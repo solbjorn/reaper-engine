@@ -16,6 +16,7 @@
 #include "inventory.h"
 #include "game_base_space.h"
 
+#include "HUDTarget.h"
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
@@ -45,10 +46,8 @@ CTorch::CTorch()
 
     glow_render._set(::Render->glow_create());
 
-    /*m_NightVisionRechargeTime	= 6.f;
-    m_NightVisionRechargeTimeMin= 2.f;
-    m_NightVisionDischargeTime	= 10.f;
-    m_NightVisionChargeTime		= 0.f;*/
+    m_camera_torch_offset = TORCH_OFFSET;
+    m_camera_omni_offset = OMNI_OFFSET;
 }
 
 CTorch::~CTorch()
@@ -56,6 +55,7 @@ CTorch::~CTorch()
     light_render.destroy();
     light_omni.destroy();
     glow_render.destroy();
+
     HUD_SOUND::DestroySound(m_NightVisionOnSnd);
     HUD_SOUND::DestroySound(m_NightVisionOffSnd);
     HUD_SOUND::DestroySound(m_NightVisionIdleSnd);
@@ -82,6 +82,11 @@ void CTorch::Load(LPCSTR section)
         HUD_SOUND::LoadSound(section, "snd_night_vision_idle", m_NightVisionIdleSnd, SOUND_TYPE_ITEM_USING);
         HUD_SOUND::LoadSound(section, "snd_night_vision_broken", m_NightVisionBrokenSnd, SOUND_TYPE_ITEM_USING);
     }
+
+    m_camera_torch_offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_torch_offset", TORCH_OFFSET);
+    m_camera_omni_offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_omni_offset", OMNI_OFFSET);
+    m_min_target_dist = READ_IF_EXISTS(pSettings, r_float, section, "camera_min_target_dist", m_min_target_dist);
+    m_bind_to_camera = READ_IF_EXISTS(pSettings, r_bool, section, "bind_to_camera", false);
 }
 
 void CTorch::SwitchNightVision() { SwitchNightVision(!m_bNightVisionOn); }
@@ -382,41 +387,58 @@ void CTorch::UpdateCL()
                     angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
             }
 
-            Fvector dir, right, up;
-            dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
-            Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+            Fvector dir, pos, right, up;
 
-            if (true)
+            if (m_bind_to_camera && actor->active_cam() == ACTOR_DEFS::eacFirstEye)
             {
-                Fvector offset = M.c;
+                f32 target_dist = HUD().GetTarget()->GetRealDist();
+                if (m_min_target_dist > 0.0f && target_dist >= 0.0f && target_dist < m_min_target_dist)
+                    target_dist = m_min_target_dist - target_dist;
+                else
+                    target_dist = 0.0f;
+
+                dir = actor->Cameras().Direction();
+                Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+                pos = actor->Cameras().Position();
+
+                Fvector offset = pos;
+                offset.mad(right, m_camera_torch_offset.x);
+                offset.mad(up, m_camera_torch_offset.y);
+                offset.mad(dir, m_camera_torch_offset.z - target_dist);
+                light_render->set_position(offset);
+
+                offset = pos;
+                offset.mad(right, m_camera_omni_offset.x);
+                offset.mad(up, m_camera_omni_offset.y);
+                offset.mad(dir, m_camera_omni_offset.z - target_dist);
+                light_omni->set_position(offset);
+            }
+            else
+            {
+                dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+                Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+                pos = M.c;
+
+                Fvector offset = pos;
                 offset.mad(M.i, TORCH_OFFSET.x);
                 offset.mad(M.j, TORCH_OFFSET.y);
                 offset.mad(M.k, TORCH_OFFSET.z);
                 light_render->set_position(offset);
 
-                if (true /*false*/)
-                {
-                    offset = M.c;
-                    offset.mad(M.i, OMNI_OFFSET.x);
-                    offset.mad(M.j, OMNI_OFFSET.y);
-                    offset.mad(M.k, OMNI_OFFSET.z);
-                    light_omni->set_position(offset);
-                }
-            } // if (true)
-            glow_render->set_position(M.c);
+                offset = pos;
+                offset.mad(M.i, OMNI_OFFSET.x);
+                offset.mad(M.j, OMNI_OFFSET.y);
+                offset.mad(M.k, OMNI_OFFSET.z);
+                light_omni->set_position(offset);
+            }
 
-            if (true)
-            {
-                light_render->set_rotation(dir, right);
+            glow_render->set_position(pos);
 
-                if (true /*false*/)
-                {
-                    light_omni->set_rotation(dir, right);
-                }
-            } // if (true)
+            light_render->set_rotation(dir, right);
+            light_omni->set_rotation(dir, right);
+
             glow_render->set_direction(dir);
-
-        } // if(actor)
+        }
         else
         {
             light_render->set_position(M.c);
