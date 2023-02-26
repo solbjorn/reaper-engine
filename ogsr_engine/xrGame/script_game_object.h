@@ -24,9 +24,9 @@
 #include "PHCharacter.h"
 #include "PHCapture.h"
 
+enum class ETaskState : u32;
 enum EPdaMsg : u32;
 enum ESoundTypes : u32;
-enum ETaskState : u32;
 
 namespace ALife
 {

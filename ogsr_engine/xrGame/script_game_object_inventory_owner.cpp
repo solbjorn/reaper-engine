@@ -621,20 +621,14 @@ LPCSTR CScriptGameObject::sound_voice_prefix() const
 
 ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id, int objective_num)
 {
-    /*	CActor* pActor = smart_cast<CActor*>(&object());
-        if (!pActor) {
-            ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"GetGameTaskState available only for actor");
-            return eTaskStateDummy;
-        }
-    */
-    CGameTask* t = Actor()->GameTaskManager().HasGameTask(shared_str{task_id});
-    if (!t)
-        return eTaskStateDummy;
+    const CGameTask* t = Actor()->GameTaskManager().HasGameTask(shared_str{task_id});
+    if (t == nullptr)
+        return ETaskState::eTaskStateDummy;
 
     if (objective_num >= std::ssize(t->m_Objectives))
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "wrong objective num %d for task %s", objective_num, task_id);
-        return eTaskStateDummy;
+        return ETaskState::eTaskStateDummy;
     }
 
     return t->m_Objectives[objective_num].TaskState();

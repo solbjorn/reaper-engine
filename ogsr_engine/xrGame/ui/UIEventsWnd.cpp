@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIEventsWnd.h"
+
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UIAnimatedStatic.h"
@@ -83,7 +84,7 @@ void CUIEventsWnd::Init()
     Register(m_TaskFilter);
     AddCallback("filter_tab", TAB_CHANGED, CallMe::fromMethod<&CUIEventsWnd::OnFilterChanged>(this));
 
-    m_currFilter = eActiveTask;
+    m_currFilter = ETaskFilters::eActiveTask;
     SetDescriptionMode(true);
 
     m_ui_task_item_xml.Init(CONFIG_PATH, UI_PATH, "job_item.xml");
@@ -104,7 +105,8 @@ void CUIEventsWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCa
 
 void CUIEventsWnd::OnFilterChanged(CUIWindow*, void*)
 {
-    m_currFilter = (ETaskFilters)m_TaskFilter->GetActiveIndex();
+    m_currFilter = ETaskFilters{m_TaskFilter->GetActiveIndex()};
+
     ReloadList(false);
     if (!GetDescriptionMode())
         SetDescriptionMode(true);
@@ -131,27 +133,22 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
             game_tasks.push_back(task);
     }
 
-    if (m_currFilter == eActiveTask)
+    if (m_currFilter == ETaskFilters::eActiveTask)
+    {
         std::sort(game_tasks.begin(), game_tasks.end(), [](const auto& a, const auto& b) {
             if (a->m_priority == b->m_priority)
                 return a->m_ReceiveTime > b->m_ReceiveTime;
+
             return a->m_priority < b->m_priority;
         });
+    }
 
     for (const auto& task : game_tasks)
     {
         CUITaskItem* pTaskItem{};
-        /*
-                if(task->m_Objectives[0].TaskState()==eTaskUserDefined)
-                {
-                    VERIFY				(task->m_Objectives.size()==1);
-                    pTaskItem			= xr_new<CUIUserTaskItem>(this);
-                    pTaskItem->SetGameTask			(task, 0);
-                    m_ListWnd->AddWindow			(pTaskItem,true);
-                }else
-        */
-        u32 visible_objectives = 0;
-        if (task->m_show_all_objectives || task->Objective(0).TaskState() != eTaskStateInProgress || task->m_Objectives.size() <= 2)
+        u32 visible_objectives{};
+
+        if (task->m_show_all_objectives || task->Objective(0).TaskState() != ETaskState::eTaskStateInProgress || task->m_Objectives.size() <= 2)
         {
             visible_objectives = task->m_Objectives.size();
         }
@@ -160,9 +157,10 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
             for (u32 i = 0; i < task->m_Objectives.size(); i++)
             {
                 auto& it = task->m_Objectives.at(i);
-                if (it.TaskState() != eTaskStateInProgress)
+                if (it.TaskState() != ETaskState::eTaskStateInProgress)
                     visible_objectives = i + 1;
             }
+
             if (visible_objectives < 2)
                 visible_objectives = 2;
             else if (visible_objectives < task->m_Objectives.size())
@@ -196,13 +194,12 @@ void CUIEventsWnd::Show(bool status)
 
 bool CUIEventsWnd::Filter(CGameTask* t)
 {
-    ETaskState task_state = t->m_Objectives[0].TaskState();
-    //	bool bprimary_only			= m_primary_or_all_filter_btn->GetCheck();
+    const ETaskState task_state = t->m_Objectives[0].TaskState();
 
-    return (false /*m_currFilter==eOwnTask && task_state==eTaskUserDefined*/) ||
-        ((true /*!bprimary_only || (bprimary_only && t->m_is_task_general)*/) &&
-         ((m_currFilter == eAccomplishedTask && task_state == eTaskStateCompleted) || (m_currFilter == eFailedTask && task_state == eTaskStateFail) ||
-          (m_currFilter == eActiveTask && task_state == eTaskStateInProgress)));
+    return (m_currFilter == ETaskFilters::eAccomplishedTask && task_state == ETaskState::eTaskStateCompleted) ||
+        (m_currFilter == ETaskFilters::eFailedTask && task_state == ETaskState::eTaskStateFail) ||
+        (m_currFilter == ETaskFilters::eActiveTask && task_state == ETaskState::eTaskStateInProgress) ||
+        (m_currFilter == ETaskFilters::eSkippedTask && task_state == ETaskState::eTaskStateSkipped);
 }
 
 void CUIEventsWnd::SetDescriptionMode(bool bMap)

@@ -10,14 +10,17 @@
 #define XRAY_ALIFE_SPACE
 
 // ALife objects, events and tasks
-#define ALIFE_VERSION 0x0009
+constexpr inline u32 ALIFE_VERSION{10};
+
 #define ALIFE_CHUNK_DATA 0x0000
 #define SPAWN_CHUNK_DATA 0x0001
 #define OBJECT_CHUNK_DATA 0x0002
 #define GAME_TIME_CHUNK_DATA 0x0005
 #define REGISTRY_CHUNK_DATA 0x0009
-constexpr u32 CALLBACK_CHUNK_DATA = 0xe;
+constexpr inline u32 CALLBACK_CHUNK_DATA{14};
+
 #define SAVE_EXTENSION ".sav"
+
 // inventory rukzak size
 #define INVALID_STORY_ID ALife::_STORY_ID(-1)
 #define INVALID_SPAWN_STORY_ID ALife::_SPAWN_STORY_ID(-1)

@@ -17,8 +17,8 @@ class CUITaskItem : public CUIListItem, public CUIWndCallback
 {
     RTTI_DECLARE_TYPEINFO(CUITaskItem, CUIListItem, CUIWndCallback);
 
-public:
-    typedef CUIListItem inherited;
+private:
+    using inherited = CUIListItem;
 
 protected:
     CGameTask* m_GameTask{};
@@ -46,8 +46,8 @@ class CUITaskRootItem : public CUITaskItem
 {
     RTTI_DECLARE_TYPEINFO(CUITaskRootItem, CUITaskItem);
 
-public:
-    typedef CUITaskItem inherited;
+private:
+    using inherited = CUITaskItem;
 
 protected:
     CUIStatic* m_taskImage;
@@ -74,11 +74,13 @@ class CUITaskSubItem : public CUITaskItem
 {
     RTTI_DECLARE_TYPEINFO(CUITaskSubItem, CUITaskItem);
 
-public:
-    typedef CUITaskItem inherited;
+private:
+    using inherited = CUITaskItem;
+
     u32 m_active_color;
     u32 m_failed_color;
     u32 m_accomplished_color;
+    u32 m_skipped_color;
 
 protected:
     CUIStatic* m_ActiveObjectiveStatic;

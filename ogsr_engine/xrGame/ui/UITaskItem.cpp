@@ -114,7 +114,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
     else
         m_switchDescriptionBtn->InitTexture("ui_icons_newPDA_showmap");
 
-    m_remTimeStatic->Show(GameTask()->Objective(0).TaskState() == eTaskStateInProgress && (GameTask()->m_ReceiveTime != GameTask()->m_TimeToComplete));
+    m_remTimeStatic->Show(GameTask()->Objective(0).TaskState() == ETaskState::eTaskStateInProgress && (GameTask()->m_ReceiveTime != GameTask()->m_TimeToComplete));
 
     if (m_remTimeStatic->IsShown())
     {
@@ -202,6 +202,7 @@ void CUITaskSubItem::Init()
     m_active_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:active", 0, 0x00);
     m_failed_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:failed", 0, 0x00);
     m_accomplished_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:accomplished", 0, 0x00);
+    m_skipped_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:skipped", 0, 0x00);
 }
 
 void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
@@ -215,20 +216,24 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
     m_descriptionStatic->AdjustHeightToText();
     float h = _max(m_ActiveObjectiveStatic->GetWndPos().y + m_ActiveObjectiveStatic->GetHeight(), m_descriptionStatic->GetWndPos().y + m_descriptionStatic->GetHeight());
     SetHeight(h);
+
     switch (obj.TaskState())
     {
-        //.		case eTaskUserDefined:
-    case eTaskStateInProgress:
+    case ETaskState::eTaskStateInProgress:
         m_stateStatic->InitTexture("ui_icons_PDA_subtask_active");
         m_descriptionStatic->SetTextColor(m_active_color);
         break;
-    case eTaskStateFail:
+    case ETaskState::eTaskStateFail:
         m_stateStatic->InitTexture("ui_icons_PDA_subtask_failed");
         m_descriptionStatic->SetTextColor(m_failed_color);
         break;
-    case eTaskStateCompleted:
+    case ETaskState::eTaskStateCompleted:
         m_stateStatic->InitTexture("ui_icons_PDA_subtask_accomplished");
         m_descriptionStatic->SetTextColor(m_accomplished_color);
+        break;
+    case ETaskState::eTaskStateSkipped:
+        m_stateStatic->InitTexture("ui_icons_PDA_subtask_skipped");
+        m_descriptionStatic->SetTextColor(m_skipped_color);
         break;
     default: NODEFAULT;
     }
@@ -246,7 +251,7 @@ void CUITaskSubItem::Update()
 bool CUITaskSubItem::OnDbClick()
 {
     SGameTaskObjective* obj = &m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
-    if (obj->TaskState() != eTaskStateInProgress)
+    if (obj->TaskState() != ETaskState::eTaskStateInProgress)
         return true;
 
     bool bIsActive = (Actor()->GameTaskManager().ActiveObjective() == obj);
