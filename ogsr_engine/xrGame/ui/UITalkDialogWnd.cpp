@@ -12,6 +12,7 @@
 #include "../UIGameSP.h"
 #include "UIPdaWnd.h"
 #include "UIDiaryWnd.h"
+#include "UIInventoryUtilities.h"
 
 #include "../game_news.h"
 #include "../level.h"
@@ -93,9 +94,20 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
     Register(&UIToTradeButton);
     AddCallback("question_item", LIST_ITEM_CLICKED, CallMe::fromMethod<&CUITalkDialogWnd::OnQuestionClicked>(this));
     AddCallback("trade_btn", BUTTON_CLICKED, CallMe::fromMethod<&CUITalkDialogWnd::OnTradeClicked>(this));
-}
 
-#include "UIInventoryUtilities.h"
+    // Load sounds
+    if (m_uiXml->NavigateToNode("action_sounds", 0))
+    {
+        XML_NODE* stored_root = m_uiXml->GetLocalRoot();
+        m_uiXml->SetLocalRoot(m_uiXml->NavigateToNode("action_sounds", 0));
+
+        create_ui_snd(sounds[std::to_underlying(eSndAction::eTalkSndOpen)], m_uiXml->Read("snd_open", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eSndAction::eTalkSndClose)], m_uiXml->Read("snd_close", 0, nullptr));
+        create_ui_snd(sounds[std::to_underlying(eSndAction::eTalkSndSay)], m_uiXml->Read("snd_say", 0, nullptr));
+
+        m_uiXml->SetLocalRoot(stored_root);
+    }
+}
 
 void CUITalkDialogWnd::Show()
 {
@@ -104,6 +116,7 @@ void CUITalkDialogWnd::Show()
     inherited::Enable(true);
 
     ResetAll();
+    PlaySnd(eSndAction::eTalkSndOpen);
 }
 
 void CUITalkDialogWnd::Hide()
@@ -111,10 +124,14 @@ void CUITalkDialogWnd::Hide()
     InventoryUtilities::SendInfoToActor("ui_talk_hide");
     inherited::Show(false);
     inherited::Enable(false);
+
+    PlaySnd(eSndAction::eTalkSndClose);
 }
 
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
 {
+    PlaySnd(eSndAction::eTalkSndSay);
+
     m_ClickedQuestionID = ((CUIQuestionItem*)w)->m_s_value;
     GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
 }
@@ -211,6 +228,14 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
     UIDialogFrame.Show(!b);
 
     UIToTradeButton.Show(!b);
+}
+
+void CUITalkDialogWnd::PlaySnd(eSndAction a)
+{
+    auto& snd = sounds[std::to_underlying(a)];
+
+    if (snd._handle() != nullptr && snd._feedback() == nullptr)
+        snd.play_no_feedback(nullptr, sm_2D);
 }
 
 void CUIQuestionItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCallback::OnEvent(pWnd, msg, pData); }

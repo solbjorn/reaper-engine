@@ -57,7 +57,7 @@ public:
     void AddItemToBag(PIItem pItem);
 
 protected:
-    enum eInventorySndAction
+    enum class eInventorySndAction : s32
     {
         eInvSndOpen = 0,
         eInvSndClose,
@@ -69,10 +69,11 @@ protected:
         eInvAttachAddon,
         eInvDetachAddon,
         eInvItemUse,
-        eInvSndMax
+        eInvSndMax,
     };
 
-    ref_sound sounds[eInvSndMax];
+    std::array<ref_sound, std::to_underlying(eInventorySndAction::eInvSndMax)> sounds;
+
     void PlaySnd(eInventorySndAction a);
 
     CUIStatic UIBeltSlots;

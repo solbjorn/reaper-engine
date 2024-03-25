@@ -65,6 +65,18 @@ public:
     void SetOsoznanieMode(bool b);
 
 private:
+    enum class eSndAction : s32
+    {
+        eTalkSndOpen = 0,
+        eTalkSndClose,
+        eTalkSndSay,
+        eTalkSndMax,
+    };
+
+    std::array<ref_sound, std::to_underlying(eSndAction::eTalkSndMax)> sounds;
+
+    void PlaySnd(eSndAction a);
+
     CUIScrollView* UIQuestionsList;
     CUIScrollView* UIAnswersList;
 
