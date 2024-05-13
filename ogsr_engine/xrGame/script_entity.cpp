@@ -486,7 +486,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
         m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
         m_monster->movement().detail().set_dest_position(l_tMovementAction.m_tDestinationPosition);
 
-        u32 vertex_id = ai().level_graph().vertex(object().ai_location().level_vertex_id(), l_tMovementAction.m_tDestinationPosition);
+        u32 vertex_id = ai().level_graph().vertex_id(object().ai_location().level_vertex_id(), l_tMovementAction.m_tDestinationPosition);
         if (!ai().level_graph().valid_vertex_id(vertex_id))
             vertex_id = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(), object().Position(), l_tMovementAction.m_tDestinationPosition);
 

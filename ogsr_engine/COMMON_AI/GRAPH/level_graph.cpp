@@ -10,19 +10,11 @@
 
 #include "level_graph.h"
 
-namespace
-{
-constexpr LPCSTR LEVEL_GRAPH_NAME = "level.ai";
-}
-
-CLevelGraph::CLevelGraph()
+CLevelGraph::CLevelGraph(gsl::czstring fName)
 {
     sh_debug->create("editor\\wire"); // sh_debug->create("debug\\ai_nodes", "$null");
 
-    string_path file_name;
-    std::ignore = FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
-
-    m_reader = FS.r_open(file_name);
+    m_reader = absl::WrapUnique(FS.r_open(fName));
 
     // m_header & data
     m_header = (const CHeader*)m_reader->pointer();
@@ -42,9 +34,9 @@ CLevelGraph::CLevelGraph()
 #endif
 }
 
-CLevelGraph::~CLevelGraph() { FS.r_close(m_reader); }
+CLevelGraph::~CLevelGraph() = default;
 
-u32 CLevelGraph::vertex(const Fvector& position) const
+u32 CLevelGraph::nearest_vertex_id(const Fvector& position) const
 {
     CLevelGraph::CPosition _node_position;
     vertex_position(_node_position, position);
@@ -65,11 +57,9 @@ u32 CLevelGraph::vertex(const Fvector& position) const
     return (selected);
 }
 
-u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
+u32 CLevelGraph::vertex_id(u32 current_node_id, const Fvector& position) const
 {
     Device.Statistic->AI_Node.Begin();
-
-    u32 id;
 
     if (valid_vertex_position(position))
     {
@@ -134,10 +124,11 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
     {
         // so, we do not have a correct current node
         // performing very slow full search
-        id = vertex(position);
+        const u32 id = nearest_vertex_id(position);
         VERIFY(valid_vertex_id(id));
+
         Device.Statistic->AI_Node.End();
-        return (id);
+        return id;
     }
 
     // so, our position is outside the level graph bounding box
@@ -169,7 +160,6 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
     }
 
     Device.Statistic->AI_Node.End();
-
     return best_vertex_id;
 }
 

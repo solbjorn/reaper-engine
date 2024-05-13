@@ -56,19 +56,18 @@ public:
     IC const CHeader& header() const;
     IC const CGameLevelCrossTable& cross_table() const;
     IC bool mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
-    IC bool mask(const _LOCATION_ID M[GameGraph::LOCATION_TYPE_COUNT], const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
     IC float distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphID1) const;
     IC bool accessible(const u32& vertex_id) const;
     IC void accessible(const u32& vertex_id, bool value) const;
     IC bool valid_vertex_id(const u32& vertex_id) const;
     IC void begin(const u32& vertex_id, const_iterator& start, const_iterator& end) const;
-    IC void begin_spawn(const u32& vertex_id, const_spawn_iterator& start, const_spawn_iterator& end) const;
     inline const _GRAPH_ID& value(const u32&, const_iterator& i) const;
     inline const float& edge_weight(const_iterator i) const;
     IC const CVertex* vertex(const u32& vertex_id) const;
     IC void set_invalid_vertex(_GRAPH_ID& vertex_id) const;
     IC _GRAPH_ID vertex_id(const CVertex* vertex) const;
-    IC void set_current_level(const u32& level_id);
+    [[nodiscard]] inline CGameLevelCrossTable* find_cross_table_for_level(u32 level_id) const;
+    inline void set_current_level(u32 level_id);
     IC const _GRAPH_ID& current_level_vertex() const;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

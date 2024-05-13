@@ -819,9 +819,9 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
                 if (!l_this->m_explode_by_timer_on_safe_dist)
                 {
                     CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
-                    if (pActor)
+                    if (pActor != nullptr)
                     {
-                        u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
+                        const u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex_id(l_pos);
                         CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
 
                         NET_Packet P;
@@ -837,9 +837,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
         }
 
         if (safe_to_explode)
-        {
             l_this->set_destroy_time(5);
-        }
 
         l_this->has_already_contact = true;
     }

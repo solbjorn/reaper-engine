@@ -253,7 +253,7 @@ static u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max
     Fvector finish_position = Fvector(start_position).add(direction);
 
     u32 result{std::numeric_limits<u32>::max()};
-    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr);
+    std::ignore = ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr);
 
     return (ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id);
 }
@@ -804,12 +804,14 @@ static void send_event_mouse_wheel(int vol) // Вращение колеса м�
 }
 //
 
+namespace
+{
 // Real Wolf 07.07.2014
-static u32 vertex_id(const Fvector& vec) { return ai().level_graph().vertex_id(vec); }
+[[nodiscard]] u32 vertex_id(const Fvector& vec) { return ai().level_graph().vertex_id(vec); }
+[[nodiscard]] u32 vertex_id(u32 node, const Fvector& vec) { return ai().level_graph().vertex_id(node, vec); }
 
-static u32 vertex_id(u32 node, const Fvector& vec) { return ai().level_graph().vertex(node, vec); }
-
-static u32 nearest_vertex_id(const Fvector& vec) { return ai().level_graph().vertex(vec); }
+[[nodiscard]] u32 nearest_vertex_id(const Fvector& vec) { return ai().level_graph().nearest_vertex_id(vec); }
+} // namespace
 
 // Also referenced in ui\UIInventoryWnd.cpp
 void update_inventory_window() { HUD().GetUI()->UIGame()->ReInitShownUI(); }
@@ -1126,7 +1128,7 @@ void CLevel::script_register(sol::state_view& lua)
         "ray_query", &PerformRayQuery,
 
         // Real Wolf 07.07.2014
-        "vertex_id", sol::overload(sol::resolve<u32(const Fvector&)>(&vertex_id), sol::resolve<u32(u32, const Fvector&)>(&vertex_id)),
+        "vertex_id", sol::overload(sol::resolve<u32(u32, const Fvector&)>(&vertex_id), sol::resolve<u32(const Fvector&)>(&vertex_id)),
 
         "nearest_vertex_id", &nearest_vertex_id, "advance_game_time", &AdvanceGameTime, "get_target_dist", &GetTargetDist, "get_target_obj", &GetTargetObj, "get_current_ray_query",
         &GetCurrentRayQuery,

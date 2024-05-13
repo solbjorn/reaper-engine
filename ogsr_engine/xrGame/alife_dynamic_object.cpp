@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects_ALife.h"
+
 #include "alife_simulator.h"
 #include "alife_schedule_registry.h"
 #include "alife_graph_registry.h"
@@ -17,6 +18,9 @@
 #include "game_level_cross_table.h"
 #include "game_graph.h"
 #include "xrServer.h"
+
+#include "level.h"
+#include "map_manager.h"
 
 void CSE_ALifeDynamicObject::on_spawn()
 {
@@ -61,9 +65,6 @@ void CSE_ALifeDynamicObject::on_before_register()
 
     op->second(this);
 }
-
-#include "level.h"
-#include "map_manager.h"
 
 void CSE_ALifeDynamicObject::__on_unregister() { Level().MapManager().RemoveMapLocationByObjectID(ID); }
 
@@ -121,7 +122,7 @@ bool CSE_ALifeDynamicObject::synchronize_location()
     if (!ai().level_graph().valid_vertex_position(o_Position) || ai().level_graph().inside(ai().level_graph().vertex(m_tNodeID), o_Position))
         return (true);
 
-    m_tNodeID = ai().level_graph().vertex(m_tNodeID, o_Position);
+    m_tNodeID = ai().level_graph().vertex_id(m_tNodeID, o_Position);
 
     GameGraph::_GRAPH_ID tGraphID = ai().cross_table().vertex(m_tNodeID).game_vertex_id();
     if (tGraphID != m_tGraphID)

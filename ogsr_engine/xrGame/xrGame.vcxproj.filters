@@ -6121,9 +6121,6 @@
     <ClCompile Include="..\COMMON_AI\alife_space.cpp">
       <Filter>AI\ALife</Filter>
     </ClCompile>
-    <ClCompile Include="alife_combat_manager.cpp">
-      <Filter>AI\ALife\interaction_manager\combat_manager</Filter>
-    </ClCompile>
     <ClCompile Include="alife_anomalous_zone.cpp">
       <Filter>AI\ALife\interaction_manager\server_entities\anomalous_zone</Filter>
     </ClCompile>
@@ -8590,6 +8587,9 @@
     </ClCompile>
     <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
       <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="level_graph_script.cpp">
+      <Filter>AI\ANavigation\LevelGraph</Filter>
     </ClCompile>
     <ClCompile Include="LevelDebugScript.cpp">
       <Filter>Core\Client\Level</Filter>

@@ -1389,6 +1389,7 @@
     <ClCompile Include="EliteDetector.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
     <ClCompile Include="LevelDebugScript.cpp" />
+    <ClCompile Include="level_graph_script.cpp" />
     <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />
@@ -1472,7 +1473,6 @@
     <ClCompile Include="alife_simulator.cpp" />
     <ClCompile Include="alife_simulator_script.cpp" />
     <ClCompile Include="..\COMMON_AI\alife_space.cpp" />
-    <ClCompile Include="alife_combat_manager.cpp" />
     <ClCompile Include="alife_anomalous_zone.cpp" />
     <ClCompile Include="alife_creature_abstract.cpp" />
     <ClCompile Include="alife_dynamic_object.cpp" />

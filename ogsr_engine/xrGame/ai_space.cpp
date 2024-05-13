@@ -8,12 +8,13 @@
 
 #include "stdafx.h"
 
+#include "ai_space.h"
+
 #include "game_graph.h"
 #include "game_level_cross_table.h"
 #include "level_graph.h"
 #include "graph_engine.h"
 #include "ef_storage.h"
-#include "ai_space.h"
 #include "cover_manager.h"
 #include "cover_point.h"
 #include "script_engine.h"
@@ -99,7 +100,10 @@ void CAI_Space::load(LPCSTR level_name)
 
     const CGameGraph::SLevel& current_level = game_graph().header().level(level_name);
 
-    m_level_graph = xr_new<CLevelGraph>();
+    string_path file_name;
+    std::ignore = FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME.data());
+    m_level_graph = xr_new<CLevelGraph>(file_name);
+
     game_graph().set_current_level(current_level.id());
     auto& crossHeader = cross_table().header();
     auto& levelHeader = level_graph().header();

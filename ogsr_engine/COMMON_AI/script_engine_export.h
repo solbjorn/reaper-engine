@@ -46,7 +46,6 @@
 #include "level.h"
 #include "memory_space.h"
 #include "script_render_device.h"
-#include "../COMMON_AI/script_camera.h"
 #include "script_game_object.h"
 #include "cover_point.h"
 #include "patrol_path_params.h"
@@ -122,6 +121,7 @@
 #include "alife_monster_patrol_path_manager.h"
 #include "alife_monster_detail_path_manager.h"
 #include "alife_smart_terrain_task.h"
+#include "level_graph.h"
 #include "game_graph.h"
 #include "smart_zone.h"
 #include "F1.h"
@@ -158,6 +158,7 @@
 #include "space_restrictor.h"
 #include "physicobject.h"
 #include "searchlight.h"
+#include "script_camera.h"
 #include "script_rq_result.h"
 #include "EffectorZoomInertion.h"
 #endif
