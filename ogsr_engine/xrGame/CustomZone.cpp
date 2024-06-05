@@ -377,6 +377,7 @@ void CCustomZone::Load(LPCSTR section)
     m_ef_weapon_type = pSettings->r_u32(section, "ef_weapon_type");
 
     DestroyAfterBlowout = READ_IF_EXISTS(pSettings, r_bool, section, "DestroyAfterBlowout", false);
+    m_b_always_fastmode = READ_IF_EXISTS(pSettings, r_bool, section, "always_fast_mode", false);
 }
 
 BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
@@ -456,13 +457,12 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     m_fDistanceToCurEntity = flt_max;
     m_bBlowoutWindActive = false;
 
-    o_fastmode = TRUE; // start initially with fast-mode enabled
-    if (spawn_ini() && spawn_ini()->line_exist("fast_mode", "always_fast"))
-    {
-        m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
-    }
+    o_fastmode = true; // start initially with fast-mode enabled
 
-    return (TRUE);
+    if (spawn_ini() != nullptr && spawn_ini()->line_exist("fast_mode", "always_fast"))
+        m_b_always_fastmode = spawn_ini()->r_bool("fast_mode", "always_fast");
+
+    return true;
 }
 
 void CCustomZone::net_Destroy()

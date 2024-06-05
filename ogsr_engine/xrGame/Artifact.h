@@ -127,23 +127,11 @@ public:
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
     // optimization FAST/SLOW mode
-public:
-    u32 o_render_frame;
-    BOOL o_fastmode;
-    IC void o_switch_2_fast()
-    {
-        if (o_fastmode)
-            return;
-        o_fastmode = TRUE;
-        // processing_activate		();
-    }
-    IC void o_switch_2_slow()
-    {
-        if (!o_fastmode)
-            return;
-        o_fastmode = FALSE;
-        // processing_deactivate		();
-    }
+    u32 o_render_frame{};
+    bool o_fastmode{};
+
+    void o_switch_2_fast() { o_fastmode = true; }
+    void o_switch_2_slow() { o_fastmode = false; }
 
     void FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force);
     bool CanBeInvisible();

@@ -133,8 +133,9 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
     if (K)
         K->PlayCycle(shared_str{"idle"});
 
-    o_fastmode = FALSE; // start initially with fast-mode enabled
+    o_fastmode = true; // start initially with fast-mode enabled
     o_render_frame = 0;
+
     SetState(eHidden);
 
     return result;
