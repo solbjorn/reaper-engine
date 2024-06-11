@@ -138,6 +138,18 @@ void CInventoryItem::Load(LPCSTR section)
     m_need_brief_info = READ_IF_EXISTS(pSettings, r_bool, section, "show_brief_info", true);
 }
 
+void CInventoryItem::ReloadNames()
+{
+    gsl::czstring section = m_object->cNameSect().c_str();
+    gsl::czstring inv_name = pSettings->r_string(section, "inv_name");
+
+    m_name = CStringTable().translate(shared_str{inv_name});
+    m_nameShort = CStringTable().translate(shared_str{READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", inv_name)});
+
+    if (pSettings->line_exist(section, "description"))
+        m_Description = CStringTable().translate(shared_str{pSettings->r_string(section, "description")});
+}
+
 void CInventoryItem::ChangeCondition(float fDeltaCondition)
 {
     m_fCondition += fDeltaCondition;

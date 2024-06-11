@@ -230,6 +230,78 @@ public:
     virtual void Info(TInfo& I) { strcpy_s(I, "game difficulty"); }
 };
 
+xr_vector<xr_token> LanguagesToken;
+u32 LanguageID{};
+} // namespace
+
+namespace xr
+{
+gsl::czstring GetLanguagesToken() { return LanguagesToken[LanguageID].name; }
+} // namespace xr
+
+namespace
+{
+class CCC_GameLanguage : public CCC_Token
+{
+    RTTI_DECLARE_TYPEINFO(CCC_GameLanguage, CCC_Token);
+
+public:
+    explicit CCC_GameLanguage(gsl::czstring N) : CCC_Token{N, &LanguageID, LanguagesToken.data()}
+    {
+        gsl::czstring str = pSettings->r_string("string_table", "language");
+
+        for (gsl::index i{0}, count{_GetItemCount(str)}; i < count; i++)
+        {
+            string64 temp;
+            std::ignore = _GetItem(str, i, temp);
+
+            LanguagesToken.emplace_back(xr_strdup(temp), i);
+        }
+
+        LanguagesToken.emplace_back(nullptr, 0);
+        tokens = LanguagesToken.data();
+    }
+
+    ~CCC_GameLanguage() override
+    {
+        for (const auto& tok : LanguagesToken)
+        {
+            auto name = const_cast<gsl::zstring>(tok.name);
+            xr_free(name);
+        }
+
+        LanguagesToken.clear();
+    }
+
+    void Execute(gsl::czstring args) override
+    {
+        CCC_Token::Execute(args);
+
+        CStringTable().ReloadLanguage();
+
+        if (g_pGamePersistent->IsMainMenuActive())
+            MainMenu()->SetLanguageChanged(true);
+
+        if (g_pGameLevel == nullptr)
+            return;
+
+        if (g_pGamePersistent->IsMainMenuActive())
+        {
+            MainMenu()->Activate(false);
+            MainMenu()->Activate(true);
+        }
+
+        for (u32 id{0}; id < std::numeric_limits<ALife::_OBJECT_ID>::max(); id++)
+        {
+            if (auto gameObj = Level().Objects.net_Find(id); gameObj != nullptr)
+            {
+                if (auto invItem = smart_cast<CInventoryItem*>(gameObj); invItem != nullptr)
+                    invItem->ReloadNames();
+            }
+        }
+    }
+};
+
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command
 {
@@ -1530,9 +1602,10 @@ public:
 void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
+
     // game
-    // CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
+    CMD1(CCC_GameLanguage, "g_language");
 
     CMD3(CCC_Mask, "wpn_aim_toggle", &psActorFlags, AF_WPN_AIM_TOGGLE);
 

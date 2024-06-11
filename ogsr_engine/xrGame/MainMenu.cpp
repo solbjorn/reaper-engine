@@ -402,6 +402,9 @@ void CMainMenu::OnFrame()
 
     if (IsActive())
         CheckForErrorDlg();
+
+    if (languageChanged)
+        languageChanged = false;
 }
 
 void CMainMenu::OnDeviceCreate() {}
