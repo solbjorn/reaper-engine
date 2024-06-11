@@ -1597,11 +1597,26 @@ public:
     virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
 };
 #endif // USE_MEMORY_VALIDATOR
+
+class CCC_UI_Reload : public IConsole_Command
+{
+    RTTI_DECLARE_TYPEINFO(CCC_UI_Reload, IConsole_Command);
+
+public:
+    explicit CCC_UI_Reload(gsl::czstring N) : IConsole_Command{N, true} {}
+
+    void Execute(gsl::czstring) override
+    {
+        if (g_pGamePersistent != nullptr && g_pGameLevel != nullptr && Level().game != nullptr)
+            HUD().OnScreenRatioChanged();
+    }
+};
 } // namespace
 
 void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
+    CMD1(CCC_UI_Reload, "ui_reload");
 
     // game
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
