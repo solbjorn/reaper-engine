@@ -1148,11 +1148,9 @@ bool CWeapon::Action(s32 cmd, u32 flags)
         return true;
     case kWPN_NEXT: {
         if (IsPending())
-        {
             return false;
-        }
 
-        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && (g_actor->get_state() & ACTOR_DEFS::mcSprint))
+        if (psActorFlags.test(AF_LOCK_RELOAD) && ParentIsActor() && (g_actor->get_state() & ACTOR_DEFS::mcSprint))
             return true;
 
         if (flags & CMD_START)
