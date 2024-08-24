@@ -82,9 +82,6 @@ BOOL CMincer::feel_touch_contact(CObject* O) { return inherited::feel_touch_cont
 void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
 {
     inherited::AffectThrow(O, GO, throw_in_dir, dist);
-
-    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), Fvector{0.0f, -99.0f, 0.0f}, 1.33f, ps_ssfx_int_grass_params_2.y,
-                                                ps_ssfx_int_grass_params_2.x, Radius() * 4.0f);
 }
 
 bool CMincer::BlowoutState()
