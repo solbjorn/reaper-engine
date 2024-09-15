@@ -10,6 +10,27 @@
 
 #include "script_fvector.h"
 
+namespace
+{
+constexpr std::tuple<Fvector, Fvector> generate_orthonormal_basis(const Fvector& self)
+{
+    std::tuple<Fvector, Fvector> upright;
+
+    Fvector::generate_orthonormal_basis(self, std::get<0>(upright), std::get<1>(upright));
+
+    return upright;
+}
+
+constexpr std::tuple<Fvector, Fvector> generate_orthonormal_basis_normalized(Fvector& self)
+{
+    std::tuple<Fvector, Fvector> upright;
+
+    Fvector::generate_orthonormal_basis_normalized(self, std::get<0>(upright), std::get<1>(upright));
+
+    return upright;
+}
+} // namespace
+
 template <>
 void CScriptFvector::script_register(sol::state_view& lua)
 {
@@ -58,7 +79,8 @@ void CScriptFvector::script_register(sol::state_view& lua)
         sol::policies(sol::overload(sol::resolve<Fvector&()>(&Fvector::normalize_safe), sol::resolve<Fvector&(const Fvector&)>(&Fvector::normalize_safe)), sol::returns_self()),
         "dotproduct", &Fvector::dotproduct, "crossproduct", sol::policies(&Fvector::crossproduct, sol::returns_self()), "distance_to_xz", &Fvector::distance_to_xz,
         "distance_to_sqr", &Fvector::distance_to_sqr, "distance_to", &Fvector::distance_to, "setHP", sol::policies(&Fvector::setHP, sol::returns_self()), "getH", &Fvector::getH,
-        "getP", &Fvector::getP, "reflect", sol::policies(&Fvector::reflect, sol::returns_self()), "slide", sol::policies(&Fvector::slide, sol::returns_self()));
+        "getP", &Fvector::getP, "reflect", sol::policies(&Fvector::reflect, sol::returns_self()), "slide", sol::policies(&Fvector::slide, sol::returns_self()),
+        "generate_orthonormal_basis", &generate_orthonormal_basis, "generate_orthonormal_basis_normalized", &generate_orthonormal_basis_normalized);
 
     lua.new_usertype<Fvector2>(
         "vector2", sol::no_constructor, sol::call_constructor,
