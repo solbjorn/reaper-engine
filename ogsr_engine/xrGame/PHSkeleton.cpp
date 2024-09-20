@@ -93,27 +93,28 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
     else
     {
         CPhysicsShellHolder* obj = PPhysicsShellHolder();
-        IKinematics* K{};
-        if (obj->Visual())
+        IKinematics* k{};
+
+        if (obj->Visual() != nullptr)
         {
-            K = smart_cast<IKinematics*>(obj->Visual());
-            if (K)
-            {
-                K->LL_SetBoneRoot(po->saved_bones.root_bone);
-                K->LL_SetBonesVisible(po->saved_bones.bones_mask);
-            }
+            k = smart_cast<IKinematics*>(obj->Visual());
+            if (k != nullptr)
+                k->LL_SetBoneRoot(po->saved_bones.root_bone);
         }
+
         SpawnInitPhysics(D);
         RestoreNetState(po);
+
         if (obj->PPhysicsShell() && obj->PPhysicsShell()->isFullActive())
             obj->PPhysicsShell()->GetGlobalTransformDynamic(&obj->XFORM());
 
         CPHDestroyableNotificate::spawn_notificate(D);
 
-        if (K)
+        if (k != nullptr)
         {
-            CInifile* ini = K->LL_UserData();
-            if (ini && ini->section_exist("collide"))
+            CInifile* ini = k->LL_UserData();
+
+            if (ini != nullptr && ini->section_exist("collide"))
             {
                 if (ini->line_exist("collide", "not_collide_parts"))
                 {
@@ -121,19 +122,20 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
                     obj->PPhysicsShell()->RegisterToCLGroup(gr);
                 }
             }
-            if (ini && ini->section_exist("collide_parts"))
+
+            if (ini != nullptr && ini->section_exist("collide_parts"))
             {
                 if (ini->line_exist("collide_parts", "small_object"))
-                {
                     obj->PPhysicsShell()->SetSmall();
-                }
+
                 if (ini->line_exist("collide_parts", "ignore_small_objects"))
-                {
                     obj->PPhysicsShell()->SetIgnoreSmall();
-                }
             }
+
+            k->LL_SetBonesVisible(po->saved_bones.bones_mask);
         }
     }
+
     return false;
 }
 
@@ -312,7 +314,7 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* /*po*/)
     else
     {
         MsgDbg("~ [%s]: [%s] has different state in saved_bones[%zu] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(),
-            obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), (obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f) ? "yes" : "no");
+               obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), (obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f) ? "yes" : "no");
     }
 
     saved_bones.clear();
