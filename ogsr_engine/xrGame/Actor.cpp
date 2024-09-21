@@ -1724,21 +1724,6 @@ CCustomOutfit* CActor::GetOutfit() const
     return _of ? smart_cast<CCustomOutfit*>(_of) : nullptr;
 }
 
-void CActor::block_action(EGameActions cmd)
-{
-    if (m_blocked_actions.find(cmd) == m_blocked_actions.end())
-    {
-        m_blocked_actions[cmd] = true;
-    }
-}
-
-void CActor::unblock_action(EGameActions cmd)
-{
-    auto iter = m_blocked_actions.find(cmd);
-    if (iter != m_blocked_actions.end())
-        m_blocked_actions.erase(iter);
-}
-
 bool CActor::is_actor_normal()
 {
     return (mstate_real & (ACTOR_DEFS::mcAnyAction | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ? false : true;
