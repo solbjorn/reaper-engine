@@ -112,10 +112,12 @@ void CCF_Skeleton::BuildState()
 
         bv_box.set(pVisual->getVisData().box);
         bv_box.getsphere(bv_sphere.P, bv_sphere.R);
+
         for (u16 i = 0; i < K->LL_BoneCount(); i++)
         {
             if (!K->LL_GetBoneVisible(i))
                 continue;
+
             SBoneShape& shape = K->LL_GetData(i).shape;
             if (SBoneShape::stNone == shape.type)
                 continue;
@@ -126,51 +128,55 @@ void CCF_Skeleton::BuildState()
         }
     }
 
-    for (ElementVecIt I = elements.begin(); I != elements.end(); I++)
+    for (auto& element : elements)
     {
-        if (!I->valid())
+        if (!element.valid())
             continue;
-        SBoneShape& shape = K->LL_GetData(I->elem_id).shape;
+
+        SBoneShape& shape = K->LL_GetData(element.elem_id).shape;
         Fmatrix ME, T, TW;
-        const Fmatrix& Mbone = K->LL_GetTransform(I->elem_id);
+        const Fmatrix& Mbone = K->LL_GetTransform(element.elem_id);
 
-        VERIFY2(DET(Mbone) > EPS, (make_string("0 scale bone matrix, %d \n", I->elem_id) + dbg_object_full_dump_string(owner)).c_str());
+        VERIFY(DET(Mbone) > EPS, (make_string("0 scale bone matrix, %d \n", element.elem_id) + dbg_object_full_dump_string(owner)).c_str());
 
-        switch (I->type)
+        switch (element.type)
         {
         case SBoneShape::stBox: {
             const Fobb& B = shape.box;
             B.xform_get(ME);
 
-            I->b_hsize.set(B.m_halfsize);
+            element.b_hsize.set(B.m_halfsize);
             // prepare matrix World to Element
             T.mul_43(Mbone, ME); // model space
             TW.mul_43(L2W, T); // world space
-            bool b = I->b_IM.invert_b(TW);
+
+            bool b = element.b_IM.invert_b(TW);
             // check matrix validity
             if (!b)
             {
                 Msg("! ERROR: invalid bone xform . Bone disabled.");
-                Msg("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]", I->elem_id, VPUSH(TW.c));
+                Msg("! ERROR: bone_id=[%d], world_pos[%f,%f,%f]", element.elem_id, VPUSH(TW.c));
                 Msg("visual name %s", owner->cNameVisual().c_str());
                 Msg("object name %s", owner->cName().c_str());
 #ifdef DEBUG
                 Msg(dbg_object_full_dump_string(owner).c_str());
 #endif // #ifdef DEBUG
-                I->elem_id = u16(-1); //. hack - disable invalid bone
+
+                element.elem_id = std::numeric_limits<u16>::max(); //. hack - disable invalid bone
             }
         }
         break;
         case SBoneShape::stSphere: {
             const Fsphere& S = shape.sphere;
-            Mbone.transform_tiny(I->s_sphere.P, S.P);
-            L2W.transform_tiny(I->s_sphere.P);
-            I->s_sphere.R = S.R;
+            Mbone.transform_tiny(element.s_sphere.P, S.P);
+            L2W.transform_tiny(element.s_sphere.P);
+            element.s_sphere.R = S.R;
         }
         break;
         case SBoneShape::stCylinder: {
             const Fcylinder& C = shape.cylinder;
-            auto& c_cylinder = I->c_cylinder;
+            auto& c_cylinder = element.c_cylinder;
+
             Mbone.transform_tiny(c_cylinder.m_center, C.m_center);
             L2W.transform_tiny(c_cylinder.m_center);
             Mbone.transform_dir(c_cylinder.m_direction, C.m_direction);
@@ -185,7 +191,6 @@ void CCF_Skeleton::BuildState()
 
 void CCF_Skeleton::BuildTopLevel()
 {
-    dwFrameTL = Device.dwFrame;
     IRenderVisual* K = owner->Visual();
     vis_data& vis = K->getVisData();
     Fbox& B = vis.box;
@@ -198,10 +203,23 @@ void CCF_Skeleton::BuildTopLevel()
     VERIFY(_valid(bv_sphere));
 }
 
-BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+void CCF_Skeleton::Calculate()
 {
     if (dwFrameTL != Device.dwFrame)
+    {
         BuildTopLevel();
+        dwFrameTL = Device.dwFrame;
+    }
+
+    IKinematics* K = PKinematics(owner->Visual());
+    if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
+        // Model changed between ray-picks
+        BuildState();
+}
+
+BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+{
+    Calculate();
 
     Fsphere w_bv_sphere;
     owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
@@ -211,19 +229,6 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
     Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
     if (res == Fsphere::rpNone)
         return FALSE;
-
-    if (dwFrame != Device.dwFrame)
-        BuildState();
-    else
-    {
-        IKinematics* K = PKinematics(owner->Visual());
-        if (K->LL_GetBonesVisible() != vis_mask)
-        {
-            // Model changed between ray-picks
-            dwFrame = Device.dwFrame - 1;
-            BuildState();
-        }
-    }
 
     BOOL bHIT{};
     for (const auto& elem : elements)
@@ -246,11 +251,12 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
                 break;
         }
     }
+
     return bHIT;
 }
 
-//----------------------------------------------------------------------------------
 CCF_Shape::CCF_Shape(CObject* _owner) : ICollisionForm(_owner, cftShape) {}
+
 BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
     // Convert ray into local model space
@@ -326,15 +332,15 @@ void CCF_Shape::add_box(Fmatrix& B)
 void CCF_Shape::ComputeBounds()
 {
     bv_box.invalidate();
-
     BOOL bCalcSphere = (shapes.size() > 1);
-    for (u32 el = 0; el < shapes.size(); el++)
+
+    for (auto& shape : shapes)
     {
-        switch (shapes[el].type)
+        switch (shape.type)
         {
         case 0: // sphere
         {
-            Fsphere T = shapes[el].data.sphere;
+            Fsphere T = shape.data.sphere;
             Fvector P;
             P.set(T.P);
             P.sub(T.R);
@@ -348,7 +354,7 @@ void CCF_Shape::ComputeBounds()
         case 1: // box
         {
             Fvector A, B;
-            Fmatrix& T = shapes[el].data.box;
+            Fmatrix& T = shape.data.box;
 
             // Build points
             A.set(-.5f, -.5f, -.5f);
@@ -406,14 +412,14 @@ BOOL CCF_Shape::Contact(CObject* O)
     const Fmatrix& XF = Owner()->XFORM();
 
     // Iterate
-    for (u32 el = 0; el < shapes.size(); el++)
+    for (auto& shape : shapes)
     {
-        switch (shapes[el].type)
+        switch (shape.type)
         {
         case 0: // sphere
         {
             Fsphere Q;
-            Fsphere& T = shapes[el].data.sphere;
+            Fsphere& T = shape.data.sphere;
             XF.transform_tiny(Q.P, T.P);
             Q.R = T.R;
             if (S.intersect(Q))
@@ -423,7 +429,7 @@ BOOL CCF_Shape::Contact(CObject* O)
         case 1: // box
         {
             Fmatrix Q;
-            Fmatrix& T = shapes[el].data.box;
+            Fmatrix& T = shape.data.box;
             Q.mul_43(XF, T);
 
             // Build points

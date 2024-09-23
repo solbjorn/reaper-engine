@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "PHSimpleCharacter.h"
+
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
-#include "PHSimpleCharacter.h"
 #include "PHContactBodyEffector.h"
 #include "ui/uistatic.h"
 #include "SpaceUtils.h"
@@ -1308,9 +1309,10 @@ u16 CPHSimpleCharacter::RetriveContactBone()
     RQR.r_clear();
     u16 contact_bone = 0;
     CObject* object = smart_cast<CObject*>(m_phys_ref_object);
-    VERIFY(object);
+    R_ASSERT(object != nullptr);
     VERIFY(!fis_zero(Q.dir.square_magnitude()));
-    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, object->collidable.model, Q))
+
+    if (object->collidable.model->RayQuery(RQR, Q))
     {
         collide::rq_result* R = RQR.r_begin();
         contact_bone = (u16)R->element;

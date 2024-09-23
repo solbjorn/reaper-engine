@@ -110,7 +110,7 @@ class XR_NOVTABLE ICollisionForm : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollisionForm);
 
-public:
+private:
     friend class CObjectSpace;
 
 protected:
@@ -119,15 +119,21 @@ protected:
 
     Fbox bv_box; // (Local) BBox объекта
     Fsphere bv_sphere; // (Local) Sphere
+
 private:
     ECollisionFormType m_type;
+
+    [[nodiscard]] virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
 
 public:
     explicit ICollisionForm(CObject* _owner, ECollisionFormType tp);
     ~ICollisionForm() override = 0;
 
-    virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
-    // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags)	= 0;
+    [[nodiscard]] BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq)
+    {
+        dest.r_clear();
+        return _RayQuery(rq, dest);
+    }
 
     IC CObject* Owner() const { return owner; }
     const Fbox& getBBox() const { return bv_box; }
@@ -222,10 +228,12 @@ public:
     explicit CCF_Skeleton(CObject* _owner);
     ~CCF_Skeleton() override = default;
 
-    virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
+    [[nodiscard]] BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) override;
 
     bool _ElementCenter(u16 elem_id, Fvector& e_center);
     const ElementVec& _GetElements() { return elements; }
+
+    void Calculate();
 
     void _dbg_refresh()
     {
@@ -314,13 +322,13 @@ public:
     explicit CCF_Shape(CObject* _owner);
     ~CCF_Shape() override = default;
 
-    virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
-    // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
+    [[nodiscard]] BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) override;
 
     void add_sphere(Fsphere& S);
     void add_box(Fmatrix& B);
 
     void ComputeBounds();
+
     BOOL Contact(CObject* O);
     xr_vector<shape_def>& Shapes() { return shapes; }
 };
