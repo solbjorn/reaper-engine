@@ -185,12 +185,15 @@ void CollectScriptFiles(decltype(xray_scripts)& map, const char* path)
         return;
     std::for_each(files->begin(), files->end(), [&](const char* file) {
         strconcat(sizeof(fname), fname, path, file);
-        if ((strstr(fname, ".script") /*|| strstr(fname, ".lua")*/) && FS.exist(fname))
+        if (strstr(fname, ".script") && FS.exist(fname) && FS.file_length(fname) > 0)
         {
             const char* fstart = ExtractFileName(fname);
             strcpy_s(buff, fstart);
             _strlwr_s(buff);
+
             const char* nspace = strtok(buff, ".");
+            auto it = map.find(nspace);
+            R_ASSERT2(it == map.end(), make_string("ERROR: script namespace \'%s\' conflict: %s vs %s", nspace, it->second.c_str(), fname));
             map.emplace(nspace, fname);
         }
     });
