@@ -133,7 +133,8 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
             s->wnd()->SetHeadingPivot(Fvector2().set(256, 512), Fvector2().set(0, 0), false);
             STOP_PROFILE;
 
-            // SetAttackEffector			();
+            if (db().m_attack_effector_present)
+                SetAttackEffector();
 
             float time_to_lock = fDamage * MAX_LOCK_TIME;
             clamp(time_to_lock, 0.f, MAX_LOCK_TIME);

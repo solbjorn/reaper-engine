@@ -43,6 +43,9 @@ remove_alt_keybinding = false
 ; и при прицеливании оно будет обладать свойствами бинокля. Еще нужно не забыть добавить в секцию этого оружия настройки для бинокля.
 binoc_firing = true
 
+; Send ui_pda_quests and ui_pda_map infoportions when switching from/to these tabs (needs gamedata support).
+new_pda_info = false
+
 ; Выключает использование анимации рассматривания болта, подкидывания гранат и кручения ножа, т.е. anim_playing.
 stop_anim_playing = true
 
@@ -110,6 +113,9 @@ engine_ammo_repacker = true
 ; как минимум в секцию [bolt]. Иначе не получится доставать и кидать болт.
 ; А для надежности, еще и в [device_pda], [device_torch] и в секции гранат.
 ruck_flag_preferred = false
+
+; Allow to pick up bolts just like regular items. Useful for finite bolts, won't work without respective scripts.
+pickup_bolts = false
 
 ; Включить старый режим отрисовки слота костюма (иконка актора в костюме в полный рост)
 old_outfit_slot_style = true

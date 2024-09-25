@@ -350,6 +350,10 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
         break;
     case eptMap:
         m_pActiveDialog = smart_cast<CUIWindow*>(UIMapWnd);
+
+        if (Core.Features.test(xrCore::Feature::new_pda_info))
+            InventoryUtilities::SendInfoToActor("ui_pda_map");
+
         g_pda_info_state &= ~pda_section::map;
         break;
     case eptEncyclopedia:
@@ -369,6 +373,10 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
         break;
     case eptQuests:
         m_pActiveDialog = smart_cast<CUIWindow*>(UIEventsWnd);
+
+        if (Core.Features.test(xrCore::Feature::new_pda_info))
+            InventoryUtilities::SendInfoToActor("ui_pda_quests");
+
         g_pda_info_state &= ~pda_section::quests;
         break;
     default: Msg("not registered button identifier [%d]", UITabControl->GetActiveIndex());

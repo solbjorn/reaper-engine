@@ -42,7 +42,7 @@ void CBolt::Throw()
     spawn_fake_missile();
 }
 
-bool CBolt::Useful() const { return false; }
+bool CBolt::Useful() const { return Core.Features.test(xrCore::Feature::pickup_bolts); }
 
 bool CBolt::Action(s32 cmd, u32 flags)
 {

@@ -208,6 +208,12 @@ void CUICharacterInfo::InitCharacter(u16 id)
             pItem->SetText(*(chInfo.Bio()));
             pItem->AdjustHeightToText();
             pItem->SetTextComplexMode(true);
+
+            if (pUIBio->GetFont()) {
+                pItem->SetFont(pUIBio->GetFont());
+                pItem->SetTextColor(pUIBio->GetTextColor());
+            }
+
             pUIBio->AddWindow(pItem, true);
         }
     }

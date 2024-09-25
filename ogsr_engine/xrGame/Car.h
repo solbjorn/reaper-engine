@@ -98,7 +98,8 @@ protected:
     {
         ectFirst = 0,
         ectChase,
-        ectFree
+        ectFree,
+        ectNum
     };
 
 public:
@@ -378,7 +379,7 @@ private:
     CCameraBase* camera[3];
     CCameraBase* active_camera;
 
-    Fvector m_camera_position;
+    Fvector m_camera_position[ectNum];
 
 public:
     IC CCameraBase* get_active_camera() { return active_camera; };

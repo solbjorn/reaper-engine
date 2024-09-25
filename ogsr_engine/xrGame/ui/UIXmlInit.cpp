@@ -1356,6 +1356,17 @@ bool CUIXmlInit::InitScrollView(CUIXml& xml_doc, const char* path, int index, CU
     R_ASSERT3(xml_doc.NavigateToNode(path, index), "XML node not found", path);
 
     InitWindow(xml_doc, path, index, pWnd);
+
+    CGameFont* LocalFont = NULL;
+    string512 buf;
+    u32 cl;
+
+    InitFont(xml_doc, strconcat(sizeof(buf), buf, path, ":font"), index, cl, LocalFont);
+    if (LocalFont) {
+        pWnd->SetFont(LocalFont);
+        pWnd->SetTextColor(cl);
+    }
+
     pWnd->SetRightIndention(xml_doc.ReadAttribFlt(path, index, "right_ident", 0.0f));
     pWnd->SetLeftIndention(xml_doc.ReadAttribFlt(path, index, "left_ident", 0.0f));
     pWnd->SetUpIndention(xml_doc.ReadAttribFlt(path, index, "top_indent", 0.0f));

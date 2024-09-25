@@ -90,6 +90,7 @@ void InitConsole()
     CORE_FEATURE_SET(show_inv_item_condition, "features");
     CORE_FEATURE_SET(remove_alt_keybinding, "features");
     CORE_FEATURE_SET(binoc_firing, "features");
+    CORE_FEATURE_SET(new_pda_info, "features");
     CORE_FEATURE_SET(stop_anim_playing, "features");
     CORE_FEATURE_SET(corpses_collision, "features");
     CORE_FEATURE_SET(more_hide_weapon, "features");
@@ -109,6 +110,7 @@ void InitConsole()
     CORE_FEATURE_SET(hard_ammo_reload, "features");
     CORE_FEATURE_SET(engine_ammo_repacker, "features");
     CORE_FEATURE_SET(ruck_flag_preferred, "features");
+    CORE_FEATURE_SET(pickup_bolts, "features");
     CORE_FEATURE_SET(old_outfit_slot_style, "features");
     CORE_FEATURE_SET(npc_simplified_shooting, "features");
     CORE_FEATURE_SET(use_trade_deficit_factor, "features");

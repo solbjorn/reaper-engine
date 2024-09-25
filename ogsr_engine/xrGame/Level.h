@@ -374,3 +374,11 @@ IC CPHCommander& CLevel::ph_commander_scripts()
 class CPHWorld;
 extern CPHWorld* ph_world;
 extern BOOL g_bDebugEvents;
+
+struct CKeyBinding
+{
+public:
+    CKeyBinding() { };
+
+    bool ignore = false;
+};

@@ -444,7 +444,25 @@ void CWeaponScript::script_register(lua_State* L)
                   .def("switch_gl", &CWeaponMagazinedWGrenade::SwitchMode),
               class_<CMissile, CInventoryItemObject>("CMissile")
                   .def_readwrite("destroy_time", &CMissile::m_dwDestroyTime)
-                  .def_readwrite("destroy_time_max", &CMissile::m_dwDestroyTimeMax)];
+                  .def_readwrite("destroy_time_max", &CMissile::m_dwDestroyTimeMax)
+              ,
+              class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonStatus>>("addon_status")
+                  .enum_("status")[
+                      value("disabled", int(CSE_ALifeItemWeapon::eAddonDisabled)),
+                      value("permanent", int(CSE_ALifeItemWeapon::eAddonPermanent)),
+                      value("attachable", int(CSE_ALifeItemWeapon::eAddonAttachable))
+                  ]
+              ,
+              class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonState>>("addon_flags")
+                  .enum_("flags")[
+                      value("scope", int(CSE_ALifeItemWeapon::eWeaponAddonScope)),
+                      value("grenade_launcher", int(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)),
+                      value("silencer", int(CSE_ALifeItemWeapon::eWeaponAddonSilencer)),
+                      value("laser", int(CSE_ALifeItemWeapon::eWeaponAddonLaserOn)),
+                      value("flashlight", int(CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn)),
+                      value("misfire", int(CSE_ALifeItemWeapon::eWeaponMisfire))
+                  ]
+    ];
 }
 
 void CCustomMonsterScript::script_register(lua_State* L)
@@ -452,5 +470,7 @@ void CCustomMonsterScript::script_register(lua_State* L)
     module(L)[class_<CCustomMonster, bases<CEntityAlive>>("CCustomMonster")
                   .def("get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId)
                   .def_readwrite("visible_for_zones", &CCustomMonster::m_visible_for_zones)
-                  .def("anomaly_detector", &CCustomMonster::anomaly_detector)];
+                  .def("anomaly_detector", &CCustomMonster::anomaly_detector)
+                  .def_readonly("curr_speed", &CCustomMonster::m_fCurSpeed)
+    ];
 }

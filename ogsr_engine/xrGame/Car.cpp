@@ -743,7 +743,11 @@ void CCar::ParseDefinitions()
     R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
     CExplosive::Load(ini, "explosion");
     // CExplosive::SetInitiator(ID());
-    m_camera_position = ini->r_fvector3("car_definition", "camera_pos");
+
+    m_camera_position[ectFirst] = ini->r_fvector3("car_definition", "camera_pos");
+    m_camera_position[ectChase] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_look", m_camera_position[ectFirst]);
+    m_camera_position[ectFree] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free", m_camera_position[ectFirst]);
+
     ///////////////////////////car definition///////////////////////////////////////////////////
     fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);
     fill_wheel_vector(ini->r_string("car_definition", "steering_wheels"), m_steering_wheels);

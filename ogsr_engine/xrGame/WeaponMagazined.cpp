@@ -1224,9 +1224,13 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
 
         if (scope_tex_name.size() > 0)
         {
+            LPCSTR shader_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_shader", NULL);
+
+            if (!shader_name)
+                shader_name = (Core.Features.test(xrCore::Feature::scope_textures_autoresize) && scope_tex_autoresize) ? "hud\\scope" : "hud\\default";
+
             m_UIScope = xr_new<CUIStaticItem>();
-            m_UIScope->Init(scope_tex_name.c_str(), (Core.Features.test(xrCore::Feature::scope_textures_autoresize) && scope_tex_autoresize) ? "hud\\scope" : "hud\\default", 0, 0,
-                            alNone);
+            m_UIScope->Init(scope_tex_name.c_str(), shader_name, 0, 0, alNone);
         }
     }
 }
@@ -1708,7 +1712,11 @@ void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_na
         icon_sect_name = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
 
     string256 sItemName;
-    strcpy_s(sItemName, CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")).c_str());
+    LPCSTR short_name;
+
+    short_name = READ_IF_EXISTS(pSettings, r_string, icon_sect_name.c_str(), "inv_name_short",
+                                pSettings->r_string(icon_sect_name.c_str(), "inv_name"));
+    strcpy_s(sItemName, CStringTable().translate(short_name).c_str());
 
     if (HasFireModes())
         strcat_s(sItemName, GetCurrentFireModeStr());

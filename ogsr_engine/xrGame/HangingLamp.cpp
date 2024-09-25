@@ -424,5 +424,6 @@ void CHangingLamp::script_register(lua_State* L)
                            .def("set_volumetric_quality", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_quality(val); })
                            .def("set_volumetric_intensity", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_intensity(val); })
                            .def("set_volumetric_distance", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_distance(val); })
+                           .def_readonly("health", &CHangingLamp::fHealth)
     ];
 }

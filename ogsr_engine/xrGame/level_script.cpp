@@ -636,6 +636,23 @@ void set_pp_effector_factor2(int id, float f)
         pp->SetCurrentFactor(f);
 }
 
+bool has_pp_effector(int id)
+{
+    CPostprocessAnimator* pp = smart_cast<CPostprocessAnimator*>(Actor()->Cameras().GetPPEffector((EEffectorPPType)id));
+
+    return !!pp;
+}
+
+#include "ai/monsters/ai_monster_effector.h"
+
+void add_monster_cam_effector(float time, float amp, float periods, float power)
+{
+    CActor* pA = smart_cast<CActor*>(Level().CurrentEntity());
+
+    if (pA)
+        Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(time, amp, periods, power));
+}
+
 #include "relation_registry.h"
 
 int g_community_goodwill(LPCSTR _community, int _entity_id)
@@ -1024,7 +1041,11 @@ void CLevel::script_register(lua_State* L)
                 .def_readwrite("size", &DBG_ScriptBox::m_size),
               class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine")
                 .def_readwrite("point_a", &DBG_ScriptLine::m_point_a)
-                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b)];
+                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b)
+        ,
+        class_<CKeyBinding>("CKeyBinding")
+            .def_readwrite("ignore", &CKeyBinding::ignore)
+        ];
 
         module(L, "debug_render")[
             def("add_object", add_object), 
@@ -1089,6 +1110,7 @@ void CLevel::script_register(lua_State* L)
             def("set_snd_volume", &set_snd_volume), def("add_cam_effector", &add_cam_effector), def("add_cam_effector2", &add_cam_effector2),
             def("remove_cam_effector", &remove_cam_effector), def("add_pp_effector", &add_pp_effector), def("set_pp_effector_factor", &set_pp_effector_factor),
             def("set_pp_effector_factor", &set_pp_effector_factor2), def("remove_pp_effector", &remove_pp_effector),
+            def("has_pp_effector", &has_pp_effector), def("add_monster_cam_effector", &add_monster_cam_effector),
 
             def("demo_record_start", &demo_record_start), def("demo_record_stop", &demo_record_stop),
             def("demo_record_get_position", &demo_record_get_position), def("demo_record_set_position", &demo_record_set_position),

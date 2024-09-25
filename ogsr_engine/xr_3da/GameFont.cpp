@@ -17,12 +17,19 @@ ENGINE_API float g_fontHeightScale = 1.f;
 
 CGameFont::CGameFont(LPCSTR section, u32 flags)
 {
+    LPCSTR line;
+
     pFontRender = RenderFactory->CreateFontRender();
     fCurrentHeight = 0.0f;
     fXStep = 0.0f;
     uFlags = flags;
 
-    Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"), section);
+    if (RDEVICE.dwHeight >= 2048 && pSettings->line_exist(section, "texture_hidpi"))
+        line = "texture_hidpi";
+    else
+        line = "texture";
+
+    Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, line), section);
 
     if (pSettings->line_exist(section, "size"))
     {

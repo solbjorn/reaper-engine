@@ -23,11 +23,11 @@ void CCar::cam_Update(float dt, float fov)
     VERIFY(!ph_world->Processing());
     Fvector P, Da;
     Da.set(0, 0, 0);
-    // bool							owner = !!Owner();
 
-    XFORM().transform_tiny(P, m_camera_position);
+    u32 tag = active_camera->tag;
+    XFORM().transform_tiny(P, m_camera_position[tag]);
 
-    switch (active_camera->tag)
+    switch (tag)
     {
     case ectFirst:
         // rotate head

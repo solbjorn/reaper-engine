@@ -437,6 +437,10 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
         READ_SETTINGS(data.m_attack_effector.ce_amplitude, "ce_amplitude", r_float, ini, ppi_section);
         READ_SETTINGS(data.m_attack_effector.ce_period_number, "ce_period_number", r_float, ini, ppi_section);
         READ_SETTINGS(data.m_attack_effector.ce_power, "ce_power", r_float, ini, ppi_section);
+
+        data.m_attack_effector_present = true;
+    } else {
+        data.m_attack_effector_present = false;
     }
 }
 

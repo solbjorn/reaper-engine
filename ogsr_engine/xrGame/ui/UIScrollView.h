@@ -28,6 +28,7 @@ protected:
     float m_downIndent;
 
     float m_vertInterval;
+    u32 m_text_color;
 
     Flags16 m_flags;
     shared_str m_scrollbar_profile;
@@ -78,4 +79,6 @@ public:
     void UpdateChildrenLenght(); // set default width for all children
     float Scroll2ViewV(); // calculate scale for scroll position
     CUIScrollBar* ScrollBar() { return m_VScrollBar; }
+    u32 GetTextColor() { return m_text_color; }
+    virtual void SetTextColor(u32 color) { m_text_color = color; }
 };

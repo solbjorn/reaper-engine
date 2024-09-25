@@ -37,5 +37,7 @@ void CCar::script_register(lua_State* L)
                   .def("IsEngineOn", &CCar__IsEngineOn)
                   .def("SwitchEngine", &CCar::SwitchEngine)
                   .def("SwitchLights", &CCar::SwitchLights)
-                  .def(constructor<>())];
+                  .def(constructor<>())
+                  .def_readonly("transmission", &CCar::m_current_transmission_num)
+    ];
 }

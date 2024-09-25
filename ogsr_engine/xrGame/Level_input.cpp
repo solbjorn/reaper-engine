@@ -166,7 +166,11 @@ void CLevel::IR_OnKeyboardPress(int key)
 
     if (Actor())
     {
-        Actor()->callback(GameObject::eOnKeyPress)(key, _curr);
+        CKeyBinding KB = CKeyBinding();
+
+        Actor()->callback(GameObject::eOnKeyPress)(key, _curr, &KB);
+        if (KB.ignore)
+            return;
 
         if (g_bDisableAllInput)
             return;

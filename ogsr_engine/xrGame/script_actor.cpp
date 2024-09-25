@@ -82,6 +82,8 @@ CActorConditionObject* get_actor_condition(CActor* pActor) { return (CActorCondi
 
 SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
 
+EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
+
 // extern LPCSTR get_lua_class_name(luabind::object O);
 
 bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
@@ -89,6 +91,25 @@ bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCond
 bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
 
 bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantSprint); }
+
+enum EInventorySlots
+{
+    KNIFE = KNIFE_SLOT,
+    FIRST_WEAPON = FIRST_WEAPON_SLOT,
+    SECOND_WEAPON = SECOND_WEAPON_SLOT,
+    GRENADE = GRENADE_SLOT,
+    APPARATUS = APPARATUS_SLOT,
+    BOLT = BOLT_SLOT,
+    OUTFIT = OUTFIT_SLOT,
+    PDA = PDA_SLOT,
+    DETECTOR = DETECTOR_SLOT,
+    TORCH = TORCH_SLOT,
+    HELMET = HELMET_SLOT,
+    NIGHT_VISION = NIGHT_VISION_SLOT,
+    BIODETECTOR = BIODETECTOR_SLOT,
+    TOTAL = SLOTS_TOTAL,
+    NO_ACTIVE = NO_ACTIVE_SLOT
+};
 
 void CScriptActor::script_register(lua_State* L)
 {
@@ -206,8 +227,46 @@ void CScriptActor::script_register(lua_State* L)
                .def("is_actor_climbing", &CActor::is_actor_climbing)
                .def("is_actor_moving", &CActor::is_actor_moving)
                .def("UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt)
-               .def("IsDetectorActive", &CActor::IsDetectorActive),
-           class_<CActorObject, bases<CActor, CEntityAlive>>("CActor") // хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
+               .def("IsDetectorActive", &CActor::IsDetectorActive)
 
+               .property("active_cam", &get_active_cam)
+               .def("set_active_cam", &CActor::cam_Set)
+           ,
+           class_<CActorObject, bases<CActor, CEntityAlive>>("CActor") // хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
+           ,
+           class_<enum_exporter<EActorCameras>>("EActorCameras")
+               .enum_("cameras")[
+                   value("eacFirstEye", int(eacFirstEye)),
+                   value("eacLookAt", int(eacLookAt)),
+                   value("eacFreeLook", int(eacFreeLook)),
+                   value("eacMaxCam", int(eacMaxCam))
+               ]
+           ,
+           class_<enum_exporter<EInventorySlots>>("inventory_slots")
+               .enum_("inventory_slots")[
+                   value("KNIFE", int(KNIFE)),
+                   value("FIRST_WEAPON", int(FIRST_WEAPON)),
+                   value("SECOND_WEAPON", int(SECOND_WEAPON)),
+                   value("GRENADE", int(GRENADE)),
+                   value("APPARATUS", int(APPARATUS)),
+                   value("BOLT", int(BOLT)),
+                   value("OUTFIT", int(OUTFIT)),
+                   value("PDA", int(PDA)),
+                   value("DETECTOR", int(DETECTOR)),
+                   value("TORCH", int(TORCH)),
+                   value("HELMET", int(HELMET)),
+                   value("NIGHT_VISION", int(NIGHT_VISION)),
+                   value("BIODETECTOR", int(BIODETECTOR)),
+                   value("TOTAL", int(TOTAL)),
+                   value("NO_ACTIVE", int(NO_ACTIVE))
+               ]
+           ,
+           class_<enum_exporter<EItemPlace>>("item_place")
+               .enum_("item_place")[
+                   value("undefined", int(eItemPlaceUndefined)),
+                   value("slot", int(eItemPlaceSlot)),
+                   value("belt", int(eItemPlaceBelt)),
+                   value("ruck", int(eItemPlaceRuck))
+               ]
     ];
 }

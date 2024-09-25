@@ -3,6 +3,7 @@
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UIAnimatedStatic.h"
+#include "UIInventoryUtilities.h"
 #include "UIMapWnd.h"
 #include "UIScrollView.h"
 #include "UITabControl.h"
@@ -210,11 +211,17 @@ void CUIEventsWnd::SetDescriptionMode(bool bMap)
     {
         m_UIRightWnd->DetachChild(m_UITaskInfoWnd);
         m_UIRightWnd->AttachChild(m_UIMapWnd);
+
+        if (Core.Features.test(xrCore::Feature::new_pda_info))
+            InventoryUtilities::SendInfoToActor("ui_pda_task_description_hide");
     }
     else
     {
         m_UIRightWnd->DetachChild(m_UIMapWnd);
         m_UIRightWnd->AttachChild(m_UITaskInfoWnd);
+
+        if (Core.Features.test(xrCore::Feature::new_pda_info))
+            InventoryUtilities::SendInfoToActor("ui_pda_task_description");
     }
     m_flags.set(flMapMode, bMap);
 }
