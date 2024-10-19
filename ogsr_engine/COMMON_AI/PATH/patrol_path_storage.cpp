@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "patrol_path_storage.h"
+
 #include "patrol_path.h"
 #include "patrol_point.h"
 #include "levelgamedef.h"
@@ -42,18 +44,20 @@ void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLev
 
 void CPatrolPathStorage::append_from_ini(CInifile& way_inifile)
 {
-    PATROL_REGISTRY::value_type pair;
+    gsl::index i{}, r{};
 
-    int i = 0;
-    int r = 0;
     for (const auto& it : way_inifile.sections())
     {
-        const shared_str patrol_name = it.first;
+        const shared_str& patrol_name = it.first;
 
-        if (m_registry.erase(patrol_name))
+        if (auto it = m_registry.find(patrol_name); it != m_registry.end())
         {
+            xr_delete(it->second);
+            m_registry.erase(it);
+
             r++;
         }
+
         if (it.second->line_count() == 0)
             continue;
 
@@ -61,7 +65,7 @@ void CPatrolPathStorage::append_from_ini(CInifile& way_inifile)
         i++;
     }
 
-    Msg("Loaded %d items from custom_waypoints, %d from all.spawn was replaced!", i, r);
+    Msg("Loaded %zd items from custom_waypoints, %zd from all.spawn was replaced!", i, r);
 }
 
 void CPatrolPathStorage::load(IReader& stream)
