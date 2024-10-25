@@ -44,13 +44,13 @@ enum ECameraStyle : u32
     csFixed,
 };
 
-enum ECamEffectorType
+enum ECamEffectorType : u32
 {
     cefDemo = 0,
-    cefNext
+    cefNext,
 };
 
-enum EEffectorPPType
+enum EEffectorPPType : u32
 {
     ppeNext = 0,
 };

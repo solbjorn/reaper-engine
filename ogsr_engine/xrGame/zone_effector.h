@@ -1,16 +1,21 @@
 #pragma once
 
 class CActor;
+class CAnimatorCamLerpEffector;
 class CPostprocessAnimatorLerp;
 
 class CZoneEffector
 {
-    float r_min_perc{};
-    float r_max_perc{};
-    float radius{1.f};
-    float m_factor{0.1f};
+private:
+    f32 r_min_perc{};
+    f32 r_max_perc{};
+    f32 radius{1.0f};
+    f32 m_factor{0.1f};
+
     CPostprocessAnimatorLerp* m_pp_effector{};
+    CAnimatorCamLerpEffector* m_cam_effector{};
     shared_str m_pp_fname;
+    shared_str m_cam_fname;
 
 public:
     CActor* m_pActor{};

@@ -327,8 +327,6 @@ protected:
     void PlayObjectIdleParticles(CGameObject* pObject);
     void StopObjectIdleParticles(CGameObject* pObject);
 
-    virtual bool EnableEffector() { return false; }
-
     virtual bool IsVisibleForZones() { return false; }
 
     // обновление, если зона передвигается
