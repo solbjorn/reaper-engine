@@ -130,8 +130,6 @@ private:
     int m_start_index;
 
     float m_path_distance;
-    u16 m_material;
-
     float fLastMotionMag;
 
     float fActualVelocity;
@@ -153,6 +151,7 @@ public:
     void CreateCharacter();
     void DestroyCharacter();
     void Load(LPCSTR section);
+
 #ifdef DEBUG
     void dbg_Draw()
     {

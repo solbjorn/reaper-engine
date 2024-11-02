@@ -9,25 +9,22 @@
 #include "stdafx.h"
 
 #include "material_manager.h"
+
+#include "ai/monsters/basemonster/base_monster.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity_alive.h"
 #include "CharacterPhysicsSupport.h"
+
 #include "../Include/xrRender/Kinematics.h"
 
-CMaterialManager::CMaterialManager(CObject* object, CPHMovementControl* movement_control)
+CMaterialManager::CMaterialManager(CObject* object, CPHMovementControl* movement_control) : m_object{object}, m_movement_control{movement_control}
 {
     VERIFY(object);
-    m_object = object;
-
     VERIFY(movement_control);
-    m_movement_control = movement_control;
-
-    m_my_material_idx = GAMEMTL_NONE_IDX;
-    m_run_mode = false;
 }
 
-CMaterialManager::~CMaterialManager() {}
+CMaterialManager::~CMaterialManager() = default;
 
 void CMaterialManager::Load(LPCSTR section)
 {
@@ -41,16 +38,11 @@ void CMaterialManager::reinit()
     m_step_id = 0;
     m_run_mode = false;
 
-    CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(m_object);
-    if (entity_alive)
+    if (auto entity_alive = smart_cast<CEntityAlive*>(m_object); entity_alive != nullptr)
     {
-        if (entity_alive->character_physics_support()->movement()->CharacterExist())
+        // для мобов не нужно устанавливать реальный материал, у них нет этих настроек материалов
+        if (smart_cast<CBaseMonster*>(entity_alive) == nullptr)
             entity_alive->character_physics_support()->movement()->SetPLastMaterialIDX(&m_last_material_idx);
-
-        //		if (entity_alive->use_simplified_visual()) {
-        //			IKinematics			*kinematics = smart_cast<IKinematics*>(entity_alive->Visual());
-        //			m_my_material_idx	= kinematics->LL_GetData(kinematics->LL_GetBoneRoot()).game_mtl_idx;
-        //		}
 
         entity_alive->character_physics_support()->movement()->SetMaterial(m_my_material_idx);
     }

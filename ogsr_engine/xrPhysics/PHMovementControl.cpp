@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
+#include "PHMovementControl.h"
+
 #include "alife_space.h"
-#include "phmovementcontrol.h"
 #include "entity.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
@@ -30,7 +31,6 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
         Msg("CPHMovementControl::CPHMovementControl %s (constructor) %f,%f,%pObjectf", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y, pObject->Position().z);
 #endif
 
-    m_material = 0;
     m_capture = nullptr;
     b_exect_position = true;
     m_start_index = 0;
@@ -1015,20 +1015,12 @@ void CPHMovementControl::GetJumpParam(Fvector& velocity, JumpType& type, const F
     }
 }
 
-void CPHMovementControl::SetMaterial(u16 material)
-{
-    m_material = material;
-    if (m_character)
-    {
-        m_character->SetMaterial(material);
-    }
-}
+void CPHMovementControl::SetMaterial(u16 material) { m_character->SetMaterial(material); }
 
 void CPHMovementControl::CreateCharacter()
 {
     dVector3 size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
     m_character->Create(size);
-    m_character->SetMaterial(m_material);
     m_character->SetAirControlFactor(fAirControlParam);
 
 #ifdef DEBUG

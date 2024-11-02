@@ -17,13 +17,14 @@ class CMaterialManager : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CMaterialManager);
 
 private:
-    bool m_run_mode;
-    float m_time_to_step{};
-    u32 m_step_id{};
-    u16 m_my_material_idx;
-    ref_sound m_step_sound[4];
     CObject* m_object;
     CPHMovementControl* m_movement_control;
+    ref_sound m_step_sound[4];
+
+    f32 m_time_to_step{};
+    u32 m_step_id{};
+    u16 m_my_material_idx{GAMEMTL_NONE_IDX};
+    bool m_run_mode{};
 
 protected:
     u16 m_last_material_idx{};
