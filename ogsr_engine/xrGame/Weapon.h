@@ -572,6 +572,8 @@ public:
         inherited::processing_deactivate();
     }
 
+    void on_a_hud_attach() override;
+
     Fvector laserdot_attach_offset{}, laser_pos{};
 
 protected:
