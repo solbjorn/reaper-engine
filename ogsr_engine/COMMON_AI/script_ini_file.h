@@ -10,38 +10,7 @@
 
 #include "script_export_space.h"
 
-class CScriptIniFile : public CInifile
-{
-    RTTI_DECLARE_TYPEINFO(CScriptIniFile, CInifile);
-
-protected:
-    typedef CInifile inherited;
-
-    static LPCSTR update(LPCSTR file_name);
-
-public:
-    explicit CScriptIniFile(IReader* F, LPCSTR path = nullptr);
-    explicit CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
-    ~CScriptIniFile() override;
-
-    bool line_exist(LPCSTR S, LPCSTR L);
-    bool section_exist_script(LPCSTR S);
-    u32 line_count(LPCSTR S);
-
-    int r_clsid(LPCSTR S, LPCSTR L);
-    bool r_bool(LPCSTR S, LPCSTR L);
-    LPCSTR r_string_wb(LPCSTR S, LPCSTR L);
-    LPCSTR r_string(LPCSTR S, LPCSTR L);
-    LPCSTR name();
-    u32 r_u32(LPCSTR S, LPCSTR L);
-    int r_s32(LPCSTR S, LPCSTR L);
-    float r_float(LPCSTR S, LPCSTR L);
-    Fvector r_fvector3(LPCSTR S, LPCSTR L);
-    Fvector2 r_fvector2(LPCSTR S, LPCSTR L);
-    Fvector4 r_fvector4(LPCSTR S, LPCSTR L);
-
-    DECLARE_SCRIPT_REGISTER_FUNCTION();
-};
+using CScriptIniFile = class_exporter<CInifile>;
 
 add_to_type_list(CScriptIniFile);
 #undef script_type_list

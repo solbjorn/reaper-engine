@@ -103,7 +103,6 @@ class CScriptSoundInfo;
 class CScriptMonsterHitInfo;
 class CScriptBinderObject;
 class CCoverPoint;
-class CScriptIniFile;
 class CPhysicsShell;
 class CHelicopter;
 class CHangingLamp;
@@ -530,7 +529,7 @@ public:
                                                  u32 enemy_vertex_id, sol::function callback);
     [[nodiscard]] const CCoverPoint* angle_cover(const Fvector& position, f32 radius, const Fvector& enemy_position, f32 min_enemy_distance, f32 max_enemy_distance,
                                                  u32 enemy_vertex_id);
-    [[nodiscard]] CScriptIniFile* spawn_ini() const;
+    [[nodiscard]] CInifile* spawn_ini() const;
     [[nodiscard]] bool active_zone_contact(u16 id);
 
     ///
@@ -610,12 +609,12 @@ public:
     void debug_planner(const script_planner* planner);
 #endif
 
-    void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
-    void sell_condition(float friend_factor, float enemy_factor);
-    void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
-    void buy_condition(float friend_factor, float enemy_factor);
-    void show_condition(CScriptIniFile* ini_file, LPCSTR section);
-    void buy_supplies(CScriptIniFile* ini_file, LPCSTR section);
+    void sell_condition(CInifile* ini_file, gsl::czstring section);
+    void sell_condition(f32 friend_factor, f32 enemy_factor);
+    void buy_condition(CInifile* ini_file, gsl::czstring section);
+    void buy_condition(f32 friend_factor, f32 enemy_factor);
+    void show_condition(CInifile* ini_file, gsl::czstring section);
+    void buy_supplies(CInifile* ini_file, gsl::czstring section);
 
     LPCSTR sound_prefix() const;
     void sound_prefix(LPCSTR sound_prefix);
@@ -701,7 +700,7 @@ public:
 
     const char* GetVisualName() const;
 
-    CScriptIniFile* GetVisIni();
+    [[nodiscard]] CInifile* GetVisIni() const;
     void SetBoneVisible(LPCSTR _bone_name, BOOL _visible);
     BOOL GetBoneVisible(LPCSTR _bone_name);
     void SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible);
@@ -852,11 +851,11 @@ add_to_type_list(CScriptGameObject);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptGameObject)
 
-extern void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
-extern void sell_condition(float friend_factor, float enemy_factor);
-extern void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
-extern void buy_condition(float friend_factor, float enemy_factor);
-extern void show_condition(CScriptIniFile* ini_file, LPCSTR section);
+void sell_condition(CInifile* ini_file, gsl::czstring section);
+void sell_condition(f32 friend_factor, f32 enemy_factor);
+void buy_condition(CInifile* ini_file, gsl::czstring section);
+void buy_condition(f32 friend_factor, f32 enemy_factor);
+void show_condition(CInifile* ini_file, gsl::czstring section);
 
 void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor = false);
 void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);

@@ -35,7 +35,6 @@
 #include "level_debug.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
 #include "trade_parameters.h"
-#include "script_ini_file.h"
 #include "sound_player.h"
 #include "stalker_decision_space.h"
 #include "Actor.h"
@@ -903,7 +902,7 @@ void CScriptGameObject::make_object_visible_somewhen(CScriptGameObject* object)
     stalker->memory().make_object_visible_somewhen(entity_alive);
 }
 
-void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::sell_condition(CInifile* ini_file, gsl::czstring section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -915,7 +914,7 @@ void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->trade_parameters().process(CTradeParameters::action_sell(nullptr), *ini_file, shared_str{section});
 }
 
-void CScriptGameObject::sell_condition(float friend_factor, float enemy_factor)
+void CScriptGameObject::sell_condition(f32 friend_factor, f32 enemy_factor)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -927,7 +926,7 @@ void CScriptGameObject::sell_condition(float friend_factor, float enemy_factor)
     inventory_owner->trade_parameters().default_factors(CTradeParameters::action_sell(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_condition(CInifile* ini_file, gsl::czstring section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -939,7 +938,7 @@ void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->trade_parameters().process(CTradeParameters::action_buy(nullptr), *ini_file, shared_str{section});
 }
 
-void CScriptGameObject::buy_condition(float friend_factor, float enemy_factor)
+void CScriptGameObject::buy_condition(f32 friend_factor, f32 enemy_factor)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -951,7 +950,7 @@ void CScriptGameObject::buy_condition(float friend_factor, float enemy_factor)
     inventory_owner->trade_parameters().default_factors(CTradeParameters::action_buy(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::show_condition(CInifile* ini_file, gsl::czstring section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -963,7 +962,7 @@ void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->trade_parameters().process(CTradeParameters::action_show(nullptr), *ini_file, shared_str{section});
 }
 
-void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_supplies(CInifile* ini_file, gsl::czstring section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -975,21 +974,21 @@ void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->buy_supplies(*ini_file, section);
 }
 
-void sell_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_sell(nullptr), *ini_file, shared_str{section}); }
+void sell_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_sell(nullptr), *ini_file, shared_str{section}); }
 
-void sell_condition(float friend_factor, float enemy_factor)
+void sell_condition(f32 friend_factor, f32 enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_sell(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void buy_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_buy(nullptr), *ini_file, shared_str{section}); }
+void buy_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_buy(nullptr), *ini_file, shared_str{section}); }
 
-void buy_condition(float friend_factor, float enemy_factor)
+void buy_condition(f32 friend_factor, f32 enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_buy(nullptr), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void show_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_show(nullptr), *ini_file, shared_str{section}); }
+void show_condition(CInifile* ini_file, gsl::czstring section) { default_trade_parameters().process(CTradeParameters::action_show(nullptr), *ini_file, shared_str{section}); }
 
 LPCSTR CScriptGameObject::sound_prefix() const
 {

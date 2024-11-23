@@ -7,9 +7,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
+
 #include "game_object_space.h"
-#include "script_ini_file.h"
 #include "sight_manager_space.h"
 #include "searchlight.h"
 #include "hit_immunity.h"
@@ -63,9 +64,8 @@ void CScriptGameObject::script_register(sol::state_view& lua)
         GameObject::eOnInvBoxItemTake, "on_inv_box_item_drop", GameObject::eOnInvBoxItemDrop, "on_inv_box_open", GameObject::eOnInvBoxOpen, "select_pda_contact",
         GameObject::eSelectPdaContact, "on_footstep", GameObject::eOnActorFootStep, "on_actor_land", GameObject::eOnActorLand, "on_actor_jump", GameObject::eOnActorJump);
 
-    lua.set_function("buy_condition", sol::overload(sol::resolve<void(CScriptIniFile*, LPCSTR)>(&::buy_condition), sol::resolve<void(float, float)>(&::buy_condition)));
-    lua.set_function("sell_condition", sol::overload(sol::resolve<void(CScriptIniFile*, LPCSTR)>(&::sell_condition), sol::resolve<void(float, float)>(&::sell_condition)));
-    lua.set_function("show_condition", &::show_condition);
+    lua.set("buy_condition", sol::overload(sol::resolve<void(CInifile*, gsl::czstring)>(&::buy_condition), sol::resolve<void(f32, f32)>(&::buy_condition)), "sell_condition",
+            sol::overload(sol::resolve<void(CInifile*, gsl::czstring)>(&::sell_condition), sol::resolve<void(f32, f32)>(&::sell_condition)), "show_condition", &::show_condition);
 
     script_register4(lua);
     CHitImmunity::script_register(lua);

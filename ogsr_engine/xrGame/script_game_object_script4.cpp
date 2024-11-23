@@ -8,6 +8,8 @@
 
 #include "stdafx.h"
 
+#include "script_game_object.h"
+
 #include "pda_space.h"
 #include "memory_space.h"
 #include "movement_manager_space.h"
@@ -16,9 +18,7 @@
 
 #include "script_binder_object.h"
 #include "script_entity_action.h"
-#include "script_game_object.h"
 #include "script_hit.h"
-#include "script_ini_file.h"
 #include "script_monster_hit_info.h"
 #include "script_sound_info.h"
 

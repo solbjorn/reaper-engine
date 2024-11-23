@@ -10,13 +10,11 @@
 
 #include "xrServer_Objects_ALife_Monsters.h"
 
-#include "script_ini_file.h"
-
 #include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 namespace
 {
-CScriptIniFile* get_spawn_ini(CSE_Abstract* abstract) { return ((CScriptIniFile*)&abstract->spawn_ini()); }
+[[nodiscard]] CInifile* get_spawn_ini(CSE_Abstract* abstract) { return &abstract->spawn_ini(); }
 
 void save_spawn_ini(CSE_Abstract* abstract)
 {
