@@ -15,6 +15,9 @@ struct event_comparer
     [[nodiscard]] constexpr bool operator()(const CUIWndCallback::callback& i) const { return name == i.m_controlName && event == i.m_event; }
 };
 
+CUIWndCallback::CUIWndCallback() = default;
+CUIWndCallback::~CUIWndCallback() { ClearCallbacks(); }
+
 void CUIWndCallback::Register(CUIWindow* pChild) { pChild->SetMessageTarget(smart_cast<CUIWindow*>(this)); }
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
@@ -32,4 +35,5 @@ void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function& f) { m_callbacks.emplace_back(f, shared_str{control_id}, event); }
-void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const void_function& f) { m_callbacks.emplace_back(f, control_id, event); }
+
+void CUIWndCallback::ClearCallbacks() { m_callbacks.clear(); }

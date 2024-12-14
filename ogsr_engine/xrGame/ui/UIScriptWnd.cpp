@@ -10,11 +10,13 @@ struct event_comparer
     shared_str name;
     s16 event;
 
-    event_comparer(shared_str n, s16 e) : name(n), event(e) {}
-    bool operator()(CUIDialogWndEx::callback& i) { return ((i.m_controlName == name) && (i.m_event == event)); }
+    constexpr explicit event_comparer(shared_str n, s16 e) : name{n}, event{e} {}
+
+    [[nodiscard]] constexpr bool operator()(const CUIDialogWndEx::callback& i) const { return name == i.m_controlName && event == i.m_event; }
 };
 
-CUIDialogWndEx::CUIDialogWndEx() : inherited() { Hide(); }
+CUIDialogWndEx::CUIDialogWndEx() { Hide(); }
+CUIDialogWndEx::~CUIDialogWndEx() { ClearCallbacks(); }
 
 void CUIDialogWndEx::Register(CUIWindow* pChild) { pChild->SetMessageTarget(this); }
 
@@ -26,9 +28,9 @@ void CUIDialogWndEx::Register(CUIWindow* pChild, LPCSTR name)
 
 void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-    event_comparer ec(pWnd->WindowName(), msg);
+    const event_comparer ec{pWnd->WindowName(), msg};
 
-    CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
+    auto it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
     if (it == m_callbacks.end())
         return inherited::SendMessage(pWnd, msg, pData);
 
@@ -37,7 +39,7 @@ void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 bool CUIDialogWndEx::Load(LPCSTR) { return true; }
 
-void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(shared_str{control_id}, event, function); }
+void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(std::move(function), shared_str{control_id}, event); }
 
 bool CUIDialogWndEx::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
