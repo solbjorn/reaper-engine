@@ -54,9 +54,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <!--SDLCheck>true</SDLCheck-->
       <FloatingPointModel>Fast</FloatingPointModel>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN7_PLATFORM_UPDATE;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>DirectXTex\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -66,6 +67,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -86,9 +88,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN7_PLATFORM_UPDATE;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>DirectXTex\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -112,6 +115,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXTex\DirectXTex\..\Common\d3dx12.h" />
     <CLInclude Include="DirectXTex\DirectXTex\BC.h" />
     <ClCompile Include="DirectXTex\DirectXTex\BC.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\BC4BC5.cpp" />
@@ -128,6 +132,7 @@
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexCompressGPU.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexConvert.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexD3D11.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexD3D12.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexDDS.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexFlipRotate.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexHDR.cpp" />
