@@ -7,6 +7,9 @@
 [submodule "3rd_party/Src/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectXTex/DirectXTex
 	url = https://github.com/microsoft/DirectXTex.git
+[submodule "3rd_party/Src/luajit2/luajit2"]
+	path = 3rd_party/Src/luajit2/luajit2
+	url = https://github.com/openresty/luajit2.git
 [submodule "3rd_party/Src/oneTBB/oneTBB"]
 	path = 3rd_party/Src/oneTBB/oneTBB
 	url = https://github.com/uxlfoundation/oneTBB.git
