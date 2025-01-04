@@ -14,17 +14,18 @@
 
 @setlocal
 @rem Add more debug flags here, e.g. DEBUGCFLAGS=/DLUA_USE_ASSERT
+@set "PATH=%PATH%;%VSAPPIDDIR%..\..\VC\Tools\Llvm\x64\bin"
 @set DEBUGCFLAGS=
-@set LJCOMPILE=cl /nologo /c /O2 /Ob3 /Oi /Ot /Oy /GL /W3 /fp:precise /GF /GS- /arch:AVX2 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
-@set LJDYNBUILD=/DLUA_BUILD_AS_DLL /MD
+@set LJCOMPILE=clang-cl /nologo /c /MP /O2 /Ob3 /Oi /Oy /Ot /GL -flto -fmerge-all-constants -fwhole-program-vtables /W4 /fp:precise /GF /arch:AVX2 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set LJDYNBUILD=/DLUA_BUILD_AS_DLL /MD /DNDEBUG
 @set LJDYNBUILD_DEBUG=/DLUA_BUILD_AS_DLL /MDd
 @set LJCOMPILETARGET=/Zi /GT
 @set LJLINKTYPE=/DEBUG /RELEASE
 @set LJLINKTYPE_DEBUG=/DEBUG
 @set LJLINKTARGET=/OPT:REF /OPT:ICF /INCREMENTAL:NO /LTCG
-@set LJLINK=link /nologo
-@set LJMT=mt /nologo
-@set LJLIB=lib /nologo /nodefaultlib
+@set LJLINK=lld-link /nologo
+@set LJMT=llvm-mt /nologo
+@set LJLIB=llvm-lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
 @set DASC=vm_x64.dasc

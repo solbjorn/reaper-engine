@@ -13,3 +13,6 @@
 [submodule "3rd_party/Src/oneTBB/oneTBB"]
 	path = 3rd_party/Src/oneTBB/oneTBB
 	url = https://github.com/uxlfoundation/oneTBB.git
+[submodule "3rd_party/Src/openal-soft/openal-soft"]
+	path = 3rd_party/Src/openal-soft/openal-soft
+	url = https://github.com/kcat/openal-soft.git

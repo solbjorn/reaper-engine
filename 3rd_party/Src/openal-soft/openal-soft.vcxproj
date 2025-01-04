@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{FD18CC23-5B32-4B39-9E74-80667FF8A9D0}</ProjectGuid>
+    <ProjectGuid>{8C67B3EC-AF96-48DB-B93E-E561C79F48D7}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>oneTBB</ProjectName>
+    <ProjectName>openal-soft</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\3rd_party_lib_properties.props" />
@@ -65,33 +65,31 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.dll</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=$(SolutionDir)\OgsrBuildProps.cmake -DTBB_TEST=OFF -DTBB_FILE_TRIM=FALSE ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=$(SolutionDir)\OgsrBuildProps.cmake -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=FALSE ..\openal-soft
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
+      copy /Y "OpenAL32.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
+      copy /Y "OpenAL32.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "OpenAL32.dll" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.dll"
+      copy /Y "OpenAL32.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.pdb"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=$(SolutionDir)\OgsrBuildProps.cmake -DTBB_TEST=OFF -DTBB_FILE_TRIM=FALSE ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=$(SolutionDir)\OgsrBuildProps.cmake -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=FALSE ..\openal-soft
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
+      copy /Y "OpenAL32.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
+      copy /Y "OpenAL32.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "OpenAL32.dll" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.dll"
+      copy /Y "OpenAL32.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.pdb"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>

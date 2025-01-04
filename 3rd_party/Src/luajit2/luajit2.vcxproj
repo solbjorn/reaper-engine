@@ -53,12 +53,6 @@
         )
         copy /Y "luajit2\src\lua51.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib"
       )
-      if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.exp" (
-        if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
-          md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
-        )
-        copy /Y "luajit2\src\lua51.exp" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.exp"
-      )
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       cd luajit2\src\
@@ -78,7 +72,6 @@
       if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
         md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
       )
-      copy /Y "luajit2\src\lua51.exp" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.exp"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>
       cd luajit2\src\
