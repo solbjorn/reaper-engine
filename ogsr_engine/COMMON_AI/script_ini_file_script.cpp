@@ -75,6 +75,19 @@ CInifile* reload_system_ini()
         szFileName = &full[0];
     }
 
+    if (auto F = absl::WrapUnique(FS.r_open(szFileName)); F)
+    {
+        // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся создание новых файлов движком - оказывается набит нулями
+        // Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+        if (F->elapsed() >= gsl::index{sizeof(u8)} && F->r_u8() == 0)
+        {
+            Msg("!![%s] file [%s] is broken!", __FUNCTION__, szFileName);
+
+            F.reset();
+            FS.file_delete(szFileName);
+        }
+    }
+
     return std::make_unique<CInifile>(szFileName, true, true, true);
 }
 
