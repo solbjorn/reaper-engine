@@ -21,6 +21,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Platform)'=='x64'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
 
       <LanguageStandard>stdcpp20</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>

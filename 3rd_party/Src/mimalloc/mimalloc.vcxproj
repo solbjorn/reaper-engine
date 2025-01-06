@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{FD18CC23-5B32-4B39-9E74-80667FF8A9D0}</ProjectGuid>
+    <ProjectGuid>{C0E0A539-F615-4317-B12C-24B77195B41A}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>oneTBB</ProjectName>
+    <ProjectName>mimalloc</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\3rd_party_lib_properties.props" />
@@ -65,33 +65,31 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DTBB_TEST=OFF -DTBB_FILE_TRIM=FALSE ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DMI_USE_CXX=ON -DMI_OPT_SIMD=ON -DMI_BUILD_STATIC=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF ..\mimalloc
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "mimalloc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.lib"
+      copy /Y "mimalloc.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
+      copy /Y "mimalloc.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DTBB_TEST=OFF -DTBB_FILE_TRIM=FALSE ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DMI_USE_CXX=ON -DMI_OPT_SIMD=ON -DMI_BUILD_STATIC=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF ..\mimalloc
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "mimalloc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.lib"
+      copy /Y "mimalloc.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
+      copy /Y "mimalloc.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>
@@ -114,4 +112,18 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="Build" DependsOnTargets="PrepareForNMakeBuild;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
+    <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeBuildCommandLine" Condition="'$(NMakeBuildCommandLine)'==''"/>
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeBuildCommandLine)'!=''"/>
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeBuildCommandLine)'!=''"/>
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="PrepareForNMakeBuild;_SetRebuildReferences;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
+    <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeReBuildCommandLine" Condition="'$(NMakeReBuildCommandLine)'=='' and ('$(NMakeCleanCommandLine)'=='' or '$(NMakeBuildCommandLine)'=='')"/>
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeReBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
+    <Exec Command="$(NMakeCleanCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeReBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
+    <Exec Command="$(NMakeCleanCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+  </Target>
 </Project>

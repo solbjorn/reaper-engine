@@ -1,8 +1,10 @@
 RD /s /q 3rd_party\_LIB
 RD /s /q 3rd_party\_TEMP
-RD /s /q 3rd_party\Src\luajit2\luajit2\src\*.dll
-RD /s /q 3rd_party\Src\luajit2\luajit2\src\*.lib
-RD /s /q 3rd_party\Src\luajit2\luajit2\src\*.pdb
+del 3rd_party\Src\luajit2\luajit2\src\*.exe
+del 3rd_party\Src\luajit2\luajit2\src\*.lib
+del 3rd_party\Src\luajit2\luajit2\src\*.pdb
+del 3rd_party\Src\luajit2\luajit2\src\lua51.*
+RD /s /q 3rd_party\Src\mimalloc\_Build
 RD /s /q 3rd_party\Src\oneTBB\_Build
 RD /s /q 3rd_party\Src\openal-soft\_Build
 RD /s /q ogsr_engine\_LIB

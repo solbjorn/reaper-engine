@@ -52,11 +52,12 @@
           md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
         )
         copy /Y "luajit2\src\lua51.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib"
+        copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.pdb"
       )
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       cd luajit2\src\
-      del /F *.exe *.exp *.lib *.pdb lua51.* luajit.h luajit_relver.txt
+      del /F *.exe *.lib *.pdb lua51.*
       call ..\..\msvcbuild.bat $(PlatformShortName)
       cd ..\..\
 
@@ -69,13 +70,14 @@
         md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
       )
       copy /Y "luajit2\src\lua51.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib"
+      copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.pdb"
       if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
         md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
       )
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>
       cd luajit2\src\
-      del /F *.exe *.exp *.lib *.pdb lua51.* luajit.h luajit_relver.txt
+      del /F *.exe *.lib *.pdb lua51.*
       cd ..\..\
     </NMakeCleanCommandLine>
   </PropertyGroup>

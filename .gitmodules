@@ -10,6 +10,11 @@
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
+	ignore = untracked
+[submodule "3rd_party/Src/mimalloc/mimalloc"]
+	path = 3rd_party/Src/mimalloc/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
+	branch = dev3
 [submodule "3rd_party/Src/oneTBB/oneTBB"]
 	path = 3rd_party/Src/oneTBB/oneTBB
 	url = https://github.com/uxlfoundation/oneTBB.git
