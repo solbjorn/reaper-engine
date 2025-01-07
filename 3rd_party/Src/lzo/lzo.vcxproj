@@ -89,6 +89,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
       <ExceptionHandling />
+      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,6 +150,7 @@
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
+      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
