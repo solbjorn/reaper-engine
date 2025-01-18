@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "ParticleEffectDef.h"
 #include "ParticleEffect.h"
 #include "ParticleEffectActions.h"
@@ -43,7 +42,6 @@ CPEDef::~CPEDef()
 u32 CPEDef::GetUStep() { return m_uStep * ps_particle_update_coeff; }
 
 float CPEDef::GetFStep() { return m_fStep * ps_particle_update_coeff; }
-
 
 void CPEDef::CreateShader()
 {
@@ -180,9 +178,11 @@ BOOL CPEDef::Load(IReader& F)
 
     if (m_Flags.is(dfFramed))
     {
-        static_assert(sizeof(SFrame) == 28);
+        constexpr size_t sz = offsetof(SFrame, m_fSpeed) + sizeof(m_Frame.m_fSpeed);
+        static_assert(sz == 28);
+
         R_ASSERT(F.find_chunk(PED_CHUNK_FRAME));
-        F.r(&m_Frame, sizeof(SFrame));
+        F.r(&m_Frame, sz);
     }
 
     if (m_Flags.is(dfTimeLimit))
@@ -225,10 +225,10 @@ BOOL CPEDef::Load(IReader& F)
             if (!valid)
                 break;
         }
-        //if (valid) //???
-        //    Compile(m_EActionList);
-        //else
-        //    m_EActionList.clear();
+        // if (valid) //???
+        //     Compile(m_EActionList);
+        // else
+        //     m_EActionList.clear();
     }
 
     return TRUE;
@@ -372,7 +372,6 @@ void CPEDef::Save2(CInifile& ini)
         ini.w_u32(sect, "action_type", (*it)->type);
         (*it)->Save2(ini, sect);
     }
-
 }
 
 void CPEDef::Save(IWriter& F)
@@ -405,8 +404,11 @@ void CPEDef::Save(IWriter& F)
 
     if (m_Flags.is(dfFramed))
     {
+        constexpr size_t sz = offsetof(SFrame, m_fSpeed) + sizeof(m_Frame.m_fSpeed);
+        static_assert(sz == 28);
+
         F.open_chunk(PED_CHUNK_FRAME);
-        F.w(&m_Frame, sizeof(SFrame));
+        F.w(&m_Frame, sz);
         F.close_chunk();
     }
 
@@ -449,4 +451,3 @@ void CPEDef::Save(IWriter& F)
     }
     F.close_chunk();
 }
-

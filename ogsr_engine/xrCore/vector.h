@@ -244,7 +244,7 @@ IC float angle_inertion_var(float src, float tgt, float min_speed, float max_spe
 }
 
 template <class T>
-IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
+constexpr IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 {
     T xx = Q.x * Q.x;
     T yy = Q.y * Q.y;
@@ -276,7 +276,7 @@ IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 }
 
 template <class T>
-IC _matrix<T>& _matrix<T>::mk_xform(const _quaternion<T>& Q, const Tvector& V)
+constexpr IC _matrix<T>& _matrix<T>::mk_xform(const _quaternion<T>& Q, const Tvector& V)
 {
     T xx = Q.x * Q.x;
     T yy = Q.y * Q.y;

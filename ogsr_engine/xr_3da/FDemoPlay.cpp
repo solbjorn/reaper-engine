@@ -17,7 +17,7 @@
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time /*,FALSE*/)
 {
     Msg("*** Playing demo: %s", name);
-    //Console->Execute("hud_weapon 0");
+    // Console->Execute("hud_weapon 0");
     if (g_bBenchmark)
         Console->Execute("hud_draw 0");
 
@@ -71,7 +71,7 @@ CDemoPlay::~CDemoPlay()
     stat_Stop();
     xr_delete(m_pMotion);
     xr_delete(m_MParam);
-    //Console->Execute("hud_weapon 1");
+    // Console->Execute("hud_weapon 1");
     if (g_bBenchmark)
         Console->Execute("hud_draw 1");
 }
@@ -155,26 +155,27 @@ void CDemoPlay::stat_Stop()
 #define FIX(a) \
     while (a >= m_count) \
     a -= m_count
-void spline1(float t, Fvector* p, Fvector* ret)
+void spline1(float t, const Fvector4* p, Fvector4* ret)
 {
     float t2 = t * t;
     float t3 = t2 * t;
-    float m[4];
+    Fvector4 m, mul;
 
-    ret->x = 0.0f;
-    ret->y = 0.0f;
-    ret->z = 0.0f;
-    m[0] = (0.5f * ((-1.0f * t3) + (2.0f * t2) + (-1.0f * t)));
-    m[1] = (0.5f * ((3.0f * t3) + (-5.0f * t2) + (0.0f * t) + 2.0f));
-    m[2] = (0.5f * ((-3.0f * t3) + (4.0f * t2) + (1.0f * t)));
-    m[3] = (0.5f * ((1.0f * t3) + (-1.0f * t2) + (0.0f * t)));
+    ret->set(0, 0, 0, 0);
+    m.set((0.5f * ((-1.0f * t3) + (2.0f * t2) + (-1.0f * t))), (0.5f * ((3.0f * t3) + (-5.0f * t2) + (0.0f * t) + 2.0f)), (0.5f * ((-3.0f * t3) + (4.0f * t2) + (1.0f * t))),
+          (0.5f * ((1.0f * t3) + (-1.0f * t2) + (0.0f * t))));
 
-    for (int i = 0; i < 4; i++)
-    {
-        ret->x += p[i].x * m[i];
-        ret->y += p[i].y * m[i];
-        ret->z += p[i].z * m[i];
-    }
+    mul.mul(p[0], m.x);
+    ret->add(mul);
+
+    mul.mul(p[1], m.y);
+    ret->add(mul);
+
+    mul.mul(p[2], m.z);
+    ret->add(mul);
+
+    mul.mul(p[3], m.w);
+    ret->add(mul);
 }
 
 BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
@@ -244,7 +245,7 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
         FIX(f4);
 
         Fmatrix *m1, *m2, *m3, *m4;
-        Fvector v[4];
+        Fvector4 v[4];
         m1 = (Fmatrix*)&seq[f1];
         m2 = (Fmatrix*)&seq[f2];
         m3 = (Fmatrix*)&seq[f3];
@@ -252,19 +253,11 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 
         for (int i = 0; i < 4; i++)
         {
-            v[0].x = m1->m[i][0];
-            v[0].y = m1->m[i][1];
-            v[0].z = m1->m[i][2];
-            v[1].x = m2->m[i][0];
-            v[1].y = m2->m[i][1];
-            v[1].z = m2->m[i][2];
-            v[2].x = m3->m[i][0];
-            v[2].y = m3->m[i][1];
-            v[2].z = m3->m[i][2];
-            v[3].x = m4->m[i][0];
-            v[3].y = m4->m[i][1];
-            v[3].z = m4->m[i][2];
-            spline1(t, &(v[0]), (Fvector*)&(Device.mView.m[i][0]));
+            v[0] = m1->vm[i];
+            v[1] = m2->vm[i];
+            v[2] = m3->vm[i];
+            v[3] = m4->vm[i];
+            spline1(t, &v[0], &Device.mView.vm[i]);
         }
 
         Fmatrix mInvCamera;

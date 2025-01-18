@@ -19,7 +19,7 @@
 
 using namespace StalkerSpace;
 
-//#define SIGHT_DEBUG
+// #define SIGHT_DEBUG
 
 CSightManager::CSightManager(CAI_Stalker* object) : inherited(object)
 {
@@ -290,14 +290,12 @@ void CSightManager::Exec_Look(float dt)
             body.target.yaw = body.current.yaw;
         } else {
     */
-    float h = -body.current.yaw;
-    float _sh = _sin(h), _ch = _cos(h);
-    m.i.set(_ch, 0.f, _sh);
-    m._14_ = 0.f;
-    m.j.set(0.f, 1.f, 0.f);
-    m._24_ = 0.f;
-    m.k.set(-_sh, 0.f, _ch);
-    m._34_ = 0.f;
+    float _sh, _ch, h = -body.current.yaw;
+    DirectX::XMScalarSinCos(&_sh, &_ch, h);
+
+    m.vm[0].set(_ch, 0.f, _sh, 0.f);
+    m.vm[1].set(0.f, 1.f, 0.f, 0.f);
+    m.vm[2].set(-_sh, 0.f, _ch, 0.f);
 //	}
 #endif
     STOP_PROFILE

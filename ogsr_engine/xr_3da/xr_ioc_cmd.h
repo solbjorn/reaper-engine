@@ -27,7 +27,7 @@
     }
 
 // KRodin: закомментировано.
-//#include "xrSASH.h"
+// #include "xrSASH.h"
 
 class ENGINE_API IConsole_Command
 {
@@ -108,7 +108,7 @@ protected:
     u32 mask;
 
 public:
-    CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M){};
+    CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M) {};
     const BOOL GetValue() const { return value->test(mask); }
     virtual void Execute(LPCSTR args)
     {
@@ -176,7 +176,7 @@ protected:
     const xr_token* tokens;
 
 public:
-    CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command(N), value(V), tokens(T){};
+    CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command(N), value(V), tokens(T) {};
 
     virtual void Execute(LPCSTR args)
     {
@@ -257,7 +257,7 @@ protected:
     float min, max;
 
 public:
-    CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1) : IConsole_Command(N), value(V), min(_min), max(_max){};
+    CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1) : IConsole_Command(N), value(V), min(_min), max(_max) {};
     const float GetValue() const { return *value; };
     void GetBounds(float& fmin, float& fmax) const
     {
@@ -350,7 +350,7 @@ public:
         imax = max;
     }
 
-    CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command(N), value(V), min(_min), max(_max){};
+    CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command(N), value(V), min(_min), max(_max) {};
 
     virtual void Execute(LPCSTR args)
     {
@@ -429,27 +429,27 @@ public:
 
     virtual void Execute(LPCSTR args) override
     {
-        Fvector4 v;
-        if (4 != sscanf(args, "%g,%g,%g,%g", &v.x, &v.y, &v.z, &v.w))
+        float x, y, z, w;
+        if (4 != sscanf(args, "%g,%g,%g,%g", &x, &y, &z, &w))
         {
-            if (4 != sscanf(args, "(%g,%g,%g,%g)", &v.x, &v.y, &v.z, &v.w))
+            if (4 != sscanf(args, "(%g,%g,%g,%g)", &x, &y, &z, &w))
             {
                 InvalidSyntax();
                 return;
             }
         }
 
-        if (v.x < min.x || v.y < min.y || v.z < min.z || v.w < min.w)
+        if (x < min.x || y < min.y || z < min.z || w < min.w)
         {
             InvalidSyntax();
             return;
         }
-        if (v.x > max.x || v.y > max.y || v.z > max.z || v.w > max.w)
+        if (x > max.x || y > max.y || z > max.z || w > max.w)
         {
             InvalidSyntax();
             return;
         }
-        value->set(v);
+        value->set(x, y, z, w);
     }
 
     virtual void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%g, %g, %g, %g)", value->x, value->y, value->z, value->w); }
@@ -459,8 +459,8 @@ public:
     virtual void fill_tips(vecTips& tips, u32 mode) override
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x, max.y,
-                   max.z, max.w);
+        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x,
+                   max.y, max.z, max.w);
         tips.push_back(str);
         IConsole_Command::fill_tips(tips, mode);
     }

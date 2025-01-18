@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __XR_CORE_MATRIX_H
+#define __XR_CORE_MATRIX_H
+
+#include <DirectXMath.h>
 
 /*
  *	DirectX-compliant, ie row-column order, ie m[Row][Col].
@@ -26,7 +29,7 @@
 // NOTE_4: The rotation sequence is ZXY
 
 template <class T>
-struct _matrix
+struct alignas(16) _matrix
 {
 public:
     typedef T TYPE;
@@ -38,155 +41,404 @@ public:
 public:
     union
     {
-        struct
-        { // Direct definition
-            T _11, _12, _13, _14;
-            T _21, _22, _23, _24;
-            T _31, _32, _33, _34;
-            T _41, _42, _43, _44;
-        };
+        DirectX::XMFLOAT4X4A cm;
+        DirectX::XMMATRIX mm;
+        Fvector4 vm[4];
+
         struct
         {
             Tvector i;
-            T _14_;
+            T _unused_14_;
             Tvector j;
-            T _24_;
+            T _unused_24_;
             Tvector k;
-            T _34_;
+            T _unused_34_;
             Tvector c;
-            T _44_;
+            T _unused_44_;
         };
-        T m[4][4]; // Array
     };
 
+    /* mm.r[0] */
+    constexpr inline T get_11() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._11;
+        else
+            return DirectX::XMVectorGetX(mm.r[0]);
+    }
+    constexpr inline T get_12() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._12;
+        else
+            return DirectX::XMVectorGetY(mm.r[0]);
+    }
+    constexpr inline T get_13() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._13;
+        else
+            return DirectX::XMVectorGetZ(mm.r[0]);
+    }
+    constexpr inline T get_14() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._14;
+        else
+            return DirectX::XMVectorGetW(mm.r[0]);
+    }
+    constexpr inline void set_11(T x)
+    {
+        if (std::is_constant_evaluated())
+            cm._11 = x;
+        else
+            mm.r[0] = DirectX::XMVectorSetX(mm.r[0], x);
+    }
+    constexpr inline void set_12(T y)
+    {
+        if (std::is_constant_evaluated())
+            cm._12 = y;
+        else
+            mm.r[0] = DirectX::XMVectorSetY(mm.r[0], y);
+    }
+    constexpr inline void set_13(T z)
+    {
+        if (std::is_constant_evaluated())
+            cm._13 = z;
+        else
+            mm.r[0] = DirectX::XMVectorSetZ(mm.r[0], z);
+    }
+    constexpr inline void set_14(T w)
+    {
+        if (std::is_constant_evaluated())
+            cm._14 = w;
+        else
+            mm.r[0] = DirectX::XMVectorSetW(mm.r[0], w);
+    }
+
+    /* mm.r[1] */
+    constexpr inline T get_21() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._21;
+        else
+            return DirectX::XMVectorGetX(mm.r[1]);
+    }
+    constexpr inline T get_22() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._22;
+        else
+            return DirectX::XMVectorGetY(mm.r[1]);
+    }
+    constexpr inline T get_23() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._23;
+        else
+            return DirectX::XMVectorGetZ(mm.r[1]);
+    }
+    constexpr inline T get_24() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._24;
+        else
+            return DirectX::XMVectorGetW(mm.r[1]);
+    }
+    constexpr inline void set_21(T x)
+    {
+        if (std::is_constant_evaluated())
+            cm._21 = x;
+        else
+            mm.r[1] = DirectX::XMVectorSetX(mm.r[1], x);
+    }
+    constexpr inline void set_22(T y)
+    {
+        if (std::is_constant_evaluated())
+            cm._22 = y;
+        else
+            mm.r[1] = DirectX::XMVectorSetY(mm.r[1], y);
+    }
+    constexpr inline void set_23(T z)
+    {
+        if (std::is_constant_evaluated())
+            cm._23 = z;
+        else
+            mm.r[1] = DirectX::XMVectorSetZ(mm.r[1], z);
+    }
+    constexpr inline void set_24(T w)
+    {
+        if (std::is_constant_evaluated())
+            cm._24 = w;
+        else
+            mm.r[1] = DirectX::XMVectorSetW(mm.r[1], w);
+    }
+
+    /* mm.r[2] */
+    constexpr inline T get_31() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._31;
+        else
+            return DirectX::XMVectorGetX(mm.r[2]);
+    }
+    constexpr inline T get_32() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._32;
+        else
+            return DirectX::XMVectorGetY(mm.r[2]);
+    }
+    constexpr inline T get_33() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._33;
+        else
+            return DirectX::XMVectorGetZ(mm.r[2]);
+    }
+    constexpr inline T get_34() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._34;
+        else
+            return DirectX::XMVectorGetW(mm.r[2]);
+    }
+    constexpr inline void set_31(T x)
+    {
+        if (std::is_constant_evaluated())
+            cm._31 = x;
+        else
+            mm.r[2] = DirectX::XMVectorSetX(mm.r[2], x);
+    }
+    constexpr inline void set_32(T y)
+    {
+        if (std::is_constant_evaluated())
+            cm._32 = y;
+        else
+            mm.r[2] = DirectX::XMVectorSetY(mm.r[2], y);
+    }
+    constexpr inline void set_33(T z)
+    {
+        if (std::is_constant_evaluated())
+            cm._33 = z;
+        else
+            mm.r[2] = DirectX::XMVectorSetZ(mm.r[2], z);
+    }
+    constexpr inline void set_34(T w)
+    {
+        if (std::is_constant_evaluated())
+            cm._34 = w;
+        else
+            mm.r[2] = DirectX::XMVectorSetW(mm.r[2], w);
+    }
+
+    /* mm.r[3] */
+    constexpr inline T get_41() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._41;
+        else
+            return DirectX::XMVectorGetX(mm.r[3]);
+    }
+    constexpr inline T get_42() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._42;
+        else
+            return DirectX::XMVectorGetY(mm.r[3]);
+    }
+    constexpr inline T get_43() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._43;
+        else
+            return DirectX::XMVectorGetZ(mm.r[3]);
+    }
+    constexpr inline T get_44() const
+    {
+        if (std::is_constant_evaluated())
+            return cm._44;
+        else
+            return DirectX::XMVectorGetW(mm.r[3]);
+    }
+    constexpr inline void set_41(T x)
+    {
+        if (std::is_constant_evaluated())
+            cm._41 = x;
+        else
+            mm.r[3] = DirectX::XMVectorSetX(mm.r[3], x);
+    }
+    constexpr inline void set_42(T y)
+    {
+        if (std::is_constant_evaluated())
+            cm._42 = y;
+        else
+            mm.r[3] = DirectX::XMVectorSetY(mm.r[3], y);
+    }
+    constexpr inline void set_43(T z)
+    {
+        if (std::is_constant_evaluated())
+            cm._43 = z;
+        else
+            mm.r[3] = DirectX::XMVectorSetZ(mm.r[3], z);
+    }
+    constexpr inline void set_44(T w)
+    {
+        if (std::is_constant_evaluated())
+            cm._44 = w;
+        else
+            mm.r[3] = DirectX::XMVectorSetW(mm.r[3], w);
+    }
+
+    __declspec(property(get = get_11, put = set_11)) T _11;
+    __declspec(property(get = get_12, put = set_12)) T _12;
+    __declspec(property(get = get_13, put = set_13)) T _13;
+    __declspec(property(get = get_14, put = set_14)) T _14;
+    __declspec(property(get = get_21, put = set_21)) T _21;
+    __declspec(property(get = get_22, put = set_22)) T _22;
+    __declspec(property(get = get_23, put = set_23)) T _23;
+    __declspec(property(get = get_24, put = set_24)) T _24;
+    __declspec(property(get = get_31, put = set_31)) T _31;
+    __declspec(property(get = get_32, put = set_32)) T _32;
+    __declspec(property(get = get_33, put = set_33)) T _33;
+    __declspec(property(get = get_34, put = set_34)) T _34;
+    __declspec(property(get = get_41, put = set_41)) T _41;
+    __declspec(property(get = get_42, put = set_42)) T _42;
+    __declspec(property(get = get_43, put = set_43)) T _43;
+    __declspec(property(get = get_44, put = set_44)) T _44;
+
+    constexpr inline _matrix() = default;
+    constexpr inline _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15)
+    {
+        if (std::is_constant_evaluated())
+            cm = DirectX::XMFLOAT4X4A(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
+        else
+            mm = DirectX::XMMatrixSet(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
+    }
+
     // Class members
-    ICF SelfRef set(const Self& a)
+    constexpr ICF SelfRef set(const Self& a)
     {
-        i.set(a.i);
-        _14_ = a._14;
-        j.set(a.j);
-        _24_ = a._24;
-        k.set(a.k);
-        _34_ = a._34;
-        c.set(a.c);
-        _44_ = a._44;
+        mm = a.mm;
         return *this;
     }
-    ICF SelfRef set(const Tvector& R, const Tvector& N, const Tvector& D, const Tvector& C)
+    constexpr ICF SelfRef set(const Tvector& R, const Tvector& N, const Tvector& D, const Tvector& C)
     {
-        i.set(R);
-        _14_ = 0;
-        j.set(N);
-        _24_ = 0;
-        k.set(D);
-        _34_ = 0;
-        c.set(C);
-        _44_ = 1;
+        if (std::is_constant_evaluated())
+        {
+            vm[0].set(R, 0);
+            vm[1].set(N, 0);
+            vm[2].set(D, 0);
+        }
+        else
+        {
+            const DirectX::XMFLOAT3* r0 = reinterpret_cast<const DirectX::XMFLOAT3*>(&R);
+            const DirectX::XMFLOAT3* r1 = reinterpret_cast<const DirectX::XMFLOAT3*>(&N);
+            const DirectX::XMFLOAT3* r2 = reinterpret_cast<const DirectX::XMFLOAT3*>(&D);
+            const DirectX::XMFLOAT3* r3 = reinterpret_cast<const DirectX::XMFLOAT3*>(&C);
+
+            mm = DirectX::XMMATRIX(DirectX::XMLoadFloat3(r0), DirectX::XMLoadFloat3(r1), DirectX::XMLoadFloat3(r2), DirectX::XMLoadFloat3(r3));
+        }
+
+        vm[3].set(C, 1);
+
         return *this;
     }
-    ICF SelfRef identity(void)
+    constexpr ICF SelfRef identity(void)
     {
-        _11 = 1;
-        _12 = 0;
-        _13 = 0;
-        _14 = 0;
-        _21 = 0;
-        _22 = 1;
-        _23 = 0;
-        _24 = 0;
-        _31 = 0;
-        _32 = 0;
-        _33 = 1;
-        _34 = 0;
-        _41 = 0;
-        _42 = 0;
-        _43 = 0;
-        _44 = 1;
+        mm = DirectX::XMMatrixIdentity();
         return *this;
     }
-    IC SelfRef rotation(const _quaternion<T>& Q);
-    ICF SelfRef mk_xform(const _quaternion<T>& Q, const Tvector& V);
+    constexpr inline SelfRef rotation(const _quaternion<T>& Q);
+    constexpr ICF SelfRef mk_xform(const _quaternion<T>& Q, const Tvector& V);
 
     // Multiply RES = A[4x4]*B[4x4] (WITH projection)
-    ICF SelfRef mul(const Self& A, const Self& B)
+    constexpr ICF SelfRef mul(const Self& A, const Self& B)
     {
         VERIFY((this != &A) && (this != &B));
-        m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2] + A.m[3][0] * B.m[0][3];
-        m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2] + A.m[3][1] * B.m[0][3];
-        m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2] + A.m[3][2] * B.m[0][3];
-        m[0][3] = A.m[0][3] * B.m[0][0] + A.m[1][3] * B.m[0][1] + A.m[2][3] * B.m[0][2] + A.m[3][3] * B.m[0][3];
 
-        m[1][0] = A.m[0][0] * B.m[1][0] + A.m[1][0] * B.m[1][1] + A.m[2][0] * B.m[1][2] + A.m[3][0] * B.m[1][3];
-        m[1][1] = A.m[0][1] * B.m[1][0] + A.m[1][1] * B.m[1][1] + A.m[2][1] * B.m[1][2] + A.m[3][1] * B.m[1][3];
-        m[1][2] = A.m[0][2] * B.m[1][0] + A.m[1][2] * B.m[1][1] + A.m[2][2] * B.m[1][2] + A.m[3][2] * B.m[1][3];
-        m[1][3] = A.m[0][3] * B.m[1][0] + A.m[1][3] * B.m[1][1] + A.m[2][3] * B.m[1][2] + A.m[3][3] * B.m[1][3];
+        if (std::is_constant_evaluated())
+        {
+            _11 = A._11 * B._11 + A._21 * B._12 + A._31 * B._13 + A._41 * B._14;
+            _12 = A._12 * B._11 + A._22 * B._12 + A._32 * B._13 + A._42 * B._14;
+            _13 = A._13 * B._11 + A._23 * B._12 + A._33 * B._13 + A._43 * B._14;
+            _14 = A._14 * B._11 + A._24 * B._12 + A._34 * B._13 + A._44 * B._14;
 
-        m[2][0] = A.m[0][0] * B.m[2][0] + A.m[1][0] * B.m[2][1] + A.m[2][0] * B.m[2][2] + A.m[3][0] * B.m[2][3];
-        m[2][1] = A.m[0][1] * B.m[2][0] + A.m[1][1] * B.m[2][1] + A.m[2][1] * B.m[2][2] + A.m[3][1] * B.m[2][3];
-        m[2][2] = A.m[0][2] * B.m[2][0] + A.m[1][2] * B.m[2][1] + A.m[2][2] * B.m[2][2] + A.m[3][2] * B.m[2][3];
-        m[2][3] = A.m[0][3] * B.m[2][0] + A.m[1][3] * B.m[2][1] + A.m[2][3] * B.m[2][2] + A.m[3][3] * B.m[2][3];
+            _21 = A._11 * B._21 + A._21 * B._22 + A._31 * B._23 + A._41 * B._24;
+            _22 = A._12 * B._21 + A._22 * B._22 + A._32 * B._23 + A._42 * B._24;
+            _23 = A._13 * B._21 + A._23 * B._22 + A._33 * B._23 + A._43 * B._24;
+            _24 = A._14 * B._21 + A._24 * B._22 + A._34 * B._23 + A._44 * B._24;
 
-        m[3][0] = A.m[0][0] * B.m[3][0] + A.m[1][0] * B.m[3][1] + A.m[2][0] * B.m[3][2] + A.m[3][0] * B.m[3][3];
-        m[3][1] = A.m[0][1] * B.m[3][0] + A.m[1][1] * B.m[3][1] + A.m[2][1] * B.m[3][2] + A.m[3][1] * B.m[3][3];
-        m[3][2] = A.m[0][2] * B.m[3][0] + A.m[1][2] * B.m[3][1] + A.m[2][2] * B.m[3][2] + A.m[3][2] * B.m[3][3];
-        m[3][3] = A.m[0][3] * B.m[3][0] + A.m[1][3] * B.m[3][1] + A.m[2][3] * B.m[3][2] + A.m[3][3] * B.m[3][3];
+            _31 = A._11 * B._31 + A._21 * B._32 + A._31 * B._33 + A._41 * B._34;
+            _32 = A._12 * B._31 + A._22 * B._32 + A._32 * B._33 + A._42 * B._34;
+            _33 = A._13 * B._31 + A._23 * B._32 + A._33 * B._33 + A._43 * B._34;
+            _34 = A._14 * B._31 + A._24 * B._32 + A._34 * B._33 + A._44 * B._34;
+
+            _41 = A._11 * B._41 + A._21 * B._42 + A._31 * B._43 + A._41 * B._44;
+            _42 = A._12 * B._41 + A._22 * B._42 + A._32 * B._43 + A._42 * B._44;
+            _43 = A._13 * B._41 + A._23 * B._42 + A._33 * B._43 + A._43 * B._44;
+            _44 = A._14 * B._41 + A._24 * B._42 + A._34 * B._43 + A._44 * B._44;
+        }
+        else
+            mm = DirectX::XMMatrixMultiply(B.mm, A.mm);
+
         return *this;
     }
 
     // Multiply RES = A[4x3]*B[4x3] (no projection), faster than ordinary multiply
-    ICF SelfRef mul_43(const Self& A, const Self& B)
+    constexpr ICF SelfRef mul_43(const Self& A, const Self& B)
     {
         VERIFY((this != &A) && (this != &B));
-        m[0][0] = A.m[0][0] * B.m[0][0] + A.m[1][0] * B.m[0][1] + A.m[2][0] * B.m[0][2];
-        m[0][1] = A.m[0][1] * B.m[0][0] + A.m[1][1] * B.m[0][1] + A.m[2][1] * B.m[0][2];
-        m[0][2] = A.m[0][2] * B.m[0][0] + A.m[1][2] * B.m[0][1] + A.m[2][2] * B.m[0][2];
-        m[0][3] = 0;
+        _11 = A._11 * B._11 + A._21 * B._12 + A._31 * B._13;
+        _12 = A._12 * B._11 + A._22 * B._12 + A._32 * B._13;
+        _13 = A._13 * B._11 + A._23 * B._12 + A._33 * B._13;
+        _14 = 0;
 
-        m[1][0] = A.m[0][0] * B.m[1][0] + A.m[1][0] * B.m[1][1] + A.m[2][0] * B.m[1][2];
-        m[1][1] = A.m[0][1] * B.m[1][0] + A.m[1][1] * B.m[1][1] + A.m[2][1] * B.m[1][2];
-        m[1][2] = A.m[0][2] * B.m[1][0] + A.m[1][2] * B.m[1][1] + A.m[2][2] * B.m[1][2];
-        m[1][3] = 0;
+        _21 = A._11 * B._21 + A._21 * B._22 + A._31 * B._23;
+        _22 = A._12 * B._21 + A._22 * B._22 + A._32 * B._23;
+        _23 = A._13 * B._21 + A._23 * B._22 + A._33 * B._23;
+        _24 = 0;
 
-        m[2][0] = A.m[0][0] * B.m[2][0] + A.m[1][0] * B.m[2][1] + A.m[2][0] * B.m[2][2];
-        m[2][1] = A.m[0][1] * B.m[2][0] + A.m[1][1] * B.m[2][1] + A.m[2][1] * B.m[2][2];
-        m[2][2] = A.m[0][2] * B.m[2][0] + A.m[1][2] * B.m[2][1] + A.m[2][2] * B.m[2][2];
-        m[2][3] = 0;
+        _31 = A._11 * B._31 + A._21 * B._32 + A._31 * B._33;
+        _32 = A._12 * B._31 + A._22 * B._32 + A._32 * B._33;
+        _33 = A._13 * B._31 + A._23 * B._32 + A._33 * B._33;
+        _34 = 0;
 
-        m[3][0] = A.m[0][0] * B.m[3][0] + A.m[1][0] * B.m[3][1] + A.m[2][0] * B.m[3][2] + A.m[3][0];
-        m[3][1] = A.m[0][1] * B.m[3][0] + A.m[1][1] * B.m[3][1] + A.m[2][1] * B.m[3][2] + A.m[3][1];
-        m[3][2] = A.m[0][2] * B.m[3][0] + A.m[1][2] * B.m[3][1] + A.m[2][2] * B.m[3][2] + A.m[3][2];
-        m[3][3] = 1;
+        _41 = A._11 * B._41 + A._21 * B._42 + A._31 * B._43 + A._41;
+        _42 = A._12 * B._41 + A._22 * B._42 + A._32 * B._43 + A._42;
+        _43 = A._13 * B._41 + A._23 * B._42 + A._33 * B._43 + A._43;
+        _44 = 1;
         return *this;
     }
-    IC SelfRef mulA_44(const Self& A) // mul after
+    constexpr inline SelfRef mulA_44(const Self& A) // mul after
     {
         Self B;
         B.set(*this);
         mul(A, B);
         return *this;
     };
-    IC SelfRef mulB_44(const Self& B) // mul before
+    constexpr inline SelfRef mulB_44(const Self& B) // mul before
     {
         Self A;
         A.set(*this);
         mul(A, B);
         return *this;
     };
-    ICF SelfRef mulA_43(const Self& A) // mul after (no projection)
+    constexpr ICF SelfRef mulA_43(const Self& A) // mul after (no projection)
     {
         Self B;
         B.set(*this);
         mul_43(A, B);
         return *this;
     };
-    ICF SelfRef mulB_43(const Self& B) // mul before (no projection)
+    constexpr ICF SelfRef mulB_43(const Self& B) // mul before (no projection)
     {
         Self A;
         A.set(*this);
         mul_43(A, B);
         return *this;
     };
-    IC SelfRef invert(const Self& a)
+    constexpr inline SelfRef invert(const Self& a)
     { // important: this is 4x3 invert, not the 4x4 one
         // faster than self-invert
         T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
@@ -216,7 +468,7 @@ public:
         return *this;
     }
 
-    IC bool invert_b(const Self& a)
+    constexpr inline bool invert_b(const Self& a)
     { // important: this is 4x3 invert, not the 4x4 one
         // faster than self-invert
         T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
@@ -247,403 +499,395 @@ public:
         return true;
     }
 
-    IC SelfRef invert_44(const Self& a)
-    {
-        const T &a11 = a._11, &a12 = a._12, &a13 = a._13, &a14 = a._14;
-        const T &a21 = a._21, &a22 = a._22, &a23 = a._23, &a24 = a._24;
-        const T &a31 = a._31, &a32 = a._32, &a33 = a._33, &a34 = a._34;
-        const T &a41 = a._41, &a42 = a._42, &a43 = a._43, &a44 = a._44;
-
-        T mn1 = a33 * a44 - a34 * a43;
-        T mn2 = a32 * a44 - a34 * a42;
-        T mn3 = a32 * a43 - a33 * a42;
-        T mn4 = a31 * a44 - a34 * a41;
-        T mn5 = a31 * a43 - a33 * a41;
-        T mn6 = a31 * a42 - a32 * a41;
-
-        T A11 = a22 * mn1 - a23 * mn2 + a24 * mn3;
-        T A12 = -(a21 * mn1 - a23 * mn4 + a24 * mn5);
-        T A13 = a21 * mn2 - a22 * mn4 + a24 * mn6;
-        T A14 = -(a21 * mn3 - a22 * mn5 + a23 * mn6);
-
-        T detInv = a11 * A11 + a12 * A12 + a13 * A13 + a14 * A14;
-        VERIFY(_abs(detInv) > flt_zero);
-
-        detInv = 1.f / detInv;
-
-        _11 = detInv * A11;
-        _12 = -detInv * (a12 * mn1 - a32 * (a13 * a44 - a43 * a14) + a42 * (a13 * a34 - a33 * a14));
-        _13 = detInv * (a12 * (a23 * a44 - a43 * a24) - a22 * (a13 * a44 - a43 * a14) + a42 * (a13 * a24 - a23 * a14));
-        _14 = -detInv * (a12 * (a23 * a34 - a33 * a24) - a22 * (a13 * a34 - a33 * a14) + a32 * (a13 * a24 - a23 * a14));
-
-        _21 = detInv * A12;
-        _22 = detInv * (a11 * mn1 - a31 * (a13 * a44 - a43 * a14) + a41 * (a13 * a34 - a33 * a14));
-        _23 = -detInv * (a11 * (a23 * a44 - a43 * a24) - a21 * (a13 * a44 - a43 * a14) + a41 * (a13 * a24 - a23 * a14));
-        _24 = detInv * (a11 * (a23 * a34 - a33 * a24) - a21 * (a13 * a34 - a33 * a14) + a31 * (a13 * a24 - a23 * a14));
-
-        _31 = detInv * A13;
-        _32 = -detInv * (a11 * (a32 * a44 - a42 * a34) - a31 * (a12 * a44 - a42 * a14) + a41 * (a12 * a34 - a32 * a14));
-        _33 = detInv * (a11 * (a22 * a44 - a42 * a24) - a21 * (a12 * a44 - a42 * a14) + a41 * (a12 * a24 - a22 * a14));
-        _34 = -detInv * (a11 * (a22 * a34 - a32 * a24) - a21 * (a12 * a34 - a32 * a14) + a31 * (a12 * a24 - a22 * a14));
-
-        /*
-            _11, _12, _13, _14;
-            _21, _22, _23, _24;
-            _31, _32, _33, _34;
-            _41, _42, _43, _44;
-        */
-
-        _41 = detInv * A14;
-        _42 = detInv * (a11 * (a32 * a43 - a42 * a33) - a31 * (a12 * a43 - a42 * a13) + a41 * (a12 * a33 - a32 * a13));
-        _43 = -detInv * (a11 * (a22 * a43 - a42 * a23) - a21 * (a12 * a43 - a42 * a13) + a41 * (a12 * a23 - a22 * a13));
-        _44 = detInv * (a11 * (a22 * a33 - a32 * a23) - a21 * (a12 * a33 - a32 * a13) + a31 * (a12 * a23 - a22 * a13));
-
-        return *this;
-    }
-
-    IC SelfRef invert() // slower than invert other matrix
+    constexpr inline SelfRef invert() // slower than invert other matrix
     {
         Self a;
         a.set(*this);
         invert(a);
+
         return *this;
     }
-    IC SelfRef transpose(const Self& matSource) // faster version of transpose
+
+    constexpr inline SelfRef invert_44(const Self& a)
     {
-        _11 = matSource._11;
-        _12 = matSource._21;
-        _13 = matSource._31;
-        _14 = matSource._41;
-        _21 = matSource._12;
-        _22 = matSource._22;
-        _23 = matSource._32;
-        _24 = matSource._42;
-        _31 = matSource._13;
-        _32 = matSource._23;
-        _33 = matSource._33;
-        _34 = matSource._43;
-        _41 = matSource._14;
-        _42 = matSource._24;
-        _43 = matSource._34;
-        _44 = matSource._44;
+        if (std::is_constant_evaluated())
+        {
+            const T &a11 = a.cm._11, &a12 = a.cm._12, &a13 = a.cm._13, &a14 = a.cm._14;
+            const T &a21 = a.cm._21, &a22 = a.cm._22, &a23 = a.cm._23, &a24 = a.cm._24;
+            const T &a31 = a.cm._31, &a32 = a.cm._32, &a33 = a.cm._33, &a34 = a.cm._34;
+            const T &a41 = a.cm._41, &a42 = a.cm._42, &a43 = a.cm._43, &a44 = a.cm._44;
+
+            T mn1 = a33 * a44 - a34 * a43;
+            T mn2 = a32 * a44 - a34 * a42;
+            T mn3 = a32 * a43 - a33 * a42;
+            T mn4 = a31 * a44 - a34 * a41;
+            T mn5 = a31 * a43 - a33 * a41;
+            T mn6 = a31 * a42 - a32 * a41;
+
+            T A11 = a22 * mn1 - a23 * mn2 + a24 * mn3;
+            T A12 = -(a21 * mn1 - a23 * mn4 + a24 * mn5);
+            T A13 = a21 * mn2 - a22 * mn4 + a24 * mn6;
+            T A14 = -(a21 * mn3 - a22 * mn5 + a23 * mn6);
+
+            T detInv = a11 * A11 + a12 * A12 + a13 * A13 + a14 * A14;
+            VERIFY(_abs(detInv) > flt_zero);
+
+            detInv = 1.f / detInv;
+
+            _11 = detInv * A11;
+            _12 = -detInv * (a12 * mn1 - a32 * (a13 * a44 - a43 * a14) + a42 * (a13 * a34 - a33 * a14));
+            _13 = detInv * (a12 * (a23 * a44 - a43 * a24) - a22 * (a13 * a44 - a43 * a14) + a42 * (a13 * a24 - a23 * a14));
+            _14 = -detInv * (a12 * (a23 * a34 - a33 * a24) - a22 * (a13 * a34 - a33 * a14) + a32 * (a13 * a24 - a23 * a14));
+
+            _21 = detInv * A12;
+            _22 = detInv * (a11 * mn1 - a31 * (a13 * a44 - a43 * a14) + a41 * (a13 * a34 - a33 * a14));
+            _23 = -detInv * (a11 * (a23 * a44 - a43 * a24) - a21 * (a13 * a44 - a43 * a14) + a41 * (a13 * a24 - a23 * a14));
+            _24 = detInv * (a11 * (a23 * a34 - a33 * a24) - a21 * (a13 * a34 - a33 * a14) + a31 * (a13 * a24 - a23 * a14));
+
+            _31 = detInv * A13;
+            _32 = -detInv * (a11 * (a32 * a44 - a42 * a34) - a31 * (a12 * a44 - a42 * a14) + a41 * (a12 * a34 - a32 * a14));
+            _33 = detInv * (a11 * (a22 * a44 - a42 * a24) - a21 * (a12 * a44 - a42 * a14) + a41 * (a12 * a24 - a22 * a14));
+            _34 = -detInv * (a11 * (a22 * a34 - a32 * a24) - a21 * (a12 * a34 - a32 * a14) + a31 * (a12 * a24 - a22 * a14));
+
+            /*
+                _11, _12, _13, _14;
+                _21, _22, _23, _24;
+                _31, _32, _33, _34;
+                _41, _42, _43, _44;
+            */
+
+            _41 = detInv * A14;
+            _42 = detInv * (a11 * (a32 * a43 - a42 * a33) - a31 * (a12 * a43 - a42 * a13) + a41 * (a12 * a33 - a32 * a13));
+            _43 = -detInv * (a11 * (a22 * a43 - a42 * a23) - a21 * (a12 * a43 - a42 * a13) + a41 * (a12 * a23 - a22 * a13));
+            _44 = detInv * (a11 * (a22 * a33 - a32 * a23) - a21 * (a12 * a33 - a32 * a13) + a31 * (a12 * a23 - a22 * a13));
+        }
+        else
+            mm = DirectX::XMMatrixInverse(nullptr, a.mm);
+
         return *this;
     }
-    IC SelfRef transpose() // self transpose - slower
+
+    constexpr inline SelfRef transpose(const Self& matSource) // faster version of transpose
     {
-        Self a;
-        a.set(*this);
-        transpose(a);
+        if (std::is_constant_evaluated())
+        {
+            _11 = matSource._11;
+            _12 = matSource._21;
+            _13 = matSource._31;
+            _14 = matSource._41;
+            _21 = matSource._12;
+            _22 = matSource._22;
+            _23 = matSource._32;
+            _24 = matSource._42;
+            _31 = matSource._13;
+            _32 = matSource._23;
+            _33 = matSource._33;
+            _34 = matSource._43;
+            _41 = matSource._14;
+            _42 = matSource._24;
+            _43 = matSource._34;
+            _44 = matSource._44;
+        }
+        else
+            mm = DirectX::XMMatrixTranspose(matSource.mm);
+
         return *this;
     }
-    IC SelfRef translate(const Tvector& Loc) // setup translation matrix
+    constexpr inline SelfRef transpose() // self transpose - slower
     {
-        identity();
-        c.set(Loc.x, Loc.y, Loc.z);
+        if (std::is_constant_evaluated())
+        {
+            Self a;
+            a.set(*this);
+            transpose(a);
+        }
+        else
+            mm = DirectX::XMMatrixTranspose(mm);
+
         return *this;
     }
-    IC SelfRef translate(T _x, T _y, T _z) // setup translation matrix
+    constexpr inline SelfRef translate(const Tvector& Loc) // setup translation matrix
     {
-        identity();
-        c.set(_x, _y, _z);
+        mm.r[0] = DirectX::g_XMIdentityR0.v;
+        mm.r[1] = DirectX::g_XMIdentityR1.v;
+        mm.r[2] = DirectX::g_XMIdentityR2.v;
+        vm[3].set(Loc, 1);
+
         return *this;
     }
-    IC SelfRef translate_over(const Tvector& Loc) // modify only translation
+    constexpr inline SelfRef translate(T _x, T _y, T _z) // setup translation matrix
     {
-        c.set(Loc.x, Loc.y, Loc.z);
+        mm.r[0] = DirectX::g_XMIdentityR0.v;
+        mm.r[1] = DirectX::g_XMIdentityR1.v;
+        mm.r[2] = DirectX::g_XMIdentityR2.v;
+        vm[3].set(_x, _y, _z, 1);
+
         return *this;
     }
-    IC SelfRef translate_over(T _x, T _y, T _z) // modify only translation
+    constexpr inline SelfRef translate_over(const Tvector& Loc) // modify only translation
     {
-        c.set(_x, _y, _z);
+        vm[3].set(Loc, vm[3].w);
         return *this;
     }
-    IC SelfRef translate_add(const Tvector& Loc) // combine translation
+    constexpr inline SelfRef translate_over(T _x, T _y, T _z) // modify only translation
     {
-        c.add(Loc);
+        vm[3].set(_x, _y, _z, vm[3].w);
         return *this;
     }
-    IC SelfRef scale(T x, T y, T z) // setup scale matrix
+    constexpr inline SelfRef translate_add(const Tvector& Loc) // combine translation
     {
-        identity();
-        m[0][0] = x;
-        m[1][1] = y;
-        m[2][2] = z;
+        DirectX::XMVECTOR vec = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&Loc));
+
+        mm.r[3] = DirectX::XMVectorAdd(mm.r[3], vec);
+
         return *this;
     }
-    IC SelfRef scale(const Tvector& v) // setup scale matrix
+    constexpr inline SelfRef scale(T x, T y, T z) // setup scale matrix
+    {
+        mm = DirectX::XMMatrixScaling(x, y, z);
+        return *this;
+    }
+    constexpr inline SelfRef scale(const Tvector& v) // setup scale matrix
     {
         return scale(v.x, v.y, v.z);
     }
 
-    IC SelfRef rotateX(T Angle) // rotation about X axis
+    constexpr inline SelfRef rotateX(T Angle) // rotation about X axis
     {
-        T cosa = _cos(Angle);
-        T sina = _sin(Angle);
-        i.set(1, 0, 0);
-        _14 = 0;
-        j.set(0, cosa, sina);
-        _24 = 0;
-        k.set(0, -sina, cosa);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        if (std::is_constant_evaluated())
+        {
+            T cosa = _cos(Angle);
+            T sina = _sin(Angle);
+
+            mm.r[0] = DirectX::g_XMIdentityR0.v;
+            vm[1].set(0, cosa, sina, 0);
+            vm[2].set(0, -sina, cosa, 0);
+            mm.r[3] = DirectX::g_XMIdentityR3.v;
+        }
+        else
+            mm = DirectX::XMMatrixRotationX(Angle);
+
         return *this;
     }
-    IC SelfRef rotateY(T Angle) // rotation about Y axis
+    constexpr inline SelfRef rotateY(T Angle) // rotation about Y axis
     {
-        T cosa = _cos(Angle);
-        T sina = _sin(Angle);
-        i.set(cosa, 0, -sina);
-        _14 = 0;
-        j.set(0, 1, 0);
-        _24 = 0;
-        k.set(sina, 0, cosa);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        if (std::is_constant_evaluated())
+        {
+            T cosa = _cos(Angle);
+            T sina = _sin(Angle);
+
+            vm[0].set(cosa, 0, -sina, 0);
+            mm.r[1] = DirectX::g_XMIdentityR1.v;
+            vm[2].set(sina, 0, cosa, 0);
+            mm.r[3] = DirectX::g_XMIdentityR3.v;
+        }
+        else
+            mm = DirectX::XMMatrixRotationY(Angle);
+
         return *this;
     }
-    IC SelfRef rotateZ(T Angle) // rotation about Z axis
+    constexpr inline SelfRef rotateZ(T Angle) // rotation about Z axis
     {
-        T cosa = _cos(Angle);
-        T sina = _sin(Angle);
-        i.set(cosa, sina, 0);
-        _14 = 0;
-        j.set(-sina, cosa, 0);
-        _24 = 0;
-        k.set(0, 0, 1);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        if (std::is_constant_evaluated())
+        {
+            T cosa = _cos(Angle);
+            T sina = _sin(Angle);
+
+            vm[0].set(cosa, sina, 0, 0);
+            vm[1].set(-sina, cosa, 0, 0);
+            mm.r[2] = DirectX::g_XMIdentityR2.v;
+            mm.r[3] = DirectX::g_XMIdentityR3.v;
+        }
+        else
+            mm = DirectX::XMMatrixRotationZ(Angle);
+
         return *this;
     }
 
-    IC SelfRef rotation(const Tvector& vdir, const Tvector& vnorm)
+    constexpr inline SelfRef rotation(const Tvector& vdir, const Tvector& vnorm)
     {
         Tvector vright;
         vright.crossproduct(vnorm, vdir).normalize();
-        m[0][0] = vright.x;
-        m[0][1] = vright.y;
-        m[0][2] = vright.z;
-        m[0][3] = 0;
-        m[1][0] = vnorm.x;
-        m[1][1] = vnorm.y;
-        m[1][2] = vnorm.z;
-        m[1][3] = 0;
-        m[2][0] = vdir.x;
-        m[2][1] = vdir.y;
-        m[2][2] = vdir.z;
-        m[2][3] = 0;
-        m[3][0] = 0;
-        m[3][1] = 0;
-        m[3][2] = 0;
-        m[3][3] = 1;
+
+        vm[0].set(vright.x, vright.y, vright.z, 0);
+        vm[1].set(vnorm.x, vnorm.y, vnorm.z, 0);
+        vm[2].set(vdir.x, vdir.y, vdir.z, 0);
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
 
-    IC SelfRef mapXYZ()
+    constexpr inline SelfRef mapXYZ()
     {
-        i.set(1, 0, 0);
-        _14 = 0;
-        j.set(0, 1, 0);
-        _24 = 0;
-        k.set(0, 0, 1);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        identity();
         return *this;
     }
-    IC SelfRef mapXZY()
+    constexpr inline SelfRef mapXZY()
     {
-        i.set(1, 0, 0);
-        _14 = 0;
-        j.set(0, 0, 1);
-        _24 = 0;
-        k.set(0, 1, 0);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        mm.r[0] = DirectX::g_XMIdentityR0.v;
+        mm.r[1] = DirectX::g_XMIdentityR2.v;
+        mm.r[2] = DirectX::g_XMIdentityR1.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mapYXZ()
+    constexpr inline SelfRef mapYXZ()
     {
-        i.set(0, 1, 0);
-        _14 = 0;
-        j.set(1, 0, 0);
-        _24 = 0;
-        k.set(0, 0, 1);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        mm.r[0] = DirectX::g_XMIdentityR1.v;
+        mm.r[1] = DirectX::g_XMIdentityR0.v;
+        mm.r[2] = DirectX::g_XMIdentityR2.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mapYZX()
+    constexpr inline SelfRef mapYZX()
     {
-        i.set(0, 1, 0);
-        _14 = 0;
-        j.set(0, 0, 1);
-        _24 = 0;
-        k.set(1, 0, 0);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        mm.r[0] = DirectX::g_XMIdentityR1.v;
+        mm.r[1] = DirectX::g_XMIdentityR2.v;
+        mm.r[2] = DirectX::g_XMIdentityR0.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mapZXY()
+    constexpr inline SelfRef mapZXY()
     {
-        i.set(0, 0, 1);
-        _14 = 0;
-        j.set(1, 0, 0);
-        _24 = 0;
-        k.set(0, 1, 0);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        mm.r[0] = DirectX::g_XMIdentityR2.v;
+        mm.r[1] = DirectX::g_XMIdentityR0.v;
+        mm.r[2] = DirectX::g_XMIdentityR1.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mapZYX()
+    constexpr inline SelfRef mapZYX()
     {
-        i.set(0, 0, 1);
-        _14 = 0;
-        j.set(0, 1, 0);
-        _24 = 0;
-        k.set(1, 0, 0);
-        _34 = 0;
-        c.set(0, 0, 0);
-        _44 = 1;
+        mm.r[0] = DirectX::g_XMIdentityR2.v;
+        mm.r[1] = DirectX::g_XMIdentityR1.v;
+        mm.r[2] = DirectX::g_XMIdentityR0.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
 
-    IC SelfRef rotation(const Tvector& axis, T Angle)
+    constexpr inline SelfRef rotation(const Tvector& axis, T Angle)
     {
-        T Cosine = _cos(Angle);
-        T Sine = _sin(Angle);
-        m[0][0] = axis.x * axis.x + (1 - axis.x * axis.x) * Cosine;
-        m[0][1] = axis.x * axis.y * (1 - Cosine) + axis.z * Sine;
-        m[0][2] = axis.x * axis.z * (1 - Cosine) - axis.y * Sine;
-        m[0][3] = 0;
-        m[1][0] = axis.x * axis.y * (1 - Cosine) - axis.z * Sine;
-        m[1][1] = axis.y * axis.y + (1 - axis.y * axis.y) * Cosine;
-        m[1][2] = axis.y * axis.z * (1 - Cosine) + axis.x * Sine;
-        m[1][3] = 0;
-        m[2][0] = axis.x * axis.z * (1 - Cosine) + axis.y * Sine;
-        m[2][1] = axis.y * axis.z * (1 - Cosine) - axis.x * Sine;
-        m[2][2] = axis.z * axis.z + (1 - axis.z * axis.z) * Cosine;
-        m[2][3] = 0;
-        m[3][0] = 0;
-        m[3][1] = 0;
-        m[3][2] = 0;
-        m[3][3] = 1;
+        T Sine, Cosine;
+
+        DirectX::XMScalarSinCos(&Sine, &Cosine, Angle);
+
+        vm[0].set(axis.x * axis.x + (1 - axis.x * axis.x) * Cosine, axis.x * axis.y * (1 - Cosine) + axis.z * Sine, axis.x * axis.z * (1 - Cosine) - axis.y * Sine, 0);
+        vm[1].set(axis.x * axis.y * (1 - Cosine) - axis.z * Sine, axis.y * axis.y + (1 - axis.y * axis.y) * Cosine, axis.y * axis.z * (1 - Cosine) + axis.x * Sine, 0);
+        vm[2].set(axis.x * axis.z * (1 - Cosine) + axis.y * Sine, axis.y * axis.z * (1 - Cosine) - axis.x * Sine, axis.z * axis.z + (1 - axis.z * axis.z) * Cosine, 0);
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
 
     // mirror X
-    IC SelfRef mirrorX()
+    constexpr inline SelfRef mirrorX()
     {
-        identity();
-        m[0][0] = -1;
+        mm.r[0] = DirectX::g_XMNegIdentityR0.v;
+        mm.r[1] = DirectX::g_XMIdentityR1.v;
+        mm.r[2] = DirectX::g_XMIdentityR2.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mirrorX_over()
+    constexpr inline SelfRef mirrorX_over()
     {
-        m[0][0] = -1;
+        vm[0].x = -1;
         return *this;
     }
-    IC SelfRef mirrorX_add()
+    constexpr inline SelfRef mirrorX_add()
     {
-        m[0][0] *= -1;
+        vm[0].x *= -1;
         return *this;
     }
 
     // mirror Y
-    IC SelfRef mirrorY()
+    constexpr inline SelfRef mirrorY()
     {
-        identity();
-        m[1][1] = -1;
+        mm.r[0] = DirectX::g_XMIdentityR0.v;
+        mm.r[1] = DirectX::g_XMNegIdentityR1.v;
+        mm.r[2] = DirectX::g_XMIdentityR2.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mirrorY_over()
+    constexpr inline SelfRef mirrorY_over()
     {
-        m[1][1] = -1;
+        vm[1].y = -1;
         return *this;
     }
-    IC SelfRef mirrorY_add()
+    constexpr inline SelfRef mirrorY_add()
     {
-        m[1][1] *= -1;
+        vm[1].y *= -1;
         return *this;
     }
 
     // mirror Z
-    IC SelfRef mirrorZ()
+    constexpr inline SelfRef mirrorZ()
     {
-        identity();
-        m[2][2] = -1;
+        mm.r[0] = DirectX::g_XMIdentityR0.v;
+        mm.r[1] = DirectX::g_XMIdentityR1.v;
+        mm.r[2] = DirectX::g_XMNegIdentityR2.v;
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef mirrorZ_over()
+    constexpr inline SelfRef mirrorZ_over()
     {
-        m[2][2] = -1;
+        vm[2].z = -1;
         return *this;
     }
-    IC SelfRef mirrorZ_add()
+    constexpr inline SelfRef mirrorZ_add()
     {
-        m[2][2] *= -1;
+        vm[2].z *= -1;
         return *this;
     }
-    IC SelfRef mul(const Self& A, T v)
+    constexpr inline SelfRef mul(const Self& A, T v)
     {
-        m[0][0] = A.m[0][0] * v;
-        m[0][1] = A.m[0][1] * v;
-        m[0][2] = A.m[0][2] * v;
-        m[0][3] = A.m[0][3] * v;
-        m[1][0] = A.m[1][0] * v;
-        m[1][1] = A.m[1][1] * v;
-        m[1][2] = A.m[1][2] * v;
-        m[1][3] = A.m[1][3] * v;
-        m[2][0] = A.m[2][0] * v;
-        m[2][1] = A.m[2][1] * v;
-        m[2][2] = A.m[2][2] * v;
-        m[2][3] = A.m[2][3] * v;
-        m[3][0] = A.m[3][0] * v;
-        m[3][1] = A.m[3][1] * v;
-        m[3][2] = A.m[3][2] * v;
-        m[3][3] = A.m[3][3] * v;
+        vm[0].mul(A.vm[0], v);
+        vm[1].mul(A.vm[1], v);
+        vm[2].mul(A.vm[2], v);
+        vm[3].mul(A.vm[3], v);
+
         return *this;
     }
-    IC SelfRef mul(T v)
+    constexpr inline SelfRef mul(T v)
     {
-        m[0][0] *= v;
-        m[0][1] *= v;
-        m[0][2] *= v;
-        m[0][3] *= v;
-        m[1][0] *= v;
-        m[1][1] *= v;
-        m[1][2] *= v;
-        m[1][3] *= v;
-        m[2][0] *= v;
-        m[2][1] *= v;
-        m[2][2] *= v;
-        m[2][3] *= v;
-        m[3][0] *= v;
-        m[3][1] *= v;
-        m[3][2] *= v;
-        m[3][3] *= v;
+        vm[0].mul(v);
+        vm[1].mul(v);
+        vm[2].mul(v);
+        vm[3].mul(v);
+
         return *this;
     }
-    IC SelfRef div(const Self& A, T v)
+    constexpr inline SelfRef div(const Self& A, T v)
     {
         VERIFY(_abs(v) > 0.000001f);
-        return mul(A, 1.0f / v);
+
+        vm[0].div(A.vm[0], v);
+        vm[1].div(A.vm[1], v);
+        vm[2].div(A.vm[2], v);
+        vm[3].div(A.vm[3], v);
+
+        return *this;
     }
-    IC SelfRef div(T v)
+    constexpr inline SelfRef div(T v)
     {
         VERIFY(_abs(v) > 0.000001f);
-        return mul(1.0f / v);
+
+        vm[0].div(v);
+        vm[1].div(v);
+        vm[2].div(v);
+        vm[3].div(v);
+
+        return *this;
     }
     // fov
-    IC SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane) { return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane); }
+    constexpr inline SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane) { return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane); }
     // half_fov-angle-tangent
-    IC SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
+    constexpr inline SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
     {
         VERIFY(_abs(fFarPlane - fNearPlane) > EPS_S);
         VERIFY(_abs(HAT) > EPS_S);
@@ -653,45 +897,23 @@ public:
         T h = T(1) * cot;
         T Q = fFarPlane / (fFarPlane - fNearPlane);
 
-        _11 = w;
-        _12 = 0;
-        _13 = 0;
-        _14 = 0;
-        _21 = 0;
-        _22 = h;
-        _23 = 0;
-        _24 = 0;
-        _31 = 0;
-        _32 = 0;
-        _33 = Q;
-        _34 = 1.0f;
-        _41 = 0;
-        _42 = 0;
-        _43 = -Q * fNearPlane;
-        _44 = 0;
+        vm[0].set(w, 0, 0, 0);
+        vm[1].set(0, h, 0, 0);
+        vm[2].set(0, 0, Q, 1);
+        vm[3].set(0, 0, -Q * fNearPlane, 0);
+
         return *this;
     }
-    IC SelfRef build_projection_ortho(T w, T h, T zn, T zf)
+    constexpr inline SelfRef build_projection_ortho(T w, T h, T zn, T zf)
     {
-        _11 = T(2) / w;
-        _12 = 0;
-        _13 = 0;
-        _14 = 0;
-        _21 = 0;
-        _22 = T(2) / h;
-        _23 = 0;
-        _24 = 0;
-        _31 = 0;
-        _32 = 0;
-        _33 = T(1) / (zf - zn);
-        _34 = 0;
-        _41 = 0;
-        _42 = 0;
-        _43 = zn / (zn - zf);
-        _44 = T(1);
+        vm[0].set(T(2) / w, 0, 0, 0);
+        vm[1].set(0, T(2) / h, 0, 0);
+        vm[2].set(0, 0, T(1) / (zf - zn), 0);
+        vm[3].set(0, 0, zn / (zn - zf), T(1));
+
         return *this;
     }
-    IC SelfRef build_camera(const Tvector& vFrom, const Tvector& vAt, const Tvector& vWorldUp)
+    constexpr inline SelfRef build_camera(const Tvector& vFrom, const Tvector& vAt, const Tvector& vWorldUp)
     {
         // Get the z basis vector3, which points straight ahead. This is the
         // difference from the eyepoint to the lookat point.
@@ -712,27 +934,16 @@ public:
 
         // Start building the Device.mView. The first three rows contains the basis
         // vectors used to rotate the view to point at the lookat point
-        _11 = vRight.x;
-        _12 = vUp.x;
-        _13 = vView.x;
-        _14 = 0.0f;
-        _21 = vRight.y;
-        _22 = vUp.y;
-        _23 = vView.y;
-        _24 = 0.0f;
-        _31 = vRight.z;
-        _32 = vUp.z;
-        _33 = vView.z;
-        _34 = 0.0f;
+        vm[0].set(vRight.x, vUp.x, vView.x, 0.0f);
+        vm[1].set(vRight.y, vUp.y, vView.y, 0.0f);
+        vm[2].set(vRight.z, vUp.z, vView.z, 0.0f);
 
         // Do the translation values (rotations are still about the eyepoint)
-        _41 = -vFrom.dotproduct(vRight);
-        _42 = -vFrom.dotproduct(vUp);
-        _43 = -vFrom.dotproduct(vView);
-        _44 = 1.0f;
+        vm[3].set(-vFrom.dotproduct(vRight), -vFrom.dotproduct(vUp), -vFrom.dotproduct(vView), 1.0f);
+
         return *this;
     }
-    IC SelfRef build_camera_dir(const Tvector& vFrom, const Tvector& vView, const Tvector& vWorldUp)
+    constexpr inline SelfRef build_camera_dir(const Tvector& vFrom, const Tvector& vView, const Tvector& vWorldUp)
     {
         // Get the dot product, and calculate the projection of the z basis
         // vector3 onto the up vector3. The projection is the y basis vector3.
@@ -748,70 +959,56 @@ public:
 
         // Start building the Device.mView. The first three rows contains the basis
         // vectors used to rotate the view to point at the lookat point
-        _11 = vRight.x;
-        _12 = vUp.x;
-        _13 = vView.x;
-        _14 = 0.0f;
-        _21 = vRight.y;
-        _22 = vUp.y;
-        _23 = vView.y;
-        _24 = 0.0f;
-        _31 = vRight.z;
-        _32 = vUp.z;
-        _33 = vView.z;
-        _34 = 0.0f;
+        vm[0].set(vRight.x, vUp.x, vView.x, 0.0f);
+        vm[1].set(vRight.y, vUp.y, vView.y, 0.0f);
+        vm[2].set(vRight.z, vUp.z, vView.z, 0.0f);
 
         // Do the translation values (rotations are still about the eyepoint)
-        _41 = -vFrom.dotproduct(vRight);
-        _42 = -vFrom.dotproduct(vUp);
-        _43 = -vFrom.dotproduct(vView);
-        _44 = 1.0f;
+        vm[3].set(-vFrom.dotproduct(vRight), -vFrom.dotproduct(vUp), -vFrom.dotproduct(vView), 1.0f);
+
         return *this;
     }
 
-    IC SelfRef inertion(const Self& mat, T v)
+    constexpr inline SelfRef inertion(const Self& mat, T v)
     {
-        T iv = 1.f - v;
-        for (int i = 0; i < 4; i++)
-        {
-            m[i][0] = m[i][0] * v + mat.m[i][0] * iv;
-            m[i][1] = m[i][1] * v + mat.m[i][1] * iv;
-            m[i][2] = m[i][2] * v + mat.m[i][2] * iv;
-            m[i][3] = m[i][3] * v + mat.m[i][3] * iv;
-        }
+        vm[0].lerp(mat.vm[0], vm[0], v);
+        vm[1].lerp(mat.vm[1], vm[1], v);
+        vm[2].lerp(mat.vm[2], vm[2], v);
+        vm[3].lerp(mat.vm[3], vm[3], v);
+
         return *this;
     }
-    ICF void transform_tiny(Tvector& dest, const Tvector& v) const // preferred to use
+    constexpr ICF void transform_tiny(Tvector& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
         dest.z = v.x * _13 + v.y * _23 + v.z * _33 + _43;
     }
-    ICF void transform_tiny32(Fvector2& dest, const Tvector& v) const // preferred to use
+    constexpr ICF void transform_tiny32(Fvector2& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
     }
-    ICF void transform_tiny23(Tvector& dest, const Fvector2& v) const // preferred to use
+    constexpr ICF void transform_tiny23(Tvector& dest, const Fvector2& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + _41;
         dest.y = v.x * _12 + v.y * _22 + _42;
         dest.z = v.x * _13 + v.y * _23 + _43;
     }
-    ICF void transform_dir(Tvector& dest, const Tvector& v) const // preferred to use
+    constexpr ICF void transform_dir(Tvector& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32;
         dest.z = v.x * _13 + v.y * _23 + v.z * _33;
     }
-    IC void transform(Fvector4& dest, const Tvector& v) const // preferred to use
+    constexpr inline void transform(Fvector4& dest, const Tvector& v) const // preferred to use
     {
         dest.w = v.x * _14 + v.y * _24 + v.z * _34 + _44;
         dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) / dest.w;
         dest.y = (v.x * _12 + v.y * _22 + v.z * _32 + _42) / dest.w;
         dest.z = (v.x * _13 + v.y * _23 + v.z * _33 + _43) / dest.w;
     }
-    IC void transform(Tvector& dest, const Tvector& v) const // preferred to use
+    constexpr inline void transform(Tvector& dest, const Tvector& v) const // preferred to use
     {
         T iw = 1.f / (v.x * _14 + v.y * _24 + v.z * _34 + _44);
         dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) * iw;
@@ -819,7 +1016,7 @@ public:
         dest.z = (v.x * _13 + v.y * _23 + v.z * _33 + _43) * iw;
     }
 
-    IC void transform(Fvector4& dest, const Fvector4& v) const // preferred to use
+    constexpr inline void transform(Fvector4& dest, const Fvector4& v) const // preferred to use
     {
         dest.w = v.x * _14 + v.y * _24 + v.z * _34 + v.w * _44;
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + v.w * _41;
@@ -827,81 +1024,76 @@ public:
         dest.z = v.x * _13 + v.y * _23 + v.z * _33 + v.w * _43;
     }
 
-    ICF void transform_tiny(Tvector& v) const
+    constexpr ICF void transform_tiny(Tvector& v) const
     {
         Tvector res;
         transform_tiny(res, v);
         v.set(res);
     }
-    IC void transform(Tvector& v) const
+    constexpr inline void transform(Tvector& v) const
     {
         Tvector res;
         transform(res, v);
         v.set(res);
     }
-    ICF void transform_dir(Tvector& v) const
+    constexpr ICF void transform_dir(Tvector& v) const
     {
         Tvector res;
         transform_dir(res, v);
         v.set(res);
     }
-    ICF SelfRef setHPB(T h, T p, T b)
+    constexpr ICF SelfRef setHPB(T h, T p, T b)
     {
         T _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
 
-        _sh = _sin(h);
-        _ch = _cos(h);
-        _sp = _sin(p);
-        _cp = _cos(p);
-        _sb = _sin(b);
-        _cb = _cos(b);
+        DirectX::XMScalarSinCos(&_sh, &_ch, h);
+        DirectX::XMScalarSinCos(&_sp, &_cp, p);
+        DirectX::XMScalarSinCos(&_sb, &_cb, b);
+
         _cc = _ch * _cb;
         _cs = _ch * _sb;
         _sc = _sh * _cb;
         _ss = _sh * _sb;
 
-        i.set(_cc - _sp * _ss, -_cp * _sb, _sp * _cs + _sc);
-        _14_ = 0;
-        j.set(_sp * _sc + _cs, _cp * _cb, _ss - _sp * _cc);
-        _24_ = 0;
-        k.set(-_cp * _sh, _sp, _cp * _ch);
-        _34_ = 0;
-        c.set(0, 0, 0);
-        _44_ = 1;
+        vm[0].set(_cc - _sp * _ss, -_cp * _sb, _sp * _cs + _sc, 0);
+        vm[1].set(_sp * _sc + _cs, _cp * _cb, _ss - _sp * _cc, 0);
+        vm[2].set(-_cp * _sh, _sp, _cp * _ch, 0);
+        mm.r[3] = DirectX::g_XMIdentityR3.v;
+
         return *this;
     }
-    IC SelfRef setXYZ(T x, T y, T z) { return setHPB(y, x, z); }
-    IC SelfRef setXYZ(Tvector const& xyz) { return setHPB(xyz.y, xyz.x, xyz.z); }
-    IC SelfRef setXYZi(T x, T y, T z) { return setHPB(-y, -x, -z); }
-    IC SelfRef setXYZi(Tvector const& xyz) { return setHPB(-xyz.y, -xyz.x, -xyz.z); }
+    constexpr inline SelfRef setXYZ(T x, T y, T z) { return setHPB(y, x, z); }
+    constexpr inline SelfRef setXYZ(Tvector const& xyz) { return setHPB(xyz.y, xyz.x, xyz.z); }
+    constexpr inline SelfRef setXYZi(T x, T y, T z) { return setHPB(-y, -x, -z); }
+    constexpr inline SelfRef setXYZi(Tvector const& xyz) { return setHPB(-xyz.y, -xyz.x, -xyz.z); }
     //
-    IC void getHPB(T& h, T& p, T& b) const
+    constexpr inline void getHPB(T& h, T& p, T& b) const
     {
-        T cy = _sqrt(j.y * j.y + i.y * i.y);
+        T cy = _sqrt(vm[1].y * vm[1].y + vm[0].y * vm[0].y);
         if (cy > 16.0f * type_epsilon(T))
         {
-            h = (T)-atan2(k.x, k.z);
-            p = (T)-atan2(-k.y, cy);
-            b = (T)-atan2(i.y, j.y);
+            h = (T)-atan2(vm[2].x, vm[2].z);
+            p = (T)-atan2(-vm[2].y, cy);
+            b = (T)-atan2(vm[0].y, vm[1].y);
         }
         else
         {
-            h = (T)-atan2(-i.z, i.x);
-            p = (T)-atan2(-k.y, cy);
+            h = (T)-atan2(-vm[0].z, vm[0].x);
+            p = (T)-atan2(-vm[2].y, cy);
             b = 0;
         }
     }
-    IC void getHPB(Tvector& hpb) const { getHPB(hpb.x, hpb.y, hpb.z); }
-    IC void getXYZ(T& x, T& y, T& z) const { getHPB(y, x, z); }
-    IC void getXYZ(Tvector& xyz) const { getXYZ(xyz.x, xyz.y, xyz.z); }
-    IC void getXYZi(T& x, T& y, T& z) const
+    constexpr inline void getHPB(Tvector& hpb) const { getHPB(hpb.x, hpb.y, hpb.z); }
+    constexpr inline void getXYZ(T& x, T& y, T& z) const { getHPB(y, x, z); }
+    constexpr inline void getXYZ(Tvector& xyz) const { getXYZ(xyz.x, xyz.y, xyz.z); }
+    constexpr inline void getXYZi(T& x, T& y, T& z) const
     {
         getHPB(y, x, z);
         x *= -1.f;
         y *= -1.f;
         z *= -1.f;
     }
-    IC void getXYZi(Tvector& xyz) const
+    constexpr inline void getXYZi(Tvector& xyz) const
     {
         getXYZ(xyz.x, xyz.y, xyz.z);
         xyz.mul(-1.f);
@@ -914,7 +1106,9 @@ static_assert(sizeof(Fmatrix) == 64);
 template <class T>
 BOOL _valid(const _matrix<T>& m)
 {
-    return _valid(m.i) && _valid(m._14_) && _valid(m.j) && _valid(m._24_) && _valid(m.k) && _valid(m._34_) && _valid(m.c) && _valid(m._44_);
+    return _valid(m.i) && _valid(m._14) && _valid(m.j) && _valid(m._24) && _valid(m.k) && _valid(m._34) && _valid(m.c) && _valid(m._44);
 }
 
 extern XRCORE_API Fmatrix Fidentity;
+
+#endif /* __XR_CORE_MATRIX_H */

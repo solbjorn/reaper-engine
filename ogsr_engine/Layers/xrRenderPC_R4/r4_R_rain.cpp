@@ -5,8 +5,6 @@
 
 #include "r4_R_sun_support.h"
 
-using namespace DirectX;
-
 constexpr float tweak_rain_COP_initial_offs = 1200.f;
 constexpr float tweak_rain_ortho_xform_initial_offs = 1000.f; //. ?
 
@@ -55,7 +53,7 @@ void CRender::render_rain()
 
         ex_project.build_projection(deg2rad(Device.fFOV /* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
         ex_full.mul(ex_project, Device.mView);
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
+        ex_full_inverse.invert_44(ex_full);
 
         //	Calculate view frustum were we can see dynamic rain radius
         {
@@ -178,10 +176,8 @@ void CRender::render_rain()
         bb.min.y = -fBoundingSphereRadius + vRectOffset.z;
         bb.max.y = fBoundingSphereRadius + vRectOffset.z;
 
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-                        XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs,
-                                                        bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
-
+        mdir_Project.mm = DirectX::XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs,
+                                                                   bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs);
         cull_xform.mul(mdir_Project, mdir_View);
 
         s32 limit = _min(RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
@@ -191,8 +187,8 @@ void CRender::render_rain()
         float fTexelOffs = (.5f / RImplementation.o.smapsize);
         Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
                               0.0f,           1.0f};
-        Fmatrix m_viewport_inv{};
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
+        Fmatrix m_viewport_inv;
+        m_viewport_inv.invert_44(m_viewport);
 
         // snap view-position to pixel
         //	snap zero point to pixel

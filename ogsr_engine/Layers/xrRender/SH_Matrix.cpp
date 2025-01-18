@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 void CMatrix::Calculate()
 {
     if (dwFrame == RDEVICE.dwFrame)
@@ -45,22 +44,10 @@ void CMatrix::Calculate()
         float Ux = .5f * RDEVICE.mView._11, Uy = .5f * RDEVICE.mView._21, Uz = .5f * RDEVICE.mView._31, Uw = .5f;
         float Vx = -.5f * RDEVICE.mView._12, Vy = -.5f * RDEVICE.mView._22, Vz = -.5f * RDEVICE.mView._32, Vw = .5f;
 
-        xform._11 = Ux;
-        xform._12 = Vx;
-        xform._13 = 0;
-        xform._14 = 0;
-        xform._21 = Uy;
-        xform._22 = Vy;
-        xform._23 = 0;
-        xform._24 = 0;
-        xform._31 = Uz;
-        xform._32 = Vz;
-        xform._33 = 0;
-        xform._34 = 0;
-        xform._41 = Uw;
-        xform._42 = Vw;
-        xform._43 = 0;
-        xform._44 = 0;
+        xform.vm[0].set(Ux, Vx, 0, 0);
+        xform.vm[1].set(Uy, Vy, 0, 0);
+        xform.vm[2].set(Uz, Vz, 0, 0);
+        xform.vm[3].set(Uw, Vw, 0, 0);
     }
         return;
     case modeC_refl: {

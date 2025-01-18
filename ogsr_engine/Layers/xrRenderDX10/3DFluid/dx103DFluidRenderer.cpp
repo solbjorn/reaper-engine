@@ -452,9 +452,7 @@ void dx103DFluidRenderer::PrepareCBuffer(const dx103DFluidData& FluidData, u32 R
     RCache.set_c(strZNear, VIEWPORT_NEAR);
     RCache.set_c(strZFar, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-    const auto gridWorld = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&transform));
-    const auto View = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&RCache.xforms.m_v));
-    auto WorldView = gridWorld * View;
+    auto WorldView = transform.mm * RCache.xforms.m_v.mm;
 
     // The length of one of the axis of the worldView matrix is the length of longest side of the box
     //  in view space. This is used to convert the length of a ray from view space to grid space.
@@ -468,26 +466,18 @@ void dx103DFluidRenderer::PrepareCBuffer(const dx103DFluidData& FluidData, u32 R
     WorldView = m_gridMatrix * WorldView;
 
     // worldViewProjection is used to transform the volume box to screen space
-    const auto Projection = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&RCache.xforms.m_p));
-    const auto WorldViewProjection = WorldView * Projection;
-
-    Fmatrix tempM1{};
-    XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&tempM1), WorldViewProjection);
-    RCache.set_c(strWorldViewProjection, tempM1);
+    const auto WorldViewProjection = WorldView * RCache.xforms.m_p.mm;
+    RCache.set_c(strWorldViewProjection, *reinterpret_cast<const Fmatrix*>(&WorldViewProjection));
 
     // invWorldViewProjection is used to transform positions in the "near" plane into grid space
-    Fmatrix tempM2{};
     const auto InvWorldViewProjection = XMMatrixInverse(nullptr, WorldViewProjection);
-    XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&tempM2), InvWorldViewProjection);
-    RCache.set_c(strInvWorldViewProjection, tempM2);
+    RCache.set_c(strInvWorldViewProjection, *reinterpret_cast<const Fmatrix*>(&InvWorldViewProjection));
 
     // Compute the inverse of the worldView matrix
     const auto WorldViewInv = XMMatrixInverse(nullptr, WorldView);
     // Compute the eye's position in "grid space" (the 0-1 texture coordinate cube)
     const auto EyeInGridSpace = XMVector3Transform(XMVectorSet(0, 0, 0, 0), WorldViewInv);
-    Fvector4 tempV{};
-    XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&tempV), EyeInGridSpace);
-    RCache.set_c(strEyeOnGrid, tempV);
+    RCache.set_c(strEyeOnGrid, *reinterpret_cast<const Fvector4*>(&EyeInGridSpace));
 
     RCache.set_c(strRTWidth, (float)RTWidth);
     RCache.set_c(strRTHeight, (float)RTHeight);

@@ -17,13 +17,13 @@ static void AddOne(std::string& split, bool first_line)
     std::scoped_lock lock(logCS);
 
     if (IsDebuggerPresent())
-    { //Вывод в отладчик студии
+    { // Вывод в отладчик студии
         OutputDebugString(split.c_str());
         OutputDebugString("\n");
     }
 
     if (LogCB)
-        LogCB(split.c_str()); //Вывод в логкаллбек
+        LogCB(split.c_str()); // Вывод в логкаллбек
 
     auto insert_time = [&] {
         if (first_line)
@@ -49,7 +49,7 @@ static void AddOne(std::string& split, bool first_line)
     static std::string last_str;
     static int items_count;
 
-    //LogFile.push_back(split); //Вывод в консоль
+    // LogFile.push_back(split); //Вывод в консоль
 
     if (last_str == split)
     {
@@ -75,12 +75,11 @@ static void AddOne(std::string& split, bool first_line)
         items_count = 0;
     }
 
-
     if (logstream.is_open())
     {
         insert_time();
 
-        //Вывод в лог-файл
+        // Вывод в лог-файл
         logstream << split;
         logstream.flush();
     }
@@ -93,9 +92,9 @@ void Log(const std::string& str)
 
     bool not_first_line = false;
 
-    constexpr std::array<char, 5> color_codes{'-', '~', '!', '*', '#'}; //Зелёный, Жёлтый, Красный, Серый, Бирюзовый
+    constexpr std::array<char, 5> color_codes{'-', '~', '!', '*', '#'}; // Зелёный, Жёлтый, Красный, Серый, Бирюзовый
     const char& color_s = str.front();
-    const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
+    const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); // Ищем в начале строки цветовой код
 
     xr_vector<std::string> substrs;
     size_t beg{};
@@ -111,7 +110,7 @@ void Log(const std::string& str)
         if (not_first_line && have_color)
         {
             str = ' ' + str;
-            str = color_s + str; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
+            str = color_s + str; // Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
         }
         AddOne(str, !not_first_line);
         not_first_line = true;
@@ -142,8 +141,8 @@ void Log(const char* msg, const Fvector& dop)
 void Log(const char* msg, const Fmatrix& dop)
 {
     char buf[1024];
-    std::snprintf(buf, sizeof(buf), "%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", msg, dop.i.x, dop.i.y, dop.i.z, dop._14_, dop.j.x, dop.j.y, dop.j.z, dop._24_,
-                  dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
+    std::snprintf(buf, sizeof(buf), "%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", msg, dop.vm[0].x, dop.vm[0].y, dop.vm[0].z, dop.vm[0].w, dop.vm[1].x, dop.vm[1].y,
+                  dop.vm[1].z, dop.vm[1].w, dop.vm[2].x, dop.vm[2].y, dop.vm[2].z, dop.vm[2].w, dop.vm[3].x, dop.vm[3].y, dop.vm[3].z, dop.vm[3].w);
     Log(buf);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,13 +175,13 @@ void CreateLog(BOOL nl)
                 FS.update_path(logFName, "$logs$", logFName);
             }
             else
-            { //Для компрессора
+            { // Для компрессора
                 string_path temp;
                 strcpy_s(temp, logFName);
                 xr_strconcat(logFName, "logs\\", temp);
             }
 
-            //logstream.imbue(std::locale(""));
+            // logstream.imbue(std::locale(""));
             VerifyPath(logFName);
             logstream.open(logFName);
         }

@@ -1,209 +1,680 @@
-#pragma once
+#ifndef __XR_CORE_VECTOR4_H
+#define __XR_CORE_VECTOR4_H
+
+#include <DirectXMath.h>
 
 template <class T>
-struct _vector4
+struct alignas(16) _ivector4
 {
     typedef T TYPE;
-    typedef _vector4<T> Self;
+    typedef _ivector4<T> Self;
     typedef Self& SelfRef;
     typedef const Self& SelfCRef;
 
+private:
+    union
+    {
+        DirectX::XMVECTORI32 cv;
+        DirectX::XMVECTOR mv;
+    };
+
 public:
-    T x, y, z, w;
+    constexpr inline _ivector4(T x = 0, T y = 0, T z = 0, T w = 0) { set(x, y, z, w); }
 
-    IC T& operator[](int i) { return *((T*)this + i); }
-    IC T& operator[](int i) const { return *((T*)this + i); }
+    constexpr inline T getx() const { return cv.i[0]; }
+    constexpr inline T gety() const { return cv.i[1]; }
+    constexpr inline T getz() const { return cv.i[2]; }
+    constexpr inline T getw() const { return cv.i[3]; }
+    constexpr inline void setx(T x) { cv.i[0] = x; }
+    constexpr inline void sety(T y) { cv.i[1] = y; }
+    constexpr inline void setz(T z) { cv.i[2] = z; }
+    constexpr inline void setw(T w) { cv.i[3] = w; }
 
-    IC SelfRef set(T _x, T _y, T _z, T _w = 1)
-    {
-        x = _x;
-        y = _y;
-        z = _z;
-        w = _w;
-        return *this;
-    }
-    IC SelfRef set(const Self& v)
-    {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        w = v.w;
-        return *this;
-    }
+    __declspec(property(get = getx, put = setx)) T x;
+    __declspec(property(get = gety, put = sety)) T y;
+    __declspec(property(get = getz, put = setz)) T z;
+    __declspec(property(get = getw, put = setw)) T w;
 
-    IC SelfRef add(const Self& v)
+    constexpr inline T& operator[](int i) { return *((T*)this + i); }
+    constexpr inline T& operator[](int i) const { return *((T*)this + i); }
+
+    constexpr inline SelfRef set(T _x, T _y, T _z, T _w = 1)
     {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        w += v.w;
+        cv = DirectX::XMVECTORI32{_x, _y, _z, _w};
         return *this;
     }
-    IC SelfRef add(T s)
+    constexpr inline SelfRef set(const Self& v)
     {
-        x += s;
-        y += s;
-        z += s;
-        w += s;
-        return *this;
-    }
-    IC SelfRef add(const Self& a, const Self& v)
-    {
-        x = a.x + v.x;
-        y = a.y + v.y;
-        z = a.z + v.z;
-        w = a.w + v.w;
-        return *this;
-    }
-    IC SelfRef add(const Self& a, T s)
-    {
-        x = a.x + s;
-        y = a.y + s;
-        z = a.z + s;
-        w = a.w + s;
+        mv = v.mv;
         return *this;
     }
 
-    IC SelfRef sub(T _x, T _y, T _z, T _w = 1)
+    constexpr inline SelfRef add(const Self& v)
     {
-        x -= _x;
-        y -= _y;
-        z -= _z;
-        w -= _w;
+        cv.i[0] += v.x;
+        cv.i[1] += v.y;
+        cv.i[2] += v.z;
+        cv.i[3] += v.w;
+
         return *this;
     }
-    IC SelfRef sub(const Self& v)
+    constexpr inline SelfRef add(T s)
     {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        w -= v.w;
+        cv.i[0] += s;
+        cv.i[1] += s;
+        cv.i[2] += s;
+        cv.i[3] += s;
+
         return *this;
     }
-    IC SelfRef sub(T s)
+    constexpr inline SelfRef add(const Self& a, const Self& v)
     {
-        x -= s;
-        y -= s;
-        z -= s;
-        w -= s;
+        cv.i[0] = a.x + v.x;
+        cv.i[1] = a.y + v.y;
+        cv.i[2] = a.z + v.z;
+        cv.i[3] = a.w + v.w;
+
         return *this;
     }
-    IC SelfRef sub(const Self& a, const Self& v)
+    constexpr inline SelfRef add(const Self& a, T s)
     {
-        x = a.x - v.x;
-        y = a.y - v.y;
-        z = a.z - v.z;
-        w = a.w - v.w;
-        return *this;
-    }
-    IC SelfRef sub(const Self& a, T s)
-    {
-        x = a.x - s;
-        y = a.y - s;
-        z = a.z - s;
-        w = a.w - s;
+        cv.i[0] = a.x + s;
+        cv.i[1] = a.y + s;
+        cv.i[2] = a.z + s;
+        cv.i[3] = a.w + s;
+
         return *this;
     }
 
-    IC SelfRef mul(T _x, T _y, T _z, T _w = 1)
+    constexpr inline SelfRef sub(T _x, T _y, T _z, T _w = 1)
     {
-        x *= _x;
-        y *= _y;
-        z *= _z;
-        w *= _w;
+        cv.i[0] -= _x;
+        cv.i[1] -= _y;
+        cv.i[2] -= _z;
+        cv.i[3] -= _w;
+
         return *this;
     }
-    IC SelfRef mul(const Self& v)
+    constexpr inline SelfRef sub(const Self& v)
     {
-        x *= v.x;
-        y *= v.y;
-        z *= v.z;
-        w *= v.w;
+        cv.i[0] -= v.x;
+        cv.i[1] -= v.y;
+        cv.i[2] -= v.z;
+        cv.i[3] -= v.w;
+
         return *this;
     }
-    IC SelfRef mul(T s)
+    constexpr inline SelfRef sub(T s)
     {
-        x *= s;
-        y *= s;
-        z *= s;
-        w *= s;
+        cv.i[0] -= s;
+        cv.i[1] -= s;
+        cv.i[2] -= s;
+        cv.i[3] -= s;
+
         return *this;
     }
-    IC SelfRef mul(const Self& a, const Self& v)
+    constexpr inline SelfRef sub(const Self& a, const Self& v)
     {
-        x = a.x * v.x;
-        y = a.y * v.y;
-        z = a.z * v.z;
-        w = a.w * v.w;
+        cv.i[0] = a.x - v.x;
+        cv.i[1] = a.y - v.y;
+        cv.i[2] = a.z - v.z;
+        cv.i[3] = a.w - v.w;
+
         return *this;
     }
-    IC SelfRef mul(const Self& a, T s)
+    constexpr inline SelfRef sub(const Self& a, T s)
     {
-        x = a.x * s;
-        y = a.y * s;
-        z = a.z * s;
-        w = a.w * s;
+        cv.i[0] = a.x - s;
+        cv.i[1] = a.y - s;
+        cv.i[2] = a.z - s;
+        cv.i[3] = a.w - s;
+
         return *this;
     }
 
-    IC SelfRef div(const Self& v)
+    constexpr inline SelfRef mul(T _x, T _y, T _z, T _w = 1)
     {
-        x /= v.x;
-        y /= v.y;
-        z /= v.z;
-        w /= v.w;
+        cv.i[0] *= _x;
+        cv.i[1] *= _y;
+        cv.i[2] *= _z;
+        cv.i[3] *= _w;
+
         return *this;
     }
-    IC SelfRef div(T s)
+    constexpr inline SelfRef mul(const Self& v)
     {
-        x /= s;
-        y /= s;
-        z /= s;
-        w /= s;
+        cv.i[0] *= v.x;
+        cv.i[1] *= v.y;
+        cv.i[2] *= v.z;
+        cv.i[3] *= v.w;
+
         return *this;
     }
-    IC SelfRef div(const Self& a, const Self& v)
+    constexpr inline SelfRef mul(T s)
     {
-        x = a.x / v.x;
-        y = a.y / v.y;
-        z = a.z / v.z;
-        w = a.w / v.w;
+        cv.i[0] *= s;
+        cv.i[1] *= s;
+        cv.i[2] *= s;
+        cv.i[3] *= s;
+
         return *this;
     }
-    IC SelfRef div(const Self& a, T s)
+    constexpr inline SelfRef mul(const Self& a, const Self& v)
     {
-        x = a.x / s;
-        y = a.y / s;
-        z = a.z / s;
-        w = a.w / s;
+        cv.i[0] = a.x * v.x;
+        cv.i[1] = a.y * v.y;
+        cv.i[2] = a.z * v.z;
+        cv.i[3] = a.w * v.w;
+
+        return *this;
+    }
+    constexpr inline SelfRef mul(const Self& a, T s)
+    {
+        cv.i[0] = a.x * s;
+        cv.i[1] = a.y * s;
+        cv.i[2] = a.z * s;
+        cv.i[3] = a.w * s;
+
         return *this;
     }
 
-    IC BOOL similar(const Self& v, T E = EPS_L) { return _abs(x - v.x) < E && _abs(y - v.y) < E && _abs(z - v.z) < E && _abs(w - v.w) < E; };
-
-    IC T magnitude_sqr() { return x * x + y * y + z * z + w * w; }
-    IC T magnitude() { return _sqrt(magnitude_sqr()); }
-    IC SelfRef normalize() { return mul(1 / magnitude()); }
-
-    IC SelfRef normalize_as_plane() { return mul(1 / _sqrt(x * x + y * y + z * z)); }
-
-    IC SelfRef lerp(const Self& p1, const Self& p2, T t)
+    constexpr inline SelfRef div(const Self& v)
     {
-        T invt = 1.f - t;
-        x = p1.x * invt + p2.x * t;
-        y = p1.y * invt + p2.y * t;
-        z = p1.z * invt + p2.z * t;
-        w = p1.w * invt + p2.w * t;
+        cv.i[0] /= v.x;
+        cv.i[1] /= v.y;
+        cv.i[2] /= v.z;
+        cv.i[3] /= v.w;
+
+        return *this;
+    }
+    constexpr inline SelfRef div(T s)
+    {
+        cv.i[0] /= s;
+        cv.i[1] /= s;
+        cv.i[2] /= s;
+        cv.i[3] /= s;
+
+        return *this;
+    }
+    constexpr inline SelfRef div(const Self& a, const Self& v)
+    {
+        cv.i[0] = a.x / v.x;
+        cv.i[1] = a.y / v.y;
+        cv.i[2] = a.z / v.z;
+        cv.i[3] = a.w / v.w;
+
+        return *this;
+    }
+    constexpr inline SelfRef div(const Self& a, T s)
+    {
+        cv.i[0] = a.x / s;
+        cv.i[1] = a.y / s;
+        cv.i[2] = a.z / s;
+        cv.i[3] = a.w / s;
+
+        return *this;
+    }
+
+    constexpr inline BOOL similar(const Self& v, T E = EPS_L) { return _abs(cv.i[0] - v.x) < E && _abs(cv.i[1] - v.y) < E && _abs(cv.i[2] - v.z) < E && _abs(cv.i[3] - v.w) < E; };
+
+    constexpr inline T magnitude_sqr() { return cv.i[0] * cv.i[0] + cv.i[1] * cv.i[1] + cv.i[2] * cv.i[2] + cv.i[3] * cv.i[3]; }
+    constexpr inline T magnitude() { return _sqrt(magnitude_sqr()); }
+    constexpr inline SelfRef normalize() { return mul(1 / magnitude()); }
+
+    constexpr inline SelfRef normalize_as_plane() { return mul(1 / _sqrt(cv.i[0] * cv.i[0] + cv.i[1] * cv.i[1] + cv.i[2] * cv.i[2])); }
+
+    constexpr inline SelfRef lerp(const Self& p1, const Self& p2, T t)
+    {
+        const T invt = 1.f - t;
+        cv.i[0] = p1.x * invt + p2.x * t;
+        cv.i[1] = p1.y * invt + p2.y * t;
+        cv.i[2] = p1.z * invt + p2.z * t;
+        cv.i[3] = p1.w * invt + p2.w * t;
+
         return *this;
     }
 };
 
-typedef _vector4<float> Fvector4;
-typedef _vector4<double> Dvector4;
-typedef _vector4<s32> Ivector4;
+typedef _ivector4<s32> Ivector4;
+static_assert(sizeof(Ivector4) == 16);
 
 template <class T>
-BOOL _valid(const _vector4<T>& v)
+struct alignas(16) _fvector4
 {
-    return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z) && _valid((T)v.w);
-}
+    typedef T TYPE;
+    typedef _vector3<T> Tvector;
+    typedef _fvector4<T> Self;
+    typedef Self& SelfRef;
+    typedef const Self& SelfCRef;
+
+private:
+    union
+    {
+        DirectX::XMVECTORF32 cv;
+        DirectX::XMVECTOR mv;
+    };
+
+public:
+    constexpr inline _fvector4() = default;
+    constexpr inline _fvector4(T x, T y, T z, T w) { set(x, y, z, w); }
+
+    constexpr inline T getx() const
+    {
+        if (std::is_constant_evaluated())
+            return cv.f[0];
+        else
+            return DirectX::XMVectorGetX(mv);
+    }
+    constexpr inline T gety() const
+    {
+        if (std::is_constant_evaluated())
+            return cv.f[1];
+        else
+            return DirectX::XMVectorGetY(mv);
+    }
+    constexpr inline T getz() const
+    {
+        if (std::is_constant_evaluated())
+            return cv.f[2];
+        else
+            return DirectX::XMVectorGetZ(mv);
+    }
+    constexpr inline T getw() const
+    {
+        if (std::is_constant_evaluated())
+            return cv.f[3];
+        else
+            return DirectX::XMVectorGetW(mv);
+    }
+    constexpr inline void setx(T x)
+    {
+        if (std::is_constant_evaluated())
+            cv.f[0] = x;
+        else
+            mv = DirectX::XMVectorSetX(mv, x);
+    }
+    constexpr inline void sety(T y)
+    {
+        if (std::is_constant_evaluated())
+            cv.f[1] = y;
+        else
+            mv = DirectX::XMVectorSetY(mv, y);
+    }
+    constexpr inline void setz(T z)
+    {
+        if (std::is_constant_evaluated())
+            cv.f[2] = z;
+        else
+            mv = DirectX::XMVectorSetZ(mv, z);
+    }
+    constexpr inline void setw(T w)
+    {
+        if (std::is_constant_evaluated())
+            cv.f[3] = w;
+        else
+            mv = DirectX::XMVectorSetW(mv, w);
+    }
+
+    __declspec(property(get = getx, put = setx)) T x;
+    __declspec(property(get = gety, put = sety)) T y;
+    __declspec(property(get = getz, put = setz)) T z;
+    __declspec(property(get = getw, put = setw)) T w;
+
+    constexpr inline T& operator[](int i) { return *((T*)this + i); }
+    constexpr inline T& operator[](int i) const { return *((T*)this + i); }
+
+    constexpr inline SelfRef set(T _x, T _y, T _z, T _w = 1)
+    {
+        if (std::is_constant_evaluated())
+            cv = DirectX::XMVECTORF32{_x, _y, _z, _w};
+        else
+            mv = DirectX::XMVectorSet(_x, _y, _z, _w);
+
+        return *this;
+    }
+    constexpr inline SelfRef set(const Tvector& vec, T _w = 1)
+    {
+        if (std::is_constant_evaluated())
+        {
+            x = vec.x;
+            y = vec.y;
+            z = vec.z;
+            w = _w;
+        }
+        else
+        {
+            mv = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&vec));
+            if (_w)
+                w = _w;
+        }
+
+        return *this;
+    }
+    constexpr inline SelfRef set(const Self& v)
+    {
+        mv = v.mv;
+        return *this;
+    }
+
+    constexpr inline SelfRef add(const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] += v.x;
+            cv.f[1] += v.y;
+            cv.f[2] += v.z;
+            cv.f[3] += v.w;
+        }
+        else
+            mv = DirectX::XMVectorAdd(mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef add(T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] += s;
+            cv.f[1] += s;
+            cv.f[2] += s;
+            cv.f[3] += s;
+        }
+        else
+            mv = DirectX::XMVectorAdd(mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+    constexpr inline SelfRef add(const Self& a, const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x + v.x;
+            cv.f[1] = a.y + v.y;
+            cv.f[2] = a.z + v.z;
+            cv.f[3] = a.w + v.w;
+        }
+        else
+            mv = DirectX::XMVectorAdd(a.mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef add(const Self& a, T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x + s;
+            cv.f[1] = a.y + s;
+            cv.f[2] = a.z + s;
+            cv.f[3] = a.w + s;
+        }
+        else
+            mv = DirectX::XMVectorAdd(a.mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+
+    constexpr inline SelfRef sub(T _x, T _y, T _z, T _w = 1)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] -= _x;
+            cv.f[1] -= _y;
+            cv.f[2] -= _z;
+            cv.f[3] -= _w;
+        }
+        else
+            mv = DirectX::XMVectorSubtract(mv, DirectX::XMVectorSet(_x, _y, _z, _w));
+
+        return *this;
+    }
+    constexpr inline SelfRef sub(const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] -= v.x;
+            cv.f[1] -= v.y;
+            cv.f[2] -= v.z;
+            cv.f[3] -= v.w;
+        }
+        else
+            mv = DirectX::XMVectorSubtract(mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef sub(T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] -= s;
+            cv.f[1] -= s;
+            cv.f[2] -= s;
+            cv.f[3] -= s;
+        }
+        else
+            mv = DirectX::XMVectorSubtract(mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+    constexpr inline SelfRef sub(const Self& a, const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x - v.x;
+            cv.f[1] = a.y - v.y;
+            cv.f[2] = a.z - v.z;
+            cv.f[3] = a.w - v.w;
+        }
+        else
+            mv = DirectX::XMVectorSubtract(a.mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef sub(const Self& a, T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x - s;
+            cv.f[1] = a.y - s;
+            cv.f[2] = a.z - s;
+            cv.f[3] = a.w - s;
+        }
+        else
+            mv = DirectX::XMVectorSubtract(a.mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+
+    constexpr inline SelfRef mul(T _x, T _y, T _z, T _w = 1)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] *= _x;
+            cv.f[1] *= _y;
+            cv.f[2] *= _z;
+            cv.f[3] *= _w;
+        }
+        else
+            mv = DirectX::XMVectorMultiply(mv, DirectX::XMVectorSet(_x, _y, _z, _w));
+
+        return *this;
+    }
+    constexpr inline SelfRef mul(const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] *= v.x;
+            cv.f[1] *= v.y;
+            cv.f[2] *= v.z;
+            cv.f[3] *= v.w;
+        }
+        else
+            mv = DirectX::XMVectorMultiply(mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef mul(T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] *= s;
+            cv.f[1] *= s;
+            cv.f[2] *= s;
+            cv.f[3] *= s;
+        }
+        else
+            mv = DirectX::XMVectorScale(mv, s);
+
+        return *this;
+    }
+    constexpr inline SelfRef mul(const Self& a, const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x * v.x;
+            cv.f[1] = a.y * v.y;
+            cv.f[2] = a.z * v.z;
+            cv.f[3] = a.w * v.w;
+        }
+        else
+            mv = DirectX::XMVectorMultiply(a.mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef mul(const Self& a, T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x * s;
+            cv.f[1] = a.y * s;
+            cv.f[2] = a.z * s;
+            cv.f[3] = a.w * s;
+        }
+        else
+            mv = DirectX::XMVectorScale(a.mv, s);
+
+        return *this;
+    }
+
+    constexpr inline SelfRef div(const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] /= v.x;
+            cv.f[1] /= v.y;
+            cv.f[2] /= v.z;
+            cv.f[3] /= v.w;
+        }
+        else
+            mv = DirectX::XMVectorDivide(mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef div(T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] /= s;
+            cv.f[1] /= s;
+            cv.f[2] /= s;
+            cv.f[3] /= s;
+        }
+        else
+            mv = DirectX::XMVectorDivide(mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+    constexpr inline SelfRef div(const Self& a, const Self& v)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x / v.x;
+            cv.f[1] = a.y / v.y;
+            cv.f[2] = a.z / v.z;
+            cv.f[3] = a.w / v.w;
+        }
+        else
+            mv = DirectX::XMVectorDivide(a.mv, v.mv);
+
+        return *this;
+    }
+    constexpr inline SelfRef div(const Self& a, T s)
+    {
+        if (std::is_constant_evaluated())
+        {
+            cv.f[0] = a.x / s;
+            cv.f[1] = a.y / s;
+            cv.f[2] = a.z / s;
+            cv.f[3] = a.w / s;
+        }
+        else
+            mv = DirectX::XMVectorDivide(a.mv, DirectX::XMVectorReplicate(s));
+
+        return *this;
+    }
+
+    constexpr inline BOOL similar(const Self& v, T E = EPS_L)
+    {
+        if (std::is_constant_evaluated())
+            return _abs(cv.f[0] - v.x) < E && _abs(cv.f[1] - v.y) < E && _abs(cv.f[2] - v.z) < E && _abs(cv.f[3] - v.w) < E;
+        else
+            return DirectX::XMVector4NearEqual(mv, v.mv, E);
+    };
+
+    constexpr inline T magnitude_sqr()
+    {
+        if (std::is_constant_evaluated())
+            return cv.f[0] * cv.f[0] + cv.f[1] * cv.f[1] + cv.f[2] * cv.f[2] + cv.f[3] * cv.f[3];
+        else
+            return DirectX::XMVectorGetX(DirectX::XMVector4LengthSq(mv));
+    }
+    constexpr inline T magnitude()
+    {
+        if (std::is_constant_evaluated())
+            return _sqrt(magnitude_sqr());
+        else
+            return DirectX::XMVectorGetX(DirectX::XMVector4Length(mv));
+    }
+    constexpr inline SelfRef normalize()
+    {
+        if (std::is_constant_evaluated())
+            mul(1 / magnitude());
+        else
+            mv = DirectX::XMVector4Normalize(mv);
+
+        return *this;
+    }
+
+    constexpr inline SelfRef normalize_as_plane()
+    {
+        if (std::is_constant_evaluated())
+            mul(1 / _sqrt(cv.f[0] * cv.f[0] + cv.f[1] * cv.f[1] + cv.f[2] * cv.f[2]));
+        else
+        {
+            DirectX::XMVECTOR tmp = DirectX::XMVector3ReciprocalLength(mv);
+            mv = DirectX::XMVectorMultiply(mv, tmp);
+        }
+
+        return *this;
+    }
+
+    constexpr inline SelfRef lerp(const Self& p1, const Self& p2, T t)
+    {
+        if (std::is_constant_evaluated())
+        {
+            const T invt = 1.f - t;
+            cv.f[0] = p1.x * invt + p2.x * t;
+            cv.f[1] = p1.y * invt + p2.y * t;
+            cv.f[2] = p1.z * invt + p2.z * t;
+            cv.f[3] = p1.w * invt + p2.w * t;
+        }
+        else
+            mv = DirectX::XMVectorLerp(p1.mv, p2.mv, t);
+
+        return *this;
+    }
+};
+
+typedef _fvector4<float> Fvector4;
+static_assert(sizeof(Fvector4) == 16);
+
+#endif /* __XR_CORE_VECTOR4_H */

@@ -20,36 +20,38 @@ static Fvector circledef1[LINE_DIVISION];
 static Fvector circledef2[LINE_DIVISION];
 static Fvector circledef3[LINE_DIVISION];
 
-const u32 boxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-static const int boxvertcount = 48;
+constexpr u32 boxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
+constexpr int boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
-
 
 #define DU_DRAW_RS RCache.dbg_SetRS
 #define DU_DRAW_SH_C(sh, c) \
     { \
         RCache.set_Shader(sh); \
-        RCache.set_c("tfactor", float(color_get_R(c)) / 255.f, float(color_get_G(c)) / 255.f, float(color_get_B(c)) / 255.f, float(color_get_A(c)) / 255.f); \
+        Fvector4 tfactor = {float(color_get_R(c)), float(color_get_G(c)), float(color_get_B(c)), float(color_get_A(c))}; \
+        constexpr Fvector4 divisor = {255.f, 255.f, 255.f, 255.f}; \
+        tfactor.div(divisor); \
+        RCache.set_c("tfactor", tfactor); \
     }
 #define DU_DRAW_SH(sh) \
     { \
         RCache.set_Shader(sh); \
-        RCache.set_c("tfactor", 1, 1, 1, 1); \
+        constexpr Fvector4 tfactor = {1.f, 1.f, 1.f, 1.f}; \
+        RCache.set_c("tfactor", tfactor); \
     }
-
 
 #define FILL_MODE D3DFILL_SOLID
 #define SHADE_MODE D3DSHADE_GOURAUD
 #define SCREEN_QUALITY 1.f
 
 // identity box
-const u32 identboxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-static const int identboxwirecount = 24;
-static Fvector identboxwire[identboxwirecount] = {{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
-                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                  {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
-                                                  {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
+constexpr u32 identboxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
+constexpr int identboxwirecount = 24;
+constexpr Fvector identboxwire[identboxwirecount] = {{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
+                                                     {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                     {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
+                                                     {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                     {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
 
 /*
 static const int identboxindexcount = 36;
@@ -76,17 +78,17 @@ DEFINE_VECTOR(FVF::L, FLvertexVec, FLvertexIt)
 
 static FLvertexVec m_GridPoints;
 
-u32 m_ColorAxis = 0xff000000;
-u32 m_ColorGrid = 0xff909090;
-u32 m_ColorGridTh = 0xffb4b4b4;
-u32 m_SelectionRect = D3DCOLOR_RGBA(127, 255, 127, 64);
+constexpr u32 m_ColorAxis = 0xff000000;
+constexpr u32 m_ColorGrid = 0xff909090;
+constexpr u32 m_ColorGridTh = 0xffb4b4b4;
+constexpr u32 m_SelectionRect = D3DCOLOR_RGBA(127, 255, 127, 64);
 
-u32 m_ColorSafeRect = 0xffB040B0;
+constexpr u32 m_ColorSafeRect = 0xffB040B0;
 
 void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)
 {
-//	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
-//	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
+    //	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
+    //	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
 }
 void SPrimitiveBuffer::Destroy()
 {
@@ -235,7 +237,7 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
     Fmatrix T;
     Fvector p1;
     float H, P;
-    float da = PI_MUL_2 / LINE_DIVISION;
+    constexpr float da = PI_MUL_2 / LINE_DIVISION;
     float b = range * _cos(PI_DIV_2 - phi / 2);
     float a = range * _sin(PI_DIV_2 - phi / 2);
     d.getHP(H, P);
@@ -433,8 +435,8 @@ void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, flo
 
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
-    static const WORD IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2, 1, 5, 1, 3, 1, 4};
-    static const WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
+    constexpr WORD IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2, 1, 5, 1, 3, 1, 4};
+    constexpr WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
     u32 vBase, iBase;
 
     Fcolor C;
@@ -641,20 +643,16 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR 
     _VertexStream* Stream = &RCache.Vertex;
     u32 vBase;
     FVF::TL* pv = (FVF::TL*)Stream->Lock(5, vs_TL->vb_stride, vBase);
-    pv->p.set(c.x - s, c.y - s, 0, 1);
-    pv->color = clr;
+
+    pv->set(c.x - s, c.y - s, 0, 1, clr);
     pv++;
-    pv->p.set(c.x + s, c.y - s, 0, 1);
-    pv->color = clr;
+    pv->set(c.x + s, c.y - s, 0, 1, clr);
     pv++;
-    pv->p.set(c.x + s, c.y + s, 0, 1);
-    pv->color = clr;
+    pv->set(c.x + s, c.y + s, 0, 1, clr);
     pv++;
-    pv->p.set(c.x - s, c.y + s, 0, 1);
-    pv->color = clr;
+    pv->set(c.x - s, c.y + s, 0, 1, clr);
     pv++;
-    pv->p.set(c.x - s, c.y - s, 0, 1);
-    pv->color = clr;
+    pv->set(c.x - s, c.y - s, 0, 1, clr);
     pv++;
     Stream->Unlock(5, vs_TL->vb_stride);
 
@@ -1179,13 +1177,9 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 {
     _VertexStream* Stream = &RCache.Vertex;
     Fvector p[6];
-    u32 c[6];
 
     // colors
-    c[0] = c[2] = c[4] = 0x00222222;
-    c[1] = 0x00FF0000;
-    c[3] = 0x0000FF00;
-    c[5] = 0x000000FF;
+    constexpr u32 c[6] = {0x00222222, 0x00FF0000, 0x00222222, 0x0000FF00, 0x00222222, 0x000000FF};
 
     // position
     p[0].mad(T.c, T.k, 0.25f);
@@ -1206,10 +1200,9 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 
     for (int i = 0; i < 6; i++, pv++)
     {
-        pv->color = c[i];
         pv->transform(p[i], Device.mFullTransform);
-        pv->p.set((float)iFloor(_x2real(pv->p.x) + dx), (float)iFloor(_y2real(pv->p.y) + dy), 0, 1);
-        p[i].set(pv->p.x, pv->p.y, 0);
+        pv->set((float)iFloor(_x2real(pv->px) + dx), (float)iFloor(_y2real(pv->py) + dy), 0, 1, c[i]);
+        p[i].set(pv->px, pv->py, 0);
     }
 
     // unlock VB and Render it as triangle list

@@ -6,8 +6,6 @@
 
 #include "r4_R_sun_support.h"
 
-using namespace DirectX;
-
 float OLES_SUN_LIMIT_27_01_07 = 100.f;
 constexpr float tweak_COP_initial_offs = 1200.f;
 
@@ -117,9 +115,8 @@ void CRender::calculate_sun(sun::cascade& cascade)
         // calculate view-frustum bounds in world space
         Fmatrix ex_full{}, ex_full_inverse{};
         {
-            Fmatrix ex_project = Device.mProject;
-            ex_full.mul(ex_project, Device.mView);
-            XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
+            ex_full.mul(Device.mProject, Device.mView);
+            ex_full_inverse.invert_44(ex_full);
         }
 
         xr_vector<Fplane> cull_planes;
@@ -200,8 +197,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
         float dist = light_top_plane.classify(Device.vCameraPosition);
 
         float map_size = cascade.size;
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-                        XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f, dist + 1.41421f * map_size));
+        mdir_Project.mm = DirectX::XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f, dist + map_size);
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -211,7 +207,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
         float view_dim = float(RImplementation.o.smapsize);
         Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
         Fmatrix m_viewport_inv{};
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
+        m_viewport_inv.invert_44(m_viewport);
 
         // snap view-position to pixel
         cull_xform.mul(mdir_Project, mdir_View);

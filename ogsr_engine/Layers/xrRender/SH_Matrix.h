@@ -42,11 +42,12 @@ public:
 
     CMatrix() { Memory.mem_fill(this, 0, sizeof(CMatrix)); }
 
-    IC void tc_trans(Fmatrix& T, float u, float v)
+    constexpr inline void tc_trans(Fmatrix& T, float u, float v)
     {
-        T.identity();
-        T.m[2][0] = u;
-        T.m[2][1] = v;
+        T.mm.r[0] = DirectX::g_XMIdentityR0.v;
+        T.mm.r[1] = DirectX::g_XMIdentityR1.v;
+        T.vm[2].set(u, v, 1, 0);
+        T.mm.r[3] = DirectX::g_XMIdentityR3.v;
     }
     void Calculate();
 

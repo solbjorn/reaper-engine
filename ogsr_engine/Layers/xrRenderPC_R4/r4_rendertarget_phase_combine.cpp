@@ -354,17 +354,18 @@ void CRenderTarget::phase_combine()
     {
         PIX_EVENT(combine_2);
         //
-        struct v_aa
+        struct alignas(8) v_aa
         {
-            Fvector4 p;
+            Fvector2 pxy, pzw;
             Fvector2 uv0;
             Fvector2 uv1;
             Fvector2 uv2;
             Fvector2 uv3;
             Fvector2 uv4;
-            Fvector4 uv5;
-            Fvector4 uv6;
+            Fvector2 uv5xy, uv5zw;
+            Fvector2 uv6xy, uv6zw;
         };
+        static_assert(sizeof(struct v_aa) == 88);
 
         float _w = float(Device.dwWidth);
         float _h = float(Device.dwHeight);
@@ -375,41 +376,53 @@ void CRenderTarget::phase_combine()
 
         // Fill vertex buffer
         v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
-        pv->p.set(EPS, float(_h + EPS), EPS, 1.f);
+        pv->pxy.set(EPS, float(_h + EPS));
+        pv->pzw.set(EPS, 1.f);
         pv->uv0.set(p0.x, p1.y);
         pv->uv1.set(p0.x - ddw, p1.y - ddh);
         pv->uv2.set(p0.x + ddw, p1.y + ddh);
         pv->uv3.set(p0.x + ddw, p1.y - ddh);
         pv->uv4.set(p0.x - ddw, p1.y + ddh);
-        pv->uv5.set(p0.x - ddw, p1.y, p1.y, p0.x + ddw);
-        pv->uv6.set(p0.x, p1.y - ddh, p1.y + ddh, p0.x);
+        pv->uv5xy.set(p0.x - ddw, p1.y);
+        pv->uv5zw.set(p1.y, p0.x + ddw);
+        pv->uv6xy.set(p0.x, p1.y - ddh);
+        pv->uv6zw.set(p1.y + ddh, p0.x);
         pv++;
-        pv->p.set(EPS, EPS, EPS, 1.f);
+        pv->pxy.set(EPS, EPS);
+        pv->pzw.set(EPS, 1.f);
         pv->uv0.set(p0.x, p0.y);
         pv->uv1.set(p0.x - ddw, p0.y - ddh);
         pv->uv2.set(p0.x + ddw, p0.y + ddh);
         pv->uv3.set(p0.x + ddw, p0.y - ddh);
         pv->uv4.set(p0.x - ddw, p0.y + ddh);
-        pv->uv5.set(p0.x - ddw, p0.y, p0.y, p0.x + ddw);
-        pv->uv6.set(p0.x, p0.y - ddh, p0.y + ddh, p0.x);
+        pv->uv5xy.set(p0.x - ddw, p0.y);
+        pv->uv5zw.set(p0.y, p0.x + ddw);
+        pv->uv6xy.set(p0.x, p0.y - ddh);
+        pv->uv6zw.set(p0.y + ddh, p0.x);
         pv++;
-        pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f);
+        pv->pxy.set(float(_w + EPS), float(_h + EPS));
+        pv->pzw.set(EPS, 1.f);
         pv->uv0.set(p1.x, p1.y);
         pv->uv1.set(p1.x - ddw, p1.y - ddh);
         pv->uv2.set(p1.x + ddw, p1.y + ddh);
         pv->uv3.set(p1.x + ddw, p1.y - ddh);
         pv->uv4.set(p1.x - ddw, p1.y + ddh);
-        pv->uv5.set(p1.x - ddw, p1.y, p1.y, p1.x + ddw);
-        pv->uv6.set(p1.x, p1.y - ddh, p1.y + ddh, p1.x);
+        pv->uv5xy.set(p1.x - ddw, p1.y);
+        pv->uv5zw.set(p1.y, p1.x + ddw);
+        pv->uv6xy.set(p1.x, p1.y - ddh);
+        pv->uv6zw.set(p1.y + ddh, p1.x);
         pv++;
-        pv->p.set(float(_w + EPS), EPS, EPS, 1.f);
+        pv->pxy.set(float(_w + EPS), EPS);
+        pv->pzw.set(EPS, 1.f);
         pv->uv0.set(p1.x, p0.y);
         pv->uv1.set(p1.x - ddw, p0.y - ddh);
         pv->uv2.set(p1.x + ddw, p0.y + ddh);
         pv->uv3.set(p1.x + ddw, p0.y - ddh);
         pv->uv4.set(p1.x - ddw, p0.y + ddh);
-        pv->uv5.set(p1.x - ddw, p0.y, p0.y, p1.x + ddw);
-        pv->uv6.set(p1.x, p0.y - ddh, p0.y + ddh, p1.x);
+        pv->uv5xy.set(p1.x - ddw, p0.y);
+        pv->uv5zw.set(p0.y, p1.x + ddw);
+        pv->uv6xy.set(p1.x, p0.y - ddh);
+        pv->uv6zw.set(p0.y + ddh, p1.x);
         pv++;
         RCache.Vertex.Unlock(4, g_aa_AA->vb_stride);
 

@@ -268,14 +268,10 @@ void light::xform_calc()
 
     // matrix
     Fmatrix mR;
-    mR.i = L_right;
-    mR._14 = 0;
-    mR.j = L_up;
-    mR._24 = 0;
-    mR.k = L_dir;
-    mR._34 = 0;
-    mR.c = position;
-    mR._44 = 1;
+    mR.vm[0].set(L_right, 0);
+    mR.vm[1].set(L_up, 0);
+    mR.vm[2].set(L_dir, 0);
+    mR.vm[3].set(position, 1);
 
     // switch
     switch (flags.type)

@@ -6,7 +6,7 @@
 #pragma pack(push, 4)
 namespace FVF
 {
-struct L
+struct alignas(16) L
 {
     Fvector p;
     u32 color;
@@ -22,27 +22,31 @@ struct L
         color = C;
     }
 };
+static_assert(sizeof(struct L) == 16);
 const u32 F_L = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
 struct V
 {
     Fvector p;
-    Fvector2 t;
+    float tx, ty;
     IC void set(const V& src) { *this = src; };
     IC void set(float x, float y, float z, float u, float v)
     {
         p.set(x, y, z);
-        t.set(u, v);
+        tx = u;
+        ty = v;
     }
     IC void set(const Fvector& _p, float u, float v)
     {
         p.set(_p);
-        t.set(u, v);
+        tx = u;
+        ty = v;
     }
 };
+static_assert(sizeof(struct V) == 20);
 const u32 F_V = D3DFVF_XYZ | D3DFVF_TEX1;
 
-struct LIT
+struct alignas(8) LIT
 {
     Fvector p;
     u32 color;
@@ -61,18 +65,22 @@ struct LIT
         t.set(u, v);
     }
 };
+static_assert(sizeof(struct LIT) == 24);
 const u32 F_LIT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL0uv
 {
-    Fvector4 p;
+    float px, py, pz, pw;
     u32 color;
     IC void set(const TL0uv& src) { *this = src; };
     IC void set(float x, float y, u32 c) { set(x, y, .0001f, .9999f, c); };
     IC void set(int x, int y, u32 c) { set(float(x), float(y), .0001f, .9999f, c); };
     IC void set(float x, float y, float z, float w, u32 c)
     {
-        p.set(x, y, z, w);
+        px = x;
+        py = y;
+        pz = z;
+        pw = w;
         color = c;
     };
     IC void transform(const Fvector& v, const Fmatrix& matSet)
@@ -81,29 +89,34 @@ struct TL0uv
         // Finally, scale the vertices to screen coords.
         // Note 1: device coords range from -1 to +1 in the viewport.
         // Note 2: the p.z-coordinate will be used in the z-buffer.
-        p.w = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
-        p.x = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / p.w;
-        p.y = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / p.w;
-        p.z = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / p.w;
+        pw = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
+        px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
+        py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
+        pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
     };
 };
+static_assert(sizeof(struct TL0uv) == 20);
 const u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 
 struct TL
 {
-    Fvector4 p;
+    float px, py, pz, pw;
     u32 color;
-    Fvector2 uv;
+    float uvx, uvy;
     IC void set(const TL& src) { *this = src; };
     IC void set(float x, float y, u32 c, Fvector2& t) { set(x, y, .0001f, .9999f, c, t.x, t.y); };
     IC void set(float x, float y, u32 c, float u, float v) { set(x, y, .0001f, .9999f, c, u, v); };
     IC void set(int x, int y, u32 c, float u, float v) { set(float(x), float(y), .0001f, .9999f, c, u, v); };
+    IC void set(float x, float y, float z, float w, u32 c) { set(x, y, z, w, c, uvx, uvy); };
     IC void set(float x, float y, float z, float w, u32 c, float u, float v)
     {
-        p.set(x, y, z, w);
+        px = x;
+        py = y;
+        pz = z;
+        pw = w;
         color = c;
-        uv.x = u;
-        uv.y = v;
+        uvx = u;
+        uvy = v;
     };
     IC void transform(const Fvector& v, const Fmatrix& matSet)
     {
@@ -111,19 +124,20 @@ struct TL
         // Finally, scale the vertices to screen coords.
         // Note 1: device coords range from -1 to +1 in the viewport.
         // Note 2: the p.z-coordinate will be used in the z-buffer.
-        p.w = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
-        p.x = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / p.w;
-        p.y = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / p.w;
-        p.z = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / p.w;
+        pw = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
+        px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
+        py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
+        pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
     };
 };
+static_assert(sizeof(struct TL) == 28);
 const u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL2uv
 {
-    Fvector4 p;
+    float px, py, pz, pw;
     u32 color;
-    Fvector2 uv[2];
+    float uv0x, uv0y, uv1x, uv1y;
     IC void set(const TL2uv& src) { *this = src; };
     IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); };
     IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); };
@@ -131,12 +145,15 @@ struct TL2uv
     IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); };
     IC void set(float x, float y, float z, float w, u32 c, float u, float v, float u2, float v2)
     {
-        p.set(x, y, z, w);
+        px = x;
+        py = y;
+        pz = z;
+        pw = w;
         color = c;
-        uv[0].x = u;
-        uv[0].y = v;
-        uv[1].x = u2;
-        uv[1].y = v2;
+        uv0x = u;
+        uv0y = v;
+        uv1x = u2;
+        uv1y = v2;
     };
     IC void transform(const Fvector& v, const Fmatrix& matSet)
     {
@@ -144,19 +161,20 @@ struct TL2uv
         // Finally, scale the vertices to screen coords.
         // Note 1: device coords range from -1 to +1 in the viewport.
         // Note 2: the p.z-coordinate will be used in the z-buffer.
-        p.w = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
-        p.x = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / p.w;
-        p.y = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / p.w;
-        p.z = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / p.w;
+        pw = matSet._14 * v.x + matSet._24 * v.y + matSet._34 * v.z + matSet._44;
+        px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
+        py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
+        pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
     };
 };
+static_assert(sizeof(struct TL2uv) == 36);
 const u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 
 struct TL4uv
 {
-    Fvector4 p;
+    float px, py, pz, pw;
     u32 color;
-    Fvector2 uv[4];
+    float uv0x, uv0y, uv1x, uv1y, uv2x, uv2y, uv3x, uv3y;
     IC void set(const TL4uv& src) { *this = src; };
     IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); };
     IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); };
@@ -164,14 +182,18 @@ struct TL4uv
     IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); };
     IC void set(float x, float y, float z, float w, u32 c, float u, float v, float u2, float v2)
     {
-        p.set(x, y, z, w);
+        px = x;
+        py = y;
+        pz = z;
+        pw = w;
         color = c;
-        uv[0].x = u;
-        uv[0].y = v;
-        uv[1].x = u2;
-        uv[1].y = v2;
+        uv0x = u;
+        uv0y = v;
+        uv1x = u2;
+        uv1y = v2;
     };
 };
+static_assert(sizeof(struct TL4uv) == 52);
 const u32 F_TL4uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
 }; // namespace FVF
 #pragma pack(pop)

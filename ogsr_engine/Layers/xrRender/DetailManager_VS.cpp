@@ -7,21 +7,20 @@
 
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
-const int quant = 16384;
-const int c_hdr = 10;
-const int c_size = 4;
+constexpr int quant = 16384;
+constexpr int c_hdr = 10;
+constexpr int c_size = 4;
 
 static D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, // pos
                                      {0, 12, D3DDECLTYPE_SHORT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, // uv
                                      D3DDECL_END()};
 
-#pragma pack(push, 1)
 struct vertHW
 {
     float x, y, z;
     short u, v, t, mid;
 };
-#pragma pack(pop)
+static_assert(sizeof(vertHW) == 20);
 
 short QC(float v)
 {
@@ -30,10 +29,7 @@ short QC(float v)
     return short(t & 0xffff);
 }
 
-void CDetailManager::hw_Load()
-{
-    hw_Load_Geom();
-}
+void CDetailManager::hw_Load() { hw_Load_Geom(); }
 
 void CDetailManager::hw_Load_Geom()
 {

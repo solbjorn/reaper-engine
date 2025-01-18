@@ -111,6 +111,7 @@ struct TL_2c3uv
         uv[2].set(u2, v2);
     }
 };
+static_assert(sizeof(TL_2c3uv) == 48);
 
 void CRenderTarget::phase_pp()
 {

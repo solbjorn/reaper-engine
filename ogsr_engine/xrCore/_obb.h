@@ -69,21 +69,17 @@ public:
     }
     IC void xform_get(Tmatrix& D) const
     {
-        D.i.set(m_rotate.i);
-        D._14_ = 0;
-        D.j.set(m_rotate.j);
-        D._24_ = 0;
-        D.k.set(m_rotate.k);
-        D._34_ = 0;
-        D.c.set(m_translate);
-        D._44_ = 1;
+        D.vm[0].set(m_rotate.i, 0);
+        D.vm[1].set(m_rotate.j, 0);
+        D.vm[2].set(m_rotate.k, 0);
+        D.vm[3].set(m_translate, 1);
     }
     IC SelfRef xform_set(const Tmatrix& S)
     {
-        m_rotate.i.set(S.i);
-        m_rotate.j.set(S.j);
-        m_rotate.k.set(S.k);
-        m_translate.set(S.c);
+        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(&m_rotate.i), *reinterpret_cast<const DirectX::XMVECTOR*>(&S.vm[0]));
+        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(&m_rotate.j), *reinterpret_cast<const DirectX::XMVECTOR*>(&S.vm[1]));
+        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(&m_rotate.k), *reinterpret_cast<const DirectX::XMVECTOR*>(&S.vm[2]));
+        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3*>(&m_translate), *reinterpret_cast<const DirectX::XMVECTOR*>(&S.vm[3]));
         return *this;
     }
     IC void xform_full(Tmatrix& D) const

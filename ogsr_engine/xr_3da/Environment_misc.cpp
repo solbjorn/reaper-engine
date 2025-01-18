@@ -295,8 +295,9 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     sky_texture_env_name = st_env;
     clouds_texture_name = config.r_string(m_identifier.c_str(), "clouds_texture");
     LPCSTR cldclr = config.r_string(m_identifier.c_str(), "clouds_color");
-    float multiplier = 0;
-    sscanf(cldclr, "%f,%f,%f,%f,%f", &clouds_color.x, &clouds_color.y, &clouds_color.z, &clouds_color.w, &multiplier);
+    float x, y, z, w, multiplier = 0;
+    sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
+    clouds_color.set(x, y, z, w);
     if (!fis_zero(multiplier))
     {
         float save = clouds_color.w;
@@ -381,8 +382,9 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     sky_texture_env_name = st_env;
     clouds_texture_name = pSettings->r_string(m_identifier.c_str(), "clouds_texture");
     LPCSTR cldclr = pSettings->r_string(m_identifier.c_str(), "clouds_color");
-    float multiplier = 0;
-    sscanf(cldclr, "%f,%f,%f,%f,%f", &clouds_color.x, &clouds_color.y, &clouds_color.z, &clouds_color.w, &multiplier);
+    float x, y, z, w, multiplier = 0;
+    sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
+    clouds_color.set(x, y, z, w);
     if (!fis_zero(multiplier))
     {
         float save = clouds_color.w;

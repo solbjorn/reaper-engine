@@ -624,7 +624,9 @@ Ivector4 CInifile::r_ivector4(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     Ivector4 V{};
-    sscanf(C, "%d,%d,%d,%d", &V.x, &V.y, &V.z, &V.w);
+    u32 x, y, z, w;
+    sscanf(C, "%d,%d,%d,%d", &x, &y, &z, &w);
+    V.set(x, y, z, w);
     return V;
 }
 
@@ -648,7 +650,9 @@ Fvector4 CInifile::r_fvector4(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     Fvector4 V{};
-    sscanf(C, "%f,%f,%f,%f", &V.x, &V.y, &V.z, &V.w);
+    float x, y, z, w;
+    sscanf(C, "%f,%f,%f,%f", &x, &y, &z, &w);
+    V.set(x, y, z, w);
     return V;
 }
 

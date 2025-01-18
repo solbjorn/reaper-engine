@@ -42,7 +42,7 @@ public:
     IC void w_seek(u32 pos, const void* p, u32 count) // random write (only inside allocated region)
     {
         R_ASSERT(p && count && (pos + count < NET_PacketSizeLimit));
-        //ASSERT_FMT_DBG(pos + count <= B.count, "!![%s] pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, pos, count, B.count);
+        // ASSERT_FMT_DBG(pos + count <= B.count, "!![%s] pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, pos, count, B.count);
 
         CopyMemory(&B.data[pos], p, count);
     }
@@ -200,7 +200,7 @@ public:
     IC void r_seek(u32 pos)
     {
         R_ASSERT(pos < NET_PacketSizeLimit);
-        //ASSERT_FMT_DBG(pos < B.count, "!![%s] pos: [%u], B.count: [%u]", __FUNCTION__, pos, B.count);
+        // ASSERT_FMT_DBG(pos < B.count, "!![%s] pos: [%u], B.count: [%u]", __FUNCTION__, pos, B.count);
 
         r_pos = pos;
     }
@@ -209,7 +209,7 @@ public:
     IC void r(void* p, u32 count)
     {
         R_ASSERT(p && count && (r_pos + count < NET_PacketSizeLimit));
-        //ASSERT_FMT_DBG(r_pos + count <= B.count, "!![%s] r_pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, r_pos, count, B.count);
+        // ASSERT_FMT_DBG(r_pos + count <= B.count, "!![%s] r_pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, r_pos, count, B.count);
 
         CopyMemory(p, &B.data[r_pos], count);
         r_pos += count;
@@ -219,7 +219,7 @@ public:
     IC void r_advance(u32 size)
     {
         R_ASSERT(r_pos + size < NET_PacketSizeLimit);
-        //ASSERT_FMT_DBG(r_pos + size <= B.count, "!![%s] r_pos: [%u], size [%u], B.count: [%u]", __FUNCTION__, r_pos, size, B.count);
+        // ASSERT_FMT_DBG(r_pos + size <= B.count, "!![%s] r_pos: [%u], size [%u], B.count: [%u]", __FUNCTION__, r_pos, size, B.count);
 
         r_pos += size;
     }
@@ -426,13 +426,13 @@ public:
     IC void r_matrix(Fmatrix& M)
     {
         r_vec3(M.i);
-        M._14_ = 0;
+        M.vm[0].set(M.i, 0);
         r_vec3(M.j);
-        M._24_ = 0;
+        M.vm[1].set(M.j, 0);
         r_vec3(M.k);
-        M._34_ = 0;
+        M.vm[2].set(M.k, 0);
         r_vec3(M.c);
-        M._44_ = 1;
+        M.vm[3].set(M.c, 1);
     }
     IC void r_clientID(ClientID& C)
     {

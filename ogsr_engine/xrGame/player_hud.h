@@ -173,14 +173,13 @@ struct movement_layer
     {
         blend.set(anm->XFORM());
         blend.mul(blend_amount[part] * m_power);
-        blend.m[0][0] = 1.f;
-        blend.m[1][1] = 1.f;
-        blend.m[2][2] = 1.f;
+        blend._11 = 1.f;
+        blend._22 = 1.f;
+        blend._33 = 1.f;
 
         return blend;
     }
 };
-
 
 struct script_layer
 {
@@ -206,10 +205,7 @@ struct script_layer
         active = true;
     }
 
-    ~script_layer()
-    {
-        xr_delete(anm);
-    }
+    ~script_layer() { xr_delete(anm); }
 
     bool IsPlaying() const { return anm->IsPlaying(); }
 
@@ -229,9 +225,9 @@ struct script_layer
     {
         blend.set(anm->XFORM());
         blend.mul(blend_amount * m_power);
-        blend.m[0][0] = 1.f;
-        blend.m[1][1] = 1.f;
-        blend.m[2][2] = 1.f;
+        blend._11 = 1.f;
+        blend._22 = 1.f;
+        blend._33 = 1.f;
 
         return blend;
     }
@@ -243,7 +239,6 @@ private:
     player_hud_motion_container m_hand_motions;
 
 public:
-    
     player_hud* m_parent{};
     CHudItem* m_parent_hud_item{};
     shared_str m_sect_name;
@@ -303,7 +298,8 @@ public:
     void render_item_ui();
     bool render_item_ui_query();
 
-    u32 anim_play(u16 part, const motion_params& P, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr);
+    u32 anim_play(u16 part, const motion_params& P, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands,
+                  IKinematicsAnimated* itemModel = nullptr);
 
     const shared_str& section_name() const { return m_sect_name; }
     attachable_hud_item* create_hud_item(const shared_str& sect);

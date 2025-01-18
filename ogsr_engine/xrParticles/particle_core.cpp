@@ -418,6 +418,6 @@ void pDomain::transform(const pDomain& domain, const Fmatrix& m)
 void pDomain::transform_dir(const pDomain& domain, const Fmatrix& m)
 {
     Fmatrix M = m;
-    M.c.set(0, 0, 0);
+    M.vm[3].set(0, 0, 0, M.vm[3].w);
     transform(domain, M);
 }
