@@ -21,3 +21,6 @@
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
+[submodule "3rd_party/Src/xxHash/xxHash"]
+	path = 3rd_party/Src/xxHash/xxHash
+	url = https://github.com/Cyan4973/xxHash.git

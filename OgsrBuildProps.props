@@ -23,15 +23,16 @@
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='x64'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
 
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OpenMPSupport>true</OpenMPSupport>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /openmp:llvm %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
 
     <Link>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
-
 </Project>

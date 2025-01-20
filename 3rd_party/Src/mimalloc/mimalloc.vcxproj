@@ -72,10 +72,10 @@
       cd _Build
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DMI_USE_CXX=ON -DMI_OPT_SIMD=ON -DMI_BUILD_STATIC=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF ..\mimalloc
       cmake --build . --config $(Configuration)
-      copy /Y "mimalloc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.lib"
-      copy /Y "mimalloc.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.lib"
+      copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.pdb"
       copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
-      copy /Y "mimalloc.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
       copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
@@ -85,10 +85,10 @@
       cd _Build
       cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DMI_USE_CXX=ON -DMI_OPT_SIMD=ON -DMI_BUILD_STATIC=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF ..\mimalloc
       cmake --build . --config $(Configuration)
-      copy /Y "mimalloc.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.lib"
-      copy /Y "mimalloc.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.lib"
+      copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.pdb"
       copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
-      copy /Y "mimalloc.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
+      copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
       copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
@@ -112,18 +112,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <Target Name="Build" DependsOnTargets="PrepareForNMakeBuild;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
-    <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeBuildCommandLine" Condition="'$(NMakeBuildCommandLine)'==''"/>
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeBuildCommandLine)'!=''"/>
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeBuildCommandLine)'!=''"/>
-  </Target>
-  <Target Name="Rebuild" DependsOnTargets="PrepareForNMakeBuild;_SetRebuildReferences;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
-    <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeReBuildCommandLine" Condition="'$(NMakeReBuildCommandLine)'=='' and ('$(NMakeCleanCommandLine)'=='' or '$(NMakeBuildCommandLine)'=='')"/>
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeReBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
-    <Exec Command="$(NMakeCleanCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeReBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
-    <Exec Command="$(NMakeCleanCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-    <Exec IgnoreStandardErrorWarningFormat="True" Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-  </Target>
 </Project>

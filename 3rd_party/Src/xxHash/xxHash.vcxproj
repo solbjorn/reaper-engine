@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{FD18CC23-5B32-4B39-9E74-80667FF8A9D0}</ProjectGuid>
+    <ProjectGuid>{D466A3A1-7CD5-4E89-8310-2515731EDF67}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
-    <ProjectName>oneTBB</ProjectName>
+    <ProjectName>xxHash</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\3rd_party_lib_properties.props" />
@@ -65,33 +65,31 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DTBB_TEST=OFF ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
+      copy /Y "xxhash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.lib"
+      copy /Y "xxhash.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "xxhash.dll" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll"
+      copy /Y "xxhash.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.pdb"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DTBB_TEST=OFF ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
       cmake --build . --config $(Configuration)
-      cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
+      copy /Y "xxhash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.lib"
+      copy /Y "xxhash.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
+      copy /Y "xxhash.dll" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll"
+      copy /Y "xxhash.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.pdb"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>
