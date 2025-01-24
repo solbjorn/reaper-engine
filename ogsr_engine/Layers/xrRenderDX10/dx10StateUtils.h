@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __XRRENDER_DX10_STATE_UTILS_H
+#define __XRRENDER_DX10_STATE_UTILS_H
 
 namespace dx10StateUtils
 {
@@ -23,10 +24,10 @@ bool operator==(const D3D_BLEND_DESC& desc1, const D3D_BLEND_DESC& desc2);
 bool operator==(const D3D_SAMPLER_DESC& desc1, const D3D_SAMPLER_DESC& desc2);
 
 //	Calculate hash values
-u32 GetHash(const D3D_RASTERIZER_DESC& desc);
-u32 GetHash(const D3D_DEPTH_STENCIL_DESC& desc);
-u32 GetHash(const D3D_BLEND_DESC& desc);
-u32 GetHash(const D3D_SAMPLER_DESC& desc);
+u64 GetHash(const D3D_RASTERIZER_DESC& desc);
+u64 GetHash(const D3D_DEPTH_STENCIL_DESC& desc);
+u64 GetHash(const D3D_BLEND_DESC& desc);
+u64 GetHash(const D3D_SAMPLER_DESC& desc);
 
 //	Modify state to meet DX10 automatic modifications
 void ValidateState(D3D_RASTERIZER_DESC& desc);
@@ -34,3 +35,5 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC& desc);
 void ValidateState(D3D_BLEND_DESC& desc);
 void ValidateState(D3D_SAMPLER_DESC& desc);
 }; // namespace dx10StateUtils
+
+#endif /* __XRRENDER_DX10_STATE_UTILS_H */

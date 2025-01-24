@@ -2,12 +2,18 @@
 
 #include "xrstring.h"
 
+#include <xxhash.h>
+#pragma comment(lib, "xxhash")
+
 XRCORE_API extern str_container* g_pStringContainer = NULL;
 
 struct str_container_impl
 {
+    static constexpr u32 buffer_shift = 18;
+    static constexpr size_t buffer_size = size_t(1) << buffer_shift;
+    static_assert(buffer_size == 1024u * 256u);
+
     xrCriticalSection cs;
-    static constexpr size_t buffer_size = 1024u * 256u;
     str_value* buffer[buffer_size];
     int num_docs;
 
@@ -19,10 +25,10 @@ struct str_container_impl
 
     str_value* find(str_value* value, const char* str) const
     {
-        str_value* candidate = buffer[value->dwCRC % buffer_size];
+        str_value* candidate = buffer[hash_64(value->dwXXH, buffer_shift)];
         while (candidate)
         {
-            if (candidate->dwCRC == value->dwCRC && candidate->dwLength == value->dwLength && !memcmp(candidate->value, str, value->dwLength))
+            if (candidate->dwXXH == value->dwXXH && candidate->dwLength == value->dwLength && !memcmp(candidate->value, str, value->dwLength))
             {
                 return candidate;
             }
@@ -35,7 +41,7 @@ struct str_container_impl
 
     void insert(str_value* value)
     {
-        str_value** element = &buffer[value->dwCRC % buffer_size];
+        str_value** element = &buffer[hash_64(value->dwXXH, buffer_shift)];
         value->next = *element;
         *element = value;
     }
@@ -70,9 +76,13 @@ struct str_container_impl
             const str_value* value = buffer[i];
             while (value)
             {
-                const auto crc = crc32(value->value, value->dwLength);
-                string32 crc_str;
-                R_ASSERT(crc == value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", itoa(value->dwCRC, crc_str, 16));
+                const XXH64_hash_t xxh = XXH3_64bits(value->value, value->dwLength);
+                if (xxh != value->dwXXH)
+                {
+                    string32 xxh_str;
+                    snprintf(xxh_str, 32, "0x%016llx", value->dwXXH);
+                    R_ASSERT(xxh == value->dwXXH, "CorePanic: read-only memory corruption (shared_strings)", xxh_str);
+                }
                 R_ASSERT(value->dwLength == xr_strlen(value->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", value->value);
                 value = value->next;
             }
@@ -87,7 +97,7 @@ struct str_container_impl
             str_value* value = buffer[i];
             while (value)
             {
-                fprintf(f, "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference, value->dwLength, value->dwCRC, value->value);
+                fprintf(f, "ref[%4u]-len[%3u]-hash[0x%016llx] : %s\n", value->dwReference, value->dwLength, value->dwXXH, value->value);
                 value = value->next;
             }
         }
@@ -101,7 +111,7 @@ struct str_container_impl
             string4096 temp;
             while (value)
             {
-                xr_sprintf(temp, sizeof(temp), "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference, value->dwLength, value->dwCRC, value->value);
+                xr_sprintf(temp, sizeof(temp), "ref[%4u]-len[%3u]-hash[0x%016llx] : %s\n", value->dwReference, value->dwLength, value->dwXXH, value->value);
                 f->w_string(temp);
                 value = value->next;
             }
@@ -147,7 +157,7 @@ str_value* str_container::dock(pcstr value) const
     str_value* sv = (str_value*)header;
     sv->dwReference = 0;
     sv->dwLength = static_cast<u32>(s_len);
-    sv->dwCRC = crc32(value, s_len);
+    sv->dwXXH = XXH3_64bits(value, s_len);
 
     // search
     result = impl->find(sv, value);
@@ -176,7 +186,7 @@ str_value* str_container::dock(pcstr value) const
 
         result->dwReference = 0;
         result->dwLength = sv->dwLength;
-        result->dwCRC = sv->dwCRC;
+        result->dwXXH = sv->dwXXH;
         CopyMemory(result->value, value, s_len_with_zero);
 
         impl->insert(result);

@@ -4,6 +4,8 @@
 #include "dx10BufferUtils.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
+#include <xxhash.h>
+
 dx10ConstantBuffer::~dx10ConstantBuffer()
 {
     DEV->_DeleteConstantBuffer(this);
@@ -42,7 +44,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
         m_MembersNames[i] = var_desc.Name;
     }
 
-    m_uiMembersCRC = crc32(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
+    m_uiMembersXXH = XXH3_64bits(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
 
     R_CHK(dx10BufferUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
     VERIFY(m_pBuffer);
@@ -63,7 +65,7 @@ bool dx10ConstantBuffer::Similar(dx10ConstantBuffer& _in)
     if (m_eBufferType != _in.m_eBufferType)
         return false;
 
-    if (m_uiMembersCRC != _in.m_uiMembersCRC)
+    if (m_uiMembersXXH != _in.m_uiMembersXXH)
         return false;
 
     if (m_MembersList.size() != _in.m_MembersList.size())

@@ -684,9 +684,6 @@
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10StateManager.h">
       <Filter>StateManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\Utils\dxHashHelper.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRenderDX10\3DFluid\dx103DFluidData.h">
       <Filter>3DFluid</Filter>
     </ClInclude>
@@ -1270,9 +1267,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10StateManager.cpp">
       <Filter>StateManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Utils\dxHashHelper.cpp">
-      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidData.cpp">
       <Filter>3DFluid</Filter>

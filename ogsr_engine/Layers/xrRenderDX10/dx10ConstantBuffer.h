@@ -1,6 +1,5 @@
 #ifndef dx10ConstantBuffer_included
 #define dx10ConstantBuffer_included
-#pragma once
 
 struct R_constant;
 struct R_constant_load;
@@ -36,7 +35,7 @@ private:
     D3D_CBUFFER_TYPE m_eBufferType;
 
     //	Buffer data description
-    u32 m_uiMembersCRC;
+    u64 m_uiMembersXXH;
     xr_vector<D3D_SHADER_TYPE_DESC> m_MembersList;
     xr_vector<shared_str> m_MembersNames;
 

@@ -1,6 +1,7 @@
-#pragma once
+#ifndef xrstringH
+#define xrstringH
 
-#pragma pack(push, 4)
+#include "xrhash.h"
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
@@ -8,7 +9,7 @@ struct XRCORE_API str_value
 {
     u32 dwReference;
     u32 dwLength;
-    u32 dwCRC;
+    u64 dwXXH;
     str_value* next;
     char value[];
 };
@@ -157,7 +158,7 @@ DEFINE_VECTOR(xr_string, SStringVec, SStringVecIt);
 // externally visible standart functionality
 IC void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
 
-IC u32 xr_strlen(shared_str& a) { return a.size(); }
+IC u32 xr_strlen(const shared_str& a) { return a.size(); }
 IC int xr_strcmp(const shared_str& a, const char* b) { return xr_strcmp(*a, b); }
 IC int xr_strcmp(const char* a, const shared_str& b) { return xr_strcmp(a, *b); }
 IC int xr_strcmp(const shared_str& a, const shared_str& b)
@@ -184,16 +185,15 @@ IC void xr_strlwr(shared_str& src)
     }
 }
 
-#pragma pack(pop)
-
 struct transparent_string_hash
 {
     using is_transparent = void; // https://www.cppstories.com/2021/heterogeneous-access-cpp20/
-    using hash_type = std::hash<std::string_view>;
-    [[nodiscard]] size_t operator()(const std::string_view txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] size_t operator()(const std::string& txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] size_t operator()(const char* txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] size_t operator()(const shared_str& txt) const noexcept { return hash_type{}(txt); }
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const std::string_view txt) const noexcept -> u64 { return rapidhash(txt.data(), txt.size()); }
+    [[nodiscard]] auto operator()(const std::string& txt) const noexcept -> u64 { return rapidhash(txt.data(), txt.size()); }
+    [[nodiscard]] auto operator()(const char* txt) const noexcept -> u64 { return rapidhash(txt, strlen(txt)); }
+    [[nodiscard]] auto operator()(const shared_str& txt) const noexcept -> u64 { return rapidhash(txt.c_str(), xr_strlen(txt)); }
 };
 
 struct transparent_string_equal
@@ -254,3 +254,5 @@ inline void strlwr(T& data)
 }
 
 } // namespace xr_string_utils
+
+#endif

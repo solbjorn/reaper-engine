@@ -3,6 +3,7 @@
 #include <queue>
 
 #include "xalloc.h"
+#include "xrhash.h"
 
 using std::swap; // TODO: Убрать!
 
@@ -46,7 +47,7 @@ using xr_map = std::map<K, V, P, allocator>;
 template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xr_allocator<std::pair<const K, V>>>
+template <typename K, typename V, class _Hasher = xr_hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = std::unordered_map<K, V, _Hasher, _Keyeq, _Alloc>;
 
 #define mk_pair std::make_pair // TODO: Везде заменить, а это убрать.

@@ -117,9 +117,6 @@
     <ClCompile Include="xrDebugNew.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
-    <ClCompile Include="crc32.cpp">
-      <Filter>shared memory/string library</Filter>
-    </ClCompile>
     <ClCompile Include="xrsharedmem.cpp">
       <Filter>shared memory/string library</Filter>
     </ClCompile>
@@ -372,9 +369,6 @@
     </ClInclude>
     <ClInclude Include="trivial_encryptor.h">
       <Filter>FS</Filter>
-    </ClInclude>
-    <ClInclude Include="crc32.h">
-      <Filter>shared memory/string library</Filter>
     </ClInclude>
     <ClInclude Include="xalloc.h">
       <Filter>Memory manager</Filter>

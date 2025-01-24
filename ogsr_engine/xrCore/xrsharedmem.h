@@ -1,23 +1,22 @@
-#pragma once
+#ifndef xrsharedmemH
+#define xrsharedmemH
 
-#pragma pack(push, 4)
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
 struct XRCORE_API smem_value
 {
     u32 dwReference;
-    u32 dwCRC;
     u32 dwSize; // size in bytes !!!
-    u32 _align_16;
+    u64 dwXXH;
     u8 value[];
 };
 
 // predicate for insertion - just a quick estimate
 IC bool smem_search(const smem_value* A, const smem_value* B)
 {
-    if (A->dwCRC < B->dwCRC)
+    if (A->dwXXH < B->dwXXH)
         return true;
-    if (A->dwCRC > B->dwCRC)
+    if (A->dwXXH > B->dwXXH)
         return false;
     return A->dwSize < B->dwSize;
 };
@@ -170,4 +169,4 @@ IC void swap(ref_smem<T>& lhs, ref_smem<T>& rhs)
     lhs.swap(rhs);
 }
 
-#pragma pack(pop)
+#endif

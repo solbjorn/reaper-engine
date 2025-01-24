@@ -1,6 +1,5 @@
 #ifndef dx10StateCache_included
 #define dx10StateCache_included
-#pragma once
 
 template <class IDeviceState, class StateDecs>
 class dx10StateCache
@@ -24,13 +23,13 @@ public:
 private:
     struct StateRecord
     {
-        u32 m_crc;
+        u64 m_xxh;
         IDeviceState* m_pState;
     };
 
 private:
     void CreateState(StateDecs desc, IDeviceState** ppIState);
-    IDeviceState* FindState(const StateDecs& desc, u32 StateCRC);
+    IDeviceState* FindState(const StateDecs& desc, u64 StateXXH);
 
     //	Private data
 private:

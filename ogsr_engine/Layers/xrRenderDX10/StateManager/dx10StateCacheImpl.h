@@ -23,14 +23,14 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::GetState(StateDecs& desc)
 
     dx10StateUtils::ValidateState(desc);
 
-    u32 crc = dx10StateUtils::GetHash(desc);
+    u64 xxh = dx10StateUtils::GetHash(desc);
 
-    pResult = FindState(desc, crc);
+    pResult = FindState(desc, xxh);
 
     if (!pResult)
     {
         StateRecord rec;
-        rec.m_crc = crc;
+        rec.m_xxh = xxh;
         CreateState(desc, &rec.m_pState);
         pResult = rec.m_pState;
         m_StateArray.push_back(rec);
@@ -40,12 +40,12 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::GetState(StateDecs& desc)
 }
 
 template <class IDeviceState, class StateDecs>
-IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs& desc, u32 StateCRC)
+IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs& desc, u64 StateXXH)
 {
     u32 res = 0xffffffff;
     for (u32 i = 0; i < m_StateArray.size(); ++i)
     {
-        if (m_StateArray[i].m_crc == StateCRC)
+        if (m_StateArray[i].m_xxh == StateXXH)
         {
             StateDecs descCandidate;
             m_StateArray[i].m_pState->GetDesc(&descCandidate);

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "dx10StateUtils.h"
 
-#include "../xrRender/Utils/dxHashHelper.h"
+#define XXH_INLINE_ALL
+#include <xxhash.h>
 
 namespace dx10StateUtils
 {
@@ -158,7 +159,6 @@ void ResetDescription(D3D_DEPTH_STENCIL_DESC& desc)
     desc.BackFace.StencilPassOp = D3D_STENCIL_OP_KEEP;
     desc.BackFace.StencilFunc = D3D_COMPARISON_ALWAYS;
 }
-
 
 void ResetDescription(D3D_BLEND_DESC& desc)
 {
@@ -332,91 +332,30 @@ bool operator==(const D3D_SAMPLER_DESC& desc1, const D3D_SAMPLER_DESC& desc2)
     return true;
 }
 
-u32 GetHash(const D3D_RASTERIZER_DESC& desc)
+u64 GetHash(const D3D_RASTERIZER_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
+u64 GetHash(const D3D_DEPTH_STENCIL_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
+u64 GetHash(const D3D_BLEND_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
+
+u64 GetHash(const D3D_SAMPLER_DESC& desc)
 {
-    dxHashHelper Hash;
+    // We need to exclude 2 fields from the hash: MipLODBias and MaxAnisotropy.
+    // Instead of using streaming API, which consumes 256+ bytes on the stack,
+    // create a local copy of the needed fields using AVX2 instructions.
+    DirectX::XMVECTOR buf[3] = {
+        // Filter, AddressU, AddressV, AddressW
+        DirectX::XMLoadInt4(reinterpret_cast<const u32*>(&desc)),
+        // ComparisonFunc, BorderColor[0], BorderColor[1], BorderColor[2]
+        DirectX::XMLoadInt4(reinterpret_cast<const u32*>(&desc.ComparisonFunc)),
+        // BorderColor[3], MinLOD, MaxLOD, 0
+        DirectX::XMLoadInt3(reinterpret_cast<const u32*>(&desc.BorderColor[3])),
+    };
 
-    Hash.AddData(&desc.FillMode, sizeof(desc.FillMode));
-    Hash.AddData(&desc.CullMode, sizeof(desc.CullMode));
-    Hash.AddData(&desc.FrontCounterClockwise, sizeof(desc.FrontCounterClockwise));
-    Hash.AddData(&desc.DepthBias, sizeof(desc.DepthBias));
-    Hash.AddData(&desc.DepthBiasClamp, sizeof(desc.DepthBiasClamp));
-    Hash.AddData(&desc.SlopeScaledDepthBias, sizeof(desc.SlopeScaledDepthBias));
-    Hash.AddData(&desc.DepthClipEnable, sizeof(desc.DepthClipEnable));
-    Hash.AddData(&desc.ScissorEnable, sizeof(desc.ScissorEnable));
-    Hash.AddData(&desc.MultisampleEnable, sizeof(desc.MultisampleEnable));
-    Hash.AddData(&desc.AntialiasedLineEnable, sizeof(desc.AntialiasedLineEnable));
+    static_assert(offsetof(desc, MipLODBias) == 16);
+    static_assert(offsetof(desc, ComparisonFunc) == 24);
+    static_assert(offsetof(desc, BorderColor[3]) == 40);
+    static_assert(sizeof(desc) == 52);
 
-    return Hash.GetHash();
-}
-
-u32 GetHash(const D3D_DEPTH_STENCIL_DESC& desc)
-{
-    dxHashHelper Hash;
-
-    Hash.AddData(&desc.DepthEnable, sizeof(desc.DepthEnable));
-    Hash.AddData(&desc.DepthWriteMask, sizeof(desc.DepthWriteMask));
-    Hash.AddData(&desc.DepthFunc, sizeof(desc.DepthFunc));
-    Hash.AddData(&desc.StencilEnable, sizeof(desc.StencilEnable));
-    Hash.AddData(&desc.StencilReadMask, sizeof(desc.StencilReadMask));
-    Hash.AddData(&desc.StencilWriteMask, sizeof(desc.StencilWriteMask));
-
-    Hash.AddData(&desc.FrontFace.StencilFailOp, sizeof(desc.FrontFace.StencilFailOp));
-    Hash.AddData(&desc.FrontFace.StencilDepthFailOp, sizeof(desc.FrontFace.StencilDepthFailOp));
-    Hash.AddData(&desc.FrontFace.StencilPassOp, sizeof(desc.FrontFace.StencilPassOp));
-    Hash.AddData(&desc.FrontFace.StencilFunc, sizeof(desc.FrontFace.StencilFunc));
-
-    Hash.AddData(&desc.BackFace.StencilFailOp, sizeof(desc.BackFace.StencilFailOp));
-    Hash.AddData(&desc.BackFace.StencilDepthFailOp, sizeof(desc.BackFace.StencilDepthFailOp));
-    Hash.AddData(&desc.BackFace.StencilPassOp, sizeof(desc.BackFace.StencilPassOp));
-    Hash.AddData(&desc.BackFace.StencilFunc, sizeof(desc.BackFace.StencilFunc));
-
-    return Hash.GetHash();
-}
-
-u32 GetHash(const D3D_BLEND_DESC& desc)
-{
-    dxHashHelper Hash;
-
-    Hash.AddData(&desc.AlphaToCoverageEnable, sizeof(desc.AlphaToCoverageEnable));
-    Hash.AddData(&desc.IndependentBlendEnable, sizeof(desc.IndependentBlendEnable));
-
-    for (int i = 0; i < 8; ++i)
-    {
-        Hash.AddData(&desc.RenderTarget[i].SrcBlend, sizeof(desc.RenderTarget[i].SrcBlend));
-        Hash.AddData(&desc.RenderTarget[i].DestBlend, sizeof(desc.RenderTarget[i].DestBlend));
-        Hash.AddData(&desc.RenderTarget[i].BlendOp, sizeof(desc.RenderTarget[i].BlendOp));
-        Hash.AddData(&desc.RenderTarget[i].SrcBlendAlpha, sizeof(desc.RenderTarget[i].SrcBlendAlpha));
-        Hash.AddData(&desc.RenderTarget[i].DestBlendAlpha, sizeof(desc.RenderTarget[i].DestBlendAlpha));
-        Hash.AddData(&desc.RenderTarget[i].BlendOpAlpha, sizeof(desc.RenderTarget[i].BlendOpAlpha));
-        Hash.AddData(&desc.RenderTarget[i].BlendEnable, sizeof(desc.RenderTarget[i].BlendEnable));
-        Hash.AddData(&desc.RenderTarget[i].RenderTargetWriteMask, sizeof(desc.RenderTarget[i].RenderTargetWriteMask));
-    }
-
-    return Hash.GetHash();
-}
-
-u32 GetHash(const D3D_SAMPLER_DESC& desc)
-{
-    dxHashHelper Hash;
-
-    Hash.AddData(&desc.Filter, sizeof(desc.Filter));
-    Hash.AddData(&desc.AddressU, sizeof(desc.AddressU));
-    Hash.AddData(&desc.AddressV, sizeof(desc.AddressV));
-    Hash.AddData(&desc.AddressW, sizeof(desc.AddressW));
-    //  RZ
-    //  Hash.AddData(&desc.MipLODBias, sizeof(desc.MipLODBias));
-    //	Ignore anisotropy since it's set up automatically by the manager
-    //	Hash.AddData( &desc.MaxAnisotropy, sizeof(desc.MaxAnisotropy) );
-    Hash.AddData(&desc.ComparisonFunc, sizeof(desc.ComparisonFunc));
-    Hash.AddData(&desc.BorderColor[0], sizeof(desc.BorderColor[0]));
-    Hash.AddData(&desc.BorderColor[1], sizeof(desc.BorderColor[1]));
-    Hash.AddData(&desc.BorderColor[2], sizeof(desc.BorderColor[2]));
-    Hash.AddData(&desc.BorderColor[3], sizeof(desc.BorderColor[3]));
-    Hash.AddData(&desc.MinLOD, sizeof(desc.MinLOD));
-    Hash.AddData(&desc.MaxLOD, sizeof(desc.MaxLOD));
-
-    return Hash.GetHash();
+    return XXH3_64bits(&buf[0], sizeof(buf));
 }
 
 void ValidateState(D3D_RASTERIZER_DESC& desc) {}

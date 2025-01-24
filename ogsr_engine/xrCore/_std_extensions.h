@@ -137,8 +137,6 @@ IC s64 _max(s64 x, s64 y) { return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8 -
 
 XRCORE_API char* timestamp(string64& dest);
 
-extern XRCORE_API u32 crc32(const void* P, u32 len);
-
 // return pointer to ".ext"
 IC char* strext(const char* S) { return (char*)strrchr(S, '.'); }
 

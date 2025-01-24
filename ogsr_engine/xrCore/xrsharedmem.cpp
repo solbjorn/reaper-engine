@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <xxhash.h>
+
 XRCORE_API smem_container* g_pSharedMemoryContainer = NULL;
 
 smem_value* smem_container::dock(u32 dwSize, void* ptr)
@@ -11,7 +13,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
         smem_value* result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
         result->dwSize = dwSize;
-        result->dwCRC = u32(-1);
+        result->dwXXH = XXH64_hash_t(-1);
         CopyMemory(result->value, ptr, dwSize);
 
         return result;
@@ -20,13 +22,13 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
     cs.Enter();
     smem_value* result = 0;
 
-    u32 dwCRC = crc32(ptr, dwSize);
+    XXH64_hash_t dwXXH = XXH3_64bits(ptr, dwSize);
 
     // search a place to insert
     u8 storage[sizeof(smem_value)];
     smem_value* value = (smem_value*)storage;
     value->dwReference = 0;
-    value->dwCRC = dwCRC;
+    value->dwXXH = dwXXH;
     value->dwSize = dwSize;
     cdb::iterator it = std::lower_bound(container.begin(), container.end(), value, smem_search);
     cdb::iterator saved_place = it;
@@ -37,7 +39,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
         {
             if (it == container.end())
                 break;
-            if ((*it)->dwCRC != dwCRC)
+            if ((*it)->dwXXH != dwXXH)
                 break;
             if ((*it)->dwSize != dwSize)
                 break;
@@ -55,7 +57,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
     {
         result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
-        result->dwCRC = dwCRC;
+        result->dwXXH = dwXXH;
         result->dwSize = dwSize;
         CopyMemory(result->value, ptr, dwSize);
         container.insert(saved_place, result);
@@ -87,7 +89,7 @@ void smem_container::dump()
     cdb::iterator end = container.end();
     FILE* F = fopen("x:\\$smem_dump$.txt", "w");
     for (; it != end; it++)
-        fprintf(F, "%4u : crc[%6x], %u bytes\n", (*it)->dwReference, (*it)->dwCRC, (*it)->dwSize);
+        fprintf(F, "%4u : hash[0x%016llx], %u bytes\n", (*it)->dwReference, (*it)->dwXXH, (*it)->dwSize);
     fclose(F);
     cs.Leave();
 }

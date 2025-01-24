@@ -14,6 +14,7 @@
 namespace stdfs = std::filesystem;
 
 #include "lzo\lzo1x.h"
+#include <xxhash.h>
 
 constexpr u32 XRP_MAX_SIZE_DEF = 1900; // Дефолтный максимальный размер создаваемого архива в МБ. Более ~1900 выставлять не рекомендую, т.к. архивы более 2гб двиг не поддерживает.
 
@@ -36,7 +37,7 @@ static u32 XRP_MAX_SIZE{1024 * 1024 * XRP_MAX_SIZE_DEF};
 struct ALIAS
 {
     LPCSTR path;
-    u32 crc;
+    XXH64_hash_t xxh;
     size_t c_ptr;
     u32 c_size_real;
     u32 c_size_compressed;
@@ -78,7 +79,7 @@ static bool testVFS(LPCSTR path)
     return false;
 }
 
-static void write_file_header(LPCSTR file_name, const u32& crc, const u32& ptr, const u32& size_real, const u32& size_compressed)
+static void write_file_header(LPCSTR file_name, XXH64_hash_t xxh, const u32& ptr, const u32& size_real, const u32& size_compressed)
 {
     u32 file_name_size = xr_strlen(file_name);
     u32 buffer_size = file_name_size + 4 * sizeof(u32);
@@ -95,7 +96,7 @@ static void write_file_header(LPCSTR file_name, const u32& crc, const u32& ptr, 
     *(u32*)buffer = size_compressed;
     buffer += sizeof(u32);
 
-    *(u32*)buffer = crc;
+    *(u32*)buffer = hash_64(xxh, 32);
     buffer += sizeof(u32);
 
     Memory.mem_copy(buffer, file_name, file_name_size);
@@ -136,14 +137,14 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
     }
     bytesSRC += src->length();
 
-    const size_t c_crc32 = crc32(src->pointer(), src->length());
-    // Msg("CRC32 for [%s] pointer: [%x], length: [%d] is: [%u]", fn, src->pointer(), src->length(), c_crc32);
+    const XXH64_hash_t c_xxh = XXH3_64bits(src->pointer(), src->length());
+    // Msg("Hash for [%s] pointer: [%x], length: [%d] is: [0x%016llx]", fn, src->pointer(), src->length(), c_xxh);
 
     size_t c_ptr = 0;
     u32 c_size_real = 0;
     u32 c_size_compressed = 0;
 
-    auto A = std::find_if(aliases.begin(), aliases.end(), [c_crc32](auto& Alias) { return Alias.crc == c_crc32; });
+    auto A = std::find_if(aliases.begin(), aliases.end(), [c_xxh](auto& Alias) { return Alias.xxh == c_xxh; });
 
     if (A != aliases.end())
     {
@@ -224,15 +225,15 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
         // Register for future aliasing
         auto& R = aliases.emplace_back();
         R.path = xr_strdup(fn);
-        R.crc = static_cast<u32>(c_crc32);
+        R.xxh = c_xxh;
         R.c_ptr = c_ptr;
         R.c_size_real = c_size_real;
         R.c_size_compressed = c_size_compressed;
-        //Msg("--[%s] Added alias [%s], crc: [%u], [%u][%u][%u]", __FUNCTION__, aliases.back().path, aliases.back().crc, aliases.back().c_ptr, aliases.back().c_size_real, aliases.back().c_size_compressed);
+        //Msg("--[%s] Added alias [%s], hash: [0x%016llx], [%u][%u][%u]", __FUNCTION__, aliases.back().path, aliases.back().xxh, aliases.back().c_ptr, aliases.back().c_size_real, aliases.back().c_size_compressed);
     }
 
     // Write description
-    write_file_header(path, static_cast<u32>(c_crc32), (u32)c_ptr, c_size_real, c_size_compressed);
+    write_file_header(path, c_xxh, (u32)c_ptr, c_size_real, c_size_compressed);
 
     FS.r_close(src);
 }

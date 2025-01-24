@@ -9,9 +9,8 @@ dx10SamplerStateCache SSManager;
 
 dx10SamplerStateCache::dx10SamplerStateCache() : m_uiMaxAnisotropy(1), m_uiMipLODBias(0.0f)
 {
-    static const int iMaxRSStates = 10;
+    constexpr int iMaxRSStates = 10;
     m_StateArray.reserve(iMaxRSStates);
-    ResetDeviceState();
 }
 
 dx10SamplerStateCache::~dx10SamplerStateCache() { ClearStateArray(); }
@@ -28,14 +27,14 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(D3D_SAMPLER_DESC&
 
     dx10StateUtils::ValidateState(desc);
 
-    u32 crc = dx10StateUtils::GetHash(desc);
+    u64 xxh = dx10StateUtils::GetHash(desc);
 
-    hResult = FindState(desc, crc);
+    hResult = FindState(desc, xxh);
 
     if (hResult == hInvalidHandle)
     {
         StateRecord rec;
-        rec.m_crc = crc;
+        rec.m_xxh = xxh;
         CreateState(desc, &rec.m_pState);
         hResult = m_StateArray.size();
         m_StateArray.push_back(rec);
@@ -46,14 +45,14 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(D3D_SAMPLER_DESC&
 
 void dx10SamplerStateCache::CreateState(StateDecs desc, IDeviceState** ppIState) { R_CHK(HW.pDevice->CreateSamplerState(&desc, ppIState)); }
 
-dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs& desc, u32 StateCRC)
+dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs& desc, u64 StateXXH)
 {
     u32 res = 0xffffffff;
     u32 i = 0;
 
     for (; i < m_StateArray.size(); ++i)
     {
-        if (m_StateArray[i].m_crc == StateCRC)
+        if (m_StateArray[i].m_xxh == StateXXH)
         {
             StateDecs descCandidate;
             m_StateArray[i].m_pState->GetDesc(&descCandidate);
@@ -85,12 +84,9 @@ void dx10SamplerStateCache::ClearStateArray()
     m_StateArray.clear();
 }
 
-void dx10SamplerStateCache::PrepareSamplerStates(HArray& samplers, ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT],
-                                                 SHandle pCurrentState[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], u32& uiMin, u32& uiMax) const
+void dx10SamplerStateCache::PrepareSamplerStates(HArray& samplers, ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT]) const
 {
-    //	It seems that sizeof pSS is 4 wor win32!
-    ZeroMemory(pSS, sizeof(pSS[0]) * D3D_COMMONSHADER_SAMPLER_SLOT_COUNT);
-
+    VERIFY(samplers.size() <= D3D_COMMONSHADER_SAMPLER_SLOT_COUNT);
     for (u32 i = 0; i < samplers.size(); ++i)
     {
         if (samplers[i] != hInvalidHandle)
@@ -99,63 +95,48 @@ void dx10SamplerStateCache::PrepareSamplerStates(HArray& samplers, ID3DSamplerSt
             pSS[i] = m_StateArray[samplers[i]].m_pState;
         }
     }
-
-    uiMin = 0;
-    uiMax = D3D_COMMONSHADER_SAMPLER_SLOT_COUNT - 1;
 }
 
 void dx10SamplerStateCache::VSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aVSSamplers, uiMin, uiMax);
-    HW.pContext->VSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->VSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::PSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aPSSamplers, uiMin, uiMax);
-    HW.pContext->PSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->PSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::GSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aGSSamplers, uiMin, uiMax);
-    HW.pContext->GSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->GSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::HSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aHSSamplers, uiMin, uiMax);
-    HW.pContext->HSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->HSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::DSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aDSSamplers, uiMin, uiMax);
-    HW.pContext->DSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->DSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::CSApplySamplers(HArray& samplers)
 {
-    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    u32 uiMin;
-    u32 uiMax;
-    PrepareSamplerStates(samplers, pSS, m_aCSSamplers, uiMin, uiMax);
-    HW.pContext->CSSetSamplers(uiMin, uiMax - uiMin + 1, &pSS[uiMin]);
+    ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+    PrepareSamplerStates(samplers, pSS);
+    HW.pContext->CSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::SetMaxAnisotropy(u32 uiMaxAniso)
@@ -207,18 +188,5 @@ void dx10SamplerStateCache::SetMipLODBias(float uiMipLODBias)
         // This can cause fragmentation if called too often
         rec.m_pState->Release();
         CreateState(desc, &rec.m_pState);
-    }
-}
-
-void dx10SamplerStateCache::ResetDeviceState()
-{
-    for (int i = 0; i < sizeof(m_aPSSamplers) / sizeof(m_aPSSamplers[0]); ++i)
-    {
-        m_aPSSamplers[i] = (SHandle)hInvalidHandle;
-        m_aVSSamplers[i] = (SHandle)hInvalidHandle;
-        m_aGSSamplers[i] = (SHandle)hInvalidHandle;
-        m_aHSSamplers[i] = (SHandle)hInvalidHandle;
-        m_aDSSamplers[i] = (SHandle)hInvalidHandle;
-        m_aCSSamplers[i] = (SHandle)hInvalidHandle;
     }
 }
