@@ -10,6 +10,7 @@
 
 #include "alife_simulator.h"
 
+#include "GameObject.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "alife_story_registry.h"
@@ -252,6 +253,12 @@ void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
     if (!alife_object->m_bOnline)
     {
         self->release(object, true);
+        return;
+    }
+
+    if (auto pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(alife_object->ID)); pGameObject != nullptr)
+    {
+        pGameObject->DestroyObject();
         return;
     }
 
