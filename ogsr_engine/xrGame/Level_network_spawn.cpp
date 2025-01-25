@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
+#include "Level.h"
+
 #include "xrServer_Objects_ALife_All.h"
-#include "level.h"
 #include "game_cl_base.h"
 #include "net_queue.h"
 #include "ai_space.h"
@@ -108,37 +109,31 @@ extern Flags32 psAI_Flags;
 
 void CLevel::g_sv_Spawn(CSE_Abstract* E)
 {
-    //-----------------------------------------------------------------
-    //	CTimer		T(false);
-
 #ifdef DEBUG
-    Msg("* CLIENT: Spawn: %s, ID=%d", *E->s_name, E->ID);
+    Msg("* CLIENT: Spawn: %s, ID=%d", E->s_name.c_str(), E->ID);
 #endif
 
-    auto obj = Objects.net_Find(E->ID);
-    if (obj && obj->getDestroy())
+    if (auto obj = Objects.net_Find(E->ID); obj != nullptr && obj->getDestroy())
     {
         Msg("[%s]: %s[%u] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID());
         Objects.ProcessDestroyQueue();
     }
 
     // Client spawn
-    //	T.Start		();
-    CObject* O = Objects.Create(*E->s_name);
-    // Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
-
-    //	T.Start		();
-    if (!O || !O->net_Spawn(E))
+    CObject* O = Objects.Create(E->s_name.c_str());
+    if (O == nullptr || !O->net_Spawn(E))
     {
+        O->setDestroy(true);
         O->net_Destroy();
         client_spawn_manager().clear(O->ID());
         Objects.Destroy(O);
-        Msg("! Failed to spawn entity '%s'", *E->s_name);
+
+        Msg("! Failed to spawn entity '%s'", E->s_name.c_str());
     }
     else
     {
         client_spawn_manager().callback(O);
-        // Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
+
         if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
         {
             if (CurrentEntity())
@@ -147,6 +142,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
                 if (pGO)
                     pGO->On_B_NotCurrentEntity();
             }
+
             SetEntity(O);
             SetControlEntity(O);
         }
@@ -160,6 +156,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
             cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
         }
     }
+
     //---------------------------------------------------------
     Game().OnSpawn(O);
     //---------------------------------------------------------
