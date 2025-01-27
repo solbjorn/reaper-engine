@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "fs_registrator.h"
+
 #include "LocatorApi.h"
 
 #include <filesystem>
@@ -288,5 +289,5 @@ void fs_registrator::script_register(sol::state_view& lua)
 
         "file_list_open", sol::overload(&file_list_open_script, &file_list_open_script_2), "file_list_open_ex", &file_list_open_ex);
 
-    lua.set_function("getFS", [] { return &FS; });
+    lua.set("getFS", [] { return &FS; });
 }
