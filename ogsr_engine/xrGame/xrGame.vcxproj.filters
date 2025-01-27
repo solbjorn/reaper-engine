@@ -1186,6 +1186,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptReader">
       <UniqueIdentifier>{7d68be88-6eb8-49a0-90e1-0a4644f405b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptWriter">
+      <UniqueIdentifier>{aa3b1cb8-4167-4170-b6cf-7f27304a9431}</UniqueIdentifier>
+    </Filter>
     <Filter Include="AI\AScript\ScriptClasses\ScriptFS">
       <UniqueIdentifier>{7e8db227-46cc-412d-a303-584f64970cb0}</UniqueIdentifier>
     </Filter>
