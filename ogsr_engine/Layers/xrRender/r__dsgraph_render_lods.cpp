@@ -10,6 +10,9 @@ extern float r_ssaLOD_B;
 ICF bool pred_dot(const std::pair<float, u32>& _1, const std::pair<float, u32>& _2) { return _1.first < _2.first; }
 void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 {
+    if (mapLOD.empty())
+        return;
+
     if (_setup_zb)
         mapLOD.getLR(lstLODs); // front-to-back
     else
@@ -68,7 +71,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
             FLOD::_face* facets = lodV->facets;
             svector<std::pair<float, u32>, 8> selector;
             for (u32 s = 0; s < 8; s++)
-                selector.push_back(mk_pair(Ldir.dotproduct(facets[s].N), s));
+                selector.push_back(std::make_pair(Ldir.dotproduct(facets[s].N), s));
             std::sort(selector.begin(), selector.end(), pred_dot);
 
             float dot_best = selector[selector.size() - 1].first;
@@ -95,8 +98,10 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
                 V->n0 = FB.N;
                 V->n1 = FA.N;
                 V->sun_af = color_rgba(FB.v[id].c_sun, FA.v[id].c_sun, uA, uF);
-                V->t0 = FB.v[id].t;
-                V->t1 = FA.v[id].t;
+                V->t0x = FB.v[id].tx;
+                V->t0y = FB.v[id].ty;
+                V->t1x = FA.v[id].tx;
+                V->t1y = FA.v[id].ty;
                 V->rgbh0 = FB.v[id].c_rgb_hemi;
                 V->rgbh1 = FA.v[id].c_rgb_hemi;
                 V++;

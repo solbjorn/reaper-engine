@@ -9,15 +9,17 @@ public:
     struct _vertex
     {
         Fvector v;
-        Fvector2 t;
+        float tx, ty;
         u32 c_rgb_hemi; // rgb,hemi
         u8 c_sun;
     };
+    static_assert(sizeof(_vertex) == 28);
     struct _face
     {
         _vertex v[4];
         Fvector N;
     };
+    static_assert(sizeof(_face) == 124);
     struct _hw
     {
         Fvector p0;
@@ -25,11 +27,12 @@ public:
         Fvector n0;
         Fvector n1;
         u32 sun_af;
-        Fvector2 t0;
-        Fvector2 t1;
+        float t0x, t0y;
+        float t1x, t1y;
         u32 rgbh0;
         u32 rgbh1;
     };
+    static_assert(sizeof(_hw) == 76);
 
     ref_geom geom;
     _face facets[8];
