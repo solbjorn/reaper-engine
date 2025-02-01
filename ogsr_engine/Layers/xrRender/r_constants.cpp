@@ -21,30 +21,28 @@ R_constant_table::~R_constant_table()
 void R_constant_table::fatal(LPCSTR S) { FATAL(S); }
 
 // predicates
-IC bool p_search(ref_constant C, LPCSTR S) { return xr_strcmp(*C->name, S) < 0; }
-IC bool p_sort(ref_constant C1, ref_constant C2) { return xr_strcmp(C1->name, C2->name) < 0; }
+IC bool p_search(const ref_constant& C, LPCSTR S) { return xr_strcmp(*C->name, S) < 0; }
+IC bool p_sort(const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; }
 
-ref_constant R_constant_table::get(LPCSTR S)
+ref_constant R_constant_table::get(LPCSTR S) const
 {
     // assumption - sorted by name
-    c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
-    if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))
-        return 0;
-    else
-        return *I;
+    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, p_search);
+
+    if (I == table.cend() || (0 != xr_strcmp((*I)->name.c_str(), S)))
+        return nullptr;
+    return *I;
 }
-ref_constant R_constant_table::get(shared_str& S)
+ref_constant R_constant_table::get(const shared_str& S) const
 {
     // linear search, but only ptr-compare
-    c_table::iterator I = table.begin();
-    c_table::iterator E = table.end();
-    for (; I != E; ++I)
+    for (const ref_constant& C : table)
     {
-        ref_constant C = *I;
         if (C->name.equal(S))
             return C;
     }
-    return 0;
+
+    return nullptr;
 }
 
 /// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
@@ -107,10 +105,10 @@ BOOL R_constant_table::equal(R_constant_table& C)
 {
     if (table.size() != C.table.size())
         return FALSE;
-    u32 size = table.size();
-    for (u32 it = 0; it < size; it++)
+    const size_t size = table.size();
+    for (size_t it = 0; it < size; it++)
     {
-        if (!table[it]->equal(&*C.table[it]))
+        if (!table[it]->equal(*C.table[it]))
             return FALSE;
     }
 

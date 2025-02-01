@@ -22,7 +22,7 @@ protected:
     bool e_currentPaused{false};
 
     CSoundRender_Environment e_current;
-    CSoundRender_Environment* e_target{};
+    CSoundRender_Environment e_target;
 
 public:
     typedef std::pair<ref_sound_data_ptr, float> event;
@@ -30,6 +30,7 @@ public:
 
 public:
     BOOL bPresent{};
+    bool bUserEnvironment{};
     BOOL bEAX{}; // Boolean variable to indicate presence of EAX Extension
     BOOL bDeferredEAX{};
     bool bEFX{}; // boolean variable to indicate presence of EFX Extension
@@ -55,7 +56,7 @@ protected:
     xr_vector<CSoundRender_Target*> s_targets_defer;
     u32 s_targets_pu{}; // parameters update
     SoundEnvironment_LIB* s_environment{};
-    xr_vector<u16> s_environment_ids;
+    CSoundRender_Environment s_user_environment{};
 
     int m_iPauseCounter{};
 
@@ -113,7 +114,7 @@ public:
     void i_efx_listener_set(CSound_environment* E);
     bool i_efx_commit_setting();
 
-    virtual CSound_environment* DbgCurrentEnv() override { return e_target; }
+    virtual CSound_environment* DbgCurrentEnv() override { return &e_target; }
     virtual void DbgCurrentEnvPaused(bool v) override { e_currentPaused = v; }
     virtual void DbgCurrentEnvSave() override { env_save_all(); }
 
@@ -129,7 +130,7 @@ public:
     virtual void object_relcase(CObject* obj);
 
     virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f);
-    float get_occlusion(Fvector& P, float R, Fvector* occ);
+    float get_occlusion(const Fvector& P, float R, Fvector* occ);
     CSoundRender_Environment* get_environment_def();
     CSoundRender_Environment* get_environment(const Fvector& P);
 

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "GameObject.h"
+
 IC CSoundMemoryManager::CSoundMemoryManager(CCustomMonster* object, CAI_Stalker* stalker, CSound_UserDataVisitor* visitor)
 {
     VERIFY(object);

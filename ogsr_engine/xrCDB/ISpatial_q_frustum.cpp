@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "ISpatial.h"
-#include "frustum.h"
 
 class walker
 {
@@ -26,11 +24,9 @@ public:
             return;
 
         // test items
-        xr_vector<ISpatial*>::iterator _it = N->items.begin();
-        xr_vector<ISpatial*>::iterator _end = N->items.end();
-        for (; _it != _end; _it++)
+        for (auto& it : N->items)
         {
-            ISpatial* S = *_it;
+            ISpatial* S = it;
             if (0 == (S->spatial.type & mask))
                 continue;
 

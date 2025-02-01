@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include "Event.hpp"
+#include "Utils/FastDelegate.hpp"
 
 #include "pure.h"
 #include "../xrcore/ftimer.h"
@@ -23,13 +24,12 @@ class engine_impl;
 #pragma pack(push, 4)
 
 class IRenderDevice
-{
-};
+{};
 
-class ENGINE_API CRenderDeviceData
+class CRenderDeviceData
 {
 public:
-    class ENGINE_API CSecondVPParams //--#SM+#-- +SecondVP+
+    class CSecondVPParams //--#SM+#-- +SecondVP+
     {
     public:
         bool m_bCamReady; // Флаг готовности камеры (FOV, позиция, и т.п) к рендеру второго вьюпорта
@@ -122,14 +122,14 @@ public:
     bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
 };
 
-class ENGINE_API CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
+class CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
 {
 public:
 };
 
 #pragma pack(pop)
 // refs
-class ENGINE_API CRenderDevice : public CRenderDeviceBase
+class CRenderDevice : public CRenderDeviceBase
 {
 private:
     // Main objects used for creating and rendering the 3D scene
@@ -153,7 +153,6 @@ public:
     void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
 public:
-
     IRenderDeviceRender* m_pRender;
 
     BOOL m_bNearer;
@@ -182,8 +181,7 @@ public:
 
     CStats* Statistic;
 
-    CRenderDevice()
-        : m_pRender(0)
+    CRenderDevice() : m_pRender(0)
     {
         m_hWnd = NULL;
         b_is_Active = FALSE;
@@ -260,15 +258,17 @@ private:
     void second_thread();
 };
 
-extern ENGINE_API CRenderDevice Device;
+extern CRenderDevice Device;
 
 #define RDEVICE Device
 
-extern ENGINE_API bool g_bBenchmark;
+extern float refresh_rate;
 
-extern ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+extern bool g_bBenchmark;
 
-class ENGINE_API CLoadScreenRenderer : public pureRender
+extern xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+
+class CLoadScreenRenderer : public pureRender
 {
 public:
     CLoadScreenRenderer();
@@ -280,4 +280,4 @@ public:
     bool b_need_user_input{};
 };
 
-extern ENGINE_API CLoadScreenRenderer load_screen_renderer;
+extern CLoadScreenRenderer load_screen_renderer;

@@ -71,7 +71,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -96,11 +96,10 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -145,7 +144,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
@@ -171,10 +170,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -195,14 +194,13 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
       </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -244,7 +242,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -290,7 +288,7 @@
     <ClCompile Include="_compressed_normal.cpp" />
     <ClCompile Include="_math.cpp" />
     <ClCompile Include="_sphere.cpp" />
-    <ClCompile Include="cpuid.cpp" />
+    <ClCompile Include="xrcpuid.cpp" />
     <ClCompile Include="_std_extensions.cpp" />
     <ClCompile Include="clsid.cpp" />
     <ClCompile Include="xr_trims.cpp" />
@@ -355,7 +353,7 @@
     <ClInclude Include="_vector3d_ext.h" />
     <ClInclude Include="_vector4.h" />
     <ClInclude Include="vector.h" />
-    <ClInclude Include="cpuid.h" />
+    <ClInclude Include="xrcpuid.h" />
     <ClInclude Include="FixedMap.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="xrPool.h" />

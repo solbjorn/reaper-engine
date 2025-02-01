@@ -5,7 +5,7 @@
 #include "Environment.h"
 #include "bone.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 #include "../COMMON_AI/object_broker.h"
 #include "xr_object.h"
 #include "igame_level.h"
@@ -244,12 +244,15 @@ void CLensFlare::OnFrame(shared_str id)
         break;
     case lfsShow:
         m_StateBlend = m_Current ? (m_StateBlend + m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf) : 1.f + EPS;
-        if (m_StateBlend >= 1.f)
+        if (m_StateBlend >= 1.f || g_pGamePersistent->Environment().m_paused)
+        {
+            m_StateBlend = 1.f;
             m_State = lfsIdle;
+        }
         break;
     case lfsHide:
         m_StateBlend = m_Current ? (m_StateBlend - m_Current->m_StateBlendDnSpeed * Device.fTimeDelta * tf) : 0.f - EPS;
-        if (m_StateBlend <= 0.f)
+        if (m_StateBlend <= 0.f || g_pGamePersistent->Environment().m_paused)
         {
             m_State = lfsShow;
             m_Current = desc;

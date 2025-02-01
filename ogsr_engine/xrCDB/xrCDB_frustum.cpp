@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-#include "xrCDB.h"
-#include "frustum.h"
+#include <Opcode.h>
 
 using namespace CDB;
 using namespace Opcode;
@@ -68,8 +67,8 @@ public:
             return;
 
         // 1st chield
-        if (node->HasLeaf())
-            _prim(node->GetPrimitive());
+        if (node->HasPosLeaf())
+            _prim(node->GetPosPrimitive());
         else
             _stab(node->GetPos(), mask);
 
@@ -78,8 +77,8 @@ public:
             return;
 
         // 2nd chield
-        if (node->HasLeaf2())
-            _prim(node->GetPrimitive2());
+        if (node->HasNegLeaf())
+            _prim(node->GetNegPrimitive());
         else
             _stab(node->GetNeg(), mask);
     }

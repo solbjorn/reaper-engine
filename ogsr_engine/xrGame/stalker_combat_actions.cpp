@@ -53,10 +53,10 @@ const u32 CROUCH_LOOK_OUT_DELTA = 5000;
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
-typedef CStalkerActionBase::_edge_value_type _edge_value_type;
+typedef CStalkerActionBase::edge_value_type edge_value_type;
 
 #ifdef DEBUG
-//#	define SILENT_COMBAT
+// #	define SILENT_COMBAT
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ void CStalkerActionRetreatFromEnemy::execute()
             //			float											distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
             //			select_queue_params								(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
             //			object().CObjectHandler::set_goal				(eObjectActionFire1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval,
-            //max_queue_interval);
+            // max_queue_interval);
             fire();
             object().sight().setup(CSightAction(object().memory().enemy().selected(), true, true));
         }
@@ -241,7 +241,7 @@ void CStalkerActionRetreatFromEnemy::execute()
 #endif
 }
 
-_edge_value_type CStalkerActionRetreatFromEnemy::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (_edge_value_type(100)); }
+edge_value_type CStalkerActionRetreatFromEnemy::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (edge_value_type(100)); }
 
 //////////////////////////////////////////////////////////////////////////
 // CStalkerActionGetReadyToKill
@@ -727,11 +727,11 @@ void CStalkerActionDetourEnemy::initialize()
 
     object().agent_manager().member().member(m_object).cover(0);
 
-    //#ifndef SILENT_COMBAT
+    // #ifndef SILENT_COMBAT
     if (object().memory().enemy().selected()->human_being() && object().agent_manager().member().group_behaviour())
         //		object().sound().play			(eStalkerSoundNeedBackup);
         object().sound().play(eStalkerSoundDetour);
-    //#endif
+    // #endif
 }
 
 void CStalkerActionDetourEnemy::finalize()

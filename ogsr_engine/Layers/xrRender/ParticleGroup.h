@@ -30,8 +30,7 @@ public:
         shared_str m_OnDeadChildName;
         float m_Time0{};
         float m_Time1{};
-        //SEffect() { m_Flags.zero(); /*set(flEnabled)*/ }
-
+        // SEffect() { m_Flags.zero(); /*set(flEnabled)*/ }
     };
     DEFINE_VECTOR(SEffect*, EffectVec, EffectIt);
     EffectVec m_Effects;
@@ -45,7 +44,6 @@ public:
 
     void Save2(CInifile& ini);
     BOOL Load2(CInifile& ini);
-
 };
 
 class ECORE_API CParticleGroup : public dxParticleCustom
@@ -62,7 +60,6 @@ public:
         VisualVec _children_related;
         VisualVec _children_free;
 
-    public:
         void Set(dxRender_Visual* e);
         void Clear();
 
@@ -87,7 +84,7 @@ public:
         void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
 
         u32 ParticlesCount();
-        BOOL IsPlaying();
+        BOOL IsPlaying() const;
         void Play();
         void Stop(BOOL def_stop);
     };

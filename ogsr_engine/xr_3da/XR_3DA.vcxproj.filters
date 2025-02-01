@@ -189,9 +189,6 @@
     <ClInclude Include="EffectorPP.h">
       <Filter>Game API\Cameras</Filter>
     </ClInclude>
-    <ClInclude Include="xr_area.h">
-      <Filter>Game API\Collision</Filter>
-    </ClInclude>
     <ClInclude Include="xr_collide_form.h">
       <Filter>Game API\Collision</Filter>
     </ClInclude>

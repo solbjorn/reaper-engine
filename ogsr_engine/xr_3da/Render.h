@@ -1,24 +1,25 @@
-#pragma once
+#ifndef _RENDER_H_
+#define _RENDER_H_
 
 #include "../xrCDB/frustum.h"
 
 #include "vis_common.h"
-//#include "IRenderDetailModel.h"
+// #include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
-//#include "../Include/xrRender/WallMarkArray.h"
+// #include "../Include/xrRender/WallMarkArray.h"
 
 // refs
-class ENGINE_API IRenderable;
-// class ENGINE_API	IRenderVisual;
+class IRenderable;
+// class IRenderVisual;
 
-// class ENGINE_API	IBlender;
-// class ENGINE_API	CSkeletonWallmark;
-// class ENGINE_API	CKinematics;
-struct ENGINE_API FSlideWindowItem;
+// class IBlender;
+// class CSkeletonWallmark;
+// class CKinematics;
+struct FSlideWindowItem;
 
 //	Igor
 class IRenderVisual;
@@ -27,11 +28,11 @@ class CGameFont;
 // class IRenderDetailModel;
 
 extern const float fLightSmoothFactor;
-ENGINE_API extern int g_3dscopes_fps_factor;
+extern int g_3dscopes_fps_factor;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
-class ENGINE_API IRender_Light : public xr_resource
+class IRender_Light : public xr_resource
 {
 public:
     enum LT
@@ -53,7 +54,7 @@ public:
     virtual void set_volumetric_quality(float) = 0;
     virtual void set_volumetric_intensity(float) = 0;
     virtual void set_volumetric_distance(float) = 0;
-    virtual void set_indirect(bool){};
+    virtual void set_indirect(bool) {};
     virtual void set_position(const Fvector& P) = 0;
     virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
     virtual void set_cone(float angle) = 0;
@@ -73,7 +74,7 @@ public:
 
     virtual ~IRender_Light();
 };
-struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>
+struct resptrcode_light : public resptr_base<IRender_Light>
 {
     void destroy() { _set(NULL); }
 };
@@ -81,7 +82,7 @@ typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Glow)
-class ENGINE_API IRender_Glow : public xr_resource
+class IRender_Glow : public xr_resource
 {
 public:
     virtual void set_active(bool) = 0;
@@ -94,7 +95,7 @@ public:
     virtual void set_color(float r, float g, float b) = 0;
     virtual ~IRender_Glow();
 };
-struct ENGINE_API resptrcode_glow : public resptr_base<IRender_Glow>
+struct resptrcode_glow : public resptr_base<IRender_Glow>
 {
     void destroy() { _set(NULL); }
 };
@@ -102,7 +103,7 @@ typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Per-object render-specific data)
-class ENGINE_API IRender_ObjectSpecific
+class IRender_ObjectSpecific
 {
 public:
     enum mode
@@ -119,28 +120,28 @@ public:
     virtual float get_luminocity_hemi() = 0;
     virtual float* get_luminocity_hemi_cube() = 0;
 
-    virtual ~IRender_ObjectSpecific(){};
+    virtual ~IRender_ObjectSpecific() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Portal)
-class ENGINE_API IRender_Portal
+class IRender_Portal
 {
 public:
-    virtual ~IRender_Portal(){};
+    virtual ~IRender_Portal() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Sector)
-class ENGINE_API IRender_Sector
+class IRender_Sector
 {
 public:
-    virtual ~IRender_Sector(){};
+    virtual ~IRender_Sector() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
-class ENGINE_API IRender_Target
+class IRender_Target
 {
 public:
     virtual void set_blur(float f) = 0;
@@ -159,12 +160,12 @@ public:
     virtual void set_cm_imfluence(float f) = 0;
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
-    virtual ~IRender_Target(){};
+    virtual ~IRender_Target() {};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
-class ENGINE_API IRender_interface
+class IRender_interface
 {
 public:
     enum GenerationLevel
@@ -219,7 +220,7 @@ public:
     virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result) = 0;
 
     // Information
-    virtual void Statistics(CGameFont* F){};
+    virtual void Statistics(CGameFont* F) {};
 
     virtual LPCSTR getShaderPath() = 0;
     //	virtual ref_shader				getShader				(int id)									= 0;
@@ -261,9 +262,9 @@ public:
 
     // Lighting/glowing
     virtual IRender_Light* light_create() = 0;
-    virtual void light_destroy(IRender_Light* p_){};
+    virtual void light_destroy(IRender_Light* p_) {};
     virtual IRender_Glow* glow_create() = 0;
-    virtual void glow_destroy(IRender_Glow* p_){};
+    virtual void glow_destroy(IRender_Glow* p_) {};
 
     // Models
     virtual IRenderVisual* model_CreateParticles(LPCSTR name) = 0;
@@ -288,7 +289,7 @@ public:
     virtual void Render() = 0;
     virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира
     virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
-    virtual void AfterUIRender() = 0; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
+    virtual void AfterUIRender() = 0; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
 
@@ -361,9 +362,10 @@ public:
     const Fvector4& get_dof_params() const { return dof_params; }
 };
 
-ENGINE_API extern ShExports shader_exports;
+extern ShExports shader_exports;
 
-// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos. Там должно быть это значение умноженное на два.
+// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos. Там должно быть это значение умноженное на
+// два.
 constexpr size_t GRASS_SHADER_DATA_COUNT = 16;
 
 struct GRASS_SHADER_DATA
@@ -371,7 +373,7 @@ struct GRASS_SHADER_DATA
     size_t index{};
     s8 anim[GRASS_SHADER_DATA_COUNT]{};
     u16 id[GRASS_SHADER_DATA_COUNT]{};
-    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; //x,y,z - pos, w - radius_curr
+    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - pos, w - radius_curr
     Fvector4 dir[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - dir, w - str
     float radius[GRASS_SHADER_DATA_COUNT]{};
     float str_target[GRASS_SHADER_DATA_COUNT]{};
@@ -380,7 +382,7 @@ struct GRASS_SHADER_DATA
     float speed[GRASS_SHADER_DATA_COUNT]{};
 };
 
-ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
+extern GRASS_SHADER_DATA grass_shader_data;
 
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;

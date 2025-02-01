@@ -9,11 +9,8 @@
 #pragma once
 
 #include "associative_vector.h"
-template <bool v>
-struct Bool2Type
-{
-    static const bool value = v;
-};
+#include "object_broker.h"
+
 template <typename _operator_condition, typename _condition_state, typename _operator, typename _condition_evaluator, typename _operator_id_type, bool _reverse_search = false,
           typename _operator_ptr = _operator*, typename _condition_evaluator_ptr = _condition_evaluator*>
 class CProblemSolver
@@ -24,25 +21,28 @@ public:
         reverse_search = _reverse_search,
     };
 
+private:
+    typedef CProblemSolver<_operator_condition, _condition_state, _operator, _condition_evaluator, _operator_id_type, _reverse_search, _operator_ptr, _condition_evaluator_ptr>
+        self_type;
+
 public:
-    typedef _operator_condition COperatorCondition;
     typedef _operator COperator;
     typedef _condition_state CState;
     typedef _condition_evaluator CConditionEvaluator;
-    typedef _operator_ptr _operator_ptr;
-    typedef _condition_evaluator_ptr _condition_evaluator_ptr;
-    typedef typename _operator_condition::_condition_type _condition_type;
-    typedef typename _operator_condition::_value_type _value_type;
-    typedef typename _operator::_edge_value_type _edge_value_type;
+    typedef _operator_ptr operator_ptr;
+    typedef _condition_evaluator_ptr condition_evaluator_ptr_type;
+    typedef typename _operator_condition::condition_type condition_type;
+    typedef typename _operator_condition::value_type value_type;
+    typedef typename _operator::edge_value_type edge_value_type;
     typedef CState _index_type;
-    typedef _operator_id_type _edge_type;
+    typedef _operator_id_type edge_type;
 
     struct SOperator
     {
         _operator_id_type m_operator_id;
         _operator_ptr m_operator;
 
-        IC SOperator(const _operator_id_type& operator_id, _operator_ptr _operator) : m_operator_id(operator_id), m_operator(_operator) {}
+        IC SOperator(const _operator_id_type& operator_id, _operator_ptr _op) : m_operator_id(operator_id), m_operator(_op) {}
 
         bool operator<(const _operator_id_type& operator_id) const { return (m_operator_id < operator_id); }
 
@@ -50,12 +50,12 @@ public:
     };
     typedef xr_vector<SOperator> OPERATOR_VECTOR;
     typedef typename OPERATOR_VECTOR::const_iterator const_iterator;
-    typedef associative_vector<_condition_type, _condition_evaluator_ptr> EVALUATORS;
+    typedef associative_vector<condition_type, condition_evaluator_ptr_type> EVALUATORS;
 
 protected:
     OPERATOR_VECTOR m_operators;
     EVALUATORS m_evaluators;
-    xr_vector<_edge_type> m_solution;
+    xr_vector<_operator_id_type> m_solution;
     CState m_target_state;
     mutable CState m_current_state;
     mutable CState m_temp;
@@ -65,13 +65,13 @@ protected:
     bool m_failed;
 
 private:
-    template <bool>
-    IC bool is_goal_reached_impl(const _index_type& vertex_index) const
+    template <bool a>
+    IC bool is_goal_reached_impl(std::enable_if_t<!a, const _index_type&> vertex_index) const
     {
         return is_goal_reached_impl(vertex_index);
     }
-    template <>
-    IC bool is_goal_reached_impl<true>(const _index_type& vertex_index) const
+    template <bool a>
+    IC bool is_goal_reached_impl(std::enable_if_t<a, const _index_type&> vertex_index) const
     {
         return is_goal_reached_impl(vertex_index, true);
     }
@@ -79,22 +79,24 @@ private:
     IC bool is_goal_reached_impl(const _index_type& vertex_index) const;
     IC bool is_goal_reached_impl(const _index_type& vertex_index, bool) const;
 
-    /*	template <bool>
-        IC		_edge_value_type			estimate_edge_weight_impl(const _index_type	&vertex_index) const {return estimate_edge_weight_impl(vertex_index);}
-        template <>
-        IC		_edge_value_type			estimate_edge_weight_impl<true>(const _index_type	&vertex_index) const {return estimate_edge_weight_impl(vertex_index,true);}*/
+    IC edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index) const;
+    IC edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index, bool) const;
 
-    template <bool _search>
-    IC _edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index) const
+private:
+    struct helper
     {
-        return estimate_edge_weight_impl_help(vertex_index, Bool2Type<_search>());
-    }
+        template <bool a>
+        static IC edge_value_type estimate_edge_weight_impl(std::enable_if_t<!a, self_type const&> self, const _index_type& vertex_index)
+        {
+            return self.estimate_edge_weight_impl(vertex_index);
+        }
 
-    IC _edge_value_type estimate_edge_weight_impl_help(const _index_type& vertex_index, Bool2Type<false>) const { return estimate_edge_weight_impl(vertex_index); }
-    IC _edge_value_type estimate_edge_weight_impl_help(const _index_type& vertex_index, Bool2Type<true>) const { return estimate_edge_weight_impl(vertex_index, true); }
-
-    IC _edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index) const;
-    IC _edge_value_type estimate_edge_weight_impl(const _index_type& vertex_index, bool) const;
+        template <bool a>
+        static IC edge_value_type estimate_edge_weight_impl(std::enable_if_t<a, self_type const&> self, const _index_type& vertex_index)
+        {
+            return self.estimate_edge_weight_impl(vertex_index, true);
+        }
+    }; // struct helper
 
 protected:
 #ifdef DEBUG
@@ -110,16 +112,16 @@ public:
     IC bool actual() const;
 
     // graph interface
-    IC _edge_value_type get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const;
+    IC edge_value_type get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const;
     IC bool is_accessible(const _index_type& vertex_index) const;
     IC const _index_type& value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const;
     IC void begin(const _index_type& vertex_index, const_iterator& b, const_iterator& e) const;
     IC bool is_goal_reached(const _index_type& vertex_index) const;
-    IC _edge_value_type estimate_edge_weight(const _index_type& vertex_index) const;
+    IC edge_value_type estimate_edge_weight(const _index_type& vertex_index) const;
 
     // operator interface
-    IC virtual void add_operator(const _edge_type& operator_id, _operator_ptr _operator);
-    IC void remove_operator(const _edge_type& operator_id);
+    IC virtual void add_operator(const _operator_id_type& operator_id, _operator_ptr _op);
+    IC virtual void remove_operator(const _operator_id_type& operator_id);
     IC _operator_ptr get_operator(const _operator_id_type& operator_id);
     IC const OPERATOR_VECTOR& operators() const;
 
@@ -129,23 +131,17 @@ public:
     IC const CState& target_state() const;
 
     // evaluator interface
-    IC virtual void add_evaluator(const _condition_type& condition_id, _condition_evaluator_ptr evaluator);
-    IC void remove_evaluator(const _condition_type& condition_id);
-    IC _condition_evaluator_ptr evaluator(const _condition_type& condition_id) const;
+    IC virtual void add_evaluator(const condition_type& condition_id, condition_evaluator_ptr_type evaluator);
+    IC virtual void remove_evaluator(const condition_type& condition_id);
+    IC condition_evaluator_ptr_type evaluator(const condition_type& condition_id) const;
     IC const EVALUATORS& evaluators() const;
-    IC bool evaluate_condition(typename xr_vector<COperatorCondition>::const_iterator& I, typename xr_vector<COperatorCondition>::const_iterator& E,
-                               const _condition_type& condition_id) const;
+    IC bool evaluate_condition(typename xr_vector<_operator_condition>::const_iterator& I, typename xr_vector<_operator_condition>::const_iterator& E,
+                               const condition_type& condition_id) const;
 
     // solver interface
     IC void solve();
-    IC const xr_vector<_edge_type>& solution() const;
+    IC const xr_vector<_operator_id_type>& solution() const;
     virtual void clear();
 };
-
-#include "ai_space.h"
-
-#include "graph_engine.h"
-#include "object_broker.h"
-#include "Level.h"
 
 #include "problem_solver_inline.h"

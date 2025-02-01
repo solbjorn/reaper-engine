@@ -128,12 +128,12 @@ enum ECombatType
     eCombatTypeDummy = u32(-1),
 };
 
-//возможность подключения аддонов
+// возможность подключения аддонов
 enum EWeaponAddonStatus
 {
-    eAddonDisabled = 0, //нельзя присоеденить
-    eAddonPermanent = 1, //постоянно подключено по умолчанию
-    eAddonAttachable = 2 //можно присоединять
+    eAddonDisabled = 0, // нельзя присоеденить
+    eAddonPermanent = 1, // постоянно подключено по умолчанию
+    eAddonAttachable = 2 // можно присоединять
 };
 
 IC EHitType g_tfString2HitType(LPCSTR caHitType)
@@ -165,7 +165,7 @@ IC EHitType g_tfString2HitType(LPCSTR caHitType)
     return (eHitTypeMax);
 #endif
 }
-xr_token hit_types_token[];
+extern xr_token hit_types_token[];
 
 IC LPCSTR g_cafHitType2String(EHitType tHitType) { return get_token_name(hit_types_token, tHitType); }
 

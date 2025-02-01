@@ -14,7 +14,7 @@
 #include "Inventory.h"
 #include "Wound.h"
 
-//#include "../lua_tools.h"
+// #include "../lua_tools.h"
 
 using namespace luabind;
 
@@ -23,7 +23,7 @@ CPHMovementControl* get_movement(CActor* pActor) { return pActor->character_phys
 #pragma optimize("s", on)
 
 typedef CScriptActor::SConditionChangeV SConditionChangeV;
-typedef float SConditionChangeV::*SConditionChangeVField;
+typedef float SConditionChangeV::* SConditionChangeVField;
 
 template <SConditionChangeVField field>
 float get_change_v(CActorCondition* C)
@@ -143,7 +143,7 @@ void CScriptActor::script_register(lua_State* L)
                .def_readwrite("max_walk_weight", &CActorCondition::m_MaxWalkWeight)
 
                //.def_readwrite("health_hit_part",			&CActorCondition::m_fHealthHitPart)
-               .def_readwrite("power_hit_part", &CActorCondition::m_fPowerHitPart)
+               .def_readwrite("power_hit_part", static_cast<float CActorCondition::*>(&CActorCondition::m_fPowerHitPart))
 
                .def_readwrite("limping_power_begin", &CActorCondition::m_fLimpingPowerBegin)
                .def_readwrite("limping_power_end", &CActorCondition::m_fLimpingPowerEnd)
@@ -230,43 +230,19 @@ void CScriptActor::script_register(lua_State* L)
                .def("IsDetectorActive", &CActor::IsDetectorActive)
 
                .property("active_cam", &get_active_cam)
-               .def("set_active_cam", &CActor::cam_Set)
-           ,
+               .def("set_active_cam", &CActor::cam_Set),
            class_<CActorObject, bases<CActor, CEntityAlive>>("CActor") // хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
            ,
            class_<enum_exporter<EActorCameras>>("EActorCameras")
-               .enum_("cameras")[
-                   value("eacFirstEye", int(eacFirstEye)),
-                   value("eacLookAt", int(eacLookAt)),
-                   value("eacFreeLook", int(eacFreeLook)),
-                   value("eacMaxCam", int(eacMaxCam))
-               ]
-           ,
+               .enum_("cameras")[value("eacFirstEye", int(eacFirstEye)), value("eacLookAt", int(eacLookAt)), value("eacFreeLook", int(eacFreeLook)),
+                                 value("eacMaxCam", int(eacMaxCam))],
            class_<enum_exporter<EInventorySlots>>("inventory_slots")
-               .enum_("inventory_slots")[
-                   value("KNIFE", int(KNIFE)),
-                   value("FIRST_WEAPON", int(FIRST_WEAPON)),
-                   value("SECOND_WEAPON", int(SECOND_WEAPON)),
-                   value("GRENADE", int(GRENADE)),
-                   value("APPARATUS", int(APPARATUS)),
-                   value("BOLT", int(BOLT)),
-                   value("OUTFIT", int(OUTFIT)),
-                   value("PDA", int(PDA)),
-                   value("DETECTOR", int(DETECTOR)),
-                   value("TORCH", int(TORCH)),
-                   value("HELMET", int(HELMET)),
-                   value("NIGHT_VISION", int(NIGHT_VISION)),
-                   value("BIODETECTOR", int(BIODETECTOR)),
-                   value("TOTAL", int(TOTAL)),
-                   value("NO_ACTIVE", int(NO_ACTIVE))
-               ]
-           ,
+               .enum_("inventory_slots")[value("KNIFE", int(KNIFE)), value("FIRST_WEAPON", int(FIRST_WEAPON)), value("SECOND_WEAPON", int(SECOND_WEAPON)),
+                                         value("GRENADE", int(GRENADE)), value("APPARATUS", int(APPARATUS)), value("BOLT", int(BOLT)), value("OUTFIT", int(OUTFIT)),
+                                         value("PDA", int(PDA)), value("DETECTOR", int(DETECTOR)), value("TORCH", int(TORCH)), value("HELMET", int(HELMET)),
+                                         value("NIGHT_VISION", int(NIGHT_VISION)), value("BIODETECTOR", int(BIODETECTOR)), value("TOTAL", int(TOTAL)),
+                                         value("NO_ACTIVE", int(NO_ACTIVE))],
            class_<enum_exporter<EItemPlace>>("item_place")
-               .enum_("item_place")[
-                   value("undefined", int(eItemPlaceUndefined)),
-                   value("slot", int(eItemPlaceSlot)),
-                   value("belt", int(eItemPlaceBelt)),
-                   value("ruck", int(eItemPlaceRuck))
-               ]
-    ];
+               .enum_("item_place")[value("undefined", int(eItemPlaceUndefined)), value("slot", int(eItemPlaceSlot)), value("belt", int(eItemPlaceBelt)),
+                                    value("ruck", int(eItemPlaceRuck))]];
 }

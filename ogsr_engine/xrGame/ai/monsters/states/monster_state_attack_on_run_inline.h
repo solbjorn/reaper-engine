@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../monster_velocity_space.h"
+#include "ai_object_location.h"
 #include "level_graph.h"
+
 #define TEMPLATE_SIGNATURE template <typename _Object>
 
 #define ATTACK_ON_RUN_STATE CStateMonsterAttackOnRun<_Object>

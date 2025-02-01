@@ -341,8 +341,8 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     case RM_SINGLE:
     case RM_SKINNING_1B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            //u32 size = V.vCount * sizeof(vertBoned1W);
-            //u32 crc = crc32(_verts_, size);
+            // u32 size = V.vCount * sizeof(vertBoned1W);
+            // u32 crc = crc32(_verts_, size);
             Vertices1W.create(V.vCount, (vertBoned1W*)_verts_);
         }
 
@@ -384,8 +384,8 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_2B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            //u32 size = V.vCount * sizeof(vertBoned2W);
-            //u32 crc = crc32(_verts_, size);
+            // u32 size = V.vCount * sizeof(vertBoned2W);
+            // u32 crc = crc32(_verts_, size);
             Vertices2W.create(V.vCount, (vertBoned2W*)_verts_);
         }
 
@@ -428,8 +428,8 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_3B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            //u32 size = V.vCount * sizeof(vertBoned3W);
-            //u32 crc = crc32(_verts_, size);
+            // u32 size = V.vCount * sizeof(vertBoned3W);
+            // u32 crc = crc32(_verts_, size);
             Vertices3W.create(V.vCount, (vertBoned3W*)_verts_);
         }
 
@@ -473,8 +473,8 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_4B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            //u32 size = V.vCount * sizeof(vertBoned4W);
-            //u32 crc = crc32(_verts_, size);
+            // u32 size = V.vCount * sizeof(vertBoned4W);
+            // u32 crc = crc32(_verts_, size);
             Vertices4W.create(V.vCount, (vertBoned4W*)_verts_);
         }
 
@@ -522,7 +522,6 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
 
 #ifdef DEBUG
 
@@ -681,7 +680,7 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
         result = _PickBoneSoft4W(r, dist, start, dir, indices + iBase, *faces);
     }
 
-return result;
+    return result;
 }
 BOOL CSkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
@@ -752,11 +751,11 @@ void CSkeletonX_PM::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, con
 }
 
 template <typename vertex_buffer_type>
-IC void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneData::FacesVec& faces, SEnumVerticesCallback& C)
+static void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneData::FacesVec& faces, SEnumVerticesCallback& C)
 {
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
+    for (u16 face : faces)
     {
-        u32 idx = (*it) * 3;
+        u32 idx = face * 3;
         for (u32 k = 0; k < 3; k++)
         {
             Fvector P;

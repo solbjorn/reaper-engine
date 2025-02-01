@@ -71,7 +71,7 @@ struct ECORE_API R_constant_load
     u16 index; // linear index (pixel)
     u16 cls; // element class
 
-    R_constant_load() : index(u16(-1)), cls(u16(-1)){};
+    R_constant_load() : index(u16(-1)), cls(u16(-1)) {};
 
     IC BOOL equal(R_constant_load& C) { return (index == C.index) && (cls == C.cls); }
 };
@@ -91,7 +91,7 @@ struct ECORE_API R_constant : public xr_resource
     R_constant_load samp;
     R_constant_setup* handler;
 
-    R_constant() : type(u16(-1)), destination(0), handler(NULL){};
+    R_constant() : type(u16(-1)), destination(0), handler(NULL) {};
 
     IC R_constant_load& get_load(u32 destination)
     {
@@ -111,8 +111,8 @@ struct ECORE_API R_constant : public xr_resource
 
     IC BOOL equal(R_constant& C)
     {
-        return (0 == xr_strcmp(name, C.name)) && (type == C.type) && (destination == C.destination) && ps.equal(C.ps) && vs.equal(C.vs) && samp.equal(C.samp) &&
-            handler == C.handler;
+        return !xr_strcmp(name, C.name) && type == C.type && destination == C.destination && ps.equal(C.ps) && vs.equal(C.vs) && gs.equal(C.gs) && hs.equal(C.hs) &&
+            ds.equal(C.ds) && cs.equal(C.cs) && samp.equal(C.samp) && handler == C.handler;
     }
     IC BOOL equal(R_constant* C) { return equal(*C); }
 };
@@ -135,6 +135,7 @@ public:
     typedef std::pair<u32, ref_cbuffer> cb_table_record;
     typedef xr_vector<cb_table_record> cb_table;
     cb_table m_CBTable;
+
 private:
     void fatal(LPCSTR s);
 
@@ -147,14 +148,12 @@ public:
     void clear();
     BOOL parse(void* desc, u32 destination);
     void merge(R_constant_table* C);
-    ref_constant get(LPCSTR name); // slow search
-    ref_constant get(shared_str& name); // fast search
+    ref_constant get(LPCSTR name) const; // slow search
+    ref_constant get(const shared_str& name) const; // fast search
 
     BOOL equal(R_constant_table& C);
     BOOL equal(R_constant_table* C) { return equal(*C); }
     BOOL empty() { return 0 == table.size(); }
-
-private:
 };
 typedef resptr_core<R_constant_table, resptr_base<R_constant_table>> ref_ctable;
 

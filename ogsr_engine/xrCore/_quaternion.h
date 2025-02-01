@@ -241,7 +241,7 @@ public:
     }
 
     // validates numerical stability
-    IC const BOOL isValid(void) const
+    IC BOOL isValid() const
     {
         if ((w * w) < 0.0f)
             return false;
@@ -254,8 +254,8 @@ public:
         return true;
     }
 
-    // checks for Unit-length quanternion
-    IC const BOOL isUnit(void)
+    // checks for Unit-length quaternion
+    IC BOOL isUnit() const
     {
         T m = magnitude();
 
@@ -265,7 +265,7 @@ public:
     }
 
     // normalizes Q to be a unit geQuaternion
-    IC SelfRef normalize(void)
+    IC SelfRef normalize()
     {
         T m, one_over_magnitude;
 

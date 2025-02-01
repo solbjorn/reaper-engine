@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "cpuid.h"
+#include "xrcpuid.h"
 #include <powerbase.h>
 #pragma comment(lib, "PowrProf.lib")
 #include <VersionHelpers.h>

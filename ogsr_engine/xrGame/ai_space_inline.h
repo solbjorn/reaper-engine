@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "graph_engine.h"
-
 IC CGameGraph& CAI_Space::game_graph() const
 {
     VERIFY(m_game_graph);
@@ -18,24 +16,6 @@ IC CGameGraph& CAI_Space::game_graph() const
 
 IC CGameGraph* CAI_Space::get_game_graph() const { return (m_game_graph); }
 
-void CAI_Space::set_game_graph(CGameGraph* graph)
-{
-    if (graph)
-    {
-        VERIFY(!m_game_graph);
-    }
-    else
-    {
-        VERIFY(m_game_graph);
-    }
-
-    m_game_graph = graph;
-    xr_delete(m_graph_engine);
-
-    if (m_game_graph)
-        m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
-}
-
 IC CLevelGraph& CAI_Space::level_graph() const
 {
     VERIFY(m_level_graph);
@@ -43,10 +23,6 @@ IC CLevelGraph& CAI_Space::level_graph() const
 }
 
 IC const CLevelGraph* CAI_Space::get_level_graph() const { return (m_level_graph); }
-
-IC const CGameLevelCrossTable& CAI_Space::cross_table() const { return (game_graph().cross_table()); }
-
-IC const CGameLevelCrossTable* CAI_Space::get_cross_table() const { return (&game_graph().cross_table()); }
 
 IC CEF_Storage& CAI_Space::ef_storage() const
 {

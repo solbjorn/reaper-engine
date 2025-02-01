@@ -1,10 +1,10 @@
-#include "stdafx.h"
+#include "../stdafx.h"
 
 #include "net_server.h"
 
 ENGINE_API ClientID BroadcastCID(0xffffffff);
 
-void ip_address::set(LPCSTR src_string) //Это нужно
+void ip_address::set(LPCSTR src_string) // Это нужно
 {
     u32 buff[4];
     int cnt = sscanf(src_string, "%d.%d.%d.%d", &buff[0], &buff[1], &buff[2], &buff[3]);
@@ -33,7 +33,7 @@ IClient::IClient(CTimer* timer) : server(NULL)
 
 IClient::~IClient() {}
 
-IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) //пока не резать. net_Players - не пустой вектор
+IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не резать. net_Players - не пустой вектор
 {
     if (0 == ID.value())
         return NULL;
@@ -83,13 +83,13 @@ void IPureServer::Disconnect() {}
 
 void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout) { FATAL(""); }
 
-void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout) //Отсюда отправляются данные в IPureClient::OnMessage
+void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout) // Отсюда отправляются данные в IPureClient::OnMessage
 {
     /// Msg("~~[%s] Send to id [%u] data: [%p], flags: [%u], dwTimeout: [%u]", __FUNCTION__, ID.value(), P.B.data, dwFlags, dwTimeout);
     SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
 }
 
-void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags) //Отсюда отправляются данные в IPureClient::OnMessage
+void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags) // Отсюда отправляются данные в IPureClient::OnMessage
 {
     csPlayers.Enter();
 

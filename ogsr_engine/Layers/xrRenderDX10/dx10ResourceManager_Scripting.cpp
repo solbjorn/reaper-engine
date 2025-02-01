@@ -736,14 +736,13 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     }
 
     // Search equal in shaders array
-    for (u32 it = 0; it < v_shaders.size(); it++)
-        if (S.equal(v_shaders[it]))
-            return v_shaders[it];
+    for (Shader* v_shader : v_shaders)
+        if (S.equal(v_shader))
+            return v_shader;
 
     // Create _new_ entry
-    Shader* N = xr_new<Shader>(S);
+    Shader* N = v_shaders.emplace_back(xr_new<Shader>(S));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_shaders.push_back(N);
     return N;
 }
 
@@ -766,6 +765,6 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     element(ac, t_0, t_1, t_d);
 
     r_End();
-    ShaderElement* _r = dxRenderDeviceRender::Instance().Resources->_CreateElement(E);
+    ShaderElement* _r = dxRenderDeviceRender::Instance().Resources->_CreateElement(std::move(E));
     return _r;
 }

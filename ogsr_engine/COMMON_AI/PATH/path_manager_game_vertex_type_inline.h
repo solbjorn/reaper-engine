@@ -16,7 +16,7 @@ TEMPLATE_SPECIALIZATION
 CGameVertexTypePathManager::~CPathManager() {}
 
 TEMPLATE_SPECIALIZATION
-IC void CGameVertexTypePathManager::setup(const _Graph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
+IC void CGameVertexTypePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
                                           const _index_type& _goal_node_index, _Parameters& parameters)
 {
     inherited::setup(_graph, _data_storage, _path, _start_node_index, _goal_node_index, parameters);

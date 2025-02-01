@@ -82,7 +82,7 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("save", &CScriptIniFile::save_as)
                   .def("iterate_sections", &iterate_sections)
 
-                  .def_readwrite("readonly", &CScriptIniFile::bReadOnly)
+                  .def_readwrite("readonly", static_cast<bool CScriptIniFile::*>(&CScriptIniFile::bReadOnly))
 
                   .def("r_line", &::r_line, pure_out_value<4>() + pure_out_value<5>())
 
@@ -107,8 +107,7 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("w_vector", &CScriptIniFile::w_fvector3)
                   .def("w_vector4", &CScriptIniFile::w_fvector4),
 
-              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), 
-              def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
+              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
               def(
                   "create_ini_file", // чтение ini как текста, без возможности сохранить
                   [](const char* ini_string) {

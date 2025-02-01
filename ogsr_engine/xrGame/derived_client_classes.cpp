@@ -134,20 +134,20 @@ void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Descripti
 
 luabind::object get_slots(CInventoryItem* itm)
 {
-    //lua_State* L = ai().script_engine().lua();
+    // lua_State* L = ai().script_engine().lua();
 
-    //lua_createtable(L, 0, 0);
-    //int tidx = lua_gettop(L);
-    //if (itm)
+    // lua_createtable(L, 0, 0);
+    // int tidx = lua_gettop(L);
+    // if (itm)
     //{
-    //    for (u32 i = 0; i < itm->GetSlotsCount(); i++)
-    //    {
-    //        lua_pushinteger(L, i + 1); // key
-    //        lua_pushinteger(L, itm->GetSlots()[i]);
-    //        lua_settable(L, tidx);
-    //    }
-    //}
-    
+    //     for (u32 i = 0; i < itm->GetSlotsCount(); i++)
+    //     {
+    //         lua_pushinteger(L, i + 1); // key
+    //         lua_pushinteger(L, itm->GetSlots()[i]);
+    //         lua_settable(L, tidx);
+    //     }
+    // }
+
     auto table = luabind::newtable(ai().script_engine().lua());
 
     if (itm)
@@ -371,24 +371,24 @@ void CWeaponScript::script_register(lua_State* L)
                   .def_readwrite("PDM_crouch", &CWeapon::m_fPDM_disp_crouch)
                   .def_readwrite("PDM_crouch_no_acc", &CWeapon::m_fPDM_disp_crouch_no_acc)
 
-                  .def_readwrite("hit_type", &CWeapon::m_eHitType)
-                  .def_readwrite("hit_impulse", &CWeapon::fHitImpulse)
-                  .def_readwrite("bullet_speed", &CWeapon::m_fStartBulletSpeed)
-                  .def_readwrite("fire_distance", &CWeapon::fireDistance)
-                  .def_readwrite("fire_dispersion_base", &CWeapon::fireDispersionBase)
-                  .def_readwrite("time_to_aim", &CWeapon::m_fTimeToAim)
-                  .def_readwrite("time_to_fire", &CWeapon::fTimeToFire)
-                  .def_readwrite("use_aim_bullet", &CWeapon::m_bUseAimBullet)
+                  .def_readwrite("hit_type", static_cast<ALife::EHitType CWeapon::*>(&CWeapon::m_eHitType))
+                  .def_readwrite("hit_impulse", static_cast<float CWeapon::*>(&CWeapon::fHitImpulse))
+                  .def_readwrite("bullet_speed", static_cast<float CWeapon::*>(&CWeapon::m_fStartBulletSpeed))
+                  .def_readwrite("fire_distance", static_cast<float CWeapon::*>(&CWeapon::fireDistance))
+                  .def_readwrite("fire_dispersion_base", static_cast<float CWeapon::*>(&CWeapon::fireDispersionBase))
+                  .def_readwrite("time_to_aim", static_cast<float CWeapon::*>(&CWeapon::m_fTimeToAim))
+                  .def_readwrite("time_to_fire", static_cast<float CWeapon::*>(&CWeapon::fTimeToFire))
+                  .def_readwrite("use_aim_bullet", static_cast<BOOL CWeapon::*>(&CWeapon::m_bUseAimBullet))
                   .property("hit_power", &get_hit_power, &set_hit_power)
 
                   .def_readwrite("ammo_mag_size", &CWeapon::iMagazineSize)
                   .def_readwrite("scope_dynamic_zoom", &CWeapon::m_bScopeDynamicZoom)
                   .def_readwrite("zoom_enabled", &CWeapon::m_bZoomEnabled)
                   .def_readwrite("zoom_factor", &CWeapon::m_fZoomFactor)
-                  .def_readwrite("zoom_rotate_time", &CWeapon::m_fZoomRotateTime)
+                  .def_readwrite("zoom_rotate_time", static_cast<float CWeapon::*>(&CWeapon::m_fZoomRotateTime))
                   .def_readwrite("iron_sight_zoom_factor", &CWeapon::m_fIronSightZoomFactor)
                   .def_readwrite("scope_zoom_factor", &CWeapon::m_fScopeZoomFactor)
-                  .def_readonly("zoom_rotation_factor", &CWeapon::m_fZoomRotationFactor)
+                  .def_readonly("zoom_rotation_factor", static_cast<float CWeapon::*>(&CWeapon::m_fZoomRotationFactor))
                   // переменные для подстройки положения аддонов из скриптов:
 
                   .def_readwrite("grenade_launcher_x", &CWeapon::m_iGrenadeLauncherX)
@@ -444,25 +444,14 @@ void CWeaponScript::script_register(lua_State* L)
                   .def("switch_gl", &CWeaponMagazinedWGrenade::SwitchMode),
               class_<CMissile, CInventoryItemObject>("CMissile")
                   .def_readwrite("destroy_time", &CMissile::m_dwDestroyTime)
-                  .def_readwrite("destroy_time_max", &CMissile::m_dwDestroyTimeMax)
-              ,
+                  .def_readwrite("destroy_time_max", &CMissile::m_dwDestroyTimeMax),
               class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonStatus>>("addon_status")
-                  .enum_("status")[
-                      value("disabled", int(CSE_ALifeItemWeapon::eAddonDisabled)),
-                      value("permanent", int(CSE_ALifeItemWeapon::eAddonPermanent)),
-                      value("attachable", int(CSE_ALifeItemWeapon::eAddonAttachable))
-                  ]
-              ,
+                  .enum_("status")[value("disabled", int(CSE_ALifeItemWeapon::eAddonDisabled)), value("permanent", int(CSE_ALifeItemWeapon::eAddonPermanent)),
+                                   value("attachable", int(CSE_ALifeItemWeapon::eAddonAttachable))],
               class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonState>>("addon_flags")
-                  .enum_("flags")[
-                      value("scope", int(CSE_ALifeItemWeapon::eWeaponAddonScope)),
-                      value("grenade_launcher", int(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)),
-                      value("silencer", int(CSE_ALifeItemWeapon::eWeaponAddonSilencer)),
-                      value("laser", int(CSE_ALifeItemWeapon::eWeaponAddonLaserOn)),
-                      value("flashlight", int(CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn)),
-                      value("misfire", int(CSE_ALifeItemWeapon::eWeaponMisfire))
-                  ]
-    ];
+                  .enum_("flags")[value("scope", int(CSE_ALifeItemWeapon::eWeaponAddonScope)), value("grenade_launcher", int(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)),
+                                  value("silencer", int(CSE_ALifeItemWeapon::eWeaponAddonSilencer)), value("laser", int(CSE_ALifeItemWeapon::eWeaponAddonLaserOn)),
+                                  value("flashlight", int(CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn)), value("misfire", int(CSE_ALifeItemWeapon::eWeaponMisfire))]];
 }
 
 void CCustomMonsterScript::script_register(lua_State* L)
@@ -471,6 +460,5 @@ void CCustomMonsterScript::script_register(lua_State* L)
                   .def("get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId)
                   .def_readwrite("visible_for_zones", &CCustomMonster::m_visible_for_zones)
                   .def("anomaly_detector", &CCustomMonster::anomaly_detector)
-                  .def_readonly("curr_speed", &CCustomMonster::m_fCurSpeed)
-    ];
+                  .def_readonly("curr_speed", &CCustomMonster::m_fCurSpeed)];
 }

@@ -8,8 +8,8 @@
 // T_INIT -  класс где определена статическая InitXmlIdToIndex
 //           функция инициализации file_str и tag_name
 
-//структура хранит строковый id элемента
-//файл и позицию, где этот элемент находится
+// структура хранит строковый id элемента
+// файл и позицию, где этот элемент находится
 struct ITEM_DATA
 {
     shared_str id;
@@ -32,10 +32,10 @@ private:
     static T_VECTOR* m_pItemDataVector;
 
 protected:
-    //имена xml файлов (разделенных запятой) из которых
-    //производить загрузку элементов
+    // имена xml файлов (разделенных запятой) из которых
+    // производить загрузку элементов
     static LPCSTR file_str;
-    //имена тегов
+    // имена тегов
     static LPCSTR tag_name;
 
 public:
@@ -60,12 +60,12 @@ public:
 
     static const int GetMaxIndex() { return m_pItemDataVector->size() - 1; }
 
-    //удаление статичекого массива
+    // удаление статичекого массива
     static void DeleteIdToIndexData();
 };
 
 TEMPLATE_SPECIALIZATION
-typename T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = NULL;
+T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = NULL;
 
 TEMPLATE_SPECIALIZATION
 LPCSTR CSXML_IdToIndex::file_str = NULL;
@@ -79,7 +79,7 @@ TEMPLATE_SPECIALIZATION
 CSXML_IdToIndex::~CXML_IdToIndex() {}
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_assert)
+const ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_assert)
 {
     T_INIT::InitXmlIdToIndex();
 
@@ -104,7 +104,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, boo
 }
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
+const ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 {
     if ((size_t)index >= m_pItemDataVector->size())
     {
@@ -123,7 +123,7 @@ void CSXML_IdToIndex::DeleteIdToIndexData()
 }
 
 TEMPLATE_SPECIALIZATION
-typename void CSXML_IdToIndex::InitInternal()
+void CSXML_IdToIndex::InitInternal()
 {
     VERIFY(!m_pItemDataVector);
     T_INIT::InitXmlIdToIndex();
@@ -147,7 +147,7 @@ typename void CSXML_IdToIndex::InitInternal()
         bool xml_result = uiXml->Init(CONFIG_PATH, GAME_PATH, xml_file_full.c_str());
         R_ASSERT3(xml_result, "error while parsing XML file", xml_file_full.c_str());
 
-        //общий список
+        // общий список
         int items_num = uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 
         for (int i = 0; i < items_num; ++i)
@@ -158,7 +158,7 @@ typename void CSXML_IdToIndex::InitInternal()
             sprintf_s(buf, "id for item don't set, number %d in %s", i, xml_file);
             R_ASSERT2(item_name, buf);
 
-            //проверетить ID на уникальность
+            // проверетить ID на уникальность
             T_VECTOR::iterator t_it = m_pItemDataVector->begin();
             for (; m_pItemDataVector->end() != t_it; t_it++)
             {

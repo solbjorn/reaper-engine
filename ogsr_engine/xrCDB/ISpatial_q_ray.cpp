@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "cpuid.h"
-#include "ISpatial.h"
+#include "xrcpuid.h"
+
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <xmmintrin.h>
@@ -205,19 +205,22 @@ public:
         ray.pos.set(_start);
         ray.inv_dir.set(1.f, 1.f, 1.f).div(_dir);
         ray.fwd_dir.set(_dir);
-        if (!b_use_sse)
+        if constexpr (!b_use_sse)
         {
             // for FPU - zero out inf
             if (_abs(_dir.x) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.x = 0;
             if (_abs(_dir.y) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.y = 0;
             if (_abs(_dir.z) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.z = 0;
         }
@@ -257,7 +260,7 @@ public:
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
         // Actual ray/aabb test
-        if (b_use_sse)
+        if constexpr (b_use_sse)
         {
             // use SSE
             float d;
@@ -277,11 +280,9 @@ public:
         }
 
         // test items
-        xr_vector<ISpatial*>::iterator _it = N->items.begin();
-        xr_vector<ISpatial*>::iterator _end = N->items.end();
-        for (; _it != _end; _it++)
+        for (auto& it : N->items)
         {
-            ISpatial* S = *_it;
+            ISpatial* S = it;
             if (mask != (S->spatial.type & mask))
                 continue;
             Fsphere& sS = S->spatial.sphere;
@@ -289,7 +290,7 @@ public:
             Fsphere::ERP_Result result = sS.intersect(ray.pos, ray.fwd_dir, dist);
             if (result != Fsphere::rpNone)
             {
-                if (b_nearest)
+                if constexpr (b_nearest)
                 {
                     switch (result)
                     {
@@ -299,7 +300,7 @@ public:
                     range2 = range * range;
                 }
                 space->q_result->push_back(S);
-                if (b_first)
+                if constexpr (b_first)
                     return;
             }
         }
@@ -313,8 +314,11 @@ public:
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
             walk(N->children[octant], c_C, c_R);
-            if (b_first && !space->q_result->empty())
-                return;
+            if constexpr (b_first)
+            {
+                if (!space->q_result->empty())
+                    return;
+            }
         }
     }
 };

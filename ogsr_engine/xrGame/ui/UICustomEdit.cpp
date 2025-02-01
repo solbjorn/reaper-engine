@@ -52,7 +52,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
     //	if(pWnd == GetParent())
     //	{
-    //кто-то другой захватил клавиатуру
+    // кто-то другой захватил клавиатуру
     if (msg == WINDOW_KEYBOARD_CAPTURE_LOST)
     {
         m_bInputFocus = false;
@@ -86,11 +86,11 @@ bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
     return false;
 }
 
-bool CUICustomEdit::OnKeyboardHold(int dik) { return true; }
+bool CUICustomEdit::OnKeyboardHold(u32 dik) { return true; }
 
-bool CUICustomEdit::KeyReleased(int dik) { return true; }
+bool CUICustomEdit::KeyReleased(u32 dik) { return true; }
 
-bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUICustomEdit::OnKeyboard(u32 dik, EUIMessages keyboard_action)
 {
     if (!m_bInputFocus)
         return false;
@@ -116,7 +116,7 @@ bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
     return false;
 }
 
-bool CUICustomEdit::KeyPressed(int dik)
+bool CUICustomEdit::KeyPressed(u32 dik)
 {
     bool bChanged = false;
 
@@ -198,8 +198,8 @@ void CUICustomEdit::AddChar(const u16 c)
             m_lines.DelLeftChar();
 }
 
-//время для обеспечивания печатания
-//символа при удерживаемой кнопке
+// время для обеспечивания печатания
+// символа при удерживаемой кнопке
 #define HOLD_WAIT_TIME 300
 #define HOLD_REPEAT_TIME 50
 

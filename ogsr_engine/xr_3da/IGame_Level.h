@@ -1,21 +1,24 @@
-#pragma once
+#ifndef igame_level_h_defined
+#define igame_level_h_defined
 
+#include "../xrCDB/xr_area.h"
+#include "../xrSound/Sound.h"
+#include "EventAPI.h"
 #include "iinputreceiver.h"
-//#include "CameraManager.h"
+// #include "CameraManager.h"
 #include "xr_object_list.h"
-#include "xr_area.h"
 
 // refs
-class ENGINE_API CCameraManager;
-class ENGINE_API CCursor;
-class ENGINE_API CCustomHUD;
-class ENGINE_API ISpatial;
+class CCameraManager;
+class CCursor;
+class CCustomHUD;
+class ISpatial;
 namespace Feel
 {
-class ENGINE_API Sound;
+class Sound;
 }
 
-class ENGINE_API CServerInfo
+class CServerInfo
 {
 private:
     struct SItem_ServerInfo
@@ -47,7 +50,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
+class IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
 {
 protected:
     // Network interface
@@ -126,7 +129,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------------
-extern ENGINE_API IGame_Level* g_pGameLevel;
+extern IGame_Level* g_pGameLevel;
 
 template <typename _class_type>
 void relcase_register(_class_type* self, void (_class_type::*function_to_bind)(CObject*))
@@ -139,3 +142,5 @@ void relcase_unregister(_class_type* self, void (_class_type::*function_to_bind)
 {
     g_pGameLevel->Objects.relcase_unregister(fastdelegate::MakeDelegate(self, function_to_bind));
 }
+
+#endif

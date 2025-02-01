@@ -26,16 +26,14 @@ TEMPLATE_SPECIALIZATION
 IC bool CGameVertexPathManager::is_accessible(const _index_type& vertex_id) const
 {
     if (!inherited::is_accessible(vertex_id))
-        return (false);
+        return false;
 
     if (!m_start_is_accessible)
-        return (true);
+        return true;
 
 #ifdef DEBUG
     if (m_evaluator->m_vertex_types->empty())
-    {
         Msg("! warning : empty vertex types");
-    }
 #endif
     auto I = m_evaluator->m_vertex_types->cbegin();
     auto E = m_evaluator->m_vertex_types->cend();

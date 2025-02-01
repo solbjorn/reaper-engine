@@ -1,6 +1,6 @@
 #pragma once
 
-class ENGINE_API ISheduled
+class ISheduled
 {
 public:
     struct

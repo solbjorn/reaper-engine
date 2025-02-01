@@ -19,7 +19,7 @@
 #include "PHCollideValidator.h"
 #include "CalculateTriangle.h"
 #include "game_base_space.h"
-//#include "phvalide.h"
+// #include "phvalide.h"
 
 IC bool PhOutOfBoundaries(const Fvector& v) { return v.y < phBoundaries.y1; }
 #ifdef DEBUG
@@ -200,7 +200,7 @@ void CPHSimpleCharacter::TestPathCallback(bool& do_colide, bool bo1, dContact& c
 
 void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 {
-    m_radius = _min(sizes[0], sizes[2]) / 2.f;
+    m_radius = std::min(sizes[0], sizes[2]) / 2.f;
     m_cyl_hight = sizes[1] - 2.f * m_radius;
     if (m_cyl_hight < 0.f)
         m_cyl_hight = 0.01f;
@@ -232,7 +232,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
     m_creation_step = ph_world->m_steps_num;
     ////////////////////////////////////////////////////////
 
-    m_radius = _min(sizes[0], sizes[2]) / 2.f;
+    m_radius = std::min(sizes[0], sizes[2]) / 2.f;
     m_current_object_radius = m_radius;
     m_cyl_hight = sizes[1] - 2.f * m_radius;
     if (m_cyl_hight < 0.f)
@@ -553,9 +553,9 @@ void CPHSimpleCharacter::PhTune(dReal step)
     if ((ud->pushing_neg || ud->pushing_b_neg) && !b_death_pos)
     {
         b_death_pos = true;
-        //#ifdef DEBUG
+        // #ifdef DEBUG
         //		Msg("death pos %f2.2,%f2.2,%f2.2",ud->last_pos[0],ud->last_pos[1],ud->last_pos[2]);
-        //#endif
+        // #endif
         Fvector pos;
         pos.set(cast_fv(dBodyGetPosition(m_body)));
         Fvector d;
@@ -611,16 +611,17 @@ void CPHSimpleCharacter::PhTune(dReal step)
 
     const dReal* velocity = dBodyGetLinearVel(m_body);
     dReal linear_vel_smag = dDOT(velocity, velocity);
-    if (b_lose_control &&
-        (b_on_ground && m_ground_contact_normal[1] > M_SQRT1_2 / 2.f
-         //&&
-         //			!b_external_impulse
-         /*&&
-         dSqrt(velocity[0]*velocity[0]+velocity[2]*velocity[2])<5.*/
-         || fis_zero(linear_vel_smag) || m_elevator_state.ClimbingState()))
-        b_lose_control = false;
+    if (b_lose_control)
+    {
+        if ((b_on_ground && (m_ground_contact_normal[1] > (M_SQRT1_2 / 2.f))
+             /* && !b_external_impulse && (dSqrt(velocity[0] * velocity[0] + velocity[2] * velocity[2]) < 5.f) */) ||
+            fis_zero(linear_vel_smag) || m_elevator_state.ClimbingState())
+        {
+            b_lose_control = false;
+        }
+    }
 
-    if (b_jumping && b_good_graund || (m_elevator_state.ClimbingState() && b_valide_wall_contact)) // b_good_graund=b_valide_ground_contact&&m_ground_contact_normal[1]>M_SQRT1_2
+    if ((b_jumping && b_good_graund) || (m_elevator_state.ClimbingState() && b_valide_wall_contact)) // b_good_graund=b_valide_ground_contact&&m_ground_contact_normal[1]>M_SQRT1_2
         b_jumping = false;
 
     // deside if control lost
@@ -847,18 +848,16 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 #endif
 
     // if(XRC.r_end()!=XRC.r_begin()) return false;
-    CDB::RESULT* R_begin = XRC.r_begin();
-    CDB::RESULT* R_end = XRC.r_end();
-    for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+    for (auto& Res : *XRC.r_get())
     {
-        SGameMtl* m = GMLib.GetMaterialByIdx(Res->material);
+        SGameMtl* m = GMLib.GetMaterialByIdx(Res.material);
         if (m->Flags.test(SGameMtl::flPassable))
             continue;
         // CDB::TRI* T = T_array + Res->id;
-        Point vertices[3] = {Point((dReal*)&Res->verts[0]), Point((dReal*)&Res->verts[1]), Point((dReal*)&Res->verts[2])};
+        Point vertices[3] = {Point((dReal*)&Res.verts[0]), Point((dReal*)&Res.verts[1]), Point((dReal*)&Res.verts[2])};
         if (__aabb_tri(Point((float*)&center_forbid), Point((float*)&AABB_forbid), vertices))
         {
-            if (test_sides(center_forbid, sd_dir, accel, obb_fb, Res->id))
+            if (test_sides(center_forbid, sd_dir, accel, obb_fb, Res.id))
             {
 #ifdef DEBUG
                 if (ph_dbg_draw_mask.test(phDbgCharacterControl))
@@ -878,16 +877,16 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
         }
     }
 
-    for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+    for (auto& Res : *XRC.r_get())
     {
         // CDB::TRI* T = T_array + Res->id;
-        SGameMtl* m = GMLib.GetMaterialByIdx(Res->material);
+        SGameMtl* m = GMLib.GetMaterialByIdx(Res.material);
         if (m->Flags.test(SGameMtl::flPassable))
             continue;
-        Point vertices[3] = {Point((dReal*)&Res->verts[0]), Point((dReal*)&Res->verts[1]), Point((dReal*)&Res->verts[2])};
+        Point vertices[3] = {Point((dReal*)&Res.verts[0]), Point((dReal*)&Res.verts[1]), Point((dReal*)&Res.verts[2])};
         if (__aabb_tri(Point((float*)&center), Point((float*)&AABB), vertices))
         {
-            if (test_sides(center, sd_dir, accel, obb, Res->id))
+            if (test_sides(center, sd_dir, accel, obb, Res.id))
             {
 #ifdef DEBUG
                 if (ph_dbg_draw_mask.test(phDbgCharacterControl))
@@ -1510,7 +1509,7 @@ void CPHSimpleCharacter::InitContact(dContact* c, bool& do_collide, u16 material
     float soft_param = dumping_rate + normal[1] * (1.f - dumping_rate); //=(1.f-normal[1])*dumping_rate +normal[1]
     if (is_control)
     { //&&!b_lose_control||b_jumping
-        if (g1 == m_wheel || g2 == m_wheel && !bClimable)
+        if ((g1 == m_wheel) || ((g2 == m_wheel) && !bClimable))
         {
             c->surface.mu = 0.f; // 0.00f;
         }

@@ -142,7 +142,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
         Fmatrix xform = XFORM_center();
-        UpdateEvent = 0;
+        UpdateEvent.clear();
         // after event
         switch (m_CurState)
         {

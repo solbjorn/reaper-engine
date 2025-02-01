@@ -17,17 +17,16 @@ public:
     };
 
 public:
-    Fcolor const_float;
-    u32 const_dword;
+    Fcolor const_float{};
+    u32 const_dword{};
 
-    u32 dwFrame;
-    u32 dwMode;
+    u32 dwFrame{};
+    u32 dwMode{};
     WaveForm _R;
     WaveForm _G;
     WaveForm _B;
     WaveForm _A;
 
-    CConstant() { Memory.mem_fill(this, 0, sizeof(CConstant)); }
     IC void set_float(float r, float g, float b, float a)
     {
         const_float.set(r, g, b, a);
@@ -35,12 +34,12 @@ public:
     }
     IC void set_float(Fcolor& c)
     {
-        const_float.set(c);
+        const_float = c;
         const_dword = const_float.get();
     }
     IC void set_dword(u32 c)
     {
-        const_float.set(c);
+        const_float = c;
         const_dword = c;
     }
     void Calculate();

@@ -1,10 +1,7 @@
 #include "stdafx.h"
 
-
 #include "DetailManager.h"
-#include "cl_intersect.h"
-
-
+#include "../../xrCDB/cl_intersect.h"
 
 //--------------------------------------------------- Decompression
 IC float Interpolate(float* base, u32 x, u32 y, u32 size)
@@ -38,10 +35,9 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
     return c > dither[col][row];
 }
 
-
 #ifdef DEBUG
-//#include "../../Include/xrRender/DebugRender.h"
 #include "dxDebugRender.h"
+
 static void draw_obb(const Fmatrix& matrix, const u32& color)
 {
     Fvector aabb[8];
@@ -81,10 +77,9 @@ void CDetailManager::cache_Decompress(Slot* S)
     D.vis.box.get_CD(bC, bD);
 
     xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
-    u32 triCount = xrc.r_count();
+    auto triCount = xrc.r_count();
     CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
     Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
-
 
     if (0 == triCount)
         return;
@@ -179,9 +174,8 @@ void CDetailManager::cache_Decompress(Slot* S)
             dir.set(0, -1, 0);
 
             float r_u, r_v, r_range;
-            for (u32 tid = 0; tid < triCount; tid++)
+            for (size_t tid = 0; tid < triCount; tid++)
             {
-
                 CDB::TRI& T = tris[xrc.r_begin()[tid].id];
                 SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
                 if (mtl->Flags.test(SGameMtl::flPassable))

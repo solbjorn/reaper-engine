@@ -1,6 +1,6 @@
 #pragma once
 
-struct ENGINE_API VisMask final
+struct VisMask final
 {
     Flags64 _visimask;
     Flags64 _visimask_ex;

@@ -18,12 +18,7 @@ struct dxRayMotions
 
 int dRayMotionsClassUser = -1;
 
-inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride)
-{
-    const size_t count = stride / sizeof(dContact);
-    dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
-    return &(contact[count]).geom;
-}
+#define CONTACT(p, skip) ((dContactGeom*)(((char*)p) + (skip)))
 
 int dCollideRMB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
 {

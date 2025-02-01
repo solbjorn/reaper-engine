@@ -4,13 +4,13 @@
 
 #include "stdafx.h"
 
-
 #include "DetailManager.h"
 
-#include "cl_intersect.h"
+#include "../../xrCDB/cl_intersect.h"
 
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
+
 #include <xmmintrin.h>
 
 const float dbgOffset = 0.f;

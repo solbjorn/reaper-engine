@@ -11,7 +11,7 @@ u64 g_qwStartGameTime = 12 * 60 * 60 * 1000;
 float g_fTimeFactor;
 u64 g_qwEStartGameTime = 12 * 60 * 60 * 1000;
 
-xr_token game_types[];
+extern xr_token game_types[];
 
 game_PlayerState::game_PlayerState()
 {

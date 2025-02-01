@@ -670,7 +670,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
         Fvector box_radius;
         box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
         RImplementation.Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, _cop, box_radius);
-        for (int K = 0; K < RImplementation.Sectors_xrc.r_count(); K++)
+        for (size_t K = 0; K < RImplementation.Sectors_xrc.r_count(); K++)
         {
             CPortal* pPortal = (CPortal*)RImplementation.Portals[RImplementation.rmPortals->get_tris()[RImplementation.Sectors_xrc.r_begin()[K].id].dummy];
             pPortal->bDualRender = TRUE;
@@ -681,11 +681,11 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
     PortalTraverser.traverse(_sector, ViewBase, _cop, mCombined, 0);
 
     // Determine visibility for static geometry hierrarhy
-    for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+    for (size_t s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
     {
         CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
         dxRender_Visual* root = sector->root();
-        for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+        for (size_t v_it = 0; v_it < sector->r_frustums.size(); v_it++)
         {
             set_Frustum(&(sector->r_frustums[v_it]));
             add_Geometry(root);

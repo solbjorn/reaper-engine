@@ -67,7 +67,7 @@ IC void CAbstractOperator::add_condition(const COperatorCondition& condition)
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CAbstractOperator::remove_condition(const typename COperatorCondition::_condition_type& condition)
+IC void CAbstractOperator::remove_condition(const typename COperatorCondition::condition_type& condition)
 {
     actual(false);
     m_conditions.remove_condition(condition);
@@ -81,7 +81,7 @@ IC void CAbstractOperator::add_effect(const COperatorCondition& effect)
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CAbstractOperator::remove_effect(const typename COperatorCondition::_condition_type& effect)
+IC void CAbstractOperator::remove_effect(const typename COperatorCondition::condition_type& effect)
 {
     actual(false);
     m_effects.remove_condition(effect);
@@ -387,10 +387,10 @@ IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CAbstractOperator::_edge_value_type CAbstractOperator::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (min_weight()); }
+IC _edge_value_type CAbstractOperator::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (min_weight()); }
 
 TEMPLATE_SPECIALIZATION
-IC typename CAbstractOperator::_edge_value_type CAbstractOperator::min_weight() const
+IC _edge_value_type CAbstractOperator::min_weight() const
 {
     if (m_weight_actual)
         return (m_min_weight);

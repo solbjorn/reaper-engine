@@ -8,6 +8,7 @@
 #include "xr_level_controller.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
+#include "level_graph.h"
 #include "ExtendedGeom.h"
 #include "characterphysicssupport.h"
 #include "inventory.h"

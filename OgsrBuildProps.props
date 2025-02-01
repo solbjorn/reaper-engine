@@ -4,7 +4,7 @@
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
 
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCl</PlatformToolset>
 
     <!--CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir-->
   </PropertyGroup>
@@ -28,7 +28,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/Zc:__cplusplus /openmp:llvm %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=alderlake -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
 
     <Link>

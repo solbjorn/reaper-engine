@@ -214,25 +214,6 @@ public:
 
         return *this;
     }
-
-    constexpr inline BOOL similar(const Self& v, T E = EPS_L) { return _abs(cv.i[0] - v.x) < E && _abs(cv.i[1] - v.y) < E && _abs(cv.i[2] - v.z) < E && _abs(cv.i[3] - v.w) < E; };
-
-    constexpr inline T magnitude_sqr() { return cv.i[0] * cv.i[0] + cv.i[1] * cv.i[1] + cv.i[2] * cv.i[2] + cv.i[3] * cv.i[3]; }
-    constexpr inline T magnitude() { return _sqrt(magnitude_sqr()); }
-    constexpr inline SelfRef normalize() { return mul(1 / magnitude()); }
-
-    constexpr inline SelfRef normalize_as_plane() { return mul(1 / _sqrt(cv.i[0] * cv.i[0] + cv.i[1] * cv.i[1] + cv.i[2] * cv.i[2])); }
-
-    constexpr inline SelfRef lerp(const Self& p1, const Self& p2, T t)
-    {
-        const T invt = 1.f - t;
-        cv.i[0] = p1.x * invt + p2.x * t;
-        cv.i[1] = p1.y * invt + p2.y * t;
-        cv.i[2] = p1.z * invt + p2.z * t;
-        cv.i[3] = p1.w * invt + p2.w * t;
-
-        return *this;
-    }
 };
 
 typedef _ivector4<s32> Ivector4;

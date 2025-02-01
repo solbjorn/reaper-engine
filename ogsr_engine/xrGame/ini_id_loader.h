@@ -57,7 +57,7 @@ protected:
         }
     }
 
-    //имя секции и линии откуда будут загружаться id
+    // имя секции и линии откуда будут загружаться id
     static LPCSTR section_name;
     static LPCSTR line_name;
 
@@ -82,7 +82,7 @@ public:
 
     static const T_INDEX GetMaxIndex() { return m_pItemDataVector->size() - 1; }
 
-    //удаление статичекого массива
+    // удаление статичекого массива
     static void DeleteIdToIndexData();
 };
 
@@ -101,7 +101,7 @@ TEMPLATE_SPECIALIZATION
 CSINI_IdToIndex::~CIni_IdToIndex() {}
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
+const ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
 {
     auto it = m_pItemDataVector->begin();
     for (; m_pItemDataVector->end() != it; it++)
@@ -120,7 +120,7 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_a
 }
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_assert)
+const ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_assert)
 {
     if ((size_t)index >= m_pItemDataVector->size())
     {
@@ -135,7 +135,7 @@ TEMPLATE_SPECIALIZATION
 void CSINI_IdToIndex::DeleteIdToIndexData() { xr_delete(m_pItemDataVector); }
 
 TEMPLATE_SPECIALIZATION
-typename void CSINI_IdToIndex::InitInternal()
+void CSINI_IdToIndex::InitInternal()
 {
     VERIFY(!m_pItemDataVector);
     T_INIT::InitIdToIndex();

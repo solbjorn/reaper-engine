@@ -5745,18 +5745,6 @@
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed_inline.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\vertex_allocators\fixed</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues\bucket_list</Filter>
     </ClInclude>
@@ -5783,18 +5771,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_constructor.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\manager_builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\manager_builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\builder_allocator</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra.h">
       <Filter>AI\ANavigation\Pathfinding\Algorithms\Dijkstra</Filter>

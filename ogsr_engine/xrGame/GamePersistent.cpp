@@ -454,7 +454,7 @@ void CGamePersistent::start_logo_intro()
 {
     if (!strstr(Core.Params, "-intro"))
     {
-        m_intro_event = 0;
+        m_intro_event.clear();
         Console->Show();
         Console->Execute("main_menu on");
         return;
@@ -476,7 +476,7 @@ void CGamePersistent::update_logo_intro()
 {
     if (m_intro && (false == m_intro->IsActive()))
     {
-        m_intro_event = 0;
+        m_intro_event.clear();
         xr_delete(m_intro);
         Console->Execute("main_menu on");
     }
@@ -499,11 +499,11 @@ void CGamePersistent::start_game_intro()
 void CGamePersistent::update_game_intro()
 {
     if (!m_intro)
-        m_intro_event = 0;
+        m_intro_event.clear();
     else if (!m_intro->IsActive())
     {
         xr_delete(m_intro);
-        m_intro_event = 0;
+        m_intro_event.clear();
     }
 }
 
@@ -716,10 +716,7 @@ void CGamePersistent::LoadTitle(const char* str)
     Discord.Update(tittle);
 }
 
-void CGamePersistent::SetTip() 
-{
-    pApp->LoadTitleInt();
-}
+void CGamePersistent::SetTip() { pApp->LoadTitleInt(); }
 
 bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE); }
 

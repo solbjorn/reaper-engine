@@ -9,7 +9,7 @@
 #pragma once
 
 // Abstract 'Pure' class for DLL interface
-class ENGINE_API DLL_Pure
+class DLL_Pure
 {
 public:
     CLASS_ID CLS_ID;
@@ -17,17 +17,16 @@ public:
     DLL_Pure(void* params) { CLS_ID = 0; };
     DLL_Pure() { CLS_ID = 0; };
     virtual DLL_Pure* _construct() { return this; }
-    virtual ~DLL_Pure(){};
+    virtual ~DLL_Pure() {};
 };
 
 // Class creation/destroying interface
 extern "C" {
-typedef DLL_API DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
-typedef DLL_API void __cdecl Factory_Destroy(DLL_Pure* O);
+typedef DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
+typedef void __cdecl Factory_Destroy(DLL_Pure* O);
 };
 
-
-class ENGINE_API CEngineAPI
+class CEngineAPI
 {
 private:
     HMODULE hGame;

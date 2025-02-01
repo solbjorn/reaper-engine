@@ -1,8 +1,8 @@
 #pragma once
 
-class ENGINE_API ICollisionForm;
+class ICollisionForm;
 
-class ENGINE_API ICollidable
+class ICollidable
 {
 public:
     struct

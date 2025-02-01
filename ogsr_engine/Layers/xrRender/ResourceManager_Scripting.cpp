@@ -281,7 +281,7 @@ bool print_output(const char* caScriptFileName, int errorCode)
         }
     }
     auto traceback = get_lua_traceback(LSVM);
-    if (!lua_isstring(LSVM, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+    if (!lua_isstring(LSVM, -1)) // НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
     {
         Msg("*********************************************************************************");
         Msg("[ResourceManager_Scripting.print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
@@ -307,7 +307,7 @@ bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, c
     if (l_iErrorCode)
     {
         print_output(caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -318,7 +318,7 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
     string_path l_caLuaFileName;
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
-    { //заменить на ассерт?
+    { // заменить на ассерт?
         Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
         return false;
     }
@@ -332,7 +332,7 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
     if (l_iErrorCode)
     {
         print_output(caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -476,7 +476,7 @@ int lua_panic(lua_State* L)
 
 #ifndef LUABIND_09
 static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
-                                       size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
+                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
     if (!size)
     {
@@ -501,22 +501,22 @@ void CResourceManager::LS_Load()
 {
     //**************************************************************//
     // Msg("[CResourceManager] Starting LuaJIT");
-    R_ASSERT2(!LSVM, "! LuaJIT is already running"); //На всякий случай
+    R_ASSERT2(!LSVM, "! LuaJIT is already running"); // На всякий случай
     //
 #ifdef LUABIND_09
     luabind::disable_super_deprecation();
 #else
-    luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
+    luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
     luabind::allocator_parameter = nullptr;
 #endif
-    LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
-    luaL_openlibs(LSVM); //Инициализация функций LuaJIT
-    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
-    luabind::open(LSVM); //Запуск луабинда
+    LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
+    luaL_openlibs(LSVM); // Инициализация функций LuaJIT
+    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); // Надо проверить, случается ли такое.
+    luabind::open(LSVM); // Запуск луабинда
     //
     //--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
-    luabind::set_error_callback(LuaError); //Калбек на ошибки.
+    luabind::set_error_callback(LuaError); // Калбек на ошибки.
     luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
     luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
@@ -721,14 +721,13 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     }
 
     // Search equal in shaders array
-    for (u32 it = 0; it < v_shaders.size(); it++)
-        if (S.equal(v_shaders[it]))
-            return v_shaders[it];
+    for (Shader* v_shader : v_shaders)
+        if (S.equal(v_shader))
+            return v_shader;
 
     // Create _new_ entry
-    Shader* N = xr_new<Shader>(S);
+    Shader* N = v_shaders.emplace_back(xr_new<Shader>(S));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_shaders.push_back(N);
     return N;
 }
 
@@ -753,6 +752,6 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     element(ac, t_0, t_1, t_d);
 
     r_End();
-    ShaderElement* _r = dxRenderDeviceRender::Instance().Resources->_CreateElement(E);
+    ShaderElement* _r = dxRenderDeviceRender::Instance().Resources->_CreateElement(std::move(E));
     return _r;
 }

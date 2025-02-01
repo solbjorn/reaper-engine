@@ -14,7 +14,7 @@
 #include "SleepEffector.h"
 #include "ActorEffector.h"
 #include "level.h"
-#include "../xr_3da/cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 #include "../xr_3da/gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
@@ -73,7 +73,7 @@ void CActor::camUpdateLadder(float dt)
     }
     else
     {
-        cam_yaw += delta * _min(dt * 10.f, 1.f);
+        cam_yaw += delta * std::min(dt * 10.f, 1.f);
     }
 
     CElevatorState* es = character_physics_support()->movement()->ElevatorState();
@@ -83,7 +83,7 @@ void CActor::camUpdateLadder(float dt)
         const float ldown_pitch = cameras[eacFirstEye]->lim_pitch.y;
         float delta = angle_difference_signed(ldown_pitch, cam_pitch);
         if (delta > 0.f)
-            cam_pitch += delta * _min(dt * 10.f, 1.f);
+            cam_pitch += delta * std::min(dt * 10.f, 1.f);
     }
 }
 
@@ -124,11 +124,9 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
     calc_point(pt, radius, VIEWPORT_NEAR / 2, angle);
     xform.transform_tiny(pt);
 
-    CDB::RESULT* it = xrc.r_begin();
-    CDB::RESULT* end = xrc.r_end();
-    for (; it != end; it++)
+    for (auto& it : *xrc.r_get())
     {
-        CDB::RESULT& O = *it;
+        CDB::RESULT& O = it;
         if (GMLib.GetMaterialByIdx(O.material)->Flags.is(SGameMtl::flPassable))
             continue;
         if (CDB::TestBBoxTri(mat, pt, ext, O.verts, FALSE))
@@ -294,7 +292,7 @@ void CActor::cam_Update(float dt, float fFOV)
     if (m_holder)
         return;
 
-    //Подобие коллизии камеры
+    // Подобие коллизии камеры
     float _viewport_near = VIEWPORT_NEAR;
     if (eacFirstEye == cam_active && psActorFlags.test(AF_CAM_COLLISION))
     {
@@ -332,14 +330,14 @@ void CActor::cam_Update(float dt, float fFOV)
         cameras[eacFirstEye]->f_fov = fFOV;
     }
 
-    //if (psActorFlags.test(AF_PSP)) // всегда true
+    // if (psActorFlags.test(AF_PSP)) // всегда true
     {
         Cameras().UpdateFromCamera(C);
     }
-    //else
+    // else
     //{
-    //    Cameras().UpdateFromCamera(cameras[eacFirstEye]);
-    //}
+    //     Cameras().UpdateFromCamera(cameras[eacFirstEye]);
+    // }
 
     fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
     vPrevCamDir = cameras[eacFirstEye]->vDirection;
@@ -354,7 +352,7 @@ void CActor::cam_Update(float dt, float fFOV)
         if (!demo || psActorFlags.test(AF_EFFECTS_ON_DEMORECORD))
         {
             Cameras().SetVPNear(_viewport_near);
-            Cameras().ApplyDevice(demo);   
+            Cameras().ApplyDevice(demo);
         }
     }
 }

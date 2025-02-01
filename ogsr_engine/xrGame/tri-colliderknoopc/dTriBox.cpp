@@ -46,7 +46,7 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
     unsigned int ret = 1;
 
     if (code == 0)
-    { //Всегда истинно //-V547
+    { // Всегда истинно //-V547
         norm[0] = triAx[0] * signum;
         norm[1] = triAx[1] * signum;
         norm[2] = triAx[2] * signum;
@@ -90,11 +90,11 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
         if (maxc == 1)
             goto done;
 
-            // get the second and third contact points by starting from `p' and going
-            // along the two sides with the smallest projected length.
+        // get the second and third contact points by starting from `p' and going
+        // along the two sides with the smallest projected length.
 
-            //(@slipch) it is not perfectly right for triangle collision
-            // because it need to check if additional points are in the triangle but it seems cause no problem
+        //(@slipch) it is not perfectly right for triangle collision
+        // because it need to check if additional points are in the triangle but it seems cause no problem
 
 #define FOO(i, j, op) \
     CONTACT(contact, i* skip)->pos[0] = pos[0] op 2.f * hside[j] * R[0 + j]; \
@@ -506,9 +506,9 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
         dContactGeom *prc, *c = CONTACT(contact, ret * skip);
         prc = c;
 #define FOO(j, op, spoint) \
-    c->pos[0] = spoint##[0] op 2.f * hside[j] * R[0 + j]; \
-    c->pos[1] = spoint##[1] op 2.f * hside[j] * R[4 + j]; \
-    c->pos[2] = spoint##[2] op 2.f * hside[j] * R[8 + j];
+    c->pos[0] = (spoint)[0] op 2.f * hside[j] * R[0 + j]; \
+    c->pos[1] = (spoint)[1] op 2.f * hside[j] * R[4 + j]; \
+    c->pos[2] = (spoint)[2] op 2.f * hside[j] * R[8 + j];
 #define BAR(side, sideinc, spos, sdepth) \
     { \
         pdepth = &(c->depth); \

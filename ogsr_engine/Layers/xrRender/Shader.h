@@ -30,6 +30,7 @@ class IBlenderXr;
 struct ECORE_API STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
     typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
+    STextureList() = default;
     ~STextureList();
 
     IC BOOL equal(const STextureList& base) const
@@ -72,6 +73,7 @@ struct ECORE_API SGeometry : public xr_resource_flagged
     ID3DVertexBuffer* vb;
     ID3DIndexBuffer* ib;
     u32 vb_stride;
+    SGeometry() = default;
     ~SGeometry();
 };
 
@@ -101,9 +103,10 @@ struct ECORE_API SPass : public xr_resource_flagged
     ref_texture_list T;
     ref_constant_list C;
 
+    SPass() = default;
     ~SPass();
 
-    BOOL equal(const SPass& other);
+    bool equal(const SPass& other) const;
 };
 typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 
@@ -127,7 +130,6 @@ public:
     ShaderElement();
     ~ShaderElement();
     BOOL equal(ShaderElement& S);
-    BOOL equal(ShaderElement* S);
 };
 typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
 
@@ -137,10 +139,12 @@ struct ECORE_API Shader : public xr_resource_flagged
 public:
     ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
                        // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+    Shader() = default;
     ~Shader();
-    BOOL equal(Shader& S);
     BOOL equal(Shader* S);
+    BOOL equal(Shader* S, int index);
 };
+
 struct ECORE_API resptrcode_shader : public resptr_base<Shader>
 {
     void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
@@ -158,9 +162,9 @@ enum SE_R1
     SE_R1_LMODELS = 4, // lighting info for models or shadowing from models
 };
 
-//#define		SE_R2_NORMAL_HQ		0	// high quality/detail
-//#define		SE_R2_NORMAL_LQ		1	// low quality
-//#define		SE_R2_SHADOW		2	// shadow generation
+// #define		SE_R2_NORMAL_HQ		0	// high quality/detail
+// #define		SE_R2_NORMAL_LQ		1	// low quality
+// #define		SE_R2_SHADOW		2	// shadow generation
 //	E[3] - can use for night vision but need to extend SE_R1. Will need
 //	Extra shader element.
 //	E[4] - distortion or self illumination(self emission).

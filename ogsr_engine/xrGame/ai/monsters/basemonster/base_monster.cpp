@@ -6,6 +6,7 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "game_level_cross_table.h"
 #include "game_graph.h"
+#include "level_graph.h"
 #include "../../../phmovementcontrol.h"
 #include "../ai_monster_squad_manager.h"
 #include "xrserver_objects_alife_monsters.h"

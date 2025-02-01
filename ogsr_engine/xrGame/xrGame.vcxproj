@@ -81,7 +81,7 @@
       <TypeLibraryName>x:\xrGame.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -114,7 +114,6 @@
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -210,10 +209,10 @@
       <TypeLibraryName>x:\xrGame.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -241,7 +240,6 @@
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;4267;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -327,23 +325,15 @@
   <ItemGroup>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\a_star.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\a_star_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_binary_heap.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_binary_heap_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\edge_path.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\edge_path_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\quadtree.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\quadtree_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed.h" />

@@ -15,18 +15,9 @@ class CPathManager<CLevelGraph, _DataStorage, SNearestVertex<_dist_type, _index_
     : public CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 {
 protected:
-    typedef CLevelGraph _Graph;
-    typedef SNearestVertex<_dist_type, _index_type, _iteration_type> _Parameters;
-    typedef typename CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
-
-    using inherited::best_node;
-    using inherited::data_storage;
-    using inherited::graph;
-    using inherited::m_sqr_distance_xz;
-    using inherited::max_iteration_count;
-    using inherited::max_range;
-    using inherited::max_visited_node_count;
-    using inherited::path;
+    using _Graph = CLevelGraph;
+    using _Parameters = SNearestVertex<_dist_type, _index_type, _iteration_type>;
+    using inherited = CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>;
 
 protected:
     int x0, y0;

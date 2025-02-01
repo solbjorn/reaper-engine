@@ -151,7 +151,7 @@ public:
     SConstantList* _CreateConstantList(SConstantList& L);
     void _DeleteConstantList(const SConstantList* L);
 
-    ShaderElement* _CreateElement(ShaderElement& L);
+    ShaderElement* _CreateElement(ShaderElement&& L);
     void _DeleteElement(const ShaderElement* L);
 
     void OnDeviceCreate();

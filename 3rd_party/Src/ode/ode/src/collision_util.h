@@ -31,15 +31,10 @@ some useful collision utility stuff.
 
 #include <ode/common.h>
 #include <ode/contact.h>
-#include <cstddef>
 
 // given a pointer `p' to a dContactGeom, return the dContactGeom at
 // p + skip bytes.
-inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride) {
-	const size_t count = stride / sizeof(dContact);
-	dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
-	return &(contact[count]).geom;
-}
+#define CONTACT(p,skip) ((dContactGeom*) (((char*)p) + (skip)))
 
 
 // if the spheres (p1,r1) and (p2,r2) collide, set the contact `c' and

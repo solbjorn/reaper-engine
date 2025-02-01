@@ -17,11 +17,7 @@ class CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index
 protected:
     typedef CLevelGraph _Graph;
     typedef SBaseParameters<_dist_type, _index_type, _iteration_type> _Parameters;
-    typedef typename CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type> inherited;
-
-    using inherited::goal_node_index;
-    using inherited::graph;
-    using inherited::start_node_index;
+    typedef CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
     int x1;
@@ -40,6 +36,8 @@ protected:
     _Graph::CVertex* best_node;
 
 public:
+    using const_iterator = typename inherited::const_iterator;
+
     virtual ~CPathManager();
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   const _Parameters& params);
@@ -49,8 +47,8 @@ public:
     IC bool is_goal_reached(const _index_type& node_index);
     IC bool is_limit_reached(const _iteration_type iteration_count) const;
     IC bool is_accessible(const _index_type& vertex_id) const;
-    IC void begin(const _index_type& vertex_id, _Graph::const_iterator& begin, _Graph::const_iterator& end);
-    IC const _index_type get_value(_Graph::const_iterator& i) const;
+    IC void begin(const _index_type& vertex_id, const_iterator& begin, const_iterator& end);
+    IC const _index_type get_value(const_iterator& i) const;
 };
 
 #include "path_manager_level_inline.h"

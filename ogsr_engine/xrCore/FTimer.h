@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 class CTimer_paused;
 
 class XRCORE_API pauseMngr
@@ -32,7 +34,8 @@ protected:
 
 public:
     constexpr CTimerBase() noexcept : startTime(), pauseDuration(), pauseAccum(), paused(false) {}
-    void Start()
+
+    ICF void Start()
     {
         if (paused)
             return;
@@ -43,17 +46,23 @@ public:
     {
         if (paused)
             return pauseDuration;
-        else
-            return Now() - startTime - pauseAccum;
+
+        return Now() - startTime - pauseAccum;
     }
 
-    u32 GetElapsed_ms() const
+    u64 GetElapsed_ns() const
     {
         using namespace std::chrono;
-        return u32(duration_cast<milliseconds>(getElapsedTime()).count());
+        return duration_cast<nanoseconds>(getElapsedTime()).count();
     }
 
-    float GetElapsed_sec() const
+    u64 GetElapsed_ms() const
+    {
+        using namespace std::chrono;
+        return duration_cast<milliseconds>(getElapsedTime()).count();
+    }
+
+    IC float GetElapsed_sec() const
     {
         using namespace std::chrono;
         return duration_cast<duration<float>>(getElapsedTime()).count();
@@ -61,11 +70,13 @@ public:
 
     Time Now() const { return Clock::now(); }
 
-    void Dump() const { Msg("* Elapsed time (sec): %f", GetElapsed_sec()); }
+    IC void Dump() const { Msg("* Elapsed time (sec): %f", GetElapsed_sec()); }
 };
 
 class XRCORE_API CTimer : public CTimerBase
 {
+    using inherited = CTimerBase;
+
     float m_time_factor;
     Duration realTime;
     Duration time;
@@ -74,8 +85,8 @@ class XRCORE_API CTimer : public CTimerBase
     {
         const auto delta = current - realTime;
         const double deltaD = double(delta.count());
-        const double time = deltaD * m_time_factor + .5;
-        const auto result = u64(time);
+        const double elapsedTime = deltaD * m_time_factor + .5;
+        const auto result = u64(elapsedTime);
         return Duration(this->time.count() + result);
     }
 
@@ -89,20 +100,20 @@ public:
 
         realTime = std::chrono::nanoseconds(0);
         time = std::chrono::nanoseconds(0);
-        __super::Start();
+        inherited::Start();
     }
 
     float time_factor() const noexcept { return m_time_factor; }
 
     void time_factor(const float time_factor) noexcept
     {
-        const Duration current = __super::getElapsedTime();
+        const Duration current = inherited::getElapsedTime();
         time = getElapsedTime(current);
         realTime = current;
         m_time_factor = time_factor;
     }
 
-    virtual Duration getElapsedTime() const { return getElapsedTime(__super::getElapsedTime()); }
+    virtual Duration getElapsedTime() const { return getElapsedTime(inherited::getElapsedTime()); }
 };
 
 class XRCORE_API CTimer_paused_ex : public CTimer
@@ -156,7 +167,7 @@ public:
     void FrameStart();
     void FrameEnd();
 
-    void Begin()
+    ICF void Begin()
     {
         if (!g_bEnableStatGather)
             return;
@@ -164,7 +175,7 @@ public:
         T.Start();
     }
 
-    void End()
+    ICF void End()
     {
         if (!g_bEnableStatGather)
             return;
@@ -173,10 +184,16 @@ public:
 
     Duration getElapsedTime() const { return accum; }
 
-    u32 GetElapsed_ms() const
+    u64 GetElapsed_ns() const
     {
         using namespace std::chrono;
-        return u32(duration_cast<milliseconds>(getElapsedTime()).count());
+        return duration_cast<nanoseconds>(getElapsedTime()).count();
+    }
+
+    u64 GetElapsed_ms() const
+    {
+        using namespace std::chrono;
+        return duration_cast<milliseconds>(getElapsedTime()).count();
     }
 
     float GetElapsed_sec() const

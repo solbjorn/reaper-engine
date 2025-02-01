@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include "entity_alive.h"
+#include "GameObject.h"
+
 IC CHitMemoryManager::CHitMemoryManager(CCustomMonster* object, CAI_Stalker* stalker)
 {
     VERIFY(object);

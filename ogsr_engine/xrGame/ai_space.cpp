@@ -20,6 +20,7 @@
 #include "alife_simulator.h"
 
 CAI_Space* g_ai_space = 0;
+CGraphEngine* g_graph_engine = nullptr;
 
 CAI_Space::CAI_Space()
 {
@@ -40,6 +41,7 @@ void CAI_Space::init()
 
     VERIFY(!m_graph_engine);
     m_graph_engine = xr_new<CGraphEngine>(1024); // game_graph().header().vertex_count() ???
+    g_graph_engine = m_graph_engine;
 
     VERIFY(!m_cover_manager);
     m_cover_manager = xr_new<CCoverManager>();
@@ -54,6 +56,7 @@ void CAI_Space::init()
 
 CAI_Space::~CAI_Space()
 {
+    g_graph_engine = nullptr;
     xr_delete(m_graph_engine);
     xr_delete(m_level_graph);
 
@@ -70,6 +73,27 @@ CAI_Space::~CAI_Space()
     xr_delete(m_script_engine);
     xr_delete(m_cover_manager);
 }
+
+void CAI_Space::set_game_graph(CGameGraph* graph)
+{
+    if (graph)
+    {
+        VERIFY(!m_game_graph);
+    }
+    else
+    {
+        VERIFY(m_game_graph);
+    }
+
+    m_game_graph = graph;
+    xr_delete(m_graph_engine);
+
+    if (m_game_graph)
+        m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
+}
+
+const CGameLevelCrossTable& CAI_Space::cross_table() const { return (game_graph().cross_table()); }
+const CGameLevelCrossTable* CAI_Space::get_cross_table() const { return (&game_graph().cross_table()); }
 
 void CAI_Space::load(LPCSTR level_name)
 {

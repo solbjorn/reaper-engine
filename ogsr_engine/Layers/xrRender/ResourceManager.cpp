@@ -38,13 +38,12 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
     return I->second;
 }
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
-    if (0 == names || 0 == names[0])
+    if (nullptr == names || 0 == names[0])
         names = "$null";
 
     dest.clear();
@@ -83,20 +82,19 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
     }
 }
 
-ShaderElement* CResourceManager::_CreateElement(ShaderElement& S)
+ShaderElement* CResourceManager::_CreateElement(ShaderElement&& S)
 {
     if (S.passes.empty())
-        return 0;
+        return nullptr;
 
     // Search equal in shaders array
-    for (u32 it = 0; it < v_elements.size(); it++)
-        if (S.equal(*(v_elements[it])))
-            return v_elements[it];
+    for (ShaderElement* elem : v_elements)
+        if (S.equal(*elem))
+            return elem;
 
     // Create _new_ entry
-    ShaderElement* N = xr_new<ShaderElement>(S);
+    ShaderElement* N = v_elements.emplace_back(xr_new<ShaderElement>(std::move(S)));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_elements.push_back(N);
     return N;
 }
 
@@ -120,13 +118,11 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
     if (_lua_HasShader(s_shader))
         return _lua_Create(s_shader, s_textures);
 
-    if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
+    Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
+    if (pShader)
         return pShader;
 
-    if (_lua_HasShader("stub_default"))
-        return _lua_Create("stub_default", s_textures);
-
-    FATAL("Can't find stub_default.s");
+    FATAL("Can't find %s", s_shader);
     return nullptr;
 }
 
@@ -157,47 +153,47 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 
     // Compile element	(LOD0 - HQ)
     {
-        C.iElement = 0;
+        C.iElement = SE_R1_NORMAL_HQ;
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[0] = _CreateElement(E);
+        S.E[SE_R1_NORMAL_HQ] = _CreateElement(std::move(E));
     }
 
     // Compile element	(LOD1)
     {
-        C.iElement = 1;
+        C.iElement = SE_R1_NORMAL_LQ;
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[1] = _CreateElement(E);
+        S.E[SE_R1_NORMAL_LQ] = _CreateElement(std::move(E));
     }
 
     // Compile element
     {
-        C.iElement = 2;
+        C.iElement = SE_R1_LPOINT;
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[2] = _CreateElement(E);
+        S.E[SE_R1_LPOINT] = _CreateElement(std::move(E));
     }
 
     // Compile element
     {
-        C.iElement = 3;
+        C.iElement = SE_R1_LSPOT;
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[3] = _CreateElement(E);
+        S.E[SE_R1_LSPOT] = _CreateElement(std::move(E));
     }
 
     // Compile element
     {
-        C.iElement = 4;
+        C.iElement = SE_R1_LMODELS;
         C.bDetail = TRUE; //.$$$ HACK :)
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[4] = _CreateElement(E);
+        S.E[SE_R1_LMODELS] = _CreateElement(std::move(E));
     }
 
     // Compile element
@@ -206,7 +202,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[5] = _CreateElement(E);
+        S.E[5] = _CreateElement(std::move(E));
     }
 
     // Search equal in shaders array
@@ -215,9 +211,8 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
             return v_shaders[it];
 
     // Create _new_ entry
-    Shader* N = xr_new<Shader>(S);
+    Shader* N = v_shaders.emplace_back(xr_new<Shader>(std::move(S)));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_shaders.push_back(N);
     return N;
 }
 
@@ -238,7 +233,7 @@ void CResourceManager::DeferredUpload()
     Msg("CResourceManager::DeferredUpload [%s] -> START, size = [%u]", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT", m_textures.size());
 
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
-    
+
     u32 m_base = 0;
     u32 c_base = 0;
     u32 m_lmaps = 0;

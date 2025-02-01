@@ -1,12 +1,14 @@
 #pragma once
 
-class ENGINE_API CObject;
+#include "../xrSound/Sound.h"
+
+class CObject;
 
 namespace Feel
 {
-class ENGINE_API Sound
+class Sound
 {
 public:
-    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power){};
+    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power) {};
 };
 }; // namespace Feel

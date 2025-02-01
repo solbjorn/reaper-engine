@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "restricted_object.h"
+
 IC bool CMovementManager::actual() const { return (m_path_actuality); }
 
 IC void CMovementManager::set_path_type(EPathType path_type)

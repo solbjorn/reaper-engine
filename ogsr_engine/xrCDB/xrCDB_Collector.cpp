@@ -1,23 +1,19 @@
 #include "stdafx.h"
 
-#include "xrCDB.h"
-
 namespace CDB
 {
 u32 Collector::VPack(const Fvector& V, float eps)
 {
-    xr_vector<Fvector>::iterator I, E;
-    I = verts.begin();
-    E = verts.end();
-    for (; I != E; I++)
+    for (auto I = verts.begin(); I != verts.end(); ++I)
         if (I->similar(V, eps))
             return u32(I - verts.begin());
-    verts.push_back(V);
+
+    verts.emplace_back(V);
     return verts.size() - 1;
 }
 
 void Collector::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
-                           size_t dummy // misc
+                           u32 dummy // misc
 )
 {
     TRI T;
@@ -26,10 +22,10 @@ void Collector::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& 
     T.verts[2] = verts.size() + 2;
     T.dummy = dummy;
 
-    verts.push_back(v0);
-    verts.push_back(v1);
-    verts.push_back(v2);
-    faces.push_back(T);
+    verts.emplace_back(v0);
+    verts.emplace_back(v1);
+    verts.emplace_back(v2);
+    faces.emplace_back(T);
 }
 
 void Collector::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector)
@@ -41,10 +37,10 @@ void Collector::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2
     T.material = material;
     T.sector = sector;
 
-    verts.push_back(v0);
-    verts.push_back(v1);
-    verts.push_back(v2);
-    faces.push_back(T);
+    verts.emplace_back(v0);
+    verts.emplace_back(v1);
+    verts.emplace_back(v2);
+    faces.emplace_back(T);
 }
 
 void Collector::add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
@@ -57,34 +53,69 @@ void Collector::add_face_packed(const Fvector& v0, const Fvector& v1, const Fvec
     T.verts[2] = VPack(v2, eps);
     T.material = material;
     T.sector = sector;
-    faces.push_back(T);
+    faces.emplace_back(T);
 }
 
 void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
-                                  size_t dummy, float eps)
+                                  u32 dummy, float eps)
 {
     TRI T;
     T.verts[0] = VPack(v0, eps);
     T.verts[1] = VPack(v1, eps);
     T.verts[2] = VPack(v2, eps);
     T.dummy = dummy;
-    faces.push_back(T);
+    faces.emplace_back(std::move(T));
 }
 
-#pragma pack(push, 1)
-struct edge
+struct alignas(16) edge
 {
-    u32 face_id : 30;
-    u32 edge_id : 2;
-    u16 vertex_id0;
-    u16 vertex_id1;
+    u32 face_id;
+    u32 edge_id;
+    u32 vertex_id0;
+    u32 vertex_id1;
 };
-#pragma pack(pop)
+static_assert(std::is_same_v<decltype(edge::vertex_id0), std::remove_all_extents_t<decltype(TRI::verts)>>);
+static_assert(std::is_same_v<decltype(edge::vertex_id1), std::remove_all_extents_t<decltype(TRI::verts)>>);
 
-struct sort_predicate
+void Collector::calc_adjacency(xr_vector<u32>& dest) const
 {
-    IC bool operator()(const edge& edge0, const edge& edge1) const
+    const auto edge_count = faces.size() * 3;
+    u8* buf = (u8*)_alloca(edge_count * sizeof(edge) + 16);
+    edge* const edges = reinterpret_cast<edge*>((reinterpret_cast<size_t>(buf) + 15) & ~size_t(0xf));
+    edge* i = edges;
+
+    const auto B = faces.cbegin();
+    auto I = B, E = faces.cend();
+    for (; I != E; ++I)
     {
+        const u32 face_id = u32(I - B);
+
+        (*i).face_id = face_id;
+        (*i).edge_id = 0;
+        (*i).vertex_id0 = (*I).verts[0];
+        (*i).vertex_id1 = (*I).verts[1];
+        if ((*i).vertex_id0 > (*i).vertex_id1)
+            std::swap((*i).vertex_id0, (*i).vertex_id1);
+        ++i;
+
+        (*i).face_id = face_id;
+        (*i).edge_id = 1;
+        (*i).vertex_id0 = (*I).verts[1];
+        (*i).vertex_id1 = (*I).verts[2];
+        if ((*i).vertex_id0 > (*i).vertex_id1)
+            std::swap((*i).vertex_id0, (*i).vertex_id1);
+        ++i;
+
+        (*i).face_id = face_id;
+        (*i).edge_id = 2;
+        (*i).vertex_id0 = (*I).verts[2];
+        (*i).vertex_id1 = (*I).verts[0];
+        if ((*i).vertex_id0 > (*i).vertex_id1)
+            std::swap((*i).vertex_id0, (*i).vertex_id1);
+        ++i;
+    }
+
+    std::sort(edges, edges + edge_count, [](const edge& edge0, const edge& edge1) {
         if (edge0.vertex_id0 < edge1.vertex_id0)
             return (true);
 
@@ -98,149 +129,30 @@ struct sort_predicate
             return (false);
 
         return (edge0.face_id < edge1.face_id);
-    }
-};
-
-void Collector::calc_adjacency(xr_vector<u32>& dest)
-{
-#if 1
-    VERIFY(faces.size() < 65536);
-    const u32 edge_count = faces.size() * 3;
-    edge* edges = (edge*)_alloca(edge_count * sizeof(edge));
-    edge* i = edges;
-    xr_vector<TRI>::const_iterator B = faces.begin(), I = B;
-    xr_vector<TRI>::const_iterator E = faces.end();
-    for (; I != E; ++I)
-    {
-        u32 face_id = u32(I - B);
-
-        (*i).face_id = face_id;
-        (*i).edge_id = 0;
-        (*i).vertex_id0 = (u16)(*I).verts[0];
-        (*i).vertex_id1 = (u16)(*I).verts[1];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
-
-        (*i).face_id = face_id;
-        (*i).edge_id = 1;
-        (*i).vertex_id0 = (u16)(*I).verts[1];
-        (*i).vertex_id1 = (u16)(*I).verts[2];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
-
-        (*i).face_id = face_id;
-        (*i).edge_id = 2;
-        (*i).vertex_id0 = (u16)(*I).verts[2];
-        (*i).vertex_id1 = (u16)(*I).verts[0];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
-    }
-
-    std::sort(edges, edges + edge_count, sort_predicate());
+    });
 
     dest.assign(edge_count, u32(-1));
 
     {
-        edge *I = edges, *J;
-        edge* E = edges + edge_count;
-        for (; I != E; ++I)
+        edge *I2 = edges, *J;
+        edge* E2 = edges + edge_count;
+        for (; I2 != E2; ++I2)
         {
-            if (I + 1 == E)
+            if (I2 + 1 == E2)
                 continue;
 
-            J = I + 1;
+            J = I2 + 1;
 
-            if ((*I).vertex_id0 != (*J).vertex_id0)
+            if ((*I2).vertex_id0 != (*J).vertex_id0)
                 continue;
 
-            if ((*I).vertex_id1 != (*J).vertex_id1)
+            if ((*I2).vertex_id1 != (*J).vertex_id1)
                 continue;
 
-            dest[(*I).face_id * 3 + (*I).edge_id] = (*J).face_id;
-            dest[(*J).face_id * 3 + (*J).edge_id] = (*I).face_id;
+            dest[(*I2).face_id * 3 + (*I2).edge_id] = (*J).face_id;
+            dest[(*J).face_id * 3 + (*J).edge_id] = (*I2).face_id;
         }
     }
-#if 0
-		xr_vector<u32>	test = dest;
-
-		dest.assign		(faces.size()*3,0xffffffff);
-		// Dumb algorithm O(N^2) :)
-		for (u32 f=0; f<faces.size(); f++)
-		{
-			for (u32 t=0; t<faces.size(); t++)
-			{
-				if (t==f)	continue;
-
-				for (u32 f_e=0; f_e<3; f_e++)
-				{
-					u32 f1	= faces[f].verts[(f_e+0)%3];
-					u32 f2	= faces[f].verts[(f_e+1)%3];
-					if (f1>f2)	std::swap(f1,f2);
-
-					for (u32 t_e=0; t_e<3; t_e++)
-					{
-						u32 t1	= faces[t].verts[(t_e+0)%3];
-						u32 t2	= faces[t].verts[(t_e+1)%3];
-						if (t1>t2)	std::swap(t1,t2);
-
-						if (f1==t1 && f2==t2)
-						{
-							// f.edge[f_e] linked to t.edge[t_e]
-							dest[f*3+f_e]	= t;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		{
-			xr_vector<u32>::const_iterator	I = test.begin();
-			xr_vector<u32>::const_iterator	E = test.end();
-			xr_vector<u32>::const_iterator	J = dest.begin();
-			for ( ; I != E; ++I, ++J) {
-				VERIFY	(*I == *J);
-			}
-		}
-#endif
-#else
-    dest.assign(faces.size() * 3, 0xffffffff);
-    // Dumb algorithm O(N^2) :)
-    for (u32 f = 0; f < faces.size(); f++)
-    {
-        for (u32 t = 0; t < faces.size(); t++)
-        {
-            if (t == f)
-                continue;
-
-            for (u32 f_e = 0; f_e < 3; f_e++)
-            {
-                u32 f1 = faces[f].verts[(f_e + 0) % 3];
-                u32 f2 = faces[f].verts[(f_e + 1) % 3];
-                if (f1 > f2)
-                    std::swap(f1, f2);
-
-                for (u32 t_e = 0; t_e < 3; t_e++)
-                {
-                    u32 t1 = faces[t].verts[(t_e + 0) % 3];
-                    u32 t2 = faces[t].verts[(t_e + 1) % 3];
-                    if (t1 > t2)
-                        std::swap(t1, t2);
-
-                    if (f1 == t1 && f2 == t2)
-                    {
-                        // f.edge[f_e] linked to t.edge[t_e]
-                        dest[f * 3 + f_e] = t;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-#endif
 }
 IC BOOL similar(TRI& T1, TRI& T2)
 {
@@ -297,9 +209,9 @@ CollectorPacked::CollectorPacked(const Fbox& bb, int apx_vertices, int apx_faces
 
     int _size = (clpMX + 1) * (clpMY + 1) * (clpMZ + 1);
     int _average = (apx_vertices / _size) / 2;
-    for (int ix = 0; ix < clpMX + 1; ix++)
-        for (int iy = 0; iy < clpMY + 1; iy++)
-            for (int iz = 0; iz < clpMZ + 1; iz++)
+    for (u32 ix = 0; ix < clpMX + 1; ix++)
+        for (u32 iy = 0; iy < clpMY + 1; iy++)
+            for (u32 iz = 0; iz < clpMZ + 1; iz++)
                 VM[ix][iy][iz].reserve(_average);
 }
 
@@ -313,11 +225,11 @@ void CollectorPacked::add_face(const Fvector& v0, const Fvector& v1, const Fvect
     T.verts[2] = VPack(v2);
     T.material = material;
     T.sector = sector;
-    faces.push_back(T);
+    faces.emplace_back(T);
 }
 
 void CollectorPacked::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
-                                 size_t dummy // misc
+                                 u32 dummy // misc
 )
 {
     TRI T;
@@ -325,7 +237,7 @@ void CollectorPacked::add_face_D(const Fvector& v0, const Fvector& v1, const Fve
     T.verts[1] = VPack(v1);
     T.verts[2] = VPack(v2);
     T.dummy = dummy;
-    faces.push_back(T);
+    faces.emplace_back(T);
 }
 
 u32 CollectorPacked::VPack(const Fvector& V)
@@ -343,21 +255,20 @@ u32 CollectorPacked::VPack(const Fvector& V)
     clamp(iz, (u32)0, clpMZ);
 
     {
-        DWORDList* vl;
-        vl = &(VM[ix][iy][iz]);
-        for (DWORDIt it = vl->begin(); it != vl->end(); it++)
-            if (verts[*it].similar(V))
+        DWORDList* vl = &(VM[ix][iy][iz]);
+        for (u32 it : *vl)
+            if (verts[it].similar(V))
             {
-                P = *it;
+                P = it;
                 break;
             }
     }
     if (0xffffffff == P)
     {
         P = verts.size();
-        verts.push_back(V);
+        verts.emplace_back(V);
 
-        VM[ix][iy][iz].push_back(P);
+        VM[ix][iy][iz].emplace_back(P);
 
         u32 ixE, iyE, izE;
         ixE = iFloor(float(V.x + VMeps.x - VMmin.x) / VMscale.x * clpMX);
@@ -370,19 +281,19 @@ u32 CollectorPacked::VPack(const Fvector& V)
         clamp(izE, (u32)0, clpMZ);
 
         if (ixE != ix)
-            VM[ixE][iy][iz].push_back(P);
+            VM[ixE][iy][iz].emplace_back(P);
         if (iyE != iy)
-            VM[ix][iyE][iz].push_back(P);
+            VM[ix][iyE][iz].emplace_back(P);
         if (izE != iz)
-            VM[ix][iy][izE].push_back(P);
+            VM[ix][iy][izE].emplace_back(P);
         if ((ixE != ix) && (iyE != iy))
-            VM[ixE][iyE][iz].push_back(P);
+            VM[ixE][iyE][iz].emplace_back(P);
         if ((ixE != ix) && (izE != iz))
-            VM[ixE][iy][izE].push_back(P);
+            VM[ixE][iy][izE].emplace_back(P);
         if ((iyE != iy) && (izE != iz))
-            VM[ix][iyE][izE].push_back(P);
+            VM[ix][iyE][izE].emplace_back(P);
         if ((ixE != ix) && (iyE != iy) && (izE != iz))
-            VM[ixE][iyE][izE].push_back(P);
+            VM[ixE][iyE][izE].emplace_back(P);
     }
     return P;
 }

@@ -36,7 +36,6 @@
 #include <algorithm>
 #include <random>
 
-
 #define ALLOCA dALLOCA16
 
 typedef const dReal *dRealPtr;

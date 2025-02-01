@@ -27,22 +27,20 @@ public:
     };
 
 public:
-    Fmatrix xform;
+    Fmatrix xform{};
 
-    u32 dwFrame;
-    u32 dwMode;
+    u32 dwFrame{};
+    u32 dwMode{};
     union
     {
-        u32 tcm; // mask for tc-modifiers
+        u32 tcm{}; // mask for tc-modifiers
         Flags32 tcm_flags;
     };
     WaveForm scaleU, scaleV;
     WaveForm rotate;
     WaveForm scrollU, scrollV;
 
-    CMatrix() { Memory.mem_fill(this, 0, sizeof(CMatrix)); }
-
-    constexpr inline void tc_trans(Fmatrix& T, float u, float v)
+    inline void tc_trans(Fmatrix& T, float u, float v) const
     {
         T.mm.r[0] = DirectX::g_XMIdentityR0.v;
         T.mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -51,7 +49,7 @@ public:
     }
     void Calculate();
 
-    IC BOOL Similar(CMatrix& M) // comare by modes and params
+    constexpr inline bool Similar(const CMatrix& M) const // comare by modes and params
     {
         if (dwMode != M.dwMode)
             return FALSE;

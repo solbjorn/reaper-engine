@@ -150,7 +150,6 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AssemblerOutput />
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
@@ -165,10 +164,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -189,7 +188,6 @@
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4315;4267;</DisableSpecificWarnings>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
@@ -354,6 +352,7 @@
     <ClInclude Include="..\xrRender\WallmarksEngine.h" />
     <ClInclude Include="..\xrRender\xrD3DDefs.h" />
     <ClInclude Include="..\xrRender\xrRender_console.h" />
+    <ClInclude Include="..\xrRender\xrSkinXW.h" />
     <ClInclude Include="..\xrRender\xrStripify.h" />
     <ClInclude Include="..\xrRender\xr_effgamma.h" />
     <ClInclude Include="blender_bloom_build.h" />
@@ -528,6 +527,7 @@
     <ClCompile Include="..\xrRender\VertexCache.cpp" />
     <ClCompile Include="..\xrRender\WallmarksEngine.cpp" />
     <ClCompile Include="..\xrRender\xrRender_console.cpp" />
+    <ClCompile Include="..\xrRender\xrSkinXW.cpp" />
     <ClCompile Include="..\xrRender\xrStripify.cpp" />
     <ClCompile Include="..\xrRender\xr_effgamma.cpp" />
     <ClCompile Include="blender_bloom_build.cpp" />

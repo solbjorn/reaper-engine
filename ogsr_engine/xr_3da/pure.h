@@ -10,8 +10,8 @@
 
 typedef void __fastcall RP_FUNC(void* obj);
 #define DECLARE_MESSAGE_CL(name, calling) \
-    extern ENGINE_API RP_FUNC rp_##name; \
-    class ENGINE_API pure##name \
+    extern RP_FUNC rp_##name; \
+    class pure##name \
     { \
     public: \
         virtual void calling On##name(void) = 0; \
@@ -31,7 +31,7 @@ DECLARE_MESSAGE(AppEnd);
 DECLARE_MESSAGE(DeviceReset);
 DECLARE_MESSAGE(ScreenResolutionChanged);
 
-// ENGINE_API extern int	__cdecl	_REG_Compare(const void *, const void *);
+// extern int	__cdecl	_REG_Compare(const void *, const void *);
 
 template <class T>
 class CRegistrator // the registrator itself
@@ -60,7 +60,7 @@ public:
     }
 
     constexpr void Add(T* object, const int priority = REG_PRIORITY_NORMAL) { Add({object, priority}); }
-    
+
     void Add(_REG_INFO&& newMessage)
     {
         bool found = false;

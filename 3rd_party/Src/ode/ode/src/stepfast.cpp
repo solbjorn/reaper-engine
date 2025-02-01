@@ -68,7 +68,6 @@ int dWorldGetAutoEnableDepthSF1 (dxWorld *world)
 	return autoEnableDepth;
 }
 
-
 //little bit of math.... the _sym_ functions assume the return matrix will be symmetric
 static void
 Multiply2_sym_p8p (dReal * A, dReal * B, dReal * C, int p, int Askip)
@@ -676,8 +675,8 @@ dInternalStepIslandFast (dxWorld * world, dxBody * const *bodies, int nb, dxJoin
 		{
 			saveFacc[b * 4 + i] = bodies[b]->facc[i];
 			saveTacc[b * 4 + i] = bodies[b]->tacc[i];
-			bodies[b]->tag = b;
 		}
+		bodies[b]->tag = b;
 	}
 
 	for (iter = 0; iter < maxiterations; iter++)
@@ -748,7 +747,6 @@ dInternalStepIslandFast (dxWorld * world, dxBody * const *bodies, int nb, dxJoin
 		//now iterate through the random ordered joint array we created.
 		for (j = 0; j < nj; j++)
 		{
-
 #ifdef TIMING
 			dTimerNow ("setting up joint");
 #endif
@@ -962,7 +960,6 @@ processIslandsFast (dxWorld * world, dReal stepsize, int maxiterations)
 			body[bcount++] = b;	// put body on body list
 
 quickstart:
-
 			// traverse and tag all body's joints, add untagged connected bodies
 			// to stack
 			for (dxJointNode * n = b->firstjoint; n; n = n->next)

@@ -9,16 +9,16 @@
 
 #include "dxRenderDeviceRender.h"
 
+#include <oneapi/tbb/parallel_for.h>
+
 void CHOM::MT_RENDER()
 {
     MT.Enter();
-    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu &&
-                                  g_pGamePersistent->m_pMainMenu->IsActive());
+    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
     if (MT_frame_rendered != Device.dwFrame && !b_main_menu_is_active)
     {
         CFrustum ViewBase;
-        ViewBase.CreateFromMatrix(Device.mFullTransform,
-                                  FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+        ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
         Enable();
         Render(ViewBase);
     }
@@ -56,11 +56,11 @@ struct HOM_poly
 
 IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
 {
-    float e1 = v0.distance_to(v1);
-    float e2 = v0.distance_to(v2);
-    float e3 = v1.distance_to(v2);
+    const float e1 = v0.distance_to(v1);
+    const float e2 = v0.distance_to(v2);
+    const float e3 = v1.distance_to(v2);
 
-    float p = (e1 + e2 + e3) / 2.f;
+    const float p = (e1 + e2 + e3) / 2.f;
     return _sqrt(p * (p - e1) * (p - e2) * (p - e3));
 }
 
@@ -77,15 +77,18 @@ void CHOM::Load()
     Msg("* Loading HOM: %s", fName);
 
     IReader* fs = FS.r_open(fName);
-    IReader* S = fs->open_chunk(1);
 
     // Load tris and merge them
     CDB::Collector CL;
-    while (!S->eof())
     {
-        HOM_poly P;
-        S->r(&P, sizeof(P));
-        CL.add_face_packed_D(P.v1, P.v2, P.v3, P.flags, 0.01f);
+        IReader* S = fs->open_chunk(1);
+        const auto begin = static_cast<HOM_poly*>(S->pointer());
+        const auto end = static_cast<HOM_poly*>(S->end());
+        for (HOM_poly* poly = begin; poly != end; ++poly)
+        {
+            CL.add_face_packed_D(poly->v1, poly->v2, poly->v3, poly->flags, 0.01f);
+        }
+        S->close();
     }
 
     // Determine adjacency
@@ -93,33 +96,36 @@ void CHOM::Load()
     CL.calc_adjacency(adjacency);
 
     // Create RASTER-triangles
-    m_pTris = xr_alloc<occTri>(u32(CL.getTS()));
-    for (u32 it = 0; it < CL.getTS(); it++)
+    m_pTris = xr_alloc<occTri>(CL.getTS());
+
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, CL.getTS()), [&](const auto& range)
     {
-        CDB::TRI& clT = CL.getT()[it];
-        occTri& rT = m_pTris[it];
-        Fvector& v0 = CL.getV()[clT.verts[0]];
-        Fvector& v1 = CL.getV()[clT.verts[1]];
-        Fvector& v2 = CL.getV()[clT.verts[2]];
-        rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
-        rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
-        rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
-        rT.flags = u32(clT.dummy);
-        rT.area = Area(v0, v1, v2);
-        if (rT.area < EPS_L)
+        for (size_t it = range.begin(); it != range.end(); ++it)
         {
-            Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
+            const CDB::TRI& clT = CL.getT()[it];
+            occTri& rT = m_pTris[it];
+            Fvector& v0 = CL.getV()[clT.verts[0]];
+            Fvector& v1 = CL.getV()[clT.verts[1]];
+            Fvector& v2 = CL.getV()[clT.verts[2]];
+            rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
+            rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
+            rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
+            rT.flags = clT.dummy;
+            rT.area = Area(v0, v1, v2);
+
+            if (rT.area < EPS_L)
+                Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
+
+            rT.plane.build(v0, v1, v2);
+            rT.skip = 0;
+            rT.center.add(v0, v1).add(v2).div(3.f);
         }
-        rT.plane.build(v0, v1, v2);
-        rT.skip = 0;
-        rT.center.add(v0, v1).add(v2).div(3.f);
-    }
+    });
 
     // Create AABB-tree
     m_pModel = xr_new<CDB::MODEL>();
-    m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+    m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
     bEnabled = TRUE;
-    S->close();
     FS.r_close(fs);
 }
 
@@ -130,34 +136,13 @@ void CHOM::Unload()
     bEnabled = FALSE;
 }
 
-class pred_fb
-{
-public:
-    occTri* m_pTris;
-    Fvector camera;
-
-public:
-    pred_fb(occTri* _t) : m_pTris(_t) {}
-    pred_fb(occTri* _t, Fvector& _c) : m_pTris(_t), camera(_c) {}
-    ICF bool operator()(const CDB::RESULT& _1, const CDB::RESULT& _2) const
-    {
-        occTri& t0 = m_pTris[_1.id];
-        occTri& t1 = m_pTris[_2.id];
-        return camera.distance_to_sqr(t0.center) < camera.distance_to_sqr(t1.center);
-    }
-    ICF bool operator()(const CDB::RESULT& _1) const
-    {
-        occTri& T = m_pTris[_1.id];
-        return T.skip > Device.dwFrame;
-    }
-};
-
 void CHOM::Render_DB(CFrustum& base)
 {
     // Update projection matrices on every frame to ensure valid HOM culling
     float view_dim = occ_dim_0;
-    Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0, view_dim / 2.f + 0 + 0, 0.0f, 1.0f};
-    Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
+    const Fmatrix m_viewport = {view_dim / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0,
+                                view_dim / 2.f + 0 + 0, 0.0f, 1.0f};
+    constexpr Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
     m_xform.mul(m_viewport, Device.mFullTransform);
     m_xform_01.mul(m_viewport_01, Device.mFullTransform);
 
@@ -167,12 +152,19 @@ void CHOM::Render_DB(CFrustum& base)
         return;
 
     // Prepare
-    CDB::RESULT* it = xrc.r_begin();
-    CDB::RESULT* end = xrc.r_end();
+    auto it = xrc.r_get()->begin();
+    auto end = xrc.r_get()->end();
 
     Fvector COP = Device.vCameraPosition;
-    end = std::remove_if(it, end, pred_fb(m_pTris));
-    std::sort(it, end, pred_fb(m_pTris, COP));
+    end = std::remove_if(it, end, [this](const CDB::RESULT& _1) {
+        const occTri& T = m_pTris[_1.id];
+        return T.skip > Device.dwFrame;
+    });
+    std::sort(it, end, [this, &COP](const CDB::RESULT& _1, const CDB::RESULT& _2) {
+        const occTri& t0 = m_pTris[_1.id];
+        const occTri& t1 = m_pTris[_2.id];
+        return COP.distance_to_sqr(t0.center) < COP.distance_to_sqr(t1.center);
+    });
 
     // Build frustum with near plane only
     CFrustum clip;
@@ -185,10 +177,10 @@ void CHOM::Render_DB(CFrustum& base)
 #endif
 
     // Perfrom selection, sorting, culling
-    for (; it != end; it++)
+    for (auto& it : *xrc.r_get())
     {
         // Control skipping
-        occTri& T = m_pTris[it->id];
+        occTri& T = m_pTris[it.id];
         u32 next = _frame + ::Random.randI(3, 10);
 
         // Test for good occluder - should be improved :)
@@ -199,7 +191,7 @@ void CHOM::Render_DB(CFrustum& base)
         }
 
         // Access to triangle vertices
-        CDB::TRI& t = m_pModel->get_tris()[it->id];
+        CDB::TRI& t = m_pModel->get_tris()[it.id];
         Fvector* v = m_pModel->get_verts();
         src.clear();
         dst.clear();
@@ -207,7 +199,7 @@ void CHOM::Render_DB(CFrustum& base)
         src.push_back(v[t.verts[1]]);
         src.push_back(v[t.verts[2]]);
         sPoly* P = clip.ClipPoly(src, dst);
-        if (0 == P)
+        if (nullptr == P)
         {
             T.skip = next;
             continue;
@@ -219,11 +211,11 @@ void CHOM::Render_DB(CFrustum& base)
 #endif
         u32 pixels = 0;
         int limit = int(P->size()) - 1;
-        for (int v = 1; v < limit; v++)
+        for (int v2 = 1; v2 < limit; v2++)
         {
             m_xform.transform(T.raster[0], (*P)[0]);
-            m_xform.transform(T.raster[1], (*P)[v + 0]);
-            m_xform.transform(T.raster[2], (*P)[v + 1]);
+            m_xform.transform(T.raster[1], (*P)[v2 + 0]);
+            m_xform.transform(T.raster[2], (*P)[v2 + 1]);
             pixels += Raster.rasterize(&T);
         }
         if (0 == pixels)
@@ -247,25 +239,25 @@ void CHOM::Render(CFrustum& base)
     Device.Statistic->RenderCALC_HOM.End();
 }
 
-ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {
-    float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+    const float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
     if (z < EPS)
         return TRUE;
-    float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+    const float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
     min.x = max.x = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
     min.y = max.y = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
     minz = 0.f + z * iw;
     return FALSE;
 }
-ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+
+ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {
-    float t;
-    float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+    const float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
     if (z < EPS)
         return TRUE;
-    float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
-    t = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
+    const float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+    float t = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
     if (t < min.x)
         min.x = t;
     else if (t > max.x)
@@ -280,7 +272,8 @@ ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _
         minz = t;
     return FALSE;
 }
-IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
+
+IC BOOL _visible(const Fbox& B, const Fmatrix& m_xform_01)
 {
     // Find min/max points of xformed-box
     Fvector2 min, max;
@@ -304,7 +297,7 @@ IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
     return Raster.test(min.x, min.y, max.x, max.y, z);
 }
 
-BOOL CHOM::visible(Fbox3& B)
+BOOL CHOM::visible(const Fbox3& B) const
 {
     if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
         return TRUE;
@@ -313,14 +306,14 @@ BOOL CHOM::visible(Fbox3& B)
     return _visible(B, m_xform_01);
 }
 
-BOOL CHOM::visible(Fbox2& B, float depth)
+BOOL CHOM::visible(const Fbox2& B, float depth) const
 {
     if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
         return TRUE;
     return Raster.test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
 }
 
-BOOL CHOM::visible(vis_data& vis)
+BOOL CHOM::visible(vis_data& vis) const
 {
     if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
         return TRUE; // return - everything visible
@@ -361,7 +354,7 @@ BOOL CHOM::visible(vis_data& vis)
     return result;
 }
 
-BOOL CHOM::visible(sPoly& P)
+BOOL CHOM::visible(const sPoly& P) const
 {
     if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
         return TRUE;
@@ -414,7 +407,8 @@ void CHOM::OnRender()
             // draw solid
             Device.SetNearer(TRUE);
             RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
-            RCache.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f, float(color_get_A(0x80FFFFFF)) / 255.f);
+            RCache.set_c("tfactor", float(color_get_R(0x80FFFFFF)) / 255.f, float(color_get_G(0x80FFFFFF)) / 255.f, float(color_get_B(0x80FFFFFF)) / 255.f,
+                         float(color_get_A(0x80FFFFFF)) / 255.f);
             RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), poly.size() / 3);
             Device.SetNearer(FALSE);
             // draw wire

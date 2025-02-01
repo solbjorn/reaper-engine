@@ -58,7 +58,7 @@ public:
 
 public:
     void update(const bool forced = false);
-    inline void update_script() { this->update(true); }; //Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
+    inline void update_script() { this->update(true); }; // Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
 
     bool perform_attack();
     ALife::EMeetActionType action_type(CSE_ALifeSchedulable* tpALifeSchedulable, const int& iGroupIndex, const bool& bMutualDetection);
@@ -66,7 +66,7 @@ public:
 public:
     IC object_type& object() const;
     IC movement_manager_type& movement() const;
-    IC CSE_ALifeSmartZone& smart_terrain();
+    CSE_ALifeSmartZone& smart_terrain();
     IC void can_choose_alife_tasks(bool value);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION

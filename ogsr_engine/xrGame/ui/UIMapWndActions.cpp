@@ -82,7 +82,7 @@ private:
 
 public:
     CSomeMapEvaluator(LPCSTR evaluator_name) : inherited((CUIMapWnd*)NULL, evaluator_name) {}
-    virtual ~CSomeMapEvaluator(){};
+    virtual ~CSomeMapEvaluator() {};
 };
 
 class CEvaluatorTargetMapShown : public CSomeMapEvaluator
@@ -91,7 +91,7 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorTargetMapShown(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+    CEvaluatorTargetMapShown(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
     virtual bool evaluate();
 };
 
@@ -101,7 +101,7 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapMinimized(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+    CEvaluatorMapMinimized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
     virtual bool evaluate();
 };
 
@@ -111,7 +111,7 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapResized(LPCSTR evaluator_name = 0) : inherited(evaluator_name){};
+    CEvaluatorMapResized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
     virtual bool evaluate();
 };
 
@@ -148,7 +148,7 @@ void CMapActionPlanner::setup(CUIMapWnd* object)
     add_evaluator(ePropMapIdle, xr_new<CEvaluatorMapConst>(false, "ePropMapIdle"));
 
     // final world state
-    _world_operator* action = xr_new<CMapActionIdle>("eOperatorMapIdle");
+    world_operator* action = xr_new<CMapActionIdle>("eOperatorMapIdle");
     add_condition(action, ePropMapResized, true);
     add_condition(action, ePropTargetMapShown, true);
     add_condition(action, ePropMapIdle, false);

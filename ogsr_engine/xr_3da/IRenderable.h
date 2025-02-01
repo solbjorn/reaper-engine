@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition ("Renderable")
-class ENGINE_API IRenderable
+class IRenderable
 {
 public:
     struct

@@ -6,14 +6,12 @@
 
 constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
 
-#pragma pack(push, 4)
-
 /*
 Requirements:
 0. Generic
     * O(1) insertion
         - radius completely determines	"level"
-        - position completely detemines "node"
+        - position completely determines "node"
     * O(1) removal
     *
 1. Rendering
@@ -104,20 +102,19 @@ public:
 class ISpatial_NODE
 {
 public:
-    typedef _W64 unsigned ptrt;
-
-public:
     ISpatial_NODE* parent; // parent node for "empty-members" optimization
     ISpatial_NODE* children[8]; // children nodes
     xr_vector<ISpatial*> items; // own items
-public:
+
     void _init(ISpatial_NODE* _parent);
-    void _remove(ISpatial* _S);
-    void _insert(ISpatial* _S);
-    BOOL _empty()
+    void _remove(ISpatial* S);
+    void _insert(ISpatial* S);
+    bool _empty()
     {
-        return items.empty() && children[0] == nullptr && children[1] == nullptr && children[2] == nullptr && children[3] == nullptr && children[4] == nullptr &&
-            children[5] == nullptr && children[6] == nullptr && children[7] == nullptr;
+        return items.empty() &&
+            0 ==
+            (uintptr_t(children[0]) | uintptr_t(children[1]) | uintptr_t(children[2]) | uintptr_t(children[3]) | uintptr_t(children[4]) | uintptr_t(children[5]) |
+             uintptr_t(children[6]) | uintptr_t(children[7]));
     }
 };
 
@@ -190,5 +187,3 @@ public:
 
 XRCDB_API extern ISpatial_DB* g_SpatialSpace;
 XRCDB_API extern ISpatial_DB* g_SpatialSpacePhysic;
-
-#pragma pack(pop)

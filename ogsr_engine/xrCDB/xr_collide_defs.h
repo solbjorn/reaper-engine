@@ -17,11 +17,13 @@ struct tri
     Fvector N;
     float d;
 };
+
 struct elipsoid
 {
     Fmatrix mL2W; // convertion from sphere(000,1) to real space
     Fmatrix mW2L; // convertion from real space to sphere(000,1)
 };
+
 struct ray_cache
 {
     // previous state
@@ -32,6 +34,7 @@ struct ray_cache
 
     // cached vertices
     Fvector verts[3];
+
     ray_cache()
     {
         start.set(0, 0, 0);
@@ -154,21 +157,23 @@ public:
             return FALSE;
         }
 
-        auto& rq = results.emplace_back();
+        rq_result& rq = results.emplace_back(rq_result());
         rq.range = _range;
         rq.element = _element;
         rq.O = _who;
         return TRUE;
     }
+
     IC void append_result(rq_result& res)
     {
         if (0 == results.capacity())
             results.reserve(8);
         results.push_back(res);
     }
+
     IC int r_count() { return results.size(); }
-    IC rq_result* r_begin() { return std::data(results); }
-    IC rq_result* r_end() { return std::data(results) + std::size(results); }
+    IC rq_result* r_begin() { return &*results.begin(); }
+    IC rqVec* r_get() { return &results; }
     IC void r_clear() { results.clear(); }
     IC void r_sort() { std::sort(results.begin(), results.end(), r_sort_pred); }
     IC rqVec& r_results() { return results; }

@@ -5,8 +5,8 @@
 #include "vismask.h"
 
 // refs
-class ENGINE_API CObject;
-class ENGINE_API CInifile;
+class CObject;
+class CInifile;
 
 // t-defs
 const u32 clGET_TRIS = (1 << 0);
@@ -79,7 +79,7 @@ enum /*ENGINE_API*/ ECollisionFormType
     cftShape
 };
 
-class ENGINE_API ICollisionForm
+class ICollisionForm
 {
     friend class CObjectSpace;
 
@@ -107,10 +107,10 @@ public:
     const ECollisionFormType Type() const { return m_type; }
 };
 
-class ENGINE_API CCF_Skeleton : public ICollisionForm
+class CCF_Skeleton : public ICollisionForm
 {
 public:
-    struct ENGINE_API SElement
+    struct SElement
     {
         union
         {
@@ -150,7 +150,6 @@ private:
     void BuildState();
     void BuildTopLevel();
 
-
 public:
     CCF_Skeleton(CObject* _owner);
 
@@ -168,7 +167,7 @@ public:
     }
 };
 
-class ENGINE_API CCF_Shape : public ICollisionForm
+class CCF_Shape : public ICollisionForm
 {
 public:
     union shape_data

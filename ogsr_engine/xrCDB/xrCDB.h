@@ -10,19 +10,17 @@
 
 // forward declarations
 class CFrustum;
+
 namespace Opcode
 {
-class OPCODE_Model;
+class Model;
 class AABBNoLeafNode;
 }; // namespace Opcode
 
-#pragma pack(push, 8)
 namespace CDB
 {
-#ifdef _M_X64
-#pragma pack(push, 1)
-// Triangle for x86
-class XRCDB_API TRI_DEPRECATED //*** 16 bytes total (was 32 :)
+// Triangle
+class alignas(16) XRCDB_API TRI //*** 16 bytes total (was 32 :)
 {
 public:
     u32 verts[3]; // 3*4 = 12b
@@ -31,102 +29,63 @@ public:
         u32 dummy; // 4b
         struct
         {
-            u32 material : 14;
-            u32 suppress_shadows : 1;
-            u32 suppress_wm : 1;
-            u32 sector : 16;
+            u32 material : 14; //
+            u32 suppress_shadows : 1; //
+            u32 suppress_wm : 1; //
+            u32 sector : 16; //
         };
     };
 
 public:
-    IC u32 IDvert(u32 ID) { return verts[ID]; }
+    TRI() = default;
+    [[nodiscard]] auto IDvert(size_t ID) const { return verts[ID]; }
 };
-#pragma pack(pop)
-#endif
-// Triangle
-class XRCDB_API TRI //*** 24 bytes total
-{
-public:
-    u32 verts[3]; // 3*4 = 12b
-    union
-    {
-        size_t dummy;
-        struct
-        {
-            size_t material : 14;
-            size_t suppress_shadows : 1;
-            size_t suppress_wm : 1;
-            size_t sector : 16;
-#ifdef _M_X64
-            size_t dumb : 32;
-#endif
-        };
-#ifdef _M_X64
-        struct
-        {
-            u32 dummy_low;
-            u32 dummy_high;
-        };
-#endif
-    };
-
-#ifdef _M_X64
-    TRI()
-    {
-        verts[0] = 0;
-        verts[1] = 0;
-        verts[2] = 0;
-        dummy = 0;
-    }
-
-    TRI& operator=(const TRI_DEPRECATED& oldTri)
-    {
-        verts[0] = oldTri.verts[0];
-        verts[1] = oldTri.verts[1];
-        verts[2] = oldTri.verts[2];
-        dummy = oldTri.dummy;
-        dumb = 0;
-        return *this;
-    }
-#endif
-public:
-    IC u32 IDvert(u32 ID) { return verts[ID]; }
-};
+static_assert(sizeof(TRI) == 16);
 
 // Build callback
 typedef void __stdcall build_callback(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
+class Noncopyable
+{
+public:
+    Noncopyable() = default;
+    Noncopyable(const Noncopyable&) = delete;
+    Noncopyable& operator=(const Noncopyable&) = delete;
+};
+
 // Model definition
-class XRCDB_API MODEL
+class XRCDB_API MODEL : Noncopyable
 {
     friend class COLLIDER;
-    enum
+
+    enum : u32
     {
         S_READY = 0,
         S_INIT = 1,
         S_BUILD = 2,
-        S_forcedword = u32(-1)
     };
 
 private:
     xrCriticalSection cs;
-    Opcode::OPCODE_Model* tree;
+    Opcode::Model* tree;
     u32 status; // 0=ready, 1=init, 2=building
 
     // tris
     TRI* tris;
-    int tris_count;
+    size_t tris_count;
     Fvector* verts;
-    int verts_count;
+    size_t verts_count;
 
 public:
     MODEL();
     ~MODEL();
 
     IC Fvector* get_verts() { return verts; }
-    IC int get_verts_count() const { return verts_count; }
+    IC const Fvector* get_verts() const { return verts; }
+    IC size_t get_verts_count() const { return verts_count; }
+    IC const TRI* get_tris() const { return tris; }
     IC TRI* get_tris() { return tris; }
-    IC int get_tris_count() const { return tris_count; }
+    IC size_t get_tris_count() const { return tris_count; }
     IC void syncronize() const
     {
         if (S_READY != status)
@@ -138,42 +97,32 @@ public:
         }
     }
 
-    void build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
-    void build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
-    u32 memory();
+    void build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
+    void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
+    size_t memory();
 };
 
 // Collider result
-struct XRCDB_API RESULT
+struct alignas(16) XRCDB_API RESULT
 {
     Fvector verts[3];
-
     union
     {
-        size_t dummy; // 4b
+        u32 dummy; // 4b
         struct
         {
-            size_t material : 14;
-            size_t suppress_shadows : 1;
-            size_t suppress_wm : 1;
-            size_t sector : 16;
-#ifdef _M_X64
-            u64 stub : 32;
-#endif
+            u32 material : 14; //
+            u32 suppress_shadows : 1; //
+            u32 suppress_wm : 1; //
+            u32 sector : 16; //
         };
-#ifdef _M_X64
-        struct
-        {
-            u32 dummy_h;
-            u32 dummy_l;
-        };
-#endif
     };
-
     int id;
     float range;
     float u, v;
+    u64 pad;
 };
+static_assert(sizeof(RESULT) == 64);
 
 // Collider Options
 enum
@@ -198,8 +147,8 @@ public:
     void box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim);
     void frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustum& F);
 
-    ICF RESULT* r_begin() { return std::data(rd); }
-    ICF RESULT* r_end() { return std::data(rd) + std::size(rd); }
+    ICF RESULT* r_begin() { return &*rd.begin(); };
+    ICF xr_vector<RESULT>* r_get() { return &rd; };
     RESULT& r_add();
     void r_free();
     ICF size_t r_count() { return rd.size(); };
@@ -218,12 +167,11 @@ class XRCDB_API Collector
 public:
     void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
 
-    void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy);
-    void add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy, float eps = EPS);
-
+    void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
     void add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, float eps = EPS);
+    void add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy, float eps = EPS);
     void remove_duplicate_T();
-    void calc_adjacency(xr_vector<u32>& dest);
+    void calc_adjacency(xr_vector<u32>& dest) const;
 
     Fvector* getV() { return &*verts.begin(); }
     size_t getVS() { return verts.size(); }
@@ -236,22 +184,15 @@ public:
     }
 };
 
-class Noncopyable
-{
-public:
-    Noncopyable() = default;
-    Noncopyable(const Noncopyable&) = delete;
-    Noncopyable& operator=(const Noncopyable&) = delete;
-};
-
 #pragma warning(push)
 #pragma warning(disable : 4275)
 const u32 clpMX = 24, clpMY = 16, clpMZ = 24;
-class XRCDB_API CollectorPacked : private Noncopyable
+class XRCDB_API CollectorPacked : public Noncopyable
 {
-    typedef xr_vector<u32> DWORDList;
-    typedef DWORDList::iterator DWORDIt;
+    using DWORDList = xr_vector<u32>;
+    using DWORDIt = DWORDList::iterator;
 
+private:
     xr_vector<Fvector> verts;
     xr_vector<TRI> faces;
 
@@ -270,7 +211,7 @@ public:
     //		}
 
     void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
-    void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, size_t dummy);
+    void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
 
     xr_vector<Fvector>& getV_Vec() { return verts; }
     Fvector* getV() { return &*verts.begin(); }
@@ -281,5 +222,3 @@ public:
 };
 #pragma warning(pop)
 }; // namespace CDB
-
-#pragma pack(pop)

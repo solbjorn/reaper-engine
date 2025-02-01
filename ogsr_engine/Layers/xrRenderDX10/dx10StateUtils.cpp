@@ -350,9 +350,9 @@ u64 GetHash(const D3D_SAMPLER_DESC& desc)
         DirectX::XMLoadInt3(reinterpret_cast<const u32*>(&desc.BorderColor[3])),
     };
 
-    static_assert(offsetof(desc, MipLODBias) == 16);
-    static_assert(offsetof(desc, ComparisonFunc) == 24);
-    static_assert(offsetof(desc, BorderColor[3]) == 40);
+    static_assert(offsetof(D3D_SAMPLER_DESC, MipLODBias) == 16);
+    static_assert(offsetof(D3D_SAMPLER_DESC, ComparisonFunc) == 24);
+    static_assert(offsetof(D3D_SAMPLER_DESC, BorderColor[3]) == 40);
     static_assert(sizeof(desc) == 52);
 
     return XXH3_64bits(&buf[0], sizeof(buf));

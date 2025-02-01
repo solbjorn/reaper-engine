@@ -14,7 +14,7 @@ IC CGraphEngine::CGraphEngine(u32 max_vertex_count)
     m_algorithm->data_storage().set_min_bucket_value(_dist_type(0));
     m_algorithm->data_storage().set_max_bucket_value(_dist_type(2000));
 
-    m_solver_algorithm = xr_new<CSolverAlgorithm>(16 * 1024);
+    m_solver_algorithm = xr_new<CSolverAlgorithm>(SolverMaxVertexCount);
 }
 
 IC CGraphEngine::~CGraphEngine()
@@ -32,7 +32,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
     START_PROFILE("graph_engine")
     START_PROFILE("graph_engine/search")
 
-    typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type> CPathManagerGeneric;
+    using CPathManagerGeneric = CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>;
 
     CPathManagerGeneric path_manager;
 
@@ -53,7 +53,7 @@ IC bool CGraphEngine::search(const _Graph& graph, const _index_type& start_node,
     START_PROFILE("graph_engine")
     START_PROFILE("graph_engine/search")
 
-    typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type> CPathManagerGeneric;
+    using CPathManagerGeneric = CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>;
 
     CPathManagerGeneric path_manager;
 
@@ -93,10 +93,10 @@ IC bool CGraphEngine::search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8
 {
     Device.Statistic->AI_Path.Begin();
     START_PROFILE("graph_engine")
-    START_PROFILE("graph_engine/proble_solver")
+    START_PROFILE("graph_engine/problem_solver")
 
-    typedef CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8> CSProblemSolver;
-    typedef CPathManager<CSProblemSolver, CSolverAlgorithm::CDataStorage, _Parameters, _solver_dist_type, _solver_index_type, GraphEngineSpace::_iteration_type> CSolverPathManager;
+    using CSProblemSolver = CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>;
+    using CSolverPathManager = CPathManager<CSProblemSolver, CSolverAlgorithm::CDataStorage, _Parameters, _solver_dist_type, _solver_index_type, GraphEngineSpace::_iteration_type>;
 
     CSolverPathManager path_manager;
 

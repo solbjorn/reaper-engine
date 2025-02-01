@@ -61,12 +61,12 @@ distribution.
 #define TIXML_SNSCANF _snscanf_s
 #elif defined(_MSC_VER) && (_MSC_VER >= 1200)
 // Microsoft visual studio, version 6 and higher.
-//#pragma message( "Using _sn* functions." )
+// #pragma message( "Using _sn* functions." )
 #define TIXML_SNPRINTF _snprintf
 #define TIXML_SNSCANF _snscanf
 #elif defined(__GNUC__) && (__GNUC__ >= 3)
 // GCC version 3 and higher.s
-//#warning( "Using sn* functions." )
+// #warning( "Using sn* functions." )
 #define TIXML_SNPRINTF snprintf
 #define TIXML_SNSCANF snscanf
 #endif
@@ -947,7 +947,7 @@ public:
         }
         return result;
     }
-#ifdef TIXML_USE_STL
+#if 0 // def TIXML_USE_STL
     /** Template form of the attribute query which will try to read the
         attribute into the specified type. Very easy, very powerful, but
         be careful to make sure to call this with the correct type.

@@ -57,9 +57,9 @@ public:
     void ChangePower(float value);
     void ChangeRadiation(float value);
     void ChangePsyHealth(float value);
-    virtual void ChangeSatiety(float value){};
-    virtual void ChangeAlcohol(float value){};
-    virtual void ChangeThirst(float value){};
+    virtual void ChangeSatiety(float value) {};
+    virtual void ChangeAlcohol(float value) {};
+    virtual void ChangeThirst(float value) {};
 
     IC void SetMaxPower(float val)
     {
@@ -73,7 +73,7 @@ public:
     void ChangeEntityMorale(float value);
 
     virtual CWound* ConditionHit(SHit* pHDS);
-    //обновления состояния с течением времени
+    // обновления состояния с течением времени
     virtual void UpdateCondition();
     void UpdateWounds();
     void UpdateConditionTime();
@@ -81,7 +81,7 @@ public:
 
     virtual void UpdatePower();
 
-    //скорость потери крови из всех открытых ран
+    // скорость потери крови из всех открытых ран
     float BleedingSpeed();
 
     CObject* GetWhoHitLastTime() { return m_pWho; }
@@ -93,48 +93,6 @@ public:
     IC bool CanBeHarmed() const { return m_bCanBeHarmed; };
 
     void ClearWounds();
-
-protected:
-    void UpdateHealth();
-    void UpdateSatiety(float k = 1.0f);
-    void UpdateRadiation(float k = 1.0f);
-    void UpdatePsyHealth(float k = 1.0f);
-
-    void UpdateEntityMorale();
-
-    //изменение силы хита в зависимости от надетого костюма
-    //(только для InventoryOwner)
-    float HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float AP);
-    //изменение потери сил в зависимости от надетого костюма
-    float HitPowerEffect(float power_loss);
-
-    //для подсчета состояния открытых ран,
-    //запоминается кость куда был нанесен хит
-    //и скорость потери крови из раны
-    DEFINE_VECTOR(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
-    WOUND_VECTOR m_WoundVector;
-    //очистка массива ран
-
-    //все величины от 0 до 1
-    float m_fPower; //сила
-    float m_fRadiation; //доза радиактивного облучения
-    float m_fPsyHealth; //здоровье
-
-    float m_fEntityMorale; //мораль
-
-    //максимальные величины
-    float m_fPowerMax;
-    float m_fRadiationMax;
-    float m_fPsyHealthMax;
-
-    float m_fEntityMoraleMax;
-
-    //величины изменения параметров на каждом обновлении
-    float m_fDeltaHealth;
-    float m_fDeltaPower;
-    float m_fDeltaRadiation;
-    float m_fDeltaPsyHealth;
-    float m_fDeltaEntityMorale{};
 
     struct SConditionChangeV
     {
@@ -151,26 +109,68 @@ protected:
         void load(LPCSTR sect, LPCSTR prefix);
     };
 
+protected:
+    void UpdateHealth();
+    void UpdateSatiety(float k = 1.0f);
+    void UpdateRadiation(float k = 1.0f);
+    void UpdatePsyHealth(float k = 1.0f);
+
+    void UpdateEntityMorale();
+
+    // изменение силы хита в зависимости от надетого костюма
+    //(только для InventoryOwner)
+    float HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float AP);
+    // изменение потери сил в зависимости от надетого костюма
+    float HitPowerEffect(float power_loss);
+
+    // для подсчета состояния открытых ран,
+    // запоминается кость куда был нанесен хит
+    // и скорость потери крови из раны
+    DEFINE_VECTOR(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
+    WOUND_VECTOR m_WoundVector;
+    // очистка массива ран
+
+    // все величины от 0 до 1
+    float m_fPower; // сила
+    float m_fRadiation; // доза радиактивного облучения
+    float m_fPsyHealth; // здоровье
+
+    float m_fEntityMorale; // мораль
+
+    // максимальные величины
+    float m_fPowerMax;
+    float m_fRadiationMax;
+    float m_fPsyHealthMax;
+
+    float m_fEntityMoraleMax;
+
+    // величины изменения параметров на каждом обновлении
+    float m_fDeltaHealth;
+    float m_fDeltaPower;
+    float m_fDeltaRadiation;
+    float m_fDeltaPsyHealth;
+    float m_fDeltaEntityMorale{};
+
     SConditionChangeV m_change_v{};
 
     float m_fMinWoundSize;
     bool m_bIsBleeding;
 
-    //части хита, затрачиваемые на уменьшение здоровья и силы
+    // части хита, затрачиваемые на уменьшение здоровья и силы
     float m_fHealthHitPart[ALife::eHitTypeMax]{};
     float m_fPowerHitPart;
 
-    //потеря здоровья от последнего хита
+    // потеря здоровья от последнего хита
     float m_fHealthLost;
 
-    //для отслеживания времени
+    // для отслеживания времени
     u64 m_iLastTimeCalled;
     float m_fDeltaTime{};
-    //кто нанес последний хит
+    // кто нанес последний хит
     CObject* m_pWho;
     u16 m_iWhoID;
 
-    //для передачи параметров из DamageManager
+    // для передачи параметров из DamageManager
     float m_fHitBoneScale;
     float m_fWoundBoneScale;
 

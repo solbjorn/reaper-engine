@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "Shader.h"
 #include "ResourceManager.h"
 
@@ -39,7 +38,7 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3D
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-BOOL SPass::equal(const SPass& other)
+bool SPass::equal(const SPass& other) const
 {
     if (state != other.state)
         return FALSE;
@@ -94,18 +93,25 @@ BOOL ShaderElement::equal(ShaderElement& S)
     return TRUE;
 }
 
-BOOL ShaderElement::equal(ShaderElement* S)
+BOOL Shader::equal(Shader* S, int index)
 {
-    if (0 == S && 0 == this)
-        return TRUE; //-V704
-    if (0 == S || 0 == this)
-        return FALSE; //-V704
-    return equal(*S);
+    if (nullptr == E[index] && nullptr == S->E[index])
+        return TRUE;
+    if (nullptr == E[index] || nullptr == S->E[index])
+        return FALSE;
+
+    return E[index]->equal(*S->E[index]);
 }
 
-//
-BOOL Shader::equal(Shader& S) { return E[0]->equal(&*S.E[0]) && E[1]->equal(&*S.E[1]) && E[2]->equal(&*S.E[2]) && E[3]->equal(&*S.E[3]) && E[4]->equal(&*S.E[4]); }
-BOOL Shader::equal(Shader* S) { return equal(*S); }
+BOOL Shader::equal(Shader* S)
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (!equal(S, i))
+            return FALSE;
+    }
+    return TRUE;
+}
 
 void STextureList::clear()
 {

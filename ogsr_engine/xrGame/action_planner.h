@@ -24,31 +24,19 @@ class CActionPlanner : public CProblemSolver<GraphEngineSpace::CWorldProperty, G
                                              _world_operator_ptr, _condition_evaluator_ptr>
 {
 public:
-    typedef CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search, _world_operator_ptr,
-                           _condition_evaluator_ptr>
-        CProblemSolver;
+    using inherited = CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
+                                     _world_operator_ptr, _condition_evaluator_ptr>;
+    using COperator = typename inherited::COperator;
+    using CConditionEvaluator = typename inherited::CConditionEvaluator;
+    using _condition_type = typename inherited::condition_type;
+    using _edge_type = typename inherited::edge_type;
+    using _value_type = typename inherited::value_type;
+    using _operator_ptr = typename inherited::operator_ptr;
+    using _action_id_type = typename inherited::edge_type;
+    using CWorldProperty = GraphEngineSpace::CWorldProperty;
+    using world_operator = _world_operator;
 
-    typedef CProblemSolver inherited;
-    typedef typename inherited::_edge_type _action_id_type;
-    typedef typename inherited::_condition_type _condition_type;
-    typedef typename inherited::COperator COperator;
-    typedef typename inherited::CConditionEvaluator CConditionEvaluator;
-    typedef typename inherited::_value_type _value_type;
-    typedef typename inherited::_edge_type _edge_type;
-    typedef typename inherited::_operator_ptr _operator_ptr;
-
-    typedef GraphEngineSpace::CWorldProperty CWorldProperty;
-    typedef GraphEngineSpace::CWorldState CWorldState;
-    typedef _world_operator _world_operator; // Fuck this shit!
-
-    using inherited::evaluators;
-    using inherited::get_operator;
-    using inherited::m_evaluators;
-    using inherited::m_operators;
-    using inherited::operators;
-    using inherited::solution;
-    using inherited::solve;
-
+protected:
     bool m_initialized;
     _action_id_type m_current_action_id;
 

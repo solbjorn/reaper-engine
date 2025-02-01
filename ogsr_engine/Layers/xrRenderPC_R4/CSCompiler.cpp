@@ -119,7 +119,7 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName, const D3D_SAMPLER_DESC& 
     return *this;
 }
 
-CSCompiler& CSCompiler::defOutput(LPCSTR ResourceName, ref_rt rt)
+CSCompiler& CSCompiler::defOutput(LPCSTR ResourceName, const ref_rt& rt)
 {
     VERIFY(ResourceName);
     if (!rt)

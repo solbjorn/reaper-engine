@@ -2,10 +2,10 @@
 #define __XR_OBJECT_LIST_H__
 
 // refs
-class ENGINE_API CObject;
+class CObject;
 class NET_Packet;
 
-class ENGINE_API CObjectList
+class CObjectList
 {
 private:
     // data

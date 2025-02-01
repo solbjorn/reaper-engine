@@ -61,7 +61,7 @@ void CGrenade::net_Destroy()
     if (m_destroy_callback)
     {
         m_destroy_callback(this);
-        m_destroy_callback = nullptr;
+        m_destroy_callback.clear();
     }
 
     inherited::net_Destroy();
@@ -124,7 +124,7 @@ void CGrenade::Throw()
     if (pGrenade)
     {
         pGrenade->set_destroy_time(m_dwDestroyTimeMax);
-        //установить ID того кто кинул гранату
+        // установить ID того кто кинул гранату
         pGrenade->SetInitiator(H_Parent()->ID());
     }
     inherited::Throw();
@@ -159,7 +159,7 @@ void CGrenade::Destroy()
     if (m_destroy_callback)
     {
         m_destroy_callback(this);
-        m_destroy_callback = nullptr;
+        m_destroy_callback.clear();
     }
 
     FindNormal(normal);
@@ -185,7 +185,7 @@ void CGrenade::PutNextToSlot()
 {
     VERIFY(!getDestroy());
 
-    //выкинуть гранату из инвентаря
+    // выкинуть гранату из инвентаря
     if (m_pCurrentInventory)
     {
         NET_Packet P;
@@ -241,7 +241,7 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 
     switch (cmd)
     {
-    //переключение типа гранаты
+    // переключение типа гранаты
     case kWPN_NEXT: {
         if (flags & CMD_START)
         {

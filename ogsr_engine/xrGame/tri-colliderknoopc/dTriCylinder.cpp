@@ -118,7 +118,7 @@ int dcTriListCollider::dSortedTriCyl(const dReal* triSideAx0, const dReal* triSi
     unsigned int ret = 0;
     dVector3 pos;
     if (code == 0)
-    { //Всегда истинно //-V547
+    { // Всегда истинно //-V547
         norm[0] = triAx[0] * signum;
         norm[1] = triAx[1] * signum;
         norm[2] = triAx[2] * signum;
@@ -256,7 +256,7 @@ IC bool dcTriListCollider::cylinderCrossesLine(const dReal* p, const dReal* R, d
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
-//#define CHECK_EXIT
+// #define CHECK_EXIT
 #ifdef CHECK_EXIT
 int Check(int check) { return check; }
 #define RETURN0 return Check(0)
@@ -806,3 +806,5 @@ int dcTriListCollider::dTriCyl(const dReal* v0, const dReal* v1, const dReal* v2
         dGeomGetUserData(o1)->callback(T->T, contact);
     return ret;
 }
+
+#undef RETURN0

@@ -2,7 +2,7 @@
 #define r_backendH
 #pragma once
 
-//#define RBackend_PGO
+// #define RBackend_PGO
 
 #ifdef RBackend_PGO
 #define PGO(a) a
@@ -84,10 +84,13 @@ public:
 
     ref_cbuffer m_aVertexConstants[MaxCBuffers];
     ref_cbuffer m_aPixelConstants[MaxCBuffers];
+
     ref_cbuffer m_aGeometryConstants[MaxCBuffers];
+    ref_cbuffer m_aComputeConstants[MaxCBuffers];
+
     ref_cbuffer m_aHullConstants[MaxCBuffers];
     ref_cbuffer m_aDomainConstants[MaxCBuffers];
-    ref_cbuffer m_aComputeConstants[MaxCBuffers];
+
     D3D_PRIMITIVE_TOPOLOGY m_PrimitiveTopology;
     ID3DInputLayout* m_pInputLayout;
     DWORD dummy0; //	Padding to avoid warning
@@ -106,7 +109,7 @@ private:
     u32 vb_stride;
 
     // Pixel/Vertex constants
-    ALIGN(16) R_constants constants;
+    alignas(16) R_constants constants;
     R_constant_table* ctable;
 
     // Shaders/State
@@ -258,8 +261,8 @@ public:
 
 protected: //	In DX10 we need input shader signature which is stored in ref_vs
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = 0);
-public:
 
+public:
     ICF void set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride);
     ICF void set_Indices(ID3DIndexBuffer* _ib);
     ICF void set_Geometry(SGeometry* _geom);
@@ -425,7 +428,7 @@ public:
     ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
 
     ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
-    
+
     // Device create / destroy / frame signaling
     void RestoreQuadIBData(); // Igor: is used to test bug with rain, particles corruption
     void CreateQuadIB();
@@ -458,9 +461,8 @@ public:
     void dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
     void dbg_DrawEllipse(Fmatrix& T, u32 C);
 
-
     CBackend() { Invalidate(); };
-    
+
 private:
     // Debug Draw
     void InitializeDebugDraw();

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "visual_memory_manager.h"
+
 template <typename T, typename _predicate>
 IC void CMemoryManager::fill_enemies(const xr_deque<T>& objects, const _predicate& predicate) const
 {

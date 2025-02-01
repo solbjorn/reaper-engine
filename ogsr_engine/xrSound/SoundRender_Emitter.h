@@ -5,10 +5,8 @@
 
 class CSoundRender_Emitter : public CSound_emitter
 {
-    float starting_delay;
-
 public:
-    enum State
+    enum State : u32
     {
         stStopped = 0,
 
@@ -23,8 +21,6 @@ public:
 
         stSimulating,
         stSimulatingLooped,
-
-        stFORCEDWORD = u32(-1)
     };
 
 public:
@@ -33,12 +29,13 @@ public:
 #endif
 
     CSoundRender_Target* target;
-    IC CSoundRender_Source* source() { return (CSoundRender_Source*)owner_data->handle; };
+    IC CSoundRender_Source* source() const { return (CSoundRender_Source*)owner_data->handle; }
     ref_sound_data_ptr owner_data;
 
     u32 get_bytes_total() const;
     float get_length_sec() const;
 
+    float starting_delay{};
     float priority_scale;
     float smooth_volume;
     float occluder_volume; // USER
@@ -49,6 +46,8 @@ public:
     u32 m_stream_cursor;
     u32 m_cur_handle_cursor;
     CSound_params p_source{};
+    CSoundRender_Environment e_current;
+    CSoundRender_Environment e_target;
 
     int iPaused;
     BOOL bMoved;
@@ -100,8 +99,8 @@ public:
     void fill_block(void* ptr, u32 size);
     void fill_data(u8* ptr, u32 offset, u32 size);
 
-    float priority();
-    float att();
+    float priority() const;
+    float att() const;
     void start(ref_sound* _owner, BOOL _loop, float delay);
     void cancel(); // manager forces out of rendering
     void update(float dt);

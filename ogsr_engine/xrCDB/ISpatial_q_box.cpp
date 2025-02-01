@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ISpatial.h"
 
 template <bool b_first>
 class walker
@@ -30,11 +29,9 @@ public:
             return;
 
         // test items
-        xr_vector<ISpatial*>::iterator _it = N->items.begin();
-        xr_vector<ISpatial*>::iterator _end = N->items.end();
-        for (; _it != _end; _it++)
+        for (auto& it : N->items)
         {
-            ISpatial* S = *_it;
+            ISpatial* S = it;
             if (0 == (S->spatial.type & mask))
                 continue;
 
@@ -46,7 +43,7 @@ public:
                 continue;
 
             space->q_result->push_back(S);
-            if (b_first)
+            if constexpr (b_first)
                 return;
         }
 
@@ -59,8 +56,11 @@ public:
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
             walk(N->children[octant], c_C, c_R);
-            if (b_first && !space->q_result->empty())
-                return;
+            if constexpr (b_first)
+            {
+                if (!space->q_result->empty())
+                    return;
+            }
         }
     }
 };

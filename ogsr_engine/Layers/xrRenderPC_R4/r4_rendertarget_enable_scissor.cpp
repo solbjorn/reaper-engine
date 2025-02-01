@@ -1,10 +1,8 @@
 #include "stdafx.h"
-#include "../../xr_3da/cl_intersect.h"
+#include "../../xrCDB/cl_intersect.h"
 #include "../xrRender/du_cone.h"
 
-// extern Fvector du_cone_vertices			[DU_CONE_NUMVERTEX];
-
-BOOL tri_vs_sphere_intersect(Fvector& SC, float R, Fvector& v0, Fvector& v1, Fvector& v2)
+static BOOL tri_vs_sphere_intersect(const Fvector& SC, float R, const Fvector& v0, const Fvector& v1, const Fvector& v2)
 {
     Fvector e0, e1;
     return CDB::TestSphereTri(SC, R, v0, e0.sub(v1, v0), e1.sub(v2, v0));
@@ -74,11 +72,7 @@ BOOL CRenderTarget::enable_scissor(light* L) // true if intersects near plane
     BOOL near_intersect = FALSE;
     {
         Fmatrix& M = Device.mFullTransform;
-        Fvector4 plane;
-        plane.x = -(M._14 + M._13);
-        plane.y = -(M._24 + M._23);
-        plane.z = -(M._34 + M._33);
-        plane.w = -(M._44 + M._43);
+        Fvector4 plane{-(M._14 + M._13), -(M._24 + M._23), -(M._34 + M._33), -(M._44 + M._43)};
         float denom = -1.0f / _sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
         plane.mul(denom);
         Fplane P;

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "space_restriction_base.h"
+
 IC CSpaceRestrictionBridge::CSpaceRestrictionBridge(CSpaceRestrictionBase* object)
 {
     VERIFY(object);

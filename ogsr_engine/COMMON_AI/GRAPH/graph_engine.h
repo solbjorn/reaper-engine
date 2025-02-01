@@ -11,35 +11,44 @@
 #include "a_star.h"
 #include "edge_path.h"
 #include "vertex_manager_fixed.h"
-#include "vertex_manager_hash_fixed.h"
 #include "vertex_allocator_fixed.h"
 #include "data_storage_bucket_list.h"
-#include "data_storage_binary_heap.h"
 #include "path_manager.h"
 #include "graph_engine_space.h"
-#include "profiler.h"
+#include "vertex_manager_hash_fixed.h"
+#include "data_storage_binary_heap.h"
 
+#include "profiler.h"
+#include "problem_solver.h"
 #include "operator_condition.h"
 #include "condition_state.h"
 #include "operator_abstract.h"
+
+namespace hash_fixed_vertex_manager
+{
+inline u32 to_u32(const GraphEngineSpace::CWorldState& other) { return other.hash_value(); }
+} // namespace hash_fixed_vertex_manager
 
 using namespace GraphEngineSpace;
 
 class CGraphEngine
 {
 public:
-    typedef CDataStorageBinaryHeap CSolverPriorityQueue;
-    typedef CDataStorageBucketList<u32, u32, 8 * 1024, false> CPriorityQueue;
+    // common algorithm
+    using CPriorityQueue = CDataStorageBucketList<u32, u32, 8 * 1024, false>;
+    using CVertexManager = CVertexManagerFixed<u32, u32, 8>;
+    static const size_t VertexAllocatorReserve = 64 * 1024;
+    using CVertexAllocator = CVertexAllocatorFixed<VertexAllocatorReserve>;
+    using AlgorithmStorage = CVertexPath<true>;
+    using CAlgorithm = CAStar<_dist_type, CPriorityQueue, CVertexManager, CVertexAllocator, true, AlgorithmStorage>;
 
-    typedef CVertexManagerFixed<u32, u32, 8> CVertexManager;
-
-    typedef CVertexManagerHashFixed<u32, _solver_index_type, 256, 8 * 1024> CSolverVertexManager;
-    typedef CVertexAllocatorFixed<64 * 1024> CVertexAllocator;
-    typedef CVertexAllocatorFixed<8 * 1024> CSolverVertexAllocator;
-
-    typedef CAStar<_dist_type, CPriorityQueue, CVertexManager, CVertexAllocator> CAlgorithm;
-
-    typedef CAStar<_solver_dist_type, CSolverPriorityQueue, CSolverVertexManager, CSolverVertexAllocator, true, CEdgePath<_solver_edge_type, true>> CSolverAlgorithm;
+    // solver algorithm
+    static constexpr size_t SolverMaxVertexCount = 16 * 1024;
+    using CSolverPriorityQueue = CDataStorageBinaryHeap;
+    using CSolverVertexManager = CVertexManagerHashFixed<u32, _solver_index_type, 256, 8 * 1024>;
+    using CSolverVertexAllocator = CVertexAllocatorFixed<8 * 1024>;
+    using SolverAlgorithmStorage = CEdgePath<_solver_edge_type, true>;
+    using CSolverAlgorithm = CAStar<_solver_dist_type, CSolverPriorityQueue, CSolverVertexManager, CSolverVertexAllocator, true, SolverAlgorithmStorage>;
 
     CAlgorithm* m_algorithm;
     CSolverAlgorithm* m_solver_algorithm;
@@ -64,4 +73,5 @@ public:
                    xr_vector<_solver_edge_type>* node_path, const _Parameters& parameters);
 };
 
+#include "problem_solver_inline_ext.h"
 #include "graph_engine_inline.h"

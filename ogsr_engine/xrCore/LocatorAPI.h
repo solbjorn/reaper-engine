@@ -11,6 +11,8 @@
 
 #include "LocatorAPI_defs.h"
 
+constexpr size_t VFS_STANDARD_FILE = std::numeric_limits<size_t>::max();
+
 class XRCORE_API CStreamReader;
 
 class XRCORE_API CLocatorAPI
@@ -21,8 +23,7 @@ public:
     struct file
     {
         LPCSTR name; // low-case name
-        u32 vfs; // 0xffffffff - standart file
-        u32 crc; // contents CRC
+        size_t vfs; // VFS_STANDARD_FILE - standart file
         u32 ptr; // pointer inside vfs
         u32 size_real; //
         u32 size_compressed; // if (size_real==size_compressed) - uncompressed
@@ -39,7 +40,15 @@ private:
     {
         shared_str path;
         void *hSrcFile, *hSrcMap;
-        u32 size;
+        CInifile* header;
+        size_t vfs_idx;
+        size_t size;
+        u32 key;
+
+        archive() : hSrcFile(NULL), hSrcMap(NULL), header(NULL), vfs_idx(VFS_STANDARD_FILE), size(0), key(0) {}
+
+        void open();
+        void close();
     };
 
     DEFINE_MAP_PRED(LPCSTR, FS_Path*, PathMap, PathPairIt, pred_str);
@@ -56,8 +65,9 @@ private:
     files_set files;
     archives_vec archives;
 
-    void Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
-    void ProcessArchive(LPCSTR path, LPCSTR base_path = NULL);
+    const CLocatorAPI::file* Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
+    void LoadArchive(archive& A);
+    void ProcessArchive(LPCSTR path);
     void ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse);
     bool RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse);
 
@@ -95,7 +105,6 @@ private:
 
     template <typename T>
     IC T* r_open_impl(LPCSTR path, LPCSTR _fname);
-    void ProcessExternalArch();
 
 public:
     CLocatorAPI();
@@ -137,9 +146,7 @@ public:
     FS_Path* append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive);
     LPCSTR update_path(string_path& dest, LPCSTR initial, LPCSTR src);
 
-    int file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = 0);
-
-    void register_archieve(LPCSTR path);
+    size_t file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = 0);
 
     // editor functions
     void rescan_physical_pathes();

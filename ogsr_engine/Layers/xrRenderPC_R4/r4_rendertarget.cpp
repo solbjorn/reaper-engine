@@ -183,9 +183,9 @@ void CRenderTarget::u_compute_texgen_jitter(Fmatrix& m_Texgen_J)
     m_Texgen_J.mulA_44(m_TexelAdjust);
 }
 
-static void generate_jitter(DWORD* dest, u32 elem_count)
+static void generate_jitter(u32* dest, u32 elem_count)
 {
-    const int cmax = 8;
+    constexpr int cmax = 8;
     svector<Ivector2, cmax> samples;
     while (samples.size() < elem_count * 2)
     {
@@ -629,7 +629,7 @@ CRenderTarget::CRenderTarget()
         // Build noise table
         {
             constexpr u32 sampleSize = 4;
-            constexpr u32 tempData[TEX_jitter_count][TEX_jitter * TEX_jitter]{};
+            u32 tempData[TEX_jitter_count][TEX_jitter * TEX_jitter]{};
 
             D3D_TEXTURE2D_DESC desc{};
             desc.Width = TEX_jitter;
@@ -658,12 +658,11 @@ CRenderTarget::CRenderTarget()
             {
                 for (u32 x = 0; x < TEX_jitter; x++)
                 {
-                    DWORD data[TEX_jitter_count];
+                    u32 data[TEX_jitter_count];
                     generate_jitter(data, TEX_jitter_count);
                     for (u32 it = 0; it < TEX_jitter_count; it++)
                     {
-                        u32* p = (u32*)(LPBYTE(subData[it].pSysMem) + y * subData[it].SysMemPitch + x * 4);
-
+                        u32* p = (u32*)((u8*)(subData[it].pSysMem) + y * subData[it].SysMemPitch + x * 4);
                         *p = data[it];
                     }
                 }
@@ -719,7 +718,7 @@ CRenderTarget::~CRenderTarget()
     //	_RELEASE					(rt_smap_ZB);
 
     // Jitter
-    for (int it = 0; it < TEX_jitter_count; it++)
+    for (u32 it = 0; it < TEX_jitter_count; it++)
     {
         t_noise[it]->surface_set(NULL);
 #ifdef DEBUG

@@ -1,11 +1,12 @@
 #include "stdafx.h"
-#include "cpuid.h"
+#include "xrcpuid.h"
+
+#include <Opcode.h>
+
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <xmmintrin.h>
 #pragma warning(pop)
-
-#include "xrCDB.h"
 
 using namespace CDB;
 using namespace Opcode;
@@ -14,20 +15,18 @@ struct alignas(16) vec_t : public Fvector3
 {
     float pad;
 };
+
 struct alignas(16) aabb_t
 {
     vec_t min;
     vec_t max;
 };
+
 struct alignas(16) ray_t
 {
     vec_t pos;
     vec_t inv_dir;
     vec_t fwd_dir;
-};
-struct ray_segment_t
-{
-    float t_near, t_far;
 };
 
 ICF u32& uf(float& x) { return (u32&)x; }
@@ -214,19 +213,22 @@ public:
         ray.fwd_dir.set(D);
         rRange = R;
         rRange2 = R * R;
-        if (!bUseSSE)
+        if constexpr (!bUseSSE)
         {
             // for FPU - zero out inf
             if (_abs(D.x) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.x = 0;
             if (_abs(D.y) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.y = 0;
             if (_abs(D.z) > flt_eps)
-            {}
+            {
+            }
             else
                 ray.inv_dir.z = 0;
         }
@@ -274,7 +276,7 @@ public:
         // if determinant is near zero, ray lies in plane of triangle
         pvec.crossproduct(ray.fwd_dir, edge2);
         det = edge1.dotproduct(pvec);
-        if (bCull)
+        if constexpr (bCull)
         {
             if (det < EPS)
                 return false;
@@ -310,7 +312,7 @@ public:
         return true;
     }
 
-    void _prim(DWORD prim)
+    void _prim(u32 prim)
     {
         float u, v, r;
         if (!_tri(tris[prim].verts, u, v, r))
@@ -318,7 +320,7 @@ public:
         if (r <= 0 || r > rRange)
             return;
 
-        if (bNearest)
+        if constexpr (bNearest)
         {
             if (dest->r_count())
             {
@@ -371,7 +373,7 @@ public:
         _mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
         // Actual ray/aabb test
-        if (bUseSSE)
+        if constexpr (bUseSSE)
         {
             // use SSE
             float d;
@@ -391,18 +393,21 @@ public:
         }
 
         // 1st chield
-        if (node->HasLeaf())
-            _prim(node->GetPrimitive());
+        if (node->HasPosLeaf())
+            _prim(node->GetPosPrimitive());
         else
             _stab(node->GetPos());
 
         // Early exit for "only first"
-        if (bFirst && dest->r_count())
-            return;
+        if constexpr (bFirst)
+        {
+            if (dest->r_count())
+                return;
+        }
 
         // 2nd chield
-        if (node->HasLeaf2())
-            _prim(node->GetPrimitive2());
+        if (node->HasNegLeaf())
+            _prim(node->GetNegPrimitive());
         else
             _stab(node->GetNeg());
     }

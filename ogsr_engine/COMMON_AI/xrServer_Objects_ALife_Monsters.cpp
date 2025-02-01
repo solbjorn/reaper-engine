@@ -40,14 +40,14 @@ void setup_location_types_section(GameGraph::TERRAIN_VECTOR& m_vertex_types, CIn
     for (const auto& I : sect.Data)
     {
         LPCSTR S = I.first.c_str();
-        string16 I;
+        string16 I16;
         u32 N = _GetItemCount(S);
 
         if (N != GameGraph::LOCATION_TYPE_COUNT)
             continue;
 
         for (u32 j = 0; j < GameGraph::LOCATION_TYPE_COUNT; ++j)
-            terrain_mask.tMask[j] = GameGraph::_LOCATION_ID(atoi(_GetItem(S, j, I)));
+            terrain_mask.tMask[j] = GameGraph::_LOCATION_ID(atoi(_GetItem(S, j, I16)));
 
         m_vertex_types.push_back(terrain_mask);
     }
@@ -98,8 +98,8 @@ void setup_location_types(GameGraph::TERRAIN_VECTOR& m_vertex_types, CInifile* i
 
 //////////////////////////////////////////////////////////////////////////
 
-//возможное отклонение от значения репутации
-//заданого в профиле и для конкретного персонажа
+// возможное отклонение от значения репутации
+// заданого в профиле и для конкретного персонажа
 #define REPUTATION_DELTA 10
 #define RANK_DELTA 10
 
@@ -136,10 +136,10 @@ CSE_Abstract* CSE_ALifeTraderAbstract::init()
 {
     // я не смог найти накой этот код нужен. какой то задел
 
-    //string4096 S;
+    // string4096 S;
 
-    //sprintf_s(S, "%s\r\n[game_info]\r\n", !*base()->m_ini_string ? "" : *base()->m_ini_string);
-    //base()->m_ini_string = S;
+    // sprintf_s(S, "%s\r\n[game_info]\r\n", !*base()->m_ini_string ? "" : *base()->m_ini_string);
+    // base()->m_ini_string = S;
 
     return (base());
 }
@@ -252,16 +252,16 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
     CCharacterInfo char_info;
     char_info.Load(character_profile());
 
-    //профиль задан индексом
+    // профиль задан индексом
     if (char_info.data()->m_CharacterId.size())
     {
         set_specific_character(char_info.data()->m_CharacterId);
         return m_SpecificCharacter;
     }
-    //профиль задан шаблоном
+    // профиль задан шаблоном
     //
-    //проверяем все информации о персонаже, запоминаем подходящие,
-    //а потом делаем случайный выбор
+    // проверяем все информации о персонаже, запоминаем подходящие,
+    // а потом делаем случайный выбор
     else
     {
         m_CheckedCharacters.clear();
@@ -287,7 +287,7 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
             }
             if (!char_info.data()->m_Class.size() || class_found)
             {
-                //запомнить пподходящий персонаж с флажком m_bDefaultForCommunity
+                // запомнить пподходящий персонаж с флажком m_bDefaultForCommunity
                 if (spec_char.data()->m_bDefaultForCommunity)
                     m_DefaultCharacters.push_back(id);
 
@@ -299,7 +299,7 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
                         int* count = NULL;
                         if (ai().get_alife())
                             count = ai().alife().registry(specific_characters).object(id, true);
-                        //если индекс еще не был использован
+                        // если индекс еще не был использован
                         if (NULL == count)
 #endif
                             m_CheckedCharacters.push_back(id);
@@ -328,7 +328,7 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     R_ASSERT(new_spec_char.size());
 
 #ifdef XRGAME_EXPORTS
-    //убрать предыдущий номер из реестра
+    // убрать предыдущий номер из реестра
     if (m_SpecificCharacter.size())
     {
         if (ai().get_alife())
@@ -340,7 +340,7 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
 #ifdef XRGAME_EXPORTS
     if (ai().get_alife())
     {
-        //запомнить, то что мы использовали индекс
+        // запомнить, то что мы использовали индекс
         int a = 1;
         ai().alife().registry(specific_characters).add(m_SpecificCharacter, a, true);
     }
@@ -415,7 +415,7 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
             m_dwMoney += ::Random.randI(max_m - min_m);
     }
 #else
-    //в редакторе специфический профиль оставляем не заполненым
+    // в редакторе специфический профиль оставляем не заполненым
     m_SpecificCharacter = NULL;
 #endif
 }
@@ -426,7 +426,7 @@ shared_str CSE_ALifeTraderAbstract::character_profile() { return m_sCharacterPro
 
 #ifdef XRGAME_EXPORTS
 
-//для работы с relation system
+// для работы с relation system
 u16 CSE_ALifeTraderAbstract::object_id() const { return base()->ID; }
 
 CHARACTER_COMMUNITY_INDEX CSE_ALifeTraderAbstract::Community() const { return m_community_index; }
@@ -453,9 +453,9 @@ CHARACTER_REPUTATION_VALUE CSE_ALifeTraderAbstract::Reputation()
 
 #endif
 
-void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet& tNetPacket){};
+void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet& tNetPacket) {};
 
-void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet& tNetPacket){};
+void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet& tNetPacket) {};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeTrader

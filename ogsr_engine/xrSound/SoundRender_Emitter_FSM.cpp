@@ -53,7 +53,9 @@ void CSoundRender_Emitter::update(float dt)
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
         occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
+        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) *
+            (b2D ? 1.f : occluder_volume);
+        e_current = e_target = *SoundRender->get_environment(p_source.position);
 
         if (update_culling(dt))
         {
@@ -79,8 +81,10 @@ void CSoundRender_Emitter::update(float dt)
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
         occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
-        
+        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) *
+            (b2D ? 1.f : occluder_volume);
+        e_current = e_target = *SoundRender->get_environment(p_source.position);
+
         if (update_culling(dt))
         {
             m_current_state = stPlayingLooped;
@@ -106,16 +110,16 @@ void CSoundRender_Emitter::update(float dt)
         if (fTime >= fTimeToStop)
         {
             // STOP
-            m_current_state = stStopped;
             SoundRender->i_stop(this);
+            m_current_state = stStopped;
         }
         else
         {
             if (!update_culling(dt))
             {
                 // switch to: SIMULATE
-                m_current_state = stSimulating; // switch state
                 SoundRender->i_stop(this);
+                m_current_state = stSimulating; // switch state
             }
             else
             {
@@ -172,8 +176,8 @@ void CSoundRender_Emitter::update(float dt)
         if (!update_culling(dt))
         {
             // switch to: SIMULATE
-            m_current_state = stSimulatingLooped; // switch state
             SoundRender->i_stop(this);
+            m_current_state = stSimulatingLooped; // switch state
         }
         else
         {
@@ -192,7 +196,7 @@ void CSoundRender_Emitter::update(float dt)
         {
             // switch to: PLAY
             m_current_state = stPlayingLooped; // switch state
-            u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), p_source.freq, source()->m_wformat); //--#SM+#--
+            const u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), p_source.freq, source()->m_wformat); //--#SM+#--
             set_cursor(ptr);
 
             SoundRender->i_start(this);
@@ -200,7 +204,7 @@ void CSoundRender_Emitter::update(float dt)
         break;
     }
 
-	//--#SM+# Begin--
+    //--#SM+# Begin--
     // hard rewind
     switch (m_current_state)
     {
@@ -212,23 +216,23 @@ void CSoundRender_Emitter::update(float dt)
     case stSimulatingLooped:
         if (fTimeToRewind > 0.0f)
         {
-            float fLength = get_length_sec();
-            bool bLooped = (fTimeToStop == 0xffffffff);
+            const float fLength = get_length_sec();
+            const bool bLooped = (fTimeToStop == 0xffffffff);
 
             R_ASSERT2(fLength >= fTimeToRewind, "set_time: target time is bigger than length of sound");
 
-            float fRemainingTime = (fLength - fTimeToRewind) / p_source.freq;
-            float fPastTime = fTimeToRewind / p_source.freq;
+            const float fRemainingTime = (fLength - fTimeToRewind) / p_source.freq;
+            const float fPastTime = fTimeToRewind / p_source.freq;
 
             fTimeStarted = SoundRender->fTimer_Value - fPastTime;
             fTimeToPropagade = fTimeStarted; //--> For AI events
 
             if (fTimeStarted < 0.0f)
             {
-                //Log("fTimer_Value = ", SoundRender->fTimer_Value);
-                //Log("fTimeStarted = ", fTimeStarted);
-                //Log("fRemainingTime = ", fRemainingTime);
-                //Log("fPastTime = ", fPastTime);
+                // Log("fTimer_Value = ", SoundRender->fTimer_Value);
+                // Log("fTimeStarted = ", fTimeStarted);
+                // Log("fRemainingTime = ", fRemainingTime);
+                // Log("fPastTime = ", fPastTime);
                 R_ASSERT2(fTimeStarted >= 0.0f, "Possible error in sound rewind logic! See log.");
 
                 fTimeStarted = SoundRender->fTimer_Value;
@@ -241,7 +245,7 @@ void CSoundRender_Emitter::update(float dt)
                 fTimeToStop = SoundRender->fTimer_Value + fRemainingTime;
             }
 
-            u32 ptr = calc_cursor(fTimeStarted, fTime, fLength, p_source.freq, source()->m_wformat);
+            const u32 ptr = calc_cursor(fTimeStarted, fTime, fLength, p_source.freq, source()->m_wformat);
             set_cursor(ptr);
 
             fTimeToRewind = 0.0f;
@@ -249,7 +253,6 @@ void CSoundRender_Emitter::update(float dt)
     default: break;
     }
     //--#SM+# End--
-
 
     // if deffered stop active and volume==0 -> physically stop sound
     if (bStopping && fis_zero(fade_volume))
@@ -275,8 +278,8 @@ void CSoundRender_Emitter::update(float dt)
 
 IC void volume_lerp(float& c, float t, float s, float dt)
 {
-    float diff = t - c;
-    float diff_a = _abs(diff);
+    const float diff = t - c;
+    const float diff_a = _abs(diff);
     if (diff_a < EPS_S)
         return;
     float mot = s * dt;
@@ -295,7 +298,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
     else
     {
         // Check range
-        float dist = SoundRender->listener_position().distance_to(p_source.position);
+        const float dist = SoundRender->listener_position().distance_to(p_source.position);
         if (dist > p_source.max_distance)
         {
             smooth_volume = 0;
@@ -303,21 +306,24 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
         }
 
         // Calc attenuated volume
-        float fade_scale =
-            bStopping || (att() * p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) < psSoundCull) ?
+        float fade_scale = bStopping ||
+                (att() * p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) <
+                 psSoundCull) ?
             -1.f :
             1.f;
         fade_volume += dt * 10.f * fade_scale;
 
         // Update occlusion
-        float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
+        const float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
         volume_lerp(occluder_volume, occ, 1.f, dt);
         clamp(occluder_volume, 0.f, 1.f);
     }
     clamp(fade_volume, 0.f, 1.f);
     // Update smoothing
     smooth_volume = .9f * smooth_volume +
-        .1f * (p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * occluder_volume * fade_volume);
+        .1f *
+            (p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) * occluder_volume *
+             fade_volume);
     if (smooth_volume < psSoundCull)
         return FALSE; // allow volume to go up
     // Here we has enought "PRIORITY" to be soundable
@@ -329,9 +335,9 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
         return SoundRender->i_allow_play(this);
 }
 
-float CSoundRender_Emitter::priority() { return smooth_volume * att() * priority_scale; }
+float CSoundRender_Emitter::priority() const { return smooth_volume * att() * priority_scale; }
 
-float CSoundRender_Emitter::att()
+float CSoundRender_Emitter::att() const
 {
     float dist = SoundRender->listener_position().distance_to(p_source.position);
     float rolloff_dist = psSoundRolloff * dist;

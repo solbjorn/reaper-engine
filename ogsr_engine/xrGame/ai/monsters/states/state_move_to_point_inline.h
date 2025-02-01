@@ -1,5 +1,7 @@
 #pragma once
 
+#include "level_graph.h"
+
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 
 #define CStateMonsterMoveToPointAbstract CStateMonsterMoveToPoint<_Object>

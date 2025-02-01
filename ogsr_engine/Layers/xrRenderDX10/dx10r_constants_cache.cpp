@@ -1,69 +1,71 @@
 #include "stdafx.h"
 
-
 #include "../xrRender/r_constants_cache.h"
 
-dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_PixelBuffer>(R_constant* C) const
 {
-    if (BType == BT_PixelBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_pixel_cb_index_mask) >> RC_dest_pixel_cb_index_shift;
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_pixel_cb_index_mask) >> RC_dest_pixel_cb_index_shift;
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
-        return *RCache.m_aPixelConstants[iBufferIndex];
-    }
-    else if (BType == BT_VertexBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_vertex_cb_index_mask) >> RC_dest_vertex_cb_index_shift;
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
+    return *RCache.m_aPixelConstants[iBufferIndex];
+}
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
-        return *RCache.m_aVertexConstants[iBufferIndex];
-    }
-    else if (BType == BT_GeometryBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_geometry_cb_index_mask) >> RC_dest_geometry_cb_index_shift;
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_VertexBuffer>(R_constant* C) const
+{
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_vertex_cb_index_mask) >> RC_dest_vertex_cb_index_shift;
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
-        return *RCache.m_aGeometryConstants[iBufferIndex];
-    }
-    else if (BType == BT_HullBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_hull_cb_index_mask) >> RC_dest_hull_cb_index_shift;
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
+    return *RCache.m_aVertexConstants[iBufferIndex];
+}
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aHullConstants[iBufferIndex]);
-        return *RCache.m_aHullConstants[iBufferIndex];
-    }
-    else if (BType == BT_DomainBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_domain_cb_index_mask) >> RC_dest_domain_cb_index_shift;
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_GeometryBuffer>(R_constant* C) const
+{
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_geometry_cb_index_mask) >> RC_dest_geometry_cb_index_shift;
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
-        return *RCache.m_aDomainConstants[iBufferIndex];
-    }
-    else if (BType == BT_Compute)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_compute_cb_index_mask) >> RC_dest_compute_cb_index_shift;
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
+    return *RCache.m_aGeometryConstants[iBufferIndex];
+}
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
-        return *RCache.m_aComputeConstants[iBufferIndex];
-    }
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_ComputeBuffer>(R_constant* C) const
+{
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_compute_cb_index_mask) >> RC_dest_compute_cb_index_shift;
 
-    FATAL("Unreachable code");
-    // Just hack to avoid warning;
-    dx10ConstantBuffer* ptr = 0;
-    return *ptr; //-V522
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
+    return *RCache.m_aComputeConstants[iBufferIndex];
+}
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_HullBuffer>(R_constant* C) const
+{
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_hull_cb_index_mask) >> RC_dest_hull_cb_index_shift;
+
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aHullConstants[iBufferIndex]);
+    return *RCache.m_aHullConstants[iBufferIndex];
+}
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_DomainBuffer>(R_constant* C) const
+{
+    //	Decode index
+    int iBufferIndex = (C->destination & RC_dest_domain_cb_index_mask) >> RC_dest_domain_cb_index_shift;
+
+    VERIFY(iBufferIndex < CBackend::MaxCBuffers);
+    VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
+    return *RCache.m_aDomainConstants[iBufferIndex];
 }
 
 void R_constants::flush_cache()

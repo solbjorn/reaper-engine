@@ -2,14 +2,15 @@
 
 #include <luabind/detail/policy.hpp>
 
-namespace luabind { namespace detail {
-
-namespace private_detail {
-
-constexpr int toInt(const bool a) noexcept
+namespace luabind
 {
-    return a ? 1 : 0;
-}
+namespace detail
+{
+
+namespace private_detail
+{
+
+constexpr int toInt(const bool a) noexcept { return a ? 1 : 0; }
 
 template <int ResInit, int Offset, int Until, int Index = 0, int Result = ResInit>
 struct calc_has_args
@@ -17,7 +18,7 @@ struct calc_has_args
     template <typename... Policies>
     static constexpr int value() noexcept
     {
-        struct find_conversion_policy<Index + Offset, Policies... >::type FindConversionsPolicyHack;
+        typename find_conversion_policy<Index + Offset, Policies...>::type FindConversionsPolicyHack;
         using converter_policy = decltype(FindConversionsPolicyHack);
         return calc_has_args<ResInit, Offset, Until, Index + 1, Result + toInt(converter_policy::has_arg)>::template value<Policies...>();
     }
@@ -33,7 +34,7 @@ struct calc_has_args<ResInit, Offset, Index, Index, Result>
     }
 };
 
-} // private_detail namespace
+} // namespace private_detail
 
 template <int ResInit, int Offset, int Until, typename... Policies>
 constexpr int calcHasArg() noexcept
@@ -41,4 +42,5 @@ constexpr int calcHasArg() noexcept
     return private_detail::calc_has_args<ResInit, Offset, Until>::template value<Policies...>();
 }
 
-}}
+} // namespace detail
+} // namespace luabind

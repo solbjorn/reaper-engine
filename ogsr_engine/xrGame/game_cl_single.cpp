@@ -8,7 +8,7 @@ using namespace luabind;
 
 ESingleGameDifficulty g_SingleGameDifficulty = egdMaster;
 
-xr_token difficulty_type_token[] = {{"gd_novice", egdNovice}, {"gd_stalker", egdStalker}, {"gd_veteran", egdVeteran}, {"gd_master", egdMaster}, {0, 0}};
+xr_token difficulty_type_token[] = {{"gd_novice", egdNovice}, {"gd_stalker", egdStalker}, {"gd_veteran", egdVeteran}, {"gd_master", egdMaster}, {nullptr, 0}};
 
 game_cl_Single::game_cl_Single() {}
 
@@ -25,6 +25,8 @@ CUIGameCustom* game_cl_Single::createGameUI()
 void game_cl_Single::OnDifficultyChanged() { Actor()->OnDifficultyChanged(); }
 
 #pragma optimize("s", on)
+
+template <>
 void CScriptGameDifficulty::script_register(lua_State* L)
 {
     module(

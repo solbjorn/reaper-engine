@@ -21,11 +21,13 @@ using namespace luabind;
 
 #pragma todo("KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.")
 
+template <>
 void DLL_PureScript::script_register(lua_State* L)
 {
     module(L)[class_<DLL_Pure, CDLL_PureWrapper>("DLL_Pure").def(constructor<>()).def("_construct", &DLL_Pure::_construct, &CDLL_PureWrapper::_construct_static)];
 }
 
+template <>
 void ISheduledScript::script_register(lua_State* L)
 {
     module(L)[class_<ISheduled, CISheduledWrapper>("ISheduled")
@@ -33,6 +35,7 @@ void ISheduledScript::script_register(lua_State* L)
     ];
 }
 
+template <>
 void IRenderableScript::script_register(lua_State* L)
 {
     module(L)[class_<IRenderable, CIRenderableWrapper>("IRenderable")
@@ -40,7 +43,11 @@ void IRenderableScript::script_register(lua_State* L)
     ];
 }
 
-void ICollidableScript::script_register(lua_State* L) { module(L)[class_<ICollidable>("ICollidable").def(constructor<>())]; }
+template <>
+void ICollidableScript::script_register(lua_State* L)
+{
+    module(L)[class_<ICollidable>("ICollidable").def(constructor<>())];
+}
 
 Fvector rotation_get_dir(SRotation* R, bool v_inverse)
 {
@@ -70,6 +77,7 @@ void rotation_init(SRotation* R, float y, float p, float r)
     R->yaw = y;
 }
 
+template <>
 void CRotationScript::script_register(lua_State* L)
 {
     module(L)[class_<SRotation>("SRotation")
@@ -84,6 +92,7 @@ void CRotationScript::script_register(lua_State* L)
                   .def("set", &rotation_init)];
 }
 
+template <>
 void CObjectScript::script_register(lua_State* L)
 {
     module(L)[class_<CGameObject, bases<DLL_Pure, ISheduled, ICollidable, IRenderable>, CGameObjectWrapper>("CGameObject")
@@ -142,6 +151,7 @@ CCameraBase* actor_camera(u16 index)
     return pA->cam_ByIndex(index);
 }
 
+template <>
 void CCameraScript::script_register(lua_State* L)
 {
     module(L)[class_<CCameraBase>("CCameraBase")
@@ -161,6 +171,7 @@ void CCameraScript::script_register(lua_State* L)
               def("actor_camera", &actor_camera)];
 }
 
+template <>
 void CAnomalyDetectorScript::script_register(lua_State* L)
 {
     module(L)[class_<CAnomalyDetector>("CAnomalyDetector")
@@ -218,11 +229,13 @@ void script_texture_load(ITexture* t, const char* name)
     t->Load(name);
 }
 
+template <>
 void ITextureScript::script_register(lua_State* L)
 {
     module(L)[def("texture_find", &script_texture_find), class_<ITexture>("ITexture").def("load", &script_texture_load).def("get_name", &ITexture::GetName)];
 }
 
+template <>
 void CPHCaptureScript::script_register(lua_State* L)
 {
     module(L)[class_<CPHCapture>("CPHCapture")

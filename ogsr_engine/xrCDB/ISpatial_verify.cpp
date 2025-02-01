@@ -1,18 +1,12 @@
 #include "stdafx.h"
-#include "ISpatial.h"
 
 class walker
 {
 public:
-    u32 o_count;
-    u32 n_count;
+    u32 o_count{};
+    u32 n_count{};
 
 public:
-    walker()
-    {
-        o_count = 0;
-        n_count = 0;
-    }
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
         // test items

@@ -46,6 +46,7 @@ CSoundRender_Core::CSoundRender_Core()
     bPresent = FALSE;
     bEAX = FALSE;
     bDeferredEAX = FALSE;
+    bUserEnvironment = false;
     geom_MODEL = NULL;
     geom_ENV = NULL;
     geom_SOM = NULL;
@@ -54,7 +55,7 @@ CSoundRender_Core::CSoundRender_Core()
     s_targets_pu = 0;
     s_emitters_u = 0;
     e_current.set_identity();
-    e_target = get_environment_def();
+    e_target.set_identity();
     bListenerMoved = FALSE;
     bReady = FALSE;
     bLocked = FALSE;
@@ -81,7 +82,7 @@ CSoundRender_Core::~CSoundRender_Core()
 {
     // if (bEFX)
     {
-        //release_efx_objects();
+        // release_efx_objects();
     }
 
     xr_delete(geom_ENV);
@@ -233,10 +234,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 #endif
         I->r_u32();
     VERIFY2(version == 0, "Invalid SOM version");
-    // load geometry
-    IReader* geom = I->open_chunk(1);
-    VERIFY2(geom, "Corrupted SOM file");
-    // Load tris and merge them
+
     struct SOM_poly
     {
         Fvector3 v1;
@@ -245,33 +243,43 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
         u32 b2sided;
         float occ;
     };
-    // Create AABB-tree
-    CDB::Collector CL;
-    while (!geom->eof())
-    {
-        SOM_poly P;
-        geom->r(&P, sizeof(P));
-        CL.add_face_packed_D(P.v1, P.v2, P.v3, *(size_t*)&P.occ, 0.01f);
-        if (P.b2sided)
-            CL.add_face_packed_D(P.v3, P.v2, P.v1, *(size_t*)&P.occ, 0.01f);
-    }
-    geom_SOM = xr_new<CDB::MODEL>();
-    geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
 
-    geom->close();
+    CDB::Collector CL;
+    {
+        // load geometry
+        IReader* geom = I->open_chunk(1);
+        VERIFY2(geom, "Corrupted SOM file");
+        if (!geom)
+            return;
+
+        // Load tris and merge them
+        const auto begin = static_cast<SOM_poly*>(geom->pointer());
+        const auto end = static_cast<SOM_poly*>(geom->end());
+        for (SOM_poly* poly = begin; poly != end; ++poly)
+        {
+            CL.add_face_packed_D(poly->v1, poly->v2, poly->v3, *reinterpret_cast<u32*>(&poly->occ), 0.01f);
+            if (poly->b2sided)
+                CL.add_face_packed_D(poly->v3, poly->v2, poly->v1, *reinterpret_cast<u32*>(&poly->occ), 0.01f);
+        }
+        geom->close();
+    }
+
+    // Create AABB-tree
+    geom_SOM = xr_new<CDB::MODEL>();
+    geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
 }
 
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
     xr_delete(geom_ENV);
-    s_environment_ids.clear();
 
     if (0 == I)
         return;
     if (0 == s_environment)
         return;
 
-    // Assosiate names
+    // Associate names
+    xr_vector<u16> ids;
     IReader* names = I->open_chunk(0);
     while (!names->eof())
     {
@@ -279,8 +287,8 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
         names->r_stringZ(n, sizeof(n));
         int id = s_environment->GetID(n);
         R_ASSERT(id >= 0);
-        s_environment_ids.push_back(u16(id));
-        Msg("~ set_geometry_env id=%d name[%s]=environment id[%d]", s_environment_ids.size() - 1, n, id);
+        ids.push_back(u16(id));
+        Msg("~ set_geometry_env id=%d name[%s]=environment id[%d]", ids.size() - 1, n, id);
     }
     names->close();
 
@@ -289,7 +297,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
     u8* _data = (u8*)xr_malloc(geom_ch->length());
 
-    Memory.mem_copy(_data, geom_ch->pointer(), geom_ch->length());
+    memcpy(_data, geom_ch->pointer(), geom_ch->length());
 
     IReader* geom = xr_new<IReader>(_data, geom_ch->length(), 0);
 
@@ -298,6 +306,16 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     R_ASSERT(H.version == CFORM_CURRENT_VERSION);
     Fvector* verts = (Fvector*)geom->pointer();
     CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+
+    for (u32 it = 0; it < H.facecount; it++)
+    {
+        CDB::TRI* T = tris + it;
+        const u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
+        const u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
+        R_ASSERT(id_front < (u16)ids.size());
+        R_ASSERT(id_back < (u16)ids.size());
+        T->dummy = u32(ids[id_back] << 16) | u32(ids[id_front]);
+    }
 
     geom_ENV = xr_new<CDB::MODEL>();
     geom_ENV->build(verts, H.vertcount, tris, H.facecount);
@@ -464,49 +482,32 @@ CSoundRender_Environment* CSoundRender_Core::get_environment_def()
 
 CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 {
+    if (bUserEnvironment)
+        return &s_user_environment;
+
     if (geom_ENV)
     {
-        Fvector dir = {0, -1, 0};
-
-        // хитрый способ для проверки звуковых зон в 2х направлениях от камеры. но что то он хуже работает. часто не та зона выбираеться. пока убрал
-
-        // CDB::COLLIDER geom_DB1;
-        // geom_DB1.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
-
-        // CDB::COLLIDER geom_DB2;
-        // geom_DB2.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, Fvector(dir).invert(), 1000.f);
+        constexpr Fvector dir = {0, -1, 0};
 
         geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
-
-        // if (geom_DB1.r_count() && geom_DB2.r_count())
         if (geom_DB.r_count())
         {
-            // CDB::RESULT* r = geom_DB1.r_begin();
-            // CDB::RESULT* r2 = geom_DB2.r_begin();
-
-            // if (r2->range < r->range)
-            //     r = r2;
-
             CDB::RESULT* r = geom_DB.r_begin();
-
             CDB::TRI* T = geom_ENV->get_tris() + r->id;
             Fvector* V = geom_ENV->get_verts();
 
             Fvector tri_norm;
             tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
-            float dot = dir.dotproduct(tri_norm);
-
-            if (dot <= 0)
+            const float dot = dir.dotproduct(tri_norm);
+            if (dot < 0)
             {
-                u16 id_front = (u16)((((u32)T->dummy) & 0x0000ffff) >> 0); //	front face
-
-                return s_environment->Get(s_environment_ids[id_front]);
+                u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
+                return s_environment->Get(id_front);
             }
             else
             {
-                u16 id_back = (u16)((((u32)T->dummy) & 0xffff0000) >> 16); //	back face
-
-                return s_environment->Get(s_environment_ids[id_back]);
+                u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
+                return s_environment->Get(id_back);
             }
         }
     }
@@ -639,8 +640,8 @@ void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)
     ep.flReflectionsDelay = E->ReflectionsDelay; // initial reflection delay time
     ep.lReverb = iFloor(E->Reverb); // late reverberation level relative to room effect
     ep.flReverbDelay = E->ReverbDelay; // late reverberation delay time relative to initial reflection
-    //ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
-    //ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
+    // ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
+    // ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
     ep.flEnvironmentDiffusion = E->EnvironmentDiffusion; // environment diffusion
     ep.flAirAbsorptionHF = E->AirAbsorptionHF; // change in level per meter at 5 kHz
     ep.dwFlags = EAXLISTENER_DEFAULTFLAGS; // modifies the behavior of properties

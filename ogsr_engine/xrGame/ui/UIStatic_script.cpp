@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Level.h"
 #include "UIStatic.h"
 #include "UILines.h"
 #include "UIMap.h"
@@ -84,12 +85,11 @@ void CUIStatic::script_register(lua_State* L)
                   .def("SetVTextAlign", &CUIStatic::SetVTextAlignment)
                   .def("SetTextPos", &CUIStatic::SetTextPos),
 
-            class_<CUIMiniMap, CUIStatic>("CUIMiniMap")
+              class_<CUIMiniMap, CUIStatic>("CUIMiniMap")
                   .def(constructor<>())
                   .def("SetRounded", &CUIMiniMap::SetRounded)
                   .def("SetLocked", &CUIMiniMap::SetLocked)
                   .def("Init", &UIMiniMapInit)
                   .def("Zoom", &UIMiniMapZoom)
-                  .def("SetActivePoint", &CUIMiniMap::SetActivePoint)
-    ];
+                  .def("SetActivePoint", &CUIMiniMap::SetActivePoint)];
 }

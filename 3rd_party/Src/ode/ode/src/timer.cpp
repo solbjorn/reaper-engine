@@ -39,7 +39,7 @@ TODO
 //****************************************************************************
 // implementation for windows based on the multimedia performance counter.
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include "windows.h"
 
@@ -85,7 +85,6 @@ double dTimerTicksPerSecond()
   return hz;
 }
 
-#endif
 
 //****************************************************************************
 // implementation based on the pentium time stamp counter. the timer functions
@@ -93,7 +92,7 @@ double dTimerTicksPerSecond()
 // instructions have executed and data has been written back before the cpu
 // time stamp counter is read. the CPUID instruction is used to serialize.
 
-#if defined(PENTIUM) && !defined(WIN32)
+#elif defined(PENTIUM)
 
 // we need to know the clock rate so that the timing function can report
 // accurate times. this number only needs to be set accurately if we're
@@ -103,31 +102,54 @@ double dTimerTicksPerSecond()
 
 #define PENTIUM_HZ (500e6)
 
-
 static inline void getClockCount (unsigned long cc[2])
 {
+#ifndef _M_X64
   asm volatile (
 	"rdtsc\n"
 	"movl %%eax,(%%esi)\n"
 	"movl %%edx,4(%%esi)\n"
 	: : "S" (cc) : "%eax","%edx","cc","memory");
+#else
+    asm volatile (
+        "rdtsc\n"
+        "movl %%eax,(%%rsi)\n"
+        "movl %%edx,4(%%rsi)\n"
+        : : "S" (cc) : "%eax","%edx","cc","memory");
+#endif  
 }
 
 
 static inline void serialize()
 {
+#ifndef _M_X64
   asm volatile (
 	"mov $0,%%eax\n"
+        "push %%ebx\n"
 	"cpuid\n"
-	: : : "%eax","%ebx","%ecx","%edx","cc","memory");
+        "pop %%ebx\n"
+        : : : "%eax","%ecx","%edx","cc","memory");
+#else
+    asm volatile (
+        "mov $0,%%rax\n"
+        "push %%rbx\n"
+        "cpuid\n"
+        "pop %%rbx\n"
+        : : : "%rax","%rcx","%rdx","cc","memory");
+#endif
 }
 
 
 static inline double loadClockCount (unsigned long a[2])
 {
   double ret;
+#ifndef _M_X64
   asm volatile ("fildll %1; fstpl %0" : "=m" (ret) : "m" (a[0]) :
 		"cc","memory");
+#else
+    asm volatile ("fildll %1; fstpl %0" : "=m" (ret) : "m" (a[0]) :
+    "cc","memory");
+#endif  
   return ret;
 }
 
@@ -143,41 +165,89 @@ double dTimerTicksPerSecond()
   return PENTIUM_HZ;
 }
 
-#endif
 
 //****************************************************************************
-// otherwise, do the implementation based on gettimeofday().
+// Implementation based on OSX mach_absolute_time()
 
-#if !defined(PENTIUM) && !defined(WIN32)
+#elif defined(__APPLE__) && defined(__MACH__)
 
-#ifndef macintosh
+#define uint64 _uint64
+#include <CoreServices/CoreServices.h>
+#undef uint64
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#include <unistd.h>
+
+static inline void getClockCount (unsigned long cc[2])
+{
+    uint64_t absTime = mach_absolute_time();
+    cc[1] = (uint32_t)((absTime >> 32) & 0xFFFFFFFF);
+    cc[0] = (uint32_t)(absTime & 0xFFFFFFFF);
+}
+
+static inline void serialize()
+{
+}
+
+
+static inline double loadClockCount (unsigned long a[2])
+{
+    uint64_t absTime = (uint64_t)(a[0] | ((uint64_t)a[1] << 32));
+
+    mach_timebase_info_data_t timeInfo;
+    double resultTime = mach_timebase_info(&timeInfo) == 0 ? absTime * ((double)timeInfo.numer / timeInfo.denom) : 0.0;
+
+    return resultTime;
+}
+
+double dTimerResolution()
+{
+    mach_timebase_info_data_t timeInfo;
+    double nanoResolution = 1e-9;
+    double resultResolution = mach_timebase_info(&timeInfo) == 0 ? nanoResolution * ((double)timeInfo.numer / timeInfo.denom) : nanoResolution;
+
+    return resultResolution;
+}
+
+double dTimerTicksPerSecond()
+{
+    return 1e9;
+}
+
+
+//****************************************************************************
+// Otherwise, do the implementation based on Macintosh Microseconds 
+// or POSIX gettimeofday().
+
+#else 
+
+#if defined(macintosh)
+
+#include <CoreServices/CoreServices.h>
+
+static inline void getClockCount (unsigned long cc[2])
+{
+    UnsignedWide ms;
+    Microseconds (&ms);
+    cc[1] = ms.lo / 1000000;
+    cc[0] = ms.lo - ( cc[1] * 1000000 );
+}
+
+
+#else // POSIX
 
 #include <sys/time.h>
 #include <unistd.h>
 
-
 static inline void getClockCount (unsigned long cc[2])
 {
-  struct timeval tv;
-  gettimeofday (&tv,0);
-  cc[0] = tv.tv_usec;
-  cc[1] = tv.tv_sec;
+    struct timeval tv;
+    gettimeofday (&tv,0);
+    cc[0] = tv.tv_usec;
+    cc[1] = tv.tv_sec;
 }
 
-#else // macintosh
-
-#include <MacTypes.h>
-#include <Timer.h>
-
-static inline void getClockCount (unsigned long cc[2])
-{
-  UnsignedWide ms;
-  Microseconds (&ms);
-  cc[1] = ms.lo / 1000000;
-  cc[0] = ms.lo - ( cc[1] * 1000000 );
-}
-
-#endif
+#endif // POSIX
 
 
 static inline void serialize()
@@ -285,7 +355,7 @@ static void initSlots()
 void dTimerStart (const char *description)
 {
   initSlots();
-  event[0].description = description;
+  event[0].description = const_cast<char*> (description);
   num = 1;
   serialize();
   getClockCount (event[0].cc);
@@ -297,7 +367,7 @@ void dTimerNow (const char *description)
   if (num < MAXNUM) {
     // do not serialize
     getClockCount (event[num].cc);
-    event[num].description = description;
+    event[num].description = const_cast<char*> (description);
     num++;
   }
 }

@@ -17,7 +17,7 @@ class CPathManager<CLevelGraph, _DataStorage, SFlooder<_dist_type, _index_type, 
 protected:
     typedef CLevelGraph _Graph;
     typedef SFlooder<_dist_type, _index_type, _iteration_type> _Parameters;
-    typedef typename CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
+    typedef CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
     int x0, y0;

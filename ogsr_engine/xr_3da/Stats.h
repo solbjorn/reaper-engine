@@ -4,14 +4,14 @@
 
 #pragma once
 
-class ENGINE_API CGameFont;
+class CGameFont;
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/StatsRender.h"
 
 DECLARE_MESSAGE(Stats);
 
-class ENGINE_API CStatsPhysics
+class CStatsPhysics
 {
 public:
     CStatTimer ph_collision; // collision
@@ -19,7 +19,7 @@ public:
     CStatTimer Physics; // movement+collision
 };
 
-class ENGINE_API CStats : public pureRender, public CStatsPhysics
+class CStats : public pureRender, public CStatsPhysics
 {
     CGameFont* pFont;
     CGameFont* pFontHW;
@@ -94,7 +94,6 @@ public:
     CStatTimer TEST3; // debug counter
 
 private:
-
     float PhysMemoryUsedPercent;
 
     float AvailableMem;

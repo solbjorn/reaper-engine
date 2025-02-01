@@ -2,7 +2,9 @@
 
 #include <efx.h>
 
-#include "../xr_3da/cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
+#include "../xr_3da/gamemtllib.h"
+
 #include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Target.h"
@@ -110,24 +112,16 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     // update EAX or EFX
     if (psSoundFlags.test(ss_EAX) && (bEAX || bEFX))
     {
-        static shared_str curr_env;
-
         if (bListenerMoved)
         {
             bListenerMoved = FALSE;
-            e_target = get_environment(P);
-
-            if (!curr_env.size() || curr_env != e_target->name)
-            {
-                curr_env = e_target->name;
-                Msg("~ current environment sound zone name [%s]", curr_env.c_str());
-            }
+            e_target = *get_environment(P);
         }
 
         if (!e_currentPaused)
-            e_current.lerp(e_current, *e_target, dt_sec);
+            e_current.lerp(e_current, e_target, dt_sec);
         else
-            e_current.set_from(*e_target);
+            e_current.set_from(e_target);
 
         if (bEAX)
         {
@@ -233,7 +227,7 @@ float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector&
 {
     float occ_value = 1.f;
 
-    if (0 != geom_SOM)
+    if (nullptr != geom_SOM)
     {
         // Calculate RAY params
         Fvector pos, dir;
@@ -241,47 +235,45 @@ float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector&
         pos.mul(dispersion);
         pos.add(snd_pt);
         dir.sub(pos, hear_pt);
-        float range = dir.magnitude();
+        const float range = dir.magnitude();
         dir.div(range);
 
         geom_DB.ray_query(CDB::OPT_CULL, geom_SOM, hear_pt, dir, range);
-        u32 r_cnt = u32(geom_DB.r_count());
-        CDB::RESULT* _B = geom_DB.r_begin();
-
+        const auto r_cnt = geom_DB.r_count();
+        CDB::RESULT* begin = geom_DB.r_begin();
         if (0 != r_cnt)
         {
-            for (u32 k = 0; k < r_cnt; k++)
+            for (size_t k = 0; k < r_cnt; k++)
             {
-                CDB::RESULT* R = _B + k;
-                occ_value *= *(float*)&R->dummy;
+                CDB::RESULT* R = begin + k;
+                occ_value *= *reinterpret_cast<float*>(&R->dummy);
             }
         }
     }
     return occ_value;
 }
 
-float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
+float CSoundRender_Core::get_occlusion(const Fvector& P, float R, Fvector* occ)
 {
     float occ_value = 1.f;
 
     // Calculate RAY params
-    Fvector base = listener_position();
+    const Fvector base = listener_position();
     Fvector pos, dir;
-    float range;
     pos.random_dir();
     pos.mul(R);
     pos.add(P);
     dir.sub(pos, base);
-    range = dir.magnitude();
+    const float range = dir.magnitude();
     dir.div(range);
 
-    if (0 != geom_MODEL)
+    if (nullptr != geom_MODEL)
     {
         bool bNeedFullTest = true;
         // 1. Check cached polygon
-        float _u, _v, _range;
-        if (CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
-            if (_range > 0 && _range < range)
+        float u, v, test_range;
+        if (CDB::TestRayTri(base, dir, occ, u, v, test_range, true))
+            if (test_range > 0 && test_range < range)
             {
                 occ_value = psSoundOcclusionScale;
                 bNeedFullTest = false;
@@ -293,28 +285,30 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
             if (0 != geom_DB.r_count())
             {
                 // cache polygon
-                const CDB::RESULT* R = geom_DB.r_begin();
-                const CDB::TRI& T = geom_MODEL->get_tris()[R->id];
+                const CDB::RESULT* R2 = geom_DB.r_begin();
+                const CDB::TRI& T = geom_MODEL->get_tris()[R2->id];
                 const Fvector* V = geom_MODEL->get_verts();
                 occ[0].set(V[T.verts[0]]);
                 occ[1].set(V[T.verts[1]]);
                 occ[2].set(V[T.verts[2]]);
-                occ_value = psSoundOcclusionScale;
+
+                const SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
+                const float occlusion = fis_zero(mtl->fSndOcclusionFactor) ? 0.1f : mtl->fSndOcclusionFactor;
+                occ_value = psSoundOcclusionScale * occlusion;
             }
         }
     }
-    if (0 != geom_SOM)
+    if (nullptr != geom_SOM)
     {
         geom_DB.ray_query(CDB::OPT_CULL, geom_SOM, base, dir, range);
-        u32 r_cnt = u32(geom_DB.r_count());
-        CDB::RESULT* _B = geom_DB.r_begin();
-
+        const auto r_cnt = geom_DB.r_count();
+        CDB::RESULT* begin = geom_DB.r_begin();
         if (0 != r_cnt)
         {
-            for (u32 k = 0; k < r_cnt; k++)
+            for (size_t k = 0; k < r_cnt; k++)
             {
-                CDB::RESULT* R = _B + k;
-                occ_value *= *(float*)&R->dummy;
+                CDB::RESULT* R2 = begin + k;
+                occ_value *= *reinterpret_cast<float*>(&R2->dummy);
             }
         }
     }

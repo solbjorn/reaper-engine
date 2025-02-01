@@ -21,10 +21,10 @@
 #endif
 
 // token type definition
-struct XRCORE_API xr_token
+struct XRCORE_API alignas(2 * sizeof(long)) xr_token
 {
     LPCSTR name;
-    int id;
+    long id;
 };
 
 IC LPCSTR get_token_name(const xr_token* tokens, int key)

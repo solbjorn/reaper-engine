@@ -12,7 +12,7 @@ bool motion_find_pred(COMotion* a, shared_str b) { return a->name < b; }
 CObjectAnimator::CObjectAnimator()
 {
     bLoop = false;
-    m_Current = 0;
+    m_Current = nullptr;
     m_Speed = 1.f;
     m_Name = "";
 }
@@ -21,10 +21,10 @@ CObjectAnimator::~CObjectAnimator() { Clear(); }
 
 void CObjectAnimator::Clear()
 {
-    for (auto m_it = m_Motions.begin(); m_it != m_Motions.end(); m_it++)
-        xr_delete(*m_it);
+    for (auto& m_Motion : m_Motions)
+        xr_delete(m_Motion);
     m_Motions.clear();
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
 }
 
 void CObjectAnimator::SetActiveMotion(COMotion* mot)
@@ -77,7 +77,7 @@ void CObjectAnimator::Load(const char* name)
 {
     m_Name = name;
     LoadMotions(name);
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
 }
 
 void CObjectAnimator::Update(float dt)
@@ -129,11 +129,11 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 
 void CObjectAnimator::Stop()
 {
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
     m_MParam.Stop();
 }
 
-float CObjectAnimator::GetLength()
+float CObjectAnimator::GetLength() const
 {
     if (!m_Current)
         return 0.0f;

@@ -79,8 +79,8 @@ private:
 template <typename _Object>
 class CStateMove : public CState<_Object>
 {
-    typedef CState<_Object> inherited;
-    using inherited::object;
+protected:
+    using inherited = CState<_Object>;
 
 public:
     CStateMove(_Object* obj, void* data = 0) : inherited(obj, data) {}
@@ -88,7 +88,7 @@ public:
     virtual void initialize()
     {
         inherited::initialize();
-        object->path().prepare_builder();
+        this->object->path().prepare_builder();
     }
 };
 

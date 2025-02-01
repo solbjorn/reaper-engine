@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "cpuid.h"
+#include "xrcpuid.h"
 #include "GameFont.h"
 #include "../xrcdb/ISpatial.h"
 #include "IGame_Persistent.h"
@@ -247,7 +247,7 @@ void CStats::Show()
         F.OutNext("qpc[%3d]", CPU::qpc_counter);
         CPU::qpc_counter = 0;
 #endif // DEBUG_MEMORY_MANAGER
-        //		F.OutSet	(640,0);
+       //		F.OutSet	(640,0);
         F.OutSkip();
         m_pRender->OutData4(F);
         /*
@@ -403,7 +403,7 @@ void CStats::Show_HW_Stats()
     {
         static DWORD dwLastFrameTime = 0;
         DWORD dwCurrentTime = timeGetTime();
-        if (dwCurrentTime - dwLastFrameTime > 500) //Апдейт раз в полсекунды
+        if (dwCurrentTime - dwLastFrameTime > 500) // Апдейт раз в полсекунды
         {
             dwLastFrameTime = dwCurrentTime;
 
@@ -452,7 +452,7 @@ void CStats::Show_HW_Stats()
         float y = 10.f;
 
         // Draw all your stuff
-        pFontHW->Out(10, y+=15, "PHYS MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
+        pFontHW->Out(10, y += 15, "PHYS MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
         pFontHW->Out(10, y += 15, "PAGE MEM AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
 
         pFontHW->Out(10, y += 15, "Engine Working Set: %0.0fMB", WorkingSetSize); // Physical memory used by app

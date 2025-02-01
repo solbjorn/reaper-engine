@@ -13,6 +13,8 @@
 using namespace luabind;
 
 #pragma optimize("s", on)
+
+template <>
 void CActionBase<CScriptGameObject>::script_register(lua_State* L)
 {
     module(L)[class_<CScriptActionBase, CScriptActionWrapper>("action_base")
@@ -23,8 +25,8 @@ void CActionBase<CScriptGameObject>::script_register(lua_State* L)
                   .def(constructor<CScriptGameObject*, LPCSTR>())
                   .def("add_precondition", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition&))(&CScriptActionBase::add_condition))
                   .def("add_effect", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition&))(&CScriptActionBase::add_effect))
-                  .def("remove_precondition", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::_condition_type&))(&CScriptActionBase::remove_condition))
-                  .def("remove_effect", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::_condition_type&))(&CScriptActionBase::remove_effect))
+                  .def("remove_precondition", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::condition_type&))(&CScriptActionBase::remove_condition))
+                  .def("remove_effect", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::condition_type&))(&CScriptActionBase::remove_effect))
                   .def("setup", &CScriptActionBase::setup, &CScriptActionWrapper::setup_static)
                   .def("initialize", &CScriptActionBase::initialize, &CScriptActionWrapper::initialize_static)
                   .def("execute", &CScriptActionBase::execute, &CScriptActionWrapper::execute_static)

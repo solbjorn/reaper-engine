@@ -16,16 +16,15 @@ class CPathManager<CGameGraph, _DataStorage, SVertexType<_dist_type, _index_type
     : public CPathManager<CGameGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 {
 protected:
-    typedef CGameGraph _Graph;
-    typedef SVertexType<_dist_type, _index_type, _iteration_type> _Parameters;
-    typedef typename CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
+    using _Parameters = SVertexType<_dist_type, _index_type, _iteration_type>;
+    using inherited = CPathManager<CGameGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>;
 
 protected:
     _Parameters* m_evaluator;
 
 public:
     virtual ~CPathManager();
-    IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
+    IC void setup(const CGameGraph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   _Parameters& params);
     IC _dist_type estimate(const _index_type& node_index) const;
     IC bool is_goal_reached(const _index_type& node_index);

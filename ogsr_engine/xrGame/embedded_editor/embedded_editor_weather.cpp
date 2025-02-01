@@ -132,35 +132,35 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
     f.save_as(fileName);
 }
 
-//void nextTexture(char* tex, int texSize, int offset)
+// void nextTexture(char* tex, int texSize, int offset)
 //{
-//    string_path dir, fn;
-//    _splitpath(tex, nullptr, dir, fn, nullptr);
-//    strconcat(sizeof(fn), fn, fn, ".dds");
-//    xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
-//    if (!files)
-//        return;
-//    size_t index = 0;
-//    for (size_t i = 0; i != files->size(); i++)
-//        if (strcmp((*files)[i], fn) == 0)
-//        {
-//            index = i;
-//            break;
-//        }
-//    size_t newIndex = index;
-//    while (true)
-//    {
-//        newIndex = (newIndex + offset + files->size()) % files->size();
-//        if (strstr((*files)[newIndex], "#small") == nullptr && strstr((*files)[newIndex], ".thm") == nullptr)
-//            break;
-//    }
-//    string_path newFn;
-//    _splitpath((*files)[newIndex], nullptr, nullptr, newFn, nullptr);
-//    // strconcat(texSize, tex, dir, newFn);
-//    strcpy_s(tex, texSize, dir);
-//    strcat_s(tex, texSize, newFn);
-//    FS.file_list_close(files);
-//}
+//     string_path dir, fn;
+//     _splitpath(tex, nullptr, dir, fn, nullptr);
+//     strconcat(sizeof(fn), fn, fn, ".dds");
+//     xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
+//     if (!files)
+//         return;
+//     size_t index = 0;
+//     for (size_t i = 0; i != files->size(); i++)
+//         if (strcmp((*files)[i], fn) == 0)
+//         {
+//             index = i;
+//             break;
+//         }
+//     size_t newIndex = index;
+//     while (true)
+//     {
+//         newIndex = (newIndex + offset + files->size()) % files->size();
+//         if (strstr((*files)[newIndex], "#small") == nullptr && strstr((*files)[newIndex], ".thm") == nullptr)
+//             break;
+//     }
+//     string_path newFn;
+//     _splitpath((*files)[newIndex], nullptr, nullptr, newFn, nullptr);
+//     // strconcat(texSize, tex, dir, newFn);
+//     strcpy_s(tex, texSize, dir);
+//     strcat_s(tex, texSize, newFn);
+//     FS.file_list_close(files);
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // from https://www.strchr.com/natural_sorting
@@ -264,11 +264,12 @@ bool SelectTexture(const char* label, shared_str& texName)
             }
         }
 
-        if (ImGui_ListBox("", &cur,   
-            [](void* data, int idx, const char** out_text) -> bool {
-                const auto textures = static_cast<xr_vector<xr_string>*>(data);
-                *out_text = (*textures)[idx].c_str();
-                return true;
+        if (ImGui_ListBox(
+                "", &cur,
+                [](void* data, int idx, const char** out_text) -> bool {
+                    const auto textures = static_cast<xr_vector<xr_string>*>(data);
+                    *out_text = (*textures)[idx].c_str();
+                    return true;
                 },
                 &filtered, filtered.size(), ImVec2(-4.0f, -30.0f)))
         {
@@ -325,7 +326,7 @@ void ShowWeatherEditor(bool& show)
     float tf = Level().GetGameTimeFactor();
     if (ImGui::SliderFloat("Time factor", &tf, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
     {
-        //Level().SetGameTimeFactor(tf);
+        // Level().SetGameTimeFactor(tf);
 
         Level().Server->game->SetGameTimeFactor(tf);
         env.SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
@@ -341,7 +342,7 @@ void ShowWeatherEditor(bool& show)
     }
 
     ImGui::Text("Main parameters");
-    
+
     ImGui::Checkbox("Script weather", &s_ScriptWeather);
 
     ImGui::BeginDisabled(!s_ScriptWeather);
@@ -394,7 +395,7 @@ void ShowWeatherEditor(bool& show)
 
     if (SelectTexture("clouds_texture", cur->clouds_texture_name))
     {
-        cur->on_device_create();
+        cur->get();
         changed = true;
     }
 
@@ -441,7 +442,7 @@ void ShowWeatherEditor(bool& show)
         string1024 buf;
         xr_strconcat(buf, cur->sky_texture_name.data(), "#small");
         cur->sky_texture_env_name = buf;
-        cur->on_device_create();
+        cur->get();
         changed = true;
     }
 
@@ -516,7 +517,7 @@ void ShowWeatherEditor(bool& show)
     if (ImGui::SliderFloat("trees_amplitude_intensity", &cur->m_fTreeAmplitudeIntensity, 0.01f, 0.250f))
         changed = true;
 
-    //ImGui::Text("Grass swing parameters");
+    // ImGui::Text("Grass swing parameters");
 
     // if (ImGui::SliderFloat("swing_normal_amp1", &cur->m_cSwingDesc[0].amp1, 0.0f, 10.0f))
     //     changed = true;
@@ -539,7 +540,7 @@ void ShowWeatherEditor(bool& show)
     // if (ImGui::SliderFloat("swing_fast_speed", &cur->m_cSwingDesc[1].speed, 0.0f, 10.0f))
     //     changed = true;
 
-    //ImGui::Text("DoF parameters");
+    // ImGui::Text("DoF parameters");
 
     // if (ImGui::InputFloat3("dof", (float*)&cur->dof_value), 3)
     //     changed = true;
@@ -570,7 +571,7 @@ void ShowWeatherEditor(bool& show)
     {
         s_ScriptWeatheParams = false;
 
-        env.SetWeather(env.CurrentWeatherName, true);        
+        env.SetWeather(env.CurrentWeatherName, true);
 
         modifiedWeathers.clear();
     }

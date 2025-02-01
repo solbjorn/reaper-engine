@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "../stdafx.h"
 #include "net_client.h"
 #include "net_server.h"
 #include "net_messages.h"
@@ -95,20 +95,20 @@ void INetQueue::Release()
 IPureClient::IPureClient(CTimer* timer)
 {
     device_timer = timer;
-    net_Syncronised = FALSE; //Добавил инициализацию сюда, тк она хз где была.
+    net_Syncronised = FALSE; // Добавил инициализацию сюда, тк она хз где была.
 }
 
 IPureClient::~IPureClient() {}
 
 BOOL IPureClient::Connect(LPCSTR) { return TRUE; }
 
-void IPureClient::Disconnect() //Вызывается при выходе из игры и переходе на другой уровень.
+void IPureClient::Disconnect() // Вызывается при выходе из игры и переходе на другой уровень.
 {
     net_Connected = EnmConnectionWait;
     net_Syncronised = FALSE;
 }
 
-void IPureClient::OnMessage(void* data, u32 size) //Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
+void IPureClient::OnMessage(void* data, u32 size) // Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
 {
     /// Msg("~~[%s] data: [%p], size: [%u]", __FUNCTION__, data, size);
 

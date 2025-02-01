@@ -6,6 +6,7 @@ del 3rd_party\Src\luajit2\luajit2\src\*.pdb
 del 3rd_party\Src\luajit2\luajit2\src\lua51.*
 RD /s /q 3rd_party\Src\mimalloc\_Build
 RD /s /q 3rd_party\Src\oneTBB\_Build
+RD /s /q 3rd_party\Src\OpCoDe\_Build
 RD /s /q 3rd_party\Src\openal-soft\_Build
 RD /s /q 3rd_party\Src\xxHash\_Build
 RD /s /q ogsr_engine\_LIB

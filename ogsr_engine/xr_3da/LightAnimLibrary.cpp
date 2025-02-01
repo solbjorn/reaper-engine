@@ -49,10 +49,10 @@ void CLAItem::Save(IWriter& F)
 
     F.open_chunk(CHUNK_ITEM_KEYS);
     F.w_u32(Keys.size());
-    for (KeyPairIt it = Keys.begin(); it != Keys.end(); it++)
+    for (auto& k : Keys)
     {
-        F.w_u32(it->first);
-        F.w_u32(it->second);
+        F.w_u32(k.first);
+        F.w_u32(k.second);
     }
     F.close_chunk();
 }
@@ -201,8 +201,8 @@ void ELightAnimLibrary::OnDestroy() { Unload(); }
 
 void ELightAnimLibrary::Unload()
 {
-    for (LAItemIt it = Items.begin(); it != Items.end(); it++)
-        xr_delete(*it);
+    for (auto& la : Items)
+        xr_delete(la);
     Items.clear();
 }
 
@@ -240,8 +240,8 @@ void ELightAnimLibrary::Load()
                 I->Load(*O);
                 if (version == 0)
                 {
-                    for (CLAItem::KeyPairIt it = I->Keys.begin(); it != I->Keys.end(); it++)
-                        it->second = subst_alpha(bgr2rgb(it->second), color_get_A(it->second));
+                    for (auto& k : I->Keys)
+                        k.second = subst_alpha(bgr2rgb(k.second), color_get_A(k.second));
                 }
                 Items.push_back(I);
                 O->close();
@@ -262,10 +262,10 @@ void ELightAnimLibrary::Save()
     F.close_chunk();
     F.open_chunk(CHUNK_ITEM_LIST);
     int count = 0;
-    for (LAItemIt it = Items.begin(); it != Items.end(); it++)
+    for (auto& la : Items)
     {
         F.open_chunk(count++);
-        (*it)->Save(F);
+        la->Save(F);
         F.close_chunk();
     }
     F.close_chunk();

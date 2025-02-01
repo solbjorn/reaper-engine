@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "game_graph.h"
+
 #define TEMPLATE_SPECIALIZATION template <typename _VertexEvaluator, typename _vertex_id_type>
 
 #define CGameLocationSelector CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>
@@ -149,7 +151,7 @@ IC void CGameLocationSelector::select_random_location(const _vertex_id_type star
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CGameLocationSelector::selection_type() const { return (m_selection_type); }
+IC ESelectionType CGameLocationSelector::selection_type() const { return (m_selection_type); }
 
 TEMPLATE_SPECIALIZATION
 IC bool CGameLocationSelector::actual(const _vertex_id_type start_vertex_id, bool path_completed)

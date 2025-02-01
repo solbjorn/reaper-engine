@@ -2,16 +2,18 @@
 #define __XR_OBJECT_H__
 
 #include "../xrCDB/ISpatial.h"
+#include "device.h"
+#include "EngineAPI.h"
 #include "isheduled.h"
-//#include "iinputreceiver.h"
+// #include "iinputreceiver.h"
 #include "irenderable.h"
 #include "icollidable.h"
 
 class IObjectPhysicsCollision;
 // refs
-class ENGINE_API IRender_Sector;
-class ENGINE_API IRender_ObjectSpecific;
-class ENGINE_API CCustomHUD;
+class IRender_Sector;
+class IRender_ObjectSpecific;
+class CCustomHUD;
 class NET_Packet;
 class CSE_Abstract;
 
@@ -22,7 +24,7 @@ class CSE_Abstract;
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
 #pragma pack(push, 4)
-class ENGINE_API CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
+class CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
 {
 public:
     struct SavedPosition
@@ -170,9 +172,9 @@ public:
     virtual void UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E){}; // export to server
+    virtual void net_Export(CSE_Abstract* E) {}; // export to server
     virtual BOOL net_Relevant() { return FALSE; }; // relevant for export to server
-    virtual void net_Relcase(CObject* O){}; // destroy all links to another objects
+    virtual void net_Relcase(CObject* O) {}; // destroy all links to another objects
 
     // Position stack
     IC u32 ps_Size() const { return PositionStack.size(); }
@@ -182,7 +184,7 @@ public:
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
     // HUD
-    virtual void OnHUDDraw(CCustomHUD* hud){};
+    virtual void OnHUDDraw(CCustomHUD* hud) {};
 
     // Active/non active
     virtual void OnH_B_Chield(); // before
