@@ -65,13 +65,13 @@ std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 
 static LPCSTR name_bool(BOOL v)
 {
-    constexpr xr_token token_bool[] = {{"false", 0}, {"true", 1}};
+    static constexpr xr_token token_bool[] = {{"false", 0}, {"true", 1}};
     return get_token_name(token_bool, v);
 }
 
 static LPCSTR name_blend_type(CBlend::ECurvature blend)
 {
-    constexpr xr_token token_blend[] = {{"eFREE_SLOT", CBlend::eFREE_SLOT}, {"eAccrue", CBlend::eAccrue}, {"eFalloff", CBlend::eFalloff}, {"eFORCEDWORD", CBlend::eFORCEDWORD}};
+    static constexpr xr_token token_blend[] = {{"eFREE_SLOT", CBlend::eFREE_SLOT}, {"eAccrue", CBlend::eAccrue}, {"eFalloff", CBlend::eFalloff}};
     return get_token_name(token_blend, blend);
 }
 

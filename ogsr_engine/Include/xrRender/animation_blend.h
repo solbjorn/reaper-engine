@@ -1,30 +1,18 @@
 #pragma once
 
 #include "animation_motion.h"
+
 //*** Run-time Blend definition *******************************************************************
-#ifdef DEBUG
-class bnon_copy
-{
-protected:
-    bnon_copy() {}
 
-protected:
-    bnon_copy(const bnon_copy&) {}
-
-protected:
-    const bnon_copy& operator=(const bnon_copy&) { return *this; }
-};
-#endif
 class CBlend
 {
 public:
-    enum ECurvature
+    enum ECurvature : u32
     {
         eFREE_SLOT = 0,
         //		eFixed,
         eAccrue,
         eFalloff,
-        eFORCEDWORD = u32(-1)
     };
 
 public:
@@ -48,10 +36,11 @@ public:
     BOOL stop_at_end_callback;
     BOOL stop_at_end;
     BOOL fall_at_end;
-    PlayCallback Callback;
-    void* CallbackParam;
 
     u32 dwFrame;
+
+    PlayCallback Callback;
+    void* CallbackParam;
 
     u32 mem_usage() { return sizeof(*this); }
     IC bool update_time(float dt);
