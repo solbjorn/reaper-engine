@@ -12,6 +12,7 @@
 #include "game_base.h"
 #include "ai_space.h"
 #include "game_graph.h"
+#include "script_engine.h"
 
 CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
 {
@@ -120,6 +121,15 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     m_game_graph = xr_new<CGameGraph>(stream, separated_graphs);
     ai().set_game_graph(m_game_graph);
 
+    if (pSettings->line_exist("engine_callbacks", "after_graph_load"))
+    {
+        const char* callback = pSettings->r_string("engine_callbacks", "after_graph_load");
+        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+        {
+            lua_function(m_game_graph);
+        }
+    }
+
     chunk = file_stream.open_chunk(1);
     m_spawns.load(*chunk);
     chunk->close();
@@ -142,9 +152,9 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
 	}
 #endif
 
-    //chunk = file_stream.open_chunk(2);
-    //load_data(m_artefact_spawn_positions, *chunk);
-    //chunk->close();
+    // chunk = file_stream.open_chunk(2);
+    // load_data(m_artefact_spawn_positions, *chunk);
+    // chunk->close();
 
     chunk = file_stream.open_chunk(3);
     R_ASSERT2(chunk, "Spawn version mismatch - REBUILD SPAWN!");
@@ -244,7 +254,7 @@ void CALifeSpawnRegistry::build_story_spawns()
         if (object->m_spawn_story_id != INVALID_SPAWN_STORY_ID)
         {
 #ifdef USE_STORY_ID_AS_SPAWN_ID
-            //Особо умные могут назначить одинаковые спавн айди куче разных объектов.
+            // Особо умные могут назначить одинаковые спавн айди куче разных объектов.
             ASSERT_FMT(m_spawn_story_ids.find(object->m_spawn_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 #endif
             // Msg("--[%s] Adding spawn_id to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id,
@@ -254,7 +264,7 @@ void CALifeSpawnRegistry::build_story_spawns()
 #ifdef USE_STORY_ID_AS_SPAWN_ID
         else if (object->m_story_id != INVALID_STORY_ID)
         {
-            //Особо умные могут назначить одинаковые спавн/стори айди куче разных объектов либо разные одному и тому же.
+            // Особо умные могут назначить одинаковые спавн/стори айди куче разных объектов либо разные одному и тому же.
             ASSERT_FMT(m_spawn_story_ids.find(object->m_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 
             // Msg("~~[%s] Adding spawn_id (story_id) to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(),
