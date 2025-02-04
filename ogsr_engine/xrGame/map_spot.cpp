@@ -23,8 +23,11 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
     int i = xml->ReadAttribInt(path, 0, "scale", 0);
     m_bScale = (i == 1);
 
-    SetWidth(GetWidth() * UI()->get_current_kx());
-    SetStretchTexture(true);
+    if (!Heading())
+    {
+        SetWidth(GetWidth() * UI()->get_current_kx());
+        SetStretchTexture(true);
+    }
 
     m_originSize = GetWndSize();
 }
