@@ -253,6 +253,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
             {
                 string_path fn, inc_path, folder;
                 strconcat(sizeof(fn), fn, path, inc_name);
+                _fullpath(fn, fn, sizeof(fn));
                 _splitpath(fn, inc_path, folder, 0, 0);
                 strcat_s(inc_path, folder);
 
@@ -267,17 +268,17 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 if (strstr(inc_name, "*.ltx"))
                 {
                     FS_FileSet fset;
-                    FS.file_list(fset, path, FS_ListFiles, inc_name);
+                    FS.file_list(fset, inc_path, FS_ListFiles, strrchr(fn, '\\') + 1);
 
                     for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
                     {
                         LPCSTR _name = it->name.c_str();
                         string_path _fn;
-                        strconcat(sizeof(_fn), _fn, path, _name);
+                        strconcat(sizeof(_fn), _fn, inc_path, _name);
 
                         if (strcmp(current_file, _fn) == 0)
                             continue;
-                        
+
                         loadFile(_fn);
                     }
                 }
