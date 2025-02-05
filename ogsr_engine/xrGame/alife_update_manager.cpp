@@ -34,7 +34,7 @@ private:
     CALifeSwitchManager* m_switch_manager;
 
 public:
-    CSwitchPredicate(CALifeSwitchManager* switch_manager) : m_switch_manager{switch_manager} {}
+    explicit CSwitchPredicate(CALifeSwitchManager* switch_manager) : m_switch_manager{switch_manager} {}
 
     bool operator()(CALifeLevelRegistry::_iterator& i, u64 cycle_count, bool) const
     {
@@ -61,14 +61,11 @@ CALifeUpdateManager::CALifeUpdateManager(LPCSTR section) : CALifeSwitchManager{s
 
 CALifeUpdateManager::~CALifeUpdateManager()
 {
-    shedule_unregister();
+    shedule_unregister(true);
     Device.remove_from_seq_parallel(CallMe::fromMethod<&CALifeUpdateManager::update>(this));
 }
 
-float CALifeUpdateManager::shedule_Scale() const
-{
-    return (.5f); // (schedule_min + schedule_max)*0.5f
-}
+float CALifeUpdateManager::shedule_Scale() const { return 0.5f; }
 
 void CALifeUpdateManager::update_switch()
 {

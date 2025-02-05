@@ -3,7 +3,8 @@
 //----------------------------------------------------
 #include "stdafx.h"
 
-#include "ps_instance.h"
+#include "PS_instance.h"
+
 #include "IGame_Persistent.h"
 
 CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial{g_SpatialSpace}, m_destroy_on_game_load{destroy_on_game_load}
@@ -12,7 +13,6 @@ CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial{g_SpatialSpace}
     renderable.pROS_Allowed = false;
 }
 
-//----------------------------------------------------
 CPS_Instance::~CPS_Instance()
 {
     VERIFY(!g_bRendering);
@@ -26,9 +26,9 @@ CPS_Instance::~CPS_Instance()
         g_pGamePersistent->ps_destroy.erase(it);
 
     spatial_unregister();
-    shedule_unregister();
+    shedule_unregister(true);
 }
-//----------------------------------------------------
+
 void CPS_Instance::shedule_Update(u32 dt)
 {
     if (renderable.pROS)
@@ -40,17 +40,18 @@ void CPS_Instance::shedule_Update(u32 dt)
     // remove???
     if (m_bDead)
         return;
+
     if (m_bAutoRemove && m_iLifeTime <= 0)
         PSI_destroy();
 }
-//----------------------------------------------------
+
 void CPS_Instance::PSI_destroy()
 {
     m_bDead = TRUE;
     m_iLifeTime = 0;
     g_pGamePersistent->ps_destroy.insert(this);
 }
-//----------------------------------------------------
+
 void CPS_Instance::PSI_internal_delete()
 {
     CPS_Instance* self = this;

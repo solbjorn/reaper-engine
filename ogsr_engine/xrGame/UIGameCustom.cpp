@@ -41,10 +41,11 @@ CUIGameCustom::~CUIGameCustom()
     InventoryUtilities::DestroyShaders();
 
     delete_data(m_pgameCaptions);
-    shedule_unregister();
     delete_data(m_custom_statics);
     delete_data(m_custom_statics_sorted);
     delete_data(m_msgs_xml);
+
+    shedule_unregister(true);
 }
 
 float CUIGameCustom::shedule_Scale() const { return 0.5f; }

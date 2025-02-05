@@ -22,10 +22,16 @@ public:
     ~ISheduled() override;
 
     void shedule_register();
-    void shedule_unregister();
+    void shedule_unregister(bool force = false);
 
     virtual float shedule_Scale() const = 0;
-    virtual void shedule_Update(u32 dt);
+
+#ifdef DEBUG
+    virtual void shedule_Update(u32);
+#else
+    virtual void shedule_Update(u32) {}
+#endif
+
     virtual shared_str shedule_Name() const { return shared_str("unknown"); }
     virtual bool shedule_Needed() = 0;
 };

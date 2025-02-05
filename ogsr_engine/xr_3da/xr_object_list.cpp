@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
+#include "xr_object_list.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
 #include "xrSheduler.h"
-#include "xr_object_list.h"
 
 #include "xr_object.h"
 #include "NET_Server_Trash/net_utils.h"
@@ -250,11 +251,11 @@ void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() 
 
 void CObjectList::Unload()
 {
-    if (objects_sleeping.size() || objects_active.size())
+    if (!objects_sleeping.empty() || !objects_active.empty())
         Msg("! objects-leaked: %zu", objects_sleeping.size() + objects_active.size());
 
     // Destroy objects
-    while (objects_sleeping.size())
+    while (!objects_sleeping.empty())
     {
         CObject* O = objects_sleeping.back();
         Msg("! s[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
@@ -263,10 +264,12 @@ void CObjectList::Unload()
 #ifdef DEBUG
         Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
 #endif
+
         O->net_Destroy();
         Destroy(O);
     }
-    while (objects_active.size())
+
+    while (!objects_active.empty())
     {
         CObject* O = objects_active.back();
         Msg("! a[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
@@ -275,6 +278,7 @@ void CObjectList::Unload()
 #ifdef DEBUG
         Msg("Destroying object [%d][%s]", O->ID(), *O->cName());
 #endif
+
         O->net_Destroy();
         Destroy(O);
     }

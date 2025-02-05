@@ -19,19 +19,19 @@ ISheduled::~ISheduled()
 {
     VERIFY2(!Engine.Sheduler.Registered(this), *shedule_Name());
 
+#ifndef DEBUG
     // sad, but true
     // we need this to become MASTER_GOLD
-#ifndef DEBUG
     Engine.Sheduler.Unregister(this);
 #endif // DEBUG
 }
 
 void ISheduled::shedule_register() { Engine.Sheduler.Register(this); }
-void ISheduled::shedule_unregister() { Engine.Sheduler.Unregister(this); }
+void ISheduled::shedule_unregister(bool force) { Engine.Sheduler.Unregister(this, force); }
 
+#ifdef DEBUG
 void ISheduled::shedule_Update(u32)
 {
-#ifdef DEBUG
     if (dbg_startframe == dbg_update_shedule)
     {
         LPCSTR name = "unknown";
@@ -42,5 +42,5 @@ void ISheduled::shedule_Update(u32)
     }
 
     dbg_update_shedule = dbg_startframe;
-#endif
 }
+#endif
