@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "script_particles.h"
+
 #include "../xr_3da/objectanimator.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
@@ -189,15 +190,10 @@ void CScriptParticles::LoadPath(LPCSTR caPathName) const
     VERIFY(m_particles);
     m_particles->LoadPath(caPathName);
 }
+
 void CScriptParticles::StartPath(bool looped) const { m_particles->StartPath(looped); }
 void CScriptParticles::StopPath() const { m_particles->StopPath(); }
 void CScriptParticles::PausePath(bool val) const { m_particles->PausePath(val); }
 
 int CScriptParticles::LifeTime() const { return m_particles->LifeTime(); }
-
-u32 CScriptParticles::Length() const
-{
-    IParticleCustom* V = smart_cast<IParticleCustom*>(m_particles->renderable.visual);
-    const float time_limit = V->GetTimeLimit();
-    return time_limit > 0.f ? iFloor(time_limit * 1000.f) : 0;
-}
+u32 CScriptParticles::Length() const { return gsl::narrow<u32>(LifeTime()); }
