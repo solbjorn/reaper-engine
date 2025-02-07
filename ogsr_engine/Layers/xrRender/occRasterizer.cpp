@@ -24,7 +24,7 @@ occRasterizer::occRasterizer()
 #endif
 {}
 
-template<typename T>
+template <typename T>
 static inline void MemFill(void* dst, const T value, const size_t dstSize)
 {
     T* ptr = reinterpret_cast<T*>(dst);
@@ -66,14 +66,20 @@ void occRasterizer::propagade()
             // Y2-connect
             int pos = oy * occ_dim + ox;
             int pos_up = pos - occ_dim;
+            if (pos_up < 0)
+                pos_up = pos;
             int pos_down = pos + occ_dim;
+            if (pos_down >= occ_dim_0 * occ_dim_0)
+                pos_down = pos;
             int pos_down2 = pos_down + occ_dim;
+            if (pos_down2 >= occ_dim_0 * occ_dim_0)
+                pos_down2 = pos_down;
 
             occTri* Tu1 = pFrame[pos_up];
             if (Tu1)
             {
                 // We has pixel 1scan up
-                if (shared(Tu1, pFrame[pos_down]))
+                if (pFrame[pos_down] && shared(Tu1, pFrame[pos_down]))
                 {
                     // We has pixel 1scan down
                     float ZR = (pDepth[pos_up] + pDepth[pos_down]) / 2;
@@ -83,7 +89,7 @@ void occRasterizer::propagade()
                         pDepth[pos] = ZR;
                     }
                 }
-                else if (shared(Tu1, pFrame[pos_down2]))
+                else if (pFrame[pos_down2] && shared(Tu1, pFrame[pos_down2]))
                 {
                     // We has pixel 2scan down
                     float ZR = (pDepth[pos_up] + pDepth[pos_down2]) / 2;
@@ -105,7 +111,7 @@ void occRasterizer::propagade()
 
 void occRasterizer::on_dbg_render()
 {
-#if DEBUG
+#ifdef DEBUG
     if (!ps_r2_ls_flags_ext.is(R_FLAGEXT_HOM_DEPTH_DRAW))
     {
         dbg_HOM_draw_initialized = false;
@@ -130,8 +136,10 @@ void occRasterizer::on_dbg_render()
                 box_r = right_bottom;
                 box_r.sub(box_center);
 
-                Device.mInvView.transform(box_center);
-                Device.mInvView.transform_dir(box_r);
+                Fmatrix inv;
+                inv.invert(Device.mView);
+                inv.transform(box_center);
+                inv.transform_dir(box_r);
 
                 pixel_box& tmp = dbg_pixel_boxes[i * occ_dim_0 + j];
                 tmp.center = box_center;
@@ -159,7 +167,7 @@ void occRasterizer::on_dbg_render()
 #endif
 }
 
-IC BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
+static BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
 {
     int x0 = iFloor(_x0 * dim + .5f);
     clamp(x0, 0, dim - 1);
@@ -189,12 +197,4 @@ BOOL occRasterizer::test(float _x0, float _y0, float _x1, float _y1, float _z)
 {
     occD z = df_2_s32up(_z) + 1;
     return test_Level(get_depth_level(), occ_dim_0, _x0, _y0, _x1, _y1, z);
-    /*
-    if	(test_Level(get_depth_level(2),occ_dim_2,_x0,_y0,_x1,_y1,z))
-    {
-        // Visbible on level 2 - test level 0
-        return test_Level(get_depth_level(0),occ_dim_0,_x0,_y0,_x1,_y1,z);
-    }
-    return FALSE;
-    */
 }

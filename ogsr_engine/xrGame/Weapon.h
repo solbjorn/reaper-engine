@@ -81,7 +81,7 @@ public:
     virtual void Hide(bool = false);
     virtual void Show(bool = false);
 
-    //инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
+    // инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
     virtual void OnActiveItem();
     virtual void OnHiddenItem();
 
@@ -162,13 +162,13 @@ public:
     virtual bool SilencerAttachable() const;
     virtual bool UseScopeTexture();
 
-    //обновление видимости для косточек аддонов
+    // обновление видимости для косточек аддонов
     void UpdateAddonsVisibility();
     void UpdateHUDAddonsVisibility();
-    //инициализация свойств присоединенных аддонов
+    // инициализация свойств присоединенных аддонов
     virtual void InitAddons();
 
-    //для отоброажения иконок апгрейдов в интерфейсе
+    // для отоброажения иконок апгрейдов в интерфейсе
     int GetScopeX() { return m_iScopeX; }
     int GetScopeY() { return m_iScopeY; }
     int GetSilencerX() { return m_iSilencerX; }
@@ -183,7 +183,7 @@ public:
     u8 GetAddonsState() const { return m_flagsAddOnState; };
     void SetAddonsState(u8 st) { m_flagsAddOnState = st; }
 
-    //названия секций подключаемых аддонов
+    // названия секций подключаемых аддонов
     shared_str m_sScopeName;
     xr_vector<shared_str> m_allScopeNames;
     shared_str m_sSilencerName;
@@ -205,15 +205,15 @@ private:
     xr_vector<shared_str> hud_hidden_bones;
 
 protected:
-    //состояние подключенных аддонов
+    // состояние подключенных аддонов
     u8 m_flagsAddOnState;
 
-    //возможность подключения различных аддонов
+    // возможность подключения различных аддонов
     ALife::EWeaponAddonStatus m_eScopeStatus;
     ALife::EWeaponAddonStatus m_eSilencerStatus;
     ALife::EWeaponAddonStatus m_eGrenadeLauncherStatus;
 
-    //смещение иконов апгрейдов в инвентаре
+    // смещение иконов апгрейдов в инвентаре
     int m_iScopeX, m_iScopeY;
     int m_iSilencerX, m_iSilencerY;
     int m_iGrenadeLauncherX, m_iGrenadeLauncherY;
@@ -222,37 +222,38 @@ protected:
     //	для режима приближения и снайперского прицела
     ///////////////////////////////////////////////////
 protected:
-    //разрешение регулирования приближения. Real Wolf.
+    // разрешение регулирования приближения. Real Wolf.
     bool m_bScopeDynamicZoom;
     // run-time zoom factor
     float m_fRTZoomFactor;
-    //разрешение режима приближения
+    // разрешение режима приближения
     bool m_bZoomEnabled;
-    //текущий фактор приближения
+    // текущий фактор приближения
     float m_fZoomFactor;
-    //текстура для снайперского прицела, в режиме приближения
+    // текстура для снайперского прицела, в режиме приближения
     CUIStaticItem* m_UIScope;
-    //коэффициент увеличения прицеливания
+    // коэффициент увеличения прицеливания
     float m_fIronSightZoomFactor;
-    //коэффициент увеличения прицела
+    // коэффициент увеличения прицела
     float m_fScopeZoomFactor;
-    //когда режим приближения включен
+    // когда режим приближения включен
     bool m_bZoomMode;
-    //коэффициент увеличения во втором вьюпорте при зуме
+    // коэффициент увеличения во втором вьюпорте при зуме
     float m_fSecondVPZoomFactor;
-    //прятать перекрестие в режиме прицеливания
+    // прятать перекрестие в режиме прицеливания
     bool m_bHideCrosshairInZoom;
-    //разрешить инерцию оружия в режиме прицеливания
+    // разрешить инерцию оружия в режиме прицеливания
     bool m_bZoomInertionAllow;
     // или в режиме прицеливания через оптику
     bool m_bScopeZoomInertionAllow;
-    //Целевой HUD FOV при зуме
+    // Целевой HUD FOV при зуме
     float m_fZoomHudFov;
-    //Целевой HUD FOV для линзы
+    // Целевой HUD FOV для линзы
     float m_fSecondVPHudFov;
 
     bool m_bUseScopeZoom = false;
     bool m_bUseScopeGrenadeZoom = false;
+    bool m_bZoomShowIndicators = true;
     bool m_bScopeShowIndicators = true;
     bool m_bIgnoreScopeTexture = false;
 
@@ -282,7 +283,7 @@ public:
 
     IC float GetZoomFactor() const { return m_fZoomFactor; }
     virtual float CurrentZoomFactor();
-    //показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
+    // показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
     bool IsRotatingToZoom() const { return (m_fZoomRotationFactor < 1.f); }
     bool IsRotatingFromZoom() const { return m_fZoomRotationFactor > 0.f; }
 
@@ -313,7 +314,7 @@ protected:
     bool m_bIsSingleHanded;
 
 public:
-    //загружаемые параметры
+    // загружаемые параметры
     Fvector vLoadedFirePoint;
     Fvector vLoadedFirePoint2;
 
@@ -372,7 +373,7 @@ public:
 protected:
     virtual void SetDefaults();
 
-    //трассирование полета пули
+    // трассирование полета пули
     virtual void FireTrace(const Fvector& P, const Fvector& D);
     virtual float GetWeaponDeterioration();
 
@@ -388,25 +389,25 @@ protected:
     virtual void DeviceSwitch();
 
     // обработка визуализации выстрела
-    virtual void OnShot(){};
+    virtual void OnShot() {};
     virtual void AddShotEffector();
     virtual void RemoveShotEffector();
     virtual void ClearShotEffector();
 
 public:
-    //текущая дисперсия (в радианах) оружия с учетом используемого патрона
+    // текущая дисперсия (в радианах) оружия с учетом используемого патрона
     float GetFireDispersion(bool with_cartridge);
     float GetFireDispersion(float cartridge_k);
     //	const Fvector&			GetRecoilDeltaAngle	();
     virtual int ShotsFired() { return 0; }
 
-    //параметы оружия в зависимоти от его состояния исправности
+    // параметы оружия в зависимоти от его состояния исправности
     float GetConditionDispersionFactor() const;
     float GetConditionMisfireProbability() const;
     virtual float GetConditionToShow() const;
 
 public:
-    //отдача при стрельбе
+    // отдача при стрельбе
     float camMaxAngle;
     float camRelaxSpeed;
     float camRelaxSpeed_AI;
@@ -416,21 +417,14 @@ public:
     float camMaxAngleHorz;
     float camStepAngleHorz;
 
-    float dof_transition_time{};
-    float dof_zoom_effect{};
-    float dof_reload_effect{};
-    Fvector4 dof_params_zoom{};
-    Fvector4 dof_params_reload{};
-    void UpdateDof(float& type, Fvector4 params_type, bool desire);
-
 protected:
-    //фактор увеличения дисперсии при максимальной изношености
+    // фактор увеличения дисперсии при максимальной изношености
     //(на сколько процентов увеличится дисперсия)
     float fireDispersionConditionFactor;
-    //вероятность осечки при максимальной изношености
+    // вероятность осечки при максимальной изношености
     float misfireProbability;
     float misfireConditionK;
-    //увеличение изношености при выстреле
+    // увеличение изношености при выстреле
     float conditionDecreasePerShot;
     float conditionDecreasePerShotOnHit;
     float conditionDecreasePerShotSilencer;
@@ -444,17 +438,17 @@ protected:
     //  [8/2/2005]
 
 protected:
-    //для отдачи оружия
+    // для отдачи оружия
     Fvector m_vRecoilDeltaAngle;
 
-    //для сталкеров, чтоб они знали эффективные границы использования
-    //оружия
+    // для сталкеров, чтоб они знали эффективные границы использования
+    // оружия
     float m_fMinRadius;
     float m_fMaxRadius;
 
-    //Давать ли доиграть анимацию выстрела после выстрела (надо для анимаций с вылетающими гильзами)
+    // Давать ли доиграть анимацию выстрела после выстрела (надо для анимаций с вылетающими гильзами)
     bool dont_interrupt_shot_anm{};
-    //Является ли это оружие оружием из Gunslinger Mod
+    // Является ли это оружие оружием из Gunslinger Mod
     bool is_gunslinger_weapon{};
 
     //////////////////////////////////////////////////////////////////////////
@@ -462,14 +456,14 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 
 protected:
-    //для второго ствола
+    // для второго ствола
     void StartFlameParticles2();
     void StopFlameParticles2();
     void UpdateFlameParticles2();
 
 protected:
     shared_str m_sFlameParticles2;
-    //объект партиклов для стрельбы из 2-го ствола
+    // объект партиклов для стрельбы из 2-го ствола
     CParticlesObject* m_pFlameParticles2;
 
     //////////////////////////////////////////////////////////////////////////
@@ -502,9 +496,9 @@ protected:
     int iAmmoElapsed; // ammo in magazine, currently
     int iMagazineSize; // size (in bullets) of magazine
 
-    //для подсчета в GetAmmoCurrent
+    // для подсчета в GetAmmoCurrent
     mutable int iAmmoCurrent;
-    mutable u32 m_dwAmmoCurrentCalcFrame; //кадр на котором просчитали кол-во патронов
+    mutable u32 m_dwAmmoCurrentCalcFrame; // кадр на котором просчитали кол-во патронов
 
     virtual bool IsNecessaryItem(const shared_str& item_sect);
 
@@ -676,7 +670,7 @@ public:
     void SaveAttachableParams() override;
     void ParseCurrentItem(CGameFont* F) override;
 
-    	// Up
+    // Up
     // Magazine system & etc
     xr_vector<shared_str> bullets_bones;
     int bullet_cnt{};

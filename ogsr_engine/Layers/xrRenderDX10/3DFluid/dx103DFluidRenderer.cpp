@@ -106,7 +106,7 @@ void dx103DFluidRenderer::CreateGridBox()
     HW.stats_manager.increment_stats(sizeof(dx103DFluidConsts::indices), enum_stats_buffer_type_index, D3DPOOL_MANAGED);
 
     // Define the input layout
-    static D3DVERTEXELEMENT9 layout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
+    static constexpr D3DVERTEXELEMENT9 layout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
 
     // Create the input layout
     m_GeomGridBox.create(layout, m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
@@ -115,10 +115,10 @@ void dx103DFluidRenderer::CreateGridBox()
 void dx103DFluidRenderer::CreateScreenQuad()
 {
     // Create our quad input layout
-    static D3DVERTEXELEMENT9 quadlayout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
+    static constexpr D3DVERTEXELEMENT9 quadlayout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
 
     // Create a screen quad for all render to texture operations
-    constexpr Fvector3 svQuad[]{{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
+    static constexpr Fvector3 svQuad[]{{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
     m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
 }

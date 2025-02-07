@@ -46,7 +46,7 @@ struct VertexFormatPairs
     DXGI_FORMAT m_dx10FMT;
 };
 
-VertexFormatPairs VertexFormatList[] = {
+static constexpr VertexFormatPairs VertexFormatList[] = {
     {D3DDECLTYPE_FLOAT1, DXGI_FORMAT_R32_FLOAT},
     {D3DDECLTYPE_FLOAT2, DXGI_FORMAT_R32G32_FLOAT},
     {D3DDECLTYPE_FLOAT3, DXGI_FORMAT_R32G32B32_FLOAT},
@@ -70,7 +70,7 @@ VertexFormatPairs VertexFormatList[] = {
 
 DXGI_FORMAT ConvertVertexFormat(D3DDECLTYPE dx9FMT)
 {
-    int arrayLength = sizeof(VertexFormatList) / sizeof(VertexFormatList[0]);
+    constexpr int arrayLength = sizeof(VertexFormatList) / sizeof(VertexFormatList[0]);
     for (int i = 0; i < arrayLength; ++i)
     {
         if (VertexFormatList[i].m_dx9FMT == dx9FMT)
@@ -87,7 +87,7 @@ struct VertexSemanticPairs
     LPCSTR m_dx10Semantic;
 };
 
-VertexSemanticPairs VertexSemanticList[] = {
+static constexpr VertexSemanticPairs VertexSemanticList[] = {
     {D3DDECLUSAGE_POSITION, "POSITION"}, //	0
     {D3DDECLUSAGE_BLENDWEIGHT, "BLENDWEIGHT"}, // 1
     {D3DDECLUSAGE_BLENDINDICES, "BLENDINDICES"}, // 2
@@ -106,7 +106,7 @@ VertexSemanticPairs VertexSemanticList[] = {
 
 LPCSTR ConvertSemantic(D3DDECLUSAGE Semantic)
 {
-    int arrayLength = sizeof(VertexSemanticList) / sizeof(VertexSemanticList[0]);
+    constexpr int arrayLength = sizeof(VertexSemanticList) / sizeof(VertexSemanticList[0]);
     for (int i = 0; i < arrayLength; ++i)
     {
         if (VertexSemanticList[i].m_dx9Semantic == Semantic)

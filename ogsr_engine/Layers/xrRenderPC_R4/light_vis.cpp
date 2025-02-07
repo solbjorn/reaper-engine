@@ -2,16 +2,18 @@
 #include "../xrRender/light.h"
 #include "../../xrCDB/cl_intersect.h"
 
-const u32 delay_small_min = 1;
-const u32 delay_small_max = 3;
-const u32 delay_large_min = 10;
-const u32 delay_large_max = 20;
-const u32 cullfragments = 4;
+constexpr u32 delay_small_min = 1;
+constexpr u32 delay_small_max = 3;
+constexpr u32 delay_large_min = 10;
+constexpr u32 delay_large_max = 20;
+constexpr u32 cullfragments = 4;
 
 void light::vis_prepare()
 {
+#ifdef DEBUG
     if (int(indirect_photons) != ps_r2_GI_photons)
         gi_generate();
+#endif
 
     //	. test is sheduled for future	= keep old result
     //	. test time comes :)
@@ -35,13 +37,10 @@ void light::vis_prepare()
     // Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
     // Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
     bool skiptest = false;
-    if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)
+    if (!flags.bShadow)
         skiptest = true;
     if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED) && flags.bShadow)
         skiptest = true;
-
-    //	TODO: DX10: Remove this pessimization
-    // skiptest	= true;
 
     vis.distance = Device.vCameraPosition.distance_to(spatial.sphere.P);
     if (skiptest || vis.distance <= (spatial.sphere.R * 1.01f + safe_area))
@@ -49,8 +48,6 @@ void light::vis_prepare()
         vis.visible = true;
         vis.pending = false;
         vis.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
-        //	TODO: DX10: Remove this pessimisation
-        // vis.frame2test	=	frame	+ 1;
         return;
     }
 
@@ -83,14 +80,12 @@ void light::vis_update()
 
     u32 frame = Device.dwFrame;
     u64 fragments = RImplementation.occq_get(vis.query_id);
-    // Log					("",fragments);
+
     vis.visible = (fragments > cullfragments);
     vis.pending = false;
     if (vis.visible)
     {
         vis.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
-        //	TODO: DX10: Remove this pessimisation
-        // vis.frame2test	=	frame	+ 1;
     }
     else
     {

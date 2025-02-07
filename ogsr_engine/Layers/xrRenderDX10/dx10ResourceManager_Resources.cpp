@@ -76,7 +76,7 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
         if (v_passes[it]->equal(proto))
             return v_passes[it];
 
-    SPass* P = xr_new<SPass>();
+    SPass* P = v_passes.emplace_back(xr_new<SPass>());
     P->dwFlags |= xr_resource_flagged::RF_REGISTERED;
     P->state = proto.state;
     P->ps = proto.ps;
@@ -89,9 +89,9 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
     P->T = proto.T;
     P->C = proto.C;
 
-    v_passes.push_back(P);
-    return v_passes.back();
+    return P;
 }
+
 void CResourceManager::_DeletePass(const SPass* P)
 {
     if (0 == (P->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -104,18 +104,34 @@ void CResourceManager::_DeletePass(const SPass* P)
 //--------------------------------------------------------------------------------------------------------------
 SVS* CResourceManager::_CreateVS(LPCSTR _name)
 {
+    int skinning = -1;
     string_path name;
     xr_strcpy(name, _name);
     if (0 == ::Render->m_skinning)
+    {
         xr_strcat(name, "_0");
+        skinning = 0;
+    }
     if (1 == ::Render->m_skinning)
+    {
         xr_strcat(name, "_1");
+        skinning = 1;
+    }
     if (2 == ::Render->m_skinning)
+    {
         xr_strcat(name, "_2");
+        skinning = 2;
+    }
     if (3 == ::Render->m_skinning)
+    {
         xr_strcat(name, "_3");
+        skinning = 3;
+    }
     if (4 == ::Render->m_skinning)
+    {
         xr_strcat(name, "_4");
+        skinning = 4;
+    }
     LPSTR N = LPSTR(name);
     map_VS::iterator I = m_vs.find(N);
     if (I != m_vs.end())
@@ -123,6 +139,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
     else
     {
         SVS* _vs = xr_new<SVS>();
+        _vs->skinning = skinning;
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_vs.insert(mk_pair(_vs->set_name(name), _vs));
         //_vs->vs				= NULL;
@@ -155,24 +172,9 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         LPCSTR c_target = "vs_5_0";
         LPCSTR c_entry = "main";
 
-        // xrSimpodin: Для воды снизил версию до 4.1 потому что с ней фиксится баг с неподвижной водой. Не понятно почему так происходит и проблема решается таким странным
-        // способом. Можно было бы сменить c_entry на main_vs_4_1 но там куча шейдеров для воды сделано через инклуды и они не позволяют так сделать.
-        if (!strncmp(shName, "water", strlen("water")))
-        {
-            c_target = "vs_4_1";
-        }
-        else if (strbuf.find("main_vs_4_1") != decltype(strbuf)::npos)
-        {
-            c_target = "vs_4_1";
-            c_entry = "main_vs_4_1";
-        }
-
-        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
         if (strstr(Core.Params, "-shadersdbg"))
-        {
-            Flags |= D3DCOMPILE_DEBUG;
-            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-        }
+            Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_vs);
 
@@ -267,25 +269,9 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         LPCSTR c_target = "ps_5_0";
         LPCSTR c_entry = "main";
 
-        // xrSimpodin: Для воды снизил версию до 4.1 потому что с ней фиксится баг с неподвижной водой. Не понятно почему так происходит и проблема решается таким странным
-        // способом.
-        // Можно было бы сменить c_entry на main_ps_4_1 но там куча шейдеров для воды сделано через инклуды и они не позволяют так сделать.
-        if (!strncmp(shName, "water", strlen("water")))
-        {
-            c_target = "ps_4_1";
-        }
-        else if (strbuf.find("main_ps_4_1") != decltype(strbuf)::npos)
-        {
-            c_target = "ps_4_1";
-            c_entry = "main_ps_4_1";
-        }
-
-        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
         if (strstr(Core.Params, "-shadersdbg"))
-        {
-            Flags |= D3DCOMPILE_DEBUG;
-            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-        }
+            Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_ps);
 
@@ -342,12 +328,9 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         LPCSTR c_target = "gs_5_0";
         LPCSTR c_entry = "main";
 
-        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
         if (strstr(Core.Params, "-shadersdbg"))
-        {
-            Flags |= D3DCOMPILE_DEBUG;
-            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-        }
+            Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs);
 
@@ -373,7 +356,7 @@ void CResourceManager::_DeleteGS(const SGS* gs)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-static BOOL dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
+static BOOL dcl_equal(const D3DVERTEXELEMENT9* a, const D3DVERTEXELEMENT9* b)
 {
     // check sizes
     u32 a_size = FVF::GetDeclLength(a);
@@ -383,26 +366,24 @@ static BOOL dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
     return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
 }
 
-SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
+SDeclaration* CResourceManager::_CreateDecl(const D3DVERTEXELEMENT9* dcl)
 {
     // Search equal code
-    for (u32 it = 0; it < v_declarations.size(); it++)
+    for (SDeclaration* D : v_declarations)
     {
-        SDeclaration* D = v_declarations[it];
-        ;
-        if (dcl_equal(dcl, &*D->dcl_code.begin()))
+        if (dcl_equal(dcl, &D->dcl_code.front()))
             return D;
     }
 
     // Create _new
-    SDeclaration* D = xr_new<SDeclaration>();
+    SDeclaration* D = v_declarations.emplace_back(xr_new<SDeclaration>());
     u32 dcl_size = FVF::GetDeclLength(dcl) + 1;
     //	Don't need it for DirectX 10 here
     // CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
     D->dcl_code.assign(dcl, dcl + dcl_size);
     dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
     D->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_declarations.push_back(D);
+
     return D;
 }
 void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
@@ -520,7 +501,7 @@ void CResourceManager::DBG_VerifyGeoms()
     */
 }
 
-SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
+SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
     R_ASSERT(decl && vb);
 
@@ -711,9 +692,8 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflection
     VERIFY(pTable);
     dx10ConstantBuffer* pTempBuffer = xr_new<dx10ConstantBuffer>(pTable);
 
-    for (u32 it = 0; it < v_constant_buffer.size(); it++)
+    for (dx10ConstantBuffer* buf : v_constant_buffer)
     {
-        dx10ConstantBuffer* buf = v_constant_buffer[it];
         if (pTempBuffer->Similar(*buf))
         {
             xr_delete(pTempBuffer);
@@ -722,7 +702,7 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflection
     }
 
     pTempBuffer->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_constant_buffer.push_back(pTempBuffer);
+    v_constant_buffer.emplace_back(pTempBuffer);
     return pTempBuffer;
 }
 void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
@@ -738,22 +718,20 @@ SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 {
     VERIFY(pBlob);
 
-    for (u32 it = 0; it < v_input_signature.size(); it++)
+    for (SInputSignature* sign : v_input_signature)
     {
-        SInputSignature* sign = v_input_signature[it];
         if ((pBlob->GetBufferSize() == sign->signature->GetBufferSize()) && (!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
         {
             return sign;
         }
     }
 
-    SInputSignature* pSign = xr_new<SInputSignature>(pBlob);
-
+    SInputSignature* pSign = v_input_signature.emplace_back(xr_new<SInputSignature>(pBlob));
     pSign->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_input_signature.push_back(pSign);
 
     return pSign;
 }
+
 void CResourceManager::_DeleteInputSignature(const SInputSignature* pSignature)
 {
     if (0 == (pSignature->dwFlags & xr_resource_flagged::RF_REGISTERED))

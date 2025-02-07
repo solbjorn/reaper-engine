@@ -312,9 +312,6 @@
     <ClInclude Include="..\xrRender\Blender_Particle.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
-    <ClInclude Include="dx11MinMaxSMBlender.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\uber_deffer.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -413,12 +410,6 @@
     </ClInclude>
     <ClInclude Include="..\xrRender\R_DStreams.h">
       <Filter>Refactored\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="ComputeShader.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="CSCompiler.h">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRenderDX10\dx10ConstantBuffer.h">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
@@ -705,6 +696,12 @@
     <ClInclude Include="..\xrRender\Debug\dxPixEventWrapper.h">
       <Filter>Debug</Filter>
     </ClInclude>
+    <ClInclude Include="blender_gasmask_dudv.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="blender_gasmask_drops.h">
+      <Filter>Shading templates</Filter>
+    </ClInclude>
     <ClInclude Include="blender_dof.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -896,9 +893,6 @@
     <ClCompile Include="..\xrRender\Blender_Particle.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
-    <ClCompile Include="dx11MinMaxSMBlender.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\uber_deffer.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
@@ -986,9 +980,6 @@
     <ClCompile Include="r4_rendertarget_accum_spot_geom.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="r4_rendertarget_create_minmaxSM.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
     <ClCompile Include="r4_rendertarget_draw_rain.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
@@ -1031,6 +1022,9 @@
     <ClCompile Include="r4_rendertarget_phase_smap_S.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_ssao.cpp">
+      <Filter>Core_Target</ Filter>
+    </ClCompile>
     <ClCompile Include="..\xrRender\ColorMapManager.cpp">
       <Filter>Core_Target\ColorMap</Filter>
     </ClCompile>
@@ -1063,12 +1057,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\R_DStreams.cpp">
       <Filter>Refactored\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="ComputeShader.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="CSCompiler.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\dx10ConstantBuffer.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Resources</Filter>
@@ -1286,7 +1274,13 @@
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidRenderer.cpp">
       <Filter>3DFluid</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp">
+    <ClCompile Include="blender_gasmask_drops.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\rendertarget_phase_gasmask_drops.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\rendertarget_phase_gasmask_dudv.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\RenderScreenQuad.cpp">
@@ -1312,9 +1306,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\imgui_impl_dx11.cpp">
       <Filter>imgui_render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\rendertarget_phase_lut.cpp">
-      <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\ParticleEffectActions.cpp">
       <Filter>Models\Visuals</Filter>

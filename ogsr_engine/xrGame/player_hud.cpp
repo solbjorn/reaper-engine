@@ -10,20 +10,19 @@
 
 player_hud* g_player_hud{};
 
-
 // Рассчитать стартовую секунду анимации --#SM+#--
 float CalculateMotionStartSeconds(float fStartFromTime, float fMotionLength)
 {
     R_ASSERT(fStartFromTime >= -1.0f);
 
-    //if (fStartFromTime >= 0.0f)
-    //{ 
-    //    // Выставляем время в точных значениях
-    //    clamp(fStartFromTime, 0.0f, fMotionLength);
-    //    return abs(fStartFromTime);
-    //}
-    //else
-    {   // Выставляем время в процентных значениях (от всей длины анимации)
+    // if (fStartFromTime >= 0.0f)
+    //{
+    //     // Выставляем время в точных значениях
+    //     clamp(fStartFromTime, 0.0f, fMotionLength);
+    //     return abs(fStartFromTime);
+    // }
+    // else
+    { // Выставляем время в процентных значениях (от всей длины анимации)
         return (abs(fStartFromTime) * fMotionLength);
     }
 }
@@ -41,8 +40,8 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
 
     for (const auto& [name, anm] : pSettings->r_section(sect).Data)
     {
-        if ((strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str()) 
-            && !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_start_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector"))
+        if ((strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str()) && !strstr(name.c_str(), "_speed_k") &&
+            !strstr(name.c_str(), "_start_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector"))
         {
             player_hud_motion pm;
 
@@ -247,10 +246,7 @@ void attachable_hud_item::update(bool bForce)
     }
 }
 
-player_hud_motion* attachable_hud_item::find_motion(const shared_str& name)
-{ 
-    return m_hand_motions.find_motion(name); 
-}
+player_hud_motion* attachable_hud_item::find_motion(const shared_str& name) { return m_hand_motions.find_motion(name); }
 
 void attachable_hud_item::setup_firedeps(firedeps& fd)
 {
@@ -271,7 +267,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
             m_item_transform.transform_tiny(fd.vLastShootPoint);
             fd.vLastShootPoint.add(Device.vCameraPosition);
         }
-        else //На ТЧ - стволах fire_point живет от стволов отдельной жизнью, поэтому если пытаться там править координаты - всё плывёт, оставим как есть.
+        else // На ТЧ - стволах fire_point живет от стволов отдельной жизнью, поэтому если пытаться там править координаты - всё плывёт, оставим как есть.
             fd.vLastShootPoint = fd.vLastFP;
 
         fd.vLastFD.set(0.f, 0.f, 1.f);
@@ -469,7 +465,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
     else
         m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
-    //ОГСР-специфичные параметры
+    // ОГСР-специфичные параметры
     xr_strconcat(val_name, "scope_zoom_offset", _prefix);
     if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
         xr_strcpy(val_name, "scope_zoom_offset");
@@ -634,10 +630,10 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
             M2 = ka->ID_Cycle_Safe(item_anm_name);
         }
-        
+
         if (!M2.valid())
             M2 = ka->ID_Cycle_Safe("idle");
-        
+
         R_ASSERT3(M2.valid(), "model has no motion [idle] ", m_visual_name.c_str());
 
         if (m_has_separated_hands)
@@ -749,7 +745,8 @@ void player_hud::load(const shared_str& player_hud_sect, bool force)
     if (!force && player_hud_sect == m_sect_name)
         return;
 
-    if (script_override_arms) return;
+    if (script_override_arms)
+        return;
 
     const bool b_reload = m_model != nullptr || m_model_2 != nullptr;
     if (m_model)
@@ -844,19 +841,26 @@ bool player_hud::render_item_ui_query()
 
 void player_hud::render_item_ui()
 {
+    IUIRender::ePointType bk = UI()->m_currentPointType;
+    UI()->m_currentPointType = IUIRender::pttLIT;
+    UIRender->CacheSetCullMode(IUIRender::cmNONE);
+
     if (m_attached_items[0])
         m_attached_items[0]->render_item_ui();
 
     if (m_attached_items[1])
         m_attached_items[1]->render_item_ui();
+
+    UIRender->CacheSetCullMode(IUIRender::cmCCW);
+    UI()->m_currentPointType = bk;
 }
 
 void player_hud::render_hud()
 {
-    //if (!m_attached_items[0] && !m_attached_items[1])
-    //    return;
+    // if (!m_attached_items[0] && !m_attached_items[1])
+    //     return;
 
-	bool b_r0 = ((m_attached_items[0] && m_attached_items[0]->need_renderable()) || script_anim_part == 0 || script_anim_part == 2);
+    bool b_r0 = ((m_attached_items[0] && m_attached_items[0]->need_renderable()) || script_anim_part == 0 || script_anim_part == 2);
     bool b_r1 = ((m_attached_items[1] && m_attached_items[1]->need_renderable()) || script_anim_part == 1 || script_anim_part == 2);
 
     if (!b_r0 && !b_r1)
@@ -902,7 +906,8 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-    return motion_length(pm->params, pm->m_animations[0], md, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model), speed == 1.f ? pm->params.speed_k : speed);
+    return motion_length(pm->params, pm->m_animations[0], md, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model),
+                         speed == 1.f ? pm->params.speed_k : speed);
 }
 
 u32 player_hud::motion_length(const motion_params& P, const motion_descr& M, const CMotionDef*& md, IKinematicsAnimated* itemModel, float speed)
@@ -929,8 +934,8 @@ u32 player_hud::motion_length(const motion_params& P, const motion_descr& M, con
 
 void player_hud::update(const Fmatrix& cam_trans)
 {
-    //Костыли для правильной работы системы коллизии худа. Это всё плохо и надо будет как-то переделать в будущем. Здесь два апдейта худа подряд делаются для того, чтобы менеджер
-    //коллизи мог получить координаты ствола в обычном режиме, из которых уже будет делаться рейтрейс. skip_updated_frame тоже к этому относится.
+    // Костыли для правильной работы системы коллизии худа. Это всё плохо и надо будет как-то переделать в будущем. Здесь два апдейта худа подряд делаются для того, чтобы менеджер
+    // коллизи мог получить координаты ствола в обычном режиме, из которых уже будет делаться рейтрейс. skip_updated_frame тоже к этому относится.
     static bool need_update_collision{};
     need_update_collision = !need_update_collision;
     bool need_update_collision_local = need_update_collision;
@@ -939,7 +944,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
     Fmatrix trans = cam_trans;
     Fmatrix trans_b = cam_trans;
-    
+
     auto attach_pos = [this](size_t part) {
         if (m_attached_items[part])
             return m_attached_items[part]->hands_attach_pos();
@@ -1036,7 +1041,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
         m_model_2->UpdateTracks();
         m_model_2->dcast_PKinematics()->CalculateBones_Invalidate();
-        m_model_2->dcast_PKinematics()->CalculateBones(TRUE);       
+        m_model_2->dcast_PKinematics()->CalculateBones(TRUE);
     }
 
     for (script_layer* anm : m_script_layers)
@@ -1142,7 +1147,6 @@ void player_hud::update(const Fmatrix& cam_trans)
                 m_transform_2.mulB_43(anm->XFORM(1));
         }
     }
-
 
     if (m_attached_items[0])
         m_attached_items[0]->update(true);
@@ -1821,9 +1825,8 @@ void player_hud::updateMovementLayerState()
         anm->Stop(false);
     }
 
-    bool need_blend = (script_anim_part != u8(-1) 
-            || (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->NeedBlendAnm()) 
-            || (m_attached_items[1] && m_attached_items[1]->m_parent_hud_item->NeedBlendAnm()));
+    bool need_blend = (script_anim_part != u8(-1) || (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->NeedBlendAnm()) ||
+                       (m_attached_items[1] && m_attached_items[1]->m_parent_hud_item->NeedBlendAnm()));
 
     if (pActor->AnyMove() && need_blend)
     {
@@ -1847,7 +1850,6 @@ void player_hud::updateMovementLayerState()
             m_movement_layers[eRun]->Play();
     }
 }
-
 
 float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart)
 {
@@ -1917,7 +1919,6 @@ float player_hud::SetBlendAnmTime(LPCSTR name, float time)
     return 0;
 }
 
-
 player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section, IKinematicsAnimated* animatedHudItem)
 {
     for (hand_motions* phm : m_hand_motions)
@@ -1933,4 +1934,3 @@ player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section, IKinem
 
     return &res->pm;
 }
-

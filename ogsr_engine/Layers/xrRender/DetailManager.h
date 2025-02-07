@@ -10,19 +10,18 @@
 #include "detailformat.h"
 #include "detailmodel.h"
 
-
-const int dm_max_decompress = 7;
+constexpr int dm_max_decompress = 7;
 // const int		dm_size				= 24;								//!
-const int dm_cache1_count = 4; //
+constexpr int dm_cache1_count = 4; //
 // const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
-const int dm_max_objects = 64;
-const int dm_obj_in_slot = 4;
+constexpr int dm_max_objects = 64;
+constexpr int dm_obj_in_slot = 4;
 // const int		dm_cache_line		= dm_size+1+dm_size;
 // const int		dm_cache_size		= dm_cache_line*dm_cache_line;
 // const float		dm_fade				= float(2*dm_size)-.5f;
-const float dm_slot_size = DETAIL_SLOT_SIZE;
+constexpr float dm_slot_size = DETAIL_SLOT_SIZE;
 
-const u32 dm_max_cache_size = 62001 * 2; // assuming max dm_size = 124
+constexpr u32 dm_max_cache_size = 62001 * 2; // assuming max dm_size = 124
 extern u32 dm_size;
 extern u32 dm_cache1_line;
 extern u32 dm_cache_line;
@@ -51,6 +50,9 @@ public:
         float c_sun;
         float distance;
         Fvector position;
+        Fvector normal;
+        float alpha;
+        float alpha_target;
     };
     DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
     struct SlotPart
@@ -77,6 +79,7 @@ public:
         int sx, sz; // координаты слота X x Y
         vis_data vis; //
         SlotPart G[dm_obj_in_slot]; //
+        bool hidden;
 
         Slot()
         {
@@ -148,8 +151,7 @@ public:
     void UpdateVisibleS();
 
 public:
-
-    IC bool UseVS() { return HW.Caps.geometry_major >= 1; }
+    constexpr IC bool UseVS() const { return true; }
 
     // Software processor
     ref_geom soft_Geom;
@@ -159,7 +161,7 @@ public:
 
     // Hardware processor
     ref_geom hw_Geom;
-    u32 hw_BatchSize;
+    size_t hw_BatchSize;
     ID3DVertexBuffer* hw_VB;
     ID3DIndexBuffer* hw_IB;
 
@@ -174,7 +176,7 @@ public:
     DetailSlot& QueryDB(int sx, int sz);
 
     void cache_Initialize();
-    void cache_Update(int sx, int sz, Fvector& view, int limit);
+    void cache_Update(int sx, int sz, Fvector& view);
     void cache_Task(int gx, int gz, Slot* D);
     Slot* cache_Query(int sx, int sz);
     void cache_Decompress(Slot* D);

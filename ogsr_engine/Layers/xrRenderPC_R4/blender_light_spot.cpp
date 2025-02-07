@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "Blender_light_spot.h"
 
 CBlender_accum_spot::CBlender_accum_spot() { description.CLS = 0; }
@@ -10,10 +9,8 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    //	BOOL		b_HW_smap	= RImplementation.o.HW_smap;
-    //	BOOL		b_HW_PCF	= RImplementation.o.HW_smap_PCF;
-    BOOL blend = RImplementation.o.fp16_blend;
-    D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
+    constexpr BOOL blend = true;
+    constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
 
     switch (C.iElement)
     {
@@ -28,10 +25,10 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_unshadowed_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -43,11 +40,13 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_normal_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss_tmp);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -61,28 +60,13 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_fullsize_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_dx10Sampler("smp_material");
-        C.r_dx10Sampler("smp_rtlinear");
-        jitter(C);
-        C.r_dx10Sampler("smp_smap");
-        C.r_End();
-        break;
-    case SE_L_TRANSLUENT: // shadowed + transluency
-        C.r_Pass("accum_volume", "accum_spot_fullsize_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
-
-        C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
-        C.r_dx10Texture("s_lmap", C.L_textures[0]);
-        C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss_tmp);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -101,10 +85,8 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    //	BOOL		b_HW_smap	= RImplementation.o.HW_smap;
-    //	BOOL		b_HW_PCF	= RImplementation.o.HW_smap_PCF;
-    BOOL blend = RImplementation.o.fp16_blend;
-    D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
+    constexpr BOOL blend = true;
+    constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
 
     if (Name)
         ::Render->m_MSAASample = atoi(Definition);
@@ -124,10 +106,10 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_unshadowed_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -139,11 +121,13 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_normal_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss_tmp);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -157,28 +141,13 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
         C.r_Pass("accum_volume", "accum_spot_fullsize_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_lmap", C.L_textures[0]);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_dx10Sampler("smp_material");
-        C.r_dx10Sampler("smp_rtlinear");
-        jitter(C);
-        C.r_dx10Sampler("smp_smap");
-        C.r_End();
-        break;
-    case SE_L_TRANSLUENT: // shadowed + transluency
-        C.r_Pass("accum_volume", "accum_spot_fullsize_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
-
-        C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
-        C.r_dx10Texture("s_lmap", C.L_textures[0]);
-        C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss_tmp);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");

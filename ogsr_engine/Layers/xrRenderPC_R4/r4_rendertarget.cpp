@@ -9,12 +9,29 @@
 #include "blender_combine.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
-#include "blender_blur.h"
-#include "blender_dof.h"
-#include "dx11MinMaxSMBlender.h"
 #include "../xrRenderDX10/msaa/dx10MSAABlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
+////////////////////////////lvutner
+#include "blender_gasmask_drops.h"
+#include "blender_gasmask_dudv.h"
+#include "blender_blur.h"
+#include "blender_dof.h"
+
 #include "../xrRender/dxRenderDeviceRender.h"
+
+void CRenderTarget::set_viewport_size(ID3DDeviceContext* dev, float w, float h)
+{
+    const D3D11_VIEWPORT vp = {
+        .TopLeftX = 0,
+        .TopLeftY = 0,
+        .Width = w,
+        .Height = h,
+        .MinDepth = 0.f,
+        .MaxDepth = 1.f,
+    };
+
+    dev->RSSetViewports(1, &vp);
+}
 
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
@@ -118,41 +135,6 @@ void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTa
     //	RImplementation.rmNormal				();
 }
 
-void CRenderTarget::u_stencil_optimize(eStencilOptimizeMode eSOM)
-{
-    //	TODO: DX10: remove half pixel offset?
-    VERIFY(RImplementation.o.nvstencil);
-    // RCache.set_ColorWriteEnable	(FALSE);
-    u32 Offset;
-    float _w = float(Device.dwWidth);
-    float _h = float(Device.dwHeight);
-    u32 C = color_rgba(255, 255, 255, 255);
-    float eps = 0;
-    float _dw = 0.5f;
-    float _dh = 0.5f;
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);
-    pv++;
-    pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
-    pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
-    RCache.set_Element(s_occq->E[1]);
-
-    switch (eSOM)
-    {
-    case SO_Light: StateManager.SetStencilRef(dwLightMarkerID); break;
-    case SO_Combine: StateManager.SetStencilRef(0x01); break;
-    default: VERIFY(!"CRenderTarget::u_stencil_optimize. switch no default!");
-    }
-
-    RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-}
-
 // 2D texgen (texture adjustment matrix)
 void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
 {
@@ -160,10 +142,10 @@ void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
     // float	_h						= float(Device.dwHeight);
     // float	o_w						= (.5f / _w);
     // float	o_h						= (.5f / _h);
-    Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                             //	Removing half pixel offset
-                             // 0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-                             0.5f, 0.5f, 0.0f, 1.0f};
+    static constexpr Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                              //	Removing half pixel offset
+                                              // 0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
+                                              0.5f, 0.5f, 0.0f, 1.0f};
     m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
 }
 
@@ -217,11 +199,8 @@ CRenderTarget::CRenderTarget()
 
 #ifdef DEBUG
     Msg("MSAA samples = %d", SampleCount);
-    if (RImplementation.o.dx10_msaa_opt)
-        Msg("dx10_MSAA_opt = on");
-    if (RImplementation.o.dx10_gbuffer_opt)
-        Msg("dx10_gbuffer_opt = on");
 #endif // DEBUG
+
     param_blur = 0.f;
     param_gray = 0.f;
     param_noise = 0.f;
@@ -250,39 +229,51 @@ CRenderTarget::CRenderTarget()
     b_accum_spot = xr_new<CBlender_accum_spot>();
     b_accum_reflected = xr_new<CBlender_accum_reflected>();
     b_bloom = xr_new<CBlender_bloom_build>();
-    b_blur = xr_new<CBlender_blur>();
-    b_dof = xr_new<CBlender_dof>();
-
     if (RImplementation.o.dx10_msaa)
     {
         b_bloom_msaa = xr_new<CBlender_bloom_build_msaa>();
         b_postprocess_msaa = xr_new<CBlender_postprocess_msaa>();
     }
+    else
+    {
+        b_bloom_msaa = nullptr;
+        b_postprocess_msaa = nullptr;
+    }
     b_luminance = xr_new<CBlender_luminance>();
     b_combine = xr_new<CBlender_combine>();
+    b_blur = xr_new<CBlender_blur>();
+    b_dof = xr_new<CBlender_dof>();
+    b_gasmask_drops = xr_new<CBlender_gasmask_drops>();
+    b_gasmask_dudv = xr_new<CBlender_gasmask_dudv>();
+
+    // Screen Space Shaders Stuff
+    b_ssfx_rain = xr_new<CBlender_ssfx_rain>();
+    b_ssfx_water_blur = xr_new<CBlender_ssfx_water_blur>();
+    b_ssfx_bloom = xr_new<CBlender_ssfx_bloom_build>();
+    b_ssfx_bloom_lens = xr_new<CBlender_ssfx_bloom_lens>();
+    b_ssfx_bloom_downsample = xr_new<CBlender_ssfx_bloom_downsample>();
+    b_ssfx_bloom_upsample = xr_new<CBlender_ssfx_bloom_upsample>();
+    b_ssfx_sss_ext = xr_new<CBlender_ssfx_sss_ext>(); // SSS
+    b_ssfx_sss = xr_new<CBlender_ssfx_sss>(); // SSS
+    b_ssfx_ssr = xr_new<CBlender_ssfx_ssr>(); // SSR
+    b_ssfx_volumetric_blur = xr_new<CBlender_ssfx_volumetric_blur>(); // Volumetric Blur
+    b_ssfx_ao = xr_new<CBlender_ssfx_ao>(); // AO
 
     if (RImplementation.o.dx10_msaa)
     {
-        int bound = RImplementation.o.dx10_msaa_samples;
-
-        if (RImplementation.o.dx10_msaa_opt)
-            bound = 1;
-
-        for (int i = 0; i < bound; ++i)
+        for (int i = 0; i < 1; ++i)
         {
-            static LPCSTR SampleDefs[] = {"0", "1", "2", "3", "4", "5", "6", "7"};
+            static constexpr LPCSTR SampleDefs[] = {"0", "1", "2", "3", "4", "5", "6", "7"};
             b_combine_msaa[i] = xr_new<CBlender_combine_msaa>();
             b_accum_mask_msaa[i] = xr_new<CBlender_accum_direct_mask_msaa>();
             b_accum_direct_msaa[i] = xr_new<CBlender_accum_direct_msaa>();
             b_accum_direct_volumetric_msaa[i] = xr_new<CBlender_accum_direct_volumetric_msaa>();
-            // b_accum_direct_volumetric_sun_msaa[i]	= xr_new<CBlender_accum_direct_volumetric_sun_msaa>			();
             b_accum_spot_msaa[i] = xr_new<CBlender_accum_spot_msaa>();
             b_accum_volumetric_msaa[i] = xr_new<CBlender_accum_volumetric_msaa>();
             b_accum_point_msaa[i] = xr_new<CBlender_accum_point_msaa>();
             b_accum_reflected_msaa[i] = xr_new<CBlender_accum_reflected_msaa>();
             static_cast<CBlender_accum_direct_mask_msaa*>(b_accum_mask_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_direct_volumetric_msaa*>(b_accum_direct_volumetric_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
-            // static_cast<CBlender_accum_direct_volumetric_sun_msaa*>(b_accum_direct_volumetric_sun_msaa[i])->SetDefine( "ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_direct_msaa*>(b_accum_direct_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_volumetric_msaa*>(b_accum_volumetric_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_spot_msaa*>(b_accum_spot_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
@@ -299,154 +290,155 @@ CRenderTarget::CRenderTarget()
         if (RImplementation.o.dx10_msaa)
             rt_MSAADepth.create(r2_RT_MSAAdepth, w, h, D3DFMT_D24S8, SampleCount);
 
-        if (!RImplementation.o.dx10_gbuffer_opt)
-            rt_Normal.create(r2_RT_N, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-
         // select albedo & accum
-        if (RImplementation.o.mrtmixdepth)
-        {
-            // NV50
-            rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A8R8G8B8, SampleCount);
-            rt_Accumulator.create(r2_RT_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-        }
-        else
-        {
-            // can't - mix-depth
-            if (RImplementation.o.fp16_blend)
-            {
-                // NV40
-                if (!RImplementation.o.dx10_gbuffer_opt)
-                {
-                    rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A16B16G16R16F, SampleCount); // expand to full
-                    rt_Accumulator.create(r2_RT_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-                }
-                else
-                {
-                    rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A8R8G8B8, SampleCount); // expand to full
-                    rt_Accumulator.create(r2_RT_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-                }
-            }
-            else
-            {
-                // R4xx, no-fp-blend,-> albedo_wo
-                VERIFY(RImplementation.o.albedo_wo);
-                rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A8R8G8B8, SampleCount); // normal
-                rt_Accumulator.create(r2_RT_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-                rt_Accumulator_temp.create(r2_RT_accum_temp, w, h, D3DFMT_A16B16G16R16F, SampleCount);
-            }
-        }
+        rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A8R8G8B8, SampleCount);
+        rt_Accumulator.create(r2_RT_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount);
 
         // generic(LDR) RTs
         rt_Generic_0.create(r2_RT_generic0, w, h, D3DFMT_A8R8G8B8, 1);
         rt_Generic_1.create(r2_RT_generic1, w, h, D3DFMT_A8R8G8B8, 1);
+        rt_Generic.create(r2_RT_generic, w, h, D3DFMT_A8R8G8B8, 1);
 
-        if (RImplementation.o.dx10_msaa)
-            rt_Generic_0_temp.create(r2_RT_generic0_temp, w, h, D3DFMT_A8R8G8B8, SampleCount);
-        else
-            rt_Generic_0_temp.create(r2_RT_generic0_temp, w, h, D3DFMT_A8R8G8B8, 1);
+        rt_Generic_temp.create("$user$generic_temp", w, h, D3DFMT_A8R8G8B8, RImplementation.o.dx10_msaa ? SampleCount : 1);
+        rt_dof.create(r2_RT_dof, w, h, D3DFMT_A8R8G8B8);
 
-        		// RT Blur
+        rt_secondVP.create(r2_RT_secondVP, w, h, D3DFMT_A8R8G8B8, 1); //--#SM+#-- +SecondVP+
+        rt_BeforeUi.create("$user$viewport_temp_before_ui", w, h, D3DFMT_A8R8G8B8, 1);
+
+        // RT Blur
         rt_blur_h_2.create(r2_RT_blur_h_2, u32(w / 2), u32(h / 2), D3DFMT_A8R8G8B8);
         rt_blur_2.create(r2_RT_blur_2, u32(w / 2), u32(h / 2), D3DFMT_A8R8G8B8);
+        rt_blur_2_zb.create(r2_RT_blur_2_zb, u32(w / 2), u32(h / 2), D3DFMT_D24S8);
 
         rt_blur_h_4.create(r2_RT_blur_h_4, u32(w / 4), u32(h / 4), D3DFMT_A8R8G8B8);
         rt_blur_4.create(r2_RT_blur_4, u32(w / 4), u32(h / 4), D3DFMT_A8R8G8B8);
+        rt_blur_4_zb.create(r2_RT_blur_4_zb, u32(w / 4), u32(h / 4), D3DFMT_D24S8);
 
         rt_blur_h_8.create(r2_RT_blur_h_8, u32(w / 8), u32(h / 8), D3DFMT_A8R8G8B8);
         rt_blur_8.create(r2_RT_blur_8, u32(w / 8), u32(h / 8), D3DFMT_A8R8G8B8);
+        rt_blur_8_zb.create(r2_RT_blur_8_zb, u32(w / 8), u32(h / 8), D3DFMT_D24S8);
 
-        rt_dof.create(r2_RT_dof, w, h, D3DFMT_A8R8G8B8);
-        rt_secondVP.create(r2_RT_secondVP, w, h, D3DFMT_A8R8G8B8, 1); //--#SM+#-- +SecondVP+
-        rt_BeforeUi.create("$user$viewport_temp_before_ui", w, h, D3DFMT_A8R8G8B8, 1);
+        // Screen Space Shaders Stuff
+        rt_ssfx.create(r2_RT_ssfx, w, h, D3DFMT_A8R8G8B8); // Temp RT
+        rt_ssfx_temp.create(r2_RT_ssfx_temp, w, h, D3DFMT_A8R8G8B8); // Temp RT
+        rt_ssfx_temp2.create(r2_RT_ssfx_temp2, w, h, D3DFMT_A8R8G8B8); // Temp RT
+        rt_ssfx_temp3.create(r2_RT_ssfx_temp3, w, h, D3DFMT_A8R8G8B8); // Temp RT
+
+        rt_ssfx_accum.create(r2_RT_ssfx_accum, w, h, D3DFMT_A16B16G16R16F, SampleCount); // Volumetric Acc
+        rt_ssfx_ssr.create(r2_RT_ssfx_ssr, w, h, D3DFMT_A8R8G8B8); // SSR Acc
+        rt_ssfx_water.create(r2_RT_ssfx_water, w, h, D3DFMT_A8R8G8B8); // Water Acc
+        rt_ssfx_ao.create(r2_RT_ssfx_ao, w, h, D3DFMT_A8R8G8B8); // AO Acc
+        rt_ssfx_il.create(r2_RT_ssfx_il, w, h, D3DFMT_A8R8G8B8); // IL Acc
+
+        if (RImplementation.o.ssfx_sss)
+        {
+            rt_ssfx_sss.create(r2_RT_ssfx_sss, w, h, D3DFMT_A8R8G8B8); // SSS Acc
+            rt_ssfx_sss_ext.create(r2_RT_ssfx_sss_ext, w, h, D3DFMT_A8R8G8B8); // SSS EXT Acc
+            rt_ssfx_sss_ext2.create(r2_RT_ssfx_sss_ext2, w, h, D3DFMT_A8R8G8B8); // SSS EXT Acc
+            rt_ssfx_sss_tmp.create(r2_RT_ssfx_sss_tmp, w, h, D3DFMT_A8R8G8B8); // SSS EXT Acc
+        }
+
+        if (RImplementation.o.ssfx_bloom)
+        {
+            rt_ssfx_bloom1.create(r2_RT_ssfx_bloom1, w / 2.0f, h / 2.0f, D3DFMT_A16B16G16R16F); // Bloom
+            rt_ssfx_bloom_emissive.create(r2_RT_ssfx_bloom_emissive, w, h, D3DFMT_A8R8G8B8, SampleCount); // Emissive
+            rt_ssfx_bloom_lens.create(r2_RT_ssfx_bloom_lens, w / 4.0f, h / 4.0f, D3DFMT_A8R8G8B8); // Lens
+
+            rt_ssfx_bloom_tmp2.create(r2_RT_ssfx_bloom_tmp2, w / 2.0f, h / 2.0f, D3DFMT_A16B16G16R16F); // Bloom / 2
+            rt_ssfx_bloom_tmp4.create(r2_RT_ssfx_bloom_tmp4, w / 4.0f, h / 4.0f, D3DFMT_A16B16G16R16F); // Bloom / 4
+            rt_ssfx_bloom_tmp8.create(r2_RT_ssfx_bloom_tmp8, w / 8.0f, h / 8.0f, D3DFMT_A16B16G16R16F); // Bloom / 8
+            rt_ssfx_bloom_tmp16.create(r2_RT_ssfx_bloom_tmp16, w / 16.0f, h / 16.0f, D3DFMT_A16B16G16R16F); // Bloom / 16
+            rt_ssfx_bloom_tmp32.create(r2_RT_ssfx_bloom_tmp32, w / 32.0f, h / 32.0f, D3DFMT_A16B16G16R16F); // Bloom / 32
+            rt_ssfx_bloom_tmp64.create(r2_RT_ssfx_bloom_tmp64, w / 64.0f, h / 64.0f, D3DFMT_A16B16G16R16F); // Bloom / 64
+
+            rt_ssfx_bloom_tmp32_2.create(r2_RT_ssfx_bloom_tmp32_2, w / 32.0f, h / 32.0f, D3DFMT_A16B16G16R16F); // Bloom / 32
+            rt_ssfx_bloom_tmp16_2.create(r2_RT_ssfx_bloom_tmp16_2, w / 16.0f, h / 16.0f, D3DFMT_A16B16G16R16F); // Bloom / 16
+            rt_ssfx_bloom_tmp8_2.create(r2_RT_ssfx_bloom_tmp8_2, w / 8.0f, h / 8.0f, D3DFMT_A16B16G16R16F); // Bloom / 8
+            rt_ssfx_bloom_tmp4_2.create(r2_RT_ssfx_bloom_tmp4_2, w / 4.0f, h / 4.0f, D3DFMT_A16B16G16R16F); // Bloom / 4
+        }
+
+        rt_ssfx_volumetric.create(r2_RT_ssfx_volumetric, w / 8.0f, h / 8.0f, D3DFMT_A16B16G16R16F); // Volumetric
+        rt_ssfx_volumetric_tmp.create(r2_RT_ssfx_volumetric_tmp, w / 8.0f, h / 8.0f, D3DFMT_A16B16G16R16F); // Volumetric
+        rt_ssfx_rain.create(r2_RT_ssfx_rain, w / 8.0f, h / 8.0f, D3DFMT_A8R8G8B8); // Rain refraction buffer
+        rt_ssfx_water_waves.create(r2_RT_ssfx_water_waves, 512, 512, D3DFMT_A8R8G8B8); // Water Waves
+
+        rt_ssfx_prevPos.create(r2_RT_ssfx_prevPos, w, h, D3DFMT_A16B16G16R16F, SampleCount);
+
+        rt_ssfx_hud.create(r2_RT_ssfx_hud, w, h, D3DFMT_A16B16G16R16F); // HUD mask & Velocity buffer
 
         if (RImplementation.o.dx10_msaa)
         {
             rt_Generic_0_r.create(r2_RT_generic0_r, w, h, D3DFMT_A8R8G8B8, SampleCount);
             rt_Generic_1_r.create(r2_RT_generic1_r, w, h, D3DFMT_A8R8G8B8, SampleCount);
-            rt_Generic.create(r2_RT_generic, w, h, D3DFMT_A8R8G8B8, 1);
         }
         //	Igor: for volumetric lights
         // rt_Generic_2.create			(r2_RT_generic2,w,h,D3DFMT_A8R8G8B8		);
         //	temp: for higher quality blends
-        if (RImplementation.o.advancedpp)
-            rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F, SampleCount);
+        rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F, SampleCount);
     }
+
+    s_blur.create(b_blur, "r2\\blur");
+    s_dof.create(b_dof, "r2\\dof");
+    s_gasmask_drops.create(b_gasmask_drops, "r2\\gasmask_drops");
+    s_gasmask_dudv.create(b_gasmask_dudv, "r2\\gasmask_dudv");
 
     // OCCLUSION
     s_occq.create(b_occq, "r2\\occq");
 
-    s_blur.create(b_blur, "r2\\blur");
-    s_dof.create(b_dof, "r2\\dof");
+    // Screen Space Shaders Stuff
+    s_ssfx_rain.create(b_ssfx_rain, "ssfx_rain"); // SSS Rain
+    s_ssfx_bloom.create(b_ssfx_bloom, "ssfx_bloom"); // SSS Bloom
+    s_ssfx_bloom_lens.create(b_ssfx_bloom_lens, "ssfx_bloom_flares"); // SSS Bloom Lens flare
+    s_ssfx_bloom_downsample.create(b_ssfx_bloom_downsample, "ssfx_bloom_downsample"); // SSS Bloom
+    s_ssfx_bloom_upsample.create(b_ssfx_bloom_upsample, "ssfx_bloom_upsample"); // SSS Bloom
+    s_ssfx_sss_ext.create(b_ssfx_sss_ext, "ssfx_sss_ext"); // SSS Extended
+    s_ssfx_sss.create(b_ssfx_sss, "ssfx_sss"); // SSS
+    s_ssfx_ssr.create(b_ssfx_ssr, "ssfx_ssr"); // SSR
+    s_ssfx_volumetric_blur.create(b_ssfx_volumetric_blur, "ssfx_volumetric_blur"); // Volumetric Blur
 
-    s_lut.create("ogsr_lut");
+    s_ssfx_water_ssr.create("ssfx_water_ssr"); // Water SSR
+    s_ssfx_water.create("ssfx_water"); // Water
+    s_ssfx_water_blur.create(b_ssfx_water_blur, "ssfx_water_blur"); // Water
+
+    s_ssfx_ao.create(b_ssfx_ao, "ssfx_ao"); // SSR
+
+    string32 cskin_buffer;
+    for (int skin_num = 0; skin_num < 5; skin_num++)
+    {
+        sprintf(cskin_buffer, "ssfx_hud_skin%i", skin_num);
+        s_ssfx_hud[skin_num].create(cskin_buffer);
+    }
 
     // DIRECT (spot)
     D3DFORMAT depth_format = (D3DFORMAT)RImplementation.o.HW_smap_FORMAT;
 
-    if (RImplementation.o.HW_smap)
+    u32 size = RImplementation.o.smapsize;
+    rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
+
+    s_accum_mask.create(b_accum_mask, "accum_mask");
+    s_accum_direct.create(b_accum_direct, "accum_direct");
+
+    if (RImplementation.o.dx10_msaa)
     {
-        u32 size = RImplementation.o.smapsize;
-        rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
-
-        if (RImplementation.o.dx10_minmax_sm)
+        for (int i = 0; i < 1; ++i)
         {
-            rt_smap_depth_minmax.create(r2_RT_smap_depth_minmax, size / 4, size / 4, D3DFMT_R32F);
-            CBlender_createminmax TempBlender;
-            s_create_minmax_sm.create(&TempBlender, "null");
-        }
-
-        s_accum_mask.create(b_accum_mask, "r3\\accum_mask");
-        s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
-
-        if (RImplementation.o.dx10_msaa)
-        {
-            int bound = RImplementation.o.dx10_msaa_samples;
-
-            if (RImplementation.o.dx10_msaa_opt)
-                bound = 1;
-
-            for (int i = 0; i < bound; ++i)
-            {
-                s_accum_direct_msaa[i].create(b_accum_direct_msaa[i], "r3\\accum_direct");
-                s_accum_mask_msaa[i].create(b_accum_mask_msaa[i], "r3\\accum_direct");
-            }
-        }
-        if (RImplementation.o.advancedpp)
-        {
-            s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
-
-            if (RImplementation.o.dx10_minmax_sm)
-                s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_nomsaa_minmax");
-
-            if (RImplementation.o.dx10_msaa)
-            {
-                static LPCSTR snames[] = {"accum_volumetric_sun_msaa0", "accum_volumetric_sun_msaa1", "accum_volumetric_sun_msaa2", "accum_volumetric_sun_msaa3",
-                                          "accum_volumetric_sun_msaa4", "accum_volumetric_sun_msaa5", "accum_volumetric_sun_msaa6", "accum_volumetric_sun_msaa7"};
-                int bound = RImplementation.o.dx10_msaa_samples;
-
-                if (RImplementation.o.dx10_msaa_opt)
-                    bound = 1;
-
-                for (int i = 0; i < bound; ++i)
-                {
-                    // s_accum_direct_volumetric_msaa[i].create		(b_accum_direct_volumetric_sun_msaa[i],			"r3\\accum_direct");
-                    s_accum_direct_volumetric_msaa[i].create(snames[i]);
-                }
-            }
+            s_accum_direct_msaa[i].create(b_accum_direct_msaa[i], "accum_direct");
+            s_accum_mask_msaa[i].create(b_accum_mask_msaa[i], "accum_direct");
         }
     }
-    else
+
+    s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
+
+    if (RImplementation.o.dx10_msaa)
     {
-        //	TODO: DX10: Check if we need old-style SMap
-        VERIFY(!"Use HW SMAPs only!");
-        // u32	size					=RImplementation.o.smapsize	;
-        // rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
-        // rt_smap_depth				= NULL;
-        // R_CHK						(HW.pDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,NULL));
-        // s_accum_mask.create			(b_accum_mask,				"r2\\accum_mask");
-        // s_accum_direct.create		(b_accum_direct,			"r2\\accum_direct");
-        // if (RImplementation.o.advancedpp)
-        //	s_accum_direct_volumetric.create("accum_volumetric_sun");
+        static constexpr LPCSTR snames[] = {"accum_volumetric_sun_msaa0", "accum_volumetric_sun_msaa1", "accum_volumetric_sun_msaa2", "accum_volumetric_sun_msaa3",
+                                            "accum_volumetric_sun_msaa4", "accum_volumetric_sun_msaa5", "accum_volumetric_sun_msaa6", "accum_volumetric_sun_msaa7"};
+
+        for (int i = 0; i < 1; ++i)
+        {
+            // s_accum_direct_volumetric_msaa[i].create		(b_accum_direct_volumetric_sun_msaa[i],			"accum_direct");
+            s_accum_direct_volumetric_msaa[i].create(snames[i]);
+        }
     }
 
     //	RAIN
@@ -458,15 +450,10 @@ CRenderTarget::CRenderTarget()
 
         if (RImplementation.o.dx10_msaa)
         {
-            static LPCSTR SampleDefs[] = {"0", "1", "2", "3", "4", "5", "6", "7"};
+            static constexpr LPCSTR SampleDefs[] = {"0", "1", "2", "3", "4", "5", "6", "7"};
             CBlender_rain_msaa TempBlender[8];
 
-            int bound = RImplementation.o.dx10_msaa_samples;
-
-            if (RImplementation.o.dx10_msaa_opt)
-                bound = 1;
-
-            for (int i = 0; i < bound; ++i)
+            for (int i = 0; i < 1; ++i)
             {
                 TempBlender[i].SetDefine("ISAMPLE", SampleDefs[i]);
                 s_rain_msaa[i].create(&TempBlender[i], "null");
@@ -513,12 +500,7 @@ CRenderTarget::CRenderTarget()
         s_accum_reflected.create(b_accum_reflected, "r2\\accum_refl");
         if (RImplementation.o.dx10_msaa)
         {
-            int bound = RImplementation.o.dx10_msaa_samples;
-
-            if (RImplementation.o.dx10_msaa_opt)
-                bound = 1;
-
-            for (int i = 0; i < bound; ++i)
+            for (int i = 0; i < 1; ++i)
             {
                 s_accum_reflected_msaa[i].create(b_accum_reflected_msaa[i], "null");
             }
@@ -527,7 +509,7 @@ CRenderTarget::CRenderTarget()
 
     // BLOOM
     {
-        D3DFORMAT fmt = D3DFMT_A8R8G8B8; //;		// D3DFMT_X8R8G8B8
+        constexpr D3DFORMAT fmt = D3DFMT_A8R8G8B8; //;		// D3DFMT_X8R8G8B8
         u32 w = BLOOM_size_X, h = BLOOM_size_Y;
         u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
         u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) | D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) |
@@ -536,8 +518,6 @@ CRenderTarget::CRenderTarget()
         rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
         g_bloom_build.create(fvf_build, RCache.Vertex.Buffer(), RCache.QuadIB);
         g_bloom_filter.create(fvf_filter, RCache.Vertex.Buffer(), RCache.QuadIB);
-        s_bloom_dbg_1.create("effects\\screen_set", r2_RT_bloom1);
-        s_bloom_dbg_2.create("effects\\screen_set", r2_RT_bloom2);
         s_bloom.create(b_bloom, "r2\\bloom");
         if (RImplementation.o.dx10_msaa)
         {
@@ -573,29 +553,24 @@ CRenderTarget::CRenderTarget()
 
     // COMBINE
     {
-        static D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, // pos+uv
-                                             D3DDECL_END()};
+        static constexpr D3DVERTEXELEMENT9 dwDecl[] = {{0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, // pos+uv
+                                                       D3DDECL_END()};
         s_combine.create(b_combine, "r2\\combine");
         s_combine_volumetric.create("combine_volumetric");
-        s_combine_dbg_0.create("effects\\screen_set", r2_RT_smap_surf);
-        s_combine_dbg_1.create("effects\\screen_set", r2_RT_luminance_t8);
-        s_combine_dbg_Accumulator.create("effects\\screen_set", r2_RT_accum);
         g_combine_VP.create(dwDecl, RCache.Vertex.Buffer(), RCache.QuadIB);
         g_combine.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
         g_combine_2UV.create(FVF::F_TL2uv, RCache.Vertex.Buffer(), RCache.QuadIB);
         g_combine_cuboid.create(dwDecl, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
-        u32 fvf_aa_blur = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
+        constexpr u32 fvf_aa_blur = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
         g_aa_blur.create(fvf_aa_blur, RCache.Vertex.Buffer(), RCache.QuadIB);
 
-        u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) |
+        constexpr u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) |
             D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
         g_aa_AA.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
 
         t_envmap_0.create(r2_T_envs0);
         t_envmap_1.create(r2_T_envs1);
-
-        s_rain_drops.create("ogsr_rain_drops");
     }
 
     u32 w = Device.dwWidth;
@@ -741,20 +716,29 @@ CRenderTarget::~CRenderTarget()
     xr_delete(b_accum_spot);
     xr_delete(b_accum_point);
     xr_delete(b_accum_direct);
+
+    ////////////lvutner
     xr_delete(b_blur);
     xr_delete(b_dof);
+    xr_delete(b_gasmask_drops);
+    xr_delete(b_gasmask_dudv);
+
+    // [ SSS Stuff ]
+    xr_delete(b_ssfx_rain); // SSS Rain
+    xr_delete(b_ssfx_water_blur); // SSS Water Blur
+    xr_delete(b_ssfx_bloom); // SSS Bloom
+    xr_delete(b_ssfx_bloom_lens); // SSS Bloom Lens
+    xr_delete(b_ssfx_bloom_downsample); // SSS Bloom Blur
+    xr_delete(b_ssfx_bloom_upsample); // SSS Bloom Blur
+    xr_delete(b_ssfx_sss_ext); // SSS Phase Ext
+    xr_delete(b_ssfx_sss); // SSS Phase
+    xr_delete(b_ssfx_ssr); // SSR Phase
+    xr_delete(b_ssfx_volumetric_blur); // Volumetric Phase
+    xr_delete(b_ssfx_ao); // AO Phase
 
     if (RImplementation.o.dx10_msaa)
     {
-        xr_delete(b_bloom_msaa);
-        xr_delete(b_postprocess_msaa);
-
-        int bound = RImplementation.o.dx10_msaa_samples;
-
-        if (RImplementation.o.dx10_msaa_opt)
-            bound = 1;
-
-        for (int i = 0; i < bound; ++i)
+        for (int i = 0; i < 1; ++i)
         {
             xr_delete(b_combine_msaa[i]);
             xr_delete(b_accum_direct_msaa[i]);
@@ -766,6 +750,9 @@ CRenderTarget::~CRenderTarget()
             xr_delete(b_accum_point_msaa[i]);
             xr_delete(b_accum_reflected_msaa[i]);
         }
+
+        xr_delete(b_postprocess_msaa);
+        xr_delete(b_bloom_msaa);
     }
     xr_delete(b_accum_mask);
     xr_delete(b_occq);
@@ -779,10 +766,10 @@ void CRenderTarget::reset_light_marker(bool bResetStencil)
         u32 Offset;
         float _w = float(Device.dwWidth);
         float _h = float(Device.dwHeight);
-        u32 C = color_rgba(255, 255, 255, 255);
-        float eps = 0;
-        float _dw = 0.5f;
-        float _dh = 0.5f;
+        constexpr u32 C = color_rgba(255, 255, 255, 255);
+        constexpr float eps = 0;
+        constexpr float _dw = 0.5f;
+        constexpr float _dh = 0.5f;
         FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
         pv++;
@@ -812,32 +799,14 @@ void CRenderTarget::increment_light_marker()
 
 bool CRenderTarget::need_to_render_sunshafts()
 {
+    if (!ps_r_sunshafts_mode)
+        return false;
+
     {
         CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        Fcolor sun_color = ((light*)RImplementation.Lights.sun_adapted._get())->color;
-        float fValue = E.m_fSunShaftsIntensity * u_diffuse2s(sun_color.r, sun_color.g, sun_color.b);
-        if (fValue < EPS)
+        if (E.m_fSunShaftsIntensity < EPS)
             return false;
     }
 
     return true;
-}
-
-bool CRenderTarget::use_minmax_sm_this_frame()
-{
-    switch (RImplementation.o.dx10_minmax_sm)
-    {
-    case CRender::MMSM_ON: return true;
-    case CRender::MMSM_AUTO: return need_to_render_sunshafts();
-    case CRender::MMSM_AUTODETECT: {
-        u32 dwScreenArea = HW.m_ChainDesc.BufferDesc.Width * HW.m_ChainDesc.BufferDesc.Height;
-
-        if ((dwScreenArea >= RImplementation.o.dx10_minmax_sm_screenarea_threshold))
-            return need_to_render_sunshafts();
-        else
-            return false;
-    }
-
-    default: return false;
-    }
 }

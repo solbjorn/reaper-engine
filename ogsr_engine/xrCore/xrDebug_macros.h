@@ -7,21 +7,21 @@
 #define ASSERT_FMT(expr, ...) \
     do \
     { \
-        if (!(expr)) \
+        if (!(expr)) [[unlikely]] \
             FATAL(__VA_ARGS__); \
     } while (0)
 
 #define CHECK_OR_EXIT(expr, message) \
     do \
     { \
-        if (!(expr)) \
+        if (!(expr)) [[unlikely]] \
             Debug.do_exit(message); \
     } while (0)
 
 #define R_ASSERT(expr, ...) \
     do \
     { \
-        if (!(expr)) \
+        if (!(expr)) [[unlikely]] \
             Debug.fail(#expr, __VA_ARGS__, DEBUG_INFO); \
     } while (0)
 #define R_ASSERT2 R_ASSERT
@@ -31,7 +31,7 @@
     do \
     { \
         HRESULT hr = expr; \
-        if (FAILED(hr)) \
+        if (FAILED(hr)) [[unlikely]] \
             Debug.error(hr, #expr, __VA_ARGS__, DEBUG_INFO); \
     } while (0)
 #define R_CHK2 R_CHK

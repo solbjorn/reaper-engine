@@ -279,7 +279,7 @@ void CWeapon::Load(LPCSTR section)
     ////////////////////////////////////////////////////
     // дисперсия стрельбы
 
-    //подбрасывание камеры во время отдачи
+    // подбрасывание камеры во время отдачи
     camMaxAngle = pSettings->r_float(section, "cam_max_angle");
     camMaxAngle = deg2rad(camMaxAngle);
     camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
@@ -345,7 +345,8 @@ void CWeapon::Load(LPCSTR section)
     m_bZoomEnabled = !!pSettings->r_bool(section, "zoom_enabled");
     m_bUseScopeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_zoom", false);
     m_bUseScopeGrenadeZoom = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_scope_grenade_zoom", false);
-    m_bScopeShowIndicators = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_show_indicators", true);
+    m_bZoomShowIndicators = !!READ_IF_EXISTS(pSettings, r_bool, section, "zoom_show_indicators", true);
+    m_bScopeShowIndicators = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_show_indicators", false);
     m_bIgnoreScopeTexture = !!READ_IF_EXISTS(pSettings, r_bool, section, "ignore_scope_texture", false);
 
     m_fZoomRotateTime = READ_IF_EXISTS(pSettings, r_float, hud_sect, "zoom_rotate_time", ROTATION_TIME);
@@ -476,7 +477,7 @@ void CWeapon::Load(LPCSTR section)
     else
         hud_hidden_bones = hidden_bones;
 
-    //Можно и из конфига прицела читать и наоборот! Пока так.
+    // Можно и из конфига прицела читать и наоборот! Пока так.
     m_fSecondVPZoomFactor = 0.0f;
     m_fZoomHudFov = 0.0f;
     m_fSecondVPHudFov = 0.0f;
@@ -533,7 +534,7 @@ void CWeapon::Load(LPCSTR section)
                                                READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_y", 0.0f),
                                                READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_z", 0.0f)};
 
-        const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
+        constexpr bool b_r2 = true;
 
         const char* m_light_section = pSettings->r_string(section, "laser_light_section");
 
@@ -568,7 +569,7 @@ void CWeapon::Load(LPCSTR section)
             Fvector{pSettings->r_float(section, "torch_omni_world_attach_offset_x"), pSettings->r_float(section, "torch_omni_world_attach_offset_y"),
                     pSettings->r_float(section, "torch_omni_world_attach_offset_z")};
 
-        const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
+        constexpr bool b_r2 = true;
 
         const char* m_light_section = pSettings->r_string(section, "flashlight_section");
 
@@ -604,10 +605,6 @@ void CWeapon::Load(LPCSTR section)
         flashlight_glow->set_color(clr);
         flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
     }
-
-    dof_transition_time = READ_IF_EXISTS(pSettings, r_float, section, "dof_transition_time", 0.6f);
-    dof_params_zoom = (READ_IF_EXISTS(pSettings, r_fvector4, section, "dof_zoom_params", (Fvector4{0, 0, 0, 1.6}))); //(Fvector4{0.1, 0.4, 0, 1.6})
-    dof_params_reload = (READ_IF_EXISTS(pSettings, r_fvector4, section, "dof_reload_params", (Fvector4{0, 0, 1, 0})));
 
     dont_interrupt_shot_anm = READ_IF_EXISTS(pSettings, r_bool, section, "dont_interrupt_shot_anm", false);
     is_gunslinger_weapon = READ_IF_EXISTS(pSettings, r_bool, section, "is_gunslinger_weapon", false);
@@ -716,7 +713,7 @@ void CWeapon::net_Destroy()
 {
     inherited::net_Destroy();
 
-    //удалить объекты партиклов
+    // удалить объекты партиклов
     StopFlameParticles();
     StopFlameParticles2();
     StopLight();
@@ -808,7 +805,7 @@ void CWeapon::OnH_B_Independent(bool just_before_destroy)
 
     inherited::OnH_B_Independent(just_before_destroy);
 
-    //завершить принудительно все процессы что шли
+    // завершить принудительно все процессы что шли
     FireEnd();
     SetPending(FALSE);
     SwitchState(eIdle);
@@ -835,7 +832,7 @@ void CWeapon::OnH_A_Chield()
 void CWeapon::OnActiveItem()
 {
     inherited::OnActiveItem();
-    //если мы занружаемся и оружие было в руках
+    // если мы занружаемся и оружие было в руках
     SetState(eIdle);
     SetNextState(eIdle);
 }
@@ -867,13 +864,7 @@ void CWeapon::OnH_B_Chield()
     m_set_next_ammoType_on_reload = u32(-1);
 }
 
-void CWeapon::OnBeforeDrop()
-{
-    if (auto io = smart_cast<CActor*>(H_Parent()); io && this == io->inventory().ActiveItem())
-        shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
-
-    inherited::OnBeforeDrop();
-}
+void CWeapon::OnBeforeDrop() { inherited::OnBeforeDrop(); }
 
 u8 CWeapon::idle_state()
 {
@@ -899,16 +890,15 @@ void CWeapon::UpdateCL()
 
     UpdateVisualBullets();
 
-    //подсветка от выстрела
+    // подсветка от выстрела
     UpdateLight();
 
-    //нарисовать партиклы
+    // нарисовать партиклы
     UpdateFlameParticles();
     UpdateFlameParticles2();
 
     VERIFY(smart_cast<IKinematics*>(Visual()));
 
-    auto pActor = smart_cast<CActor*>(H_Parent());
     if (GetState() == eIdle)
     {
         auto state = idle_state();
@@ -920,55 +910,14 @@ void CWeapon::UpdateCL()
                 SwitchState(eIdle);
             }
         }
-
-        if (pActor)
-        {
-            if (psActorFlags.test(AF_DOF_ZOOM))
-            {
-                if (m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture() && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
-                    UpdateDof(dof_zoom_effect, dof_params_zoom, false);
-                else if (dof_zoom_effect > 0.f && !m_bZoomMode)
-                    UpdateDof(dof_zoom_effect, dof_params_zoom, true);
-            }
-
-            if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f) 
-                UpdateDof(dof_reload_effect, dof_params_reload, true);
-        }
-    }
-    else if (GetState() == eReload)
-    {
-        if (pActor && psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect < 1.f && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
-            UpdateDof(dof_reload_effect, dof_params_reload, false);
-
-        m_idle_state = eIdle;
     }
     else
     {
-        if (pActor)
-        {
-            if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f)
-                UpdateDof(dof_reload_effect, dof_params_reload, true);
-
-            if (psActorFlags.test(AF_DOF_ZOOM) && dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
-                UpdateDof(dof_zoom_effect, dof_params_zoom, true);
-        }
-
         m_idle_state = eIdle;
     }
 
     UpdateLaser();
     UpdateFlashlight();
-}
-
-void CWeapon::UpdateDof(float& type, Fvector4 params_type, bool desire)
-{
-    if (desire)
-        type -= Device.fTimeDelta / dof_transition_time;
-    else
-        type += Device.fTimeDelta / dof_transition_time;
-
-    shader_exports.set_dof_params(params_type.x * type, params_type.y * type, params_type.z * type, params_type.w * type);
-    clamp(type, 0.f, 1.f);
 }
 
 void CWeapon::UpdateLaser()
@@ -1105,10 +1054,10 @@ void CWeapon::renderable_Render()
 {
     UpdateXForm();
 
-    //нарисовать подсветку
+    // нарисовать подсветку
     RenderLight();
 
-    //если мы в режиме снайперки, то сам HUD рисовать не надо
+    // если мы в режиме снайперки, то сам HUD рисовать не надо
     if (IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
         RenderHud(FALSE);
     else
@@ -1158,7 +1107,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
     switch (cmd)
     {
     case kWPN_FIRE: {
-        //если оружие чем-то занято, то ничего не делать
+        // если оружие чем-то занято, то ничего не делать
         {
             if (flags & CMD_START)
             {
@@ -1368,7 +1317,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
     if (!m_pCurrentInventory)
         return l_count;
 
-    //чтоб не делать лишних пересчетов
+    // чтоб не делать лишних пересчетов
     if (m_pCurrentInventory->ModifyFrame() <= m_dwAmmoCurrentCalcFrame)
         return l_count + iAmmoCurrent;
 
@@ -1877,7 +1826,7 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const
     {
         const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
         const bool has_scope = ScopeAttachable() && IsScopeAttached();
-        //const bool has_aim_alt = AimAlt && is_second_zoom_offset_enabled;
+        // const bool has_aim_alt = AimAlt && is_second_zoom_offset_enabled;
 
         if (IsGrenadeMode())
         {
@@ -1897,15 +1846,15 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const
         {
             if (m_bUseScopeZoom && has_scope)
                 return hud_item_measures::m_hands_offset_type_aim_scope;
-            //else if (has_aim_alt)
-            //    return hud_item_measures::m_hands_offset_type_alt_aim;
+            // else if (has_aim_alt)
+            //     return hud_item_measures::m_hands_offset_type_alt_aim;
             else
                 return hud_item_measures::m_hands_offset_type_aim;
         }
     }
 
-    //if (LoweredActive && !(g_actor->get_state() & mcSprint))
-    //    return hud_item_measures::m_hands_offset_type_lowered;
+    // if (LoweredActive && !(g_actor->get_state() & mcSprint))
+    //     return hud_item_measures::m_hands_offset_type_lowered;
 
     return hud_item_measures::m_hands_offset_type_normal;
 }
@@ -2068,17 +2017,23 @@ void CWeapon::Show(bool now)
 
 bool CWeapon::show_crosshair() { return psActorFlags.test(AF_CROSSHAIR_DBG) || !(IsZoomed() && ZoomHideCrosshair()); }
 
-bool CWeapon::show_indicators() { return !(IsZoomed() && (ZoomTexture() || !m_bScopeShowIndicators)); }
+bool CWeapon::show_indicators()
+{
+    if (!IsZoomed())
+        return true;
+
+    if (!IsScopeAttached())
+        return m_bZoomShowIndicators;
+
+    return !ZoomTexture() && m_bScopeShowIndicators;
+}
 
 float CWeapon::GetConditionToShow() const
 {
     return (GetCondition()); // powf(GetCondition(),4.0f));
 }
 
-bool CWeapon::ParentIsActor() const
-{
-    return smart_cast<const CActor*>(H_Parent()) != nullptr;
-}
+bool CWeapon::ParentIsActor() const { return smart_cast<const CActor*>(H_Parent()) != nullptr; }
 
 const float& CWeapon::hit_probability() const
 {
@@ -2283,6 +2238,6 @@ void CWeapon::update_visual_bullet_textures(const bool forced)
         tex->Unload();
         tex->Load(bullet_texrure_name.c_str());
         current_bullet_texture = bullet_texrure_name;
-        //Msg("--[%s] replaced texture [%s] --> [%s] for [%s]", __FUNCTION__, tex_name.c_str(), current_bullet_texture.c_str(), cNameSect().c_str());
+        // Msg("--[%s] replaced texture [%s] --> [%s] for [%s]", __FUNCTION__, tex_name.c_str(), current_bullet_texture.c_str(), cNameSect().c_str());
     }
 }

@@ -4,7 +4,7 @@
     friend class CPHItemList<class_name>; \
     friend class CPHItemList<class_name>::iterator; \
     class_name* next; \
-    class_name** tome;
+    class_name** tome
 
 template <class T>
 class CPHItemList
@@ -71,4 +71,4 @@ public:
 
 #define DEFINE_PHITEM_LIST(T, N, I) \
     typedef CPHItemList<T> N; \
-    typedef CPHItemList<T>::iterator I;
+    typedef CPHItemList<T>::iterator I

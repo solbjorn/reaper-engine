@@ -47,7 +47,7 @@ void dx103DFluidGrid::Initialize(int gridWidth, int gridHeight, int gridDepth)
 
 void dx103DFluidGrid::CreateVertexBuffers()
 {
-    static D3DVERTEXELEMENT9 layoutDesc[] = {
+    static constexpr D3DVERTEXELEMENT9 layoutDesc[] = {
         {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, D3DDECL_END()};
 
     u32 vSize = FVF::ComputeVertexSize(layoutDesc, 0);
@@ -139,13 +139,13 @@ void dx103DFluidGrid::InitScreenSlice(VS_INPUT_FLUIDSIM_STRUCT** vertices, int z
     tempVertex1.Pos.set(px * 2.0f / Width - 1.0f, -(py * 2.0f / Height) + 1.0f, 0.0f);
     tempVertex1.Tex.set(0, 0, float(z));
 
-    tempVertex2.Pos.set((px + w) * 2.0f / Width - 1.0f, -((py)*2.0f / Height) + 1.0f, 0.0f);
+    tempVertex2.Pos.set((px + w) * 2.0f / Width - 1.0f, -((py) * 2.0f / Height) + 1.0f, 0.0f);
     tempVertex2.Tex.set(w, 0, float(z));
 
     tempVertex3.Pos.set((px + w) * 2.0f / Width - 1.0f, -((py + h) * 2.0f / Height) + 1.0f, 0.0f);
     tempVertex3.Tex.set(w, h, float(z));
 
-    tempVertex4.Pos.set((px)*2.0f / Width - 1.0f, -((py + h) * 2.0f / Height) + 1.0f, 0.0f);
+    tempVertex4.Pos.set((px) * 2.0f / Width - 1.0f, -((py + h) * 2.0f / Height) + 1.0f, 0.0f);
     tempVertex4.Tex.set(0, h, float(z));
 
     (*vertices)[index++] = tempVertex1;

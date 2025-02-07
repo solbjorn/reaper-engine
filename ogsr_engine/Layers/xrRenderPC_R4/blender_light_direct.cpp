@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "Blender_light_direct.h"
 
 CBlender_accum_direct::CBlender_accum_direct() { description.CLS = 0; }
@@ -10,33 +9,28 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    //	BOOL	b_HW_smap		= RImplementation.o.HW_smap;
-    //	BOOL	b_HW_PCF		= RImplementation.o.HW_smap_PCF;
-    BOOL blend = FALSE; // RImplementation.o.fp16_blend;
-    D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
-    if (RImplementation.o.sunfilter)
-    {
-        blend = FALSE;
-        dest = D3DBLEND_ZERO;
-    }
+    constexpr BOOL blend = FALSE;
+    constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
 
     switch (C.iElement)
     {
     case SE_SUN_NEAR: // near pass - enable Z-test to perform depth-clipping
     case SE_SUN_MIDDLE: // middle pass - enable Z-test to perform depth-clipping
         //	FVF::TL2uv
-        C.r_Pass("accum_sun", "accum_sun_near_nomsaa_nominmax", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
+        C.r_Pass("accum_sun", "accum_sun_near_nomsaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
 
         C.r_CullMode(D3DCULL_NONE);
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_smap_minmax", r2_RT_smap_depth_minmax);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -53,11 +47,14 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
         C.r_CullMode(D3DCULL_NONE);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -65,8 +62,11 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
         jitter(C);
         {
             u32 s = C.r_dx10Sampler("smp_smap");
-            C.i_dx10Address(s, D3DTADDRESS_BORDER);
-            C.i_dx10BorderColor(s, D3DCOLOR_ARGB(255, 255, 255, 255));
+            if (s != u32(-1))
+            {
+                C.i_dx10Address(s, D3DTADDRESS_BORDER);
+                C.i_dx10BorderColor(s, D3DCOLOR_ARGB(255, 255, 255, 255));
+            }
         }
 
         C.r_End();
@@ -77,37 +77,13 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
         C.r_CullMode(D3DCULL_NONE);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_smap", r2_RT_generic0);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
         jitter(C);
-        C.r_End();
-        break;
-
-        //	SE_SUN_NEAR for min/max
-    case SE_SUN_NEAR_MINMAX: // near pass - enable Z-test to perform depth-clipping
-        //	FVF::TL2uv
-        C.r_Pass("accum_sun", "accum_sun_near_nomsaa_minmax", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
-        C.r_CullMode(D3DCULL_NONE);
-        C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
-
-        C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
-        C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_lmap", r2_sunmask);
-        C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_smap_minmax", r2_RT_smap_depth_minmax);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
-
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_dx10Sampler("smp_material");
-        C.r_dx10Sampler("smp_linear");
-        jitter(C);
-        C.r_dx10Sampler("smp_smap");
-
         C.r_End();
         break;
     }
@@ -131,15 +107,8 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
     else
         ::Render->m_MSAASample = -1;
 
-    //	BOOL	b_HW_smap		= RImplementation.o.HW_smap;
-    //	BOOL	b_HW_PCF		= RImplementation.o.HW_smap_PCF;
-    BOOL blend = FALSE; // RImplementation.o.fp16_blend;
-    D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
-    if (RImplementation.o.sunfilter)
-    {
-        blend = FALSE;
-        dest = D3DBLEND_ZERO;
-    }
+    constexpr BOOL blend = FALSE;
+    constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
 
     switch (C.iElement)
     {
@@ -147,16 +116,19 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
     case SE_SUN_MIDDLE: // middle pass - enable Z-test to perform depth-clipping
         //	FVF::TL2uv
         // C.r_Pass			("null",			"accum_sun_near",	false,	TRUE,	FALSE,blend,D3DBLEND_ONE,dest);
-        C.r_Pass("accum_sun", "accum_sun_near_msaa_nominmax", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
+        C.r_Pass("accum_sun", "accum_sun_near_msaa", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
         C.r_CullMode(D3DCULL_NONE);
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -173,11 +145,14 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
         C.r_CullMode(D3DCULL_NONE);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_sss", r2_RT_ssfx_sss);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
@@ -185,8 +160,11 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
         jitter(C);
         {
             u32 s = C.r_dx10Sampler("smp_smap");
-            C.i_dx10Address(s, D3DTADDRESS_BORDER);
-            C.i_dx10BorderColor(s, D3DCOLOR_ARGB(255, 255, 255, 255));
+            if (s != u32(-1))
+            {
+                C.i_dx10Address(s, D3DTADDRESS_BORDER);
+                C.i_dx10BorderColor(s, D3DCOLOR_ARGB(255, 255, 255, 255));
+            }
         }
 
         C.r_End();
@@ -197,37 +175,13 @@ void CBlender_accum_direct_msaa::Compile(CBlender_Compile& C)
         C.r_CullMode(D3DCULL_NONE);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
+        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+
         C.r_dx10Texture("s_smap", r2_RT_generic0);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
         jitter(C);
-        C.r_End();
-        break;
-
-        //	SE_SUN_NEAR for minmax
-    case SE_SUN_NEAR_MINMAX: // near pass - enable Z-test to perform depth-clipping
-        //	FVF::TL2uv
-        C.r_Pass("accum_sun", "accum_sun_near_msaa_minmax", false, TRUE, FALSE, blend, D3DBLEND_ONE, dest);
-        C.r_CullMode(D3DCULL_NONE);
-        C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
-
-        C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
-        C.r_dx10Texture("s_accumulator", r2_RT_accum);
-        C.r_dx10Texture("s_lmap", r2_sunmask);
-        C.r_dx10Texture("s_smap", r2_RT_smap_depth);
-        C.r_dx10Texture("s_smap_minmax", r2_RT_smap_depth_minmax);
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
-
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_dx10Sampler("smp_material");
-        C.r_dx10Sampler("smp_linear");
-        jitter(C);
-        C.r_dx10Sampler("smp_smap");
-
         C.r_End();
         break;
     }
@@ -252,15 +206,8 @@ void CBlender_accum_direct_volumetric_msaa::Compile(CBlender_Compile& C)
     else
         ::Render->m_MSAASample = -1;
 
-    //	BOOL	b_HW_smap		= RImplementation.o.HW_smap;
-    //	BOOL	b_HW_PCF		= RImplementation.o.HW_smap_PCF;
-    BOOL blend = FALSE; // RImplementation.o.fp16_blend;
-    D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
-    if (RImplementation.o.sunfilter)
-    {
-        blend = FALSE;
-        dest = D3DBLEND_ZERO;
-    }
+    constexpr BOOL blend = FALSE;
+    constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
 
     switch (C.iElement)
     {

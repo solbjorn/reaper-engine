@@ -34,6 +34,7 @@ struct R_statistics_element
         dips++;
     }
 };
+
 struct R_statistics
 {
     R_statistics_element s_static;
@@ -206,7 +207,7 @@ public:
         }
     }
 
-    IC void get_ConstantDirect(const char* n, u32 DataSize, void** pVData, void** pGData, void** pPData);
+    IC void get_ConstantDirect(const char* n, size_t DataSize, void** pVData, void** pGData, void** pPData);
 
     // API
     IC void set_xform(u32 ID, const Fmatrix& M);
@@ -228,11 +229,14 @@ public:
     void set_Textures(STextureList* T);
     IC void set_Textures(ref_texture_list& T) { set_Textures(&*T); }
 
-    IC void set_Element(ShaderElement* S, u32 pass = 0);
-    IC void set_Element(ref_selement& S, u32 pass = 0) { set_Element(&*S, pass); }
+    IC void set_Pass(SPass* P);
+    void set_Pass(ref_pass& P) { set_Pass(&*P); }
 
-    IC void set_Shader(Shader* S, u32 pass = 0);
-    IC void set_Shader(ref_shader& S, u32 pass = 0) { set_Shader(&*S, pass); }
+    ICF void set_Element(ShaderElement* S, u32 pass = 0);
+    void set_Element(ref_selement& S, u32 pass = 0) { set_Element(&*S, pass); }
+
+    ICF void set_Shader(Shader* S, u32 pass = 0);
+    void set_Shader(ref_shader& S, u32 pass = 0) { set_Shader(&*S, pass); }
 
     ICF void set_States(ID3DState* _state);
     ICF void set_States(ref_state& _state) { set_States(_state->state); }
@@ -285,141 +289,65 @@ public:
     {
         if (ctable)
             return ctable->get(n);
-        else
-            return 0;
+        return nullptr;
     }
-    ICF ref_constant get_c(shared_str& n)
+
+    ICF ref_constant get_c(const shared_str& n)
     {
         if (ctable)
             return ctable->get(n);
-        else
-            return 0;
+        return nullptr;
     }
 
     // constants - direct (fast)
-    ICF void set_c(R_constant* C, const Fmatrix& A)
+    template <typename... Args>
+    ICF void set_c(R_constant* C, Args&&... args)
     {
-        if (C)
-            constants.set(C, A);
-    }
-    ICF void set_c(R_constant* C, const Fvector4& A)
-    {
-        if (C)
-            constants.set(C, A);
-    }
-    ICF void set_c(R_constant* C, float x, float y, float z, float w)
-    {
-        if (C)
-            constants.set(C, x, y, z, w);
-    }
-    ICF void set_ca(R_constant* C, u32 e, const Fmatrix& A)
-    {
-        if (C)
-            constants.seta(C, e, A);
-    }
-    ICF void set_ca(R_constant* C, u32 e, const Fvector4& A)
-    {
-        if (C)
-            constants.seta(C, e, A);
-    }
-    ICF void set_ca(R_constant* C, u32 e, float x, float y, float z, float w)
-    {
-        if (C)
-            constants.seta(C, e, x, y, z, w);
-    }
-    ICF void set_c(R_constant* C, float A)
-    {
-        if (C)
-            constants.set(C, A);
-    }
-    ICF void set_c(R_constant* C, int A)
-    {
-        if (C)
-            constants.set(C, A);
+        if (!C)
+            return;
+        constants.set(C, std::forward<Args>(args)...);
     }
 
-    // constants - LPCSTR (slow)
-    ICF void set_c(LPCSTR n, const Fmatrix& A)
+    template <typename... Args>
+    ICF void set_ca(R_constant* C, Args&&... args)
     {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
+        if (!C)
+            return;
+        constants.seta(C, std::forward<Args>(args)...);
     }
-    ICF void set_c(LPCSTR n, const Fvector4& A)
+
+    // constants - raw string (slow)
+    template <typename... Args>
+    ICF void set_c(const char* name, Args&&... args)
     {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
+        if (!ctable)
+            return;
+        set_c(ctable->get(name)._get(), std::forward<Args>(args)...);
     }
-    ICF void set_c(LPCSTR n, float x, float y, float z, float w)
+
+    template <typename... Args>
+    ICF void set_ca(const char* name, Args&&... args)
     {
-        if (ctable)
-            set_c(&*ctable->get(n), x, y, z, w);
-    }
-    ICF void set_ca(LPCSTR n, u32 e, const Fmatrix& A)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, A);
-    }
-    ICF void set_ca(LPCSTR n, u32 e, const Fvector4& A)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, A);
-    }
-    ICF void set_ca(LPCSTR n, u32 e, float x, float y, float z, float w)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, x, y, z, w);
-    }
-    ICF void set_c(LPCSTR n, float A)
-    {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
-    }
-    ICF void set_c(LPCSTR n, int A)
-    {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
+        if (!ctable)
+            return;
+        set_ca(ctable->get(name)._get(), std::forward<Args>(args)...);
     }
 
     // constants - shared_str (average)
-    ICF void set_c(shared_str& n, const Fmatrix& A)
+    template <typename... Args>
+    ICF void set_c(const shared_str& name, Args&&... args)
     {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
+        if (!ctable)
+            return;
+        set_c(ctable->get(name)._get(), std::forward<Args>(args)...);
     }
-    ICF void set_c(shared_str& n, const Fvector4& A)
+
+    template <typename... Args>
+    ICF void set_ca(const shared_str& name, Args&&... args)
     {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
-    }
-    ICF void set_c(shared_str& n, float x, float y, float z, float w)
-    {
-        if (ctable)
-            set_c(&*ctable->get(n), x, y, z, w);
-    }
-    ICF void set_ca(shared_str& n, u32 e, const Fmatrix& A)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, A);
-    }
-    ICF void set_ca(shared_str& n, u32 e, const Fvector4& A)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, A);
-    }
-    ICF void set_ca(shared_str& n, u32 e, float x, float y, float z, float w)
-    {
-        if (ctable)
-            set_ca(&*ctable->get(n), e, x, y, z, w);
-    }
-    ICF void set_c(shared_str& n, float A)
-    {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
-    }
-    ICF void set_c(shared_str& n, int A)
-    {
-        if (ctable)
-            set_c(&*ctable->get(n), A);
+        if (!ctable)
+            return;
+        set_ca(ctable->get(name)._get(), std::forward<Args>(args)...);
     }
 
     inline void Clear(u32 Count, const D3DRECT* pRects, u32 Flags, u32 Color, float Z, u32 Stencil);
@@ -441,13 +369,13 @@ public:
     void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
     void dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 
-    IC void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) { VERIFY(!"Not implemented"); }
-    IC void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) { VERIFY(!"Not implemented"); }
+    void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) { VERIFY(!"Not implemented"); }
+    void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) { VERIFY(!"Not implemented"); }
 
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
     void dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
-    IC void dbg_DrawAABB(Fvector& T, float sx, float sy, float sz, u32 C)
+    void dbg_DrawAABB(Fvector& T, float sx, float sy, float sz, u32 C)
     {
         Fvector half_dim;
         half_dim.set(sx, sy, sz);
@@ -456,7 +384,7 @@ public:
         dbg_DrawOBB(TM, half_dim, C);
     }
     void dbg_DrawOBB(Fmatrix& T, Fvector& half_dim, u32 C);
-    IC void dbg_DrawTRI(Fmatrix& T, Fvector* p, u32 C) { dbg_DrawTRI(T, p[0], p[1], p[2], C); }
+    void dbg_DrawTRI(Fmatrix& T, Fvector* p, u32 C) { dbg_DrawTRI(T, p[0], p[1], p[2], C); }
     void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
     void dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
     void dbg_DrawEllipse(Fmatrix& T, u32 C);

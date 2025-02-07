@@ -4,6 +4,19 @@
 
 #include "../../xr_3da/Rain.h"
 
+// Warning: duplicated in rain.cpp
+static const int max_desired_items = std::thread::hardware_concurrency() < 3u ? 1500 : 2500;
+constexpr float source_radius = 15; // 12.5f;
+constexpr float source_offset = 20.f; // 40
+constexpr float max_distance = source_offset * 1.5f; // 1.25f;
+constexpr float sink_offset = -(max_distance - source_offset);
+constexpr float drop_length = 5.f;
+constexpr float drop_width = 0.30f;
+constexpr float drop_max_angle = deg2rad(35.f); // 10
+
+constexpr int particles_cache = 400;
+constexpr float particles_time = .3f;
+
 dxRainRender::dxRainRender()
 {
     RainPerlin = std::make_unique<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
@@ -18,7 +31,8 @@ dxRainRender::dxRainRender()
     hGeom_Rain.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
     hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
-    SH_Splash.create("effects\\rain_splash", "fx\\fx_rain");
+    if (RImplementation.o.ssfx_rain)
+        SH_Splash.create("effects\\rain_splash", "fx\\fx_rain");
 
     FS.r_close(F);
 }
@@ -33,8 +47,18 @@ void dxRainRender::Render(CEffect_Rain& owner)
     if (factor < EPS_L)
         return;
 
-    ref_shader& _splash_SH = SH_Splash;
+    float _drop_len = drop_length;
+    float _drop_width = drop_width;
+    ref_shader& _splash_SH = DM_Drop->shader;
     constexpr const char* s_shader_setup = "ssfx_rain_setup";
+
+    // SSS Rain shader is available
+    if (RImplementation.o.ssfx_rain)
+    {
+        _drop_len = ps_ssfx_rain_1.x;
+        _drop_width = ps_ssfx_rain_1.y;
+        _splash_SH = SH_Splash;
+    }
 
     // visual
     const float factor_visual = factor / 2.f + .5f;
@@ -43,74 +67,69 @@ void dxRainRender::Render(CEffect_Rain& owner)
 
     if (!owner.items.empty())
     {
+        // perform update
+        u32 vOffset;
+        FVF::LIT* verts = (FVF::LIT*)RCache.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
+        FVF::LIT* start = verts;
+        const Fvector& vEye = Device.vCameraPosition;
 
-    const float _drop_len = ps_ssfx_rain_1.x;
-    const float _drop_width = ps_ssfx_rain_1.y;
+        for (const auto& one : owner.items)
+        {
+            // Build line
+            const Fvector& pos_head = one.P;
+            Fvector pos_trail;
+            pos_trail.mad(pos_head, one.D, -_drop_len * factor_visual);
 
-    // perform update
-    u32 vOffset;
-    FVF::LIT* verts = (FVF::LIT*)RCache.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
-    FVF::LIT* start = verts;
-    const Fvector& vEye = Device.vCameraPosition;
+            // Culling
+            Fvector sC, lineD;
+            float sR;
+            sC.sub(pos_head, pos_trail);
+            lineD.normalize(sC);
+            sC.mul(.5f);
+            sR = sC.magnitude();
+            sC.add(pos_trail);
+            if (!::Render->ViewBase.testSphere_dirty(sC, sR))
+                continue;
 
-    for (const auto& one : owner.items)
-    {
-        // Build line
-        const Fvector& pos_head = one.P;
-        Fvector pos_trail;
-        pos_trail.mad(pos_head, one.D, -_drop_len * factor_visual);
+            constexpr Fvector2 UV[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
 
-        // Culling
-        Fvector sC, lineD;
-        float sR;
-        sC.sub(pos_head, pos_trail);
-        lineD.normalize(sC);
-        sC.mul(.5f);
-        sR = sC.magnitude();
-        sC.add(pos_trail);
-        if (!::Render->ViewBase.testSphere_dirty(sC, sR))
-            continue;
+            // Everything OK - build vertices
+            Fvector P, lineTop, camDir;
+            camDir.sub(sC, vEye);
+            camDir.normalize();
+            lineTop.crossproduct(camDir, lineD);
+            float w = _drop_width;
+            u32 s = one.uv_set;
+            P.mad(pos_trail, lineTop, -w);
+            verts->set(P, u_rain_color, UV[s][0].x, UV[s][0].y);
+            verts++;
+            P.mad(pos_trail, lineTop, w);
+            verts->set(P, u_rain_color, UV[s][1].x, UV[s][1].y);
+            verts++;
+            P.mad(pos_head, lineTop, -w);
+            verts->set(P, u_rain_color, UV[s][2].x, UV[s][2].y);
+            verts++;
+            P.mad(pos_head, lineTop, w);
+            verts->set(P, u_rain_color, UV[s][3].x, UV[s][3].y);
+            verts++;
+        }
 
-        constexpr Fvector2 UV[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
+        u32 vCount = (u32)(verts - start);
+        RCache.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
 
-        // Everything OK - build vertices
-        Fvector P, lineTop, camDir;
-        camDir.sub(sC, vEye);
-        camDir.normalize();
-        lineTop.crossproduct(camDir, lineD);
-        float w = _drop_width;
-        u32 s = one.uv_set;
-        P.mad(pos_trail, lineTop, -w);
-        verts->set(P, u_rain_color, UV[s][0].x, UV[s][0].y);
-        verts++;
-        P.mad(pos_trail, lineTop, w);
-        verts->set(P, u_rain_color, UV[s][1].x, UV[s][1].y);
-        verts++;
-        P.mad(pos_head, lineTop, -w);
-        verts->set(P, u_rain_color, UV[s][2].x, UV[s][2].y);
-        verts++;
-        P.mad(pos_head, lineTop, w);
-        verts->set(P, u_rain_color, UV[s][3].x, UV[s][3].y);
-        verts++;
-    }
-
-    u32 vCount = (u32)(verts - start);
-    RCache.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
-
-    // Render if needed
-    if (vCount)
-    {
-        // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_NONE);
-        RCache.set_CullMode(CULL_NONE);
-        RCache.set_xform_world(Fidentity);
-        RCache.set_Shader(SH_Rain);
-        RCache.set_Geometry(hGeom_Rain);
-        RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-        // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
-        RCache.set_CullMode(CULL_CCW);
-        RCache.set_c(s_shader_setup, ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
-    }
-
+        // Render if needed
+        if (vCount)
+        {
+            // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_NONE);
+            RCache.set_CullMode(CULL_NONE);
+            RCache.set_xform_world(Fidentity);
+            RCache.set_Shader(SH_Rain);
+            RCache.set_Geometry(hGeom_Rain);
+            RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
+            // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
+            RCache.set_CullMode(CULL_CCW);
+            RCache.set_c(s_shader_setup, ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
+        }
     }
 
     // Particles
@@ -198,8 +217,6 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     if (factor < EPS_L)
         return;
 
-    float _drop_speed = ps_ssfx_rain_1.z;
-
     // Prepare correct angle and distance to hit the player
     Fvector Rain_Axis{0.f, -1.f, 0.f};
     Fvector2 Rain_Offset;
@@ -239,7 +256,19 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     Prepare();
 
-    const size_t desired_items = iFloor(min_desired_items + (factor * (max_desired_items - min_desired_items)));
+    float _drop_speed = 1.0f;
+    int rain_max_particles = max_desired_items;
+    float rain_radius = source_radius;
+
+    // SSS Rain shader is available
+    if (RImplementation.o.ssfx_rain)
+    {
+        _drop_speed = ps_ssfx_rain_1.z;
+        rain_max_particles = ps_ssfx_rain_drops_setup.x;
+        rain_radius = ps_ssfx_rain_drops_setup.y;
+    }
+
+    const size_t desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * float(rain_max_particles));
 
     if (size_t sz = owner.items.size(); sz < desired_items)
     {
@@ -247,7 +276,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
         for (; sz < desired_items; sz++)
         {
             CEffect_Rain::Item one;
-            owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
+            owner.Born(one, rain_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
             owner.items.emplace_back(std::move(one));
         }
     }
@@ -257,7 +286,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     }
 
     // build source plane
-    float b_radius_wrap_sqr = _sqr((source_radius * 1.5f));
+    float b_radius_wrap_sqr = _sqr((rain_radius * 1.5f));
     Fplane src_plane;
     Fvector norm = {0.f, -1.f, 0.f};
     Fvector upper;
@@ -275,7 +304,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
         if (one.dwTime_Life < Device.dwTimeGlobal)
         {
-            owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
+            owner.Born(one, rain_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
         }
 
         float dt = Device.fTimeDelta;
@@ -299,7 +328,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
                 Fvector inv_dir, src_p;
                 inv_dir.invert(one.D);
                 wdir.div(wlen);
-                one.P.mad(one.P, wdir, -(wlen + source_radius));
+                one.P.mad(one.P, wdir, -(wlen + rain_radius));
                 if (src_plane.intersectRayPoint(one.P, inv_dir, src_p))
                 {
                     float dist_sqr = one.P.distance_to_sqr(src_p);

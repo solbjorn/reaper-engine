@@ -14,12 +14,28 @@ using namespace Opcode;
 struct alignas(16) vec_t : public Fvector3
 {
     float pad;
+
+    constexpr inline vec_t() = default;
+    constexpr inline vec_t(const vec_t& v) { xr_memcpy16(this, &v); }
+    constexpr inline vec_t& operator=(const vec_t& v)
+    {
+        xr_memcpy16(this, &v);
+        return *this;
+    }
 };
 
 struct alignas(16) aabb_t
 {
     vec_t min;
     vec_t max;
+
+    constexpr inline aabb_t() = default;
+    constexpr inline aabb_t(const aabb_t& v) { xr_memcpy128(this, &v, sizeof(v)); }
+    constexpr inline aabb_t& operator=(const aabb_t& v)
+    {
+        xr_memcpy128(this, &v, sizeof(v));
+        return *this;
+    }
 };
 
 struct alignas(16) ray_t
@@ -27,6 +43,14 @@ struct alignas(16) ray_t
     vec_t pos;
     vec_t inv_dir;
     vec_t fwd_dir;
+
+    constexpr inline ray_t() = default;
+    constexpr inline ray_t(const ray_t& r) { xr_memcpy128(this, &r, sizeof(r)); }
+    constexpr inline ray_t& operator=(const ray_t& r)
+    {
+        xr_memcpy128(this, &r, sizeof(r));
+        return *this;
+    }
 };
 
 ICF u32& uf(float& x) { return (u32&)x; }
@@ -152,7 +176,7 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
     // you may already have those values hanging around somewhere
     const __m128 plus_inf = loadps(ps_cst_plus_inf), minus_inf = loadps(ps_cst_minus_inf);
 
-    // use whatever's apropriate to load.
+    // use whatever's appropriate to load.
     const __m128 box_min = loadps(&box.min), box_max = loadps(&box.max), pos = loadps(&ray.pos), inv_dir = loadps(&ray.inv_dir);
 
     // use a div if inverted directions aren't available
@@ -191,6 +215,17 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
     return ret;
 }
 
+#undef loadps
+#undef storess
+#undef minss
+#undef maxss
+#undef minps
+#undef maxps
+#undef mulps
+#undef subps
+#undef rotatelps
+#undef muxhps
+
 template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
 class alignas(16) ray_collider
 {
@@ -202,6 +237,14 @@ public:
     ray_t ray;
     float rRange;
     float rRange2;
+
+    constexpr inline ray_collider() = default;
+    constexpr inline ray_collider(const ray_collider& c) { xr_memcpy128(this, &c, sizeof(c)); }
+    constexpr inline ray_collider& operator=(const ray_collider& c)
+    {
+        xr_memcpy128(this, &c, sizeof(c));
+        return *this;
+    }
 
     IC void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
     {

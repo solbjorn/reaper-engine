@@ -33,7 +33,6 @@ CROS_impl::CROS_impl()
         hemi_cube[i] = hemi_cube_smooth[i] = 0;
     }
 
-
     last_position.set(0.0f, 0.0f, 0.0f);
     ticks_to_update = 0;
     sky_rays_uptodate = 0;
@@ -67,37 +66,7 @@ IC bool pred_energy(const CROS_impl::Light& L1, const CROS_impl::Light& L2) { re
 #pragma warning(push)
 #pragma warning(disable : 4305)
 
-// const float		hdir		[lt_hemisamples][3] =
-// {
-// 	{0.00000,	1.00000,	0.00000	},
-// 	{0.52573,	0.85065,	0.00000	},
-// 	{0.16246,	0.85065,	0.50000	},
-// 	{-0.42533,	0.85065,	0.30902	},
-// 	{-0.42533,	0.85065,	-0.30902},
-// 	{0.16246,	0.85065,	-0.50000},
-// 	{0.89443,	0.44721,	0.00000	},
-// 	{0.27639,	0.44721,	0.85065	},
-// 	{-0.72361,	0.44721,	0.52573	},
-// 	{-0.72361,	0.44721,	-0.52573},
-// 	{0.27639,	0.44721,	-0.85065},
-// 	{0.68819,	0.52573,	0.50000	},
-// 	{-0.26287,	0.52573,	0.80902	},
-// 	{-0.85065,	0.52573,	-0.00000},
-// 	{-0.26287,	0.52573,	-0.80902},
-// 	{0.68819,	0.52573,	-0.50000},
-// 	{0.95106,	0.00000,	0.30902	},
-// 	{0.58779,	0.00000,	0.80902	},
-// 	{-0.00000,	0.00000,	1.00000	},
-// 	{-0.58779,	0.00000,	0.80902	},
-// 	{-0.95106,	0.00000,	0.30902	},
-// 	{-0.95106,	0.00000,	-0.30902},
-// 	{-0.58779,	0.00000,	-0.80902},
-// 	{0.00000,	0.00000,	-1.00000},
-// 	{0.58779,	0.00000,	-0.80902},
-// 	{0.95106,	0.00000,	-0.30902}
-// };
-
-const float hdir[lt_hemisamples][3] = {
+static constexpr float hdir[lt_hemisamples][3] = {
     {-0.26287, 0.52573, 0.80902},  {0.27639, 0.44721, 0.85065},   {-0.95106, 0.00000, 0.30902},
     {-0.95106, 0.00000, -0.30902}, {0.58779, 0.00000, -0.80902},  {0.58779, 0.00000, 0.80902},
 
@@ -113,24 +82,6 @@ const float hdir[lt_hemisamples][3] = {
     {-0.42533, 0.85065, -0.30902}, {0.68819, 0.52573, 0.50000},
 };
 #pragma warning(pop)
-
-// inline CROS_impl::CubeFaces CROS_impl::get_cube_face(Fvector3& dir)
-//{
-//	float x2 = dir.x*dir.x;
-//	float y2 = dir.y*dir.y;
-//	float z2 = dir.z*dir.z;
-//
-//	if (x2 >= y2 + z2)
-//	{
-//		return (dir.x > 0) ? CUBE_FACE_POS_X : CUBE_FACE_NEG_X;
-//	}
-//	else if (y2 >= z2 + x2)
-//	{
-//		return (dir.y > 0) ? CUBE_FACE_POS_Y : CUBE_FACE_NEG_Y;
-//	}
-//	/*else*/
-//	return (dir.z > 0) ? CUBE_FACE_POS_Z : CUBE_FACE_NEG_Z;
-// }
 
 inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 {
@@ -171,9 +122,7 @@ void CROS_impl::update(IRenderable* O)
         return;
     }
 
-    if (isnan(_object->renderable.xform._41) || 
-        isnan(_object->renderable.xform._42) ||
-        isnan(_object->renderable.xform._43))
+    if (isnan(_object->renderable.xform._41) || isnan(_object->renderable.xform._42) || isnan(_object->renderable.xform._43))
     {
         if (!skip)
         {
@@ -263,7 +212,6 @@ void CROS_impl::update(IRenderable* O)
             hemi_cube[i] = std::max(hemi_cube[i], minHemiValue);
         }
 
-
         //		lacc.x		*= desc.lmap_color.x;
         //		lacc.y		*= desc.lmap_color.y;
         //		lacc.z		*= desc.lmap_color.z;
@@ -285,12 +233,12 @@ void CROS_impl::update(IRenderable* O)
 }
 
 //	Update ticks settings
-static const s32 s_iUTFirstTimeMin = 1;
-static const s32 s_iUTFirstTimeMax = 1;
-static const s32 s_iUTPosChangedMin = 3;
-static const s32 s_iUTPosChangedMax = 6;
-static const s32 s_iUTIdleMin = 1000;
-static const s32 s_iUTIdleMax = 2000;
+constexpr s32 s_iUTFirstTimeMin = 1;
+constexpr s32 s_iUTFirstTimeMax = 1;
+constexpr s32 s_iUTPosChangedMin = 3;
+constexpr s32 s_iUTPosChangedMax = 6;
+constexpr s32 s_iUTIdleMin = 1000;
+constexpr s32 s_iUTIdleMax = 2000;
 
 void CROS_impl::smart_update(IRenderable* O)
 {
@@ -321,7 +269,7 @@ void CROS_impl::smart_update(IRenderable* O)
     }
     else
     {
-        if (!last_position.similar(position, 0.15))
+        if (!last_position.similar(position, 0.15f))
         {
             sky_rays_uptodate = 0;
             update(O);
@@ -335,7 +283,6 @@ void CROS_impl::smart_update(IRenderable* O)
     }
 }
 
-
 extern float ps_r2_lt_smooth;
 
 // hemi & sun: update and smooth
@@ -346,9 +293,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 
     dwFrameSmooth = Device.dwFrame;
 
-
     smart_update(O);
-
 
     float l_f = Device.fTimeDelta * ps_r2_lt_smooth;
     clamp(l_f, 0.f, 1.f);
@@ -441,8 +386,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
     if (bTraceLights)
     {
         // Select nearest lights
-        Fvector bb_size = {radius, radius, radius};
-
+        const Fvector bb_size = {radius, radius, radius};
 
         g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
 
@@ -452,11 +396,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
             light* source = (light*)(spatial->dcast_Light());
             VERIFY(source); // sanity check
             float R = radius + source->range;
-            if (position.distance_to(source->position) < R
-
-                && source->flags.bStatic
-
-            )
+            if (position.distance_to(source->position) < R && source->flags.bStatic)
                 add(source);
         }
 

@@ -308,6 +308,7 @@ public:
     __declspec(property(get = get_44, put = set_44)) T _44;
 
     constexpr inline _matrix() = default;
+    constexpr inline _matrix(const Self& a) { set(a); }
     constexpr inline _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15)
     {
         if (std::is_constant_evaluated())
@@ -316,10 +317,16 @@ public:
             mm = DirectX::XMMatrixSet(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
     }
 
+    constexpr inline SelfRef operator=(const Self& a) { return set(a); }
+
     // Class members
-    constexpr ICF SelfRef set(const Self& a)
+    constexpr inline SelfRef set(const Self& a)
     {
-        mm = a.mm;
+        xr_memcpy16(&vm[0], &a.vm[0]);
+        xr_memcpy16(&vm[1], &a.vm[1]);
+        xr_memcpy16(&vm[2], &a.vm[2]);
+        xr_memcpy16(&vm[3], &a.vm[3]);
+
         return *this;
     }
     constexpr ICF SelfRef set(const Tvector& R, const Tvector& N, const Tvector& D, const Tvector& C)

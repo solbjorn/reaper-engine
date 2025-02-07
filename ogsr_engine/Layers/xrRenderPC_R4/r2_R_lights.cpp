@@ -125,16 +125,14 @@ void CRender::render_lights(light_Package& LP)
 
             // render
             phase = PHASE_SMAP;
-            if (RImplementation.o.Tshadows)
-                r_pmask(true, true);
-            else
-                r_pmask(true, false);
+            r_pmask(true, false);
             L->svis.begin();
             PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
             r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
             bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-            bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-            if (bNormal || bSpecial)
+            VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
+
+            if (bNormal)
             {
                 stats.s_merged++;
                 L_spot_s.push_back(L);
@@ -151,16 +149,6 @@ void CRender::render_lights(light_Package& LP)
                         Details->light_position.set(L->position);
                         Details->Render();
                     }
-                }
-                L->X.S.transluent = FALSE;
-                if (bSpecial)
-                {
-                    L->X.S.transluent = TRUE;
-                    Target->phase_smap_spot_tsh(L);
-                    PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
-                    r_dsgraph_render_graph(1); // normal level, secondary priority
-                    PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
-                    r_dsgraph_render_sorted(); // strict-sorted geoms
                 }
             }
             else
@@ -219,9 +207,25 @@ void CRender::render_lights(light_Package& LP)
             }
 
             PIX_EVENT(ACCUM_VOLUMETRIC);
-            if (RImplementation.o.advancedpp && ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
+            if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
+            {
+                // Current Resolution
+                float w = float(Device.dwWidth);
+                float h = float(Device.dwHeight);
+
+                // Adjust resolution
+                if (RImplementation.o.ssfx_volumetric)
+                    Target->set_viewport_size(HW.pContext, w / 8, h / 8);
+
                 for (u32 it = 0; it < L_spot_s.size(); it++)
+                {
                     Target->accum_volumetric(L_spot_s[it]);
+                }
+
+                // Restore resolution
+                if (RImplementation.o.ssfx_volumetric)
+                    Target->set_viewport_size(HW.pContext, w, h);
+            }
 
             L_spot_s.clear();
         }
@@ -263,7 +267,9 @@ void CRender::render_lights(light_Package& LP)
 
 void CRender::render_indirect(light* L)
 {
+#ifdef DEBUG
     if (!ps_r2_ls_flags.test(R2FLAG_GI))
+#endif
         return;
 
     light LIGEN;

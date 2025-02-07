@@ -59,7 +59,6 @@ public:
 
     virtual void Render_First();
     virtual void Render_Last();
-    virtual void Render_Actor_Shadow(); // added by KD
     virtual void OnFrame();
 
     virtual void RenderUI();
@@ -69,10 +68,10 @@ public:
     void Hit(int idx, float power, const Fvector& dir);
     CFontManager& Font() { return *(UI()->Font()); }
 
-    //текущий предмет на который смотрит HUD
+    // текущий предмет на который смотрит HUD
     collide::rq_result& GetCurrentRayQuery();
 
-    //устанвка внешнего вида прицела в зависимости от текущей дисперсии
+    // устанвка внешнего вида прицела в зависимости от текущей дисперсии
     void SetCrosshairDisp(float dispf, float disps = 0.f);
     void ShowCrosshair(bool show);
 

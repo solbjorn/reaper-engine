@@ -90,7 +90,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
     const int RS = 800 + 10;
     const int N = RS;
 
-    static dContact contacts[RS]{};
+    static dContact contacts[RS];
     int collided_contacts = 0;
     // get the contacts up to a maximum of N contacts
     int n;
@@ -255,7 +255,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
                 usr_data_1->ph_object->InitContact(&c, do_collide, material_idx_1, material_idx_2);
         }
 
-        //#INFO: (Giperion): dInfinity works incorrectly (probably because all working with full 32 bit precision), so instead push a large number
+        // #INFO: (Giperion): dInfinity works incorrectly (probably because all working with full 32 bit precision), so instead push a large number
         if (pushing_neg)
             surface.mu = std::numeric_limits<dReal>::max();
 

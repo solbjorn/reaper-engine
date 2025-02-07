@@ -7,19 +7,9 @@ void CRenderTarget::phase_accumulator()
     {
         // normal operation - setup
         if (!RImplementation.o.dx10_msaa)
-        {
-            if (RImplementation.o.fp16_blend)
-                u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
-            else
-                u_setrt(rt_Accumulator_temp, NULL, NULL, HW.pBaseZB);
-        }
+            u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
         else
-        {
-            if (RImplementation.o.fp16_blend)
-                u_setrt(rt_Accumulator, NULL, NULL, rt_MSAADepth->pZRT);
-            else
-                u_setrt(rt_Accumulator_temp, NULL, NULL, rt_MSAADepth->pZRT);
-        }
+            u_setrt(rt_Accumulator, NULL, NULL, rt_MSAADepth->pZRT);
     }
     else
     {
@@ -41,7 +31,7 @@ void CRenderTarget::phase_accumulator()
         }
         //		u32		clr4clear					= color_rgba(0,0,0,0);	// 0x00
         // CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
-        FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         HW.pContext->ClearRenderTargetView(rt_Accumulator->pRT, ColorRGBA);
 
         //	render this after sun to avoid troubles with sun
@@ -68,24 +58,40 @@ void CRenderTarget::phase_accumulator()
 
 void CRenderTarget::phase_vol_accumulator()
 {
-    if (!m_bHasActiveVolumetric)
+    if (RImplementation.o.ssfx_volumetric)
     {
-        m_bHasActiveVolumetric = true;
-        if (!RImplementation.o.dx10_msaa)
-            u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
-        else
-            u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
-        // u32		clr4clearVol				= color_rgba(0,0,0,0);	// 0x00
-        // CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
-        FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
+        // SSS does not require the stencil. ( This also fix the MSAA bug )
+        if (!m_bHasActiveVolumetric)
+        {
+            m_bHasActiveVolumetric = true;
+
+            constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+            HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
+        }
+
+        u_setrt(rt_Generic_2, NULL, NULL, NULL);
     }
     else
     {
-        if (!RImplementation.o.dx10_msaa)
-            u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+        if (!m_bHasActiveVolumetric)
+        {
+            m_bHasActiveVolumetric = true;
+            if (!RImplementation.o.dx10_msaa)
+                u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+            else
+                u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
+            // u32		clr4clearVol				= color_rgba(0,0,0,0);	// 0x00
+            // CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
+            constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+            HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
+        }
         else
-            u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
+        {
+            if (!RImplementation.o.dx10_msaa)
+                u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+            else
+                u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
+        }
     }
 
     RCache.set_Stencil(FALSE);

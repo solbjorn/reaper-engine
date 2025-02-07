@@ -168,14 +168,6 @@ public:
 class IRender_interface
 {
 public:
-    enum GenerationLevel
-    {
-        GENERATION_R1 = 81,
-        GENERATION_DX81 = 81,
-        GENERATION_R2 = 90,
-        GENERATION_DX90 = 90,
-        GENERATION_forcedword = u32(-1)
-    };
     enum ScreenshotMode
     {
         SM_NORMAL = 0, // jpeg,	name ignored
@@ -198,12 +190,6 @@ public:
     CFrustum* View;
 
 public:
-    // feature level
-    virtual GenerationLevel get_generation() = 0;
-
-    virtual bool is_sun_static() = 0;
-    virtual DWORD get_dx_level() = 0;
-
     // Loading / Unloading
     virtual void create() = 0;
     virtual void destroy() = 0;
@@ -238,7 +224,6 @@ public:
     virtual void set_Transform(Fmatrix* M) = 0;
     virtual void set_HUD(BOOL V) = 0;
     virtual BOOL get_HUD() = 0;
-    virtual void set_Invisible(BOOL V) = 0;
     virtual void flush() = 0;
     virtual void set_Object(IRenderable* O) = 0;
     virtual void add_Occluder(Fbox2& bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
@@ -344,7 +329,6 @@ class ShExports final
     PositionsStorage<Fvector2, 24> anomalys_position{};
     Ivector2 detector_params{};
     Fvector pda_params{}, actor_params{};
-    Fvector4 dof_params{};
 
 public:
     void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] = _pos; };
@@ -352,14 +336,12 @@ public:
     void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
     void set_pda_params(const Fvector& _pos) { pda_params = _pos; };
     void set_actor_params(const Fvector& _pos) { actor_params = _pos; };
-    void set_dof_params(float a, float b, float c, float d) { dof_params = {a, b, c, d}; };
 
     const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
     const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }
     const Ivector2& get_detector_params() const { return detector_params; }
     const Fvector& get_pda_params() const { return pda_params; }
     const Fvector& get_actor_params() const { return actor_params; }
-    const Fvector4& get_dof_params() const { return dof_params; }
 };
 
 extern ShExports shader_exports;
@@ -368,9 +350,10 @@ extern ShExports shader_exports;
 // два.
 constexpr size_t GRASS_SHADER_DATA_COUNT = 16;
 
-struct GRASS_SHADER_DATA
+struct alignas(32) GRASS_SHADER_DATA
 {
     size_t index{};
+    size_t pad{};
     s8 anim[GRASS_SHADER_DATA_COUNT]{};
     u16 id[GRASS_SHADER_DATA_COUNT]{};
     Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - pos, w - radius_curr
@@ -381,13 +364,11 @@ struct GRASS_SHADER_DATA
     float fade[GRASS_SHADER_DATA_COUNT]{};
     float speed[GRASS_SHADER_DATA_COUNT]{};
 };
+static_assert(offsetof(GRASS_SHADER_DATA, pos) == 64);
 
 extern GRASS_SHADER_DATA grass_shader_data;
 
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;
-extern Fvector4 ps_ssfx_hud_drops_1, ps_ssfx_hud_drops_2, ps_ssfx_hud_drops_1_cfg, ps_ssfx_hud_drops_2_cfg;
-extern Fvector4 ps_ssfx_wetsurfaces_1, ps_ssfx_wetsurfaces_2, ps_ssfx_wetsurfaces_1_cfg, ps_ssfx_wetsurfaces_2_cfg;
-extern Fvector4 ps_ssfx_lightsetup_1;
-extern float ps_ssfx_gloss_factor;
-extern Fvector3 ps_ssfx_gloss_minmax;
+
+#endif

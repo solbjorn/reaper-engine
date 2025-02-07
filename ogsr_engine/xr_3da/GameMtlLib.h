@@ -23,10 +23,10 @@
 #define GAMEMTL_CHUNK_FACTORS_MP 0x1008
 //----------------------------------------------------
 #define GAMEMTLPAIR_CHUNK_PAIR 0x1000
-//#define GAMEMTLPAIR_CHUNK_FLOTATION   0x1001 - obsolete
+// #define GAMEMTLPAIR_CHUNK_FLOTATION   0x1001 - obsolete
 #define GAMEMTLPAIR_CHUNK_BREAKING 0x1002
 #define GAMEMTLPAIR_CHUNK_STEP 0x1003
-//#define GAMEMTLPAIR_CHUNK_COLLIDE   	0x1004 - obsolete / rename HIT
+// #define GAMEMTLPAIR_CHUNK_COLLIDE   	0x1004 - obsolete / rename HIT
 #define GAMEMTLPAIR_CHUNK_COLLIDE 0x1005
 //----------------------------------------------------
 
@@ -47,7 +47,11 @@
 #endif
 
 #ifndef MTL_EXPORT_API
+#ifdef ENGINE_API
 #define MTL_EXPORT_API ENGINE_API
+#else
+#define MTL_EXPORT_API
+#endif
 #endif
 
 #ifdef GM_NON_GAME
@@ -321,7 +325,7 @@ public:
     IC GameMtlIt LastMaterial() { return materials.end(); }
     IC u32 CountMaterial() { return materials.size(); }
 
-// material pair routine
+    // material pair routine
     // game
     IC SGameMtlPair* GetMaterialPair(u16 idx0, u16 idx1)
     {
@@ -341,8 +345,8 @@ public:
 
 #define CLONE_MTL_SOUND(_res_, _mtl_pair_, _a_vector_) \
     { \
-        VERIFY2(!_mtl_pair_##->_a_vector_.empty(), _mtl_pair_->dbg_Name()); \
-        _res_.clone(GET_RANDOM(_mtl_pair_##->_a_vector_), st_Effect, sg_SourceType); \
+        VERIFY2(!(_mtl_pair_)->_a_vector_.empty(), (_mtl_pair_)->dbg_Name()); \
+        _res_.clone(GET_RANDOM((_mtl_pair_)->_a_vector_), st_Effect, sg_SourceType); \
     }
 
 extern MTL_EXPORT_API CGameMtlLibrary GMLib;

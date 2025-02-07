@@ -31,7 +31,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
     dxRender_Visual::Load(N, data, dwFlags);
 
     auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
-    D3DVERTEXELEMENT9* vFormat = 0;
+    const D3DVERTEXELEMENT9* vFormat = nullptr;
     dwPrimitives = 0;
     BOOL loaded_v = false;
 
@@ -59,7 +59,6 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         p_rm_Indices = RImplementation.getIB(ID);
         p_rm_Indices->AddRef();
 
-#if (RENDER == R_R4)
         // check for fast-vertices
         if (data->find_chunk(OGF_FASTPATH))
         {
@@ -70,7 +69,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             m_fast = xr_new<IRender_Mesh>();
 
             // verts
-            D3DVERTEXELEMENT9* fmt = 0;
+            const D3DVERTEXELEMENT9* fmt = nullptr;
             ID = def().r_u32();
             m_fast->vBase = def().r_u32();
             m_fast->vCount = def().r_u32();
@@ -93,7 +92,6 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             // geom
             m_fast->rm_geom.create(fmt, m_fast->p_rm_Vertices, m_fast->p_rm_Indices);
         }
-#endif // (RENDER==R_R4)
     }
 
     // read vertices
@@ -142,7 +140,6 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             VERIFY(NULL == p_rm_Indices);
             p_rm_Indices = RImplementation.getIB(ID);
             p_rm_Indices->AddRef();
-
         }
         else
         {
@@ -165,7 +162,6 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 void Fvisual::Render(float)
 {
-#if (RENDER == R_R4)
     if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && !RCache.is_TessEnabled())
     {
         RCache.set_Geometry(m_fast->rm_geom);
@@ -178,7 +174,6 @@ void Fvisual::Render(float)
         RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
         RCache.stat.r.s_static.add(vCount);
     }
-#endif // (RENDER==R_R4)
 }
 
 #define PCOPY(a) a = pFrom->a

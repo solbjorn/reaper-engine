@@ -85,12 +85,3 @@ void CRenderTarget::ProcessSMAA()
 
     HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
 }
-
-void CRenderTarget::PhaseAA()
-{
-    // Use TAA only for additionally antialiasing
-    switch (ps_r_pp_aa_mode)
-    {
-    case SMAA: ProcessSMAA(); break;
-    }
-}

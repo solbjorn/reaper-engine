@@ -109,7 +109,7 @@ void CRender::level_Load(IReader* fs)
     // End
     pApp->LoadEnd();
 
-    //u32 m_base, c_base, m_lmaps, c_lmaps;
+    // u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load completed!");
@@ -120,6 +120,7 @@ void CRender::level_Load(IReader* fs)
     lstLODs.clear();
     lstLODgroups.clear();
     mapLOD.clear();
+    mapWater.clear();
 
     // signal loaded
     b_loaded = TRUE;
@@ -133,7 +134,6 @@ void CRender::level_Unload()
     if (!b_loaded)
         return;
 
-    
     u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
@@ -233,7 +233,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
         _VB.resize(count);
 
         // decl
-        const u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
+        constexpr u32 buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
         auto* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 
         for (u32 i = 0; i < count; i++)
@@ -375,16 +375,15 @@ void CRender::LoadSectors(IReader* fs)
         }
         if (CL.getTS() < 2)
         {
-            Fvector v1, v2, v3;
-            v1.set(-20000.f, -20000.f, -20000.f);
-            v2.set(-20001.f, -20001.f, -20001.f);
-            v3.set(-20002.f, -20002.f, -20002.f);
+            constexpr Fvector v1{-20000.f, -20000.f, -20000.f};
+            constexpr Fvector v2{-20001.f, -20001.f, -20001.f};
+            constexpr Fvector v3{-20002.f, -20002.f, -20002.f};
             CL.add_face_packed_D(v1, v2, v3, 0);
         }
 
         // build portal model
         rmPortals = xr_new<CDB::MODEL>();
-        rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+        rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
     }
     else
     {

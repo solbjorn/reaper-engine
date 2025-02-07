@@ -27,7 +27,7 @@
 
 #include "../xr_3da/device.h"
 
-//#define USE_SMART_HITS
+// #define USE_SMART_HITS
 #define USE_IK
 constexpr float IK_CALC_DIST = 100.f;
 constexpr float IK_ALWAYS_CALC_DIST = 20.f;
@@ -113,10 +113,12 @@ void CCharacterPhysicsSupport::SetRemoved()
     m_eState = esRemoved;
     if (m_flags.test(fl_skeleton_in_shell)) // b_skeleton_in_shell
     {
+        if (!m_pPhysicsShell)
+            return;
+
         if (m_pPhysicsShell->isEnabled())
-        {
             m_EntityAlife.processing_deactivate();
-        }
+
         m_pPhysicsShell->Deactivate();
         xr_delete(m_pPhysicsShell);
     }
@@ -192,9 +194,9 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
     }
     else if (!m_EntityAlife.animation_movement_controlled())
     {
-        ka->PlayCycle("death_init"); ///непонятно зачем это вообще надо запускать
-                                     ///этот хак нужен, потому что некоторым монстрам
-                                     ///анимация после спона, может быть вообще не назначена
+        ka->PlayCycle("death_init"); /// непонятно зачем это вообще надо запускать
+                                     /// этот хак нужен, потому что некоторым монстрам
+                                     /// анимация после спона, может быть вообще не назначена
     }
     ka->dcast_PKinematics()->CalculateBones_Invalidate();
     ka->dcast_PKinematics()->CalculateBones();
@@ -496,7 +498,7 @@ void CCharacterPhysicsSupport::in_UpdateCL()
     if (m_pPhysicsShell)
     {
         VERIFY(m_pPhysicsShell->isFullActive());
-        m_pPhysicsShell->SetRagDoll(); //Теперь шела относиться к классу объектов cbClassRagDoll
+        m_pPhysicsShell->SetRagDoll(); // Теперь шела относиться к классу объектов cbClassRagDoll
 
         if (!is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)
             m_pPhysicsShell->InterpolateGlobalTransform(&mXFORM);
@@ -642,6 +644,8 @@ void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,
     {
         CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
     }
+    if (!character_create)
+        activation_shape.set_rotation(mXFORM);
     activation_shape.Activate(vbox, 1, 1.f, M_PI / 8.f);
     m_EntityAlife.Position().sub(activation_shape.Position(), shift);
     activation_shape.Destroy();
@@ -658,7 +662,6 @@ void CCharacterPhysicsSupport::set_movement_position(const Fvector& pos)
 
 void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 {
-
     DestroyIKController();
 
     destroy_animation_collision();
@@ -704,7 +707,7 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
             return;
     }
 
-//////////////////////this needs to evaluate object box//////////////////////////////////////////////////////
+    //////////////////////this needs to evaluate object box//////////////////////////////////////////////////////
     for (u16 I = K->LL_BoneCount(); I > 0;)
         K->LL_GetBoneInstance(--I).reset_callback();
 
@@ -955,7 +958,7 @@ void CCharacterPhysicsSupport::TestForWounded()
 
 void CCharacterPhysicsSupport::UpdateFrictionAndJointResistanse()
 {
-    //Преобразование skel_ddelay из кадров в секунды и линейное нарастание сопротивления в джоинтах со временем от момента смерти
+    // Преобразование skel_ddelay из кадров в секунды и линейное нарастание сопротивления в джоинтах со временем от момента смерти
 
     if (skel_remain_time != 0)
     {

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-class walker
+class alignas(8) walker
 {
 public:
     u32 o_count{};

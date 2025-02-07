@@ -31,6 +31,10 @@ public:
             right = nullptr;
         }
     };
+
+    using key_type = K;
+    using mapped_type = T;
+    using value_type = TNode;
     typedef void __fastcall callback(TNode*);
 
 private:
@@ -239,7 +243,7 @@ public:
     IC TNode* end() { return nodes + pool; }
     IC TNode* last() { return nodes + limit; } // for setup only
     IC u32 size() { return pool; }
-    IC TNode& operator[](int v) { return nodes[v]; }
+    mapped_type& operator[](const key_type& key) { return insert(key)->val; }
 
     IC void traverseLR(callback CB)
     {

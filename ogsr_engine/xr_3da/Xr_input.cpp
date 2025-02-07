@@ -14,6 +14,8 @@ ENGINE_API Flags32 psMouseInvert = {FALSE};
 #define KEYBOARDBUFFERSIZE 64
 #define _KEYDOWN(name, key) (name[key] & 0x80)
 
+extern u32 g_screenmode;
+
 CInput::CInput(bool bExclusive, int deviceForInit)
 {
     is_exclusive_mode = bExclusive;
@@ -164,7 +166,7 @@ void CInput::KeyUpdate()
         if (KBState[key])
         {
             if (this->is_exclusive_mode && (key == DIK_LSHIFT || key == DIK_RSHIFT) && (this->iGetAsyncKeyState(DIK_LMENU) || this->iGetAsyncKeyState(DIK_RMENU)))
-                PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); //Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
+                PostMessage(gGameWindow, WM_INPUTLANGCHANGEREQUEST, 2, 0); // Переключили язык. В эксклюзивном режиме это обязательно для правильной работы функции DikToChar
 
             cbStack.back()->IR_OnKeyboardPress(key);
         }
@@ -530,7 +532,7 @@ u16 CInput::DikToChar(const int dik, const bool utf)
         if (this->is_exclusive_mode)
         { // GetKeyboardState в данном случае не используем, потому что оно очень глючно работает в эксклюзивном режиме
             if (this->iGetAsyncKeyState(DIK_LSHIFT) || this->iGetAsyncKeyState(DIK_RSHIFT))
-                State[VK_SHIFT] = 0x80; //Для получения правильных символов при зажатом shift
+                State[VK_SHIFT] = 0x80; // Для получения правильных символов при зажатом shift
         }
         else
         {
@@ -581,7 +583,7 @@ void CInput::clip_cursor(bool clip)
     if (clip)
     {
         ShowCursor(FALSE);
-        if (Device.m_hWnd && !psDeviceFlags.is(rsFullscreen))
+        if (Device.m_hWnd && g_screenmode != 2)
         {
             RECT rect;
             GetClientRect(Device.m_hWnd, &rect);

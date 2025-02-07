@@ -22,6 +22,7 @@ float psSoundVEffects = 1.0f;
 float psSoundVFactor = 1.0f;
 float psSoundTimeFactor = 1.0f; //--#SM+#--
 float psSoundVMusic = 1.f;
+float psSoundVMusicFactor = 1.f;
 int psSoundCacheSizeMB = 32;
 
 CSoundRender_Core* SoundRender = 0;
@@ -56,7 +57,6 @@ CSoundRender_Core::CSoundRender_Core()
     s_emitters_u = 0;
     e_current.set_identity();
     e_target.set_identity();
-    bListenerMoved = FALSE;
     bReady = FALSE;
     bLocked = FALSE;
     fTimer_Value = Timer.GetElapsed_sec();
@@ -97,7 +97,7 @@ void CSoundRender_Core::_initialize(int stage)
     env_load();
 
     // Cache
-    cache_bytes_per_line = (sdef_target_block / 8) * 276400 / 1000;
+    cache_bytes_per_line = (sdef_target_block / 8) * 352800 / 1000;
     cache.initialize(psSoundCacheSizeMB * 1024, cache_bytes_per_line);
 }
 
@@ -527,10 +527,21 @@ void CSoundRender_Core::env_apply()
             pEmitter->set_position	(pParams->position);
         }
     */
-    bListenerMoved = TRUE;
+    bListenerMoved = true;
 }
 
-void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt) {}
+void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt)
+{
+    if (!Listener.position.similar(P))
+    {
+        Listener.position = P;
+        bListenerMoved = true;
+    }
+
+    Listener.orientation[0] = D;
+    Listener.orientation[1] = N;
+    Listener.orientation[2] = R;
+}
 
 //////////////////////////////////////////////////
 void CSoundRender_Core::InitAlEFXAPI()

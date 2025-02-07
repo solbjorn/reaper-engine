@@ -10,12 +10,6 @@
 
 #include <format>
 
-class adopt_dx10options
-{
-public:
-    bool _dx10_msaa_alphatest_atoc() { return (RImplementation.o.dx10_msaa_alphatest == CRender::MSAA_ATEST_DX10_0_ATOC); }
-};
-
 // wrapper
 class adopt_dx10sampler
 {
@@ -35,7 +29,12 @@ public:
 
     //	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
     //	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
-    //	adopt_sampler&			_clamp			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_CLAMP);									return *this;	}
+    adopt_dx10sampler& _clamp()
+    {
+        if (m_pC)
+            m_pC->i_dx10Address(m_SI, D3DTADDRESS_CLAMP);
+        return *this;
+    }
     //	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);									return *this;	}
     //	adopt_sampler&			_mirror			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_MIRROR);									return *this;	}
     //	adopt_sampler&			_f_anisotropic	()						{ if (C) C->i_Filter	(stage,D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,D3DTEXF_ANISOTROPIC);	return *this;	}
@@ -163,14 +162,9 @@ public:
         C->r_StencilRef(Ref);
         return *this;
     }
-		adopt_compiler& _dx10CullMode(u32 Ref)
-	{
-		C->r_CullMode((D3DCULL)Ref);
-		return *this;
-	}
-    adopt_compiler& _dx10ATOC(bool Enable)
+    adopt_compiler& _dx10CullMode(u32 Ref)
     {
-        C->RS.SetRS(XRDX10RS_ALPHATOCOVERAGE, Enable);
+        C->r_CullMode((D3DCULL)Ref);
         return *this;
     }
     adopt_compiler& _dx10ZFunc(u32 Func)
@@ -178,9 +172,6 @@ public:
         C->RS.SetRS(D3DRS_ZFUNC, Func);
         return *this;
     }
-    // adopt_dx10texture		_dx10texture	(LPCSTR _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}
-
-    adopt_dx10options _dx10Options() { return adopt_dx10options(); };
 };
 #pragma warning(pop)
 
@@ -257,7 +248,7 @@ bool print_output(const char* caScriptFileName, int errorCode)
         }
     }
     auto traceback = get_lua_traceback(LSVM);
-    if (!lua_isstring(LSVM, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+    if (!lua_isstring(LSVM, -1)) // НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
     {
         Msg("*********************************************************************************");
         Msg("[ResourceManager_Scripting.print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
@@ -283,7 +274,7 @@ bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, c
     if (l_iErrorCode)
     {
         print_output(caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -294,7 +285,7 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
     {
-        //заменить на ассерт?
+        // заменить на ассерт?
         Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
         return false;
     }
@@ -312,7 +303,7 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
     if (l_iErrorCode)
     {
         print_output(caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -426,7 +417,6 @@ static void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
     print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);
 
     Msg("LUA error: cannot cast lua value to %s", info->name());
-
 }
 #endif
 
@@ -447,7 +437,7 @@ int lua_panic(lua_State* L)
 }
 
 static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
-                                       size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
+                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
     if (!size)
     {
@@ -472,19 +462,19 @@ void CResourceManager::LS_Load()
 {
     //**************************************************************//
     // Msg("[CResourceManager] Starting LuaJIT");
-    R_ASSERT2(!LSVM, "! LuaJIT is already running"); //На всякий случай
+    R_ASSERT2(!LSVM, "! LuaJIT is already running"); // На всякий случай
     //
-    luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
+    luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
     luabind::allocator_parameter = nullptr;
 
-    LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
-    luaL_openlibs(LSVM); //Инициализация функций LuaJIT
-    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
-    luabind::open(LSVM); //Запуск луабинда
+    LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
+    luaL_openlibs(LSVM); // Инициализация функций LuaJIT
+    R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); // Надо проверить, случается ли такое.
+    luabind::open(LSVM); // Запуск луабинда
     //
     //--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
-    luabind::set_error_callback(LuaError); //Калбек на ошибки.
+    luabind::set_error_callback(LuaError); // Калбек на ошибки.
     luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
     luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
@@ -496,16 +486,10 @@ void CResourceManager::LS_Load()
     using namespace luabind;
 
     module(LSVM)[def("log", &LuaLog),
-
-                 class_<adopt_dx10options>("_dx10options").def("dx10_msaa_alphatest_atoc", &adopt_dx10options::_dx10_msaa_alphatest_atoc)
-                     .def("getLevel", [](adopt_dx10options*){ return g_pGameLevel->name().c_str(); })
-                 //.def("",					&adopt_dx10options::_dx10Options		),	// returns options-object
-                 ,
-
                  class_<adopt_dx10sampler>("_dx10sampler")
-                 //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
-                 //.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
-                 //.def("clamp",						&adopt_sampler::_clamp			,return_reference_to(_1))
+                     //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
+                     //.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
+                     .def("clamp", &adopt_dx10sampler::_clamp, return_reference_to<1>())
                  //.def("wrap",						    &adopt_sampler::_wrap			,return_reference_to(_1))
                  //.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
                  //.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
@@ -545,44 +529,25 @@ void CResourceManager::LS_Load()
                      .def("dx10stencil", &adopt_compiler::_dx10Stencil, return_reference_to<1>())
                      .def("dx10stencil_ref", &adopt_compiler::_dx10StencilRef, return_reference_to<1>())
                      .def("dx10cullmode", &adopt_compiler::_dx10CullMode, return_reference_to<1>())
-                     .def("dx10atoc", &adopt_compiler::_dx10ATOC, return_reference_to<1>())
                      .def("dx10zfunc", &adopt_compiler::_dx10ZFunc, return_reference_to<1>())
 
-                     .def("dx10sampler", &adopt_compiler::_dx10sampler) // returns sampler-object
-                     .def("dx10Options", &adopt_compiler::_dx10Options), // returns options-object
+                     // returns sampler-object
+                     .def("dx10sampler", &adopt_compiler::_dx10sampler),
+                 class_<adopt_blend>("blend").enum_(
+                     "blend")[value("zero", int(D3DBLEND_ZERO)), value("one", int(D3DBLEND_ONE)), value("srccolor", int(D3DBLEND_SRCCOLOR)),
+                              value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), value("srcalpha", int(D3DBLEND_SRCALPHA)), value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
+                              value("destalpha", int(D3DBLEND_DESTALPHA)), value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), value("destcolor", int(D3DBLEND_DESTCOLOR)),
+                              value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
 
-                 class_<adopt_blend>("blend").enum_("blend")[
-                        value("zero", int(D3DBLEND_ZERO)), 
-                        value("one", int(D3DBLEND_ONE)), 
-                        value("srccolor", int(D3DBLEND_SRCCOLOR)),
-                        value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), 
-                        value("srcalpha", int(D3DBLEND_SRCALPHA)), 
-                        value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
-                        value("destalpha", int(D3DBLEND_DESTALPHA)), 
-                        value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), 
-                        value("destcolor", int(D3DBLEND_DESTCOLOR)),
-                        value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), 
-                        value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
+                 class_<adopt_cmp_func>("cmp_func")
+                     .enum_("cmp_func")[value("never", int(D3DCMP_NEVER)), value("less", int(D3DCMP_LESS)), value("equal", int(D3DCMP_EQUAL)),
+                                        value("lessequal", int(D3DCMP_LESSEQUAL)), value("greater", int(D3DCMP_GREATER)), value("notequal", int(D3DCMP_NOTEQUAL)),
+                                        value("greaterequal", int(D3DCMP_GREATEREQUAL)), value("always", int(D3DCMP_ALWAYS))],
 
-                 class_<adopt_cmp_func>("cmp_func").enum_("cmp_func")[
-                        value("never", int(D3DCMP_NEVER)), 
-                        value("less", int(D3DCMP_LESS)), 
-                        value("equal", int(D3DCMP_EQUAL)),
-                        value("lessequal", int(D3DCMP_LESSEQUAL)), 
-                        value("greater", int(D3DCMP_GREATER)), 
-                        value("notequal", int(D3DCMP_NOTEQUAL)),
-                        value("greaterequal", int(D3DCMP_GREATEREQUAL)), 
-                        value("always", int(D3DCMP_ALWAYS))],
-
-                 class_<adopt_stencil_op>("stencil_op").enum_("stencil_op")[
-                        value("keep", int(D3DSTENCILOP_KEEP)), 
-                        value("zero", int(D3DSTENCILOP_ZERO)), 
-                        value("replace", int(D3DSTENCILOP_REPLACE)),
-                        value("incrsat", int(D3DSTENCILOP_INCRSAT)), 
-                        value("decrsat", int(D3DSTENCILOP_DECRSAT)), 
-                        value("invert", int(D3DSTENCILOP_INVERT)),
-                        value("incr", int(D3DSTENCILOP_INCR)), 
-                        value("decr", int(D3DSTENCILOP_DECR))]];
+                 class_<adopt_stencil_op>("stencil_op")
+                     .enum_("stencil_op")[value("keep", int(D3DSTENCILOP_KEEP)), value("zero", int(D3DSTENCILOP_ZERO)), value("replace", int(D3DSTENCILOP_REPLACE)),
+                                          value("incrsat", int(D3DSTENCILOP_INCRSAT)), value("decrsat", int(D3DSTENCILOP_DECRSAT)), value("invert", int(D3DSTENCILOP_INVERT)),
+                                          value("incr", int(D3DSTENCILOP_INCR)), value("decr", int(D3DSTENCILOP_DECR))]];
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
@@ -647,7 +612,6 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
 
     // Access to template
     C.BT = NULL;
-    C.bEditor = FALSE;
     C.bDetail = FALSE;
 
     // Prepare
@@ -697,6 +661,14 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
                 // C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
                 C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
                 S.E[0] = C._lua_Compile(s_shader, "normal");
+
+                /// SSS fix water for DX10
+                // Water Flag
+                if (S.E[0]->flags.bDistort)
+                {
+                    if (strstr(s_shader, "effects_water"))
+                        S.E[0]->flags.isWater = TRUE;
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "ResourceManager.h"
 #include "R_DStreams.h"
 
@@ -9,8 +8,8 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int rsDVB_Size = 4096; // Fixed: (bytes_need<=mSize) && vl_Count
-int rsDIB_Size = 512;
+constexpr int rsDVB_Size = 4096; // Fixed: (bytes_need<=mSize) && vl_Count
+constexpr int rsDIB_Size = 512;
 
 void _VertexStream::Create()
 {
@@ -57,12 +56,12 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
     R_ASSERT(vl_Count, "Missing or invalid texture! vl_Count=0.");
 
     // Ensure there is enough space in the VB for this data
-    u32 bytes_need = vl_Count * Stride;
+    const u32 bytes_need = vl_Count * Stride;
     ASSERT_FMT(bytes_need <= mSize, "bytes_need = [%u], mSize = [%u]", bytes_need, mSize);
 
     // Vertex-local info
-    u32 vl_mSize = mSize / Stride;
-    u32 vl_mPosition = mPosition / Stride + 1;
+    const u32 vl_mSize = mSize / Stride;
+    const u32 vl_mPosition = mPosition / Stride + 1;
 
     // Check if there is need to flush and perform lock
     BYTE* pData = 0;
@@ -177,15 +176,15 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
     // If either user forced us to flush,
     // or there is not enough space for the index data,
     // then flush the buffer contents
-    u32 dwFlags = LOCKFLAGS_APPEND;
+    bool bFlush = false;
     if (2 * (Count + mPosition) >= mSize)
     {
         mPosition = 0; // clear position
-        dwFlags = LOCKFLAGS_FLUSH; // discard it's contens
+        bFlush = true; // discard it's contens
         mDiscardID++;
     }
 
-    D3D_MAP MapMode = (dwFlags == LOCKFLAGS_APPEND) ? D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
+    D3D_MAP MapMode = bFlush ? D3D_MAP_WRITE_DISCARD : D3D_MAP_WRITE_NO_OVERWRITE;
     HW.pContext->Map(pIB, 0, MapMode, 0, &MappedSubRes);
     pLockedData = (BYTE*)MappedSubRes.pData;
     pLockedData += mPosition * 2;

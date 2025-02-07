@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "blender_Model_EbB.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -23,7 +22,7 @@ CBlender_Model_EbB::~CBlender_Model_EbB() {}
 
 void CBlender_Model_EbB::Save(IWriter& fs)
 {
-    //description.version = 0x1;
+    // description.version = 0x1;
     IBlenderXr::Save(fs);
     xrPWRITE_MARKER(fs, "Environment map");
     xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT2_Name);
@@ -99,7 +98,6 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
         case SE_R2_NORMAL_HQ: // deffer
             if (C.HudElement)
             {
-                //Msg("--[%s] Detected hud element: [%s]", __FUNCTION__, C.L_textures[0].c_str());
                 uber_deffer(C, true, "model_hud", "base_hud", false, 0, true);
                 C.r_dx10Texture("s_hud_rain", "fx\\hud_rain");
             }
@@ -118,10 +116,7 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
             C.r_End();
             break;
         case SE_R2_SHADOW: // smap
-            // if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
-            // else							C.r_Pass	("shadow_direct_model","shadow_direct_base",FALSE);
             C.r_Pass("shadow_direct_model", "dumb", FALSE, TRUE, TRUE, FALSE);
-            // C.r_Sampler		("s_base",C.L_textures[0]);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             C.r_dx10Sampler("smp_base");
             C.r_dx10Sampler("smp_linear");

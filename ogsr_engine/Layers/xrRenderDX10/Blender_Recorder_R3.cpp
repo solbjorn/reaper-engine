@@ -49,7 +49,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
     R_ASSERT(C->type == RC_dx10texture);
     u32 stage = C->samp.index;
 
-    passTextures.push_back(mk_pair(stage, ref_texture(DEV->_CreateTexture(TexName))));
+    passTextures.emplace_back(stage, ref_texture(DEV->_CreateTexture(TexName)));
 }
 
 void CBlender_Compile::i_dx10Address(u32 s, u32 address)
@@ -58,6 +58,7 @@ void CBlender_Compile::i_dx10Address(u32 s, u32 address)
     if (s == u32(-1))
     {
         Msg("s != u32(-1)");
+        return;
     }
     RS.SetSAMP(s, D3DSAMP_ADDRESSU, address);
     RS.SetSAMP(s, D3DSAMP_ADDRESSV, address);
@@ -115,6 +116,8 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
 
     R_ASSERT(C->type == RC_sampler);
     u32 stage = C->samp.index;
+    if (stage == u32(-1))
+        return u32(-1);
 
     //	init defaults here
 
@@ -137,19 +140,6 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-    }
-
-    #pragma todo("Зачем добавлен ещё один такой же что и smp_linear ???")
-    else if (0 == xr_strcmp(ResourceName, "smp_linear2"))
-    {
-        i_dx10Address(stage, D3DTADDRESS_WRAP);
-        i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-    }
-
-    else if (0 == xr_strcmp(ResourceName, "smp_point"))
-    {
-        i_dx10Address(stage, D3DTADDRESS_WRAP);
-        i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
     }
 
     //	Use D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC, 	D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC
@@ -180,6 +170,18 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
+    }
+
+    else if (0 == xr_strcmp(ResourceName, "smp_linear2"))
+    {
+        i_dx10Address(stage, D3DTADDRESS_WRAP);
+        i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
+    }
+
+    else if (0 == xr_strcmp(ResourceName, "smp_point"))
+    {
+        i_dx10Address(stage, D3DTADDRESS_WRAP);
+        i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
     }
 
     return stage;

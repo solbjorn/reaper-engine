@@ -1,3 +1,6 @@
+#ifndef EnvironmentH
+#define EnvironmentH
+
 #pragma once
 
 // refs
@@ -72,9 +75,9 @@ public:
 
         void load(CInifile& config, LPCSTR sect);
         ref_sound& get_rnd_sound() { return sounds()[Random.randI(sounds().size())]; }
-        u32 get_rnd_sound_time() { return (m_sound_period.z < m_sound_period.w) ? Random.randI(m_sound_period.z, m_sound_period.w) : 0; }
-        u32 get_rnd_sound_first_time() { return (m_sound_period.x < m_sound_period.y) ? Random.randI(m_sound_period.x, m_sound_period.y) : 0; }
-        float get_rnd_sound_dist() { return (m_sound_dist.x < m_sound_dist.y) ? Random.randF(m_sound_dist.x, m_sound_dist.y) : 0; }
+        u32 get_rnd_sound_time() const { return (m_sound_period.z < m_sound_period.w) ? Random.randI(m_sound_period.z, m_sound_period.w) : 0; }
+        u32 get_rnd_sound_first_time() const { return (m_sound_period.x < m_sound_period.y) ? Random.randI(m_sound_period.x, m_sound_period.y) : 0; }
+        float get_rnd_sound_dist() const { return (m_sound_dist.x < m_sound_dist.y) ? Random.randF(m_sound_dist.x, m_sound_dist.y) : 0; }
         INGAME_EDITOR_VIRTUAL ~SSndChannel() {}
         inline INGAME_EDITOR_VIRTUAL sounds_type& sounds() { return m_sounds; }
 
@@ -158,18 +161,22 @@ public:
     float wind_velocity;
     float wind_direction;
 
-    Fvector3 ambient;
     Fvector4 hemi_color; // w = R2 correction
+    Fvector3 ambient;
     Fvector3 sun_color;
     Fvector3 sun_dir;
     float m_fSunShaftsIntensity;
     float m_fWaterIntensity;
     float m_fTreeAmplitudeIntensity;
 
+    Fvector4 bloom;
+    float sky_height;
+
     //	int					lens_flare_id;
     //	int					tb_id;
     shared_str lens_flare_id;
     shared_str tb_id;
+    void set_sun(LPCSTR sect, CEnvironment* parent);
 
     CEnvAmbient* env_ambient;
     void setEnvAmbient(LPCSTR sect, CEnvironment* parent);
@@ -179,6 +186,7 @@ public:
     void load(CEnvironment& environment, CInifile& config);
     void load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S);
     void load_shoc(float exec_tm, LPCSTR S, CEnvironment& environment);
+    void load_common(CInifile* config);
 
     void copy(const CEnvDescriptor& src)
     {
@@ -189,8 +197,8 @@ public:
         exec_time_loaded = tm1;
     }
 
-    void on_device_create();
-    void on_device_destroy();
+    void get();
+    void put();
 
     shared_str m_identifier;
 };
@@ -242,8 +250,11 @@ private:
     void SelectEnv(EnvVec* envs, CEnvDescriptor*& e, float tm);
 
     void calculate_dynamic_sun_dir();
+    void invalidate_descs();
 
 public:
+    Fvector3 calculate_config_sun_dir(float ftime);
+
     static bool sort_env_pred(const CEnvDescriptor* x, const CEnvDescriptor* y) { return x->exec_time < y->exec_time; }
     static bool sort_env_etl_pred(const CEnvDescriptor* x, const CEnvDescriptor* y) { return x->exec_time_loaded < y->exec_time_loaded; }
 
@@ -259,7 +270,7 @@ public:
     float wind_strength_factor;
     float wind_gust_factor;
     float wetness_factor;
-    Fvector3 wind_anim{};
+    Fvector4 wind_anim{};
 
     // wind blast params
     float wind_blast_strength;
@@ -341,10 +352,14 @@ public:
 
     bool m_paused;
 
+    bool m_sun_hp_loaded{};
+    Fvector2 sun_hp[24];
+
     CInifile* m_ambients_config{};
     CInifile* m_sound_channels_config{};
     CInifile* m_effects_config{};
     CInifile* m_suns_config{};
+    CInifile* m_sun_pos_config{};
     CInifile* m_thunderbolt_collections_config{};
     CInifile* m_thunderbolts_config{};
     bool m_dynamic_sun_movement{};
@@ -357,6 +372,7 @@ public:
 protected:
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor_shoc(LPCSTR exec_tm, LPCSTR S);
+    void load_sun();
     INGAME_EDITOR_VIRTUAL void load_weathers();
     INGAME_EDITOR_VIRTUAL void load_weather_effects();
     INGAME_EDITOR_VIRTUAL void create_mixer();
@@ -386,4 +402,5 @@ public:
 
 ENGINE_API extern Flags32 psEnvFlags;
 ENGINE_API extern float psVisDistance;
-extern ENGINE_API float ps_r_sunshafts_intensity;
+
+#endif // EnvironmentH

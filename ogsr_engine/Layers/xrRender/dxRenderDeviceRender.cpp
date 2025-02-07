@@ -46,8 +46,8 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
     Memory.mem_compact();
     HW.Reset(hWnd);
 
-    dwWidth = HW.m_ChainDesc.BufferDesc.Width;
-    dwHeight = HW.m_ChainDesc.BufferDesc.Height;
+    dwWidth = HW.m_ChainDesc.Width;
+    dwHeight = HW.m_ChainDesc.Height;
 
     fWidth_2 = float(dwWidth / 2);
     fHeight_2 = float(dwHeight / 2);
@@ -126,8 +126,8 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float&
 
     HW.CreateDevice(hWnd);
 
-    dwWidth = HW.m_ChainDesc.BufferDesc.Width;
-    dwHeight = HW.m_ChainDesc.BufferDesc.Height;
+    dwWidth = HW.m_ChainDesc.Width;
+    dwHeight = HW.m_ChainDesc.Height;
 
     fWidth_2 = float(dwWidth / 2);
     fHeight_2 = float(dwHeight / 2);
@@ -210,7 +210,7 @@ void dxRenderDeviceRender::Clear()
 
     if (psDeviceFlags.test(rsClearBB))
     {
-        FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
     }
 }
@@ -224,11 +224,21 @@ void dxRenderDeviceRender::End()
 
     RCache.OnFrameEnd();
 
-    bool bUseVSync = psDeviceFlags.is(rsFullscreen) && psDeviceFlags.test(rsVSync); // xxx: weird tearing glitches when VSync turned on for windowed mode in DX10\11
+    UINT present_flags = 0;
+    bool use_vsync = !!psDeviceFlags.test(rsVSync);
+    UINT present_interval = (use_vsync) ? 1 : 0;
+
+    // NOTE: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays
+    BOOL is_windowed = HW.m_ChainDescFullscreen.Windowed;
+    if (is_windowed && !use_vsync && HW.m_SupportsVRR)
+    {
+        present_flags |= DXGI_PRESENT_ALLOW_TEARING;
+    }
+
     if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
     { //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
       // раза реже) [don't flush image into display for SecondVP-frame]
-        switch (HW.m_pSwapChain->Present(bUseVSync ? 1 : 0, 0))
+        switch (HW.m_pSwapChain->Present(present_interval, present_flags))
         {
         case DXGI_STATUS_OCCLUDED:
         case DXGI_ERROR_DEVICE_REMOVED: HW.doPresentTest = true; break;
@@ -238,7 +248,7 @@ void dxRenderDeviceRender::End()
 
 void dxRenderDeviceRender::ClearTarget()
 {
-    FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 }
 

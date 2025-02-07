@@ -14,7 +14,6 @@ void CBlender_rain::Compile(CBlender_Compile& C)
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
@@ -37,14 +36,10 @@ void CBlender_rain::Compile(CBlender_Compile& C)
     case 1: // Patch normals
         // C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
         // C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
-        if (ps_r3_dyn_wet_surf_opt)
-            C.r_Pass("stub_notransform_2uv", "rain_patch_normal_nomsaa", false, TRUE, FALSE, FALSE);
-        else
-            C.r_Pass("stub_notransform_2uv", "rain_patch_normal_new_nomsaa", false, TRUE, FALSE, FALSE);
+        C.r_Pass("stub_notransform_2uv", "rain_patch_normal_nomsaa", false, TRUE, FALSE, FALSE);
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
 
@@ -66,6 +61,7 @@ void CBlender_rain::Compile(CBlender_Compile& C)
         // C.r_dx10Texture		("s_waterFall",	"water\\water_normal");
         C.r_dx10Texture("s_waterFall", "water\\water_flowing_nmap");
 
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
         C.r_End();
 
         break;
@@ -92,10 +88,7 @@ void CBlender_rain::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_patched_normal", r2_RT_accum);
 
         //	Normal can be packed into R and G
-        if (RImplementation.o.dx10_gbuffer_opt)
-            C.r_ColorWriteEnable(true, true, false, false);
-        else
-            C.r_ColorWriteEnable(true, true, true, false);
+        C.r_ColorWriteEnable(true, true, false, false);
 
         C.r_End();
 
@@ -153,14 +146,10 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
     case 0: // Patch normals
         // C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
         // C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
-        if (ps_r3_dyn_wet_surf_opt)
-            C.r_Pass("stub_notransform_2uv", "rain_patch_normal_msaa", false, TRUE, FALSE, FALSE);
-        else
-            C.r_Pass("stub_notransform_2uv", "rain_patch_normal_new_msaa", false, TRUE, FALSE, FALSE);
+        C.r_Pass("stub_notransform_2uv", "rain_patch_normal_msaa", false, TRUE, FALSE, FALSE);
         C.PassSET_ZB(TRUE, FALSE, TRUE); // force inverted Z-Buffer
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_lmap", r2_sunmask);
         C.r_dx10Texture("s_smap", r2_RT_smap_depth);
 
@@ -208,10 +197,7 @@ void CBlender_rain_msaa::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_patched_normal", r2_RT_accum);
 
         //	Normal can be packed into R and G
-        if (RImplementation.o.dx10_gbuffer_opt)
-            C.r_ColorWriteEnable(true, true, false, false);
-        else
-            C.r_ColorWriteEnable(true, true, true, false);
+        C.r_ColorWriteEnable(true, true, false, false);
 
         C.r_End();
 

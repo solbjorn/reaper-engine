@@ -20,9 +20,9 @@
 #include "PHSynchronize.h"
 #include "phnetstate.h"
 static float max_depth = 0.f;
-static float friction_factor = 0.f;
-static float cfm = 1.e-10f;
-static float erp = 1.f;
+constexpr float friction_factor = 0.f;
+constexpr float cfm = 1.e-10f;
+constexpr float erp = 1.f;
 #ifdef DEBUG
 #define CHECK_POS(pos, msg, br) \
     if (!valid_pos(pos, phBoundaries)) \
@@ -78,11 +78,10 @@ void GetMaxDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* mater
 
 void RestoreVelocityState(V_PH_WORLD_STATE& state)
 {
-    V_PH_WORLD_STATE::iterator i = state.begin(), e = state.end();
-    for (; e != i; ++i)
+    for (auto& it : state)
     {
-        CPHSynchronize& sync = *i->first;
-        SPHNetState& old_s = i->second;
+        CPHSynchronize& sync = *it.first;
+        SPHNetState& old_s = it.second;
         SPHNetState new_s;
         sync.get_State(new_s);
         new_s.angular_vel.set(old_s.angular_vel);
@@ -103,6 +102,9 @@ CPHActivationShape::~CPHActivationShape() { VERIFY(!m_body && !m_geom); }
 void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_size, CPhysicsShellHolder* ref_obj, EType _type /*=etBox*/, u16 flags)
 {
     VERIFY(ref_obj);
+    R_ASSERT(_valid(start_pos));
+    R_ASSERT(_valid(start_size));
+
     m_body = dBodyCreate(0);
     dMass m;
     dMassSetSphere(&m, 1.f, 100000.f);
@@ -111,7 +113,6 @@ void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_siz
     switch (_type)
     {
     case etBox: m_geom = dCreateBox(0, start_size.x, start_size.y, start_size.z); break;
-
     case etSphere: m_geom = dCreateSphere(0, start_size.x); break;
     };
 
@@ -269,3 +270,5 @@ void CPHActivationShape::set_rotation(const Fmatrix& sof)
     PHDynamicData::FMXtoDMX(sof, rot);
     dBodySetRotation(ODEBody(), rot);
 }
+
+#undef CHECK_POS

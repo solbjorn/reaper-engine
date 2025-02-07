@@ -53,11 +53,7 @@ public:
     IC CDB::RESULT* r_begin() { return CL.r_begin(); };
     IC xr_vector<CDB::RESULT>* r_get() { return CL.r_get(); };
     IC void r_free() { CL.r_free(); }
-    [[nodiscard]]
-    IC size_t r_count()
-    {
-        return CL.r_count();
-    }
+    [[nodiscard]] IC size_t r_count() { return CL.r_count(); }
     IC void r_clear() { CL.r_clear(); };
     IC void r_clear_compact() { CL.r_clear_compact(); };
 

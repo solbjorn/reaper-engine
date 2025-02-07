@@ -62,20 +62,19 @@ public:
     inline void setRZFlag(const bool f) { renderFlag = f; }
     /************************* End add *************************************/
 
-
-    virtual void Render(float LOD){}; // LOD - Level Of Detail  [0..1], Ignored
+    virtual void Render(float LOD) {}; // LOD - Level Of Detail  [0..1], Ignored
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Release(); // Shared memory release
     virtual void Copy(dxRender_Visual* from);
-    virtual void Spawn(){};
-    virtual void Depart(){};
+    virtual void Spawn() {};
+    virtual void Depart() {};
 
     //	virtual	CKinematics*		dcast_PKinematics			()				{ return 0;	}
     //	virtual	CKinematicsAnimated*dcast_PKinematicsAnimated	()				{ return 0;	}
     //	virtual IParticleCustom*	dcast_ParticleCustom		()				{ return 0;	}
 
     virtual vis_data& _BCL getVisData() { return vis; }
-    virtual u32 getType() { return Type; }
+    u32 getType() const override { return Type; }
 
     dxRender_Visual();
     virtual ~dxRender_Visual();

@@ -22,8 +22,8 @@ void CDetailManager::cache_Initialize()
         for (u32 _mx1 = 0; _mx1 < dm_cache1_line; _mx1++)
         {
             CacheSlot1& MS = cache_level1[_mz1][_mx1];
-            for (int _z = 0; _z < dm_cache1_count; _z++)
-                for (int _x = 0; _x < dm_cache1_count; _x++)
+            for (u32 _z = 0; _z < dm_cache1_count; _z++)
+                for (u32 _x = 0; _x < dm_cache1_count; _x++)
                     MS.slots[_z * dm_cache1_count + _x] = &cache[_mz1 * dm_cache1_count + _z][_mx1 * dm_cache1_count + _x];
         }
     }
@@ -91,7 +91,7 @@ BOOL CDetailManager::cache_Validate()
     return TRUE;
 }
 
-void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
+void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
 {
     bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
     // *****	Cache shift
@@ -118,7 +118,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
             for (u32 z = 0; z < dm_cache_line; z++)
             {
                 Slot* S = cache[z][dm_cache_line - 1];
-                for (int x = dm_cache_line - 1; x > 0; x--)
+                for (u32 x = dm_cache_line - 1; x > 0; x--)
                     cache[z][x] = cache[z][x - 1];
                 cache[z][0] = S;
                 cache_Task(0, z, S);
@@ -135,7 +135,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
             for (u32 x = 0; x < dm_cache_line; x++)
             {
                 Slot* S = cache[dm_cache_line - 1][x];
-                for (int z = dm_cache_line - 1; z > 0; z--)
+                for (u32 z = dm_cache_line - 1; z > 0; z--)
                     cache[z][x] = cache[z - 1][x];
                 cache[0][x] = S;
                 cache_Task(x, 0, S);
@@ -159,47 +159,65 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
     }
 
     // Task performer
-    BOOL bFullUnpack = FALSE;
-    if (cache_task.size() == dm_cache_size || Device.dwPrecacheFrame == 1) // на последнем кадре префетча
+    if (cache_task.size() == dm_cache_size) // full unpack, first time
     {
-        limit = dm_cache_size;
-        bFullUnpack = TRUE;
-    }
-
-    for (int iteration = 0; cache_task.size() && (iteration < limit); iteration++)
-    {
-        u32 best_id = 0;
-        float best_dist = flt_max;
-
-        if (bFullUnpack)
+        while (!cache_task.empty())
         {
-            best_id = cache_task.size() - 1;
+            // Decompress and remove task
+            const u32 bestId = cache_task.size() - 1;
+            cache_Decompress(cache_task[bestId]);
+            cache_task.erase(bestId);
         }
-        else
+    }
+    else
+    {
+        const u32 invalidIndex = u32(-1);
+        u32 bestIndexes[dm_max_decompress];
+        std::fill_n(bestIndexes, dm_max_decompress, invalidIndex);
+
+        float bestDistances[dm_max_decompress];
+        std::fill_n(bestDistances, dm_max_decompress, flt_max);
+
+        auto bestDistancesBegin = std::begin(bestDistances);
+        auto bestDistancesEnd = std::end(bestDistances);
+        ptrdiff_t maxIdx = 0;
+
+        for (u32 i = 0, size = cache_task.size(); i < size; ++i)
         {
-            for (u32 entry = 0; entry < cache_task.size(); entry++)
+            // Gain access to data
+            Slot* S = cache_task[i];
+            VERIFY(stPending == S->type);
+
+            // Estimate
+            Fvector C;
+            S->vis.box.getcenter(C);
+            float D = view.distance_to_sqr(C);
+
+            // Select
+            if (D < bestDistances[maxIdx])
             {
-                // Gain access to data
-                Slot* S = cache_task[entry];
-                VERIFY(stPending == S->type);
+                bestDistances[maxIdx] = D;
+                bestIndexes[maxIdx] = i;
 
-                // Estimate
-                Fvector C;
-                S->vis.box.getcenter(C);
-                float D = view.distance_to_sqr(C);
-
-                // Select
-                if (D < best_dist)
-                {
-                    best_dist = D;
-                    best_id = entry;
-                }
+                const auto maxIt = std::max_element(bestDistancesBegin, bestDistancesEnd);
+                maxIdx = std::distance(bestDistancesBegin, maxIt);
             }
         }
 
-        // Decompress and remove task
-        cache_Decompress(cache_task[best_id]);
-        cache_task.erase(best_id);
+        // Because indexes become invalid after an erase, sort them and process in the reverse order to erase everything correctly
+        std::sort(bestIndexes, bestIndexes + dm_max_decompress);
+
+        for (int i = dm_max_decompress - 1; i >= 0; --i)
+        {
+            const u32 bestId = bestIndexes[i];
+
+            if (bestId != invalidIndex)
+            {
+                // Decompress and remove task
+                cache_Decompress(cache_task[bestId]);
+                cache_task.erase(bestId);
+            }
+        }
     }
 
     if (bNeedMegaUpdate)
@@ -211,7 +229,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
                 CacheSlot1& MS = cache_level1[_mz1][_mx1];
                 MS.empty = TRUE;
                 MS.vis.clear();
-                for (int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
+                for (u32 _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
                 {
                     Slot* PS = *MS.slots[_i];
                     Slot& S = *PS;

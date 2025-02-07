@@ -1,9 +1,11 @@
+#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
+#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
+
 // HW.h: interface for the CHW class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#pragma once
-
+#include <d3d11_4.h>
 #include <dxgi1_4.h>
 
 #include "hwcaps.h"
@@ -12,9 +14,7 @@
 #include "stats_manager.h"
 #endif
 
-class CHW
-    : public pureAppActivate,
-      public pureAppDeactivate
+class CHW : public pureAppActivate, public pureAppDeactivate
 {
     //	Functions section
 public:
@@ -40,31 +40,31 @@ public:
 
     void DumpVideoMemoryUsage() const;
 
-//	Variables section
+    //	Variables section
 public:
-    ID3D11Device* pDevice = nullptr; // render device
+    IDXGIFactory2* m_pFactory = nullptr;
+    IDXGIAdapter1* m_pAdapter = nullptr;
+    ID3D11Device1* pDevice = nullptr; // render device
+    ID3D11DeviceContext1* pContext = nullptr;
+    IDXGISwapChain1* m_pSwapChain = nullptr;
     ID3D11RenderTargetView* pBaseRT = nullptr; // base render target
     ID3D11DepthStencilView* pBaseZB = nullptr; // base depth-stencil buffer
 
-    IDXGIFactory1* pFactory = nullptr;
-    IDXGIAdapter1* m_pAdapter = nullptr;
-    IDXGIAdapter3* m_pAdapter3{};
-    ID3D11DeviceContext* pContext = nullptr;
-    IDXGISwapChain* m_pSwapChain = nullptr;
-
-    ID3DUserDefinedAnnotation* pAnnotation{};
-
     CHWCaps Caps;
-
-    DXGI_SWAP_CHAIN_DESC m_ChainDesc{}; //	DevPP equivalent
+    DXGI_SWAP_CHAIN_DESC1 m_ChainDesc{}; // DevPP equivalent
+    DXGI_SWAP_CHAIN_FULLSCREEN_DESC m_ChainDescFullscreen{};
+    HWND m_hWnd = nullptr;
     D3D_FEATURE_LEVEL FeatureLevel;
+    bool m_SupportsVRR = false; // whether we can use DXGI_PRESENT_ALLOW_TEARING etc.
+
+    IDXGIAdapter3* m_pAdapter3{};
+    ID3DUserDefinedAnnotation* pAnnotation{};
 
     stats_manager stats_manager{};
 
     bool doPresentTest{};
 
     void UpdateViews();
-
     DXGI_RATIONAL selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
 
     virtual void OnAppActivate();
@@ -72,3 +72,5 @@ public:
 };
 
 extern ECORE_API CHW HW;
+
+#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)

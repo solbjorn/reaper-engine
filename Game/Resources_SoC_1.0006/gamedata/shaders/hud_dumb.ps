@@ -1,0 +1,8 @@
+#include "common.h"
+
+float4 main(v2p_TL I) : SV_Target
+{
+    float4 col = s_base.Sample(smp_base, I.Tex0);
+
+    return float4((I.Color * col).rgb, 0);
+}

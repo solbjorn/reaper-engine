@@ -35,7 +35,7 @@ struct SFrame
         m_iFrameCount = 16;
         m_fSpeed = 24.f;
     }
-    IC void CalculateTC(int frame, Fvector2& lt, Fvector2& rb)
+    IC void CalculateTC(int frame, Fvector2& lt, Fvector2& rb) const
     {
         lt.x = (frame % m_iFrameDimX) * m_fTexSize.x;
         lt.y = (frame / m_iFrameDimX) * m_fTexSize.y;
@@ -97,7 +97,7 @@ public:
 
     // execute
     void ExecuteAnimate(PAPI::Particle* particles, u32 p_cnt, float dt);
-    void ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
+    void ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb) const;
 
     CPEDef();
     ~CPEDef();
@@ -115,7 +115,6 @@ public:
 
     void Save2(CInifile& ini);
     BOOL Load2(CInifile& ini);
-
 
     void Compile(EPAVec& v);
 };

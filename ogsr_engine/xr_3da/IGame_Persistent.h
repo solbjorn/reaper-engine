@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IGame_PersistentH
+#define IGame_PersistentH
 
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
@@ -53,22 +54,21 @@ public:
         BENDER_ANIM_SUCK = 3,
         BENDER_ANIM_BLOW = 4,
         BENDER_ANIM_PULSE = 5,
-    }; 
+    };
 
-  	void GrassBendersUpdateAnimations();
+    void GrassBendersUpdateAnimations();
     void GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
     void GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
     void GrassBendersRemoveById(const u16 id);
     void GrassBendersRemoveByIndex(size_t& idx);
-    float GrassBenderToValue(float& current, const float go_to, const float intensity, const bool use_easing);
-    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str);
+    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str, bool CheckDistance);
     void GrassBendersReset(const size_t idx);
-    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const GrassBenders_Anim anim, const bool resetTime);
+    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                         const float radius, const GrassBenders_Anim anim, const bool resetTime);
+    float GrassBenderToValue(float& current, const float go_to, const float intensity, const bool use_easing);
     CPerlinNoise1D* PerlinNoise1D{};
 
     bool IsActorInHideout() const;
-    void UpdateHudRaindrops() const;
-    void UpdateRainGloss() const;
 
     void destroy_particles(const bool& all_particles);
 
@@ -85,8 +85,8 @@ public:
     ShadersExternalData m_pGShaderConstants; //--#SM+#--
 
     virtual bool OnRenderPPUI_query() { return FALSE; }; // should return true if we want to have second function called
-    virtual void OnRenderPPUI_main(){};
-    virtual void OnRenderPPUI_PP(){};
+    virtual void OnRenderPPUI_main() {};
+    virtual void OnRenderPPUI_PP() {};
 
     virtual void OnAppStart();
     virtual void OnAppEnd();
@@ -98,9 +98,9 @@ public:
     virtual void OnGameStart();
     virtual void OnGameEnd();
 
-    virtual void UpdateGameType(){};
+    virtual void UpdateGameType() {};
 
-    virtual void OnSectorChanged(int sector){};
+    virtual void OnSectorChanged(int sector) {};
 
     virtual void RegisterModel(IRenderVisual* V) = 0;
     virtual float MtlTransparent(u32 mtl_idx) = 0;
@@ -114,13 +114,13 @@ public:
     virtual void SetTip() = 0;
 
     virtual bool CanBePaused() { return true; }
-    virtual	void models_savePrefetch();
+    virtual void models_savePrefetch();
 };
 
 class IMainMenu
 {
 public:
-    virtual ~IMainMenu(){};
+    virtual ~IMainMenu() {};
     virtual void Activate(bool bActive) = 0;
     virtual bool IsActive() = 0;
     virtual bool CanSkipSceneRendering() = 0;
@@ -130,3 +130,5 @@ public:
 extern ENGINE_API IGame_Persistent* g_pGamePersistent;
 ENGINE_API extern bool IsMainMenuActive();
 ENGINE_API extern BOOL g_prefetch;
+
+#endif // IGame_PersistentH

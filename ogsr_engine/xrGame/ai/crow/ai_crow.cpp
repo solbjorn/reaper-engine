@@ -135,6 +135,8 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
     m_Anims.m_fly.Load(M, "norm_fly_fwd");
     m_Anims.m_idle.Load(M, "norm_idle");
 
+    renderable.visual->_ignore_optimization = true;
+
     // Crow fixes by Sin! (Gunslinger mod)  --#SM+#--
     // [bug] баг - кто-то забыл проинициализировать, из-за чего при неудачном стечении обстоятельств вороны вне сектора обзора не летают... Исправим.
     o_workload_frame = 0;
@@ -295,7 +297,7 @@ void CAI_Crow::UpdateCL()
 void CAI_Crow::renderable_Render()
 {
     // CAI_Crow::renderable_Render вызывается только для ВИДИМЫХ В ЭТОМ КАДРЕ объектов --#SM+#--
-    //из-за этого вороны, видимые в мире, но не видимые в зуме, замедляются - fDeltaTime для кадров линзы не учитывается
+    // из-за этого вороны, видимые в мире, но не видимые в зуме, замедляются - fDeltaTime для кадров линзы не учитывается
     UpdateWorkload(Device.fTimeDelta * (Device.dwFrame - o_workload_frame));
     inherited::renderable_Render();
     o_workload_rframe = Device.dwFrame;

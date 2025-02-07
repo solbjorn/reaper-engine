@@ -66,7 +66,8 @@ public:
 
     virtual void Compile(CBlender_Compile& C)
     {
-        C.r_Pass("editor", "simple_color", FALSE, TRUE, TRUE);
+        C.r_Pass("editor", "simple_color", FALSE, FALSE, FALSE);
+        C.r_ColorWriteEnable();
         C.r_End();
     }
 

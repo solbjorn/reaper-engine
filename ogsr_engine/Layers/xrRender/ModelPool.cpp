@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
-
 #include "ModelPool.h"
 #include <xr_ini.h>
-
 
 #include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/fmesh.h"
@@ -186,7 +184,7 @@ CModelPool::CModelPool()
         // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся vis_prefetch.ltx - оказывается набит нулями, в результате чего игра не
         // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
 
-        if (F->elapsed() >= sizeof(u8) && F->r_u8() == 0) 
+        if (F->elapsed() >= sizeof(u8) && F->r_u8() == 0)
         {
             Msg("!![%s] file [%s] broken!", __FUNCTION__, fname);
 
@@ -229,7 +227,6 @@ dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
-
     string_path low_name;
     VERIFY(xr_strlen(name) < sizeof(low_name));
     xr_strcpy(low_name, name);
@@ -439,7 +436,7 @@ void CModelPool::Prefetch()
     if (pSettings->section_exist(section))
     {
         const auto& sect = pSettings->r_section(section);
-        for (const auto& pair: sect.Data)
+        for (const auto& pair : sect.Data)
         {
             const auto& low_name = pair.first;
             if (!Instance_Find(low_name.c_str()))
@@ -479,8 +476,8 @@ void CModelPool::Prefetch()
             if (FS.exist("$game_meshes$", fname.c_str()))
             {
                 ::Render->hud_loading = val2 == 2.f;
-                //if (::Render->hud_loading)
-                //    Msg("--[%s] loading hud model [%s]", __FUNCTION__, fname.c_str());
+                // if (::Render->hud_loading)
+                //     Msg("--[%s] loading hud model [%s]", __FUNCTION__, fname.c_str());
                 dxRender_Visual* V = Create(low_name.c_str());
                 ::Render->hud_loading = false;
                 Delete(V, FALSE);
@@ -595,7 +592,6 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     }
 }
 
-
 void CModelPool::save_vis_prefetch()
 {
     if (vis_prefetch_ini)
@@ -615,7 +611,7 @@ void CModelPool::process_vis_prefetch()
     {
         float val1{}, val2{};
         sscanf(val.c_str(), "%f,%f", &val1, &val2);
-        //Msg("--[%s] sscanf returns: [%f,%f]", __FUNCTION__, val1, val2);
+        // Msg("--[%s] sscanf returns: [%f,%f]", __FUNCTION__, val1, val2);
         const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
         const float rnd = Random.randF() - 0.5f;

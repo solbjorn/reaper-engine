@@ -13,7 +13,7 @@ class CDeviceResetNotifier : public pureDeviceReset
 public:
     CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); };
     virtual ~CDeviceResetNotifier() { Device.seqDeviceReset.Remove(this); };
-    virtual void OnDeviceReset(){};
+    virtual void OnDeviceReset() {};
 };
 
 //---------------------------------------------------------------------------------------
@@ -53,6 +53,12 @@ class C2DFrustum
 public:
     void CreateFromRect(const Frect& rect);
     sPoly2D* ClipPoly(sPoly2D& S, sPoly2D& D) const;
+
+    void Clear()
+    {
+        if (planes.size())
+            planes.clear();
+    }
 };
 
 class ui_core : public CDeviceResetNotifier

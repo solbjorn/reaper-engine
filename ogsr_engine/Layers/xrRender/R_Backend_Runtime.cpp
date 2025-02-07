@@ -42,7 +42,7 @@ void CBackend::Invalidate()
     state = NULL;
     ps = NULL;
     vs = NULL;
-    DX10_ONLY(gs = NULL);
+    gs = NULL;
 
     hs = 0;
     ds = 0;
@@ -91,7 +91,6 @@ void CBackend::Invalidate()
     //	Redundant call. Just no note that we need to unmap const
     //	if we create dedicated class.
     StateManager.UnmapConstants();
-    SSManager.ResetDeviceState();
     SRVSManager.ResetDeviceState();
 
     for (u32 gs_it = 0; gs_it < mtMaxGeometryShaderTextures;)
@@ -135,11 +134,11 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
     set_ClipPlanes(_enable, F.planes, F.p_count);
 }
 
-void CBackend::set_Textures(STextureList* _T)
+void CBackend::set_Textures(STextureList* textures_list)
 {
-    if (T == _T)
+    if (T == textures_list)
         return;
-    T = _T;
+    T = textures_list;
     //	If resources weren't set at all we should clear from resource #0.
     int _last_ps = -1;
     int _last_vs = -1;
@@ -148,14 +147,14 @@ void CBackend::set_Textures(STextureList* _T)
     int _last_ds = -1;
     int _last_cs = -1;
 
-    STextureList::iterator _it = _T->begin();
-    STextureList::iterator _end = _T->end();
+    auto it = textures_list->begin();
+    const auto end = textures_list->end();
 
-    for (; _it != _end; _it++)
+    for (; it != end; ++it)
     {
-        std::pair<u32, ref_texture>& loader = *_it;
+        std::pair<u32, ref_texture>& loader = *it;
         u32 load_id = loader.first;
-        CTexture* load_surf = &*loader.second;
+        CTexture* load_surf = loader.second._get();
         //		if (load_id < 256)		{
         if (load_id < CTexture::rstVertex)
         {
@@ -178,8 +177,7 @@ void CBackend::set_Textures(STextureList* _T)
                 }
             }
         }
-        else
-        if (load_id < CTexture::rstGeometry)
+        else if (load_id < CTexture::rstGeometry)
         {
             //	Set up pixel shader resources
             VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
@@ -373,6 +371,6 @@ void CBackend::set_Textures(STextureList* _T)
 #else
 
 void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */) {}
-void CBackend::set_Textures(STextureList* _T) {}
+void CBackend::set_Textures(STextureList* textures_list) {}
 
 #endif

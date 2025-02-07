@@ -1,7 +1,10 @@
 #include "stdafx.h"
+#include "../Layers/xrRender/xrRender_console.h"
 
 #include "particle_actions_collection.h"
 #include "particle_effect.h"
+
+#include <oneapi/tbb/parallel_for.h>
 
 using namespace PAPI;
 
@@ -1426,7 +1429,6 @@ void PASpeedLimit::Transform(const Fmatrix&) { ; }
 
 #define STEP_DEFAULT 0.033F
 
-
 // Change color of all particles toward the specified color
 void PATargetColor::Execute(ParticleEffect* effect, float dt)
 {
@@ -1438,7 +1440,8 @@ void PATargetColor::Execute(ParticleEffect* effect, float dt)
     {
         Particle& m = effect->particles[i];
 
-		if (m.age < timeFrom /* * tm_max */ || m.age > timeTo /* * tm_max */) continue;
+        if (m.age < timeFrom /* * tm_max */ || m.age > timeTo /* * tm_max */)
+            continue;
 
         c_p.set(m.colorR, m.colorG, m.colorB, m.colorA);
         c_t.set(color.x, color.y, color.z, alpha);
@@ -1639,62 +1642,74 @@ __forceinline void _mm_store_fvector(Fvector& v, const __m128 R1)
     _mm_store_ss((float*)&v.z, R2);
 }
 
-extern float ps_particle_update_coeff;
-
-void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_from, u32 p_to, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
+static void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
 {
+    Particle& m = effect->particles[i];
     pVector pV, vX, vY, vZ;
 
-    for (u32 i = p_from; i < p_to; i++)
+    pV.mad(m.pos, offset, age);
+    vX.set(pV.x + epsilon, pV.y, pV.z);
+    vY.set(pV.x, pV.y + epsilon, pV.z);
+    vZ.set(pV.x, pV.y, pV.z + epsilon);
+
+    float d = fractalsum3(pV, frequency, octaves);
+
+    pVector D;
+
+    D.x = fractalsum3(vX, frequency, octaves);
+    D.y = fractalsum3(vY, frequency, octaves);
+    D.z = fractalsum3(vZ, frequency, octaves);
+
+    __m128 _D = _mm_load_fvector(D);
+    __m128 _d = _mm_set1_ps(d);
+    __m128 _magnitude = _mm_set1_ps(magnitude);
+    __m128 _mvel = _mm_load_fvector(m.vel);
+    _D = _mm_sub_ps(_D, _d);
+    _D = _mm_mul_ps(_D, _magnitude);
+
+    __m128 _vmo = _mm_mul_ps(_mvel, _mvel); // _vmo = 00 | zz | yy | xx
+    __m128 _tmp = _mm_movehl_ps(_vmo, _vmo); // _tmp = 00 | zz | 00 | zz
+    _vmo = _mm_add_ss(_vmo, _tmp); // _vmo = 00 | zz | yy | xx + zz
+    _tmp = _mm_unpacklo_ps(_vmo, _vmo); // _tmp = yy | yy | xx + zz | xx + zz
+    _tmp = _mm_movehl_ps(_tmp, _tmp); // _tmp = yy | yy | yy | yy
+    _vmo = _mm_add_ss(_vmo, _tmp); // _vmo = 00 | zz | yy | xx + yy + zz
+    _vmo = _mm_sqrt_ss(_vmo); // _vmo = 00 | zz | yy | vmo
+
+    _mvel = _mm_add_ps(_mvel, _D);
+
+    __m128 _vmn = _mm_mul_ps(_mvel, _mvel); // _vmn = 00 | zz | yy | xx
+    _tmp = _mm_movehl_ps(_vmn, _vmn); // _tmp = 00 | zz | 00 | zz
+    _vmn = _mm_add_ss(_vmn, _tmp); // _vmn = 00 | zz | yy | xx + zz
+    _tmp = _mm_unpacklo_ps(_vmn, _vmn); // _tmp = yy | yy | xx + zz | xx + zz
+    _tmp = _mm_movehl_ps(_tmp, _tmp); // _tmp = yy | yy | yy | yy
+    _vmn = _mm_add_ss(_vmn, _tmp); // _vmn = 00 | zz | yy | xx + yy + zz
+    _vmn = _mm_sqrt_ss(_vmn); // _vmn = 00 | zz | yy | vmn
+
+    _vmo = _mm_div_ss(_vmo, _vmn); // _vmo = 00 | zz | yy | scale
+
+    _vmo = _mm_shuffle_ps(_vmo, _vmo, _MM_SHUFFLE(0, 0, 0, 0)); // _vmo = scale | scale | scale | scale
+    _mvel = _mm_mul_ps(_mvel, _vmo);
+
+    _mm_store_fvector(m.vel, _mvel);
+}
+
+static void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
+{
+    if (p_cnt > 1 && ps_r2_ls_flags.test(RFLAG_MT_PARTICLES))
     {
-        Particle& m = effect->particles[i];
-
-        pV.mad(m.pos, offset, age);
-        vX.set(pV.x + epsilon, pV.y, pV.z);
-        vY.set(pV.x, pV.y + epsilon, pV.z);
-        vZ.set(pV.x, pV.y, pV.z + epsilon);
-
-        float d = fractalsum3(pV, frequency, octaves);
-
-        pVector D;
-
-        D.x = fractalsum3(vX, frequency, octaves);
-        D.y = fractalsum3(vY, frequency, octaves);
-        D.z = fractalsum3(vZ, frequency, octaves);
-
-        __m128 _D = _mm_load_fvector(D);
-        __m128 _d = _mm_set1_ps(d);
-        __m128 _magnitude = _mm_set1_ps(magnitude);
-        __m128 _mvel = _mm_load_fvector(m.vel);
-        _D = _mm_sub_ps(_D, _d);
-        _D = _mm_mul_ps(_D, _magnitude);
-
-        __m128 _vmo = _mm_mul_ps(_mvel, _mvel); // _vmo = 00 | zz | yy | xx
-        __m128 _tmp = _mm_movehl_ps(_vmo, _vmo); // _tmp = 00 | zz | 00 | zz
-        _vmo = _mm_add_ss(_vmo, _tmp); // _vmo = 00 | zz | yy | xx + zz
-        _tmp = _mm_unpacklo_ps(_vmo, _vmo); // _tmp = yy | yy | xx + zz | xx + zz
-        _tmp = _mm_movehl_ps(_tmp, _tmp); // _tmp = yy | yy | yy | yy
-        _vmo = _mm_add_ss(_vmo, _tmp); // _vmo = 00 | zz | yy | xx + yy + zz
-        _vmo = _mm_sqrt_ss(_vmo); // _vmo = 00 | zz | yy | vmo
-
-        _mvel = _mm_add_ps(_mvel, _D);
-
-        __m128 _vmn = _mm_mul_ps(_mvel, _mvel); // _vmn = 00 | zz | yy | xx
-        _tmp = _mm_movehl_ps(_vmn, _vmn); // _tmp = 00 | zz | 00 | zz
-        _vmn = _mm_add_ss(_vmn, _tmp); // _vmn = 00 | zz | yy | xx + zz
-        _tmp = _mm_unpacklo_ps(_vmn, _vmn); // _tmp = yy | yy | xx + zz | xx + zz
-        _tmp = _mm_movehl_ps(_tmp, _tmp); // _tmp = yy | yy | yy | yy
-        _vmn = _mm_add_ss(_vmn, _tmp); // _vmn = 00 | zz | yy | xx + yy + zz
-        _vmn = _mm_sqrt_ss(_vmn); // _vmn = 00 | zz | yy | vmn
-
-        _vmo = _mm_div_ss(_vmo, _vmn); // _vmo = 00 | zz | yy | scale
-
-        _vmo = _mm_shuffle_ps(_vmo, _vmo, _MM_SHUFFLE(0, 0, 0, 0)); // _vmo = scale | scale | scale | scale
-        _mvel = _mm_mul_ps(_mvel, _vmo);
-
-        _mm_store_fvector(m.vel, _mvel);
+        oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, p_cnt), [&](const oneapi::tbb::blocked_range<u32>& range) {
+            for (u32 i = range.begin(); i != range.end(); ++i)
+                PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
+        });
+    }
+    else
+    {
+        for (u32 i = 0; i < p_cnt; i++)
+            PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
     }
 }
+
+extern float ps_particle_update_coeff;
 
 void PATurbulence::Execute(ParticleEffect* effect, float dt)
 {
@@ -1711,7 +1726,7 @@ void PATurbulence::Execute(ParticleEffect* effect, float dt)
     if (!p_cnt)
         return;
 
-    PATurbulenceExecuteStream(effect, 0, p_cnt, offset, age, epsilon, frequency, octaves, magnitude * ps_particle_update_coeff);
+    PATurbulenceExecuteStream(effect, p_cnt, offset, age, epsilon, frequency, octaves, magnitude * ps_particle_update_coeff);
 }
 
 void PATurbulence::Transform(const Fmatrix& m) {}

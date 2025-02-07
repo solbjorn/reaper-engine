@@ -21,7 +21,7 @@ static Fvector circledef2[LINE_DIVISION];
 static Fvector circledef3[LINE_DIVISION];
 
 constexpr u32 boxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-constexpr int boxvertcount = 48;
+constexpr u32 boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
 
 #define DU_DRAW_RS RCache.dbg_SetRS
@@ -46,35 +46,16 @@ static Fvector boxvert[boxvertcount];
 
 // identity box
 constexpr u32 identboxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-constexpr int identboxwirecount = 24;
-constexpr Fvector identboxwire[identboxwirecount] = {{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
-                                                     {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                     {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
-                                                     {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                     {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
-
-/*
-static const int identboxindexcount = 36;
-static const WORD identboxindices[identboxindexcount] = {
-    0, 1, 2,   2, 3, 0,
-    3, 2, 6,   6, 7, 3,
-    6, 4, 5,   6, 5, 7,
-    4, 1, 5,   1, 0, 5,
-    3, 5, 0,   3, 7, 5,
-    1, 4, 6,   1, 6, 2};
-static const int identboxindexwirecount = 24;
-static const WORD identboxindiceswire[identboxindexwirecount] = {
-    0, 1, 	1, 2,
-    2, 3, 	3, 0,
-    4, 6, 	6, 7,
-    7, 5, 	5, 4,
-    1, 4, 	2, 6,
-    3, 7, 	0, 5};
-*/
+constexpr u32 identboxwirecount = 24;
+static constexpr Fvector identboxwire[identboxwirecount] = {{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
+                                                            {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                            {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
+                                                            {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                            {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
 
 #define SIGN(x) ((x < 0) ? -1 : 1)
 
-DEFINE_VECTOR(FVF::L, FLvertexVec, FLvertexIt)
+DEFINE_VECTOR(FVF::L, FLvertexVec, FLvertexIt);
 
 static FLvertexVec m_GridPoints;
 
@@ -173,24 +154,19 @@ void CDrawUtilities::OnDeviceCreate()
     m_WireCylinder.CreateFromData(D3DPT_LINELIST, DU_CYLINDER_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices, DU_CYLINDER_NUMVERTEX, du_cylinder_lines,
                                   DU_CYLINDER_NUMLINES * 2);
 
-    for (int i = 0; i < LINE_DIVISION; i++)
+    for (u32 i = 0; i < LINE_DIVISION; i++)
     {
-        float angle = M_PI * 2.f * (i / (float)LINE_DIVISION);
-        float _sa = _sin(angle), _ca = _cos(angle);
-        circledef1[i].x = _ca;
-        circledef1[i].y = _sa;
-        circledef1[i].z = 0;
-        circledef2[i].x = 0;
-        circledef2[i].y = _ca;
-        circledef2[i].z = _sa;
-        circledef3[i].x = _sa;
-        circledef3[i].y = 0;
-        circledef3[i].z = _ca;
+        float _sa, _ca;
+        DirectX::XMScalarSinCos(&_sa, &_ca, M_PI * 2.f * (i / (float)LINE_DIVISION));
+
+        circledef1[i].set(_ca, _sa, 0);
+        circledef2[i].set(0, _ca, _sa);
+        circledef3[i].set(_sa, 0, _ca);
     }
+
     // initialize identity box
-    Fbox bb;
-    bb.set(-0.505f, -0.505f, -0.505f, 0.505f, 0.505f, 0.505f);
-    for (int i = 0; i < 8; i++)
+    constexpr Fbox bb{-0.505f, -0.505f, -0.505f, 0.505f, 0.505f, 0.505f};
+    for (u32 i = 0; i < 8; i++)
     {
         Fvector S;
         Fvector p;
@@ -435,8 +411,8 @@ void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, flo
 
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
-    constexpr WORD IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2, 1, 5, 1, 3, 1, 4};
-    constexpr WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
+    static constexpr WORD IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2, 1, 5, 1, 3, 1, 4};
+    static constexpr WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
     u32 vBase, iBase;
 
     Fcolor C;
@@ -715,7 +691,7 @@ void CDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, u32* c
     _VertexStream* Stream = &RCache.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(boxvertcount, vs_L->vb_stride, vBase);
-    for (int i = 0; i < boxvertcount; i++, pv++)
+    for (u32 i = 0; i < boxvertcount; i++, pv++)
     {
         pv->p.mul(boxvert[i], S);
         pv->p.add(C);
@@ -736,7 +712,7 @@ void CDrawUtilities::DrawBox(const Fvector& offs, const Fvector& Size, BOOL bSol
     {
         u32 vBase;
         FVF::L* pv = (FVF::L*)Stream->Lock(identboxwirecount, vs_L->vb_stride, vBase);
-        for (int i = 0; i < identboxwirecount; i++, pv++)
+        for (u32 i = 0; i < identboxwirecount; i++, pv++)
         {
             pv->p.mul(identboxwire[i], Size);
             pv->p.mul(2);

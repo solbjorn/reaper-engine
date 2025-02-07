@@ -105,9 +105,9 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
         _unlink(name);
         file = FS.w_open(name);
     }
-    //if (file)
+    // if (file)
     {
-        //g_position.set_position = false;
+        // g_position.set_position = false;
         IR_Capture(); // capture input
         m_Camera.invert(Device.mView);
 
@@ -147,10 +147,10 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
         m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
         m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
     }
-    //else
+    // else
     //{
-    //    fLifeTime = -1;
-    //}
+    //     fLifeTime = -1;
+    // }
 }
 
 CDemoRecord::~CDemoRecord()
@@ -190,9 +190,7 @@ void CDemoRecord::MakeLevelMapProcess()
         s_dev_flags = psDeviceFlags;
         s_hud_flag.assign(psHUD_Flags);
         psDeviceFlags.zero();
-        psDeviceFlags.set(rsClearBB | rsFullscreen | rsDrawStatic, true);
-        if (!psDeviceFlags.equal(s_dev_flags, rsFullscreen))
-            Device.Reset();
+        psDeviceFlags.set(rsClearBB | rsDrawStatic, true);
     }
     break;
 
@@ -223,10 +221,7 @@ void CDemoRecord::MakeLevelMapProcess()
         {
             psHUD_Flags.assign(s_hud_flag);
 
-            bool bDevReset = !psDeviceFlags.equal(s_dev_flags, rsFullscreen);
             psDeviceFlags = s_dev_flags;
-            if (bDevReset)
-                Device.Reset();
             m_bMakeLevelMap = false;
             m_iLMScreenshotFragment = -1;
         }
@@ -277,8 +272,8 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
 BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
     info.dont_apply = false;
-    //if (!file)
-    //    return TRUE;
+    // if (!file)
+    //     return TRUE;
 
     if (m_bMakeScreenshot)
     {
@@ -363,13 +358,13 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
         m_HPB.y -= m_vR.x;
         m_HPB.z += m_vR.z;
 
-        //if (g_position.set_position)
+        // if (g_position.set_position)
         //{
-        //    m_Position.set(g_position.p);
-        //    g_position.set_position = false;
-        //}
-        //else
-        //    g_position.p.set(m_Position);
+        //     m_Position.set(g_position.p);
+        //     g_position.set_position = false;
+        // }
+        // else
+        //     g_position.p.set(m_Position);
 
         // move
         Fvector vmove;
@@ -465,7 +460,9 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
     case DIK_RIGHT: vT_delta.x += 1.0f; break; // Slide Right
 
     case DIK_S: vT_delta.y -= 1.0f; break; // Slide Up
-    case DIK_W: vT_delta.y += 1.0f; break; // Slide Down
+    case DIK_W:
+        vT_delta.y += 1.0f;
+        break; // Slide Down
 
     // rotate
     case DIK_NUMPAD2: vR_delta.x -= 1.0f; break; // Pitch Down
@@ -484,7 +481,7 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
     update_whith_timescale(m_vR, vR_delta);
 }
 
-void CDemoRecord::IR_OnKeyboardRelease(int dik) 
+void CDemoRecord::IR_OnKeyboardRelease(int dik)
 {
     if (m_b_redirect_input_to_level)
     {
@@ -530,7 +527,7 @@ void CDemoRecord::IR_OnMouseHold(int btn)
     update_whith_timescale(m_vT, vT_delta);
 }
 
-void CDemoRecord::IR_OnMousePress(int btn) 
+void CDemoRecord::IR_OnMousePress(int btn)
 {
     if (m_b_redirect_input_to_level)
     {
@@ -539,7 +536,7 @@ void CDemoRecord::IR_OnMousePress(int btn)
     }
 }
 
-void CDemoRecord::IR_OnMouseRelease(int btn) 
+void CDemoRecord::IR_OnMouseRelease(int btn)
 {
     if (m_b_redirect_input_to_level)
     {
@@ -547,7 +544,6 @@ void CDemoRecord::IR_OnMouseRelease(int btn)
         return;
     }
 }
-
 
 void CDemoRecord::RecordKey()
 {

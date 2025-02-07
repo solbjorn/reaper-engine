@@ -51,7 +51,8 @@ void CPortal::OnRender()
         RCache.set_xform_world(Fidentity);
         // draw solid
         RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
-        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f, float(color_get_A(portalColor)) / 255.f);
+        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                     float(color_get_A(portalColor)) / 255.f);
         RCache.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
 
         // draw wire
@@ -64,7 +65,8 @@ void CPortal::OnRender()
             Device.SetNearer(TRUE);
         }
         RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
-        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f, float(color_get_A(portalColor)) / 255.f);
+        RCache.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
+                     float(color_get_A(portalColor)) / 255.f);
         RCache.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
         if (bDebug)
         {
@@ -96,7 +98,6 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
     Fvector N, T;
     N.set(0, 0, 0);
 
-    FPU::m64r();
     u32 _cnt = 0;
     for (int i = 2; i < vcnt; i++)
     {
@@ -111,12 +112,6 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
     R_ASSERT2(_cnt, "Invalid portal detected");
     N.div(float(_cnt));
     P.build(poly[0], N);
-    FPU::m24r();
-
-    /*
-    if (_abs(1-P.n.magnitude())<EPS)
-    Debug.fatal		(DEBUG_INFO,"Degenerated portal found at {%3.2f,%3.2f,%3.2f}.",VPUSH(poly[0]));
-    */
 }
 
 //

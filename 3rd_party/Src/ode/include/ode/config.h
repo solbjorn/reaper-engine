@@ -29,78 +29,75 @@
 #include <math.h>
 #include <string.h>
 
-#include <malloc.h>		// for alloca under windows
+#include <malloc.h> // for alloca under windows
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Well-defined common data types...need to be defined for 64 bit systems */
-#if defined(__aarch64__) || defined(__alpha__) || defined(__ppc64__) \
-    || defined(__s390__) || defined(__s390x__) || defined(__zarch__) \
-    || defined(__mips__) || defined(__powerpc64__) || defined(__riscv) \
-    || defined(__loongarch64) || defined(__e2k__) \
-    || (defined(__sparc__) && defined(__arch64__))
-    #include <stdint.h>
-    typedef int64_t         dint64;
-    typedef uint64_t        duint64;
-    typedef int32_t         dint32;
-    typedef uint32_t        duint32;
-    typedef int16_t         dint16;
-    typedef uint16_t        duint16;
-    typedef int8_t          dint8;
-    typedef uint8_t         duint8;
+#if defined(__aarch64__) || defined(__alpha__) || defined(__ppc64__) || defined(__s390__) || defined(__s390x__) || defined(__zarch__) || defined(__mips__) || \
+    defined(__powerpc64__) || defined(__riscv) || defined(__loongarch64) || defined(__e2k__) || (defined(__sparc__) && defined(__arch64__))
+#include <stdint.h>
+typedef int64_t dint64;
+typedef uint64_t duint64;
+typedef int32_t dint32;
+typedef uint32_t duint32;
+typedef int16_t dint16;
+typedef uint16_t duint16;
+typedef int8_t dint8;
+typedef uint8_t duint8;
 
-    typedef intptr_t        dintptr;
-    typedef uintptr_t       duintptr;
-    typedef ptrdiff_t       ddiffint;
-    typedef size_t          dsizeint;
+typedef intptr_t dintptr;
+typedef uintptr_t duintptr;
+typedef ptrdiff_t ddiffint;
+typedef size_t dsizeint;
 
 #elif (defined(_M_IA64) || defined(__ia64__) || defined(_M_AMD64) || defined(__x86_64__)) && !defined(__ILP32__) && !defined(_ILP32)
-  #define X86_64_SYSTEM   1
+#define X86_64_SYSTEM 1
 #if defined(_MSC_VER)
-  typedef __int64         dint64;
-  typedef unsigned __int64 duint64;
+typedef __int64 dint64;
+typedef unsigned __int64 duint64;
 #else
 #if defined(_LP64) || defined(__LP64__)
-typedef long              dint64;
-typedef unsigned long     duint64;
+typedef long dint64;
+typedef unsigned long duint64;
 #else
-  typedef long long       dint64;
-  typedef unsigned long long duint64;
+typedef long long dint64;
+typedef unsigned long long duint64;
 #endif
 #endif
-  typedef int             dint32;
-  typedef unsigned int    duint32;
-  typedef short           dint16;
-  typedef unsigned short  duint16;
-  typedef signed char     dint8;
-  typedef unsigned char   duint8;
+typedef int dint32;
+typedef unsigned int duint32;
+typedef short dint16;
+typedef unsigned short duint16;
+typedef signed char dint8;
+typedef unsigned char duint8;
 
-  typedef dint64          dintptr;
-  typedef duint64         duintptr;
-  typedef dint64          ddiffint;
-  typedef duint64         dsizeint;
+typedef dint64 dintptr;
+typedef duint64 duintptr;
+typedef dint64 ddiffint;
+typedef duint64 dsizeint;
 
 #else
 #if defined(_MSC_VER)
-  typedef __int64         dint64;
-  typedef unsigned __int64 duint64;
+typedef __int64 dint64;
+typedef unsigned __int64 duint64;
 #else
-  typedef long long       dint64;
-  typedef unsigned long long duint64;
+typedef long long dint64;
+typedef unsigned long long duint64;
 #endif
-  typedef int             dint32;
-  typedef unsigned int    duint32;
-  typedef short           dint16;
-  typedef unsigned short  duint16;
-  typedef signed char     dint8;
-  typedef unsigned char   duint8;
+typedef int dint32;
+typedef unsigned int duint32;
+typedef short dint16;
+typedef unsigned short duint16;
+typedef signed char dint8;
+typedef unsigned char duint8;
 
-  typedef dint32          dintptr;
-  typedef duint32         duintptr;
-  typedef dint32          ddiffint;
-  typedef duint32         dsizeint;
+typedef dint32 dintptr;
+typedef duint32 duintptr;
+typedef dint32 ddiffint;
+typedef duint32 dsizeint;
 
 #endif
 
@@ -123,38 +120,31 @@ typedef unsigned long     duint64;
 #endif
 #else
 #ifdef dSINGLE
-#define dInfinity ((float)(1.0/0.0))
+#define dInfinity ((float)(1.0 / 0.0))
 #else
-#define dInfinity (1.0/0.0)
+#define dInfinity (1.0 / 0.0)
 #endif
 #endif
 
+#define SHAREDLIBIMPORT __declspec(dllimport)
 
-#define SHAREDLIBIMPORT __declspec (dllimport)
-
-#define SHAREDLIBEXPORT __declspec (dllexport)
-
-
+#define SHAREDLIBEXPORT __declspec(dllexport)
 
 /* some types. assume `int' >= 32 bits */
 
-typedef unsigned int    uint;
+typedef unsigned int uint;
 
-typedef int             int32;
+typedef int int32;
 
-typedef unsigned int    uint32;
+typedef unsigned int uint32;
 
-typedef short           int16;
+typedef short int16;
 
-typedef unsigned short  uint16;
+typedef unsigned short uint16;
 
-typedef char            int8;
+typedef char int8;
 
-typedef unsigned char   uint8;
-
-
-
-
+typedef unsigned char uint8;
 
 /* an integer type that we can safely cast a pointer to and from without
 
@@ -163,10 +153,6 @@ typedef unsigned char   uint8;
  */
 
 typedef uintptr_t intP;
-
-
-
-
 
 /* if we're compiling on a pentium, we may need to know the clock rate so
 
@@ -180,8 +166,6 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #ifdef PENTIUM
 
 #ifndef PENTIUM_HZ
@@ -191,10 +175,6 @@ typedef uintptr_t intP;
 #endif
 
 #endif
-
-
-
-
 
 /* the efficient alignment. most platforms align data structures to some
 
@@ -212,13 +192,7 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #define EFFICIENT_ALIGNMENT 16
-
-
-
-
 
 /* for unix, define this if your system supports anonymous memory maps
 
@@ -226,13 +200,7 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #define MMAP_ANONYMOUS
-
-
-
-
 
 #ifdef __cplusplus
 }

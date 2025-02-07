@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "..\ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
@@ -97,8 +96,6 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     bDetail_Diffuse = FALSE;
     bDetail_Bump = FALSE;
 
-
-
     if (bDetail)
     {
         DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
@@ -130,6 +127,7 @@ void CBlender_Compile::PassBegin()
     passConstants.clear();
     xr_strcpy(pass_ps, "null");
     xr_strcpy(pass_vs, "null");
+    ctable.clear();
     dwStage = 0;
 }
 

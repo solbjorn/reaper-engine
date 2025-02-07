@@ -13,11 +13,8 @@
 
 #include <xmmintrin.h>
 
-const float dbgOffset = 0.f;
-const int dbgItems = 128;
-
 //--------------------------------------------------- Decompression
-static int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
+static constexpr int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
 
 void bwdithermap(int levels, int magic[16][16])
 {
@@ -34,11 +31,11 @@ void bwdithermap(int levels, int magic[16][16])
      * pixel value with mod N == 0 at the next level).
      */
 
-    float magicfact = (N - 1) / 16;
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            for (int k = 0; k < 4; k++)
-                for (int l = 0; l < 4; l++)
+    const float magicfact = (N - 1) / 16;
+    for (u32 i = 0; i < 4; i++)
+        for (u32 j = 0; j < 4; j++)
+            for (u32 k = 0; k < 4; k++)
+                for (u32 l = 0; l < 4; l++)
                     magic[4 * k + i][4 * l + j] = (int)(0.5 + magic4x4[i][j] * magicfact + (magic4x4[k][l] / 16.) * magicfact);
 }
 //--------------------------------------------------- Decompression
@@ -78,7 +75,7 @@ CDetailManager::CDetailManager()
     dm_cache1_line = dm_current_cache1_line;
     dm_cache_size = dm_current_cache_size;
     dm_fade = dm_current_fade;
-    
+
     cache_level1 = (CacheSlot1**)xr_malloc(dm_cache1_line * sizeof(CacheSlot1*));
     for (u32 i = 0; i < dm_cache1_line; ++i)
     {
@@ -120,18 +117,7 @@ CDetailManager::~CDetailManager()
     }
     xr_mfree(cache_level1);
 }
-/*
- */
 
-/*
-void dump	(CDetailManager::vis_list& lst)
-{
-    for (int i=0; i<lst.size(); i++)
-    {
-        Msg("%8x / %8x / %8x",	lst[i]._M_start, lst[i]._M_finish, lst[i]._M_end_of_storage._M_data);
-    }
-}
-*/
 void CDetailManager::Load()
 {
     // Open file stream
@@ -148,7 +134,9 @@ void CDetailManager::Load()
     // Header
     dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
     R_ASSERT(dtH.version == DETAIL_VERSION);
+
     u32 m_count = dtH.object_count;
+    objects.reserve(m_count);
 
     // Models
     IReader* m_fs = dtFS->open_chunk(1);
@@ -203,11 +191,12 @@ void CDetailManager::Unload()
     else
         soft_Unload();
 
-    for (DetailIt it = objects.begin(); it != objects.end(); it++)
+    for (CDetail* detailObject : objects)
     {
-        (*it)->Unload();
-        xr_delete(*it);
+        detailObject->Unload();
+        xr_delete(detailObject);
     }
+
     objects.clear();
     m_visibles[0].clear();
     m_visibles[1].clear();
@@ -222,8 +211,8 @@ extern BOOL ps_no_scale_on_fade;
 void CDetailManager::UpdateVisibleM()
 {
     // Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Для теней от травы SSS16 фикс не нужен, наоборот вредит.
-   // if (Device.m_SecondViewport.IsSVPFrame())
-   //     return;
+    // if (Device.m_SecondViewport.IsSVPFrame())
+    //     return;
 
     // Clean up
     for (auto& vec : m_visibles)
@@ -300,7 +289,10 @@ void CDetailManager::UpdateVisibleM()
                     // Calc fade factor	(per slot)
                     float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
                     if (dist_sq > fade_limit)
+                    {
+                        S.hidden = true;
                         continue;
+                    }
                     float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
                     float alpha_i = 1.f - alpha;
                     float dist_sq_rcp = 1.f / dist_sq;
@@ -329,6 +321,7 @@ void CDetailManager::UpdateVisibleM()
                             float ssa = ps_no_scale_on_fade ? scale : scale * scale * Rq_drcp;
                             if (ssa < r_ssaDISCARD)
                             {
+                                Item.alpha_target = 0;
                                 continue;
                             }
                             u32 vis_id = 0;
@@ -336,6 +329,13 @@ void CDetailManager::UpdateVisibleM()
                                 vis_id = Item.vis_ID;
 
                             sp.r_items[vis_id].push_back(el);
+
+                            if (S.hidden)
+                            {
+                                Item.alpha = 0;
+                                S.hidden = false;
+                            }
+                            Item.alpha_target = 1;
                             Item.distance = dist_sq;
                             Item.position = S.vis.sphere.P;
 
@@ -381,12 +381,14 @@ void CDetailManager::Render()
     // MT wait
     if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && async_started)
     {
-        //Msg("--[%s] async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
+        // Msg("--[%s] async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(),
+        // Device.m_SecondViewport.IsSVPFrame());
         WaitAsync();
     }
     else
     {
-        //Msg("~~[%s] NO async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
+        // Msg("~~[%s] NO async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(),
+        // Device.m_SecondViewport.IsSVPFrame());
         MT_CALC();
     }
 
@@ -412,7 +414,8 @@ u32 reset_frame = 0;
 
 void CDetailManager::StartAsync()
 {
-    if (!(ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && //костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
+    if (!(ps_r2_ls_flags.test(
+              (u32)R2FLAG_EXP_MT_DETAILS) && // костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
           (Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0))))
     {
         async_started = false;
@@ -431,8 +434,8 @@ void CDetailManager::StartAsync()
     if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
         return;
 
-    //Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
-    //Msg("##[%s] frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
+    // Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
+    // Msg("##[%s] frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
 
     awaiter = TTAPI->submit([this]() { MT_CALC(); });
     async_started = true;
@@ -472,7 +475,7 @@ void CDetailManager::MT_CALC()
     int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
     RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
-    cache_Update(s_x, s_z, EYE, dm_max_decompress);
+    cache_Update(s_x, s_z, EYE);
     RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
 
     UpdateVisibleM();
@@ -484,6 +487,7 @@ void CDetailManager::details_clear()
 {
     // Disable fade, next render will be scene
     fade_distance = 99999;
+
     if (ps_ssfx_grass_shadows.x <= 0)
         return;
 

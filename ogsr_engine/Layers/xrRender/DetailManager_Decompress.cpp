@@ -50,7 +50,7 @@ static void draw_obb(const Fmatrix& matrix, const u32& color)
     matrix.transform_tiny(aabb[6], Fvector().set(+1, +1, +1)); // 6
     matrix.transform_tiny(aabb[7], Fvector().set(+1, -1, +1)); // 7
 
-    u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
+    static constexpr u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
 
     rdebug_render->add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color);
 }
@@ -61,7 +61,7 @@ bool det_render_debug = false;
 #include "../../xr_3da/gamemtllib.h"
 
 extern float ps_current_detail_scale;
-//#define		DBG_SWITCHOFF_RANDOMIZE
+
 void CDetailManager::cache_Decompress(Slot* S)
 {
     VERIFY(S);
@@ -77,7 +77,7 @@ void CDetailManager::cache_Decompress(Slot* S)
     D.vis.box.get_CD(bC, bD);
 
     xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
-    auto triCount = xrc.r_count();
+    const auto triCount = xrc.r_count();
     CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
     Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
 
@@ -172,6 +172,7 @@ void CDetailManager::cache_Decompress(Slot* S)
             float y = D.vis.box.min.y - 5;
             Fvector dir;
             dir.set(0, -1, 0);
+            Fvector3 terrain_normal;
 
             float r_u, r_v, r_range;
             for (size_t tid = 0; tid < triCount; tid++)
@@ -189,13 +190,20 @@ void CDetailManager::cache_Decompress(Slot* S)
                         float y_test = Item_P.y - r_range;
                         if (y_test > y)
                             y = y_test;
+                        terrain_normal.mknormal(Tv[0], Tv[1], Tv[2]);
                     }
                 }
-
             }
+
+            // Slope Limit
+            float DotP = terrain_normal.dotproduct(dir);
+            if (DotP > -(1.0f - ::Random.randF(ps_ssfx_terrain_grass_slope * 0.8f, ps_ssfx_terrain_grass_slope)))
+                continue;
+
             if (y < D.vis.box.min.y)
                 continue;
             Item_P.y = y;
+            Item.normal = terrain_normal; // Save terrain normal here to feed the grass shader later.
 
             // Angles and scale
 #ifndef DBG_SWITCHOFF_RANDOMIZE
@@ -215,37 +223,33 @@ void CDetailManager::cache_Decompress(Slot* S)
             Item.mRotY.rotateY(0);
 #endif
 
+            // Terrain Alignment
+            if (ps_ssfx_terrain_grass_align > 0)
+            {
+                // Current matrix
+                const Fmatrix CurrMatrix = Item.mRotY;
+
+                // Align to terrain
+                Item.mRotY.j.set(terrain_normal);
+                Fvector::generate_orthonormal_basis(Item.mRotY.j, Item.mRotY.i, Item.mRotY.k);
+
+                // Apply random rotation from old matrix
+                Item.mRotY.mulB_43(CurrMatrix);
+            }
+
             Item.mRotY.translate_over(Item_P);
             mScale.scale(Item.scale, Item.scale, Item.scale);
             mXform.mul_43(Item.mRotY, mScale);
             ItemBB.xform(Dobj->bv_bb, mXform);
             Bounds.merge(ItemBB);
 
-
 #ifdef DEBUG
             if (det_render_debug)
                 draw_obb(mXform, color_rgba(255, 0, 0, 255)); // Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
 #endif
 
-                // Color
-                /*
-                DetailPalette*	c_pal			= (DetailPalette*)&DS.color;
-                float gray255	[4];
-                gray255[0]						=	255.f*float(c_pal->a0)/15.f;
-                gray255[1]						=	255.f*float(c_pal->a1)/15.f;
-                gray255[2]						=	255.f*float(c_pal->a2)/15.f;
-                gray255[3]						=	255.f*float(c_pal->a3)/15.f;
-                */
-                // float c_f						=	1.f;	//Interpolate		(gray255,x,z,d_size)+.5f;
-                // int c_dw						=	255;	//iFloor			(c_f);
-                // clamp							(c_dw,0,255);
-                // Item.C_dw						=	color_rgba		(c_dw,c_dw,c_dw,255);
-
             Item.c_hemi = DS.r_qclr(DS.c_hemi, 15);
             Item.c_sun = DS.r_qclr(DS.c_dir, 15);
-
-            //? hack: RGB = hemi
-            //? Item.c_rgb.add					(ps_r__Detail_rainbow_hemi*Item.c_hemi);
 
             // Vis-sorting
 #ifndef DBG_SWITCHOFF_RANDOMIZE
@@ -270,7 +274,7 @@ void CDetailManager::cache_Decompress(Slot* S)
             Item.vis_ID = 0;
 #endif
             // Save it
-            D.G[index].items.push_back(ItemP);
+            D.G[index].items.emplace_back(ItemP);
         }
     }
 

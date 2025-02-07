@@ -181,7 +181,8 @@ void CBaseMonster::reload(LPCSTR section)
     CInventoryOwner::reload(section);
     movement().reload(section);
 
-    if (g_Alive()) {
+    if (g_Alive())
+    {
         // load base sounds
         LOAD_SOUND("sound_idle", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eLowPriority, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundIdle);
         LOAD_SOUND("sound_distant_idle", SOUND_TYPE_MONSTER_TALKING, MonsterSound::eLowPriority + 1, MonsterSound::eBaseChannel, MonsterSound::eMonsterSoundIdleDistant);
@@ -282,10 +283,10 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
 
     CSE_Abstract* e = (CSE_Abstract*)(DC);
 
-    m_pPhysics_support->in_NetSpawn(e); //этот выззов с послудующими не связан,
-                                        //но там есть хак - запуск анимации на всякий случай если никто больше ее не запустил
-                                        //поэтому в основной версии на всякий случай пусть будет здесь,
-                                        //но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
+    m_pPhysics_support->in_NetSpawn(e); // этот выззов с послудующими не связан,
+                                        // но там есть хак - запуск анимации на всякий случай если никто больше ее не запустил
+                                        // поэтому в основной версии на всякий случай пусть будет здесь,
+                                        // но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
 
     R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),
               "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
@@ -439,15 +440,10 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
         READ_SETTINGS(data.m_attack_effector.ce_power, "ce_power", r_float, ini, ppi_section);
 
         data.m_attack_effector_present = true;
-    } else {
-        data.m_attack_effector_present = false;
     }
 }
 
-void CBaseMonster::settings_load(LPCSTR section)
-{
-    settings_read(pSettings, section, m_current_settings);
-}
+void CBaseMonster::settings_load(LPCSTR section) { settings_read(pSettings, section, m_current_settings); }
 
 void CBaseMonster::settings_overrides()
 {

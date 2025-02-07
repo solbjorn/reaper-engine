@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "../xrRender/ResourceManager.h"
 
 #include "../../xr_3da/render.h"
@@ -114,10 +113,7 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
     }
 }
 
-ID3DBaseTexture* CTexture::surface_get() const
-{
-    return pSurface;
-}
+ID3DBaseTexture* CTexture::surface_get() const { return pSurface; }
 
 void CTexture::PostLoad()
 {
@@ -140,7 +136,7 @@ void CTexture::apply_load(u32 dwStage)
     bind(dwStage);
 };
 
-void CTexture::Apply(u32 dwStage)
+void CTexture::Apply(u32 dwStage) const
 {
     if (dwStage < rstVertex) //	Pixel shader stage resources
     {
@@ -196,7 +192,7 @@ void CTexture::apply_theora(u32 dwStage)
     Apply(dwStage);
 }
 
-void CTexture::apply_avi(u32 dwStage)
+void CTexture::apply_avi(u32 dwStage) const
 {
     if (pAVI->NeedUpdate())
     {
@@ -243,7 +239,7 @@ void CTexture::apply_seq(u32 dwStage)
     Apply(dwStage);
 }
 
-void CTexture::apply_normal(u32 dwStage)
+void CTexture::apply_normal(u32 dwStage) const
 {
     // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
     Apply(dwStage);
@@ -265,18 +261,15 @@ void CTexture::Load(const char* Name)
         return;
 
     flags.bLoaded = true;
-
     flags.memUsage = 0;
 
-    if (0 == stricmp(Name, "$null"))
-    {
+    if (!stricmp(Name, "$null"))
         return;
-    }
 
-    if (0 != strstr(Name, "$user$"))
-    {
+    // we need to check only the beginning of the string,
+    // so let's use strncmp instead of strstr.
+    if (!strncmp(Name, "$user$", sizeof("$user$") - 1))
         return;
-    }
 
     Preload(Name);
 
@@ -445,7 +438,6 @@ void CTexture::Load(const char* Name)
         if (pSurface)
         {
             flags.memUsage = mem;
-            
             CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
         }
     }
@@ -482,8 +474,6 @@ void CTexture::Unload()
     xr_sprintf(msg_buff, sizeof(msg_buff), "* Unloading texture [%s] pSurface RefCount=", cName.c_str());
 #endif // DEBUG
 
-    // if (flags.bLoaded) Msg("* Unloaded: %s",cName.c_str());
-
     flags.bLoaded = false;
 
     if (!seqDATA.empty())
@@ -518,16 +508,16 @@ void CTexture::video_Play(BOOL looped, u32 _time)
         pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Device.dwTimeContinual);
 }
 
-void CTexture::video_Pause(BOOL state)
+void CTexture::video_Pause(BOOL state) const
 {
     if (pTheora)
         pTheora->Pause(state);
 }
 
-void CTexture::video_Stop()
+void CTexture::video_Stop() const
 {
     if (pTheora)
         pTheora->Stop();
 }
 
-BOOL CTexture::video_IsPlaying() { return (pTheora) ? pTheora->IsPlaying() : FALSE; }
+BOOL CTexture::video_IsPlaying() const { return (pTheora) ? pTheora->IsPlaying() : FALSE; }

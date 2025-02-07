@@ -3,11 +3,11 @@
 
 #include "../../xrcdb/ispatial.h"
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
 #include "light_package.h"
 #include "light_smapvis.h"
 #include "light_GI.h"
-#endif //(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+
+extern Fvector4 ps_ssfx_volumetric;
 
 #define MIN_VIRTUAL_SIZE 0.01f
 
@@ -34,20 +34,30 @@ public:
     vis_data hom;
     u32 frame_render;
 
+    int omnipart_num;
+    int sss_id;
+    int sss_refresh;
+    s8 sss_priority;
+    light* omipart_parent;
+    float distance;
+    float distance_lpos;
+
     float m_volumetric_quality;
     float m_volumetric_intensity;
     float m_volumetric_distance;
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+    float virtual_size;
+
     float falloff; // precalc to make light equal to zero at light range
     float attenuation0; // Constant attenuation
     float attenuation1; // Linear attenuation
     float attenuation2; // Quadratic attenuation
 
-    float virtual_size;
     light* omnipart[6];
     xr_vector<light_indirect> indirect;
+#ifdef DEBUG
     u32 indirect_photons;
+#endif
 
     smapvis svis; // used for 6-cubemap faces
 
@@ -55,11 +65,9 @@ public:
     ref_shader s_point;
     ref_shader s_volumetric;
 
-#if (RENDER == R_R3) || (RENDER == R_R4)
-    ref_shader s_spot_msaa[8];
-    ref_shader s_point_msaa[8];
-    ref_shader s_volumetric_msaa[8];
-#endif //	(RENDER==R_R3) || (RENDER==R_R4)
+    ref_shader s_spot_msaa[1];
+    ref_shader s_point_msaa[1];
+    ref_shader s_volumetric_msaa[1];
 
     u32 m_xform_frame;
     Fmatrix m_xform;
@@ -82,7 +90,6 @@ public:
             Fmatrix combine;
             s32 minX, maxX;
             s32 minY, maxY;
-            BOOL transluent;
         } D;
         struct _P
         {
@@ -99,10 +106,8 @@ public:
             u32 size;
             u32 posX;
             u32 posY;
-            BOOL transluent;
         } S;
     } X;
-#endif //	(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 public:
     virtual void set_type(LT type) { flags.type = type; }
@@ -110,23 +115,24 @@ public:
     virtual void set_active(bool b);
     virtual bool get_active() { return flags.bActive; }
     virtual void set_shadow(bool b) { flags.bShadow = b; }
-    virtual void set_volumetric(bool b) { flags.bVolumetric = b; }
+    virtual void set_volumetric(bool b)
+    {
+        if (ps_ssfx_volumetric.x > 0)
+            b = true;
+
+        flags.bVolumetric = b;
+    }
 
     virtual void set_volumetric_quality(float fValue) { m_volumetric_quality = fValue; }
-    virtual void set_volumetric_intensity(float fValue) { m_volumetric_intensity = fValue; }
-    virtual void set_volumetric_distance(float fValue) { m_volumetric_distance = fValue; }
+    virtual void set_volumetric_intensity(float fValue) { m_volumetric_intensity = ps_ssfx_volumetric.y; }
+    virtual void set_volumetric_distance(float fValue) { m_volumetric_distance = 1.0f; }
 
     virtual void set_position(const Fvector& P);
     virtual void set_rotation(const Fvector& D, const Fvector& R);
     virtual void set_cone(float angle);
     virtual void set_range(float R);
     float get_range() const override { return range; };
-    virtual void set_virtual_size(float S)
-    {
-#if RENDER != R_R1
-        virtual_size = (S > MIN_VIRTUAL_SIZE) ? S : MIN_VIRTUAL_SIZE;
-#endif
-    }
+    virtual void set_virtual_size(float S) { virtual_size = (S > MIN_VIRTUAL_SIZE) ? S : MIN_VIRTUAL_SIZE; }
 
     virtual void set_color(const Fcolor& C) { color.set(C); }
     virtual void set_color(float r, float g, float b) { color.set(r, g, b, 1); }
@@ -144,14 +150,12 @@ public:
     virtual IRender_Light* dcast_Light() { return this; }
 
     vis_data& get_homdata();
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
     void gi_generate();
     void xform_calc();
     void vis_prepare();
     void vis_update();
     void export_to(light_Package& dest);
     void set_attenuation_params(float a0, float a1, float a2, float fo);
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
     float get_LOD();
 

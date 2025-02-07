@@ -30,6 +30,7 @@
 #include "map_location.h"
 #include "phworld.h"
 #include "../xrcdb/xr_collide_defs.h"
+#include "../xr_3da/Rain.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
 #include "GamePersistent.h"
@@ -190,17 +191,27 @@ float rain_factor() { return g_pGamePersistent->Environment().CurrentEnv->rain_d
 
 float rain_hemi()
 {
-    CObject* E = g_pGameLevel->CurrentViewEntity();
-    if (E && E->renderable_ROS())
+    CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain;
+
+    if (rain)
     {
-        float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
-        float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
-        hemi_val = _max(hemi_val, hemi_cube[2]);
-        hemi_val = _max(hemi_val, hemi_cube[3]);
-        hemi_val = _max(hemi_val, hemi_cube[5]);
-        return hemi_val;
+        return rain->GetRainHemi();
     }
-    return 0.f;
+    else
+    {
+        CObject* E = g_pGameLevel->CurrentViewEntity();
+        if (E && E->renderable_ROS())
+        {
+            float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
+            float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
+            hemi_val = _max(hemi_val, hemi_cube[2]);
+            hemi_val = _max(hemi_val, hemi_cube[3]);
+            hemi_val = _max(hemi_val, hemi_cube[5]);
+
+            return hemi_val;
+        }
+        return 0;
+    }
 }
 
 u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -261,10 +272,7 @@ void map_change_spot_ser(u16 id, LPCSTR spot_type, BOOL v)
     ml->SetSerializable(!!v);
 }
 
-void prefetch_many_sounds( LPCSTR prefix ) {
-  Level().PrefetchManySoundsLater( prefix );
-}
-
+void prefetch_many_sounds(LPCSTR prefix) { Level().PrefetchManySoundsLater(prefix); }
 
 void map_remove_object_spot(u16 id, LPCSTR spot_type) { Level().MapManager().RemoveMapLocation(spot_type, id); }
 
@@ -582,11 +590,26 @@ void remove_cam_effector(int id) { Actor()->Cameras().RemoveCamEffector((ECamEff
 
 float get_snd_volume() { return psSoundVFactor; }
 
+float get_rain_volume()
+{
+    CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain;
+    return rain ? rain->GetRainVolume() : 0.0f;
+}
+
 void set_snd_volume(float v)
 {
     psSoundVFactor = v;
     clamp(psSoundVFactor, 0.0f, 1.0f);
 }
+
+float get_music_volume() { return psSoundVMusicFactor; }
+
+void set_music_volume(float v)
+{
+    psSoundVMusicFactor = v;
+    clamp(psSoundVMusicFactor, 0.0f, 1.0f);
+}
+
 #include "actor_statistic_mgr.h"
 void add_actor_points(LPCSTR sect, LPCSTR detail_key, int cnt, int pts) { return Actor()->StatisticMgr().AddPoints(sect, detail_key, cnt, pts); }
 
@@ -724,19 +747,19 @@ void AdvanceGameTime(u32 _ms)
 }
 
 //
-void send_event_key_press(int dik) //Нажатие клавиши
+void send_event_key_press(int dik) // Нажатие клавиши
 {
     Level().IR_OnKeyboardPress(dik);
 }
-void send_event_key_release(int dik) //Отпускание клавиши
+void send_event_key_release(int dik) // Отпускание клавиши
 {
     Level().IR_OnKeyboardRelease(dik);
 }
-void send_event_key_hold(int dik) //Удержание клавиши.
+void send_event_key_hold(int dik) // Удержание клавиши.
 {
     Level().IR_OnKeyboardHold(dik);
 }
-void send_event_mouse_wheel(int vol) //Вращение колеса мыши
+void send_event_mouse_wheel(int vol) // Вращение колеса мыши
 {
     Level().IR_OnMouseWheel(vol);
 }
@@ -884,19 +907,16 @@ int get_character_community_team(LPCSTR comm)
 #include "../xr_3da/fdemorecord.h"
 
 void demo_record_start()
-{ 
+{
     string_path fn{};
     g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
 }
 
-void demo_record_stop() 
-{
-    g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
-}
+void demo_record_stop() { g_pGameLevel->Cameras().RemoveCamEffector(cefDemo); }
 
 Fvector demo_record_get_position()
-{ 
-    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo); 
+{
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo);
     return demo->m_Position;
 }
 
@@ -1007,9 +1027,21 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity)
                   .def_readwrite("m_fSunShaftsIntensity", &CEnvDescriptor::m_fSunShaftsIntensity)
                   .property("m_identifier", [](CEnvDescriptor* self) { return self->m_identifier.c_str(); })
-                  .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient),
+                  .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient)
+                  .def_readwrite("clouds_color", &CEnvDescriptor::clouds_color)
+                  .def_readwrite("sky_color", &CEnvDescriptor::sky_color)
+                  .def_readwrite("fog_color", &CEnvDescriptor::fog_color)
+                  .def_readwrite("rain_color", &CEnvDescriptor::rain_color)
+                  .def_readwrite("ambient", &CEnvDescriptor::ambient)
+                  .def_readwrite("hemi_color", &CEnvDescriptor::hemi_color)
+                  .def_readwrite("sun_color", &CEnvDescriptor::sun_color)
+                  .def("set_sun", &CEnvDescriptor::set_sun),
               class_<CEnvironment>("CEnvironment")
-                  .def("getCurrentWeather", [](CEnvironment* self, const size_t idx) { R_ASSERT(idx < 2); return self->Current[idx]; }),
+                  .def("getCurrentWeather",
+                       [](CEnvironment* self, const size_t idx) {
+                           R_ASSERT(idx < 2);
+                           return self->Current[idx];
+                       }),
 
               class_<CPHCall>("CPHCall").def("set_pause", &CPHCall::setPause),
 
@@ -1021,12 +1053,8 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("walk_speed", &CEffectorBobbing::m_fSpeedWalk)
                   .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp),
 
-        class_<DBG_ScriptObject>("DBG_ScriptObject")
-                  .enum_("dbg_type")[
-                      value("line", (int)DebugRenderType::eDBGLine), 
-                      value("sphere", (int)DebugRenderType::eDBGSphere), 
-                      value("box", (int)DebugRenderType::eDBGBox)
-                  ]
+              class_<DBG_ScriptObject>("DBG_ScriptObject")
+                  .enum_("dbg_type")[value("line", (int)DebugRenderType::eDBGLine), value("sphere", (int)DebugRenderType::eDBGSphere), value("box", (int)DebugRenderType::eDBGBox)]
                   .def("cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere)
                   .def("cast_dbg_box", &DBG_ScriptObject::cast_dbg_box)
                   .def("cast_dbg_line", &DBG_ScriptObject::cast_dbg_line)
@@ -1034,122 +1062,108 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("hud", &DBG_ScriptObject::m_hud)
                   .def_readwrite("visible", &DBG_ScriptObject::m_visible),
 
-              class_<DBG_ScriptSphere, DBG_ScriptObject>("DBG_ScriptSphere")
-                .def_readwrite("matrix", &DBG_ScriptSphere::m_mat),
-              class_<DBG_ScriptBox, DBG_ScriptObject>("DBG_ScriptBox")
-                .def_readwrite("matrix", &DBG_ScriptBox::m_mat)
-                .def_readwrite("size", &DBG_ScriptBox::m_size),
-              class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine")
-                .def_readwrite("point_a", &DBG_ScriptLine::m_point_a)
-                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b)
-        ,
-        class_<CKeyBinding>("CKeyBinding")
-            .def_readwrite("ignore", &CKeyBinding::ignore)
-        ];
+              class_<DBG_ScriptSphere, DBG_ScriptObject>("DBG_ScriptSphere").def_readwrite("matrix", &DBG_ScriptSphere::m_mat),
+              class_<DBG_ScriptBox, DBG_ScriptObject>("DBG_ScriptBox").def_readwrite("matrix", &DBG_ScriptBox::m_mat).def_readwrite("size", &DBG_ScriptBox::m_size),
+              class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine").def_readwrite("point_a", &DBG_ScriptLine::m_point_a).def_readwrite("point_b", &DBG_ScriptLine::m_point_b),
+              class_<CKeyBinding>("CKeyBinding").def_readwrite("ignore", &CKeyBinding::ignore)];
 
-        module(L, "debug_render")[
-            def("add_object", add_object), 
-            def("remove_object", remove_object), 
-            def("get_object", get_object)
-        ];
+    module(L, "debug_render")[def("add_object", add_object), def("remove_object", remove_object), def("get_object", get_object)];
 
-        module(L, "level")[
-            // obsolete\deprecated
-            def("object_by_id", &get_object_by_id), def("is_removing_objects", &is_removing_objects_script),
+    module(L, "level")[
+        // obsolete\deprecated
+        def("object_by_id", &get_object_by_id), def("is_removing_objects", &is_removing_objects_script),
 #ifdef DEBUG
-            def("debug_object", &get_object_by_name), def("debug_actor", &tpfGetActor), def("check_object", &check_object),
+        def("debug_object", &get_object_by_name), def("debug_actor", &tpfGetActor), def("check_object", &check_object),
 #endif
 
-            def("get_weather", &get_weather), def("get_weather_prev", &get_weather_prev), def("get_weather_last_shift", &get_weather_last_shift), def("set_weather", &set_weather),
-            def("set_weather_next", &set_weather_next), def("set_weather_fx", &set_weather_fx), def("start_weather_fx_from_time", &start_weather_fx_from_time),
-            def("is_wfx_playing", &is_wfx_playing), def("get_wfx_time", &get_wfx_time), def("stop_weather_fx", &stop_weather_fx), def("environment", &environment),
+        def("get_weather", &get_weather), def("get_weather_prev", &get_weather_prev), def("get_weather_last_shift", &get_weather_last_shift), def("set_weather", &set_weather),
+        def("set_weather_next", &set_weather_next), def("set_weather_fx", &set_weather_fx), def("start_weather_fx_from_time", &start_weather_fx_from_time),
+        def("is_wfx_playing", &is_wfx_playing), def("get_wfx_time", &get_wfx_time), def("stop_weather_fx", &stop_weather_fx), def("environment", &environment),
 
-            def("set_time_factor", &set_time_factor), def("get_time_factor", &get_time_factor),
+        def("set_time_factor", &set_time_factor), def("get_time_factor", &get_time_factor),
 
-            def("set_game_difficulty", &set_game_difficulty), def("get_game_difficulty", &get_game_difficulty),
+        def("set_game_difficulty", &set_game_difficulty), def("get_game_difficulty", &get_game_difficulty),
 
-            def("get_time_days", &get_time_days), def("get_time_hours", &get_time_hours), def("get_time_minutes", &get_time_minutes),
+        def("get_time_days", &get_time_days), def("get_time_hours", &get_time_hours), def("get_time_minutes", &get_time_minutes),
 
-            def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor), def("rain_hemi", rain_hemi),
-            def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }),
-            def("patrol_path_exists", &patrol_path_exists), def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
+        def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor), def("rain_hemi", rain_hemi),
+        def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }), def("patrol_path_exists", &patrol_path_exists),
+        def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
 
-            def("prefetch_sound", prefetch_sound),
-            def("prefetch_many_sounds", prefetch_many_sounds ),
+        def("prefetch_sound", prefetch_sound), def("prefetch_many_sounds", prefetch_many_sounds),
 
-            def("client_spawn_manager", &get_client_spawn_manager),
+        def("client_spawn_manager", &get_client_spawn_manager),
 
-            def("map_add_object_spot_ser", &map_add_object_spot_ser), def("map_add_object_spot", &map_add_object_spot), def("map_remove_object_spot", &map_remove_object_spot),
-            def("map_has_object_spot", &map_has_object_spot), def("map_change_spot_hint", &map_change_spot_hint), def("map_change_spot_ser", &map_change_spot_ser),
-            def("map_add_user_spot", &map_add_user_spot),
+        def("map_add_object_spot_ser", &map_add_object_spot_ser), def("map_add_object_spot", &map_add_object_spot), def("map_remove_object_spot", &map_remove_object_spot),
+        def("map_has_object_spot", &map_has_object_spot), def("map_change_spot_hint", &map_change_spot_hint), def("map_change_spot_ser", &map_change_spot_ser),
+        def("map_add_user_spot", &map_add_user_spot),
 
-            def("start_stop_menu", &start_stop_menu), def("add_dialog_to_render", &add_dialog_to_render), def("remove_dialog_to_render", &remove_dialog_to_render),
-            def("main_input_receiver", &main_input_receiver), def("hide_indicators", &hide_indicators), def("show_indicators", &show_indicators),
-            def("game_indicators_shown", &game_indicators_shown), def("get_hud_flags", &get_hud_flags),
-            def("add_call", ((CPHCall * (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & add_call)),
-            def("add_call", ((CPHCall * (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) & add_call)),
-            def("add_call", ((CPHCall * (*)(const luabind::object&, LPCSTR, LPCSTR)) & add_call)),
-            def("remove_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & remove_call)),
-            def("remove_call", ((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) & remove_call)),
-            def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR)) & remove_call)), def("remove_calls_for_object", remove_calls_for_object),
+        def("start_stop_menu", &start_stop_menu), def("add_dialog_to_render", &add_dialog_to_render), def("remove_dialog_to_render", &remove_dialog_to_render),
+        def("main_input_receiver", &main_input_receiver), def("hide_indicators", &hide_indicators), def("show_indicators", &show_indicators),
+        def("game_indicators_shown", &game_indicators_shown), def("get_hud_flags", &get_hud_flags),
+        def("add_call", ((CPHCall * (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & add_call)),
+        def("add_call", ((CPHCall * (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) & add_call)),
+        def("add_call", ((CPHCall * (*)(const luabind::object&, LPCSTR, LPCSTR)) & add_call)),
+        def("remove_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&))&remove_call)),
+        def("remove_call", ((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&))&remove_call)),
+        def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR))&remove_call)), def("remove_calls_for_object", remove_calls_for_object),
 
-            def("present", is_level_present),
+        def("present", is_level_present),
 
-            def("disable_input", disable_input), def("enable_input", enable_input), 
+        def("disable_input", disable_input), def("enable_input", enable_input),
 
-            def("only_allow_movekeys", block_all_except_movement), def("only_movekeys_allowed", only_movement_allowed),
+        def("only_allow_movekeys", block_all_except_movement), def("only_movekeys_allowed", only_movement_allowed),
 
-            def("set_actor_allow_ladder", set_actor_allow_ladder), def("actor_ladder_allowed", actor_ladder_allowed),
-            def("set_actor_allow_pda", set_actor_allow_pda), def("actor_pda_allowed", actor_pda_allowed),
+        def("set_actor_allow_ladder", set_actor_allow_ladder), def("actor_ladder_allowed", actor_ladder_allowed), def("set_actor_allow_pda", set_actor_allow_pda),
+        def("actor_pda_allowed", actor_pda_allowed),
 
-            def("spawn_phantom", spawn_phantom),
+        def("spawn_phantom", spawn_phantom),
 
-            def("get_bounding_volume", &get_bounding_volume),
+        def("get_bounding_volume", &get_bounding_volume),
 
-            def("iterate_sounds", &iterate_sounds1), def("iterate_sounds", &iterate_sounds2), def("physics_world", &physics_world), def("get_snd_volume", &get_snd_volume),
-            def("set_snd_volume", &set_snd_volume), def("add_cam_effector", &add_cam_effector), def("add_cam_effector2", &add_cam_effector2),
-            def("remove_cam_effector", &remove_cam_effector), def("add_pp_effector", &add_pp_effector), def("set_pp_effector_factor", &set_pp_effector_factor),
-            def("set_pp_effector_factor", &set_pp_effector_factor2), def("remove_pp_effector", &remove_pp_effector),
-            def("has_pp_effector", &has_pp_effector), def("add_monster_cam_effector", &add_monster_cam_effector),
+        def("iterate_sounds", &iterate_sounds1), def("iterate_sounds", &iterate_sounds2), def("physics_world", &physics_world), def("get_snd_volume", &get_snd_volume),
+        def("get_rain_volume", &get_rain_volume), def("set_snd_volume", &set_snd_volume), def("add_cam_effector", &add_cam_effector), def("add_cam_effector2", &add_cam_effector2),
+        def("remove_cam_effector", &remove_cam_effector), def("add_pp_effector", &add_pp_effector), def("set_pp_effector_factor", &set_pp_effector_factor),
+        def("set_pp_effector_factor", &set_pp_effector_factor2), def("remove_pp_effector", &remove_pp_effector), def("has_pp_effector", &has_pp_effector),
+        def("add_monster_cam_effector", &add_monster_cam_effector), def("get_music_volume", &get_music_volume), def("set_music_volume", &set_music_volume),
 
-            def("demo_record_start", &demo_record_start), def("demo_record_stop", &demo_record_stop),
-            def("demo_record_get_position", &demo_record_get_position), def("demo_record_set_position", &demo_record_set_position),
-            def("demo_record_get_HPB", &demo_record_get_HPB), def("demo_record_set_HPB", &demo_record_set_HPB),
-            def("demo_record_set_direct_input", &demo_record_set_direct_input),
+        def("demo_record_start", &demo_record_start), def("demo_record_stop", &demo_record_stop), def("demo_record_get_position", &demo_record_get_position),
+        def("demo_record_set_position", &demo_record_set_position), def("demo_record_get_HPB", &demo_record_get_HPB), def("demo_record_set_HPB", &demo_record_set_HPB),
+        def("demo_record_set_direct_input", &demo_record_set_direct_input),
 
-            def("add_complex_effector", &add_complex_effector), def("remove_complex_effector", &remove_complex_effector),
+        def("add_complex_effector", &add_complex_effector), def("remove_complex_effector", &remove_complex_effector),
 
-            def("game_id", &GameID), def("set_ignore_game_state_update", &set_ignore_game_state_update),
+        def("game_id", &GameID), def("set_ignore_game_state_update", &set_ignore_game_state_update),
 
-            def("get_inventory_wnd", &GetInventoryWindow), def("get_talk_wnd", &GetTalkWindow), def("get_trade_wnd", &GetTradeWindow), def("get_pda_wnd", &GetPdaWindow),
-            def("get_car_body_wnd", &GetCarBodyWindow), def("get_second_talker", &GetSecondTalker), def("get_car_body_target", &GetCarBodyTarget),
-            def("get_change_level_wnd", &GetUIChangeLevelWnd),
+        def("get_inventory_wnd", &GetInventoryWindow), def("get_talk_wnd", &GetTalkWindow), def("get_trade_wnd", &GetTradeWindow), def("get_pda_wnd", &GetPdaWindow),
+        def("get_car_body_wnd", &GetCarBodyWindow), def("get_second_talker", &GetSecondTalker), def("get_car_body_target", &GetCarBodyTarget),
+        def("get_change_level_wnd", &GetUIChangeLevelWnd),
 
-            def("ray_query", &PerformRayQuery),
+        def("ray_query", &PerformRayQuery),
 
-            // Real Wolf 07.07.2014
-            def("vertex_id", ((u32(*)(const Fvector&)) & vertex_id)), def("vertex_id", ((u32(*)(u32, const Fvector&)) & vertex_id)), def("nearest_vertex_id", &nearest_vertex_id),
+        // Real Wolf 07.07.2014
+        def("vertex_id", ((u32(*)(const Fvector&))&vertex_id)), def("vertex_id", ((u32(*)(u32, const Fvector&))&vertex_id)), def("nearest_vertex_id", &nearest_vertex_id),
 
-            def("advance_game_time", &AdvanceGameTime),
+        def("advance_game_time", &AdvanceGameTime),
 
-            def("get_target_dist", &GetTargetDist), def("get_target_obj", &GetTargetObj), def("get_current_ray_query", &GetCurrentRayQuery),
-            //
-            def("send_event_key_press", &send_event_key_press), def("send_event_key_release", &send_event_key_release), def("send_event_key_hold", &send_event_key_hold),
-            def("send_event_mouse_wheel", &send_event_mouse_wheel),
+        def("get_target_dist", &GetTargetDist), def("get_target_obj", &GetTargetObj), def("get_current_ray_query", &GetCurrentRayQuery),
+        //
+        def("send_event_key_press", &send_event_key_press), def("send_event_key_release", &send_event_key_release), def("send_event_key_hold", &send_event_key_hold),
+        def("send_event_mouse_wheel", &send_event_mouse_wheel),
 
-            def("iterate_nearest", &iterate_nearest),
+        def("iterate_nearest", &iterate_nearest),
 
-            def("change_level", &change_level), def("set_cam_inert", &set_cam_inert), def("set_monster_relation", &set_monster_relation), def("patrol_path_add", &patrol_path_add),
-            def("patrol_path_remove", &patrol_path_remove), def("valid_vertex_id", &valid_vertex_id), def("vertex_count", &vertex_count), def("disable_vertex", &disable_vertex),
-            def("enable_vertex", &enable_vertex), def("is_accessible_vertex_id", &is_accessible_vertex_id), def("iterate_vertices_inside", &iterate_vertices_inside),
-            def("iterate_vertices_border", &iterate_vertices_border), def("get_character_community_team", &get_character_community_team),
+        def("change_level", &change_level), def("set_cam_inert", &set_cam_inert), def("set_monster_relation", &set_monster_relation), def("patrol_path_add", &patrol_path_add),
+        def("patrol_path_remove", &patrol_path_remove), def("valid_vertex_id", &valid_vertex_id), def("vertex_count", &vertex_count), def("disable_vertex", &disable_vertex),
+        def("enable_vertex", &enable_vertex), def("is_accessible_vertex_id", &is_accessible_vertex_id), def("iterate_vertices_inside", &iterate_vertices_inside),
+        def("iterate_vertices_border", &iterate_vertices_border), def("get_character_community_team", &get_character_community_team),
 
-            def("get_effector_bobbing", &get_effector_bobbing), def("is_ray_intersect_sphere", &is_ray_intersect_sphere),
+        def("get_effector_bobbing", &get_effector_bobbing), def("is_ray_intersect_sphere", &is_ray_intersect_sphere),
 
-            //--#SM+# Begin --
-            def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
-            def("get_shader_params", &get_shader_params)
-            //--#SM+# End --
+        //--#SM+# Begin --
+        def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
+        def("get_shader_params", &get_shader_params)
+        //--#SM+# End --
     ],
 
         module(L, "actor_stats")[def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),
@@ -1162,11 +1176,9 @@ void CLevel::script_register(lua_State* L)
                                    def("change_community_goodwill", &g_change_community_goodwill), def("get_personal_goodwill", &g_get_personal_goodwill),
                                    def("set_personal_goodwill", &g_set_personal_goodwill), def("change_personal_goodwill", &g_change_personal_goodwill),
                                    def("clear_personal_goodwill", &g_clear_personal_goodwill), def("clear_personal_relations", &g_clear_personal_relations)];
-    //установка параметров для шейдеров из скриптов
+    // установка параметров для шейдеров из скриптов
     module(L)[def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
               def("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); }), def("update_inventory_window", &update_inventory_window),
-
-           def("set_dof_params", [](const float& p1, const float& p2, const float& p3, const float& p4) { shader_exports.set_dof_params(p1, p2, p3, p4); }),
 
               def("update_inventory_weight", &update_inventory_weight),
 

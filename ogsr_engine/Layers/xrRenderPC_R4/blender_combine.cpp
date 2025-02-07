@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "Blender_combine.h"
 
 CBlender_combine::CBlender_combine() { description.CLS = 0; }
@@ -18,7 +17,6 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         C.r_StencilRef(0x01);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
@@ -27,8 +25,14 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
 
+        C.r_dx10Texture("ssfx_ao", r2_RT_ssfx_temp);
+        C.r_dx10Texture("ssfx_il", r2_RT_ssfx_temp2);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+
         jitter(C);
 
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
         C.r_dx10Sampler("smp_rtlinear");
@@ -39,17 +43,22 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA", FALSE, FALSE, FALSE);
         // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_rtf		("s_normal",		r2_RT_N);
         // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
         // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
         // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_bloom", r2_RT_bloom1);
         C.r_dx10Texture("s_distort", r2_RT_generic1);
+        C.r_dx10Texture("s_blur_2", r2_RT_blur_2);
 
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_bloom", r2_RT_ssfx_bloom1);
+
+        C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
@@ -59,17 +68,22 @@ void CBlender_combine::Compile(CBlender_Compile& C)
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA_D", FALSE, FALSE, FALSE);
         // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_rtf		("s_normal",		r2_RT_N);
         // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
         // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
         // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_bloom", r2_RT_bloom1);
         C.r_dx10Texture("s_distort", r2_RT_generic1);
+        C.r_dx10Texture("s_blur_2", r2_RT_blur_2);
 
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_bloom", r2_RT_ssfx_bloom1);
+
+        C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
@@ -100,7 +114,6 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         C.r_StencilRef(0x01);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_diffuse", r2_RT_albedo);
         C.r_dx10Texture("s_accumulator", r2_RT_accum);
         C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
@@ -109,8 +122,14 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
 
+        C.r_dx10Texture("ssfx_ao", r2_RT_ssfx_temp);
+        C.r_dx10Texture("ssfx_il", r2_RT_ssfx_temp2);
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+
         jitter(C);
 
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_material");
         C.r_dx10Sampler("smp_rtlinear");
@@ -121,17 +140,22 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA", FALSE, FALSE, TRUE);
         // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_rtf		("s_normal",		r2_RT_N);
         // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
         // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
         // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_bloom", r2_RT_bloom1);
         C.r_dx10Texture("s_distort", r2_RT_generic1_r);
+        C.r_dx10Texture("s_blur_2", r2_RT_blur_2);
 
+        C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_bloom", r2_RT_ssfx_bloom1);
+
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();
@@ -141,17 +165,22 @@ void CBlender_combine_msaa::Compile(CBlender_Compile& C)
         //	Can use simpler VS (need only Tex0)
         C.r_Pass("stub_notransform_aa_AA", "combine_2_NAA_D", FALSE, FALSE, TRUE);
         // C.r_Sampler_rtf		("s_position",		r2_RT_P);
-        // C.r_Sampler_rtf		("s_normal",		r2_RT_N);
         // C.r_Sampler_clf		("s_image",			r2_RT_generic0);
         // C.r_Sampler_clf		("s_bloom",			r2_RT_bloom1);
         // C.r_Sampler_clf		("s_distort",		r2_RT_generic1);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N);
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_bloom", r2_RT_bloom1);
         C.r_dx10Texture("s_distort", r2_RT_generic1_r);
+        C.r_dx10Texture("s_blur_2", r2_RT_blur_2);
 
+        C.r_dx10Texture("s_hud_mask", r2_RT_ssfx_hud);
+        C.r_dx10Texture("s_ssfx_bloom", r2_RT_ssfx_bloom1);
+
+        C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+
+        C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_End();

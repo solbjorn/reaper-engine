@@ -40,6 +40,8 @@ CHW::CHW() : hD3D(NULL), pD3D(NULL), pDevice(NULL), pBaseRT(NULL), pBaseZB(NULL)
 
 CHW::~CHW() { ; }
 
+extern u32 g_screenmode;
+
 void CHW::Reset(HWND hwnd)
 {
 #ifdef DEBUG
@@ -49,29 +51,27 @@ void CHW::Reset(HWND hwnd)
     _RELEASE(pBaseRT);
 
 #ifndef _EDITOR
-    //#ifndef DEDICATED_SERVER
+    // #ifndef DEDICATED_SERVER
     //	BOOL	bWindowed		= !psDeviceFlags.is	(rsFullscreen);
-    //#else
+    // #else
     //	BOOL	bWindowed		= TRUE;
-    //#endif
+    // #endif
     BOOL bWindowed = TRUE;
     if (!g_dedicated_server)
-        bWindowed = !psDeviceFlags.is(rsFullscreen);
+        bWindowed = (g_screenmode != 2);
 
     selectResolution(DevPP.BackBufferWidth, DevPP.BackBufferHeight, bWindowed);
     // Windoze
-    DevPP.SwapEffect = bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
+    DevPP.SwapEffect = D3DSWAPEFFECT_FLIP; // bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
     DevPP.Windowed = bWindowed;
 
-    if (!bWindowed)
-        DevPP.PresentationInterval = selectPresentInterval(); // Vsync (R1\R2)
-    else
-        DevPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-
-    if (!bWindowed)
+    // AVO: fucntional vsync by avbaula
+    DevPP.PresentationInterval = selectPresentInterval(); // Vsync
+    if (!bWindowed) // Refresh rate
         DevPP.FullScreen_RefreshRateInHz = selectRefresh(DevPP.BackBufferWidth, DevPP.BackBufferHeight, Caps.fTarget);
     else
         DevPP.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+    //-AVO
 #endif
 
     while (TRUE)
@@ -99,11 +99,11 @@ void CHW::Reset(HWND hwnd)
 
 void CHW::CreateD3D()
 {
-    //#ifndef DEDICATED_SERVER
+    // #ifndef DEDICATED_SERVER
     //	LPCSTR		_name			= "d3d9.dll";
-    //#else
+    // #else
     //	LPCSTR		_name			= "xrd3d9-null.dll";
-    //#endif
+    // #endif
 
     LPCSTR _name = "xrd3d9-null.dll";
 
@@ -134,26 +134,7 @@ D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
 {
     // R2 hack
 #pragma todo("R2 need to specify depth format")
-    if (psDeviceFlags.test(rsR2))
-        return D3DFMT_D24S8;
-
-    // R1 usual
-    static D3DFORMAT fDS_Try1[6] = {D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D32, D3DFMT_D24X8, D3DFMT_D16, D3DFMT_D15S1};
-
-    D3DFORMAT* fDS_Try = fDS_Try1;
-    int fDS_Cnt = 6;
-
-    for (int it = 0; it < fDS_Cnt; it++)
-    {
-        if (SUCCEEDED(pD3D->CheckDeviceFormat(DevAdapter, DevT, fTarget, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, fDS_Try[it])))
-        {
-            if (SUCCEEDED(pD3D->CheckDepthStencilMatch(DevAdapter, DevT, fTarget, fTarget, fDS_Try[it])))
-            {
-                return fDS_Try[it];
-            }
-        }
-    }
-    return D3DFMT_UNKNOWN;
+    return D3DFMT_D24S8;
 }
 
 void CHW::DestroyDevice()
@@ -179,6 +160,9 @@ void CHW::DestroyDevice()
     free_vid_mode_list();
 #endif
 }
+
+extern void GetMonitorResolution(u32& horizontal, u32& vertical);
+
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
     fill_vid_mode_list(this);
@@ -191,6 +175,9 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
     else
 #endif
     {
+        if (psCurrentVidMode[0] == 0 || psCurrentVidMode[1] == 0)
+            GetMonitorResolution(psCurrentVidMode[0], psCurrentVidMode[1]);
+
         if (bWindowed)
         {
             dwWidth = psCurrentVidMode[0];
@@ -213,26 +200,25 @@ void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 #endif
         }
     }
-    //#endif
+    // #endif
 }
 
-void CHW::CreateDevice(HWND m_hWnd, bool move_window)
+void CHW::CreateDevice(HWND m_hWnd)
 {
-    m_move_window = move_window;
     CreateD3D();
 
     // General - select adapter and device
-    //#ifdef DEDICATED_SERVER
+    // #ifdef DEDICATED_SERVER
     //	BOOL  bWindowed			= TRUE;
-    //#else
+    // #else
     //	BOOL  bWindowed			= !psDeviceFlags.is(rsFullscreen);
-    //#endif
+    // #endif
 
     BOOL bWindowed = TRUE;
 
 #ifndef _EDITOR
     if (!g_dedicated_server)
-        bWindowed = !psDeviceFlags.is(rsFullscreen);
+        bWindowed = (g_screenmode != 2);
 #else
     bWindowed = 1;
 #endif
@@ -330,14 +316,14 @@ void CHW::CreateDevice(HWND m_hWnd, bool move_window)
     //.	P.BackBufferWidth		= dwWidth;
     //. P.BackBufferHeight		= dwHeight;
     P.BackBufferFormat = fTarget;
-    P.BackBufferCount = 1;
+    P.BackBufferCount = 2;
 
     // Multisample
     P.MultiSampleType = D3DMULTISAMPLE_NONE;
     P.MultiSampleQuality = 0;
 
     // Windoze
-    P.SwapEffect = bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
+    P.SwapEffect = D3DSWAPEFFECT_FLIP; // bWindowed ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
     P.hDeviceWindow = m_hWnd;
     P.Windowed = bWindowed;
 
@@ -346,14 +332,11 @@ void CHW::CreateDevice(HWND m_hWnd, bool move_window)
     P.AutoDepthStencilFormat = fDepth;
     P.Flags = 0; //. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 
-    // Refresh rate
-    if (bWindowed)
-        P.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-    else
-        P.PresentationInterval = selectPresentInterval(); // Vsync (R1\R2)
-
+    // AVO: functional vsync by avbaula
+    P.PresentationInterval = selectPresentInterval(); // Vsync
     if (!bWindowed)
         P.FullScreen_RefreshRateInHz = selectRefresh(P.BackBufferWidth, P.BackBufferHeight, fTarget);
+    //-AVO
     else
         P.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 
@@ -415,48 +398,6 @@ u32 CHW::selectPresentInterval()
 
 u32 CHW::selectGPU()
 {
-#if RENDER == R_R1
-    BOOL isIntelGMA = FALSE;
-
-    if (Caps.id_vendor == 0x8086)
-    { // Intel
-
-#define GMA_SL_SIZE 43
-
-        DWORD IntelGMA_SoftList[GMA_SL_SIZE] = {0x2782, 0x2582, 0x2792, 0x2592, 0x2772, 0x2776, 0x27A2, 0x27A6, 0x27AE, 0x2982, 0x2983, 0x2992, 0x2993, 0x29A2, 0x29A3, 0x2972,
-                                                0x2973, 0x2A02, 0x2A03, 0x2A12, 0x2A13, 0x29C2, 0x29C3, 0x29B2, 0x29B3, 0x29D2, 0x29D3,
-
-                                                0x2A42, 0x2A43, 0x2E02, 0x2E03, 0x2E12, 0x2E13, 0x2E22, 0x2E23, 0x2E32, 0x2E33, 0x2E42, 0x2E43, 0x2E92, 0x2E93, 0x0042, 0x0046};
-
-        for (int idx = 0; idx < GMA_SL_SIZE; ++idx)
-            if (IntelGMA_SoftList[idx] == Caps.id_device)
-            {
-                isIntelGMA = TRUE;
-                break;
-            }
-    }
-
-    if (isIntelGMA)
-        switch (ps_r1_SoftwareSkinning)
-        {
-        case 0:
-            Msg("* Enabling software skinning");
-            ps_r1_SoftwareSkinning = 1;
-            break;
-        case 1: Msg("* Using software skinning"); break;
-        case 2:
-            Msg("* WARNING: Using hardware skinning");
-            Msg("*   setting 'r1_software_skinning' to '1' may improve performance");
-            break;
-        }
-    else if (ps_r1_SoftwareSkinning == 1)
-    {
-        Msg("* WARNING: Using software skinning");
-        Msg("*   setting 'r1_software_skinning' to '0' should improve performance");
-    }
-
-#endif // RENDER == R_R1
-
     if (Caps.bForceGPU_SW)
         return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
@@ -482,24 +423,22 @@ u32 CHW::selectGPU()
 
 u32 CHW::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 {
-    if (psDeviceFlags.is(rsRefresh60hz))
-        return D3DPRESENT_RATE_DEFAULT;
-    else
+    u32 selected = D3DPRESENT_RATE_DEFAULT;
+    u32 count = pD3D->GetAdapterModeCount(DevAdapter, fmt);
+    for (u32 I = 0; I < count; I++)
     {
-        u32 selected = D3DPRESENT_RATE_DEFAULT;
-        u32 count = pD3D->GetAdapterModeCount(DevAdapter, fmt);
-        for (u32 I = 0; I < count; I++)
-        {
-            D3DDISPLAYMODE Mode;
-            pD3D->EnumAdapterModes(DevAdapter, fmt, I, &Mode);
-            if (Mode.Width == dwWidth && Mode.Height == dwHeight)
-            {
-                if (Mode.RefreshRate > selected)
-                    selected = Mode.RefreshRate;
-            }
-        }
-        return selected;
+        D3DDISPLAYMODE Mode;
+        pD3D->EnumAdapterModes(DevAdapter, fmt, I, &Mode);
+        if (Mode.Width == dwWidth && Mode.Height == dwHeight && Mode.RefreshRate > selected)
+            selected = Mode.RefreshRate;
     }
+
+    if (selected > 0)
+        refresh_rate = selected;
+    else
+        refresh_rate = 60.f;
+
+    return selected;
 }
 
 BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
@@ -514,30 +453,23 @@ BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 void CHW::updateWindowProps(HWND m_hWnd)
 {
     //	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
-    //#ifndef DEDICATED_SERVER
+    // #ifndef DEDICATED_SERVER
     //	BOOL	bWindowed				= !psDeviceFlags.is	(rsFullscreen);
-    //#else
+    // #else
     //	BOOL	bWindowed				= TRUE;
-    //#endif
+    // #endif
 
-    BOOL bWindowed = TRUE;
-#ifndef _EDITOR
-    if (!g_dedicated_server)
-        bWindowed = !psDeviceFlags.is(rsFullscreen);
-#endif
-
+    BOOL bWindowed = g_screenmode != 2;
     LONG_PTR dwWindowStyle = 0;
     // Set window properties depending on what mode were in.
     if (bWindowed)
     {
         if (m_move_window)
         {
-            static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
-            dwWindowStyle = WS_VISIBLE;
-            if (bBordersMode)
-                dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+            dwWindowStyle = WS_BORDER | WS_VISIBLE;
+            if (!strstr(Core.Params, "-no_dialog_header"))
+                dwWindowStyle |= WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
             SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
-
             // When moving from fullscreen to windowed mode, it is important to
             // adjust the window size after recreating the device rather than
             // beforehand to ensure that you get the window size you want.  For
@@ -562,7 +494,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
             }
             else
             {
-                if (bBordersMode)
+                if (dwWindowStyle & WS_DLGFRAME)
                     fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
                 SetRect(&m_rcWindowBounds, 0, 0, DevPP.BackBufferWidth, DevPP.BackBufferHeight);
             };
@@ -590,81 +522,6 @@ struct _uniq_mode
     bool operator()(LPCSTR _other) { return !stricmp(_val, _other); }
 };
 
-#ifndef _EDITOR
-
-/*
-void free_render_mode_list()
-{
-    for( int i=0; vid_quality_token[i].name; i++ )
-    {
-        xr_free					(vid_quality_token[i].name);
-    }
-    xr_free						(vid_quality_token);
-    vid_quality_token			= NULL;
-}
-*/
-/*
-void	fill_render_mode_list()
-{
-    if(vid_quality_token != NULL)		return;
-
-    D3DCAPS9					caps;
-    CHW							_HW;
-    _HW.CreateD3D				();
-    _HW.pD3D->GetDeviceCaps		(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&caps);
-    _HW.DestroyD3D				();
-    u16		ps_ver_major		= u16 ( u32(u32(caps.PixelShaderVersion)&u32(0xf << 8ul))>>8 );
-
-    xr_vector<LPCSTR>			_tmp;
-    u32 i						= 0;
-    for(; i<5; ++i)
-    {
-        bool bBreakLoop = false;
-        switch (i)
-        {
-        case 3:		//"renderer_r2.5"
-            if (ps_ver_major < 3)
-                bBreakLoop = true;
-            break;
-        case 4:		//"renderer_r_dx10"
-            bBreakLoop = true;
-            break;
-        default:	;
-        }
-
-        if (bBreakLoop) break;
-
-        _tmp.push_back				(NULL);
-        LPCSTR val					= NULL;
-        switch (i)
-        {
-            case 0: val ="renderer_r1";			break;
-            case 1: val ="renderer_r2a";		break;
-            case 2: val ="renderer_r2";			break;
-            case 3: val ="renderer_r2.5";		break;
-            case 4: val ="renderer_r_dx10";		break; //  -)
-        }
-        _tmp.back()					= xr_strdup(val);
-    }
-    u32 _cnt								= _tmp.size()+1;
-    vid_quality_token						= xr_alloc<xr_token>(_cnt);
-
-    vid_quality_token[_cnt-1].id			= -1;
-    vid_quality_token[_cnt-1].name			= NULL;
-
-#ifdef DEBUG
-    Msg("Available render modes[%d]:",_tmp.size());
-#endif // DEBUG
-    for(u32 i=0; i<_tmp.size();++i)
-    {
-        vid_quality_token[i].id				= i;
-        vid_quality_token[i].name			= _tmp[i];
-#ifdef DEBUG
-        Msg							("[%s]",_tmp[i]);
-#endif // DEBUG
-    }
-}
-*/
 void free_vid_mode_list()
 {
     for (int i = 0; vid_mode_token[i].name; i++)
@@ -720,4 +577,3 @@ void fill_vid_mode_list(CHW* _hw)
 #endif // DEBUG
     }
 }
-#endif

@@ -62,7 +62,7 @@ void CShootingObject::Load(LPCSTR section)
     else
         m_bLightShotEnabled = true;
 
-    //время затрачиваемое на выстрел
+    // время затрачиваемое на выстрел
     fTimeToFire = pSettings->r_float(section, "rpm");
     VERIFY(fTimeToFire > 0.f);
     // Alundaio: Two-shot burst rpm; used for Abakan/AN-94
@@ -89,10 +89,7 @@ void CShootingObject::Light_Create()
 {
     // lights
     light_render = ::Render->light_create();
-    if (::Render->get_generation() == IRender_interface::GENERATION_R2)
-        light_render->set_shadow(true);
-    else
-        light_render->set_shadow(false);
+    light_render->set_shadow(true);
     light_render->set_moveable(true);
 }
 
@@ -103,7 +100,7 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
     string256 full_name;
     string32 buffer;
     shared_str s_sHitPower;
-    //базовая дисперсия оружия
+    // базовая дисперсия оружия
     fireDispersionBase = pSettings->r_float(section, "fire_dispersion_base");
     fireDispersionBase = deg2rad(fireDispersionBase);
     constDeviation.pitch = READ_IF_EXISTS(pSettings, r_float, section, "const_deviation_pitch", 0);
@@ -111,33 +108,33 @@ void CShootingObject::LoadFireParams(LPCSTR section, LPCSTR prefix)
 
     LPCSTR hit_type = READ_IF_EXISTS(pSettings, r_string, section, "hit_type", "fire_wound");
     m_eHitType = ALife::g_tfString2HitType(hit_type); // поддержка произвольного хита оружия
-    //сила выстрела и его мощьность
-    s_sHitPower = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); //читаем строку силы хита пули оружия
-    fvHitPower[egdMaster] = (float)atof(_GetItem(*s_sHitPower, 0, buffer)); //первый параметр - это хит для уровня игры мастер
+    // сила выстрела и его мощьность
+    s_sHitPower = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power")); // читаем строку силы хита пули оружия
+    fvHitPower[egdMaster] = (float)atof(_GetItem(*s_sHitPower, 0, buffer)); // первый параметр - это хит для уровня игры мастер
 
-    fvHitPower[egdVeteran] = fvHitPower[egdMaster]; //изначально параметры для других уровней
-    fvHitPower[egdStalker] = fvHitPower[egdMaster]; //сложности
-    fvHitPower[egdNovice] = fvHitPower[egdMaster]; //такие же
+    fvHitPower[egdVeteran] = fvHitPower[egdMaster]; // изначально параметры для других уровней
+    fvHitPower[egdStalker] = fvHitPower[egdMaster]; // сложности
+    fvHitPower[egdNovice] = fvHitPower[egdMaster]; // такие же
 
-    int num_game_diff_param = _GetItemCount(*s_sHitPower); //узнаём колличество параметров для хитов
-    if (num_game_diff_param > 1) //если задан второй параметр хита
+    int num_game_diff_param = _GetItemCount(*s_sHitPower); // узнаём колличество параметров для хитов
+    if (num_game_diff_param > 1) // если задан второй параметр хита
     {
-        fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); //то вычитываем его для уровня ветерана
+        fvHitPower[egdVeteran] = (float)atof(_GetItem(*s_sHitPower, 1, buffer)); // то вычитываем его для уровня ветерана
     }
-    if (num_game_diff_param > 2) //если задан третий параметр хита
+    if (num_game_diff_param > 2) // если задан третий параметр хита
     {
-        fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); //то вычитываем его для уровня сталкера
+        fvHitPower[egdStalker] = (float)atof(_GetItem(*s_sHitPower, 2, buffer)); // то вычитываем его для уровня сталкера
     }
-    if (num_game_diff_param > 3) //если задан четвёртый параметр хита
+    if (num_game_diff_param > 3) // если задан четвёртый параметр хита
     {
-        fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); //то вычитываем его для уровня новичка
+        fvHitPower[egdNovice] = (float)atof(_GetItem(*s_sHitPower, 3, buffer)); // то вычитываем его для уровня новичка
     }
 
     // fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));
     fHitImpulse = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "hit_impulse"));
-    //максимальное расстояние полета пули
+    // максимальное расстояние полета пули
     fireDistance = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "fire_distance"));
-    //начальная скорость пули
+    // начальная скорость пули
     m_fStartBulletSpeed = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "bullet_speed"));
     m_bUseAimBullet = pSettings->r_bool(section, strconcat(sizeof(full_name), full_name, prefix, "use_aim_bullet"));
     if (m_bUseAimBullet)
@@ -271,7 +268,7 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
     if (pSettings->line_exist(section, full_name))
         m_sShotParticles = pSettings->r_string(section, full_name);
 
-    //текущие партиклы
+    // текущие партиклы
     m_sFlameParticlesCurrent = m_sFlameParticles;
     m_sSmokeParticlesCurrent = m_sSmokeParticles;
 }
@@ -307,7 +304,7 @@ void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent
     pShellParticles->Play(hudMode);
 }
 
-//партиклы дыма
+// партиклы дыма
 void CShootingObject::StartSmokeParticles(const Fvector& play_pos, const Fvector& parent_vel)
 {
     if (!ParentIsActor() && Core.Features.test(xrCore::Feature::npc_simplified_shooting))
@@ -321,7 +318,7 @@ void CShootingObject::StartFlameParticles()
     if (0 == m_sFlameParticlesCurrent.size())
         return;
 
-    //если партиклы циклические
+    // если партиклы циклические
     if (m_pFlameParticles && m_pFlameParticles->IsLooped() && m_pFlameParticles->IsPlaying())
     {
         UpdateFlameParticles();
@@ -366,7 +363,7 @@ void CShootingObject::UpdateFlameParticles()
     }
 }
 
-//подсветка от выстрела
+// подсветка от выстрела
 void CShootingObject::UpdateLight()
 {
     if (light_render && light_time > 0)
@@ -463,7 +460,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
     m_fPredBulletTime = Device.fTimeGlobal;
 
     float l_fHitPower;
-    if (ParentIsActor()) //если из оружия стреляет актёр(игрок)
+    if (ParentIsActor()) // если из оружия стреляет актёр(игрок)
     {
         l_fHitPower = fvHitPower[g_SingleGameDifficulty];
     }

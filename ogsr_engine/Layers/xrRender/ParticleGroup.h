@@ -88,7 +88,7 @@ public:
         void Play();
         void Stop(BOOL def_stop);
     };
-    DEFINE_VECTOR(SItem, SItemVec, SItemVecIt)
+    DEFINE_VECTOR(SItem, SItemVec, SItemVecIt);
     SItemVec items;
 
 public:

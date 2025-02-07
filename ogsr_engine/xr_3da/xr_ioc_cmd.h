@@ -414,7 +414,7 @@ public:
 
 class CCC_Vector4 : public IConsole_Command
 {
-private:
+protected:
     Fvector4* value;
     Fvector4 min, max;
 

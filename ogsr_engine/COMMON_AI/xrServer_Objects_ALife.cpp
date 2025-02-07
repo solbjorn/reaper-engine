@@ -211,7 +211,7 @@ void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
 
 void CSE_ALifeObject::UPDATE_Write(NET_Packet& tNetPacket) {}
 
-void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket){};
+void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket) {};
 
 u32 CSE_ALifeObject::ef_equipment_type() const
 {
@@ -807,8 +807,7 @@ bool CSE_ALifeObjectHangingLamp::match_configuration() const
 {
     R_ASSERT3(flags.test(flR1) || flags.test(flR2), "no renderer type set for hanging-lamp ", name_replace());
 #ifdef XRGAME_EXPORTS
-    return ((flags.test(flR1) && (::Render->get_generation() == IRender_interface::GENERATION_R1)) ||
-            (flags.test(flR2) && (::Render->get_generation() == IRender_interface::GENERATION_R2)));
+    return flags.test(flR2);
 #else
     return (true);
 #endif

@@ -105,17 +105,16 @@ public:
         y_height = _height;
     }
 
-    float r_ybase() { return float(y_base) * .2f - 200.f; }
-    float r_yheight() { return float(y_height) * .1f; }
-    u32 w_qclr(float v, u32 range)
+    float r_ybase() const { return float(y_base) * .2f - 200.f; }
+    float r_yheight() const { return float(y_height) * .1f; }
+    u32 w_qclr(float v, u32 range) const
     {
         s32 _v = iFloor(v * float(range));
         clamp(_v, 0, s32(range));
         return _v;
-    };
-    float r_qclr(u32 v, u32 range) { return float(v) / float(range); }
+    }
+    float r_qclr(u32 v, u32 range) const { return float(v) / float(range); }
 
-    //	static void		verify		()						{	VERIFY(16==sizeof(DetailSlot));	}
     void color_editor()
     {
         c_dir = w_qclr(0.5f, 15);

@@ -23,13 +23,12 @@ public:
     IRenderable* val_pObject;
     Fmatrix* val_pTransform;
     BOOL val_bHUD;
-    BOOL val_bInvisible;
     BOOL val_bRecordMP; // record nearest for multi-pass
-    R_feedback* val_feedback; // feedback for geometry being rendered
-    u32 val_feedback_breakp; // breakpoint
+    R_feedback* val_feedback{}; // feedback for geometry being rendered
+    u32 val_feedback_breakp{}; // breakpoint
     xr_vector<Fbox3>* val_recorder; // coarse structure recorder
-    u32 phase;
-    u32 marker;
+    u32 marker{};
+    u32 phase{};
     bool pmask[2];
     bool pmask_wmark;
 
@@ -44,29 +43,17 @@ public:
     R_dsgraph::mapLOD_T mapLOD;
     R_dsgraph::mapSorted_T mapDistort;
     R_dsgraph::mapHUD_T mapHUDSorted;
+    R_dsgraph::mapLandscape_T mapLandscape;
+    R_dsgraph::HUDMask_T HUDMask;
+    R_dsgraph::mapWater_T mapWater;
 
     R_dsgraph::mapSorted_T mapWmark; // sorted
     R_dsgraph::mapSorted_T mapEmissive;
     R_dsgraph::mapSorted_T mapHUDEmissive;
 
-
     // Runtime structures
-    xr_vector<R_dsgraph::mapNormalVS::TNode*> nrmVS;
-    xr_vector<R_dsgraph::mapNormalGS::TNode*> nrmGS;
-    xr_vector<R_dsgraph::mapNormalPS::TNode*> nrmPS;
-    xr_vector<R_dsgraph::mapNormalCS::TNode*> nrmCS;
-    xr_vector<R_dsgraph::mapNormalStates::TNode*> nrmStates;
-    xr_vector<R_dsgraph::mapNormalTextures::TNode*> nrmTextures;
-    xr_vector<R_dsgraph::mapNormalTextures::TNode*> nrmTexturesTemp;
-
-    xr_vector<R_dsgraph::mapMatrixVS::TNode*> matVS;
-    xr_vector<R_dsgraph::mapMatrixGS::TNode*> matGS;
-    xr_vector<R_dsgraph::mapMatrixPS::TNode*> matPS;
-    xr_vector<R_dsgraph::mapMatrixCS::TNode*> matCS;
-    xr_vector<R_dsgraph::mapMatrixStates::TNode*> matStates;
-    xr_vector<R_dsgraph::mapMatrixTextures::TNode*> matTextures;
-    xr_vector<R_dsgraph::mapMatrixTextures::TNode*> matTexturesTemp;
-
+    xr_vector<R_dsgraph::mapNormal_T::value_type*> nrmPasses;
+    xr_vector<R_dsgraph::mapMatrix_T::value_type*> matPasses;
     xr_vector<R_dsgraph::_LodItem> lstLODs;
     xr_vector<int> lstLODgroups;
     xr_vector<ISpatial*> lstRenderables;
@@ -87,7 +74,6 @@ public:
     }
     virtual void set_HUD(BOOL V) { val_bHUD = V; }
     virtual BOOL get_HUD() { return val_bHUD; }
-    virtual void set_Invisible(BOOL V) { val_bInvisible = V; }
     void set_Feedback(R_feedback* V, u32 id)
     {
         val_feedback_breakp = id;
@@ -112,44 +98,25 @@ public:
         val_pObject = NULL;
         val_pTransform = NULL;
         val_bHUD = FALSE;
-        val_bInvisible = FALSE;
         val_bRecordMP = FALSE;
-        val_feedback = 0;
         val_feedback_breakp = 0;
         val_recorder = 0;
-        marker = 0;
         r_pmask(true, true);
         b_loaded = FALSE;
     };
 
     void r_dsgraph_destroy()
     {
-        nrmVS.clear();
-        nrmPS.clear();
-        nrmCS.clear();
-        nrmStates.clear();
-        nrmTextures.clear();
-        nrmTexturesTemp.clear();
-
-        matVS.clear();
-        matPS.clear();
-        matCS.clear();
-        matStates.clear();
-        matTextures.clear();
-        matTexturesTemp.clear();
+        nrmPasses.clear();
+        matPasses.clear();
 
         lstLODs.clear();
         lstLODgroups.clear();
         lstRenderables.clear();
         lstSpatial.clear();
         lstVisuals.clear();
-
         lstRecorded.clear();
 
-        // mapNormal[0].destroy	();
-        // mapNormal[1].destroy	();
-        // mapMatrix[0].destroy	();
-        // mapMatrix[1].destroy	();
         for (int i = 0; i < SHADER_PASSES_MAX; ++i)
         {
             mapNormalPasses[0][i].destroy();
@@ -162,10 +129,13 @@ public:
         mapLOD.destroy();
         mapDistort.destroy();
         mapHUDSorted.destroy();
+        mapLandscape.destroy();
+        HUDMask.destroy();
+        mapWater.destroy();
+
         mapWmark.destroy();
         mapEmissive.destroy();
         mapHUDEmissive.destroy();
-
     }
 
     void r_pmask(bool _1, bool _2, bool _wm = false)
@@ -178,17 +148,21 @@ public:
     void r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center);
     void r_dsgraph_insert_static(dxRender_Visual* pVisual);
 
-    void r_dsgraph_render_graph(u32 _priority, bool _clear = true);
-    void r_dsgraph_render_hud();
+    void r_dsgraph_render_graph(u32 _priority);
+    void r_dsgraph_render_hud(bool NoPS = false);
     void r_dsgraph_render_hud_ui();
     void r_dsgraph_render_lods(bool _setup_zb, bool _clear);
     void r_dsgraph_render_sorted();
-    void r_dsgraph_render_emissive();
+    void r_dsgraph_render_emissive(bool clear = true, bool renderHUD = false);
     void r_dsgraph_render_wmarks();
     void r_dsgraph_render_distort();
     void r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
     void r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
     void r_dsgraph_render_R1_box(IRender_Sector* _sector, Fbox& _bb, int _element);
+
+    void r_dsgraph_render_landscape(u32 pass, bool _clear);
+    void r_dsgraph_render_water_ssr();
+    void r_dsgraph_render_water();
 
 public:
     virtual u32 memory_usage()

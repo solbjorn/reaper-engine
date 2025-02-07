@@ -67,7 +67,6 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
         ps = _ps;
         HW.pContext->PSSetShader(ps, 0, 0);
 
-
 #ifdef DEBUG
         ps_name = _n;
 #endif
@@ -84,13 +83,11 @@ ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
         gs = _gs;
         HW.pContext->GSSetShader(gs, 0, 0);
 
-
 #ifdef DEBUG
         gs_name = _n;
 #endif
     }
 }
-
 
 ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
 {
@@ -140,7 +137,7 @@ ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
     }
 }
 
-ICF bool CBackend::is_TessEnabled() { return HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && (ds != 0 || hs != 0); }
+ICF bool CBackend::is_TessEnabled() { return ds || hs; }
 
 ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 {
@@ -199,7 +196,7 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
 {
-    static D3D_PRIMITIVE_TOPOLOGY translateTable[] = {
+    static constexpr D3D_PRIMITIVE_TOPOLOGY translateTable[] = {
         D3D_PRIMITIVE_TOPOLOGY_UNDEFINED, //	None
         D3D_PRIMITIVE_TOPOLOGY_POINTLIST, //	D3DPT_POINTLIST = 1,
         D3D_PRIMITIVE_TOPOLOGY_LINELIST, //	D3DPT_LINELIST = 2,
@@ -686,35 +683,6 @@ IC void CBackend::set_Constants(R_constant_table* C)
             }
             HW.pContext->CSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
-
-        /*
-        for (int i=0; i<MaxCBuffers; ++i)
-        {
-            if (m_aPixelConstants[i])
-                tempBuffer[i] = m_aPixelConstants[i]->GetBuffer();
-            else
-                tempBuffer[i] = 0;
-        }
-        HW.pDevice->PSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
-
-        for (int i=0; i<MaxCBuffers; ++i)
-        {
-            if (m_aVertexConstants[i])
-                tempBuffer[i] = m_aVertexConstants[i]->GetBuffer();
-            else
-                tempBuffer[i] = 0;
-        }
-        HW.pDevice->VSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
-
-        for (int i=0; i<MaxCBuffers; ++i)
-        {
-            if (m_aGeometryConstants[i])
-                tempBuffer[i] = m_aGeometryConstants[i]->GetBuffer();
-            else
-                tempBuffer[i] = 0;
-        }
-        HW.pDevice->GSSetConstantBuffers(0, MaxCBuffers, tempBuffer);
-        */
     }
 
     // process constant-loaders
@@ -738,7 +706,7 @@ ICF void CBackend::ApplyRTandZB()
     }
 }
 
-IC void CBackend::get_ConstantDirect(const char* n, u32 DataSize, void** pVData, void** pGData, void** pPData)
+IC void CBackend::get_ConstantDirect(const char* n, size_t DataSize, void** pVData, void** pGData, void** pPData)
 {
     ref_constant C = get_c(n);
 

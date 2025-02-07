@@ -28,8 +28,6 @@ static const float OPTIMIZATION_DISTANCE = 100.f;
 
 static bool stalker_use_dynamic_lights = false;
 
-extern ENGINE_API int g_current_renderer;
-
 CTorch::CTorch(void)
 {
     light_render = ::Render->light_create();
@@ -54,14 +52,6 @@ CTorch::CTorch(void)
 
     m_prev_hp.set(0, 0);
     m_delta_h = 0;
-
-    // Disabling shift by x and z axes for 1st render,
-    // because we don't have dynamic lighting in it.
-    if (g_current_renderer == 1)
-    {
-        TORCH_OFFSET.x = 0;
-        TORCH_OFFSET.z = 0;
-    }
 }
 
 CTorch::~CTorch(void)
@@ -90,10 +80,7 @@ void CTorch::Load(LPCSTR section)
     }
 }
 
-void CTorch::SwitchNightVision()
-{
-    SwitchNightVision(!m_bNightVisionOn);
-}
+void CTorch::SwitchNightVision() { SwitchNightVision(!m_bNightVisionOn); }
 
 void CTorch::SwitchNightVision(bool vision_on)
 {
@@ -218,9 +205,12 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
     if (!inherited::net_Spawn(DC))
         return (FALSE);
 
-    bool b_r2 = !!psDeviceFlags.test(rsR2);
-    b_r2 |= !!psDeviceFlags.test(rsR3);
-    b_r2 |= !!psDeviceFlags.test(rsR4);
+    constexpr bool b_r2 = true;
+
+    if (smart_cast<CActor*>(H_Parent()))
+    {
+        light_render->set_hud_mode(true); // Enable HUD flag to player headlamp
+    }
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     CInifile* pUserData = K->LL_UserData();
@@ -268,7 +258,10 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
     glow_render->set_color(m_color);
     glow_render->set_radius(pUserData->r_float("torch_definition", "glow_radius"));
 
-    //включить/выключить фонарик
+    light_render->set_type((IRender_Light::LT)(READ_IF_EXISTS(pUserData, r_u8, "torch_definition", "type", 2)));
+    light_omni->set_type((IRender_Light::LT)(READ_IF_EXISTS(pUserData, r_u8, "torch_definition", "omni_type", 1)));
+
+    // включить/выключить фонарик
     Switch(torch->m_active);
     VERIFY(!torch->m_active || (torch->ID_Parent != 0xffff));
 

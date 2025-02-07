@@ -4,7 +4,7 @@
 
 #include "xr_collide_defs.h"
 
-constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
+static constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
 
 /*
 Requirements:
@@ -24,7 +24,7 @@ Requirements:
     * Should have at least "bounding-sphere" or "bounding-box"
 */
 
-const float c_spatial_min = 8.f;
+constexpr float c_spatial_min = 8.f;
 //////////////////////////////////////////////////////////////////////////
 enum
 {
@@ -53,12 +53,15 @@ enum
 class ISpatial_NODE;
 class IRender_Sector;
 class ISpatial_DB;
+
 namespace Feel
 {
 class Sound;
 }
+
 class IRenderable;
 class IRender_Light;
+
 class XRCDB_API ISpatial
 {
 public:
@@ -73,11 +76,11 @@ public:
         ISpatial_DB* space{}; // allow different spaces
     } spatial;
 
-public:
-    BOOL spatial_inside();
+private:
     void spatial_updatesector_internal();
 
 public:
+    bool spatial_inside();
     virtual void spatial_register();
     void spatial_unregister();
     virtual void spatial_move();
@@ -128,12 +131,12 @@ private:
     ISpatial* rt_insert_object{};
 
 public:
-    ISpatial_NODE* m_root;
+    ISpatial_NODE* m_root{};
     Fvector m_center{};
     float m_bounds{};
     xr_vector<ISpatial*>* q_result{};
-    u32 stat_nodes;
-    u32 stat_objects;
+    u32 stat_nodes{};
+    u32 stat_objects{};
     CStatTimer stat_insert;
     CStatTimer stat_remove;
 
@@ -162,14 +165,13 @@ public:
     ~ISpatial_DB();
 
     // managing
-    void initialize(Fbox& BB);
+    void initialize(const Fbox& BB);
     // void							destroy			();
     void insert(ISpatial* S);
     void remove(ISpatial* S);
     void update(u32 nodes = 8);
     BOOL verify();
 
-public:
     enum
     {
         O_ONLYFIRST = (1 << 0),

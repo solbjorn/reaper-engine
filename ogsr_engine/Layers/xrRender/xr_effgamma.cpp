@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "xr_effgamma.h"
-//#include "device.h"
 
-void CGammaControl::Update()
+void CGammaControl::Update() const
 {
     if (HW.pDevice)
     {
@@ -22,18 +21,18 @@ void CGammaControl::Update()
     }
 }
 
-void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G)
+void CGammaControl::GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G) const
 {
-    DXGI_RGB Offset = {0, 0, 0};
-    DXGI_RGB Scale = {1, 1, 1};
+    constexpr DXGI_RGB Offset = {0, 0, 0};
+    constexpr DXGI_RGB Scale = {1, 1, 1};
     G.Offset = Offset;
     G.Scale = Scale;
 
-    float DeltaCV = (GC.MaxConvertedValue - GC.MinConvertedValue);
+    const float DeltaCV = (GC.MaxConvertedValue - GC.MinConvertedValue);
 
-    float og = 1.f / (fGamma + EPS);
-    float B = fBrightness / 2.f;
-    float C = fContrast / 2.f;
+    const float og = 1.f / (fGamma + EPS);
+    const float B = fBrightness / 2.f;
+    const float C = fContrast / 2.f;
 
     for (u32 i = 0; i < GC.NumGammaControlPoints; i++)
     {

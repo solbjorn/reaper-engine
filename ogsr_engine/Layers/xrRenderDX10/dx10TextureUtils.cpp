@@ -9,7 +9,7 @@ struct TextureFormatPairs
     DXGI_FORMAT m_dx10FMT;
 };
 
-TextureFormatPairs TextureFormatList[] = {
+static constexpr TextureFormatPairs TextureFormatList[] = {
     {D3DFMT_UNKNOWN, DXGI_FORMAT_UNKNOWN},
     // D3DFMT_R8G8B8 Not available
     {D3DFMT_A8R8G8B8, DXGI_FORMAT_R8G8B8A8_UNORM}, // Not available
@@ -92,7 +92,7 @@ TextureFormatPairs TextureFormatList[] = {
 
 DXGI_FORMAT ConvertTextureFormat(D3DFORMAT dx9FMT)
 {
-    int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
+    constexpr int arrayLength = sizeof(TextureFormatList) / sizeof(TextureFormatList[0]);
     for (int i = 0; i < arrayLength; ++i)
     {
         if (TextureFormatList[i].m_dx9FMT == dx9FMT)

@@ -55,7 +55,7 @@ struct VERTEX_CONSTANT_BUFFER
 
 // File: 'Terminuz14.ttf' (81308 bytes)
 // Exported using binary_to_compressed_c.cpp
-constexpr char Terminuz14_compressed_data_base85[] =
+static constexpr char Terminuz14_compressed_data_base85[] =
     "7])#######So85U'/###[),##.f1$#Q6>##%[n420tjXr0.>>#)jNC4aNV=BGQ`5#GLJM'%xmo%X`(*Hlme+M`cSV6<d5&5#-0%J/1jP(mSZ`*hW&]t<.d<BnB47Eqq.>-1@pV-TT$=("
     "%Y#n$-hG<-q*.m/<_[FHUrG%EU^>E6tD/2'n2JuB6<-/>',1,)[[qr$sJ[^IbDL/#r5S>-oU+41+>00Fq$1j**mDA+uOgk0P%S+HGE5i64)&#,+6)Z-g^A_1K/QlJbuciAeI1=#PpNw9"
     "h=+Vdktm#MXn,VdC`j7#_=&&$%C7#M_nv##UE31#N&###f4/>5FVO;->=Ke$Ckl'&(lT#$e#<X(X@(&l,@0:)g>t9)v`O;-eXZV$E2aA+2-cw'MUNF%sG[8#<J_/#*VUV$cvo*%FJ)4#"
@@ -460,7 +460,7 @@ static void ImGui_ImplDX11_CreateFontsTexture()
     f->AddRemapChar(0xA8, 0x401, true);
     f->AddRemapChar(0xB8, 0x451, true);
 
-     // №—
+    // №—
     f->AddRemapChar(0xB9, 0x2116, true);
     f->AddRemapChar(0x97, 0x2014, true);
 
@@ -797,10 +797,10 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
             return false;
 
         // Create the input layout
-        D3D11_INPUT_ELEMENT_DESC local_layout[] = {
-            {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, (size_t)(&((ImDrawVert*)0)->pos), D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, (size_t)(&((ImDrawVert*)0)->uv), D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, (size_t)(&((ImDrawVert*)0)->col), D3D11_INPUT_PER_VERTEX_DATA, 0},
+        static constexpr D3D11_INPUT_ELEMENT_DESC local_layout[] = {
+            {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ImDrawVert, pos), D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ImDrawVert, uv), D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, offsetof(ImDrawVert, col), D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
         if (g_pd3dDevice->CreateInputLayout(local_layout, 3, g_pVertexShaderBlob->GetBufferPointer(), g_pVertexShaderBlob->GetBufferSize(), &g_pInputLayout) != S_OK)
             return false;
@@ -888,11 +888,11 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
 
 void ImGui_ImplDX11_InvalidateDeviceObjects()
 {
-    ImGui::EndFrame();
-    ImGui::NewFrame();
-
     if (!g_pd3dDevice)
         return;
+
+    ImGui::EndFrame();
+    ImGui::NewFrame();
 
     if (g_pFontSampler)
     {

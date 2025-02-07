@@ -19,6 +19,7 @@ private:
     };
 
 public:
+    constexpr inline _ivector4(const Self& v) { set(v); }
     constexpr inline _ivector4(T x = 0, T y = 0, T z = 0, T w = 0) { set(x, y, z, w); }
 
     constexpr inline T getx() const { return cv.i[0]; }
@@ -35,6 +36,8 @@ public:
     __declspec(property(get = getz, put = setz)) T z;
     __declspec(property(get = getw, put = setw)) T w;
 
+    constexpr inline SelfRef operator=(const Self& v) { return set(v); }
+
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
     constexpr inline T& operator[](int i) const { return *((T*)this + i); }
 
@@ -45,7 +48,7 @@ public:
     }
     constexpr inline SelfRef set(const Self& v)
     {
-        mv = v.mv;
+        xr_memcpy16(&mv, &v.mv);
         return *this;
     }
 
@@ -237,6 +240,7 @@ private:
 
 public:
     constexpr inline _fvector4() = default;
+    constexpr inline _fvector4(const Self& v) { set(v); }
     constexpr inline _fvector4(T x, T y, T z, T w) { set(x, y, z, w); }
 
     constexpr inline T getx() const
@@ -301,6 +305,8 @@ public:
     __declspec(property(get = getz, put = setz)) T z;
     __declspec(property(get = getw, put = setw)) T w;
 
+    constexpr inline SelfRef operator=(const Self& v) { return set(v); }
+
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
     constexpr inline T& operator[](int i) const { return *((T*)this + i); }
 
@@ -333,7 +339,7 @@ public:
     }
     constexpr inline SelfRef set(const Self& v)
     {
-        mv = v.mv;
+        xr_memcpy16(&mv, &v.mv);
         return *this;
     }
 

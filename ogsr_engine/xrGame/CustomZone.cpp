@@ -21,8 +21,8 @@
 #include "script_game_object.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define PREFETCHED_ARTEFACTS_NUM 1 //количество предварительно проспавненых артефактов
-#define WIND_RADIUS (4 * Radius()) //расстояние до актера, когда появляется ветер
+#define PREFETCHED_ARTEFACTS_NUM 1 // количество предварительно проспавненых артефактов
+#define WIND_RADIUS (4 * Radius()) // расстояние до актера, когда появляется ветер
 #define FASTMODE_DISTANCE (50.f) // distance to camera from sphere, when zone switches to fast update sequence
 
 extern Fvector4 ps_ssfx_int_grass_params_1;
@@ -99,7 +99,7 @@ void CCustomZone::Load(LPCSTR section)
     BirthOnAlive = READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_alive", false);
     BirthOnDead = READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_dead", false);
 
-    //загрузить времена для зоны
+    // загрузить времена для зоны
     m_StateTime[eZoneStateIdle] = -1;
     m_StateTime[eZoneStateAwaking] = pSettings->r_s32(section, "awaking_time");
     m_StateTime[eZoneStateBlowout] = pSettings->r_s32(section, "blowout_time");
@@ -274,7 +274,7 @@ void CCustomZone::Load(LPCSTR section)
         m_fBlowoutWindPowerMax = pSettings->r_float(section, "blowout_wind_power");
     }
 
-    //загрузить параметры световой вспышки от взрыва
+    // загрузить параметры световой вспышки от взрыва
     BlowoutLight = pSettings->r_bool(section, "blowout_light");
     BlowoutLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "blowout_light_shadow", true);
 
@@ -301,7 +301,7 @@ void CCustomZone::Load(LPCSTR section)
         }
     }
 
-    //загрузить параметры idle подсветки
+    // загрузить параметры idle подсветки
     IdleLight = pSettings->r_bool(section, "idle_light");
     if (IdleLight)
     {
@@ -327,7 +327,7 @@ void CCustomZone::Load(LPCSTR section)
         IdleLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true);
     }
 
-    //загрузить параметры для разбрасывания артефактов
+    // загрузить параметры для разбрасывания артефактов
     SpawnBlowoutArtefacts = pSettings->r_bool(section, "spawn_blowout_artefacts");
     if (SpawnBlowoutArtefacts)
     {
@@ -368,7 +368,7 @@ void CCustomZone::Load(LPCSTR section)
         }
 
         R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", *cName());
-        //нормализировать вероятности
+        // нормализировать вероятности
         for (u32 i = 0; i < m_ArtefactSpawn.size(); ++i)
         {
             m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability / total_probability;
@@ -405,7 +405,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     m_StartTime = Device.dwTimeGlobal;
     UseOnOffTime = (m_TimeToDisable != 0) && (m_TimeToEnable != 0);
 
-    //добавить источники света
+    // добавить источники света
     if (IdleLight)
     {
         m_pIdleLight = ::Render->light_create();
@@ -555,7 +555,7 @@ void CCustomZone::UpdateWorkload(u32 dt)
     default: NODEFAULT;
     }
 
-    //вычислить время срабатывания зоны
+    // вычислить время срабатывания зоны
     if (m_bZoneActive)
         m_dwDeltaTime += dt;
     else
@@ -600,8 +600,8 @@ void CCustomZone::shedule_Update(u32 dt)
         // update
         feel_touch_update(P, s.R);
 
-        //пройтись по всем объектам в зоне
-        //и проверить их состояние
+        // пройтись по всем объектам в зоне
+        // и проверить их состояние
         for (OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
         {
             CObject* pObject = (*it).object;
@@ -630,8 +630,8 @@ void CCustomZone::shedule_Update(u32 dt)
                     StopObjectIdleParticles(holder);
             }
 
-            //если есть хотя бы один не дисабленый объект, то
-            //зона считается активной
+            // если есть хотя бы один не дисабленый объект, то
+            // зона считается активной
             if (info.zone_ignore == false)
                 m_bZoneActive = true;
         }
@@ -673,7 +673,6 @@ void CCustomZone::shedule_Update(u32 dt)
                 }
             }
         }
-
     }
     else if (m_keep_update)
         inherited::shedule_Update(dt);
@@ -937,7 +936,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
     else
         vel.set(0, 0, 0);
 
-    //выбрать случайную косточку на объекте
+    // выбрать случайную косточку на объекте
     CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
     if (PP)
     {
@@ -993,7 +992,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 
     shared_str particle_str = NULL;
 
-    //разные партиклы для объектов разного размера
+    // разные партиклы для объектов разного размера
     if (pObject->Radius() < SMALL_OBJECT_RADIUS)
     {
         if (!m_sIdleObjectParticlesSmall)
@@ -1007,7 +1006,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
         particle_str = m_sIdleObjectParticlesBig;
     }
 
-    //запустить партиклы на объекте
+    // запустить партиклы на объекте
     //. new
     PP->StopParticles(particle_str, BI_NONE, true);
 
@@ -1031,7 +1030,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
         return;
 
     shared_str particle_str = NULL;
-    //разные партиклы для объектов разного размера
+    // разные партиклы для объектов разного размера
     if (pObject->Radius() < SMALL_OBJECT_RADIUS)
     {
         if (!m_sIdleObjectParticlesSmall)
@@ -1309,8 +1308,8 @@ void CCustomZone::ZoneDisable(bool keep_update)
 
 void CCustomZone::SpawnArtefact()
 {
-    //вычислить согласно распределению вероятностей
-    //какой артефакт из списка ставить
+    // вычислить согласно распределению вероятностей
+    // какой артефакт из списка ставить
     float rnd = ::Random.randF(.0f, 1.f - EPS_L);
     float prob_threshold = 0.f;
 
@@ -1644,7 +1643,7 @@ void CCustomZone::GrassZoneUpdate()
 
     // Update grass bender if the animation is > -1
     if (targetAnim > -1 || (grassbender_id > 0 && grass_shader_data.anim[grassbender_id] > -1))
-        g_pGamePersistent->GrassBendersUpdate(ID(), grassbender_id, grassbender_frame, Position(), m_BendGrass_idle_radius, 0.0f);
+        g_pGamePersistent->GrassBendersUpdate(ID(), grassbender_id, grassbender_frame, Position(), m_BendGrass_idle_radius, 0.0f, false);
     else
         g_pGamePersistent->GrassBendersRemoveByIndex(grassbender_id);
 
@@ -1670,7 +1669,8 @@ void CCustomZone::GrassZoneUpdate()
             grass_shader_data.speed[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.speed[grassbender_id], m_BendGrass_whenactive_speed, 10.0f, true);
 
         if (m_BendGrass_whenactive_str >= 0)
-            grass_shader_data.str_target[grassbender_id] += g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], m_BendGrass_whenactive_str, 10.0f, true);
+            grass_shader_data.str_target[grassbender_id] +=
+                g_pGamePersistent->GrassBenderToValue(grass_shader_data.str_target[grassbender_id], m_BendGrass_whenactive_str, 10.0f, true);
     }
     else
     {

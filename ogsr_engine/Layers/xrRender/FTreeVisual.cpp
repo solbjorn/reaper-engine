@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/igame_level.h"
 #include "../../xr_3da/environment.h"
@@ -18,7 +17,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
     dxRender_Visual::Load(N, data, dwFlags);
 
-    D3DVERTEXELEMENT9* vFormat = NULL;
+    const D3DVERTEXELEMENT9* vFormat = NULL;
 
     // read vertices
     R_ASSERT(data->find_chunk(OGF_GCONTAINER));
@@ -97,7 +96,7 @@ void FTreeVisual::Render(float LOD)
     static FTreeVisual_setup tvs;
     if (tvs.dwFrame != Device.dwFrame)
         tvs.calculate();
-        // setup constants
+    // setup constants
 
     Fmatrix xform_v;
     xform_v.mul_43(RCache.get_xform_view(), xform);
@@ -115,35 +114,30 @@ void FTreeVisual::Render(float LOD)
 
     RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
 
-    constexpr const char* strBendersPos{"benders_pos"};
-    constexpr const char* strBendersSetup{"benders_setup"};
-
-    RCache.set_c(strBendersSetup, Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
-
-    if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
+    if (ps_ssfx_grass_interactive.y > 0)
     {
+        constexpr const char* strBendersPos{"benders_pos"};
+        constexpr const char* strBendersSetup{"benders_setup"};
+
+        // Inter grass Settings
+        RCache.set_c(strBendersSetup, ps_ssfx_int_grass_params_1);
+
+        // Grass benders data ( Player + Characters )
+
+        // Add Player?
+        if (ps_ssfx_grass_interactive.x > 0)
+            grass_shader_data.pos[0].set(Device.vCameraPosition, -1);
+        else
+            grass_shader_data.pos[0].set(0, 0, 0, -1);
+        grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
+
         Fvector4* c_grass{};
-        RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos + sizeof grass_shader_data.dir, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
-        if (c_grass)
-        {
-            std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
-            std::memcpy(c_grass + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
-        }
-    }
+        RCache.get_ConstantDirect(strBendersPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+        VERIFY(c_grass);
 
-    bool is_bugged_flora{};
-    if (!ps_ssfx_wind_bugged_flora_enable)
-    {
-        if (const R_constant* C = &*RCache.get_c(CRender::c_sbase))
-        {
-            if (const CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index)))
-            {
-                const char* tex = T->cName.c_str();
-                is_bugged_flora = (strstr(tex, "trees\\trees_elka") || strstr(tex, "trees\\trees_kamysh"));
-            }
-        }
+        if (c_grass)
+            xr_memcpy(c_grass, &grass_shader_data.pos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir));
     }
-    RCache.set_c("is_bugged_flora", static_cast<float>(is_bugged_flora));
 }
 
 #define PCOPY(a) a = pFrom->a

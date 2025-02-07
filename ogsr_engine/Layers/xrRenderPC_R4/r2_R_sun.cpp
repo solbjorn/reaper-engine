@@ -42,11 +42,11 @@ void CRender::init_cacades()
     u32 cascade_count = 3;
     m_sun_cascades.resize(cascade_count);
 
-    float fBias = -0.0000025f;
+    constexpr float fBias = -0.0000025f;
 
     m_sun_cascades[0].cascade_ind = 0;
     m_sun_cascades[0].reset_chain = true;
-    m_sun_cascades[0].size = ps_ssfx_shadow_cascades.x; //40;
+    m_sun_cascades[0].size = ps_ssfx_shadow_cascades.x; // 40;
     m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
 
     m_sun_cascades[1].cascade_ind = 1;
@@ -77,7 +77,7 @@ void CRender::render_sun_cascades()
 void CRender::calculate_sun_async()
 {
     if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_SUN))
-        return;    
+        return;
 
     calculate_sun_awaiter = TTAPI->submit([this]() { calculate_sun(); });
 }
@@ -121,7 +121,6 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         xr_vector<Fplane> cull_planes;
 
-        FPU::m64r();
         // Lets begin from base frustum
         Fmatrix fullxform_inv = ex_full_inverse;
 
@@ -171,6 +170,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
             if (cascade.cascade_ind == 0 || cascade.reset_chain)
             {
                 Fvector3 near_p, edge_vec;
+                light_cuboid.view_frustum_rays.reserve(4);
                 for (int p = 0; p < 4; p++)
                 {
                     near_p = wform(fullxform_inv, corners[facetable[4][p]]);
@@ -301,7 +301,6 @@ void CRender::calculate_sun(sun::cascade& cascade)
         fuckingsun->X.D.maxY = limit;
 
         // full-xform
-        FPU::m24r();
     }
 }
 
@@ -319,10 +318,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
         HOM.Disable();
         phase = PHASE_SMAP;
-        if (RImplementation.o.Tshadows)
-            r_pmask(true, true);
-        else
-            r_pmask(true, false);
+        r_pmask(true, false);
     }
 
     // Fill the database
@@ -332,9 +328,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
     //. !!! We should clip based on shrinked frustum (again)
     {
         bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-        bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+        VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
 
-        if (bNormal || bSpecial)
+        if (bNormal)
         {
             Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
             RCache.set_xform_world(Fidentity);
@@ -347,16 +343,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
                 Details->fade_distance = dm_fade * dm_fade * ps_ssfx_grass_shadows.y;
                 Details->Render();
             }
-
-            fuckingsun->X.D.transluent = FALSE;
-
-            if (bSpecial)
-            {
-                fuckingsun->X.D.transluent = TRUE;
-                Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
-                r_dsgraph_render_graph(1); // normal level, secondary priority
-                r_dsgraph_render_sorted(); // strict-sorted geoms
-            }
         }
     }
 
@@ -367,12 +353,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
     // Accumulate
     Target->phase_accumulator();
-
-    if (Target->use_minmax_sm_this_frame())
-    {
-        PIX_EVENT(SE_SUN_NEAR_MINMAX_GENERATE);
-        Target->create_minmax_SM();
-    }
 
     PIX_EVENT(SE_SUN_NEAR);
 

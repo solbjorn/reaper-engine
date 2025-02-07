@@ -8,6 +8,21 @@
 
 constexpr int quant = 16384;
 
+float GoToValue(float& current, float go_to)
+{
+    float diff = abs(current - go_to);
+
+    float r_value = Device.fTimeDelta;
+
+    if (diff - r_value <= 0)
+    {
+        current = go_to;
+        return 0;
+    }
+
+    return current < go_to ? r_value : -r_value;
+}
+
 void CDetailManager::hw_Render()
 {
     // Render-prepare
@@ -15,7 +30,7 @@ void CDetailManager::hw_Render()
     //	Can't use Device.fTimeDelta since it is smoothed! Don't know why, but smoothed value looks more choppy!
     float fDelta = Device.fTimeGlobal - m_global_time_old;
     if ((fDelta < 0) || (fDelta > 1))
-        fDelta = 0.03;
+        fDelta = 0.03f;
     m_global_time_old = Device.fTimeGlobal;
 
     m_time_rot_1 += (PI_MUL_2 * fDelta / swing_current.rot1);
@@ -60,8 +75,21 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
     constexpr const char* strDir2D = "dir2D";
     constexpr const char* strArray = "array";
     constexpr const char* strXForm = "xform";
-    constexpr const char* strBendersSetup = "benders_setup";
-    constexpr const char* strBendersPos = "benders_pos";
+
+    constexpr const char* strPos = "benders_pos";
+    constexpr const char* strGrassSetup = "benders_setup";
+
+    constexpr const char* strExData = "exdata";
+    constexpr const char* strGrassAlign = "grass_align";
+
+    // Grass benders data
+
+    // Add Player?
+    if (ps_ssfx_grass_interactive.x > 0)
+        grass_shader_data.pos[0].set(Device.vCameraPosition, -1);
+    else
+        grass_shader_data.pos[0].set(0, 0, 0, -1);
+    grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 
     Device.Statistic->RenderDUMP_DT_Count = 0;
 
@@ -71,7 +99,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
     vis_list& list = m_visibles[var_id];
 
-    CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+    const CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
     Fvector c_sun, c_ambient, c_hemi;
     c_sun.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z);
     c_sun.mul(.5f);
@@ -97,21 +125,23 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                 RCache.set_c(strWave, wave);
                 RCache.set_c(strDir2D, wind);
                 RCache.set_c(strXForm, Device.mFullTransform);
+                RCache.set_c(strGrassAlign, ps_ssfx_terrain_grass_align);
 
-                RCache.set_c(strBendersSetup,
-                             Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
-                                      ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
-
-                if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
+                if (ps_ssfx_grass_interactive.y > 0)
                 {
+                    RCache.set_c(strGrassSetup, ps_ssfx_int_grass_params_1);
+
                     Fvector4* c_grass{};
-                    RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos + sizeof grass_shader_data.dir, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                    RCache.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                    R_ASSERT(c_grass);
+
                     if (c_grass)
-                    {
-                        std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
-                        std::memcpy(c_grass + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
-                    }
+                        xr_memcpy(c_grass, &grass_shader_data.pos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir));
                 }
+
+                Fvector4* c_ExData{};
+                RCache.get_ConstantDirect(strExData, hw_BatchSize * sizeof(Fvector4), reinterpret_cast<void**>(&c_ExData), nullptr, nullptr);
+                R_ASSERT(c_ExData);
 
                 Fvector4* c_storage{};
                 RCache.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
@@ -134,7 +164,8 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                         SlotItem& Instance = **_iI;
                         u32 base = dwBatch * 4;
 
-                        // Build matrix ( 3x4 matrix, last row - color )
+                        Instance.alpha += GoToValue(Instance.alpha, Instance.alpha_target);
+
                         float scale = Instance.scale_calculated;
 
                         // Sort of fade using the scale
@@ -143,11 +174,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                             scale *= 1.0f - Instance.position.distance_to_xz_sqr(light_position) * 0.005f;
                         else if (Instance.distance > fade_distance)
                             scale *= 1.0f - abs(Instance.distance - fade_distance) * 0.005f;
-                        if (scale <= 0)
-                            break;
-                        // Build matrix ( 3x4 matrix, last row - color )
-                        // float scale = Instance.scale_calculated;
 
+                        if (scale <= 0 || Instance.alpha <= 0)
+                            break;
+
+                        // Build matrix ( 3x4 matrix, last row - color )
                         Fmatrix& M = Instance.mRotY;
                         c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
                         c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
@@ -158,6 +189,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                         float h = Instance.c_hemi;
                         float s = Instance.c_sun;
                         c_storage[base + 3].set(s, s, s, h);
+
+                        if (c_ExData)
+                            c_ExData[dwBatch].set(Instance.normal.x, Instance.normal.y, Instance.normal.z, Instance.alpha);
+
                         dwBatch++;
                         if (dwBatch == hw_BatchSize)
                         {
@@ -187,6 +222,17 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
                     RCache.stat.r.s_details.add(dwCNT_verts);
                 }
+            }
+            // Clean up
+            // KD: we must not clear vis on r2 since we want details shadows
+            if (ps_ssfx_grass_shadows.x <= 0)
+            {
+                if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
+                    ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_SMAP == RImplementation.phase)) // phase smap with shadows
+                     || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase) &&
+                         (!RImplementation.is_sun())) // phase normal with shadows without sun
+                     || (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase)))) // phase normal without shadows
+                    vis.clear();
             }
         }
         vOffset += hw_BatchSize * Object.number_vertices;

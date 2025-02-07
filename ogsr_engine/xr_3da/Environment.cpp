@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "render.h"
 
 #include "Environment.h"
@@ -12,11 +11,11 @@
 
 #include "xr_input.h"
 
-//#include "resourcemanager.h"
+// #include "resourcemanager.h"
 
 #include "IGame_Level.h"
 
-//#include "D3DUtils.h"
+// #include "D3DUtils.h"
 #include "../xrcore/xrCore.h"
 
 #include "../Include/xrRender/EnvironmentRender.h"
@@ -27,15 +26,17 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-ENGINE_API float psVisDistance = 1.1f;
+ENGINE_API float psVisDistance = 1.f;
 static const float MAX_NOISE_FREQ = 0.03f;
 
-//#define WEATHER_LOGGING
+// #define WEATHER_LOGGING
 
 // real WEATHER->WFX transition time
 #define WFX_TRANS_TIME 5.f
 
 const float MAX_DIST_FACTOR = 0.95f;
+
+extern Fvector4 ps_ssfx_wind_trees;
 
 //////////////////////////////////////////////////////////////////////////
 // environment
@@ -91,6 +92,10 @@ CEnvironment::CEnvironment()
         m_sound_channels_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
         m_effects_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
         m_suns_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+
+        if (FS.exist(file_name, "$game_config$", "environment\\sun_positions.ltx"))
+            m_sun_pos_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\sun_positions.ltx"), TRUE, TRUE, FALSE);
+
         m_thunderbolt_collections_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
         m_thunderbolts_config = xr_new<CInifile>(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
 
@@ -127,7 +132,6 @@ CEnvironment::CEnvironment()
 CEnvironment::~CEnvironment()
 {
     xr_delete(PerlinNoise1D);
-
     OnDeviceDestroy();
 
     if (m_ambients_config)
@@ -142,6 +146,9 @@ CEnvironment::~CEnvironment()
     if (m_suns_config)
         CInifile::Destroy(m_suns_config);
 
+    if (m_sun_pos_config)
+        CInifile::Destroy(m_sun_pos_config);
+
     if (m_thunderbolt_collections_config)
         CInifile::Destroy(m_thunderbolt_collections_config);
 
@@ -151,15 +158,25 @@ CEnvironment::~CEnvironment()
     destroy_mixer();
 }
 
+void CEnvironment::invalidate_descs()
+{
+    if (Current[0])
+        Current[0]->put();
+    if (Current[1])
+        Current[1]->put();
+
+    Current[0] = 0;
+    Current[1] = 0;
+}
+
 void CEnvironment::Invalidate()
 {
     bWFX = false;
-    Current[0] = 0;
-    Current[1] = 0;
-    if (eff_LensFlare)
-        eff_LensFlare->Invalidate();
+    invalidate_descs();
     if (eff_Rain)
         eff_Rain->InvalidateState();
+    if (eff_LensFlare)
+        eff_LensFlare->Invalidate();
 }
 
 float CEnvironment::TimeDiff(float prev, float cur)
@@ -300,6 +317,11 @@ bool CEnvironment::SetWeatherFX(shared_str name)
         // sort wfx envs
         std::sort(CurrentWeather->begin(), CurrentWeather->end(), sort_env_pred);
 
+        C0->get();
+        C1->get();
+        Current[0]->put();
+        Current[1]->put();
+
         Current[0] = C0;
         Current[1] = C1;
 #ifdef WEATHER_LOGGING
@@ -337,6 +359,12 @@ void CEnvironment::StopWFX()
     VERIFY(CurrentCycleName.size());
     bWFX = false;
     SetWeather(CurrentCycleName, false);
+
+    WFX_end_desc[0]->get();
+    WFX_end_desc[1]->get();
+    Current[0]->put();
+    Current[1]->put();
+
     Current[0] = WFX_end_desc[0];
     Current[1] = WFX_end_desc[1];
 #ifdef WEATHER_LOGGING
@@ -385,6 +413,10 @@ void CEnvironment::SelectEnvs(float gt)
         VERIFY(!bWFX);
         // first or forced start
         SelectEnvs(CurrentWeather, Current[0], Current[1], gt);
+
+        Current[0]->get();
+        Current[1]->get();
+
         m_last_weather_shift = Device.dwFrame;
         g_pGameLevel->OnChangeCurrentWeather(Current[0]->m_identifier.c_str());
     }
@@ -402,8 +434,13 @@ void CEnvironment::SelectEnvs(float gt)
         }
         if (bSelect)
         {
+            Current[0]->put();
+
             Current[0] = Current[1];
             SelectEnv(CurrentWeather, Current[1], gt);
+
+            Current[1]->get();
+
             m_last_weather_shift = Device.dwFrame;
             g_pGameLevel->OnChangeCurrentWeather(Current[0]->m_identifier.c_str());
 #ifdef WEATHER_LOGGING
@@ -443,7 +480,8 @@ void CEnvironment::lerp(float& current_weight)
         current_weight = 0;
 
     // final lerp
-    CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
+    if (!m_paused)
+        CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
 }
 
 void CEnvironment::OnFrame()
@@ -451,28 +489,39 @@ void CEnvironment::OnFrame()
     if (!g_pGameLevel)
         return;
 
+    // Min wind velocity. [ ps_ssfx_wind_trees.w 0 ~ 1 ]
+    float WindVel = std::max(CurrentEnv->wind_velocity, ps_ssfx_wind_trees.w * 1000);
+
     // Limit min at 200 to avoid slow-mo at extremly low speed.
-    float WindVel = std::max(CurrentEnv->wind_velocity, 200.f) * 0.001f;
+    WindVel = std::max(WindVel, 200.f) * 0.001f;
 
     const float WindDir = -CurrentEnv->wind_direction + PI_DIV_2;
     const Fvector2 WDir{_cos(WindDir), _sin(WindDir)};
     wind_anim.x += WindVel * WDir.x * Device.fTimeDelta;
     wind_anim.y += WindVel * WDir.y * Device.fTimeDelta;
     wind_anim.z += clampr(WindVel * 1.33f, 0.0f, 1.0f) * Device.fTimeDelta;
+    wind_anim.w += 1.0f * Device.fTimeDelta;
 
     float current_weight;
     lerp(current_weight);
 
+    bool dyn = false;
     //	Igor. Dynamic sun position.
     if (USED_COP_WEATHER)
     {
-        if (!::Render->is_sun_static() && m_dynamic_sun_movement)
+        if (m_dynamic_sun_movement && fGameTime > 18000.f && fGameTime < 79000.f)
+        {
             calculate_dynamic_sun_dir();
+            dyn = true;
+        }
     }
     else
     {
-        if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))
+        if (Core.Features.test(xrCore::Feature::dynamic_sun_movement) && fGameTime > 18000.f && fGameTime < 79000.f)
+        {
             calculate_dynamic_sun_dir();
+            dyn = true;
+        }
     }
 
 #ifndef MASTER_GOLD
@@ -491,14 +540,63 @@ void CEnvironment::OnFrame()
     PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
     wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal) + 0.5f, 0.f, 1.f);
 
-    shared_str l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
+    shared_str l_id;
+    shared_str t_id;
+    if (m_paused)
+    {
+        l_id = CurrentEnv->lens_flare_id;
+        t_id = CurrentEnv->tb_id;
+    }
+    else
+    {
+        if (bWFX && !dyn && m_sun_hp_loaded)
+            CurrentEnv->sun_dir = calculate_config_sun_dir(fGameTime);
+
+        l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
+        t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
+    }
+
     eff_LensFlare->OnFrame(l_id);
-    shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
     eff_Rain->OnFrame();
 
     // ******************** Environment params (setting)
     m_pRender->OnFrame(*this);
+}
+
+Fvector3 CEnvironment::calculate_config_sun_dir(float ftime)
+{
+    float current_time = ftime / (DAY_LENGTH / 24);
+    int weather_time = floor(current_time);
+    float s_weight = current_time - weather_time;
+
+    float real_sun_alt, real_sun_long;
+    float s_alt = sun_hp[weather_time].x;
+    float s_long = sun_hp[weather_time].y;
+
+    if (s_weight > 0)
+    {
+        int next_hour = weather_time == 23 ? 0 : weather_time + 1;
+        float s_alt2 = sun_hp[next_hour].x;
+        float s_long2 = sun_hp[next_hour].y;
+
+        real_sun_alt = std::lerp(s_alt, s_alt2, s_weight);
+        real_sun_long = std::lerp(s_long, s_long2, s_weight);
+    }
+    else
+    {
+        real_sun_alt = s_alt;
+        real_sun_long = s_long;
+    }
+
+    R_ASSERT(_valid(real_sun_alt));
+    R_ASSERT(_valid(real_sun_long));
+
+    Fvector3 ret{};
+    ret.setHP(deg2rad(real_sun_alt), deg2rad(real_sun_long));
+
+    R_ASSERT(_valid(ret));
+    return ret;
 }
 
 void CEnvironment::calculate_dynamic_sun_dir()
@@ -564,7 +662,6 @@ void CEnvironment::calculate_dynamic_sun_dir()
     R_ASSERT(_valid(SEA));
     CurrentEnv->sun_dir.setHP(AZ, SEA);
     R_ASSERT(_valid(CurrentEnv->sun_dir));
-
     CurrentEnv->sun_color.mul(fSunBlend);
 }
 
@@ -645,6 +742,11 @@ void CEnvironment::SetWeatherNext(shared_str name)
         Msg("! [%s]: Invalid weather name: %s", __FUNCTION__, name.c_str());
         return;
     }
+
+    Current[1]->put();
+
     EnvVec* NextWeather = &it->second;
     SelectEnv(NextWeather, Current[1], fGameTime);
+
+    Current[1]->get();
 }

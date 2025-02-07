@@ -15,5 +15,5 @@ public:
         m_script_params = Fmatrix();
         hud_params.set(0.f, 0.f, 0.f, 0.f);
         m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
-    };
+    }
 };

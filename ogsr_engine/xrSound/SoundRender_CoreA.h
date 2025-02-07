@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SoundRender_CoreAH
+#define SoundRender_CoreAH
 
 #include "SoundRender_Core.h"
 #include "OpenALDeviceList.h"
 #include <eax.h>
 
-//#include "NotificationClient.h"
+// #include "NotificationClient.h"
 
 #ifdef DEBUG
 #define A_CHK(expr) \
@@ -44,22 +45,21 @@ class CSoundRender_CoreA : public CSoundRender_Core
 
     ALDeviceList* pDeviceList;
 
-    struct SListener
+    struct SListenerSmooth
     {
-        Fvector position;
-        Fvector orientation[2];
+        Fvector prevVelocity;
+        Fvector curVelocity;
+        Fvector accVelocity;
     };
-    SListener Listener{};
+    SListenerSmooth ListenerSmooth{};
 
     BOOL EAXQuerySupport(BOOL bDeferred, const GUID* guid, u32 prop, void* val, u32 sz);
     BOOL EAXTestSupport(BOOL bDeferred);
 
-    //NotificationClient notification_client{};
-
 protected:
     virtual void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz);
     virtual void i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz);
-    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt);
+    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt);
 
     bool init_device_list();
     void init_device_properties(const bool& is_al_soft);
@@ -78,6 +78,6 @@ public:
     virtual void _restart();
 
     virtual void set_master_volume(float f);
-
-    virtual const Fvector& listener_position() { return Listener.position; }
 };
+
+#endif

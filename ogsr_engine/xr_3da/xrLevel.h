@@ -187,9 +187,9 @@ struct SNodePositionOld
 };
 #pragma pack(pop)
 
-const u32 XRCL_CURRENT_VERSION = 17; // input
-const u32 XRCL_PRODUCTION_VERSION = 14; // output
-const u32 CFORM_CURRENT_VERSION = 4;
-const u32 MAX_NODE_BIT_COUNT = 23;
+constexpr u32 XRCL_CURRENT_VERSION = 17; // input
+constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output
+constexpr u32 CFORM_CURRENT_VERSION = 4;
+constexpr u32 MAX_NODE_BIT_COUNT = 23;
 
-const u32 XRAI_CURRENT_VERSION = 8;
+constexpr u32 XRAI_CURRENT_VERSION = 8;

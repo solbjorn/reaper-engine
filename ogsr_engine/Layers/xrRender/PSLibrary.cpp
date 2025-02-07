@@ -13,13 +13,12 @@ void CPSLibrary::LoadAll()
     if (!Load2()) // load ltx pg and pe
     {
         string_path fn;
-        if (FS.exist(fn, _game_data_, "particles.xr"))
+        if (FS.exist(fn, _game_data_, "particles_cop.xr"))
         {
             Msg("Load [%s]", fn);
             Load(fn);
         }
-
-        if (FS.exist(fn, _game_data_, "particles_cop.xr"))
+        else if (FS.exist(fn, _game_data_, "particles.xr"))
         {
             Msg("Load [%s]", fn);
             Load(fn);
@@ -49,14 +48,14 @@ void CPSLibrary::OnDestroy()
 
 PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 {
-    //auto it = Name ? m_PEDs.find(Name) : m_PEDs.end(); //Сомневаюсь что сюда может попасть nullptr
+    // auto it = Name ? m_PEDs.find(Name) : m_PEDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PEDs.find(Name);
     return it == m_PEDs.end() ? nullptr : it->second.get();
 }
 
 PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 {
-    //auto it = Name ? m_PGDs.find(Name) : m_PGDs.end(); //Сомневаюсь что сюда может попасть nullptr
+    // auto it = Name ? m_PGDs.find(Name) : m_PGDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PGDs.find(Name);
     return it == m_PGDs.end() ? nullptr : it->second.get();
 }
@@ -233,7 +232,7 @@ bool CPSLibrary::Load2()
         {
             R_ASSERT(0);
         }
-    }    
+    }
 
     Msg("Loaded particle files: [%u]", files.size());
 

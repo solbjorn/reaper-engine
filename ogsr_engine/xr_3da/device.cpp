@@ -17,12 +17,11 @@ ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
 ENGINE_API BOOL g_bRendering = FALSE;
 
-u32 g_dwFPSlimit = 60;
-
 ENGINE_API int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
                                           // тем более низкий FPS во втором вьюпорте)
 
 BOOL g_bLoaded = FALSE;
+ENGINE_API float refresh_rate = 0;
 
 BOOL CRenderDevice::Begin()
 {
@@ -45,9 +44,6 @@ BOOL CRenderDevice::Begin()
     }
 
     m_pRender->Begin();
-
-    FPU::m24r();
-
     g_bRendering = TRUE;
 
     return TRUE;
@@ -68,7 +64,7 @@ void CRenderDevice::End(void)
         if (0 == dwPrecacheFrame)
         {
             m_pRender->updateGamma();
-            
+
             ::Sound->set_master_volume(1.f);
 
             Memory.mem_compact();
@@ -109,6 +105,45 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 }
 
 ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+
+void GetMonitorResolution(u32& horizontal, u32& vertical)
+{
+    HMONITOR hMonitor = MonitorFromWindow(Device.m_hWnd, MONITOR_DEFAULTTOPRIMARY);
+
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    if (GetMonitorInfoA(hMonitor, &mi))
+    {
+        horizontal = mi.rcMonitor.right - mi.rcMonitor.left;
+        vertical = mi.rcMonitor.bottom - mi.rcMonitor.top;
+    }
+    else
+    {
+        RECT desktop;
+        const HWND hDesktop = GetDesktopWindow();
+        GetWindowRect(hDesktop, &desktop);
+        horizontal = desktop.right - desktop.left;
+        vertical = desktop.bottom - desktop.top;
+    }
+}
+
+float GetMonitorRefresh()
+{
+    DEVMODE lpDevMode;
+    memset(&lpDevMode, 0, sizeof(DEVMODE));
+    lpDevMode.dmSize = sizeof(DEVMODE);
+    lpDevMode.dmDriverExtra = 0;
+
+    if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) == 0)
+    {
+        return 60.f;
+    }
+    else
+        return lpDevMode.dmDisplayFrequency;
+}
+
+extern int ps_framelimiter;
+extern u32 g_screenmode;
 
 void CRenderDevice::on_idle()
 {
@@ -153,7 +188,6 @@ void CRenderDevice::on_idle()
     }
 
     // Matrices
-    mInvView.invert(mView);
     mFullTransform.mul(mProject, mView);
     m_pRender->SetCacheXform(mView, mProject);
     mInvFullTransform.invert_44(mFullTransform);
@@ -195,8 +229,15 @@ void CRenderDevice::on_idle()
     const auto FrameEndTime = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
 
-    constexpr u32 menuFPSlimit{60}, pauseFPSlimit{60};
-    const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
+    u32 curFPSLimit = ps_framelimiter;
+    if (!curFPSLimit && (IsMainMenuActive() || Device.Paused()))
+    {
+        if (!refresh_rate)
+            refresh_rate = GetMonitorRefresh();
+
+        curFPSLimit = refresh_rate;
+    }
+
     if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
     {
         const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
@@ -373,7 +414,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 //	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
 #endif // DEBUG
 
-
     if (bOn)
     {
         if (!Paused())
@@ -425,7 +465,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
             }
         }
     }
-
 }
 
 BOOL CRenderDevice::Paused() { return g_pauseMngr.Paused(); };
@@ -435,7 +474,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
     const u16 fActive = LOWORD(wParam);
     const BOOL fMinimized = (BOOL)HIWORD(wParam);
     const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
-    const BOOL isGameActive = ((psDeviceFlags.is(rsAlwaysActive) && !psDeviceFlags.is(rsFullscreen)) || bActive) ? TRUE : FALSE;
+    const BOOL isGameActive = ((psDeviceFlags.is(rsAlwaysActive) && g_screenmode != 2) || bActive) ? TRUE : FALSE;
 
     pInput->clip_cursor(fActive != WA_INACTIVE);
 

@@ -33,7 +33,7 @@ void resptrcode_shader::create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, 
 
 //////////////////////////////////////////////////////////////////////////
 void resptrcode_geom::create(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib) { _set(DEV->CreateGeom(FVF, vb, ib)); }
-void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib) { _set(DEV->CreateGeom(decl, vb, ib)); }
+void resptrcode_geom::create(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib) { _set(DEV->CreateGeom(decl, vb, ib)); }
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -41,26 +41,26 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3D
 bool SPass::equal(const SPass& other) const
 {
     if (state != other.state)
-        return FALSE;
+        return false;
     if (ps != other.ps)
-        return FALSE;
+        return false;
     if (vs != other.vs)
-        return FALSE;
+        return false;
     if (gs != other.gs)
-        return FALSE;
+        return false;
     if (hs != other.hs)
-        return FALSE;
+        return false;
     if (ds != other.ds)
-        return FALSE;
+        return false;
     if (cs != other.cs)
-        return FALSE;
+        return false;
     if (constants != other.constants)
-        return FALSE; // is this nessesary??? (ps+vs already combines)
+        return false; // is this nessesary??? (ps+vs already combines)
     if (T != other.T)
-        return FALSE;
+        return false;
     if (C != other.C)
-        return FALSE;
-    return TRUE;
+        return false;
+    return true;
 }
 
 //
@@ -71,6 +71,11 @@ ShaderElement::ShaderElement()
     flags.bEmissive = FALSE;
     flags.bDistort = FALSE;
     flags.bWmark = FALSE;
+    flags.bLandscape = FALSE;
+
+    // SSS Custom rendering
+    flags.isLandscape = FALSE;
+    flags.isWater = FALSE;
 }
 
 BOOL ShaderElement::equal(ShaderElement& S)
@@ -80,6 +85,8 @@ BOOL ShaderElement::equal(ShaderElement& S)
     if (flags.bStrictB2F != S.flags.bStrictB2F)
         return FALSE;
     if (flags.bEmissive != S.flags.bEmissive)
+        return FALSE;
+    if (flags.bLandscape != S.flags.bLandscape)
         return FALSE;
     if (flags.bWmark != S.flags.bWmark)
         return FALSE;

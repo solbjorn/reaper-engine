@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-class walker
+class alignas(8) walker
 {
 public:
     u32 mask;
@@ -14,6 +14,7 @@ public:
         F = (CFrustum*)_F;
         space = _space;
     }
+
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
     {
         // box

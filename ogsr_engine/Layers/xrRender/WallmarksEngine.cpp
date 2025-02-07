@@ -10,8 +10,6 @@
 #include "../../xr_3da/GameFont.h"
 #include "SkeletonCustom.h"
 
-u32 g_r = 1;
-
 namespace WallmarksEngine
 {
 struct wm_slot
@@ -70,26 +68,23 @@ CWallmarksEngine::~CWallmarksEngine()
 
 void CWallmarksEngine::clear()
 {
+    for (auto& p_it : marks)
     {
-        for (WMSlotVecIt p_it = marks.begin(); p_it != marks.end(); p_it++)
-        {
-            for (StaticWMVecIt m_it = (*p_it)->static_items.begin(); m_it != (*p_it)->static_items.end(); m_it++)
-                static_wm_destroy(*m_it);
-            xr_delete(*p_it);
-        }
-        marks.clear();
+        for (auto& m_it : p_it->static_items)
+            static_wm_destroy(m_it);
+        xr_delete(p_it);
     }
-    {
-        for (u32 it = 0; it < static_pool.size(); it++)
-            xr_delete(static_pool[it]);
-        static_pool.clear();
-    }
+    marks.clear();
+
+    for (u32 it = 0; it < static_pool.size(); it++)
+        xr_delete(static_pool[it]);
+    static_pool.clear();
 }
 
 // allocate
 CWallmarksEngine::static_wallmark* CWallmarksEngine::static_wm_allocate()
 {
-    static_wallmark* W = 0;
+    static_wallmark* W = nullptr;
     if (static_pool.empty())
         W = xr_new<static_wallmark>();
     else
@@ -111,6 +106,7 @@ void CWallmarksEngine::static_wm_render(CWallmarksEngine::static_wallmark* W, FV
     int aC = iFloor(a * 255.f);
     clamp(aC, 0, 255);
     u32 C = color_rgba(128, 128, 128, aC);
+
     for (const auto& el : W->verts)
     {
         V->p.set(el.p);
@@ -209,7 +205,7 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
         bb_query.grow(sz * 2.5f);
         bb_query.get_CD(bbc, bbd);
         xrc.box_query(CDB::OPT_FULL_TEST, g_pGameLevel->ObjectSpace.GetStaticModel(), bbc, bbd);
-        auto triCount = xrc.r_count();
+        const auto triCount = xrc.r_count();
         if (0 == triCount)
             return;
 
@@ -257,37 +253,28 @@ void CWallmarksEngine::AddWallmark_internal(CDB::TRI* pTri, const Fvector* pVert
         bb.getsphere(W->bounds.P, W->bounds.R);
     }
 
-    //	if (W->bounds.R < 1.f)
+    // search if similar wallmark exists
+    wm_slot* slot = FindSlot(hShader);
+    if (slot)
     {
-        // search if similar wallmark exists
-        wm_slot* slot = FindSlot(hShader);
-        if (slot)
+        for (auto& it : slot->static_items)
         {
-            StaticWMVecIt it = slot->static_items.begin();
-            StaticWMVecIt end = slot->static_items.end();
-            for (; it != end; it++)
-            {
-                static_wallmark* wm = *it;
-                if (wm->bounds.P.similar(W->bounds.P, 0.02f))
-                { // replace
-                    static_wm_destroy(wm);
-                    *it = W;
-                    return;
-                }
+            static_wallmark* wm = it;
+            if (wm->bounds.P.similar(W->bounds.P, 0.02f))
+            { // replace
+                static_wm_destroy(wm);
+                it = W;
+                return;
             }
         }
-        else
-        {
-            slot = AppendSlot(hShader);
-        }
-
-        // no similar - register _new_
-        slot->static_items.push_back(W);
     }
-    // else
-    //{
-    //	static_wm_destroy(W);
-    // }
+    else
+    {
+        slot = AppendSlot(hShader);
+    }
+
+    // no similar - register _new_
+    slot->static_items.push_back(W);
 }
 
 void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& hShader, float sz)

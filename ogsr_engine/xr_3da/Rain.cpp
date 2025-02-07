@@ -9,6 +9,15 @@
 #include "igame_level.h"
 #include "xr_object.h"
 
+// Warning: duplicated in dxRainRender
+constexpr float source_offset = 20.f; // 40
+constexpr float max_distance = source_offset * 1.5f; // 1.25f;
+constexpr float drop_angle = deg2rad(15.0f); // 3.0
+constexpr float drop_speed_min = 40.f;
+constexpr float drop_speed_max = 80.f;
+
+constexpr int max_particles = 1000;
+constexpr float particles_time = .3f;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -19,6 +28,7 @@ CEffect_Rain::CEffect_Rain()
     state = stIdle;
 
     snd_Ambient.create("ambient\\rain", st_Effect, sg_Undefined);
+    rain_volume = 0.0f;
 
     p_create();
 }
@@ -26,6 +36,7 @@ CEffect_Rain::CEffect_Rain()
 CEffect_Rain::~CEffect_Rain()
 {
     snd_Ambient.destroy();
+    rain_volume = 0.0f;
 
     p_destroy();
 }
@@ -53,8 +64,7 @@ void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const
 
     // Born
     float height = max_distance;
-    const BOOL b_hit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
-    RenewItem(dest, height, b_hit);
+    RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
 }
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
@@ -113,6 +123,7 @@ void CEffect_Rain::OnFrame()
         float t = Device.fTimeDelta;
         clamp(t, 0.001f, 1.0f);
         hemi_factor = hemi_factor * (1.0f - t) + f * t;
+        rain_hemi = hemi_val;
     }
 
     switch (state)
@@ -121,12 +132,16 @@ void CEffect_Rain::OnFrame()
         if (factor < EPS_L)
         {
             if (snd_Ambient._feedback())
+            {
                 snd_Ambient.stop();
+                rain_volume = 0.0f;
+            }
             return;
         }
         if (snd_Ambient._feedback())
         {
             snd_Ambient.stop();
+            rain_volume = 0.0f;
             return;
         }
         snd_Ambient.play(0, sm_Looped);
@@ -137,8 +152,9 @@ void CEffect_Rain::OnFrame()
     case stWorking:
         if (factor < EPS_L)
         {
-            snd_Ambient.stop();
             state = stIdle;
+            snd_Ambient.stop();
+            rain_volume = 0.0f;
             return;
         }
         break;
@@ -147,7 +163,9 @@ void CEffect_Rain::OnFrame()
     // ambient sound
     if (snd_Ambient._feedback())
     {
-        snd_Ambient.set_volume(_max(0.1f, factor) * hemi_factor);
+        rain_volume = factor * hemi_factor;
+        clamp(rain_volume, .1f, 1.f);
+        snd_Ambient.set_volume(rain_volume);
     }
 }
 
@@ -170,7 +188,7 @@ void CEffect_Rain::Calculate()
 // startup _new_ particle system
 void CEffect_Rain::Hit(Fvector& pos)
 {
-    if (::Random.randF() > 0.2f)
+    if (0 != ::Random.randI(2))
         return;
 
     Particle* P = p_allocate();
@@ -191,7 +209,7 @@ void CEffect_Rain::p_create()
 {
     // pool
     particle_pool.resize(max_particles);
-    for (u32 it = 0; it < particle_pool.size(); it++)
+    for (size_t it = 0; it < particle_pool.size(); it++)
     {
         Particle& P = particle_pool[it];
         P.prev = it ? (&particle_pool[it - 1]) : 0;

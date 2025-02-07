@@ -78,6 +78,7 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
         LPCSTR O = pIni->r_string(sect, "flare_opacity");
         LPCSTR P = pIni->r_string(sect, "flare_position");
         u32 tcnt = _GetItemCount(T);
+        m_Flares.reserve(tcnt);
         string256 name;
         for (u32 i = 0; i < tcnt; i++)
         {
@@ -111,8 +112,8 @@ void CLensFlareDescriptor::OnDeviceCreate()
     // shaders
     m_Gradient.m_pRender->CreateShader(*m_Gradient.shader, *m_Gradient.texture);
     m_Source.m_pRender->CreateShader(*m_Source.shader, *m_Source.texture);
-    for (FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
-        it->m_pRender->CreateShader(*it->shader, *it->texture);
+    for (const auto& flare : m_Flares)
+        flare.m_pRender->CreateShader(*flare.shader, *flare.texture);
 }
 
 void CLensFlareDescriptor::OnDeviceDestroy()
@@ -120,8 +121,8 @@ void CLensFlareDescriptor::OnDeviceDestroy()
     // shaders
     m_Gradient.m_pRender->DestroyShader();
     m_Source.m_pRender->DestroyShader();
-    for (FlareIt it = m_Flares.begin(); it != m_Flares.end(); it++)
-        it->m_pRender->DestroyShader();
+    for (const auto& flare : m_Flares)
+        flare.m_pRender->DestroyShader();
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +136,6 @@ CLensFlare::CLensFlare()
     LightColor.set(0xFFFFFFFF);
     fGradientValue = 0.f;
 
-    // hGeom						= 0;
     m_Current = 0;
 
     m_State = lfsNone;
@@ -440,15 +440,15 @@ void CLensFlare::OnDeviceCreate()
     m_pRender->OnDeviceCreate();
 
     // palette
-    for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-        (*it)->OnDeviceCreate();
+    for (auto& descr : m_Palette)
+        descr->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
     // palette
-    for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-        (*it)->OnDeviceDestroy();
+    for (auto& descr : m_Palette)
+        descr->OnDeviceDestroy();
 
     m_pRender->OnDeviceDestroy();
 }

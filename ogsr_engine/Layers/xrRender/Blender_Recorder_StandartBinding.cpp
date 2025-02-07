@@ -16,7 +16,6 @@
         void setup(R_constant* C) override { RCache.xforms.set_c_##xf(C); } \
     } binder_##xf
 BIND_DECLARE(w);
-BIND_DECLARE(invw);
 BIND_DECLARE(v);
 BIND_DECLARE(p);
 BIND_DECLARE(wv);
@@ -52,13 +51,13 @@ static class cl_material final : public R_constant_setup
     void setup(R_constant* C) override { RCache.hemi.set_c_material(C); }
 } binder_material;
 
+static constexpr Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+
 static class cl_texgen final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
         Fmatrix mTexgen;
-        Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
-
         mTexgen.mul(mTexelAdjust, RCache.xforms.m_wvp);
 
         RCache.set_c(C, mTexgen);
@@ -70,8 +69,6 @@ static class cl_VPtexgen final : public R_constant_setup
     void setup(R_constant* C) override
     {
         Fmatrix mTexgen;
-        Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
-
         mTexgen.mul(mTexelAdjust, RCache.xforms.m_vp);
 
         RCache.set_c(C, mTexgen);
@@ -86,11 +83,8 @@ static class cl_fog_plane final : public R_constant_setup
     {
         // Plane
         Fvector4 plane;
-        Fmatrix& M = Device.mFullTransform;
-        plane.x = -(M._14 + M._13);
-        plane.y = -(M._24 + M._23);
-        plane.z = -(M._34 + M._33);
-        plane.w = -(M._44 + M._43);
+        const Fmatrix& M = Device.mFullTransform;
+        plane.set(-(M._14 + M._13), -(M._24 + M._23), -(M._34 + M._33), -(M._44 + M._43));
         float denom = -1.0f / _sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
         plane.mul(denom);
 
@@ -126,11 +120,23 @@ static class cl_fog_color final : public R_constant_setup
     void setup(R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.fog_color.x, desc.fog_color.y, desc.fog_color.z, 0);
+        result.set(desc.fog_color, desc.fog_density);
 
         RCache.set_c(C, result);
     }
 } binder_fog_color;
+
+static class cl_wind_params final : public R_constant_setup
+{
+    Fvector4 result;
+    void setup(R_constant* C) override
+    {
+        CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
+        result.set(E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f);
+
+        RCache.set_c(C, result);
+    }
+} binder_wind_params;
 
 // times
 static class cl_times final : public R_constant_setup
@@ -148,7 +154,7 @@ static class cl_eye_P final : public R_constant_setup
     void setup(R_constant* C) override
     {
         Fvector& V = RDEVICE.vCameraPosition;
-        RCache.set_c(C, V.x, V.y, V.z, 1);
+        RCache.set_c(C, V.x, V.y, V.z, 1.f);
     }
 } binder_eye_P;
 
@@ -158,7 +164,7 @@ static class cl_eye_D final : public R_constant_setup
     void setup(R_constant* C) override
     {
         Fvector& V = RDEVICE.vCameraDirection;
-        RCache.set_c(C, V.x, V.y, V.z, 0);
+        RCache.set_c(C, V.x, V.y, V.z, 0.f);
     }
 } binder_eye_D;
 
@@ -168,7 +174,7 @@ static class cl_eye_N final : public R_constant_setup
     void setup(R_constant* C) override
     {
         Fvector& V = RDEVICE.vCameraTop;
-        RCache.set_c(C, V.x, V.y, V.z, 0);
+        RCache.set_c(C, V.x, V.y, V.z, 0.f);
     }
 } binder_eye_N;
 
@@ -179,7 +185,7 @@ static class cl_sun0_color final : public R_constant_setup
     void setup(R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
+        result.set(desc.sun_color, 0);
 
         RCache.set_c(C, result);
     }
@@ -191,7 +197,7 @@ static class cl_sun0_dir_w final : public R_constant_setup
     void setup(R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
+        result.set(desc.sun_dir, 0);
 
         RCache.set_c(C, result);
     }
@@ -206,7 +212,7 @@ static class cl_sun0_dir_e final : public R_constant_setup
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
         Device.mView.transform_dir(D, desc.sun_dir);
         D.normalize();
-        result.set(D.x, D.y, D.z, 0);
+        result.set(D, 0);
 
         RCache.set_c(C, result);
     }
@@ -218,7 +224,7 @@ static class cl_amb_color final : public R_constant_setup
     void setup(R_constant* C) override
     {
         CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.ambient.x, desc.ambient.y, desc.ambient.z, desc.weight);
+        result.set(desc.ambient, desc.weight);
 
         RCache.set_c(C, result);
     }
@@ -226,15 +232,23 @@ static class cl_amb_color final : public R_constant_setup
 
 static class cl_hemi_color final : public R_constant_setup
 {
-    Fvector4 result;
     void setup(R_constant* C) override
     {
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z, desc.hemi_color.w);
-
-        RCache.set_c(C, result);
+        RCache.set_c(C, desc.hemi_color);
     }
 } binder_hemi_color;
+
+static class cl_sky_color final : public R_constant_setup
+{
+    Fvector4 result{};
+    void setup(R_constant* C) override
+    {
+        auto* desc = g_pGamePersistent->Environment().CurrentEnv;
+        result.set(desc->sky_color, desc->sky_rotation);
+        RCache.set_c(C, result);
+    }
+} binder_sky_color;
 
 static class cl_screen_res final : public R_constant_setup
 {
@@ -251,6 +265,21 @@ static class cl_screen_params final : public R_constant_setup
         RCache.set_c(C, result);
     }
 } binder_screen_params;
+
+static class cl_hud_params final : public R_constant_setup //--#SM+#--
+{
+    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
+} binder_hud_params;
+
+static class cl_script_params final : public R_constant_setup //--#SM+#--
+{
+    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_script_params); }
+} binder_script_params;
+
+static class cl_blend_mode final : public R_constant_setup //--#SM+#--
+{
+    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
+} binder_blend_mode;
 
 static class cl_rain_params final : public R_constant_setup
 {
@@ -334,21 +363,6 @@ static class cl_detector final : public R_constant_setup
     }
 } binder_detector;
 
-static class cl_hud_params final : public R_constant_setup //--#SM+#--
-{
-    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
-} binder_hud_params;
-
-static class cl_script_params final : public R_constant_setup //--#SM+#--
-{
-    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_script_params); }
-} binder_script_params;
-
-static class cl_blend_mode final : public R_constant_setup //--#SM+#--
-{
-    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
-} binder_blend_mode;
-
 static class cl_ogsr_game_time final : public R_constant_setup
 {
     void setup(R_constant* C) override
@@ -360,16 +374,15 @@ static class cl_ogsr_game_time final : public R_constant_setup
     }
 } binder_ogsr_game_time;
 
-static class cl_addon_VControl final : public R_constant_setup
+static class cl_inv_v final : public R_constant_setup
 {
+    Fmatrix result;
     void setup(R_constant* C) override
     {
-        if (ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL) && ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL_CONTROL))
-            RCache.set_c(C, ps_r2_visor_refl_intensity, ps_r2_visor_refl_radius, 0.f, 1.f);
-        else
-            RCache.set_c(C, 0.f, 0.f, 0.f, 0.f);
+        result.invert(Device.mView);
+        RCache.set_c(C, result);
     }
-} binder_addon_VControl;
+} binder_inv_v;
 
 static class cl_pda_params final : public R_constant_setup
 {
@@ -389,44 +402,57 @@ static class cl_actor_params final : public R_constant_setup
     }
 } binder_actor_params;
 
-static class cl_sky_color final : public R_constant_setup
-{
-    Fvector4 result{};
-    void setup(R_constant* C) override
-    {
-        auto* desc = g_pGamePersistent->Environment().CurrentEnv;
-        result.set(desc->sky_color.x, desc->sky_color.y, desc->sky_color.z, desc->sky_rotation);
-        RCache.set_c(C, result);
-    }
-} binder_sky_color;
-
-static class cl_inv_v final : public R_constant_setup
-{
-    Fmatrix result;
-    void setup(R_constant* C) override
-    {
-        result.invert(Device.mView);
-        RCache.set_c(C, result);
-    }
-} binder_inv_v;
-
 // Screen Space Shaders Stuff
+extern Fvector4 ps_ssfx_pom;
+extern Fvector4 ps_ssfx_terrain_pom;
+
+extern Fvector4 ps_ssfx_bloom_1;
+extern Fvector4 ps_ssfx_bloom_2;
+extern Fvector4 ps_ssfx_il_setup1;
+
+extern float ps_ssfx_hud_hemi;
+extern Fvector4 ps_ssfx_il;
+extern Fvector4 ps_ssfx_il_setup1;
+extern Fvector4 ps_ssfx_ao;
+extern Fvector4 ps_ssfx_ao_setup1;
+extern Fvector4 ps_ssfx_water;
+extern Fvector4 ps_ssfx_water_setup1;
+extern Fvector4 ps_ssfx_water_setup2;
+
+extern Fvector4 ps_ssfx_volumetric;
+extern Fvector4 ps_ssfx_ssr_2;
+extern Fvector4 ps_ssfx_terrain_offset;
+
+extern Fvector3 ps_ssfx_shadow_bias;
+extern Fvector4 ps_ssfx_lut;
+extern Fvector4 ps_ssfx_wind_grass;
+extern Fvector4 ps_ssfx_wind_trees;
+
+extern Fvector4 ps_ssfx_florafixes_1;
+extern Fvector4 ps_ssfx_florafixes_2;
+
+extern float ps_ssfx_gloss_factor;
+extern Fvector3 ps_ssfx_gloss_minmax;
+
+extern Fvector4 ps_ssfx_wetsurfaces_1;
+extern Fvector4 ps_ssfx_wetsurfaces_2;
+
+extern int ps_ssfx_is_underground;
+extern Fvector4 ps_ssfx_lightsetup_1;
+extern Fvector4 ps_ssfx_hud_drops_1;
+extern Fvector4 ps_ssfx_hud_drops_2;
+extern Fvector4 ps_ssfx_blood_decals;
+extern Fvector4 ps_ssfx_wpn_dof_1;
+extern float ps_ssfx_wpn_dof_2;
 
 static class ssfx_wpn_dof_1 final : public R_constant_setup
 {
-    void setup(R_constant* C) override
-    {
-        const auto& P = shader_exports.get_dof_params();
-        RCache.set_c(C, P.x, P.y, P.z, P.w);
-    }
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wpn_dof_1); }
 } ssfx_wpn_dof_1;
 
 static class ssfx_wpn_dof_2 final : public R_constant_setup
 {
-    void setup(R_constant* C) override
-    {
-        RCache.set_c(C, ps_ssfx_wpn_dof_2, 0, 0, 0);    
-    }
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wpn_dof_2, 0.f, 0.f, 0.f); }
 } ssfx_wpn_dof_2;
 
 static class ssfx_blood_decals final : public R_constant_setup
@@ -479,25 +505,6 @@ static class ssfx_florafixes_2 final : public R_constant_setup
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_florafixes_2); }
 } ssfx_florafixes_2;
 
-static class pp_image_corrections final : public R_constant_setup
-{
-    void setup(R_constant* C) override { RCache.set_c(C, ps_r2_img_exposure, ps_r2_img_gamma, ps_r2_img_saturation, 1); }
-} pp_image_corrections;
-
-static class pp_color_grading final : public R_constant_setup
-{
-    void setup(R_constant* C) override { RCache.set_c(C, ps_r2_img_cg.x, ps_r2_img_cg.y, ps_r2_img_cg.z, 1); }
-} pp_color_grading;
-
-static class cl_wind_params final : public R_constant_setup
-{
-    void setup(R_constant* C) override
-    {
-        CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        RCache.set_c(C, E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f);
-    }
-} binder_wind_params;
-
 static class ssfx_wind_grass final : public R_constant_setup
 {
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wind_grass); }
@@ -510,11 +517,7 @@ static class ssfx_wind_trees final : public R_constant_setup
 
 static class ssfx_wind_anim final : public R_constant_setup
 {
-    void setup(R_constant* C) override
-    {
-        const Fvector3& WindAni = g_pGamePersistent->Environment().wind_anim;
-        RCache.set_c(C, WindAni.x, WindAni.y, WindAni.z, 0.f);
-    }
+    void setup(R_constant* C) override { RCache.set_c(C, g_pGamePersistent->Environment().wind_anim); }
 } ssfx_wind_anim;
 
 static class ssfx_lut final : public R_constant_setup
@@ -527,19 +530,151 @@ static class ssfx_shadow_bias final : public R_constant_setup
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_shadow_bias.x, ps_ssfx_shadow_bias.y, 0.f, 0.f); }
 } ssfx_shadow_bias;
 
+static class ssfx_terrain_offset final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_terrain_offset); }
+} ssfx_terrain_offset;
+
+static class ssfx_ssr_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_ssr_2); }
+} ssfx_ssr_2;
+
+static class ssfx_volumetric : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_volumetric); }
+} ssfx_volumetric;
+
+static class ssfx_water final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_water); }
+} ssfx_water;
+
+static class ssfx_water_setup1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_water_setup1); }
+} ssfx_water_setup1;
+
+static class ssfx_water_setup2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_water_setup2); }
+} ssfx_water_setup2;
+
+static class ssfx_ao final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_ao); }
+} ssfx_ao;
+
+static class ssfx_ao_setup1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_ao_setup1); }
+} ssfx_ao_setup1;
+
+static class ssfx_il final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_il); }
+} ssfx_il;
+
+static class ssfx_il_setup1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_il_setup1); }
+} ssfx_il_setup1;
+
+static class ssfx_hud_hemi final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_hud_hemi, 0.f, 0.f, 0.f); }
+} ssfx_hud_hemi;
+
+static class ssfx_issvp final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, Device.m_SecondViewport.IsSVPFrame() ? 1.f : 0.f, 0.f, 0.f, 0.f); }
+} ssfx_issvp;
+
+static class ssfx_bloom_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override
+    {
+        Fvector4 BloomSetup;
+        if (ps_ssfx_bloom_use_presets)
+            BloomSetup.set(g_pGamePersistent->Environment().CurrentEnv->bloom);
+        else
+            BloomSetup.set(ps_ssfx_bloom_1);
+
+        RCache.set_c(C, BloomSetup);
+    }
+} ssfx_bloom_1;
+
+static class ssfx_bloom_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_bloom_2); }
+} ssfx_bloom_2;
+
+static class ssfx_terrain_pom final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_terrain_pom); }
+} ssfx_terrain_pom;
+
+static class ssfx_pom final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_pom); }
+} ssfx_pom;
+
+static class r__color_gamma final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_gamma); }
+} r__color_gamma;
+
+static class r__color_slope final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_slope); }
+} r__color_slope;
+
+static class r__color_offset final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_offset); }
+} r__color_offset;
+
+static class r__color_power final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_power); }
+} r__color_power;
+
+static class r__color_saturation final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_saturation); }
+} r__color_saturation;
+
+static class r__color_contrast final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_contrast); }
+} r__color_contrast;
+
+static class r__color_red final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_red); }
+} r__color_red;
+
+static class r__color_green final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_green); }
+} r__color_green;
+
+static class r__color_blue final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r__color_blue); }
+} r__color_blue;
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
 {
     // matrices
     r_Constant("m_W", &binder_w);
-    r_Constant("m_invW", &binder_invw);
     r_Constant("m_V", &binder_v);
-    r_Constant("m_inv_V", &binder_inv_v);
     r_Constant("m_P", &binder_p);
     r_Constant("m_WV", &binder_wv);
     r_Constant("m_VP", &binder_vp);
     r_Constant("m_WVP", &binder_wvp);
+    r_Constant("m_inv_V", &binder_inv_v);
 
     r_Constant("m_xform_v", &tree_binder_m_xform_v);
     r_Constant("m_xform", &tree_binder_m_xform);
@@ -563,9 +698,7 @@ void CBlender_Compile::SetMapping()
     r_Constant("fog_plane", &binder_fog_plane);
     r_Constant("fog_params", &binder_fog_params);
     r_Constant("fog_color", &binder_fog_color);
-
-    // Rain
-    r_Constant("rain_params", &binder_rain_params);
+    r_Constant("wind_params", &binder_wind_params);
 
     // time
     r_Constant("timers", &binder_times);
@@ -579,7 +712,6 @@ void CBlender_Compile::SetMapping()
     r_Constant("L_sun_color", &binder_sun0_color);
     r_Constant("L_sun_dir_w", &binder_sun0_dir_w);
     r_Constant("L_sun_dir_e", &binder_sun0_dir_e);
-    //	r_Constant				("L_lmap_color",	&binder_lm_color);
     r_Constant("L_hemi_color", &binder_hemi_color);
     r_Constant("L_ambient", &binder_amb_color);
 
@@ -594,6 +726,24 @@ void CBlender_Compile::SetMapping()
     r_Constant("ogse_c_anomalys3", &binder_anomalys3);
     r_Constant("ogse_c_detector", &binder_detector);
 
+    // misc
+    r_Constant("m_hud_params", &binder_hud_params); //--#SM+#--
+    r_Constant("m_script_params", &binder_script_params); //--#SM+#--
+    r_Constant("m_blender_mode", &binder_blend_mode); //--#SM+#--
+
+    // Rain
+    r_Constant("rain_params", &binder_rain_params);
+
+    r_Constant("color_gamma", &r__color_gamma);
+    r_Constant("color_slope", &r__color_slope);
+    r_Constant("color_offset", &r__color_offset);
+    r_Constant("color_power", &r__color_power);
+    r_Constant("color_saturation", &r__color_saturation);
+    r_Constant("color_contrast", &r__color_contrast);
+    r_Constant("color_red", &r__color_red);
+    r_Constant("color_green", &r__color_green);
+    r_Constant("color_blue", &r__color_blue);
+
     // detail
     // if (bDetail	&& detail_scaler)
     //	Igor: bDetail can be overridden by no_detail_texture option.
@@ -602,21 +752,33 @@ void CBlender_Compile::SetMapping()
     if (detail_scaler)
         r_Constant("dt_params", detail_scaler);
 
-    // misc
-    r_Constant("m_hud_params", &binder_hud_params); //--#SM+#--
-    r_Constant("m_script_params", &binder_script_params); //--#SM+#--
-    r_Constant("m_blender_mode", &binder_blend_mode); //--#SM+#--
-
     r_Constant("ogsr_game_time", &binder_ogsr_game_time);
-
-    r_Constant("addon_VControl", &binder_addon_VControl);
-
     r_Constant("m_affects", &binder_pda_params);
-
     r_Constant("m_actor_params", &binder_actor_params);
 
-    r_Constant("sky_color", &binder_sky_color);
+    // Screen Space Shaders
+    r_Constant("ssfx_pom", &ssfx_pom);
 
+    r_Constant("ssfx_terrain_pom", &ssfx_terrain_pom);
+    r_Constant("ssfx_bloom_1", &ssfx_bloom_1);
+    r_Constant("ssfx_bloom_2", &ssfx_bloom_2);
+
+    r_Constant("ssfx_issvp", &ssfx_issvp);
+    r_Constant("ssfx_hud_hemi", &ssfx_hud_hemi);
+    r_Constant("ssfx_il_setup", &ssfx_il);
+    r_Constant("ssfx_il_setup2", &ssfx_il_setup1);
+    r_Constant("ssfx_ao_setup", &ssfx_ao);
+    r_Constant("ssfx_ao_setup2", &ssfx_ao_setup1);
+    r_Constant("ssfx_water", &ssfx_water);
+    r_Constant("ssfx_water_setup1", &ssfx_water_setup1);
+    r_Constant("ssfx_water_setup2", &ssfx_water_setup2);
+
+    r_Constant("ssfx_volumetric", &ssfx_volumetric);
+    r_Constant("ssfx_ssr_2", &ssfx_ssr_2);
+    r_Constant("ssfx_terrain_offset", &ssfx_terrain_offset);
+    r_Constant("ssfx_shadow_bias", &ssfx_shadow_bias);
+    r_Constant("ssfx_wind_anim", &ssfx_wind_anim);
+    r_Constant("sky_color", &binder_sky_color);
     r_Constant("ssfx_wpn_dof_1", &ssfx_wpn_dof_1);
     r_Constant("ssfx_wpn_dof_2", &ssfx_wpn_dof_2);
     r_Constant("ssfx_blood_decals", &ssfx_blood_decals);
@@ -629,15 +791,9 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_gloss", &ssfx_gloss);
     r_Constant("ssfx_florafixes_1", &ssfx_florafixes_1);
     r_Constant("ssfx_florafixes_2", &ssfx_florafixes_2);
-    r_Constant("wind_params", &binder_wind_params);
-    r_Constant("ssfx_wind_anim", &ssfx_wind_anim);
     r_Constant("ssfx_wsetup_grass", &ssfx_wind_grass);
     r_Constant("ssfx_wsetup_trees", &ssfx_wind_trees);
     r_Constant("ssfx_lut", &ssfx_lut);
-    r_Constant("ssfx_shadow_bias", &ssfx_shadow_bias);
-
-    r_Constant("pp_img_corrections", &pp_image_corrections);
-    r_Constant("pp_img_cg", &pp_color_grading);
 
     // other common
     for (const auto& [name, s] : DEV->v_constant_setup)

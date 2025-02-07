@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DefinesH
+#define DefinesH
 
 #ifdef DEBUG
 ENGINE_API extern BOOL bDebug;
@@ -26,7 +27,7 @@ ENGINE_API extern BOOL bDebug;
 // psDeviceFlags
 enum
 {
-    rsFullscreen = (1ul << 0ul),
+    /* 1ul << 0ul, */
     rsClearBB = (1ul << 1ul),
     rsVSync = (1ul << 2ul),
     rsWireframe = (1ul << 3ul),
@@ -46,9 +47,9 @@ enum
 
     rsCameraPos = (1ul << 15ul),
 
-    rsR2 = (1ul << 16ul),
-    rsR3 = (1ul << 17ul),
-    rsR4 = (1ul << 18ul),
+    /* 1ul << 16ul, */
+    /* 1ul << 17ul, */
+    /* 1ul << 18ul, */
 
     rsExclusiveMode = 1ul << 19ul,
 };
@@ -56,6 +57,12 @@ enum
 //. ENGINE_API extern	u32			psCurrentMode		;
 ENGINE_API extern u32 psCurrentVidMode[];
 ENGINE_API extern Flags32 psDeviceFlags;
+extern Flags32 psDeviceFlags2;
+
+enum
+{
+    rsOptShadowGeom = 1 << 0,
+};
 
 // game path definition
 #define _game_data_ "$game_data$"
@@ -80,3 +87,5 @@ ENGINE_API extern Flags32 psDeviceFlags;
 #define _omotions_ "$omotions$"
 #define _smotion_ "$smotion$"
 #define _detail_objects_ "$detail_objects$"
+
+#endif

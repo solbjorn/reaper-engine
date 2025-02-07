@@ -29,9 +29,8 @@ struct _SoundProcessor : public pureFrame
 {
     virtual void OnFrame()
     {
-        // Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.dwFrame),VPUSH(Device.vCameraPosition));
         Device.Statistic->Sound.Begin();
-        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight);
         Device.Statistic->Sound.End();
     }
 } SoundProcessor;
@@ -137,7 +136,7 @@ void destroySettings()
 }
 void destroyConsole()
 {
-    //Console->Destroy();
+    // Console->Destroy();
     xr_delete(Console);
 }
 void destroyEngine()
@@ -374,7 +373,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         damn_keys_filter filter;
         (void)filter;
 
-        FPU::m24r();
         InitEngine();
         InitInput();
         InitConsole();
@@ -667,7 +665,7 @@ void CApplication::Level_Set(u32 L)
 
     static string_path path;
     path[0] = 0;
-    
+
     int count = 0;
     while (true)
     {

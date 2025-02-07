@@ -43,10 +43,8 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
     CBoneData::BoneDebug dbgLines;
     (*bones)[iRoot]->DebugQuery(dbgLines);
 
-    Fvector Z;
-    Z.set(0, 0, 0);
-    Fvector H1;
-    H1.set(0.01f, 0.01f, 0.01f);
+    constexpr Fvector Z{0, 0, 0};
+    constexpr Fvector H1{0.01f, 0.01f, 0.01f};
     Fvector H2;
     H2.mul(H1, 2);
     for (u32 i = 0; i < dbgLines.size(); i += 2)

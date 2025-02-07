@@ -20,7 +20,6 @@
 #include "alife_simulator.h"
 
 CAI_Space* g_ai_space = 0;
-CGraphEngine* g_graph_engine = nullptr;
 
 CAI_Space::CAI_Space()
 {
@@ -41,7 +40,6 @@ void CAI_Space::init()
 
     VERIFY(!m_graph_engine);
     m_graph_engine = xr_new<CGraphEngine>(1024); // game_graph().header().vertex_count() ???
-    g_graph_engine = m_graph_engine;
 
     VERIFY(!m_cover_manager);
     m_cover_manager = xr_new<CCoverManager>();
@@ -56,7 +54,6 @@ void CAI_Space::init()
 
 CAI_Space::~CAI_Space()
 {
-    g_graph_engine = nullptr;
     xr_delete(m_graph_engine);
     xr_delete(m_level_graph);
 

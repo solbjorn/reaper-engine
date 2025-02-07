@@ -13,7 +13,9 @@ public:
     virtual ~IRenderVisual() { ; }
 
     virtual vis_data& _BCL getVisData() = 0;
-    virtual u32 getType() = 0;
+    virtual u32 getType() const = 0;
+
+    bool _ignore_optimization{};
 
     virtual shared_str _BCL getDebugName() = 0;
 

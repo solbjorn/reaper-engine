@@ -87,7 +87,7 @@ static Fbox bbCrouchBox;
 static Fvector vFootCenter;
 static Fvector vFootExt;
 
-Flags32 psActorFlags = {AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_RELOAD | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
+Flags32 psActorFlags = {AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
 
 static bool updated;
 
@@ -154,7 +154,7 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     Device.seqRender.Add(this, REG_PRIORITY_LOW);
 #endif
 
-    //разрешить использование пояса в inventory
+    // разрешить использование пояса в inventory
     inventory().SetBeltUseful(true);
 
     m_pPersonWeLookingAt = NULL;
@@ -367,11 +367,11 @@ void CActor::Load(LPCSTR section)
 
     character_physics_support()->in_Load(section);
 
-    //загрузить параметры эффектора
+    // загрузить параметры эффектора
     //	LoadShootingEffector	("shooting_effector");
     LoadSleepEffector("sleep_effector");
 
-    //загрузить параметры смещения firepoint
+    // загрузить параметры смещения firepoint
     m_vMissileOffset = pSettings->r_fvector3(section, "missile_throw_offset");
 
     // Weapons				= xr_new<CWeaponList> (this);
@@ -749,7 +749,7 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
             SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
             //				Hit
             //(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 +
-            //2*::Random.randI(0,2))
+            // 2*::Random.randI(0,2))
             if (Level().CurrentControlEntity() == this)
             {
                 SHit HDS = SHit(character_physics_support()->movement()->gcontact_HealthLost, hdir, di->DamageInitiator(), character_physics_support()->movement()->ContactBone(),
@@ -915,18 +915,6 @@ void CActor::UpdateCL()
             wpn_cond = wpn->GetCondition();
         shader_exports.set_actor_params(Fvector{this->conditions().GetHealth(), outfit_cond, wpn_cond});
     }
-
-    // Обновление позиции актора для коллизии с травой/кустами
-    if (ps_ssfx_grass_interactive.x > 0.f)
-    {
-        // Не знаю что лучше использовать - позицию камеры или актора. Вроде для травы с позицией актора получше выглядит. Для кустов - не понятно, что лучше.
-        // grass_shader_data.pos[0].set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z, -1);
-        const auto& pos = Position();
-        grass_shader_data.pos[0].set(pos.x, pos.y, pos.z, -1.f);
-    }
-    else
-        grass_shader_data.pos[0].set(0.f, 0.f, 0.f, -1.f);
-    grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 }
 
 constexpr u32 TASKS_UPDATE_TIME = 1u;
@@ -968,7 +956,7 @@ void CActor::shedule_Update(u32 DT)
         // Msg("---No hud view found, all items detached.");
     }
 
-    //обновление инвентаря
+    // обновление инвентаря
     if (!updated)
         inventory().RestoreBeltOrder();
     UpdateInventoryOwner(DT);
@@ -1058,7 +1046,7 @@ void CActor::shedule_Update(u32 DT)
     }
     else if (!m_holder)
     {
-        //Этот код не должен быть взван
+        // Этот код не должен быть взван
         R_ASSERT(0);
     }
 
@@ -1071,7 +1059,7 @@ void CActor::shedule_Update(u32 DT)
 
     inherited::shedule_Update(DT);
 
-    //эффектор включаемый при ходьбе
+    // эффектор включаемый при ходьбе
     if (!m_holder)
     {
         if (!pCamBobbing)
@@ -1082,7 +1070,7 @@ void CActor::shedule_Update(u32 DT)
         pCamBobbing->SetState(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
     }
 
-    //звук тяжелого дыхания при уталости и хромании
+    // звук тяжелого дыхания при уталости и хромании
     if (this == Level().CurrentControlEntity())
     {
         if (conditions().IsLimping() && g_Alive())
@@ -1125,10 +1113,10 @@ void CActor::shedule_Update(u32 DT)
             m_BloodSnd.stop();
     }
 
-    //если в режиме HUD, то сама модель актера не рисуется
+    // если в режиме HUD, то сама модель актера не рисуется
     if (!character_physics_support()->IsRemoved() && !m_holder)
         setVisible(!HUDview());
-    //что актер видит перед собой
+    // что актер видит перед собой
     collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 
     if (!input_external_handler_installed() && !m_holder && RQ.O && RQ.O->getVisible() && RQ.range < inventory().GetTakeDist())
@@ -1199,7 +1187,7 @@ void CActor::shedule_Update(u32 DT)
 
     //	UpdateSleep									();
 
-    //для свойст артефактов, находящихся на поясе
+    // для свойст артефактов, находящихся на поясе
     UpdateArtefactsOnBelt();
     if (!m_holder)
         m_pPhysics_support->in_shedule_Update(DT);
@@ -1212,7 +1200,6 @@ void CActor::renderable_Render()
     inherited::renderable_Render();
 
     if ((cam_active == eacFirstEye && // first eye cam
-         ::Render->get_generation() == ::Render->GENERATION_R2 && // R2
          ::Render->active_phase() == 1) // shadow map rendering on R2
 
         ||
@@ -1384,10 +1371,7 @@ float CActor::Radius() const
 
 bool CActor::use_bolts() const { return CInventoryOwner::use_bolts(); };
 
-void CActor::OnItemTake(CInventoryItem* inventory_item)
-{
-    CInventoryOwner::OnItemTake(inventory_item);
-}
+void CActor::OnItemTake(CInventoryItem* inventory_item) { CInventoryOwner::OnItemTake(inventory_item); }
 
 void CActor::OnItemDrop(CInventoryItem* inventory_item)
 {
@@ -1758,11 +1742,11 @@ bool CActor::can_attach(const CInventoryItem* inventory_item) const
     if (!item || /*!item->enabled() ||*/ !item->can_be_attached())
         return (false);
 
-    //можно ли присоединять объекты такого типа
+    // можно ли присоединять объекты такого типа
     if (m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(), m_attach_item_sections.end(), inventory_item->object().cNameSect()))
         return false;
 
-    //если уже есть присоединненый объет такого типа
+    // если уже есть присоединненый объет такого типа
     if (attached(inventory_item->object().cNameSect()))
         return false;
 
@@ -1929,7 +1913,7 @@ void CActor::RepackAmmo()
                 }
             }
         }
-        //чистим массив от обработанных пачек
+        // чистим массив от обработанных пачек
         _ammo.erase(std::remove_if(_ammo.begin(), _ammo.end(), [asect](CWeaponAmmo* a) { return a->cNameSect() == asect; }), _ammo.end());
     }
 }

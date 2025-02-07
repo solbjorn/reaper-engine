@@ -56,6 +56,7 @@ struct pred_str
 {
     bool operator()(const char* x, const char* y) const { return std::strcmp(x, y) < 0; }
 };
+
 struct pred_stri
 {
     bool operator()(const char* x, const char* y) const { return _stricmp(x, y) < 0; }
@@ -63,48 +64,48 @@ struct pred_stri
 
 // STL extensions
 #define DEF_VECTOR(N, T) \
-    typedef xr_vector<T> N; \
-    typedef N::iterator N##_it;
+    using N = xr_vector<T>; \
+    using N##_it = N::iterator
 #define DEF_LIST(N, T) \
-    typedef xr_list<T> N; \
-    typedef N::iterator N##_it;
+    using N = xr_list<T>; \
+    using N##_it = N::iterator
 #define DEF_DEQUE(N, T) \
-    typedef xr_deque<T> N; \
-    typedef N::iterator N##_it;
+    using N = xr_deque<T>; \
+    using N##_it = N::iterator
 #define DEF_MAP(N, K, T) \
-    typedef xr_map<K, T> N; \
-    typedef N::iterator N##_it;
+    using N = xr_map<K, T>; \
+    using N##_it = N::iterator
 #define DEFINE_STACK(T, N) \
-    typedef xr_stack<T> N; \
-    typedef N::iterator N##_it;
+    using N = xr_stack<T>; \
+    using N##_it = N::iterator
 
 #define DEFINE_DEQUE(T, N, I) \
-    typedef xr_deque<T> N; \
-    typedef N::iterator I;
+    using N = xr_deque<T>; \
+    using I = N::iterator
 #define DEFINE_LIST(T, N, I) \
-    typedef xr_list<T> N; \
-    typedef N::iterator I;
+    using N = xr_list<T>; \
+    using I = N::iterator
 #define DEFINE_VECTOR(T, N, I) \
-    typedef xr_vector<T> N; \
-    typedef N::iterator I;
+    using N = xr_vector<T>; \
+    using I = N::iterator
 #define DEFINE_MAP(K, T, N, I) \
-    typedef xr_map<K, T> N; \
-    typedef N::iterator I;
+    using N = xr_map<K, T>; \
+    using I = N::iterator
 #define DEFINE_MAP_PRED(K, T, N, I, P) \
-    typedef xr_map<K, T, P> N; \
-    typedef N::iterator I;
+    using N = xr_map<K, T, P>; \
+    using I = N::iterator
 #define DEFINE_MMAP(K, T, N, I) \
-    typedef xr_multimap<K, T> N; \
-    typedef N::iterator I;
+    using N = xr_multimap<K, T>; \
+    using I = N::iterator
 #define DEFINE_SVECTOR(T, C, N, I) \
-    typedef svector<T, C> N; \
-    typedef N::iterator I;
+    typedef svector<T, C>; \
+    using I = N::iterator
 #define DEFINE_SET(T, N, I) \
-    typedef xr_set<T> N; \
-    typedef N::iterator I;
+    using N = xr_set<T>; \
+    using I = N::iterator
 #define DEFINE_SET_PRED(T, N, I, P) \
-    typedef xr_set<T, P> N; \
-    typedef N::iterator I;
+    using N = xr_set<T, P>; \
+    using I = N::iterator
 
 #include "FixedVector.h"
 

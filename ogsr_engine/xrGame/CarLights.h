@@ -24,7 +24,8 @@ struct SCarLight
     void ParseDefinitions(LPCSTR section);
 };
 
-DEFINE_VECTOR(SCarLight*, LIGHTS_STORAGE, LIGHTS_I)
+DEFINE_VECTOR(SCarLight*, LIGHTS_STORAGE, LIGHTS_I);
+
 class CCarLights
 {
 public:

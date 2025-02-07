@@ -1,9 +1,49 @@
-#pragma once
+#ifndef xrRender_consoleH
+#define xrRender_consoleH
+
+#ifndef ECORE_API
+#define ECORE_API
+#endif
 
 // Common
-extern ECORE_API u32 r2_SmapSize;
+extern ECORE_API Fvector4 ps_ssfx_rain_drops_setup;
+extern ECORE_API int ps_ssfx_terrain_grass_align;
+extern ECORE_API int ps_ssfx_terrain_pom_refine;
+extern ECORE_API int ps_ssfx_pom_refine;
+extern ECORE_API int ps_ssfx_terrain_grass_align;
+extern ECORE_API float ps_ssfx_terrain_grass_slope;
+extern ECORE_API int ps_ssfx_bloom_use_presets;
+extern ECORE_API Fvector4 ps_ssfx_bloom_2;
+extern ECORE_API Fvector4 ps_ssfx_sss_quality;
+extern ECORE_API Fvector4 ps_ssfx_sss;
 
-extern ECORE_API u32 ps_r_pp_aa_mode;
+extern ECORE_API int ps_ssfx_il_quality;
+extern ECORE_API int ps_ssfx_ao_quality;
+extern ECORE_API Fvector3 ps_ssfx_water_quality;
+extern ECORE_API Fvector4 ps_ssfx_il;
+extern ECORE_API Fvector4 ps_ssfx_ao;
+extern ECORE_API Fvector4 ps_ssfx_water;
+
+extern ECORE_API int ps_ssfx_ssr_quality;
+extern ECORE_API Fvector4 ps_ssfx_ssr;
+extern ECORE_API Fvector4 ps_ssfx_ssr_2;
+extern ECORE_API Fvector4 ps_ssfx_terrain_quality;
+extern ECORE_API Fvector3 ps_ssfx_shadows;
+extern ECORE_API Fvector4 ps_ssfx_volumetric;
+
+extern ECORE_API Fvector4 ps_ssfx_wind_grass;
+extern ECORE_API Fvector4 ps_ssfx_wind_trees;
+
+extern ECORE_API Fvector4 ps_ssfx_rain_1;
+extern ECORE_API Fvector4 ps_ssfx_rain_2;
+extern ECORE_API Fvector4 ps_ssfx_rain_3;
+extern ECORE_API Fvector4 ps_ssfx_grass_shadows;
+extern ECORE_API Fvector3 ps_ssfx_shadow_cascades;
+extern ECORE_API Fvector4 ps_ssfx_grass_interactive;
+extern ECORE_API Fvector4 ps_ssfx_int_grass_params_1;
+extern ECORE_API Fvector4 ps_ssfx_int_grass_params_2;
+
+extern ECORE_API u32 r2_SmapSize;
 
 extern ECORE_API u32 ps_r_sun_shafts;
 extern ECORE_API u32 ps_r_sunshafts_mode;
@@ -18,19 +58,14 @@ extern ECORE_API u32 ps_r_ssao; //	=	0;
 
 enum : u32
 {
-    AO_MODE_GTAO,
-    AO_MODE_SSDO
+    AO_MODE_SSDO,
+    AO_MODE_GTAO
 };
 extern u32 ps_r_ao_mode;
 
 extern ECORE_API u32 ps_r_sun_quality; //	=	0;
-
+extern ECORE_API u32 ps_smaa_quality;
 extern ECORE_API u32 ps_r3_msaa; //	=	0;
-
-extern ECORE_API u32 ps_r3_msaa_atest; //=	0;
-
-extern ECORE_API u32 ps_r3_minmax_sm; //	=	0;
-
 
 extern ECORE_API int ps_r__LightSleepFrames;
 
@@ -67,15 +102,9 @@ extern ECORE_API float ps_r1_pps_v;
 
 // R1-specific
 extern ECORE_API int ps_r1_GlowsPerFrame; // r1-only
-extern ECORE_API Flags32 ps_r1_flags; // r1-only
 
 extern ECORE_API float ps_r1_fog_luminance; // 1.f r1-only
 extern ECORE_API int ps_r1_SoftwareSkinning; // r1-only
-
-enum
-{
-    R1FLAG_DLIGHTS = (1 << 0),
-};
 
 // R2
 extern ECORE_API float ps_r2_ssaLOD_A;
@@ -126,53 +155,35 @@ extern ECORE_API float ps_r2_dhemi_light_flow; // .1f
 extern ECORE_API int ps_r2_dhemi_count; // 5
 extern ECORE_API float ps_r2_slight_fade; // 1.f
 extern ECORE_API int ps_r2_wait_sleep;
+////lvutner
+extern ECORE_API Fvector4 ps_r2_mask_control; // r2-only
+extern ECORE_API Fvector ps_r2_drops_control; // r2-only
 
-extern float ps_r2_gloss_factor;
+extern ECORE_API Fvector4 ps_r__color_gamma;
+extern ECORE_API Fvector4 ps_r__color_slope;
+extern ECORE_API Fvector4 ps_r__color_offset;
+extern ECORE_API Fvector4 ps_r__color_power;
+extern ECORE_API Fvector4 ps_r__color_saturation;
+extern ECORE_API Fvector4 ps_r__color_contrast;
+extern ECORE_API Fvector4 ps_r__color_red;
+extern ECORE_API Fvector4 ps_r__color_green;
+extern ECORE_API Fvector4 ps_r__color_blue;
 
-extern ECORE_API float ps_r2_img_exposure; // r2-only
-extern ECORE_API float ps_r2_img_gamma; // r2-only
-extern ECORE_API float ps_r2_img_saturation; // r2-only
-extern ECORE_API Fvector ps_r2_img_cg; // r2-only
-
-//	x - min (0), y - focus (1.4), z - max (100)
-extern ECORE_API Fvector3 ps_r2_dof;
-extern ECORE_API float ps_r2_dof_sky; //	distance to sky
-extern ECORE_API float ps_r2_dof_kernel_size; //	7.0f
-
-extern ECORE_API int ps_r3_dyn_wet_surf_opt;
 extern ECORE_API float ps_r3_dyn_wet_surf_near; // 10.0f
 extern ECORE_API float ps_r3_dyn_wet_surf_far; // 30.0f
 extern ECORE_API int ps_r3_dyn_wet_surf_sm_res; // 256
-extern ECORE_API int ps_r3_dyn_wet_surf_enable_streaks;
-
-extern ECORE_API float ps_r2_rain_drops_intensity;
-extern ECORE_API float ps_r2_rain_drops_speed;
-
-extern ECORE_API float ps_r2_visor_refl_intensity;
-extern ECORE_API float ps_r2_visor_refl_radius;
-
-extern ECORE_API float ps_ssfx_wpn_dof_2;
-extern Fvector4 ps_ssfx_blood_decals;
-extern Fvector4 ps_ssfx_int_grass_params_1;
-extern ECORE_API Fvector4 ps_ssfx_grass_shadows;
-extern Fvector3 ps_ssfx_shadow_cascades;
-extern Fvector4 ps_ssfx_wind_grass, ps_ssfx_wind_trees;
-extern int ps_ssfx_wind_bugged_flora_enable;
-extern ECORE_API Fvector4 ps_ssfx_rain_1;
-extern ECORE_API Fvector4 ps_ssfx_rain_2;
-extern ECORE_API Fvector4 ps_ssfx_rain_3;
-extern Fvector4 ps_ssfx_florafixes_1, ps_ssfx_florafixes_2;
-extern int ps_ssfx_is_underground, ps_ssfx_gloss_method;
-extern Fvector4 ps_ssfx_lut;
-extern Fvector3 ps_ssfx_shadows;
-extern Fvector3 ps_ssfx_shadow_bias;
-extern Fvector3 ps_ssfx_volumetric_limits;
-extern int ps_ssfx_use_new_volumetric_method;
 
 // textures
+#ifdef DEBUG
 extern ECORE_API int psTextureLOD;
-
 extern ECORE_API u32 psCurrentBPP;
+#else
+constexpr int psTextureLOD = 0;
+constexpr u32 psCurrentBPP = 32;
+#endif
+
+extern ECORE_API int opt_static;
+extern ECORE_API int opt_dynamic;
 
 enum
 {
@@ -182,68 +193,86 @@ enum
     R2FLAG_SUN_DETAILS = (1 << 3),
     R2FLAG_TONEMAP = (1 << 4),
     R2FLAG_EXP_MT_DETAILS = 1 << 5,
+#ifdef DEBUG
     R2FLAG_GI = (1 << 6),
-    R2FLAG_FASTBLOOM = (1 << 7),
-    R2FLAG_GLOBALMATERIAL = (1 << 8),
-    R2FLAG_ZFILL = (1 << 9),
-    R2FLAG_R1LIGHTS = (1 << 10),
-    R2FLAG_SUN_IGNORE_PORTALS = (1 << 11),
-
-    R2FLAG_EXP_MT_RAIN = (1 << 12),
-
-    R2FLAG_EXP_SPLIT_SCENE = (1 << 13),
-    R2FLAG_EXP_DONT_TEST_UNSHADOWED = (1 << 14),
-    R2FLAG_EXP_DONT_TEST_SHADOWED = (1 << 15),
-
-    R2FLAG_USE_NVDBT = (1 << 16),
-    R2FLAG_USE_NVSTENCIL = (1 << 17),
-
-    R2FLAG_EXP_MT_CALC = (1 << 18),
-    R2FLAG_EXP_MT_SUN = 1 << 19,
-    // = 1 << 20,
-    R2FLAG_VOLUMETRIC_LIGHTS = (1 << 21),
-    R2FLAG_STEEP_PARALLAX = (1 << 22),
-    R2FLAG_DOF = (1 << 23),
-#if RENDER == R_R1
-    R1FLAG_DETAIL_TEXTURES = (1 << 24),
 #endif
-    // = 1 << 25,
+/* 1 << 7, */
+#ifdef DEBUG
+    R2FLAG_GLOBALMATERIAL = (1 << 8),
+#endif
+    R2FLAG_ZFILL = (1 << 9),
+    /* 1 << 10, */
+    /* 1 << 11, */
 
-    R3FLAG_DYN_WET_SURF = (1 << 26),
-    R3FLAG_VOLUMETRIC_SMOKE = (1 << 27),
+    /* 1 << 12, */
+    /* 1 << 13, */
+    R2FLAG_EXP_DONT_TEST_SHADOWED = (1 << 14),
 
-    // R3FLAG_MSAA					= (1<<28),
-    R3FLAG_MSAA_HYBRID = (1 << 28),
-    R3FLAG_MSAA_OPT = (1 << 29),
-    R3FLAG_GBUFFER_OPT = (1 << 30),
-    R3FLAG_USE_DX10_1 = (1 << 31),
-    // R3FLAG_MSAA_ALPHATEST		= (1<<31),
+    /* 1 << 15, */
+    /* 1 << 16, */
+
+    R2FLAG_EXP_MT_CALC = (1 << 17),
+    R2FLAG_EXP_MT_SUN = 1 << 18,
+    R2FLAG_EXP_MT_RAIN = 1 << 19,
+
+    R2FLAG_VOLUMETRIC_LIGHTS = (1 << 20),
+    R2FLAG_STEEP_PARALLAX = (1 << 21),
+    R2FLAG_DOF = (1 << 22),
+
+    R2FLAG_MBLUR = 1 << 23,
+    RFLAG_MT_PARTICLES = 1 << 24,
+
+    R3FLAG_DYN_WET_SURF = (1 << 25),
+    R3FLAG_VOLUMETRIC_SMOKE = (1 << 26),
+
+    /* 1 << 27, */
+    /* 1 << 28, */
+    R2FLAG_TERRAIN_PREPASS = 1 << 29,
+    /* 1 << 30, */
 };
 
 enum
 {
-    SSFX_HEIGHT_FOG = 1 << 0,
-    SSFX_SKY_DEBANDING = 1 << 1,
-    SSFX_INDIRECT_LIGHT = 1 << 2,
-    REFLECTIONS_ONLY_ON_TERRAIN = 1 << 3,
-    REFLECTIONS_ONLY_ON_PUDDLES = 1 << 4,
+    /* 1 << 0, */
+    /* 1 << 1, */
+    /* 1 << 2, */
+    /* 1 << 3, */
+    /* 1 << 4, */
     R2FLAGEXT_ENABLE_TESSELLATION = (1 << 5),
     R2FLAGEXT_WIREFRAME = (1 << 6),
     R_FLAGEXT_HOM_DEPTH_DRAW = (1 << 7),
     R2FLAGEXT_SUN_ZCULLING = (1 << 8),
-    R2FLAGEXT_SUN_OLD = (1 << 9),
-    SSFX_INTER_GRASS = 1 << 10,
+    /* 1 << 9, */
+    /* 1 << 10, */
     R2FLAGEXT_DISABLE_HOM = 1 << 11,
-    R2FLAGEXT_RAIN_DROPS = 1 << 12,
-    R2FLAGEXT_RAIN_DROPS_CONTROL = 1 << 13,
+    /* 1 << 12, */
+    /* 1 << 13, */
     R2FLAGEXT_ACTOR_SHADOW = 1 << 14,
-    R2FLAGEXT_SSLR = 1 << 15,
-    R2FLAG_VISOR_REFL = 1 << 16,
-    R2FLAG_VISOR_REFL_CONTROL = 1 << 17,
-    R2FLAGEXT_TERRAIN_PARALLAX = 1 << 18,
+    /* 1 << 15, */
+    /* 1 << 16, */
+    /* 1 << 17, */
+    /* 1 << 18, */
     R2FLAGEXT_MT_TEXLOAD = 1 << 19,
     R2FLAGEXT_FONT_SHADOWS = 1 << 20,
 };
+
+// Sunshafts types
+enum
+{
+    SS_OFF = 0,
+
+    SS_SS_OGSE = 1,
+    SS_SS_MANOWAR = 2,
+    SS_SS_MASK = 3,
+
+    SS_VOLUMETRIC = 4,
+
+    SS_COMBINED_OGSE = SS_VOLUMETRIC | SS_SS_OGSE,
+    SS_COMBINED_MANOWAR = SS_VOLUMETRIC | SS_SS_MANOWAR,
+};
+
+// Rezy: cleanup flags
+extern Flags32 psDeviceFlags2;
 
 extern void xrRender_initconsole();
 
@@ -251,18 +280,4 @@ extern void xrRender_initconsole();
 extern BOOL xrRender_test_hw();
 #endif
 
-// Postprocess anti-aliasing types
-enum
-{
-    NO_AA,
-    SMAA,
-};
-
-// Sunshafts types
-enum
-{
-    SS_OFF,
-    SS_VOLUMETRIC,
-    SS_SS_OGSE,
-    SS_SS_MANOWAR,
-};
+#endif

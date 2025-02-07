@@ -1,3 +1,6 @@
+#ifndef xr_resourceH
+#define xr_resourceH
+
 #pragma once
 
 // resource itself, the base class for all derived resources
@@ -24,6 +27,9 @@ public:
 
 public:
     u32 dwFlags;
+    int skinning;
+    bool hud_disabled;
+
     xr_resource_flagged() : dwFlags(0) {}
 };
 
@@ -205,3 +211,5 @@ resptr_core<T, D> dynamic_pointer_cast(resptr_core<U, D> const& p)
 {
     return dynamic_cast<T*>(p.get());
 }
+
+#endif // xr_resourceH

@@ -1,8 +1,6 @@
 #ifndef vis_commonH
 #define vis_commonH
-#pragma once
 
-#pragma pack(push, 4)
 struct vis_data
 {
     Fsphere sphere; //
@@ -12,10 +10,18 @@ struct vis_data
     u32 hom_frame; // when to perform test - shedule
     u32 hom_tested; // when it was last time tested
 
+    constexpr inline vis_data() = default;
+    constexpr inline vis_data(const vis_data& v) { xr_memcpy128(this, &v, sizeof(v)); }
+
+    constexpr inline vis_data& operator=(const vis_data& v)
+    {
+        xr_memcpy128(this, &v, sizeof(v));
+        return *this;
+    }
+
     IC void clear()
     {
-        sphere.P.set(0, 0, 0);
-        sphere.R = 0;
+        sphere.v.set(0, 0, 0, 0);
         box.invalidate();
         marker = 0;
         accept_frame = 0;
@@ -23,5 +29,5 @@ struct vis_data
         hom_tested = 0;
     }
 };
-#pragma pack(pop)
+
 #endif

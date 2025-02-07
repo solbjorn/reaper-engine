@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 template <bool b_first>
-class walker
+class alignas(16) walker
 {
 public:
     u32 mask;
@@ -10,7 +10,14 @@ public:
     Fbox box;
     ISpatial_DB* space;
 
-public:
+    constexpr inline walker() = default;
+    constexpr inline walker(const walker<b_first>& w) { xr_memcpy128(this, &w, sizeof(w)); }
+    constexpr inline walker<b_first>& operator=(const walker<b_first>& w)
+    {
+        xr_memcpy128(this, &w, sizeof(w));
+        return *this;
+    }
+
     walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size)
     {
         mask = _mask;
@@ -19,6 +26,7 @@ public:
         box.setb(center, size);
         space = _space;
     }
+
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
         // box

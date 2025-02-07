@@ -6,11 +6,10 @@
 using namespace PAPI;
 using namespace PS;
 
-
 static void ApplyTexgen(const Fmatrix& mVP)
 {
     Fmatrix mTexgen;
-    Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+    static constexpr Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
 
     mTexgen.mul(mTexelAdjust, mVP);
     RCache.set_c("mVPTexgen", mTexgen);
@@ -198,7 +197,7 @@ BOOL CParticleEffect::Compile(CPEDef* def)
     return TRUE;
 }
 
-void CParticleEffect::SetBirthDeadCB(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p)
+void CParticleEffect::SetBirthDeadCB(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p) const
 {
     ParticleManager()->SetCallback(m_HandleEffect, bc, dc, owner, p);
 }
@@ -236,39 +235,6 @@ void CParticleEffect::OnDeviceDestroy()
 }
 
 //----------------------------------------------------
-IC void FillSprite_fpu(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
-{
-    float sa = _sin(angle);
-    float ca = _cos(angle);
-
-    Fvector Vr, Vt;
-
-    Vr.x = T.x * r1 * sa + R.x * r1 * ca;
-    Vr.y = T.y * r1 * sa + R.y * r1 * ca;
-    Vr.z = T.z * r1 * sa + R.z * r1 * ca;
-
-    Vt.x = T.x * r2 * ca - R.x * r2 * sa;
-    Vt.y = T.y * r2 * ca - R.y * r2 * sa;
-    Vt.z = T.z * r2 * ca - R.z * r2 * sa;
-
-    Fvector a, b, c, d;
-
-    a.sub(Vt, Vr);
-    b.add(Vt, Vr);
-
-    c.invert(a);
-    d.invert(b);
-
-    pv->set(d.x + pos.x, d.y + pos.y, d.z + pos.z, clr, lt.x, rb.y);
-    pv++;
-    pv->set(a.x + pos.x, a.y + pos.y, a.z + pos.z, clr, lt.x, lt.y);
-    pv++;
-    pv->set(c.x + pos.x, c.y + pos.y, c.z + pos.z, clr, rb.x, rb.y);
-    pv++;
-    pv->set(b.x + pos.x, b.y + pos.y, b.z + pos.z, clr, rb.x, lt.y);
-    pv++;
-}
-
 IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina,
                    float cosa)
 {
@@ -379,7 +345,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
 
 extern ENGINE_API float psHUD_FOV;
 
-__forceinline void magnitude_sse(Fvector& vec, float& res)
+ICF void magnitude_sse(Fvector& vec, float& res)
 {
     __m128 tv, tu;
 

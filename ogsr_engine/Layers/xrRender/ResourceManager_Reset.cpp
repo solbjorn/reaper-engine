@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
-
 #include "ResourceManager.h"
 #include "../../xr_3da/Render.h"
-
 
 void CResourceManager::reset_begin()
 {
@@ -74,7 +72,7 @@ void CResourceManager::reset_end()
             rt[_it]->reset_end();
     }
     {
-    // RTc
+        // RTc
 #pragma todo("container is created in stack!")
         //	DX10 cut 		xr_vector<CRTC*>	rt;
         //	DX10 cut 		for (map_RTCIt rt_it=m_rtargets_c.begin(); rt_it!=m_rtargets_c.end(); rt_it++)	rt.push_back(rt_it->second);
@@ -99,10 +97,7 @@ void mdump(C c)
         Msg("*        : %3d: %s", I->second->dwReference, I->second->cName.c_str());
 }
 
-CResourceManager::~CResourceManager()
-{
-    Dump(false);
-}
+CResourceManager::~CResourceManager() { Dump(false); }
 
 void CResourceManager::Dump(bool bBrief)
 {
@@ -119,6 +114,18 @@ void CResourceManager::Dump(bool bBrief)
     Msg("* RM_Dump: ps        : %d", m_ps.size());
     if (!bBrief)
         mdump(m_ps);
+    Msg("* RM_Dump: gs        : %d", m_gs.size());
+    if (!bBrief)
+        mdump(m_gs);
+    Msg("* RM_Dump: cs        : %d", m_cs.size());
+    if (!bBrief)
+        mdump(m_cs);
+    Msg("* RM_Dump: hs        : %d", m_hs.size());
+    if (!bBrief)
+        mdump(m_hs);
+    Msg("* RM_Dump: ds        : %d", m_ds.size());
+    if (!bBrief)
+        mdump(m_ds);
     Msg("* RM_Dump: dcl       : %d", v_declarations.size());
     Msg("* RM_Dump: states    : %d", v_states.size());
     Msg("* RM_Dump: tex_list  : %d", lst_textures.size());

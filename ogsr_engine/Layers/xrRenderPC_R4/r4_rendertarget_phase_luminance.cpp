@@ -21,7 +21,7 @@ void CRenderTarget::phase_luminance()
 {
     u32 Offset = 0;
     //	float	eps		= EPS_S;
-    float eps = 0;
+    constexpr float eps = 0;
 
     // Targets
     RCache.set_Stencil(FALSE);
@@ -34,7 +34,7 @@ void CRenderTarget::phase_luminance()
     u_setrt(rt_LUM_64, NULL, NULL, NULL);
     // RImplementation.rmNormal();
     {
-        float ts = 64;
+        constexpr float ts = 64;
         float _w = float(BLOOM_size_X);
         float _h = float(BLOOM_size_Y);
         Fvector2 one = {2.f / _w, 2.f / _h}; // two, infact
@@ -85,8 +85,8 @@ void CRenderTarget::phase_luminance()
     // RImplementation.rmNormal();
     {
         // Build filter-kernel
-        float _ts = 8;
-        float _src = float(64);
+        constexpr float _ts = 8;
+        constexpr float _src = float(64);
         Fvector2 a[16], b[16];
         for (int k = 0; k < 16; k++)
         {
@@ -126,8 +126,8 @@ void CRenderTarget::phase_luminance()
     // RImplementation.rmNormal();
     {
         // Build filter-kernel
-        float _ts = 1;
-        float _src = float(8);
+        constexpr float _ts = 1;
+        constexpr float _src = float(8);
         Fvector2 a[16], b[16];
         for (int k = 0; k < 16; k++)
         {
@@ -159,8 +159,8 @@ void CRenderTarget::phase_luminance()
 
         f_luminance_adapt = .9f * f_luminance_adapt + .1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
         float amount = ps_r2_ls_flags.test(R2FLAG_TONEMAP) ? ps_r2_tonemap_amount : 0;
-        Fvector3 _none, _full, _result;
-        _none.set(1, 0, 1);
+        constexpr Fvector3 _none{1.f, 0.f, 1.f};
+        Fvector3 _full, _result;
         _full.set(ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum);
         _result.lerp(_none, _full, amount);
 

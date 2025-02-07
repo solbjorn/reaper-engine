@@ -80,8 +80,7 @@ public:
                 break;
         }
 
-        Fvector align_vector;
-        align_vector.set(0.f, 0.f, 0.f);
+        Fvector align_vector{0.f, 0.f, 0.f};
 
         // Align ray points to the align planes.
         for (int p = 0; p < align_planes_count; ++p)
@@ -362,33 +361,6 @@ public:
                 p301.build(p3, p0, p1);
                 VERIFY(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
             }
-
-            /*
-            t1.sub					(points[P.points[0]], points[P.points[1]]);
-
-
-            //	HACK: Igor: just make sure we calculated the plane
-
-            t2.sub					(points[P.points[0]], points[P.points[2]]);
-            P.planeN.crossproduct	(t1,t2).normalize();
-
-
-            P.planeD			= -	P.planeN.dotproduct(points[P.points[0]]);
-
-            // verify
-            if (_debug)
-            {
-                Fvector&		p0	= points[P.points[0]];
-                Fvector&		p1	= points[P.points[1]];
-                Fvector&		p2	= points[P.points[2]];
-                Fvector&		p3	= points[P.points[3]];
-                Fplane	p012;	p012.build(p0,p1,p2);
-                Fplane	p123;	p123.build(p1,p2,p3);
-                Fplane	p230;	p230.build(p2,p3,p0);
-                Fplane	p301;	p301.build(p3,p0,p1);
-                VERIFY	(p012.n.similar(p123.n) && p012.n.similar(p230.n) && p012.n.similar(p301.n));
-            }
-            */
         }
     }
     void compute_caster_model(xr_vector<Fplane>& dest, Fvector3 direction)
@@ -396,7 +368,7 @@ public:
         CRenderTarget& T = *RImplementation.Target;
 
         // COG
-        Fvector3 cog = {0, 0, 0};
+        Fvector3 cog{0, 0, 0};
         for (int it = 0; it < int(points.size()); it++)
             cog.add(points[it]);
         cog.div(float(points.size()));

@@ -48,7 +48,8 @@ public:
 #ifdef DEBUG
         ;
 #else
-    {}
+    {
+    }
 #endif
 
     IC CKinematics* Parent() { return m_Parent; }
@@ -117,6 +118,7 @@ public:
 protected:
     SkeletonWMVec wallmarks;
     u32 wm_frame;
+    u32 CurrentFrame{};
 
     xr_vector<dxRender_Visual*> children_invisible;
 
@@ -141,7 +143,7 @@ protected:
     virtual CBoneData* CreateBoneData(u16 ID) { return xr_new<CBoneData>(ID); }
     virtual void IBoneInstances_Create();
     virtual void IBoneInstances_Destroy();
-    void Visibility_Invalidate() { Update_Visibility = TRUE; };
+    void Visibility_Invalidate() { Update_Visibility = TRUE; }
     void Visibility_Update();
 
     void LL_Validate();
@@ -174,7 +176,7 @@ public:
 
     ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
     {
-        //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
+        // Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
 
         R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         R_ASSERT(bone_instances);
@@ -182,7 +184,7 @@ public:
     }
     ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
     {
-        //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
+        // Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
 
         R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         R_ASSERT(bone_instances);

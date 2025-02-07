@@ -47,10 +47,7 @@ void CRender::render_rain()
     // calculate view-frustum bounds in world space
     Fmatrix ex_project{}, ex_full{}, ex_full_inverse{};
     {
-        float fRainFar = 250.f;
-        if (ps_ssfx_gloss_method == 0)
-            fRainFar = ps_r3_dyn_wet_surf_far;
-
+        const float fRainFar = ps_r3_dyn_wet_surf_far;
         ex_project.build_projection(deg2rad(Device.fFOV /* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
         ex_full.mul(ex_project, Device.mView);
         ex_full_inverse.invert_44(ex_full);
@@ -77,7 +74,6 @@ void CRender::render_rain()
     CSector* cull_sector;
     Fmatrix cull_xform;
     {
-        FPU::m64r();
         // Lets begin from base frustum
         Fmatrix fullxform_inv = ex_full_inverse;
 #ifdef DEBUG
@@ -209,7 +205,6 @@ void CRender::render_rain()
         RainLight.X.D.maxY = limit;
 
         // full-xform
-        FPU::m24r();
     }
 
     // Begin SMAP-render

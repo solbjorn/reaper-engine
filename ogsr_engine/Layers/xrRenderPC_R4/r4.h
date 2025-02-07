@@ -34,71 +34,35 @@ public:
         PHASE_SMAP = 1, // E[1]
     };
 
-    enum
-    {
-        MSAA_ATEST_NONE = 0x0, //	Hi bit - DX10.1 mode
-        MSAA_ATEST_DX10_0_ATOC = 0x1, //	Lo bit - ATOC mode
-        MSAA_ATEST_DX10_1_NATIVE = 0x2,
-        MSAA_ATEST_DX10_1_ATOC = 0x3,
-    };
-
-    enum
-    {
-        MMSM_OFF = 0,
-        MMSM_ON,
-        MMSM_AUTO,
-        MMSM_AUTODETECT
-    };
-
 public:
     struct _options
     {
-        u32 bug : 1;
+        constexpr inline bool get_true() const { return true; }
 
-        u32 smapsize : 16;
-        u32 depth16 : 1;
-        u32 mrt : 1;
-        u32 mrtmixdepth : 1;
-        u32 fp16_filter : 1;
-        u32 fp16_blend : 1;
-        u32 albedo_wo : 1; // work-around albedo on less capable HW
-        u32 HW_smap : 1;
-        u32 HW_smap_PCF : 1;
-        u32 HW_smap_FETCH4 : 1;
+        __declspec(property(get = get_true)) bool ssfx_branches;
+        __declspec(property(get = get_true)) bool ssfx_blood;
+        __declspec(property(get = get_true)) bool ssfx_rain;
+        __declspec(property(get = get_true)) bool ssfx_hud_raindrops;
+        __declspec(property(get = get_true)) bool ssfx_ssr;
+        __declspec(property(get = get_true)) bool ssfx_terrain;
+        __declspec(property(get = get_true)) bool ssfx_volumetric;
+        __declspec(property(get = get_true)) bool ssfx_water;
+        __declspec(property(get = get_true)) bool ssfx_ao;
+        __declspec(property(get = get_true)) bool ssfx_il;
+        __declspec(property(get = get_true)) bool ssfx_core;
+        __declspec(property(get = get_true)) bool ssfx_bloom;
+        __declspec(property(get = get_true)) bool ssfx_sss;
 
         u32 HW_smap_FORMAT : 32;
-
-        u32 nvstencil : 1;
-        u32 nvdbt : 1;
+        u32 smapsize : 16;
 
         u32 distortion : 1;
-        u32 distortion_enabled : 1;
-        u32 mblur : 1;
-
-        u32 sunfilter : 1;
-        u32 sunstatic : 1;
-        u32 sjitter : 1;
-        u32 noshadows : 1;
-        u32 Tshadows : 1; // transluent shadows
         u32 disasm : 1;
-        u32 advancedpp : 1; //	advanced post process (DOF, SSAO, volumetrics, etc.)
 
         u32 dx10_msaa : 1; //	DX10.0 path
-        u32 dx10_msaa_hybrid : 1; //	DX10.0 main path with DX10.1 A-test msaa allowed
-        u32 dx10_msaa_opt : 1; //	DX10.1 path
-        u32 dx10_gbuffer_opt : 1; //
-        u32 dx10_sm4_1 : 1; //	DX10.1 path
-        u32 dx10_msaa_alphatest : 2; //	A-test mode
         u32 dx10_msaa_samples : 4;
 
-        u32 dx10_minmax_sm : 2;
-        u32 dx10_minmax_sm_screenarea_threshold;
-
         u32 dx11_enable_tessellation : 1;
-
-        u32 forcegloss : 1;
-        u32 forceskinw : 1;
-        float forcegloss_v;
     } o;
     struct _stats
     {
@@ -110,6 +74,7 @@ public:
     } stats;
 
 public:
+    bool is_sun();
     // Sector detection and visibility
     CSector* pLastSector;
     Fvector vLastCameraPos;
@@ -160,7 +125,6 @@ public:
     bool need_to_render_sunshafts{false};
     bool last_cascade_chain_mode{false};
 
-
 private:
     // Loading / Unloading
     void LoadBuffers(CStreamReader* fs, BOOL _alternative);
@@ -172,7 +136,7 @@ private:
 
     BOOL add_Dynamic(dxRender_Visual* pVisual, u32 planes); // normal processing
     void add_Static(dxRender_Visual* pVisual, u32 planes);
-    void add_leafs_Dynamic(dxRender_Visual* pVisual); // if detected node's full visibility
+    void add_leafs_Dynamic(dxRender_Visual* pVisual, bool ignore = false); // if detected node's full visibility
     void add_leafs_Static(dxRender_Visual* pVisual); // if detected node's full visibility
 
 public:
@@ -228,30 +192,24 @@ public:
     }
     IC void apply_lmaterial()
     {
-        R_constant* C = &*RCache.get_c(c_sbase); // get sampler
+        R_constant* C = RCache.get_c(c_sbase)._get(); // get sampler
         if (0 == C)
             return;
         VERIFY(RC_dest_sampler == C->destination);
         VERIFY(RC_dx10texture == C->type);
         CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
         VERIFY(T);
-        float mtl = T->m_material;
+        float mtl = T ? T->m_material : 0.f;
 #ifdef DEBUG
         if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
             mtl = ps_r2_gmaterial;
 #endif
-        RCache.hemi.set_material(o_hemi, o_sun, 0, (mtl + .5f) / 4.f);
+        RCache.hemi.set_material(o_hemi, o_sun, 0, (mtl < 5 ? (mtl + .5f) / 4.f : mtl));
         RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
         RCache.hemi.set_neg_faces(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
     }
 
 public:
-    // feature level
-    virtual GenerationLevel get_generation() { return IRender_interface::GENERATION_R2; }
-
-    virtual bool is_sun_static() { return o.sunstatic; }
-    virtual DWORD get_dx_level() { return HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 ? 0x000A0001 : 0x000A0000; }
-
     // Loading / Unloading
     virtual void create();
     virtual void destroy();
@@ -266,7 +224,7 @@ public:
 
     // Information
     virtual void Statistics(CGameFont* F);
-    virtual LPCSTR getShaderPath() { return "r3\\"; }
+    virtual LPCSTR getShaderPath() { return ""; }
     virtual ref_shader getShader(int id);
     virtual IRender_Sector* getSector(int id);
     virtual IRenderVisual* getVisual(int id);
@@ -327,7 +285,7 @@ public:
     virtual void _BCL OnFrame();
     virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
     virtual void AfterWorldRender(const bool save_bb_before_ui); //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
-    void AfterUIRender() override; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
+    void AfterUIRender() override; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
     // Render mode
     virtual void rmNear();

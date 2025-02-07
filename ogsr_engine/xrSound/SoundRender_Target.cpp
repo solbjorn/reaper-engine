@@ -56,7 +56,7 @@ void CSoundRender_Target::render() { rendering = TRUE; }
 
 void CSoundRender_Target::stop()
 {
-    dettach();
+    detach();
     m_pEmitter = NULL;
     rendering = FALSE;
 }
@@ -89,7 +89,7 @@ void CSoundRender_Target::attach()
     VERIFY(0 != wave);
 }
 
-void CSoundRender_Target::dettach()
+void CSoundRender_Target::detach()
 {
     if (wave)
     {

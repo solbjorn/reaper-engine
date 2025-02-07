@@ -1,7 +1,5 @@
-
 #include "stdafx.h"
 
-#include "ispatial.h"
 #include "../xr_3da/Engine.h"
 #include "../xr_3da/render.h"
 
@@ -24,8 +22,10 @@ ISpatial::ISpatial(ISpatial_DB* space)
     spatial.sector = NULL;
     spatial.space = space;
 }
+
 ISpatial::~ISpatial() { spatial_unregister(); }
-BOOL ISpatial::spatial_inside()
+
+bool ISpatial::spatial_inside()
 {
     float dr = -(-spatial.node_radius + spatial.sphere.R);
     if (spatial.sphere.P.x < spatial.node_center.x - dr)
@@ -146,7 +146,7 @@ void ISpatial_NODE::_remove(ISpatial* S)
 
 //////////////////////////////////////////////////////////////////////////
 
-ISpatial_DB::ISpatial_DB() : m_root(nullptr), stat_nodes(0), stat_objects(0) {}
+ISpatial_DB::ISpatial_DB() {}
 
 ISpatial_DB::~ISpatial_DB()
 {
@@ -162,27 +162,21 @@ ISpatial_DB::~ISpatial_DB()
     }
 }
 
-void ISpatial_DB::initialize(Fbox& BB)
+void ISpatial_DB::initialize(const Fbox& BB)
 {
+    // initialize
+    Fvector bbc, bbd;
+    BB.get_CD(bbc, bbd);
+
+    allocator_pool.reserve(128);
+    m_center.set(bbc);
+    m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
+    rt_insert_object = nullptr;
+
     if (!m_root)
-    {
-        // initialize
-        Fvector bbc, bbd;
-        BB.get_CD(bbc, bbd);
-
-        Msg("--[%s] bbc is [%.1f, %.1f, %.1f], bbd is [%.1f, %.1f, %.1f]", __FUNCTION__, bbc.x, bbc.y, bbc.z, bbd.x, bbd.y, bbd.z);
-        //Костыли для всяких кривых локаций, хотя бывают ли такие, я не уверен.
-        bbd.x = std::max(bbd.x, 1024.f);
-        bbd.y = std::max(bbd.y, 1024.f);
-        bbd.z = std::max(bbd.z, 1024.f);
-
-        allocator_pool.reserve(128);
-        m_center.set(bbc);
-        m_bounds = std::max(std::max(bbd.x, bbd.y), bbd.z);
-        rt_insert_object = nullptr;
         m_root = _node_create();
-        m_root->_init(nullptr);
-    }
+
+    m_root->_init(nullptr);
 }
 
 ISpatial_NODE* ISpatial_DB::_node_create()
@@ -289,15 +283,6 @@ void ISpatial_DB::insert(ISpatial* S)
     {
         // Object outside our DB, put it into root node and hack bounds
         // Object will reinsert itself until fits into "real", "controlled" space
-
-        /*
-        if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
-        {
-            m_root = _node_create();
-            m_root->_init(NULL);
-        }
-        */
-
         m_root->_insert(S);
         S->spatial.node_center.set(m_center);
         S->spatial.node_radius = m_bounds;
@@ -361,7 +346,7 @@ void ISpatial_DB::remove(ISpatial* S)
     cs.Leave();
 }
 
-void ISpatial_DB::update(u32 nodes /* =8 */)
+void ISpatial_DB::update(u32 /* nodes =8 */)
 {
 #ifdef DEBUG
     if (0 == m_root)

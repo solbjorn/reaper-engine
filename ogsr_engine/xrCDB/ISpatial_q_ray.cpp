@@ -9,21 +9,43 @@
 struct alignas(16) vec_t : public Fvector3
 {
     float pad;
+
+    constexpr inline vec_t() = default;
+    constexpr inline vec_t(const vec_t& v) { xr_memcpy16(this, &v); }
+    constexpr inline vec_t& operator=(const vec_t& v)
+    {
+        xr_memcpy16(this, &v);
+        return *this;
+    }
 };
+
 struct alignas(16) aabb_t
 {
     vec_t min;
     vec_t max;
+
+    constexpr inline aabb_t() = default;
+    constexpr inline aabb_t(const aabb_t& v) { xr_memcpy128(this, &v, sizeof(v)); }
+    constexpr inline aabb_t& operator=(const aabb_t& v)
+    {
+        xr_memcpy128(this, &v, sizeof(v));
+        return *this;
+    }
 };
+
 struct alignas(16) ray_t
 {
     vec_t pos;
     vec_t inv_dir;
     vec_t fwd_dir;
-};
-struct ray_segment_t
-{
-    float t_near, t_far;
+
+    constexpr inline ray_t() = default;
+    constexpr inline ray_t(const ray_t& r) { xr_memcpy128(this, &r, sizeof(r)); }
+    constexpr inline ray_t& operator=(const ray_t& r)
+    {
+        xr_memcpy128(this, &r, sizeof(r));
+        return *this;
+    }
 };
 
 ICF u32& uf(float& x) { return (u32&)x; }
@@ -149,7 +171,7 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
     // you may already have those values hanging around somewhere
     const __m128 plus_inf = loadps(ps_cst_plus_inf), minus_inf = loadps(ps_cst_minus_inf);
 
-    // use whatever's apropriate to load.
+    // use whatever's appropriate to load.
     const __m128 box_min = loadps(&box.min), box_max = loadps(&box.max), pos = loadps(&ray.pos), inv_dir = loadps(&ray.inv_dir);
 
     // use a div if inverted directions aren't available
@@ -198,7 +220,14 @@ public:
     float range2;
     ISpatial_DB* space;
 
-public:
+    constexpr inline walker() = default;
+    constexpr inline walker(const walker& w) { xr_memcpy128(this, &w, sizeof(w)); }
+    constexpr inline walker& operator=(const walker& w)
+    {
+        xr_memcpy128(this, &w, sizeof(w));
+        return *this;
+    }
+
     walker(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
     {
         mask = _mask;

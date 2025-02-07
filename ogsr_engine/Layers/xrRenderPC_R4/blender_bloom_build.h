@@ -32,3 +32,47 @@ public:
     CBlender_postprocess_msaa();
     virtual ~CBlender_postprocess_msaa();
 };
+
+class CBlender_ssfx_bloom_build : public IBlender
+{
+public:
+    virtual LPCSTR getComment() { return "SSFX Bloom"; }
+
+    virtual void Compile(CBlender_Compile& C);
+
+    CBlender_ssfx_bloom_build();
+    virtual ~CBlender_ssfx_bloom_build();
+};
+
+class CBlender_ssfx_bloom_lens : public IBlender
+{
+public:
+    virtual LPCSTR getComment() { return "SSFX Bloom Lens"; }
+
+    virtual void Compile(CBlender_Compile& C);
+
+    CBlender_ssfx_bloom_lens();
+    virtual ~CBlender_ssfx_bloom_lens();
+};
+
+class CBlender_ssfx_bloom_downsample : public IBlender
+{
+public:
+    virtual LPCSTR getComment() { return "SSFX Bloom Downsample"; }
+
+    virtual void Compile(CBlender_Compile& C);
+
+    CBlender_ssfx_bloom_downsample();
+    virtual ~CBlender_ssfx_bloom_downsample();
+};
+
+class CBlender_ssfx_bloom_upsample : public IBlender
+{
+public:
+    virtual LPCSTR getComment() { return "SSFX Bloom Upsample"; }
+
+    virtual void Compile(CBlender_Compile& C);
+
+    CBlender_ssfx_bloom_upsample();
+    virtual ~CBlender_ssfx_bloom_upsample();
+};

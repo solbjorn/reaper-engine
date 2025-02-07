@@ -17,25 +17,25 @@ CFontManager::CFontManager()
 
 void CFontManager::InitializeFonts()
 {
-    //pFontMedium = nullptr;
-    //pFontSmall = nullptr;
+    // pFontMedium = nullptr;
+    // pFontSmall = nullptr;
 
-    //pFontDI = nullptr;
+    // pFontDI = nullptr;
 
-    //pFontArial14 = nullptr;
-    //pFontArial21 = nullptr;
-    //pFontGraffiti19Russian = nullptr;
-    //pFontGraffiti22Russian = nullptr;
-    //pFontLetterica16Russian = nullptr;
-    //pFontLetterica18Russian = nullptr;
-    //pFontGraffiti32Russian = nullptr;
-    //pFontGraffiti40Russian = nullptr;
-    //pFontGraffiti50Russian = nullptr;
-    //pFontLetterica25 = nullptr;
+    // pFontArial14 = nullptr;
+    // pFontArial21 = nullptr;
+    // pFontGraffiti19Russian = nullptr;
+    // pFontGraffiti22Russian = nullptr;
+    // pFontLetterica16Russian = nullptr;
+    // pFontLetterica18Russian = nullptr;
+    // pFontGraffiti32Russian = nullptr;
+    // pFontGraffiti40Russian = nullptr;
+    // pFontGraffiti50Russian = nullptr;
+    // pFontLetterica25 = nullptr;
 
-    //delete_data(m_all_fonts);
+    // delete_data(m_all_fonts);
 
-    //m_all_fonts.clear();
+    // m_all_fonts.clear();
 
     InitializeFont(pFontMedium, "hud_font_medium");
     InitializeFont(pFontSmall, "hud_font_small");
@@ -245,10 +245,8 @@ void CHUDManager::Render_First()
 
     // only shadow
     CObject* O = g_pGameLevel->CurrentViewEntity();
-    ::Render->set_Invisible(TRUE);
     ::Render->set_Object(O->H_Root());
     O->renderable_Render();
-    ::Render->set_Invisible(FALSE);
 }
 
 void CHUDManager::Render_Last()
@@ -276,28 +274,11 @@ void CHUDManager::Render_Last()
     ::Render->set_HUD(FALSE);
 }
 
-void CHUDManager::Render_Actor_Shadow() // added by KD
-{
-    if (0 == pUI)
-        return;
-    CObject* O = g_pGameLevel->CurrentViewEntity();
-    if (0 == O)
-        return;
-    CActor* A = smart_cast<CActor*>(O);
-    if (!A)
-        return;
-    if (A->active_cam() != eacFirstEye)
-        return; // KD: we need to render actor shadow only in first eye cam mode because
-                // in other modes actor model already in scene graph and renders well
-    ::Render->set_Object(O->H_Root());
-    O->renderable_Render();
-}
-
 extern void draw_wnds_rects();
 
 extern ENGINE_API BOOL bShowPauseString;
 
-//отрисовка элементов интерфейса
+// отрисовка элементов интерфейса
 #include "string_table.h"
 
 void CHUDManager::RenderUI()
@@ -317,7 +298,6 @@ void CHUDManager::RenderUI()
         pUI->Render();
 
     Font().Render();
-
 
     if (Device.Paused() && bShowPauseString)
     {
@@ -352,11 +332,11 @@ void CHUDManager::OnScreenRatioChanged()
 
     pUI->UIMainIngameWnd = xr_new<CUIMainIngameWnd>();
     pUI->UIMainIngameWnd->Init();
-    pUI->UIMainIngameWnd->OnConnected(); //Перезагружаем здесь миникарту, чтобы она не пропадала при изменении разрешения экрана.
+    pUI->UIMainIngameWnd->OnConnected(); // Перезагружаем здесь миникарту, чтобы она не пропадала при изменении разрешения экрана.
     pUI->UnLoad();
     pUI->Load(pUI->UIGame());
     if (auto act = Actor())
-        act->UpdateArtefactPanel(); //Обновляем панель с артами на худе
+        act->UpdateArtefactPanel(); // Обновляем панель с артами на худе
 }
 
 void CHUDManager::OnDisconnected()

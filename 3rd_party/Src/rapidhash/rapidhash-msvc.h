@@ -32,13 +32,12 @@ constexpr RAPIDHASH_INLINE void rapid_mum_msvc(u64* A, u64* B) RAPIDHASH_NOEXCEP
 constexpr RAPIDHASH_INLINE u64 rapid_mix_msvc(u64 A, u64 B) RAPIDHASH_NOEXCEPT
 {
     rapid_mum_msvc(&A, &B);
-
     return A ^ B;
 }
 
 #ifdef RAPIDHASH_LITTLE_ENDIAN
-RAPIDHASH_INLINE u64 rapid_read64_msvc(const u8* p) RAPIDHASH_NOEXCEPT { return *reinterpret_cast<const u64*>(p); }
-RAPIDHASH_INLINE u64 rapid_read32_msvc(const u8* p) RAPIDHASH_NOEXCEPT { return *reinterpret_cast<const u32*>(p); }
+constexpr RAPIDHASH_INLINE u64 rapid_read64_msvc(const u8* p) RAPIDHASH_NOEXCEPT { return *(const u64*)(p); }
+constexpr RAPIDHASH_INLINE u64 rapid_read32_msvc(const u8* p) RAPIDHASH_NOEXCEPT { return *(const u32*)(p); }
 #endif
 
 constexpr RAPIDHASH_INLINE u64 rapidhash_internal_msvc(const void* key, size_t len, u64 seed, const u64* secret) RAPIDHASH_NOEXCEPT

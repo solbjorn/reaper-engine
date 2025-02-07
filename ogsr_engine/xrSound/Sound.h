@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SoundH
+#define SoundH
 
 #ifdef XRSOUND_STATIC
 #define XRSOUND_API
@@ -22,6 +23,7 @@ XRSOUND_API extern u32 psSoundModel;
 XRSOUND_API extern float psSoundVEffects;
 XRSOUND_API extern float psSoundVFactor;
 XRSOUND_API extern float psSoundVMusic;
+XRSOUND_API extern float psSoundVMusicFactor;
 XRSOUND_API extern float psSoundRolloff;
 XRSOUND_API extern float psSoundOcclusionScale;
 XRSOUND_API extern float psSoundLinearFadeFactor; //--#SM+#--
@@ -33,12 +35,11 @@ XRSOUND_API extern u32 snd_device_id;
 XRSOUND_API extern float psSoundTimeFactor; //--#SM+#--
 
 // Flags
-enum
+enum : u32
 {
-    //ss_Hardware = (1ul << 1ul), // Use hardware mixing only
-    ss_EAX = (1ul << 2ul), // Use EAX or EFX
-    ss_UseDefaultDevice = (1ul << 3ul),
-    ss_forcedword = u32(-1)
+    ss_EAX = 1ul << 1ul, // Use EAX or EFX
+    ss_UseDefaultDevice = 1ul << 2ul,
+    ss_UseFloat32 = 1ul << 3ul, //!< Use 32-bit float sound instead of 16-bit
 };
 
 enum
@@ -198,17 +199,72 @@ public:
     float AirAbsorptionHF; // change in level per meter at 5 kHz
 };
 
+namespace soundSmoothingParams
+{
+extern float power;
+extern int steps;
+extern float alpha;
+extern float getAlpha();
+extern float getTimeDeltaSmoothing();
+extern float getSmoothedValue(float, float, float);
+}; // namespace soundSmoothingParams
+
 /// definition (Sound Params)
 class XRSOUND_API CSound_params
 {
 public:
+    CSound_params() : set(false)
+    {
+        position.set(0.0f, 0.0f, 0.0f);
+        velocity.set(0.0f, 0.0f, 0.0f);
+        accVelocity.set(0.f, 0.f, 0.f);
+    }
+
+private:
+    bool set;
+
+public:
     Fvector position;
+    Fvector velocity; // Cribbledirge.  Added for doppler effect.
+    Fvector curVelocity; // Current velocity.
+    Fvector prevVelocity; // Previous velocity.
+    Fvector accVelocity; // Velocity accumulator (for moving average).
     float base_volume;
     float volume;
     float freq;
     float min_distance;
     float max_distance;
     float max_ai_distance;
+
+    // Functions added by Cribbledirge for doppler effect.
+    IC virtual void update_position(const Fvector& newPosition)
+    {
+        // If the position has been set already, start getting a moving average of the velocity.
+        if (set)
+        {
+            prevVelocity.set(accVelocity);
+            curVelocity.sub(newPosition, position);
+
+            // accVelocity.set(curVelocity.mul(alpha).add(prevVelocity.mul(1.f - alpha)));
+        }
+        else
+        {
+            set = true;
+        }
+        position.set(newPosition);
+    }
+
+    IC virtual void update_velocity(const float dt)
+    {
+        float a = soundSmoothingParams::getTimeDeltaSmoothing();
+        int p = soundSmoothingParams::power;
+        accVelocity.x = soundSmoothingParams::getSmoothedValue(curVelocity.x * p / dt, accVelocity.x, a);
+        accVelocity.y = soundSmoothingParams::getSmoothedValue(curVelocity.y * p / dt, accVelocity.y, a);
+        accVelocity.z = soundSmoothingParams::getSmoothedValue(curVelocity.z * p / dt, accVelocity.z, a);
+        velocity.set(accVelocity);
+
+        // Msg("VELOC: %f", velocity.magnitude());
+    }
 };
 
 /// definition (Sound Interface)
@@ -230,10 +286,7 @@ public:
 };
 
 /// definition (Sound Stream Interface)
-class XRSOUND_API CSound_stream_interface
-{
-public:
-};
+class XRSOUND_API CSound_stream_interface{public : };
 
 /// definition (Sound Stream Interface)
 class XRSOUND_API CSound_stats
@@ -310,7 +363,7 @@ public:
     virtual void set_geometry_occ(CDB::MODEL* M) = 0;
     virtual void set_handler(sound_event* E) = 0;
 
-    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N) = 0;
+    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) = 0;
     virtual void statistic(CSound_stats* s0, CSound_stats_ext* s1) = 0;
 
     virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f) = 0;
@@ -443,3 +496,5 @@ IC void ref_sound::set_params(CSound_params* p)
         _feedback()->set_volume(p->volume);
     }
 }
+
+#endif

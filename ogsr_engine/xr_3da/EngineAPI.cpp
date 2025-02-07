@@ -22,23 +22,7 @@ CEngineAPI::CEngineAPI()
     pDestroy = 0;
 }
 
-CEngineAPI::~CEngineAPI()
-{
-}
-
-#ifndef EXCLUDE_R1
-extern u32 renderer_value; // con cmd
-#endif
-
-ENGINE_API int g_current_renderer = 0;
-
-//ENGINE_API bool is_enough_address_space_available()
-//{
-//    SYSTEM_INFO system_info;
-//    GetSystemInfo(&system_info);
-//
-//    return (*(size_t*)&system_info.lpMaximumApplicationAddress) > 0x90000000ull;
-//}
+CEngineAPI::~CEngineAPI() {}
 
 #ifdef XRGAME_STATIC
 extern "C" {
@@ -52,8 +36,6 @@ void CEngineAPI::Initialize()
 #ifdef XRRENDER_STATIC
     void AttachRender();
     AttachRender();
-    g_current_renderer = 4;
-    psDeviceFlags.set(rsR4, TRUE);
     Console->Execute("renderer renderer_r4");
 #else
 
@@ -78,8 +60,6 @@ void CEngineAPI::Initialize()
             Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r4_name, Debug.error2string(GetLastError()));
             psDeviceFlags.set(rsR2, TRUE);
         }
-        else
-            g_current_renderer = 4;
     }
 
     if (psDeviceFlags.test(rsR3))
@@ -93,8 +73,6 @@ void CEngineAPI::Initialize()
             Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r3_name, Debug.error2string(GetLastError()));
             psDeviceFlags.set(rsR2, TRUE);
         }
-        else
-            g_current_renderer = 3;
     }
 
 #ifdef EXCLUDE_R1
@@ -122,8 +100,6 @@ void CEngineAPI::Initialize()
             Msg("!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r2_name, Debug.error2string(GetLastError()));
 #endif
         }
-        else
-            g_current_renderer = 2;
     }
 
 #ifndef EXCLUDE_R1
@@ -133,12 +109,10 @@ void CEngineAPI::Initialize()
         psDeviceFlags.set(rsR4, FALSE);
         psDeviceFlags.set(rsR3, FALSE);
         psDeviceFlags.set(rsR2, FALSE);
-        renderer_value = 0; // con cmd
 
         Msg("--Loading DLL: [%s]", r1_name);
         hRender = LoadLibrary(r1_name);
         ASSERT_FMT(hRender, "!![%s] Can't load module: [%s]! Error: %s", __FUNCTION__, r1_name, Debug.error2string(GetLastError()));
-        g_current_renderer = 1;
     }
 #endif
 #endif

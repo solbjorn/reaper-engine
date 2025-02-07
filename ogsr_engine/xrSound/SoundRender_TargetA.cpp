@@ -4,6 +4,7 @@
 #include "soundrender_emitter.h"
 #include "soundrender_source.h"
 
+#include <alext.h>
 #include <efx.h>
 
 xr_vector<u8> g_target_temp_data;
@@ -205,6 +206,9 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
     A_CHK(alSource3f(pSource, AL_POSITION, m_pEmitter->p_source.position.x, m_pEmitter->p_source.position.y, -m_pEmitter->p_source.position.z));
 
     VERIFY2(m_pEmitter, SE->source()->file_name());
+    A_CHK(alSource3f(pSource, AL_VELOCITY, m_pEmitter->p_source.velocity.x, m_pEmitter->p_source.velocity.y, -m_pEmitter->p_source.velocity.z));
+
+    VERIFY2(m_pEmitter, SE->source()->file_name());
     A_CHK(alSourcei(pSource, AL_SOURCE_RELATIVE, m_pEmitter->b2D));
 
     A_CHK(alSourcef(pSource, AL_ROLLOFF_FACTOR, psSoundRolloff));
@@ -234,11 +238,22 @@ void CSoundRender_TargetA::fill_block(ALuint BufferID)
     R_ASSERT(m_pEmitter);
 
     m_pEmitter->fill_block(&g_target_temp_data.front(), buf_block);
-    ALuint format = (m_pEmitter->source()->m_wformat.nChannels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+    const auto& wvf = m_pEmitter->source()->m_wformat;
+    const bool mono = wvf.nChannels == 1;
+
+    ALuint format;
+    if (wvf.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
+        format = mono ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+    else
+    {
+        format = mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    }
+
     A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, m_pEmitter->source()->m_wformat.nSamplesPerSec));
 }
 void CSoundRender_TargetA::source_changed()
 {
-    dettach();
+    detach();
     attach();
 }

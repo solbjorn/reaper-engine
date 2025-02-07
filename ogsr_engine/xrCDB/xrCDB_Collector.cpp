@@ -73,6 +73,14 @@ struct alignas(16) edge
     u32 edge_id;
     u32 vertex_id0;
     u32 vertex_id1;
+
+    constexpr inline edge() = default;
+    constexpr inline edge(const edge& e) { xr_memcpy16(this, &e); }
+    constexpr inline edge& operator=(const edge& e)
+    {
+        xr_memcpy16(this, &e);
+        return *this;
+    }
 };
 static_assert(std::is_same_v<decltype(edge::vertex_id0), std::remove_all_extents_t<decltype(TRI::verts)>>);
 static_assert(std::is_same_v<decltype(edge::vertex_id1), std::remove_all_extents_t<decltype(TRI::verts)>>);

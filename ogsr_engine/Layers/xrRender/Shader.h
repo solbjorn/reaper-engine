@@ -79,9 +79,9 @@ struct ECORE_API SGeometry : public xr_resource_flagged
 
 struct ECORE_API resptrcode_geom : public resptr_base<SGeometry>
 {
-    void create(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+    void create(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void create(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
     u32 stride() const { return _get()->vb_stride; }
 };
 
@@ -121,6 +121,9 @@ public:
         u32 bEmissive : 1;
         u32 bDistort : 1;
         u32 bWmark : 1;
+        u32 bLandscape : 1;
+        u32 isLandscape : 1;
+        u32 isWater : 1;
     };
 
 public:

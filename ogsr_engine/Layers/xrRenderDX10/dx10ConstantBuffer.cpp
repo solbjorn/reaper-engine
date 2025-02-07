@@ -97,7 +97,7 @@ void dx10ConstantBuffer::Flush()
         pData = pSubRes.pData;
         VERIFY(pData);
         VERIFY(m_pBufferData);
-        CopyMemory(pData, m_pBufferData, m_uiBufferSize);
+        xr_memcpy(pData, m_pBufferData, m_uiBufferSize);
         HW.pContext->Unmap(m_pBuffer, 0);
         m_bChanged = false;
     }

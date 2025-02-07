@@ -10,15 +10,37 @@
 
 class CSoundRender_Core : public CSound_manager_interface
 {
-    volatile BOOL bLocked{};
-
 protected:
     virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type);
     virtual void _destroy_data(ref_sound_data& S);
 
-protected:
-    BOOL bListenerMoved{};
+private:
+    volatile BOOL bLocked{};
 
+public:
+    struct SListener
+    {
+        Fvector position;
+        Fvector orientation[3];
+
+        [[nodiscard]]
+        SListener ToRHS() const
+        {
+            return {
+                {position.x, position.y, -position.z},
+                {
+                    {orientation[0].x, orientation[0].y, -orientation[0].z},
+                    {orientation[1].x, orientation[1].y, -orientation[1].z},
+                    {orientation[2].x, orientation[2].y, -orientation[2].z},
+                },
+            };
+        }
+    };
+
+protected:
+    SListener Listener;
+
+    bool bListenerMoved{};
     bool e_currentPaused{false};
 
     CSoundRender_Environment e_current;
@@ -34,6 +56,7 @@ public:
     BOOL bEAX{}; // Boolean variable to indicate presence of EAX Extension
     BOOL bDeferredEAX{};
     bool bEFX{}; // boolean variable to indicate presence of EFX Extension
+    bool supports_float_pcm{};
     BOOL bReady{};
 
     CTimer Timer{};
@@ -99,12 +122,14 @@ public:
     virtual void set_geometry_occ(CDB::MODEL* M);
     virtual void set_handler(sound_event* E);
 
-    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N);
+    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R);
     virtual void update_events();
     virtual void statistic(CSound_stats* dest, CSound_stats_ext* ext);
 
     // listener
-    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt) = 0;
+    const auto& listener_params() const { return Listener; }
+    const Fvector& listener_position() override { return Listener.position; }
+    virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt) = 0;
 
     // eax listener
     void i_eax_listener_set(CSound_environment* E);

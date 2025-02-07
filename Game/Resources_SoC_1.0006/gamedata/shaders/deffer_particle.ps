@@ -1,0 +1,56 @@
+#ifdef USE_MSAA
+#define EXTEND_F_DEFFER
+#endif
+
+#include "common.h"
+#include "sload.h"
+
+struct p_particle
+{
+    float4 color : COLOR0;
+    p_flat base;
+};
+
+f_deffer main(p_particle II)
+{
+    p_flat I = II.base;
+
+    // 1. Base texture + kill pixels with low alpha
+#ifdef USE_MSAA
+    uint mask = 0x0;
+    float2 ddx_base = ddx(I.tcdh);
+    float2 ddy_base = ddy(I.tcdh);
+
+    float2 pixeloffset = MSAAOffsets[0] * (1.0 / 16.0);
+
+    float2 texeloffset = pixeloffset.x * ddx_base + pixeloffset.y * ddy_base;
+
+    float4 D = s_base.Sample(smp_base, I.tcdh + texeloffset);
+    D *= II.color;
+
+    if (D.w - def_aref >= 0)
+        mask |= 0x1;
+
+    [unroll] for (int i = 1; i < MSAA_SAMPLES; ++i)
+    {
+        pixeloffset = MSAAOffsets[i] * (1.0 / 16.0);
+        texeloffset = pixeloffset.x * ddx_base + pixeloffset.y * ddy_base;
+        float4 DI = s_base.Sample(smp_base, I.tcdh + texeloffset);
+        DI *= II.color;
+        if (DI.w - def_aref >= 0)
+            mask |= (uint(0x1) << i);
+    }
+
+    if (mask == 0x0)
+        discard;
+#else // !USE_MSAA
+    float4 D = s_base.Sample(smp_base, I.tcdh);
+    D *= II.color;
+
+    clip(D.w - def_aref);
+#endif // !USE_MSAA
+
+    float4 Ne = float4(normalize((float3)I.N.xyz), I.position.w);
+
+    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.f, xmaterial), float4(D.xyz, def_gloss), EXTFMASK(mask));
+}

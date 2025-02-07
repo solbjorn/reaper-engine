@@ -1,13 +1,10 @@
 #pragma once
 
 #include "../xrRender/ColorMapManager.h"
+#include "../xrRender/light_db.h"
 
 class light;
 
-//#define DU_SPHERE_NUMVERTEX 92
-//#define DU_SPHERE_NUMFACES	180
-//#define DU_CONE_NUMVERTEX	18
-//#define DU_CONE_NUMFACES	32
 //	no less than 2
 #define VOLUMETRIC_SLICES 100
 
@@ -19,12 +16,6 @@ private:
     u32 dwAccumulatorClearMark;
 
 public:
-    enum eStencilOptimizeMode
-    {
-        SO_Light = 0, //	Default
-        SO_Combine, //	Default
-    };
-
     u32 dwLightMarkerID;
     //
     IBlender* b_occq;
@@ -38,17 +29,31 @@ public:
     IBlender* b_combine;
     IBlender* b_postprocess_msaa;
     IBlender* b_bloom_msaa;
-    IBlender* b_combine_msaa[8];
-    IBlender* b_accum_mask_msaa[8];
-    IBlender* b_accum_spot_msaa[8];
-    IBlender* b_accum_direct_msaa[8];
-    IBlender* b_accum_direct_volumetric_msaa[8];
-    IBlender* b_accum_direct_volumetric_sun_msaa[8];
-    IBlender* b_accum_volumetric_msaa[8];
-    IBlender* b_accum_point_msaa[8];
-    IBlender* b_accum_reflected_msaa[8];
+    IBlender* b_combine_msaa[1];
+    IBlender* b_accum_mask_msaa[1];
+    IBlender* b_accum_spot_msaa[1];
+    IBlender* b_accum_direct_msaa[1];
+    IBlender* b_accum_direct_volumetric_msaa[1];
+    IBlender* b_accum_volumetric_msaa[1];
+    IBlender* b_accum_point_msaa[1];
+    IBlender* b_accum_reflected_msaa[1];
     IBlender* b_blur;
     IBlender* b_dof;
+    IBlender* b_gasmask_drops;
+    IBlender* b_gasmask_dudv;
+
+    // [SSS Stuff]
+    IBlender* b_ssfx_rain;
+    IBlender* b_ssfx_water_blur;
+    IBlender* b_ssfx_bloom_downsample;
+    IBlender* b_ssfx_bloom_upsample;
+    IBlender* b_ssfx_bloom;
+    IBlender* b_ssfx_bloom_lens;
+    IBlender* b_ssfx_sss_ext;
+    IBlender* b_ssfx_sss;
+    IBlender* b_ssfx_ssr;
+    IBlender* b_ssfx_volumetric_blur;
+    IBlender* b_ssfx_ao;
 
 #ifdef DEBUG
     struct dbg_line_t
@@ -67,7 +72,6 @@ public:
     ref_rt rt_Generic_1_r; // MRT generic 1
     ref_rt rt_Generic;
     ref_rt rt_Position; // 64bit,	fat	(x,y,z,?)				(eye-space)
-    ref_rt rt_Normal; // 64bit,	fat	(x,y,z,hemi)			(eye-space)
     ref_rt rt_Color; // 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
 
     //
@@ -75,13 +79,25 @@ public:
     ref_rt rt_Accumulator_temp; // only for HW which doesn't feature fp16 blend
     ref_rt rt_Generic_0; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     ref_rt rt_Generic_1; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-    resptr_core<CRT, resptrcode_crt> rt_Generic_0_temp;
+
+    resptr_core<CRT, resptrcode_crt> rt_Generic_temp;
 
     //  Second viewport
     ref_rt rt_secondVP, rt_BeforeUi; // 32bit		(r,g,b,a) --//#SM+#-- +SecondVP+
 
     ref_rt rt_dof;
-    ref_rt rt_blur_2, rt_blur_h_2, rt_blur_4, rt_blur_h_4, rt_blur_8, rt_blur_h_8;
+
+    ref_rt rt_blur_h_2;
+    ref_rt rt_blur_2;
+    ref_rt rt_blur_2_zb;
+
+    ref_rt rt_blur_h_4;
+    ref_rt rt_blur_4;
+    ref_rt rt_blur_4_zb;
+
+    ref_rt rt_blur_h_8;
+    ref_rt rt_blur_8;
+    ref_rt rt_blur_8_zb;
 
     //	Igor: for volumetric lights
     ref_rt rt_Generic_2; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -99,9 +115,57 @@ public:
     ref_texture t_envmap_1; // env-1
 
     // smap
-    ref_rt rt_smap_surf; // 32bit,		color
     ref_rt rt_smap_depth; // 24(32) bit,	depth
-    ref_rt rt_smap_depth_minmax; //	is used for min/max sm
+
+    // Screen Space Shaders Stuff
+    ref_rt rt_ssfx;
+    ref_rt rt_ssfx_temp;
+    ref_rt rt_ssfx_temp2;
+    ref_rt rt_ssfx_temp3;
+
+    ref_rt rt_ssfx_accum;
+    ref_rt rt_ssfx_hud;
+    ref_rt rt_ssfx_ssr;
+    ref_rt rt_ssfx_water;
+    ref_rt rt_ssfx_water_waves;
+    ref_rt rt_ssfx_ao;
+    ref_rt rt_ssfx_il;
+
+    ref_rt rt_ssfx_sss;
+    ref_rt rt_ssfx_sss_ext;
+    ref_rt rt_ssfx_sss_ext2;
+    ref_rt rt_ssfx_sss_tmp;
+    ref_rt rt_ssfx_bloom1;
+    ref_rt rt_ssfx_bloom_emissive;
+    ref_rt rt_ssfx_bloom_lens;
+    ref_rt rt_ssfx_rain;
+    ref_rt rt_ssfx_volumetric;
+    ref_rt rt_ssfx_volumetric_tmp;
+
+    ref_rt rt_ssfx_bloom_tmp2;
+    ref_rt rt_ssfx_bloom_tmp4;
+    ref_rt rt_ssfx_bloom_tmp8;
+    ref_rt rt_ssfx_bloom_tmp16;
+    ref_rt rt_ssfx_bloom_tmp32;
+    ref_rt rt_ssfx_bloom_tmp64;
+
+    ref_rt rt_ssfx_bloom_tmp32_2;
+    ref_rt rt_ssfx_bloom_tmp16_2;
+    ref_rt rt_ssfx_bloom_tmp8_2;
+    ref_rt rt_ssfx_bloom_tmp4_2;
+
+    ref_rt rt_ssfx_prevPos;
+
+    ref_shader s_ssfx_water;
+    ref_shader s_ssfx_water_blur;
+    ref_shader s_ssfx_water_ssr;
+    ref_shader s_ssfx_ao;
+    ref_shader s_ssfx_hud[5];
+
+    Fmatrix Matrix_previous, Matrix_current;
+    Fmatrix Matrix_HUD_previous;
+    Fvector3 Position_previous;
+    bool RVelocity;
 
     // Textures
     ID3DTexture2D* t_noise_surf[TEX_jitter_count];
@@ -116,14 +180,14 @@ private:
     ref_shader s_accum_mask;
     ref_shader s_accum_direct;
     ref_shader s_accum_direct_volumetric;
-    ref_shader s_accum_direct_volumetric_minmax;
     ref_shader s_accum_point;
     ref_shader s_accum_spot;
     ref_shader s_accum_reflected;
     ref_shader s_accum_volume;
-
-    //	generate min/max
-    ref_shader s_create_minmax_sm;
+    ref_shader s_blur;
+    ref_shader s_dof;
+    ref_shader s_gasmask_drops;
+    ref_shader s_gasmask_dudv;
 
     //	DX10 Rain
     ref_shader s_rain;
@@ -137,6 +201,18 @@ private:
     ref_shader s_accum_spot_msaa[8];
     ref_shader s_accum_reflected_msaa[8];
     ref_shader s_accum_volume_msaa[8];
+
+    // Screen Space Shaders Stuff
+    ref_shader s_ssfx_rain;
+    ref_shader s_ssfx_bloom;
+    ref_shader s_ssfx_bloom_lens;
+    ref_shader s_ssfx_bloom_upsample;
+    ref_shader s_ssfx_bloom_downsample;
+    ref_shader s_ssfx_sss_ext;
+    ref_shader s_ssfx_sss;
+
+    ref_shader s_ssfx_ssr;
+    ref_shader s_ssfx_volumetric_blur;
 
     ref_geom g_accum_point;
     ref_geom g_accum_spot;
@@ -158,8 +234,6 @@ private:
     // Bloom
     ref_geom g_bloom_build;
     ref_geom g_bloom_filter;
-    ref_shader s_bloom_dbg_1;
-    ref_shader s_bloom_dbg_2;
     ref_shader s_bloom;
     ref_shader s_bloom_msaa;
     float f_bloom_factor;
@@ -175,18 +249,9 @@ private:
     ref_geom g_combine_cuboid;
     ref_geom g_aa_blur;
     ref_geom g_aa_AA;
-    ref_shader s_combine_dbg_0;
-    ref_shader s_combine_dbg_1;
-    ref_shader s_combine_dbg_Accumulator;
     ref_shader s_combine;
     ref_shader s_combine_msaa[8];
     ref_shader s_combine_volumetric;
-
-    ref_shader s_blur;
-    ref_shader s_dof;
-
-    ref_shader s_rain_drops;
-    ref_shader s_lut;
 
 public:
     ref_shader s_postprocess;
@@ -218,6 +283,7 @@ private:
 
     //	Igor: used for volumetric lights
     bool m_bHasActiveVolumetric;
+    bool m_bHasActiveVolumetric_spot;
 
 public:
     CRenderTarget();
@@ -232,7 +298,6 @@ public:
     void accum_volumetric_geom_create();
     void accum_volumetric_geom_destroy();
 
-    void u_stencil_optimize(eStencilOptimizeMode eSOM = SO_Light);
     void u_compute_texgen_screen(Fmatrix& dest);
     void u_compute_texgen_jitter(Fmatrix& dest);
 
@@ -244,29 +309,37 @@ public:
     void u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
     BOOL u_need_PP();
     bool u_need_CM();
-    BOOL u_DBT_enable(float zMin, float zMax);
-    void u_DBT_disable();
 
+    void phase_blur();
+    void phase_dof();
+    void phase_gasmask_drops();
+    void phase_gasmask_dudv();
     void phase_scene_prepare();
     void phase_scene_begin();
-    void phase_scene_end();
+    inline void phase_scene_end() { disable_aniso(); }
     void phase_occq();
     void phase_downsamp();
     void phase_wallmarks();
     void phase_smap_direct(light* L, u32 sub_phase);
-    void phase_smap_direct_tsh(light* L, u32 sub_phase);
     void phase_smap_spot_clear();
     void phase_smap_spot(light* L);
-    void phase_smap_spot_tsh(light* L);
     void phase_accumulator();
     void phase_vol_accumulator();
     void shadow_direct(light* L, u32 dls_phase);
-    void phase_blur();
-    void phase_dof();
-    void phase_lut();
 
-    //	Generates min/max sm
-    void create_minmax_SM();
+    // SSS Stuff
+    void phase_ssfx_rain(); // Bloom PP
+    void phase_ssfx_bloom(); // Bloom PP
+    void phase_ssfx_sss(); // SSS
+    void phase_ssfx_sss_ext(light_Package& LP); // SSS Spot lights
+
+    void phase_ssfx_ssr(); // SSR Phase
+    void phase_ssfx_volumetric_blur(); // Volumetric Blur
+    void phase_ssfx_water_blur(); // Water Blur
+    void phase_ssfx_water_waves(); // Water Waves
+    void phase_ssfx_ao(); // AO
+    void phase_ssfx_il(); // IL
+    void set_viewport_size(ID3DDeviceContext* dev, float w, float h);
 
     void phase_rain();
     void draw_rain(light& RainSetup);
@@ -274,18 +347,14 @@ public:
     void mark_msaa_edges();
 
     bool need_to_render_sunshafts();
-    bool use_minmax_sm_this_frame();
 
     BOOL enable_scissor(light* L); // true if intersects near plane
-    void enable_dbt_bounds(light* L);
 
     void disable_aniso();
 
     void draw_volume(light* L);
     void accum_direct(u32 sub_phase);
     void accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
-    void accum_direct_f(u32 sub_phase);
-    void accum_direct_lum();
     void accum_direct_blend();
     void accum_direct_volumetric(u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
     void accum_point(light* L);
@@ -298,7 +367,6 @@ public:
     void phase_combine();
     void phase_combine_volumetric();
     void phase_pp();
-    void PhaseRainDrops();
 
     virtual void set_blur(float f) { param_blur = f; }
     virtual void set_gray(float f) { param_gray = f; }
@@ -346,7 +414,6 @@ private:
     ref_rt rt_smaa_edgetex;
     ref_rt rt_smaa_blendtex;
 
-    void PhaseAA();
     void ProcessSMAA();
 
     void PhaseSSSS();

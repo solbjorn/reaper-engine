@@ -1,4 +1,3 @@
-
 #ifndef NV_TRISTRIP_OBJECTS_H
 #define NV_TRISTRIP_OBJECTS_H
 

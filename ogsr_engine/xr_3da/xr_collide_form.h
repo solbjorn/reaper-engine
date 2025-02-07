@@ -132,8 +132,16 @@ public:
         u16 elem_id;
 
     public:
-        SElement() : elem_id(u16(-1)), type(0) {}
-        SElement(u16 id, u16 t) : elem_id(id), type(t) {}
+        constexpr inline SElement() : elem_id(u16(-1)), type(0) {}
+        constexpr inline SElement(u16 id, u16 t) : elem_id(id), type(t) {}
+        constexpr inline SElement(const SElement& s) { xr_memcpy128(this, &s, sizeof(s)); }
+
+        constexpr inline SElement& operator=(const SElement& s)
+        {
+            xr_memcpy128(this, &s, sizeof(s));
+            return *this;
+        }
+
         BOOL valid() const { return (elem_id != (u16(-1))) && (type != 0); }
         void center(Fvector& center) const;
     };
@@ -178,11 +186,29 @@ public:
             Fmatrix box;
             Fmatrix ibox;
         };
+
+        constexpr inline shape_data() = default;
+        constexpr inline shape_data(const shape_data& d) { xr_memcpy128(this, &d, sizeof(d)); }
+
+        constexpr inline shape_data& operator=(const shape_data& d)
+        {
+            xr_memcpy128(this, &d, sizeof(d));
+            return *this;
+        }
     };
     struct shape_def
     {
         int type;
         shape_data data;
+
+        constexpr inline shape_def() = default;
+        constexpr inline shape_def(const shape_def& d) { xr_memcpy128(this, &d, sizeof(d)); }
+
+        constexpr inline shape_def& operator=(const shape_def& d)
+        {
+            xr_memcpy128(this, &d, sizeof(d));
+            return *this;
+        }
     };
     xr_vector<shape_def> shapes;
 

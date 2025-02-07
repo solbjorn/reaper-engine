@@ -5,6 +5,20 @@
 
 #include <efx.h>
 
+namespace soundSmoothingParams
+{
+float power = 1.8;
+int steps = 15;
+float alpha = getAlpha();
+IC float getAlpha() { return 2.0f / (steps + 1); }
+IC float getTimeDeltaSmoothing()
+{
+    return alpha;
+    // return min(1.0f, alpha * (Device.fTimeDelta / steps));
+}
+IC float getSmoothedValue(float target, float current, float smoothing = getTimeDeltaSmoothing()) { return current + smoothing * (target - current); }
+}; // namespace soundSmoothingParams
+
 CSoundRender_CoreA::CSoundRender_CoreA()
 {
     pDevice = nullptr;
@@ -142,7 +156,7 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
     }
 
     // Get the device specifier.
-    //alcGetString(pDevice, ALC_DEVICE_SPECIFIER);
+    // alcGetString(pDevice, ALC_DEVICE_SPECIFIER);
 
     // Create context
     pContext = alcCreateContext(pDevice, nullptr);
@@ -240,7 +254,7 @@ void CSoundRender_CoreA::init_device_properties(const bool& is_al_soft)
     }
 }
 
-#define AL_STOP_SOURCES_ON_DISCONNECT_SOFT 0x19AB  // not in public yet
+#define AL_STOP_SOURCES_ON_DISCONNECT_SOFT 0x19AB // not in public yet
 
 void CSoundRender_CoreA::_initialize(int stage)
 {
@@ -274,9 +288,22 @@ void CSoundRender_CoreA::_initialize(int stage)
         Msg("!![%s] OpenAL AL_STOP_SOURCES_ON_DISCONNECT_SOFT error: %s", __FUNCTION__, alGetString(err));
     }
 
+    supports_float_pcm = alIsExtensionPresent("AL_EXT_FLOAT32") // first is OpenAL Soft,
+        || alIsExtensionPresent("AL_EXT_float32"); // second is macOS
+    supports_float_pcm &= psSoundFlags.test(ss_UseFloat32);
+
     const bool is_al_soft = deviceDesc.is_al_soft;
-    
+
     init_device_properties(is_al_soft);
+
+    // Init listener struct
+    Listener.position.set(0.0f, 0.0f, 0.0f);
+    Listener.orientation[0].set(0.0f, 0.0f, 0.0f);
+    Listener.orientation[1].set(0.0f, 0.0f, 0.0f);
+    Listener.orientation[2].set(0.0f, 0.0f, 0.0f);
+    ListenerSmooth.prevVelocity.set(0.0f, 0.0f, 0.0f);
+    ListenerSmooth.curVelocity.set(0.0f, 0.0f, 0.0f);
+    ListenerSmooth.accVelocity.set(0.0f, 0.0f, 0.0f);
 
     inherited::_initialize(stage);
 
@@ -298,7 +325,7 @@ void CSoundRender_CoreA::_initialize(int stage)
                 T->bAlSoft = is_al_soft;
                 T->bEFX = bEFX;
 
-                s_targets.push_back(T);
+                s_targets.emplace_back(T);
             }
             else
             {
@@ -311,7 +338,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     }
 
     bReady = TRUE;
-    //notification_client.Start();
+    // notification_client.Start();
 }
 
 void CSoundRender_CoreA::set_master_volume(float f)
@@ -339,7 +366,7 @@ void CSoundRender_CoreA::release_context()
 
 void CSoundRender_CoreA::_clear()
 {
-    //notification_client.Stop();
+    // notification_client.Stop();
     bReady = FALSE;
 
     inherited::_clear();
@@ -361,19 +388,22 @@ void CSoundRender_CoreA::_clear()
 void CSoundRender_CoreA::i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz) { eaxSet(guid, prop, 0, val, sz); }
 void CSoundRender_CoreA::i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz) { eaxGet(guid, prop, 0, val, sz); }
 
-void CSoundRender_CoreA::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt)
+void CSoundRender_CoreA::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt)
 {
-    inherited::update_listener(P, D, N, dt);
+    ListenerSmooth.curVelocity.sub(P, listener_position());
+    inherited::update_listener(P, D, N, R, dt);
 
-    if (!Listener.position.similar(P))
-    {
-        Listener.position.set(P);
-        bListenerMoved = TRUE;
-    }
-    Listener.orientation[0].set(D.x, D.y, -D.z);
-    Listener.orientation[1].set(N.x, N.y, -N.z);
+    float a = soundSmoothingParams::getTimeDeltaSmoothing();
+    int p = soundSmoothingParams::power;
+    ListenerSmooth.accVelocity.x = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.x * p / dt, ListenerSmooth.accVelocity.x, a);
+    ListenerSmooth.accVelocity.y = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.y * p / dt, ListenerSmooth.accVelocity.y, a);
+    ListenerSmooth.accVelocity.z = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.z * p / dt, ListenerSmooth.accVelocity.z, a);
 
-    A_CHK(alListener3f(AL_POSITION, Listener.position.x, Listener.position.y, -Listener.position.z));
-    A_CHK(alListener3f(AL_VELOCITY, 0.f, 0.f, 0.f));
-    A_CHK(alListenerfv(AL_ORIENTATION, &Listener.orientation[0].x));
+    ListenerSmooth.prevVelocity.set(ListenerSmooth.accVelocity);
+
+    const auto listener = Listener.ToRHS();
+
+    A_CHK(alListener3f(AL_POSITION, listener.position.x, listener.position.y, listener.position.z));
+    A_CHK(alListener3f(AL_VELOCITY, ListenerSmooth.prevVelocity.x, ListenerSmooth.prevVelocity.y, -ListenerSmooth.prevVelocity.z));
+    A_CHK(alListenerfv(AL_ORIENTATION, &listener.orientation[0].x));
 }

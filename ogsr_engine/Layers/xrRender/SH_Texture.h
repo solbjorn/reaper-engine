@@ -25,9 +25,9 @@ public:
 public:
     void apply_load(u32 stage);
     void apply_theora(u32 stage);
-    void apply_avi(u32 stage);
+    void apply_avi(u32 stage) const;
     void apply_seq(u32 stage);
-    void apply_normal(u32 stage);
+    void apply_normal(u32 stage) const;
 
     const char* GetName() const override { return cName.c_str(); }
 
@@ -43,20 +43,14 @@ public:
     void surface_set(ID3DBaseTexture* surf);
     ID3DBaseTexture* surface_get() const;
 
-    inline u32 get_Width()
-    {
-        return desc_Width;
-    }
-    inline u32 get_Height()
-    {
-        return desc_Height;
-    }
+    inline u32 get_Width() const { return desc_Width; }
+    inline u32 get_Height() const { return desc_Height; }
 
     void video_Sync(u32 _time) { m_play_time = _time; }
     void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF);
-    void video_Pause(BOOL state);
-    void video_Stop();
-    BOOL video_IsPlaying();
+    void video_Pause(BOOL state) const;
+    void video_Stop() const;
+    BOOL video_IsPlaying() const;
 
     CTexture();
     virtual ~CTexture();
@@ -64,8 +58,7 @@ public:
     ID3DShaderResourceView* get_SRView() { return m_pSRView; }
 
 private:
-
-    void Apply(u32 dwStage);
+    void Apply(u32 dwStage) const;
 
     //	Class data
 public: //	Public class members (must be encapsulated furthur)

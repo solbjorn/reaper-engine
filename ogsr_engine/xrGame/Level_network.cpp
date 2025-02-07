@@ -52,9 +52,8 @@ void CLevel::remove_objects()
         ProcessGameEvents();
 
         Objects.Update(true);
-        //Sleep(100);
+        // Sleep(100);
     }
-
 
     BulletManager().Clear();
     ph_commander().clear();
@@ -96,9 +95,7 @@ void CLevel::remove_objects()
 
     g_ScriptVars.clear();
 
-    shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
-
-    //u32 m_base, c_base, m_lmaps, c_lmaps;
+    // u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ ObjectResources unload completed!");
@@ -298,7 +295,7 @@ void CLevel::OnConnectResult(NET_Packet* P)
     // multiple results can be sent during connection they should be "AND-ed"
     m_bConnectResultReceived = true;
     u8 result = P->r_u8();
-    /*u8  res1					=*/P->r_u8(); //Оставлено для совместимости сейвов
+    /*u8  res1					=*/P->r_u8(); // Оставлено для совместимости сейвов
     string128 ResultStr;
     P->r_stringZ(ResultStr);
     if (!result)

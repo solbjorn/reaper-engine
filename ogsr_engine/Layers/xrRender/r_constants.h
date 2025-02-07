@@ -100,6 +100,7 @@ struct ECORE_API R_constant : public xr_resource
         {
         case RC_dest_vertex: return vs;
         case RC_dest_pixel: return ps;
+        case RC_dest_sampler: return samp;
         case RC_dest_geometry: return gs;
         case RC_dest_hull: return hs;
         case RC_dest_domain: return ds;

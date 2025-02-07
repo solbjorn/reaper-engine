@@ -1,12 +1,13 @@
-#pragma once
 #ifndef CPHOBJECT
 #define CPHOBJECT
+
 #include "../xrcdb/ispatial.h"
 #include "PHItemList.h"
 #include "PHIsland.h"
+
 typedef u32 CLClassBits;
 typedef u32 CLBits;
-DEFINE_VECTOR(ISpatial*, qResultVec, qResultIt)
+DEFINE_VECTOR(ISpatial*, qResultVec, qResultIt);
 class CPHObject;
 class CPHUpdateObject;
 class CPHMoveStorage;
@@ -18,7 +19,7 @@ class CPHObject : public ISpatial
 #ifdef DEBUG
     friend void DBG_DrawPHObject(CPHObject* obj);
 #endif
-    DECLARE_PHLIST_ITEM(CPHObject)
+    DECLARE_PHLIST_ITEM(CPHObject);
 
     Flags8 m_flags;
 
@@ -82,7 +83,7 @@ public:
     virtual void PhTune(dReal step) = 0;
     virtual void spatial_move();
     virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) = 0;
-    virtual void CutVelocity(float l_limit, float a_limit){};
+    virtual void CutVelocity(float l_limit, float a_limit) {};
 
     void Freeze();
     void UnFreeze();
@@ -120,7 +121,7 @@ public:
 
 class CPHUpdateObject
 {
-    DECLARE_PHLIST_ITEM(CPHUpdateObject)
+    DECLARE_PHLIST_ITEM(CPHUpdateObject);
     bool b_activated;
 
 public:
@@ -133,6 +134,7 @@ public:
     virtual void PhTune(dReal step) = 0;
 };
 
-DEFINE_PHITEM_LIST(CPHObject, PH_OBJECT_STORAGE, PH_OBJECT_I)
-DEFINE_PHITEM_LIST(CPHUpdateObject, PH_UPDATE_OBJECT_STORAGE, PH_UPDATE_OBJECT_I)
+DEFINE_PHITEM_LIST(CPHObject, PH_OBJECT_STORAGE, PH_OBJECT_I);
+DEFINE_PHITEM_LIST(CPHUpdateObject, PH_UPDATE_OBJECT_STORAGE, PH_UPDATE_OBJECT_I);
+
 #endif // CPHOBJECT

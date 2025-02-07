@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
-struct XRCORE_API smem_value
+struct alignas(16) smem_value
 {
     u32 dwReference;
     u32 dwSize; // size in bytes !!!

@@ -98,8 +98,7 @@ void CHOM::Load()
     // Create RASTER-triangles
     m_pTris = xr_alloc<occTri>(CL.getTS());
 
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, CL.getTS()), [&](const auto& range)
-    {
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, CL.getTS()), [&](const auto& range) {
         for (size_t it = range.begin(); it != range.end(); ++it)
         {
             const CDB::TRI& clT = CL.getT()[it];

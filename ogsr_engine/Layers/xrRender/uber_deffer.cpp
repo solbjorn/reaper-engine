@@ -2,7 +2,7 @@
 #include "uber_deffer.h"
 #include "dxRenderDeviceRender.h"
 
-void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOOL _aref, LPCSTR _detail_replace, bool DO_NOT_FINISH)
+void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOOL _aref, LPCSTR _detail_replace, bool DO_NOT_FINISH, bool DO_NOT_WRITE)
 {
     // Uber-parse
     string256 fname, fnameA, fnameB;
@@ -155,8 +155,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
             C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
         }
     }
+    else if (DO_NOT_WRITE)
+        C.r_Pass(vs, ps, FALSE, TRUE, FALSE);
     else
-    C.r_Pass(vs, ps, FALSE);
+        C.r_Pass(vs, ps, FALSE);
     C.r_dx10Texture("s_base", C.L_textures[0]);
     C.r_dx10Texture("s_bumpX", fnameB); // should be before base bump
     C.r_dx10Texture("s_bump", fnameA);
@@ -168,6 +170,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         C.r_dx10Texture("s_detailBumpX", texDetailBumpX);
     }
     C.r_dx10Sampler("smp_base");
+    C.r_dx10Sampler("smp_linear");
     if (lmap)
     {
         // C.r_Sampler("s_hemi",	C.L_textures[2],	false,	D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,		D3DTEXF_NONE,	D3DTEXF_LINEAR);

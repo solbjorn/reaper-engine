@@ -2,7 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#pragma once
+#ifndef ResourceManagerH
+#define ResourceManagerH
 
 #include "shader.h"
 #include "tss_def.h"
@@ -46,6 +47,9 @@ private:
     map_VS m_vs;
     map_PS m_ps;
     map_GS m_gs;
+    map_DS m_ds;
+    map_HS m_hs;
+    map_CS m_cs;
 
     xr_vector<SState*> v_states;
     xr_vector<SDeclaration*> v_declarations;
@@ -139,7 +143,7 @@ public:
     SState* _CreateState(SimulatorStates& Code);
     void _DeleteState(const SState* SB);
 
-    SDeclaration* _CreateDecl(D3DVERTEXELEMENT9* dcl);
+    SDeclaration* _CreateDecl(const D3DVERTEXELEMENT9* dcl);
     void _DeleteDecl(const SDeclaration* dcl);
 
     STextureList* _CreateTextureList(STextureList& L);
@@ -165,9 +169,9 @@ public:
     Shader* Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
     void Delete(const Shader* S);
 
-    void RegisterConstantSetup(LPCSTR name, R_constant_setup* s) { v_constant_setup.push_back(mk_pair(shared_str(name), s)); }
+    void RegisterConstantSetup(LPCSTR name, R_constant_setup* s) { v_constant_setup.emplace_back(shared_str(name), s); }
 
-    SGeometry* CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+    SGeometry* CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     SGeometry* CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void DeleteGeom(const SGeometry* VS);
 
@@ -179,10 +183,6 @@ public:
     xr_vector<ITexture*> FindTexture(const char* Name) const override;
 
 private:
-    map_DS m_ds;
-    map_HS m_hs;
-    map_CS m_cs;
-
     template <typename T>
     T& GetShaderMap();
 
@@ -191,4 +191,23 @@ private:
 
     template <typename T>
     void DestroyShader(const T* sh);
+
+    template <typename T>
+    bool reclaim(xr_vector<T*>& vec, const T* ptr)
+    {
+        auto it = vec.begin();
+        const auto end = vec.cend();
+
+        for (; it != end; ++it)
+        {
+            if (*it == ptr)
+            {
+                vec.erase(it);
+                return true;
+            }
+        }
+        return false;
+    }
 };
+
+#endif // ResourceManagerH

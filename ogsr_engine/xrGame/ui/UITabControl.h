@@ -7,7 +7,7 @@
 class CUITabButton;
 class CUIButton;
 
-DEF_VECTOR(TABS_VECTOR, CUITabButton*)
+DEF_VECTOR(TABS_VECTOR, CUITabButton*);
 
 class CUITabControl : public CUIWindow, public CUIOptionsItem
 {

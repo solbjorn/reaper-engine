@@ -9,19 +9,7 @@
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
 
-template <class T>
-BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
-{
-    auto it = vec.begin();
-    auto end = vec.end();
-    for (; it != end; it++)
-        if (*it == ptr)
-        {
-            vec.erase(it);
-            return TRUE;
-        }
-    return FALSE;
-}
+#include <oneapi/tbb/parallel_for_each.h>
 
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
@@ -142,14 +130,16 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 
     // Access to template
     C.BT = B;
-    C.bEditor = FALSE;
     C.bDetail = FALSE;
-    C.HudElement = ::Render->hud_loading;
+    C.HudElement = false;
 
     // Parse names
     _ParseList(C.L_textures, s_textures);
     _ParseList(C.L_constants, s_constants);
     _ParseList(C.L_matrices, s_matrices);
+
+    if (::Render->hud_loading && RImplementation.o.ssfx_hud_raindrops)
+        C.HudElement = true;
 
     // Compile element	(LOD0 - HQ)
     {
@@ -205,6 +195,13 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         S.E[5] = _CreateElement(std::move(E));
     }
 
+    // Hacky way to remove from the HUD mask transparent stuff. ( Let's try something better later... )
+    if (::Render->hud_loading)
+    {
+        if (strstr(s_shader, "lens"))
+            S.E[0]->passes[0]->ps->hud_disabled = TRUE;
+    }
+
     // Search equal in shaders array
     for (u32 it = 0; it < v_shaders.size(); it++)
         if (S.equal(v_shaders[it]))
@@ -246,12 +243,7 @@ void CResourceManager::DeferredUpload()
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
-    {
-        for (const auto& it : m_textures)
-            TTAPI->submit_detach([](CTexture* tex) { tex->Load(); }, it.second);
-
-        TTAPI->wait_for_tasks();
-    }
+        oneapi::tbb::parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Load(); });
     else
         for (auto& pair : m_textures)
             pair.second->Load();
@@ -299,7 +291,7 @@ void CResourceManager::_DumpMemoryUsage()
         {
             u32 m = I->second->flags.memUsage;
             shared_str n = I->second->cName;
-            mtex.insert(mk_pair(m, mk_pair(I->second->dwReference, n)));
+            mtex.emplace(m, std::make_pair(I->second->dwReference, n));
         }
     }
 

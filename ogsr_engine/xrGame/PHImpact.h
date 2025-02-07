@@ -13,6 +13,7 @@ struct SPHImpact
         geom = root_geom;
     }
 };
-DEFINE_VECTOR(SPHImpact, PH_IMPACT_STORAGE, PH_IMPACT_I)
+
+DEFINE_VECTOR(SPHImpact, PH_IMPACT_STORAGE, PH_IMPACT_I);
 
 #endif

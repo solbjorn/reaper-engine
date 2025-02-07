@@ -1,7 +1,6 @@
 #ifndef ETextureParamsH
 #define ETextureParamsH
 
-#pragma pack(push, 1)
 struct ECORE_API STextureParams
 {
     enum ETType
@@ -105,7 +104,7 @@ struct ECORE_API STextureParams
     float detail_scale;
     ETType type;
     // material
-    ETMaterial material;
+    u32 material;
     float material_weight;
     // bump
     float bump_virtual_height;
@@ -162,12 +161,6 @@ struct ECORE_API STextureParams
     void Load(IReader& F, const char* dbg_name);
     void Save(IWriter& F);
 };
-#pragma pack(pop)
-
-struct xr_token;
-extern xr_token tparam_token[];
-extern xr_token tfmt_token[];
-extern xr_token ttype_token[];
 
 //----------------------------------------------------
 #define THM_CHUNK_VERSION 0x0810

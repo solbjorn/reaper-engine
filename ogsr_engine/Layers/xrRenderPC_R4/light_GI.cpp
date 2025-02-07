@@ -6,7 +6,11 @@ IC bool pred_LI(const light_indirect& A, const light_indirect& B) { return A.E >
 void light::gi_generate()
 {
     indirect.clear();
+#ifdef DEBUG
     indirect_photons = ps_r2_ls_flags.test(R2FLAG_GI) ? ps_r2_GI_photons : 0;
+#else
+    constexpr u32 indirect_photons = 0;
+#endif
 
     xrXRC& xrc = RImplementation.Sectors_xrc;
     CDB::MODEL* model = g_pGameLevel->ObjectSpace.GetStaticModel();

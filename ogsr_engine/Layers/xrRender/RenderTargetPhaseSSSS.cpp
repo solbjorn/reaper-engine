@@ -3,17 +3,15 @@
 // Screen Space Sun Shafts
 void CRenderTarget::PhaseSSSS()
 {
-    if (!need_to_render_sunshafts())
-        return;
-
     // Constants
     float intensity = g_pGamePersistent->Environment().CurrentEnv->m_fSunShaftsIntensity *
-        3.3f; //Домножаем, т.к. интенсивность плоских саншафтов примерно соответствует объемным как 1 к 0.3. А конфиги погоды рассчитаны на объемные лучи же.
+        3.3f; // Домножаем, т.к. интенсивность плоских саншафтов примерно соответствует объемным как 1 к 0.3. А конфиги погоды рассчитаны на объемные лучи же.
 
     Fvector4 params{0.0f, 0.0f, 0.0f, 0.0f};
     string_unordered_map<const char*, Fvector4*> consts{{"ssss_params", &params}};
 
-    if (ps_r_sunshafts_mode == SS_SS_MANOWAR)
+    u32 mode = ps_r_sunshafts_mode & SS_SS_MASK;
+    if (mode == SS_SS_MANOWAR)
     {
         // Mask
         RenderScreenQuad(Device.dwWidth, Device.dwHeight, rt_SunShaftsMask, s_ssss_mrmnwar->E[0]);
@@ -39,7 +37,7 @@ void CRenderTarget::PhaseSSSS()
         RenderScreenQuad(Device.dwWidth, Device.dwHeight, dest_rt, s_ssss_mrmnwar->E[4], &consts);
         HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
     }
-    else if (ps_r_sunshafts_mode == SS_SS_OGSE)
+    else if (mode == SS_SS_OGSE)
     {
         // ***MASK GENERATION***
         // In this pass generates geometry mask

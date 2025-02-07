@@ -11,6 +11,7 @@
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
+#include "../xr_3da/Rain.h"
 
 BOOL CLevel::Load_GameSpecific_Before()
 {
@@ -102,6 +103,14 @@ BOOL CLevel::Load_GameSpecific_After()
         }
         Sounds_Random_dwNextTime = Device.TimerAsync() + 50000;
         Sounds_Random_Enabled = FALSE;
+    }
+
+    if (g_pGamePersistent->pEnvironment)
+    {
+        if (CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain)
+        {
+            rain->InvalidateState();
+        }
     }
 
     if (pSettings->section_exist("engine_callbacks") && pSettings->line_exist("engine_callbacks", "on_change_weather"))

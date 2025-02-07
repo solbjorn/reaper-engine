@@ -77,6 +77,9 @@ inline CResourceManager::map_CS& CResourceManager::GetShaderMap()
     return m_cs;
 }
 
+#define D3DCOMPILE_FLAGS_DEFAULT (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR)
+#define D3DCOMPILE_FLAGS_DEBUG (D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG)
+
 template <typename T>
 inline T* CResourceManager::CreateShader(const char* name)
 {
@@ -90,7 +93,7 @@ inline T* CResourceManager::CreateShader(const char* name)
         T* sh = xr_new<T>();
 
         sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-        sh_map.insert(mk_pair(sh->set_name(name), sh));
+        sh_map.emplace(sh->set_name(name), sh);
         if (0 == stricmp(name, "null"))
         {
             sh->sh = NULL;
@@ -118,12 +121,9 @@ inline T* CResourceManager::CreateShader(const char* name)
         LPCSTR c_target = ShaderTypeTraits<T>::GetCompilationTarget();
         LPCSTR c_entry = "main";
 
-        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        DWORD Flags{D3DCOMPILE_FLAGS_DEFAULT};
         if (strstr(Core.Params, "-shadersdbg"))
-        {
-            Flags |= D3DCOMPILE_DEBUG;
-            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-        }
+            Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         // Compile
         HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
@@ -139,10 +139,10 @@ inline T* CResourceManager::CreateShader(const char* name)
 template <typename T>
 inline void CResourceManager::DestroyShader(const T* sh)
 {
-    auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-
     if (0 == (sh->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
+
+    auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
 
     LPSTR N = LPSTR(*sh->cName);
     auto I = sh_map.find(N);
@@ -152,5 +152,6 @@ inline void CResourceManager::DestroyShader(const T* sh)
         sh_map.erase(I);
         return;
     }
+
     Msg("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
 }

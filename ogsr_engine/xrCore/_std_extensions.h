@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __XRCORE_STD_EXTENSIONS_H
+#define __XRCORE_STD_EXTENSIONS_H
+
+#include <immintrin.h>
 
 #ifdef abs
 #undef abs
@@ -137,6 +140,94 @@ IC s64 _max(s64 x, s64 y) { return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8 -
 
 XRCORE_API char* timestamp(string64& dest);
 
+constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
+{
+    u8* cdst = (u8*)(dst);
+    const u8* csrc = (const u8*)(src);
+
+    for (size_t i = 0; i < size; i++)
+        cdst[i] = csrc[i];
+}
+
+constexpr ICF void xr_memcpy16(void* dst, const void* src)
+{
+    if (std::is_constant_evaluated())
+        xr_memcpy_const(dst, src, 16);
+    else
+        _mm_store_si128(reinterpret_cast<__m128i*>(dst), _mm_load_si128(reinterpret_cast<const __m128i*>(src)));
+}
+
+constexpr ICF void xr_memcpy128(void* dst, const void* src, size_t size)
+{
+    if (std::is_constant_evaluated())
+        return xr_memcpy_const(dst, src, size);
+
+    __m128i* cdst = reinterpret_cast<__m128i*>(dst);
+    const __m128i* csrc = reinterpret_cast<const __m128i*>(src);
+
+    for (size_t pos = 0; pos < size; pos += 16)
+    {
+        _mm_store_si128(cdst, _mm_load_si128(csrc));
+        cdst++;
+        csrc++;
+    }
+}
+
+constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
+{
+    if (std::is_constant_evaluated())
+        return xr_memcpy_const(dst, src, size);
+
+    u8* cdst = reinterpret_cast<u8*>(dst);
+    const u8* csrc = reinterpret_cast<const u8*>(src);
+
+    if (size >= 32 && !(((uintptr_t)dst | (uintptr_t)src) & 31))
+    {
+        do
+        {
+            _mm256_store_si256((__m256i*)cdst, _mm256_load_si256((const __m256i*)csrc));
+            cdst += 32;
+            csrc += 32;
+            size -= 32;
+        } while (size >= 32);
+    }
+
+    if (size >= 16 && !(((uintptr_t)dst | (uintptr_t)src) & 15))
+    {
+        do
+        {
+            _mm_store_si128((__m128i*)cdst, _mm_load_si128((const __m128i*)csrc));
+            cdst += 16;
+            csrc += 16;
+            size -= 16;
+        } while (size >= 16);
+    }
+
+    while (size >= 8)
+    {
+        *reinterpret_cast<u64*>(cdst) = *reinterpret_cast<const u64*>(csrc);
+        cdst += 8;
+        csrc += 8;
+        size -= 8;
+    }
+
+    if (size >= 4)
+    {
+        *reinterpret_cast<u32*>(cdst) = *reinterpret_cast<const u32*>(csrc);
+        cdst += 4;
+        csrc += 4;
+        size -= 4;
+    }
+
+    while (size)
+    {
+        *cdst = *csrc;
+        cdst++;
+        csrc++;
+        size--;
+    }
+}
+
 // return pointer to ".ext"
 IC char* strext(const char* S) { return (char*)strrchr(S, '.'); }
 
@@ -217,3 +308,5 @@ inline bool StringHasUTF8(const char* str)
     }
     return true;
 }
+
+#endif /* __XRCORE_STD_EXTENSIONS_H */

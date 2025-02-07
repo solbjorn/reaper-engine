@@ -3,8 +3,8 @@
 void CRenderTarget::mark_msaa_edges()
 {
     u32 Offset;
-    float d_Z = EPS_S, d_W = 1.f;
-    u32 C = color_rgba(255, 255, 255, 255);
+    constexpr float d_Z = EPS_S, d_W = 1.f;
+    constexpr u32 C = color_rgba(255, 255, 255, 255);
 
     // Fill vertex buffer
     FVF::TL2uv* pv = (FVF::TL2uv*)RCache.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
@@ -23,13 +23,7 @@ void CRenderTarget::mark_msaa_edges()
     StateManager.SetStencil(TRUE, D3DCMP_ALWAYS, 0x80, 0xFF, 0x80, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     StateManager.SetColorWriteEnable(0);
     StateManager.SetDepthFunc(D3DCMP_ALWAYS);
-    // Here was resource leak
-    // due to some bug in Microsoft beta run-time we changed
-    // StateManager.SetDepthEnable( FALSE );
-    // to the next line
-    StateManager.SetDepthEnable(TRUE);
-    // Problem was in that state created with DepthEnable=0 and DepthFunc=D3D11_COMPARISON_NEVER
-    // returned in the GetDesc method other values.
+    StateManager.SetDepthEnable(FALSE);
     StateManager.SetCullMode(D3DCULL_NONE);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     StateManager.SetColorWriteEnable(D3D_COLOR_WRITE_ENABLE_ALL);

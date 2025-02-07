@@ -20,7 +20,7 @@ CSoundRender_Emitter* CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float 
     return E;
 }
 
-void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N) // called on seqFrameMT
+void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R)
 {
     u32 it;
 
@@ -150,7 +150,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     }
 
     // update listener
-    update_listener(P, D, N, dt_sec);
+    update_listener(P, D, N, R, dt_sec);
 
     // Start rendering of pending targets
     if (!s_targets_defer.empty())

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __XRRENDER_LIGHT_PACKAGE_H
+#define __XRRENDER_LIGHT_PACKAGE_H
 
 #include "light.h"
 
@@ -15,3 +16,5 @@ public:
     void vis_prepare();
     void vis_update();
 };
+
+#endif /* __XRRENDER_LIGHT_PACKAGE_H */

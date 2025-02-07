@@ -97,7 +97,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     xr_strcpy(fname, fRName);
     fix_texture_name(fname);
 
-    if (strstr(fname, "_bump") && !FS.exist(fn, "$game_textures$", fname, ".dds"))
+    if (strstr(fname, "_bump") && !FS.exist(fn, "$level$", fname, ".dds") && !FS.exist(fn, "$game_textures$", fname, ".dds"))
     {
         Msg("! Fallback to default bump map: [%s]", fname);
 

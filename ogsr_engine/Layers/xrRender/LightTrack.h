@@ -6,9 +6,9 @@
 #define AFX_LIGHTTRACK_H__89914D61_AC0B_4C7C_BA8C_D7D810738CE7__INCLUDED_
 #pragma once
 
-const float lt_inc = 4.f;
-const float lt_dec = 2.f;
-const int lt_hemisamples = 26;
+constexpr float lt_inc = 4.f;
+constexpr float lt_dec = 2.f;
+constexpr int lt_hemisamples = 26;
 
 class CROS_impl : public IRender_ObjectSpecific
 {
@@ -74,7 +74,6 @@ private:
 
     Fvector approximate;
 
-
     Fvector last_position;
     s32 ticks_to_update;
     s32 sky_rays_uptodate;
@@ -121,7 +120,7 @@ public:
     }
 
     CROS_impl();
-    virtual ~CROS_impl(){};
+    virtual ~CROS_impl() {};
 
 private:
     // static inline CubeFaces get_cube_face(Fvector3& dir);
@@ -140,7 +139,6 @@ private:
 
     //	Updates only if makes a desizion that update is necessary
     void smart_update(IRenderable* O);
-
 };
 
 #endif // !defined(AFX_LIGHTTRACK_H__89914D61_AC0B_4C7C_BA8C_D7D810738CE7__INCLUDED_)

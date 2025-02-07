@@ -10,27 +10,28 @@
 
 //////////////////////////////////////////////////////////////////////////
 // half box def
-static Fvector3 hbox_verts[24] = {
-    {-1.f, -1.f, -1.f}, {-1.f, -1.01f, -1.f}, // down
-    {1.f, -1.f, -1.f},  {1.f, -1.01f, -1.f}, // down
-    {-1.f, -1.f, 1.f},  {-1.f, -1.01f, 1.f}, // down
-    {1.f, -1.f, 1.f},   {1.f, -1.01f, 1.f}, // down
-    {-1.f, 1.f, -1.f},  {-1.f, 1.f, -1.f},    {1.f, 1.f, -1.f}, {1.f, 1.f, -1.f},  {-1.f, 1.f, 1.f},
-    {-1.f, 1.f, 1.f},   {1.f, 1.f, 1.f},      {1.f, 1.f, 1.f},  {-1.f, 0.f, -1.f}, {-1.f, -1.f, -1.f}, // half
-    {1.f, 0.f, -1.f},   {1.f, -1.f, -1.f}, // half
-    {1.f, 0.f, 1.f},    {1.f, -1.f, 1.f}, // half
-    {-1.f, 0.f, 1.f},   {-1.f, -1.f, 1.f} // half
+static constexpr Fvector3 hbox_verts[24] = {
+    {-1.f, -1.f, -1.f},  {-1.f, -1.01f, -1.f}, // down
+    {1.f, -1.f, -1.f},   {1.f, -1.01f, -1.f}, // down
+    {-1.f, -1.f, 1.f},   {-1.f, -1.01f, 1.f}, // down
+    {1.f, -1.f, 1.f},    {1.f, -1.01f, 1.f}, // down
+    {-1.f, 1.f, -1.f},   {-1.f, 1.f, -1.f},    {1.f, 1.f, -1.f}, {1.f, 1.f, -1.f},     {-1.f, 1.f, 1.f},
+    {-1.f, 1.f, 1.f},    {1.f, 1.f, 1.f},      {1.f, 1.f, 1.f},  {-1.f, -0.01f, -1.f}, {-1.f, -1.f, -1.f}, // half
+    {1.f, -0.01f, -1.f}, {1.f, -1.f, -1.f}, // half
+    {1.f, -0.01f, 1.f},  {1.f, -1.f, 1.f}, // half
+    {-1.f, -0.01f, 1.f}, {-1.f, -1.f, 1.f} // half
 };
-static u16 hbox_faces[20 * 3] = {0, 2,  3, 3, 1, 0, 4, 5, 7,  7,  6,  4, 0,  1,  9, 9, 8, 0,  8, 9, 5, 5, 4,  8, 1,  3, 10, 10, 9, 1,
-                                 9, 10, 7, 7, 5, 9, 3, 2, 11, 11, 10, 3, 10, 11, 6, 6, 7, 10, 2, 0, 8, 8, 11, 2, 11, 8, 4,  4,  6, 11};
 
-struct v_skybox
+static constexpr u16 hbox_faces[20 * 3] = {0, 2,  3, 3, 1, 0, 4, 5, 7,  7,  6,  4, 0,  1,  9, 9, 8, 0,  8, 9, 5, 5, 4,  8, 1,  3, 10, 10, 9, 1,
+                                           9, 10, 7, 7, 5, 9, 3, 2, 11, 11, 10, 3, 10, 11, 6, 6, 7, 10, 2, 0, 8, 8, 11, 2, 11, 8, 4,  4,  6, 11};
+
+struct alignas(8) v_skybox
 {
     Fvector3 p;
     u32 color;
     Fvector3 uv[2];
 
-    void set(Fvector3& _p, u32 _c, Fvector3& _tc)
+    void set(const Fvector3& _p, u32 _c, const Fvector3& _tc)
     {
         p = _p;
         color = _c;
@@ -39,13 +40,14 @@ struct v_skybox
     }
 };
 static_assert(sizeof(v_skybox) == 40);
-const u32 v_skybox_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXCOORDSIZE3(0) | D3DFVF_TEXCOORDSIZE3(1);
+constexpr u32 v_skybox_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXCOORDSIZE3(0) | D3DFVF_TEXCOORDSIZE3(1);
+
 struct v_clouds
 {
     Fvector3 p;
     u32 color;
     u32 intensity;
-    void set(Fvector3& _p, u32 _c, u32 _i)
+    void set(const Fvector3& _p, u32 _c, u32 _i)
     {
         p = _p;
         color = _c;
@@ -53,7 +55,7 @@ struct v_clouds
     }
 };
 static_assert(sizeof(v_clouds) == 20);
-const u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
+constexpr u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 
 void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in) { *this = *(dxEnvDescriptorRender*)&_in; }
 
@@ -93,17 +95,17 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
     dxEnvDescriptorRender* pB = (dxEnvDescriptorRender*)inB;
 
     sky_r_textures.clear();
-    sky_r_textures.push_back(mk_pair(0, pA->sky_texture));
-    sky_r_textures.push_back(mk_pair(1, pB->sky_texture));
+    sky_r_textures.emplace_back(0, pA->sky_texture);
+    sky_r_textures.emplace_back(1, pB->sky_texture);
 
     sky_r_textures_env.clear();
 
-    sky_r_textures_env.push_back(mk_pair(0, pA->sky_texture_env));
-    sky_r_textures_env.push_back(mk_pair(1, pB->sky_texture_env));
+    sky_r_textures_env.emplace_back(0, pA->sky_texture_env);
+    sky_r_textures_env.emplace_back(1, pB->sky_texture_env);
 
     clouds_r_textures.clear();
-    clouds_r_textures.push_back(mk_pair(0, pA->clouds_texture));
-    clouds_r_textures.push_back(mk_pair(1, pB->clouds_texture));
+    clouds_r_textures.emplace_back(0, pA->clouds_texture);
+    clouds_r_textures.emplace_back(1, pB->clouds_texture);
 }
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
@@ -135,24 +137,10 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
 {
     dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
-    if (::Render->get_generation() == IRender_interface::GENERATION_R2)
-    {
-        //. very very ugly hack
-        if (HW.Caps.raster_major >= 3 && HW.Caps.geometry.bVTF)
-        {
-            // tonemapping in VS
-            mixRen.sky_r_textures.push_back(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap)); //. hack
-            mixRen.sky_r_textures_env.push_back(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap)); //. hack
-            mixRen.clouds_r_textures.push_back(mk_pair(u32(D3DVERTEXTEXTURESAMPLER0), tonemap)); //. hack
-        }
-        else
-        {
-            // tonemapping in PS
-            mixRen.sky_r_textures.push_back(mk_pair(2, tonemap)); //. hack
-            mixRen.sky_r_textures_env.push_back(mk_pair(2, tonemap)); //. hack
-            mixRen.clouds_r_textures.push_back(mk_pair(2, tonemap)); //. hack
-        }
-    }
+    // tonemapping in VS
+    mixRen.sky_r_textures.emplace_back(u32(D3DVERTEXTEXTURESAMPLER0), tonemap); //. hack
+    mixRen.sky_r_textures_env.emplace_back(u32(D3DVERTEXTEXTURESAMPLER0), tonemap); //. hack
+    mixRen.clouds_r_textures.emplace_back(u32(D3DVERTEXTEXTURESAMPLER0), tonemap); //. hack
 
     //. Setup skybox textures, somewhat ugly
     ID3DBaseTexture* e0 = mixRen.sky_r_textures[0].second->surface_get();
@@ -207,7 +195,12 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
     // Fill vertex buffer
     v_skybox* pv = (v_skybox*)RCache.Vertex.Lock(12, sh_2geom.stride(), v_offset);
     for (u32 v = 0; v < 12; v++)
-        pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
+    {
+        Fvector3 hv = hbox_verts[v * 2];
+        if (v >= 4 && v <= 7)
+            hv.y *= env.CurrentEnv->sky_height;
+        pv[v].set(hv, C, hbox_verts[v * 2 + 1]);
+    }
     RCache.Vertex.Unlock(12, sh_2geom.stride());
 
     // Render
@@ -249,7 +242,8 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
     wind_dir.set(wd0.x, wd0.z, wd1.x, wd1.z).mul(0.5f).add(0.5f).mul(255.f);
     u32 i_offset, v_offset;
     u32 C0 = color_rgba(iFloor(wind_dir.x), iFloor(wind_dir.y), iFloor(wind_dir.w), iFloor(wind_dir.z));
-    u32 C1 = color_rgba(iFloor(env.CurrentEnv->clouds_color.x * 255.f), iFloor(env.CurrentEnv->clouds_color.y * 255.f), iFloor(env.CurrentEnv->clouds_color.z * 255.f), iFloor(env.CurrentEnv->clouds_color.w * 255.f));
+    u32 C1 = color_rgba(iFloor(env.CurrentEnv->clouds_color.x * 255.f), iFloor(env.CurrentEnv->clouds_color.y * 255.f), iFloor(env.CurrentEnv->clouds_color.z * 255.f),
+                        iFloor(env.CurrentEnv->clouds_color.w * 255.f));
 
     // Fill index buffer
     u16* pib = RCache.Index.Lock(env.CloudsIndices.size(), i_offset);

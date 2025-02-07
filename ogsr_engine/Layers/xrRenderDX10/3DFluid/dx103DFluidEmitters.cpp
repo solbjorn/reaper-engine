@@ -80,7 +80,7 @@ void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
     float fRadius = Emitter.m_fRadius;
 
     // Color is the density of the smoke. We use a sinusoidal function of 't' to make it more interesting.
-    const float fMiddleIntencity = 1;
+    constexpr float fMiddleIntencity = 1.f;
     const float saturation = Emitter.m_fSaturation;
     FLOAT density = 1.5f * (((_sin(t * 1.5f + 2.0f * float(PI) / 3.0f) * 0.5f + 0.5f)) * saturation + fMiddleIntencity * (1.0f - saturation));
     density *= Emitter.m_fDensity;

@@ -142,13 +142,21 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
             }
         }
         if (g_pGameLevel && (phase == PHASE_NORMAL))
+        {
             g_hud->Render_Last(); // HUD
+            if (g_hud->RenderActiveItemUIQuery())
+                r_dsgraph_render_hud_ui();
+        }
     }
     else
     {
         set_Object(0);
         if (g_pGameLevel && (phase == PHASE_NORMAL))
+        {
             g_hud->Render_Last(); // HUD
+            if (g_hud->RenderActiveItemUIQuery())
+                r_dsgraph_render_hud_ui();
+        }
     }
 }
 
@@ -168,7 +176,7 @@ void CRender::render_menu()
 
     // Distort
     {
-        FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+        constexpr FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
         Target->u_setrt(Target->rt_Generic_1, 0, 0, HW.pBaseZB); // Now RT is a distortion mask
         HW.pContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
         g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
@@ -181,11 +189,11 @@ void CRender::render_menu()
 
     Fvector2 p0, p1;
     u32 Offset;
-    u32 C = color_rgba(255, 255, 255, 255);
+    constexpr u32 C = color_rgba(255, 255, 255, 255);
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
-    float d_Z = EPS_S;
-    float d_W = 1.f;
+    constexpr float d_Z = EPS_S;
+    constexpr float d_W = 1.f;
     p0.set(.5f / _w, .5f / _h);
     p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
@@ -202,12 +210,10 @@ void CRender::render_menu()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-extern u32 g_r;
 void CRender::Render()
 {
     PIX_EVENT(CRender_Render);
 
-    g_r = 1;
     VERIFY(0 == mapDistort.size());
 
     rmNormal();
@@ -240,9 +246,6 @@ void CRender::Render()
     RImplementation.o.distortion = FALSE; // disable distorion
     Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
     BOOL bSUN = ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
-    if (o.sunstatic)
-        bSUN = FALSE;
-    // Msg						("sstatic: %s, sun: %s",o.sunstatic?;"true":"false", bSUN?"true":"false");
 
     // HOM
     ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
@@ -316,31 +319,31 @@ void CRender::Render()
     r_pmask(true, false); // disable priority "1"
     Device.Statistic->RenderCALC.End();
 
-    BOOL split_the_scene_to_minimize_wait = FALSE;
-    if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))
-        split_the_scene_to_minimize_wait = TRUE;
+    if (RImplementation.o.ssfx_core)
+    {
+        // HUD Masking rendering
+        constexpr FLOAT ColorRGBA[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+        HW.pContext->ClearRenderTargetView(Target->rt_ssfx_hud->pRT, ColorRGBA);
+
+        Target->u_setrt(Target->rt_ssfx_hud, NULL, NULL, HW.pBaseZB);
+        r_dsgraph_render_hud(true);
+
+        // Reset Depth
+        HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH, 1.0f, 0);
+    }
+
+    if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
+    {
+        Target->u_setrt(Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, !RImplementation.o.dx10_msaa ? HW.pBaseZB : Target->rt_MSAADepth->pZRT);
+        r_dsgraph_render_landscape(0, false);
+    }
 
     //******* Main render :: PART-0	-- first
-    if (!split_the_scene_to_minimize_wait)
-    {
-        PIX_EVENT(DEFER_PART0_NO_SPLIT);
-        // level, DO NOT SPLIT
-        Target->phase_scene_begin();
-        r_dsgraph_render_hud();
-        r_dsgraph_render_graph(0);
-        r_dsgraph_render_lods(true, true);
-        if (Details)
-            Details->Render();
-        Target->phase_scene_end();
-    }
-    else
-    {
-        PIX_EVENT(DEFER_PART0_SPLIT);
-        // level, SPLIT
-        Target->phase_scene_begin();
-        r_dsgraph_render_graph(0);
-        Target->disable_aniso();
-    }
+    PIX_EVENT(DEFER_PART0_SPLIT);
+    // level, SPLIT
+    Target->phase_scene_begin();
+    r_dsgraph_render_graph(0);
+    Target->disable_aniso();
 
     //******* Occlusion testing of volume-limited light-sources
     Target->phase_occq();
@@ -365,49 +368,41 @@ void CRender::Render()
     }
 
     //******* Main render :: PART-1 (second)
-    if (split_the_scene_to_minimize_wait)
+    PIX_EVENT(DEFER_PART1_SPLIT);
+    // skybox can be drawn here
+    if (0)
     {
-        PIX_EVENT(DEFER_PART1_SPLIT);
-        // skybox can be drawn here
-        if (0)
-        {
-            if (!RImplementation.o.dx10_msaa)
-                Target->u_setrt(Target->rt_Generic_0, Target->rt_Generic_1, 0, HW.pBaseZB);
-            else
-                Target->u_setrt(Target->rt_Generic_0_r, Target->rt_Generic_1, 0, RImplementation.Target->rt_MSAADepth->pZRT);
-            RCache.set_CullMode(CULL_NONE);
-            RCache.set_Stencil(FALSE);
+        if (!RImplementation.o.dx10_msaa)
+            Target->u_setrt(Target->rt_Generic_0, Target->rt_Generic_1, 0, HW.pBaseZB);
+        else
+            Target->u_setrt(Target->rt_Generic_0_r, Target->rt_Generic_1, 0, RImplementation.Target->rt_MSAADepth->pZRT);
+        RCache.set_CullMode(CULL_NONE);
+        RCache.set_Stencil(FALSE);
 
-            // draw skybox
-            RCache.set_ColorWriteEnable();
-            // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-            RCache.set_Z(FALSE);
-            g_pGamePersistent->Environment().RenderSky();
-            // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-            RCache.set_Z(TRUE);
-        }
-
-        // level
-        Target->phase_scene_begin();
-        r_dsgraph_render_hud();
-        r_dsgraph_render_lods(true, true);
-        if (Details)
-            Details->Render();
-        Target->phase_scene_end();
+        // draw skybox
+        RCache.set_ColorWriteEnable();
+        // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
+        RCache.set_Z(FALSE);
+        g_pGamePersistent->Environment().RenderSky();
+        // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+        RCache.set_Z(TRUE);
     }
 
-    if (g_hud && g_hud->RenderActiveItemUIQuery())
-    {
-        Target->phase_wallmarks();
-        r_dsgraph_render_hud_ui();
-    }
+    // level
+    Target->phase_scene_begin();
+    r_dsgraph_render_hud();
+    r_dsgraph_render_lods(true, true);
+    if (Details)
+        Details->Render();
+    if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
+        r_dsgraph_render_landscape(1, true);
+    Target->phase_scene_end();
 
     // Wall marks
     if (Wallmarks)
     {
         PIX_EVENT(DEFER_WALLMARKS);
         Target->phase_wallmarks();
-        g_r = 0;
         Wallmarks->Render(); // wallmarks has priority as normal geometry
     }
 
@@ -419,9 +414,9 @@ void CRender::Render()
         {
             if (0 == Lights_LastFrame[it])
                 continue;
-            //try
+            // try
             //{
-                Lights_LastFrame[it]->svis.flushoccq();
+            Lights_LastFrame[it]->svis.flushoccq();
             /*}
             catch (...)
             {
@@ -445,23 +440,65 @@ void CRender::Render()
         render_rain();
     }
 
+    {
+        // Save previus and current matrices
+        {
+            static Fmatrix mm_saved_viewproj;
+
+            if (!Device.m_SecondViewport.IsSVPFrame())
+            {
+                Fmatrix m_invview;
+                m_invview.invert(Device.mView);
+                Target->Matrix_previous.mul(mm_saved_viewproj, m_invview);
+                Target->Matrix_current.set(Device.mProject);
+                mm_saved_viewproj.set(Device.mFullTransform);
+            }
+        }
+
+        if (RImplementation.o.ssfx_sss && !Device.m_SecondViewport.IsSVPFrame())
+        {
+            static bool sss_rendered, sss_extended_rendered;
+
+            // SSS Shadows
+            if (ps_ssfx_sss_quality.z > 0)
+            {
+                Target->phase_ssfx_sss();
+                sss_rendered = true;
+            }
+            else
+            {
+                if (sss_rendered) // Clear buffer
+                {
+                    sss_rendered = false;
+                    constexpr FLOAT ColorRGBA[4] = {1, 1, 1, 1};
+                    HW.pContext->ClearRenderTargetView(Target->rt_ssfx_sss->pRT, ColorRGBA);
+                }
+            }
+
+            if (ps_ssfx_sss_quality.w > 0)
+            {
+                // Extra lights
+                Target->phase_ssfx_sss_ext(Lights.package);
+                sss_extended_rendered = true;
+            }
+            else
+            {
+                if (sss_extended_rendered) // Clear buffer
+                {
+                    sss_extended_rendered = false;
+                    constexpr FLOAT ColorRGBA[4] = {1, 1, 1, 1};
+                    HW.pContext->ClearRenderTargetView(Target->rt_ssfx_sss_tmp->pRT, ColorRGBA);
+                }
+            }
+        }
+    }
+
     // Directional light - fucking sun
     if (bSUN)
     {
         PIX_EVENT(DEFER_SUN);
         RImplementation.stats.l_visible++;
-        if (!ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_OLD))
-        {
-            render_sun_cascades();
-        }
-        else
-        {
-            // старое солнце кривое
-
-            //render_sun_near();
-            //render_sun();
-            //render_sun_filtered();
-        }
+        render_sun_cascades();
         Target->accum_direct_blend();
     }
 
@@ -479,7 +516,16 @@ void CRender::Render()
         // RCache.set_Stencil				(TRUE,D3DCMP_ALWAYS,0x00,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
         RCache.set_CullMode(CULL_CCW);
         RCache.set_ColorWriteEnable();
-        RImplementation.r_dsgraph_render_emissive();
+        RImplementation.r_dsgraph_render_emissive(!RImplementation.o.ssfx_bloom);
+    }
+
+    if (RImplementation.o.ssfx_bloom)
+    {
+        // Render Emissive on `rt_ssfx_bloom_emissive`
+        constexpr FLOAT ColorRGBA[4] = {0, 0, 0, 0};
+        HW.pContext->ClearRenderTargetView(Target->rt_ssfx_bloom_emissive->pRT, ColorRGBA);
+        Target->u_setrt(Target->rt_ssfx_bloom_emissive, NULL, NULL, !RImplementation.o.dx10_msaa ? HW.pBaseZB : Target->rt_MSAADepth->pZRT);
+        RImplementation.r_dsgraph_render_emissive(true, true);
     }
 
     // Lighting, non dependant on OCCQ
@@ -498,11 +544,15 @@ void CRender::Render()
         // render_lights( LP_pending );
     }
 
+    if (RImplementation.o.ssfx_volumetric)
+        Target->phase_ssfx_volumetric_blur();
+
     // Postprocess
     {
         PIX_EVENT(DEFER_LIGHT_COMBINE);
         Target->phase_combine();
     }
+
     if (Details)
         Details->details_clear();
 
@@ -512,7 +562,7 @@ void CRender::Render()
 void CRender::render_forward()
 {
     VERIFY(0 == mapDistort.size());
-    RImplementation.o.distortion = RImplementation.o.distortion_enabled; // enable distorion
+    RImplementation.o.distortion = true; // enable distorion
 
     //******* Main render - second order geometry (the one, that doesn't support deffering)
     //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
@@ -526,7 +576,6 @@ void CRender::render_forward()
         r_dsgraph_render_graph(1); // normal level, secondary priority
         PortalTraverser.fade_render(); // faded-portals
         r_dsgraph_render_sorted(); // strict-sorted geoms
-        g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
     }
 
     RImplementation.o.distortion = FALSE; // disable distorion

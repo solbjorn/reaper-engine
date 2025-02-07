@@ -34,10 +34,10 @@ public:
         Balance.set(cBalance);
     }
 
-    void Update();
+    void Update() const;
 
 private:
-    void GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G);
+    void GenLUT(const DXGI_GAMMA_CONTROL_CAPABILITIES& GC, DXGI_GAMMA_CONTROL& G) const;
 };
 
 #endif

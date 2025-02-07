@@ -11,7 +11,7 @@ extern float psSoundVEffects;
 void CSoundRender_Emitter::set_position(const Fvector& pos)
 {
     if (source()->channels_num() == 1 && _valid(pos))
-        p_source.position = pos;
+        p_source.update_position(pos);
     else
         p_source.position.set(0, 0, 0);
 
@@ -100,7 +100,7 @@ void CSoundRender_Emitter::Event_Propagade()
         return;
 
     // Inform objects
-    SoundRender->s_events.push_back(mk_pair(owner_data, range));
+    SoundRender->s_events.emplace_back(owner_data, range);
 }
 
 void CSoundRender_Emitter::switch_to_2D()

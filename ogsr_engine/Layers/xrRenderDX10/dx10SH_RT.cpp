@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "../xrRender/ResourceManager.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -31,17 +30,11 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
         return;
 
     R_ASSERT(HW.pDevice && Name && Name[0] && w && h);
-    _order = CPU::GetCLK(); // Device.GetTimerGlobal()->GetElapsed_clk();
-
-    // HRESULT		_hr;
+    _order = CPU::QPC(); // Device.GetTimerGlobal()->GetElapsed_clk();
 
     dwWidth = w;
     dwHeight = h;
     fmt = f;
-
-    // Get caps
-    // D3DCAPS9	caps;
-    // R_CHK		(HW.pDevice->GetDeviceCaps(&caps));
 
     //	DirectX 10 supports non-power of two textures
     // Pow2
@@ -57,7 +50,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
         return;
 
     // Select usage
-    u32 usage = 0;
+    u32 usage = D3DUSAGE_RENDERTARGET;
     if (D3DFMT_D24X8 == fmt)
         usage = D3DUSAGE_DEPTHSTENCIL;
     else if (D3DFMT_D24S8 == fmt)
@@ -72,8 +65,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
         usage = D3DUSAGE_DEPTHSTENCIL;
     else if ((D3DFORMAT)MAKEFOURCC('D', 'F', '2', '4') == fmt)
         usage = D3DUSAGE_DEPTHSTENCIL;
-    else
-        usage = D3DUSAGE_RENDERTARGET;
 
     DXGI_FORMAT dx10FMT;
 
@@ -124,13 +115,10 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
     else
     {
         desc.BindFlags = (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : (D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET));
-        if (RImplementation.o.dx10_msaa_opt)
-        {
-            desc.SampleDesc.Quality = UINT(D3D_STANDARD_MULTISAMPLE_PATTERN);
-        }
+        desc.SampleDesc.Quality = UINT(D3D_STANDARD_MULTISAMPLE_PATTERN);
     }
 
-    if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV)
+    if (!bUseAsDepth && SampleCount == 1 && useUAV)
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
     CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSurface));
@@ -172,7 +160,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
     else
         CHK_DX(HW.pDevice->CreateRenderTargetView(pSurface, 0, &pRT));
 
-    if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV)
+    if (!bUseAsDepth && SampleCount == 1 && useUAV)
     {
         D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
         UAVDesc.Format = dx10FMT;
@@ -192,7 +180,7 @@ void CRT::destroy()
     {
         pTexture->surface_set(0);
         pTexture.destroy();
-        pTexture = nullptr;	
+        pTexture = nullptr;
     }
     _RELEASE(pRT);
     _RELEASE(pZRT);

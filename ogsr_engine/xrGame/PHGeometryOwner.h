@@ -1,9 +1,10 @@
 #ifndef PH_GEOMETRY_OWNER_H
 #define PH_GEOMETRY_OWNER_H
+
 #include "Geometry.h"
 #include "../xr_3da/gamemtllib.h"
 
-DEFINE_VECTOR(CODEGeom*, GEOM_STORAGE, GEOM_I)
+DEFINE_VECTOR(CODEGeom*, GEOM_STORAGE, GEOM_I);
 
 struct SBoneShape;
 class IKinematics;

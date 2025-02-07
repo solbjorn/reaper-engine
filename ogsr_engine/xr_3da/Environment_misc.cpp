@@ -8,10 +8,11 @@
 #include "IGame_Level.h"
 #include "../COMMON_AI/object_broker.h"
 #include "../COMMON_AI/LevelGameDef.h"
+#include "../Layers/xrRender/xrRender_console.h"
 
-ENGINE_API float ps_r_sunshafts_intensity = 0.0f;
-ENGINE_API float puddles_drying = 2.f;
-ENGINE_API float puddles_wetting = 4.f;
+extern float ps_r2_sun_shafts_min;
+extern float ps_r2_sun_shafts_value;
+extern Fvector3 ssfx_wetness_multiplier;
 
 void CEnvModifier::load(IReader* fs, u32 version)
 {
@@ -245,7 +246,6 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
     sky_rotation = 0.0f;
 
     far_plane = 400.0f;
-    ;
 
     fog_color.set(1, 1, 1);
     fog_density = 0.0f;
@@ -267,7 +267,10 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
 
     m_fSunShaftsIntensity = 0.f;
     m_fWaterIntensity = 1;
-    m_fTreeAmplitudeIntensity = 0.01;
+    m_fTreeAmplitudeIntensity = 0.01f;
+
+    bloom.set(3.5f, 3.f, 0, 0.6f);
+    sky_height = 1.f;
 
     lens_flare_id = "";
     tb_id = "";
@@ -280,6 +283,42 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
     { \
         Msg("! Invalid '%s' in env-section '%s'", #C, m_identifier.c_str()); \
     }
+
+void CEnvDescriptor::load_common(CInifile* config)
+{
+    LPCSTR sect = m_identifier.c_str();
+
+    bloom.set(READ_IF_EXISTS(config, r_float, sect, "bloom_threshold", 3.5f), READ_IF_EXISTS(config, r_float, sect, "bloom_exposure", 3.0f), 0,
+              READ_IF_EXISTS(config, r_float, sect, "bloom_sky_intensity", 0.6f));
+
+    float mod = READ_IF_EXISTS(config, r_float, sect, "fog_mul", 1.f);
+    fog_color.mul(mod);
+
+    mod = READ_IF_EXISTS(config, r_float, sect, "rain_mul", 1.f);
+    rain_color.mul(mod);
+
+    mod = READ_IF_EXISTS(config, r_float, sect, "amb_mul", 1.f);
+    ambient.mul(mod);
+
+    mod = READ_IF_EXISTS(config, r_float, sect, "hemi_mul", 1.f);
+    hemi_color.x *= mod;
+    hemi_color.y *= mod;
+    hemi_color.z *= mod;
+
+    mod = READ_IF_EXISTS(config, r_float, sect, "sun_mul", 1.f);
+    sun_color.mul(mod);
+
+    sky_height = READ_IF_EXISTS(config, r_float, sect, "sky_height", 1.f);
+    clamp(sky_height, 0.5f, 4.f);
+
+    C_CHECK(clouds_color);
+    C_CHECK(sky_color);
+    C_CHECK(fog_color);
+    C_CHECK(rain_color);
+    C_CHECK(ambient);
+    C_CHECK(hemi_color);
+    C_CHECK(sun_color);
+}
 
 void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 {
@@ -323,14 +362,14 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     ambient = config.r_fvector3(m_identifier.c_str(), "ambient_color");
     hemi_color = config.r_fvector4(m_identifier.c_str(), "hemisphere_color");
     sun_color = config.r_fvector3(m_identifier.c_str(), "sun_color");
-    //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
-    sun_dir.setHP(deg2rad(config.r_float(m_identifier.c_str(), "sun_altitude")), deg2rad(config.r_float(m_identifier.c_str(), "sun_longitude")));
+
+    sun_dir.y = FLT_MAX;
+    if (config.line_exist(m_identifier.c_str(), "sun_altitude"))
+        sun_dir.setHP(deg2rad(config.r_float(m_identifier.c_str(), "sun_altitude")), deg2rad(config.r_float(m_identifier.c_str(), "sun_longitude")));
+    else if (environment.m_sun_hp_loaded)
+        this->sun_dir = environment.calculate_config_sun_dir(this->exec_time);
+
     R_ASSERT(_valid(sun_dir));
-    //	else
-    //		sun_dir.setHP			(
-    //			deg2rad(config.r_fvector2(m_identifier.c_str(),"sun_dir").y),
-    //			deg2rad(config.r_fvector2(m_identifier.c_str(),"sun_dir").x)
-    //		);
     VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while loading");
 
     lens_flare_id = environment.eff_LensFlare->AppendDef(environment, config.r_string(m_identifier.c_str(), "sun"));
@@ -342,24 +381,15 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
     if (config.line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = config.r_float(m_identifier.c_str(), "sun_shafts_intensity");
-    else
-        m_fSunShaftsIntensity = 0.f;
 
     if (config.line_exist(m_identifier.c_str(), "water_intensity"))
         m_fWaterIntensity = config.r_float(m_identifier.c_str(), "water_intensity");
 
     constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
-    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
+    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); // Если не прописано, дефолт будет рассчитываться от силы дождя.
     m_fTreeAmplitudeIntensity = READ_IF_EXISTS(reinterpret_cast<CInifile*>(&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
-    C_CHECK(clouds_color);
-    C_CHECK(sky_color);
-    C_CHECK(fog_color);
-    C_CHECK(rain_color);
-    C_CHECK(ambient);
-    C_CHECK(hemi_color);
-    C_CHECK(sun_color);
-    on_device_create();
+    load_common(reinterpret_cast<CInifile*>(&config));
 }
 
 void CEnvDescriptor::load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S)
@@ -431,23 +461,16 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
         m_fWaterIntensity = pSettings->r_float(m_identifier.c_str(), "water_intensity");
 
     constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
-    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
+    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); // Если не прописано, дефолт будет рассчитываться от силы дождя.
     m_fTreeAmplitudeIntensity = READ_IF_EXISTS(pSettings, r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
-    C_CHECK(clouds_color);
-    C_CHECK(sky_color);
-    C_CHECK(fog_color);
-    C_CHECK(rain_color);
-    C_CHECK(ambient);
-    C_CHECK(hemi_color);
-    C_CHECK(sun_color);
-    on_device_create();
+    load_common(pSettings);
 }
 
-void CEnvDescriptor::on_device_create() { m_pDescriptor->OnDeviceCreate(*this); }
+void CEnvDescriptor::get() { m_pDescriptor->OnDeviceCreate(*this); }
+void CEnvDescriptor::put() { m_pDescriptor->OnDeviceDestroy(); }
 
-void CEnvDescriptor::on_device_destroy() { m_pDescriptor->OnDeviceDestroy(); }
-
+void CEnvDescriptor::set_sun(LPCSTR sect, CEnvironment* parent) { lens_flare_id = parent->eff_LensFlare->AppendDef(*parent, sect); }
 void CEnvDescriptor::setEnvAmbient(LPCSTR sect, CEnvironment* parent) { env_ambient = parent->AppendEnvAmb(sect); }
 
 //-----------------------------------------------------------------------------
@@ -455,13 +478,7 @@ void CEnvDescriptor::setEnvAmbient(LPCSTR sect, CEnvironment* parent) { env_ambi
 //-----------------------------------------------------------------------------
 CEnvDescriptorMixer::CEnvDescriptorMixer(shared_str const& identifier) : CEnvDescriptor(identifier) {}
 
-void CEnvDescriptorMixer::destroy()
-{
-    m_pDescriptorMixer->Destroy();
-
-    //	Reuse existing code
-    on_device_destroy();
-}
+void CEnvDescriptorMixer::destroy() { m_pDescriptorMixer->Destroy(); }
 
 void CEnvDescriptorMixer::clear() { m_pDescriptorMixer->Clear(); }
 
@@ -478,18 +495,15 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
 
     sky_rotation = (fi * A.sky_rotation + f * B.sky_rotation);
 
-    //.	far_plane				=	(fi*A.far_plane + f*B.far_plane + Mdf.far_plane)*psVisDistance*modif_power;
     if (Mdf.use_flags.test(eViewDist))
         far_plane = (fi * A.far_plane + f * B.far_plane + Mdf.far_plane) * psVisDistance * modif_power;
     else
         far_plane = (fi * A.far_plane + f * B.far_plane) * psVisDistance;
 
-    //.	fog_color.lerp			(A.fog_color,B.fog_color,f).add(Mdf.fog_color).mul(modif_power);
     fog_color.lerp(A.fog_color, B.fog_color, f);
     if (Mdf.use_flags.test(eFogColor))
         fog_color.add(Mdf.fog_color).mul(modif_power);
 
-    //.	fog_density				=	(fi*A.fog_density + f*B.fog_density + Mdf.fog_density)*modif_power;
     fog_density = (fi * A.fog_density + f * B.fog_density);
     if (Mdf.use_flags.test(eFogDensity))
     {
@@ -504,27 +518,31 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
 
     rain_density = fi * A.rain_density + f * B.rain_density;
     rain_color.lerp(A.rain_color, B.rain_color, f);
+
     bolt_period = fi * A.bolt_period + f * B.bolt_period;
     bolt_duration = fi * A.bolt_duration + f * B.bolt_duration;
+
     // wind
     wind_velocity = fi * A.wind_velocity + f * B.wind_velocity;
     wind_direction = fi * A.wind_direction + f * B.wind_direction;
 
-    if (ps_r_sunshafts_intensity > 0.f)
-        m_fSunShaftsIntensity = ps_r_sunshafts_intensity;
-    else
-        m_fSunShaftsIntensity = fi * A.m_fSunShaftsIntensity + f * B.m_fSunShaftsIntensity;
-
+    m_fSunShaftsIntensity = fi * A.m_fSunShaftsIntensity + f * B.m_fSunShaftsIntensity;
     m_fWaterIntensity = fi * A.m_fWaterIntensity + f * B.m_fWaterIntensity;
+
+    m_fSunShaftsIntensity *= 1.0f - ps_r2_sun_shafts_min;
+    m_fSunShaftsIntensity += ps_r2_sun_shafts_min;
+    m_fSunShaftsIntensity *= ps_r2_sun_shafts_value;
+    clamp(m_fSunShaftsIntensity, 0.0f, 1.0f);
+
     m_fTreeAmplitudeIntensity = fi * A.m_fTreeAmplitudeIntensity + f * B.m_fTreeAmplitudeIntensity;
 
+    bloom.lerp(A.bloom, B.bloom, f);
+
     // colors
-    //.	sky_color.lerp			(A.sky_color,B.sky_color,f).add(Mdf.sky_color).mul(modif_power);
     sky_color.lerp(A.sky_color, B.sky_color, f);
     if (Mdf.use_flags.test(eSkyColor))
         sky_color.add(Mdf.sky_color).mul(modif_power);
 
-    //.	ambient.lerp			(A.ambient,B.ambient,f).add(Mdf.ambient).mul(modif_power);
     ambient.lerp(A.ambient, B.ambient, f);
     if (Mdf.use_flags.test(eAmbientColor))
         ambient.add(Mdf.ambient).mul(modif_power);
@@ -544,11 +562,13 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
     sun_color.lerp(A.sun_color, B.sun_color, f);
 
     if (rain_density > 0.f)
-        env->wetness_factor += (rain_density * puddles_wetting) / 10000.f;
+        env->wetness_factor += (rain_density * ssfx_wetness_multiplier.x) / 10000.f;
     else
-        env->wetness_factor -= 0.0001f * puddles_drying;
+        env->wetness_factor -= 0.0001f * ssfx_wetness_multiplier.y;
 
     clamp(env->wetness_factor, 0.f, 1.f);
+
+    sky_height = fi * A.sky_height + f * B.sky_height;
 
     R_ASSERT(_valid(A.sun_dir));
     R_ASSERT(_valid(B.sun_dir));
@@ -660,6 +680,27 @@ CEnvDescriptor* CEnvironment::create_descriptor_shoc(LPCSTR exec_tm, LPCSTR S)
     return result;
 }
 
+void CEnvironment::load_sun()
+{
+    if (!m_sun_pos_config)
+        return;
+
+    for (u32 i = 0; i < 24; i++)
+    {
+        char sun_identifier[10];
+        sprintf(sun_identifier, i >= 10 ? "%d:00:00" : "0%d:00:00", i);
+
+        float sun_alt = m_sun_pos_config->r_float(sun_identifier, "sun_altitude");
+        float sun_long = m_sun_pos_config->r_float(sun_identifier, "sun_longitude");
+
+        R_ASSERT(_valid(sun_alt));
+        R_ASSERT(_valid(sun_long));
+        sun_hp[i].set(sun_alt, sun_long);
+    }
+
+    m_sun_hp_loaded = true;
+}
+
 void CEnvironment::load_weathers()
 {
     if (!WeatherCycles.empty())
@@ -685,7 +726,11 @@ void CEnvironment::load_weathers()
             env.reserve(sections.size());
 
             for (const auto& pair : sections)
-                env.push_back(create_descriptor(pair.second->Name, &config));
+            {
+                int h, m, s;
+                if (sscanf(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
+                    env.push_back(create_descriptor(pair.second->Name, &config));
+            }
         }
 
         FS.file_list_close(file_list);
@@ -750,7 +795,11 @@ void CEnvironment::load_weather_effects()
             env.push_back(create_descriptor("00:00:00", nullptr));
 
             for (const auto& pair : sections)
-                env.push_back(create_descriptor(pair.second->Name, &config));
+            {
+                int h, m, s;
+                if (sscanf(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
+                    env.push_back(create_descriptor(pair.second->Name, &config));
+            }
 
             env.emplace_back(create_descriptor("24:00:00", nullptr))->exec_time_loaded = DAY_LENGTH;
         }
@@ -800,12 +849,15 @@ void CEnvironment::load()
     if (!eff_Thunderbolt)
         eff_Thunderbolt = xr_new<CEffect_Thunderbolt>();
 
+    load_sun();
     load_weathers();
     load_weather_effects();
 }
 
 void CEnvironment::unload()
 {
+    invalidate_descs();
+
     EnvsMapIt _I, _E;
     // clear weathers
     _I = WeatherCycles.begin();

@@ -98,7 +98,7 @@ public:
         flush_cache();
     }
 
-    ICF void access_direct(R_constant* C, u32 DataSize, void** ppVData, void** ppGData, void** ppPData)
+    ICF void access_direct(R_constant* C, size_t DataSize, void** ppVData, void** ppGData, void** ppPData)
     {
         if (ppPData)
         {

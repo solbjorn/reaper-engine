@@ -22,22 +22,27 @@ size_t ov_read_func(void* ptr, size_t size, size_t nmemb, void* datasource)
 {
     IReader* F = (IReader*)datasource;
     size_t exist_block = _max(0ul, iFloor(F->elapsed() / (float)size));
-    size_t read_block = _min(exist_block, nmemb);
-    F->r(ptr, (int)(read_block * size));
+    size_t read_block = std::min(exist_block, nmemb);
+    F->r(ptr, read_block * size);
     return read_block;
 }
+
 int ov_close_func(void* datasource) { return 0; }
-long ov_tell_func(void* datasource) { return ((IReader*)datasource)->tell(); }
+
+long ov_tell_func(void* datasource)
+{
+    const auto file = static_cast<IReader*>(datasource);
+    return static_cast<long>(file->tell());
+}
 
 void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 {
     VERIFY(ovf);
     // decompression of one cache-line
     u32 line_size = SoundRender->cache.get_linesize();
-    char* dest = (char*)SoundRender->cache.get_dataptr(CAT, line);
-    u32 buf_offs = (line * line_size) / 2 / m_wformat.nChannels;
+    u32 buf_offs = (line * line_size) / (m_wformat.wBitsPerSample / 8) / m_wformat.nChannels;
     u32 left_file = dwBytesTotal - buf_offs;
-    u32 left = (u32)_min(left_file, line_size);
+    u32 left = (u32)std::min(left_file, line_size);
 
     // seek
     u32 cur_pos = u32(ov_pcm_tell(ovf));
@@ -45,7 +50,11 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
         ov_pcm_seek(ovf, buf_offs);
 
     // decompress
-    i_decompress_fr(ovf, dest, left);
+    const auto dest = SoundRender->cache.get_dataptr(CAT, line);
+    if (m_wformat.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
+        i_decompress(ovf, static_cast<float*>(dest), left);
+    else
+        i_decompress(ovf, static_cast<char*>(dest), left);
 }
 
 void CSoundRender_Source::LoadWave(LPCSTR pName)
@@ -57,7 +66,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     ov_callbacks ovc = {ov_read_func, ov_seek_func, ov_close_func, ov_tell_func};
     IReader* wave = FS.r_open(pname.c_str());
     R_ASSERT3(wave && wave->length(), "Can't open wave file:", pname.c_str());
-    ov_open_callbacks(wave, &ovf, NULL, 0, ovc);
+    ov_open_callbacks(wave, &ovf, nullptr, 0, ovc);
 
     vorbis_info* ovi = ov_info(&ovf, -1);
     // verify
@@ -72,10 +81,19 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
 
     ZeroMemory(&m_wformat, sizeof(WAVEFORMATEX));
 
-    m_wformat.nSamplesPerSec = (ovi->rate);
-    m_wformat.wFormatTag = WAVE_FORMAT_PCM;
+    m_wformat.nSamplesPerSec = (ovi->rate); // 44100;
     m_wformat.nChannels = u16(ovi->channels);
-    m_wformat.wBitsPerSample = 16;
+
+    if (SoundRender->supports_float_pcm)
+    {
+        m_wformat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+        m_wformat.wBitsPerSample = 32;
+    }
+    else
+    {
+        m_wformat.wFormatTag = WAVE_FORMAT_PCM;
+        m_wformat.wBitsPerSample = 16;
+    }
 
     m_wformat.nBlockAlign = m_wformat.wBitsPerSample / 8 * m_wformat.nChannels;
     m_wformat.nAvgBytesPerSec = m_wformat.nSamplesPerSec * m_wformat.nBlockAlign;

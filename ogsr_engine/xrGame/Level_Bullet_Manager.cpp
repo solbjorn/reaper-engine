@@ -136,7 +136,7 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
     bullet->m_whine_snd.play_at_pos(object, pos);
 }
 
-void CBulletManager::Clear() //Вызывается при загрузке и дестрое уровня
+void CBulletManager::Clear() // Вызывается при загрузке и дестрое уровня
 {
     m_Bullets.clear();
     m_Events.clear();
@@ -170,11 +170,11 @@ void CBulletManager::UpdateWorkload()
     for (; k >= 0; k--)
     {
         SBullet& bullet = m_Bullets[k];
-        //для пули пущенной на этом же кадре считаем только 1 шаг
+        // для пули пущенной на этом же кадре считаем только 1 шаг
         //(хотя по теории вообще ничего считать на надо)
-        //который пропустим на следующем кадре,
-        //это делается для того чтоб при скачках FPS не промазать
-        //с 2х метров
+        // который пропустим на следующем кадре,
+        // это делается для того чтоб при скачках FPS не промазать
+        // с 2х метров
         u32 cur_step_num = step_num;
 
         u32 frames_pass = Device.dwFrame - bullet.frame_num;
@@ -207,9 +207,9 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
     if (range > max_range)
         range = max_range;
 
-    //запомнить текущую скорость пули, т.к. в
+    // запомнить текущую скорость пули, т.к. в
     // RayQuery() она может поменяться из-за рикошетов
-    //и столкновений с объектами
+    // и столкновений с объектами
     Fvector cur_dir = bullet->dir;
     bullet_test_callback_data bullet_data;
     bullet_data.pBullet = bullet;
@@ -232,7 +232,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
 
     if (!bullet->flags.ricochet_was)
     {
-        //изменить положение пули
+        // изменить положение пули
         bullet->pos.mad(bullet->pos, cur_dir, range);
         bullet->fly_dist += range;
 
@@ -249,8 +249,8 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
               (bullet->pos.z >= level_box.z1) && (bullet->pos.z <= level_box.z2)))
             return false;
 
-        //изменить скорость и направление ее полета
-        //с учетом гравитации
+        // изменить скорость и направление ее полета
+        // с учетом гравитации
         bullet->dir.mul(bullet->speed);
 
         Fvector air_resistance = bullet->dir;
@@ -263,7 +263,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
         bullet->speed = bullet->dir.magnitude();
         VERIFY(_valid(bullet->speed));
         VERIFY(!fis_zero(bullet->speed));
-        //вместо normalize(),	 чтоб не считать 2 раза magnitude()
+        // вместо normalize(),	 чтоб не считать 2 раза magnitude()
 #pragma todo("а как насчет bullet->speed==0")
         bullet->dir.x /= bullet->speed;
         bullet->dir.y /= bullet->speed;
@@ -345,9 +345,8 @@ void CBulletManager::Render()
         float length = bullet.speed * float(m_dwStepTime) / 1000.f; // dist.magnitude();
 
         if (length < m_fTracerLengthMin)
-            continue;
-
-        if (length > m_fTracerLengthMax)
+            length = m_fTracerLengthMin;
+        else if (length > m_fTracerLengthMax)
             length = m_fTracerLengthMax;
 
         float width = m_fTracerWidth;

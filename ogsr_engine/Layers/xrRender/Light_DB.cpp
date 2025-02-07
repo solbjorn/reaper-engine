@@ -3,7 +3,7 @@
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
-#include "../../utils/xrLC_Light/R_light.h"
+#include "R_light.h"
 #include "light_db.h"
 
 CLight_DB::CLight_DB() {}
@@ -149,7 +149,6 @@ void CLight_DB::LoadHemi()
     }
 }
 
-
 void CLight_DB::Unload()
 {
     v_static.clear();
@@ -167,19 +166,15 @@ light* CLight_DB::Create()
     return L;
 }
 
-#if (RENDER == R_R4)
 void CLight_DB::add_light(light* L)
 {
     if (Device.dwFrame == L->frame_render)
         return;
     L->frame_render = Device.dwFrame;
-    if (RImplementation.o.noshadows)
-        L->flags.bShadow = FALSE;
-    if (L->flags.bStatic && !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS))
+    if (L->flags.bStatic)
         return;
     L->export_to(package);
 }
-#endif // (RENDER==R_R4)
 
 void CLight_DB::Update()
 {
@@ -233,11 +228,8 @@ void CLight_DB::Update()
         sun_adapted->set_color(E.sun_color.x * ps_r2_sun_lumscale, E.sun_color.y * ps_r2_sun_lumscale, E.sun_color.z * ps_r2_sun_lumscale);
         sun_adapted->set_range(600.f);
 
-        if (!::Render->is_sun_static())
-        {
-            sun_adapted->set_rotation(OD, _sun_original->right);
-            sun_adapted->set_position(OP);
-        }
+        sun_adapted->set_rotation(OD, _sun_original->right);
+        sun_adapted->set_position(OP);
     }
 
     // Clear selection

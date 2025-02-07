@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "igame_level.h"
 
-//#include "xr_effgamma.h"
+// #include "xr_effgamma.h"
 #include "x_ray.h"
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
-//#include "fbasicvisual.h"
+// #include "fbasicvisual.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"
@@ -19,10 +19,11 @@
 
 xr_token* vid_quality_token = nullptr;
 
-constexpr xr_token FpsLockToken[] = {{"nofpslock", 0}, {"fpslock60", 60}, {"fpslock120", 120}, {"fpslock144", 144}, {"fpslock240", 240}, {nullptr, 0}};
+u32 g_screenmode = 1;
+static constexpr xr_token screen_mode_tokens[] = {{"fullscreen", 2}, {"borderless", 1}, {"windowed", 0}, {nullptr, 0}};
 
 #ifdef DEBUG
-constexpr xr_token vid_bpp_token[] = {{"16", 16}, {"32", 32}, {0, 0}};
+static constexpr xr_token vid_bpp_token[] = {{"16", 16}, {"32", 32}, {0, 0}};
 #endif
 
 void IConsole_Command::add_to_LRU(shared_str const& arg)
@@ -155,7 +156,7 @@ public:
 class CCC_E_Signal : public IConsole_Command
 {
 public:
-    CCC_E_Signal(LPCSTR N) : IConsole_Command(N){};
+    CCC_E_Signal(LPCSTR N) : IConsole_Command(N) {};
     virtual void Execute(LPCSTR args)
     {
         char Event[128], Param[128];
@@ -255,7 +256,7 @@ public:
             Msg("!Cannot store config file [%s]", cfg_full_name);
     }
 };
-CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N){};
+CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) {};
 
 void CCC_LoadCFG::Execute(LPCSTR args)
 {
@@ -333,7 +334,7 @@ private:
     }
 
 public:
-    CCC_Start(const char* N) : IConsole_Command(N){};
+    CCC_Start(const char* N) : IConsole_Command(N) {};
     void Execute(const char* args) override
     {
         auto str = parse(args);
@@ -415,6 +416,71 @@ public:
         }
     }
 };
+
+extern void GetMonitorResolution(u32& horizontal, u32& vertical);
+
+class CCC_Screenmode : public CCC_Token
+{
+public:
+    CCC_Screenmode(LPCSTR N) : CCC_Token(N, &g_screenmode, screen_mode_tokens) {};
+
+    virtual void Execute(LPCSTR args)
+    {
+        u32 prev_mode = g_screenmode;
+        CCC_Token::Execute(args);
+
+        if ((prev_mode != g_screenmode))
+        {
+            // TODO: If you enable the debug layer for DX11 and switch between fullscreen and windowed a few times,
+            // you'll occasionally see the following error in the output:
+            // DXGI ERROR: IDXGISwapChain::Present: The application has not called ResizeBuffers or re-created the SwapChain after a fullscreen or windowed transition. Flip model
+            // swapchains (DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL and DXGI_SWAP_EFFECT_FLIP_DISCARD) are required to do so. [ MISCELLANEOUS ERROR #117: ] This shouldn't happen if we're
+            // calling reset on FS/Windowed transitions, I tried logging where Present() is called as well as where ResizeBuffers and SetFullscreenState are called, and the debug
+            // output looks like this:
+            //
+            // Present()
+            // SetFullscreenState()
+            // [ERROR MESSAGE FROM ABOVE]
+            // ResizeBuffers()
+            // Present()
+            //
+            // Which makes no sense, it's impossible for us to have called Present between SetFullscreenState and ResizeBuffers
+            // so DX11 must be doing it automatically
+            //
+            // These threads might be relevant for someone looking into this:
+            // https://www.gamedev.net/forums/topic/652626-resizebuffers-bug/
+            // https://www.gamedev.net/forums/topic/667426-dxgi-altenter-behaves-inconsistently/
+            // https://www.gamedev.net/forums/topic/687484-correct-way-of-creating-the-swapchain-fullscreenwindowedvsync-about-refresh-rate/
+            //
+            // but the fixes make no sense and contradicts MSDN, and this isn't a major priority since ResizeBuffers is called
+            // immediately after (before our Present call) so it works, just so stupid
+
+            bool windowed_to_fullscreen = ((prev_mode == 0) || (prev_mode == 1)) && (g_screenmode == 2);
+            bool fullscreen_to_windowed = (prev_mode == 2) && ((g_screenmode == 0) || (g_screenmode == 1));
+            bool reset_required = windowed_to_fullscreen || fullscreen_to_windowed;
+            if (Device.b_is_Ready && reset_required)
+            {
+                Device.Reset();
+            }
+
+            if (g_screenmode == 0 || g_screenmode == 1)
+            {
+                u32 w, h;
+                GetMonitorResolution(w, h);
+                SetWindowLongPtr(Device.m_hWnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
+                SetWindowPos(Device.m_hWnd, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
+
+                if (g_screenmode == 0)
+                    SetWindowLongPtr(Device.m_hWnd, GWL_STYLE, WS_VISIBLE | WS_OVERLAPPEDWINDOW);
+            }
+        }
+
+        RECT winRect;
+        GetClientRect(Device.m_hWnd, &winRect);
+        MapWindowPoints(Device.m_hWnd, nullptr, reinterpret_cast<LPPOINT>(&winRect), 2);
+        ClipCursor(&winRect);
+    }
+};
 //-----------------------------------------------------------------------
 class CCC_SND_Restart : public IConsole_Command
 {
@@ -445,74 +511,16 @@ public:
 };
 
 //-----------------------------------------------------------------------
-/*
-#ifdef	DEBUG
-extern  INT	g_bDR_LM_UsePointsBBox;
-extern	INT	g_bDR_LM_4Steps;
-extern	INT g_iDR_LM_Step;
-extern	Fvector	g_DR_LM_Min, g_DR_LM_Max;
-
-class CCC_DR_ClearPoint : public IConsole_Command
-{
-public:
-    CCC_DR_ClearPoint(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-    virtual void Execute(LPCSTR args) {
-        g_DR_LM_Min.x = 1000000.0f;
-        g_DR_LM_Min.z = 1000000.0f;
-
-        g_DR_LM_Max.x = -1000000.0f;
-        g_DR_LM_Max.z = -1000000.0f;
-
-        Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-    }
-};
-
-class CCC_DR_TakePoint : public IConsole_Command
-{
-public:
-    CCC_DR_TakePoint(LPCSTR N) : IConsole_Command(N)	{ bEmptyArgsHandled = TRUE; };
-    virtual void Execute(LPCSTR args) {
-        Fvector CamPos =  Device.vCameraPosition;
-
-        if (g_DR_LM_Min.x > CamPos.x)	g_DR_LM_Min.x = CamPos.x;
-        if (g_DR_LM_Min.z > CamPos.z)	g_DR_LM_Min.z = CamPos.z;
-
-        if (g_DR_LM_Max.x < CamPos.x)	g_DR_LM_Max.x = CamPos.x;
-        if (g_DR_LM_Max.z < CamPos.z)	g_DR_LM_Max.z = CamPos.z;
-
-        Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-    }
-};
-
-class CCC_DR_UsePoints : public CCC_Integer
-{
-public:
-    CCC_DR_UsePoints(LPCSTR N, int* V, int _min=0, int _max=999) : CCC_Integer(N, V, _min, _max)	{};
-    virtual void	Save	(IWriter *F)	{};
-};
-#endif
-*/
-
-#ifdef XRRENDER_STATIC
-ENGINE_API BOOL r2_sun_static = FALSE;
-ENGINE_API BOOL r2_advanced_pp = TRUE; //	advanced post process and effects
-#else
-ENGINE_API BOOL r2_sun_static = TRUE;
-ENGINE_API BOOL r2_advanced_pp = FALSE; //	advanced post process and effects
-#endif
-
-#ifdef EXCLUDE_R1
-u32 renderer_value = 1;
-#else
-u32 renderer_value = 2;
-#endif
 
 class CCC_r2 : public CCC_Token
 {
     typedef CCC_Token inherited;
 
+private:
+    u32 renderer_value{};
+
 public:
-    CCC_r2(LPCSTR N) : inherited(N, &renderer_value, nullptr){};
+    CCC_r2(LPCSTR N) : inherited(N, &renderer_value, nullptr) {};
     virtual ~CCC_r2() = default;
 
     virtual void Execute(LPCSTR args)
@@ -531,10 +539,6 @@ public:
         psDeviceFlags.set(rsR2, ((renderer_value >= 0) && renderer_value < 3));
         psDeviceFlags.set(rsR3, (renderer_value == 3));
         psDeviceFlags.set(rsR4, (renderer_value == 4));
-
-        r2_sun_static = renderer_value == 0;
-
-        r2_advanced_pp = renderer_value >= 2;
 #else
         //	0 - r1
         //	1..3 - r2
@@ -542,10 +546,6 @@ public:
         psDeviceFlags.set(rsR2, ((renderer_value > 0) && renderer_value < 4));
         psDeviceFlags.set(rsR3, (renderer_value == 4));
         psDeviceFlags.set(rsR4, (renderer_value >= 5));
-
-        r2_sun_static = (renderer_value < 2);
-
-        r2_advanced_pp = (renderer_value >= 3);
 #endif
 #endif
     }
@@ -573,7 +573,7 @@ class CCC_soundDevice : public CCC_Token
     typedef CCC_Token inherited;
 
 public:
-    CCC_soundDevice(LPCSTR N) : inherited(N, &snd_device_id, NULL){};
+    CCC_soundDevice(LPCSTR N) : inherited(N, &snd_device_id, NULL) {};
     virtual ~CCC_soundDevice() {}
 
     virtual void Execute(LPCSTR args)
@@ -634,6 +634,18 @@ public:
     virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "hide console"); }
 };
 
+class CCC_SoundParamsSmoothing : public CCC_Integer
+{
+public:
+    CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+
+    virtual void Execute(LPCSTR args)
+    {
+        CCC_Integer::Execute(args);
+        soundSmoothingParams::alpha = soundSmoothingParams::getAlpha();
+    }
+};
+
 ENGINE_API float psHUD_FOV_def = 0.45f;
 ENGINE_API float psHUD_FOV = psHUD_FOV_def;
 
@@ -647,8 +659,12 @@ extern int g_ErrorLineCount;
 extern float g_fontWidthScale;
 extern float g_fontHeightScale;
 
-extern float puddles_drying;
-extern float puddles_wetting;
+ENGINE_API float ps_r2_sun_shafts_min = 0.f;
+ENGINE_API float ps_r2_sun_shafts_value = 1.f;
+
+int ps_framelimiter = 0;
+
+Fvector3 ssfx_wetness_multiplier = Fvector3().set(1.0f, 0.3f, 0.0f);
 
 void CCC_Register()
 {
@@ -697,12 +713,15 @@ void CCC_Register()
 
     // Render device states
     CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
-    CMD3(CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken);
+
+    CMD4(CCC_Float, "r2_sunshafts_min", &ps_r2_sun_shafts_min, 0.0, 0.5);
+    CMD4(CCC_Float, "r2_sunshafts_value", &ps_r2_sun_shafts_value, 0.5, 2.0);
 
     CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
     //	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
-    CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
+    CMD1(CCC_Screenmode, "rs_screenmode");
     CMD3(CCC_Mask, "rs_stats", &psDeviceFlags, rsStatistic);
+    CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.5f);
 
     CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 #ifdef DEBUG
@@ -711,10 +730,10 @@ void CCC_Register()
     // CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
-//Вместо этих настроек теперь используется ES Color Grading
-//    CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-//    CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-//    CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+    // Вместо этих настроек теперь используется ES Color Grading
+    //     CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
+    //     CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
+    //     CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
 
     //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
     //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
@@ -730,11 +749,15 @@ void CCC_Register()
     CMD2(CCC_Float, "snd_volume_eff", &psSoundVEffects);
     CMD2(CCC_Float, "snd_volume_music", &psSoundVMusic);
     CMD1(CCC_SND_Restart, "snd_restart");
-    //CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
+    // CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EAX);
+    CMD3(CCC_Mask, "snd_use_float32", &psSoundFlags, ss_UseFloat32);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
     CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 128);
     CMD4(CCC_Float, "snd_linear_fade", &psSoundLinearFadeFactor, 0.1f, 1.f);
+    // Doppler effect power
+    CMD4(CCC_Float, "snd_doppler_power", &soundSmoothingParams::power, 0.f, 5.f);
+    CMD4(CCC_SoundParamsSmoothing, "snd_doppler_smoothing", &soundSmoothingParams::steps, 1, 100);
 
 #ifdef DEBUG
     CMD3(CCC_Mask, "snd_stats", &g_stats_flags, st_sound);
@@ -758,9 +781,8 @@ void CCC_Register()
 
     CMD1(CCC_r2, "renderer");
 
-
     CMD1(CCC_soundDevice, "snd_device");
-    //CMD3(CCC_Mask, "snd_device_default", &psSoundFlags, ss_UseDefaultDevice);
+    // CMD3(CCC_Mask, "snd_device_default", &psSoundFlags, ss_UseDefaultDevice);
 
     // psSoundRolloff	= pSettings->r_float	("sound","rolloff");		clamp(psSoundRolloff,			EPS_S,	2.f);
     psSoundOcclusionScale = pSettings->r_float("sound", "occlusion_scale");
@@ -777,6 +799,10 @@ void CCC_Register()
 
     CMD1(CCC_HideConsole, "hide");
 
+    CMD4(CCC_Integer, "r__framelimit", &ps_framelimiter, 0, 500);
+
+    CMD4(CCC_Vector3, "ssfx_wetness_multiplier", &ssfx_wetness_multiplier, Fvector3().set(0.1f, 0.1f, 0.0f), Fvector3().set(20.0f, 20.0f, 0.0f));
+
 #ifdef DEBUG
     extern BOOL debug_destroy;
     CMD4(CCC_Integer, "debug_destroy", &debug_destroy, FALSE, TRUE);
@@ -784,9 +810,6 @@ void CCC_Register()
 
     CMD4(CCC_Float, "g_font_scale_x", &g_fontWidthScale, 0.2f, 5.0f);
     CMD4(CCC_Float, "g_font_scale_y", &g_fontHeightScale, 0.2f, 5.0f);
-
-    CMD4(CCC_Float, "rain_puddles_drying", &puddles_drying, 0.1f, 20.0f);
-    CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
 
     CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
 

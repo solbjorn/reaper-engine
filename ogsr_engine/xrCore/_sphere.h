@@ -2,27 +2,31 @@
 #define _F_SPHERE_H_
 
 template <class T>
-struct _sphere
+struct alignas(16) _sphere
 {
-    _vector3<T> P;
-    T R;
+    union
+    {
+        struct
+        {
+            _vector3<T> P;
+            T R;
+        };
+        _fvector4<T> v;
+    };
 
 public:
-    IC void set(const _vector3<T>& _P, T _R)
+    constexpr inline _sphere() = default;
+    constexpr inline _sphere(const _sphere<T>& s) { set(s); }
+    constexpr inline _sphere(const _vector3<T>& _P, T _R) { set(_P, _R); }
+    constexpr inline _sphere<T>& operator=(const _sphere<T>& s) { return set(s); }
+
+    constexpr IC void set(const _vector3<T>& _P, T _R) { v.set(_P, _R); }
+    constexpr IC _sphere<T>& set(const _sphere<T>& S)
     {
-        P.set(_P);
-        R = _R;
+        v = S.v;
+        return *this;
     }
-    IC void set(const _sphere<T>& S)
-    {
-        P.set(S.P);
-        R = S.R;
-    }
-    IC void identity()
-    {
-        P.set(0, 0, 0);
-        R = 1;
-    }
+    constexpr IC void identity() { v.set(0, 0, 0, 1); }
 
     enum ERP_Result
     {
@@ -71,7 +75,7 @@ public:
     // return's volume of sphere
     IC T volume() const { return T(PI_MUL_4 / 3) * (R * R * R); }
 
-      // https://gamedev.stackexchange.com/questions/96459/fast-ray-sphere-collision-code
+    // https://gamedev.stackexchange.com/questions/96459/fast-ray-sphere-collision-code
     ICF ERP_Result intersect_ray(const _vector3<T>& start, const _vector3<T>& dir, T& t) const
     {
         _vector3<T> m;
@@ -106,7 +110,7 @@ public:
 };
 
 typedef _sphere<float> Fsphere;
-typedef _sphere<double> Dsphere;
+static_assert(sizeof(Fsphere) == 16);
 
 template <class T>
 BOOL _valid(const _sphere<T>& s)

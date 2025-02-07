@@ -36,8 +36,14 @@ public:
         };
     };
 
-public:
-    TRI() = default;
+    constexpr inline TRI() = default;
+    constexpr inline TRI(const TRI& tr) { xr_memcpy16(this, &tr); }
+    constexpr inline TRI& operator=(const TRI& tr)
+    {
+        xr_memcpy16(this, &tr);
+        return *this;
+    }
+
     [[nodiscard]] auto IDvert(size_t ID) const { return verts[ID]; }
 };
 static_assert(sizeof(TRI) == 16);
@@ -121,6 +127,14 @@ struct alignas(16) XRCDB_API RESULT
     float range;
     float u, v;
     u64 pad;
+
+    constexpr inline RESULT() = default;
+    constexpr inline RESULT(const RESULT& res) { xr_memcpy128(this, &res, sizeof(res)); }
+    constexpr inline RESULT& operator=(const RESULT& res)
+    {
+        xr_memcpy128(this, &res, sizeof(res));
+        return *this;
+    }
 };
 static_assert(sizeof(RESULT) == 64);
 

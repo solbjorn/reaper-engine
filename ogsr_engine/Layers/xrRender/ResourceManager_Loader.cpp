@@ -40,13 +40,12 @@ void CResourceManager::OnDeviceCreate()
     }
     else
     {
-        if (FS.exist(fname, _game_data_, "shaders.xr"))
+        if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
         {
             Msg("Loading shader file: [%s]", fname);
             LoadShaderFile(fname);
         }
-
-        if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
+        else if (FS.exist(fname, _game_data_, "shaders.xr"))
         {
             Msg("Loading shader file: [%s]", fname);
             LoadShaderFile(fname);
@@ -69,7 +68,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
     if (0 == strncmp(id, ID, 8))
     {
         FATAL("Unsupported blender library. Compressed?");
-    }    
+    }
 
     string_path ini_path;
     strcpy_s(ini_path, fname);
@@ -117,7 +116,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                     B->SaveIni(&ini, desc.cName);
                 }
 
-                //Msg("Loading shader: [%s]", desc.cName);
+                // Msg("Loading shader: [%s]", desc.cName);
 
                 std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
                 ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
