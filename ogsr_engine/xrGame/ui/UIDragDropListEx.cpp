@@ -578,15 +578,19 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
         if (i->HasChild(itm))
         {
             CUICellItem* iii = i->PopChild();
-            R_ASSERT(0 == iii->ChildsCount());
+            R_ASSERT(iii->ChildsCount() == 0);
+            i->UpdateItemText();
+
             return iii;
         }
     }
 
-    if (!force_root && itm->ChildsCount())
+    if (!force_root && itm->ChildsCount() != 0)
     {
         CUICellItem* iii = itm->PopChild();
-        R_ASSERT(0 == iii->ChildsCount());
+        R_ASSERT(iii->ChildsCount() == 0);
+        itm->UpdateItemText();
+
         return iii;
     }
 

@@ -131,7 +131,7 @@ CUICellItem* CUICellItem::PopChild()
     CUICellItem* itm = m_childs.back();
     m_childs.pop_back();
     std::swap(itm->m_pData, m_pData);
-    UpdateItemText();
+
     R_ASSERT(itm->ChildsCount() == 0);
     itm->SetOwnerList(nullptr);
 

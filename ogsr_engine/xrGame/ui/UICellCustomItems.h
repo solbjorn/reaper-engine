@@ -33,18 +33,17 @@ class CUIAmmoCellItem : public CUIInventoryCellItem
 {
     RTTI_DECLARE_TYPEINFO(CUIAmmoCellItem, CUIInventoryCellItem);
 
-public:
-    typedef CUIInventoryCellItem inherited;
-
-protected:
-    virtual void UpdateItemText();
+private:
+    using inherited = CUIInventoryCellItem;
 
 public:
     explicit CUIAmmoCellItem(CWeaponAmmo* itm);
     ~CUIAmmoCellItem() override = default;
 
     virtual void Update();
+    void UpdateItemText() override;
     virtual bool EqualTo(CUICellItem* itm);
+
     CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
 

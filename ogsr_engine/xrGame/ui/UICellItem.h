@@ -35,7 +35,6 @@ protected:
     Fvector2 m_cell_size;
     ICustomDrawCell* m_custom_draw{};
     int m_accelerator;
-    virtual void UpdateItemText();
 
     CUIProgressBar* m_pConditionState{};
     bool m_condition_auto_width{};
@@ -50,6 +49,7 @@ public:
     [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action) override;
     virtual void Draw();
     virtual void Update();
+    virtual void UpdateItemText();
 
     virtual void OnAfterChild(CUIDragDropListEx*) {}
 
