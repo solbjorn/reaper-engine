@@ -62,7 +62,7 @@ class Sound;
 class IRenderable;
 class IRender_Light;
 
-class XRCDB_API ISpatial
+class ISpatial
 {
 public:
     struct _spatial
@@ -122,7 +122,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class XRCDB_API ISpatial_DB
+class ISpatial_DB
 {
 private:
     xrCriticalSection cs;
@@ -187,5 +187,5 @@ public:
     void q_frustum(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_or, const CFrustum& _frustum);
 };
 
-XRCDB_API extern ISpatial_DB* g_SpatialSpace;
-XRCDB_API extern ISpatial_DB* g_SpatialSpacePhysic;
+extern ISpatial_DB* g_SpatialSpace;
+extern ISpatial_DB* g_SpatialSpacePhysic;

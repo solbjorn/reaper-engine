@@ -1,6 +1,6 @@
 #pragma once
 
-class ENGINE_API DiscordRPC final
+class DiscordRPC final
 {
     HMODULE m_hDiscordDLL{};
 
@@ -69,4 +69,4 @@ public:
     }
 };
 
-extern ENGINE_API DiscordRPC Discord;
+extern DiscordRPC Discord;

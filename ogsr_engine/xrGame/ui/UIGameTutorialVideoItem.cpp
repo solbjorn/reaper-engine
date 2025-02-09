@@ -9,7 +9,7 @@
 
 #include "../../Include/xrRender/UISequenceVideoItem.h"
 
-extern ENGINE_API BOOL bShowPauseString;
+extern BOOL bShowPauseString;
 
 //-----------------------------------------------------------------------------
 // Tutorial Item

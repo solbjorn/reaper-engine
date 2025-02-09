@@ -5,9 +5,9 @@
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
 
-XRCORE_API xrDebug Debug;
-XRCORE_API HWND gGameWindow = nullptr;
-XRCORE_API bool ExitFromWinMain = false;
+xrDebug Debug;
+HWND gGameWindow = nullptr;
+bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
 
@@ -384,7 +384,7 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
-static void _terminate() //Вызывается при std::terminate()
+static void _terminate() // Вызывается при std::terminate()
 {
     Debug.backend("<no expression>", "Unexpected application termination", nullptr, nullptr, DEBUG_INFO);
 }
@@ -490,7 +490,7 @@ void xrDebug::_initialize()
 
     ::SetUnhandledExceptionFilter(UnhandledFilter);
 
-    //PreventSetUnhandledExceptionFilter();
+    // PreventSetUnhandledExceptionFilter();
 
     // Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
     // SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);

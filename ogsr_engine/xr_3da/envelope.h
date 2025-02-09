@@ -122,7 +122,7 @@ DEFINE_VECTOR(st_Key*, KeyVec, KeyIt);
 // refs
 class CExporter;
 
-class ENGINE_API CEnvelope
+class CEnvelope
 {
 public:
     KeyVec keys;

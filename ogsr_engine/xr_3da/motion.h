@@ -48,7 +48,7 @@ struct st_BoneMotion
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
 //--------------------------------------------------------------------------
-class ENGINE_API CCustomMotion
+class CCustomMotion
 {
 protected:
     enum EMotionType
@@ -105,7 +105,7 @@ public:
 };
 
 //--------------------------------------------------------------------------
-class ENGINE_API COMotion : public CCustomMotion
+class COMotion : public CCustomMotion
 {
     CEnvelope* envs[ctMaxChannel];
 
@@ -142,7 +142,7 @@ enum ESMFlags
     esmUseWeaponBone = 1 << 7,
 };
 
-struct ECORE_API SAnimParams
+struct SAnimParams
 {
     float t;
     float min_t;
@@ -176,7 +176,7 @@ public:
     void Pause(bool val) { bPlay = !val; }
 };
 
-class ENGINE_API CClip
+class CClip
 {
 public:
     struct AnimItem

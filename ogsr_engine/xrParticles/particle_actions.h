@@ -6,7 +6,7 @@ namespace PAPI
 {
 // refs
 struct ParticleEffect;
-struct PARTICLES_API ParticleAction
+struct ParticleAction
 {
     enum
     {

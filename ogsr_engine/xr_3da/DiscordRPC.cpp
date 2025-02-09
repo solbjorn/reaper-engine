@@ -5,7 +5,7 @@
 
 constexpr const char* DISCORD_LIBRARY_DLL{"discord-rpc.dll"};
 
-ENGINE_API DiscordRPC Discord;
+DiscordRPC Discord;
 
 void DiscordRPC::Init()
 {
@@ -57,7 +57,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     DiscordRichPresence presenseInfo{};
 
-    presenseInfo.startTimestamp = start_time; //время с момента запуска
+    presenseInfo.startTimestamp = start_time; // время с момента запуска
 
     if (level_name)
         current_level_name = level_name;
@@ -65,16 +65,16 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
     if (IS_OGSR_GA && current_level_name && (level_name || !level_name_translated))
         presenseInfo.largeImageKey = current_level_name; // большая картинка
     else
-        presenseInfo.largeImageKey = "main_image"; //большая картинка
-    presenseInfo.smallImageKey = "main_image_small"; //маленькая картинка
-    presenseInfo.smallImageText = Core.GetEngineVersion(); //версия движка на маленькой картинке
+        presenseInfo.largeImageKey = "main_image"; // большая картинка
+    presenseInfo.smallImageKey = "main_image_small"; // маленькая картинка
+    presenseInfo.smallImageText = Core.GetEngineVersion(); // версия движка на маленькой картинке
 
     std::string task_txt, lname, lname_and_task;
 
     if (active_task_text)
     {
         task_txt = StringHasUTF8(active_task_text) ? active_task_text : StringToUTF8(active_task_text);
-        presenseInfo.state = task_txt.c_str(); //Активное задание
+        presenseInfo.state = task_txt.c_str(); // Активное задание
     }
 
     if (level_name_translated)
@@ -83,7 +83,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
     if (current_level_name_translated)
     {
         lname = StringHasUTF8(current_level_name_translated) ? current_level_name_translated : StringToUTF8(current_level_name_translated);
-        presenseInfo.details = lname.c_str(); //название уровня
+        presenseInfo.details = lname.c_str(); // название уровня
     }
 
     if (!lname.empty())
@@ -101,7 +101,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
     }
 
     if (!lname_and_task.empty())
-        presenseInfo.largeImageText = lname_and_task.c_str(); //название уровня + активное задание на большой картинке
+        presenseInfo.largeImageText = lname_and_task.c_str(); // название уровня + активное задание на большой картинке
 
     Discord_UpdatePresence(&presenseInfo);
 }

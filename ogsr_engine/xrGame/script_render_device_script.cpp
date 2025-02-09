@@ -15,7 +15,7 @@ bool is_device_paused(CRenderDevice* d) { return !!Device.Paused(); }
 
 void set_device_paused(CRenderDevice* d, bool b) { Device.Pause(b, TRUE, FALSE, "set_device_paused_script"); }
 
-extern ENGINE_API BOOL g_appLoaded;
+extern BOOL g_appLoaded;
 bool is_app_ready() { return !!g_appLoaded; }
 
 u32 time_global(const CRenderDevice* self)

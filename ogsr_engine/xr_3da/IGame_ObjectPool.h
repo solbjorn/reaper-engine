@@ -1,10 +1,10 @@
 #pragma once
 
 // refs
-class ENGINE_API CObject;
+class CObject;
 
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_ObjectPool
+class IGame_ObjectPool
 {
     /*
     private:

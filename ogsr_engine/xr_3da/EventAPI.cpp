@@ -3,7 +3,7 @@
 #include "xr_ioconsole.h"
 
 //---------------------------------------------------------------------
-class ENGINE_API CEvent
+class CEvent
 {
     friend class CEventAPI;
 

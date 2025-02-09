@@ -85,18 +85,18 @@ struct ogf_header
 };
 
 // Sliding Window Record
-struct ENGINE_API FSlideWindow
+struct FSlideWindow
 {
     u32 offset;
     u16 num_tris;
     u16 num_verts;
 };
-struct ENGINE_API FSlideWindowItem
+struct FSlideWindowItem
 {
     FSlideWindow* sw;
     u32 count;
     u32 reserved[4];
-    FSlideWindowItem() : sw(0), count(0){};
+    FSlideWindowItem() : sw(0), count(0) {};
 };
 
 // OGF_TEXTURE1

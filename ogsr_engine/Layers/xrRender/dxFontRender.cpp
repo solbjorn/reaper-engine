@@ -17,8 +17,8 @@ void dxFontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
     pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 }
 
-extern ENGINE_API BOOL g_bRendering;
-extern ENGINE_API Fvector2 g_current_font_scale;
+extern BOOL g_bRendering;
+extern Fvector2 g_current_font_scale;
 
 void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last)
 {
@@ -35,9 +35,7 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
         wide_char wsStr[MAX_MB_CHARS];
 
-        u32 len = owner.IsMultibyte()
-            ? mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, PS.string)
-            : xr_strlen(PS.string);
+        u32 len = owner.IsMultibyte() ? mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, PS.string) : xr_strlen(PS.string);
 
         if (len)
         {
@@ -56,12 +54,8 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
             switch (PS.align)
             {
-            case CGameFont::alCenter:
-                X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x;
-                break;
-            case CGameFont::alRight:
-                X -= iFloor(fSize) * g_current_font_scale.x;
-                break;
+            case CGameFont::alCenter: X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x; break;
+            case CGameFont::alRight: X -= iFloor(fSize) * g_current_font_scale.x; break;
             }
 
             u32 clr, clr2;

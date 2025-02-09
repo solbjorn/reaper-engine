@@ -2,7 +2,7 @@
 
 #include "iinputreceiver.h"
 
-ENGINE_API extern Flags32 psHUD_Flags;
+extern Flags32 psHUD_Flags;
 
 enum HUD_Flags : u32
 {
@@ -22,7 +22,7 @@ enum HUD_Flags : u32
 
 class CUI;
 
-class ENGINE_API CCustomHUD : public DLL_Pure, public IEventReceiver
+class CCustomHUD : public DLL_Pure, public IEventReceiver
 {
 public:
     CCustomHUD();
@@ -45,4 +45,4 @@ public:
     virtual void net_Relcase(CObject* object) = 0;
 };
 
-extern ENGINE_API CCustomHUD* g_hud;
+extern CCustomHUD* g_hud;

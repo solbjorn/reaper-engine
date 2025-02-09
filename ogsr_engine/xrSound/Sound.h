@@ -1,38 +1,30 @@
 #ifndef SoundH
 #define SoundH
 
-#ifdef XRSOUND_STATIC
-#define XRSOUND_API
-#elif defined XRSOUND_EXPORTS
-#define XRSOUND_API __declspec(dllexport)
-#else
-#define XRSOUND_API __declspec(dllimport)
-#endif
-
 #define OGG_COMMENT_VERSION 0x0003
 
 // refs
 class CObject;
-class XRSOUND_API CSound_params;
-class XRSOUND_API CSound_source;
-class XRSOUND_API CSound_emitter;
-class XRSOUND_API CSound_stream_interface;
-class XRSOUND_API CSound_environment;
+class CSound_params;
+class CSound_source;
+class CSound_emitter;
+class CSound_stream_interface;
+class CSound_environment;
 
-XRSOUND_API extern u32 psSoundModel;
-XRSOUND_API extern float psSoundVEffects;
-XRSOUND_API extern float psSoundVFactor;
-XRSOUND_API extern float psSoundVMusic;
-XRSOUND_API extern float psSoundVMusicFactor;
-XRSOUND_API extern float psSoundRolloff;
-XRSOUND_API extern float psSoundOcclusionScale;
-XRSOUND_API extern float psSoundLinearFadeFactor; //--#SM+#--
-XRSOUND_API extern Flags32 psSoundFlags;
-XRSOUND_API extern int psSoundTargets;
-XRSOUND_API extern int psSoundCacheSizeMB;
-XRSOUND_API extern xr_token* snd_devices_token;
-XRSOUND_API extern u32 snd_device_id;
-XRSOUND_API extern float psSoundTimeFactor; //--#SM+#--
+extern u32 psSoundModel;
+extern float psSoundVEffects;
+extern float psSoundVFactor;
+extern float psSoundVMusic;
+extern float psSoundVMusicFactor;
+extern float psSoundRolloff;
+extern float psSoundOcclusionScale;
+extern float psSoundLinearFadeFactor; //--#SM+#--
+extern Flags32 psSoundFlags;
+extern int psSoundTargets;
+extern int psSoundCacheSizeMB;
+extern xr_token* snd_devices_token;
+extern u32 snd_device_id;
+extern float psSoundTimeFactor; //--#SM+#--
 
 // Flags
 enum : u32
@@ -167,7 +159,7 @@ public:
 };
 
 /// definition (Sound Source)
-class XRSOUND_API CSound_source
+class CSound_source
 {
 public:
     virtual float length_sec() const = 0;
@@ -178,7 +170,7 @@ public:
 };
 
 /// definition (Sound Source)
-class XRSOUND_API CSound_environment
+class CSound_environment
 {
 public:
     shared_str name;
@@ -210,7 +202,7 @@ extern float getSmoothedValue(float, float, float);
 }; // namespace soundSmoothingParams
 
 /// definition (Sound Params)
-class XRSOUND_API CSound_params
+class CSound_params
 {
 public:
     CSound_params() : set(false)
@@ -268,7 +260,7 @@ public:
 };
 
 /// definition (Sound Interface)
-class XRSOUND_API CSound_emitter
+class CSound_emitter
 {
 public:
     virtual BOOL is_2D() = 0;
@@ -286,10 +278,13 @@ public:
 };
 
 /// definition (Sound Stream Interface)
-class XRSOUND_API CSound_stream_interface{public : };
+class CSound_stream_interface
+{
+public:
+};
 
 /// definition (Sound Stream Interface)
-class XRSOUND_API CSound_stats
+class CSound_stats
 {
 public:
     u32 _rendered;
@@ -299,7 +294,7 @@ public:
     u32 _events;
 };
 
-class XRSOUND_API CSound_stats_ext
+class CSound_stats_ext
 {
 public:
     struct SItem
@@ -328,7 +323,7 @@ public:
 typedef void __stdcall sound_event(ref_sound_data_ptr S, float range);
 
 /// definition (Sound Manager Interface)
-class XRSOUND_API CSound_manager_interface
+class CSound_manager_interface
 {
     virtual void _initialize(int stage) = 0;
     virtual void _clear() = 0;
@@ -377,7 +372,7 @@ public:
 };
 
 class CSound_manager_interface;
-extern XRSOUND_API CSound_manager_interface* Sound;
+extern CSound_manager_interface* Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
 IC ref_sound_data::ref_sound_data()

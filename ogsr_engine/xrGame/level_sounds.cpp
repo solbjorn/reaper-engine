@@ -41,7 +41,7 @@ void SStaticSound::LoadIni(CInifile::Sect& section)
     m_StopTime = 0;
 }
 
-extern XRSOUND_API float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ);
+extern float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ);
 
 void SStaticSound::Update(u32 game_time, u32 global_time)
 {

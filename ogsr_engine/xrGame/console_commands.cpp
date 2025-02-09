@@ -49,7 +49,6 @@ string_path g_last_saved_game;
 extern u64 g_qwStartGameTime;
 extern u64 g_qwEStartGameTime;
 
-ENGINE_API
 extern float psHUD_FOV_def;
 extern float psSqueezeVelocity;
 

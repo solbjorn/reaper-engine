@@ -1,7 +1,7 @@
 #ifndef STREAM_READER_H
 #define STREAM_READER_H
 
-class XRCORE_API CStreamReader : public IReaderBase<CStreamReader>
+class CStreamReader : public IReaderBase<CStreamReader>
 {
 private:
     HANDLE m_file_mapping_handle{};

@@ -16,7 +16,7 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 } PROCESSOR_POWER_INFORMATION, *PPROCESSOR_POWER_INFORMATION;
 
 // Initialized on startup
-XRCORE_API Fmatrix Fidentity;
+Fmatrix Fidentity;
 
 namespace CPU
 {

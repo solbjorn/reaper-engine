@@ -22,8 +22,8 @@
 #include "phcollidevalidator.h"
 #include "PHShell.h"
 
-ENGINE_API extern float psHUD_FOV; //--#SM+#--
-ENGINE_API extern float psHUD_FOV_def; //--#SM+#--
+extern float psHUD_FOV; //--#SM+#--
+extern float psHUD_FOV_def; //--#SM+#--
 
 void CActor::cam_Set(EActorCameras style)
 {

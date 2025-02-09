@@ -85,4 +85,4 @@ public:
     ui_shader& GetShader() { return hShader; }
 };
 
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;

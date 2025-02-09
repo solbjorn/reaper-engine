@@ -29,7 +29,7 @@
 // KRodin: закомментировано.
 // #include "xrSASH.h"
 
-class ENGINE_API IConsole_Command
+class IConsole_Command
 {
 public:
     friend class CConsole;
@@ -101,7 +101,7 @@ public:
 
 }; // class IConsole_Command
 
-class ENGINE_API CCC_Mask : public IConsole_Command
+class CCC_Mask : public IConsole_Command
 {
 protected:
     Flags32* value;
@@ -138,7 +138,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_ToggleMask : public IConsole_Command
+class CCC_ToggleMask : public IConsole_Command
 {
 protected:
     Flags32* value;
@@ -169,7 +169,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_Token : public IConsole_Command
+class CCC_Token : public IConsole_Command
 {
 protected:
     u32* value;
@@ -250,7 +250,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_Float : public IConsole_Command
+class CCC_Float : public IConsole_Command
 {
 protected:
     float* value;
@@ -289,7 +289,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_Vector3 : public IConsole_Command
+class CCC_Vector3 : public IConsole_Command
 {
 protected:
     Fvector* value;
@@ -336,7 +336,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_Integer : public IConsole_Command
+class CCC_Integer : public IConsole_Command
 {
 protected:
     int* value;
@@ -371,7 +371,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_String : public IConsole_Command
+class CCC_String : public IConsole_Command
 {
 protected:
     LPSTR value;
@@ -395,7 +395,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_LoadCFG : public IConsole_Command
+class CCC_LoadCFG : public IConsole_Command
 {
 public:
     virtual bool allow(LPCSTR cmd) { return true; };
@@ -403,7 +403,7 @@ public:
     virtual void Execute(LPCSTR args);
 };
 
-class ENGINE_API CCC_LoadCFG_custom : public CCC_LoadCFG
+class CCC_LoadCFG_custom : public CCC_LoadCFG
 {
     string64 m_cmd;
 

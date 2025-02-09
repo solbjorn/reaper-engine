@@ -9,7 +9,7 @@ using namespace PAPI;
 
 // system
 CParticleManager PM;
-PARTICLES_API IParticleManager* PAPI::ParticleManager() { return &PM; }
+IParticleManager* PAPI::ParticleManager() { return &PM; }
 
 CParticleManager::CParticleManager() {}
 
@@ -102,7 +102,7 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
     for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
     {
         VERIFY((*it));
-		if ((*it))
+        if ((*it))
             switch ((*it)->type)
             {
             case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, FALSE); break;
@@ -123,7 +123,7 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     // Step through all the actions in the action list.
     for (PAVecIt it = pa->begin(); it != pa->end(); it++)
     {
-		if ((*it))
+        if ((*it))
             switch ((*it)->type)
             {
             case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, TRUE); break;
@@ -152,14 +152,12 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
     for (PAVecIt it = pa->begin(); it != pa->end(); it++)
     {
         VERIFY((*it));
-		if ((*it))
-			(*it)->Execute(pe, dt);
+        if ((*it))
+            (*it)->Execute(pe, dt);
     }
 }
 
-void CParticleManager::Render(int)
-{
-}
+void CParticleManager::Render(int) {}
 
 void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvector& vel)
 {
@@ -176,8 +174,8 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     // Step through all the actions in the action list.
     for (PAVecIt it = pa->begin(); it != pa->end(); it++)
     {
-		if (!(*it))
-			continue;
+        if (!(*it))
+            continue;
 
         BOOL r = (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
         const Fmatrix& m = r ? full : mT;
@@ -275,11 +273,11 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
         u32 cnt = R.r_u32();
         for (u32 k = 0; k < cnt; k++)
         {
-			u32 type = R.r_u32();
-			if (type == (u32)-1)
-				continue;
+            u32 type = R.r_u32();
+            if (type == (u32)-1)
+                continue;
 
-			ParticleAction* act = CreateAction((PActionEnum)type);
+            ParticleAction* act = CreateAction((PActionEnum)type);
             act->m_copFormat = copFormat;
             act->Load(R);
             pa->append(act);

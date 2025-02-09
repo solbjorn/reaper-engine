@@ -7,7 +7,7 @@
 
 // #include "../xrcdb/xrxrc.h"
 
-extern XRCDB_API BOOL* cdb_bDebug;
+extern BOOL* cdb_bDebug;
 
 void SetupGPU(IRenderDeviceRender* pRender)
 {

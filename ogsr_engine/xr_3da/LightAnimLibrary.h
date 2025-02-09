@@ -1,6 +1,6 @@
 #pragma once
 
-class ENGINE_API CLAItem
+class CLAItem
 {
 public:
     shared_str cName;
@@ -38,7 +38,7 @@ public:
 };
 DEFINE_VECTOR(CLAItem*, LAItemVec, LAItemIt);
 
-class ENGINE_API ELightAnimLibrary
+class ELightAnimLibrary
 {
 public:
     LAItemVec Items;
@@ -61,4 +61,4 @@ public:
     void DbgDumpInfo() const;
 };
 
-extern ENGINE_API ELightAnimLibrary LALib;
+extern ELightAnimLibrary LALib;

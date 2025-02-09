@@ -1,12 +1,12 @@
 #pragma once
 
-struct ENGINE_API SBaseEffector
+struct SBaseEffector
 {
     fastdelegate::FastDelegate<void()> m_on_b_remove_callback;
     virtual ~SBaseEffector() = default;
 };
 
-struct ENGINE_API SCamEffectorInfo
+struct SCamEffectorInfo
 {
     Fvector p;
     Fvector d;
@@ -61,6 +61,6 @@ enum EEffectorPPType
 };
 
 // refs
-class ENGINE_API CCameraBase;
-class ENGINE_API CEffectorCam;
-class ENGINE_API CEffectorPP;
+class CCameraBase;
+class CEffectorCam;
+class CEffectorPP;

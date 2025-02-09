@@ -343,7 +343,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     FillSprite(pv, T, R, pos, lt, rb, r1, r2, clr, sina, cosa);
 }
 
-extern ENGINE_API float psHUD_FOV;
+extern float psHUD_FOV;
 
 ICF void magnitude_sse(Fvector& vec, float& res)
 {

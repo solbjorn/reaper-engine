@@ -2,8 +2,8 @@
 
 #include "SoundRender_CoreA.h"
 
-XRSOUND_API xr_token* snd_devices_token = nullptr;
-XRSOUND_API u32 snd_device_id = u32(-1);
+xr_token* snd_devices_token = nullptr;
+u32 snd_device_id = u32(-1);
 
 CSoundRender_CoreA* impl = nullptr;
 

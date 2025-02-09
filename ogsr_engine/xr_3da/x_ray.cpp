@@ -21,8 +21,8 @@
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
-ENGINE_API bool IS_OGSR_GA{};
-ENGINE_API CInifile* pGameIni = nullptr;
+bool IS_OGSR_GA{};
+CInifile* pGameIni = nullptr;
 int max_load_stage = 0;
 
 struct _SoundProcessor : public pureFrame
@@ -36,10 +36,10 @@ struct _SoundProcessor : public pureFrame
 } SoundProcessor;
 
 // global variables
-ENGINE_API CApplication* pApp = NULL;
+CApplication* pApp = NULL;
 static HWND logoWindow = NULL;
 
-ENGINE_API bool g_bBenchmark = false;
+bool g_bBenchmark = false;
 string512 g_sBenchmarkName;
 
 // startup point
@@ -503,7 +503,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 }
 
 static CTimer phase_timer;
-extern ENGINE_API BOOL g_appLoaded = FALSE;
+extern BOOL g_appLoaded = FALSE;
 
 void CApplication::LoadBegin()
 {
@@ -712,10 +712,10 @@ void CApplication::load_draw_internal() { loadingScreen->Update(load_stage, max_
 extern "C"
 {
     // https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
-    ENGINE_API DWORD NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
+    DWORD NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
 
     // https://gpuopen.com/amdpowerxpressrequesthighperformance/
-    ENGINE_API DWORD AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
+    DWORD AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
 }
 
 */

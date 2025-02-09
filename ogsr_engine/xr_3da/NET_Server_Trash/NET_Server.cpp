@@ -2,7 +2,7 @@
 
 #include "net_server.h"
 
-ENGINE_API ClientID BroadcastCID(0xffffffff);
+ClientID BroadcastCID(0xffffffff);
 
 void ip_address::set(LPCSTR src_string) // Это нужно
 {

@@ -3,24 +3,24 @@
 #include "../../xrCore/xrCore.h"
 
 class IRender_interface;
-extern XRCORE_API IRender_interface* Render;
+extern IRender_interface* Render;
 
 class IRenderFactory;
-extern XRCORE_API IRenderFactory* RenderFactory;
+extern IRenderFactory* RenderFactory;
 
 class CDUInterface;
-extern XRCORE_API CDUInterface* DU;
+extern CDUInterface* DU;
 
 struct xr_token;
-extern XRCORE_API xr_token* vid_mode_token;
+extern xr_token* vid_mode_token;
 
 class IUIRender;
-extern XRCORE_API IUIRender* UIRender;
+extern IUIRender* UIRender;
 
 class CGameMtlLibrary;
-extern XRCORE_API CGameMtlLibrary* PGMLib;
+extern CGameMtlLibrary* PGMLib;
 
-//#ifdef DEBUG
+// #ifdef DEBUG
 class IDebugRender;
-extern XRCORE_API IDebugRender* DRender;
-//#endif // DEBUG
+extern IDebugRender* DRender;
+// #endif // DEBUG

@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
-struct XRCORE_API str_value
+struct str_value
 {
     u32 dwReference;
     u32 dwLength;
@@ -19,7 +19,7 @@ struct XRCORE_API str_value
 struct str_container_impl;
 
 //////////////////////////////////////////////////////////////////////////
-class XRCORE_API str_container
+class str_container
 {
 public:
     str_container();
@@ -36,7 +36,7 @@ private:
     str_container_impl* impl;
 };
 
-XRCORE_API extern str_container* g_pStringContainer;
+extern str_container* g_pStringContainer;
 
 //////////////////////////////////////////////////////////////////////////
 class shared_str
@@ -120,7 +120,7 @@ public:
 
     const char* c_str() const { return p_ ? p_->value : nullptr; }
 
-    //Используется в погодном редакторе.
+    // Используется в погодном редакторе.
     const char* data() const { return p_ ? p_->value : ""; }
 
     u32 size() const { return p_ ? p_->dwLength : 0; }
@@ -132,7 +132,6 @@ public:
         str_value* tmp = p_;
         p_ = rhs.p_;
         rhs.p_ = tmp;
-
     }
     bool equal(const shared_str& rhs) const { return (p_ == rhs.p_); }
 

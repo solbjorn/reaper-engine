@@ -3,18 +3,16 @@
 #include "iinputreceiver.h"
 #include "effector.h"
 
-class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
+class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
-    //struct force_position
+    // struct force_position
     //{
-    //    bool set_position;
-    //    Fvector p;
-    //} g_position{};
+    //     bool set_position;
+    //     Fvector p;
+    // } g_position{};
 
     int iCount;
     IWriter* file{};
-
-
 
     Fmatrix m_Camera;
     u32 m_Stage;

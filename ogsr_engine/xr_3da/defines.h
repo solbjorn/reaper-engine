@@ -2,7 +2,7 @@
 #define DefinesH
 
 #ifdef DEBUG
-ENGINE_API extern BOOL bDebug;
+extern BOOL bDebug;
 #else
 #define bDebug 0
 #endif
@@ -54,9 +54,9 @@ enum
     rsExclusiveMode = 1ul << 19ul,
 };
 
-//. ENGINE_API extern	u32			psCurrentMode		;
-ENGINE_API extern u32 psCurrentVidMode[];
-ENGINE_API extern Flags32 psDeviceFlags;
+//. extern	u32			psCurrentMode		;
+extern u32 psCurrentVidMode[];
+extern Flags32 psDeviceFlags;
 extern Flags32 psDeviceFlags2;
 
 enum

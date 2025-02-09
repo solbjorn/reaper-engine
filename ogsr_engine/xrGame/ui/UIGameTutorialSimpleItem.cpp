@@ -14,7 +14,7 @@
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
 
-extern ENGINE_API BOOL bShowPauseString;
+extern BOOL bShowPauseString;
 
 //-----------------------------------------------------------------------------
 // Tutorial Item

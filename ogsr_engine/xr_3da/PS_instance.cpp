@@ -15,7 +15,7 @@ CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial(g_SpatialSpace)
     m_bAutoRemove = TRUE;
     m_bDead = FALSE;
 }
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;
 
 //----------------------------------------------------
 CPS_Instance::~CPS_Instance()

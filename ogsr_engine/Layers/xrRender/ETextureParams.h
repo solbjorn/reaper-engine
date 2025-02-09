@@ -1,7 +1,7 @@
 #ifndef ETextureParamsH
 #define ETextureParamsH
 
-struct ECORE_API STextureParams
+struct STextureParams
 {
     enum ETType
     {

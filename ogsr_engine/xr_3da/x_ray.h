@@ -1,11 +1,11 @@
 #pragma once
 
 // refs
-class ENGINE_API CGameFont;
+class CGameFont;
 class ILoadingScreen;
 
 // definition
-class ENGINE_API CApplication : public pureFrame, public IEventReceiver
+class CApplication : public pureFrame, public IEventReceiver
 {
     // levels
     struct sLevelInfo
@@ -57,5 +57,5 @@ public:
     void DestroyLoadingScreen();
 };
 
-extern ENGINE_API CApplication* pApp;
-extern ENGINE_API bool IS_OGSR_GA;
+extern CApplication* pApp;
+extern bool IS_OGSR_GA;

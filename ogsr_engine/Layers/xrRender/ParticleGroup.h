@@ -6,7 +6,7 @@ namespace PS
 {
 class CParticleEffect;
 
-class ECORE_API CPGDef
+class CPGDef
 {
 public:
     shared_str m_Name;
@@ -46,7 +46,7 @@ public:
     BOOL Load2(CInifile& ini);
 };
 
-class ECORE_API CParticleGroup : public dxParticleCustom
+class CParticleGroup : public dxParticleCustom
 {
     const CPGDef* m_Def{};
     float m_CurrentTime{};

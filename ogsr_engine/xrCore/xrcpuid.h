@@ -3,7 +3,7 @@
 #include <bitset>
 #include <winternl.h>
 
-struct XRCORE_API _processor_info final
+struct _processor_info final
 {
     _processor_info();
 

@@ -16,7 +16,7 @@
 
 // refs
 class CEntity;
-class ENGINE_API CMotionDef;
+class CMotionDef;
 class CSE_ALifeItemWeapon;
 class CSE_ALifeItemWeaponAmmo;
 class CWeaponMagazined;

@@ -3,7 +3,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
-class ENGINE_API IInputReceiver;
+class IInputReceiver;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //описание класса
@@ -12,7 +12,7 @@ const int keyboard_device_key = 2;
 const int all_device_key = mouse_device_key | keyboard_device_key;
 const int default_key = mouse_device_key | keyboard_device_key;
 
-class ENGINE_API CInput : public pureFrame, public pureAppActivate, public pureAppDeactivate
+class CInput : public pureFrame, public pureAppActivate, public pureAppDeactivate
 {
 public:
     enum
@@ -93,4 +93,4 @@ public:
     void clip_cursor(bool clip);
 };
 
-extern ENGINE_API CInput* pInput;
+extern CInput* pInput;

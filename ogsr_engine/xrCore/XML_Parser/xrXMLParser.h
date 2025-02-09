@@ -11,7 +11,7 @@ constexpr LPCSTR STRING_TABLE_PATH = "text";
 typedef TiXmlNode XML_NODE;
 typedef TiXmlAttribute XML_ATTRIBUTE;
 
-class XRCORE_API CXml
+class CXml
 {
 public:
     string_path m_xml_file_name{};
@@ -22,7 +22,7 @@ public:
     bool Init(LPCSTR path_alias, LPCSTR path, LPCSTR xml_filename);
     bool Init(LPCSTR path_alias, LPCSTR xml_filename);
 
-    //чтение элементов
+    // чтение элементов
     LPCSTR Read(LPCSTR path, int index, LPCSTR default_str_val);
     LPCSTR Read(XML_NODE* start_node, LPCSTR path, int index, LPCSTR default_str_val);
     LPCSTR Read(XML_NODE* node, LPCSTR default_str_val);
@@ -50,20 +50,20 @@ public:
     XML_NODE* SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern);
     XML_NODE* SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern);
 
-    //возвращает количество узлов с заданым именем
+    // возвращает количество узлов с заданым именем
     int GetNodesNum(LPCSTR path, int index, LPCSTR tag_name);
     int GetNodesNum(XML_NODE* node, LPCSTR tag_name);
 
 #ifdef DEBUG // debug & mixed
-    //проверка того, что аттрибуты у тегов уникальны
+    // проверка того, что аттрибуты у тегов уникальны
     //(если не NULL, то уникальность нарушена и возврашается имя
-    //повторяющегося атрибута)
+    // повторяющегося атрибута)
     LPCSTR CheckUniqueAttrib(XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name);
 #endif
 
-    //переместиться по XML дереву
-    //путь задается в форме PARENT:CHILD:CHIDLS_CHILD
-    // node_index - номер, если узлов с одним именем несколько
+    // переместиться по XML дереву
+    // путь задается в форме PARENT:CHILD:CHIDLS_CHILD
+    //  node_index - номер, если узлов с одним именем несколько
     XML_NODE* NavigateToNode(LPCSTR path, int index = 0);
     XML_NODE* NavigateToNode(XML_NODE* start_node, LPCSTR path, int index = 0);
     XML_NODE* NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value);
@@ -80,7 +80,7 @@ protected:
     XML_NODE* m_pLocalRoot;
 
 #ifdef DEBUG // debug & mixed
-    //буфферный вектор для проверки уникальность аттрибутов
+    // буфферный вектор для проверки уникальность аттрибутов
     xr_vector<shared_str> m_AttribValues;
 #endif
 public:

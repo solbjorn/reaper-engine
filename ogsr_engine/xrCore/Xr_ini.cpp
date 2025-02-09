@@ -2,14 +2,14 @@
 
 #include "fs_internal.h"
 
-XRCORE_API CInifile* pSettings = nullptr;
+CInifile* pSettings = nullptr;
 
 CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly) { return xr_new<CInifile>(szFileName, ReadOnly); }
 
 void CInifile::Destroy(CInifile* ini) { xr_delete(ini); }
 
 // Тело функций Inifile
-XRCORE_API void _parse(LPSTR dest, LPCSTR src)
+void _parse(LPSTR dest, LPCSTR src)
 {
     if (src)
     {
@@ -37,7 +37,7 @@ XRCORE_API void _parse(LPSTR dest, LPCSTR src)
     *dest = 0;
 }
 
-XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
+void _decorate(LPSTR dest, LPCSTR src)
 {
     if (src)
     {

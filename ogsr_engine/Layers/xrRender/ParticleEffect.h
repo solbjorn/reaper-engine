@@ -10,7 +10,7 @@
 
 namespace PS
 {
-class ECORE_API CParticleEffect : public dxParticleCustom
+class CParticleEffect : public dxParticleCustom
 {
     //		friend void ParticleRenderStream( LPVOID lpvParams );
     friend class CPEDef;

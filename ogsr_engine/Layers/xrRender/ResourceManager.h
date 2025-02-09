@@ -13,7 +13,7 @@
 class dx10ConstantBuffer;
 
 // defs
-class ECORE_API CResourceManager : public IResourceManager
+class CResourceManager : public IResourceManager
 {
 private:
     struct str_pred

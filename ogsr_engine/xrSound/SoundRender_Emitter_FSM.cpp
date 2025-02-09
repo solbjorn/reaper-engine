@@ -4,7 +4,7 @@
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 
-XRSOUND_API extern float psSoundCull;
+extern float psSoundCull;
 constexpr float TIME_TO_STOP_INFINITE = static_cast<float>(0xffffffff);
 
 inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const float& fFreq, const WAVEFORMATEX& wfx)

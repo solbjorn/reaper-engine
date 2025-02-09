@@ -276,7 +276,7 @@ void CHUDManager::Render_Last()
 
 extern void draw_wnds_rects();
 
-extern ENGINE_API BOOL bShowPauseString;
+extern BOOL bShowPauseString;
 
 // отрисовка элементов интерфейса
 #include "string_table.h"

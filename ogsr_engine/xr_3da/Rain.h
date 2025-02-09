@@ -8,12 +8,12 @@
 #include "../xrcdb/xr_collide_defs.h"
 
 // refs
-class ENGINE_API IRender_DetailModel;
+class IRender_DetailModel;
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RainRender.h"
 //
-class ENGINE_API CEffect_Rain
+class CEffect_Rain
 {
     friend class dxRainRender;
 

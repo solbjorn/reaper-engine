@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-XRCORE_API BOOL g_bEnableStatGather = FALSE;
+BOOL g_bEnableStatGather = FALSE;
 
 void CStatTimer::FrameStart()
 {
@@ -17,7 +17,7 @@ void CStatTimer::FrameEnd()
         result = 0.99f * result + 0.01f * time;
 }
 
-XRCORE_API pauseMngr g_pauseMngr;
+pauseMngr g_pauseMngr;
 
 pauseMngr::pauseMngr() : paused(false) { m_timers.reserve(3); }
 

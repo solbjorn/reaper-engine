@@ -1,6 +1,6 @@
 #pragma once
 class CBlend;
-class XRCORE_API motion_marks;
+class motion_marks;
 class IKinematicsAnimated;
 class ik_anim_state
 {
@@ -11,7 +11,7 @@ class ik_anim_state
     const CBlend* current_blend;
 
 public:
-    ik_anim_state() : is_step(false), do_glue(true), is_idle(false), is_blending(false), current_blend(0){};
+    ik_anim_state() : is_step(false), do_glue(true), is_idle(false), is_blending(false), current_blend(0) {};
     void update(IKinematicsAnimated* K, const CBlend* b, u16 interval);
     IC bool step() const { return is_step; }
     IC bool glue() const { return do_glue; }

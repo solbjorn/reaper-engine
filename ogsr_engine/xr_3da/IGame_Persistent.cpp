@@ -12,11 +12,11 @@
 
 extern Fvector4 ps_ssfx_grass_interactive;
 
-ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
+IGame_Persistent* g_pGamePersistent = NULL;
 
-ENGINE_API bool IsMainMenuActive() { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
+bool IsMainMenuActive() { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 
-ENGINE_API BOOL g_prefetch{TRUE};
+BOOL g_prefetch{TRUE};
 
 IGame_Persistent::IGame_Persistent()
 {

@@ -9,7 +9,7 @@
 // refs
 class CObject;
 
-class ENGINE_API CCameraBase
+class CCameraBase
 {
 protected:
     CObject* parent;

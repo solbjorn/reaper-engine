@@ -1,6 +1,6 @@
 #pragma once
 
-class XRCORE_API trivial_encryptor
+class trivial_encryptor
 {
     using type = u8;
     using pvoid = void*;
@@ -44,4 +44,4 @@ public:
     void decode(pcvoid source, const size_t& source_size, pvoid destination, key_flag what = key_flag::worldwide);
 };
 
-extern XRCORE_API trivial_encryptor g_trivial_encryptor;
+extern trivial_encryptor g_trivial_encryptor;

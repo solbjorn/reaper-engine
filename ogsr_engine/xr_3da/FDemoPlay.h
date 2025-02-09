@@ -10,7 +10,7 @@ class COMotion;
 struct SAnimParams;
 
 // class
-class ENGINE_API CDemoPlay : public CEffectorCam
+class CDemoPlay : public CEffectorCam
 {
     COMotion* m_pMotion;
     SAnimParams* m_MParam;

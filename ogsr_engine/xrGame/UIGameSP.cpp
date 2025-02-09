@@ -197,7 +197,7 @@ void CUIGameSP::ReInitShownUI()
         UICarBodyMenu->UpdateLists_delayed();
 };
 
-extern ENGINE_API BOOL bShowPauseString;
+extern BOOL bShowPauseString;
 
 void CUIGameSP::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b)
 {
@@ -297,7 +297,7 @@ bool CChangeLevelWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
         {
             OnCancel();
             return true;
-        }        
+        }
     }
     return inherited::OnKeyboard(dik, keyboard_action);
 }

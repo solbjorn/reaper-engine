@@ -9,7 +9,7 @@ class CBone;
 
 #define MAX_BONE_PARAMS 4
 
-class ENGINE_API CBoneInstance;
+class CBoneInstance;
 // callback
 typedef void _BCL BoneCallbackFunction(CBoneInstance* P);
 typedef BoneCallbackFunction* BoneCallback;
@@ -17,7 +17,7 @@ typedef BoneCallbackFunction* BoneCallback;
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push, 8)
-class ENGINE_API CBoneInstance
+class CBoneInstance
 {
 public:
     // data
@@ -82,7 +82,7 @@ public:
 #pragma pack(pop)
 
 #pragma pack(push, 2)
-struct ENGINE_API vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
+struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
 {
     Fvector P;
     Fvector N;
@@ -100,7 +100,7 @@ struct ENGINE_API vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
     }
 #endif
 };
-struct ENGINE_API vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
+struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
 {
     u16 matrix0;
     u16 matrix1;
@@ -120,7 +120,7 @@ struct ENGINE_API vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
     }
 #endif
 };
-struct ENGINE_API vertBoned3W // 70 bytes
+struct vertBoned3W // 70 bytes
 {
     u16 m[3];
     Fvector P;
@@ -139,7 +139,7 @@ struct ENGINE_API vertBoned3W // 70 bytes
     }
 #endif
 };
-struct ENGINE_API vertBoned4W // 76 bytes
+struct vertBoned4W // 76 bytes
 {
     u16 m[4];
     Fvector P;
@@ -172,7 +172,7 @@ enum EJointType
     jtForceU32 = u32(-1)
 };
 
-struct ECORE_API SJointLimit
+struct SJointLimit
 {
     Fvector2 limit;
     float spring_factor;
@@ -186,7 +186,7 @@ struct ECORE_API SJointLimit
     }
 };
 
-struct ECORE_API SBoneShape
+struct SBoneShape
 {
     enum EShapeType
     {
@@ -232,7 +232,7 @@ struct ECORE_API SBoneShape
     }
 };
 
-struct ECORE_API SJointIKData
+struct SJointIKData
 {
     // IK
     EJointType type;
@@ -335,7 +335,7 @@ public:
 class CBone;
 DEFINE_VECTOR(CBone*, BoneVec, BoneIt);
 
-class ECORE_API CBone : public CBoneInstance, public IBoneData
+class CBone : public CBoneInstance, public IBoneData
 {
     shared_str name;
     shared_str parent_name;
@@ -479,7 +479,7 @@ class CBoneData;
 typedef xr_vector<CBoneData*> vecBones;
 typedef vecBones::iterator vecBonesIt;
 
-class ENGINE_API CBoneData : public IBoneData
+class CBoneData : public IBoneData
 {
 protected:
     u16 SelfID;

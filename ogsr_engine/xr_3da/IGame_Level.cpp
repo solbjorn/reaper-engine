@@ -10,7 +10,7 @@
 #include "xrLevel.h"
 #include "CameraManager.h"
 
-ENGINE_API IGame_Level* g_pGameLevel = NULL;
+IGame_Level* g_pGameLevel = NULL;
 
 IGame_Level::IGame_Level()
 {
@@ -23,7 +23,7 @@ IGame_Level::IGame_Level()
     pHUD = NULL;
 }
 
-//#include "resourcemanager.h"
+// #include "resourcemanager.h"
 
 IGame_Level::~IGame_Level()
 {

@@ -4,7 +4,7 @@
 
 #include "../Include/xrRender/FontRender.h"
 
-class ENGINE_API CGameFont
+class CGameFont
 {
     friend class dxFontRender;
 
@@ -27,7 +27,6 @@ private:
         EAligment align;
     };
 
-
     float fXStep;
 
     float fTCHeight;
@@ -45,11 +44,10 @@ private:
     Fvector2 vInterval;
 
 protected:
-
     float fHeight; // оригинальная высота
 
     xr_vector<String> strings;
-    
+
     Ivector2 vTS;
 
     u32 uFlags;

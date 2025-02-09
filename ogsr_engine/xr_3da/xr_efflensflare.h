@@ -6,10 +6,10 @@
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/LensFlareRender.h"
 
-class ENGINE_API CInifile;
-class ENGINE_API CEnvironment;
+class CInifile;
+class CEnvironment;
 
-class ENGINE_API CLensFlareDescriptor
+class CLensFlareDescriptor
 {
 public:
     struct SFlare
@@ -67,7 +67,7 @@ public:
 };
 DEFINE_VECTOR(CLensFlareDescriptor*, LensFlareDescVec, LensFlareDescIt);
 
-class ENGINE_API CLensFlare
+class CLensFlare
 {
     friend class dxLensFlareRender;
 

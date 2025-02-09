@@ -53,7 +53,7 @@ struct R_statistics
 
 #pragma warning(push)
 #pragma warning(disable : 4324)
-class ECORE_API CBackend
+class CBackend
 {
 public:
     enum MaxTextures
@@ -410,7 +410,7 @@ private:
 };
 #pragma warning(pop)
 
-extern ECORE_API CBackend RCache;
+extern CBackend RCache;
 
 #include "D3DUtils.h"
 

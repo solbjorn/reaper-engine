@@ -7,7 +7,7 @@
 class IReader;
 class IWriter;
 
-class ECORE_API CMatrix : public xr_resource_named
+class CMatrix : public xr_resource_named
 {
 public:
     enum

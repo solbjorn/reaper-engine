@@ -12,7 +12,7 @@ struct SEmitter;
 };
 
 // defs
-class ECORE_API CModelPool
+class CModelPool
 {
 private:
     friend class CRender;
@@ -86,7 +86,7 @@ public:
 
     void memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system);
 
-	void save_vis_prefetch();
-	void begin_prefetch1( bool val );
+    void save_vis_prefetch();
+    void begin_prefetch1(bool val);
 };
 #endif // ModelPoolH

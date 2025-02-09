@@ -1,7 +1,7 @@
 #ifndef dx10r_constants_cacheH
 #define dx10r_constants_cacheH
 
-class ECORE_API R_constants
+class R_constants
 {
 public:
     enum BufferType

@@ -7,29 +7,20 @@
 
 #pragma comment(lib, "winmm.lib")
 
-XRCORE_API xrCore Core;
+xrCore Core;
 
-XRCORE_API task_thread_pool::task_thread_pool* TTAPI{};
+task_thread_pool::task_thread_pool* TTAPI{};
 
 // indicate that we reach WinMain, and all static variables are initialized
-XRCORE_API bool gModulesLoaded = false;
+bool gModulesLoaded = false;
 
 static u32 init_counter = 0;
 
-void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
-                         LPCSTR fs_fname)
+void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
     strcpy_s(ApplicationName, _ApplicationName);
     if (0 == init_counter)
     {
-#ifdef XRCORE_STATIC
-        _clearfp();
-#ifdef _M_IX86
-        _controlfp(_PC_53, MCW_PC);
-#endif
-        _controlfp(_RC_CHOP, MCW_RC);
-        _controlfp(_RC_NEAR, MCW_RC);
-        _controlfp(_MCW_EM, MCW_EM);
         /*
             По сути это не рекомендуемый Microsoft, но повсеместно используемый
            способ повышения точности соблюдения и измерения временных интревалов
@@ -48,7 +39,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
             https://github.com/tebjan/TimerTool
         */
         timeBeginPeriod(1);
-#endif
 
         strcpy_s(Params, sizeof(Params), GetCommandLine());
 
@@ -109,11 +99,9 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 
         FS._initialize(flags, 0, fs_fname);
 
-        Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]",
-            GetBuildConfiguration());
+        Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
         if (strlen(APPVEYOR_BUILD_VERSION))
-            Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION
-                "], repo: [" APPVEYOR_REPO_NAME "]");
+            Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
 #pragma message("[" _CRT_STRINGIZE_(_MSC_FULL_VER) "]: [" _CRT_STRINGIZE(_MSC_FULL_VER) "], [" _CRT_STRINGIZE_(_MSVC_LANG) "]: [" _CRT_STRINGIZE(_MSVC_LANG) "]")
         Log("[" _CRT_STRINGIZE_(_MSC_FULL_VER) "]: [" _CRT_STRINGIZE(_MSC_FULL_VER) "], [" _CRT_STRINGIZE_(_MSVC_LANG) "]: [" _CRT_STRINGIZE(_MSVC_LANG) "]");
@@ -135,8 +123,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
     const char* szSearchFor = "-max-threads";
     char* pszTemp = strstr(Params, szSearchFor);
     u32 dwOverride = 0;
-    if (pszTemp && sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride) &&
-        dwOverride >= 1)
+    if (pszTemp && sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride) && dwOverride >= 1)
     {
         th_count = dwOverride;
     }
@@ -161,10 +148,7 @@ void xrCore::_destroy()
 
         CoUninitialize();
 
-#ifdef XRCORE_STATIC
-        _clearfp();
         timeEndPeriod(1);
-#endif
     }
 }
 
@@ -194,41 +178,3 @@ constexpr const char* xrCore::GetBuildConfiguration()
 #endif
 #endif
 }
-
-#ifndef XRCORE_STATIC
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
-{
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH: _clearfp();
-#ifdef _M_IX86
-        _controlfp(_PC_53, MCW_PC);
-#endif
-        _controlfp(_RC_CHOP, MCW_RC);
-        _controlfp(_RC_NEAR, MCW_RC);
-        _controlfp(_MCW_EM, MCW_EM);
-        /*
-            По сути это не рекомендуемый Microsoft, но повсеместно используемый способ повышения точности
-            соблюдения и измерения временных интревалов функциями Sleep, QueryPerformanceCounter,
-            timeGetTime и GetTickCount.
-            Функция действует на всю операционную систему в целом (!) и нет необходимости вызывать её при
-            старте нового потока. Вызов timeEndPeriod специалисты Microsoft считают обязательным.
-            Есть подозрения, что Windows сама устанавливает максимальную точность при старте таких
-            приложений как, например, игры. Тогда есть шанс, что вызов timeBeginPeriod здесь бессмысленен.
-            Недостатком данного способа является то, что он приводит к общему замедлению работы как
-            текущего приложения, так и всей операционной системы.
-            Ещё можно посмотреть ссылки:
-            https://msdn.microsoft.com/en-us/library/vs/alm/dd757624(v=vs.85).aspx
-            https://users.livejournal.com/-winnie/151099.html
-            https://github.com/tebjan/TimerTool
-        */
-        timeBeginPeriod(1);
-        break;
-    case DLL_PROCESS_DETACH:
-        _clearfp();
-        timeEndPeriod(1);
-        break;
-    }
-    return TRUE;
-}
-#endif // XRCORE_STATIC

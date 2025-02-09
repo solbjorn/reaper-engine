@@ -45,7 +45,7 @@ static constexpr u32 frustum_aabb_remap[8][6] = {{Mx, My, Mz, mx, my, mz}, {Mx, 
 #undef My
 #undef Mz
 
-class XRCDB_API CFrustum
+class CFrustum
 {
 public:
     struct fplane : public Fplane

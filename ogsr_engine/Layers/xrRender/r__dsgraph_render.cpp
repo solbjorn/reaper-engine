@@ -9,7 +9,7 @@
 
 #include "FBasicVisual.h"
 
-extern ENGINE_API float psHUD_FOV;
+extern float psHUD_FOV;
 
 using namespace R_dsgraph;
 

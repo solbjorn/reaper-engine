@@ -1,13 +1,5 @@
 #pragma once
 
-#ifdef XRCDB_STATIC
-#define XRCDB_API
-#elif defined XRCDB_EXPORTS
-#define XRCDB_API __declspec(dllexport)
-#else
-#define XRCDB_API __declspec(dllimport)
-#endif
-
 // forward declarations
 class CFrustum;
 
@@ -20,7 +12,7 @@ class AABBNoLeafNode;
 namespace CDB
 {
 // Triangle
-class alignas(16) XRCDB_API TRI //*** 16 bytes total (was 32 :)
+class alignas(16) TRI //*** 16 bytes total (was 32 :)
 {
 public:
     u32 verts[3]; // 3*4 = 12b
@@ -60,7 +52,7 @@ public:
 };
 
 // Model definition
-class XRCDB_API MODEL : Noncopyable
+class MODEL : Noncopyable
 {
     friend class COLLIDER;
 
@@ -109,7 +101,7 @@ public:
 };
 
 // Collider result
-struct alignas(16) XRCDB_API RESULT
+struct alignas(16) RESULT
 {
     Fvector verts[3];
     union
@@ -148,7 +140,7 @@ enum
 };
 
 // Collider itself
-class XRCDB_API COLLIDER
+class COLLIDER
 {
     // Result management
     xr_vector<RESULT> rd;
@@ -171,7 +163,7 @@ public:
 };
 
 //
-class XRCDB_API Collector
+class Collector
 {
     xr_vector<Fvector> verts;
     xr_vector<TRI> faces;
@@ -201,7 +193,7 @@ public:
 #pragma warning(push)
 #pragma warning(disable : 4275)
 const u32 clpMX = 24, clpMY = 16, clpMZ = 24;
-class XRCDB_API CollectorPacked : public Noncopyable
+class CollectorPacked : public Noncopyable
 {
     using DWORDList = xr_vector<u32>;
     using DWORDIt = DWORDList::iterator;

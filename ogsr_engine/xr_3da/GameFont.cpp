@@ -1,15 +1,14 @@
 #include "stdafx.h"
 
-
 #include "GameFont.h"
 #include "Render.h"
 
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;
 
-ENGINE_API Fvector2 g_current_font_scale = {1.f, 1.f};
+Fvector2 g_current_font_scale = {1.f, 1.f};
 
-ENGINE_API float g_fontWidthScale = 1.f;
-ENGINE_API float g_fontHeightScale = 1.f;
+float g_fontWidthScale = 1.f;
+float g_fontHeightScale = 1.f;
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
@@ -137,7 +136,6 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
             else
                 TCMap[i] = vFirstValid; // "unassigned" unprintable characters
         }
-
 
         // Special case for space
         TCMap[0x0020].set(0, 0, 0);

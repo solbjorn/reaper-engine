@@ -5,7 +5,7 @@
 
 typedef unsigned short int wide_char;
 
-ENGINE_API unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const unsigned short int WideStrSize, const char* MultiStr);
+unsigned short int mbhMulti2Wide(wide_char* WideStr, wide_char* WidePos, const unsigned short int WideStrSize, const char* MultiStr);
 
 __inline BOOL IsSpaceCharacter(wide_char wc)
 {

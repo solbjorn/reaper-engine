@@ -4,7 +4,7 @@
 #include "trivial_encryptor.h"
 
 #ifdef DEBUG
-XRCORE_API u32 g_file_mapped_memory = 0;
+u32 g_file_mapped_memory = 0;
 u32 g_file_mapped_count = 0;
 typedef xr_map<u32, std::pair<u32, shared_str>> FILE_MAPPINGS;
 FILE_MAPPINGS g_file_mappings;
@@ -35,7 +35,7 @@ void unregister_file_mapping(void* address, const u32& size)
     g_file_mappings.erase(I);
 }
 
-XRCORE_API void dump_file_mappings()
+void dump_file_mappings()
 {
     std::scoped_lock<decltype(g_file_mappings_Mutex)> lock(g_file_mappings_Mutex);
 

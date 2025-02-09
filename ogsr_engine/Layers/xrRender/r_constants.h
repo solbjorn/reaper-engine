@@ -5,7 +5,7 @@
 #include "../../xrcore/xr_resource.h"
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
-class ECORE_API R_constant_setup;
+class R_constant_setup;
 
 enum
 {
@@ -66,7 +66,7 @@ enum //	Constant buffer index masks
     CB_BufferComputeShader = 0x60,
 };
 
-struct ECORE_API R_constant_load
+struct R_constant_load
 {
     u16 index; // linear index (pixel)
     u16 cls; // element class
@@ -76,7 +76,7 @@ struct ECORE_API R_constant_load
     IC BOOL equal(R_constant_load& C) { return (index == C.index) && (cls == C.cls); }
 };
 
-struct ECORE_API R_constant : public xr_resource
+struct R_constant : public xr_resource
 {
     shared_str name; // HLSL-name
     u16 type; // float=0/integer=1/boolean=2
@@ -120,14 +120,14 @@ struct ECORE_API R_constant : public xr_resource
 typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
 
 // Automatic constant setup
-class ECORE_API R_constant_setup
+class R_constant_setup
 {
 public:
     virtual void setup(R_constant* C) = 0;
     virtual ~R_constant_setup() {}
 };
 
-class ECORE_API R_constant_table : public xr_resource_flagged
+class R_constant_table : public xr_resource_flagged
 {
 public:
     typedef xr_vector<ref_constant> c_table;

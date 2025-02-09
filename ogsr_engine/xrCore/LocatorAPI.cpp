@@ -65,7 +65,7 @@ struct eq_fname_check
     bool operator()(_open_file& itm) const { return _val == itm._fn && itm._reader != nullptr; }
 };
 
-XRCORE_API xr_vector<_open_file> g_open_files;
+xr_vector<_open_file> g_open_files;
 
 void _check_open_file(const shared_str& _fname)
 {
@@ -121,7 +121,7 @@ void _unregister_open_file(T* _r)
     _lock.Leave();
 }
 
-XRCORE_API void _dump_open_files(int mode)
+void _dump_open_files(int mode)
 {
     bool bShow = false;
     if (mode == 1)

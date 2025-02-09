@@ -7,7 +7,7 @@
 class IReader;
 class IWriter;
 
-class ECORE_API CConstant : public xr_resource_named
+class CConstant : public xr_resource_named
 {
 public:
     enum

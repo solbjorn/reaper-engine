@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #include "SkeletonMotions.h"
-//#include 	"SkeletonAnimated.h"
+// #include 	"SkeletonAnimated.h"
 #include "Fmesh.h"
 #include "motion.h"
 #include "..\Include\xrRender\Kinematics.h"
@@ -160,7 +160,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         R_ASSERT(MS->find_chunk(m_idx + 1));
         MS->r_stringZ(mname, sizeof(mname));
 
-        if constexpr (false) //В ганслингере полно таких ошибок в анимациях, не вижу смысла спамить ими в лог
+        if constexpr (false) // В ганслингере полно таких ошибок в анимациях, не вижу смысла спамить ими в лог
         {
             // sanity check
             xr_strlwr(mname);
@@ -181,19 +181,19 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             if (M.test_flag(flRKeyAbsent))
             {
                 CKeyQR* r = (CKeyQR*)MS->pointer();
-                //u32 crc_q = crc32(r, sizeof(CKeyQR));
+                // u32 crc_q = crc32(r, sizeof(CKeyQR));
                 M._keysR.create(1, r);
                 MS->advance(1 * sizeof(CKeyQR));
             }
             else
             {
-                /*u32 crc_q = */MS->r_u32();
+                /*u32 crc_q = */ MS->r_u32();
                 M._keysR.create(dwLen, (CKeyQR*)MS->pointer());
                 MS->advance(dwLen * sizeof(CKeyQR));
             }
             if (M.test_flag(flTKeyPresent))
             {
-                /*u32 crc_t = */MS->r_u32();
+                /*u32 crc_t = */ MS->r_u32();
                 if (M.test_flag(flTKey16IsBit))
                 {
                     M._keysT16.create(dwLen, (CKeyQT16*)MS->pointer());
@@ -321,7 +321,7 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
     accrue = MP->r_float();
     falloff = MP->r_float();
     flags = (u16)fl;
-    constexpr float fQuantizerRangeExt = 1.5f; //Какое-то магическое число
+    constexpr float fQuantizerRangeExt = 1.5f; // Какое-то магическое число
     /*//Dbg
         Log("############################################################################");
         constexpr auto Dequantize = [](u16 V) { return  float(V) / 655.35f; };
@@ -336,8 +336,8 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
         falloff = accrue /* - 0.003f*/; // KRodin: 0.003f наиболее приближённо к тому что было до этого. Разница в результате буквально в тысячных долях. При Quantize/Dequantize
                                         // точность в любом случае терялась, так что это не сильно важно.
         if (/*negative(falloff)*/ negative(accrue - 0.003f))
-            falloff = 100.f; //И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после
-                             //Quantize/Dequantize всегда получалось 100.
+            falloff = 100.f; // И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после
+                             // Quantize/Dequantize всегда получалось 100.
         // Msg("--[%s] fallof set to [%f]", __FUNCTION__, fQuantizerRangeExt * falloff);
     }
     // Log("############################################################################");
@@ -446,7 +446,7 @@ float motion_marks::time_to_next_mark(float time) const
     return result_dist;
 }
 
-void ENGINE_API motion_marks::Load(IReader* R)
+void motion_marks::Load(IReader* R)
 {
     xr_string tmp;
     R->r_string(tmp);

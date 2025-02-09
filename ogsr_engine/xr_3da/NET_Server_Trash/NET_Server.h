@@ -18,7 +18,7 @@ struct SClientConnectData
 
 class IPureServer;
 
-struct ENGINE_API ip_address
+struct ip_address
 {
     union
     {
@@ -39,7 +39,7 @@ struct ENGINE_API ip_address
     }
 };
 
-class ENGINE_API IClient
+class IClient
 {
 public:
     struct Flags
@@ -71,7 +71,7 @@ public:
 
 class CServerInfo;
 
-class ENGINE_API IPureServer
+class IPureServer
 {
 public:
     enum EConnect

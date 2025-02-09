@@ -46,14 +46,6 @@
 #define GM_NON_GAME
 #endif
 
-#ifndef MTL_EXPORT_API
-#ifdef ENGINE_API
-#define MTL_EXPORT_API ENGINE_API
-#else
-#define MTL_EXPORT_API
-#endif
-#endif
-
 #ifdef GM_NON_GAME
 #define SoundVec shared_str
 #define PSVec shared_str
@@ -67,7 +59,7 @@ DEFINE_VECTOR(shared_str, PSVec, PSIt);
 //	DEFINE_VECTOR(ref_shader,ShaderVec,ShaderIt);
 #endif
 
-struct MTL_EXPORT_API SGameMtl
+struct SGameMtl
 {
     friend class CGameMtlLibrary;
 
@@ -146,7 +138,7 @@ public:
 };
 DEFINE_VECTOR(SGameMtl*, GameMtlVec, GameMtlIt);
 
-struct MTL_EXPORT_API SGameMtlPair
+struct SGameMtlPair
 {
     friend class CGameMtlLibrary;
     CGameMtlLibrary* m_Owner;
@@ -217,7 +209,7 @@ public:
 
 DEFINE_VECTOR(SGameMtlPair*, GameMtlPairVec, GameMtlPairIt);
 
-class MTL_EXPORT_API CGameMtlLibrary
+class CGameMtlLibrary
 {
     int material_index;
     int material_pair_index;
@@ -349,7 +341,7 @@ public:
         _res_.clone(GET_RANDOM((_mtl_pair_)->_a_vector_), st_Effect, sg_SourceType); \
     }
 
-extern MTL_EXPORT_API CGameMtlLibrary GMLib;
+extern CGameMtlLibrary GMLib;
 
 #include "../include/xrapi/xrapi.h"
 

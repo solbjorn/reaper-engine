@@ -2,12 +2,12 @@
 
 #include "CameraDefs.h"
 
-struct ENGINE_API SPPInfo
+struct SPPInfo
 {
     struct SColor
     {
         float r, g, b;
-        SColor(){};
+        SColor() {};
         SColor(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
         IC operator u32()
         {
@@ -44,7 +44,7 @@ struct ENGINE_API SPPInfo
     struct SDuality
     {
         float h, v;
-        SDuality(){};
+        SDuality() {};
         SDuality(float _h, float _v) : h(_h), v(_v) {}
         IC SDuality& set(float _h, float _v)
         {
@@ -57,7 +57,7 @@ struct ENGINE_API SPPInfo
     {
         float intensity, grain;
         float fps;
-        SNoise(){};
+        SNoise() {};
         SNoise(float _i, float _g, float _f) : intensity(_i), grain(_g), fps(_f) {}
         IC SNoise& set(float _i, float _g, float _f)
         {
@@ -88,7 +88,7 @@ using EffectorCamVec = xr_list<CEffectorCam*>;
 using EffectorPPVec = xr_vector<CEffectorPP*>;
 
 struct SCamEffectorInfo;
-class ENGINE_API CCameraManager
+class CCameraManager
 {
     float fFovSecond;
 
@@ -141,8 +141,8 @@ public:
     CCameraManager(bool bApplyOnUpdate);
     ~CCameraManager();
 };
-ENGINE_API extern SPPInfo pp_identity;
-ENGINE_API extern SPPInfo pp_zero;
+extern SPPInfo pp_identity;
+extern SPPInfo pp_zero;
 
-ENGINE_API extern float psCamInert;
-ENGINE_API extern float psCamSlideInert;
+extern float psCamInert;
+extern float psCamSlideInert;

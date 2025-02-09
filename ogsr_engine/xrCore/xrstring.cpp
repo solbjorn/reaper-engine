@@ -5,7 +5,7 @@
 #include <xxhash.h>
 #pragma comment(lib, "xxhash")
 
-XRCORE_API extern str_container* g_pStringContainer = NULL;
+extern str_container* g_pStringContainer = NULL;
 
 struct str_container_impl
 {

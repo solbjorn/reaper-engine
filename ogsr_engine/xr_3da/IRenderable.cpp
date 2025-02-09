@@ -15,7 +15,7 @@ IRenderable::IRenderable()
         self->spatial.type |= STYPE_RENDERABLE;
 }
 
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;
 IRenderable::~IRenderable()
 {
     VERIFY(!g_bRendering);

@@ -12,16 +12,16 @@
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
 #include <winternl.h>
 
-ENGINE_API CRenderDevice Device;
-ENGINE_API CLoadScreenRenderer load_screen_renderer;
+CRenderDevice Device;
+CLoadScreenRenderer load_screen_renderer;
 
-ENGINE_API BOOL g_bRendering = FALSE;
+BOOL g_bRendering = FALSE;
 
-ENGINE_API int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
-                                          // тем более низкий FPS во втором вьюпорте)
+int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
+                               // тем более низкий FPS во втором вьюпорте)
 
 BOOL g_bLoaded = FALSE;
-ENGINE_API float refresh_rate = 0;
+float refresh_rate = 0;
 
 BOOL CRenderDevice::Begin()
 {
@@ -104,7 +104,7 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
     }
 }
 
-ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
 void GetMonitorResolution(u32& horizontal, u32& vertical)
 {
@@ -401,7 +401,7 @@ void CRenderDevice::FrameMove()
     Statistic->EngineTOTAL.End();
 }
 
-ENGINE_API BOOL bShowPauseString = TRUE;
+BOOL bShowPauseString = TRUE;
 
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {

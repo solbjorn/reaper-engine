@@ -8,7 +8,7 @@ enum
     LOCKFLAGS_APPEND = D3DLOCK_NOOVERWRITE
 };
 
-class ECORE_API _VertexStream
+class _VertexStream
 {
 private:
     ID3DVertexBuffer* pVB;
@@ -41,7 +41,7 @@ public:
     ~_VertexStream() { Destroy(); };
 };
 
-class ECORE_API _IndexStream
+class _IndexStream
 {
 private:
     ID3DIndexBuffer* pIB;

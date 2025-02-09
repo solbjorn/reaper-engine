@@ -4,7 +4,7 @@
 #include "motion.h"
 
 // refs
-class ENGINE_API CObjectAnimator
+class CObjectAnimator
 {
 private:
     using MotionVec = xr_vector<COMotion*>;

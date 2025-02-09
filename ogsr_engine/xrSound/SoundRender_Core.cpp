@@ -694,4 +694,4 @@ void CSoundRender_Core::object_relcase(CObject* obj)
     }
 }
 
-XRSOUND_API float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ) { return SoundRender->get_occlusion(P, R, occ); }
+float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ) { return SoundRender->get_occlusion(P, R, occ); }

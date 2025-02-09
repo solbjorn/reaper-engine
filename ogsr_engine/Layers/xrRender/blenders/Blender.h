@@ -11,7 +11,7 @@
 
 #pragma pack(push, 4)
 
-class ECORE_API CBlender_DESC
+class CBlender_DESC
 {
 public:
     CLASS_ID CLS;
@@ -32,7 +32,7 @@ public:
     }
 };
 
-class ECORE_API IBlender
+class IBlender
 {
     friend class CBlender_Compile;
 
@@ -45,7 +45,6 @@ protected:
     string64 oT_Name;
 
 public:
-
     CBlender_DESC& getDescription() { return description; }
     virtual LPCSTR getName() { return description.cName; }
     virtual LPCSTR getComment() = 0;
@@ -59,7 +58,7 @@ public:
     virtual ~IBlender();
 };
 
-class ECORE_API IBlenderXr : public IBlender, public CPropertyBase
+class IBlenderXr : public IBlender, public CPropertyBase
 {
 protected:
     static void WriteInteger(CInifile* ini_file, LPCSTR section, LPCSTR line, xrP_INTEGER v);

@@ -205,7 +205,7 @@ void CDetailManager::Unload()
     dtFS = NULL;
 }
 
-extern ECORE_API float r_ssaDISCARD;
+extern float r_ssaDISCARD;
 extern BOOL ps_no_scale_on_fade;
 
 void CDetailManager::UpdateVisibleM()

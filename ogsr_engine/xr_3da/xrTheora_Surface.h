@@ -3,7 +3,7 @@
 // refs
 class CTheoraStream;
 
-class ENGINE_API CTheoraSurface
+class CTheoraSurface
 {
     CTheoraStream* m_rgb;
     CTheoraStream* m_alpha;

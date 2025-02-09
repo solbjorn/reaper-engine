@@ -113,9 +113,8 @@ public:
 public:
     PDomain() {}
 
-    PDomain(EType et, BOOL renderable, u32 color = 0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint
-        , float inA0 = 0.0f, float inA1 = 0.0f, float inA2 = 0.0f, float inA3 = 0.0f
-        , float inA4 = 0.0f, float inA5 = 0.0f, float inA6 = 0.0f, float inA7 = 0.0f, float inA8 = 0.0f);
+    PDomain(EType et, BOOL renderable, u32 color = 0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint, float inA0 = 0.0f, float inA1 = 0.0f, float inA2 = 0.0f, float inA3 = 0.0f,
+            float inA4 = 0.0f, float inA5 = 0.0f, float inA6 = 0.0f, float inA7 = 0.0f, float inA8 = 0.0f);
 
     PDomain(const PDomain& in);
     ~PDomain();
@@ -420,7 +419,7 @@ public:
 extern xr_token2 actions_token[];
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
-extern ECORE_API _CreateEAction pCreateEAction;
+extern _CreateEAction pCreateEAction;
 
 //---------------------------------------------------------------------------
 

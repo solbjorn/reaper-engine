@@ -23,7 +23,7 @@ IC bool smem_search(const smem_value* A, const smem_value* B)
 #pragma warning(default : 4200)
 
 //////////////////////////////////////////////////////////////////////////
-class XRCORE_API smem_container
+class smem_container
 {
 private:
     typedef xr_vector<smem_value*> cdb;
@@ -44,7 +44,7 @@ public:
     smem_container(bool disable) { bDisable = disable; }
     ~smem_container();
 };
-XRCORE_API extern smem_container* g_pSharedMemoryContainer;
+extern smem_container* g_pSharedMemoryContainer;
 
 //////////////////////////////////////////////////////////////////////////
 template <class T>

@@ -4,7 +4,7 @@
 #pragma once
 
 // resource itself, the base class for all derived resources
-class XRCORE_API xr_resource
+class xr_resource
 {
 public:
     enum
@@ -17,7 +17,7 @@ public:
     xr_resource() : dwReference(0) {}
 };
 
-class XRCORE_API xr_resource_flagged : public xr_resource
+class xr_resource_flagged : public xr_resource
 {
 public:
     enum
@@ -33,7 +33,7 @@ public:
     xr_resource_flagged() : dwFlags(0) {}
 };
 
-class XRCORE_API xr_resource_named : public xr_resource_flagged
+class xr_resource_named : public xr_resource_flagged
 {
 public:
     shared_str cName;

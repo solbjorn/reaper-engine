@@ -4,7 +4,7 @@
 
 struct ip_address;
 
-class ENGINE_API INetQueue
+class INetQueue
 {
     xrCriticalSection cs;
     xr_deque<NET_Packet*> ready;
@@ -21,7 +21,7 @@ public:
     void Release();
 };
 
-class ENGINE_API IPureClient
+class IPureClient
 {
     enum ConnectionState
     {
@@ -55,7 +55,7 @@ public:
     // send
     virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
     virtual void OnMessage(void* data, u32 size);
-    virtual void OnConnectRejected(){};
+    virtual void OnConnectRejected() {};
 
     // time management
     IC u32 timeServer() { return device_timer->GetElapsed_ms(); }
@@ -64,5 +64,5 @@ public:
     BOOL net_Syncronised;
     virtual BOOL net_IsSyncronised() { return net_Syncronised; }
 
-    virtual void OnSessionTerminate(LPCSTR reason){};
+    virtual void OnSessionTerminate(LPCSTR reason) {};
 };

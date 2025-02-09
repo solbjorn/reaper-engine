@@ -18,7 +18,7 @@ void CRenderTarget::accum_point(light* L)
 
     if (L->flags.bHudMode)
     {
-        extern ENGINE_API float psHUD_FOV;
+        extern float psHUD_FOV;
         Pold = Device.mProject;
         FTold = Device.mFullTransform;
         Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,

@@ -42,7 +42,7 @@ private:
 };
 
 // The class itself
-class ECORE_API dxRender_Visual : public IRenderVisual
+class dxRender_Visual : public IRenderVisual
 {
 public:
     shared_str dbg_name;

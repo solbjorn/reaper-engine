@@ -4,10 +4,10 @@
 #include "hudsound.h"
 #include "ai_sounds.h"
 
-class ENGINE_API CMotionDef;
+class CMotionDef;
 
-//размер очереди считается бесконечность
-//заканчиваем стрельбу, только, если кончились патроны
+// размер очереди считается бесконечность
+// заканчиваем стрельбу, только, если кончились патроны
 #define WEAPON_ININITE_QUEUE -1
 
 class CBinocularsVision;
@@ -31,12 +31,12 @@ protected:
     HUD_SOUND sndTactItemOn;
     HUD_SOUND sndAimStart, sndAimEnd;
     HUD_SOUND sndItemOn;
-    //звук текущего выстрела
+    // звук текущего выстрела
     HUD_SOUND* m_pSndShotCurrent;
 
     virtual void StopHUDSounds();
 
-    //дополнительная информация о глушителе
+    // дополнительная информация о глушителе
     LPCSTR m_sSilencerFlameParticles;
     LPCSTR m_sSilencerSmokeParticles;
     HUD_SOUND sndSilencerShot;
@@ -48,7 +48,7 @@ protected:
     ESoundTypes m_eSoundReload;
 
     // General
-    //кадр момента пересчета UpdateSounds
+    // кадр момента пересчета UpdateSounds
     u32 dwUpdateSounds_Frame;
 
 protected:
@@ -130,22 +130,22 @@ public:
     virtual void StopedAfterQueueFired(bool value) { m_bStopedAfterQueueFired = value; }
 
 protected:
-    //максимальный размер очереди, которой можно стрельнуть
+    // максимальный размер очереди, которой можно стрельнуть
     int m_iQueueSize;
-    //количество реально выстреляных патронов
+    // количество реально выстреляных патронов
     int m_iShotNum;
     //  [7/20/2005]
-    //после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-зи Абакана)
+    // после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-зи Абакана)
     int m_iShootEffectorStart;
     Fvector m_vStartPos, m_vStartDir;
     //  [7/20/2005]
-    //флаг того, что мы остановились после того как выстреляли
-    //ровно столько патронов, сколько было задано в m_iQueueSize
+    // флаг того, что мы остановились после того как выстреляли
+    // ровно столько патронов, сколько было задано в m_iQueueSize
     bool m_bStopedAfterQueueFired;
-    //флаг того, что хотя бы один выстрел мы должны сделать
+    // флаг того, что хотя бы один выстрел мы должны сделать
     //(даже если очень быстро нажали на курок и вызвалось FireEnd)
     bool m_bFireSingleShot;
-    //режимы стрельбы
+    // режимы стрельбы
     bool m_bHasDifferentFireModes;
     xr_vector<int> m_aFireModes;
     int m_iCurFireMode;
@@ -153,8 +153,8 @@ protected:
     int m_iPrefferedFireMode;
     u32 m_fire_zoomout_time = u32(-1);
 
-    //переменная блокирует использование
-    //только разных типов патронов
+    // переменная блокирует использование
+    // только разных типов патронов
     bool m_bLockType;
 
     const char* m_str_count_tmpl;
@@ -183,7 +183,7 @@ public:
 protected:
     virtual bool AllowFireWhileWorking() { return false; }
 
-    //виртуальные функции для проигрывания анимации HUD
+    // виртуальные функции для проигрывания анимации HUD
     virtual void PlayAnimShow();
     virtual void PlayAnimHide();
     virtual void PlayAnimReload();

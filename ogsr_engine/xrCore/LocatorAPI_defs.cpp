@@ -101,7 +101,7 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src) const
     return xr_strlwr(dest);
 }
 
-bool XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask)
+bool PatternMatch(LPCSTR s, LPCSTR mask)
 {
     LPCSTR cp = 0;
     LPCSTR mp = 0;

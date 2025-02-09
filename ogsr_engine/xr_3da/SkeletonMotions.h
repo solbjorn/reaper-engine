@@ -2,7 +2,7 @@
 #ifndef SkeletonMotionsH
 #define SkeletonMotionsH
 
-//#include		"skeletoncustom.h"
+// #include		"skeletoncustom.h"
 #include "bone.h"
 #include "skeletonmotiondefs.h"
 // refs
@@ -48,7 +48,7 @@ struct  CKeyQT
 #pragma pack(pop)
 
 //*** Motion Data *********************************************************************************
-class ENGINE_API CMotion
+class CMotion
 {
     struct
     {
@@ -96,10 +96,11 @@ public:
     }
 };
 
-class ENGINE_API motion_marks
+class motion_marks
 {
 public:
     typedef std::pair<float, float> interval;
+
 private:
     typedef xr_vector<interval> STORAGE;
     typedef STORAGE::iterator ITERATOR;
@@ -117,7 +118,7 @@ public:
     float time_to_next_mark(float time) const;
 };
 
-class ENGINE_API CMotionDef
+class CMotionDef
 {
     float speed, power, accrue, falloff;
 
@@ -145,16 +146,16 @@ DEFINE_VECTOR(CMotion, MotionVec, MotionVecIt);
 DEFINE_VECTOR(MotionVec*, BoneMotionsVec, BoneMotionsVecIt);
 
 // partition
-class ENGINE_API CPartDef
+class CPartDef
 {
 public:
     shared_str Name;
     xr_vector<u32> bones;
-    CPartDef() : Name(0){};
+    CPartDef() : Name(0) {};
 
     u32 mem_usage() { return sizeof(*this) + bones.size() * sizeof(u32) + sizeof(Name); }
 };
-class ENGINE_API CPartition
+class CPartition
 {
     CPartDef P[MAX_PARTS];
 
@@ -175,7 +176,7 @@ public:
 };
 
 // shared motions
-struct ENGINE_API motions_value
+struct motions_value
 {
     accel_map m_motion_map; // motion associations
     accel_map m_cycle; // motion data itself	(shared)
@@ -202,7 +203,7 @@ struct ENGINE_API motions_value
     }
 };
 
-class ENGINE_API motions_container
+class motions_container
 {
     string_unordered_map<shared_str, motions_value*> container;
 
@@ -215,9 +216,9 @@ public:
     void clean(bool force_destroy);
 };
 
-extern ENGINE_API motions_container* g_pMotionsContainer;
+extern motions_container* g_pMotionsContainer;
 
-class ENGINE_API shared_motions
+class shared_motions
 {
 private:
     motions_value* p_;

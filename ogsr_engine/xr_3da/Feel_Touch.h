@@ -2,10 +2,10 @@
 
 #include "pure_relcase.h"
 
-class ENGINE_API CObject;
+class CObject;
 namespace Feel
 {
-class ENGINE_API Touch : private pure_relcase
+class Touch : private pure_relcase
 {
     friend class pure_relcase;
 
@@ -33,8 +33,8 @@ public:
     virtual BOOL feel_touch_contact(CObject* O);
     virtual void feel_touch_update(Fvector&, float, const std::function<void(CObject*, bool)>& = {}, const std::function<bool(CObject*)>& = {});
     virtual void feel_touch_deny(CObject* O, DWORD T);
-    virtual void feel_touch_new(CObject* O){};
-    virtual void feel_touch_delete(CObject* O){};
+    virtual void feel_touch_new(CObject* O) {};
+    virtual void feel_touch_delete(CObject* O) {};
     virtual void feel_touch_relcase2(CObject*, const std::function<void(CObject*, bool)>& = {});
 };
 }; // namespace Feel

@@ -1116,6 +1116,6 @@ BOOL _valid(const _matrix<T>& m)
     return _valid(m.i) && _valid(m._14) && _valid(m.j) && _valid(m._24) && _valid(m.k) && _valid(m._34) && _valid(m.c) && _valid(m._44);
 }
 
-extern XRCORE_API Fmatrix Fidentity;
+extern Fmatrix Fidentity;
 
 #endif /* __XR_CORE_MATRIX_H */

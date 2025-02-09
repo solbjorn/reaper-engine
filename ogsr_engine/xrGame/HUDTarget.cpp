@@ -72,7 +72,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
     }
     else
     {
-        //получить треугольник и узнать его материал
+        // получить треугольник и узнать его материал
         CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
         const auto* mtl = GMLib.GetMaterialByIdx(T->material);
         if (mtl->Flags.is(SGameMtl::flPassable))
@@ -109,7 +109,7 @@ void CHUDTarget::CursorOnFrame()
         clamp(RQ.range, NEAR_LIM, RQ.range);
 }
 
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;
 
 #include <ai/monsters/poltergeist/poltergeist.h>
 
@@ -233,7 +233,7 @@ void CHUDTarget::Render()
     float cx = (pt.x + 1) * w_2;
     float cy = (pt.y + 1) * h_2;
 
-    //отрендерить кружочек или крестик
+    // отрендерить кружочек или крестик
     if (!m_bShowCrosshair)
     {
         // actual rendering
@@ -255,7 +255,7 @@ void CHUDTarget::Render()
     }
     else
     {
-        //отрендерить прицел
+        // отрендерить прицел
         HUDCrosshair.cross_color = C;
         HUDCrosshair.OnRender(Fvector2{cx, cy}, scr_size);
     }

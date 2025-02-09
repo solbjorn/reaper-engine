@@ -175,4 +175,4 @@ protected: // EFX
     void release_efx_objects() const;
 };
 
-extern XRSOUND_API CSoundRender_Core* SoundRender;
+extern CSoundRender_Core* SoundRender;

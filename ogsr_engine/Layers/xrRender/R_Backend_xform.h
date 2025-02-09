@@ -2,7 +2,7 @@
 #define r_backend_xformH
 #pragma once
 
-class ECORE_API R_xforms
+class R_xforms
 {
 public:
     Fmatrix m_w; // Basic	- world

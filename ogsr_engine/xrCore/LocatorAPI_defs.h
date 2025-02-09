@@ -11,7 +11,7 @@ enum FS_List
     FS_forcedword = u32(-1)
 };
 
-class XRCORE_API FS_Path
+class FS_Path
 {
 public:
     enum
@@ -41,7 +41,7 @@ public:
 struct _finddata64i32_t;
 #define _FINDDATA_T _finddata64i32_t
 
-struct XRCORE_API FS_File
+struct FS_File
 {
     enum
     {
@@ -65,4 +65,4 @@ public:
 };
 DEFINE_SET(FS_File, FS_FileSet, FS_FileSetIt);
 
-extern bool XRCORE_API PatternMatch(LPCSTR s, LPCSTR mask);
+extern bool PatternMatch(LPCSTR s, LPCSTR mask);

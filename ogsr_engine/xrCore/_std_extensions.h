@@ -24,7 +24,7 @@
 #endif
 
 // token type definition
-struct XRCORE_API alignas(2 * sizeof(long)) xr_token
+struct alignas(2 * sizeof(long)) xr_token
 {
     LPCSTR name;
     long id;
@@ -46,7 +46,7 @@ IC int get_token_id(xr_token* tokens, LPCSTR key)
     return -1;
 }
 
-struct XRCORE_API xr_token2
+struct xr_token2
 {
     LPCSTR name;
     LPCSTR info;
@@ -138,7 +138,7 @@ IC s64 _abs(s64 x) { return (x >= 0) ? x : s64(-x); }
 IC s64 _min(s64 x, s64 y) { return y + ((x - y) & ((x - y) >> (sizeof(s64) * 8 - 1))); };
 IC s64 _max(s64 x, s64 y) { return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8 - 1))); };
 
-XRCORE_API char* timestamp(string64& dest);
+char* timestamp(string64& dest);
 
 constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
 {
@@ -237,7 +237,7 @@ IC char* xr_strlwr(char* S) { return strlwr(S); }
 
 IC int xr_strcmp(const char* S1, const char* S2) { return strcmp(S1, S2); }
 
-XRCORE_API char* xr_strdup(const char* string);
+char* xr_strdup(const char* string);
 
 template <typename StrType, typename StrType2, typename... Args>
 inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... args)
@@ -257,8 +257,8 @@ inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... ar
 #define xr_sprintf sprintf_s
 #define xr_strcat strcat_s
 
-XRCORE_API std::string StringToUTF8(const char* in);
-XRCORE_API std::string StringFromUTF8(const char* in);
+std::string StringToUTF8(const char* in);
+std::string StringFromUTF8(const char* in);
 // Определяет есть ли в строке юникодные символы
 inline bool StringHasUTF8(const char* str)
 {

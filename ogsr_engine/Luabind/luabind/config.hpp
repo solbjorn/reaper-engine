@@ -23,22 +23,23 @@
 #pragma once
 
 //***************************************[KRodin: Настройки]***************************************
-//#define ENABLE_DUMP_LUA_HELP //KRodin: раскомментировать для дампа Lua_help
+// #define ENABLE_DUMP_LUA_HELP //KRodin: раскомментировать для дампа Lua_help
 
 #ifdef ENABLE_DUMP_LUA_HELP
-#	undef NDEBUG
+#undef NDEBUG
 #else
-#	define LUABIND_NO_ERROR_CHECKING //Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
+#define LUABIND_NO_ERROR_CHECKING // Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к
+                                  // воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
 #endif
-#define LUABIND_NO_EXCEPTIONS //Не рекомендую закомментировать.
+#define LUABIND_NO_EXCEPTIONS // Не рекомендую закомментировать.
 #ifdef LUABIND_NO_EXCEPTIONS
-#	define LUABIND_DTOR_NOEXCEPT noexcept
+#define LUABIND_DTOR_NOEXCEPT noexcept
 #else
-#	define LUABIND_DTOR_NOEXCEPT
+#define LUABIND_DTOR_NOEXCEPT
 #endif
 #define LUABIND_DONT_COPY_STRINGS // ?
 //
-#pragma comment(lib, "lua51.lib") //LuaJIT теперь подключается только здесь и больше нигде.
+#pragma comment(lib, "lua51.lib") // LuaJIT теперь подключается только здесь и больше нигде.
 //
 #include "xrCore.h" //Чтобы можно было использвовать здесь функции типа Msg/Log
 //
@@ -56,11 +57,11 @@
 // exceptions will still be catched when there's
 // no error checking.
 
-//#define LUABIND_NOT_THREADSAFE
-// this define will make luabind non-thread safe. That is,
-// it will rely on a static variable. You can still have
-// multiple lua states and use coroutines, but only
-// one of your real threads may run lua code.
+// #define LUABIND_NOT_THREADSAFE
+//  this define will make luabind non-thread safe. That is,
+//  it will rely on a static variable. You can still have
+//  multiple lua states and use coroutines, but only
+//  one of your real threads may run lua code.
 
 // If you don't want to use the rtti supplied by C++
 // you can supply your own type-info structure with the
@@ -78,11 +79,11 @@
 // for all classes that you have type-info for.
 
 #ifndef LUABIND_TYPE_INFO
-#	define LUABIND_TYPE_INFO const type_info*
-#	define LUABIND_TYPEID(t) &typeid(t)
-#	define LUABIND_TYPE_INFO_EQUAL(i1, i2) *i1 == *i2
-#	define LUABIND_INVALID_TYPE_INFO &typeid(detail::null_type)
-#	include <typeinfo>
+#define LUABIND_TYPE_INFO const type_info*
+#define LUABIND_TYPEID(t) &typeid(t)
+#define LUABIND_TYPE_INFO_EQUAL(i1, i2) *i1 == *i2
+#define LUABIND_INVALID_TYPE_INFO &typeid(detail::null_type)
+#include <typeinfo>
 #endif
 
 // LUABIND_NO_EXCEPTIONS
@@ -101,21 +102,15 @@
 
 // this define is set if we're currently building a luabind file
 // select import or export depending on it
-#ifdef LUABIND_STATIC
-#	define LUABIND_API
-#elif defined LUABIND_BUILDING
-#	define LUABIND_API 		__declspec(dllexport)
-#else
-#	define LUABIND_API		__declspec(dllimport)
-#endif
+#define LUABIND_API
 
 #include <luabind/luabind_memory.h>
 
-#define string_class			luabind::internal_string
-#define vector_class			luabind::internal_vector
-#define list_class				luabind::internal_list
-#define map_class				luabind::internal_map
-#define set_class				luabind::internal_set
-#define multimap_class			luabind::internal_multimap
-#define multiset_class			luabind::internal_multiset
-#define stringstream_class		luabind::internal_stringstream
+#define string_class luabind::internal_string
+#define vector_class luabind::internal_vector
+#define list_class luabind::internal_list
+#define map_class luabind::internal_map
+#define set_class luabind::internal_set
+#define multimap_class luabind::internal_multimap
+#define multiset_class luabind::internal_multiset
+#define stringstream_class luabind::internal_stringstream

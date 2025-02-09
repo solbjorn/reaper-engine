@@ -6,7 +6,7 @@
 
 dxDebugRender DebugRenderImpl;
 
-extern ENGINE_API float psHUD_FOV;
+extern float psHUD_FOV;
 
 void dxDebugRender::Render()
 {
@@ -36,8 +36,8 @@ void dxDebugRender::Render()
 
             Device.mFullTransform.mul(Device.mProject, Device.mView);
             RCache.set_xform_project(Device.mProject);
-            //RImplementation.rmNear();
-            //ApplyTexgen(Device.mFullTransform);
+            // RImplementation.rmNear();
+            // ApplyTexgen(Device.mFullTransform);
         }
 
         for (auto& [color, vert_vec] : m_line_vertices_hud)
@@ -50,11 +50,11 @@ void dxDebugRender::Render()
         }
 
         {
-            //RImplementation.rmNormal();
+            // RImplementation.rmNormal();
             Device.mProject = Pold;
             Device.mFullTransform = FTold;
             RCache.set_xform_project(Device.mProject);
-            //ApplyTexgen(Device.mFullTransform);
+            // ApplyTexgen(Device.mFullTransform);
         }
 
         m_line_vertices_hud.clear();
@@ -74,7 +74,7 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
         all_inds_count += line_indices.at(color).size();
     }
 
-    //Лимиты превышать нельзя ни в коем случае - убавить лимит если будут краши в R_DStreams.cpp
+    // Лимиты превышать нельзя ни в коем случае - убавить лимит если будут краши в R_DStreams.cpp
     if ((all_verts_count + vertex_count) >= u16(-1))
     {
         // Msg("~~[%s.1] Rendered [%u] verts and [%u] inds", __FUNCTION__, all_verts_count, all_inds_count);

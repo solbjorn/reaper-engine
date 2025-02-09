@@ -1,6 +1,6 @@
 #pragma once
 
-//#define USE_MEMORY_VALIDATOR
+// #define USE_MEMORY_VALIDATOR
 
 #ifdef USE_MEMORY_VALIDATOR
 
@@ -12,7 +12,7 @@ extern BOOL g_enable_memory_debug;
 
 #endif
 
-class XRCORE_API xrMemory
+class xrMemory
 {
 public:
     xrMemory() = default;
@@ -29,7 +29,7 @@ public:
     void*(WINAPIV* mem_copy)(void*, const void*, size_t) = std::memcpy;
     void*(WINAPIV* mem_fill)(void*, int, size_t) = std::memset;
 };
-extern XRCORE_API xrMemory Memory;
+extern xrMemory Memory;
 
 #undef ZeroMemory
 #undef CopyMemory
@@ -69,7 +69,6 @@ inline void xr_mfree(void* p, const std::source_location& loc = std::source_loca
     Memory.mem_free(p);
 }
 
-
 // generic "C"-like allocations/deallocations
 template <class T>
 IC T* xr_alloc(size_t count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
@@ -94,7 +93,6 @@ IC void xr_free(T*& P, const std::source_location& loc = std::source_location::c
         P = nullptr;
     }
 }
-
 
 template <typename T>
 void registerClass(T* ptr, const std::source_location& loc)
@@ -162,7 +160,6 @@ T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::sourc
     return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5));
 }
 
-
 template <class T>
 IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())
 {
@@ -192,7 +189,6 @@ IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_locatio
 #define xr_realloc(p, size) Memory.mem_realloc(p, size)
 #define xr_mfree(p) Memory.mem_free(p)
 
-
 // generic "C"-like allocations/deallocations
 template <class T>
 IC T* xr_alloc(size_t count)
@@ -211,14 +207,12 @@ IC void xr_free(T*& P)
     }
 }
 
-
 template <typename T, typename... Args>
 T* xr_new(Args&&... args)
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     return new (ptr) T(std::forward<Args>(args)...);
 }
-
 
 template <class T>
 IC void xr_delete(T*& ptr)
@@ -242,7 +236,7 @@ IC void xr_delete(T*& ptr)
 
 #endif
 
-XRCORE_API size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree);
+size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree);
 
 struct SProcessMemInfo
 {
@@ -259,4 +253,4 @@ struct SProcessMemInfo
 
     u32 MemoryLoad;
 };
-XRCORE_API void GetProcessMemInfo(SProcessMemInfo& minfo);
+void GetProcessMemInfo(SProcessMemInfo& minfo);

@@ -11,7 +11,7 @@ CHUDCrosshair::CHUDCrosshair()
 {
     hShader->create("hud\\crosshair");
 
-    //вычислить и запомнить центр экрана
+    // вычислить и запомнить центр экрана
     //	center.set(int(Device.dwWidth)/2,int(Device.dwHeight)/2);
     radius = 0;
 }
@@ -20,8 +20,8 @@ CHUDCrosshair::~CHUDCrosshair() {}
 
 void CHUDCrosshair::Load()
 {
-    //все размеры в процентах от длины экрана
-    //длина крестика
+    // все размеры в процентах от длины экрана
+    // длина крестика
     cross_length_perc = pSettings->r_float(HUD_CURSOR_SECTION, "cross_length");
     //	cross_length = iFloor(0.5f + cross_length_perc*float(Device.dwWidth));
 
@@ -36,7 +36,7 @@ void CHUDCrosshair::Load()
     radius_speed_perc = pSettings->r_float(HUD_CURSOR_SECTION, "radius_lerp_speed");
 }
 
-//выставляет radius от min_radius до max_radius
+// выставляет radius от min_radius до max_radius
 void CHUDCrosshair::SetDispersion(float disp)
 {
     Fvector4 r;
@@ -50,7 +50,7 @@ void CHUDCrosshair::SetDispersion(float disp)
     target_radius = radius_pixels;
 }
 
-extern ENGINE_API BOOL g_bRendering;
+extern BOOL g_bRendering;
 void CHUDCrosshair::OnRender(const Fvector2& center, const Fvector2& scr_size)
 {
     VERIFY(g_bRendering);

@@ -3,10 +3,10 @@
 #include "../../xrCore/xr_resource.h"
 #include "../../xr_3da/Render.h"
 
-class ENGINE_API CAviPlayerCustom;
+class CAviPlayerCustom;
 class CTheoraSurface;
 
-class ECORE_API CTexture : public ITexture, public xr_resource_named
+class CTexture : public ITexture, public xr_resource_named
 {
 public:
     //	Since DX10 allows up to 128 unique textures,

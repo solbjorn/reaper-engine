@@ -4,15 +4,15 @@
 #pragma once
 
 // refs
-class ENGINE_API CInifile;
-class ENGINE_API CEnvironment;
+class CInifile;
+class CEnvironment;
 
 // refs - effects
-class ENGINE_API CLensFlare;
-class ENGINE_API CEffect_Rain;
-class ENGINE_API CEffect_Thunderbolt;
+class CLensFlare;
+class CEffect_Rain;
+class CEffect_Thunderbolt;
 
-class ENGINE_API CPerlinNoise1D;
+class CPerlinNoise1D;
 
 struct SThunderboltDesc;
 struct SThunderboltCollection;
@@ -26,7 +26,7 @@ class CLensFlareDescriptor;
 #define INGAME_EDITOR_VIRTUAL
 
 // t-defs
-class ENGINE_API CEnvModifier
+class CEnvModifier
 {
 public:
     Fvector3 position;
@@ -45,7 +45,7 @@ public:
     float sum(CEnvModifier& _another, Fvector3& view);
 };
 
-class ENGINE_API CEnvAmbient
+class CEnvAmbient
 {
 public:
     struct SEffect
@@ -123,7 +123,7 @@ public:
     IC u32 get_rnd_effect_time_shoc() { return Random.randI(effect_period.x, effect_period.y); }
 };
 
-class ENGINE_API CEnvDescriptor
+class CEnvDescriptor
 {
 public:
     float exec_time;
@@ -203,7 +203,7 @@ public:
     shared_str m_identifier;
 };
 
-class ENGINE_API CEnvDescriptorMixer : public CEnvDescriptor
+class CEnvDescriptorMixer : public CEnvDescriptor
 {
 public:
     /*
@@ -224,7 +224,7 @@ public:
     void destroy();
 };
 
-class ENGINE_API CEnvironment
+class CEnvironment
 {
     friend class dxEnvironmentRender;
     struct str_pred
@@ -400,7 +400,7 @@ public:
 
 #undef INGAME_EDITOR_VIRTUAL
 
-ENGINE_API extern Flags32 psEnvFlags;
-ENGINE_API extern float psVisDistance;
+extern Flags32 psEnvFlags;
+extern float psVisDistance;
 
 #endif // EnvironmentH

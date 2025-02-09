@@ -99,13 +99,13 @@ void CMainMenu::ReadTextureInfo()
         xr_strcat(fn1, fn3);
         xr_strcat(fn1, ".xml");
 
-        //xr_string fn1 = (*fit).name;
+        // xr_string fn1 = (*fit).name;
 
         CUITextureMaster::ParseShTexInfo(fn1);
     }
 }
 
-extern ENGINE_API BOOL bShowPauseString;
+extern BOOL bShowPauseString;
 
 void CMainMenu::Activate(bool bActivate)
 {
@@ -164,7 +164,7 @@ void CMainMenu::Activate(bool bActivate)
 
         if (!g_pGameLevel)
         {
-            Discord.Set_active_task_text(nullptr); //Апдейт таска должен быть выше апдейта значка уровня!
+            Discord.Set_active_task_text(nullptr); // Апдейт таска должен быть выше апдейта значка уровня!
 
             const char* menu_status = CStringTable().translate("discord_status_mm").c_str();
             Discord.Update(!strcmp(menu_status, "discord_status_mm") ? "In main menu" : menu_status);
@@ -258,7 +258,7 @@ void CMainMenu::IR_OnMouseMove(int x, int y)
         MainInputReceiver()->IR_OnMouseMove(x, y);
 };
 
-void CMainMenu::IR_OnMouseStop(int x, int y){};
+void CMainMenu::IR_OnMouseStop(int x, int y) {};
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {

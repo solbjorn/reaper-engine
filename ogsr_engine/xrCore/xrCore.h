@@ -81,15 +81,6 @@
 #pragma warning(pop)
 
 // Our headers
-#ifdef XRCORE_STATIC
-#define XRCORE_API
-#else
-#ifdef XRCORE_EXPORTS
-#define XRCORE_API __declspec(dllexport)
-#else
-#define XRCORE_API __declspec(dllimport)
-#endif
-#endif
 
 #include "xrDebug.h"
 #include "vector.h"
@@ -106,7 +97,7 @@
 #include "rt_compressor.h"
 
 // stl ext
-struct XRCORE_API xr_rtoken
+struct xr_rtoken
 {
     shared_str name;
     int id;
@@ -163,7 +154,7 @@ public:
 };
 
 // ********************************************** The Core definition
-class XRCORE_API xrCore
+class xrCore
 {
 public:
     string64 ApplicationName;
@@ -208,12 +199,12 @@ public:
 // Borland global function dll interface
 #define _BGCL
 
-extern XRCORE_API xrCore Core;
+extern xrCore Core;
 
 #include "Utils/task_thread_pool.hpp"
-extern XRCORE_API task_thread_pool::task_thread_pool* TTAPI;
+extern task_thread_pool::task_thread_pool* TTAPI;
 
-extern XRCORE_API bool gModulesLoaded;
+extern bool gModulesLoaded;
 
 // Трэш
 #define BENCH_SEC_CALLCONV

@@ -28,9 +28,9 @@ class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
 class CCharacterPhysicsSupport;
 // refs
-class ENGINE_API CCameraBase;
-class ENGINE_API CBoneInstance;
-class ENGINE_API CBlend;
+class CCameraBase;
+class CBoneInstance;
+class CBlend;
 class CWeaponList;
 class CEffectorBobbing;
 class CHolderCustom;
@@ -217,7 +217,7 @@ public:
     virtual bool unlimited_ammo();
 
 public:
-    //свойства артефактов
+    // свойства артефактов
     virtual void UpdateArtefactsOnBelt();
 
     virtual ActorRestoreParams ActiveArtefactsOnBelt();
@@ -227,7 +227,7 @@ public:
 
 protected:
     void ApplyArtefactEffects(ActorRestoreParams&, CArtefact*);
-    //звук тяжелого дыхания
+    // звук тяжелого дыхания
     ref_sound m_HeavyBreathSnd;
     ref_sound m_BloodSnd;
 
@@ -254,11 +254,11 @@ protected:
     float f_DropPower;
 
     bool m_bOutBorder;
-    //сохраняет счетчик объектов в feel_touch, для которых необходимо обновлять размер колижена с актером
+    // сохраняет счетчик объектов в feel_touch, для которых необходимо обновлять размер колижена с актером
     u32 m_feel_touch_characters;
-    //разрешения на удаление трупа актера
-    //после того как контролирующий его игрок зареспавнился заново.
-    //устанавливается в game
+    // разрешения на удаление трупа актера
+    // после того как контролирующий его игрок зареспавнился заново.
+    // устанавливается в game
     u8 m_loaded_ph_box_id;
 
 private:
@@ -290,10 +290,10 @@ protected:
     // Rotation
     SRotation r_torso;
     float r_torso_tgt_roll;
-    //положение торса без воздействия эффекта отдачи оружия
+    // положение торса без воздействия эффекта отдачи оружия
     SRotation unaffected_r_torso;
 
-    //ориентация модели
+    // ориентация модели
     float r_model_yaw_dest;
     float r_model_yaw; // orientation of model
     float r_model_yaw_delta; // effect on multiple "strafe"+"something"
@@ -373,7 +373,7 @@ protected:
     SSleepEffector* m_pSleepEffector;
     CSleepEffectorPP* m_pSleepEffectorPP;
 
-    //менеджер эффекторов, есть у каждого актрера
+    // менеджер эффекторов, есть у каждого актрера
     CActorCameraManager* m_pActorEffector;
     static float f_Ladder_cam_limit;
     ////////////////////////////////////////////
@@ -406,9 +406,9 @@ protected:
     // Tip for action for object we're looking at
     const char* m_sDefaultObjAction;
 
-    //режим подбирания предметов
+    // режим подбирания предметов
     bool m_bPickupMode;
-    //расстояние подсветки предметов
+    // расстояние подсветки предметов
     float m_fPickupInfoRadius;
 
     void PickupInfoDraw(CObject* object);
@@ -502,23 +502,23 @@ public:
     bool IsZoomAimingMode() const { return m_bZoomAimingMode; }
 
 protected:
-    //если актер целится в прицел
+    // если актер целится в прицел
     bool m_bZoomAimingMode;
 
-    //настройки аккуратности стрельбы
-    //базовая дисперсия (когда игрок стоит на месте)
+    // настройки аккуратности стрельбы
+    // базовая дисперсия (когда игрок стоит на месте)
     float m_fDispBase;
     float m_fDispAim;
-    //коэффициенты на сколько процентов увеличится базовая дисперсия
-    //учитывает скорость актера
+    // коэффициенты на сколько процентов увеличится базовая дисперсия
+    // учитывает скорость актера
     float m_fDispVelFactor;
-    //если актер бежит
+    // если актер бежит
     float m_fDispAccelFactor;
-    //если актер сидит
+    // если актер сидит
     float m_fDispCrouchFactor;
     // crouch+no acceleration
     float m_fDispCrouchNoAccelFactor;
-    //смещение firepoint относительно default firepoint для бросания болтов и гранат
+    // смещение firepoint относительно default firepoint для бросания болтов и гранат
     Fvector m_vMissileOffset;
 
 public:
@@ -527,7 +527,7 @@ public:
     void SetMissileOffset(const Fvector& vNewOffset);
 
 protected:
-    //косточки используемые при стрельбе
+    // косточки используемые при стрельбе
     int m_r_hand;
     int m_l_finger1;
     int m_r_finger2;
@@ -565,9 +565,9 @@ protected:
     //---------------------------------------------
     //	bool					m_bHasUpdate;
     /// spline coeff /////////////////////
-    float SCoeff[3][4]; //коэффициэнты для сплайна Бизье
-    float HCoeff[3][4]; //коэффициэнты для сплайна Эрмита
-    Fvector IPosS, IPosH, IPosL; //положение актера после интерполяции Бизье, Эрмита, линейной
+    float SCoeff[3][4]; // коэффициэнты для сплайна Бизье
+    float HCoeff[3][4]; // коэффициэнты для сплайна Эрмита
+    Fvector IPosS, IPosH, IPosL; // положение актера после интерполяции Бизье, Эрмита, линейной
 
 #ifdef DEBUG
     DEF_DEQUE(VIS_POSITION, Fvector);

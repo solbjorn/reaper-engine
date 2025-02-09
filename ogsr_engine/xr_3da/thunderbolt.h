@@ -5,8 +5,8 @@
 #pragma once
 
 // refs
-class ENGINE_API IRender_DetailModel;
-class ENGINE_API CLAItem;
+class IRender_DetailModel;
+class CLAItem;
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/LensFlareRender.h"
@@ -75,7 +75,7 @@ public:
 
 #define THUNDERBOLT_CACHE_SIZE 8
 //
-class ENGINE_API CEffect_Thunderbolt
+class CEffect_Thunderbolt
 {
     friend class dxThunderboltRender;
 

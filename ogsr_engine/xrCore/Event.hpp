@@ -1,6 +1,6 @@
 #pragma once
 
-class XRCORE_API Event
+class Event
 {
     void* handle;
 

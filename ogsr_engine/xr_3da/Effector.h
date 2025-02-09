@@ -3,7 +3,7 @@
 
 #include "CameraDefs.h"
 
-class ENGINE_API CEffectorCam : public SBaseEffector
+class CEffectorCam : public SBaseEffector
 {
 protected:
     ECamEffectorType eType;
@@ -25,7 +25,7 @@ public:
         fLifeTime = 0.0f;
         bHudAffect = true;
     };
-    virtual ~CEffectorCam(){};
+    virtual ~CEffectorCam() {};
     void SetType(ECamEffectorType type) { eType = type; }
     void SetHudAffect(bool val) { bHudAffect = val; }
     bool GetHudAffect() { return bHudAffect; }
@@ -38,7 +38,7 @@ public:
         return Valid();
     }
 
-    virtual void ProcessIfInvalid(SCamEffectorInfo& info){};
+    virtual void ProcessIfInvalid(SCamEffectorInfo& info) {};
     virtual BOOL AllowProcessingIfInvalid() { return FALSE; }
     virtual bool AbsolutePositioning() { return false; }
 };

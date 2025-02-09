@@ -13,9 +13,9 @@
 
 constexpr size_t VFS_STANDARD_FILE = std::numeric_limits<size_t>::max();
 
-class XRCORE_API CStreamReader;
+class CStreamReader;
 
-class XRCORE_API CLocatorAPI
+class CLocatorAPI
 {
     friend class FS_Path;
 
@@ -154,5 +154,5 @@ public:
     void unlock_rescan();
 };
 
-extern XRCORE_API std::unique_ptr<CLocatorAPI> xr_FS;
+extern std::unique_ptr<CLocatorAPI> xr_FS;
 #define FS (*xr_FS)

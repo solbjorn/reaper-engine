@@ -17,7 +17,7 @@
 #include "PHDestroyable.h"
 #include "DelayedActionFuse.h"
 // refs
-class ENGINE_API CBoneInstance;
+class CBoneInstance;
 class CActor;
 class CInventory;
 class CSE_PHSkeleton;
@@ -85,7 +85,7 @@ private:
     virtual void ApplyDamage(u16 level);
     virtual float Health() { return GetfHealth(); }
     virtual void ChangeCondition(float fDeltaCondition);
-    virtual void StartTimerEffects(){};
+    virtual void StartTimerEffects() {};
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual CPhysicsShellHolder* PPhysicsShellHolder() { return static_cast<CPhysicsShellHolder*>(this); }
     virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return static_cast<CPHCollisionDamageReceiver*>(this); }
@@ -366,7 +366,7 @@ public:
         u32 engine_start_delay{}; // snd_engine starts after engine_start_delay ms by snd_engine_start
         u32 time_state_start{};
         CCar* pcar;
-    } * m_car_sound;
+    }* m_car_sound;
 
 private:
     typedef CEntity inherited;
@@ -564,7 +564,7 @@ public:
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void GetRayExplosionSourcePos(Fvector& pos);
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos){};
+    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {};
     virtual void ResetScriptData(void* P = 0);
 
     virtual void Action(int id, u32 flags);
@@ -579,8 +579,8 @@ public:
     virtual float SetfHealth(float value) { return CEntity::SetfHealth(value); };
 
     // Hits
-    virtual void HitSignal(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
-    virtual void HitImpulse(float /**amount/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/){};
+    virtual void HitSignal(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/) {};
+    virtual void HitImpulse(float /**amount/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/) {};
     virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
     virtual u16 Initiator();
     // HUD

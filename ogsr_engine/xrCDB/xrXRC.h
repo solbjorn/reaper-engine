@@ -7,12 +7,12 @@
 #include "xrCDB.h"
 
 #ifdef DEBUG
-extern XRCDB_API CStatTimer* cdb_clRAY; // total: ray-testing
-extern XRCDB_API CStatTimer* cdb_clBOX; // total: box query
-extern XRCDB_API CStatTimer* cdb_clFRUSTUM; // total: frustum query
+extern CStatTimer* cdb_clRAY; // total: ray-testing
+extern CStatTimer* cdb_clBOX; // total: box query
+extern CStatTimer* cdb_clFRUSTUM; // total: frustum query
 #endif
 
-class XRCDB_API xrXRC
+class xrXRC
 {
     CDB::COLLIDER CL;
 
@@ -60,4 +60,5 @@ public:
     IC xrXRC() {}
     IC ~xrXRC() {}
 };
-XRCDB_API extern xrXRC XRC;
+
+extern xrXRC XRC;

@@ -208,7 +208,7 @@ public:
     }
 };
 
-XRCORE_API void _dump_open_files(int mode);
+void _dump_open_files(int mode);
 class CCC_DumpOpenFiles : public IConsole_Command
 {
 public:
@@ -529,25 +529,6 @@ public:
         tokens = vid_quality_token;
 
         inherited::Execute(args);
-
-#ifndef XRRENDER_STATIC
-        Msg("--[%s] Executing renderer: [%s], renderer_value: [%u]", __FUNCTION__, args, renderer_value);
-#ifdef EXCLUDE_R1
-        //	0..2 - r2
-        //	3 - r3
-        //	4 - r4
-        psDeviceFlags.set(rsR2, ((renderer_value >= 0) && renderer_value < 3));
-        psDeviceFlags.set(rsR3, (renderer_value == 3));
-        psDeviceFlags.set(rsR4, (renderer_value == 4));
-#else
-        //	0 - r1
-        //	1..3 - r2
-        //	4 - r3
-        psDeviceFlags.set(rsR2, ((renderer_value > 0) && renderer_value < 4));
-        psDeviceFlags.set(rsR3, (renderer_value == 4));
-        psDeviceFlags.set(rsR4, (renderer_value >= 5));
-#endif
-#endif
     }
 
     virtual void Save(IWriter* F)
@@ -624,7 +605,7 @@ public:
     }
 };
 
-class ENGINE_API CCC_HideConsole : public IConsole_Command
+class CCC_HideConsole : public IConsole_Command
 {
 public:
     CCC_HideConsole(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
@@ -646,8 +627,8 @@ public:
     }
 };
 
-ENGINE_API float psHUD_FOV_def = 0.45f;
-ENGINE_API float psHUD_FOV = psHUD_FOV_def;
+float psHUD_FOV_def = 0.45f;
+float psHUD_FOV = psHUD_FOV_def;
 
 // extern int			psSkeletonUpdate;
 extern int rsDVB_Size;
@@ -659,8 +640,8 @@ extern int g_ErrorLineCount;
 extern float g_fontWidthScale;
 extern float g_fontHeightScale;
 
-ENGINE_API float ps_r2_sun_shafts_min = 0.f;
-ENGINE_API float ps_r2_sun_shafts_value = 1.f;
+float ps_r2_sun_shafts_min = 0.f;
+float ps_r2_sun_shafts_value = 1.f;
 
 int ps_framelimiter = 0;
 

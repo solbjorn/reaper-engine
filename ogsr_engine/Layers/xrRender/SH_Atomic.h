@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SInputSignature : public xr_resource_flagged
+struct SInputSignature : public xr_resource_flagged
 {
     ID3DBlob* signature;
     SInputSignature(ID3DBlob* pBlob);
@@ -20,7 +20,7 @@ struct ECORE_API SInputSignature : public xr_resource_flagged
 typedef resptr_core<SInputSignature, resptr_base<SInputSignature>> ref_input_sign;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SVS : public xr_resource_named
+struct SVS : public xr_resource_named
 {
     ID3DVertexShader* vs;
     R_constant_table constants;
@@ -31,7 +31,7 @@ struct ECORE_API SVS : public xr_resource_named
 typedef resptr_core<SVS, resptr_base<SVS>> ref_vs;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SPS : public xr_resource_named
+struct SPS : public xr_resource_named
 {
     ID3DPixelShader* ps;
     R_constant_table constants;
@@ -40,7 +40,7 @@ struct ECORE_API SPS : public xr_resource_named
 typedef resptr_core<SPS, resptr_base<SPS>> ref_ps;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SGS : public xr_resource_named
+struct SGS : public xr_resource_named
 {
     ID3DGeometryShader* gs;
     R_constant_table constants;
@@ -48,7 +48,7 @@ struct ECORE_API SGS : public xr_resource_named
 };
 typedef resptr_core<SGS, resptr_base<SGS>> ref_gs;
 
-struct ECORE_API SHS : public xr_resource_named
+struct SHS : public xr_resource_named
 {
     ID3D11HullShader* sh;
     R_constant_table constants;
@@ -56,7 +56,7 @@ struct ECORE_API SHS : public xr_resource_named
 };
 typedef resptr_core<SHS, resptr_base<SHS>> ref_hs;
 
-struct ECORE_API SDS : public xr_resource_named
+struct SDS : public xr_resource_named
 {
     ID3D11DomainShader* sh;
     R_constant_table constants;
@@ -64,7 +64,7 @@ struct ECORE_API SDS : public xr_resource_named
 };
 typedef resptr_core<SDS, resptr_base<SDS>> ref_ds;
 
-struct ECORE_API SCS : public xr_resource_named
+struct SCS : public xr_resource_named
 {
     ID3D11ComputeShader* sh;
     R_constant_table constants;
@@ -73,7 +73,7 @@ struct ECORE_API SCS : public xr_resource_named
 typedef resptr_core<SCS, resptr_base<SCS>> ref_cs;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SState : public xr_resource_flagged
+struct SState : public xr_resource_flagged
 {
     ID3DState* state;
     SimulatorStates state_code;
@@ -82,7 +82,7 @@ struct ECORE_API SState : public xr_resource_flagged
 typedef resptr_core<SState, resptr_base<SState>> ref_state;
 
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SDeclaration : public xr_resource_flagged
+struct SDeclaration : public xr_resource_flagged
 {
     //	Maps input signature to input layout
     xr_map<ID3DBlob*, ID3DInputLayout*> vs_to_layout;

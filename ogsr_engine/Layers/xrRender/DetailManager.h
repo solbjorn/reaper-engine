@@ -34,7 +34,7 @@ extern u32 dm_current_cache_size; //		= dm_current_cache_line*dm_current_cache_l
 extern float dm_current_fade; //				= float(2*dm_current_size)-.5f;
 extern float ps_current_detail_density;
 
-class ECORE_API CDetailManager
+class CDetailManager
 {
 public:
     float fade_distance = 99999;

@@ -7,12 +7,12 @@
 constexpr auto CFS_CompressMark = 1ul << 31ul;
 constexpr auto CFS_HeaderChunkID = 666;
 
-XRCORE_API void VerifyPath(const std::string_view path);
+void VerifyPath(const std::string_view path);
 
 #ifdef DEBUG
-XRCORE_API extern u32 g_file_mapped_memory;
-XRCORE_API extern u32 g_file_mapped_count;
-XRCORE_API void dump_file_mappings();
+extern u32 g_file_mapped_memory;
+extern u32 g_file_mapped_count;
+void dump_file_mappings();
 extern void register_file_mapping(void* address, const u32& size, LPCSTR file_name);
 extern void unregister_file_mapping(void* address, const u32& size);
 #endif // DEBUG
@@ -20,7 +20,7 @@ extern void unregister_file_mapping(void* address, const u32& size);
 //------------------------------------------------------------------------------------
 // Write
 //------------------------------------------------------------------------------------
-class XRCORE_API IWriter
+class IWriter
 {
 private:
     xr_stack<size_t> chunk_pos;
@@ -108,7 +108,7 @@ public:
     virtual size_t flush() { return 0; } // RvP
 };
 
-class XRCORE_API CMemoryWriter : public IWriter
+class CMemoryWriter : public IWriter
 {
     u8* data;
     size_t position;
@@ -469,7 +469,7 @@ private:
     size_t m_last_pos{};
 };
 
-class XRCORE_API IReader : public IReaderBase<IReader>
+class IReader : public IReaderBase<IReader>
 {
 protected:
     char* data{};

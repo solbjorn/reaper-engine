@@ -3,13 +3,13 @@
 class CInifile;
 struct xr_token;
 
-class XRCORE_API CInifile
+class CInifile
 {
     friend class CIniMerger;
 
 public:
     using Item = std::pair<shared_str, shared_str>;
-    struct XRCORE_API Sect
+    struct Sect
     {
         u32 Index{};
         shared_str Name{};
@@ -167,4 +167,4 @@ public:
 };
 
 // Main configuration file
-extern XRCORE_API CInifile* pSettings;
+extern CInifile* pSettings;

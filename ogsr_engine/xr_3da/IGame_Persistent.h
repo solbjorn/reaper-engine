@@ -8,9 +8,9 @@
 
 class IRenderVisual;
 class IMainMenu;
-class ENGINE_API CPS_Instance;
+class CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
+class IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
 {
 public:
     union params
@@ -127,8 +127,8 @@ public:
     virtual void DestroyInternal(bool bForce) = 0;
 };
 
-extern ENGINE_API IGame_Persistent* g_pGamePersistent;
-ENGINE_API extern bool IsMainMenuActive();
-ENGINE_API extern BOOL g_prefetch;
+extern IGame_Persistent* g_pGamePersistent;
+extern bool IsMainMenuActive();
+extern BOOL g_prefetch;
 
 #endif // IGame_PersistentH
