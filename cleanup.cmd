@@ -8,6 +8,9 @@ RD /s /q 3rd_party\Src\mimalloc\_Build
 RD /s /q 3rd_party\Src\oneTBB\_Build
 RD /s /q 3rd_party\Src\OpCoDe\_Build
 RD /s /q 3rd_party\Src\openal-soft\_Build
+RD /s /q 3rd_party\Src\Xiph\ogg\_Build
+RD /s /q 3rd_party\Src\Xiph\theora\_Build
+RD /s /q 3rd_party\Src\Xiph\vorbis\_Build
 RD /s /q 3rd_party\Src\xxHash\_Build
 RD /s /q ogsr_engine\_LIB
 RD /s /q ogsr_engine\_TEMP
