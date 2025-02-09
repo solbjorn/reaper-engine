@@ -61,31 +61,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.lib</NMakeOutput>
     <NMakeBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUNDLED_MODE=ON -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
       cmake --build . --config $(Configuration)
       copy /Y "xxhash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.lib"
-      copy /Y "xxhash.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.pdb"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "xxhash.dll" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll"
-      copy /Y "xxhash.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.pdb"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DXXHASH_BUNDLED_MODE=ON -DXXHASH_BUILD_XXHSUM=OFF ..\xxHash\cmake_unofficial
       cmake --build . --config $(Configuration)
       copy /Y "xxhash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.lib"
-      copy /Y "xxhash.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\xxhash.pdb"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "xxhash.dll" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.dll"
-      copy /Y "xxhash.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\xxhash.pdb"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>
