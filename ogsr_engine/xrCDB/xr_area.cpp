@@ -6,6 +6,8 @@
 #include "../xr_3da/igame_level.h"
 #include "../xr_3da/xrLevel.h"
 
+#include <xxhash.h>
+
 using namespace collide;
 
 extern BOOL g_bLoaded;
@@ -175,7 +177,10 @@ int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj
 }
 
 //----------------------------------------------------------------------
-static void __stdcall build_callback(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
+static void __stdcall build_callback(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
+static void __stdcall serialize_callback(IWriter& writer) { g_pGameLevel->Load_GameSpecific_CFORM_Serialize(writer); }
+static bool __stdcall deserialize_callback(IReader& reader) { return g_pGameLevel->Load_GameSpecific_CFORM_Deserialize(reader); }
+
 void CObjectSpace::Load()
 {
     IReader* F = FS.r_open("$level$", "level.cform");
@@ -186,7 +191,21 @@ void CObjectSpace::Load()
     Fvector* verts = (Fvector*)F->pointer();
     CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
     R_ASSERT(CFORM_CURRENT_VERSION == H.version);
-    Static.build(verts, H.vertcount, tris, H.facecount, build_callback);
+
+    F->seek(0);
+    XXH64_hash_t xxh = XXH3_64bits(F->pointer(), F->length());
+
+    string_path cache;
+    xr_strcpy(cache, "levels_cache\\");
+    xr_strcat(cache, g_pGameLevel->name().c_str());
+    xr_strcat(cache, ".cform");
+    FS.update_path(cache, "$app_data_root$", cache);
+
+    if (!FS.exist(cache) || !Static.deserialize(cache, xxh, deserialize_callback))
+    {
+        Static.build(verts, H.vertcount, tris, H.facecount, build_callback);
+        Static.serialize(cache, xxh, serialize_callback);
+    }
 
     m_BoundingVolume.set(H.aabb);
     g_SpatialSpace->initialize(H.aabb);

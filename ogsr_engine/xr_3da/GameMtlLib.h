@@ -331,6 +331,7 @@ public:
     // IO routines
     void Load();
     bool Save();
+    u64 get_hash();
 };
 
 #define GET_RANDOM(a_vector) (a_vector[Random.randI(a_vector.size())])

@@ -195,7 +195,10 @@ public:
 
     virtual BOOL Load_GameSpecific_Before();
     virtual BOOL Load_GameSpecific_After();
-    virtual void Load_GameSpecific_CFORM(CDB::TRI* T, u32 count);
+
+    void Load_GameSpecific_CFORM_Serialize(IWriter& writer) override;
+    bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) override;
+    void Load_GameSpecific_CFORM(CDB::TRI* T, size_t count) override;
 
     // Events
     virtual void OnEvent(EVENT E, u64 P1, u64 P2);
@@ -226,7 +229,7 @@ public:
     void ClientReceive();
     void ClientSend();
     void ClientSave();
-    
+
     virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 
     void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
@@ -244,16 +247,16 @@ public:
     CLevel();
     virtual ~CLevel();
 
-    //названияе текущего уровня
+    // названияе текущего уровня
     virtual shared_str name() const;
 
     // gets the time from the game simulation
 
-    //возвращает время в милисекундах относительно начала игры
+    // возвращает время в милисекундах относительно начала игры
     ALife::_TIME_ID GetGameTime();
-    //возвращает время для энвайронмента в милисекундах относительно начала игры
+    // возвращает время для энвайронмента в милисекундах относительно начала игры
     ALife::_TIME_ID GetEnvironmentGameTime();
-    //игровое время в отформатированном виде
+    // игровое время в отформатированном виде
     void GetGameDateTime(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
     float GetGameTimeFactor();
@@ -284,7 +287,7 @@ public:
     CMapManager& MapManager() { return *m_map_manager; }
     //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
-    //работа с пулями
+    // работа с пулями
 protected:
     CBulletManager* m_pBulletManager;
 
@@ -292,8 +295,8 @@ public:
     IC CBulletManager& BulletManager() { return *m_pBulletManager; }
 
     // by Mad Max
-    //bool IsServer();
-    //bool IsClient();
+    // bool IsServer();
+    // bool IsClient();
     CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
 
 protected:
@@ -368,8 +371,8 @@ IC CPHCommander& CLevel::ph_commander_scripts()
     return *m_ph_commander_scripts;
 }
 // by Mad Max
-//IC bool OnServer() { return Level().IsServer(); }
-//IC bool OnClient() { return Level().IsClient(); }
+// IC bool OnServer() { return Level().IsServer(); }
+// IC bool OnClient() { return Level().IsClient(); }
 
 class CPHWorld;
 extern CPHWorld* ph_world;
@@ -378,7 +381,7 @@ extern BOOL g_bDebugEvents;
 struct CKeyBinding
 {
 public:
-    CKeyBinding() { };
+    CKeyBinding() {};
 
     bool ignore = false;
 };

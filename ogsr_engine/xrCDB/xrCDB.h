@@ -41,7 +41,9 @@ public:
 static_assert(sizeof(TRI) == 16);
 
 // Build callback
-typedef void __stdcall build_callback(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
+using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
+using serialize_callback = void(IWriter& writer);
+using deserialize_callback = bool(IReader& reader);
 
 class Noncopyable
 {
@@ -98,6 +100,13 @@ public:
     void build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
     void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
     size_t memory();
+
+    bool serialize(const char* file, u64 xxh, serialize_callback callback = nullptr) const;
+    bool deserialize(const char* file, u64 xxh, deserialize_callback callback = nullptr);
+
+private:
+    void serialize_tree(IWriter* stream) const;
+    bool deserialize_tree(IReader* stream);
 };
 
 // Collider result

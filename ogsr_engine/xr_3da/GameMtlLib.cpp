@@ -1,9 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-
 #include "GameMtlLib.h"
-//#include "../include/xrapi/xrapi.h"
+
+#include <xxhash.h>
 
 CGameMtlLibrary GMLib;
 // CSound_manager_interface*	Sound = NULL;
@@ -101,7 +101,7 @@ void CGameMtlLibrary::Load()
         OBJ->close();
     }
 
-    //const u32 actor_material_idx = GetMaterialID(pSettings->r_string("actor", "material"));
+    // const u32 actor_material_idx = GetMaterialID(pSettings->r_string("actor", "material"));
 
     OBJ = F->open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
     if (OBJ)
@@ -156,6 +156,21 @@ void CGameMtlLibrary::Load()
         }
     */
     FS.r_close(F);
+}
+
+u64 CGameMtlLibrary::get_hash()
+{
+    XXH64_hash_t xxh = XXH64_hash_t(-1);
+    string_path name;
+
+    if (!FS.exist(name, _game_data_, GAMEMTL_FILENAME))
+        return xxh;
+
+    IReader* r = FS.r_open(name);
+    xxh = XXH3_64bits(r->pointer(), r->length());
+    FS.r_close(r);
+
+    return xxh;
 }
 
 #ifdef GM_NON_GAME

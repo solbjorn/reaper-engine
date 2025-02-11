@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include <Opcode.h>
+#include <xxhash.h>
 
 using namespace CDB;
 using namespace Opcode;
@@ -93,6 +94,201 @@ size_t MODEL::memory()
     const size_t V = verts_count * sizeof(Fvector);
     const size_t T = tris_count * sizeof(TRI);
     return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
+}
+
+struct alignas(16) model_mid_hdr
+{
+    u64 tris_count;
+    u64 verts_count;
+    XXH64_hash_t tris_xxh;
+    XXH64_hash_t verts_xxh;
+};
+
+struct alignas(16) model_end_hdr
+{
+    u32 model_code;
+    u32 nodes_num;
+    u64 nodes;
+    XXH64_hash_t nodes_xxh;
+    u64 pad;
+};
+
+void MODEL::serialize_tree(IWriter* stream) const
+{
+    const u32 nodes_num = tree->GetNbNodes();
+    const auto* root = ((const AABBNoLeafTree*)tree->GetTree())->GetNodes();
+    const size_t size = roundup(nodes_num * sizeof(AABBNoLeafNode), 16);
+
+    const model_end_hdr hdr = {
+        .model_code = tree->GetModelCode(),
+        .nodes_num = nodes_num,
+        .nodes = (uintptr_t)root,
+        .nodes_xxh = XXH3_64bits(root, size),
+        .pad = 0,
+    };
+
+    stream->w(&hdr, sizeof(hdr));
+    stream->w(root, size);
+}
+
+bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) const
+{
+    IWriter* wstream = FS.w_open(file);
+    if (!wstream)
+        return false;
+
+    if (callback)
+        callback(*wstream);
+
+    wstream->w_u64(xxh);
+    wstream->seek(roundup(wstream->tell(), 16));
+
+    const size_t trs = sizeof(TRI) * tris_count;
+    const size_t vrs = roundup(sizeof(Fvector) * verts_count, 16);
+
+    const model_mid_hdr hdr = {
+        .tris_count = tris_count,
+        .verts_count = verts_count,
+        .tris_xxh = XXH3_64bits(tris, trs),
+        .verts_xxh = XXH3_64bits(verts, vrs),
+    };
+
+    wstream->w(&hdr, sizeof(hdr));
+    wstream->w(tris, trs);
+    wstream->w(verts, vrs);
+
+    if (tree)
+        serialize_tree(wstream);
+
+    FS.w_close(wstream);
+
+    return true;
+}
+
+bool MODEL::deserialize_tree(IReader* stream)
+{
+    model_end_hdr hdr;
+    xr_memcpy128(&hdr, stream->pointer(), sizeof(hdr));
+    stream->advance(sizeof(hdr));
+
+    auto* mTree = xr_new<AABBNoLeafTree>();
+    auto* ptr = xr_alloc<AABBNoLeafNode>(hdr.nodes_num);
+    R_ASSERT(mTree && ptr);
+
+    const size_t size = hdr.nodes_num * sizeof(AABBNoLeafNode);
+    xr_memcpy128(ptr, stream->pointer(), size);
+
+    if (XXH3_64bits(ptr, size) != hdr.nodes_xxh)
+        goto err;
+
+    for (u32 i = 0; i < hdr.nodes_num; i++)
+    {
+        if (!ptr[i].HasPosLeaf())
+        {
+            ptr[i].mPosData -= hdr.nodes;
+            ptr[i].mPosData += (uintptr_t)ptr;
+        }
+        if (!ptr[i].HasNegLeaf())
+        {
+            ptr[i].mNegData -= hdr.nodes;
+            ptr[i].mNegData += (uintptr_t)ptr;
+        }
+    }
+
+    struct faketree
+    {
+        u8 pad1[8];
+        u32 mNbNodes;
+        u8 pad2[4];
+        AABBNoLeafNode* mNodes;
+    }* ft = reinterpret_cast<faketree*>(mTree);
+
+    ft->mNbNodes = hdr.nodes_num;
+    ft->mNodes = ptr;
+
+    struct fakemodel
+    {
+        u8 pad1[16];
+        u32 mModelCode;
+        u8 pad2[12];
+        AABBOptimizedTree* mTree;
+    }* fm = reinterpret_cast<fakemodel*>(tree);
+
+    fm->mModelCode = hdr.model_code;
+    fm->mTree = mTree;
+
+    return true;
+
+err:
+    xr_free(ptr);
+    xr_delete(mTree);
+
+    return false;
+}
+
+bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback)
+{
+    IReader* rstream = FS.r_open(file);
+    if (!rstream)
+        return false;
+
+    if (callback && !callback(*rstream))
+        goto err_close;
+
+    if (rstream->r_u64() != xxh)
+        goto err_close;
+
+    rstream->seek(roundup(rstream->tell(), 16));
+
+    xr_free(tris);
+    xr_free(verts);
+    xr_delete(tree);
+
+    model_mid_hdr mid;
+    xr_memcpy128(&mid, rstream->pointer(), sizeof(mid));
+    rstream->advance(sizeof(mid));
+
+    tris_count = mid.tris_count;
+    verts_count = mid.verts_count;
+
+    tris = xr_alloc<TRI>(tris_count);
+    const size_t trisSize = tris_count * sizeof(TRI);
+    xr_memcpy128(tris, rstream->pointer(), trisSize);
+    rstream->advance(trisSize);
+
+    if (XXH3_64bits(tris, trisSize) != mid.tris_xxh)
+        goto err_tris;
+
+    verts = xr_alloc<Fvector>(verts_count);
+    const size_t vertsSize = roundup(verts_count * sizeof(Fvector), 16);
+    xr_memcpy128(verts, rstream->pointer(), vertsSize);
+    rstream->advance(vertsSize);
+
+    if (XXH3_64bits(verts, vertsSize) != mid.verts_xxh)
+        goto err_verts;
+
+    if (rstream->eof())
+        return true;
+
+    tree = xr_new<Model>();
+    if (!deserialize_tree(rstream))
+        goto err_tree;
+
+    FS.r_close(rstream);
+    status = S_READY;
+
+    return true;
+
+err_tree:
+    xr_delete(tree);
+err_verts:
+    xr_free(verts);
+err_tris:
+    xr_free(tris);
+err_close:
+    FS.r_close(rstream);
+
+    return false;
 }
 
 COLLIDER::~COLLIDER() { r_free(); }
