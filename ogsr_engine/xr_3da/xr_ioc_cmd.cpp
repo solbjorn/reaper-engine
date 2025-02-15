@@ -731,7 +731,7 @@ void CCC_Register()
     CMD2(CCC_Float, "snd_volume_music", &psSoundVMusic);
     CMD1(CCC_SND_Restart, "snd_restart");
     // CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
-    CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EAX);
+    CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EFX);
     CMD3(CCC_Mask, "snd_use_float32", &psSoundFlags, ss_UseFloat32);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
     CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 128);

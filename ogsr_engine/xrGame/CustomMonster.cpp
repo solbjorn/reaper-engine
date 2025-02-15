@@ -107,8 +107,8 @@ CCustomMonster::~CCustomMonster()
     Msg("dumping client spawn manager stuff for object with id %d", ID());
     Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
-	if ( g_pGameLevel )
-	  Level().client_spawn_manager().clear(ID());
+    if (g_pGameLevel)
+        Level().client_spawn_manager().clear(ID());
 }
 
 void CCustomMonster::Load(LPCSTR section)
@@ -282,11 +282,11 @@ void CCustomMonster::shedule_Update(u32 DT)
     {
         if (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
-            Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::Exec_Visibility));
+            Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
 #else // DEBUG
         {
             if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-                Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::Exec_Visibility));
+                Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
             else
                 Exec_Visibility();
         }
@@ -306,7 +306,8 @@ void CCustomMonster::shedule_Update(u32 DT)
 
     VERIFY(_valid(Position()));
     if (Remote())
-    {}
+    {
+    }
     else
     {
         // here is monster AI call
@@ -399,7 +400,7 @@ void CCustomMonster::UpdateCL()
     */
 
     if (g_mt_config.test(mtSoundPlayer))
-        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::update_sound_player));
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
     else
     {
         START_PROFILE("CustomMonster/client_update/sound_player")
@@ -712,8 +713,8 @@ void CCustomMonster::net_Destroy()
 
     Actor()->SetActorVisibility(ID(), 0.f);
 
-    Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::update_sound_player));
-    Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::Exec_Visibility));
+    Device.remove_from_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
+    Device.remove_from_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
 
 #ifdef DEBUG
     DBG().on_destroy_object(this);

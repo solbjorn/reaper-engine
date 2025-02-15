@@ -114,7 +114,7 @@ public:
 
 public:
     xr_vector<shared_str> errors;
-    CRegistrator<pureStats> seqStats;
+    MessageRegistry<pureStats> seqStats;
 
 public:
     CStats();

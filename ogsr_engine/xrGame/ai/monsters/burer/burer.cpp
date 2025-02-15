@@ -60,13 +60,11 @@ void CBurer::reload(LPCSTR section)
         return;
 
     // add specific sounds
-    sound().add_deferred(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT,
-        SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
-        u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
+    sound().add_deferred(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
+                         u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
 
-    sound().add_deferred(pSettings->r_string(section, "sound_tele_attack"), DEFAULT_SAMPLE_COUNT,
-        SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
-        u32(MonsterSound::eBaseChannel), eMonsterSoundTeleAttack, get_head_bone_name());
+    sound().add_deferred(pSettings->r_string(section, "sound_tele_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
+                         u32(MonsterSound::eBaseChannel), eMonsterSoundTeleAttack, get_head_bone_name());
 }
 
 void CBurer::ActivateShield() { m_shield_active = true; }
@@ -214,7 +212,7 @@ void CBurer::PostLoad(LPCSTR section)
     inherited::PostLoad(section);
     if (m_anti_aim)
     {
-        m_anti_aim->set_callback(fastdelegate::MakeDelegate(this, &CBurer::StaminaHit));
+        m_anti_aim->set_callback(CallMe::fromMethod<&CBurer::StaminaHit>(this));
     }
 }
 
@@ -363,15 +361,11 @@ void CBurer::UpdateGraviObject()
     for (u32 i = 0; i < m_nearest.size(); i++)
     {
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
-        if (
-		  !obj ||
-		  !obj->m_pPhysicsShell ||
-		  (obj->spawn_ini() && obj->spawn_ini()->section_exist( "ph_heavy" )) || 
-          (pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" )) ||
-		  (pSettings->line_exist( obj->cNameSect().c_str(), "quest_item" ) && pSettings->r_bool( obj->cNameSect().c_str(), "quest_item" )) ||
-		  obj->hasFixedBones() ||
-		  !obj->m_pPhysicsShell->get_ApplyByGravity()
-		) continue;
+        if (!obj || !obj->m_pPhysicsShell || (obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
+            (pSettings->line_exist(obj->cNameSect().c_str(), "ph_heavy") && pSettings->r_bool(obj->cNameSect().c_str(), "ph_heavy")) ||
+            (pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")) || obj->hasFixedBones() ||
+            !obj->m_pPhysicsShell->get_ApplyByGravity())
+            continue;
 
         Fvector dir;
         dir.sub(obj->Position(), m_gravi_object.cur_pos);

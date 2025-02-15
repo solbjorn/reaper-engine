@@ -69,7 +69,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 {
     float base = PI / 180.f;
 
-    //влияние ранга на меткость
+    // влияние ранга на меткость
     base *= m_fRankDisperison;
 
     if (!movement().path_completed())
@@ -216,7 +216,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
     callback(GameObject::entity_alive_before_hit)(&HDS);
     if (HDS.ignore_flag)
         return;
-    //хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
+    // хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
     HDS.power *= m_fRankImmunity;
     if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
     {
@@ -281,8 +281,9 @@ void CAI_Stalker::Hit(SHit* pHDS)
                     pHDS->_dump();
                 }
 #endif
-                //				int						fx_index = iFloor(tpKinematics->LL_GetBoneInstance(pHDS->bone()).get_param(1) + (angle_difference(movement().m_body.current.yaw,-yaw) <=
-                //PI_DIV_2 ? 0 : 1)); 				if (fx_index != -1) 					animation().play_fx	(power_factor,fx_index);
+                //				int						fx_index = iFloor(tpKinematics->LL_GetBoneInstance(pHDS->bone()).get_param(1) +
+                //(angle_difference(movement().m_body.current.yaw,-yaw) <= PI_DIV_2 ? 0 : 1)); 				if (fx_index != -1) 					animation().play_fx
+                // (power_factor,fx_index);
             }
             else
             {
@@ -1163,14 +1164,14 @@ void CAI_Stalker::remove_critical_hit()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
 
-    animation().global().remove_callback(fastdelegate::MakeDelegate(this, &CAI_Stalker::remove_critical_hit));
+    animation().global().remove_callback(CallMe::fromMethod<&CAI_Stalker::remove_critical_hit>(this));
 }
 
 void CAI_Stalker::critical_wounded_state_start()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, true);
 
-    animation().global().add_callback(fastdelegate::MakeDelegate(this, &CAI_Stalker::remove_critical_hit));
+    animation().global().add_callback(CallMe::fromMethod<&CAI_Stalker::remove_critical_hit>(this));
 }
 
 bool CAI_Stalker::can_cry_enemy_is_wounded() const

@@ -37,12 +37,12 @@ CUIDragDropListEx::CUIDragDropListEx()
 
     m_vScrollBar->SetWindowName("scroll_v");
     Register(m_vScrollBar);
-    AddCallback("scroll_v", SCROLLBAR_VSCROLL, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnScrollV));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DRAG, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemStartDragging));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DROP, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemDrop));
-    AddCallback("cell_item", DRAG_DROP_ITEM_SELECTED, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemSelected));
-    AddCallback("cell_item", DRAG_DROP_ITEM_RBUTTON_CLICK, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemRButtonClick));
-    AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemDBClick));
+    AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIDragDropListEx::OnScrollV>(this));
+    AddCallback("cell_item", DRAG_DROP_ITEM_DRAG, CallMe::fromMethod<&CUIDragDropListEx::OnItemStartDragging>(this));
+    AddCallback("cell_item", DRAG_DROP_ITEM_DROP, CallMe::fromMethod<&CUIDragDropListEx::OnItemDrop>(this));
+    AddCallback("cell_item", DRAG_DROP_ITEM_SELECTED, CallMe::fromMethod<&CUIDragDropListEx::OnItemSelected>(this));
+    AddCallback("cell_item", DRAG_DROP_ITEM_RBUTTON_CLICK, CallMe::fromMethod<&CUIDragDropListEx::OnItemRButtonClick>(this));
+    AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, CallMe::fromMethod<&CUIDragDropListEx::OnItemDBClick>(this));
 
     back_color = 0xFFFFFFFF;
 }
@@ -137,7 +137,7 @@ void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
     if (itm != m_selected_item)
         return;
 
-    if (m_f_item_start_drag && m_f_item_start_drag(itm))
+    if (m_f_item_start_drag(itm))
         return;
 
     CreateDragItem(itm);
@@ -156,7 +156,7 @@ void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
         itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DROP);
     }
 
-    if (m_f_item_drop && m_f_item_drop(itm))
+    if (m_f_item_drop(itm))
     {
         DestroyDragItem();
         return;
@@ -185,7 +185,7 @@ void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
     OnItemSelected(w, pData);
     CUICellItem* itm = smart_cast<CUICellItem*>(w);
 
-    if (m_f_item_db_click && m_f_item_db_click(itm))
+    if (m_f_item_db_click(itm))
     {
         DestroyDragItem();
         return;
@@ -208,16 +208,14 @@ void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void* pData)
 {
     m_selected_item = smart_cast<CUICellItem*>(w);
     VERIFY(m_selected_item);
-    if (m_f_item_selected)
-        m_f_item_selected(m_selected_item);
+    m_f_item_selected(m_selected_item);
 }
 
 void CUIDragDropListEx::OnItemRButtonClick(CUIWindow* w, void* pData)
 {
     OnItemSelected(w, pData);
     CUICellItem* itm = smart_cast<CUICellItem*>(w);
-    if (m_f_item_rbutton_click)
-        m_f_item_rbutton_click(itm);
+    m_f_item_rbutton_click(itm);
 }
 
 void CUIDragDropListEx::GetClientArea(Frect& r)
@@ -943,7 +941,7 @@ void CUICellContainer::clear_select_armament()
     CUITradeWnd* TradeWnd = nullptr;
 
     if (!InvWnd && !CarBodyWnd)
-    { //Окно торговли приаттачено к CUITalkWnd, поэтому придётся извращаться с его поиском
+    { // Окно торговли приаттачено к CUITalkWnd, поэтому придётся извращаться с его поиском
         auto Parent = this->GetParent();
         do
         {

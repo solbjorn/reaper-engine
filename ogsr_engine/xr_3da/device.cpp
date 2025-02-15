@@ -12,6 +12,8 @@
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
 #include <winternl.h>
 
+#include <oneapi/tbb/parallel_invoke.h>
+
 CRenderDevice Device;
 CLoadScreenRenderer load_screen_renderer;
 
@@ -104,7 +106,7 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
     }
 }
 
-xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 void GetMonitorResolution(u32& horizontal, u32& vertical)
 {
@@ -166,7 +168,6 @@ void CRenderDevice::on_idle()
             g_loading_events.pop_front();
 
         pApp->LoadDraw();
-
         return;
     }
 
@@ -197,36 +198,51 @@ void CRenderDevice::on_idle()
     mView_saved = mView;
     mProject_saved = mProject;
 
+    std::chrono::time_point<std::chrono::high_resolution_clock> FrameEndTime;
+    std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
     const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
 
-    // allow secondary thread to do its job
-    auto awaiter = TTAPI->submit([this] { second_thread(); });
+    oneapi::tbb::parallel_invoke(
+        [this, &FrameEndTime] {
+            Statistic->RenderTOTAL_Real.FrameStart();
+            Statistic->RenderTOTAL_Real.Begin();
 
-    Statistic->RenderTOTAL_Real.FrameStart();
-    Statistic->RenderTOTAL_Real.Begin();
+            if (b_is_Active && Begin())
+            {
+                seqRender.Process();
 
-    if (b_is_Active)
-    {
-        if (Begin())
-        {
-            seqRender.Process(rp_Render);
+                if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+                    Statistic->Show();
 
-            if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-                Statistic->Show();
+                Statistic->Show_HW_Stats();
 
-            Statistic->Show_HW_Stats();
+                End();
+            }
 
-            End();
-        }
-    }
+            ImGui::EndFrame();
 
-    ImGui::EndFrame();
+            Statistic->RenderTOTAL_Real.End();
+            Statistic->RenderTOTAL_Real.FrameEnd();
+            Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 
-    Statistic->RenderTOTAL_Real.End();
-    Statistic->RenderTOTAL_Real.FrameEnd();
-    Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+            FrameEndTime = std::chrono::high_resolution_clock::now();
+        },
+        [this, &SecondThreadTasksElapsedTime] {
+            const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
 
-    const auto FrameEndTime = std::chrono::high_resolution_clock::now();
+            auto size = seqParallel.size();
+            while (size-- > 0)
+            {
+                seqParallel.front()();
+                seqParallel.pop_front();
+            }
+
+            seqFrameMT.Process();
+
+            const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
+            SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
+        });
+
     const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
 
     u32 curFPSLimit = ps_framelimiter;
@@ -241,27 +257,21 @@ void CRenderDevice::on_idle()
     if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
     {
         const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
-        if (FrameElapsedTime < FpsLimitMs)
+        const std::chrono::duration<double, std::milli> total = std::chrono::high_resolution_clock::now() - FrameStartTime;
+
+        if (total < FpsLimitMs)
         {
-            const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
-            // std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
+            const auto TimeToSleep = FpsLimitMs - total;
             Sleep(iFloor(TimeToSleep.count()));
-            // Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
         }
     }
 
-    const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
-
-    bool show_stats{};
-    if (awaiter.wait_for(FrameElapsedTime) == std::future_status::timeout)
-        show_stats = true;
-
-    awaiter.get();
-
+    bool show_stats = SecondThreadTasksElapsedTime > FrameElapsedTime;
     if (show_stats && dwPrecacheFrame == 0)
     {
-        const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
+        const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = FrameEndTime - SecondThreadStartTime;
         const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
+
         Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
             SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
     }
@@ -285,27 +295,6 @@ void CRenderDevice::message_loop()
 
         on_idle();
     }
-}
-
-void CRenderDevice::second_thread()
-{
-    const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
-
-    auto size = seqParallel.size();
-
-    while (size > 0)
-    {
-        seqParallel.front()();
-
-        seqParallel.pop_front();
-
-        size--;
-    }
-
-    seqFrameMT.Process(rp_Frame);
-
-    const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
-    SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
 }
 
 static void LogOsVersion()
@@ -352,13 +341,13 @@ void CRenderDevice::Run()
     }
 
     // Message cycle
-    seqAppStart.Process(rp_AppStart);
+    seqAppStart.Process();
 
     m_pRender->ClearTarget();
 
     message_loop();
 
-    seqAppEnd.Process(rp_AppEnd);
+    seqAppEnd.Process();
 }
 
 u32 app_inactive_time = 0;
@@ -395,7 +384,7 @@ void CRenderDevice::FrameMove()
     // Frame move
     Statistic->EngineTOTAL.Begin();
 
-    Device.seqFrame.Process(rp_Frame);
+    Device.seqFrame.Process();
     g_bLoaded = TRUE;
 
     Statistic->EngineTOTAL.End();
@@ -484,13 +473,13 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 
         if (Device.b_is_Active)
         {
-            Device.seqAppActivate.Process(rp_AppActivate);
+            Device.seqAppActivate.Process();
             app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
         }
         else
         {
             app_inactive_time_start = TimerMM.GetElapsed_ms();
-            Device.seqAppDeactivate.Process(rp_AppDeactivate);
+            Device.seqAppDeactivate.Process();
         }
     }
 }

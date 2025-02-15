@@ -105,7 +105,7 @@ void CUIInventoryWnd::Init()
     UIOutfitInfo.InitFromXml(uiXml);
     //.	xml_init.InitStatic					(uiXml, "outfit_info_window",0, &UIOutfitInfo);
 
-    //Элементы автоматического добавления
+    // Элементы автоматического добавления
     xml_init.InitAutoStatic(uiXml, "auto_static", this);
 
     m_pUIBagList = xr_new<CUIDragDropListEx>();
@@ -310,7 +310,7 @@ void CUIInventoryWnd::Update()
         // update money
         static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
         UIMoneyWnd.SetText(std::format("{} {}", pOurInvOwner->get_money(), StMoneyDescr).c_str());
- 
+
         if (m_b_need_update_stats)
         {
             // update outfit parameters
@@ -354,7 +354,7 @@ void CUIInventoryWnd::Hide()
     SendInfoToActor("ui_inventory_hide");
     ClearAllLists();
 
-    //достать вещь в активный слот
+    // достать вещь в активный слот
     CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
     if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
     {
@@ -461,11 +461,11 @@ void CUIInventoryWnd::SendEvent_Item_Eat(PIItem pItem)
 
 void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = fastdelegate::MakeDelegate(this, &CUIInventoryWnd::OnItemDrop);
-    lst->m_f_item_start_drag = fastdelegate::MakeDelegate(this, &CUIInventoryWnd::OnItemStartDrag);
-    lst->m_f_item_db_click = fastdelegate::MakeDelegate(this, &CUIInventoryWnd::OnItemDbClick);
-    lst->m_f_item_selected = fastdelegate::MakeDelegate(this, &CUIInventoryWnd::OnItemSelected);
-    lst->m_f_item_rbutton_click = fastdelegate::MakeDelegate(this, &CUIInventoryWnd::OnItemRButtonClick);
+    lst->m_f_item_drop = CallMe::fromMethod<&CUIInventoryWnd::OnItemDrop>(this);
+    lst->m_f_item_start_drag = CallMe::fromMethod<&CUIInventoryWnd::OnItemStartDrag>(this);
+    lst->m_f_item_db_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemDbClick>(this);
+    lst->m_f_item_selected = CallMe::fromMethod<&CUIInventoryWnd::OnItemSelected>(this);
+    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemRButtonClick>(this);
 }
 
 #include "../xr_level_controller.h"
@@ -510,7 +510,7 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 void CUIInventoryWnd::UpdateOutfit()
 {
     if (dont_update_belt_flag)
-    { //Чтобы арты не перемещались в рюкзак, при смене костюма
+    { // Чтобы арты не перемещались в рюкзак, при смене костюма
         dont_update_belt_flag = false;
         return;
     }
@@ -529,7 +529,7 @@ void CUIInventoryWnd::UpdateOutfit()
 
     if (modified)
     {
-        extern void update_inventory_window(); //некрасиво, зато просто
+        extern void update_inventory_window(); // некрасиво, зато просто
         update_inventory_window();
     }
 }

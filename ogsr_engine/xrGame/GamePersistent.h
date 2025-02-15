@@ -29,7 +29,7 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
     CUISequencer* m_intro;
     EVENT eQuickLoad;
 
-    fastdelegate::FastDelegate<void()> m_intro_event;
+    CallMe::Delegate<void()> m_intro_event;
 
     void start_logo_intro();
     void update_logo_intro();

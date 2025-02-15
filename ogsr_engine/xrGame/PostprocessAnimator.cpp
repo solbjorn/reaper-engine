@@ -28,11 +28,7 @@ void CPostProcessColor::save(IWriter& pWriter)
 
 CPostprocessAnimator::CPostprocessAnimator() { Create(); }
 
-CPostprocessAnimator::CPostprocessAnimator(int id, bool cyclic)
-    : CEffectorPP((EEffectorPPType)id, 100000, true), m_bCyclic(cyclic)
-{
-    Create();
-}
+CPostprocessAnimator::CPostprocessAnimator(int id, bool cyclic) : CEffectorPP((EEffectorPPType)id, 100000, true), m_bCyclic(cyclic) { Create(); }
 
 CPostprocessAnimator::~CPostprocessAnimator() { Clear(); }
 
@@ -267,7 +263,7 @@ BOOL CPostprocessAnimatorLerpConst::Process(SPPInfo& PPInfo)
 CPostprocessAnimatorControlled::CPostprocessAnimatorControlled(CEffectorController* c) : m_controller(c)
 {
     m_controller->SetPP(this);
-    SetFactorFunc(fastdelegate::MakeDelegate(m_controller, &CEffectorController::GetFactor));
+    SetFactorFunc(CallMe::fromMethod<&CEffectorController::GetFactor>(m_controller));
 }
 
 CPostprocessAnimatorControlled::~CPostprocessAnimatorControlled() { m_controller->SetPP(NULL); }

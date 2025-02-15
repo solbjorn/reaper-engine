@@ -109,46 +109,6 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
             s_targets_defer[it]->fill_parameters(this);
     }
 
-    // update EAX or EFX
-    if (psSoundFlags.test(ss_EAX) && (bEAX || bEFX))
-    {
-        if (bListenerMoved)
-        {
-            bListenerMoved = FALSE;
-            e_target = *get_environment(P);
-        }
-
-        if (!e_currentPaused)
-            e_current.lerp(e_current, e_target, dt_sec);
-        else
-            e_current.set_from(e_target);
-
-        if (bEAX)
-        {
-            i_eax_listener_set(&e_current);
-            i_eax_commit_setting();
-        }
-        else if (bEFX)
-        {
-            i_efx_listener_set(&e_current);
-            bEFX = i_efx_commit_setting();
-
-            if (!bEFX)
-            {
-                for (u32 it = 0; it < s_targets.size(); it++)
-                {
-                    CSoundRender_Target* T = s_targets[it];
-
-                    T->alAuxInit(AL_EFFECTSLOT_NULL);
-
-                    T->bEFX = false;
-                }
-
-                release_efx_objects();
-            }
-        }
-    }
-
     // update listener
     update_listener(P, D, N, R, dt_sec);
 
@@ -164,6 +124,15 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     update_events();
 
     bLocked = FALSE;
+}
+
+void CSoundRender_Core::i_efx_disable()
+{
+    for (auto& T : s_targets)
+    {
+        T->alAuxInit(AL_EFFECTSLOT_NULL);
+        T->bEFX = false;
+    }
 }
 
 static u32 g_saved_event_count = 0;

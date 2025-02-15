@@ -4,8 +4,7 @@
 #include "xr_object.h"
 using namespace Feel;
 
-Touch::Touch() : pure_relcase(&Touch::feel_touch_relcase) {}
-
+Touch::Touch() : pure_relcase(CallMe::fromMethod<&Touch::feel_touch_relcase>(this)) {}
 Touch::~Touch() {}
 
 BOOL Touch::feel_touch_contact(CObject* O) { return TRUE; }

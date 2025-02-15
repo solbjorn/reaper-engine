@@ -53,7 +53,7 @@ void CUIScrollView::Init()
         m_VScrollBar->SetAutoDelete(true);
         AttachChild(m_VScrollBar);
         Register(m_VScrollBar);
-        AddCallback("scroll_v", SCROLLBAR_VSCROLL, fastdelegate::MakeDelegate(this, &CUIScrollView::OnScrollV));
+        AddCallback("scroll_v", SCROLLBAR_VSCROLL, CallMe::fromMethod<&CUIScrollView::OnScrollV>(this));
     }
     if (!!m_scrollbar_profile)
         m_VScrollBar->Init(GetWndSize().x, 0.0f, GetWndSize().y, false, *m_scrollbar_profile);
@@ -312,7 +312,7 @@ void CUIScrollView::ScrollToEnd()
     OnScrollV(NULL, NULL);
 }
 
-void CUIScrollView::SetWndSize(const Fvector2& size) 
+void CUIScrollView::SetWndSize(const Fvector2& size)
 {
     m_wndSize = size;
     m_VScrollBar->SetStepSize(_max(1, iFloor(size.y / 10)));
@@ -320,9 +320,9 @@ void CUIScrollView::SetWndSize(const Fvector2& size)
     m_flags.set(eNeedRecalc, TRUE);
 }
 
-void CUIScrollView::SetHeight(float height) 
-{ 
-    m_wndSize.y = height; 
+void CUIScrollView::SetHeight(float height)
+{
+    m_wndSize.y = height;
     m_VScrollBar->SetStepSize(_max(1, iFloor(height / 10)));
     m_VScrollBar->SetPageSize(iFloor(height));
     m_flags.set(eNeedRecalc, TRUE);

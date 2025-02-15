@@ -40,15 +40,9 @@
 
 struct SRemoveOfflinePredicate
 {
-    bool operator()(const CVisibleObject& object) const
-    {
-        return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent());
-    }
+    bool operator()(const CVisibleObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
 
-    bool operator()(const CNotYetVisibleObject& object) const
-    {
-        return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent());
-    }
+    bool operator()(const CNotYetVisibleObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
 };
 
 struct CVisibleObjectPredicate
@@ -353,7 +347,6 @@ bool CVisualMemoryManager::visible(const CGameObject* game_object, float time_de
 
     if (game_object->getDestroy())
         return (false);
-
 
     float object_distance, distance = object_visible_distance(game_object, object_distance);
 
@@ -757,7 +750,7 @@ void CVisualMemoryManager::load(IReader& packet)
     if (!m_object->g_Alive())
         return;
 
-    auto callback = fastdelegate::MakeDelegate(&m_object->memory(), &CMemoryManager::on_requested_spawn);
+    auto callback = CallMe::fromMethod<&CMemoryManager::on_requested_spawn>(&m_object->memory());
 
     int count = packet.r_u8();
     for (int i = 0; i < count; ++i)
@@ -810,12 +803,12 @@ void CVisualMemoryManager::load(IReader& packet)
         m_delayed_objects.push_back(delayed_object);
 
         const CClientSpawnManager::CSpawnCallback* spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
-        if (!spawn_callback || !spawn_callback->m_object_callback)
+        if (!spawn_callback || spawn_callback->m_object_callback == CallMe::Delegate<void(CObject*)>())
             Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
 #ifdef DEBUG
         else
         {
-            if (spawn_callback && spawn_callback->m_object_callback)
+            if (spawn_callback && spawn_callback->m_object_callback != CallMe::Delegate<void(CObject*)>())
             {
                 VERIFY(spawn_callback->m_object_callback == callback);
             }

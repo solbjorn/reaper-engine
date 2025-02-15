@@ -142,7 +142,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
         Fmatrix xform = XFORM_center();
-        UpdateEvent.clear();
+        UpdateEvent = CallMe::Delegate<void()>();
         // after event
         switch (m_CurState)
         {
@@ -179,7 +179,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stFly: {
-            UpdateEvent.bind(this, &CPhantom::OnFlyState);
+            UpdateEvent = CallMe::fromMethod<&CPhantom::OnFlyState>(this);
             SStateData& sdata = m_state_data[new_state];
             m_fly_particles = PlayParticles(sdata.particles.c_str(), FALSE, xform);
             sdata.sound.play_at_pos(0, xform.c, sm_Looped);
@@ -187,14 +187,14 @@ void CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stContact: {
-            UpdateEvent.bind(this, &CPhantom::OnDeadState);
+            UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
             sdata.sound.play_at_pos(0, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
         case stShoot: {
-            UpdateEvent.bind(this, &CPhantom::OnDeadState);
+            UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
             PlayParticles(sdata.particles.c_str(), TRUE, xform);
             sdata.sound.play_at_pos(0, xform.c);
@@ -202,7 +202,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
         }
         break;
         case stIdle: {
-            UpdateEvent.bind(this, &CPhantom::OnIdleState);
+            UpdateEvent = CallMe::fromMethod<&CPhantom::OnIdleState>(this);
             SStateData& sdata = m_state_data[m_CurState];
             sdata.sound.stop();
             CParticlesObject::Destroy(m_fly_particles);
@@ -264,8 +264,7 @@ void CPhantom::UpdateCL()
 {
     inherited::UpdateCL();
 
-    if (!UpdateEvent.empty())
-        UpdateEvent();
+    UpdateEvent();
     if (m_TgtState != m_CurState)
         SwitchToState_internal(m_TgtState);
 }

@@ -2,7 +2,6 @@
 
 #include "../xrCore/xrCore.h"
 #include "../Include/xrAPI/xrAPI.h"
-#include "Utils/FastDelegate.hpp"
 
 // Our headers
 #include "engine.h"

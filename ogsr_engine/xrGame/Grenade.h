@@ -67,9 +67,9 @@ public:
     virtual CGameObject* cast_game_object() { return this; }
     virtual IDamageSource* cast_IDamageSource() { return CExplosive::cast_IDamageSource(); }
 
-    using destroy_callback = fastdelegate::FastDelegate<void(CGrenade*)>;
+    using destroy_callback = CallMe::Delegate<void(CGrenade*)>;
     void set_destroy_callback(destroy_callback callback) { m_destroy_callback = callback; }
-    //void DestroyCallbackClear() { m_destroy_callback.clear(); }
+    // void DestroyCallbackClear() { m_destroy_callback.clear(); }
 
 private:
     destroy_callback m_destroy_callback;

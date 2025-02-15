@@ -69,7 +69,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
     m_bJumpRequirePower = READ_IF_EXISTS(pSettings, r_bool, section, "jump_require_power", false);
 
-    //порог силы и здоровья меньше которого актер начинает хромать
+    // порог силы и здоровья меньше которого актер начинает хромать
     m_fLimpingHealthBegin = pSettings->r_float(section, "limping_health_begin");
     m_fLimpingHealthEnd = pSettings->r_float(section, "limping_health_end");
     R_ASSERT(m_fLimpingHealthBegin <= m_fLimpingHealthEnd);
@@ -127,7 +127,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
     m_MaxWalkWeight = pSettings->r_float(section, "max_walk_weight");
 }
 
-//вычисление параметров с ходом времени
+// вычисление параметров с ходом времени
 #include "UI.h"
 #include "HUDManager.h"
 
@@ -172,7 +172,7 @@ void CActorCondition::UpdateCondition()
             k_max_power = 1.0f;
 
         SetMaxPower(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power);
-    }    
+    }
 
     m_fAlcohol += m_fV_Alcohol * m_fDeltaTime;
     clamp(m_fAlcohol, 0.0f, 1.0f);
@@ -182,7 +182,7 @@ void CActorCondition::UpdateCondition()
     {
         if (!ce)
         {
-            AddEffector(m_object, effAlcohol, "effector_alcohol", fastdelegate::MakeDelegate(this, &CActorCondition::GetAlcohol));
+            AddEffector(m_object, effAlcohol, "effector_alcohol", CallMe::fromMethod<&CActorCondition::GetAlcohol>(this));
         }
     }
     else
@@ -203,7 +203,7 @@ void CActorCondition::UpdateCondition()
     {
         if (!ppe)
         {
-            AddEffector(m_object, effPsyHealth, pp_sect_name, fastdelegate::MakeDelegate(this, &CActorCondition::GetPsy));
+            AddEffector(m_object, effPsyHealth, pp_sect_name, CallMe::fromMethod<&CActorCondition::GetPsy>(this));
         }
     }
     else

@@ -22,7 +22,7 @@ public:
     IC void hud_camera_Matrix(Fmatrix& M) { M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p); }
 };
 
-using GET_KOEFF_FUNC = fastdelegate::FastDelegate<float()>;
+using GET_KOEFF_FUNC = CallMe::Delegate<float()>;
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name);
 void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor);

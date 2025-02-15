@@ -8,8 +8,7 @@
 
 namespace Feel
 {
-
-Vision::Vision() : pure_relcase(&Vision::feel_vision_relcase) {}
+Vision::Vision() : pure_relcase(CallMe::fromMethod<&Vision::feel_vision_relcase>(this)) {}
 Vision::~Vision() {}
 
 struct SFeelParam
@@ -20,6 +19,7 @@ struct SFeelParam
     float vis_threshold;
     SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold) : parent(_parent), item(_item), vis(1.f), vis_threshold(_vis_threshold) {}
 };
+
 IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 {
     SFeelParam* fp = (SFeelParam*)params;

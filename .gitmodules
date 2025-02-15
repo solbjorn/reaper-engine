@@ -7,26 +7,9 @@
 [submodule "3rd_party/Src/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectXTex/DirectXTex
 	url = https://github.com/microsoft/DirectXTex.git
-[submodule "3rd_party/Src/luajit2/luajit2"]
-	path = 3rd_party/Src/luajit2/luajit2
-	url = https://github.com/openresty/luajit2.git
-	ignore = untracked
-[submodule "3rd_party/Src/mimalloc/mimalloc"]
-	path = 3rd_party/Src/mimalloc/mimalloc
-	url = https://github.com/microsoft/mimalloc.git
-	branch = dev3
 [submodule "3rd_party/Src/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/OpCoDe/OpCoDe
 	url = https://github.com/solbjorn/OpCoDe
-[submodule "3rd_party/Src/oneTBB/oneTBB"]
-	path = 3rd_party/Src/oneTBB/oneTBB
-	url = https://github.com/uxlfoundation/oneTBB.git
-[submodule "3rd_party/Src/openal-soft/openal-soft"]
-	path = 3rd_party/Src/openal-soft/openal-soft
-	url = https://github.com/kcat/openal-soft.git
-[submodule "3rd_party/Src/rapidhash/rapidhash"]
-	path = 3rd_party/Src/rapidhash/rapidhash
-	url = https://github.com/Nicoshev/rapidhash.git
 [submodule "3rd_party/Src/Xiph/ogg/ogg"]
 	path = 3rd_party/Src/Xiph/ogg/ogg
 	url = https://gitlab.xiph.org/xiph/ogg.git
@@ -36,6 +19,26 @@
 [submodule "3rd_party/Src/Xiph/vorbis/vorbis"]
 	path = 3rd_party/Src/Xiph/vorbis/vorbis
 	url = https://gitlab.xiph.org/xiph/vorbis.git
+[submodule "3rd_party/Src/callme"]
+	path = 3rd_party/Src/callme
+	url = https://github.com/solbjorn/callme.git
+[submodule "3rd_party/Src/luajit2/luajit2"]
+	path = 3rd_party/Src/luajit2/luajit2
+	url = https://github.com/openresty/luajit2.git
+	ignore = untracked
+[submodule "3rd_party/Src/mimalloc/mimalloc"]
+	path = 3rd_party/Src/mimalloc/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
+	branch = dev3
+[submodule "3rd_party/Src/oneTBB/oneTBB"]
+	path = 3rd_party/Src/oneTBB/oneTBB
+	url = https://github.com/uxlfoundation/oneTBB.git
+[submodule "3rd_party/Src/openal-soft/openal-soft"]
+	path = 3rd_party/Src/openal-soft/openal-soft
+	url = https://github.com/kcat/openal-soft.git
+[submodule "3rd_party/Src/rapidhash/rapidhash"]
+	path = 3rd_party/Src/rapidhash/rapidhash
+	url = https://github.com/Nicoshev/rapidhash.git
 [submodule "3rd_party/Src/xxHash/xxHash"]
 	path = 3rd_party/Src/xxHash/xxHash
 	url = https://github.com/Cyan4973/xxHash.git

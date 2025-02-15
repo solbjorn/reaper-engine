@@ -91,7 +91,7 @@ class CPHObject;
 struct SPHDBGDrawAbsract
 {
     virtual void render() = 0;
-    virtual ~SPHDBGDrawAbsract(){};
+    virtual ~SPHDBGDrawAbsract() {};
 };
 DEFINE_VECTOR(SPHDBGDrawAbsract*, PHABS_DBG_V, PHABS_DBG_I);
 extern PHABS_DBG_V dbg_draw_abstruct0;
@@ -123,7 +123,7 @@ void PH_DBG_SetTrackObject(LPCSTR obj);
 struct CFunctionGraph
 {
 public:
-    using type_function = fastdelegate::FastDelegate<float(float)>;
+    using type_function = CallMe::Delegate<float(float)>;
 
 private:
     CStatGraph* m_stat_graph;

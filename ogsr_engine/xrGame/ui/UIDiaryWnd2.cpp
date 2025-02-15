@@ -69,7 +69,7 @@ void CUIDiaryWnd::Init()
     xml_init.InitTabControl(uiXml, "main_wnd:left_frame:left_frame_header:filter_tab", 0, m_FilterTab);
     m_FilterTab->SetWindowName("filter_tab");
     Register(m_FilterTab);
-    AddCallback("filter_tab", TAB_CHANGED, fastdelegate::MakeDelegate(this, &CUIDiaryWnd::OnFilterChanged));
+    AddCallback("filter_tab", TAB_CHANGED, CallMe::fromMethod<&CUIDiaryWnd::OnFilterChanged>(this));
 
     if (uiXml.NavigateToNode("main_wnd:left_frame:left_frame_header:anim_static"))
     {
@@ -89,7 +89,7 @@ void CUIDiaryWnd::Init()
     xml_init.InitListWnd(uiXml, "main_wnd:left_frame:work_area:src_list", 0, m_SrcListWnd);
     m_SrcListWnd->SetWindowName("src_list");
     Register(m_SrcListWnd);
-    AddCallback("src_list", LIST_ITEM_CLICKED, fastdelegate::MakeDelegate(this, &CUIDiaryWnd::OnSrcListItemClicked));
+    AddCallback("src_list", LIST_ITEM_CLICKED, CallMe::fromMethod<&CUIDiaryWnd::OnSrcListItemClicked>(this));
 
     xml_init.InitFont(uiXml, "main_wnd:left_frame:work_area:src_list:tree_item_font", 0, m_uTreeItemColor, m_pTreeItemFont);
     R_ASSERT(m_pTreeItemFont);

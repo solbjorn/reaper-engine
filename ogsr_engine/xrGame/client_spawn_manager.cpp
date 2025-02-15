@@ -115,8 +115,7 @@ void CClientSpawnManager::clear(ALife::_OBJECT_ID requested_id)
 
 void CClientSpawnManager::callback(CSpawnCallback& spawn_callback, CObject* object)
 {
-    if (spawn_callback.m_object_callback)
-        spawn_callback.m_object_callback(object);
+    spawn_callback.m_object_callback(object);
 
     CGameObject* game_object = smart_cast<CGameObject*>(object);
     CScriptGameObject* script_game_object = !game_object ? 0 : game_object->lua_game_object();

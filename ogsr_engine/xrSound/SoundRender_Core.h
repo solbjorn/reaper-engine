@@ -138,6 +138,7 @@ public:
     // efx listener
     void i_efx_listener_set(CSound_environment* E);
     bool i_efx_commit_setting();
+    void i_efx_disable();
 
     virtual CSound_environment* DbgCurrentEnv() override { return &e_target; }
     virtual void DbgCurrentEnvPaused(bool v) override { e_currentPaused = v; }

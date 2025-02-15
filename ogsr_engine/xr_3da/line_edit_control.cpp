@@ -188,47 +188,47 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 
     if (mode == im_read_only)
     {
-        assign_callback(DIK_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
-        assign_callback(DIK_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
-        assign_callback(DIK_INSERT, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
+        assign_callback(DIK_A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
+        assign_callback(DIK_C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(DIK_INSERT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
 
-        assign_callback(DIK_HOME, ks_free, Callback(this, &line_edit_control::move_pos_home));
-        assign_callback(DIK_END, ks_free, Callback(this, &line_edit_control::move_pos_end));
-        assign_callback(DIK_LEFT, ks_free, Callback(this, &line_edit_control::move_pos_left));
-        assign_callback(DIK_RIGHT, ks_free, Callback(this, &line_edit_control::move_pos_right));
-        assign_callback(DIK_LEFT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_left_word));
-        assign_callback(DIK_RIGHT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_right_word));
+        assign_callback(DIK_HOME, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
+        assign_callback(DIK_END, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
+        assign_callback(DIK_LEFT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
+        assign_callback(DIK_RIGHT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
+        assign_callback(DIK_LEFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
+        assign_callback(DIK_RIGHT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
     }
     else
     {
         assign_char_pairs(mode);
 
-        assign_callback(DIK_INSERT, ks_free, Callback(this, &line_edit_control::flip_insert_mode));
-        assign_callback(DIK_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
-        assign_callback(DIK_Z, ks_Ctrl, Callback(this, &line_edit_control::undo_buf));
+        assign_callback(DIK_INSERT, ks_free, CallMe::fromMethod<&line_edit_control::flip_insert_mode>(this));
+        assign_callback(DIK_A, ks_Ctrl, CallMe::fromMethod<&line_edit_control::select_all_buf>(this));
+        assign_callback(DIK_Z, ks_Ctrl, CallMe::fromMethod<&line_edit_control::undo_buf>(this));
 
-        assign_callback(DIK_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
-        assign_callback(DIK_V, ks_Ctrl, Callback(this, &line_edit_control::paste_from_clipboard));
-        assign_callback(DIK_X, ks_Ctrl, Callback(this, &line_edit_control::cut_to_clipboard));
+        assign_callback(DIK_C, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(DIK_V, ks_Ctrl, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
+        assign_callback(DIK_X, ks_Ctrl, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
 
-        assign_callback(DIK_INSERT, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
-        assign_callback(DIK_INSERT, ks_Shift, Callback(this, &line_edit_control::paste_from_clipboard));
-        assign_callback(DIK_DELETE, ks_Shift, Callback(this, &line_edit_control::cut_to_clipboard));
+        assign_callback(DIK_INSERT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::copy_to_clipboard>(this));
+        assign_callback(DIK_INSERT, ks_Shift, CallMe::fromMethod<&line_edit_control::paste_from_clipboard>(this));
+        assign_callback(DIK_DELETE, ks_Shift, CallMe::fromMethod<&line_edit_control::cut_to_clipboard>(this));
 
-        assign_callback(DIK_HOME, ks_free, Callback(this, &line_edit_control::move_pos_home));
-        assign_callback(DIK_END, ks_free, Callback(this, &line_edit_control::move_pos_end));
-        assign_callback(DIK_LEFT, ks_free, Callback(this, &line_edit_control::move_pos_left));
-        assign_callback(DIK_RIGHT, ks_free, Callback(this, &line_edit_control::move_pos_right));
-        assign_callback(DIK_LEFT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_left_word));
-        assign_callback(DIK_RIGHT, ks_Ctrl, Callback(this, &line_edit_control::move_pos_right_word));
+        assign_callback(DIK_HOME, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_home>(this));
+        assign_callback(DIK_END, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_end>(this));
+        assign_callback(DIK_LEFT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_left>(this));
+        assign_callback(DIK_RIGHT, ks_free, CallMe::fromMethod<&line_edit_control::move_pos_right>(this));
+        assign_callback(DIK_LEFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_left_word>(this));
+        assign_callback(DIK_RIGHT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::move_pos_right_word>(this));
 
-        assign_callback(DIK_BACK, ks_free, Callback(this, &line_edit_control::delete_selected_back));
-        assign_callback(DIK_DELETE, ks_free, Callback(this, &line_edit_control::delete_selected_forward));
-        assign_callback(DIK_BACK, ks_Ctrl, Callback(this, &line_edit_control::delete_word_back));
-        assign_callback(DIK_DELETE, ks_Ctrl, Callback(this, &line_edit_control::delete_word_forward));
+        assign_callback(DIK_BACK, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_back>(this));
+        assign_callback(DIK_DELETE, ks_free, CallMe::fromMethod<&line_edit_control::delete_selected_forward>(this));
+        assign_callback(DIK_BACK, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_back>(this));
+        assign_callback(DIK_DELETE, ks_Ctrl, CallMe::fromMethod<&line_edit_control::delete_word_forward>(this));
 
-        assign_callback(DIK_LSHIFT, ks_Ctrl, Callback(this, &line_edit_control::SwitchKL));
-        assign_callback(DIK_LSHIFT, ks_Alt, Callback(this, &line_edit_control::SwitchKL));
+        assign_callback(DIK_LSHIFT, ks_Ctrl, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
+        assign_callback(DIK_LSHIFT, ks_Alt, CallMe::fromMethod<&line_edit_control::SwitchKL>(this));
     } // if mode
 
     create_key_state(DIK_LSHIFT, ks_LShift);

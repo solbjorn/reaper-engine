@@ -48,7 +48,7 @@ CGamePersistent::CGamePersistent(void)
     m_pUI_core = NULL;
     m_pMainMenu = NULL;
     m_intro = NULL;
-    m_intro_event.bind(this, &CGamePersistent::start_logo_intro);
+    m_intro_event = CallMe::fromMethod<&CGamePersistent::start_logo_intro>(this);
 #ifdef DEBUG
     m_frame_counter = 0;
     m_last_stats_frame = u32(-2);
@@ -156,7 +156,7 @@ void CGamePersistent::PreStart(LPCSTR op)
 void CGamePersistent::Start(LPCSTR op)
 {
     __super::Start(op);
-    m_intro_event.bind(this, &CGamePersistent::start_game_intro);
+    m_intro_event = CallMe::fromMethod<&CGamePersistent::start_game_intro>(this);
 }
 
 void CGamePersistent::Disconnect()
@@ -454,7 +454,7 @@ void CGamePersistent::start_logo_intro()
 {
     if (!strstr(Core.Params, "-intro"))
     {
-        m_intro_event.clear();
+        m_intro_event = CallMe::Delegate<void()>();
         Console->Show();
         Console->Execute("main_menu on");
         return;
@@ -462,7 +462,7 @@ void CGamePersistent::start_logo_intro()
 
     if (Device.dwPrecacheFrame == 0)
     {
-        m_intro_event.bind(this, &CGamePersistent::update_logo_intro);
+        m_intro_event = CallMe::fromMethod<&CGamePersistent::update_logo_intro>(this);
         if (0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pGameLevel)
         {
             VERIFY(NULL == m_intro);
@@ -476,7 +476,7 @@ void CGamePersistent::update_logo_intro()
 {
     if (m_intro && (false == m_intro->IsActive()))
     {
-        m_intro_event.clear();
+        m_intro_event = CallMe::Delegate<void()>();
         xr_delete(m_intro);
         Console->Execute("main_menu on");
     }
@@ -486,7 +486,7 @@ void CGamePersistent::start_game_intro()
 {
     if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
     {
-        m_intro_event.bind(this, &CGamePersistent::update_game_intro);
+        m_intro_event = CallMe::fromMethod<&CGamePersistent::update_game_intro>(this);
         if (0 == stricmp(m_game_params.m_new_or_load, "new"))
         {
             VERIFY(NULL == m_intro);
@@ -499,11 +499,11 @@ void CGamePersistent::start_game_intro()
 void CGamePersistent::update_game_intro()
 {
     if (!m_intro)
-        m_intro_event.clear();
+        m_intro_event = CallMe::Delegate<void()>();
     else if (!m_intro->IsActive())
     {
         xr_delete(m_intro);
-        m_intro_event.clear();
+        m_intro_event = CallMe::Delegate<void()>();
     }
 }
 
@@ -527,7 +527,7 @@ void CGamePersistent::OnFrame()
 #ifdef DEBUG
     ++m_frame_counter;
 #endif
-    if (!m_intro_event.empty() && !load_screen_renderer.b_registered)
+    if (!load_screen_renderer.b_registered)
         m_intro_event();
 
     if (Device.dwPrecacheFrame == 0 && load_screen_renderer.b_registered && !GameAutopaused)

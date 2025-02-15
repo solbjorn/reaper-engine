@@ -65,7 +65,7 @@ public:
     typedef xr_map<LPCSTR, IConsole_Command*, str_pred> vecCMD;
     typedef vecCMD::iterator vecCMD_IT;
     typedef vecCMD::const_iterator vecCMD_CIT;
-    typedef fastdelegate::FastDelegate<void()> Callback;
+    using Callback = CallMe::Delegate<void()>;
     typedef xr_vector<shared_str> vecHistory;
     typedef xr_vector<shared_str> vecTips;
     typedef xr_vector<TipString> vecTipsEx;

@@ -25,11 +25,11 @@
 
 #include "OpenALDeviceList.h"
 
-//#include <objbase.h>
+// #include <objbase.h>
 
 ALDeviceList::ALDeviceList()
 {
-    //snd_device_id = u32(-1);
+    // snd_device_id = u32(-1);
 
     Enumerate();
 }
@@ -101,7 +101,7 @@ void ALDeviceList::Enumerate()
     }
     else if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATION_EXT"))
     {
-        const char* devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);  
+        const char* devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
 
         IterateDevicesList(devices, false);
 
@@ -160,15 +160,13 @@ void ALDeviceList::Enumerate()
         {
             ALDeviceDesc al_device_desc = GetDeviceDesc(j);
 
-            Msg("%d. %s (full name [%s]). al_soft [%d]", j + 1,
-                snd_devices_token[j].name,
-                al_device_desc.name, al_device_desc.is_al_soft);
+            Msg("%d. %s (full name [%s]). al_soft [%d]", j + 1, snd_devices_token[j].name, al_device_desc.name, al_device_desc.is_al_soft);
         }
     }
     else
         Log("!!SOUND: OpenAL: No devices available.");
 
-    //CoInitializeEx(NULL, COINIT_MULTITHREADED); // ???
+    // CoInitializeEx(NULL, COINIT_MULTITHREADED); // ???
 }
 
 void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
@@ -180,30 +178,27 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
     }
     else
     {
-        if (snd_device_id == u32(-1) || snd_device_id >= GetNumDevices() || psSoundFlags.test(ss_UseDefaultDevice))
-        {            
+        if (snd_device_id == u32(-1) || snd_device_id >= GetNumDevices())
+        {
             R_ASSERT(GetNumDevices() != 0);
 
             // select best
             u32 new_device_id = 0; // first
 
-            //if (snd_device_id == u32(-1) || psSoundFlags.test(ss_UseDefaultDevice))
+            for (int i = 0; snd_devices_token[i].name; i++)
             {
-                for (int i = 0; snd_devices_token[i].name; i++)
+                // check openAL default device first
+                if (m_defaultDeviceName[0] && _stricmp(m_defaultDeviceName, snd_devices_token[i].name) == 0)
                 {
-                    // check openAL default device first
-                    if (m_defaultDeviceName[0] && _stricmp(m_defaultDeviceName, snd_devices_token[i].name) == 0)
-                    {
-                        new_device_id = i;
-                        break;
-                    }
+                    new_device_id = i;
+                    break;
+                }
 
-                    // check OS system default device too
-                    if (system_default_device && _stricmp(system_default_device, snd_devices_token[i].name) == 0)
-                    {
-                        new_device_id = i;
-                        break;
-                    }
+                // check OS system default device too
+                if (system_default_device && _stricmp(system_default_device, snd_devices_token[i].name) == 0)
+                {
+                    new_device_id = i;
+                    break;
                 }
             }
 

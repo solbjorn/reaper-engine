@@ -57,17 +57,17 @@ struct CUITradeInternal
     CUIDragDropListEx UIOurTradeList;
     CUIDragDropListEx UIOthersTradeList;
 
-    //кнопки
+    // кнопки
     CUI3tButton UIPerformTradeButton;
     CUI3tButton UIToTalkButton;
 
-    //информация о персонажах
+    // информация о персонажах
     CUIStatic UIOurIcon;
     CUIStatic UIOthersIcon;
     CUICharacterInfo UICharacterInfoLeft;
     CUICharacterInfo UICharacterInfoRight;
 
-    //информация о перетаскиваемом предмете
+    // информация о перетаскиваемом предмете
     CUIStatic UIDescWnd;
     CUIItemInfo UIItemInfo;
 
@@ -103,13 +103,13 @@ void CUITradeWnd::Init()
 
     xml_init.InitWindow(uiXml, "main", 0, this);
 
-    //статические элементы интерфейса
+    // статические элементы интерфейса
     AttachChild(&m_uidata->UIStaticTop);
     xml_init.InitStatic(uiXml, "top_background", 0, &m_uidata->UIStaticTop);
     AttachChild(&m_uidata->UIStaticBottom);
     xml_init.InitStatic(uiXml, "bottom_background", 0, &m_uidata->UIStaticBottom);
 
-    //иконки с изображение нас и партнера по торговле
+    // иконки с изображение нас и партнера по торговле
     AttachChild(&m_uidata->UIOurIcon);
     xml_init.InitStatic(uiXml, "static_icon", 0, &m_uidata->UIOurIcon);
     AttachChild(&m_uidata->UIOthersIcon);
@@ -119,7 +119,7 @@ void CUITradeWnd::Init()
     m_uidata->UIOthersIcon.AttachChild(&m_uidata->UICharacterInfoRight);
     m_uidata->UICharacterInfoRight.Init(0, 0, m_uidata->UIOthersIcon.GetWidth(), m_uidata->UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
 
-    //Списки торговли
+    // Списки торговли
     AttachChild(&m_uidata->UIOurBagWnd);
     xml_init.InitStatic(uiXml, "our_bag_static", 0, &m_uidata->UIOurBagWnd);
     AttachChild(&m_uidata->UIOthersBagWnd);
@@ -142,7 +142,7 @@ void CUITradeWnd::Init()
     m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersPriceCaption);
     xml_init.InitMultiTextStatic(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
 
-    //Списки Drag&Drop
+    // Списки Drag&Drop
     m_uidata->UIOurBagWnd.AttachChild(&m_uidata->UIOurBagList);
     xml_init.InitDragDropListEx(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
 
@@ -577,7 +577,7 @@ void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx*
     {
         CUICellItem* itm = pSellList->RemoveItem(pSellList->GetItemIdx(0), false);
         auto InvItm = (PIItem)itm->m_pData;
-        InvItm->m_highlight_equipped = false; //Убираем подсветку после продажи предмета
+        InvItm->m_highlight_equipped = false; // Убираем подсветку после продажи предмета
         itm->m_select_equipped = false;
         pTrade->TransferItem(InvItm, bBuying, !others_zero_trade);
         pBuyList->SetItem(itm);
@@ -794,16 +794,16 @@ void CUITradeWnd::SwitchToTalk() { GetMessageTarget()->SendMessage(this, TRADE_W
 
 void CUITradeWnd::BindDragDropListEvents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = fastdelegate::MakeDelegate(this, &CUITradeWnd::OnItemDrop);
-    lst->m_f_item_start_drag = fastdelegate::MakeDelegate(this, &CUITradeWnd::OnItemStartDrag);
-    lst->m_f_item_db_click = fastdelegate::MakeDelegate(this, &CUITradeWnd::OnItemDbClick);
-    lst->m_f_item_selected = fastdelegate::MakeDelegate(this, &CUITradeWnd::OnItemSelected);
-    lst->m_f_item_rbutton_click = fastdelegate::MakeDelegate(this, &CUITradeWnd::OnItemRButtonClick);
+    lst->m_f_item_drop = CallMe::fromMethod<&CUITradeWnd::OnItemDrop>(this);
+    lst->m_f_item_start_drag = CallMe::fromMethod<&CUITradeWnd::OnItemStartDrag>(this);
+    lst->m_f_item_db_click = CallMe::fromMethod<&CUITradeWnd::OnItemDbClick>(this);
+    lst->m_f_item_selected = CallMe::fromMethod<&CUITradeWnd::OnItemSelected>(this);
+    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUITradeWnd::OnItemRButtonClick>(this);
 }
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted)
 {
-    static const bool highlight_cop_enabled = !Core.Features.test(xrCore::Feature::colorize_untradable); //Это опция для Dsh, не убирать!
+    static const bool highlight_cop_enabled = !Core.Features.test(xrCore::Feature::colorize_untradable); // Это опция для Dsh, не убирать!
 
     if (!canTrade)
     {

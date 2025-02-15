@@ -25,7 +25,7 @@ anti_aim_ability::anti_aim_ability(CBaseMonster* const object) : m_object(object
     m_last_activated_tick = 0;
     m_last_detection_tick = 0;
     m_last_angle = M_PI;
-    m_callback.clear();
+    m_callback = CallMe::Delegate<void()>();
 }
 
 anti_aim_ability::~anti_aim_ability() { do_deactivate(); }
@@ -182,11 +182,7 @@ void anti_aim_ability::start_camera_effector()
     m_camera_effector_end_tick = std::max(m_camera_effector_end_tick, m_animation_end_tick);
 
     Actor()->Cameras().AddCamEffector(cam_eff);
-
-    if (m_callback)
-    {
-        m_callback();
-    }
+    m_callback();
 }
 
 void anti_aim_ability::do_deactivate()

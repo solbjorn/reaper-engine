@@ -19,18 +19,18 @@ private:
     xr_vector<CObject*>* crows;
 
 public:
-    using RELCASE_CALLBACK = fastdelegate::FastDelegate<void(CObject*)>;
+    using RELCASE_CALLBACK = CallMe::Delegate<void(CObject*)>;
     struct SRelcasePair
     {
         int* m_ID;
         RELCASE_CALLBACK m_Callback;
-        SRelcasePair(int* id, RELCASE_CALLBACK cb) : m_ID(id), m_Callback(cb) {}
-        bool operator==(RELCASE_CALLBACK cb) { return m_Callback == cb; }
+        SRelcasePair(int* id, const RELCASE_CALLBACK& cb) : m_ID(id), m_Callback(cb) {}
+        bool operator==(const RELCASE_CALLBACK& cb) const { return m_Callback == cb; }
     };
     typedef xr_vector<SRelcasePair> RELCASE_CALLBACK_VEC;
     RELCASE_CALLBACK_VEC m_relcase_callbacks;
 
-    void relcase_register(RELCASE_CALLBACK, int*);
+    void relcase_register(const RELCASE_CALLBACK&, int*);
     void relcase_unregister(int*);
 
 public:

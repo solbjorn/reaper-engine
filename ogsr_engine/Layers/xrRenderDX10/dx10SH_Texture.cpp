@@ -31,7 +31,7 @@ CTexture::CTexture()
     flags.bLoaded = false;
     flags.seqCycles = 0;
     m_material = 1.0f;
-    bind = fastdelegate::MakeDelegate(this, &CTexture::apply_load);
+    bind = CallMe::fromMethod<&CTexture::apply_load>(this);
 }
 
 CTexture::~CTexture()
@@ -118,13 +118,13 @@ ID3DBaseTexture* CTexture::surface_get() const { return pSurface; }
 void CTexture::PostLoad()
 {
     if (pTheora)
-        bind = fastdelegate::MakeDelegate(this, &CTexture::apply_theora);
+        bind = CallMe::fromMethod<&CTexture::apply_theora>(this);
     else if (pAVI)
-        bind = fastdelegate::MakeDelegate(this, &CTexture::apply_avi);
+        bind = CallMe::fromMethod<&CTexture::apply_avi>(this);
     else if (!m_seqSRView.empty())
-        bind = fastdelegate::MakeDelegate(this, &CTexture::apply_seq);
+        bind = CallMe::fromMethod<&CTexture::apply_seq>(this);
     else
-        bind = fastdelegate::MakeDelegate(this, &CTexture::apply_normal);
+        bind = CallMe::fromMethod<&CTexture::apply_normal>(this);
 }
 
 void CTexture::apply_load(u32 dwStage)
@@ -499,7 +499,7 @@ void CTexture::Unload()
     xr_delete(pAVI);
     xr_delete(pTheora);
 
-    bind = fastdelegate::MakeDelegate(this, &CTexture::apply_load);
+    bind = CallMe::fromMethod<&CTexture::apply_load>(this);
 }
 
 void CTexture::video_Play(BOOL looped, u32 _time)

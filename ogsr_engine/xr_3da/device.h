@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include "Event.hpp"
-#include "Utils/FastDelegate.hpp"
+#include <CallMe.h>
 
 #include "pure.h"
 #include "../xrcore/ftimer.h"
@@ -18,8 +18,6 @@
 #include "../Include/xrRender/RenderDeviceRender.h"
 
 class engine_impl;
-
-#pragma pack(push, 4)
 
 class IRenderDevice
 {};
@@ -106,13 +104,13 @@ protected:
 
 public:
     // Registrators
-    CRegistrator<pureRender> seqRender;
-    CRegistrator<pureAppActivate> seqAppActivate;
-    CRegistrator<pureAppDeactivate> seqAppDeactivate;
-    CRegistrator<pureAppStart> seqAppStart;
-    CRegistrator<pureAppEnd> seqAppEnd;
-    CRegistrator<pureFrame> seqFrame;
-    CRegistrator<pureScreenResolutionChanged> seqResolutionChanged;
+    MessageRegistry<pureRender> seqRender;
+    MessageRegistry<pureAppActivate> seqAppActivate;
+    MessageRegistry<pureAppDeactivate> seqAppDeactivate;
+    MessageRegistry<pureAppStart> seqAppStart;
+    MessageRegistry<pureAppEnd> seqAppEnd;
+    MessageRegistry<pureFrame> seqFrame;
+    MessageRegistry<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
 
@@ -124,7 +122,6 @@ class CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
 public:
 };
 
-#pragma pack(pop)
 // refs
 class CRenderDevice : public CRenderDeviceBase
 {
@@ -140,7 +137,7 @@ private:
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
-    xr_deque<fastdelegate::FastDelegate<void()>> seqParallel;
+    xr_deque<CallMe::Delegate<void()>> seqParallel;
 
 public:
     LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
@@ -171,8 +168,8 @@ public:
     void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
 
 public:
-    CRegistrator<pureFrame> seqFrameMT;
-    CRegistrator<pureDeviceReset> seqDeviceReset;
+    MessageRegistry<pureFrame> seqFrameMT;
+    MessageRegistry<pureDeviceReset> seqDeviceReset;
 
     CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
@@ -228,11 +225,8 @@ public:
         return (Timer.time_factor());
     }
 
-private:
-    std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
-
 public:
-    ICF bool add_to_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
+    ICF bool add_to_seq_parallel(const CallMe::Delegate<void()>& delegate)
     {
         auto I = std::find(seqParallel.begin(), seqParallel.end(), delegate);
         if (I != seqParallel.end())
@@ -241,7 +235,7 @@ public:
         return true;
     }
 
-    ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
+    ICF void remove_from_seq_parallel(const CallMe::Delegate<void()>& delegate)
     {
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
     }
@@ -252,7 +246,6 @@ public:
 
 private:
     void message_loop();
-    void second_thread();
 };
 
 extern CRenderDevice Device;
@@ -263,7 +256,7 @@ extern float refresh_rate;
 
 extern bool g_bBenchmark;
 
-extern xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
+extern xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 class CLoadScreenRenderer : public pureRender
 {

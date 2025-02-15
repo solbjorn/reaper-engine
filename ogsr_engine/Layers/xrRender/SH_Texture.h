@@ -69,7 +69,7 @@ public: //	Public class members (must be encapsulated furthur)
         u32 memUsage : 28;
     } flags;
 
-    fastdelegate::FastDelegate<void(u32)> bind;
+    CallMe::Delegate<void(u32)> bind;
 
     CAviPlayerCustom* pAVI;
     CTheoraSurface* pTheora;

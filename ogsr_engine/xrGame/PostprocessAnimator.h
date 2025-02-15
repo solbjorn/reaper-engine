@@ -8,7 +8,6 @@
 
 class CEffectorController;
 
-
 #define POSTPROCESS_PARAMS_COUNT 11
 #define POSTPROCESS_FILE_VERSION 0x0002
 
@@ -90,7 +89,6 @@ public:
     virtual size_t get_keys_count() { return m_Red.keys.size(); }
 };
 
-
 class CPostprocessAnimator : public CEffectorPP
 
 {
@@ -128,10 +126,10 @@ public:
 class CPostprocessAnimatorLerp : public CPostprocessAnimator
 {
 protected:
-    fastdelegate::FastDelegate<float()> m_get_factor_func;
+    CallMe::Delegate<float()> m_get_factor_func;
 
 public:
-    void SetFactorFunc(fastdelegate::FastDelegate<float()> f) { m_get_factor_func = f; }
+    void SetFactorFunc(CallMe::Delegate<float()> f) { m_get_factor_func = f; }
     virtual BOOL Process(SPPInfo& PPInfo);
 };
 

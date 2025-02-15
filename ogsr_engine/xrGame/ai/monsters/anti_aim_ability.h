@@ -9,7 +9,7 @@ class CBaseMonster;
 class anti_aim_ability : public CControl_ComCustom<>
 {
 public:
-    using hit_callback = fastdelegate::FastDelegate<void()>;
+    using hit_callback = CallMe::Delegate<void()>;
 
 private:
     typedef CControl_ComCustom<> inherited;

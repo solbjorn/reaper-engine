@@ -46,7 +46,7 @@ class line_edit_control
 {
 private:
     typedef text_editor::base Base;
-    typedef fastdelegate::FastDelegate<void()> Callback;
+    using Callback = CallMe::Delegate<void()>;
 
 public:
     line_edit_control(u32 str_buffer_size);

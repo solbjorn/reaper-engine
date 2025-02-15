@@ -541,6 +541,38 @@ void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, cons
     Listener.orientation[0] = D;
     Listener.orientation[1] = N;
     Listener.orientation[2] = R;
+
+    // update EAX or EFX
+    if (!(psSoundFlags.test(ss_EFX) && (bEAX || bEFX)))
+        return;
+
+    if (bListenerMoved)
+    {
+        bListenerMoved = FALSE;
+        e_target = *get_environment(P);
+    }
+
+    if (!e_currentPaused)
+        e_current.lerp(e_current, e_target, dt);
+    else
+        e_current.set_from(e_target);
+
+    if (bEAX)
+    {
+        i_eax_listener_set(&e_current);
+        i_eax_commit_setting();
+    }
+    else if (bEFX)
+    {
+        i_efx_listener_set(&e_current);
+
+        bEFX = i_efx_commit_setting();
+        if (!bEFX)
+        {
+            i_efx_disable();
+            release_efx_objects();
+        }
+    }
 }
 
 //////////////////////////////////////////////////

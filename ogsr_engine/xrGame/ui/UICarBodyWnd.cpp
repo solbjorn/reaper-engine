@@ -106,7 +106,7 @@ void CUICarBodyWnd::Init()
     m_pUIOthersBagWnd->AttachChild(m_pUIOthersBagList);
     xml_init.InitDragDropListEx(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
 
-    //информация о предмете
+    // информация о предмете
     m_pUIDescWnd = xr_new<CUIFrameWindow>();
     m_pUIDescWnd->SetAutoDelete(true);
     AttachChild(m_pUIDescWnd);
@@ -227,8 +227,8 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
             NET_Packet P;
             CGameObject::u_EventGen(P, GE_INFO_TRANSFER, our_id);
             P.w_u16(0); // not used
-            P.w_stringZ((*it).info_id); //сообщение
-            P.w_u8(1); //добавление сообщения
+            P.w_stringZ((*it).info_id); // сообщение
+            P.w_u8(1); // добавление сообщения
             CGameObject::u_EventSend(P);
         }
         known_info.clear();
@@ -266,7 +266,7 @@ void CUICarBodyWnd::UpdateLists()
     m_pOurObject->inventory().AddAvailableItems(ruck_list, true);
     std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
-    //Наш рюкзак
+    // Наш рюкзак
     for (const auto& inv_item : ruck_list)
     {
         CUICellItem* itm = create_cell_item(inv_item);
@@ -286,7 +286,7 @@ void CUICarBodyWnd::UpdateLists()
 
     std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 
-    //Чужой рюкзак
+    // Чужой рюкзак
     for (const auto& inv_item : ruck_list)
     {
         CUICellItem* itm = create_cell_item(inv_item);
@@ -312,7 +312,7 @@ void CUICarBodyWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
         {
             switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG())
             {
-            case INVENTORY_EAT_ACTION: //съесть объект
+            case INVENTORY_EAT_ACTION: // съесть объект
                 EatItem();
                 break;
             case INVENTORY_UNLOAD_MAGAZINE: {
@@ -903,7 +903,7 @@ void move_item(u16 from_id, u16 to_id, u16 what_id)
     P.w_u16(what_id);
     CGameObject::u_EventSend(P);
 
-    //другому инвентарю - взять вещь
+    // другому инвентарю - взять вещь
     CGameObject::u_EventGen(P, GE_TRANSFER_TAKE, to_id);
     P.w_u16(what_id);
     CGameObject::u_EventSend(P);
@@ -933,11 +933,11 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 
 void CUICarBodyWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
-    lst->m_f_item_drop = fastdelegate::MakeDelegate(this, &CUICarBodyWnd::OnItemDrop);
-    lst->m_f_item_start_drag = fastdelegate::MakeDelegate(this, &CUICarBodyWnd::OnItemStartDrag);
-    lst->m_f_item_db_click = fastdelegate::MakeDelegate(this, &CUICarBodyWnd::OnItemDbClick);
-    lst->m_f_item_selected = fastdelegate::MakeDelegate(this, &CUICarBodyWnd::OnItemSelected);
-    lst->m_f_item_rbutton_click = fastdelegate::MakeDelegate(this, &CUICarBodyWnd::OnItemRButtonClick);
+    lst->m_f_item_drop = CallMe::fromMethod<&CUICarBodyWnd::OnItemDrop>(this);
+    lst->m_f_item_start_drag = CallMe::fromMethod<&CUICarBodyWnd::OnItemStartDrag>(this);
+    lst->m_f_item_db_click = CallMe::fromMethod<&CUICarBodyWnd::OnItemDbClick>(this);
+    lst->m_f_item_selected = CallMe::fromMethod<&CUICarBodyWnd::OnItemSelected>(this);
+    lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUICarBodyWnd::OnItemRButtonClick>(this);
 }
 
 void CUICarBodyWnd::PlaySnd(eInventorySndAction a)

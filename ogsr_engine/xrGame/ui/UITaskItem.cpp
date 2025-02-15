@@ -32,7 +32,7 @@ void CUITaskItem::Init()
 {
     SetWindowName("job_item");
     Register(this);
-    AddCallback("job_item", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskItem::OnItemClicked));
+    AddCallback("job_item", BUTTON_CLICKED, CallMe::fromMethod<&CUITaskItem::OnItemClicked>(this));
 }
 
 void CUITaskItem::OnItemClicked(CUIWindow*, void*) { m_EventsWnd->ShowDescription(GameTask(), ObjectiveIdx()); }
@@ -64,7 +64,7 @@ void CUITaskRootItem::Init()
 
     m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
     Register(m_switchDescriptionBtn);
-    AddCallback("m_switchDescriptionBtn", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
+    AddCallback("m_switchDescriptionBtn", BUTTON_CLICKED, CallMe::fromMethod<&CUITaskRootItem::OnSwitchDescriptionClicked>(this));
 
     CUIXmlInit xml_init;
     CUIXml& uiXml = m_EventsWnd->m_ui_task_item_xml;
@@ -190,7 +190,7 @@ void CUITaskSubItem::Init()
     m_showDescriptionBtn->SetWindowName("m_showDescriptionBtn");
     Register(m_showDescriptionBtn);
 
-    AddCallback("m_showDescriptionBtn", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskSubItem::OnShowDescriptionClicked));
+    AddCallback("m_showDescriptionBtn", BUTTON_CLICKED, CallMe::fromMethod<&CUITaskSubItem::OnShowDescriptionClicked>(this));
 
     CUIXmlInit xml_init;
     xml_init.InitWindow(uiXml, "task_sub_item", 0, this);

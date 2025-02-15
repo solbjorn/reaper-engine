@@ -17,7 +17,7 @@
 const float default_grenade_detonation_threshold_hit = 100;
 CGrenade::CGrenade(void)
 {
-    m_destroy_callback.clear();
+    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
     m_eSoundCheckout = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
 }
 
@@ -58,11 +58,8 @@ BOOL CGrenade::net_Spawn(CSE_Abstract* DC)
 
 void CGrenade::net_Destroy()
 {
-    if (m_destroy_callback)
-    {
-        m_destroy_callback(this);
-        m_destroy_callback.clear();
-    }
+    m_destroy_callback(this);
+    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
 
     inherited::net_Destroy();
     CExplosive::net_Destroy();
@@ -156,11 +153,8 @@ void CGrenade::Destroy()
     // Generate Expode event
     Fvector normal;
 
-    if (m_destroy_callback)
-    {
-        m_destroy_callback(this);
-        m_destroy_callback.clear();
-    }
+    m_destroy_callback(this);
+    m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
 
     FindNormal(normal);
     Fvector C;

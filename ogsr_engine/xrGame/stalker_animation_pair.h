@@ -31,7 +31,7 @@ public:
     typedef std::pair<LPCSTR, LPCSTR> BLEND_ID;
 
 public:
-    using CALLBACK_ID = fastdelegate::FastDelegate<void()>;
+    using CALLBACK_ID = CallMe::Delegate<void()>;
     typedef xr_vector<CALLBACK_ID> CALLBACKS;
 
 private:

@@ -38,14 +38,14 @@ void CRenderDevice::Destroy(void)
     // xr_delete					(Resources);
     // HW.DestroyDevice			();
 
-    seqRender.R.clear();
-    seqAppActivate.R.clear();
-    seqAppDeactivate.R.clear();
-    seqAppStart.R.clear();
-    seqAppEnd.R.clear();
-    seqFrame.R.clear();
-    seqFrameMT.R.clear();
-    seqDeviceReset.R.clear();
+    seqRender.Clear();
+    seqAppActivate.Clear();
+    seqAppDeactivate.Clear();
+    seqAppStart.Clear();
+    seqAppEnd.Clear();
+    seqFrame.Clear();
+    seqFrameMT.Clear();
+    seqDeviceReset.Clear();
     seqParallel.clear();
 
     RenderFactory->DestroyRenderDeviceRender(m_pRender);
@@ -85,11 +85,11 @@ void CRenderDevice::Reset(bool precache)
 #pragma todo("KRodin: ??? Remove this! It may hide crash ???")
     Memory.mem_compact();
 
-    seqDeviceReset.Process(rp_DeviceReset);
+    seqDeviceReset.Process();
 
     if (dwWidth_before != dwWidth || dwHeight_before != dwHeight)
     {
-        seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+        seqResolutionChanged.Process();
     }
 
     if (g_screenmode == 1)

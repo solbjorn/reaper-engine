@@ -29,8 +29,8 @@ extern float psSoundTimeFactor; //--#SM+#--
 // Flags
 enum : u32
 {
-    ss_EAX = 1ul << 1ul, // Use EAX or EFX
-    ss_UseDefaultDevice = 1ul << 2ul,
+    /* 1ul << 1ul, */
+    ss_EFX = 1ul << 2ul, //!< Use EAX or EFX
     ss_UseFloat32 = 1ul << 3ul, //!< Use 32-bit float sound instead of 16-bit
 };
 

@@ -207,14 +207,13 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
         K->PlayCycle("death_init");
 
-        //остановить звук тяжелого дыхания
+        // остановить звук тяжелого дыхания
         m_HeavyBreathSnd.stop();
     }
 
-    auto callback = fastdelegate::MakeDelegate(this, &CActor::on_requested_spawn);
     m_holder_id = E->m_holderID;
     if (E->m_holderID != ALife::_OBJECT_ID(-1))
-        Level().client_spawn_manager().add(E->m_holderID, ID(), callback);
+        Level().client_spawn_manager().add(E->m_holderID, ID(), CallMe::fromMethod<&CActor::on_requested_spawn>(this));
     // F
     //-------------------------------------------------------------
     m_iLastHitterID = u16(-1);

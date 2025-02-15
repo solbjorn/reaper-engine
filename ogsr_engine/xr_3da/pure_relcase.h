@@ -1,4 +1,5 @@
-#pragma once
+#ifndef pure_relcaseH
+#define pure_relcaseH
 
 #include "IGame_Level.h"
 
@@ -8,12 +9,12 @@ private:
     int m_ID;
 
 public:
-    template <typename class_type>
-    pure_relcase(void (class_type::*function_to_bind)(CObject*))
+    pure_relcase(const CObjectList::RELCASE_CALLBACK& cb)
     {
         R_ASSERT(g_pGameLevel);
-        class_type* self = static_cast<class_type*>(this);
-        g_pGameLevel->Objects.relcase_register(fastdelegate::MakeDelegate(self, function_to_bind), &m_ID);
+        g_pGameLevel->Objects.relcase_register(cb, &m_ID);
     }
     virtual ~pure_relcase();
 };
+
+#endif // pure_relcaseH

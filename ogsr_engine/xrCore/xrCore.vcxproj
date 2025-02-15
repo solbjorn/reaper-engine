@@ -315,7 +315,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Event.hpp" />
     <ClInclude Include="trivial_encryptor.h" />
-    <ClInclude Include="Utils\FastDelegate.hpp" />
     <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp" />
     <ClInclude Include="Utils\imdexlib\identity.hpp" />
     <ClInclude Include="Utils\imdexlib\is_reference_wrapper.hpp" />

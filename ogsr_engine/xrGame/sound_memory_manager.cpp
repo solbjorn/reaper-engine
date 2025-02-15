@@ -31,12 +31,12 @@
 #endif // MASTER_GOLD
 
 #define SILENCE
-//#define SAVE_OWN_SOUNDS
-//#define SAVE_OWN_ITEM_SOUNDS
+// #define SAVE_OWN_SOUNDS
+// #define SAVE_OWN_ITEM_SOUNDS
 #define SAVE_NON_ALIVE_OBJECT_SOUNDS
 #define SAVE_FRIEND_ITEM_SOUNDS
 #define SAVE_FRIEND_SOUNDS
-//#define SAVE_VISIBLE_OBJECT_SOUNDS
+// #define SAVE_VISIBLE_OBJECT_SOUNDS
 
 const float COMBAT_SOUND_PERCEIVE_RADIUS_SQR = _sqr(5.f);
 
@@ -308,10 +308,7 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
 
 struct CRemoveOfflinePredicate
 {
-    bool operator()(const CSoundObject& object) const
-    {
-        return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent());
-    }
+    bool operator()(const CSoundObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
 };
 
 void CSoundMemoryManager::update()
@@ -429,7 +426,7 @@ void CSoundMemoryManager::load(IReader& packet)
     if (!m_object->g_Alive())
         return;
 
-    auto callback = fastdelegate::MakeDelegate(&m_object->memory(), &CMemoryManager::on_requested_spawn);
+    auto callback = CallMe::fromMethod<&CMemoryManager::on_requested_spawn>(&m_object->memory());
 
     int count = packet.r_u8();
     for (int i = 0; i < count; ++i)
@@ -483,12 +480,12 @@ void CSoundMemoryManager::load(IReader& packet)
         m_delayed_objects.push_back(delayed_object);
 
         const CClientSpawnManager::CSpawnCallback* spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
-        if (!spawn_callback || !spawn_callback->m_object_callback)
+        if (!spawn_callback || spawn_callback->m_object_callback == CallMe::Delegate<void(CObject*)>())
             Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
 #ifdef DEBUG
         else
         {
-            if (spawn_callback && spawn_callback->m_object_callback)
+            if (spawn_callback && spawn_callback->m_object_callback != CallMe::Delegate<void(CObject*)>())
             {
                 VERIFY(spawn_callback->m_object_callback == callback);
             }

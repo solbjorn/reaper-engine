@@ -2,7 +2,7 @@
 
 struct SBaseEffector
 {
-    fastdelegate::FastDelegate<void()> m_on_b_remove_callback;
+    CallMe::Delegate<void()> m_on_b_remove_callback;
     virtual ~SBaseEffector() = default;
 };
 

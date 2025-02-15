@@ -82,7 +82,7 @@ public:
     virtual ~CUIDragDropListEx();
     void Init(float x, float y, float w, float h);
 
-    using DRAG_DROP_EVENT = fastdelegate::FastDelegate<bool(CUICellItem*)>;
+    using DRAG_DROP_EVENT = CallMe::Delegate<bool(CUICellItem*)>;
 
     DRAG_DROP_EVENT m_f_item_drop;
     DRAG_DROP_EVENT m_f_item_start_drag;
@@ -237,13 +237,13 @@ protected:
 private:
     enum CellTextureType : u32
     {
-        CellTextureTypeNormal, //Обычная клетка инвентаря
-        CellTextureTypeCursorHover, //При наведении курсора на предмет
-        CellTextureTypeEquipped, //Предмет в слотах при торговле
-        CellTextureTypeArmanent, //Патроны для стволов, аддоны
-        CellTextureTypeUntradable, //Непродаваемый предмет при торговле
-        CellTextureTypeAvailableSlots, //Доступные слоты для предмета
-        CellTextureTypeBlockedSlots, //Заблокированные клетки для артов
+        CellTextureTypeNormal, // Обычная клетка инвентаря
+        CellTextureTypeCursorHover, // При наведении курсора на предмет
+        CellTextureTypeEquipped, // Предмет в слотах при торговле
+        CellTextureTypeArmanent, // Патроны для стволов, аддоны
+        CellTextureTypeUntradable, // Непродаваемый предмет при торговле
+        CellTextureTypeAvailableSlots, // Доступные слоты для предмета
+        CellTextureTypeBlockedSlots, // Заблокированные клетки для артов
     };
     CellTextureType get_select_mode(const int x, const int y);
 };

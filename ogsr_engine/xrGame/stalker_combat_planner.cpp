@@ -39,11 +39,7 @@ using namespace StalkerDecisionSpace;
 
 CStalkerCombatPlanner::CStalkerCombatPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
 
-CStalkerCombatPlanner::~CStalkerCombatPlanner()
-{
-    auto temp = fastdelegate::MakeDelegate(this, &CStalkerCombatPlanner::on_best_cover_changed);
-    object().unsubscribe_on_best_cover_changed(temp);
-}
+CStalkerCombatPlanner::~CStalkerCombatPlanner() { object().unsubscribe_on_best_cover_changed(CallMe::fromMethod<&CStalkerCombatPlanner::on_best_cover_changed>(this)); }
 
 void CStalkerCombatPlanner::on_best_cover_changed(const CCoverPoint* new_cover, const CCoverPoint* old_cover)
 {
@@ -71,8 +67,7 @@ void CStalkerCombatPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage
     add_evaluators();
     add_actions();
 
-    auto temp = fastdelegate::MakeDelegate(this, &CStalkerCombatPlanner::on_best_cover_changed);
-    this->object().subscribe_on_best_cover_changed(temp);
+    this->object().subscribe_on_best_cover_changed(CallMe::fromMethod<&CStalkerCombatPlanner::on_best_cover_changed>(this));
 }
 
 void CStalkerCombatPlanner::execute() { inherited::execute(); }

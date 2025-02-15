@@ -153,7 +153,7 @@ void CParticlesObject::shedule_Update(u32 _dt)
         if constexpr (false)
         { //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
             mt_dt = dt;
-            Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CParticlesObject::PerformAllTheWork_mt));
+            Device.add_to_seq_parallel(CallMe::fromMethod<&CParticlesObject::PerformAllTheWork_mt>(this));
         }
         else
         {
@@ -239,8 +239,8 @@ void CParticlesObject::SetAutoRemove(bool auto_remove)
     m_bAutoRemove = auto_remove;
 }
 
-//играются ли партиклы, отличается от PSI_Alive, тем что после
-//остановки Stop партиклы могут еще доигрывать анимацию IsPlaying = true
+// играются ли партиклы, отличается от PSI_Alive, тем что после
+// остановки Stop партиклы могут еще доигрывать анимацию IsPlaying = true
 bool CParticlesObject::IsPlaying()
 {
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);

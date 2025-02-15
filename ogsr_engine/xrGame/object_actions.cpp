@@ -248,11 +248,11 @@ CObjectActionStrapping::~CObjectActionStrapping()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this)));
         return;
     }
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
 }
 
 void CObjectActionStrapping::on_animation_end()
@@ -261,7 +261,7 @@ void CObjectActionStrapping::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, true);
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
 
     m_callback_removed = true;
 
@@ -280,7 +280,7 @@ void CObjectActionStrapping::initialize()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
+    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
 
     //	Msg							("[%6d][%s] adding callback CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
@@ -302,15 +302,15 @@ void CObjectActionStrapping::finalize()
     {
         //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 
-        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
+        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this));
 
         m_callback_removed = true;
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrapping::on_animation_end>(this)));
         //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-        //CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+        // CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
 }
 
@@ -328,11 +328,11 @@ CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this)));
         return;
     }
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
 }
 
 void CObjectActionStrappingToIdle::on_animation_end()
@@ -341,7 +341,7 @@ void CObjectActionStrappingToIdle::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
 
     m_callback_removed = true;
 
@@ -358,7 +358,7 @@ void CObjectActionStrappingToIdle::initialize()
 
     m_callback_removed = false;
 
-    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
+    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
 
     //	Msg							("[%6d][%s] adding callback CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
@@ -378,16 +378,16 @@ void CObjectActionStrappingToIdle::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
+        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this));
 
         m_callback_removed = true;
         //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionStrappingToIdle::on_animation_end>(this)));
         //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-        //CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+        // CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
 }
 
@@ -405,11 +405,11 @@ CObjectActionUnstrapping::~CObjectActionUnstrapping()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this)));
         return;
     }
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
 }
 
 void CObjectActionUnstrapping::on_animation_end()
@@ -418,7 +418,7 @@ void CObjectActionUnstrapping::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, false);
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
 
     m_callback_removed = true;
 
@@ -437,7 +437,7 @@ void CObjectActionUnstrapping::initialize()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
+    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
 
     //	Msg							("[%6d][%s] adding callback CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
@@ -457,16 +457,16 @@ void CObjectActionUnstrapping::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
+        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this));
 
         m_callback_removed = true;
         //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrapping::on_animation_end>(this)));
         //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-        //CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+        // CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
 }
 
@@ -484,11 +484,11 @@ CObjectActionUnstrappingToIdle::~CObjectActionUnstrappingToIdle()
 {
     if (m_callback_removed)
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this)));
         return;
     }
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
 }
 
 void CObjectActionUnstrappingToIdle::on_animation_end()
@@ -497,7 +497,7 @@ void CObjectActionUnstrappingToIdle::on_animation_end()
 
     m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
+    object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
 
     m_callback_removed = true;
 
@@ -514,7 +514,7 @@ void CObjectActionUnstrappingToIdle::initialize()
 
     m_callback_removed = false;
 
-    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
+    object().animation().torso().add_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
 
     //	Msg							("[%6d][%s] adding callback CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
@@ -534,16 +534,16 @@ void CObjectActionUnstrappingToIdle::finalize()
 
     if (!m_callback_removed)
     {
-        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
+        object().animation().torso().remove_callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this));
 
         m_callback_removed = true;
         //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
     else
     {
-        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
+        VERIFY(!object().animation().torso().callback(CallMe::fromMethod<&CObjectActionUnstrappingToIdle::on_animation_end>(this)));
         //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
-        //CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+        // CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
     }
 }
 

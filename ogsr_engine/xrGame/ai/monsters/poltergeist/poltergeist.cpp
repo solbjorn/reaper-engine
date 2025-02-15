@@ -209,7 +209,7 @@ void CPoltergeist::update_detection()
                 ;
             }
 
-            AddEffector(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, fastdelegate::MakeDelegate(this, &CPoltergeist::get_post_process_factor));
+            AddEffector(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, CallMe::fromMethod<&CPoltergeist::get_post_process_factor>(this));
         }
     }
     else if (m_detection_pp_type_index != 0)
@@ -366,7 +366,7 @@ void CPoltergeist::net_Destroy()
     ability()->on_destroy();
 }
 
-void CPoltergeist::OnDie() 
+void CPoltergeist::OnDie()
 {
     if ((m_tele || m_dead_always_visible) && state_invisible)
     {

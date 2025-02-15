@@ -3,7 +3,7 @@
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
 #include "../../ActorEffector.h"
-//#include "../../HudSound.h"
+// #include "../../HudSound.h"
 
 namespace detail
 {
@@ -192,7 +192,7 @@ void monster_aura::update_schedule()
         if (!m_pp_index)
         {
             m_pp_index = Actor()->Cameras().RequestPPEffectorId();
-            AddEffector(Actor(), m_pp_index, m_pp_effector_name, fastdelegate::MakeDelegate(this, &monster_aura::get_post_process_factor));
+            AddEffector(Actor(), m_pp_index, m_pp_effector_name, CallMe::fromMethod<&monster_aura::get_post_process_factor>(this));
         }
         if (this_is_psy_aura)
             Actor()->PsyAuraAffect = true;

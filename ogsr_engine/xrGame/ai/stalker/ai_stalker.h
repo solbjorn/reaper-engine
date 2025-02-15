@@ -284,7 +284,7 @@ public:
     virtual BOOL feel_touch_contact(CObject* O);
     virtual BOOL feel_touch_on_contact(CObject* O);
 
-    //флаги, какие действия совершал актер по отношению к сталкеру
+    // флаги, какие действия совершал актер по отношению к сталкеру
     //(помог, атаковал и т.д.)
     Flags32 m_actor_relation_flags;
 
@@ -425,7 +425,7 @@ public:
     IC u32 max_queue_interval_close() const;
 
 public:
-    using on_best_cover_changed_delegate = fastdelegate::FastDelegate<void(const CCoverPoint*, const CCoverPoint*)>;
+    using on_best_cover_changed_delegate = CallMe::Delegate<void(const CCoverPoint*, const CCoverPoint*)>;
 
 private:
     typedef xr_vector<on_best_cover_changed_delegate> cover_delegates;

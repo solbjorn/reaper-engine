@@ -34,7 +34,7 @@ public:
         m_object->m_wait_for_distributed_computation = true;
         m_level_path = &level_path;
         m_path_vertex_index = path_vertex_index;
-        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CDetailPathBuilder::process_detail));
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CDetailPathBuilder::process_detail>(this));
     }
 
     void process()
@@ -59,6 +59,6 @@ public:
     {
         m_object->m_wait_for_distributed_computation = false;
 
-        Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CDetailPathBuilder::process_detail));
+        Device.remove_from_seq_parallel(CallMe::fromMethod<&CDetailPathBuilder::process_detail>(this));
     }
 };

@@ -50,12 +50,12 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
     m_caServerOptions = op_server;
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------------
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start1));
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start2));
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start3));
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start4));
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start5));
-    g_loading_events.push_back(fastdelegate::MakeDelegate(this, &CLevel::net_start6));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start1>(this));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start2>(this));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start3>(this));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start4>(this));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start5>(this));
+    g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start6>(this));
 
     return net_start_result_total;
 }
@@ -130,12 +130,12 @@ bool CLevel::net_start4()
 
     g_loading_events.pop_front();
 
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client6));
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client5));
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client4));
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client3));
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client2));
-    g_loading_events.push_front(fastdelegate::MakeDelegate(this, &CLevel::net_start_client1));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client6>(this));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client5>(this));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client4>(this));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client3>(this));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client2>(this));
+    g_loading_events.push_front(CallMe::fromMethod<&CLevel::net_start_client1>(this));
 
     return false;
 }
@@ -165,7 +165,7 @@ bool CLevel::net_start6()
     g_start_total_res = net_start_result_total;
     g_connect_server_err = m_connect_server_err;
     g_loading_events.pop_front();
-    g_loading_events.push_front(fastdelegate::MakeDelegate(&LF, &LevelLoadFinalizer::net_start_finalizer));
+    g_loading_events.push_front(CallMe::fromMethod<&LevelLoadFinalizer::net_start_finalizer>(&LF));
 
     // init bullet manager
     BulletManager().Clear();

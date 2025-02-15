@@ -285,7 +285,7 @@ void CRender::OnFrame()
             if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
             {
                 // MT-HOM (@front)
-                Device.add_to_seq_parallel(fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
+                Device.add_to_seq_parallel(CallMe::fromMethod<&CHOM::MT_RENDER>(&HOM));
             }
         }
 

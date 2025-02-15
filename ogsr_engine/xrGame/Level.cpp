@@ -186,10 +186,10 @@ CLevel::~CLevel()
         CParticlesObject::Destroy(*p_it);
     m_StaticParticles.clear();
 
-	// Unload sounds
-	// unload prefetched sounds
+    // Unload sounds
+    // unload prefetched sounds
     sound_registry.clear();
-	sound_registry_defer.clear();
+    sound_registry_defer.clear();
 
     // unload static sounds
     for (u32 i = 0; i < static_Sounds.size(); ++i)
@@ -408,7 +408,7 @@ void CLevel::ProcessGameEvents()
     }
 
     if (!is_removing_objects())
-        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::ProcessGameSpawns));
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::ProcessGameSpawns>(this));
 }
 
 void CLevel::OnFrame()
@@ -444,19 +444,19 @@ void CLevel::OnFrame()
     m_ph_commander->update();
     m_ph_commander_scripts->update();
 
-    //просчитать полет пуль
+    // просчитать полет пуль
     Device.Statistic->TEST0.Begin();
     BulletManager().CommitRenderSet();
     Device.Statistic->TEST0.End();
 
     // update static sounds
     if (g_mt_config.test(mtLevelSounds))
-        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(m_level_sound_manager, &CLevelSoundManager::Update));
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevelSoundManager::Update>(m_level_sound_manager));
     else
         m_level_sound_manager->Update();
 
     if (!sound_registry_defer.empty())
-        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::PrefetchDeferredSounds));
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::PrefetchDeferredSounds>(this));
 
     //-----------------------------------------------------
     if (pStatGraphR)
@@ -483,8 +483,8 @@ void CLevel::OnRender()
 
     Game().OnRender();
 
-    //отрисовать трассы пуль
-    // Device.Statistic->TEST1.Begin();
+    // отрисовать трассы пуль
+    //  Device.Statistic->TEST1.Begin();
     BulletManager().Render();
     // Device.Statistic->TEST1.End();
 
@@ -555,9 +555,9 @@ void CLevel::OnRender()
             {
                 if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
                 {
-                    //CPhysicObject* physic_object = smart_cast<CPhysicObject*>(_O);
-                    //if (physic_object)
-                    //    physic_object->OnRender();
+                    // CPhysicObject* physic_object = smart_cast<CPhysicObject*>(_O);
+                    // if (physic_object)
+                    //     physic_object->OnRender();
 
                     pGO->dbg_DrawSkeleton();
                 }
@@ -649,7 +649,8 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
         Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, Fvector().set(0, 0, 0));
     }
     else if (E == eChangeRP && P1)
-    {}
+    {
+    }
     else if (E == eDemoPlay && P1)
     {
         char* name = (char*)P1;
@@ -721,7 +722,7 @@ void CLevel::ScriptDebugRender()
         }
     }
 
-	// demonized: fix of showing console window when there are no visible gizmos
+    // demonized: fix of showing console window when there are no visible gizmos
     if (hasVisibleObj)
         DRender->OnFrameEnd();
 }
@@ -763,25 +764,25 @@ void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& 
     split_time(GetGameTime(), unused, unused, unused, hours, minutes, seconds, milliseconds);
 }
 
-//bool CLevel::IsServer() // always false
+// bool CLevel::IsServer() // always false
 //{
-//    //if (!Server)
-//    //    return false;
+//     //if (!Server)
+//     //    return false;
 //
-//    bool r = !Server ? false : (Server->client_Count() != 0);
-//    Msg("IsServer = %d", r ? 1 : 0);
-//    return r;
-//}
+//     bool r = !Server ? false : (Server->client_Count() != 0);
+//     Msg("IsServer = %d", r ? 1 : 0);
+//     return r;
+// }
 //
-//bool CLevel::IsClient() // always false
+// bool CLevel::IsClient() // always false
 //{
-//    //if (!Server)
-//    //    return true;
+//     //if (!Server)
+//     //    return true;
 //
-//    bool r = !Server ? true : (Server->client_Count() == 0);
-//    Msg("IsClient = %d", r ? 1 : 0);
-//    return r;
-//}
+//     bool r = !Server ? true : (Server->client_Count() == 0);
+//     Msg("IsClient = %d", r ? 1 : 0);
+//     return r;
+// }
 
 void CLevel::OnSessionTerminate(LPCSTR reason) { MainMenu()->OnSessionTerminate(reason); }
 

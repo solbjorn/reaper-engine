@@ -15,14 +15,11 @@ class fClassEQ
     CLASS_ID cls;
 
 public:
-    fClassEQ(CLASS_ID C) : cls(C){};
+    fClassEQ(CLASS_ID C) : cls(C) {};
     IC bool operator()(CObject* O) { return cls == O->CLS_ID; }
 };
 
-CObjectList::CObjectList()
-{
-    crows = &crows_0;
-}
+CObjectList::CObjectList() { crows = &crows_0; }
 
 CObjectList::~CObjectList()
 {
@@ -34,13 +31,15 @@ CObjectList::~CObjectList()
 
 CObject* CObjectList::FindObjectByName(shared_str name)
 {
-    for (xr_vector<CObject*>::iterator I = objects_active.begin(); I != objects_active.end(); I++)
-        if ((*I)->cName().equal(name))
-            return (*I);
-    for (xr_vector<CObject*>::iterator I = objects_sleeping.begin(); I != objects_sleeping.end(); I++)
-        if ((*I)->cName().equal(name))
-            return (*I);
-    return NULL;
+    for (auto& it : objects_active)
+        if (it->cName().equal(name))
+            return it;
+
+    for (auto& it : objects_sleeping)
+        if (it->cName().equal(name))
+            return it;
+
+    return nullptr;
 }
 CObject* CObjectList::FindObjectByName(LPCSTR name) { return FindObjectByName(shared_str(name)); }
 
@@ -122,8 +121,8 @@ void CObjectList::SingleUpdate(CObject* O)
 
 void clear_crow_vec(xr_vector<CObject*>& o)
 {
-    for (u32 _it = 0; _it < o.size(); _it++)
-        o[_it]->IAmNotACrowAnyMore();
+    for (auto& it : o)
+        it->IAmNotACrowAnyMore();
     o.clear();
 }
 
@@ -187,17 +186,15 @@ void CObjectList::ProcessDestroyQueue()
             Sound->object_relcase(destroy_queue[it]);
 
         CCustomHUD& hud = *g_pGameLevel->pHUD;
-        RELCASE_CALLBACK_VEC::iterator It = m_relcase_callbacks.begin();
-        RELCASE_CALLBACK_VEC::iterator Ite = m_relcase_callbacks.end();
-        for (; It != Ite; ++It)
+        RELCASE_CALLBACK_VEC::iterator it = m_relcase_callbacks.begin();
+        const RELCASE_CALLBACK_VEC::iterator ite = m_relcase_callbacks.end();
+        for (; it != ite; ++it)
         {
-            VERIFY(*(*It).m_ID == (It - m_relcase_callbacks.begin()));
-            xr_vector<CObject*>::iterator dIt = destroy_queue.begin();
-            xr_vector<CObject*>::iterator dIte = destroy_queue.end();
-            for (; dIt != dIte; ++dIt)
+            VERIFY(*(*it).m_ID == (it - m_relcase_callbacks.begin()));
+            for (auto& dit : destroy_queue)
             {
-                (*It).m_Callback(*dIt);
-                hud.net_Relcase(*dIt);
+                (*it).m_Callback(dit);
+                hud.net_Relcase(dit);
             }
         }
 
@@ -311,7 +308,7 @@ void CObjectList::Destroy(CObject* O)
     g_pGamePersistent->ObjectPool.destroy(O);
 }
 
-void CObjectList::relcase_register(RELCASE_CALLBACK cb, int* ID)
+void CObjectList::relcase_register(const RELCASE_CALLBACK& cb, int* ID)
 {
 #ifdef DEBUG
     RELCASE_CALLBACK_VEC::iterator It = std::find(m_relcase_callbacks.begin(), m_relcase_callbacks.end(), cb);
@@ -355,11 +352,9 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
     VERIFY(!registered_object_to_destroy(object_to_destroy));
     destroy_queue.push_back(object_to_destroy);
 
-    xr_vector<CObject*>::iterator it = objects_active.begin();
-    xr_vector<CObject*>::iterator it_e = objects_active.end();
-    for (; it != it_e; ++it)
+    for (auto& it : objects_active)
     {
-        CObject* O = *it;
+        CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
             Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
@@ -367,11 +362,9 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         }
     }
 
-    it = objects_sleeping.begin();
-    it_e = objects_sleeping.end();
-    for (; it != it_e; ++it)
+    for (auto& it : objects_sleeping)
     {
-        CObject* O = *it;
+        CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
             Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
