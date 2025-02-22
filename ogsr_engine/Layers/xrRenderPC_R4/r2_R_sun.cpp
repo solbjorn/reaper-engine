@@ -3,6 +3,7 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
+#include "xr_task.h"
 
 #include "r4_R_sun_support.h"
 
@@ -39,7 +40,7 @@ Fvector3 wform(Fmatrix& m, Fvector3 const& v)
 
 void CRender::init_cacades()
 {
-    u32 cascade_count = 3;
+    constexpr u32 cascade_count = 3;
     m_sun_cascades.resize(cascade_count);
 
     constexpr float fBias = -0.0000025f;
@@ -60,15 +61,7 @@ void CRender::init_cacades()
 
 void CRender::render_sun_cascades()
 {
-    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_SUN))
-    {
-        calculate_sun();
-    }
-    else
-    {
-        if (calculate_sun_awaiter.valid())
-            calculate_sun_awaiter.get();
-    }
+    tg->wait();
 
     for (u32 i = 0; i < m_sun_cascades.size(); ++i)
         render_sun_cascade(i);
@@ -76,31 +69,22 @@ void CRender::render_sun_cascades()
 
 void CRender::calculate_sun_async()
 {
-    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_SUN))
-        return;
+    tg->run([this] {
+        need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
+        last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
 
-    calculate_sun_awaiter = TTAPI->submit([this]() { calculate_sun(); });
-}
+        if (need_to_render_sunshafts)
+            m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
 
-void CRender::calculate_sun()
-{
-    need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
-    last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
+        // Compute volume(s) - something like a frustum for infinite directional light
+        // Also compute virtual light position and sector it is inside
 
-    if (need_to_render_sunshafts)
-        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
+        for (u32 i = 0; i < m_sun_cascades.size(); i++)
+            calculate_sun(m_sun_cascades[i]);
 
-    // Compute volume(s) - something like a frustum for infinite directional light
-    // Also compute virtual light position and sector it is inside
-
-    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-    {
-        sun::cascade& cascade = m_sun_cascades[i];
-        calculate_sun(cascade);
-    }
-
-    if (need_to_render_sunshafts)
-        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+        if (need_to_render_sunshafts)
+            m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+    });
 }
 
 void CRender::calculate_sun(sun::cascade& cascade)
@@ -239,7 +223,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
         if (cascade.cascade_ind < m_sun_cascades.size() - 1)
             m_sun_cascades[cascade.cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
-        static bool draw_debug = false;
+        constexpr bool draw_debug = false;
         if (draw_debug && cascade.cascade_ind == 0)
             for (u32 it = 0; it < cull_planes.size(); it++)
                 RImplementation.Target->dbg_addplane(cull_planes[it], it * 0xFFF);
@@ -261,7 +245,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         {
             Fvector cam_proj = Device.vCameraPosition;
-            const float align_aim_step_coef = 4.f;
+            constexpr float align_aim_step_coef = 4.f;
             cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2, floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
                          floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
             cam_proj.mul(align_aim_step_coef);
@@ -271,7 +255,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
             cull_xform.transform_dir(shift_proj);
             m_viewport.transform_dir(shift_proj);
 
-            const float align_granularity = 4.f;
+            constexpr float align_granularity = 4.f;
             shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
             shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
             shift_proj.z = 0;
@@ -287,7 +271,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
             m_viewport_inv.transform_dir(cam_pixel);
             cull_xform_inv.transform_dir(cam_pixel);
             Fvector diff = cam_pixel;
-            static float sign_test = -1.f;
+            constexpr float sign_test = -1.f;
             diff.mul(sign_test);
             Fmatrix adjust;
             adjust.translate(diff);

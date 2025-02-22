@@ -226,7 +226,6 @@ public:
     virtual BOOL get_HUD() = 0;
     virtual void flush() = 0;
     virtual void set_Object(IRenderable* O) = 0;
-    virtual void add_Occluder(Fbox2& bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
     virtual void add_Visual(IRenderVisual* V) = 0; // add visual leaf	(no culling performed at all)
     virtual void add_Geometry(IRenderVisual* V) = 0; // add visual(s)	(all culling performed)
     //	virtual void					add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)=0;
@@ -244,6 +243,8 @@ public:
 
     virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) = 0;
     virtual void ros_destroy(IRender_ObjectSpecific*&) = 0;
+
+    virtual void calculate_sun_async() = 0;
 
     // Lighting/glowing
     virtual IRender_Light* light_create() = 0;
@@ -270,6 +271,7 @@ public:
     virtual BOOL occ_visible(sPoly& P) = 0;
 
     // Main
+    virtual void OnCameraUpdated() = 0;
     virtual void Calculate() = 0;
     virtual void Render() = 0;
     virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира

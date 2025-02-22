@@ -98,8 +98,8 @@ float ps_r2_ssaLOD_A = 64.f;
 float ps_r2_ssaLOD_B = 48.f;
 
 // R2-specific
-Flags32 ps_r2_ls_flags = {R2FLAG_SUN | R2FLAG_MBLUR | R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS |
-                          R2FLAG_SUN_TSM | R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS | R2FLAG_EXP_MT_DETAILS | R2FLAG_EXP_MT_RAIN | RFLAG_MT_PARTICLES};
+Flags32 ps_r2_ls_flags = {R2FLAG_SUN | R2FLAG_MBLUR | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM |
+                          R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS};
 
 Flags32 ps_r2_ls_flags_ext = {R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_FONT_SHADOWS};
 
@@ -702,13 +702,8 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_gloss_min", &ps_r2_gloss_min, .001f, 1.0f);
     //- Mad Max
 
-#ifdef DEBUG
-    CMD3(CCC_Mask, "r2_mt", &ps_r2_ls_flags, R2FLAG_EXP_MT_CALC);
-#endif // DEBUG
-
     CMD3(CCC_Mask, "r2_disable_hom", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_HOM);
 
-    CMD3(CCC_Mask, "r_mt_texload", &ps_r2_ls_flags_ext, R2FLAGEXT_MT_TEXLOAD);
     CMD3(CCC_Mask, "r_font_shadows", &ps_r2_ls_flags_ext, R2FLAGEXT_FONT_SHADOWS);
 
     CMD3(CCC_Mask, "r2_sun", &ps_r2_ls_flags, R2FLAG_SUN);
@@ -879,15 +874,9 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_ls_depth_bias", &ps_r2_ls_depth_bias, -0.5, +0.5);
 
     CMD4(CCC_Float, "r2_parallax_h", &ps_r2_df_parallax_h, .0f, .5f);
-
     CMD4(CCC_Float, "r2_slight_fade", &ps_r2_slight_fade, .2f, 2.f);
+
     CMD3(CCC_Mask, "r2_dof_enable", &ps_r2_ls_flags, R2FLAG_DOF);
-
-    CMD3(CCC_Mask, "r_mt_details", &ps_r2_ls_flags, R2FLAG_EXP_MT_DETAILS);
-    CMD3(CCC_Mask, "r_mt_particles", &ps_r2_ls_flags, RFLAG_MT_PARTICLES);
-    CMD3(CCC_Mask, "r_mt_rain", &ps_r2_ls_flags, R2FLAG_EXP_MT_RAIN);
-    CMD3(CCC_Mask, "r_mt_sun", &ps_r2_ls_flags, R2FLAG_EXP_MT_SUN);
-
     CMD3(CCC_Mask, "r2_volumetric_lights", &ps_r2_ls_flags, R2FLAG_VOLUMETRIC_LIGHTS);
 
     // Sunshafts

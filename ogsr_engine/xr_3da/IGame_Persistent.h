@@ -79,6 +79,9 @@ public:
     IGame_ObjectPool ObjectPool;
     IMainMenu* m_pMainMenu;
 
+    bool IsMainMenuActive() const;
+    bool MainMenuActiveOrLevelNotExist() const;
+
     CEnvironment* pEnvironment;
     CEnvironment& Environment() { return *pEnvironment; };
 
@@ -128,7 +131,6 @@ public:
 };
 
 extern IGame_Persistent* g_pGamePersistent;
-extern bool IsMainMenuActive();
 extern BOOL g_prefetch;
 
 #endif // IGame_PersistentH

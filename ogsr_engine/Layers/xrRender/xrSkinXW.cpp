@@ -182,8 +182,9 @@ void Skin3W(vertRender* D, vertBoned3W* S, u32 vCount, CBoneInstance* Bones)
 
 void Skin4W(vertRender* D, vertBoned4W* S, u32 vCount, CBoneInstance* Bones)
 {
-    oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, vCount), [&](const oneapi::tbb::blocked_range<u32>& range) {
+    oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, vCount), [&](const auto& range) {
         Fvector P0, N0, P1, N1, P2, N2, P3, N3;
+
         for (u32 i = range.begin(); i != range.end(); ++i)
         {
             Fmatrix& M0 = Bones[S[i].m[0]].mRenderTransform;

@@ -9,8 +9,6 @@
 
 xrCore Core;
 
-task_thread_pool::task_thread_pool* TTAPI{};
-
 // indicate that we reach WinMain, and all static variables are initialized
 bool gModulesLoaded = false;
 
@@ -21,6 +19,8 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
     strcpy_s(ApplicationName, _ApplicationName);
     if (0 == init_counter)
     {
+        mainThreadId = std::this_thread::get_id();
+
         /*
             По сути это не рекомендуемый Microsoft, но повсеместно используемый
            способ повышения точности соблюдения и измерения временных интревалов
@@ -117,18 +117,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 
     SetLogCB(cb);
     init_counter++;
-
-    u32 th_count{};
-    // Check for override from command line
-    const char* szSearchFor = "-max-threads";
-    char* pszTemp = strstr(Params, szSearchFor);
-    u32 dwOverride = 0;
-    if (pszTemp && sscanf_s(pszTemp + strlen(szSearchFor), "%u", &dwOverride) && dwOverride >= 1)
-    {
-        th_count = dwOverride;
-    }
-    TTAPI = xr_new<task_thread_pool::task_thread_pool>(th_count);
-    Msg("TTAPI number of threads: [%u]", TTAPI->get_num_threads());
 }
 
 void xrCore::_destroy()
@@ -136,10 +124,6 @@ void xrCore::_destroy()
     --init_counter;
     if (0 == init_counter)
     {
-        TTAPI->clear_task_queue();
-        TTAPI->wait_for_tasks();
-        xr_delete(TTAPI);
-
         FS._destroy();
 
         xr_FS.reset();

@@ -6,6 +6,7 @@
 #include "rain.h"
 #include "thunderbolt.h"
 #include "igame_level.h"
+#include "xr_task.h"
 
 //-----------------------------------------------------------------------------
 // Environment render
@@ -41,22 +42,7 @@ void CEnvironment::RenderFlares()
 
 void CEnvironment::RenderLast()
 {
-    if (0 == g_pGameLevel)
-        return;
-
-    if (async_started)
-    {
-        if (awaiter.valid())
-        {
-            awaiter.get();
-        }
-
-        async_started = false;
-    }
-    else
-    {
-        eff_Rain->Calculate();
-    }
+    tg->wait();
 
     // 2
     eff_Rain->Render();
@@ -66,6 +52,7 @@ void CEnvironment::RenderLast()
 void CEnvironment::OnDeviceCreate()
 {
     m_pRender->OnDeviceCreate();
+    tg = &xr_task_group_get();
 
     Invalidate();
     OnFrame();
@@ -73,16 +60,9 @@ void CEnvironment::OnDeviceCreate()
 
 void CEnvironment::OnDeviceDestroy()
 {
+    tg->cancel();
+    tg->put();
+
     m_pRender->OnDeviceDestroy();
     CurrentEnv->destroy();
-}
-
-void CEnvironment::StartCalculateAsync()
-{
-    if (0 == g_pGameLevel)
-        return;
-
-    awaiter = TTAPI->submit([this]() { eff_Rain->Calculate(); });
-
-    async_started = true;
 }

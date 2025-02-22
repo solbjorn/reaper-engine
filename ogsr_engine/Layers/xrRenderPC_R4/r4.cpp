@@ -15,6 +15,7 @@
 #include "../xrRender/ShaderResourceTraits.h"
 
 #include <xxhash.h>
+#include "xr_task.h"
 
 CRender RImplementation;
 
@@ -273,32 +274,24 @@ void CRender::OnFrame()
 {
     Models->DeleteQueue();
 
-    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
+    if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())
+        return;
 
-    if (!b_main_menu_is_active && g_pGameLevel)
-    {
-        if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
-        {
-            if (Details)
-                Details->StartAsync();
+    if (Details)
+        g_pGamePersistent->GrassBendersUpdateAnimations();
+}
 
-            if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
-            {
-                // MT-HOM (@front)
-                Device.add_to_seq_parallel(CallMe::fromMethod<&CHOM::MT_RENDER>(&HOM));
-            }
-        }
+void CRender::OnCameraUpdated()
+{
+    // Frustum
+    ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-        if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN))
-        {
-            g_pGamePersistent->Environment().StartCalculateAsync();
-        }
+    if (g_pGamePersistent->MainMenuActiveOrLevelNotExist())
+        return;
 
-        if (Details)
-            g_pGamePersistent->GrassBendersUpdateAnimations();
-
-        calculate_sun_async();
-    }
+    HOM.run_async();
+    if (Details)
+        Details->run_async();
 }
 
 // Перед началом рендера мира --#SM+#-- +SecondVP+
@@ -514,7 +507,6 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
         add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
 }
 
-void CRender::add_Occluder(Fbox2& bb_screenspace) { HOM.occlude(bb_screenspace); }
 void CRender::set_Object(IRenderable* O) { val_pObject = O; }
 
 void CRender::rmNear()
@@ -542,9 +534,17 @@ void CRender::rmNormal()
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRender::CRender() : m_bFirstFrameAfterReset(false) { init_cacades(); }
+CRender::CRender() : m_bFirstFrameAfterReset(false)
+{
+    tg = &xr_task_group_get();
+    init_cacades();
+}
 
-CRender::~CRender() {}
+CRender::~CRender()
+{
+    tg->cancel();
+    tg->put();
+}
 
 #include "../../xr_3da/GameFont.h"
 void CRender::Statistics(CGameFont* _F)

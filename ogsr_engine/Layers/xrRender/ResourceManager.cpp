@@ -227,8 +227,7 @@ void CResourceManager::DeferredUpload()
     if (!RDEVICE.b_is_Ready)
         return;
 
-    Msg("CResourceManager::DeferredUpload [%s] -> START, size = [%u]", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT", m_textures.size());
-
+    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%u]", m_textures.size());
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
 
     u32 m_base = 0;
@@ -242,11 +241,7 @@ void CResourceManager::DeferredUpload()
     HW.DumpVideoMemoryUsage();
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
-    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
-        oneapi::tbb::parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Load(); });
-    else
-        for (auto& pair : m_textures)
-            pair.second->Load();
+    oneapi::tbb::parallel_for_each(m_textures, [&](auto m_tex) { m_tex.second->Load(); });
 
     Msg("CResourceManager::DeferredUpload VRAM usage after:");
 

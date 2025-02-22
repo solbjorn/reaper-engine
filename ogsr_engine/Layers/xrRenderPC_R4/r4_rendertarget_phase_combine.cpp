@@ -6,7 +6,8 @@
 
 #define STENCIL_CULL 0
 
-float hclip(float v, float dim) { return 2.f * v / dim - 1.f; }
+static constexpr float hclip(float v, float dim) { return 2.f * v / dim - 1.f; }
+
 void CRenderTarget::phase_combine()
 {
     PIX_EVENT(phase_combine);

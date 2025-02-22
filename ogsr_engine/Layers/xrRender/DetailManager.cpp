@@ -12,6 +12,7 @@
 #include "../../xr_3da/environment.h"
 
 #include <xmmintrin.h>
+#include "xr_task.h"
 
 //--------------------------------------------------- Decompression
 static constexpr int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
@@ -59,7 +60,6 @@ CDetailManager::CDetailManager()
 {
     dtFS = 0;
     dtSlots = 0;
-    soft_Geom = 0;
     hw_Geom = 0;
     hw_BatchSize = 0;
     hw_VB = 0;
@@ -68,6 +68,8 @@ CDetailManager::CDetailManager()
     m_time_rot_2 = 0;
     m_time_pos = 0;
     m_global_time_old = 0;
+
+    tg = &xr_task_group_get();
 
     // KD: variable detail radius
     dm_size = dm_current_size;
@@ -95,6 +97,9 @@ CDetailManager::CDetailManager()
 
 CDetailManager::~CDetailManager()
 {
+    tg->cancel();
+    tg->put();
+
     if (dtFS)
     {
         FS.r_close(dtFS);
@@ -164,10 +169,7 @@ void CDetailManager::Load()
     bwdithermap(2, dither);
 
     // Hardware specific optimizations
-    if (UseVS())
-        hw_Load();
-    else
-        soft_Load();
+    hw_Load();
 
     // swing desc
     // normal
@@ -186,10 +188,7 @@ void CDetailManager::Load()
 
 void CDetailManager::Unload()
 {
-    if (UseVS())
-        hw_Unload();
-    else
-        soft_Unload();
+    hw_Unload();
 
     for (CDetail* detailObject : objects)
     {
@@ -208,7 +207,7 @@ void CDetailManager::Unload()
 extern float r_ssaDISCARD;
 extern BOOL ps_no_scale_on_fade;
 
-void CDetailManager::UpdateVisibleM()
+void CDetailManager::UpdateVisibleM(const Fvector& EYE)
 {
     // Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Для теней от травы SSS16 фикс не нужен, наоборот вредит.
     // if (Device.m_SecondViewport.IsSVPFrame())
@@ -219,10 +218,8 @@ void CDetailManager::UpdateVisibleM()
         for (auto& vis : vec)
             vis.clear();
 
-    Fvector EYE = RDEVICE.vCameraPosition_saved;
-
     CFrustum View;
-    View.CreateFromMatrix(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+    View.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
     float fade_limit = dm_fade;
     fade_limit = fade_limit * fade_limit;
@@ -233,7 +230,7 @@ void CDetailManager::UpdateVisibleM()
 
     // Initialize 'vis' and 'cache'
     // Collect objects for rendering
-    RDEVICE.Statistic->RenderDUMP_DT_VIS.Begin();
+    Device.Statistic->RenderDUMP_DT_VIS.Begin();
     for (u32 _mz = 0; _mz < dm_cache1_line; _mz++)
     {
         for (u32 _mx = 0; _mx < dm_cache1_line; _mx++)
@@ -284,7 +281,7 @@ void CDetailManager::UpdateVisibleM()
                 }
 
                 // Add to visibility structures
-                if (RDEVICE.dwFrame > S.frame)
+                if (Device.dwFrame > S.frame)
                 {
                     // Calc fade factor	(per slot)
                     float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
@@ -297,7 +294,7 @@ void CDetailManager::UpdateVisibleM()
                     float alpha_i = 1.f - alpha;
                     float dist_sq_rcp = 1.f / dist_sq;
 
-                    S.frame = RDEVICE.dwFrame + Random.randI(15, 30);
+                    S.frame = Device.dwFrame + Random.randI(15, 30);
                     for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
                     {
                         SlotPart& sp = S.G[sp_id];
@@ -338,8 +335,6 @@ void CDetailManager::UpdateVisibleM()
                             Item.alpha_target = 1;
                             Item.distance = dist_sq;
                             Item.position = S.vis.sphere.P;
-
-                            // 2							visible[vis_id][sp.id].push_back(&Item);
                         }
                     }
                 }
@@ -364,35 +359,17 @@ void CDetailManager::UpdateVisibleM()
             }
         }
     }
-    RDEVICE.Statistic->RenderDUMP_DT_VIS.End();
+    Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
 void CDetailManager::Render()
 {
-    if (!RImplementation.Details)
-        return; // possibly deleted
-    if (!dtFS)
-        return;
-    if (!psDeviceFlags.is(rsDetails))
-        return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+    if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
         return;
 
-    // MT wait
-    if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && async_started)
-    {
-        // Msg("--[%s] async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(),
-        // Device.m_SecondViewport.IsSVPFrame());
-        WaitAsync();
-    }
-    else
-    {
-        // Msg("~~[%s] NO async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(),
-        // Device.m_SecondViewport.IsSVPFrame());
-        MT_CALC();
-    }
+    tg->wait();
 
-    RDEVICE.Statistic->RenderDUMP_DT_Render.Begin();
+    Device.Statistic->RenderDUMP_DT_Render.Begin();
 
     const float factor = g_pGamePersistent->Environment().wind_strength_factor;
 
@@ -401,86 +378,48 @@ void CDetailManager::Render()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_xform_world(Fidentity);
 
-    if (UseVS())
-        hw_Render();
-    else
-        soft_Render();
+    hw_Render();
 
     RCache.set_CullMode(CULL_CCW);
-    RDEVICE.Statistic->RenderDUMP_DT_Render.End();
+    Device.Statistic->RenderDUMP_DT_Render.End();
 }
 
 u32 reset_frame = 0;
 
-void CDetailManager::StartAsync()
+void CDetailManager::run_async()
 {
-    if (!(ps_r2_ls_flags.test(
-              (u32)R2FLAG_EXP_MT_DETAILS) && // костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
-          (Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0))))
-    {
-        async_started = false;
-        return;
-    }
-
-    if (reset_frame == Device.dwFrame)
-        return;
-
-    if (!RImplementation.Details)
-        return; // possibly deleted
-    if (!dtFS)
-        return;
-    if (!psDeviceFlags.is(rsDetails))
-        return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+    // костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
+    if (!(Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0)))
         return;
 
     // Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
-    // Msg("##[%s] frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
+    tg->run([this] {
+        if (reset_frame == Device.dwFrame)
+            return;
+        if (!RImplementation.Details)
+            return; // possibly deleted
+        if (!dtFS)
+            return;
+        if (!psDeviceFlags.is(rsDetails))
+            return;
 
-    awaiter = TTAPI->submit([this]() { MT_CALC(); });
-    async_started = true;
-}
+        if (need_init) [[unlikely]]
+        {
+            cache_Initialize();
+            need_init = false;
+        }
 
-void CDetailManager::WaitAsync()
-{
-    if (awaiter.valid())
-        awaiter.get();
-}
+        Fvector EYE = Device.vCameraPosition;
 
-void CDetailManager::MT_CALC()
-{
-    if (reset_frame == Device.dwFrame)
-        return;
+        int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+        int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-    if (!RImplementation.Details)
-        return; // possibly deleted
-    if (!dtFS)
-        return;
-    if (!psDeviceFlags.is(rsDetails))
-        return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-        return;
+        Device.Statistic->RenderDUMP_DT_Cache.Begin();
+        cache_Update(s_x, s_z, EYE);
+        Device.Statistic->RenderDUMP_DT_Cache.End();
 
-    MT.Enter();
-
-    if (need_init)
-    {
-        need_init = false;
-        cache_Initialize();
-    }
-
-    Fvector EYE = RDEVICE.vCameraPosition_saved;
-
-    int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-    int s_z = iFloor(EYE.z / dm_slot_size + .5f);
-
-    RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
-    cache_Update(s_x, s_z, EYE);
-    RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
-
-    UpdateVisibleM();
-
-    MT.Leave();
+        UpdateVisibleM(EYE);
+    });
 }
 
 void CDetailManager::details_clear()

@@ -18,6 +18,8 @@ struct SThunderboltDesc;
 struct SThunderboltCollection;
 class CLensFlareDescriptor;
 
+class xr_task_group;
+
 #define DAY_LENGTH 86400.f
 
 #include "../Include/xrRender/FactoryPtr.h"
@@ -351,8 +353,9 @@ public:
     void OnDeviceDestroy();
 
     bool m_paused;
-
+    bool m_dynamic_sun_movement{};
     bool m_sun_hp_loaded{};
+
     Fvector2 sun_hp[24];
 
     CInifile* m_ambients_config{};
@@ -362,12 +365,9 @@ public:
     CInifile* m_sun_pos_config{};
     CInifile* m_thunderbolt_collections_config{};
     CInifile* m_thunderbolts_config{};
-    bool m_dynamic_sun_movement{};
 
-    void StartCalculateAsync();
-
-    std::future<void> awaiter;
-    bool async_started{};
+private:
+    xr_task_group* tg{};
 
 protected:
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);

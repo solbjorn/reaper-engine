@@ -10,10 +10,12 @@
 #include "perlin.h"
 
 #include "xr_input.h"
+#include "xr_task.h"
 
 // #include "resourcemanager.h"
 
 #include "IGame_Level.h"
+#include "IGame_Persistent.h"
 
 // #include "D3DUtils.h"
 #include "../xrcore/xrCore.h"
@@ -33,8 +35,6 @@ static const float MAX_NOISE_FREQ = 0.03f;
 
 // real WEATHER->WFX transition time
 #define WFX_TRANS_TIME 5.f
-
-const float MAX_DIST_FACTOR = 0.95f;
 
 extern Fvector4 ps_ssfx_wind_trees;
 
@@ -556,9 +556,16 @@ void CEnvironment::OnFrame()
         t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
     }
 
+    bool ingame = !g_pGamePersistent->IsMainMenuActive();
+
     eff_LensFlare->OnFrame(l_id);
+    if (ingame)
+        ::Render->calculate_sun_async();
+
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
     eff_Rain->OnFrame();
+    if (ingame)
+        tg->run([this] { eff_Rain->Calculate(); });
 
     // ******************** Environment params (setting)
     m_pRender->OnFrame(*this);

@@ -10,7 +10,6 @@
 CSoundRender_Environment::CSoundRender_Environment(void)
 {
     version = sdef_env_version;
-    name = "_engine_default_";
     set_default();
 }
 

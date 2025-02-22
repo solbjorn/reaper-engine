@@ -110,7 +110,7 @@ void CRender::render_main(Fmatrix& m_ViewProjection, bool _fportals)
                 continue; // inactive (untouched) sector
             for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
             {
-                CFrustum& view = sector->r_frustums[v_it];
+                const CFrustum& view = sector->r_frustums[v_it];
                 if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
                     continue;
 
@@ -223,7 +223,7 @@ void CRender::Render()
     {
         render_menu();
         return;
-    };
+    }
 
     IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
     bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
@@ -248,13 +248,8 @@ void CRender::Render()
     BOOL bSUN = ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
 
     // HOM
-    ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
     View = 0;
-    if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
-    {
-        HOM.Enable();
-        HOM.Render(ViewBase);
-    }
+    HOM.wait_async();
 
     //******* Z-prefill calc - DEFERRER RENDERER
     if (ps_r2_ls_flags.test(R2FLAG_ZFILL))
@@ -369,24 +364,6 @@ void CRender::Render()
 
     //******* Main render :: PART-1 (second)
     PIX_EVENT(DEFER_PART1_SPLIT);
-    // skybox can be drawn here
-    if (0)
-    {
-        if (!RImplementation.o.dx10_msaa)
-            Target->u_setrt(Target->rt_Generic_0, Target->rt_Generic_1, 0, HW.pBaseZB);
-        else
-            Target->u_setrt(Target->rt_Generic_0_r, Target->rt_Generic_1, 0, RImplementation.Target->rt_MSAADepth->pZRT);
-        RCache.set_CullMode(CULL_NONE);
-        RCache.set_Stencil(FALSE);
-
-        // draw skybox
-        RCache.set_ColorWriteEnable();
-        // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
-        RCache.set_Z(FALSE);
-        g_pGamePersistent->Environment().RenderSky();
-        // CHK_DX(HW.pDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
-        RCache.set_Z(TRUE);
-    }
 
     // level
     Target->phase_scene_begin();

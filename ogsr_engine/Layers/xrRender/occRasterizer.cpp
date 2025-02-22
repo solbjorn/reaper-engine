@@ -16,27 +16,38 @@ occRasterizer Raster;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-occRasterizer::occRasterizer()
-    : bufFrame{}, bufDepth{}, bufDepth_0{}
-#if DEBUG
-      ,
-      dbg_HOM_draw_initialized(false)
-#endif
-{}
+static constexpr ptrdiff_t __declspec(align(32)) zeros[32 / sizeof(occTri*)]{};
+static constexpr float __declspec(align(32)) ones[32 / sizeof(float)] = {1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f};
 
-template <typename T>
-static inline void MemFill(void* dst, const T value, const size_t dstSize)
+static ICF void MemFill(void* dst, const void* src, size_t size)
 {
-    T* ptr = reinterpret_cast<T*>(dst);
-    T* end = ptr + dstSize;
-    while (ptr != end)
-        *ptr++ = value;
+    u8* cdst = reinterpret_cast<u8*>(dst);
+    const u8* csrc = reinterpret_cast<const u8*>(src);
+
+    do
+    {
+        _mm256_store_si256((__m256i*)cdst, _mm256_load_si256((const __m256i*)csrc));
+        cdst += 32;
+        size -= 32;
+    } while (size >= 32);
+}
+
+occRasterizer::occRasterizer()
+#ifdef DEBUG
+    : dbg_HOM_draw_initialized(false)
+#endif
+{
+    static_assert(!offsetof(occRasterizer, bufFrame));
+    static_assert(!(sizeof(bufFrame) % 32));
+    static_assert(!(sizeof(bufDepth) % 32));
+
+    MemFill(this, zeros, sizeof(*this));
 }
 
 void occRasterizer::clear()
 {
-    MemFill<ptrdiff_t>(bufFrame, 0, sizeof bufFrame / sizeof(occTri*));
-    MemFill<float>(bufDepth, 1.f, sizeof bufDepth / sizeof(float));
+    MemFill(bufFrame, zeros, sizeof(bufFrame));
+    MemFill(bufDepth, ones, sizeof(bufDepth));
 }
 
 static inline bool shared(occTri* T1, occTri* T2)
@@ -177,9 +188,6 @@ static BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, fl
     clamp(y0, 0, dim - 1);
     int y1 = iFloor(_y1 * dim + .5f);
     clamp(y1, y0, dim - 1);
-
-    // MT-Sync (delayed as possible)
-    RImplementation.HOM.MT_SYNC();
 
     for (int y = y0; y <= y1; y++)
     {

@@ -1695,18 +1695,10 @@ static void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset
 
 static void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
 {
-    if (p_cnt > 1 && ps_r2_ls_flags.test(RFLAG_MT_PARTICLES))
-    {
-        oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, p_cnt), [&](const oneapi::tbb::blocked_range<u32>& range) {
-            for (u32 i = range.begin(); i != range.end(); ++i)
-                PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
-        });
-    }
-    else
-    {
-        for (u32 i = 0; i < p_cnt; i++)
+    oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, p_cnt), [&](const auto& range) {
+        for (u32 i = range.begin(); i != range.end(); i++)
             PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
-    }
+    });
 }
 
 extern float ps_particle_update_coeff;

@@ -46,7 +46,7 @@ private:
     BOOL mouseState[COUNT_MOUSE_BUTTONS]{};
     uint8_t KBState[COUNT_KB_BUTTONS]{};
 
-    HRESULT CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 dwFlags, u32 buf_size);
+    HRESULT CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 buf_size);
 
     //	xr_stack<IInputReceiver*>	cbStack;
     xr_vector<IInputReceiver*> cbStack;
@@ -60,6 +60,7 @@ public:
     sxr_key key_property;
     u32 dwCurTime;
 
+    void Attach();
     void SetAllAcquire(BOOL bAcquire = TRUE);
     void SetMouseAcquire(BOOL bAcquire);
     void SetKBDAcquire(BOOL bAcquire);

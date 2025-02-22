@@ -13,10 +13,10 @@
 extern Fvector4 ps_ssfx_grass_interactive;
 
 IGame_Persistent* g_pGamePersistent = NULL;
-
-bool IsMainMenuActive() { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
-
 BOOL g_prefetch{TRUE};
+
+bool IGame_Persistent::IsMainMenuActive() const { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
+bool IGame_Persistent::MainMenuActiveOrLevelNotExist() const { return !g_pGameLevel || IsMainMenuActive(); }
 
 IGame_Persistent::IGame_Persistent()
 {

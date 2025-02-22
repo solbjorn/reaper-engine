@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "occRasterizer.h"
 
-static occTri* currentTri = 0;
+static occTri* currentTri = nullptr;
 static u32 dwPixels = 0;
 static float currentA[3], currentB[3], currentC[3];
 
@@ -88,8 +88,6 @@ static BOOL shared(occTri* T1, occTri* T2)
     return FALSE;
 }
 
-const float one_div_3 = 1.f / 3.f;
-
 // Rasterize a scan line between given X point values, corresponding Z values and current color
 void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float startZ, float endZ)
 {
@@ -158,7 +156,6 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     {
         if (shared(currentTri, pFrame[i - 1]))
         {
-            // float ZR = (Z+2*pDepth[i-1])*one_div_3;
             if (Z < pDepth[i])
             {
                 pFrame[i] = currentTri;
@@ -188,7 +185,6 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     {
         if (shared(currentTri, pFrame[i + 1]))
         {
-            // float ZR = (Z+2*pDepth[i+1])*one_div_3;
             if (Z < pDepth[i])
             {
                 pFrame[i] = currentTri;

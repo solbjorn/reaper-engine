@@ -334,9 +334,6 @@
     <ClInclude Include="xrSyncronize.h">
       <Filter>Threading</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\task_thread_pool.hpp">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp">
       <Filter>Utils\imdexlib</Filter>
     </ClInclude>

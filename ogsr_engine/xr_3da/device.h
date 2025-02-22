@@ -100,8 +100,6 @@ protected:
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 
-    std::thread::id mainThreadId;
-
 public:
     // Registrators
     MessageRegistry<pureRender> seqRender;
@@ -114,7 +112,7 @@ public:
 
     HWND m_hWnd;
 
-    bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
+    bool OnMainThread() const { return Core.OnMainThread(); }
 };
 
 class CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
@@ -126,6 +124,8 @@ public:
 class CRenderDevice : public CRenderDeviceBase
 {
 private:
+    u32 camFrame{u32(-1)};
+
     // Main objects used for creating and rendering the 3D scene
     u32 m_dwWindowStyle;
     RECT m_rcWindowBounds;
@@ -192,11 +192,15 @@ public:
     BOOL Paused();
 
     // Scene control
+    void ProcessFrame();
     void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
-    BOOL Begin();
-    void Clear();
-    void End();
+
+    bool BeforeFrame();
     void FrameMove();
+    void OnCameraUpdated();
+    bool RenderBegin();
+    void Clear();
+    void RenderEnd();
 
     void overdrawBegin();
     void overdrawEnd();
@@ -241,7 +245,6 @@ public:
     }
 
 public:
-    void on_idle();
     bool on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result);
 
 private:

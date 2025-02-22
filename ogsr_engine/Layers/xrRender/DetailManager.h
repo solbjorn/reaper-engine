@@ -40,11 +40,12 @@ public:
     float fade_distance = 99999;
     Fvector light_position;
     void details_clear();
+
     struct SlotItem
     { // один кустик
+        Fmatrix mRotY;
         float scale;
         float scale_calculated;
-        Fmatrix mRotY;
         u32 vis_ID; // индекс в visibility списке он же тип [не качается, качается1, качается2]
         float c_hemi;
         float c_sun;
@@ -54,20 +55,22 @@ public:
         float alpha;
         float alpha_target;
     };
+
     DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
+
     struct SlotPart
     { //
         u32 id; // ID модельки
         SlotItemVec items; // список кустиков
         SlotItemVec r_items[3]; // список кустиков for render
     };
-    enum SlotType
+
+    enum SlotType : u32
     {
         stReady = 0, // Ready to use
         stPending, // Pending for decompression
-
-        stFORCEDWORD = 0xffffffff
     };
+
     struct Slot
     { // распакованый слот размером DETAIL_SLOT_SIZE
         struct
@@ -77,9 +80,9 @@ public:
             u32 frame : 30;
         };
         int sx, sz; // координаты слота X x Y
+        bool hidden;
         vis_data vis; //
         SlotPart G[dm_obj_in_slot]; //
-        bool hidden;
 
         Slot()
         {
@@ -90,6 +93,7 @@ public:
             vis.clear();
         }
     };
+
     struct CacheSlot1
     {
         u32 empty;
@@ -106,10 +110,9 @@ public:
     typedef svector<CDetail*, dm_max_objects> DetailVec;
     typedef DetailVec::iterator DetailIt;
     typedef poolSS<SlotItem, /*4096*/ 65536> PSS; // KD: try to avoid blinking
-public:
+
     int dither[16][16];
 
-public:
     // swing values
     struct SSwingValue
     {
@@ -127,13 +130,11 @@ public:
     float m_time_pos;
     float m_global_time_old;
 
-public:
     IReader* dtFS;
     DetailHeader dtH;
     DetailSlot* dtSlots; // note: pointer into VFS
     DetailSlot DS_empty;
 
-public:
     DetailVec objects;
     vis_list m_visibles[3]; // 0=still, 1=Wave1, 2=Wave2
 
@@ -147,17 +148,8 @@ public:
 
     PSS poolSI; // pool из которого выделяются SlotItem
 
-    void UpdateVisibleM();
+    void UpdateVisibleM(const Fvector& EYE);
     void UpdateVisibleS();
-
-public:
-    constexpr IC bool UseVS() const { return true; }
-
-    // Software processor
-    ref_geom soft_Geom;
-    void soft_Load();
-    void soft_Unload();
-    void soft_Render();
 
     // Hardware processor
     ref_geom hw_Geom;
@@ -171,7 +163,6 @@ public:
     void hw_Render();
     void hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id);
 
-public:
     // get unpacked slot
     DetailSlot& QueryDB(int sx, int sz);
 
@@ -192,16 +183,11 @@ public:
     void Unload();
     void Render();
 
-    /// MT stuff
-    xrCriticalSection MT;
-    void StartAsync();
-    void WaitAsync();
+private:
+    xr_task_group* tg{};
 
-    std::future<void> awaiter;
-    bool async_started{};
-
-    void MT_CALC();
-
+public:
+    void run_async();
     bool need_init{};
 
     CDetailManager();

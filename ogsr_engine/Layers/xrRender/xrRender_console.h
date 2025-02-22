@@ -188,11 +188,11 @@ enum
     R2FLAG_SUN_TSM = (1 << 2),
     R2FLAG_SUN_DETAILS = (1 << 3),
     R2FLAG_TONEMAP = (1 << 4),
-    R2FLAG_EXP_MT_DETAILS = 1 << 5,
+    /* 1 << 5, */
 #ifdef DEBUG
     R2FLAG_GI = (1 << 6),
 #endif
-/* 1 << 7, */
+    /* 1 << 7, */
 #ifdef DEBUG
     R2FLAG_GLOBALMATERIAL = (1 << 8),
 #endif
@@ -207,16 +207,16 @@ enum
     /* 1 << 15, */
     /* 1 << 16, */
 
-    R2FLAG_EXP_MT_CALC = (1 << 17),
-    R2FLAG_EXP_MT_SUN = 1 << 18,
-    R2FLAG_EXP_MT_RAIN = 1 << 19,
+    /* 1 << 17, */
+    /* 1 << 18, */
+    /* 1 << 19, */
 
     R2FLAG_VOLUMETRIC_LIGHTS = (1 << 20),
     R2FLAG_STEEP_PARALLAX = (1 << 21),
     R2FLAG_DOF = (1 << 22),
 
     R2FLAG_MBLUR = 1 << 23,
-    RFLAG_MT_PARTICLES = 1 << 24,
+    /* 1 << 24, */
 
     R3FLAG_DYN_WET_SURF = (1 << 25),
     R3FLAG_VOLUMETRIC_SMOKE = (1 << 26),
@@ -248,7 +248,7 @@ enum
     /* 1 << 16, */
     /* 1 << 17, */
     /* 1 << 18, */
-    R2FLAGEXT_MT_TEXLOAD = 1 << 19,
+    /* 1 << 19, */
     R2FLAGEXT_FONT_SHADOWS = 1 << 20,
 };
 

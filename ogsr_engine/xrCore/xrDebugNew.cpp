@@ -18,9 +18,9 @@ static bool error_after_dialog = false;
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
-    const bool on_ttapi_thread = (TTAPI && TTAPI->is_pool_thread());
+    const bool on_main_thread = Core.OnMainThread();
 
-    if (!on_ttapi_thread)
+    if (on_main_thread)
     {
         ShowWindow(gGameWindow, SW_HIDE);
 
@@ -30,7 +30,7 @@ static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 
     if (!IsDebuggerPresent())
     {
-        if (show_msg && !on_ttapi_thread)
+        if (show_msg && on_main_thread)
             MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         else
             ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);

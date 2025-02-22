@@ -6,6 +6,7 @@
 #include "../../xr_3da/IGame_Persistent.h"
 
 class occTri;
+class xr_task_group;
 
 class CHOM
 #ifdef DEBUG
@@ -24,30 +25,20 @@ private:
     u32 tris_in_frame;
 #endif
 
-    xrCriticalSection MT;
-    volatile u32 MT_frame_rendered{};
+    xr_task_group* tg{};
 
+    void Render(CFrustum& base);
     void Render_DB(CFrustum& base);
 
 public:
     void Load();
     void Unload();
-    void Render(CFrustum& base);
-    void Render_ZB();
-    //	void					Debug		();
 
-    void occlude(Fbox2& space) {}
     void Disable();
     void Enable();
 
-    void MT_RENDER();
-    ICF void MT_SYNC()
-    {
-        if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-            return;
-
-        MT_RENDER();
-    }
+    void run_async();
+    void wait_async();
 
     BOOL visible(vis_data& vis) const;
     BOOL visible(const Fbox3& B) const;

@@ -148,15 +148,13 @@ public:
     void render_rain();
 
     void init_cacades();
+    void calculate_sun_async();
     void render_sun_cascades();
     void render_sun_cascade(u32 cascade_ind);
 
-    void calculate_sun();
+private:
+    xr_task_group* tg{};
     void calculate_sun(sun::cascade& cascade);
-
-    void calculate_sun_async();
-
-    std::future<void> calculate_sun_awaiter;
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);
@@ -234,7 +232,6 @@ public:
     // Main
     virtual void flush();
     virtual void set_Object(IRenderable* O);
-    virtual void add_Occluder(Fbox2& bb_screenspace); // mask screen region as oclluded
     virtual void add_Visual(IRenderVisual* V); // add visual leaf	(no culling performed at all)
     virtual void add_Geometry(IRenderVisual* V); // add visual(s)	(all culling performed)
 
@@ -279,10 +276,11 @@ public:
     virtual BOOL occ_visible(sPoly& P);
 
     // Main
+    void OnCameraUpdated() override;
     virtual void Calculate();
     virtual void Render();
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
-    virtual void _BCL OnFrame();
+    virtual void OnFrame();
     virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
     virtual void AfterWorldRender(const bool save_bb_before_ui); //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
     void AfterUIRender() override; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.

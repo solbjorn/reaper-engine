@@ -186,6 +186,12 @@ public:
                              disable_dialog_break = 1ull << 41, actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43;
     };
 
+private:
+    std::thread::id mainThreadId;
+
+public:
+    bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
+
     void _initialize(LPCSTR ApplicationName, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0);
     void _destroy();
 
@@ -200,10 +206,6 @@ public:
 #define _BGCL
 
 extern xrCore Core;
-
-#include "Utils/task_thread_pool.hpp"
-extern task_thread_pool::task_thread_pool* TTAPI;
-
 extern bool gModulesLoaded;
 
 // Трэш

@@ -19,6 +19,9 @@
 #include "DiscordRPC.hpp"
 #include "splash.h"
 
+#include <oneapi/tbb/global_control.h>
+#include "xr_task.h"
+
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
 bool IS_OGSR_GA{};
@@ -42,14 +45,7 @@ static HWND logoWindow = NULL;
 bool g_bBenchmark = false;
 string512 g_sBenchmarkName;
 
-// startup point
-void InitEngine()
-{
-    Engine.Initialize();
-    Device.Initialize();
-}
-
-void InitSettings()
+static void InitSettings()
 {
     string_path fname;
     FS.update_path(fname, "$game_config$", "system.ltx");
@@ -62,7 +58,8 @@ void InitSettings()
 
     IS_OGSR_GA = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
 }
-void InitConsole()
+
+static void InitConsole()
 {
     Console = xr_new<CConsole>();
     Console->Initialize();
@@ -121,31 +118,7 @@ void InitConsole()
     CORE_FEATURE_SET(disable_dialog_break, "features");
 }
 
-void InitInput() { pInput = xr_new<CInput>(); }
-void destroyInput() { xr_delete(pInput); }
-
-void InitSound1() { CSound_manager_interface::_create(0); }
-
-void InitSound2() { CSound_manager_interface::_create(1); }
-void destroySound() { CSound_manager_interface::_destroy(); }
-
-void destroySettings()
-{
-    xr_delete(pSettings);
-    xr_delete(pGameIni);
-}
-void destroyConsole()
-{
-    // Console->Destroy();
-    xr_delete(Console);
-}
-void destroyEngine()
-{
-    Device.Destroy();
-    Engine.Destroy();
-}
-
-void execUserScript()
+static void execUserScript()
 {
     Console->Execute("unbindall");
 
@@ -163,28 +136,8 @@ void execUserScript()
     }
 }
 
-void Startup()
+static void Startup()
 {
-    InitSound1();
-    execUserScript();
-    InitSound2();
-
-    // ...command line for auto start
-    {
-        LPCSTR pStartup = strstr(Core.Params, "-start ");
-        if (pStartup)
-            Console->Execute(pStartup + 1);
-    }
-    {
-        LPCSTR pStartup = strstr(Core.Params, "-load ");
-        if (pStartup)
-            Console->Execute(pStartup + 1);
-    }
-
-    // Initialize APP
-    ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
-    Device.Create();
-    LALib.OnCreate();
     pApp = xr_new<CApplication>();
     g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
     g_SpatialSpace = xr_new<ISpatial_DB>();
@@ -208,21 +161,25 @@ void Startup()
     Engine.Event.Dump();
 
     // Destroying
-    destroyInput();
+    xr_delete(pInput);
 
     if (!g_bBenchmark)
-        destroySettings();
+    {
+        xr_delete(pSettings);
+        xr_delete(pGameIni);
+    }
 
     LALib.OnDestroy();
 
     if (!g_bBenchmark)
-        destroyConsole();
+        xr_delete(Console);
     else
         Console->OnScreenResolutionChanged(); // Console->Reset();
 
-    destroySound();
+    CSound_manager_interface::_destroy();
 
-    destroyEngine();
+    Device.Destroy();
+    Engine.Destroy();
 }
 
 constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
@@ -350,21 +307,27 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         }
     }
 
-    // SetThreadAffinityMask		(GetCurrentThread(),1);
-
     // Title window
 
     DisableProcessWindowsGhosting();
 
     logoWindow = ShowSplash(hInstance, nCmdShow);
 
-    LPCSTR fsgame_ltx_name = "-fsltx ";
-    string_path fsgame = "";
-    if (strstr(lpCmdLine, fsgame_ltx_name))
+    const char* tok = "-max-threads";
+    if (strstr(lpCmdLine, tok))
     {
-        int sz = xr_strlen(fsgame_ltx_name);
-        sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+        u32 cpus = 0;
+        if (sscanf_s(strstr(lpCmdLine, tok) + strlen(tok), "%u", &cpus) && cpus >= 1)
+            oneapi::tbb::global_control c(oneapi::tbb::global_control::max_allowed_parallelism, cpus);
     }
+
+    auto& in = xr_task_group_run([] { pInput = xr_new<CInput>(); });
+    auto& snd = xr_task_group_run([] { CSound_manager_interface::_create(0); });
+
+    tok = "-fsltx ";
+    string_path fsgame = "";
+    if (strstr(lpCmdLine, tok))
+        sscanf(strstr(lpCmdLine, tok) + xr_strlen(tok), "%[^ ] ", fsgame);
 
     Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
     InitSettings();
@@ -373,15 +336,40 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         damn_keys_filter filter;
         (void)filter;
 
-        InitEngine();
-        InitInput();
+        Engine.Initialize();
+        Device.Initialize();
+
+        in.wait();
+        pInput->Attach();
         InitConsole();
 
         Engine.External.CreateRendererList();
-
         Engine.External.Initialize();
+
         Console->Execute("stat_memory");
+        execUserScript();
+
+        snd.wait_put();
+        CSound_manager_interface::_create(1);
+
+        // ...command line for auto start
+        LPCSTR pStartup = strstr(Core.Params, "-start ");
+        if (pStartup)
+            Console->Execute(pStartup + 1);
+
+        pStartup = strstr(Core.Params, "-load ");
+        if (pStartup)
+            Console->Execute(pStartup + 1);
+
+        in.run([] { LALib.OnCreate(); });
+
+        // Initialize APP
+        ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+        Device.Create();
+
+        in.wait_put();
         Startup();
+
         Core._destroy();
 
         if (!strstr(lpCmdLine, "-multi_instances")) // Delete application presence mutex
@@ -547,14 +535,15 @@ void CApplication::LoadDraw()
 {
     if (g_appLoaded)
         return;
-    Device.dwFrame += 1;
 
-    if (!Device.Begin())
+    Device.dwFrame++;
+
+    if (!Device.RenderBegin())
         return;
 
     load_draw_internal();
 
-    Device.End();
+    Device.RenderEnd();
 }
 
 void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }
@@ -568,8 +557,8 @@ void CApplication::LoadStage()
     VERIFY(ll_dwReference);
 
     Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
-    phase_timer.Start();
     Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
+    phase_timer.Start();
 
     // if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
     max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
@@ -629,7 +618,7 @@ void CApplication::Level_Scan()
 }
 
 // Taken from OpenXray/xray-16 and refactored
-void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
+static void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
 {
     strconcat(sizeof(path), path, "intro\\intro_", level_name);
 
@@ -644,7 +633,7 @@ void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
 // Taken from OpenXray/xray-16 and refactored
 // Return true if logo exists
 // Always sets the path even if logo doesn't exist
-bool validate_logo_path(string_path& path, pcstr level_name, int num = -1)
+static bool validate_logo_path(string_path& path, pcstr level_name, int num = -1)
 {
     generate_logo_path(path, level_name, num);
     string_path temp;

@@ -816,6 +816,7 @@ void CActor::UpdateCL()
 
     Device.Statistic->TEST1.Begin();
     cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
+    Device.OnCameraUpdated();
     Device.Statistic->TEST1.End();
 
     if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())

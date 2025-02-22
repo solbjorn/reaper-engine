@@ -69,7 +69,7 @@ void CRender::Calculate()
 
         VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
         // lightsource
-        light* L = (light*)(spatial->dcast_Light());
+        light* L = (light*)spatial->dcast_Light();
         VERIFY(L);
         Lights.add_light(L);
     }

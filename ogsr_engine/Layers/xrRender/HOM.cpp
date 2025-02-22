@@ -10,20 +10,7 @@
 #include "dxRenderDeviceRender.h"
 
 #include <oneapi/tbb/parallel_for.h>
-
-void CHOM::MT_RENDER()
-{
-    MT.Enter();
-    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
-    if (MT_frame_rendered != Device.dwFrame && !b_main_menu_is_active)
-    {
-        CFrustum ViewBase;
-        ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-        Enable();
-        Render(ViewBase);
-    }
-    MT.Leave();
-}
+#include "xr_task.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -31,9 +18,12 @@ void CHOM::MT_RENDER()
 
 CHOM::CHOM()
 {
+    tg = &xr_task_group_get();
     bEnabled = FALSE;
-    m_pModel = 0;
-    m_pTris = 0;
+
+    m_pModel = nullptr;
+    m_pTris = nullptr;
+
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 #endif
@@ -41,18 +31,19 @@ CHOM::CHOM()
 
 CHOM::~CHOM()
 {
+    tg->cancel();
+    tg->put();
+
 #ifdef DEBUG
     Device.seqRender.Remove(this);
 #endif
 }
 
-#pragma pack(push, 4)
 struct HOM_poly
 {
     Fvector v1, v2, v3;
     u32 flags;
 };
-#pragma pack(pop)
 
 IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
 {
@@ -125,6 +116,7 @@ void CHOM::Load()
     m_pModel = xr_new<CDB::MODEL>();
     m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
     bEnabled = TRUE;
+
     FS.r_close(fs);
 }
 
@@ -234,11 +226,25 @@ void CHOM::Render(CFrustum& base)
     Raster.clear();
     Render_DB(base);
     Raster.propagade();
-    MT_frame_rendered = Device.dwFrame;
     Device.Statistic->RenderCALC_HOM.End();
 }
 
-ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
+void CHOM::run_async()
+{
+    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+        return;
+
+    tg->run([this] {
+        CFrustum ViewBase;
+        ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+        Enable();
+        Render(ViewBase);
+    });
+}
+
+void CHOM::wait_async() { tg->wait(); }
+
+static ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {
     const float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
     if (z < EPS)
@@ -250,7 +256,7 @@ ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, f
     return FALSE;
 }
 
-ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
+static ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {
     const float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
     if (z < EPS)
@@ -272,7 +278,7 @@ ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, f
     return FALSE;
 }
 
-IC BOOL _visible(const Fbox& B, const Fmatrix& m_xform_01)
+static IC BOOL _visible(const Fbox& B, const Fmatrix& m_xform_01)
 {
     // Find min/max points of xformed-box
     Fvector2 min, max;
@@ -314,14 +320,14 @@ BOOL CHOM::visible(const Fbox2& B, float depth) const
 
 BOOL CHOM::visible(vis_data& vis) const
 {
-    if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
-        return TRUE; // return - everything visible
-
     if (vis.hom_tested == Device.dwFrame)
         return vis.hom_frame > vis.hom_tested;
 
     if (Device.dwFrame < vis.hom_frame)
         return TRUE; // not at this time :)
+
+    if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+        return TRUE; // return - everything visible
 
     // Now, the test time comes
     // 0. The object was hidden, and we must prove that each frame - test |
@@ -371,7 +377,6 @@ BOOL CHOM::visible(const sPoly& P) const
 }
 
 void CHOM::Disable() { bEnabled = FALSE; }
-
 void CHOM::Enable() { bEnabled = m_pModel ? TRUE : FALSE; }
 
 #ifdef DEBUG

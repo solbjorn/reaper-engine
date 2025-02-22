@@ -253,22 +253,14 @@ void CDetailManager::cache_Decompress(Slot* S)
 
             // Vis-sorting
 #ifndef DBG_SWITCHOFF_RANDOMIZE
-            if (!UseVS())
-            {
-                // Always still on CPU pipe
+            if (Dobj->m_Flags.is(DO_NO_WAVING))
                 Item.vis_ID = 0;
-            }
             else
             {
-                if (Dobj->m_Flags.is(DO_NO_WAVING))
-                    Item.vis_ID = 0;
+                if (::Random.randI(0, 3) == 0)
+                    Item.vis_ID = 2; // Second wave
                 else
-                {
-                    if (::Random.randI(0, 3) == 0)
-                        Item.vis_ID = 2; // Second wave
-                    else
-                        Item.vis_ID = 1; // First wave
-                }
+                    Item.vis_ID = 1; // First wave
             }
 #else
             Item.vis_ID = 0;

@@ -32,12 +32,11 @@ CInput::CInput(bool bExclusive, int deviceForInit)
 
     // KEYBOARD
     if (deviceForInit & keyboard_device_key)
-        CHK_DX(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND, KEYBOARDBUFFERSIZE));
+        CHK_DX(CreateInputDevice(&pKeyboard, GUID_SysKeyboard, &c_dfDIKeyboard, KEYBOARDBUFFERSIZE));
 
     // MOUSE
     if (deviceForInit & mouse_device_key)
-        CHK_DX(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY,
-                                 MOUSEBUFFERSIZE));
+        CHK_DX(CreateInputDevice(&pMouse, GUID_SysMouse, &c_dfDIMouse2, MOUSEBUFFERSIZE));
 
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
@@ -71,7 +70,7 @@ CInput::~CInput(void)
 // Name: CreateInputDevice()
 // Desc: Create a DirectInput device.
 //-----------------------------------------------------------------------------
-HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 dwFlags, u32 buf_size)
+HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 buf_size)
 {
     // Obtain an interface to the input device
     //.	CHK_DX( pDI->CreateDeviceEx( guidDevice, IID_IDirectInputDevice8, (void**)device, NULL ) );
@@ -81,14 +80,6 @@ HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
     // controls on a device we are interested in, and how they should be
     // reported.
     CHK_DX((*device)->SetDataFormat(pdidDataFormat));
-
-    // Set the cooperativity level to let DirectInput know how this device
-    // should interact with the system and with other DirectInput applications.
-    HRESULT _hr = (*device)->SetCooperativeLevel(Device.m_hWnd, dwFlags);
-    if (FAILED(_hr) && (_hr == E_NOTIMPL))
-        Msg("! INPUT: Can't set coop level. Emulation???");
-    else
-        R_CHK(_hr);
 
     // setup the buffer size for the keyboard data
     DIPROPDWORD dipdw;
@@ -101,6 +92,16 @@ HRESULT CInput::CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice,
     CHK_DX((*device)->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph));
 
     return S_OK;
+}
+
+void CInput::Attach()
+{
+    // Set the cooperativity level to let DirectInput know how this device
+    // should interact with the system and with other DirectInput applications.
+    if (pKeyboard)
+        R_CHK(pKeyboard->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND));
+    if (pMouse)
+        R_CHK(pMouse->SetCooperativeLevel(Device.m_hWnd, (is_exclusive_mode ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY));
 }
 
 //-----------------------------------------------------------------------
@@ -131,9 +132,9 @@ void CInput::exclusive_mode(const bool exclusive)
     pKeyboard->Unacquire();
     pMouse->Unacquire();
 
-    R_CHK(pKeyboard->SetCooperativeLevel(RDEVICE.m_hWnd, (exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND));
+    Attach();
+
     pKeyboard->Acquire();
-    R_CHK(pMouse->SetCooperativeLevel(RDEVICE.m_hWnd, (exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY));
     pMouse->Acquire();
 }
 

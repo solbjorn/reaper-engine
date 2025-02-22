@@ -25,7 +25,7 @@ int g_3dscopes_fps_factor = 2; // На каком кадре с момента �
 BOOL g_bLoaded = FALSE;
 float refresh_rate = 0;
 
-BOOL CRenderDevice::Begin()
+bool CRenderDevice::RenderBegin()
 {
     switch (m_pRender->GetDeviceState())
     {
@@ -34,26 +34,25 @@ BOOL CRenderDevice::Begin()
     case IRenderDeviceRender::dsLost:
         // If the device was lost, do not render until we get it back
         Sleep(33);
-        return FALSE;
-        break;
+        return false;
 
     case IRenderDeviceRender::dsNeedReset:
         // Check if the device is ready to be reset
         Reset();
-        break;
+        return false;
 
     default: R_ASSERT(0);
     }
 
     m_pRender->Begin();
-    g_bRendering = TRUE;
+    g_bRendering = true;
 
-    return TRUE;
+    return true;
 }
 
 void CRenderDevice::Clear() { m_pRender->Clear(); }
 
-void CRenderDevice::End(void)
+void CRenderDevice::RenderEnd(void)
 {
     if (dwPrecacheFrame)
     {
@@ -66,7 +65,6 @@ void CRenderDevice::End(void)
         if (0 == dwPrecacheFrame)
         {
             m_pRender->updateGamma();
-
             ::Sound->set_master_volume(1.f);
 
             Memory.mem_compact();
@@ -76,14 +74,12 @@ void CRenderDevice::End(void)
         }
     }
 
-    g_bRendering = FALSE;
+    g_bRendering = false;
 
     extern BOOL g_appLoaded;
-
     if (g_appLoaded)
     {
         ImGui::Render();
-
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
 
@@ -105,8 +101,6 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
         load_screen_renderer.start(b_wait_user_input);
     }
 }
-
-xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 void GetMonitorResolution(u32& horizontal, u32& vertical)
 {
@@ -147,40 +141,46 @@ float GetMonitorRefresh()
 extern int ps_framelimiter;
 extern u32 g_screenmode;
 
-void CRenderDevice::on_idle()
+xr_list<CallMe::Delegate<bool()>> g_loading_events;
+
+bool CRenderDevice::BeforeFrame()
 {
     if (!b_is_Ready)
     {
         Sleep(100);
-        return;
+        return false;
     }
-
-    const auto FrameStartTime = std::chrono::high_resolution_clock::now();
 
     if (psDeviceFlags.test(rsStatistic))
         g_bEnableStatGather = TRUE;
     else
         g_bEnableStatGather = FALSE;
 
-    if (g_loading_events.size())
+    if (!g_loading_events.empty())
     {
         if (g_loading_events.front()())
             g_loading_events.pop_front();
 
         pApp->LoadDraw();
-        return;
+        return false;
     }
 
-    ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+    return true;
+}
 
-    FrameMove();
+void CRenderDevice::OnCameraUpdated()
+{
+    if (camFrame == dwFrame)
+        return;
 
     // Precache
     if (dwPrecacheFrame)
     {
-        float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-        float angle = PI_MUL_2 * factor;
-        vCameraDirection.set(_sin(angle), 0, _cos(angle));
+        const float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+        float sin, cos;
+
+        DirectX::XMScalarSinCos(&sin, &cos, PI_MUL_2 * factor);
+        vCameraDirection.set(sin, 0, cos);
         vCameraDirection.normalize();
         vCameraTop.set(0, 1, 0);
         vCameraRight.crossproduct(vCameraTop, vCameraDirection);
@@ -190,24 +190,39 @@ void CRenderDevice::on_idle()
 
     // Matrices
     mFullTransform.mul(mProject, mView);
-    m_pRender->SetCacheXform(mView, mProject);
     mInvFullTransform.invert_44(mFullTransform);
+    ::Render->OnCameraUpdated();
+    m_pRender->SetCacheXform(mView, mProject);
 
     vCameraPosition_saved = vCameraPosition;
     mFullTransform_saved = mFullTransform;
     mView_saved = mView;
     mProject_saved = mProject;
 
+    camFrame = dwFrame;
+}
+
+void CRenderDevice::ProcessFrame()
+{
+    if (!BeforeFrame())
+        return;
+
+    const auto FrameStartTime = std::chrono::high_resolution_clock::now();
+
+    ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+
+    FrameMove();
+    OnCameraUpdated();
+
     std::chrono::time_point<std::chrono::high_resolution_clock> FrameEndTime;
     std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
-    const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
 
     oneapi::tbb::parallel_invoke(
         [this, &FrameEndTime] {
             Statistic->RenderTOTAL_Real.FrameStart();
             Statistic->RenderTOTAL_Real.Begin();
 
-            if (b_is_Active && Begin())
+            if (b_is_Active && RenderBegin())
             {
                 seqRender.Process();
 
@@ -216,7 +231,7 @@ void CRenderDevice::on_idle()
 
                 Statistic->Show_HW_Stats();
 
-                End();
+                RenderEnd();
             }
 
             ImGui::EndFrame();
@@ -245,18 +260,18 @@ void CRenderDevice::on_idle()
 
     const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
 
-    u32 curFPSLimit = ps_framelimiter;
-    if (!curFPSLimit && (IsMainMenuActive() || Device.Paused()))
+    float curFPSLimit = ps_framelimiter;
+    if (g_pGamePersistent->IsMainMenuActive() || Paused())
     {
-        if (!refresh_rate)
+        if (!refresh_rate) [[unlikely]]
             refresh_rate = GetMonitorRefresh();
 
-        curFPSLimit = refresh_rate;
+        curFPSLimit = ps_framelimiter ? std::min<float>(ps_framelimiter, refresh_rate) : refresh_rate;
     }
 
     if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
     {
-        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
+        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / (curFPSLimit + 1))};
         const std::chrono::duration<double, std::milli> total = std::chrono::high_resolution_clock::now() - FrameStartTime;
 
         if (total < FpsLimitMs)
@@ -267,13 +282,12 @@ void CRenderDevice::on_idle()
     }
 
     bool show_stats = SecondThreadTasksElapsedTime > FrameElapsedTime;
-    if (show_stats && dwPrecacheFrame == 0)
+    if (show_stats && !dwPrecacheFrame) [[unlikely]]
     {
-        const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = FrameEndTime - SecondThreadStartTime;
-        const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
+        const std::chrono::duration<double, std::milli> SecondThreadFreeTime = FrameElapsedTime - SecondThreadTasksElapsedTime;
 
-        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
-            SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
+        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, FrameElapsedTime.count(), SecondThreadTasksElapsedTime.count(),
+            SecondThreadFreeTime.count());
     }
 
     if (!b_is_Active)
@@ -293,7 +307,7 @@ void CRenderDevice::message_loop()
             continue;
         }
 
-        on_idle();
+        ProcessFrame();
     }
 }
 
@@ -325,7 +339,6 @@ void CRenderDevice::Run()
 
     Log("Starting engine...");
     set_current_thread_name("X-RAY Primary thread");
-    mainThreadId = std::this_thread::get_id();
     Msg("Main thread id: [%u]", _Thrd_id());
 
     // Startup timers and calculate timer delta
@@ -356,35 +369,31 @@ u32 app_inactive_time_start = 0;
 void CRenderDevice::FrameMove()
 {
     dwFrame++;
-
     dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 
-    {
-        // Timer
-        float fPreviousFrameTime = Timer.GetElapsed_sec();
-        Timer.Start(); // previous frame
-        fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
+    // Timer
+    float fPreviousFrameTime = Timer.GetElapsed_sec();
+    Timer.Start(); // previous frame
+    fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
 
-        if (fTimeDelta > .1f)
-            fTimeDelta = .1f; // limit to 15fps minimum
+    if (fTimeDelta > .1f)
+        fTimeDelta = .1f; // limit to 15fps minimum
 
-        if (fTimeDelta <= 0.f)
-            fTimeDelta = EPS_S + EPS_S; // limit to 15fps minimum
+    if (fTimeDelta <= 0.f)
+        fTimeDelta = EPS_S + EPS_S; // limit to 15fps minimum
 
-        if (Paused())
-            fTimeDelta = 0.0f;
+    if (Paused())
+        fTimeDelta = 0.0f;
 
-        fTimeGlobal = TimerGlobal.GetElapsed_sec(); // float(qTime)*CPU::cycles2seconds;
-
-        u32 _old_global = dwTimeGlobal;
-        dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-        dwTimeDelta = dwTimeGlobal - _old_global;
-    }
+    fTimeGlobal = TimerGlobal.GetElapsed_sec();
+    const u32 _old_global = dwTimeGlobal;
+    dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+    dwTimeDelta = dwTimeGlobal - _old_global;
 
     // Frame move
     Statistic->EngineTOTAL.Begin();
 
-    Device.seqFrame.Process();
+    seqFrame.Process();
     g_bLoaded = TRUE;
 
     Statistic->EngineTOTAL.End();
@@ -456,7 +465,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
     }
 }
 
-BOOL CRenderDevice::Paused() { return g_pauseMngr.Paused(); };
+BOOL CRenderDevice::Paused() { return g_pauseMngr.Paused(); }
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
@@ -467,19 +476,19 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 
     pInput->clip_cursor(fActive != WA_INACTIVE);
 
-    if (isGameActive != Device.b_is_Active)
+    if (isGameActive != b_is_Active)
     {
-        Device.b_is_Active = isGameActive;
+        b_is_Active = isGameActive;
 
-        if (Device.b_is_Active)
+        if (b_is_Active)
         {
-            Device.seqAppActivate.Process();
+            seqAppActivate.Process();
             app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
         }
         else
         {
             app_inactive_time_start = TimerMM.GetElapsed_ms();
-            Device.seqAppDeactivate.Process();
+            seqAppDeactivate.Process();
         }
     }
 }
