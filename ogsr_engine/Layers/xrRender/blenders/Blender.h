@@ -9,26 +9,26 @@
 #include "../../xr_3da/properties.h"
 #include "Blender_Recorder.h"
 
-#pragma pack(push, 4)
-
 class CBlender_DESC
 {
 public:
     CLASS_ID CLS;
 
     string128 cName;
-    string32 cComputer;
     u32 cTime;
+
     u16 version;
+    u16 pad;
 
     CBlender_DESC()
     {
         CLS = CLASS_ID(0);
 
         cName[0] = 0;
-        cComputer[0] = 0;
         cTime = 0;
+
         version = 0;
+        pad = 0;
     }
 };
 
@@ -79,7 +79,5 @@ public:
     virtual void SaveIni(CInifile* ini_file, LPCSTR section);
     virtual void LoadIni(CInifile* ini_file, LPCSTR section);
 };
-
-#pragma pack(pop)
 
 #endif // !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)

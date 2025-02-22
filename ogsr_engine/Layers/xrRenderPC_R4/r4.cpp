@@ -39,7 +39,7 @@ public:
 
 bool CRender::is_sun()
 {
-    Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
+    Fcolor sun_color = ((light*)Lights.sun._get())->color;
     return (ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS));
 }
 
@@ -890,6 +890,18 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         sprintf_s(samples, "%d", o.dx10_msaa_samples);
         defines.emplace_back("MSAA_SAMPLES", samples);
     }
+
+    // Double precision
+    if (HW.DoublePrecisionFloatShaderOps)
+        defines.emplace_back("DOUBLE_PRECISION", "1");
+
+    // Extended doubles instructions
+    if (HW.ExtendedDoublesShaderInstructions)
+        defines.emplace_back("EXTENDED_DOUBLES", "1");
+
+    // SAD4 intrinsic support
+    if (HW.SAD4ShaderInstructions)
+        defines.emplace_back("SAD4_SUPPORTED", "1");
 
     if (ps_ssfx_rain_1.w > 0.f)
     {

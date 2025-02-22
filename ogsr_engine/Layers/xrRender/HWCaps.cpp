@@ -7,7 +7,7 @@ constexpr u32 GetGpuNum() { return 1; }
 void CHWCaps::Update()
 {
     // ***************** GEOMETRY
-    geometry_major = 4;
+    geometry_major = 5;
     geometry_minor = 0;
     geometry.bSoftware = FALSE;
     geometry.bPointSprites = FALSE;
@@ -20,7 +20,7 @@ void CHWCaps::Update()
     geometry.bVTF = TRUE;
 
     // ***************** PIXEL processing
-    raster_major = 4;
+    raster_major = 5;
     raster_minor = 0;
     raster.dwStages = 15;
     raster.bNonPow2 = TRUE;

@@ -87,7 +87,12 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
         while ((chunk = fs->open_chunk(chunk_id)) != nullptr)
         {
             CBlender_DESC desc;
-            chunk->r(&desc, sizeof(desc));
+
+            chunk->r(&desc, offsetof(CBlender_DESC, cName) + sizeof(desc.cName));
+            // ignore PC name
+            chunk->advance(sizeof(string32));
+            // time, version, 2-byte pad
+            chunk->r(&desc.cTime, 8);
 
             IBlenderXr* B = IBlenderXr::Create(desc.CLS);
             if (!B)

@@ -54,8 +54,12 @@ public:
     DXGI_SWAP_CHAIN_DESC1 m_ChainDesc{}; // DevPP equivalent
     DXGI_SWAP_CHAIN_FULLSCREEN_DESC m_ChainDescFullscreen{};
     HWND m_hWnd = nullptr;
+
     D3D_FEATURE_LEVEL FeatureLevel;
     bool m_SupportsVRR = false; // whether we can use DXGI_PRESENT_ALLOW_TEARING etc.
+    bool DoublePrecisionFloatShaderOps;
+    bool SAD4ShaderInstructions;
+    bool ExtendedDoublesShaderInstructions;
 
     IDXGIAdapter3* m_pAdapter3{};
     ID3DUserDefinedAnnotation* pAnnotation{};

@@ -156,6 +156,8 @@ private:
     xr_task_group* tg{};
     void calculate_sun(sun::cascade& cascade);
 
+    CSector* largest_sector;
+
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);
     ShaderElement* rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq);

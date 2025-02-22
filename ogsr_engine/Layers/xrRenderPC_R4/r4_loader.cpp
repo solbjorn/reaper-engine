@@ -248,7 +248,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
             // count, size
             u32 vCount = fs->r_u32();
             u32 vSize = FVF::ComputeVertexSize(dcl, 0);
+#ifndef MASTER_GOLD
             Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
+#endif
 
             // Create and fill
             // BYTE*	pData		= 0;
@@ -277,7 +279,9 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
         for (u32 i = 0; i < count; i++)
         {
             u32 iCount = fs->r_u32();
+#ifndef MASTER_GOLD
             Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
+#endif
 
             // Create and fill
             // BYTE*	pData		= 0;
@@ -344,20 +348,34 @@ void CRender::LoadSectors(IReader* fs)
         Portals[c] = xr_new<CPortal>();
 
     // load sectors
+    CSector* largest_sec = nullptr;
+    float largest_sector_vol = 0;
     IReader* S = fs->open_chunk(fsL_SECTORS);
+
     for (u32 i = 0;; i++)
     {
         IReader* P = S->open_chunk(i);
-        if (0 == P)
+        if (!P)
             break;
 
-        CSector* __S = xr_new<CSector>();
+        CSector* __S = (CSector*)Sectors.emplace_back(xr_new<CSector>());
         __S->load(*P);
-        Sectors.push_back(__S);
-
         P->close();
+
+        // Search for default sector - assume "default" or "outdoor" sector is the largest one
+        // hack: need to know real outdoor sector
+        const dxRender_Visual* V = __S->root();
+        const float vol = V->vis.box.getvolume();
+
+        if (vol > largest_sector_vol)
+        {
+            largest_sector_vol = vol;
+            largest_sec = __S;
+        }
     }
+
     S->close();
+    largest_sector = largest_sec;
 
     // load portals
     if (count)

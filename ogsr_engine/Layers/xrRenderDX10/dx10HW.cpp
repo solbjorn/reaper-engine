@@ -231,6 +231,16 @@ void CHW::CreateDevice(HWND hwnd)
     R_CHK(device->QueryInterface(&pDevice));
     R_CHK(context->QueryInterface(&pContext));
 
+    D3D11_FEATURE_DATA_D3D11_OPTIONS options;
+    device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &options, sizeof(options));
+
+    D3D11_FEATURE_DATA_DOUBLES doubles;
+    device->CheckFeatureSupport(D3D11_FEATURE_DOUBLES, &doubles, sizeof(doubles));
+
+    DoublePrecisionFloatShaderOps = doubles.DoublePrecisionFloatShaderOps;
+    SAD4ShaderInstructions = options.SAD4ShaderInstructions;
+    ExtendedDoublesShaderInstructions = options.ExtendedDoublesShaderInstructions;
+
     _RELEASE(device);
     _RELEASE(context);
 

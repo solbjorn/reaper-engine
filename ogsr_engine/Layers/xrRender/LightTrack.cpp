@@ -308,7 +308,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
 {
-    light* sun = (light*)RImplementation.Lights.sun_adapted._get();
+    light* sun = (light*)RImplementation.Lights.sun._get();
 
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
     {

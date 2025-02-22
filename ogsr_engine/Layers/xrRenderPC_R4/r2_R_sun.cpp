@@ -89,7 +89,7 @@ void CRender::calculate_sun_async()
 
 void CRender::calculate_sun(sun::cascade& cascade)
 {
-    light* fuckingsun = (light*)Lights.sun_adapted._get();
+    light* fuckingsun = (light*)Lights.sun._get();
 
     CFrustum& cull_frustum = cascade.cull_frustum;
     Fmatrix& cull_xform = cascade.cull_xform;
@@ -107,25 +107,6 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         // Lets begin from base frustum
         Fmatrix fullxform_inv = ex_full_inverse;
-
-        typedef DumbConvexVolume<false> t_volume;
-
-        //******************************* Need to be placed after cuboid built **************************
-        // Search for default sector - assume "default" or "outdoor" sector is the largest one
-        //. hack: need to know real outdoor sector
-        CSector* largest_sector = 0;
-        float largest_sector_vol = 0;
-        for (u32 s = 0; s < Sectors.size(); s++)
-        {
-            CSector* S = (CSector*)Sectors[s];
-            dxRender_Visual* V = S->root();
-            float vol = V->vis.box.getvolume();
-            if (vol > largest_sector_vol)
-            {
-                largest_sector_vol = vol;
-                largest_sector = S;
-            }
-        }
 
         cascade.cull_sector = largest_sector;
 
@@ -292,7 +273,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 {
     sun::cascade& cascade = m_sun_cascades[cascade_ind];
 
-    light* fuckingsun = (light*)Lights.sun_adapted._get();
+    light* fuckingsun = (light*)Lights.sun._get();
 
     // Finalize & Cleanup
     fuckingsun->X.D.combine = cascade.cull_xform;
