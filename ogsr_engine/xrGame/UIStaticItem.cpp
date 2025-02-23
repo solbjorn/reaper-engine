@@ -2,10 +2,6 @@
 #include "uistaticitem.h"
 #include "hudmanager.h"
 
-void CreateUIGeom() { UIRender->CreateUIGeom(); }
-
-void DestroyUIGeom() { UIRender->DestroyUIGeom(); }
-
 CUIStaticItem::CUIStaticItem()
 {
     dwColor = 0xffffffff;
@@ -29,7 +25,7 @@ void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
     dbg_tex_name = tex;
 #endif
     uFlags.set(flValidRect, FALSE);
-    //uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
+    // uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
 }
 
 void CUIStaticItem::SetShader(const ui_shader& sh) { hShader = sh; }
@@ -37,7 +33,7 @@ void CUIStaticItem::SetShader(const ui_shader& sh) { hShader = sh; }
 void CUIStaticItem::Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align)
 {
     uFlags.set(flValidRect, FALSE);
-    //uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
+    // uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
 
     CreateShader(tex, sh);
     SetPos(left, top);
@@ -55,8 +51,8 @@ void CUIStaticItem::Render()
     // convert&set pos
     Fvector2 bp;
     UI()->ClientToScreenScaled(bp, float(iPos.x), float(iPos.y));
-    //bp.x = (float)iFloor(bp.x);
-    //bp.y = (float)iFloor(bp.y);
+    // bp.x = (float)iFloor(bp.x);
+    // bp.y = (float)iFloor(bp.y);
 
     // actual rendering
     Fvector2 pos;

@@ -27,6 +27,7 @@
 #endif // MASTER_GOLD
 
 #include "ai_debug.h"
+#include "xr_task.h"
 
 static void* ode_alloc(size_t size) { return xr_malloc(size); }
 static void* ode_realloc(void* ptr, size_t oldsize, size_t newsize) { return xr_realloc(ptr, newsize); }
@@ -126,10 +127,15 @@ void CGamePersistent::OnAppStart()
 {
     // load game materials
     GMLib.Load();
-    init_game_globals();
+
+    auto& glob = xr_task_group_run(init_game_globals);
+
     __super::OnAppStart();
+
     m_pUI_core = xr_new<ui_core>();
     m_pMainMenu = xr_new<CMainMenu>();
+
+    glob.wait_put();
 }
 
 void CGamePersistent::OnAppEnd()
@@ -143,7 +149,6 @@ void CGamePersistent::OnAppEnd()
     __super::OnAppEnd();
 
     clean_game_globals();
-
     GMLib.Unload();
 }
 

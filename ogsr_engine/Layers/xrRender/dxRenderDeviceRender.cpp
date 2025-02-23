@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
+#include "dxUIRender.h"
 #include "ResourceManager.h"
 
 #define USE_RENDERDOC
@@ -23,6 +24,7 @@ void dxRenderDeviceRender::updateGamma() { m_Gamma.Update(); }
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
+    UIRender->DestroyUIGeom();
     m_WireShader.destroy();
     m_SelectionShader.destroy();
 
@@ -77,12 +79,11 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     ::Render->create();
     Device.Statistic->OnDeviceCreate();
 
-    {
-        m_WireShader.create("editor\\wire");
-        m_SelectionShader.create("editor\\selection");
+    m_WireShader.create("editor\\wire");
+    m_SelectionShader.create("editor\\selection");
 
-        DUImpl.OnDeviceCreate();
-    }
+    DUImpl.OnDeviceCreate();
+    UIRender->CreateUIGeom();
 }
 
 void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)

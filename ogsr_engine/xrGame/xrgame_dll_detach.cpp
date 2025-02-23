@@ -34,18 +34,14 @@ extern void dump_list_lines();
 extern void dump_list_sublines();
 extern void clean_wnd_rects();
 extern void dump_list_xmls();
-extern void CreateUIGeom();
-extern void DestroyUIGeom();
 
 #include "..\xr_3da\IGame_Persistent.h"
+
 void init_game_globals()
 {
-    CreateUIGeom();
-
     CInfoPortion::InitInternal();
     CEncyclopediaArticle::InitInternal();
     CPhraseDialog::InitInternal();
-    InventoryUtilities::CreateShaders();
     CCharacterInfo::InitInternal();
     CSpecificCharacter::InitInternal();
     CHARACTER_COMMUNITY::InitInternal();
@@ -81,7 +77,6 @@ void clean_game_globals()
     CPhraseDialog::DeleteSharedData();
     CPhraseDialog::DeleteIdToIndexData();
 
-    InventoryUtilities::DestroyShaders();
     CCharacterInfo::DeleteSharedData();
     CCharacterInfo::DeleteIdToIndexData();
 
@@ -96,7 +91,7 @@ void clean_game_globals()
     // static shader for blood
     CEntityAlive::UnloadBloodyWallmarks();
     CEntityAlive::UnloadFireParticles();
-    //очищение памяти таблицы строк
+    // очищение памяти таблицы строк
     CStringTable::Destroy();
     // Очищение таблицы цветов
     CUIXmlInit::DeleteColorDefs();
@@ -118,5 +113,4 @@ void clean_game_globals()
     xr_delete(g_gameTaskXml);
     xr_delete(g_uiSpotXml);
     dump_list_xmls();
-    DestroyUIGeom();
 }

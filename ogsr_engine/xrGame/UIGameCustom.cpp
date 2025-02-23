@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIGameCustom.h"
 #include "ui.h"
+#include "ui/UIInventoryUtilities.h"
 #include "level.h"
 #include "hudmanager.h"
 #include "ui/UIMultiTextStatic.h"
@@ -28,10 +29,14 @@ CUIGameCustom::CUIGameCustom()
     m_pgameCaptions = xr_new<CUICaption>();
     m_msgs_xml = xr_new<CUIXml>();
     m_msgs_xml->Init(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+    InventoryUtilities::CreateShaders();
 }
 
 CUIGameCustom::~CUIGameCustom()
 {
+    InventoryUtilities::DestroyShaders();
+
     delete_data(m_pgameCaptions);
     shedule_unregister();
     delete_data(m_custom_statics);
