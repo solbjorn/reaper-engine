@@ -71,7 +71,7 @@ public:
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false);
 
     virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false);
-    virtual void Activate(const Fmatrix& start_from, bool disable = false){}
+    virtual void Activate(const Fmatrix& start_from, bool disable = false) {}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; };
@@ -94,7 +94,7 @@ public:
     virtual void SetIgnoreDynamic();
     virtual void SetStatic();
     virtual void SetDynamic();
-    
+
     virtual void SetRagDoll();
     virtual void SetIgnoreRagDoll();
 
@@ -205,14 +205,14 @@ public:
     virtual void CollideAll();
     virtual void PhDataUpdate(dReal step);
     virtual void PhTune(dReal step);
-    virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/){};
+    virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) {};
     virtual void FreezeContent();
     virtual void UnFreezeContent();
     virtual void Freeze();
     virtual void UnFreeze();
     virtual void NetInterpolationModeON() { CPHObject::NetInterpolationON(); }
     virtual void NetInterpolationModeOFF() { CPHObject::NetInterpolationOFF(); }
-    virtual void StepFrameUpdate(dReal step){};
+    virtual void StepFrameUpdate(dReal step) {};
     virtual CPHMoveStorage* MoveStorage() { return &m_traced_geoms; }
     virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL);
     virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map);

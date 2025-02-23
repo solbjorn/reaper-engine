@@ -21,8 +21,8 @@ class CPHCollideValidator
         cbNCClassRagDoll = 1 << 9,
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-        cbClassAnimated = 1 << 10, //класс анимированного физического объекта
-        cbNCClassAnimated = 1 << 11, //свойство игнорирования класса анимированного физического объекта
+        cbClassAnimated = 1 << 10, // класс анимированного физического объекта
+        cbNCClassAnimated = 1 << 11, // свойство игнорирования класса анимированного физического объекта
         cbNone = 1 << 12
 #else
         cbNone = 1 << 10

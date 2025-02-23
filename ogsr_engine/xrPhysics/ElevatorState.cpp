@@ -58,7 +58,6 @@ void CElevatorState::PhTune(float step)
         return;
     }
 
-
     switch (m_state)
     {
     case clbNone: UpdateStNone(); break;

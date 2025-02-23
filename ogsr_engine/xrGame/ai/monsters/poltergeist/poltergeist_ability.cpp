@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "poltergeist.h"
-#include "../../../PhysicsShell.h"
+#include "PhysicsShell.h"
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
@@ -88,7 +88,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
     {
         if (BI_NONE != pHDS->bone())
         {
-            //вычислить координаты попадания
+            // вычислить координаты попадания
             IKinematics* V = smart_cast<IKinematics*>(m_object->Visual());
 
             Fvector start_pos = pHDS->bone_space_position();

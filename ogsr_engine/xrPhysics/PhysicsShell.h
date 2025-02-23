@@ -102,7 +102,7 @@ public:
 
     virtual void SetAnimated(bool v) = 0;
 
-    virtual ~CPhysicsBase(){};
+    virtual ~CPhysicsBase() {};
 };
 
 // ABSTRACT:
@@ -150,7 +150,7 @@ public:
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual ~CPhysicsElement(){};
+    virtual ~CPhysicsElement() {};
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
@@ -182,7 +182,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     enumType eType; // type of the joint
 public:
-    virtual ~CPhysicsJoint(){};
+    virtual ~CPhysicsJoint() {};
     virtual u16 BoneID() = 0;
     virtual void SetBoneID(u16 bone_id) = 0;
     virtual CPhysicsElement* PFirst_element() = 0;
@@ -332,7 +332,7 @@ public:
     virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) = 0;
     virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) = 0;
     virtual void Build(bool disable = false) = 0;
-    virtual void SetMaxAABBRadius(float size){};
+    virtual void SetMaxAABBRadius(float size) {};
     virtual void AddTracedGeom(u16 element = 0, u16 geom = 0) = 0;
     virtual void SetAllGeomTraced() = 0;
     virtual void RunSimulation(bool place_current_forms = true) = 0;

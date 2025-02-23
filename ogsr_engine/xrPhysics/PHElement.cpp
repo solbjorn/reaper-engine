@@ -377,9 +377,9 @@ void CPHElement::PhDataUpdate(dReal step)
         return;
     }
 
-        ///////////////skip for disabled elements////////////////////////////////////////////////////////////
-        // b_enabled_onstep=!!dBodyIsEnabled(m_body);
-        // VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate begin, body position");
+    ///////////////skip for disabled elements////////////////////////////////////////////////////////////
+    // b_enabled_onstep=!!dBodyIsEnabled(m_body);
+    // VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate begin, body position");
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawMassCenters))
     {

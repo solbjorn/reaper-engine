@@ -108,7 +108,7 @@ public:
     void SetPLastMaterialIDX(u16* p) { p_lastMaterialIDX = p; }
     const u16& LastMaterialIDX() const { return *p_lastMaterialIDX; }
     virtual bool TouchRestrictor(ERestrictionType rttype) = 0;
-    virtual void SetElevator(CClimableObject* climable){};
+    virtual void SetElevator(CClimableObject* climable) {};
     virtual void SetMaterial(u16 material) = 0;
     virtual void SetMaximumVelocity(dReal /**vel/**/) {} //!!
     virtual dReal GetMaximumVelocity() { return 0; }

@@ -14,12 +14,12 @@
 #endif
 
 ///////////////////////////////////////////////////////////////
-///#pragma warning(disable:4995)
-//#include "ode/src/collision_kernel.h"
-//#include "ode/src/joint.h"
-//#include "ode/src/objects.h"
+/// #pragma warning(disable:4995)
+// #include "ode/src/collision_kernel.h"
+// #include "ode/src/joint.h"
+// #include "ode/src/objects.h"
 
-//#pragma warning(default:4995)
+// #pragma warning(default:4995)
 ///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"

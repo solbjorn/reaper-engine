@@ -282,7 +282,7 @@ CPHFracture::CPHFracture()
     m_breaked = false;
 }
 
-//#define DBG_BREAK
+// #define DBG_BREAK
 bool CPHFracture::Update(CPHElement* element)
 {
     ////itterate through impacts & calculate

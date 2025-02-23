@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "telekinesis.h"
 #include "../../entity_alive.h"
-#include "../../PhysicsShell.h"
+#include "PhysicsShell.h"
 
 CTelekinesis::CTelekinesis() { active = false; }
 CTelekinesis::~CTelekinesis()
@@ -194,7 +194,7 @@ static bool RemovePred(CTelekineticObject* tele_object)
 
 void CTelekinesis::clear_notrelevant()
 {
-    //убрать все объеты со старыми параметрами
+    // убрать все объеты со старыми параметрами
     objects.erase(std::remove_if(objects.begin(), objects.end(), &RemovePred), objects.end());
 }
 

@@ -65,11 +65,11 @@ void CPHCollideValidator::SetRagDollClass(CPHObject& obj) { obj.collide_class_bi
 void CPHCollideValidator::SetRagDollClassNotCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCClassRagDoll, TRUE); }
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-//Относит физический объект к классу анимированных объектов
+// Относит физический объект к классу анимированных объектов
 void CPHCollideValidator::SetAnimatedClass(CPHObject& obj) { obj.collide_class_bits().set(cbClassAnimated, TRUE); }
 
-//Задаёт игнорирование коллизий данного физического
-//объекта с анимированными телами
+// Задаёт игнорирование коллизий данного физического
+// объекта с анимированными телами
 void CPHCollideValidator::SetAnimatedClassNotCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCClassAnimated, TRUE); }
 #endif
 

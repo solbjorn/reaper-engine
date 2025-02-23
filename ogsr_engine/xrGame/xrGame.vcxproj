@@ -96,7 +96,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -110,7 +110,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
@@ -159,7 +159,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -173,7 +173,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
@@ -224,7 +224,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -238,7 +238,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -283,7 +283,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -297,7 +297,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -444,10 +444,8 @@
     <ClInclude Include="ik_object_shift.h" />
     <ClInclude Include="InventoryContainer.h" />
     <ClInclude Include="LevelDebugScript.h" />
-    <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
-    <ClInclude Include="DamageSource.h" />
     <ClInclude Include="physics_shell_animated.h" />
     <ClInclude Include="player_hud.h" />
     <ClInclude Include="pose_extrapolation.h" />
@@ -1194,7 +1192,6 @@
     <ClInclude Include="holder_custom.h" />
     <ClInclude Include="ParticlesPlayer.h" />
     <ClInclude Include="UsableScriptObject.h" />
-    <ClInclude Include="PHCollideValidator.h" />
     <ClInclude Include="PHSkeleton.h" />
     <ClInclude Include="PHDestroyable.h" />
     <ClInclude Include="PHDestroyableNotificate.h" />
@@ -1426,87 +1423,24 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife_Monsters.h" />
     <ClInclude Include="..\COMMON_AI\script_value_container.h" />
     <ClInclude Include="..\COMMON_AI\script_value_container_impl.h" />
-    <ClInclude Include="CalculateTriangle.h" />
-    <ClInclude Include="ExtendedGeom.h" />
-    <ClInclude Include="ode_include.h" />
-    <ClInclude Include="ode_redefine.h" />
     <ClInclude Include="PHDebug.h" />
-    <ClInclude Include="phvalide.h" />
-    <ClInclude Include="PHWorld.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="PhysicsCommon.h" />
     <ClInclude Include="PhysicsGamePars.h" />
     <ClInclude Include="ph_shell_interface.h" />
-    <ClInclude Include="PHDefs.h" />
     <ClInclude Include="PHShellCreator.h" />
-    <ClInclude Include="PHStaticGeomShell.h" />
-    <ClInclude Include="BlockAllocator.h" />
-    <ClInclude Include="CycleConstStorage.h" />
-    <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="PHDynamicData.h" />
-    <ClInclude Include="PHInterpolation.h" />
-    <ClInclude Include="PHItemList.h" />
-    <ClInclude Include="PHValideValues.h" />
-    <ClInclude Include="SpaceUtils.h" />
-    <ClInclude Include="PHBaseBodyEffector.h" />
-    <ClInclude Include="PHContactBodyEffector.h" />
     <ClInclude Include="..\COMMON_AI\PHNetState.h" />
     <ClInclude Include="..\COMMON_AI\PHSynchronize.h" />
-    <ClInclude Include="PHMoveStorage.h" />
-    <ClInclude Include="DisablingParams.h" />
-    <ClInclude Include="PHDisabling.h" />
-    <ClInclude Include="PHActorCharacter.h" />
-    <ClInclude Include="PHAICharacter.h" />
-    <ClInclude Include="PHCapture.h" />
     <ClInclude Include="PHMovementControl.h" />
-    <ClInclude Include="ElevatorState.h" />
-    <ClInclude Include="PHSimpleCharacter.h" />
-    <ClInclude Include="PHSimpleCharacterInline.h" />
-    <ClInclude Include="IColisiondamageInfo.h" />
-    <ClInclude Include="PHCharacter.h" />
-    <ClInclude Include="PhysicsShell.h" />
-    <ClInclude Include="PhysicsShellAnimator.h" />
-    <ClInclude Include="PhysicsShellAnimatorBoneData.h" />
     <ClInclude Include="animation_movement_controller.h" />
-    <ClInclude Include="PHElement.h" />
-    <ClInclude Include="PHElementInline.h" />
-    <ClInclude Include="PHJoint.h" />
-    <ClInclude Include="PHShell.h" />
-    <ClInclude Include="PHFracture.h" />
-    <ClInclude Include="PHJointDestroyInfo.h" />
-    <ClInclude Include="PHShellSplitter.h" />
-    <ClInclude Include="PHSplitedShell.h" />
-    <ClInclude Include="PHObject.h" />
-    <ClInclude Include="Geometry.h" />
-    <ClInclude Include="PHGeometryOwner.h" />
-    <ClInclude Include="PHIsland.h" />
     <ClInclude Include="PHCommander.h" />
     <ClInclude Include="PHReqComparer.h" />
     <ClInclude Include="PHScriptCall.h" />
     <ClInclude Include="PHSimpleCalls.h" />
-    <ClInclude Include="PHImpact.h" />
     <ClInclude Include="character_hit_animations.h" />
     <ClInclude Include="CharacterPhysicsSupport.h" />
     <ClInclude Include="death_anims.h" />
     <ClInclude Include="interactive_motion.h" />
-    <ClInclude Include="tri-colliderKNoOPC\__aabb_tri.h" />
-    <ClInclude Include="tri-colliderknoopc\dcTriangle.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dcTriListCollider.h" />
-    <ClInclude Include="tri-colliderknoopc\dSortTriPrimitive.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriBox.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dTriCollideK.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriColliderCommon.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriColliderMath.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriCylinder.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dTriList.h" />
-    <ClInclude Include="tri-colliderknoopc\dTriSphere.h" />
-    <ClInclude Include="tri-colliderKNoOPC\dxTriList.h" />
-    <ClInclude Include="tri-colliderknoopc\TriPrimitiveCollideClassDef.h" />
-    <ClInclude Include="dCylinder\dCylinder.h" />
-    <CustomBuildStep Include="dRayMotions.h" />
     <ClInclude Include="DamagableItem.h" />
     <ClInclude Include="PHSoundPlayer.h" />
-    <ClInclude Include="PHActivationShape.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Ik\aint.h" />
     <ClInclude Include="Ik\Dof7control.h" />
@@ -2148,7 +2082,6 @@
     <ClCompile Include="holder_custom_script.cpp" />
     <ClCompile Include="ParticlesPlayer.cpp" />
     <ClCompile Include="UsableScriptObject.cpp" />
-    <ClCompile Include="PHCollideValidator.cpp" />
     <ClCompile Include="PHSkeleton.cpp" />
     <ClCompile Include="PHDestroyable.cpp" />
     <ClCompile Include="PHDestroyableNotificate.cpp" />
@@ -2382,48 +2315,15 @@
     <ClCompile Include="xrServer_process_spawn.cpp" />
     <ClCompile Include="xrServer_process_update.cpp" />
     <ClCompile Include="PHDebug.cpp" />
-    <ClCompile Include="PHWorld.cpp" />
     <ClCompile Include="PHWorldScript.cpp" />
-    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="physics_game.cpp" />
     <ClCompile Include="PhysicsGamePars.cpp" />
     <ClCompile Include="PHShellCreator.cpp" />
-    <ClCompile Include="PHStaticGeomShell.cpp" />
-    <ClCompile Include="MathUtils.cpp" />
-    <ClCompile Include="PHDynamicData.cpp" />
-    <ClCompile Include="PHInterpolation.cpp" />
-    <ClCompile Include="PHContactBodyEffector.cpp" />
     <ClCompile Include="..\COMMON_AI\PHNetState.cpp" />
-    <ClCompile Include="PHMoveStorage.cpp" />
-    <ClCompile Include="DisablingParams.cpp" />
-    <ClCompile Include="PHDisabling.cpp" />
-    <ClCompile Include="PHActorCharacter.cpp" />
     <ClCompile Include="PHMovementDynamicActivate.cpp" />
-    <ClCompile Include="PHAICharacter.cpp" />
-    <ClCompile Include="PHCapture.cpp" />
-    <ClCompile Include="PHCaptureInit.cpp" />
     <ClCompile Include="PHMovementControl.cpp" />
-    <ClCompile Include="ElevatorState.cpp" />
-    <ClCompile Include="PHSimpleCharacter.cpp" />
-    <ClCompile Include="PHCharacter.cpp" />
-    <ClCompile Include="PhysicsShell.cpp" />
     <ClCompile Include="PhysicsShellScript.cpp" />
-    <ClCompile Include="PhysicsShellAnimator.cpp" />
     <ClCompile Include="animation_movement_controller.cpp" />
-    <ClCompile Include="PHElement.cpp" />
-    <ClCompile Include="PHElementNetState.cpp" />
-    <ClCompile Include="PHJoint.cpp" />
-    <ClCompile Include="PHShell.cpp" />
-    <ClCompile Include="PHShellActivate.cpp" />
-    <ClCompile Include="ShellHit.cpp" />
-    <ClCompile Include="PHFracture.cpp" />
-    <ClCompile Include="PHJointDestroyInfo.cpp" />
-    <ClCompile Include="PHShellSplitter.cpp" />
-    <ClCompile Include="PHSplitedShell.cpp" />
-    <ClCompile Include="PHObject.cpp" />
-    <ClCompile Include="Geometry.cpp" />
-    <ClCompile Include="PHGeometryOwner.cpp" />
-    <ClCompile Include="PHIsland.cpp" />
     <ClCompile Include="PHCommander.cpp" />
     <ClCompile Include="PHScriptCall.cpp" />
     <ClCompile Include="PHSimpleCalls.cpp" />
@@ -2432,18 +2332,8 @@
     <ClCompile Include="CharacterPhysicsSupport.cpp" />
     <ClCompile Include="death_anims.cpp" />
     <ClCompile Include="interactive_motion.cpp" />
-    <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="tri-colliderknoopc\dTriBox.cpp" />
-    <ClCompile Include="tri-colliderknoopc\dTriCylinder.cpp" />
-    <ClCompile Include="tri-colliderKNoOPC\dTriList.cpp" />
-    <ClCompile Include="tri-colliderknoopc\dTriSphere.cpp" />
-    <ClCompile Include="dCylinder\dCylinder.cpp" />
-    <ClCompile Include="dRayMotions.cpp" />
     <ClCompile Include="DamagableItem.cpp" />
     <ClCompile Include="PHSoundPlayer.cpp" />
-    <ClCompile Include="PHActivationShape.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Ik\aint.cxx" />
     <ClCompile Include="Ik\Dof7control.cpp" />

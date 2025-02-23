@@ -574,6 +574,10 @@
       <Project>{200652A6-043E-4634-8837-87983B3BD5E0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\xrPhysics\xrPhysics.vcxproj">
+      <Project>{DFE83C79-B305-40B1-B566-00F78A6D2568}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\3rd_party\Src\imgui\imgui.vcxproj">
       <Project>{c8fbc3ce-d6de-4fc3-bc15-7b647614db09}</Project>
     </ProjectReference>

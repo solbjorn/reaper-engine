@@ -3,7 +3,8 @@
 #include "../../../PhysicsShellHolder.h"
 #include "../../../level.h"
 #include "../../../actor.h"
-#include "../../../IColisiondamageInfo.h"
+#include "IColisiondamageInfo.h"
+
 CPolterTele::CPolterTele(CPoltergeist* polter) : inherited(polter), m_pmt_object_collision_damage(0.5f) {}
 
 CPolterTele::~CPolterTele() {}

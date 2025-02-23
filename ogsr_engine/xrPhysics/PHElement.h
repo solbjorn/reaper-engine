@@ -179,7 +179,7 @@ public: //
     virtual void applyGravityAccel(const Fvector& accel);
     virtual void getForce(Fvector& force);
     virtual void getTorque(Fvector& torque);
-    virtual void get_LinearVel(Fvector& velocity) override;  // aux
+    virtual void get_LinearVel(Fvector& velocity) override; // aux
     virtual void get_AngularVel(Fvector& velocity) override; // aux
     virtual void set_LinearVel(const Fvector& velocity); // called anywhere ph state influent
     virtual void set_AngularVel(const Fvector& velocity); // called anywhere ph state influent

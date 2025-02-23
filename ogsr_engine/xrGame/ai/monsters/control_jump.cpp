@@ -22,8 +22,8 @@
 */
 
 #include "../../trajectories.h"
-#include "../../PHWorld.h"
-#include "../../PHCharacter.h"
+#include "PHWorld.h"
+#include "PHCharacter.h"
 
 void CControlJump::reinit()
 {

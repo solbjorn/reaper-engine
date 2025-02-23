@@ -1355,10 +1355,11 @@ void CPHShell::PlaceBindToElFormsRecursive(Fmatrix parent, u16 id, u16 element, 
     CBoneData& bone_data = m_pKinematics->LL_GetData(u16(id));
     SJointIKData& joint_data = bone_data.IK_data;
 
-    if (mask.is(/*1ui64<<(u64)*/ id)) //Вот тут проверить надо, кажется мне тут было не правильно.
+    if (mask.is(/*1ui64<<(u64)*/ id)) // Вот тут проверить надо, кажется мне тут было не правильно.
     {
         if (no_physics_shape(bone_data.shape) || joint_data.type == jtRigid && element != u16(-1))
-        {}
+        {
+        }
         else
         {
             element++;
@@ -1475,26 +1476,26 @@ void CPHShell::SetRagDoll() { CPHCollideValidator::SetRagDollClass(*this); }
 void CPHShell::SetIgnoreRagDoll() { CPHCollideValidator::SetRagDollClassNotCollide(*this); }
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-//Делает данный физический объек анимированным
+// Делает данный физический объек анимированным
 void CPHShell::CreateShellAnimator()
 {
-    //Для фильтра коллизий относим данный объект к классу анимированных
+    // Для фильтра коллизий относим данный объект к классу анимированных
     CPHCollideValidator::SetAnimatedClass(*this);
     m_pPhysicsShellAnimatorC = xr_new<CPhysicsShellAnimator>(this);
     // m_pPhysicsShellAnimatorC->ResetCallbacks();
 }
 
-//Настраивает фильтр коллизий на игнорирование столкновенний данного
-//физического объекта с анимированным физическим объектом
+// Настраивает фильтр коллизий на игнорирование столкновенний данного
+// физического объекта с анимированным физическим объектом
 void CPHShell::SetIgnoreAnimated()
 {
-    //Для фильтра коллизий указываем, что данный
-    //физический объект игнорирует анимированные физические тела
+    // Для фильтра коллизий указываем, что данный
+    // физический объект игнорирует анимированные физические тела
 
     CPHCollideValidator::SetAnimatedClassNotCollide(*this);
 }
 
-//Выдает информацию о том является ли данный объект анимированным
+// Выдает информацию о том является ли данный объект анимированным
 bool CPHShell::Animated() { return CPHCollideValidator::IsAnimatedObject(*this); }
 #endif
 
