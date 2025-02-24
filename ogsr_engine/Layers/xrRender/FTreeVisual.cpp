@@ -66,12 +66,12 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 struct FTreeVisual_setup
 {
-    u32 dwFrame;
+    u32 dwFrame{};
     float scale{};
     Fvector4 wave;
     Fvector4 wind;
 
-    FTreeVisual_setup() { dwFrame = 0; }
+    FTreeVisual_setup() {}
 
     void calculate()
     {
@@ -83,7 +83,7 @@ struct FTreeVisual_setup
         wind.set(_sin(tm_rot), 0, _cos(tm_rot), 0);
         wind.normalize();
         wind.mul(env.m_fTreeAmplitudeIntensity); // dir1*amplitude
-        scale = 1.f / FTreeVisual_quant;
+        scale = 1.f / float(FTreeVisual_quant);
 
         // setup constants
         wave.set(ps_r__Tree_Wave.x, ps_r__Tree_Wave.y, ps_r__Tree_Wave.z, Device.fTimeGlobal * ps_r__Tree_w_speed); // wave

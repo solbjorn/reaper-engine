@@ -1,12 +1,5 @@
 #include "stdafx.h"
 
-IC bool pred_area(light* _1, light* _2)
-{
-    u32 a0 = _1->X.S.size;
-    u32 a1 = _2->X.S.size;
-    return a0 > a1; // reverse -> descending
-}
-
 bool check_grass_shadow(light* L, CFrustum VB)
 {
     // Grass shadows are allowed?
@@ -55,7 +48,11 @@ void CRender::render_lights(light_Package& LP)
         for (u16 smap_ID = 0; refactored.size() != total; smap_ID++)
         {
             LP_smap_pool.initialize(RImplementation.o.smapsize);
-            std::sort(source.begin(), source.end(), pred_area);
+            std::sort(source.begin(), source.end(), [](const light* l1, const light* l2) {
+                const u32 a0 = l1->X.S.size;
+                const u32 a1 = l2->X.S.size;
+                return a0 > a1; // reverse -> descending
+            });
             for (u32 test = 0; test < source.size(); test++)
             {
                 light* L = source[test];
@@ -173,10 +170,7 @@ void CRender::render_lights(light_Package& LP)
             light* L = LP.v_point.back();
             LP.v_point.pop_back();
             if (L->vis.visible)
-            {
                 Target->accum_point(L);
-                render_indirect(L);
-            }
         }
 
         PIX_EVENT(SPOT_LIGHTS);
@@ -190,7 +184,6 @@ void CRender::render_lights(light_Package& LP)
             {
                 LR.compute_xf_spot(L);
                 Target->accum_spot(L);
-                render_indirect(L);
             }
         }
 
@@ -201,10 +194,7 @@ void CRender::render_lights(light_Package& LP)
         {
             PIX_EVENT(ACCUM_SPOT);
             for (u32 it = 0; it < L_spot_s.size(); it++)
-            {
                 Target->accum_spot(L_spot_s[it]);
-                render_indirect(L_spot_s[it]);
-            }
 
             PIX_EVENT(ACCUM_VOLUMETRIC);
             if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
@@ -239,10 +229,7 @@ void CRender::render_lights(light_Package& LP)
         for (u32 pid = 0; pid < Lvec.size(); pid++)
         {
             if (Lvec[pid]->vis.visible)
-            {
-                render_indirect(Lvec[pid]);
                 Target->accum_point(Lvec[pid]);
-            }
         }
         Lvec.clear();
     }
@@ -257,62 +244,9 @@ void CRender::render_lights(light_Package& LP)
             if (Lvec[pid]->vis.visible)
             {
                 LR.compute_xf_spot(Lvec[pid]);
-                render_indirect(Lvec[pid]);
                 Target->accum_spot(Lvec[pid]);
             }
         }
         Lvec.clear();
-    }
-}
-
-void CRender::render_indirect(light* L)
-{
-#ifdef DEBUG
-    if (!ps_r2_ls_flags.test(R2FLAG_GI))
-#endif
-        return;
-
-    light LIGEN;
-    LIGEN.set_type(IRender_Light::REFLECTED);
-    LIGEN.set_shadow(false);
-    LIGEN.set_cone(PI_DIV_2 * 2.f);
-
-    xr_vector<light_indirect>& Lvec = L->indirect;
-    if (Lvec.empty())
-        return;
-    float LE = L->color.intensity();
-    for (u32 it = 0; it < Lvec.size(); it++)
-    {
-        light_indirect& LI = Lvec[it];
-
-        // energy and color
-        float LIE = LE * LI.E;
-        if (LIE < ps_r2_GI_clip)
-            continue;
-        Fvector T;
-        T.set(L->color.r, L->color.g, L->color.b).mul(LI.E);
-        LIGEN.set_color(T.x, T.y, T.z);
-
-        // geometric
-        Fvector L_up, L_right;
-        L_up.set(0, 1, 0);
-        if (_abs(L_up.dotproduct(LI.D)) > .99f)
-            L_up.set(0, 0, 1);
-        L_right.crossproduct(L_up, LI.D).normalize();
-        LIGEN.spatial.sector = LI.S;
-        LIGEN.set_position(LI.P);
-        LIGEN.set_rotation(LI.D, L_right);
-
-        // range
-        // dist^2 / range^2 = A - has infinity number of solutions
-        // approximate energy by linear fallof Emax / (1 + x) = Emin
-        float Emax = LIE;
-        float Emin = 1.f / 255.f;
-        float x = (Emax - Emin) / Emin;
-        if (x < 0.1f)
-            continue;
-        LIGEN.set_range(x);
-
-        Target->accum_reflected(&LIGEN);
     }
 }

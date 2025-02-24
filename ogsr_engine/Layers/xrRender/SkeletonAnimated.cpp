@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-
 #include "SkeletonAnimated.h"
 
 #include "AnimationKeyCalculate.h"
@@ -41,14 +40,14 @@ void CBlendInstance::blend_remove(CBlend* H)
 void CKinematicsAnimated::Bone_Motion_Start(CBoneData* bd, CBlend* handle)
 {
     LL_GetBlendInstance(bd->GetSelfID()).blend_add(handle);
-    for (vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
-        Bone_Motion_Start(*I, handle);
+    for (auto& it : bd->children)
+        Bone_Motion_Start(it, handle);
 }
 void CKinematicsAnimated::Bone_Motion_Stop(CBoneData* bd, CBlend* handle)
 {
     LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle);
-    for (vecBonesIt I = bd->children.begin(); I != bd->children.end(); I++)
-        Bone_Motion_Stop(*I, handle);
+    for (auto& it : bd->children)
+        Bone_Motion_Stop(it, handle);
 }
 void CKinematicsAnimated::Bone_Motion_Start_IM(CBoneData* bd, CBlend* handle) { LL_GetBlendInstance(bd->GetSelfID()).blend_add(handle); }
 void CKinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle) { LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle); }
@@ -56,11 +55,10 @@ void CKinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle) { L
 std::pair<LPCSTR, LPCSTR> CKinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
     shared_motions& s_mots = m_Motions[ID.slot].motions;
-    auto _E = s_mots.motion_map()->end();
-    for (auto _I = s_mots.motion_map()->begin(); _I != _E; ++_I)
-        if (_I->second == ID.idx)
-            return std::make_pair(*_I->first, *s_mots.id());
-    return std::make_pair((LPCSTR)0, (LPCSTR)0);
+    for (auto& it : *s_mots.motion_map())
+        if (it.second == ID.idx)
+            return std::make_pair(*it.first, *s_mots.id());
+    return std::make_pair((LPCSTR) nullptr, (LPCSTR) nullptr);
 }
 
 static LPCSTR name_bool(BOOL v)
@@ -98,9 +96,8 @@ static void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
 void CKinematicsAnimated::LL_DumpBlends_dbg()
 {
     Msg("==================dump blends=================================================");
-    CBlend *I = blend_pool.begin(), *E = blend_pool.end();
-    for (; I != E; I++)
-        dump_blend(this, *I, u32(I - blend_pool.begin()));
+    for (auto& it : blend_pool)
+        dump_blend(this, it, u32(&it - blend_pool.begin()));
 }
 
 u32 CKinematicsAnimated::LL_PartBlendsCount(u32 bone_part_id) { return blend_cycle(bone_part_id).size(); }
@@ -113,10 +110,9 @@ CBlend* CKinematicsAnimated::LL_PartBlend(u32 bone_part_id, u32 n)
 }
 void CKinematicsAnimated::LL_IterateBlends(IterateBlendsCallback& callback)
 {
-    CBlend *I = blend_pool.begin(), *E = blend_pool.end();
-    for (; I != E; I++)
-        if (I->blend_state() != CBlend::eFREE_SLOT)
-            callback(*I);
+    for (auto& it : blend_pool)
+        if (it.blend_state() != CBlend::eFREE_SLOT)
+            callback(it);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -447,9 +443,9 @@ void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_ble
         for (; I != E; I++)
         {
             CBlend& B = *(*I);
-            if (!b_force && B.dwFrame == RDEVICE.dwFrame)
+            if (!b_force && B.dwFrame == Device.dwFrame)
                 continue;
-            B.dwFrame = RDEVICE.dwFrame;
+            B.dwFrame = Device.dwFrame;
             if (B.update(dt, B.Callback) && !leave_blends)
             {
                 DestroyCycle(B);
@@ -522,20 +518,21 @@ void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
 void CKinematicsAnimated::UpdateTracks()
 {
     _DBG_SINGLE_USE_MARKER;
-    if (Update_LastTime == RDEVICE.dwTimeGlobal)
+    if (Update_LastTime == Device.dwTimeGlobal)
         return;
-    u32 DT = RDEVICE.dwTimeGlobal - Update_LastTime;
+
+    u32 DT = Device.dwTimeGlobal - Update_LastTime;
     if (DT > 66)
         DT = 66;
     float dt = float(DT) / 1000.f;
 
     if (GetUpdateTracksCalback())
     {
-        if ((*GetUpdateTracksCalback())(float(RDEVICE.dwTimeGlobal - Update_LastTime) / 1000.f, *this))
-            Update_LastTime = RDEVICE.dwTimeGlobal;
+        if ((*GetUpdateTracksCalback())(float(Device.dwTimeGlobal - Update_LastTime) / 1000.f, *this))
+            Update_LastTime = Device.dwTimeGlobal;
         return;
     }
-    Update_LastTime = RDEVICE.dwTimeGlobal;
+    Update_LastTime = Device.dwTimeGlobal;
     LL_UpdateTracks(dt, false, false);
 }
 
@@ -612,7 +609,7 @@ void CKinematicsAnimated::IBlend_Startup()
 
     ZeroMemory(&blend_pool, sizeof blend_pool);
     blend_pool.resize(MAX_BLENDED_POOL);
- 
+
     // cycles+fx clear
     for (u32 i = 0; i < MAX_PARTS; i++)
         blend_cycles[i].clear();
@@ -624,10 +621,9 @@ CBlend* CKinematicsAnimated::IBlend_Create()
 {
     UpdateTracks();
     _DBG_SINGLE_USE_MARKER;
-    CBlend *I = blend_pool.begin(), *E = blend_pool.end();
-    for (; I != E; I++)
-        if (I->blend_state() == CBlend::eFREE_SLOT)
-            return I;
+    for (auto& it : blend_pool)
+        if (it.blend_state() == CBlend::eFREE_SLOT)
+            return &it;
     FATAL("Too many blended motions requisted");
     return 0;
 }
@@ -723,9 +719,9 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
     m_Partition->load(this, N);
 
     // initialize motions
-    for (MotionsSlotVecIt m_it = m_Motions.begin(); m_it != m_Motions.end(); m_it++)
+    for (auto& m_it : m_Motions)
     {
-        SMotionsSlot& MS = *m_it;
+        SMotionsSlot& MS = m_it;
         MS.bone_motions.resize(bones->size());
         for (u32 i = 0; i < bones->size(); i++)
         {
@@ -745,12 +741,11 @@ void CKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 cha
 {
     u16 SelfID = bd->GetSelfID();
     CBlendInstance& BLEND_INST = LL_GetBlendInstance(SelfID);
-    const CBlendInstance::BlendSVec& Blend = BLEND_INST.blend_vector();
     CKey BK[MAX_CHANNELS][MAX_BLENDED]; // base keys
-    BlendSVecCIt BI;
-    for (BI = Blend.begin(); BI != Blend.end(); BI++)
+
+    for (auto& it : BLEND_INST.blend_vector())
     {
-        CBlend* B = *BI;
+        CBlend* B = it;
         int& b_count = keys.chanel_blend_conts[B->channel];
         CKey* D = &keys.keys[B->channel][b_count];
         if (!(channel_mask & (1 << B->channel)))

@@ -138,7 +138,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     _ParseList(C.L_constants, s_constants);
     _ParseList(C.L_matrices, s_matrices);
 
-    if (::Render->hud_loading && RImplementation.o.ssfx_hud_raindrops)
+    if (RImplementation.hud_loading && RImplementation.o.ssfx_hud_raindrops)
         C.HudElement = true;
 
     // Compile element	(LOD0 - HQ)
@@ -196,7 +196,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     }
 
     // Hacky way to remove from the HUD mask transparent stuff. ( Let's try something better later... )
-    if (::Render->hud_loading)
+    if (RImplementation.hud_loading)
     {
         if (strstr(s_shader, "lens"))
             S.E[0]->passes[0]->ps->hud_disabled = TRUE;
@@ -224,7 +224,7 @@ void CResourceManager::Delete(const Shader* S)
 
 void CResourceManager::DeferredUpload()
 {
-    if (!RDEVICE.b_is_Ready)
+    if (!Device.b_is_Ready)
         return;
 
     Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%u]", m_textures.size());

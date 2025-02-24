@@ -196,8 +196,6 @@ void light::spatial_move()
     // update spatial DB
     ISpatial::spatial_move();
 
-    if (flags.bActive)
-        gi_generate();
     svis.invalidate();
 }
 

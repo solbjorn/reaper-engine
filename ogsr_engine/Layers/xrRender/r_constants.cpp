@@ -20,14 +20,10 @@ R_constant_table::~R_constant_table()
 
 void R_constant_table::fatal(LPCSTR S) { FATAL(S); }
 
-// predicates
-IC bool p_search(const ref_constant& C, LPCSTR S) { return xr_strcmp(*C->name, S) < 0; }
-IC bool p_sort(const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; }
-
 ref_constant R_constant_table::get(LPCSTR S) const
 {
     // assumption - sorted by name
-    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, p_search);
+    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, [](const ref_constant& C, const char* S) { return xr_strcmp(*C->name, S) < 0; });
 
     if (I == table.cend() || (0 != xr_strcmp((*I)->name.c_str(), S)))
         return nullptr;
@@ -90,8 +86,9 @@ void R_constant_table::merge(R_constant_table* T)
     {
         // Append
         std::move(table_tmp.begin(), table_tmp.end(), std::back_inserter(table));
+
         // Sort
-        std::sort(table.begin(), table.end(), p_sort);
+        std::sort(table.begin(), table.end(), [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
     }
 
     //	TODO:	DX10:	Implement merge with validity check

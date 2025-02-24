@@ -166,8 +166,7 @@ void CParticleGroup::SItem::Clear()
 
     for (auto& visual : visuals)
     {
-        IRenderVisual* pVisual = smart_cast<IRenderVisual*>(visual);
-        ::Render->model_Delete(pVisual);
+        RImplementation.model_Delete((IRenderVisual*&)visual, false);
         visual = nullptr;
     }
 
@@ -262,15 +261,13 @@ void CParticleGroup::SItem::Stop(BOOL def_stop)
     {
         for (auto& child : _children_related)
         {
-            IRenderVisual* pVisual = smart_cast<IRenderVisual*>(child);
-            ::Render->model_Delete(pVisual);
+            RImplementation.model_Delete((IRenderVisual*&)child, false);
             child = nullptr;
         }
 
         for (auto& child : _children_free)
         {
-            IRenderVisual* pVisual = smart_cast<IRenderVisual*>(child);
-            ::Render->model_Delete(pVisual);
+            RImplementation.model_Delete((IRenderVisual*&)child, false);
             child = nullptr;
         }
 
@@ -321,10 +318,6 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
         PG->items[param].StartFreeChild(PE, *eff->m_OnDeadChildName, m);
 }
 //------------------------------------------------------------------------------
-struct zero_vis_pred
-{
-    bool operator()(const dxRender_Visual* x) { return x == 0; }
-};
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
     CParticleEffect* E = static_cast<CParticleEffect*>(_effect);
@@ -403,15 +396,14 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
             else
             {
                 rem_cnt++;
-                IRenderVisual* pVisual = smart_cast<IRenderVisual*>(child);
-                ::Render->model_Delete(pVisual);
+                RImplementation.model_Delete((IRenderVisual*&)child, false);
                 child = nullptr;
             }
         }
         // remove if stopped
         if (rem_cnt)
         {
-            const VisualVecIt new_end = std::remove_if(_children_free.begin(), _children_free.end(), zero_vis_pred());
+            const auto new_end = std::remove_if(_children_free.begin(), _children_free.end(), [](const dxRender_Visual* x) { return x == nullptr; });
             _children_free.erase(new_end, _children_free.end());
         }
     }

@@ -15,7 +15,7 @@
 #include "sh_constant.h"
 #include "sh_rt.h"
 
-typedef xr_vector<shared_str> sh_list;
+using sh_list = xr_vector<shared_str>;
 
 class CBlender_Compile;
 class IBlender;
@@ -24,12 +24,10 @@ class IBlenderXr;
 #define SHADER_PASSES_MAX 2
 #define SHADER_ELEMENTS_MAX 16
 
-#pragma pack(push, 4)
-
 //////////////////////////////////////////////////////////////////////////
 struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
-    typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
+    using inherited_vec = xr_vector<std::pair<u32, ref_texture>>;
     STextureList() = default;
     ~STextureList();
 
@@ -113,7 +111,6 @@ typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 //////////////////////////////////////////////////////////////////////////
 struct ShaderElement : public xr_resource_flagged
 {
-public:
     struct Sflags
     {
         u32 iPriority : 2;
@@ -126,7 +123,6 @@ public:
         u32 isWater : 1;
     };
 
-public:
     Sflags flags;
     svector<ref_pass, SHADER_PASSES_MAX> passes;
 
@@ -134,12 +130,12 @@ public:
     ~ShaderElement();
     BOOL equal(ShaderElement& S);
 };
-typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
+
+using ref_selement = resptr_core<ShaderElement, resptr_base<ShaderElement>>;
 
 //////////////////////////////////////////////////////////////////////////
 struct Shader : public xr_resource_flagged
 {
-public:
     ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
                        // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
     Shader() = default;
@@ -154,7 +150,8 @@ struct resptrcode_shader : public resptr_base<Shader>
     void create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
     void destroy() { _set(NULL); }
 };
-typedef resptr_core<Shader, resptrcode_shader> ref_shader;
+
+using ref_shader = resptr_core<Shader, resptrcode_shader>;
 
 enum SE_R1
 {
@@ -172,7 +169,5 @@ enum SE_R1
 //	Extra shader element.
 //	E[4] - distortion or self illumination(self emission).
 //	E[4] Can use for lightmap capturing.
-
-#pragma pack(pop)
 
 #endif // !defined(AFX_SHADER_H__9CBD70DD_E147_446B_B4EE_5DA321EB726F__INCLUDED_)

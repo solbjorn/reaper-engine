@@ -6,8 +6,6 @@
 
 #include "../xrRenderDX10/StateManager/dx10State.h"
 
-#pragma pack(push, 4)
-
 //////////////////////////////////////////////////////////////////////////
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
@@ -77,6 +75,7 @@ struct SState : public xr_resource_flagged
 {
     ID3DState* state;
     SimulatorStates state_code;
+    SState() = default;
     ~SState();
 };
 typedef resptr_core<SState, resptr_base<SState>> ref_state;
@@ -90,9 +89,9 @@ struct SDeclaration : public xr_resource_flagged
 
     //	Use this for DirectX10 to cache DX9 declaration for comparison purpose only
     xr_vector<D3DVERTEXELEMENT9> dcl_code;
+    SDeclaration() = default;
     ~SDeclaration();
 };
 typedef resptr_core<SDeclaration, resptr_base<SDeclaration>> ref_declaration;
 
-#pragma pack(pop)
 #endif // sh_atomicH

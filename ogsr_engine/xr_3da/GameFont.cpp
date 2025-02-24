@@ -23,7 +23,7 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
     fXStep = 0.0f;
     uFlags = flags;
 
-    if (RDEVICE.dwHeight >= 2048 && pSettings->line_exist(section, "texture_hidpi"))
+    if (Device.dwHeight >= 2048 && pSettings->line_exist(section, "texture_hidpi"))
         line = "texture_hidpi";
     else
         line = "texture";
@@ -315,7 +315,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 
 void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p)
 {
-    if (bCheckDevice && (!RDEVICE.b_is_Active))
+    if (bCheckDevice && (!Device.b_is_Active))
         return;
 
     String rs;
@@ -423,7 +423,7 @@ float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHei
 void CGameFont::SetHeightI(float S)
 {
     VERIFY(uFlags & fsDeviceIndependent);
-    fCurrentHeight = S * RDEVICE.dwHeight;
+    fCurrentHeight = S * Device.dwHeight;
 };
 
 void CGameFont::SetHeight(float S)

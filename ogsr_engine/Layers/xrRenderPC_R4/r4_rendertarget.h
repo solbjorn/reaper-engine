@@ -192,15 +192,15 @@ private:
     //	DX10 Rain
     ref_shader s_rain;
 
-    ref_shader s_rain_msaa[8]; // up to 8 shaders for DX10.0 support
-    ref_shader s_accum_direct_volumetric_msaa[8];
-    ref_shader s_accum_mask_msaa[8];
-    ref_shader s_accum_direct_msaa[8];
+    ref_shader s_rain_msaa[1];
+    ref_shader s_accum_direct_volumetric_msaa[1];
+    ref_shader s_accum_mask_msaa[1];
+    ref_shader s_accum_direct_msaa[1];
     ref_shader s_mark_msaa_edges;
-    ref_shader s_accum_point_msaa[8];
-    ref_shader s_accum_spot_msaa[8];
-    ref_shader s_accum_reflected_msaa[8];
-    ref_shader s_accum_volume_msaa[8];
+    ref_shader s_accum_point_msaa[1];
+    ref_shader s_accum_spot_msaa[1];
+    ref_shader s_accum_reflected_msaa[1];
+    ref_shader s_accum_volume_msaa[1];
 
     // Screen Space Shaders Stuff
     ref_shader s_ssfx_rain;
@@ -250,7 +250,7 @@ private:
     ref_geom g_aa_blur;
     ref_geom g_aa_AA;
     ref_shader s_combine;
-    ref_shader s_combine_msaa[8];
+    ref_shader s_combine_msaa[1];
     ref_shader s_combine_volumetric;
 
 public:

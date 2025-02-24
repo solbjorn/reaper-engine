@@ -415,14 +415,10 @@ void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
     static constexpr WORD IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
     u32 vBase, iBase;
 
-    Fcolor C;
-    C.set(c);
-    C.mul_rgb(0.75);
-    u32 c1 = C.get();
+    const u32 c1 = Fcolor(c).mul_rgb(0.75).get();
 
     int k;
     FVF::L* pv;
-    WORD* i;
     _VertexStream* Stream = &RCache.Vertex;
     _IndexStream* StreamI = &RCache.Index;
 
@@ -442,7 +438,7 @@ void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
     pv++;
     Stream->Unlock(6, vs_L->vb_stride);
 
-    i = StreamI->Lock(24, iBase);
+    u16* i = StreamI->Lock(24, iBase);
     for (k = 0; k < 24; k++, i++)
         *i = IT[k];
     StreamI->Unlock(24);

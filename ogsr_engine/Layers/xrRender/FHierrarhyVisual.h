@@ -8,10 +8,9 @@
 
 class FHierrarhyVisual : public dxRender_Visual
 {
-    BOOL bDontDelete;
-
 public:
     xr_vector<dxRender_Visual*> children;
+    BOOL bDontDelete;
 
     FHierrarhyVisual();
     virtual ~FHierrarhyVisual();

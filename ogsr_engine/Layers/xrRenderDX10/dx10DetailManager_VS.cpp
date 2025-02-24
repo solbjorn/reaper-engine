@@ -213,7 +213,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     }
                 }
 
-                // flush if nessecary
+                // flush if necessary
                 if (dwBatch)
                 {
                     Device.Statistic->RenderDUMP_DT_Count += dwBatch;

@@ -5,7 +5,6 @@
 
 #include "light_package.h"
 #include "light_smapvis.h"
-#include "light_GI.h"
 
 extern Fvector4 ps_ssfx_volumetric;
 
@@ -54,10 +53,6 @@ public:
     float attenuation2; // Quadratic attenuation
 
     light* omnipart[6];
-    xr_vector<light_indirect> indirect;
-#ifdef DEBUG
-    u32 indirect_photons;
-#endif
 
     smapvis svis; // used for 6-cubemap faces
 
@@ -150,7 +145,6 @@ public:
     virtual IRender_Light* dcast_Light() { return this; }
 
     vis_data& get_homdata();
-    void gi_generate();
     void xform_calc();
     void vis_prepare();
     void vis_update();

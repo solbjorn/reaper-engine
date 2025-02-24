@@ -7,7 +7,7 @@ BOOL bShadersXrExport{};
 
 void CResourceManager::OnDeviceDestroy(BOOL)
 {
-    if (RDEVICE.b_is_Ready)
+    if (Device.b_is_Ready)
         return;
 
     m_textures_description.UnLoad();
@@ -26,7 +26,7 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 
 void CResourceManager::OnDeviceCreate()
 {
-    if (!RDEVICE.b_is_Ready)
+    if (!Device.b_is_Ready)
         return;
 
     // scripting

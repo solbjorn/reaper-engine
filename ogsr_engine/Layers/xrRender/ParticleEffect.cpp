@@ -297,7 +297,7 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     const Fvector& T = dir;
     Fvector R;
 
-    // R.crossproduct(T,RDEVICE.vCameraDirection).normalize_safe();
+    // R.crossproduct(T,Device.vCameraDirection).normalize_safe();
 
     __m128 _t, _t1, _t2, _r, _r1, _r2;
 
@@ -306,8 +306,8 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     _t = _mm_load_ss((float*)&T.x);
     _t = _mm_loadh_pi(_t, (__m64*)&T.y);
 
-    _r = _mm_load_ss((float*)&RDEVICE.vCameraDirection.x);
-    _r = _mm_loadh_pi(_r, (__m64*)&RDEVICE.vCameraDirection.y);
+    _r = _mm_load_ss((float*)&Device.vCameraDirection.x);
+    _r = _mm_loadh_pi(_r, (__m64*)&Device.vCameraDirection.y);
 
     _t1 = _mm_shuffle_ps(_t, _t, _MM_SHUFFLE(0, 3, 1, 2));
     _t2 = _mm_shuffle_ps(_t, _t, _MM_SHUFFLE(2, 0, 1, 3));
@@ -360,14 +360,14 @@ ICF void magnitude_sse(Fvector& vec, float& res)
     _mm_store_ss((float*)&res, tv);
 }
 
-void ParticleRenderStream(CParticleEffect& pPE, PAPI::Particle* particles, FVF::LIT* pv, u32 p_from, u32 p_to)
+static void ParticleRenderStream(CParticleEffect& pPE, PAPI::Particle* particles, FVF::LIT* pv, u32 p_to)
 {
     float sina = 0.0f, cosa = 0.0f;
     // Xottab_DUTY: changed angle to be float instead of DWORD
     // But it must be 0xFFFFFFFF or otherwise some particles won't play
     float angle = float(0xFFFFFFFF); // XXX: check if we can replace with flt_max
 
-    for (u32 i = p_from; i < p_to; i++)
+    for (u32 i = 0; i < p_to; i++)
     {
         PAPI::Particle& m = particles[i];
         Fvector2 lt, rb;
@@ -471,11 +471,11 @@ void ParticleRenderStream(CParticleEffect& pPE, PAPI::Particle* particles, FVF::
             {
                 Fvector p;
                 pPE.m_XFORM.transform_tiny(p, m.pos);
-                FillSprite(pv, RDEVICE.vCameraTop, RDEVICE.vCameraRight, p, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
+                FillSprite(pv, Device.vCameraTop, Device.vCameraRight, p, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
             }
             else
             {
-                FillSprite(pv, RDEVICE.vCameraTop, RDEVICE.vCameraRight, m.pos, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
+                FillSprite(pv, Device.vCameraTop, Device.vCameraRight, m.pos, lt, rb, r_x, r_y, color_rgba_f(m.colorR, m.colorG, m.colorB, m.colorA), sina, cosa);
             }
         }
     }
@@ -496,7 +496,7 @@ void CParticleEffect::Render(float)
             FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
             FVF::LIT* pv = pv_start;
 
-            ParticleRenderStream(*this, particles, pv, 0, p_cnt);
+            ParticleRenderStream(*this, particles, pv, p_cnt);
 
             dwCount = p_cnt << 2;
 
@@ -507,8 +507,8 @@ void CParticleEffect::Render(float)
                 Fmatrix FTold = Device.mFullTransform;
                 if (GetHudMode())
                 {
-                    RDEVICE.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                                      g_pGamePersistent->Environment().CurrentEnv->far_plane);
+                    Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
+                                                     g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
                     Device.mFullTransform.mul(Device.mProject, Device.mView);
                     RCache.set_xform_project(Device.mProject);

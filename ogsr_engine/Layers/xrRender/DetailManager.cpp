@@ -411,8 +411,8 @@ void CDetailManager::run_async()
 
         Fvector EYE = Device.vCameraPosition;
 
-        int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-        int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+        const int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+        const int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
         Device.Statistic->RenderDUMP_DT_Cache.Begin();
         cache_Update(s_x, s_z, EYE);

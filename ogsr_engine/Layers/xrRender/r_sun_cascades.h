@@ -16,10 +16,9 @@ struct cascade
 {
     cascade() : reset_chain(false) {}
 
-    u32 cascade_ind;
-
     xr_vector<ray> rays;
 
+    u32 cascade_ind;
     float size;
     float bias;
     bool reset_chain;

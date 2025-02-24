@@ -15,10 +15,10 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     // early out.
     // check if the info is still relevant
     // skip all the computations - assume nothing changes in a small period of time :)
-    if (RDEVICE.dwTimeGlobal == UCalc_Time)
+    if (Device.dwTimeGlobal == UCalc_Time)
         return; // early out for "fast" update
 
-    if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
+    if (!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
         return; // early out for "slow" update
 
     std::scoped_lock UCalc_Lock(UCalc_Mutex);
@@ -32,18 +32,18 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     // here we have either:
     //	1:	timeout elapsed
     //	2:	exact computation required
-    UCalc_Time = RDEVICE.dwTimeGlobal;
+    UCalc_Time = Device.dwTimeGlobal;
 
     // exact computation
     // Calculate bones
 #ifdef DEBUG
-    RDEVICE.Statistic->Animation.Begin();
+    Device.Statistic->Animation.Begin();
 #endif
 
     Bone_Calculate(bones->at(iRoot), &Fidentity);
 #ifdef DEBUG
     check_kinematics(this, dbg_name.c_str());
-    RDEVICE.Statistic->Animation.End();
+    Device.Statistic->Animation.End();
 #endif
     VERIFY(LL_GetBonesVisible() != 0);
     // Calculate BOXes/Spheres if needed

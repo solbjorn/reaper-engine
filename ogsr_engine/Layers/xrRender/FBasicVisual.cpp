@@ -137,8 +137,7 @@ static bool overrideShaders(const char* fnT, char* fnS, u32 fnS_size)
 
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {
-    IsHudVisual = ::Render->hud_loading;
-
+    IsHudVisual = RImplementation.hud_loading;
     dbg_name = N;
 
     // header
@@ -148,7 +147,6 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
     {
         R_ASSERT2(hdr.format_version == xrOGF_FormatVersion, "Invalid visual version");
         Type = hdr.type;
-        // if (hdr.shader_id)	shader	= ::Render->getShader	(hdr.shader_id);
         if (hdr.shader_id)
             shader = ::RImplementation.getShader(hdr.shader_id);
         vis.box.set(hdr.bb.min, hdr.bb.max);

@@ -10,11 +10,6 @@ constexpr u32 cullfragments = 4;
 
 void light::vis_prepare()
 {
-#ifdef DEBUG
-    if (int(indirect_photons) != ps_r2_GI_photons)
-        gi_generate();
-#endif
-
     //	. test is sheduled for future	= keep old result
     //	. test time comes :)
     //		. camera inside light volume	= visible,	shedule for 'small' interval
@@ -78,8 +73,8 @@ void light::vis_update()
     if (!vis.pending)
         return;
 
-    u32 frame = Device.dwFrame;
-    u64 fragments = RImplementation.occq_get(vis.query_id);
+    const u32 frame = Device.dwFrame;
+    const auto fragments = RImplementation.occq_get(vis.query_id);
 
     vis.visible = (fragments > cullfragments);
     vis.pending = false;

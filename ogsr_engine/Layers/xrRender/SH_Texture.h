@@ -61,7 +61,7 @@ private:
     void Apply(u32 dwStage) const;
 
     //	Class data
-public: //	Public class members (must be encapsulated furthur)
+public: //	Public class members (must be encapsulated further)
     struct
     {
         u32 bLoaded : 1;
@@ -98,8 +98,9 @@ private:
 struct resptrcode_texture : public resptr_base<CTexture>
 {
     void create(LPCSTR _name);
-    void destroy() { _set(NULL); }
-    shared_str bump_get() { return _get()->m_bumpmap; }
-    bool bump_exist() { return 0 != bump_get().size(); }
+    void destroy() { _set(nullptr); }
+    shared_str bump_get() const { return _get()->m_bumpmap; }
+    bool bump_exist() const { return 0 != bump_get().size(); }
 };
+
 typedef resptr_core<CTexture, resptrcode_texture> ref_texture;

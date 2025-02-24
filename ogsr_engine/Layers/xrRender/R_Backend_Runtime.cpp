@@ -13,7 +13,7 @@ void CBackend::OnFrameEnd()
 
 void CBackend::OnFrameBegin()
 {
-    PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
+    PGO(Msg("PGO:*****frame[%d]*****", Device.dwFrame));
 
     Invalidate();
     //	DX9 sets base rt nd base zb by default

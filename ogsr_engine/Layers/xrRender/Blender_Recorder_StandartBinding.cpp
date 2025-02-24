@@ -143,7 +143,7 @@ static class cl_times final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
-        float t = RDEVICE.fTimeGlobal;
+        float t = Device.fTimeGlobal;
         RCache.set_c(C, t, t * 10, t / 10, _sin(t));
     }
 } binder_times;
@@ -153,7 +153,7 @@ static class cl_eye_P final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
-        Fvector& V = RDEVICE.vCameraPosition;
+        Fvector& V = Device.vCameraPosition;
         RCache.set_c(C, V.x, V.y, V.z, 1.f);
     }
 } binder_eye_P;
@@ -163,7 +163,7 @@ static class cl_eye_D final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
-        Fvector& V = RDEVICE.vCameraDirection;
+        Fvector& V = Device.vCameraDirection;
         RCache.set_c(C, V.x, V.y, V.z, 0.f);
     }
 } binder_eye_D;
@@ -173,7 +173,7 @@ static class cl_eye_N final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
-        Fvector& V = RDEVICE.vCameraTop;
+        Fvector& V = Device.vCameraTop;
         RCache.set_c(C, V.x, V.y, V.z, 0.f);
     }
 } binder_eye_N;
@@ -252,7 +252,7 @@ static class cl_sky_color final : public R_constant_setup
 
 static class cl_screen_res final : public R_constant_setup
 {
-    void setup(R_constant* C) override { RCache.set_c(C, (float)RDEVICE.dwWidth, (float)RDEVICE.dwHeight, 1.0f / (float)RDEVICE.dwWidth, 1.0f / (float)RDEVICE.dwHeight); }
+    void setup(R_constant* C) override { RCache.set_c(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight); }
 } binder_screen_res;
 
 static class cl_screen_params final : public R_constant_setup

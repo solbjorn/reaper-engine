@@ -85,7 +85,7 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
     // calc sphere
     Fbox BB;
     BB.invalidate();
-    for (int v = 0; v < vcnt; v++)
+    for (u32 v = 0; v < vcnt; v++)
         BB.modify(V[v]);
     BB.getsphere(S.P, S.R);
 
@@ -99,7 +99,7 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
     N.set(0, 0, 0);
 
     u32 _cnt = 0;
-    for (int i = 2; i < vcnt; i++)
+    for (u32 i = 2; i < vcnt; i++)
     {
         T.mknormal_non_normalized(poly[0], poly[i - 1], poly[i]);
         float m = T.magnitude();

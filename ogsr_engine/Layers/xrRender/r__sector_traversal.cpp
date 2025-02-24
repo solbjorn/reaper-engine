@@ -54,31 +54,33 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, Fvector& vBa
 }
 
 void CPortalTraverser::fade_portal(CPortal* _p, float ssa) { f_portals.emplace_back(_p, ssa); }
+
 void CPortalTraverser::initialize()
 {
     f_shader.create("portal");
     f_geom.create(FVF::F_L, RCache.Vertex.Buffer(), 0);
 }
+
 void CPortalTraverser::destroy()
 {
     f_geom.destroy();
     f_shader.destroy();
 }
-ICF bool psort_pred(const std::pair<CPortal*, float>& _1, const std::pair<CPortal*, float>& _2)
-{
-    float d1 = PortalTraverser.i_vBase.distance_to_sqr(_1.first->S.P);
-    float d2 = PortalTraverser.i_vBase.distance_to_sqr(_2.first->S.P);
-    return d2 > d1; // descending, back to front
-}
+
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A, r_ssaLOD_B;
+
 void CPortalTraverser::fade_render()
 {
     if (f_portals.empty())
         return;
 
     // re-sort, back to front
-    std::sort(f_portals.begin(), f_portals.end(), psort_pred);
+    std::sort(f_portals.begin(), f_portals.end(), [](const auto& p1, const auto& p2) {
+        const float d1 = PortalTraverser.i_vBase.distance_to_sqr(p1.first->S.P);
+        const float d2 = PortalTraverser.i_vBase.distance_to_sqr(p2.first->S.P);
+        return d2 > d1; // descending, back to front
+    });
 
     // calc poly-count
     u32 _pcount = 0;

@@ -108,7 +108,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         // Open file
         string_path cname;
-        strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
         FS.update_path(cname, "$game_shaders$", cname);
 
         // duplicate and zero-terminate
@@ -126,7 +126,7 @@ inline T* CResourceManager::CreateShader(const char* name)
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         // Compile
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
+        HRESULT const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
 
         FS.r_close(file);
 
@@ -153,5 +153,5 @@ inline void CResourceManager::DestroyShader(const T* sh)
         return;
     }
 
-    Msg("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
+    Msg("! ERROR: Failed to find compiled shader '%s'", *sh->cName);
 }

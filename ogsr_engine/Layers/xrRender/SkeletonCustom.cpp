@@ -149,7 +149,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
             string_path lod_name;
             LD->r_string(lod_name, sizeof(lod_name));
             //.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
-            m_lod = (dxRender_Visual*)::Render->model_CreateChild(lod_name, NULL);
+            m_lod = (dxRender_Visual*)RImplementation.model_CreateChild(lod_name, NULL);
 
             if (CKinematics* lod_kinematics = dynamic_cast<CKinematics*>(m_lod))
             {
@@ -160,7 +160,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
             //.			VERIFY2			(m_lod->Type==MT_HIERRARHY || m_lod->Type==MT_PROGRESSIVE || m_lod->Type==MT_NORMAL,lod_name.c_str());
             /*
                         strconcat		(name_load, short_name, ":lod:1");
-                        m_lod 			= ::Render->model_CreateChild(name_load,LD);
+                        m_lod 			= RImplementation.model_CreateChild(name_load,LD);
                         VERIFY			(m_lod->Type==MT_SKELETON_GEOMDEF_PM || m_lod->Type==MT_SKELETON_GEOMDEF_ST);
             */
         }
@@ -409,7 +409,7 @@ void CKinematics::Copy(dxRender_Visual* P)
 
     CalculateBones_Invalidate();
 
-    m_lod = (pFrom->m_lod) ? (dxRender_Visual*)::Render->model_Duplicate(pFrom->m_lod) : 0;
+    m_lod = (pFrom->m_lod) ? (dxRender_Visual*)RImplementation.model_Duplicate(pFrom->m_lod) : 0;
 }
 
 void CKinematics::CalculateBones_Invalidate()
@@ -442,7 +442,7 @@ void CKinematics::Depart()
     visimask.zero();
     if (bones)
     {
-        for (u16 b = 0; b < bones->size(); b++)
+        for (u32 b = 0; b < bones->size(); b++)
             visimask.set(b, true);
     }
 
@@ -493,7 +493,7 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 void CKinematics::LL_SetBonesVisible(VisMask mask)
 {
     visimask.zero();
-    for (u16 b = 0; b < bones->size(); b++)
+    for (u32 b = 0; b < bones->size(); b++)
     {
         if (mask.is(b))
         {
@@ -523,7 +523,7 @@ void CKinematics::Visibility_Update()
         {
             // move into invisible list
             children_invisible.push_back(children[c_it]);
-            swap(children[c_it], children.back());
+            std::swap(children[c_it], children.back());
             children.pop_back();
             Update_Visibility = TRUE;
         }
@@ -538,7 +538,7 @@ void CKinematics::Visibility_Update()
         {
             // move into visible list
             children.push_back(children_invisible[_it]);
-            swap(children_invisible[_it], children_invisible.back());
+            std::swap(children_invisible[_it], children_invisible.back());
             children_invisible.pop_back();
             Update_Visibility = TRUE;
         }
@@ -679,7 +679,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
     }
 
     // ok. allocate wallmark
-    intrusive_ptr<CSkeletonWallmark> wm = xr_new<CSkeletonWallmark>(this, parent_xform, shader, cp, RDEVICE.fTimeGlobal);
+    intrusive_ptr<CSkeletonWallmark> wm = xr_new<CSkeletonWallmark>(this, parent_xform, shader, cp, Device.fTimeGlobal);
     wm->m_LocalBounds.set(cp, size * 2.f);
     wm->XFORM()->transform_tiny(wm->m_Bounds.P, cp);
     wm->m_Bounds.R = wm->m_LocalBounds.R;
@@ -707,19 +707,19 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 
 void CKinematics::CalculateWallmarks()
 {
-    if (!wallmarks.empty() && (wm_frame != RDEVICE.dwFrame))
+    if (!wallmarks.empty() && (wm_frame != Device.dwFrame))
     {
-        wm_frame = RDEVICE.dwFrame;
+        wm_frame = Device.dwFrame;
         bool need_remove = false;
         for (SkeletonWMVecIt it = wallmarks.begin(); it != wallmarks.end(); it++)
         {
             intrusive_ptr<CSkeletonWallmark>& wm = *it;
-            float w = (RDEVICE.fTimeGlobal - wm->TimeStart()) / ps_r__WallmarkTTL;
+            float w = (Device.fTimeGlobal - wm->TimeStart()) / ps_r__WallmarkTTL;
             if (w < 1.f)
             {
                 // append wm to WallmarkEngine
-                if (::Render->ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
-                    //::Render->add_SkeletonWallmark	(wm);
+                if (RImplementation.ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
+                    // RImplementation.add_SkeletonWallmark	(wm);
                     ::RImplementation.add_SkeletonWallmark(wm);
             }
             else
@@ -750,7 +750,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
     for (u32 f_idx = 0; f_idx < wm->m_Faces.size(); f_idx++)
     {
         CSkeletonWallmark::WMFace F = wm->m_Faces[f_idx];
-        float w = (RDEVICE.fTimeGlobal - wm->TimeStart()) / ps_r__WallmarkTTL;
+        float w = (Device.fTimeGlobal - wm->TimeStart()) / ps_r__WallmarkTTL;
         for (u32 k = 0; k < 3; k++)
         {
             Fvector P;

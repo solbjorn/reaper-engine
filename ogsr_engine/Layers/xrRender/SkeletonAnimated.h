@@ -30,8 +30,8 @@ public:
     u32 mem_usage()
     {
         u32 sz = sizeof(*this);
-        for (BlendSVecIt it = Blend.begin(); it != Blend.end(); it++)
-            sz += (*it)->mem_usage();
+        for (auto& it : Blend)
+            sz += it->mem_usage();
         return sz;
     }
 };
@@ -65,24 +65,23 @@ private:
 public:
     virtual void OnCalculateBones();
 
-public:
 private:
-    u32 Update_LastTime;
+    u32 Update_LastTime{};
 
-    CBlendInstance* blend_instances;
+    CBlendInstance* blend_instances{};
 
     struct SMotionsSlot
     {
         shared_motions motions;
         BoneMotionsVec bone_motions;
     };
-    DEFINE_VECTOR(SMotionsSlot, MotionsSlotVec, MotionsSlotVecIt);
+    using MotionsSlotVec = xr_vector<SMotionsSlot>;
     MotionsSlotVec m_Motions;
 
-    CPartition* m_Partition;
+    CPartition* m_Partition{};
 
-    IBlendDestroyCallback* m_blend_destroy_callback;
-    IUpdateTracksCallback* m_update_tracks_callback;
+    IBlendDestroyCallback* m_blend_destroy_callback{};
+    IUpdateTracksCallback* m_update_tracks_callback{};
     // Blending
     svector<CBlend, MAX_BLENDED_POOL> blend_pool;
     BlendSVec blend_cycles[MAX_PARTS];

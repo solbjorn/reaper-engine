@@ -72,9 +72,9 @@ void CResourceManager::_DeleteState(const SState* state)
 //--------------------------------------------------------------------------------------------------------------
 SPass* CResourceManager::_CreatePass(const SPass& proto)
 {
-    for (u32 it = 0; it < v_passes.size(); it++)
-        if (v_passes[it]->equal(proto))
-            return v_passes[it];
+    for (SPass* pass : v_passes)
+        if (pass->equal(proto))
+            return pass;
 
     SPass* P = v_passes.emplace_back(xr_new<SPass>());
     P->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -107,27 +107,27 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
     int skinning = -1;
     string_path name;
     xr_strcpy(name, _name);
-    if (0 == ::Render->m_skinning)
+    if (0 == RImplementation.m_skinning)
     {
         xr_strcat(name, "_0");
         skinning = 0;
     }
-    if (1 == ::Render->m_skinning)
+    if (1 == RImplementation.m_skinning)
     {
         xr_strcat(name, "_1");
         skinning = 1;
     }
-    if (2 == ::Render->m_skinning)
+    if (2 == RImplementation.m_skinning)
     {
         xr_strcat(name, "_2");
         skinning = 2;
     }
-    if (3 == ::Render->m_skinning)
+    if (3 == RImplementation.m_skinning)
     {
         xr_strcat(name, "_3");
         skinning = 3;
     }
-    if (4 == ::Render->m_skinning)
+    if (4 == RImplementation.m_skinning)
     {
         xr_strcat(name, "_4");
         skinning = 4;
@@ -158,7 +158,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         }
 
         string_path cname;
-        strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*_name*/ shName, ".vs");
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*_name*/ shName, ".vs");
         FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
@@ -176,7 +176,8 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         if (strstr(Core.Params, "-shadersdbg"))
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_vs);
+        HRESULT const _hr =
+            RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_vs);
 
         FS.r_close(file);
 
@@ -216,21 +217,21 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
 {
     string_path name;
     xr_strcpy(name, _name);
-    if (0 == ::Render->m_MSAASample)
+    if (0 == RImplementation.m_MSAASample)
         xr_strcat(name, "_0");
-    if (1 == ::Render->m_MSAASample)
+    if (1 == RImplementation.m_MSAASample)
         xr_strcat(name, "_1");
-    if (2 == ::Render->m_MSAASample)
+    if (2 == RImplementation.m_MSAASample)
         xr_strcat(name, "_2");
-    if (3 == ::Render->m_MSAASample)
+    if (3 == RImplementation.m_MSAASample)
         xr_strcat(name, "_3");
-    if (4 == ::Render->m_MSAASample)
+    if (4 == RImplementation.m_MSAASample)
         xr_strcat(name, "_4");
-    if (5 == ::Render->m_MSAASample)
+    if (5 == RImplementation.m_MSAASample)
         xr_strcat(name, "_5");
-    if (6 == ::Render->m_MSAASample)
+    if (6 == RImplementation.m_MSAASample)
         xr_strcat(name, "_6");
-    if (7 == ::Render->m_MSAASample)
+    if (7 == RImplementation.m_MSAASample)
         xr_strcat(name, "_7");
     LPSTR N = LPSTR(name);
     map_PS::iterator I = m_ps.find(N);
@@ -255,7 +256,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
 
         // Open file
         string_path cname;
-        strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*_name*/ shName, ".ps");
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*_name*/ shName, ".ps");
         FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
@@ -273,7 +274,8 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         if (strstr(Core.Params, "-shadersdbg"))
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_ps);
+        HRESULT const _hr =
+            RImplementation.shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_ps);
 
         FS.r_close(file);
 
@@ -316,7 +318,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
 
         // Open file
         string_path cname;
-        strconcat(sizeof(cname), cname, ::Render->getShaderPath(), name, ".gs");
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), name, ".gs");
         FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
@@ -332,7 +334,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         if (strstr(Core.Params, "-shadersdbg"))
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs);
+        HRESULT const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs);
 
         FS.r_close(file);
 

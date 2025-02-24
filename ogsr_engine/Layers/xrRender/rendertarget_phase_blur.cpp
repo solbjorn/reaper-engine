@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-IC bool SortLights(light* i, light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); }
-
 void CRenderTarget::phase_blur()
 {
     // Get common data
@@ -652,15 +650,30 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     HW.pContext->CopyResource(rt_ssfx_sss->pTexture->surface_get(), rt_ssfx_temp2->pTexture->surface_get());
-};
+}
+
+static constexpr ptrdiff_t __declspec(align(16)) zeros[16 / sizeof(ptrdiff_t)]{};
+
+static ICF void memset128(void* dst, const void* src, size_t size)
+{
+    __m128i* cdst = reinterpret_cast<__m128i*>(dst);
+    const __m128i* csrc = reinterpret_cast<const __m128i*>(src);
+
+    do
+    {
+        _mm_store_si128(cdst, _mm_load_si128(csrc));
+        cdst++;
+        size -= 16;
+    } while (size >= 16);
+}
 
 void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 {
     constexpr const char* strLights{"lights_data"};
-    static light* LightSlot[8];
+    static __declspec(align(16)) light* LightSlot[8];
     static u32 sss_currentframe;
 
-    if (Device.dwPrecacheFrame > 2)
+    if (Device.dwPrecacheFrame > 2) [[unlikely]]
     {
         memset(LightSlot, 0, sizeof(LightSlot));
         sss_currentframe = 0;
@@ -708,8 +721,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 
     if (Lights_Array)
     {
-        for (int slot = 0; slot < 8; slot++)
-            Lights_Array[slot].set(0, 0, 0, 0);
+        memset128(Lights_Array, zeros, 8 * sizeof(*Lights_Array));
 
         xr_vector<light*> LightsSort;
         bool CheckPackage = true;
@@ -759,12 +771,11 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
             }
 
             // Sort Distance
-            std::sort(LightsSort.begin(), LightsSort.end(), SortLights);
+            std::sort(LightsSort.begin(), LightsSort.end(), [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
 
             for (int x = 0; x < LightsSort.size(); x++)
             {
                 light* L = LightsSort[x];
-
                 bool Add = true;
                 int FreeSlot = -1;
 
@@ -849,7 +860,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
                     float Atte = 1.0f - (clampr((Dist - LightSlot[slot]->range * 1.9f) / -(LightSlot[slot]->range / 2.0f), 0.f, 1.f));
 
                     // ( Reminder ) The value is inverted ( 1.0 = Fadeout ~ 0.0 = Full Visible )
-                    Lights_Array[slot].set(L_pos.x, L_pos.y, L_pos.z, std::max(MaxAtte, Atte));
+                    Lights_Array[slot].set(L_pos, std::max(MaxAtte, Atte));
                 }
             }
         }

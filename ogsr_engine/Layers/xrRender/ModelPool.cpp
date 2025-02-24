@@ -150,12 +150,10 @@ void CModelPool::Destroy()
     }
 
     // Base/Reference
-    xr_vector<ModelDef>::iterator I = Models.begin();
-    xr_vector<ModelDef>::iterator E = Models.end();
-    for (; I != E; I++)
+    for (auto& md : Models)
     {
-        I->model->Release();
-        xr_delete(I->model);
+        md.model->Release();
+        xr_delete(md.model);
     }
 
     Models.clear();
@@ -264,7 +262,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 
         // 3. If found - return (cloned) reference
         dxRender_Visual* Model = Instance_Duplicate(Base);
-        Registry.insert(mk_pair(Model, low_name));
+        Registry.emplace(Model, low_name);
 
         refresh_prefetch(low_name, Model->IsHudVisual);
 
@@ -336,7 +334,7 @@ void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
         if (it != Registry.end())
         {
             // Registry entry found - move it to pool
-            Pool.insert(mk_pair(it->second, V));
+            Pool.emplace(it->second, V);
         }
         else
         {
@@ -475,11 +473,9 @@ void CModelPool::Prefetch()
             fname.sprintf("%s.ogf", low_name.c_str());
             if (FS.exist("$game_meshes$", fname.c_str()))
             {
-                ::Render->hud_loading = val2 == 2.f;
-                // if (::Render->hud_loading)
-                //     Msg("--[%s] loading hud model [%s]", __FUNCTION__, fname.c_str());
+                RImplementation.hud_loading = val2 == 2.f;
                 dxRender_Visual* V = Create(low_name.c_str());
-                ::Render->hud_loading = false;
+                RImplementation.hud_loading = false;
                 Delete(V, FALSE);
                 cnt++;
             }

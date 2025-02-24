@@ -180,7 +180,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
         cache_vCount = vCount;
         cache_vOffset = vOffset;
 
-        RDEVICE.Statistic->RenderDUMP_SKIN.Begin();
+        Device.Statistic->RenderDUMP_SKIN.Begin();
         if (*Vertices1W)
         {
             Skin1W(Dest, // dest
@@ -216,7 +216,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
         else
             R_ASSERT2(0, "unsupported soft rendering");
 
-        RDEVICE.Statistic->RenderDUMP_SKIN.End();
+        Device.Statistic->RenderDUMP_SKIN.End();
         _VS.Unlock(vCount, hGeom->vb_stride);
     }
 
@@ -242,7 +242,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     dwVertCount = data->r_u32();
 
     RenderMode = RM_SKINNING_SOFT;
-    Render->shader_option_skinning(-1);
+    RImplementation.shader_option_skinning(-1);
 
     switch (dwVertType)
     {
@@ -266,21 +266,21 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
             // HW- single bone
             RenderMode = RM_SINGLE;
             RMS_boneid = *bids.begin();
-            Render->shader_option_skinning(0);
+            RImplementation.shader_option_skinning(0);
         }
         else if (sw_bones_cnt <= hw_bones_cnt)
         {
             // HW- one weight
             RenderMode = RM_SKINNING_1B;
             RMS_bonecount = sw_bones_cnt + 1;
-            Render->shader_option_skinning(1);
+            RImplementation.shader_option_skinning(1);
         }
         else
         {
             // software
             // crc = crc32(data->pointer(), size);
             Vertices1W.create(dwVertCount, (vertBoned1W*)data->pointer());
-            Render->shader_option_skinning(-1);
+            RImplementation.shader_option_skinning(-1);
         }
     }
     break;
@@ -307,14 +307,14 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
             // HW- two weights
             RenderMode = RM_SKINNING_2B;
             RMS_bonecount = sw_bones_cnt + 1;
-            Render->shader_option_skinning(2);
+            RImplementation.shader_option_skinning(2);
         }
         else
         {
             // software
             // crc = crc32(data->pointer(), size);
             Vertices2W.create(dwVertCount, (vertBoned2W*)data->pointer());
-            Render->shader_option_skinning(-1);
+            RImplementation.shader_option_skinning(-1);
         }
     }
     break;
@@ -339,13 +339,13 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         {
             RenderMode = RM_SKINNING_3B;
             RMS_bonecount = sw_bones_cnt + 1;
-            Render->shader_option_skinning(3);
+            RImplementation.shader_option_skinning(3);
         }
         else
         {
             // crc = crc32(data->pointer(), size);
             Vertices3W.create(dwVertCount, (vertBoned3W*)data->pointer());
-            Render->shader_option_skinning(-1);
+            RImplementation.shader_option_skinning(-1);
         }
     }
     break;
@@ -371,13 +371,13 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         {
             RenderMode = RM_SKINNING_4B;
             RMS_bonecount = sw_bones_cnt + 1;
-            Render->shader_option_skinning(4);
+            RImplementation.shader_option_skinning(4);
         }
         else
         {
             // crc = crc32(data->pointer(), size);
             Vertices4W.create(dwVertCount, (vertBoned4W*)data->pointer());
-            Render->shader_option_skinning(-1);
+            RImplementation.shader_option_skinning(-1);
         }
     }
     break;

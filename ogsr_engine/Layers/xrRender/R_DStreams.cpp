@@ -142,7 +142,6 @@ void _IndexStream::Create()
     bufferDesc.Usage = D3D_USAGE_DYNAMIC;
     bufferDesc.BindFlags = D3D_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-    bufferDesc.MiscFlags = 0;
 
     R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pIB));
     HW.stats_manager.increment_stats_ib(pIB);

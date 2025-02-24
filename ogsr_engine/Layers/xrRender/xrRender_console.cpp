@@ -119,10 +119,6 @@ float ps_r2_ls_psm_kernel = .7f; // r2-only
 float ps_r2_ls_ssm_kernel = .7f; // r2-only
 float ps_r2_ls_bloom_threshold = 1.f; // r2-only
 float ps_r2_mblur = .0f; // .5f
-int ps_r2_GI_depth = 1; // 1..5
-int ps_r2_GI_photons = 16; // 8..64
-float ps_r2_GI_clip = EPS_L; // EPS
-float ps_r2_GI_refl = .9f; // .9f
 float ps_r2_ls_depth_scale = 1.00001f; // 1.00001f
 
 float ps_r2_ls_depth_bias = -0.001f;
@@ -759,14 +755,6 @@ void xrRender_initconsole()
     //////////other
     CMD3(CCC_Mask, "r2_mblur_enabled", &ps_r2_ls_flags, R2FLAG_MBLUR);
     CMD3(CCC_Token, "r2_smaa", &ps_smaa_quality, smaa_quality_token);
-
-#ifdef DEBUG
-    CMD3(CCC_Mask, "r2_gi", &ps_r2_ls_flags, R2FLAG_GI);
-    CMD4(CCC_Float, "r2_gi_clip", &ps_r2_GI_clip, EPS, 0.1f);
-    CMD4(CCC_Integer, "r2_gi_depth", &ps_r2_GI_depth, 1, 5);
-    CMD4(CCC_Integer, "r2_gi_photons", &ps_r2_GI_photons, 8, 256);
-    CMD4(CCC_Float, "r2_gi_refl", &ps_r2_GI_refl, EPS_L, 0.99f);
-#endif
 
     // Shader param stuff
     tw2_max.set(100.f, 100.f, 100.f, 100.f);

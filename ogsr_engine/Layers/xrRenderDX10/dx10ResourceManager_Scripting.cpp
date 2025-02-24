@@ -550,7 +550,7 @@ void CResourceManager::LS_Load()
                                           value("incr", int(D3DSTENCILOP_INCR)), value("decr", int(D3DSTENCILOP_DECR))]];
 
     // load shaders
-    xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
+    xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);
     VERIFY(folder);
     for (u32 it = 0; it < folder->size(); it++)
     {
@@ -561,7 +561,7 @@ void CResourceManager::LS_Load()
         *strext(namesp) = 0;
         if (0 == namesp[0])
             xr_strcpy(namesp, "_G");
-        strconcat(sizeof(fn), fn, ::Render->getShaderPath(), (*folder)[it]);
+        strconcat(sizeof(fn), fn, RImplementation.getShaderPath(), (*folder)[it]);
         FS.update_path(fn, "$game_shaders$", fn);
         do_file(fn, namesp);
     }

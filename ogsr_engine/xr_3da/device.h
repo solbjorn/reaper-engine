@@ -252,13 +252,8 @@ private:
 };
 
 extern CRenderDevice Device;
-
-#define RDEVICE Device
-
 extern float refresh_rate;
-
 extern bool g_bBenchmark;
-
 extern xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 class CLoadScreenRenderer : public pureRender

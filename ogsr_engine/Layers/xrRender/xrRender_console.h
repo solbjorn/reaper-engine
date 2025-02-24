@@ -125,10 +125,6 @@ extern float ps_r2_ls_dsm_kernel; // r2-only
 extern float ps_r2_ls_psm_kernel; // r2-only
 extern float ps_r2_ls_ssm_kernel; // r2-only
 extern float ps_r2_mblur; // .5f
-extern int ps_r2_GI_depth; // 1..5
-extern int ps_r2_GI_photons; // 8..256
-extern float ps_r2_GI_clip; // EPS
-extern float ps_r2_GI_refl; // .9f
 extern float ps_r2_ls_depth_scale; // 1.0f
 extern float ps_r2_ls_depth_bias; // -0.0001f
 extern float ps_r2_ls_squality; // 1.0f
@@ -189,9 +185,7 @@ enum
     R2FLAG_SUN_DETAILS = (1 << 3),
     R2FLAG_TONEMAP = (1 << 4),
     /* 1 << 5, */
-#ifdef DEBUG
-    R2FLAG_GI = (1 << 6),
-#endif
+    /* 1 << 6, */
     /* 1 << 7, */
 #ifdef DEBUG
     R2FLAG_GLOBALMATERIAL = (1 << 8),

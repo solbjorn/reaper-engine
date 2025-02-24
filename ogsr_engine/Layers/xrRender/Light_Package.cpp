@@ -8,13 +8,12 @@ void light_Package::clear()
     v_shadowed.clear();
 }
 
-IC bool pred_light_cmp(light* _1, light* _2)
-{
-    return _1->range > _2->range; // sort by range
-}
-
 void light_Package::sort()
 {
+    const auto pred_light_cmp = [](const light* l1, const light* l2) {
+        return l1->range > l2->range; // sort by range
+    };
+
     // resort lights (pending -> at the end), maintain stable order
     std::stable_sort(v_point.begin(), v_point.end(), pred_light_cmp);
     std::stable_sort(v_spot.begin(), v_spot.end(), pred_light_cmp);

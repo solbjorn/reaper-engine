@@ -2,8 +2,8 @@
 #define r4_R_sun_support_included
 #pragma once
 
-const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
-const u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
+constexpr u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
+constexpr u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
 
 template <bool _debug>
 class FixedConvexVolume

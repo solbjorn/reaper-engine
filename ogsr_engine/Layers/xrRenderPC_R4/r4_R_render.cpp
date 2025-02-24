@@ -543,17 +543,15 @@ void CRender::render_forward()
 
     //******* Main render - second order geometry (the one, that doesn't support deffering)
     //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
-    {
-        // level
-        r_pmask(false, true); // enable priority "1"
-        phase = PHASE_NORMAL;
-        render_main(Device.mFullTransform, false); //
-        //	Igor: we don't want to render old lods on next frame.
-        mapLOD.clear();
-        r_dsgraph_render_graph(1); // normal level, secondary priority
-        PortalTraverser.fade_render(); // faded-portals
-        r_dsgraph_render_sorted(); // strict-sorted geoms
-    }
+    // level
+    r_pmask(false, true); // enable priority "1"
+    phase = PHASE_NORMAL;
+    render_main(Device.mFullTransform, false); //
+    //	Igor: we don't want to render old lods on next frame.
+    mapLOD.clear();
+    r_dsgraph_render_graph(1); // normal level, secondary priority
+    PortalTraverser.fade_render(); // faded-portals
+    r_dsgraph_render_sorted(); // strict-sorted geoms
 
     RImplementation.o.distortion = FALSE; // disable distorion
 }
