@@ -53,26 +53,22 @@ void enable_cmd(CConsole* c, LPCSTR cmd)
         icmd->SetEnabled(true);
 }
 
-#pragma optimize("s", on)
 void console_registrator::script_register(lua_State* L)
 {
-    module(L)[def("get_console", &console),
-              class_<CConsole>("CConsole")
-                  .def("disable_command", &disable_cmd)
-                  .def("enable_command", &enable_cmd)
-                  .def("execute", ((void(CConsole::*)(LPCSTR)) & CConsole::Execute))
-                  .def("execute", ((void(CConsole::*)(LPCSTR, LPCSTR)) & CConsole::Execute))
-                  .def("execute_script", &CConsole::ExecuteScript)
-                  .def("show", &CConsole::Show)
-                  .def("hide", &CConsole::Hide)
-                  //		.def("save",						&CConsole::Save)
-                  .def("get_string", &CConsole::GetString)
-                  .def("get_integer", &get_console_integer)
-                  .def("get_bool", &get_console_bool)
-                  .def("get_float", &get_console_float)
-                  .def("get_token", &CConsole::GetToken)
-                  .def_readonly("visible", &CConsole::bVisible)
-              //		.def("",				&CConsole::)
-
-    ];
+    module(L)[(def("get_console", &console),
+               class_<CConsole>("CConsole")
+                   .def("disable_command", &disable_cmd)
+                   .def("enable_command", &enable_cmd)
+                   .def("execute", ((void(CConsole::*)(LPCSTR)) & CConsole::Execute))
+                   .def("execute", ((void(CConsole::*)(LPCSTR, LPCSTR)) & CConsole::Execute))
+                   .def("execute_script", &CConsole::ExecuteScript)
+                   .def("show", &CConsole::Show)
+                   .def("hide", &CConsole::Hide)
+                   //		.def("save",						&CConsole::Save)
+                   .def("get_string", &CConsole::GetString)
+                   .def("get_integer", &get_console_integer)
+                   .def("get_bool", &get_console_bool)
+                   .def("get_float", &get_console_float)
+                   .def("get_token", &CConsole::GetToken)
+                   .def_readonly("visible", &CConsole::bVisible))];
 }

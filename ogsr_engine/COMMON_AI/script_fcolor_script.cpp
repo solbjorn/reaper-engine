@@ -11,8 +11,6 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
-
 template <>
 void CScriptFcolor::script_register(lua_State* L)
 {

@@ -30,7 +30,6 @@ void unfreeze(CPhysicsShell* self)
     self->SetStatic();
 }
 
-#pragma optimize("s", on)
 void CPhysicsShell::script_register(lua_State* L)
 {
     module(L)[class_<CPhysicsShell>("physics_shell")
@@ -62,8 +61,7 @@ void CPhysicsShell::script_register(lua_State* L)
                   .def("EnableCollision", &CPhysicsShell::EnableCollision)
                   .def("Disable", &CPhysicsShell::Disable)
                   .def("Enable", &CPhysicsShell::Enable)
-                  .def("CollideAll", &CPhysicsShell::CollideAll)
-    ];
+                  .def("CollideAll", &CPhysicsShell::CollideAll)];
 }
 
 void CPhysicsElement::script_register(lua_State* L)

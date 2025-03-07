@@ -111,8 +111,8 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     // light_render->set_flare(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flUseFlare));
     // light_render->set_lsf_params(lamp->m_speed, lamp->m_amount, lamp->m_smap_jitter);
 
-    //Simp: для поинта не вижу смысла по дефолту включать волюметрик, ибо один поинт - это шесть отдельных источников света направленных в разные стороны. Слишком накладно по 6 волюметриков на светильник.
-    //Да и вообще лучше придумать настройки чтоб каждую лампу индивидуально настроить можно было. Пока только настройку через скрипты добавил.
+    // Simp: для поинта не вижу смысла по дефолту включать волюметрик, ибо один поинт - это шесть отдельных источников света направленных в разные стороны. Слишком накладно по 6
+    // волюметриков на светильник. Да и вообще лучше придумать настройки чтоб каждую лампу индивидуально настроить можно было. Пока только настройку через скрипты добавил.
     light_render->set_volumetric(lamp->flags.is(CSE_ALifeObjectHangingLamp::flVolumetricLight) /*|| light_render->get_type() == IRender_Light::SPOT*/);
     light_render->set_volumetric_quality(1.f);
     light_render->set_volumetric_intensity(0.1f);
@@ -274,7 +274,7 @@ void CHangingLamp::UpdateCL()
         }
     }
 
-    //Эффект мигания при выбросе
+    // Эффект мигания при выбросе
     bool light_status{lights_turned_on};
     const float surge_progress = shader_exports.get_pda_params().x;
 
@@ -412,7 +412,6 @@ void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit)
     // light_render->set_lsf_params(_speed, _amount, _jit);
 }
 
-#pragma optimize("s", on)
 void CHangingLamp::script_register(lua_State* L)
 {
     luabind::module(L)[luabind::class_<CHangingLamp, CGameObject>("hanging_lamp")
@@ -424,6 +423,5 @@ void CHangingLamp::script_register(lua_State* L)
                            .def("set_volumetric_quality", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_quality(val); })
                            .def("set_volumetric_intensity", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_intensity(val); })
                            .def("set_volumetric_distance", [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_distance(val); })
-                           .def_readonly("health", &CHangingLamp::fHealth)
-    ];
+                           .def_readonly("health", &CHangingLamp::fHealth)];
 }

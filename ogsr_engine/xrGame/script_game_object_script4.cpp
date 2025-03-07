@@ -158,13 +158,11 @@ u32 obj_level_id(CScriptGameObject* O) { return get_level_id(O->object().ai_loca
 
 LPCSTR obj_level_name(CScriptGameObject* O) { return get_level_name_by_id(obj_level_id(O)); }
 
-#pragma optimize("s", on)
 using namespace luabind;
 
 class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&& instance)
 {
     return std::move(instance)
-        //#pragma message("+ game_object.extensions export begin")
         // alpet: export object cast
         .def("get_game_object", &CScriptGameObject::object)
         .def("get_alife_object", &CScriptGameObject::alife_object)
@@ -225,10 +223,7 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
         .property("is_alive", &get_obj_alive)
         .property("conditions", &get_obj_conditions)
         .property("level_id", &obj_level_id)
-        .property("level_name", &obj_level_name)
-
-        //#pragma message("+ game_object.extensions export end")
-        ;
+        .property("level_name", &obj_level_name);
 }
 
-void script_register_game_object4(lua_State* L) { module(L)[def("get_actor_obj", &Actor), def("get_level_id", &get_level_id)]; }
+void script_register_game_object4(lua_State* L) { module(L)[(def("get_actor_obj", &Actor), def("get_level_id", &get_level_id))]; }

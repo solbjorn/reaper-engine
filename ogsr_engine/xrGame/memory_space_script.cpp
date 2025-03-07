@@ -50,10 +50,9 @@ Fvector CDangerObject__position(const CDangerObject* self)
     return (self->position());
 }
 
-#pragma optimize("s", on)
 void CMemoryInfo::script_register(lua_State* L)
 {
-    module(L)[
+    module(L)[(
 #ifdef USE_ORIENTATION
         class_<SRotation>("rotation").def_readonly("yaw", &SRotation::yaw).def_readonly("pitch", &SRotation::pitch),
 #endif
@@ -120,18 +119,13 @@ void CMemoryInfo::script_register(lua_State* L)
             .def("object", &not_yet_visible_object),
 
         class_<CDangerObject>("danger_object")
-            .enum_("danger_type")[value("bullet_ricochet", CDangerObject::eDangerTypeBulletRicochet), 
-                                  value("attack_sound", CDangerObject::eDangerTypeAttackSound),
-                                  value("entity_attacked", CDangerObject::eDangerTypeEntityAttacked), 
-                                  value("entity_death", CDangerObject::eDangerTypeEntityDeath),
-                                  value("entity_corpse", CDangerObject::eDangerTypeFreshEntityCorpse), 
-                                  value("attacked", CDangerObject::eDangerTypeAttacked),
-                                  value("grenade", CDangerObject::eDangerTypeGrenade), 
-                                  value("enemy_sound", CDangerObject::eDangerTypeEnemySound)]
+            .enum_("danger_type")[(value("bullet_ricochet", CDangerObject::eDangerTypeBulletRicochet), value("attack_sound", CDangerObject::eDangerTypeAttackSound),
+                                   value("entity_attacked", CDangerObject::eDangerTypeEntityAttacked), value("entity_death", CDangerObject::eDangerTypeEntityDeath),
+                                   value("entity_corpse", CDangerObject::eDangerTypeFreshEntityCorpse), value("attacked", CDangerObject::eDangerTypeAttacked),
+                                   value("grenade", CDangerObject::eDangerTypeGrenade), value("enemy_sound", CDangerObject::eDangerTypeEnemySound))]
 
-            .enum_("danger_perceive_type")[value("visual", CDangerObject::eDangerPerceiveTypeVisual), 
-                                           value("sound", CDangerObject::eDangerPerceiveTypeSound),
-                                           value("hit", CDangerObject::eDangerPerceiveTypeHit)]
+            .enum_("danger_perceive_type")[(value("visual", CDangerObject::eDangerPerceiveTypeVisual), value("sound", CDangerObject::eDangerPerceiveTypeSound),
+                                            value("hit", CDangerObject::eDangerPerceiveTypeHit))]
 
             .def(const_self == other<CDangerObject>())
             .def("position", &CDangerObject__position)
@@ -139,5 +133,5 @@ void CMemoryInfo::script_register(lua_State* L)
             .def("type", &CDangerObject::type)
             .def("perceive_type", &CDangerObject::perceive_type)
             .def("object", &CDangerObject_object)
-            .def("dependent_object", &CDangerObject_dependent_object)];
+            .def("dependent_object", &CDangerObject_dependent_object))];
 }

@@ -69,14 +69,11 @@ struct CWrapperBase : public T, public luabind::wrap_base
     }
 };
 
-#pragma optimize("s", on)
 void CPureServerObject::script_register(lua_State* L)
 {
-    module(L)[class_<IPureLoadableObject<IReader>>("ipure_alife_load_object"), class_<IPureSavableObject<IWriter>>("ipure_alife_save_object"),
-              class_<IPureSerializeObject<IReader, IWriter>, bases<IPureLoadableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
-              class_<IPureServerObject, IPureSerializeObject<IReader, IWriter>>("ipure_server_object"), class_<CPureServerObject, IPureServerObject>("cpure_server_object")
-              //			.def(		constructor<>())
-    ];
+    module(L)[(class_<IPureLoadableObject<IReader>>("ipure_alife_load_object"), class_<IPureSavableObject<IWriter>>("ipure_alife_save_object"),
+               class_<IPureSerializeObject<IReader, IWriter>, bases<IPureLoadableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
+               class_<IPureServerObject, IPureSerializeObject<IReader, IWriter>>("ipure_server_object"), class_<CPureServerObject, IPureServerObject>("cpure_server_object"))];
 }
 
 void CSE_Abstract::script_register(lua_State* L)
@@ -102,28 +99,10 @@ void CSE_Abstract::script_register(lua_State* L)
                   .def("save_spawn_ini", &save_spawn_ini)];
 }
 
-void CSE_Shape::script_register(lua_State* L)
-{
-    module(L)[class_<CSE_Shape>("cse_shape")
-              //			.def(		constructor<>())
-    ];
-}
+void CSE_Shape::script_register(lua_State* L) { module(L)[class_<CSE_Shape>("cse_shape")]; }
 
-void CSE_Visual::script_register(lua_State* L)
-{
-    module(L)[class_<CSE_Visual>("cse_visual")
-              //			.def(		constructor<>())
-              //			.def(		constructor<LPCSTR>())
-                  .property("visual_name", &CSE_Visual::get_visual, &CSE_Visual::set_visual)
-    ];
-}
+void CSE_Visual::script_register(lua_State* L) { module(L)[class_<CSE_Visual>("cse_visual").property("visual_name", &CSE_Visual::get_visual, &CSE_Visual::set_visual)]; }
 
-void CSE_Motion::script_register(lua_State* L)
-{
-    module(L)[class_<CSE_Motion>("cse_motion")
-              //			.def(		constructor<>())
-              //			.def(		constructor<LPCSTR>())
-    ];
-}
+void CSE_Motion::script_register(lua_State* L) { module(L)[class_<CSE_Motion>("cse_motion")]; }
 
 void CSE_Temporary::script_register(lua_State* L) { module(L)[luabind_class_abstract1(CSE_Temporary, "cse_temporary", CSE_Abstract)]; }

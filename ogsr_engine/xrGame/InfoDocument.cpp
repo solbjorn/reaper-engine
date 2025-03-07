@@ -68,21 +68,21 @@ void CInfoDocument::OnH_A_Chield()
 {
     inherited::OnH_A_Chield();
 
-    //передать информацию содержащуюся в документе
-    //объекту, который поднял документ
-    // CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
+    // передать информацию содержащуюся в документе
+    // объекту, который поднял документ
+    //  CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
     CActor* pInvOwner = smart_cast<CActor*>(H_Parent());
     if (!pInvOwner)
         return;
 
-    //создать и отправить пакет о получении новой информации
+    // создать и отправить пакет о получении новой информации
     for (const auto& it : m_Info)
     {
         NET_Packet P;
         u_EventGen(P, GE_INFO_TRANSFER, H_Parent()->ID());
-        P.w_u16(ID()); //отправитель
-        P.w_stringZ(it.c_str()); //сообщение
-        P.w_u8(1); //добавление сообщения
+        P.w_u16(ID()); // отправитель
+        P.w_stringZ(it.c_str()); // сообщение
+        P.w_u8(1); // добавление сообщения
         u_EventSend(P);
     }
 }
@@ -92,5 +92,5 @@ void CInfoDocument::OnH_B_Independent(bool just_before_destroy) { inherited::OnH
 void CInfoDocument::renderable_Render() { inherited::renderable_Render(); }
 
 using namespace luabind;
-#pragma optimize("s", on)
+
 void CInfoDocument::script_register(lua_State* L) { module(L)[class_<CInfoDocument, CGameObject>("CInfoDocument").def(constructor<>())]; }

@@ -12,7 +12,6 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
 void CUIComboBox::script_register(lua_State* L)
 {
     module(L)[class_<CUIComboBox, CUIWindow>("CUIComboBox")
@@ -24,7 +23,6 @@ void CUIComboBox::script_register(lua_State* L)
                   .def("CurrentID", &CUIComboBox::CurrentID)
                   .def("SetCurrentID", &CUIComboBox::SetItem)
 
-                  //		.def("AddItem",				(void (CUIComboBox::*)(LPCSTR, bool)) CUIComboBox::AddItem)
                   .def("AddItem", (CUIListBoxItem * (CUIComboBox::*)(LPCSTR)) & CUIComboBox::AddItem_)
                   .def("GetText", &CUIComboBox::GetText)];
 }

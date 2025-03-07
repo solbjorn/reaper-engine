@@ -18,11 +18,9 @@ LPCSTR character_name_script(CSE_ALifeTraderAbstract* ta) { return ta->m_charact
 
 void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR name) { ta->m_character_name = name; }
 
-#pragma optimize("s", on)
 void CSE_ALifeTraderAbstract::script_register(lua_State* L)
 {
     module(L)[class_<CSE_ALifeTraderAbstract>("cse_alife_trader_abstract")
-//			.def(		constructor<LPCSTR>())
 #ifdef XRGAME_EXPORTS
                   .def("community", &CSE_ALifeTraderAbstract::CommunityName)
                   .def("profile_name", &profile_name_script)

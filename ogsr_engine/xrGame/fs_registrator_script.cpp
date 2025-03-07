@@ -159,46 +159,46 @@ LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 #include <filesystem>
 namespace stdfs = std::filesystem;
 
-//Путь до папки с движком
+// Путь до папки с движком
 static std::string get_engine_dir() { return stdfs::current_path().string(); }
 
-//Перебор файлов в папке, подкаталоги не учитываются.
+// Перебор файлов в папке, подкаталоги не учитываются.
 static void directory_iterator(const char* dir, const luabind::functor<void>& iterator_func)
 {
     if (!stdfs::exists(dir))
         return;
 
     for (const auto& file : stdfs::directory_iterator(dir))
-        if (stdfs::is_regular_file(file)) //Папки не учитываем
+        if (stdfs::is_regular_file(file)) // Папки не учитываем
             iterator_func(file);
 }
 
-//Перебор файлов в папке включая подкаталоги.
+// Перебор файлов в папке включая подкаталоги.
 static void recursive_directory_iterator(const char* dir, const luabind::functor<void>& iterator_func)
 {
     if (!stdfs::exists(dir))
         return;
 
     for (const auto& file : stdfs::recursive_directory_iterator(dir))
-        if (stdfs::is_regular_file(file)) //Папки не учитываем
+        if (stdfs::is_regular_file(file)) // Папки не учитываем
             iterator_func(file);
 }
 
-//полный путь до файла с расширением.
+// полный путь до файла с расширением.
 static std::string get_full_path(const stdfs::directory_entry& file) { return file.path().string(); }
 
-//имя файла без пути, но с расширением.
+// имя файла без пути, но с расширением.
 static std::string get_full_filename(const stdfs::directory_entry& file) { return file.path().filename().string(); }
 
-//имя файла без пути, и без расширения.
+// имя файла без пути, и без расширения.
 static std::string get_short_filename(const stdfs::directory_entry& file) { return file.path().stem().string(); }
 
-//расширение файла.
+// расширение файла.
 static std::string get_extension(const stdfs::directory_entry& file) { return file.path().extension().string(); }
 
-extern "C" int64_t __cdecl _Last_write_time(const wchar_t*); //так не надо делать нигде и никогда
+extern "C" int64_t __cdecl _Last_write_time(const wchar_t*); // так не надо делать нигде и никогда
 
-//Время последнего изменения файла
+// Время последнего изменения файла
 static decltype(auto) get_last_write_time(const stdfs::directory_entry& file)
 {
     // Это ужасный костыль на самом деле, надо переписать нормально под новый стандарт, но мне щас лень возиться.
@@ -211,7 +211,7 @@ static auto format_last_write_time = [](const stdfs::directory_entry& file, cons
     static std::ostringstream ss;
     static const std::locale loc{""};
     if (loc != ss.getloc())
-        ss.imbue(loc); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
+        ss.imbue(loc); // Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
 
     ss.str("");
 
@@ -221,115 +221,113 @@ static auto format_last_write_time = [](const stdfs::directory_entry& file, cons
     return ss.str();
 };
 
-//Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
+// Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
 static std::string get_last_write_time_string(const stdfs::directory_entry& file) { return format_last_write_time(file, "[%A %d %b %Y %T]"); }
 
-//Время последнего изменения файла в формате [02:01:2018 14:03:32]
+// Время последнего изменения файла в формате [02:01:2018 14:03:32]
 static std::string get_last_write_time_string_short(const stdfs::directory_entry& file) { return format_last_write_time(file, "[%d:%m:%Y %T]"); }
 
-#pragma optimize("s", on)
 void script_register_stdfs(lua_State* L)
 {
     using self = stdfs::directory_entry;
 
-    module(L, "stdfs")[def("VerifyPath", [](const char* path) { VerifyPath(path); }), def("directory_iterator", &directory_iterator),
-                       def("recursive_directory_iterator", &recursive_directory_iterator),
-                       class_<self>("path")
-                           .def(constructor<const char*>())
-                           // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
-                           .property("full_path_name", &get_full_path)
-                           .property("full_filename", &get_full_filename)
-                           .property("short_filename", &get_short_filename)
-                           .property("extension", &get_extension)
-                           .property("last_write_time", &get_last_write_time)
-                           .property("last_write_time_string", &get_last_write_time_string)
-                           .property("last_write_time_string_short", &get_last_write_time_string_short)
-                           .def("exists", (bool(self::*)() const)(&self::exists))
-                           .def("is_regular_file", (bool(self::*)() const)(&self::is_regular_file))
-                           .def("is_directory", (bool(self::*)() const)(&self::is_directory))
-                           .def("file_size", (uintmax_t(self::*)() const)(&self::file_size))];
+    module(L, "stdfs")[(def("VerifyPath", [](const char* path) { VerifyPath(path); }), def("directory_iterator", &directory_iterator),
+                        def("recursive_directory_iterator", &recursive_directory_iterator),
+                        class_<self>("path")
+                            .def(constructor<const char*>())
+                            // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
+                            .property("full_path_name", &get_full_path)
+                            .property("full_filename", &get_full_filename)
+                            .property("short_filename", &get_short_filename)
+                            .property("extension", &get_extension)
+                            .property("last_write_time", &get_last_write_time)
+                            .property("last_write_time_string", &get_last_write_time_string)
+                            .property("last_write_time_string_short", &get_last_write_time_string_short)
+                            .def("exists", (bool(self::*)() const)(&self::exists))
+                            .def("is_regular_file", (bool(self::*)() const)(&self::is_regular_file))
+                            .def("is_directory", (bool(self::*)() const)(&self::is_directory))
+                            .def("file_size", (uintmax_t(self::*)() const)(&self::file_size)))];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-#pragma optimize("s", on)
 void fs_registrator::script_register(lua_State* L)
 {
     //
     script_register_stdfs(L);
     //
-    module(L)[class_<FS_item>("FS_item")
-                  .def("NameFull", &FS_item::NameFull)
-                  .def("NameShort", &FS_item::NameShort)
-                  .def("Size", &FS_item::Size)
-                  .def("ModifDigitOnly", &FS_item::ModifDigitOnly)
-                  .def("Modif", &FS_item::Modif),
+    module(
+        L)[(class_<FS_item>("FS_item")
+                .def("NameFull", &FS_item::NameFull)
+                .def("NameShort", &FS_item::NameShort)
+                .def("Size", &FS_item::Size)
+                .def("ModifDigitOnly", &FS_item::ModifDigitOnly)
+                .def("Modif", &FS_item::Modif),
 
-              class_<FS_file_list_ex>("FS_file_list_ex")
-                  .def("Size", &FS_file_list_ex::Size)
-                  .def("GetAt", &FS_file_list_ex::GetAt)
-                  .def("Sort", &FS_file_list_ex::Sort)
-                  .def( "GetAll", &FS_file_list_ex::GetAll, return_stl_iterator)
-              ,
+            class_<FS_file_list_ex>("FS_file_list_ex")
+                .def("Size", &FS_file_list_ex::Size)
+                .def("GetAt", &FS_file_list_ex::GetAt)
+                .def("Sort", &FS_file_list_ex::Sort)
+                .def("GetAll", &FS_file_list_ex::GetAll, return_stl_iterator),
 
-              class_<FS_file_list>("FS_file_list").def("Size", &FS_file_list::Size).def("GetAt", &FS_file_list::GetAt).def("Free", &FS_file_list::Free),
+            class_<FS_file_list>("FS_file_list").def("Size", &FS_file_list::Size).def("GetAt", &FS_file_list::GetAt).def("Free", &FS_file_list::Free),
 
-              /*		class_<FS_Path>("FS_Path")
-                          .def_readonly("m_Path",						&FS_Path::m_Path)
-                          .def_readonly("m_Root",						&FS_Path::m_Root)
-                          .def_readonly("m_Add",						&FS_Path::m_Add)
-                          .def_readonly("m_DefExt",					&FS_Path::m_DefExt)
-                          .def_readonly("m_FilterCaption",			&FS_Path::m_FilterCaption),
-              */
-              class_<CLocatorAPI::file>("fs_file")
-                  .def_readonly("name", &CLocatorAPI::file::name)
-                  .def_readonly("vfs", &CLocatorAPI::file::vfs)
-                  .def_readonly("ptr", &CLocatorAPI::file::ptr)
-                  .def_readonly("size_real", &CLocatorAPI::file::size_real)
-                  .def_readonly("size_compressed", &CLocatorAPI::file::size_compressed)
-                  .def_readonly("modif", &CLocatorAPI::file::modif),
+            /*		class_<FS_Path>("FS_Path")
+                        .def_readonly("m_Path",						&FS_Path::m_Path)
+                        .def_readonly("m_Root",						&FS_Path::m_Root)
+                        .def_readonly("m_Add",						&FS_Path::m_Add)
+                        .def_readonly("m_DefExt",					&FS_Path::m_DefExt)
+                        .def_readonly("m_FilterCaption",			&FS_Path::m_FilterCaption),
+            */
+            class_<CLocatorAPI::file>("fs_file")
+                .def_readonly("name", &CLocatorAPI::file::name)
+                .def_readonly("vfs", &CLocatorAPI::file::vfs)
+                .def_readonly("ptr", &CLocatorAPI::file::ptr)
+                .def_readonly("size_real", &CLocatorAPI::file::size_real)
+                .def_readonly("size_compressed", &CLocatorAPI::file::size_compressed)
+                .def_readonly("modif", &CLocatorAPI::file::modif),
 
-              class_<CLocatorAPI>("FS")
-                  .enum_("FS_sort_mode")[value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
-                                         value("FS_sort_by_size_up", int(FS_file_list_ex::eSortBySizeUp)), value("FS_sort_by_size_down", int(FS_file_list_ex::eSortBySizeDown)),
-                                         value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown))]
-                  .enum_("FS_List")[value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
-                                    value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower))]
+            class_<CLocatorAPI>("FS")
+                .enum_("FS_sort_mode")[(value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
+                                        value("FS_sort_by_size_up", int(FS_file_list_ex::eSortBySizeUp)), value("FS_sort_by_size_down", int(FS_file_list_ex::eSortBySizeDown)),
+                                        value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown)))]
+                .enum_("FS_List")[(value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
+                                   value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower)))]
 
-                  .def("path_exist", &CLocatorAPI::path_exist)
-                  .def("update_path", &update_path_script)
-                  .def("get_path", &CLocatorAPI::get_path)
-                  .def("append_path", &CLocatorAPI::append_path)
+                .def("path_exist", &CLocatorAPI::path_exist)
+                .def("update_path", &update_path_script)
+                .def("get_path", &CLocatorAPI::get_path)
+                .def("append_path", &CLocatorAPI::append_path)
 
-                  .def("file_delete", (void(CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
-                  .def("file_delete", (void(CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
+                .def("file_delete", (void(CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
+                .def("file_delete", (void(CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
 
-                  //.def("dir_delete", &dir_delete_script)
-                  //.def("dir_delete", &dir_delete_script_2)
+                //.def("dir_delete", &dir_delete_script)
+                //.def("dir_delete", &dir_delete_script_2)
 
-                  .def("application_dir", &get_engine_dir)
+                .def("application_dir", &get_engine_dir)
 
-                  .def("file_rename", &CLocatorAPI::file_rename)
-                  .def("file_length", &CLocatorAPI::file_length)
-                  .def("file_copy", &CLocatorAPI::file_copy)
+                .def("file_rename", &CLocatorAPI::file_rename)
+                .def("file_length", &CLocatorAPI::file_length)
+                .def("file_copy", &CLocatorAPI::file_copy)
 
-                  .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))
-                  .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::exist))
+                .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))
+                .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::exist))
 
-                  .def("get_file_age", &CLocatorAPI::get_file_age)
-                  .def("get_file_age_str", &get_file_age_str)
+                .def("get_file_age", &CLocatorAPI::get_file_age)
+                .def("get_file_age_str", &get_file_age_str)
 
-                  .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
-                  .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
-                  .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
+                .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
+                .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
+                .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
 
-                  .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::w_open))
-                  .def("w_close", &CLocatorAPI::w_close)
+                .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::w_open))
+                .def("w_close", &CLocatorAPI::w_close)
 
-                  .def("file_list_open", &file_list_open_script)
-                  .def("file_list_open", &file_list_open_script_2)
-                  .def("file_list_open_ex", &file_list_open_ex),
+                .def("file_list_open", &file_list_open_script)
+                .def("file_list_open", &file_list_open_script_2)
+                .def("file_list_open_ex", &file_list_open_ex),
 
-              def("getFS", [] { return &FS; })];
+            def("getFS", [] { return &FS; }))];
 }

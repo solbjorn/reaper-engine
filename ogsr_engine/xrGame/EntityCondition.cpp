@@ -145,7 +145,7 @@ void CEntityCondition::ChangePsyHealth(float value) { m_fDeltaPsyHealth += value
 
 void CEntityCondition::ChangeBleeding(float percent)
 {
-    //затянуть раны
+    // затянуть раны
     for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
     {
         (*it)->Incarnation(percent, m_fMinWoundSize);
@@ -166,7 +166,7 @@ bool RemoveWoundPred(CWound* pWound)
 
 void CEntityCondition::UpdateWounds()
 {
-    //убрать все зашившие раны из списка
+    // убрать все зашившие раны из списка
     m_WoundVector.erase(std::remove_if(m_WoundVector.begin(), m_WoundVector.end(), &RemoveWoundPred), m_WoundVector.end());
 }
 
@@ -198,7 +198,7 @@ void CEntityCondition::UpdateConditionTime()
     m_iLastTimeCalled = _cur_time;
 }
 
-//вычисление параметров с ходом игрового времени
+// вычисление параметров с ходом игрового времени
 void CEntityCondition::UpdateCondition()
 {
     if (GetHealth() <= 0)
@@ -230,8 +230,8 @@ void CEntityCondition::UpdateCondition()
 
     UpdateEntityMorale();
 
-    //if (m_object && m_object->ID() == 0)
-    //    clamp(m_fDeltaHealth, -0.8f, 1.0f);
+    // if (m_object && m_object->ID() == 0)
+    //     clamp(m_fDeltaHealth, -0.8f, 1.0f);
 
     health() += m_fDeltaHealth;
 
@@ -270,7 +270,7 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
     else
         new_hit_power *= pOutfit->GetHitTypeProtection(hit_type, element);
 
-    //увеличить изношенность костюма
+    // увеличить изношенность костюма
     pOutfit->Hit(hit_power, hit_type);
 
     return new_hit_power;
@@ -300,10 +300,10 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
         }
     */
 
-    //максимальное число косточек 64
+    // максимальное число косточек 64
     VERIFY(element < 64 || BI_NONE == element);
 
-    //запомнить кость по которой ударили и силу удара
+    // запомнить кость по которой ударили и силу удара
     WOUND_VECTOR_IT it = m_WoundVector.begin();
     for (; it != m_WoundVector.end(); it++)
     {
@@ -313,14 +313,14 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 
     CWound* pWound = NULL;
 
-    //новая рана
+    // новая рана
     if (it == m_WoundVector.end())
     {
         pWound = xr_new<CWound>(element);
         pWound->AddHit(hit_power * ::Random.randF(0.5f, 1.5f), hit_type);
         m_WoundVector.push_back(pWound);
     }
-    //старая
+    // старая
     else
     {
         pWound = *it;
@@ -333,7 +333,7 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 
 CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 {
-    //кто нанес последний хит
+    // кто нанес последний хит
     m_pWho = pHDS->who;
     m_iWhoID = (NULL != pHDS->who) ? pHDS->who->ID() : 0;
 
@@ -406,7 +406,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
     if (bDebug)
         Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
-    //раны добавляются только живому
+    // раны добавляются только живому
     if (bAddWound && GetHealth() > 0)
         return AddWound(hit_power * m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);
     else
@@ -578,32 +578,32 @@ bool get_entity_sprint(CEntity::SEntityState* S) { return S->bSprint; }
 
 void CEntityCondition::script_register(lua_State* L)
 {
-    module(L)[class_<CEntity::SEntityState>("SEntityState")
-                  .property("crouch", &get_entity_crouch)
-                  .property("fall", &get_entity_fall)
-                  .property("jump", &get_entity_jump)
-                  .property("sprint", &get_entity_sprint)
-                  .def_readonly("velocity", &CEntity::SEntityState::fVelocity)
-                  .def_readonly("a_velocity", &CEntity::SEntityState::fAVelocity)
-              //.property     ("class_name"			,				&get_lua_class_name)
-              ,
-              class_<CEntityCondition>("CEntityCondition")
-                  .def("fdelta_time", &CEntityCondition::fdelta_time)
-                  .def_readonly("has_valid_time", &CEntityCondition::m_bTimeValid)
-                  .def_readwrite("power", &CEntityCondition::m_fPower)
-                  .def_readwrite("power_max", &CEntityCondition::m_fPowerMax)
-                  .def_readwrite("psy_health", &CEntityCondition::m_fPsyHealth)
-                  .def_readwrite("psy_health_max", &CEntityCondition::m_fPsyHealthMax)
-                  .def_readwrite("radiation", &CEntityCondition::m_fRadiation)
-                  .def_readwrite("radiation_max", &CEntityCondition::m_fRadiationMax)
-                  .def_readwrite("morale", &CEntityCondition::m_fEntityMorale)
-                  .def_readwrite("morale_max", &CEntityCondition::m_fEntityMoraleMax)
-                  .def_readwrite("min_wound_size", &CEntityCondition::m_fMinWoundSize)
-                  .def_readonly("is_bleeding", &CEntityCondition::m_bIsBleeding)
-                  //.def_readwrite("health_hit_part",			&CEntityCondition::m_fHealthHitPart)
-                  .def_readwrite("power_hit_part", &CEntityCondition::m_fPowerHitPart)				
-                  .property("health", &CEntityCondition::GetHealth, &set_entity_health)
-                  .property("max_health", &CEntityCondition::GetMaxHealth, &set_entity_max_health)
-              //.property("class_name"				,				&get_lua_class_name)
-    ];
+    module(L)[(class_<CEntity::SEntityState>("SEntityState")
+                   .property("crouch", &get_entity_crouch)
+                   .property("fall", &get_entity_fall)
+                   .property("jump", &get_entity_jump)
+                   .property("sprint", &get_entity_sprint)
+                   .def_readonly("velocity", &CEntity::SEntityState::fVelocity)
+                   .def_readonly("a_velocity", &CEntity::SEntityState::fAVelocity)
+               //.property     ("class_name"			,				&get_lua_class_name)
+               ,
+               class_<CEntityCondition>("CEntityCondition")
+                   .def("fdelta_time", &CEntityCondition::fdelta_time)
+                   .def_readonly("has_valid_time", &CEntityCondition::m_bTimeValid)
+                   .def_readwrite("power", &CEntityCondition::m_fPower)
+                   .def_readwrite("power_max", &CEntityCondition::m_fPowerMax)
+                   .def_readwrite("psy_health", &CEntityCondition::m_fPsyHealth)
+                   .def_readwrite("psy_health_max", &CEntityCondition::m_fPsyHealthMax)
+                   .def_readwrite("radiation", &CEntityCondition::m_fRadiation)
+                   .def_readwrite("radiation_max", &CEntityCondition::m_fRadiationMax)
+                   .def_readwrite("morale", &CEntityCondition::m_fEntityMorale)
+                   .def_readwrite("morale_max", &CEntityCondition::m_fEntityMoraleMax)
+                   .def_readwrite("min_wound_size", &CEntityCondition::m_fMinWoundSize)
+                   .def_readonly("is_bleeding", &CEntityCondition::m_bIsBleeding)
+                   //.def_readwrite("health_hit_part",			&CEntityCondition::m_fHealthHitPart)
+                   .def_readwrite("power_hit_part", &CEntityCondition::m_fPowerHitPart)
+                   .property("health", &CEntityCondition::GetHealth, &set_entity_health)
+                   .property("max_health", &CEntityCondition::GetMaxHealth, &set_entity_max_health)
+               //.property("class_name"				,				&get_lua_class_name)
+               )];
 }

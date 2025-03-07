@@ -88,8 +88,8 @@ void CEffectorZoomInertion::SetParams(float disp)
     if (m_fFloatSpeed < m_fSpeedMin)
         m_fFloatSpeed = m_fSpeedMin;
 
-    //для того, чтоб сразу прошел пересчет направления
-    //движения прицела
+    // для того, чтоб сразу прошел пересчет направления
+    // движения прицела
     if (!fis_zero(old_disp - m_fDispRadius, EPS))
         m_fEpsilon = 2 * m_fDispRadius;
 }
@@ -109,7 +109,7 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 {
     bool camera_moved = false;
 
-    //определяем двигал ли прицелом актер
+    // определяем двигал ли прицелом актер
     if (!info.d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
         camera_moved = true;
 
@@ -157,29 +157,23 @@ void set_current_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vCurr
 void set_last_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vLastPoint.set(src); }
 void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTargetPoint.set(src); }
 
-#pragma optimize("s", on)
 void CEffectorZoomInertion::script_register(lua_State* L)
 {
-    module(L)[
-
-        class_<CEffectorZoomInertion>("CEffectorZoomInertion")
-            .def_readwrite("float_speed", &CEffectorZoomInertion::m_fFloatSpeed)
-            .def_readwrite("disp_radius", &CEffectorZoomInertion::m_fDispRadius)
-            .def_readwrite("epsilon", &CEffectorZoomInertion::m_fEpsilon)
-            .property("current_point", &get_current_point, &set_current_point)
-            .property("last_point", &get_last_point, &set_last_point)
-            .property("target_point", &get_target_point, &set_target_point)
-            .def_readwrite("target_vel", &CEffectorZoomInertion::m_vTargetVel)
-            .def_readwrite("time_passed", &CEffectorZoomInertion::m_dwTimePassed)
-            // settings for real-time modify
-            .def_readwrite("camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon)
-            .def_readwrite("disp_min", &CEffectorZoomInertion::m_fDispMin)
-            .def_readwrite("speed_min", &CEffectorZoomInertion::m_fSpeedMin)
-            .def_readwrite("zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK)
-            .def_readwrite("zoom_aim_speed_k", &CEffectorZoomInertion::m_fZoomAimingSpeedK)
-            .def_readwrite("delta_time", &CEffectorZoomInertion::m_dwDeltaTime)
-
-        // */
-        ,
-        def("find_effector_zi", &FindEffectorZoomInertion), def("switch_zoom_osc", &switch_zoom_osc)];
+    module(L)[(class_<CEffectorZoomInertion>("CEffectorZoomInertion")
+                   .def_readwrite("float_speed", &CEffectorZoomInertion::m_fFloatSpeed)
+                   .def_readwrite("disp_radius", &CEffectorZoomInertion::m_fDispRadius)
+                   .def_readwrite("epsilon", &CEffectorZoomInertion::m_fEpsilon)
+                   .property("current_point", &get_current_point, &set_current_point)
+                   .property("last_point", &get_last_point, &set_last_point)
+                   .property("target_point", &get_target_point, &set_target_point)
+                   .def_readwrite("target_vel", &CEffectorZoomInertion::m_vTargetVel)
+                   .def_readwrite("time_passed", &CEffectorZoomInertion::m_dwTimePassed)
+                   // settings for real-time modify
+                   .def_readwrite("camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon)
+                   .def_readwrite("disp_min", &CEffectorZoomInertion::m_fDispMin)
+                   .def_readwrite("speed_min", &CEffectorZoomInertion::m_fSpeedMin)
+                   .def_readwrite("zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK)
+                   .def_readwrite("zoom_aim_speed_k", &CEffectorZoomInertion::m_fZoomAimingSpeedK)
+                   .def_readwrite("delta_time", &CEffectorZoomInertion::m_dwDeltaTime),
+               def("find_effector_zi", &FindEffectorZoomInertion), def("switch_zoom_osc", &switch_zoom_osc))];
 }

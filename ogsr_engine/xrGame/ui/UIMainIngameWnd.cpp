@@ -168,19 +168,19 @@ void CUIMainIngameWnd::Init()
 
     UIWeaponIcon.Enable(false);
 
-    //индикаторы
+    // индикаторы
     UIZoneMap->Init();
     UIZoneMap->SetScale(DEFAULT_MAP_SCALE);
 
     xml_init.InitStatic(uiXml, "static_pda_online", 0, &UIPdaOnline);
     UIZoneMap->Background()->AttachChild(&UIPdaOnline);
 
-    //Полоса прогресса здоровья
+    // Полоса прогресса здоровья
     UIStaticHealth.AttachChild(&UIHealthBar);
     //.	xml_init.InitAutoStaticGroup(uiXml,"static_health", &UIStaticHealth);
     xml_init.InitProgressBar(uiXml, "progress_bar_health", 0, &UIHealthBar);
 
-    //Полоса прогресса армора
+    // Полоса прогресса армора
     UIStaticArmor.AttachChild(&UIArmorBar);
     //.	xml_init.InitAutoStaticGroup(uiXml,"static_armor", &UIStaticArmor);
     xml_init.InitProgressBar(uiXml, "progress_bar_armor", 0, &UIArmorBar);
@@ -827,15 +827,10 @@ void GetStaticRaw(CUIMainIngameWnd* wnd, lua_State* L)
 
 using namespace luabind;
 
-#pragma optimize("s", on)
 void CUIMainIngameWnd::script_register(lua_State* L)
 {
-    module(L)[
+    module(L)[(class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd").def("GetStatic", &GetStaticRaw, raw<2>()),
 
-        class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
-            .def("GetStatic", &GetStaticRaw, raw<2>()),
-
-        def("get_main_window", &GetMainIngameWindow), // get_mainingame_window better??
-        def("setup_game_icon", &SetupGameIcon)
-    ];
+               def("get_main_window", &GetMainIngameWindow), // get_mainingame_window better??
+               def("setup_game_icon", &SetupGameIcon))];
 }

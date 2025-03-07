@@ -16,8 +16,6 @@ void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPla
 
 bool get_actual(const CScriptActionPlanner* action_planner) { return (action_planner->actual()); }
 
-#pragma optimize("s", on)
-
 template <>
 void CActionPlanner<CScriptGameObject>::script_register(lua_State* L)
 {
@@ -38,8 +36,6 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State* L)
                   .def("current_action", &CScriptActionPlanner::current_action)
                   .def("initialized", &CScriptActionPlanner::initialized)
                   .def("set_goal_world_state", &set_goal_world_state)
-    // KRodin: Это теперь не нужно, т.к. планировщик НПС теперь принудительно останавливается при их смерти.
-    //.def("clear",						&CScriptActionPlanner::clear)
 #ifdef LOG_ACTION
                   .def("show", &CScriptActionPlanner::show)
 #endif

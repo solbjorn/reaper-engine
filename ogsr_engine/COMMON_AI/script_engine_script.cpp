@@ -82,34 +82,32 @@ bool GetRAlt() { return !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 bool GetAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 
 using namespace luabind;
-#pragma optimize("s", on)
 
 void CScriptEngine::script_register(lua_State* L)
 {
-    module(
-        L)[def("log1", (void (*)(LPCSTR)) & Log), def("fail", &msg_and_fail),
+    module(L)[(def("log1", (void (*)(LPCSTR))&Log), def("fail", &msg_and_fail),
 
-           def("screenshot", &take_screenshot),
-           class_<enum_exporter<IRender_interface::ScreenshotMode>>("screenshot_modes")
-               .enum_(
-                   "modes")[value("normal", int(IRender_interface::ScreenshotMode::SM_NORMAL)), value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
-                            value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)), value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP))],
-           class_<profile_timer_script>("profile_timer")
-               .def(constructor<>())
-               .def(constructor<profile_timer_script&>())
-               .def(const_self + profile_timer_script())
-               .def(const_self < profile_timer_script())
-               .def("start", &profile_timer_script::start)
-               .def("stop", &profile_timer_script::stop)
-               .def("time", &profile_timer_script::time),
-           def("prefetch", [](const char* file_name) { ai().script_engine().process_file(file_name); }), def("editor", [] { return false; }),
+               def("screenshot", &take_screenshot),
+               class_<enum_exporter<IRender_interface::ScreenshotMode>>("screenshot_modes")
+                   .enum_("modes")[(value("normal", int(IRender_interface::ScreenshotMode::SM_NORMAL)), value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
+                                    value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)),
+                                    value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP)))],
+               class_<profile_timer_script>("profile_timer")
+                   .def(constructor<>())
+                   .def(constructor<profile_timer_script&>())
+                   .def(const_self + profile_timer_script())
+                   .def(const_self < profile_timer_script())
+                   .def("start", &profile_timer_script::start)
+                   .def("stop", &profile_timer_script::stop)
+                   .def("time", &profile_timer_script::time),
+               def("prefetch", [](const char* file_name) { ai().script_engine().process_file(file_name); }), def("editor", [] { return false; }),
 
-           def("bit_and", [](const int i, const int j) { return i & j; }), def("bit_or", [](const int i, const int j) { return i | j; }),
-           def("bit_xor", [](const int i, const int j) { return i ^ j; }), def("bit_not", [](const int i) { return ~i; }),
+               def("bit_and", [](const int i, const int j) { return i & j; }), def("bit_or", [](const int i, const int j) { return i | j; }),
+               def("bit_xor", [](const int i, const int j) { return i ^ j; }), def("bit_not", [](const int i) { return ~i; }),
 
-           def("user_name", [] { return Core.UserName; }), def("time_global", [] { return Device.dwTimeGlobal; }),
+               def("user_name", [] { return Core.UserName; }), def("time_global", [] { return Device.dwTimeGlobal; }),
 
-           def("GetShift", &GetShift), def("GetLAlt", &GetLAlt), def("GetRAlt", &GetRAlt), def("GetAlt", &GetAlt),
+               def("GetShift", &GetShift), def("GetLAlt", &GetLAlt), def("GetRAlt", &GetRAlt), def("GetAlt", &GetAlt),
 
-           def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); })];
+               def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); }))];
 }

@@ -1014,62 +1014,62 @@ DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
     return dbg_obj;
 }
 
-#pragma optimize("s", on)
 void CLevel::script_register(lua_State* L)
 {
-    module(L)[class_<CEnvDescriptor>("CEnvDescriptor")
-                  .def_readwrite("fog_density", &CEnvDescriptor::fog_density)
-                  .def_readwrite("fog_distance", &CEnvDescriptor::fog_distance)
-                  .def_readwrite("far_plane", &CEnvDescriptor::far_plane)
-                  .def_readwrite("sun_dir", &CEnvDescriptor::sun_dir)
-                  .def_readwrite("wind_velocity", &CEnvDescriptor::wind_velocity)
-                  .def_readwrite("wind_direction", &CEnvDescriptor::wind_direction)
-                  .def_readwrite("m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity)
-                  .def_readwrite("m_fSunShaftsIntensity", &CEnvDescriptor::m_fSunShaftsIntensity)
-                  .property("m_identifier", [](CEnvDescriptor* self) { return self->m_identifier.c_str(); })
-                  .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient)
-                  .def_readwrite("clouds_color", &CEnvDescriptor::clouds_color)
-                  .def_readwrite("sky_color", &CEnvDescriptor::sky_color)
-                  .def_readwrite("fog_color", &CEnvDescriptor::fog_color)
-                  .def_readwrite("rain_color", &CEnvDescriptor::rain_color)
-                  .def_readwrite("ambient", &CEnvDescriptor::ambient)
-                  .def_readwrite("hemi_color", &CEnvDescriptor::hemi_color)
-                  .def_readwrite("sun_color", &CEnvDescriptor::sun_color)
-                  .def("set_sun", &CEnvDescriptor::set_sun),
-              class_<CEnvironment>("CEnvironment")
-                  .def("getCurrentWeather",
-                       [](CEnvironment* self, const size_t idx) {
-                           R_ASSERT(idx < 2);
-                           return self->Current[idx];
-                       }),
+    module(
+        L)[(class_<CEnvDescriptor>("CEnvDescriptor")
+                .def_readwrite("fog_density", &CEnvDescriptor::fog_density)
+                .def_readwrite("fog_distance", &CEnvDescriptor::fog_distance)
+                .def_readwrite("far_plane", &CEnvDescriptor::far_plane)
+                .def_readwrite("sun_dir", &CEnvDescriptor::sun_dir)
+                .def_readwrite("wind_velocity", &CEnvDescriptor::wind_velocity)
+                .def_readwrite("wind_direction", &CEnvDescriptor::wind_direction)
+                .def_readwrite("m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity)
+                .def_readwrite("m_fSunShaftsIntensity", &CEnvDescriptor::m_fSunShaftsIntensity)
+                .property("m_identifier", [](CEnvDescriptor* self) { return self->m_identifier.c_str(); })
+                .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient)
+                .def_readwrite("clouds_color", &CEnvDescriptor::clouds_color)
+                .def_readwrite("sky_color", &CEnvDescriptor::sky_color)
+                .def_readwrite("fog_color", &CEnvDescriptor::fog_color)
+                .def_readwrite("rain_color", &CEnvDescriptor::rain_color)
+                .def_readwrite("ambient", &CEnvDescriptor::ambient)
+                .def_readwrite("hemi_color", &CEnvDescriptor::hemi_color)
+                .def_readwrite("sun_color", &CEnvDescriptor::sun_color)
+                .def("set_sun", &CEnvDescriptor::set_sun),
+            class_<CEnvironment>("CEnvironment")
+                .def("getCurrentWeather",
+                     [](CEnvironment* self, const size_t idx) {
+                         R_ASSERT(idx < 2);
+                         return self->Current[idx];
+                     }),
 
-              class_<CPHCall>("CPHCall").def("set_pause", &CPHCall::setPause),
+            class_<CPHCall>("CPHCall").def("set_pause", &CPHCall::setPause),
 
-              class_<CEffectorBobbing>("CEffectorBobbing")
-                  .def_readwrite("run_amplitude", &CEffectorBobbing::m_fAmplitudeRun)
-                  .def_readwrite("walk_amplitude", &CEffectorBobbing::m_fAmplitudeWalk)
-                  .def_readwrite("limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp)
-                  .def_readwrite("run_speed", &CEffectorBobbing::m_fSpeedRun)
-                  .def_readwrite("walk_speed", &CEffectorBobbing::m_fSpeedWalk)
-                  .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp),
+            class_<CEffectorBobbing>("CEffectorBobbing")
+                .def_readwrite("run_amplitude", &CEffectorBobbing::m_fAmplitudeRun)
+                .def_readwrite("walk_amplitude", &CEffectorBobbing::m_fAmplitudeWalk)
+                .def_readwrite("limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp)
+                .def_readwrite("run_speed", &CEffectorBobbing::m_fSpeedRun)
+                .def_readwrite("walk_speed", &CEffectorBobbing::m_fSpeedWalk)
+                .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp),
 
-              class_<DBG_ScriptObject>("DBG_ScriptObject")
-                  .enum_("dbg_type")[value("line", (int)DebugRenderType::eDBGLine), value("sphere", (int)DebugRenderType::eDBGSphere), value("box", (int)DebugRenderType::eDBGBox)]
-                  .def("cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere)
-                  .def("cast_dbg_box", &DBG_ScriptObject::cast_dbg_box)
-                  .def("cast_dbg_line", &DBG_ScriptObject::cast_dbg_line)
-                  .def_readwrite("color", &DBG_ScriptObject::m_color)
-                  .def_readwrite("hud", &DBG_ScriptObject::m_hud)
-                  .def_readwrite("visible", &DBG_ScriptObject::m_visible),
+            class_<DBG_ScriptObject>("DBG_ScriptObject")
+                .enum_("dbg_type")[(value("line", (int)DebugRenderType::eDBGLine), value("sphere", (int)DebugRenderType::eDBGSphere), value("box", (int)DebugRenderType::eDBGBox))]
+                .def("cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere)
+                .def("cast_dbg_box", &DBG_ScriptObject::cast_dbg_box)
+                .def("cast_dbg_line", &DBG_ScriptObject::cast_dbg_line)
+                .def_readwrite("color", &DBG_ScriptObject::m_color)
+                .def_readwrite("hud", &DBG_ScriptObject::m_hud)
+                .def_readwrite("visible", &DBG_ScriptObject::m_visible),
 
-              class_<DBG_ScriptSphere, DBG_ScriptObject>("DBG_ScriptSphere").def_readwrite("matrix", &DBG_ScriptSphere::m_mat),
-              class_<DBG_ScriptBox, DBG_ScriptObject>("DBG_ScriptBox").def_readwrite("matrix", &DBG_ScriptBox::m_mat).def_readwrite("size", &DBG_ScriptBox::m_size),
-              class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine").def_readwrite("point_a", &DBG_ScriptLine::m_point_a).def_readwrite("point_b", &DBG_ScriptLine::m_point_b),
-              class_<CKeyBinding>("CKeyBinding").def_readwrite("ignore", &CKeyBinding::ignore)];
+            class_<DBG_ScriptSphere, DBG_ScriptObject>("DBG_ScriptSphere").def_readwrite("matrix", &DBG_ScriptSphere::m_mat),
+            class_<DBG_ScriptBox, DBG_ScriptObject>("DBG_ScriptBox").def_readwrite("matrix", &DBG_ScriptBox::m_mat).def_readwrite("size", &DBG_ScriptBox::m_size),
+            class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine").def_readwrite("point_a", &DBG_ScriptLine::m_point_a).def_readwrite("point_b", &DBG_ScriptLine::m_point_b),
+            class_<CKeyBinding>("CKeyBinding").def_readwrite("ignore", &CKeyBinding::ignore))];
 
-    module(L, "debug_render")[def("add_object", add_object), def("remove_object", remove_object), def("get_object", get_object)];
+    module(L, "debug_render")[(def("add_object", add_object), def("remove_object", remove_object), def("get_object", get_object))];
 
-    module(L, "level")[
+    module(L, "level")[(
         // obsolete\deprecated
         def("object_by_id", &get_object_by_id), def("is_removing_objects", &is_removing_objects_script),
 #ifdef DEBUG
@@ -1164,26 +1164,26 @@ void CLevel::script_register(lua_State* L)
         def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
         def("get_shader_params", &get_shader_params)
         //--#SM+# End --
-    ],
+        )],
 
-        module(L, "actor_stats")[def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),
-                                 def("remove_points", &remove_actor_points), def("add_to_ranking", &add_human_to_top_list), def("remove_from_ranking", &remove_human_from_top_list),
-                                 def("get_actor_ranking", &get_actor_ranking)];
+        module(L, "actor_stats")[(def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),
+                                  def("remove_points", &remove_actor_points), def("add_to_ranking", &add_human_to_top_list),
+                                  def("remove_from_ranking", &remove_human_from_top_list), def("get_actor_ranking", &get_actor_ranking))];
 
     module(L)[def("command_line", &command_line)];
 
-    module(L, "relation_registry")[def("community_goodwill", &g_community_goodwill), def("set_community_goodwill", &g_set_community_goodwill),
-                                   def("change_community_goodwill", &g_change_community_goodwill), def("get_personal_goodwill", &g_get_personal_goodwill),
-                                   def("set_personal_goodwill", &g_set_personal_goodwill), def("change_personal_goodwill", &g_change_personal_goodwill),
-                                   def("clear_personal_goodwill", &g_clear_personal_goodwill), def("clear_personal_relations", &g_clear_personal_relations)];
+    module(L, "relation_registry")[(def("community_goodwill", &g_community_goodwill), def("set_community_goodwill", &g_set_community_goodwill),
+                                    def("change_community_goodwill", &g_change_community_goodwill), def("get_personal_goodwill", &g_get_personal_goodwill),
+                                    def("set_personal_goodwill", &g_set_personal_goodwill), def("change_personal_goodwill", &g_change_personal_goodwill),
+                                    def("clear_personal_goodwill", &g_clear_personal_goodwill), def("clear_personal_relations", &g_clear_personal_relations))];
     // установка параметров для шейдеров из скриптов
-    module(L)[def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
-              def("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); }), def("update_inventory_window", &update_inventory_window),
+    module(L)[(def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
+               def("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); }), def("update_inventory_window", &update_inventory_window),
 
-              def("update_inventory_weight", &update_inventory_weight),
+               def("update_inventory_weight", &update_inventory_weight),
 
-              class_<enum_exporter<collide::rq_target>>("rq_target")
-                  .enum_("rq_target")[value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
-                                      value("rqtShape", int(collide::rqtShape)), value("rqtObstacle", int(collide::rqtObstacle)), value("rqtBoth", int(collide::rqtBoth)),
-                                      value("rqtDyn", int(collide::rqtDyn))]];
+               class_<enum_exporter<collide::rq_target>>("rq_target")
+                   .enum_("rq_target")[(value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
+                                        value("rqtShape", int(collide::rqtShape)), value("rqtObstacle", int(collide::rqtObstacle)), value("rqtBoth", int(collide::rqtBoth)),
+                                        value("rqtDyn", int(collide::rqtDyn)))])];
 }

@@ -14,8 +14,6 @@ using namespace luabind;
 void get_matrix_hpb(Fmatrix* self, float* h, float* p, float* b) { self->getHPB(*h, *p, *b); }
 void matrix_transform(Fmatrix* self, Fvector* v) { self->transform(*v); }
 
-#pragma optimize("s", on)
-
 template <>
 void CScriptFmatrix::script_register(lua_State* L)
 {

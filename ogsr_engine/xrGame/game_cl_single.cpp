@@ -24,12 +24,10 @@ CUIGameCustom* game_cl_Single::createGameUI()
 
 void game_cl_Single::OnDifficultyChanged() { Actor()->OnDifficultyChanged(); }
 
-#pragma optimize("s", on)
-
 template <>
 void CScriptGameDifficulty::script_register(lua_State* L)
 {
-    module(
-        L)[class_<enum_exporter<ESingleGameDifficulty>>("game_difficulty")
-               .enum_("game_difficulty")[value("novice", int(egdNovice)), value("stalker", int(egdStalker)), value("veteran", int(egdVeteran)), value("master", int(egdMaster))]];
+    module(L)[(
+        class_<enum_exporter<ESingleGameDifficulty>>("game_difficulty")
+            .enum_("game_difficulty")[(value("novice", int(egdNovice)), value("stalker", int(egdStalker)), value("veteran", int(egdVeteran)), value("master", int(egdMaster)))])];
 }

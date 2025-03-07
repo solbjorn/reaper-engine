@@ -82,12 +82,12 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
     light_render->set_cone(deg2rad(pUserData->r_float("projector_definition", "spot_angle")));
     light_render->set_texture(pUserData->r_string("projector_definition", "spot_texture"));
 
-/* //Лучше придумать настройки чтоб каждый прожектор индивидуально настроить можно было. Пока только настройку через скрипты добавил.
-    light_render->set_volumetric(true);
-    light_render->set_volumetric_quality(1.f);
-    light_render->set_volumetric_intensity(0.15f);
-    light_render->set_volumetric_distance(1.f);
-*/
+    /* //Лучше придумать настройки чтоб каждый прожектор индивидуально настроить можно было. Пока только настройку через скрипты добавил.
+        light_render->set_volumetric(true);
+        light_render->set_volumetric_quality(1.f);
+        light_render->set_volumetric_intensity(0.15f);
+        light_render->set_volumetric_distance(1.f);
+    */
     glow_render->set_texture(pUserData->r_string("projector_definition", "glow_texture"));
     glow_render->set_color(clr);
     glow_render->set_radius(pUserData->r_float("projector_definition", "glow_radius"));
@@ -241,7 +241,6 @@ void CProjector::Hit(SHit* pHDS)
     callback(GameObject::eHit)(lua_game_object(), HDS.power, HDS.dir, smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.bone());
 }
 
-#pragma optimize("s", on)
 void CProjector::script_register(lua_State* L)
 {
     luabind::module(L)[luabind::class_<CProjector, CGameObject>("projector")
@@ -253,6 +252,5 @@ void CProjector::script_register(lua_State* L)
                            .def("set_volumetric", [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); })
                            .def("set_volumetric_quality", [](CProjector* self, const float val) { self->light_render->set_volumetric_quality(val); })
                            .def("set_volumetric_intensity", [](CProjector* self, const float val) { self->light_render->set_volumetric_intensity(val); })
-                           .def("set_volumetric_distance", [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); })
-    ];
+                           .def("set_volumetric_distance", [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); })];
 }

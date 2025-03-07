@@ -21,7 +21,6 @@ using namespace luabind;
 extern export_class script_register_ui_window1(export_class&&);
 extern export_class script_register_ui_window2(export_class&&);
 
-#pragma optimize("s", on)
 void CUIDialogWndEx::script_register(lua_State* L)
 {
     export_class instance("CUIScriptWnd");
@@ -45,7 +44,5 @@ export_class script_register_ui_window1(export_class&& instance)
         .def("GetMessageBox", (CUIMessageBox * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIMessageBox>)
         .def("GetPropertiesBox", (CUIPropertiesBox * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIPropertiesBox>)
         .def("GetCheckButton", (CUICheckButton * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUICheckButton>)
-        .def("GetRadioButton", (CUIRadioButton * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIRadioButton>)
-        //		.def("GetRadioGroup",	(CUIRadioGroup* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIRadioGroup>)
-        ;
+        .def("GetRadioButton", (CUIRadioButton * (BaseType::*)(LPCSTR)) & BaseType::GetControl<CUIRadioButton>);
 }

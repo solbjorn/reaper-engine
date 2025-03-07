@@ -42,29 +42,28 @@ Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
     return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
 }
 
-#pragma optimize("s", on)
 void CGameGraph::script_register(lua_State* L)
 {
-    module(L)[def("game_graph", &get_game_graph),
+    module(L)[(def("game_graph", &get_game_graph),
 
-              class_<CGameGraph>("CGameGraph")
-                  .def("accessible", &get_accessible1)
-                  .def("accessible", &get_accessible2)
-                  .def("valid_vertex_id", &CGameGraph::valid_vertex_id)
-                  .def("vertex", &CGameGraph::vertex)
-                  .def("vertex_id", &CGameGraph::vertex_id)
-                  .def("vertex_count", &vertex_count),
+               class_<CGameGraph>("CGameGraph")
+                   .def("accessible", &get_accessible1)
+                   .def("accessible", &get_accessible2)
+                   .def("valid_vertex_id", &CGameGraph::valid_vertex_id)
+                   .def("vertex", &CGameGraph::vertex)
+                   .def("vertex_id", &CGameGraph::vertex_id)
+                   .def("vertex_count", &vertex_count),
 
-              class_<CVertex>("GameGraph__CVertex")
-                  .def("level_point", &CVertex__level_point)
-                  .def("game_point", &CVertex__game_point)
-                  .def("level_id", &CVertex::level_id)
-                  .def("level_vertex_id", &CVertex::level_vertex_id)
-                  .def("mask", &CVertex__mask_),
+               class_<CVertex>("GameGraph__CVertex")
+                   .def("level_point", &CVertex__level_point)
+                   .def("game_point", &CVertex__game_point)
+                   .def("level_id", &CVertex::level_id)
+                   .def("level_vertex_id", &CVertex::level_vertex_id)
+                   .def("mask", &CVertex__mask_),
 
-              def("cross_table", &get_cross_table),
+               def("cross_table", &get_cross_table),
 
-              class_<CGameLevelCrossTable>("CGameLevelCrossTable").def("vertex", &CGameLevelCrossTable::vertex),
+               class_<CGameLevelCrossTable>("CGameLevelCrossTable").def("vertex", &CGameLevelCrossTable::vertex),
 
-              class_<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell").def("game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id)];
+               class_<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell").def("game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id))];
 }

@@ -11,12 +11,10 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
-
 template <>
 void CScriptFvector::script_register(lua_State* L)
 {
-    module(L)[
+    module(L)[(
         // Для инициализации векторов нулями
         def("vector", [] { return Fvector{}; }), def("vector2", [] { return Fvector2{}; }), def("vector4", [] { return Fvector4{}; }),
 
@@ -184,5 +182,5 @@ void CScriptFvector::script_register(lua_State* L)
             .def_readwrite("x1", &Frect::x1)
             .def_readwrite("x2", &Frect::x2)
             .def_readwrite("y1", &Frect::y1)
-            .def_readwrite("y2", &Frect::y2)];
+            .def_readwrite("y2", &Frect::y2))];
 }

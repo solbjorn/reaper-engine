@@ -25,10 +25,10 @@
 
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OpenMPSupport>true</OpenMPSupport>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=alderlake -mavxvnni -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=haswell -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
 
     <Link>

@@ -17,8 +17,6 @@ struct CGlobalFlags
 
 using namespace luabind;
 
-#pragma optimize("s", on)
-
 #pragma todo("KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.")
 
 template <>
@@ -30,17 +28,13 @@ void DLL_PureScript::script_register(lua_State* L)
 template <>
 void ISheduledScript::script_register(lua_State* L)
 {
-    module(L)[class_<ISheduled, CISheduledWrapper>("ISheduled")
-              //			.def(constructor<>())
-    ];
+    module(L)[class_<ISheduled, CISheduledWrapper>("ISheduled")];
 }
 
 template <>
 void IRenderableScript::script_register(lua_State* L)
 {
-    module(L)[class_<IRenderable, CIRenderableWrapper>("IRenderable")
-              //			.def(constructor<>())
-    ];
+    module(L)[class_<IRenderable, CIRenderableWrapper>("IRenderable")];
 }
 
 template <>
@@ -95,51 +89,52 @@ void CRotationScript::script_register(lua_State* L)
 template <>
 void CObjectScript::script_register(lua_State* L)
 {
-    module(L)[class_<CGameObject, bases<DLL_Pure, ISheduled, ICollidable, IRenderable>, CGameObjectWrapper>("CGameObject")
-                  .def(constructor<>())
-                  .def("_construct", &CGameObject::_construct, &CGameObjectWrapper::_construct_static)
-                  .def("Visual", &CGameObject::Visual)
+    module(
+        L)[(class_<CGameObject, bases<DLL_Pure, ISheduled, ICollidable, IRenderable>, CGameObjectWrapper>("CGameObject")
+                .def(constructor<>())
+                .def("_construct", &CGameObject::_construct, &CGameObjectWrapper::_construct_static)
+                .def("Visual", &CGameObject::Visual)
 
-                  .def("net_Spawn", &CGameObject::net_Spawn, &CGameObjectWrapper::net_Spawn_static)
+                .def("net_Spawn", &CGameObject::net_Spawn, &CGameObjectWrapper::net_Spawn_static)
 
-                  .def("use", &CGameObject::use, &CGameObjectWrapper::use_static)
+                .def("use", &CGameObject::use, &CGameObjectWrapper::use_static)
 
-                  //			.def("setVisible",			&CGameObject::setVisible)
-                  .def("getVisible", &CGameObject::getVisible)
-                  .def("getEnabled", &CGameObject::getEnabled)
-              //			.def("setEnabled",			&CGameObject::setEnabled)
-              ,
-              class_<CGlobalFlags>("global_flags") // для оптимальности доступа, предполагается в скриптах скопировать элементы этого "класса" в пространство имен _G
-                  .enum_("inventory_item")
-                      [value("FdropManual", int(CInventoryItem::EIIFlags::FdropManual)), value("FCanTake", int(CInventoryItem::EIIFlags::FCanTake)),
-                       value("FCanTrade", int(CInventoryItem::EIIFlags::FCanTrade)), value("Fbelt", int(CInventoryItem::EIIFlags::Fbelt)),
-                       value("Fruck", int(CInventoryItem::EIIFlags::Fruck)), value("FRuckDefault", int(CInventoryItem::EIIFlags::FRuckDefault)),
-                       value("FUsingCondition", int(CInventoryItem::EIIFlags::FUsingCondition)), value("FAllowSprint", int(CInventoryItem::EIIFlags::FAllowSprint)),
-                       value("Fuseful_for_NPC", int(CInventoryItem::EIIFlags::Fuseful_for_NPC)), value("FInInterpolation", int(CInventoryItem::EIIFlags::FInInterpolation)),
-                       value("FInInterpolate", int(CInventoryItem::EIIFlags::FInInterpolate)), value("FIsQuestItem", int(CInventoryItem::EIIFlags::FIsQuestItem)),
-                       value("FIAlwaysUntradable", int(CInventoryItem::EIIFlags::FIAlwaysUntradable)), value("FIUngroupable", int(CInventoryItem::EIIFlags::FIUngroupable)),
-                       value("FIHiddenForInventory", int(CInventoryItem::EIIFlags::FIHiddenForInventory))]
-                  .enum_("se_object_flags")[value("flUseSwitches", int(CSE_ALifeObject::flUseSwitches)), value("flSwitchOnline", int(CSE_ALifeObject::flSwitchOnline)),
-                                            value("flSwitchOffline", int(CSE_ALifeObject::flSwitchOffline)), value("flInteractive", int(CSE_ALifeObject::flInteractive)),
-                                            value("flVisibleForAI", int(CSE_ALifeObject::flVisibleForAI)), value("flUsefulForAI", int(CSE_ALifeObject::flUsefulForAI)),
-                                            value("flOfflineNoMove", int(CSE_ALifeObject::flOfflineNoMove)), value("flUsedAI_Locations", int(CSE_ALifeObject::flUsedAI_Locations)),
-                                            value("flGroupBehaviour", int(CSE_ALifeObject::flGroupBehaviour)), value("flCanSave", int(CSE_ALifeObject::flCanSave)),
-                                            value("flVisibleForMap", int(CSE_ALifeObject::flVisibleForMap)), value("flUseSmartTerrains", int(CSE_ALifeObject::flUseSmartTerrains)),
-                                            value("flCheckForSeparator", int(CSE_ALifeObject::flCheckForSeparator))]
-                  .enum_("weapon_states")[value("eIdle", int(CHudItem::EHudStates::eIdle)), value("eSprintStart", int(CHudItem::EHudStates::eSprintStart)),
-                                          value("eSprintEnd", int(CHudItem::EHudStates::eSprintEnd)), value("eShowing", int(CHudItem::EHudStates::eShowing)),
-                                          value("eHiding", int(CHudItem::EHudStates::eHiding)), value("eHidden", int(CHudItem::EHudStates::eHidden)),
-                                          value("eBore", int(CHudItem::EHudStates::eBore)), value("eFire", int(CHudItem::EHudStates::eFire)),
-                                          value("eFire2", int(CHudItem::EHudStates::eFire2)), value("eReload", int(CHudItem::EHudStates::eReload)),
-                                          value("eMisfire", int(CHudItem::EHudStates::eMisfire)), value("eMagEmpty", int(CHudItem::EHudStates::eMagEmpty)),
-                                          value("eSwitch", int(CHudItem::EHudStates::eSwitch)), value("eDeviceSwitch", int(CHudItem::EHudStates::eDeviceSwitch)),
-                                          value("eThrowStart", int(CHudItem::EHudStates::eThrowStart)), value("eReady", int(CHudItem::EHudStates::eReady)),
-                                          value("eThrow", int(CHudItem::EHudStates::eThrow)), value("eThrowEnd", int(CHudItem::EHudStates::eThrowEnd))]
-                  .enum_("RestrictionSpace")
-                      [value("eDefaultRestrictorTypeNone", int(RestrictionSpace::eDefaultRestrictorTypeNone)),
-                       value("eDefaultRestrictorTypeOut", int(RestrictionSpace::eDefaultRestrictorTypeOut)),
-                       value("eDefaultRestrictorTypeIn", int(RestrictionSpace::eDefaultRestrictorTypeIn)), value("eRestrictorTypeNone", int(RestrictionSpace::eRestrictorTypeNone)),
-                       value("eRestrictorTypeIn", int(RestrictionSpace::eRestrictorTypeIn)), value("eRestrictorTypeOut", int(RestrictionSpace::eRestrictorTypeOut))]];
+                //			.def("setVisible",			&CGameObject::setVisible)
+                .def("getVisible", &CGameObject::getVisible)
+                .def("getEnabled", &CGameObject::getEnabled)
+            //			.def("setEnabled",			&CGameObject::setEnabled)
+            ,
+            class_<CGlobalFlags>("global_flags") // для оптимальности доступа, предполагается в скриптах скопировать элементы этого "класса" в пространство имен _G
+                .enum_("inventory_item")[(
+                    value("FdropManual", int(CInventoryItem::EIIFlags::FdropManual)), value("FCanTake", int(CInventoryItem::EIIFlags::FCanTake)),
+                    value("FCanTrade", int(CInventoryItem::EIIFlags::FCanTrade)), value("Fbelt", int(CInventoryItem::EIIFlags::Fbelt)),
+                    value("Fruck", int(CInventoryItem::EIIFlags::Fruck)), value("FRuckDefault", int(CInventoryItem::EIIFlags::FRuckDefault)),
+                    value("FUsingCondition", int(CInventoryItem::EIIFlags::FUsingCondition)), value("FAllowSprint", int(CInventoryItem::EIIFlags::FAllowSprint)),
+                    value("Fuseful_for_NPC", int(CInventoryItem::EIIFlags::Fuseful_for_NPC)), value("FInInterpolation", int(CInventoryItem::EIIFlags::FInInterpolation)),
+                    value("FInInterpolate", int(CInventoryItem::EIIFlags::FInInterpolate)), value("FIsQuestItem", int(CInventoryItem::EIIFlags::FIsQuestItem)),
+                    value("FIAlwaysUntradable", int(CInventoryItem::EIIFlags::FIAlwaysUntradable)), value("FIUngroupable", int(CInventoryItem::EIIFlags::FIUngroupable)),
+                    value("FIHiddenForInventory", int(CInventoryItem::EIIFlags::FIHiddenForInventory)))]
+                .enum_("se_object_flags")[(value("flUseSwitches", int(CSE_ALifeObject::flUseSwitches)), value("flSwitchOnline", int(CSE_ALifeObject::flSwitchOnline)),
+                                           value("flSwitchOffline", int(CSE_ALifeObject::flSwitchOffline)), value("flInteractive", int(CSE_ALifeObject::flInteractive)),
+                                           value("flVisibleForAI", int(CSE_ALifeObject::flVisibleForAI)), value("flUsefulForAI", int(CSE_ALifeObject::flUsefulForAI)),
+                                           value("flOfflineNoMove", int(CSE_ALifeObject::flOfflineNoMove)), value("flUsedAI_Locations", int(CSE_ALifeObject::flUsedAI_Locations)),
+                                           value("flGroupBehaviour", int(CSE_ALifeObject::flGroupBehaviour)), value("flCanSave", int(CSE_ALifeObject::flCanSave)),
+                                           value("flVisibleForMap", int(CSE_ALifeObject::flVisibleForMap)), value("flUseSmartTerrains", int(CSE_ALifeObject::flUseSmartTerrains)),
+                                           value("flCheckForSeparator", int(CSE_ALifeObject::flCheckForSeparator)))]
+                .enum_("weapon_states")[(value("eIdle", int(CHudItem::EHudStates::eIdle)), value("eSprintStart", int(CHudItem::EHudStates::eSprintStart)),
+                                         value("eSprintEnd", int(CHudItem::EHudStates::eSprintEnd)), value("eShowing", int(CHudItem::EHudStates::eShowing)),
+                                         value("eHiding", int(CHudItem::EHudStates::eHiding)), value("eHidden", int(CHudItem::EHudStates::eHidden)),
+                                         value("eBore", int(CHudItem::EHudStates::eBore)), value("eFire", int(CHudItem::EHudStates::eFire)),
+                                         value("eFire2", int(CHudItem::EHudStates::eFire2)), value("eReload", int(CHudItem::EHudStates::eReload)),
+                                         value("eMisfire", int(CHudItem::EHudStates::eMisfire)), value("eMagEmpty", int(CHudItem::EHudStates::eMagEmpty)),
+                                         value("eSwitch", int(CHudItem::EHudStates::eSwitch)), value("eDeviceSwitch", int(CHudItem::EHudStates::eDeviceSwitch)),
+                                         value("eThrowStart", int(CHudItem::EHudStates::eThrowStart)), value("eReady", int(CHudItem::EHudStates::eReady)),
+                                         value("eThrow", int(CHudItem::EHudStates::eThrow)), value("eThrowEnd", int(CHudItem::EHudStates::eThrowEnd)))]
+                .enum_("RestrictionSpace")[(
+                    value("eDefaultRestrictorTypeNone", int(RestrictionSpace::eDefaultRestrictorTypeNone)),
+                    value("eDefaultRestrictorTypeOut", int(RestrictionSpace::eDefaultRestrictorTypeOut)),
+                    value("eDefaultRestrictorTypeIn", int(RestrictionSpace::eDefaultRestrictorTypeIn)), value("eRestrictorTypeNone", int(RestrictionSpace::eRestrictorTypeNone)),
+                    value("eRestrictorTypeIn", int(RestrictionSpace::eRestrictorTypeIn)), value("eRestrictorTypeOut", int(RestrictionSpace::eRestrictorTypeOut)))])];
 }
 
 CCameraBase* actor_camera(u16 index)
@@ -154,35 +149,35 @@ CCameraBase* actor_camera(u16 index)
 template <>
 void CCameraScript::script_register(lua_State* L)
 {
-    module(L)[class_<CCameraBase>("CCameraBase")
-                  .def_readwrite("aspect", &CCameraBase::f_aspect)
-                  .def_readonly("direction", &CCameraBase::vDirection)
-                  .def_readwrite("fov", &CCameraBase::f_fov)
-                  .def_readwrite("position", &CCameraBase::vPosition)
+    module(L)[(class_<CCameraBase>("CCameraBase")
+                   .def_readwrite("aspect", &CCameraBase::f_aspect)
+                   .def_readonly("direction", &CCameraBase::vDirection)
+                   .def_readwrite("fov", &CCameraBase::f_fov)
+                   .def_readwrite("position", &CCameraBase::vPosition)
 
-                  .def_readwrite("lim_yaw", &CCameraBase::lim_yaw)
-                  .def_readwrite("lim_pitch", &CCameraBase::lim_pitch)
-                  .def_readwrite("lim_roll", &CCameraBase::lim_roll)
+                   .def_readwrite("lim_yaw", &CCameraBase::lim_yaw)
+                   .def_readwrite("lim_pitch", &CCameraBase::lim_pitch)
+                   .def_readwrite("lim_roll", &CCameraBase::lim_roll)
 
-                  .def_readwrite("yaw", &CCameraBase::yaw)
-                  .def_readwrite("pitch", &CCameraBase::pitch)
-                  .def_readwrite("roll", &CCameraBase::roll),
+                   .def_readwrite("yaw", &CCameraBase::yaw)
+                   .def_readwrite("pitch", &CCameraBase::pitch)
+                   .def_readwrite("roll", &CCameraBase::roll),
 
-              def("actor_camera", &actor_camera)];
+               def("actor_camera", &actor_camera))];
 }
 
 template <>
 void CAnomalyDetectorScript::script_register(lua_State* L)
 {
-    module(L)[class_<CAnomalyDetector>("CAnomalyDetector")
-                  .def_readwrite("Anomaly_Detect_Radius", &CAnomalyDetector::m_radius)
-                  .def_readwrite("Anomaly_Detect_Time_Remember", &CAnomalyDetector::m_time_to_rememeber)
-                  .def_readwrite("Anomaly_Detect_Probability", &CAnomalyDetector::m_detect_probability)
-                  .def_readonly("is_active", &CAnomalyDetector::m_active)
-                  .def("activate", &CAnomalyDetector::activate)
-                  .def("deactivate", &CAnomalyDetector::deactivate)
-                  .def("remove_all_restrictions", &CAnomalyDetector::remove_all_restrictions)
-                  .def("remove_restriction", &CAnomalyDetector::remove_restriction)];
+    module(L)[(class_<CAnomalyDetector>("CAnomalyDetector")
+                   .def_readwrite("Anomaly_Detect_Radius", &CAnomalyDetector::m_radius)
+                   .def_readwrite("Anomaly_Detect_Time_Remember", &CAnomalyDetector::m_time_to_rememeber)
+                   .def_readwrite("Anomaly_Detect_Probability", &CAnomalyDetector::m_detect_probability)
+                   .def_readonly("is_active", &CAnomalyDetector::m_active)
+                   .def("activate", &CAnomalyDetector::activate)
+                   .def("deactivate", &CAnomalyDetector::deactivate)
+                   .def("remove_all_restrictions", &CAnomalyDetector::remove_all_restrictions)
+                   .def("remove_restriction", &CAnomalyDetector::remove_restriction))];
 }
 
 LPCSTR CPatrolPointScript::getName(CPatrolPoint* pp) { return pp->m_name.c_str(); }
@@ -191,24 +186,24 @@ void CPatrolPointScript::setName(CPatrolPoint* pp, LPCSTR str) { pp->m_name = sh
 
 void CPatrolPointScript::script_register(lua_State* L)
 {
-    module(L)[class_<CPatrolPoint>("CPatrolPoint")
-                  .def(constructor<>())
-                  .def_readwrite("m_position", &CPatrolPoint::m_position)
-                  .def_readwrite("m_flags", &CPatrolPoint::m_flags)
-                  .def_readwrite("m_level_vertex_id", &CPatrolPoint::m_level_vertex_id)
-                  .def_readwrite("m_game_vertex_id", &CPatrolPoint::m_game_vertex_id)
-                  .property("m_name", &CPatrolPointScript::getName, &CPatrolPointScript::setName)
-                  .def("position", (CPatrolPoint & (CPatrolPoint::*)(Fvector))(&CPatrolPoint::position))];
+    module(L)[(class_<CPatrolPoint>("CPatrolPoint")
+                   .def(constructor<>())
+                   .def_readwrite("m_position", &CPatrolPoint::m_position)
+                   .def_readwrite("m_flags", &CPatrolPoint::m_flags)
+                   .def_readwrite("m_level_vertex_id", &CPatrolPoint::m_level_vertex_id)
+                   .def_readwrite("m_game_vertex_id", &CPatrolPoint::m_game_vertex_id)
+                   .property("m_name", &CPatrolPointScript::getName, &CPatrolPointScript::setName)
+                   .def("position", (CPatrolPoint & (CPatrolPoint::*)(Fvector))(&CPatrolPoint::position)))];
 }
 
 void CPatrolPathScript::script_register(lua_State* L)
 {
-    module(L)[class_<CPatrolPath>("CPatrolPath")
-                  .def(constructor<>())
-                  .def("add_point", &CPatrolPath::add_point)
-                  .def("point", (CPatrolPoint(CPatrolPath::*)(u32))(&CPatrolPath::point))
-                  .def("point_raw", &CPatrolPath::point_raw)
-                  .def("add_vertex", &CPatrolPath::add_vertex)];
+    module(L)[(class_<CPatrolPath>("CPatrolPath")
+                   .def(constructor<>())
+                   .def("add_point", &CPatrolPath::add_point)
+                   .def("point", (CPatrolPoint(CPatrolPath::*)(u32))(&CPatrolPath::point))
+                   .def("point_raw", &CPatrolPath::point_raw)
+                   .def("add_vertex", &CPatrolPath::add_vertex))];
 }
 
 luabind::object script_texture_find(const char* name)
@@ -232,22 +227,22 @@ void script_texture_load(ITexture* t, const char* name)
 template <>
 void ITextureScript::script_register(lua_State* L)
 {
-    module(L)[def("texture_find", &script_texture_find), class_<ITexture>("ITexture").def("load", &script_texture_load).def("get_name", &ITexture::GetName)];
+    module(L)[(def("texture_find", &script_texture_find), class_<ITexture>("ITexture").def("load", &script_texture_load).def("get_name", &ITexture::GetName))];
 }
 
 template <>
 void CPHCaptureScript::script_register(lua_State* L)
 {
-    module(L)[class_<CPHCapture>("CPHCapture")
-                  .def_readonly("e_state", &CPHCapture::e_state)
-                  .def_readwrite("capture_force", &CPHCapture::m_capture_force)
-                  .def_readwrite("distance", &CPHCapture::m_capture_distance)
-                  .def_readwrite("hard_mode", &CPHCapture::m_hard_mode)
-                  .def_readwrite("pull_distance", &CPHCapture::m_pull_distance)
-                  .def_readwrite("pull_force", &CPHCapture::m_pull_force)
-                  .def_readwrite("time_limit", &CPHCapture::m_capture_time),
+    module(L)[(class_<CPHCapture>("CPHCapture")
+                   .def_readonly("e_state", &CPHCapture::e_state)
+                   .def_readwrite("capture_force", &CPHCapture::m_capture_force)
+                   .def_readwrite("distance", &CPHCapture::m_capture_distance)
+                   .def_readwrite("hard_mode", &CPHCapture::m_hard_mode)
+                   .def_readwrite("pull_distance", &CPHCapture::m_pull_distance)
+                   .def_readwrite("pull_force", &CPHCapture::m_pull_force)
+                   .def_readwrite("time_limit", &CPHCapture::m_capture_time),
 
-              class_<enum_exporter<EPHCaptureState>>("ph_capture")
-                  .enum_("ph_capture")[value("pulling", int(EPHCaptureState::cstPulling)), value("captured", int(EPHCaptureState::cstCaptured)),
-                                       value("released", int(EPHCaptureState::cstReleased))]];
+               class_<enum_exporter<EPHCaptureState>>("ph_capture")
+                   .enum_("ph_capture")[(value("pulling", int(EPHCaptureState::cstPulling)), value("captured", int(EPHCaptureState::cstCaptured)),
+                                         value("released", int(EPHCaptureState::cstReleased)))])];
 }
