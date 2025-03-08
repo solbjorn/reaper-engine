@@ -81,7 +81,7 @@ ICF const Fvector CLevelGraph::vertex_position(const CLevelGraph::CPosition& sou
 {
     Fvector dest_position;
     unpack_xz(source_position, dest_position.x, dest_position.z);
-    dest_position.y = (float(source_position.y()) / 65535) * header().factor_y() + header().box().min.y;
+    dest_position.y = (float(source_position.y()) / 65535.f) * header().factor_y() + header().box().min.y;
     return (dest_position);
 }
 
@@ -92,15 +92,21 @@ ICF const Fvector& CLevelGraph::vertex_position(Fvector& dest_position, const CL
 
 IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosition& dest_position, const Fvector& source_position) const
 {
-    VERIFY(iFloor((source_position.z - header().box().min.z) / header().cell_size() + .5f) < (int)m_row_length);
-    int pxz = iFloor(((source_position.x - header().box().min.x) / header().cell_size() + .5f)) * m_row_length +
-        iFloor((source_position.z - header().box().min.z) / header().cell_size() + .5f);
-    int py = iFloor(65535.f * (source_position.y - header().box().min.y) / header().factor_y() + EPS_S);
-    VERIFY(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
-    dest_position.xz(u32(pxz));
-    clamp(py, 0, 65535);
-    dest_position.y(u16(py));
-    return (dest_position);
+    const auto [box_x, box_y, box_z] = header().box().min;
+    const auto cell_size = header().cell_size();
+
+    VERIFY(iFloor((source_position.z - box_z) / cell_size + .5f) < (int)m_row_length);
+
+    const int packed_xz = iFloor((source_position.x - box_x) / cell_size + .5f)
+                        * m_row_length + iFloor((source_position.z - box_z) / cell_size + .5f);
+    VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
+
+    int packed_y = iFloor(65535.f * (source_position.y - box_y) / header().factor_y() + EPS_S);
+    clamp(packed_y, 0, 65535);
+
+    dest_position.xz(u32(packed_xz));
+    dest_position.y(u16(packed_y));
+    return dest_position;
 }
 
 IC const Fvector CLevelGraph::vertex_position(u32 vertex_id) const
@@ -170,10 +176,15 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector& position, const 
 
 IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector2& position) const
 {
-    int pxz = iFloor(((position.x - header().box().min.x) / header().cell_size() + .5f)) * m_row_length + iFloor((position.y - header().box().min.z) / header().cell_size() + .5f);
-    VERIFY(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
-    bool b = vertex(vertex_id)->position().xz() == u32(pxz);
-    return (b);
+    [[maybe_unused]]
+    const auto [box_x, box_y, box_z] = header().box().min;
+    const auto cell_size = header().cell_size();
+
+    const int packed_xz = iFloor((position.x - box_x) / cell_size + .5f) * m_row_length +
+        iFloor((position.y - box_z) / cell_size + .5f);
+    VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
+    const bool b = vertex(vertex_id)->position().xz() == u32(packed_xz);
+    return b;
 }
 
 IC float CLevelGraph::vertex_plane_y(const CLevelGraph::CVertex& vertex, const float X, const float Z) const
