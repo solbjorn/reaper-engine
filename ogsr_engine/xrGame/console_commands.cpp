@@ -78,7 +78,7 @@ float adj_delta_rot = 0.05f;
 
 extern BOOL g_enable_memory_debug;
 
-Flags32 g_mt_config = {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife};
+Flags32 g_mt_config = {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
 
 Flags32 dbg_net_Draw_Flags = {0};
 
@@ -1459,6 +1459,7 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "mt_bullets", &g_mt_config, mtBullets);
     CMD3(CCC_Mask, "mt_level_sounds", &g_mt_config, mtLevelSounds);
     CMD3(CCC_Mask, "mt_alife", &g_mt_config, mtALife);
+    CMD3(CCC_Mask, "mt_map", &g_mt_config, mtMap);
 #endif // MASTER_GOLD
 
 #ifdef DEBUG

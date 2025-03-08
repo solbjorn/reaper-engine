@@ -321,7 +321,7 @@ void CLevel::CancelPrefetchManySounds(LPCSTR prefix)
 }
 
 // Game interface ////////////////////////////////////////////////////
-int CLevel::get_RPID(LPCSTR /**name/**/)
+int CLevel::get_RPID(LPCSTR /**name**/)
 {
     /*
     // Gain access to string
@@ -430,7 +430,11 @@ void CLevel::OnFrame()
 
     ProcessGameEvents();
 
-    MapManager().Update();
+    if (g_mt_config.test(mtMap))
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CMapManager::Update>(m_map_manager));
+    else
+        MapManager().Update();
+
     // Inherited update
     inherited::OnFrame();
 

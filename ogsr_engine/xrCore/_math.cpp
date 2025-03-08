@@ -93,7 +93,6 @@ void _initialize_cpu()
     pvInitializeStatics(); // Lookup table for compressed normals
 }
 
-#pragma pack(push, 8)
 typedef struct tagTHREADNAME_INFO
 {
     DWORD dwType; // Must be 0x1000.
@@ -101,7 +100,6 @@ typedef struct tagTHREADNAME_INFO
     DWORD dwThreadID; // Thread ID (-1=caller thread).
     DWORD dwFlags; // Reserved for future use, must be zero.
 } THREADNAME_INFO;
-#pragma pack(pop)
 
 static void set_thread_name(HANDLE ThreadHandle, const char* threadName)
 {

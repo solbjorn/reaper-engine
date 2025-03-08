@@ -5,7 +5,7 @@
 #include <xxhash.h>
 #pragma comment(lib, "xxhash")
 
-extern str_container* g_pStringContainer = NULL;
+str_container* g_pStringContainer = NULL;
 
 struct str_container_impl
 {
