@@ -88,7 +88,7 @@ void PointerRegistryDump(float thresholdInKb)
         Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, static_cast<float>(size) / 1024.f);
         Msg("! xrMemory: dump (large that [%f Kb]):", thresholdInKb);
 
-        std::sort(tmp.begin(), tmp.end(), [](const auto& a, const auto& b) { return std::get<1>(a.second) > std::get<1>(b.second); });
+        std::ranges::sort(tmp, [](const auto& a, const auto& b) { return std::get<1>(a.second) > std::get<1>(b.second); });
 
         for (const auto& [name, typle] : tmp)
         {

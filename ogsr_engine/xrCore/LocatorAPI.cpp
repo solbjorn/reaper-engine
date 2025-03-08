@@ -485,8 +485,6 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse)
     }
 }
 
-IC bool pred_str_ff(const _finddata_t& x, const _finddata_t& y) { return xr_strcmp(x.name, y.name) < 0; }
-
 bool ignore_name(const char* _name)
 {
     // ignore windows hidden Thumbs.db
@@ -569,7 +567,7 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     if (log_if_found)
         Msg("  files: [%u]", rec_files.size());
 
-    std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
+    std::ranges::sort(rec_files, [](const _finddata_t& x, const _finddata_t& y) { return xr_strcmp(x.name, y.name) < 0; });
 
     for (const auto& el : rec_files)
     {

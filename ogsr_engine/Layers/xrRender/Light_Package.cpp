@@ -15,9 +15,9 @@ void light_Package::sort()
     };
 
     // resort lights (pending -> at the end), maintain stable order
-    std::stable_sort(v_point.begin(), v_point.end(), pred_light_cmp);
-    std::stable_sort(v_spot.begin(), v_spot.end(), pred_light_cmp);
-    std::stable_sort(v_shadowed.begin(), v_shadowed.end(), pred_light_cmp);
+    std::ranges::stable_sort(v_point, pred_light_cmp);
+    std::ranges::stable_sort(v_spot, pred_light_cmp);
+    std::ranges::stable_sort(v_shadowed, pred_light_cmp);
 }
 
 // Создаем запросы к окклюдеру. Потом мы будем получать от них данные

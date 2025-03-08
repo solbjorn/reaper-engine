@@ -133,7 +133,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
             auto& map = mapNormalPasses[_priority][iPass];
 
             map.getANY_P(nrmPasses);
-            std::sort(nrmPasses.begin(), nrmPasses.end(), cmp_pass<mapNormal_T::value_type*>);
+            std::ranges::sort(nrmPasses, cmp_pass<mapNormal_T::value_type*>);
             for (const auto& it : nrmPasses)
             {
                 RCache.set_Pass(it->key);
@@ -142,7 +142,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
                 mapNormalItems& items = it->val;
                 items.ssa = 0;
 
-                std::sort(items.begin(), items.end(), cmp_ssa<_NormalItem>);
+                std::ranges::sort(items, cmp_ssa<_NormalItem>);
                 for (const auto& item : items)
                 {
                     const float LOD = calcLOD(item.ssa, item.pVisual->vis.sphere.R);
@@ -166,7 +166,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
             auto& map = mapMatrixPasses[_priority][iPass];
 
             map.getANY_P(matPasses);
-            std::sort(matPasses.begin(), matPasses.end(), cmp_pass<mapMatrix_T::value_type*>);
+            std::ranges::sort(matPasses, cmp_pass<mapMatrix_T::value_type*>);
             for (const auto& it : matPasses)
             {
                 RCache.set_Pass(it->key);
@@ -174,7 +174,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
                 mapMatrixItems& items = it->val;
                 items.ssa = 0;
 
-                std::sort(items.begin(), items.end(), cmp_ssa<_MatrixItem>);
+                std::ranges::sort(items, cmp_ssa<_MatrixItem>);
                 for (auto& item : items)
                 {
                     RCache.set_xform_world(item.Matrix);

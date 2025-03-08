@@ -139,7 +139,6 @@ class rq_results
 {
 protected:
     rqVec results;
-    static bool r_sort_pred(const rq_result& a, const rq_result& b) { return a.range < b.range; }
 
 public:
     IC BOOL append_result(CObject* _who, float _range, int _element, BOOL bNearest)
@@ -175,7 +174,10 @@ public:
     IC rq_result* r_begin() { return &*results.begin(); }
     IC rqVec* r_get() { return &results; }
     IC void r_clear() { results.clear(); }
-    IC void r_sort() { std::sort(results.begin(), results.end(), r_sort_pred); }
+    IC void r_sort()
+    {
+        std::ranges::sort(results, [](const rq_result& a, const rq_result& b) { return a.range < b.range; });
+    }
     IC rqVec& r_results() { return results; }
 };
 typedef BOOL rq_callback(rq_result& result, LPVOID user_data);

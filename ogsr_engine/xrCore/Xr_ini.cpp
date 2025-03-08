@@ -419,7 +419,7 @@ bool CInifile::save_as(LPCSTR new_fname)
             bool operator()(Sect* a, Sect* b) const { return a->Index < b->Index; }
         } pred;
 
-        std::sort(sorted_List.begin(), sorted_List.end(), pred);
+        std::ranges::sort(sorted_List, pred);
 
         for (const auto& r_it : sorted_List)
         {

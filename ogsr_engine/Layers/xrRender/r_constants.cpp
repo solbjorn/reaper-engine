@@ -85,10 +85,10 @@ void R_constant_table::merge(R_constant_table* T)
     if (!table_tmp.empty())
     {
         // Append
-        std::move(table_tmp.begin(), table_tmp.end(), std::back_inserter(table));
+        std::ranges::move(table_tmp, std::back_inserter(table));
 
         // Sort
-        std::sort(table.begin(), table.end(), [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
+        std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
     }
 
     //	TODO:	DX10:	Implement merge with validity check

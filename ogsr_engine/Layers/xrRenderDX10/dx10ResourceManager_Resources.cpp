@@ -600,11 +600,9 @@ void CResourceManager::DBG_VerifyTextures()
 }
 #endif
 
-bool cmp_tl(const std::pair<u32, ref_texture>& _1, const std::pair<u32, ref_texture>& _2) { return _1.first < _2.first; }
-
 STextureList* CResourceManager::_CreateTextureList(STextureList& L)
 {
-    std::sort(L.begin(), L.end(), cmp_tl);
+    std::ranges::sort(L, [](const std::pair<u32, ref_texture>& _1, const std::pair<u32, ref_texture>& _2) { return _1.first < _2.first; });
     for (u32 it = 0; it < lst_textures.size(); it++)
     {
         STextureList* base = lst_textures[it];

@@ -297,7 +297,9 @@ bool CEnvironment::SetWeatherFX(shared_str name)
             current_length = Current[1]->exec_time - Current[0]->exec_time;
         }
 
-        std::sort(CurrentWeather->begin(), CurrentWeather->end(), sort_env_etl_pred);
+        auto& wref = *CurrentWeather;
+        std::ranges::sort(wref, sort_env_etl_pred);
+
         CEnvDescriptor* C0 = CurrentWeather->at(0);
         CEnvDescriptor* C1 = CurrentWeather->at(1);
         CEnvDescriptor* CE = CurrentWeather->at(CurrentWeather->size() - 2);
@@ -315,7 +317,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
         bWFX = true;
 
         // sort wfx envs
-        std::sort(CurrentWeather->begin(), CurrentWeather->end(), sort_env_pred);
+        std::ranges::sort(wref, sort_env_pred);
 
         C0->get();
         C1->get();

@@ -48,11 +48,10 @@ CEvent::CEvent(const char* S)
 CEvent::~CEvent() { xr_free(Name); }
 
 //-----------------------------------------
-IC bool ev_sort(CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); }
 
 void CEventAPI::Dump()
 {
-    std::sort(Events.begin(), Events.end(), ev_sort);
+    std::ranges::sort(Events, [](CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); });
     for (u32 i = 0; i < Events.size(); i++)
         Msg("* [%d] %s", Events[i]->RefCount(), Events[i]->GetFull());
 }

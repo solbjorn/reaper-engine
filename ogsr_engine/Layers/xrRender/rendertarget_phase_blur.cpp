@@ -771,7 +771,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
             }
 
             // Sort Distance
-            std::sort(LightsSort.begin(), LightsSort.end(), [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
+            std::ranges::sort(LightsSort, [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
 
             for (int x = 0; x < LightsSort.size(); x++)
             {

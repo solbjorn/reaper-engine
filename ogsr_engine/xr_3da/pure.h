@@ -107,9 +107,7 @@ public:
     void Resort()
     {
         if (!messages.empty())
-        {
-            std::sort(std::begin(messages), std::end(messages), [](const auto& a, const auto& b) { return a.Prio > b.Prio; });
-        }
+            std::ranges::sort(messages, [](const auto& a, const auto& b) { return a.Prio > b.Prio; });
 
         while (!messages.empty() && messages.back().Prio == REG_PRIORITY_INVALID)
             messages.pop_back();

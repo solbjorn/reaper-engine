@@ -27,9 +27,6 @@ void CResourceManager::reset_begin()
     RCache.Vertex.reset_begin();
 }
 
-bool cmp_rt(const CRT* A, const CRT* B) { return A->_order < B->_order; }
-//	DX10 cut bool	cmp_rtc	(const CRTC* A,const CRTC* B)	{ return A->_order < B->_order; }
-
 void CResourceManager::reset_end()
 {
     // create RDStreams
@@ -67,7 +64,7 @@ void CResourceManager::reset_end()
     for (auto& rt_pair : m_rtargets)
         sorted_rts.push_back(rt_pair.second);
 
-    std::sort(sorted_rts.begin(), sorted_rts.end(), cmp_rt);
+    std::ranges::sort(sorted_rts, [](const CRT* A, const CRT* B) { return A->_order < B->_order; });
 
     for (CRT* rt : sorted_rts)
         rt->reset_end();

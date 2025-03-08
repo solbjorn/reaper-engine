@@ -3,9 +3,6 @@
 #include "ObjectAnimator.h"
 #include "motion.h"
 
-bool motion_sort_pred(COMotion* a, COMotion* b) { return a->name < b->name; }
-bool motion_find_pred(COMotion* a, shared_str b) { return a->name < b; }
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -69,7 +66,7 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
             }
             FS.r_close(F);
         }
-        std::sort(m_Motions.begin(), m_Motions.end(), motion_sort_pred);
+        std::ranges::sort(m_Motions, [](COMotion* a, COMotion* b) { return a->name < b->name; });
     }
 }
 
@@ -96,7 +93,7 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 {
     if (name && name[0])
     {
-        auto it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, motion_find_pred);
+        auto it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, [](COMotion* a, shared_str b) { return a->name < b; });
         if ((it != m_Motions.end()) && (0 == xr_strcmp((*it)->Name(), name)))
         {
             bLoop = loop;
