@@ -78,7 +78,6 @@ public:
     virtual void LoadTitle(const char* title_name);
     virtual void SetTip();
 
-    virtual bool CanBePaused();
     bool OnKeyboardPress(int dik);
 };
 

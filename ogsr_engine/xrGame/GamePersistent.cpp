@@ -723,8 +723,6 @@ void CGamePersistent::LoadTitle(const char* str)
 
 void CGamePersistent::SetTip() { pApp->LoadTitleInt(); }
 
-bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE); }
-
 bool CGamePersistent::OnKeyboardPress(int dik)
 {
     if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused)

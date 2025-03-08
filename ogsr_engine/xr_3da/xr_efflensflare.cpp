@@ -244,7 +244,7 @@ void CLensFlare::OnFrame(shared_str id)
         break;
     case lfsShow:
         m_StateBlend = m_Current ? (m_StateBlend + m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf) : 1.f + EPS;
-        if (m_StateBlend >= 1.f || g_pGamePersistent->Environment().m_paused)
+        if (m_StateBlend >= 1.f)
         {
             m_StateBlend = 1.f;
             m_State = lfsIdle;
@@ -252,7 +252,7 @@ void CLensFlare::OnFrame(shared_str id)
         break;
     case lfsHide:
         m_StateBlend = m_Current ? (m_StateBlend - m_Current->m_StateBlendDnSpeed * Device.fTimeDelta * tf) : 0.f - EPS;
-        if (m_StateBlend <= 0.f || g_pGamePersistent->Environment().m_paused)
+        if (m_StateBlend <= 0.f)
         {
             m_State = lfsShow;
             m_Current = desc;

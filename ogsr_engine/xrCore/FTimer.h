@@ -17,7 +17,8 @@ public:
     void UnRegister(CTimer_paused& t);
 };
 
-extern pauseMngr g_pauseMngr;
+extern pauseMngr* g_pauseMngr;
+extern pauseMngr& g_pauseMngr_get();
 
 class CTimerBase
 {
@@ -113,7 +114,7 @@ public:
         m_time_factor = time_factor;
     }
 
-    virtual Duration getElapsedTime() const { return getElapsedTime(inherited::getElapsedTime()); }
+    Duration getElapsedTime() const override { return getElapsedTime(inherited::getElapsedTime()); }
 };
 
 class CTimer_paused_ex : public CTimer
@@ -144,11 +145,11 @@ public:
     }
 };
 
-class CTimer_paused : public CTimer_paused_ex
+class CTimer_paused final : public CTimer_paused_ex
 {
 public:
-    CTimer_paused() { g_pauseMngr.Register(*this); }
-    virtual ~CTimer_paused() { g_pauseMngr.UnRegister(*this); }
+    CTimer_paused() { g_pauseMngr_get().Register(*this); }
+    ~CTimer_paused() override { g_pauseMngr_get().UnRegister(*this); }
 };
 
 extern BOOL g_bEnableStatGather;

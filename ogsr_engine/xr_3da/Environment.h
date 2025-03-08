@@ -352,7 +352,6 @@ public:
     void OnDeviceCreate();
     void OnDeviceDestroy();
 
-    bool m_paused;
     bool m_dynamic_sun_movement{};
     bool m_sun_hp_loaded{};
 

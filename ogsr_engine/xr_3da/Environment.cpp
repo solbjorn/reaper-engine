@@ -56,8 +56,6 @@ CEnvironment::CEnvironment()
     eff_Thunderbolt = 0;
     OnDeviceCreate();
 
-    m_paused = false;
-
     fGameTime = 0.f;
     fTimeFactor = 12.f;
 
@@ -211,12 +209,6 @@ void CEnvironment::ChangeGameTime(float game_time) { fGameTime = NormalizeTime(f
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
-    if (m_paused)
-    {
-        g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(fGameTime * 1000.f), fTimeFactor);
-        return;
-    }
-
     if (bWFX)
         wfx_time -= TimeDiff(fGameTime, game_time);
     fGameTime = game_time;
@@ -482,8 +474,7 @@ void CEnvironment::lerp(float& current_weight)
         current_weight = 0;
 
     // final lerp
-    if (!m_paused)
-        CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
+    CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
 }
 
 void CEnvironment::OnFrame()
@@ -542,29 +533,19 @@ void CEnvironment::OnFrame()
     PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
     wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal) + 0.5f, 0.f, 1.f);
 
-    shared_str l_id;
-    shared_str t_id;
-    if (m_paused)
-    {
-        l_id = CurrentEnv->lens_flare_id;
-        t_id = CurrentEnv->tb_id;
-    }
-    else
-    {
-        if (bWFX && !dyn && m_sun_hp_loaded)
-            CurrentEnv->sun_dir = calculate_config_sun_dir(fGameTime);
-
-        l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
-        t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
-    }
+    if (bWFX && !dyn && m_sun_hp_loaded)
+        CurrentEnv->sun_dir = calculate_config_sun_dir(fGameTime);
 
     bool ingame = !g_pGamePersistent->IsMainMenuActive();
 
+    shared_str l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
     eff_LensFlare->OnFrame(l_id);
     if (ingame)
         ::Render->calculate_sun_async();
 
+    shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
+
     eff_Rain->OnFrame();
     if (ingame)
         tg->run([this] { eff_Rain->Calculate(); });

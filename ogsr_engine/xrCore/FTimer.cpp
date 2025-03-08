@@ -10,14 +10,22 @@ void CStatTimer::FrameStart()
 
 void CStatTimer::FrameEnd()
 {
-    const float time = GetElapsed_sec();
+    const float time = GetElapsed_sec() * 1000.0f;
     if (time > result)
         result = time;
     else
         result = 0.99f * result + 0.01f * time;
 }
 
-pauseMngr g_pauseMngr;
+pauseMngr* g_pauseMngr;
+
+pauseMngr& g_pauseMngr_get()
+{
+    static pauseMngr manager;
+    g_pauseMngr = &manager;
+
+    return manager;
+}
 
 pauseMngr::pauseMngr() : paused(false) { m_timers.reserve(3); }
 
