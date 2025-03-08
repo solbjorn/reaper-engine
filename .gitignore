@@ -17,6 +17,9 @@
 *.aps
 *.TMP
 
+# Top-level Directory.build.props to allow specifying custom LLVM paths
+/Directory.build.props
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
