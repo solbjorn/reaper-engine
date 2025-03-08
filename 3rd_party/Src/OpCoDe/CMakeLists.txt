@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(OpCoDe VERSION 1.3.2 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(op_sources
     OpCoDe/Ice/IceAABB.cpp
