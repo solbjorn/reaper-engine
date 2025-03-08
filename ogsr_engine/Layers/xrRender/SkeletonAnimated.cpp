@@ -105,7 +105,7 @@ u32 CKinematicsAnimated::LL_PartBlendsCount(u32 bone_part_id) { return blend_cyc
 CBlend* CKinematicsAnimated::LL_PartBlend(u32 bone_part_id, u32 n)
 {
     if (LL_PartBlendsCount(bone_part_id) <= n)
-        return 0;
+        return nullptr;
     return blend_cycle(bone_part_id)[n];
 }
 void CKinematicsAnimated::LL_IterateBlends(IterateBlendsCallback& callback)
@@ -235,7 +235,7 @@ float CKinematicsAnimated::get_animation_length(MotionID motion_ID)
     return bone_motions->at(motion_ID.idx).GetLength() / anim_speed;
 }
 
-void CKinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop,
+void CKinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float /*blendFalloff*/, float Speed, BOOL noloop,
                                       PlayCallback Callback, LPVOID CallbackParam)
 {
     VERIFY(B.channel < MAX_CHANNELS);
@@ -397,7 +397,6 @@ CBlend* CKinematicsAnimated::PlayFX(LPCSTR N, float power_scale)
     MotionID motion_ID = ID_FX(N);
     return PlayFX(motion_ID, power_scale);
 }
-// u16 part,u8 channel, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback callback(), LPVOID CallbackParam)
 
 CBlend* CKinematicsAnimated::LL_PlayFX(u16 bone, MotionID motion_ID, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
@@ -607,7 +606,7 @@ void CKinematicsAnimated::IBlend_Startup()
 {
     _DBG_SINGLE_USE_MARKER;
 
-    ZeroMemory(&blend_pool, sizeof blend_pool);
+    blend_pool.clear();
     blend_pool.resize(MAX_BLENDED_POOL);
 
     // cycles+fx clear
@@ -816,72 +815,20 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
 #endif
 }
 
+// Добавить скриптовое смещение для кости --#SM+#--
+void CKinematicsAnimated::LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset) { inherited::LL_AddTransformToBone(offset); }
+
+// Обнулить скриптовое смещение для конкретной кости или всех сразу (bone_id = BI_NONE) --#SM+#--
+void CKinematicsAnimated::LL_ClearAdditionalTransform(u16 bone_id) { inherited::LL_ClearAdditionalTransform(bone_id); }
+
 void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
-    // CKey				R						[MAX_CHANNELS][MAX_BLENDED];	//all keys
-    // float				BA						[MAX_CHANNELS][MAX_BLENDED];	//all factors
-    // int				b_counts				[MAX_CHANNELS]	= {0,0,0,0}; //channel counts
     SKeyTable keys;
-    LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
 
+    LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
     LL_BoneMatrixBuild(bi, parent, keys);
 
-    /*
-    if(bi.mTransform.c.y>10000)
-    {
-    Log("BLEND_INST",BLEND_INST.Blend.size());
-    Log("Bone",LL_BoneName_dbg(SelfID));
-    Msg("Result.Q %f,%f,%f,%f",Result.Q.x,Result.Q.y,Result.Q.z,Result.Q.w);
-    Log("Result.T",Result.T);
-    Log("lp parent",(u32)parent);
-    Log("parent",*parent);
-    Log("RES",RES);
-    Log("mT",bi.mTransform);
-
-    CBlend*			B		=	*BI;
-    CMotion&		M		=	*LL_GetMotion(B->motionID,SelfID);
-    float			time	=	B->timeCurrent*float(SAMPLE_FPS);
-    u32				frame	=	iFloor(time);
-    u32				count	=	M.get_count();
-    float			delta	=	time-float(frame);
-
-    Log("flTKeyPresent",M.test_flag(flTKeyPresent));
-    Log("M._initT",M._initT);
-    Log("M._sizeT",M._sizeT);
-
-    // translate
-    if (M.test_flag(flTKeyPresent))
-    {
-    CKeyQT*	K1t	= &M._keysT[(frame+0)%count];
-    CKeyQT*	K2t	= &M._keysT[(frame+1)%count];
-
-    Fvector T1,T2,Dt;
-    T1.x		= float(K1t->x)*M._sizeT.x+M._initT.x;
-    T1.y		= float(K1t->y)*M._sizeT.y+M._initT.y;
-    T1.z		= float(K1t->z)*M._sizeT.z+M._initT.z;
-    T2.x		= float(K2t->x)*M._sizeT.x+M._initT.x;
-    T2.y		= float(K2t->y)*M._sizeT.y+M._initT.y;
-    T2.z		= float(K2t->z)*M._sizeT.z+M._initT.z;
-
-    Dt.lerp	(T1,T2,delta);
-
-    Msg("K1t %d,%d,%d",K1t->x,K1t->y,K1t->z);
-    Msg("K2t %d,%d,%d",K2t->x,K2t->y,K2t->z);
-
-    Log("count",count);
-    Log("frame",frame);
-    Log("T1",T1);
-    Log("T2",T2);
-    Log("delta",delta);
-    Log("Dt",Dt);
-
-    }else
-    {
-    D->T.set	(M._initT);
-    }
-    VERIFY(0);
-    }
-    */
+    CalculateBonesAdditionalTransforms(bd, bi, parent, channel_mask); //--#SM+#--
 }
 
 void CKinematicsAnimated::OnCalculateBones() { UpdateTracks(); }

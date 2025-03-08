@@ -68,9 +68,7 @@ void __stdcall AttachmentCallback(IKinematics* tpKinematics)
 
     for (const auto* it : attachment_owner->attached_objects())
     {
-        Fmatrix bone_mtx;
-        kinematics->Bone_GetAnimPos(bone_mtx, it->bone_id(), u8(-1), false);
-        it->item().object().XFORM().mul_43(bone_mtx, it->offset());
+        it->item().object().XFORM().mul_43(kinematics->LL_GetBoneInstance(it->bone_id()).mTransform, it->offset());
         it->item().object().XFORM().mulA_43(game_object->XFORM());
     }
 }
@@ -81,7 +79,6 @@ void CAttachmentOwner::attach(CInventoryItem* inventory_item)
     xr_vector<CAttachableItem*>::const_iterator E = m_attached_objects.end();
     for (; I != E; ++I)
     {
-        //		if( (*I)->item().object().ID() != inventory_item->object().ID() )
         if ((*I)->item().object().ID() == inventory_item->object().ID())
             return; // already attached, fake, I'll repair It
         //		VERIFY								((*I)->ID() != inventory_item->object().ID());
@@ -141,11 +138,11 @@ bool CAttachmentOwner::can_attach(const CInventoryItem* inventory_item) const
     if (!item || !item->enabled() || !item->can_be_attached())
         return (false);
 
-    //можно ли присоединять объекты такого типа
+    // можно ли присоединять объекты такого типа
     if (m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(), m_attach_item_sections.end(), inventory_item->object().cNameSect()))
         return false;
 
-    //если уже есть присоединненый объет такого типа
+    // если уже есть присоединненый объет такого типа
     if (attached(inventory_item->object().cNameSect()))
         return false;
 

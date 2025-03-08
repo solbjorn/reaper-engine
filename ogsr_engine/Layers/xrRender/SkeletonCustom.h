@@ -86,6 +86,10 @@ class CKinematics : public FHierrarhyVisual, public IKinematics
     friend class CBoneData;
     friend class CSkeletonX;
 
+protected: //--#SM+#--
+    DEFINE_VECTOR(KinematicsABT::additional_bone_transform, BONE_TRANSFORM_VECTOR, BONE_TRANSFORM_VECTOR_IT);
+    BONE_TRANSFORM_VECTOR m_bones_offsets;
+
 public:
 #ifdef DEBUG
     BOOL dbg_single_use_marker;
@@ -112,6 +116,9 @@ public:
     virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
     virtual void OnCalculateBones() {}
 
+    virtual void CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0)); //--#SM+#--
+    virtual void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset); //--#SM+#--
+    virtual void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE); //--#SM+#--
 public:
     dxRender_Visual* m_lod;
 
@@ -263,14 +270,15 @@ public:
     virtual UpdateCallback GetUpdateCallback() { return Update_Callback; }
     virtual void* GetUpdateCallbackParam() { return Update_Callback_Param; }
 
-    // debug
 #ifdef DEBUG
+    // debug
     void DebugRender(Fmatrix& XFORM);
-#endif
+
 protected:
     virtual shared_str _BCL getDebugName() { return dbg_name; }
 
 public:
+#endif
     // General "Visual" stuff
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Load(const char* N, IReader* data, u32 dwFlags);

@@ -74,7 +74,11 @@ void fix_bones(LPCSTR fixed_bones, CPhysicsShell* shell)
         string64 fixed_bone;
         _GetItem(fixed_bones, i, fixed_bone);
         u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
+#ifdef DEBUG
         R_ASSERT2(BI_NONE != fixed_bone_id, make_string("wrong fixed bone [%s] for object with visual [%s]", fixed_bone, pKinematics->getDebugName().c_str()));
+#else
+        R_ASSERT(fixed_bone_id != BI_NONE);
+#endif
         CPhysicsElement* E = shell->get_Element(fixed_bone_id);
         if (E)
             E->Fix();

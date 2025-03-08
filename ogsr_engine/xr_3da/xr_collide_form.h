@@ -9,19 +9,28 @@ class CObject;
 class CInifile;
 
 // t-defs
-const u32 clGET_TRIS = (1 << 0);
-const u32 clGET_BOXES = (1 << 1);
-const u32 clGET_SPHERES = (1 << 2);
-const u32 clQUERY_ONLYFIRST = (1 << 3); // stop if was any collision
-const u32 clQUERY_TOPLEVEL = (1 << 4); // get only top level of model box/sphere
-const u32 clQUERY_STATIC = (1 << 5); // static
-const u32 clQUERY_DYNAMIC = (1 << 6); // dynamic
-const u32 clCOARSE = (1 << 7); // coarse test (triangles vs obb)
+constexpr u32 clGET_TRIS = (1 << 0);
+constexpr u32 clGET_BOXES = (1 << 1);
+constexpr u32 clGET_SPHERES = (1 << 2);
+constexpr u32 clQUERY_ONLYFIRST = (1 << 3); // stop if was any collision
+constexpr u32 clQUERY_TOPLEVEL = (1 << 4); // get only top level of model box/sphere
+constexpr u32 clQUERY_STATIC = (1 << 5); // static
+constexpr u32 clQUERY_DYNAMIC = (1 << 6); // dynamic
+constexpr u32 clCOARSE = (1 << 7); // coarse test (triangles vs obb)
 
-struct clQueryTri
+struct alignas(16) clQueryTri
 {
     Fvector p[3];
     const CDB::TRI* T;
+
+    constexpr inline clQueryTri() = default;
+    constexpr inline clQueryTri(const clQueryTri& t) { xr_memcpy128(this, &t, sizeof(t)); }
+
+    constexpr inline clQueryTri& operator=(const clQueryTri& t)
+    {
+        xr_memcpy128(this, &t, sizeof(t));
+        return *this;
+    }
 };
 
 struct clQueryCollision
@@ -87,7 +96,6 @@ protected:
     CObject* owner; // владелец
     u32 dwQueryID{};
 
-protected:
     Fbox bv_box; // (Local) BBox объекта
     Fsphere bv_sphere; // (Local) Sphere
 private:
@@ -104,7 +112,7 @@ public:
     const Fbox& getBBox() const { return bv_box; }
     float getRadius() const { return bv_sphere.R; }
     const Fsphere& getSphere() const { return bv_sphere; }
-    const ECollisionFormType Type() const { return m_type; }
+    ECollisionFormType Type() const { return m_type; }
 };
 
 class CCF_Skeleton : public ICollisionForm
@@ -131,7 +139,6 @@ public:
         u16 type;
         u16 elem_id;
 
-    public:
         constexpr inline SElement() : elem_id(u16(-1)), type(0) {}
         constexpr inline SElement(u16 id, u16 t) : elem_id(id), type(t) {}
         constexpr inline SElement(const SElement& s) { xr_memcpy128(this, &s, sizeof(s)); }
@@ -149,7 +156,6 @@ public:
 
 private:
     VisMask vis_mask;
-    SpinLock elements_lock;
     ElementVec elements;
 
     u32 dwFrame{}; // The model itself
@@ -165,8 +171,6 @@ public:
 
     bool _ElementCenter(u16 elem_id, Fvector& e_center);
     const ElementVec& _GetElements() { return elements; }
-
-    void Calculate();
 
     void _dbg_refresh()
     {
@@ -212,7 +216,6 @@ public:
     };
     xr_vector<shape_def> shapes;
 
-public:
     CCF_Shape(CObject* _owner);
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
@@ -222,7 +225,6 @@ public:
     void add_box(Fmatrix& B);
 
     void ComputeBounds();
-
     BOOL Contact(CObject* O);
     xr_vector<shape_def>& Shapes() { return shapes; }
 };

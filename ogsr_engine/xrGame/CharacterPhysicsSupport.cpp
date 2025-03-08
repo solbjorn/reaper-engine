@@ -113,9 +113,6 @@ void CCharacterPhysicsSupport::SetRemoved()
     m_eState = esRemoved;
     if (m_flags.test(fl_skeleton_in_shell)) // b_skeleton_in_shell
     {
-        if (!m_pPhysicsShell)
-            return;
-
         if (m_pPhysicsShell->isEnabled())
             m_EntityAlife.processing_deactivate();
 
@@ -644,8 +641,6 @@ void CCharacterPhysicsSupport::CollisionCorrectObjPos(const Fvector& start_from,
     {
         CPHCollideValidator::SetCharacterClassNotCollide(activation_shape);
     }
-    if (!character_create)
-        activation_shape.set_rotation(mXFORM);
     activation_shape.Activate(vbox, 1, 1.f, M_PI / 8.f);
     m_EntityAlife.Position().sub(activation_shape.Position(), shift);
     activation_shape.Destroy();

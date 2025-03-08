@@ -63,6 +63,9 @@ private:
     virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 
 public:
+    virtual void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset); //--#SM+#--
+    virtual void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE); //--#SM+#--
+
     virtual void OnCalculateBones();
 
 private:

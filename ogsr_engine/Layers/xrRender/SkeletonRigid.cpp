@@ -18,12 +18,11 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     if (Device.dwTimeGlobal == UCalc_Time)
         return; // early out for "fast" update
 
+    std::scoped_lock UCalc_Lock(UCalc_Mutex);
+    OnCalculateBones();
+
     if (!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
         return; // early out for "slow" update
-
-    std::scoped_lock UCalc_Lock(UCalc_Mutex);
-
-    OnCalculateBones();
 
     if (Update_Visibility)
         Visibility_Update();
@@ -119,11 +118,8 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 #endif
     }
 
-    if (Device.OnMainThread())
-    {
-        if (Update_Callback)
-            Update_Callback(this);
-    }
+    if (Update_Callback)
+        Update_Callback(this);
 }
 
 #ifdef DEBUG
@@ -149,9 +145,49 @@ void check_kinematics(CKinematics* _k, LPCSTR s)
 }
 #endif
 
-void CKinematics::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /* = (1<<0)*/)
+// Добавить скриптовое смещение для кости --#SM+#--
+void CKinematics::LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset) { m_bones_offsets.push_back(offset); }
+
+// Обнулить скриптовое смещение для конкретной кости или всех сразу (bone_id = BI_NONE) --#SM+#--
+void CKinematics::LL_ClearAdditionalTransform(u16 bone_id)
+{
+    if (bone_id == BI_NONE)
+    {
+        m_bones_offsets.clear();
+        return;
+    }
+
+    BONE_TRANSFORM_VECTOR_IT it = m_bones_offsets.begin();
+    while (it != m_bones_offsets.end())
+    {
+        if (it->m_bone_id == bone_id)
+        {
+            it = m_bones_offsets.erase(it);
+        }
+        else
+            ++it;
+    }
+}
+
+void CKinematics::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
     bi.mTransform.mul_43(*parent, bd->bind_transform);
+    CalculateBonesAdditionalTransforms(bd, bi, parent, channel_mask); //--#SM+#--
+}
+
+// Добавляем константные смещения к нужным костям --#SM+#--
+void CKinematics::CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /* = (1<<0)*/)
+{
+    // bi.mTransform.c - содержит смещение относительно первой кости модели\центра сцены (0, 0, 0)
+    for (auto& it : m_bones_offsets)
+    {
+        if (it.m_bone_id == bd->GetSelfID())
+        {
+            const Fvector vOldPos = bi.mTransform.c;
+            bi.mTransform.mulB_43(it.m_transform); // Rotation
+            bi.mTransform.c.add(vOldPos, it.m_transform.c); // Translation
+        }
+    }
 }
 
 void CKinematics::CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
@@ -188,13 +224,11 @@ void CKinematics::Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 mask_channel, bool ig
     ASSERT_FMT(id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), id);
 
     CBoneInstance bi = LL_GetBoneInstance(id);
-    Fvector last_c = bi.mTransform.c;
     BoneChain_Calculate(&LL_GetData(id), bi, mask_channel, ignore_callbacks);
 #ifndef MASTER_GOLD
     R_ASSERT(_valid(bi.mTransform));
 #endif
     pos.set(bi.mTransform);
-    pos.c.set(last_c);
 }
 
 void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix* parent)
@@ -217,7 +251,7 @@ void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8
     BOOL ow = bi.callback_overwrite();
     if (ignore_callbacks)
     {
-        bi.set_callback(bi.callback_type(), 0, bi.callback_param(), 0);
+        bi.set_callback(bi.callback_type(), nullptr, bi.callback_param(), 0);
     }
     if (SelfID == LL_GetBoneRoot())
     {

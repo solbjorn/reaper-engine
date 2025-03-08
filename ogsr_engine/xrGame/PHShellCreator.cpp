@@ -25,15 +25,22 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
 
     if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
     {
+#ifdef DEBUG
         Msg(" ! Error: world item visual [%s] has no elements!", pKinematics->getDebugName().c_str());
+#else
+        Msg(" ! Error: world item visual has no elements!");
+#endif
     }
     else if (!owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
     {
+#ifdef DEBUG
         Msg(" ! Error: world item visual [%s] has no shape!", pKinematics->getDebugName().c_str());
+#else
+        Msg(" ! Error: world item visual has no shape!");
+#endif
     }
 
     owner->PPhysicsShell()->set_PhysicsRefObject(owner);
-    // m_pPhysicsShell->SmoothElementsInertia(0.3f);
     owner->PPhysicsShell()->mXFORM.set(owner->XFORM());
     owner->PPhysicsShell()->SetAirResistance(0.001f, 0.02f);
 }
