@@ -52,6 +52,10 @@ extern u64 g_qwEStartGameTime;
 extern float psHUD_FOV_def;
 extern float psSqueezeVelocity;
 
+extern int psLUA_GCSTEP;
+extern int psLUA_GCTIMEOUT;
+extern u32 ps_lua_gc_method;
+
 extern int x_m_x;
 extern int x_m_z;
 #ifdef DEBUG
@@ -93,6 +97,8 @@ extern LPSTR dbg_stalker_death_anim;
 extern BOOL b_death_anim_velocity;
 #endif
 int g_AI_inactive_time = 0;
+
+static constexpr xr_token lua_gc_method_token[] = {{"gc_disable", 0}, {"gc_step", 1}, {"gc_timeout", 2}, {"gc_full", 3}, {nullptr, -1}};
 
 void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 {
@@ -1002,6 +1008,33 @@ public:
     }
 };
 
+class CCC_LuaGCMethod : public CCC_Token
+{
+public:
+    CCC_LuaGCMethod(pcstr name) : CCC_Token(name, &ps_lua_gc_method, lua_gc_method_token) {}
+
+    void Execute(pcstr args) override
+    {
+        const auto prev = *value;
+        CCC_Token::Execute(args);
+
+        switch (*value)
+        {
+        case 0: lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0); break;
+        case 1:
+        case 2:
+            if (prev == 0)
+                lua_gc(ai().script_engine().lua(), LUA_GCRESTART, 0);
+            break;
+        case 3:
+            // Perform a full garbage collection cycle and return to previous strategy.
+            lua_gc(ai().script_engine().lua(), LUA_GCCOLLECT, 0);
+            *value = prev;
+            break;
+        }
+    }
+};
+
 #include "GamePersistent.h"
 
 class CCC_MainMenu : public IConsole_Command
@@ -1457,10 +1490,15 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "mt_object_handler", &g_mt_config, mtObjectHandler);
     CMD3(CCC_Mask, "mt_sound_player", &g_mt_config, mtSoundPlayer);
     CMD3(CCC_Mask, "mt_bullets", &g_mt_config, mtBullets);
+    CMD3(CCC_Mask, "mt_script_gc", &g_mt_config, mtLUA_GC);
     CMD3(CCC_Mask, "mt_level_sounds", &g_mt_config, mtLevelSounds);
     CMD3(CCC_Mask, "mt_alife", &g_mt_config, mtALife);
     CMD3(CCC_Mask, "mt_map", &g_mt_config, mtMap);
 #endif // MASTER_GOLD
+
+    CMD1(CCC_LuaGCMethod, "lua_gc_method");
+    CMD4(CCC_Integer, "lua_gc_step", &psLUA_GCSTEP, 1, 1000);
+    CMD4(CCC_Integer, "lua_gc_timeout", &psLUA_GCTIMEOUT, 1000, 16000);
 
 #ifdef DEBUG
     CMD3(CCC_Mask, "ai_debug", &psAI_Flags, aiDebug);

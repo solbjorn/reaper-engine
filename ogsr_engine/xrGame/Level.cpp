@@ -462,6 +462,12 @@ void CLevel::OnFrame()
     if (!sound_registry_defer.empty())
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::PrefetchDeferredSounds>(this));
 
+    // defer LUA-GC-STEP
+    if (g_mt_config.test(mtLUA_GC))
+        Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::script_gc>(this));
+    else
+        script_gc();
+
     //-----------------------------------------------------
     if (pStatGraphR)
     {
@@ -473,6 +479,28 @@ void CLevel::OnFrame()
     };
 
     ShowEditor();
+}
+
+int psLUA_GCSTEP = 100; // 10
+int psLUA_GCTIMEOUT = 1000;
+u32 ps_lua_gc_method = 1;
+
+void CLevel::script_gc()
+{
+    switch (ps_lua_gc_method)
+    {
+    case 0: break;
+    case 2:
+#ifdef LUA_GCTIMEOUT
+        if (lua_gc(ai().script_engine().lua(), LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)
+            break;
+
+        // LUA_GCTIMEOUT is unsupported, fallback to LUA_GCSTEP
+#endif
+        [[fallthrough]];
+    default: ps_lua_gc_method = 1; [[fallthrough]];
+    case 1: lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP); break;
+    }
 }
 
 extern Flags32 dbg_net_Draw_Flags;

@@ -239,6 +239,7 @@ public:
     IC CSeniorityHierarchyHolder& seniority_holder();
     IC CClientSpawnManager& client_spawn_manager();
     IC CDebugRenderer& debug_renderer();
+    void script_gc(); // GC-cycle
 
     IC CPHCommander& ph_commander();
     IC CPHCommander& ph_commander_scripts();
@@ -247,7 +248,7 @@ public:
     CLevel();
     virtual ~CLevel();
 
-    // названияе текущего уровня
+    // название текущего уровня
     virtual shared_str name() const;
 
     // gets the time from the game simulation
