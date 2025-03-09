@@ -212,7 +212,7 @@ Fvector& CParticlesObject::Position() { return renderable.visual->getVisData().s
 
 float CParticlesObject::shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
 
-void CParticlesObject::renderable_Render()
+void CParticlesObject::renderable_Render(u32 context_id, IRenderable* root)
 {
     VERIFY(renderable.visual);
     u32 dt = Device.dwTimeGlobal - dwLastTime;
@@ -223,9 +223,10 @@ void CParticlesObject::renderable_Render()
         V->OnFrame(dt);
         dwLastTime = Device.dwTimeGlobal;
     }
-    ::Render->set_Transform(&renderable.xform);
-    ::Render->add_Visual(renderable.visual);
+
+    ::Render->add_Visual(context_id, root, renderable.visual, renderable.xform);
 }
+
 bool CParticlesObject::IsAutoRemove()
 {
     if (m_bAutoRemove)

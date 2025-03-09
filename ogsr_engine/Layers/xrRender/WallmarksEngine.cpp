@@ -291,7 +291,7 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, 
 
 void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {
-    if (::RImplementation.phase != CRender::PHASE_NORMAL)
+    if (RImplementation.active_phase() != CRender::PHASE_NORMAL)
         return;
     // optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
     if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))
@@ -305,23 +305,20 @@ void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, 
 
 void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-    if (::RImplementation.phase != CRender::PHASE_NORMAL)
+    if (RImplementation.active_phase() != CRender::PHASE_NORMAL)
         return;
 
-    if (!::RImplementation.val_bHUD)
-    {
-        lock.Enter();
-        // search if similar wallmark exists
-        wm_slot* slot = FindSlot(wm->Shader());
-        if (0 == slot)
-            slot = AppendSlot(wm->Shader());
-        // no similar - register _new_
-        slot->skeleton_items.push_back(wm);
+    lock.Enter();
+    // search if similar wallmark exists
+    wm_slot* slot = FindSlot(wm->Shader());
+    if (!slot)
+        slot = AppendSlot(wm->Shader());
+    // no similar - register _new_
+    slot->skeleton_items.push_back(wm);
 #ifdef DEBUG
-        wm->used_in_render = Device.dwFrame;
+    wm->used_in_render = Device.dwFrame;
 #endif
-        lock.Leave();
-    }
+    lock.Leave();
 }
 
 extern float r_ssaDISCARD;
@@ -472,7 +469,7 @@ void CWallmarksEngine::Render()
     lock.Leave(); // Physics may add wallmarks in parallel with rendering
 
     // Level-wmarks
-    RImplementation.r_dsgraph_render_wmarks();
+    RImplementation.dsgraph.render_wmarks();
     Device.Statistic->RenderDUMP_WM.End();
 
     // Projection

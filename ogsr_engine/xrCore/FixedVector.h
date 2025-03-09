@@ -101,7 +101,7 @@ public:
     }
     IC void assign(const_iterator p, size_t c)
     {
-        R_ASSERT(c > 0 && c < dim);
+        R_ASSERT(c > 0 && c <= dim);
         CopyMemory(array, p, c * sizeof(value_type));
         count = c;
     }

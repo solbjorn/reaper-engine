@@ -167,7 +167,7 @@ public:
 
     // Update
     virtual void shedule_Update(u32 dt); // Called by sheduler
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual void UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract* data);
@@ -184,7 +184,7 @@ public:
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
     // HUD
-    virtual void OnHUDDraw(CCustomHUD* hud) {};
+    virtual void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) {};
 
     // Active/non active
     virtual void OnH_B_Chield(); // before

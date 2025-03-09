@@ -37,7 +37,7 @@ void CExplosiveItem::Hit(SHit* pHDS)
     inherited::Hit(pHDS);
     if (!CDelayedActionFuse::isActive() && CDelayedActionFuse::CheckCondition(GetCondition()) && CExplosive::Initiator() == u16(-1))
     {
-        //запомнить того, кто взорвал вещь
+        // запомнить того, кто взорвал вещь
         SetInitiator(pHDS->who->ID());
     }
 }
@@ -64,21 +64,14 @@ void CExplosiveItem::shedule_Update(u32 dt)
     }
 }
 
-bool CExplosiveItem::shedule_Needed()
-{
-    //.	return true;
+bool CExplosiveItem::shedule_Needed() { return inherited::shedule_Needed() || CDelayedActionFuse::isActive(); }
 
-    return (inherited::shedule_Needed() || CDelayedActionFuse::isActive());
-}
-
-void CExplosiveItem::renderable_Render() { inherited::renderable_Render(); }
 void CExplosiveItem::net_Relcase(CObject* O)
 {
     CExplosive::net_Relcase(O);
     inherited::net_Relcase(O);
 }
-void CExplosiveItem::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos)
-{
-    // PKinematics(Visual())->CalculateBones();
-}
+
+void CExplosiveItem::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {}
+
 void CExplosiveItem::GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }

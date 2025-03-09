@@ -149,7 +149,7 @@ public:
 
     float get_vampire_distance() const { return m_vampire_distance; }
 
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
 
 #ifdef DEBUG
     virtual CBaseMonster::SDebugInfo show_debug_info();

@@ -68,7 +68,7 @@ public:
 
 class CHudItem : public CHUDState
 {
-protected: //чтоб нельзя было вызвать на прямую
+protected: // чтоб нельзя было вызвать на прямую
     CHudItem();
     virtual ~CHudItem() = default;
     virtual DLL_Pure* _construct();
@@ -105,19 +105,19 @@ public:
     ///////////////////////////////////////////////
     // общие функции HUD
     ///////////////////////////////////////////////
-    virtual void StopHUDSounds(){};
+    virtual void StopHUDSounds() {};
 
-    //для предачи команд владельцем
+    // для предачи команд владельцем
     virtual bool Action(s32 cmd, u32 flags);
 
-    virtual void OnDrawUI(){};
+    virtual void OnDrawUI() {};
 
     virtual bool IsHidden() const { return GetState() == eHidden; } // Does weapon is in hidden state
     virtual bool IsHiding() const { return GetState() == eHiding; }
     virtual bool IsShowing() const { return GetState() == eShowing; }
-    //посылка сообщения на сервер о смене состояния оружия
+    // посылка сообщения на сервер о смене состояния оружия
     virtual void SwitchState(u32 S);
-    //прием сообщения с сервера и его обработка
+    // прием сообщения с сервера и его обработка
     virtual void OnStateSwitch(u32 S, u32 oldState);
     virtual void OnEvent(NET_Packet& P, u16 type);
 
@@ -132,11 +132,11 @@ public:
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
 
-    virtual void OnActiveItem(){};
-    virtual void OnHiddenItem(){};
+    virtual void OnActiveItem() {};
+    virtual void OnHiddenItem() {};
 
     virtual void OnAnimationEnd(u32 state);
-    virtual void OnMotionMark(u32 state, const motion_marks&){};
+    virtual void OnMotionMark(u32 state, const motion_marks&) {};
     virtual void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
 
     virtual void PlayAnimIdle();
@@ -150,12 +150,12 @@ public:
     virtual void PlayAnimSprintEnd();
     virtual void PlayAnimIdleMovingCrouch();
     virtual void PlayAnimIdleMovingCrouchSlow();
-    virtual void PlayAnimDeviceSwitch(){};
+    virtual void PlayAnimDeviceSwitch() {};
 
     virtual bool NeedBlendAnm();
 
     virtual void UpdateCL();
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root);
 
     virtual void Hide(bool = false) {}
     virtual void Show(bool = false) {}
@@ -183,7 +183,7 @@ public:
 
     void PlayBlendAnm(LPCSTR name, float speed = 1.f, float power = 1.f, bool stop_old = true);
 
-    virtual void render_hud_mode(){};
+    virtual void render_hud_mode() {};
     virtual bool need_renderable() { return true; };
     virtual void render_item_3d_ui() {}
     virtual bool render_item_3d_ui_query() { return false; }
@@ -193,7 +193,7 @@ protected:
     BOOL hud_mode;
     shared_str hud_sect;
 
-    //кадры момента пересчета XFORM и FirePos
+    // кадры момента пересчета XFORM и FirePos
     u32 dwFP_Frame;
     u32 dwXF_Frame;
 
@@ -219,7 +219,7 @@ public:
         return (*m_item);
     }
 
-    virtual void on_renderable_Render() = 0;
+    virtual void on_renderable_Render(u32 context_id, IRenderable* root) = 0;
 
 public:
     class CWeaponBobbing
@@ -266,7 +266,7 @@ public:
     bool AnmIdleMovingAllowed() const;
     void AllowHudBobbing(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
     void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
-    //Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
+    // Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
     void CorrectDirFromWorldToHud(Fvector& dir);
     float GetLastHudFov() const { return m_nearwall_last_hud_fov; }
 
@@ -290,15 +290,15 @@ protected:
     virtual size_t GetWeaponTypeForCollision() const { return Knife_and_other; }
     virtual Fvector GetPositionForCollision() { return Device.vCameraPosition; }
     virtual Fvector GetDirectionForCollision() { return Device.vCameraDirection; }
-    float m_fZoomRotationFactor{}; //от 0 до 1, показывает насколько процентов мы перемещаем HUD
-    float m_fZoomRotateTime{}; //время приближения
-    //bool is_second_zoom_offset_enabled{};
-    //bool AimAlt{};
+    float m_fZoomRotationFactor{}; // от 0 до 1, показывает насколько процентов мы перемещаем HUD
+    float m_fZoomRotateTime{}; // время приближения
+    // bool is_second_zoom_offset_enabled{};
+    // bool AimAlt{};
     u32 skip_updated_frame{};
     bool HudInertionAllowed() const { return m_huditem_flags.test(fl_inertion_allow); }
     void AllowHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
     void TimeLockAnimation();
-    virtual void DeviceUpdate(){};
+    virtual void DeviceUpdate() {};
 
 private:
     shared_str world_sect;

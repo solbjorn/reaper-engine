@@ -236,7 +236,7 @@ void CAI_Bloodsucker::reinit()
     m_vampire_want_value = 0.f;
     m_predator = false;
 
-	//start_invisible_predator();
+    // start_invisible_predator();
 }
 
 void CAI_Bloodsucker::reload(LPCSTR section)
@@ -246,13 +246,20 @@ void CAI_Bloodsucker::reload(LPCSTR section)
     if (!g_Alive())
         return;
 
-    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Grasp"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 4, MonsterSound::eBaseChannel, eVampireGrasp, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Sucking"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3, MonsterSound::eBaseChannel, eVampireSucking, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Hit"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2, MonsterSound::eBaseChannel, eVampireHit, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_StartHunt"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 5, MonsterSound::eBaseChannel, eVampireStartHunt, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Invisibility_Change_State"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority, MonsterSound::eChannelIndependent << 1, eChangeVisibility, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Growl"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 6, MonsterSound::eBaseChannel, eGrowl, "bip01_head");
-    sound().add_deferred(pSettings->r_string(section, "Sound_Alien"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eCriticalPriority, u32(MonsterSound::eCaptureAllChannels), eAlien, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Grasp"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 4,
+                         MonsterSound::eBaseChannel, eVampireGrasp, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Sucking"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
+                         MonsterSound::eBaseChannel, eVampireSucking, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_Hit"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
+                         MonsterSound::eBaseChannel, eVampireHit, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Vampire_StartHunt"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 5,
+                         MonsterSound::eBaseChannel, eVampireStartHunt, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Invisibility_Change_State"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eNormalPriority,
+                         MonsterSound::eChannelIndependent << 1, eChangeVisibility, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Growl"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 6,
+                         MonsterSound::eBaseChannel, eGrowl, "bip01_head");
+    sound().add_deferred(pSettings->r_string(section, "Sound_Alien"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eCriticalPriority,
+                         u32(MonsterSound::eCaptureAllChannels), eAlien, "bip01_head");
 }
 
 void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
@@ -284,7 +291,7 @@ void CAI_Bloodsucker::vfAssignBones()
 
     bone_spine = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
     bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-    if (!PPhysicsShell()) //нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+    if (!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
     {
         bone_spine->set_callback(bctCustom, BoneCallback, this);
         bone_head->set_callback(bctCustom, BoneCallback, this);
@@ -298,7 +305,7 @@ void CAI_Bloodsucker::vfAssignBones()
     Bones.AddBone(bone_head, AXIS_Y);
 }
 
-//#define MAX_BONE_ANGLE PI_DIV_4
+// #define MAX_BONE_ANGLE PI_DIV_4
 
 void CAI_Bloodsucker::LookDirection(Fvector to_dir, float bone_turn_speed)
 {
@@ -664,12 +671,10 @@ void CAI_Bloodsucker::manual_deactivate()
     setVisible(TRUE);
 }
 
-void CAI_Bloodsucker::renderable_Render()
+void CAI_Bloodsucker::renderable_Render(u32 context_id, IRenderable* root)
 {
     if (m_visibility_state != no_visibility)
-    {
-        inherited::renderable_Render();
-    }
+        inherited::renderable_Render(context_id, root);
 }
 
 bool CAI_Bloodsucker::done_enough_hits_before_vampire() { return (int)m_hits_before_vampire >= (int)m_sufficient_hits_before_vampire + m_sufficient_hits_before_vampire_random; }

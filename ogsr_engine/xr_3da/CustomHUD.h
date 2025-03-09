@@ -30,8 +30,8 @@ public:
 
     virtual void Load() { ; }
 
-    virtual void Render_First() { ; }
-    virtual void Render_Last() { ; }
+    virtual void Render_First(u32 context_id) {}
+    virtual void Render_Last(u32 context_id) {}
 
     virtual void OnFrame() { ; }
     virtual void OnEvent(EVENT E, u64 P1, u64 P2) { ; }

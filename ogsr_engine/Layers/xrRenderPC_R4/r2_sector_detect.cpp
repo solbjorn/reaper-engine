@@ -6,9 +6,9 @@ int CRender::translateSector(IRender_Sector* pSector)
     if (!pSector)
         return -1;
 
-    for (u32 i = 0; i < Sectors.size(); ++i)
+    for (u32 i = 0; i < dsgraph.Sectors.size(); ++i)
     {
-        if (Sectors[i] == pSector)
+        if (dsgraph.Sectors[i] == pSector)
             return i;
     }
 
@@ -42,10 +42,10 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
     float range1 = 500.f;
     if (rmPortals)
     {
-        Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, rmPortals, P, dir, range1);
-        if (Sectors_xrc.r_count())
+        dsgraph.Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, rmPortals, P, dir, range1);
+        if (dsgraph.Sectors_xrc.r_count())
         {
-            CDB::RESULT* RP1 = Sectors_xrc.r_begin();
+            CDB::RESULT* RP1 = dsgraph.Sectors_xrc.r_begin();
             id1 = RP1->id;
             range1 = RP1->range;
         }
@@ -54,10 +54,10 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
     // Geometry model
     int id2 = -1;
     float range2 = range1;
-    Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
-    if (Sectors_xrc.r_count())
+    dsgraph.Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
+    if (dsgraph.Sectors_xrc.r_count())
     {
-        CDB::RESULT* RP2 = Sectors_xrc.r_begin();
+        CDB::RESULT* RP2 = dsgraph.Sectors_xrc.r_begin();
         id2 = RP2->id;
         range2 = RP2->range;
     }
@@ -80,7 +80,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
     {
         // Take sector, facing to our point from portal
         CDB::TRI* pTri = rmPortals->get_tris() + ID;
-        CPortal* pPortal = (CPortal*)Portals[pTri->dummy];
+        CPortal* pPortal = dsgraph.Portals[pTri->dummy];
         return pPortal->getSectorFacing(P);
     }
     else

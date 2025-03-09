@@ -177,13 +177,12 @@ public:
         Log("--------------------------------------------------------------------------------");
 
         const size_t _process_heap = mem_usage_impl(nullptr, nullptr);
-        const u32 _render = ::Render->memory_usage();
         const u32 _eco_strings = g_pStringContainer->stat_economy();
         const u32 _eco_smem = g_pSharedMemoryContainer->stat_economy();
 
         Msg("* [ D3D ]: textures count [%d]", (c_base + c_lmaps));
         Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
-        Msg("* [x-ray]: process heap[%d K], render[%d K]", _process_heap / 1024, _render / 1024);
+        Msg("* [x-ray]: process heap[%d K]", _process_heap / 1024);
         Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
 
 #ifdef DEBUG

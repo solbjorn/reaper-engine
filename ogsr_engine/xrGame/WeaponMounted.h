@@ -53,10 +53,10 @@ protected:
     shared_str m_sAmmoType;
     CCartridge m_CurrentAmmo;
 
-    //звук стрельбы
+    // звук стрельбы
     HUD_SOUND sndShot;
 
-    //для отдачи
+    // для отдачи
     float camRelaxSpeed;
     float camMaxAngle;
 
@@ -74,7 +74,7 @@ public:
     virtual void UpdateCL();
     virtual void shedule_Update(u32 dt);
 
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual BOOL UsedAI_Locations() { return FALSE; }
 

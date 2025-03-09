@@ -44,10 +44,10 @@ void CRender::Calculate()
             float eps = VIEWPORT_NEAR + EPS_L;
             Fvector box_radius;
             box_radius.set(eps, eps, eps);
-            Sectors_xrc.box_query(CDB::OPT_FULL_TEST, rmPortals, Device.vCameraPosition, box_radius);
-            for (int K = 0; K < Sectors_xrc.r_count(); K++)
+            dsgraph.Sectors_xrc.box_query(CDB::OPT_FULL_TEST, rmPortals, Device.vCameraPosition, box_radius);
+            for (int K = 0; K < dsgraph.Sectors_xrc.r_count(); K++)
             {
-                CPortal* pPortal = (CPortal*)Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
+                CPortal* pPortal = dsgraph.Portals[rmPortals->get_tris()[dsgraph.Sectors_xrc.r_begin()[K].id].dummy];
                 pPortal->bDualRender = TRUE;
             }
         }
@@ -57,11 +57,11 @@ void CRender::Calculate()
     Lights.Update();
 
     // Check if we touch some light even trough portal
-    lstRenderables.clear();
-    g_SpatialSpace->q_sphere(lstRenderables, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
-    for (u32 _it = 0; _it < lstRenderables.size(); _it++)
+    dsgraph.lstRenderables.clear();
+    g_SpatialSpace->q_sphere(dsgraph.lstRenderables, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+    for (u32 _it = 0; _it < dsgraph.lstRenderables.size(); _it++)
     {
-        ISpatial* spatial = lstRenderables[_it];
+        ISpatial* spatial = dsgraph.lstRenderables[_it];
         spatial->spatial_updatesector();
         CSector* sector = (CSector*)spatial->spatial.sector;
         if (0 == sector)

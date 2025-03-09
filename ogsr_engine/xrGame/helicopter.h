@@ -84,7 +84,7 @@ struct SHeliMovementState
     {
         Fvector point;
         float dir_h;
-        STmpPt(const Fvector& p, const float h) : point(p), dir_h(h){};
+        STmpPt(const Fvector& p, const float h) : point(p), dir_h(h) {};
     };
     ~SHeliMovementState();
     CHelicopter* parent;
@@ -257,9 +257,9 @@ protected:
     void TurnLighting(bool bOn);
     void TurnEngineSound(bool bOn);
     // explosive
-    virtual void OnAfterExplosion(){};
+    virtual void OnAfterExplosion() {};
     virtual void GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos){};
+    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {};
     // general
     EHeliState m_curState;
 
@@ -289,7 +289,7 @@ public:
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E){};
+    virtual void net_Export(CSE_Abstract* E) {};
     virtual void net_Relcase(CObject* O);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
@@ -299,7 +299,6 @@ public:
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell() != NULL)) || m_exploded; };
 
-    virtual void renderable_Render() { inherited::renderable_Render(); };
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
 

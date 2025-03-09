@@ -121,13 +121,13 @@ void CRender::render_lights(light_Package& LP)
             Lights_LastFrame.push_back(L);
 
             // render
-            phase = PHASE_SMAP;
-            r_pmask(true, false);
+            dsgraph.phase = PHASE_SMAP;
+            dsgraph.r_pmask(true, false);
             L->svis.begin();
             PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-            r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
-            bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-            VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
+            dsgraph.render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
+            bool bNormal = dsgraph.mapNormalPasses[0][0].size() || dsgraph.mapMatrixPasses[0][0].size();
+            VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
 
             if (bNormal)
             {
@@ -137,7 +137,7 @@ void CRender::render_lights(light_Package& LP)
                 RCache.set_xform_world(Fidentity);
                 RCache.set_xform_view(L->X.S.view);
                 RCache.set_xform_project(L->X.S.project);
-                r_dsgraph_render_graph(0);
+                dsgraph.render_graph(0);
                 if (Details)
                 {
                     if (check_grass_shadow(L, ViewBase))
@@ -153,7 +153,7 @@ void CRender::render_lights(light_Package& LP)
                 stats.s_finalclip++;
             }
             L->svis.end();
-            r_pmask(true, false);
+            dsgraph.r_pmask(true, false);
         }
 
         PIX_EVENT(UNSHADOWED_LIGHTS);

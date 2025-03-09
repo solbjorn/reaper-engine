@@ -194,15 +194,14 @@ void CRender::render_rain()
 
     // Begin SMAP-render
     {
-        VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
+        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
         HOM.Disable();
-        phase = PHASE_SMAP;
-        r_pmask(true, false);
+        dsgraph.phase = PHASE_SMAP;
+        dsgraph.r_pmask(true, false);
     }
 
     // Fill the database
-    // r_dsgraph_render_subspace				(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
-    r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, FALSE);
+    dsgraph.render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, FALSE);
 
     // Finalize & Cleanup
     RainLight.X.D.combine = cull_xform; //*((Fmatrix*)&m_LightViewProj);
@@ -210,25 +209,20 @@ void CRender::render_rain()
     // Render shadow-map
     //. !!! We should clip based on shrinked frustum (again)
     {
-        bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-        bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+        bool bNormal = dsgraph.mapNormalPasses[0][0].size() || dsgraph.mapMatrixPasses[0][0].size();
+        bool bSpecial = dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size();
         if (bNormal || bSpecial)
         {
             Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
             RCache.set_xform_world(Fidentity);
             RCache.set_xform_view(Fidentity);
             RCache.set_xform_project(RainLight.X.D.combine);
-            r_dsgraph_render_graph(0);
-            // if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
-            //	Details->Render					()	;
+            dsgraph.render_graph(0);
         }
     }
 
     // End SMAP-render
-    {
-        //		fuckingsun->svis.end					();
-        r_pmask(true, false);
-    }
+    dsgraph.r_pmask(true, false);
 
     // Restore XForms
     RCache.set_xform_world(Fidentity);

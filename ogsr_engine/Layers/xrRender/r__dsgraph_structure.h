@@ -17,12 +17,8 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // common part of interface implementation for all D3D renderers		//
 //////////////////////////////////////////////////////////////////////////
-class R_dsgraph_structure : public IRender_interface, public pureFrame
+struct R_dsgraph_structure
 {
-public:
-    IRenderable* val_pObject;
-    Fmatrix* val_pTransform;
-    BOOL val_bHUD;
     BOOL val_bRecordMP; // record nearest for multi-pass
     R_feedback* val_feedback{}; // feedback for geometry being rendered
     u32 val_feedback_breakp{}; // breakpoint
@@ -32,7 +28,6 @@ public:
     bool pmask[2];
     bool pmask_wmark;
 
-public:
     // Dynamic scene graph
     // R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
     R_dsgraph::mapNormalPasses_T mapNormalPasses[2]; // 2==(priority/2)
@@ -51,6 +46,11 @@ public:
     R_dsgraph::mapSorted_T mapEmissive;
     R_dsgraph::mapSorted_T mapHUDEmissive;
 
+    xr_vector<CSector*> Sectors;
+    xr_vector<CPortal*> Portals;
+    CPortalTraverser PortalTraverser;
+    xrXRC Sectors_xrc;
+
     // Runtime structures
     xr_vector<R_dsgraph::mapNormal_T::value_type*> nrmPasses;
     xr_vector<R_dsgraph::mapMatrix_T::value_type*> matPasses;
@@ -60,20 +60,9 @@ public:
     xr_vector<ISpatial*> lstSpatial;
     xr_vector<dxRender_Visual*> lstVisuals;
 
-    xr_vector<dxRender_Visual*> lstRecorded;
-
     u32 counter_S;
     u32 counter_D;
-    BOOL b_loaded;
 
-public:
-    virtual void set_Transform(Fmatrix* M)
-    {
-        VERIFY(M);
-        val_pTransform = M;
-    }
-    virtual void set_HUD(BOOL V) { val_bHUD = V; }
-    virtual BOOL get_HUD() { return val_bHUD; }
     void set_Feedback(R_feedback* V, u32 id)
     {
         val_feedback_breakp = id;
@@ -92,20 +81,15 @@ public:
     }
     void clear_Counters() { counter_S = counter_D = 0; }
 
-public:
     R_dsgraph_structure()
     {
-        val_pObject = NULL;
-        val_pTransform = NULL;
-        val_bHUD = FALSE;
         val_bRecordMP = FALSE;
         val_feedback_breakp = 0;
         val_recorder = 0;
         r_pmask(true, true);
-        b_loaded = FALSE;
     };
 
-    void r_dsgraph_destroy()
+    void destroy()
     {
         nrmPasses.clear();
         matPasses.clear();
@@ -115,7 +99,6 @@ public:
         lstRenderables.clear();
         lstSpatial.clear();
         lstVisuals.clear();
-        lstRecorded.clear();
 
         for (int i = 0; i < SHADER_PASSES_MAX; ++i)
         {
@@ -145,32 +128,28 @@ public:
         pmask_wmark = _wm;
     }
 
-    void r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center);
-    void r_dsgraph_insert_static(dxRender_Visual* pVisual);
+    void load(const xr_vector<CSector::level_sector_data_t>& sectors, const xr_vector<CPortal::level_portal_data_t>& portals);
+    void unload();
 
-    void r_dsgraph_render_graph(u32 _priority);
-    void r_dsgraph_render_hud(bool NoPS = false);
-    void r_dsgraph_render_hud_ui();
-    void r_dsgraph_render_lods(bool _setup_zb, bool _clear);
-    void r_dsgraph_render_sorted();
-    void r_dsgraph_render_emissive(bool clear = true, bool renderHUD = false);
-    void r_dsgraph_render_wmarks();
-    void r_dsgraph_render_distort();
-    void r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-    void r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-    void r_dsgraph_render_R1_box(IRender_Sector* _sector, Fbox& _bb, int _element);
+    void add_static(dxRender_Visual* pVisual, const CFrustum& view, u32 planes);
+    void add_leafs_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, bool ignore = false); // if detected node's full visibility
+    void add_leafs_static(dxRender_Visual* pVisual); // if detected node's full visibility
 
-    void r_dsgraph_render_landscape(u32 pass, bool _clear);
-    void r_dsgraph_render_water_ssr();
-    void r_dsgraph_render_water();
+    void insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& Center);
+    void insert_static(dxRender_Visual* pVisual);
 
-public:
-    virtual u32 memory_usage()
-    {
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-        return (g_render_lua_allocator.get_allocated_size());
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-        return (0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-    }
+    void render_graph(u32 _priority);
+    void render_hud(bool NoPS = false);
+    void render_hud_ui();
+    void render_lods(bool _setup_zb, bool _clear);
+    void render_sorted();
+    void render_emissive(bool clear = true, bool renderHUD = false);
+    void render_wmarks();
+    void render_distort();
+    void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
+    void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
+
+    void render_landscape(u32 pass, bool _clear);
+    void render_water_ssr();
+    void render_water();
 };

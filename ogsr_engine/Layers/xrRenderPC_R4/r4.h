@@ -25,7 +25,7 @@
 class dxRender_Visual;
 
 // definition
-class CRender : public R_dsgraph_structure
+class CRender : public IRender_interface, public pureFrame
 {
 public:
     enum
@@ -35,23 +35,23 @@ public:
     };
 
 public:
+    R_dsgraph_structure dsgraph;
+
     struct _options
     {
-        constexpr inline bool get_true() const { return true; }
-
-        __declspec(property(get = get_true)) bool ssfx_branches;
-        __declspec(property(get = get_true)) bool ssfx_blood;
-        __declspec(property(get = get_true)) bool ssfx_rain;
-        __declspec(property(get = get_true)) bool ssfx_hud_raindrops;
-        __declspec(property(get = get_true)) bool ssfx_ssr;
-        __declspec(property(get = get_true)) bool ssfx_terrain;
-        __declspec(property(get = get_true)) bool ssfx_volumetric;
-        __declspec(property(get = get_true)) bool ssfx_water;
-        __declspec(property(get = get_true)) bool ssfx_ao;
-        __declspec(property(get = get_true)) bool ssfx_il;
-        __declspec(property(get = get_true)) bool ssfx_core;
-        __declspec(property(get = get_true)) bool ssfx_bloom;
-        __declspec(property(get = get_true)) bool ssfx_sss;
+        static constexpr bool ssfx_branches = true;
+        static constexpr bool ssfx_blood = true;
+        static constexpr bool ssfx_rain = true;
+        static constexpr bool ssfx_hud_raindrops = true;
+        static constexpr bool ssfx_ssr = true;
+        static constexpr bool ssfx_terrain = true;
+        static constexpr bool ssfx_volumetric = true;
+        static constexpr bool ssfx_water = true;
+        static constexpr bool ssfx_ao = true;
+        static constexpr bool ssfx_il = true;
+        static constexpr bool ssfx_core = true;
+        static constexpr bool ssfx_bloom = true;
+        static constexpr bool ssfx_sss = true;
 
         u32 HW_smap_FORMAT : 32;
         u32 smapsize : 16;
@@ -73,15 +73,12 @@ public:
         u32 ic_total, ic_culled;
     } stats;
 
-public:
     bool is_sun();
+
     // Sector detection and visibility
     CSector* pLastSector;
     Fvector vLastCameraPos;
     u32 uLastLTRACK;
-    xr_vector<IRender_Portal*> Portals;
-    xr_vector<IRender_Sector*> Sectors;
-    xrXRC Sectors_xrc;
     CDB::MODEL* rmPortals;
     CHOM HOM;
     R_occlusion HWOCC;
@@ -119,6 +116,7 @@ public:
     // u32															q_sync_count	;
 
     bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
+    bool b_loaded{};
 
     xr_vector<sun::cascade> m_sun_cascades;
 
@@ -133,11 +131,6 @@ private:
     void LoadSectors(IReader* fs);
     void LoadSWIs(CStreamReader* fs);
     void Load3DFluid();
-
-    BOOL add_Dynamic(dxRender_Visual* pVisual, u32 planes); // normal processing
-    void add_Static(dxRender_Visual* pVisual, u32 planes);
-    void add_leafs_Dynamic(dxRender_Visual* pVisual, bool ignore = false); // if detected node's full visibility
-    void add_leafs_Static(dxRender_Visual* pVisual); // if detected node's full visibility
 
 public:
     void render_main(Fmatrix& mCombined, bool _fportals);
@@ -159,13 +152,12 @@ private:
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);
-    ShaderElement* rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq);
+    ShaderElement* rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq);
     D3DVERTEXELEMENT9* getVB_Format(int id, BOOL _alt = FALSE);
     ID3DVertexBuffer* getVB(int id, BOOL _alt = FALSE);
     ID3DIndexBuffer* getIB(int id, BOOL _alt = FALSE);
     FSlideWindowItem* getSWI(int id);
     IRender_Portal* getPortal(int id);
-    IRender_Sector* getSectorActive();
     IRenderVisual* model_CreatePE(LPCSTR name);
     IRender_Sector* detectSector(const Fvector& P, Fvector& D);
     int translateSector(IRender_Sector* pSector);
@@ -231,10 +223,7 @@ public:
     virtual IRender_Target* getTarget();
 
     // Main
-    virtual void flush();
-    virtual void set_Object(IRenderable* O);
-    virtual void add_Visual(IRenderVisual* V); // add visual leaf	(no culling performed at all)
-    virtual void add_Geometry(IRenderVisual* V); // add visual(s)	(all culling performed)
+    void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) override;
 
     // wallmarks
     virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
@@ -291,7 +280,7 @@ public:
     virtual void rmFar();
     virtual void rmNormal();
 
-    u32 active_phase() const override { return phase; }
+    u32 active_phase() const override { return dsgraph.phase; }
 
     // Constructor/destructor/loader
     CRender();

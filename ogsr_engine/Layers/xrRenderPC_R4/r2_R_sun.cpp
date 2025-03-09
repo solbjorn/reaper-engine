@@ -280,20 +280,20 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
     // Begin SMAP-render
     {
-        VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
+        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
         HOM.Disable();
-        phase = PHASE_SMAP;
-        r_pmask(true, false);
+        dsgraph.phase = PHASE_SMAP;
+        dsgraph.r_pmask(true, false);
     }
 
     // Fill the database
-    r_dsgraph_render_subspace(cascade.cull_sector, &cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
+    dsgraph.render_subspace(cascade.cull_sector, &cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
 
     // Render shadow-map
     //. !!! We should clip based on shrinked frustum (again)
     {
-        bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-        VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
+        bool bNormal = dsgraph.mapNormalPasses[0][0].size() || dsgraph.mapMatrixPasses[0][0].size();
+        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
 
         if (bNormal)
         {
@@ -301,7 +301,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             RCache.set_xform_world(Fidentity);
             RCache.set_xform_view(Fidentity);
             RCache.set_xform_project(fuckingsun->X.D.combine);
-            r_dsgraph_render_graph(0);
+            dsgraph.render_graph(0);
 
             if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
             {
@@ -312,9 +312,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
     }
 
     // End SMAP-render
-    {
-        r_pmask(true, false);
-    }
+    dsgraph.r_pmask(true, false);
 
     // Accumulate
     Target->phase_accumulator();

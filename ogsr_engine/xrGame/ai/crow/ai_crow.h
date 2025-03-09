@@ -120,7 +120,7 @@ public:
     virtual void net_Destroy();
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return FALSE; }
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
 
@@ -129,7 +129,7 @@ public:
     virtual void net_Export(CSE_Abstract* E);
 
     virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
-    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/){};
+    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/) {};
 
     virtual void HitSignal(float HitAmount, Fvector& local_dir, CObject* who, s16 element);
     virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);

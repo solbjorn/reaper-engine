@@ -45,13 +45,12 @@ bool CRender::is_sun()
 
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq)
 {
     int id = SE_R2_SHADOW;
-    if (CRender::PHASE_NORMAL == RImplementation.phase)
-    {
-        id = (RImplementation.val_bHUD || ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
-    }
+    if (active_phase() == PHASE_NORMAL)
+        id = ((root && root->renderable_HUD()) || ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+
     return pVisual->shader->E[id]._get();
 }
 
@@ -59,7 +58,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
 {
     int id = SE_R2_SHADOW;
-    if (CRender::PHASE_NORMAL == RImplementation.phase)
+    if (active_phase() == PHASE_NORMAL)
     {
         if (pVisual->shader->E[0]->flags.isLandscape)
         {
@@ -186,9 +185,7 @@ void CRender::create()
     PSLibrary.OnCreate();
 
     rmNormal();
-    marker = 0;
-
-    ::PortalTraverser.initialize();
+    dsgraph.marker = 0;
 
     FluidManager.Initialize(70, 70, 70);
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
@@ -198,18 +195,12 @@ void CRender::destroy()
 {
     FluidManager.Destroy();
 
-    ::PortalTraverser.destroy();
-    /*
-    for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-        _RELEASE				(q_sync_point[i]);
-    */
-
     HWOCC.occq_destroy();
     xr_delete(Models);
     xr_delete(Target);
     PSLibrary.OnDestroy();
     Device.seqFrame.Remove(this);
-    r_dsgraph_destroy();
+    dsgraph.destroy();
 }
 
 extern u32 reset_frame;
@@ -391,17 +382,15 @@ ref_shader CRender::getShader(int id)
 
 IRender_Portal* CRender::getPortal(int id)
 {
-    VERIFY(id < int(Portals.size()));
-    return Portals[id];
+    VERIFY(id < int(dsgraph.Portals.size()));
+    return dsgraph.Portals[id];
 }
 
 IRender_Sector* CRender::getSector(int id)
 {
-    VERIFY(id < int(Sectors.size()));
-    return Sectors[id];
+    VERIFY(id < int(dsgraph.Sectors.size()));
+    return dsgraph.Sectors[id];
 }
-
-IRender_Sector* CRender::getSectorActive() { return pLastSector; }
 
 IRenderVisual* CRender::getVisual(int id)
 {
@@ -462,14 +451,12 @@ IRender_Target* CRender::getTarget() { return Target; }
 IRender_Light* CRender::light_create() { return Lights.Create(); }
 IRender_Glow* CRender::glow_create() { return xr_new<CGlow>(); }
 
-void CRender::flush() { r_dsgraph_render_graph(0); }
-
 BOOL CRender::occ_visible(vis_data& P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(sPoly& P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(Fbox& P) { return HOM.visible(P); }
 
-void CRender::add_Visual(IRenderVisual* V) { add_leafs_Dynamic((dxRender_Visual*)V, V->_ignore_optimization); }
-void CRender::add_Geometry(IRenderVisual* V) { add_Static((dxRender_Visual*)V, View->getMask()); }
+void CRender::add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) { dsgraph.add_leafs_dynamic(root, (dxRender_Visual*)V, m, V->_ignore_optimization); }
+
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
     if (T->suppress_wm)
@@ -506,8 +493,6 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
     if (pShader)
         add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
 }
-
-void CRender::set_Object(IRenderable* O) { val_pObject = O; }
 
 void CRender::rmNear()
 {

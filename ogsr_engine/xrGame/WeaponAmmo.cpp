@@ -75,8 +75,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
     VERIFY(u16(-1) != bullet_material_idx);
     VERIFY(fWallmarkSize > 0);
 
-    m_InvShortName = CStringTable().translate(READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short",
-                                                             pSettings->r_string(section, "inv_name")));
+    m_InvShortName = CStringTable().translate(READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", pSettings->r_string(section, "inv_name")));
 }
 
 float CCartridge::Weight() const
@@ -204,10 +203,10 @@ bool CWeaponAmmo::Get(CCartridge& cartridge)
     return true;
 }
 
-void CWeaponAmmo::renderable_Render()
+void CWeaponAmmo::renderable_Render(u32 context_id, IRenderable* root)
 {
     if (!m_ready_to_destroy)
-        inherited::renderable_Render();
+        inherited::renderable_Render(context_id, root);
 }
 
 void CWeaponAmmo::UpdateCL()

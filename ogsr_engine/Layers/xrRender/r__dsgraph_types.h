@@ -20,6 +20,17 @@ struct _MatrixItem
     dxRender_Visual* pVisual;
     Fmatrix Matrix; // matrix (copy)
     Fmatrix PrevMatrix;
+
+    constexpr inline _MatrixItem() = default;
+    constexpr inline _MatrixItem(const _MatrixItem& i) { xr_memcpy128(this, &i, sizeof(i)); }
+    constexpr inline _MatrixItem(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m) : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(Fidentity) {}
+    constexpr inline _MatrixItem(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p) : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(p) {}
+
+    constexpr inline _MatrixItem& operator=(const _MatrixItem& i)
+    {
+        xr_memcpy128(this, &i, sizeof(i));
+        return *this;
+    }
 };
 
 struct _MatrixItemS
@@ -34,6 +45,22 @@ struct _MatrixItemS
     Fmatrix PrevMatrix;
     // _MatrixItem end
     ShaderElement* se;
+
+    constexpr inline _MatrixItemS() = default;
+    constexpr inline _MatrixItemS(const _MatrixItemS& i) { xr_memcpy128(this, &i, sizeof(i)); }
+    constexpr inline _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa(s), pObject(nullptr), pVisual(v), Matrix(Fidentity), PrevMatrix(Fidentity), se(e) {}
+    constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, ShaderElement* e)
+        : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(Fidentity), se(e)
+    {}
+    constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p, ShaderElement* e)
+        : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(p), se(e)
+    {}
+
+    constexpr inline _MatrixItemS& operator=(const _MatrixItemS& i)
+    {
+        xr_memcpy128(this, &i, sizeof(i));
+        return *this;
+    }
 };
 
 struct _LodItem

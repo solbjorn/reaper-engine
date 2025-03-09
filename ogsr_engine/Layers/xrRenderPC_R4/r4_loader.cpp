@@ -117,10 +117,10 @@ void CRender::level_Load(IReader* fs)
     Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
     // sanity-clear
-    lstLODs.clear();
-    lstLODgroups.clear();
-    mapLOD.clear();
-    mapWater.clear();
+    dsgraph.lstLODs.clear();
+    dsgraph.lstLODgroups.clear();
+    dsgraph.mapLOD.clear();
+    dsgraph.mapWater.clear();
 
     // signal loaded
     b_loaded = TRUE;
@@ -155,13 +155,7 @@ void CRender::level_Unload()
     pLastSector = 0;
     vLastCameraPos.set(0, 0, 0);
     // 2.
-    for (I = 0; I < Sectors.size(); I++)
-        xr_delete(Sectors[I]);
-    Sectors.clear();
-    // 3.
-    for (I = 0; I < Portals.size(); I++)
-        xr_delete(Portals[I]);
-    Portals.clear();
+    dsgraph.unload();
 
     //*** Lights
     // Glows.Unload			();
@@ -330,25 +324,19 @@ void CRender::LoadLights(IReader* fs)
     Lights.LoadHemi();
 }
 
-struct b_portal
-{
-    u16 sector_front;
-    u16 sector_back;
-    svector<Fvector, 6> vertices;
-};
-
 void CRender::LoadSectors(IReader* fs)
 {
     // allocate memory for portals
-    u32 size = fs->find_chunk(fsL_PORTALS);
-    R_ASSERT(0 == size % sizeof(b_portal));
-    u32 count = size / sizeof(b_portal);
-    Portals.resize(count);
-    for (u32 c = 0; c < count; c++)
-        Portals[c] = xr_new<CPortal>();
+    const u32 pt_size = fs->find_chunk(fsL_PORTALS);
+    R_ASSERT(0 == pt_size % sizeof(CPortal::level_portal_data_t));
+
+    const u32 portals_count = pt_size / sizeof(CPortal::level_portal_data_t);
+    xr_vector<CPortal::level_portal_data_t> portals_data{portals_count};
 
     // load sectors
-    CSector* largest_sec = nullptr;
+    xr_vector<CSector::level_sector_data_t> sectors_data;
+
+    size_t largest_sector_id = size_t(-1);
     float largest_sector_vol = 0;
     IReader* S = fs->open_chunk(fsL_SECTORS);
 
@@ -358,36 +346,48 @@ void CRender::LoadSectors(IReader* fs)
         if (!P)
             break;
 
-        CSector* __S = (CSector*)Sectors.emplace_back(xr_new<CSector>());
-        __S->load(*P);
-        P->close();
+        auto& sector_data = sectors_data.emplace_back();
+
+        u32 size = P->find_chunk(fsP_Portals);
+        R_ASSERT(0 == (size & 1));
+        u32 portals_in_sector = size / sizeof(u16);
+
+        sector_data.portals_id.reserve(portals_in_sector);
+        while (portals_in_sector)
+        {
+            const u16 ID = P->r_u16();
+            sector_data.portals_id.emplace_back(ID);
+            --portals_in_sector;
+        }
+
+        size = P->find_chunk(fsP_Root);
+        R_ASSERT(size == 4);
+        sector_data.root_id = P->r_u32();
 
         // Search for default sector - assume "default" or "outdoor" sector is the largest one
-        // hack: need to know real outdoor sector
-        const dxRender_Visual* V = __S->root();
-        const float vol = V->vis.box.getvolume();
-
+        // XXX: hack: need to know real outdoor sector
+        auto* V = (dxRender_Visual*)RImplementation.getVisual(sector_data.root_id);
+        float vol = V->vis.box.getvolume();
         if (vol > largest_sector_vol)
         {
             largest_sector_vol = vol;
-            largest_sec = __S;
+            largest_sector_id = i;
         }
-    }
 
+        P->close();
+    }
     S->close();
-    largest_sector = largest_sec;
 
     // load portals
-    if (count)
+    if (portals_count)
     {
         CDB::Collector CL;
         fs->find_chunk(fsL_PORTALS);
-        for (u32 i = 0; i < count; i++)
+        for (u32 i = 0; i < portals_count; i++)
         {
-            b_portal P;
+            auto& P = portals_data[i];
             fs->r(&P, sizeof(P));
-            CPortal* __P = (CPortal*)Portals[i];
-            __P->Setup(P.vertices.begin(), P.vertices.size(), (CSector*)getSector(P.sector_front), (CSector*)getSector(P.sector_back));
+
             for (u32 j = 2; j < P.vertices.size(); j++)
                 CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
         }
@@ -405,14 +405,13 @@ void CRender::LoadSectors(IReader* fs)
     }
     else
     {
-        rmPortals = 0;
+        rmPortals = nullptr;
     }
 
-    // debug
-    //	for (int d=0; d<Sectors.size(); d++)
-    //		Sectors[d]->DebugDump	();
+    dsgraph.load(sectors_data, portals_data);
 
-    pLastSector = 0;
+    largest_sector = dsgraph.Sectors[largest_sector_id];
+    pLastSector = nullptr;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)

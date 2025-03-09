@@ -705,7 +705,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
     wallmarks.push_back(wm);
 }
 
-void CKinematics::CalculateWallmarks()
+void CKinematics::CalculateWallmarks(bool hud)
 {
     if (!wallmarks.empty() && (wm_frame != Device.dwFrame))
     {
@@ -718,9 +718,8 @@ void CKinematics::CalculateWallmarks()
             if (w < 1.f)
             {
                 // append wm to WallmarkEngine
-                if (RImplementation.ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
-                    // RImplementation.add_SkeletonWallmark	(wm);
-                    ::RImplementation.add_SkeletonWallmark(wm);
+                if (!hud && RImplementation.ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
+                    RImplementation.add_SkeletonWallmark(wm);
             }
             else
             {

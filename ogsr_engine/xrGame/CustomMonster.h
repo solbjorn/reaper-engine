@@ -140,7 +140,7 @@ public:
     virtual void Die(CObject* who);
 
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who);
-    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/){};
+    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/) {};
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
 
@@ -154,7 +154,7 @@ public:
     // debug
 #ifdef DEBUG
     virtual void OnRender();
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
 #endif
 
     virtual bool bfExecMovement() { return (false); };

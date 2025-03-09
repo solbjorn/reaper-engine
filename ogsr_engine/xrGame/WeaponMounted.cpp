@@ -56,11 +56,11 @@ void CWeaponMounted::Load(LPCSTR section)
 
     HUD_SOUND::LoadSound(section, "snd_shoot", sndShot, SOUND_TYPE_WEAPON_SHOOTING);
 
-    //тип используемых патронов
+    // тип используемых патронов
     m_sAmmoType = pSettings->r_string(section, "ammo_class");
     m_CurrentAmmo.Load(*m_sAmmoType, 0);
 
-    //подбрасывание камеры во время отдачи
+    // подбрасывание камеры во время отдачи
     camMaxAngle = pSettings->r_float(section, "cam_max_angle");
     camMaxAngle = deg2rad(camMaxAngle);
     camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
@@ -152,12 +152,11 @@ void CWeaponMounted::UpdateCL()
 
 void CWeaponMounted::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
 
-void CWeaponMounted::renderable_Render()
+void CWeaponMounted::renderable_Render(u32 context_id, IRenderable* root)
 {
-    //нарисовать подсветку
+    // нарисовать подсветку
     RenderLight();
-
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
 }
 
 void CWeaponMounted::OnMouseMove(int dx, int dy)
@@ -278,7 +277,7 @@ void CWeaponMounted::detach_Actor()
     // enable shell callback
     m_pPhysicsShell->EnabledCallbacks(TRUE);
 
-    //закончить стрельбу
+    // закончить стрельбу
     FireEnd();
 
     processing_deactivate();
@@ -319,7 +318,7 @@ void CWeaponMounted::OnShot()
     bool b_hud_mode = (Level().CurrentEntity() == smart_cast<CObject*>(Owner()));
     HUD_SOUND::PlaySound(sndShot, fire_pos, Owner(), b_hud_mode);
 
-    //добавить эффектор стрельбы
+    // добавить эффектор стрельбы
     AddShotEffector();
     m_dAngle.set(::Random.randF(-fireDispersionBase, fireDispersionBase), ::Random.randF(-fireDispersionBase, fireDispersionBase));
 }

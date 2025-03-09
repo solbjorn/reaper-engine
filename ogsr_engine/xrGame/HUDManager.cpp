@@ -232,7 +232,7 @@ bool need_render_hud()
     return true;
 }
 
-void CHUDManager::Render_First()
+void CHUDManager::Render_First(u32 context_id)
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
@@ -245,11 +245,10 @@ void CHUDManager::Render_First()
 
     // only shadow
     CObject* O = g_pGameLevel->CurrentViewEntity();
-    ::Render->set_Object(O->H_Root());
-    O->renderable_Render();
+    O->renderable_Render(context_id, O->H_Root());
 }
 
-void CHUDManager::Render_Last()
+void CHUDManager::Render_Last(u32 context_id)
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
@@ -268,10 +267,9 @@ void CHUDManager::Render_Last()
         return;
 
     // hud itself
-    ::Render->set_HUD(TRUE);
-    ::Render->set_Object(O->H_Root());
-    O->OnHUDDraw(this);
-    ::Render->set_HUD(FALSE);
+    O->renderable_HUD(true);
+    O->OnHUDDraw(context_id, this, O->H_Root());
+    O->renderable_HUD(false);
 }
 
 extern void draw_wnds_rects();

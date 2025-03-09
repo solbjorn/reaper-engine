@@ -49,9 +49,7 @@ public:
     virtual BOOL UsedAI_Locations() { return (FALSE); }
     virtual bool Useful() const { return (m_eState == eInactive); }
 
-    virtual void renderable_Render() { inherited::renderable_Render(); }
-
-    //создание физической оболочки
+    // создание физической оболочки
     virtual void activate_physic_shell();
     virtual void create_physic_shell();
 
@@ -79,37 +77,37 @@ public:
     bool m_bLaunched;
 
 protected:
-    //указатель на владельца RocketLauncher - который стреляет ракету
+    // указатель на владельца RocketLauncher - который стреляет ракету
     CGameObject* m_pOwner;
 
     SRoketContact m_contact;
-    //параметры которые задаются RocketLauncher-ом перед пуском
+    // параметры которые задаются RocketLauncher-ом перед пуском
     Fmatrix m_LaunchXForm;
     Fvector m_vLaunchVelocity;
     Fvector m_vLaunchAngularVelocity;
 
     enum ERocketState
     {
-        eInactive, //ракета неактивна и находиться в инвентаре
-        eEngine, //включен двигатель
-        eFlying, //просто летим
-        eCollide //произошло столкновение с препятствием
+        eInactive, // ракета неактивна и находиться в инвентаре
+        eEngine, // включен двигатель
+        eFlying, // просто летим
+        eCollide // произошло столкновение с препятствием
     };
 
-    //текущее состояние ракеты
+    // текущее состояние ракеты
     ERocketState m_eState;
 
-    //двигатель присутствует
+    // двигатель присутствует
     bool m_bEnginePresent;
-    //время работы двигателя с момента старта
+    // время работы двигателя с момента старта
     int m_dwEngineWorkTime;
-    //сила работы двигателя (размер импульса в секунду)
+    // сила работы двигателя (размер импульса в секунду)
     float m_fEngineImpulse;
     float m_fEngineImpulseUp;
-    //текущее время работы двигателя
+    // текущее время работы двигателя
     int m_dwEngineTime;
 
-    //обработка столкновения
+    // обработка столкновения
     virtual void Contact(const Fvector& pos, const Fvector& normal);
     void PlayContact();
     static void ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
@@ -118,12 +116,12 @@ protected:
     //	Lights
     //////////////////////////////////////////////////////////////////////////
 protected:
-    //флаг, что подсветка может быть включена
+    // флаг, что подсветка может быть включена
     bool m_bLightsEnabled;
-    //флаг, что подсветка будет остановлена
-    //вместе с двигателем
+    // флаг, что подсветка будет остановлена
+    // вместе с двигателем
     bool m_bStopLightsWithEngine;
-    //подсветка во время полета и работы двигателя
+    // подсветка во время полета и работы двигателя
     ref_light m_pTrailLight;
     Fcolor m_TrailLightColor;
     float m_fTrailLightRange;
@@ -138,10 +136,10 @@ protected:
     //	Particles
     //////////////////////////////////////////////////////////////////////////
 protected:
-    //имя партиклов двигателя
+    // имя партиклов двигателя
     shared_str m_sEngineParticles;
     CParticlesObject* m_pEngineParticles;
-    //имя партиклов полета
+    // имя партиклов полета
     shared_str m_sFlyParticles;
     CParticlesObject* m_pFlyParticles;
 

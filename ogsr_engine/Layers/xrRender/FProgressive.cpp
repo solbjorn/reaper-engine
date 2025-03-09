@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "../../xr_3da/fmesh.h"
 #include "FProgressive.h"
 
@@ -67,8 +66,7 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
 
 void FProgressive::Render(float LOD)
 {
-
-    if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
+    if (m_fast && RImplementation.active_phase() == CRender::PHASE_SMAP)
     {
         int lod_id = iFloor((1.f - clampr(LOD, 0.f, 1.f)) * float(xSWI->count - 1) + 0.5f);
         VERIFY(lod_id >= 0 && lod_id < int(xSWI->count));
@@ -92,7 +90,6 @@ void FProgressive::Render(float LOD)
         RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
         RCache.stat.r.s_static.add(SW.num_verts);
     }
-
 }
 
 #define PCOPY(a) a = pFrom->a

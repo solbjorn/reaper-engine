@@ -70,7 +70,7 @@ class CGameObject : public CObject, public CUsableScriptObject, public CScriptBi
     animation_movement_controller* m_anim_mov_ctrl;
 
 protected:
-    //время удаления объекта
+    // время удаления объекта
     bool m_bObjectRemoved;
 
 public:
@@ -131,19 +131,18 @@ public:
     virtual void spatial_move();
     virtual BOOL Ready() { return getReady(); } // update only if active and fully initialized by/for network
 
-
     virtual void shedule_Update(u32 dt);
     virtual bool shedule_Needed();
 
     virtual void ForceTransform(const Fmatrix& m) override {}
     virtual void ForceTransformAndDirection(const Fmatrix& m) override { ForceTransform(m); }
 
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void Hit(SHit* pHDS){};
-    virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir){};
+    virtual void Hit(SHit* pHDS) {};
+    virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) {};
 
-    //игровое имя объекта
+    // игровое имя объекта
     virtual LPCSTR Name() const;
 
     // virtual void			OnH_A_Independent	();
@@ -264,7 +263,7 @@ public:
     CScriptCallbackEx<void>& callback(GameObject::ECallbackType type) const;
     virtual LPCSTR visual_name(CSE_Abstract* server_entity);
 
-    virtual void On_B_NotCurrentEntity(){};
+    virtual void On_B_NotCurrentEntity() {};
 
     CSE_ALifeDynamicObject* alife_object() const; // alpet: возвращает серверный экземпляр для этого объекта
 

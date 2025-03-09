@@ -496,7 +496,6 @@ void CTorch::afterDetach()
     inherited::afterDetach();
     Switch(false);
 }
-void CTorch::renderable_Render() { inherited::renderable_Render(); }
 
 void CTorch::calc_m_delta_h(float range) { m_delta_h = PI_DIV_2 - atan((range * 0.5f) / _abs(TORCH_OFFSET.x)); }
 

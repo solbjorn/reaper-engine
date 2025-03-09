@@ -151,6 +151,8 @@ public:
             allocator::dealloc(nodes);
         }
     }
+
+private:
     IC TNode* insert(const K& k)
     {
         if (pool)
@@ -234,6 +236,14 @@ public:
         {
             return Alloc(k);
         }
+    }
+
+public:
+    value_type* insertInAnyWay(const K& key, const T& value)
+    {
+        value_type* N = insertInAnyWay(key);
+        N->val = value;
+        return N;
     }
 
     IC u32 allocated() { return this->limit; }

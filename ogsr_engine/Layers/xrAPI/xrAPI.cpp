@@ -10,7 +10,4 @@ IRenderFactory* RenderFactory = nullptr;
 CDUInterface* DU = nullptr;
 xr_token* vid_mode_token = nullptr;
 IUIRender* UIRender = nullptr;
-CGameMtlLibrary* PGMLib = nullptr;
-// #ifdef DEBUG
 IDebugRender* DRender = nullptr;
-// #endif // DEBUG

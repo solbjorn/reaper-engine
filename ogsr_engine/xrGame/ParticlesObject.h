@@ -14,8 +14,8 @@ class CParticlesObject : public CPS_Instance
     void UpdateSpatial();
 
 protected:
-    bool m_bLooped; //флаг, что система зациклена
-    bool m_bStopping; //вызвана функция Stop()
+    bool m_bLooped; // флаг, что система зациклена
+    bool m_bStopping; // вызвана функция Stop()
 
 protected:
     u32 mt_dt;
@@ -27,7 +27,7 @@ public:
     virtual bool shedule_Needed() { return true; };
     virtual float shedule_Scale();
     virtual void shedule_Update(u32 dt);
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
     void PerformAllTheWork(u32 dt);
     void PerformAllTheWork_mt();
 

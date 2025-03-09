@@ -294,14 +294,16 @@ void CAI_Crow::UpdateCL()
         XFORM().set(m_pPhysicsShell->mXFORM);
     }
 }
-void CAI_Crow::renderable_Render()
+
+void CAI_Crow::renderable_Render(u32 context_id, IRenderable* root)
 {
     // CAI_Crow::renderable_Render вызывается только для ВИДИМЫХ В ЭТОМ КАДРЕ объектов --#SM+#--
     // из-за этого вороны, видимые в мире, но не видимые в зуме, замедляются - fDeltaTime для кадров линзы не учитывается
     UpdateWorkload(Device.fTimeDelta * (Device.dwFrame - o_workload_frame));
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
     o_workload_rframe = Device.dwFrame;
 }
+
 void CAI_Crow::shedule_Update(u32 DT)
 {
     float fDT = float(DT) / 1000.F;

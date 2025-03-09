@@ -120,7 +120,7 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     // Render
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual BOOL renderable_ShadowGenerate();
     virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power);
     virtual Feel::Sound* dcast_FeelSound() { return this; }
@@ -327,7 +327,7 @@ public:
     // HUD
     //////////////////////////////////////////////////////////////////////////
 public:
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
     BOOL HUDview() const;
 
     // visiblity

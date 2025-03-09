@@ -93,7 +93,6 @@ private:
     virtual bool obsolete() const noexcept { return false; }
 };
 
-
 class CPHFindParticlesComparer : public CPHReqComparerV
 {
     Fvector m_position;
@@ -171,9 +170,9 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
         SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(T->material, data->material);
         if (mtl_pair)
         {
-            if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
+            if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks->empty())
             {
-                wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
+                wm_shader WallmarkShader = mtl_pair->CollideMarks->GenerateWallmark();
                 Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,12 +186,12 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                         sp->Play(mtl_pair, (Fvector*)c->pos, true, nullptr);
                 }
                 else
-                {                  
+                {
                     float volume = collide_volume_min;
 
                     if (vel_cret > Pars::vel_cret_sound)
                     {
-                        volume =+ vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
+                        volume += vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
                     }
 
                     if (auto sp = object_snd_player(data); sp)

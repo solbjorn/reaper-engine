@@ -4,10 +4,6 @@
 
 #include "../xrRender/dxEnvironmentRender.h"
 
-#define STENCIL_CULL 0
-
-static constexpr float hclip(float v, float dim) { return 2.f * v / dim - 1.f; }
-
 void CRenderTarget::phase_combine()
 {
     PIX_EVENT(phase_combine);
@@ -238,7 +234,7 @@ void CRenderTarget::phase_combine()
 
         // Render Water SSR
         RCache.set_xform_world(Fidentity);
-        RImplementation.r_dsgraph_render_water_ssr();
+        RImplementation.dsgraph.render_water_ssr();
 
         // Restore Viewport
         set_viewport_size(HW.pContext, w, h);
@@ -260,7 +256,7 @@ void CRenderTarget::phase_combine()
 
     // Final water rendering ( All the code above can be omitted if the Water module isn't installed )
     RCache.set_xform_world(Fidentity);
-    RImplementation.r_dsgraph_render_water();
+    RImplementation.dsgraph.render_water();
 
     {
         if (RImplementation.o.ssfx_rain)
@@ -325,7 +321,7 @@ void CRenderTarget::phase_combine()
 
     // Distortion filter
     BOOL bDistort = true; // This can be modified
-    if ((0 == RImplementation.mapDistort.size()) && !_menu_pp)
+    if (!RImplementation.dsgraph.mapDistort.size() && !_menu_pp)
         bDistort = FALSE;
     if (bDistort)
     {
@@ -345,7 +341,7 @@ void CRenderTarget::phase_combine()
         RCache.set_Stencil(FALSE);
         RCache.set_ColorWriteEnable();
         // CHK_DX(HW.pDevice->Clear	( 0L, NULL, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
-        RImplementation.r_dsgraph_render_distort();
+        RImplementation.dsgraph.render_distort();
         if (g_pGamePersistent)
             g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
     }

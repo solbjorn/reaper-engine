@@ -387,12 +387,12 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
         // Select nearest lights
         const Fvector bb_size = {radius, radius, radius};
 
-        g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
+        g_SpatialSpace->q_box(RImplementation.dsgraph.lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
 
-        for (u32 o_it = 0; o_it < RImplementation.lstSpatial.size(); o_it++)
+        for (u32 o_it = 0; o_it < RImplementation.dsgraph.lstSpatial.size(); o_it++)
         {
-            ISpatial* spatial = RImplementation.lstSpatial[o_it];
-            light* source = (light*)(spatial->dcast_Light());
+            ISpatial* spatial = RImplementation.dsgraph.lstSpatial[o_it];
+            light* source = (light*)spatial->dcast_Light();
             VERIFY(source); // sanity check
             float R = radius + source->range;
             if (position.distance_to(source->position) < R && source->flags.bStatic)

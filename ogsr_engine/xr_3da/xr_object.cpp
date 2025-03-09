@@ -350,7 +350,7 @@ CObject::SavedPosition CObject::ps_Element(u32 ID) const
     return PositionStack[ID];
 }
 
-void CObject::renderable_Render() { MakeMeCrow(); }
+void CObject::renderable_Render(u32 context_id, IRenderable* root) { MakeMeCrow(); }
 
 CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
 {

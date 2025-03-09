@@ -306,10 +306,9 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 bool attachable_hud_item::need_renderable() { return m_parent_hud_item->need_renderable(); }
 
-void attachable_hud_item::render()
+void attachable_hud_item::render(u32 context_id, IRenderable* root)
 {
-    ::Render->set_Transform(&m_item_transform);
-    ::Render->add_Visual(m_model->dcast_RenderVisual());
+    ::Render->add_Visual(context_id, root, m_model->dcast_RenderVisual(), m_item_transform);
     debug_draw_firedeps();
     m_parent_hud_item->render_hud_mode();
 }
@@ -855,7 +854,7 @@ void player_hud::render_item_ui()
     UI()->m_currentPointType = bk;
 }
 
-void player_hud::render_hud()
+void player_hud::render_hud(u32 context_id, IRenderable* root)
 {
     // if (!m_attached_items[0] && !m_attached_items[1])
     //     return;
@@ -871,30 +870,21 @@ void player_hud::render_hud()
 
     if (b_has_hands || script_anim_part != u8(-1))
     {
-        ::Render->set_Transform(&m_transform);
-        ::Render->add_Visual(m_model->dcast_RenderVisual());
-
-        ::Render->set_Transform(&m_transform_2);
-        ::Render->add_Visual(m_model_2->dcast_RenderVisual());
+        ::Render->add_Visual(context_id, root, m_model->dcast_RenderVisual(), m_transform);
+        ::Render->add_Visual(context_id, root, m_model_2->dcast_RenderVisual(), m_transform_2);
     }
 
     if (!script_override_item) // можно скрывать предметы в руках во время скриптовой анимаии, но выглядит кривовато
     {
         if (m_attached_items[0])
-            m_attached_items[0]->render();
+            m_attached_items[0]->render(context_id, root);
 
         if (m_attached_items[1])
-            m_attached_items[1]->render();
+            m_attached_items[1]->render(context_id, root);
     }
 
-    if (b_has_hands)
-    {
-        if (script_anim_item_model)
-        {
-            ::Render->set_Transform(&m_item_pos);
-            ::Render->add_Visual(script_anim_item_model->dcast_RenderVisual());
-        }
-    }
+    if (b_has_hands && script_anim_item_model)
+        ::Render->add_Visual(context_id, root, script_anim_item_model->dcast_RenderVisual(), m_item_pos);
 }
 
 #include "../xr_3da/motion.h"

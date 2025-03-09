@@ -34,7 +34,7 @@ bool cmp_pass(const T& left, const T& right)
 }
 
 // ALPHA
-void __fastcall sorted_L1(mapSorted_Node* N)
+static void __fastcall sorted_L1(mapSorted_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -49,7 +49,7 @@ void __fastcall sorted_L1(mapSorted_Node* N)
     V->Render(LOD);
 }
 
-void __fastcall water_node_ssr(mapSorted_Node* N)
+static void __fastcall water_node_ssr(mapSorted_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -70,7 +70,7 @@ void __fastcall water_node_ssr(mapSorted_Node* N)
     V->Render(calcLOD(N->key, V->vis.sphere.R));
 }
 
-void __fastcall water_node(mapSorted_Node* N)
+static void __fastcall water_node(mapSorted_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -91,7 +91,7 @@ void __fastcall water_node(mapSorted_Node* N)
     V->Render(calcLOD(N->key, V->vis.sphere.R));
 }
 
-void __fastcall hud_node(mapSorted_Node* N)
+static void __fastcall hud_node(mapSorted_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -116,7 +116,7 @@ void __fastcall hud_node(mapSorted_Node* N)
     RImplementation.Target->RVelocity = false;
 }
 
-void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
+void R_dsgraph_structure::render_graph(u32 _priority)
 {
     PIX_EVENT(r_dsgraph_render_graph);
     Device.Statistic->RenderDUMP.Begin();
@@ -200,7 +200,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
 
 //////////////////////////////////////////////////////////////////////////
 // HUD render
-void R_dsgraph_structure::r_dsgraph_render_hud(bool NoPS)
+void R_dsgraph_structure::render_hud(bool NoPS)
 {
     PIX_EVENT(r_dsgraph_render_hud);
 
@@ -217,21 +217,18 @@ void R_dsgraph_structure::r_dsgraph_render_hud(bool NoPS)
     RCache.set_xform_project(Device.mProject);
 
     // Rendering
-    rmNear();
+    RImplementation.rmNear();
     if (!NoPS)
     {
         mapHUD.traverseLR(sorted_L1);
         mapHUD.clear();
-
-        rmNormal();
     }
     else
     {
         HUDMask.traverseLR(hud_node);
         HUDMask.clear();
-
-        rmNormal();
     }
+    RImplementation.rmNormal();
 
     // Restore projection
     Device.mProject = Pold;
@@ -241,7 +238,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud(bool NoPS)
     RCache.set_xform_project(Device.mProject);
 }
 
-void R_dsgraph_structure::r_dsgraph_render_hud_ui()
+void R_dsgraph_structure::render_hud_ui()
 {
     // Change projection
     Fmatrix Pold = Device.mProject;
@@ -255,9 +252,9 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
     RCache.set_xform_view(Device.mView);
     RCache.set_xform_project(Device.mProject);
 
-    rmNear();
+    RImplementation.rmNear();
     g_hud->RenderActiveItemUI();
-    rmNormal();
+    RImplementation.rmNormal();
 
     // Restore projection
     Device.mProject = Pold;
@@ -269,7 +266,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_sorted()
+void R_dsgraph_structure::render_sorted()
 {
     // Sorted (back to front)
     mapSorted.traverseRL(sorted_L1);
@@ -288,10 +285,10 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
     RCache.set_xform_project(Device.mProject);
 
     // Rendering
-    rmNear();
+    RImplementation.rmNear();
     mapHUDSorted.traverseRL(sorted_L1);
     mapHUDSorted.clear();
-    rmNormal();
+    RImplementation.rmNormal();
 
     // Restore projection
     Device.mProject = Pold;
@@ -303,7 +300,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear, bool renderHUD)
+void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 {
     // Sorted (back to front)
     mapEmissive.traverseLR(sorted_L1);
@@ -323,7 +320,7 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear, bool renderHUD)
     RCache.set_xform_project(Device.mProject);
 
     // Rendering
-    rmNear();
+    RImplementation.rmNear();
     // Sorted (back to front)
     mapHUDEmissive.traverseLR(sorted_L1);
 
@@ -333,7 +330,7 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear, bool renderHUD)
     if (renderHUD)
         mapHUDSorted.traverseRL(sorted_L1);
 
-    rmNormal();
+    RImplementation.rmNormal();
 
     // Restore projection
     Device.mProject = Pold;
@@ -343,9 +340,9 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear, bool renderHUD)
     RCache.set_xform_project(Device.mProject);
 }
 
-void R_dsgraph_structure::r_dsgraph_render_water_ssr() { mapWater.traverseLR(water_node_ssr); }
+void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr); }
 
-void R_dsgraph_structure::r_dsgraph_render_water()
+void R_dsgraph_structure::render_water()
 {
     mapWater.traverseLR(water_node);
     mapWater.clear();
@@ -353,7 +350,7 @@ void R_dsgraph_structure::r_dsgraph_render_water()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_wmarks()
+void R_dsgraph_structure::render_wmarks()
 {
     // Sorted (back to front)
     mapWmark.traverseLR(sorted_L1);
@@ -362,7 +359,7 @@ void R_dsgraph_structure::r_dsgraph_render_wmarks()
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
-void R_dsgraph_structure::r_dsgraph_render_distort()
+void R_dsgraph_structure::render_distort()
 {
     // Sorted (back to front)
     mapDistort.traverseRL(sorted_L1);
@@ -371,58 +368,51 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 
 //////////////////////////////////////////////////////////////////////////
 // sub-space rendering - shortcut to render with frustum extracted from matrix
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
+void R_dsgraph_structure::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
 {
     CFrustum temp;
     temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL & (~FRUSTUM_P_NEAR));
-    r_dsgraph_render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
+    render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
 }
 
 // sub-space rendering - main procedure
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
+void R_dsgraph_structure::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
 {
     VERIFY(_sector);
-    RImplementation.marker++; // !!! critical here
-
-    // Save and build new frustum, disable HOM
-    CFrustum ViewSave = ViewBase;
-    ViewBase = *_frustum;
-    View = &ViewBase;
+    marker++; // !!! critical here
 
     if (_precise_portals && RImplementation.rmPortals)
     {
         // Check if camera is too near to some portal - if so force DualRender
         Fvector box_radius;
         box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
-        RImplementation.Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, _cop, box_radius);
-        for (size_t K = 0; K < RImplementation.Sectors_xrc.r_count(); K++)
+        Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, _cop, box_radius);
+        for (size_t K = 0; K < Sectors_xrc.r_count(); K++)
         {
-            CPortal* pPortal = (CPortal*)RImplementation.Portals[RImplementation.rmPortals->get_tris()[RImplementation.Sectors_xrc.r_begin()[K].id].dummy];
+            CPortal* pPortal = Portals[RImplementation.rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
             pPortal->bDualRender = TRUE;
         }
     }
 
     // Traverse sector/portal structure
-    PortalTraverser.traverse(_sector, ViewBase, _cop, mCombined, 0);
+    PortalTraverser.traverse(_sector, *_frustum, _cop, mCombined, 0);
 
     // Determine visibility for static geometry hierrarhy
     for (size_t s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
     {
-        CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+        CSector* sector = PortalTraverser.r_sectors[s_it];
         dxRender_Visual* root = sector->root();
         for (size_t v_it = 0; v_it < sector->r_frustums.size(); v_it++)
         {
-            set_Frustum(&(sector->r_frustums[v_it]));
-            add_Geometry(root);
+            const auto& view = sector->r_frustums[v_it];
+            add_static(root, view, view.getMask());
         }
     }
 
     if (_dynamic)
     {
-        set_Object(0);
-
         // Traverse object database
-        g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, ViewBase);
+        g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *_frustum);
 
         // Determine visibility for dynamic part of scene
         for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
@@ -435,8 +425,8 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
                 continue; // inactive (untouched) sector
             for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
             {
-                set_Frustum(&(sector->r_frustums[v_it]));
-                if (!View->testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+                const CFrustum& view = sector->r_frustums[v_it];
+                if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
                     continue;
 
                 // renderable
@@ -444,7 +434,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
                 if (0 == renderable)
                     continue; // unknown, but renderable object (r1_glow???)
 
-                renderable->renderable_Render();
+                renderable->renderable_Render(0, renderable);
             }
         }
 
@@ -467,74 +457,14 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
                         continue;
 
                     // renderable
-                    g_hud->Render_First();
+                    g_hud->Render_First(0);
                 }
             } while (0);
         }
     }
-
-    // Restore
-    ViewBase = ViewSave;
-    View = 0;
 }
 
-#include "fhierrarhyvisual.h"
-#include "SkeletonCustom.h"
-#include "../../xr_3da/fmesh.h"
-#include "flod.h"
-
-void R_dsgraph_structure::r_dsgraph_render_R1_box(IRender_Sector* _S, Fbox& BB, int sh)
-{
-    CSector* S = (CSector*)_S;
-    lstVisuals.clear();
-    lstVisuals.push_back(S->root());
-
-    for (size_t test = 0; test < lstVisuals.size(); test++)
-    {
-        dxRender_Visual* V = lstVisuals[test];
-
-        switch (V->Type)
-        {
-        case MT_HIERRARHY: {
-            for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(V)->children)
-                if (BB.intersect(Vis->vis.box) && Vis->getRZFlag())
-                    lstVisuals.push_back(Vis);
-        }
-        break;
-        case MT_SKELETON_ANIM:
-        case MT_SKELETON_RIGID: {
-            auto pV = reinterpret_cast<CKinematics*>(V);
-            pV->CalculateBones(TRUE);
-
-            for (dxRender_Visual* Vis : pV->children)
-                if (BB.intersect(Vis->vis.box) && Vis->getRZFlag())
-                    lstVisuals.push_back(Vis);
-        }
-        break;
-        case MT_LOD: {
-            for (dxRender_Visual* Vis : reinterpret_cast<FLOD*>(V)->children)
-                if (BB.intersect(Vis->vis.box))
-                    lstVisuals.push_back(Vis);
-        }
-        break;
-        default: {
-            // Renderable visual
-            ShaderElement* E2 = V->shader->E[sh]._get();
-            if (E2 && !(E2->flags.bDistort))
-            {
-                for (u32 pass = 0; pass < E2->passes.size(); pass++)
-                {
-                    RCache.set_Element(E2, pass);
-                    V->Render(-1.f);
-                }
-            }
-        }
-        break;
-        }
-    }
-}
-
-void __fastcall pLandscape_0(mapLandscape_Node* N)
+static void __fastcall pLandscape_0(mapLandscape_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -545,7 +475,7 @@ void __fastcall pLandscape_0(mapLandscape_Node* N)
     V->Render(LOD);
 }
 
-void __fastcall pLandscape_1(mapLandscape_Node* N)
+static void __fastcall pLandscape_1(mapLandscape_Node* N)
 {
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -557,7 +487,7 @@ void __fastcall pLandscape_1(mapLandscape_Node* N)
     V->Render(LOD);
 }
 
-void R_dsgraph_structure::r_dsgraph_render_landscape(u32 pass, bool _clear)
+void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
 {
     RCache.set_xform_world(Fidentity);
 

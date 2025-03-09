@@ -54,7 +54,6 @@ public:
 
     virtual void OnH_A_Chield() { inherited::OnH_A_Chield(); }
     virtual void OnH_B_Chield() { inherited::OnH_B_Chield(); }
-    virtual void renderable_Render() { inherited::renderable_Render(); }
 #ifdef DEBUG
     virtual void OnRender();
 #endif

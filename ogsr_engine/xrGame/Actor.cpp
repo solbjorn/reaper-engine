@@ -1192,10 +1192,12 @@ void CActor::shedule_Update(u32 DT)
 
     updated = true;
 };
+
 #include "debug_renderer.h"
-void CActor::renderable_Render()
+
+void CActor::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
 
     if ((cam_active == eacFirstEye && // first eye cam
          ::Render->active_phase() == 1) // shadow map rendering on R2
@@ -1203,7 +1205,7 @@ void CActor::renderable_Render()
         ||
 
         !(IsFocused() && (cam_active == eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView()))))
-        CInventoryOwner::renderable_Render();
+        CInventoryOwner::renderable_Render(context_id, root);
 }
 
 BOOL CActor::renderable_ShadowGenerate()
@@ -1232,41 +1234,9 @@ void CActor::g_PerformDrop()
 #ifdef DEBUG
 extern BOOL g_ShowAnimationInfo;
 #endif // DEBUG
+
 // HUD
-void CActor::OnHUDDraw(CCustomHUD* /**hud/**/)
-{
-    g_player_hud->render_hud();
-
-#if 0 // ndef NDEBUG
-	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)
-	{
-		string128 buf;
-		HUD().Font().pFontStat->SetColor	(0xffffffff);
-		HUD().Font().pFontStat->OutSet		(170,530);
-		HUD().Font().pFontStat->OutNext	("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
-		HUD().Font().pFontStat->OutNext	("Velocity:      [%3.2f, %3.2f, %3.2f]",VPUSH(m_PhysicMovementControl->GetVelocity()));
-		HUD().Font().pFontStat->OutNext	("Vel Magnitude: [%3.2f]",m_PhysicMovementControl->GetVelocityMagnitude());
-		HUD().Font().pFontStat->OutNext	("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
-		switch (m_PhysicMovementControl->Environment())
-		{
-		case CPHMovementControl::peOnGround:	strcpy(buf,"ground");			break;
-		case CPHMovementControl::peInAir:		strcpy(buf,"air");				break;
-		case CPHMovementControl::peAtWall:		strcpy(buf,"wall");				break;
-		}
-		HUD().Font().pFontStat->OutNext	(buf);
-
-		if (IReceived != 0)
-		{
-			float Size = 0;
-			Size = HUD().Font().pFontStat->GetSize();
-			HUD().Font().pFontStat->SetSize(Size*2);
-			HUD().Font().pFontStat->SetColor	(0xffff0000);
-			HUD().Font().pFontStat->OutNext ("Input :		[%3.2f]", ICoincidenced/IReceived * 100.0f);
-			HUD().Font().pFontStat->SetSize(Size);
-		};
-	};
-#endif
-}
+void CActor::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) { g_player_hud->render_hud(context_id, root); }
 
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;

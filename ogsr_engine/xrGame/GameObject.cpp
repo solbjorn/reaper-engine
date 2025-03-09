@@ -32,7 +32,7 @@
 #include "PHCommander.h"
 #include "PHScriptCall.h"
 #include "debug_renderer.h"
-//#include "PHDebug.h"
+// #include "PHDebug.h"
 
 CGameObject::CGameObject()
 {
@@ -102,10 +102,7 @@ void CGameObject::reinit()
         pair.second->m_callback.clear();
 }
 
-void CGameObject::reload(LPCSTR section)
-{
-    m_script_clsid = object_factory().script_clsid(CLS_ID);
-}
+void CGameObject::reload(LPCSTR section) { m_script_clsid = object_factory().script_clsid(CLS_ID); }
 
 void CGameObject::net_Destroy()
 {
@@ -137,7 +134,6 @@ void CGameObject::net_Destroy()
         Level().SetControlEntity(0);
     }
 
-    
     // remove calls
     CPHSriptReqGObjComparer cmpr(this);
     Level().ph_commander_scripts().remove_calls(&cmpr);
@@ -152,7 +148,7 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
-    case GE_HIT:{
+    case GE_HIT: {
         /*
                     u16				id,weapon_id;
                     Fvector			dir;
@@ -685,20 +681,12 @@ void CGameObject::dbg_DrawSkeleton()
     };
 }
 
-void CGameObject::renderable_Render()
+void CGameObject::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inherited::renderable_Render();
-    ::Render->set_Transform(&XFORM());
-    ::Render->add_Visual(Visual());
+    inherited::renderable_Render(context_id, root);
+    ::Render->add_Visual(context_id, root, Visual(), XFORM());
     Visual()->getVisData().hom_frame = Device.dwFrame;
 }
-
-/*
-float CGameObject::renderable_Ambient	()
-{
-    return (ai().get_level_graph() && ai().level_graph().valid_vertex_id(level_vertex_id()) ? float(level_vertex()->light()/15.f) : 1.f);
-}
-*/
 
 CObject::SavedPosition CGameObject::ps_Element(u32 ID) const
 {
@@ -839,7 +827,7 @@ void CGameObject::shedule_Update(u32 dt)
 
 BOOL CGameObject::net_SaveRelevant() { return (CScriptBinder::net_SaveRelevant()); }
 
-//игровое имя объекта
+// игровое имя объекта
 LPCSTR CGameObject::Name() const { return (*cName()); }
 
 u32 CGameObject::ef_creature_type() const

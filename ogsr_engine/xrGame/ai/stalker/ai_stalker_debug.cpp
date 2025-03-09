@@ -229,9 +229,9 @@ LPCSTR danger_type(const CDangerObject::EDangerType& danger_type)
 
 void CAI_Stalker::debug_planner(const script_planner* planner) { m_debug_planner = planner; }
 
-void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
+void CAI_Stalker::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root)
 {
-    inherited::OnHUDDraw(hud);
+    inherited::OnHUDDraw(context_id, hud, root);
 
     if (!psAI_Flags.test(aiStalker))
         return;

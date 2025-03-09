@@ -50,7 +50,6 @@ public:
 
     virtual bool CanTake() const;
 
-    // virtual void					renderable_Render				();
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
     virtual void create_physic_shell();
@@ -59,7 +58,7 @@ public:
     virtual CArtefact* cast_artefact() { return this; }
 
 protected:
-    virtual void UpdateCLChild(){};
+    virtual void UpdateCLChild() {};
 
     u16 m_CarringBoneID;
     shared_str m_sParticlesName;
@@ -69,9 +68,9 @@ protected:
     //////////////////////////////////////////////////////////////////////////
     //	Lights
     //////////////////////////////////////////////////////////////////////////
-    //флаг, что подсветка может быть включена
+    // флаг, что подсветка может быть включена
     bool m_bLightsEnabled;
-    //подсветка во время полета и работы двигателя
+    // подсветка во время полета и работы двигателя
     ref_light m_pTrailLight;
     Fcolor m_TrailLightColor;
     float m_fTrailLightRange;
@@ -89,7 +88,7 @@ public:
     bool CanBeActivated() { return m_bCanSpawnZone; }; // does artefact can spawn anomaly zone
 
     virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step){};
+    virtual void PhTune(dReal step) {};
 
     bool m_bCanSpawnZone;
 

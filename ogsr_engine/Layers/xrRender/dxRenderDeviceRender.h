@@ -64,6 +64,8 @@ public:
 
     ref_shader m_WireShader;
     ref_shader m_SelectionShader;
+    ref_shader m_PortalFadeShader;
+    ref_geom m_PortalFadeGeom;
 
 private:
     CGammaControl m_Gamma;

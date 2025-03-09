@@ -20,12 +20,12 @@
 #include "weapon.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
 
-//константы shoot_factor, определяющие
-//поведение пули при столкновении с объектом
+// константы shoot_factor, определяющие
+// поведение пули при столкновении с объектом
 #define RICOCHET_THRESHOLD 0.1
 #define STUCK_THRESHOLD 0.4
 
-//расстояния не пролетев которого пуля не трогает того кто ее пустил
+// расстояния не пролетев которого пуля не трогает того кто ее пустил
 #define PARENT_IGNORE_DIST 3.f
 
 // test callback функция
@@ -149,20 +149,20 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
     pData->bStopTracing = true;
     SBullet* bullet = pData->pBullet;
 
-    //вычислить точку попадания
+    // вычислить точку попадания
     Fvector end_point;
     end_point.mad(bullet->pos, bullet->dir, result.range);
 
     u16 hit_material_idx = GAMEMTL_NONE_IDX;
 
-    //динамический объект
+    // динамический объект
     if (result.O)
     {
-        //получить косточку и ее материал
+        // получить косточку и ее материал
         IKinematics* V = 0;
-        //если мы попали по родителю на первых же
-        //кадре, то игнорировать это, так как это он
-        //и стрелял
+        // если мы попали по родителю на первых же
+        // кадре, то игнорировать это, так как это он
+        // и стрелял
         VERIFY(!(result.O->ID() == bullet->parent_id && bullet->fly_dist < PARENT_IGNORE_DIST));
         if (0 != (V = smart_cast<IKinematics*>(result.O->Visual())))
         {
@@ -173,13 +173,13 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
     }
     else
     {
-        //статический объект
-        //получить треугольник и узнать его материал
+        // статический объект
+        // получить треугольник и узнать его материал
         CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
         hit_material_idx = T->material;
 
         SGameMtl* mtl = GMLib.GetMaterialByIdx(hit_material_idx);
-        if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) //Если материал полностью простреливаемый
+        if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) // Если материал полностью простреливаемый
         {
             pData->bStopTracing = false;
         }
@@ -187,7 +187,7 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
             Level().BulletManager().RegisterEvent(EVENT_HIT, FALSE, bullet, end_point, result, hit_material_idx);
     }
 
-    //проверить достаточно ли силы хита, чтобы двигаться дальше
+    // проверить достаточно ли силы хита, чтобы двигаться дальше
     if (bullet->speed < m_fMinBulletSpeed || bullet->flags.ricochet_was)
         return FALSE;
     else
@@ -204,31 +204,31 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
         particle_dir = vDir;
         particle_dir.invert();
 
-        //на текущем актере отметок не ставим
-        if (!smart_cast<CActor*>(R.O) && mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
+        // на текущем актере отметок не ставим
+        if (!R.O->renderable_HUD() && !smart_cast<CActor*>(R.O) && mtl_pair && !mtl_pair->CollideMarks->empty() && ShowMark)
         {
-            //добавить отметку на материале
+            // добавить отметку на материале
             Fvector p;
             p.mad(bullet->pos, bullet->dir, R.range - 0.01f);
-            ::Render->add_SkeletonWallmark(&R.O->renderable.xform, PKinematics(R.O->Visual()), &*mtl_pair->m_pCollideMarks, p, bullet->dir, bullet->wallmark_size);
+            ::Render->add_SkeletonWallmark(&R.O->renderable.xform, PKinematics(R.O->Visual()), &*mtl_pair->CollideMarks, p, bullet->dir, bullet->wallmark_size);
         }
     }
     else
     {
-        //вычислить нормаль к пораженной поверхности
+        // вычислить нормаль к пораженной поверхности
         Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
         CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
 
-        if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
+        if (mtl_pair && !mtl_pair->CollideMarks->empty() && ShowMark)
         {
-            //добавить отметку на материале
-            ::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+            // добавить отметку на материале
+            ::Render->add_StaticWallmark(&*mtl_pair->CollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
         }
     }
 
     ref_sound* pSound = (!mtl_pair || mtl_pair->CollideSounds.empty()) ? NULL : &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
 
-    //проиграть звук
+    // проиграть звук
     if (pSound && ShowMark)
     {
         CObject* O = Level().Objects.net_Find(bullet->parent_id);
@@ -249,7 +249,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
         pos.c.set(vEnd);
         if (ps_name && ShowMark)
         {
-            //отыграть партиклы попадания в материал
+            // отыграть партиклы попадания в материал
             CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
 
             ps->UpdateParent(pos, zero_vel);
@@ -272,7 +272,7 @@ void CBulletManager::StaticObjectHit(CBulletManager::_event& E)
 static bool g_clear = false;
 void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
-    //только для динамических объектов
+    // только для динамических объектов
     VERIFY(E.R.O);
     if (g_clear)
         E.Repeated = false;
@@ -293,7 +293,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
         NeedShootmark = (NeedShootmark && monster->need_shotmark());
     }
 
-    //визуальное обозначение попадание на объекте
+    // визуальное обозначение попадание на объекте
     //	Fvector			hit_normal;
     FireShotmark(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal, NeedShootmark);
 
@@ -304,7 +304,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
     impulse = hit_result.second;
 
     // object-space
-    //вычислить координаты попадания
+    // вычислить координаты попадания
     Fvector p_in_object_space, position_in_bone_space;
     Fmatrix m_inv;
     m_inv.invert(E.R.O->XFORM());
@@ -326,7 +326,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
         position_in_bone_space.set(p_in_object_space);
     }
 
-    //отправить хит пораженному объекту
+    // отправить хит пораженному объекту
     if (E.bullet.flags.allow_sendhit && !E.Repeated)
     {
         /*
@@ -373,7 +373,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     //----------- normal - start
     if (R.O)
     {
-        //вернуть нормаль по которой играть партиклы
+        // вернуть нормаль по которой играть партиклы
         CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(R.O->CFORM());
         if (skeleton)
         {
@@ -390,7 +390,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     }
     else
     {
-        //вычислить нормаль к поверхности
+        // вычислить нормаль к поверхности
         Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
         CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + R.element;
         hit_normal.mknormal(pVerts[pTri->verts[0]], pVerts[pTri->verts[1]], pVerts[pTri->verts[2]]);
@@ -399,16 +399,16 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     float old_speed, energy_lost;
     old_speed = bullet->speed;
 
-    //коэффициент уменьшение силы с падением скорости
+    // коэффициент уменьшение силы с падением скорости
     float speed_factor = bullet->speed / bullet->max_speed;
-    //получить силу хита выстрела с учетом патрона
+    // получить силу хита выстрела с учетом патрона
     float power = bullet->hit_power * speed_factor;
 
     SGameMtl* mtl = GMLib.GetMaterialByIdx(target_material);
 
     // shoot_factor: коеффициент указывающий на текущие свойства пули
     //(Если меньше 1, то пуля либо рикошетит(если контакт идёт по касательной), либо застряёт в текущем
-    //объекте, если больше 1, то пуля прошивает объект)
+    // объекте, если больше 1, то пуля прошивает объект)
     float shoot_factor = mtl->fShootFactor * bullet->pierce * speed_factor;
 
     float impulse = 0.f;
@@ -419,7 +419,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     int bullet_state = 0;
 #endif
 
-    if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) //Если материал полностью простреливаемый, то
+    if (fsimilar(mtl->fShootFactor, 1.0f, EPS)) // Если материал полностью простреливаемый, то
     {
 #ifdef DEBUG
         bullet_state = 2;
@@ -427,7 +427,7 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
         return std::make_pair(power, impulse);
     }
 
-    //рикошет
+    // рикошет
     Fvector new_dir;
     new_dir.reflect(bullet->dir, hit_normal);
     Fvector tgt_dir;
@@ -440,23 +440,23 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     //	if(shoot_factor<RICOCHET_THRESHOLD &&  )
     if (((f + shoot_factor) < ricoshet_factor) && bullet->flags.allow_ricochet)
     {
-        //уменьшение скорости полета в зависимости
-        //от угла падения пули (чем прямее угол, тем больше потеря)
+        // уменьшение скорости полета в зависимости
+        // от угла падения пули (чем прямее угол, тем больше потеря)
         float scale = 1.f - _abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
         clamp(scale, 0.f, m_fCollisionEnergyMax);
 
-        //вычисление рикошета, делается немного фейком,
-        //т.к. пуля остается в точке столкновения
-        //и сразу выходит из RayQuery()
+        // вычисление рикошета, делается немного фейком,
+        // т.к. пуля остается в точке столкновения
+        // и сразу выходит из RayQuery()
         bullet->dir.set(tgt_dir);
         bullet->pos = end_point;
         bullet->flags.ricochet_was = 1;
 
-        //уменьшить скорость в зависимости от простреливаемости
+        // уменьшить скорость в зависимости от простреливаемости
         bullet->speed *= (1 - mtl->fShootFactor) * scale;
-        //сколько энергии в процентах потеряла пуля при столкновении
+        // сколько энергии в процентах потеряла пуля при столкновении
         float energy_lost = 1.f - bullet->speed / old_speed;
-        //импульс переданный объекту равен прямопропорционален потерянной энергии
+        // импульс переданный объекту равен прямопропорционален потерянной энергии
         impulse = bullet->hit_impulse * speed_factor * energy_lost;
 
 #ifdef DEBUG
@@ -465,9 +465,9 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     }
     else if (shoot_factor < 1.0)
     {
-        //застрявание пули в материале
+        // застрявание пули в материале
         bullet->speed = 0.f;
-        //передаем весь импульс целиком
+        // передаем весь импульс целиком
         impulse = bullet->hit_impulse * speed_factor;
 #ifdef DEBUG
         bullet_state = 1;
@@ -475,18 +475,18 @@ std::pair<float, float> CBulletManager::ObjectHit(SBullet* bullet, const Fvector
     }
     else
     {
-        //пробивание материала
-        //уменьшить скорость пропорцианально потраченому импульсу
-        // float speed_lost = fis_zero(bullet->hit_impulse) ?	1.f : 		1.f - impulse/bullet->hit_impulse;
-        // clamp (speed_lost, 0.f , 1.f);
-        // float speed_lost = shoot_factor;
+        // пробивание материала
+        // уменьшить скорость пропорцианально потраченому импульсу
+        //  float speed_lost = fis_zero(bullet->hit_impulse) ?	1.f : 		1.f - impulse/bullet->hit_impulse;
+        //  clamp (speed_lost, 0.f , 1.f);
+        //  float speed_lost = shoot_factor;
 
         bullet->speed *= mtl->fShootFactor;
         energy_lost = 1.f - bullet->speed / old_speed;
         impulse = bullet->hit_impulse * speed_factor * energy_lost;
 
         bullet->pos.mad(bullet->pos, bullet->dir, EPS); // fake
-        //ввести коэффициент случайности при простреливании
+        // ввести коэффициент случайности при простреливании
         Fvector rand_normal;
         rand_normal.random_dir(bullet->dir, deg2rad(5.f) * energy_lost, Random);
         bullet->dir.set(rand_normal);

@@ -118,7 +118,7 @@ public:
     virtual float evaluate(const CItemManager* manager, const CGameObject* object) const;
 
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void OnHUDDraw(CCustomHUD* hud) { return inherited::OnHUDDraw(hud); }
+    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override { inherited::OnHUDDraw(context_id, hud, root); }
     virtual u16 PHGetSyncItemsNumber() { return inherited::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited::PHGetSyncItem(item); }
     virtual void PHUnFreeze() { return inherited::PHUnFreeze(); }
@@ -126,7 +126,7 @@ public:
     virtual BOOL UsedAI_Locations() { return inherited::UsedAI_Locations(); }
 
     virtual const SRotation Orientation() const { return inherited::Orientation(); }
-    virtual void renderable_Render() { return inherited::renderable_Render(); }
+    void renderable_Render(u32 context_id, IRenderable* root) override { inherited::renderable_Render(context_id, root); }
 
     virtual void on_restrictions_change();
 
@@ -223,7 +223,7 @@ protected:
 
 protected:
     virtual CMovementManager* create_movement_manager();
-    
+
     // --------------------------------------------------------------------------------------
     // Monster Settings
     SMonsterSettings m_current_settings;

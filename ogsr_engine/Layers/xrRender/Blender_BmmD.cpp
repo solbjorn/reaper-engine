@@ -134,10 +134,10 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
 
         if (RImplementation.o.ssfx_terrain)
         {
-            C.r_dx10Texture("s_dnE_r", strconcat(sizeof(mask), mask, oR_Name, "_bump#"));
-            C.r_dx10Texture("s_dnE_g", strconcat(sizeof(mask), mask, oG_Name, "_bump#"));
-            C.r_dx10Texture("s_dnE_b", strconcat(sizeof(mask), mask, oB_Name, "_bump#"));
-            C.r_dx10Texture("s_dnE_a", strconcat(sizeof(mask), mask, oA_Name, "_bump#"));
+            C.r_dx10Texture("s_height_r", strconcat(sizeof(mask), mask, oR_Name, "_height"));
+            C.r_dx10Texture("s_height_g", strconcat(sizeof(mask), mask, oG_Name, "_height"));
+            C.r_dx10Texture("s_height_b", strconcat(sizeof(mask), mask, oB_Name, "_height"));
+            C.r_dx10Texture("s_height_a", strconcat(sizeof(mask), mask, oA_Name, "_height"));
         }
 
         C.r_dx10Texture("s_puddles_normal", "fx\\water_normal");

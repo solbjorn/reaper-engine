@@ -76,7 +76,7 @@ CCar::CCar()
     m_exhaust_particles = "vehiclefx\\exhaust_1";
     m_car_sound = xr_new<SCarSound>(this);
 
-    //у машины слотов в инвентаре нет
+    // у машины слотов в инвентаре нет
     inventory = xr_new<CInventory>();
     inventory->SetSlotsUseful(false);
     m_doors_torque_factor = 2.f;
@@ -513,16 +513,16 @@ void CCar::VisualUpdate(float fov)
     m_lights.Update();
 }
 
-void CCar::renderable_Render()
+void CCar::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
     if (m_car_weapon)
         m_car_weapon->Render_internal();
 }
 
 void CCar::net_Export(CSE_Abstract* E) { inherited::net_Export(E); }
 
-void CCar::OnHUDDraw(CCustomHUD* /**hud/**/)
+void CCar::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root)
 {
 #ifdef DEBUG
     Fvector velocity;
@@ -531,7 +531,6 @@ void CCar::OnHUDDraw(CCustomHUD* /**hud/**/)
     HUD().Font().pFontStat->OutSet(120, 530);
     HUD().Font().pFontStat->OutNext("Position:      [%3.2f, %3.2f, %3.2f]", VPUSH(Position()));
     HUD().Font().pFontStat->OutNext("Velocity:      [%3.2f]", velocity.magnitude());
-
 #endif
 }
 
@@ -859,7 +858,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
     m_pPhysicsShell->SetAirResistance(0.f, 0.f);
     m_pPhysicsShell->SetPrefereExactIntegration();
 
-    m_pPhysicsShell->Enable(); //Чтобы машины не висели в воздухе после спавна.
+    m_pPhysicsShell->Enable(); // Чтобы машины не висели в воздухе после спавна.
 
     ApplySpawnIniToPhysicShell(&po->spawn_ini(), m_pPhysicsShell, false);
     ApplySpawnIniToPhysicShell(smart_cast<IKinematics*>(Visual())->LL_UserData(), m_pPhysicsShell, false);
@@ -1670,7 +1669,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
     inherited::OnEvent(P, type);
     CExplosive::OnEvent(P, type);
 
-    //обработка сообщений, нужных для работы с багажником машины
+    // обработка сообщений, нужных для работы с багажником машины
     u16 id;
     switch (type)
     {

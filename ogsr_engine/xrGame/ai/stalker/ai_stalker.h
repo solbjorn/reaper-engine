@@ -190,14 +190,14 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void feel_touch_new(CObject* O);
 
-    virtual void renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void Exec_Look(float dt);
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
     virtual BOOL feel_vision_isRelevant(CObject* who);
     virtual float Radius() const;
 #ifdef DEBUG
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
     virtual void OnRender();
 #endif
 

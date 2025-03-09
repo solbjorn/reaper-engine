@@ -192,16 +192,16 @@ void CHudItem::net_Destroy() { m_dwStateTime = 0; }
 
 BOOL CHudItem::net_Spawn(CSE_Abstract* DC) { return TRUE; }
 
-void CHudItem::renderable_Render()
+void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
 {
     UpdateXForm();
-    const bool _hud_render = ::Render->get_HUD() && GetHUDmode();
+    const bool _hud_render = root->renderable_HUD() && GetHUDmode();
 
     if (!(_hud_render && !IsHidden()))
     {
         if (!object().H_Parent() || (!_hud_render && !IsHidden()))
         {
-            on_renderable_Render();
+            on_renderable_Render(context_id, root);
         }
         else if (object().H_Parent())
         {
@@ -209,7 +209,7 @@ void CHudItem::renderable_Render()
             VERIFY(owner);
             CInventoryItem* self = smart_cast<CInventoryItem*>(this);
             if (owner->attached(self))
-                on_renderable_Render();
+                on_renderable_Render(context_id, root);
         }
     }
 }

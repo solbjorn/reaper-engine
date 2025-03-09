@@ -18,9 +18,6 @@ class IUIRender;
 extern IUIRender* UIRender;
 
 class CGameMtlLibrary;
-extern CGameMtlLibrary* PGMLib;
 
-// #ifdef DEBUG
 class IDebugRender;
 extern IDebugRender* DRender;
-// #endif // DEBUG

@@ -13,7 +13,7 @@
 
 class CHudItemObject : public CInventoryItemObject, public CHudItem
 {
-protected: //чтоб нельзя было вызвать на прямую
+protected: // чтоб нельзя было вызвать на прямую
     CHudItemObject();
     virtual ~CHudItemObject();
 
@@ -38,8 +38,8 @@ public:
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
     virtual void UpdateCL();
-    virtual void renderable_Render();
-    virtual void on_renderable_Render();
+    void renderable_Render(u32 context_id, IRenderable* root) override;
+    void on_renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual bool use_parent_ai_locations() const { return (Device.dwFrame != dwXF_Frame); }
 };

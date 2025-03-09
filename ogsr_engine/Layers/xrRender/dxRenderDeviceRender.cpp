@@ -25,6 +25,9 @@ void dxRenderDeviceRender::updateGamma() { m_Gamma.Update(); }
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
     UIRender->DestroyUIGeom();
+
+    m_PortalFadeGeom.destroy();
+    m_PortalFadeShader.destroy();
     m_WireShader.destroy();
     m_SelectionShader.destroy();
 
@@ -81,6 +84,8 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
     m_WireShader.create("editor\\wire");
     m_SelectionShader.create("editor\\selection");
+    m_PortalFadeShader.create("portal");
+    m_PortalFadeGeom.create(FVF::F_L, RCache.Vertex.Buffer(), 0);
 
     DUImpl.OnDeviceCreate();
     UIRender->CreateUIGeom();

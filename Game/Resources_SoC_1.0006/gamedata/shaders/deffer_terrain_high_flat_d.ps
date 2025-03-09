@@ -28,10 +28,10 @@ Texture2D s_rainsplash;
 #endif
 
 // Height Textures
-Texture2D s_dnE_r;
-Texture2D s_dnE_g;
-Texture2D s_dnE_b;
-Texture2D s_dnE_a;
+Texture2D s_height_r;
+Texture2D s_height_g;
+Texture2D s_height_b;
+Texture2D s_height_a;
 
 uniform float4 ssfx_terrain_pom; // Samples, Range, Height, Water Limit
 uniform float4 ssfx_terrain_offset;
@@ -228,10 +228,10 @@ f_deffer main(p_bumped I)
     surface Sb = Terrain_InitSurfaces(s_dt_b, I.tcdbump.xy, mask.z, 2);
     surface Sa = Terrain_InitSurfaces(s_dt_a, I.tcdbump.xy, mask.w, 3);
 #else
-    surface Sr = Terrain_InitSurfaces(s_dnE_r, I.tcdbump.xy, mask.x, 0);
-    surface Sg = Terrain_InitSurfaces(s_dnE_g, I.tcdbump.xy, mask.y, 1);
-    surface Sb = Terrain_InitSurfaces(s_dnE_b, I.tcdbump.xy, mask.z, 2);
-    surface Sa = Terrain_InitSurfaces(s_dnE_a, I.tcdbump.xy, mask.w, 3);
+    surface Sr = Terrain_InitSurfaces(s_height_r, I.tcdbump.xy, mask.x, 0);
+    surface Sg = Terrain_InitSurfaces(s_height_g, I.tcdbump.xy, mask.y, 1);
+    surface Sb = Terrain_InitSurfaces(s_height_b, I.tcdbump.xy, mask.z, 2);
+    surface Sa = Terrain_InitSurfaces(s_height_a, I.tcdbump.xy, mask.w, 3);
 #endif
 
     // Texture splatting ( TODO: Improve Texture Splatting )
@@ -263,10 +263,10 @@ f_deffer main(p_bumped I)
     TerrainParallax(tc_step, _step, Sb, I, s_dt_b, 2);
     TerrainParallax(tc_step, _step, Sa, I, s_dt_a, 3);
 #else
-    TerrainParallax(tc_step, _step, Sr, I, s_dnE_r, 0);
-    TerrainParallax(tc_step, _step, Sg, I, s_dnE_g, 1);
-    TerrainParallax(tc_step, _step, Sb, I, s_dnE_b, 2);
-    TerrainParallax(tc_step, _step, Sa, I, s_dnE_a, 3);
+    TerrainParallax(tc_step, _step, Sr, I, s_height_r, 0);
+    TerrainParallax(tc_step, _step, Sg, I, s_height_g, 1);
+    TerrainParallax(tc_step, _step, Sb, I, s_height_b, 2);
+    TerrainParallax(tc_step, _step, Sa, I, s_height_a, 3);
 #endif
 
     // Calculate height using splatting mask

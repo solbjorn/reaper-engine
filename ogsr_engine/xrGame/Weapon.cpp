@@ -1050,7 +1050,7 @@ void CWeapon::UpdateFlashlight()
     }
 }
 
-void CWeapon::renderable_Render()
+void CWeapon::renderable_Render(u32 context_id, IRenderable* root)
 {
     UpdateXForm();
 
@@ -1063,7 +1063,7 @@ void CWeapon::renderable_Render()
     else
         RenderHud(TRUE);
 
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
 }
 
 void CWeapon::render_hud_mode()
