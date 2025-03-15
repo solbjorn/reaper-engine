@@ -40,7 +40,7 @@ void FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
     }
 
     // VS
-    geom.create(dwDecl, RCache.Vertex.Buffer(), RCache.QuadIB);
+    geom.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     // lod correction
     Fvector3 S;
@@ -63,4 +63,4 @@ void FLOD::Copy(dxRender_Visual* pFrom)
     CopyMemory(facets, F->facets, sizeof(facets));
 }
 
-void FLOD::Render(float LOD) {}
+void FLOD::Render(float, bool) {}

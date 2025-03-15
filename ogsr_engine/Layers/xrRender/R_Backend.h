@@ -10,6 +10,7 @@
 #define PGO(a)
 #endif
 
+#include "LightTrack.h"
 #include "r_DStreams.h"
 #include "r_constants_cache.h"
 #include "r_backend_xform.h"
@@ -72,12 +73,6 @@ public:
     };
 
 public:
-    // Dynamic geometry streams
-    _VertexStream Vertex;
-    _IndexStream Index;
-    ID3DIndexBuffer* QuadIB;
-    ID3DIndexBuffer* old_QuadIB;
-    ID3DIndexBuffer* CuboidIB;
     R_xforms xforms;
     R_hemi hemi;
     R_tree tree;
@@ -94,9 +89,6 @@ public:
 
     D3D_PRIMITIVE_TOPOLOGY m_PrimitiveTopology;
     ID3DInputLayout* m_pInputLayout;
-    DWORD dummy0; //	Padding to avoid warning
-    DWORD dummy1; //	Padding to avoid warning
-    DWORD dummy2; //	Padding to avoid warning
 
 private:
     // Render-targets
@@ -185,27 +177,26 @@ public:
         R_statistics r;
     } stat;
 
-public:
     IC CTexture* get_ActiveTexture(u32 stage)
     {
         if (stage < CTexture::rstVertex)
             return textures_ps[stage];
-        else if (stage < CTexture::rstGeometry)
+        if (stage < CTexture::rstGeometry)
             return textures_vs[stage - CTexture::rstVertex];
-        else if (stage < CTexture::rstHull)
+        if (stage < CTexture::rstHull)
             return textures_gs[stage - CTexture::rstGeometry];
-        else if (stage < CTexture::rstDomain)
+        if (stage < CTexture::rstDomain)
             return textures_hs[stage - CTexture::rstHull];
-        else if (stage < CTexture::rstCompute)
+        if (stage < CTexture::rstCompute)
             return textures_ds[stage - CTexture::rstDomain];
-        else if (stage < CTexture::rstInvalid)
+        if (stage < CTexture::rstInvalid)
             return textures_cs[stage - CTexture::rstCompute];
-        else
-        {
-            VERIFY(!"Invalid texture stage");
-            return 0;
-        }
+
+        VERIFY(!"Invalid texture stage");
+        return nullptr;
     }
+
+    void apply_lmaterial(IRenderable* O = nullptr);
 
     IC void get_ConstantDirect(const char* n, size_t DataSize, void** pVData, void** pGData, void** pPData);
 
@@ -358,8 +349,6 @@ public:
     ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 
     // Device create / destroy / frame signaling
-    void RestoreQuadIBData(); // Igor: is used to test bug with rain, particles corruption
-    void CreateQuadIB();
     void OnFrameBegin();
     void OnFrameEnd();
     void OnDeviceCreate();
@@ -403,9 +392,14 @@ private:
     void ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
     bool CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
 
-private:
     ID3DBlob* m_pInputSignature;
 
+    void apply_object(IRenderable& O);
+
+public:
+    CROS_impl::lmaterial o;
+
+private:
     bool m_bChangedRTorZB;
 };
 #pragma warning(pop)

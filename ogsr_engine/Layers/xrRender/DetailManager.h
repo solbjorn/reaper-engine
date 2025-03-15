@@ -146,6 +146,7 @@ public:
     int cache_cx;
     int cache_cz;
 
+private:
     PSS poolSI; // pool из которого выделяются SlotItem
 
     void UpdateVisibleM(const Fvector& EYE);
@@ -160,12 +161,13 @@ public:
     void hw_Load();
     void hw_Load_Geom();
     void hw_Unload();
-    void hw_Render();
-    void hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id);
+    void hw_Render(bool use_fast_geo);
+    void hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo);
 
     // get unpacked slot
     DetailSlot& QueryDB(int sx, int sz);
 
+public:
     void cache_Initialize();
     void cache_Update(int sx, int sz, Fvector& view);
     void cache_Task(int gx, int gz, Slot* D);
@@ -181,7 +183,7 @@ public:
 
     void Load();
     void Unload();
-    void Render();
+    void Render(bool use_fast_geo);
 
 private:
     xr_task_group* tg{};

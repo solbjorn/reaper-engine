@@ -70,7 +70,7 @@ void CRender::render_sun_cascades()
 void CRender::calculate_sun_async()
 {
     tg->run([this] {
-        need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
+        need_to_render_sunshafts = Target->need_to_render_sunshafts();
         last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
 
         if (need_to_render_sunshafts)
@@ -107,8 +107,6 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         // Lets begin from base frustum
         Fmatrix fullxform_inv = ex_full_inverse;
-
-        cascade.cull_sector = largest_sector;
 
         // COP - 100 km away
         cull_COP.mad(Device.vCameraPosition, fuckingsun->direction, -tweak_COP_initial_offs);
@@ -169,7 +167,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
         /**/
 
         // build viewport xform
-        float view_dim = float(RImplementation.o.smapsize);
+        float view_dim = float(o.smapsize);
         Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
         Fmatrix m_viewport_inv{};
         m_viewport_inv.invert_44(m_viewport);
@@ -207,7 +205,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
         constexpr bool draw_debug = false;
         if (draw_debug && cascade.cascade_ind == 0)
             for (u32 it = 0; it < cull_planes.size(); it++)
-                RImplementation.Target->dbg_addplane(cull_planes[it], it * 0xFFF);
+                Target->dbg_addplane(cull_planes[it], it * 0xFFF);
 
         Fvector cam_shifted = L_pos;
         cam_shifted.add(lightXZshift);
@@ -259,7 +257,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
             cull_xform.mulB_44(adjust);
         }
 
-        s32 limit = RImplementation.o.smapsize - 1;
+        s32 limit = o.smapsize - 1;
         fuckingsun->X.D.minX = 0;
         fuckingsun->X.D.maxX = limit;
         fuckingsun->X.D.minY = 0;
@@ -279,15 +277,11 @@ void CRender::render_sun_cascade(u32 cascade_ind)
     fuckingsun->X.D.combine = cascade.cull_xform;
 
     // Begin SMAP-render
-    {
-        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
-        HOM.Disable();
-        dsgraph.phase = PHASE_SMAP;
-        dsgraph.r_pmask(true, false);
-    }
+    VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
+    dsgraph.r_pmask(true, false);
 
     // Fill the database
-    dsgraph.render_subspace(cascade.cull_sector, &cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
+    dsgraph.build_subspace(largest_sector_id, cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
 
     // Render shadow-map
     //. !!! We should clip based on shrinked frustum (again)
@@ -306,7 +300,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
             {
                 Details->fade_distance = dm_fade * dm_fade * ps_ssfx_grass_shadows.y;
-                Details->Render();
+                Details->Render(true);
             }
         }
     }

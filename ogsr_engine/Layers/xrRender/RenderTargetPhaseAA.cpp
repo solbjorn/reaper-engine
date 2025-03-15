@@ -20,7 +20,7 @@ void CRenderTarget::ProcessSMAA()
     RCache.Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0L);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(EPS, _h + EPS, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -29,7 +29,7 @@ void CRenderTarget::ProcessSMAA()
     pv++;
     pv->set(_w + EPS, EPS, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Draw COLOR
     RCache.set_Element(s_pp_antialiasing->E[2]);
@@ -43,7 +43,7 @@ void CRenderTarget::ProcessSMAA()
     RCache.Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0L);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(EPS, _h + EPS, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -52,7 +52,7 @@ void CRenderTarget::ProcessSMAA()
     pv++;
     pv->set(_w + EPS, EPS, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Draw COLOR
     RCache.set_Element(s_pp_antialiasing->E[3]);
@@ -67,7 +67,7 @@ void CRenderTarget::ProcessSMAA()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(EPS, _h + EPS, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -76,7 +76,7 @@ void CRenderTarget::ProcessSMAA()
     pv++;
     pv->set(_w + EPS, EPS, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Draw COLOR
     RCache.set_Element(s_pp_antialiasing->E[4]);

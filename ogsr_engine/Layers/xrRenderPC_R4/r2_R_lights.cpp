@@ -47,7 +47,7 @@ void CRender::render_lights(light_Package& LP)
 
         for (u16 smap_ID = 0; refactored.size() != total; smap_ID++)
         {
-            LP_smap_pool.initialize(RImplementation.o.smapsize);
+            LP_smap_pool.initialize(o.smapsize);
             std::ranges::sort(source, [](const light* l1, const light* l2) {
                 const u32 a0 = l1->X.S.size;
                 const u32 a1 = l2->X.S.size;
@@ -90,8 +90,7 @@ void CRender::render_lights(light_Package& LP)
     //	}
     //	if (left_some_lights_that_doesn't cast shadows)
     //		accumulate them
-    HOM.Disable();
-    while (LP.v_shadowed.size())
+    while (!LP.v_shadowed.empty())
     {
         // if (has_spot_shadowed)
         xr_vector<light*> L_spot_s;
@@ -112,20 +111,22 @@ void CRender::render_lights(light_Package& LP)
 
             source.pop_back();
 
-            if (!L->spatial.sector)
+            if (L->spatial.sector_id == INVALID_SECTOR_ID) [[unlikely]]
             {
-                Msg("!![%s] L->spatial.sector not found in Light [%p]", __FUNCTION__, L);
+                Msg("!![%s] Invalid L->spatial.sector_id in Light [%p]", __FUNCTION__, L);
                 continue;
             }
 
             Lights_LastFrame.push_back(L);
 
             // render
-            dsgraph.phase = PHASE_SMAP;
-            dsgraph.r_pmask(true, false);
-            L->svis.begin();
             PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-            dsgraph.render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
+            L->svis.begin();
+            dsgraph.r_pmask(true, false);
+            CFrustum temp;
+            temp.CreateFromMatrix(L->X.S.combine, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
+            dsgraph.build_subspace(L->spatial.sector_id, temp, L->X.S.combine, L->position, true);
+
             bool bNormal = dsgraph.mapNormalPasses[0][0].size() || dsgraph.mapMatrixPasses[0][0].size();
             VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
 
@@ -144,7 +145,7 @@ void CRender::render_lights(light_Package& LP)
                     {
                         Details->fade_distance = -1; // Use light position to calc "fade"
                         Details->light_position.set(L->position);
-                        Details->Render();
+                        Details->Render(true);
                     }
                 }
             }
@@ -160,7 +161,6 @@ void CRender::render_lights(light_Package& LP)
 
         //		switch-to-accumulator
         Target->phase_accumulator();
-        HOM.Disable();
 
         PIX_EVENT(POINT_LIGHTS);
 
@@ -204,7 +204,7 @@ void CRender::render_lights(light_Package& LP)
                 float h = float(Device.dwHeight);
 
                 // Adjust resolution
-                if (RImplementation.o.ssfx_volumetric)
+                if (o.ssfx_volumetric)
                     Target->set_viewport_size(HW.pContext, w / 8, h / 8);
 
                 for (u32 it = 0; it < L_spot_s.size(); it++)
@@ -213,7 +213,7 @@ void CRender::render_lights(light_Package& LP)
                 }
 
                 // Restore resolution
-                if (RImplementation.o.ssfx_volumetric)
+                if (o.ssfx_volumetric)
                     Target->set_viewport_size(HW.pContext, w, h);
             }
 

@@ -146,10 +146,7 @@ void dx103DFluidManager::DestroyShaders()
     }
 }
 
-void dx103DFluidManager::PrepareTexture(int rtIndex)
-{
-    pRTTextures[rtIndex] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex]);
-}
+void dx103DFluidManager::PrepareTexture(int rtIndex) { pRTTextures[rtIndex] = RImplementation.Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex]); }
 
 void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
@@ -348,7 +345,7 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
     RCache.set_c(strForward, -1.0f);
 
     m_pGrid->DrawSlices();
- 
+
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
     if (bTeperature)
         RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECCTemp]);
@@ -387,7 +384,7 @@ void dx103DFluidManager::AdvectVelocity(float timestep, float fGravity)
 {
     PIX_EVENT(AdvectVelocity);
 
-   //  Advect velocity by the fluid velocity
+    //  Advect velocity by the fluid velocity
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
 
     if (_abs(fGravity) < 0.000001)
@@ -448,7 +445,7 @@ void dx103DFluidManager::ComputeVelocityDivergence(float timestep)
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
     RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
 
-     m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices();
 }
 
 void dx103DFluidManager::ComputePressure(float timestep)

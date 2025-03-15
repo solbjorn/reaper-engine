@@ -22,7 +22,7 @@ void CRenderTarget::phase_gasmask_dudv()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
@@ -31,7 +31,7 @@ void CRenderTarget::phase_gasmask_dudv()
     pv++;
     pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Set pass
     RCache.set_Element(s_gasmask_dudv->E[0]);

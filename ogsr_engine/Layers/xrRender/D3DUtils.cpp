@@ -180,9 +180,9 @@ void CDrawUtilities::OnDeviceCreate()
         boxvert[i * 6 + 5].set(p.x, p.y, p.z - S.z * 0.25f);
     }
     // create render stream
-    vs_L.create(FVF::F_L, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    vs_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    vs_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+    vs_L.create(FVF::F_L, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+    vs_TL.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+    vs_LIT.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 
     m_Font = xr_new<CGameFont>("stat_font");
 }
@@ -219,7 +219,7 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
     d.getHP(H, P);
     T.setHPB(H, P, 0);
     T.translate_over(p);
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(LINE_DIVISION * 2 + 2, vs_L->vb_stride, vBase);
     for (float angle = 0; angle < PI_MUL_2; angle += da)
@@ -264,7 +264,7 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
     float sz = radius + range;
 
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(6, vs_L->vb_stride, vBase);
     pv->set(0, 0, r, c);
@@ -306,7 +306,7 @@ void CDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
     pv->set(0.f, 0.f, 0.f, clr);
@@ -321,7 +321,7 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
     pv++;
     Stream->Unlock(5, vs_L->vb_stride);
     // render flagshtok
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+    DU_DRAW_SH(RImplementation.m_WireShader);
     DU_DRAW_DP(D3DPT_LINESTRIP, vs_L, vBase, 4);
 
     if (s)
@@ -350,7 +350,7 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, BOOL bDrawEntity)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(2, vs_L->vb_stride, vBase);
     pv->set(p, clr);
@@ -419,8 +419,8 @@ void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 
     int k;
     FVF::L* pv;
-    _VertexStream* Stream = &RCache.Vertex;
-    _IndexStream* StreamI = &RCache.Index;
+    _VertexStream* Stream = &RImplementation.Vertex;
+    _IndexStream* StreamI = &RImplementation.Index;
 
     // fill VB
     pv = (FVF::L*)Stream->Lock(6, vs_L->vb_stride, vBase);
@@ -477,12 +477,12 @@ void CDrawUtilities::DrawIdentCone(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w
 {
     if (bWire)
     {
-        DU_DRAW_SH_C(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
+        DU_DRAW_SH_C(RImplementation.m_WireShader, clr_w);
         m_WireCone.Render();
     }
     if (bSolid)
     {
-        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? dxRenderDeviceRender::Instance().m_WireShader : dxRenderDeviceRender::Instance().m_SelectionShader, clr_s);
+        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? RImplementation.m_WireShader : RImplementation.m_SelectionShader, clr_s);
         m_SolidCone.Render();
     }
     DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
@@ -492,12 +492,12 @@ void CDrawUtilities::DrawIdentSphere(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr
 {
     if (bWire)
     {
-        DU_DRAW_SH_C(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
+        DU_DRAW_SH_C(RImplementation.m_WireShader, clr_w);
         m_WireSphere.Render();
     }
     if (bSolid)
     {
-        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? dxRenderDeviceRender::Instance().m_WireShader : dxRenderDeviceRender::Instance().m_SelectionShader, clr_s);
+        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? RImplementation.m_WireShader : RImplementation.m_SelectionShader, clr_s);
         m_SolidSphere.Render();
     }
     DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
@@ -507,12 +507,12 @@ void CDrawUtilities::DrawIdentSpherePart(BOOL bSolid, BOOL bWire, u32 clr_s, u32
 {
     if (bWire)
     {
-        DU_DRAW_SH_C(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
+        DU_DRAW_SH_C(RImplementation.m_WireShader, clr_w);
         m_WireSpherePart.Render();
     }
     if (bSolid)
     {
-        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? dxRenderDeviceRender::Instance().m_WireShader : dxRenderDeviceRender::Instance().m_SelectionShader, clr_s);
+        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? RImplementation.m_WireShader : RImplementation.m_SelectionShader, clr_s);
         m_SolidSpherePart.Render();
     }
     DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
@@ -522,12 +522,12 @@ void CDrawUtilities::DrawIdentCylinder(BOOL bSolid, BOOL bWire, u32 clr_s, u32 c
 {
     if (bWire)
     {
-        DU_DRAW_SH_C(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
+        DU_DRAW_SH_C(RImplementation.m_WireShader, clr_w);
         m_WireCylinder.Render();
     }
     if (bSolid)
     {
-        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? dxRenderDeviceRender::Instance().m_WireShader : dxRenderDeviceRender::Instance().m_SelectionShader, clr_s);
+        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? RImplementation.m_WireShader : RImplementation.m_SelectionShader, clr_s);
         m_SolidCylinder.Render();
     }
     DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
@@ -537,12 +537,12 @@ void CDrawUtilities::DrawIdentBox(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 {
     if (bWire)
     {
-        DU_DRAW_SH_C(dxRenderDeviceRender::Instance().m_WireShader, clr_w);
+        DU_DRAW_SH_C(RImplementation.m_WireShader, clr_w);
         m_WireBox.Render();
     }
     if (bSolid)
     {
-        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? dxRenderDeviceRender::Instance().m_WireShader : dxRenderDeviceRender::Instance().m_SelectionShader, clr_s);
+        DU_DRAW_SH_C(color_get_A(clr_s) >= 254 ? RImplementation.m_WireShader : RImplementation.m_SelectionShader, clr_s);
         m_SolidBox.Render();
     }
     DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
@@ -551,7 +551,7 @@ void CDrawUtilities::DrawIdentBox(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 void CDrawUtilities::DrawLineSphere(const Fvector& p, float radius, u32 c, BOOL bCross)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     int i;
     FVF::L* pv;
@@ -612,7 +612,7 @@ void CDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR 
     c.x = (float)iFloor(_x2real(c.x));
     c.y = (float)iFloor(_y2real(-c.y));
 
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::TL* pv = (FVF::TL*)Stream->Lock(5, vs_TL->vb_stride, vBase);
 
@@ -666,7 +666,7 @@ void CDrawUtilities::dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fve
 void CDrawUtilities::DrawLine(const Fvector& p0, const Fvector& p1, u32 c)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(2, vs_L->vb_stride, vBase);
     pv->set(p0, c);
@@ -684,7 +684,7 @@ void CDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, u32* c
     u32 cc = (c) ? *c : boxcolor;
 
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(boxvertcount, vs_L->vb_stride, vBase);
     for (u32 i = 0; i < boxvertcount; i++, pv++)
@@ -703,7 +703,7 @@ void CDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, u32* c
 
 void CDrawUtilities::DrawBox(const Fvector& offs, const Fvector& Size, BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 {
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     if (bWire)
     {
         u32 vBase;
@@ -783,7 +783,7 @@ void CDrawUtilities::DrawSphere(const Fmatrix& parent, const Fvector& center, fl
 
 void CDrawUtilities::DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire)
 {
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
 
     u32 vBase;
     if (bSolid)
@@ -820,12 +820,12 @@ void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
 {
     VERIFY(m_DD_pv_start == 0);
     m_DD_wire = bWire;
-    m_DD_pv_start = (FVF::L*)RCache.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
+    m_DD_pv_start = (FVF::L*)RImplementation.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
     m_DD_pv = m_DD_pv_start;
 }
 void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
 {
-    RCache.Vertex.Unlock((u32)(m_DD_pv - m_DD_pv_start), vs_L->vb_stride);
+    RImplementation.Vertex.Unlock((u32)(m_DD_pv - m_DD_pv_start), vs_L->vb_stride);
     if (m_DD_wire)
         DU_DRAW_RS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
     DU_DRAW_DP(D3DPT_TRIANGLELIST, vs_L, m_DD_base, u32(m_DD_pv - m_DD_pv_start) / 3);
@@ -833,7 +833,7 @@ void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
         DU_DRAW_RS(D3DRS_FILLMODE, FILL_MODE);
     if (try_again)
     {
-        m_DD_pv_start = (FVF::L*)RCache.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
+        m_DD_pv_start = (FVF::L*)RImplementation.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
         m_DD_pv = m_DD_pv_start;
     }
 }
@@ -952,12 +952,12 @@ void CDrawUtilities::DrawPlane(const Fvector& p, const Fvector& n, const Fvector
     mR._44 = 1;
 
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
 
     if (bSolid)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_SelectionShader);
+        DU_DRAW_SH(RImplementation.m_SelectionShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
         pv->set(-scale.x, 0, -scale.y, clr_s);
         mR.transform_tiny(pv->p);
@@ -982,7 +982,7 @@ void CDrawUtilities::DrawPlane(const Fvector& p, const Fvector& n, const Fvector
 
     if (bWire)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+        DU_DRAW_SH(RImplementation.m_WireShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
         pv->set(-scale.x, 0, -scale.y, clr_w);
         mR.transform_tiny(pv->p);
@@ -1009,12 +1009,12 @@ void CDrawUtilities::DrawPlane(const Fvector& center, const Fvector2& scale, con
     M.setHPB(rotate.y, rotate.x, rotate.z);
     M.translate_over(center);
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
 
     if (bSolid)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_SelectionShader);
+        DU_DRAW_SH(RImplementation.m_SelectionShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
         pv->set(-scale.x, 0, -scale.y, clr_s);
         M.transform_tiny(pv->p);
@@ -1039,7 +1039,7 @@ void CDrawUtilities::DrawPlane(const Fvector& center, const Fvector2& scale, con
 
     if (bWire)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+        DU_DRAW_SH(RImplementation.m_WireShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
         pv->set(-scale.x, 0, -scale.y, clr_w);
         M.transform_tiny(pv->p);
@@ -1062,12 +1062,12 @@ void CDrawUtilities::DrawPlane(const Fvector& center, const Fvector2& scale, con
 
 void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fvector& v, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire)
 {
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
 
     u32 vBase;
     if (bSolid)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_SelectionShader);
+        DU_DRAW_SH(RImplementation.m_SelectionShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(6, vs_L->vb_stride, vBase);
         pv->set(o.x, o.y, o.z, clr_s);
         pv++;
@@ -1086,7 +1086,7 @@ void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fve
     }
     if (bWire)
     {
-        DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+        DU_DRAW_SH(RImplementation.m_WireShader);
         FVF::L* pv = (FVF::L*)Stream->Lock(5, vs_L->vb_stride, vBase);
         pv->set(o.x, o.y, o.z, clr_w);
         pv++;
@@ -1106,7 +1106,7 @@ void CDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fve
 
 void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45)
 {
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     // actual rendering
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(bRot45 ? 12 : 6, vs_L->vb_stride, vBase);
@@ -1141,13 +1141,13 @@ void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float s
 
 void CDrawUtilities::DrawPivot(const Fvector& pos, float sz)
 {
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+    DU_DRAW_SH(RImplementation.m_WireShader);
     DrawCross(pos, sz, sz, sz, sz, sz, sz, 0xFF7FFF7F);
 }
 
 void CDrawUtilities::DrawAxis(const Fmatrix& T)
 {
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     Fvector p[6];
 
     // colors
@@ -1180,7 +1180,7 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
     // unlock VB and Render it as triangle list
     Stream->Unlock(6, vs_TL->vb_stride);
     DU_DRAW_RS(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+    DU_DRAW_SH(RImplementation.m_WireShader);
     DU_DRAW_DP(D3DPT_LINELIST, vs_TL, vBase, 3);
     DU_DRAW_RS(D3DRS_SHADEMODE, SHADE_MODE);
 
@@ -1197,7 +1197,7 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 {
     VERIFY(Device.b_is_Ready);
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     Fvector c, r, n, d;
     float w = T.c.x * Device.mFullTransform._14 + T.c.y * Device.mFullTransform._24 + T.c.z * Device.mFullTransform._34 + Device.mFullTransform._44;
     if (w < 0)
@@ -1240,7 +1240,7 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 
     // Render it as line list
     DU_DRAW_RS(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+    DU_DRAW_SH(RImplementation.m_WireShader);
     DU_DRAW_DP(D3DPT_LINELIST, vs_TL, vBase, 3);
     DU_DRAW_RS(D3DRS_SHADEMODE, SHADE_MODE);
 
@@ -1257,7 +1257,7 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 void CDrawUtilities::DrawGrid()
 {
     VERIFY(Device.b_is_Ready);
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     // fill VB
     FVF::L* pv = (FVF::L*)Stream->Lock(m_GridPoints.size(), vs_L->vb_stride, vBase);
@@ -1268,7 +1268,7 @@ void CDrawUtilities::DrawGrid()
     Fmatrix ddd;
     ddd.identity();
     RCache.set_xform_world(ddd);
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_WireShader);
+    DU_DRAW_SH(RImplementation.m_WireShader);
     DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, m_GridPoints.size() / 2);
 }
 
@@ -1276,7 +1276,7 @@ void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector
 {
     VERIFY(Device.b_is_Ready);
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase;
     FVF::TL* pv = (FVF::TL*)Stream->Lock(4, vs_TL->vb_stride, vBase);
     pv->set(m_SelStart.x * SCREEN_QUALITY, m_SelStart.y * SCREEN_QUALITY, m_SelectionRect, 0.f, 0.f);
@@ -1290,7 +1290,7 @@ void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector
     Stream->Unlock(4, vs_TL->vb_stride);
     // Render it as triangle list
     DU_DRAW_RS(D3DRS_CULLMODE, D3DCULL_NONE);
-    DU_DRAW_SH(dxRenderDeviceRender::Instance().m_SelectionShader);
+    DU_DRAW_SH(RImplementation.m_SelectionShader);
     DU_DRAW_DP(D3DPT_TRIANGLEFAN, vs_TL, vBase, 2);
     DU_DRAW_RS(D3DRS_CULLMODE, D3DCULL_CCW);
 }
@@ -1298,7 +1298,7 @@ void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector
 void CDrawUtilities::DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
     FVF::L* pv = (FVF::L*)Stream->Lock(dwNeed, vs_L->vb_stride, vBase);
     for (int k = 0; k < vc; k++, pv++)
@@ -1317,7 +1317,7 @@ void CDrawUtilities::DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertic
 void CDrawUtilities::DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
     FVF::TL* pv = (FVF::TL*)Stream->Lock(dwNeed, vs_TL->vb_stride, vBase);
     for (int k = 0; k < vc; k++, pv++)
@@ -1336,7 +1336,7 @@ void CDrawUtilities::DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* verti
 void CDrawUtilities::DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle)
 {
     // fill VB
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &RImplementation.Vertex;
     u32 vBase, dwNeed = (bCycle) ? vc + 1 : vc;
     FVF::LIT* pv = (FVF::LIT*)Stream->Lock(dwNeed, vs_LIT->vb_stride, vBase);
     for (int k = 0; k < vc; k++, pv++)

@@ -28,8 +28,8 @@ private:
     xr_vector<_Q> used; // id's are generated from this and it is cleared from back only
     xr_vector<u32> fids; // free id's
 
-    bool enabled;
     u32 last_frame;
+    bool enabled;
 
     void cleanup_lost();
 
@@ -37,9 +37,9 @@ public:
     typedef u64 occq_result;
 
 public:
-    R_occlusion();
     ~R_occlusion();
 
+    void occq_create();
     void occq_destroy();
     u32 occq_begin(u32& ID); // returns 'order'
     void occq_end(u32& ID);

@@ -3,7 +3,6 @@
 #include "ResourceManager.h"
 #include "R_DStreams.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -13,7 +12,6 @@ constexpr int rsDIB_Size = 512;
 
 void _VertexStream::Create()
 {
-    // dxRenderDeviceRender::Instance().Resources->Evict		();
     DEV->Evict();
 
     mSize = rsDVB_Size * 1024;
@@ -132,7 +130,6 @@ void _VertexStream::_clear()
 //////////////////////////////////////////////////////////////////////////
 void _IndexStream::Create()
 {
-    // dxRenderDeviceRender::Instance().Resources->Evict		();
     DEV->Evict();
 
     mSize = rsDIB_Size * 1024;

@@ -7,10 +7,10 @@ extern const Fvector zero_vel;
 
 class CParticlesObject : public CPS_Instance
 {
-    typedef CPS_Instance inherited;
+    using inherited = CPS_Instance;
 
     u32 dwLastTime;
-    void Init(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove);
+    void Init(LPCSTR p_name, sector_id_t sector_id, BOOL bAutoRemove);
     void UpdateSpatial();
 
 protected:
@@ -25,13 +25,13 @@ public:
     virtual ~CParticlesObject();
 
     virtual bool shedule_Needed() { return true; };
-    virtual float shedule_Scale();
+    virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
     void renderable_Render(u32 context_id, IRenderable* root) override;
     void PerformAllTheWork(u32 dt);
     void PerformAllTheWork_mt();
 
-    Fvector& Position();
+    Fvector& Position() const;
     void SetXFORM(const Fmatrix& m);
     IC Fmatrix& XFORM() { return renderable.xform; }
     void UpdateParent(const Fmatrix& m, const Fvector& vel);

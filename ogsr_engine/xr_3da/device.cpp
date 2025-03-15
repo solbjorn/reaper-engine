@@ -84,6 +84,8 @@ void CRenderDevice::RenderEnd(void)
     }
 
     m_pRender->End();
+
+    vCameraDirectionSaved = vCameraDirection;
 }
 
 #include "igame_level.h"
@@ -93,7 +95,6 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
     if (m_pRender->GetForceGPU_REF())
         amount = 0;
 
-    // Msg			("* PCACHE: start for %d...",amount);
     dwPrecacheFrame = dwPrecacheTotal = amount;
 
     if (amount && b_draw_loadscreen && load_screen_renderer.b_registered == false)
@@ -193,11 +194,6 @@ void CRenderDevice::OnCameraUpdated()
     mInvFullTransform.invert_44(mFullTransform);
     ::Render->OnCameraUpdated();
     m_pRender->SetCacheXform(mView, mProject);
-
-    vCameraPosition_saved = vCameraPosition;
-    mFullTransform_saved = mFullTransform;
-    mView_saved = mView;
-    mProject_saved = mProject;
 
     camFrame = dwFrame;
 }

@@ -5,7 +5,6 @@
 
 #define MAX_Flares 24
 
-
 void dxFlareRender::Copy(IFlareRender& _in) { *this = *(dxFlareRender*)&_in; }
 
 void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
@@ -29,7 +28,7 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
     svector<ref_shader, MAX_Flares> _2render;
 
     u32 VS_Offset;
-    FVF::LIT* pv = (FVF::LIT*)RCache.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+    FVF::LIT* pv = (FVF::LIT*)RImplementation.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
 
     float fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
 
@@ -111,7 +110,7 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
             }
         }
     }
-    RCache.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
+    RImplementation.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
     RCache.set_xform_world(Fidentity);
     RCache.set_Geometry(hGeom);
@@ -126,6 +125,6 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
     }
 }
 
-void dxLensFlareRender::OnDeviceCreate() { hGeom.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB); }
+void dxLensFlareRender::OnDeviceCreate() { hGeom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB); }
 
 void dxLensFlareRender::OnDeviceDestroy() { hGeom.destroy(); }

@@ -12,7 +12,6 @@
 
 class CCartridge;
 class CParticlesObject;
-class IRender_Sector;
 
 extern const Fvector zero_vel;
 
@@ -27,7 +26,7 @@ protected:
     virtual ~CShootingObject(void);
 
     void reinit();
-    void reload(LPCSTR section){};
+    void reload(LPCSTR section) {};
     void Load(LPCSTR section);
 
     Fvector m_vCurrentShootDir;
@@ -64,22 +63,22 @@ protected:
     bool m_bForcedParticlesHudMode;
     bool m_bParticlesHudMode;
 
-    //скорость вылета пули из ствола
+    // скорость вылета пули из ствола
     float m_fStartBulletSpeed;
-    //максимальное расстояние стрельбы
+    // максимальное расстояние стрельбы
     float fireDistance;
 
-    //рассеивание во время стрельбы
+    // рассеивание во время стрельбы
     float fireDispersionBase;
 
     struct SRotation constDeviation; // постоянное отклонение пуль при стрельбе в радианах
 
-    //счетчик времени, затрачиваемого на выстрел
+    // счетчик времени, затрачиваемого на выстрел
     float fTime;
 
 protected:
-    //для сталкеров, чтоб они знали эффективные границы использования
-    //оружия
+    // для сталкеров, чтоб они знали эффективные границы использования
+    // оружия
     float m_fMinRadius;
     float m_fMaxRadius;
 
@@ -97,7 +96,7 @@ protected:
     float light_lifetime;
     u32 light_frame;
     float light_time;
-    //включение подсветки во время выстрела
+    // включение подсветки во время выстрела
     bool m_bLightShotEnabled;
 
 protected:
@@ -116,14 +115,14 @@ protected:
     // партикловая система
     //////////////////////////////////////////////////////////////////////////
 protected:
-    //функции родительского объекта
+    // функции родительского объекта
     virtual const Fvector& get_CurrentFirePoint() = 0;
     virtual const Fmatrix& get_ParticlesXFORM() = 0;
-    virtual void ForceUpdateFireParticles(){};
+    virtual void ForceUpdateFireParticles() {};
     virtual bool IsHudModeNow() = 0;
 
     ////////////////////////////////////////////////
-    //общие функции для работы с партиклами оружия
+    // общие функции для работы с партиклами оружия
     virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel = zero_vel, bool auto_remove_flag = false);
     virtual void StopParticles(CParticlesObject*& pParticles);
     virtual void UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos, const Fvector& vel = zero_vel);
@@ -132,23 +131,23 @@ protected:
     virtual void LoadFlameParticles(LPCSTR section, LPCSTR prefix);
 
     ////////////////////////////////////////////////
-    //спецефические функции для партиклов
-    //партиклы огня
+    // спецефические функции для партиклов
+    // партиклы огня
     virtual void StartFlameParticles();
     virtual void StopFlameParticles();
     virtual void UpdateFlameParticles();
 
-    //партиклы дыма
+    // партиклы дыма
     virtual void StartSmokeParticles(const Fvector& play_pos, const Fvector& parent_vel);
 
-    //партиклы полосы от пули
+    // партиклы полосы от пули
     virtual void StartShotParticles();
 
-    //партиклы гильз
+    // партиклы гильз
     virtual void OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel);
 
 protected:
-    //имя пратиклов для гильз
+    // имя пратиклов для гильз
     shared_str m_sShellParticles;
 
 public:
@@ -158,17 +157,17 @@ public:
     BOOL m_bUseAimBullet;
 
 protected:
-    //имя пратиклов для огня
+    // имя пратиклов для огня
     shared_str m_sFlameParticlesCurrent;
-    //для выстрела 1м и 2м видом стрельбы
+    // для выстрела 1м и 2м видом стрельбы
     shared_str m_sFlameParticles;
-    //объект партиклов огня
+    // объект партиклов огня
     CParticlesObject* m_pFlameParticles;
 
-    //имя пратиклов для дыма
+    // имя пратиклов для дыма
     shared_str m_sSmokeParticlesCurrent;
     shared_str m_sSmokeParticles;
 
-    //имя партиклов следа от пули
+    // имя партиклов следа от пули
     shared_str m_sShotParticles;
 };

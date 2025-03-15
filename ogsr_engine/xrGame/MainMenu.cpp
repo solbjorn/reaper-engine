@@ -310,15 +310,14 @@ void CMainMenu::IR_OnMouseWheel(int direction)
 bool CMainMenu::OnRenderPPUI_query() { return IsActive() && !m_Flags.test(flGameSaveScreenshot) && b_shniaganeed_pp; }
 
 extern void draw_wnds_rects();
+
 void CMainMenu::OnRender()
 {
     if (m_Flags.test(flGameSaveScreenshot))
         return;
 
-    if (g_pGameLevel)
-        Render->Calculate();
-
     Render->Render();
+
     if (!OnRenderPPUI_query())
     {
         DoRenderDialogs();

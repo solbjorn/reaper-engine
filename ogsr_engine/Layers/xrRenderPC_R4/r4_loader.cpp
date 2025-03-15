@@ -53,7 +53,7 @@ void CRender::level_Load(IReader* fs)
             LPSTR delim = strchr(n_sh, '/');
             *delim = 0;
             xr_strcpy(n_tlist, delim + 1);
-            Shaders[i] = dxRenderDeviceRender::Instance().Resources->Create(n_sh, n_tlist);
+            Shaders[i] = Resources->Create(n_sh, n_tlist);
         }
         chunk->close();
     }
@@ -152,7 +152,7 @@ void CRender::level_Unload()
     //*** Sectors
     // 1.
     xr_delete(rmPortals);
-    pLastSector = 0;
+    last_sector_id = INVALID_SECTOR_ID;
     vLastCameraPos.set(0, 0, 0);
     // 2.
     dsgraph.unload();
@@ -210,8 +210,7 @@ void CRender::level_Unload()
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
     R_ASSERT2(base_fs, "Could not load geometry. File not found.");
-    dxRenderDeviceRender::Instance().Resources->Evict();
-    //	u32	dwUsage					= D3DUSAGE_WRITEONLY;
+    Resources->Evict();
 
     xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
     xr_vector<ID3DVertexBuffer*>& _VB = _alternative ? xVB : nVB;
@@ -336,11 +335,10 @@ void CRender::LoadSectors(IReader* fs)
     // load sectors
     xr_vector<CSector::level_sector_data_t> sectors_data;
 
-    size_t largest_sector_id = size_t(-1);
     float largest_sector_vol = 0;
     IReader* S = fs->open_chunk(fsL_SECTORS);
 
-    for (u32 i = 0;; i++)
+    for (sector_id_t i = 0;; i++)
     {
         IReader* P = S->open_chunk(i);
         if (!P)
@@ -366,7 +364,7 @@ void CRender::LoadSectors(IReader* fs)
 
         // Search for default sector - assume "default" or "outdoor" sector is the largest one
         // XXX: hack: need to know real outdoor sector
-        auto* V = (dxRender_Visual*)RImplementation.getVisual(sector_data.root_id);
+        auto* V = (dxRender_Visual*)getVisual(sector_data.root_id);
         float vol = V->vis.box.getvolume();
         if (vol > largest_sector_vol)
         {
@@ -409,9 +407,6 @@ void CRender::LoadSectors(IReader* fs)
     }
 
     dsgraph.load(sectors_data, portals_data);
-
-    largest_sector = dsgraph.Sectors[largest_sector_id];
-    pLastSector = nullptr;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)
@@ -471,14 +466,14 @@ void CRender::Load3DFluid()
                 Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
 
                 //	Attach to sector's static geometry
-                CSector* pSector = (CSector*)detectSector(pVolume->getVisData().sphere.P);
+                const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
+                auto* pSector = dsgraph.get_sector(sector_id);
 
                 if (!pSector)
                 {
                     Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
 
                     xr_delete(pVolume);
-
                     continue;
                 }
 

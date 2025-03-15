@@ -176,6 +176,31 @@ constexpr ICF void xr_memcpy128(void* dst, const void* src, size_t size)
     }
 }
 
+constexpr ICF void xr_memcpy32(void* dst, const void* src)
+{
+    if (std::is_constant_evaluated())
+        xr_memcpy_const(dst, src, 32);
+    else
+        _mm256_store_si256(reinterpret_cast<__m256i*>(dst), _mm256_load_si256(reinterpret_cast<const __m256i*>(src)));
+}
+
+constexpr ICF void xr_memcpy256(void* dst, const void* src, size_t size)
+{
+    if (std::is_constant_evaluated())
+        return xr_memcpy_const(dst, src, size);
+
+    u8* cdst = reinterpret_cast<u8*>(dst);
+    const u8* csrc = reinterpret_cast<const u8*>(src);
+
+    do
+    {
+        _mm256_store_si256((__m256i*)cdst, _mm256_load_si256((const __m256i*)csrc));
+        cdst += 32;
+        csrc += 32;
+        size -= 32;
+    } while (size >= 32);
+}
+
 constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 {
     if (std::is_constant_evaluated())

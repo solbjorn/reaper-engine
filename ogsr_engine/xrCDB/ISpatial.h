@@ -6,6 +6,9 @@
 
 static constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
 
+using sector_id_t = size_t;
+constexpr sector_id_t INVALID_SECTOR_ID = sector_id_t(-1);
+
 /*
 Requirements:
 0. Generic
@@ -51,7 +54,6 @@ enum
 //////////////////////////////////////////////////////////////////////////
 
 class ISpatial_NODE;
-class IRender_Sector;
 class ISpatial_DB;
 
 namespace Feel
@@ -67,17 +69,17 @@ class ISpatial
 public:
     struct _spatial
     {
-        u32 type{};
         Fsphere sphere{};
+        u32 type{};
         Fvector node_center{}; // Cached node center for TBV optimization
         float node_radius{}; // Cached node bounds for TBV optimization
         ISpatial_NODE* node_ptr{}; // Cached parent node for "empty-members" optimization
-        IRender_Sector* sector{};
+        sector_id_t sector_id{INVALID_SECTOR_ID};
         ISpatial_DB* space{}; // allow different spaces
     } spatial;
 
 private:
-    void spatial_updatesector_internal();
+    void spatial_updatesector_internal(sector_id_t sector_id);
 
 public:
     bool spatial_inside();
@@ -85,19 +87,21 @@ public:
     void spatial_unregister();
     virtual void spatial_move();
     virtual Fvector spatial_sector_point() { return spatial.sphere.P; }
-    ICF void spatial_updatesector()
+
+    void spatial_updatesector(sector_id_t sector_id)
     {
-        if (0 == (spatial.type & STYPEFLAG_INVALIDSECTOR))
+        if (!(spatial.type & STYPEFLAG_INVALIDSECTOR))
             return;
-        spatial_updatesector_internal();
-    };
+
+        spatial_updatesector_internal(sector_id);
+    }
 
     virtual CObject* dcast_CObject() { return 0; }
     virtual Feel::Sound* dcast_FeelSound() { return 0; }
     virtual IRenderable* dcast_Renderable() { return 0; }
     virtual IRender_Light* dcast_Light() { return 0; }
 
-    ISpatial(ISpatial_DB* space);
+    ISpatial(ISpatial_DB* space) { spatial.space = space; }
     virtual ~ISpatial();
 };
 
@@ -126,6 +130,7 @@ class ISpatial_DB
 {
 private:
     xrCriticalSection cs;
+
     poolSS<ISpatial_NODE, 128> allocator;
     xr_vector<ISpatial_NODE*> allocator_pool;
     ISpatial* rt_insert_object{};
@@ -161,7 +166,7 @@ private:
     void _remove(ISpatial_NODE* N, ISpatial_NODE* N_sub);
 
 public:
-    ISpatial_DB();
+    ISpatial_DB() {}
     ~ISpatial_DB();
 
     // managing

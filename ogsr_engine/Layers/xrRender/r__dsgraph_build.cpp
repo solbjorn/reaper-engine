@@ -2,8 +2,10 @@
 
 #include "fhierrarhyvisual.h"
 #include "SkeletonCustom.h"
+#include "../../xr_3da/CustomHUD.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/irenderable.h"
+#include "../../xr_3da/xr_object.h"
 
 #include "flod.h"
 #include "particlegroup.h"
@@ -64,7 +66,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
         mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
 
     // Select shader
-    ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(root, pVisual, distSQ);
+    ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(root, pVisual, distSQ, phase);
     if (0 == sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
@@ -131,13 +133,6 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
             matrixItems.ssa = SSA;
         }
     }
-
-    if (val_recorder)
-    {
-        Fbox3 temp;
-        temp.xform(pVisual->vis.box, xform);
-        val_recorder->push_back(temp);
-    }
 }
 
 void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
@@ -160,7 +155,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
         mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
 
     // Select shader
-    ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ);
+    ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ, phase);
     if (0 == sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
@@ -218,11 +213,6 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
         {
             normalItems.ssa = SSA;
         }
-    }
-
-    if (val_recorder)
-    {
-        val_recorder->push_back(pVisual->vis.box);
     }
 }
 
@@ -545,7 +535,7 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
 
 void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
 {
-    if (!RImplementation.HOM.visible(pVisual->vis))
+    if (use_hom && !RImplementation.HOM.visible(pVisual->vis))
         return;
 
     if (!pVisual->_ignore_optimization && !IsValuableToRender(nullptr, pVisual, true, phase == CRender::PHASE_SMAP, nullptr))
@@ -618,7 +608,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     if (VIS == fcvNone)
         return;
 
-    if (!RImplementation.HOM.visible(vis))
+    if (use_hom && !RImplementation.HOM.visible(vis))
         return;
 
     // If we get here visual is visible or partially visible
@@ -695,8 +685,8 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
 
 void R_dsgraph_structure::load(const xr_vector<CSector::level_sector_data_t>& sectors_data, const xr_vector<CPortal::level_portal_data_t>& portals_data)
 {
-    const auto portals_count = portals_data.size();
-    const auto sectors_count = sectors_data.size();
+    const sector_id_t sectors_count = sectors_data.size();
+    const u32 portals_count = portals_data.size();
 
     Sectors.resize(sectors_count);
     Portals.resize(portals_count);
@@ -707,9 +697,11 @@ void R_dsgraph_structure::load(const xr_vector<CSector::level_sector_data_t>& se
         Portals[idx] = portal;
     }
 
-    for (u32 idx = 0; idx < sectors_count; ++idx)
+    for (sector_id_t idx = 0; idx < sectors_count; ++idx)
     {
         auto* sector = xr_new<CSector>();
+
+        sector->unique_id = idx;
         sector->setup(sectors_data[idx], Portals);
         Sectors[idx] = sector;
     }
@@ -730,4 +722,225 @@ void R_dsgraph_structure::unload()
     for (auto* portal : Portals)
         xr_delete(portal);
     Portals.clear();
+}
+
+// sub-space rendering - PHASE_NORMAL
+void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum)
+{
+    marker++;
+
+    phase = CRender::PHASE_NORMAL;
+    use_hom = true;
+
+    // Calculate sector(s) and their objects
+    if (o_sector_id != INVALID_SECTOR_ID)
+    {
+        if (RImplementation.rmPortals)
+        {
+            // Check if camera is too near to some portal - if so force DualRender
+            float eps = VIEWPORT_NEAR + EPS_L;
+            Fvector box_radius;
+
+            box_radius.set(eps, eps, eps);
+            Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, Device.vCameraPosition, box_radius);
+
+            for (size_t K = 0; K < Sectors_xrc.r_count(); K++)
+            {
+                CPortal* pPortal = Portals[RImplementation.rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
+                pPortal->bDualRender = TRUE;
+            }
+        }
+
+        // Traverse sector/portal structure
+        PortalTraverser.traverse(Sectors[o_sector_id], _frustum, Device.vCameraPosition, Device.mFullTransform,
+                                 CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE);
+
+        // Determine visibility for static geometry hierarchy
+        for (auto* sector : PortalTraverser.r_sectors)
+        {
+            dxRender_Visual* root = sector->root();
+            for (const auto& view : sector->r_frustums)
+                add_static(root, view, view.getMask());
+        }
+
+        // Traverse object database
+        g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE + STYPE_LIGHTSOURCE, _frustum);
+
+        // Exact sorting order (front-to-back)
+        std::ranges::sort(lstRenderables, [](const auto* s1, const auto* s2) {
+            const float d1 = s1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
+            const float d2 = s2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
+            return d1 < d2;
+        });
+
+        u32 uID_LTRACK = 0xffffffff;
+        RImplementation.uLastLTRACK++;
+        if (!lstRenderables.empty())
+            uID_LTRACK = RImplementation.uLastLTRACK % lstRenderables.size();
+
+        // update light-vis for current entity / actor
+        CObject* O = g_pGameLevel->CurrentViewEntity();
+        if (O)
+        {
+            CROS_impl* R = (CROS_impl*)O->ROS();
+            if (R)
+                R->update(O);
+        }
+
+        // Determine visibility for dynamic part of scene
+        for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
+        {
+            ISpatial* spatial = lstRenderables[o_it];
+            const auto& entity_pos = spatial->spatial_sector_point();
+            spatial->spatial_updatesector(detect_sector(entity_pos));
+
+            const auto& [sector_id, type, sphere] = std::tuple(spatial->spatial.sector_id, spatial->spatial.type, spatial->spatial.sphere);
+            if (sector_id == INVALID_SECTOR_ID)
+                continue; // disassociated from S/P structure
+            auto* sector = Sectors[sector_id];
+
+            if (type & STYPE_LIGHTSOURCE)
+            {
+                // lightsource
+                light* L = (light*)spatial->dcast_Light();
+                VERIFY(L);
+                float lod = L->get_LOD();
+                if (lod > EPS_L)
+                {
+                    vis_data& vis = L->get_homdata();
+                    if (RImplementation.HOM.visible(vis))
+                        RImplementation.Lights.add_light(L);
+                }
+                continue;
+            }
+
+            if (PortalTraverser.i_marker != sector->r_marker)
+                continue; // inactive (untouched) sector
+
+            for (auto& view : sector->r_frustums)
+            {
+                if (!view.testSphere_dirty(sphere.P, sphere.R))
+                    continue;
+
+                if (type & STYPE_RENDERABLE)
+                {
+                    // renderable
+                    IRenderable* renderable = spatial->dcast_Renderable();
+                    VERIFY(renderable);
+
+                    // Occlusion
+                    //	casting is faster then using getVis method
+                    vis_data& v_orig = ((dxRender_Visual*)renderable->renderable.visual)->vis;
+                    vis_data v_copy = v_orig;
+                    v_copy.box.xform(renderable->renderable.xform);
+                    BOOL bVisible = RImplementation.HOM.visible(v_copy);
+                    v_orig.marker = v_copy.marker;
+                    v_orig.accept_frame = v_copy.accept_frame;
+                    v_orig.hom_frame = v_copy.hom_frame;
+                    v_orig.hom_tested = v_copy.hom_tested;
+                    if (!bVisible)
+                        break; // exit loop on frustums
+
+                    // update light-vis for selected entity
+                    if (o_it == uID_LTRACK && renderable->renderable_ROS())
+                    {
+                        // track lighting environment
+                        CROS_impl* T = (CROS_impl*)renderable->renderable_ROS();
+                        T->update(renderable);
+                    }
+
+                    // Rendering
+                    renderable->renderable_Render(0, renderable);
+                }
+
+                break; // exit loop on frustums
+            }
+        }
+    }
+
+    if (!g_pGameLevel)
+        return;
+
+    g_hud->Render_Last(0); // HUD
+    if (g_hud->RenderActiveItemUIQuery())
+        render_hud_ui();
+}
+
+// sub-space rendering - PHASE_SMAP
+void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic)
+{
+    VERIFY(sector_id != INVALID_SECTOR_ID);
+    marker++; // !!! critical here
+
+    phase = CRender::PHASE_SMAP;
+    use_hom = false;
+
+    // Traverse sector/portal structure
+    PortalTraverser.traverse(Sectors[o_sector_id], _frustum, _cop, mCombined, 0);
+
+    // Determine visibility for static geometry hierarchy
+    for (auto* sector : PortalTraverser.r_sectors)
+    {
+        dxRender_Visual* root = sector->root();
+        for (const auto& view : sector->r_frustums)
+            add_static(root, view, view.getMask());
+    }
+
+    if (!_dynamic)
+        return;
+
+    // Traverse object database
+    g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, _frustum);
+
+    // Determine visibility for dynamic part of scene
+    for (auto* spatial : lstRenderables)
+    {
+        const auto& [sector_id, sphere] = std::tuple(spatial->spatial.sector_id, spatial->spatial.sphere);
+        if (sector_id == INVALID_SECTOR_ID)
+            continue; // disassociated from S/P structure
+
+        auto* sector = Sectors[sector_id];
+        if (PortalTraverser.i_marker != sector->r_marker)
+            continue; // inactive (untouched) sector
+
+        for (auto& view : sector->r_frustums)
+        {
+            if (!view.testSphere_dirty(sphere.P, sphere.R))
+                continue;
+
+            // renderable
+            IRenderable* renderable = spatial->dcast_Renderable();
+            if (!renderable)
+                continue; // unknown, but renderable object (r1_glow???)
+
+            renderable->renderable_Render(0, nullptr);
+        }
+    }
+
+    if (!g_pGameLevel || !ps_r2_ls_flags_ext.test(R2FLAGEXT_ACTOR_SHADOW))
+        return;
+
+    CObject* viewEntity = g_pGameLevel->CurrentViewEntity();
+    if (!viewEntity)
+        return;
+
+    const auto& entity_pos = viewEntity->spatial_sector_point();
+    viewEntity->spatial_updatesector(detect_sector(entity_pos));
+
+    const auto& [sector_id, sphere] = std::tuple(viewEntity->spatial.sector_id, viewEntity->spatial.sphere);
+    if (sector_id == INVALID_SECTOR_ID)
+        return; // disassociated from S/P structure
+
+    auto* sector = Sectors[sector_id];
+    if (PortalTraverser.i_marker != sector->r_marker)
+        return; // inactive (untouched) sector
+
+    for (const CFrustum& view : sector->r_frustums)
+    {
+        if (!view.testSphere_dirty(sphere.P, sphere.R))
+            continue;
+
+        // renderable
+        g_hud->Render_First(0);
+    }
 }

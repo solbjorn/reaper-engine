@@ -11,9 +11,9 @@
 
 const Fvector zero_vel = {0.f, 0.f, 0.f};
 
-CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) : inherited(destroy_on_game_load) { Init(p_name, 0, bAutoRemove); }
+CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) : inherited(destroy_on_game_load) { Init(p_name, INVALID_SECTOR_ID, bAutoRemove); }
 
-void CParticlesObject::Init(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
+void CParticlesObject::Init(LPCSTR p_name, sector_id_t sector_id, BOOL bAutoRemove)
 {
     m_bLooped = false;
     m_bStopping = false;
@@ -46,7 +46,7 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 
     // spatial
     spatial.type = 0;
-    spatial.sector = S;
+    spatial.sector_id = sector_id;
 
     // sheduled
     shedule.t_min = 20;
@@ -69,12 +69,13 @@ CParticlesObject::~CParticlesObject()
 void CParticlesObject::UpdateSpatial()
 {
     // spatial	(+ workaround occasional bug inside particle-system)
-    if (_valid(renderable.visual->getVisData().sphere))
+    vis_data& vis = renderable.visual->getVisData();
+    if (_valid(vis.sphere))
     {
         Fvector P;
         float R;
-        renderable.xform.transform_tiny(P, renderable.visual->getVisData().sphere.P);
-        R = renderable.visual->getVisData().sphere.R;
+        renderable.xform.transform_tiny(P, vis.sphere.P);
+        R = vis.sphere.R;
         if (0 == spatial.type)
         {
             // First 'valid' update - register
@@ -208,14 +209,14 @@ void CParticlesObject::UpdateParent(const Fmatrix& m, const Fvector& vel)
     UpdateSpatial();
 }
 
-Fvector& CParticlesObject::Position() { return renderable.visual->getVisData().sphere.P; }
+Fvector& CParticlesObject::Position() const { return renderable.visual->getVisData().sphere.P; }
 
-float CParticlesObject::shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
+float CParticlesObject::shedule_Scale() const { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
 
 void CParticlesObject::renderable_Render(u32 context_id, IRenderable* root)
 {
     VERIFY(renderable.visual);
-    u32 dt = Device.dwTimeGlobal - dwLastTime;
+    const auto dt = Device.dwTimeGlobal - dwLastTime;
     if (dt)
     {
         IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);

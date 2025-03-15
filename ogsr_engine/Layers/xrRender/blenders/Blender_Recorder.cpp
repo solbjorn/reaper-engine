@@ -65,7 +65,7 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
                 Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
             base = *lst[id];
         }
-        //.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+
         if (!DEV->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
             bDetail = FALSE;
     }

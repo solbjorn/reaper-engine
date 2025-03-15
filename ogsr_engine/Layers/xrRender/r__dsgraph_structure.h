@@ -5,28 +5,22 @@
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
 
-//////////////////////////////////////////////////////////////////////////
-// feedback	for receiving visuals										//
-//////////////////////////////////////////////////////////////////////////
+// feedback for receiving visuals
 class R_feedback
 {
 public:
     virtual void rfeedback_static(dxRender_Visual* V) = 0;
 };
 
-//////////////////////////////////////////////////////////////////////////
-// common part of interface implementation for all D3D renderers		//
-//////////////////////////////////////////////////////////////////////////
 struct R_dsgraph_structure
 {
-    BOOL val_bRecordMP; // record nearest for multi-pass
     R_feedback* val_feedback{}; // feedback for geometry being rendered
     u32 val_feedback_breakp{}; // breakpoint
-    xr_vector<Fbox3>* val_recorder; // coarse structure recorder
     u32 marker{};
     u32 phase{};
     bool pmask[2];
     bool pmask_wmark;
+    bool use_hom{};
 
     // Dynamic scene graph
     // R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
@@ -60,19 +54,13 @@ struct R_dsgraph_structure
     xr_vector<ISpatial*> lstSpatial;
     xr_vector<dxRender_Visual*> lstVisuals;
 
-    u32 counter_S;
-    u32 counter_D;
+    u32 counter_S{};
+    u32 counter_D{};
 
     void set_Feedback(R_feedback* V, u32 id)
     {
         val_feedback_breakp = id;
         val_feedback = V;
-    }
-    void set_Recorder(xr_vector<Fbox3>* dest)
-    {
-        val_recorder = dest;
-        if (dest)
-            dest->clear();
     }
     void get_Counters(u32& s, u32& d)
     {
@@ -81,13 +69,7 @@ struct R_dsgraph_structure
     }
     void clear_Counters() { counter_S = counter_D = 0; }
 
-    R_dsgraph_structure()
-    {
-        val_bRecordMP = FALSE;
-        val_feedback_breakp = 0;
-        val_recorder = 0;
-        r_pmask(true, true);
-    };
+    R_dsgraph_structure() { r_pmask(true, true); };
 
     void destroy()
     {
@@ -131,6 +113,14 @@ struct R_dsgraph_structure
     void load(const xr_vector<CSector::level_sector_data_t>& sectors, const xr_vector<CPortal::level_portal_data_t>& portals);
     void unload();
 
+    ICF CSector* get_sector(sector_id_t sector_id) const
+    {
+        VERIFY(sector_id < Sectors.size());
+        return Sectors[sector_id];
+    }
+    sector_id_t detect_sector(const Fvector& P);
+    sector_id_t detect_sector(const Fvector& P, Fvector& D);
+
     void add_static(dxRender_Visual* pVisual, const CFrustum& view, u32 planes);
     void add_leafs_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, bool ignore = false); // if detected node's full visibility
     void add_leafs_static(dxRender_Visual* pVisual); // if detected node's full visibility
@@ -138,6 +128,10 @@ struct R_dsgraph_structure
     void insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& Center);
     void insert_static(dxRender_Visual* pVisual);
 
+    void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum);
+    void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic);
+
+    // render primitives
     void render_graph(u32 _priority);
     void render_hud(bool NoPS = false);
     void render_hud_ui();
@@ -146,9 +140,6 @@ struct R_dsgraph_structure
     void render_emissive(bool clear = true, bool renderHUD = false);
     void render_wmarks();
     void render_distort();
-    void render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-    void render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-
     void render_landscape(u32 pass, bool _clear);
     void render_water_ssr();
     void render_water();

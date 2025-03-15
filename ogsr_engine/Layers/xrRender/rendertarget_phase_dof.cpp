@@ -21,7 +21,7 @@ void CRenderTarget::phase_dof()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
@@ -30,7 +30,7 @@ void CRenderTarget::phase_dof()
     pv++;
     pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Set pass
     RCache.set_Element(s_dof->E[0]);
@@ -46,7 +46,7 @@ void CRenderTarget::phase_dof()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
@@ -55,7 +55,7 @@ void CRenderTarget::phase_dof()
     pv++;
     pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Set pass
     RCache.set_Element(s_dof->E[1]);

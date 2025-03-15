@@ -28,11 +28,19 @@ void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 
     m_PortalFadeGeom.destroy();
     m_PortalFadeShader.destroy();
-    m_WireShader.destroy();
     m_SelectionShader.destroy();
+    m_WireShader.destroy();
 
     Resources->OnDeviceDestroy(bKeepTextures);
     RCache.OnDeviceDestroy();
+
+    // Quad
+    HW.stats_manager.decrement_stats_ib(QuadIB);
+    _RELEASE(QuadIB);
+
+    // streams
+    Index.Destroy();
+    Vertex.Destroy();
 }
 
 void dxRenderDeviceRender::DestroyHW()
@@ -76,6 +84,13 @@ void dxRenderDeviceRender::SetupStates()
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
     // Signal everyone - device created
+
+    // streams
+    Vertex.Create();
+    Index.Create();
+
+    CreateQuadIB();
+
     RCache.OnDeviceCreate();
     m_Gamma.Update();
     Resources->OnDeviceCreate();
@@ -85,7 +100,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     m_WireShader.create("editor\\wire");
     m_SelectionShader.create("editor\\selection");
     m_PortalFadeShader.create("portal");
-    m_PortalFadeGeom.create(FVF::F_L, RCache.Vertex.Buffer(), 0);
+    m_PortalFadeGeom.create(FVF::F_L, Vertex.Buffer(), 0);
 
     DUImpl.OnDeviceCreate();
     UIRender->CreateUIGeom();
@@ -206,6 +221,10 @@ void dxRenderDeviceRender::Begin()
     RCache.OnFrameBegin();
     RCache.set_CullMode(CULL_CW);
     RCache.set_CullMode(CULL_CCW);
+
+    Vertex.Flush();
+    Index.Flush();
+
     if (HW.Caps.SceneMode)
         overdrawBegin();
 }

@@ -91,7 +91,7 @@ struct FTreeVisual_setup
     }
 };
 
-void FTreeVisual::Render(float LOD)
+void FTreeVisual::Render(float LOD, bool)
 {
     static FTreeVisual_setup tvs;
     if (tvs.dwFrame != Device.dwFrame)
@@ -174,15 +174,18 @@ void FTreeVisual::Copy(dxRender_Visual* pSrc)
 //-----------------------------------------------------------------------------------
 FTreeVisual_ST::FTreeVisual_ST(void) {}
 FTreeVisual_ST::~FTreeVisual_ST(void) {}
+
 void FTreeVisual_ST::Release() { inherited::Release(); }
 void FTreeVisual_ST::Load(const char* N, IReader* data, u32 dwFlags) { inherited::Load(N, data, dwFlags); }
-void FTreeVisual_ST::Render(float LOD)
+
+void FTreeVisual_ST::Render(float LOD, bool use_fast_geo)
 {
-    inherited::Render(LOD);
+    inherited::Render(LOD, use_fast_geo);
     RCache.set_Geometry(rm_geom);
     RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
     RCache.stat.r.s_flora.add(vCount);
 }
+
 void FTreeVisual_ST::Copy(dxRender_Visual* pSrc) { inherited::Copy(pSrc); }
 
 //-----------------------------------------------------------------------------------
@@ -193,8 +196,11 @@ FTreeVisual_PM::FTreeVisual_PM(void)
     pSWI = 0;
     last_lod = 0;
 }
+
 FTreeVisual_PM::~FTreeVisual_PM(void) {}
+
 void FTreeVisual_PM::Release() { inherited::Release(); }
+
 void FTreeVisual_PM::Load(const char* N, IReader* data, u32 dwFlags)
 {
     inherited::Load(N, data, dwFlags);
@@ -204,9 +210,10 @@ void FTreeVisual_PM::Load(const char* N, IReader* data, u32 dwFlags)
         pSWI = RImplementation.getSWI(ID);
     }
 }
-void FTreeVisual_PM::Render(float LOD)
+
+void FTreeVisual_PM::Render(float LOD, bool use_fast_geo)
 {
-    inherited::Render(LOD);
+    inherited::Render(LOD, use_fast_geo);
     int lod_id = last_lod;
     if (LOD >= 0.f)
     {
@@ -219,6 +226,7 @@ void FTreeVisual_PM::Render(float LOD)
     RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, SW.num_verts, iBase + SW.offset, SW.num_tris);
     RCache.stat.r.s_flora.add(SW.num_verts);
 }
+
 void FTreeVisual_PM::Copy(dxRender_Visual* pSrc)
 {
     inherited::Copy(pSrc);

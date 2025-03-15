@@ -1,15 +1,7 @@
 #include "stdafx.h"
 
-#include "../xrRenderDX10/dx10BufferUtils.h"
-
-CBackend RCache;
-
 // Create Quad-IB
-
-// Igor: is used to test bug with rain, particles corruption
-void CBackend::RestoreQuadIBData() {}
-
-void CBackend::CreateQuadIB()
+void dxRenderDeviceRender::CreateQuadIB()
 {
     constexpr u32 dwTriCount = 4 * 1024;
     constexpr u32 dwIdxCount = dwTriCount * 2 * 3;
@@ -41,34 +33,4 @@ void CBackend::CreateQuadIB()
 
     R_CHK(HW.pDevice->CreateBuffer(&desc, &subData, &QuadIB));
     HW.stats_manager.increment_stats_ib(QuadIB);
-}
-
-// Device dependance
-void CBackend::OnDeviceCreate()
-{
-    CreateQuadIB();
-
-    // streams
-    Vertex.Create();
-    Index.Create();
-
-    // Debug Draw
-    InitializeDebugDraw();
-
-    // invalidate caching
-    Invalidate();
-}
-
-void CBackend::OnDeviceDestroy()
-{
-    // streams
-    Index.Destroy();
-    Vertex.Destroy();
-
-    // Quad
-    HW.stats_manager.decrement_stats_ib(QuadIB);
-    _RELEASE(QuadIB);
-
-    // Debug Draw
-    DestroyDebugDraw();
 }

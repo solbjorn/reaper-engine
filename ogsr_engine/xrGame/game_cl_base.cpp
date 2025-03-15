@@ -181,7 +181,7 @@ ClientID game_cl_GameState::GetClientIDByOrderID(u32 idx)
     return I->first;
 }
 
-float game_cl_GameState::shedule_Scale() { return 1.0f; }
+float game_cl_GameState::shedule_Scale() const { return 1.0f; }
 
 void game_cl_GameState::shedule_Update(u32 dt) { ISheduled::shedule_Update(dt); }
 
@@ -249,10 +249,7 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
     u_EventSend(P);
 };
 
-void game_cl_GameState::set_type_name(LPCSTR s)
-{
-    m_game_type_name = s;
-}
+void game_cl_GameState::set_type_name(LPCSTR s) { m_game_type_name = s; }
 
 void game_cl_GameState::reset_ui()
 { // KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!

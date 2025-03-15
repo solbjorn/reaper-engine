@@ -11,7 +11,6 @@
 
 class IObjectPhysicsCollision;
 // refs
-class IRender_Sector;
 class IRender_ObjectSpecific;
 class CCustomHUD;
 class NET_Packet;
@@ -89,7 +88,7 @@ public:
     virtual BOOL Ready() { return Props.net_Ready; }
     BOOL GetTmpPreDestroy() const { return Props.bPreDestroy; }
     void SetTmpPreDestroy(BOOL b) { Props.bPreDestroy = b; }
-    virtual float shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
+    virtual float shedule_Scale() const { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
     virtual bool shedule_Needed() { return processing_enabled(); };
 
     // Parentness
@@ -118,7 +117,7 @@ public:
     virtual float Radius() const;
     virtual const Fbox& BoundingBox() const;
 
-    IC IRender_Sector* Sector() { return H_Root()->spatial.sector; }
+    sector_id_t Sector() const { return H_Root()->spatial.sector_id; }
     IC IRender_ObjectSpecific* ROS() { return renderable_ROS(); }
     virtual BOOL renderable_ShadowGenerate() { return TRUE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }

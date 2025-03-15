@@ -23,15 +23,13 @@ CROS_impl::CROS_impl()
     result_iterator = 0;
     result_frame = u32(-1);
     result_sun = 0;
-    hemi_value = 0.5f;
-    hemi_smooth = 0.5f;
-    sun_value = 0.2f;
-    sun_smooth = 0.2f;
+    value.hemi = 0.5f;
+    smooth.hemi = 0.5f;
+    value.sun = 0.2f;
+    smooth.sun = 0.2f;
 
-    for (size_t i = 0; i < NUM_FACES; ++i)
-    {
-        hemi_cube[i] = hemi_cube_smooth[i] = 0;
-    }
+    memset(value.hemi_cube, 0, sizeof(value.hemi_cube));
+    memset(smooth.hemi_cube, 0, sizeof(smooth.hemi_cube));
 
     last_position.set(0.0f, 0.0f, 0.0f);
     ticks_to_update = 0;
@@ -116,12 +114,10 @@ void CROS_impl::update(IRenderable* O)
 
     CObject* _object = dynamic_cast<CObject*>(O);
 
-    if (skip)
-    {
+    if (skip) [[unlikely]]
         return;
-    }
 
-    if (isnan(_object->renderable.xform._41) || isnan(_object->renderable.xform._42) || isnan(_object->renderable.xform._43))
+    if (isnan(_object->renderable.xform._41) || isnan(_object->renderable.xform._42) || isnan(_object->renderable.xform._43)) [[unlikely]]
     {
         if (!skip)
         {
@@ -139,14 +135,11 @@ void CROS_impl::update(IRenderable* O)
     position.y += .3f * vis.sphere.R;
     Fvector direction;
     direction.random_dir();
-    //.			position.mad(direction,0.25f*radius);
-    //.			position.mad(direction,0.025f*radius);
 
-    // function call order is important at least for r1
-    for (size_t i = 0; i < NUM_FACES; ++i)
-    {
-        hemi_cube[i] = 0;
-    }
+    static_assert(sizeof(value.hemi_cube) == 3 * sizeof(u64));
+    *reinterpret_cast<u64*>(&value.hemi_cube[0]) = 0;
+    *reinterpret_cast<u64*>(&value.hemi_cube[2]) = 0;
+    *reinterpret_cast<u64*>(&value.hemi_cube[4]) = 0;
 
     bool bFirstTime = (0 == result_count);
     calc_sun_value(position, _object);
@@ -161,20 +154,19 @@ void CROS_impl::update(IRenderable* O)
     Fvector hemi = {desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z};
     Fvector sun_ = {desc.sun_color.x, desc.sun_color.y, desc.sun_color.z};
     if (MODE & IRender_ObjectSpecific::TRACE_HEMI)
-        hemi.mul(hemi_smooth);
+        hemi.mul(smooth.hemi);
     else
         hemi.mul(.2f);
     accum.add(hemi);
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
-        sun_.mul(sun_smooth);
+        sun_.mul(smooth.sun);
     else
         sun_.mul(.2f);
     accum.add(sun_);
     if (MODE & IRender_ObjectSpecific::TRACE_LIGHTS)
     {
-        Fvector lacc = {0, 0, 0};
-
-        float hemi_cube_light[NUM_FACES] = {0, 0, 0, 0, 0, 0};
+        float hemi_cube_light[NUM_FACES]{};
+        Fvector lacc{};
 
         for (u32 lit = 0; lit < lights.size(); lit++)
         {
@@ -202,13 +194,13 @@ void CROS_impl::update(IRenderable* O)
 
         float hemi_light = (lacc.x + lacc.y + lacc.z) / 3.0f * ps_r2_dhemi_light_scale;
 
-        hemi_value += hemi_light;
-        hemi_value = std::max(hemi_value, minHemiValue);
+        value.hemi += hemi_light;
+        value.hemi = std::max(value.hemi, minHemiValue);
 
         for (size_t i = 0; i < NUM_FACES; ++i)
         {
-            hemi_cube[i] += hemi_cube_light[i] * (1 - ps_r2_dhemi_light_flow) + ps_r2_dhemi_light_flow * hemi_cube_light[(i + NUM_FACES / 2) % NUM_FACES];
-            hemi_cube[i] = std::max(hemi_cube[i], minHemiValue);
+            value.hemi_cube[i] += hemi_cube_light[i] * (1 - ps_r2_dhemi_light_flow) + ps_r2_dhemi_light_flow * hemi_cube_light[(i + NUM_FACES / 2) % NUM_FACES];
+            value.hemi_cube[i] = std::max(value.hemi_cube[i], minHemiValue);
         }
 
         //		lacc.x		*= desc.lmap_color.x;
@@ -223,8 +215,8 @@ void CROS_impl::update(IRenderable* O)
     // clamp(hemi_value, 0.0f, 1.0f); //Possibly can change hemi value
     if (bFirstTime)
     {
-        hemi_smooth = hemi_value;
-        CopyMemory(hemi_cube_smooth, hemi_cube, sizeof hemi_cube);
+        smooth.hemi = value.hemi;
+        CopyMemory(smooth.hemi_cube, value.hemi_cube, sizeof(value.hemi_cube));
     }
 
     update_smooth();
@@ -297,12 +289,10 @@ void CROS_impl::update_smooth(IRenderable* O)
     float l_f = Device.fTimeDelta * ps_r2_lt_smooth;
     clamp(l_f, 0.f, 1.f);
     float l_i = 1.f - l_f;
-    hemi_smooth = hemi_value * l_f + hemi_smooth * l_i;
-    sun_smooth = sun_value * l_f + sun_smooth * l_i;
+    smooth.hemi = value.hemi * l_f + smooth.hemi * l_i;
+    smooth.sun = value.sun * l_f + smooth.sun * l_i;
     for (size_t i = 0; i < NUM_FACES; ++i)
-    {
-        hemi_cube_smooth[i] = hemi_cube[i] * l_f + hemi_cube_smooth[i] * l_i;
-    }
+        smooth.hemi_cube[i] = value.hemi_cube[i] * l_f + smooth.hemi_cube[i] * l_i;
 }
 
 void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
@@ -316,7 +306,7 @@ void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
             result_sun += ::Random.randI(lt_hemisamples / 4, lt_hemisamples / 2);
             Fvector direction;
             direction.set(sun->direction).invert().normalize();
-            sun_value = !(g_pGameLevel->ObjectSpace.RayTest(position, direction, 500.f, collide::rqtBoth, &cache_sun, _object)) ? 1.f : 0.f;
+            value.sun = !(g_pGameLevel->ObjectSpace.RayTest(position, direction, 500.f, collide::rqtBoth, &cache_sun, _object)) ? 1.f : 0.f;
         }
     }
 }
@@ -358,15 +348,13 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
     for (int it = 0; it < result_count; it++)
         if (result[it])
             _pass++;
-    hemi_value = float(_pass) / float(result_count ? result_count : 1);
-    hemi_value *= ps_r2_dhemi_sky_scale;
+    value.hemi = float(_pass) / float(result_count ? result_count : 1);
+    value.hemi *= ps_r2_dhemi_sky_scale;
 
     for (int it = 0; it < result_count; it++)
     {
         if (result[it])
-        {
-            accum_hemi(hemi_cube, Fvector3().set(hdir[it][0], hdir[it][1], hdir[it][2]), ps_r2_dhemi_sky_scale);
-        }
+            accum_hemi(value.hemi_cube, Fvector3().set(hdir[it][0], hdir[it][1], hdir[it][2]), ps_r2_dhemi_sky_scale);
     }
 }
 

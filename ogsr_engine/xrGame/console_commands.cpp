@@ -82,7 +82,9 @@ float adj_delta_rot = 0.05f;
 
 extern BOOL g_enable_memory_debug;
 
-Flags32 g_mt_config = {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
+#ifndef MASTER_GOLD
+Flags32 g_mt_config = g_mt_default;
+#endif
 
 Flags32 dbg_net_Draw_Flags = {0};
 

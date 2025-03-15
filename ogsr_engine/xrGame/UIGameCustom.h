@@ -58,15 +58,15 @@ protected:
 public:
     st_vec m_custom_statics;
     xr_vector<st_vec::size_type> m_custom_statics_sorted;
-    virtual void SetClGame(game_cl_GameState* g){};
+    virtual void SetClGame(game_cl_GameState* g) {};
 
-    virtual float shedule_Scale();
+    virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
 
     CUIGameCustom();
     virtual ~CUIGameCustom();
 
-    virtual void Init(){};
+    virtual void Init() {};
 
     virtual void Render();
     virtual void OnFrame();
@@ -82,7 +82,7 @@ public:
 
     CUIDialogWnd* MainInputReceiver();
     virtual void ReInitShownUI() = 0;
-    virtual void HideShownDialogs(){};
+    virtual void HideShownDialogs() {};
 
     void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color);
     void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color /*, LPCSTR def_text*/, float flicker);

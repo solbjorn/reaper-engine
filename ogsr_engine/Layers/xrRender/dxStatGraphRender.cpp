@@ -5,8 +5,8 @@ void dxStatGraphRender::Copy(IStatGraphRender& _in) { *this = *((dxStatGraphRend
 
 void dxStatGraphRender::OnDeviceCreate()
 {
-    hGeomLine.create(FVF::F_TL0uv, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    hGeomTri.create(FVF::F_TL0uv, RCache.Vertex.Buffer(), RCache.QuadIB);
+    hGeomLine.create(FVF::F_TL0uv, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+    hGeomTri.create(FVF::F_TL0uv, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 }
 
 void dxStatGraphRender::OnDeviceDestroy()
@@ -54,7 +54,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
 
     if (TriElem)
     {
-        pv_Tri_start = (FVF::TL0uv*)RCache.Vertex.Lock(u32(TriElem), hGeomTri->vb_stride, dwOffsetTri);
+        pv_Tri_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(u32(TriElem), hGeomTri->vb_stride, dwOffsetTri);
         pv_Tri = pv_Tri_start;
 
         pv_Tri = pv_Tri_start;
@@ -66,14 +66,14 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
             };
         };
         dwCount = u32(pv_Tri - pv_Tri_start);
-        RCache.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
+        RImplementation.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
         RCache.set_Geometry(hGeomTri);
         RCache.Render(D3DPT_TRIANGLELIST, dwOffsetTri, 0, dwCount, 0, dwCount / 2);
     };
 
     if (LineElem)
     {
-        pv_Line_start = (FVF::TL0uv*)RCache.Vertex.Lock(u32(LineElem), hGeomLine->vb_stride, dwOffsetLine);
+        pv_Line_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(u32(LineElem), hGeomLine->vb_stride, dwOffsetLine);
         pv_Line = pv_Line_start;
 
         for (CStatGraph::SubGraphVecIt it = owner.subgraphs.begin(); it != owner.subgraphs.end(); it++)
@@ -86,7 +86,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
         };
 
         dwCount = u32(pv_Line - pv_Line_start);
-        RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+        RImplementation.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
         RCache.set_Geometry(hGeomLine);
         RCache.Render(D3DPT_LINELIST, dwOffsetLine, dwCount / 2);
     };
@@ -96,13 +96,13 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
         dwOffsetLine = 0;
         LineElem = owner.m_Markers.size() * 2;
 
-        pv_Line_start = (FVF::TL0uv*)RCache.Vertex.Lock(u32(LineElem), hGeomLine->vb_stride, dwOffsetLine);
+        pv_Line_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(u32(LineElem), hGeomLine->vb_stride, dwOffsetLine);
         pv_Line = pv_Line_start;
 
         RenderMarkers(owner, &pv_Line, &(owner.m_Markers));
 
         dwCount = u32(pv_Line - pv_Line_start);
-        RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+        RImplementation.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
         RCache.set_Geometry(hGeomLine);
         RCache.Render(D3DPT_LINELIST, dwOffsetLine, dwCount / 2);
     }
@@ -112,7 +112,7 @@ void dxStatGraphRender::RenderBack(CStatGraph& owner)
 {
     // draw back
     u32 dwOffset, dwCount;
-    FVF::TL0uv* pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(4, hGeomTri->vb_stride, dwOffset);
+    FVF::TL0uv* pv_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(4, hGeomTri->vb_stride, dwOffset);
     FVF::TL0uv* pv = pv_start;
     // base rect
     pv->set(owner.lt.x, owner.rb.y, owner.back_color);
@@ -125,12 +125,12 @@ void dxStatGraphRender::RenderBack(CStatGraph& owner)
     pv++; // 3
     // render
     dwCount = u32(pv - pv_start);
-    RCache.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
+    RImplementation.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
     RCache.set_Geometry(hGeomTri);
     RCache.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
 
     // draw rect
-    pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(5, hGeomLine->vb_stride, dwOffset);
+    pv_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(5, hGeomLine->vb_stride, dwOffset);
     pv = pv_start;
     // base rect
     pv->set(owner.lt.x, owner.lt.y, owner.rect_color);
@@ -145,7 +145,7 @@ void dxStatGraphRender::RenderBack(CStatGraph& owner)
     pv++; // 0
     // render
     dwCount = u32(pv - pv_start);
-    RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+    RImplementation.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
     RCache.set_Geometry(hGeomLine);
     RCache.Render(D3DPT_LINESTRIP, dwOffset, 4);
 
@@ -158,7 +158,7 @@ void dxStatGraphRender::RenderBack(CStatGraph& owner)
     int Num_H_LinesUp = (owner.grid.y < PNum_H_LinesUp) ? owner.grid.y : PNum_H_LinesUp;
     int Num_H_LinesDwn = (owner.grid.y < PNum_H_LinesUp) ? owner.grid.y : PNum_H_LinesDwn;
 
-    pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(2 + 2 * owner.grid.x + Num_H_LinesUp * 2 + Num_H_LinesDwn * 2, hGeomLine->vb_stride, dwOffset);
+    pv_start = (FVF::TL0uv*)RImplementation.Vertex.Lock(2 + 2 * owner.grid.x + Num_H_LinesUp * 2 + Num_H_LinesDwn * 2, hGeomLine->vb_stride, dwOffset);
     pv = pv_start;
     // base Coordinate Line
     pv->set(owner.lt.x, int(base_y), owner.base_color);
@@ -191,13 +191,8 @@ void dxStatGraphRender::RenderBack(CStatGraph& owner)
         pv++;
     }
 
-    //    for (int g_y=1; g_y<=owner.grid.y; g_y++){
-    //	    pv->set				(owner.lt.x,iFloor(g_y*grid_offs_y+owner.lt.y),owner.grid_color); pv++;
-    //	    pv->set				(owner.rb.x,iFloor(g_y*grid_offs_y+owner.lt.y),owner.grid_color); pv++;
-    //	}
-
     dwCount = u32(pv - pv_start);
-    RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+    RImplementation.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
     RCache.set_Geometry(hGeomLine);
     RCache.Render(D3DPT_LINELIST, dwOffset, dwCount / 2);
 }

@@ -53,7 +53,7 @@ public:
     void OnFrame(u32 dt);
 
     u32 RenderTO();
-    virtual void Render(float LOD);
+    virtual void Render(float, bool) override;
     virtual void Copy(dxRender_Visual* pFrom);
 
     virtual void OnDeviceCreate();

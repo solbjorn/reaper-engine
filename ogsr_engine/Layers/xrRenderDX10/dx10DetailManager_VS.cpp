@@ -23,7 +23,7 @@ float GoToValue(float& current, float go_to)
     return current < go_to ? r_value : -r_value;
 }
 
-void CDetailManager::hw_Render()
+void CDetailManager::hw_Render(bool use_fast_geo)
 {
     // Render-prepare
     //	Update timer
@@ -55,20 +55,20 @@ void CDetailManager::hw_Render()
 
     wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0);
+    hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0, use_fast_geo);
 
     // Wave1
     wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0);
+    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0, use_fast_geo);
 
     // Still
     consts.set(scale, scale, scale, 1.f);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1);
+    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1, use_fast_geo);
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo)
 {
     constexpr const char* strConsts = "consts";
     constexpr const char* strWave = "wave";
@@ -117,7 +117,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
             {
                 // Setup matrices + colors (and flush it as necessary)
                 RCache.set_Element(Object.shader->E[lod_id], iPass);
-                RImplementation.apply_lmaterial();
+                RCache.apply_lmaterial();
 
                 //	This could be cached in the corresponding consatant buffer
                 //	as it is done for DX9
@@ -223,18 +223,19 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     RCache.stat.r.s_details.add(dwCNT_verts);
                 }
             }
+
             // Clean up
             // KD: we must not clear vis on r2 since we want details shadows
             if (ps_ssfx_grass_shadows.x <= 0)
             {
                 if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
-                    ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.active_phase() == CRender::PHASE_SMAP)) // phase smap with shadows
-                     || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.active_phase() == CRender::PHASE_NORMAL) &&
-                         (!RImplementation.is_sun())) // phase normal with shadows without sun
-                     || (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.active_phase() == CRender::PHASE_NORMAL)))) // phase normal without shadows
+                    ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && use_fast_geo) // phase smap with shadows
+                     || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && !use_fast_geo && (!RImplementation.is_sun())) // phase normal with shadows without sun
+                     || (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && !use_fast_geo))) // phase normal without shadows
                     vis.clear();
             }
         }
+
         vOffset += hw_BatchSize * Object.number_vertices;
         iOffset += hw_BatchSize * Object.number_indices;
     }

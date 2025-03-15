@@ -284,7 +284,7 @@ void CSkeletonX_ST::Copy(dxRender_Visual* P)
     _Copy((CSkeletonX*)X);
 }
 //////////////////////////////////////////////////////////////////////
-void CSkeletonX_PM::Render(float LOD)
+void CSkeletonX_PM::Render(float LOD, bool)
 {
     int lod_id = inherited1::last_lod;
     if (LOD >= 0.f)
@@ -297,7 +297,7 @@ void CSkeletonX_PM::Render(float LOD)
     FSlideWindow& SW = nSWI.sw[lod_id];
     _Render(rm_geom, SW.num_verts, SW.offset, SW.num_tris);
 }
-void CSkeletonX_ST::Render(float LOD) { _Render(rm_geom, vCount, 0, dwPrimitives); }
+void CSkeletonX_ST::Render(float LOD, bool) { _Render(rm_geom, vCount, 0, dwPrimitives); }
 
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX_PM::Release() { inherited1::Release(); }
@@ -333,7 +333,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     {
     case RM_SKINNING_SOFT:
         // Msg					("skinning: software");
-        V.rm_geom.create(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
+        V.rm_geom.create(vertRenderFVF, RImplementation.Vertex.Buffer(), V.p_rm_Indices);
         break;
     case RM_SINGLE:
     case RM_SKINNING_1B: {
@@ -347,17 +347,6 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         VERIFY(vStride == sizeof(vertHW_1W));
         //			BYTE*	bytes		= 0;
         VERIFY(NULL == V.p_rm_Vertices);
-
-        // R_CHK				(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-        // R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-        // vertHW_1W*		dst	= (vertHW_1W*)bytes;
-        // vertBoned1W*	src = (vertBoned1W*)_verts_;
-        // for (u32 it=0; it<V.vCount; it++)	{
-        // Fvector2	uv; uv.set(src->u,src->v);
-        // dst->set	(src->P,src->N,src->T,src->B,uv,src->matrix*3);
-        // dst++; src++;
-        //}
-        // V.p_rm_Vertices->Unlock	();
 
         //	TODO: DX10: Check for memory fragmentation
         vertHW_1W* dstOriginal = xr_alloc<vertHW_1W>(V.vCount);

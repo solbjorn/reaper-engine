@@ -21,14 +21,13 @@ void CRenderTarget::phase_combine()
 
     if (Device.m_SecondViewport.IsSVPActive()) //--#SM+#-- +SecondVP+
     {
-        // clang-format off
-		gpu_id = (Device.dwFrame - 1) % HW.Caps.iGPUNum;	// Фикс "мерцания" tonemapping (HDR) после выключения двойного рендера. 
-															// Побочный эффект - при работе двойного рендера скорость изменения tonemapping (HDR) падает в два раза
-															// Мерцание связано с тем, что HDR для своей работы хранит уменьшенние копии "прошлых кадров"
-															// Эти кадры относительно похожи друг на друга, однако при включЄнном двойном рендере
-															// в половине кадров оказывается картинка из второго рендера, и поскольку она часто может отличатся по цвету\яркости
-															// то при попытке создания "плавного" перехода между ними получается эффект мерцания
-        // clang-format on
+        // Фикс "мерцания" tonemapping (HDR) после выключения двойного рендера.
+        // Побочный эффект - при работе двойного рендера скорость изменения tonemapping (HDR) падает в два раза
+        // Мерцание связано с тем, что HDR для своей работы хранит уменьшенние копии "прошлых кадров"
+        // Эти кадры относительно похожи друг на друга, однако при включЄнном двойном рендере
+        // в половине кадров оказывается картинка из второго рендера, и поскольку она часто может отличатся по цвету\яркости
+        // то при попытке создания "плавного" перехода между ними получается эффект мерцания
+        gpu_id = (Device.dwFrame - 1) % HW.Caps.iGPUNum;
     }
 
     {
@@ -157,7 +156,7 @@ void CRenderTarget::phase_combine()
         float scale_Y = float(Device.dwHeight) / float(TEX_jitter);
 
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(-1, 1, 0, 1, 0, 0, scale_Y);
         pv++;
         pv->set(-1, -1, 0, 0, 0, 0, 0);
@@ -166,7 +165,7 @@ void CRenderTarget::phase_combine()
         pv++;
         pv->set(1, -1, 1, 0, 0, scale_X, 0);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
         dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
@@ -429,7 +428,7 @@ void CRenderTarget::phase_combine()
         p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
         // Fill vertex buffer
-        v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
+        v_aa* pv = (v_aa*)RImplementation.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
         pv->pxy.set(EPS, float(_h + EPS));
         pv->pzw.set(EPS, 1.f);
         pv->uv0.set(p0.x, p1.y);
@@ -478,7 +477,7 @@ void CRenderTarget::phase_combine()
         pv->uv6xy.set(p1.x, p0.y - ddh);
         pv->uv6zw.set(p0.y + ddh, p1.x);
         pv++;
-        RCache.Vertex.Unlock(4, g_aa_AA->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_aa_AA->vb_stride);
 
         // Draw COLOR
         if (!RImplementation.o.dx10_msaa)
@@ -598,7 +597,7 @@ void CRenderTarget::phase_combine_volumetric()
     RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
     {
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(-1, 1, 0, 1, 0, 0, 1);
         pv++;
         pv->set(-1, -1, 0, 0, 0, 0, 0);
@@ -607,11 +606,10 @@ void CRenderTarget::phase_combine_volumetric()
         pv++;
         pv->set(1, -1, 1, 0, 0, 1, 0);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
         // Draw
         RCache.set_Element(s_combine_volumetric->E[0]);
-        // RCache.set_Geometry			(g_combine_VP		);
         RCache.set_Geometry(g_combine);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }

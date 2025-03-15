@@ -49,7 +49,7 @@ void CRenderTarget::phase_luminance()
         Fvector2 b_3 = {1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
-        v_build* pv = (v_build*)RCache.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
+        v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
         pv->p.set(eps, float(ts + eps), eps, 1.f);
         pv->uv0.set(a_0.x, b_0.y);
         pv->uv1.set(a_1.x, b_1.y);
@@ -74,7 +74,7 @@ void CRenderTarget::phase_luminance()
         pv->uv2.set(b_2.x, a_2.y);
         pv->uv3.set(b_3.x, a_3.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_build->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_build->vb_stride);
         RCache.set_Element(s_luminance->E[0]);
         RCache.set_Geometry(g_bloom_build);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
@@ -97,7 +97,7 @@ void CRenderTarget::phase_luminance()
         }
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
         pv->p.set(eps, float(_ts + eps), eps, 1.f);
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(a[t].x, b[t].y, b[t + 8].y, a[t + 8].x); // xy/yx	- left+down
@@ -114,7 +114,7 @@ void CRenderTarget::phase_luminance()
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(b[t].x, a[t].y, a[t + 8].y, b[t + 8].x); // xy/yx	- right+up
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
         RCache.set_Element(s_luminance->E[1]);
         RCache.set_Geometry(g_bloom_filter);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
@@ -138,7 +138,7 @@ void CRenderTarget::phase_luminance()
         }
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
         pv->p.set(eps, float(_ts + eps), eps, 1.f);
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(a[t].x, b[t].y, b[t + 8].y, a[t + 8].x); // xy/yx	- left+down
@@ -155,7 +155,7 @@ void CRenderTarget::phase_luminance()
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(b[t].x, a[t].y, a[t + 8].y, b[t + 8].x); // xy/yx	- right+up
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
 
         f_luminance_adapt = .9f * f_luminance_adapt + .1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
         float amount = ps_r2_ls_flags.test(R2FLAG_TONEMAP) ? ps_r2_tonemap_amount : 0;

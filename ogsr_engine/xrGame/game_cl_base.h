@@ -3,7 +3,7 @@
 #include "game_base.h"
 #include "../xr_3da/NET_Server_Trash/client_id.h"
 #include "WeaponAmmo.h"
-//#include "Level_Bullet_Manager.h"
+// #include "Level_Bullet_Manager.h"
 
 class NET_Packet;
 class CGameObject;
@@ -39,7 +39,7 @@ protected:
     virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
 
     virtual shared_str shedule_Name() const { return shared_str("game_cl_GameState"); };
-    virtual float shedule_Scale();
+    virtual float shedule_Scale() const;
     virtual bool shedule_Needed() { return true; };
 
     void sv_EventSend(NET_Packet& P);
@@ -49,7 +49,7 @@ public:
     virtual ~game_cl_GameState();
     LPCSTR type_name() const { return *m_game_type_name; };
     void set_type_name(LPCSTR s);
-    virtual void Init(){};
+    virtual void Init() {};
     virtual void net_import_state(NET_Packet& P);
     virtual void net_import_update(NET_Packet& P);
     virtual void net_import_GameTime(NET_Packet& P); // update GameTime only for remote clients
@@ -74,13 +74,13 @@ public:
     void u_EventGen(NET_Packet& P, u16 type, u16 dest);
     void u_EventSend(NET_Packet& P);
 
-    virtual void OnRender(){};
+    virtual void OnRender() {};
     virtual bool IsServerControlHits() { return m_bServerControlHits; };
     virtual bool IsEnemy(game_PlayerState* ps) { return false; };
     virtual bool IsEnemy(CEntityAlive* ea1, CEntityAlive* ea2) { return false; };
 
-    virtual void OnSpawn(CObject* pObj){};
-    virtual void OnDestroy(CObject* pObj){};
+    virtual void OnSpawn(CObject* pObj) {};
+    virtual void OnDestroy(CObject* pObj) {};
 
     virtual void SendPickUpEvent(u16 ID_who, u16 ID_what);
 };

@@ -45,20 +45,20 @@ bool CRender::is_sun()
 
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq, u32 phase)
 {
     int id = SE_R2_SHADOW;
-    if (active_phase() == PHASE_NORMAL)
+    if (phase == PHASE_NORMAL)
         id = ((root && root->renderable_HUD()) || ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 
     return pVisual->shader->E[id]._get();
 }
 
 //////////////////////////////////////////////////////////////////////////
-ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase)
 {
     int id = SE_R2_SHADOW;
-    if (active_phase() == PHASE_NORMAL)
+    if (phase == PHASE_NORMAL)
     {
         if (pVisual->shader->E[0]->flags.isLandscape)
         {
@@ -171,18 +171,18 @@ void CRender::create()
     o.dx11_enable_tessellation = ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
     // constants
-    CResourceManager* RM = dxRenderDeviceRender::Instance().Resources;
-    RM->RegisterConstantSetup("parallax", &binder_parallax);
-    RM->RegisterConstantSetup("water_intensity", &binder_water_intensity);
-    RM->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
-    RM->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
-    RM->RegisterConstantSetup("pos_decompression_params", &binder_pos_decompress_params);
-    RM->RegisterConstantSetup("triLOD", &binder_LOD);
+    Resources->RegisterConstantSetup("parallax", &binder_parallax);
+    Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
+    Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
+    Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
+    Resources->RegisterConstantSetup("pos_decompression_params", &binder_pos_decompress_params);
+    Resources->RegisterConstantSetup("triLOD", &binder_LOD);
 
     Target = xr_new<CRenderTarget>(); // Main target
 
     Models = xr_new<CModelPool>();
     PSLibrary.OnCreate();
+    HWOCC.occq_create();
 
     rmNormal();
     dsgraph.marker = 0;
@@ -380,18 +380,6 @@ ref_shader CRender::getShader(int id)
     return Shaders[id];
 }
 
-IRender_Portal* CRender::getPortal(int id)
-{
-    VERIFY(id < int(dsgraph.Portals.size()));
-    return dsgraph.Portals[id];
-}
-
-IRender_Sector* CRender::getSector(int id)
-{
-    VERIFY(id < int(dsgraph.Sectors.size()));
-    return dsgraph.Sectors[id];
-}
-
 IRenderVisual* CRender::getVisual(int id)
 {
     VERIFY(id < int(Visuals.size()));
@@ -446,8 +434,6 @@ FSlideWindowItem* CRender::getSWI(int id)
     return &SWIs[id];
 }
 
-IRender_Target* CRender::getTarget() { return Target; }
-
 IRender_Light* CRender::light_create() { return Lights.Create(); }
 IRender_Glow* CRender::glow_create() { return xr_new<CGlow>(); }
 
@@ -496,24 +482,20 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
 
 void CRender::rmNear()
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT VP = {0, 0, (float)T->get_width(), (float)T->get_height(), 0, 0.02f};
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0, 0.02f};
     HW.pContext->RSSetViewports(1, &VP);
-    // CHK_DX				(HW.pDevice->SetViewport(&VP));
 }
+
 void CRender::rmFar()
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT VP = {0, 0, (float)T->get_width(), (float)T->get_height(), 0.99999f, 1.f};
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0.99999f, 1.f};
     HW.pContext->RSSetViewports(1, &VP);
-    // CHK_DX				(HW.pDevice->SetViewport(&VP));
 }
+
 void CRender::rmNormal()
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT VP = {0, 0, (float)T->get_width(), (float)T->get_height(), 0, 1.f};
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0, 1.f};
     HW.pContext->RSSetViewports(1, &VP);
-    // CHK_DX				(HW.pDevice->SetViewport(&VP));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -670,7 +652,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
             VERIFY(pSignatureBlob);
 
-            svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
+            svs_result->signature = RImplementation.Resources->_CreateInputSignature(pSignatureBlob);
 
             _RELEASE(pSignatureBlob);
 

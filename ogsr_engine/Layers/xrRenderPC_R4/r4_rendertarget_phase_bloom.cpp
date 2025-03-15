@@ -104,7 +104,7 @@ void CRenderTarget::phase_bloom()
         Fvector2 b_3 = {1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
-        v_build* pv = (v_build*)RCache.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
+        v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
         pv->p.set(EPS, float(th + EPS), EPS, 1.f);
         pv->uv0.set(a_0.x, b_0.y);
         pv->uv1.set(a_1.x, b_1.y);
@@ -129,7 +129,7 @@ void CRenderTarget::phase_bloom()
         pv->uv2.set(b_2.x, a_2.y);
         pv->uv3.set(b_3.x, a_3.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_build->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_build->vb_stride);
 
         // Perform combine (all scalers must account for 4 samples + final diffuse multiply);
         float s = ps_r2_ls_bloom_threshold; // scale
@@ -167,7 +167,7 @@ void CRenderTarget::phase_bloom()
         Fvector4 a_7 = {a_6.x - two.x, half.y, half.y, a_6.w + two.x}; // -7,+7i
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
 
         // 0 - LB
         pv->p.set(EPS, float(_h + EPS), EPS, 1.f);
@@ -216,7 +216,7 @@ void CRenderTarget::phase_bloom()
         pv->uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
         pv->uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
 
         // Perform filtering
         Fvector4 w0, w1;
@@ -247,7 +247,7 @@ void CRenderTarget::phase_bloom()
         Fvector4 a_7 = {half.x, a_6.y - two.y, two.y + a_6.z, half.x}; // -7,+7i
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
 
         // 0 - LB
         pv->p.set(EPS, float(_h + EPS), EPS, 1.f);
@@ -296,7 +296,7 @@ void CRenderTarget::phase_bloom()
         pv->uv6.set(1 + a_6.x, a_6.y, a_6.z, 1 + a_6.w);
         pv->uv7.set(1 + a_7.x, a_7.y, a_7.z, 1 + a_7.w);
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
 
         // Perform filtering
         Fvector4 w0, w1;
@@ -342,7 +342,7 @@ void CRenderTarget::phase_ssfx_bloom()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
     pv++;
     pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -351,7 +351,7 @@ void CRenderTarget::phase_ssfx_bloom()
     pv++;
     pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Draw COLOR
     RCache.set_Element(s_ssfx_bloom->E[0]);
@@ -368,7 +368,7 @@ void CRenderTarget::phase_ssfx_bloom()
         RCache.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
         pv++;
         pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -377,7 +377,7 @@ void CRenderTarget::phase_ssfx_bloom()
         pv++;
         pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
         // Draw COLOR
         RCache.set_Element(s_ssfx_bloom_lens->E[0]);
@@ -394,7 +394,7 @@ void CRenderTarget::phase_ssfx_bloom()
             RCache.set_Stencil(FALSE);
 
             // Fill vertex buffer
-            pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+            pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
             pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
             pv++;
             pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -403,7 +403,7 @@ void CRenderTarget::phase_ssfx_bloom()
             pv++;
             pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
             pv++;
-            RCache.Vertex.Unlock(4, g_combine->vb_stride);
+            RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
             // Draw COLOR
             RCache.set_Element(s_ssfx_bloom_lens->E[1 + lensblur]);
@@ -429,7 +429,7 @@ void CRenderTarget::phase_ssfx_bloom()
         RCache.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
         pv++;
         pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -438,7 +438,7 @@ void CRenderTarget::phase_ssfx_bloom()
         pv++;
         pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
         // Draw COLOR
         RCache.set_Element(s_ssfx_bloom_downsample->E[downsample]);
@@ -462,7 +462,7 @@ void CRenderTarget::phase_ssfx_bloom()
         RCache.set_Stencil(FALSE);
 
         // Fill vertex buffer
-        pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
         pv++;
         pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -471,7 +471,7 @@ void CRenderTarget::phase_ssfx_bloom()
         pv++;
         pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
         // Draw COLOR
         RCache.set_Element(s_ssfx_bloom_upsample->E[upsample]);
@@ -488,7 +488,7 @@ void CRenderTarget::phase_ssfx_bloom()
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
-    pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, h, EPS_S, 1.0f, C, 0.0f, 1.0f);
     pv++;
     pv->set(0, 0, EPS_S, 1.0f, C, 0.0f, 0.0f);
@@ -497,7 +497,7 @@ void CRenderTarget::phase_ssfx_bloom()
     pv++;
     pv->set(w, 0, EPS_S, 1.0f, C, 1.0f, 0.0f);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Draw COLOR
     RCache.set_Element(s_ssfx_bloom->E[1]);

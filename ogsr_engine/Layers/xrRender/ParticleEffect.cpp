@@ -215,7 +215,7 @@ void CParticleEffect::OnDeviceCreate()
     {
         if (m_Def->m_Flags.is(CPEDef::dfSprite))
         {
-            geom.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+            geom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
             if (m_Def)
                 shader = m_Def->m_CachedShader;
         }
@@ -481,7 +481,7 @@ static void ParticleRenderStream(CParticleEffect& pPE, PAPI::Particle* particles
     }
 }
 
-void CParticleEffect::Render(float)
+void CParticleEffect::Render(float, bool)
 {
     u32 dwOffset, dwCount;
     // Get a pointer to the particles in gp memory
@@ -493,14 +493,14 @@ void CParticleEffect::Render(float)
     {
         if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
         {
-            FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+            FVF::LIT* pv_start = (FVF::LIT*)RImplementation.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
             FVF::LIT* pv = pv_start;
 
             ParticleRenderStream(*this, particles, pv, p_cnt);
 
             dwCount = p_cnt << 2;
 
-            RCache.Vertex.Unlock(dwCount, geom->vb_stride);
+            RImplementation.Vertex.Unlock(dwCount, geom->vb_stride);
             if (dwCount)
             {
                 Fmatrix Pold = Device.mProject;

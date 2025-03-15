@@ -44,7 +44,7 @@ CUIGameCustom::~CUIGameCustom()
     delete_data(m_msgs_xml);
 }
 
-float CUIGameCustom::shedule_Scale() { return 0.5f; };
+float CUIGameCustom::shedule_Scale() const { return 0.5f; };
 
 void CUIGameCustom::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
 

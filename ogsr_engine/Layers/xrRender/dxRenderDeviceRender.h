@@ -1,17 +1,13 @@
 #pragma once
 
-#define DEV dxRenderDeviceRender::Instance().Resources
-
 #include "..\..\Include\xrRender\RenderDeviceRender.h"
 #include "xr_effgamma.h"
 
 class CResourceManager;
 
-class dxRenderDeviceRender : public IRenderDeviceRender
+class dxRenderDeviceRender : public IRenderDeviceRender, public pureFrame
 {
 public:
-    static dxRenderDeviceRender& Instance() { return *((dxRenderDeviceRender*)(&*Device.m_pRender)); }
-
     dxRenderDeviceRender();
 
     virtual void Copy(IRenderDeviceRender& _in);
@@ -21,8 +17,6 @@ public:
     virtual void setBrightness(float fGamma);
     virtual void setContrast(float fGamma);
     virtual void updateGamma();
-
-    // void	gammaGenLUT(D3DGAMMARAMP &G) {m_Gamma.GenLUT(G);}
 
     //	Destroy
     virtual void OnDeviceDestroy(BOOL bKeepTextures);
@@ -59,14 +53,28 @@ public:
 
     IResourceManager* GetResourceManager() const override;
 
+    void CreateQuadIB();
+
 public:
-    CResourceManager* Resources;
+    CResourceManager* Resources{};
 
     ref_shader m_WireShader;
     ref_shader m_SelectionShader;
     ref_shader m_PortalFadeShader;
     ref_geom m_PortalFadeGeom;
 
+    // Dynamic geometry streams
+    _VertexStream Vertex;
+    _IndexStream Index;
+
+    ID3DIndexBuffer* QuadIB;
+    ID3DIndexBuffer* old_QuadIB;
+
 private:
     CGammaControl m_Gamma;
+
+protected:
+    bool b_loaded{};
 };
+
+#define DEV RImplementation.Resources

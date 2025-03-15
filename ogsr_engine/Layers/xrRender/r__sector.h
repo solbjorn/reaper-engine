@@ -4,7 +4,6 @@
 
 #if !defined(_PORTAL_H_)
 #define _PORTAL_H_
-#pragma once
 
 class CPortal;
 class CSector;
@@ -15,10 +14,9 @@ struct _scissor : public Fbox2
 };
 
 // Connector
-class CPortal : public IRender_Portal
+class CPortal
 #ifdef DEBUG
-    ,
-                public pureRender
+    : public pureRender
 #endif
 {
 public:
@@ -74,7 +72,7 @@ public:
 class dxRender_Visual;
 
 // Main 'Sector' class
-class CSector : public IRender_Sector
+class CSector
 {
 public:
     struct level_sector_data_t
@@ -82,6 +80,8 @@ public:
         xr_vector<u32> portals_id;
         u32 root_id;
     };
+
+    sector_id_t unique_id{INVALID_SECTOR_ID};
 
 protected:
     dxRender_Visual* m_root; // whole geometry of that sector
@@ -125,7 +125,7 @@ public:
 
 public:
     CPortalTraverser();
-    void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
+    void traverse(CSector* sector, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
     void traverse_sector(CSector* sector, CFrustum& F, _scissor& R);
     void fade_portal(CPortal* _p, float ssa);
     void fade_render();

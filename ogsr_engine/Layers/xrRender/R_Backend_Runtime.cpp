@@ -5,6 +5,8 @@
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 
+CBackend RCache;
+
 void CBackend::OnFrameEnd()
 {
     HW.pContext->ClearState();
@@ -21,8 +23,6 @@ void CBackend::OnFrameBegin()
     set_RT(HW.pBaseRT);
     set_ZB(HW.pBaseZB);
     Memory.mem_fill(&stat, 0, sizeof(stat));
-    Vertex.Flush();
-    Index.Flush();
     set_Stencil(FALSE);
 }
 
@@ -116,7 +116,6 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     return;
 }
 
-#ifndef DEDICATED_SREVER
 void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
 {
     if (0 == HW.Caps.geometry.dwClipPlanes)
@@ -368,9 +367,55 @@ void CBackend::set_Textures(STextureList* textures_list)
         SRVSManager.SetCSResource(_last_cs, pRes);
     }
 }
-#else
 
-void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */) {}
-void CBackend::set_Textures(STextureList* textures_list) {}
+// Device dependance
+void CBackend::OnDeviceCreate()
+{
+    // Debug Draw
+    InitializeDebugDraw();
 
+    // invalidate caching
+    Invalidate();
+}
+
+void CBackend::OnDeviceDestroy()
+{
+    // Debug Draw
+    DestroyDebugDraw();
+}
+
+void CBackend::apply_object(IRenderable& O)
+{
+    CROS_impl& LT = *(CROS_impl*)O.renderable_ROS();
+    LT.update_smooth(&O);
+
+    xr_memcpy32(&o, &LT.get_lmaterial());
+    o.hemi *= 0.75f;
+    o.sun *= 0.75f;
+}
+
+void CBackend::apply_lmaterial(IRenderable* O)
+{
+    if (O && O->renderable_ROS())
+        apply_object(*O);
+
+    R_constant* C = get_c("s_base")._get(); // get sampler
+    if (!C)
+        return;
+
+    VERIFY(RC_dest_sampler == C->destination);
+    VERIFY(RC_dx10texture == C->type);
+
+    CTexture* T = get_ActiveTexture(u32(C->samp.index));
+    VERIFY(T);
+
+    float mtl = T ? T->m_material : 0.f;
+#ifdef DEBUG
+    if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
+        mtl = ps_r2_gmaterial;
 #endif
+
+    hemi.set_material(o.hemi, o.sun, 0, (mtl < 5 ? (mtl + .5f) / 4.f : mtl));
+    hemi.set_pos_faces(o.hemi_cube[CROS_impl::CUBE_FACE_POS_X], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o.hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
+    hemi.set_neg_faces(o.hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o.hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
+}

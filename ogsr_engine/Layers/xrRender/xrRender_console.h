@@ -139,7 +139,6 @@ extern float ps_r2_sun_depth_near_bias; // -0.0001f
 extern float ps_r2_sun_lumscale; // 0.5f
 extern float ps_r2_sun_lumscale_hemi; // 1.0f
 extern float ps_r2_sun_lumscale_amb; // 1.0f
-extern float ps_r2_zfill; // .1f
 
 extern float ps_r2_dhemi_sky_scale; // 1.5f
 extern float ps_r2_dhemi_light_scale; // 1.f
@@ -190,7 +189,7 @@ enum
 #ifdef DEBUG
     R2FLAG_GLOBALMATERIAL = (1 << 8),
 #endif
-    R2FLAG_ZFILL = (1 << 9),
+    /* 1 << 9, */
     /* 1 << 10, */
     /* 1 << 11, */
 

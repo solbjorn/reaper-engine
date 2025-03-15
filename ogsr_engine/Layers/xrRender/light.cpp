@@ -317,7 +317,7 @@ void light::export_to(light_Package& package)
                 L->set_cone(PI_DIV_2);
                 L->set_range(range);
                 L->set_color(color);
-                L->spatial.sector = spatial.sector; //. dangerous?
+                L->spatial.sector_id = spatial.sector_id;
                 L->s_spot = s_spot;
                 L->s_point = s_point;
                 L->set_virtual_size(virtual_size); // Set virtual size

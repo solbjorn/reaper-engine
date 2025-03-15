@@ -2,9 +2,13 @@
 #include "r__occlusion.h"
 #include "QueryHelper.h"
 
-R_occlusion::R_occlusion() : enabled(!strstr(Core.Params, "-no_occq")), last_frame(Device.dwFrame) {}
-
 R_occlusion::~R_occlusion() { occq_destroy(); }
+
+void R_occlusion::occq_create()
+{
+    enabled = !strstr(Core.Params, "-no_occq");
+    last_frame = Device.dwFrame;
+}
 
 void R_occlusion::occq_destroy()
 {

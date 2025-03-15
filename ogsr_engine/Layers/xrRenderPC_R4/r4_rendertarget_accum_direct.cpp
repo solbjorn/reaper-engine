@@ -52,7 +52,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
     // if( 0 )
     {
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
         pv++;
         pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -61,7 +61,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
         pv++;
         pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
         RCache.set_Geometry(g_combine);
 
         // setup
@@ -181,7 +181,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
         j1.set(scale_X, scale_X).add(offset);
 
         // Fill vertex buffer
-        FVF::TL2uv* pv = (FVF::TL2uv*)RCache.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
+        FVF::TL2uv* pv = (FVF::TL2uv*)RImplementation.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
         // pv->set						(EPS,			float(_h+EPS),	d_Z,	d_W, C, p0.x, p1.y, j0.x, j1.y);	pv++;
         // pv->set						(EPS,			EPS,			d_Z,	d_W, C, p0.x, p0.y, j0.x, j0.y);	pv++;
         // pv->set						(float(_w+EPS),	float(_h+EPS),	d_Z,	d_W, C, p1.x, p1.y, j1.x, j1.y);	pv++;
@@ -194,7 +194,7 @@ void CRenderTarget::accum_direct(u32 sub_phase)
         pv++;
         pv->set(1, 1, d_Z, d_W, C, 1, 0, scale_X, 0);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine_2UV->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine_2UV->vb_stride);
         RCache.set_Geometry(g_combine_2UV);
 
         // setup
@@ -290,7 +290,7 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
                                   // if( 0 )
     {
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
         pv++;
         pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -299,7 +299,7 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
         pv++;
         pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
         RCache.set_Geometry(g_combine);
 
         // setup
@@ -421,7 +421,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
         // Make jitter texture
         Fvector2 j0, j1;
         float scale_X = float(Device.dwWidth) / float(TEX_jitter);
-        // float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
         float offset = (.5f / float(TEX_jitter));
         j0.set(offset, offset);
         j1.set(scale_X, scale_X).add(offset);
@@ -429,14 +428,14 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
         // Fill vertex buffer
         u32 i_offset;
         {
-            u16* pib = RCache.Index.Lock(sizeof(facetable) / sizeof(u16), i_offset);
+            u16* pib = RImplementation.Index.Lock(sizeof(facetable) / sizeof(u16), i_offset);
             CopyMemory(pib, &facetable, sizeof(facetable));
-            RCache.Index.Unlock(sizeof(facetable) / sizeof(u16));
+            RImplementation.Index.Unlock(sizeof(facetable) / sizeof(u16));
 
             // corners
 
             u32 ver_count = sizeof(corners) / sizeof(Fvector3);
-            Fvector4* pv = (Fvector4*)RCache.Vertex.Lock(ver_count, g_combine_cuboid.stride(), Offset);
+            Fvector4* pv = (Fvector4*)RImplementation.Vertex.Lock(ver_count, g_combine_cuboid.stride(), Offset);
 
             Fmatrix inv_XDcombine;
             if (/*ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_ZCULLING) &&*/ sub_phase == SE_SUN_FAR)
@@ -451,7 +450,7 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
                 pv->set(tmp_vec.x, tmp_vec.y, tmp_vec.z, 1);
                 pv++;
             }
-            RCache.Vertex.Unlock(ver_count, g_combine_cuboid.stride());
+            RImplementation.Vertex.Unlock(ver_count, g_combine_cuboid.stride());
         }
 
         RCache.set_Geometry(g_combine_cuboid);

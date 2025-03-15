@@ -746,9 +746,6 @@
     <ClCompile Include="r2_R_sun.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="r2_sector_detect.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="r4.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -759,9 +756,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="r4_R_render.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="r4_R_sun_support.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\r__dsgraph_build.cpp">
@@ -932,6 +926,9 @@
     <ClCompile Include="..\xrRender\r__sector.cpp">
       <Filter>Visibility\Sector/Portal</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRender\r__sector_detect.cpp">
+      <Filter>Visibility\Sector/Portal</Filter>
+    </ClCompile>
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp">
       <Filter>Visibility\Sector/Portal</Filter>
     </ClCompile>
@@ -1021,9 +1018,6 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\HWCaps.cpp">
       <Filter>Refactored\HW</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\R_Backend.cpp">
-      <Filter>Refactored\Backend</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\R_Backend_DBG.cpp">
       <Filter>Refactored\Backend</Filter>
@@ -1183,6 +1177,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp">
       <Filter>Interfase implementations\RenderDeviceRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\dxRenderQuadIB.cpp">
+      <Filter>Interfase implementations\QuadIB</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\dxConsoleRender.cpp">
       <Filter>Interfase implementations\ConsoleRender</Filter>

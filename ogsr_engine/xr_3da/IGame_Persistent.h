@@ -1,6 +1,7 @@
 #ifndef IGame_PersistentH
 #define IGame_PersistentH
 
+#include "../xrCDB/ISpatial.h"
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
 
@@ -101,9 +102,8 @@ public:
     virtual void OnGameStart();
     virtual void OnGameEnd();
 
-    virtual void UpdateGameType() {};
-
-    virtual void OnSectorChanged(int sector) {};
+    virtual void UpdateGameType() {}
+    virtual void OnSectorChanged(sector_id_t sector) {}
 
     virtual void RegisterModel(IRenderVisual* V) = 0;
     virtual float MtlTransparent(u32 mtl_idx) = 0;

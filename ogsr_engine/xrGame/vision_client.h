@@ -41,7 +41,7 @@ public:
     virtual ~vision_client();
 
 public:
-    virtual float shedule_Scale();
+    virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
     virtual shared_str shedule_Name() const;
     virtual bool shedule_Needed();

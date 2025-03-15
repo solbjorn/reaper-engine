@@ -14,7 +14,7 @@ dxFontRender::~dxFontRender()
 void dxFontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
 {
     pShader.create(cShader, cTexture);
-    pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+    pGeom.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 }
 
 extern BOOL g_bRendering;
@@ -26,7 +26,7 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
     // lock AGP memory
     u32 vOffset;
-    FVF::TL* v = (FVF::TL*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
+    FVF::TL* v = (FVF::TL*)RImplementation.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
     FVF::TL* start = v;
 
     for (; i < last; i++)
@@ -128,7 +128,7 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
     // Unlock and draw
     u32 vCount = (u32)(v - start);
-    RCache.Vertex.Unlock(vCount, pGeom.stride());
+    RImplementation.Vertex.Unlock(vCount, pGeom.stride());
     if (vCount)
     {
         RCache.set_Geometry(pGeom);

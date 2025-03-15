@@ -42,8 +42,7 @@ public:
     ISheduledWrapper() = default;
     virtual ~ISheduledWrapper() = default;
 
-    float shedule_Scale() override { return 1; }
-
+    float shedule_Scale() const override { return 1; }
     void shedule_Update(u32 dt) override { Base::shedule_Update(dt); }
 };
 

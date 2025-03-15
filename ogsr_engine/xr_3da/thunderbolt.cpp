@@ -167,22 +167,6 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
     state = stIdle;
     next_lightning_time = 0.f;
     bEnabled = FALSE;
-
-    // geom
-    // hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    // hGeom_gradient.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
-
-    // params
-    //	p_var_alt		= pSettings->r_fvector2							( "environment","altitude" );
-    //	p_var_alt.x		= deg2rad(p_var_alt.x); p_var_alt.y	= deg2rad(p_var_alt.y);
-    //	p_var_long		= deg2rad	(				 pSettings->r_float	( "environment","delta_longitude" ));
-    //	p_min_dist		= _min		(.95f,pSettings->r_float	( "environment","min_dist_factor" ));
-    //	p_tilt			= deg2rad	(pSettings->r_float					( "environment","tilt" ));
-    //	p_second_prop	= pSettings->r_float							( "environment","second_propability" );
-    //	clamp			(p_second_prop,0.f,1.f);
-    //	p_sky_color		= pSettings->r_float							( "environment","sky_color" );
-    //	p_sun_color		= pSettings->r_float							( "environment","sun_color" );
-    //	p_fog_color		= pSettings->r_float							( "environment","fog_color" );
 }
 
 CEffect_Thunderbolt::~CEffect_Thunderbolt()
@@ -190,8 +174,6 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
     for (CollectionVecIt d_it = collection.begin(); d_it != collection.end(); d_it++)
         xr_delete(*d_it);
     collection.clear();
-    // hGeom_model.destroy			();
-    // hGeom_gradient.destroy		();
 }
 
 shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)

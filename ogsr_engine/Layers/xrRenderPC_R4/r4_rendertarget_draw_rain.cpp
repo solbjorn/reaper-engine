@@ -33,7 +33,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
     // if (SE_SUN_NEAR==sub_phase)	//.
     {
         // Fill vertex buffer
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
         pv++;
         pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
@@ -42,7 +42,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
         pv++;
         pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
         RCache.set_Geometry(g_combine);
 
         // setup
@@ -129,15 +129,11 @@ void CRenderTarget::draw_rain(light& RainSetup)
             // Fvector			direction	= RainSetup.direction	;
             Fvector normal;
             normal.setHP(1, 0);
-            // w_shift		+=	0.003f*Device.fTimeDelta;
-            // Fvector			position;	position.set(0,0,0);
-            // m_xform.build_camera_dir	(position,direction,normal)	;
             m_xform.identity();
             Fvector localnormal;
             m_xform.transform_dir(localnormal, normal);
             localnormal.normalize();
             m_clouds_shadow.mul(m_xform, xf_invview);
-            // m_xform.scale				(0.002f,0.002f,1.f)			;
             m_xform.scale(1.f, 1.f, 1.f);
             m_clouds_shadow.mulA_44(m_xform);
             m_xform.translate(localnormal.mul(w_shift));
@@ -153,7 +149,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
         j1.set(scale_X, scale_X).add(offset);
 
         // Fill vertex buffer
-        FVF::TL2uv* pv = (FVF::TL2uv*)RCache.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
+        FVF::TL2uv* pv = (FVF::TL2uv*)RImplementation.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
         pv->set(-1, -1, d_Z, d_W, C, 0, 1, 0, scale_X);
         pv++;
         pv->set(-1, 1, d_Z, d_W, C, 0, 0, 0, 0);
@@ -162,7 +158,7 @@ void CRenderTarget::draw_rain(light& RainSetup)
         pv++;
         pv->set(1, 1, d_Z, d_W, C, 1, 0, scale_X, 0);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine_2UV->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine_2UV->vb_stride);
         RCache.set_Geometry(g_combine_2UV);
 
         //	Use for intermediate results

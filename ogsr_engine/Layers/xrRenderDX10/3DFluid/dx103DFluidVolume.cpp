@@ -16,7 +16,7 @@ void dx103DFluidVolume::Load(LPCSTR N, IReader* data, u32 dwFlags)
     shader.create("fluid3d_stub", "water\\water_ryaska1");
 
     //	Create debug geom
-    m_Geom.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+    m_Geom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     Type = MT_3DFLUIDVOLUME;
 
@@ -36,14 +36,14 @@ void dx103DFluidVolume::Load(LPCSTR N, IReader* data, u32 dwFlags)
     vis.sphere.R = vis.box.getradius();
 }
 
-void dx103DFluidVolume::Render(float LOD) // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
+void dx103DFluidVolume::Render(float, bool) // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 {
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
 
     u32 dwOffset, dwCount;
 
-    FVF::LIT* pv_start = (FVF::LIT*)RCache.Vertex.Lock(6 * 3 * 2, m_Geom->vb_stride, dwOffset);
+    FVF::LIT* pv_start = (FVF::LIT*)RImplementation.Vertex.Lock(6 * 3 * 2, m_Geom->vb_stride, dwOffset);
     FVF::LIT* pv = pv_start;
 
     constexpr u32 clr = 0xFFFFFFFF;
@@ -118,7 +118,7 @@ void dx103DFluidVolume::Render(float LOD) // LOD - Level Of Detail  [0.0f - min,
     RCache.set_xform_world(m_FluidData.GetTransform());
 
     dwCount = u32(pv - pv_start);
-    RCache.Vertex.Unlock(dwCount, m_Geom->vb_stride);
+    RImplementation.Vertex.Unlock(dwCount, m_Geom->vb_stride);
     RCache.set_Geometry(m_Geom);
 
     //	Render obstacles

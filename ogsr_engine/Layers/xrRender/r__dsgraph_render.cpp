@@ -5,7 +5,6 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 #include "../../xr_3da/CustomHUD.h"
-#include "../../xr_3da/xr_object.h"
 
 #include "FBasicVisual.h"
 
@@ -34,23 +33,27 @@ bool cmp_pass(const T& left, const T& right)
 }
 
 // ALPHA
-static void __fastcall sorted_L1(mapSorted_Node* N)
+static void __fastcall sorted_L1(mapSorted_Node* N, void* arg)
 {
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V && V->shader._get());
+
     RCache.set_Element(N->val.se);
     RCache.set_xform_world(N->val.Matrix);
-    RImplementation.apply_object(N->val.pObject);
-    RImplementation.apply_lmaterial();
+    RCache.apply_lmaterial(N->val.pObject);
 
     const float LOD = calcLOD(N->key, V->vis.sphere.R);
     RCache.LOD.set_LOD(LOD);
-    V->Render(LOD);
+    V->Render(LOD, dsgraph.phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall water_node_ssr(mapSorted_Node* N)
+static void __fastcall water_node_ssr(mapSorted_Node* N, void* arg)
 {
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V);
@@ -58,8 +61,7 @@ static void __fastcall water_node_ssr(mapSorted_Node* N)
     RCache.set_Shader(RImplementation.Target->s_ssfx_water_ssr);
 
     RCache.set_xform_world(N->val.Matrix);
-    RImplementation.apply_object(N->val.pObject);
-    RImplementation.apply_lmaterial();
+    RCache.apply_lmaterial(N->val.pObject);
 
     RCache.set_c("cam_pos", RImplementation.Target->Position_previous.x, RImplementation.Target->Position_previous.y, RImplementation.Target->Position_previous.z, 0.0f);
 
@@ -67,11 +69,13 @@ static void __fastcall water_node_ssr(mapSorted_Node* N)
     RCache.set_c("m_current", RImplementation.Target->Matrix_current);
     RCache.set_c("m_previous", RImplementation.Target->Matrix_previous);
 
-    V->Render(calcLOD(N->key, V->vis.sphere.R));
+    V->Render(calcLOD(N->key, V->vis.sphere.R), dsgraph.phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall water_node(mapSorted_Node* N)
+static void __fastcall water_node(mapSorted_Node* N, void* arg)
 {
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V);
@@ -80,19 +84,20 @@ static void __fastcall water_node(mapSorted_Node* N)
         RCache.set_Shader(RImplementation.Target->s_ssfx_water);
 
     RCache.set_xform_world(N->val.Matrix);
-    RImplementation.apply_object(N->val.pObject);
-    RImplementation.apply_lmaterial();
+    RCache.apply_lmaterial(N->val.pObject);
 
     // Wind settings
     float WindDir = g_pGamePersistent->Environment().CurrentEnv->wind_direction;
     float WindVel = g_pGamePersistent->Environment().CurrentEnv->wind_velocity;
     RCache.set_c("wind_setup", WindDir, WindVel, 0.f, 0.f);
 
-    V->Render(calcLOD(N->key, V->vis.sphere.R));
+    V->Render(calcLOD(N->key, V->vis.sphere.R), dsgraph.phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall hud_node(mapSorted_Node* N)
+static void __fastcall hud_node(mapSorted_Node* N, void* arg)
 {
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V && V->shader._get());
@@ -111,7 +116,7 @@ static void __fastcall hud_node(mapSorted_Node* N)
 
     const float LOD = calcLOD(N->key, V->vis.sphere.R);
     RCache.LOD.set_LOD(LOD);
-    V->Render(LOD);
+    V->Render(LOD, dsgraph.phase == CRender::PHASE_SMAP);
 
     RImplementation.Target->RVelocity = false;
 }
@@ -137,7 +142,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
             for (const auto& it : nrmPasses)
             {
                 RCache.set_Pass(it->key);
-                RImplementation.apply_lmaterial();
+                RCache.apply_lmaterial();
 
                 mapNormalItems& items = it->val;
                 items.ssa = 0;
@@ -147,7 +152,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
                 {
                     const float LOD = calcLOD(item.ssa, item.pVisual->vis.sphere.R);
                     RCache.LOD.set_LOD(LOD);
-                    item.pVisual->Render(LOD);
+                    item.pVisual->Render(LOD, phase == CRender::PHASE_SMAP);
                 }
                 items.clear();
             }
@@ -178,15 +183,14 @@ void R_dsgraph_structure::render_graph(u32 _priority)
                 for (auto& item : items)
                 {
                     RCache.set_xform_world(item.Matrix);
-                    RImplementation.apply_object(item.pObject);
-                    RImplementation.apply_lmaterial();
+                    RCache.apply_lmaterial(item.pObject);
 
                     const float LOD = calcLOD(item.ssa, item.pVisual->vis.sphere.R);
                     RCache.LOD.set_LOD(LOD);
                     // --#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
                     // RCache.hemi.c_update(item.pVisual);
 
-                    item.pVisual->Render(LOD);
+                    item.pVisual->Render(LOD, phase == CRender::PHASE_SMAP);
                 }
                 items.clear();
             }
@@ -204,6 +208,9 @@ void R_dsgraph_structure::render_hud(bool NoPS)
 {
     PIX_EVENT(r_dsgraph_render_hud);
 
+    if ((!NoPS && mapHUD.empty()) || (NoPS && HUDMask.empty()))
+        return;
+
     // Change projection
     Fmatrix Pold = Device.mProject;
     Fmatrix FTold = Device.mFullTransform;
@@ -220,12 +227,12 @@ void R_dsgraph_structure::render_hud(bool NoPS)
     RImplementation.rmNear();
     if (!NoPS)
     {
-        mapHUD.traverseLR(sorted_L1);
+        mapHUD.traverseLR(sorted_L1, this);
         mapHUD.clear();
     }
     else
     {
-        HUDMask.traverseLR(hud_node);
+        HUDMask.traverseLR(hud_node, this);
         HUDMask.clear();
     }
     RImplementation.rmNormal();
@@ -269,8 +276,11 @@ void R_dsgraph_structure::render_hud_ui()
 void R_dsgraph_structure::render_sorted()
 {
     // Sorted (back to front)
-    mapSorted.traverseRL(sorted_L1);
+    mapSorted.traverseRL(sorted_L1, this);
     mapSorted.clear();
+
+    if (mapHUDSorted.empty())
+        return;
 
     // Change projection
     Fmatrix Pold = Device.mProject;
@@ -286,7 +296,7 @@ void R_dsgraph_structure::render_sorted()
 
     // Rendering
     RImplementation.rmNear();
-    mapHUDSorted.traverseRL(sorted_L1);
+    mapHUDSorted.traverseRL(sorted_L1, this);
     mapHUDSorted.clear();
     RImplementation.rmNormal();
 
@@ -303,7 +313,7 @@ void R_dsgraph_structure::render_sorted()
 void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 {
     // Sorted (back to front)
-    mapEmissive.traverseLR(sorted_L1);
+    mapEmissive.traverseLR(sorted_L1, this);
     if (clear)
         mapEmissive.clear();
 
@@ -322,13 +332,13 @@ void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
     // Rendering
     RImplementation.rmNear();
     // Sorted (back to front)
-    mapHUDEmissive.traverseLR(sorted_L1);
+    mapHUDEmissive.traverseLR(sorted_L1, this);
 
     if (clear)
         mapHUDEmissive.clear();
 
     if (renderHUD)
-        mapHUDSorted.traverseRL(sorted_L1);
+        mapHUDSorted.traverseRL(sorted_L1, this);
 
     RImplementation.rmNormal();
 
@@ -340,11 +350,11 @@ void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
     RCache.set_xform_project(Device.mProject);
 }
 
-void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr); }
+void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr, this); }
 
 void R_dsgraph_structure::render_water()
 {
-    mapWater.traverseLR(water_node);
+    mapWater.traverseLR(water_node, this);
     mapWater.clear();
 }
 
@@ -353,7 +363,7 @@ void R_dsgraph_structure::render_water()
 void R_dsgraph_structure::render_wmarks()
 {
     // Sorted (back to front)
-    mapWmark.traverseLR(sorted_L1);
+    mapWmark.traverseLR(sorted_L1, this);
     mapWmark.clear();
 }
 
@@ -362,129 +372,35 @@ void R_dsgraph_structure::render_wmarks()
 void R_dsgraph_structure::render_distort()
 {
     // Sorted (back to front)
-    mapDistort.traverseRL(sorted_L1);
+    mapDistort.traverseRL(sorted_L1, this);
     mapDistort.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// sub-space rendering - shortcut to render with frustum extracted from matrix
-void R_dsgraph_structure::render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
+static void __fastcall pLandscape_0(mapLandscape_Node* N, void* arg)
 {
-    CFrustum temp;
-    temp.CreateFromMatrix(mCombined, FRUSTUM_P_ALL & (~FRUSTUM_P_NEAR));
-    render_subspace(_sector, &temp, mCombined, _cop, _dynamic, _precise_portals);
-}
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
 
-// sub-space rendering - main procedure
-void R_dsgraph_structure::render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals)
-{
-    VERIFY(_sector);
-    marker++; // !!! critical here
-
-    if (_precise_portals && RImplementation.rmPortals)
-    {
-        // Check if camera is too near to some portal - if so force DualRender
-        Fvector box_radius;
-        box_radius.set(EPS_L * 20, EPS_L * 20, EPS_L * 20);
-        Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, _cop, box_radius);
-        for (size_t K = 0; K < Sectors_xrc.r_count(); K++)
-        {
-            CPortal* pPortal = Portals[RImplementation.rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-            pPortal->bDualRender = TRUE;
-        }
-    }
-
-    // Traverse sector/portal structure
-    PortalTraverser.traverse(_sector, *_frustum, _cop, mCombined, 0);
-
-    // Determine visibility for static geometry hierrarhy
-    for (size_t s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
-    {
-        CSector* sector = PortalTraverser.r_sectors[s_it];
-        dxRender_Visual* root = sector->root();
-        for (size_t v_it = 0; v_it < sector->r_frustums.size(); v_it++)
-        {
-            const auto& view = sector->r_frustums[v_it];
-            add_static(root, view, view.getMask());
-        }
-    }
-
-    if (_dynamic)
-    {
-        // Traverse object database
-        g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, *_frustum);
-
-        // Determine visibility for dynamic part of scene
-        for (u32 o_it = 0; o_it < lstRenderables.size(); o_it++)
-        {
-            ISpatial* spatial = lstRenderables[o_it];
-            CSector* sector = (CSector*)spatial->spatial.sector;
-            if (0 == sector)
-                continue; // disassociated from S/P structure
-            if (PortalTraverser.i_marker != sector->r_marker)
-                continue; // inactive (untouched) sector
-            for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
-            {
-                const CFrustum& view = sector->r_frustums[v_it];
-                if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-                    continue;
-
-                // renderable
-                IRenderable* renderable = spatial->dcast_Renderable();
-                if (0 == renderable)
-                    continue; // unknown, but renderable object (r1_glow???)
-
-                renderable->renderable_Render(0, renderable);
-            }
-        }
-
-        if (g_pGameLevel && phase == RImplementation.PHASE_SMAP && ps_r2_ls_flags_ext.test(R2FLAGEXT_ACTOR_SHADOW))
-        {
-            do
-            {
-                CObject* viewEntity = g_pGameLevel->CurrentViewEntity();
-                if (!viewEntity)
-                    break;
-                viewEntity->spatial_updatesector();
-                CSector* sector = (CSector*)viewEntity->spatial.sector;
-                if (!sector)
-                    continue; // disassociated from S/P structure
-                if (PortalTraverser.i_marker != sector->r_marker)
-                    continue; // inactive (untouched) sector
-                for (const CFrustum& view : sector->r_frustums)
-                {
-                    if (!view.testSphere_dirty(viewEntity->spatial.sphere.P, viewEntity->spatial.sphere.R))
-                        continue;
-
-                    // renderable
-                    g_hud->Render_First(0);
-                }
-            } while (0);
-        }
-    }
-}
-
-static void __fastcall pLandscape_0(mapLandscape_Node* N)
-{
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V && V->shader._get());
     RCache.set_Element(N->val.se, 0);
     float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
     RCache.LOD.set_LOD(LOD);
-    V->Render(LOD);
+    V->Render(LOD, dsgraph.phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall pLandscape_1(mapLandscape_Node* N)
+static void __fastcall pLandscape_1(mapLandscape_Node* N, void* arg)
 {
+    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
     VERIFY(V && V->shader._get());
     RCache.set_Element(N->val.se, 1);
-    RImplementation.apply_lmaterial();
+    RCache.apply_lmaterial();
     float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
     RCache.LOD.set_LOD(LOD);
-    V->Render(LOD);
+    V->Render(LOD, dsgraph.phase == CRender::PHASE_SMAP);
 }
 
 void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
@@ -492,9 +408,9 @@ void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
     RCache.set_xform_world(Fidentity);
 
     if (pass == 0)
-        mapLandscape.traverseLR(pLandscape_0);
+        mapLandscape.traverseLR(pLandscape_0, this);
     else
-        mapLandscape.traverseLR(pLandscape_1);
+        mapLandscape.traverseLR(pLandscape_1, this);
 
     if (_clear)
         mapLandscape.clear();

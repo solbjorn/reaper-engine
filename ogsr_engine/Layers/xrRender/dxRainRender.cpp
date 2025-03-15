@@ -28,8 +28,8 @@ dxRainRender::dxRainRender()
     DM_Drop = ::RImplementation.model_CreateDM(F);
 
     SH_Rain.create("effects\\rain", "fx\\fx_rain");
-    hGeom_Rain.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
-    hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+    hGeom_Rain.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+    hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 
     if (RImplementation.o.ssfx_rain)
         SH_Splash.create("effects\\rain_splash", "fx\\fx_rain");
@@ -69,7 +69,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
     {
         // perform update
         u32 vOffset;
-        FVF::LIT* verts = (FVF::LIT*)RCache.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
+        FVF::LIT* verts = (FVF::LIT*)RImplementation.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
         FVF::LIT* start = verts;
         const Fvector& vEye = Device.vCameraPosition;
 
@@ -115,7 +115,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         }
 
         u32 vCount = (u32)(verts - start);
-        RCache.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
+        RImplementation.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
 
         // Render if needed
         if (vCount)
@@ -139,7 +139,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
 
     {
         float dt = Device.fTimeDelta;
-        _IndexStream& _IS = RCache.Index;
+        _IndexStream& _IS = RImplementation.Index;
         RCache.set_Shader(_splash_SH);
         RCache.set_c(s_shader_setup, ps_ssfx_rain_3); // Alpha, Refraction
 
@@ -148,7 +148,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         u32 v_offset, i_offset;
         u32 vCount_Lock = particles_cache * DM_Drop->number_vertices;
         u32 iCount_Lock = particles_cache * DM_Drop->number_indices;
-        IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)RCache.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
+        IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
         u16* i_ptr = _IS.Lock(iCount_Lock, i_offset);
         while (P)
         {
@@ -182,12 +182,12 @@ void dxRainRender::Render(CEffect_Rain& owner)
                 {
                     // flush
                     u32 dwNumPrimitives = iCount_Lock / 3;
-                    RCache.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
+                    RImplementation.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
                     _IS.Unlock(iCount_Lock);
                     RCache.set_Geometry(hGeom_Drops);
                     RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, vCount_Lock, i_offset, dwNumPrimitives);
 
-                    v_ptr = (IRender_DetailModel::fvfVertexOut*)RCache.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
+                    v_ptr = (IRender_DetailModel::fvfVertexOut*)RImplementation.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
                     i_ptr = _IS.Lock(iCount_Lock, i_offset);
 
                     pcount = 0;
@@ -201,7 +201,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         vCount_Lock = pcount * DM_Drop->number_vertices;
         iCount_Lock = pcount * DM_Drop->number_indices;
         u32 dwNumPrimitives = iCount_Lock / 3;
-        RCache.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
+        RImplementation.Vertex.Unlock(vCount_Lock, hGeom_Drops->vb_stride);
         _IS.Unlock(iCount_Lock);
         if (pcount)
         {

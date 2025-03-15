@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../../xr_3da/customhud.h"
 
 float g_fSCREEN;
 
@@ -14,9 +13,8 @@ extern float r_ssaGLOD_start, r_ssaGLOD_end;
 void CRender::Calculate()
 {
     // Transfer to global space to avoid deep pointer access
-    IRender_Target* T = getTarget();
     float fov_factor = _sqr(90.f / Device.fFOV);
-    g_fSCREEN = float(T->get_width() * T->get_height()) * fov_factor * (EPS_S + ps_r__LOD);
+    g_fSCREEN = float(Target->get_width() * Target->get_height()) * fov_factor * (EPS_S + ps_r__LOD);
     r_ssaDISCARD = _sqr(ps_r__ssaDISCARD) / g_fSCREEN;
     r_ssaDONTSORT = _sqr(ps_r__ssaDONTSORT / 3) / g_fSCREEN;
     r_ssaLOD_A = _sqr(ps_r2_ssaLOD_A / 3) / g_fSCREEN;
@@ -26,45 +24,35 @@ void CRender::Calculate()
     r_ssaHZBvsTEX = _sqr(ps_r__ssaHZBvsTEX / 3) / g_fSCREEN;
     r_dtex_range = ps_r2_df_parallax_range * g_fSCREEN / (1024.f * 768.f);
 
+    if (m_bFirstFrameAfterReset)
+        return;
+
     // Detect camera-sector
-    if (!vLastCameraPos.similar(Device.vCameraPosition, EPS_S))
+    if (!Device.vCameraDirectionSaved.similar(Device.vCameraPosition, EPS_L))
     {
-        CSector* pSector = (CSector*)detectSector(Device.vCameraPosition);
-        if (pSector && (pSector != pLastSector))
-            g_pGamePersistent->OnSectorChanged(translateSector(pSector));
-
-        if (0 == pSector)
-            pSector = pLastSector;
-        pLastSector = pSector;
-        vLastCameraPos.set(Device.vCameraPosition);
-
-        // Check if camera is too near to some portal - if so force DualRender
-        if (rmPortals)
+        const auto sector_id = dsgraph.detect_sector(Device.vCameraPosition);
+        if (sector_id != INVALID_SECTOR_ID)
         {
-            float eps = VIEWPORT_NEAR + EPS_L;
-            Fvector box_radius;
-            box_radius.set(eps, eps, eps);
-            dsgraph.Sectors_xrc.box_query(CDB::OPT_FULL_TEST, rmPortals, Device.vCameraPosition, box_radius);
-            for (int K = 0; K < dsgraph.Sectors_xrc.r_count(); K++)
-            {
-                CPortal* pPortal = dsgraph.Portals[rmPortals->get_tris()[dsgraph.Sectors_xrc.r_begin()[K].id].dummy];
-                pPortal->bDualRender = TRUE;
-            }
+            if (sector_id != last_sector_id)
+                g_pGamePersistent->OnSectorChanged(sector_id);
+
+            last_sector_id = sector_id;
         }
     }
 
     //
     Lights.Update();
+    calculate_sun_async();
 
     // Check if we touch some light even trough portal
-    dsgraph.lstRenderables.clear();
-    g_SpatialSpace->q_sphere(dsgraph.lstRenderables, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
-    for (u32 _it = 0; _it < dsgraph.lstRenderables.size(); _it++)
+    static xr_vector<ISpatial*> spatial_lights;
+    g_SpatialSpace->q_sphere(spatial_lights, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+    for (auto spatial : spatial_lights)
     {
-        ISpatial* spatial = dsgraph.lstRenderables[_it];
-        spatial->spatial_updatesector();
-        CSector* sector = (CSector*)spatial->spatial.sector;
-        if (0 == sector)
+        const auto& entity_pos = spatial->spatial_sector_point();
+
+        spatial->spatial_updatesector(dsgraph.detect_sector(entity_pos));
+        if (spatial->spatial.sector_id == INVALID_SECTOR_ID)
             continue; // disassociated from S/P structure
 
         VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);

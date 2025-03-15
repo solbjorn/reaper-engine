@@ -219,7 +219,7 @@ CRenderTarget::CRenderTarget()
     param_color_add.set(0.0f, 0.0f, 0.0f);
 
     dwAccumulatorClearMark = 0;
-    dxRenderDeviceRender::Instance().Resources->Evict();
+    RImplementation.Resources->Evict();
 
     // Blenders
     b_occq = xr_new<CBlender_light_occq>();
@@ -516,8 +516,8 @@ CRenderTarget::CRenderTarget()
             D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
         rt_Bloom_1.create(r2_RT_bloom1, w, h, fmt);
         rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
-        g_bloom_build.create(fvf_build, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_bloom_filter.create(fvf_filter, RCache.Vertex.Buffer(), RCache.QuadIB);
+        g_bloom_build.create(fvf_build, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+        g_bloom_filter.create(fvf_filter, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
         s_bloom.create(b_bloom, "r2\\bloom");
         if (RImplementation.o.dx10_msaa)
         {
@@ -557,17 +557,17 @@ CRenderTarget::CRenderTarget()
                                                        D3DDECL_END()};
         s_combine.create(b_combine, "r2\\combine");
         s_combine_volumetric.create("combine_volumetric");
-        g_combine_VP.create(dwDecl, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_combine.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_combine_2UV.create(FVF::F_TL2uv, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_combine_cuboid.create(dwDecl, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+        g_combine_VP.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+        g_combine.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+        g_combine_2UV.create(FVF::F_TL2uv, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+        g_combine_cuboid.create(dwDecl, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 
         constexpr u32 fvf_aa_blur = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
-        g_aa_blur.create(fvf_aa_blur, RCache.Vertex.Buffer(), RCache.QuadIB);
+        g_aa_blur.create(fvf_aa_blur, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
         constexpr u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) |
             D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
-        g_aa_AA.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
+        g_aa_AA.create(fvf_aa_AA, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
         t_envmap_0.create(r2_T_envs0);
         t_envmap_1.create(r2_T_envs1);
@@ -648,7 +648,7 @@ CRenderTarget::CRenderTarget()
                 string_path name;
                 xr_sprintf(name, "%s%d", r2_jitter, it);
                 R_CHK(HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
-                t_noise[it] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
+                t_noise[it] = RImplementation.Resources->_CreateTexture(name);
                 t_noise[it]->surface_set(t_noise_surf[it]);
             }
         }
@@ -656,11 +656,11 @@ CRenderTarget::CRenderTarget()
 
     // PP
     s_postprocess.create("postprocess");
-    g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);
+    g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     // Menu
     s_menu.create("distort");
-    g_menu.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+    g_menu.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     //
     dwWidth = Device.dwWidth;
@@ -770,7 +770,7 @@ void CRenderTarget::reset_light_marker(bool bResetStencil)
         constexpr float eps = 0;
         constexpr float _dw = 0.5f;
         constexpr float _dh = 0.5f;
-        FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
         pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
         pv++;
         pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);
@@ -779,7 +779,7 @@ void CRenderTarget::reset_light_marker(bool bResetStencil)
         pv++;
         pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
         pv++;
-        RCache.Vertex.Unlock(4, g_combine->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
         RCache.set_Element(s_occq->E[2]);
         RCache.set_Geometry(g_combine);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

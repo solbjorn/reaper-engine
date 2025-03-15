@@ -4,7 +4,6 @@
 #include "render.h"
 #include "pure_relcase.h"
 
-class IRender_Sector;
 class CObject;
 class ISpatial;
 

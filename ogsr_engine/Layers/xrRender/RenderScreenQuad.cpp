@@ -16,7 +16,7 @@ void CRenderTarget::RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetV
     // Half-pixel offset (DX9 only)
     constexpr Fvector2 p0{0.0f, 0.0f}, p1{1.0f, 1.0f};
 
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
@@ -25,7 +25,7 @@ void CRenderTarget::RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetV
     pv++;
     pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     RCache.set_Element(sh);
 

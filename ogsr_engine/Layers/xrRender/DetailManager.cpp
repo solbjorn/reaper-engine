@@ -362,7 +362,7 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
     Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
-void CDetailManager::Render()
+void CDetailManager::Render(bool use_fast_geo)
 {
     if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
         return;
@@ -378,7 +378,7 @@ void CDetailManager::Render()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_xform_world(Fidentity);
 
-    hw_Render();
+    hw_Render(use_fast_geo);
 
     RCache.set_CullMode(CULL_CCW);
     Device.Statistic->RenderDUMP_DT_Render.End();

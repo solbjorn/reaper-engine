@@ -57,7 +57,7 @@ CWallmarksEngine::CWallmarksEngine()
 {
     static_pool.reserve(256);
     marks.reserve(256);
-    hGeom.create(FVF::F_LIT, RCache.Vertex.Buffer(), NULL);
+    hGeom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), NULL);
 }
 
 CWallmarksEngine::~CWallmarksEngine()
@@ -325,14 +325,14 @@ extern float r_ssaDISCARD;
 ICF void BeginStream(const ref_geom& hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
 {
     w_offset = 0;
-    w_verts = (FVF::LIT*)RCache.Vertex.Lock(MAX_TRIS * 3, hGeom->vb_stride, w_offset);
+    w_verts = (FVF::LIT*)RImplementation.Vertex.Lock(MAX_TRIS * 3, hGeom->vb_stride, w_offset);
     w_start = w_verts;
 }
 
 ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start, BOOL bSuppressCull)
 {
     u32 w_count = u32(w_verts - w_start);
-    RCache.Vertex.Unlock(w_count, hGeom->vb_stride);
+    RImplementation.Vertex.Unlock(w_count, hGeom->vb_stride);
     if (w_count)
     {
         RCache.set_Shader(shader);

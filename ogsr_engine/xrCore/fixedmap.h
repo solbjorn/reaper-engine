@@ -35,7 +35,7 @@ public:
     using key_type = K;
     using mapped_type = T;
     using value_type = TNode;
-    typedef void __fastcall callback(TNode*);
+    typedef void __fastcall callback(TNode*, void*);
 
 private:
     TNode* nodes{};
@@ -107,21 +107,21 @@ private:
         return N;
     }
 
-    IC void recurseLR(TNode* N, callback CB)
+    IC void recurseLR(TNode* N, callback CB, void* arg)
     {
         if (N->left)
-            recurseLR(N->left, CB);
-        CB(N);
+            recurseLR(N->left, CB, arg);
+        CB(N, arg);
         if (N->right)
-            recurseLR(N->right, CB);
+            recurseLR(N->right, CB, arg);
     }
-    IC void recurseRL(TNode* N, callback CB)
+    IC void recurseRL(TNode* N, callback CB, void* arg)
     {
         if (N->right)
-            recurseRL(N->right, CB);
-        CB(N);
+            recurseRL(N->right, CB, arg);
+        CB(N, arg);
         if (N->left)
-            recurseRL(N->left, CB);
+            recurseRL(N->left, CB, arg);
     }
     IC void getLR(TNode* N, xr_vector<T>& D)
     {
@@ -255,15 +255,15 @@ public:
     IC u32 size() { return pool; }
     mapped_type& operator[](const key_type& key) { return insert(key)->val; }
 
-    IC void traverseLR(callback CB)
+    IC void traverseLR(callback CB, void* arg)
     {
         if (pool)
-            recurseLR(nodes, CB);
+            recurseLR(nodes, CB, arg);
     }
-    IC void traverseRL(callback CB)
+    IC void traverseRL(callback CB, void* arg)
     {
         if (pool)
-            recurseRL(nodes, CB);
+            recurseRL(nodes, CB, arg);
     }
 
     IC void getLR(xr_vector<T>& D)
@@ -287,9 +287,9 @@ public:
         for (TNode* cur = begin(); cur != _end; cur++, _it++)
             *_it = cur;
     }
-    IC void setup(callback CB)
+    IC void setup(callback CB, void* arg)
     {
         for (u32 i = 0; i < limit; i++)
-            CB(nodes + i);
+            CB(nodes + i, arg);
     }
 };

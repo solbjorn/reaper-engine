@@ -540,8 +540,6 @@ void CEnvironment::OnFrame()
 
     shared_str l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
     eff_LensFlare->OnFrame(l_id);
-    if (ingame)
-        ::Render->calculate_sun_async();
 
     shared_str t_id = (current_weight < 0.5f) ? Current[0]->tb_id : Current[1]->tb_id;
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);

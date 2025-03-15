@@ -242,7 +242,7 @@ void CDialogHolder::shedule_Update(u32 dt)
     m_dialogsToRender.erase(std::remove_if(m_dialogsToRender.begin(), m_dialogsToRender.end(), [](const auto& it) { return !it.enabled; }), m_dialogsToRender.end());
 }
 
-float CDialogHolder::shedule_Scale() { return 0.5f; }
+float CDialogHolder::shedule_Scale() const { return 0.5f; }
 
 void CDialogHolder::CleanInternals()
 {

@@ -68,7 +68,7 @@ CALifeUpdateManager::~CALifeUpdateManager()
     Device.remove_from_seq_parallel(CallMe::fromMethod<&CALifeUpdateManager::update>(this));
 }
 
-float CALifeUpdateManager::shedule_Scale()
+float CALifeUpdateManager::shedule_Scale() const
 {
     return (.5f); // (schedule_min + schedule_max)*0.5f
 }

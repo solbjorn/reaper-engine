@@ -138,8 +138,10 @@ float ps_r2_sun_depth_near_bias = 0.00001f; // -0.00005f
 float ps_r2_sun_lumscale = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_hemi = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_amb = 1.0f;
+
+#ifdef DEBUG
 float ps_r2_gmaterial = 2.2f; //
-float ps_r2_zfill = 0.25f; // .1f
+#endif
 
 float ps_r2_dhemi_sky_scale = 0.08f; // 1.5f
 float ps_r2_dhemi_light_scale = 0.2f;
@@ -461,13 +463,6 @@ public:
     }
 };
 
-class CCC_RestoreQuadIBData : public IConsole_Command
-{
-public:
-    CCC_RestoreQuadIBData(LPCSTR N) : IConsole_Command(N) {};
-    virtual void Execute(LPCSTR args) { RCache.RestoreQuadIBData(); }
-};
-
 class CCC_ModelPoolStat : public IConsole_Command
 {
 public:
@@ -533,7 +528,7 @@ public:
         u32 m_lmaps = 0;
         u32 c_lmaps = 0;
 
-        dxRenderDeviceRender::Instance().ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+        RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
         Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
 
         HW.DumpVideoMemoryUsage();
@@ -547,7 +542,7 @@ public:
     virtual void Execute(LPCSTR args)
     {
         RImplementation.Models->dump();
-        dxRenderDeviceRender::Instance().Resources->Dump(false);
+        RImplementation.Resources->Dump(false);
     }
 };
 
@@ -623,9 +618,6 @@ void xrRender_initconsole()
     // Common
     CMD1(CCC_Screenshot, "screenshot");
 
-    //	Igor: just to test bug with rain/particles corruption
-    CMD1(CCC_RestoreQuadIBData, "r_restore_quad_ib_data");
-
 #ifdef DEBUG
     CMD1(CCC_BuildSSA, "build_ssa");
 
@@ -689,9 +681,6 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_ls_psm_kernel", &ps_r2_ls_psm_kernel, .1f, 3.f);
     CMD4(CCC_Float, "r2_ls_ssm_kernel", &ps_r2_ls_ssm_kernel, .1f, 3.f);
     CMD4(CCC_Float, "r2_ls_squality", &ps_r2_ls_squality, .5f, 3.f);
-
-    CMD3(CCC_Mask, "r2_zfill", &ps_r2_ls_flags, R2FLAG_ZFILL);
-    CMD4(CCC_Float, "r2_zfill_depth", &ps_r2_zfill, .001f, .5f);
 
     //- Mad Max
     CMD4(CCC_Float, "r2_gloss_factor", &ps_r2_gloss_factor, .001f, 10.f);

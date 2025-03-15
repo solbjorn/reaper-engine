@@ -12,16 +12,6 @@ ISpatial_DB* g_SpatialSpace = nullptr;
 ISpatial_DB* g_SpatialSpacePhysic = nullptr;
 
 //////////////////////////////////////////////////////////////////////////
-ISpatial::ISpatial(ISpatial_DB* space)
-{
-    spatial.sphere.P.set(0, 0, 0);
-    spatial.sphere.R = 0;
-    spatial.node_center.set(0, 0, 0);
-    spatial.node_radius = 0;
-    spatial.node_ptr = NULL;
-    spatial.sector = NULL;
-    spatial.space = space;
-}
 
 ISpatial::~ISpatial() { spatial_unregister(); }
 
@@ -73,7 +63,7 @@ void ISpatial::spatial_register()
         // register
         R_ASSERT(spatial.space);
         spatial.space->insert(this);
-        spatial.sector = 0;
+        spatial.sector_id = INVALID_SECTOR_ID;
     }
 }
 
@@ -84,7 +74,7 @@ void ISpatial::spatial_unregister()
         // remove
         spatial.space->remove(this);
         spatial.node_ptr = NULL;
-        spatial.sector = NULL;
+        spatial.sector_id = INVALID_SECTOR_ID;
     }
     else
     {
@@ -112,12 +102,12 @@ void ISpatial::spatial_move()
     }
 }
 
-void ISpatial::spatial_updatesector_internal()
+void ISpatial::spatial_updatesector_internal(sector_id_t sector_id)
 {
-    IRender_Sector* S = ::Render->detectSector(spatial_sector_point());
     spatial.type &= ~STYPEFLAG_INVALIDSECTOR;
-    if (S)
-        spatial.sector = S;
+
+    if (sector_id != INVALID_SECTOR_ID)
+        spatial.sector_id = sector_id;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,8 +135,6 @@ void ISpatial_NODE::_remove(ISpatial* S)
 }
 
 //////////////////////////////////////////////////////////////////////////
-
-ISpatial_DB::ISpatial_DB() {}
 
 ISpatial_DB::~ISpatial_DB()
 {

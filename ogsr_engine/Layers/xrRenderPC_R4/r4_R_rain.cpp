@@ -71,7 +71,6 @@ void CRender::render_rain()
     CFrustum cull_frustum;
     xr_vector<Fplane> cull_planes;
     Fvector3 cull_COP;
-    CSector* cull_sector;
     Fmatrix cull_xform;
     {
         // Lets begin from base frustum
@@ -100,10 +99,8 @@ void CRender::render_rain()
         hull.compute_caster_model(cull_planes, RainLight.direction);
 #ifdef DEBUG
         for (u32 it = 0; it < cull_planes.size(); it++)
-            RImplementation.Target->dbg_addplane(cull_planes[it], 0xffffffff);
+            Target->dbg_addplane(cull_planes[it], 0xffffffff);
 #endif
-
-        cull_sector = largest_sector;
 
         // COP - 100 km away
         cull_COP.mad(Device.vCameraPosition, RainLight.direction, -tweak_rain_COP_initial_offs);
@@ -161,11 +158,11 @@ void CRender::render_rain()
                                                                    bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs);
         cull_xform.mul(mdir_Project, mdir_View);
 
-        s32 limit = _min(RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
+        s32 limit = _min(o.smapsize, ps_r3_dyn_wet_surf_sm_res);
 
         // build viewport xform
         float view_dim = float(limit);
-        float fTexelOffs = (.5f / RImplementation.o.smapsize);
+        float fTexelOffs = (.5f / o.smapsize);
         Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
                               0.0f,           1.0f};
         Fmatrix m_viewport_inv;
@@ -193,15 +190,11 @@ void CRender::render_rain()
     }
 
     // Begin SMAP-render
-    {
-        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
-        HOM.Disable();
-        dsgraph.phase = PHASE_SMAP;
-        dsgraph.r_pmask(true, false);
-    }
+    VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
+    dsgraph.r_pmask(true, false);
 
     // Fill the database
-    dsgraph.render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, FALSE);
+    dsgraph.build_subspace(largest_sector_id, cull_frustum, cull_xform, cull_COP, FALSE);
 
     // Finalize & Cleanup
     RainLight.X.D.combine = cull_xform; //*((Fmatrix*)&m_LightViewProj);

@@ -1254,7 +1254,6 @@ void PARestore::Execute(ParticleEffect* effect, float dt)
 
         for (u32 i = 0; i < effect->p_count; i++)
         {
-#if 1
             Particle& m = effect->particles[i];
 
             // Solve for a desired-behavior velocity function in each axis
@@ -1280,29 +1279,6 @@ void PARestore::Execute(ParticleEffect* effect, float dt)
 
             // Figure new velocity at next timestep
             m.vel.z += a + b;
-#else
-            Particle& m = effect->particles[i];
-
-            // XXX Optimize this.
-            // Solve for a desired-behavior velocity function in each axis
-            float a, b, c; // Coefficients of velocity function needed
-
-            _pconstrain(m.pos.x, m.vel.x, m.posB.x, 0., timeLeft, &a, &b, &c);
-
-            // Figure new velocity at next timestep
-            m.vel.x = a * dtSqr + b * dt + c;
-
-            _pconstrain(m.pos.y, m.vel.y, m.posB.y, 0., timeLeft, &a, &b, &c);
-
-            // Figure new velocity at next timestep
-            m.vel.y = a * dtSqr + b * dt + c;
-
-            _pconstrain(m.pos.z, m.vel.z, m.posB.z, 0., timeLeft, &a, &b, &c);
-
-            // Figure new velocity at next timestep
-            m.vel.z = a * dtSqr + b * dt + c;
-
-#endif
         }
     }
 
@@ -1617,7 +1593,7 @@ extern void noise3Init();
 
 #include <xmmintrin.h>
 
-__forceinline __m128 _mm_load_fvector(const Fvector& v)
+static ICF __m128 _mm_load_fvector(const Fvector& v)
 {
     __m128 R1, R2;
 
@@ -1630,7 +1606,7 @@ __forceinline __m128 _mm_load_fvector(const Fvector& v)
     return R1;
 }
 
-__forceinline void _mm_store_fvector(Fvector& v, const __m128 R1)
+static ICF void _mm_store_fvector(Fvector& v, const __m128 R1)
 {
     __m128 R2;
 
@@ -1714,7 +1690,6 @@ void PATurbulence::Execute(ParticleEffect* effect, float dt)
     age += dt;
 
     u32 p_cnt = effect->p_count;
-
     if (!p_cnt)
         return;
 

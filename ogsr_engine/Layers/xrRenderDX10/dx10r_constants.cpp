@@ -314,16 +314,14 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
                      ? CB_BufferVertexShader : CB_BufferGeometryShader;*/
 
                 parseConstants(pTable, updatedDest);
-                ref_cbuffer tempBuffer = dxRenderDeviceRender::Instance().Resources->_CreateConstantBuffer(pTable);
+                ref_cbuffer tempBuffer = RImplementation.Resources->_CreateConstantBuffer(pTable);
                 m_CBTable.emplace_back(uiBufferIndex, tempBuffer);
             }
         }
     }
 
     if (ShaderDesc.BoundResources)
-    {
         parseResources(pReflection, ShaderDesc.BoundResources, destination);
-    }
 
     std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
 

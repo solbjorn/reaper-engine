@@ -137,10 +137,6 @@ void CRenderTarget::phase_pp()
     u32 p_color = subst_alpha(param_color_base, nblend);
     u32 p_gray = subst_alpha(param_color_gray, gblend);
     Fvector p_brightness = param_color_add;
-    // Msg				("param_gray:%f(%d),param_noise:%f(%d)",param_gray,gblend,param_noise,nblend);
-    // Msg				("base: %d,%d,%d",	color_get_R(p_color),		color_get_G(p_color),		color_get_B(p_color));
-    // Msg				("gray: %d,%d,%d",	color_get_R(p_gray),		color_get_G(p_gray),		color_get_B(p_gray));
-    // Msg				("add:  %d,%d,%d",	color_get_R(p_brightness),	color_get_G(p_brightness),	color_get_B(p_brightness));
 
     // Draw full-screen quad textured with our scene image
     u32 Offset;
@@ -153,7 +149,7 @@ void CRenderTarget::phase_pp()
 
     // Fill vertex buffer
     float du = ps_r1_pps_u, dv = ps_r1_pps_v;
-    TL_2c3uv* pv = (TL_2c3uv*)RCache.Vertex.Lock(4, g_postprocess.stride(), Offset);
+    TL_2c3uv* pv = (TL_2c3uv*)RImplementation.Vertex.Lock(4, g_postprocess.stride(), Offset);
     pv->set(du + 0, dv + float(_h), p_color, p_gray, r0.x, r1.y, l0.x, l1.y, n0.x, n1.y);
     pv++;
     pv->set(du + 0, dv + 0, p_color, p_gray, r0.x, r0.y, l0.x, l0.y, n0.x, n0.y);
@@ -162,7 +158,7 @@ void CRenderTarget::phase_pp()
     pv++;
     pv->set(du + float(_w), dv + 0, p_color, p_gray, r1.x, r0.y, l1.x, l0.y, n1.x, n0.y);
     pv++;
-    RCache.Vertex.Unlock(4, g_postprocess.stride());
+    RImplementation.Vertex.Unlock(4, g_postprocess.stride());
 
     // Actual rendering
     constexpr const char* s_brightness = "c_brightness";

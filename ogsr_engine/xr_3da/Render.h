@@ -124,22 +124,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-// definition (Portal)
-class IRender_Portal
-{
-public:
-    virtual ~IRender_Portal() {};
-};
-
-//////////////////////////////////////////////////////////////////////////
-// definition (Sector)
-class IRender_Sector
-{
-public:
-    virtual ~IRender_Sector() {};
-};
-
-//////////////////////////////////////////////////////////////////////////
 // definition (Target)
 class IRender_Target
 {
@@ -208,10 +192,7 @@ public:
     virtual void Statistics(CGameFont* F) {};
 
     virtual LPCSTR getShaderPath() = 0;
-    //	virtual ref_shader				getShader				(int id)									= 0;
-    virtual IRender_Sector* getSector(int id) = 0;
     virtual IRenderVisual* getVisual(int id) = 0;
-    virtual IRender_Sector* detectSector(const Fvector& P) = 0;
     virtual IRender_Target* getTarget() = 0;
 
     virtual void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) = 0; // add visual leaf	(no culling performed at all)
@@ -229,8 +210,6 @@ public:
 
     virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) = 0;
     virtual void ros_destroy(IRender_ObjectSpecific*&) = 0;
-
-    virtual void calculate_sun_async() = 0;
 
     // Lighting/glowing
     virtual IRender_Light* light_create() = 0;

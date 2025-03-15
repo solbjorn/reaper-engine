@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/r__dsgraph_structure.h"
 #include "../xrRender/r__occlusion.h"
 
@@ -25,7 +26,7 @@
 class dxRender_Visual;
 
 // definition
-class CRender : public IRender_interface, public pureFrame
+class CRender : public IRender_interface, public dxRenderDeviceRender
 {
 public:
     enum
@@ -76,7 +77,7 @@ public:
     bool is_sun();
 
     // Sector detection and visibility
-    CSector* pLastSector;
+    sector_id_t last_sector_id{INVALID_SECTOR_ID};
     Fvector vLastCameraPos;
     u32 uLastLTRACK;
     CDB::MODEL* rmPortals;
@@ -105,18 +106,7 @@ public:
     SMAP_Allocator LP_smap_pool;
     light_Package LP_normal;
 
-    xr_vector<Fbox3> main_coarse_structure;
-
-    static constexpr const char* c_sbase = "s_base";
-
-    float o_hemi;
-    float o_hemi_cube[CROS_impl::NUM_FACES];
-    float o_sun;
-    // ID3DQuery*													q_sync_point[CHWCaps::MAX_GPUS];
-    // u32															q_sync_count	;
-
     bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
-    bool b_loaded{};
 
     xr_vector<sun::cascade> m_sun_cascades;
 
@@ -133,34 +123,32 @@ private:
     void Load3DFluid();
 
 public:
-    void render_main(Fmatrix& mCombined, bool _fportals);
     void render_forward();
     void render_lights(light_Package& LP);
     void render_menu();
     void render_rain();
 
     void init_cacades();
-    void calculate_sun_async();
     void render_sun_cascades();
     void render_sun_cascade(u32 cascade_ind);
 
 private:
+    void calculate_sun_async();
+
     xr_task_group* tg{};
     void calculate_sun(sun::cascade& cascade);
 
-    CSector* largest_sector;
+    sector_id_t largest_sector_id{INVALID_SECTOR_ID};
 
 public:
-    ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);
-    ShaderElement* rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq);
+    ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase);
+    ShaderElement* rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq, u32 phase);
+
     D3DVERTEXELEMENT9* getVB_Format(int id, BOOL _alt = FALSE);
     ID3DVertexBuffer* getVB(int id, BOOL _alt = FALSE);
     ID3DIndexBuffer* getIB(int id, BOOL _alt = FALSE);
     FSlideWindowItem* getSWI(int id);
-    IRender_Portal* getPortal(int id);
     IRenderVisual* model_CreatePE(LPCSTR name);
-    IRender_Sector* detectSector(const Fvector& P, Fvector& D);
-    int translateSector(IRender_Sector* pSector);
 
     // HW-occlusion culling
     IC u32 occq_begin(u32& ID) { return HWOCC.occq_begin(ID); }
@@ -168,39 +156,6 @@ public:
     IC R_occlusion::occq_result occq_get(u32& ID) { return HWOCC.occq_get(ID); }
     IC void occq_free(u32 ID) { HWOCC.occq_free(ID); }
 
-    ICF void apply_object(IRenderable* O)
-    {
-        if (0 == O)
-            return;
-        if (0 == O->renderable_ROS())
-            return;
-        CROS_impl& LT = *((CROS_impl*)O->renderable_ROS());
-        LT.update_smooth(O);
-        o_hemi = 0.75f * LT.get_hemi();
-        // o_hemi						= 0.5f*LT.get_hemi			()	;
-        o_sun = 0.75f * LT.get_sun();
-        CopyMemory(o_hemi_cube, LT.get_hemi_cube(), sizeof o_hemi_cube);
-    }
-    IC void apply_lmaterial()
-    {
-        R_constant* C = RCache.get_c(c_sbase)._get(); // get sampler
-        if (0 == C)
-            return;
-        VERIFY(RC_dest_sampler == C->destination);
-        VERIFY(RC_dx10texture == C->type);
-        CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
-        VERIFY(T);
-        float mtl = T ? T->m_material : 0.f;
-#ifdef DEBUG
-        if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
-            mtl = ps_r2_gmaterial;
-#endif
-        RCache.hemi.set_material(o_hemi, o_sun, 0, (mtl < 5 ? (mtl + .5f) / 4.f : mtl));
-        RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-        RCache.hemi.set_neg_faces(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
-    }
-
-public:
     // Loading / Unloading
     virtual void create();
     virtual void destroy();
@@ -217,10 +172,8 @@ public:
     virtual void Statistics(CGameFont* F);
     virtual LPCSTR getShaderPath() { return ""; }
     virtual ref_shader getShader(int id);
-    virtual IRender_Sector* getSector(int id);
     virtual IRenderVisual* getVisual(int id);
-    virtual IRender_Sector* detectSector(const Fvector& P);
-    virtual IRender_Target* getTarget();
+    IRender_Target* getTarget() override { return Target; }
 
     // Main
     void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) override;
