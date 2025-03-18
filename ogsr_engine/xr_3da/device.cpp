@@ -29,14 +29,14 @@ bool CRenderDevice::RenderBegin()
 {
     switch (m_pRender->GetDeviceState())
     {
-    case IRenderDeviceRender::dsOK: break;
+    case DeviceState::Normal: break;
 
-    case IRenderDeviceRender::dsLost:
+    case DeviceState::Lost:
         // If the device was lost, do not render until we get it back
         Sleep(33);
         return false;
 
-    case IRenderDeviceRender::dsNeedReset:
+    case DeviceState::NeedReset:
         // Check if the device is ready to be reset
         Reset();
         return false;

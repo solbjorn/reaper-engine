@@ -362,7 +362,7 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
     Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
-void CDetailManager::Render(bool use_fast_geo)
+void CDetailManager::Render(CBackend& cmd_list, bool use_fast_geo)
 {
     if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
         return;
@@ -375,12 +375,12 @@ void CDetailManager::Render(bool use_fast_geo)
 
     swing_current.lerp(swing_desc[0], swing_desc[1], factor);
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_xform_world(Fidentity);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_xform_world(Fidentity);
 
-    hw_Render(use_fast_geo);
+    hw_Render(cmd_list, use_fast_geo);
 
-    RCache.set_CullMode(CULL_CCW);
+    cmd_list.set_CullMode(CULL_CCW);
     Device.Statistic->RenderDUMP_DT_Render.End();
 }
 

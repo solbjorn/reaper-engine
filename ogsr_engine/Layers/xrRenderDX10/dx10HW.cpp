@@ -74,7 +74,7 @@ void CHW::CreateD3D()
         m_pFactory->EnumAdapters1(0, &m_pAdapter);
     }
 
-    m_pAdapter->QueryInterface(&m_pAdapter3);
+    m_pAdapter->QueryInterface(IID_PPV_ARGS(&m_pAdapter3));
 
     // when using FLIP_* present modes, to disable DWM vsync we have to use DXGI_PRESENT_ALLOW_TEARING with ->Present()
     // when vsync is off (PresentInterval = 0) and only when in window mode
@@ -92,7 +92,7 @@ void CHW::CreateD3D()
         HRESULT hr;
 
         IDXGIFactory5* factory5 = nullptr;
-        hr = m_pFactory->QueryInterface(&factory5);
+        hr = m_pFactory->QueryInterface(IID_PPV_ARGS(&factory5));
 
         if (SUCCEEDED(hr) && factory5)
         {
@@ -149,8 +149,8 @@ void CHW::CreateDevice(HWND hwnd)
     D3DFORMAT& fDepth = Caps.fDepth;
 
     //	HACK: DX10: Embed hard target format.
-    fTarget = D3DFMT_X8R8G8B8; //	No match in DX10. D3DFMT_A8B8G8R8->DXGI_FORMAT_R8G8B8A8_UNORM
-    fDepth = selectDepthStencil(fTarget);
+    fTarget = D3DFMT_A8R8G8B8;
+    fDepth = D3DFMT_D24S8;
 
     // Set up the presentation parameters
     DXGI_SWAP_CHAIN_DESC1& sd = m_ChainDesc;
@@ -163,36 +163,22 @@ void CHW::CreateDevice(HWND hwnd)
     sd_fullscreen.Windowed = bWindowed;
 
     // Back buffer
-    //.	P.BackBufferWidth		= dwWidth;
-    //. P.BackBufferHeight		= dwHeight;
-    //	TODO: DX10: implement dynamic format selection
-    // sd.BufferDesc.Format		= fTarget;
     sd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     sd.BufferCount = 2;
+
+    // Minus sd_fullscreen front buffer
+    BackBufferCount = sd.BufferCount - 1;
 
     // Multisample
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
 
-    // Windoze
-    // P.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
-    // P.hDeviceWindow			= m_hWnd;
-    // P.Windowed				= bWindowed;
     // Required for HDR, provides better performance in windowed/borderless mode
     // https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/for-best-performance--use-dxgi-flip-
     sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
-    // Depth/stencil
-    // DX10 don't need this?
-    // P.EnableAutoDepthStencil= TRUE;
-    // P.AutoDepthStencilFormat= fDepth;
-    // P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
-
     // Refresh rate
-    // P.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
-    // if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
-    // else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
     if (bWindowed)
     {
         sd_fullscreen.RefreshRate.Numerator = 60;
@@ -228,14 +214,14 @@ void CHW::CreateDevice(HWND hwnd)
                             nullptr, create_device_flags, nullptr, 0, D3D11_SDK_VERSION, &device, &FeatureLevel, &context));
     R_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0); // На всякий случай
 
-    R_CHK(device->QueryInterface(&pDevice));
-    R_CHK(context->QueryInterface(&pContext));
+    R_CHK(device->QueryInterface(IID_PPV_ARGS(&pDevice)));
+    R_CHK(context->QueryInterface(IID_PPV_ARGS(&contexts_pool[R__IMM_CTX_ID])));
 
     D3D11_FEATURE_DATA_D3D11_OPTIONS options;
-    device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &options, sizeof(options));
+    pDevice->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &options, sizeof(options));
 
     D3D11_FEATURE_DATA_DOUBLES doubles;
-    device->CheckFeatureSupport(D3D11_FEATURE_DOUBLES, &doubles, sizeof(doubles));
+    pDevice->CheckFeatureSupport(D3D11_FEATURE_DOUBLES, &doubles, sizeof(doubles));
 
     DoublePrecisionFloatShaderOps = doubles.DoublePrecisionFloatShaderOps;
     SAD4ShaderInstructions = options.SAD4ShaderInstructions;
@@ -244,12 +230,15 @@ void CHW::CreateDevice(HWND hwnd)
     _RELEASE(device);
     _RELEASE(context);
 
+    for (ctx_id_t id = R__PARALLEL_CTX_ID; id < R__NUM_CONTEXTS; id++)
+        R_CHK(pDevice->CreateDeferredContext1(0, &contexts_pool[id]));
+
     // create swapchain
     R_CHK(m_pFactory->CreateSwapChainForHwnd(pDevice, m_hWnd, &sd, &sd_fullscreen, NULL, &m_pSwapChain));
 
     // setup colorspace
     IDXGISwapChain3* swapchain3;
-    R_CHK(m_pSwapChain->QueryInterface(&swapchain3));
+    R_CHK(m_pSwapChain->QueryInterface(IID_PPV_ARGS(&swapchain3)));
     R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
     _RELEASE(swapchain3);
 
@@ -259,7 +248,7 @@ void CHW::CreateDevice(HWND hwnd)
     R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
     _RELEASE(pDeviceDXGI);
 
-    _SHOW_REF("* CREATE: DeviceREF:", HW.pDevice);
+    _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
     size_t memory = Desc.DedicatedVideoMemory;
     Msg("*     Texture memory: %d M", memory / (1024 * 1024));
@@ -267,13 +256,11 @@ void CHW::CreateDevice(HWND hwnd)
     //	Create render target and depth-stencil views here
 
     // NOTE: this seems required to get the default render target to match the swap chain resolution
-    // probably the sequence ResizeTarget, ResizeBuffers, and UpdateViews is important
+    // probably the sequence ResizeTarget, and ResizeBuffers is important
     Reset(hwnd);
     fill_vid_mode_list(this);
 
-    ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
-
-    pContext->QueryInterface(IID_PPV_ARGS(&pAnnotation));
+    ImGui_ImplDX11_Init(m_hWnd, pDevice, contexts_pool[R__IMM_CTX_ID]);
 }
 
 void CHW::DestroyDevice()
@@ -281,34 +268,23 @@ void CHW::DestroyDevice()
     ImGui_ImplDX11_Shutdown();
 
     //	Destroy state managers
-    StateManager.Reset();
     RSManager.ClearStateArray();
     DSSManager.ClearStateArray();
     BSManager.ClearStateArray();
     SSManager.ClearStateArray();
 
-    _SHOW_REF("refCount:pBaseZB", pBaseZB);
-    _RELEASE(pBaseZB);
-
-    _RELEASE(pAnnotation);
-
-    _SHOW_REF("refCount:pBaseRT", pBaseRT);
-    _RELEASE(pBaseRT);
-    // #ifdef DEBUG
-    //	_SHOW_REF				("refCount:dwDebugSB",dwDebugSB);
-    //	_RELEASE				(dwDebugSB);
-    // #endif
-
     //	Must switch to windowed mode to release swap chain
     if (!m_ChainDescFullscreen.Windowed)
         m_pSwapChain->SetFullscreenState(FALSE, NULL);
+
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
 
-    _RELEASE(pContext);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        _RELEASE(contexts_pool[R__NUM_CONTEXTS - 1 - id]);
 
-    _SHOW_REF("DeviceREF:", HW.pDevice);
-    _RELEASE(HW.pDevice);
+    _SHOW_REF("DeviceREF:", pDevice);
+    _RELEASE(pDevice);
 
     DestroyD3D();
 
@@ -349,15 +325,6 @@ void CHW::Reset(HWND hwnd)
     mode.RefreshRate = cd_fs.RefreshRate;
     CHK_DX(m_pSwapChain->ResizeTarget(&mode));
 
-#ifdef DEBUG
-    //	_RELEASE			(dwDebugSB);
-#endif
-    _SHOW_REF("refCount:pBaseZB", pBaseZB);
-    _SHOW_REF("refCount:pBaseRT", pBaseRT);
-
-    _RELEASE(pBaseZB);
-    _RELEASE(pBaseRT);
-
     UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     if (m_SupportsVRR)
     {
@@ -366,18 +333,9 @@ void CHW::Reset(HWND hwnd)
 
     CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags));
 
-    UpdateViews();
-
     updateWindowProps(hwnd);
 
     ImGui_ImplDX11_CreateDeviceObjects();
-}
-
-D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
-{
-    // R3 hack
-#pragma todo("R3 need to specify depth format")
-    return D3DFMT_D24S8;
 }
 
 extern void GetMonitorResolution(u32& horizontal, u32& vertical);
@@ -466,12 +424,6 @@ void CHW::OnAppActivate()
         ShowWindow(m_hWnd, SW_RESTORE);
         m_pSwapChain->SetFullscreenState(true, nullptr);
 
-        _SHOW_REF("refCount:pBaseZB", pBaseZB);
-        _RELEASE(pBaseZB);
-
-        _SHOW_REF("refCount:pBaseRT", pBaseRT);
-        _RELEASE(pBaseRT);
-
         const auto& cd = m_ChainDesc;
 
         UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -481,8 +433,6 @@ void CHW::OnAppActivate()
         }
 
         m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
-
-        UpdateViews();
     }
 }
 
@@ -492,12 +442,6 @@ void CHW::OnAppDeactivate()
     {
         m_pSwapChain->SetFullscreenState(false, nullptr);
 
-        _SHOW_REF("refCount:pBaseZB", pBaseZB);
-        _RELEASE(pBaseZB);
-
-        _SHOW_REF("refCount:pBaseRT", pBaseRT);
-        _RELEASE(pBaseRT);
-
         const auto& cd = m_ChainDesc;
 
         UINT flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -508,22 +452,8 @@ void CHW::OnAppDeactivate()
 
         m_pSwapChain->ResizeBuffers(cd.BufferCount, cd.Width, cd.Height, cd.Format, flags);
 
-        UpdateViews();
-
         ShowWindow(m_hWnd, SW_MINIMIZE);
     }
-}
-
-BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
-{
-    //	TODO: DX10: implement stub for this code.
-    VERIFY(!"Implement CHW::support");
-    /*
-    HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
-    if (FAILED(hr))	return FALSE;
-    else			return TRUE;
-    */
-    return TRUE;
 }
 
 void CHW::DumpVideoMemoryUsage() const
@@ -686,45 +616,50 @@ void fill_vid_mode_list(CHW* _hw)
     }
 }
 
-void CHW::UpdateViews()
+void CHW::Present()
 {
-    DXGI_SWAP_CHAIN_DESC1& sd = m_ChainDesc;
-    HRESULT R;
+    UINT present_flags = 0;
+    bool use_vsync = !!psDeviceFlags.test(rsVSync);
+    UINT present_interval = (use_vsync) ? 1 : 0;
 
-    // Create a render target view
-    // R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
-    ID3DTexture2D* pBuffer;
-    R = m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-    R_CHK(R);
+    // NOTE: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays
+    BOOL is_windowed = m_ChainDescFullscreen.Windowed;
+    if (is_windowed && !use_vsync && m_SupportsVRR)
+    {
+        present_flags |= DXGI_PRESENT_ALLOW_TEARING;
+    }
 
-    R = pDevice->CreateRenderTargetView(pBuffer, NULL, &pBaseRT);
-    pBuffer->Release();
-    R_CHK(R);
+    if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
+    {
+        //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
+        // раза реже) [don't flush image into display for SecondVP-frame]
+        switch (m_pSwapChain->Present(present_interval, present_flags))
+        {
+        case DXGI_STATUS_OCCLUDED:
+        case DXGI_ERROR_DEVICE_REMOVED: doPresentTest = true; break;
+        }
+    }
 
-    //	Create Depth/stencil buffer
-    //	HACK: DX10: hard depth buffer format
-    // R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
-    ID3DTexture2D* pDepthStencil = NULL;
-    D3D_TEXTURE2D_DESC descDepth{};
-    descDepth.Width = sd.Width;
-    descDepth.Height = sd.Height;
-    descDepth.MipLevels = 1;
-    descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    descDepth.SampleDesc.Count = 1;
-    descDepth.SampleDesc.Quality = 0;
-    descDepth.Usage = D3D_USAGE_DEFAULT;
-    descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL;
-    descDepth.CPUAccessFlags = 0;
-    descDepth.MiscFlags = 0;
-    R = pDevice->CreateTexture2D(&descDepth, // Texture desc
-                                 NULL, // Initial data
-                                 &pDepthStencil); // [out] Texture
-    R_CHK(R);
+    CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;
+}
 
-    //	Create Depth/stencil view
-    R = pDevice->CreateDepthStencilView(pDepthStencil, NULL, &pBaseZB);
-    R_CHK(R);
+DeviceState CHW::GetDeviceState()
+{
+    if (!doPresentTest)
+        return DeviceState::Normal;
 
-    pDepthStencil->Release();
+    switch (m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
+    {
+    case S_OK: doPresentTest = false; break;
+
+    case DXGI_STATUS_OCCLUDED:
+        // Do not render until we become visible again
+        return DeviceState::Lost;
+
+    case DXGI_ERROR_DEVICE_RESET: return DeviceState::NeedReset;
+
+    case DXGI_ERROR_DEVICE_REMOVED: FATAL("Graphics driver was updated or GPU was physically removed from computer.\nPlease, restart the game."); break;
+    }
+
+    return DeviceState::Normal;
 }

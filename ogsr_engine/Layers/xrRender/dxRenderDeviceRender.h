@@ -1,6 +1,9 @@
 #pragma once
 
+#include "bitmap.h"
+
 #include "..\..\Include\xrRender\RenderDeviceRender.h"
+#include "r__dsgraph_structure.h"
 #include "xr_effgamma.h"
 
 class CResourceManager;
@@ -44,10 +47,10 @@ public:
     virtual DeviceState GetDeviceState();
     virtual BOOL GetForceGPU_REF();
     virtual u32 GetCacheStatPolys();
-    virtual void Begin();
-    virtual void Clear();
-    virtual void End();
-    virtual void ClearTarget();
+    virtual void Begin() override;
+    virtual void Clear() override;
+    virtual void End() override;
+    virtual void ClearTarget() override;
     virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject);
     virtual void OnAssetsChanged();
 
@@ -55,7 +58,6 @@ public:
 
     void CreateQuadIB();
 
-public:
     CResourceManager* Resources{};
 
     ref_shader m_WireShader;
@@ -70,6 +72,37 @@ public:
     ID3DIndexBuffer* QuadIB;
     ID3DIndexBuffer* old_QuadIB;
 
+    ctx_id_t alloc_context(bool alloc_cmd_list = true);
+
+    ICF R_dsgraph_structure& get_context(ctx_id_t id)
+    {
+        VERIFY(id < R__NUM_CONTEXTS);
+
+        VERIFY(contexts_used.test(id));
+        VERIFY(contexts_pool[id].context_id == id);
+
+        return contexts_pool[id];
+    }
+
+    ICF void release_context(ctx_id_t id)
+    {
+        VERIFY(id != R__IMM_CTX_ID); // never release immediate context
+        VERIFY(id < R__NUM_PARALLEL_CONTEXTS);
+
+        VERIFY(contexts_used.test(id));
+        VERIFY(contexts_pool[id].context_id != R__INVALID_CTX_ID);
+
+        contexts_used.clear(id);
+    }
+
+    ICF R_dsgraph_structure& get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
+
+    void cleanup_contexts();
+
+protected:
+    xr_bitmap<R__NUM_CONTEXTS> contexts_used;
+    R_dsgraph_structure contexts_pool[R__NUM_CONTEXTS];
+
 private:
     CGammaControl m_Gamma;
 
@@ -77,4 +110,4 @@ protected:
     bool b_loaded{};
 };
 
-#define DEV RImplementation.Resources
+#define DEV (RImplementation.Resources)

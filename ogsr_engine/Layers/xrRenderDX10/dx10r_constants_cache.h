@@ -1,6 +1,8 @@
 #ifndef dx10r_constants_cacheH
 #define dx10r_constants_cacheH
 
+class CBackend;
+
 class R_constants
 {
 public:
@@ -155,6 +157,9 @@ private:
 
     template <BufferType BType>
     dx10ConstantBuffer& GetCBuffer(R_constant* C) const = delete; // no implicit specialization
+
+    ICF CBackend& cmd_list();
+    ICF const CBackend& cmd_list() const;
 };
 
 template <>

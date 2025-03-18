@@ -38,9 +38,9 @@ void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
 void CRenderTarget::u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
 {
     // Calculate ordinaty TCs from blur and SS
-    float tw = float(dwWidth);
-    float th = float(dwHeight);
-    if (dwHeight != Device.dwHeight)
+    float tw = float(get_width(RCache));
+    float th = float(get_height(RCache));
+    if (th != Device.dwHeight)
         param_blur = 1.f;
     Fvector2 shift, p0, p1;
     shift.set(.5f / tw, .5f / th);
@@ -116,21 +116,16 @@ static_assert(sizeof(TL_2c3uv) == 48);
 void CRenderTarget::phase_pp()
 {
     // combination/postprocess
-    u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+    u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), NULL, NULL, get_base_zb());
+
     //	Element 0 for for normal post-process
     //	Element 4 for color map post-process
     bool bCMap = u_need_CM();
-    // RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
+
     if (!RImplementation.o.dx10_msaa)
-    {
-        //		RCache.set_Shader	(s_postprocess	);
         RCache.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
-    }
     else
-    {
-        //		RCache.set_Shader( s_postprocess_msaa );
         RCache.set_Element(s_postprocess_msaa->E[bCMap ? 4 : 0]);
-    }
 
     int gblend = clampr(iFloor((1 - param_gray) * 255.f), 0, 255);
     int nblend = clampr(iFloor((1 - param_noise) * 255.f), 0, 255);

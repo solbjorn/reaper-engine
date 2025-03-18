@@ -42,7 +42,7 @@ private:
 public:
     CSkeletonX_ST() {}
     virtual ~CSkeletonX_ST() {}
-    virtual void Render(float LOD, bool) override;
+    virtual void Render(CBackend& cmd_list, float LOD, bool) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();
@@ -65,7 +65,7 @@ private:
 public:
     CSkeletonX_PM() {}
     virtual ~CSkeletonX_PM() {}
-    virtual void Render(float LOD, bool) override;
+    virtual void Render(CBackend& cmd_list, float LOD, bool) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();

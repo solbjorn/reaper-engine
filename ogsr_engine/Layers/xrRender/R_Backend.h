@@ -17,7 +17,9 @@
 #include "r_backend_hemi.h"
 #include "r_backend_tree.h"
 
-#include "..\xrRenderPC_R4\r_backend_lod.h"
+#include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
+#include "../xrRenderDX10/StateManager/dx10StateManager.h"
+#include "../xrRenderPC_R4/r_backend_lod.h"
 
 #include "fvf.h"
 
@@ -57,22 +59,11 @@ struct R_statistics
 class CBackend
 {
 public:
-    enum MaxTextures
-    {
-        //	Actually these values are 128
-        mtMaxPixelShaderTextures = 16,
-        mtMaxVertexShaderTextures = 4,
-        mtMaxGeometryShaderTextures = 16,
-        mtMaxHullShaderTextures = 16,
-        mtMaxDomainShaderTextures = 16,
-        mtMaxComputeShaderTextures = 16,
-    };
     enum
     {
         MaxCBuffers = 14
     };
 
-public:
     R_xforms xforms;
     R_hemi hemi;
     R_tree tree;
@@ -101,8 +92,11 @@ private:
     ID3DIndexBuffer* ib;
     u32 vb_stride;
 
+public:
     // Pixel/Vertex constants
     alignas(16) R_constants constants;
+
+private:
     R_constant_table* ctable;
 
     // Shaders/State
@@ -143,15 +137,12 @@ private:
     SConstantList* C;
 
     // Lists-expanded
-    CTexture* textures_ps[mtMaxPixelShaderTextures]; // stages
-    // CTexture*						textures_vs	[5	];	// dmap + 4 vs
-    CTexture* textures_vs[mtMaxVertexShaderTextures]; // 4 vs
-    CTexture* textures_gs[mtMaxGeometryShaderTextures]; // 4 vs
-    CTexture* textures_hs[mtMaxHullShaderTextures]; // 4 vs
-    CTexture* textures_ds[mtMaxDomainShaderTextures]; // 4 vs
-    CTexture* textures_cs[mtMaxComputeShaderTextures]; // 4 vs
-
-    void Invalidate();
+    CTexture* textures_ps[CTexture::mtMaxPixelShaderTextures]; // stages
+    CTexture* textures_vs[CTexture::mtMaxVertexShaderTextures]; // 4 vs
+    CTexture* textures_gs[CTexture::mtMaxGeometryShaderTextures]; // 4 vs
+    CTexture* textures_hs[CTexture::mtMaxHullShaderTextures]; // 4 vs
+    CTexture* textures_ds[CTexture::mtMaxDomainShaderTextures]; // 4 vs
+    CTexture* textures_cs[CTexture::mtMaxComputeShaderTextures]; // 4 vs
 
 public:
     struct _stats
@@ -177,6 +168,10 @@ public:
         R_statistics r;
     } stat;
 
+    ctx_id_t context_id{R__IMM_CTX_ID};
+
+    ICF ID3D11DeviceContext1* context() const;
+
     IC CTexture* get_ActiveTexture(u32 stage)
     {
         if (stage < CTexture::rstVertex)
@@ -196,9 +191,13 @@ public:
         return nullptr;
     }
 
+    CROS_impl::lmaterial o;
+
     void apply_lmaterial(IRenderable* O = nullptr);
 
     IC void get_ConstantDirect(const char* n, size_t DataSize, void** pVData, void** pGData, void** pPData);
+
+    void Invalidate();
 
     // API
     IC void set_xform(u32 ID, const Fmatrix& M);
@@ -213,6 +212,15 @@ public:
     IC void set_ZB(ID3DDepthStencilView* ZB);
     IC ID3DRenderTargetView* get_RT(u32 ID = 0);
     IC ID3DDepthStencilView* get_ZB();
+
+    IC void ClearRT(ID3DRenderTargetView* rt, const Fcolor& color);
+    IC void ClearZB(ID3DDepthStencilView* zb, float depth);
+    IC void ClearZB(ID3DDepthStencilView* zb, float depth, u32 stencil);
+
+    IC void set_ZB(const ref_rt& zb) { set_ZB(zb ? zb->pZRT[context_id] : nullptr); }
+    ICF void ClearRT(ref_rt& rt, const Fcolor& color) { ClearRT(rt->pRT, color); }
+    ICF void ClearZB(ref_rt& zb, float depth) { ClearZB(zb->pZRT[context_id], depth); }
+    ICF void ClearZB(ref_rt& zb, float depth, u32 stencil) { ClearZB(zb->pZRT[context_id], depth, stencil); }
 
     IC void set_Constants(R_constant_table* C);
     IC void set_Constants(ref_ctable& C) { set_Constants(&*C); }
@@ -271,9 +279,10 @@ public:
     IC void set_CullMode(u32 _mode);
     IC u32 get_CullMode() { return cull_mode; }
     IC void set_FillMode(u32 _mode);
-    void set_ClipPlanes(u32 _enable, Fplane* _planes = NULL, u32 count = 0);
-    void set_ClipPlanes(u32 _enable, Fmatrix* _xform = NULL, u32 fmask = 0xff);
-    IC void set_Scissor(Irect* rect = NULL);
+    void set_ClipPlanes(u32 _enable, Fplane* _planes = nullptr, u32 count = 0);
+    void set_ClipPlanes(u32 _enable, Fmatrix* _xform = nullptr, u32 fmask = 0xff);
+    IC void set_Scissor(Irect* rect = nullptr);
+    IC void SetViewport(const D3D_VIEWPORT& viewport) const;
 
     // constants
     ICF ref_constant get_c(LPCSTR n)
@@ -341,18 +350,28 @@ public:
         set_ca(ctable->get(name)._get(), std::forward<Args>(args)...);
     }
 
-    inline void Clear(u32 Count, const D3DRECT* pRects, u32 Flags, u32 Color, float Z, u32 Stencil);
-
     ICF void Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
     ICF void Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
 
     ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
+
+    ICF void submit()
+    {
+        VERIFY(context_id != R__IMM_CTX_ID);
+        ID3D11CommandList* pCommandList{};
+
+        CHK_DX(HW.get_context(context_id)->FinishCommandList(false, &pCommandList));
+        HW.get_context(R__IMM_CTX_ID)->ExecuteCommandList(pCommandList, false);
+
+        _RELEASE(pCommandList);
+    }
 
     // Device create / destroy / frame signaling
     void OnFrameBegin();
     void OnFrameEnd();
     void OnDeviceCreate();
     void OnDeviceDestroy();
+    void SetupStates();
 
     // Debug render
     void dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
@@ -361,8 +380,8 @@ public:
     void dbg_SetRS(D3DRENDERSTATETYPE p1, u32 p2) { VERIFY(!"Not implemented"); }
     void dbg_SetSS(u32 sampler, D3DSAMPLERSTATETYPE type, u32 value) { VERIFY(!"Not implemented"); }
 
-    void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
-    void dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt);
+    void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);
+    void dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
     void dbg_DrawAABB(Fvector& T, float sx, float sy, float sz, u32 C)
     {
@@ -392,20 +411,20 @@ private:
     void ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
     bool CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
 
-    ID3DBlob* m_pInputSignature;
+private:
+    ID3DBlob* m_pInputSignature{};
+    ID3DUserDefinedAnnotation* pAnnotation{};
+
+    bool m_bChangedRTorZB;
 
     void apply_object(IRenderable& O);
 
 public:
-    CROS_impl::lmaterial o;
-
-private:
-    bool m_bChangedRTorZB;
+    dx10StateManager StateManager;
+    dx10ShaderResourceStateCache SRVSManager;
 };
 #pragma warning(pop)
 
-extern CBackend RCache;
-
-#include "D3DUtils.h"
+#define RCache (RImplementation.get_imm_context().cmd_list)
 
 #endif

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "dx10ShaderResourceStateCache.h"
 
-dx10ShaderResourceStateCache SRVSManager;
-
 dx10ShaderResourceStateCache::dx10ShaderResourceStateCache() { ResetDeviceState(); }
 
 void dx10ShaderResourceStateCache::ResetDeviceState()
@@ -35,11 +33,13 @@ void dx10ShaderResourceStateCache::ResetDeviceState()
     m_bUpdateHSViews = false;
 }
 
-void dx10ShaderResourceStateCache::Apply()
+void dx10ShaderResourceStateCache::Apply(ctx_id_t context_id)
 {
+    auto* pContext = HW.get_context(context_id);
+
     if (m_bUpdatePSViews)
     {
-        HW.pContext->PSSetShaderResources(m_uiMinPSView, m_uiMaxPSView - m_uiMinPSView + 1, &m_PSViews[m_uiMinPSView]);
+        pContext->PSSetShaderResources(m_uiMinPSView, m_uiMaxPSView - m_uiMinPSView + 1, &m_PSViews[m_uiMinPSView]);
         m_uiMinPSView = 0xFFFFFFFF;
         m_uiMaxPSView = 0xFFFFFFFF;
         m_bUpdatePSViews = false;
@@ -47,7 +47,7 @@ void dx10ShaderResourceStateCache::Apply()
 
     if (m_bUpdateGSViews)
     {
-        HW.pContext->GSSetShaderResources(m_uiMinGSView, m_uiMaxGSView - m_uiMinGSView + 1, &m_GSViews[m_uiMinGSView]);
+        pContext->GSSetShaderResources(m_uiMinGSView, m_uiMaxGSView - m_uiMinGSView + 1, &m_GSViews[m_uiMinGSView]);
         m_uiMinGSView = 0xFFFFFFFF;
         m_uiMaxGSView = 0xFFFFFFFF;
         m_bUpdateGSViews = false;
@@ -55,7 +55,7 @@ void dx10ShaderResourceStateCache::Apply()
 
     if (m_bUpdateVSViews)
     {
-        HW.pContext->VSSetShaderResources(m_uiMinVSView, m_uiMaxVSView - m_uiMinVSView + 1, &m_VSViews[m_uiMinVSView]);
+        pContext->VSSetShaderResources(m_uiMinVSView, m_uiMaxVSView - m_uiMinVSView + 1, &m_VSViews[m_uiMinVSView]);
         m_uiMinVSView = 0xFFFFFFFF;
         m_uiMaxVSView = 0xFFFFFFFF;
         m_bUpdateVSViews = false;
@@ -63,7 +63,7 @@ void dx10ShaderResourceStateCache::Apply()
 
     if (m_bUpdateHSViews)
     {
-        HW.pContext->HSSetShaderResources(m_uiMinHSView, m_uiMaxHSView - m_uiMinHSView + 1, &m_HSViews[m_uiMinHSView]);
+        pContext->HSSetShaderResources(m_uiMinHSView, m_uiMaxHSView - m_uiMinHSView + 1, &m_HSViews[m_uiMinHSView]);
         m_uiMinHSView = 0xFFFFFFFF;
         m_uiMaxHSView = 0xFFFFFFFF;
         m_bUpdateHSViews = false;
@@ -71,7 +71,7 @@ void dx10ShaderResourceStateCache::Apply()
 
     if (m_bUpdateDSViews)
     {
-        HW.pContext->DSSetShaderResources(m_uiMinDSView, m_uiMaxDSView - m_uiMinDSView + 1, &m_DSViews[m_uiMinDSView]);
+        pContext->DSSetShaderResources(m_uiMinDSView, m_uiMaxDSView - m_uiMinDSView + 1, &m_DSViews[m_uiMinDSView]);
         m_uiMinDSView = 0xFFFFFFFF;
         m_uiMaxDSView = 0xFFFFFFFF;
         m_bUpdateDSViews = false;
@@ -79,7 +79,7 @@ void dx10ShaderResourceStateCache::Apply()
 
     if (m_bUpdateCSViews)
     {
-        HW.pContext->CSSetShaderResources(m_uiMinCSView, m_uiMaxCSView - m_uiMinCSView + 1, &m_CSViews[m_uiMinCSView]);
+        pContext->CSSetShaderResources(m_uiMinCSView, m_uiMaxCSView - m_uiMinCSView + 1, &m_CSViews[m_uiMinCSView]);
         m_uiMinCSView = 0xFFFFFFFF;
         m_uiMaxCSView = 0xFFFFFFFF;
         m_bUpdateCSViews = false;
@@ -88,7 +88,7 @@ void dx10ShaderResourceStateCache::Apply()
 
 void dx10ShaderResourceStateCache::SetPSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxPixelShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxPixelShaderTextures);
 
     if (m_PSViews[uiSlot] != pRes)
     {
@@ -109,7 +109,7 @@ void dx10ShaderResourceStateCache::SetPSResource(u32 uiSlot, ID3DShaderResourceV
 
 void dx10ShaderResourceStateCache::SetGSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxGeometryShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxGeometryShaderTextures);
 
     if (m_GSViews[uiSlot] != pRes)
     {
@@ -130,7 +130,7 @@ void dx10ShaderResourceStateCache::SetGSResource(u32 uiSlot, ID3DShaderResourceV
 
 void dx10ShaderResourceStateCache::SetVSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxVertexShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxVertexShaderTextures);
 
     if (m_VSViews[uiSlot] != pRes)
     {
@@ -151,7 +151,7 @@ void dx10ShaderResourceStateCache::SetVSResource(u32 uiSlot, ID3DShaderResourceV
 
 void dx10ShaderResourceStateCache::SetHSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxHullShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxHullShaderTextures);
 
     if (m_HSViews[uiSlot] != pRes)
     {
@@ -172,7 +172,7 @@ void dx10ShaderResourceStateCache::SetHSResource(u32 uiSlot, ID3DShaderResourceV
 
 void dx10ShaderResourceStateCache::SetDSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxHullShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxHullShaderTextures);
 
     if (m_DSViews[uiSlot] != pRes)
     {
@@ -193,7 +193,7 @@ void dx10ShaderResourceStateCache::SetDSResource(u32 uiSlot, ID3DShaderResourceV
 
 void dx10ShaderResourceStateCache::SetCSResource(u32 uiSlot, ID3DShaderResourceView* pRes)
 {
-    VERIFY(uiSlot < CBackend::mtMaxComputeShaderTextures);
+    VERIFY(uiSlot < CTexture::mtMaxComputeShaderTextures);
 
     if (m_CSViews[uiSlot] != pRes)
     {

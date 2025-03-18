@@ -63,4 +63,4 @@ void FLOD::Copy(dxRender_Visual* pFrom)
     CopyMemory(facets, F->facets, sizeof(facets));
 }
 
-void FLOD::Render(float, bool) {}
+void FLOD::Render(CBackend&, float, bool) {}

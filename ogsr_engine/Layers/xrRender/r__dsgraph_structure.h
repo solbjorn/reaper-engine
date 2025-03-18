@@ -16,6 +16,8 @@ struct R_dsgraph_structure
 {
     R_feedback* val_feedback{}; // feedback for geometry being rendered
     u32 val_feedback_breakp{}; // breakpoint
+
+    ctx_id_t context_id{R__INVALID_CTX_ID};
     u32 marker{};
     u32 phase{};
     bool pmask[2];
@@ -23,9 +25,7 @@ struct R_dsgraph_structure
     bool use_hom{};
 
     // Dynamic scene graph
-    // R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
     R_dsgraph::mapNormalPasses_T mapNormalPasses[2]; // 2==(priority/2)
-    // R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
     R_dsgraph::mapSorted_T mapSorted;
     R_dsgraph::mapHUD_T mapHUD;
@@ -57,6 +57,8 @@ struct R_dsgraph_structure
     u32 counter_S{};
     u32 counter_D{};
 
+    CBackend cmd_list{};
+
     void set_Feedback(R_feedback* V, u32 id)
     {
         val_feedback_breakp = id;
@@ -71,8 +73,11 @@ struct R_dsgraph_structure
 
     R_dsgraph_structure() { r_pmask(true, true); };
 
-    void destroy()
+    void reset()
     {
+        context_id = R__INVALID_CTX_ID;
+        val_feedback = nullptr;
+
         nrmPasses.clear();
         matPasses.clear();
 
@@ -101,6 +106,8 @@ struct R_dsgraph_structure
         mapWmark.destroy();
         mapEmissive.destroy();
         mapHUDEmissive.destroy();
+
+        cmd_list.Invalidate();
     }
 
     void r_pmask(bool _1, bool _2, bool _wm = false)

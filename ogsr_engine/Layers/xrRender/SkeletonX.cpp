@@ -45,14 +45,14 @@ void CSkeletonX::_Copy(CSkeletonX* B)
     m_Indices = B->m_Indices;
 }
 //////////////////////////////////////////////////////////////////////
-void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
     const bool CalcVelocity = RImplementation.Target->RVelocity;
 
     if (CalcVelocity)
     {
         // Previous WVP
-        RCache.set_c("m_WVP_prev", RImplementation.Target->Matrix_HUD_previous);
+        cmd_list.set_c("m_WVP_prev", RImplementation.Target->Matrix_HUD_previous);
 
         if (RenderMode > 1 && Device.dwFrame > Parent->CurrentFrame)
         {
@@ -68,25 +68,25 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
         }
     }
 
-    RCache.stat.r.s_dynamic.add(vCount);
+    cmd_list.stat.r.s_dynamic.add(vCount);
     switch (RenderMode)
     {
     case RM_SKINNING_SOFT:
-        _Render_soft(hGeom, vCount, iOffset, pCount);
-        RCache.stat.r.s_dynamic_sw.add(vCount);
+        _Render_soft(cmd_list, hGeom, vCount, iOffset, pCount);
+        cmd_list.stat.r.s_dynamic_sw.add(vCount);
         break;
     case RM_SINGLE: {
         Fmatrix W;
-        W.mul_43(RCache.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
-        RCache.set_xform_world(W);
+        W.mul_43(cmd_list.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
+        cmd_list.set_xform_world(W);
 
         // Add the bone transform
         if (CalcVelocity)
-            RCache.set_c("m_bone", Parent->LL_GetTransform_R(u16(RMS_boneid)));
+            cmd_list.set_c("m_bone", Parent->LL_GetTransform_R(u16(RMS_boneid)));
 
-        RCache.set_Geometry(hGeom);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
-        RCache.stat.r.s_dynamic_inst.add(vCount);
+        cmd_list.set_Geometry(hGeom);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+        cmd_list.stat.r.s_dynamic_inst.add(vCount);
     }
     break;
     case RM_SKINNING_1B:
@@ -100,9 +100,9 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
         const u32 c_bones_array_size = RMS_bonecount * sizeof(Fvector4) * 3;
 #endif
         Fvector4* c_bones_array{};
-        RCache.get_ConstantDirect(s_bones_array_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array), nullptr, nullptr);
+        cmd_list.get_ConstantDirect(s_bones_array_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array), nullptr, nullptr);
         Fvector4* c_bones_array_prev{};
-        RCache.get_ConstantDirect(s_bones_array_prev_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array_prev), nullptr, nullptr);
+        cmd_list.get_ConstantDirect(s_bones_array_prev_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array_prev), nullptr, nullptr);
         if (c_bones_array)
         {
             for (u32 mid = 0; mid < RMS_bonecount; mid++)
@@ -154,21 +154,22 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
         }
 
         // render
-        RCache.set_Geometry(hGeom);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+        cmd_list.set_Geometry(hGeom);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
         if (RM_SKINNING_1B == RenderMode)
-            RCache.stat.r.s_dynamic_1B.add(vCount);
+            cmd_list.stat.r.s_dynamic_1B.add(vCount);
         else if (RM_SKINNING_2B == RenderMode)
-            RCache.stat.r.s_dynamic_2B.add(vCount);
+            cmd_list.stat.r.s_dynamic_2B.add(vCount);
         else if (RM_SKINNING_3B == RenderMode)
-            RCache.stat.r.s_dynamic_3B.add(vCount);
+            cmd_list.stat.r.s_dynamic_3B.add(vCount);
         else if (RM_SKINNING_4B == RenderMode)
-            RCache.stat.r.s_dynamic_4B.add(vCount);
+            cmd_list.stat.r.s_dynamic_4B.add(vCount);
     }
     break;
     }
 }
-void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+
+void CSkeletonX::_Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
     u32 vOffset = cache_vOffset;
 
@@ -220,8 +221,8 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
         _VS.Unlock(vCount, hGeom->vb_stride);
     }
 
-    RCache.set_Geometry(hGeom);
-    RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
+    cmd_list.set_Geometry(hGeom);
+    cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
 }
 
 void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)

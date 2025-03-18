@@ -4,8 +4,6 @@
 #include "../dx10StateUtils.h"
 #include "dx10StateCache.h"
 
-dx10StateManager StateManager;
-
 //	DX10: TODO: Implement alpha referense control
 
 dx10StateManager::dx10StateManager()
@@ -109,7 +107,7 @@ void dx10StateManager::SetAlphaRef(UINT uiAlphaRef)
     {
         m_uiAlphaRef = uiAlphaRef;
         if (m_cAlphaRef)
-            RCache.set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
+            cmd_list().set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
     }
 }
 
@@ -117,7 +115,7 @@ void dx10StateManager::BindAlphaRef(R_constant* C)
 {
     m_cAlphaRef = C;
     if (m_cAlphaRef)
-        RCache.set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
+        cmd_list().set_c(m_cAlphaRef, (float)m_uiAlphaRef / 255.0f);
 }
 
 void dx10StateManager::ValidateRDesc()
@@ -162,6 +160,8 @@ void dx10StateManager::ValidateBDesc()
 //	Sends states to DX10 runtime, creates new state objects if nessessary
 void dx10StateManager::Apply()
 {
+    auto* pContext = cmd_list().context();
+
     //	Apply rasterizer state
     if (m_bRSNeedApply || m_bRSChanged)
     {
@@ -171,7 +171,7 @@ void dx10StateManager::Apply()
             m_bRSChanged = false;
         }
 
-        HW.pContext->RSSetState(m_pRState);
+        pContext->RSSetState(m_pRState);
         m_bRSNeedApply = false;
     }
 
@@ -184,7 +184,7 @@ void dx10StateManager::Apply()
             m_bDSSChanged = false;
         }
 
-        HW.pContext->OMSetDepthStencilState(m_pDepthStencilState, m_uiStencilRef);
+        pContext->OMSetDepthStencilState(m_pDepthStencilState, m_uiStencilRef);
         m_bDSSNeedApply = false;
     }
 
@@ -199,7 +199,7 @@ void dx10StateManager::Apply()
 
         constexpr FLOAT BlendFactor[4]{};
 
-        HW.pContext->OMSetBlendState(m_pBlendState, BlendFactor, m_uiSampleMask);
+        pContext->OMSetBlendState(m_pBlendState, BlendFactor, m_uiSampleMask);
         m_bBSNeedApply = false;
     }
 }

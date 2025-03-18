@@ -20,7 +20,7 @@ void CRenderTarget::phase_blur()
     w = float(Device.dwWidth) * 0.5f;
     h = float(Device.dwHeight) * 0.5f;
 
-    u_setrt(rt_blur_h_2, 0, 0, rt_blur_2_zb->pZRT);
+    u_setrt(RCache, rt_blur_h_2, 0, 0, rt_blur_2_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -44,7 +44,7 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(rt_blur_2, 0, 0, rt_blur_2_zb->pZRT);
+    u_setrt(RCache, rt_blur_2, 0, 0, rt_blur_2_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -71,7 +71,7 @@ void CRenderTarget::phase_blur()
     w = float(Device.dwWidth) * 0.25f;
     h = float(Device.dwHeight) * 0.25f;
 
-    u_setrt(rt_blur_h_4, 0, 0, rt_blur_4_zb->pZRT);
+    u_setrt(RCache, rt_blur_h_4, 0, 0, rt_blur_4_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -95,7 +95,7 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(rt_blur_4, 0, 0, rt_blur_4_zb->pZRT);
+    u_setrt(RCache, rt_blur_4, 0, 0, rt_blur_4_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -122,7 +122,7 @@ void CRenderTarget::phase_blur()
     w = float(Device.dwWidth) * 0.125f;
     h = float(Device.dwHeight) * 0.125f;
 
-    u_setrt(rt_blur_h_8, 0, 0, rt_blur_8_zb->pZRT);
+    u_setrt(RCache, rt_blur_h_8, 0, 0, rt_blur_8_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -146,7 +146,7 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(rt_blur_8, 0, 0, rt_blur_8_zb->pZRT);
+    u_setrt(RCache, rt_blur_8, 0, 0, rt_blur_8_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -187,7 +187,7 @@ void CRenderTarget::phase_ssfx_ssr()
     Fvector2 p1{1.f, 1.f};
 
     // GLOSS /////////////////////////////////////////////////////////////////
-    u_setrt(rt_ssfx_temp3, 0, 0, HW.pBaseZB);
+    u_setrt(RCache, rt_ssfx_temp3, 0, 0, get_base_zb());
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -216,12 +216,12 @@ void CRenderTarget::phase_ssfx_ssr()
     float scale_Y = h / ScaleFactor;
 
     // SSR ///////////////////////////////////////////////////////////
-    u_setrt(rt_ssfx, 0, 0, HW.pBaseZB);
+    u_setrt(RCache, rt_ssfx, 0, 0, get_base_zb());
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     if (ScaleFactor > 1.0f)
-        set_viewport_size(HW.pContext, scale_X, scale_Y);
+        set_viewport_size(RCache, scale_X, scale_Y);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -246,13 +246,13 @@ void CRenderTarget::phase_ssfx_ssr()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // COPY SSR RESULT ( ACC ) ////////////////////////////////////////////
-    HW.pContext->CopyResource(rt_ssfx_ssr->pTexture->surface_get(), rt_ssfx->pTexture->surface_get());
+    RCache.context()->CopyResource(rt_ssfx_ssr->pTexture->surface_get(), rt_ssfx->pTexture->surface_get());
 
     // Disable/Enable Blur if the value is <= 0
     // if (ps_ssfx_ssr.y > 0 || ps_ssfx_ssr.x > 1.0)
     {
         // BLUR PHASE 1 //////////////////////////////////////////////////////////
-        u_setrt(rt_ssfx_temp, 0, 0, HW.pBaseZB);
+        u_setrt(RCache, rt_ssfx_temp, 0, 0, get_base_zb());
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -276,7 +276,7 @@ void CRenderTarget::phase_ssfx_ssr()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // BLUR PHASE 2 //////////////////////////////////////////////////////////
-        u_setrt(rt_ssfx_temp2, 0, 0, HW.pBaseZB);
+        u_setrt(RCache, rt_ssfx_temp2, 0, 0, get_base_zb());
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -303,14 +303,14 @@ void CRenderTarget::phase_ssfx_ssr()
     // COMBINE //////////////////////////////////////////////////////////
     // Reset Viewport
     if (ScaleFactor > 1.0f)
-        set_viewport_size(HW.pContext, w, h);
+        set_viewport_size(RCache, w, h);
 
     p1.set(1.0f, 1.0f);
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(rt_Generic_0, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_Generic_0, nullptr, nullptr, nullptr);
     else
-        u_setrt(rt_Generic_0_r, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_Generic_0_r, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -338,15 +338,11 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
 {
     // Be careful and clear the buffer ( rt_Generic_2 contain unspeakable stuff if no volumetric is written )
     if (!m_bHasActiveVolumetric)
-    {
-        constexpr FLOAT ColorRGBA[4] = {0.0, 0.0, 0.0, 0.0};
-        HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
-    }
+        RCache.ClearRT(rt_Generic_2->pRT, {});
 
     if (!m_bHasActiveVolumetric_spot)
     {
-        constexpr FLOAT ColorRGBA[4] = {0.0, 0.0, 0.0, 0.0};
-        HW.pContext->ClearRenderTargetView(rt_ssfx_volumetric->pRT, ColorRGBA);
+        RCache.ClearRT(rt_ssfx_volumetric->pRT, {});
         return;
     }
 
@@ -361,7 +357,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
     // Volumetric always at 1/8 res
-    set_viewport_size(HW.pContext, w / 8, h / 8);
+    set_viewport_size(RCache, w / 8, h / 8);
 
     ref_rt* rt_VolBlur[2] = {&rt_ssfx_volumetric_tmp, &rt_ssfx_volumetric};
     constexpr float pixelsize[4] = {0, 1, 1, 2}; // half pixel + pixelsize
@@ -370,7 +366,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     // BLUR ///////////////////////////////////////////////////////////////////
     for (int b = 0; b < 4; b++)
     {
-        u_setrt(*rt_VolBlur[b % 2], 0, 0, NULL);
+        u_setrt(RCache, *rt_VolBlur[b % 2], 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -394,10 +390,10 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     }
 
     // Restore Viewport
-    set_viewport_size(HW.pContext, w, h);
+    set_viewport_size(RCache, w, h);
 
     // COMBINE ////////////////////////////////////////////////////////////////
-    u_setrt(rt_ssfx_accum, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_accum, 0, 0, NULL);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -418,7 +414,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    HW.pContext->CopyResource(rt_Generic_2->pTexture->surface_get(), rt_ssfx_accum->pTexture->surface_get());
+    RCache.context()->CopyResource(rt_Generic_2->pTexture->surface_get(), rt_ssfx_accum->pTexture->surface_get());
 };
 
 void CRenderTarget::phase_ssfx_water_blur()
@@ -435,12 +431,12 @@ void CRenderTarget::phase_ssfx_water_blur()
     constexpr Fvector2 p0{0.f, 0.f};
     Fvector2 p1{0.5f, 0.5f};
 
-    set_viewport_size(HW.pContext, w / 2, h / 2);
+    set_viewport_size(RCache, w / 2, h / 2);
 
     if (ps_ssfx_water.y > 0)
     {
         // BLUR PHASE 1 //////////////////////////////////////////////////////////
-        u_setrt(rt_ssfx_temp2, 0, 0, NULL);
+        u_setrt(RCache, rt_ssfx_temp2, 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -463,7 +459,7 @@ void CRenderTarget::phase_ssfx_water_blur()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // BLUR PHASE 2 //////////////////////////////////////////////////////////
-        u_setrt(rt_ssfx_temp, 0, 0, NULL);
+        u_setrt(RCache, rt_ssfx_temp, 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -488,9 +484,9 @@ void CRenderTarget::phase_ssfx_water_blur()
     }
     else
     {
-        HW.pContext->CopyResource(rt_ssfx_temp2->pTexture->surface_get(), rt_ssfx_temp->pTexture->surface_get());
+        RCache.context()->CopyResource(rt_ssfx_temp2->pTexture->surface_get(), rt_ssfx_temp->pTexture->surface_get());
 
-        u_setrt(rt_ssfx_temp, 0, 0, NULL);
+        u_setrt(RCache, rt_ssfx_temp, 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -513,7 +509,7 @@ void CRenderTarget::phase_ssfx_water_blur()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
-    set_viewport_size(HW.pContext, w, h);
+    set_viewport_size(RCache, w, h);
     p1.set(1.0f, 1.0f);
 };
 
@@ -530,9 +526,9 @@ void CRenderTarget::phase_ssfx_water_waves()
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    set_viewport_size(HW.pContext, 512, 512);
+    set_viewport_size(RCache, 512, 512);
 
-    u_setrt(rt_ssfx_water_waves, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_water_waves, 0, 0, NULL);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -554,7 +550,7 @@ void CRenderTarget::phase_ssfx_water_waves()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    set_viewport_size(HW.pContext, w, h);
+    set_viewport_size(RCache, w, h);
 };
 
 void CRenderTarget::phase_ssfx_sss()
@@ -570,7 +566,7 @@ void CRenderTarget::phase_ssfx_sss()
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    u_setrt(rt_ssfx, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -598,7 +594,7 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // BLUR
-    u_setrt(rt_ssfx_temp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -624,7 +620,7 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // BLUR
-    u_setrt(rt_ssfx_temp2, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_temp2, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -649,7 +645,7 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    HW.pContext->CopyResource(rt_ssfx_sss->pTexture->surface_get(), rt_ssfx_temp2->pTexture->surface_get());
+    RCache.context()->CopyResource(rt_ssfx_sss->pTexture->surface_get(), rt_ssfx_temp2->pTexture->surface_get());
 }
 
 static constexpr ptrdiff_t __declspec(align(16)) zeros[16 / sizeof(ptrdiff_t)]{};
@@ -690,7 +686,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    u_setrt(rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -869,11 +865,12 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    HW.pContext->CopyResource(rt_ssfx_sss_ext->pTexture->surface_get(), rt_ssfx_sss_tmp->pTexture->surface_get());
+    auto* pContext = RCache.context();
+    pContext->CopyResource(rt_ssfx_sss_ext->pTexture->surface_get(), rt_ssfx_sss_tmp->pTexture->surface_get());
 
     // SSS Ext 2 -------------------------------------------------------
 
-    u_setrt(rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -902,11 +899,11 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    HW.pContext->CopyResource(rt_ssfx_sss_ext2->pTexture->surface_get(), rt_ssfx_sss_tmp->pTexture->surface_get());
+    pContext->CopyResource(rt_ssfx_sss_ext2->pTexture->surface_get(), rt_ssfx_sss_tmp->pTexture->surface_get());
 
     // Combine ---------------------------------------------------------
 
-    u_setrt(rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);

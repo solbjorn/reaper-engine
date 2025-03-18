@@ -57,10 +57,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
     DescRT.Texture3D.WSize = TexDesc.Depth;
 
     CHK_DX(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
-
-    constexpr float color[4] = {0, 0, 0, 0};
-
-    HW.pContext->ClearRenderTargetView(m_pRenderTargetViews[rtIndex], color);
+    RCache.ClearRT(m_pRenderTargetViews[rtIndex], {});
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)
@@ -200,8 +197,5 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 
 //	Allow real-time config reload
 #ifdef DEBUG
-void dx103DFluidData::ReparseProfile(const xr_string& Profile)
-{
-    ParseProfile(Profile);
-}
+void dx103DFluidData::ReparseProfile(const xr_string& Profile) { ParseProfile(Profile); }
 #endif //	DEBUG

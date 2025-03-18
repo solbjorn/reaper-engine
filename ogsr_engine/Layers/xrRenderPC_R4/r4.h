@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../xrRender/dxRenderDeviceRender.h"
-#include "../xrRender/r__dsgraph_structure.h"
 #include "../xrRender/r__occlusion.h"
 
 #include "../xrRender/PSLibrary.h"
@@ -34,9 +33,6 @@ public:
         PHASE_NORMAL = 0, // E[0]
         PHASE_SMAP = 1, // E[1]
     };
-
-public:
-    R_dsgraph_structure dsgraph;
 
     struct _options
     {
@@ -78,7 +74,6 @@ public:
 
     // Sector detection and visibility
     sector_id_t last_sector_id{INVALID_SECTOR_ID};
-    Fvector vLastCameraPos;
     u32 uLastLTRACK;
     CDB::MODEL* rmPortals;
     CHOM HOM;
@@ -229,11 +224,9 @@ public:
     void AfterUIRender() override; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
     // Render mode
-    virtual void rmNear();
-    virtual void rmFar();
-    virtual void rmNormal();
-
-    u32 active_phase() const override { return dsgraph.phase; }
+    void rmNear(const CBackend& cmd_list) const;
+    void rmFar(const CBackend& cmd_list) const;
+    void rmNormal(const CBackend& cmd_list) const;
 
     // Constructor/destructor/loader
     CRender();

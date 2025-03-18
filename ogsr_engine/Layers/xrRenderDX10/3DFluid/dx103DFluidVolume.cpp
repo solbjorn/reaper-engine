@@ -36,7 +36,7 @@ void dx103DFluidVolume::Load(LPCSTR N, IReader* data, u32 dwFlags)
     vis.sphere.R = vis.box.getradius();
 }
 
-void dx103DFluidVolume::Render(float, bool) // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
+void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 {
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
@@ -115,19 +115,15 @@ void dx103DFluidVolume::Render(float, bool) // LOD - Level Of Detail  [0.0f - mi
         pv++;
     }
 
-    RCache.set_xform_world(m_FluidData.GetTransform());
+    cmd_list.set_xform_world(m_FluidData.GetTransform());
 
     dwCount = u32(pv - pv_start);
     RImplementation.Vertex.Unlock(dwCount, m_Geom->vb_stride);
-    RCache.set_Geometry(m_Geom);
+    cmd_list.set_Geometry(m_Geom);
 
     //	Render obstacles
-    const xr_vector<Fmatrix>& Obstacles = m_FluidData.GetObstaclesList();
-    int iObstNum = Obstacles.size();
-    for (int i = 0; i < iObstNum; ++i)
-    {
-        RCache.set_xform_world(Obstacles[i]);
-    }
+    for (auto& obst : m_FluidData.GetObstaclesList())
+        cmd_list.set_xform_world(obst);
 
     constexpr float fTimeStep = 2.0f;
 

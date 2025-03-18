@@ -190,6 +190,7 @@ void CRender::render_rain()
     }
 
     // Begin SMAP-render
+    auto& dsgraph = get_imm_context();
     VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
     dsgraph.r_pmask(true, false);
 
@@ -207,9 +208,9 @@ void CRender::render_rain()
         if (bNormal || bSpecial)
         {
             Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_xform_view(Fidentity);
-            RCache.set_xform_project(RainLight.X.D.combine);
+            dsgraph.cmd_list.set_xform_world(Fidentity);
+            dsgraph.cmd_list.set_xform_view(Fidentity);
+            dsgraph.cmd_list.set_xform_project(RainLight.X.D.combine);
             dsgraph.render_graph(0);
         }
     }
@@ -218,9 +219,9 @@ void CRender::render_rain()
     dsgraph.r_pmask(true, false);
 
     // Restore XForms
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_view(Device.mView);
-    RCache.set_xform_project(Device.mProject);
+    dsgraph.cmd_list.set_xform_world(Fidentity);
+    dsgraph.cmd_list.set_xform_view(Device.mView);
+    dsgraph.cmd_list.set_xform_project(Device.mProject);
 
     // Accumulate
     Target->phase_rain();

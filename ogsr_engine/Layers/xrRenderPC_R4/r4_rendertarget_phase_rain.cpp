@@ -3,11 +3,11 @@
 void CRenderTarget::phase_rain()
 {
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(rt_Color, NULL, NULL, HW.pBaseZB);
+        u_setrt(RCache, rt_Color, NULL, NULL, get_base_zb());
     else
-        u_setrt(rt_Color, NULL, NULL, rt_MSAADepth->pZRT);
-    // u_setrt	(rt_Normal,NULL,NULL,HW.pBaseZB);
-    RImplementation.rmNormal();
+        u_setrt(RCache, rt_Color, NULL, NULL, rt_MSAADepth);
+
+    RImplementation.rmNormal(RCache);
 }
 
 void CRenderTarget::phase_ssfx_rain()
@@ -19,9 +19,9 @@ void CRenderTarget::phase_ssfx_rain()
     float w = float(Device.dwWidth);
     float h = float(Device.dwHeight);
 
-    set_viewport_size(HW.pContext, w / 8.0f, h / 8.0f);
+    set_viewport_size(RCache, w / 8.0f, h / 8.0f);
 
-    u_setrt(rt_ssfx_rain, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_rain, 0, 0, NULL);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -42,5 +42,5 @@ void CRenderTarget::phase_ssfx_rain()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    set_viewport_size(HW.pContext, w, h);
+    set_viewport_size(RCache, w, h);
 }

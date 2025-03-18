@@ -18,6 +18,7 @@ ref_constant R_constant_table::get(LPCSTR S) const
         return nullptr;
     return *I;
 }
+
 ref_constant R_constant_table::get(const shared_str& S) const
 {
     // linear search, but only ptr-compare
@@ -33,7 +34,7 @@ ref_constant R_constant_table::get(const shared_str& S) const
 /// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
 {
-    if (0 == T)
+    if (!T)
         return;
 
     // Real merge
@@ -57,6 +58,7 @@ void R_constant_table::merge(R_constant_table* T)
             C->ds = src->ds;
             C->cs = src->cs;
             C->samp = src->samp;
+            C->handler = src->handler;
             table_tmp.push_back(C);
         }
         else
@@ -81,18 +83,24 @@ void R_constant_table::merge(R_constant_table* T)
     }
 
     //	TODO:	DX10:	Implement merge with validity check
-    m_CBTable.reserve(m_CBTable.size() + T->m_CBTable.size());
-    for (u32 i = 0; i < T->m_CBTable.size(); ++i)
-        m_CBTable.push_back(T->m_CBTable[i]);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    {
+        m_CBTable[id].reserve(m_CBTable[id].size() + T->m_CBTable[id].size());
+
+        for (u32 i = 0; i < T->m_CBTable[id].size(); ++i)
+            m_CBTable[id].push_back((T->m_CBTable[id])[i]);
+    }
 }
 
 void R_constant_table::clear()
 {
-    //.
     for (u32 it = 0; it < table.size(); it++)
-        table[it] = 0; //.g_constant_allocator.destroy(table[it]);
+        table[it] = 0;
+
     table.clear();
-    m_CBTable.clear();
+
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        m_CBTable[id].clear();
 }
 
 BOOL R_constant_table::equal(R_constant_table& C)

@@ -1,6 +1,7 @@
 #ifndef r_backend_treeH
 #define r_backend_treeH
-#pragma once
+
+class CBackend;
 
 class R_tree
 {
@@ -14,7 +15,6 @@ public:
     R_constant* c_c_bias;
     R_constant* c_c_sun;
 
-public:
     R_tree();
     void unmap();
 
@@ -35,5 +35,9 @@ public:
     void set_c_scale(float x, float y, float z, float w);
     void set_c_bias(float x, float y, float z, float w);
     void set_c_sun(float x, float y, float z, float w);
+
+private:
+    ICF CBackend& cmd_list();
 };
+
 #endif

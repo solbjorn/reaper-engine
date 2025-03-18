@@ -1,5 +1,9 @@
 #pragma once
 
+// Base targets
+#define r2_RT_base "$user$base_"
+#define r2_RT_base_depth "$user$base_depth"
+
 // r3xx code-path (MRT)
 #define r2_RT_MSAAdepth "$user$msaadepth" // MRT
 #define r2_RT_P "$user$position" // MRT
@@ -137,9 +141,16 @@ constexpr u32 LUMINANCE_size = 16;
 #define SE_MASK_ALBEDO 5
 
 // sun
-#define SE_SUN_NEAR 0
-#define SE_SUN_MIDDLE 1
-#define SE_SUN_FAR 2
+enum : u32
+{
+    SE_SUN_NEAR,
+    SE_SUN_MIDDLE,
+    SE_SUN_FAR,
+
+    SE__SUN_NUM,
+};
+static_assert(SE__SUN_NUM == R__NUM_SUN_CASCADES);
+
 #define SE_SUN_LUMINANCE 3
 //	For rain R3 rendering
 #define SE_SUN_RAIN_SMAP 5

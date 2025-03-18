@@ -101,6 +101,7 @@ void CRender::render_lights(light_Package& LP)
 
         auto& source = LP.v_shadowed;
         const u16 sid = source.back()->vis.smap_ID;
+        auto& dsgraph = get_imm_context();
 
         while (!source.empty())
         {
@@ -121,7 +122,7 @@ void CRender::render_lights(light_Package& LP)
 
             // render
             PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-            L->svis.begin();
+            L->svis[dsgraph.context_id].begin();
             dsgraph.r_pmask(true, false);
             CFrustum temp;
             temp.CreateFromMatrix(L->X.S.combine, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
@@ -135,9 +136,9 @@ void CRender::render_lights(light_Package& LP)
                 stats.s_merged++;
                 L_spot_s.push_back(L);
                 Target->phase_smap_spot(L);
-                RCache.set_xform_world(Fidentity);
-                RCache.set_xform_view(L->X.S.view);
-                RCache.set_xform_project(L->X.S.project);
+                dsgraph.cmd_list.set_xform_world(Fidentity);
+                dsgraph.cmd_list.set_xform_view(L->X.S.view);
+                dsgraph.cmd_list.set_xform_project(L->X.S.project);
                 dsgraph.render_graph(0);
                 if (Details)
                 {
@@ -145,7 +146,7 @@ void CRender::render_lights(light_Package& LP)
                     {
                         Details->fade_distance = -1; // Use light position to calc "fade"
                         Details->light_position.set(L->position);
-                        Details->Render(true);
+                        Details->Render(dsgraph.cmd_list, true);
                     }
                 }
             }
@@ -153,7 +154,7 @@ void CRender::render_lights(light_Package& LP)
             {
                 stats.s_finalclip++;
             }
-            L->svis.end();
+            L->svis[dsgraph.context_id].end();
             dsgraph.r_pmask(true, false);
         }
 
@@ -205,7 +206,7 @@ void CRender::render_lights(light_Package& LP)
 
                 // Adjust resolution
                 if (o.ssfx_volumetric)
-                    Target->set_viewport_size(HW.pContext, w / 8, h / 8);
+                    Target->set_viewport_size(RCache, w / 8, h / 8);
 
                 for (u32 it = 0; it < L_spot_s.size(); it++)
                 {
@@ -214,7 +215,7 @@ void CRender::render_lights(light_Package& LP)
 
                 // Restore resolution
                 if (o.ssfx_volumetric)
-                    Target->set_viewport_size(HW.pContext, w, h);
+                    Target->set_viewport_size(RCache, w, h);
             }
 
             L_spot_s.clear();

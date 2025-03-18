@@ -54,7 +54,7 @@ public:
 
     light* omnipart[6];
 
-    smapvis svis; // used for 6-cubemap faces
+    smapvis svis[R__NUM_CONTEXTS]; // used for 6-cubemap faces
 
     ref_shader s_spot;
     ref_shader s_point;
@@ -146,7 +146,7 @@ public:
 
     vis_data& get_homdata();
     void xform_calc();
-    void vis_prepare();
+    void vis_prepare(CBackend& cmd_list);
     void vis_update();
     void export_to(light_Package& dest);
     void set_attenuation_params(float a0, float a1, float a2, float fo);

@@ -1,6 +1,7 @@
 #ifndef dx10StateManager_included
 #define dx10StateManager_included
-#pragma once
+
+class CBackend;
 
 class dx10StateManager
 {
@@ -28,7 +29,7 @@ public:
     //	The slowest (but finer) method
     //	Can create state objects in runtime
     //	These functions accept only DX9 style constants
-    //	Don't use these directly. Only via RCache to allow it
+    //	Don't use these directly. Only via CBackend to allow it
     //	to route calls to DX9
     //	TODO: replace u32 with appropriate DX9 enums to avoid confusion
     void SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail);
@@ -89,8 +90,9 @@ private:
     bool m_bOverrideScissoring;
     BOOL m_bOverrideScissoringValue;
     UINT m_uiSampleMask;
-};
 
-extern dx10StateManager StateManager;
+private:
+    CBackend& cmd_list();
+};
 
 #endif //	dx10StateManager_included

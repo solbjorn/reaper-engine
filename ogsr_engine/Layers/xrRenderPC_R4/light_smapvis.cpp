@@ -26,7 +26,9 @@ void smapvis::invalidate()
 
 void smapvis::begin()
 {
-    RImplementation.dsgraph.clear_Counters();
+    auto& dsgraph = RImplementation.get_context(id);
+    dsgraph.clear_Counters();
+
     switch (state)
     {
     case state_counting:
@@ -38,7 +40,7 @@ void smapvis::begin()
         resetoccq();
         testQ_id = 0;
         mark();
-        RImplementation.dsgraph.set_Feedback(this, test_current);
+        dsgraph.set_Feedback(this, test_current);
         break;
     case state_usingTC:
         // just mark
@@ -46,13 +48,16 @@ void smapvis::begin()
         break;
     }
 }
+
 void smapvis::end()
 {
+    auto& dsgraph = RImplementation.get_context(id);
+
     // Gather stats
     u32 ts, td;
-    RImplementation.dsgraph.get_Counters(ts, td);
+    dsgraph.get_Counters(ts, td);
     RImplementation.stats.ic_total += ts;
-    RImplementation.dsgraph.set_Feedback(0, 0);
+    dsgraph.set_Feedback(0, 0);
 
     switch (state)
     {
@@ -71,9 +76,11 @@ void smapvis::end()
         if (testQ_V)
         {
             RImplementation.occq_begin(testQ_id);
-            RImplementation.dsgraph.marker += 1;
-            RImplementation.dsgraph.insert_static(testQ_V);
-            RImplementation.dsgraph.render_graph(0);
+
+            dsgraph.marker++;
+            dsgraph.insert_static(testQ_V);
+            dsgraph.render_graph(0);
+
             RImplementation.occq_end(testQ_id);
             testQ_frame = Device.dwFrame + 1; // get result on next frame
             pending = true;
@@ -132,13 +139,14 @@ void smapvis::resetoccq()
 void smapvis::mark()
 {
     RImplementation.stats.ic_culled += invisible.size();
-    u32 marker = RImplementation.dsgraph.marker + 1; // we are called befor marker increment
+
+    u32 marker = RImplementation.get_context(id).marker++; // we are called before marker increment
     for (u32 it = 0; it < invisible.size(); it++)
-        invisible[it]->vis.marker = marker; // this effectively disables processing
+        invisible[it]->vis.marker[id] = marker; // this effectively disables processing
 }
 
 void smapvis::rfeedback_static(dxRender_Visual* V)
 {
     testQ_V = V;
-    RImplementation.dsgraph.set_Feedback(0, 0);
+    RImplementation.get_context(id).set_Feedback(0, 0);
 }

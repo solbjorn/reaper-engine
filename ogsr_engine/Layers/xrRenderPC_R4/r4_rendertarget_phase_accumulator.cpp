@@ -7,9 +7,9 @@ void CRenderTarget::phase_accumulator()
     {
         // normal operation - setup
         if (!RImplementation.o.dx10_msaa)
-            u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+            u_setrt(RCache, rt_Accumulator, NULL, NULL, get_base_zb());
         else
-            u_setrt(rt_Accumulator, NULL, NULL, rt_MSAADepth->pZRT);
+            u_setrt(RCache, rt_Accumulator, NULL, NULL, rt_MSAADepth);
     }
     else
     {
@@ -18,21 +18,18 @@ void CRenderTarget::phase_accumulator()
 
         // clear
         if (!RImplementation.o.dx10_msaa)
-            u_setrt(rt_Accumulator, NULL, NULL, HW.pBaseZB);
+            u_setrt(RCache, rt_Accumulator, NULL, NULL, get_base_zb());
         else
-            u_setrt(rt_Accumulator, NULL, NULL, rt_MSAADepth->pZRT);
-        // dwLightMarkerID						= 5;					// start from 5, increment in 2 units
-        reset_light_marker();
+            u_setrt(RCache, rt_Accumulator, NULL, NULL, rt_MSAADepth);
+
+        reset_light_marker(RCache);
+
         //	Igor: AMD bug workaround. Should be fixed in 8.7 catalyst
         //	Need for MSAA to work correctly.
         if (RImplementation.o.dx10_msaa)
-        {
-            HW.pContext->OMSetRenderTargets(1, &(rt_Accumulator->pRT), 0);
-        }
-        //		u32		clr4clear					= color_rgba(0,0,0,0);	// 0x00
-        // CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
-        constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        HW.pContext->ClearRenderTargetView(rt_Accumulator->pRT, ColorRGBA);
+            RCache.context()->OMSetRenderTargets(1, &rt_Accumulator->pRT, 0);
+
+        RCache.ClearRT(rt_Accumulator, {});
 
         // Stencil	- draw only where stencil >= 0x1
         RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
@@ -41,7 +38,7 @@ void CRenderTarget::phase_accumulator()
     }
 
     //	Restore viewport after shadow map rendering
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 }
 
 void CRenderTarget::phase_vol_accumulator()
@@ -52,12 +49,10 @@ void CRenderTarget::phase_vol_accumulator()
         if (!m_bHasActiveVolumetric)
         {
             m_bHasActiveVolumetric = true;
-
-            constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-            HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
+            RCache.ClearRT(rt_Generic_2, {});
         }
 
-        u_setrt(rt_Generic_2, NULL, NULL, NULL);
+        u_setrt(RCache, rt_Generic_2, NULL, NULL, NULL);
     }
     else
     {
@@ -65,20 +60,18 @@ void CRenderTarget::phase_vol_accumulator()
         {
             m_bHasActiveVolumetric = true;
             if (!RImplementation.o.dx10_msaa)
-                u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+                u_setrt(RCache, rt_Generic_2, NULL, NULL, get_base_zb());
             else
-                u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
-            // u32		clr4clearVol				= color_rgba(0,0,0,0);	// 0x00
-            // CHK_DX	(HW.pDevice->Clear			( 0L, NULL, D3DCLEAR_TARGET, clr4clearVol, 1.0f, 0L));
-            constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-            HW.pContext->ClearRenderTargetView(rt_Generic_2->pRT, ColorRGBA);
+                u_setrt(RCache, rt_Generic_2, NULL, NULL, rt_MSAADepth);
+
+            RCache.ClearRT(rt_Generic_2, {});
         }
         else
         {
             if (!RImplementation.o.dx10_msaa)
-                u_setrt(rt_Generic_2, NULL, NULL, HW.pBaseZB);
+                u_setrt(RCache, rt_Generic_2, NULL, NULL, get_base_zb());
             else
-                u_setrt(rt_Generic_2, NULL, NULL, RImplementation.Target->rt_MSAADepth->pZRT);
+                u_setrt(RCache, rt_Generic_2, NULL, NULL, rt_MSAADepth);
         }
     }
 

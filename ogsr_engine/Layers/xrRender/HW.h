@@ -8,16 +8,15 @@
 #include <d3d11_4.h>
 #include <dxgi1_4.h>
 
-#include "hwcaps.h"
+#include "../../xr_3da/context.h"
 
-#ifndef _MAYA_EXPORT
+#include "hwcaps.h"
 #include "stats_manager.h"
-#endif
 
 class CHW : public pureAppActivate, public pureAppDeactivate
 {
-    //	Functions section
 public:
+    //	Functions section
     CHW();
     ~CHW();
 
@@ -26,29 +25,32 @@ public:
     void CreateDevice(HWND hw);
 
     void DestroyDevice();
-
     void Reset(HWND hw);
 
     void selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed);
-    D3DFORMAT selectDepthStencil(D3DFORMAT);
     u32 selectPresentInterval();
     u32 selectGPU();
     u32 selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt);
 
     void updateWindowProps(HWND hw);
-    BOOL support(D3DFORMAT fmt, DWORD type, DWORD usage);
-
     void DumpVideoMemoryUsage() const;
 
+    ICF ID3D11DeviceContext1* get_context(ctx_id_t context_id)
+    {
+        VERIFY(context_id < R__NUM_CONTEXTS);
+        return contexts_pool[context_id];
+    }
+
+    ICF ID3D11DeviceContext1* get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
+
     //	Variables section
-public:
-    IDXGIFactory2* m_pFactory = nullptr;
-    IDXGIAdapter1* m_pAdapter = nullptr;
-    ID3D11Device1* pDevice = nullptr; // render device
-    ID3D11DeviceContext1* pContext = nullptr;
-    IDXGISwapChain1* m_pSwapChain = nullptr;
-    ID3D11RenderTargetView* pBaseRT = nullptr; // base render target
-    ID3D11DepthStencilView* pBaseZB = nullptr; // base depth-stencil buffer
+    u32 BackBufferCount{};
+    u32 CurrentBackBuffer{};
+
+    IDXGIFactory2* m_pFactory{};
+    IDXGIAdapter1* m_pAdapter{};
+    ID3D11Device3* pDevice{}; // render device
+    IDXGISwapChain1* m_pSwapChain{};
 
     CHWCaps Caps;
     DXGI_SWAP_CHAIN_DESC1 m_ChainDesc{}; // DevPP equivalent
@@ -61,14 +63,18 @@ public:
     bool SAD4ShaderInstructions;
     bool ExtendedDoublesShaderInstructions;
 
+private:
     IDXGIAdapter3* m_pAdapter3{};
-    ID3DUserDefinedAnnotation* pAnnotation{};
+    ID3D11DeviceContext1* contexts_pool[R__NUM_CONTEXTS]{};
 
+public:
     stats_manager stats_manager{};
 
     bool doPresentTest{};
 
-    void UpdateViews();
+    void Present();
+    DeviceState GetDeviceState();
+
     DXGI_RATIONAL selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt);
 
     virtual void OnAppActivate();

@@ -36,8 +36,6 @@ void dxDebugRender::Render()
 
             Device.mFullTransform.mul(Device.mProject, Device.mView);
             RCache.set_xform_project(Device.mProject);
-            // RImplementation.rmNear();
-            // ApplyTexgen(Device.mFullTransform);
         }
 
         for (auto& [color, vert_vec] : m_line_vertices_hud)
@@ -50,11 +48,9 @@ void dxDebugRender::Render()
         }
 
         {
-            // RImplementation.rmNormal();
             Device.mProject = Pold;
             Device.mFullTransform = FTold;
             RCache.set_xform_project(Device.mProject);
-            // ApplyTexgen(Device.mFullTransform);
         }
 
         m_line_vertices_hud.clear();

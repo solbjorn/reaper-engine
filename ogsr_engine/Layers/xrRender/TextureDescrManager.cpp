@@ -14,7 +14,7 @@ public:
     float scale;
 
     cl_dt_scaler(float s) : scale(s) {};
-    virtual void setup(R_constant* C) { RCache.set_c(C, scale, scale, scale, 1 / r__dtex_range); }
+    virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.set_c(C, scale, scale, scale, 1 / r__dtex_range); }
 };
 
 void fix_texture_thm_name(LPSTR fn)

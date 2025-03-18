@@ -62,7 +62,9 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
     const u32 vl_mPosition = mPosition / Stride + 1;
 
     // Check if there is need to flush and perform lock
+    auto* pContext = HW.get_imm_context();
     BYTE* pData = 0;
+
     if ((vl_Count + vl_mPosition) >= vl_mSize)
     {
         // FLUSH-LOCK
@@ -70,7 +72,7 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
         vOffset = 0;
         mDiscardID++;
 
-        HW.pContext->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
+        pContext->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
         pData = (BYTE*)MappedSubRes.pData;
         pData += vOffset;
     }
@@ -80,7 +82,7 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
         mPosition = vl_mPosition * Stride;
         vOffset = vl_mPosition;
 
-        HW.pContext->Map(pVB, 0, D3D_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
+        pContext->Map(pVB, 0, D3D_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
         pData = (BYTE*)MappedSubRes.pData;
         pData += vOffset * Stride;
     }
@@ -100,7 +102,7 @@ void _VertexStream::Unlock(u32 Count, u32 Stride)
 
     VERIFY(pVB);
 
-    HW.pContext->Unmap(pVB, 0);
+    HW.get_imm_context()->Unmap(pVB, 0);
 }
 
 void _VertexStream::reset_begin()
@@ -181,7 +183,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
     }
 
     D3D_MAP MapMode = bFlush ? D3D_MAP_WRITE_DISCARD : D3D_MAP_WRITE_NO_OVERWRITE;
-    HW.pContext->Map(pIB, 0, MapMode, 0, &MappedSubRes);
+    HW.get_imm_context()->Map(pIB, 0, MapMode, 0, &MappedSubRes);
     pLockedData = (BYTE*)MappedSubRes.pData;
     pLockedData += mPosition * 2;
 
@@ -198,7 +200,7 @@ void _IndexStream::Unlock(u32 RealCount)
     mPosition += RealCount;
     VERIFY(pIB);
 
-    HW.pContext->Unmap(pIB, 0);
+    HW.get_imm_context()->Unmap(pIB, 0);
 }
 
 void _IndexStream::reset_begin()

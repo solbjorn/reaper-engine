@@ -25,7 +25,7 @@ void CRenderTarget::accum_point(light* L)
                                          g_pGamePersistent->Environment().CurrentEnv->far_plane);
         Device.mFullTransform.mul(Device.mProject, Device.mView);
         RCache.set_xform_project(Device.mProject);
-        RImplementation.rmNear();
+        RImplementation.rmNear(RCache);
     }
 
     // Common
@@ -73,16 +73,12 @@ void CRenderTarget::accum_point(light* L)
     // Select shader (front or back-faces), *** back, if intersect near plane
     RCache.set_ColorWriteEnable();
     RCache.set_CullMode(CULL_CW); // back
-    /*
-    if (bIntersect)	RCache.set_CullMode		(CULL_CW);		// back
-    else			RCache.set_CullMode		(CULL_CCW);		// front
-    */
 
     // 2D texgens
     Fmatrix m_Texgen;
-    u_compute_texgen_screen(m_Texgen);
+    u_compute_texgen_screen(RCache, m_Texgen);
     Fmatrix m_Texgen_J;
-    u_compute_texgen_jitter(m_Texgen_J);
+    u_compute_texgen_jitter(RCache, m_Texgen_J);
 
     // Draw volume with projective texgen
     {
@@ -136,15 +132,13 @@ void CRenderTarget::accum_point(light* L)
         }
     }
 
-    // CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
     RCache.set_Scissor(0);
 
-    // dwLightMarkerID					+=	2;	// keep lowest bit always setted up
-    increment_light_marker();
+    increment_light_marker(RCache);
 
     if (L->flags.bHudMode)
     {
-        RImplementation.rmNormal();
+        RImplementation.rmNormal(RCache);
         // Restore projection
         Device.mProject = Pold;
         Device.mFullTransform = FTold;

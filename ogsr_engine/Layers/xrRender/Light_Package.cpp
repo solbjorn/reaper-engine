@@ -26,14 +26,14 @@ void light_Package::sort()
 // готовы данные для самого свежего запроса, то для более старых они
 // будут готовы тем более и мы будет ждать ответа на запрос только
 // один раз за кадр.
-void light_Package::vis_prepare()
+void light_Package::vis_prepare(CBackend& cmd_list)
 {
     for (light* L : v_point)
-        L->vis_prepare();
+        L->vis_prepare(cmd_list);
     for (light* L : v_shadowed)
-        L->vis_prepare();
+        L->vis_prepare(cmd_list);
     for (light* L : v_spot)
-        L->vis_prepare();
+        L->vis_prepare(cmd_list);
 }
 
 // Получаем ответы от запросов к окклюдеру в обратном порядке, от

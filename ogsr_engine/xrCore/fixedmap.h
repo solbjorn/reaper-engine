@@ -144,12 +144,16 @@ public:
     ~FixedMAP() { destroy(); }
     void destroy()
     {
-        if (nodes)
-        {
-            for (TNode* cur = begin(); cur != last(); cur++)
-                cur->~TNode();
-            allocator::dealloc(nodes);
-        }
+        if (!nodes)
+            return;
+
+        for (TNode* cur = begin(); cur != last(); cur++)
+            cur->~TNode();
+        allocator::dealloc(nodes);
+
+        nodes = nullptr;
+        pool = 0;
+        limit = 0;
     }
 
 private:

@@ -15,7 +15,7 @@ void CRenderTarget::phase_dof()
 
     //////////////////////////////////////////////////////////////////////////
     // Set MSAA/NonMSAA rendertarget
-    u_setrt(rt_dof, 0, 0, HW.pBaseZB);
+    u_setrt(RCache, rt_dof, 0, 0, get_base_zb());
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -40,7 +40,7 @@ void CRenderTarget::phase_dof()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     ////////////////////////////////////////////////////////////////////////////
     ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
-    u_setrt(dest_rt, nullptr, nullptr, nullptr);
+    u_setrt(RCache, dest_rt, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -65,5 +65,5 @@ void CRenderTarget::phase_dof()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
+    RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
 };

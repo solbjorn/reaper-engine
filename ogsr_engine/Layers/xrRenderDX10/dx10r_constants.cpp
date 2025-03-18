@@ -292,7 +292,9 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
 
     if (ShaderDesc.ConstantBuffers)
     {
-        m_CBTable.reserve(ShaderDesc.ConstantBuffers);
+        for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+            m_CBTable[id].reserve(ShaderDesc.ConstantBuffers);
+
         //	Parse single constant table
         ID3DShaderReflectionConstantBuffer* pTable = 0;
 
@@ -314,8 +316,12 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
                      ? CB_BufferVertexShader : CB_BufferGeometryShader;*/
 
                 parseConstants(pTable, updatedDest);
-                ref_cbuffer tempBuffer = RImplementation.Resources->_CreateConstantBuffer(pTable);
-                m_CBTable.emplace_back(uiBufferIndex, tempBuffer);
+
+                for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+                {
+                    ref_cbuffer tempBuffer = RImplementation.Resources->_CreateConstantBuffer(id, pTable);
+                    m_CBTable[id].emplace_back(uiBufferIndex, tempBuffer);
+                }
             }
         }
     }

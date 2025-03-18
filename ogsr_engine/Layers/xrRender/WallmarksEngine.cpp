@@ -291,8 +291,6 @@ void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, 
 
 void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
 {
-    if (RImplementation.active_phase() != CRender::PHASE_NORMAL)
-        return;
     // optimization cheat: don't allow wallmarks more than 50 m from viewer/actor
     if (xf->c.distance_to_sqr(Device.vCameraPosition) > _sqr(50.f))
         return;
@@ -305,9 +303,6 @@ void CWallmarksEngine::AddSkeletonWallmark(const Fmatrix* xf, CKinematics* obj, 
 
 void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 {
-    if (RImplementation.active_phase() != CRender::PHASE_NORMAL)
-        return;
-
     lock.Enter();
     // search if similar wallmark exists
     wm_slot* slot = FindSlot(wm->Shader());
@@ -348,18 +343,21 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 
 void CWallmarksEngine::Render()
 {
+    auto& dsgraph = RImplementation.get_imm_context();
+    auto& cmd_list = dsgraph.cmd_list;
+
     //	if (marks.empty())			return;
     // Projection and xform
     float _43 = Device.mProject._43;
     Device.mProject._43 -= ps_r__WallmarkSHIFT;
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_project(Device.mProject);
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_xform_project(Device.mProject);
 
     Fmatrix mSavedView = Device.mView;
     Fvector mViewPos;
     mViewPos.mad(Device.vCameraPosition, Device.vCameraDirection, ps_r__WallmarkSHIFT_V);
     Device.mView.build_camera_dir(mViewPos, Device.vCameraDirection, Device.vCameraTop);
-    RCache.set_xform_view(Device.mView);
+    cmd_list.set_xform_view(Device.mView);
 
     Device.Statistic->RenderDUMP_WM.Begin();
     Device.Statistic->RenderDUMP_WMS_Count = 0;
@@ -469,12 +467,12 @@ void CWallmarksEngine::Render()
     lock.Leave(); // Physics may add wallmarks in parallel with rendering
 
     // Level-wmarks
-    RImplementation.dsgraph.render_wmarks();
+    dsgraph.render_wmarks();
     Device.Statistic->RenderDUMP_WM.End();
 
     // Projection
     Device.mView = mSavedView;
     Device.mProject._43 = _43;
-    RCache.set_xform_view(Device.mView);
-    RCache.set_xform_project(Device.mProject);
+    cmd_list.set_xform_view(Device.mView);
+    cmd_list.set_xform_project(Device.mProject);
 }

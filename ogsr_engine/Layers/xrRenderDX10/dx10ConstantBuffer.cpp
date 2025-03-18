@@ -8,7 +8,9 @@
 
 dx10ConstantBuffer::~dx10ConstantBuffer()
 {
-    DEV->_DeleteConstantBuffer(this);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        RImplementation.Resources->_DeleteConstantBuffer(id, this);
+
     //	Flush();
     _RELEASE(m_pBuffer);
     xr_free(m_pBufferData);
@@ -86,19 +88,23 @@ bool dx10ConstantBuffer::Similar(dx10ConstantBuffer& _in)
     return true;
 }
 
-void dx10ConstantBuffer::Flush()
+void dx10ConstantBuffer::Flush(ctx_id_t context_id)
 {
-    if (m_bChanged)
-    {
-        void* pData;
+    if (!m_bChanged)
+        return;
 
-        D3D11_MAPPED_SUBRESOURCE pSubRes;
-        CHK_DX(HW.pContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
-        pData = pSubRes.pData;
-        VERIFY(pData);
-        VERIFY(m_pBufferData);
-        xr_memcpy(pData, m_pBufferData, m_uiBufferSize);
-        HW.pContext->Unmap(m_pBuffer, 0);
-        m_bChanged = false;
-    }
+    auto* pContext = HW.get_context(context_id);
+    D3D11_MAPPED_SUBRESOURCE pSubRes;
+    void* pData;
+
+    CHK_DX(pContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
+    pData = pSubRes.pData;
+
+    VERIFY(pData);
+    VERIFY(m_pBufferData);
+
+    xr_memcpy(pData, m_pBufferData, m_uiBufferSize);
+    pContext->Unmap(m_pBuffer, 0);
+
+    m_bChanged = false;
 }

@@ -16,17 +16,17 @@ void CBackend::DestroyDebugDraw()
 
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
-    RCache.set_Geometry(geom);
-    RCache.Render(pt, vBase, pc);
+    set_Geometry(geom);
+    Render(pt, vBase, pc);
 }
 
 void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-    RCache.set_Geometry(geom);
-    RCache.Render(pt, baseV, startV, countV, startI, PC);
+    set_Geometry(geom);
+    Render(pt, baseV, startV, countV, startI, PC);
 }
 
-void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
+void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt)
 {
     u32 vBase;
     {
@@ -48,13 +48,13 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx,
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmNormal();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmNormal(*this);
     set_Stencil(FALSE);
     Render(T, vBase, 0, vcnt, iBase, pcnt);
 }
 
-void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
+void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt)
 {
     u32 vBase;
     {
@@ -76,8 +76,8 @@ void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* 
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmNear();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmNear(*this);
     set_Stencil(FALSE);
     Render(T, vBase, 0, vcnt, iBase, pcnt);
 }
@@ -96,8 +96,8 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmFar();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmFar(*this);
     set_Stencil(FALSE);
     Render(T, vBase, pcnt);
 }
@@ -124,7 +124,7 @@ void CBackend::dbg_DrawOBB(Fmatrix& T, Fvector& half_dim, u32 C)
     u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
     set_xform_world(mL2W_Transform);
 
-    RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+    set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
     dbg_Draw(D3DPT_LINELIST, aabb, 8, aabb_id, 12);
 }
@@ -140,8 +140,7 @@ void CBackend::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u3
     tri[2].color = C;
 
     set_xform_world(T);
-
-    RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+    set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
     dbg_Draw(D3DPT_TRIANGLESTRIP, tri, 1);
 }
@@ -155,15 +154,14 @@ void CBackend::dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C)
     line[1].color = C;
 
     set_xform_world(T);
-
-    RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+    set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
     dbg_Draw(D3DPT_LINELIST, line, 1);
 }
 
 void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 {
-    constexpr float gVertices[] = {
+    static constexpr float gVertices[] = {
         0.0000f,  0.0000f,  1.0000f,  0.0000f,  0.3827f,  0.9239f,  -0.1464f, 0.3536f,  0.9239f,  -0.2706f, 0.2706f,  0.9239f,  -0.3536f, 0.1464f,  0.9239f,  -0.3827f, 0.0000f,
         0.9239f,  -0.3536f, -0.1464f, 0.9239f,  -0.2706f, -0.2706f, 0.9239f,  -0.1464f, -0.3536f, 0.9239f,  0.0000f,  -0.3827f, 0.9239f,  0.1464f,  -0.3536f, 0.9239f,  0.2706f,
         -0.2706f, 0.9239f,  0.3536f,  -0.1464f, 0.9239f,  0.3827f,  0.0000f,  0.9239f,  0.3536f,  0.1464f,  0.9239f,  0.2706f,  0.2706f,  0.9239f,  0.1464f,  0.3536f,  0.9239f,
@@ -186,7 +184,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
         -0.9239f, 0.3536f,  -0.1464f, -0.9239f, 0.3827f,  0.0000f,  -0.9239f, 0.3536f,  0.1464f,  -0.9239f, 0.2706f,  0.2706f,  -0.9239f, 0.1464f,  0.3536f,  -0.9239f, 0.0000f,
         0.0000f,  -1.0000f};
 
-    u16 gFaces[224 * 3] = {
+    static constexpr u16 gFaces[224 * 3] = {
         0,   1,   2,   0,   2,   3,   0,   3,   4,   0,   4,   5,   0,   5,   6,   0,   6,   7,   0,   7,   8,   0,   8,   9,   0,   9,   10,  0,   10,  11,  0,   11,  12,  0,
         12,  13,  0,   13,  14,  0,   14,  15,  0,   15,  16,  0,   16,  1,   1,   17,  18,  1,   18,  2,   2,   18,  19,  2,   19,  3,   3,   19,  20,  3,   20,  4,   4,   20,
         21,  4,   21,  5,   5,   21,  22,  5,   22,  6,   6,   22,  23,  6,   23,  7,   7,   23,  24,  7,   24,  8,   8,   24,  25,  8,   25,  9,   9,   25,  26,  9,   26,  10,
@@ -217,10 +215,9 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
     }
 
     set_xform_world(T);
+    set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
-    RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
-
-    RCache.set_FillMode(D3DFILL_WIREFRAME);
+    set_FillMode(D3DFILL_WIREFRAME);
     dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
-    RCache.set_FillMode(D3DFILL_SOLID);
+    set_FillMode(D3DFILL_SOLID);
 }

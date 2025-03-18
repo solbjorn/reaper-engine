@@ -4,6 +4,7 @@
 #include "../Include/xrAPI/xrAPI.h"
 
 // Our headers
+#include "context.h"
 #include "engine.h"
 #include "defines.h"
 #include "device.h"

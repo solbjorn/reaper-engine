@@ -56,7 +56,7 @@ private:
     xr_vector<SGeometry*> v_geoms;
     xr_vector<R_constant_table*> v_constant_tables;
 
-    xr_vector<dx10ConstantBuffer*> v_constant_buffer;
+    xr_vector<dx10ConstantBuffer*> v_constant_buffer[R__NUM_CONTEXTS];
     xr_vector<SInputSignature*> v_input_signature;
 
     // lists
@@ -79,7 +79,7 @@ private:
     void LS_Unload();
 
     // Miscelaneous
-    static void _ParseList(sh_list& dest, LPCSTR names);
+    void _ParseList(sh_list& dest, LPCSTR names);
     IBlender* _GetBlender(LPCSTR Name);
 
     Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
@@ -99,7 +99,6 @@ public:
     void _DumpMemoryUsage();
 
     // Debug
-    void DBG_VerifyGeoms();
     void DBG_VerifyTextures();
 
     // Low level resource creation
@@ -109,13 +108,13 @@ public:
     R_constant_table* _CreateConstantTable(R_constant_table& C);
     void _DeleteConstantTable(const R_constant_table* C);
 
-    dx10ConstantBuffer* _CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
-    void _DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
+    dx10ConstantBuffer* _CreateConstantBuffer(ctx_id_t context_id, ID3DShaderReflectionConstantBuffer* pTable);
+    void _DeleteConstantBuffer(ctx_id_t context_id, const dx10ConstantBuffer* pBuffer);
 
     SInputSignature* _CreateInputSignature(ID3DBlob* pBlob);
     void _DeleteInputSignature(const SInputSignature* pSignature);
 
-    CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, bool useUAV = false);
+    CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, u32 slices_num = 1, Flags32 flags = {});
     void _DeleteRT(const CRT* RT);
 
     SGS* _CreateGS(LPCSTR Name);
@@ -149,7 +148,6 @@ public:
     STextureList* _CreateTextureList(STextureList& L);
     void _DeleteTextureList(const STextureList* L);
 
-    SMatrixList* _CreateMatrixList(SMatrixList& L);
     void _DeleteMatrixList(const SMatrixList* L);
 
     SConstantList* _CreateConstantList(SConstantList& L);
@@ -165,8 +163,8 @@ public:
     void reset_end();
 
     // Creation/Destroying
-    Shader* Create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    Shader* Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    Shader* Create(LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    Shader* Create(IBlender* B, LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
     void Delete(const Shader* S);
 
     void RegisterConstantSetup(LPCSTR name, R_constant_setup* s) { v_constant_setup.emplace_back(shared_str(name), s); }

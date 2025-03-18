@@ -179,12 +179,8 @@ void dx103DFluidManager::DestroyRTTextureAndViews(int rtIndex)
 
 void dx103DFluidManager::Reset()
 {
-    constexpr float color[4] = {0, 0, 0, 0};
-
     for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
-    {
-        HW.pContext->ClearRenderTargetView(pRenderTargetViews[rtIndex], color);
-    }
+        RCache.ClearRT(pRenderTargetViews[rtIndex], {});
 }
 
 void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
@@ -206,32 +202,12 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     rtViewport.Width = (float)m_iTextureWidth;
     rtViewport.Height = (float)m_iTextureHeight;
 
-    HW.pContext->RSSetViewports(1, &rtViewport);
-
+    RCache.SetViewport(rtViewport);
     RCache.set_ZB(0);
 
     UpdateObstacles(FluidData, timestep);
 
     // Set vorticity confinment and decay parameters
-    /*if (m_bUseBFECC)
-    {
-        if (bSimulateFire)
-        {
-            m_fConfinementScale = 0.03f;
-            m_fDecay = 0.9995f;
-        }
-        else
-        {
-            m_fConfinementScale = 0.06f;
-            m_fDecay = 0.994f;
-        }
-    }
-    else
-    {
-        m_fConfinementScale = 0.12f;
-        m_fDecay = 0.9995f;
-    }*/
-
     m_fConfinementScale = VolumeSettings.m_fConfinementScale;
     m_fDecay = VolumeSettings.m_fDecay;
 
@@ -257,11 +233,11 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(pTarget->rt_Generic_0, 0, 0, HW.pBaseZB); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->get_base_zb()); // LDR RT
     else
-        pTarget->u_setrt(pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth->pZRT); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth); // LDR RT
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 }
 
 void dx103DFluidManager::AttachFluidData(dx103DFluidData& FluidData)
@@ -305,10 +281,10 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 {
     PIX_EVENT(AdvectColorBFECC);
 
-    constexpr float color[4] = {0, 0, 0, 0};
+    constexpr Fcolor color = {0, 0, 0, 0};
 
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
 
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
     if (bTeperature)
@@ -338,7 +314,7 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
     u32 dwTextureStage = _T->find_texture_stage(strColorName);
     //	This will be overritten by the next technique.
     //	Otherwise we had to reset current texture list manually.
-    pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(dwTextureStage);
+    pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(RCache, dwTextureStage);
 
     RCache.set_c(strTimeStep, timestep);
     RCache.set_c(strModulate, 1.0f);
@@ -406,8 +382,7 @@ void dx103DFluidManager::ApplyVorticityConfinement(float timestep)
     PIX_EVENT(ApplyVorticityConfinement);
 
     // Compute vorticity
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], {});
 
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
@@ -439,8 +414,7 @@ void dx103DFluidManager::ComputeVelocityDivergence(float timestep)
 {
     PIX_EVENT(ComputeVelocityDivergence);
 
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], {});
 
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
     RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
@@ -452,8 +426,7 @@ void dx103DFluidManager::ComputePressure(float timestep)
 {
     PIX_EVENT(ComputePressure);
 
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], {});
 
     RCache.set_RT(0);
     ref_selement CurrentTechnique = m_SimulationTechnique[SS_Jacobi];
@@ -467,11 +440,11 @@ void dx103DFluidManager::ComputePressure(float timestep)
     for (int iteration = 0; iteration < m_nIterations / 2.0; iteration++)
     {
         RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
-        pRTTextures[RENDER_TARGET_PRESSURE]->bind(dwTextureStage);
+        pRTTextures[RENDER_TARGET_PRESSURE]->bind(RCache, dwTextureStage);
         m_pGrid->DrawSlices();
 
         RCache.set_RT(pRenderTargetViews[RENDER_TARGET_PRESSURE]);
-        pRTTextures[RENDER_TARGET_TEMPSCALAR]->bind(dwTextureStage);
+        pRTTextures[RENDER_TARGET_TEMPSCALAR]->bind(RCache, dwTextureStage);
         m_pGrid->DrawSlices();
     }
 }
@@ -507,20 +480,21 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(pTarget->rt_Generic_0, 0, 0, HW.pBaseZB); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->get_base_zb()); // LDR RT
     else
-        pTarget->u_setrt(pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth->pZRT); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth); // LDR RT
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 }
 
 void dx103DFluidManager::UpdateObstacles(const dx103DFluidData& FluidData, float timestep)
 {
     PIX_EVENT(Fluid_update_obstacles);
+
     //	Reset data
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_OBSTACLES], color);
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], color);
+    constexpr Fcolor color = {0, 0, 0, 0};
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], color);
 
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
     RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);

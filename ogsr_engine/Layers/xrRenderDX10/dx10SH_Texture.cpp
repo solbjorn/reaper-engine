@@ -2,12 +2,8 @@
 
 #include "../xrRender/ResourceManager.h"
 
-#include "../../xr_3da/render.h"
-
 #include "../../xr_3da/tntQAVI.h"
 #include "../../xr_3da/xrTheora_Surface.h"
-
-#include "../xrRender/dxRenderDeviceRender.h"
 
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
@@ -15,7 +11,7 @@
 #define PRIORITY_NORMAL 8
 #define PRIORITY_LOW 4
 
-void resptrcode_texture::create(LPCSTR _name) { _set(DEV->_CreateTexture(_name)); }
+void resptrcode_texture::create(LPCSTR _name) { _set(RImplementation.Resources->_CreateTexture(_name)); }
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -39,7 +35,7 @@ CTexture::~CTexture()
     Unload();
 
     // release external reference
-    DEV->_DeleteTexture(this);
+    RImplementation.Resources->_DeleteTexture(this);
 }
 
 void CTexture::surface_set(ID3DBaseTexture* surf)
@@ -50,7 +46,6 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
     if (surf)
         surf->AddRef();
     _RELEASE(pSurface);
-    _RELEASE(m_pSRView);
 
     pSurface = surf;
 
@@ -79,37 +74,65 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
             }
             else
             {
+                const bool isArray = desc.ArraySize > 1;
                 if (desc.SampleDesc.Count <= 1)
                 {
-                    ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-                    ViewDesc.Texture2D.MostDetailedMip = 0;
-                    ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+                    ViewDesc.ViewDimension = isArray ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
+                    if (isArray)
+                    {
+                        ViewDesc.Texture2DArray.MipLevels = desc.MipLevels;
+                        ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
+                    }
+                    else
+                    {
+                        ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+                    }
                 }
                 else
                 {
-                    ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
-                    ViewDesc.Texture2D.MostDetailedMip = 0;
-                    ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+                    ViewDesc.ViewDimension = isArray ? D3D_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D_SRV_DIMENSION_TEXTURE2DMS;
+                    if (isArray)
+                        ViewDesc.Texture2DMSArray.ArraySize = desc.ArraySize;
                 }
             }
 
-            ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
-
             switch (desc.Format)
             {
+            case DXGI_FORMAT_R32G8X24_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS; break;
             case DXGI_FORMAT_R24G8_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
             case DXGI_FORMAT_R32_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
+            case DXGI_FORMAT_R16_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R16_FLOAT; break;
             }
 
-            // this would be supported by DX10.1 but is not needed for stalker
-            // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
-            if ((desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS))
-                CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, &ViewDesc, &m_pSRView));
-            else
-                m_pSRView = 0;
+            _RELEASE(srv_all);
+            CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, &ViewDesc, &srv_all));
+
+            srv_per_slice.resize(desc.ArraySize);
+            for (u32 id = 0; id < desc.ArraySize; ++id)
+            {
+                _RELEASE(srv_per_slice[id]);
+
+                if (desc.SampleDesc.Count <= 1)
+                {
+                    ViewDesc.Texture2DArray.ArraySize = 1;
+                    ViewDesc.Texture2DArray.FirstArraySlice = id;
+                }
+                else
+                {
+                    ViewDesc.Texture2DMSArray.ArraySize = 1;
+                    ViewDesc.Texture2DMSArray.FirstArraySlice = id;
+                }
+
+                CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, &ViewDesc, &srv_per_slice[id]));
+            }
+
+            set_slice(-1);
         }
         else
+        {
+            _RELEASE(m_pSRView);
             CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, NULL, &m_pSRView));
+        }
     }
 }
 
@@ -127,46 +150,46 @@ void CTexture::PostLoad()
         bind = CallMe::fromMethod<&CTexture::apply_normal>(this);
 }
 
-void CTexture::apply_load(u32 dwStage)
+void CTexture::apply_load(CBackend& cmd_list, u32 dwStage)
 {
     if (!flags.bLoaded)
         Load();
     else
         PostLoad();
-    bind(dwStage);
+    bind(cmd_list, dwStage);
 };
 
-void CTexture::Apply(u32 dwStage) const
+void CTexture::Apply(CBackend& cmd_list, u32 dwStage) const
 {
     if (dwStage < rstVertex) //	Pixel shader stage resources
     {
-        SRVSManager.SetPSResource(dwStage, m_pSRView);
+        cmd_list.SRVSManager.SetPSResource(dwStage, m_pSRView);
     }
     else if (dwStage < rstGeometry) //	Vertex shader stage resources
     {
-        SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView);
+        cmd_list.SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView);
     }
     else if (dwStage < rstHull) //	Geometry shader stage resources
     {
-        SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView);
+        cmd_list.SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView);
     }
     else if (dwStage < rstDomain) //	Geometry shader stage resources
     {
-        SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView);
+        cmd_list.SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView);
     }
     else if (dwStage < rstCompute) //	Geometry shader stage resources
     {
-        SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView);
+        cmd_list.SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView);
     }
     else if (dwStage < rstInvalid) //	Geometry shader stage resources
     {
-        SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView);
+        cmd_list.SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView);
     }
     else
         VERIFY("Invalid stage");
 }
 
-void CTexture::apply_theora(u32 dwStage)
+void CTexture::apply_theora(CBackend& cmd_list, u32 dwStage)
 {
     if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Device.dwTimeContinual))
     {
@@ -176,23 +199,22 @@ void CTexture::apply_theora(u32 dwStage)
         ID3DTexture2D* T2D = (ID3DTexture2D*)pSurface;
         D3D_MAPPED_TEXTURE2D mapData;
 
+        auto* pContext = cmd_list.context();
         u32 _w = pTheora->Width(false);
 
-        // R_CHK(T2D->LockRect(0,&R,&rect,0));
-
-        R_CHK(HW.pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
+        R_CHK(pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
         R_ASSERT(mapData.RowPitch == int(_w * 4));
         int _pos = 0;
         pTheora->DecompressFrame((u32*)mapData.pData, _w - pTheora->Width(true), _pos);
         VERIFY(u32(_pos) == pTheora->Height(true) * _w);
         // R_CHK				(T2D->UnlockRect(0));
-        HW.pContext->Unmap(T2D, 0);
+        pContext->Unmap(T2D, 0);
     }
-    // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
-    Apply(dwStage);
+
+    Apply(cmd_list, dwStage);
 }
 
-void CTexture::apply_avi(u32 dwStage) const
+void CTexture::apply_avi(CBackend& cmd_list, u32 dwStage) const
 {
     if (pAVI->NeedUpdate())
     {
@@ -202,21 +224,21 @@ void CTexture::apply_avi(u32 dwStage) const
         ID3DTexture2D* T2D = (ID3DTexture2D*)pSurface;
         D3D_MAPPED_TEXTURE2D mapData;
 
-        // R_CHK	(T2D->LockRect(0,&R,NULL,0));
+        auto* pContext = cmd_list.context();
 
-        R_CHK(HW.pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
+        R_CHK(pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
         R_ASSERT(mapData.RowPitch == int(pAVI->m_dwWidth * 4));
         BYTE* ptr;
         pAVI->GetFrame(&ptr);
         CopyMemory(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
         // R_CHK	(T2D->UnlockRect(0));
-        HW.pContext->Unmap(T2D, 0);
+        pContext->Unmap(T2D, 0);
     }
-    // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
-    Apply(dwStage);
+
+    Apply(cmd_list, dwStage);
 }
 
-void CTexture::apply_seq(u32 dwStage)
+void CTexture::apply_seq(CBackend& cmd_list, u32 dwStage)
 {
     // SEQ
     u32 frame = Device.dwTimeContinual / seqMSPF; // Device.dwTimeGlobal
@@ -235,22 +257,24 @@ void CTexture::apply_seq(u32 dwStage)
         pSurface = seqDATA[frame_id];
         m_pSRView = m_seqSRView[frame_id];
     }
-    // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
-    Apply(dwStage);
+
+    Apply(cmd_list, dwStage);
 }
 
-void CTexture::apply_normal(u32 dwStage) const
+void CTexture::apply_normal(CBackend& cmd_list, u32 dwStage) const { Apply(cmd_list, dwStage); };
+
+void CTexture::set_slice(int slice)
 {
-    // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
-    Apply(dwStage);
-};
+    m_pSRView = (slice < 0) ? srv_all : srv_per_slice[slice];
+    curr_slice = slice;
+}
 
 void CTexture::Preload() { Preload(cName.c_str()); }
 
 void CTexture::Preload(const char* Name)
 {
-    m_bumpmap = DEV->m_textures_description.GetBumpName(Name);
-    m_material = DEV->m_textures_description.GetMaterial(Name);
+    m_bumpmap = RImplementation.Resources->m_textures_description.GetBumpName(Name);
+    m_material = RImplementation.Resources->m_textures_description.GetMaterial(Name);
 }
 
 void CTexture::Load() { Load(cName.c_str()); }
@@ -393,15 +417,14 @@ void CTexture::Load(const char* Name)
             {
                 // Load another texture
                 u32 mem = 0;
-                pSurface = ::RImplementation.texture_load(buffer, mem);
+                pSurface = RImplementation.texture_load(buffer, mem);
 
                 if (pSurface)
                 {
                     seqDATA.push_back(pSurface);
-
                     m_seqSRView.push_back(0);
-                    HW.pDevice->CreateShaderResourceView(pSurface, nullptr, &m_seqSRView.back());
 
+                    HW.pDevice->CreateShaderResourceView(pSurface, nullptr, &m_seqSRView.back());
                     flags.memUsage += mem;
                 }
             }
@@ -432,7 +455,7 @@ void CTexture::Load(const char* Name)
     {
         // Normal texture
         u32 mem = 0;
-        pSurface = ::RImplementation.texture_load(Name, mem);
+        pSurface = RImplementation.texture_load(Name, mem);
 
         // Calc memory usage and preload into vid-mem
         if (pSurface)
@@ -472,6 +495,7 @@ void CTexture::Unload()
 #ifdef DEBUG
     string_path msg_buff;
     xr_sprintf(msg_buff, sizeof(msg_buff), "* Unloading texture [%s] pSurface RefCount=", cName.c_str());
+    _SHOW_REF(msg_buff, pSurface);
 #endif // DEBUG
 
     flags.bLoaded = false;
@@ -487,14 +511,13 @@ void CTexture::Unload()
         m_seqSRView.clear();
 
         pSurface = 0;
-        m_pSRView = 0;
     }
 
-#ifdef DEBUG
-    _SHOW_REF(msg_buff, pSurface);
-#endif // DEBUG
     _RELEASE(pSurface);
-    _RELEASE(m_pSRView);
+    _RELEASE(srv_all);
+
+    for (auto& srv : srv_per_slice)
+        _RELEASE(srv);
 
     xr_delete(pAVI);
     xr_delete(pTheora);

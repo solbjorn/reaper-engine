@@ -62,7 +62,7 @@ public:
     inline void setRZFlag(const bool f) { renderFlag = f; }
     /************************* End add *************************************/
 
-    virtual void Render(float, bool) {}; // LOD - Level Of Detail  [0..1], Ignored
+    virtual void Render(CBackend&, float, bool) {}; // LOD - Level Of Detail  [0..1], Ignored
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Release(); // Shared memory release
     virtual void Copy(dxRender_Visual* from);

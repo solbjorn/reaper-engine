@@ -227,8 +227,8 @@ CGameFont::~CGameFont()
     RenderFactory->DestroyFontRender(pFontRender);
 }
 
-#define DI2PX(x) float(iFloor((x + 1) * float(::Render->getTarget()->get_width()) * 0.5f))
-#define DI2PY(y) float(iFloor((y + 1) * float(::Render->getTarget()->get_height()) * 0.5f))
+static inline float DI2PX(float x) { return float(iFloor((x + 1) * float(Device.dwWidth) * 0.5f)); }
+static inline float DI2PY(float y) { return float(iFloor((y + 1) * float(Device.dwHeight) * 0.5f)); }
 
 void CGameFont::OutSet(float x, float y)
 {

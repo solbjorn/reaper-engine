@@ -151,6 +151,7 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
         "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject32.exe" -i -f "$(OutDir)\xrEngine.exe"
+        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -227,6 +228,7 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
         "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject32.exe" -i -f "$(OutDir)\xrEngine.exe"
+        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -296,6 +298,7 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
         "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
+        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -369,6 +372,7 @@
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
         copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
         "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject.exe" -i -f "$(OutDir)\xrEngine.exe"
+        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -378,6 +382,7 @@
   <ItemGroup>
     <ClInclude Include="IPhysicsDefinitions.h" />
     <ClInclude Include="bone.h" />
+    <ClInclude Include="context.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="DiscordRPC.hpp" />
     <ClInclude Include="edit_actions.h" />

@@ -32,13 +32,16 @@ light::light(void) : ISpatial(g_SpatialSpace)
     sss_refresh = 0;
 
     ZeroMemory(omnipart, sizeof(omnipart));
-    s_spot = NULL;
-    s_point = NULL;
+    s_spot = nullptr;
+    s_point = nullptr;
     vis.frame2test = 0; // xffffffff;
     vis.query_id = 0;
     vis.query_order = 0;
     vis.visible = true;
     vis.pending = false;
+
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        svis[id].id = id;
 }
 
 light::~light()
@@ -53,17 +56,20 @@ light::~light()
     {
         if (this == p_light)
         {
-            p_light->svis.resetoccq();
+            for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+                p_light->svis[id].resetoccq();
+
             p_light = nullptr;
         }
     }
+
     if (vis.pending)
         RImplementation.occq_free(vis.query_id);
 }
 
 void light::set_texture(LPCSTR name)
 {
-    if ((0 == name) || (0 == name[0]))
+    if ((nullptr == name) || (0 == name[0]))
     {
         // default shaders
         s_spot.destroy();
@@ -196,7 +202,8 @@ void light::spatial_move()
     // update spatial DB
     ISpatial::spatial_move();
 
-    svis.invalidate();
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        svis[id].invalidate();
 }
 
 vis_data& light::get_homdata()

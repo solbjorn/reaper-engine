@@ -416,7 +416,7 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
         RCache.xforms.set_W(m_Texgen);
         RCache.xforms.set_V(Device.mView);
         RCache.xforms.set_P(Device.mProject);
-        u_compute_texgen_screen(m_Texgen);
+        u_compute_texgen_screen(RCache, m_Texgen);
 
         // Make jitter texture
         Fvector2 j0, j1;
@@ -553,7 +553,7 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
 void CRenderTarget::accum_direct_blend()
 {
     PIX_EVENT(accum_direct_blend);
-    increment_light_marker();
+    increment_light_marker(RCache);
 }
 
 void CRenderTarget::accum_direct_volumetric(u32 sub_phase, const u32 Offset, const Fmatrix& mShadow)
@@ -604,7 +604,7 @@ void CRenderTarget::accum_direct_volumetric(u32 sub_phase, const u32 Offset, con
         RCache.xforms.set_W(m_Texgen);
         RCache.xforms.set_V(Device.mView);
         RCache.xforms.set_P(Device.mProject);
-        u_compute_texgen_screen(m_Texgen);
+        u_compute_texgen_screen(RCache, m_Texgen);
 
         RCache.set_c("m_texgen", m_Texgen);
 

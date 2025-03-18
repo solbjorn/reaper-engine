@@ -10,10 +10,10 @@ constexpr size_t GAMESAVE_SIZE{768};
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
 {
     Microsoft::WRL::ComPtr<ID3DResource> pSrcTexture;
-    HW.pBaseRT->GetResource(pSrcTexture.GetAddressOf());
+    Target->get_base_rt()->GetResource(pSrcTexture.GetAddressOf());
 
     ScratchImage SImage{};
-    CHK_DX(CaptureTexture(HW.pDevice, HW.pContext, pSrcTexture.Get(), SImage));
+    CHK_DX(CaptureTexture(HW.pDevice, HW.get_imm_context(), pSrcTexture.Get(), SImage));
     Blob SavedBlob{};
 
     switch (mode)

@@ -19,7 +19,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-void CRenderTarget::set_viewport_size(ID3DDeviceContext* dev, float w, float h)
+void CRenderTarget::set_viewport_size(const CBackend& cmd_list, float w, float h) const
 {
     const D3D11_VIEWPORT vp = {
         .TopLeftX = 0,
@@ -30,16 +30,16 @@ void CRenderTarget::set_viewport_size(ID3DDeviceContext* dev, float w, float h)
         .MaxDepth = 1.f,
     };
 
-    dev->RSSetViewports(1, &vp);
+    cmd_list.SetViewport(vp);
 }
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
     VERIFY(_1 || zb);
     if (_1)
     {
-        dwWidth = _1->dwWidth;
-        dwHeight = _1->dwHeight;
+        dwWidth[cmd_list.context_id] = _1->dwWidth;
+        dwHeight[cmd_list.context_id] = _1->dwHeight;
     }
     else
     {
@@ -59,34 +59,34 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 
         pTex->GetDesc(&TexDesc);
 
-        dwWidth = TexDesc.Width;
-        dwHeight = TexDesc.Height;
+        dwWidth[cmd_list.context_id] = TexDesc.Width;
+        dwHeight[cmd_list.context_id] = TexDesc.Height;
         _RELEASE(pRes);
     }
 
     if (_1)
-        RCache.set_RT(_1->pRT, 0);
+        cmd_list.set_RT(_1->pRT, 0);
     else
-        RCache.set_RT(NULL, 0);
+        cmd_list.set_RT(NULL, 0);
     if (_2)
-        RCache.set_RT(_2->pRT, 1);
+        cmd_list.set_RT(_2->pRT, 1);
     else
-        RCache.set_RT(NULL, 1);
+        cmd_list.set_RT(NULL, 1);
     if (_3)
-        RCache.set_RT(_3->pRT, 2);
+        cmd_list.set_RT(_3->pRT, 2);
     else
-        RCache.set_RT(NULL, 2);
+        cmd_list.set_RT(NULL, 2);
 
-    RCache.set_ZB(zb);
+    cmd_list.set_ZB(zb);
 }
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
 {
     VERIFY(_1 || zb);
     if (_1)
     {
-        dwWidth = _1->dwWidth;
-        dwHeight = _1->dwHeight;
+        dwWidth[cmd_list.context_id] = _1->dwWidth;
+        dwHeight[cmd_list.context_id] = _1->dwHeight;
     }
     else
     {
@@ -105,63 +105,53 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencil
 
         pTex->GetDesc(&TexDesc);
 
-        dwWidth = TexDesc.Width;
-        dwHeight = TexDesc.Height;
+        dwWidth[cmd_list.context_id] = TexDesc.Width;
+        dwHeight[cmd_list.context_id] = TexDesc.Height;
         _RELEASE(pRes);
     }
 
     if (_1)
-        RCache.set_RT(_1->pRT, 0);
+        cmd_list.set_RT(_1->pRT, 0);
     else
-        RCache.set_RT(NULL, 0);
+        cmd_list.set_RT(NULL, 0);
     if (_2)
-        RCache.set_RT(_2->pRT, 1);
+        cmd_list.set_RT(_2->pRT, 1);
     else
-        RCache.set_RT(NULL, 1);
+        cmd_list.set_RT(NULL, 1);
 
-    RCache.set_ZB(zb);
+    cmd_list.set_ZB(zb);
 }
 
-void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
 {
-    // VERIFY									(_1);
-    dwWidth = W;
-    dwHeight = H;
-    // VERIFY									(_1);
-    RCache.set_RT(_1, 0);
-    RCache.set_RT(_2, 1);
-    RCache.set_RT(_3, 2);
-    RCache.set_ZB(zb);
-    //	RImplementation.rmNormal				();
+    dwWidth[cmd_list.context_id] = W;
+    dwHeight[cmd_list.context_id] = H;
+
+    cmd_list.set_RT(_1, 0);
+    cmd_list.set_RT(_2, 1);
+    cmd_list.set_RT(_3, 2);
+
+    cmd_list.set_ZB(zb);
 }
 
 // 2D texgen (texture adjustment matrix)
-void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
+void CRenderTarget::u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& m_Texgen)
 {
-    // float	_w						= float(Device.dwWidth);
-    // float	_h						= float(Device.dwHeight);
-    // float	o_w						= (.5f / _w);
-    // float	o_h						= (.5f / _h);
-    static constexpr Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                                              //	Removing half pixel offset
-                                              // 0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-                                              0.5f, 0.5f, 0.0f, 1.0f};
-    m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
+    static constexpr Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+    m_Texgen.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
 }
 
 // 2D texgen for jitter (texture adjustment matrix)
-void CRenderTarget::u_compute_texgen_jitter(Fmatrix& m_Texgen_J)
+void CRenderTarget::u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& m_Texgen_J)
 {
     // place into	0..1 space
     Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
-    m_Texgen_J.mul(m_TexelAdjust, RCache.xforms.m_wvp);
+    m_Texgen_J.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
 
     // rescale - tile it
     float scale_X = float(Device.dwWidth) / float(TEX_jitter);
     float scale_Y = float(Device.dwHeight) / float(TEX_jitter);
-    // float	offset			= (.5f / float(TEX_jitter));
     m_TexelAdjust.scale(scale_X, scale_Y, 1.f);
-    // m_TexelAdjust.translate_over(offset,	offset,	0	);
     m_Texgen_J.mulA_44(m_TexelAdjust);
 }
 
@@ -192,10 +182,7 @@ static void generate_jitter(u32* dest, u32 elem_count)
 
 CRenderTarget::CRenderTarget()
 {
-    u32 SampleCount = 1;
-
-    if (RImplementation.o.dx10_msaa)
-        SampleCount = RImplementation.o.dx10_msaa_samples;
+    const u32 SampleCount = RImplementation.o.dx10_msaa ? RImplementation.o.dx10_msaa_samples : 1;
 
 #ifdef DEBUG
     Msg("MSAA samples = %d", SampleCount);
@@ -215,7 +202,6 @@ CRenderTarget::CRenderTarget()
 
     param_color_base = color_rgba(127, 127, 127, 0);
     param_color_gray = color_rgba(85, 85, 85, 0);
-    // param_color_add		= color_rgba(0,0,0,			0);
     param_color_add.set(0.0f, 0.0f, 0.0f);
 
     dwAccumulatorClearMark = 0;
@@ -285,6 +271,16 @@ CRenderTarget::CRenderTarget()
     //	NORMAL
     {
         u32 w = Device.dwWidth, h = Device.dwHeight;
+
+        rt_Base.resize(HW.BackBufferCount);
+        for (u32 i = 0; i < HW.BackBufferCount; i++)
+        {
+            string32 temp;
+            xr_sprintf(temp, "%s%u", r2_RT_base, i);
+            rt_Base[i].create(temp, w, h, HW.Caps.fTarget, 1, {CRT::CreateBase});
+        }
+        rt_Base_Depth.create(r2_RT_base_depth, w, h, HW.Caps.fDepth, 1, {CRT::CreateBase});
+
         rt_Position.create(r2_RT_P, w, h, D3DFMT_A16B16G16R16F, SampleCount);
 
         if (RImplementation.o.dx10_msaa)
@@ -511,8 +507,8 @@ CRenderTarget::CRenderTarget()
     {
         constexpr D3DFORMAT fmt = D3DFMT_A8R8G8B8; //;		// D3DFMT_X8R8G8B8
         u32 w = BLOOM_size_X, h = BLOOM_size_Y;
-        u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
-        u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) | D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) |
+        constexpr u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
+        constexpr u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) | D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) |
             D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
         rt_Bloom_1.create(r2_RT_bloom1, w, h, fmt);
         rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
@@ -543,12 +539,12 @@ CRenderTarget::CRenderTarget()
             string256 name;
             xr_sprintf(name, "%s_%d", r2_RT_luminance_pool, it);
             rt_LUM_pool[it].create(name, 1, 1, D3DFMT_R32F);
-            // u_setrt						(rt_LUM_pool[it],	0,	0,	0			);
-            // CHK_DX						(HW.pDevice->Clear( 0L, NULL, D3DCLEAR_TARGET,	0x7f7f7f7f,	1.0f, 0L));
-            FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
-            HW.pContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
+
+            Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
+            RCache.ClearRT(rt_LUM_pool[it], ColorRGBA);
         }
-        u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+
+        u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), NULL, NULL, get_base_zb());
     }
 
     // COMBINE
@@ -663,8 +659,8 @@ CRenderTarget::CRenderTarget()
     g_menu.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 
     //
-    dwWidth = Device.dwWidth;
-    dwHeight = Device.dwHeight;
+    dwWidth[RCache.context_id] = Device.dwWidth;
+    dwHeight[RCache.context_id] = Device.dwHeight;
 }
 
 CRenderTarget::~CRenderTarget()
@@ -758,43 +754,43 @@ CRenderTarget::~CRenderTarget()
     xr_delete(b_occq);
 }
 
-void CRenderTarget::reset_light_marker(bool bResetStencil)
+void CRenderTarget::reset_light_marker(CBackend& cmd_list, bool bResetStencil)
 {
     dwLightMarkerID = 5;
-    if (bResetStencil)
-    {
-        u32 Offset;
-        float _w = float(Device.dwWidth);
-        float _h = float(Device.dwHeight);
-        constexpr u32 C = color_rgba(255, 255, 255, 255);
-        constexpr float eps = 0;
-        constexpr float _dw = 0.5f;
-        constexpr float _dh = 0.5f;
-        FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-        pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
-        pv++;
-        pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);
-        pv++;
-        pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);
-        pv++;
-        pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
-        pv++;
-        RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
-        RCache.set_Element(s_occq->E[2]);
-        RCache.set_Geometry(g_combine);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-    }
+
+    if (!bResetStencil)
+        return;
+
+    u32 Offset;
+    float _w = float(Device.dwWidth);
+    float _h = float(Device.dwHeight);
+    constexpr u32 C = color_rgba(255, 255, 255, 255);
+    constexpr float eps = 0;
+    constexpr float _dw = 0.5f;
+    constexpr float _dh = 0.5f;
+    FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
+    pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);
+    pv++;
+    pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);
+    pv++;
+    pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);
+    pv++;
+    pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
+    pv++;
+    RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
+    cmd_list.set_Element(s_occq->E[2]);
+    cmd_list.set_Geometry(g_combine);
+    cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }
 
-void CRenderTarget::increment_light_marker()
+void CRenderTarget::increment_light_marker(CBackend& cmd_list)
 {
     dwLightMarkerID += 2;
 
-    // if (dwLightMarkerID>10)
     const u32 iMaxMarkerValue = RImplementation.o.dx10_msaa ? 127 : 255;
 
     if (dwLightMarkerID > iMaxMarkerValue)
-        reset_light_marker(true);
+        reset_light_marker(cmd_list, true);
 }
 
 bool CRenderTarget::need_to_render_sunshafts()

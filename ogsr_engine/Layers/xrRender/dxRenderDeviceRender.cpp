@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "D3DUtils.h"
 #include "dxRenderDeviceRender.h"
 #include "dxUIRender.h"
 #include "ResourceManager.h"
@@ -32,7 +34,9 @@ void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
     m_WireShader.destroy();
 
     Resources->OnDeviceDestroy(bKeepTextures);
-    RCache.OnDeviceDestroy();
+
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        contexts_pool[id].cmd_list.OnDeviceDestroy();
 
     // Quad
     HW.stats_manager.decrement_stats_ib(QuadIB);
@@ -75,10 +79,8 @@ void dxRenderDeviceRender::SetupStates()
 {
     HW.Caps.Update();
 
-    //	TODO: DX10: Implement Resetting of render states into default mode
-    // VERIFY(!"dxRenderDeviceRender::SetupStates not implemented.");
-    SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
-    SSManager.SetMipLODBias(ps_r__tf_Mipbias);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        contexts_pool[id].cmd_list.SetupStates();
 }
 
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
@@ -91,7 +93,12 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
     CreateQuadIB();
 
-    RCache.OnDeviceCreate();
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    {
+        contexts_pool[id].cmd_list.context_id = id;
+        contexts_pool[id].cmd_list.OnDeviceCreate();
+    }
+
     m_Gamma.Update();
     Resources->OnDeviceCreate();
     ::Render->create();
@@ -187,30 +194,7 @@ void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32
 
 void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { Resources->_DumpMemoryUsage(); }
 
-dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
-{
-    if (HW.doPresentTest)
-    {
-        switch (HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
-        {
-        case S_OK: HW.doPresentTest = false; break;
-
-        case DXGI_STATUS_OCCLUDED:
-            // Do not render until we become visible again
-            return DeviceState::dsLost;
-
-        case DXGI_ERROR_DEVICE_RESET: return DeviceState::dsNeedReset;
-
-        case DXGI_ERROR_DEVICE_REMOVED:
-            FATAL(
-                "Graphics driver was updated or GPU was physically removed from computer.\n"
-                "Please, restart the game.");
-            break;
-        }
-    }
-
-    return DeviceState::dsOK;
-}
+DeviceState dxRenderDeviceRender::GetDeviceState() { return HW.GetDeviceState(); }
 
 BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
 
@@ -218,9 +202,15 @@ u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
 
 void dxRenderDeviceRender::Begin()
 {
-    RCache.OnFrameBegin();
-    RCache.set_CullMode(CULL_CW);
-    RCache.set_CullMode(CULL_CCW);
+    get_imm_context().context_id = R__IMM_CTX_ID;
+    contexts_used.set(R__IMM_CTX_ID);
+
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    {
+        contexts_pool[id].cmd_list.OnFrameBegin();
+        contexts_pool[id].cmd_list.set_CullMode(CULL_CW);
+        contexts_pool[id].cmd_list.set_CullMode(CULL_CCW);
+    }
 
     Vertex.Flush();
     Index.Flush();
@@ -231,13 +221,10 @@ void dxRenderDeviceRender::Begin()
 
 void dxRenderDeviceRender::Clear()
 {
-    HW.pContext->ClearDepthStencilView(RCache.get_ZB(), D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+    RCache.ClearZB(RCache.get_ZB(), 1.0f, 0);
 
     if (psDeviceFlags.test(rsClearBB))
-    {
-        constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
-    }
+        RCache.ClearRT(RCache.get_RT(), {});
 }
 
 void dxRenderDeviceRender::End()
@@ -247,40 +234,27 @@ void dxRenderDeviceRender::End()
     if (HW.Caps.SceneMode)
         overdrawEnd();
 
-    RCache.OnFrameEnd();
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        contexts_pool[id].cmd_list.OnFrameEnd();
 
-    UINT present_flags = 0;
-    bool use_vsync = !!psDeviceFlags.test(rsVSync);
-    UINT present_interval = (use_vsync) ? 1 : 0;
+    // we're done with rendering
+    cleanup_contexts();
 
-    // NOTE: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/variable-refresh-rate-displays
-    BOOL is_windowed = HW.m_ChainDescFullscreen.Windowed;
-    if (is_windowed && !use_vsync && HW.m_SupportsVRR)
-    {
-        present_flags |= DXGI_PRESENT_ALLOW_TEARING;
-    }
-
-    if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
-    { //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
-      // раза реже) [don't flush image into display for SecondVP-frame]
-        switch (HW.m_pSwapChain->Present(present_interval, present_flags))
-        {
-        case DXGI_STATUS_OCCLUDED:
-        case DXGI_ERROR_DEVICE_REMOVED: HW.doPresentTest = true; break;
-        }
-    }
+    HW.Present();
 }
 
 void dxRenderDeviceRender::ClearTarget()
 {
-    constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    RCache.ClearRT(RCache.get_RT(), {}); // black
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
 {
-    RCache.set_xform_view(mView);
-    RCache.set_xform_project(mProject);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    {
+        contexts_pool[id].cmd_list.set_xform_view(mView);
+        contexts_pool[id].cmd_list.set_xform_project(mProject);
+    }
 }
 
 bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
@@ -297,3 +271,28 @@ void dxRenderDeviceRender::OnAssetsChanged()
 }
 
 IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return dynamic_cast<IResourceManager*>(Resources); }
+
+ctx_id_t dxRenderDeviceRender::alloc_context(bool alloc_cmd_list)
+{
+    ctx_id_t id = contexts_used.ffz();
+    if (id == contexts_used.size())
+        return R__INVALID_CTX_ID;
+
+    contexts_used.set(id);
+
+    auto& dsgraph = contexts_pool[id];
+
+    dsgraph.reset();
+    dsgraph.context_id = id;
+    dsgraph.cmd_list.context_id = alloc_cmd_list ? id : R__IMM_CTX_ID;
+
+    return id;
+}
+
+void dxRenderDeviceRender::cleanup_contexts()
+{
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        contexts_pool[id].reset();
+
+    contexts_used.zero();
+}

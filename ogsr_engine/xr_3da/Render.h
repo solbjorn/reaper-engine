@@ -137,10 +137,7 @@ public:
     virtual void set_noise_fps(float f) = 0;
     virtual void set_color_base(u32 f) = 0;
     virtual void set_color_gray(u32 f) = 0;
-    // virtual void					set_color_add		(u32	f)							= 0;
     virtual void set_color_add(const Fvector& f) = 0;
-    virtual u32 get_width() = 0;
-    virtual u32 get_height() = 0;
     virtual void set_cm_imfluence(float f) = 0;
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
@@ -149,6 +146,14 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
+
+enum class DeviceState
+{
+    Normal = 0,
+    Lost,
+    NeedReset
+};
+
 class IRender_interface
 {
 public:
@@ -244,13 +249,6 @@ public:
     virtual void AfterUIRender() = 0; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
-
-    // Render mode
-    virtual void rmNear() = 0;
-    virtual void rmFar() = 0;
-    virtual void rmNormal() = 0;
-
-    virtual u32 active_phase() const = 0;
 
     // Constructor/destructor
     virtual ~IRender_interface();

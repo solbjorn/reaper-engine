@@ -285,12 +285,11 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
 
     // Raycast into the temporary render target:
     //  raycasting is done at the smaller resolution, using a fullscreen quad
-    constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    HW.pContext->ClearRenderTargetView(RT[RRT_RayCastTex]->pRT, ColorRGBA);
+    RCache.ClearRT(RT[RRT_RayCastTex], {});
 
-    pTarget->u_setrt(RT[RRT_RayCastTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayCastTex], nullptr, nullptr, nullptr); // LDR RT
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 
     if (bRenderFire)
         RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFire]);
@@ -304,16 +303,16 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
     //  If and edge was detected at the current pixel we will raycast again to avoid
     //  smoke aliasing artifacts at scene edges
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(pTarget->rt_Generic_0, nullptr, nullptr, HW.pBaseZB); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->get_base_zb()); // LDR RT
     else
-        pTarget->u_setrt(pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth->pZRT); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth); // LDR RT
 
     if (bRenderFire)
         RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
     else
         RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog]);
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 
     PrepareCBuffer(FluidData, Device.dwWidth, Device.dwHeight);
     RCache.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
@@ -324,14 +323,13 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
 void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
 {
     // Clear the color buffer to 0
-    constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    HW.pContext->ClearRenderTargetView(RT[RRT_RayDataTex]->pRT, ColorRGBA);
+    RCache.ClearRT(RT[RRT_RayDataTex], {});
 
     CRenderTarget* pTarget = RImplementation.Target;
-    pTarget->u_setrt(RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 
     PrepareCBuffer(FluidData, Device.dwWidth, Device.dwHeight);
 
@@ -342,7 +340,7 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
     // Render volume front faces using subtractive blending
     // We output xyz="position in grid space" and w=boxDepth,
     //  unless the pixel is occluded by the scene, in which case we output xyzw=(1,0,0,0)
-    pTarget->u_setrt(RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
     PrepareCBuffer(FluidData, Device.dwWidth, Device.dwHeight);
 
@@ -353,11 +351,11 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
 void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
 {
     CRenderTarget* pTarget = RImplementation.Target;
-    pTarget->u_setrt(RT[RRT_RayDataTexSmall], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTexSmall], nullptr, nullptr, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
 
     // First setup viewport to match the size of the destination low-res texture
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 
     PrepareCBuffer(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
 
@@ -365,7 +363,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
     DrawScreenQuad();
 
     // Create an edge texture, performing edge detection on 'rayDataTexSmall'
-    pTarget->u_setrt(RT[RRT_EdgeTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_EdgeTex], nullptr, nullptr, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
     PrepareCBuffer(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
 

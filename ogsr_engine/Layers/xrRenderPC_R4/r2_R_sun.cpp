@@ -270,13 +270,13 @@ void CRender::calculate_sun(sun::cascade& cascade)
 void CRender::render_sun_cascade(u32 cascade_ind)
 {
     sun::cascade& cascade = m_sun_cascades[cascade_ind];
-
     light* fuckingsun = (light*)Lights.sun._get();
 
     // Finalize & Cleanup
     fuckingsun->X.D.combine = cascade.cull_xform;
 
     // Begin SMAP-render
+    auto& dsgraph = get_imm_context();
     VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
     dsgraph.r_pmask(true, false);
 
@@ -292,15 +292,15 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         if (bNormal)
         {
             Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_xform_view(Fidentity);
-            RCache.set_xform_project(fuckingsun->X.D.combine);
+            dsgraph.cmd_list.set_xform_world(Fidentity);
+            dsgraph.cmd_list.set_xform_view(Fidentity);
+            dsgraph.cmd_list.set_xform_project(fuckingsun->X.D.combine);
             dsgraph.render_graph(0);
 
             if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
             {
                 Details->fade_distance = dm_fade * dm_fade * ps_ssfx_grass_shadows.y;
-                Details->Render(true);
+                Details->Render(dsgraph.cmd_list, true);
             }
         }
     }
@@ -321,7 +321,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         Target->accum_direct_cascade(SE_SUN_FAR, cascade.cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, cascade.bias);
 
     // Restore XForms
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_view(Device.mView);
-    RCache.set_xform_project(Device.mProject);
+    dsgraph.cmd_list.set_xform_world(Fidentity);
+    dsgraph.cmd_list.set_xform_view(Device.mView);
+    dsgraph.cmd_list.set_xform_project(Device.mProject);
 }

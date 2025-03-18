@@ -19,7 +19,7 @@
 
 void CRender::level_Load(IReader* fs)
 {
-    R_ASSERT(0 != g_pGameLevel);
+    R_ASSERT(g_pGameLevel);
     R_ASSERT(!b_loaded);
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
@@ -116,21 +116,14 @@ void CRender::level_Load(IReader* fs)
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
     Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
-    // sanity-clear
-    dsgraph.lstLODs.clear();
-    dsgraph.lstLODgroups.clear();
-    dsgraph.mapLOD.clear();
-    dsgraph.mapWater.clear();
-
     // signal loaded
     b_loaded = TRUE;
 }
 
 void CRender::level_Unload()
 {
-    if (0 == g_pGameLevel)
+    if (!g_pGameLevel)
         return;
-
     if (!b_loaded)
         return;
 
@@ -140,8 +133,6 @@ void CRender::level_Unload()
     Msg("~ LevelResources unload...");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
     Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
-
-    u32 I;
 
     // HOM
     HOM.Unload();
@@ -153,38 +144,40 @@ void CRender::level_Unload()
     // 1.
     xr_delete(rmPortals);
     last_sector_id = INVALID_SECTOR_ID;
-    vLastCameraPos.set(0, 0, 0);
+
     // 2.
-    dsgraph.unload();
+    cleanup_contexts();
 
     //*** Lights
-    // Glows.Unload			();
     Lights.Unload();
 
     //*** Visuals
-    for (I = 0; I < Visuals.size(); I++)
+    for (dxRender_Visual* visual : Visuals)
     {
-        Visuals[I]->Release();
-        xr_delete(Visuals[I]);
+        visual->Release();
+        xr_delete(visual);
     }
     Visuals.clear();
 
     //*** SWI
-    for (I = 0; I < SWIs.size(); I++)
-        xr_free(SWIs[I].sw);
+    for (auto& swi : SWIs)
+        xr_free(swi.sw);
     SWIs.clear();
 
     //*** VB/IB
-    for (I = 0; I < nVB.size(); I++)
-        _RELEASE(nVB[I]);
-    for (I = 0; I < xVB.size(); I++)
-        _RELEASE(xVB[I]);
+    for (auto* buffer : nVB)
+        _RELEASE(buffer);
+    for (auto* buffer : xVB)
+        _RELEASE(buffer);
+
     nVB.clear();
     xVB.clear();
-    for (I = 0; I < nIB.size(); I++)
-        _RELEASE(nIB[I]);
-    for (I = 0; I < xIB.size(); I++)
-        _RELEASE(xIB[I]);
+
+    for (auto* buffer : nIB)
+        _RELEASE(buffer);
+    for (auto* buffer : xIB)
+        _RELEASE(buffer);
+
     nIB.clear();
     xIB.clear();
     nDC.clear();
@@ -246,12 +239,6 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 #endif
 
             // Create and fill
-            // BYTE*	pData		= 0;
-            // R_CHK				(HW.pDevice->CreateVertexBuffer(vCount*vSize,dwUsage,0,D3DPOOL_MANAGED,&_VB[i],0));
-            // R_CHK				(_VB[i]->Lock(0,0,(void**)&pData,0));
-            //			CopyMemory			(pData,fs().pointer(),vCount*vSize);
-            // fs->r				(pData,vCount*vSize);
-            //_VB[i]->Unlock		();
             //	TODO: DX10: Check fragmentation.
             //	Check if buffer is less then 2048 kb
             BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
@@ -277,21 +264,12 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 #endif
 
             // Create and fill
-            // BYTE*	pData		= 0;
-            // R_CHK				(HW.pDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
-            // R_CHK				(_IB[i]->Lock(0,0,(void**)&pData,0));
-            //			CopyMemory			(pData,fs().pointer(),iCount*2);
-            // fs->r				(pData,iCount*2);
-            //_IB[i]->Unlock		();
-
             //	TODO: DX10: Check fragmentation.
             //	Check if buffer is less then 2048 kb
             BYTE* pData = xr_alloc<BYTE>(iCount * 2);
             fs->r(pData, iCount * 2);
             dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount * 2);
             xr_free(pData);
-
-            //			fs().advance		(iCount*2);
         }
         fs->close();
     }
@@ -299,16 +277,16 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 void CRender::LoadVisuals(IReader* fs)
 {
-    IReader* chunk = 0;
     u32 index = 0;
-    dxRender_Visual* V = 0;
-    ogf_header H;
+    IReader* chunk = nullptr;
 
     while ((chunk = fs->open_chunk(index)) != 0)
     {
+        ogf_header H;
         chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
-        V = Models->Instance_Create(H.type);
-        V->Load(0, chunk, 0);
+
+        dxRender_Visual* V = Models->Instance_Create(H.type);
+        V->Load(nullptr, chunk, 0);
         Visuals.push_back(V);
 
         chunk->close();
@@ -406,7 +384,15 @@ void CRender::LoadSectors(IReader* fs)
         rmPortals = nullptr;
     }
 
-    dsgraph.load(sectors_data, portals_data);
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    {
+        auto& dsgraph = contexts_pool[id];
+
+        dsgraph.reset();
+        dsgraph.load(sectors_data, portals_data);
+    }
+
+    contexts_used.zero();
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)
@@ -417,11 +403,8 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
         CStreamReader* fs = base_fs->open_chunk(fsL_SWIS);
         u32 item_count = fs->r_u32();
 
-        xr_vector<FSlideWindowItem>::iterator it = SWIs.begin();
-        xr_vector<FSlideWindowItem>::iterator it_e = SWIs.end();
-
-        for (; it != it_e; ++it)
-            xr_free((*it).sw);
+        for (auto& SWI : SWIs)
+            xr_free(SWI.sw);
 
         SWIs.clear();
 
@@ -434,7 +417,7 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
             swi.reserved[2] = fs->r_u32();
             swi.reserved[3] = fs->r_u32();
             swi.count = fs->r_u32();
-            VERIFY(NULL == swi.sw);
+            VERIFY(!swi.sw);
             swi.sw = xr_alloc<FSlideWindow>(swi.count);
             fs->r(swi.sw, sizeof(FSlideWindow) * swi.count);
         }
@@ -466,26 +449,30 @@ void CRender::Load3DFluid()
                 Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
 
                 //	Attach to sector's static geometry
-                const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
-                auto* pSector = dsgraph.get_sector(sector_id);
-
-                if (!pSector)
+                for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
                 {
-                    Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
+                    auto& dsgraph = contexts_pool[id];
+                    const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
+                    auto* pSector = dsgraph.get_sector(sector_id);
 
-                    xr_delete(pVolume);
-                    continue;
+                    if (!pSector)
+                    {
+                        Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
+
+                        xr_delete(pVolume);
+                        continue;
+                    }
+
+                    //	3DFluid volume must be in render sector
+                    R_ASSERT(pSector);
+
+                    dxRender_Visual* pRoot = pSector->root();
+                    //	Sector must have root
+                    R_ASSERT(pRoot);
+                    R_ASSERT(pRoot->getType() == MT_HIERRARHY);
+
+                    ((FHierrarhyVisual*)pRoot)->children.push_back(pVolume);
                 }
-
-                //	3DFluid volume must be in render sector
-                R_ASSERT(pSector);
-
-                dxRender_Visual* pRoot = pSector->root();
-                //	Sector must have root
-                R_ASSERT(pRoot);
-                R_ASSERT(pRoot->getType() == MT_HIERRARHY);
-
-                ((FHierrarhyVisual*)pRoot)->children.push_back(pVolume);
             }
         }
 

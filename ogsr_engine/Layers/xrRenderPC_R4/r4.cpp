@@ -78,52 +78,52 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 }
 static class cl_parallax : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    virtual void setup(CBackend& cmd_list, R_constant* C)
     {
         float h = ps_r2_df_parallax_h;
-        RCache.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
+        cmd_list.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
     }
 } binder_parallax;
 
 static class cl_LOD : public R_constant_setup
 {
-    virtual void setup(R_constant* C) { RCache.LOD.set_LOD(C); }
+    virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.LOD.set_LOD(C); }
 } binder_LOD;
 
 static class cl_pos_decompress_params : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    virtual void setup(CBackend& cmd_list, R_constant* C)
     {
         const float VertTan = -1.0f * tanf(deg2rad(Device.fFOV / 2.0f));
         const float HorzTan = -VertTan / Device.fASPECT;
 
-        RCache.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
+        cmd_list.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
     }
 } binder_pos_decompress_params;
 
 static class cl_water_intensity : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    virtual void setup(CBackend& cmd_list, R_constant* C)
     {
         CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
         float fValue = E.m_fWaterIntensity;
-        RCache.set_c(C, fValue, fValue, fValue, 0.f);
+        cmd_list.set_c(C, fValue, fValue, fValue, 0.f);
     }
 } binder_water_intensity;
 
 static class cl_sun_shafts_intensity : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    virtual void setup(CBackend& cmd_list, R_constant* C)
     {
         const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
         const float fValue = E.m_fSunShaftsIntensity;
-        RCache.set_c(C, fValue, fValue, fValue, 0.f);
+        cmd_list.set_c(C, fValue, fValue, fValue, 0.f);
     }
 } binder_sun_shafts_intensity;
 
 static class cl_alpha_ref : public R_constant_setup
 {
-    virtual void setup(R_constant* C) { StateManager.BindAlphaRef(C); }
+    virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.StateManager.BindAlphaRef(C); }
 } binder_alpha_ref;
 
 //////////////////////////////////////////////////////////////////////////
@@ -184,8 +184,7 @@ void CRender::create()
     PSLibrary.OnCreate();
     HWOCC.occq_create();
 
-    rmNormal();
-    dsgraph.marker = 0;
+    rmNormal(RCache);
 
     FluidManager.Initialize(70, 70, 70);
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
@@ -200,31 +199,23 @@ void CRender::destroy()
     xr_delete(Target);
     PSLibrary.OnDestroy();
     Device.seqFrame.Remove(this);
-    dsgraph.destroy();
 }
 
 extern u32 reset_frame;
+
 void CRender::reset_begin()
 {
     // Update incremental shadowmap-visibility solver
     // BUG-ID: 10646
+    for (u32 it = 0; it < Lights_LastFrame.size(); it++)
     {
-        u32 it = 0;
-        for (it = 0; it < Lights_LastFrame.size(); it++)
-        {
-            if (0 == Lights_LastFrame[it])
-                continue;
-            // try
-            //{
-            Lights_LastFrame[it]->svis.resetoccq();
-            /*}
-            catch (...)
-            {
-                Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-            }*/
-        }
-        Lights_LastFrame.clear();
+        if (!Lights_LastFrame[it])
+            continue;
+
+        for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+            Lights_LastFrame[it]->svis[id].resetoccq();
     }
+    Lights_LastFrame.clear();
 
     reset_frame = Device.dwFrame;
 
@@ -255,6 +246,8 @@ void CRender::reset_end()
     //-AVO
 
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+
+    cleanup_contexts();
 
     // Set this flag true to skip the first render frame,
     // that some data is not ready in the first frame (for example device camera position)
@@ -297,7 +290,7 @@ void CRender::AfterWorldRender(const bool save_bb_before_ui)
         // кадр после рендера ui. Именно этот кадр будет позже выведен на экран.)
         ID3DTexture2D* pBuffer{};
         HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-        HW.pContext->CopyResource(save_bb_before_ui ? Target->rt_BeforeUi->pSurface : Target->rt_secondVP->pSurface, pBuffer);
+        HW.get_imm_context()->CopyResource(save_bb_before_ui ? Target->rt_BeforeUi->pSurface : Target->rt_secondVP->pSurface, pBuffer);
         pBuffer->Release(); // Корректно очищаем ссылку на бэкбуфер (иначе игра зависнет в опциях)
     }
 }
@@ -307,13 +300,13 @@ void CRender::AfterUIRender()
     // Делает копию бэкбуфера (текущего экрана) в рендер-таргет второго вьюпорта (для использования в пда)
     ID3DTexture2D* pBuffer{};
     HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-    HW.pContext->CopyResource(Target->rt_secondVP->pSurface, pBuffer);
+    HW.get_imm_context()->CopyResource(Target->rt_secondVP->pSurface, pBuffer);
     pBuffer->Release(); // Корректно очищаем ссылку на бэкбуфер (иначе игра зависнет в опциях)
 
     // Возвращаем на экран кадр, который сохранили до рендера ui для пда
     ID3DTexture2D* pBuffer2{};
     HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer2));
-    HW.pContext->CopyResource(pBuffer2, Target->rt_BeforeUi->pSurface);
+    HW.get_imm_context()->CopyResource(pBuffer2, Target->rt_BeforeUi->pSurface);
     pBuffer2->Release(); // Корректно очищаем ссылку на бэкбуфер (иначе игра зависнет в опциях)
 }
 
@@ -441,7 +434,10 @@ BOOL CRender::occ_visible(vis_data& P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(sPoly& P) { return HOM.visible(P); }
 BOOL CRender::occ_visible(Fbox& P) { return HOM.visible(P); }
 
-void CRender::add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) { dsgraph.add_leafs_dynamic(root, (dxRender_Visual*)V, m, V->_ignore_optimization); }
+void CRender::add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m)
+{
+    get_context(context_id).add_leafs_dynamic(root, (dxRender_Visual*)V, m, V->_ignore_optimization);
+}
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
 {
@@ -480,22 +476,22 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
         add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
 }
 
-void CRender::rmNear()
+void CRender::rmNear(const CBackend& cmd_list) const
 {
-    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0, 0.02f};
-    HW.pContext->RSSetViewports(1, &VP);
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(cmd_list), (float)Target->get_height(cmd_list), 0, 0.02f};
+    cmd_list.SetViewport(VP);
 }
 
-void CRender::rmFar()
+void CRender::rmFar(const CBackend& cmd_list) const
 {
-    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0.99999f, 1.f};
-    HW.pContext->RSSetViewports(1, &VP);
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(cmd_list), (float)Target->get_height(cmd_list), 0.99999f, 1.f};
+    cmd_list.SetViewport(VP);
 }
 
-void CRender::rmNormal()
+void CRender::rmNormal(const CBackend& cmd_list) const
 {
-    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(), (float)Target->get_height(), 0, 1.f};
-    HW.pContext->RSSetViewports(1, &VP);
+    const D3D_VIEWPORT VP = {0, 0, (float)Target->get_width(cmd_list), (float)Target->get_height(cmd_list), 0, 1.f};
+    cmd_list.SetViewport(VP);
 }
 
 //////////////////////////////////////////////////////////////////////

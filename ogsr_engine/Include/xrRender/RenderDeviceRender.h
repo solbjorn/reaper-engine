@@ -1,17 +1,10 @@
 #pragma once
 
+enum class DeviceState;
 class IResourceManager;
 
 class IRenderDeviceRender
 {
-public:
-    enum DeviceState
-    {
-        dsOK = 0,
-        dsLost,
-        dsNeedReset
-    };
-
 public:
     virtual ~IRenderDeviceRender() { ; }
     virtual void Copy(IRenderDeviceRender& _in) = 0;

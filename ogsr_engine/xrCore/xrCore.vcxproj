@@ -308,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
+    <ClInclude Include="bitmap.h" />
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
     <ClInclude Include="FTimer.h" />
@@ -378,6 +379,7 @@
     <ClInclude Include="rt_compressor.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="xrSyncronize.h" />
+    <ClInclude Include="xrhash.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -58,7 +58,7 @@ void CPortal::OnRender()
         // draw wire
         if (bDebug)
         {
-            RImplementation.rmNear();
+            RImplementation.rmNear(RCache);
         }
         else
         {
@@ -70,7 +70,7 @@ void CPortal::OnRender()
         RCache.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
         if (bDebug)
         {
-            RImplementation.rmNormal();
+            RImplementation.rmNormal(RCache);
         }
         else
         {

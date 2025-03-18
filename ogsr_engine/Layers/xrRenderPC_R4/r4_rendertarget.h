@@ -11,8 +11,8 @@ class light;
 class CRenderTarget : public IRender_Target
 {
 private:
-    u32 dwWidth;
-    u32 dwHeight;
+    u32 dwWidth[R__NUM_CONTEXTS];
+    u32 dwHeight[R__NUM_CONTEXTS];
     u32 dwAccumulatorClearMark;
 
 public:
@@ -65,6 +65,10 @@ public:
     xr_vector<dbg_line_t> dbg_lines;
     xr_vector<Fplane> dbg_planes;
 #endif
+
+    // Base targets
+    xr_vector<ref_rt> rt_Base;
+    ref_rt rt_Base_Depth;
 
     // MRT-path
     ref_rt rt_MSAADepth; // z-buffer for MSAA deferred shading
@@ -298,13 +302,24 @@ public:
     void accum_volumetric_geom_create();
     void accum_volumetric_geom_destroy();
 
-    void u_compute_texgen_screen(Fmatrix& dest);
-    void u_compute_texgen_jitter(Fmatrix& dest);
+    ID3DRenderTargetView* get_base_rt() { return rt_Base[HW.CurrentBackBuffer]->pRT; }
+    ID3DDepthStencilView* get_base_zb() { return rt_Base_Depth->pZRT[R__IMM_CTX_ID]; }
 
-    void u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb);
-    void u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
-    void u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
+    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb);
+    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _zb)
+    {
+        u_setrt(cmd_list, _1, _2, _3, _zb ? _zb->pZRT[cmd_list.context_id] : nullptr);
+    }
+    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
+    void u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _zb) { u_setrt(cmd_list, _1, _2, _zb ? _zb->pZRT[cmd_list.context_id] : nullptr); }
+    void u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
+    void u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, const ref_rt& _zb)
+    {
+        u_setrt(cmd_list, W, H, _1, _2, _3, _zb ? _zb->pZRT[cmd_list.context_id] : nullptr);
+    }
 
+    void u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& dest);
+    void u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& dest);
     void u_calc_tc_noise(Fvector2& p0, Fvector2& p1);
     void u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
     BOOL u_need_PP();
@@ -339,7 +354,8 @@ public:
     void phase_ssfx_water_waves(); // Water Waves
     void phase_ssfx_ao(); // AO
     void phase_ssfx_il(); // IL
-    void set_viewport_size(ID3DDeviceContext* dev, float w, float h);
+
+    void set_viewport_size(const CBackend& cmd_list, float w, float h) const;
 
     void phase_rain();
     void draw_rain(light& RainSetup);
@@ -368,28 +384,27 @@ public:
     void phase_combine_volumetric();
     void phase_pp();
 
-    virtual void set_blur(float f) { param_blur = f; }
-    virtual void set_gray(float f) { param_gray = f; }
-    virtual void set_duality_h(float f) { param_duality_h = _abs(f); }
-    virtual void set_duality_v(float f) { param_duality_v = _abs(f); }
-    virtual void set_noise(float f) { param_noise = f; }
-    virtual void set_noise_scale(float f) { param_noise_scale = f; }
-    virtual void set_noise_fps(float f) { param_noise_fps = _abs(f) + EPS_S; }
-    virtual void set_color_base(u32 f) { param_color_base = f; }
-    virtual void set_color_gray(u32 f) { param_color_gray = f; }
-    virtual void set_color_add(const Fvector& f) { param_color_add = f; }
+    u32 get_width(const CBackend& cmd_list) const { return dwWidth[cmd_list.context_id]; }
+    u32 get_height(const CBackend& cmd_list) const { return dwHeight[cmd_list.context_id]; }
 
-    virtual u32 get_width() { return dwWidth; }
-    virtual u32 get_height() { return dwHeight; }
-
-    virtual void set_cm_imfluence(float f) { param_color_map_influence = f; }
-    virtual void set_cm_interpolate(float f) { param_color_map_interpolate = f; }
-    virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) { color_map_manager.SetTextures(tex0, tex1); }
+    void set_blur(float f) { param_blur = f; }
+    void set_gray(float f) { param_gray = f; }
+    void set_duality_h(float f) { param_duality_h = _abs(f); }
+    void set_duality_v(float f) { param_duality_v = _abs(f); }
+    void set_noise(float f) { param_noise = f; }
+    void set_noise_scale(float f) { param_noise_scale = f; }
+    void set_noise_fps(float f) { param_noise_fps = _abs(f) + EPS_S; }
+    void set_color_base(u32 f) { param_color_base = f; }
+    void set_color_gray(u32 f) { param_color_gray = f; }
+    void set_color_add(const Fvector& f) { param_color_add = f; }
+    void set_cm_imfluence(float f) { param_color_map_influence = f; }
+    void set_cm_interpolate(float f) { param_color_map_interpolate = f; }
+    void set_cm_textures(const shared_str& tex0, const shared_str& tex1) { color_map_manager.SetTextures(tex0, tex1); }
 
     //	Need to reset stencil only when marker overflows.
     //	Don't clear when render for the first time
-    void reset_light_marker(bool bResetStencil = false);
-    void increment_light_marker();
+    void reset_light_marker(CBackend& cmd_list, bool bResetStencil = false);
+    void increment_light_marker(CBackend& cmd_list);
 
 #ifdef DEBUG
     IC void dbg_addline(Fvector& P0, Fvector& P1, u32 c)

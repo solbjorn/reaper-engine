@@ -10,40 +10,88 @@
 #include "../xrRenderDX10/dx10R_Backend_Runtime.h"
 #include "../xrRenderDX10/StateManager/dx10State.h"
 
+ICF CBackend& R_hemi::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, hemi);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
+ICF CBackend& R_LOD::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, LOD);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
+ICF CBackend& R_tree::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, tree);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
+ICF CBackend& R_xforms::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, xforms);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
+ICF CBackend& R_constants::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, constants);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
+ICF const CBackend& R_constants::cmd_list() const
+{
+    const char* pos = reinterpret_cast<const char*>(this) - offsetof(CBackend, constants);
+    return *reinterpret_cast<const CBackend*>(pos);
+}
+
+ICF CBackend& dx10StateManager::cmd_list()
+{
+    char* pos = reinterpret_cast<char*>(this) - offsetof(CBackend, StateManager);
+    return *reinterpret_cast<CBackend*>(pos);
+}
+
 IC void R_xforms::set_c_w(R_constant* C)
 {
     c_w = C;
-    RCache.set_c(C, m_w);
+    cmd_list().set_c(C, m_w);
 };
+
 IC void R_xforms::set_c_invw(R_constant* C)
 {
     c_invw = C;
     apply_invw();
 };
+
 IC void R_xforms::set_c_v(R_constant* C)
 {
     c_v = C;
-    RCache.set_c(C, m_v);
+    cmd_list().set_c(C, m_v);
 };
+
 IC void R_xforms::set_c_p(R_constant* C)
 {
     c_p = C;
-    RCache.set_c(C, m_p);
+    cmd_list().set_c(C, m_p);
 };
+
 IC void R_xforms::set_c_wv(R_constant* C)
 {
     c_wv = C;
-    RCache.set_c(C, m_wv);
+    cmd_list().set_c(C, m_wv);
 };
+
 IC void R_xforms::set_c_vp(R_constant* C)
 {
     c_vp = C;
-    RCache.set_c(C, m_vp);
+    cmd_list().set_c(C, m_vp);
 };
+
 IC void R_xforms::set_c_wvp(R_constant* C)
 {
     c_wvp = C;
-    RCache.set_c(C, m_wvp);
+    cmd_list().set_c(C, m_wvp);
 };
 
 IC void CBackend::set_xform_world(const Fmatrix& M) { xforms.set_W(M); }
@@ -69,7 +117,7 @@ ICF void CBackend::set_States(ID3DState* _state)
     stat.states++;
 #endif
     state = _state;
-    state->Apply();
+    state->Apply(*this);
 }
 
 IC void CBackend::set_Pass(SPass* P)

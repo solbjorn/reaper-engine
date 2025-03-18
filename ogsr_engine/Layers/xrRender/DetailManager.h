@@ -161,8 +161,8 @@ private:
     void hw_Load();
     void hw_Load_Geom();
     void hw_Unload();
-    void hw_Render(bool use_fast_geo);
-    void hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo);
+    void hw_Render(CBackend& cmd_list, bool use_fast_geo);
+    void hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo);
 
     // get unpacked slot
     DetailSlot& QueryDB(int sx, int sz);
@@ -183,7 +183,7 @@ public:
 
     void Load();
     void Unload();
-    void Render(bool use_fast_geo);
+    void Render(CBackend& cmd_list, bool use_fast_geo);
 
 private:
     xr_task_group* tg{};

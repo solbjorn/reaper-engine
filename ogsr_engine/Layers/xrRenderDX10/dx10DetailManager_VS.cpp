@@ -23,7 +23,7 @@ float GoToValue(float& current, float go_to)
     return current < go_to ? r_value : -r_value;
 }
 
-void CDetailManager::hw_Render(bool use_fast_geo)
+void CDetailManager::hw_Render(CBackend& cmd_list, bool use_fast_geo)
 {
     // Render-prepare
     //	Update timer
@@ -45,7 +45,7 @@ void CDetailManager::hw_Render(bool use_fast_geo)
     dir2.set(_sin(tm_rot2), 0, _cos(tm_rot2), 0).normalize().mul(swing_current.amp2);
 
     // Setup geometry and DMA
-    RCache.set_Geometry(hw_Geom);
+    cmd_list.set_Geometry(hw_Geom);
 
     // Wave0
     constexpr float scale = 1.f / float(quant);
@@ -55,20 +55,20 @@ void CDetailManager::hw_Render(bool use_fast_geo)
 
     wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir1, 1, 0, use_fast_geo);
 
     // Wave1
     wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 2, 0, use_fast_geo);
 
     // Still
     consts.set(scale, scale, scale, 1.f);
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 0, 1, use_fast_geo);
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo)
+void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo)
 {
     constexpr const char* strConsts = "consts";
     constexpr const char* strWave = "wave";
@@ -116,23 +116,23 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
             for (u32 iPass = 0; iPass < Object.shader->E[lod_id]->passes.size(); ++iPass)
             {
                 // Setup matrices + colors (and flush it as necessary)
-                RCache.set_Element(Object.shader->E[lod_id], iPass);
-                RCache.apply_lmaterial();
+                cmd_list.set_Element(Object.shader->E[lod_id], iPass);
+                cmd_list.apply_lmaterial();
 
                 //	This could be cached in the corresponding consatant buffer
                 //	as it is done for DX9
-                RCache.set_c(strConsts, consts);
-                RCache.set_c(strWave, wave);
-                RCache.set_c(strDir2D, wind);
-                RCache.set_c(strXForm, Device.mFullTransform);
-                RCache.set_c(strGrassAlign, ps_ssfx_terrain_grass_align);
+                cmd_list.set_c(strConsts, consts);
+                cmd_list.set_c(strWave, wave);
+                cmd_list.set_c(strDir2D, wind);
+                cmd_list.set_c(strXForm, Device.mFullTransform);
+                cmd_list.set_c(strGrassAlign, ps_ssfx_terrain_grass_align);
 
                 if (ps_ssfx_grass_interactive.y > 0)
                 {
-                    RCache.set_c(strGrassSetup, ps_ssfx_int_grass_params_1);
+                    cmd_list.set_c(strGrassSetup, ps_ssfx_int_grass_params_1);
 
                     Fvector4* c_grass{};
-                    RCache.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                    cmd_list.get_ConstantDirect(strPos, sizeof(grass_shader_data.pos) + sizeof(grass_shader_data.dir), reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
                     R_ASSERT(c_grass);
 
                     if (c_grass)
@@ -140,11 +140,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                 }
 
                 Fvector4* c_ExData{};
-                RCache.get_ConstantDirect(strExData, hw_BatchSize * sizeof(Fvector4), reinterpret_cast<void**>(&c_ExData), nullptr, nullptr);
+                cmd_list.get_ConstantDirect(strExData, hw_BatchSize * sizeof(Fvector4), reinterpret_cast<void**>(&c_ExData), nullptr, nullptr);
                 R_ASSERT(c_ExData);
 
                 Fvector4* c_storage{};
-                RCache.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
+                cmd_list.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
                 R_ASSERT(c_storage);
 
                 u32 dwBatch = 0;
@@ -200,14 +200,14 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                             Device.Statistic->RenderDUMP_DT_Count += dwBatch;
                             u32 dwCNT_verts = dwBatch * Object.number_vertices;
                             u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
-                            RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
-                            RCache.stat.r.s_details.add(dwCNT_verts);
+                            cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
+                            cmd_list.stat.r.s_details.add(dwCNT_verts);
 
                             // restart
                             dwBatch = 0;
 
                             //	Remap constants to memory directly (just in case anything goes wrong)
-                            RCache.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
+                            cmd_list.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
                             R_ASSERT(c_storage);
                         }
                     }
@@ -219,8 +219,8 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     Device.Statistic->RenderDUMP_DT_Count += dwBatch;
                     u32 dwCNT_verts = dwBatch * Object.number_vertices;
                     u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
-                    RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
-                    RCache.stat.r.s_details.add(dwCNT_verts);
+                    cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
+                    cmd_list.stat.r.s_details.add(dwCNT_verts);
                 }
             }
 

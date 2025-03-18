@@ -173,7 +173,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
         clouds_geom.create(v_clouds_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
         env.bNeed_re_create_env = FALSE;
     }
-    RImplementation.rmFar();
+    RImplementation.rmFar(RCache);
 
     dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
@@ -211,7 +211,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
     RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
 
     // Sun
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 
     //
     // This hack is done to make sure that the state is set for sure:
@@ -226,7 +226,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
 void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 {
-    RImplementation.rmFar();
+    RImplementation.rmFar(RCache);
 
     Fmatrix mXFORM, mScale;
     mScale.scale(10, 0.4f, 10);
@@ -263,7 +263,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
     RCache.set_Textures(&mixRen.clouds_r_textures);
     RCache.Render(D3DPT_TRIANGLELIST, v_offset, 0, env.CloudsVerts.size(), i_offset, env.CloudsIndices.size() / 3);
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(RCache);
 }
 
 void dxEnvironmentRender::OnDeviceCreate()

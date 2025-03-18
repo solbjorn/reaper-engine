@@ -16,7 +16,7 @@ void CRenderTarget::phase_gasmask_drops()
     //////////////////////////////////////////////////////////////////////////
     // Set MSAA/NonMSAA rendertarget
     ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
-    u_setrt(dest_rt, nullptr, nullptr, nullptr);
+    u_setrt(RCache, dest_rt, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -44,5 +44,5 @@ void CRenderTarget::phase_gasmask_drops()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
+    RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
 };

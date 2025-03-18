@@ -1,6 +1,7 @@
 #ifndef r_backend_xformH
 #define r_backend_xformH
-#pragma once
+
+class CBackend;
 
 class R_xforms
 {
@@ -43,5 +44,8 @@ public:
 
 private:
     void apply_invw();
+
+    ICF CBackend& cmd_list();
 };
+
 #endif

@@ -97,46 +97,46 @@ void dx10SamplerStateCache::PrepareSamplerStates(HArray& samplers, ID3DSamplerSt
     }
 }
 
-void dx10SamplerStateCache::VSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::VSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->VSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->VSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
-void dx10SamplerStateCache::PSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::PSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->PSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->PSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
-void dx10SamplerStateCache::GSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::GSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->GSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->GSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
-void dx10SamplerStateCache::HSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::HSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->HSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->HSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
-void dx10SamplerStateCache::DSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::DSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->DSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->DSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
-void dx10SamplerStateCache::CSApplySamplers(HArray& samplers)
+void dx10SamplerStateCache::CSApplySamplers(u32 context_id, HArray& samplers)
 {
     ID3DSamplerState* pSS[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
     PrepareSamplerStates(samplers, pSS);
-    HW.pContext->CSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
+    HW.get_context(context_id)->CSSetSamplers(0, D3D_COMMONSHADER_SAMPLER_SLOT_COUNT, pSS);
 }
 
 void dx10SamplerStateCache::SetMaxAnisotropy(u32 uiMaxAniso)

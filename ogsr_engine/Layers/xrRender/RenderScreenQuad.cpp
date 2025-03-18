@@ -8,7 +8,7 @@ void CRenderTarget::RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetV
     constexpr u32 C = color_rgba(0, 0, 0, 255);
 
     if (rt)
-        u_setrt(w, h, rt, nullptr, nullptr, HW.pBaseZB);
+        u_setrt(RCache, w, h, rt, nullptr, nullptr, get_base_zb());
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);

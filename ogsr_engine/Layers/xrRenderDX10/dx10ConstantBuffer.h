@@ -1,6 +1,8 @@
 #ifndef dx10ConstantBuffer_included
 #define dx10ConstantBuffer_included
 
+#include "../../xr_3da/context.h"
+
 struct R_constant;
 struct R_constant_load;
 
@@ -13,7 +15,7 @@ public:
     bool Similar(dx10ConstantBuffer& _in);
     ID3DBuffer* GetBuffer() { return m_pBuffer; }
 
-    void Flush();
+    void Flush(ctx_id_t context_id);
 
     //	Set copy data into constant buffer
     //	Plain buffer member

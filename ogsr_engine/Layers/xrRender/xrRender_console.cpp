@@ -417,38 +417,6 @@ public:
     }
 };
 
-#ifdef DEBUG
-class CCC_R2GM : public CCC_Float
-{
-public:
-    CCC_R2GM(LPCSTR N, float* v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-    virtual void Execute(LPCSTR args)
-    {
-        if (0 == xr_strcmp(args, "on"))
-        {
-            ps_r2_ls_flags.set(R2FLAG_GLOBALMATERIAL, TRUE);
-        }
-        else if (0 == xr_strcmp(args, "off"))
-        {
-            ps_r2_ls_flags.set(R2FLAG_GLOBALMATERIAL, FALSE);
-        }
-        else
-        {
-            CCC_Float::Execute(args);
-            if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
-            {
-                static LPCSTR name[4] = {"oren", "blin", "phong", "metal"};
-                float mid = *value;
-                int m0 = iFloor(mid) % 4;
-                int m1 = (m0 + 1) % 4;
-                float frc = mid - float(iFloor(mid));
-                Msg("* material set to [%s]-[%s], with lerp of [%f]", name[m0], name[m1], frc);
-            }
-        }
-    }
-};
-#endif
-
 class CCC_Screenshot : public IConsole_Command
 {
 public:
@@ -663,10 +631,6 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_ssa_lod_b", &ps_r2_ssaLOD_B, 32, 64);
 
     // R2-specific
-#ifdef DEBUG
-    CMD2(CCC_R2GM, "r2em", &ps_r2_gmaterial);
-#endif
-
     CMD3(CCC_Mask, "r2_tonemap", &ps_r2_ls_flags, R2FLAG_TONEMAP);
     CMD4(CCC_Float, "r2_tonemap_middlegray", &ps_r2_tonemap_middlegray, 0.0f, 2.0f);
     CMD4(CCC_Float, "r2_tonemap_adaptation", &ps_r2_tonemap_adaptation, 0.01f, 10.0f);

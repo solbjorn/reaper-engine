@@ -9,6 +9,17 @@ class CTheoraSurface;
 class CTexture : public ITexture, public xr_resource_named
 {
 public:
+    enum MaxTextures
+    {
+        // Actually these values are 128
+        mtMaxPixelShaderTextures = 16,
+        mtMaxVertexShaderTextures = 4,
+        mtMaxGeometryShaderTextures = 16,
+        mtMaxHullShaderTextures = 16,
+        mtMaxDomainShaderTextures = 16,
+        mtMaxComputeShaderTextures = 16,
+    };
+
     //	Since DX10 allows up to 128 unique textures,
     //	distance between enum values should be at leas 128
     enum ResourceShaderType //	Don't change this since it's hardware-dependent
@@ -23,11 +34,13 @@ public:
     };
 
 public:
-    void apply_load(u32 stage);
-    void apply_theora(u32 stage);
-    void apply_avi(u32 stage) const;
-    void apply_seq(u32 stage);
-    void apply_normal(u32 stage) const;
+    void apply_load(CBackend& cmd_list, u32 stage);
+    void apply_theora(CBackend& cmd_list, u32 stage);
+    void apply_avi(CBackend& cmd_list, u32 stage) const;
+    void apply_seq(CBackend& cmd_list, u32 stage);
+    void apply_normal(CBackend& cmd_list, u32 stage) const;
+
+    void set_slice(int slice);
 
     const char* GetName() const override { return cName.c_str(); }
 
@@ -58,7 +71,7 @@ public:
     ID3DShaderResourceView* get_SRView() { return m_pSRView; }
 
 private:
-    void Apply(u32 dwStage) const;
+    void Apply(CBackend& cmd_list, u32 dwStage) const;
 
     //	Class data
 public: //	Public class members (must be encapsulated further)
@@ -69,7 +82,7 @@ public: //	Public class members (must be encapsulated further)
         u32 memUsage : 28;
     } flags;
 
-    CallMe::Delegate<void(u32)> bind;
+    CallMe::Delegate<void(CBackend& cmd_list, u32)> bind;
 
     CAviPlayerCustom* pAVI;
     CTheoraSurface* pTheora;
@@ -82,12 +95,17 @@ public: //	Public class members (must be encapsulated further)
         u32 seqMSPF; // Sequence data milliseconds per frame
     };
 
+    int curr_slice{-1};
+    int last_slice{-1};
+
 private:
     ID3DBaseTexture* pSurface{};
     // Sequence data
     xr_vector<ID3DBaseTexture*> seqDATA;
 
     ID3DShaderResourceView* m_pSRView{};
+    ID3DShaderResourceView* srv_all{};
+    xr_vector<ID3DShaderResourceView*> srv_per_slice;
     // Sequence view data
     xr_vector<ID3DShaderResourceView*> m_seqSRView;
 

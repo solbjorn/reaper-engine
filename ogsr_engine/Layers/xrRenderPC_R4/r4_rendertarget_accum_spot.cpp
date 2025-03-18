@@ -73,9 +73,9 @@ void CRenderTarget::accum_spot(light* L)
 
     // 2D texgens
     Fmatrix m_Texgen;
-    u_compute_texgen_screen(m_Texgen);
+    u_compute_texgen_screen(RCache, m_Texgen);
     Fmatrix m_Texgen_J;
-    u_compute_texgen_jitter(m_Texgen_J);
+    u_compute_texgen_jitter(RCache, m_Texgen_J);
 
     // Shadow xform (+texture adjustment matrix)
     Fmatrix m_Shadow, m_Lmap;
@@ -207,9 +207,7 @@ void CRenderTarget::accum_spot(light* L)
     }
 
     RCache.set_Scissor(0);
-    // CHK_DX		(HW.pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
-    // dwLightMarkerID					+=	2;	// keep lowest bit always setted up
-    increment_light_marker();
+    increment_light_marker(RCache);
 }
 
 void CRenderTarget::accum_volumetric(light* L)
@@ -234,12 +232,10 @@ void CRenderTarget::accum_volumetric(light* L)
         if (!m_bHasActiveVolumetric_spot)
         {
             m_bHasActiveVolumetric_spot = true;
-
-            constexpr FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-            HW.pContext->ClearRenderTargetView(rt_ssfx_volumetric->pRT, ColorRGBA);
+            RCache.ClearRT(rt_ssfx_volumetric, {});
         }
 
-        u_setrt(rt_ssfx_volumetric, NULL, NULL, NULL);
+        u_setrt(RCache, rt_ssfx_volumetric, NULL, NULL, NULL);
 
         RCache.set_Stencil(FALSE);
         RCache.set_CullMode(CULL_NONE);

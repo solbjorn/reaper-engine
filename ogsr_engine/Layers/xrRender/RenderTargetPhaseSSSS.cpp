@@ -35,7 +35,7 @@ void CRenderTarget::PhaseSSSS()
         ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
 
         RenderScreenQuad(Device.dwWidth, Device.dwHeight, dest_rt, s_ssss_mrmnwar->E[4], &consts);
-        HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
+        RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
     }
     else if (mode == SS_SS_OGSE)
     {
@@ -68,6 +68,6 @@ void CRenderTarget::PhaseSSSS()
         ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
 
         RenderScreenQuad(Device.dwWidth, Device.dwHeight, dest_rt, s_ssss_ogse->E[4], &consts);
-        HW.pContext->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
+        RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
     }
 }

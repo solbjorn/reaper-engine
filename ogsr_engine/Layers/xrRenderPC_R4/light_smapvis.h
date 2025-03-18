@@ -11,12 +11,13 @@ public:
     } state;
     xr_vector<dxRender_Visual*> invisible;
 
+    dxRender_Visual* testQ_V;
     u32 frame_sleep;
     u32 test_count;
     u32 test_current;
-    dxRender_Visual* testQ_V;
     u32 testQ_id;
     u32 testQ_frame;
+    ctx_id_t id{R__INVALID_CTX_ID};
     bool pending;
 
 public:
@@ -32,6 +33,5 @@ public:
     void resetoccq();
 
     IC bool sleep() { return Device.dwFrame > frame_sleep; }
-
-    virtual void rfeedback_static(dxRender_Visual* V);
+    virtual void rfeedback_static(dxRender_Visual* V) override;
 };

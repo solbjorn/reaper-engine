@@ -16,20 +16,21 @@ void CRender::render_menu()
 
     // Main Render
     {
-        Target->u_setrt(Target->rt_Generic_0, 0, 0, HW.pBaseZB); // LDR RT
+        Target->u_setrt(RCache, Target->rt_Generic_0, 0, 0, Target->rt_Base_Depth); // LDR RT
         g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
     }
 
     // Distort
     {
-        constexpr FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
-        Target->u_setrt(Target->rt_Generic_1, 0, 0, HW.pBaseZB); // Now RT is a distortion mask
-        HW.pContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
+        constexpr Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+
+        Target->u_setrt(RCache, Target->rt_Generic_1, 0, 0, Target->rt_Base_Depth); // Now RT is a distortion mask
+        RCache.ClearRT(Target->rt_Generic_1, ColorRGBA);
         g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
     }
 
     // Actual Display
-    Target->u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+    Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), NULL, NULL, Target->get_base_zb());
     RCache.set_Shader(Target->s_menu);
     RCache.set_Geometry(Target->g_menu);
 
@@ -60,9 +61,10 @@ void CRender::Render()
 {
     PIX_EVENT(CRender_Render);
 
+    auto& dsgraph = get_imm_context();
     VERIFY(dsgraph.mapDistort.empty());
 
-    rmNormal();
+    rmNormal(dsgraph.cmd_list);
 
     bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
     if (_menu_pp)
@@ -76,7 +78,7 @@ void CRender::Render()
 
     if (!(g_pGameLevel && g_hud) || bMenu)
     {
-        Target->u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
+        Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), NULL, NULL, Target->get_base_zb());
         return;
     }
 
@@ -90,9 +92,6 @@ void CRender::Render()
     o.distortion = FALSE; // disable distorion
     Fcolor sun_color = ((light*)Lights.sun._get())->color;
     const BOOL bSUN = ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
-
-    // HOM
-    HOM.wait_async();
 
     Target->phase_scene_prepare();
 
@@ -126,22 +125,29 @@ void CRender::Render()
     dsgraph.r_pmask(true, false); // disable priority "1"
     Device.Statistic->RenderCALC.End();
 
+    if (g_hud->RenderActiveItemUIQuery())
+        dsgraph.render_hud_ui();
+
     if (o.ssfx_core)
     {
         // HUD Masking rendering
-        constexpr FLOAT ColorRGBA[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-        HW.pContext->ClearRenderTargetView(Target->rt_ssfx_hud->pRT, ColorRGBA);
+        constexpr Fcolor ColorRGBA = {1.0f, 0.0f, 0.0f, 1.0f};
+        RCache.ClearRT(Target->rt_ssfx_hud, ColorRGBA);
 
-        Target->u_setrt(Target->rt_ssfx_hud, NULL, NULL, HW.pBaseZB);
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_hud, NULL, NULL, Target->get_base_zb());
         dsgraph.render_hud(true);
 
         // Reset Depth
-        HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH, 1.0f, 0);
+        RCache.ClearZB(Target->get_base_zb(), 1.0f);
     }
 
     if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
     {
-        Target->u_setrt(Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, !o.dx10_msaa ? HW.pBaseZB : Target->rt_MSAADepth->pZRT);
+        if (o.dx10_msaa)
+            Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->rt_MSAADepth);
+        else
+            Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->get_base_zb());
+
         dsgraph.render_landscape(0, false);
     }
 
@@ -155,8 +161,10 @@ void CRender::Render()
     //******* Occlusion testing of volume-limited light-sources
     Target->phase_occq();
     LP_normal.clear();
+
     if (o.dx10_msaa)
-        RCache.set_ZB(Target->rt_MSAADepth->pZRT);
+        RCache.set_ZB(Target->rt_MSAADepth);
+
     {
         PIX_EVENT(DEFER_TEST_LIGHT_VIS);
         // perform tests
@@ -171,7 +179,7 @@ void CRender::Render()
         LP_normal.v_point = LP.v_point;
         LP_normal.v_shadowed = LP.v_shadowed;
         LP_normal.v_spot = LP.v_spot;
-        LP_normal.vis_prepare();
+        LP_normal.vis_prepare(dsgraph.cmd_list);
     }
 
     //******* Main render :: PART-1 (second)
@@ -182,7 +190,7 @@ void CRender::Render()
     dsgraph.render_hud();
     dsgraph.render_lods(true, true);
     if (Details)
-        Details->Render(false);
+        Details->Render(dsgraph.cmd_list, false);
     if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
         dsgraph.render_landscape(1, true);
     Target->phase_scene_end();
@@ -205,7 +213,7 @@ void CRender::Render()
                 continue;
             // try
             //{
-            Lights_LastFrame[it]->svis.flushoccq();
+            Lights_LastFrame[it]->svis[dsgraph.context_id].flushoccq();
             /*}
             catch (...)
             {
@@ -247,6 +255,7 @@ void CRender::Render()
         if (o.ssfx_sss && !Device.m_SecondViewport.IsSVPFrame())
         {
             static bool sss_rendered, sss_extended_rendered;
+            constexpr Fcolor ColorRGBA = {1, 1, 1, 1};
 
             // SSS Shadows
             if (ps_ssfx_sss_quality.z > 0)
@@ -259,8 +268,7 @@ void CRender::Render()
                 if (sss_rendered) // Clear buffer
                 {
                     sss_rendered = false;
-                    constexpr FLOAT ColorRGBA[4] = {1, 1, 1, 1};
-                    HW.pContext->ClearRenderTargetView(Target->rt_ssfx_sss->pRT, ColorRGBA);
+                    RCache.ClearRT(Target->rt_ssfx_sss, ColorRGBA);
                 }
             }
 
@@ -275,8 +283,7 @@ void CRender::Render()
                 if (sss_extended_rendered) // Clear buffer
                 {
                     sss_extended_rendered = false;
-                    constexpr FLOAT ColorRGBA[4] = {1, 1, 1, 1};
-                    HW.pContext->ClearRenderTargetView(Target->rt_ssfx_sss_tmp->pRT, ColorRGBA);
+                    RCache.ClearRT(Target->rt_ssfx_sss_tmp, ColorRGBA);
                 }
             }
         }
@@ -310,9 +317,13 @@ void CRender::Render()
     if (o.ssfx_bloom)
     {
         // Render Emissive on `rt_ssfx_bloom_emissive`
-        constexpr FLOAT ColorRGBA[4] = {0, 0, 0, 0};
-        HW.pContext->ClearRenderTargetView(Target->rt_ssfx_bloom_emissive->pRT, ColorRGBA);
-        Target->u_setrt(Target->rt_ssfx_bloom_emissive, NULL, NULL, !o.dx10_msaa ? HW.pBaseZB : Target->rt_MSAADepth->pZRT);
+        RCache.ClearRT(Target->rt_ssfx_bloom_emissive, {});
+
+        if (o.dx10_msaa)
+            Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->rt_MSAADepth);
+        else
+            Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->get_base_zb());
+
         dsgraph.render_emissive(true, true);
     }
 
@@ -348,7 +359,9 @@ void CRender::Render()
 
 void CRender::render_forward()
 {
+    auto& dsgraph = get_imm_context();
     VERIFY(dsgraph.mapDistort.empty());
+
     o.distortion = true; // enable distorion
 
     //******* Main render - second order geometry (the one, that doesn't support deffering)
@@ -358,6 +371,10 @@ void CRender::render_forward()
     dsgraph.build_subspace(last_sector_id, ViewBase);
     //	Igor: we don't want to render old lods on next frame.
     dsgraph.mapLOD.clear();
+
+    if (g_hud->RenderActiveItemUIQuery())
+        dsgraph.render_hud_ui();
+
     dsgraph.render_graph(1); // normal level, secondary priority
     dsgraph.PortalTraverser.fade_render(); // faded-portals
     dsgraph.render_sorted(); // strict-sorted geoms

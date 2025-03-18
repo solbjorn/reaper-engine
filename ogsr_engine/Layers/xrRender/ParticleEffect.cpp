@@ -6,13 +6,13 @@
 using namespace PAPI;
 using namespace PS;
 
-static void ApplyTexgen(const Fmatrix& mVP)
+static void ApplyTexgen(CBackend& cmd_list, const Fmatrix& mVP)
 {
     Fmatrix mTexgen;
     static constexpr Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
 
     mTexgen.mul(mTexelAdjust, mVP);
-    RCache.set_c("mVPTexgen", mTexgen);
+    cmd_list.set_c("mVPTexgen", mTexgen);
 }
 
 void PS::OnEffectParticleBirth(void* owner, u32, PAPI::Particle& m, u32)
@@ -481,7 +481,7 @@ static void ParticleRenderStream(CParticleEffect& pPE, PAPI::Particle* particles
     }
 }
 
-void CParticleEffect::Render(float, bool)
+void CParticleEffect::Render(CBackend& cmd_list, float, bool)
 {
     u32 dwOffset, dwCount;
     // Get a pointer to the particles in gp memory
@@ -511,25 +511,25 @@ void CParticleEffect::Render(float, bool)
                                                      g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
                     Device.mFullTransform.mul(Device.mProject, Device.mView);
-                    RCache.set_xform_project(Device.mProject);
-                    RImplementation.rmNear();
-                    ApplyTexgen(Device.mFullTransform);
+                    cmd_list.set_xform_project(Device.mProject);
+                    RImplementation.rmNear(cmd_list);
+                    ApplyTexgen(cmd_list, Device.mFullTransform);
                 }
 
-                RCache.set_xform_world(Fidentity);
-                RCache.set_Geometry(geom);
+                cmd_list.set_xform_world(Fidentity);
+                cmd_list.set_Geometry(geom);
 
-                RCache.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling) ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_CCW : CULL_CW) : CULL_NONE);
-                RCache.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-                RCache.set_CullMode(CULL_CCW);
+                cmd_list.set_CullMode(m_Def->m_Flags.is(CPEDef::dfCulling) ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? CULL_CCW : CULL_CW) : CULL_NONE);
+                cmd_list.Render(D3DPT_TRIANGLELIST, dwOffset, 0, dwCount, 0, dwCount / 2);
+                cmd_list.set_CullMode(CULL_CCW);
 
                 if (GetHudMode())
                 {
-                    RImplementation.rmNormal();
+                    RImplementation.rmNormal(cmd_list);
                     Device.mProject = Pold;
                     Device.mFullTransform = FTold;
-                    RCache.set_xform_project(Device.mProject);
-                    ApplyTexgen(Device.mFullTransform);
+                    cmd_list.set_xform_project(Device.mProject);
+                    ApplyTexgen(cmd_list, Device.mFullTransform);
                 }
             }
         }

@@ -6,67 +6,66 @@
 // Volume texture width
 static class cl_textureWidth final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
-        RCache.set_c(C, tW);
+        cmd_list.set_c(C, tW);
     }
 } binder_textureWidth;
 
 // Volume texture height
 static class cl_textureHeight final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         float tH = (float)FluidManager.GetTextureHeight();
-        RCache.set_c(C, tH);
+        cmd_list.set_c(C, tH);
     }
 } binder_textureHeight;
 
 // Volume texture depth
 static class cl_textureDepth final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         float tD = (float)FluidManager.GetTextureDepth();
-        RCache.set_c(C, tD);
+        cmd_list.set_c(C, tD);
     }
 } binder_textureDepth;
 
 static class cl_gridDim final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
         float tH = (float)FluidManager.GetTextureHeight();
         float tD = (float)FluidManager.GetTextureDepth();
-        RCache.set_c(C, tW, tH, tD, 0.0f);
+        cmd_list.set_c(C, tW, tH, tD, 0.0f);
     }
 } binder_gridDim;
 
 static class cl_recGridDim final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
         float tH = (float)FluidManager.GetTextureHeight();
         float tD = (float)FluidManager.GetTextureDepth();
-        RCache.set_c(C, 1.0f / tW, 1.0f / tH, 1.0f / tD, 0.0f);
+        cmd_list.set_c(C, 1.0f / tW, 1.0f / tH, 1.0f / tD, 0.0f);
     }
 } binder_recGridDim;
 
 static class cl_maxDim final : public R_constant_setup
 {
-    void setup(R_constant* C) override
+    void setup(CBackend& cmd_list, R_constant* C) override
     {
         int tW = FluidManager.GetTextureWidth();
         int tH = FluidManager.GetTextureHeight();
         int tD = FluidManager.GetTextureDepth();
         float tMax = (float)_max(tW, _max(tH, tD));
-        RCache.set_c(C, (float)tMax);
+        cmd_list.set_c(C, (float)tMax);
     }
 } binder_maxDim;
-
 
 void BindConstants(CBlender_Compile& C)
 {
