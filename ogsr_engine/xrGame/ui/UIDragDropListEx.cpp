@@ -780,17 +780,14 @@ bool CUICellContainer::ValidCell(const Ivector2& pos) const { return !(pos.x < 0
 
 void CUICellContainer::ClearAll(bool bDestroy)
 {
-    {
-        UI_CELLS_VEC_IT it = m_cells.begin();
-        UI_CELLS_VEC_IT it_e = m_cells.end();
-        for (; it != it_e; ++it)
-            (*it).Clear();
-    }
+    for (auto& cell : m_cells)
+        cell.Clear();
+
     while (!m_ChildWndList.empty())
     {
         CUIWindow* w = m_ChildWndList.back();
         CUICellItem* wc = smart_cast<CUICellItem*>(w);
-        VERIFY(!wc->IsAutoDelete());
+        R_ASSERT(!wc->IsAutoDelete());
         DetachChild(wc);
 
         while (wc->ChildsCount())
@@ -799,13 +796,11 @@ void CUICellContainer::ClearAll(bool bDestroy)
             R_ASSERT(ci->ChildsCount() == 0);
 
             if (bDestroy)
-                delete_data(ci);
+                xr_delete(ci);
         }
 
         if (bDestroy)
-        {
-            delete_data(wc);
-        }
+            xr_delete(wc);
     }
 }
 
