@@ -8,18 +8,6 @@ class CUIDragDropListEx;
 class CUICellItem;
 class CUIProgressBar;
 
-class XR_NOVTABLE ICustomDrawCell : public virtual RTTI::Enable
-{
-    RTTI_DECLARE_TYPEINFO(ICustomDrawCell);
-
-public:
-    ~ICustomDrawCell() override = 0;
-
-    virtual void OnDraw(CUICellItem* cell) = 0;
-};
-
-inline ICustomDrawCell::~ICustomDrawCell() = default;
-
 class CUICellItem : public CUIStatic
 {
     RTTI_DECLARE_TYPEINFO(CUICellItem, CUIStatic);
@@ -33,7 +21,6 @@ protected:
     CUIDragDropListEx* m_pParentList{};
     Ivector2 m_grid_size;
     Fvector2 m_cell_size;
-    ICustomDrawCell* m_custom_draw{};
     int m_accelerator;
 
     CUIProgressBar* m_pConditionState{};
@@ -66,15 +53,18 @@ public:
     virtual CUIDragItem* CreateDragItem();
 
     CUIDragDropListEx* OwnerList() { return m_pParentList; }
+
     static CUICellItem* m_mouse_selected_item;
+
     void SetOwnerList(CUIDragDropListEx* p);
-    void SetCustomDraw(ICustomDrawCell* c);
+
     void* m_pData{};
     int m_index;
     bool m_b_already_drawn{};
-    bool m_b_destroy_childs;
+
     void ColorizeItems(std::initializer_list<CUIDragDropListEx*>);
     void UpdateConditionProgressBar();
+
     bool m_selected{};
     bool m_select_armament{};
     bool m_select_equipped{};
