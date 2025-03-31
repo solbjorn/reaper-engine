@@ -28,7 +28,7 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=haswell -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=haswell -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp -Xclang -stdlib=libc++ %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
 
     <Link>
