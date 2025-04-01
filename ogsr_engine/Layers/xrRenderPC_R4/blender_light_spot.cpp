@@ -14,13 +14,7 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_L_FILL: // masking
-        C.r_Pass("stub_notransform", "copy_nomsaa", false, FALSE, FALSE);
-        // C.r_Sampler			("s_base",			C.L_textures[0]);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
+    case SE_L_FILL: break;
     case SE_L_UNSHADOWED: // unshadowed
         C.r_Pass("accum_volume", "accum_spot_unshadowed_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
@@ -95,13 +89,7 @@ void CBlender_accum_spot_msaa::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-    case SE_L_FILL: // masking
-        C.r_Pass("stub_notransform", "copy_msaa", false, FALSE, FALSE);
-        // C.r_Sampler			("s_base",			C.L_textures[0]);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
+    case SE_L_FILL: break;
     case SE_L_UNSHADOWED: // unshadowed
         C.r_Pass("accum_volume", "accum_spot_unshadowed_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 

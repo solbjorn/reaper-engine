@@ -10,8 +10,7 @@ class CTextureDescrMngr
     struct texture_assoc
     {
         shared_str detail_name;
-        size_t usage;
-        texture_assoc() : usage(0) {}
+        size_t usage{};
     };
     struct texture_spec
     {
@@ -21,9 +20,8 @@ class CTextureDescrMngr
     };
     struct texture_desc
     {
-        texture_assoc* m_assoc;
-        texture_spec* m_spec;
-        texture_desc() : m_assoc(nullptr), m_spec(nullptr) {}
+        texture_assoc* m_assoc{};
+        texture_spec* m_spec{};
     };
 
     string_unordered_map<shared_str, texture_desc> m_texture_details;

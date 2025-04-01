@@ -20,10 +20,9 @@ typedef resptr_core<SInputSignature, resptr_base<SInputSignature>> ref_input_sig
 //////////////////////////////////////////////////////////////////////////
 struct SVS : public xr_resource_named
 {
-    ID3DVertexShader* vs;
+    ID3DVertexShader* vs{};
     R_constant_table constants;
     ref_input_sign signature;
-    SVS();
     ~SVS();
 };
 typedef resptr_core<SVS, resptr_base<SVS>> ref_vs;

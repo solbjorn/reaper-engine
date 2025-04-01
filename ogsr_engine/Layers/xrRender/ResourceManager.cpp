@@ -135,8 +135,6 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
 
     // Parse names
     _ParseList(C.L_textures, s_textures);
-    _ParseList(C.L_constants, s_constants);
-    _ParseList(C.L_matrices, s_matrices);
 
     if (RImplementation.hud_loading && RImplementation.o.ssfx_hud_raindrops)
         C.HudElement = true;

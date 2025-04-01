@@ -336,8 +336,6 @@
     <ClInclude Include="..\xrRender\Shader.h" />
     <ClInclude Include="..\xrRender\ShaderResourceTraits.h" />
     <ClInclude Include="..\xrRender\SH_Atomic.h" />
-    <ClInclude Include="..\xrRender\SH_Constant.h" />
-    <ClInclude Include="..\xrRender\SH_Matrix.h" />
     <ClInclude Include="..\xrRender\SH_RT.h" />
     <ClInclude Include="..\xrRender\SH_Texture.h" />
     <ClInclude Include="..\xrRender\SkeletonAnimated.h" />
@@ -368,7 +366,6 @@
     <ClInclude Include="blender_light_mask.h" />
     <ClInclude Include="blender_light_occq.h" />
     <ClInclude Include="blender_light_point.h" />
-    <ClInclude Include="blender_light_reflected.h" />
     <ClInclude Include="blender_light_spot.h" />
     <ClInclude Include="blender_luminance.h" />
     <ClInclude Include="cl_intersect.h" />
@@ -448,7 +445,6 @@
     <ClCompile Include="..\xrRender\dxFontRender.cpp" />
     <ClCompile Include="..\xrRender\dxLensFlareRender.cpp" />
     <ClCompile Include="..\xrRender\dxObjectSpaceRender.cpp" />
-    <ClCompile Include="..\xrRender\dxParticleCustom.cpp" />
     <ClCompile Include="..\xrRender\dxRainRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderDeviceRender.cpp" />
     <ClCompile Include="..\xrRender\dxRenderFactory.cpp" />
@@ -511,8 +507,6 @@
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp" />
     <ClCompile Include="..\xrRender\Shader.cpp" />
     <ClCompile Include="..\xrRender\SH_Atomic.cpp" />
-    <ClCompile Include="..\xrRender\SH_Constant.cpp" />
-    <ClCompile Include="..\xrRender\SH_Matrix.cpp" />
     <ClCompile Include="..\xrRender\SkeletonAnimated.cpp" />
     <ClCompile Include="..\xrRender\SkeletonCustom.cpp" />
     <ClCompile Include="..\xrRender\SkeletonRigid.cpp" />
@@ -541,10 +535,8 @@
     <ClCompile Include="blender_light_mask.cpp" />
     <ClCompile Include="blender_light_occq.cpp" />
     <ClCompile Include="blender_light_point.cpp" />
-    <ClCompile Include="blender_light_reflected.cpp" />
     <ClCompile Include="blender_light_spot.cpp" />
     <ClCompile Include="blender_luminance.cpp" />
-    <ClCompile Include="..\xrRender\Light_Render_Direct.cpp" />
     <ClCompile Include="..\xrRender\Light_Render_Direct_ComputeXFS.cpp" />
     <ClCompile Include="light_smapvis.cpp" />
     <ClCompile Include="light_vis.cpp" />
@@ -559,7 +551,6 @@
     <ClCompile Include="r4_rendertarget_accum_omnipart_geom.cpp" />
     <ClCompile Include="r4_rendertarget_accum_point.cpp" />
     <ClCompile Include="r4_rendertarget_accum_point_geom.cpp" />
-    <ClCompile Include="r4_rendertarget_accum_reflected.cpp" />
     <ClCompile Include="r4_rendertarget_accum_spot.cpp" />
     <ClCompile Include="r4_rendertarget_accum_spot_geom.cpp" />
     <ClCompile Include="r4_rendertarget_draw_rain.cpp" />

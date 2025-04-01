@@ -12,17 +12,15 @@ class CBlender_Compile
 {
 public:
     sh_list L_textures;
-    sh_list L_constants;
-    sh_list L_matrices;
 
     LPCSTR detail_texture;
     R_constant_setup* detail_scaler;
 
+    int iElement;
     BOOL bDetail;
     BOOL bDetail_Diffuse;
     BOOL bDetail_Bump;
     BOOL bUseSteepParallax;
-    int iElement;
     bool HudElement{};
 
 public:
@@ -40,13 +38,11 @@ public:
     u32 TessMethod;
 
 private:
+    u32 dwStage;
+
     SPass dest;
     R_constant_table ctable;
-
     STextureList passTextures;
-    SMatrixList passMatrices;
-    SConstantList passConstants;
-    u32 dwStage;
 
     string128 pass_vs;
     string128 pass_ps;

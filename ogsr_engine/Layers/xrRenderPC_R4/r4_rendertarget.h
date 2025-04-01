@@ -23,7 +23,6 @@ public:
     IBlender* b_accum_direct;
     IBlender* b_accum_point;
     IBlender* b_accum_spot;
-    IBlender* b_accum_reflected;
     IBlender* b_bloom;
     IBlender* b_luminance;
     IBlender* b_combine;
@@ -36,7 +35,6 @@ public:
     IBlender* b_accum_direct_volumetric_msaa[1];
     IBlender* b_accum_volumetric_msaa[1];
     IBlender* b_accum_point_msaa[1];
-    IBlender* b_accum_reflected_msaa[1];
     IBlender* b_blur;
     IBlender* b_dof;
     IBlender* b_gasmask_drops;
@@ -80,7 +78,6 @@ public:
 
     //
     ref_rt rt_Accumulator; // 64bit		(r,g,b,specular)
-    ref_rt rt_Accumulator_temp; // only for HW which doesn't feature fp16 blend
     ref_rt rt_Generic_0; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     ref_rt rt_Generic_1; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 
@@ -186,7 +183,6 @@ private:
     ref_shader s_accum_direct_volumetric;
     ref_shader s_accum_point;
     ref_shader s_accum_spot;
-    ref_shader s_accum_reflected;
     ref_shader s_accum_volume;
     ref_shader s_blur;
     ref_shader s_dof;
@@ -203,7 +199,6 @@ private:
     ref_shader s_mark_msaa_edges;
     ref_shader s_accum_point_msaa[1];
     ref_shader s_accum_spot_msaa[1];
-    ref_shader s_accum_reflected_msaa[1];
     ref_shader s_accum_volume_msaa[1];
 
     // Screen Space Shaders Stuff
@@ -375,7 +370,6 @@ public:
     void accum_direct_volumetric(u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
     void accum_point(light* L);
     void accum_spot(light* L);
-    void accum_reflected(light* L);
     //	Igor: for volumetric lights
     void accum_volumetric(light* L);
     void phase_bloom();

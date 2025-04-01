@@ -12,7 +12,7 @@
 
 struct SPrimitiveBuffer
 {
-    ref_geom pGeom;
+    ref_geom pGeom{};
     u32 v_cnt;
     u32 i_cnt;
     D3DPRIMITIVETYPE p_type;
@@ -22,8 +22,8 @@ struct SPrimitiveBuffer
     void RenderDP() { DU_DRAW_DP(p_type, pGeom, 0, p_cnt); }
 
 public:
-    SPrimitiveBuffer() : OnRender(CallMe::Delegate<void()>()), pGeom(0) { ; }
-    void CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices = 0, u32 _i_cnt = 0);
+    SPrimitiveBuffer() : OnRender(CallMe::Delegate<void()>()) {}
+    void CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, const void* vertices, u32 _v_cnt, const u16* indices = nullptr, u32 _i_cnt = 0) {}
     void Destroy();
     void Render() { OnRender(); }
 };

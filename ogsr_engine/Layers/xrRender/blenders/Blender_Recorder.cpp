@@ -123,8 +123,6 @@ void CBlender_Compile::PassBegin()
 {
     RS.Invalidate();
     passTextures.clear();
-    passMatrices.clear();
-    passConstants.clear();
     xr_strcpy(pass_ps, "null");
     xr_strcpy(pass_vs, "null");
     ctable.clear();

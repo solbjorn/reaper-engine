@@ -10,8 +10,6 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BO
     RS.Invalidate();
     ctable.clear();
     passTextures.clear();
-    passMatrices.clear();
-    passConstants.clear();
     dwStage = 0;
 
     // Setup FF-units (Z-buffer, blender)

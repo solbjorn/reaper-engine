@@ -66,11 +66,6 @@ constexpr u32 m_SelectionRect = D3DCOLOR_RGBA(127, 255, 127, 64);
 
 constexpr u32 m_ColorSafeRect = 0xffB040B0;
 
-void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)
-{
-    //	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
-    //	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
-}
 void SPrimitiveBuffer::Destroy()
 {
     if (pGeom)

@@ -41,7 +41,6 @@ public:
         POINT = 1,
         SPOT = 2,
         OMNIPART = 3,
-        REFLECTED = 4,
     };
 
 public:

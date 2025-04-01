@@ -5,8 +5,6 @@
 
 ///////////////////////////////////////////////////////////////////////
 //	SVS
-SVS::SVS() : vs(0) {}
-
 SVS::~SVS()
 {
     DEV->_DeleteVS(this);
@@ -34,11 +32,13 @@ SHS::~SHS()
     _RELEASE(sh);
     DEV->_DeleteHS(this);
 }
+
 SDS::~SDS()
 {
     _RELEASE(sh);
     DEV->_DeleteDS(this);
 }
+
 SCS::~SCS()
 {
     _RELEASE(sh);
@@ -53,6 +53,7 @@ SInputSignature::SInputSignature(ID3DBlob* pBlob)
     signature = pBlob;
     signature->AddRef();
 };
+
 SInputSignature::~SInputSignature()
 {
     _RELEASE(signature);

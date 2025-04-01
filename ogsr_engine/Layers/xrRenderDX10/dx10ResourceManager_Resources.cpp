@@ -72,7 +72,6 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
     P->cs = proto.cs;
     P->constants = proto.constants;
     P->T = proto.T;
-    P->C = proto.C;
 
     return P;
 }
@@ -127,12 +126,9 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         _vs->skinning = skinning;
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_vs.insert(mk_pair(_vs->set_name(name), _vs));
-        //_vs->vs				= NULL;
-        //_vs->signature		= NULL;
+
         if (0 == stricmp(_name, "null"))
-        {
             return _vs;
-        }
 
         string_path shName;
         {
@@ -366,8 +362,6 @@ SDeclaration* CResourceManager::_CreateDecl(const D3DVERTEXELEMENT9* dcl)
     // Create _new
     SDeclaration* D = v_declarations.emplace_back(xr_new<SDeclaration>());
     u32 dcl_size = FVF::GetDeclLength(dcl) + 1;
-    //	Don't need it for DirectX 10 here
-    // CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
     D->dcl_code.assign(dcl, dcl + dcl_size);
     dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
     D->dwFlags |= xr_resource_flagged::RF_REGISTERED;
@@ -490,7 +484,6 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 
 CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 {
-    // DBG_VerifyTextures	();
     if (0 == xr_strcmp(_Name, "null"))
         return nullptr;
 
@@ -515,8 +508,6 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 
 void CResourceManager::_DeleteTexture(const CTexture* T)
 {
-    // DBG_VerifyTextures	();
-
     if (0 == (T->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
     LPSTR N = LPSTR(*T->cName);
@@ -567,50 +558,6 @@ void CResourceManager::_DeleteTextureList(const STextureList* L)
     if (reclaim(lst_textures, L))
         return;
     Msg("! ERROR: Failed to find compiled list of textures");
-}
-
-void CResourceManager::_DeleteMatrixList(const SMatrixList* L)
-{
-    if (0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))
-        return;
-    if (reclaim(lst_matrices, L))
-        return;
-    Msg("! ERROR: Failed to find compiled list of xform-defs");
-}
-
-SConstantList* CResourceManager::_CreateConstantList(SConstantList& L)
-{
-    BOOL bEmpty = TRUE;
-    for (const auto& constant : L)
-    {
-        if (constant)
-        {
-            bEmpty = FALSE;
-            break;
-        }
-    }
-
-    if (bEmpty)
-        return nullptr;
-
-    for (SConstantList* base : lst_constants)
-    {
-        if (L.equal(*base))
-            return base;
-    }
-
-    SConstantList* lst = lst_constants.emplace_back(xr_new<SConstantList>(L));
-    lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-
-    return lst;
-}
-void CResourceManager::_DeleteConstantList(const SConstantList* L)
-{
-    if (0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))
-        return;
-    if (reclaim(lst_constants, L))
-        return;
-    Msg("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 
 dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ctx_id_t context_id, ID3DShaderReflectionConstantBuffer* pTable)

@@ -11,8 +11,6 @@
 
 #include "sh_atomic.h"
 #include "sh_texture.h"
-#include "sh_matrix.h"
-#include "sh_constant.h"
 #include "sh_rt.h"
 
 using sh_list = xr_vector<shared_str>;
@@ -51,18 +49,6 @@ struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32
     u32 find_texture_stage(const shared_str& TexName) const;
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
-//////////////////////////////////////////////////////////////////////////
-struct SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
-{
-    ~SMatrixList();
-};
-typedef resptr_core<SMatrixList, resptr_base<SMatrixList>> ref_matrix_list;
-//////////////////////////////////////////////////////////////////////////
-struct SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
-{
-    ~SConstantList();
-};
-typedef resptr_core<SConstantList, resptr_base<SConstantList>> ref_constant_list;
 
 //////////////////////////////////////////////////////////////////////////
 struct SGeometry : public xr_resource_flagged
@@ -97,9 +83,7 @@ struct SPass : public xr_resource_flagged
     ref_cs cs; // may be NULL = don't use compute shader at all
 
     ref_ctable constants; // may be NULL
-
     ref_texture_list T;
-    ref_constant_list C;
 
     SPass() = default;
     ~SPass();
@@ -162,9 +146,6 @@ enum SE_R1
     SE_R1_LMODELS = 4, // lighting info for models or shadowing from models
 };
 
-// #define		SE_R2_NORMAL_HQ		0	// high quality/detail
-// #define		SE_R2_NORMAL_LQ		1	// low quality
-// #define		SE_R2_SHADOW		2	// shadow generation
 //	E[3] - can use for night vision but need to extend SE_R1. Will need
 //	Extra shader element.
 //	E[4] - distortion or self illumination(self emission).

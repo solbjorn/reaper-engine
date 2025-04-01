@@ -61,8 +61,6 @@ private:
 
     // lists
     xr_vector<STextureList*> lst_textures;
-    xr_vector<SMatrixList*> lst_matrices;
-    xr_vector<SConstantList*> lst_constants;
 
     // main shader-array
     xr_vector<SPass*> v_passes;
@@ -147,11 +145,6 @@ public:
 
     STextureList* _CreateTextureList(STextureList& L);
     void _DeleteTextureList(const STextureList* L);
-
-    void _DeleteMatrixList(const SMatrixList* L);
-
-    SConstantList* _CreateConstantList(SConstantList& L);
-    void _DeleteConstantList(const SConstantList* L);
 
     ShaderElement* _CreateElement(ShaderElement&& L);
     void _DeleteElement(const ShaderElement* L);

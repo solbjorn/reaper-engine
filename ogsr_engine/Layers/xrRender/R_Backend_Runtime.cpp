@@ -47,10 +47,7 @@ void CBackend::Invalidate()
     cs = 0;
 
     ctable = NULL;
-
     T = NULL;
-    M = NULL;
-    C = NULL;
 
     stencil_enable = u32(-1);
     stencil_func = u32(-1);

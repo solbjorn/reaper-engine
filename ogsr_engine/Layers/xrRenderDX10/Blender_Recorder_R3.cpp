@@ -192,8 +192,6 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
     RS.Invalidate();
     ctable.clear();
     passTextures.clear();
-    passMatrices.clear();
-    passConstants.clear();
     dwStage = 0;
 
     // Setup FF-units (Z-buffer, blender)
@@ -249,8 +247,5 @@ void CBlender_Compile::r_End()
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
-    dest.C = 0;
-    ref_matrix_list temp(0);
     SH->passes.push_back(DEV->_CreatePass(dest));
-    // SH->passes.push_back	(DEV->_CreatePass(dest.state,dest.ps,dest.vs,dest.gs,dest.constants,dest.T,temp,dest.C));
 }

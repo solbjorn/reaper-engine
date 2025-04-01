@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "light.h"
 
-constexpr float SQRT2 = 1.4142135623730950488016887242097f;
 constexpr float RSQRTDIV2 = 0.70710678118654752440084436210485f;
 
 light::light(void) : ISpatial(g_SpatialSpace)
@@ -165,11 +164,7 @@ void light::spatial_move()
 {
     switch (flags.type)
     {
-    case IRender_Light::REFLECTED:
-    case IRender_Light::POINT: {
-        spatial.sphere.set(position, range);
-    }
-    break;
+    case IRender_Light::POINT: spatial.sphere.set(position, range); break;
     case IRender_Light::SPOT: {
         // minimal enclosing sphere around cone
         VERIFY2(cone < deg2rad(121.f), "Too large light-cone angle. Maybe you have passed it in 'degrees'?");
@@ -269,7 +264,6 @@ void light::xform_calc()
     // switch
     switch (flags.type)
     {
-    case IRender_Light::REFLECTED:
     case IRender_Light::POINT: {
         // scale of identity sphere
         float L_R = range;
@@ -339,7 +333,6 @@ void light::export_to(light_Package& package)
                     {
                         L->s_point_msaa[i] = s_point_msaa[i];
                         L->s_spot_msaa[i] = s_spot_msaa[i];
-                        // L->s_volumetric_msaa[i] = s_volumetric_msaa[i];
                     }
                 }
 

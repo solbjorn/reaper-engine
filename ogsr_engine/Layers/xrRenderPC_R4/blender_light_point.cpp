@@ -13,14 +13,7 @@ void CBlender_accum_point::Compile(CBlender_Compile& C)
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
     switch (C.iElement)
     {
-    case SE_L_FILL: // fill projective
-        // C.r_Pass			("null", 			"copy",						false,	FALSE,	FALSE);
-        C.r_Pass("stub_notransform", "copy_nomsaa", false, FALSE, FALSE);
-        // C.r_Sampler			("s_base",			C.L_textures[0]	);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
+    case SE_L_FILL: break;
     case SE_L_UNSHADOWED: // unshadowed
         C.r_Pass("accum_volume", "accum_omni_unshadowed_nomsaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 
@@ -92,14 +85,7 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
     switch (C.iElement)
     {
-    case SE_L_FILL: // fill projective
-        // C.r_Pass			("null", 			"copy",						false,	FALSE,	FALSE);
-        C.r_Pass("stub_notransform", "copy_msaa", false, FALSE, FALSE);
-        // C.r_Sampler			("s_base",			C.L_textures[0]	);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
+    case SE_L_FILL: break;
     case SE_L_UNSHADOWED: // unshadowed
         C.r_Pass("accum_volume", "accum_omni_unshadowed_msaa", false, FALSE, FALSE, blend, D3DBLEND_ONE, dest);
 

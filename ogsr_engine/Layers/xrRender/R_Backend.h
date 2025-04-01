@@ -1,6 +1,5 @@
 #ifndef r_backendH
 #define r_backendH
-#pragma once
 
 // #define RBackend_PGO
 
@@ -133,8 +132,6 @@ private:
 
     // Lists
     STextureList* T;
-    SMatrixList* M;
-    SConstantList* C;
 
     // Lists-expanded
     CTexture* textures_ps[CTexture::mtMaxPixelShaderTextures]; // stages

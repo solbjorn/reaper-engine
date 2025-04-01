@@ -12,10 +12,6 @@
 //
 STextureList::~STextureList() { DEV->_DeleteTextureList(this); }
 
-SMatrixList::~SMatrixList() { DEV->_DeleteMatrixList(this); }
-
-SConstantList::~SConstantList() { DEV->_DeleteConstantList(this); }
-
 SPass::~SPass() { DEV->_DeletePass(this); }
 
 ShaderElement::~ShaderElement() { DEV->_DeleteElement(this); }
@@ -58,8 +54,7 @@ bool SPass::equal(const SPass& other) const
         return false; // is this nessesary??? (ps+vs already combines)
     if (T != other.T)
         return false;
-    if (C != other.C)
-        return false;
+
     return true;
 }
 

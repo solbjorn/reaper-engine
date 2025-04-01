@@ -1,11 +1,11 @@
 #include "stdafx.h"
+
 #include "../xrRender/resourcemanager.h"
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
 #include "blender_light_point.h"
 #include "blender_light_spot.h"
-#include "blender_light_reflected.h"
 #include "blender_combine.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
@@ -213,7 +213,6 @@ CRenderTarget::CRenderTarget()
     b_accum_direct = xr_new<CBlender_accum_direct>();
     b_accum_point = xr_new<CBlender_accum_point>();
     b_accum_spot = xr_new<CBlender_accum_spot>();
-    b_accum_reflected = xr_new<CBlender_accum_reflected>();
     b_bloom = xr_new<CBlender_bloom_build>();
     if (RImplementation.o.dx10_msaa)
     {
@@ -257,14 +256,12 @@ CRenderTarget::CRenderTarget()
             b_accum_spot_msaa[i] = xr_new<CBlender_accum_spot_msaa>();
             b_accum_volumetric_msaa[i] = xr_new<CBlender_accum_volumetric_msaa>();
             b_accum_point_msaa[i] = xr_new<CBlender_accum_point_msaa>();
-            b_accum_reflected_msaa[i] = xr_new<CBlender_accum_reflected_msaa>();
             static_cast<CBlender_accum_direct_mask_msaa*>(b_accum_mask_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_direct_volumetric_msaa*>(b_accum_direct_volumetric_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_direct_msaa*>(b_accum_direct_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_volumetric_msaa*>(b_accum_volumetric_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_spot_msaa*>(b_accum_spot_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_accum_point_msaa*>(b_accum_point_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
-            static_cast<CBlender_accum_reflected_msaa*>(b_accum_reflected_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
             static_cast<CBlender_combine_msaa*>(b_combine_msaa[i])->SetDefine("ISAMPLE", SampleDefs[i]);
         }
     }
@@ -491,18 +488,6 @@ CRenderTarget::CRenderTarget()
         g_accum_volumetric.create(D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
     }
 
-    // REFLECTED
-    {
-        s_accum_reflected.create(b_accum_reflected, "r2\\accum_refl");
-        if (RImplementation.o.dx10_msaa)
-        {
-            for (int i = 0; i < 1; ++i)
-            {
-                s_accum_reflected_msaa[i].create(b_accum_reflected_msaa[i], "null");
-            }
-        }
-    }
-
     // BLOOM
     {
         constexpr D3DFORMAT fmt = D3DFMT_A8R8G8B8; //;		// D3DFMT_X8R8G8B8
@@ -708,7 +693,6 @@ CRenderTarget::~CRenderTarget()
     xr_delete(b_combine);
     xr_delete(b_luminance);
     xr_delete(b_bloom);
-    xr_delete(b_accum_reflected);
     xr_delete(b_accum_spot);
     xr_delete(b_accum_point);
     xr_delete(b_accum_direct);
@@ -740,11 +724,9 @@ CRenderTarget::~CRenderTarget()
             xr_delete(b_accum_direct_msaa[i]);
             xr_delete(b_accum_mask_msaa[i]);
             xr_delete(b_accum_direct_volumetric_msaa[i]);
-            // xr_delete					(b_accum_direct_volumetric_sun_msaa[i]);
             xr_delete(b_accum_spot_msaa[i]);
             xr_delete(b_accum_volumetric_msaa[i]);
             xr_delete(b_accum_point_msaa[i]);
-            xr_delete(b_accum_reflected_msaa[i]);
         }
 
         xr_delete(b_postprocess_msaa);
