@@ -9,9 +9,7 @@ dx103DFluidData::dx103DFluidData()
 {
     D3D_TEXTURE3D_DESC desc{};
     desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
-    desc.CPUAccessFlags = 0;
     desc.MipLevels = 1;
-    desc.MiscFlags = 0;
     desc.Usage = D3D_USAGE_DEFAULT;
     desc.Width = FluidManager.GetTextureWidth();
     desc.Height = FluidManager.GetTextureHeight();
@@ -20,7 +18,6 @@ dx103DFluidData::dx103DFluidData()
     D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
     SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
     SRVDesc.Texture3D.MipLevels = 1;
-    SRVDesc.Texture3D.MostDetailedMip = 0;
 
     for (int rtIndex = 0; rtIndex < VP_NUM_TARGETS; rtIndex++)
     {
@@ -52,8 +49,6 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
     D3D_RENDER_TARGET_VIEW_DESC DescRT{};
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
-    DescRT.Texture3D.FirstWSlice = 0;
-    DescRT.Texture3D.MipSlice = 0;
     DescRT.Texture3D.WSize = TexDesc.Depth;
 
     CHK_DX(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
@@ -143,12 +138,12 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
     u32 iEmittersNum = ini.r_u32("volume", "EmittersNum");
 
     m_Emitters.clear();
-    m_Emitters.reserve(iEmittersNum);
+    m_Emitters.resize(iEmittersNum);
 
     for (u32 i = 0; i < iEmittersNum; ++i)
     {
         string32 EmitterSectionName{};
-        CEmitter& Emitter = m_Emitters.emplace_back();
+        CEmitter& Emitter = m_Emitters[i];
 
         xr_sprintf(EmitterSectionName, "emitter%02d", i);
 

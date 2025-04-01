@@ -6,7 +6,7 @@
 #ifdef MASTER_GOLD
 
 #define PIX_EVENT_CTX(C, Name) \
-    static_assert(sizeof(C)); \
+    static_assert(sizeof(C) == sizeof(CBackend)); \
     static_assert(std::char_traits<wchar_t>::length(L## #Name))
 
 #else

@@ -31,7 +31,6 @@ ref_constant R_constant_table::get(const shared_str& S) const
     return nullptr;
 }
 
-/// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
 {
     if (!T)
@@ -41,9 +40,8 @@ void R_constant_table::merge(R_constant_table* T)
     xr_vector<ref_constant> table_tmp;
     table_tmp.reserve(table.size());
 
-    for (u32 it = 0; it < T->table.size(); it++)
+    for (ref_constant src : T->table)
     {
-        ref_constant src = T->table[it];
         ref_constant C = get(*src->name);
         if (!C)
         {
@@ -59,6 +57,7 @@ void R_constant_table::merge(R_constant_table* T)
             C->cs = src->cs;
             C->samp = src->samp;
             C->handler = src->handler;
+
             table_tmp.push_back(C);
         }
         else

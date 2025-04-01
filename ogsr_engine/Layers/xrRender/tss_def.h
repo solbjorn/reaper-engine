@@ -1,8 +1,6 @@
 #ifndef TSS_DEF_H
 #define TSS_DEF_H
 
-#pragma once
-
 class SimulatorStates
 {
 private:
@@ -18,6 +16,7 @@ private:
             v2 = b;
             v3 = 0;
         }
+
         IC void set_TSS(u32 a, u32 b, u32 c)
         {
             type = 1;
@@ -25,6 +24,7 @@ private:
             v2 = b;
             v3 = c;
         }
+
         IC void set_SAMP(u32 a, u32 b, u32 c)
         {
             type = 2;
@@ -51,4 +51,5 @@ public:
     void UpdateDesc(D3D_BLEND_DESC& desc) const;
     void UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex) const;
 };
+
 #endif

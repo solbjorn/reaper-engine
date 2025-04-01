@@ -23,7 +23,7 @@ void CRender::level_Load(IReader* fs)
     R_ASSERT(!b_loaded);
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load...");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -31,7 +31,7 @@ void CRender::level_Load(IReader* fs)
 
     // Begin
     pApp->LoadBegin();
-    Device.m_pRender->DeferredLoad(TRUE);
+    Resources->DeferredLoad(TRUE);
 
     IReader* chunk;
 
@@ -62,35 +62,33 @@ void CRender::level_Load(IReader* fs)
     Wallmarks = xr_new<CWallmarksEngine>();
     Details = xr_new<CDetailManager>();
 
+    // VB,IB,SWI
+    g_pGamePersistent->LoadTitle("st_loading_geometry");
     {
-        // VB,IB,SWI
-        g_pGamePersistent->LoadTitle("st_loading_geometry");
-        {
-            CStreamReader* geom = FS.rs_open("$level$", "level.geom");
-            R_ASSERT2(geom, "level.geom");
-            LoadBuffers(geom, FALSE);
-            LoadSWIs(geom);
-            FS.r_close(geom);
-        }
-
-        //...and alternate/fast geometry
-        {
-            CStreamReader* geom = FS.rs_open("$level$", "level.geomx");
-            R_ASSERT2(geom, "level.geomX");
-            LoadBuffers(geom, TRUE);
-            FS.r_close(geom);
-        }
-
-        // Visuals
-        g_pGamePersistent->LoadTitle("st_loading_spatial_db");
-        chunk = fs->open_chunk(fsL_VISUALS);
-        LoadVisuals(chunk);
-        chunk->close();
-
-        // Details
-        g_pGamePersistent->LoadTitle("st_loading_details");
-        Details->Load();
+        CStreamReader* geom = FS.rs_open("$level$", "level.geom");
+        R_ASSERT2(geom, "level.geom");
+        LoadBuffers(geom, FALSE);
+        LoadSWIs(geom);
+        FS.r_close(geom);
     }
+
+    //...and alternate/fast geometry
+    {
+        CStreamReader* geom = FS.rs_open("$level$", "level.geomx");
+        R_ASSERT2(geom, "level.geomX");
+        LoadBuffers(geom, TRUE);
+        FS.r_close(geom);
+    }
+
+    // Visuals
+    g_pGamePersistent->LoadTitle("st_loading_spatial_db");
+    chunk = fs->open_chunk(fsL_VISUALS);
+    LoadVisuals(chunk);
+    chunk->close();
+
+    // Details
+    g_pGamePersistent->LoadTitle("st_loading_details");
+    Details->Load();
 
     // Sectors
     g_pGamePersistent->LoadTitle("st_loading_sectors_portals");
@@ -103,14 +101,14 @@ void CRender::level_Load(IReader* fs)
     HOM.Load();
 
     // Lights
-    // pApp->LoadTitle			("Loading lights...");
+    g_pGamePersistent->LoadTitle("st_loading_lights");
     LoadLights(fs);
 
     // End
     pApp->LoadEnd();
 
     // u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load completed!");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -128,7 +126,7 @@ void CRender::level_Unload()
         return;
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload...");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -191,7 +189,7 @@ void CRender::level_Unload()
     Shaders.clear();
 
     // u32 m_base, c_base, m_lmaps, c_lmaps;
-    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload completed!");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);

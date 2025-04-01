@@ -3,6 +3,7 @@
 struct SMAP_Rect
 {
     Ivector2 min, max;
+
     bool intersect(SMAP_Rect& R)
     {
         if (max.x < R.min.x)
@@ -15,6 +16,7 @@ struct SMAP_Rect
             return false;
         return true;
     }
+
     bool valid()
     {
         if (min.x == max.x)
@@ -23,11 +25,13 @@ struct SMAP_Rect
             return false;
         return true;
     }
+
     void setup(Ivector2& p, u32 size)
     {
         min = max = p;
         max.add(size - 1);
     }
+
     void get_cp(Ivector2& p0, Ivector2& p1)
     {
         p0.set(max.x + 1, min.y); // right
@@ -37,10 +41,11 @@ struct SMAP_Rect
 
 class SMAP_Allocator
 {
-    u32 psize; // pool size
+private:
     xr_vector<SMAP_Rect> stack; //
     xr_vector<Ivector2> cpoint; // critical points
-private:
+    u32 psize; // pool size
+
     void _add(SMAP_Rect& R)
     {
         stack.push_back(R);
@@ -60,6 +65,7 @@ public:
         stack.clear();
         cpoint.clear();
     }
+
     BOOL push(SMAP_Rect& R, u32 _size)
     {
         VERIFY(_size <= psize && _size > 4);

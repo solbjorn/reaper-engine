@@ -4,23 +4,14 @@
 
 #include "../../xrCore/xrPool.h"
 #include "../xrRender/r_constants.h"
-
-#include "../xrRender/dxRenderDeviceRender.h"
-
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
 {
-    // VERIFY(_desc);
-    // ID3D10ShaderReflectionConstantBuffer *pTable = (ID3D10ShaderReflectionConstantBuffer *)_desc;
     VERIFY(pTable);
     D3D_SHADER_BUFFER_DESC TableDesc{};
     CHK_DX(pTable->GetDesc(&TableDesc));
 
-    // D3DXSHADER_CONSTANTTABLE* desc	= (D3DXSHADER_CONSTANTTABLE*) _desc;
-    // D3DXSHADER_CONSTANTINFO* it		= (D3DXSHADER_CONSTANTINFO*) (LPBYTE(desc)+desc->ConstantInfo);
-    // LPBYTE					 ptr	= LPBYTE(desc);
-    // for (u32 dwCount = desc->Constants; dwCount; dwCount--,it++)
     for (u32 i = 0; i < TableDesc.Variables; ++i)
     {
         ID3DShaderReflectionVariable* pVar;
@@ -36,11 +27,9 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         pType->GetDesc(&TypeDesc);
 
         // Name
-        // LPCSTR	name		=	LPCSTR(ptr+it->Name);
         LPCSTR name = VarDesc.Name;
 
         // Type
-        // u16		type		=	RC_float;
         u16 type = u16(-1);
         switch (TypeDesc.Type)
         {
@@ -51,16 +40,13 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         }
 
         // Rindex,Rcount
-        // u16		r_index		=	it->RegisterIndex;
         //	Used as byte offset in constant buffer
         VERIFY(VarDesc.StartOffset < 0x10000);
         u16 r_index = u16(VarDesc.StartOffset);
         u16 r_type = u16(-1);
 
         // TypeInfo + class
-        // D3DXSHADER_TYPEINFO*	T	= (D3DXSHADER_TYPEINFO*)(ptr+it->TypeInfo);
         BOOL bSkip = FALSE;
-        // switch (T->Class)
         switch (TypeDesc.Class)
         {
         case D3D10_SVC_SCALAR: r_type = RC_1x1; break;
@@ -81,24 +67,8 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
                 switch (TypeDesc.Rows)
                 {
                 case 2: r_type = RC_2x4; break;
-                case 3:
-                    r_type = RC_3x4;
-                    break;
-                    /*
-                    switch (it->RegisterCount)
-                    {
-                    case 2:	r_type	=	RC_2x4;	break;
-                    case 3: r_type	=	RC_3x4;	break;
-                    default:
-                    fatal		("MATRIX_ROWS: unsupported number of RegisterCount");
-                    break;
-                    }
-                    break;
-                    */
-                case 4:
-                    r_type = RC_4x4;
-                    // VERIFY(4 == it->RegisterCount);
-                    break;
+                case 3: r_type = RC_3x4; break;
+                case 4: r_type = RC_4x4; break;
                 default: fatal("MATRIX_ROWS: unsupported number of Rows"); break;
                 }
                 break;
@@ -108,45 +78,10 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         break;
         case D3D10_SVC_MATRIX_COLUMNS: fatal("Pclass MATRIX_COLUMNS unsupported"); break;
         case D3D10_SVC_STRUCT: fatal("Pclass D3DXPC_STRUCT unsupported"); break;
-        case D3D10_SVC_OBJECT: {
+        case D3D10_SVC_OBJECT:
             //	TODO: DX10:
             VERIFY(!"Implement shader object parsing.");
-            /*
-            switch (T->Type)
-            {
-            case D3DXPT_SAMPLER:
-            case D3DXPT_SAMPLER1D:
-            case D3DXPT_SAMPLER2D:
-            case D3DXPT_SAMPLER3D:
-            case D3DXPT_SAMPLERCUBE:
-            {
-            // ***Register sampler***
-            // We have determined all valuable info, search if constant already created
-            ref_constant	C		=	get	(name);
-            if (!C)	{
-            C					=	xr_new<R_constant>();//.g_constant_allocator.create();
-            C->name				=	name;
-            C->destination		=	RC_dest_sampler;
-            C->type				=	RC_sampler;
-            R_constant_load& L	=	C->samp;
-            L.index				=	u16(r_index	+ ( (destination&1)? 0 : D3DVERTEXTEXTURESAMPLER0 ));
-            L.cls				=	RC_sampler	;
-            table.push_back		(C);
-            } else {
-            R_ASSERT			(C->destination	==	RC_dest_sampler);
-            R_ASSERT			(C->type		==	RC_sampler);
-            R_constant_load& L	=	C->samp;
-            R_ASSERT			(L.index		==	r_index);
-            R_ASSERT			(L.cls			==	RC_sampler);
-            }
-            }
-            break;
-            default:
-            fatal		("Pclass D3DXPC_OBJECT - object isn't of 'sampler' type");
-            break;
-            }
-            */
-        }
+
             bSkip = TRUE;
             break;
         default: bSkip = TRUE; break;
@@ -196,8 +131,6 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
         }
 
         VERIFY(ResDesc.BindCount == 1);
-
-        // u16	r_index = u16( ResDesc.BindPoint + ((destination&1)? 0 : CTexture::rstVertex) );
 
         u16 r_index = u16(-1);
 
@@ -305,15 +238,11 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
             {
                 //	Encode buffer index into destination
                 u32 updatedDest = destination;
-                updatedDest |= iBuf << dest_to_shift_value(destination); /*((destination&RC_dest_pixel)
-                     ? RC_dest_pixel_cb_index_shift : (destination&RC_dest_vertex)
-                     ? RC_dest_vertex_cb_index_shift : RC_dest_geometry_cb_index_shift);*/
+                updatedDest |= iBuf << dest_to_shift_value(destination);
 
                 //	Encode bind dest (pixel/vertex buffer) and bind point index
                 u32 uiBufferIndex = iBuf;
-                uiBufferIndex |= dest_to_cbuf_type(destination); /*(destination&RC_dest_pixel)
-                     ? CB_BufferPixelShader : (destination&RC_dest_vertex)
-                     ? CB_BufferVertexShader : CB_BufferGeometryShader;*/
+                uiBufferIndex |= dest_to_cbuf_type(destination);
 
                 parseConstants(pTable, updatedDest);
 

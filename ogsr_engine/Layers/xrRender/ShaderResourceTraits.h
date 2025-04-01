@@ -13,6 +13,7 @@ struct ShaderTypeTraits<SHS>
 
     static inline const char* GetShaderExt() { return ".hs"; }
     static inline const char* GetCompilationTarget() { return "hs_5_0"; }
+
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
         DXIface* hs = 0;
@@ -31,6 +32,7 @@ struct ShaderTypeTraits<SDS>
 
     static inline const char* GetShaderExt() { return ".ds"; }
     static inline const char* GetCompilationTarget() { return "ds_5_0"; }
+
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
         DXIface* hs = 0;
@@ -49,6 +51,7 @@ struct ShaderTypeTraits<SCS>
 
     static inline const char* GetShaderExt() { return ".cs"; }
     static inline const char* GetCompilationTarget() { return "cs_5_0"; }
+
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
         DXIface* cs = 0;

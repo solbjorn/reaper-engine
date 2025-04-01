@@ -1,6 +1,5 @@
 #ifndef dx10ConstantBuffer_impl_included
 #define dx10ConstantBuffer_impl_included
-#pragma once
 
 IC Fvector4* dx10ConstantBuffer::Access(u16 offset)
 {
@@ -17,8 +16,6 @@ IC Fvector4* dx10ConstantBuffer::Access(u16 offset)
 IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fmatrix& A)
 {
     VERIFY(RC_float == C->type);
-    //	TEST
-    // return;
 
     Fmatrix trans;
     trans.transpose(A);
@@ -27,20 +24,17 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fmatrix
     switch (L.cls)
     {
     case RC_2x4:
-        // c_f.dirty			(L.index,L.index+2);
         VERIFY(u32((u32)L.index + 2 * lineSize) <= m_uiBufferSize);
         it->vm[0].set(trans.vm[0]);
         it->vm[1].set(trans.vm[1]);
         break;
     case RC_3x4:
-        // c_f.dirty			(L.index,L.index+3);
         VERIFY(u32((u32)L.index + 3 * lineSize) <= m_uiBufferSize);
         it->vm[0].set(trans.vm[0]);
         it->vm[1].set(trans.vm[1]);
         it->vm[2].set(trans.vm[2]);
         break;
     case RC_4x4:
-        // c_f.dirty			(L.index,L.index+4);
         VERIFY(u32((u32)L.index + 4 * lineSize) <= m_uiBufferSize);
         *it = trans;
         break;
@@ -57,8 +51,6 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fvector
 {
     VERIFY(RC_float == C->type);
     VERIFY(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
-    // Fvector4*	it	= Access(L.index);
-    // it->set	(A);
 
     VERIFY(u32((u32)L.index + lineSize) <= m_uiBufferSize);
     Fvector4* it = Access(L.index);
@@ -79,9 +71,6 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, float A)
     float* it = (float*)Access(L.index);
     VERIFY(u32((u32)L.index + sizeof(float)) <= m_uiBufferSize);
     *it = A;
-
-    // c_f.access	(L.index)->set	(A);
-    // c_f.dirty	(L.index,L.index+1);
 }
 
 IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, int A)
@@ -91,15 +80,10 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, int A)
     int* it = (int*)Access(L.index);
     VERIFY(u32((u32)L.index + sizeof(int)) <= m_uiBufferSize);
     *it = A;
-
-    // c_f.access	(L.index)->set	(A);
-    // c_f.dirty	(L.index,L.index+1);
 }
 
 IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A)
 {
-    //	TEST
-    // return;
     VERIFY(RC_float == C->type);
 
     Fmatrix trans;
@@ -110,9 +94,6 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
     switch (L.cls)
     {
     case RC_2x4:
-        // base				= L.index + 2*e;
-        // it					= c_f.access	(base);
-        // c_f.dirty			(base,base+2);
         base = (u32)L.index + 2 * lineSize * e;
         it = reinterpret_cast<Fmatrix*>(Access((u16)base));
         VERIFY((base + 2 * lineSize) <= m_uiBufferSize);
@@ -120,9 +101,6 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
         it->vm[1].set(trans.vm[1]);
         break;
     case RC_3x4:
-        // base				= L.index + 3*e;
-        // it					= c_f.access	(base);
-        // c_f.dirty			(base,base+3);
         base = (u32)L.index + 3 * lineSize * e;
         it = reinterpret_cast<Fmatrix*>(Access((u16)base));
         VERIFY((base + 3 * lineSize) <= m_uiBufferSize);
@@ -131,9 +109,6 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
         it->vm[2].set(trans.vm[2]);
         break;
     case RC_4x4:
-        // base				= L.index + 4*e;
-        // it					= c_f.access	(base);
-        // c_f.dirty			(base,base+4);
         base = (u32)L.index + 4 * lineSize * e;
         it = reinterpret_cast<Fmatrix*>(Access((u16)base));
         VERIFY((base + 4 * lineSize) <= m_uiBufferSize);
@@ -150,8 +125,6 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
 
 IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A)
 {
-    //	TEST
-    // return;
     VERIFY(RC_float == C->type);
     VERIFY(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
 
@@ -160,10 +133,6 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
     Fvector4* it = Access((u16)base);
     VERIFY((base + lineSize) <= m_uiBufferSize);
     it->set(A);
-
-    // u32			base	= L.index + e;
-    // c_f.access	(base)->set	(A);
-    // c_f.dirty	(base,base+1);
 }
 
 IC void* dx10ConstantBuffer::AccessDirect(R_constant_load& L, size_t DataSize)
@@ -179,7 +148,9 @@ IC void* dx10ConstantBuffer::AccessDirect(R_constant_load& L, size_t DataSize)
         return res;
     }
     else
-        return 0;
+    {
+        return nullptr;
+    }
 }
 
 #endif //	dx10ConstantBuffer_impl_included

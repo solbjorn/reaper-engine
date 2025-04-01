@@ -452,21 +452,12 @@ void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_ble
                 E = blend_cycles[part].end();
                 I--;
             }
-            // else{
-            //	CMotionDef* m_def						= m_Motions[B.motionID.slot].motions.motion_def(B.motionID.idx);
-            //	float timeCurrent						= B.timeCurrent;
-            //	xr_vector<motion_marks>::iterator it	= m_def->marks.begin();
-            //	xr_vector<motion_marks>::iterator it_e	= m_def->marks.end();
-            //	for(;it!=it_e; ++it)
-            //	{
-            //		if( (*it).pick_mark(timeCurrent) )
-            //	}
-            // }
         }
     }
 
     LL_UpdateFxTracks(dt);
 }
+
 void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
 {
     // FX
@@ -535,23 +526,7 @@ void CKinematicsAnimated::UpdateTracks()
     LL_UpdateTracks(dt, false, false);
 }
 
-void CKinematicsAnimated::Release()
-{
-    // xr_free bones
-    //.	for (u32 i=0; i<bones->size(); i++)
-    //.	{
-    //.		CBoneDataAnimated* B	= (CBoneDataAnimated*)(*bones)[i];
-    //.		B->Motions.clear		();
-    //.	}
-
-    // destroy shared data
-    //.	xr_delete(partition);
-    //.	xr_delete(motion_map);
-    //.	xr_delete(m_cycle);
-    //.	xr_delete(m_fx);
-
-    inherited::Release();
-}
+void CKinematicsAnimated::Release() { inherited::Release(); }
 
 CKinematicsAnimated::~CKinematicsAnimated() { IBoneInstances_Destroy(); }
 CKinematicsAnimated::CKinematicsAnimated()
@@ -731,9 +706,6 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 
     // Init blend pool
     IBlend_Startup();
-
-    //.	if (motions.cycle()->size()<2)
-    //.		Msg("* WARNING: model '%s' has only one motion. Candidate for SkeletonRigid???",N);
 }
 
 void CKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys)

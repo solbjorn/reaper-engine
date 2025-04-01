@@ -169,6 +169,5 @@ void CRenderTarget::phase_luminance()
     }
 
     // Cleanup states
-    // CHK_DX		(HW.pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
     RCache.set_Z(TRUE);
 }

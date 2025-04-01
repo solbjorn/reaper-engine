@@ -150,10 +150,8 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
                           STYPE_RENDERABLE, center, size);
 
     // Determine visibility for dynamic part of scene
-    for (u32 i = 0; i < m_lstRenderables.size(); ++i)
+    for (ISpatial* spatial : m_lstRenderables)
     {
-        ISpatial* spatial = m_lstRenderables[i];
-
         CObject* pObject = spatial->dcast_CObject();
         if (!pObject)
             continue;
@@ -175,7 +173,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
         }
     }
 
-    if (!(m_lstShells.size() || m_lstElements.size()))
+    if (m_lstShells.empty() && m_lstElements.empty())
         return;
 
     RCache.set_Element(m_ObstacleTechnique[OS_DynamicOOBB]);
@@ -186,27 +184,21 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     RCache.set_c(strWorldToLocal, WorldToFluid);
     RCache.set_c(strLocalToWorld, FluidToWorld);
 
-    int iShellsNum = m_lstShells.size();
-    for (int i = 0; i < iShellsNum; ++i)
-    {
-        RenderPhysicsShell(m_lstShells[i], WorldToFluid, timestep);
-    }
+    for (IPhysicsShell* shell : m_lstShells)
+        RenderPhysicsShell(shell, WorldToFluid, timestep);
 
-    int iElementsNum = m_lstElements.size();
-    for (int i = 0; i < iElementsNum; ++i)
-    {
-        RenderPhysicsElement(*m_lstElements[i], WorldToFluid, timestep);
-    }
+    for (IPhysicsElement* element : m_lstElements)
+        RenderPhysicsElement(*element, WorldToFluid, timestep);
 }
 
 //	TODO: DX10: Do it using instancing.
 void dx103DFluidObstacles::RenderPhysicsShell(IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
 {
     u16 iObstNum = pShell->get_ElementsNumber();
+
     for (u16 i = 0; i < iObstNum; ++i)
     {
         IPhysicsElement& Element = pShell->IElement(i);
-
         RenderPhysicsElement(Element, WorldToFluid, timestep);
     }
 }

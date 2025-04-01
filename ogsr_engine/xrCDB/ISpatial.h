@@ -171,7 +171,6 @@ public:
 
     // managing
     void initialize(const Fbox& BB);
-    // void							destroy			();
     void insert(ISpatial* S);
     void remove(ISpatial* S);
     void update(u32 nodes = 8);

@@ -69,7 +69,6 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
             if (desc.MiscFlags & D3D_RESOURCE_MISC_TEXTURECUBE)
             {
                 ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
-                ViewDesc.TextureCube.MostDetailedMip = 0;
                 ViewDesc.TextureCube.MipLevels = desc.MipLevels;
             }
             else
@@ -207,7 +206,6 @@ void CTexture::apply_theora(CBackend& cmd_list, u32 dwStage)
         int _pos = 0;
         pTheora->DecompressFrame((u32*)mapData.pData, _w - pTheora->Width(true), _pos);
         VERIFY(u32(_pos) == pTheora->Height(true) * _w);
-        // R_CHK				(T2D->UnlockRect(0));
         pContext->Unmap(T2D, 0);
     }
 
@@ -231,7 +229,6 @@ void CTexture::apply_avi(CBackend& cmd_list, u32 dwStage) const
         BYTE* ptr;
         pAVI->GetFrame(&ptr);
         CopyMemory(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
-        // R_CHK	(T2D->UnlockRect(0));
         pContext->Unmap(T2D, 0);
     }
 
@@ -329,7 +326,6 @@ void CTexture::Load(const char* Name)
             desc.Usage = D3D_USAGE_DYNAMIC;
             desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
             desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-            desc.MiscFlags = 0;
             HRESULT hrr = HW.pDevice->CreateTexture2D(&desc, nullptr, &pTexture);
 
             if (FAILED(hrr))
@@ -370,11 +366,9 @@ void CTexture::Load(const char* Name)
             desc.ArraySize = 1;
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             desc.SampleDesc.Count = 1;
-            desc.SampleDesc.Quality = 0;
             desc.Usage = D3D_USAGE_DYNAMIC;
             desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
             desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-            desc.MiscFlags = 0;
             HRESULT hrr = HW.pDevice->CreateTexture2D(&desc, nullptr, &pTexture);
 
             if (FAILED(hrr))

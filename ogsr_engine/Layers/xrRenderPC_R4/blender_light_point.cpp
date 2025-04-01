@@ -77,9 +77,9 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
     IBlender::Compile(C);
 
     if (Name)
-        ::Render->m_MSAASample = atoi(Definition);
+        RImplementation.m_MSAASample = atoi(Definition);
     else
-        ::Render->m_MSAASample = -1;
+        RImplementation.m_MSAASample = -1;
 
     constexpr BOOL blend = true;
     constexpr D3DBLEND dest = blend ? D3DBLEND_ONE : D3DBLEND_ZERO;
@@ -139,5 +139,5 @@ void CBlender_accum_point_msaa::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     }
-    ::Render->m_MSAASample = -1;
+    RImplementation.m_MSAASample = -1;
 }

@@ -21,7 +21,6 @@ void _VertexStream::Create()
     bufferDesc.Usage = D3D_USAGE_DYNAMIC;
     bufferDesc.BindFlags = D3D_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-    bufferDesc.MiscFlags = 0;
 
     R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pVB));
     HW.stats_manager.increment_stats_vb(pVB);
@@ -174,15 +173,14 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
     // If either user forced us to flush,
     // or there is not enough space for the index data,
     // then flush the buffer contents
-    bool bFlush = false;
+    D3D_MAP MapMode = D3D_MAP_WRITE_NO_OVERWRITE;
     if (2 * (Count + mPosition) >= mSize)
     {
         mPosition = 0; // clear position
-        bFlush = true; // discard it's contens
+        MapMode = D3D_MAP_WRITE_DISCARD; // discard it's contens
         mDiscardID++;
     }
 
-    D3D_MAP MapMode = bFlush ? D3D_MAP_WRITE_DISCARD : D3D_MAP_WRITE_NO_OVERWRITE;
     HW.get_imm_context()->Map(pIB, 0, MapMode, 0, &MappedSubRes);
     pLockedData = (BYTE*)MappedSubRes.pData;
     pLockedData += mPosition * 2;
@@ -208,8 +206,5 @@ void _IndexStream::reset_begin()
     old_pIB = pIB;
     Destroy();
 }
-void _IndexStream::reset_end()
-{
-    Create();
-    // old_pIB				= NULL;
-}
+
+void _IndexStream::reset_end() { Create(); }

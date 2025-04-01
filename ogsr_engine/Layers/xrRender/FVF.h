@@ -23,7 +23,7 @@ struct alignas(16) L
     }
 };
 static_assert(sizeof(struct L) == 16);
-const u32 F_L = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+constexpr u32 F_L = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 
 struct V
 {
@@ -44,7 +44,7 @@ struct V
     }
 };
 static_assert(sizeof(struct V) == 20);
-const u32 F_V = D3DFVF_XYZ | D3DFVF_TEX1;
+constexpr u32 F_V = D3DFVF_XYZ | D3DFVF_TEX1;
 
 struct alignas(8) LIT
 {
@@ -66,7 +66,7 @@ struct alignas(8) LIT
     }
 };
 static_assert(sizeof(struct LIT) == 24);
-const u32 F_LIT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+constexpr u32 F_LIT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL0uv
 {
@@ -96,7 +96,7 @@ struct TL0uv
     };
 };
 static_assert(sizeof(struct TL0uv) == 20);
-const u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
+constexpr u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 
 struct TL
 {
@@ -131,7 +131,7 @@ struct TL
     };
 };
 static_assert(sizeof(struct TL) == 28);
-const u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+constexpr u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct TL2uv
 {
@@ -168,7 +168,7 @@ struct TL2uv
     };
 };
 static_assert(sizeof(struct TL2uv) == 36);
-const u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+constexpr u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 
 struct TL4uv
 {
@@ -194,7 +194,7 @@ struct TL4uv
     };
 };
 static_assert(sizeof(struct TL4uv) == 52);
-const u32 F_TL4uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
+constexpr u32 F_TL4uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
 }; // namespace FVF
 
 //-----------------------------------------------------------------------------

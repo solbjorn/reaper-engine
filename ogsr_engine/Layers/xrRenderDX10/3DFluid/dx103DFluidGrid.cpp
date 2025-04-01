@@ -125,16 +125,16 @@ void dx103DFluidGrid::InitScreenSlice(VS_INPUT_FLUIDSIM_STRUCT** vertices, int z
     VS_INPUT_FLUIDSIM_STRUCT tempVertex4;
 
     // compute the offset (px, py) in the "flat 3D-texture" space for the slice with given 'z' coordinate
-    int column = z % m_iCols;
-    int row = (int)floorf((float)(z / m_iCols));
-    int px = column * m_vDim[0];
-    int py = row * m_vDim[1];
+    const int column = z % m_iCols;
+    const int row = (int)floorf((float)(z / m_iCols));
+    const int px = column * m_vDim[0];
+    const int py = row * m_vDim[1];
 
-    float w = float(m_vDim[0]);
-    float h = float(m_vDim[1]);
+    const float w = float(m_vDim[0]);
+    const float h = float(m_vDim[1]);
 
-    float Width = float(m_iCols * m_vDim[0]);
-    float Height = float(m_iRows * m_vDim[1]);
+    const float Width = float(m_iCols * m_vDim[0]);
+    const float Height = float(m_iRows * m_vDim[1]);
 
     tempVertex1.Pos.set(px * 2.0f / Width - 1.0f, -(py * 2.0f / Height) + 1.0f, 0.0f);
     tempVertex1.Tex.set(0, 0, float(z));
@@ -163,8 +163,8 @@ void dx103DFluidGrid::InitSlice(int z, VS_INPUT_FLUIDSIM_STRUCT** vertices, int&
     VS_INPUT_FLUIDSIM_STRUCT tempVertex3;
     VS_INPUT_FLUIDSIM_STRUCT tempVertex4;
 
-    int w = m_vDim[0];
-    int h = m_vDim[1];
+    const int w = m_vDim[0];
+    const int h = m_vDim[1];
 
     tempVertex1.Pos.set(1 * 2.0f / w - 1.0f, -1 * 2.0f / h + 1.0f, 0.0f);
     tempVertex1.Tex.set(1.0f, 1.0f, float(z));

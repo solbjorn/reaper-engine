@@ -57,17 +57,10 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs&
             StateDecs descCandidate;
             m_StateArray[i].m_pState->GetDesc(&descCandidate);
             if (descCandidate == desc)
-            // return i;
-            //	TEST
             {
-                // return i;
                 res = i;
                 break;
             }
-            // else
-            //{
-            //	VERIFY(0);
-            // }
         }
     }
 

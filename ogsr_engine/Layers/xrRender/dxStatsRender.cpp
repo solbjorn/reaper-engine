@@ -1,7 +1,7 @@
 #include "stdafx.h"
+
 #include "dxStatsRender.h"
 #include "../../xr_3da/GameFont.h"
-#include "dxRenderDeviceRender.h"
 
 void dxStatsRender::Copy(IStatsRender& _in) { *this = *((dxStatsRender*)&_in); }
 

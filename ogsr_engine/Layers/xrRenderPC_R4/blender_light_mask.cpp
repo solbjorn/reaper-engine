@@ -51,9 +51,9 @@ void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
     IBlender::Compile(C);
 
     if (Name)
-        ::Render->m_MSAASample = atoi(Definition);
+        RImplementation.m_MSAASample = atoi(Definition);
     else
-        ::Render->m_MSAASample = -1;
+        RImplementation.m_MSAASample = -1;
 
     switch (C.iElement)
     {
@@ -80,5 +80,5 @@ void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
     case SE_MASK_ACCUM_2D: break;
     case SE_MASK_ALBEDO: break;
     }
-    ::Render->m_MSAASample = -1;
+    RImplementation.m_MSAASample = -1;
 }

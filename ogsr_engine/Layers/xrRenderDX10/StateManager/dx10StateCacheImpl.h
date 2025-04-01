@@ -1,6 +1,5 @@
 #ifndef dx10StateCacheImpl_included
 #define dx10StateCacheImpl_included
-#pragma once
 
 #include "../dx10StateUtils.h"
 
@@ -49,18 +48,11 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs
         {
             StateDecs descCandidate;
             m_StateArray[i].m_pState->GetDesc(&descCandidate);
-            // if ( !memcmp(&descCandidate, &desc, sizeof(desc)) )
             if (descCandidate == desc)
-            // break;
-            //	TEST
             {
                 res = i;
                 break;
             }
-            // else
-            //{
-            //	VERIFY(0);
-            // }
         }
     }
 

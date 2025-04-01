@@ -5,7 +5,7 @@
 #include "../../xr_3da/Rain.h"
 
 // Warning: duplicated in rain.cpp
-static const int max_desired_items = std::thread::hardware_concurrency() < 3u ? 1500 : 2500;
+constexpr float max_desired_items = 2500;
 constexpr float source_radius = 15; // 12.5f;
 constexpr float source_offset = 20.f; // 40
 constexpr float max_distance = source_offset * 1.5f; // 1.25f;
@@ -257,7 +257,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     Prepare();
 
     float _drop_speed = 1.0f;
-    int rain_max_particles = max_desired_items;
+    float rain_max_particles = max_desired_items;
     float rain_radius = source_radius;
 
     // SSS Rain shader is available
@@ -268,7 +268,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
         rain_radius = ps_ssfx_rain_drops_setup.y;
     }
 
-    const size_t desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * float(rain_max_particles));
+    const size_t desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * rain_max_particles);
 
     if (size_t sz = owner.items.size(); sz < desired_items)
     {

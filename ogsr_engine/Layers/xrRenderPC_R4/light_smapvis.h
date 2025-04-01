@@ -9,6 +9,7 @@ public:
         state_working = 1,
         state_usingTC = 3,
     } state;
+
     xr_vector<dxRender_Visual*> invisible;
 
     dxRender_Visual* testQ_V;

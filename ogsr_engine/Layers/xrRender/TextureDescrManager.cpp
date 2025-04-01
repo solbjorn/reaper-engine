@@ -40,7 +40,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
         FS.update_path(fn, initial, file.name.c_str());
         CInifile ini(fn);
 
-        tbb::spin_mutex lock;
+        oneapi::tbb::spin_mutex lock;
         if (ini.section_exist("association"))
         {
             auto& Sect = ini.r_section("association");
@@ -48,7 +48,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
             m_texture_details.reserve(m_texture_details.size() + Sect.Data.size());
             m_detail_scalers.reserve(m_detail_scalers.size() + Sect.Data.size());
 
-            tbb::parallel_for_each(Sect.Data, [&](auto item) {
+            oneapi::tbb::parallel_for_each(Sect.Data, [&](auto item) {
                 lock.lock();
                 texture_desc& desc = m_texture_details[item.first];
                 cl_dt_scaler*& dts = m_detail_scalers[item.first];
@@ -85,7 +85,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
 
             m_texture_details.reserve(m_texture_details.size() + Sect.Data.size());
 
-            tbb::parallel_for_each(Sect.Data, [&](auto item) {
+            oneapi::tbb::parallel_for_each(Sect.Data, [&](auto item) {
                 lock.lock();
                 texture_desc& desc = m_texture_details[item.first];
                 lock.unlock();
@@ -120,8 +120,8 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
     m_texture_details.reserve(m_texture_details.size() + flist.size());
     m_detail_scalers.reserve(m_detail_scalers.size() + flist.size());
 
-    tbb::spin_mutex lock;
-    tbb::parallel_for_each(flist, [&](auto it) {
+    oneapi::tbb::spin_mutex lock;
+    oneapi::tbb::parallel_for_each(flist, [&](auto it) {
         string_path fn;
         FS.update_path(fn, initial, it.name.c_str());
         IReader* F = FS.r_open(fn);
@@ -171,7 +171,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
                 xr_delete(desc.m_spec);
 
             desc.m_spec = xr_new<texture_spec>();
-            desc.m_spec->m_material = static_cast<float>(tp.material) + (tp.material < 4 ? tp.material_weight : 0);
+            desc.m_spec->m_material = (float)(tp.material) + (tp.material < 4 ? tp.material_weight : 0);
             desc.m_spec->m_use_steep_parallax = false;
 
             if (tp.bump_mode == STextureParams::tbmUse)

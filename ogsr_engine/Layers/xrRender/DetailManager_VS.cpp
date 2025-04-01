@@ -22,7 +22,7 @@ struct vertHW
 };
 static_assert(sizeof(vertHW) == 20);
 
-short QC(float v)
+static short QC(float v)
 {
     int t = iFloor(v * float(quant));
     clamp(t, -32768, 32767);

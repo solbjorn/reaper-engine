@@ -1,8 +1,7 @@
 #include "stdafx.h"
 
-
-#include "tss_def.h"
 #include "../xrRenderDX10/dx10StateUtils.h"
+#include "tss_def.h"
 
 IDirect3DStateBlock9* SimulatorStates::record()
 {

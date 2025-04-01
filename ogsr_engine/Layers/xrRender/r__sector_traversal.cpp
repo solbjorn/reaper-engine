@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "dxRenderDeviceRender.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 #include "fvf.h"

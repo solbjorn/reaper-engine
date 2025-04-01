@@ -1,16 +1,9 @@
 #include "stdafx.h"
-#include "dx10State.h"
 
+#include "dx10State.h"
 #include "dx10StateCache.h"
 
 dx10State::dx10State() : m_pRasterizerState(0), m_pDepthStencilState(0), m_pBlendState(0), m_uiStencilRef(UINT(-1)), m_uiAlphaRef(0) {}
-
-dx10State::~dx10State()
-{
-    //	m_pRasterizerState is a weak link
-    //	m_pDepthStencilState is a weak link
-    //	m_pBlendState is a weak link
-}
 
 dx10State* dx10State::Create(SimulatorStates& state_code)
 {

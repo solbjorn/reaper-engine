@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "dxUIRender.h"
 
+#include "dxUIRender.h"
 #include "dxUIShader.h"
 
 dxUIRender UIRenderImpl;

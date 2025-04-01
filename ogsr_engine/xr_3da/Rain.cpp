@@ -16,7 +16,7 @@ constexpr float drop_angle = deg2rad(15.0f); // 3.0
 constexpr float drop_speed_min = 40.f;
 constexpr float drop_speed_max = 80.f;
 
-constexpr int max_particles = 1000;
+constexpr u32 max_particles = 1000;
 constexpr float particles_time = .3f;
 
 //////////////////////////////////////////////////////////////////////

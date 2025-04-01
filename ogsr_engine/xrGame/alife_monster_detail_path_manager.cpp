@@ -133,7 +133,7 @@ void CALifeMonsterDetailPathManager::actualize()
     }
 
     m_walked_distance = 0.f;
-    std::reverse(m_path.begin(), m_path.end());
+    std::ranges::reverse(m_path);
     VERIFY(m_path.back() == object().m_tGraphID);
 }
 

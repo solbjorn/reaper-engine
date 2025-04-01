@@ -5,7 +5,6 @@
 #include "device.h"
 #include "EngineAPI.h"
 #include "isheduled.h"
-// #include "iinputreceiver.h"
 #include "irenderable.h"
 #include "icollidable.h"
 
@@ -17,8 +16,8 @@ class NET_Packet;
 class CSE_Abstract;
 
 //-----------------------------------------------------------------------------------------------------------
-#define CROW_RADIUS (30.f)
-#define CROW_RADIUS2 (60.f)
+constexpr float CROW_RADIUS = 30.f;
+constexpr float CROW_RADIUS2 = 60.f;
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------

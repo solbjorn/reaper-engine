@@ -233,7 +233,7 @@ void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatr
     // and reverse if needed
     if (P.classify(vBase) < 0)
     {
-        std::reverse(poly->begin(), poly->end());
+        std::ranges::reverse(*poly);
         P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
     }
 

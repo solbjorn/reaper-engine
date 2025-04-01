@@ -3,23 +3,17 @@
 
 namespace dx10BufferUtils
 {
-
 HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable, bool bIndexBuffer)
 {
     D3D_BUFFER_DESC desc{};
     desc.ByteWidth = DataSize;
-    // desc.Usage = bImmutable ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DEFAULT;
     desc.Usage = D3D_USAGE_DEFAULT;
     desc.BindFlags = bIndexBuffer ? D3D_BIND_INDEX_BUFFER : D3D_BIND_VERTEX_BUFFER;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
 
     D3D_SUBRESOURCE_DATA subData{};
     subData.pSysMem = pData;
 
-    HRESULT res = HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
-    // R_CHK(res);
-    return res;
+    return HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
 }
 
 HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable) { return CreateBuffer(ppBuffer, pData, DataSize, bImmutable, false); }
@@ -33,11 +27,8 @@ HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
     desc.Usage = D3D_USAGE_DYNAMIC;
     desc.BindFlags = D3D_BIND_CONSTANT_BUFFER;
     desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-    desc.MiscFlags = 0;
 
-    HRESULT res = HW.pDevice->CreateBuffer(&desc, 0, ppBuffer);
-    // R_CHK(res);
-    return res;
+    return HW.pDevice->CreateBuffer(&desc, 0, ppBuffer);
 }
 
 struct VertexFormatPairs
@@ -139,5 +130,4 @@ void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vec
     if (iDeclSize >= 0)
         ZeroMemory(&declOut[iDeclSize], sizeof(declOut[iDeclSize]));
 }
-
 }; // namespace dx10BufferUtils

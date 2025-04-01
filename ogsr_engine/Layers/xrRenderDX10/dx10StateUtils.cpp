@@ -6,7 +6,6 @@
 
 namespace dx10StateUtils
 {
-
 D3D_FILL_MODE ConvertFillMode(D3DFILLMODE Mode)
 {
     switch (Mode)
@@ -449,5 +448,4 @@ void ValidateState(D3D_SAMPLER_DESC& desc)
         desc.MaxAnisotropy = 1;
     }
 }
-
 }; // namespace dx10StateUtils
