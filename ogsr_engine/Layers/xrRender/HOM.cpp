@@ -31,8 +31,7 @@ CHOM::CHOM()
 
 CHOM::~CHOM()
 {
-    tg->cancel();
-    tg->put();
+    tg->cancel_put();
 
 #ifdef DEBUG
     Device.seqRender.Remove(this);

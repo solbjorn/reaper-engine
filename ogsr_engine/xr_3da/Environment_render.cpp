@@ -60,9 +60,7 @@ void CEnvironment::OnDeviceCreate()
 
 void CEnvironment::OnDeviceDestroy()
 {
-    tg->cancel();
-    tg->put();
-
+    tg->cancel_put();
     m_pRender->OnDeviceDestroy();
     CurrentEnv->destroy();
 }

@@ -18,6 +18,12 @@ public:
         wait();
         put();
     }
+
+    void cancel_put()
+    {
+        cancel();
+        put();
+    }
 };
 
 inline xr_task_group& xr_task_group_get()

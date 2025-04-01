@@ -97,8 +97,7 @@ CDetailManager::CDetailManager()
 
 CDetailManager::~CDetailManager()
 {
-    tg->cancel();
-    tg->put();
+    tg->cancel_put();
 
     if (dtFS)
     {

@@ -505,8 +505,7 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 CRender::~CRender()
 {
-    tg->cancel();
-    tg->put();
+    tg->cancel_put();
 }
 
 #include "../../xr_3da/GameFont.h"
