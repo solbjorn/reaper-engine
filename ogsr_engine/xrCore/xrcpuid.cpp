@@ -18,7 +18,7 @@ decltype(auto) countSetBits(ULONG_PTR bitMask)
     return bitSetCount;
 }
 
-static ICF void xr_cpuid(int* regs, int leaf)
+static ICF void xr_cpuid(u32* regs, u32 leaf)
 {
 #ifdef __clang__
     __cpuid(leaf, regs[0], regs[1], regs[2], regs[3]);
@@ -29,7 +29,7 @@ static ICF void xr_cpuid(int* regs, int leaf)
 
 _processor_info::_processor_info()
 {
-    int cpinfo[4];
+    u32 cpinfo[4];
     // detect cpu vendor
     xr_cpuid(cpinfo, 0);
     memcpy(vendor, &(cpinfo[1]), sizeof(int));
@@ -49,13 +49,13 @@ _processor_info::_processor_info()
     stepping = cpinfo[0] & 0xf;
     model = (u8)((cpinfo[0] >> 4) & 0xf) | ((u8)((cpinfo[0] >> 16) & 0xf) << 4);
     family = (u8)((cpinfo[0] >> 8) & 0xf) | ((u8)((cpinfo[0] >> 20) & 0xff) << 4);
-    m_f1_ECX = cpinfo[2];
-    m_f1_EDX = cpinfo[3];
+    m_f1_ECX.init(cpinfo[2]);
+    m_f1_EDX.init(cpinfo[3]);
 
     // and check 3DNow! support
     xr_cpuid(cpinfo, 0x80000001);
-    m_f81_ECX = cpinfo[2];
-    m_f81_EDX = cpinfo[3];
+    m_f81_ECX.init(cpinfo[2]);
+    m_f81_EDX.init(cpinfo[3]);
 
     // get version of OS
     DWORD dwMajorVersion = 0;
@@ -63,15 +63,14 @@ _processor_info::_processor_info()
     dwVersion = GetVersion();
 
     dwMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-
     if (dwMajorVersion <= 5) // XP don't support SSE3+ instruction sets
     {
-        m_f1_ECX[0] = 0;
-        m_f1_ECX[9] = 0;
-        m_f1_ECX[19] = 0;
-        m_f1_ECX[20] = 0;
-        m_f81_ECX[6] = 0;
-        m_f1_ECX[28] = 0;
+        m_f1_ECX.clear(0);
+        m_f1_ECX.clear(9);
+        m_f1_ECX.clear(19);
+        m_f1_ECX.clear(20);
+        m_f1_ECX.clear(28);
+        m_f81_ECX.clear(6);
     }
 
     // Calculate available processors

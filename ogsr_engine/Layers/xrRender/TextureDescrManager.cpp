@@ -69,13 +69,19 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
                 else
                     dts = xr_new<cl_dt_scaler>(s);
 
-                desc.m_assoc->usage = 0;
                 if (strstr(item.second.c_str(), "usage[diffuse_or_bump]"))
-                    desc.m_assoc->usage = (1 << 0) | (1 << 1);
+                {
+                    desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
+                    desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
+                }
                 else if (strstr(item.second.c_str(), "usage[bump]"))
-                    desc.m_assoc->usage = (1 << 1);
+                {
+                    desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
+                }
                 else if (strstr(item.second.c_str(), "usage[diffuse]"))
-                    desc.m_assoc->usage = (1 << 0);
+                {
+                    desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
+                }
             });
         }
 
@@ -159,13 +165,11 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
                 else
                     dts = xr_new<cl_dt_scaler>(tp.detail_scale);
 
-                desc.m_assoc->usage = 0;
-
                 if (tp.flags.is(STextureParams::flDiffuseDetail))
-                    desc.m_assoc->usage |= (1 << 0);
+                    desc.m_assoc->usage.set(texture_assoc::flDiffuseDetail);
 
                 if (tp.flags.is(STextureParams::flBumpDetail))
-                    desc.m_assoc->usage |= (1 << 1);
+                    desc.m_assoc->usage.set(texture_assoc::flBumpDetail);
             }
             if (desc.m_spec)
                 xr_delete(desc.m_spec);
@@ -272,9 +276,9 @@ void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffu
     {
         if (I->second.m_assoc)
         {
-            u8 usage = I->second.m_assoc->usage;
-            bDiffuse = !!(usage & (1 << 0));
-            bBump = !!(usage & (1 << 1));
+            const auto& usage = I->second.m_assoc->usage;
+            bDiffuse = usage.test(texture_assoc::flDiffuseDetail);
+            bBump = usage.test(texture_assoc::flBumpDetail);
         }
     }
 }

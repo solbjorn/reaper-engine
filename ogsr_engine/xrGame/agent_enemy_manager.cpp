@@ -23,14 +23,13 @@
 #include "hit_memory_manager.h"
 #include "enemy_manager.h"
 #include "memory_space_impl.h"
-#include <bitset>
 
 const float wounded_enemy_reached_distance = 3.f;
 
 IC u32 population(const squad_mask_type& b)
 {
-    std::bitset<std::numeric_limits<squad_mask_type>::digits> mask(b);
-    return mask.count();
+    static_assert(sizeof(b) == sizeof(u64));
+    return __popcnt64(b);
 }
 
 struct CEnemyFiller

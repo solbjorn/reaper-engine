@@ -5,7 +5,7 @@ template <size_t N>
 class xr_bitmap
 {
 public:
-    constexpr ICF bool test(size_t pos) const { return !!(val & (1UL << pos)); }
+    constexpr ICF bool test(size_t pos) const { return !!(val & (size_t(1) << pos)); }
 
     constexpr ICF void set(size_t pos) { val |= size_t(1) << pos; }
     constexpr ICF void clear(size_t pos) { val &= ~(size_t(1) << pos); }
@@ -23,6 +23,7 @@ public:
         return ret;
     }
 
+    constexpr ICF void init(size_t v) { val = v; }
     constexpr ICF void zero() { val = 0; }
 
     constexpr ICF size_t size() const { return len; }

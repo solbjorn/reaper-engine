@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bitset>
+#include "bitmap.h"
 #include <winternl.h>
 
 struct _processor_info final
@@ -9,18 +9,25 @@ struct _processor_info final
 
     string32 vendor; // vendor name
     string64 brand; // Name of model eg. Intel_Pentium_Pro
-    int family; // family of the processor, eg. Intel_Pentium_Pro is family 6 processor
-    int model; // model of processor, eg. Intel_Pentium_Pro is model 1 of family 6 processor
-    int stepping; // Processor revision number
-    unsigned int threadCount; // number of available threads, both physical and logical
-    unsigned int coresCount; // number of physical cores
+    u32 family; // family of the processor, eg. Intel_Pentium_Pro is family 6 processor
+    u32 model; // model of processor, eg. Intel_Pentium_Pro is model 1 of family 6 processor
+    u32 stepping; // Processor revision number
+    u32 threadCount; // number of available threads, both physical and logical
+    u32 coresCount; // number of physical cores
 
-    void clearFeatures() { m_f1_ECX = m_f1_EDX = m_f81_ECX = m_f81_EDX = 0; }
-    bool hasMMX() const { return m_f1_EDX[23]; }
-    bool has3DNOWExt() const { return m_f81_EDX[30]; }
-    bool has3DNOW() const { return m_f81_EDX[31]; }
-    bool hasMWAIT() const { return m_f1_ECX[3]; }
-    bool hasSSE4a() const { return m_f81_ECX[6]; }
+    void clearFeatures()
+    {
+        m_f1_ECX.zero();
+        m_f1_EDX.zero();
+        m_f81_ECX.zero();
+        m_f81_EDX.zero();
+    }
+
+    bool hasMMX() const { return m_f1_EDX.test(23); }
+    bool has3DNOWExt() const { return m_f81_EDX.test(30); }
+    bool has3DNOW() const { return m_f81_EDX.test(31); }
+    bool hasMWAIT() const { return m_f1_ECX.test(3); }
+    bool hasSSE4a() const { return m_f81_ECX.test(6); }
 
     // Always true for AVX2 processors
     constexpr bool hasSSE() const { return true; }
@@ -38,10 +45,10 @@ struct _processor_info final
     std::unique_ptr<float[]> fUsage;
 
 private:
-    std::bitset<32> m_f1_ECX;
-    std::bitset<32> m_f1_EDX;
-    std::bitset<32> m_f81_ECX;
-    std::bitset<32> m_f81_EDX;
+    xr_bitmap<32> m_f1_ECX;
+    xr_bitmap<32> m_f1_EDX;
+    xr_bitmap<32> m_f81_ECX;
+    xr_bitmap<32> m_f81_EDX;
 
     DWORD m_dwCount = 0;
     FILETIME prevSysIdle{}, prevSysKernel{}, prevSysUser{};
