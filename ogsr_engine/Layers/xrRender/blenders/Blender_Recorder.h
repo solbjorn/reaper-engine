@@ -8,8 +8,6 @@
 
 #include "..\tss.h"
 
-#pragma pack(push, 4)
-
 class CBlender_Compile
 {
 public:
@@ -127,6 +125,5 @@ public:
     void _cpp_Compile(ShaderElement* _SH);
     ShaderElement* _lua_Compile(LPCSTR namesp, LPCSTR name);
 };
-#pragma pack(pop)
 
 #endif // !defined(AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_)

@@ -44,12 +44,12 @@ enum EBuildQuality
     ebq_force_u16 = u16(-1)
 };
 
-#pragma pack(push, 8)
 struct hdrLEVEL
 {
     u16 XRLC_version;
     u16 XRLC_quality;
 };
+static_assert(sizeof(hdrLEVEL) == 4);
 
 struct hdrCFORM
 {
@@ -58,6 +58,7 @@ struct hdrCFORM
     u32 facecount;
     Fbox aabb;
 };
+static_assert(sizeof(hdrCFORM) == 36);
 
 struct hdrNODES
 {
@@ -68,9 +69,8 @@ struct hdrNODES
     Fbox aabb;
     xrGUID guid;
 };
-#pragma pack(pop)
+static_assert(sizeof(hdrNODES) == 56);
 
-#pragma pack(push, 1)
 class NodePosition
 {
     u8 data[5];
@@ -88,6 +88,9 @@ public:
     friend struct CNodePositionCompressor;
     friend struct CNodePositionConverter;
 };
+static_assert(sizeof(NodePosition) == 5);
+
+#pragma pack(push, 1)
 
 struct NodeCompressed
 {
@@ -178,6 +181,9 @@ public:
     friend class CNodeRenumberer;
     friend class CRenumbererConverter;
 }; // 2+2+5+12 = 21b
+static_assert(sizeof(NodeCompressed) == 21);
+
+#pragma pack(pop)
 
 struct SNodePositionOld
 {
@@ -185,7 +191,7 @@ struct SNodePositionOld
     u16 y;
     s16 z;
 };
-#pragma pack(pop)
+static_assert(sizeof(SNodePositionOld) == 6);
 
 constexpr u32 XRCL_CURRENT_VERSION = 17; // input
 constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output

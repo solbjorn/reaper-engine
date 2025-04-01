@@ -4,10 +4,7 @@
 #pragma once
 
 #include "xrCDB.h"
-
 #include "fixedvector.h"
-
-#pragma pack(push, 4)
 
 enum EFC_Visible : u32
 {
@@ -110,4 +107,3 @@ public:
         return testPolyInside(src);
     }
 };
-#pragma pack(pop)

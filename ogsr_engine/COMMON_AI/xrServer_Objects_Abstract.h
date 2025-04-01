@@ -8,7 +8,6 @@
 
 #pragma once
 
-#pragma pack(push, 4)
 #include "xrServer_Space.h"
 #ifdef XRGAME_EXPORTS
 #include "../../xrCDB/xrCDB.h"
@@ -115,5 +114,3 @@ public:
 };
 
 #pragma warning(pop)
-
-#pragma pack(pop)

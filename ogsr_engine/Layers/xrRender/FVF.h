@@ -3,7 +3,7 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
-#pragma pack(push, 4)
+
 namespace FVF
 {
 struct alignas(16) L
@@ -196,7 +196,6 @@ struct TL4uv
 static_assert(sizeof(struct TL4uv) == 52);
 const u32 F_TL4uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
 }; // namespace FVF
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 #endif

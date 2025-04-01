@@ -16,7 +16,6 @@ typedef BoneCallbackFunction* BoneCallback;
 // typedef void  (* BoneCallback)		(CBoneInstance* P);
 
 //*** Bone Instance *******************************************************************************
-#pragma pack(push, 8)
 class CBoneInstance
 {
 public:
@@ -79,9 +78,7 @@ public:
 
     u32 mem_usage() { return sizeof(*this); }
 };
-#pragma pack(pop)
 
-#pragma pack(push, 2)
 struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
 {
     Fvector P;
@@ -90,6 +87,7 @@ struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
     Fvector B;
     float u, v;
     u32 matrix;
+
     void get_pos(Fvector& p) const { p.set(P); }
 #ifdef DEBUG
     static const u8 bones_count = 1;
@@ -100,6 +98,8 @@ struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
     }
 #endif
 };
+static_assert(sizeof(vertBoned1W) == 60);
+
 struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
 {
     u16 matrix0;
@@ -110,6 +110,7 @@ struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
     Fvector B;
     float w;
     float u, v;
+
     void get_pos(Fvector& p) const { p.set(P); }
 #ifdef DEBUG
     static const u8 bones_count = 2;
@@ -120,6 +121,10 @@ struct vertBoned2W // (1+3+3 + 1+3+3 + 2)*4 = 16*4 = 64 bytes
     }
 #endif
 };
+static_assert(sizeof(vertBoned2W) == 64);
+
+#pragma pack(push, 2)
+
 struct vertBoned3W // 70 bytes
 {
     u16 m[3];
@@ -129,6 +134,7 @@ struct vertBoned3W // 70 bytes
     Fvector B;
     float w[2];
     float u, v;
+
     void get_pos(Fvector& p) const { p.set(P); }
 #ifdef DEBUG
     static const u8 bones_count = 3;
@@ -139,6 +145,10 @@ struct vertBoned3W // 70 bytes
     }
 #endif
 };
+static_assert(sizeof(vertBoned3W) == 70);
+
+#pragma pack(pop)
+
 struct vertBoned4W // 76 bytes
 {
     u16 m[4];
@@ -148,6 +158,7 @@ struct vertBoned4W // 76 bytes
     Fvector B;
     float w[3];
     float u, v;
+
     void get_pos(Fvector& p) const { p.set(P); }
 #ifdef DEBUG
     static const u8 bones_count = 4;
@@ -158,10 +169,9 @@ struct vertBoned4W // 76 bytes
     }
 #endif
 };
-#pragma pack(pop)
+static_assert(sizeof(vertBoned4W) == 76);
 
-#pragma pack(push, 1)
-enum EJointType
+enum EJointType : u32
 {
     jtRigid,
     jtCloth,
@@ -169,7 +179,6 @@ enum EJointType
     jtWheel,
     jtNone,
     jtSlider,
-    jtForceU32 = u32(-1)
 };
 
 struct SJointLimit
@@ -177,6 +186,7 @@ struct SJointLimit
     Fvector2 limit;
     float spring_factor;
     float damping_factor;
+
     SJointLimit() { Reset(); }
     void Reset()
     {
@@ -185,16 +195,16 @@ struct SJointLimit
         damping_factor = 1.f;
     }
 };
+static_assert(sizeof(SJointLimit) == 16);
 
 struct SBoneShape
 {
-    enum EShapeType
+    enum EShapeType : u16
     {
         stNone,
         stBox,
         stSphere,
         stCylinder,
-        stForceU32 = u16(-1)
     };
 
     enum EShapeFlags
@@ -210,6 +220,7 @@ struct SBoneShape
     Fobb box; // 15*4
     Fsphere sphere; // 4*4
     Fcylinder cylinder; // 8*4
+
     SBoneShape() { Reset(); }
     void Reset()
     {
@@ -231,11 +242,13 @@ struct SBoneShape
         return true;
     }
 };
+static_assert(sizeof(SBoneShape) == 112);
 
 struct SJointIKData
 {
     // IK
     EJointType type;
+    u32 pad;
     SJointLimit limits[3]; // by [axis XYZ on joint] and[Z-wheel,X-steer on wheel]
     float spring_factor;
     float damping_factor;
@@ -308,7 +321,7 @@ struct SJointIKData
         return true;
     }
 };
-#pragma pack(pop)
+static_assert(sizeof(SJointIKData) == 80);
 
 class IBoneData
 {
@@ -545,7 +558,7 @@ public:
     }
 };
 
-enum EBoneCallbackType
+enum EBoneCallbackType : u32
 {
     bctDummy = u32(0), // 0 - required!!!
     bctPhysics,

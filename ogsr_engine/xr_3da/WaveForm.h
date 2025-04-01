@@ -1,11 +1,9 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
-#pragma once
 
-#pragma pack(push, 4)
 struct WaveForm
 {
-    enum EFunction
+    enum EFunction : u32
     {
         fCONSTANT = 0,
         fSIN,
@@ -13,8 +11,8 @@ struct WaveForm
         fSQUARE,
         fSAWTOOTH,
         fINVSAWTOOTH,
-        fFORCE32 = u32(-1)
     };
+
     IC float signf(float t) { return t / _abs(t); }
     IC float Func(float t)
     {
@@ -67,6 +65,6 @@ public:
         return TRUE;
     }
 };
+static_assert(sizeof(WaveForm) == 20);
 
-#pragma pack(pop)
 #endif

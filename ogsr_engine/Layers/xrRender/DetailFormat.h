@@ -1,60 +1,9 @@
-#pragma once
-
 #ifndef _DETAIL_FORMAT_H_
 #define _DETAIL_FORMAT_H_
-#pragma pack(push, 1)
 
 #define DETAIL_VERSION 3
 #define DETAIL_SLOT_SIZE 2.f
 #define DETAIL_SLOT_SIZE_2 DETAIL_SLOT_SIZE * 0.5f
-
-//	int s_x	= iFloor			(EYE.x/slot_size+.5f)+offs_x;		// [0...size_x)
-//	int s_z	= iFloor			(EYE.z/slot_size+.5f)+offs_z;		// [0...size_z)
-
-/*
-0 - Header(version,obj_count(max255),size_x,size_z,min_x,min_z)
-1 - Objects
-    0
-    1
-    2
-    ..
-    obj_count-1
-2 - slots
-
-    CMemoryWriter F;
-    m_Header.object_count=m_Objects.size();
-    // header
-    F.w_chunk		(DETMGR_CHUNK_HEADER,&m_Header,sizeof(DetailHeader));
-    // objects
-    F.open_chunk		(DETMGR_CHUNK_OBJECTS);
-    for (DOIt it=m_Objects.begin(); it!=m_Objects.end(); it++){
-        F.open_chunk	(it-m_Objects.begin());
-        (*it)->Export	(F);
-        F.close_chunk	();
-    }
-    F.close_chunk		();
-    // slots
-    F.open_chunk		(DETMGR_CHUNK_SLOTS);
-    F.write				(m_Slots.begin(),m_Slots.size()*sizeof(DetailSlot));
-    F.close_chunk		();
-
-    F.SaveTo			(fn,0);
-*/
-/*
-// detail object
-    char*			shader;
-    char*			texture;
-
-    u32				flag;
-    float			min_scale;
-    float	 		max_scale;
-
-    u32				vert_count;
-    u32				index_count;
-
-    fvfVertexIn*	vertices;
-    u16*			indices;
-*/
 
 #define DO_NO_WAVING 0x0001
 
@@ -65,6 +14,8 @@ struct DetailHeader
     int offs_x, offs_z;
     u32 size_x, size_z;
 };
+static_assert(sizeof(DetailHeader) == 24);
+
 struct DetailPalette
 {
     u16 a0 : 4;
@@ -72,6 +23,8 @@ struct DetailPalette
     u16 a2 : 4;
     u16 a3 : 4;
 };
+static_assert(sizeof(DetailPalette) == 2);
+
 struct DetailSlot // was(4+4+3*4+2 = 22b), now(8+2*4=16b)
 {
     u32 y_base : 12; // 11	// 1 unit = 20 cm, low = -200m, high = 4096*20cm - 200 = 619.2m
@@ -149,6 +102,6 @@ public:
         }
     }
 };
+static_assert(sizeof(DetailSlot) == 16);
 
-#pragma pack(pop)
 #endif // DEBUG

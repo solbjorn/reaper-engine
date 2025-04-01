@@ -22,7 +22,7 @@ class CSE_Abstract;
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
-#pragma pack(push, 4)
+
 class CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
 {
 public:
@@ -196,7 +196,5 @@ public:
 public:
     virtual bool register_schedule() const { return true; }
 };
-
-#pragma pack(pop)
 
 #endif //__XR_OBJECT_H__
