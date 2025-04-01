@@ -40,9 +40,6 @@ public:
     virtual void ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
     virtual void ResourcesDumpMemoryUsage();
 
-    //	HWSupport
-    virtual bool HWSupportsShaderYUV2RGB();
-
     //	Device state
     virtual DeviceState GetDeviceState();
     virtual BOOL GetForceGPU_REF();

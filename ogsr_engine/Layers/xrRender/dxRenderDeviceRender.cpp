@@ -257,13 +257,6 @@ void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
     }
 }
 
-bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
-{
-    u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-    u32 v_need = CAP_VERSION(2, 0);
-    return (v_dev >= v_need);
-}
-
 void dxRenderDeviceRender::OnAssetsChanged()
 {
     Resources->m_textures_description.UnLoad();
