@@ -35,5 +35,6 @@ private:
     void Load(LPCSTR xml_file);
 
     static STRING_VALUE ParseLine(LPCSTR str, LPCSTR key, bool bFirst);
+    static std::mutex pDataMutex;
     static STRING_TABLE_DATA* pData;
 };

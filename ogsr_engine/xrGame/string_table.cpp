@@ -1,10 +1,14 @@
 #include "stdafx.h"
-#include "string_table.h"
 
+#include <oneapi/tbb/parallel_for_each.h>
+
+#include "string_table.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
 
+std::mutex CStringTable::pDataMutex;
 STRING_TABLE_DATA* CStringTable::pData{};
+
 BOOL CStringTable::WriteErrorsToLog{};
 
 CStringTable::CStringTable() { Init(); }
@@ -26,20 +30,23 @@ void CStringTable::Init()
     LPCSTR S = pSettings->r_string("string_table", "files");
     if (S && S[0])
     {
-        string128 xml_file;
-        int count = _GetItemCount(S);
-        for (int it = 0; it < count; ++it)
-        {
-            _GetItem(S, it, xml_file);
-            Load(xml_file);
-        }
+        size_t count = _GetItemCount(S);
+
+        oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<size_t>(0, count), [this, &S](const auto& range) {
+            for (size_t i = range.begin(); i != range.end(); i++)
+            {
+                string128 xml_file;
+
+                _GetItem(S, i, xml_file);
+                Load(xml_file);
+            }
+        });
     }
 
     if (pSettings->section_exist("string_table_files"))
     {
         CInifile::Sect& files = pSettings->r_section("string_table_files");
-        for (const auto& i : files.Ordered_Data)
-            Load(i.first.c_str());
+        oneapi::tbb::parallel_for_each(files.Ordered_Data, [&](const auto& i) { Load(i.first.c_str()); });
     }
 }
 
@@ -56,22 +63,23 @@ void CStringTable::Load(LPCSTR xml_file)
         Debug.fatal(DEBUG_INFO, "string table xml file not found %s, for language %s", xml_file_full, *(pData->m_sLanguage));
 
     // общий список всех записей таблицы в файле
-    const int string_num = uiXml.GetNodesNum(uiXml.GetRoot(), "string");
+    const size_t string_num = uiXml.GetNodesNum(uiXml.GetRoot(), "string");
 
-    for (int i = 0; i < string_num; ++i)
+    for (size_t i = 0; i < string_num; i++)
     {
         LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", NULL);
-
-        if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
-            Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
-
         LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), "string:text", i, NULL);
-
         VERIFY3(string_text, "string table entry does not has a text", string_name);
 
-        STRING_VALUE str_val = ParseLine(string_text, string_name, true);
+        const STRING_VALUE str_val = ParseLine(string_text, string_name, true);
+        {
+            std::lock_guard guard{pDataMutex};
 
-        pData->m_StringTable[string_name] = str_val;
+            if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
+                Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
+
+            pData->m_StringTable[string_name] = str_val;
+        }
     }
 }
 
