@@ -8,19 +8,13 @@ void CRenderTarget::phase_scene_prepare()
     //	TODO: DX10: Check if we need to set RT here.
     u_setrt(RCache, Device.dwWidth, Device.dwHeight, rt_Position->pRT, NULL, NULL, rt_MSAADepth);
 
-    // Thx to K.D.
-    // We need to clean up G-buffer every frame to avoid "ghosting" on sky
-    {
-        constexpr Fcolor ColorRGBA{};
+    constexpr Fcolor ColorRGBA{};
 
-        RCache.ClearRT(rt_Position, ColorRGBA);
-        RCache.ClearRT(rt_Color, ColorRGBA);
-        RCache.ClearRT(rt_Accumulator, ColorRGBA);
-        RCache.ClearZB(get_base_zb(), 1.0f, 0);
+    RCache.ClearRT(rt_Position, ColorRGBA);
+    RCache.ClearZB(get_base_zb(), 1.0f, 0);
 
-        if (RImplementation.o.dx10_msaa)
-            RCache.ClearZB(rt_MSAADepth, 1.0f, 0);
-    }
+    if (RImplementation.o.dx10_msaa)
+        RCache.ClearZB(rt_MSAADepth, 1.0f, 0);
 
     //	Igor: for volumetric lights
     m_bHasActiveVolumetric = false;
