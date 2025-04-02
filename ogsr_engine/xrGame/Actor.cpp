@@ -384,6 +384,7 @@ void CActor::Load(LPCSTR section)
         int cnt = _GetItemCount(hit_snds);
         string128 tmp;
         VERIFY(cnt != 0);
+        sndHit[hit_type].reserve(cnt);
         for (int i = 0; i < cnt; ++i)
         {
             sndHit[hit_type].emplace_back().create(_GetItem(hit_snds, i, tmp), st_Effect, sg_SourceType);

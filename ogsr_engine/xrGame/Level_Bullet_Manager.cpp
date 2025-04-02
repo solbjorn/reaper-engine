@@ -98,6 +98,7 @@ void CBulletManager::Load()
 
     LPCSTR whine_sounds = pSettings->r_string(BULLET_MANAGER_SECTION, "whine_sounds");
     int cnt = _GetItemCount(whine_sounds);
+    m_WhineSounds.reserve(cnt);
     xr_string tmp;
     for (int k = 0; k < cnt; ++k)
     {
@@ -107,6 +108,7 @@ void CBulletManager::Load()
 
     LPCSTR explode_particles = pSettings->r_string(BULLET_MANAGER_SECTION, "explode_particles");
     cnt = _GetItemCount(explode_particles);
+    m_ExplodeParticles.reserve(cnt);
     for (int k = 0; k < cnt; ++k)
         m_ExplodeParticles.emplace_back(_GetItem(explode_particles, k, tmp));
 }
