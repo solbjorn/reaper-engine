@@ -136,12 +136,11 @@ static void execUserScript()
     }
 }
 
-static void Startup()
+static void Startup(xr_task_group& spatial_tg)
 {
     pApp = xr_new<CApplication>();
     g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
-    g_SpatialSpace = xr_new<ISpatial_DB>();
-    g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+    spatial_tg.wait_put();
 
     // Destroy LOGO
     DestroyWindow(logoWindow);
@@ -349,7 +348,10 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         Console->Execute("stat_memory");
         execUserScript();
 
-        snd.wait_put();
+        snd.wait();
+        snd.run([] { g_SpatialSpace = xr_new<ISpatial_DB>(); });
+        snd.run([] { g_SpatialSpacePhysic = xr_new<ISpatial_DB>(); });
+
         CSound_manager_interface::_create(1);
 
         // ...command line for auto start
@@ -368,7 +370,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         Device.Create();
 
         in.wait_put();
-        Startup();
+        Startup(snd);
 
         Core._destroy();
 
