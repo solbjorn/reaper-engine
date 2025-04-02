@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------
 // Environment render
 //-----------------------------------------------------------------------------
-// BOOL bNeed_re_create_env = FALSE;
+
 void CEnvironment::RenderSky()
 {
     if (0 == g_pGameLevel)
@@ -37,7 +37,7 @@ void CEnvironment::RenderFlares()
     if (0 == g_pGameLevel)
         return;
     // 1
-    eff_LensFlare->Render(FALSE, TRUE, TRUE);
+    eff_LensFlare->Render(false, true, true);
 }
 
 void CEnvironment::RenderLast()
@@ -62,5 +62,5 @@ void CEnvironment::OnDeviceDestroy()
 {
     tg->cancel_put();
     m_pRender->OnDeviceDestroy();
-    CurrentEnv->destroy();
+    CurrentEnv->put();
 }

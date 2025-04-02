@@ -57,7 +57,6 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         c_bias.rgb.mul(.5f);
         c_bias.hemi *= .5f;
         c_bias.sun *= .5f;
-        // Msg				("hemi[%f / %f], sun[%f / %f]",c_scale.hemi,c_bias.hemi,c_scale.sun,c_bias.sun);
     }
 
     // Geom
@@ -66,21 +65,37 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 struct FTreeVisual_setup
 {
-    u32 dwFrame{};
-    float scale{};
+public:
     Fvector4 wave;
     Fvector4 wind;
 
-    FTreeVisual_setup() {}
+private:
+    std::mutex lock;
+    u32 dwFrame{};
 
+public:
+    float scale{};
+
+    void update()
+    {
+        std::scoped_lock slock(lock);
+
+        if (dwFrame != Device.dwFrame)
+            calculate();
+    }
+
+private:
     void calculate()
     {
         dwFrame = Device.dwFrame;
-        float tm_rot = PI_MUL_2 * Device.fTimeGlobal / ps_r__Tree_w_rot;
+
+        const float tm_rot = PI_MUL_2 * Device.fTimeGlobal / ps_r__Tree_w_rot;
+        float rot_sin, rot_cos;
+        DirectX::XMScalarSinCos(&rot_sin, &rot_cos, tm_rot);
 
         // Calc wind-vector3, scale
         CEnvDescriptor& env = *g_pGamePersistent->Environment().CurrentEnv;
-        wind.set(_sin(tm_rot), 0, _cos(tm_rot), 0);
+        wind.set(rot_sin, 0, rot_cos, 0);
         wind.normalize();
         wind.mul(env.m_fTreeAmplitudeIntensity); // dir1*amplitude
         scale = 1.f / float(FTreeVisual_quant);
@@ -94,8 +109,8 @@ struct FTreeVisual_setup
 void FTreeVisual::Render(CBackend& cmd_list, float LOD, bool)
 {
     static FTreeVisual_setup tvs;
-    if (tvs.dwFrame != Device.dwFrame)
-        tvs.calculate();
+    tvs.update();
+
     // setup constants
 
     Fmatrix xform_v;

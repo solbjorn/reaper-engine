@@ -17,22 +17,6 @@
 #include "blender_blur.h"
 #include "blender_dof.h"
 
-#include "../xrRender/dxRenderDeviceRender.h"
-
-void CRenderTarget::set_viewport_size(const CBackend& cmd_list, float w, float h) const
-{
-    const D3D11_VIEWPORT vp = {
-        .TopLeftX = 0,
-        .TopLeftY = 0,
-        .Width = w,
-        .Height = h,
-        .MinDepth = 0.f,
-        .MaxDepth = 1.f,
-    };
-
-    cmd_list.SetViewport(vp);
-}
-
 void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
 {
     VERIFY(_1 || zb);
@@ -180,13 +164,28 @@ static void generate_jitter(u32* dest, u32 elem_count)
         *dest = color_rgba(samples[2 * it].x, samples[2 * it].y, samples[2 * it + 1].y, samples[2 * it + 1].x);
 }
 
+static void manually_assign_texture(ref_shader& shader, const char* textureName, const char* rendertargetTextureName)
+{
+    SPass& pass = *shader->E[0]->passes[0];
+    if (!pass.constants)
+        return;
+
+    const ref_constant constant = pass.constants->get(textureName);
+    if (!constant)
+        return;
+
+    const auto index = constant->samp.index;
+    pass.T->create_texture(index, rendertargetTextureName);
+}
+
 CRenderTarget::CRenderTarget()
 {
-    const u32 SampleCount = RImplementation.o.dx10_msaa ? RImplementation.o.dx10_msaa_samples : 1;
+    const auto& options = RImplementation.o;
+    const u32 SampleCount = options.dx10_msaa ? options.dx10_msaa_samples : 1;
 
 #ifdef DEBUG
     Msg("MSAA samples = %d", SampleCount);
-#endif // DEBUG
+#endif
 
     param_blur = 0.f;
     param_gray = 0.f;
@@ -214,7 +213,7 @@ CRenderTarget::CRenderTarget()
     b_accum_point = xr_new<CBlender_accum_point>();
     b_accum_spot = xr_new<CBlender_accum_spot>();
     b_bloom = xr_new<CBlender_bloom_build>();
-    if (RImplementation.o.dx10_msaa)
+    if (options.dx10_msaa)
     {
         b_bloom_msaa = xr_new<CBlender_bloom_build_msaa>();
         b_postprocess_msaa = xr_new<CBlender_postprocess_msaa>();
@@ -244,7 +243,7 @@ CRenderTarget::CRenderTarget()
     b_ssfx_volumetric_blur = xr_new<CBlender_ssfx_volumetric_blur>(); // Volumetric Blur
     b_ssfx_ao = xr_new<CBlender_ssfx_ao>(); // AO
 
-    if (RImplementation.o.dx10_msaa)
+    if (options.dx10_msaa)
     {
         for (int i = 0; i < 1; ++i)
         {
@@ -280,8 +279,10 @@ CRenderTarget::CRenderTarget()
 
         rt_Position.create(r2_RT_P, w, h, D3DFMT_A16B16G16R16F, SampleCount);
 
-        if (RImplementation.o.dx10_msaa)
+        if (options.dx10_msaa)
             rt_MSAADepth.create(r2_RT_MSAAdepth, w, h, D3DFMT_D24S8, SampleCount);
+        else
+            rt_MSAADepth = rt_Base_Depth;
 
         // select albedo & accum
         rt_Color.create(r2_RT_albedo, w, h, D3DFMT_A8R8G8B8, SampleCount);
@@ -292,7 +293,7 @@ CRenderTarget::CRenderTarget()
         rt_Generic_1.create(r2_RT_generic1, w, h, D3DFMT_A8R8G8B8, 1);
         rt_Generic.create(r2_RT_generic, w, h, D3DFMT_A8R8G8B8, 1);
 
-        rt_Generic_temp.create("$user$generic_temp", w, h, D3DFMT_A8R8G8B8, RImplementation.o.dx10_msaa ? SampleCount : 1);
+        rt_Generic_temp.create("$user$generic_temp", w, h, D3DFMT_A8R8G8B8, SampleCount);
         rt_dof.create(r2_RT_dof, w, h, D3DFMT_A8R8G8B8);
 
         rt_secondVP.create(r2_RT_secondVP, w, h, D3DFMT_A8R8G8B8, 1); //--#SM+#-- +SecondVP+
@@ -323,7 +324,7 @@ CRenderTarget::CRenderTarget()
         rt_ssfx_ao.create(r2_RT_ssfx_ao, w, h, D3DFMT_A8R8G8B8); // AO Acc
         rt_ssfx_il.create(r2_RT_ssfx_il, w, h, D3DFMT_A8R8G8B8); // IL Acc
 
-        if (RImplementation.o.ssfx_sss)
+        if (options.ssfx_sss)
         {
             rt_ssfx_sss.create(r2_RT_ssfx_sss, w, h, D3DFMT_A8R8G8B8); // SSS Acc
             rt_ssfx_sss_ext.create(r2_RT_ssfx_sss_ext, w, h, D3DFMT_A8R8G8B8); // SSS EXT Acc
@@ -331,7 +332,7 @@ CRenderTarget::CRenderTarget()
             rt_ssfx_sss_tmp.create(r2_RT_ssfx_sss_tmp, w, h, D3DFMT_A8R8G8B8); // SSS EXT Acc
         }
 
-        if (RImplementation.o.ssfx_bloom)
+        if (options.ssfx_bloom)
         {
             rt_ssfx_bloom1.create(r2_RT_ssfx_bloom1, w / 2.0f, h / 2.0f, D3DFMT_A16B16G16R16F); // Bloom
             rt_ssfx_bloom_emissive.create(r2_RT_ssfx_bloom_emissive, w, h, D3DFMT_A8R8G8B8, SampleCount); // Emissive
@@ -359,7 +360,7 @@ CRenderTarget::CRenderTarget()
 
         rt_ssfx_hud.create(r2_RT_ssfx_hud, w, h, D3DFMT_A16B16G16R16F); // HUD mask & Velocity buffer
 
-        if (RImplementation.o.dx10_msaa)
+        if (options.dx10_msaa)
         {
             rt_Generic_0_r.create(r2_RT_generic0_r, w, h, D3DFMT_A8R8G8B8, SampleCount);
             rt_Generic_1_r.create(r2_RT_generic1_r, w, h, D3DFMT_A8R8G8B8, SampleCount);
@@ -403,15 +404,15 @@ CRenderTarget::CRenderTarget()
     }
 
     // DIRECT (spot)
-    D3DFORMAT depth_format = (D3DFORMAT)RImplementation.o.HW_smap_FORMAT;
+    D3DFORMAT depth_format = (D3DFORMAT)options.HW_smap_FORMAT;
 
-    u32 size = RImplementation.o.smapsize;
-    rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
+    u32 size = options.smapsize;
+    rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format, 1, R__NUM_CONTEXTS, {});
 
     s_accum_mask.create(b_accum_mask, "accum_mask");
     s_accum_direct.create(b_accum_direct, "accum_direct");
 
-    if (RImplementation.o.dx10_msaa)
+    if (options.dx10_msaa)
     {
         for (int i = 0; i < 1; ++i)
         {
@@ -421,16 +422,17 @@ CRenderTarget::CRenderTarget()
     }
 
     s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
+    manually_assign_texture(s_accum_direct_volumetric, "s_smap", r2_RT_smap_depth);
 
-    if (RImplementation.o.dx10_msaa)
+    if (options.dx10_msaa)
     {
         static constexpr LPCSTR snames[] = {"accum_volumetric_sun_msaa0", "accum_volumetric_sun_msaa1", "accum_volumetric_sun_msaa2", "accum_volumetric_sun_msaa3",
                                             "accum_volumetric_sun_msaa4", "accum_volumetric_sun_msaa5", "accum_volumetric_sun_msaa6", "accum_volumetric_sun_msaa7"};
 
         for (int i = 0; i < 1; ++i)
         {
-            // s_accum_direct_volumetric_msaa[i].create		(b_accum_direct_volumetric_sun_msaa[i],			"accum_direct");
             s_accum_direct_volumetric_msaa[i].create(snames[i]);
+            manually_assign_texture(s_accum_direct_volumetric_msaa[i], "s_smap", r2_RT_smap_depth);
         }
     }
 
@@ -441,7 +443,7 @@ CRenderTarget::CRenderTarget()
         CBlender_rain TempBlender;
         s_rain.create(&TempBlender, "null");
 
-        if (RImplementation.o.dx10_msaa)
+        if (options.dx10_msaa)
         {
             static constexpr LPCSTR SampleDefs[] = {"0", "1", "2", "3", "4", "5", "6", "7"};
             CBlender_rain_msaa TempBlender[8];
@@ -452,17 +454,15 @@ CRenderTarget::CRenderTarget()
                 s_rain_msaa[i].create(&TempBlender[i], "null");
                 s_accum_spot_msaa[i].create(b_accum_spot_msaa[i], "r2\\accum_spot_s", "lights\\lights_spot01");
                 s_accum_point_msaa[i].create(b_accum_point_msaa[i], "r2\\accum_point_s");
-                // s_accum_volume_msaa[i].create(b_accum_direct_volumetric_msaa[i], "lights\\lights_spot01");
                 s_accum_volume_msaa[i].create(b_accum_volumetric_msaa[i], "lights\\lights_spot01");
                 s_combine_msaa[i].create(b_combine_msaa[i], "r2\\combine");
             }
         }
     }
 
-    if (RImplementation.o.dx10_msaa)
+    if (options.dx10_msaa)
     {
         CBlender_msaa TempBlender;
-
         s_mark_msaa_edges.create(&TempBlender, "null");
     }
 
@@ -482,8 +482,10 @@ CRenderTarget::CRenderTarget()
         g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
     }
 
+    // SPOT VOLUMETRIC
     {
         s_accum_volume.create("accum_volumetric", "lights\\lights_spot01");
+        manually_assign_texture(s_accum_volume, "s_smap", r2_RT_smap_depth);
         accum_volumetric_geom_create();
         g_accum_volumetric.create(D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
     }
@@ -500,7 +502,7 @@ CRenderTarget::CRenderTarget()
         g_bloom_build.create(fvf_build, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
         g_bloom_filter.create(fvf_filter, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
         s_bloom.create(b_bloom, "r2\\bloom");
-        if (RImplementation.o.dx10_msaa)
+        if (options.dx10_msaa)
         {
             s_bloom_msaa.create(b_bloom_msaa, "r2\\bloom");
             s_postprocess_msaa.create(b_postprocess_msaa, "r2\\post");
@@ -549,9 +551,6 @@ CRenderTarget::CRenderTarget()
         constexpr u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) |
             D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
         g_aa_AA.create(fvf_aa_AA, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-
-        t_envmap_0.create(r2_T_envs0);
-        t_envmap_1.create(r2_T_envs1);
     }
 
     u32 w = Device.dwWidth;
@@ -580,58 +579,51 @@ CRenderTarget::CRenderTarget()
         s_ssss_ogse.create("effects\\ss_sunshafts_ogse");
     }
 
-    // Build textures
+    // Build noise table
     {
-        // Build noise table
+        constexpr u32 sampleSize = 4;
+        u32 tempData[TEX_jitter_count][TEX_jitter * TEX_jitter]{};
+
+        D3D_TEXTURE2D_DESC desc{};
+        desc.Width = TEX_jitter;
+        desc.Height = TEX_jitter;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.SampleDesc.Count = 1;
+        desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+        desc.Usage = D3D_USAGE_DEFAULT;
+        desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+
+        D3D_SUBRESOURCE_DATA subData[TEX_jitter_count]{};
+
+        for (u32 it{}; it < TEX_jitter_count; it++)
         {
-            constexpr u32 sampleSize = 4;
-            u32 tempData[TEX_jitter_count][TEX_jitter * TEX_jitter]{};
+            subData[it].pSysMem = tempData[it];
+            subData[it].SysMemPitch = desc.Width * sampleSize;
+        }
 
-            D3D_TEXTURE2D_DESC desc{};
-            desc.Width = TEX_jitter;
-            desc.Height = TEX_jitter;
-            desc.MipLevels = 1;
-            desc.ArraySize = 1;
-            desc.SampleDesc.Count = 1;
-            desc.SampleDesc.Quality = 0;
-            desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
-            // desc.Usage = D3D_USAGE_IMMUTABLE;
-            desc.Usage = D3D_USAGE_DEFAULT;
-            desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-            desc.CPUAccessFlags = 0;
-            desc.MiscFlags = 0;
-
-            D3D_SUBRESOURCE_DATA subData[TEX_jitter_count]{};
-
-            for (u32 it{}; it < TEX_jitter_count; it++)
+        // Fill it,
+        for (u32 y = 0; y < TEX_jitter; y++)
+        {
+            for (u32 x = 0; x < TEX_jitter; x++)
             {
-                subData[it].pSysMem = tempData[it];
-                subData[it].SysMemPitch = desc.Width * sampleSize;
-            }
-
-            // Fill it,
-            for (u32 y = 0; y < TEX_jitter; y++)
-            {
-                for (u32 x = 0; x < TEX_jitter; x++)
+                u32 data[TEX_jitter_count];
+                generate_jitter(data, TEX_jitter_count);
+                for (u32 it = 0; it < TEX_jitter_count; it++)
                 {
-                    u32 data[TEX_jitter_count];
-                    generate_jitter(data, TEX_jitter_count);
-                    for (u32 it = 0; it < TEX_jitter_count; it++)
-                    {
-                        u32* p = (u32*)((u8*)(subData[it].pSysMem) + y * subData[it].SysMemPitch + x * 4);
-                        *p = data[it];
-                    }
+                    u32* p = (u32*)((u8*)(subData[it].pSysMem) + y * subData[it].SysMemPitch + x * 4);
+                    *p = data[it];
                 }
             }
+        }
 
-            for (u32 it{}; it < TEX_jitter_count; it++)
-            {
-                string_path name;
-                xr_sprintf(name, "%s%d", r2_jitter, it);
-                R_CHK(HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
-                t_noise[it] = RImplementation.Resources->_CreateTexture(name);
-                t_noise[it]->surface_set(t_noise_surf[it]);
-            }
+        for (u32 it{}; it < TEX_jitter_count; it++)
+        {
+            string_path name;
+            xr_sprintf(name, "%s%d", r2_jitter, it);
+            R_CHK(HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
+            t_noise[it] = RImplementation.Resources->_CreateTexture(name);
+            t_noise[it]->surface_set(t_noise_surf[it]);
         }
     }
 
@@ -654,32 +646,13 @@ CRenderTarget::~CRenderTarget()
     t_LUM_src->surface_set(NULL);
     t_LUM_dest->surface_set(NULL);
 
-#ifdef DEBUG
-    ID3DBaseTexture* pSurf = 0;
-
-    pSurf = t_envmap_0->surface_get();
-    _SHOW_REF("t_envmap_0 - #small", pSurf);
-
-    pSurf = t_envmap_1->surface_get();
-    _SHOW_REF("t_envmap_1 - #small", pSurf);
-    //_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
-    //_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
-#endif // DEBUG
-    t_envmap_0->surface_set(NULL);
-    t_envmap_1->surface_set(NULL);
-    t_envmap_0.destroy();
-    t_envmap_1.destroy();
-
-    //	TODO: DX10: Check if we need old style SMAPs
-    //	_RELEASE					(rt_smap_ZB);
-
     // Jitter
     for (u32 it = 0; it < TEX_jitter_count; it++)
     {
         t_noise[it]->surface_set(NULL);
 #ifdef DEBUG
         _SHOW_REF("t_noise_surf[it]", t_noise_surf[it]);
-#endif // DEBUG
+#endif
         _RELEASE(t_noise_surf[it]);
     }
 
@@ -780,11 +753,9 @@ bool CRenderTarget::need_to_render_sunshafts()
     if (!ps_r_sunshafts_mode)
         return false;
 
-    {
-        CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        if (E.m_fSunShaftsIntensity < EPS)
-            return false;
-    }
+    const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
+    if (E.m_fSunShaftsIntensity < EPS)
+        return false;
 
     return true;
 }

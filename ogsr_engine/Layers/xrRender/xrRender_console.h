@@ -111,7 +111,6 @@ extern Flags32 ps_r2_ls_flags; // r2-only
 extern Flags32 ps_r2_ls_flags_ext;
 extern float ps_r2_df_parallax_h; // r2-only
 extern float ps_r2_df_parallax_range; // r2-only
-extern float ps_r2_gmaterial; // r2-only
 extern float ps_r2_tonemap_middlegray; // r2-only
 extern float ps_r2_tonemap_adaptation; // r2-only
 extern float ps_r2_tonemap_low_lum; // r2-only
@@ -130,6 +129,7 @@ extern float ps_r2_ls_depth_bias; // -0.0001f
 extern float ps_r2_ls_squality; // 1.0f
 extern float ps_r2_sun_near; // 10.0f
 extern float ps_r2_sun_near_border; // 1.0f
+extern float ps_r2_sun_far;
 extern float ps_r2_sun_tsm_projection; // 0.2f
 extern float ps_r2_sun_tsm_bias; // 0.0001f
 extern float ps_r2_sun_depth_far_scale; // 1.00001f
@@ -146,6 +146,8 @@ extern float ps_r2_dhemi_light_flow; // .1f
 extern int ps_r2_dhemi_count; // 5
 extern float ps_r2_slight_fade; // 1.f
 extern int ps_r2_wait_sleep;
+extern int ps_r2_wait_timeout;
+
 ////lvutner
 extern Fvector4 ps_r2_mask_control; // r2-only
 extern Fvector ps_r2_drops_control; // r2-only

@@ -6,8 +6,6 @@
 
 dxDebugRender DebugRenderImpl;
 
-extern float psHUD_FOV;
-
 void dxDebugRender::Render()
 {
     if (!m_line_vertices.empty())
@@ -27,16 +25,7 @@ void dxDebugRender::Render()
 
     if (!m_line_vertices_hud.empty())
     {
-        Fmatrix Pold = Device.mProject;
-        Fmatrix FTold = Device.mFullTransform;
-
-        {
-            Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                             g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-            Device.mFullTransform.mul(Device.mProject, Device.mView);
-            RCache.set_xform_project(Device.mProject);
-        }
+        RCache.set_xform_project(Device.mProjectHud);
 
         for (auto& [color, vert_vec] : m_line_vertices_hud)
         {
@@ -47,11 +36,7 @@ void dxDebugRender::Render()
             RCache.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
         }
 
-        {
-            Device.mProject = Pold;
-            Device.mFullTransform = FTold;
-            RCache.set_xform_project(Device.mProject);
-        }
+        RCache.set_xform_project(Device.mProject);
 
         m_line_vertices_hud.clear();
         m_line_indices_hud.clear();

@@ -382,12 +382,7 @@ static class cl_ogsr_game_time final : public R_constant_setup
 
 static class cl_inv_v final : public R_constant_setup
 {
-    Fmatrix result;
-    void setup(CBackend& cmd_list, R_constant* C) override
-    {
-        result.invert(Device.mView);
-        cmd_list.set_c(C, result);
-    }
+    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, Device.mInvView); }
 } binder_inv_v;
 
 static class cl_pda_params final : public R_constant_setup

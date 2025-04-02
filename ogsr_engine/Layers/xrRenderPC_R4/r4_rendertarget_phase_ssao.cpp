@@ -26,7 +26,7 @@ void CRenderTarget::phase_ssfx_ao()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
-    set_viewport_size(RCache, scale_X, scale_Y);
+    RCache.set_viewport_size(scale_X, scale_Y);
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -57,7 +57,7 @@ void CRenderTarget::phase_ssfx_ao()
     // scale_Y = h / (ScaleFactor * 2.0f);
 
     p1.set(1.0f, 1.0f);
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
 
     // BLUR PHASE 1 //////////////////////////////////////////////////////////
     u_setrt(RCache, rt_ssfx_temp3, 0, 0, 0);
@@ -155,7 +155,7 @@ void CRenderTarget::phase_ssfx_ao()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
 }
 
 void CRenderTarget::phase_ssfx_il()
@@ -184,7 +184,7 @@ void CRenderTarget::phase_ssfx_il()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
-    set_viewport_size(RCache, scale_X, scale_Y);
+    RCache.set_viewport_size(scale_X, scale_Y);
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -213,7 +213,7 @@ void CRenderTarget::phase_ssfx_il()
     // scale_Y = h / ScaleFactor;
 
     // p1.set(1.0f / ScaleFactor, 1.0f / ScaleFactor);
-    // set_viewport_size(RCache, scale_X, scale_Y);
+    // RCache.set_viewport_size(scale_X, scale_Y);
 
     // BLUR PHASE 1 //////////////////////////////////////////////////////////
     u_setrt(RCache, rt_ssfx_temp3, 0, 0, 0);
@@ -311,5 +311,5 @@ void CRenderTarget::phase_ssfx_il()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
 }

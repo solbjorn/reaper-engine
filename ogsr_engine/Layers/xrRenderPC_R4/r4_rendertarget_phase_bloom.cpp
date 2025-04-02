@@ -76,7 +76,6 @@ void CRenderTarget::phase_bloom()
     // Clear	- don't clear - it's stupid here :)
     // Stencil	- disable
     // Misc		- draw everything (no culling)
-    // CHK_DX		(HW.pDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
     RCache.set_Z(FALSE);
 
     // Transfer into Bloom1
@@ -329,7 +328,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
     // BLOOM BUILD ////////////////////////////////////////////////////
     // Half resolution is the max size for everything
-    set_viewport_size(RCache, w / 2.0f, h / 2.0f);
+    RCache.set_viewport_size(w / 2.0f, h / 2.0f);
 
     u_setrt(RCache, rt_ssfx_bloom1, 0, 0, NULL);
     RCache.set_CullMode(CULL_NONE);
@@ -355,7 +354,7 @@ void CRenderTarget::phase_ssfx_bloom()
     // BLOOM LENS /////////////////////////////////////////////////////
     if (ps_r2_mask_control.x > 0)
     {
-        set_viewport_size(RCache, w / 4.0f, h / 4.0f);
+        RCache.set_viewport_size(w / 4.0f, h / 4.0f);
 
         u_setrt(RCache, rt_ssfx_bloom_tmp4, 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
@@ -416,7 +415,7 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         SampleScale = 1 << (downsample + 1);
 
-        set_viewport_size(RCache, w / SampleScale, h / SampleScale);
+        RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
         u_setrt(RCache, *rt_Down[downsample], 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
@@ -449,7 +448,7 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         SampleScale = 1 << (5 - upsample);
 
-        set_viewport_size(RCache, w / SampleScale, h / SampleScale);
+        RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
         u_setrt(RCache, *rt_Up[upsample], 0, 0, NULL);
         RCache.set_CullMode(CULL_NONE);
@@ -500,5 +499,5 @@ void CRenderTarget::phase_ssfx_bloom()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Restore Viewport
-    set_viewport_size(RCache, Device.dwWidth, Device.dwHeight);
+    RCache.set_viewport_size(Device.dwWidth, Device.dwHeight);
 }

@@ -18,8 +18,8 @@ struct R_dsgraph_structure
     u32 val_feedback_breakp{}; // breakpoint
 
     ctx_id_t context_id{R__INVALID_CTX_ID};
-    u32 marker{};
     u32 phase{};
+    u32 marker{};
     bool pmask[2];
     bool pmask_wmark;
     bool use_hom{};

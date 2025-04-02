@@ -361,7 +361,7 @@ void CDetailManager::UpdateVisibleM(const Fvector& EYE)
     Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
-void CDetailManager::Render(CBackend& cmd_list, bool use_fast_geo)
+void CDetailManager::Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position)
 {
     if (!RImplementation.Details || !dtFS || !psDeviceFlags.is(rsDetails))
         return;
@@ -377,7 +377,7 @@ void CDetailManager::Render(CBackend& cmd_list, bool use_fast_geo)
     cmd_list.set_CullMode(CULL_NONE);
     cmd_list.set_xform_world(Fidentity);
 
-    hw_Render(cmd_list, use_fast_geo);
+    hw_Render(cmd_list, fade_distance, light_position);
 
     cmd_list.set_CullMode(CULL_CCW);
     Device.Statistic->RenderDUMP_DT_Render.End();
@@ -423,9 +423,6 @@ void CDetailManager::run_async()
 
 void CDetailManager::details_clear()
 {
-    // Disable fade, next render will be scene
-    fade_distance = 99999;
-
     if (ps_ssfx_grass_shadows.x <= 0)
         return;
 

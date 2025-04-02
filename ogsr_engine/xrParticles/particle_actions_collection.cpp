@@ -4,8 +4,6 @@
 #include "particle_actions_collection.h"
 #include "particle_effect.h"
 
-#include <oneapi/tbb/parallel_for.h>
-
 using namespace PAPI;
 
 void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
@@ -1669,12 +1667,10 @@ static void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset
     _mm_store_fvector(m.vel, _mvel);
 }
 
-static void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
+static ICF void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
 {
-    oneapi::tbb::parallel_for(oneapi::tbb::blocked_range<u32>(0, p_cnt), [&](const auto& range) {
-        for (u32 i = range.begin(); i != range.end(); i++)
-            PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
-    });
+    for (u32 i = 0; i < p_cnt; i++)
+        PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
 }
 
 extern float ps_particle_update_coeff;

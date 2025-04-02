@@ -63,10 +63,15 @@ public:
     Fmatrix mView;
     Fmatrix mProject;
     Fmatrix mFullTransform;
+
+    Fmatrix mViewHud;
+    Fmatrix mProjectHud;
+
+    Fmatrix mInvView;
     Fmatrix mInvFullTransform;
 
     // Copies of corresponding members. Used for synchronization.
-    Fvector vCameraDirectionSaved{};
+    Fvector vCameraDirectionSaved;
 
     float fFOV;
     float fASPECT;

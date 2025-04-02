@@ -6,10 +6,7 @@ void CRenderTarget::phase_scene_prepare()
     PIX_EVENT(phase_scene_prepare);
 
     //	TODO: DX10: Check if we need to set RT here.
-    if (RImplementation.o.dx10_msaa)
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, rt_Position->pRT, NULL, NULL, rt_MSAADepth);
-    else
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, rt_Position->pRT, NULL, NULL, get_base_zb());
+    u_setrt(RCache, Device.dwWidth, Device.dwHeight, rt_Position->pRT, NULL, NULL, rt_MSAADepth);
 
     // Thx to K.D.
     // We need to clean up G-buffer every frame to avoid "ghosting" on sky
@@ -38,10 +35,7 @@ void CRenderTarget::phase_scene_begin()
     SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
     // Targets, use accumulator for temporary storage
-    if (RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Position, rt_Color, NULL, rt_MSAADepth);
-    else
-        u_setrt(RCache, rt_Position, rt_Color, NULL, get_base_zb());
+    u_setrt(RCache, rt_Position, rt_Color, NULL, rt_MSAADepth);
 
     // Stencil - write 0x1 at pixel pos
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);

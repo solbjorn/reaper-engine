@@ -1,30 +1,13 @@
 #ifndef dxEnvironmentRender_included
 #define dxEnvironmentRender_included
-#pragma once
 
-#include "..\..\Include\xrRender\EnvironmentRender.h"
+#include "../../Include/xrRender/EnvironmentRender.h"
 
-#include "blenders\blender.h"
-class CBlender_skybox : public IBlender
-{
-public:
-    virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
-
-    virtual void Compile(CBlender_Compile& C)
-    {
-        C.r_Pass("sky2", "sky2", FALSE, TRUE, FALSE);
-        C.r_dx10Texture("s_sky0", "$null");
-        C.r_dx10Texture("s_sky1", "$null");
-        C.r_dx10Texture("s_tonemap", "$user$tonemap");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.PassSET_ZB(FALSE, FALSE);
-        C.r_End();
-    }
-};
+class dxEnvironmentRender;
 
 class dxEnvDescriptorRender : public IEnvDescriptorRender
 {
-    friend class dxEnvDescriptorMixerRender;
+    friend class dxEnvironmentRender;
 
 public:
     virtual void OnDeviceCreate(CEnvDescriptor& owner);
@@ -38,46 +21,39 @@ private:
     ref_texture clouds_texture;
 };
 
-class dxEnvDescriptorMixerRender : public IEnvDescriptorMixerRender
-{
-public:
-    virtual void Copy(IEnvDescriptorMixerRender& _in);
-
-    virtual void Destroy();
-    virtual void Clear();
-    virtual void lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB);
-    // private:
-public:
-    STextureList sky_r_textures;
-    STextureList sky_r_textures_env;
-    STextureList clouds_r_textures;
-};
-
 class dxEnvironmentRender : public IEnvironmentRender
 {
 public:
     dxEnvironmentRender();
     virtual void Copy(IEnvironmentRender& _in);
 
-    virtual void OnFrame(CEnvironment& env);
-    virtual void OnLoad();
-    virtual void OnUnload();
     virtual void RenderSky(CEnvironment& env);
     virtual void RenderClouds(CEnvironment& env);
     virtual void OnDeviceCreate();
     virtual void OnDeviceDestroy();
+    virtual void Clear();
+    virtual void lerp(CEnvDescriptorMixer& currentEnv, IEnvDescriptorRender* inA, IEnvDescriptorRender* inB);
 
 private:
-    CBlender_skybox m_b_skybox;
+    STextureList sky_r_textures;
+    STextureList clouds_r_textures;
 
     ref_shader sh_2sky;
     ref_geom sh_2geom;
-
     ref_shader clouds_sh;
     ref_geom clouds_geom;
 
-    ref_texture tonemap;
     ref_texture tsky0, tsky1;
+    ref_texture t_envmap_0, t_envmap_1;
+    ref_texture tonemap;
+
+    u32 tsky0_tstage{};
+    u32 tsky1_tstage{};
+    u32 tclouds0_tstage{};
+    u32 tclouds1_tstage{};
+
+    u32 tonemap_tstage_2sky{u32(-1)};
+    u32 tonemap_tstage_clouds{u32(-1)};
 };
 
 #endif //	EnvironmentRender_included

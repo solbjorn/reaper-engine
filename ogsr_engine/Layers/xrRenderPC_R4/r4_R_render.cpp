@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../../xr_3da/igame_persistent.h"
 #include "../xrRender/FBasicVisual.h"
 #include "../../xr_3da/customhud.h"
@@ -62,8 +63,6 @@ void CRender::Render()
     PIX_EVENT(CRender_Render);
 
     auto& dsgraph = get_imm_context();
-    VERIFY(dsgraph.mapDistort.empty());
-
     rmNormal(dsgraph.cmd_list);
 
     bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
@@ -88,42 +87,15 @@ void CRender::Render()
         return;
     }
 
-    // Configure
-    o.distortion = FALSE; // disable distorion
-    Fcolor sun_color = ((light*)Lights.sun._get())->color;
-    const BOOL bSUN = ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);
-
-    Target->phase_scene_prepare();
-
     //*******
     // Sync point
-    // Device.Statistic->RenderDUMP_Wait_S.Begin	();
-    /*if (1)
-    {
-        CTimer	T;							T.Start	();
-        BOOL	result						= FALSE;
-        HRESULT	hr							= S_FALSE;
-        //while	((hr=q_sync_point[q_sync_count]->GetData	(&result,sizeof(result),D3DGETDATA_FLUSH))==S_FALSE) {
-        while	((hr=GetData (q_sync_point[q_sync_count], &result,sizeof(result)))==S_FALSE)
-        {
-            if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
-            if (T.GetElapsed_ms() > 500)	{
-                result	= FALSE;
-                break;
-            }
-        }
-    }*/
-    // Device.Statistic->RenderDUMP_Wait_S.End		();
-    // q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
-    // CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
+    Device.Statistic->RenderDUMP_Wait_S.Begin();
+    q_sync_point.Wait(ps_r2_wait_sleep, ps_r2_wait_timeout);
+    Device.Statistic->RenderDUMP_Wait_S.End();
+    q_sync_point.End();
 
-    //******* Main calc - DEFERRER RENDERER
-    // Main calc
-    Device.Statistic->RenderCALC.Begin();
-    dsgraph.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
-    dsgraph.build_subspace(last_sector_id, ViewBase);
-    dsgraph.r_pmask(true, false); // disable priority "1"
-    Device.Statistic->RenderCALC.End();
+    Target->phase_scene_prepare();
+    main_sync();
 
     if (g_hud->RenderActiveItemUIQuery())
         dsgraph.render_hud_ui();
@@ -143,20 +115,18 @@ void CRender::Render()
 
     if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
     {
-        if (o.dx10_msaa)
-            Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->rt_MSAADepth);
-        else
-            Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->get_base_zb());
-
+        Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->rt_MSAADepth);
         dsgraph.render_landscape(0, false);
     }
 
     //******* Main render :: PART-0	-- first
-    PIX_EVENT(DEFER_PART0_SPLIT);
-    // level, SPLIT
-    Target->phase_scene_begin();
-    dsgraph.render_graph(0);
-    Target->disable_aniso();
+    {
+        PIX_EVENT(DEFER_PART0_SPLIT);
+        // level, SPLIT
+        Target->phase_scene_begin();
+        dsgraph.render_graph(0);
+        Target->disable_aniso();
+    }
 
     //******* Occlusion testing of volume-limited light-sources
     Target->phase_occq();
@@ -179,21 +149,23 @@ void CRender::Render()
         LP_normal.v_point = LP.v_point;
         LP_normal.v_shadowed = LP.v_shadowed;
         LP_normal.v_spot = LP.v_spot;
-        LP_normal.vis_prepare(dsgraph.cmd_list);
+        LP_normal.vis_prepare();
     }
 
     //******* Main render :: PART-1 (second)
-    PIX_EVENT(DEFER_PART1_SPLIT);
+    {
+        PIX_EVENT(DEFER_PART1_SPLIT);
 
-    // level
-    Target->phase_scene_begin();
-    dsgraph.render_hud();
-    dsgraph.render_lods(true, true);
-    if (Details)
-        Details->Render(dsgraph.cmd_list, false);
-    if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
-        dsgraph.render_landscape(1, true);
-    Target->phase_scene_end();
+        // level
+        Target->phase_scene_begin();
+        dsgraph.render_hud();
+        dsgraph.render_lods(true, true);
+        if (Details)
+            Details->Render(dsgraph.cmd_list);
+        if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
+            dsgraph.render_landscape(1, true);
+        Target->phase_scene_end();
+    }
 
     // Wall marks
     if (Wallmarks)
@@ -206,20 +178,16 @@ void CRender::Render()
     // Update incremental shadowmap-visibility solver
     {
         PIX_EVENT(DEFER_FLUSH_OCCLUSION);
-        u32 it = 0;
-        for (it = 0; it < Lights_LastFrame.size(); it++)
+
+        for (auto* light : Lights_LastFrame)
         {
-            if (0 == Lights_LastFrame[it])
+            if (!light)
                 continue;
-            // try
-            //{
-            Lights_LastFrame[it]->svis[dsgraph.context_id].flushoccq();
-            /*}
-            catch (...)
-            {
-                Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-            }*/
+
+            for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+                light->svis[id].flushoccq();
         }
+
         Lights_LastFrame.clear();
     }
 
@@ -230,12 +198,8 @@ void CRender::Render()
         Target->mark_msaa_edges();
     }
 
-    //	TODO: DX10: Implement DX10 rain.
-    if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
-    {
-        PIX_EVENT(DEFER_RAIN);
-        render_rain();
-    }
+    if (rain_active)
+        rain_sync();
 
     {
         // Save previus and current matrices
@@ -244,9 +208,7 @@ void CRender::Render()
 
             if (!Device.m_SecondViewport.IsSVPFrame())
             {
-                Fmatrix m_invview;
-                m_invview.invert(Device.mView);
-                Target->Matrix_previous.mul(mm_saved_viewproj, m_invview);
+                Target->Matrix_previous.mul(mm_saved_viewproj, Device.mInvView);
                 Target->Matrix_current.set(Device.mProject);
                 mm_saved_viewproj.set(Device.mFullTransform);
             }
@@ -289,18 +251,17 @@ void CRender::Render()
         }
     }
 
-    // Directional light - fucking sun
-    if (bSUN)
+    // Directional light - sun
+    if (sun_active)
     {
-        PIX_EVENT(DEFER_SUN);
         stats.l_visible++;
-        render_sun_cascades();
+        sun_sync();
         Target->accum_direct_blend();
     }
 
     {
         PIX_EVENT(DEFER_SELF_ILLUM);
-        Target->phase_accumulator();
+        Target->phase_accumulator(RCache);
         // Render emissive geometry, stencil - write 0x0 at pixel pos
         RCache.set_xform_project(Device.mProject);
         RCache.set_xform_view(Device.mView);
@@ -319,27 +280,18 @@ void CRender::Render()
         // Render Emissive on `rt_ssfx_bloom_emissive`
         RCache.ClearRT(Target->rt_ssfx_bloom_emissive, {});
 
-        if (o.dx10_msaa)
-            Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->rt_MSAADepth);
-        else
-            Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->get_base_zb());
-
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->rt_MSAADepth);
         dsgraph.render_emissive(true, true);
-    }
-
-    // Lighting, non dependant on OCCQ
-    {
-        PIX_EVENT(DEFER_LIGHT_NO_OCCQ);
-        Target->phase_accumulator();
-        LP_normal.vis_update();
-        LP_normal.sort();
-        render_lights(LP_normal);
     }
 
     // Lighting, dependant on OCCQ
     {
         PIX_EVENT(DEFER_LIGHT_OCCQ);
-        // render_lights( LP_pending );
+        Target->phase_accumulator(RCache);
+
+        LP_normal.vis_update();
+        LP_normal.sort();
+        render_lights(LP_normal);
     }
 
     if (o.ssfx_volumetric)
@@ -359,16 +311,11 @@ void CRender::Render()
 
 void CRender::render_forward()
 {
-    auto& dsgraph = get_imm_context();
-    VERIFY(dsgraph.mapDistort.empty());
-
-    o.distortion = true; // enable distorion
-
     //******* Main render - second order geometry (the one, that doesn't support deffering)
     //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
     // level
-    dsgraph.r_pmask(false, true); // enable priority "1"
-    dsgraph.build_subspace(last_sector_id, ViewBase);
+    auto& dsgraph = get_imm_context();
+
     //	Igor: we don't want to render old lods on next frame.
     dsgraph.mapLOD.clear();
 
@@ -378,6 +325,4 @@ void CRender::render_forward()
     dsgraph.render_graph(1); // normal level, secondary priority
     dsgraph.PortalTraverser.fade_render(); // faded-portals
     dsgraph.render_sorted(); // strict-sorted geoms
-
-    o.distortion = FALSE; // disable distorion
 }

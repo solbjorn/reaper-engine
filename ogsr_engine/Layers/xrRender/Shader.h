@@ -44,9 +44,10 @@ struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32
     }
     void clear();
 
-    //	Avoid using this function.
-    //	If possible use precompiled texture list.
+    // Avoid using these functions.
+    // If possible use precompiled texture list.
     u32 find_texture_stage(const shared_str& TexName) const;
+    void create_texture(u32 stage, const char* textureName);
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
 

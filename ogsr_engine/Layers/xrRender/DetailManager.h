@@ -11,14 +11,9 @@
 #include "detailmodel.h"
 
 constexpr int dm_max_decompress = 7;
-// const int		dm_size				= 24;								//!
 constexpr int dm_cache1_count = 4; //
-// const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
 constexpr int dm_max_objects = 64;
 constexpr int dm_obj_in_slot = 4;
-// const int		dm_cache_line		= dm_size+1+dm_size;
-// const int		dm_cache_size		= dm_cache_line*dm_cache_line;
-// const float		dm_fade				= float(2*dm_size)-.5f;
 constexpr float dm_slot_size = DETAIL_SLOT_SIZE;
 
 constexpr u32 dm_max_cache_size = 62001 * 2; // assuming max dm_size = 124
@@ -37,8 +32,6 @@ extern float ps_current_detail_density;
 class CDetailManager
 {
 public:
-    float fade_distance = 99999;
-    Fvector light_position;
     void details_clear();
 
     struct SlotItem
@@ -99,6 +92,7 @@ public:
         u32 empty;
         vis_data vis;
         Slot** slots[dm_cache1_count * dm_cache1_count];
+
         CacheSlot1()
         {
             empty = 1;
@@ -123,6 +117,7 @@ public:
         float speed;
         void lerp(const SSwingValue& v1, const SSwingValue& v2, float factor);
     };
+
     SSwingValue swing_desc[2];
     SSwingValue swing_current;
     float m_time_rot_1;
@@ -152,6 +147,8 @@ private:
     void UpdateVisibleM(const Fvector& EYE);
     void UpdateVisibleS();
 
+    void Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position);
+
     // Hardware processor
     ref_geom hw_Geom;
     size_t hw_BatchSize;
@@ -161,8 +158,9 @@ private:
     void hw_Load();
     void hw_Load_Geom();
     void hw_Unload();
-    void hw_Render(CBackend& cmd_list, bool use_fast_geo);
-    void hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo);
+    void hw_Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position);
+    void hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, float fade_distance,
+                        const Fvector* light_position);
 
     // get unpacked slot
     DetailSlot& QueryDB(int sx, int sz);
@@ -183,9 +181,20 @@ public:
 
     void Load();
     void Unload();
-    void Render(CBackend& cmd_list, bool use_fast_geo);
+
+    // PHASE_NORMAL, regular scene
+    void Render(CBackend& cmd_list) { Render(cmd_list, fade_scene, nullptr); }
+    // PHASE_SMAP, shadows from sun cascades
+    void Render(CBackend& cmd_list, float fade_distance) { Render(cmd_list, fade_distance, nullptr); }
+    // PHASE_SMAP, shadows from lights
+    void Render(CBackend& cmd_list, const Fvector& light_position) { Render(cmd_list, fade_light, &light_position); }
 
 private:
+    // PHASE_NORMAL, regular scene
+    static constexpr float fade_scene = 99999.f;
+    // PHASE_SMAP, shadows from lights
+    static constexpr float fade_light = -1.f;
+
     xr_task_group* tg{};
 
 public:

@@ -10,7 +10,6 @@ class IObjectSpaceRender;
 
 class IFontRender;
 class IEnvDescriptorRender;
-class IEnvDescriptorMixerRender;
 class IFlareRender;
 class ILensFlareRender;
 class IRainRender;
@@ -48,8 +47,6 @@ public:
 
     virtual IEnvironmentRender* CreateEnvironmentRender() = 0;
     virtual void DestroyEnvironmentRender(IEnvironmentRender* pObject) = 0;
-    virtual IEnvDescriptorMixerRender* CreateEnvDescriptorMixerRender() = 0;
-    virtual void DestroyEnvDescriptorMixerRender(IEnvDescriptorMixerRender* pObject) = 0;
     virtual IEnvDescriptorRender* CreateEnvDescriptorRender() = 0;
     virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject) = 0;
     virtual IRainRender* CreateRainRender() = 0;

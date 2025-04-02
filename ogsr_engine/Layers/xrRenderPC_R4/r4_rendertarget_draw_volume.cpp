@@ -1,9 +1,10 @@
 #include "stdafx.h"
+
 #include "../xrRender/du_sphere_part.h"
 #include "../xrRender/du_cone.h"
 #include "../xrRender/du_sphere.h"
 
-void CRenderTarget::draw_volume(light* L)
+void CRenderTarget::draw_volume(const light* L)
 {
     switch (L->flags.type)
     {

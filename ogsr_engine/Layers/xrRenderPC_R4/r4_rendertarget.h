@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../xrRender/ColorMapManager.h"
-#include "../xrRender/light_db.h"
 
 class light;
+class light_Package;
 
 //	no less than 2
 #define VOLUMETRIC_SLICES 100
@@ -111,10 +111,6 @@ public:
     ref_texture t_LUM_src; // source
     ref_texture t_LUM_dest; // destination & usage for current frame
 
-    // env
-    ref_texture t_envmap_0; // env-0
-    ref_texture t_envmap_1; // env-1
-
     // smap
     ref_rt rt_smap_depth; // 24(32) bit,	depth
 
@@ -166,7 +162,6 @@ public:
     Fmatrix Matrix_previous, Matrix_current;
     Fmatrix Matrix_HUD_previous;
     Fvector3 Position_previous;
-    bool RVelocity;
 
     // Textures
     ID3DTexture2D* t_noise_surf[TEX_jitter_count];
@@ -330,11 +325,11 @@ public:
     void phase_occq();
     void phase_downsamp();
     void phase_wallmarks();
-    void phase_smap_direct(light* L, u32 sub_phase);
-    void phase_smap_spot_clear();
-    void phase_smap_spot(light* L);
-    void phase_accumulator();
-    void phase_vol_accumulator();
+    void phase_smap_direct(CBackend& cmd_list, const light* L, u32 sub_phase);
+    void phase_smap_spot_clear(CBackend& cmd_list);
+    void phase_smap_spot(CBackend& cmd_list, const light* L);
+    void phase_accumulator(CBackend& cmd_list);
+    void phase_vol_accumulator(CBackend& cmd_list);
     void shadow_direct(light* L, u32 dls_phase);
 
     // SSS Stuff
@@ -350,24 +345,20 @@ public:
     void phase_ssfx_ao(); // AO
     void phase_ssfx_il(); // IL
 
-    void set_viewport_size(const CBackend& cmd_list, float w, float h) const;
-
     void phase_rain();
-    void draw_rain(light& RainSetup);
+    void draw_rain(const light& RainSetup);
 
     void mark_msaa_edges();
 
     bool need_to_render_sunshafts();
 
     BOOL enable_scissor(light* L); // true if intersects near plane
-
     void disable_aniso();
 
-    void draw_volume(light* L);
-    void accum_direct(u32 sub_phase);
-    void accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
+    void draw_volume(const light* L);
+    void accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, const Fmatrix& xform, const Fmatrix& xform_prev, float fBias);
     void accum_direct_blend();
-    void accum_direct_volumetric(u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
+    void accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, const u32 Offset, const Fmatrix& mShadow);
     void accum_point(light* L);
     void accum_spot(light* L);
     //	Igor: for volumetric lights
@@ -401,13 +392,7 @@ public:
     void increment_light_marker(CBackend& cmd_list);
 
 #ifdef DEBUG
-    IC void dbg_addline(Fvector& P0, Fvector& P1, u32 c)
-    {
-        dbg_lines.push_back(dbg_line_t());
-        dbg_lines.back().P0 = P0;
-        dbg_lines.back().P1 = P1;
-        dbg_lines.back().color = c;
-    }
+    IC void dbg_addline(Fvector& P0, Fvector& P1, u32 c) { dbg_lines.emplace_back(dbg_line_t{P0, P1, c}); }
     IC void dbg_addplane(Fplane& P0, u32 c) { dbg_planes.push_back(P0); }
 #else
     IC void dbg_addline(Fvector& P0, Fvector& P1, u32 c) {}

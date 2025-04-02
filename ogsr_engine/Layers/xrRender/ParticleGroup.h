@@ -99,7 +99,8 @@ public:
     };
     Flags8 m_RT_Flags;
 
-public:
+    std::recursive_mutex lock;
+
     CParticleGroup();
     virtual ~CParticleGroup();
     virtual void OnFrame(u32 dt);

@@ -1,8 +1,10 @@
 #include "StdAfx.h"
+
 #include "../../xr_3da/_d3d_extensions.h"
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
+
 #include "R_light.h"
 #include "light_db.h"
 
@@ -59,6 +61,8 @@ void CLight_DB::Load(IReader* fs)
 
     F->close();
     R_ASSERT2(sun, "Where is sun?");
+
+    rain = xr_new<light>();
 }
 
 void CLight_DB::LoadHemi()
@@ -114,7 +118,9 @@ void CLight_DB::Unload()
 {
     v_static.clear();
     v_hemi.clear();
+
     sun.destroy();
+    rain.destroy();
 }
 
 light* CLight_DB::Create()

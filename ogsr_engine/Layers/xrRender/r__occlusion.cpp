@@ -1,6 +1,7 @@
 #include "StdAfx.h"
-#include "r__occlusion.h"
+
 #include "QueryHelper.h"
+#include "r__occlusion.h"
 
 R_occlusion::~R_occlusion() { occq_destroy(); }
 
@@ -40,13 +41,15 @@ void R_occlusion::cleanup_lost()
         Msg("! [%s]: cleanup %u lost queries", __FUNCTION__, cnt);
 }
 
-u32 R_occlusion::occq_begin(u32& ID)
+u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)
 {
     if (!enabled)
     {
         ID = iInvalidHandle;
         return 0;
     }
+
+    std::scoped_lock slock(lock);
 
     if (last_frame != Device.dwFrame)
     {
@@ -60,7 +63,7 @@ u32 R_occlusion::occq_begin(u32& ID)
         ID = u32(used.size());
         _Q q{};
         q.order = ID;
-        if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3DQUERYTYPE_OCCLUSION)))
+        if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3D_QUERY_OCCLUSION)))
         {
             if (Device.dwFrame % 100 == 0)
                 Msg("RENDER [Warning]: Too many occlusion queries were issued: %u !!!", used.size());
@@ -77,22 +80,35 @@ u32 R_occlusion::occq_begin(u32& ID)
         used[ID].Q = pool.back().Q;
         pool.pop_back();
     }
+
     used[ID].ttl = Device.dwFrame + 1;
-    CHK_DX(BeginQuery(used[ID].Q.Get()));
+    CHK_DX(BeginQuery(used[ID].Q.Get(), context_id));
+
     return used[ID].order;
 }
 
-void R_occlusion::occq_end(u32& ID)
+void R_occlusion::occq_end(u32& ID, ctx_id_t context_id)
 {
-    if (!enabled || ID == iInvalidHandle || !used[ID].Q)
+    if (!enabled || ID == iInvalidHandle)
         return;
-    CHK_DX(EndQuery(used[ID].Q.Get()));
+
+    std::scoped_lock slock(lock);
+
+    if (!used[ID].Q)
+        return;
+
+    CHK_DX(EndQuery(used[ID].Q.Get(), context_id));
     used[ID].ttl = Device.dwFrame + 1;
 }
 
 R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 {
-    if (!enabled || ID == iInvalidHandle || !used[ID].Q)
+    if (!enabled || ID == iInvalidHandle)
+        return 0xffffffff;
+
+    std::scoped_lock slock(lock);
+
+    if (!used[ID].Q)
         return 0xffffffff;
 
     occq_result fragments = 0;
@@ -107,7 +123,8 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
     {
         if (!SwitchToThread())
             Sleep(ps_r2_wait_sleep);
-        if (T.GetElapsed_ms() > 500)
+
+        if (T.GetElapsed_ms() > ps_r2_wait_timeout)
         {
             fragments = (occq_result)-1; // 0xffffffff;
             break;
@@ -129,6 +146,8 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 
 void R_occlusion::occq_free(u32 ID)
 {
+    std::scoped_lock slock(lock);
+
     if (used[ID].Q)
     {
         pool.push_back(used[ID]);

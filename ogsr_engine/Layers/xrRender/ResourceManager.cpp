@@ -272,6 +272,7 @@ void CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
         }
     }
 }
+
 void CResourceManager::_DumpMemoryUsage()
 {
     xr_multimap<u32, std::pair<u32, shared_str>> mtex;
@@ -284,7 +285,7 @@ void CResourceManager::_DumpMemoryUsage()
         {
             u32 m = I->second->flags.memUsage;
             shared_str n = I->second->cName;
-            mtex.emplace(m, std::make_pair(I->second->dwReference, n));
+            mtex.emplace(m, std::make_pair(I->second->ref_count.load(), n));
         }
     }
 

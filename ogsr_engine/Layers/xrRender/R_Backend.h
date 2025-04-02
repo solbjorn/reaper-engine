@@ -18,7 +18,9 @@
 
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
+
 #include "../xrRenderPC_R4/r_backend_lod.h"
+#include "../xrRenderPC_R4/SMAP_Allocator.h"
 
 #include "fvf.h"
 
@@ -205,10 +207,10 @@ public:
     IC const Fmatrix& get_xform_view();
     IC const Fmatrix& get_xform_project();
 
-    IC void set_RT(ID3DRenderTargetView* RT, u32 ID = 0);
-    IC void set_ZB(ID3DDepthStencilView* ZB);
     IC ID3DRenderTargetView* get_RT(u32 ID = 0);
     IC ID3DDepthStencilView* get_ZB();
+    IC void set_RT(ID3DRenderTargetView* RT, u32 ID = 0);
+    IC void set_ZB(ID3DDepthStencilView* ZB);
 
     IC void ClearRT(ID3DRenderTargetView* rt, const Fcolor& color);
     IC void ClearZB(ID3DDepthStencilView* zb, float depth);
@@ -280,6 +282,7 @@ public:
     void set_ClipPlanes(u32 _enable, Fmatrix* _xform = nullptr, u32 fmask = 0xff);
     IC void set_Scissor(Irect* rect = nullptr);
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;
+    IC void set_viewport_size(float w, float h) const;
 
     // constants
     ICF ref_constant get_c(LPCSTR n)
@@ -408,17 +411,19 @@ private:
     void ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
     bool CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
 
-private:
-    ID3DBlob* m_pInputSignature{};
-    ID3DUserDefinedAnnotation* pAnnotation{};
-
-    bool m_bChangedRTorZB;
-
     void apply_object(IRenderable& O);
 
+    ID3DBlob* m_pInputSignature{};
+    ID3DUserDefinedAnnotation* pAnnotation{};
+    bool m_bChangedRTorZB;
+
 public:
+    bool RVelocity{};
+
     dx10StateManager StateManager;
     dx10ShaderResourceStateCache SRVSManager;
+
+    SMAP_Allocator LP_smap_pool;
 };
 #pragma warning(pop)
 

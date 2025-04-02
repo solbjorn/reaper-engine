@@ -47,9 +47,7 @@ void CRenderTarget::phase_combine()
             Position_previous.set(saved_position);
             saved_position.set(Device.vCameraPosition);
 
-            Fmatrix m_invview;
-            m_invview.invert(Device.mView);
-            Matrix_previous.mul(m_saved_viewproj, m_invview);
+            Matrix_previous.mul(m_saved_viewproj, Device.mInvView);
             Matrix_current.set(Device.mProject);
             m_saved_viewproj.set(Device.mFullTransform);
         }
@@ -100,18 +98,11 @@ void CRenderTarget::phase_combine()
     RCache.set_Stencil(FALSE);
 
     // draw skybox
-    //	Moved to shader!
-    // RCache.set_ColorWriteEnable					();
-    //	Moved to shader!
-    // RCache.set_Z(FALSE);
     g_pGamePersistent->Environment().RenderSky();
 
     //	Igor: Render clouds before compine without Z-test
     //	to avoid siluets. HOwever, it's a bit slower process.
     g_pGamePersistent->Environment().RenderClouds();
-
-    //	Moved to shader!
-    // RCache.set_Z(TRUE);
 
     //
     RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00); // stencil should be >= 1
@@ -121,11 +112,9 @@ void CRenderTarget::phase_combine()
     {
         PIX_EVENT(combine_1);
         // Compute params
-        Fmatrix m_v2w;
-        m_v2w.invert(Device.mView);
         CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
         constexpr float minamb = 0.001f;
-        Fvector4 ambclr = {std::max(envdesc.ambient.x * 2, minamb), std::max(envdesc.ambient.y * 2, minamb), std::max(envdesc.ambient.z * 2, minamb), 0};
+        Fvector4 ambclr = {std::max(envdesc.ambient.x * 2.f, minamb), std::max(envdesc.ambient.y * 2.f, minamb), std::max(envdesc.ambient.z * 2.f, minamb), 0.f};
         ambclr.mul(ps_r2_sun_lumscale_amb);
 
         Fvector4 envclr;
@@ -142,12 +131,12 @@ void CRenderTarget::phase_combine()
 
         // sun-params
         {
-            light* fuckingsun = (light*)RImplementation.Lights.sun._get();
+            light* sun = (light*)RImplementation.Lights.sun._get();
             Fvector L_dir, L_clr;
             float L_spec;
-            L_clr.set(fuckingsun->color.r, fuckingsun->color.g, fuckingsun->color.b);
+            L_clr.set(sun->color.r, sun->color.g, sun->color.b);
             L_spec = u_diffuse2s(L_clr);
-            Device.mView.transform_dir(L_dir, fuckingsun->direction);
+            Device.mView.transform_dir(L_dir, sun->direction);
             L_dir.normalize();
 
             sunclr.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
@@ -170,20 +159,11 @@ void CRenderTarget::phase_combine()
         pv++;
         RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
-        dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
-
-        // Setup textures
-        ID3DBaseTexture* e0 = _menu_pp ? 0 : envdescren.sky_r_textures_env[0].second->surface_get();
-        ID3DBaseTexture* e1 = _menu_pp ? 0 : envdescren.sky_r_textures_env[1].second->surface_get();
-        t_envmap_0->surface_set(e0);
-        t_envmap_1->surface_set(e1);
-
         // Draw
         RCache.set_Element(s_combine->E[0]);
-        // RCache.set_Geometry			(g_combine_VP		);
         RCache.set_Geometry(g_combine);
 
-        RCache.set_c("m_v2w", m_v2w);
+        RCache.set_c("m_v2w", Device.mInvView);
         RCache.set_c("L_ambient", ambclr);
 
         RCache.set_c("Ldynamic_color", sunclr);
@@ -235,14 +215,14 @@ void CRenderTarget::phase_combine()
         float h = float(Device.dwHeight);
 
         // Render Scale
-        set_viewport_size(RCache, w / ps_ssfx_water.x, h / ps_ssfx_water.x);
+        RCache.set_viewport_size(w / ps_ssfx_water.x, h / ps_ssfx_water.x);
 
         // Render Water SSR
         RCache.set_xform_world(Fidentity);
         dsgraph.render_water_ssr();
 
         // Restore Viewport
-        set_viewport_size(RCache, w, h);
+        RCache.set_viewport_size(w, h);
 
         // Save Frame
         pContext->CopyResource(rt_ssfx_water->pTexture->surface_get(), rt_ssfx_temp->pTexture->surface_get());
@@ -281,19 +261,19 @@ void CRenderTarget::phase_combine()
         pContext->CopyResource(rt_ssfx_prevPos->pTexture->surface_get(), rt_Position->pTexture->surface_get());
 
     // Forward rendering
-    PIX_EVENT(Forward_rendering);
-    if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, 0, 0, get_base_zb()); // LDR RT
-    else
-        u_setrt(RCache, rt_Generic_0_r, 0, 0, rt_MSAADepth); // LDR RT
-    RCache.set_CullMode(CULL_CCW);
-    RCache.set_Stencil(FALSE);
-    RCache.set_ColorWriteEnable();
-    //	TODO: DX10: CHeck this!
-    // g_pGamePersistent->Environment().RenderClouds	();
-    RImplementation.render_forward();
-    if (g_pGamePersistent)
-        g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
+    {
+        PIX_EVENT(Forward_rendering);
+        if (!RImplementation.o.dx10_msaa)
+            u_setrt(RCache, rt_Generic_0, 0, 0, get_base_zb()); // LDR RT
+        else
+            u_setrt(RCache, rt_Generic_0_r, 0, 0, rt_MSAADepth); // LDR RT
+        RCache.set_CullMode(CULL_CCW);
+        RCache.set_Stencil(FALSE);
+        RCache.set_ColorWriteEnable();
+        RImplementation.render_forward();
+        if (g_pGamePersistent)
+            g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
+    }
 
     //	Igor: for volumetric lights
     //	combine light volume here
@@ -354,9 +334,11 @@ void CRenderTarget::phase_combine()
     RCache.set_Stencil(FALSE);
 
     // Screen space sunshafts
-    PIX_EVENT(phase_ss_ss);
     if (!_menu_pp && (ps_r_sunshafts_mode & SS_SS_MASK) && need_to_render_sunshafts())
+    {
+        PIX_EVENT(phase_ss_ss);
         PhaseSSSS();
+    }
 
     // Compute blur textures
     if (!Device.m_SecondViewport.IsSVPFrame()) // Temp fix for blur buffer and SVP
@@ -409,7 +391,6 @@ void CRenderTarget::phase_combine()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
-    if (1)
     {
         PIX_EVENT(combine_2);
         //
@@ -577,10 +558,8 @@ void CRenderTarget::phase_wallmarks()
     // Targets
     RCache.set_RT(NULL, 2);
     RCache.set_RT(NULL, 1);
-    if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Color, NULL, NULL, get_base_zb());
-    else
-        u_setrt(RCache, rt_Color, NULL, NULL, rt_MSAADepth);
+    u_setrt(RCache, rt_Color, NULL, NULL, rt_MSAADepth);
+
     // Stencil	- draw only where stencil >= 0x1
     RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
     RCache.set_CullMode(CULL_CCW);
@@ -594,7 +573,6 @@ void CRenderTarget::phase_combine_volumetric()
 
     //	TODO: DX10: Remove half pixel offset here
 
-    // u_setrt(RCache, rt_Generic_0,0,0,HW.pBaseZB );			// LDR RT
     if (!RImplementation.o.dx10_msaa)
         u_setrt(RCache, rt_Generic_0, rt_Generic_1, 0, get_base_zb());
     else

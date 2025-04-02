@@ -209,17 +209,6 @@ inline void FactoryPtr<IEnvDescriptorRender>::DestroyObject()
     RenderFactory->DestroyEnvDescriptorRender(m_pObject);
     m_pObject = nullptr;
 }
-template <>
-inline void FactoryPtr<IEnvDescriptorMixerRender>::CreateObject()
-{
-    m_pObject = RenderFactory->CreateEnvDescriptorMixerRender();
-}
-template <>
-inline void FactoryPtr<IEnvDescriptorMixerRender>::DestroyObject()
-{
-    RenderFactory->DestroyEnvDescriptorMixerRender(m_pObject);
-    m_pObject = nullptr;
-}
 
 template <>
 inline void FactoryPtr<IFontRender>::CreateObject()

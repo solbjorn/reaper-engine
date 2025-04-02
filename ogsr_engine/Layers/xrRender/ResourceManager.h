@@ -107,7 +107,7 @@ public:
     void _DeleteConstantTable(const R_constant_table* C);
 
     dx10ConstantBuffer* _CreateConstantBuffer(ctx_id_t context_id, ID3DShaderReflectionConstantBuffer* pTable);
-    void _DeleteConstantBuffer(ctx_id_t context_id, const dx10ConstantBuffer* pBuffer);
+    void _DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
     SInputSignature* _CreateInputSignature(ID3DBlob* pBlob);
     void _DeleteInputSignature(const SInputSignature* pSignature);

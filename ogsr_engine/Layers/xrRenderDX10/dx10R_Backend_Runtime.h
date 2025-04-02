@@ -169,17 +169,7 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 #endif
         vb = _vb;
         vb_stride = _vb_stride;
-        // CHK_DX			(HW.pDevice->SetStreamSource(0,vb,0,vb_stride));
-        // UINT StreamNumber,
-        // IDirect3DVertexBuffer9 * pStreamData,
-        // UINT OffsetInBytes,
-        // UINT Stride
 
-        // UINT StartSlot,
-        // UINT NumBuffers,
-        // ID3DxxBuffer *const *ppVertexBuffers,
-        // const UINT *pStrides,
-        // const UINT *pOffsets
         u32 iOffset = 0;
         context()->IASetVertexBuffers(0, 1, &vb, &_vb_stride, &iOffset);
     }
@@ -258,10 +248,6 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 
 IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-    // VERIFY(vs);
-    // HW.pDevice->VSSetShader(vs);
-    // HW.pDevice->GSSetShader(0);
-
     D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T);
     u32 iIndexCount = GetIndexCount(T, PC);
 
@@ -278,27 +264,13 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 
     ApplyPrimitieTopology(Topology);
 
-    // CHK_DX(HW.pDevice->DrawIndexedPrimitive(T,baseV, startV, countV,startI,PC));
-    // D3DPRIMITIVETYPE Type,
-    // INT BaseVertexIndex,
-    // UINT MinIndex,
-    // UINT NumVertices,
-    // UINT StartIndex,
-    // UINT PriResmitiveCount
-
-    // UINT IndexCount,
-    // UINT StartIndexLocation,
-    // INT BaseVertexLocation
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
     ApplyVertexLayout();
     StateManager.Apply();
     //	State manager may alter constants
     constants.flush();
-    //	Msg("DrawIndexed: Start");
-    //	Msg("iIndexCount=%d, startI=%d, baseV=%d", iIndexCount, startI, baseV);
     context()->DrawIndexed(iIndexCount, startI, baseV);
-    //	Msg("DrawIndexed: End\n");
 
     PGO(Msg("PGO:DIP:%dv/%df", countV, PC));
 }
@@ -308,9 +280,6 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
     //	TODO: DX10: Remove triangle fan usage from the engine
     if (T == D3DPT_TRIANGLEFAN)
         return;
-
-    // VERIFY(vs);
-    // HW.pDevice->VSSetShader(vs);
 
     D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T);
     u32 iVertexCount = GetIndexCount(T, PC);
@@ -326,11 +295,8 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
     StateManager.Apply();
     //	State manager may alter constants
     constants.flush();
-    //	Msg("Draw: Start");
-    //	Msg("iVertexCount=%d, startV=%d", iVertexCount, startV);
-    // CHK_DX				(HW.pDevice->DrawPrimitive(T, startV, PC));
     context()->Draw(iVertexCount, startV);
-    //	Msg("Draw: End\n");
+
     PGO(Msg("PGO:DIP:%dv/%df", 3 * PC, PC));
 }
 
@@ -361,6 +327,20 @@ IC void CBackend::set_Scissor(Irect* R)
 
 IC void CBackend::SetViewport(const D3D_VIEWPORT& viewport) const { context()->RSSetViewports(1, &viewport); }
 
+IC void CBackend::set_viewport_size(float w, float h) const
+{
+    const D3D11_VIEWPORT viewport = {
+        .TopLeftX = 0,
+        .TopLeftY = 0,
+        .Width = w,
+        .Height = h,
+        .MinDepth = 0.f,
+        .MaxDepth = 1.f,
+    };
+
+    SetViewport(viewport);
+}
+
 IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
 {
     StateManager.SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
@@ -377,6 +357,7 @@ IC void CBackend::set_AlphaRef(u32 _value)
 }
 
 IC void CBackend::set_ColorWriteEnable(u32 _mask) { StateManager.SetColorWriteEnable(_mask); }
+
 ICF void CBackend::set_CullMode(u32 _mode) { StateManager.SetCullMode(_mode); }
 
 ICF void CBackend::set_FillMode(u32 _mode) { StateManager.SetFillMode(_mode); }

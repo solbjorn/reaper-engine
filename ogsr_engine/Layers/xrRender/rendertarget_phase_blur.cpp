@@ -221,7 +221,7 @@ void CRenderTarget::phase_ssfx_ssr()
     RCache.set_Stencil(FALSE);
 
     if (ScaleFactor > 1.0f)
-        set_viewport_size(RCache, scale_X, scale_Y);
+        RCache.set_viewport_size(scale_X, scale_Y);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -303,7 +303,7 @@ void CRenderTarget::phase_ssfx_ssr()
     // COMBINE //////////////////////////////////////////////////////////
     // Reset Viewport
     if (ScaleFactor > 1.0f)
-        set_viewport_size(RCache, w, h);
+        RCache.set_viewport_size(w, h);
 
     p1.set(1.0f, 1.0f);
 
@@ -357,7 +357,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
     // Volumetric always at 1/8 res
-    set_viewport_size(RCache, w / 8, h / 8);
+    RCache.set_viewport_size(w / 8, h / 8);
 
     ref_rt* rt_VolBlur[2] = {&rt_ssfx_volumetric_tmp, &rt_ssfx_volumetric};
     constexpr float pixelsize[4] = {0, 1, 1, 2}; // half pixel + pixelsize
@@ -390,7 +390,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     }
 
     // Restore Viewport
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
 
     // COMBINE ////////////////////////////////////////////////////////////////
     u_setrt(RCache, rt_ssfx_accum, 0, 0, NULL);
@@ -431,7 +431,7 @@ void CRenderTarget::phase_ssfx_water_blur()
     constexpr Fvector2 p0{0.f, 0.f};
     Fvector2 p1{0.5f, 0.5f};
 
-    set_viewport_size(RCache, w / 2, h / 2);
+    RCache.set_viewport_size(w / 2, h / 2);
 
     if (ps_ssfx_water.y > 0)
     {
@@ -509,7 +509,7 @@ void CRenderTarget::phase_ssfx_water_blur()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
     p1.set(1.0f, 1.0f);
 };
 
@@ -526,7 +526,7 @@ void CRenderTarget::phase_ssfx_water_waves()
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    set_viewport_size(RCache, 512, 512);
+    RCache.set_viewport_size(512, 512);
 
     u_setrt(RCache, rt_ssfx_water_waves, 0, 0, NULL);
     RCache.set_CullMode(CULL_NONE);
@@ -550,7 +550,7 @@ void CRenderTarget::phase_ssfx_water_waves()
     RCache.set_Geometry(g_combine);
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-    set_viewport_size(RCache, w, h);
+    RCache.set_viewport_size(w, h);
 };
 
 void CRenderTarget::phase_ssfx_sss()

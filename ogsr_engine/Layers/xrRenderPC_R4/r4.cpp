@@ -160,13 +160,11 @@ void CRender::create()
     o.smapsize = r2_SmapSize;
 
     // options
-    o.distortion = true;
-    o.disasm = (strstr(Core.Params, "-disasm")) ? TRUE : FALSE;
+    o.disasm = !!strstr(Core.Params, "-disasm");
 
     //	MSAA option dependencies
-
     o.dx10_msaa = !!ps_r3_msaa;
-    o.dx10_msaa_samples = (1 << ps_r3_msaa);
+    o.dx10_msaa_samples = 1 << ps_r3_msaa;
 
     o.dx11_enable_tessellation = ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
@@ -182,7 +180,9 @@ void CRender::create()
 
     Models = xr_new<CModelPool>();
     PSLibrary.OnCreate();
+
     HWOCC.occq_create();
+    q_sync_point.Create();
 
     rmNormal(RCache);
 
@@ -194,7 +194,9 @@ void CRender::destroy()
 {
     FluidManager.Destroy();
 
+    q_sync_point.Destroy();
     HWOCC.occq_destroy();
+
     xr_delete(Models);
     xr_delete(Target);
     PSLibrary.OnDestroy();
@@ -205,15 +207,20 @@ extern u32 reset_frame;
 
 void CRender::reset_begin()
 {
+    main_tg->wait();
+    rain_tg->wait();
+    sun_tg->wait();
+    lights_tg->wait();
+
     // Update incremental shadowmap-visibility solver
     // BUG-ID: 10646
-    for (u32 it = 0; it < Lights_LastFrame.size(); it++)
+    for (auto* light : Lights_LastFrame)
     {
-        if (!Lights_LastFrame[it])
+        if (!light)
             continue;
 
         for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-            Lights_LastFrame[it]->svis[id].resetoccq();
+            light->svis[id].resetoccq();
     }
     Lights_LastFrame.clear();
 
@@ -227,15 +234,16 @@ void CRender::reset_begin()
     //-AVO
 
     xr_delete(Target);
+
     HWOCC.occq_destroy();
-    /*
-    for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-        _RELEASE				(q_sync_point[i]);
-    */
+    q_sync_point.Destroy();
 }
 
 void CRender::reset_end()
 {
+    q_sync_point.Create();
+    HWOCC.occq_create();
+
     Target = xr_new<CRenderTarget>();
 
     if (b_loaded /*&& ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density))*/)
@@ -497,15 +505,23 @@ void CRender::rmNormal(const CBackend& cmd_list) const
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRender::CRender() : m_bFirstFrameAfterReset(false)
+CRender::CRender()
 {
-    tg = &xr_task_group_get();
-    init_cacades();
+    main_tg = &xr_task_group_get();
+    rain_tg = &xr_task_group_get();
+
+    m_sun_cascades.resize(R__NUM_SUN_CASCADES);
+    sun_tg = &xr_task_group_get();
+
+    lights_tg = &xr_task_group_get();
 }
 
 CRender::~CRender()
 {
-    tg->cancel_put();
+    main_tg->cancel_put();
+    rain_tg->cancel_put();
+    sun_tg->cancel_put();
+    lights_tg->cancel_put();
 }
 
 #include "../../xr_3da/GameFont.h"

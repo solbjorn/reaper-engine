@@ -8,7 +8,7 @@
 
 constexpr int quant = 16384;
 
-float GoToValue(float& current, float go_to)
+static float GoToValue(float& current, float go_to)
 {
     float diff = abs(current - go_to);
 
@@ -23,7 +23,7 @@ float GoToValue(float& current, float go_to)
     return current < go_to ? r_value : -r_value;
 }
 
-void CDetailManager::hw_Render(CBackend& cmd_list, bool use_fast_geo)
+void CDetailManager::hw_Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position)
 {
     // Render-prepare
     //	Update timer
@@ -55,20 +55,21 @@ void CDetailManager::hw_Render(CBackend& cmd_list, bool use_fast_geo)
 
     wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 
-    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir1, 1, 0, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir1, 1, 0, fade_distance, light_position);
 
     // Wave1
     wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 
-    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 2, 0, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 2, 0, fade_distance, light_position);
 
     // Still
     consts.set(scale, scale, scale, 1.f);
 
-    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 0, 1, use_fast_geo);
+    hw_Render_dump(cmd_list, consts, wave.div(PI_MUL_2), dir2, 0, 1, fade_distance, light_position);
 }
 
-void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, bool use_fast_geo)
+void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id, float fade_distance,
+                                    const Fvector* light_position)
 {
     constexpr const char* strConsts = "consts";
     constexpr const char* strWave = "wave";
@@ -149,19 +150,14 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
 
                 u32 dwBatch = 0;
 
-                auto _vI = vis.begin();
-                auto _vE = vis.end();
-                for (; _vI != _vE; _vI++)
+                for (auto* items : vis)
                 {
-                    SlotItemVec* items = *_vI;
-                    SlotItemVecIt _iI = items->begin();
-                    SlotItemVecIt _iE = items->end();
-                    for (; _iI != _iE; _iI++)
+                    for (auto* pInstance : *items)
                     {
-                        if (*_iI == nullptr)
+                        if (!pInstance)
                             continue;
 
-                        SlotItem& Instance = **_iI;
+                        SlotItem& Instance = *pInstance;
                         u32 base = dwBatch * 4;
 
                         Instance.alpha += GoToValue(Instance.alpha, Instance.alpha_target);
@@ -169,9 +165,9 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
                         float scale = Instance.scale_calculated;
 
                         // Sort of fade using the scale
-                        // fade_distance == -1 use light_position to define "fade", anything else uses fade_distance
-                        if (fade_distance <= -1)
-                            scale *= 1.0f - Instance.position.distance_to_xz_sqr(light_position) * 0.005f;
+                        // fade_distance == fade_light use light_position to define "fade", anything else uses fade_distance
+                        if (fade_distance <= fade_light)
+                            scale *= 1.0f - Instance.position.distance_to_xz_sqr(*light_position) * 0.005f;
                         else if (Instance.distance > fade_distance)
                             scale *= 1.0f - abs(Instance.distance - fade_distance) * 0.005f;
 
@@ -228,6 +224,9 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
             // KD: we must not clear vis on r2 since we want details shadows
             if (ps_ssfx_grass_shadows.x <= 0)
             {
+                // fade_distance == fade_scene only during PHASE_NORMAL
+                bool use_fast_geo = fade_distance != fade_scene;
+
                 if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
                     ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && use_fast_geo) // phase smap with shadows
                      || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && !use_fast_geo && (!RImplementation.is_sun())) // phase normal with shadows without sun

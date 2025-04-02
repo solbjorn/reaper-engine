@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "xr_task.h"
 
 float g_fSCREEN;
 
@@ -44,23 +45,38 @@ void CRender::Calculate()
 
     //
     Lights.Update();
-    calculate_sun_async();
 
-    // Check if we touch some light even trough portal
-    static xr_vector<ISpatial*> spatial_lights;
-    g_SpatialSpace->q_sphere(spatial_lights, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
-    for (auto spatial : spatial_lights)
-    {
-        const auto& entity_pos = spatial->spatial_sector_point();
+    main_tg->run([this] {
+        auto& dsgraph = get_imm_context();
+        VERIFY(dsgraph.mapDistort.empty());
 
-        spatial->spatial_updatesector(dsgraph.detect_sector(entity_pos));
-        if (spatial->spatial.sector_id == INVALID_SECTOR_ID)
-            continue; // disassociated from S/P structure
+        // Check if we touch some light even trough portal
+        static xr_vector<ISpatial*> spatial_lights;
+        g_SpatialSpace->q_sphere(spatial_lights, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
 
-        VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
-        // lightsource
-        light* L = (light*)spatial->dcast_Light();
-        VERIFY(L);
-        Lights.add_light(L);
-    }
+        for (auto spatial : spatial_lights)
+        {
+            const auto& entity_pos = spatial->spatial_sector_point();
+
+            spatial->spatial_updatesector(dsgraph.detect_sector(entity_pos));
+            if (spatial->spatial.sector_id == INVALID_SECTOR_ID)
+                continue; // disassociated from S/P structure
+
+            VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
+            // lightsource
+            light* L = (light*)spatial->dcast_Light();
+            VERIFY(L);
+            Lights.add_light(L);
+        }
+
+        Device.Statistic->RenderCALC.Begin();
+        dsgraph.r_pmask(true, true, true);
+        dsgraph.build_subspace(last_sector_id, ViewBase);
+        Device.Statistic->RenderCALC.End();
+    });
+
+    rain_run();
+    sun_run();
 }
+
+void CRender::main_sync() { main_tg->wait(); }

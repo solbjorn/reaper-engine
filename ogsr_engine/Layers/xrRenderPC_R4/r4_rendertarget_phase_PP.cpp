@@ -1,10 +1,14 @@
 #include "stdafx.h"
-#include "r4_rendertarget.h"
 
 void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
 {
-    CTexture* T = RCache.get_ActiveTexture(2);
-    VERIFY2(T, "Texture #3 in noise shader should be setted up");
+    R_constant* C = RCache.get_c("s_noise")._get(); // get texture
+    VERIFY2(C, "s_noise texture in noise shader should be set");
+    VERIFY(RC_dest_sampler == C->destination);
+    VERIFY(RC_dx10texture == C->type);
+
+    CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
+    VERIFY2(T, "s_noise texture in noise shader should be set");
     u32 tw = iCeil(float(T->get_Width()) * param_noise_scale + EPS_S);
     u32 th = iCeil(float(T->get_Height()) * param_noise_scale + EPS_S);
     VERIFY2(tw && th, "Noise scale can't be zero in any way");
@@ -65,8 +69,6 @@ BOOL CRenderTarget::u_need_PP()
     bool _noise = (param_noise > 0.001f);
     bool _dual = (param_duality_h > 0.001f) || (param_duality_v > 0.001f);
 
-    // bool	_menu_pp= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
-
     bool _cbase = false;
     {
         int _r = color_get_R(param_color_base);
@@ -80,10 +82,6 @@ BOOL CRenderTarget::u_need_PP()
     }
     bool _cadd = false;
     {
-        // int		_r	= color_get_R(param_color_add)	;
-        // int		_g	= color_get_G(param_color_add)	;
-        // int		_b	= color_get_B(param_color_add)	;
-        // if (_r>2 || _g>2 || _b>2)	_cadd	= true	;
         int _r = _abs((int)(param_color_add.x * 255));
         int _g = _abs((int)(param_color_add.y * 255));
         int _b = _abs((int)(param_color_add.z * 255));
@@ -101,6 +99,7 @@ struct TL_2c3uv
     u32 color0;
     u32 color1;
     Fvector2 uv[3];
+
     IC void set(float x, float y, u32 c0, u32 c1, float u0, float v0, float u1, float v1, float u2, float v2)
     {
         p.set(x, y, EPS_S, 1.f);

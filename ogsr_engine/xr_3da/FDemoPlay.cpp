@@ -260,8 +260,7 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
             spline1(t, &v[0], &Device.mView.vm[i]);
         }
 
-        Fmatrix mInvCamera;
-        mInvCamera.invert(Device.mView);
+        const auto& mInvCamera = Device.mInvView;
         info.n.set(mInvCamera._21, mInvCamera._22, mInvCamera._23);
         info.d.set(mInvCamera._31, mInvCamera._32, mInvCamera._33);
         info.p.set(mInvCamera._41, mInvCamera._42, mInvCamera._43);

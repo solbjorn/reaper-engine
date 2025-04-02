@@ -233,7 +233,7 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->get_base_zb()); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->rt_Base_Depth); // LDR RT
     else
         pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth); // LDR RT
 
@@ -281,8 +281,7 @@ void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 {
     PIX_EVENT(AdvectColorBFECC);
 
-    constexpr Fcolor color = {0, 0, 0, 0};
-
+    constexpr Fcolor color{};
     RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
     RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
 
@@ -480,7 +479,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->get_base_zb()); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, 0, 0, pTarget->rt_Base_Depth); // LDR RT
     else
         pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth); // LDR RT
 
@@ -492,7 +491,7 @@ void dx103DFluidManager::UpdateObstacles(const dx103DFluidData& FluidData, float
     PIX_EVENT(Fluid_update_obstacles);
 
     //	Reset data
-    constexpr Fcolor color = {0, 0, 0, 0};
+    constexpr Fcolor color{};
     RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], color);
     RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], color);
 
@@ -561,14 +560,10 @@ void dx103DFluidManager::DeregisterFluidData(dx103DFluidData* pData)
 
 void dx103DFluidManager::UpdateProfiles()
 {
-    int iDataNum = m_lstFluidData.size();
+    const size_t iDataNum = m_lstFluidData.size();
 
-    int i;
-
-    for (i = 0; i < iDataNum; ++i)
-    {
+    for (size_t i = 0; i < iDataNum; i++)
         m_lstFluidData[i]->ReparseProfile(m_lstSectionNames[i]);
-    }
 }
 
 #endif //	DEBUG

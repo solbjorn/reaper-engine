@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "../xrRender/du_cone.h"
 
-// extern Fvector du_cone_vertices[DU_CONE_NUMVERTEX];
-
 void CRenderTarget::accum_spot(light* L)
 {
-    phase_accumulator();
+    phase_accumulator(RCache);
     RImplementation.stats.l_visible++;
 
     // *** assume accumulator already setup ***
@@ -105,12 +103,10 @@ void CRenderTarget::accum_spot(light* L)
                                        1.0f};
 
         // compute xforms
-        Fmatrix xf_world;
-        xf_world.invert(Device.mView);
         Fmatrix xf_view = L->X.S.view;
         Fmatrix xf_project;
         xf_project.mul(m_TexelAdjust, L->X.S.project);
-        m_Shadow.mul(xf_view, xf_world);
+        m_Shadow.mul(xf_view, Device.mInvView);
         m_Shadow.mulA_44(xf_project);
 
         // lmap
@@ -136,7 +132,7 @@ void CRenderTarget::accum_spot(light* L)
 
         // compute xforms
         xf_project.mul(m_TexelAdjust2, L->X.S.project);
-        m_Lmap.mul(xf_view, xf_world);
+        m_Lmap.mul(xf_view, Device.mInvView);
         m_Lmap.mulA_44(xf_project);
     }
 
@@ -225,7 +221,7 @@ void CRenderTarget::accum_volumetric(light* L)
 
     if (!RImplementation.o.ssfx_volumetric)
     {
-        phase_vol_accumulator();
+        phase_vol_accumulator(RCache);
     }
     else
     {
@@ -287,12 +283,10 @@ void CRenderTarget::accum_volumetric(light* L)
                                        1.0f};
 
         // compute xforms
-        Fmatrix xf_world;
-        xf_world.invert(Device.mView);
         Fmatrix xf_view = L->X.S.view;
         Fmatrix xf_project;
         xf_project.mul(m_TexelAdjust, L->X.S.project);
-        m_Shadow.mul(xf_view, xf_world);
+        m_Shadow.mul(xf_view, Device.mInvView);
         m_Shadow.mulA_44(xf_project);
 
         // lmap
@@ -318,7 +312,7 @@ void CRenderTarget::accum_volumetric(light* L)
 
         // compute xforms
         xf_project.mul(m_TexelAdjust2, L->X.S.project);
-        m_Lmap.mul(xf_view, xf_world);
+        m_Lmap.mul(xf_view, Device.mInvView);
         m_Lmap.mulA_44(xf_project);
 
         // Compute light frustum in world space
@@ -330,23 +324,6 @@ void CRenderTarget::accum_volumetric(light* L)
     }
 
     //	Calculate camera space AABB
-    // xform BB
-    /*
-    Fbox	BB;
-    Fvector	rr; rr.set(L->spatial.sphere.R,L->spatial.sphere.R,L->spatial.sphere.R);
-    BB.setb	(L->spatial.sphere.P, rr);
-
-    Fbox	bbp; bbp.invalidate();
-    for (u32 i=0; i<8; i++)		{
-        Fvector		pt;
-        BB.getpoint	(i,pt);
-        //Device.mFullTransform.transform	(pt);
-        Device.mFullTransform.transform	(mView);
-        bbp.modify	(pt);
-    }
-    */
-
-    //	Calculate camera space AABB
     //	Adjust AABB according to the adjusted distance for the light volume
     Fbox aabb;
 
@@ -356,27 +333,10 @@ void CRenderTarget::accum_volumetric(light* L)
     pt.sub(L->position);
     pt.mul(L->m_volumetric_distance);
     pt.add(L->position);
-    //	Don't adjust AABB
-    // float	scaledRadius = L->spatial.sphere.R;
-    // Fvector	rr = Fvector().set(scaledRadius,scaledRadius,scaledRadius);
-    // Fvector pt = L->spatial.sphere.P;
+
     Device.mView.transform(pt);
     aabb.setb(pt, rr);
-    /*
-        //	Calculate presise AABB assuming we are drawing for the spot light
-        {
-            aabb.invalidate();
-            Fmatrix	transform;
-            transform.mul( Device.mView, L->m_xform);
-            for (u32 i=0; i<DU_CONE_NUMVERTEX; ++i)
-            {
-                Fvector		pt = du_cone_vertices[i];
-                transform.transform(pt);
-                aabb.modify(pt);
-            }
 
-        }
-    */
     // Common vars
     float fQuality{};
     int iNumSlices{};
@@ -392,12 +352,12 @@ void CRenderTarget::accum_volumetric(light* L)
     {
         // Vanilla Method
         fQuality = L->m_volumetric_quality;
-        iNumSlices = static_cast<int>(static_cast<float>(VOLUMETRIC_SLICES) * fQuality);
+        iNumSlices = (int)((float)VOLUMETRIC_SLICES * fQuality);
         // min 10 surfaces
         iNumSlices = std::max(10, iNumSlices);
 
         // Set Intensity
-        fQuality = static_cast<float>(iNumSlices) / static_cast<float>(VOLUMETRIC_SLICES);
+        fQuality = (float)iNumSlices / (float)VOLUMETRIC_SLICES;
         L_clr.mul(L->m_volumetric_intensity);
         L_clr.mul(1 / fQuality);
         L_clr.mul(L->get_LOD());
@@ -406,7 +366,7 @@ void CRenderTarget::accum_volumetric(light* L)
     {
         // SSS Method
         fQuality = ps_ssfx_volumetric.z;
-        iNumSlices = static_cast<int>(24.f * fQuality);
+        iNumSlices = (int)(24.f * fQuality);
 
         // Intensity mod to OMNIPART && HUD
         if (L->flags.type == IRender_Light::OMNIPART || L->flags.bHudMode)
@@ -416,7 +376,7 @@ void CRenderTarget::accum_volumetric(light* L)
         L_clr.mul(L->m_volumetric_intensity * IntensityMod);
         L_clr.mul(1.0f / fQuality);
         L_clr.mul(L->get_LOD());
-        fQuality = static_cast<float>(iNumSlices) / 120; // Max setting ( 24 * 5 )
+        fQuality = (float)iNumSlices / 120.f; // Max setting ( 24 * 5 )
     }
 
     L_spec = u_diffuse2s(L_clr);
@@ -424,27 +384,6 @@ void CRenderTarget::accum_volumetric(light* L)
 
     // Draw volume with projective texgen
     {
-        //	Set correct depth surface
-        //	It's slow. Make this when shader is created
-        {
-            // s_smap
-            STextureList* _T = &*s_accum_volume->E[0]->passes[0]->T;
-
-            STextureList::iterator _it = _T->begin();
-            STextureList::iterator _end = _T->end();
-            for (; _it != _end; _it++)
-            {
-                std::pair<u32, ref_texture>& loader = *_it;
-                u32 load_id = loader.first;
-                //	Shadowmap texture always uses 0 texture unit
-                if (load_id == 0)
-                {
-                    //	Assign correct texture
-                    loader.second.create(r2_RT_smap_depth);
-                }
-            }
-        }
-
         RCache.set_Element(s_accum_volume->E[0]);
 
         // Constants

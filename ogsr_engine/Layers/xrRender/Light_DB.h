@@ -11,9 +11,9 @@ private:
 
 public:
     ref_light sun{};
+    ref_light rain{};
     light_Package package;
 
-public:
     void add_light(light* L);
 
     void Load(IReader* fs);

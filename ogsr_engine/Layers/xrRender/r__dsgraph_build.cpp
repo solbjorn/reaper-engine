@@ -62,7 +62,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     // b) Should be rendered to special distort buffer in another pass
     VERIFY(pVisual->shader._get());
     ShaderElement* sh_d = pVisual->shader->E[4]._get();
-    if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
+    if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
         mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
 
     // Select shader
@@ -151,7 +151,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     // b) Should be rendered to special distort buffer in another pass
     VERIFY(pVisual->shader._get());
     ShaderElement* sh_d = pVisual->shader->E[4]._get();
-    if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
+    if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
         mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
 
     // Select shader
@@ -514,7 +514,8 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
         else
         {
             pV->CalculateBones(TRUE);
-            pV->CalculateWallmarks(root && root->renderable_HUD());
+            if (phase == CRender::PHASE_NORMAL)
+                pV->CalculateWallmarks(root && root->renderable_HUD());
 
             for (dxRender_Visual* Vis : pV->children)
                 if (Vis->getRZFlag())

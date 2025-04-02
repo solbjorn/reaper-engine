@@ -37,13 +37,22 @@ void SetupGPU(IRenderDeviceRender* pRender)
 void CRenderDevice::_SetupStates()
 {
     // General Render States
-    mView.identity();
-    mProject.identity();
-    mFullTransform.identity();
     vCameraPosition.set(0, 0, 0);
     vCameraDirection.set(0, 0, 1);
     vCameraTop.set(0, 1, 0);
     vCameraRight.set(1, 0, 0);
+
+    mView.identity();
+    mProject.identity();
+    mFullTransform.identity();
+
+    mViewHud.identity();
+    mProjectHud.identity();
+
+    mInvView.identity();
+    mInvFullTransform.identity();
+
+    vCameraDirectionSaved = vCameraPosition;
 
     m_pRender->SetupStates();
 }

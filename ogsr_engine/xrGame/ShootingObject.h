@@ -37,7 +37,6 @@ protected:
     //////////////////////////////////////////////////////////////////////////
     // Fire Params
     //////////////////////////////////////////////////////////////////////////
-protected:
     virtual void LoadFireParams(LPCSTR section, LPCSTR prefix);
     virtual bool SendHitAllowed(CObject* pUser);
     virtual void FireBullet(const Fvector& pos, const Fvector& dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit);
@@ -76,7 +75,6 @@ protected:
     // счетчик времени, затрачиваемого на выстрел
     float fTime;
 
-protected:
     // для сталкеров, чтоб они знали эффективные границы использования
     // оружия
     float m_fMinRadius;
@@ -85,7 +83,6 @@ protected:
     //////////////////////////////////////////////////////////////////////////
     // Lights
     //////////////////////////////////////////////////////////////////////////
-protected:
     Fcolor light_base_color;
     float light_base_range;
     Fcolor light_build_color;
@@ -99,7 +96,8 @@ protected:
     // включение подсветки во время выстрела
     bool m_bLightShotEnabled;
 
-protected:
+    std::recursive_mutex render_lock;
+
     void Light_Create();
     void Light_Destroy();
 
@@ -114,7 +112,6 @@ protected:
     //////////////////////////////////////////////////////////////////////////
     // партикловая система
     //////////////////////////////////////////////////////////////////////////
-protected:
     // функции родительского объекта
     virtual const Fvector& get_CurrentFirePoint() = 0;
     virtual const Fmatrix& get_ParticlesXFORM() = 0;
@@ -146,7 +143,6 @@ protected:
     // партиклы гильз
     virtual void OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel);
 
-protected:
     // имя пратиклов для гильз
     shared_str m_sShellParticles;
 

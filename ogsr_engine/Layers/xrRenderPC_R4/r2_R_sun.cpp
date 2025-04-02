@@ -1,20 +1,21 @@
 #include "stdafx.h"
 
+#include <oneapi/tbb/parallel_invoke.h>
+#include "xr_task.h"
+
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
-#include "xr_task.h"
 
 #include "r4_R_sun_support.h"
 
-float OLES_SUN_LIMIT_27_01_07 = 100.f;
 constexpr float tweak_COP_initial_offs = 1200.f;
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-constexpr Fvector3 corners[8] = {{-1, -1, 0}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0}, {+1, +1, +1}, {+1, +1, 0}, {+1, -1, +1}, {+1, -1, 0}};
-constexpr int facetable[6][4] = {
+static constexpr Fvector3 corners[8] = {{-1, -1, 0}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0}, {+1, +1, +1}, {+1, +1, 0}, {+1, -1, +1}, {+1, -1, 0}};
+static constexpr u32 facetable[6][4] = {
     {6, 7, 5, 4},
     {1, 0, 7, 6},
     {1, 2, 3, 0},
@@ -25,71 +26,21 @@ constexpr int facetable[6][4] = {
 };
 
 //////////////////////////////////////////////////////////////////////////
-Fvector3 wform(Fmatrix& m, Fvector3 const& v)
+Fvector3 wform(const Fmatrix& m, const Fvector3& v)
 {
     Fvector4 r;
     r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
     r.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
     r.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
     r.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
-    // VERIFY		(r.w>0.f);
     float invW = 1.0f / r.w;
-    Fvector3 r3 = {r.x * invW, r.y * invW, r.z * invW};
-    return r3;
-}
 
-void CRender::init_cacades()
-{
-    constexpr u32 cascade_count = 3;
-    m_sun_cascades.resize(cascade_count);
-
-    constexpr float fBias = -0.0000025f;
-
-    m_sun_cascades[0].cascade_ind = 0;
-    m_sun_cascades[0].reset_chain = true;
-    m_sun_cascades[0].size = ps_ssfx_shadow_cascades.x; // 40;
-    m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
-
-    m_sun_cascades[1].cascade_ind = 1;
-    m_sun_cascades[1].size = ps_ssfx_shadow_cascades.y; // 120;
-    m_sun_cascades[1].bias = m_sun_cascades[1].size * fBias;
-
-    m_sun_cascades[2].cascade_ind = 2;
-    m_sun_cascades[2].size = ps_ssfx_shadow_cascades.z; // 320;
-    m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
-}
-
-void CRender::render_sun_cascades()
-{
-    tg->wait();
-
-    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
-        render_sun_cascade(i);
-}
-
-void CRender::calculate_sun_async()
-{
-    tg->run([this] {
-        need_to_render_sunshafts = Target->need_to_render_sunshafts();
-        last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
-
-        if (need_to_render_sunshafts)
-            m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
-
-        // Compute volume(s) - something like a frustum for infinite directional light
-        // Also compute virtual light position and sector it is inside
-
-        for (u32 i = 0; i < m_sun_cascades.size(); i++)
-            calculate_sun(m_sun_cascades[i]);
-
-        if (need_to_render_sunshafts)
-            m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
-    });
+    return {r.x * invW, r.y * invW, r.z * invW};
 }
 
 void CRender::calculate_sun(sun::cascade& cascade)
 {
-    light* fuckingsun = (light*)Lights.sun._get();
+    light* sun = (light*)Lights.sun._get();
 
     CFrustum& cull_frustum = cascade.cull_frustum;
     Fmatrix& cull_xform = cascade.cull_xform;
@@ -109,14 +60,14 @@ void CRender::calculate_sun(sun::cascade& cascade)
         Fmatrix fullxform_inv = ex_full_inverse;
 
         // COP - 100 km away
-        cull_COP.mad(Device.vCameraPosition, fuckingsun->direction, -tweak_COP_initial_offs);
+        cull_COP.mad(Device.vCameraPosition, sun->direction, -tweak_COP_initial_offs);
 
         // Create approximate ortho-xform
         // view: auto find 'up' and 'right' vectors
         Fmatrix mdir_View, mdir_Project;
         Fvector L_dir, L_up, L_right, L_pos;
-        L_pos.set(fuckingsun->position);
-        L_dir.set(fuckingsun->direction).normalize();
+        L_pos.set(sun->position);
+        L_dir.set(sun->direction).normalize();
         L_right.set(1, 0, 0);
         if (_abs(L_right.dotproduct(L_dir)) > .99f)
             L_right.set(0, 0, 1);
@@ -134,7 +85,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
             {
                 Fvector3 near_p, edge_vec;
                 light_cuboid.view_frustum_rays.reserve(4);
-                for (int p = 0; p < 4; p++)
+                for (u32 p = 0; p < 4; p++)
                 {
                     near_p = wform(fullxform_inv, corners[facetable[4][p]]);
 
@@ -180,17 +131,19 @@ void CRender::calculate_sun(sun::cascade& cascade)
         //		light_cuboid.light_cuboid_points.reserve		(9);
         for (int p = 0; p < 8; p++)
         {
-            Fvector3 xf = wform(cull_xform_inv, corners[p]);
+            const Fvector3 xf = wform(cull_xform_inv, corners[p]);
             light_cuboid.light_cuboid_points[p] = xf;
         }
 
         // only side planes
-        for (int plane = 0; plane < 4; plane++)
-            for (int pt = 0; pt < 4; pt++)
+        for (u32 plane = 0; plane < 4; plane++)
+        {
+            for (u32 pt = 0; pt < 4; pt++)
             {
-                int asd = facetable[plane][pt];
+                u32 asd = facetable[plane][pt];
                 light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
             }
+        }
 
         Fvector lightXZshift;
         light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, cascade.size, cascade.reset_chain);
@@ -199,13 +152,15 @@ void CRender::calculate_sun(sun::cascade& cascade)
         proj_view.normalize();
 
         // Initialize rays for the next cascade
-        if (cascade.cascade_ind < m_sun_cascades.size() - 1)
+        if (cascade.cascade_ind < SE_SUN_FAR)
             m_sun_cascades[cascade.cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
+#ifdef DEBUG
         constexpr bool draw_debug = false;
-        if (draw_debug && cascade.cascade_ind == 0)
+        if (draw_debug && cascade.cascade_ind == SE_SUN_NEAR)
             for (u32 it = 0; it < cull_planes.size(); it++)
                 Target->dbg_addplane(cull_planes[it], it * 0xFFF);
+#endif
 
         Fvector cam_shifted = L_pos;
         cam_shifted.add(lightXZshift);
@@ -219,8 +174,8 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         // Create frustum for query
         cull_frustum._clear();
-        for (u32 p = 0; p < cull_planes.size(); p++)
-            cull_frustum._add(cull_planes[p]);
+        for (auto& plane : cull_planes)
+            cull_frustum._add(plane);
 
         {
             Fvector cam_proj = Device.vCameraPosition;
@@ -258,70 +213,143 @@ void CRender::calculate_sun(sun::cascade& cascade)
         }
 
         s32 limit = o.smapsize - 1;
-        fuckingsun->X.D.minX = 0;
-        fuckingsun->X.D.maxX = limit;
-        fuckingsun->X.D.minY = 0;
-        fuckingsun->X.D.maxY = limit;
+        sun->X.D.minX = 0;
+        sun->X.D.maxX = limit;
+        sun->X.D.minY = 0;
+        sun->X.D.maxY = limit;
 
         // full-xform
     }
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+void CRender::accumulate_cascade(u32 cascade_ind)
 {
-    sun::cascade& cascade = m_sun_cascades[cascade_ind];
-    light* fuckingsun = (light*)Lights.sun._get();
+    auto& cascade = m_sun_cascades[cascade_ind];
+    auto& cmd_list = get_context(cascade.context_id).cmd_list;
 
-    // Finalize & Cleanup
-    fuckingsun->X.D.combine = cascade.cull_xform;
-
-    // Begin SMAP-render
-    auto& dsgraph = get_imm_context();
-    VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
-    dsgraph.r_pmask(true, false);
-
-    // Fill the database
-    dsgraph.build_subspace(largest_sector_id, cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
-
-    // Render shadow-map
-    //. !!! We should clip based on shrinked frustum (again)
-    {
-        bool bNormal = dsgraph.mapNormalPasses[0][0].size() || dsgraph.mapMatrixPasses[0][0].size();
-        VERIFY(!(dsgraph.mapNormalPasses[1][0].size() || dsgraph.mapMatrixPasses[1][0].size() || dsgraph.mapSorted.size()));
-
-        if (bNormal)
-        {
-            Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
-            dsgraph.cmd_list.set_xform_world(Fidentity);
-            dsgraph.cmd_list.set_xform_view(Fidentity);
-            dsgraph.cmd_list.set_xform_project(fuckingsun->X.D.combine);
-            dsgraph.render_graph(0);
-
-            if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
-            {
-                Details->fade_distance = dm_fade * dm_fade * ps_ssfx_grass_shadows.y;
-                Details->Render(dsgraph.cmd_list, true);
-            }
-        }
-    }
-
-    // End SMAP-render
-    dsgraph.r_pmask(true, false);
+    PIX_EVENT_CTX(cmd_list, accumulate_cascade);
 
     // Accumulate
-    Target->phase_accumulator();
+    Target->phase_accumulator(cmd_list);
+    Target->rt_smap_depth->set_slice_read(cmd_list.context_id);
+    Target->accum_direct_cascade(cmd_list, cascade_ind, cascade.cull_xform, m_sun_cascades[cascade_ind == SE_SUN_NEAR ? cascade_ind : (cascade_ind - 1)].cull_xform, cascade.bias);
+}
 
-    PIX_EVENT(SE_SUN_NEAR);
+void CRender::sun_run()
+{
+    sun_active = is_sun();
+    if (!sun_active)
+        return;
 
-    if (cascade_ind == 0)
-        Target->accum_direct_cascade(SE_SUN_NEAR, cascade.cull_xform, cascade.cull_xform, cascade.bias);
-    else if (cascade_ind < m_sun_cascades.size() - 1)
-        Target->accum_direct_cascade(SE_SUN_MIDDLE, cascade.cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, cascade.bias);
-    else
-        Target->accum_direct_cascade(SE_SUN_FAR, cascade.cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, cascade.bias);
+    for (auto& cascade : m_sun_cascades)
+    {
+        cascade.context_id = alloc_context();
+        VERIFY(cascade.context_id != R__INVALID_CTX_ID);
+    }
+
+    sun_tg->run([this] {
+        constexpr float fBias = -0.0000025f;
+        auto* cascade = &m_sun_cascades[SE_SUN_NEAR];
+
+        cascade->cascade_ind = SE_SUN_NEAR;
+        cascade->reset_chain = true;
+        cascade->size = ps_ssfx_shadow_cascades.x; // 40;
+        cascade->bias = cascade->size * fBias;
+
+        cascade = &m_sun_cascades[SE_SUN_MIDDLE];
+        cascade->cascade_ind = SE_SUN_MIDDLE;
+        cascade->size = ps_ssfx_shadow_cascades.y; // 120;
+        cascade->bias = cascade->size * fBias;
+
+        cascade = &m_sun_cascades[SE_SUN_FAR];
+        cascade->cascade_ind = SE_SUN_FAR;
+        cascade->size = ps_ssfx_shadow_cascades.z; // 320;
+        cascade->bias = cascade->size * fBias;
+
+        bool need_to_render_sunshafts = Target->need_to_render_sunshafts(), last_cascade_chain_mode;
+        if (need_to_render_sunshafts)
+        {
+            last_cascade_chain_mode = cascade->reset_chain;
+            cascade->reset_chain = true;
+        }
+
+        // Compute volume(s) - something like a frustum for infinite directional light
+        // Also compute virtual light position and sector it is inside
+
+        for (auto& cascade : m_sun_cascades)
+            calculate_sun(cascade);
+
+        if (need_to_render_sunshafts)
+            cascade->reset_chain = last_cascade_chain_mode;
+
+        for (auto& cascade : m_sun_cascades)
+        {
+            sun_tg->run([this, &cascade] {
+                auto& dsgraph = get_context(cascade.context_id);
+
+                // Fill the database
+                dsgraph.r_pmask(true, false);
+                dsgraph.build_subspace(largest_sector_id, cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, true);
+
+                // Finalize & Cleanup
+                light& sun = *(light*)Lights.sun._get();
+                sun.X.D.combine[cascade.cascade_ind] = cascade.cull_xform;
+
+                sun_tg->run([this, cascade_ind = cascade.cascade_ind] {
+                    // Begin SMAP-render
+                    auto& dsgraph = get_context(m_sun_cascades[cascade_ind].context_id);
+
+                    // Render shadow-map
+                    //. !!! We should clip based on shrinked frustum (again)
+                    bool empty = dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty();
+                    if (empty)
+                        return;
+
+                    VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
+                    const light& sun = *(const light*)Lights.sun._get();
+
+                    Target->phase_smap_direct(dsgraph.cmd_list, &sun, cascade_ind);
+                    dsgraph.cmd_list.set_xform_world(Fidentity);
+                    dsgraph.cmd_list.set_xform_view(Fidentity);
+                    dsgraph.cmd_list.set_xform_project(sun.X.D.combine[cascade_ind]);
+                    dsgraph.render_graph(0);
+
+                    if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
+                        Details->Render(dsgraph.cmd_list, dm_fade * dm_fade * ps_ssfx_grass_shadows.y);
+                });
+            });
+        }
+    });
+}
+
+void CRender::sun_sync()
+{
+    PIX_EVENT(DEFER_SUN);
+    sun_tg->wait();
+
+    for (u32 i = 0; i < R__NUM_SUN_CASCADES + 1; i++)
+    {
+        // Accumulate the current cascade and flush the previous one in parallel
+        oneapi::tbb::parallel_invoke(
+            [this, i] {
+                if (i < R__NUM_SUN_CASCADES)
+                    accumulate_cascade(i);
+            },
+            [this, i] {
+                if (!i)
+                    return;
+
+                ctx_id_t context_id = m_sun_cascades[i - 1].context_id;
+                get_context(context_id).cmd_list.submit();
+                release_context(context_id);
+            });
+    }
+
+    auto& cmd_list = get_imm_context().cmd_list;
+    cmd_list.Invalidate();
 
     // Restore XForms
-    dsgraph.cmd_list.set_xform_world(Fidentity);
-    dsgraph.cmd_list.set_xform_view(Device.mView);
-    dsgraph.cmd_list.set_xform_project(Device.mProject);
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_xform_view(Device.mView);
+    cmd_list.set_xform_project(Device.mProject);
 }

@@ -9,8 +9,6 @@
 #include "dxRainRender.h"
 #include "dxLensFlareRender.h"
 #include "dxEnvironmentRender.h"
-
-#include "dxRenderDeviceRender.h"
 #include "dxObjectSpaceRender.h"
 
 #include "dxFontRender.h"
@@ -50,8 +48,6 @@ ILensFlareRender* dxRenderFactory::CreateLensFlareRender() { return xr_new<dxLen
 void dxRenderFactory::DestroyLensFlareRender(ILensFlareRender* pObject) { xr_delete((dxLensFlareRender*&)pObject); }
 IEnvironmentRender* dxRenderFactory::CreateEnvironmentRender() { return xr_new<dxEnvironmentRender>(); }
 void dxRenderFactory::DestroyEnvironmentRender(IEnvironmentRender* pObject) { xr_delete((dxEnvironmentRender*&)pObject); }
-IEnvDescriptorMixerRender* dxRenderFactory::CreateEnvDescriptorMixerRender() { return xr_new<dxEnvDescriptorMixerRender>(); }
-void dxRenderFactory::DestroyEnvDescriptorMixerRender(IEnvDescriptorMixerRender* pObject) { xr_delete((dxEnvDescriptorMixerRender*&)pObject); }
 IEnvDescriptorRender* dxRenderFactory::CreateEnvDescriptorRender() { return xr_new<dxEnvDescriptorRender>(); }
 void dxRenderFactory::DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject) { xr_delete((dxEnvDescriptorRender*&)pObject); }
 IFlareRender* dxRenderFactory::CreateFlareRender() { return xr_new<dxFlareRender>(); }

@@ -1344,16 +1344,10 @@ void CHudItem::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_po
     HudItemData()->m_item_transform.transform_dir(dest_dir);
 }
 
-extern float psHUD_FOV;
-
 void CHudItem::CorrectDirFromWorldToHud(Fvector& worldPos)
 {
-    Fmatrix hud_project;
-    hud_project.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                 g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
     Device.mView.transform_dir(worldPos);
-    hud_project.transform_dir(worldPos);
+    Device.mProjectHud.transform_dir(worldPos);
 
     Fmatrix{Device.mProject}.invert().transform_dir(worldPos);
     Fmatrix{Device.mView}.invert().transform_dir(worldPos);

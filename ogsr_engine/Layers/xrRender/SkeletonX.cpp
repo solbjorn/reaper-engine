@@ -44,10 +44,11 @@ void CSkeletonX::_Copy(CSkeletonX* B)
 
     m_Indices = B->m_Indices;
 }
+
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
-    const bool CalcVelocity = RImplementation.Target->RVelocity;
+    const bool CalcVelocity = cmd_list.RVelocity;
 
     if (CalcVelocity)
     {
@@ -441,6 +442,7 @@ void get_pos_bones(const vertBoned3W& vert, Fvector& p, CKinematics* Parent)
     p.add(P1);
     p.add(P2);
 }
+
 void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent)
 {
     Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;

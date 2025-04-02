@@ -284,7 +284,7 @@ void CSkeletonX_ST::Copy(dxRender_Visual* P)
     _Copy((CSkeletonX*)X);
 }
 //////////////////////////////////////////////////////////////////////
-void CSkeletonX_PM::Render(CBackend& cmd_list, float LOD, bool use_fast_geo)
+void CSkeletonX_PM::Render(CBackend& cmd_list, float LOD, bool)
 {
     int lod_id = inherited1::last_lod;
     if (LOD >= 0.f)

@@ -169,6 +169,8 @@ bool CRenderDevice::BeforeFrame()
     return true;
 }
 
+extern float psHUD_FOV;
+
 void CRenderDevice::OnCameraUpdated()
 {
     if (camFrame == dwFrame)
@@ -191,7 +193,14 @@ void CRenderDevice::OnCameraUpdated()
 
     // Matrices
     mFullTransform.mul(mProject, mView);
+
+    mViewHud.build_camera_dir({}, Device.vCameraDirection, Device.vCameraTop);
+    mProjectHud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
+                                 g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+    mInvView.invert(mView);
     mInvFullTransform.invert_44(mFullTransform);
+
     ::Render->OnCameraUpdated();
     m_pRender->SetCacheXform(mView, mProject);
 

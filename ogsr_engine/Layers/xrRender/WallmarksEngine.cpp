@@ -27,8 +27,6 @@ struct wm_slot
 };
 } // namespace WallmarksEngine
 
-// #include "xr_effsun.h"
-
 constexpr float W_DIST_FADE = 15.f;
 constexpr float W_DIST_FADE_SQR = W_DIST_FADE * W_DIST_FADE;
 constexpr float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
@@ -346,34 +344,36 @@ void CWallmarksEngine::Render()
     auto& dsgraph = RImplementation.get_imm_context();
     auto& cmd_list = dsgraph.cmd_list;
 
-    //	if (marks.empty())			return;
     // Projection and xform
-    float _43 = Device.mProject._43;
-    Device.mProject._43 -= ps_r__WallmarkSHIFT;
-    cmd_list.set_xform_world(Fidentity);
-    cmd_list.set_xform_project(Device.mProject);
+    Fmatrix mProject = Device.mProject;
+    mProject._43 -= ps_r__WallmarkSHIFT;
 
-    Fmatrix mSavedView = Device.mView;
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_xform_project(mProject);
+
     Fvector mViewPos;
+    Fmatrix mView;
     mViewPos.mad(Device.vCameraPosition, Device.vCameraDirection, ps_r__WallmarkSHIFT_V);
-    Device.mView.build_camera_dir(mViewPos, Device.vCameraDirection, Device.vCameraTop);
-    cmd_list.set_xform_view(Device.mView);
+    mView.build_camera_dir(mViewPos, Device.vCameraDirection, Device.vCameraTop);
+
+    cmd_list.set_xform_view(mView);
 
     Device.Statistic->RenderDUMP_WM.Begin();
     Device.Statistic->RenderDUMP_WMS_Count = 0;
     Device.Statistic->RenderDUMP_WMD_Count = 0;
     Device.Statistic->RenderDUMP_WMT_Count = 0;
 
-    float ssaCLIP = r_ssaDISCARD / 4;
+    const float ssaCLIP = r_ssaDISCARD / 4;
 
     lock.Enter(); // Physics may add wallmarks in parallel with rendering
 
-    for (WMSlotVecIt slot_it = marks.begin(); slot_it != marks.end(); slot_it++)
+    for (auto& slot_it : marks)
     {
         u32 w_offset;
         FVF::LIT *w_verts, *w_start;
         BeginStream(hGeom, w_offset, w_verts, w_start);
-        wm_slot* slot = *slot_it;
+        wm_slot* slot = slot_it;
+
         // static wallmarks
         for (auto w_it = slot->static_items.begin(); w_it != slot->static_items.end();)
         {
@@ -415,9 +415,9 @@ void CWallmarksEngine::Render()
         BeginStream(hGeom, w_offset, w_verts, w_start);
 
         // dynamic wallmarks
-        for (xr_vector<intrusive_ptr<CSkeletonWallmark>>::iterator w_it = slot->skeleton_items.begin(); w_it != slot->skeleton_items.end(); w_it++)
+        for (auto& w_it : slot->skeleton_items)
         {
-            intrusive_ptr<CSkeletonWallmark> W = *w_it;
+            intrusive_ptr<CSkeletonWallmark> W = w_it;
             if (!W)
             {
                 continue;
@@ -471,8 +471,6 @@ void CWallmarksEngine::Render()
     Device.Statistic->RenderDUMP_WM.End();
 
     // Projection
-    Device.mView = mSavedView;
-    Device.mProject._43 = _43;
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }

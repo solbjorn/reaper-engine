@@ -69,7 +69,7 @@ public:
     ID3DIndexBuffer* QuadIB;
     ID3DIndexBuffer* old_QuadIB;
 
-    ctx_id_t alloc_context(bool alloc_cmd_list = true);
+    ctx_id_t alloc_context();
 
     ICF R_dsgraph_structure& get_context(ctx_id_t id)
     {

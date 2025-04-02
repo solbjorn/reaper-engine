@@ -2,6 +2,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/r__occlusion.h"
+#include "../xrRender/r__sync_point.h"
 
 #include "../xrRender/PSLibrary.h"
 
@@ -13,7 +14,6 @@
 #include "../xrRender/modelpool.h"
 #include "../xrRender/wallmarksengine.h"
 
-#include "smap_allocator.h"
 #include "../xrRender/light_db.h"
 #include "../xrRender/light_render_direct.h"
 #include "../xrRender/LightTrack.h"
@@ -23,6 +23,7 @@
 #include "../../xr_3da/fmesh.h"
 
 class dxRender_Visual;
+struct light_ctx;
 
 // definition
 class CRender : public IRender_interface, public dxRenderDeviceRender
@@ -53,10 +54,9 @@ public:
         u32 HW_smap_FORMAT : 32;
         u32 smapsize : 16;
 
-        u32 distortion : 1;
         u32 disasm : 1;
 
-        u32 dx10_msaa : 1; //	DX10.0 path
+        u32 dx10_msaa : 1;
         u32 dx10_msaa_samples : 4;
 
         u32 dx11_enable_tessellation : 1;
@@ -98,17 +98,20 @@ public:
     CLight_DB Lights;
     CLight_Compute_XFORM_and_VIS LR;
     xr_vector<light*> Lights_LastFrame;
-    SMAP_Allocator LP_smap_pool;
     light_Package LP_normal;
 
-    bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
-
+    R_sync_point q_sync_point;
     xr_vector<sun::cascade> m_sun_cascades;
 
-    bool need_to_render_sunshafts{false};
-    bool last_cascade_chain_mode{false};
+    bool m_bFirstFrameAfterReset{}; // Determines weather the frame is the first after resetting device.
 
 private:
+    bool sun_active{};
+    bool rain_active{};
+
+    ctx_id_t rain_context_id{R__INVALID_CTX_ID};
+    sector_id_t largest_sector_id{INVALID_SECTOR_ID};
+
     // Loading / Unloading
     void LoadBuffers(CStreamReader* fs, BOOL _alternative);
     void LoadVisuals(IReader* fs);
@@ -119,21 +122,28 @@ private:
 
 public:
     void render_forward();
-    void render_lights(light_Package& LP);
-    void render_menu();
-    void render_rain();
-
-    void init_cacades();
-    void render_sun_cascades();
-    void render_sun_cascade(u32 cascade_ind);
 
 private:
-    void calculate_sun_async();
+    void render_menu();
 
-    xr_task_group* tg{};
     void calculate_sun(sun::cascade& cascade);
+    void accumulate_cascade(u32 cascade_ind);
 
-    sector_id_t largest_sector_id{INVALID_SECTOR_ID};
+    xr_task_group* main_tg{};
+    void main_sync();
+
+    xr_task_group* rain_tg{};
+    void rain_run();
+    void rain_sync();
+
+    xr_task_group* sun_tg{};
+    void sun_run();
+    void sun_sync();
+
+    xr_task_group* lights_tg{};
+    void render_lights_shadowed_one(light_ctx& task);
+    void render_lights_shadowed(light_Package& LP);
+    void render_lights(light_Package& LP);
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase);
@@ -146,8 +156,8 @@ public:
     IRenderVisual* model_CreatePE(LPCSTR name);
 
     // HW-occlusion culling
-    IC u32 occq_begin(u32& ID) { return HWOCC.occq_begin(ID); }
-    IC void occq_end(u32& ID) { HWOCC.occq_end(ID); }
+    IC u32 occq_begin(u32& ID, ctx_id_t context_id = R__IMM_CTX_ID) { return HWOCC.occq_begin(ID, context_id); }
+    IC void occq_end(u32& ID, ctx_id_t context_id = R__IMM_CTX_ID) { HWOCC.occq_end(ID, context_id); }
     IC R_occlusion::occq_result occq_get(u32& ID) { return HWOCC.occq_get(ID); }
     IC void occq_free(u32 ID) { HWOCC.occq_free(ID); }
 

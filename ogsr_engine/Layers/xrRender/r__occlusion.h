@@ -31,18 +31,20 @@ private:
     u32 last_frame;
     bool enabled;
 
+    std::recursive_mutex lock;
+
     void cleanup_lost();
 
 public:
     typedef u64 occq_result;
 
-public:
     ~R_occlusion();
 
     void occq_create();
     void occq_destroy();
-    u32 occq_begin(u32& ID); // returns 'order'
-    void occq_end(u32& ID);
+
+    u32 occq_begin(u32& ID, ctx_id_t context_id); // returns 'order'
+    void occq_end(u32& ID, ctx_id_t context_id);
     occq_result occq_get(u32& ID);
     void occq_free(u32 ID);
 };

@@ -203,8 +203,6 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     desc.Usage = D3D_USAGE_DEFAULT;
     desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
 
     D3D_SUBRESOURCE_DATA dataDesc{};
     dataDesc.pSysMem = converted;
@@ -303,7 +301,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
     //  If and edge was detected at the current pixel we will raycast again to avoid
     //  smoke aliasing artifacts at scene edges
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->get_base_zb()); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth); // LDR RT
     else
         pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth); // LDR RT
 

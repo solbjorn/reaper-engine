@@ -50,6 +50,8 @@ private:
     CHUDTarget* m_pHUDTarget;
     bool b_online;
 
+    std::recursive_mutex render_lock;
+
 public:
     CHUDManager();
     virtual ~CHUDManager();

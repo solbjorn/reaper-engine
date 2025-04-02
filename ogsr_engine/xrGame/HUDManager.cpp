@@ -245,7 +245,9 @@ void CHUDManager::Render_First(u32 context_id)
 
     // only shadow
     CObject* O = g_pGameLevel->CurrentViewEntity();
-    O->renderable_Render(context_id, O->H_Root());
+    const auto root = O->H_Root();
+    std::scoped_lock slock(render_lock);
+    O->renderable_Render(context_id, root);
 }
 
 void CHUDManager::Render_Last(u32 context_id)
@@ -267,9 +269,11 @@ void CHUDManager::Render_Last(u32 context_id)
         return;
 
     // hud itself
-    O->renderable_HUD(true);
-    O->OnHUDDraw(context_id, this, O->H_Root());
-    O->renderable_HUD(false);
+    const auto root = O->H_Root();
+    std::scoped_lock slock(render_lock);
+    root->renderable_HUD(true);
+    O->OnHUDDraw(context_id, this, root);
+    root->renderable_HUD(false);
 }
 
 extern void draw_wnds_rects();

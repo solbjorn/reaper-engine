@@ -8,8 +8,6 @@
 
 #include "FBasicVisual.h"
 
-extern float psHUD_FOV;
-
 using namespace R_dsgraph;
 
 extern float r_ssaHZBvsTEX;
@@ -35,7 +33,7 @@ bool cmp_pass(const T& left, const T& right)
 // ALPHA
 static void __fastcall sorted_L1(mapSorted_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -52,7 +50,7 @@ static void __fastcall sorted_L1(mapSorted_Node* N, void* arg)
 
 static void __fastcall water_node_ssr(mapSorted_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -74,7 +72,7 @@ static void __fastcall water_node_ssr(mapSorted_Node* N, void* arg)
 
 static void __fastcall water_node(mapSorted_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -96,7 +94,7 @@ static void __fastcall water_node(mapSorted_Node* N, void* arg)
 
 static void __fastcall hud_node(mapSorted_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -112,18 +110,18 @@ static void __fastcall hud_node(mapSorted_Node* N, void* arg)
     RImplementation.Target->Matrix_HUD_previous.set(N->val.PrevMatrix);
     N->val.PrevMatrix.set(dsgraph.cmd_list.xforms.m_wvp);
 
-    RImplementation.Target->RVelocity = true;
+    dsgraph.cmd_list.RVelocity = true;
 
     const float LOD = calcLOD(N->key, V->vis.sphere.R);
     dsgraph.cmd_list.LOD.set_LOD(LOD);
     V->Render(dsgraph.cmd_list, LOD, dsgraph.phase == CRender::PHASE_SMAP);
 
-    RImplementation.Target->RVelocity = false;
+    dsgraph.cmd_list.RVelocity = false;
 }
 
 void R_dsgraph_structure::render_graph(u32 _priority)
 {
-    PIX_EVENT(r_dsgraph_render_graph);
+    PIX_EVENT_CTX(cmd_list, dsgraph_render_graph);
     Device.Statistic->RenderDUMP.Begin();
 
     cmd_list.set_xform_world(Fidentity);
@@ -133,6 +131,8 @@ void R_dsgraph_structure::render_graph(u32 _priority)
     // Sorting by SSA and changes minimizations
     // Render several passes
     {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_static);
+
         for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
         {
             auto& map = mapNormalPasses[_priority][iPass];
@@ -166,6 +166,8 @@ void R_dsgraph_structure::render_graph(u32 _priority)
     // Sorting by SSA and changes minimizations
     // Render several passes
     {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_dynamic);
+
         for (u32 iPass = 0; iPass < SHADER_PASSES_MAX; ++iPass)
         {
             auto& map = mapMatrixPasses[_priority][iPass];
@@ -212,35 +214,24 @@ void R_dsgraph_structure::render_hud(bool NoPS)
         return;
 
     // Change projection
-    Fmatrix Pold = Device.mProject;
-    Fmatrix FTold = Device.mFullTransform;
-    Fmatrix FVold = Device.mView;
-    Device.mView.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), Device.vCameraDirection, Device.vCameraTop);
-    Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                     g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-    Device.mFullTransform.mul(Device.mProject, Device.mView);
-    cmd_list.set_xform_view(Device.mView);
-    cmd_list.set_xform_project(Device.mProject);
+    cmd_list.set_xform_view(Device.mViewHud);
+    cmd_list.set_xform_project(Device.mProjectHud);
 
     // Rendering
     RImplementation.rmNear(cmd_list);
     if (!NoPS)
     {
-        mapHUD.traverseLR(sorted_L1, this);
+        mapHUD.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
         mapHUD.clear();
     }
     else
     {
-        HUDMask.traverseLR(hud_node, this);
+        HUDMask.traverseLR(hud_node, (void*)(uintptr_t)context_id);
         HUDMask.clear();
     }
     RImplementation.rmNormal(cmd_list);
 
     // Restore projection
-    Device.mProject = Pold;
-    Device.mFullTransform = FTold;
-    Device.mView = FVold;
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }
@@ -248,25 +239,14 @@ void R_dsgraph_structure::render_hud(bool NoPS)
 void R_dsgraph_structure::render_hud_ui()
 {
     // Change projection
-    Fmatrix Pold = Device.mProject;
-    Fmatrix FTold = Device.mFullTransform;
-    Fmatrix Vold = Device.mView;
-    Device.mView.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), Device.vCameraDirection, Device.vCameraTop);
-    Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                     g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-    Device.mFullTransform.mul(Device.mProject, Device.mView);
-    cmd_list.set_xform_view(Device.mView);
-    cmd_list.set_xform_project(Device.mProject);
+    cmd_list.set_xform_view(Device.mViewHud);
+    cmd_list.set_xform_project(Device.mProjectHud);
 
     RImplementation.rmNear(cmd_list);
     g_hud->RenderActiveItemUI();
     RImplementation.rmNormal(cmd_list);
 
     // Restore projection
-    Device.mProject = Pold;
-    Device.mFullTransform = FTold;
-    Device.mView = Vold;
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }
@@ -276,34 +256,23 @@ void R_dsgraph_structure::render_hud_ui()
 void R_dsgraph_structure::render_sorted()
 {
     // Sorted (back to front)
-    mapSorted.traverseRL(sorted_L1, this);
+    mapSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
     mapSorted.clear();
 
     if (mapHUDSorted.empty())
         return;
 
     // Change projection
-    Fmatrix Pold = Device.mProject;
-    Fmatrix FTold = Device.mFullTransform;
-    Fmatrix Vold = Device.mView;
-    Device.mView.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), Device.vCameraDirection, Device.vCameraTop);
-    Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                     g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-    Device.mFullTransform.mul(Device.mProject, Device.mView);
-    cmd_list.set_xform_view(Device.mView);
-    cmd_list.set_xform_project(Device.mProject);
+    cmd_list.set_xform_view(Device.mViewHud);
+    cmd_list.set_xform_project(Device.mProjectHud);
 
     // Rendering
     RImplementation.rmNear(cmd_list);
-    mapHUDSorted.traverseRL(sorted_L1, this);
+    mapHUDSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
     mapHUDSorted.clear();
     RImplementation.rmNormal(cmd_list);
 
     // Restore projection
-    Device.mProject = Pold;
-    Device.mFullTransform = FTold;
-    Device.mView = Vold;
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }
@@ -313,48 +282,37 @@ void R_dsgraph_structure::render_sorted()
 void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 {
     // Sorted (back to front)
-    mapEmissive.traverseLR(sorted_L1, this);
+    mapEmissive.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
     if (clear)
         mapEmissive.clear();
 
     // Change projection
-    Fmatrix Pold = Device.mProject;
-    Fmatrix FTold = Device.mFullTransform;
-    Fmatrix Vold = Device.mView;
-    Device.mView.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), Device.vCameraDirection, Device.vCameraTop);
-    Device.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                     g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-    Device.mFullTransform.mul(Device.mProject, Device.mView);
-    cmd_list.set_xform_view(Device.mView);
-    cmd_list.set_xform_project(Device.mProject);
+    cmd_list.set_xform_view(Device.mViewHud);
+    cmd_list.set_xform_project(Device.mProjectHud);
 
     // Rendering
     RImplementation.rmNear(cmd_list);
     // Sorted (back to front)
-    mapHUDEmissive.traverseLR(sorted_L1, this);
+    mapHUDEmissive.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
 
     if (clear)
         mapHUDEmissive.clear();
 
     if (renderHUD)
-        mapHUDSorted.traverseRL(sorted_L1, this);
+        mapHUDSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
 
     RImplementation.rmNormal(cmd_list);
 
     // Restore projection
-    Device.mProject = Pold;
-    Device.mFullTransform = FTold;
-    Device.mView = Vold;
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
 }
 
-void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr, this); }
+void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr, (void*)(uintptr_t)context_id); }
 
 void R_dsgraph_structure::render_water()
 {
-    mapWater.traverseLR(water_node, this);
+    mapWater.traverseLR(water_node, (void*)(uintptr_t)context_id);
     mapWater.clear();
 }
 
@@ -363,7 +321,7 @@ void R_dsgraph_structure::render_water()
 void R_dsgraph_structure::render_wmarks()
 {
     // Sorted (back to front)
-    mapWmark.traverseLR(sorted_L1, this);
+    mapWmark.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
     mapWmark.clear();
 }
 
@@ -372,13 +330,13 @@ void R_dsgraph_structure::render_wmarks()
 void R_dsgraph_structure::render_distort()
 {
     // Sorted (back to front)
-    mapDistort.traverseRL(sorted_L1, this);
+    mapDistort.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
     mapDistort.clear();
 }
 
 static void __fastcall pLandscape_0(mapLandscape_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -391,7 +349,7 @@ static void __fastcall pLandscape_0(mapLandscape_Node* N, void* arg)
 
 static void __fastcall pLandscape_1(mapLandscape_Node* N, void* arg)
 {
-    R_dsgraph_structure& dsgraph = *(R_dsgraph_structure*)arg;
+    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
 
     VERIFY(N);
     dxRender_Visual* V = N->val.pVisual;
@@ -408,9 +366,9 @@ void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
     cmd_list.set_xform_world(Fidentity);
 
     if (pass == 0)
-        mapLandscape.traverseLR(pLandscape_0, this);
+        mapLandscape.traverseLR(pLandscape_0, (void*)(uintptr_t)context_id);
     else
-        mapLandscape.traverseLR(pLandscape_1, this);
+        mapLandscape.traverseLR(pLandscape_1, (void*)(uintptr_t)context_id);
 
     if (_clear)
         mapLandscape.clear();

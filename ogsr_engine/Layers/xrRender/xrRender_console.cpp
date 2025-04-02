@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "xrRender_console.h"
-#include "dxRenderDeviceRender.h"
 
 u32 r2_SmapSize = 2048;
 static constexpr xr_token SmapSizeToken[] = {{"1536x1536", 1536},
@@ -127,10 +126,8 @@ float ps_r2_ls_squality = 1.0f; // Base shadow map quality. The higher the value
 float ps_r2_sun_tsm_projection = 0.3f; // 0.18f
 float ps_r2_sun_tsm_bias = -0.01f; //
 float ps_r2_sun_near = 20.f; // 12.0f
-
-extern float OLES_SUN_LIMIT_27_01_07; //	actually sun_far
-
 float ps_r2_sun_near_border = 0.75f; // 1.0f
+float ps_r2_sun_far = 100.f;
 float ps_r2_sun_depth_far_scale = 1.00000f; // 1.00001f
 float ps_r2_sun_depth_far_bias = -0.00002f; // -0.0000f
 float ps_r2_sun_depth_near_scale = 1.0000f; // 1.00001f
@@ -139,19 +136,17 @@ float ps_r2_sun_lumscale = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_hemi = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_amb = 1.0f;
 
-#ifdef DEBUG
-float ps_r2_gmaterial = 2.2f; //
-#endif
-
 float ps_r2_dhemi_sky_scale = 0.08f; // 1.5f
 float ps_r2_dhemi_light_scale = 0.2f;
 float ps_r2_dhemi_light_flow = 0.1f;
 int ps_r2_dhemi_count = 5; // 5
 int ps_r2_wait_sleep = 0;
+int ps_r2_wait_timeout = 500;
 int ps_lens_flare{};
 
 float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
+
 ///////lvutner
 Fvector4 ps_r2_mask_control = {.0f, .0f, .0f, .0f}; // r2-only
 Fvector ps_r2_drops_control = {.0f, 1.15f, .0f}; // r2-only
@@ -264,7 +259,7 @@ u32 dm_current_cache1_line = 12; // dm_current_size*2/dm_cache1_count
 u32 dm_current_cache_line = 49; // dm_current_size+1+dm_current_size
 u32 dm_current_cache_size = 2401; // dm_current_cache_line*dm_current_cache_line
 float dm_current_fade = 47.5; // float(2*dm_current_size)-.5f;
-float ps_current_detail_density = 0.6;
+float ps_current_detail_density = 0.6f;
 float ps_current_detail_scale = 1.f;
 
 //- Mad Max
@@ -311,24 +306,6 @@ public:
     }
 };
 
-class CCC_ssfx_cascades final : public CCC_Vector3
-{
-    void apply() { RImplementation.init_cacades(); }
-
-public:
-    CCC_ssfx_cascades(LPCSTR N, Fvector3* V, const Fvector3 _min, const Fvector3 _max) : CCC_Vector3(N, V, _min, _max) {}
-    void Execute(LPCSTR args) override
-    {
-        CCC_Vector3::Execute(args);
-        apply();
-    }
-    void Status(TStatus& S) override
-    {
-        CCC_Vector3::Status(S);
-        apply();
-    }
-};
-
 //-----------------------------------------------------------------------
 class CCC_detail_radius : public CCC_Integer
 {
@@ -341,7 +318,7 @@ public:
         dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
         dm_current_fade = float(2 * dm_current_size) - .5f;
     }
-    CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+    CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {}
     virtual void Execute(LPCSTR args)
     {
         CCC_Integer::Execute(args);
@@ -379,7 +356,7 @@ public:
         clamp(val, 1, 16);
         SSManager.SetMaxAnisotropy(val);
     }
-    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 1, 16) {};
+    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 1, 16) {}
     virtual void Execute(LPCSTR args)
     {
         CCC_Integer::Execute(args);
@@ -399,12 +376,10 @@ public:
         if (0 == HW.pDevice)
             return;
 
-        //	TODO: DX10: Implement mip bias control
-        // VERIFY(!"apply not implmemented.");
         SSManager.SetMipLODBias(*value);
     }
 
-    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.f, +3.f) {};
+    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.f, +3.f) {}
     virtual void Execute(LPCSTR args)
     {
         CCC_Float::Execute(args);
@@ -420,14 +395,14 @@ public:
 class CCC_Screenshot : public IConsole_Command
 {
 public:
-    CCC_Screenshot(LPCSTR N) : IConsole_Command(N) {};
+    CCC_Screenshot(LPCSTR N) : IConsole_Command(N) {}
     virtual void Execute(LPCSTR args)
     {
         string_path name;
         name[0] = 0;
         sscanf(args, "%s", name);
         LPCSTR image = xr_strlen(name) ? name : 0;
-        ::Render->Screenshot(IRender_interface::SM_NORMAL, image);
+        RImplementation.Screenshot(IRender_interface::SM_NORMAL, image);
     }
 };
 
@@ -442,7 +417,7 @@ public:
 class CCC_Preset : public CCC_Token
 {
 public:
-    CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {};
+    CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -665,10 +640,9 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_sun_tsm_bias", &ps_r2_sun_tsm_bias, -0.5, +0.5);
 
     CMD3(CCC_Token, "r__smap_size", &r2_SmapSize, SmapSizeToken);
+
     CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 150.f);
-
-    CMD4(CCC_Float, "r2_sun_far", &OLES_SUN_LIMIT_27_01_07, 51.f, 180.f);
-
+    CMD4(CCC_Float, "r2_sun_far", &ps_r2_sun_far, 51.f, 180.f);
     CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 3.0f);
     CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
     CMD4(CCC_Float, "r2_sun_depth_far_bias", &ps_r2_sun_depth_far_bias, -0.5, +0.5);
@@ -783,7 +757,7 @@ void xrRender_initconsole()
     CMD4(CCC_Vector4, "ssfx_rain_3", &ps_ssfx_rain_3, Fvector4().set(0, 0, 0, 0), Fvector4().set(1, 10, 10, 10));
 
     CMD4(CCC_Vector4, "ssfx_grass_shadows", &ps_ssfx_grass_shadows, Fvector4().set(0, 0, 0, 0), Fvector4().set(3, 1, 100, 100));
-    CMD4(CCC_ssfx_cascades, "ssfx_shadow_cascades", &ps_ssfx_shadow_cascades, Fvector3().set(1.0f, 1.0f, 1.0f), Fvector3().set(300, 300, 300));
+    CMD4(CCC_Vector3, "ssfx_shadow_cascades", &ps_ssfx_shadow_cascades, Fvector3().set(1.0f, 1.0f, 1.0f), Fvector3().set(300, 300, 300));
 
     CMD4(CCC_Vector4, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, Fvector4().set(0, 0, 0, 0), Fvector4().set(1, 15, 5000, 1));
     CMD4(CCC_Vector4, "ssfx_int_grass_params_1", &ps_ssfx_int_grass_params_1, Fvector4().set(0, 0, 0, 0), Fvector4().set(5, 5, 5, 60));
@@ -799,6 +773,7 @@ void xrRender_initconsole()
     CMD3(CCC_Mask, "r__optimize_shadow_geom", &psDeviceFlags2, rsOptShadowGeom);
 
     CMD4(CCC_Integer, "r2_wait_sleep", &ps_r2_wait_sleep, 0, 1);
+    CMD4(CCC_Integer, "r2_wait_timeout", &ps_r2_wait_timeout, 100, 1000);
 
 #ifndef MASTER_GOLD
     CMD4(CCC_Integer, "r2_dhemi_count", &ps_r2_dhemi_count, 4, 25);

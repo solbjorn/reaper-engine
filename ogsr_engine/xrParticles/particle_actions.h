@@ -31,23 +31,33 @@ class ParticleActions
     PAVec m_actions;
 
 public:
-    std::mutex m_bLocked;
+    std::recursive_mutex m_bLocked;
 
     ParticleActions() { m_actions.reserve(4); }
     ~ParticleActions() { clear(); }
 
     IC void clear()
     {
-        for (PAVecIt it = m_actions.begin(); it != m_actions.end(); it++)
-            xr_delete(*it);
+        std::scoped_lock slock(m_bLocked);
+
+        for (auto& it : m_actions)
+            xr_delete(it);
+
         m_actions.clear();
     }
-    IC void append(ParticleAction* pa) { m_actions.push_back(pa); }
-    IC bool empty() { return m_actions.empty(); }
+
+    IC void append(ParticleAction* pa)
+    {
+        std::scoped_lock slock(m_bLocked);
+        m_actions.push_back(pa);
+    }
+
+    IC bool empty() const { return m_actions.empty(); }
     IC PAVecIt begin() { return m_actions.begin(); }
     IC PAVecIt end() { return m_actions.end(); }
-    IC int size() { return m_actions.size(); }
-    void copy(ParticleActions* src);
+    IC size_t size() const { return m_actions.size(); }
+    void lock() { m_bLocked.lock(); }
+    void unlock() { m_bLocked.unlock(); }
 };
 }; // namespace PAPI
 //---------------------------------------------------------------------------

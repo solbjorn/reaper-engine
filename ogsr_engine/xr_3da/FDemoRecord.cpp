@@ -109,7 +109,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
     {
         // g_position.set_position = false;
         IR_Capture(); // capture input
-        m_Camera.invert(Device.mView);
+        m_Camera = Device.mInvView;
 
         // parse yaw
         Fvector& dir = m_Camera.k;

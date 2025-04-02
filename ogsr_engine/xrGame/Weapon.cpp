@@ -1052,6 +1052,8 @@ void CWeapon::UpdateFlashlight()
 
 void CWeapon::renderable_Render(u32 context_id, IRenderable* root)
 {
+    std::scoped_lock slock(render_lock);
+
     UpdateXForm();
 
     // нарисовать подсветку

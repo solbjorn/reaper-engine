@@ -288,6 +288,11 @@ void CEnvDescriptor::load_common(CInifile* config)
 {
     LPCSTR sect = m_identifier.c_str();
 
+    if (config->line_exist(sect, "clouds_rotation"))
+        clouds_rotation = deg2rad(config->r_float(sect, "clouds_rotation"));
+    else
+        clouds_rotation = sky_rotation;
+
     bloom.set(READ_IF_EXISTS(config, r_float, sect, "bloom_threshold", 3.5f), READ_IF_EXISTS(config, r_float, sect, "bloom_exposure", 3.0f), 0,
               READ_IF_EXISTS(config, r_float, sect, "bloom_sky_intensity", 0.6f));
 
@@ -478,22 +483,17 @@ void CEnvDescriptor::setEnvAmbient(LPCSTR sect, CEnvironment* parent) { env_ambi
 //-----------------------------------------------------------------------------
 CEnvDescriptorMixer::CEnvDescriptorMixer(shared_str const& identifier) : CEnvDescriptor(identifier) {}
 
-void CEnvDescriptorMixer::destroy() { m_pDescriptorMixer->Destroy(); }
-
-void CEnvDescriptorMixer::clear() { m_pDescriptorMixer->Clear(); }
-
 void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
 {
-    float modif_power = 1.f / (modifier_power + 1); // the environment itself
-    float fi = 1 - f;
-
-    m_pDescriptorMixer->lerp(&*A.m_pDescriptor, &*B.m_pDescriptor);
+    const float modif_power = 1.f / (modifier_power + 1); // the environment itself
+    const float fi = 1 - f;
 
     weight = f;
 
     clouds_color.lerp(A.clouds_color, B.clouds_color, f);
 
     sky_rotation = (fi * A.sky_rotation + f * B.sky_rotation);
+    clouds_rotation = (fi * A.clouds_rotation + f * B.clouds_rotation);
 
     if (Mdf.use_flags.test(eViewDist))
         far_plane = (fi * A.far_plane + f * B.far_plane + Mdf.far_plane) * psVisDistance * modif_power;
@@ -576,6 +576,18 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
     R_ASSERT(_valid(sun_dir));
 
     VERIFY2(sun_dir.y < 0, "Invalid sun direction settings while lerp");
+
+    string_path temp_name;
+
+    if (!A.sky_texture_name.empty() && !B.sky_texture_name.empty())
+        sky_texture_name = xr_strconcat(temp_name, A.sky_texture_name.c_str(), "; ", B.sky_texture_name.c_str());
+    else
+        sky_texture_name = f < 0.5f ? A.sky_texture_name : B.sky_texture_name;
+
+    if (!A.clouds_texture_name.empty() && !B.clouds_texture_name.empty())
+        clouds_texture_name = xr_strconcat(temp_name, A.clouds_texture_name.c_str(), "; ", B.clouds_texture_name.c_str());
+    else
+        clouds_texture_name = f < 0.5f ? A.clouds_texture_name : B.clouds_texture_name;
 }
 
 //-----------------------------------------------------------------------------
@@ -619,9 +631,8 @@ void CEnvironment::mods_load()
             }
             else
             {
-                CEnvModifier E;
-                E.load(fs, ver);
-                Modifiers.push_back(E);
+                Modifiers.emplace_back(CEnvModifier());
+                Modifiers.back().load(fs, ver);
             }
             id++;
         }
@@ -765,7 +776,6 @@ void CEnvironment::load_weathers()
     }
 
     R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
-
     SetWeather((*WeatherCycles.begin()).first.c_str());
 }
 
@@ -840,8 +850,6 @@ void CEnvironment::load()
     if (!CurrentEnv)
         create_mixer();
 
-    m_pRender->OnLoad();
-    // tonemap					= Device.Resources->_CreateTexture("$user$tonemap");	//. hack
     if (!eff_Rain)
         eff_Rain = xr_new<CEffect_Rain>();
     if (!eff_LensFlare)
@@ -869,6 +877,7 @@ void CEnvironment::unload()
     }
 
     WeatherCycles.clear();
+
     // clear weather effect
     _I = WeatherFXs.begin();
     _E = WeatherFXs.end();
@@ -878,19 +887,18 @@ void CEnvironment::unload()
             xr_delete(*it);
     }
     WeatherFXs.clear();
+
     // clear ambient
     for (EnvAmbVecIt it = Ambients.begin(); it != Ambients.end(); it++)
         xr_delete(*it);
     Ambients.clear();
+
     // misc
     xr_delete(eff_Rain);
     xr_delete(eff_LensFlare);
     xr_delete(eff_Thunderbolt);
-    CurrentWeather = 0;
-    CurrentWeatherName = 0;
-    CurrentEnv->clear();
+    CurrentWeather = nullptr;
+    CurrentWeatherName = nullptr;
+    m_pRender->Clear();
     Invalidate();
-
-    m_pRender->OnUnload();
-    //	tonemap				= 0;
 }

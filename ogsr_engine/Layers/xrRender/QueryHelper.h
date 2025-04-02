@@ -1,11 +1,9 @@
 #pragma once
 
-IC HRESULT CreateQuery(ID3DQuery** ppQuery, D3DQUERYTYPE Type)
+IC HRESULT CreateQuery(ID3DQuery** ppQuery, D3D_QUERY Type)
 {
     D3D_QUERY_DESC desc{};
-    desc.Query = D3D_QUERY_OCCLUSION;
-
-    R_ASSERT(Type == D3DQUERYTYPE_OCCLUSION);
+    desc.Query = Type;
 
     return HW.pDevice->CreateQuery(&desc, ppQuery);
 }
@@ -16,14 +14,20 @@ IC HRESULT GetData(ID3DQuery* pQuery, void* pData, u32 DataSize)
     return HW.get_imm_context()->GetData(pQuery, pData, DataSize, 0);
 }
 
-IC HRESULT BeginQuery(ID3DQuery* pQuery)
+IC HRESULT BeginQuery(ID3DQuery* pQuery, ctx_id_t context_id = R__IMM_CTX_ID)
 {
-    HW.get_imm_context()->Begin(pQuery);
+    HW.get_context(context_id)->Begin(pQuery);
     return S_OK;
 }
 
-IC HRESULT EndQuery(ID3DQuery* pQuery)
+IC HRESULT EndQuery(ID3DQuery* pQuery, ctx_id_t context_id = R__IMM_CTX_ID)
 {
-    HW.get_imm_context()->End(pQuery);
+    HW.get_context(context_id)->End(pQuery);
+    return S_OK;
+}
+
+IC HRESULT ReleaseQuery(ID3DQuery* pQuery)
+{
+    _RELEASE(pQuery);
     return S_OK;
 }

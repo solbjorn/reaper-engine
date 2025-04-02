@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "../xrRender/light.h"
 #include "../../xrCDB/cl_intersect.h"
 
@@ -8,14 +9,14 @@ constexpr u32 delay_large_min = 10;
 constexpr u32 delay_large_max = 20;
 constexpr u32 cullfragments = 4;
 
-void light::vis_prepare(CBackend& cmd_list)
+void light::vis_prepare()
 {
     //	. test is sheduled for future	= keep old result
     //	. test time comes :)
     //		. camera inside light volume	= visible,	shedule for 'small' interval
     //		. perform testing				= ???,		pending
 
-    u32 frame = Device.dwFrame;
+    const u32 frame = Device.dwFrame;
     if (frame < vis.frame2test)
         return;
 
@@ -29,8 +30,6 @@ void light::vis_prepare(CBackend& cmd_list)
         safe_area = _max(_max(VIEWPORT_NEAR, _max(x0, x1)), c);
     }
 
-    // Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
-    // Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
     bool skiptest = false;
     if (!flags.bShadow)
         skiptest = true;
@@ -39,7 +38,8 @@ void light::vis_prepare(CBackend& cmd_list)
 
     vis.distance = Device.vCameraPosition.distance_to(spatial.sphere.P);
     if (skiptest || vis.distance <= (spatial.sphere.R * 1.01f + safe_area))
-    { // small error
+    {
+        // small error
         vis.visible = true;
         vis.pending = false;
         vis.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
@@ -49,15 +49,15 @@ void light::vis_prepare(CBackend& cmd_list)
     // testing
     vis.pending = true;
     xform_calc();
-    cmd_list.set_xform_world(m_xform);
+    RCache.set_xform_world(m_xform);
     vis.query_order = RImplementation.occq_begin(vis.query_id);
     //	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
     //	Hope it won't slow down too much since there's not too much volumetric lights
     //	TODO: sort for performance improvement if this technique hurts
     if ((flags.type == IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric)
-        cmd_list.set_Stencil(FALSE);
+        RCache.set_Stencil(FALSE);
     else
-        cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+        RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
     RImplementation.Target->draw_volume(this);
     RImplementation.occq_end(vis.query_id);
 }
@@ -79,11 +79,7 @@ void light::vis_update()
     vis.visible = (fragments > cullfragments);
     vis.pending = false;
     if (vis.visible)
-    {
         vis.frame2test = frame + ::Random.randI(delay_large_min, delay_large_max);
-    }
     else
-    {
         vis.frame2test = frame + 1;
-    }
 }

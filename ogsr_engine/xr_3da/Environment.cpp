@@ -12,12 +12,9 @@
 #include "xr_input.h"
 #include "xr_task.h"
 
-// #include "resourcemanager.h"
-
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
 
-// #include "D3DUtils.h"
 #include "../xrcore/xrCore.h"
 
 #include "../Include/xrRender/EnvironmentRender.h"
@@ -45,7 +42,6 @@ CEnvironment::CEnvironment()
     USED_COP_WEATHER = FS.path_exist("$game_weathers$");
 
     m_last_weather_shift = 0;
-    bNeed_re_create_env = FALSE;
     bWFX = false;
     Current[0] = 0;
     Current[1] = 0;
@@ -227,11 +223,8 @@ float CEnvironment::NormalizeTime(float tm)
 
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-    //.	static BOOL bAlready = FALSE;
-    //.	if(bAlready)	return;
     if (name.size())
     {
-        //.		bAlready = TRUE;
         EnvsMapIt it = WeatherCycles.find(name);
         if (it == WeatherCycles.end())
         {
@@ -280,14 +273,11 @@ bool CEnvironment::SetWeatherFX(shared_str name)
         float rewind_tm = WFX_TRANS_TIME * fTimeFactor;
         float start_tm = fGameTime + rewind_tm;
         float current_length;
+
         if (Current[0]->exec_time > Current[1]->exec_time)
-        {
             current_length = (DAY_LENGTH - Current[0]->exec_time) + Current[1]->exec_time;
-        }
         else
-        {
             current_length = Current[1]->exec_time - Current[0]->exec_time;
-        }
 
         auto& wref = *CurrentWeather;
         std::ranges::sort(wref, sort_env_etl_pred);
@@ -465,8 +455,8 @@ void CEnvironment::lerp(float& current_weight)
 
     Fvector view = Device.vCameraPosition;
     float mpower = 0;
-    for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
-        mpower += EM.sum(*mit, view);
+    for (auto& mit : Modifiers)
+        mpower += EM.sum(mit, view);
 
     extern bool s_ScriptNoMixer;
 
@@ -475,6 +465,7 @@ void CEnvironment::lerp(float& current_weight)
 
     // final lerp
     CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
+    m_pRender->lerp(*CurrentEnv, &*Current[0]->m_pDescriptor, &*Current[1]->m_pDescriptor);
 }
 
 void CEnvironment::OnFrame()
@@ -536,8 +527,6 @@ void CEnvironment::OnFrame()
     if (bWFX && !dyn && m_sun_hp_loaded)
         CurrentEnv->sun_dir = calculate_config_sun_dir(fGameTime);
 
-    bool ingame = !g_pGamePersistent->IsMainMenuActive();
-
     shared_str l_id = (current_weight < 0.5f) ? Current[0]->lens_flare_id : Current[1]->lens_flare_id;
     eff_LensFlare->OnFrame(l_id);
 
@@ -545,11 +534,8 @@ void CEnvironment::OnFrame()
     eff_Thunderbolt->OnFrame(t_id, CurrentEnv->bolt_period, CurrentEnv->bolt_duration);
 
     eff_Rain->OnFrame();
-    if (ingame)
+    if (!g_pGamePersistent->IsMainMenuActive())
         tg->run([this] { eff_Rain->Calculate(); });
-
-    // ******************** Environment params (setting)
-    m_pRender->OnFrame(*this);
 }
 
 Fvector3 CEnvironment::calculate_config_sun_dir(float ftime)

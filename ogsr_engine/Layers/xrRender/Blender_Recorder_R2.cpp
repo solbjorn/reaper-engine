@@ -18,18 +18,16 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BO
     PassSET_LightFog(FALSE, bFog);
 
     // Create shaders
-    SPS* ps = DEV->_CreatePS(_ps);
-    SVS* vs = DEV->_CreateVS(_vs);
-    dest.ps = ps;
-    dest.vs = vs;
-    SGS* gs = DEV->_CreateGS("null");
-    dest.gs = gs;
+    dest.ps = DEV->_CreatePS(_ps);
+    ctable.merge(&dest.ps->constants);
+
+    dest.vs = DEV->_CreateVS(_vs);
+    ctable.merge(&dest.vs->constants);
+
+    dest.gs = DEV->_CreateGS("null");
     dest.hs = DEV->_CreateHS("null");
     dest.ds = DEV->_CreateDS("null");
     dest.cs = DEV->_CreateCS("null");
-
-    ctable.merge(&ps->constants);
-    ctable.merge(&vs->constants);
 
     // Last Stage - disable
     if (0 == stricmp(_ps, "null"))

@@ -2,7 +2,6 @@
 
 #include "../Include/xrRender/DrawUtils.h"
 #include "render.h"
-#include "IGame_Persistent.h"
 #include "xr_IOConsole.h"
 #include "xr_input.h"
 
@@ -33,9 +32,6 @@ void CRenderDevice::Destroy(void)
     // real destroy
     m_pRender->DestroyHW();
 
-    // xr_delete					(Resources);
-    // HW.DestroyDevice			();
-
     seqRender.Clear();
     seqAppActivate.Clear();
     seqAppDeactivate.Clear();
@@ -64,11 +60,6 @@ void CRenderDevice::Reset(bool precache)
     u32 tm_start = TimerAsync();
 
     m_pRender->Reset(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
-
-    if (g_pGamePersistent)
-    {
-        g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
-    }
 
     _SetupStates();
 

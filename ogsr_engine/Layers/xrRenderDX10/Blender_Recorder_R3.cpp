@@ -3,7 +3,6 @@
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/blenders/Blender_Recorder.h"
 #include "../xrRender/blenders/Blender.h"
-#include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/tss.h"
 
 void CBlender_Compile::r_Stencil(BOOL Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
@@ -54,7 +53,6 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
 
 void CBlender_Compile::i_dx10Address(u32 s, u32 address)
 {
-    // VERIFY(s!=u32(-1));
     if (s == u32(-1))
     {
         Msg("s != u32(-1)");
@@ -101,16 +99,13 @@ void CBlender_Compile::i_dx10Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
 u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
 {
     //	TEST
-    // return ((u32)-1);
     VERIFY(ResourceName);
     string256 name;
     xr_strcpy(name, ResourceName);
     fix_texture_name(name);
 
     // Find index
-    // ref_constant C			= ctable.get(ResourceName);
     ref_constant C = ctable.get(name);
-    // VERIFY(C);
     if (!C)
         return u32(-1);
 
@@ -200,19 +195,18 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
     PassSET_LightFog(FALSE, bFog);
 
     // Create shaders
-    SPS* ps = DEV->_CreatePS(_ps);
-    SVS* vs = DEV->_CreateVS(_vs);
-    SGS* gs = DEV->_CreateGS(_gs);
-    dest.ps = ps;
-    dest.vs = vs;
-    dest.gs = gs;
+    dest.ps = DEV->_CreatePS(_ps);
+    ctable.merge(&dest.ps->constants);
+
+    dest.vs = DEV->_CreateVS(_vs);
+    ctable.merge(&dest.vs->constants);
+
+    dest.gs = DEV->_CreateGS(_gs);
+    ctable.merge(&dest.gs->constants);
+
     dest.hs = DEV->_CreateHS("null");
     dest.ds = DEV->_CreateDS("null");
     dest.cs = DEV->_CreateCS("null");
-
-    ctable.merge(&ps->constants);
-    ctable.merge(&vs->constants);
-    ctable.merge(&gs->constants);
 
     // Last Stage - disable
     if (0 == stricmp(_ps, "null"))

@@ -1,9 +1,7 @@
 #ifndef dxRenderFactory_included
 #define dxRenderFactory_included
-#pragma once
 
-#include "..\..\Include\xrRender\RenderFactory.h"
-
+#include "../../Include/xrRender/RenderFactory.h"
 
 class dxRenderFactory : public IRenderFactory
 {
@@ -38,8 +36,6 @@ class dxRenderFactory : public IRenderFactory
     virtual void DestroyLensFlareRender(ILensFlareRender* pObject);
     virtual IEnvironmentRender* CreateEnvironmentRender();
     virtual void DestroyEnvironmentRender(IEnvironmentRender* pObject);
-    virtual IEnvDescriptorMixerRender* CreateEnvDescriptorMixerRender();
-    virtual void DestroyEnvDescriptorMixerRender(IEnvDescriptorMixerRender* pObject);
     virtual IEnvDescriptorRender* CreateEnvDescriptorRender();
     virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject);
     virtual IFontRender* CreateFontRender();

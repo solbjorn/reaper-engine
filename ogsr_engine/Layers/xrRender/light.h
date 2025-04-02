@@ -82,7 +82,7 @@ public:
     {
         struct _D
         {
-            Fmatrix combine;
+            Fmatrix combine[R__NUM_SUN_CASCADES];
             s32 minX, maxX;
             s32 minY, maxY;
         } D;
@@ -104,7 +104,6 @@ public:
         } S;
     } X;
 
-public:
     virtual void set_type(LT type) { flags.type = type; }
     virtual u32 get_type() const override { return flags.type; }
     virtual void set_active(bool b);
@@ -146,7 +145,7 @@ public:
 
     vis_data& get_homdata();
     void xform_calc();
-    void vis_prepare(CBackend& cmd_list);
+    void vis_prepare();
     void vis_update();
     void export_to(light_Package& dest);
     void set_attenuation_params(float a0, float a1, float a2, float fo);

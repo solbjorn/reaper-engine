@@ -579,12 +579,15 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ctx_id_t context_id,
     return pTempBuffer;
 }
 
-void CResourceManager::_DeleteConstantBuffer(ctx_id_t context_id, const dx10ConstantBuffer* pBuffer)
+void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
 {
-    if (0 == (pBuffer->dwFlags & xr_resource_flagged::RF_REGISTERED))
+    if (!(pBuffer->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    if (reclaim(v_constant_buffer[context_id], pBuffer))
-        return;
+
+    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+        if (reclaim(v_constant_buffer[id], pBuffer))
+            return;
+
     Msg("! ERROR: Failed to find compiled constant buffer");
 }
 

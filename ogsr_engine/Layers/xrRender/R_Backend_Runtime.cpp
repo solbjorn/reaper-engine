@@ -19,7 +19,7 @@ void CBackend::OnFrameBegin()
     // DX9 sets base rt nd base zb by default
     RImplementation.rmNormal(*this);
     set_RT(RImplementation.Target->get_base_rt());
-    set_ZB(RImplementation.Target->get_base_zb());
+    set_ZB(RImplementation.Target->rt_Base_Depth->pZRT[context_id]);
     memset(&stat, 0, sizeof(stat));
     set_Stencil(FALSE);
 }

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "../xrRender/light.h"
 #include "../xrRender/FBasicVisual.h"
 
@@ -75,13 +76,13 @@ void smapvis::end()
         // issue query
         if (testQ_V)
         {
-            RImplementation.occq_begin(testQ_id);
+            RImplementation.occq_begin(testQ_id, dsgraph.cmd_list.context_id);
 
             dsgraph.marker++;
             dsgraph.insert_static(testQ_V);
             dsgraph.render_graph(0);
 
-            RImplementation.occq_end(testQ_id);
+            RImplementation.occq_end(testQ_id, dsgraph.cmd_list.context_id);
             testQ_frame = Device.dwFrame + 1; // get result on next frame
             pending = true;
         }
@@ -116,6 +117,7 @@ void smapvis::flushoccq()
         // this is visible shadow-caster, advance testing
         test_current++;
     }
+
     testQ_V = 0;
 
     if (test_current == test_count)
@@ -129,6 +131,7 @@ void smapvis::flushoccq()
 void smapvis::resetoccq()
 {
     testQ_frame = Device.dwFrame;
+
     if (pending)
     {
         RImplementation.occq_free(testQ_id);
@@ -138,11 +141,15 @@ void smapvis::resetoccq()
 
 void smapvis::mark()
 {
-    RImplementation.stats.ic_culled += invisible.size();
+    const auto sz = invisible.size();
+    if (!sz)
+        return;
 
-    u32 marker = RImplementation.get_context(id).marker++; // we are called before marker increment
-    for (u32 it = 0; it < invisible.size(); it++)
-        invisible[it]->vis.marker[id] = marker; // this effectively disables processing
+    RImplementation.stats.ic_culled += sz;
+
+    u32 marker = RImplementation.get_context(id).marker + 1; // we are called before marker increment
+    for (auto* it : invisible)
+        it->vis.marker[id] = marker; // this effectively disables processing
 }
 
 void smapvis::rfeedback_static(dxRender_Visual* V)

@@ -1,50 +1,44 @@
 #ifndef xr_resourceH
 #define xr_resourceH
 
-#pragma once
-
 // resource itself, the base class for all derived resources
-class xr_resource
+struct xr_resource
 {
-public:
-    enum
-    {
-        RF_REGISTERED = 1 << 0
-    };
+    xr_resource() = default;
+    virtual ~xr_resource() = default;
 
-public:
-    u32 dwReference;
-    xr_resource() : dwReference(0) {}
+    xr_resource(xr_resource const& other) { *this = other; }
+
+    xr_resource& operator=(xr_resource const& other)
+    {
+        ref_count.exchange(other.ref_count);
+        return *this;
+    }
+
+    std::atomic<u32> ref_count{};
 };
 
-class xr_resource_flagged : public xr_resource
+struct xr_resource_flagged : public xr_resource
 {
-public:
     enum
     {
-        RF_REGISTERED = 1 << 0
+        RF_REGISTERED = 1 << 0,
     };
 
-public:
-    u32 dwFlags;
+    u32 dwFlags{};
     int skinning;
     bool hud_disabled;
-
-    xr_resource_flagged() : dwFlags(0) {}
 };
 
-class xr_resource_named : public xr_resource_flagged
+struct xr_resource_named : public xr_resource_flagged
 {
-public:
-    shared_str cName;
+    shared_str cName{};
 
     const char* set_name(const char* name)
     {
         cName = name;
         return *cName;
     }
-    xr_resource_named() : cName(0) {}
-    ~xr_resource_named() {}
 };
 
 // resptr_BASE
@@ -54,38 +48,37 @@ class resptr_base
 protected:
     T* p_;
 
-protected:
     // ref-counting
     void _inc()
     {
-        if (0 == p_)
-            return;
-        p_->dwReference++;
+        if (p_)
+            p_->ref_count++;
     }
+
     void _dec()
     {
-        if (0 == p_)
-            return;
-        p_->dwReference--;
-        if (0 == p_->dwReference)
+        if (p_ && !--p_->ref_count)
             xr_delete(p_);
     }
 
 public:
     ICF void _set(T* rhs)
     {
-        if (0 != rhs)
-            rhs->dwReference++;
+        if (rhs)
+            rhs->ref_count++;
+
         _dec();
         p_ = rhs;
     }
+
     ICF void _set(resptr_base<T> const& rhs)
     {
         T* prhs = rhs._get();
         _set(prhs);
     }
+
     ICF T* _get() const { return p_; }
-    void _clear() { p_ = 0; }
+    void _clear() { p_ = nullptr; }
 };
 
 // resptr_CORE
@@ -99,23 +92,26 @@ protected:
 public:
     // construction
     resptr_core() { C::p_ = nullptr; }
+
     resptr_core(T* p, const bool add_ref = true)
     {
         C::p_ = p;
         if (add_ref)
             C::_inc();
     }
+
     resptr_core(const self& rhs)
     {
         C::p_ = rhs.p_;
         C::_inc();
     }
+
     ~resptr_core() { C::_dec(); }
 
     // assignment
     self& operator=(const self& rhs)
     {
-        C::_set(rhs);
+        this->_set(rhs);
         return (self&)*this;
     }
 
@@ -126,15 +122,11 @@ public:
     // unspecified bool type
     typedef T* (resptr_core::*unspecified_bool_type)() const;
     operator unspecified_bool_type() const { return C::p_ == 0 ? 0 : &resptr_core::_get; }
+
     bool operator!() const { return !C::p_; }
 
     // fast swapping
-    void swap(self& rhs)
-    {
-        T* tmp = C::p_;
-        C::p_ = rhs.p_;
-        rhs.p_ = tmp;
-    }
+    void swap(self& rhs) { std::swap(this->p_, rhs.p_); }
 };
 
 // res_ptr == res_ptr
@@ -145,45 +137,53 @@ public:
 // ptr != const res_ptr
 // res_ptr < res_ptr
 // res_ptr > res_ptr
+
 template <class T, class U, typename D>
 inline bool operator==(resptr_core<T, D> const& a, resptr_core<U, D> const& b)
 {
     return a._get() == b._get();
 }
+
 template <class T, class U, typename D>
 inline bool operator!=(resptr_core<T, D> const& a, resptr_core<U, D> const& b)
 {
     return a._get() != b._get();
 }
+
 template <class T, typename D>
 inline bool operator==(resptr_core<T, D> const& a, T* b)
 {
     return a._get() == b;
 }
+
 template <class T, typename D>
 inline bool operator!=(resptr_core<T, D> const& a, T* b)
 {
     return a._get() != b;
 }
+
 template <class T, typename D>
 inline bool operator==(T* a, resptr_core<T, D> const& b)
 {
     return a == b._get();
 }
+
 template <class T, typename D>
 inline bool operator!=(T* a, resptr_core<T, D> const& b)
 {
     return a != b._get();
 }
+
 template <class T, typename D>
 inline bool operator<(resptr_core<T, D> const& a, resptr_core<T, D> const& b)
 {
     return std::less<T*>()(a._get(), b._get());
 }
+
 template <class T, typename D>
 inline bool operator>(resptr_core<T, D> const& a, resptr_core<T, D> const& b)
 {
-    return std::greater<T*>()(a._get(), b._get());
+    return std::less<T*>()(b._get(), a._get());
 }
 
 // externally visible swap
@@ -206,6 +206,7 @@ resptr_core<T, D> static_pointer_cast(resptr_core<U, D> const& p)
 {
     return static_cast<T*>(p.get());
 }
+
 template <class T, class U, typename D>
 resptr_core<T, D> dynamic_pointer_cast(resptr_core<U, D> const& p)
 {

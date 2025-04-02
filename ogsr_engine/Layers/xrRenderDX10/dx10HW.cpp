@@ -242,12 +242,6 @@ void CHW::CreateDevice(HWND hwnd)
     R_CHK(swapchain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
     _RELEASE(swapchain3);
 
-    // https://habr.com/ru/post/308980/
-    IDXGIDevice1* pDeviceDXGI = nullptr;
-    R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&pDeviceDXGI)));
-    R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
-    _RELEASE(pDeviceDXGI);
-
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
     size_t memory = Desc.DedicatedVideoMemory;
@@ -559,7 +553,6 @@ void fill_vid_mode_list(CHW* _hw)
     xr_vector<DXGI_MODE_DESC> modes;
 
     IDXGIOutput* pOutput;
-    //_hw->m_pSwapChain->GetContainingOutput(&pOutput);
     _hw->m_pAdapter->EnumOutputs(0, &pOutput);
     VERIFY(pOutput);
 
@@ -592,9 +585,6 @@ void fill_vid_mode_list(CHW* _hw)
         _tmp.push_back(NULL);
         _tmp.back() = xr_strdup(str);
     }
-
-    //	_tmp.push_back				(NULL);
-    //	_tmp.back()					= xr_strdup("1024x768");
 
     u32 _cnt = _tmp.size() + 1;
 
@@ -631,13 +621,17 @@ void CHW::Present()
 
     if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
     {
-        //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
+        Device.Statistic->RenderDUMP_Wait_S.Begin();
+
+        // --#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
         // раза реже) [don't flush image into display for SecondVP-frame]
         switch (m_pSwapChain->Present(present_interval, present_flags))
         {
         case DXGI_STATUS_OCCLUDED:
         case DXGI_ERROR_DEVICE_REMOVED: doPresentTest = true; break;
         }
+
+        Device.Statistic->RenderDUMP_Wait_S.End();
     }
 
     CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;

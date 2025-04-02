@@ -101,7 +101,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
     m_Gamma.Update();
     Resources->OnDeviceCreate();
-    ::Render->create();
+    RImplementation.create();
     Device.Statistic->OnDeviceCreate();
 
     m_WireShader.create("editor\\wire");
@@ -265,7 +265,7 @@ void dxRenderDeviceRender::OnAssetsChanged()
 
 IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return dynamic_cast<IResourceManager*>(Resources); }
 
-ctx_id_t dxRenderDeviceRender::alloc_context(bool alloc_cmd_list)
+ctx_id_t dxRenderDeviceRender::alloc_context()
 {
     ctx_id_t id = contexts_used.ffz();
     if (id == contexts_used.size())
@@ -277,7 +277,7 @@ ctx_id_t dxRenderDeviceRender::alloc_context(bool alloc_cmd_list)
 
     dsgraph.reset();
     dsgraph.context_id = id;
-    dsgraph.cmd_list.context_id = alloc_cmd_list ? id : R__IMM_CTX_ID;
+    dsgraph.cmd_list.context_id = id;
 
     return id;
 }

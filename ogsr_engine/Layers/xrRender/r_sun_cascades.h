@@ -2,7 +2,6 @@
 
 namespace sun
 {
-
 struct ray
 {
     ray() = default;
@@ -14,18 +13,16 @@ struct ray
 
 struct cascade
 {
-    cascade() : reset_chain(false) {}
-
-    xr_vector<ray> rays;
-
+    u32 context_id{R__INVALID_CTX_ID};
     u32 cascade_ind;
     float size;
     float bias;
-    bool reset_chain;
 
+    xr_vector<ray> rays;
     CFrustum cull_frustum{};
     Fmatrix cull_xform{};
     Fvector3 cull_COP{};
-};
 
+    bool reset_chain{};
+};
 } // namespace sun

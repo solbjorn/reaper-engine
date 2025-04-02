@@ -54,6 +54,11 @@ public:
 
     u32 RenderTO();
     virtual void Render(CBackend& cmd_list, float, bool) override;
+
+private:
+    void ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* pv, u32 count);
+
+public:
     virtual void Copy(dxRender_Visual* pFrom);
 
     virtual void OnDeviceCreate();

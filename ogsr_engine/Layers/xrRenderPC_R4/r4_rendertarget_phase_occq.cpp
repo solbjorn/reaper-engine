@@ -2,10 +2,7 @@
 
 void CRenderTarget::phase_occq()
 {
-    if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), NULL, NULL, get_base_zb());
-    else
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, rt_MSAADepth);
+    u_setrt(RCache, Device.dwWidth, Device.dwHeight, RImplementation.o.dx10_msaa ? nullptr : get_base_rt(), nullptr, nullptr, rt_MSAADepth);
 
     RCache.set_Shader(s_occq);
     RCache.set_CullMode(CULL_CCW);

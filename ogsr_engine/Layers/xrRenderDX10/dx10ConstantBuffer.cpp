@@ -1,17 +1,14 @@
 #include "stdafx.h"
-#include "dx10ConstantBuffer.h"
 
+#include "dx10ConstantBuffer.h"
 #include "dx10BufferUtils.h"
-#include "../xrRender/dxRenderDeviceRender.h"
 
 #include <xxhash.h>
 
 dx10ConstantBuffer::~dx10ConstantBuffer()
 {
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        RImplementation.Resources->_DeleteConstantBuffer(id, this);
+    RImplementation.Resources->_DeleteConstantBuffer(this);
 
-    //	Flush();
     _RELEASE(m_pBuffer);
     xr_free(m_pBufferData);
 }
