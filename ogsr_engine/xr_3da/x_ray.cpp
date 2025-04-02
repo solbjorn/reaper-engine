@@ -317,7 +317,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
     if (strstr(lpCmdLine, tok))
     {
         u32 cpus = 0;
-        if (sscanf_s(strstr(lpCmdLine, tok) + strlen(tok), "%u", &cpus) && cpus >= 1)
+        if (sscanf_s(strstr(lpCmdLine, tok) + strlen(tok) + 1, "%u", &cpus))
             oneapi::tbb::global_control c(oneapi::tbb::global_control::max_allowed_parallelism, cpus);
     }
 
