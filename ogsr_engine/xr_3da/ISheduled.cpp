@@ -13,7 +13,6 @@ ISheduled::ISheduled()
 #endif
 }
 
-extern BOOL g_bSheduleInProgress;
 ISheduled::~ISheduled()
 {
     VERIFY2(!Engine.Sheduler.Registered(this), make_string("0x%08x : %s", this, *shedule_Name()));
@@ -26,7 +25,6 @@ ISheduled::~ISheduled()
 }
 
 void ISheduled::shedule_register() { Engine.Sheduler.Register(this); }
-
 void ISheduled::shedule_unregister() { Engine.Sheduler.Unregister(this); }
 
 void ISheduled::shedule_Update(u32 dt)

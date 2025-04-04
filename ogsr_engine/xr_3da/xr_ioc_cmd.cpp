@@ -796,6 +796,6 @@ void CCC_Register()
 
     CMD1(CCC_DbgLALibDump, "dbg_lalib_dump");
 
-    extern float psShedulerMax;
-    CMD4(CCC_Float, "rs_sheduler_max", &psShedulerMax, 3.f, 66.f);
+    extern float psSchedulerPart;
+    CMD4(CCC_Float, "rs_scheduler_part", &psSchedulerPart, 0.1f, 1.f);
 };

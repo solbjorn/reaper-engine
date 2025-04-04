@@ -503,6 +503,10 @@ void CLevel::script_gc()
     }
 }
 
+// Immediately stop the current GC iteration. Can be used to avoid unintentional CPU load,
+// since we anyway have one full script_gc() above each frame
+void CLevel::stop_gc() { lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0); }
+
 extern Flags32 dbg_net_Draw_Flags;
 
 extern void draw_wnds_rects();

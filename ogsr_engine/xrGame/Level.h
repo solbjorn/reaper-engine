@@ -276,8 +276,6 @@ public:
     xr_map<u16, DBG_ScriptObject*>* getScriptRenderQueue() { return &m_debug_render_queue; }
 
 protected:
-    //	CFogOfWarMngr*		m_pFogOfWarMngr;
-protected:
     CMapManager* m_map_manager;
 
     xr_map<u16, DBG_ScriptObject*> m_debug_render_queue;
@@ -317,6 +315,8 @@ public:
     virtual void OnSessionTerminate(LPCSTR reason);
     void OnDestroyObject(u16 id) override;
     virtual void OnChangeCurrentWeather(const char* sect) override;
+
+    void stop_gc() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
