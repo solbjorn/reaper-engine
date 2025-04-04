@@ -70,7 +70,6 @@ void CStats::Show()
         AI_Vis_Query.FrameEnd();
         AI_Vis_RayTests.FrameEnd();
 
-        RenderTOTAL.FrameEnd();
         RenderCALC.FrameEnd();
         RenderCALC_HOM.FrameEnd();
         RenderDUMP.FrameEnd();
@@ -111,22 +110,6 @@ void CStats::Show()
         g_SpatialSpace->stat_remove.FrameEnd();
         g_SpatialSpacePhysic->stat_insert.FrameEnd();
         g_SpatialSpacePhysic->stat_remove.FrameEnd();
-    }
-
-    // calc FPS & TPS
-    if (Device.fTimeDelta > EPS_S)
-    {
-        float fps = 1.f / Device.fTimeDelta;
-        float fOne = 0.3f;
-        float fInv = 1.f - fOne;
-        fFPS = fInv * fFPS + fOne * fps;
-
-        if (RenderTOTAL.result > EPS_S)
-        {
-            u32 rendered_polies = Device.m_pRender->GetCacheStatPolys();
-            fTPS = fInv * fTPS + fOne * float(rendered_polies) / (RenderTOTAL.result * 1000.f);
-            fRFPS = fInv * fRFPS + fOne * 1000.f / RenderTOTAL.result;
-        }
     }
 
     CGameFont& F = *pFont;
@@ -325,7 +308,6 @@ void CStats::Show()
         AI_Vis_Query.FrameStart();
         AI_Vis_RayTests.FrameStart();
 
-        RenderTOTAL.FrameStart();
         RenderCALC.FrameStart();
         RenderCALC_HOM.FrameStart();
         RenderDUMP.FrameStart();
@@ -373,93 +355,90 @@ void CStats::Show()
 
 void CStats::Show_HW_Stats()
 {
-    if (psDeviceFlags.test(rsHWInfo))
+    static DWORD dwLastFrameTime = 0;
+    DWORD dwCurrentTime = timeGetTime();
+    if (dwCurrentTime - dwLastFrameTime > 500) // Апдейт раз в полсекунды
     {
-        static DWORD dwLastFrameTime = 0;
-        DWORD dwCurrentTime = timeGetTime();
-        if (dwCurrentTime - dwLastFrameTime > 500) // Апдейт раз в полсекунды
+        dwLastFrameTime = dwCurrentTime;
+
+        MEMORYSTATUSEX mem;
+        mem.dwLength = sizeof(mem);
+        GlobalMemoryStatusEx(&mem);
+
+        AvailableMem = (float)mem.ullAvailPhys; // how much phys mem available
+        AvailableMem /= (1024 * 1024);
+
+        if (mem.ullTotalPageFile - mem.ullTotalPhys > 0.f)
         {
-            dwLastFrameTime = dwCurrentTime;
-
-            MEMORYSTATUSEX mem;
-            mem.dwLength = sizeof(mem);
-            GlobalMemoryStatusEx(&mem);
-
-            AvailableMem = (float)mem.ullAvailPhys; // how much phys mem available
-            AvailableMem /= (1024 * 1024);
-
-            if (mem.ullTotalPageFile - mem.ullTotalPhys > 0.f)
-            {
-                AvailablePageFileMem = (float)mem.ullAvailPageFile - (float)mem.ullAvailPhys; // how much pagefile mem available
-                AvailablePageFileMem /= (1024 * 1024);
-            }
-
-            PhysMemoryUsedPercent = (float)mem.dwMemoryLoad;
-
-            // Getting info by request
-            PROCESS_MEMORY_COUNTERS pc;
-            std::memset(&pc, 0, sizeof(PROCESS_MEMORY_COUNTERS));
-            pc.cb = sizeof(pc);
-            if (GetProcessMemoryInfo(GetCurrentProcess(), &pc, sizeof(pc)))
-            {
-                PagefileUsage = (float)pc.PagefileUsage;
-                PagefileUsage /= (1024 * 1024);
-
-                WorkingSetSize = (float)pc.WorkingSetSize;
-                WorkingSetSize /= (1024 * 1024);
-            }
-
-            // Counting CPU load
-            CPU::ID.getCPULoad(cpuLoad);
-            CPU::ID.MTCPULoad();
+            AvailablePageFileMem = (float)mem.ullAvailPageFile - (float)mem.ullAvailPhys; // how much pagefile mem available
+            AvailablePageFileMem /= (1024 * 1024);
         }
 
-        pFontHW->SetHeightI(0.018f);
+        PhysMemoryUsedPercent = (float)mem.dwMemoryLoad;
 
-        if (AvailableMem < 512 || AvailablePageFileMem < 1596)
-            pFontHW->SetColor(DebugTextColor::DTC_RED);
-        else if (AvailableMem < 768 || AvailablePageFileMem < 2048)
-            pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
-        else
-            pFontHW->SetColor(DebugTextColor::DTC_GREEN);
-
-        float y = 10.f;
-
-        // Draw all your stuff
-        pFontHW->Out(10, y += 15, "PHYS MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
-        pFontHW->Out(10, y += 15, "PAGE MEM AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
-
-        pFontHW->Out(10, y += 15, "Engine Working Set: %0.0fMB", WorkingSetSize); // Physical memory used by app
-        pFontHW->Out(10, y += 15, "Engine Commit Charge: %0.0fMB", PagefileUsage); // Physical memory used by app
-
-        if (PhysMemoryUsedPercent > 80.0f)
-            pFontHW->SetColor(DebugTextColor::DTC_RED);
-        else if (PhysMemoryUsedPercent > 60.0f)
-            pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
-        else
-            pFontHW->SetColor(DebugTextColor::DTC_GREEN);
-
-        pFontHW->Out(10, y += 15, "MEM USED: %0.0f%%", PhysMemoryUsedPercent); // Total Phys. memory load (%)
-
-        if (cpuLoad > 80.0)
-            pFontHW->SetColor(DebugTextColor::DTC_RED);
-        else if (cpuLoad > 60.0)
-            pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
-        else
-            pFontHW->SetColor(DebugTextColor::DTC_GREEN);
-
-        pFontHW->Out(10, y += 15, "CPU LOAD: %0.0f%%", cpuLoad); // CPU load
-
-        // get MT Load
-        float dwScale = 100;
-        for (size_t i = 0; i < CPU::ID.m_dwNumberOfProcessors; i++)
+        // Getting info by request
+        PROCESS_MEMORY_COUNTERS pc;
+        std::memset(&pc, 0, sizeof(PROCESS_MEMORY_COUNTERS));
+        pc.cb = sizeof(pc);
+        if (GetProcessMemoryInfo(GetCurrentProcess(), &pc, sizeof(pc)))
         {
-            pFontHW->Out(10, dwScale, "CPU%u: %0.0f%%", i, CPU::ID.fUsage[i]);
-            dwScale += 15;
+            PagefileUsage = (float)pc.PagefileUsage;
+            PagefileUsage /= (1024 * 1024);
+
+            WorkingSetSize = (float)pc.WorkingSetSize;
+            WorkingSetSize /= (1024 * 1024);
         }
 
-        pFontHW->OnRender();
+        // Counting CPU load
+        CPU::ID.getCPULoad(cpuLoad);
+        CPU::ID.MTCPULoad();
     }
+
+    pFontHW->SetHeightI(0.018f);
+
+    if (AvailableMem < 512 || AvailablePageFileMem < 1596)
+        pFontHW->SetColor(DebugTextColor::DTC_RED);
+    else if (AvailableMem < 768 || AvailablePageFileMem < 2048)
+        pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+    else
+        pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+    float y = 10.f;
+
+    // Draw all your stuff
+    pFontHW->Out(10, y += 15, "PHYS MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
+    pFontHW->Out(10, y += 15, "PAGE MEM AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
+
+    pFontHW->Out(10, y += 15, "Engine Working Set: %0.0fMB", WorkingSetSize); // Physical memory used by app
+    pFontHW->Out(10, y += 15, "Engine Commit Charge: %0.0fMB", PagefileUsage); // Physical memory used by app
+
+    if (PhysMemoryUsedPercent > 80.0f)
+        pFontHW->SetColor(DebugTextColor::DTC_RED);
+    else if (PhysMemoryUsedPercent > 60.0f)
+        pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+    else
+        pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+    pFontHW->Out(10, y += 15, "MEM USED: %0.0f%%", PhysMemoryUsedPercent); // Total Phys. memory load (%)
+
+    if (cpuLoad > 80.0)
+        pFontHW->SetColor(DebugTextColor::DTC_RED);
+    else if (cpuLoad > 60.0)
+        pFontHW->SetColor(DebugTextColor::DTC_YELLOW);
+    else
+        pFontHW->SetColor(DebugTextColor::DTC_GREEN);
+
+    pFontHW->Out(10, y += 15, "CPU LOAD: %0.0f%%", cpuLoad); // CPU load
+
+    // get MT Load
+    float dwScale = 100;
+    for (size_t i = 0; i < CPU::ID.m_dwNumberOfProcessors; i++)
+    {
+        pFontHW->Out(10, dwScale, "CPU%u: %0.0f%%", i, CPU::ID.fUsage[i]);
+        dwScale += 15;
+    }
+
+    pFontHW->OnRender();
 }
 
 void CStats::OnDeviceCreate()

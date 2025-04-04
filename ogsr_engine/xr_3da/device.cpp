@@ -139,6 +139,31 @@ float GetMonitorRefresh()
         return lpDevMode.dmDisplayFrequency;
 }
 
+void CRenderDevice::CalcFrameStats()
+{
+    auto& stats = *Statistic;
+    stats.RenderTOTAL.FrameEnd();
+
+    // calc FPS & TPS
+    if (fTimeDelta <= EPS_S)
+        goto out;
+
+    const float fps = 1.f / fTimeDelta;
+    constexpr float fOne = 0.3f;
+    constexpr float fInv = 1.f - fOne;
+    stats.fFPS = fInv * stats.fFPS + fOne * fps;
+
+    if (stats.RenderTOTAL.result > EPS_S)
+    {
+        const u32 renderedPolys = m_pRender->GetCacheStatPolys();
+        stats.fTPS = fInv * stats.fTPS + fOne * float(renderedPolys) / (stats.RenderTOTAL.result * 1000.f);
+        stats.fRFPS = fInv * stats.fRFPS + fOne * 1000.f / stats.RenderTOTAL.result;
+    }
+
+out:
+    stats.RenderTOTAL.FrameStart();
+}
+
 extern int ps_framelimiter;
 extern u32 g_screenmode;
 
@@ -231,10 +256,11 @@ void CRenderDevice::ProcessFrame()
             {
                 seqRender.Process();
 
+                CalcFrameStats();
                 if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
                     Statistic->Show();
-
-                Statistic->Show_HW_Stats();
+                if (psDeviceFlags.test(rsHWInfo))
+                    Statistic->Show_HW_Stats();
 
                 RenderEnd();
             }

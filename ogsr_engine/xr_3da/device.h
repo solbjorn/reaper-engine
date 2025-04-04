@@ -245,6 +245,9 @@ public:
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
     }
 
+private:
+    void CalcFrameStats();
+
 public:
     bool on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result);
 
