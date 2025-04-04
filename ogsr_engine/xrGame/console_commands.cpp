@@ -1677,6 +1677,7 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
     CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &psActorFlags, AF_AI_VOLUMETRIC_LIGHTS);
+    CMD3(CCC_Mask, "r2_exp_force_shadowed", &psActorFlags, AF_FORCE_LIGHTS_SHADOWED);
 
 #ifndef MASTER_GOLD
     CMD4(CCC_Vector3, "psp_cam_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "Actor_Flags.h"
 #include "helicopter.h"
 #include "xrserver_objects_alife.h"
 #include "PhysicsShell.h"
@@ -220,7 +222,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 
     // lighting
     m_light_render = ::Render->light_create();
-    m_light_render->set_shadow(false);
+    m_light_render->set_shadow(psActorFlags.test(AF_FORCE_LIGHTS_SHADOWED));
     m_light_render->set_type(IRender_Light::POINT);
     m_light_render->set_range(m_light_range);
     m_light_render->set_color(m_light_color);

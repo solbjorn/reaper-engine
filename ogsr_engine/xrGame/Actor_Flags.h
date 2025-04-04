@@ -6,7 +6,7 @@ enum
     AF_KEYPRESS_ON_START = (1 << 1),
     AF_ALWAYSRUN = (1 << 2),
     AF_UNLIMITEDAMMO = (1 << 3),
-    /* 1 << 4, */
+    AF_FORCE_LIGHTS_SHADOWED = 1 << 4,
     AF_WPN_AIM_TOGGLE = (1 << 5),
     AF_PSP = (1 << 6),
     AF_MUSIC_TRACKS = (1 << 7),
