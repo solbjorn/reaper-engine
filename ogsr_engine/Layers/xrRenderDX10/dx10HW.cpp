@@ -621,7 +621,7 @@ void CHW::Present()
 
     if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
     {
-        Device.Statistic->RenderDUMP_Wait_S.Begin();
+        Device.Statistic->RenderDUMP_Wait_P.Begin();
 
         // --#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
         // раза реже) [don't flush image into display for SecondVP-frame]
@@ -631,7 +631,7 @@ void CHW::Present()
         case DXGI_ERROR_DEVICE_REMOVED: doPresentTest = true; break;
         }
 
-        Device.Statistic->RenderDUMP_Wait_S.End();
+        Device.Statistic->RenderDUMP_Wait_P.End();
     }
 
     CurrentBackBuffer = (CurrentBackBuffer + 1) % BackBufferCount;

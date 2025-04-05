@@ -6,6 +6,7 @@
 #include "render.h"
 #include "xr_input.h"
 
+#include "IGame_Level.h"
 #include "igame_persistent.h"
 
 #include "imgui.h"
@@ -87,8 +88,6 @@ void CRenderDevice::RenderEnd(void)
 
     vCameraDirectionSaved = vCameraDirection;
 }
-
-#include "igame_level.h"
 
 void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
