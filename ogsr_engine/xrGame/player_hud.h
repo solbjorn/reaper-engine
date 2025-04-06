@@ -61,9 +61,6 @@ struct hud_item_measures
         e_shell_point = (1 << 2),
         e_16x9_mode_now = (1 << 3)
     };
-    Flags8 m_prop_flags;
-
-    Fvector m_item_attach[2]{}; // pos,rot
 
     enum m_hands_offset_coords : u8
     {
@@ -85,20 +82,21 @@ struct hud_item_measures
         m_hands_offset_type_size
     };
     Fvector m_hands_offset[m_hands_offset_size][m_hands_offset_type_size]{};
+    Fvector m_hands_attach[2]{}; // pos,rot
+    Fvector m_item_attach[2]{}; // pos,rot
 
-    u16 m_fire_bone;
     Fvector m_fire_point_offset;
-    u16 m_fire_bone2;
     Fvector m_fire_point2_offset;
-    u16 m_shell_bone;
     Fvector m_shell_point_offset;
     Fvector m_shoot_point_offset{};
 
-    Fvector m_hands_attach[2]{}; // pos,rot
+    u16 m_fire_bone;
+    u16 m_fire_bone2;
+    u16 m_shell_bone;
+    Flags8 m_prop_flags;
+    bool useCopFirePoint{};
 
     void load(const shared_str& sect_name, IKinematics* K);
-
-    bool useCopFirePoint{};
 };
 
 enum eMovementLayers
@@ -245,8 +243,8 @@ public:
     shared_str m_visual_name;
     IKinematics* m_model{};
     u16 m_attach_place_idx{};
-    hud_item_measures m_measures{};
     bool m_has_separated_hands{};
+    hud_item_measures m_measures{};
 
     // runtime positioning
     Fmatrix m_attach_offset;
