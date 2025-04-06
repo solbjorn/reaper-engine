@@ -1,13 +1,12 @@
 #pragma once
 
-#include <atomic>
-#include "../xrCore/Event.hpp"
 #include <CallMe.h>
-
-#include "pure.h"
-#include "../xrcore/ftimer.h"
-#include "stats.h"
+#include <atomic>
 #include <numeric>
+
+#include "../xrcore/ftimer.h"
+#include "pure.h"
+#include "stats.h"
 
 #define VIEWPORT_NEAR 0.2f
 #define HUD_VIEWPORT_NEAR 0.05f
