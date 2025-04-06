@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include "Event.hpp"
+#include "../xrCore/Event.hpp"
 #include <CallMe.h>
 
 #include "pure.h"

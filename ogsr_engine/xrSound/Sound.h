@@ -21,7 +21,6 @@ extern float psSoundOcclusionScale;
 extern float psSoundLinearFadeFactor; //--#SM+#--
 extern Flags32 psSoundFlags;
 extern int psSoundTargets;
-extern int psSoundCacheSizeMB;
 extern xr_token* snd_devices_token;
 extern u32 snd_device_id;
 extern float psSoundTimeFactor; //--#SM+#--
@@ -42,18 +41,21 @@ enum
     sq_HIGH,
     sq_forcedword = u32(-1)
 };
+
 enum
 {
     sg_Undefined = 0,
     sg_SourceType = u32(-1),
     sg_forcedword = u32(-1),
 };
+
 enum
 {
     sm_Looped = (1ul << 0ul), //!< Looped
     sm_2D = (1ul << 1ul), //!< 2D mode
     sm_forcedword = u32(-1),
 };
+
 enum esound_type
 {
     st_Effect = 0,
@@ -70,6 +72,7 @@ public:
     virtual void accept(CSound_UserDataVisitor*) = 0;
     virtual void invalidate() = 0;
 };
+
 typedef resptr_core<CSound_UserData, resptr_base<CSound_UserData>> CSound_UserDataPtr;
 
 class ref_sound_data : public xr_resource
@@ -89,11 +92,13 @@ public:
 
 public:
     ref_sound_data();
-    ref_sound_data(LPCSTR fName, esound_type sound_type, int game_type);
+    ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual ~ref_sound_data();
     float get_length_sec() const { return fTimeTotal; };
 };
+
 typedef resptr_core<ref_sound_data, resptr_base<ref_sound_data>> ref_sound_data_ptr;
+
 /*! \class ref_sound
 \brief Sound source + control
 
@@ -111,31 +116,35 @@ public:
 
     IC CSound_source* _handle() const { return _p ? _p->handle : NULL; }
     IC CSound_emitter* _feedback() { return _p ? _p->feedback : 0; }
+
     IC CObject* _g_object()
     {
         VERIFY(_p);
         return _p->g_object;
     }
+
     IC int _g_type()
     {
         VERIFY(_p);
         return _p->g_type;
     }
+
     IC esound_type _sound_type()
     {
         VERIFY(_p);
         return _p->s_type;
     }
+
     IC CSound_UserDataPtr _g_userdata()
     {
         VERIFY(_p);
         return _p->g_userdata;
     }
 
-    IC void create(LPCSTR name, esound_type sound_type, int game_type);
+    IC void create(LPCSTR name, esound_type sound_type, u32 game_type);
     IC void attach_tail(LPCSTR name);
 
-    IC void clone(const ref_sound& from, esound_type sound_type, int game_type);
+    IC void clone(const ref_sound& from, esound_type sound_type, u32 game_type);
 
     IC void destroy();
 
@@ -205,22 +214,12 @@ extern float getSmoothedValue(float, float, float);
 class CSound_params
 {
 public:
-    CSound_params() : set(false)
-    {
-        position.set(0.0f, 0.0f, 0.0f);
-        velocity.set(0.0f, 0.0f, 0.0f);
-        accVelocity.set(0.f, 0.f, 0.f);
-    }
+    Fvector position{};
+    Fvector velocity{}; // Cribbledirge.  Added for doppler effect.
+    Fvector curVelocity{}; // Current velocity.
+    Fvector prevVelocity{}; // Previous velocity.
+    Fvector accVelocity{}; // Velocity accumulator (for moving average).
 
-private:
-    bool set;
-
-public:
-    Fvector position;
-    Fvector velocity; // Cribbledirge.  Added for doppler effect.
-    Fvector curVelocity; // Current velocity.
-    Fvector prevVelocity; // Previous velocity.
-    Fvector accVelocity; // Velocity accumulator (for moving average).
     float base_volume;
     float volume;
     float freq;
@@ -228,6 +227,10 @@ public:
     float max_distance;
     float max_ai_distance;
 
+private:
+    bool set{};
+
+public:
     // Functions added by Cribbledirge for doppler effect.
     IC virtual void update_position(const Fvector& newPosition)
     {
@@ -236,8 +239,6 @@ public:
         {
             prevVelocity.set(accVelocity);
             curVelocity.sub(newPosition, position);
-
-            // accVelocity.set(curVelocity.mul(alpha).add(prevVelocity.mul(1.f - alpha)));
         }
         else
         {
@@ -254,8 +255,6 @@ public:
         accVelocity.y = soundSmoothingParams::getSmoothedValue(curVelocity.y * p / dt, accVelocity.y, a);
         accVelocity.z = soundSmoothingParams::getSmoothedValue(curVelocity.z * p / dt, accVelocity.z, a);
         velocity.set(accVelocity);
-
-        // Msg("VELOC: %f", velocity.magnitude());
     }
 };
 
@@ -263,7 +262,7 @@ public:
 class CSound_emitter
 {
 public:
-    virtual BOOL is_2D() = 0;
+    virtual bool is_2D() const = 0;
     virtual void switch_to_2D() = 0;
     virtual void switch_to_3D() = 0;
     virtual void set_position(const Fvector& pos) = 0;
@@ -289,8 +288,6 @@ class CSound_stats
 public:
     u32 _rendered;
     u32 _simulated;
-    u32 _cache_hits;
-    u32 _cache_misses;
     u32 _events;
 };
 
@@ -299,12 +296,13 @@ class CSound_stats_ext
 public:
     struct SItem
     {
-        shared_str name;
         CSound_params params;
-        float volume;
-        esound_type type;
-        int game_type;
         CObject* game_object;
+        shared_str name;
+        esound_type type;
+        float volume;
+        u32 game_type;
+
         struct
         {
             u32 _3D : 1;
@@ -330,7 +328,7 @@ class CSound_manager_interface
 
 protected:
     friend class ref_sound_data;
-    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type) = 0;
+    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
     virtual void _destroy_data(ref_sound_data& S) = 0;
 
 public:
@@ -341,9 +339,9 @@ public:
 
     virtual void _restart() = 0;
 
-    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, int game_type) = 0;
+    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
     virtual void attach_tail(ref_sound& S, LPCSTR fName) = 0;
-    virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int game_type) = 0;
+    virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type) = 0;
     virtual void destroy(ref_sound& S) = 0;
     virtual void stop_emitters() = 0;
     virtual int pause_emitters(bool val) = 0;
@@ -359,6 +357,7 @@ public:
     virtual void set_handler(sound_event* E) = 0;
 
     virtual void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) = 0;
+    virtual void render() = 0;
     virtual void statistic(CSound_stats* s0, CSound_stats_ext* s1) = 0;
 
     virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f) = 0;
@@ -385,93 +384,109 @@ IC ref_sound_data::ref_sound_data()
     dwBytesTotal = 0;
     fTimeTotal = 0.0f;
 }
-IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, int game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
+
+IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
+
 IC ref_sound_data::~ref_sound_data() { ::Sound->_destroy_data(*this); }
 
-IC void ref_sound::create(LPCSTR name, esound_type sound_type, int game_type)
+IC void ref_sound::create(LPCSTR name, esound_type sound_type, u32 game_type)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->create(*this, name, sound_type, game_type);
 }
+
 IC void ref_sound::attach_tail(LPCSTR name)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->attach_tail(*this, name);
 }
 
-IC void ref_sound::clone(const ref_sound& from, esound_type sound_type, int game_type)
+IC void ref_sound::clone(const ref_sound& from, esound_type sound_type, u32 game_type)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->clone(*this, from, sound_type, game_type);
 }
+
 IC void ref_sound::destroy()
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->destroy(*this);
 }
+
 IC void ref_sound::play(CObject* O, u32 flags, float d)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->play(*this, O, flags, d);
 }
+
 IC void ref_sound::play_at_pos(CObject* O, const Fvector& pos, u32 flags, float d)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->play_at_pos(*this, O, pos, flags, d);
 }
+
 IC void ref_sound::play_no_feedback(CObject* O, u32 flags, float d, Fvector* pos, float* vol, float* freq, Fvector2* range)
 {
     VERIFY(!::Sound->i_locked());
     ::Sound->play_no_feedback(*this, O, flags, d, pos, vol, freq, range);
 }
+
 IC void ref_sound::set_position(const Fvector& pos)
 {
     VERIFY(!::Sound->i_locked());
     VERIFY(_feedback());
     _feedback()->set_position(pos);
 }
+
 IC void ref_sound::set_frequency(float freq)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_frequency(freq);
 }
+
 IC void ref_sound::set_range(float min, float max)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_range(min, max);
 }
+
 IC void ref_sound::set_volume(float vol)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_volume(vol);
 }
+
 IC void ref_sound::set_priority(float p)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_priority(p);
 }
+
 IC void ref_sound::set_time(float t)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_time(t);
 }
+
 IC void ref_sound::stop()
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->stop(FALSE);
 }
+
 IC void ref_sound::stop_deffered()
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->stop(TRUE);
 }
+
 IC const CSound_params* ref_sound::get_params()
 {
     VERIFY(!::Sound->i_locked());
@@ -480,6 +495,7 @@ IC const CSound_params* ref_sound::get_params()
     else
         return NULL;
 }
+
 IC void ref_sound::set_params(CSound_params* p)
 {
     VERIFY(!::Sound->i_locked());

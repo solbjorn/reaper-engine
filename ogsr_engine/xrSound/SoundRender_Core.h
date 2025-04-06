@@ -5,17 +5,12 @@
 
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
-#include "SoundRender_Cache.h"
-#include "soundrender_environment.h"
 
 class CSoundRender_Core : public CSound_manager_interface
 {
 protected:
-    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type);
+    virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual void _destroy_data(ref_sound_data& S);
-
-private:
-    volatile BOOL bLocked{};
 
 public:
     struct SListener
@@ -38,11 +33,15 @@ public:
     };
 
 protected:
-    SListener Listener;
+    SListener Listener{};
 
     bool bListenerMoved{};
     bool e_currentPaused{false};
 
+private:
+    volatile bool bLocked{};
+
+protected:
     CSoundRender_Environment e_current;
     CSoundRender_Environment e_target;
 
@@ -72,27 +71,21 @@ protected:
     CDB::MODEL* geom_ENV{};
 
     // Containers
-    xr_vector<CSoundRender_Source*> s_sources;
+    string_unordered_map<xr_string, CSoundRender_Source*> s_sources;
     xr_vector<CSoundRender_Emitter*> s_emitters;
-    u32 s_emitters_u{}; // emitter update marker
     xr_vector<CSoundRender_Target*> s_targets;
-    xr_vector<CSoundRender_Target*> s_targets_defer;
-    u32 s_targets_pu{}; // parameters update
+
     SoundEnvironment_LIB* s_environment{};
     CSoundRender_Environment s_user_environment{};
 
+    u32 s_emitters_u{}; // emitter update marker
     int m_iPauseCounter{};
 
-public:
-    // Cache
-    CSoundRender_Cache cache{};
-    u32 cache_bytes_per_line{};
-
-protected:
     virtual void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz) = 0;
     virtual void i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz) = 0;
 
     std::mutex m_bLocked;
+    std::recursive_mutex s_sources_lock;
 
 public:
     CSoundRender_Core();
@@ -105,10 +98,10 @@ public:
 
     // Sound interface
     void verify_refsound(ref_sound& S);
-    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, int game_type);
+    virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual void attach_tail(ref_sound& S, LPCSTR fName);
 
-    virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int game_type);
+    virtual void clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type);
     virtual void destroy(ref_sound& S);
     virtual void stop_emitters();
     virtual int pause_emitters(bool val);
@@ -122,8 +115,8 @@ public:
     virtual void set_geometry_occ(CDB::MODEL* M);
     virtual void set_handler(sound_event* E);
 
-    virtual void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R);
-    virtual void update_events();
+    void update(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R) override;
+    void render() override;
     virtual void statistic(CSound_stats* dest, CSound_stats_ext* ext);
 
     // listener
@@ -148,10 +141,8 @@ public:
     CSoundRender_Source* i_create_source(LPCSTR name);
     void i_destroy_source(CSoundRender_Source* S);
     CSoundRender_Emitter* i_play(ref_sound* S, BOOL _loop, float delay);
-    void i_start(CSoundRender_Emitter* E);
-    void i_stop(CSoundRender_Emitter* E);
-    void i_rewind(CSoundRender_Emitter* E);
-    BOOL i_allow_play(CSoundRender_Emitter* E);
+    void i_start(CSoundRender_Emitter* E) const;
+    bool i_allow_play(const CSoundRender_Emitter* E);
 
     virtual void object_relcase(CObject* obj);
 

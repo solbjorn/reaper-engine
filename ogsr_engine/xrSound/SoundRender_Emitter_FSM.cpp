@@ -3,6 +3,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
+#include "SoundRender_Target.h"
 
 extern float psSoundCull;
 constexpr float TIME_TO_STOP_INFINITE = static_cast<float>(0xffffffff);
@@ -16,22 +17,32 @@ inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTi
     {
         fTime -= fTimeTotal / fFreq;
     }
-    u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.nSamplesPerSec);
+    const u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.nSamplesPerSec);
     return curr_sample_num * (wfx.wBitsPerSample / 8) * wfx.nChannels;
 }
 
-void CSoundRender_Emitter::update(float dt)
+void CSoundRender_Emitter::update(float fTime, float dt)
 {
-    float fTime = SoundRender->fTimer_Value;
-    float fDeltaTime = SoundRender->fTimer_Delta;
-
     VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
     VERIFY2(owner_data ? *(int*)(&owner_data->feedback) : 1, "owner");
 
     if (bRewind)
     {
+        wait_prefill();
+
+        const float time = SoundRender->Timer.GetElapsed_sec();
+        const float diff = time - fTimeStarted;
+        fTimeStarted += diff;
+        fTimeToStop += diff;
+        fTimeToPropagade = time;
+
+        set_cursor(0);
         if (target)
-            SoundRender->i_rewind(this);
+        {
+            fill_all_blocks();
+            target->rewind();
+            dispatch_prefill();
+        }
         bRewind = FALSE;
     }
 
@@ -62,6 +73,7 @@ void CSoundRender_Emitter::update(float dt)
             m_current_state = stPlaying;
             set_cursor(0);
             SoundRender->i_start(this);
+            dispatch_prefill();
         }
         else
             m_current_state = stSimulating;
@@ -90,6 +102,7 @@ void CSoundRender_Emitter::update(float dt)
             m_current_state = stPlayingLooped;
             set_cursor(0);
             SoundRender->i_start(this);
+            dispatch_prefill();
         }
         else
             m_current_state = stSimulatingLooped;
@@ -97,20 +110,18 @@ void CSoundRender_Emitter::update(float dt)
     case stPlaying:
         if (iPaused)
         {
-            if (target)
-            {
-                SoundRender->i_stop(this);
-                m_current_state = stSimulating;
-            }
-            fTimeStarted += fDeltaTime;
-            fTimeToStop += fDeltaTime;
-            fTimeToPropagade += fDeltaTime;
+            stop_target();
+            m_current_state = stSimulating;
+
+            fTimeStarted += dt;
+            fTimeToStop += dt;
+            fTimeToPropagade += dt;
             break;
         }
         if (fTime >= fTimeToStop)
         {
             // STOP
-            SoundRender->i_stop(this);
+            stop_target();
             m_current_state = stStopped;
         }
         else
@@ -118,8 +129,8 @@ void CSoundRender_Emitter::update(float dt)
             if (!update_culling(dt))
             {
                 // switch to: SIMULATE
-                SoundRender->i_stop(this);
-                m_current_state = stSimulating; // switch state
+                stop_target();
+                m_current_state = stSimulating;
             }
             else
             {
@@ -131,9 +142,9 @@ void CSoundRender_Emitter::update(float dt)
     case stSimulating:
         if (iPaused)
         {
-            fTimeStarted += fDeltaTime;
-            fTimeToStop += fDeltaTime;
-            fTimeToPropagade += fDeltaTime;
+            fTimeStarted += dt;
+            fTimeToStop += dt;
+            fTimeToPropagade += dt;
             break;
         }
         if (fTime >= fTimeToStop)
@@ -143,40 +154,32 @@ void CSoundRender_Emitter::update(float dt)
         }
         else
         {
-            u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), p_source.freq, source()->m_wformat); //--#SM+#--
+            const u32 ptr = calc_cursor(fTimeStarted, fTime, get_length_sec(), p_source.freq, source()->m_wformat); //--#SM+#--
             set_cursor(ptr);
 
             if (update_culling(dt))
             {
                 // switch to: PLAY
                 m_current_state = stPlaying;
-                /*
-                                u32 ptr						= calc_cursor(	fTimeStarted,
-                                                                            fTime,
-                                                                            get_length_sec(),
-                                                                            source()->m_wformat);
-                                set_cursor					(ptr);
-                */
                 SoundRender->i_start(this);
+                dispatch_prefill();
             }
         }
         break;
     case stPlayingLooped:
         if (iPaused)
         {
-            if (target)
-            {
-                SoundRender->i_stop(this);
-                m_current_state = stSimulatingLooped;
-            }
-            fTimeStarted += fDeltaTime;
-            fTimeToPropagade += fDeltaTime;
+            stop_target();
+            m_current_state = stSimulatingLooped;
+
+            fTimeStarted += dt;
+            fTimeToPropagade += dt;
             break;
         }
         if (!update_culling(dt))
         {
             // switch to: SIMULATE
-            SoundRender->i_stop(this);
+            stop_target();
             m_current_state = stSimulatingLooped; // switch state
         }
         else
@@ -188,8 +191,8 @@ void CSoundRender_Emitter::update(float dt)
     case stSimulatingLooped:
         if (iPaused)
         {
-            fTimeStarted += fDeltaTime;
-            fTimeToPropagade += fDeltaTime;
+            fTimeStarted += dt;
+            fTimeToPropagade += dt;
             break;
         }
         if (update_culling(dt))
@@ -200,6 +203,7 @@ void CSoundRender_Emitter::update(float dt)
             set_cursor(ptr);
 
             SoundRender->i_start(this);
+            dispatch_prefill();
         }
         break;
     }
@@ -224,25 +228,21 @@ void CSoundRender_Emitter::update(float dt)
             const float fRemainingTime = (fLength - fTimeToRewind) / p_source.freq;
             const float fPastTime = fTimeToRewind / p_source.freq;
 
-            fTimeStarted = SoundRender->fTimer_Value - fPastTime;
+            fTimeStarted = fTime - fPastTime;
             fTimeToPropagade = fTimeStarted; //--> For AI events
 
             if (fTimeStarted < 0.0f)
             {
-                // Log("fTimer_Value = ", SoundRender->fTimer_Value);
-                // Log("fTimeStarted = ", fTimeStarted);
-                // Log("fRemainingTime = ", fRemainingTime);
-                // Log("fPastTime = ", fPastTime);
                 R_ASSERT2(fTimeStarted >= 0.0f, "Possible error in sound rewind logic! See log.");
 
-                fTimeStarted = SoundRender->fTimer_Value;
+                fTimeStarted = fTime;
                 fTimeToPropagade = fTimeStarted;
             }
 
             if (!bLooped)
             {
                 //--> Пересчитываем время, когда звук должен остановиться [recalculate stop time]
-                fTimeToStop = SoundRender->fTimer_Value + fRemainingTime;
+                fTimeToStop = fTime + fRemainingTime;
             }
 
             const u32 ptr = calc_cursor(fTimeStarted, fTime, fLength, p_source.freq, source()->m_wformat);
@@ -287,7 +287,9 @@ IC void volume_lerp(float& c, float t, float s, float dt)
         mot = diff_a;
     c += (diff / diff_a) * mot;
 }
-#include "..\COMMON_AI\ai_sounds.h"
+
+#include "../COMMON_AI/ai_sounds.h"
+
 BOOL CSoundRender_Emitter::update_culling(float dt)
 {
     if (b2D)
@@ -330,9 +332,12 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
     // If we are playing already, return OK
     // --- else check availability of resources
     if (target)
+    {
+        target->set_priority(priority());
         return TRUE;
-    else
-        return SoundRender->i_allow_play(this);
+    }
+
+    return SoundRender->i_allow_play(this);
 }
 
 float CSoundRender_Emitter::priority() const { return smooth_volume * att() * priority_scale; }
@@ -366,4 +371,16 @@ void CSoundRender_Emitter::update_environment(float dt)
         p_source.update_velocity(dt);
     }
     e_current.lerp(e_current, e_target, dt);
+}
+
+void CSoundRender_Emitter::render()
+{
+    target->fill_parameters(SoundRender);
+
+    if (target->get_Rendering())
+        target->update();
+    else
+        target->render();
+
+    dispatch_prefill();
 }

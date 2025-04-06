@@ -11,16 +11,24 @@ CSoundRender_Source* CSoundRender_Core::i_create_source(LPCSTR name)
     strlwr(id);
     if (strext(id))
         *strext(id) = 0;
-    for (u32 it = 0; it < s_sources.size(); it++)
+
+    s_sources_lock.lock();
+
+    const auto it = s_sources.find(id);
+    if (it != s_sources.end())
     {
-        if (0 == xr_strcmp(*s_sources[it]->fname, id))
-            return s_sources[it];
+        s_sources_lock.unlock();
+        return it->second;
     }
 
     // Load a _new one
     CSoundRender_Source* S = xr_new<CSoundRender_Source>();
     S->load(id);
-    s_sources.push_back(S);
+
+    s_sources_lock.lock();
+    s_sources.emplace(id, S);
+    s_sources_lock.unlock();
+
     return S;
 }
 

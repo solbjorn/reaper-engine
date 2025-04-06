@@ -296,15 +296,6 @@ void CSoundRender_CoreA::_initialize(int stage)
 
     init_device_properties(is_al_soft);
 
-    // Init listener struct
-    Listener.position.set(0.0f, 0.0f, 0.0f);
-    Listener.orientation[0].set(0.0f, 0.0f, 0.0f);
-    Listener.orientation[1].set(0.0f, 0.0f, 0.0f);
-    Listener.orientation[2].set(0.0f, 0.0f, 0.0f);
-    ListenerSmooth.prevVelocity.set(0.0f, 0.0f, 0.0f);
-    ListenerSmooth.curVelocity.set(0.0f, 0.0f, 0.0f);
-    ListenerSmooth.accVelocity.set(0.0f, 0.0f, 0.0f);
-
     inherited::_initialize(stage);
 
     if (stage == 1) // first initialize
@@ -338,7 +329,6 @@ void CSoundRender_CoreA::_initialize(int stage)
     }
 
     bReady = TRUE;
-    // notification_client.Start();
 }
 
 void CSoundRender_CoreA::set_master_volume(float f)
@@ -366,20 +356,17 @@ void CSoundRender_CoreA::release_context()
 
 void CSoundRender_CoreA::_clear()
 {
-    // notification_client.Stop();
     bReady = FALSE;
-
     inherited::_clear();
 
     // remove targets
-    CSoundRender_Target* T = nullptr;
-    for (u32 tit = 0; tit < s_targets.size(); tit++)
+    for (auto& T : s_targets)
     {
-        T = s_targets[tit];
         T->_destroy();
         xr_delete(T);
     }
 
+    s_targets.clear();
     release_context();
 
     xr_delete(pDeviceList);

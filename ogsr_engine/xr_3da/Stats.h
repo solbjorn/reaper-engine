@@ -77,7 +77,9 @@ public:
     CStatTimer RenderDUMP_Scalc; // ...shadows		building
     CStatTimer RenderDUMP_Srender; // ...shadows		render
 
-    CStatTimer Sound; // total time taken by sound subsystem (accurate only in single-threaded mode)
+    CStatTimer SoundUpdate; // time taken by sound scene update
+    CStatTimer SoundRender; // time taken by sound emitters playing
+
     CStatTimer Input; // total time taken by input subsystem (accurate only in single-threaded mode)
     CStatTimer clRAY; // total: ray-testing
     CStatTimer clBOX; // total: box query

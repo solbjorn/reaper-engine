@@ -1,41 +1,39 @@
-#pragma once
+#ifndef SoundRender_TargetAH
+#define SoundRender_TargetAH
 
-#include "soundrender_Target.h"
-#include "soundrender_CoreA.h"
+#include "SoundRender_Target.h"
+#include "SoundRender_CoreA.h"
 
 class CSoundRender_TargetA : public CSoundRender_Target
 {
-    typedef CSoundRender_Target inherited;
+    using inherited = CSoundRender_Target;
 
     // OpenAL
-    ALuint pSource;
-    ALuint pBuffers[sdef_target_count]{};
+    ALuint pSource{};
+    ALuint pBuffers[sdef_target_count_submit]{};
+    ALuint dataFormat;
+    ALsizei sampleRate;
 
     float cache_gain{};
-    float cache_pitch{};
-
-    ALuint buf_block{};
+    float cache_pitch{1.f};
 
 private:
-    void fill_block(ALuint BufferID);
+    void submit_buffer(ALuint BufferID) const;
+    void submit_all_buffers() const;
 
 public:
-    CSoundRender_TargetA();
-    virtual ~CSoundRender_TargetA();
+    bool _initialize() override;
+    void _destroy() override;
+    void _restart() override;
 
-    virtual BOOL _initialize();
-    virtual void _destroy();
-    virtual void _restart();
+    void start(CSoundRender_Emitter* E) override;
+    void render() override;
+    void rewind() override;
+    void stop() override;
+    void update() override;
+    void fill_parameters(CSoundRender_Core* core) override;
 
-    virtual void start(CSoundRender_Emitter* E);
-    virtual void render();
-    virtual void rewind();
-    virtual void stop();
-    virtual void update();
-
-    void source_changed();
-
-    virtual void fill_parameters(CSoundRender_Core* core);
-
-    virtual void alAuxInit(ALuint slot) override;
+    void alAuxInit(ALuint slot) override;
 };
+
+#endif

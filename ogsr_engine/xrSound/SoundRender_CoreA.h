@@ -3,9 +3,8 @@
 
 #include "SoundRender_Core.h"
 #include "OpenALDeviceList.h"
-#include <eax.h>
 
-// #include "NotificationClient.h"
+#include <eax.h>
 
 #ifdef DEBUG
 #define A_CHK(expr) \

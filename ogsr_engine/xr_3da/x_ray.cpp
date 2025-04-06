@@ -28,15 +28,15 @@ bool IS_OGSR_GA{};
 CInifile* pGameIni = nullptr;
 int max_load_stage = 0;
 
-struct _SoundProcessor : public pureFrame
+static struct SoundProcessor final : public pureFrame
 {
-    virtual void OnFrame()
-    {
-        Device.Statistic->Sound.Begin();
-        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight);
-        Device.Statistic->Sound.End();
-    }
-} SoundProcessor;
+    void OnFrame() override { ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight); }
+} g_sound_processor;
+
+static struct SoundRenderer final : public pureFrame
+{
+    void OnFrame() override { ::Sound->render(); }
+} g_sound_renderer;
 
 // global variables
 CApplication* pApp = NULL;
@@ -412,7 +412,8 @@ CApplication::CApplication() : loadingScreen(nullptr)
     // Register us
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
 
-    Device.seqFrameMT.Add(&SoundProcessor);
+    Device.seqFrame.Add(&g_sound_processor, REG_PRIORITY_NORMAL - 1000); // Place it after Level update
+    Device.seqFrameMT.Add(&g_sound_renderer);
 
     Console->Show();
 }
@@ -421,8 +422,8 @@ CApplication::~CApplication()
 {
     Console->Hide();
 
-    Device.seqFrameMT.Remove(&SoundProcessor);
-    Device.seqFrame.Remove(&SoundProcessor);
+    Device.seqFrameMT.Remove(&g_sound_renderer);
+    Device.seqFrame.Remove(&g_sound_processor);
     Device.seqFrame.Remove(this);
 
     // events

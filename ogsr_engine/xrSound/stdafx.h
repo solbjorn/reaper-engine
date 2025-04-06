@@ -6,6 +6,7 @@
 #pragma once
 
 #include "../xrCore/xrCore.h"
+#include "../xrCore/xr_resource.h"
 
 // mmsystem.h
 #define MMNOSOUND
@@ -23,10 +24,5 @@
 #define NOBITMAP
 #include <mmreg.h>
 
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
-
 #include "../xrCDB/xrCDB.h"
 #include "sound.h"
-
-#include "../xrCore/xr_resource.h"

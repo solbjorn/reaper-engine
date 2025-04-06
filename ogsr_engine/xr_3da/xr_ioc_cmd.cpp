@@ -734,7 +734,6 @@ void CCC_Register()
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EFX);
     CMD3(CCC_Mask, "snd_use_float32", &psSoundFlags, ss_UseFloat32);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
-    CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 128);
     CMD4(CCC_Float, "snd_linear_fade", &psSoundLinearFadeFactor, 0.1f, 1.f);
     // Doppler effect power
     CMD4(CCC_Float, "snd_doppler_power", &soundSmoothingParams::power, 0.f, 5.f);

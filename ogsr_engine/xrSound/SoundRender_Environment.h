@@ -6,8 +6,8 @@ class CSoundRender_Environment : public CSound_environment
 public:
     u32 version;
 
-    CSoundRender_Environment(void);
-    ~CSoundRender_Environment(void);
+    CSoundRender_Environment();
+    ~CSoundRender_Environment();
     void set_identity();
     void set_default();
     void clamp();

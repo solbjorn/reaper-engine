@@ -23,7 +23,6 @@ float psSoundVFactor = 1.0f;
 float psSoundTimeFactor = 1.0f; //--#SM+#--
 float psSoundVMusic = 1.f;
 float psSoundVMusicFactor = 1.f;
-int psSoundCacheSizeMB = 32;
 
 CSoundRender_Core* SoundRender = 0;
 CSound_manager_interface* Sound = 0;
@@ -53,7 +52,6 @@ CSoundRender_Core::CSoundRender_Core()
     geom_SOM = NULL;
     s_environment = NULL;
     Handler = NULL;
-    s_targets_pu = 0;
     s_emitters_u = 0;
     e_current.set_identity();
     e_target.set_identity();
@@ -95,29 +93,22 @@ void CSoundRender_Core::_initialize(int stage)
 
     // load environment
     env_load();
-
-    // Cache
-    cache_bytes_per_line = (sdef_target_block / 8) * 352800 / 1000;
-    cache.initialize(psSoundCacheSizeMB * 1024, cache_bytes_per_line);
 }
 
-extern xr_vector<u8> g_target_temp_data;
 void CSoundRender_Core::_clear()
 {
-    cache.destroy();
     env_unload();
 
     // remove sources
-    for (u32 sit = 0; sit < s_sources.size(); sit++)
-        xr_delete(s_sources[sit]);
+    for (auto& kv : s_sources)
+        xr_delete(kv.second);
+
     s_sources.clear();
 
     // remove emmiters
     for (u32 eit = 0; eit < s_emitters.size(); eit++)
         xr_delete(s_emitters[eit]);
     s_emitters.clear();
-
-    g_target_temp_data.clear();
 }
 
 void CSoundRender_Core::stop_emitters()
@@ -208,16 +199,8 @@ void CSoundRender_Core::env_save_all() const
     s_environment->SaveIni(&inifile);
 }
 
-void CSoundRender_Core::_restart()
-{
-    cache.destroy();
-    cache.initialize(psSoundCacheSizeMB * 1024, cache_bytes_per_line);
-
-    env_apply();
-}
-
+void CSoundRender_Core::_restart() { env_apply(); }
 void CSoundRender_Core::set_handler(sound_event* E) { Handler = E; }
-
 void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M) { geom_MODEL = M; }
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
@@ -324,7 +307,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     xr_free(_data);
 }
 
-void CSoundRender_Core::create(ref_sound& S, LPCSTR fName, esound_type sound_type, int game_type)
+void CSoundRender_Core::create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type)
 {
     if (!bPresent)
         return;
@@ -361,7 +344,7 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
     SoundRender->i_destroy_source(s);
 }
 
-void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int game_type)
+void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type)
 {
     if (!bPresent)
         return;
@@ -435,6 +418,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
     if (flags & sm_2D || S._handle()->channels_num() == 2)
         S._feedback()->switch_to_2D();
 }
+
 void CSoundRender_Core::destroy(ref_sound& S)
 {
     if (S._feedback())
@@ -445,7 +429,7 @@ void CSoundRender_Core::destroy(ref_sound& S)
     S._p = 0;
 }
 
-void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type)
+void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type)
 {
     string_path fn;
     xr_strcpy(fn, fName);
@@ -460,6 +444,7 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
     S.dwBytesTotal = S.handle->bytes_total();
     S.fTimeTotal = S.handle->length_sec();
 }
+
 void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 {
     if (S.feedback)
@@ -515,20 +500,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
     return get_environment_def();
 }
 
-void CSoundRender_Core::env_apply()
-{
-    /*
-        // Force all sounds to change their environment
-        // (set their positions to signal changes in environment)
-        for (u32 it=0; it<s_emitters.size(); it++)
-        {
-            CSoundRender_Emitter*	pEmitter	= s_emitters[it];
-            const CSound_params*	pParams		= pEmitter->get_params	();
-            pEmitter->set_position	(pParams->position);
-        }
-    */
-    bListenerMoved = true;
-}
+void CSoundRender_Core::env_apply() { bListenerMoved = true; }
 
 void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt)
 {

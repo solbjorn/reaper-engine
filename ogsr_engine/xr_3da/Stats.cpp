@@ -89,7 +89,9 @@ void CStats::Show()
         RenderDUMP_Scalc.FrameEnd();
         RenderDUMP_Srender.FrameEnd();
 
-        Sound.FrameEnd();
+        SoundUpdate.FrameEnd();
+        SoundRender.FrameEnd();
+
         Input.FrameEnd();
         clRAY.FrameEnd();
         clBOX.FrameEnd();
@@ -188,9 +190,9 @@ void CStats::Show()
         F.OutNext("  S_calc:    %2.2fms", RenderDUMP_Scalc.result);
         F.OutNext("  S_render:  %2.2fms, %d", RenderDUMP_Srender.result, RenderDUMP_Srender.count);
         F.OutSkip();
-        F.OutNext("*** SOUND:   %2.2fms", Sound.result);
+        F.OutNext("*** SOUND:   %2.2fms", SoundUpdate.result);
+        F.OutNext("  RENDER:    %2.2fms", SoundRender.result);
         F.OutNext("  TGT/SIM/E: %d/%d/%d", snd_stat._rendered, snd_stat._simulated, snd_stat._events);
-        F.OutNext("  HIT/MISS:  %d/%d", snd_stat._cache_hits, snd_stat._cache_misses);
         F.OutSkip();
         F.OutNext("Input:       %2.2fms", Input.result);
         F.OutNext("clRAY:       %2.2fms, %d, %2.0fK", clRAY.result, clRAY.count, r_ps);
@@ -329,7 +331,9 @@ void CStats::Show()
         RenderDUMP_Scalc.FrameStart();
         RenderDUMP_Srender.FrameStart();
 
-        Sound.FrameStart();
+        SoundUpdate.FrameStart();
+        SoundRender.FrameStart();
+
         Input.FrameStart();
         clRAY.FrameStart();
         clBOX.FrameStart();

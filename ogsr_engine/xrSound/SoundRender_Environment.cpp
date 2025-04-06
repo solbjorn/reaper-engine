@@ -1,19 +1,20 @@
 #include "stdafx.h"
 
-#include "soundrender.h"
-#include "soundrender_environment.h"
+#include "SoundRender.h"
+#include "SoundRender_Environment.h"
+
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <eax.h>
 #pragma warning(pop)
 
-CSoundRender_Environment::CSoundRender_Environment(void)
+CSoundRender_Environment::CSoundRender_Environment()
 {
     version = sdef_env_version;
     set_default();
 }
 
-CSoundRender_Environment::~CSoundRender_Environment(void) {}
+CSoundRender_Environment::~CSoundRender_Environment() {}
 
 void CSoundRender_Environment::set_default()
 {

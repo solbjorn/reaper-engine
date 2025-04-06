@@ -1,30 +1,18 @@
 #include "stdafx.h"
 
-#include "soundrender_TargetA.h"
-#include "soundrender_emitter.h"
-#include "soundrender_source.h"
+#include "SoundRender_TargetA.h"
+#include "SoundRender_Emitter.h"
+#include "SoundRender_Source.h"
 
 #include <alext.h>
 #include <efx.h>
 
-xr_vector<u8> g_target_temp_data;
-
-CSoundRender_TargetA::CSoundRender_TargetA() : CSoundRender_Target()
+bool CSoundRender_TargetA::_initialize()
 {
-    cache_gain = 0.f;
-    cache_pitch = 1.f;
-    pSource = 0;
-}
-
-CSoundRender_TargetA::~CSoundRender_TargetA() {}
-
-BOOL CSoundRender_TargetA::_initialize()
-{
-    inherited::_initialize();
     // initialize buffer
-    A_CHK(alGenBuffers(sdef_target_count, pBuffers));
+    A_CHK(alGenBuffers(sdef_target_count_submit, pBuffers));
     alGenSources(1, &pSource);
-    ALenum error = alGetError();
+    const ALenum error = alGetError();
     if (AL_NO_ERROR == error)
     {
         A_CHK(alSourcei(pSource, AL_LOOPING, AL_FALSE));
@@ -48,7 +36,7 @@ void CSoundRender_TargetA::_destroy()
     // clean up target
     if (alIsSource(pSource))
         alDeleteSources(1, &pSource);
-    A_CHK(alDeleteBuffers(sdef_target_count, pBuffers));
+    A_CHK(alDeleteBuffers(sdef_target_count_submit, pBuffers));
 }
 
 void CSoundRender_TargetA::_restart()
@@ -61,20 +49,24 @@ void CSoundRender_TargetA::start(CSoundRender_Emitter* E)
 {
     inherited::start(E);
 
-    // Calc storage
-    buf_block = sdef_target_block * E->source()->m_wformat.nAvgBytesPerSec / 1000;
-    g_target_temp_data.resize(buf_block);
+    const auto& wvf = m_pEmitter->source()->m_wformat;
+    const bool mono = wvf.nChannels == 1;
+
+    if (wvf.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
+        dataFormat = mono ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+    else
+        dataFormat = mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+    sampleRate = wvf.nSamplesPerSec;
 }
 
 void CSoundRender_TargetA::render()
 {
-    for (u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
-        fill_block(pBuffers[buf_idx]);
-
-    A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
-    A_CHK(alSourcePlay(pSource));
-
     inherited::render();
+    submit_all_buffers();
+
+    A_CHK(alSourceQueueBuffers(pSource, sdef_target_count_submit, pBuffers));
+    A_CHK(alSourcePlay(pSource));
 }
 
 void CSoundRender_TargetA::stop()
@@ -94,17 +86,16 @@ void CSoundRender_TargetA::rewind()
 
     A_CHK(alSourceStop(pSource));
     A_CHK(alSourcei(pSource, AL_BUFFER, NULL));
-    for (u32 buf_idx = 0; buf_idx < sdef_target_count; buf_idx++)
-        fill_block(pBuffers[buf_idx]);
-    A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
+
+    submit_all_buffers();
+
+    A_CHK(alSourceQueueBuffers(pSource, sdef_target_count_submit, pBuffers));
     A_CHK(alSourcePlay(pSource));
 }
 
 void CSoundRender_TargetA::update()
 {
     inherited::update();
-
-    // Msg("--[%s] bEFX is [%d]", __FUNCTION__, this->bEFX);
 
     if (bAlSoft)
     {
@@ -124,7 +115,9 @@ void CSoundRender_TargetA::update()
         {
             ALuint BufferID;
             A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
-            fill_block(BufferID);
+
+            submit_buffer(BufferID);
+
             A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
             processed--;
             ALenum error = alGetError();
@@ -166,9 +159,11 @@ void CSoundRender_TargetA::update()
             {
                 ALuint BufferID;
                 A_CHK(alSourceUnqueueBuffers(pSource, 1, &BufferID));
-                fill_block(BufferID);
+
+                submit_buffer(BufferID);
+
                 A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
-                --processed;
+                processed--;
             }
         }
         else
@@ -178,10 +173,7 @@ void CSoundRender_TargetA::update()
             ALint state;
             A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
             if (state != AL_PLAYING)
-            {
-                //			Log		("Queuing underrun detected.");
                 A_CHK(alSourcePlay(pSource));
-            }
         }
     }
 }
@@ -192,8 +184,6 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
     CSoundRender_Emitter* SE = m_pEmitter;
     VERIFY(SE);
 #endif
-
-    inherited::fill_parameters(core);
 
     // 3D params
     VERIFY2(m_pEmitter, SE->source()->file_name());
@@ -224,7 +214,7 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
 
     VERIFY2(m_pEmitter, SE->source()->file_name());
     float _pitch = m_pEmitter->p_source.freq * psSoundTimeFactor; //--#SM+#-- Correct sound "speed" by time factor
-    clamp(_pitch, EPS_L, 100.f); //--#SM+#-- Increase sound frequancy (speed) limit
+    clamp(_pitch, EPS_L, 100.f); //--#SM+#-- Increase sound frequency (speed) limit
     if (!fsimilar(_pitch, cache_pitch))
     {
         cache_pitch = _pitch;
@@ -233,27 +223,16 @@ void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
     VERIFY2(m_pEmitter, SE->source()->file_name());
 }
 
-void CSoundRender_TargetA::fill_block(ALuint BufferID)
+void CSoundRender_TargetA::submit_buffer(ALuint BufferID) const
 {
     R_ASSERT(m_pEmitter);
 
-    m_pEmitter->fill_block(&g_target_temp_data.front(), buf_block);
-
-    const auto& wvf = m_pEmitter->source()->m_wformat;
-    const bool mono = wvf.nChannels == 1;
-
-    ALuint format;
-    if (wvf.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
-        format = mono ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
-    else
-    {
-        format = mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-    }
-
-    A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, m_pEmitter->source()->m_wformat.nSamplesPerSec));
+    const auto [data, dataSize] = m_pEmitter->obtain_block();
+    A_CHK(alBufferData(BufferID, dataFormat, data, dataSize, sampleRate));
 }
-void CSoundRender_TargetA::source_changed()
+
+void CSoundRender_TargetA::submit_all_buffers() const
 {
-    detach();
-    attach();
+    for (const auto buffer : pBuffers)
+        submit_buffer(buffer);
 }
