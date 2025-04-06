@@ -38,7 +38,7 @@ public:
     void Enable();
 
     void run_async();
-    void wait_async();
+    void wait_async() const;
 
     BOOL visible(vis_data& vis) const;
     BOOL visible(const Fbox3& B) const;

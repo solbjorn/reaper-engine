@@ -220,7 +220,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     return bRes;
 }
 
-MotionVec* motions_value::bone_motions(shared_str bone_name)
+MotionVec* motions_value::bone_motions(const shared_str& bone_name)
 {
     auto I = m_motions.find(bone_name);
     if (I == m_motions.end())

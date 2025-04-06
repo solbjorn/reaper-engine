@@ -241,7 +241,7 @@ void CHOM::run_async()
     });
 }
 
-void CHOM::wait_async() { tg->wait(); }
+void CHOM::wait_async() const { tg->wait(); }
 
 static ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, float _x, float _y, float _z)
 {

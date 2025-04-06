@@ -189,7 +189,7 @@ struct motions_value
     shared_str m_id;
 
     BOOL load(LPCSTR N, IReader* data, vecBones* bones);
-    MotionVec* bone_motions(shared_str bone_name);
+    MotionVec* bone_motions(const shared_str& bone_name);
 
     u32 mem_usage()
     {
@@ -257,7 +257,7 @@ public:
     bool operator==(shared_motions const& rhs) const { return (p_ == rhs.p_); }
 
     // misc func
-    MotionVec* bone_motions(shared_str bone_name)
+    MotionVec* bone_motions(const shared_str& bone_name)
     {
         VERIFY(p_);
         return p_->bone_motions(bone_name);
