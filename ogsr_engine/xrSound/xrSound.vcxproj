@@ -95,7 +95,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
@@ -144,7 +144,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
@@ -196,7 +196,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
     </ClCompile>
@@ -241,7 +241,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\openal-soft\openal-soft\include\AL;$(SolutionDir)\3rd_party\Src\eax;..\..\3rd_party\Src\Xiph\ogg\ogg\include;..\..\3rd_party\Src\Xiph\vorbis\vorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

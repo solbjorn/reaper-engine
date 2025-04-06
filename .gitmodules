@@ -1,8 +1,8 @@
-[submodule "3rd_party/Src/DirectXMath/DirectXMath"]
-	path = 3rd_party/Src/DirectXMath/DirectXMath
+[submodule "3rd_party/Src/DirectXMath"]
+	path = 3rd_party/Src/DirectXMath
 	url = https://github.com/microsoft/DirectXMath.git
-[submodule "3rd_party/Src/DirectXMesh/DirectXMesh"]
-	path = 3rd_party/Src/DirectXMesh/DirectXMesh
+[submodule "3rd_party/Src/DirectXMesh"]
+	path = 3rd_party/Src/DirectXMesh
 	url = https://github.com/microsoft/DirectXMesh.git
 [submodule "3rd_party/Src/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectXTex/DirectXTex

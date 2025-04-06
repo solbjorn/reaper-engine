@@ -3,7 +3,7 @@
 #include "embedded_editor_sound_env.h"
 
 #include <mmeapi.h>
-#include <../eax/Include/eax.h>
+#include <../eax/eax.h>
 
 /*
 constexpr const char* env_names[]{"GENERIC",    "PADDEDCELL",      "ROOM",       "BATHROOM",      "LIVINGROOM", "STONEROOM", "AUDITORIUM", "CONCERTHALL", "CAVE",   "ARENA",
