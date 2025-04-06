@@ -241,7 +241,7 @@ namespace luabind { namespace detail {
     {
         // class is already registered
 		if (m_classes.find(info) != m_classes.end())
-			Msg("!![%s] you are trying to register a class twice [%s]", __FUNCTION__, crep->name()); //To XRay Log
+			call_log("!![%s] you are trying to register a class twice [%s]", __FUNCTION__, crep->name());
 
         assert((m_classes.find(info) == m_classes.end()) && "you are trying to register a class twice");
         m_classes[info] = crep;

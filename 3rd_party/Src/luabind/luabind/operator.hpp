@@ -28,7 +28,7 @@
 #include <luabind/raw_policy.hpp>
 #include <luabind/detail/policy_cons.hpp>
 
-#include <Utils/imdexlib/identity.hpp>
+#include <identity.hpp>
 
 namespace luabind
 {

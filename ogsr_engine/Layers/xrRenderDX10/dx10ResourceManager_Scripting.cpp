@@ -467,6 +467,9 @@ void CResourceManager::LS_Load()
     luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
     luabind::allocator_parameter = nullptr;
 
+    luabind::log = Msg;
+    luabind::exception_filter = DbgLogExceptionFilter;
+
     LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
     luaL_openlibs(LSVM); // Инициализация функций LuaJIT
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); // Надо проверить, случается ли такое.

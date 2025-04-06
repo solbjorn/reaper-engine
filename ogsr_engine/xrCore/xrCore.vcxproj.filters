@@ -55,9 +55,6 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{c4866ff7-f5fd-4722-9e1a-73ef37fde25e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utils\imdexlib">
-      <UniqueIdentifier>{58baf96e-ab86-4e39-8fab-60b26515b38c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -327,27 +324,6 @@
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="xrSyncronize.h">
       <Filter>Threading</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\identity.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\is_reference_wrapper.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\mpl.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\traits.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\typelist.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\imdexlib\utility.hpp">
-      <Filter>Utils\imdexlib</Filter>
     </ClInclude>
     <ClInclude Include="buffer_vector.h">
       <Filter>Math</Filter>

@@ -416,8 +416,8 @@ int luabind::detail::class_rep::operator_dispatcher(lua_State* L)
 	}
 
 	lua_pop(L, lua_gettop(L));
-	string512 err_str;
-	xr_sprintf(err_str, "! No such operator [%s] defined in class [%s]", ptr, crep->name());
+	char err_str[512];
+	sprintf_s(err_str, "! No such operator [%s] defined in class [%s]", ptr, crep->name());
 	lua_pushstring(L, err_str);
 	lua_error(L);
 
@@ -661,7 +661,7 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 		else
 			return o.call(L, force_static_call != 0);
 	}
-	__except(ExceptStackTrace("[luabind::detail::class_rep::function_dispatcher] stack trace:\n"))
+	__except(call_exception("[luabind::detail::class_rep::function_dispatcher] stack trace:\n"))
 	{
 		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught unhandled exception!");
 	}

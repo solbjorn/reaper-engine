@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Utils/imdexlib/typelist.hpp>
+#include <typelist.hpp>
 
 struct lua_State;
 

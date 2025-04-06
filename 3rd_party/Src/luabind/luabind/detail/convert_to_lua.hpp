@@ -25,7 +25,7 @@
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
 
-#include <Utils/imdexlib/is_reference_wrapper.hpp>
+#include <is_reference_wrapper.hpp>
 
 namespace luabind { namespace detail
 {

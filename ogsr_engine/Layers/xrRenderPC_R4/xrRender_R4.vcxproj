@@ -71,7 +71,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -112,7 +112,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4456;4457;4458;4459;4315;4267;</DisableSpecificWarnings>
       <StringPooling>false</StringPooling>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -137,7 +137,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
@@ -171,7 +171,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>

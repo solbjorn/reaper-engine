@@ -72,9 +72,9 @@
 #include <vector>
 #include <cassert>
 
-#include <Utils/imdexlib/mpl.hpp>
-#include <Utils/imdexlib/utility.hpp>
-#include <Utils/imdexlib/typelist.hpp>
+#include <mpl.hpp>
+#include <utility.hpp>
+#include <typelist.hpp>
 
 #include <luabind/config.hpp>
 #include <luabind/scope.hpp>
