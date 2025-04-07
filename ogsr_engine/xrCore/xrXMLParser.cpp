@@ -63,10 +63,10 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR curr
                         loadFile(file_name);
                     }
                 }
-                else 
+                else
                 {
                     loadFile(inc_name);
-                }                
+                }
             }
         }
         else
@@ -83,7 +83,7 @@ bool CXml::Init(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
     return Init(path_alias, str);
 }
 
-//инициализация и загрузка XML файла
+// инициализация и загрузка XML файла
 bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
 {
     strcpy_s(m_xml_file_name, xml_filename);
@@ -105,7 +105,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     if (m_Doc.Error())
     {
         string1024 str;
-        sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorDesc());
+        sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
         R_ASSERT(false, str);
     }
 
@@ -127,17 +127,15 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
     char* token;
     int tmp = 0;
 
-    //разбить путь на отдельные подпути
+    // разбить путь на отдельные подпути
     token = strtok(buf_str, seps);
 
     if (token != NULL)
     {
-        node = start_node->FirstChild(token);
+        node = (XML_NODE*)start_node->FirstChildElement(token);
 
         while (tmp++ < index && node)
-        {
-            node = start_node->IterateChildren(token, node);
-        }
+            node = (XML_NODE*)node->NextSiblingElement(token);
     }
 
     while (token != NULL)
@@ -149,7 +147,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
             if (node != 0)
             {
                 node_parent = node;
-                node = node_parent->FirstChild(token);
+                node = (XML_NODE*)node_parent->FirstChildElement(token);
             }
     }
 
@@ -211,7 +209,7 @@ LPCSTR CXml::Read(XML_NODE* node, LPCSTR default_str_val)
         if (!node)
             return default_str_val;
 
-        const TiXmlText* text = node->ToText();
+        const XML_TEXT* text = node->ToText();
         if (text)
             return text->Value();
         else
@@ -304,7 +302,7 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
         LPCSTR result_str = NULL;
         // Кастаем ниже по иерархии
 
-        const TiXmlElement* el = node->ToElement();
+        const XML_ELEM* el = node->ToElement();
 
         if (el)
         {
@@ -411,7 +409,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR tag_name)
     if (!tag_name)
         el = node->FirstChild();
     else
-        el = node->FirstChild(tag_name);
+        el = (XML_NODE*)node->FirstChildElement(tag_name);
 
     int result = 0;
 
@@ -421,13 +419,13 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR tag_name)
         if (!tag_name)
             el = el->NextSibling();
         else
-            el = el->NextSibling(tag_name);
+            el = (XML_NODE*)el->NextSiblingElement(tag_name);
     }
 
     return result;
 }
 
-//нахождение элемнета по его атрибуту
+// нахождение элемента по его атрибуту
 XML_NODE* CXml::SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
 {
     XML_NODE* start_node = NavigateToNode(path, index);
@@ -439,7 +437,7 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 {
     while (start_node)
     {
-        TiXmlElement* el = start_node->ToElement();
+        XML_ELEM* el = start_node->ToElement();
         if (el)
         {
             LPCSTR attribStr = el->Attribute(attrib);
@@ -451,12 +449,12 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
             }
         }
 
-        XML_NODE* newEl = start_node->FirstChild(tag_name);
+        XML_NODE* newEl = (XML_NODE*)start_node->FirstChildElement(tag_name);
         newEl = SearchForAttribute(newEl, tag_name, attrib, attrib_value_pattern);
         if (newEl)
             return newEl;
 
-        start_node = start_node->NextSibling(tag_name);
+        start_node = (XML_NODE*)start_node->NextSiblingElement(tag_name);
     }
     return NULL;
 }

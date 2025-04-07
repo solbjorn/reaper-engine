@@ -132,16 +132,7 @@
     <ClCompile Include="xrMemoryDebug.cpp">
       <Filter>Memory manager</Filter>
     </ClCompile>
-    <ClCompile Include="XML_Parser\tinyxml.cpp">
-      <Filter>XML_Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="XML_Parser\tinyxmlerror.cpp">
-      <Filter>XML_Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="XML_Parser\tinyxmlparser.cpp">
-      <Filter>XML_Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="XML_Parser\xrXMLParser.cpp">
+    <ClCompile Include="xrXMLParser.cpp">
       <Filter>XML_Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
@@ -312,10 +303,7 @@
     <ClInclude Include="xrMemoryDebug.h">
       <Filter>Memory manager</Filter>
     </ClInclude>
-    <ClInclude Include="XML_Parser\tinyxml.h">
-      <Filter>XML_Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="XML_Parser\xrXMLParser.h">
+    <ClInclude Include="xrXMLParser.h">
       <Filter>XML_Parser</Filter>
     </ClInclude>
     <ClInclude Include="_vector3d_ext.h">

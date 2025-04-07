@@ -96,7 +96,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
@@ -144,7 +144,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
@@ -194,7 +194,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -242,7 +242,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -278,10 +278,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="trivial_encryptor.cpp" />
-    <ClCompile Include="XML_Parser\tinyxml.cpp" />
-    <ClCompile Include="XML_Parser\tinyxmlerror.cpp" />
-    <ClCompile Include="XML_Parser\tinyxmlparser.cpp" />
-    <ClCompile Include="XML_Parser\xrXMLParser.cpp" />
+    <ClCompile Include="xrXMLParser.cpp" />
     <ClCompile Include="xrCore.cpp" />
     <ClCompile Include="xrMemoryDebug.cpp" />
     <ClCompile Include="_compressed_normal.cpp" />
@@ -315,8 +312,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="xalloc.h" />
-    <ClInclude Include="XML_Parser\tinyxml.h" />
-    <ClInclude Include="XML_Parser\xrXMLParser.h" />
+    <ClInclude Include="xrXMLParser.h" />
     <ClInclude Include="xrCore.h" />
     <ClInclude Include="xrCore_platform.h" />
     <ClInclude Include="xrMemoryDebug.h" />

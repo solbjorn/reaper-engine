@@ -131,7 +131,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;tinyxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -206,7 +206,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;tinyxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -279,7 +279,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;tinyxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -350,7 +350,7 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;lzo.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;tinyxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>

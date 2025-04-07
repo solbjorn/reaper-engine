@@ -6,10 +6,10 @@ constexpr LPCSTR UI_PATH = "ui";
 constexpr LPCSTR GAME_PATH = "gameplay";
 constexpr LPCSTR STRING_TABLE_PATH = "text";
 
-#include "tinyxml.h"
+#include <tinyxml2.h>
 
-typedef TiXmlNode XML_NODE;
-typedef TiXmlAttribute XML_ATTRIBUTE;
+using XML_NODE = tinyxml2::XMLNode;
+using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
 
 class CXml
 {
@@ -90,6 +90,8 @@ private:
     CXml(const CXml& copy);
     void operator=(const CXml& copy);
 
-    typedef TiXmlElement XML_ELEM;
-    TiXmlDocument m_Doc;
+    using XML_ELEM = tinyxml2::XMLElement;
+    using XML_TEXT = tinyxml2::XMLText;
+
+    tinyxml2::XMLDocument m_Doc;
 };
