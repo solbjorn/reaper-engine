@@ -8,8 +8,6 @@
 #include "Blender_Recorder.h"
 #include "Blender.h"
 
-#include "..\dxRenderDeviceRender.h"
-
 static int ParseName(LPCSTR N)
 {
     if (0 == xr_strcmp(N, "$null"))
@@ -48,11 +46,13 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     //	TODO: Check if we need such wired system for
     //	base texture name detection. Perhapse it's done for
     //	optimization?
+    auto& desc = RImplementation.Resources->m_textures_description;
 
     // Analyze possibility to detail this shader
     detail_texture = NULL;
     detail_scaler = NULL;
     LPCSTR base = NULL;
+
     if (bDetail && BT->canBeDetailed())
     {
         //
@@ -62,11 +62,11 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
         if (id >= 0)
         {
             if (id >= int(lst.size()))
-                Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
+                Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", *lst[0]);
             base = *lst[id];
         }
 
-        if (!DEV->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
+        if (!desc.GetDetailTexture(base, detail_texture, detail_scaler))
             bDetail = FALSE;
     }
     else
@@ -82,7 +82,7 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
             if (id >= 0)
             {
                 if (id >= int(lst.size()))
-                    Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
+                    Debug.fatal(DEBUG_INFO, "Not enough textures for shader. Base texture: '%s'.", *lst[0]);
                 base = *lst[id];
             }
         }
@@ -97,12 +97,9 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     bDetail_Bump = FALSE;
 
     if (bDetail)
-    {
-        DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
-    }
+        desc.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
-    bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) && BT->canUseSteepParallax();
-
+    bUseSteepParallax = desc.UseSteepParallax(base) && BT->canUseSteepParallax();
     TessMethod = 0;
 
     // Compile

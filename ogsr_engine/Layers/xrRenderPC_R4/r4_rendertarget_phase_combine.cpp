@@ -179,7 +179,7 @@ void CRenderTarget::phase_combine()
             RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x81, 0);
             RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-            RCache.set_Element(s_combine_msaa[0]->E[0]);
+            RCache.set_Element(s_combine_msaa->E[0]);
             RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x81, 0x81, 0);
             RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
@@ -470,7 +470,7 @@ void CRenderTarget::phase_combine()
         if (!RImplementation.o.dx10_msaa)
             RCache.set_Element(s_combine->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
         else
-            RCache.set_Element(s_combine_msaa[0]->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
+            RCache.set_Element(s_combine_msaa->E[bDistort ? 4 : 2]); // look at blender_combine.cpp
 
         RCache.set_c("m_current", Matrix_current);
         RCache.set_c("m_previous", Matrix_previous);

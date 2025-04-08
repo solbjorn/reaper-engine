@@ -5,7 +5,7 @@
 #include "../../xrCore/xrPool.h"
 #include "r_constants.h"
 
-R_constant_table::~R_constant_table() { DEV->_DeleteConstantTable(this); }
+R_constant_table::~R_constant_table() { RImplementation.Resources->_DeleteConstantTable(this); }
 
 void R_constant_table::fatal(LPCSTR S) { FATAL(S); }
 

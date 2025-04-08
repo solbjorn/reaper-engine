@@ -48,7 +48,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
     R_ASSERT(C->type == RC_dx10texture);
     u32 stage = C->samp.index;
 
-    passTextures.emplace_back(stage, ref_texture(DEV->_CreateTexture(TexName)));
+    passTextures.emplace_back(stage, ref_texture(RImplementation.Resources->_CreateTexture(TexName)));
 }
 
 void CBlender_Compile::i_dx10Address(u32 s, u32 address)
@@ -195,18 +195,19 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
     PassSET_LightFog(FALSE, bFog);
 
     // Create shaders
-    dest.ps = DEV->_CreatePS(_ps);
+    auto& res = *RImplementation.Resources;
+    dest.ps = res._CreatePS(_ps);
     ctable.merge(&dest.ps->constants);
 
-    dest.vs = DEV->_CreateVS(_vs);
+    dest.vs = res._CreateVS(_vs);
     ctable.merge(&dest.vs->constants);
 
-    dest.gs = DEV->_CreateGS(_gs);
+    dest.gs = res._CreateGS(_gs);
     ctable.merge(&dest.gs->constants);
 
-    dest.hs = DEV->_CreateHS("null");
-    dest.ds = DEV->_CreateDS("null");
-    dest.cs = DEV->_CreateCS("null");
+    dest.hs = res._CreateHS("null");
+    dest.ds = res._CreateDS("null");
+    dest.cs = res._CreateCS("null");
 
     // Last Stage - disable
     if (0 == stricmp(_ps, "null"))
@@ -221,8 +222,8 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 {
     r_Pass(vs, gs, ps, bFog, bZtest, bZwrite, bABlend, abSRC, abDST, aTest, aRef);
 
-    dest.hs = DEV->_CreateHS(hs);
-    dest.ds = DEV->_CreateDS(ds);
+    dest.hs = RImplementation.Resources->_CreateHS(hs);
+    dest.ds = RImplementation.Resources->_CreateDS(ds);
 
     ctable.merge(&dest.hs->constants);
     ctable.merge(&dest.ds->constants);
@@ -230,16 +231,19 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 
 void CBlender_Compile::r_ComputePass(LPCSTR cs)
 {
-    dest.cs = DEV->_CreateCS(cs);
-
+    dest.cs = RImplementation.Resources->_CreateCS(cs);
     ctable.merge(&dest.cs->constants);
 }
 
 void CBlender_Compile::r_End()
 {
+    auto& res = *RImplementation.Resources;
+
     SetMapping();
-    dest.constants = DEV->_CreateConstantTable(ctable);
-    dest.state = DEV->_CreateState(RS.GetContainer());
-    dest.T = DEV->_CreateTextureList(passTextures);
-    SH->passes.push_back(DEV->_CreatePass(dest));
+
+    dest.constants = res._CreateConstantTable(ctable);
+    dest.state = res._CreateState(RS.GetContainer());
+    dest.T = res._CreateTextureList(passTextures);
+
+    SH->passes.push_back(res._CreatePass(dest));
 }

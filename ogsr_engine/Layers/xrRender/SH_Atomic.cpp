@@ -7,7 +7,7 @@
 //	SVS
 SVS::~SVS()
 {
-    DEV->_DeleteVS(this);
+    RImplementation.Resources->_DeleteVS(this);
     _RELEASE(vs);
 }
 
@@ -16,7 +16,7 @@ SVS::~SVS()
 SPS::~SPS()
 {
     _RELEASE(ps);
-    DEV->_DeletePS(this);
+    RImplementation.Resources->_DeletePS(this);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -24,25 +24,25 @@ SPS::~SPS()
 SGS::~SGS()
 {
     _RELEASE(gs);
-    DEV->_DeleteGS(this);
+    RImplementation.Resources->_DeleteGS(this);
 }
 
 SHS::~SHS()
 {
     _RELEASE(sh);
-    DEV->_DeleteHS(this);
+    RImplementation.Resources->_DeleteHS(this);
 }
 
 SDS::~SDS()
 {
     _RELEASE(sh);
-    DEV->_DeleteDS(this);
+    RImplementation.Resources->_DeleteDS(this);
 }
 
 SCS::~SCS()
 {
     _RELEASE(sh);
-    DEV->_DeleteCS(this);
+    RImplementation.Resources->_DeleteCS(this);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ SInputSignature::SInputSignature(ID3DBlob* pBlob)
 SInputSignature::~SInputSignature()
 {
     _RELEASE(signature);
-    DEV->_DeleteInputSignature(this);
+    RImplementation.Resources->_DeleteInputSignature(this);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -65,14 +65,14 @@ SInputSignature::~SInputSignature()
 SState::~SState()
 {
     _RELEASE(state);
-    DEV->_DeleteState(this);
+    RImplementation.Resources->_DeleteState(this);
 }
 
 ///////////////////////////////////////////////////////////////////////
 //	SDeclaration
 SDeclaration::~SDeclaration()
 {
-    DEV->_DeleteDecl(this);
+    RImplementation.Resources->_DeleteDecl(this);
     xr_map<ID3DBlob*, ID3DInputLayout*>::iterator iLayout;
     iLayout = vs_to_layout.begin();
     for (; iLayout != vs_to_layout.end(); ++iLayout)

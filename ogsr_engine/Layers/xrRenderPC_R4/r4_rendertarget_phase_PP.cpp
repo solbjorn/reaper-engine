@@ -42,8 +42,8 @@ void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
 void CRenderTarget::u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
 {
     // Calculate ordinaty TCs from blur and SS
-    float tw = float(get_width(RCache));
-    float th = float(get_height(RCache));
+    const float tw = float(get_width(RCache));
+    const float th = float(get_height(RCache));
     if (th != Device.dwHeight)
         param_blur = 1.f;
     Fvector2 shift, p0, p1;

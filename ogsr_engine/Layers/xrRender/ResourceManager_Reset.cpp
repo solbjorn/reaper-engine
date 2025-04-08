@@ -30,7 +30,6 @@ void CResourceManager::reset_end()
     // create RDStreams
     RImplementation.Vertex.reset_end();
     RImplementation.Index.reset_end();
-    Evict();
     RImplementation.CreateQuadIB();
 
     // remark geom's which point to dynamic VB/IB

@@ -20,7 +20,6 @@ light::light(void) : ISpatial(g_SpatialSpace)
     color.set(1, 1, 1, 1);
 
     m_volumetric_quality = 1;
-    // m_volumetric_quality	= 0.5;
     m_volumetric_intensity = 1;
     m_volumetric_distance = 1;
 
@@ -73,7 +72,6 @@ void light::set_texture(LPCSTR name)
         // default shaders
         s_spot.destroy();
         s_point.destroy();
-        s_volumetric.destroy();
         return;
     }
 
@@ -82,15 +80,11 @@ void light::set_texture(LPCSTR name)
 
     s_spot.create(RImplementation.Target->b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);
     s_point.create(RImplementation.Target->b_accum_point, xr_strconcat(temp, "r2\\accum_point_", name), name);
-    s_volumetric.create("accum_volumetric_nomsaa", name);
+
     if (RImplementation.o.dx10_msaa)
     {
-        for (int i = 0; i < 1; ++i)
-        {
-            s_spot_msaa[i].create(RImplementation.Target->b_accum_spot_msaa[i], xr_strconcat(temp, "r2\\accum_spot_", name), name);
-            s_point_msaa[i].create(RImplementation.Target->b_accum_point_msaa[i], xr_strconcat(temp, "r2\\accum_point_", name), name);
-            s_volumetric_msaa[i].create(RImplementation.Target->b_accum_volumetric_msaa[i], xr_strconcat(temp, "r2\\accum_volumetric_", name), name);
-        }
+        s_spot_msaa.create(RImplementation.Target->b_accum_spot_msaa, xr_strconcat(temp, "r2\\accum_spot_", name), name);
+        s_point_msaa.create(RImplementation.Target->b_accum_point_msaa, xr_strconcat(temp, "r2\\accum_point_", name), name);
     }
 }
 
@@ -329,11 +323,8 @@ void light::export_to(light_Package& package)
                 // Holger - do we need to export msaa stuff as well ?
                 if (RImplementation.o.dx10_msaa)
                 {
-                    for (int i = 0; i < 1; ++i)
-                    {
-                        L->s_point_msaa[i] = s_point_msaa[i];
-                        L->s_spot_msaa[i] = s_spot_msaa[i];
-                    }
+                    L->s_point_msaa = s_point_msaa;
+                    L->s_spot_msaa = s_spot_msaa;
                 }
 
                 //	Igor: add volumetric support

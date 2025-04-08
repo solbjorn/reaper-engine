@@ -12,8 +12,6 @@ constexpr int rsDIB_Size = 512;
 
 void _VertexStream::Create()
 {
-    DEV->Evict();
-
     mSize = rsDVB_Size * 1024;
 
     D3D_BUFFER_DESC bufferDesc{};
@@ -131,8 +129,6 @@ void _VertexStream::_clear()
 //////////////////////////////////////////////////////////////////////////
 void _IndexStream::Create()
 {
-    DEV->Evict();
-
     mSize = rsDIB_Size * 1024;
 
     D3D_BUFFER_DESC bufferDesc{};

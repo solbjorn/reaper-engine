@@ -106,5 +106,3 @@ private:
 protected:
     bool b_loaded{};
 };
-
-#define DEV (RImplementation.Resources)

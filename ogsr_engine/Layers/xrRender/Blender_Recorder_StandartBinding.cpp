@@ -797,6 +797,6 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_lut", &ssfx_lut);
 
     // other common
-    for (const auto& [name, s] : DEV->v_constant_setup)
+    for (const auto& [name, s] : RImplementation.Resources->v_constant_setup)
         r_Constant(name.c_str(), s);
 }

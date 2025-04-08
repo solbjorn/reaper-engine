@@ -17,41 +17,12 @@ private:
 
 public:
     u32 dwLightMarkerID;
-    //
-    IBlender* b_occq;
-    IBlender* b_accum_mask;
-    IBlender* b_accum_direct;
+
     IBlender* b_accum_point;
     IBlender* b_accum_spot;
-    IBlender* b_bloom;
-    IBlender* b_luminance;
-    IBlender* b_combine;
-    IBlender* b_postprocess_msaa;
-    IBlender* b_bloom_msaa;
-    IBlender* b_combine_msaa[1];
-    IBlender* b_accum_mask_msaa[1];
-    IBlender* b_accum_spot_msaa[1];
-    IBlender* b_accum_direct_msaa[1];
-    IBlender* b_accum_direct_volumetric_msaa[1];
-    IBlender* b_accum_volumetric_msaa[1];
-    IBlender* b_accum_point_msaa[1];
-    IBlender* b_blur;
-    IBlender* b_dof;
-    IBlender* b_gasmask_drops;
-    IBlender* b_gasmask_dudv;
 
-    // [SSS Stuff]
-    IBlender* b_ssfx_rain;
-    IBlender* b_ssfx_water_blur;
-    IBlender* b_ssfx_bloom_downsample;
-    IBlender* b_ssfx_bloom_upsample;
-    IBlender* b_ssfx_bloom;
-    IBlender* b_ssfx_bloom_lens;
-    IBlender* b_ssfx_sss_ext;
-    IBlender* b_ssfx_sss;
-    IBlender* b_ssfx_ssr;
-    IBlender* b_ssfx_volumetric_blur;
-    IBlender* b_ssfx_ao;
+    IBlender* b_accum_spot_msaa;
+    IBlender* b_accum_point_msaa;
 
 #ifdef DEBUG
     struct dbg_line_t
@@ -78,15 +49,20 @@ public:
 
     //
     ref_rt rt_Accumulator; // 64bit		(r,g,b,specular)
+    ref_rt rt_sunshafts_0; // ss0
+    ref_rt rt_sunshafts_1; // ss1
+    ref_rt rt_SunShaftsMask;
+    ref_rt rt_SunShaftsMaskSmoothed;
+    ref_rt rt_SunShaftsPass0;
     ref_rt rt_Generic_0; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     ref_rt rt_Generic_1; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 
     resptr_core<CRT, resptrcode_crt> rt_Generic_temp;
 
-    //  Second viewport
-    ref_rt rt_secondVP, rt_BeforeUi; // 32bit		(r,g,b,a) --//#SM+#-- +SecondVP+
+    ref_rt rt_secondVP; // 32bit		(r,g,b,a) --//#SM+#-- +SecondVP+
 
     ref_rt rt_dof;
+    ref_rt rt_BeforeUi;
 
     ref_rt rt_blur_h_2;
     ref_rt rt_blur_2;
@@ -99,6 +75,9 @@ public:
     ref_rt rt_blur_h_8;
     ref_rt rt_blur_8;
     ref_rt rt_blur_8_zb;
+
+    ref_rt rt_smaa_edgetex;
+    ref_rt rt_smaa_blendtex;
 
     //	Igor: for volumetric lights
     ref_rt rt_Generic_2; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -164,13 +143,13 @@ public:
     Fvector3 Position_previous;
 
     // Textures
-    ID3DTexture2D* t_noise_surf[TEX_jitter_count];
     ref_texture t_noise[TEX_jitter_count];
 
 private:
     // OCCq
-
     ref_shader s_occq;
+    ref_shader s_ssss_ogse;
+    ref_shader s_ssss_mrmnwar;
 
     // Accum
     ref_shader s_accum_mask;
@@ -183,18 +162,19 @@ private:
     ref_shader s_dof;
     ref_shader s_gasmask_drops;
     ref_shader s_gasmask_dudv;
+    ref_shader s_pp_antialiasing;
 
     //	DX10 Rain
     ref_shader s_rain;
 
-    ref_shader s_rain_msaa[1];
-    ref_shader s_accum_direct_volumetric_msaa[1];
-    ref_shader s_accum_mask_msaa[1];
-    ref_shader s_accum_direct_msaa[1];
+    ref_shader s_rain_msaa;
+    ref_shader s_accum_direct_volumetric_msaa;
+    ref_shader s_accum_mask_msaa;
+    ref_shader s_accum_direct_msaa;
     ref_shader s_mark_msaa_edges;
-    ref_shader s_accum_point_msaa[1];
-    ref_shader s_accum_spot_msaa[1];
-    ref_shader s_accum_volume_msaa[1];
+    ref_shader s_accum_point_msaa;
+    ref_shader s_accum_spot_msaa;
+    ref_shader s_accum_volume_msaa;
 
     // Screen Space Shaders Stuff
     ref_shader s_ssfx_rain;
@@ -244,7 +224,7 @@ private:
     ref_geom g_aa_blur;
     ref_geom g_aa_AA;
     ref_shader s_combine;
-    ref_shader s_combine_msaa[1];
+    ref_shader s_combine_msaa;
     ref_shader s_combine_volumetric;
 
 public:
@@ -315,10 +295,12 @@ public:
     BOOL u_need_PP();
     bool u_need_CM();
 
+    void PhaseSSSS();
     void phase_blur();
     void phase_dof();
     void phase_gasmask_drops();
     void phase_gasmask_dudv();
+    void ProcessSMAA();
     void phase_scene_prepare();
     void phase_scene_begin();
     inline void phase_scene_end() { disable_aniso(); }
@@ -402,20 +384,4 @@ public:
 private:
     void RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetView* rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
     void RenderScreenQuad(const u32 w, const u32 h, ref_rt& rt, ref_selement& sh, string_unordered_map<const char*, Fvector4*>* consts = nullptr);
-
-    // Anti Aliasing
-    ref_shader s_pp_antialiasing;
-    ref_rt rt_smaa_edgetex;
-    ref_rt rt_smaa_blendtex;
-
-    void ProcessSMAA();
-
-    void PhaseSSSS();
-    ref_rt rt_sunshafts_0; // ss0
-    ref_rt rt_sunshafts_1; // ss1
-    ref_rt rt_SunShaftsMask;
-    ref_rt rt_SunShaftsMaskSmoothed;
-    ref_rt rt_SunShaftsPass0;
-    ref_shader s_ssss_mrmnwar;
-    ref_shader s_ssss_ogse;
 };

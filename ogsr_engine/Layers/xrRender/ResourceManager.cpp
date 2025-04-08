@@ -95,18 +95,15 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
     Msg("! ERROR: Failed to find compiled 'shader-element'");
 }
 
-Shader* CResourceManager::Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
-{
-    return _cpp_Create(B, s_shader, s_textures, s_constants, s_matrices);
-}
+Shader* CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures) { return _cpp_Create(B, s_shader, s_textures); }
 
-Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::Create(const char* s_shader, const char* s_textures)
 {
     //	TODO: DX10: When all shaders are ready switch to common path
     if (_lua_HasShader(s_shader))
         return _lua_Create(s_shader, s_textures);
 
-    Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
+    Shader* pShader = _cpp_Create(s_shader, s_textures);
     if (pShader)
         return pShader;
 
@@ -114,16 +111,16 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
     return nullptr;
 }
 
-Shader* CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::_cpp_Create(const char* s_shader, const char* s_textures)
 {
     //	TODO: DX10: When all shaders are ready switch to common path
     IBlender* pBlender = _GetBlender(s_shader ? s_shader : "null");
     if (!pBlender)
         return nullptr;
-    return _cpp_Create(pBlender, s_shader, s_textures, s_constants, s_matrices);
+    return _cpp_Create(pBlender, s_shader, s_textures);
 }
 
-Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
+Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const char* s_textures)
 {
     CBlender_Compile C;
     Shader S;
@@ -296,11 +293,6 @@ void CResourceManager::_DumpMemoryUsage()
         for (; I != E; I++)
             Msg("* %4.1f : [%4d] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
     }
-}
-
-void CResourceManager::Evict()
-{
-    //	TODO: DX10: check if we really need this method
 }
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const

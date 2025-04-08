@@ -58,11 +58,9 @@ public:
 
     ref_shader s_spot;
     ref_shader s_point;
-    ref_shader s_volumetric;
 
-    ref_shader s_spot_msaa[1];
-    ref_shader s_point_msaa[1];
-    ref_shader s_volumetric_msaa[1];
+    ref_shader s_spot_msaa;
+    ref_shader s_point_msaa;
 
     u32 m_xform_frame;
     Fmatrix m_xform;

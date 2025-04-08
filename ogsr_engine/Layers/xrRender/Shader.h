@@ -131,8 +131,20 @@ struct Shader : public xr_resource_flagged
 
 struct resptrcode_shader : public resptr_base<Shader>
 {
-    void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    void create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    void create(const char* s_shader, const char* s_textures = nullptr);
+    void create(IBlender* B, const char* s_shader, const char* s_textures = nullptr);
+
+    template <class Blender, bool msaa = false>
+    void create(const char* s_shader, const char* s_textures = nullptr)
+    {
+        Blender blender;
+
+        if constexpr (msaa)
+            blender.SetDefine("ISAMPLE", "0");
+
+        create(&blender, s_shader, s_textures);
+    }
+
     void destroy() { _set(NULL); }
 };
 

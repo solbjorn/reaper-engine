@@ -80,8 +80,8 @@ private:
     void _ParseList(sh_list& dest, LPCSTR names);
     IBlender* _GetBlender(LPCSTR Name);
 
-    Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    Shader* _cpp_Create(const char* s_shader, const char* s_textures = nullptr);
+    Shader* _cpp_Create(IBlender* B, const char* s_shader, const char* s_textures = nullptr);
 
     Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
     static BOOL _lua_HasShader(LPCSTR s_shader);
@@ -156,8 +156,8 @@ public:
     void reset_end();
 
     // Creation/Destroying
-    Shader* Create(LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
-    Shader* Create(IBlender* B, LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    Shader* Create(const char* s_shader, const char* s_textures = nullptr);
+    Shader* Create(IBlender* B, const char* s_shader, const char* s_textures = nullptr);
     void Delete(const Shader* S);
 
     void RegisterConstantSetup(LPCSTR name, R_constant_setup* s) { v_constant_setup.emplace_back(shared_str(name), s); }
@@ -168,7 +168,6 @@ public:
 
     void DeferredLoad(BOOL E) { bDeferredLoad = E; }
     void DeferredUpload();
-    void Evict();
     void Dump(bool bBrief);
 
     xr_vector<ITexture*> FindTexture(const char* Name) const override;

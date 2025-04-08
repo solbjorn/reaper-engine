@@ -73,7 +73,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/
     }
 
     // Try to create texture/surface
-    RImplementation.Resources->Evict();
 
     // Create the render target texture
     D3D_TEXTURE2D_DESC desc{};

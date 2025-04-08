@@ -23,7 +23,7 @@ void CRender::level_Load(IReader* fs)
     R_ASSERT(!b_loaded);
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
-    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load...");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -107,8 +107,7 @@ void CRender::level_Load(IReader* fs)
     // End
     pApp->LoadEnd();
 
-    // u32 m_base, c_base, m_lmaps, c_lmaps;
-    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load completed!");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -126,7 +125,7 @@ void CRender::level_Unload()
         return;
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
-    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload...");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -188,8 +187,7 @@ void CRender::level_Unload()
     //*** Shaders
     Shaders.clear();
 
-    // u32 m_base, c_base, m_lmaps, c_lmaps;
-    RImplementation.ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload completed!");
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
@@ -201,7 +199,6 @@ void CRender::level_Unload()
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
     R_ASSERT2(base_fs, "Could not load geometry. File not found.");
-    Resources->Evict();
 
     xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
     xr_vector<ID3DVertexBuffer*>& _VB = _alternative ? xVB : nVB;

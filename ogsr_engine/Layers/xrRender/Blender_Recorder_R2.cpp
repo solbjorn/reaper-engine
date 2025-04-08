@@ -3,7 +3,6 @@
 #include "ResourceManager.h"
 #include "blenders\Blender_Recorder.h"
 #include "blenders\Blender.h"
-#include "dxRenderDeviceRender.h"
 
 void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
 {
@@ -18,16 +17,17 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BO
     PassSET_LightFog(FALSE, bFog);
 
     // Create shaders
-    dest.ps = DEV->_CreatePS(_ps);
+    auto& res = *RImplementation.Resources;
+    dest.ps = res._CreatePS(_ps);
     ctable.merge(&dest.ps->constants);
 
-    dest.vs = DEV->_CreateVS(_vs);
+    dest.vs = res._CreateVS(_vs);
     ctable.merge(&dest.vs->constants);
 
-    dest.gs = DEV->_CreateGS("null");
-    dest.hs = DEV->_CreateHS("null");
-    dest.ds = DEV->_CreateDS("null");
-    dest.cs = DEV->_CreateCS("null");
+    dest.gs = res._CreateGS("null");
+    dest.hs = res._CreateHS("null");
+    dest.ds = res._CreateDS("null");
+    dest.cs = res._CreateCS("null");
 
     // Last Stage - disable
     if (0 == stricmp(_ps, "null"))

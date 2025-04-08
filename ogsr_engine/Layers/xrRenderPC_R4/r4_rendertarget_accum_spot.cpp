@@ -9,7 +9,7 @@ void CRenderTarget::accum_spot(light* L)
     // *** assume accumulator already setup ***
     // *****************************	Mask by stencil		*************************************
     ref_shader shader;
-    ref_shader* shader_msaa;
+    ref_shader shader_msaa;
     if (IRender_Light::OMNIPART == L->flags.type)
     {
         shader = L->s_point;
@@ -194,7 +194,7 @@ void CRenderTarget::accum_spot(light* L)
             RCache.set_CullMode(D3DCULL_CW);
             draw_volume(L);
             // per sample
-            RCache.set_Element(shader_msaa[0]->E[_id]);
+            RCache.set_Element(shader_msaa->E[_id]);
             RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
             RCache.set_CullMode(D3DCULL_CW);
             draw_volume(L);

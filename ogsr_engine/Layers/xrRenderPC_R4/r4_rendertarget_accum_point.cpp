@@ -6,7 +6,7 @@ void CRenderTarget::accum_point(light* L)
     RImplementation.stats.l_visible++;
 
     ref_shader shader = L->s_point;
-    ref_shader* shader_msaa = L->s_point_msaa;
+    ref_shader shader_msaa = L->s_point_msaa;
     if (!shader)
     {
         shader = s_accum_point;
@@ -117,7 +117,7 @@ void CRenderTarget::accum_point(light* L)
             draw_volume(L);
 
             // per sample
-            RCache.set_Element(shader_msaa[0]->E[_id]);
+            RCache.set_Element(shader_msaa->E[_id]);
             RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0xff, 0x00);
             RCache.set_CullMode(D3DCULL_CW);
             draw_volume(L);

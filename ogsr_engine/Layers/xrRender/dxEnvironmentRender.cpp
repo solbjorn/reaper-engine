@@ -241,9 +241,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 
 void dxEnvironmentRender::OnDeviceCreate()
 {
-    CBlender_skybox* b_skybox = xr_new<CBlender_skybox>();
-
-    sh_2sky.create(b_skybox, "skybox_2t");
+    sh_2sky.create<CBlender_skybox>("skybox_2t");
     sh_2geom.create(v_skybox_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
     clouds_sh.create("clouds", "null");
     clouds_geom.create(v_clouds_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
@@ -272,8 +270,6 @@ void dxEnvironmentRender::OnDeviceCreate()
 
     tonemap_tstage_2sky = sh_2sky->E[0]->passes[0]->T->find_texture_stage(r2_RT_luminance_cur);
     tonemap_tstage_clouds = clouds_sh->E[0]->passes[0]->T->find_texture_stage(r2_RT_luminance_cur);
-
-    xr_delete(b_skybox);
 }
 
 void dxEnvironmentRender::OnDeviceDestroy()

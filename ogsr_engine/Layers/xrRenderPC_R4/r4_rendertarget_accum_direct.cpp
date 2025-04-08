@@ -77,7 +77,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
             cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
             // per sample rendering
-            cmd_list.set_Element(s_accum_mask_msaa[0]->E[SE_MASK_DIRECT]); // masker
+            cmd_list.set_Element(s_accum_mask_msaa->E[SE_MASK_DIRECT]); // masker
             cmd_list.set_CullMode(CULL_NONE);
             cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID | 0x80, 0x81, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
             cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
@@ -263,7 +263,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
             cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, 0, 16);
 
             // per sample
-            cmd_list.set_Element(s_accum_direct_msaa[0]->E[uiElementIndex]);
+            cmd_list.set_Element(s_accum_direct_msaa->E[uiElementIndex]);
 
             if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
                 cmd_list.set_ZFunc(D3DCMP_GREATEREQUAL);
