@@ -794,7 +794,4 @@ void CCC_Register()
     CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
 
     CMD1(CCC_DbgLALibDump, "dbg_lalib_dump");
-
-    extern float psSchedulerPart;
-    CMD4(CCC_Float, "rs_scheduler_part", &psSchedulerPart, 0.1f, 1.f);
 };

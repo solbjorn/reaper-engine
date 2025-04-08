@@ -6,9 +6,6 @@
 
 // #define DEBUG_SCHEDULER
 
-// To calculate the time limit, 1/2 part of the rendering time is taken by default
-float psSchedulerPart = 0.5f;
-
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize()
 {
@@ -303,7 +300,7 @@ void CSheduler::ProcessStep()
     CTimer eTimer;
 #endif
 
-    for (int i = 0; !Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
+    while (!Items.empty() && Top().dwTimeForExecute < dwTime)
     {
         // Update
         Item item = Top();
@@ -409,8 +406,9 @@ void CSheduler::Update()
     auto& stats = *Device.Statistic;
     stats.Sheduler.Begin();
     cycles_start = CPU::QPC();
+    // To calculate the time limit, 1/6 part of the rendering time is taken
     float psShedulerCurrent = (stats.RenderTOTAL.result * 10) / stats.fRFPS;
-    clamp(psShedulerCurrent, 1.f, stats.RenderTOTAL.result * psSchedulerPart);
+    clamp(psShedulerCurrent, 1.f, stats.RenderTOTAL.result / 2.f);
     cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000ul + cycles_start;
     internal_Registration();
 
