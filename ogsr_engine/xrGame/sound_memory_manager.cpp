@@ -23,7 +23,7 @@
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "client_spawn_manager.h"
-#include "memory_manager.h"
+
 #include "..\xr_3da\IGame_Persistent.h"
 
 #ifndef MASTER_GOLD
@@ -213,15 +213,18 @@ void CSoundMemoryManager::add(CSoundObject& sound_object, bool check_for_existan
     }
 
     VERIFY(m_max_sound_count);
+
 #ifdef USE_LEVEL_TIME // USE_FIRST_LEVEL_TIME
     sound_object.m_first_level_time = Device.dwTimeGlobal;
 #endif
+
     if (m_max_sound_count <= m_sounds->size())
     {
-        auto I = std::min_element(m_sounds->begin(), m_sounds->end(), MemorySpace::SLevelTimePredicate<CGameObject>());
-        VERIFY(m_sounds->end() != I);
-        m_sounds->erase(I);
+        auto I = std::min_element(m_sounds->begin(), m_sounds->end(), MemorySpace::SLevelTimePredicate<CGameObject>{});
+        if (m_sounds->end() != I)
+            m_sounds->erase(I);
     }
+
     m_sounds->push_front(sound_object);
 }
 
