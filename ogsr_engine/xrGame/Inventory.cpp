@@ -603,7 +603,7 @@ bool CInventory::Action(s32 cmd, u32 flags)
             {
                 std::ignore = Activate(NO_ACTIVE_SLOT);
             }
-            else
+            else if (g_actor_allow_pda)
             {
                 auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
                 if (pGameSP->InventoryMenu->IsShown())
