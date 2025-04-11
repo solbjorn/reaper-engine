@@ -113,9 +113,13 @@ void CActor::IR_OnKeyboardPress(int cmd)
     case kNIGHT_VISION:
     case kTORCH: {
         auto act_it = inventory().ActiveItem();
-        const auto active_hud = smart_cast<CHudItem*>(act_it);
-        if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-            return;
+
+        if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+        {
+            const auto active_hud = smart_cast<CHudItem*>(act_it);
+            if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
+                return;
+        }
 
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
         if (pTorch != nullptr && smart_cast<CWeaponMagazined*>(act_it) == nullptr && smart_cast<CWeaponKnife*>(act_it) == nullptr && smart_cast<CMissile*>(act_it) == nullptr)
@@ -148,9 +152,12 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
     case kUSE_BANDAGE:
     case kUSE_MEDKIT: {
-        const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
-        if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-            return;
+        if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+        {
+            const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+            if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
+                return;
+        }
 
         if (!(GetTrade()->IsInTradeState()))
         {
@@ -403,9 +410,12 @@ void CActor::ActorUse()
     if (auto Pda = GetPDA(); Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown())
         return;
 
-    const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
-    if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
-        return;
+    if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+    {
+        const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+        if (active_hud != nullptr && active_hud->GetState() != CHudItem::eIdle)
+            return;
+    }
 
     if (g_bDisableAllInput || HUD().GetUI()->MainInputReceiver())
         return;

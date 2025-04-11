@@ -1088,8 +1088,13 @@ void CActor::shedule_Update(u32 DT)
 
     // что актер видит перед собой
     collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-    const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
-    const bool can_use = active_hud == nullptr || active_hud->GetState() == CHudItem::eIdle;
+    bool can_use = true;
+
+    if (Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+    {
+        const auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+        can_use = active_hud == nullptr || active_hud->GetState() == CHudItem::eIdle;
+    }
 
     if (can_use && !input_external_handler_installed() && !m_holder && RQ.O && RQ.O->getVisible() && RQ.range < inventory().GetTakeDist())
     {

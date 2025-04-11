@@ -103,7 +103,7 @@ static void InitConsole()
     CORE_FEATURE_SET(show_inv_item_condition, "features");
     CORE_FEATURE_SET(remove_alt_keybinding, "features");
     CORE_FEATURE_SET(binoc_firing, "features");
-    CORE_FEATURE_SET(new_pda_info, "features");
+    CORE_FEATURE_SET(busy_actor_restrictions, "features");
     CORE_FEATURE_SET(stop_anim_playing, "features");
     CORE_FEATURE_SET(corpses_collision, "features");
     CORE_FEATURE_SET(more_hide_weapon, "features");
@@ -119,6 +119,7 @@ static void InitConsole()
     CORE_FEATURE_SET(ogse_new_slots, "features");
     CORE_FEATURE_SET(ogse_wpn_zoom_system, "features");
     CORE_FEATURE_SET(wpn_cost_include_addons, "features");
+    CORE_FEATURE_SET(new_pda_info, "features");
     CORE_FEATURE_SET(hard_ammo_reload, "features");
     CORE_FEATURE_SET(engine_ammo_repacker, "features");
     CORE_FEATURE_SET(ruck_flag_preferred, "features");
