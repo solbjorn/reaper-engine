@@ -23,9 +23,11 @@ protected:
     typedef CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    int x0, y0;
-    u32 max_range_sqr;
-    float m_cell_dist;
+    s32 x0{};
+    s32 y0{};
+
+    u32 max_range_sqr{};
+    f32 m_cell_dist{};
 
 public:
     ~CPathManager() override = default;
@@ -37,6 +39,7 @@ public:
     IC _dist_type estimate(const _index_type& node_index) const;
     IC bool is_accessible(const _index_type& vertex_id) const;
     IC bool is_limit_reached(const _iteration_type iteration_count) const;
+
     template <typename T>
     IC void create_path(T& vertex);
 };

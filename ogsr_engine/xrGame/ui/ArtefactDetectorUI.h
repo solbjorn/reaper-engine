@@ -47,20 +47,21 @@ class CUIArtefactDetectorSimple : public CUIArtefactDetectorBase
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorSimple, CUIArtefactDetectorBase);
 
 public:
-    typedef CUIArtefactDetectorBase inherited;
+    using inherited = CUIArtefactDetectorBase;
 
-    CSimpleDetector* m_parent;
-    u16 m_flash_bone;
-    u16 m_on_off_bone;
-    u32 m_turn_off_flash_time;
+    CSimpleDetector* m_parent{};
+    u16 m_flash_bone{};
+    u16 m_on_off_bone{};
+    u32 m_turn_off_flash_time{};
 
     ref_light m_flash_light;
     ref_light m_on_off_light;
-    CLAItem* m_pOnOfLAnim;
-    CLAItem* m_pFlashLAnim;
-    void setup_internals();
+    CLAItem* m_pOnOfLAnim{};
+    CLAItem* m_pFlashLAnim{};
 
     ~CUIArtefactDetectorSimple() override;
+
+    void setup_internals();
 
     void update() override;
     void Flash(bool bOn, float fRelPower);
@@ -83,9 +84,10 @@ public:
         CUIStatic* pStatic;
         Fvector pos;
     };
+
     xr_vector<SDrawOneItem> m_items_to_draw;
-    CEliteDetector* m_parent;
-    Fmatrix m_map_attach_offset;
+    CEliteDetector* m_parent{};
+    Fmatrix m_map_attach_offset{};
 
     void GetUILocatorMatrix(Fmatrix& _m);
 
@@ -106,13 +108,13 @@ class CUIArtefactDetectorAdv : public CUIArtefactDetectorBase
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorAdv, CUIArtefactDetectorBase);
 
 public:
-    typedef CUIArtefactDetectorBase inherited;
+    using inherited = CUIArtefactDetectorBase;
 
-    CAdvancedDetector* m_parent;
-    Fvector m_target_dir;
-    float m_cur_y_rot;
-    float m_curr_ang_speed;
-    u16 m_bid;
+    CAdvancedDetector* m_parent{};
+    Fvector m_target_dir{};
+    f32 m_cur_y_rot{};
+    f32 m_curr_ang_speed{};
+    u16 m_bid{};
 
     ~CUIArtefactDetectorAdv() override = default;
 

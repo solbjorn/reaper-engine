@@ -57,9 +57,9 @@ class CControlAnimation : public CControl_ComPure<SControlAnimationData>
     RTTI_DECLARE_TYPEINFO(CControlAnimation, CControl_ComPure<SControlAnimationData>);
 
 public:
-    typedef CControl_ComPure<SControlAnimationData> inherited;
+    using inherited = CControl_ComPure<SControlAnimationData>;
 
-    IKinematicsAnimated* m_skeleton_animated;
+    IKinematicsAnimated* m_skeleton_animated{};
 
     // animation events
     struct SAnimationEvent
@@ -71,13 +71,14 @@ public:
 
     using ANIMATION_EVENT_VEC = xr_vector<SAnimationEvent>;
     using ANIMATION_EVENT_MAP = xr_map<MotionID, ANIMATION_EVENT_VEC>;
+
     ANIMATION_EVENT_MAP m_anim_events;
 
-    bool m_freeze;
-    float m_saved_global_speed;
-    float m_saved_legs_speed;
-    float m_saved_torso_speed;
+    f32 m_saved_global_speed{};
+    f32 m_saved_legs_speed{};
+    f32 m_saved_torso_speed{};
 
+    bool m_freeze{};
     bool m_global_animation_end;
     bool m_legs_animation_end;
     bool m_torso_animation_end;

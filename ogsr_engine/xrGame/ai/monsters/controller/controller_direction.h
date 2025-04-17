@@ -11,17 +11,17 @@ class CControllerDirection : public CControlDirectionBase
     RTTI_DECLARE_TYPEINFO(CControllerDirection, CControlDirectionBase);
 
 private:
-    typedef CControlDirectionBase inherited;
+    using inherited = CControlDirectionBase;
 
-    CController* m_controller;
+    CController* m_controller{};
 
-    bonesManipulation m_bones;
-    CBoneInstance* m_bone_spine;
-    CBoneInstance* m_bone_head;
+    bonesManipulation m_bones{};
+    CBoneInstance* m_bone_spine{};
+    CBoneInstance* m_bone_head{};
 
-    MonsterSpace::SBoneRotation m_head_orient;
+    MonsterSpace::SBoneRotation m_head_orient{};
 
-    Fvector m_head_look_point;
+    Fvector m_head_look_point{};
 
 public:
     ~CControllerDirection() override = default;

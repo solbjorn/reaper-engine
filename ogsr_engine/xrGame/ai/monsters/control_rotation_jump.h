@@ -23,26 +23,26 @@ class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
     RTTI_DECLARE_TYPEINFO(CControlRotationJump, CControl_ComCustom<SControlRotationJumpData>);
 
 private:
-    typedef CControl_ComCustom<SControlRotationJumpData> inherited;
+    using inherited = CControl_ComCustom<SControlRotationJumpData>;
 
-    u32 m_time_next_rotation_jump;
+    u32 m_time_next_rotation_jump{};
 
-    float m_target_velocity;
-    float m_start_velocity;
-    float m_accel;
-    float m_dist;
-    float m_time;
+    f32 m_target_velocity{};
+    f32 m_start_velocity{};
+    f32 m_accel{};
+    f32 m_dist{};
+    f32 m_time{};
 
-    bool m_right_side;
+    bool m_right_side{};
 
     enum EStage
     {
         eStop,
         eRun,
         eNone
-    } m_stage;
+    } m_stage{};
 
-    IKinematicsAnimated* m_skeleton_animated;
+    IKinematicsAnimated* m_skeleton_animated{};
 
 public:
     ~CControlRotationJump() override = default;

@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "HairsZone.h"
+
 #include "hudmanager.h"
 #include "level.h"
 #include "PhysicsShellHolder.h"
@@ -89,7 +91,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
     float power = Power(pGameObject->Position().distance_to(P));
     float impulse = m_fHitImpulseScale * power * pGameObject->GetMass();
 
-    //статистика по объекту
+    // статистика по объекту
     O->total_damage += power;
     O->hit_num++;
 

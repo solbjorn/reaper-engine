@@ -13,7 +13,7 @@ class CAnimationSequencer : public CControl_ComCustom<SAnimationSequencerData>
     RTTI_DECLARE_TYPEINFO(CAnimationSequencer, CControl_ComCustom<SAnimationSequencerData>);
 
 private:
-    u32 m_index;
+    u32 m_index{};
 
 public:
     ~CAnimationSequencer() override = default;

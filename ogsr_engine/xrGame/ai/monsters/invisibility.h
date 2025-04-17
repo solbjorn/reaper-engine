@@ -5,20 +5,21 @@ class CInvisibility : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CInvisibility);
 
 private:
-    u32 m_time_start_blink;
-    u32 m_time_last_blink;
-    bool m_blink;
-    bool m_cur_visibility;
+    u32 m_time_start_blink{};
+    u32 m_time_last_blink{};
 
     // external parameters
-    u32 timeBlink;
-    u32 timeBlinkInterval;
+    u32 timeBlink{};
+    u32 timeBlinkInterval{};
 
-    bool m_manual;
+    bool m_blink{};
+    bool m_cur_visibility{};
 
-    bool m_active; //
-    float m_energy; // [0..1]
-    float m_speed; // energy change speed (external)
+    bool m_manual{};
+    bool m_active{}; //
+
+    f32 m_energy{}; // [0..1]
+    f32 m_speed{}; // energy change speed (external)
 
 protected:
     virtual void reload(LPCSTR section);

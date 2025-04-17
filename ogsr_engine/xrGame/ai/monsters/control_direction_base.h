@@ -7,10 +7,10 @@ class CControlDirectionBase : public CControl_ComBase
     RTTI_DECLARE_TYPEINFO(CControlDirectionBase, CControl_ComBase);
 
 private:
-    typedef CControl_ComBase inherited;
+    using inherited = CControl_ComBase;
 
-    u32 m_time_last_faced;
-    u32 m_delay;
+    u32 m_time_last_faced{};
+    u32 m_delay{};
 
 public:
     struct SAxis

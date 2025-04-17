@@ -4,6 +4,7 @@
 
 #include "../xr_3da/x_ray.h"
 
+CWeaponBM16::CWeaponBM16() { guns_bm_aim_anm[0] = '\0'; }
 CWeaponBM16::~CWeaponBM16() { HUD_SOUND::DestroySound(m_sndReload1); }
 
 void CWeaponBM16::Load(LPCSTR section)

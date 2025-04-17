@@ -51,7 +51,7 @@ class CControlledEntity : public CControlledEntityBase
     RTTI_DECLARE_TYPEINFO(CControlledEntity<_Object>, CControlledEntityBase);
 
 public:
-    SControlledInfo m_data;
+    SControlledInfo m_data{};
 
     struct SGroupID
     {
@@ -60,8 +60,8 @@ public:
         int group_id;
     } saved_id;
 
-    _Object* m_object;
-    CController* m_controller;
+    _Object* m_object{};
+    CController* m_controller{};
 
     ~CControlledEntity() override = default;
 

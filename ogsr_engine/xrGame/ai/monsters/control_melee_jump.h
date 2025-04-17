@@ -14,9 +14,9 @@ class CControlMeleeJump : public CControl_ComCustom<SControlMeleeJumpData>
     RTTI_DECLARE_TYPEINFO(CControlMeleeJump, CControl_ComCustom<SControlMeleeJumpData>);
 
 private:
-    typedef CControl_ComCustom<SControlMeleeJumpData> inherited;
+    using inherited = CControl_ComCustom<SControlMeleeJumpData>;
 
-    u32 m_time_next_melee_jump;
+    u32 m_time_next_melee_jump{};
 
 public:
     ~CControlMeleeJump() override = default;

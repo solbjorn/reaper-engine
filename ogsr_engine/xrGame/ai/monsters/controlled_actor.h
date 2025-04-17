@@ -7,17 +7,17 @@ class CControlledActor : public CActorInputHandler
     RTTI_DECLARE_TYPEINFO(CControlledActor, CActorInputHandler);
 
 public:
-    typedef CActorInputHandler inherited;
+    using inherited = CActorInputHandler;
 
-    Fvector m_target_point;
+    Fvector m_target_point{};
 
-    bool m_turned_yaw;
-    bool m_turned_pitch;
-    bool m_need_turn;
+    bool m_turned_yaw{};
+    bool m_turned_pitch{};
+    bool m_need_turn{};
 
-    bool m_lock_run;
-    u32 m_lock_run_started;
-    u32 m_lock_run_period;
+    bool m_lock_run{};
+    u32 m_lock_run_started{};
+    u32 m_lock_run_period{};
 
     ~CControlledActor() override = default;
 

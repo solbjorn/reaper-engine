@@ -7,13 +7,13 @@ class CControlRunAttack : public CControl_ComCustom<>
     RTTI_DECLARE_TYPEINFO(CControlRunAttack, CControl_ComCustom<>);
 
 private:
-    float m_min_dist;
-    float m_max_dist;
+    f32 m_min_dist{};
+    f32 m_max_dist{};
 
-    u32 m_min_delay;
-    u32 m_max_delay;
+    u32 m_min_delay{};
+    u32 m_max_delay{};
 
-    u32 m_time_next_attack;
+    u32 m_time_next_attack{};
 
 public:
     ~CControlRunAttack() override = default;

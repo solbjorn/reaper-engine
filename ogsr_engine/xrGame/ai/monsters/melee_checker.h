@@ -1,4 +1,5 @@
 #pragma once
+
 class CBaseMonster;
 class CEntity;
 
@@ -10,17 +11,17 @@ private:
     collide::rq_results r_res;
 
 private:
-    CBaseMonster* m_object;
+    CBaseMonster* m_object{};
 
     // ltx parameters
-    float m_min_attack_distance;
-    float m_max_attack_distance;
-    float m_as_min_dist;
-    float m_as_step;
+    f32 m_min_attack_distance{};
+    f32 m_max_attack_distance{};
+    f32 m_as_min_dist{};
+    f32 m_as_step{};
 
-    bool m_hit_stack[HIT_STACK_SIZE];
+    bool m_hit_stack[HIT_STACK_SIZE]{};
 
-    float m_current_min_distance;
+    f32 m_current_min_distance{};
 
 public:
     void init_external(CBaseMonster* obj) { m_object = obj; }
