@@ -32,7 +32,7 @@ protected:
     PATROL_REGISTRY m_registry;
 
 public:
-    CPatrolPathStorage() = default;
+    CPatrolPathStorage();
     ~CPatrolPathStorage() override;
 
     virtual void load(IReader& stream);

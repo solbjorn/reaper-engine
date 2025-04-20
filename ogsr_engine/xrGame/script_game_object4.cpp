@@ -33,6 +33,9 @@
 #include "agent_member_manager.h"
 #include "player_hud.h"
 
+#include "HudManager.h"
+#include "UIGameSP.h"
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -384,11 +387,8 @@ u32 CScriptGameObject::InvBoxCount()
 }
 
 float CScriptGameObject::GetCamFOV() { return g_fov; }
-
 void CScriptGameObject::SetCamFOV(float _fov) { g_fov = _fov; }
 
-#include "HudManager.h"
-#include "UIGameSP.h"
 void CScriptGameObject::OpenInvBox(CScriptGameObject* obj)
 {
     CInventoryOwner* e = smart_cast<CInventoryOwner*>(&object());
@@ -412,7 +412,7 @@ CInifile* CScriptGameObject::GetVisIni() const
         return nullptr;
     }
 
-    return static_cast<CInifile*>(k->LL_UserData());
+    return k->LL_UserData();
 }
 
 CScriptGameObject* CScriptGameObject::ObjectFromInvBox(int _i)

@@ -16,4 +16,4 @@
 
 extern CInifile* pGameIni;
 
-#define READ_IF_EXISTS(ltx, method, section, name, default_value) ((ltx->line_exist(section, name)) ? (ltx->method(section, name)) : (default_value))
+#define READ_IF_EXISTS(ltx, method, section, name, default_value) (((ltx)->line_exist(section, name)) ? ((ltx)->method(section, name)) : (default_value))

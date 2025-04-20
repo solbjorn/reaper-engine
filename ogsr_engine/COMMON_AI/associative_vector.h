@@ -15,7 +15,6 @@ class associative_vector : protected xr_vector<std::pair<_key_type, _data_type>>
 {
 private:
     typedef associative_vector<_key_type, _data_type, _compare_predicate_type> self_type;
-
     typedef xr_vector<std::pair<_key_type, _data_type>> inherited;
 
 public:
@@ -46,6 +45,7 @@ private:
 
 public:
     inline explicit associative_vector(const key_compare& predicate = key_compare());
+
     template <typename _iterator_type>
     inline explicit associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate = key_compare());
 
@@ -53,16 +53,22 @@ public:
     IC iterator end();
     IC reverse_iterator rbegin();
     IC iterator rend();
+
     IC insert_result insert(const value_type& value);
     IC iterator insert(iterator where, const value_type& value);
+
     template <class _iterator_type>
     IC void insert(_iterator_type first, _iterator_type last);
+
     IC insert_result emplace(const key_type& key, const mapped_type& value);
+
     IC void erase(iterator element);
     IC void erase(iterator first, iterator last);
     IC size_type erase(const key_type& key);
+
     IC void clear();
     IC void reserve(size_t new_capacity);
+
     IC iterator find(const key_type& key);
     IC iterator lower_bound(const key_type& key);
     IC iterator upper_bound(const key_type& key);
@@ -88,6 +94,7 @@ public:
 
 public:
     IC mapped_type& operator[](const key_type& key);
+
     IC self_type& operator=(const self_type& right);
     IC bool operator<(const self_type& right) const;
     IC bool operator<=(const self_type& right) const;
