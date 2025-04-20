@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "CarWeapon.h"
+
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -221,8 +222,6 @@ void CCarWeapon::OnShot()
 {
     // TODO: KRodin: а может тут сразу возвращать id стреляющего, а не машины?
     FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, m_object->ID(), m_object->ID(), SendHitAllowed(m_object));
-
-    StartShotParticles();
 
     if (m_bLightShotEnabled)
         Light_Start();

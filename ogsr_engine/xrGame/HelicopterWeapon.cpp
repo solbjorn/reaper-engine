@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "helicopter.h"
+
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
@@ -146,7 +147,6 @@ void CHelicopter::OnShot()
 
     FireBullet(fire_pos, fire_dir, fireDispersionBase, m_CurrentAmmo, ID(), ID(), TRUE);
 
-    StartShotParticles();
     if (m_bLightShotEnabled)
         Light_Start();
 
