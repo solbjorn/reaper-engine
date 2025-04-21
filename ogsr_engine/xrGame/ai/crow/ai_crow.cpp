@@ -135,8 +135,6 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
     m_Anims.m_fly.Load(M, "norm_fly_fwd");
     m_Anims.m_idle.Load(M, "norm_idle");
 
-    renderable.visual->_ignore_optimization = true;
-
     // Crow fixes by Sin! (Gunslinger mod)  --#SM+#--
     // [bug] баг - кто-то забыл проинициализировать, из-за чего при неудачном стечении обстоятельств вороны вне сектора обзора не летают... Исправим.
     o_workload_frame = 0;
@@ -160,6 +158,8 @@ BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
         processing_activate();
         CreateSkeleton();
     }
+
+    renderable.visual->_ignore_optimization = true;
 
     return R;
 }

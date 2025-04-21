@@ -196,6 +196,8 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
         m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
     }
 
+    renderable.visual->_ignore_optimization = true;
+
     return (CScriptEntity::net_Spawn(DC) && R);
 }
 

@@ -127,6 +127,7 @@ void CHelicopter::reload(LPCSTR section) { inherited::reload(section); }
 void CollisionCallbackAlife(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2) { do_colide = false; }
 
 void ContactCallbackAlife(CDB::TRI* T, dContactGeom* c) {}
+
 BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 {
     SetfHealth(100.0f);
@@ -236,6 +237,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1);
 #endif
+
+    renderable.visual->_ignore_optimization = true;
 
     return TRUE;
 }
