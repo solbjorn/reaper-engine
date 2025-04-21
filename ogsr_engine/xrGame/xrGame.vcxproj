@@ -1122,6 +1122,7 @@
     <ClInclude Include="ScriptXMLInit.h" />
     <ClInclude Include="key_binding_registrator.h" />
     <ClInclude Include="..\COMMON_AI\script_reader.h" />
+    <ClInclude Include="..\COMMON_AI\script_writer.h" />
     <ClInclude Include="fs_registrator.h" />
     <ClInclude Include="console_registrator.h" />
     <ClInclude Include="base_client_classes.h" />
@@ -1996,6 +1997,7 @@
     <ClCompile Include="ui_export_script.cpp" />
     <ClCompile Include="key_binding_registrator_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_reader_script.cpp" />
+    <ClCompile Include="..\COMMON_AI\script_writer_script.cpp" />
     <ClCompile Include="fs_registrator_script.cpp" />
     <ClCompile Include="console_registrator_script.cpp" />
     <ClCompile Include="base_client_classes_script.cpp" />

@@ -4083,6 +4083,9 @@
     <ClInclude Include="..\COMMON_AI\script_reader.h">
       <Filter>AI\AScript\ScriptClasses\ScriptReader</Filter>
     </ClInclude>
+    <ClInclude Include="..\COMMON_AI\script_writer.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
+    </ClInclude>
     <ClInclude Include="fs_registrator.h">
       <Filter>AI\AScript\ScriptClasses\ScriptFS</Filter>
     </ClInclude>
@@ -7182,6 +7185,9 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_reader_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON_AI\script_writer_script.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
     </ClCompile>
     <ClCompile Include="fs_registrator_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptFS</Filter>
