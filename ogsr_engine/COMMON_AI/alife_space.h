@@ -18,6 +18,7 @@
 #define REGISTRY_CHUNK_DATA 0x0009
 // alpet: для сохранения переменных
 #define SCRIPT_VARS_CHUNK_DATA 0x000D
+constexpr u32 CALLBACK_CHUNK_DATA = 0xe;
 #define SAVE_EXTENSION ".sav"
 // inventory rukzak size
 #define INVALID_STORY_ID ALife::_STORY_ID(-1)
