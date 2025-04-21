@@ -248,8 +248,12 @@ void CRenderDevice::ProcessFrame()
 
     oneapi::tbb::parallel_invoke(
         [this, &FrameEndTime] {
+            bool calc = g_bEnableStatGather;
+
+            g_bEnableStatGather = true;
             Statistic->RenderTOTAL_Real.FrameStart();
             Statistic->RenderTOTAL_Real.Begin();
+            g_bEnableStatGather = calc;
 
             if (b_is_Active && RenderBegin())
             {
@@ -266,9 +270,11 @@ void CRenderDevice::ProcessFrame()
 
             ImGui::EndFrame();
 
+            g_bEnableStatGather = true;
             Statistic->RenderTOTAL_Real.End();
             Statistic->RenderTOTAL_Real.FrameEnd();
             Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+            g_bEnableStatGather = calc;
 
             FrameEndTime = std::chrono::high_resolution_clock::now();
         },

@@ -126,7 +126,6 @@ public:
     virtual void OnChangeCurrentWeather(const char* sect) = 0;
 
     virtual void OnDestroyObject(u16 id) = 0;
-    virtual void stop_gc() = 0;
 
     virtual void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) = 0;
 };

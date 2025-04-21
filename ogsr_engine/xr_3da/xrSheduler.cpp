@@ -359,9 +359,7 @@ void CSheduler::ProcessStep()
             clamp(dwUpdate, u32(_max(dwMin, u32(20))), dwMax);
 
             m_current_step_obj = item.Object;
-
             item.Object->shedule_Update(clampr(Elapsed, u32(1), u32(_max(u32(item.Object->shedule.t_max), u32(1000)))));
-            g_pGameLevel->stop_gc(); // The garbage collector starts at any allocation, so after each run we disable it to avoid microfreeze
 
             if (!m_current_step_obj)
             {

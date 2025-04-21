@@ -316,8 +316,6 @@ public:
     void OnDestroyObject(u16 id) override;
     virtual void OnChangeCurrentWeather(const char* sect) override;
 
-    void stop_gc() override;
-
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CLevel)

@@ -487,25 +487,26 @@ u32 ps_lua_gc_method = 1;
 
 void CLevel::script_gc()
 {
+    auto* state = ai().script_engine().lua();
+
     switch (ps_lua_gc_method)
     {
-    case 0: break;
-    case 2:
+    case 0: return;
 #ifdef LUA_GCTIMEOUT
-        if (lua_gc(ai().script_engine().lua(), LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)
+    case 2:
+        if (state, LUA_GCTIMEOUT, psLUA_GCTIMEOUT) >= 0)
             break;
 
         // LUA_GCTIMEOUT is unsupported, fallback to LUA_GCSTEP
-#endif
         [[fallthrough]];
+#endif
     default: ps_lua_gc_method = 1; [[fallthrough]];
-    case 1: lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP); break;
+    case 1: lua_gc(state, LUA_GCSTEP, psLUA_GCSTEP); break;
     }
-}
 
-// Immediately stop the current GC iteration. Can be used to avoid unintentional CPU load,
-// since we anyway have one full script_gc() above each frame
-void CLevel::stop_gc() { lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0); }
+    // If script_gc() is performed once a frame, we don't need automatic GC
+    lua_gc(state, LUA_GCSTOP, 0);
+}
 
 extern Flags32 dbg_net_Draw_Flags;
 
