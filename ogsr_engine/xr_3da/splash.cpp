@@ -100,6 +100,10 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
     if (!hWnd)
         return nullptr;
 
+    const float scale = float(GetDpiForWindow(hWnd)) / float(USER_DEFAULT_SCREEN_DPI);
+    splashWidth = std::lround(float(splashWidth) * scale);
+    splashHeight = std::lround(float(splashHeight) * scale);
+
     const HDC hdcScreen = GetDC(nullptr);
     const HDC hDC = CreateCompatibleDC(hdcScreen);
     const HBITMAP hBmp = CreateCompatibleBitmap(hdcScreen, splashWidth, splashHeight);
@@ -118,6 +122,7 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
         }
     }
 
+    img.StretchBlt(hDC, 0, 0, splashWidth, splashHeight, 0, 0, img.GetWidth(), img.GetHeight(), SRCCOPY);
     img.AlphaBlend(hDC, 0, 0, splashWidth, splashHeight, 0, 0, splashWidth, splashHeight);
 
     // alpha
