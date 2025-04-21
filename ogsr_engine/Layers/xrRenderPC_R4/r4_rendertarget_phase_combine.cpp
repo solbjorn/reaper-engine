@@ -302,9 +302,7 @@ void CRenderTarget::phase_combine()
     phase_bloom(); // HDR RT invalidated here
 
     // Distortion filter
-    BOOL bDistort = true; // This can be modified
-    if (dsgraph.mapDistort.empty() && !_menu_pp)
-        bDistort = FALSE;
+    const bool bDistort = !dsgraph.mapDistort.empty() || !dsgraph.mapHUDDistort.empty() || _menu_pp;
     if (bDistort)
     {
         PIX_EVENT(render_distort_objects);

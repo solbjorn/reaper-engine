@@ -306,7 +306,7 @@ void CRender::Render()
     if (Details)
         Details->details_clear();
 
-    VERIFY(dsgraph.mapDistort.empty());
+    VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
 }
 
 void CRender::render_forward()

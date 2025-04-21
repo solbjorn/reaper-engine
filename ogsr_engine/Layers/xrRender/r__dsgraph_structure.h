@@ -31,6 +31,7 @@ struct R_dsgraph_structure
     R_dsgraph::mapHUD_T mapHUD;
     R_dsgraph::mapLOD_T mapLOD;
     R_dsgraph::mapSorted_T mapDistort;
+    R_dsgraph::mapSorted_T mapHUDDistort;
     R_dsgraph::mapHUD_T mapHUDSorted;
     R_dsgraph::mapLandscape_T mapLandscape;
     R_dsgraph::HUDMask_T HUDMask;
@@ -98,6 +99,7 @@ struct R_dsgraph_structure
         mapHUD.destroy();
         mapLOD.destroy();
         mapDistort.destroy();
+        mapHUDDistort.destroy();
         mapHUDSorted.destroy();
         mapLandscape.destroy();
         HUDMask.destroy();

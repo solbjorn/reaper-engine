@@ -48,7 +48,7 @@ void CRender::Calculate()
 
     main_tg->run([this] {
         auto& dsgraph = get_imm_context();
-        VERIFY(dsgraph.mapDistort.empty());
+        VERIFY(dsgraph.mapDistort.empty() && dsgraph.mapHUDDistort.empty());
 
         // Check if we touch some light even trough portal
         static xr_vector<ISpatial*> spatial_lights;

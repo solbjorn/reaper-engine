@@ -63,7 +63,10 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     VERIFY(pVisual->shader._get());
     ShaderElement* sh_d = pVisual->shader->E[4]._get();
     if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
-        mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+    {
+        auto& map = hud ? mapHUDDistort : mapDistort;
+        map.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+    }
 
     // Select shader
     ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(root, pVisual, distSQ, phase);

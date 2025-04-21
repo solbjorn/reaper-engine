@@ -332,6 +332,23 @@ void R_dsgraph_structure::render_distort()
     // Sorted (back to front)
     mapDistort.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
     mapDistort.clear();
+
+    if (mapHUDDistort.empty())
+        return;
+
+    // Change projection
+    cmd_list.set_xform_view(Device.mViewHud);
+    cmd_list.set_xform_project(Device.mProjectHud);
+
+    // Rendering
+    RImplementation.rmNear(cmd_list);
+    mapHUDDistort.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+    mapHUDDistort.clear();
+    RImplementation.rmNormal(cmd_list);
+
+    // Restore projection
+    cmd_list.set_xform_view(Device.mView);
+    cmd_list.set_xform_project(Device.mProject);
 }
 
 static void __fastcall pLandscape_0(mapLandscape_Node* N, void* arg)
