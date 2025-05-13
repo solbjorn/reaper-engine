@@ -359,6 +359,7 @@
     <ClInclude Include="xrMemory.h" />
     <ClInclude Include="xrDebug.h" />
     <ClInclude Include="xrDebug_macros.h" />
+    <ClInclude Include="xr_hash.h" />
     <ClInclude Include="xr_resource.h" />
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />
@@ -366,7 +367,6 @@
     <ClInclude Include="rt_compressor.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="xrSyncronize.h" />
-    <ClInclude Include="xrhash.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

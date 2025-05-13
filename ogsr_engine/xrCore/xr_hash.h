@@ -1,8 +1,7 @@
-#ifndef __XRCORE_XRHASH_H
-#define __XRCORE_XRHASH_H
+#ifndef __XRCORE_HASH_H
+#define __XRCORE_HASH_H
 
-#define RAPIDHASH_INLINE ICF
-#include <rapidhash-msvc.h>
+#include <rapidhash.h>
 
 // Pack 64-bit value into <= 32 bits
 // https://elixir.bootlin.com/linux/v6.13-rc3/source/include/linux/hash.h#L24
@@ -15,6 +14,8 @@ constexpr ICF u32 hash_64(const u64 val, const u32 bits)
 // Templates for hashing basic types with RapidHash.
 // Taken from https://github.com/martinus/unordered_dense replacing custom
 // wyhash implementation with upstream RapidHash.
+
+RAPIDHASH_INLINE_CONSTEXPR u64 rapidhash(u64 key) RAPIDHASH_NOEXCEPT { return rapidhash(&key, sizeof(key)); }
 
 template <typename T, typename Enable = void>
 struct xr_hash
@@ -33,35 +34,35 @@ template <typename CharT>
 struct xr_hash<std::basic_string<CharT>>
 {
     using is_avalanching = void;
-    auto operator()(std::basic_string<CharT> const& str) const noexcept -> u64 { return rapidhash_msvc(str.data(), sizeof(CharT) * str.size()); }
+    auto operator()(std::basic_string<CharT> const& str) const noexcept -> u64 { return rapidhash(str.data(), sizeof(CharT) * str.size()); }
 };
 
 template <typename CharT>
 struct xr_hash<std::basic_string_view<CharT>>
 {
     using is_avalanching = void;
-    auto operator()(std::basic_string_view<CharT> const& sv) const noexcept -> u64 { return rapidhash_msvc(sv.data(), sizeof(CharT) * sv.size()); }
+    auto operator()(std::basic_string_view<CharT> const& sv) const noexcept -> u64 { return rapidhash(sv.data(), sizeof(CharT) * sv.size()); }
 };
 
 template <class T>
 struct xr_hash<T*>
 {
     using is_avalanching = void;
-    auto operator()(T* ptr) const noexcept -> u64 { return rapidhash_msvc(reinterpret_cast<uintptr_t>(ptr)); }
+    auto operator()(T* ptr) const noexcept -> u64 { return rapidhash(reinterpret_cast<uintptr_t>(ptr)); }
 };
 
 template <class T>
 struct xr_hash<std::unique_ptr<T>>
 {
     using is_avalanching = void;
-    auto operator()(std::unique_ptr<T> const& ptr) const noexcept -> u64 { return rapidhash_msvc(reinterpret_cast<uintptr_t>(ptr.get())); }
+    auto operator()(std::unique_ptr<T> const& ptr) const noexcept -> u64 { return rapidhash(reinterpret_cast<uintptr_t>(ptr.get())); }
 };
 
 template <class T>
 struct xr_hash<std::shared_ptr<T>>
 {
     using is_avalanching = void;
-    auto operator()(std::shared_ptr<T> const& ptr) const noexcept -> u64 { return rapidhash_msvc(reinterpret_cast<uintptr_t>(ptr.get())); }
+    auto operator()(std::shared_ptr<T> const& ptr) const noexcept -> u64 { return rapidhash(reinterpret_cast<uintptr_t>(ptr.get())); }
 };
 
 template <typename Enum>
@@ -71,7 +72,7 @@ struct xr_hash<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
     auto operator()(Enum e) const noexcept -> u64
     {
         using underlying = typename std::underlying_type_t<Enum>;
-        return rapidhash_msvc(static_cast<underlying>(e));
+        return rapidhash(static_cast<underlying>(e));
     }
 };
 
@@ -87,7 +88,7 @@ struct tuple_hash_helper
             return xr_hash<Arg>{}(arg);
     }
 
-    [[nodiscard]] static auto mix64(u64 state, u64 v) -> u64 { return rapidhash_msvc(state + v); }
+    [[nodiscard]] static auto mix64(u64 state, u64 v) -> u64 { return rapidhash(state + v); }
 
     template <typename T, std::size_t... Idx>
     [[nodiscard]] static auto calc_hash(T const& t, std::index_sequence<Idx...>) noexcept -> u64
@@ -119,7 +120,7 @@ struct xr_hash<std::pair<A, B>> : tuple_hash_helper<A, B>
     struct xr_hash<T> \
     { \
         using is_avalanching = void; \
-        auto operator()(T const& obj) const noexcept -> u64 { return rapidhash_msvc(static_cast<u64>(obj)); } \
+        auto operator()(T const& obj) const noexcept -> u64 { return rapidhash(static_cast<u64>(obj)); } \
     }
 
 XR_HASH_STATIC_CAST(bool);
@@ -143,4 +144,4 @@ XR_HASH_STATIC_CAST(unsigned long long);
 
 #undef XR_HASH_STATIC_CAST
 
-#endif /* __XRCORE_XRHASH_H */
+#endif /* __XRCORE_HASH_H */

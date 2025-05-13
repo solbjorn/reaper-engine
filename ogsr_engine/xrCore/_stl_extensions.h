@@ -3,7 +3,7 @@
 #include <queue>
 
 #include "xalloc.h"
-#include "xrhash.h"
+#include "xr_hash.h"
 
 using std::swap; // TODO: Убрать!
 

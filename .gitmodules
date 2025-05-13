@@ -36,8 +36,8 @@
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
-[submodule "3rd_party/Src/rapidhash/rapidhash"]
-	path = 3rd_party/Src/rapidhash/rapidhash
+[submodule "3rd_party/Src/rapidhash"]
+	path = 3rd_party/Src/rapidhash
 	url = https://github.com/Nicoshev/rapidhash.git
 [submodule "3rd_party/Src/tinyxml2/tinyxml2"]
 	path = 3rd_party/Src/tinyxml2/tinyxml2

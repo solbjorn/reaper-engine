@@ -1,7 +1,7 @@
 #ifndef xrstringH
 #define xrstringH
 
-#include "xrhash.h"
+#include "xr_hash.h"
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
