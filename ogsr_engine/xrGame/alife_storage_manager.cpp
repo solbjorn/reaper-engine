@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include <zstd.h>
+
 #include "alife_storage_manager.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
@@ -77,9 +80,11 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 
         source_count = stream.tell();
         void* source_data = stream.pointer();
-        dest_count = rtc_csize(source_count);
+        dest_count = ZSTD_compressBound(source_count);
         dest_data = xr_malloc(dest_count);
-        dest_count = rtc_compress(dest_data, dest_count, source_data, source_count);
+
+        dest_count = ZSTD_compress(dest_data, dest_count, source_data, source_count, 1);
+        R_ASSERT(!ZSTD_isError(dest_count));
     }
 
     string_path temp;
@@ -173,16 +178,13 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 
     R_ASSERT(CSavedGameWrapper::valid_saved_game(*stream), make_string("%s\nSaved game version mismatch or saved game is corrupted", file_name));
 
-    /*	string512					temp;
-        strconcat					(sizeof(temp),temp,CStringTable().translate("st_loading_saved_game").c_str()," \"",save_name,SAVE_EXTENSION,"\"");
-        g_pGamePersistent->LoadTitle(temp);*/
-
     unload();
     reload(m_section);
 
     u32 source_count = stream->r_u32();
     void* source_data = xr_malloc(source_count);
-    rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
+    R_ASSERT(ZSTD_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32)) == source_count);
+
     FS.r_close(stream);
     load(source_data, source_count, file_name);
     xr_free(source_data);

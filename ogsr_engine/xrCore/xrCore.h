@@ -94,7 +94,6 @@
 #include "xrsharedmem.h"
 #include "xrstring.h"
 #include "xr_resource.h"
-#include "rt_compressor.h"
 
 // stl ext
 struct xr_rtoken

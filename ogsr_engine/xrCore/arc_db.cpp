@@ -138,6 +138,8 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, const char* fs_entry_point
         name[name_length] = 0;
         buffer += buffer_size - 4 * sizeof(u32);
 
+        R_ASSERT2(size_compr == size_real, make_string("error indexing %s\\%s: per-file compression support is deprecated and was removed", *path, name));
+
         u32 ptr = *(u32*)buffer;
         buffer += sizeof(ptr);
 
@@ -174,21 +176,8 @@ IReader* CLocatorAPI::archive::read_db(const char* fname, const struct file& des
 #endif // DEBUG
 
     size_t ptr_offs = desc.ptr - start;
-    if (desc.size_real == desc.size_compressed)
-        return xr_new<CPackReader>(ptr, ptr + ptr_offs, desc.size_real);
 
-    // Compressed
-    u8* dest = xr_alloc<u8>(desc.size_real);
-    rtc_decompress(dest, desc.size_real, ptr + ptr_offs, desc.size_compressed);
-
-    auto* R = xr_new<CTempReader>(dest, desc.size_real, 0);
-    UnmapViewOfFile(ptr);
-
-#ifdef DEBUG
-    unregister_file_mapping(ptr, sz);
-#endif // DEBUG
-
-    return R;
+    return xr_new<CPackReader>(ptr, ptr + ptr_offs, desc.size_real);
 }
 
 CStreamReader* CLocatorAPI::archive::stream_db(const char* fname, const struct file& desc)

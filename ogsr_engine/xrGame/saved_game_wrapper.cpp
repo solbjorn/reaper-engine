@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include <zstd.h>
+
 #include "saved_game_wrapper.h"
 #include "alife_time_manager.h"
 #include "alife_object_registry.h"
@@ -83,7 +86,7 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
 
     u32 source_count = stream->r_u32();
     void* source_data = xr_malloc(source_count);
-    rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
+    R_ASSERT(ZSTD_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32)) == source_count);
     FS.r_close(stream);
 
     IReader reader(source_data, source_count);
