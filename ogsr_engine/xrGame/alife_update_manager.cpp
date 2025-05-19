@@ -23,6 +23,7 @@
 #include "profiler.h"
 #include "mt_config.h"
 #include "gamepersistent.h"
+#include "script_engine.h"
 
 using namespace ALife;
 
@@ -207,6 +208,7 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 }
 
 #include "..\xr_3da\IGame_Persistent.h"
+
 void CALifeUpdateManager::new_game(LPCSTR save_name)
 {
     g_pGamePersistent->LoadTitle("st_creating_new_game");
@@ -224,6 +226,16 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
     can_register_objects(false);
     spawn_new_objects();
+
+    if (pSettings->line_exist("engine_callbacks", "after_objs_load"))
+    {
+        const char* callback = pSettings->r_string("engine_callbacks", "after_objs_load");
+        IReader empty(nullptr, 0);
+
+        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+            lua_function(&empty);
+    }
+
     can_register_objects(true);
 
     CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
