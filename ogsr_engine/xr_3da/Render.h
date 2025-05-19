@@ -49,7 +49,7 @@ public:
     virtual void set_active(bool) = 0;
     virtual bool get_active() = 0;
     virtual void set_shadow(bool) = 0;
-    virtual void set_volumetric(bool) = 0;
+    virtual void set_volumetric(bool, bool manual = false) = 0;
     virtual void set_volumetric_quality(float) = 0;
     virtual void set_volumetric_intensity(float) = 0;
     virtual void set_volumetric_distance(float) = 0;

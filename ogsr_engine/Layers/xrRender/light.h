@@ -20,6 +20,7 @@ public:
         u32 bActive : 1;
         u32 bShadow : 1;
         u32 bVolumetric : 1;
+        u32 bVolumetricManual : 1;
         u32 bHudMode : 1;
         u32 bMoveable : 1;
     } flags{};
@@ -107,9 +108,11 @@ public:
     virtual void set_active(bool b);
     virtual bool get_active() { return flags.bActive; }
     virtual void set_shadow(bool b) { flags.bShadow = b; }
-    virtual void set_volumetric(bool b)
+    virtual void set_volumetric(bool b, bool manual = false)
     {
-        if (ps_ssfx_volumetric.x > 0)
+        flags.bVolumetricManual = manual;
+
+        if (!manual && ps_ssfx_volumetric.x > 0)
             b = true;
 
         flags.bVolumetric = b;

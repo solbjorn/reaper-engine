@@ -328,8 +328,8 @@ void light::export_to(light_Package& package)
                 }
 
                 //	Igor: add volumetric support
-                if (ps_ssfx_volumetric.x <= 0)
-                    L->set_volumetric(flags.bVolumetric);
+                if (flags.bVolumetricManual || ps_ssfx_volumetric.x <= 0)
+                    L->set_volumetric(flags.bVolumetric, flags.bVolumetricManual);
 
                 L->set_volumetric_quality(m_volumetric_quality);
                 L->set_volumetric_intensity(m_volumetric_intensity);

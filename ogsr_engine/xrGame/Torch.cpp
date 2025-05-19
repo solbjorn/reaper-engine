@@ -313,7 +313,7 @@ void CTorch::UpdateCL()
     if (useVolumetric)
     {
         if (smart_cast<CActor*>(H_Parent()))
-            light_render->set_volumetric(useVolumetricForActor);
+            light_render->set_volumetric(useVolumetricForActor, true);
         else
             light_render->set_volumetric(psActorFlags.test(AF_AI_VOLUMETRIC_LIGHTS));
     }

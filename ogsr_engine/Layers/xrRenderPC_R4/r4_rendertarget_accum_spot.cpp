@@ -213,7 +213,9 @@ void CRenderTarget::accum_volumetric(light* L)
     {
         float Falloff = ps_ssfx_volumetric.y - std::min(std::max((L->vis.distance - 20) * 0.01f, 0.0f), 1.0f) * ps_ssfx_volumetric.y;
         L->m_volumetric_intensity = Falloff;
-        L->flags.bVolumetric = Falloff <= 0 ? false : true;
+
+        if (!L->flags.bVolumetricManual)
+            L->flags.bVolumetric = Falloff <= 0 ? false : true;
     }
 
     if (!L->flags.bVolumetric)
