@@ -3,9 +3,9 @@
 
 #include "stream_reader.h"
 
-class CFileStreamReader : public CStreamReader
+class CFileStreamReader : public CMapStreamReader
 {
-    using inherited = CStreamReader;
+    using inherited = CMapStreamReader;
 
 private:
     HANDLE m_file_handle;

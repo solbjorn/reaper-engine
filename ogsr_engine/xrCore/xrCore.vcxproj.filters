@@ -96,6 +96,12 @@
     <ClCompile Include="LocatorAPI_defs.cpp">
       <Filter>FS</Filter>
     </ClCompile>
+    <ClCompile Include="arc_db.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="arc_sqfs.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
     <ClCompile Include="log.cpp">
       <Filter>FS</Filter>
     </ClCompile>

@@ -140,8 +140,9 @@ IC s64 _max(s64 x, s64 y) { return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8 -
 
 char* timestamp(string64& dest);
 
-// Round @val to next @mul boundary, where @mul is a power of two
+// Round @val to next or prev @mul boundary, where @mul is a power of two
 constexpr ICF size_t roundup(size_t val, long mul) { return (val + mul - 1) & -mul; }
+constexpr ICF size_t rounddown(size_t val, long mul) { return val & -mul; }
 
 constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
 {

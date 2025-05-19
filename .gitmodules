@@ -22,10 +22,19 @@
 [submodule "3rd_party/Src/callme"]
 	path = 3rd_party/Src/callme
 	url = https://github.com/solbjorn/callme.git
+[submodule "3rd_party/Src/concurrentqueue"]
+	path = 3rd_party/Src/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "3rd_party/Src/libsquashfs/squashfs-tools-ng"]
+	path = 3rd_party/Src/libsquashfs/squashfs-tools-ng
+	url = https://github.com/AgentD/squashfs-tools-ng.git
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
 	ignore = untracked
+[submodule "3rd_party/Src/lz4/lz4"]
+	path = 3rd_party/Src/lz4/lz4
+	url = https://github.com/lz4/lz4.git
 [submodule "3rd_party/Src/mimalloc/mimalloc"]
 	path = 3rd_party/Src/mimalloc/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
@@ -45,3 +54,6 @@
 [submodule "3rd_party/Src/xxHash/xxHash"]
 	path = 3rd_party/Src/xxHash/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
+[submodule "3rd_party/Src/zstd/zstd"]
+	path = 3rd_party/Src/zstd/zstd
+	url = https://github.com/facebook/zstd.git

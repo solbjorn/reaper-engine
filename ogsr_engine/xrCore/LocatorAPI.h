@@ -11,9 +11,11 @@
 
 #include "LocatorAPI_defs.h"
 
-constexpr size_t VFS_STANDARD_FILE = std::numeric_limits<size_t>::max();
-
 class CStreamReader;
+
+struct sqfs_compressor_t;
+struct sqfs_dir_iterator_t;
+struct sqfs_file_t;
 
 class CLocatorAPI
 {
@@ -22,33 +24,110 @@ class CLocatorAPI
 public:
     struct file
     {
-        LPCSTR name; // low-case name
+        const char* name; // low-case name
         size_t vfs; // VFS_STANDARD_FILE - standart file
-        u32 ptr; // pointer inside vfs
-        u32 size_real; //
-        u32 size_compressed; // if (size_real==size_compressed) - uncompressed
+
+        u32 size_real;
+        u32 folder : 1;
+
+        union
+        {
+            // SquashFS
+            u64 inode;
+
+            // DB
+            struct
+            {
+                u32 ptr; // pointer inside vfs
+                u32 size_compressed; // if (size_real==size_compressed) - uncompressed
+            };
+        };
+
         u32 modif; // for editor
-        bool folder{};
     };
 
 private:
+    static constexpr size_t VFS_STANDARD_FILE = std::numeric_limits<size_t>::max();
+    static constexpr size_t BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
+
     struct file_pred
     {
         IC bool operator()(const file& x, const file& y) const { return xr_strcmp(x.name, y.name) < 0; }
     };
+
     struct archive
     {
         shared_str path;
-        void *hSrcFile, *hSrcMap;
-        CInifile* header;
         size_t vfs_idx;
         size_t size;
-        u32 key;
 
-        archive() : hSrcFile(NULL), hSrcMap(NULL), header(NULL), vfs_idx(VFS_STANDARD_FILE), size(0), key(0) {}
+    private:
+        class xr_sqfs_stream;
+        struct xr_sqfs;
 
+        enum container
+        {
+            STANDARD,
+            SQFS,
+            DB,
+        };
+        container type : 3;
+
+        union
+        {
+            // SquashFS
+            struct
+            {
+                sqfs_file_t* file;
+                sqfs_compressor_t* cmp;
+                xr_sqfs* fs;
+            };
+
+            // DB
+            struct
+            {
+                void* hSrcMap;
+                CInifile* header;
+                u32 key;
+            };
+        };
+
+        void* hSrcFile;
+
+    public:
+        archive() : hSrcFile(NULL), vfs_idx(VFS_STANDARD_FILE), size(0), type(container::STANDARD), file(nullptr), cmp(nullptr), fs(nullptr) {}
+
+        // Implementation wrappers
         void open();
+        IC bool autoload();
+        IC const char* entry_point();
+        IC void index(CLocatorAPI& loc, const char* fs_entry_point);
+        IC IReader* read(const char* fname, const struct file& desc, u32 gran);
+        IC CStreamReader* stream(const char* fname, const struct file& desc);
+        IC void cleanup();
         void close();
+
+    private:
+        // SquashFS
+        void open_sqfs();
+        bool autoload_sqfs();
+        const char* entry_point_sqfs();
+        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it);
+        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point);
+        IReader* read_sqfs(const char* fname, const struct file& desc, u32 gran);
+        CStreamReader* stream_sqfs(const char* fname, const struct file& desc);
+        void cleanup_sqfs();
+        void close_sqfs();
+
+        // DB
+        void open_db();
+        bool autoload_db();
+        const char* entry_point_db();
+        void index_db(CLocatorAPI& loc, const char* entry_point);
+        IReader* read_db(const char* fname, const struct file& desc, u32 gran);
+        CStreamReader* stream_db(const char* fname, const struct file& desc);
+        void cleanup_db();
+        void close_db();
     };
 
     DEFINE_MAP_PRED(LPCSTR, FS_Path*, PathMap, PathPairIt, pred_str);
