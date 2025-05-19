@@ -16,7 +16,7 @@
 @rem Add more debug flags here, e.g. DEBUGCFLAGS=/DLUA_USE_ASSERT
 @set "PATH=%PATH%;%LLVMInstallDir%\bin"
 @set DEBUGCFLAGS=
-@set LJCOMPILE=clang-cl /nologo /c /MP /O2 /Ob2 /Oi /Oy /Ot /GL -march=haswell -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp -Xclang -stdlib=libc++ /D_WIN32_WINNT=0x0A00 /W4 /fp:precise /GF /GS- /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set LJCOMPILE=clang-cl /nologo /c /MP /O2 /Ob2 /Oi /Oy /Ot /GL -march=haswell -mavx2 -mtune=native -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp -Xclang -stdlib=libc++ -Xclang -fno-strict-float-cast-overflow /D_WIN32_WINNT=0x0A00 /W4 /fp:precise /GF /GS- /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJDYNBUILD=/DLUA_BUILD_AS_DLL /MD /DNDEBUG
 @set LJDYNBUILD_DEBUG=/DLUA_BUILD_AS_DLL /MDd
 @set LJCOMPILETARGET=/Zi /GT
