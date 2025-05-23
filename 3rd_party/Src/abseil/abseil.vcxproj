@@ -72,6 +72,10 @@
       copy /Y "absl\base\absl_base.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"
       copy /Y "absl\base\absl_raw_logging_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
       copy /Y "absl\base\absl_spinlock_wait.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
+      copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
+      copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
+      copy /Y "absl\hash\absl_low_level_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_low_level_hash.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random
       copy /Y "absl\random\absl_random_distributions.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_distributions.lib"
       copy /Y "absl\random\absl_random_internal_entropy_pool.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_entropy_pool.lib"
@@ -83,6 +87,8 @@
       copy /Y "absl\random\absl_random_internal_seed_material.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_seed_material.lib"
       copy /Y "absl\random\absl_random_seed_gen_exception.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_gen_exception.lib"
       copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
+      copy /Y "absl\strings\absl_string_view.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_string_view.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
@@ -95,6 +101,10 @@
       copy /Y "absl\base\absl_base.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"
       copy /Y "absl\base\absl_raw_logging_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
       copy /Y "absl\base\absl_spinlock_wait.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
+      copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
+      copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
+      copy /Y "absl\hash\absl_low_level_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_low_level_hash.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random
       copy /Y "absl\random\absl_random_distributions.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_distributions.lib"
       copy /Y "absl\random\absl_random_internal_entropy_pool.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_entropy_pool.lib"
@@ -106,6 +116,8 @@
       copy /Y "absl\random\absl_random_internal_seed_material.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_seed_material.lib"
       copy /Y "absl\random\absl_random_seed_gen_exception.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_gen_exception.lib"
       copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
+      copy /Y "absl\strings\absl_string_view.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_string_view.lib"
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>

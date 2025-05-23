@@ -144,6 +144,14 @@ char* timestamp(string64& dest);
 constexpr ICF size_t roundup(size_t val, long mul) { return (val + mul - 1) & -mul; }
 constexpr ICF size_t rounddown(size_t val, long mul) { return val & -mul; }
 
+// Pack 64-bit value into <= 32 bits
+// https://elixir.bootlin.com/linux/v6.13-rc3/source/include/linux/hash.h#L24
+constexpr ICF u32 hash_64(const u64 val, const u32 bits)
+{
+#define GOLDEN_RATIO_64 0x61C8864680B583EBull
+    return u32(val * GOLDEN_RATIO_64 >> (64 - bits));
+}
+
 constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
 {
     u8* cdst = (u8*)(dst);

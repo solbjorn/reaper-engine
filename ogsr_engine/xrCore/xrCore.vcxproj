@@ -96,7 +96,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
@@ -143,7 +143,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
@@ -192,7 +192,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -239,7 +239,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -357,7 +357,6 @@
     <ClInclude Include="xrMemory.h" />
     <ClInclude Include="xrDebug.h" />
     <ClInclude Include="xrDebug_macros.h" />
-    <ClInclude Include="xr_hash.h" />
     <ClInclude Include="xr_resource.h" />
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />

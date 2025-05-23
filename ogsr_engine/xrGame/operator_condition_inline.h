@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "xr_hash.h"
-
 #define TEMPLATE_SPECIALIZATION template <typename _condition_type, typename _value_type>
 
 #define CAbstractOperatorCondition COperatorConditionAbstract<_condition_type, _value_type>
@@ -30,7 +28,7 @@ IC CAbstractOperatorCondition::COperatorConditionAbstract(const _condition_type 
         .val = u32(value),
     };
 
-    m_hash = xr_hash<u64>{}(a.key);
+    m_hash = absl::Hash<u64>{}(a.key);
 }
 
 TEMPLATE_SPECIALIZATION

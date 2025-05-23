@@ -1,7 +1,7 @@
 #ifndef xrstringH
 #define xrstringH
 
-#include "xr_hash.h"
+#include <absl/hash/hash.h>
 
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
@@ -116,7 +116,7 @@ public:
     const char* operator*() const { return p_ ? p_->value : nullptr; }
 
     // Чтобы можно было легко кастить в std::string_view как и все остальные строки
-    operator std::string_view() const { return std::string_view{p_ ? p_->value : ""}; }
+    operator absl::string_view() const { return absl::string_view(data()); }
 
     const char* c_str() const { return p_ ? p_->value : nullptr; }
 
@@ -146,6 +146,12 @@ public:
         if (vs_sz)
             _set(buf);
         return (shared_str&)*this;
+    }
+
+    template <typename H>
+    friend H AbslHashValue(H h, const shared_str& rhs)
+    {
+        return H::combine(std::move(h), (absl::string_view)rhs);
     }
 };
 
@@ -187,18 +193,20 @@ IC void xr_strlwr(shared_str& src)
 struct transparent_string_hash
 {
     using is_transparent = void; // https://www.cppstories.com/2021/heterogeneous-access-cpp20/
+    using hash_type = absl::Hash<absl::string_view>;
     using is_avalanching = void;
 
-    [[nodiscard]] auto operator()(const std::string_view txt) const noexcept -> u64 { return rapidhash(txt.data(), txt.size()); }
-    [[nodiscard]] auto operator()(const std::string& txt) const noexcept -> u64 { return rapidhash(txt.data(), txt.size()); }
-    [[nodiscard]] auto operator()(const char* txt) const noexcept -> u64 { return rapidhash(txt, strlen(txt)); }
-    [[nodiscard]] auto operator()(const shared_str& txt) const noexcept -> u64 { return rapidhash(txt.c_str(), xr_strlen(txt)); }
+    [[nodiscard]] auto operator()(const absl::string_view txt) const noexcept -> u64 { return hash_type{}(txt); }
+    [[nodiscard]] auto operator()(const std::string& txt) const noexcept -> u64 { return hash_type{}(txt); }
+    [[nodiscard]] auto operator()(const char* txt) const noexcept -> u64 { return hash_type{}(txt); }
+    [[nodiscard]] auto operator()(const shared_str& txt) const noexcept -> u64 { return hash_type{}(txt); }
 };
 
 struct transparent_string_equal
 {
     using is_transparent = void;
-    [[nodiscard]] bool operator()(const std::string_view lhs, const std::string_view rhs) const { return lhs == rhs; }
+
+    [[nodiscard]] bool operator()(const absl::string_view lhs, const absl::string_view rhs) const { return lhs == rhs; }
     [[nodiscard]] bool operator()(const shared_str& lhs, const shared_str& rhs) const { return lhs == rhs; }
     [[nodiscard]] bool operator()(const char* lhs, const char* rhs) const { return !strcmp(lhs, rhs); }
 };
