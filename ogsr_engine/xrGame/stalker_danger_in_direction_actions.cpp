@@ -97,16 +97,13 @@ void CStalkerActionDangerInDirectionTakeCover::finalize() { inherited::finalize(
 // CStalkerActionDangerInDirectionLookOut
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerInDirectionLookOut::CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name)
-{
-    m_crouch_look_out_random.seed(u32(CPU::QPC() & 0xffffffff));
-}
+CStalkerActionDangerInDirectionLookOut::CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
 
 void CStalkerActionDangerInDirectionLookOut::initialize()
 {
     inherited::initialize();
 
-    m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!m_crouch_look_out_random.random(2));
+    m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!get_random_u32_below(2));
 
     object().movement().set_desired_direction(0);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
@@ -194,8 +191,7 @@ void CStalkerActionDangerInDirectionHoldPosition::initialize()
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
-    set_inertia_time(5000 + ::Random32.random(5000));
-    //	object().brain().affect_cover				(true);
+    set_inertia_time(get_random_u32(5000, 10000));
 }
 
 void CStalkerActionDangerInDirectionHoldPosition::execute()

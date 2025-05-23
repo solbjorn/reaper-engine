@@ -72,6 +72,9 @@
     <ClCompile Include="_math.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClInclude Include="_random.cpp">
+      <Filter>Math</Filter>
+    </ClInclude>
     <ClCompile Include="_sphere.cpp">
       <Filter>Math</Filter>
     </ClCompile>

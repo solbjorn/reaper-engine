@@ -38,9 +38,6 @@ class CStalkerActionDangerInDirectionLookOut : public CStalkerActionCombatBase
 protected:
     typedef CStalkerActionCombatBase inherited;
 
-private:
-    CRandom32 m_crouch_look_out_random;
-
 public:
     CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name = "");
     virtual void initialize();

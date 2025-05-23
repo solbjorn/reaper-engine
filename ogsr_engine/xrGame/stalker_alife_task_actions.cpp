@@ -35,7 +35,7 @@
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
-//#define GRENADE_TEST
+// #define GRENADE_TEST
 
 #ifdef GRENADE_TEST
 #include "actor.h"
@@ -54,7 +54,7 @@ void CStalkerActionSolveZonePuzzle::initialize()
 #ifndef GRENADE_TEST
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
     if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-        m_stop_weapon_handling_time += ::Random32.random(30000) + 30000;
+        m_stop_weapon_handling_time += get_random_u32(30000, 60000);
 
     //	object().movement().set_desired_position	(0);
     object().movement().set_desired_direction(0);

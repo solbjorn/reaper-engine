@@ -176,7 +176,7 @@ IC bool CConditionStateAbstract::includes(const CConditionState& condition) cons
 }
 
 TEMPLATE_SPECIALIZATION
-IC u32 CConditionStateAbstract::hash_value() const { return (m_hash); }
+IC u64 CConditionStateAbstract::hash_value() const { return m_hash; }
 
 TEMPLATE_SPECIALIZATION
 IC const _world_property* CConditionStateAbstract::property(const typename _world_property::condition_type& condition) const

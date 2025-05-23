@@ -389,7 +389,6 @@
     <ClInclude Include="..\COMMON_AI\PATH\patrol_point.h" />
     <ClInclude Include="..\COMMON_AI\PATH\patrol_point_inline.h" />
     <ClInclude Include="..\COMMON_AI\profiler.h" />
-    <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
     <ClInclude Include="AdvancedDetector.h" />
@@ -1582,7 +1581,6 @@
     <ClInclude Include="ui\UIGameTutorial.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\COMMON_AI\random32.cpp" />
     <ClCompile Include="AdvancedDetector.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_helper.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_hud.cpp" />

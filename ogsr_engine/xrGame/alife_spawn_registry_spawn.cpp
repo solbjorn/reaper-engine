@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 #include "alife_spawn_registry.h"
-#include "random32.h"
 
 IC bool CALifeSpawnRegistry::enabled_spawn(CSE_Abstract& abstract) const { return (!!abstract.m_spawn_flags.is(CSE_Abstract::flSpawnEnabled)); }
 

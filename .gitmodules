@@ -19,6 +19,9 @@
 [submodule "3rd_party/Src/Xiph/vorbis/vorbis"]
 	path = 3rd_party/Src/Xiph/vorbis/vorbis
 	url = https://gitlab.xiph.org/xiph/vorbis.git
+[submodule "3rd_party/Src/abseil/abseil-cpp"]
+	path = 3rd_party/Src/abseil/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
 [submodule "3rd_party/Src/callme"]
 	path = 3rd_party/Src/callme
 	url = https://github.com/solbjorn/callme.git

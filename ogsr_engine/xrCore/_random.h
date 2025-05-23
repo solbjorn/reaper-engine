@@ -1,30 +1,37 @@
-#pragma once
-#include <random>
+#ifndef __XRCORE_RANDOM_H
+#define __XRCORE_RANDOM_H
+
+u32 get_random_u32(u32 min, u32 max);
+u32 get_random_u32_below(u32 min, u32 max);
+int get_random_int(int min, int max);
+int get_random_int_below(int min, int max);
+float get_random_float(float min, float max);
+
+u64 get_random_u64(u64 min, u64 max);
+s64 get_random_s64(s64 min, s64 max);
+double get_random_double_below(double min, double max);
+
+inline u32 get_random_u32(u32 max) { return get_random_u32(0u, max); }
+inline u32 get_random_u32_below(u32 max) { return get_random_u32_below(0u, max); }
+inline int get_random_int(int max) { return get_random_int(0, max); }
+inline int get_random_int_below(int max) { return get_random_int_below(0, max); }
+inline float get_random_float(float max) { return get_random_float(0.f, max); }
 
 class CRandom final
 {
-    static constexpr s32 maxI = RAND_MAX;
-
-    std::mt19937 generator{std::random_device()()}; // mt19937 is a standard mersenne_twister_engine
-
-    inline s32 nextValue(const s32 max) { return std::uniform_int_distribution<s32>{0, max - 1}(generator); }
-
 public:
-    CRandom() = default;
+    [[nodiscard]] inline s32 randI(const s32 max) { return get_random_int_below(max); }
+    [[nodiscard]] inline s32 randI(const s32 min, const s32 max) { return get_random_int_below(min, max); }
 
-    [[nodiscard]] inline s32 randI() { return nextValue(maxI); }
-    [[nodiscard]] inline s32 randI(const s32 max) { return !max ? max : nextValue(max); }
-    [[nodiscard]] inline s32 randI(const s32 min, const s32 max) { return min + randI(max - min); }
-    [[nodiscard]] inline s32 randIs(const s32 range) { return randI(-range, range); }
-    [[nodiscard]] inline s32 randIs(const s32 range, const s32 offs) { return offs + randIs(range); }
-
-    [[nodiscard]] inline float randF() { return static_cast<float>(randI()) / static_cast<float>(maxI - 1); }
-    [[nodiscard]] inline float randF(const float max) { return randF() * max; }
-    [[nodiscard]] inline float randF(const float min, const float max) { return min + randF(max - min); }
-    [[nodiscard]] inline float randFs(const float range) { return randF(-range, range); }
-    [[nodiscard]] inline float randFs(const float range, const float offs) { return offs + randFs(range); }
+    [[nodiscard]] inline float randF() { return get_random_float(1.f); }
+    [[nodiscard]] inline float randF(const float max) { return get_random_float(max); }
+    [[nodiscard]] inline float randF(const float min, const float max) { return get_random_float(min, max); }
+    [[nodiscard]] inline float randFs(const float range) { return get_random_float(-range, range); }
+    [[nodiscard]] inline float randFs(const float range, const float offs) { return get_random_float(offs - range, offs + range); }
 };
 
-inline thread_local CRandom Random{};
+inline CRandom Random;
 
-#define rand Random.randI
+inline int rand() { return get_random_int(RAND_MAX); }
+
+#endif /* __XRCORE_RANDOM_H */

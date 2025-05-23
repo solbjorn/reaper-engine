@@ -1186,4 +1186,6 @@ void CLevel::script_register(lua_State* L)
                    .enum_("rq_target")[(value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
                                         value("rqtShape", int(collide::rqtShape)), value("rqtObstacle", int(collide::rqtObstacle)), value("rqtBoth", int(collide::rqtBoth)),
                                         value("rqtDyn", int(collide::rqtDyn)))])];
+
+    module(L, "lib")[(def("get_random_u64", get_random_u64), def("get_random_s64", get_random_s64), def("get_random_double_below", get_random_double_below))];
 }

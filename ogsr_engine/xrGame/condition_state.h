@@ -18,7 +18,7 @@ public:
 
 protected:
     xr_vector<_world_property> m_conditions;
-    u32 m_hash;
+    u64 m_hash;
 
 public:
     IC CConditionState();
@@ -34,7 +34,7 @@ public:
     IC bool operator<(const CConditionState& condition) const;
     IC CConditionState<_world_property>& operator-=(const CConditionState& condition);
     IC bool operator==(const CConditionState& condition) const;
-    IC u32 hash_value() const;
+    IC u64 hash_value() const;
     IC const _world_property* property(const typename _world_property::condition_type& condition) const;
 };
 

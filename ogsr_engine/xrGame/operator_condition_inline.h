@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "random32.h"
+#include "xr_hash.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _condition_type, typename _value_type>
 
@@ -17,22 +17,30 @@
 TEMPLATE_SPECIALIZATION
 IC CAbstractOperatorCondition::COperatorConditionAbstract(const _condition_type condition, const _value_type value) : m_condition(condition), m_value(value)
 {
-    u32 seed = ::Random32.seed();
-    ::Random32.seed(u32(condition) + 1);
-    m_hash = ::Random32.random(0xffffffff);
-    ::Random32.seed(m_hash + u32(value));
-    m_hash ^= ::Random32.random(0xffffffff);
-    ::Random32.seed(seed);
+    union
+    {
+        struct
+        {
+            u32 cond;
+            u32 val;
+        };
+        u64 key;
+    } a = {
+        .cond = u32(condition),
+        .val = u32(value),
+    };
+
+    m_hash = xr_hash<u64>{}(a.key);
 }
 
 TEMPLATE_SPECIALIZATION
-IC const _condition_type& CAbstractOperatorCondition::condition() const { return (m_condition); }
+IC _condition_type CAbstractOperatorCondition::condition() const { return m_condition; }
 
 TEMPLATE_SPECIALIZATION
-IC const _value_type& CAbstractOperatorCondition::value() const { return (m_value); }
+IC _value_type CAbstractOperatorCondition::value() const { return m_value; }
 
 TEMPLATE_SPECIALIZATION
-IC const u32& CAbstractOperatorCondition::hash_value() const { return (m_hash); }
+IC u64 CAbstractOperatorCondition::hash_value() const { return m_hash; }
 
 TEMPLATE_SPECIALIZATION
 IC bool CAbstractOperatorCondition::operator<(const COperatorCondition& _condition) const

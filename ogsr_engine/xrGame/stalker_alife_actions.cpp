@@ -28,7 +28,7 @@
 using namespace StalkerSpace;
 
 #ifdef DEBUG
-//#	define STALKER_DEBUG_MODE
+// #	define STALKER_DEBUG_MODE
 #endif
 
 #ifdef STALKER_DEBUG_MODE
@@ -56,7 +56,7 @@ void CStalkerActionNoALife::initialize()
 
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
     if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-        m_stop_weapon_handling_time += ::Random32.random(30000) + 30000;
+        m_stop_weapon_handling_time += get_random_u32(30000, 60000);
 
 #else
     object().movement().set_mental_state(eMentalStateDanger);

@@ -18,16 +18,15 @@ public:
 protected:
     typedef COperatorConditionAbstract<_condition_type, _value_type> COperatorCondition;
 
-protected:
     _condition_type m_condition;
-    u32 m_hash;
     _value_type m_value;
+    u64 m_hash;
 
 public:
     IC COperatorConditionAbstract(const _condition_type condition, const _value_type value);
-    IC const _condition_type& condition() const;
-    IC const _value_type& value() const;
-    IC const u32& hash_value() const;
+    IC _condition_type condition() const;
+    IC _value_type value() const;
+    IC u64 hash_value() const;
     IC bool operator<(const COperatorCondition& condition) const;
     IC bool operator==(const COperatorCondition& condition) const;
 };

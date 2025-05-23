@@ -9,7 +9,6 @@
 #pragma once
 
 #include "stalker_combat_action_base.h"
-#include "random32.h"
 
 class CCoverPoint;
 
@@ -137,7 +136,6 @@ protected:
 
 private:
     u32 m_last_change_time;
-    CRandom32 m_crouch_look_out_random;
 
 public:
     CStalkerActionLookOut(CAI_Stalker* object, LPCSTR action_name = "");

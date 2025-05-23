@@ -518,11 +518,7 @@ void CStalkerActionTakeCover::execute()
 // CStalkerActionLookOut
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionLookOut::CStalkerActionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name)
-{
-    m_crouch_look_out_random.seed(u32(CPU::QPC() & 0xffffffff));
-    m_last_change_time = 0;
-}
+CStalkerActionLookOut::CStalkerActionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) { m_last_change_time = 0; }
 
 void CStalkerActionLookOut::initialize()
 {
@@ -530,7 +526,7 @@ void CStalkerActionLookOut::initialize()
 
     if (Device.dwTimeGlobal >= m_last_change_time + CROUCH_LOOK_OUT_DELTA)
     {
-        m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!m_crouch_look_out_random.random(2));
+        m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!get_random_u32_below(2));
         m_last_change_time = Device.dwTimeGlobal;
     }
 
@@ -645,7 +641,7 @@ void CStalkerActionHoldPosition::initialize()
 
     aim_ready();
 
-    set_inertia_time(1000 + ::Random32.random(2000));
+    set_inertia_time(get_random_u32(1000, 3000));
     object().brain().affect_cover(true);
 }
 
