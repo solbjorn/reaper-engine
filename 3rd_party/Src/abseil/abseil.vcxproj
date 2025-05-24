@@ -70,12 +70,21 @@
       cmake --build . --config $(Configuration)
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base
       copy /Y "absl\base\absl_base.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"
+      copy /Y "absl\base\absl_malloc_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_malloc_internal.lib"
       copy /Y "absl\base\absl_raw_logging_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
       copy /Y "absl\base\absl_spinlock_wait.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"
+      copy /Y "absl\base\absl_throw_delegate.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_throw_delegate.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container
+      copy /Y "absl\container\absl_hashtablez_sampler.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_hashtablez_sampler.lib"
+      copy /Y "absl\container\absl_raw_hash_set.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\container\absl_raw_hash_set.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging
+      copy /Y "absl\debugging\absl_stacktrace.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\debugging\absl_stacktrace.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
       copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
       copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
       copy /Y "absl\hash\absl_low_level_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_low_level_hash.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric
+      copy /Y "absl\numeric\absl_int128.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric\absl_int128.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random
       copy /Y "absl\random\absl_random_distributions.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_distributions.lib"
       copy /Y "absl\random\absl_random_internal_entropy_pool.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_entropy_pool.lib"
@@ -89,35 +98,16 @@
       copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
       copy /Y "absl\strings\absl_string_view.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_string_view.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization
+      copy /Y "absl\synchronization\absl_kernel_timeout_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_kernel_timeout_internal.lib"
+      copy /Y "absl\synchronization\absl_synchronization.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\synchronization\absl_synchronization.lib"
+      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\time
+      copy /Y "absl\time\absl_time.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\time\absl_time.lib"
+      copy /Y "absl\time\absl_time_zone.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\time\absl_time_zone.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
-      md _Build
-      cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..\abseil-cpp
-      cmake --build . --config $(Configuration)
-      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base
-      copy /Y "absl\base\absl_base.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"
-      copy /Y "absl\base\absl_raw_logging_internal.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_raw_logging_internal.lib"
-      copy /Y "absl\base\absl_spinlock_wait.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_spinlock_wait.lib"
-      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
-      copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
-      copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
-      copy /Y "absl\hash\absl_low_level_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_low_level_hash.lib"
-      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random
-      copy /Y "absl\random\absl_random_distributions.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_distributions.lib"
-      copy /Y "absl\random\absl_random_internal_entropy_pool.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_entropy_pool.lib"
-      copy /Y "absl\random\absl_random_internal_platform.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_platform.lib"
-      copy /Y "absl\random\absl_random_internal_randen.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_randen.lib"
-      copy /Y "absl\random\absl_random_internal_randen_hwaes.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_randen_hwaes.lib"
-      copy /Y "absl\random\absl_random_internal_randen_hwaes_impl.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_randen_hwaes_impl.lib"
-      copy /Y "absl\random\absl_random_internal_randen_slow.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_randen_slow.lib"
-      copy /Y "absl\random\absl_random_internal_seed_material.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_internal_seed_material.lib"
-      copy /Y "absl\random\absl_random_seed_gen_exception.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_gen_exception.lib"
-      copy /Y "absl\random\absl_random_seed_sequences.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random\absl_random_seed_sequences.lib"
-      md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings
-      copy /Y "absl\strings\absl_string_view.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\strings\absl_string_view.lib"
+      $(NMakeBuildCommandLine)
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>

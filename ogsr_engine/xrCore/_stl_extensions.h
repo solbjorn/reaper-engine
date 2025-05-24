@@ -2,6 +2,7 @@
 
 #include <queue>
 
+#include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
 
 #include "xalloc.h"
@@ -48,8 +49,8 @@ using xr_map = std::map<K, V, P, allocator>;
 template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-template <typename K, typename V, class _Hasher = absl::Hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xr_allocator<std::pair<const K, V>>>
-using xr_unordered_map = std::unordered_map<K, V, _Hasher, _Keyeq, _Alloc>;
+template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
+using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 #define mk_pair std::make_pair // TODO: Везде заменить, а это убрать.
 

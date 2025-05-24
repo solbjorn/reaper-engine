@@ -1,6 +1,7 @@
 #ifndef xrstringH
 #define xrstringH
 
+#include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -190,29 +191,8 @@ IC void xr_strlwr(shared_str& src)
     }
 }
 
-struct transparent_string_hash
-{
-    using is_transparent = void; // https://www.cppstories.com/2021/heterogeneous-access-cpp20/
-    using hash_type = absl::Hash<absl::string_view>;
-    using is_avalanching = void;
-
-    [[nodiscard]] auto operator()(const absl::string_view txt) const noexcept -> u64 { return hash_type{}(txt); }
-    [[nodiscard]] auto operator()(const std::string& txt) const noexcept -> u64 { return hash_type{}(txt); }
-    [[nodiscard]] auto operator()(const char* txt) const noexcept -> u64 { return hash_type{}(txt); }
-    [[nodiscard]] auto operator()(const shared_str& txt) const noexcept -> u64 { return hash_type{}(txt); }
-};
-
-struct transparent_string_equal
-{
-    using is_transparent = void;
-
-    [[nodiscard]] bool operator()(const absl::string_view lhs, const absl::string_view rhs) const { return lhs == rhs; }
-    [[nodiscard]] bool operator()(const shared_str& lhs, const shared_str& rhs) const { return lhs == rhs; }
-    [[nodiscard]] bool operator()(const char* lhs, const char* rhs) const { return !strcmp(lhs, rhs); }
-};
-
-template <typename Key, typename Value, class _Alloc = xr_allocator<std::pair<const Key, Value>>>
-using string_unordered_map = std::unordered_map<Key, Value, transparent_string_hash, transparent_string_equal, _Alloc>;
+template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
+using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr_string_utils
 {
