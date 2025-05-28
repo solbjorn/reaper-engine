@@ -95,9 +95,7 @@ void CClientSpawnManager::remove(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT
 
 void CClientSpawnManager::clear(ALife::_OBJECT_ID requested_id)
 {
-    REQUEST_REGISTRY::iterator I = m_registry.begin();
-    REQUEST_REGISTRY::iterator E = m_registry.end();
-    for (; I != E;)
+    for (auto I = m_registry.begin(); I != m_registry.end();)
     {
         remove((*I).second, (*I).first, requested_id, true);
         if (!(*I).second.empty())
@@ -106,10 +104,7 @@ void CClientSpawnManager::clear(ALife::_OBJECT_ID requested_id)
             continue;
         }
 
-        REQUEST_REGISTRY::iterator J = I;
-        ++J;
-        m_registry.erase(I);
-        I = J;
+        I = m_registry.erase(I);
     }
 }
 

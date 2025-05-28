@@ -389,7 +389,10 @@ private:
     friend struct SWheel;
     friend struct SDoor;
 
-    xr_map<u16, SWheel> m_wheels_map;
+    template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
+    using xr_legacy_map = std::map<K, V, P, allocator>;
+
+    xr_legacy_map<u16, SWheel> m_wheels_map;
     xr_vector<SWheelDrive> m_driving_wheels;
     xr_vector<SWheelSteer> m_steering_wheels;
     xr_vector<SWheelBreak> m_breaking_wheels;

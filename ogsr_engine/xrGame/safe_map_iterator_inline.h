@@ -35,11 +35,10 @@ IC void CSSafeMapIterator::add(const _key_type& id, _data_type* value, bool no_a
     }
 
     bool addition = m_objects.empty();
+    _key_type last = addition ? id : m_next_iterator->first;
 
-    m_objects.insert(std::make_pair(id, value));
-
-    if (addition)
-        m_next_iterator = m_objects.begin();
+    m_objects.emplace(id, value);
+    m_next_iterator = m_objects.find(last);
 }
 
 TEMPLATE_SPEZIALIZATION
@@ -52,13 +51,19 @@ IC void CSSafeMapIterator::remove(const _key_type& id, bool no_assert)
         return;
     }
 
-    if (I == m_next_iterator)
-        update_next();
-
+    _key_type last = m_next_iterator->first;
     m_objects.erase(I);
 
-    if (m_objects.empty())
-        update_next();
+    if (!m_objects.empty())
+    {
+        m_next_iterator = m_objects.lower_bound(last);
+        if (m_next_iterator == m_objects.end())
+            m_next_iterator = m_objects.begin();
+    }
+    else
+    {
+        m_next_iterator = m_objects.begin();
+    }
 }
 
 TEMPLATE_SPEZIALIZATION

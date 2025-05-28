@@ -69,14 +69,12 @@ void CMonsterCorpseMemory::remove_non_actual()
     TTime cur_time = Device.dwTimeGlobal;
 
     // удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
-    for (CORPSE_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
+    for (auto it = m_objects.begin(); it != m_objects.end();)
     {
-        nit = it;
-        ++nit;
         // проверить условия удаления
         if (!it->first || it->first->g_Alive() || it->first->getDestroy() || (it->second.time + time_memory < cur_time) || (it->first->m_fFood < 1))
         {
-            m_objects.erase(it);
+            it = m_objects.erase(it);
 
             // Lain: fixed by adding "continue"
             continue;
@@ -84,9 +82,11 @@ void CMonsterCorpseMemory::remove_non_actual()
 
         if (const_cast<CEntityAlive*>(it->first)->is_locked_corpse())
         {
-            m_objects.erase(it);
+            it = m_objects.erase(it);
             continue;
         }
+
+        it++;
     }
 }
 

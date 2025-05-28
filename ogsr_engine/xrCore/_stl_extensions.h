@@ -2,6 +2,8 @@
 
 #include <queue>
 
+#include <absl/container/btree_map.h>
+#include <absl/container/btree_set.h>
 #include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
 
@@ -37,17 +39,17 @@ using xr_queue = std::queue<T, C>;
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_list = std::list<T, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = xr_allocator<K>>
-using xr_set = std::set<K, P, allocator>;
+template <typename Key, typename Compare = std::less<Key>, typename Alloc = xr_allocator<Key>>
+using xr_set = absl::btree_set<Key, Compare, Alloc>;
 
-template <typename K, class P = std::less<K>, typename allocator = xr_allocator<K>>
-using xr_multiset = std::multiset<K, P, allocator>;
+template <typename Key, typename Compare = std::less<Key>, typename Alloc = xr_allocator<Key>>
+using xr_multiset = absl::btree_multiset<Key, Compare, Alloc>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
-using xr_map = std::map<K, V, P, allocator>;
+template <typename Key, typename Value, typename Compare = std::less<Key>, typename Alloc = xr_allocator<std::pair<const Key, Value>>>
+using xr_map = absl::btree_map<Key, Value, Compare, Alloc>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
-using xr_multimap = std::multimap<K, V, P, allocator>;
+template <typename Key, typename Value, typename Compare = std::less<Key>, typename Alloc = xr_allocator<std::pair<const Key, Value>>>
+using xr_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
 
 template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;

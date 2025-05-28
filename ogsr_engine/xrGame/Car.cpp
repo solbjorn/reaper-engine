@@ -300,7 +300,7 @@ void CCar::SaveNetState(NET_Packet& P)
         }
 
         {
-            xr_map<u16,SWheel>::iterator i,e;
+            xr_legacy_map<u16, SWheel>::iterator i, e;
             i=m_wheels_map.begin();
             e=m_wheels_map.end();
             P.w_u16(u16(m_wheels_map.size()));
@@ -902,7 +902,7 @@ void CCar::Init()
     float l_time_to_explosion = READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion", 120.f);
     CDelayedActionFuse::Initialize(l_time_to_explosion, CDamagableItem::DamageLevelToHealth(2));
     {
-        xr_map<u16, SWheel>::iterator i, e;
+        xr_legacy_map<u16, SWheel>::iterator i, e;
         i = m_wheels_map.begin();
         e = m_wheels_map.end();
         for (; i != e; ++i)
@@ -962,7 +962,7 @@ void CCar::Init()
         {
             u16 index = pKinematics->LL_BoneID(item.first.c_str());
             R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
-            xr_map<u16, SWheel>::iterator i = m_wheels_map.find(index);
+            auto i = m_wheels_map.find(index);
 
             if (i != m_wheels_map.end())
                 i->second.CDamagableHealthItem::Init(float(atof(item.second.c_str())), 2);

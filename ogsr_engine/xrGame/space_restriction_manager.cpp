@@ -100,19 +100,17 @@ shared_str CSpaceRestrictionManager::base_out_restrictions(ALife::_OBJECT_ID id)
 
 IC void CSpaceRestrictionManager::collect_garbage()
 {
-    SPACE_RESTRICTIONS::iterator I = m_space_restrictions.begin(), J;
-    SPACE_RESTRICTIONS::iterator E = m_space_restrictions.end();
-    for (; I != E;)
+    for (auto I = m_space_restrictions.begin(); I != m_space_restrictions.end();)
     {
         if ((*I).second->released() && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + time_to_delete))
         {
-            J = I;
-            ++I;
-            xr_delete((*J).second);
-            m_space_restrictions.erase(J);
+            xr_delete((*I).second);
+            I = m_space_restrictions.erase(I);
         }
         else
-            ++I;
+        {
+            I++;
+        }
     }
 }
 

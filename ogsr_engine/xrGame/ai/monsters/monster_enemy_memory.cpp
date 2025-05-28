@@ -162,16 +162,14 @@ void CMonsterEnemyMemory::remove_non_actual()
     TTime cur_time = Device.dwTimeGlobal;
 
     // удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
-    for (ENEMIES_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
+    for (auto it = m_objects.begin(); it != m_objects.end();)
     {
-        nit = it;
-        ++nit;
         // проверить условия удаления
         if (!it->first || !it->first->g_Alive() || it->first->getDestroy() || (it->second.time + time_memory < cur_time) || (it->first->g_Team() == monster->g_Team()) ||
             !monster->memory().enemy().is_useful(it->first))
-        {
-            m_objects.erase(it);
-        }
+            it = m_objects.erase(it);
+        else
+            it++;
     }
 }
 
