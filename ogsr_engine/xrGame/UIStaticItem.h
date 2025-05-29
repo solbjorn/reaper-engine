@@ -3,9 +3,6 @@
 #include "ui/uiabstract.h"
 #include "uicustomitem.h"
 
-void CreateUIGeom();
-void DestroyUIGeom();
-
 class IUIShader;
 
 class CUIStaticItem : public IUISimpleTextureControl, public CUICustomItem

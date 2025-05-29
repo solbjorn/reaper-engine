@@ -39,6 +39,8 @@ extern void dump_list_xmls();
 
 void init_game_globals()
 {
+    CUIXmlInit::InitColorDefs();
+
     CInfoPortion::InitInternal();
     CEncyclopediaArticle::InitInternal();
     CPhraseDialog::InitInternal();

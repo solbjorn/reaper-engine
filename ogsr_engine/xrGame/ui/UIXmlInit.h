@@ -37,7 +37,7 @@ class CUITrackBar;
 class CUIXmlInit
 {
 public:
-    CUIXmlInit();
+    CUIXmlInit() = default;
     virtual ~CUIXmlInit();
 
     static bool InitWindow(CUIXml& xml_doc, const char* path, int index, CUIWindow* pWnd);

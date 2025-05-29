@@ -46,13 +46,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-const char* const COLOR_DEFINITIONS = "color_defs.xml";
+static constexpr const char* COLOR_DEFINITIONS = "color_defs.xml";
 
 CUIXmlInit::ColorDefs* CUIXmlInit::m_pColorDefs = NULL;
-
-//////////////////////////////////////////////////////////////////////////
-
-CUIXmlInit::CUIXmlInit() { InitColorDefs(); }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -141,7 +137,7 @@ bool CUIXmlInit::InitFrameWindow(CUIXml& xml_doc, LPCSTR path, int index, CUIFra
 
         if(*tex_name) pWnd->InitLeftBottom(*tex_name, x,y);
     */
-    //инициализировать заголовок окна
+    // инициализировать заголовок окна
     strconcat(sizeof(buf), buf, path, ":title");
     if (xml_doc.NavigateToNode(buf, index))
         InitStatic(xml_doc, buf, index, pWnd->UITitleText);
@@ -1325,9 +1321,6 @@ bool CUIXmlInit::InitAlignment(CUIXml& xml_doc, const char* path, int index, flo
 
 void CUIXmlInit::InitColorDefs()
 {
-    if (NULL != m_pColorDefs)
-        return;
-
     m_pColorDefs = xr_new<ColorDefs>();
 
     CUIXml uiXml;
@@ -1362,7 +1355,8 @@ bool CUIXmlInit::InitScrollView(CUIXml& xml_doc, const char* path, int index, CU
     u32 cl;
 
     InitFont(xml_doc, strconcat(sizeof(buf), buf, path, ":font"), index, cl, LocalFont);
-    if (LocalFont) {
+    if (LocalFont)
+    {
         pWnd->SetFont(LocalFont);
         pWnd->SetTextColor(cl);
     }

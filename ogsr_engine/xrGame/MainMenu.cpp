@@ -38,7 +38,6 @@ CMainMenu::CMainMenu()
         OnDeviceCreate();
 
     ReadTextureInfo();
-    CUIXmlInit::InitColorDefs();
 
     g_btnHint = NULL;
     m_deactivated_frame = 0;
