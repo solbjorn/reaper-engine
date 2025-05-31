@@ -41,6 +41,24 @@ void SStaticSound::LoadIni(CInifile::Sect& section)
     m_StopTime = 0;
 }
 
+static bool should_play(const Ivector2& m_ActiveTime, int game_time)
+{
+    // 0, 0 => always
+    if (!m_ActiveTime.x && !m_ActiveTime.y)
+        return true;
+
+    // 6, 22 => 6:00:00 - 21:59:59
+    if (m_ActiveTime.x < m_ActiveTime.y)
+        return game_time >= m_ActiveTime.x && game_time < m_ActiveTime.y;
+
+    // 6, 6 => 6:00:00 - 6:59:59
+    if (m_ActiveTime.x == m_ActiveTime.y)
+        return game_time >= m_ActiveTime.x && game_time < m_ActiveTime.y + 60 * 60 * 1000;
+
+    // 22, 6 => 22:00:00 - 23:59:59, 0:00:00 - 5:59:59
+    return game_time >= m_ActiveTime.x || game_time < m_ActiveTime.y;
+}
+
 extern float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ);
 
 void SStaticSound::Update(u32 game_time, u32 global_time)
@@ -49,7 +67,7 @@ void SStaticSound::Update(u32 game_time, u32 global_time)
     float occluder_volume = SoundRenderGetOcculution(m_Position, .2f, occ);
     float vol = m_Volume * occluder_volume;
 
-    if ((0 == m_ActiveTime.x) && (0 == m_ActiveTime.y) || ((int(game_time) >= m_ActiveTime.x) && (int(game_time) < m_ActiveTime.y)))
+    if (should_play(m_ActiveTime, int(game_time)))
     {
         if (0 == m_Source._feedback())
         {
@@ -228,7 +246,7 @@ void CLevelSoundManager::Update()
                 SMusicTrack& T = m_MusicTracks[k];
                 if (T.IsPlaying())
                     T.Stop();
-                if ((0 == T.m_ActiveTime.x) && (0 == T.m_ActiveTime.y) || ((int(game_time) >= T.m_ActiveTime.x) && (int(game_time) < T.m_ActiveTime.y)))
+                if (should_play(T.m_ActiveTime, int(game_time)))
                     indices.push_back(k);
             }
             if (!indices.empty())
