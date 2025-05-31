@@ -16,9 +16,10 @@
 [submodule "3rd_party/Src/Xiph/theora/theora"]
 	path = 3rd_party/Src/Xiph/theora/theora
 	url = https://gitlab.xiph.org/xiph/theora.git
-[submodule "3rd_party/Src/Xiph/vorbis/vorbis"]
-	path = 3rd_party/Src/Xiph/vorbis/vorbis
-	url = https://gitlab.xiph.org/xiph/vorbis.git
+[submodule "3rd_party/Src/Xiph/vorbis/vorbis-aotuv-lancer"]
+	path = 3rd_party/Src/Xiph/vorbis/vorbis-aotuv-lancer
+	url = https://github.com/enzo1982/vorbis-aotuv-lancer.git
+	branch = aotuv-lancer
 [submodule "3rd_party/Src/abseil/abseil-cpp"]
 	path = 3rd_party/Src/abseil/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp.git
