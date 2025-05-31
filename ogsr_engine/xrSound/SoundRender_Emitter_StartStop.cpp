@@ -110,4 +110,7 @@ void CSoundRender_Emitter::stop_target()
 
     target->stop();
     target = nullptr;
+
+    source()->close(ovf);
+    ovf = nullptr;
 }

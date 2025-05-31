@@ -152,7 +152,14 @@ u32 CSoundRender_Emitter::get_cursor(bool b_absolute) const
 }
 
 void CSoundRender_Emitter::move_cursor(int offset) { set_cursor(get_cursor(true) + offset); }
-void CSoundRender_Emitter::fill_data(void* dest, u32 offset, u32 size) const { source()->decompress(dest, offset, size, ovf); }
+
+void CSoundRender_Emitter::fill_data(void* dest, u32 offset, u32 size)
+{
+    if (!ovf)
+        ovf = source()->open();
+
+    source()->decompress(dest, offset, size, ovf);
+}
 
 void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
 {
