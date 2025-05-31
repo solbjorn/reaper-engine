@@ -10,113 +10,84 @@
 
 using namespace R_dsgraph;
 
-extern float r_ssaHZBvsTEX;
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
 
-ICF float calcLOD(float ssa /*fDistSq*/, float /*R*/) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f)); }
-
-template <class T>
-bool cmp_ssa(const T& lhs, const T& rhs)
-{
-    return lhs.ssa > rhs.ssa;
-}
-
-// Sorting by SSA and changes minimizations
-template <typename T>
-bool cmp_pass(const T& left, const T& right)
-{
-    if (left->key->equal(*right->key))
-        return false;
-    return left->val.ssa >= right->val.ssa;
-}
+static ICF float calcLOD(float ssa /*fDistSq*/, float /*R*/) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f)); }
 
 // ALPHA
-static void __fastcall sorted_L1(mapSorted_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
 
-    dsgraph.cmd_list.set_Element(N->val.se);
-    dsgraph.cmd_list.set_xform_world(N->val.Matrix);
-    dsgraph.cmd_list.apply_lmaterial(N->val.pObject);
+    cmd_list.set_Element(val.se);
+    cmd_list.set_xform_world(val.Matrix);
+    cmd_list.apply_lmaterial(val.pObject);
 
-    const float LOD = calcLOD(N->key, V->vis.sphere.R);
-    dsgraph.cmd_list.LOD.set_LOD(LOD);
-    V->Render(dsgraph.cmd_list, LOD, dsgraph.phase == CRender::PHASE_SMAP);
+    const float LOD = calcLOD(key, V->vis.sphere.R);
+    cmd_list.LOD.set_LOD(LOD);
+    V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall water_node_ssr(mapSorted_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V);
 
-    dsgraph.cmd_list.set_Shader(RImplementation.Target->s_ssfx_water_ssr);
+    cmd_list.set_Shader(RImplementation.Target->s_ssfx_water_ssr);
+    cmd_list.set_xform_world(val.Matrix);
+    cmd_list.apply_lmaterial(val.pObject);
 
-    dsgraph.cmd_list.set_xform_world(N->val.Matrix);
-    dsgraph.cmd_list.apply_lmaterial(N->val.pObject);
-
-    dsgraph.cmd_list.set_c("cam_pos", RImplementation.Target->Position_previous.x, RImplementation.Target->Position_previous.y, RImplementation.Target->Position_previous.z, 0.0f);
+    cmd_list.set_c("cam_pos", RImplementation.Target->Position_previous.x, RImplementation.Target->Position_previous.y, RImplementation.Target->Position_previous.z, 0.0f);
 
     // Previous matrix data
-    dsgraph.cmd_list.set_c("m_current", RImplementation.Target->Matrix_current);
-    dsgraph.cmd_list.set_c("m_previous", RImplementation.Target->Matrix_previous);
+    cmd_list.set_c("m_current", RImplementation.Target->Matrix_current);
+    cmd_list.set_c("m_previous", RImplementation.Target->Matrix_previous);
 
-    V->Render(dsgraph.cmd_list, calcLOD(N->key, V->vis.sphere.R), dsgraph.phase == CRender::PHASE_SMAP);
+    V->Render(cmd_list, calcLOD(key, V->vis.sphere.R), phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall water_node(mapSorted_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V);
 
     if (RImplementation.o.ssfx_water)
-        dsgraph.cmd_list.set_Shader(RImplementation.Target->s_ssfx_water);
+        cmd_list.set_Shader(RImplementation.Target->s_ssfx_water);
 
-    dsgraph.cmd_list.set_xform_world(N->val.Matrix);
-    dsgraph.cmd_list.apply_lmaterial(N->val.pObject);
+    cmd_list.set_xform_world(val.Matrix);
+    cmd_list.apply_lmaterial(val.pObject);
 
     // Wind settings
     float WindDir = g_pGamePersistent->Environment().CurrentEnv->wind_direction;
     float WindVel = g_pGamePersistent->Environment().CurrentEnv->wind_velocity;
-    dsgraph.cmd_list.set_c("wind_setup", WindDir, WindVel, 0.f, 0.f);
+    cmd_list.set_c("wind_setup", WindDir, WindVel, 0.f, 0.f);
 
-    V->Render(dsgraph.cmd_list, calcLOD(N->key, V->vis.sphere.R), dsgraph.phase == CRender::PHASE_SMAP);
+    V->Render(cmd_list, calcLOD(key, V->vis.sphere.R), phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall hud_node(mapSorted_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
-    dsgraph.cmd_list.set_xform_world(N->val.Matrix);
+    cmd_list.set_xform_world(val.Matrix);
 
-    if (N->val.se->passes[0]->ps->hud_disabled)
+    if (val.se->passes[0]->ps->hud_disabled)
         return;
 
-    int skinning = N->val.se->passes[0]->vs->skinning;
-    dsgraph.cmd_list.set_Shader(RImplementation.Target->s_ssfx_hud[skinning]);
+    int skinning = val.se->passes[0]->vs->skinning;
+    cmd_list.set_Shader(RImplementation.Target->s_ssfx_hud[skinning]);
 
-    RImplementation.Target->Matrix_HUD_previous.set(N->val.PrevMatrix);
-    N->val.PrevMatrix.set(dsgraph.cmd_list.xforms.m_wvp);
+    RImplementation.Target->Matrix_HUD_previous.set(val.PrevMatrix);
+    val.PrevMatrix.set(cmd_list.xforms.m_wvp);
 
-    dsgraph.cmd_list.RVelocity = true;
+    cmd_list.RVelocity = true;
 
-    const float LOD = calcLOD(N->key, V->vis.sphere.R);
-    dsgraph.cmd_list.LOD.set_LOD(LOD);
-    V->Render(dsgraph.cmd_list, LOD, dsgraph.phase == CRender::PHASE_SMAP);
+    const float LOD = calcLOD(key, V->vis.sphere.R);
+    cmd_list.LOD.set_LOD(LOD);
+    V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 
-    dsgraph.cmd_list.RVelocity = false;
+    cmd_list.RVelocity = false;
 }
 
 void R_dsgraph_structure::render_graph(u32 _priority)
@@ -137,22 +108,22 @@ void R_dsgraph_structure::render_graph(u32 _priority)
         {
             auto& map = mapNormalPasses[_priority][iPass];
 
-            map.getANY_P(nrmPasses);
-            std::ranges::sort(nrmPasses, cmp_pass<mapNormal_T::value_type*>);
+            for (auto& pm : map)
+                nrmPasses.emplace(pm.second.ssa, &pm);
+
             for (const auto& it : nrmPasses)
             {
-                cmd_list.set_Pass(it->key);
+                cmd_list.set_Pass(it.second->first);
                 cmd_list.apply_lmaterial();
 
-                mapNormalItems& items = it->val;
+                mapNormalItems& items = it.second->second;
                 items.ssa = 0;
 
-                std::ranges::sort(items, cmp_ssa<_NormalItem>);
                 for (const auto& item : items)
                 {
-                    const float LOD = calcLOD(item.ssa, item.pVisual->vis.sphere.R);
+                    const float LOD = calcLOD(item.first, item.second.pVisual->vis.sphere.R);
                     cmd_list.LOD.set_LOD(LOD);
-                    item.pVisual->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
+                    item.second.pVisual->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
                 }
                 items.clear();
             }
@@ -172,27 +143,27 @@ void R_dsgraph_structure::render_graph(u32 _priority)
         {
             auto& map = mapMatrixPasses[_priority][iPass];
 
-            map.getANY_P(matPasses);
-            std::ranges::sort(matPasses, cmp_pass<mapMatrix_T::value_type*>);
+            for (auto& pm : map)
+                matPasses.emplace(pm.second.ssa, &pm);
+
             for (const auto& it : matPasses)
             {
-                cmd_list.set_Pass(it->key);
+                cmd_list.set_Pass(it.second->first);
 
-                mapMatrixItems& items = it->val;
+                mapMatrixItems& items = it.second->second;
                 items.ssa = 0;
 
-                std::ranges::sort(items, cmp_ssa<_MatrixItem>);
-                for (auto& item : items)
+                for (const auto& item : items)
                 {
-                    cmd_list.set_xform_world(item.Matrix);
-                    cmd_list.apply_lmaterial(item.pObject);
+                    cmd_list.set_xform_world(item.second.Matrix);
+                    cmd_list.apply_lmaterial(item.second.pObject);
 
-                    const float LOD = calcLOD(item.ssa, item.pVisual->vis.sphere.R);
+                    const float LOD = calcLOD(item.first, item.second.pVisual->vis.sphere.R);
                     cmd_list.LOD.set_LOD(LOD);
                     // --#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
-                    // cmd_list.hemi.c_update(item.pVisual);
+                    // cmd_list.hemi.c_update(item.second.pVisual);
 
-                    item.pVisual->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
+                    item.second.pVisual->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
                 }
                 items.clear();
             }
@@ -208,7 +179,7 @@ void R_dsgraph_structure::render_graph(u32 _priority)
 // HUD render
 void R_dsgraph_structure::render_hud(bool NoPS)
 {
-    PIX_EVENT(r_dsgraph_render_hud);
+    PIX_EVENT_CTX(cmd_list, r_dsgraph_render_hud);
 
     if ((!NoPS && mapHUD.empty()) || (NoPS && HUDMask.empty()))
         return;
@@ -221,12 +192,16 @@ void R_dsgraph_structure::render_hud(bool NoPS)
     RImplementation.rmNear(cmd_list);
     if (!NoPS)
     {
-        mapHUD.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
+        for (auto& elem : mapHUD)
+            sorted_L1(elem.first, elem.second);
+
         mapHUD.clear();
     }
     else
     {
-        HUDMask.traverseLR(hud_node, (void*)(uintptr_t)context_id);
+        for (auto& elem : HUDMask)
+            hud_node(elem.first, elem.second);
+
         HUDMask.clear();
     }
     RImplementation.rmNormal(cmd_list);
@@ -256,7 +231,9 @@ void R_dsgraph_structure::render_hud_ui()
 void R_dsgraph_structure::render_sorted()
 {
     // Sorted (back to front)
-    mapSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapSorted)
+        sorted_L1(elem.first, elem.second);
+
     mapSorted.clear();
 
     if (mapHUDSorted.empty())
@@ -268,7 +245,10 @@ void R_dsgraph_structure::render_sorted()
 
     // Rendering
     RImplementation.rmNear(cmd_list);
-    mapHUDSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+
+    for (auto& elem : mapHUDSorted)
+        sorted_L1(elem.first, elem.second);
+
     mapHUDSorted.clear();
     RImplementation.rmNormal(cmd_list);
 
@@ -282,7 +262,9 @@ void R_dsgraph_structure::render_sorted()
 void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 {
     // Sorted (back to front)
-    mapEmissive.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapEmissive)
+        sorted_L1(elem.first, elem.second);
+
     if (clear)
         mapEmissive.clear();
 
@@ -292,14 +274,19 @@ void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
 
     // Rendering
     RImplementation.rmNear(cmd_list);
+
     // Sorted (back to front)
-    mapHUDEmissive.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapHUDEmissive)
+        sorted_L1(elem.first, elem.second);
 
     if (clear)
         mapHUDEmissive.clear();
 
     if (renderHUD)
-        mapHUDSorted.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+    {
+        for (auto& elem : mapHUDSorted)
+            sorted_L1(elem.first, elem.second);
+    }
 
     RImplementation.rmNormal(cmd_list);
 
@@ -308,11 +295,17 @@ void R_dsgraph_structure::render_emissive(bool clear, bool renderHUD)
     cmd_list.set_xform_project(Device.mProject);
 }
 
-void R_dsgraph_structure::render_water_ssr() { mapWater.traverseLR(water_node_ssr, (void*)(uintptr_t)context_id); }
+void R_dsgraph_structure::render_water_ssr()
+{
+    for (auto& elem : mapWater)
+        water_node_ssr(elem.first, elem.second);
+}
 
 void R_dsgraph_structure::render_water()
 {
-    mapWater.traverseLR(water_node, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapWater)
+        water_node(elem.first, elem.second);
+
     mapWater.clear();
 }
 
@@ -321,7 +314,9 @@ void R_dsgraph_structure::render_water()
 void R_dsgraph_structure::render_wmarks()
 {
     // Sorted (back to front)
-    mapWmark.traverseLR(sorted_L1, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapWmark)
+        sorted_L1(elem.first, elem.second);
+
     mapWmark.clear();
 }
 
@@ -330,7 +325,9 @@ void R_dsgraph_structure::render_wmarks()
 void R_dsgraph_structure::render_distort()
 {
     // Sorted (back to front)
-    mapDistort.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+    for (auto& elem : mapDistort)
+        sorted_L1(elem.first, elem.second);
+
     mapDistort.clear();
 
     if (mapHUDDistort.empty())
@@ -342,7 +339,10 @@ void R_dsgraph_structure::render_distort()
 
     // Rendering
     RImplementation.rmNear(cmd_list);
-    mapHUDDistort.traverseRL(sorted_L1, (void*)(uintptr_t)context_id);
+
+    for (auto& elem : mapHUDDistort)
+        sorted_L1(elem.first, elem.second);
+
     mapHUDDistort.clear();
     RImplementation.rmNormal(cmd_list);
 
@@ -351,31 +351,29 @@ void R_dsgraph_structure::render_distort()
     cmd_list.set_xform_project(Device.mProject);
 }
 
-static void __fastcall pLandscape_0(mapLandscape_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::pLandscape_0(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
-    dsgraph.cmd_list.set_Element(N->val.se, 0);
-    float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
-    dsgraph.cmd_list.LOD.set_LOD(LOD);
-    V->Render(dsgraph.cmd_list, LOD, dsgraph.phase == CRender::PHASE_SMAP);
+
+    cmd_list.set_Element(val.se, 0);
+
+    float LOD = calcLOD(val.ssa, V->vis.sphere.R);
+    cmd_list.LOD.set_LOD(LOD);
+    V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
-static void __fastcall pLandscape_1(mapLandscape_Node* N, void* arg)
+void __fastcall R_dsgraph_structure::pLandscape_1(float key, _MatrixItemS& val)
 {
-    auto& dsgraph = RImplementation.get_context((uintptr_t)arg);
-
-    VERIFY(N);
-    dxRender_Visual* V = N->val.pVisual;
+    dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
-    dsgraph.cmd_list.set_Element(N->val.se, 1);
-    dsgraph.cmd_list.apply_lmaterial();
-    float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
-    dsgraph.cmd_list.LOD.set_LOD(LOD);
-    V->Render(dsgraph.cmd_list, LOD, dsgraph.phase == CRender::PHASE_SMAP);
+
+    cmd_list.set_Element(val.se, 1);
+    cmd_list.apply_lmaterial();
+
+    float LOD = calcLOD(val.ssa, V->vis.sphere.R);
+    cmd_list.LOD.set_LOD(LOD);
+    V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
 void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
@@ -383,9 +381,15 @@ void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
     cmd_list.set_xform_world(Fidentity);
 
     if (pass == 0)
-        mapLandscape.traverseLR(pLandscape_0, (void*)(uintptr_t)context_id);
+    {
+        for (auto& elem : mapLandscape)
+            pLandscape_0(elem.first, elem.second);
+    }
     else
-        mapLandscape.traverseLR(pLandscape_1, (void*)(uintptr_t)context_id);
+    {
+        for (auto& elem : mapLandscape)
+            pLandscape_1(elem.first, elem.second);
+    }
 
     if (_clear)
         mapLandscape.clear();

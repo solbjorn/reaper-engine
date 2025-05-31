@@ -17,10 +17,8 @@ using namespace R_dsgraph;
 // Scene graph actual insertion and sorting ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float r_ssaDISCARD;
-float r_ssaDONTSORT;
 float r_ssaLOD_A, r_ssaLOD_B;
 float r_ssaGLOD_start, r_ssaGLOD_end;
-float r_ssaHZBvsTEX;
 
 static ICF float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
 {
@@ -65,7 +63,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
         auto& map = hud ? mapHUDDistort : mapDistort;
-        map.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        map.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
     }
 
     // Select shader
@@ -81,20 +79,20 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
         if (sh->flags.bStrictB2F)
         {
             if (sh->flags.bEmissive)
-                mapHUDEmissive.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+                mapHUDEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
 
-            mapHUDSorted.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+            mapHUDSorted.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
             return;
         }
         else
         {
-            mapHUD.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+            mapHUD.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
 
             if (RImplementation.o.ssfx_core && !sh->passes[0]->ps->hud_disabled)
-                HUDMask.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+                HUDMask.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
 
             if (sh->flags.bEmissive)
-                mapHUDEmissive.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+                mapHUDEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
 
             return;
         }
@@ -103,7 +101,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapSorted.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
         return;
     }
 
@@ -113,11 +111,11 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     // c) Should not cast shadows
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
-        mapEmissive.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        mapEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
 
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insertInAnyWay(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapWmark.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
         return;
     }
 
@@ -128,7 +126,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
         mapMatrixItems& matrixItems = map[pass];
 
         // Create common node
-        matrixItems.emplace_back(_MatrixItem{SSA, root, pVisual, xform});
+        matrixItems.emplace(SSA, _MatrixItem{root, pVisual, xform});
 
         // Need to sort for HZB efficient use
         if (SSA > matrixItems.ssa)
@@ -155,7 +153,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     VERIFY(pVisual->shader._get());
     ShaderElement* sh_d = pVisual->shader->E[4]._get();
     if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
-        mapDistort.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
+        mapDistort.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
 
     // Select shader
     ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ, phase);
@@ -167,14 +165,14 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     // Water rendering
     if (sh->flags.isWater && RImplementation.o.ssfx_water)
     {
-        mapWater.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        mapWater.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
         return;
     }
 
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        mapSorted.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
         return;
     }
 
@@ -184,11 +182,11 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     // c) Should not cast shadows
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
-        mapEmissive.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
+        mapEmissive.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
 
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        mapWmark.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
         return;
     }
 
@@ -199,7 +197,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
 
     if (sh->flags.bLandscape && phase == CRender::PHASE_NORMAL)
     {
-        mapLandscape.insertInAnyWay(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        mapLandscape.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
         return;
     }
 
@@ -209,7 +207,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
         mapNormal_T& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
         mapNormalItems& normalItems = map[pass];
 
-        normalItems.emplace_back(_NormalItem{SSA, pVisual});
+        normalItems.emplace(SSA, _NormalItem{pVisual});
 
         // Need to sort for HZB efficient use
         if (SSA > normalItems.ssa)
@@ -575,7 +573,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
             if (ssa < r_ssaDISCARD)
                 return;
 
-            mapLOD.insertInAnyWay(D, _LodItem({ssa, pVisual}));
+            mapLOD.emplace(D, _LodItem({ssa, pVisual}));
         }
 
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)
@@ -663,7 +661,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
             if (ssa < r_ssaDISCARD)
                 return;
 
-            mapLOD.insertInAnyWay(D, _LodItem({ssa, pVisual}));
+            mapLOD.emplace(D, _LodItem({ssa, pVisual}));
         }
 
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)

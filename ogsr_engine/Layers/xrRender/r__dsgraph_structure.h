@@ -27,19 +27,20 @@ struct R_dsgraph_structure
     // Dynamic scene graph
     R_dsgraph::mapNormalPasses_T mapNormalPasses[2]; // 2==(priority/2)
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
-    R_dsgraph::mapSorted_T mapSorted;
-    R_dsgraph::mapHUD_T mapHUD;
-    R_dsgraph::mapLOD_T mapLOD;
-    R_dsgraph::mapSorted_T mapDistort;
-    R_dsgraph::mapSorted_T mapHUDDistort;
-    R_dsgraph::mapHUD_T mapHUDSorted;
-    R_dsgraph::mapLandscape_T mapLandscape;
-    R_dsgraph::HUDMask_T HUDMask;
-    R_dsgraph::mapWater_T mapWater;
 
-    R_dsgraph::mapSorted_T mapWmark; // sorted
-    R_dsgraph::mapSorted_T mapEmissive;
-    R_dsgraph::mapSorted_T mapHUDEmissive;
+    R_dsgraph::map_sorted mapSorted;
+    R_dsgraph::map_item mapHUD;
+    R_dsgraph::map_lod mapLOD;
+    R_dsgraph::map_sorted mapDistort;
+    R_dsgraph::map_sorted mapHUDDistort;
+    R_dsgraph::map_sorted mapHUDSorted;
+    R_dsgraph::map_item mapLandscape;
+    R_dsgraph::map_item HUDMask;
+    R_dsgraph::map_item mapWater;
+
+    R_dsgraph::map_item mapWmark; // sorted
+    R_dsgraph::map_item mapEmissive;
+    R_dsgraph::map_item mapHUDEmissive;
 
     xr_vector<CSector*> Sectors;
     xr_vector<CPortal*> Portals;
@@ -47,10 +48,9 @@ struct R_dsgraph_structure
     xrXRC Sectors_xrc;
 
     // Runtime structures
-    xr_vector<R_dsgraph::mapNormal_T::value_type*> nrmPasses;
-    xr_vector<R_dsgraph::mapMatrix_T::value_type*> matPasses;
-    xr_vector<R_dsgraph::_LodItem> lstLODs;
-    xr_vector<int> lstLODgroups;
+    xr_multimap<float, R_dsgraph::mapNormal_T::value_type*, std::greater<float>> nrmPasses;
+    xr_multimap<float, R_dsgraph::mapMatrix_T::value_type*, std::greater<float>> matPasses;
+    xr_vector<u32> lstLODgroups;
     xr_vector<ISpatial*> lstRenderables;
     xr_vector<ISpatial*> lstSpatial;
     xr_vector<dxRender_Visual*> lstVisuals;
@@ -82,7 +82,6 @@ struct R_dsgraph_structure
         nrmPasses.clear();
         matPasses.clear();
 
-        lstLODs.clear();
         lstLODgroups.clear();
         lstRenderables.clear();
         lstSpatial.clear();
@@ -90,24 +89,25 @@ struct R_dsgraph_structure
 
         for (int i = 0; i < SHADER_PASSES_MAX; ++i)
         {
-            mapNormalPasses[0][i].destroy();
-            mapNormalPasses[1][i].destroy();
-            mapMatrixPasses[0][i].destroy();
-            mapMatrixPasses[1][i].destroy();
+            mapNormalPasses[0][i].clear();
+            mapNormalPasses[1][i].clear();
+            mapMatrixPasses[0][i].clear();
+            mapMatrixPasses[1][i].clear();
         }
-        mapSorted.destroy();
-        mapHUD.destroy();
-        mapLOD.destroy();
-        mapDistort.destroy();
-        mapHUDDistort.destroy();
-        mapHUDSorted.destroy();
-        mapLandscape.destroy();
-        HUDMask.destroy();
-        mapWater.destroy();
 
-        mapWmark.destroy();
-        mapEmissive.destroy();
-        mapHUDEmissive.destroy();
+        mapSorted.clear();
+        mapHUD.clear();
+        mapLOD.clear();
+        mapDistort.clear();
+        mapHUDDistort.clear();
+        mapHUDSorted.clear();
+        mapLandscape.clear();
+        HUDMask.clear();
+        mapWater.clear();
+
+        mapWmark.clear();
+        mapEmissive.clear();
+        mapHUDEmissive.clear();
 
         cmd_list.Invalidate();
     }
@@ -140,11 +140,20 @@ struct R_dsgraph_structure
     void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum);
     void build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic);
 
+private:
     // render primitives
+    void __fastcall sorted_L1(float key, R_dsgraph::_MatrixItemS& val);
+    void __fastcall water_node_ssr(float key, R_dsgraph::_MatrixItemS& val);
+    void __fastcall water_node(float key, R_dsgraph::_MatrixItemS& val);
+    void __fastcall hud_node(float key, R_dsgraph::_MatrixItemS& val);
+    void __fastcall pLandscape_0(float key, R_dsgraph::_MatrixItemS& val);
+    void __fastcall pLandscape_1(float key, R_dsgraph::_MatrixItemS& val);
+
+public:
     void render_graph(u32 _priority);
     void render_hud(bool NoPS = false);
     void render_hud_ui();
-    void render_lods(bool _setup_zb, bool _clear);
+    void render_lods();
     void render_sorted();
     void render_emissive(bool clear = true, bool renderHUD = false);
     void render_wmarks();

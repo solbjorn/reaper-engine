@@ -159,7 +159,7 @@ void CRender::Render()
         // level
         Target->phase_scene_begin();
         dsgraph.render_hud();
-        dsgraph.render_lods(true, true);
+        dsgraph.render_lods();
         if (Details)
             Details->Render(dsgraph.cmd_list);
         if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))

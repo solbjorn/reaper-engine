@@ -7,40 +7,34 @@
 extern float r_ssaLOD_A;
 extern float r_ssaLOD_B;
 
-void R_dsgraph_structure::render_lods(bool _setup_zb, bool _clear)
+void R_dsgraph_structure::render_lods()
 {
     if (mapLOD.empty())
         return;
 
-    if (_setup_zb)
-        mapLOD.getLR(lstLODs); // front-to-back
-    else
-        mapLOD.getRL(lstLODs); // back-to-front
-    if (lstLODs.empty())
-        return;
-
     // *** Fill VB and generate groups
-    u32 shid = _setup_zb ? SE_R1_LMODELS : SE_R1_NORMAL_LQ;
-    FLOD* firstV = (FLOD*)lstLODs[0].pVisual;
+    constexpr u32 shid = SE_R1_LMODELS;
+    auto iter = mapLOD.begin();
+    FLOD* firstV = (FLOD*)iter->second.pVisual;
     ref_selement cur_S = firstV->shader->E[shid];
     float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
     if (ssaRange < EPS_S)
         ssaRange = EPS_S;
 
-    const u32 uiVertexPerImposter = 4;
+    constexpr u32 uiVertexPerImposter = 4;
     const u32 uiImpostersFit = RImplementation.Vertex.GetSize() / (firstV->geom->vb_stride * uiVertexPerImposter);
 
-    for (u32 i = 0; i < lstLODs.size(); i++)
+    for (size_t i = 0; i < mapLOD.size(); i++, iter++)
     {
-        const u32 iBatchSize = std::min(lstLODs.size() - i, (size_t)uiImpostersFit);
-        int cur_count = 0;
+        const u32 iBatchSize = std::min(mapLOD.size() - i, (size_t)uiImpostersFit);
+        u32 cur_count = 0;
         u32 vOffset;
         FLOD::_hw* V = (FLOD::_hw*)RImplementation.Vertex.Lock(iBatchSize * uiVertexPerImposter, firstV->geom->vb_stride, vOffset);
 
-        for (u32 j = 0; j < iBatchSize; ++j, ++i)
+        for (u32 j = 0; j < iBatchSize; ++j, ++i, iter++)
         {
             // sort out redundancy
-            R_dsgraph::_LodItem& P = lstLODs[i];
+            R_dsgraph::_LodItem& P = iter->second;
             if (P.pVisual->shader->E[shid] == cur_S)
                 cur_count++;
             else
@@ -108,15 +102,15 @@ void R_dsgraph_structure::render_lods(bool _setup_zb, bool _clear)
         cmd_list.set_xform_world(Fidentity);
         for (u32 uiPass = 0; uiPass < SHADER_PASSES_MAX; ++uiPass)
         {
-            int current = 0;
+            auto current = mapLOD.begin();
             u32 vCurOffset = vOffset;
 
-            for (int p_count : lstLODgroups)
+            for (u32 p_count : lstLODgroups)
             {
-                u32 uiNumPasses = lstLODs[current].pVisual->shader->E[shid]->passes.size();
+                u32 uiNumPasses = current->second.pVisual->shader->E[shid]->passes.size();
                 if (uiPass < uiNumPasses)
                 {
-                    cmd_list.set_Element(lstLODs[current].pVisual->shader->E[shid], uiPass);
+                    cmd_list.set_Element(current->second.pVisual->shader->E[shid], uiPass);
                     cmd_list.set_Geometry(firstV->geom);
                     cmd_list.Render(D3DPT_TRIANGLELIST, vCurOffset, 0, 4 * p_count, 0, 2 * p_count);
                 }
@@ -129,8 +123,5 @@ void R_dsgraph_structure::render_lods(bool _setup_zb, bool _clear)
         lstLODgroups.clear();
     }
 
-    lstLODs.clear();
-
-    if (_clear)
-        mapLOD.clear();
+    mapLOD.clear();
 }

@@ -81,10 +81,9 @@ extern float ps_r__WallmarkSHIFT_V;
 extern float ps_r__GLOD_ssa_start;
 extern float ps_r__GLOD_ssa_end;
 extern float ps_r__LOD;
-//.extern float		ps_r__LOD_Power		;
-extern float ps_r__ssaDISCARD;
-extern float ps_r__ssaDONTSORT;
-extern float ps_r__ssaHZBvsTEX;
+
+constexpr float ps_r__ssaDISCARD = 3.5f; // RO
+
 extern int ps_r__tf_Anisotropic;
 extern float ps_r__tf_Mipbias;
 

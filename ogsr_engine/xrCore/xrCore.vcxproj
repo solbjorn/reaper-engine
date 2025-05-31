@@ -338,7 +338,6 @@
     <ClInclude Include="_vector4.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="xrcpuid.h" />
-    <ClInclude Include="FixedMap.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="_std_extensions.h" />
