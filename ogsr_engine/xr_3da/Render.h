@@ -137,6 +137,8 @@ public:
     virtual void set_color_base(u32 f) = 0;
     virtual void set_color_gray(u32 f) = 0;
     virtual void set_color_add(const Fvector& f) = 0;
+    virtual u32 get_width(ctx_id_t context_id) = 0;
+    virtual u32 get_height(ctx_id_t context_id) = 0;
     virtual void set_cm_imfluence(float f) = 0;
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;

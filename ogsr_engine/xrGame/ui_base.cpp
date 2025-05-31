@@ -240,12 +240,13 @@ void ui_core::pp_start()
 {
     m_bPostprocess = true;
 
-    m_pp_scale_.set(float(Device.dwWidth) / float(UI_BASE_WIDTH), float(Device.dwHeight) / float(UI_BASE_HEIGHT));
-    m_2DFrustumPP.CreateFromRect(Frect().set(0.0f, 0.0f, float(Device.dwWidth), float(Device.dwHeight)));
+    m_pp_scale_.set(float(::Render->getTarget()->get_width(R__IMM_CTX_ID)) / float(UI_BASE_WIDTH), float(::Render->getTarget()->get_height(R__IMM_CTX_ID)) / float(UI_BASE_HEIGHT));
+    m_2DFrustumPP.CreateFromRect(Frect().set(0.0f, 0.0f, float(::Render->getTarget()->get_width(R__IMM_CTX_ID)), float(::Render->getTarget()->get_height(R__IMM_CTX_ID))));
 
     m_current_scale = &m_pp_scale_;
 
-    g_current_font_scale.set(float(Device.dwWidth) / float(Device.dwWidth), float(Device.dwHeight) / float(Device.dwHeight));
+    g_current_font_scale.set(float(::Render->getTarget()->get_width(R__IMM_CTX_ID)) / float(Device.dwWidth),
+                             float(::Render->getTarget()->get_height(R__IMM_CTX_ID)) / float(Device.dwHeight));
 }
 
 float ui_core::get_current_kx()

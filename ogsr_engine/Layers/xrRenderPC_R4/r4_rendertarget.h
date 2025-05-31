@@ -354,6 +354,9 @@ public:
     u32 get_width(const CBackend& cmd_list) const { return dwWidth[cmd_list.context_id]; }
     u32 get_height(const CBackend& cmd_list) const { return dwHeight[cmd_list.context_id]; }
 
+    u32 get_width(ctx_id_t context_id) override { return dwWidth[context_id]; }
+    u32 get_height(ctx_id_t context_id) override { return dwHeight[context_id]; }
+
     void set_blur(float f) { param_blur = f; }
     void set_gray(float f) { param_gray = f; }
     void set_duality_h(float f) { param_duality_h = _abs(f); }
