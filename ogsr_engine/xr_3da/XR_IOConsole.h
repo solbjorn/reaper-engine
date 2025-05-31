@@ -146,8 +146,11 @@ public:
     Fvector GetFVector(LPCSTR cmd) const;
     Fvector* GetFVectorPtr(LPCSTR cmd) const;
     IConsole_Command* GetCommand(LPCSTR cmd) const;
+    Fvector4 GetFVector4(const char* cmd) const;
 
 protected:
+    Fvector4* GetFVector4Ptr(const char* cmd) const;
+
     text_editor::line_editor* m_editor;
     text_editor::line_edit_control& ec();
 
