@@ -214,6 +214,12 @@ float rain_hemi()
     }
 }
 
+static void set_rain_wetness(float val)
+{
+    clamp(val, 0.f, 1.f);
+    g_pGamePersistent->Environment().wetness_factor = val;
+}
+
 u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
 {
     direction.normalize_safe();
@@ -1087,8 +1093,8 @@ void CLevel::script_register(lua_State* L)
         def("get_time_days", &get_time_days), def("get_time_hours", &get_time_hours), def("get_time_minutes", &get_time_minutes),
 
         def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor), def("rain_hemi", rain_hemi),
-        def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }), def("patrol_path_exists", &patrol_path_exists),
-        def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
+        def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }), def("set_rain_wetness", set_rain_wetness),
+        def("patrol_path_exists", &patrol_path_exists), def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
 
         def("prefetch_sound", prefetch_sound), def("prefetch_many_sounds", prefetch_many_sounds),
 
@@ -1142,7 +1148,7 @@ void CLevel::script_register(lua_State* L)
         def("ray_query", &PerformRayQuery),
 
         // Real Wolf 07.07.2014
-        def("vertex_id", ((u32(*)(const Fvector&))&vertex_id)), def("vertex_id", ((u32(*)(u32, const Fvector&))&vertex_id)), def("nearest_vertex_id", &nearest_vertex_id),
+        def("vertex_id", ((u32 (*)(const Fvector&))&vertex_id)), def("vertex_id", ((u32 (*)(u32, const Fvector&))&vertex_id)), def("nearest_vertex_id", &nearest_vertex_id),
 
         def("advance_game_time", &AdvanceGameTime),
 
