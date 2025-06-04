@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -35,18 +27,6 @@
     <AbseilTime>absl\time\absl_time.lib;absl\time\absl_time_zone.lib</AbseilTime>
     <AbseilLibs>$(AbseilBase);$(AbseilContainer);$(AbseilDebugging);$(AbseilHash);$(AbseilNumeric);$(AbseilRandom);$(AbseilStrings);$(AbseilSynchronization);$(AbseilTime)</AbseilLibs>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -63,12 +43,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -78,8 +52,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
   </PropertyGroup>
@@ -87,166 +59,9 @@
     <TargetName>xrEngine</TargetName>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>xrEngine</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>xrEngine</TargetName>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>xrEngine</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4652;4577;4267;</DisableSpecificWarnings>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <MinimalRebuild>false</MinimalRebuild>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0422</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVMInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <FixedBaseAddress>false</FixedBaseAddress>
-    </Link>
-    <PostBuildEvent>
-      <Command>
-        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-        "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject32.exe" -i -f "$(OutDir)\xrEngine.exe"
-        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
-      </Command>
-    </PostBuildEvent>
-    <Manifest>
-      <AdditionalManifestFiles>manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
-    </Manifest>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>x:\XR_3DA.tlb</TypeLibraryName>
-    </Midl>
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\xxHash\xxHash;$(SolutionDir)\3rd_party\Src\Xiph\ogg\ogg\include;$(SolutionDir)\3rd_party\Src\Xiph\theora\theora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>false</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <BrowseInformation>
-      </BrowseInformation>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>Default</CompileAs>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4652;4577;4267;</DisableSpecificWarnings>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0422</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LLVMInstallDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
-      <FixedBaseAddress>false</FixedBaseAddress>
-    </Link>
-    <PostBuildEvent>
-      <Command>
-        copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-        "$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\bin\minject32.exe" -i -f "$(OutDir)\xrEngine.exe"
-        copy /Y ".\manifest.xml" "$(OutDir)\xrEngine.exe.manifest"
-      </Command>
-    </PostBuildEvent>
-    <Manifest>
-      <AdditionalManifestFiles>manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
-    </Manifest>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -488,8 +303,6 @@
     <ClCompile Include="os_clipboard.cpp" />
     <ClCompile Include="splash.cpp" />
     <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
