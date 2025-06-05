@@ -418,7 +418,11 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
     // Open the file
     hSrcFile = CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
     R_ASSERT3(hSrcFile != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
-    Size = (int)GetFileSize(hSrcFile, NULL);
+
+    LARGE_INTEGER sz;
+    GetFileSizeEx(hSrcFile, &sz);
+    Size = sz.QuadPart;
+
     if (Size == 0)
         Msg("~~[%s] Found empty file: [%s]", __FUNCTION__, cFileName);
 
