@@ -52,15 +52,27 @@ void CStringTable::Init()
 
 void CStringTable::Load(LPCSTR xml_file)
 {
+    const char* lang = *pData->m_sLanguage;
+    string_path xml_file_full, _s;
     CUIXml uiXml;
-    string_path xml_file_full;
+    bool nf;
+
     strconcat(sizeof(xml_file_full), xml_file_full, xml_file, ".xml");
-    string_path _s;
-    strconcat(sizeof(_s), _s, STRING_TABLE_PATH, "\\", *(pData->m_sLanguage));
+
+    if (FS.exist(_s, "$game_config$", "text\\", xml_file_full))
+    {
+        strcpy_s(_s, STRING_TABLE_PATH);
+        nf = true;
+    }
+    else
+    {
+        strconcat(sizeof(_s), _s, STRING_TABLE_PATH, "\\", lang);
+        nf = false;
+    }
 
     bool xml_result = uiXml.Init(CONFIG_PATH, _s, xml_file_full);
     if (!xml_result)
-        Debug.fatal(DEBUG_INFO, "string table xml file not found %s, for language %s", xml_file_full, *(pData->m_sLanguage));
+        Debug.fatal(DEBUG_INFO, "string table xml file not found %s, for language %s", xml_file_full, lang);
 
     // общий список всех записей таблицы в файле
     const size_t string_num = uiXml.GetNodesNum(uiXml.GetRoot(), "string");
@@ -68,8 +80,12 @@ void CStringTable::Load(LPCSTR xml_file)
     for (size_t i = 0; i < string_num; i++)
     {
         LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", NULL);
-        LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), "string:text", i, NULL);
-        VERIFY3(string_text, "string table entry does not has a text", string_name);
+
+        string32 node;
+        strconcat(sizeof(node), node, "string:", nf ? lang : "text");
+
+        LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), node, i, nullptr);
+        ASSERT_FMT(string_text, "no attribute '%s' in node %s", node, string_name);
 
         const STRING_VALUE str_val = ParseLine(string_text, string_name, true);
         {
