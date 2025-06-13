@@ -191,7 +191,7 @@ IC void xr_strlwr(shared_str& src)
     }
 }
 
-template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
+template <class K, class V, class Hash = absl::DefaultHashContainerHash<absl::string_view>, class Eq = absl::DefaultHashContainerEq<absl::string_view>, class Allocator = xr_allocator<std::pair<const K, V>>>
 using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr_string_utils
