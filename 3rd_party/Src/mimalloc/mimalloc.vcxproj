@@ -48,6 +48,7 @@
       cmake --build . --config $(Configuration)
       copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.lib"
       copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.pdb"
+      md "$(SolutionDir)\bin_$(PlatformShortName)"
       copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
       copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
       copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"
@@ -61,6 +62,7 @@
       cmake --build . --config $(Configuration)
       copy /Y "mimalloc.dll.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.lib"
       copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\mimalloc.dll.pdb"
+      md "$(SolutionDir)\bin_$(PlatformShortName)"
       copy /Y "mimalloc.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.dll"
       copy /Y "mimalloc.dll.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc.pdb"
       copy /Y "mimalloc-redirect.dll" "$(SolutionDir)\bin_$(PlatformShortName)\mimalloc-redirect.dll"

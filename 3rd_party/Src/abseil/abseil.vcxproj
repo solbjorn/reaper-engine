@@ -60,7 +60,6 @@
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash
       copy /Y "absl\hash\absl_city.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_city.lib"
       copy /Y "absl\hash\absl_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_hash.lib"
-      copy /Y "absl\hash\absl_low_level_hash.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\hash\absl_low_level_hash.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric
       copy /Y "absl\numeric\absl_int128.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\numeric\absl_int128.lib"
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\random

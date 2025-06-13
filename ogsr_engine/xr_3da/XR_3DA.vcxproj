@@ -19,7 +19,7 @@
     <AbseilBase>absl\base\absl_base.lib;absl\base\absl_malloc_internal.lib;absl\base\absl_raw_logging_internal.lib;absl\base\absl_spinlock_wait.lib;absl\base\absl_throw_delegate.lib</AbseilBase>
     <AbseilContainer>absl\container\absl_hashtablez_sampler.lib;absl\container\absl_raw_hash_set.lib</AbseilContainer>
     <AbseilDebugging>absl\debugging\absl_stacktrace.lib</AbseilDebugging>
-    <AbseilHash>absl\hash\absl_city.lib;absl\hash\absl_hash.lib;absl\hash\absl_low_level_hash.lib</AbseilHash>
+    <AbseilHash>absl\hash\absl_city.lib;absl\hash\absl_hash.lib</AbseilHash>
     <AbseilNumeric>absl\numeric\absl_int128.lib</AbseilNumeric>
     <AbseilRandom>absl\random\absl_random_distributions.lib;absl\random\absl_random_internal_entropy_pool.lib;absl\random\absl_random_internal_platform.lib;absl\random\absl_random_internal_randen.lib;absl\random\absl_random_internal_randen_hwaes.lib;absl\random\absl_random_internal_randen_hwaes_impl.lib;absl\random\absl_random_internal_randen_slow.lib;absl\random\absl_random_internal_seed_material.lib;absl\random\absl_random_seed_gen_exception.lib;absl\random\absl_random_seed_sequences.lib</AbseilRandom>
     <AbseilStrings>absl\strings\absl_string_view.lib</AbseilStrings>
