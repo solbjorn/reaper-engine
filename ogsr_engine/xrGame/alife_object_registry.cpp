@@ -15,6 +15,8 @@ CALifeObjectRegistry::CALifeObjectRegistry(LPCSTR section) {}
 
 CALifeObjectRegistry::~CALifeObjectRegistry()
 {
+    m_object_ids.clear();
+
     OBJECT_REGISTRY::iterator I = m_objects.begin();
     OBJECT_REGISTRY::iterator E = m_objects.end();
     for (; I != E; ++I)
@@ -145,6 +147,7 @@ void CALifeObjectRegistry::load(IReader& file_stream)
     R_ASSERT2(file_stream.find_chunk(OBJECT_CHUNK_DATA), "Can't find chunk OBJECT_CHUNK_DATA!");
 
     m_objects.clear();
+    m_object_ids.clear();
 
     u32 count = file_stream.r_u32();
     CSE_ALifeDynamicObject** objects = (CSE_ALifeDynamicObject**)_alloca(count * sizeof(CSE_ALifeDynamicObject*));

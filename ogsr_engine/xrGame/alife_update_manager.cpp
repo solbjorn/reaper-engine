@@ -238,10 +238,8 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
 
     can_register_objects(true);
 
-    CALifeObjectRegistry::OBJECT_REGISTRY::iterator I = objects().objects().begin();
-    CALifeObjectRegistry::OBJECT_REGISTRY::iterator E = objects().objects().end();
-    for (; I != E; ++I)
-        (*I).second->on_register();
+    for (auto& I : objects().objects())
+        I.second->on_register();
 
     save(save_name);
 

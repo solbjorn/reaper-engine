@@ -108,11 +108,26 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
     }
 
     // PROCESS NAME; Name this entity
-    if (CL && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
+    const char* name = E->name_replace();
+    if (!name || !name[0] || !xr_strcmp(name, E->s_name.c_str()))
     {
-        CL->owner = E;
-        //		E->set_name_replace	(CL->name);
+        string256 s_name_replace;
+        string16 S1;
+
+        strcpy_s(s_name_replace, E->s_name.c_str());
+        if (E->ID < 1000)
+            strcat_s(s_name_replace, "0");
+        if (E->ID < 100)
+            strcat_s(s_name_replace, "0");
+        if (E->ID < 10)
+            strcat_s(s_name_replace, "0");
+        strcat_s(s_name_replace, itoa(E->ID, S1, 10));
+
+        E->set_name_replace(s_name_replace);
     }
+
+    if (CL && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+        CL->owner = E;
 
     // PROCESS RP;	 3D position/orientation
     PerformRP(E);

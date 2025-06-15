@@ -60,15 +60,7 @@ bool valid_object_id(const CALifeSimulator* self, ALife::_OBJECT_ID object_id)
 CSE_ALifeDynamicObject* alife_object(const CALifeSimulator* self, LPCSTR name)
 {
     VERIFY(self);
-
-    for (CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator it = self->objects().objects().begin(); it != self->objects().objects().end(); it++)
-    {
-        CSE_ALifeDynamicObject* obj = it->second;
-        if (xr_strcmp(obj->name_replace(), name) == 0)
-            return (it->second);
-    }
-
-    return (0);
+    return self->objects().object_by_name(name);
 }
 
 CSE_ALifeDynamicObject* alife_object(const CALifeSimulator* self, ALife::_OBJECT_ID id, bool no_assert)
@@ -402,9 +394,9 @@ void CALifeSimulator::script_register(lua_State* L)
                    .def("object", (CSE_ALifeDynamicObject * (*)(const CALifeSimulator*, ALife::_OBJECT_ID, bool))(alife_object))
                    .def("is_unloading", &sim_is_unloading)
                    .def("story_object", (CSE_ALifeDynamicObject * (*)(const CALifeSimulator*, ALife::_STORY_ID))(alife_story_object))
-                   .def("set_switch_online", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_online))
-                   .def("set_switch_offline", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_offline))
-                   .def("set_interactive", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_interactive))
+                   .def("set_switch_online", (void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_online))
+                   .def("set_switch_offline", (void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_offline))
+                   .def("set_interactive", (void (CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_interactive))
                    .def("kill_entity", &CALifeSimulator::kill_entity)
                    .def("kill_entity", &kill_entity0)
                    .def("kill_entity", &kill_entity1)
