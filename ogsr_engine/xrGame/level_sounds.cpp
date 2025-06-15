@@ -59,13 +59,9 @@ static bool should_play(const Ivector2& m_ActiveTime, int game_time)
     return game_time >= m_ActiveTime.x || game_time < m_ActiveTime.y;
 }
 
-extern float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ);
-
 void SStaticSound::Update(u32 game_time, u32 global_time)
 {
-    Fvector occ[3];
-    float occluder_volume = SoundRenderGetOcculution(m_Position, .2f, occ);
-    float vol = m_Volume * occluder_volume;
+    const float vol = m_Volume;
 
     if (should_play(m_ActiveTime, int(game_time)))
     {

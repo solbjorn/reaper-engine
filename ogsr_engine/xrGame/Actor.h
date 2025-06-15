@@ -122,7 +122,7 @@ public:
     // Render
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual BOOL renderable_ShadowGenerate();
-    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power);
+    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     float m_snd_noise;
 #ifdef DEBUG

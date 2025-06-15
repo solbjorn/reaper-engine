@@ -2,6 +2,7 @@
 #define SoundRender_EmitterH
 
 #include "soundrender.h"
+#include "SoundRender_Core.h"
 #include "soundrender_environment.h"
 
 class xr_task_group;
@@ -27,6 +28,10 @@ public:
         stSimulatingLooped,
     };
 
+private:
+    CSoundRender_Core::Occ occluder;
+    u32 updateOccVolumeFrame{};
+
 public:
 #ifdef DEBUG
     u32 dbg_ID;
@@ -44,19 +49,17 @@ public:
     float smooth_volume;
     float occluder_volume; // USER
     float fade_volume;
-    Fvector occluder[3]{};
 
     State m_current_state;
     u32 m_stream_cursor;
     u32 m_cur_handle_cursor;
     CSound_params p_source{};
-    CSoundRender_Environment e_current;
-    CSoundRender_Environment e_target;
 
     int iPaused;
     BOOL bMoved;
     BOOL b2D;
     BOOL bStopping;
+    float fStoppingSpeed_k{1.f};
     BOOL bRewind;
     float fTimeStarted; // time of "Start"
     float fTimeToStop; // time to "Stop"
@@ -87,7 +90,13 @@ private:
 
     void wait_prefill() const;
 
+    bool canceling{};
+
 public:
+    void updateOccVolume(float dt);
+
+    float smooth_hf_volume;
+
     void Event_Propagade();
     void Event_ReleaseOwner();
 
@@ -118,6 +127,12 @@ public:
         p_source.volume = vol;
     }
 
+    virtual void set_gain(float low_gain, float high_gain)
+    {
+        p_source.low_gain = low_gain;
+        p_source.high_gain = high_gain;
+    }
+
     virtual void set_priority(float p) { priority_scale = p; }
     virtual void set_time(float t); //--#SM+#--
     virtual const CSound_params* get_params() { return &p_source; }
@@ -131,9 +146,8 @@ public:
     void update(float time, float dt);
     void render();
     BOOL update_culling(float dt);
-    void update_environment(float dt);
     void rewind();
-    virtual void stop(BOOL bDeffered);
+    void stop(BOOL bDeffered, float speed_k = 1.f);
     void pause(BOOL bVal, int id);
 
     virtual u32 play_time();
@@ -143,6 +157,10 @@ public:
 
 private:
     void stop_target();
+
+    float applyOccVolume() const;
+    float applyOccHfVolume() const;
+    void initStartingVolumes();
 };
 
 #endif

@@ -16,9 +16,13 @@ extern float psSoundVEffects;
 extern float psSoundVFactor;
 extern float psSoundVMusic;
 extern float psSoundVMusicFactor;
+
 extern float psSoundRolloff;
 extern float psSoundOcclusionScale;
-extern float psSoundLinearFadeFactor; //--#SM+#--
+extern float psSoundOcclusionMtl;
+extern float psSoundOcclusionHf;
+extern float psSoundFadeSpeed;
+
 extern Flags32 psSoundFlags;
 extern int psSoundTargets;
 extern xr_token* snd_devices_token;
@@ -153,7 +157,7 @@ public:
     IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0);
 
     IC void stop();
-    IC void stop_deffered();
+    IC void stop_deffered(float speed_k);
 
     IC void set_position(const Fvector& pos);
     IC void set_frequency(float freq);
@@ -161,6 +165,7 @@ public:
     IC void set_volume(float vol);
     IC void set_priority(float vol);
     IC void set_time(float t); //--#SM+#--
+    IC void set_gain(float low_gain, float high_gain);
 
     IC const CSound_params* get_params();
     IC void set_params(CSound_params* p);
@@ -174,7 +179,6 @@ public:
     virtual float length_sec() const = 0;
     virtual u32 game_type() const = 0;
     virtual LPCSTR file_name() const = 0;
-    virtual u16 channels_num() const = 0;
     virtual u32 bytes_total() const = 0;
 };
 
@@ -226,6 +230,8 @@ public:
     float min_distance;
     float max_distance;
     float max_ai_distance;
+    float low_gain{1.f};
+    float high_gain{1.f};
 
 private:
     bool set{};
@@ -250,7 +256,7 @@ public:
     IC virtual void update_velocity(const float dt)
     {
         float a = soundSmoothingParams::getTimeDeltaSmoothing();
-        int p = soundSmoothingParams::power;
+        float p = soundSmoothingParams::power;
         accVelocity.x = soundSmoothingParams::getSmoothedValue(curVelocity.x * p / dt, accVelocity.x, a);
         accVelocity.y = soundSmoothingParams::getSmoothedValue(curVelocity.y * p / dt, accVelocity.y, a);
         accVelocity.z = soundSmoothingParams::getSmoothedValue(curVelocity.z * p / dt, accVelocity.z, a);
@@ -271,7 +277,8 @@ public:
     virtual void set_volume(float vol) = 0;
     virtual void set_priority(float vol) = 0;
     virtual void set_time(float t) = 0; //--#SM+#--
-    virtual void stop(BOOL bDeffered) = 0;
+    virtual void set_gain(float low_gain, float high_gain) = 0;
+    virtual void stop(BOOL bDeffered, float speed_k = 1.f) = 0;
     virtual const CSound_params* get_params() = 0;
     virtual u32 play_time() = 0;
 };
@@ -318,7 +325,7 @@ public:
 };
 
 /// definition (Sound Callback)
-typedef void __stdcall sound_event(ref_sound_data_ptr S, float range);
+typedef void __stdcall sound_event(ref_sound_data_ptr S, float range, float time_to_stop);
 
 /// definition (Sound Manager Interface)
 class CSound_manager_interface
@@ -351,6 +358,8 @@ public:
     virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0) = 0;
 
     virtual void set_master_volume(float f = 1.f) = 0;
+    virtual void set_master_gain(float low_pass, float high_pass) = 0;
+
     virtual void set_geometry_env(IReader* I) = 0;
     virtual void set_geometry_som(IReader* I) = 0;
     virtual void set_geometry_occ(CDB::MODEL* M) = 0;
@@ -364,6 +373,8 @@ public:
 
     virtual void object_relcase(CObject* obj) = 0;
     virtual const Fvector& listener_position() = 0;
+
+    virtual float get_time() const = 0;
 
     virtual CSound_environment* DbgCurrentEnv() = 0;
     virtual void DbgCurrentEnvPaused(bool v) = 0;
@@ -473,6 +484,13 @@ IC void ref_sound::set_time(float t)
         _feedback()->set_time(t);
 }
 
+inline void ref_sound::set_gain(float low_gain, float high_gain)
+{
+    VERIFY(!::Sound->i_locked());
+    if (_feedback())
+        _feedback()->set_gain(low_gain, high_gain);
+}
+
 IC void ref_sound::stop()
 {
     VERIFY(!::Sound->i_locked());
@@ -480,11 +498,11 @@ IC void ref_sound::stop()
         _feedback()->stop(FALSE);
 }
 
-IC void ref_sound::stop_deffered()
+IC void ref_sound::stop_deffered(float speed_k = 1.f)
 {
     VERIFY(!::Sound->i_locked());
     if (_feedback())
-        _feedback()->stop(TRUE);
+        _feedback()->stop(true, speed_k);
 }
 
 IC const CSound_params* ref_sound::get_params()
@@ -492,8 +510,8 @@ IC const CSound_params* ref_sound::get_params()
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         return _feedback()->get_params();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 IC void ref_sound::set_params(CSound_params* p)

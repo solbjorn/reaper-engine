@@ -12,22 +12,17 @@ CSoundRender_Source* CSoundRender_Core::i_create_source(LPCSTR name)
     if (strext(id))
         *strext(id) = 0;
 
-    s_sources_lock.lock();
+    std::scoped_lock lock(s_sources_lock);
 
     const auto it = s_sources.find(id);
     if (it != s_sources.end())
-    {
-        s_sources_lock.unlock();
         return it->second;
-    }
 
     // Load a _new one
     CSoundRender_Source* S = xr_new<CSoundRender_Source>();
     S->load(id);
 
-    s_sources_lock.lock();
     s_sources.emplace(id, S);
-    s_sources_lock.unlock();
 
     return S;
 }

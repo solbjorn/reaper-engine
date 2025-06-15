@@ -9,13 +9,16 @@ class CSoundRender_Target
 {
 protected:
     CSoundRender_Emitter* m_pEmitter{};
-    float priority{-1};
-    BOOL rendering{};
 
 public:
+    float priority{-1.f};
     bool bAlSoft{};
     bool bEFX{};
 
+protected:
+    bool rendering{};
+
+public:
     CSoundRender_Target() = default;
     virtual ~CSoundRender_Target() = default;
 
@@ -36,7 +39,6 @@ public:
     virtual void alAuxInit(ALuint slot) = 0;
 
     ICF auto get_priority() const { return priority; }
-    ICF void set_priority(const float p) { priority = p; }
 };
 
 #endif

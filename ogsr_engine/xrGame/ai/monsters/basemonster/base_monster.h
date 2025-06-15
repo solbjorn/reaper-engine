@@ -109,7 +109,7 @@ public:
 
     virtual void init() {}
 
-    virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power);
+    virtual void feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
     virtual BOOL feel_vision_isRelevant(CObject* O);
     virtual BOOL feel_touch_on_contact(CObject* O);
     virtual BOOL feel_touch_contact(CObject*);

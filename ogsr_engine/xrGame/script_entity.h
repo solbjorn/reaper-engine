@@ -29,9 +29,10 @@ public:
         int m_sound_type;
         Fvector m_position;
         float m_sound_power;
+        float m_time_to_stop;
 
-        IC CSavedSound(CScriptGameObject* lua_game_object, int sound_type, const Fvector& position, float sound_power)
-            : m_lua_game_object(lua_game_object), m_sound_type(sound_type), m_position(position), m_sound_power(sound_power)
+        IC CSavedSound(CScriptGameObject* lua_game_object, int sound_type, const Fvector& position, float sound_power, float time_to_stop)
+            : m_lua_game_object(lua_game_object), m_sound_type(sound_type), m_position(position), m_sound_power(sound_power), m_time_to_stop(time_to_stop)
         {}
     };
 
@@ -58,6 +59,7 @@ public:
 
 protected:
     ref_sound* m_current_sound;
+
     xr_vector<CSavedSound> m_saved_sounds;
 
 public:
@@ -97,7 +99,7 @@ public:
     virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignMonsterAction(CScriptEntityAction* tpEntityAction);
 
-    virtual void sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power);
+    virtual void sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power, float time_to_stop);
 
     virtual LPCSTR GetPatrolPathName();
     bool bfScriptAnimation();
@@ -107,10 +109,11 @@ public:
     virtual CEntity* GetCurrentEnemy();
     virtual CEntity* GetCurrentCorpse();
     virtual int get_enemy_strength();
+
     void process_sound_callbacks();
 
     void set_script_capture(bool val = true) { m_can_capture = val; }
-    bool can_script_capture() { return m_can_capture; }
+    bool can_script_capture() const { return m_can_capture; }
 
 public:
     IC CGameObject& object() const;

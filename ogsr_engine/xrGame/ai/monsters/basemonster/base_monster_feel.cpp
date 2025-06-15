@@ -28,7 +28,7 @@
 #include "../../../ActorEffector.h"
 #include "../../../../xr_3da/CameraBase.h"
 
-void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power)
+void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop)
 {
     if (!g_Alive())
         return;
@@ -70,7 +70,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
         HitMemory.add_hit(who, eSideFront);
 
     // execute callback
-    sound_callback(who, eType, Position, power);
+    sound_callback(who, eType, Position, power, time_to_stop);
 
     // register in sound memory
     if (power >= db().m_fSoundThreshold)
@@ -249,7 +249,7 @@ void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16
     if (!g_Alive())
         return;
 
-    feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, 0, who->Position(), 1.f);
+    feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, nullptr, who->Position(), 1.f, ::Sound->get_time() + 2.f);
     if (g_Alive())
         sound().play(MonsterSound::eMonsterSoundTakeDamage);
 

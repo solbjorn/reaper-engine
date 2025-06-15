@@ -82,7 +82,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
     }
     else
     {
-        //получить треугольник и узнать его материал
+        // получить треугольник и узнать его материал
         CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
         const auto* mtl = GMLib.GetMaterialByIdx(T->material);
         if (mtl->Flags.is(SGameMtl::flPassable))
@@ -152,11 +152,8 @@ void CActor::PickupModeUpdate_COD()
         return;
     }
 
-    //подбирание объекта
-    if (inventory().m_pTarget 
-        && inventory().m_pTarget->Useful() 
-        && m_pUsableObject 
-        && m_pUsableObject->nonscript_usable() &&
+    // подбирание объекта
+    if (inventory().m_pTarget && inventory().m_pTarget->Useful() && m_pUsableObject && m_pUsableObject->nonscript_usable() &&
         !Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)))
     {
         CInventoryItem* pNearestItem = inventory().m_pTarget;
@@ -323,7 +320,7 @@ void CActor::PickupInfoDraw(CObject* object)
     HUD().Font().pFontLetterica16Russian->Out(x, y, draw_str);
 }
 
-void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)
+void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop)
 {
     if (who == this)
         m_snd_noise = _max(m_snd_noise, power);

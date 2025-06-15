@@ -10,7 +10,7 @@ extern float psSoundVEffects;
 
 void CSoundRender_Emitter::set_position(const Fvector& pos)
 {
-    if (source()->channels_num() == 1 && _valid(pos))
+    if (!is_2D() && _valid(pos))
         p_source.update_position(pos);
     else
         p_source.update_position({});
@@ -40,9 +40,6 @@ CSoundRender_Emitter::CSoundRender_Emitter()
     smooth_volume = 1.f;
     occluder_volume = 1.f;
     fade_volume = 1.f;
-    occluder[0].set(0, 0, 0);
-    occluder[1].set(0, 0, 0);
-    occluder[2].set(0, 0, 0);
     m_current_state = stStopped;
     set_cursor(0);
     bMoved = TRUE;
@@ -77,7 +74,7 @@ void CSoundRender_Emitter::Event_ReleaseOwner()
 
     for (u32 it = 0; it < events.size(); it++)
     {
-        if (owner_data == events[it].first)
+        if (owner_data == events[it].sound_data)
         {
             events.erase(events.begin() + it);
             it--;
@@ -98,6 +95,7 @@ void CSoundRender_Emitter::Event_Propagade()
         return;
 
     VERIFY(_valid(p_source.volume));
+
     // Calculate range
     const float clip = p_source.max_ai_distance * p_source.volume;
     const float range = std::min(p_source.max_ai_distance, clip);
@@ -105,7 +103,7 @@ void CSoundRender_Emitter::Event_Propagade()
         return;
 
     // Inform objects
-    SoundRender->s_events.emplace_back(owner_data, range);
+    SoundRender->s_events.emplace_back(owner_data, range, fTimeToStop);
 }
 
 void CSoundRender_Emitter::switch_to_2D()
@@ -264,19 +262,33 @@ void CSoundRender_Emitter::dispatch_prefill()
 {
     wait_prefill();
 
-    if (filled_blocks >= sdef_target_count_prefill)
+    if (canceling)
         return;
 
-    tg->run([this] {
-        size_t next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
+    float fDeltaTime = SoundRender->fTimer_Delta;
 
-        while (filled_blocks < sdef_target_count_prefill)
+    tg->run([this, fDeltaTime] {
+        if (filled_blocks < sdef_target_count_prefill)
         {
-            auto& block = temp_buf[next_block_to_fill];
-            fill_block(block.data(), block.size());
+            size_t next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
 
-            next_block_to_fill = (next_block_to_fill + 1) % sdef_target_count_prefill;
-            filled_blocks++;
+            while (filled_blocks < sdef_target_count_prefill)
+            {
+                if (canceling)
+                    break;
+
+                auto& block = temp_buf[next_block_to_fill];
+                fill_block(block.data(), block.size());
+
+                next_block_to_fill = (next_block_to_fill + 1) % sdef_target_count_prefill;
+                filled_blocks++;
+            }
+        }
+
+        if (!canceling)
+        {
+            // Update occlusion
+            updateOccVolume(fDeltaTime);
         }
     });
 }

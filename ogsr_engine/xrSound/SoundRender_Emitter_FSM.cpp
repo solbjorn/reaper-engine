@@ -63,10 +63,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         fTimeToStop = fTime + (get_length_sec() / p_source.freq); //--#SM+#--
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
-        occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) *
-            (b2D ? 1.f : occluder_volume);
-        e_current = e_target = *SoundRender->get_environment(p_source.position);
+        initStartingVolumes();
 
         if (update_culling(dt))
         {
@@ -92,10 +89,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         fTimeToStop = TIME_TO_STOP_INFINITE;
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
-        occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) *
-            (b2D ? 1.f : occluder_volume);
-        e_current = e_target = *SoundRender->get_environment(p_source.position);
+        initStartingVolumes();
 
         if (update_culling(dt))
         {
@@ -134,8 +128,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
             }
             else
             {
-                // We are still playing
-                update_environment(dt);
+                if (bMoved)
+                    p_source.update_velocity(dt);
             }
         }
         break;
@@ -184,8 +178,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         }
         else
         {
-            // We are still playing
-            update_environment(dt);
+            if (bMoved)
+                p_source.update_velocity(dt);
         }
         break;
     case stSimulatingLooped:
@@ -261,8 +255,9 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     VERIFY2(!!(owner_data) || (!(owner_data) && (m_current_state == stStopped)), "owner");
     VERIFY2(owner_data ? *(int*)(owner_data->feedback) : 1, "owner");
 
-    // footer
     bMoved = FALSE;
+
+    // footer
     if (m_current_state != stStopped)
     {
         if (fTime >= fTimeToPropagade)
@@ -276,7 +271,19 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     }
 }
 
-IC void volume_lerp(float& c, float t, float s, float dt)
+void CSoundRender_Emitter::render()
+{
+    target->fill_parameters(SoundRender);
+
+    if (target->get_Rendering())
+        target->update();
+    else
+        target->render();
+
+    dispatch_prefill();
+}
+
+static IC void volume_lerp(float& c, float t, float s, float dt)
 {
     const float diff = t - c;
     const float diff_a = _abs(diff);
@@ -288,99 +295,138 @@ IC void volume_lerp(float& c, float t, float s, float dt)
     c += (diff / diff_a) * mot;
 }
 
-#include "../COMMON_AI/ai_sounds.h"
-
 BOOL CSoundRender_Emitter::update_culling(float dt)
 {
+    float fade_speed = psSoundFadeSpeed;
+
+    if (bStopping)
+        fade_speed *= fStoppingSpeed_k;
+
     if (b2D)
     {
         occluder_volume = 1.f;
-        fade_volume += dt * 10.f * (bStopping ? -1.f : 1.f);
+
+        fade_volume += dt * fade_speed * (bStopping ? -1.f : 1.f);
     }
     else
     {
-        // Check range
-        const float dist = SoundRender->listener_position().distance_to(p_source.position);
-        if (dist > p_source.max_distance)
+        const float curr_vol = att() * applyOccVolume();
+        const float fade_dir = bStopping || (curr_vol) < psSoundCull ? -1.f : 1.f;
+
+        // Calc attenuated volume
+        fade_volume += dt * fade_speed * fade_dir;
+
+        // Если звук уже звучит и мы от него отошли дальше его максимальной
+        // дистанции, не будем обрывать его резко. Пусть громкость плавно
+        // снизится до минимального и потом уже выключается. А вот если звук еще
+        // даже и не начинал звучать, то можно сразу отсекать его по расстоянию.
+        // Ничего внезапно не замолчит, т.к. еще ничего и не было слышно. Звучит
+        // звук или не звучит - будем определять по наличию target, т.е. тому,
+        // что обеспечивает физическое звучание.
+        if (!target && fade_dir < 0.f)
         {
             smooth_volume = 0;
             return FALSE;
         }
-
-        // Calc attenuated volume
-        float fade_scale = bStopping ||
-                (att() * p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) <
-                 psSoundCull) ?
-            -1.f :
-            1.f;
-        fade_volume += dt * 10.f * fade_scale;
-
-        // Update occlusion
-        const float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        volume_lerp(occluder_volume, occ, 1.f, dt);
-        clamp(occluder_volume, 0.f, 1.f);
     }
+
     clamp(fade_volume, 0.f, 1.f);
+
     // Update smoothing
-    smooth_volume = .9f * smooth_volume +
-        .1f *
-            (p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic * psSoundVMusicFactor) * occluder_volume *
-             fade_volume);
+    smooth_volume = .9f * smooth_volume + .1f * applyOccVolume() * fade_volume;
+    smooth_hf_volume = .9f * smooth_hf_volume + .1f * applyOccHfVolume() * fade_volume;
+
     if (smooth_volume < psSoundCull)
         return FALSE; // allow volume to go up
+
     // Here we has enought "PRIORITY" to be soundable
     // If we are playing already, return OK
     // --- else check availability of resources
     if (target)
-    {
-        target->set_priority(priority());
         return TRUE;
-    }
 
     return SoundRender->i_allow_play(this);
 }
 
-float CSoundRender_Emitter::priority() const { return smooth_volume * att() * priority_scale; }
+float CSoundRender_Emitter::priority() const { return b2D ? 1000.f : smooth_volume * att() * priority_scale; }
 
+/*
+The AL_INVERSE_DISTANCE_CLAMPED model works according to the following formula:
+distance = max(distance,AL_REFERENCE_DISTANCE);
+distance = min(distance,AL_MAX_DISTANCE);
+gain = AL_REFERENCE_DISTANCE / (AL_REFERENCE_DISTANCE +
+ AL_ROLLOFF_FACTOR *
+ (distance – AL_REFERENCE_DISTANCE));
+*/
 float CSoundRender_Emitter::att() const
 {
     float dist = SoundRender->listener_position().distance_to(p_source.position);
-    float rolloff_dist = psSoundRolloff * dist;
-
-    // Calc linear fade --#SM+#--
-    // https://www.desmos.com/calculator/lojovfugle
-    const float fMinDistDiff = rolloff_dist - p_source.min_distance;
-    float att;
-    if (fMinDistDiff > 0.f)
-    {
-        const float fMaxDistDiff = p_source.max_distance - p_source.min_distance;
-        att = pow(1.f - (fMinDistDiff / fMaxDistDiff), psSoundLinearFadeFactor);
-    }
-    else
-        att = 1.f;
+    if (dist < p_source.min_distance)
+        dist = p_source.min_distance;
+    else if (dist > p_source.max_distance)
+        return 0.f; // dist = p_source.max_distance;
+    float att = p_source.min_distance / (p_source.min_distance + psSoundRolloff * (dist - p_source.min_distance));
     clamp(att, 0.f, 1.f);
 
     return att;
 }
 
-void CSoundRender_Emitter::update_environment(float dt)
+float CSoundRender_Emitter::applyOccVolume() const
 {
-    if (bMoved)
+    float vol = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic);
+
+    if (!b2D)
     {
-        e_target = *SoundRender->get_environment(p_source.position);
-        p_source.update_velocity(dt);
+        if (psSoundOcclusionScale < 1.f && occluder.valid)
+            vol *= psSoundOcclusionScale;
+        if (psSoundOcclusionMtl > 0.f && occluder_volume < 1.f)
+            vol = vol * (1.f - psSoundOcclusionMtl) + vol * psSoundOcclusionMtl * occluder_volume;
     }
-    e_current.lerp(e_current, e_target, dt);
+
+    return vol;
 }
 
-void CSoundRender_Emitter::render()
+float CSoundRender_Emitter::applyOccHfVolume() const
 {
-    target->fill_parameters(SoundRender);
+    if (psSoundOcclusionHf > 0.f && occluder_volume < 1.f)
+        return 1.f - psSoundOcclusionHf + occluder_volume * psSoundOcclusionHf;
+    return 1.f;
+}
 
-    if (target->get_Rendering())
-        target->update();
+void CSoundRender_Emitter::initStartingVolumes()
+{
+    fade_volume = 1.f;
+    occluder_volume = (b2D || att() < psSoundCull) ? 1.f : SoundRender->get_occlusion(p_source.position, &occluder);
+    smooth_volume = applyOccVolume();
+    smooth_hf_volume = applyOccHfVolume();
+}
+
+#include "../COMMON_AI/ai_sounds.h"
+
+void CSoundRender_Emitter::updateOccVolume(float dt)
+{
+    if (updateOccVolumeFrame == marker)
+        return;
+
+    updateOccVolumeFrame = marker;
+
+    if (target)
+    {
+        // Звук воспроизводится или пока ещё воспроизводится
+        const float occ = owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT ? 1.0f : SoundRender->get_occlusion(p_source.position, &occluder);
+        volume_lerp(occluder_volume, occ, 1.f, dt);
+    }
     else
-        target->render();
-
-    dispatch_prefill();
+    {
+        // Или звук только что запустили, или его (пока ещё?) не слышно. Нужно
+        // проверить, если его не слышно потому, что он слишком далеко, тогда не
+        // будем зря дёргать `get_occlusion`. `occluder_volume` нужно установить
+        // сразу, а не через `volume_lerp`, что бы, если звук зазвучит на
+        // следующем кадре, он сразу с правильной громкостью начал
+        // воспроизводится. По этой же причине сразу установим `SmoothHfVolume`,
+        // что бы высокие частоты правильную громкость имели.
+        occluder_volume = (att() < psSoundCull) ? 1.f : SoundRender->get_occlusion(p_source.position, &occluder);
+        smooth_hf_volume = applyOccHfVolume();
+    }
+    clamp(occluder_volume, 0.f, 1.f);
 }

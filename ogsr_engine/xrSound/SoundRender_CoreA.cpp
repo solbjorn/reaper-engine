@@ -3,14 +3,12 @@
 #include "soundrender_coreA.h"
 #include "soundrender_targetA.h"
 
-#include <efx.h>
-
 namespace soundSmoothingParams
 {
-float power = 1.8;
+float power = 0.f; // default is 1.8f
 int steps = 15;
 float alpha = getAlpha();
-IC float getAlpha() { return 2.0f / (steps + 1); }
+IC float getAlpha() { return 2.0f / ((float)steps + 1.f); }
 IC float getTimeDeltaSmoothing()
 {
     return alpha;
@@ -110,10 +108,8 @@ void CSoundRender_CoreA::_restart()
         {
             const bool is_al_soft = deviceDesc.is_al_soft;
 
-            for (u32 it = 0; it < s_targets.size(); it++)
+            for (const auto& T : s_targets)
             {
-                CSoundRender_Target* T = s_targets[it];
-
                 T->alAuxInit(AL_EFFECTSLOT_NULL);
 
                 T->bEFX = false;
@@ -123,10 +119,8 @@ void CSoundRender_CoreA::_restart()
 
             init_device_properties(is_al_soft);
 
-            for (u32 it = 0; it < s_targets.size(); it++)
+            for (const auto& T : s_targets)
             {
-                CSoundRender_Target* T = s_targets[it];
-
                 if (bEFX)
                 {
                     T->alAuxInit(slot);
@@ -308,7 +302,6 @@ void CSoundRender_CoreA::_initialize(int stage)
             if (T->_initialize())
             {
                 if (bEFX)
-
                 {
                     T->alAuxInit(slot);
                 }
@@ -321,6 +314,7 @@ void CSoundRender_CoreA::_initialize(int stage)
             else
             {
                 Msg("! SOUND: OpenAL: Max targets - [%u]", tit);
+
                 T->_destroy();
                 xr_delete(T);
                 break;
@@ -381,7 +375,7 @@ void CSoundRender_CoreA::update_listener(const Fvector& P, const Fvector& D, con
     inherited::update_listener(P, D, N, R, dt);
 
     float a = soundSmoothingParams::getTimeDeltaSmoothing();
-    int p = soundSmoothingParams::power;
+    float p = soundSmoothingParams::power;
     ListenerSmooth.accVelocity.x = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.x * p / dt, ListenerSmooth.accVelocity.x, a);
     ListenerSmooth.accVelocity.y = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.y * p / dt, ListenerSmooth.accVelocity.y, a);
     ListenerSmooth.accVelocity.z = soundSmoothingParams::getSmoothedValue(ListenerSmooth.curVelocity.z * p / dt, ListenerSmooth.accVelocity.z, a);

@@ -730,11 +730,17 @@ void CCC_Register()
     CMD2(CCC_Float, "snd_volume_eff", &psSoundVEffects);
     CMD2(CCC_Float, "snd_volume_music", &psSoundVMusic);
     CMD1(CCC_SND_Restart, "snd_restart");
-    // CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
+
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EFX);
     CMD3(CCC_Mask, "snd_use_float32", &psSoundFlags, ss_UseFloat32);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
-    CMD4(CCC_Float, "snd_linear_fade", &psSoundLinearFadeFactor, 0.1f, 1.f);
+
+    CMD4(CCC_Float, "snd_rolloff", &psSoundRolloff, 0.1f, 2.f);
+    CMD4(CCC_Float, "snd_fade_speed", &psSoundFadeSpeed, 1.f, 10.f);
+    CMD4(CCC_Float, "snd_occ_scale", &psSoundOcclusionScale, 0.1f, 1.f);
+    CMD4(CCC_Float, "snd_occ_hf", &psSoundOcclusionHf, 0.f, 1.f);
+    CMD4(CCC_Float, "snd_occ_mtl", &psSoundOcclusionMtl, 0.f, 1.f);
+
     // Doppler effect power
     CMD4(CCC_Float, "snd_doppler_power", &soundSmoothingParams::power, 0.f, 5.f);
     CMD4(CCC_SoundParamsSmoothing, "snd_doppler_smoothing", &soundSmoothingParams::steps, 1, 100);

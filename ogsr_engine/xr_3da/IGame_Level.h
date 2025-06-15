@@ -70,7 +70,8 @@ protected:
 public:
     CObjectList Objects;
     CObjectSpace ObjectSpace;
-    CCameraManager& Cameras() { return *m_pCameras; };
+
+    CCameraManager& Cameras() const { return *m_pCameras; }
 
     BOOL bReady;
 
@@ -83,6 +84,7 @@ public: // deferred sound events
         Feel::Sound* dest;
         ref_sound_data_ptr source;
         float power;
+        float time_to_stop;
     };
     xr_vector<_esound_delegate> snd_Events;
 
@@ -116,7 +118,7 @@ public:
     void SetEntity(CObject* O) { pCurrentEntity = pCurrentViewEntity = O; }
     void SetViewEntity(CObject* O) { pCurrentViewEntity = O; }
 
-    void SoundEvent_Register(ref_sound_data_ptr S, float range);
+    void SoundEvent_Register(ref_sound_data_ptr S, float range, float time_to_stop);
     void SoundEvent_Dispatch();
     void SoundEvent_OnDestDestroy(Feel::Sound*);
 

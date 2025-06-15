@@ -188,12 +188,10 @@ void CSoundRender_Environment::saveIni(CInifile* ini, LPCSTR name) const
 //////////////////////////////////////////////////////////////////////////
 void SoundEnvironment_LIB::Load(LPCSTR f_name)
 {
-    // R_ASSERT(library.empty());
-
     IReader* F = FS.r_open(f_name);
     IReader* C;
 
-    for (u32 chunk = 0; 0 != (C = F->open_chunk(chunk)); chunk++)
+    for (u32 chunk = 0; nullptr != (C = F->open_chunk(chunk)); chunk++)
     {
         CSoundRender_Environment* E = xr_new<CSoundRender_Environment>();
         if (E->load(C))
@@ -240,17 +238,17 @@ void SoundEnvironment_LIB::LoadIni(CInifile* ini)
 
 bool SoundEnvironment_LIB::SaveIni(CInifile* ini) const
 {
-    for (u32 chunk = 0; chunk < library.size(); chunk++)
-    {
-        library[chunk]->saveIni(ini, library[chunk]->name.c_str());
-    }
+    for (auto chunk : library)
+        chunk->saveIni(ini, chunk->name.c_str());
+
     return true;
 }
 
 void SoundEnvironment_LIB::Unload()
 {
-    for (u32 chunk = 0; chunk < library.size(); chunk++)
-        xr_delete(library[chunk]);
+    for (auto& chunk : library)
+        xr_delete(chunk);
+
     library.clear();
 }
 

@@ -13,7 +13,6 @@ void CSoundRender_Target::start(CSoundRender_Emitter* E)
     // 4. Load 2 blocks of data (as much as possible)
     // 5. Deferred-play-signal (emitter-exist, rendering-false)
     m_pEmitter = E;
-    priority = E->priority();
     rendering = false;
 }
 
@@ -25,9 +24,8 @@ void CSoundRender_Target::render()
 
 void CSoundRender_Target::stop()
 {
-    m_pEmitter = nullptr;
     rendering = false;
-    priority = -1;
+    m_pEmitter = nullptr;
 }
 
 void CSoundRender_Target::rewind() { R_ASSERT(rendering); }

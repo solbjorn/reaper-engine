@@ -244,7 +244,7 @@ void CGamePersistent::WeathersUpdate()
                         pos.z = _sin(angle);
                         pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
                         pos.y += 10.f;
-                        snd.play_at_pos(0, pos);
+                        snd.play_at_pos(nullptr, pos, (!ch.m_sound_period.x && !ch.m_sound_period.y && !ch.m_sound_period.z && !ch.m_sound_period.w) ? sm_2D : 0);
 
 #ifdef DEBUG
                         if (!snd._handle() && strstr(Core.Params, "-nosound"))

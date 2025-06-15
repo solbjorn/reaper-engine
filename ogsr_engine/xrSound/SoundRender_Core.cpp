@@ -13,10 +13,15 @@
 BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
 Flags32 psSoundFlags = {/*ss_Hardware*/};
-float psSoundOcclusionScale = 0.5f;
-float psSoundLinearFadeFactor = 0.4f; //--#SM+#--
+
+float psSoundOcclusionScale = 0.8f;
+float psSoundOcclusionHf = 0.5f;
+float psSoundOcclusionMtl = 0.4f;
+
 float psSoundCull = 0.01f;
-float psSoundRolloff = 0.75f;
+float psSoundRolloff = 0.8f;
+float psSoundFadeSpeed = 4.f;
+
 u32 psSoundModel = 0;
 float psSoundVEffects = 1.0f;
 float psSoundVFactor = 1.0f;
@@ -46,15 +51,14 @@ CSoundRender_Core::CSoundRender_Core()
     bPresent = FALSE;
     bEAX = FALSE;
     bDeferredEAX = FALSE;
-    bUserEnvironment = false;
-    geom_MODEL = NULL;
+    geom_OCC = nullptr;
     geom_ENV = NULL;
     geom_SOM = NULL;
     s_environment = NULL;
     Handler = NULL;
     s_emitters_u = 0;
     e_current.set_identity();
-    e_target.set_identity();
+    e_target = get_environment_def();
     bReady = FALSE;
     bLocked = FALSE;
     fTimer_Value = Timer.GetElapsed_sec();
@@ -78,11 +82,6 @@ void CSoundRender_Core::release_efx_objects() const
 
 CSoundRender_Core::~CSoundRender_Core()
 {
-    // if (bEFX)
-    {
-        // release_efx_objects();
-    }
-
     xr_delete(geom_ENV);
     xr_delete(geom_SOM);
 }
@@ -106,15 +105,16 @@ void CSoundRender_Core::_clear()
     s_sources.clear();
 
     // remove emmiters
-    for (u32 eit = 0; eit < s_emitters.size(); eit++)
-        xr_delete(s_emitters[eit]);
+    for (auto& s_emitter : s_emitters)
+        xr_delete(s_emitter);
+
     s_emitters.clear();
 }
 
 void CSoundRender_Core::stop_emitters()
 {
-    for (u32 eit = 0; eit < s_emitters.size(); eit++)
-        s_emitters[eit]->stop(FALSE);
+    for (auto& s_emitter : s_emitters)
+        s_emitter->stop(false);
 }
 
 int CSoundRender_Core::pause_emitters(bool val)
@@ -122,8 +122,8 @@ int CSoundRender_Core::pause_emitters(bool val)
     m_iPauseCounter += val ? +1 : -1;
     VERIFY(m_iPauseCounter >= 0);
 
-    for (u32 it = 0; it < s_emitters.size(); it++)
-        ((CSoundRender_Emitter*)s_emitters[it])->pause(val, val ? m_iPauseCounter : m_iPauseCounter + 1);
+    for (const auto& s_emitter : s_emitters)
+        s_emitter->pause(val, val ? m_iPauseCounter : m_iPauseCounter + 1);
 
     return m_iPauseCounter;
 }
@@ -165,10 +165,6 @@ void CSoundRender_Core::env_load()
             Msg("~ env id=[%d] name=[%s]", chunk, name.c_str());
         }
     }
-
-    // Load geometry
-
-    // Assosiate geometry
 }
 
 void CSoundRender_Core::env_unload()
@@ -185,8 +181,6 @@ void CSoundRender_Core::env_unload()
     }
 
     xr_delete(s_environment);
-
-    // Unload geometry
 }
 
 void CSoundRender_Core::env_save_all() const
@@ -201,7 +195,7 @@ void CSoundRender_Core::env_save_all() const
 
 void CSoundRender_Core::_restart() { env_apply(); }
 void CSoundRender_Core::set_handler(sound_event* E) { Handler = E; }
-void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M) { geom_MODEL = M; }
+void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M) { geom_OCC = M; }
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
@@ -307,6 +301,15 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     xr_free(_data);
 }
 
+void CSoundRender_Core::set_master_gain(float low_pass, float high_pass)
+{
+    if (bEFX)
+    {
+        master_low_pass = low_pass;
+        master_high_pass = high_pass;
+    }
+}
+
 void CSoundRender_Core::create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type)
 {
     if (!bPresent)
@@ -353,60 +356,70 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
     S._p->handle = from._p->handle;
     S._p->dwBytesTotal = from._p->dwBytesTotal;
     S._p->fTimeTotal = from._p->fTimeTotal;
+
     S._p->fn_attached[0] = from._p->fn_attached[0];
     S._p->fn_attached[1] = from._p->fn_attached[1];
+
     S._p->g_type = (game_type == sg_SourceType) ? S._p->handle->game_type() : game_type;
     S._p->s_type = sound_type;
 }
 
 void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 {
-    if (!bPresent || 0 == S._handle())
+    if (!bPresent || !S._handle())
         return;
+
     S._p->g_object = O;
     if (S._feedback())
         ((CSoundRender_Emitter*)S._feedback())->rewind();
     else
         i_play(&S, flags & sm_Looped, delay);
 
-    if (flags & sm_2D || S._handle()->channels_num() == 2)
+    if (flags & sm_2D)
         S._feedback()->switch_to_2D();
 }
 
 void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range)
 {
-    if (!bPresent || 0 == S._handle())
+    if (!bPresent || !S._handle())
         return;
+
     ref_sound_data_ptr orig = S._p;
     S._p = xr_new<ref_sound_data>();
     S._p->handle = orig->handle;
+    S._p->s_type = orig->s_type;
+
     S._p->g_type = orig->g_type;
     S._p->g_object = O;
+
     S._p->dwBytesTotal = orig->dwBytesTotal;
     S._p->fTimeTotal = orig->fTimeTotal;
+
     S._p->fn_attached[0] = orig->fn_attached[0];
     S._p->fn_attached[1] = orig->fn_attached[1];
 
     i_play(&S, flags & sm_Looped, delay);
 
-    if (flags & sm_2D || S._handle()->channels_num() == 2)
-        S._feedback()->switch_to_2D();
-
     if (pos)
         S._feedback()->set_position(*pos);
+    if (vol)
+        S._feedback()->set_volume(*vol);
     if (freq)
         S._feedback()->set_frequency(*freq);
     if (range)
         S._feedback()->set_range((*range)[0], (*range)[1]);
-    if (vol)
-        S._feedback()->set_volume(*vol);
+
+    if (flags & sm_2D)
+        S._feedback()->switch_to_2D();
+
     S._p = orig;
 }
 
 void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
 {
-    if (!bPresent || 0 == S._handle())
+    if (!bPresent || !S._handle())
         return;
+
     S._p->g_object = O;
     if (S._feedback())
         ((CSoundRender_Emitter*)S._feedback())->rewind();
@@ -415,7 +428,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 
     S._feedback()->set_position(pos);
 
-    if (flags & sm_2D || S._handle()->channels_num() == 2)
+    if (flags & sm_2D)
         S._feedback()->switch_to_2D();
 }
 
@@ -426,7 +439,8 @@ void CSoundRender_Core::destroy(ref_sound& S)
         CSoundRender_Emitter* E = (CSoundRender_Emitter*)S._feedback();
         E->stop(FALSE);
     }
-    S._p = 0;
+
+    S._p = nullptr;
 }
 
 void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type)
@@ -452,10 +466,11 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
         CSoundRender_Emitter* E = (CSoundRender_Emitter*)S.feedback;
         E->stop(FALSE);
     }
+
     R_ASSERT(0 == S.feedback);
     SoundRender->i_destroy_source((CSoundRender_Source*)S.handle);
 
-    S.handle = NULL;
+    S.handle = nullptr;
 }
 
 CSoundRender_Environment* CSoundRender_Core::get_environment_def()
@@ -467,12 +482,10 @@ CSoundRender_Environment* CSoundRender_Core::get_environment_def()
 
 CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 {
-    if (bUserEnvironment)
-        return &s_user_environment;
-
     if (geom_ENV)
     {
         constexpr Fvector dir = {0, -1, 0};
+        CDB::COLLIDER geom_DB;
 
         geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
         if (geom_DB.r_count())
@@ -484,7 +497,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
             Fvector tri_norm;
             tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
             const float dot = dir.dotproduct(tri_norm);
-            if (dot < 0)
+            if (dot <= 0)
             {
                 u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
                 return s_environment->Get(id_front);
@@ -514,20 +527,20 @@ void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, cons
     Listener.orientation[1] = N;
     Listener.orientation[2] = R;
 
+    if (bListenerMoved)
+    {
+        bListenerMoved = false;
+        e_target = get_environment(P);
+    }
+
     // update EAX or EFX
     if (!(psSoundFlags.test(ss_EFX) && (bEAX || bEFX)))
         return;
 
-    if (bListenerMoved)
-    {
-        bListenerMoved = FALSE;
-        e_target = *get_environment(P);
-    }
-
     if (!e_currentPaused)
-        e_current.lerp(e_current, e_target, dt);
+        e_current.lerp(e_current, *e_target, dt / 2);
     else
-        e_current.set_from(e_target);
+        e_current.set_from(*e_target);
 
     if (bEAX)
     {
@@ -550,15 +563,25 @@ void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, cons
 //////////////////////////////////////////////////
 void CSoundRender_Core::InitAlEFXAPI()
 {
-    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
+    using namespace efx_api;
+
     LOAD_PROC(alGenEffects, LPALGENEFFECTS);
     LOAD_PROC(alDeleteEffects, LPALDELETEEFFECTS);
     LOAD_PROC(alIsEffect, LPALISEFFECT);
     LOAD_PROC(alEffecti, LPALEFFECTI);
+    LOAD_PROC(alEffectf, LPALEFFECTF);
+
+    LOAD_PROC(alGenFilters, LPALGENFILTERS);
+    LOAD_PROC(alDeleteFilters, LPALDELETEFILTERS);
+    LOAD_PROC(alIsFilter, LPALISFILTER);
+
+    LOAD_PROC(alFilteri, LPALFILTERI);
+    LOAD_PROC(alFilterf, LPALFILTERF);
+
     LOAD_PROC(alAuxiliaryEffectSloti, LPALAUXILIARYEFFECTSLOTI);
     LOAD_PROC(alGenAuxiliaryEffectSlots, LPALGENAUXILIARYEFFECTSLOTS);
+    LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
     LOAD_PROC(alIsAuxiliaryEffectSlot, LPALISAUXILIARYEFFECTSLOT);
-    LOAD_PROC(alEffectf, LPALEFFECTF);
 }
 
 bool CSoundRender_Core::EFXTestSupport()
@@ -597,11 +620,13 @@ bool CSoundRender_Core::EFXTestSupport()
     return true;
 }
 
-inline static float mB_to_gain(float mb) { return powf(10.0f, mb / 2000.0f); }
+static inline float mB_to_gain(float mb) { return powf(10.0f, mb / 2000.0f); }
 
 void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E)
 {
     const auto E = static_cast<CSoundRender_Environment*>(_E);
+    if (!E)
+        return;
 
     // http://openal.org/pipermail/openal/2014-March/000083.html
     float density = powf(E->EnvironmentSize, 3.0f) / 16.0f;
@@ -616,8 +641,8 @@ void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E)
     alEffectf(effect, AL_REVERB_DECAY_HFRATIO, E->DecayHFRatio);
     alEffectf(effect, AL_REVERB_REFLECTIONS_GAIN, mB_to_gain(E->Reflections));
     alEffectf(effect, AL_REVERB_REFLECTIONS_DELAY, E->ReflectionsDelay);
-    alEffectf(effect, AL_REVERB_LATE_REVERB_DELAY, E->ReverbDelay);
     alEffectf(effect, AL_REVERB_LATE_REVERB_GAIN, mB_to_gain(E->Reverb));
+    alEffectf(effect, AL_REVERB_LATE_REVERB_DELAY, E->ReverbDelay);
     alEffectf(effect, AL_REVERB_AIR_ABSORPTION_GAINHF, mB_to_gain(E->AirAbsorptionHF));
     alEffectf(effect, AL_REVERB_ROOM_ROLLOFF_FACTOR, E->RoomRolloffFactor);
 }
@@ -655,8 +680,6 @@ void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)
     ep.flReflectionsDelay = E->ReflectionsDelay; // initial reflection delay time
     ep.lReverb = iFloor(E->Reverb); // late reverberation level relative to room effect
     ep.flReverbDelay = E->ReverbDelay; // late reverberation delay time relative to initial reflection
-    // ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
-    // ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
     ep.flEnvironmentDiffusion = E->EnvironmentDiffusion; // environment diffusion
     ep.flAirAbsorptionHF = E->AirAbsorptionHF; // change in level per meter at 5 kHz
     ep.dwFlags = EAXLISTENER_DEFAULTFLAGS; // modifies the behavior of properties
@@ -681,21 +704,17 @@ void CSoundRender_Core::i_eax_commit_setting()
 {
     // commit eax
     if (bDeferredEAX)
-        i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_COMMITDEFERREDSETTINGS, NULL, 0);
+        i_eax_set(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_COMMITDEFERREDSETTINGS, nullptr, 0);
 }
 
 void CSoundRender_Core::object_relcase(CObject* obj)
 {
-    if (obj)
+    if (!obj)
+        return;
+
+    for (const auto& s_emitter : s_emitters)
     {
-        for (u32 eit = 0; eit < s_emitters.size(); eit++)
-        {
-            if (s_emitters[eit])
-                if (s_emitters[eit]->owner_data)
-                    if (obj == s_emitters[eit]->owner_data->g_object)
-                        s_emitters[eit]->owner_data->g_object = 0;
-        }
+        if (s_emitter && s_emitter->owner_data && s_emitter->owner_data->g_object == obj)
+            s_emitter->owner_data->g_object = nullptr;
     }
 }
-
-float SoundRenderGetOcculution(Fvector& P, float R, Fvector* occ) { return SoundRender->get_occlusion(P, R, occ); }

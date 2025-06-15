@@ -6,6 +6,18 @@
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 
+#include <efx.h>
+
+namespace efx_api
+{
+inline LPALGENFILTERS alGenFilters{};
+inline LPALDELETEFILTERS alDeleteFilters{};
+inline LPALISFILTER alIsFilter{};
+
+inline LPALFILTERF alFilterf{};
+inline LPALFILTERI alFilteri{};
+} // namespace efx_api
+
 class CSoundRender_Core : public CSound_manager_interface
 {
 protected:
@@ -43,15 +55,19 @@ private:
 
 protected:
     CSoundRender_Environment e_current;
-    CSoundRender_Environment e_target;
+    CSoundRender_Environment* e_target{};
 
 public:
-    typedef std::pair<ref_sound_data_ptr, float> event;
+    struct event
+    {
+        ref_sound_data_ptr sound_data;
+        float range;
+        float time_to_stop;
+    };
     xr_vector<event> s_events;
 
 public:
     BOOL bPresent{};
-    bool bUserEnvironment{};
     BOOL bEAX{}; // Boolean variable to indicate presence of EAX Extension
     BOOL bDeferredEAX{};
     bool bEFX{}; // boolean variable to indicate presence of EFX Extension
@@ -63,11 +79,18 @@ public:
     float fTimer_Delta{};
     sound_event* Handler{};
 
+    struct Occ
+    {
+        Fvector occ[3]{};
+        float occ_value{};
+        u32 lastFrame{};
+        bool valid{};
+    };
+
 protected:
     // Collider
-    CDB::COLLIDER geom_DB{};
     CDB::MODEL* geom_SOM{};
-    CDB::MODEL* geom_MODEL{};
+    CDB::MODEL* geom_OCC{};
     CDB::MODEL* geom_ENV{};
 
     // Containers
@@ -76,7 +99,6 @@ protected:
     xr_vector<CSoundRender_Target*> s_targets;
 
     SoundEnvironment_LIB* s_environment{};
-    CSoundRender_Environment s_user_environment{};
 
     u32 s_emitters_u{}; // emitter update marker
     int m_iPauseCounter{};
@@ -110,6 +132,7 @@ public:
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
     virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0);
     virtual void set_master_volume(float f) = 0;
+    virtual void set_master_gain(float low_pass, float high_pass);
     virtual void set_geometry_env(IReader* I);
     virtual void set_geometry_som(IReader* I);
     virtual void set_geometry_occ(CDB::MODEL* M);
@@ -124,6 +147,8 @@ public:
     const Fvector& listener_position() override { return Listener.position; }
     virtual void update_listener(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& R, float dt) = 0;
 
+    virtual float get_time() const { return Timer.GetElapsed_sec(); }
+
     // eax listener
     void i_eax_listener_set(CSound_environment* E);
     void i_eax_commit_setting();
@@ -133,7 +158,7 @@ public:
     bool i_efx_commit_setting();
     void i_efx_disable();
 
-    virtual CSound_environment* DbgCurrentEnv() override { return &e_target; }
+    virtual CSound_environment* DbgCurrentEnv() override { return e_target; }
     virtual void DbgCurrentEnvPaused(bool v) override { e_currentPaused = v; }
     virtual void DbgCurrentEnvSave() override { env_save_all(); }
 
@@ -142,12 +167,13 @@ public:
     void i_destroy_source(CSoundRender_Source* S);
     CSoundRender_Emitter* i_play(ref_sound* S, BOOL _loop, float delay);
     void i_start(CSoundRender_Emitter* E) const;
-    bool i_allow_play(const CSoundRender_Emitter* E);
+    bool i_allow_play(const CSoundRender_Emitter* E) const;
 
     virtual void object_relcase(CObject* obj);
 
     virtual float get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f);
-    float get_occlusion(const Fvector& P, float R, Fvector* occ);
+    float get_occlusion(const Fvector& snd_pt, Occ* occ);
+    float calc_occlusion(const Fvector& hear_pt, const Fvector& snd_pt, Occ* occ);
     CSoundRender_Environment* get_environment_def();
     CSoundRender_Environment* get_environment(const Fvector& P);
 
@@ -155,6 +181,9 @@ public:
     void env_unload();
     void env_save_all() const;
     void env_apply();
+
+    float master_low_pass{1.f};
+    float master_high_pass{1.f};
 
 protected: // EFX
     EFXEAXREVERBPROPERTIES efx_reverb{};
@@ -165,6 +194,10 @@ protected: // EFX
     void InitAlEFXAPI();
 
     void release_efx_objects() const;
+
+private:
+    float occRayTestMtl(const Fvector& pos, const Fvector& dir, float range, Occ* occ);
+    float occRayTestSom(const Fvector& pos, const Fvector& dir, float range) const;
 };
 
 extern CSoundRender_Core* SoundRender;

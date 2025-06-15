@@ -9,6 +9,6 @@ namespace Feel
 class Sound
 {
 public:
-    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power) {};
+    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop) {};
 };
 }; // namespace Feel

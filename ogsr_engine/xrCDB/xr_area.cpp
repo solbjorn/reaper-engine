@@ -12,7 +12,7 @@ using namespace collide;
 
 extern BOOL g_bLoaded;
 
-void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
+void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float time_to_stop)
 {
     if (!g_bLoaded)
         return;
@@ -74,7 +74,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
             Power *= occ;
             if (Power > EPS_S)
             {
-                _esound_delegate D = {L, S, Power};
+                _esound_delegate D = {.dest = L, .source = S, .power = Power, .time_to_stop = time_to_stop};
                 snd_Events.push_back(D);
             }
         }
@@ -91,7 +91,7 @@ void IGame_Level::SoundEvent_Dispatch()
         if (D.source->feedback)
         {
             D.dest->feel_sound_new(D.source->g_object, D.source->g_type, D.source->g_userdata,
-                                   D.source->feedback->is_2D() ? Device.vCameraPosition : D.source->feedback->get_params()->position, D.power);
+                                   D.source->feedback->is_2D() ? Device.vCameraPosition : D.source->feedback->get_params()->position, D.power, D.time_to_stop);
         }
         snd_Events.pop_back();
     }
@@ -103,10 +103,10 @@ void IGame_Level::SoundEvent_OnDestDestroy(Feel::Sound* obj)
     snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) { return d.dest == obj; }), snd_Events.end());
 }
 
-void __stdcall _sound_event(ref_sound_data_ptr S, float range)
+void __stdcall _sound_event(ref_sound_data_ptr S, float range, float time_to_stop)
 {
     if (g_pGameLevel && S && S->feedback)
-        g_pGameLevel->SoundEvent_Register(S, range);
+        g_pGameLevel->SoundEvent_Register(S, range, time_to_stop);
 }
 
 //----------------------------------------------------------------------
@@ -126,8 +126,10 @@ CObjectSpace::CObjectSpace()
 //----------------------------------------------------------------------
 CObjectSpace::~CObjectSpace()
 {
-    Sound->set_geometry_occ(NULL);
-    Sound->set_handler(NULL);
+    Sound->set_geometry_occ(nullptr);
+    Sound->set_geometry_som(nullptr);
+    Sound->set_geometry_env(nullptr);
+    Sound->set_handler(nullptr);
 #ifdef DEBUG
     sh_debug.destroy();
 #endif

@@ -44,7 +44,6 @@ public:
     [[nodiscard]] float length_sec() const override { return fTimeTotal; }
     [[nodiscard]] u32 bytes_total() const override { return dwBytesTotal; }
 
-    [[nodiscard]] u16 channels_num() const override { return m_wformat.nChannels; }
     [[nodiscard]] u32 game_type() const override { return m_uGameType; }
 };
 

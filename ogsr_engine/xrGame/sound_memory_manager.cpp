@@ -113,7 +113,7 @@ void CSoundMemoryManager::enable(const CObject* object, bool enable)
 
 IC bool is_sound_type(int s, const ESoundTypes& t) { return ((s & t) == t); }
 
-void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power)
+void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power, float time_to_stop)
 {
 #ifndef MASTER_GOLD
     if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
@@ -153,7 +153,7 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
     }
 
     VERIFY(_valid(m_sound_threshold));
-    m_object->sound_callback(object, sound_type, position, sound_power);
+    m_object->sound_callback(object, sound_type, position, sound_power, time_to_stop);
     VERIFY(_valid(m_sound_threshold));
 
     update_sound_threshold();
@@ -194,10 +194,6 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
         {
             if (object)
             {
-                //				bool		is_shooting = is_sound_type(sound_type,SOUND_TYPE_WEAPON_SHOOTING);
-                //				bool		is_colliding = is_sound_type(sound_type,SOUND_TYPE_WORLD_OBJECT_COLLIDING);
-                //				bool		very_close = m_stalker->Position().distance_to_sqr(object->Position()) <= COMBAT_SOUND_PERCEIVE_RADIUS_SQR;
-                //				if (is_shooting || is_colliding || very_close)
                 add(object, sound_type, position, sound_power);
             }
         }

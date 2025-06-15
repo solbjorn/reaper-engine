@@ -57,12 +57,16 @@ void CSoundRender_Emitter::i_stop()
         owner_data = NULL;
     }
     m_current_state = stStopped;
+    fStoppingSpeed_k = 1.f;
 }
 
-void CSoundRender_Emitter::stop(BOOL bDeffered)
+void CSoundRender_Emitter::stop(BOOL bDeffered, float speed_k)
 {
     if (bDeffered)
+    {
         bStopping = TRUE;
+        fStoppingSpeed_k = speed_k;
+    }
     else
         i_stop();
 }
@@ -89,6 +93,8 @@ void CSoundRender_Emitter::pause(BOOL bVal, int id)
 
 void CSoundRender_Emitter::cancel()
 {
+    canceling = true;
+
     switch (m_current_state)
     {
     case stPlaying:
@@ -101,6 +107,8 @@ void CSoundRender_Emitter::cancel()
         break;
     default: FATAL("Non playing ref_sound forced out of render queue"); break;
     }
+
+    canceling = false;
 }
 
 void CSoundRender_Emitter::stop_target()

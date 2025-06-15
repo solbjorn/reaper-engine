@@ -794,11 +794,11 @@ bool CCustomMonster::is_special_killer(CObject* obj) { return (obj && (std::find
 
 float CCustomMonster::feel_vision_mtl_transp(CObject* O, u32 element) { return (memory().visual().feel_vision_mtl_transp(O, element)); }
 
-void CCustomMonster::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& position, float power)
+void CCustomMonster::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& position, float power, float time_to_stop)
 {
     if (getDestroy())
         return;
-    memory().sound().feel_sound_new(who, type, user_data, position, power);
+    memory().sound().feel_sound_new(who, type, user_data, position, power, time_to_stop);
 }
 
 bool CCustomMonster::useful(const CItemManager* manager, const CGameObject* object) const { return (memory().item().useful(object)); }
