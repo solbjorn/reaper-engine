@@ -35,13 +35,12 @@ IC bool CGameVertexPathManager::is_accessible(const _index_type& vertex_id) cons
     if (m_evaluator->m_vertex_types->empty())
         Msg("! warning : empty vertex types");
 #endif
-    auto I = m_evaluator->m_vertex_types->cbegin();
-    auto E = m_evaluator->m_vertex_types->cend();
-    for (; I != E; ++I)
-        if (graph->mask((*I).tMask, graph->vertex(vertex_id)->vertex_type()))
-            return (true);
 
-    return (false);
+    for (const auto& it : *(m_evaluator->m_vertex_types))
+        if (this->graph->mask(it.tMask, this->graph->vertex(vertex_id)->vertex_type()))
+            return true;
+
+    return false;
 }
 
 #undef TEMPLATE_SPECIALIZATION

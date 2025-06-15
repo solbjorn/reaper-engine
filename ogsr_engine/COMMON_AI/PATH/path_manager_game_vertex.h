@@ -22,7 +22,7 @@ protected:
 
 protected:
     _Parameters* m_evaluator;
-    bool m_start_is_accessible;
+    bool m_start_is_accessible{true};
 
 public:
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,

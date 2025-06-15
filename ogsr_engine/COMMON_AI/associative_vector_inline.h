@@ -90,11 +90,13 @@ TEMPLATE_SPECIALIZATION
 IC void _associative_vector::clear() { inherited::clear(); }
 
 TEMPLATE_SPECIALIZATION
+IC void _associative_vector::reserve(size_t new_capacity) { inherited::reserve(new_capacity); }
+
+TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::size_type _associative_vector::max_size() const { return (inherited::max_size()); }
 
 TEMPLATE_SPECIALIZATION
-// IC	typename _associative_vector::size_type _associative_vector::size						() const
-IC u32 _associative_vector::size() const { return (inherited::size()); }
+IC typename _associative_vector::size_type _associative_vector::size() const { return inherited::size(); }
 
 TEMPLATE_SPECIALIZATION
 IC bool _associative_vector::empty() const { return (inherited::empty()); }
@@ -215,6 +217,22 @@ IC void _associative_vector::insert(_iterator_type first, _iterator_type last)
 
     inherited::insert(end(), first, last);
     std::sort(begin(), end(), (value_compare&)(*this));
+}
+
+TEMPLATE_SPECIALIZATION
+IC typename _associative_vector::insert_result _associative_vector::emplace(const key_type& key, const mapped_type& value)
+{
+    actualize();
+    bool found = true;
+    iterator I = lower_bound(key);
+    if (I == end() || (*this)(key, (*I).first))
+    {
+        I = inherited::emplace(I, key, value);
+        found = false;
+    }
+    else
+        (*I).second = value;
+    return insert_result(I, !found);
 }
 
 TEMPLATE_SPECIALIZATION

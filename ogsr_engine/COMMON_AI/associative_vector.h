@@ -57,10 +57,12 @@ public:
     IC iterator insert(iterator where, const value_type& value);
     template <class _iterator_type>
     IC void insert(_iterator_type first, _iterator_type last);
+    IC insert_result emplace(const key_type& key, const mapped_type& value);
     IC void erase(iterator element);
     IC void erase(iterator first, iterator last);
     IC size_type erase(const key_type& key);
     IC void clear();
+    IC void reserve(size_t new_capacity);
     IC iterator find(const key_type& key);
     IC iterator lower_bound(const key_type& key);
     IC iterator upper_bound(const key_type& key);
@@ -78,8 +80,7 @@ public:
     IC const_equal_range_result equal_range(const key_type& key) const;
     IC size_type count(const key_type& key) const;
     IC size_type max_size() const;
-    //	IC		size_type					size				() const;
-    IC u32 size() const;
+    IC size_type size() const;
     IC bool empty() const;
     IC key_compare key_comp() const;
     IC value_compare value_comp() const;
