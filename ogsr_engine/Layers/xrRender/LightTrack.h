@@ -13,6 +13,8 @@ constexpr int lt_hemisamples = 26;
 
 class CROS_impl : public IRender_ObjectSpecific
 {
+    RTTI_DECLARE_TYPEINFO(CROS_impl, IRender_ObjectSpecific);
+
 public:
     enum CubeFaces
     {

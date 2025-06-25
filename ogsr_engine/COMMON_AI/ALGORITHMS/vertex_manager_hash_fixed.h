@@ -28,6 +28,9 @@ struct CVertexManagerHashFixed
     template <typename TPathBuilder, typename TVertexAllocator, typename TCompoundVertex>
     class CDataStorage : public TPathBuilder::template CDataStorage<TCompoundVertex>, public TVertexAllocator::template CDataStorage<TCompoundVertex>
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TPathBuilder, TVertexAllocator, TCompoundVertex>, typename TPathBuilder::template CDataStorage<TCompoundVertex>,
+                              typename TVertexAllocator::template CDataStorage<TCompoundVertex>);
+
     public:
         using CDataStorageBase = typename TPathBuilder::template CDataStorage<TCompoundVertex>;
         using CDataStorageAllocator = typename TVertexAllocator::template CDataStorage<TCompoundVertex>;

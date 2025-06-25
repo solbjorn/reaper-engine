@@ -25,8 +25,11 @@ struct SDisableUpdateState
     SDisableUpdateState();
 };
 
-struct CBaseDisableData
+struct CBaseDisableData : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CBaseDisableData);
+
+public:
     CBaseDisableData();
 
 protected:
@@ -56,6 +59,8 @@ protected:
 
 class CPHDisablingBase : public virtual CBaseDisableData
 {
+    RTTI_DECLARE_TYPEINFO(CPHDisablingBase, CBaseDisableData);
+
 public:
     void UpdateValues(const Fvector& new_pos, const Fvector& new_vel);
     virtual void UpdateL2();
@@ -79,6 +84,8 @@ protected:
 
 class CPHDisablingRotational : public CPHDisablingBase
 {
+    RTTI_DECLARE_TYPEINFO(CPHDisablingRotational, CPHDisablingBase);
+
 public:
     CPHDisablingRotational();
     void Reinit();
@@ -88,6 +95,8 @@ public:
 
 class CPHDisablingTranslational : public CPHDisablingBase
 {
+    RTTI_DECLARE_TYPEINFO(CPHDisablingTranslational, CPHDisablingBase);
+
 public:
     CPHDisablingTranslational();
     void Reinit();
@@ -97,10 +106,13 @@ public:
 
 class CPHDisablingFull : public CPHDisablingTranslational, public CPHDisablingRotational
 {
+    RTTI_DECLARE_TYPEINFO(CPHDisablingFull, CPHDisablingTranslational, CPHDisablingRotational);
+
 public:
     void Reinit();
     virtual void UpdateL1();
     virtual void UpdateL2();
     virtual void set_DisableParams(const SAllDDOParams& params);
 };
+
 #endif

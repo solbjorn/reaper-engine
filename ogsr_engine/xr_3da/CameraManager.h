@@ -88,8 +88,12 @@ using EffectorCamVec = xr_list<CEffectorCam*>;
 using EffectorPPVec = xr_vector<CEffectorPP*>;
 
 struct SCamEffectorInfo;
-class CCameraManager
+
+class CCameraManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CCameraManager);
+
+public:
     float fFovSecond;
 
 protected:
@@ -141,6 +145,7 @@ public:
     CCameraManager(bool bApplyOnUpdate);
     ~CCameraManager();
 };
+
 extern SPPInfo pp_identity;
 extern SPPInfo pp_zero;
 

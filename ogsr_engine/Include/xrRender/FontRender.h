@@ -1,11 +1,12 @@
 #ifndef FontRender_included
 #define FontRender_included
-#pragma once
 
 class CGameFont;
 
-class IFontRender
+class IFontRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IFontRender);
+
 public:
     virtual ~IFontRender() { ; }
 

@@ -88,8 +88,11 @@ enum ECollisionFormType
     cftShape
 };
 
-class ICollisionForm
+class ICollisionForm : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ICollisionForm);
+
+public:
     friend class CObjectSpace;
 
 protected:
@@ -117,6 +120,8 @@ public:
 
 class CCF_Skeleton : public ICollisionForm
 {
+    RTTI_DECLARE_TYPEINFO(CCF_Skeleton, ICollisionForm);
+
 public:
     struct SElement
     {
@@ -181,6 +186,8 @@ public:
 
 class CCF_Shape : public ICollisionForm
 {
+    RTTI_DECLARE_TYPEINFO(CCF_Shape, ICollisionForm);
+
 public:
     union shape_data
     {

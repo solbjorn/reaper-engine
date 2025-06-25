@@ -13,8 +13,10 @@
 #include "object_broker.h"
 
 template <typename _data_type, typename _edge_weight_type = float, typename _vertex_id_type = u32>
-class CGraphAbstract
+class CGraphAbstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>);
+
 public:
     typedef CVertex<_data_type, _vertex_id_type, CGraphAbstract> CVertex;
 
@@ -63,9 +65,12 @@ public:
 template <typename _data_type, typename _edge_weight_type = float, typename _vertex_id_type = u32>
 class CGraphAbstractSerialize : public CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>, public IPureSerializeObject<IReader, IWriter>
 {
-    using inherited = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>;
+    RTTI_DECLARE_TYPEINFO(CGraphAbstractSerialize<_data_type, _edge_weight_type, _vertex_id_type>, CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>,
+                          IPureSerializeObject<IReader, IWriter>);
 
 public:
+    using inherited = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>;
+
     using inherited::add_edge;
     using inherited::add_vertex;
     using inherited::clear;

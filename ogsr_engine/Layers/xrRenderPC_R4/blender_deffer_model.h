@@ -2,6 +2,8 @@
 
 class CBlender_deffer_model : public IBlenderXr
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_deffer_model, IBlenderXr);
+
 public:
     xrP_INTEGER oAREF;
     xrP_BOOL oBlend;

@@ -17,8 +17,10 @@ namespace LevelGraph
 class CVertex;
 };
 
-class CCoverManager
+class CCoverManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CCoverManager);
+
 public:
     typedef CQuadTree<CCoverPoint> CPointQuadTree;
 

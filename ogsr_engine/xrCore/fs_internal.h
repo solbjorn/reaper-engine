@@ -8,6 +8,8 @@
 
 class CFileWriter : public IWriter
 {
+    RTTI_DECLARE_TYPEINFO(CFileWriter, IWriter);
+
 private:
     FILE* hf;
 
@@ -66,6 +68,8 @@ public:
 // It automatically frees memory after destruction
 class CTempReader : public IReader
 {
+    RTTI_DECLARE_TYPEINFO(CTempReader, IReader);
+
 public:
     CTempReader(void* _data, size_t _size, size_t _iterpos) : IReader(_data, _size, _iterpos) {}
     virtual ~CTempReader();
@@ -73,15 +77,19 @@ public:
 
 class CPackReader : public IReader
 {
-    void* base_address;
+    RTTI_DECLARE_TYPEINFO(CPackReader, IReader);
 
 public:
+    void* base_address;
+
     CPackReader(void* _base, void* _data, size_t _size) : IReader(_data, _size) { base_address = _base; }
     virtual ~CPackReader();
 };
 
 class CVirtualFileReader : public IReader
 {
+    RTTI_DECLARE_TYPEINFO(CVirtualFileReader, IReader);
+
 private:
     void *hSrcFile, *hSrcMap;
 

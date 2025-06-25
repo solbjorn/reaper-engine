@@ -13,8 +13,10 @@
 
 class CSE_ALifeCreatureActor;
 
-class CALifeGraphRegistry
+class CALifeGraphRegistry : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeGraphRegistry);
+
 public:
     typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject, std::less<ALife::_OBJECT_ID>, false> OBJECT_REGISTRY;
 

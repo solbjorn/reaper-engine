@@ -15,6 +15,8 @@
 template <typename _client_type, typename _server_type>
 class CObjectItemClientServer : public CObjectItemAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CObjectItemClientServer<_client_type, _server_type>, CObjectItemAbstract);
+
 protected:
     typedef CObjectItemAbstract inherited;
     typedef _client_type CLIENT_TYPE;
@@ -29,9 +31,11 @@ public:
 template <typename _client_type_single, typename _client_type_mp, typename _server_type_single, typename _server_type_mp>
 class CObjectItemClientServerSingleMp : public CObjectItemAbstract
 {
-    typedef CObjectItemAbstract inherited;
+    RTTI_DECLARE_TYPEINFO(CObjectItemClientServerSingleMp<_client_type_single, _client_type_mp, _server_type_single, _server_type_mp>, CObjectItemAbstract);
 
 public:
+    typedef CObjectItemAbstract inherited;
+
     IC CObjectItemClientServerSingleMp(const CLASS_ID& clsid, LPCSTR script_clsid);
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;

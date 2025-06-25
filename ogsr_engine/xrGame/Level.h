@@ -45,6 +45,8 @@ class DBG_ScriptObject;
 
 class GlobalFeelTouch : public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(GlobalFeelTouch, Feel::Touch);
+
 public:
     GlobalFeelTouch();
     virtual ~GlobalFeelTouch();
@@ -55,6 +57,8 @@ public:
 
 class CLevel : public IGame_Level, public IPureClient
 {
+    RTTI_DECLARE_TYPEINFO(CLevel, IGame_Level, IPureClient);
+
 private:
 #ifdef DEBUG
     bool m_bSynchronization;
@@ -101,7 +105,7 @@ public:
 
 public:
     ////////////// network ////////////////////////
-    constexpr u32 GetInterpolationSteps() { return 0; }
+    static constexpr u32 GetInterpolationSteps() { return 0; }
     static void PhisStepsCallback(u32 Time0, u32 Time1);
 
     virtual void OnMessage(void* data, u32 size);

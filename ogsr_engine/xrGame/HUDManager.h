@@ -8,6 +8,9 @@ class CHUDTarget;
 
 struct CFontManager : public pureDeviceReset
 {
+    RTTI_DECLARE_TYPEINFO(CFontManager, pureDeviceReset);
+
+public:
     CFontManager();
     ~CFontManager();
 
@@ -42,6 +45,9 @@ struct CFontManager : public pureDeviceReset
 
 class CHUDManager : public CCustomHUD
 {
+    RTTI_DECLARE_TYPEINFO(CHUDManager, CCustomHUD);
+
+public:
     friend class CUI;
 
 private:

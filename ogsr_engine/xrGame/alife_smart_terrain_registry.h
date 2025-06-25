@@ -13,8 +13,10 @@
 class CSE_ALifeDynamicObject;
 class CSE_ALifeSmartZone;
 
-class CALifeSmartTerrainRegistry
+class CALifeSmartTerrainRegistry : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSmartTerrainRegistry);
+
 public:
     typedef xr_map<ALife::_OBJECT_ID, CSE_ALifeSmartZone*> OBJECTS;
 

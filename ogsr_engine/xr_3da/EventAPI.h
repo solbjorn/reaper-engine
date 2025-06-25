@@ -6,8 +6,10 @@ class CEvent;
 typedef CEvent* EVENT;
 
 //---------------------------------------------------------------------
-class IEventReceiver
+class IEventReceiver : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IEventReceiver);
+
 public:
     virtual void OnEvent(EVENT E, u64 P1, u64 P2) = 0;
 };

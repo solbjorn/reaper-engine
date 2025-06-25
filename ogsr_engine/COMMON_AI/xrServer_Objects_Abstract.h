@@ -28,8 +28,10 @@ class CDUInterface;
 #pragma warning(push)
 #pragma warning(disable : 4005)
 
-class ISE_Shape
+class ISE_Shape : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ISE_Shape);
+
 public:
     virtual ~ISE_Shape() = default;
     virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt) = 0;
@@ -84,8 +86,11 @@ add_to_type_list(CSE_Motion)
     virtual void __stdcall get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
 };
 
-struct ISE_Abstract
+struct ISE_Abstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ISE_Abstract);
+
+public:
     enum
     {
         flUpdateProperties = u32(1 << 0),
@@ -96,7 +101,6 @@ struct ISE_Abstract
     Flags32 m_editor_flags;
     IC void set_editor_flag(u32 mask) { m_editor_flags.set(mask, TRUE); }
 
-public:
     virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal) = 0;
     virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket) = 0;
     virtual LPCSTR __stdcall name() const = 0;

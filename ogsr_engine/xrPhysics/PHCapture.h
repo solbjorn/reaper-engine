@@ -17,6 +17,8 @@ class CPHCharacter;
 
 class CPHCapture : public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CPHCapture, CPHUpdateObject);
+
 public:
     CPHCapture(CPHCharacter*, CPhysicsShellHolder*, LPCSTR = nullptr, bool = false);
     CPHCapture(CPHCharacter*, CPhysicsShellHolder*, u16, LPCSTR = nullptr, bool = false);

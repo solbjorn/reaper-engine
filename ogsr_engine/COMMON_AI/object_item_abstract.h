@@ -10,8 +10,10 @@
 
 #include "object_factory_space.h"
 
-class CObjectItemAbstract
+class CObjectItemAbstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CObjectItemAbstract);
+
 protected:
     CLASS_ID m_clsid;
     shared_str m_script_clsid;

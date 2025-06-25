@@ -5,8 +5,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition ("Renderable")
-class IRenderable
+class IRenderable : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRenderable);
+
 public:
     struct
     {

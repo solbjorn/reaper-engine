@@ -2,8 +2,11 @@
 #define I_COLLISION_DAMAGE_INFO_H
 
 class ICollisionHitCallback;
-class ICollisionDamageInfo
+
+class ICollisionDamageInfo : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ICollisionDamageInfo);
+
 public:
     virtual float ContactVelocity() const = 0;
     virtual void HitDir(Fvector& dir) const = 0;
@@ -17,4 +20,5 @@ public:
     virtual bool IsInitiated() const = 0;
     virtual bool GetAndResetInitiated() = 0;
 };
+
 #endif

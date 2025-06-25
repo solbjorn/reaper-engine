@@ -42,6 +42,9 @@ public:
 //*** The visual itself ***************************************************************************
 class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
 {
+    RTTI_DECLARE_TYPEINFO(CKinematicsAnimated, CKinematics, IKinematicsAnimated);
+
+public:
     typedef CKinematics inherited;
     friend class CBoneData;
     friend class CMotionDef;

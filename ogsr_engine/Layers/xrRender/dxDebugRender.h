@@ -4,6 +4,8 @@
 
 class dxDebugRender : public IDebugRender
 {
+    RTTI_DECLARE_TYPEINFO(dxDebugRender, IDebugRender);
+
 public:
     dxDebugRender() = default;
 
@@ -13,8 +15,8 @@ public:
     virtual void ZEnable(bool bEnable);
     virtual void OnFrameEnd();
     virtual void SetShader(const debug_shader& shader);
-    //virtual void CacheSetXformWorld(const Fmatrix& M);
-    //virtual void CacheSetCullMode(CullMode);
+    // virtual void CacheSetXformWorld(const Fmatrix& M);
+    // virtual void CacheSetCullMode(CullMode);
     virtual void SetAmbient(u32 colour);
 
     // Shaders

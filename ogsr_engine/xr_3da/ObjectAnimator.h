@@ -4,8 +4,10 @@
 #include "motion.h"
 
 // refs
-class CObjectAnimator
+class CObjectAnimator : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CObjectAnimator);
+
 private:
     using MotionVec = xr_vector<COMotion*>;
 

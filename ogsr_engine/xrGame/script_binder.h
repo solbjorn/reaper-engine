@@ -12,8 +12,10 @@ class CSE_Abstract;
 class CScriptBinderObject;
 class NET_Packet;
 
-class CScriptBinder
+class CScriptBinder : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptBinder);
+
 protected:
     CScriptBinderObject* m_object;
 

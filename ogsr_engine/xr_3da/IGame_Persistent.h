@@ -10,9 +10,12 @@
 class IRenderVisual;
 class IMainMenu;
 class CPS_Instance;
+
 //-----------------------------------------------------------------------------------------------------------
 class IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(IGame_Persistent, DLL_Pure, pureAppStart, pureAppEnd, pureAppActivate, pureAppDeactivate, pureFrame);
+
 public:
     union params
     {
@@ -119,8 +122,10 @@ public:
     virtual void models_savePrefetch();
 };
 
-class IMainMenu
+class IMainMenu : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IMainMenu);
+
 public:
     virtual ~IMainMenu() {};
     virtual void Activate(bool bActive) = 0;

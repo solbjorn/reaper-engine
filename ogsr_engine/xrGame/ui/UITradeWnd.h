@@ -14,6 +14,8 @@ class CUICellItem;
 
 class CUITradeWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUITradeWnd, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
 
@@ -79,7 +81,7 @@ protected:
 
     bool CanMoveToOther(PIItem, bool);
 
-    //указатели игрока и того с кем торгуем
+    // указатели игрока и того с кем торгуем
     CInventory* m_pInv;
     CInventory* m_pOthersInv;
     CInventoryOwner* m_pInvOwner;

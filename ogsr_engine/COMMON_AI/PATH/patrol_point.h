@@ -18,6 +18,9 @@ class CGameGraph;
 
 class CPatrolPoint : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(CPatrolPoint, IPureSerializeObject<IReader, IWriter>);
+
+public:
     friend class CPatrolPathStorage;
     friend class CPatrolPointScript;
 

@@ -4,8 +4,10 @@
 
 #pragma once
 
-class IInputReceiver
+class IInputReceiver : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IInputReceiver);
+
 public:
     static void IR_GetLastMouseDelta(Ivector2& p);
     static void IR_GetMousePosScreen(Ivector2& p);

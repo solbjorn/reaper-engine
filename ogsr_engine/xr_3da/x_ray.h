@@ -7,6 +7,9 @@ class ILoadingScreen;
 // definition
 class CApplication : public pureFrame, public IEventReceiver
 {
+    RTTI_DECLARE_TYPEINFO(CApplication, pureFrame, IEventReceiver);
+
+public:
     // levels
     struct sLevelInfo
     {
@@ -27,7 +30,6 @@ class CApplication : public pureFrame, public IEventReceiver
     int load_stage;
     int max_load_stage;
 
-public:
     // Levels
     xr_vector<sLevelInfo> Levels;
     u32 Level_Current;

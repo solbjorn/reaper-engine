@@ -5,12 +5,9 @@
 
 class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
-    // struct force_position
-    //{
-    //     bool set_position;
-    //     Fvector p;
-    // } g_position{};
+    RTTI_DECLARE_TYPEINFO(CDemoRecord, CEffectorCam, IInputReceiver, pureRender);
 
+public:
     int iCount;
     IWriter* file{};
 
@@ -46,7 +43,6 @@ class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRende
     void MakeScreenshot();
     void MakeLevelMapScreenshot(bool bHQ);
 
-public:
     CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
     virtual ~CDemoRecord();
 
@@ -71,7 +67,4 @@ public:
     Fvector m_HPB;
     Fvector m_Position;
     bool m_b_redirect_input_to_level;
-
-    // static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
-    // static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 };

@@ -140,12 +140,14 @@ struct CSightParams
     Fvector m_vector;
 };
 
-class CScriptGameObject
+class CScriptGameObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptGameObject);
+
+public:
     mutable CGameObject* m_game_object;
     mutable lua_State* m_lua_state{};
 
-public:
     CScriptGameObject(CGameObject* tpGameObject);
     virtual ~CScriptGameObject();
     operator CObject*();
@@ -288,15 +290,15 @@ public:
     CProjector* GetProjector();
     Fvector GetCurrentDirection();
     bool IsInvBoxEmpty();
-    //передача порции информации InventoryOwner
+    // передача порции информации InventoryOwner
     bool GiveInfoPortion(LPCSTR info_id);
     bool DisableInfoPortion(LPCSTR info_id);
 
-    //предикаты наличия/отсутствия порции информации у персонажа
+    // предикаты наличия/отсутствия порции информации у персонажа
     bool HasInfo(LPCSTR info_id);
     bool DontHasInfo(LPCSTR info_id);
     xrTime GetInfoTime(LPCSTR info_id);
-    //работа с заданиями
+    // работа с заданиями
     ETaskState GetGameTaskState(LPCSTR task_id, int objective_num);
     void SetGameTaskState(ETaskState state, LPCSTR task_id, int objective_num);
     void GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExisting);

@@ -5,8 +5,10 @@
 
 #include "SoundRender.h"
 
-class CSoundRender_Target
+class CSoundRender_Target : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_Target);
+
 protected:
     CSoundRender_Emitter* m_pEmitter{};
 

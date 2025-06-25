@@ -1,9 +1,10 @@
 #ifndef ThunderboltDescRender_included
 #define ThunderboltDescRender_included
-#pragma once
 
-class IThunderboltDescRender
+class IThunderboltDescRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IThunderboltDescRender);
+
 public:
     virtual ~IThunderboltDescRender() { ; }
     virtual void Copy(IThunderboltDescRender& _in) = 0;

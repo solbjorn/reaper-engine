@@ -12,11 +12,13 @@
 #include "../UI.h"
 #include "uiabstract.h"
 
-class CUILines : public IUITextControl, public CUISimpleWindow//, public CDeviceResetNotifier
+class CUILines : public IUITextControl, public CUISimpleWindow //, public CDeviceResetNotifier
 {
-    friend class CUICustomEdit;
+    RTTI_DECLARE_TYPEINFO(CUILines, IUITextControl, CUISimpleWindow);
 
 public:
+    friend class CUICustomEdit;
+
     CUILines();
     virtual ~CUILines();
 

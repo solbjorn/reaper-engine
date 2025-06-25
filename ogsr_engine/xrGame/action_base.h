@@ -19,6 +19,8 @@ class CScriptGameObject;
 template <typename _object_type>
 class CActionBase : public GraphEngineSpace::CWorldOperator
 {
+    RTTI_DECLARE_TYPEINFO(CActionBase<_object_type>, GraphEngineSpace::CWorldOperator);
+
 protected:
     typedef GraphEngineSpace::CWorldOperator inherited;
     typedef GraphEngineSpace::CWorldProperty COperatorCondition;

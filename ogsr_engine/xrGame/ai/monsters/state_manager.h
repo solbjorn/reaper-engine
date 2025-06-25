@@ -9,10 +9,12 @@ namespace debug { class text_tree; }
 #endif
 */
 
-class IStateManagerBase
+class IStateManagerBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IStateManagerBase);
+
 public:
-    virtual ~IStateManagerBase(){};
+    virtual ~IStateManagerBase() {};
     virtual void reinit() = 0;
     virtual void update() = 0;
     virtual void force_script_state(EMonsterState state) = 0;

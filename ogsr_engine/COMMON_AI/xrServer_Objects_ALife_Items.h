@@ -87,7 +87,7 @@ add_to_type_list(CSE_ALifeItem)
 #define script_type_list save_type_list(CSE_ALifeItem)
 
     SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch, CSE_ALifeItem)
-    //флаги
+    // флаги
     enum EStats {
         eTorchActive = (1 << 0),
         eNightVisionActive = (1 << 1),
@@ -118,14 +118,14 @@ add_to_type_list(CSE_ALifeItemAmmo)
 
     SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon, CSE_ALifeItem)
 
-    //возможность подключения аддонов
+    // возможность подключения аддонов
     enum EWeaponAddonStatus {
-        eAddonDisabled = 0, //нельзя присоеденить
-        eAddonPermanent = 1, //постоянно подключено по умолчанию
-        eAddonAttachable = 2 //можно присоединять
+        eAddonDisabled = 0, // нельзя присоеденить
+        eAddonPermanent = 1, // постоянно подключено по умолчанию
+        eAddonAttachable = 2 // можно присоединять
     };
 
-//текущее состояние аддонов
+// текущее состояние аддонов
 enum EWeaponAddonState : u8
 {
     eWeaponAddonScope = 1 << 0,
@@ -275,9 +275,11 @@ add_to_type_list(CSE_ALifeItemCustomOutfit)
     class CSE_InventoryContainer : public CSE_InventoryBoxAbstract,
                                    public CSE_ALifeItem
 {
+    RTTI_DECLARE_TYPEINFO(CSE_InventoryContainer, CSE_InventoryBoxAbstract, CSE_ALifeItem);
+
 public:
-    CSE_InventoryContainer(LPCSTR caSection) : CSE_ALifeItem(caSection){};
-    virtual ~CSE_InventoryContainer(){};
+    CSE_InventoryContainer(LPCSTR caSection) : CSE_ALifeItem(caSection) {};
+    virtual ~CSE_InventoryContainer() {};
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
     {
         add_offline_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), saved_children, update_registries);
@@ -293,7 +295,7 @@ public:
 // KRodin: Закомментировал, попытка предотвратить повторную регистрацию cse_alife_item в луабинде.
 // По идее, оно и не нужно, ведь у класса CSE_InventoryContainer нету метода ::script_register()
 // add_to_type_list(CSE_InventoryContainer)
-//#define script_type_list save_type_list(CSE_InventoryContainer)
+// #define script_type_list save_type_list(CSE_InventoryContainer)
 
 #pragma warning(pop)
 

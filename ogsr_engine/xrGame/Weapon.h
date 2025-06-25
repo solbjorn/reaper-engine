@@ -28,6 +28,9 @@ constexpr float def_zoom_step_count = 4.0f;
 
 class CWeapon : public CHudItemObject, public CShootingObject
 {
+    RTTI_DECLARE_TYPEINFO(CWeapon, CHudItemObject, CShootingObject);
+
+public:
     friend class CWeaponScript;
 
 private:

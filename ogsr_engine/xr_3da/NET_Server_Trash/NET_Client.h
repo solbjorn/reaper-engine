@@ -21,8 +21,11 @@ public:
     void Release();
 };
 
-class IPureClient
+class IPureClient : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IPureClient);
+
+public:
     enum ConnectionState
     {
         EnmConnectionFails = 0,

@@ -17,6 +17,8 @@ class CAI_Stalker;
 
 class CEnemyManager : public CObjectManager<const CEntityAlive>
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyManager, CObjectManager<const CEntityAlive>);
+
 public:
     typedef CObjectManager<const CEntityAlive> inherited;
     typedef OBJECTS ENEMIES;

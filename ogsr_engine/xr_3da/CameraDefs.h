@@ -1,7 +1,10 @@
 #pragma once
 
-struct SBaseEffector
+struct SBaseEffector : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(SBaseEffector);
+
+public:
     CallMe::Delegate<void()> m_on_b_remove_callback;
     virtual ~SBaseEffector() = default;
 };

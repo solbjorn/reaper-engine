@@ -11,8 +11,10 @@
 #include "condition_state.h"
 
 template <typename _world_property, typename _edge_value_type>
-class COperatorAbstract
+class COperatorAbstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(COperatorAbstract<_world_property, _edge_value_type>);
+
 public:
     typedef _edge_value_type edge_value_type;
 

@@ -32,6 +32,8 @@ class CCustomMonsterScript;
 
 class CCustomMonster : public CEntityAlive, public CScriptEntity, public Feel::Vision, public Feel::Sound, public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CCustomMonster, CEntityAlive, CScriptEntity, Feel::Vision, Feel::Sound, Feel::Touch);
+
 private:
     typedef CEntityAlive inherited;
     friend class CCustomMonsterScript;

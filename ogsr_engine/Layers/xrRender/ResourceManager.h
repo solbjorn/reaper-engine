@@ -15,6 +15,8 @@ class dx10ConstantBuffer;
 // defs
 class CResourceManager : public IResourceManager
 {
+    RTTI_DECLARE_TYPEINFO(CResourceManager, IResourceManager);
+
 private:
     struct str_pred
     {

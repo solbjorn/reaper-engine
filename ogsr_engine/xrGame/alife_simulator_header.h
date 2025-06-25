@@ -11,8 +11,10 @@
 #include "object_interfaces.h"
 #include "alife_space.h"
 
-class CALifeSimulatorHeader
+class CALifeSimulatorHeader : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSimulatorHeader);
+
 protected:
     u32 m_version;
 

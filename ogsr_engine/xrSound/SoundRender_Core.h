@@ -20,6 +20,8 @@ inline LPALFILTERI alFilteri{};
 
 class CSoundRender_Core : public CSound_manager_interface
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_Core, CSound_manager_interface);
+
 protected:
     virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual void _destroy_data(ref_sound_data& S);

@@ -4,6 +4,8 @@
 
 class CFoodItem : public CEatableItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CFoodItem, CEatableItemObject);
+
 public:
     CFoodItem();
     virtual ~CFoodItem();

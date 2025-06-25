@@ -23,6 +23,9 @@ class intrusive_ptr;
 
 class CSpaceRestrictionManager : public CSpaceRestrictionHolder
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionManager, CSpaceRestrictionHolder);
+
+public:
     friend class CLevelGraph;
 
     struct CClientRestriction;

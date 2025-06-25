@@ -9,8 +9,10 @@
 
 class NET_Packet;
 
-class CWound
+class CWound : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CWound);
+
 public:
     CWound(u16 bone_num);
     virtual ~CWound(void);
@@ -25,7 +27,7 @@ public:
 
     void AddHit(float hit_power, ALife::EHitType hit_type);
 
-    //заживление раны
+    // заживление раны
     void Incarnation(float percent, float min_wound_size);
     u16 GetBoneNum() { return m_iBoneNum; }
     void SetBoneNum(u16 bone_num) { m_iBoneNum = bone_num; }
@@ -39,19 +41,19 @@ public:
     void SetDestroy(bool destroy) { m_bToBeDestroy = destroy; }
     bool GetDestroy() { return m_bToBeDestroy; }
 
-    //время обновления (для капель крови)
+    // время обновления (для капель крови)
     float m_fDropTime;
 
 protected:
-    //косточка на которой появилась рана
+    // косточка на которой появилась рана
     u16 m_iBoneNum;
 
-    //косточка, если на ране отыгрывается партикл
+    // косточка, если на ране отыгрывается партикл
     u16 m_iParticleBoneNum;
-    //имя этого партикла
+    // имя этого партикла
     shared_str m_sParticleName;
 
-    //список составляющих раны
+    // список составляющих раны
     HitImmunity::HitTypeSVec m_Wounds;
 
     bool m_bToBeDestroy;

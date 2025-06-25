@@ -39,8 +39,10 @@ struct ip_address
     }
 };
 
-class IClient
+class IClient : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IClient);
+
 public:
     struct Flags
     {
@@ -71,8 +73,10 @@ public:
 
 class CServerInfo;
 
-class IPureServer
+class IPureServer : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IPureServer);
+
 public:
     enum EConnect
     {

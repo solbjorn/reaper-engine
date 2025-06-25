@@ -5,6 +5,8 @@
 
 class CWeaponUSP45 : public CWeaponPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponUSP45, CWeaponPistol);
+
     typedef CWeaponPistol inherited;
 
 public:

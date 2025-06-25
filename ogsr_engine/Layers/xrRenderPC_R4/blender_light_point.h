@@ -2,6 +2,8 @@
 
 class CBlender_accum_point : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_point, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate point light"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_accum_point_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_point_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate point light msaa"; }
 

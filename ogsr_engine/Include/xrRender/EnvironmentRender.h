@@ -4,8 +4,10 @@ class CEnvironment;
 class CEnvDescriptor;
 class CEnvDescriptorMixer;
 
-class IEnvDescriptorRender
+class IEnvDescriptorRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IEnvDescriptorRender);
+
 public:
     virtual ~IEnvDescriptorRender() = 0;
     virtual void Copy(IEnvDescriptorRender& _in) = 0;
@@ -16,8 +18,10 @@ public:
 
 inline IEnvDescriptorRender::~IEnvDescriptorRender() = default;
 
-class IEnvironmentRender
+class IEnvironmentRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IEnvironmentRender);
+
 public:
     virtual ~IEnvironmentRender() = 0;
     virtual void Copy(IEnvironmentRender& _in) = 0;

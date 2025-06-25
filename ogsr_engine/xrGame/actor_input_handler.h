@@ -2,8 +2,10 @@
 
 class CActor;
 
-class CActorInputHandler
+class CActorInputHandler : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CActorInputHandler);
+
 public:
     virtual void reinit();
 

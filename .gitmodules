@@ -49,6 +49,9 @@
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
+[submodule "3rd_party/Src/rtti"]
+	path = 3rd_party/Src/rtti
+	url = https://github.com/solbjorn/rtti.git
 [submodule "3rd_party/Src/tinyxml2/tinyxml2"]
 	path = 3rd_party/Src/tinyxml2/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git

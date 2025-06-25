@@ -15,6 +15,9 @@ struct SGameMtl;
 
 class CBreakableObject : public CPhysicsShellHolder
 {
+    RTTI_DECLARE_TYPEINFO(CBreakableObject, CPhysicsShellHolder);
+
+public:
     typedef CPhysicsShellHolder inherited;
 
 private:

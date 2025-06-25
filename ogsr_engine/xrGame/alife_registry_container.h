@@ -17,13 +17,17 @@ struct CLinearRegistryType;
 
 template <typename... Ts>
 struct CLinearRegistryType<imdexlib::typelist<Ts...>> : Ts...
-{};
+{
+    RTTI_DECLARE_TYPEINFO(CLinearRegistryType<imdexlib::typelist<Ts...>>, Ts...);
+};
 
 class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list>
 {
-    using TYPE_LIST = registry_type_list;
+    RTTI_DECLARE_TYPEINFO(CALifeRegistryContainer, CLinearRegistryType<registry_type_list>);
 
 public:
+    using TYPE_LIST = registry_type_list;
+
     template <typename T>
     IC T& operator()(const T*);
     template <typename T>

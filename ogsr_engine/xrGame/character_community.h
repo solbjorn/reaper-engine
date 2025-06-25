@@ -23,6 +23,8 @@ class CHARACTER_COMMUNITY;
 
 class CHARACTER_COMMUNITY : public CIni_IdToIndex<1, COMMUNITY_DATA, CHARACTER_COMMUNITY_ID, CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY>
 {
+    RTTI_DECLARE_TYPEINFO(CHARACTER_COMMUNITY, CIni_IdToIndex<1, COMMUNITY_DATA, CHARACTER_COMMUNITY_ID, CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY>);
+
 private:
     typedef CIni_IdToIndex<1, COMMUNITY_DATA, CHARACTER_COMMUNITY_ID, CHARACTER_COMMUNITY_INDEX, CHARACTER_COMMUNITY> inherited;
     friend inherited;
@@ -44,7 +46,7 @@ private:
     static void InitIdToIndex();
 
 public:
-    //отношение между группировками
+    // отношение между группировками
     static CHARACTER_GOODWILL relation(CHARACTER_COMMUNITY_INDEX from, CHARACTER_COMMUNITY_INDEX to);
     CHARACTER_GOODWILL relation(CHARACTER_COMMUNITY_INDEX to);
 
@@ -57,7 +59,7 @@ private:
     friend GOODWILL_TABLE;
     static GOODWILL_TABLE m_relation_table;
 
-    //таблица коэффициентов "сочуствия" между участниками группировки
+    // таблица коэффициентов "сочуствия" между участниками группировки
     typedef CIni_Table<float, CHARACTER_COMMUNITY> SYMPATHY_TABLE;
     friend SYMPATHY_TABLE;
     static SYMPATHY_TABLE m_sympathy_table;

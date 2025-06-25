@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "UIDialogWnd.h"
-//#include "UIListWnd.h"
+// #include "UIListWnd.h"
 #include "UIScrollView.h"
 
 class CUIXml;
@@ -20,6 +20,8 @@ class CUIStatic;
 
 class CUIGameLog : public CUIScrollView
 {
+    RTTI_DECLARE_TYPEINFO(CUIGameLog, CUIScrollView);
+
 public:
     CUIGameLog();
     virtual ~CUIGameLog();

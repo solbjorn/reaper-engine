@@ -5,6 +5,8 @@
 
 class CWeaponKnife : public CWeapon
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponKnife, CWeapon);
+
 private:
     typedef CWeapon inherited;
 

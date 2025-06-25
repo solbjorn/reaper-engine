@@ -1,11 +1,12 @@
 #ifndef dxFontRender_included
 #define dxFontRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\FontRender.h"
 
 class dxFontRender : public IFontRender
 {
+    RTTI_DECLARE_TYPEINFO(dxFontRender, IFontRender);
+
 public:
     dxFontRender();
     virtual ~dxFontRender();

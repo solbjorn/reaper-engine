@@ -15,6 +15,8 @@ class CScriptGameObject;
 
 class CScriptZone : public CSpaceRestrictor
 {
+    RTTI_DECLARE_TYPEINFO(CScriptZone, CSpaceRestrictor);
+
 public:
     typedef CSpaceRestrictor inherited;
 

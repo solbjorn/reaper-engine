@@ -21,6 +21,9 @@ struct lanim_cont
 
 class CUIStatic : public CUIWindow, public CUISingleTextureOwner, public IUITextControl
 {
+    RTTI_DECLARE_TYPEINFO(CUIStatic, CUIWindow, CUISingleTextureOwner, IUITextControl);
+
+public:
     friend class CUIXmlInit;
     friend class CUI3tButton;
 
@@ -80,8 +83,8 @@ public:
     void TextureAvailable(bool value) { m_bAvailableTexture = value; }
     bool TextureAvailable() { return m_bAvailableTexture; }
 
-    const LPCSTR GetTextureName() const { return m_texture.c_str(); }
-    const LPCSTR GetShaderName() const { return m_shader.c_str(); }
+    LPCSTR GetTextureName() const { return m_texture.c_str(); }
+    LPCSTR GetShaderName() const { return m_shader.c_str(); }
     // own
     virtual void SetHighlightColor(const u32 uColor) { m_HighlightColor = uColor; }
     void EnableTextHighlighting(bool value) { m_bEnableTextHighlighting = value; }
@@ -118,7 +121,7 @@ public:
     u32 GetTextAlign_script();
     void SetTextColor_script(int a, int r, int g, int b) { SetTextColor(color_argb(a, r, g, b)); }
     u32& GetTextColorRef();
-    //#pragma todo("Satan->Satan : delete next two functions")
+    // #pragma todo("Satan->Satan : delete next two functions")
     //	virtual void			SetTextAlign		(CGameFont::EAligment align);
     //	CGameFont::EAligment	GetTextAlign		();
     void AdjustHeightToText();

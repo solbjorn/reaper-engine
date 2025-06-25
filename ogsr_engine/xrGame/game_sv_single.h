@@ -7,6 +7,8 @@ class CALifeSimulator;
 
 class game_sv_Single : public game_sv_GameState
 {
+    RTTI_DECLARE_TYPEINFO(game_sv_Single, game_sv_GameState);
+
 private:
     typedef game_sv_GameState inherited;
 

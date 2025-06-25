@@ -34,6 +34,8 @@ extern int g_3dscopes_fps_factor;
 // definition (Dynamic Light)
 class IRender_Light : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(IRender_Light, xr_resource);
+
 public:
     enum LT
     {
@@ -83,6 +85,8 @@ typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 // definition (Dynamic Glow)
 class IRender_Glow : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(IRender_Glow, xr_resource);
+
 public:
     virtual void set_active(bool) = 0;
     virtual bool get_active() = 0;
@@ -102,8 +106,10 @@ typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Per-object render-specific data)
-class IRender_ObjectSpecific
+class IRender_ObjectSpecific : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRender_ObjectSpecific);
+
 public:
     enum mode
     {
@@ -124,8 +130,10 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
-class IRender_Target
+class IRender_Target : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRender_Target);
+
 public:
     virtual void set_blur(float f) = 0;
     virtual void set_gray(float f) = 0;
@@ -258,8 +266,10 @@ protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
 };
 
-class ITexture
+class ITexture : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ITexture);
+
 public:
     virtual ~ITexture() = default;
 
@@ -269,8 +279,10 @@ public:
     virtual void Unload() = 0;
 };
 
-class IResourceManager
+class IResourceManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IResourceManager);
+
 public:
     virtual ~IResourceManager() = default;
 

@@ -78,6 +78,9 @@ struct R_constant_load
 
 struct R_constant : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(R_constant, xr_resource);
+
+public:
     shared_str name; // HLSL-name
     u16 type; // float=0/integer=1/boolean=2
     u32 destination; // pixel/vertex/(or both)/sampler
@@ -119,8 +122,10 @@ struct R_constant : public xr_resource
 typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
 
 // Automatic constant setup
-class R_constant_setup
+class R_constant_setup : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(R_constant_setup);
+
 public:
     R_constant_setup() = default;
     virtual void setup(CBackend& cmd_list, R_constant* C) = 0;
@@ -129,6 +134,8 @@ public:
 
 class R_constant_table : public xr_resource_flagged
 {
+    RTTI_DECLARE_TYPEINFO(R_constant_table, xr_resource_flagged);
+
 public:
     typedef xr_vector<ref_constant> c_table;
     c_table table;

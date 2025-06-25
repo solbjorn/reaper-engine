@@ -12,6 +12,9 @@ class CControllerAura;
 
 class CController : public CBaseMonster, public CControlledActor
 {
+    RTTI_DECLARE_TYPEINFO(CController, CBaseMonster, CControlledActor);
+
+public:
     typedef CBaseMonster inherited;
 
     u8 m_max_controlled_number;
@@ -36,13 +39,11 @@ class CController : public CBaseMonster, public CControlledActor
 
     bool m_tube_at_once;
 
-public:
     float aura_radius;
     float aura_damage;
 
     //////////////////////////////////////////////////////////////////////////
 
-public:
     CControllerPsyHit* m_psy_hit;
 
     ref_sound m_sound_aura_left_channel;

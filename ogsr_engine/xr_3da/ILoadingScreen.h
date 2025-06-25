@@ -8,8 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-class ILoadingScreen
+class ILoadingScreen : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ILoadingScreen);
+
 public:
     virtual ~ILoadingScreen() = default;
 

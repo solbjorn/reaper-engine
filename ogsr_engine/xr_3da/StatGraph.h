@@ -8,9 +8,11 @@
 //---------------------------------------------------------------------------
 class CStatGraph : public pureRender
 {
-    friend class dxStatGraphRender;
+    RTTI_DECLARE_TYPEINFO(CStatGraph, pureRender);
 
 public:
+    friend class dxStatGraphRender;
+
     enum EStyle
     {
         stBar,
@@ -164,4 +166,5 @@ public:
         m_Markers.erase(m_Markers.begin() + ID);
     }
 };
+
 #endif

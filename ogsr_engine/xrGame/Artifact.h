@@ -29,6 +29,8 @@ struct SArtefactDetectorsSupport
 
 class CArtefact : public CHudItemObject, public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CArtefact, CHudItemObject, CPHUpdateObject);
+
 private:
     typedef CHudItemObject inherited;
 

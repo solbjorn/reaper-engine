@@ -16,6 +16,8 @@ typedef CPropertyEvaluator<CScriptGameObject> CScriptPropertyEvaluator;
 
 class CScriptPropertyEvaluatorWrapper : public CScriptPropertyEvaluator, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CScriptPropertyEvaluatorWrapper, CScriptPropertyEvaluator);
+
 public:
     IC CScriptPropertyEvaluatorWrapper(CScriptGameObject* object = 0, LPCSTR evaluator_name = "");
     virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);

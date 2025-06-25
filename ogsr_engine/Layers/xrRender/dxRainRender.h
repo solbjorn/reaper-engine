@@ -4,6 +4,8 @@
 
 class dxRainRender : public IRainRender
 {
+    RTTI_DECLARE_TYPEINFO(dxRainRender, IRainRender);
+
 public:
     dxRainRender();
     virtual ~dxRainRender();

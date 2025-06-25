@@ -16,6 +16,8 @@
 
 class CMincer : public CBaseGraviZone, public CPHDestroyableNotificator
 {
+    RTTI_DECLARE_TYPEINFO(CMincer, CBaseGraviZone, CPHDestroyableNotificator);
+
 private:
     typedef CBaseGraviZone inherited;
     CTeleWhirlwind m_telekinetics;

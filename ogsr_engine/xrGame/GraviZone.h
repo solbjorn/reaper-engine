@@ -9,11 +9,14 @@
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "customzone.h"
 #include "ai/monsters/telekinesis.h"
 
 class CBaseGraviZone : public CCustomZone
 {
+    RTTI_DECLARE_TYPEINFO(CBaseGraviZone, CCustomZone);
+
 private:
     typedef CCustomZone inherited;
 
@@ -27,7 +30,7 @@ public:
     virtual void net_Destroy();
     virtual void net_Relcase(CObject* O);
 
-    //воздействие зоной на объект
+    // воздействие зоной на объект
     virtual void Affect(SZoneObjectInfo* O);
     virtual void AffectPull(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
     virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
@@ -46,36 +49,25 @@ protected:
     virtual CTelekinesis& Telekinesis() = 0;
 
 protected:
-    //сила импульса втягивания в зону (для веса 100 кг)
+    // сила импульса втягивания в зону (для веса 100 кг)
     float m_fThrowInImpulse;
-    //сила импульса втягивания в зону для живых существ
+    // сила импульса втягивания в зону для живых существ
     float m_fThrowInImpulseAlive;
-    //коэфф. затягивания (чем меньше, тем плавнее затягивает)
+    // коэфф. затягивания (чем меньше, тем плавнее затягивает)
     float m_fThrowInAtten;
-    //радиус действия выброса (в процентах от всего)
+    // радиус действия выброса (в процентах от всего)
     float m_fBlowoutRadiusPercent;
 
-    //параметры телекинеза
+    // параметры телекинеза
     float m_fTeleHeight;
     u32 m_dwTimeToTele;
     u32 m_dwTelePause;
     u32 m_dwTeleTime;
 
-    //имя партиклов телекинеза
+    // имя партиклов телекинеза
     void PlayTeleParticles(CGameObject* pObject);
     void StopTeleParticles(CGameObject* pObject);
 
     shared_str m_sTeleParticlesBig;
     shared_str m_sTeleParticlesSmall;
 };
-//
-// class CGraviZone	: public CBaseGraviZone
-//{
-//	typedef		CBaseGraviZone				inherited;
-//	CTelekinesis m_telekinesis;
-// protected:
-//	virtual CTelekinesis& Telekinesis()						{return m_telekinesis;}
-// public:
-//						CGraviZone		(void)			{}
-//	virtual				~CGraviZone		(void)			{}
-//};

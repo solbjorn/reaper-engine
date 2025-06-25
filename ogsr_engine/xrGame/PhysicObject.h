@@ -11,6 +11,9 @@ class CPhysicsElement;
 
 class CPhysicObject : public CPhysicsShellHolder, public CPHSkeleton
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicObject, CPhysicsShellHolder, CPHSkeleton);
+
+public:
     typedef CPhysicsShellHolder inherited;
     EPOType m_type;
     float m_mass;

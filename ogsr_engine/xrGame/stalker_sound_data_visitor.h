@@ -15,6 +15,8 @@ class CStalkerSoundData;
 
 class CStalkerSoundDataVisitor : public CSound_UserDataVisitor
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerSoundDataVisitor, CSound_UserDataVisitor);
+
 private:
     CAI_Stalker* m_object;
 

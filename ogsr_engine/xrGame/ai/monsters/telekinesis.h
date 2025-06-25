@@ -5,6 +5,8 @@
 
 class CTelekinesis : public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CTelekinesis, CPHUpdateObject);
+
 protected:
     using TELE_OBJECTS = xr_vector<CTelekineticObject*>;
     using TELE_OBJECTS_IT = TELE_OBJECTS::iterator;

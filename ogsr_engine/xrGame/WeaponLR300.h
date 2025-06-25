@@ -7,6 +7,8 @@
 
 class CWeaponLR300 : public CWeaponMagazined
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponLR300, CWeaponMagazined);
+
 private:
     typedef CWeaponMagazined inherited;
 

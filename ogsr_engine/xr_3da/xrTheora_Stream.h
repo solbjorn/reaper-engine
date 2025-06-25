@@ -1,12 +1,14 @@
 #ifndef xrTheora_StreamH
 #define xrTheora_StreamH
-#pragma once
 
 #include <theora/theora.h>
 #include "../xrCore/Stream_Reader.h"
 
-class CTheoraStream
+class CTheoraStream : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CTheoraStream);
+
+public:
     friend class CTheoraSurface;
 
     ogg_sync_state o_sync_state;

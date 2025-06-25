@@ -33,11 +33,16 @@ vec random_vec();
 // base
 //----------------------------------------------------------
 
-class base
+class base : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(base);
+
 public:
-    struct params
+    struct params : public virtual RTTI::Enable
     {
+        RTTI_DECLARE_TYPEINFO(params);
+
+    public:
         bool enabled;
         vec factor;
         float min_factor_dist;
@@ -75,9 +80,14 @@ private:
 
 class evade : public base
 {
+    RTTI_DECLARE_TYPEINFO(evade, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         vec pos;
         vec dest;
         float max_evade_range;
@@ -106,9 +116,14 @@ private:
 
 class pursue : public base
 {
+    RTTI_DECLARE_TYPEINFO(pursue, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         vec pos;
         vec dest;
         float min_range2dest{};
@@ -140,9 +155,14 @@ private:
 
 class restrictor : public base
 {
+    RTTI_DECLARE_TYPEINFO(restrictor, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         vec pos;
         vec restrictor_pos;
         float max_allowed_range;
@@ -168,9 +188,14 @@ private:
 
 class wander : public base
 {
+    RTTI_DECLARE_TYPEINFO(wander, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         enum plane_t
         {
             xy_plane,
@@ -211,9 +236,14 @@ private:
 
 class containment : public base
 {
+    RTTI_DECLARE_TYPEINFO(containment, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         vec pos;
         vec dir;
         vec up;
@@ -248,9 +278,14 @@ private:
 
 class grouping : public base
 {
+    RTTI_DECLARE_TYPEINFO(grouping, base);
+
 public:
     struct params : base::params
     {
+        RTTI_DECLARE_TYPEINFO(params, base::params);
+
+    public:
         vec pos;
         vec cohesion_factor;
         vec separation_factor;
@@ -285,8 +320,10 @@ private:
 // manager
 //----------------------------------------------------------
 
-class manager
+class manager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(manager);
+
 public:
     vec calc_acceleration();
     void add(base* behaviour);

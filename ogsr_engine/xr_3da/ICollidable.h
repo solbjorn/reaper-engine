@@ -2,8 +2,10 @@
 
 class ICollisionForm;
 
-class ICollidable
+class ICollidable : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ICollidable);
+
 public:
     struct
     {

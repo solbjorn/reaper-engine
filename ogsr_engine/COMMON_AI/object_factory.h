@@ -9,14 +9,14 @@
 #ifndef object_factoryH
 #define object_factoryH
 
-#pragma once
-
 #include "script_export_space.h"
 #include "object_item_abstract.h"
 #include "xrServer_Objects.h"
 
-class CObjectFactory
+class CObjectFactory : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CObjectFactory);
+
 public:
     typedef ObjectFactory::CLIENT_BASE_CLASS CLIENT_BASE_CLASS;
     typedef ObjectFactory::SERVER_BASE_CLASS SERVER_BASE_CLASS;
@@ -75,4 +75,5 @@ add_to_type_list(CObjectFactory)
 IC const CObjectFactory& object_factory();
 
 #include "object_factory_inline.h"
+
 #endif

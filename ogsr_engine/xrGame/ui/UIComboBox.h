@@ -10,7 +10,7 @@
 #pragma once
 #include "UIEditBox.h"
 //.#include "UI3tButton.h"
-//#include "UIListWnd.h"
+// #include "UIListWnd.h"
 #include "UIListBox.h"
 #include "UIListBoxItem.h"
 #include "UIInteractiveBackground.h"
@@ -20,6 +20,9 @@ class CUIListBoxItem;
 
 class CUIComboBox : public CUIWindow, public CUIOptionsItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIComboBox, CUIWindow, CUIOptionsItem);
+
+public:
     friend class CUIXmlInit;
     typedef enum
     {
@@ -27,7 +30,6 @@ class CUIComboBox : public CUIWindow, public CUIOptionsItem
         LIST_FONDED
     } E_COMBO_STATE;
 
-public:
     CUIComboBox();
     virtual ~CUIComboBox();
     // CUIOptionsItem

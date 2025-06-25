@@ -30,6 +30,13 @@ class CPHCharacter : public CPHObject,
                      public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CPHCharacter, CPHObject, CPHSynchronize, CPHDisablingTranslational, IPhysicsElement
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
 public:
     u64 m_creation_step;
     bool b_exist{};

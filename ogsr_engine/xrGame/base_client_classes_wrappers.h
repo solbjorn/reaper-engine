@@ -24,6 +24,8 @@
 template <typename Base, typename... Ts>
 class DLL_PureWrapper : public Base, public Ts...
 {
+    RTTI_DECLARE_TYPEINFO(DLL_PureWrapper<Base, Ts...>, Base);
+
 public:
     DLL_PureWrapper() = default;
     virtual ~DLL_PureWrapper() = default;
@@ -38,6 +40,8 @@ using CDLL_PureWrapper = DLL_PureWrapper<DLL_Pure, luabind::wrap_base>;
 template <typename Base, typename... Ts>
 class ISheduledWrapper : public Base, public Ts...
 {
+    RTTI_DECLARE_TYPEINFO(ISheduledWrapper<Base, Ts...>, Base);
+
 public:
     ISheduledWrapper() = default;
     virtual ~ISheduledWrapper() = default;
@@ -51,6 +55,8 @@ using CISheduledWrapper = ISheduledWrapper<ISheduled, luabind::wrap_base>;
 template <typename Base, typename... Ts>
 class IRenderableWrapper : public Base, public Ts...
 {
+    RTTI_DECLARE_TYPEINFO(IRenderableWrapper<Base, Ts...>, Base);
+
 public:
     IRenderableWrapper() = default;
     virtual ~IRenderableWrapper() = default;
@@ -64,6 +70,8 @@ using CGameObjectIRenderable = IRenderableWrapper<CGameObjectISheduled>;
 
 class CGameObjectWrapper : public CGameObjectIRenderable
 {
+    RTTI_DECLARE_TYPEINFO(CGameObjectWrapper, CGameObjectIRenderable);
+
 public:
     CGameObjectWrapper() = default;
     virtual ~CGameObjectWrapper() = default;

@@ -1,11 +1,12 @@
 #ifndef DetailModelH
 #define DetailModelH
-#pragma once
 
 #include "IRenderDetailModel.h"
 
 class CDetail : public IRender_DetailModel
 {
+    RTTI_DECLARE_TYPEINFO(CDetail, IRender_DetailModel);
+
 public:
     void Load(IReader* S);
     void Optimize();
@@ -15,4 +16,5 @@ public:
     virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv);
     virtual ~CDetail();
 };
+
 #endif

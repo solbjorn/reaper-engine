@@ -16,8 +16,10 @@ struct CVertexAllocatorFixed
     {};
 
     template <typename TCompoundVertex>
-    class CDataStorage
+    class CDataStorage : public virtual RTTI::Enable
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TCompoundVertex>);
+
     public:
         using Index = typename TCompoundVertex::Index;
         using VertexContainer = xr_vector<TCompoundVertex>;

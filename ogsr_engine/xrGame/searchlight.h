@@ -7,6 +7,9 @@ class CLAItem;
 
 class CProjector : public CScriptObject
 {
+    RTTI_DECLARE_TYPEINFO(CProjector, CScriptObject);
+
+public:
     typedef CScriptObject inherited;
 
     friend void BoneCallbackX(CBoneInstance* B);
@@ -32,7 +35,6 @@ class CProjector : public CScriptObject
         float pitch;
     } _start{}, _current{}, _target{};
 
-public:
     CProjector();
     virtual ~CProjector();
 

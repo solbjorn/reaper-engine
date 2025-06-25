@@ -9,9 +9,11 @@
 
 class CPda : public CHudItemObject, public Feel::Touch
 {
-    using inherited = CHudItemObject;
+    RTTI_DECLARE_TYPEINFO(CPda, CHudItemObject, Feel::Touch);
 
 public:
+    using inherited = CHudItemObject;
+
     CPda();
     virtual ~CPda();
 

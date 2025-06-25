@@ -4,6 +4,7 @@
 
 #ifndef D3DUtilsH
 #define D3DUtilsH
+
 #include "..\..\Include\xrRender\DrawUtils.h"
 //----------------------------------------------------
 
@@ -33,6 +34,9 @@ public:
 //----------------------------------------------------
 class CDrawUtilities : public CDUInterface, public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(CDrawUtilities, CDUInterface, pureRender);
+
+public:
     SPrimitiveBuffer m_SolidCone;
     SPrimitiveBuffer m_WireCone;
     SPrimitiveBuffer m_SolidSphere;
@@ -45,7 +49,6 @@ class CDrawUtilities : public CDUInterface, public pureRender
     SPrimitiveBuffer m_WireBox;
     CGameFont* m_Font;
 
-public:
     ref_geom vs_L;
     ref_geom vs_TL;
     ref_geom vs_LIT;
@@ -168,4 +171,5 @@ public:
 };
 extern CDrawUtilities DUImpl;
 //----------------------------------------------------
+
 #endif /*_INCDEF_D3DUtils_H_*/

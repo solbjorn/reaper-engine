@@ -16,6 +16,8 @@ DEFINE_VECTOR(CEntityAlive*, ALIVE_LIST, ALIVE_LIST_it);
 
 class CBastArtefact : public CArtefact, public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CBastArtefact, CArtefact, Feel::Touch);
+
 private:
     typedef CArtefact inherited;
 
@@ -43,13 +45,13 @@ protected:
     virtual void UpdateCLChild();
 
     static void ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
-    //столкновение мочалки с сущностью
+    // столкновение мочалки с сущностью
     void BastCollision(CEntityAlive* pEntityAlive);
 
-    //параметры артефакта
+    // параметры артефакта
 
-    //пороговое значение импульса после получения
-    //которого артефакт активизируется
+    // пороговое значение импульса после получения
+    // которого артефакт активизируется
     float m_fImpulseThreshold;
 
     float m_fEnergy;
@@ -60,15 +62,15 @@ protected:
     float m_fRadius;
     float m_fStrikeImpulse;
 
-    //флаг, того что артефакт получил хит
-    //и теперь может совершить бросок
+    // флаг, того что артефакт получил хит
+    // и теперь может совершить бросок
     bool m_bStrike;
 
-    //список живых существ в зоне досягаемости артефакта
+    // список живых существ в зоне досягаемости артефакта
     ALIVE_LIST m_AliveList;
-    //то, что мы ударили
+    // то, что мы ударили
     CEntityAlive* m_pHitedEntity{};
-    //то что атакуем
+    // то что атакуем
     CEntityAlive* m_AttakingEntity;
 
 public:

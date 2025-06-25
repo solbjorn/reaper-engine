@@ -15,6 +15,9 @@
 
 class UILoadingScreen : public ILoadingScreen, public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(UILoadingScreen, ILoadingScreen, CUIWindow);
+
+public:
     std::recursive_mutex loadingLock;
 
     CUIProgressBar* loadingProgress;

@@ -12,6 +12,8 @@ class CPda;
 
 class CUIPdaContactsWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaContactsWnd, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
     enum
@@ -48,8 +50,12 @@ protected:
 };
 
 #include "UIPdaListItem.h"
+
 class CUIPdaContactItem : public CUIPdaListItem, public CUISelectable
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaContactItem, CUIPdaListItem, CUISelectable);
+
+public:
     CUIPdaContactsWnd* m_cw;
 
 public:

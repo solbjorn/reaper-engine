@@ -5,6 +5,9 @@
 
 class CPseudoGigant : public CBaseMonster, public CControlledEntity<CPseudoGigant>
 {
+    RTTI_DECLARE_TYPEINFO(CPseudoGigant, CBaseMonster, CControlledEntity<CPseudoGigant>);
+
+public:
     typedef CBaseMonster inherited;
     typedef CControlledEntity<CPseudoGigant> CControlled;
 

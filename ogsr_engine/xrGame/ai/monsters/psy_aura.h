@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../../xr_3da/feel_touch.h"
 #include "energy_holder.h"
 
@@ -6,6 +7,9 @@ class CBaseMonster;
 
 class CPsyAura : public Feel::Touch, public CEnergyHolder
 {
+    RTTI_DECLARE_TYPEINFO(CPsyAura, Feel::Touch, CEnergyHolder);
+
+public:
     typedef CEnergyHolder inherited;
 
     // владелец поля
@@ -14,7 +18,6 @@ class CPsyAura : public Feel::Touch, public CEnergyHolder
     // радиус поля
     float m_radius;
 
-public:
     CPsyAura();
     virtual ~CPsyAura();
 

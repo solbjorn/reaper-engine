@@ -3,8 +3,10 @@
 class CCustomRocket;
 class CGameObject;
 
-class CRocketLauncher
+class CRocketLauncher : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CRocketLauncher);
+
 public:
     CRocketLauncher();
     ~CRocketLauncher();
@@ -25,7 +27,7 @@ protected:
     CCustomRocket* getCurrentRocket();
     void dropCurrentRocket();
     u32 getRocketCount();
-    //начальная скорость, придаваемая ракете во время
-    //старта
+    // начальная скорость, придаваемая ракете во время
+    // старта
     float m_fLaunchSpeed;
 };

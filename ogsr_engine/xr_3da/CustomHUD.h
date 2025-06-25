@@ -24,6 +24,8 @@ class CUI;
 
 class CCustomHUD : public DLL_Pure, public IEventReceiver
 {
+    RTTI_DECLARE_TYPEINFO(CCustomHUD, DLL_Pure, IEventReceiver);
+
 public:
     CCustomHUD();
     virtual ~CCustomHUD();

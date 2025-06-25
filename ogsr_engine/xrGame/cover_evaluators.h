@@ -17,8 +17,10 @@
 
 class CCoverPoint;
 
-class CCoverEvaluatorBase
+class CCoverEvaluatorBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorBase);
+
 protected:
     const CCoverPoint* m_selected;
     u32 m_last_update;
@@ -53,6 +55,8 @@ public:
 
 class CCoverEvaluatorCloseToEnemy : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorCloseToEnemy, CCoverEvaluatorBase);
+
 protected:
     typedef CCoverEvaluatorBase inherited;
 
@@ -77,6 +81,8 @@ public:
 
 class CCoverEvaluatorFarFromEnemy : public CCoverEvaluatorCloseToEnemy
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorFarFromEnemy, CCoverEvaluatorCloseToEnemy);
+
 protected:
     typedef CCoverEvaluatorCloseToEnemy inherited;
 
@@ -91,6 +97,8 @@ public:
 
 class CCoverEvaluatorBest : public CCoverEvaluatorCloseToEnemy
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorBest, CCoverEvaluatorCloseToEnemy);
+
 protected:
     typedef CCoverEvaluatorCloseToEnemy inherited;
 
@@ -105,6 +113,8 @@ public:
 
 class CCoverEvaluatorBestByTime : public CCoverEvaluatorBest
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorBestByTime, CCoverEvaluatorBest);
+
 protected:
     typedef CCoverEvaluatorBest inherited;
 
@@ -119,6 +129,8 @@ public:
 
 class CCoverEvaluatorAngle : public CCoverEvaluatorCloseToEnemy
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorAngle, CCoverEvaluatorCloseToEnemy);
+
 protected:
     typedef CCoverEvaluatorCloseToEnemy inherited;
 
@@ -141,6 +153,8 @@ public:
 
 class CCoverEvaluatorSafe : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorSafe, CCoverEvaluatorBase);
+
 protected:
     typedef CCoverEvaluatorBase inherited;
 
@@ -159,6 +173,8 @@ public:
 
 class CCoverEvaluatorRandomGame : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorRandomGame, CCoverEvaluatorBase);
+
 protected:
     typedef CCoverEvaluatorBase inherited;
 
@@ -181,6 +197,8 @@ public:
 
 class CCoverEvaluatorAmbush : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluatorAmbush, CCoverEvaluatorBase);
+
 protected:
     typedef CCoverEvaluatorBase inherited;
 

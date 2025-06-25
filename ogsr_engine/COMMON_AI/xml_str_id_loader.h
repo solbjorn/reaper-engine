@@ -25,9 +25,10 @@ void _destroy_item_data_vector_cont(T_VECTOR* vec);
 #define CSXML_IdToIndex CXML_IdToIndex<T_INIT>
 
 TEMPLATE_SPECIALIZATION
-class CXML_IdToIndex
+class CXML_IdToIndex : public virtual RTTI::Enable
 {
-public:
+    RTTI_DECLARE_TYPEINFO(CXML_IdToIndex<T_INIT>);
+
 private:
     static T_VECTOR* m_pItemDataVector;
 

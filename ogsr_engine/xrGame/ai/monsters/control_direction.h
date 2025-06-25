@@ -25,6 +25,9 @@ struct SRotationEventData : public ControlCom::IEventData
 
 class CControlDirection : public CControl_ComPure<SControlDirectionData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlDirection, CControl_ComPure<SControlDirectionData>);
+
+public:
     typedef CControl_ComPure<SControlDirectionData> inherited;
 
     struct
@@ -41,7 +44,6 @@ class CControlDirection : public CControl_ComPure<SControlDirectionData>
         }
     } m_heading, m_pitch;
 
-public:
     virtual void reinit();
     virtual void update_frame();
 

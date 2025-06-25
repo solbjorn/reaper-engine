@@ -2,8 +2,6 @@
 
 #include "../../xrParticles/psystem.h"
 
-#include "../../COMMON_AI/smart_cast.h"
-
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
 #include "ParticleEffect.h"

@@ -1,11 +1,13 @@
 #pragma once
 
 #include "alife_space.h"
-
 #include "object_interfaces.h"
 
 struct ARTICLE_DATA : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(ARTICLE_DATA, IPureSerializeObject<IReader, IWriter>);
+
+public:
     enum EArticleType
     {
         eEncyclopediaArticle,

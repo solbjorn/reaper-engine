@@ -261,6 +261,8 @@ extern xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 class CLoadScreenRenderer : public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(CLoadScreenRenderer, pureRender);
+
 public:
     CLoadScreenRenderer();
     void start(bool b_user_input);

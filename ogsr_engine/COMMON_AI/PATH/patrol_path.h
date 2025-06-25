@@ -13,6 +13,9 @@
 
 class CPatrolPath : public CGraphAbstractSerialize<CPatrolPoint, float, u32>
 {
+    RTTI_DECLARE_TYPEINFO(CPatrolPath, CGraphAbstractSerialize<CPatrolPoint, float, u32>);
+
+public:
     friend class CPatrolPathScript;
 
 private:

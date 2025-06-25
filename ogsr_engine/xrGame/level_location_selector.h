@@ -14,6 +14,9 @@
 template <typename _VertexEvaluator, typename _vertex_id_type>
 class CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type> : public CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>
 {
+    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type>);
+
+public:
     typedef CLevelGraph _Graph;
     typedef CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type> inherited;
 
@@ -21,7 +24,6 @@ class CBaseLocationSelector<CLevelGraph, _VertexEvaluator, _vertex_id_type> : pu
     using inherited::m_graph;
     using inherited::m_restricted_object;
 
-public:
     IC CBaseLocationSelector(CRestrictedObject* object);
 
 protected:

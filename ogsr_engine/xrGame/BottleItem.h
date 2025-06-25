@@ -9,6 +9,8 @@
 
 class CBottleItem : public CFoodItem
 {
+    RTTI_DECLARE_TYPEINFO(CBottleItem, CFoodItem);
+
 private:
     typedef CFoodItem inherited;
 
@@ -28,7 +30,7 @@ public:
 
 protected:
     float m_alcohol;
-    //партиклы разбивания бутылки
+    // партиклы разбивания бутылки
     shared_str m_sBreakParticles;
     ref_sound sndBreaking;
 };

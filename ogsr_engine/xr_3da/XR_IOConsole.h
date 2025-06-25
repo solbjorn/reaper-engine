@@ -56,6 +56,8 @@ struct TipString
 
 class CConsole : public pureRender, public pureFrame, public pureScreenResolutionChanged
 {
+    RTTI_DECLARE_TYPEINFO(CConsole, pureRender, pureFrame, pureScreenResolutionChanged);
+
 public:
     struct str_pred
     {

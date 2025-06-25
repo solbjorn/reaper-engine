@@ -8,8 +8,12 @@ class CSE_ALifePHSkeletonObject;
 class CSE_Abstract;
 class CSE_PHSkeleton;
 class NET_Packet;
+
 class CPHSkeleton : public CPHDestroyableNotificate
 {
+    RTTI_DECLARE_TYPEINFO(CPHSkeleton, CPHDestroyableNotificate);
+
+public:
     bool b_removing;
     static u32 existence_time;
     u32 m_remove_time;

@@ -12,9 +12,11 @@ class CUIXml;
 
 class CUIActorInfoWnd : public CUIWindow
 {
-    typedef CUIWindow inherited;
+    RTTI_DECLARE_TYPEINFO(CUIActorInfoWnd, CUIWindow);
 
 public:
+    typedef CUIWindow inherited;
+
     CUIActorInfoWnd();
     virtual void Init();
     virtual void Show(bool status);
@@ -42,6 +44,9 @@ protected:
 
 class CUIActorStaticticHeader : public CUIWindow, public CUISelectable
 {
+    RTTI_DECLARE_TYPEINFO(CUIActorStaticticHeader, CUIWindow, CUISelectable);
+
+public:
     CUIActorInfoWnd* m_actorInfoWnd;
 
 protected:
@@ -62,13 +67,13 @@ public:
 
 class CUIActorStaticticDetail : public CUIWindow
 {
-protected:
+    RTTI_DECLARE_TYPEINFO(CUIActorStaticticDetail, CUIWindow);
+
 public:
     CUIStatic* m_text0;
     CUIStatic* m_text1;
     CUIStatic* m_text2;
     CUIStatic* m_text3;
 
-public:
     void Init(CUIXml* xml, LPCSTR path, int xml_idx);
 };

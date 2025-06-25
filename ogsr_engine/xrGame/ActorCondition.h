@@ -14,9 +14,11 @@ class CActor;
 
 class CActorCondition : public CEntityCondition
 {
-    friend class CScriptActor;
+    RTTI_DECLARE_TYPEINFO(CActorCondition, CEntityCondition);
 
 public:
+    friend class CScriptActor;
+
     typedef CEntityCondition inherited;
     enum
     {
@@ -129,7 +131,7 @@ protected:
 
     float m_f_time_affected;
 
-    //порог силы и здоровья меньше которого актер начинает хромать
+    // порог силы и здоровья меньше которого актер начинает хромать
     float m_fLimpingPowerBegin;
     float m_fLimpingPowerEnd;
     float m_fCantWalkPowerBegin;

@@ -12,8 +12,11 @@
 class CKinematics;
 
 struct SEnumVerticesCallback;
-class CSkeletonX
+
+class CSkeletonX : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSkeletonX);
+
 protected:
     enum
     {

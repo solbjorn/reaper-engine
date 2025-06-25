@@ -23,8 +23,10 @@ class CGameObject;
 
 using namespace PatrolPathManager;
 
-class CPatrolPathManager
+class CPatrolPathManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPatrolPathManager);
+
 private:
     friend struct CAccessabilityEvaluator;
 

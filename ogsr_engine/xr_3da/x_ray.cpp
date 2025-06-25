@@ -30,11 +30,17 @@ int max_load_stage = 0;
 
 static struct SoundProcessor final : public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(SoundProcessor, pureFrame);
+
+public:
     void OnFrame() override { ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop, Device.vCameraRight); }
 } g_sound_processor;
 
 static struct SoundRenderer final : public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(SoundRenderer, pureFrame);
+
+public:
     void OnFrame() override { ::Sound->render(); }
 } g_sound_renderer;
 

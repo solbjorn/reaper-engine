@@ -1,5 +1,6 @@
 #ifndef PH_WORLD_H
 #define PH_WORLD_H
+
 #include "Physics.h"
 
 // refs
@@ -31,6 +32,14 @@ class CPHWorld : public pureFrame
                  public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CPHWorld, pureFrame
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
+public:
     double m_start_time{};
     u32 m_delay;
     u32 m_previous_delay;
@@ -112,4 +121,5 @@ public:
 add_to_type_list(CPHWorld)
 #undef script_type_list
 #define script_type_list save_type_list(CPHWorld)
+
 #endif

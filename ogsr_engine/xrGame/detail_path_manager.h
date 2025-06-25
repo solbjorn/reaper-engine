@@ -14,8 +14,10 @@
 
 using namespace DetailPathManager;
 
-class CDetailPathManager
+class CDetailPathManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDetailPathManager);
+
 public:
     struct STravelParams
     {

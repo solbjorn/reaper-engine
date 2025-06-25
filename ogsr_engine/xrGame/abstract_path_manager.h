@@ -11,8 +11,10 @@
 #include "restricted_object.h"
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
-class CAbstractPathManager
+class CAbstractPathManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>);
+
 public:
     typedef xr_vector<_vertex_id_type> PATH;
 
@@ -68,4 +70,6 @@ public:
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 class CBasePathManager : public CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>
-{};
+{
+    RTTI_DECLARE_TYPEINFO(CBasePathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>, CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>);
+};

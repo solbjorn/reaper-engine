@@ -10,24 +10,24 @@ class CZoneEffector;
 
 #define SMALL_OBJECT_RADIUS 0.6f
 
-//информация о объекте, находящемся в зоне
+// информация о объекте, находящемся в зоне
 struct SZoneObjectInfo
 {
     SZoneObjectInfo() : object(NULL), zone_ignore(false), time_in_zone(0), hit_num(0), total_damage(0), small_object(false), nonalive_object(false), death_in_zone(false) {}
     CGameObject* object;
     bool small_object;
     bool nonalive_object;
-    //игнорирование объекта в зоне
+    // игнорирование объекта в зоне
     bool zone_ignore;
-    //присоединенные партиклы
+    // присоединенные партиклы
     xr_vector<CParticlesObject*> particles_vector;
-    //время прибывания в зоне
+    // время прибывания в зоне
     u32 time_in_zone;
-    //количество раз, сколько зона воздействовала на объект
+    // количество раз, сколько зона воздействовала на объект
     u32 hit_num;
-    //количество повреждений нанесенных зоной
+    // количество повреждений нанесенных зоной
     float total_damage;
-    //существо померло в зоне
+    // существо померло в зоне
     bool death_in_zone;
 
     bool operator==(const CGameObject* O) const { return object == O; }
@@ -35,6 +35,9 @@ struct SZoneObjectInfo
 
 class CCustomZone : public CSpaceRestrictor
 {
+    RTTI_DECLARE_TYPEINFO(CCustomZone, CSpaceRestrictor);
+
+public:
     friend class CAnomalyZoneScript;
 
 private:
@@ -71,21 +74,21 @@ public:
     float GetMaxPower() { return m_fMaxPower; }
     void SetMaxPower(float p) { m_fMaxPower = p; }
 
-    //вычисление силы хита в зависимости от расстояния до центра зоны
-    //относительный размер силы (от 0 до 1)
+    // вычисление силы хита в зависимости от расстояния до центра зоны
+    // относительный размер силы (от 0 до 1)
     virtual float RelativePower(float dist);
-    //абсолютный размер
+    // абсолютный размер
     float Power(float dist);
 
     virtual CCustomZone* cast_custom_zone() { return this; }
 
-    //различные состояния в которых может находиться зона
+    // различные состояния в которых может находиться зона
     typedef enum
     {
-        eZoneStateIdle = 0, //состояние зоны, когда внутри нее нет активных объектов
-        eZoneStateAwaking, //пробуждение зоны (объект попал в зону)
-        eZoneStateBlowout, //выброс
-        eZoneStateAccumulate, //накапливание энергии, после выброса
+        eZoneStateIdle = 0, // состояние зоны, когда внутри нее нет активных объектов
+        eZoneStateAwaking, // пробуждение зоны (объект попал в зону)
+        eZoneStateBlowout, // выброс
+        eZoneStateAccumulate, // накапливание энергии, после выброса
         eZoneStateDisabled,
         eZoneStateMax
     } EZoneState;
@@ -105,27 +108,27 @@ protected:
 
     u32 m_owner_id; // if created from artefact
     u32 m_ttl;
-    //список объетков, находящихся в зоне
+    // список объетков, находящихся в зоне
     CActor* m_pLocalActor;
 
-    //максимальная сила заряда зоны
+    // максимальная сила заряда зоны
     float m_fMaxPower;
 
-    //линейный коэффициент затухания в зависимости от расстояния
+    // линейный коэффициент затухания в зависимости от расстояния
     float m_fAttenuation;
-    //процент удара зоны, который пойдет на физический импульс
+    // процент удара зоны, который пойдет на физический импульс
     float m_fHitImpulseScale;
-    //размер радиуса в процентах от оригинального,
-    //где действует зона
+    // размер радиуса в процентах от оригинального,
+    // где действует зона
     float m_fEffectiveRadius;
 
-    //тип наносимого хита
+    // тип наносимого хита
     ALife::EHitType m_eHitTypeBlowout;
 
     EZoneState m_eZoneState;
     bool m_keep_update;
 
-    //текущее время пребывания зоны в определенном состоянии
+    // текущее время пребывания зоны в определенном состоянии
     int m_iStateTime;
     int m_iPreviousStateTime;
 
@@ -134,8 +137,8 @@ protected:
     u32 m_TimeShift;
     u32 m_StartTime;
 
-    //массив с временами, сколько каждое состояние должно
-    //длиться (если 0, то мгновенно -1 - бесконечность,
+    // массив с временами, сколько каждое состояние должно
+    // длиться (если 0, то мгновенно -1 - бесконечность,
     //-2 - вообще не должно вызываться)
     typedef svector<int, eZoneStateMax> StateTimeSVec;
     StateTimeSVec m_StateTime;
@@ -143,7 +146,7 @@ protected:
     virtual void SwitchZoneState(EZoneState new_state);
     virtual void OnStateSwitch(EZoneState new_state);
     virtual void CheckForAwaking();
-    //обработка зоны в различных состояниях
+    // обработка зоны в различных состояниях
     virtual bool IdleState();
     virtual bool AwakingState();
     virtual bool BlowoutState();
@@ -162,10 +165,10 @@ public:
     EZoneState ZoneState() { return m_eZoneState; }
 
 protected:
-    //воздействие зоной на объект
+    // воздействие зоной на объект
     virtual void Affect(SZoneObjectInfo* O) {}
 
-    //воздействовать на все объекты в зоне
+    // воздействовать на все объекты в зоне
     virtual void AffectObjects();
 
     u32 m_dwAffectFrameNum;
@@ -173,23 +176,23 @@ protected:
     u32 m_dwDeltaTime;
     u32 m_dwPeriod;
     //	bool					m_bZoneReady;
-    //если в зоне есть не disabled объекты
+    // если в зоне есть не disabled объекты
     bool m_bZoneActive;
 
-    //параметры для выброса, с какой задержкой
-    //включать эффекты и логику
+    // параметры для выброса, с какой задержкой
+    // включать эффекты и логику
     u32 m_dwBlowoutParticlesTime;
     u32 m_dwBlowoutLightTime;
     u32 m_dwBlowoutSoundTime;
     u32 m_dwBlowoutExplosionTime;
     void UpdateBlowout();
 
-    //ветер
+    // ветер
     bool m_bBlowoutWindActive;
     u32 m_dwBlowoutWindTimeStart;
     u32 m_dwBlowoutWindTimePeak;
     u32 m_dwBlowoutWindTimeEnd;
-    //сила ветра (увеличение текущего) (0,1) когда в аномалию попадает актер
+    // сила ветра (увеличение текущего) (0,1) когда в аномалию попадает актер
     float m_fBlowoutWindPowerMax;
     float m_fStoreWindPower;
 
@@ -197,30 +200,30 @@ protected:
     void StopWind();
     void UpdateWind();
 
-    //время, через которое, зона перестает реагировать
-    //на объект мертвый объект (-1 если не указано)
+    // время, через которое, зона перестает реагировать
+    // на объект мертвый объект (-1 если не указано)
     int m_iDisableHitTime;
-    //тоже самое но для маленьких объектов
+    // тоже самое но для маленьких объектов
     int m_iDisableHitTimeSmall;
     int m_iDisableIdleTime;
 
     ////////////////////////////////
     // имена партиклов зоны
 
-    //обычное состояние зоны
+    // обычное состояние зоны
     shared_str m_sIdleParticles;
-    //выброс зоны
+    // выброс зоны
     shared_str m_sBlowoutParticles;
     shared_str m_sAccumParticles;
     shared_str m_sAwakingParticles;
 
-    //появление большого и мальнекого объекта в зоне
+    // появление большого и мальнекого объекта в зоне
     shared_str m_sEntranceParticlesSmall;
     shared_str m_sEntranceParticlesBig;
-    //поражение большого и мальнекого объекта в зоне
+    // поражение большого и мальнекого объекта в зоне
     shared_str m_sHitParticlesSmall;
     shared_str m_sHitParticlesBig;
-    //нахождение большого и мальнекого объекта в зоне
+    // нахождение большого и мальнекого объекта в зоне
     shared_str m_sIdleObjectParticlesSmall;
     shared_str m_sIdleObjectParticlesBig;
     BOOL m_bIdleObjectParticlesDontStop;
@@ -254,13 +257,13 @@ protected:
 
     void GrassZoneUpdate();
 
-    //объект партиклов обычного состояния зоны
+    // объект партиклов обычного состояния зоны
     CParticlesObject* m_pIdleParticles;
 
     //////////////////////////////
-    //подсветка аномалии
+    // подсветка аномалии
 
-    //подсветка idle состояния
+    // подсветка idle состояния
     ref_light m_pIdleLight;
     Fcolor m_IdleLightColor;
     float m_fIdleLightRange;
@@ -298,7 +301,7 @@ protected:
     void StopBlowoutLight();
     void UpdateBlowoutLight();
 
-    //список партиклов для объетов внутри зоны
+    // список партиклов для объетов внутри зоны
     //	DEFINE_MAP (CObject*, SZoneObjectInfo, OBJECT_INFO_MAP, OBJECT_INFO_MAP_IT);
     DEFINE_VECTOR(SZoneObjectInfo, OBJECT_INFO_VEC, OBJECT_INFO_VEC_IT);
     OBJECT_INFO_VEC m_ObjectInfoMap;
@@ -307,7 +310,7 @@ protected:
 
     virtual void Hit(SHit* pHDS);
 
-    //для визуализации зоны
+    // для визуализации зоны
     void PlayIdleParticles();
     void StopIdleParticles();
     void PlayAccumParticles();
@@ -325,12 +328,12 @@ protected:
 
     virtual bool IsVisibleForZones() { return false; }
 
-    //обновление, если зона передвигается
+    // обновление, если зона передвигается
     virtual void OnMove();
     Fvector m_vPrevPos;
     u32 m_dwLastTimeMoved;
 
-    //видимость зоны детектором
+    // видимость зоны детектором
 public:
     bool VisibleByDetector() { return VisibleDetector; }
 
@@ -339,10 +342,10 @@ public:
 protected:
     virtual void SpawnArtefact();
 
-    //рождение артефакта в зоне, во время ее срабатывания
-    //и присоединение его к зоне
+    // рождение артефакта в зоне, во время ее срабатывания
+    // и присоединение его к зоне
     void BornArtefact(bool forced);
-    //выброс артефактов из зоны
+    // выброс артефактов из зоны
     void ThrowOutArtefact(CArtefact* pArtefact);
 
     // void	PrefetchArtefacts			();
@@ -352,22 +355,22 @@ protected:
     DEFINE_VECTOR(CArtefact*, ARTEFACT_VECTOR, ARTEFACT_VECTOR_IT);
     ARTEFACT_VECTOR m_SpawnedArtefacts;
 
-    //есть ли вообще функция выбрасывания артефактов во время срабатывания
+    // есть ли вообще функция выбрасывания артефактов во время срабатывания
     //	bool					m_bSpawnBlowoutArtefacts;
-    //вероятность того, что артефакт засповниться при единичном
-    //срабатывании аномалии
+    // вероятность того, что артефакт засповниться при единичном
+    // срабатывании аномалии
     float m_fArtefactSpawnProbability;
     // bak вероятность спавна при смерти в зоне
     float m_fArtefactSpawnOnDeathProbability;
 
-    //величина импульса выкидывания артефакта из зоны
+    // величина импульса выкидывания артефакта из зоны
     float m_fThrowOutPower;
-    //высота над центром зоны, где будет появляться артефакт
+    // высота над центром зоны, где будет появляться артефакт
     float m_fArtefactSpawnHeight;
 
-    //имя партиклов, которые проигрываются во время и на месте рождения артефакта
+    // имя партиклов, которые проигрываются во время и на месте рождения артефакта
     shared_str m_sArtefactSpawnParticles;
-    //звук рождения артефакта
+    // звук рождения артефакта
     ref_sound m_ArtefactBornSound;
 
     struct ARTEFACT_SPAWN
@@ -379,7 +382,7 @@ protected:
     DEFINE_VECTOR(ARTEFACT_SPAWN, ARTEFACT_SPAWN_VECTOR, ARTEFACT_SPAWN_IT);
     ARTEFACT_SPAWN_VECTOR m_ArtefactSpawn;
 
-    //расстояние от зоны до текущего актера
+    // расстояние от зоны до текущего актера
     float m_fDistanceToCurEntity;
 
     // bak / флаг для рождения артефакта
@@ -390,7 +393,7 @@ protected:
     u32 m_ef_weapon_type;
     BOOL m_b_always_fastmode;
 
-    bool DestroyAfterBlowout{}; //Для самоудаления мин после взрыва
+    bool DestroyAfterBlowout{}; // Для самоудаления мин после взрыва
     u32 LastBlowoutTime{};
 
 public:

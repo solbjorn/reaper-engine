@@ -63,6 +63,9 @@ struct FeelTouchAddon
 
 class CGameObject : public CObject, public CUsableScriptObject, public CScriptBinder
 {
+    RTTI_DECLARE_TYPEINFO(CGameObject, CObject, CUsableScriptObject, CScriptBinder);
+
+public:
     typedef CObject inherited;
     Flags32 m_server_flags;
     CAI_ObjectLocation* m_ai_location;

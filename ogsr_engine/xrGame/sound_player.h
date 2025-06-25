@@ -11,8 +11,10 @@
 #include "ai_sounds.h"
 #include "associative_vector.h"
 
-class CSoundPlayer
+class CSoundPlayer : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSoundPlayer);
+
 public:
     struct CSoundParams
     {

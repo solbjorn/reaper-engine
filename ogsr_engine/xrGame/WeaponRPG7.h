@@ -6,6 +6,8 @@
 
 class CWeaponRPG7 : public CWeaponCustomPistol, public CRocketLauncher
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponRPG7, CWeaponCustomPistol, CRocketLauncher);
+
 private:
     typedef CWeaponCustomPistol inherited;
 

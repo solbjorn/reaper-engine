@@ -14,6 +14,8 @@ const int default_key = mouse_device_key | keyboard_device_key;
 
 class CInput : public pureFrame, public pureAppActivate, public pureAppDeactivate
 {
+    RTTI_DECLARE_TYPEINFO(CInput, pureFrame, pureAppActivate, pureAppDeactivate);
+
 public:
     enum
     {

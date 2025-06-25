@@ -2,6 +2,8 @@
 
 class CBlender_accum_direct : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_accum_direct_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
 
@@ -32,6 +36,8 @@ public:
 
 class CBlender_accum_direct_volumetric_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_volumetric_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
 
@@ -51,6 +57,8 @@ public:
 
 class CBlender_accum_direct_volumetric_sun_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_volumetric_sun_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
 

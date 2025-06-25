@@ -85,6 +85,14 @@ class CActor : public CEntityAlive,
                public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CActor, CEntityAlive, IInputReceiver, Feel::Touch, CInventoryOwner, CPhraseDialogManager, CStepManager, Feel::Sound
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
+public:
     friend class CActorCondition;
     friend class CScriptActor;
 

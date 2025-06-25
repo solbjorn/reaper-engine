@@ -32,6 +32,10 @@ template <typename TDistance, typename TPriorityQueue, typename TVertexManager, 
           typename TPathBuilder = CVertexPath<EuclidianHeuristics>, typename TIteration = u32, typename TVertexData = EmptyVertexData>
 class CAStar : public CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>
 {
+    RTTI_DECLARE_TYPEINFO(
+        CAStar<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>,
+        CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>);
+
 protected:
     using Inherited =
         CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>;

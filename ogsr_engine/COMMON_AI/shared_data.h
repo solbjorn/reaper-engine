@@ -2,8 +2,10 @@
 
 // Singleton template definition
 template <class T>
-class CSingleton
+class CSingleton : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSingleton<T>);
+
 private:
     static T* _self;
     static int _refcount;
@@ -59,11 +61,13 @@ bool CSingleton<T>::_on_self_delete = true;
 template <class SHARED_TYPE, class KEY_TYPE>
 class CSharedObj : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
 {
+    RTTI_DECLARE_TYPEINFO(CSharedObj<SHARED_TYPE, KEY_TYPE>, CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>);
+
+public:
     xr_map<KEY_TYPE, SHARED_TYPE*> _shared_tab;
     typedef typename xr_map<KEY_TYPE, SHARED_TYPE*>::iterator SHARED_DATA_MAP_IT;
 
-public:
-    CSharedObj(){};
+    CSharedObj() {};
     virtual ~CSharedObj()
     {
         for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it)
@@ -92,11 +96,13 @@ public:
     }
 };
 
-class CSharedResource
+class CSharedResource : public virtual RTTI::Enable
 {
-    bool loaded;
+    RTTI_DECLARE_TYPEINFO(CSharedResource);
 
 public:
+    bool loaded;
+
     CSharedResource() { loaded = false; }
 
     bool IsLoaded() { return loaded; }
@@ -104,12 +110,14 @@ public:
 };
 
 template <class SHARED_TYPE, class KEY_TYPE, bool auto_delete = true>
-class CSharedClass
+class CSharedClass : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSharedClass<SHARED_TYPE, KEY_TYPE, auto_delete>);
+
+public:
     SHARED_TYPE* _sd;
     CSharedObj<SHARED_TYPE, KEY_TYPE>* pSharedObj;
 
-public:
     CSharedClass() : _sd(NULL)
     {
         pSharedObj = CSharedObj<SHARED_TYPE, KEY_TYPE>::Instance();

@@ -15,6 +15,8 @@ class CCustomMonster;
 
 class CItemManager : public CObjectManager<const CGameObject>
 {
+    RTTI_DECLARE_TYPEINFO(CItemManager, CObjectManager<const CGameObject>);
+
 public:
     typedef CObjectManager<const CGameObject> inherited;
     typedef OBJECTS ITEMS;

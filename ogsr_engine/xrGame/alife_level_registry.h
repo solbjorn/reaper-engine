@@ -13,12 +13,14 @@
 #include "game_graph.h"
 #include "ai_debug.h"
 
-//#define FULL_LEVEL_UPDATE
+// #define FULL_LEVEL_UPDATE
 
 class CSE_ALifeDynamicObject;
 
 class CALifeLevelRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>
 {
+    RTTI_DECLARE_TYPEINFO(CALifeLevelRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>);
+
 protected:
     typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject> inherited;
 

@@ -1,12 +1,14 @@
 #pragma once
+
 #include "UIDialogWnd.h"
 #include "UIWndCallback.h"
-//#include "UIMessageBox.h"
 
 class CUIMessageBox;
 
 class CUIMessageBoxEx : public CUIDialogWnd, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIMessageBoxEx, CUIDialogWnd, CUIWndCallback);
+
 public:
     CUIMessageBoxEx();
     virtual ~CUIMessageBoxEx();

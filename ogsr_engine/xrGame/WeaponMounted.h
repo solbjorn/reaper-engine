@@ -11,6 +11,8 @@
 
 class CWeaponMounted : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponMounted, CPhysicsShellHolder, CHolderCustom, CShootingObject);
+
 private:
     //////////////////////////////////////////////////////////////////////////
     //  General
@@ -97,4 +99,5 @@ public:
 
     virtual CCameraBase* Camera();
 };
+
 #endif // WeaponMountedH

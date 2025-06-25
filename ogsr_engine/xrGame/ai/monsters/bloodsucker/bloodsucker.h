@@ -9,9 +9,11 @@
 
 class CAI_Bloodsucker : public CBaseMonster, public CControlledActor
 {
-    typedef CBaseMonster inherited;
+    RTTI_DECLARE_TYPEINFO(CAI_Bloodsucker, CBaseMonster, CControlledActor);
 
 public:
+    typedef CBaseMonster inherited;
+
     CAI_Bloodsucker();
     virtual ~CAI_Bloodsucker();
 

@@ -16,6 +16,9 @@ class CUITaskItem;
 
 class CUIEventsWnd : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIEventsWnd, CUIWindow, CUIWndCallback);
+
+public:
     typedef CUIWindow inherited;
     enum ETaskFilters
     {

@@ -16,6 +16,8 @@ class interactive_motion;
 
 class CCharacterPhysicsSupport : public CPHSkeleton, public CPHDestroyable
 {
+    RTTI_DECLARE_TYPEINFO(CCharacterPhysicsSupport, CPHSkeleton, CPHDestroyable);
+
 public:
     enum EType
     {
@@ -91,7 +93,7 @@ private:
     float skeleton_skin_ddelay_after_wound;
     float skeleton_skin_remain_time_after_wound;
     bool m_was_wounded;
-    float m_Pred_Time; //Для вычисления дельта времени между пересчётами сопротивления в джоинтах и коэффициента NPC
+    float m_Pred_Time; // Для вычисления дельта времени между пересчётами сопротивления в джоинтах и коэффициента NPC
     float m_time_delta;
     float pelvis_factor_low_pose_detect;
     BOOL character_have_wounded_state;

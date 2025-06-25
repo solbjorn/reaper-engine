@@ -8,8 +8,10 @@
 #include "script_export_space.h"
 #include "hit_immunity_space.h"
 
-class CHitImmunity
+class CHitImmunity : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CHitImmunity);
+
 public:
     CHitImmunity();
     virtual ~CHitImmunity();
@@ -20,8 +22,8 @@ public:
     virtual float AffectHit(float power, ALife::EHitType hit_type);
 
 protected:
-    //коэффициенты на которые домножается хит
-    //при соответствующем типе воздействия
+    // коэффициенты на которые домножается хит
+    // при соответствующем типе воздействия
     //(для защитных костюмов и специфичных животных)
     HitImmunity::HitTypeSVec m_HitTypeK;
 

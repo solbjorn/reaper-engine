@@ -122,8 +122,10 @@ DEFINE_VECTOR(st_Key*, KeyVec, KeyIt);
 // refs
 class CExporter;
 
-class CEnvelope
+class CEnvelope : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CEnvelope);
+
 public:
     KeyVec keys;
     int behavior[2];

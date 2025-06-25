@@ -2,6 +2,8 @@
 
 class CBlender_luminance : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_luminance, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: luminance estimate"; }
 

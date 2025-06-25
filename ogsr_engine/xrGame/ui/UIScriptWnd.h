@@ -7,6 +7,9 @@ struct SCallbackInfo;
 
 class CUIDialogWndEx : public CUIDialogWnd, public DLL_Pure
 {
+    RTTI_DECLARE_TYPEINFO(CUIDialogWndEx, CUIDialogWnd, DLL_Pure);
+
+public:
     typedef CUIDialogWnd inherited;
     typedef xr_vector<SCallbackInfo> CALLBACKS;
     typedef CALLBACKS::iterator CALLBACK_IT;

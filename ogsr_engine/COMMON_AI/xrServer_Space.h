@@ -11,33 +11,41 @@
 #include "script_export_space.h"
 
 #define SERVER_ENTITY_DECLARE_BEGIN0(__A) \
-    class __A \
+    class __A : public virtual RTTI::Enable \
     { \
+        RTTI_DECLARE_TYPEINFO(__A); \
+\
     public: \
         DECLARE_SCRIPT_REGISTER_FUNCTION
+
 #define SERVER_ENTITY_DECLARE_BEGIN(__A, __B) \
     class __A : public __B \
     { \
-        typedef __B inherited; \
+        RTTI_DECLARE_TYPEINFO(__A, __B); \
 \
     public: \
+        typedef __B inherited; \
         DECLARE_SCRIPT_REGISTER_FUNCTION
+
 #define SERVER_ENTITY_DECLARE_BEGIN2(__A, __B, __C) \
     class __A : public __B, public __C \
     { \
-        typedef __B inherited1; \
-        typedef __C inherited2; \
+        RTTI_DECLARE_TYPEINFO(__A, __B, __C); \
 \
     public: \
+        typedef __B inherited1; \
+        typedef __C inherited2; \
         DECLARE_SCRIPT_REGISTER_FUNCTION
+
 #define SERVER_ENTITY_DECLARE_BEGIN3(__A, __B, __C, __D) \
     class __A : public __B, public __C, public __D \
     { \
+        RTTI_DECLARE_TYPEINFO(__A, __B, __C, __D); \
+\
+    public: \
         typedef __B inherited1; \
         typedef __C inherited2; \
         typedef __D inherited3; \
-\
-    public: \
         DECLARE_SCRIPT_REGISTER_FUNCTION
 
 #define SERVER_ENTITY_DECLARE_END \

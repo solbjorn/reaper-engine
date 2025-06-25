@@ -6,8 +6,12 @@ namespace PAPI
 {
 // refs
 struct ParticleEffect;
-struct ParticleAction
+
+struct ParticleAction : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ParticleAction);
+
+public:
     enum
     {
         ALLOW_ROTATE = (1 << 1)

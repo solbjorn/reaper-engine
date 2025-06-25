@@ -7,8 +7,12 @@ class CUIScrollBar;
 
 class CUIScrollView : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIScrollView, CUIWindow, CUIWndCallback);
+
+public:
     typedef CUIWindow inherited;
     friend class CUIXmlInit; // for init
+
 protected:
     enum
     {

@@ -12,6 +12,8 @@
 
 class CALifeSwitchManager : public virtual CALifeSimulatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSwitchManager, CALifeSimulatorBase);
+
 protected:
     typedef CALifeSimulatorBase inherited;
     typedef ALife::OBJECT_VECTOR OBJECT_VECTOR;

@@ -1,11 +1,15 @@
 #pragma once
 
 #include "CameraDefs.h"
+
 struct SPPInfo;
 
 // постпроцесс
 class CEffectorPP : public SBaseEffector
 {
+    RTTI_DECLARE_TYPEINFO(CEffectorPP, SBaseEffector);
+
+public:
     EEffectorPPType eType{};
     bool bFreeOnRemove;
 

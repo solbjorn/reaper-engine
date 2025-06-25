@@ -20,8 +20,10 @@
 #define CSINI_IdToIndex CIni_IdToIndex<ITEM_REC_NUM, ITEM_DATA, T_ID, T_INDEX, T_INIT>
 
 TEMPLATE_SPECIALIZATION
-class CIni_IdToIndex
+class CIni_IdToIndex : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CIni_IdToIndex<ITEM_REC_NUM, ITEM_DATA, T_ID, T_INDEX, T_INIT>);
+
 public:
     typedef T_INDEX index_type;
     typedef T_ID id_type;

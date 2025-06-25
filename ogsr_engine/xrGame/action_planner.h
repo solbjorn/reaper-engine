@@ -23,6 +23,10 @@ template <typename _object_type, bool _reverse_search = false, typename _world_o
 class CActionPlanner : public CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
                                              _world_operator_ptr, _condition_evaluator_ptr>
 {
+    RTTI_DECLARE_TYPEINFO(CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr, _condition_evaluator_ptr>,
+                          CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
+                                         _world_operator_ptr, _condition_evaluator_ptr>);
+
 public:
     using inherited = CProblemSolver<GraphEngineSpace::CWorldProperty, GraphEngineSpace::CWorldState, _world_operator, _condition_evaluator, u32, _reverse_search,
                                      _world_operator_ptr, _condition_evaluator_ptr>;

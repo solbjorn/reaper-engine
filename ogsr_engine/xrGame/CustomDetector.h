@@ -18,12 +18,12 @@ struct ITEM_TYPE
     shared_str nightvision_particle;
 };
 
-//описание зоны, обнаруженной детектором
+// описание зоны, обнаруженной детектором
 struct ITEM_INFO
 {
     ITEM_TYPE* curr_ref{};
     float snd_time{};
-    //текущая частота работы датчика
+    // текущая частота работы датчика
     float cur_period{};
     // particle for night-vision mode
     CParticlesObject* pParticle{};
@@ -35,6 +35,8 @@ struct ITEM_INFO
 template <typename K>
 class CDetectList : public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CDetectList<K>, Feel::Touch);
+
 protected:
     string_unordered_map<shared_str, ITEM_TYPE> m_TypesMap;
 
@@ -131,6 +133,9 @@ class CUIArtefactDetectorBase;
 
 class CCustomDetector : public CHudItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CCustomDetector, CHudItemObject);
+
+public:
     typedef CHudItemObject inherited;
 
 protected:

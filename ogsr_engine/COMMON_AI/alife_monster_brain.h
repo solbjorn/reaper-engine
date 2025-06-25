@@ -18,8 +18,10 @@ class CALifeMonsterMovementManager;
 class CSE_ALifeSmartZone;
 class NET_Packet;
 
-class CALifeMonsterBrain
+class CALifeMonsterBrain : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeMonsterBrain);
+
 public:
     typedef CSE_ALifeMonsterAbstract object_type;
     typedef CALifeMonsterMovementManager movement_manager_type;

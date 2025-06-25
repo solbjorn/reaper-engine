@@ -25,6 +25,8 @@ class MONSTER_COMMUNITY;
 
 class MONSTER_COMMUNITY : public CIni_IdToIndex<1, MONSTER_COMMUNITY_DATA, MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_INDEX, MONSTER_COMMUNITY>
 {
+    RTTI_DECLARE_TYPEINFO(MONSTER_COMMUNITY, CIni_IdToIndex<1, MONSTER_COMMUNITY_DATA, MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_INDEX, MONSTER_COMMUNITY>);
+
 private:
     typedef CIni_IdToIndex<1, MONSTER_COMMUNITY_DATA, MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_INDEX, MONSTER_COMMUNITY> inherited;
     friend inherited;
@@ -46,7 +48,7 @@ private:
     static void InitIdToIndex();
 
 public:
-    //отношение между группами монстров
+    // отношение между группами монстров
     static int relation(MONSTER_COMMUNITY_INDEX from, MONSTER_COMMUNITY_INDEX to);
     int relation(MONSTER_COMMUNITY_INDEX to);
     static void set_relation(MONSTER_COMMUNITY_ID, MONSTER_COMMUNITY_ID, int);

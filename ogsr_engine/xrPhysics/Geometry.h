@@ -25,12 +25,13 @@ class CPHObject;
 
 class CODEGeom : public IPhysicsGeometry
 {
+    RTTI_DECLARE_TYPEINFO(CODEGeom, IPhysicsGeometry);
+
 protected:
     dGeomID m_geom_transform;
     u16 m_bone_id;
     Flags16 m_flags{};
 
-protected:
 public:
     // get
     virtual float volume() = 0;
@@ -106,10 +107,12 @@ public:
 
 class CBoxGeom : public CODEGeom
 {
+    RTTI_DECLARE_TYPEINFO(CBoxGeom, CODEGeom);
+
+public:
     typedef CODEGeom inherited;
     Fobb m_box;
 
-public:
     CBoxGeom(const Fobb& box);
     //	virtual					~CBoxGeom			(const Fobb& box)													;
     virtual float volume();
@@ -126,10 +129,12 @@ public:
 
 class CSphereGeom : public CODEGeom
 {
+    RTTI_DECLARE_TYPEINFO(CSphereGeom, CODEGeom);
+
+public:
     typedef CODEGeom inherited;
     Fsphere m_sphere;
 
-public:
     CSphereGeom(const Fsphere& sphere);
     virtual float volume();
     virtual float radius();
@@ -142,12 +147,15 @@ public:
     virtual dGeomID create();
     virtual void set_position(const Fvector& ref_point);
 };
+
 class CCylinderGeom : public CODEGeom
 {
+    RTTI_DECLARE_TYPEINFO(CCylinderGeom, CODEGeom);
+
+public:
     typedef CODEGeom inherited;
     Fcylinder m_cylinder;
 
-public:
     CCylinderGeom(const Fcylinder& cyl);
     virtual float volume();
     virtual float radius();

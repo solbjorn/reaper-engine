@@ -1,7 +1,9 @@
 #pragma once
 
-class IDamageSource
+class IDamageSource : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IDamageSource);
+
 public:
     virtual void SetInitiator(u16 id) = 0;
     virtual u16 Initiator() = 0;

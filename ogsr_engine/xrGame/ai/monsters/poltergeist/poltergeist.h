@@ -14,6 +14,9 @@ class CPolterTele;
 
 class CPoltergeist : public CBaseMonster, public CTelekinesis, public CEnergyHolder
 {
+    RTTI_DECLARE_TYPEINFO(CPoltergeist, CBaseMonster, CTelekinesis, CEnergyHolder);
+
+public:
     typedef CBaseMonster inherited;
     typedef CEnergyHolder Energy;
 
@@ -44,10 +47,8 @@ class CPoltergeist : public CBaseMonster, public CTelekinesis, public CEnergyHol
     float m_detection_success_level;
     float m_detection_max_level;
 
-public:
     bool m_detect_without_sight;
 
-public:
     CPoltergeist();
     virtual ~CPoltergeist();
 
@@ -154,8 +155,11 @@ add_to_type_list(CPoltergeist)
     // Interface
     //////////////////////////////////////////////////////////////////////////
 
-    class CPolterSpecialAbility
+    class CPolterSpecialAbility : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPolterSpecialAbility);
+
+public:
     CParticlesObject* m_particles_object;
     CParticlesObject* m_particles_object_electro;
 
@@ -189,6 +193,9 @@ public:
 //////////////////////////////////////////////////////////////////////////
 class CPolterFlame : public CPolterSpecialAbility
 {
+    RTTI_DECLARE_TYPEINFO(CPolterFlame, CPolterSpecialAbility);
+
+public:
     typedef CPolterSpecialAbility inherited;
 
     ref_sound m_sound;
@@ -272,6 +279,9 @@ private:
 //////////////////////////////////////////////////////////////////////////
 class CPolterTele : public CPolterSpecialAbility
 {
+    RTTI_DECLARE_TYPEINFO(CPolterTele, CPolterSpecialAbility);
+
+public:
     typedef CPolterSpecialAbility inherited;
 
     xr_vector<CObject*> m_nearest;

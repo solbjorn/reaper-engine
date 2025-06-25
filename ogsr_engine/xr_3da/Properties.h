@@ -56,8 +56,10 @@ struct xrP_TOKEN
 };
 
 // Base class
-class CPropertyBase
+class CPropertyBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPropertyBase);
+
 public:
     virtual void Save(IWriter& fs) = 0;
     virtual void Load(IReader& fs, u16 version) = 0;

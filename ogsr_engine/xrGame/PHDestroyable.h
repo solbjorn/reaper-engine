@@ -6,15 +6,20 @@
 class CPhysicsShellHolder;
 class CSE_Abstract;
 class CPHDestroyableNotificate;
-class CPHDestroyableNotificator
+
+class CPHDestroyableNotificator : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPHDestroyableNotificator);
+
 public:
     virtual void NotificateDestroy(CPHDestroyableNotificate* dn) = 0;
 };
 
 class CPHDestroyable : public CPHDestroyableNotificator
-
 {
+    RTTI_DECLARE_TYPEINFO(CPHDestroyable, CPHDestroyableNotificator);
+
+public:
     xr_vector<shared_str> m_destroyed_obj_visual_names;
     xr_vector<CPHDestroyableNotificate*> m_notificate_objects;
     u16 m_depended_objects;

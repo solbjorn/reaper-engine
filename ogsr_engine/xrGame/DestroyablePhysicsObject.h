@@ -2,12 +2,14 @@
 
 class CDestroyablePhysicsObject : public CPhysicObject, public CPHDestroyable, public CPHCollisionDamageReceiver, public CHitImmunity, public CDamageManager
 {
+    RTTI_DECLARE_TYPEINFO(CDestroyablePhysicsObject, CPhysicObject, CPHDestroyable, CPHCollisionDamageReceiver, CHitImmunity, CDamageManager);
+
+public:
     typedef CPhysicObject inherited;
     float m_fHealth;
     ref_sound m_destroy_sound;
     shared_str m_destroy_particles;
 
-public:
     CDestroyablePhysicsObject();
     virtual ~CDestroyablePhysicsObject();
     virtual CPhysicsShellHolder* PPhysicsShellHolder();
@@ -26,6 +28,4 @@ public:
 
 protected:
     void Destroy();
-
-private:
 };

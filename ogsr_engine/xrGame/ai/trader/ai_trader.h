@@ -24,6 +24,9 @@ class CTraderAnimation;
 
 class CAI_Trader : public CEntityAlive, public CInventoryOwner, public CScriptEntity, public CAI_PhraseDialogManager
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Trader, CEntityAlive, CInventoryOwner, CScriptEntity, CAI_PhraseDialogManager);
+
+public:
     typedef CEntityAlive inherited;
 
 private:
@@ -54,8 +57,8 @@ public:
 
     virtual void Die(CObject* who);
     virtual void Think();
-    virtual void HitSignal(float /**P/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
-    virtual void HitImpulse(float /**P/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/){};
+    virtual void HitSignal(float /**P/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/) {};
+    virtual void HitImpulse(float /**P/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/) {};
     virtual void Hit(SHit* pHDS);
     virtual void UpdateCL();
 
@@ -86,7 +89,7 @@ public:
     void OnStartTrade();
     void OnStopTrade();
 
-    //игровое имя
+    // игровое имя
     virtual LPCSTR Name() const { return CInventoryOwner::Name(); }
 
     virtual bool can_attach(const CInventoryItem* inventory_item) const;

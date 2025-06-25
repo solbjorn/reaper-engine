@@ -8,6 +8,8 @@ class CTheoraSurface;
 
 class CTexture : public ITexture, public xr_resource_named
 {
+    RTTI_DECLARE_TYPEINFO(CTexture, ITexture, xr_resource_named);
+
 public:
     enum MaxTextures
     {

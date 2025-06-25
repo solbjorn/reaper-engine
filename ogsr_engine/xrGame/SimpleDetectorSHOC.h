@@ -4,13 +4,13 @@
 #include "hudsound.h"
 
 class CCustomZone;
-//описание типа зоны
+// описание типа зоны
 struct ZONE_TYPE_SHOC
 {
-    //интервал частот отыгрывания звука
+    // интервал частот отыгрывания звука
     float min_freq;
     float max_freq;
-    //звук реакции детектора на конкретную зону
+    // звук реакции детектора на конкретную зону
     //	ref_sound	detect_snd;
     HUD_SOUND detect_snds;
 
@@ -18,11 +18,11 @@ struct ZONE_TYPE_SHOC
     float m_fRadius;
 };
 
-//описание зоны, обнаруженной детектором
+// описание зоны, обнаруженной детектором
 struct ZONE_INFO_SHOC
 {
     u32 snd_time;
-    //текущая частота работы датчика
+    // текущая частота работы датчика
     float cur_freq;
     // particle for night-vision mode
     CParticlesObject* pParticle;
@@ -35,9 +35,11 @@ class CInventoryOwner;
 
 class CCustomDetectorSHOC : public CInventoryItemObject, public Feel::Touch
 {
-    typedef CInventoryItemObject inherited;
+    RTTI_DECLARE_TYPEINFO(CCustomDetectorSHOC, CInventoryItemObject, Feel::Touch);
 
 public:
+    typedef CInventoryItemObject inherited;
+
     CCustomDetectorSHOC(void);
     virtual ~CCustomDetectorSHOC(void);
 
@@ -72,15 +74,15 @@ protected:
 
     float m_fRadius;
 
-    //если хозяин текущий актер
+    // если хозяин текущий актер
     CActor* m_pCurrentActor;
     CInventoryOwner* m_pCurrentInvOwner;
 
-    //информация об онаруживаемых зонах
+    // информация об онаруживаемых зонах
     DEFINE_MAP(CLASS_ID, ZONE_TYPE_SHOC, ZONE_TYPE_MAP, ZONE_TYPE_MAP_IT);
     ZONE_TYPE_MAP m_ZoneTypeMap;
 
-    //список обнаруженных зон и информация о них
+    // список обнаруженных зон и информация о них
     DEFINE_MAP(CCustomZone*, ZONE_INFO_SHOC, ZONE_INFO_MAP, ZONE_INFO_MAP_IT);
     ZONE_INFO_MAP m_ZoneInfoMap;
 
@@ -99,6 +101,8 @@ public:
 
 class CSimpleDetectorSHOC : public CCustomDetectorSHOC
 {
+    RTTI_DECLARE_TYPEINFO(CSimpleDetectorSHOC, CCustomDetectorSHOC);
+
 public:
     CSimpleDetectorSHOC();
     virtual ~CSimpleDetectorSHOC();

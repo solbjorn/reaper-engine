@@ -5,6 +5,8 @@
 
 class CUIButton : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIButton, CUIStatic);
+
 private:
     typedef CUIStatic inherited;
 
@@ -15,7 +17,7 @@ public:
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual void OnClick();
 
-    //прорисовка окна
+    // прорисовка окна
     virtual void DrawTexture();
     virtual void DrawText();
     virtual void DrawHighlightedText();
@@ -25,27 +27,27 @@ public:
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual void OnFocusLost();
 
-    //режимы в которых можно нажимать кнопку
+    // режимы в которых можно нажимать кнопку
     typedef enum
     {
-        NORMAL_PRESS, //кнопка нажимается при
-                      //нажатии и отпускании на ней мыши
-        DOWN_PRESS //сразу при нажатии
+        NORMAL_PRESS, // кнопка нажимается при
+                      // нажатии и отпускании на ней мыши
+        DOWN_PRESS // сразу при нажатии
     } E_PRESS_MODE;
 
-    //заново подготовить состояние
+    // заново подготовить состояние
     virtual void Reset();
 
-    //подсвечен ли текст на кнопке
-    // принудительная подсветка
+    // подсвечен ли текст на кнопке
+    //  принудительная подсветка
     virtual void HighlightItem(bool bHighlight) { m_bCursorOverWindow = bHighlight; }
 
-    //состояния в которых находится кнопка
+    // состояния в которых находится кнопка
     typedef enum
     {
-        BUTTON_NORMAL, //кнопка никак не затрагивается
-        BUTTON_PUSHED, //в нажатом сотоянии
-        BUTTON_UP //при удерживаемой кнопки мыши
+        BUTTON_NORMAL, // кнопка никак не затрагивается
+        BUTTON_PUSHED, // в нажатом сотоянии
+        BUTTON_UP // при удерживаемой кнопки мыши
     } E_BUTTON_STATE;
 
     // Установка состояния кнопки: утоплена, не утоплена
@@ -70,10 +72,7 @@ public:
     }
     IC bool IsAccelerator(int dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
 
-    void SetAcceleratorAction(EGameActions a)
-    {
-        m_uAcceleratorAction = a;
-    }
+    void SetAcceleratorAction(EGameActions a) { m_uAcceleratorAction = a; }
 
     void SetPressMode(E_PRESS_MODE ePressMode) { m_ePressMode = ePressMode; }
     E_PRESS_MODE GetPressMode() { return m_ePressMode; }

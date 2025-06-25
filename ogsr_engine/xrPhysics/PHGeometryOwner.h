@@ -9,8 +9,10 @@ DEFINE_VECTOR(CODEGeom*, GEOM_STORAGE, GEOM_I);
 struct SBoneShape;
 class IKinematics;
 
-class CPHGeometryOwner
+class CPHGeometryOwner : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPHGeometryOwner);
+
 protected:
     GEOM_STORAGE m_geoms; // e
     // bl

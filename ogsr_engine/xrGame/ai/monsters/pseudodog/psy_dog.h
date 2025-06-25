@@ -6,6 +6,9 @@ class CPsyDogPhantom;
 
 class CPsyDog : public CAI_PseudoDog
 {
+    RTTI_DECLARE_TYPEINFO(CPsyDog, CAI_PseudoDog);
+
+public:
     typedef CAI_PseudoDog inherited;
 
     friend class CPsyDogPhantom;
@@ -27,7 +30,6 @@ class CPsyDog : public CAI_PseudoDog
 
     TTime* m_phantoms_die_time;
 
-public:
     CPsyDog();
     virtual ~CPsyDog();
 
@@ -69,6 +71,9 @@ add_to_type_list(CPsyDog)
 
     class CPsyDogPhantom : public CAI_PseudoDog
 {
+    RTTI_DECLARE_TYPEINFO(CPsyDogPhantom, CAI_PseudoDog);
+
+public:
     typedef CAI_PseudoDog inherited;
 
     CPsyDog* m_parent;
@@ -88,7 +93,6 @@ add_to_type_list(CPsyDog)
 
     u32 m_time_spawned;
 
-public:
     CPsyDogPhantom();
     virtual ~CPsyDogPhantom();
     virtual BOOL net_Spawn(CSE_Abstract* dc);

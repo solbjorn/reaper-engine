@@ -13,6 +13,8 @@
 
 class CInventoryItemObject : public CInventoryItem, public CPhysicItem
 {
+    RTTI_DECLARE_TYPEINFO(CInventoryItemObject, CInventoryItem, CPhysicItem);
+
 public:
     CInventoryItemObject();
     virtual ~CInventoryItemObject();

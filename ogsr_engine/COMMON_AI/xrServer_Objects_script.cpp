@@ -37,6 +37,9 @@ void set_ini_string_script(CSE_Abstract* abstract, LPCSTR cd)
 template <typename T>
 struct CWrapperBase : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperBase<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperBase<T> self_type;
 

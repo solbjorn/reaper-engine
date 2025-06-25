@@ -11,8 +11,10 @@
 #include "restricted_object.h"
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
-class CAbstractLocationSelector
+class CAbstractLocationSelector : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>);
+
 protected:
     bool m_failed;
     _VertexEvaluator* m_evaluator;
@@ -53,4 +55,6 @@ public:
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
 class CBaseLocationSelector : public CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>
-{};
+{
+    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>);
+};

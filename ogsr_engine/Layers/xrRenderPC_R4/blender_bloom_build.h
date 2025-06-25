@@ -2,6 +2,8 @@
 
 class CBlender_bloom_build : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_bloom_build, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_bloom_build_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_bloom_build_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
 
@@ -24,6 +28,8 @@ public:
 
 class CBlender_postprocess_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_postprocess_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
 
@@ -35,6 +41,8 @@ public:
 
 class CBlender_ssfx_bloom_build : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_build, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "SSFX Bloom"; }
 
@@ -46,6 +54,8 @@ public:
 
 class CBlender_ssfx_bloom_lens : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_lens, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "SSFX Bloom Lens"; }
 
@@ -57,6 +67,8 @@ public:
 
 class CBlender_ssfx_bloom_downsample : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_downsample, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "SSFX Bloom Downsample"; }
 
@@ -68,6 +80,8 @@ public:
 
 class CBlender_ssfx_bloom_upsample : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_bloom_upsample, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "SSFX Bloom Upsample"; }
 

@@ -4,6 +4,7 @@ class CUIWindow;
 class CUIDialogWnd;
 class CUICursor;
 class CUIMessageBoxEx;
+
 #include "..\xr_3da\iinputreceiver.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "UIDialogHolder.h"
@@ -11,8 +12,10 @@ class CUIMessageBoxEx;
 #include "ui_base.h"
 
 class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, public CDialogHolder, public CUIWndCallback, public CDeviceResetNotifier
-
 {
+    RTTI_DECLARE_TYPEINFO(CMainMenu, IMainMenu, IInputReceiver, pureRender, CDialogHolder, CUIWndCallback, CDeviceResetNotifier);
+
+public:
     CUIDialogWnd* m_startDialog;
 
     enum

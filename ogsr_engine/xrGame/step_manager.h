@@ -4,8 +4,11 @@
 class CEntityAlive;
 class CBlend;
 
-class CStepManager
+class CStepManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CStepManager);
+
+public:
     u8 m_legs_count;
 
     STEPS_MAP m_steps_map;
@@ -18,7 +21,6 @@ class CStepManager
 
     u32 m_time_anim_started;
 
-public:
     CStepManager();
     virtual ~CStepManager();
 

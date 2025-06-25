@@ -3,13 +3,16 @@
 #include "pure_relcase.h"
 
 class CObject;
+
 namespace Feel
 {
-class Touch : private pure_relcase
+class Touch : public virtual RTTI::Enable, private pure_relcase
 {
-    friend class pure_relcase;
+    RTTI_DECLARE_TYPEINFO(Touch, pure_relcase);
 
 public:
+    friend class pure_relcase;
+
     struct DenyTouch
     {
         CObject* O;

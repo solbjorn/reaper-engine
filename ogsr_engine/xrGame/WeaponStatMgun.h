@@ -11,12 +11,13 @@ class CCameraBase;
 
 class CWeaponStatMgun : public CPhysicsShellHolder, public CHolderCustom, public CShootingObject
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponStatMgun, CPhysicsShellHolder, CHolderCustom, CShootingObject);
+
 private:
     typedef CPhysicsShellHolder inheritedPH;
     typedef CHolderCustom inheritedHolder;
     typedef CShootingObject inheritedShooting;
 
-private:
     CCameraBase* camera;
     //
     static void BoneCallbackX(CBoneInstance* B);

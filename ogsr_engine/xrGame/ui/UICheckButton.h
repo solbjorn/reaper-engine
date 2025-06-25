@@ -5,6 +5,8 @@
 
 class CUICheckButton : public CUI3tButton, public CUIOptionsItem
 {
+    RTTI_DECLARE_TYPEINFO(CUICheckButton, CUI3tButton, CUIOptionsItem);
+
 public:
     CUICheckButton(void);
     virtual ~CUICheckButton(void);
@@ -20,11 +22,9 @@ public:
 
     virtual void Init(float x, float y, float width, float height);
     virtual void InitTexture(LPCSTR tex_name);
-    virtual void SetTextX(float x)
-    { /*do nothing*/
-    }
+    virtual void SetTextX(float x) { /*do nothing*/ }
 
-    //состояние кнопки
+    // состояние кнопки
     bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }
     void SetCheck(bool ch)
     {

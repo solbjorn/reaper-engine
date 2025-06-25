@@ -13,11 +13,14 @@ class CPhysicsShellHolder;
 class CTelekineticObject;
 class CPHUpdateObject;
 class CTelekinesis;
-class CTelekineticObject
+
+class CTelekineticObject : public virtual RTTI::Enable
 {
-    ETelekineticState state;
+    RTTI_DECLARE_TYPEINFO(CTelekineticObject);
 
 public:
+    ETelekineticState state;
+
     CPhysicsShellHolder* object;
     CTelekinesis* telekinesis;
     float target_height;

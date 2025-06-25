@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "gameobject.h"
+// #include "gameobject.h"
 
 #include "script_export_space.h"
 
@@ -9,8 +9,10 @@ class CGameObject;
 class CCameraBase;
 class CActor;
 
-class CHolderCustom
+class CHolderCustom : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CHolderCustom);
+
 private:
     CGameObject* m_owner{};
     CActor* m_ownerActor{};
@@ -28,7 +30,7 @@ public:
         m_ownerActor = NULL;
     }
     virtual ~CHolderCustom() { ; }
-    virtual void UpdateEx(float fov){}; // called by owner
+    virtual void UpdateEx(float fov) {}; // called by owner
     virtual CHolderCustom* cast_holder_custom() { return this; }
     bool Engaged() { return m_owner != NULL; }
     virtual void OnMouseMove(int x, int y) = 0;
@@ -48,9 +50,9 @@ public:
     virtual Fvector ExitPosition() = 0;
     virtual Fvector ExitVelocity() { return Fvector().set(0, 0, 0); }
     virtual CCameraBase* Camera() = 0;
-    virtual void Action(int id, u32 flags){};
-    virtual void SetParam(int id, Fvector2 val){};
-    virtual void SetParam(int id, Fvector val){};
+    virtual void Action(int id, u32 flags) {};
+    virtual void SetParam(int id, Fvector2 val) {};
+    virtual void SetParam(int id, Fvector val) {};
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

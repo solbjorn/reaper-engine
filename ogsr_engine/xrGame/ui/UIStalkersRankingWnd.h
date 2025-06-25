@@ -12,9 +12,11 @@ class CSE_ALifeTraderAbstract;
 
 class CUIStalkersRankingWnd : public CUIWindow
 {
-    typedef CUIWindow inherited;
+    RTTI_DECLARE_TYPEINFO(CUIStalkersRankingWnd, CUIWindow);
 
 public:
+    typedef CUIWindow inherited;
+
     void Init();
     virtual void Show(bool status);
     void ShowHumanDetails();
@@ -41,16 +43,17 @@ public:
 
 class CUIStalkerRankingInfoItem : public CUIWindow, public CUISelectable
 {
+    RTTI_DECLARE_TYPEINFO(CUIStalkerRankingInfoItem, CUIWindow, CUISelectable);
+
+public:
     CUIStalkersRankingWnd* m_StalkersRankingWnd;
     u32 m_stored_alpha;
 
-public:
     u16 m_humanID;
     CUIStatic* m_text1;
     CUIStatic* m_text2;
     CUIStatic* m_text3;
 
-public:
     CUIStalkerRankingInfoItem(CUIStalkersRankingWnd*);
 
     void Init(CUIXml* xml, LPCSTR path, int idx);
@@ -60,9 +63,11 @@ public:
 
 class CUIStalkerRankingElipsisItem : public CUIStalkerRankingInfoItem
 {
-    typedef CUIStalkerRankingInfoItem inherited;
+    RTTI_DECLARE_TYPEINFO(CUIStalkerRankingElipsisItem, CUIStalkerRankingInfoItem);
 
 public:
+    typedef CUIStalkerRankingInfoItem inherited;
+
     CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
     virtual void SetSelected(bool b);
     virtual bool OnMouseDown(int mouse_btn);

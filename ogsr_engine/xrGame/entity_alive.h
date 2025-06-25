@@ -11,8 +11,11 @@ class CCharacterPhysicsSupport;
 class CMaterialManager;
 class CVisualMemoryManager;
 class CBlend;
+
 class CEntityAlive : public CEntity
 {
+    RTTI_DECLARE_TYPEINFO(CEntityAlive, CEntity);
+
 private:
     typedef CEntity inherited;
     u32 m_used_time;
@@ -122,30 +125,30 @@ public:
 protected:
     virtual void PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size, IWallMarkArray* wallmarks_vector);
 
-    //информация о кровавых отметках на стенах, общая для всех CEntityAlive
+    // информация о кровавых отметках на стенах, общая для всех CEntityAlive
     static FactoryPtr<IWallMarkArray>* m_pBloodMarksVector;
     static float m_fBloodMarkSizeMax;
     static float m_fBloodMarkSizeMin;
     static float m_fBloodMarkDistance;
     static float m_fNominalHit;
 
-    //текстурки капель крови
+    // текстурки капель крови
     static FactoryPtr<IWallMarkArray>* m_pBloodDropsVector;
-    //список ран с которых капает кровь
+    // список ран с которых капает кровь
 
     DEFINE_VECTOR(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
     WOUND_VECTOR m_BloodWounds;
-    //размер раны, чтоб начала капать кровь
+    // размер раны, чтоб начала капать кровь
     static float m_fStartBloodWoundSize;
-    //размер раны, чтоб остановить кровь
+    // размер раны, чтоб остановить кровь
     static float m_fStopBloodWoundSize;
     static float m_fBloodDropSize;
 
-    //обновление ран, и рисование отметок от капающей крови
+    // обновление ран, и рисование отметок от капающей крови
     virtual void StartBloodDrops(CWound* pWound);
     virtual void UpdateBloodDrops();
 
-    //отношения между существами и персонажами в зоне
+    // отношения между существами и персонажами в зоне
 public:
     virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
     virtual bool is_relation_enemy(const CEntityAlive* tpEntityAlive) const;

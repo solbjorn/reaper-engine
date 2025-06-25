@@ -23,8 +23,10 @@ class CEntityAlive;
 class CCustomMonster;
 class CAI_Stalker;
 
-class CHitMemoryManager
+class CHitMemoryManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CHitMemoryManager);
+
 public:
     typedef MemorySpace::CHitObject CHitObject;
     typedef xr_deque<CHitObject> HITS;

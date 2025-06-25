@@ -6,6 +6,8 @@ struct FSlideWindowItem;
 
 class FTreeVisual : public dxRender_Visual, public IRender_Mesh
 {
+    RTTI_DECLARE_TYPEINFO(FTreeVisual, dxRender_Visual, IRender_Mesh);
+
 private:
     struct _5color
     {
@@ -31,9 +33,11 @@ public:
 
 class FTreeVisual_ST : public FTreeVisual
 {
-    typedef FTreeVisual inherited;
+    RTTI_DECLARE_TYPEINFO(FTreeVisual_ST, FTreeVisual);
 
 public:
+    typedef FTreeVisual inherited;
+
     FTreeVisual_ST(void);
     virtual ~FTreeVisual_ST(void);
 
@@ -49,6 +53,9 @@ private:
 
 class FTreeVisual_PM : public FTreeVisual
 {
+    RTTI_DECLARE_TYPEINFO(FTreeVisual_PM, FTreeVisual);
+
+public:
     typedef FTreeVisual inherited;
 
 private:

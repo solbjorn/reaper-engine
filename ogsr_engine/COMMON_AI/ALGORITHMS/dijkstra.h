@@ -30,8 +30,10 @@ struct DijkstraVertexData
 
 template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics = true,
           typename TPathBuilder = CVertexPath<EuclidianHeuristics>, typename TIteration = u32, typename TVertexData = EmptyVertexData>
-class CDijkstra
+class CDijkstra : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>);
+
 public:
     using Vertex = CompoundVertex<DijkstraVertexData<TDistance, TVertexData>, TPriorityQueue, TVertexManager, TVertexAllocator, TPathBuilder>;
     using CDataStorage = PriorityQueueConstructor<TPriorityQueue, TVertexManager, TPathBuilder, TVertexAllocator, Vertex>;

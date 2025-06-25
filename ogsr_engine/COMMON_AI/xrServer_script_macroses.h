@@ -88,6 +88,9 @@ class CALifeSmartTerrainTask;
 template <typename T>
 struct CWrapperPure : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperPure<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperPure<T> self_type;
     CWrapperPure(LPCSTR section) : inherited(section) {}
@@ -96,6 +99,9 @@ struct CWrapperPure : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstract : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstract<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstract<T> self_type;
 
@@ -106,6 +112,9 @@ struct CWrapperAbstract : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractALife : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractALife<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractALife<T> self_type;
     CWrapperAbstractALife(LPCSTR section) : inherited(section) {}
@@ -115,6 +124,9 @@ struct CWrapperAbstractALife : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractDynamicALife : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractDynamicALife<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractDynamicALife<T> self_type;
     CWrapperAbstractDynamicALife(LPCSTR section) : inherited(section) {}
@@ -124,6 +136,9 @@ struct CWrapperAbstractDynamicALife : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractZone : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractZone<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractZone<T> self_type;
     CWrapperAbstractZone(LPCSTR section) : inherited(section) {}
@@ -133,6 +148,9 @@ struct CWrapperAbstractZone : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractCreature : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractCreature<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractCreature<T> self_type;
     CWrapperAbstractCreature(LPCSTR section) : inherited(section) {}
@@ -142,6 +160,9 @@ struct CWrapperAbstractCreature : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractMonster : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractMonster<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractMonster<T> self_type;
     CWrapperAbstractMonster(LPCSTR section) : inherited(section) {}
@@ -151,6 +172,9 @@ struct CWrapperAbstractMonster : public T, public luabind::wrap_base
 template <typename T>
 struct CWrapperAbstractItem : public T, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CWrapperAbstractItem<T>, T);
+
+public:
     typedef T inherited;
     typedef CWrapperAbstractItem<T> self_type;
     CWrapperAbstractItem(LPCSTR section) : inherited(section) {}

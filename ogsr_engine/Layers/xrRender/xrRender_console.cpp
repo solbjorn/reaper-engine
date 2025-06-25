@@ -279,6 +279,8 @@ int opt_dynamic = 2;
 
 class CCC_r__color final : public CCC_Vector4
 {
+    RTTI_DECLARE_TYPEINFO(CCC_r__color, CCC_Vector4);
+
 public:
     CCC_r__color(LPCSTR N, Fvector4* V, const Fvector4 _min, const Fvector4 _max) : CCC_Vector4(N, V, _min, _max) {}
 
@@ -305,6 +307,8 @@ public:
 //-----------------------------------------------------------------------
 class CCC_detail_radius : public CCC_Integer
 {
+    RTTI_DECLARE_TYPEINFO(CCC_detail_radius, CCC_Integer);
+
 public:
     void apply()
     {
@@ -325,6 +329,8 @@ public:
 
 class CCC_detail_reset : public CCC_Float
 {
+    RTTI_DECLARE_TYPEINFO(CCC_detail_reset, CCC_Float);
+
 public:
     void apply()
     {
@@ -343,6 +349,8 @@ public:
 
 class CCC_tf_Aniso : public CCC_Integer
 {
+    RTTI_DECLARE_TYPEINFO(CCC_tf_Aniso, CCC_Integer);
+
 public:
     void apply()
     {
@@ -364,8 +372,11 @@ public:
         apply();
     }
 };
+
 class CCC_tf_MipBias : public CCC_Float
 {
+    RTTI_DECLARE_TYPEINFO(CCC_tf_MipBias, CCC_Float);
+
 public:
     void apply()
     {
@@ -390,6 +401,8 @@ public:
 
 class CCC_Screenshot : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Screenshot, IConsole_Command);
+
 public:
     CCC_Screenshot(LPCSTR N) : IConsole_Command(N) {}
     virtual void Execute(LPCSTR args)
@@ -404,6 +417,8 @@ public:
 
 class CCC_ModelPoolStat : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ModelPoolStat, IConsole_Command);
+
 public:
     CCC_ModelPoolStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args) { RImplementation.Models->dump(); }
@@ -412,6 +427,8 @@ public:
 //-----------------------------------------------------------------------
 class CCC_Preset : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Preset, CCC_Token);
+
 public:
     CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {}
 
@@ -437,7 +454,8 @@ public:
 
 class CCC_VideoMemoryStats : public IConsole_Command
 {
-protected:
+    RTTI_DECLARE_TYPEINFO(CCC_VideoMemoryStats, IConsole_Command);
+
 public:
     CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
@@ -476,6 +494,8 @@ public:
 
 class CCC_DumpResources : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpResources, IConsole_Command);
+
 public:
     CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args)
@@ -492,6 +512,8 @@ public:
 
 class CCC_Fog_Reload : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Fog_Reload, IConsole_Command);
+
 public:
     CCC_Fog_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args) { FluidManager.UpdateProfiles(); }
@@ -500,6 +522,8 @@ public:
 
 class CCC_PART_Export : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_PART_Export, IConsole_Command);
+
 public:
     CCC_PART_Export(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 
@@ -520,6 +544,8 @@ public:
 
 class CCC_PART_Import : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_PART_Import, IConsole_Command);
+
 public:
     CCC_PART_Import(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 

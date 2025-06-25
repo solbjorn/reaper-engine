@@ -46,6 +46,9 @@ class CCar : public CEntity,
              public CExplosive,
              public CDelayedActionFuse
 {
+    RTTI_DECLARE_TYPEINFO(CCar, CEntity, CScriptEntity, CPHUpdateObject, CHolderCustom, CPHSkeleton, CDamagableItem, CPHDestroyable, CPHCollisionDamageReceiver, CHitImmunity,
+                          CExplosive, CDelayedActionFuse);
+
 private:
     collide::rq_results RQR;
 

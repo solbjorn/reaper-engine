@@ -1,11 +1,12 @@
 #ifndef StatGraphRender_included
 #define StatGraphRender_included
-#pragma once
 
 class CStatGraph;
 
-class IStatGraphRender
+class IStatGraphRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IStatGraphRender);
+
 public:
     virtual ~IStatGraphRender() { ; }
     virtual void Copy(IStatGraphRender& _in) = 0;

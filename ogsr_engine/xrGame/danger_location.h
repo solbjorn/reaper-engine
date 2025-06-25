@@ -14,6 +14,8 @@ class CObject;
 
 class CDangerLocation : public intrusive_base
 {
+    RTTI_DECLARE_TYPEINFO(CDangerLocation, intrusive_base);
+
 public:
     typedef MemorySpace::squad_mask_type squad_mask_type;
     typedef _flags<squad_mask_type> flags;

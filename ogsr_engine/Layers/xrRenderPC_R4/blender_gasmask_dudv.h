@@ -2,6 +2,8 @@
 
 class CBlender_gasmask_dudv : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_gasmask_dudv, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "Gasmask_dudv"; }
 

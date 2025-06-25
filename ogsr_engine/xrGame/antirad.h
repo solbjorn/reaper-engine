@@ -9,6 +9,8 @@
 
 class CAntirad : public CEatableItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CAntirad, CEatableItemObject);
+
 private:
     typedef CEatableItemObject inherited;
 

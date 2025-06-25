@@ -29,8 +29,10 @@ typedef xr_deque<MemorySpace::CHitObject> HIT_OBJECTS;
 typedef xr_vector<CEntity*> MEMBER_REGISTRY;
 } // namespace GroupHierarchyHolder
 
-class CGroupHierarchyHolder
+class CGroupHierarchyHolder : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CGroupHierarchyHolder);
+
 private:
     typedef GroupHierarchyHolder::VISIBLE_OBJECTS VISIBLE_OBJECTS;
     typedef GroupHierarchyHolder::SOUND_OBJECTS SOUND_OBJECTS;

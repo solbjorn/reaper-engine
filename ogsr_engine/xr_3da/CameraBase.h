@@ -9,8 +9,10 @@
 // refs
 class CObject;
 
-class CCameraBase
+class CCameraBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CCameraBase);
+
 protected:
     CObject* parent;
 

@@ -11,8 +11,10 @@ constexpr LPCSTR STRING_TABLE_PATH = "text";
 using XML_NODE = tinyxml2::XMLNode;
 using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
 
-class CXml
+class CXml : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CXml);
+
 public:
     string_path m_xml_file_name{};
     CXml();

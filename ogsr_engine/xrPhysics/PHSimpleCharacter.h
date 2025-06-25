@@ -16,6 +16,9 @@ enum EHitType;
 
 class CPHSimpleCharacter : public CPHCharacter, ICollisionDamageInfo
 {
+    RTTI_DECLARE_TYPEINFO(CPHSimpleCharacter, CPHCharacter, ICollisionDamageInfo);
+
+public:
     friend class CScriptActor;
 
 private:

@@ -9,6 +9,8 @@
 
 class CMedkit : public CEatableItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CMedkit, CEatableItemObject);
+
 private:
     typedef CEatableItemObject inherited;
 

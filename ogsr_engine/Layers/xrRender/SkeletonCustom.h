@@ -16,6 +16,9 @@ struct SEnumVerticesCallback;
 class CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
 #pragma warning(pop)
+    RTTI_DECLARE_TYPEINFO(CSkeletonWallmark, intrusive_base);
+
+public:
     CKinematics* m_Parent; // 4
     const Fmatrix* m_XForm; // 4
     ref_shader m_Shader; // 4
@@ -82,6 +85,9 @@ struct dbg_marker
 
 class CKinematics : public FHierrarhyVisual, public IKinematics
 {
+    RTTI_DECLARE_TYPEINFO(CKinematics, FHierrarhyVisual, IKinematics);
+
+public:
     typedef FHierrarhyVisual inherited;
     friend class CBoneData;
     friend class CSkeletonX;
@@ -307,4 +313,5 @@ public:
 private:
     bool m_is_original_lod;
 };
+
 IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : 0; }

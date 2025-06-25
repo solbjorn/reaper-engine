@@ -3,7 +3,6 @@
 
 #include "ParticleEffectActions.h"
 
-#include "../../COMMON_AI/smart_cast.h"
 #include "../xrParticles/particle_actions_collection.h"
 
 using namespace PAPI;
@@ -979,11 +978,7 @@ EPATargetColor::EPATargetColor() : EParticleAction(PAPI::PATargetColorID)
     appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);
 }
 
-void EPATargetColor::Compile(IWriter& F)
-{
-    pTargetColor(F, _vector("Color").val, _float("Alpha").val, _float("Scale").val
-        , _float("TimeFrom").val, _float("TimeTo").val);
-}
+void EPATargetColor::Compile(IWriter& F) { pTargetColor(F, _vector("Color").val, _float("Alpha").val, _float("Scale").val, _float("TimeFrom").val, _float("TimeTo").val); }
 
 EPATargetSize::EPATargetSize() : EParticleAction(PAPI::PATargetSizeID)
 {

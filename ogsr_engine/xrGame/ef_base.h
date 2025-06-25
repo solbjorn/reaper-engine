@@ -14,8 +14,10 @@ class CEntityAlive;
 class CSE_ALifeObject;
 class CEF_Storage;
 
-class CBaseFunction
+class CBaseFunction : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CBaseFunction);
+
 protected:
     float m_fMinResultValue{};
     float m_fMaxResultValue{};
@@ -29,7 +31,7 @@ public:
         VERIFY(m_storage);
     };
 
-    virtual ~CBaseFunction(){};
+    virtual ~CBaseFunction() {};
 
     IC CEF_Storage& ef_storage() const
     {

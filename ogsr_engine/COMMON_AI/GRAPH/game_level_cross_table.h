@@ -18,8 +18,10 @@
 #define CROSS_TABLE_CHUNK_VERSION 0
 #define CROSS_TABLE_CHUNK_DATA 1
 
-class CGameLevelCrossTable
+class CGameLevelCrossTable : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CGameLevelCrossTable);
+
 public:
 #pragma pack(push, 2)
     class CHeader

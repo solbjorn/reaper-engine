@@ -13,6 +13,9 @@ class CUIDialogWnd;
 
 class game_cl_GameState : public game_GameState, public ISheduled
 {
+    RTTI_DECLARE_TYPEINFO(game_cl_GameState, game_GameState, ISheduled);
+
+public:
     typedef game_GameState inherited;
     shared_str m_game_type_name;
 

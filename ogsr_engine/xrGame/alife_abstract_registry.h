@@ -14,6 +14,8 @@
 template <typename _index_type, typename _data_type>
 class CALifeAbstractRegistry : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(CALifeAbstractRegistry<_index_type, _data_type>, IPureSerializeObject<IReader, IWriter>);
+
 public:
     typedef xr_map<_index_type, _data_type> OBJECT_REGISTRY;
     typedef typename OBJECT_REGISTRY::iterator iterator;

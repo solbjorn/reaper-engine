@@ -43,9 +43,12 @@ struct physicsBone
 };
 DEFINE_MAP(u16, physicsBone, BONE_P_MAP, BONE_P_PAIR_IT);
 typedef const BONE_P_MAP ::iterator BONE_P_PAIR_CIT;
+
 // ABSTRACT:
-class CPhysicsBase
+class CPhysicsBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicsBase);
+
 public:
     Fmatrix mXFORM; // In parent space
 public:
@@ -109,6 +112,8 @@ public:
 // Element is fully Rigid and consists of one or more forms, such as sphere, box, cylinder, etc.
 class CPhysicsElement : public CPhysicsBase, public IPhysicsElement
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicsElement, CPhysicsBase, IPhysicsElement);
+
 public:
     u16 m_SelfID;
     virtual CPhysicsShell* PhysicsShell() = 0;
@@ -161,8 +166,10 @@ add_to_type_list(CPhysicsElement)
     // ABSTRACT:
     //  Joint between two elements
 
-    class CPhysicsJoint
+    class CPhysicsJoint : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicsJoint);
+
 public:
     bool bActive;
     enum eVs
@@ -242,6 +249,8 @@ class CPhysicsShellAnimator;
 
 class CPhysicsShell : public CPhysicsBase, public IPhysicsShell
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicsShell, CPhysicsBase, IPhysicsShell);
+
 protected:
     IKinematics* m_pKinematics;
 

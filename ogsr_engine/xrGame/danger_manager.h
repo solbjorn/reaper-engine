@@ -17,8 +17,10 @@ struct CSoundObject;
 struct CHitObject;
 }; // namespace MemorySpace
 
-class CDangerManager
+class CDangerManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDangerManager);
+
 public:
     typedef xr_vector<CDangerObject> OBJECTS;
     typedef OBJECTS DANGERS;

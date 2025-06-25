@@ -20,6 +20,8 @@ class CGameObject;
 
 class CStalkerMovementManager : public CMovementManager
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerMovementManager, CMovementManager);
+
 protected:
     typedef CMovementManager inherited;
 

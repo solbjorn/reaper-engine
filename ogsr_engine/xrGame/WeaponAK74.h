@@ -8,6 +8,8 @@
 
 class CWeaponAK74 : public CWeaponMagazinedWGrenade
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponAK74, CWeaponMagazinedWGrenade);
+
 private:
     typedef CWeaponMagazinedWGrenade inherited;
 

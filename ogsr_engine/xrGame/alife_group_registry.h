@@ -13,8 +13,10 @@
 class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeDynamicObject;
 
-class CALifeGroupRegistry
+class CALifeGroupRegistry : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeGroupRegistry);
+
 public:
     typedef CSE_ALifeOnlineOfflineGroup OBJECT;
     typedef xr_map<ALife::_OBJECT_ID, OBJECT*> OBJECTS;

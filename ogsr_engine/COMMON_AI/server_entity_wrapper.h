@@ -14,6 +14,8 @@ class CSE_Abstract;
 
 class CServerEntityWrapper : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(CServerEntityWrapper, IPureSerializeObject<IReader, IWriter>);
+
 private:
     CSE_Abstract* m_object;
 

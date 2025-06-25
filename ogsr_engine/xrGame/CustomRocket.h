@@ -20,6 +20,8 @@ struct SRoketContact
 
 class CCustomRocket : public CPhysicItem, public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CCustomRocket, CPhysicItem, CPHUpdateObject);
+
 private:
     typedef CPhysicItem inherited;
     friend CRocketLauncher;

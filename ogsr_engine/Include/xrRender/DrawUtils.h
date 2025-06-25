@@ -4,11 +4,14 @@
 
 #ifndef DrawUtilsH
 #define DrawUtilsH
+
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
-class CDUInterface
+class CDUInterface : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDUInterface);
+
 public:
     //----------------------------------------------------
     virtual void __stdcall DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45 = false) = 0;
@@ -70,4 +73,5 @@ public:
     virtual void __stdcall OnDeviceDestroy() = 0;
 };
 //----------------------------------------------------
+
 #endif

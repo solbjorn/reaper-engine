@@ -1,9 +1,12 @@
 #pragma once
+
 class CPhysicsShell;
 class CPhysicsShellHolder;
 
-class physics_shell_animated
+class physics_shell_animated : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(physics_shell_animated);
+
 protected:
     CPhysicsShell* physics_shell;
     bool update_velocity;

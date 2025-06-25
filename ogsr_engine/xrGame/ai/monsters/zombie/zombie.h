@@ -9,12 +9,14 @@
 
 class CZombie : public CBaseMonster, public CControlledEntity<CZombie>
 {
+    RTTI_DECLARE_TYPEINFO(CZombie, CBaseMonster, CControlledEntity<CZombie>);
+
+public:
     typedef CBaseMonster inherited;
     typedef CControlledEntity<CZombie> CControlled;
 
     bonesManipulation Bones;
 
-public:
     CZombie();
     virtual ~CZombie();
 

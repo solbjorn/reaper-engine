@@ -15,6 +15,8 @@ class CScriptGameObject;
 
 class CScriptBinderObjectWrapper : public CScriptBinderObject, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CScriptBinderObjectWrapper, CScriptBinderObject);
+
 public:
     CScriptBinderObjectWrapper(CScriptGameObject* object);
     virtual ~CScriptBinderObjectWrapper();

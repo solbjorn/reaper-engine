@@ -12,6 +12,8 @@ extern Fvector4 ps_ssfx_volumetric;
 
 class light : public IRender_Light, public ISpatial
 {
+    RTTI_DECLARE_TYPEINFO(light, IRender_Light, ISpatial);
+
 public:
     struct
     {

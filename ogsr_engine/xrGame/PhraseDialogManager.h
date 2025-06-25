@@ -1,10 +1,12 @@
 #pragma once
 
-//#include "PhraseDialogDefs.h"
+// #include "PhraseDialogDefs.h"
 #include "PhraseDialog.h"
 
-class CPhraseDialogManager
+class CPhraseDialogManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPhraseDialogManager);
+
 public:
     CPhraseDialogManager(void);
     virtual ~CPhraseDialogManager(void);
@@ -12,14 +14,14 @@ public:
     virtual void InitDialog(CPhraseDialogManager* dialog_partner, DIALOG_SHARED_PTR& phrase_dialog);
     virtual void AddDialog(DIALOG_SHARED_PTR& phrase_dialog);
 
-    //получение фразы, виртуальная функция,
-    //должна быть переопределена для сталкеров и актера
+    // получение фразы, виртуальная функция,
+    // должна быть переопределена для сталкеров и актера
     virtual void ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog);
-    //ответить на сказанную фразу в диалоге
+    // ответить на сказанную фразу в диалоге
     virtual void SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str& phrase_id);
 
-    //виртуальная функция, заполняет массив, тем диалогами, которые
-    //персонаж может инициировать в данный момент
+    // виртуальная функция, заполняет массив, тем диалогами, которые
+    // персонаж может инициировать в данный момент
     virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
 
     DEFINE_VECTOR(DIALOG_SHARED_PTR, DIALOG_VECTOR, DIALOG_VECTOR_IT);
@@ -30,12 +32,12 @@ public:
 protected:
     virtual bool AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager* partner);
 
-    //буфферный список диалогов, которые были проверены
-    //во время UpdateAvailableDialogs
+    // буфферный список диалогов, которые были проверены
+    // во время UpdateAvailableDialogs
     DIALOG_ID_VECTOR m_CheckedDialogs;
 
-    //список активных диалогов
+    // список активных диалогов
     DIALOG_VECTOR m_ActiveDialogs;
-    //список доступных диалогов
+    // список доступных диалогов
     DIALOG_VECTOR m_AvailableDialogs;
 };

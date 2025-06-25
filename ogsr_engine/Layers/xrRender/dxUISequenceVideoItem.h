@@ -1,11 +1,12 @@
 #ifndef dxUISequenceVideoItem_included
 #define dxUISequenceVideoItem_included
-#pragma once
 
 #include "..\..\Include\xrRender\UISequenceVideoItem.h"
 
 class dxUISequenceVideoItem : public IUISequenceVideoItem
 {
+    RTTI_DECLARE_TYPEINFO(dxUISequenceVideoItem, IUISequenceVideoItem);
+
 public:
     dxUISequenceVideoItem();
     virtual void Copy(IUISequenceVideoItem& _in);

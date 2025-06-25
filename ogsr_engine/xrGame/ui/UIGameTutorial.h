@@ -9,6 +9,8 @@ class CUIXml;
 
 class CUISequencer : public pureFrame, public pureRender, public IInputReceiver
 {
+    RTTI_DECLARE_TYPEINFO(CUISequencer, pureFrame, pureRender, IInputReceiver);
+
 protected:
     CUIWindow* m_UIWindow{};
     xr_deque<CUISequenceItem*> m_items;
@@ -45,8 +47,11 @@ public:
     virtual void IR_OnActivate(void);
 };
 
-class CUISequenceItem
+class CUISequenceItem : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUISequenceItem);
+
+public:
     xr_vector<int> m_disabled_actions;
 
 protected:
@@ -86,6 +91,9 @@ public:
 
 class CUISequenceSimpleItem : public CUISequenceItem
 {
+    RTTI_DECLARE_TYPEINFO(CUISequenceSimpleItem, CUISequenceItem);
+
+public:
     typedef CUISequenceItem inherited;
     struct SSubItem
     {
@@ -101,7 +109,6 @@ class CUISequenceSimpleItem : public CUISequenceItem
     DEFINE_VECTOR(SSubItem, SubItemVec, SubItemVecIt);
     SubItemVec m_subitems;
 
-public:
     CUIWindow* m_UIWindow;
     ref_sound m_sound;
     float m_time_start;
@@ -117,7 +124,6 @@ public:
     };
     xr_vector<SActionItem> m_actions;
 
-public:
     CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem(owner) {}
     virtual ~CUISequenceSimpleItem();
     virtual void Load(CUIXml* xml, int idx);
@@ -134,6 +140,9 @@ public:
 
 class CUISequenceVideoItem : public CUISequenceItem
 {
+    RTTI_DECLARE_TYPEINFO(CUISequenceVideoItem, CUISequenceItem);
+
+public:
     typedef CUISequenceItem inherited;
     ref_sound m_sound[2];
     FactoryPtr<IUISequenceVideoItem> m_texture;
@@ -149,7 +158,6 @@ class CUISequenceVideoItem : public CUISequenceItem
     u32 m_time_start;
     u32 m_sync_time;
 
-public:
     CUISequenceVideoItem(CUISequencer* owner);
     virtual ~CUISequenceVideoItem();
     virtual void Load(CUIXml* xml, int idx);

@@ -2,6 +2,8 @@
 
 class CBlender_accum_direct_mask : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: mask direct light"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_accum_direct_mask_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_direct_mask_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: mask direct light msaa"; }
 

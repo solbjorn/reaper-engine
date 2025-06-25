@@ -9,8 +9,10 @@
 #include "alife_simulator.h"
 
 template <typename _registry_type>
-class CALifeRegistryWrapper
+class CALifeRegistryWrapper : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeRegistryWrapper<_registry_type>);
+
 public:
     IC CALifeRegistryWrapper() { holder_id = 0xffff; }
     virtual ~CALifeRegistryWrapper() { delete_data(local_registry); }
@@ -30,7 +32,7 @@ private:
     // id - владельца реестра
     u16 holder_id;
 
-    //реестр на случай, если нет ALife (для отладки)
+    // реестр на случай, если нет ALife (для отладки)
     //	typename _registry_type::_data	local_registry;
     typename _registry_type::OBJECT_REGISTRY local_registry;
 };

@@ -50,9 +50,9 @@ virtual bool natural_detector() const { return true; }
 #ifdef XRGAME_EXPORTS
 virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) = 0;
 virtual bool bfPerformAttack() { return (true); };
-virtual void vfUpdateWeaponAmmo(){};
-virtual void vfProcessItems(){};
-virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll){};
+virtual void vfUpdateWeaponAmmo() {};
+virtual void vfProcessItems() {};
+virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll) {};
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection) = 0;
 virtual bool bfActive() = 0;
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector() = 0;
@@ -161,14 +161,16 @@ add_to_type_list(CSE_ALifeGroupAbstract)
     template <class __A>
     class CSE_ALifeGroupTemplate : public __A, public CSE_ALifeGroupAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CSE_ALifeGroupTemplate<__A>, __A, CSE_ALifeGroupAbstract);
+
+public:
     typedef __A inherited1;
     typedef CSE_ALifeGroupAbstract inherited2;
 
-public:
     CSE_ALifeGroupTemplate(LPCSTR caSection)
-        : __A(pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section") : caSection), CSE_ALifeGroupAbstract(caSection){};
+        : __A(pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section") : caSection), CSE_ALifeGroupAbstract(caSection) {};
 
-    virtual ~CSE_ALifeGroupTemplate(){};
+    virtual ~CSE_ALifeGroupTemplate() {};
 
     virtual void STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
@@ -315,8 +317,8 @@ virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSche
 // additional functionality
 virtual bool enabled(CSE_ALifeMonsterAbstract* object) const { return false; };
 virtual float suitable(CSE_ALifeMonsterAbstract* object) const { return 0.f; };
-virtual void register_npc(CSE_ALifeMonsterAbstract* object){};
-virtual void unregister_npc(CSE_ALifeMonsterAbstract* object){};
+virtual void register_npc(CSE_ALifeMonsterAbstract* object) {};
+virtual void unregister_npc(CSE_ALifeMonsterAbstract* object) {};
 virtual CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object) { return 0; };
 #endif
 SERVER_ENTITY_DECLARE_END
@@ -477,13 +479,15 @@ virtual ~CSE_ALifeStationaryMgun();
 
 SERVER_ENTITY_DECLARE_END
 // add_to_type_list(CSE_ALifeStationaryMgun)
-//#define script_type_list save_type_list(CSE_ALifeStationaryMgun)
+// #define script_type_list save_type_list(CSE_ALifeStationaryMgun)
 
-    extern void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registries);
+extern void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registries);
 extern void add_offline_impl(CSE_ALifeDynamicObject* object, const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 
-class CSE_InventoryBoxAbstract
+class CSE_InventoryBoxAbstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSE_InventoryBoxAbstract);
+
 protected:
     bool m_opened;
 
@@ -493,9 +497,11 @@ public:
 
 class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual, public CSE_InventoryBoxAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CSE_InventoryBox, CSE_ALifeDynamicObjectVisual, CSE_InventoryBoxAbstract);
+
 public:
-    CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection){};
-    virtual ~CSE_InventoryBox(){};
+    CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {};
+    virtual ~CSE_InventoryBox() {};
 #ifdef XRGAME_EXPORTS
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
     {

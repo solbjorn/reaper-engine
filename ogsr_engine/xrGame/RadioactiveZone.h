@@ -1,8 +1,11 @@
 #pragma once
-#include "customzone.h"
+
+#include "CustomZone.h"
 
 class CRadioactiveZone : public CCustomZone
 {
+    RTTI_DECLARE_TYPEINFO(CRadioactiveZone, CCustomZone);
+
 private:
     typedef CCustomZone inherited;
 

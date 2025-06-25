@@ -44,6 +44,14 @@ class CInventoryItem : public CAttachableItem,
                        public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CInventoryItem, CAttachableItem, CHitImmunity
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
+public:
     friend class CInventoryScript;
 
 private:
@@ -84,7 +92,7 @@ public:
     virtual LPCSTR NameShort();
     //.	virtual LPCSTR				NameComplex			();
     shared_str ItemDescription() { return m_Description; }
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count){};
+    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
     virtual bool NeedBriefInfo() { return m_need_brief_info; };
 
     virtual void OnEvent(NET_Packet& P, u16 type);
@@ -92,7 +100,7 @@ public:
     virtual bool Useful() const; // !!! Переопределить. (см. в Inventory.cpp)
     virtual bool Attach(PIItem pIItem, bool b_send_event) { return false; }
     virtual bool Detach(PIItem pIItem) { return false; }
-    //при детаче спаунится новая вещь при заданно названии секции
+    // при детаче спаунится новая вещь при заданно названии секции
     virtual bool Detach(const char* item_section_name, bool b_spawn_item);
     virtual bool CanAttach(PIItem pIItem) { return false; }
     virtual bool CanDetach(LPCSTR item_section_name) { return false; }
@@ -149,8 +157,8 @@ public:
     virtual void OnMoveToSlot();
     virtual void OnMoveToBelt();
     virtual void OnMoveToRuck(EItemPlace prevPlace);
-    virtual void OnDrop(){};
-    virtual void OnBeforeDrop(){};
+    virtual void OnDrop() {};
+    virtual void OnBeforeDrop() {};
 
     int GetGridWidth() const;
     int GetGridHeight() const;

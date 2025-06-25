@@ -17,6 +17,8 @@ struct CDataStorageBinaryHeap
     template <typename TManagerDataStorage>
     class CDataStorage : public TManagerDataStorage
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TManagerDataStorage>, TManagerDataStorage);
+
     public:
         using Inherited = TManagerDataStorage;
         using Vertex = typename Inherited::Vertex;

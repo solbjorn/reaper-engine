@@ -54,13 +54,14 @@ class anti_aim_ability;
 
 class CBaseMonster : public CCustomMonster, public CStepManager, public CInventoryOwner
 {
-    typedef CCustomMonster inherited;
+    RTTI_DECLARE_TYPEINFO(CBaseMonster, CCustomMonster, CStepManager, CInventoryOwner);
 
 public:
+    typedef CCustomMonster inherited;
+
     CBaseMonster();
     virtual ~CBaseMonster();
 
-public:
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     virtual CCharacterPhysicsSupport* character_physics_support() { return m_pPhysics_support; }
     virtual CPHDestroyable* ph_destroyable();

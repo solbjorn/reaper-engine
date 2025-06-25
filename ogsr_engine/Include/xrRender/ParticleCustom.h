@@ -1,9 +1,10 @@
 #ifndef ParticleCustom_included
 #define ParticleCustom_included
-#pragma once
 
-class IParticleCustom
+class IParticleCustom : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IParticleCustom);
+
 public:
     virtual ~IParticleCustom() { ; }
 

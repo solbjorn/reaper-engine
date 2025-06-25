@@ -6,10 +6,12 @@
 
 class CWeaponRG6 : public CRocketLauncher, public CWeaponShotgun
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponRG6, CRocketLauncher, CWeaponShotgun);
+
+public:
     typedef CRocketLauncher inheritedRL;
     typedef CWeaponShotgun inheritedSG;
 
-public:
     virtual ~CWeaponRG6();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);

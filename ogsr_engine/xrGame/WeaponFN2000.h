@@ -5,6 +5,8 @@
 
 class CWeaponFN2000 : public CWeaponMagazined
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponFN2000, CWeaponMagazined);
+
 private:
     typedef CWeaponMagazined inherited;
 

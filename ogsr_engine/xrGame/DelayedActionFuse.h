@@ -1,7 +1,10 @@
 #pragma once
 
-class CDelayedActionFuse
+class CDelayedActionFuse : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDelayedActionFuse);
+
+public:
     enum
     {
         flActive = 1 << 0,
@@ -12,7 +15,6 @@ class CDelayedActionFuse
     float m_fTime;
     float m_fSpeedChangeCondition;
 
-public:
     void SetTimer(float current_condition);
     void Initialize(float time, float critical_condition);
     ICF bool CheckCondition(float current_condition)

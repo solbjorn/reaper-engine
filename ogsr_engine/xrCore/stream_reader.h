@@ -3,6 +3,8 @@
 
 class CStreamReader : public IReaderBase<CStreamReader>
 {
+    RTTI_DECLARE_TYPEINFO(CStreamReader, IReaderBase<CStreamReader>);
+
 public:
     virtual intptr_t elapsed() const = 0;
     virtual const size_t& length() const = 0;
@@ -17,6 +19,8 @@ public:
 
 class CMapStreamReader : public CStreamReader
 {
+    RTTI_DECLARE_TYPEINFO(CMapStreamReader, CStreamReader);
+
 private:
     HANDLE m_file_mapping_handle{};
     size_t m_start_offset{};

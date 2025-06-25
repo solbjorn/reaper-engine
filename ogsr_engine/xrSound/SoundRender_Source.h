@@ -5,6 +5,8 @@ struct OggVorbis_File;
 
 class CSoundRender_Source : public CSound_source
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_Source, CSound_source);
+
 public:
     shared_str pname;
     shared_str fname;

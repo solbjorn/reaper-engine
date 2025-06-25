@@ -21,6 +21,8 @@ typedef xr_map<u16, CSE_Abstract*> xrS_entities;
 
 class xrClientData : public IClient
 {
+    RTTI_DECLARE_TYPEINFO(xrClientData, IClient);
+
 public:
     CSE_Abstract* owner;
     BOOL net_Ready;
@@ -47,6 +49,8 @@ IC bool operator<(const svs_respawn& A, const svs_respawn& B) { return A.timesta
 
 class xrServer : public IPureServer
 {
+    RTTI_DECLARE_TYPEINFO(xrServer, IPureServer);
+
 private:
     xrS_entities entities;
     xr_multiset<svs_respawn> q_respawn;

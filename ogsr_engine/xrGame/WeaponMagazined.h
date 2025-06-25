@@ -14,6 +14,9 @@ class CBinocularsVision;
 
 class CWeaponMagazined : public CWeapon
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponMagazined, CWeapon);
+
+public:
     friend class CWeaponScript;
 
 private:

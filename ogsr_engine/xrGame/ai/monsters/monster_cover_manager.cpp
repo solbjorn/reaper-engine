@@ -19,6 +19,9 @@
 // CControllerCoverEvaluator
 class CCoverEvaluator : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CCoverEvaluator, CCoverEvaluatorBase);
+
+public:
     typedef CCoverEvaluatorBase inherited;
 
     Fvector m_dest_position;
@@ -30,7 +33,6 @@ class CCoverEvaluator : public CCoverEvaluatorBase
 
     CBaseMonster* m_object{};
 
-public:
     CCoverEvaluator(CRestrictedObject* object);
 
     // setup by cover_manager

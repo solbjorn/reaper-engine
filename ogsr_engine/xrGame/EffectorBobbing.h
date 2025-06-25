@@ -5,6 +5,9 @@
 
 class CEffectorBobbing : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CEffectorBobbing, CEffectorCam);
+
+public:
     float fTime;
     Fvector vAngleAmplitude;
     float fYAmplitude{};
@@ -15,7 +18,6 @@ class CEffectorBobbing : public CEffectorCam
     bool is_limping;
     bool m_bZoomMode{};
 
-public:
     float m_fAmplitudeRun;
     float m_fAmplitudeWalk;
     float m_fAmplitudeLimp;
@@ -24,7 +26,6 @@ public:
     float m_fSpeedWalk;
     float m_fSpeedLimp;
 
-public:
     CEffectorBobbing();
     virtual ~CEffectorBobbing();
     virtual BOOL ProcessCam(SCamEffectorInfo& info);

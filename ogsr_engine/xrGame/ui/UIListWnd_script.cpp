@@ -9,10 +9,14 @@ using namespace luabind;
 bool CUIListWnd::AddItem_script(CUIListItem* item) { return AddItem(item, -1); }
 
 struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
-{};
+{
+    RTTI_DECLARE_TYPEINFO(CUIListItemWrapper, CUIListItem);
+};
 
 struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
-{};
+{
+    RTTI_DECLARE_TYPEINFO(CUIListItemExWrapper, CUIListItemEx);
+};
 
 void CUIListWnd::script_register(lua_State* L)
 {

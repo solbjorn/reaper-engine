@@ -8,6 +8,8 @@
 
 class CSilencer : public CInventoryItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CSilencer, CInventoryItemObject);
+
 private:
     typedef CInventoryItemObject inherited;
 

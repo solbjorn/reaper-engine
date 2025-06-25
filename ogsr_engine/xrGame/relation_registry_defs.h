@@ -7,7 +7,7 @@
 
 #include "object_interfaces.h"
 
-//структура, описывающая отношение одного персонажа к другому или к группировке
+// структура, описывающая отношение одного персонажа к другому или к группировке
 struct SRelation
 {
     SRelation();
@@ -16,24 +16,27 @@ struct SRelation
     void SetGoodwill(CHARACTER_GOODWILL new_goodwill) { m_iGoodwill = new_goodwill; };
 
 private:
-    //благосклонность
+    // благосклонность
     CHARACTER_GOODWILL m_iGoodwill;
 };
 
 DEFINE_MAP(u16, SRelation, PERSONAL_RELATION_MAP, PERSONAL_RELATION_MAP_IT);
 DEFINE_MAP(CHARACTER_COMMUNITY_INDEX, SRelation, COMMUNITY_RELATION_MAP, COMMUNITY_RELATION_MAP_IT);
 
-//структура, существует для каждого персонажа в игре
+// структура, существует для каждого персонажа в игре
 struct RELATION_DATA : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(RELATION_DATA, IPureSerializeObject<IReader, IWriter>);
+
+public:
     virtual void clear();
 
     virtual void load(IReader&);
     virtual void save(IWriter&);
 
-    //личные отношения
+    // личные отношения
     PERSONAL_RELATION_MAP personal;
     xr_vector<u16> reverse_personal;
-    //отношения с группировками
+    // отношения с группировками
     COMMUNITY_RELATION_MAP communities;
 };

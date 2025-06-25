@@ -14,6 +14,8 @@
 
 class CLevelChanger : public CGameObject, public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CLevelChanger, CGameObject, Feel::Touch);
+
 private:
     typedef CGameObject inherited;
 

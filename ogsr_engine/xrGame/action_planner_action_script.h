@@ -14,6 +14,8 @@
 template <typename _object_type>
 class CActionPlannerActionScript : public CScriptActionPlannerAction
 {
+    RTTI_DECLARE_TYPEINFO(CActionPlannerActionScript<_object_type>, CScriptActionPlannerAction);
+
 protected:
     typedef CScriptActionPlannerAction inherited;
 

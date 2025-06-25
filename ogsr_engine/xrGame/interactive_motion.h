@@ -1,8 +1,14 @@
 #pragma once
+
 #include "..\Include/xrRender/KinematicsAnimated.h"
+
 class CPhysicsShell;
-class interactive_motion
+
+class interactive_motion : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(interactive_motion);
+
+public:
     MotionID motion;
     CPhysicsShell* shell{};
 
@@ -52,6 +58,9 @@ IC void destroy_motion(interactive_motion*& im)
 
 class imotion_velocity : public interactive_motion
 {
+    RTTI_DECLARE_TYPEINFO(imotion_velocity, interactive_motion);
+
+public:
     typedef interactive_motion inherited;
     virtual void move_update(CPhysicsShell* s);
     virtual void collide(CPhysicsShell* s);
@@ -61,6 +70,9 @@ class imotion_velocity : public interactive_motion
 
 class imotion_position : public interactive_motion
 {
+    RTTI_DECLARE_TYPEINFO(imotion_position, interactive_motion);
+
+public:
     typedef interactive_motion inherited;
     virtual void move_update(CPhysicsShell* s);
     virtual void collide(CPhysicsShell* s);

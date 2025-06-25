@@ -1,13 +1,17 @@
 #pragma once
+
 #include "PHSimpleCharacter.h"
+
 class CPHAICharacter : public CPHSimpleCharacter
 {
+    RTTI_DECLARE_TYPEINFO(CPHAICharacter, CPHSimpleCharacter);
+
+public:
     typedef CPHSimpleCharacter inherited;
 
     Fvector m_vDesiredPosition;
     bool m_forced_physics_control;
 
-public:
     CPHAICharacter();
     virtual CPHAICharacter* CastAICharacter() { return this; }
     virtual void SetPosition(Fvector pos);

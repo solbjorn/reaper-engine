@@ -11,8 +11,10 @@
 #include "xrServer_Objects_ALife.h"
 #include "profiler.h"
 
-class CALifeObjectRegistry
+class CALifeObjectRegistry : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeObjectRegistry);
+
 public:
     using OBJECT_REGISTRY = xr_map<ALife::_OBJECT_ID, CSE_ALifeDynamicObject*>;
 

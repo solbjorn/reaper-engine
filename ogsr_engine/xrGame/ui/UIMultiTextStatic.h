@@ -16,6 +16,9 @@
 
 class CUIMultiTextStatic : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIMultiTextStatic, CUIStatic);
+
+public:
     typedef CUIStatic inherited;
 
 public:
@@ -55,8 +58,11 @@ public:
     void RemovePhraseByIndex(u32 idx);
 };
 
-class CUICaption : protected CUIMultiTextStatic
+class CUICaption : public virtual RTTI::Enable, protected CUIMultiTextStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUICaption, CUIMultiTextStatic);
+
+public:
     typedef CUIMultiTextStatic inherited;
 
     u32 findIndexOf(const shared_str& key);
@@ -69,4 +75,5 @@ public:
     void setCaption(const shared_str& msg_name, LPCSTR message_to_out, u32 color = 0, bool replaceColor = false);
     void removeCustomMessage(const shared_str& msg_name);
 };
+
 #endif // UI_MULTITEXT_STATIC_H_

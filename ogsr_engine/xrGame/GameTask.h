@@ -10,6 +10,8 @@ class CGameTask;
 
 class SScriptObjectiveHelper : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(SScriptObjectiveHelper, IPureSerializeObject<IReader, IWriter>);
+
 public:
     xr_vector<shared_str> m_s_complete_lua_functions;
     xr_vector<shared_str> m_s_fail_lua_functions;
@@ -28,6 +30,9 @@ public:
 
 class SGameTaskObjective : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(SGameTaskObjective, IPureSerializeObject<IReader, IWriter>);
+
+public:
     friend struct SGameTaskKey;
     friend class CGameTaskManager;
 
@@ -100,7 +105,7 @@ DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
 class CGameTask
 {
 private:
-    CGameTask(const CGameTask&){}; // disable copy ctor
+    CGameTask(const CGameTask&) {}; // disable copy ctor
 protected:
     void Load(const TASK_ID& id);
     void sync_task_version();

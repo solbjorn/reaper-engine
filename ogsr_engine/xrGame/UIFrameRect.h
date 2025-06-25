@@ -7,6 +7,8 @@
 
 class CUIFrameRect : public CUISimpleWindow, CUIMultiTextureOwner // public CUICustomItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIFrameRect, CUISimpleWindow, CUIMultiTextureOwner);
+
 public:
     enum EFramePart
     {

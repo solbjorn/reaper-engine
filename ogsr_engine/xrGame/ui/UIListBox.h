@@ -6,6 +6,8 @@ class CUIListBoxItem;
 
 class CUIListBox : public CUIScrollView, public IUIFontControl
 {
+    RTTI_DECLARE_TYPEINFO(CUIListBox, CUIScrollView, IUIFontControl);
+
 public:
     CUIListBox();
     CUIListBoxItem* AddItem(LPCSTR text);

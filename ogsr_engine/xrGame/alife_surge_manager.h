@@ -15,6 +15,8 @@ class CSE_ALifeTrader;
 
 class CALifeSurgeManager : public virtual CALifeSimulatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSurgeManager, CALifeSimulatorBase);
+
 protected:
     typedef CALifeSimulatorBase inherited;
 

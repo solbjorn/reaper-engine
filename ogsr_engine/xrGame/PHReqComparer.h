@@ -14,8 +14,10 @@ class CPHParticlesPlayCall;
 class CPHParticlesCondition;
 class CPHFindParticlesComparer;
 
-class CPHReqComparerV
+class CPHReqComparerV : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPHReqComparerV);
+
 public:
     virtual bool compare(const CPHScriptCondition* v) const { return false; }
     virtual bool compare(const CPHScriptAction* v) const { return false; }

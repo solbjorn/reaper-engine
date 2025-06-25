@@ -21,8 +21,10 @@ class CMissile;
 class CPropertyStorage;
 class CStalkerAnimationData;
 
-class CStalkerAnimationManager
+class CStalkerAnimationManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerAnimationManager);
+
 public:
     typedef xr_deque<CStalkerAnimationScript> SCRIPT_ANIMATIONS;
     typedef MonsterSpace::EMovementDirection EMovementDirection;

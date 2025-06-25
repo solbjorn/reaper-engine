@@ -14,9 +14,11 @@ class CScriptGameObject;
 
 class CScriptActionPlannerActionWrapper : public CScriptActionPlannerAction, public luabind::wrap_base
 {
-    typedef CScriptActionPlannerAction inherited;
+    RTTI_DECLARE_TYPEINFO(CScriptActionPlannerActionWrapper, CScriptActionPlannerAction);
 
 public:
+    typedef CScriptActionPlannerAction inherited;
+
     IC CScriptActionPlannerActionWrapper(CScriptGameObject* object = 0, LPCSTR action_name = "");
     virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);
     static void setup_static(CScriptActionPlannerAction* action, CScriptGameObject* object, CPropertyStorage* storage);

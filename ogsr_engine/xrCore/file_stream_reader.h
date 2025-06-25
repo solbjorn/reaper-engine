@@ -5,6 +5,9 @@
 
 class CFileStreamReader : public CMapStreamReader
 {
+    RTTI_DECLARE_TYPEINFO(CFileStreamReader, CMapStreamReader);
+
+public:
     using inherited = CMapStreamReader;
 
 private:

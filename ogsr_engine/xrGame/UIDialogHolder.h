@@ -27,6 +27,9 @@ public:
 
 class CDialogHolder : public ISheduled, public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(CDialogHolder, ISheduled, pureFrame);
+
+public:
     // dialogs
     xr_vector<recvItem> m_input_receivers;
     xr_vector<dlgItem> m_dialogsToRender;
@@ -34,7 +37,6 @@ class CDialogHolder : public ISheduled, public pureFrame
     void StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators);
     void StopMenu(CUIDialogWnd* pDialog);
 
-public:
     void SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, const Flags8 flags = {});
 
 protected:

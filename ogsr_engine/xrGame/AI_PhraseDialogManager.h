@@ -11,6 +11,8 @@
 
 class CAI_PhraseDialogManager : public CPhraseDialogManager
 {
+    RTTI_DECLARE_TYPEINFO(CAI_PhraseDialogManager, CPhraseDialogManager);
+
 private:
     typedef CPhraseDialogManager inherited;
 
@@ -28,12 +30,12 @@ public:
     virtual void RestoreDefaultStartDialog();
 
 protected:
-    //диалог, если не NULL, то его персонаж запустит
-    //при встрече с актером
+    // диалог, если не NULL, то его персонаж запустит
+    // при встрече с актером
     shared_str m_sStartDialog;
     shared_str m_sDefaultStartDialog;
 
     DEFINE_VECTOR(DIALOG_SHARED_PTR, DIALOG_SHARED_VECTOR, DIALOG_SHARED_IT);
-    //список диалогов, на которые нужно ответить
+    // список диалогов, на которые нужно ответить
     DIALOG_SHARED_VECTOR m_PendingDialogs;
 };

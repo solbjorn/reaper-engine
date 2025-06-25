@@ -18,8 +18,10 @@
 class CServerEntityWrapper;
 class CGameGraph;
 
-class CALifeSpawnRegistry
+class CALifeSpawnRegistry : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSpawnRegistry);
+
 public:
     typedef CGameGraph::LEVEL_POINT_VECTOR ARTEFACT_SPAWNS;
     typedef CGraphAbstractSerialize<CServerEntityWrapper*, float, ALife::_SPAWN_ID> SPAWN_GRAPH;
@@ -30,7 +32,7 @@ public:
 private:
     CALifeSpawnHeader m_header{};
     SPAWN_GRAPH m_spawns;
-    //ARTEFACT_SPAWNS m_artefact_spawn_positions;
+    // ARTEFACT_SPAWNS m_artefact_spawn_positions;
     shared_str m_spawn_name;
     SPAWN_IDS m_spawn_roots;
     SPAWN_IDS m_temp0;
@@ -72,11 +74,11 @@ public:
     IC const SPAWN_GRAPH& spawns() const;
     shared_str const& get_spawn_name() const { return m_spawn_name; }
     IReader* get_spawn_file() const { return m_file; }
-    //IC void assign_artefact_position(CSE_ALifeAnomalousZone* anomaly, CSE_ALifeDynamicObject* object) const;
+    // IC void assign_artefact_position(CSE_ALifeAnomalousZone* anomaly, CSE_ALifeDynamicObject* object) const;
 
-    //Используется только в луа
+    // Используется только в луа
     ALife::_SPAWN_ID spawn_id(const ALife::_SPAWN_STORY_ID& spawn_story_id) const;
-    //Используется только в луа
+    // Используется только в луа
     ALife::_SPAWN_ID spawn_id(const char* obj_name) const;
 };
 

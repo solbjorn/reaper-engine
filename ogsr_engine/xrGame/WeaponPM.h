@@ -8,10 +8,11 @@
 
 class CWeaponPM : public CWeaponPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponPM, CWeaponPistol);
+
 private:
     typedef CWeaponPistol inherited;
 
-protected:
 public:
     CWeaponPM();
     virtual ~CWeaponPM();

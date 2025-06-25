@@ -25,13 +25,15 @@ typedef CIni_IdToIndex<1, RANK_DATA, shared_str, int, CHARACTER_RANK> CHARACTER_
 
 class CHARACTER_RANK : public CHARACTER_RANK_base
 {
+    RTTI_DECLARE_TYPEINFO(CHARACTER_RANK, CHARACTER_RANK_base);
+
 private:
     typedef CHARACTER_RANK_base inherited;
     friend inherited;
 
 public:
-    CHARACTER_RANK() : m_current_value(NO_RANK){};
-    ~CHARACTER_RANK(){};
+    CHARACTER_RANK() : m_current_value(NO_RANK) {};
+    ~CHARACTER_RANK() {};
 
     void set(CHARACTER_RANK_VALUE);
 
@@ -48,7 +50,7 @@ private:
     static void InitIdToIndex();
 
 public:
-    //отношение между рангами
+    // отношение между рангами
     static CHARACTER_GOODWILL relation(int from, int to);
     CHARACTER_GOODWILL relation(int to);
 
@@ -61,7 +63,7 @@ private:
     friend GOODWILL_TABLE;
     static GOODWILL_TABLE m_relation_table;
 
-    //очки рейтинга которые прибавляются за убийство персонажа с определенным рангом
+    // очки рейтинга которые прибавляются за убийство персонажа с определенным рангом
     typedef CIni_Table<CHARACTER_RANK_VALUE, CHARACTER_RANK> RANK_KILL_TABLE;
     friend RANK_KILL_TABLE;
     static RANK_KILL_TABLE m_rank_kill_table;

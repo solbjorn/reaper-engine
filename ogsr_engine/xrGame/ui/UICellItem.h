@@ -8,15 +8,19 @@ class CUIDragDropListEx;
 class CUICellItem;
 class CUIProgressBar;
 
-class ICustomDrawCell
+class ICustomDrawCell : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ICustomDrawCell);
+
 public:
-    virtual ~ICustomDrawCell(){};
+    virtual ~ICustomDrawCell() {};
     virtual void OnDraw(CUICellItem* cell) = 0;
 };
 
 class CUICellItem : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUICellItem, CUIStatic);
+
 private:
     typedef CUIStatic inherited;
 
@@ -44,7 +48,7 @@ public:
     virtual void Draw();
     virtual void Update();
 
-    virtual void OnAfterChild(CUIDragDropListEx* parent_list){};
+    virtual void OnAfterChild(CUIDragDropListEx* parent_list) {};
 
     u32 ChildsCount();
     void PushChild(CUICellItem*);
@@ -76,6 +80,8 @@ public:
 
 class CUIDragItem : public CUIWindow, public pureRender, public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(CUIDragItem, CUIWindow, pureRender, pureFrame);
+
 private:
     typedef CUIWindow inherited;
     CUIStatic m_static;

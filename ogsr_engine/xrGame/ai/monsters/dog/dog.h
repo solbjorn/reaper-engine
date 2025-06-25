@@ -6,10 +6,12 @@
 
 class CAI_Dog : public CBaseMonster, public CControlledEntity<CAI_Dog>
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Dog, CBaseMonster, CControlledEntity<CAI_Dog>);
+
+public:
     typedef CBaseMonster inherited;
     typedef CControlledEntity<CAI_Dog> CControlled;
 
-public:
     CAI_Dog();
     virtual ~CAI_Dog();
 

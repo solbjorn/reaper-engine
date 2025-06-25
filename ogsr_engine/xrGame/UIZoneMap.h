@@ -6,8 +6,11 @@ class CActor;
 class CUICustomMap;
 //////////////////////////////////////////////////////////////////////////
 
-class CUIZoneMap
+class CUIZoneMap : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUIZoneMap);
+
+public:
     CUICustomMap* m_activeMap;
     float m_fScale;
 
@@ -21,7 +24,6 @@ class CUIZoneMap
     bool m_rounded{};
     u32 m_alpha{};
 
-public:
     CUIZoneMap();
     virtual ~CUIZoneMap();
 

@@ -33,8 +33,10 @@ struct SKeyTable
     SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
-class IKinematicsAnimated
+class IKinematicsAnimated : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IKinematicsAnimated);
+
 public:
     virtual ~IKinematicsAnimated() { ; }
 

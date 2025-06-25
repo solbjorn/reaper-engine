@@ -3,8 +3,11 @@
 // refs
 class CTheoraStream;
 
-class CTheoraSurface
+class CTheoraSurface : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CTheoraSurface);
+
+public:
     CTheoraStream* m_rgb;
     CTheoraStream* m_alpha;
 
@@ -13,7 +16,6 @@ class CTheoraSurface
     u32 tm_total;
     BOOL ready;
 
-public:
     BOOL playing;
     BOOL looped;
 

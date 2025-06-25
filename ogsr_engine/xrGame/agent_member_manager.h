@@ -14,8 +14,10 @@
 class CAgentManager;
 class CEntity;
 
-class CAgentMemberManager
+class CAgentMemberManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CAgentMemberManager);
+
 public:
     typedef xr_vector<CMemberOrder*> MEMBER_STORAGE;
     typedef MEMBER_STORAGE::iterator iterator;

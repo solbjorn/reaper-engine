@@ -1,10 +1,14 @@
 #pragma once
+
 #include "alife_abstract_registry.h"
 
 extern xr_token actor_stats_token[];
 
 struct SStatDetailBData : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(SStatDetailBData, IPureSerializeObject<IReader, IWriter>);
+
+public:
     shared_str key;
     s32 int_count;
     s32 int_points;
@@ -18,6 +22,9 @@ typedef xr_vector<SStatDetailBData> vStatDetailData;
 
 struct SStatSectionData : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(SStatSectionData, IPureSerializeObject<IReader, IWriter>);
+
+public:
     shared_str key;
     vStatDetailData data;
 

@@ -10,11 +10,13 @@ struct SControlMovementData : public ControlCom::IComData
 
 class CControlMovement : public CControl_ComPure<SControlMovementData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlMovement, CControl_ComPure<SControlMovementData>);
+
+public:
     typedef CControl_ComPure<SControlMovementData> inherited;
 
     float m_velocity_current;
 
-public:
     virtual void reinit();
     virtual void update_frame();
 

@@ -18,6 +18,9 @@ class CPHFracturesHolder;
 
 class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisablingFull, public CPHGeometryOwner
 {
+    RTTI_DECLARE_TYPEINFO(CPHElement, CPhysicsElement, CPHSynchronize, CPHDisablingFull, CPHGeometryOwner);
+
+public:
     friend class CPHFracturesHolder;
 
     // float						m_start_time;				//uu ->to shell ??	//aux

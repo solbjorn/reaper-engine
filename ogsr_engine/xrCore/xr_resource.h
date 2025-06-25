@@ -2,8 +2,11 @@
 #define xr_resourceH
 
 // resource itself, the base class for all derived resources
-struct xr_resource
+struct xr_resource : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(xr_resource);
+
+public:
     xr_resource() = default;
     virtual ~xr_resource() = default;
 
@@ -20,6 +23,9 @@ struct xr_resource
 
 struct xr_resource_flagged : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(xr_resource_flagged, xr_resource);
+
+public:
     enum
     {
         RF_REGISTERED = 1 << 0,
@@ -32,6 +38,9 @@ struct xr_resource_flagged : public xr_resource
 
 struct xr_resource_named : public xr_resource_flagged
 {
+    RTTI_DECLARE_TYPEINFO(xr_resource_named, xr_resource_flagged);
+
+public:
     shared_str cName{};
 
     const char* set_name(const char* name)
@@ -210,7 +219,7 @@ resptr_core<T, D> static_pointer_cast(resptr_core<U, D> const& p)
 template <class T, class U, typename D>
 resptr_core<T, D> dynamic_pointer_cast(resptr_core<U, D> const& p)
 {
-    return dynamic_cast<T*>(p.get());
+    return smart_cast<T*>(p.get());
 }
 
 #endif // xr_resourceH

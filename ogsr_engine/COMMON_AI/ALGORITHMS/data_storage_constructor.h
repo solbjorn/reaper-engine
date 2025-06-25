@@ -27,6 +27,10 @@ template <typename TPriorityQueuee, // CDataStorageBucketList|CDataStorageBinary
           typename TDataStorageBase = typename TPriorityQueuee::template CDataStorage<TManagerDataStorage>>
 struct PriorityQueueConstructor : public TDataStorageBase
 {
+    RTTI_DECLARE_TYPEINFO(PriorityQueueConstructor<TPriorityQueuee, TVertexManager, TPathBuilder, TVertexAllocator, TCompoundVertex, TManagerDataStorage, TDataStorageBase>,
+                          TDataStorageBase);
+
+public:
     using Inherited = TDataStorageBase;
     using Vertex = TCompoundVertex;
     using Index = typename Vertex::Index;

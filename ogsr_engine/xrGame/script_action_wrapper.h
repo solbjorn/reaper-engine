@@ -12,6 +12,8 @@
 
 class CScriptActionWrapper : public CScriptActionBase, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CScriptActionWrapper, CScriptActionBase);
+
 public:
     IC CScriptActionWrapper(CScriptGameObject* object = 0, LPCSTR action_name = "");
     virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);

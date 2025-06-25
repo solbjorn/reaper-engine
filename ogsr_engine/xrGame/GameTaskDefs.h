@@ -20,10 +20,13 @@ class CGameTask;
 
 struct SGameTaskKey : public IPureSerializeObject<IReader, IWriter>, public IPureDestroyableObject
 {
+    RTTI_DECLARE_TYPEINFO(SGameTaskKey, IPureSerializeObject<IReader, IWriter>, IPureDestroyableObject);
+
+public:
     TASK_ID task_id;
     CGameTask* game_task;
-    SGameTaskKey(TASK_ID t_id) : task_id(t_id), game_task(NULL){};
-    SGameTaskKey() : task_id(NULL), game_task(NULL){};
+    SGameTaskKey(TASK_ID t_id) : task_id(t_id), game_task(NULL) {};
+    SGameTaskKey() : task_id(NULL), game_task(NULL) {};
 
     virtual void save(IWriter& stream);
     virtual void load(IReader& stream);
@@ -35,6 +38,9 @@ DEFINE_VECTOR(SGameTaskKey, GameTasks, GameTasks_it);
 
 struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, GameTasks>
 {
+    RTTI_DECLARE_TYPEINFO(CGameTaskRegistry, CALifeAbstractRegistry<u16, GameTasks>);
+
+public:
     virtual void save(IWriter& stream)
     {
         CALifeAbstractRegistry<u16, GameTasks>::save(stream);

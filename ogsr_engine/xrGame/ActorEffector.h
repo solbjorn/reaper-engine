@@ -8,6 +8,9 @@ class CActor;
 
 class CActorCameraManager : public CCameraManager
 {
+    RTTI_DECLARE_TYPEINFO(CActorCameraManager, CCameraManager);
+
+public:
     SCamEffectorInfo m_cam_info_hud;
 
 protected:
@@ -30,8 +33,10 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUN
 void AddEffector(CActor* A, int type, const shared_str& sect_name, CEffectorController*);
 void RemoveEffector(CActor* A, int type);
 
-class CEffectorController
+class CEffectorController : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CEffectorController);
+
 protected:
     CEffectorCam* m_ce;
     CEffectorPP* m_pe;
@@ -48,6 +53,9 @@ public:
 
 class CAnimatorCamEffector : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CAnimatorCamEffector, CEffectorCam);
+
+public:
     bool m_bCyclic;
 
 protected:
@@ -72,6 +80,9 @@ public:
 
 class CAnimatorCamEffectorScriptCB : public CAnimatorCamEffector
 {
+    RTTI_DECLARE_TYPEINFO(CAnimatorCamEffectorScriptCB, CAnimatorCamEffector);
+
+public:
     shared_str cb_name;
 
 protected:
@@ -86,6 +97,8 @@ public:
 
 class CAnimatorCamLerpEffector : public CAnimatorCamEffector
 {
+    RTTI_DECLARE_TYPEINFO(CAnimatorCamLerpEffector, CAnimatorCamEffector);
+
 protected:
     using inherited = CAnimatorCamEffector;
     GET_KOEFF_FUNC m_func;
@@ -97,6 +110,8 @@ public:
 
 class CAnimatorCamLerpEffectorConst : public CAnimatorCamLerpEffector
 {
+    RTTI_DECLARE_TYPEINFO(CAnimatorCamLerpEffectorConst, CAnimatorCamLerpEffector);
+
 protected:
     float m_factor;
 
@@ -112,9 +127,11 @@ public:
 
 class CCameraEffectorControlled : public CAnimatorCamLerpEffector
 {
-    CEffectorController* m_controller;
+    RTTI_DECLARE_TYPEINFO(CCameraEffectorControlled, CAnimatorCamLerpEffector);
 
 public:
+    CEffectorController* m_controller;
+
     CCameraEffectorControlled(CEffectorController* c);
     virtual ~CCameraEffectorControlled();
     virtual BOOL Valid();
@@ -122,6 +139,8 @@ public:
 
 class SndShockEffector : public CEffectorController
 {
+    RTTI_DECLARE_TYPEINFO(SndShockEffector, CEffectorController);
+
 protected:
     using inherited = CEffectorController;
 
@@ -147,6 +166,8 @@ public:
 //////////////////////////////////////////////////////////////////////////
 class CControllerPsyHitCamEffector : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CControllerPsyHitCamEffector, CEffectorCam);
+
 protected:
     using inherited = CEffectorCam;
 

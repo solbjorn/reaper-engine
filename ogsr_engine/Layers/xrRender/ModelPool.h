@@ -2,7 +2,6 @@
 //////////////////////////////////////////////////////////////////////
 #ifndef ModelPoolH
 #define ModelPoolH
-#pragma once
 
 // refs
 class dxRender_Visual;
@@ -12,8 +11,10 @@ struct SEmitter;
 };
 
 // defs
-class CModelPool
+class CModelPool : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CModelPool);
+
 private:
     friend class CRender;
 
@@ -89,4 +90,5 @@ public:
     void save_vis_prefetch();
     void begin_prefetch1(bool val);
 };
+
 #endif // ModelPoolH

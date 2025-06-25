@@ -11,6 +11,9 @@ class ui_core;
 
 class CGamePersistent : public IGame_Persistent, public IEventReceiver
 {
+    RTTI_DECLARE_TYPEINFO(CGamePersistent, IGame_Persistent, IEventReceiver);
+
+public:
     bool GameAutopaused = false;
 
     // ambient particles

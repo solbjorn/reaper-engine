@@ -13,6 +13,8 @@ class CUIFrameLineWnd;
 
 class CUIListWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIListWnd, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
     friend class CUIGameLog;
@@ -47,7 +49,7 @@ public:
 
     void RemoveItem(int index);
     void RemoveAll();
-    //находит первый элемент с заданной pData, иначе -1
+    // находит первый элемент с заданной pData, иначе -1
     int FindItem(void* pData);
     int FindItemWithValue(int iValue);
     CUIListItem* GetItem(int index);
@@ -66,7 +68,7 @@ public:
 
     int GetItemsCount() { return m_ItemList.size(); }
 
-    //подготовить все элементы заново
+    // подготовить все элементы заново
     void Reset();
 
     void EnableScrollBar(bool enable);
@@ -85,7 +87,7 @@ public:
     void SetTextColor(u32 color) { m_dwFontColor = color; }
     u32 GetTextColor() { return m_dwFontColor; }
 
-    //делает активными (как кнопки) элементы списка
+    // делает активными (как кнопки) элементы списка
     void ActivateList(bool activity);
     bool IsListActive() { return m_bListActivity; }
 
@@ -109,24 +111,24 @@ protected:
 
     CUIScrollBar* m_ScrollBar;
 
-    //обновления елементов списка, вызвается
-    //если произошли изменения
+    // обновления елементов списка, вызвается
+    // если произошли изменения
     void UpdateList();
 
-    //список элементов листа
+    // список элементов листа
     LIST_ITEM_LIST m_ItemList;
 
-    //размеры элемента списка
+    // размеры элемента списка
     float m_iItemHeight;
     float m_iItemWidth;
 
-    //количество рядов для элементов
+    // количество рядов для элементов
     int m_iRowNum;
 
-    //индекс первого показанного элемента
+    // индекс первого показанного элемента
     int m_iFirstShownIndex;
 
-    //элемент над которым курсор в данный момент или -1, если такого нет
+    // элемент над которым курсор в данный момент или -1, если такого нет
     int m_iFocusedItem;
     int m_iFocusedItemGroupID;
     int m_iSelectedItem;
@@ -139,14 +141,14 @@ protected:
     // Если хотим принудительно выставлять фокус, то поднять этот флаг
     bool m_bForceFocusedItem;
 
-    //подсветка активного элемента
+    // подсветка активного элемента
     CUIFrameLineWnd* m_ActiveBackgroundFrame;
 
-    //текущий цвет текста
+    // текущий цвет текста
     u32 m_dwFontColor;
     bool m_bListActivity;
 
-    //переворот списка по вертикали
+    // переворот списка по вертикали
     bool m_bVertFlip;
 
     // Признак того, что мышь подвинули

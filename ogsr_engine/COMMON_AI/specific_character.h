@@ -26,15 +26,15 @@ struct SSpecificCharacterData : CSharedResource
     SSpecificCharacterData();
     virtual ~SSpecificCharacterData();
 
-    //игровое имя персонажа
+    // игровое имя персонажа
     xr_string m_sGameName;
-    //текст с биографией персонажа (линк на string table)
+    // текст с биографией персонажа (линк на string table)
     shared_str m_sBioText;
-    //строка содержащая предметы, которые нужно проспавнить
+    // строка содержащая предметы, которые нужно проспавнить
     xr_string m_sSupplySpawn;
-    //имя секции конфигурации настроек NPC для персонажа
+    // имя секции конфигурации настроек NPC для персонажа
     xr_string m_sNpcConfigSect;
-    //имя секции конфигурации звука для NPC персонажа
+    // имя секции конфигурации звука для NPC персонажа
     xr_string m_sound_voice_prefix;
 
     float m_fPanic_threshold;
@@ -45,35 +45,35 @@ struct SSpecificCharacterData : CSharedResource
 #endif
     shared_str m_terrain_sect;
 
-    //имя модели
+    // имя модели
     xr_string m_sVisual;
 
 #ifdef XRGAME_EXPORTS
 
-    //начальный диалог
+    // начальный диалог
     shared_str m_StartDialog;
-    //диалоги актера, которые будут доступны только при встрече с данным персонажем
+    // диалоги актера, которые будут доступны только при встрече с данным персонажем
     DIALOG_ID_VECTOR m_ActorDialogs;
 
     shared_str m_icon_name;
-    //команда
+    // команда
     CHARACTER_COMMUNITY m_Community;
 
 #endif
 
-    //ранг
+    // ранг
     CHARACTER_RANK_VALUE m_Rank;
-    //репутация
+    // репутация
     CHARACTER_REPUTATION_VALUE m_Reputation;
 
-    //классы персонажа (военные-ветераны, ученые и т.д.)
-    //к которым он принадлежит
+    // классы персонажа (военные-ветераны, ученые и т.д.)
+    // к которым он принадлежит
     xr_vector<CHARACTER_CLASS> m_Classes;
 
-    //указание на то что персонаж не предназначен для случайного выбора
-    //и задается только через явное указание ID
+    // указание на то что персонаж не предназначен для случайного выбора
+    // и задается только через явное указание ID
     bool m_bNoRandom;
-    //если персонаж является заданым по умолчанию для своей команды
+    // если персонаж является заданым по умолчанию для своей команды
     bool m_bDefaultForCommunity;
 #ifdef XRGAME_EXPORTS
     struct SMoneyDef
@@ -92,6 +92,8 @@ class CSE_ALifeTraderAbstract;
 
 class CSpecificCharacter : public CSharedClass<SSpecificCharacterData, shared_str, false>, public CXML_IdToIndex<CSpecificCharacter>
 {
+    RTTI_DECLARE_TYPEINFO(CSpecificCharacter, CSharedClass<SSpecificCharacterData, shared_str, false>, CXML_IdToIndex<CSpecificCharacter>);
+
 private:
     typedef CSharedClass<SSpecificCharacterData, shared_str, false> inherited_shared;
     typedef CXML_IdToIndex<CSpecificCharacter> id_to_index;
@@ -119,7 +121,7 @@ protected:
         return inherited_shared::get_sd();
     }
 
-    //загрузка из XML файла
+    // загрузка из XML файла
     virtual void load_shared(LPCSTR);
     static void InitXmlIdToIndex();
 

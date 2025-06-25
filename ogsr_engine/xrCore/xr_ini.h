@@ -3,11 +3,13 @@
 class CInifile;
 struct xr_token;
 
-class CInifile
+class CInifile : public virtual RTTI::Enable
 {
-    friend class CIniMerger;
+    RTTI_DECLARE_TYPEINFO(CInifile);
 
 public:
+    friend class CIniMerger;
+
     using Item = std::pair<shared_str, shared_str>;
     struct Sect
     {

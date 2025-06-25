@@ -15,19 +15,23 @@ class CPHCapture;
 
 #include "../xr_3da/IPhysicsDefinitions.h"
 
-class ICollisionHitCallback
+class ICollisionHitCallback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ICollisionHitCallback);
+
 public:
     virtual void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di) = 0;
     virtual ~ICollisionHitCallback() {}
 };
-class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer, public IObjectPhysicsCollision
 
+class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer, public IObjectPhysicsCollision
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicsShellHolder, CGameObject, CParticlesPlayer, IObjectPhysicsCollision);
+
+public:
     bool b_sheduled;
     CPHSoundPlayer* m_ph_sound_player;
 
-public:
     void SheduleRegister()
     {
         if (!IsSheduled())
@@ -104,7 +108,7 @@ public:
     void init();
 
     virtual void OnChangeVisual();
-    //для наследования CParticlesPlayer
+    // для наследования CParticlesPlayer
     virtual void UpdateCL();
     void correct_spawn_pos();
 

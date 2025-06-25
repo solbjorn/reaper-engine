@@ -9,11 +9,13 @@ class CUIColorAnimatorWrapper;
 
 class CUIEditKeyBind : public CUILabel, public CUIOptionsItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIEditKeyBind, CUILabel, CUIOptionsItem);
+
+public:
     bool m_bPrimary;
     _action* m_action;
     _keyboard* m_keyboard;
 
-public:
     CUIEditKeyBind(bool bPrim);
     virtual ~CUIEditKeyBind();
     // options item

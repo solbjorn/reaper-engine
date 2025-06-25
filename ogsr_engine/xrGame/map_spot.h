@@ -6,10 +6,12 @@ class CUIXml;
 
 class CMapSpot : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CMapSpot, CUIStatic);
+
+public:
     typedef CUIStatic inherited;
     CMapLocation* m_map_location;
 
-public:
     bool m_bScale;
     Fvector2 m_originSize;
     CMapSpot(CMapLocation*);
@@ -24,10 +26,12 @@ public:
 
 class CMapSpotPointer : public CMapSpot
 {
+    RTTI_DECLARE_TYPEINFO(CMapSpotPointer, CMapSpot);
+
+public:
     typedef CMapSpot inherited;
     xr_string m_pointer_hint;
 
-public:
     CMapSpotPointer(CMapLocation*);
     virtual ~CMapSpotPointer();
     virtual LPCSTR GetHint();
@@ -35,11 +39,13 @@ public:
 
 class CMiniMapSpot : public CMapSpot
 {
+    RTTI_DECLARE_TYPEINFO(CMiniMapSpot, CMapSpot);
+
+public:
     typedef CMapSpot inherited;
     ui_shader m_icon_above, m_icon_normal, m_icon_below;
     Frect m_tex_rect_above, m_tex_rect_normal, m_tex_rect_below;
 
-public:
     CMiniMapSpot(CMapLocation*);
     virtual ~CMiniMapSpot();
     virtual void Load(CUIXml* xml, LPCSTR path);

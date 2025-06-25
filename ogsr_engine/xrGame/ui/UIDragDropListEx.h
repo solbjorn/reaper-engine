@@ -42,6 +42,8 @@ typedef UI_CELLS_VEC::iterator UI_CELLS_VEC_IT;
 
 class CUIDragDropListEx : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIDragDropListEx, CUIWindow, CUIWndCallback);
+
 private:
     typedef CUIWindow inherited;
 
@@ -171,6 +173,9 @@ public:
 
 class CUICellContainer : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUICellContainer, CUIWindow);
+
+public:
     friend class CUIDragDropListEx;
 
 private:

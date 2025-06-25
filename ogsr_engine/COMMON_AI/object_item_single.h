@@ -17,6 +17,8 @@
 template <typename _unknown_type, bool _client_type>
 class CObjectItemSingle : public CObjectItemAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CObjectItemSingle<_unknown_type, _client_type>, CObjectItemAbstract);
+
 protected:
     typedef CObjectItemAbstract inherited;
     typedef _unknown_type SERVER_TYPE;
@@ -30,6 +32,8 @@ public:
 template <typename _unknown_type>
 class CObjectItemSingle<_unknown_type, true> : public CObjectItemAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CObjectItemSingle<_unknown_type, true>, CObjectItemAbstract);
+
 protected:
     typedef CObjectItemAbstract inherited;
     typedef _unknown_type CLIENT_TYPE;

@@ -11,6 +11,9 @@ class GameEventQueue;
 
 class game_sv_GameState : public game_GameState
 {
+    RTTI_DECLARE_TYPEINFO(game_sv_GameState, game_GameState);
+
+public:
     typedef game_GameState inherited;
 
 protected:
@@ -23,7 +26,6 @@ protected:
     virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 
 public:
-
     BOOL sv_force_sync{};
 
 public:
@@ -37,7 +39,7 @@ public:
     virtual void* get_client(u16 id); // if exist
     virtual game_PlayerState* get_it(u32 it);
     virtual game_PlayerState* get_id(ClientID id);
-    
+
     virtual u16 get_id_2_eid(ClientID id);
     virtual ClientID get_it_2_id(u32 it);
 
@@ -55,8 +57,8 @@ public:
 
     // Events
     virtual BOOL OnPreCreate(CSE_Abstract* E) { return TRUE; };
-    virtual void OnCreate(u16 id_who){};
-    virtual void OnPostCreate(u16 id_who){};
+    virtual void OnCreate(u16 id_who) {};
+    virtual void OnPostCreate(u16 id_who) {};
     virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) = 0; // TRUE=allow ownership, FALSE=denied
     virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
 
@@ -75,7 +77,7 @@ public:
 
     void AddDelayedEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
     void ProcessDelayedEvent();
-    
+
     virtual void teleport_object(NET_Packet& packet, u16 id);
 
     virtual void add_restriction(NET_Packet& packet, u16 id);
@@ -83,7 +85,7 @@ public:
     virtual void remove_all_restrictions(NET_Packet& packet, u16 id);
 
     virtual bool custom_sls_default() { return false; };
-    virtual void sls_default(){};
+    virtual void sls_default() {};
 
     virtual shared_str level_name(const shared_str& server_options) const;
     virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);

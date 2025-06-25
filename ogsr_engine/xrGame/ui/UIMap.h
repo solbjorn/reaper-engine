@@ -7,6 +7,8 @@ class CUIMapWnd;
 
 class CUICustomMap : public CUIStatic, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUICustomMap, CUIStatic, CUIWndCallback);
+
 protected:
     shared_str m_name{};
     Frect m_BoundRect{}; // real map size (meters)
@@ -64,11 +66,14 @@ public:
     float GetPointerDistance() const { return m_pointer_dist; };
 
 protected:
-    virtual void UpdateSpots(){};
+    virtual void UpdateSpots() {};
 };
 
 class CUIGlobalMap : public CUICustomMap
 {
+    RTTI_DECLARE_TYPEINFO(CUIGlobalMap, CUICustomMap);
+
+public:
     typedef CUICustomMap inherited;
 
 private:
@@ -105,6 +110,9 @@ public:
 
 class CUILevelMap : public CUICustomMap
 {
+    RTTI_DECLARE_TYPEINFO(CUILevelMap, CUICustomMap);
+
+public:
     typedef CUICustomMap inherited;
 
     CUIMapWnd* m_mapWnd{};
@@ -113,7 +121,6 @@ class CUILevelMap : public CUICustomMap
     CUILevelMap(const CUILevelMap&) = delete;
     CUILevelMap& operator=(const CUILevelMap&) = delete;
 
-public:
     CUILevelMap(CUIMapWnd*);
     virtual ~CUILevelMap();
 
@@ -138,9 +145,11 @@ protected:
 
 class CUIMiniMap : public CUICustomMap
 {
-    typedef CUICustomMap inherited;
+    RTTI_DECLARE_TYPEINFO(CUIMiniMap, CUICustomMap);
 
 public:
+    typedef CUICustomMap inherited;
+
     CUIMiniMap();
     virtual ~CUIMiniMap();
 

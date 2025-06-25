@@ -2,6 +2,8 @@
 
 class CBlender_combine : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_combine, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_combine_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_combine_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
 

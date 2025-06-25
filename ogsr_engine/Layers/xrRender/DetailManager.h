@@ -4,7 +4,6 @@
 
 #ifndef DetailManagerH
 #define DetailManagerH
-#pragma once
 
 #include "../../xrCore/xrpool.h"
 #include "detailformat.h"
@@ -29,8 +28,10 @@ extern u32 dm_current_cache_size; //		= dm_current_cache_line*dm_current_cache_l
 extern float dm_current_fade; //				= float(2*dm_current_size)-.5f;
 extern float ps_current_detail_density;
 
-class CDetailManager
+class CDetailManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDetailManager);
+
 public:
     void details_clear();
 

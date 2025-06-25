@@ -12,6 +12,9 @@ namespace RestrictionSpace
 {
 struct CTimeIntrusiveBase : public intrusive_base
 {
+    RTTI_DECLARE_TYPEINFO(CTimeIntrusiveBase, intrusive_base);
+
+public:
     u32 m_last_time_dec;
 
     IC CTimeIntrusiveBase() : m_last_time_dec(0) {}

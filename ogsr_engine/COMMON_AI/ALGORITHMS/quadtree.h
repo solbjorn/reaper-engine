@@ -7,11 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "profiler.h"
 
 template <typename _object_type>
-class CQuadTree
+class CQuadTree : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CQuadTree<_object_type>);
+
 public:
     struct CQuadNode
     {
@@ -19,7 +22,7 @@ public:
 
         IC CQuadNode*& next() { return (m_neighbours[0]); }
 
-        ~CQuadNode() { }
+        ~CQuadNode() {}
     };
 
     struct CListItem
@@ -29,10 +32,7 @@ public:
 
         IC CListItem*& next() { return (m_next); }
 
-        ~CListItem()
-        {
-            xr_delete(m_object);
-        }
+        ~CListItem() { xr_delete(m_object); }
     };
 
     template <typename T>
@@ -92,8 +92,7 @@ protected:
 
 protected:
     IC u32 neighbour_index(const Fvector& position, Fvector& center, float distance) const;
-    IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
-        Fvector center, float distance, int depth) const;
+    IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node, Fvector center, float distance, int depth) const;
     IC _object_type* remove(const _object_type* object, CQuadNode*& node, Fvector center, float distance, int depth);
     IC void all(xr_vector<_object_type*>& objects, CQuadNode* node, int depth) const;
 

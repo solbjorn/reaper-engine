@@ -4,6 +4,9 @@
 
 class CControlledActor : public CActorInputHandler
 {
+    RTTI_DECLARE_TYPEINFO(CControlledActor, CActorInputHandler);
+
+public:
     typedef CActorInputHandler inherited;
 
     Fvector m_target_point;
@@ -17,7 +20,6 @@ class CControlledActor : public CActorInputHandler
 
     bool m_need_turn;
 
-public:
     virtual void reinit();
     virtual float mouse_scale_factor() { return flt_max; }
     virtual void release();

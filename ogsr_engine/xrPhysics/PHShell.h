@@ -14,7 +14,11 @@ class CPhysicsShellAnimator;
 
 class CPHShell : public CPhysicsShell, public CPHObject
 {
+    RTTI_DECLARE_TYPEINFO(CPHShell, CPhysicsShell, CPHObject);
+
+public:
     friend class CPHShellSplitterHolder;
+
     enum
     {
         flActive = 1 << 0,

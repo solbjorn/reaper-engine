@@ -22,8 +22,11 @@ enum ERestrictorTypes;
 template <bool add>
 struct CRestrictionPredicate;
 
-class CRestrictedObject
+class CRestrictedObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CRestrictedObject);
+
+public:
     friend struct CRestrictionPredicate<true>;
     friend struct CRestrictionPredicate<false>;
 

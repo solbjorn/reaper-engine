@@ -14,34 +14,36 @@ struct SInfoPortionData : CSharedResource
     SInfoPortionData();
     virtual ~SInfoPortionData();
 
-    //массив с именами диалогов, которые могут быть инициированы
-    //из этого InfoPortion
+    // массив с именами диалогов, которые могут быть инициированы
+    // из этого InfoPortion
     DIALOG_ID_VECTOR m_DialogNames;
 
-    //список статей в энциклопедии, которые становятся известными
+    // список статей в энциклопедии, которые становятся известными
     ARTICLE_ID_VECTOR m_Articles;
-    //список статей в энциклопедии, которые становятся неизвестными (на тот случай если
-    //нужно заменить одну статью другой)
+    // список статей в энциклопедии, которые становятся неизвестными (на тот случай если
+    // нужно заменить одну статью другой)
     ARTICLE_ID_VECTOR m_ArticlesDisable;
 
-    //присоединенные задания
+    // присоединенные задания
     TASK_ID_VECTOR m_GameTasks;
 
-    //скриптовые действия, которые активируется после того как
-    //информацию получает персонаж
+    // скриптовые действия, которые активируется после того как
+    // информацию получает персонаж
     CPhraseScript m_PhraseScript;
 
-    //массив с индексами тех порций информации, которые
-    //исчезнут, после получения этой info_portion
+    // массив с индексами тех порций информации, которые
+    // исчезнут, после получения этой info_portion
     DEFINE_VECTOR(shared_str, INFO_ID_VECTOR, INFO_ID_VECTOR_IT);
     INFO_ID_VECTOR m_DisableInfo;
 };
 
 class CInfoPortion;
 
-//квант  - порция информации
+// квант  - порция информации
 class CInfoPortion : public CSharedClass<SInfoPortionData, shared_str, false>, public CXML_IdToIndex<CInfoPortion>
 {
+    RTTI_DECLARE_TYPEINFO(CInfoPortion, CSharedClass<SInfoPortionData, shared_str, false>, CXML_IdToIndex<CInfoPortion>);
+
 private:
     typedef CSharedClass<SInfoPortionData, shared_str, false> inherited_shared;
     typedef CXML_IdToIndex<CInfoPortion> id_to_index;
@@ -52,9 +54,9 @@ public:
     CInfoPortion(void);
     virtual ~CInfoPortion(void);
 
-    //инициализация info данными
-    //если info с таким id раньше не использовался
-    //он будет загружен из файла
+    // инициализация info данными
+    // если info с таким id раньше не использовался
+    // он будет загружен из файла
     virtual void Load(shared_str info_str_id);
     //	virtual void Load	(INFO_INDEX info_index);
 
@@ -67,7 +69,7 @@ public:
 
     void RunScriptActions(const CGameObject* pOwner) { info_data()->m_PhraseScript.Action(pOwner, NULL, NULL); }
 
-    //текстовое представление информации
+    // текстовое представление информации
     shared_str GetText() const;
 
 protected:

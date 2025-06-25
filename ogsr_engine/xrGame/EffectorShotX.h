@@ -2,12 +2,14 @@
 
 #include "EffectorShot.h"
 
-//Этот класс в ЗП удалён и по видимому не используется.
+// Этот класс в ЗП удалён и по видимому не используется.
 class CCameraShotEffectorX : public CCameraShotEffector
 {
-    typedef CCameraShotEffector inherited;
+    RTTI_DECLARE_TYPEINFO(CCameraShotEffectorX, CCameraShotEffector);
 
 public:
+    typedef CCameraShotEffector inherited;
+
     CCameraShotEffectorX(float max_angle, float relax_time, float max_angle_horz, float step_angle_horz, float angle_frac = 0.7f);
     virtual ~CCameraShotEffectorX();
 

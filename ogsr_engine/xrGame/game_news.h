@@ -8,6 +8,9 @@
 
 struct GAME_NEWS_DATA : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(GAME_NEWS_DATA, IPureSerializeObject<IReader, IWriter>);
+
+public:
     enum eNewsType
     {
         eNews = 0,
@@ -29,7 +32,7 @@ struct GAME_NEWS_DATA : public IPureSerializeObject<IReader, IWriter>
     LPCSTR SingleLineText();
 
 private:
-    //полный текст новостей, формируется при первом обращении
+    // полный текст новостей, формируется при первом обращении
     xr_string full_news_text;
 };
 

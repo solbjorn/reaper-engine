@@ -25,8 +25,10 @@ public:
     MotionID motion() const;
 };
 
-class type_motion
+class type_motion : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(type_motion);
+
 public:
     enum edirection
     {

@@ -1,11 +1,12 @@
 #ifndef dxWallMarkArray_included
 #define dxWallMarkArray_included
-#pragma once
 
 #include "..\..\Include\xrRender\WallMarkArray.h"
 
 class dxWallMarkArray : public IWallMarkArray
 {
+    RTTI_DECLARE_TYPEINFO(dxWallMarkArray, IWallMarkArray);
+
 public:
     virtual ~dxWallMarkArray();
     virtual void Copy(IWallMarkArray& _in);

@@ -14,13 +14,14 @@ class CSE_ALifeObject;
 class CScriptGameObject;
 class NET_Packet;
 
-class CScriptBinderObject
+class CScriptBinderObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptBinderObject);
+
 public:
     typedef CSE_ALifeObject* SpawnType;
     CScriptGameObject* m_object;
 
-public:
     CScriptBinderObject(CScriptGameObject* object);
     virtual ~CScriptBinderObject();
     virtual void reinit();

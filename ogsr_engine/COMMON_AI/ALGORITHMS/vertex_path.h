@@ -18,8 +18,10 @@ struct CVertexPath
 #pragma pack(pop)
 
     template <typename TCompoundVertex>
-    class CDataStorage
+    class CDataStorage : public virtual RTTI::Enable
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TCompoundVertex>);
+
     public:
         using Vertex = TCompoundVertex;
         using Index = typename Vertex::Index;

@@ -1,4 +1,5 @@
 #pragma once
+
 ////////////////////////////////////////////////////////////////////////
 // Effector controlling class
 ////////////////////////////////////////////////////////////////////////
@@ -6,6 +7,9 @@
 
 class CPPEffectorPsyDogAura : public CPPEffectorCustom
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorPsyDogAura, CPPEffectorCustom);
+
+public:
     typedef CPPEffectorCustom inherited;
 
     enum
@@ -29,6 +33,9 @@ class CActor;
 
 class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
 {
+    RTTI_DECLARE_TYPEINFO(CPsyDogAura, CPPEffectorCustomController<CPPEffectorPsyDogAura>);
+
+public:
     CPsyDog* m_object;
     CActor* m_actor;
 

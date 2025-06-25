@@ -4,6 +4,8 @@
 
 class CEffectorCam : public SBaseEffector
 {
+    RTTI_DECLARE_TYPEINFO(CEffectorCam, SBaseEffector);
+
 protected:
     ECamEffectorType eType;
 

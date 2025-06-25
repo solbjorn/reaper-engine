@@ -10,12 +10,15 @@ class CLevel;
 #include "Level.h"
 
 class CEntityCondition;
-class CEntityConditionSimple
+
+class CEntityConditionSimple : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CEntityConditionSimple);
+
+public:
     float m_fHealth;
     float m_fHealthMax;
 
-public:
     CEntityConditionSimple();
     virtual ~CEntityConditionSimple();
 
@@ -29,6 +32,8 @@ public:
 
 class CEntityCondition : public CEntityConditionSimple, public CHitImmunity
 {
+    RTTI_DECLARE_TYPEINFO(CEntityCondition, CEntityConditionSimple, CHitImmunity);
+
 private:
     bool m_use_limping_state;
     CEntityAlive* m_object;

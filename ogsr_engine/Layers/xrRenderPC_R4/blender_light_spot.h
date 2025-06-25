@@ -2,6 +2,8 @@
 
 class CBlender_accum_spot : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_spot, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light"; }
 
@@ -13,6 +15,8 @@ public:
 
 class CBlender_accum_spot_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_spot_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light msaa"; }
 
@@ -33,6 +37,8 @@ public:
 
 class CBlender_accum_volumetric_msaa : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_accum_volumetric_msaa, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light msaa"; }
 

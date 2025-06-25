@@ -46,8 +46,10 @@ typedef struct _SCRIPT_VAR
 
 typedef xr_map<shared_str, SCRIPT_VAR> SCRIPT_VARS_MAP;
 
-class CScriptVarsTable // таблица переменных
+class CScriptVarsTable : public virtual RTTI::Enable // таблица переменных
 {
+    RTTI_DECLARE_TYPEINFO(CScriptVarsTable);
+
 private:
     SCRIPT_VARS_MAP m_map;
     shared_str m_name;
@@ -83,12 +85,14 @@ public:
 
 class CScriptVarsStorage : public CScriptVarsTable
 {
-    typedef CScriptVarsTable inherited;
+    RTTI_DECLARE_TYPEINFO(CScriptVarsStorage, CScriptVarsTable);
 
 public:
+    typedef CScriptVarsTable inherited;
+
     virtual int load(IReader& memory_stream);
     virtual int save(IWriter& memory_stream);
-    virtual void release(){};
+    virtual void release() {};
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

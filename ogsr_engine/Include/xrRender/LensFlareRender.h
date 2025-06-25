@@ -1,9 +1,10 @@
 #ifndef LensFlareRender_included
 #define LensFlareRender_included
-#pragma once
 
-class IFlareRender
+class IFlareRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IFlareRender);
+
 public:
     virtual ~IFlareRender() { ; }
     virtual void Copy(IFlareRender& _in) = 0;
@@ -14,8 +15,10 @@ public:
 
 class CLensFlare;
 
-class ILensFlareRender
+class ILensFlareRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ILensFlareRender);
+
 public:
     virtual ~ILensFlareRender() { ; }
     virtual void Copy(ILensFlareRender& _in) = 0;

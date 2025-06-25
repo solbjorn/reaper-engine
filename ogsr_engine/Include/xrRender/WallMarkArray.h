@@ -1,14 +1,15 @@
 #ifndef WallMarkArray_included
 #define WallMarkArray_included
-#pragma once
 
 #include "FactoryPtr.h"
 #include "UIShader.h"
 
 typedef FactoryPtr<IUIShader> wm_shader;
 
-class IWallMarkArray
+class IWallMarkArray : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IWallMarkArray);
+
 public:
     virtual ~IWallMarkArray() { ; }
     virtual void Copy(IWallMarkArray& _in) = 0;

@@ -17,8 +17,11 @@ extern const Fvector zero_vel;
 
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
-class CShootingObject
+class CShootingObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CShootingObject);
+
+public:
     friend class CWeaponScript;
 
 protected:
@@ -51,10 +54,10 @@ public:
 protected:
     // Weapon fires now
     bool bWorking;
+    bool bCycleDown;
 
     float fTimeToFire;
     float fTimeToFire2;
-    bool bCycleDown;
     ALife::EHitType m_eHitType;
     Fvector4 fvHitPower;
     // float					fHitPower;

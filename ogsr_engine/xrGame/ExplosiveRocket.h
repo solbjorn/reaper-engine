@@ -11,6 +11,8 @@
 
 class CExplosiveRocket : public CCustomRocket, public CInventoryItem, public CExplosive
 {
+    RTTI_DECLARE_TYPEINFO(CExplosiveRocket, CCustomRocket, CInventoryItem, CExplosive);
+
 private:
     typedef CCustomRocket inherited;
     friend CRocketLauncher;

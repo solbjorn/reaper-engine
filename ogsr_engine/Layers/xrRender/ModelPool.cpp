@@ -568,7 +568,7 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     for (; it != en; ++it)
     {
         dxRender_Visual* ptr = it->model;
-        Fvisual* vis_ptr = dynamic_cast<Fvisual*>(ptr);
+        Fvisual* vis_ptr = smart_cast<Fvisual*>(ptr);
 
         if (vis_ptr == NULL)
             continue;

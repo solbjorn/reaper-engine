@@ -10,6 +10,9 @@ class CUIEditBoxEx;
 
 class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaSpot, CUIDialogWnd, CUIWndCallback);
+
+public:
     using base_class = CUIDialogWnd;
 
     CUIStatic* m_background;
@@ -23,7 +26,6 @@ class CUIPdaSpot : public CUIDialogWnd, public CUIWndCallback
     u16 m_spotID;
     shared_str m_spotType;
 
-public:
     CUIPdaSpot();
     ~CUIPdaSpot() = default;
 

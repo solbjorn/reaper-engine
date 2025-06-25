@@ -167,7 +167,7 @@ IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_locatio
     {
         if constexpr (std::is_polymorphic_v<T>)
         {
-            void* _real_ptr = dynamic_cast<void*>(ptr);
+            void* _real_ptr = smart_cast<void*>(ptr);
 
             ptr->~T();
             PointerRegistryRelease(_real_ptr, loc, true);
@@ -221,7 +221,7 @@ IC void xr_delete(T*& ptr)
     {
         if constexpr (std::is_polymorphic_v<T>)
         {
-            void* _real_ptr = dynamic_cast<void*>(ptr);
+            void* _real_ptr = smart_cast<void*>(ptr);
             ptr->~T();
             Memory.mem_free(_real_ptr);
         }

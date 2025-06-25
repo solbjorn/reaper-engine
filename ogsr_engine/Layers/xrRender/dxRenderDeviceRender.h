@@ -10,6 +10,8 @@ class CResourceManager;
 
 class dxRenderDeviceRender : public IRenderDeviceRender, public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(dxRenderDeviceRender, IRenderDeviceRender, pureFrame);
+
 public:
     dxRenderDeviceRender();
 

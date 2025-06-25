@@ -7,11 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "ai_space.h"
 #include "level_graph.h"
 
-class CSpaceRestrictionAbstract
+class CSpaceRestrictionAbstract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionAbstract);
+
 protected:
     xr_vector<u32> m_border;
     bool m_initialized;

@@ -20,6 +20,8 @@ class CAI_Stalker;
 
 class CSightManager : public CSetupManager<CSightControlAction, CAI_Stalker, u32>
 {
+    RTTI_DECLARE_TYPEINFO(CSightManager, CSetupManager<CSightControlAction, CAI_Stalker, u32>);
+
 public:
     typedef CSetupManager<CSightControlAction, CAI_Stalker, u32> inherited;
 

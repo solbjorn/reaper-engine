@@ -1,7 +1,9 @@
 #pragma once
 
-class ISheduled
+class ISheduled : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ISheduled);
+
 public:
     struct
     {

@@ -14,6 +14,8 @@ class CEF_Storage;
 
 class CPatternFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPatternFunction, CBaseFunction);
+
 private:
     typedef CBaseFunction inherited;
     enum

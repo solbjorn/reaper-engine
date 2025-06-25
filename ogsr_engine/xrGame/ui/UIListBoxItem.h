@@ -3,6 +3,8 @@
 
 class CUIListBoxItem : public CUILabel, public CUISelectable
 {
+    RTTI_DECLARE_TYPEINFO(CUIListBoxItem, CUILabel, CUISelectable);
+
 public:
     using CUILabel::SetTextColor;
 

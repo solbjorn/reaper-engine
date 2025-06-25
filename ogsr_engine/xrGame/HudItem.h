@@ -16,8 +16,10 @@ class CMotionDef;
 
 #include "actor_defs.h"
 
-class CHUDState
+class CHUDState : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CHUDState);
+
 public:
     enum EHudStates
     {
@@ -68,6 +70,8 @@ public:
 
 class CHudItem : public CHUDState
 {
+    RTTI_DECLARE_TYPEINFO(CHudItem, CHUDState);
+
 protected: // чтоб нельзя было вызвать на прямую
     CHudItem();
     virtual ~CHudItem() = default;

@@ -6,6 +6,9 @@
 
 class CSoundRender_TargetA : public CSoundRender_Target
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_TargetA, CSoundRender_Target);
+
+public:
     using inherited = CSoundRender_Target;
 
     // OpenAL

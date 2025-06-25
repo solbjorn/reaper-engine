@@ -8,6 +8,8 @@
 
 class FHierrarhyVisual : public dxRender_Visual
 {
+    RTTI_DECLARE_TYPEINFO(FHierrarhyVisual, dxRender_Visual);
+
 public:
     xr_vector<dxRender_Visual*> children;
     BOOL bDontDelete;

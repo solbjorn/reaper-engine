@@ -10,6 +10,8 @@ class CUICursor;
 
 class CDeviceResetNotifier : public pureDeviceReset
 {
+    RTTI_DECLARE_TYPEINFO(CDeviceResetNotifier, pureDeviceReset);
+
 public:
     CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); };
     virtual ~CDeviceResetNotifier() { Device.seqDeviceReset.Remove(this); };
@@ -63,6 +65,9 @@ public:
 
 class ui_core : public CDeviceResetNotifier
 {
+    RTTI_DECLARE_TYPEINFO(ui_core, CDeviceResetNotifier);
+
+public:
     C2DFrustum m_2DFrustum;
     C2DFrustum m_2DFrustumPP;
     C2DFrustum m_FrustumLIT;
@@ -79,7 +84,6 @@ class ui_core : public CDeviceResetNotifier
     IC float ClientToScreenScaledX(float left) { return left * m_current_scale->x; };
     IC float ClientToScreenScaledY(float top) { return top * m_current_scale->y; };
 
-public:
     xr_stack<Frect> m_Scissors;
 
     ui_core();

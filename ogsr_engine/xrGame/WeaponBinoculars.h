@@ -9,6 +9,8 @@ class CBinocularsVision;
 
 class CWeaponBinoculars : public CWeaponCustomPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponBinoculars, CWeaponCustomPistol);
+
 private:
     typedef CWeaponCustomPistol inherited;
 

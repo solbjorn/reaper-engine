@@ -14,8 +14,10 @@ namespace text_editor
 {
 class line_edit_control;
 
-class base
+class base : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(base);
+
 public:
     base();
     virtual ~base();
@@ -30,6 +32,8 @@ protected:
 
 class callback_base : public base
 {
+    RTTI_DECLARE_TYPEINFO(callback_base, base);
+
 private:
     using Callback = CallMe::Delegate<void()>;
 
@@ -47,6 +51,8 @@ protected:
 
 class type_pair : public base
 {
+    RTTI_DECLARE_TYPEINFO(type_pair, base);
+
 public:
     type_pair(u32 dik, char c, char c_shift, bool b_translate);
     virtual ~type_pair();
@@ -64,6 +70,8 @@ private:
 
 class key_state_base : public base
 {
+    RTTI_DECLARE_TYPEINFO(key_state_base, base);
+
 public:
     key_state_base(key_state state, base* type_pair);
     virtual ~key_state_base();

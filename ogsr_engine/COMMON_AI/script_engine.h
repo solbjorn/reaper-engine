@@ -13,6 +13,8 @@
 
 class CScriptEngine : public CScriptStorage
 {
+    RTTI_DECLARE_TYPEINFO(CScriptEngine, CScriptStorage);
+
 private:
     bool m_reload_modules;
 

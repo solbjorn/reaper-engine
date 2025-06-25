@@ -8,6 +8,8 @@ class CUIStatic;
 
 class CUIFrameWindow : public CUIWindow, public CUIMultiTextureOwner
 {
+    RTTI_DECLARE_TYPEINFO(CUIFrameWindow, CUIWindow, CUIMultiTextureOwner);
+
 private:
     typedef CUIWindow inherited;
 
@@ -30,7 +32,7 @@ public:
     virtual void Draw();
     virtual void Update();
 
-    //текст заголовка
+    // текст заголовка
     CUIStatic* UITitleText;
     CUIStatic* GetTitleStatic() { return UITitleText; };
     void SetVisiblePart(CUIFrameRect::EFramePart p, BOOL b) { m_UIWndFrame.SetVisiblePart(p, b); };

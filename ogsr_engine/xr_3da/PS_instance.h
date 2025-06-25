@@ -7,6 +7,9 @@
 
 class CPS_Instance : public ISpatial, public ISheduled, public IRenderable
 {
+    RTTI_DECLARE_TYPEINFO(CPS_Instance, ISpatial, ISheduled, IRenderable);
+
+public:
     friend class IGame_Persistent;
 
 private:

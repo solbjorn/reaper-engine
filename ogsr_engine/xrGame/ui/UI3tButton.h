@@ -13,10 +13,12 @@
 
 class CUI3tButton : public CUIButton
 {
+    RTTI_DECLARE_TYPEINFO(CUI3tButton, CUIButton);
+
+public:
     friend class CUIXmlInit;
     using CUIButton::SetTextColor;
 
-public:
     CUI3tButton();
     virtual ~CUI3tButton();
     // appearance

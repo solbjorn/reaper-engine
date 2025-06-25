@@ -1,11 +1,12 @@
 #ifndef dxLensFlareRender_included
 #define dxLensFlareRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\LensFlareRender.h"
 
 class dxFlareRender : public IFlareRender
 {
+    RTTI_DECLARE_TYPEINFO(dxFlareRender, IFlareRender);
+
 public:
     virtual void Copy(IFlareRender& _in);
 
@@ -19,6 +20,8 @@ public:
 
 class dxLensFlareRender : public ILensFlareRender
 {
+    RTTI_DECLARE_TYPEINFO(dxLensFlareRender, ILensFlareRender);
+
 public:
     virtual void Copy(ILensFlareRender& _in);
 

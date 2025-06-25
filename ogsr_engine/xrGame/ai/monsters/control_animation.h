@@ -52,6 +52,9 @@ struct SAnimationSignalEventData : public ControlCom::IEventData
 
 class CControlAnimation : public CControl_ComPure<SControlAnimationData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlAnimation, CControl_ComPure<SControlAnimationData>);
+
+public:
     typedef CControl_ComPure<SControlAnimationData> inherited;
 
     IKinematicsAnimated* m_skeleton_animated;
@@ -73,7 +76,6 @@ class CControlAnimation : public CControl_ComPure<SControlAnimationData>
     float m_saved_legs_speed;
     float m_saved_torso_speed;
 
-public:
     bool m_global_animation_end;
     bool m_legs_animation_end;
     bool m_torso_animation_end;

@@ -1,13 +1,13 @@
 #ifndef dxStatGraphRender_included
 #define dxStatGraphRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\StatGraphRender.h"
-
 #include "../../xr_3da/StatGraph.h"
 
 class dxStatGraphRender : public IStatGraphRender
 {
+    RTTI_DECLARE_TYPEINFO(dxStatGraphRender, IStatGraphRender);
+
 public:
     virtual void Copy(IStatGraphRender& _in);
 

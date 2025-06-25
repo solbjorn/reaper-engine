@@ -6,13 +6,15 @@ class CUIFrameLineWnd;
 
 class CUIButtonHint : public CUIWindow, public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(CUIButtonHint, CUIWindow, pureRender);
+
+public:
     CUIWindow* m_ownerWnd;
 
     CUIStatic* m_text;
     CUIFrameLineWnd* m_border;
     bool m_enabledOnFrame;
 
-public:
     CUIButtonHint();
     virtual ~CUIButtonHint();
     CUIWindow* Owner() { return m_ownerWnd; }

@@ -78,6 +78,8 @@ void CLocatorAPI::archive::xr_sqfs::drain()
 
 class CLocatorAPI::archive::xr_sqfs_stream : public CStreamReader
 {
+    RTTI_DECLARE_TYPEINFO(CLocatorAPI::archive::xr_sqfs_stream, CStreamReader);
+
 private:
     const archive* arc{};
     xr_sqfs::reader* rd;
@@ -104,7 +106,7 @@ private:
         xr_free(inode);
         arc->fs->put(rd);
 
-        memset(reinterpret_cast<u8*>(this) + offsetof(xr_sqfs_stream, arc), 0, sizeof(*this) - offsetof(xr_sqfs_stream, arc));
+        memset(reinterpret_cast<u8*>(this) + offsetof(xr_sqfs_stream, arc), 0, offsetof(xr_sqfs_stream, wnd) + sizeof(wnd) - offsetof(xr_sqfs_stream, arc));
     }
 
 public:

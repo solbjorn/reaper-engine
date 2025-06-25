@@ -8,11 +8,19 @@
 class occTri;
 class xr_task_group;
 
-class CHOM
+class CHOM : public virtual RTTI::Enable
 #ifdef DEBUG
-    : public pureRender
+    ,
+             public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CHOM
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
 private:
     xrXRC xrc;
     CDB::MODEL* m_pModel;

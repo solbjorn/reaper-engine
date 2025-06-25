@@ -10,6 +10,8 @@ class light_Package;
 
 class CRenderTarget : public IRender_Target
 {
+    RTTI_DECLARE_TYPEINFO(CRenderTarget, IRender_Target);
+
 private:
     u32 dwWidth[R__NUM_CONTEXTS];
     u32 dwHeight[R__NUM_CONTEXTS];

@@ -11,11 +11,13 @@
 */
 
 template <typename _Object>
-class CState
+class CState : public virtual RTTI::Enable
 {
-    typedef CState<_Object> CSState;
+    RTTI_DECLARE_TYPEINFO(CState<_Object>);
 
 public:
+    typedef CState<_Object> CSState;
+
     CState(_Object* obj, void* data = 0);
     virtual ~CState();
 
@@ -79,6 +81,8 @@ private:
 template <typename _Object>
 class CStateMove : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMove<_Object>, CState<_Object>);
+
 protected:
     using inherited = CState<_Object>;
 

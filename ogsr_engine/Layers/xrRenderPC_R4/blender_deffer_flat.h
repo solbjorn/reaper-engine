@@ -2,6 +2,8 @@
 
 class CBlender_deffer_flat : public IBlenderXr
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_deffer_flat, IBlenderXr);
+
 public:
     virtual LPCSTR getComment() { return "LEVEL: defer-base-normal"; }
 

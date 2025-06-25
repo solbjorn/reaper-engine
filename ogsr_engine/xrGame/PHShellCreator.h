@@ -5,10 +5,9 @@
 
 class CPHShellSimpleCreator : public IPhysicShellCreator
 {
+    RTTI_DECLARE_TYPEINFO(CPHShellSimpleCreator, IPhysicShellCreator);
+
 public:
     virtual void CreatePhysicsShell();
-
-protected:
-private:
 };
 #endif

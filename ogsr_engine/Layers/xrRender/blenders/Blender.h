@@ -4,7 +4,6 @@
 
 #if !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)
 #define AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
-#pragma once
 
 #include "../../xr_3da/properties.h"
 #include "Blender_Recorder.h"
@@ -32,8 +31,11 @@ public:
     }
 };
 
-class IBlender
+class IBlender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IBlender);
+
+public:
     friend class CBlender_Compile;
 
 protected:
@@ -60,6 +62,8 @@ public:
 
 class IBlenderXr : public IBlender, public CPropertyBase
 {
+    RTTI_DECLARE_TYPEINFO(IBlenderXr, IBlender, CPropertyBase);
+
 protected:
     static void WriteInteger(CInifile* ini_file, LPCSTR section, LPCSTR line, xrP_INTEGER v);
     static void WriteBool(CInifile* ini_file, LPCSTR section, LPCSTR line, xrP_BOOL v);

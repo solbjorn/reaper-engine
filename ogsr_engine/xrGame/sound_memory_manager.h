@@ -24,8 +24,10 @@ enum ESoundTypes;
 class CCustomMonster;
 class CAI_Stalker;
 
-class CSoundMemoryManager
+class CSoundMemoryManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSoundMemoryManager);
+
 public:
     typedef MemorySpace::CSoundObject CSoundObject;
     typedef xr_deque<CSoundObject> SOUNDS;

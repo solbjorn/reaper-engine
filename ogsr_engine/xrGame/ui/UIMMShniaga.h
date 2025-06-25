@@ -10,6 +10,8 @@ class CMMSound;
 
 class CUIMMShniaga : public CUIWindow, public CDeviceResetNotifier
 {
+    RTTI_DECLARE_TYPEINFO(CUIMMShniaga, CUIWindow, CDeviceResetNotifier);
+
 public:
     using CUIWindow::Init;
 

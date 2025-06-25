@@ -4,6 +4,7 @@
 
 #include "particle_actions.h"
 #include "particle_core.h"
+
 namespace PAPI
 {
 #define _METHODS \
@@ -14,6 +15,9 @@ namespace PAPI
 
 struct PAAvoid : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAAvoid, ParticleAction);
+
+public:
     pDomain positionL; // Avoid region (in local space)
     pDomain position; // Avoid region
     float look_ahead; // how many time units ahead to look
@@ -25,6 +29,9 @@ struct PAAvoid : public ParticleAction
 
 struct PABounce : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PABounce, ParticleAction);
+
+public:
     pDomain positionL; // Bounce region (in local space)
     pDomain position; // Bounce region
     float oneMinusFriction; // Friction tangent to surface
@@ -36,6 +43,9 @@ struct PABounce : public ParticleAction
 
 struct PACopyVertexB : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PACopyVertexB, ParticleAction);
+
+public:
     BOOL copy_pos; // True to copy pos to posB.
 
     _METHODS;
@@ -43,6 +53,9 @@ struct PACopyVertexB : public ParticleAction
 
 struct PADamping : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PADamping, ParticleAction);
+
+public:
     pVector damping; // Damping constant applied to velocity
     float vlowSqr; // Low and high cutoff velocities
     float vhighSqr;
@@ -52,6 +65,9 @@ struct PADamping : public ParticleAction
 
 struct PAExplosion : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAExplosion, ParticleAction);
+
+public:
     pVector centerL; // The center of the explosion (in local space)
     pVector center; // The center of the explosion
     float velocity; // Of shock wave
@@ -65,6 +81,9 @@ struct PAExplosion : public ParticleAction
 
 struct PAFollow : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAFollow, ParticleAction);
+
+public:
     float magnitude; // The grav of each particle
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
@@ -74,6 +93,9 @@ struct PAFollow : public ParticleAction
 
 struct PAGravitate : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAGravitate, ParticleAction);
+
+public:
     float magnitude; // The grav of each particle
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
@@ -83,6 +105,9 @@ struct PAGravitate : public ParticleAction
 
 struct PAGravity : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAGravity, ParticleAction);
+
+public:
     pVector directionL; // Amount to increment velocity (in local space)
     pVector direction; // Amount to increment velocity
 
@@ -91,6 +116,9 @@ struct PAGravity : public ParticleAction
 
 struct PAJet : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAJet, ParticleAction);
+
+public:
     pVector centerL; // Center of the fan (in local space)
     pDomain accL; // Acceleration vector domain  (in local space)
     pVector center; // Center of the fan
@@ -104,6 +132,9 @@ struct PAJet : public ParticleAction
 
 struct PAKillOld : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAKillOld, ParticleAction);
+
+public:
     float age_limit; // Exact age at which to kill particles.
     BOOL kill_less_than; // True to kill particles less than limit.
 
@@ -112,6 +143,9 @@ struct PAKillOld : public ParticleAction
 
 struct PAMatchVelocity : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAMatchVelocity, ParticleAction);
+
+public:
     float magnitude; // The grav of each particle
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
@@ -121,11 +155,17 @@ struct PAMatchVelocity : public ParticleAction
 
 struct PAMove : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAMove, ParticleAction);
+
+public:
     _METHODS;
 };
 
 struct PAOrbitLine : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAOrbitLine, ParticleAction);
+
+public:
     pVector pL, axisL; // Endpoints of line to which particles are attracted (in local space)
     pVector p, axis; // Endpoints of line to which particles are attracted
     float magnitude; // Scales acceleration
@@ -137,6 +177,9 @@ struct PAOrbitLine : public ParticleAction
 
 struct PAOrbitPoint : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAOrbitPoint, ParticleAction);
+
+public:
     pVector centerL; // Point to which particles are attracted (in local space)
     pVector center; // Point to which particles are attracted
     float magnitude; // Scales acceleration
@@ -148,6 +191,9 @@ struct PAOrbitPoint : public ParticleAction
 
 struct PARandomAccel : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PARandomAccel, ParticleAction);
+
+public:
     pDomain gen_accL; // The domain of random accelerations.(in local space)
     pDomain gen_acc; // The domain of random accelerations.
 
@@ -156,6 +202,9 @@ struct PARandomAccel : public ParticleAction
 
 struct PARandomDisplace : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PARandomDisplace, ParticleAction);
+
+public:
     pDomain gen_dispL; // The domain of random displacements.(in local space)
     pDomain gen_disp; // The domain of random displacements.
 
@@ -164,6 +213,9 @@ struct PARandomDisplace : public ParticleAction
 
 struct PARandomVelocity : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PARandomVelocity, ParticleAction);
+
+public:
     pDomain gen_velL; // The domain of random velocities.(in local space)
     pDomain gen_vel; // The domain of random velocities.
 
@@ -172,6 +224,9 @@ struct PARandomVelocity : public ParticleAction
 
 struct PARestore : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PARestore, ParticleAction);
+
+public:
     float time_left; // Time remaining until they should be in position.
 
     _METHODS;
@@ -179,6 +234,9 @@ struct PARestore : public ParticleAction
 
 struct PAScatter : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAScatter, ParticleAction);
+
+public:
     pVector centerL; // Center of the fan (in local space)
     pVector center; // Center of the fan
     float magnitude; // Scales acceleration
@@ -190,6 +248,9 @@ struct PAScatter : public ParticleAction
 
 struct PASink : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PASink, ParticleAction);
+
+public:
     BOOL kill_inside; // True to dispose of particles *inside* domain
     pDomain positionL; // Disposal region (in local space)
     pDomain position; // Disposal region
@@ -199,6 +260,9 @@ struct PASink : public ParticleAction
 
 struct PASinkVelocity : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PASinkVelocity, ParticleAction);
+
+public:
     BOOL kill_inside; // True to dispose of particles with vel *inside* domain
     pDomain velocityL; // Disposal region (in local space)
     pDomain velocity; // Disposal region
@@ -208,6 +272,9 @@ struct PASinkVelocity : public ParticleAction
 
 struct PASpeedLimit : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PASpeedLimit, ParticleAction);
+
+public:
     float min_speed; // Clamp speed to this minimum.
     float max_speed; // Clamp speed to this maximum.
 
@@ -216,6 +283,9 @@ struct PASpeedLimit : public ParticleAction
 
 struct PASource : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PASource, ParticleAction);
+
+public:
     enum
     {
         flSingleSize = (1ul << 29ul), // True to get positionB from position.
@@ -242,6 +312,9 @@ struct PASource : public ParticleAction
 
 struct PATargetColor : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PATargetColor, ParticleAction);
+
+public:
     pVector color{}; // Color to shift towards
     float alpha{}; // Alpha value to shift towards
     float scale{}; // Amount to shift by (1 == all the way)
@@ -253,6 +326,9 @@ struct PATargetColor : public ParticleAction
 
 struct PATargetSize : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PATargetSize, ParticleAction);
+
+public:
     pVector size; // Size to shift towards
     pVector scale; // Amount to shift by per frame (1 == all the way)
 
@@ -261,6 +337,9 @@ struct PATargetSize : public ParticleAction
 
 struct PATargetRotate : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PATargetRotate, ParticleAction);
+
+public:
     pVector rot; // Rotation to shift towards
     float scale; // Amount to shift by per frame (1 == all the way)
 
@@ -269,6 +348,9 @@ struct PATargetRotate : public ParticleAction
 
 struct PATargetVelocity : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PATargetVelocity, ParticleAction);
+
+public:
     pVector velocityL; // Velocity to shift towards (in local space)
     pVector velocity; // Velocity to shift towards
     float scale; // Amount to shift by (1 == all the way)
@@ -278,6 +360,9 @@ struct PATargetVelocity : public ParticleAction
 
 struct PAVortex : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PAVortex, ParticleAction);
+
+public:
     pVector centerL; // Center of vortex (in local space)
     pVector axisL; // Axis around which vortex is applied (in local space)
     pVector center; // Center of vortex
@@ -291,6 +376,9 @@ struct PAVortex : public ParticleAction
 
 struct PATurbulence : public ParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(PATurbulence, ParticleAction);
+
+public:
     float frequency; // Frequency
     int octaves; // Octaves
     float magnitude; // Scale for rotation around axis

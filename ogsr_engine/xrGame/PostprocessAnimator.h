@@ -31,9 +31,10 @@ typedef enum _pp_params
     pp_force_dword = 0x7fffffff
 } pp_params;
 
-class CPostProcessParam
+class CPostProcessParam : public virtual RTTI::Enable
 {
-protected:
+    RTTI_DECLARE_TYPEINFO(CPostProcessParam);
+
 public:
     virtual void update(float dt) = 0;
     virtual void load(IReader& pReader) = 0;
@@ -44,6 +45,8 @@ public:
 
 class CPostProcessValue : public CPostProcessParam
 {
+    RTTI_DECLARE_TYPEINFO(CPostProcessValue, CPostProcessParam);
+
 protected:
     CEnvelope m_Value;
     float* m_pfParam;
@@ -63,6 +66,8 @@ public:
 
 class CPostProcessColor : public CPostProcessParam
 {
+    RTTI_DECLARE_TYPEINFO(CPostProcessColor, CPostProcessParam);
+
 protected:
     float m_fBase{};
     CEnvelope m_Red;
@@ -90,8 +95,9 @@ public:
 };
 
 class CPostprocessAnimator : public CEffectorPP
-
 {
+    RTTI_DECLARE_TYPEINFO(CPostprocessAnimator, CEffectorPP);
+
 protected:
     CPostProcessParam* m_Params[POSTPROCESS_PARAMS_COUNT];
     shared_str m_Name;
@@ -125,6 +131,8 @@ public:
 
 class CPostprocessAnimatorLerp : public CPostprocessAnimator
 {
+    RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorLerp, CPostprocessAnimator);
+
 protected:
     CallMe::Delegate<float()> m_get_factor_func;
 
@@ -135,6 +143,8 @@ public:
 
 class CPostprocessAnimatorLerpConst : public CPostprocessAnimator
 {
+    RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorLerpConst, CPostprocessAnimator);
+
 protected:
     float m_power;
 
@@ -146,11 +156,14 @@ public:
 
 class CPostprocessAnimatorControlled : public CPostprocessAnimatorLerp
 {
-    CEffectorController* m_controller;
+    RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorControlled, CPostprocessAnimatorLerp);
 
 public:
+    CEffectorController* m_controller;
+
     virtual ~CPostprocessAnimatorControlled();
     CPostprocessAnimatorControlled(CEffectorController* c);
     virtual BOOL Valid();
 };
+
 #endif /*__ppanimator_included__*/

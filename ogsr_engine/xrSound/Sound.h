@@ -71,6 +71,8 @@ class CSound_UserDataVisitor;
 
 class CSound_UserData : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(CSound_UserData, xr_resource);
+
 public:
     virtual ~CSound_UserData() {}
     virtual void accept(CSound_UserDataVisitor*) = 0;
@@ -81,6 +83,8 @@ typedef resptr_core<CSound_UserData, resptr_base<CSound_UserData>> CSound_UserDa
 
 class ref_sound_data : public xr_resource
 {
+    RTTI_DECLARE_TYPEINFO(ref_sound_data, xr_resource);
+
 public:
     //	shared_str						nm;
     CSound_source* handle; //!< Pointer to wave-source interface
@@ -173,8 +177,10 @@ public:
 };
 
 /// definition (Sound Source)
-class CSound_source
+class CSound_source : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSound_source);
+
 public:
     virtual float length_sec() const = 0;
     virtual u32 game_type() const = 0;
@@ -265,8 +271,10 @@ public:
 };
 
 /// definition (Sound Interface)
-class CSound_emitter
+class CSound_emitter : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSound_emitter);
+
 public:
     virtual bool is_2D() const = 0;
     virtual void switch_to_2D() = 0;
@@ -328,8 +336,11 @@ public:
 typedef void __stdcall sound_event(ref_sound_data_ptr S, float range, float time_to_stop);
 
 /// definition (Sound Manager Interface)
-class CSound_manager_interface
+class CSound_manager_interface : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSound_manager_interface);
+
+public:
     virtual void _initialize(int stage) = 0;
     virtual void _clear() = 0;
 

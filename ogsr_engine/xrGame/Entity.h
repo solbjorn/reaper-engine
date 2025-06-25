@@ -15,6 +15,9 @@ class CHudItem;
 
 class CEntity : public CPhysicsShellHolder, public CDamageManager
 {
+    RTTI_DECLARE_TYPEINFO(CEntity, CPhysicsShellHolder, CDamageManager);
+
+public:
     friend class CEntityCondition;
 
 private:

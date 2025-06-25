@@ -19,6 +19,8 @@ enum ERestrictorTypes;
 
 class CALifeUpdateManager : public CALifeSwitchManager, public CALifeSurgeManager, public CALifeStorageManager, public ISheduled
 {
+    RTTI_DECLARE_TYPEINFO(CALifeUpdateManager, CALifeSwitchManager, CALifeSurgeManager, CALifeStorageManager, ISheduled);
+
 private:
     bool m_first_time;
 

@@ -25,6 +25,8 @@ struct CDataStorageBucketList
     template <typename TManagerDataStorage>
     class CDataStorage : public TManagerDataStorage
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TManagerDataStorage>, TManagerDataStorage);
+
     protected:
         typename TManagerDataStorage::Vertex::Distance m_max_distance;
         typename TManagerDataStorage::Vertex m_list_data[2];

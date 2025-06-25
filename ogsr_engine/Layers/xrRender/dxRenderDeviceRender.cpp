@@ -263,7 +263,7 @@ void dxRenderDeviceRender::OnAssetsChanged()
     Resources->m_textures_description.Load();
 }
 
-IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return dynamic_cast<IResourceManager*>(Resources); }
+IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return smart_cast<IResourceManager*>(Resources); }
 
 ctx_id_t dxRenderDeviceRender::alloc_context()
 {

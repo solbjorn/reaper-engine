@@ -4,7 +4,6 @@
 #include "SkeletonX.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/Render.h"
-#include "../../COMMON_AI/smart_cast.h"
 
 int psSkeletonUpdate = 32;
 
@@ -95,7 +94,7 @@ CKinematics::~CKinematics()
 
     if (m_lod)
     {
-        if (CKinematics* lod_kinematics = dynamic_cast<CKinematics*>(m_lod))
+        if (CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod))
         {
             if (lod_kinematics->m_is_original_lod)
             {
@@ -128,7 +127,7 @@ void CKinematics::IBoneInstances_Destroy()
 CSkeletonX* CKinematics::LL_GetChild(u32 idx)
 {
     IRenderVisual* V = children[idx];
-    CSkeletonX* B = dynamic_cast<CSkeletonX*>(V);
+    CSkeletonX* B = smart_cast<CSkeletonX*>(V);
     return B;
 }
 
@@ -151,7 +150,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
             //.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
             m_lod = (dxRender_Visual*)RImplementation.model_CreateChild(lod_name, NULL);
 
-            if (CKinematics* lod_kinematics = dynamic_cast<CKinematics*>(m_lod))
+            if (CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod))
             {
                 lod_kinematics->m_is_original_lod = true;
             }
@@ -388,7 +387,7 @@ void CKinematics::Copy(dxRender_Visual* P)
 {
     inherited::Copy(P);
 
-    CKinematics* pFrom = dynamic_cast<CKinematics*>(P);
+    CKinematics* pFrom = smart_cast<CKinematics*>(P);
     VERIFY(pFrom);
     pUserData = pFrom->pUserData;
     bones = pFrom->bones;
@@ -511,7 +510,7 @@ void CKinematics::Visibility_Update()
     // check visible
     for (u32 c_it = 0; c_it < children.size(); c_it++)
     {
-        CSkeletonX* _c = dynamic_cast<CSkeletonX*>(children[c_it]);
+        CSkeletonX* _c = smart_cast<CSkeletonX*>(children[c_it]);
         VERIFY(_c);
         if (!_c->has_visible_bones())
         {
@@ -526,7 +525,7 @@ void CKinematics::Visibility_Update()
     // check invisible
     for (u32 _it = 0; _it < children_invisible.size(); _it++)
     {
-        CSkeletonX* _c = dynamic_cast<CSkeletonX*>(children_invisible[_it]);
+        CSkeletonX* _c = smart_cast<CSkeletonX*>(children_invisible[_it]);
         VERIFY(_c);
         if (_c->has_visible_bones())
         {
@@ -909,7 +908,7 @@ void CKinematics::RC_Dump()
         Msg("[child %u] : min[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
         temp.set(RC_VisBorderMax(i));
         Msg("[child %u] : max[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
-        FHierrarhyVisual* HV = dynamic_cast<FHierrarhyVisual*>(children.at(i));
+        FHierrarhyVisual* HV = smart_cast<FHierrarhyVisual*>(children.at(i));
         if (HV && HV->children.size())
         {
             for (u32 j = 0; j < HV->children.size(); j++)
@@ -923,7 +922,7 @@ void CKinematics::RC_Dump()
                 Msg("[child %u->%u] : min[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
                 temp.set(FB.max);
                 Msg("[child %u->%u] : max[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
-                FHierrarhyVisual* kHV = dynamic_cast<FHierrarhyVisual*>(HV->children.at(j));
+                FHierrarhyVisual* kHV = smart_cast<FHierrarhyVisual*>(HV->children.at(j));
                 if (kHV && kHV->children.size())
                 {
                     for (u32 k = 0; k < kHV->children.size(); k++)

@@ -88,17 +88,18 @@ IC RESTRICTOR_I end(RESRICTORS_V& v)
 
 class CPHActorCharacter : public CPHSimpleCharacter
 {
+    RTTI_DECLARE_TYPEINFO(CPHActorCharacter, CPHSimpleCharacter);
+
+public:
     typedef CPHSimpleCharacter inherited;
 
     RESRICTORS_V m_restrictors;
     float m_speed_goal{};
 
-public:
     typedef TPHCharacterRestrictor<CPHCharacter::rtStalker> stalker_restrictor;
     typedef TPHCharacterRestrictor<CPHCharacter::rtStalkerSmall> stalker_small_restrictor;
     typedef TPHCharacterRestrictor<CPHCharacter::rtMonsterMedium> medium_monster_restrictor;
 
-public:
     virtual CPHActorCharacter* CastActorCharacter() { return this; }
     virtual void SetObjectContactCallback(ObjectContactCallbackFun* callback);
     virtual void SetMaterial(u16 material);

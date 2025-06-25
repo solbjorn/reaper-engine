@@ -29,11 +29,11 @@ struct SCharacterProfile : CSharedResource
     SCharacterProfile();
     virtual ~SCharacterProfile();
 
-    //если задано, то выбирается именно такой профиль,
-    //иначе ищется случайно,удовлетворяющее шаблону
+    // если задано, то выбирается именно такой профиль,
+    // иначе ищется случайно,удовлетворяющее шаблону
     shared_str m_CharacterId;
 
-    //требуемые параметры персонажа
+    // требуемые параметры персонажа
     CHARACTER_CLASS m_Class;
     CHARACTER_RANK_VALUE m_Rank;
     CHARACTER_REPUTATION_VALUE m_Reputation;
@@ -44,6 +44,8 @@ class CSE_ALifeTraderAbstract;
 
 class CCharacterInfo : public CSharedClass<SCharacterProfile, shared_str, false>, public CXML_IdToIndex<CCharacterInfo>
 {
+    RTTI_DECLARE_TYPEINFO(CCharacterInfo, CSharedClass<SCharacterProfile, shared_str, false>, CXML_IdToIndex<CCharacterInfo>);
+
 private:
     typedef CSharedClass<SCharacterProfile, shared_str, false> inherited_shared;
     typedef CXML_IdToIndex<CCharacterInfo> id_to_index;
@@ -62,9 +64,9 @@ public:
     void load(IReader&);
     void save(NET_Packet&);
 
-    //инициализация профиля подразумевает
-    //загрузку соответствующего CSpecificCharacter, по
-    //указанному индексу
+    // инициализация профиля подразумевает
+    // загрузку соответствующего CSpecificCharacter, по
+    // указанному индексу
     void Init(CSE_ALifeTraderAbstract* trader);
     void InitSpecificCharacter(shared_str new_id);
 #endif
@@ -83,20 +85,20 @@ protected:
 
     static void InitXmlIdToIndex();
 
-    //загрузка из XML файла
+    // загрузка из XML файла
     virtual void load_shared(LPCSTR);
 
-    //индекс загруженного профиля
+    // индекс загруженного профиля
     shared_str m_ProfileId;
 
-    //индекс данных о конкретном персонаже, который
-    //используется в данном экземпляре класса
+    // индекс данных о конкретном персонаже, который
+    // используется в данном экземпляре класса
     shared_str m_SpecificCharacterId;
 
 #ifdef XRGAME_EXPORTS
     shared_str m_StartDialog;
 
-    //загруженная информация о конкретном персонаже
+    // загруженная информация о конкретном персонаже
     CSpecificCharacter m_SpecificCharacter;
 #endif
 
@@ -110,7 +112,7 @@ public:
     const CHARACTER_RANK& Rank() const { return m_CurrentRank; };
     const CHARACTER_REPUTATION& Reputation() const { return m_CurrentReputation; };
 
-    //доступут только у InventoryOwner
+    // доступут только у InventoryOwner
 protected:
     void SetRank(CHARACTER_RANK_VALUE rank);
     void SetReputation(CHARACTER_REPUTATION_VALUE reputation);

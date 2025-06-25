@@ -13,8 +13,10 @@
 class CSquadHierarchyHolder;
 class CSeniorityHierarchyHolder;
 
-class CTeamHierarchyHolder
+class CTeamHierarchyHolder : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CTeamHierarchyHolder);
+
 private:
     enum
     {

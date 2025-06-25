@@ -6,6 +6,8 @@ class CUIFrameWindow;
 
 class CUIEditBoxEx : public CUIMultiTextureOwner, public CUICustomEdit
 {
+    RTTI_DECLARE_TYPEINFO(CUIEditBoxEx, CUIMultiTextureOwner, CUICustomEdit);
+
 public:
     CUIEditBoxEx();
     virtual ~CUIEditBoxEx();

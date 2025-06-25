@@ -14,8 +14,10 @@
 
 class CGameObject;
 
-class CClientSpawnManager
+class CClientSpawnManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CClientSpawnManager);
+
 public:
     using CALLBACK_TYPE = CallMe::Delegate<void(CObject*)>;
 

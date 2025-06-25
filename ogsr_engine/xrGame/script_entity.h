@@ -20,8 +20,10 @@ class CCustomMonster;
 
 using namespace ScriptEntity;
 
-class CScriptEntity
+class CScriptEntity : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptEntity);
+
 public:
     struct CSavedSound
     {

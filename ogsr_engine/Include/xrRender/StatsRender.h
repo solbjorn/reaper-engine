@@ -1,12 +1,13 @@
 #ifndef StatsRender_included
 #define StatsRender_included
-#pragma once
 
 class CGameFont;
 class IRenderDeviceRender;
 
-class IStatsRender
+class IStatsRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IStatsRender);
+
 public:
     virtual ~IStatsRender() { ; }
     virtual void Copy(IStatsRender& _in) = 0;

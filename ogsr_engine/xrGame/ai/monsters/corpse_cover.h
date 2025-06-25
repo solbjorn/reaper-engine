@@ -4,6 +4,8 @@
 
 class CMonsterCorpseCoverEvaluator : public CCoverEvaluatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterCorpseCoverEvaluator, CCoverEvaluatorBase);
+
 protected:
     typedef CCoverEvaluatorBase inherited;
 

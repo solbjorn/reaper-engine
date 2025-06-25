@@ -14,9 +14,12 @@
 template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 class CBasePathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type> : public CAbstractPathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
-    typedef CAbstractPathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type> inherited;
+    RTTI_DECLARE_TYPEINFO(CBasePathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>,
+                          CAbstractPathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type>);
 
 public:
+    typedef CAbstractPathManager<CGameGraph, _VertexEvaluator, _vertex_id_type, _index_type> inherited;
+
     using inherited::dest_vertex_id;
     using inherited::m_intermediate_index;
     using inherited::m_object;

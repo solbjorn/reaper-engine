@@ -15,6 +15,8 @@ class CSE_ALifeHumanAbstract;
 
 class CALifeHumanBrain : public CALifeMonsterBrain
 {
+    RTTI_DECLARE_TYPEINFO(CALifeHumanBrain, CALifeMonsterBrain);
+
 private:
     typedef CALifeMonsterBrain inherited;
 

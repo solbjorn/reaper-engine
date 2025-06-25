@@ -4,9 +4,12 @@ class CPHLeaderGeomShell;
 class CPHCharacter;
 struct dContact;
 struct SGameMtl;
+
 class CClimableObject : public CPhysicsShellHolder
-//,public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(CClimableObject, CPhysicsShellHolder);
+
+public:
     typedef CPhysicsShellHolder inherited;
     CPHLeaderGeomShell* m_pStaticShell;
     Fobb m_box{};
@@ -15,7 +18,6 @@ class CClimableObject : public CPhysicsShellHolder
     Fvector m_norm;
     float m_radius{};
 
-public:
     CClimableObject();
     ~CClimableObject();
     virtual void Load(LPCSTR section);

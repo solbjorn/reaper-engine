@@ -8,10 +8,11 @@
 
 class CWeaponHPSA : public CWeaponPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponHPSA, CWeaponPistol);
+
 private:
     typedef CWeaponPistol inherited;
 
-protected:
 public:
     CWeaponHPSA();
     virtual ~CWeaponHPSA();

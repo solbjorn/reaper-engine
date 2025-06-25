@@ -33,9 +33,11 @@ public:
 
 class CWeaponAmmo : public CInventoryItemObject
 {
-    typedef CInventoryItemObject inherited;
+    RTTI_DECLARE_TYPEINFO(CWeaponAmmo, CInventoryItemObject);
 
 public:
+    typedef CInventoryItemObject inherited;
+
     CWeaponAmmo(void);
     virtual ~CWeaponAmmo(void);
 

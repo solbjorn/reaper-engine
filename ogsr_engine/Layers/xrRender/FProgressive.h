@@ -11,6 +11,8 @@ struct FSlideWindowItem;
 
 class FProgressive : public Fvisual
 {
+    RTTI_DECLARE_TYPEINFO(FProgressive, Fvisual);
+
 protected:
     FSlideWindowItem nSWI;
     FSlideWindowItem* xSWI;

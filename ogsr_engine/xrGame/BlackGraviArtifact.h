@@ -5,13 +5,17 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "GraviArtifact.h"
 #include "..\xr_3da\feel_touch.h"
 #include "PhysicsShellHolder.h"
+
 DEFINE_VECTOR(CPhysicsShellHolder*, GAME_OBJECT_LIST, GAME_OBJECT_LIST_it);
 
 class CBlackGraviArtefact : public CGraviArtefact, public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CBlackGraviArtefact, CGraviArtefact, Feel::Touch);
+
 private:
     collide::rq_results rq_storage;
 
@@ -36,20 +40,20 @@ protected:
     virtual void net_Relcase(CObject* O);
     virtual void UpdateCLChild();
 
-    //гравитационный удар по всем объектам в зоне досягаемости
+    // гравитационный удар по всем объектам в зоне досягаемости
     void GraviStrike();
 
     GAME_OBJECT_LIST m_GameObjectList;
 
-    //которого артефакт активизируется
+    // которого артефакт активизируется
     float m_fImpulseThreshold;
-    //радиус действия артефакта
+    // радиус действия артефакта
     float m_fRadius;
-    //импульс передаваемый окружающим предметам
+    // импульс передаваемый окружающим предметам
     float m_fStrikeImpulse;
 
-    //флаг, того что артефакт получил хит
-    //и теперь может совершить бросок
+    // флаг, того что артефакт получил хит
+    // и теперь может совершить бросок
     bool m_bStrike;
 
     shared_str m_sParticleName;

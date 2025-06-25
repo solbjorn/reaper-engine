@@ -15,6 +15,8 @@
 
 class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
 {
+    RTTI_DECLARE_TYPEINFO(CALifeScheduleRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>);
+
 private:
     struct CUpdatePredicate
     {

@@ -1,9 +1,10 @@
 #ifndef UISequenceVideoItem_included
 #define UISequenceVideoItem_included
-#pragma once
 
-class IUISequenceVideoItem
+class IUISequenceVideoItem : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUISequenceVideoItem);
+
 public:
     virtual ~IUISequenceVideoItem() { ; }
     virtual void Copy(IUISequenceVideoItem& _in) = 0;

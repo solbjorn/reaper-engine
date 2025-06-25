@@ -14,38 +14,33 @@
 
 class CSpaceRestrictor : public CGameObject, public Feel::Touch
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictor, CGameObject, Feel::Touch);
+
 private:
     typedef CGameObject inherited;
 
-private:
     enum
     {
         PLANE_COUNT = 6,
     };
 
-private:
     typedef Fplane CPlanesArray[PLANE_COUNT];
 
-private:
     struct CPlanes
     {
         CPlanesArray m_planes;
     };
 
-private:
     typedef xr_vector<Fsphere> SPHERES;
     typedef xr_vector<CPlanes> BOXES;
 
-private:
     mutable SPHERES m_spheres;
     mutable BOXES m_boxes;
     Fsphere m_selfbounds{};
     bool m_actuality{false};
 
-private:
     u8 m_space_restrictor_type;
 
-private:
     IC void actual(bool value) { m_actuality = value; }
     void prepare();
     bool prepared_inside(const Fsphere& sphere) const;

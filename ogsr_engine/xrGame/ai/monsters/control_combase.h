@@ -11,8 +11,10 @@ class CControl_ComControlling;
 
 //////////////////////////////////////////////////////////////////////////
 // Base
-class CControl_Com
+class CControl_Com : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CControl_Com);
+
 public:
     CControl_Com() { m_inited = false; }
     virtual ~CControl_Com() {}
@@ -62,8 +64,10 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 // Controlled with data
-class CControl_ComControlled
+class CControl_ComControlled : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComControlled);
+
 public:
     virtual void reinit()
     {
@@ -91,8 +95,10 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 // Controlling
-class CControl_ComControlling
+class CControl_ComControlling : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComControlling);
+
 public:
     virtual ~CControl_ComControlling() {}
     virtual void reinit() {}
@@ -114,6 +120,8 @@ protected:
 template <class T>
 class CControl_ComControlledStorage : public CControl_ComControlled
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComControlledStorage<T>, CControl_ComControlled);
+
 public:
     virtual ControlCom::IComData* data() { return &m_data; }
 
@@ -126,6 +134,8 @@ protected:
 template <class T>
 class CControl_ComPure : public CControl_Com, public CControl_ComControlledStorage<T>
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComPure<T>, CControl_Com, CControl_ComControlledStorage<T>);
+
 public:
     virtual CControl_ComControlled* ced() { return this; }
     virtual void reinit()
@@ -139,6 +149,8 @@ public:
 // Base
 class CControl_ComBase : public CControl_Com, public CControl_ComControlling
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComBase, CControl_Com, CControl_ComControlling);
+
 public:
     virtual CControl_ComControlling* cing() { return this; }
     virtual void reinit()
@@ -153,6 +165,8 @@ public:
 template <class T = ControlCom::IComData>
 class CControl_ComCustom : public CControl_Com, public CControl_ComControlledStorage<T>, public CControl_ComControlling
 {
+    RTTI_DECLARE_TYPEINFO(CControl_ComCustom<T>, CControl_Com, CControl_ComControlledStorage<T>, CControl_ComControlling);
+
 public:
     virtual CControl_ComControlled* ced() { return this; }
     virtual CControl_ComControlling* cing() { return this; }

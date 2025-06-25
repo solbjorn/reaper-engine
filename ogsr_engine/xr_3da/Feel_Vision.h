@@ -14,8 +14,11 @@ const float fuzzy_update_novis = 1000.f; // speed of fuzzy-logic desisions
 const float fuzzy_guaranteed = 0.001f; // distance which is supposed 100% visible
 const float lr_granularity = 0.1f; // assume similar positions
 
-class Vision : private pure_relcase
+class Vision : public virtual RTTI::Enable, private pure_relcase
 {
+    RTTI_DECLARE_TYPEINFO(Vision, pure_relcase);
+
+public:
     friend class pure_relcase;
 
 private:

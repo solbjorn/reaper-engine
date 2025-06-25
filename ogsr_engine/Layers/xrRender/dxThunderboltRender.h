@@ -1,11 +1,12 @@
 #ifndef dxThunderboltRender_included
 #define dxThunderboltRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\ThunderboltRender.h"
 
 class dxThunderboltRender : public IThunderboltRender
 {
+    RTTI_DECLARE_TYPEINFO(dxThunderboltRender, IThunderboltRender);
+
 public:
     dxThunderboltRender();
     virtual ~dxThunderboltRender();

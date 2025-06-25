@@ -7,10 +7,12 @@
 
 typedef CGameFont::EAligment ETextAlignment;
 
-class IUIFontControl
+class IUIFontControl : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUIFontControl);
+
 public:
-    virtual ~IUIFontControl(){};
+    virtual ~IUIFontControl() {};
     virtual void SetTextColor(u32 color) = 0;
     virtual u32 GetTextColor() = 0;
     virtual void SetFont(CGameFont* pFont) = 0;
@@ -28,15 +30,19 @@ typedef enum
 
 class IUITextControl : public IUIFontControl
 {
+    RTTI_DECLARE_TYPEINFO(IUITextControl, IUIFontControl);
+
 public:
-    virtual ~IUITextControl(){};
+    virtual ~IUITextControl() {};
     virtual void SetText(LPCSTR text) = 0;
     virtual LPCSTR GetText() = 0;
 };
 
 // Texture controls
-class IUISimpleTextureControl
+class IUISimpleTextureControl : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUISimpleTextureControl);
+
 public:
     virtual ~IUISimpleTextureControl() {}
     virtual void CreateShader(const char* tex, const char* sh = "hud\\default") = 0;
@@ -47,8 +53,10 @@ public:
     virtual void SetOriginalRectEx(const Frect& r) = 0;
 };
 
-class IUIMultiTextureOwner
+class IUIMultiTextureOwner : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUIMultiTextureOwner);
+
 public:
     virtual ~IUIMultiTextureOwner() {}
     virtual void InitTexture(const char* texture) = 0;
@@ -59,6 +67,8 @@ public:
 
 class CUIMultiTextureOwner : public IUIMultiTextureOwner
 {
+    RTTI_DECLARE_TYPEINFO(CUIMultiTextureOwner, IUIMultiTextureOwner);
+
 public:
     CUIMultiTextureOwner()
     {
@@ -76,6 +86,8 @@ protected:
 
 class IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl
 {
+    RTTI_DECLARE_TYPEINFO(IUISingleTextureOwner, CUIMultiTextureOwner, IUISimpleTextureControl);
+
 public:
     virtual void InitTextureEx(const char* texture, const char* shader) = 0;
     virtual void SetStretchTexture(bool stretch) = 0;
@@ -84,6 +96,8 @@ public:
 
 class CUISingleTextureOwner : public IUISingleTextureOwner
 {
+    RTTI_DECLARE_TYPEINFO(CUISingleTextureOwner, IUISingleTextureOwner);
+
 public:
     virtual void SetStretchTexture(bool stretch) { m_bStretchTexture = stretch; }
     virtual bool GetStretchTexture() { return m_bStretchTexture; }
@@ -103,13 +117,15 @@ enum EWindowAlignment
     waCenter = 16
 };
 
-class IUISimpleWindow
+class IUISimpleWindow : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUISimpleWindow);
+
 public:
-    IUISimpleWindow(){};
+    IUISimpleWindow() {};
     IUISimpleWindow(const IUISimpleWindow&) = delete;
     void operator=(const IUISimpleWindow&) = delete;
-    virtual ~IUISimpleWindow(){};
+    virtual ~IUISimpleWindow() {};
 
     virtual void Init(float x, float y, float width, float height) = 0;
     virtual void Draw() = 0;
@@ -130,6 +146,8 @@ public:
 
 class CUISimpleWindow : public IUISimpleWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUISimpleWindow, IUISimpleWindow);
+
 public:
     CUISimpleWindow()
     {
@@ -193,8 +211,11 @@ protected:
     Fvector2 m_wndSize;
     EWindowAlignment m_alignment;
 };
-class CUISelectable
+
+class CUISelectable : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUISelectable);
+
 protected:
     bool m_bSelected;
 

@@ -25,8 +25,10 @@ struct SContour;
 
 class CCoverPoint;
 
-class CLevelGraph
+class CLevelGraph : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CLevelGraph);
+
 private:
     friend class CRenumbererConverter;
 

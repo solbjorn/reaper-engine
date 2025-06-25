@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UICursor.h"
-
 #include "UIDialogHolder.h"
 
 // refs
@@ -14,10 +13,12 @@ struct SDrawStaticStruct;
 
 class CUI : public CDialogHolder
 {
+    RTTI_DECLARE_TYPEINFO(CUI, CDialogHolder);
+
+public:
     CUIGameCustom* pUIGame;
     bool m_bShowGameIndicators;
 
-public:
     CHUDManager* m_Parent;
     CUIMainIngameWnd* UIMainIngameWnd;
     CUIMessagesWindow* m_pMessagesWnd;

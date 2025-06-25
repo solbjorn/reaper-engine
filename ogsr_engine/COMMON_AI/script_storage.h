@@ -25,8 +25,10 @@ using namespace ScriptStorage;
 
 struct lua_State;
 
-class CScriptStorage
+class CScriptStorage : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptStorage);
+
 protected:
     lua_State* m_virtual_machine = nullptr;
     xr_set<void*> m_dumpedObjList;

@@ -30,12 +30,14 @@ struct SControlPathBuilderData : public ControlCom::IComData
 
 class CControlPathBuilder : public CControl_ComPure<SControlPathBuilderData>, public CMovementManager
 {
+    RTTI_DECLARE_TYPEINFO(CControlPathBuilder, CControl_ComPure<SControlPathBuilderData>, CMovementManager);
+
+public:
     typedef CMovementManager inherited;
     typedef CControl_ComPure<SControlPathBuilderData> inherited_com;
 
     friend class CControl_Manager;
 
-public:
     CControlPathBuilder(CCustomMonster* monster);
     virtual ~CControlPathBuilder();
 

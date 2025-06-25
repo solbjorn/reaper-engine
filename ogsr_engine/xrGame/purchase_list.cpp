@@ -34,7 +34,7 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
         }
     }
 
-    const CGameObject& game_object = smart_cast<const CGameObject&>(owner);
+    const CGameObject& game_object = *smart_cast<const CGameObject*>(&owner);
     CInifile::Sect& S = ini_file.r_section(section);
     for (const auto& I : S.Data)
     {

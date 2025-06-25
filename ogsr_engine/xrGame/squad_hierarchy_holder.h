@@ -19,8 +19,10 @@ namespace SquadHierarchyHolder
 typedef xr_vector<CGroupHierarchyHolder*> GROUP_REGISTRY;
 }
 
-class CSquadHierarchyHolder
+class CSquadHierarchyHolder : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSquadHierarchyHolder);
+
 private:
     enum
     {

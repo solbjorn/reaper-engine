@@ -23,6 +23,9 @@ DEFINE_MAP(shared_str, CUICustomMap*, GameMaps, GameMapsPairIt);
 
 class CUIMapWnd : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIMapWnd, CUIWindow, CUIWndCallback);
+
+public:
     typedef CUIWindow inherited;
     enum EMapToolBtn
     {
@@ -33,7 +36,6 @@ class CUIMapWnd : public CUIWindow, public CUIWndCallback
         eMaxBtn
     };
 
-public:
     enum lmFlags
     {
         lmZoomIn = (1 << 3),

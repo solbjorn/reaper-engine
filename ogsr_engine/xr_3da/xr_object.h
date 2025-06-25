@@ -24,6 +24,8 @@ constexpr float CROW_RADIUS2 = 60.f;
 
 class CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
 {
+    RTTI_DECLARE_TYPEINFO(CObject, DLL_Pure, ISpatial, ISheduled, IRenderable, ICollidable);
+
 public:
     struct SavedPosition
     {

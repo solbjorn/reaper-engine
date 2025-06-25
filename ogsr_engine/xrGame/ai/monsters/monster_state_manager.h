@@ -5,9 +5,11 @@
 template <typename _Object>
 class CMonsterStateManager : public IStateManagerBase, public CState<_Object>
 {
-    typedef CState<_Object> inherited;
+    RTTI_DECLARE_TYPEINFO(CMonsterStateManager<_Object>, IStateManagerBase, CState<_Object>);
 
 public:
+    typedef CState<_Object> inherited;
+
     using inherited::add_state;
     using inherited::current_substate;
     using inherited::execute;

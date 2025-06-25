@@ -29,16 +29,16 @@ class CCustomOutfit;
 
 class CInventoryOwner : public CAttachmentOwner
 {
-    friend class CInventoryScript;
+    RTTI_DECLARE_TYPEINFO(CInventoryOwner, CAttachmentOwner);
 
 public:
+    friend class CInventoryScript;
+
     CInventoryOwner();
     virtual ~CInventoryOwner();
 
-public:
     virtual CInventoryOwner* cast_inventory_owner() { return this; }
 
-public:
     virtual DLL_Pure* _construct();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

@@ -31,8 +31,10 @@ inline u32 to_u32(const GraphEngineSpace::CWorldState& other) { return other.has
 
 using namespace GraphEngineSpace;
 
-class CGraphEngine
+class CGraphEngine : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CGraphEngine);
+
 public:
     // common algorithm
     using CPriorityQueue = CDataStorageBucketList<u32, u32, 8 * 1024, false>;

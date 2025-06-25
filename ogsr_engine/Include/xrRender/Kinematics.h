@@ -18,8 +18,10 @@ struct SEnumVerticesCallback;
 // 10 fps
 #define UCalc_Interval (u32(100))
 
-class IKinematics
+class IKinematics : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IKinematics);
+
 public:
     struct pick_result
     {

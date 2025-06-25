@@ -11,8 +11,10 @@
 #include "object_broker.h"
 
 template <typename _action_type, typename _object_type, typename _action_id_type>
-class CSetupManager
+class CSetupManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSetupManager<_action_type, _object_type, _action_id_type>);
+
 protected:
     typedef std::pair<_action_id_type, _action_type*> setup_pair;
     typedef xr_vector<setup_pair> setup_actions;

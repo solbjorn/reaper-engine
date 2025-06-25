@@ -5,9 +5,11 @@
 
 class CWeaponShotgun : public CWeaponCustomPistol
 {
-    typedef CWeaponCustomPistol inherited;
+    RTTI_DECLARE_TYPEINFO(CWeaponShotgun, CWeaponCustomPistol);
 
 public:
+    typedef CWeaponCustomPistol inherited;
+
     CWeaponShotgun(void);
     virtual ~CWeaponShotgun(void);
 

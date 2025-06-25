@@ -4,12 +4,16 @@
 #include "PHReqComparer.h"
 #include "alife_space.h"
 #include "script_export_space.h"
+
 class CPhysicsShell;
+
 class CPHCallOnStepCondition : public CPHCondition
 {
-    u64 m_step;
+    RTTI_DECLARE_TYPEINFO(CPHCallOnStepCondition, CPHCondition);
 
 public:
+    u64 m_step;
+
     CPHCallOnStepCondition();
     virtual bool obsolete() const;
     virtual bool is_true();
@@ -31,6 +35,8 @@ add_to_type_list(CPHCallOnStepCondition)
 
     class CPHExpireOnStepCondition : public CPHCallOnStepCondition
 {
+    RTTI_DECLARE_TYPEINFO(CPHExpireOnStepCondition, CPHCallOnStepCondition);
+
 public:
     virtual bool is_true() { return true; }
     DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -42,6 +48,8 @@ add_to_type_list(CPHExpireOnStepCondition)
 
     class CPHShellBasedAction : public CPHAction
 {
+    RTTI_DECLARE_TYPEINFO(CPHShellBasedAction, CPHAction);
+
 protected:
     CPhysicsShell* m_shell;
 
@@ -54,9 +62,11 @@ public:
 
 class CPHConstForceAction : public CPHShellBasedAction
 {
-    Fvector m_force;
+    RTTI_DECLARE_TYPEINFO(CPHConstForceAction, CPHShellBasedAction);
 
 public:
+    Fvector m_force;
+
     CPHConstForceAction(CPhysicsShell* shell, const Fvector& force);
     virtual void run();
 
@@ -70,9 +80,11 @@ add_to_type_list(CPHConstForceAction)
 
     class CPHReqComparerHasShell : public CPHReqComparerV
 {
-    CPhysicsShell* m_shell;
+    RTTI_DECLARE_TYPEINFO(CPHReqComparerHasShell, CPHReqComparerV);
 
 public:
+    CPhysicsShell* m_shell;
+
     CPHReqComparerHasShell(CPhysicsShell* shl);
     virtual bool compare(const CPHConstForceAction* v) const { return v->compare(m_shell); }
 };

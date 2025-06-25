@@ -6,10 +6,12 @@
 
 class CAI_Boar : public CBaseMonster, public CControlledEntity<CAI_Boar>
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Boar, CBaseMonster, CControlledEntity<CAI_Boar>);
+
+public:
     typedef CBaseMonster inherited;
     typedef CControlledEntity<CAI_Boar> CControlled;
 
-public:
     CAI_Boar();
     virtual ~CAI_Boar();
 
@@ -20,7 +22,7 @@ public:
     virtual void UpdateCL();
 
     IC virtual bool CanExecRotationJump() { return true; }
-    virtual void CheckSpecParams(u32 spec_params) override{};
+    virtual void CheckSpecParams(u32 spec_params) override {};
 
     // look at enemy
     static void _BCL BoneCallback(CBoneInstance* B);

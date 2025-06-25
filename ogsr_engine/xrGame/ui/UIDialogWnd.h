@@ -8,18 +8,21 @@
 #pragma once
 
 #include "uiwindow.h"
+
 class CDialogHolder;
 
 class CUIDialogWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIDialogWnd, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
     CDialogHolder* m_pHolder;
 
 protected:
     bool IR_process();
-    //время прошлого клика мышки
-    //для определения DoubleClick
+    // время прошлого клика мышки
+    // для определения DoubleClick
     u32 m_dwLastClickTime;
 
 public:

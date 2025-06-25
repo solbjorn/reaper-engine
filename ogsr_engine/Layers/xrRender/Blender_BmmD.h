@@ -8,6 +8,8 @@
 
 class CBlender_BmmD : public IBlenderXr
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_BmmD, IBlenderXr);
+
 public:
     string64 oT2_Name; // name of secondary texture
 
@@ -15,7 +17,7 @@ public:
     string64 oG_Name; //. задел на будущее
     string64 oB_Name; //. задел на будущее
     string64 oA_Name; //. задел на будущее
-public:
+
     virtual LPCSTR getComment() { return "LEVEL: Implicit**detail"; }
     virtual BOOL canBeDetailed() { return TRUE; }
 

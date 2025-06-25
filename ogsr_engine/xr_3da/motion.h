@@ -48,8 +48,10 @@ struct st_BoneMotion
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
 //--------------------------------------------------------------------------
-class CCustomMotion
+class CCustomMotion : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CCustomMotion);
+
 protected:
     enum EMotionType
     {
@@ -107,9 +109,11 @@ public:
 //--------------------------------------------------------------------------
 class COMotion : public CCustomMotion
 {
-    CEnvelope* envs[ctMaxChannel];
+    RTTI_DECLARE_TYPEINFO(COMotion, CCustomMotion);
 
 public:
+    CEnvelope* envs[ctMaxChannel];
+
     COMotion();
     COMotion(COMotion* src);
     virtual ~COMotion();

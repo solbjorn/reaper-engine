@@ -13,6 +13,8 @@
 
 class CObjectItemScript : public CObjectItemAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CObjectItemScript, CObjectItemAbstract);
+
 protected:
     typedef CObjectItemAbstract inherited;
 
@@ -22,7 +24,7 @@ protected:
 
 public:
     CObjectItemScript(luabind::object client_creator, luabind::object server_creator, const CLASS_ID& clsid, LPCSTR script_clsid);
-    //CObjectItemScript(luabind::object creator, const CLASS_ID& clsid, LPCSTR script_clsid);
+    // CObjectItemScript(luabind::object creator, const CLASS_ID& clsid, LPCSTR script_clsid);
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
 };

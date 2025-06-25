@@ -11,9 +11,11 @@ DEF_VECTOR(TABS_VECTOR, CUITabButton*);
 
 class CUITabControl : public CUIWindow, public CUIOptionsItem
 {
-    typedef CUIWindow inherited;
+    RTTI_DECLARE_TYPEINFO(CUITabControl, CUIWindow, CUIOptionsItem);
 
 public:
+    typedef CUIWindow inherited;
+
     CUITabControl();
     virtual ~CUITabControl();
 

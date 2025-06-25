@@ -5,9 +5,11 @@
 
 class CCameraFirstEye : public CCameraBase
 {
-    typedef CCameraBase inherited;
+    RTTI_DECLARE_TYPEINFO(CCameraFirstEye, CCameraBase);
 
 public:
+    typedef CCameraBase inherited;
+
     CCameraFirstEye(CObject* p, u32 flags = 0);
     virtual ~CCameraFirstEye();
 

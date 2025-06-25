@@ -15,8 +15,10 @@
 class CScriptGameObject;
 
 template <typename _object_type>
-class CPropertyEvaluator
+class CPropertyEvaluator : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPropertyEvaluator<_object_type>);
+
 public:
     typedef GraphEngineSpace::_solver_condition_type _condition_type;
     typedef GraphEngineSpace::_solver_value_type _value_type;

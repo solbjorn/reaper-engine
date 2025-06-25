@@ -108,9 +108,11 @@ ObjectContactCallbackFun* TestFootDepthCallback = &TTestDepthCallback<STestFootC
 ///////////////////////////////////////////////////////////////////////////////////////
 class CVelocityLimiter : public CPHUpdateObject
 {
-    dBodyID m_body;
+    RTTI_DECLARE_TYPEINFO(CVelocityLimiter, CPHUpdateObject);
 
 public:
+    dBodyID m_body;
+
     float l_limit;
     float y_limit;
 
@@ -191,6 +193,9 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////
 class CGetContactForces : public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CGetContactForces, CPHUpdateObject);
+
+public:
     dBodyID m_body;
     float m_max_force_self;
     float m_max_torque_self;
@@ -201,7 +206,6 @@ class CGetContactForces : public CPHUpdateObject
     float m_max_force_others;
     float m_max_torque_others;
 
-public:
     CGetContactForces(dBodyID b)
     {
         R_ASSERT(b);

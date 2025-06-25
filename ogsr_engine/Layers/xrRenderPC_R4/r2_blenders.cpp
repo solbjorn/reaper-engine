@@ -16,6 +16,8 @@
 
 class CBlender_Editor_Selection : public IBlenderXr
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_Editor_Selection, IBlenderXr);
+
 public:
     virtual LPCSTR getComment() { return "EDITOR: selection"; }
 
@@ -47,6 +49,8 @@ public:
 
 class CBlender_Editor_Wire : public IBlenderXr
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_Editor_Wire, IBlenderXr);
+
 public:
     virtual LPCSTR getComment() { return "EDITOR: wire"; }
 

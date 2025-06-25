@@ -23,13 +23,15 @@ class CHARACTER_REPUTATION;
 
 class CHARACTER_REPUTATION : public CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION>
 {
+    RTTI_DECLARE_TYPEINFO(CHARACTER_REPUTATION, CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION>);
+
 private:
     typedef CIni_IdToIndex<1, REPUTATION_DATA, shared_str, int, CHARACTER_REPUTATION> inherited;
     friend inherited;
 
 public:
-    CHARACTER_REPUTATION() : m_current_value(NO_REPUTATION){};
-    ~CHARACTER_REPUTATION(){};
+    CHARACTER_REPUTATION() : m_current_value(NO_REPUTATION) {};
+    ~CHARACTER_REPUTATION() {};
 
     void set(CHARACTER_REPUTATION_VALUE);
 
@@ -46,7 +48,7 @@ private:
     static void InitIdToIndex();
 
 public:
-    //отношение между репутациями
+    // отношение между репутациями
     static CHARACTER_GOODWILL relation(int from, int to);
     CHARACTER_GOODWILL relation(int to);
 

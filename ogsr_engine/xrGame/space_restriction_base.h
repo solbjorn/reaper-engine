@@ -12,6 +12,8 @@
 
 class CSpaceRestrictionBase : public CSpaceRestrictionAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionBase, CSpaceRestrictionAbstract);
+
 private:
     typedef CSpaceRestrictionAbstract inherited;
 

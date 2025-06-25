@@ -8,6 +8,8 @@ class CUIWindow;
 
 class CUIWindow : public CUISimpleWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIWindow, CUISimpleWindow);
+
 public:
     using CUISimpleWindow::Init;
 
@@ -15,11 +17,11 @@ public:
     virtual ~CUIWindow();
 
     ////////////////////////////////////
-    //инициализация
+    // инициализация
     virtual void Init(Frect* pRect);
 
     ////////////////////////////////////
-    //работа с дочерними и родительскими окнами
+    // работа с дочерними и родительскими окнами
     virtual void AttachChild(CUIWindow* pChild, bool bottom = false);
     virtual void DetachChild(CUIWindow* pChild, bool from_destructor = false);
     virtual void DoDetachChild(CUIWindow* pChild, bool from_destructor = false);
@@ -32,7 +34,7 @@ public:
     void SetParent(CUIWindow* pNewParent);
     CUIWindow* GetParent() const { return m_pParentWnd; }
 
-    //получить окно самого верхнего уровня
+    // получить окно самого верхнего уровня
     CUIWindow* GetTop()
     {
         if (m_pParentWnd == NULL)
@@ -43,11 +45,11 @@ public:
     CUIWindow* GetCurrentMouseHandler();
     CUIWindow* GetChildMouseHandler();
 
-    //поднять на вершину списка выбранное дочернее окно
+    // поднять на вершину списка выбранное дочернее окно
     bool BringToTop(CUIWindow* pChild);
     bool BringToBottom(CUIWindow* pChild);
 
-    //поднять на вершину списка всех родителей окна и его самого
+    // поднять на вершину списка всех родителей окна и его самого
     void BringAllToTop();
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
@@ -63,32 +65,32 @@ public:
     virtual bool CapturesFocusToo();
     bool HasChildMouseHandler();
 
-    //захватить/освободить мышь окном
-    //сообщение посылается дочерним окном родительскому
+    // захватить/освободить мышь окном
+    // сообщение посылается дочерним окном родительскому
     void SetMouseCapture(CUIWindow* pChildWindow, bool capture_status);
     CUIWindow* GetMouseCapturer();
 
-    //окошко, которому пересылаются сообщения,
-    //если NULL, то шлем на GetParent()
+    // окошко, которому пересылаются сообщения,
+    // если NULL, то шлем на GetParent()
     void SetMessageTarget(CUIWindow* pWindow) { m_pMessageTarget = pWindow; }
     CUIWindow* GetMessageTarget();
 
-    //реакция на клавиатуру
+    // реакция на клавиатуру
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual bool OnKeyboardHold(int dik);
     virtual void SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status);
 
-    //обработка сообщений не предусмотреных стандартными обработчиками
-    //ф-ция должна переопределяться
-    // pWnd - указатель на окно, которое послало сообщение
-    // pData - указатель на дополнительные данные, которые могут понадобиться
+    // обработка сообщений не предусмотреных стандартными обработчиками
+    // ф-ция должна переопределяться
+    //  pWnd - указатель на окно, которое послало сообщение
+    //  pData - указатель на дополнительные данные, которые могут понадобиться
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
-    //запрещение/разрешение на ввод с клавиатуры
+    // запрещение/разрешение на ввод с клавиатуры
     virtual void Enable(bool status) { m_bIsEnabled = status; }
     virtual bool IsEnabled() { return m_bIsEnabled; }
 
-    //убрать/показать окно и его дочерние окна
+    // убрать/показать окно и его дочерние окна
     virtual void Show(bool status)
     {
         SetVisible(status);
@@ -97,7 +99,7 @@ public:
     IC bool IsShown() { return this->GetVisible(); }
     void ShowChildren(bool show);
 
-    //абсолютные координаты
+    // абсолютные координаты
     IC void GetAbsoluteRect(Frect& r);
     IC void GetAbsolutePos(Fvector2& p)
     {
@@ -113,20 +115,20 @@ public:
     IC float GetPosLeft() const { return m_wndPos.x; }
     IC float GetPosTop() const { return m_wndPos.y; }
 
-    //прорисовка окна
+    // прорисовка окна
     virtual void Draw();
     virtual void Draw(float x, float y);
-    //обновление окна передпрорисовкой
+    // обновление окна передпрорисовкой
     virtual void Update();
 
     void SetPPMode();
     void ResetPPMode();
     IC bool GetPPMode() { return m_bPP; };
-    //для перевода окна и потомков в исходное состояние
+    // для перевода окна и потомков в исходное состояние
     virtual void Reset();
     void ResetAll();
 
-    //временно!!!! (а может уже и нет)
+    // временно!!!! (а может уже и нет)
     virtual void SetFont(CGameFont* pFont) { m_pFont = pFont; }
     CGameFont* GetFont()
     {
@@ -162,24 +164,24 @@ protected:
     bool m_bCustomDraw{};
 
     shared_str m_windowName;
-    //список дочерних окон
+    // список дочерних окон
     WINDOW_LIST m_ChildWndList;
 
-    //указатель на родительское окно
+    // указатель на родительское окно
     CUIWindow* m_pParentWnd;
 
-    //дочернее окно которое, захватило ввод мыши
+    // дочернее окно которое, захватило ввод мыши
     CUIWindow* m_pMouseCapturer;
 
-    //кто изначально иницировал
-    //захват фокуса, только он теперь
-    //может весь фокус и освободить
+    // кто изначально иницировал
+    // захват фокуса, только он теперь
+    // может весь фокус и освободить
     CUIWindow* m_pOrignMouseCapturer;
 
-    //дочернее окно которое, захватило ввод клавиатуры
+    // дочернее окно которое, захватило ввод клавиатуры
     CUIWindow* m_pKeyboardCapturer;
 
-    //кому шлем сообщения
+    // кому шлем сообщения
     CUIWindow* m_pMessageTarget;
 
     CGameFont* m_pFont;
@@ -189,12 +191,12 @@ protected:
 
     u32 m_dwFocusReceiveTime;
 
-    //флаг автоматического удаления во время вызова деструктора
+    // флаг автоматического удаления во время вызова деструктора
     bool m_bAutoDelete;
 
     // Флаг разрешающий/запрещающий генерацию даблклика
     bool m_bPP;
-    //разрешен ли ввод пользователя
+    // разрешен ли ввод пользователя
     bool m_bIsEnabled;
 
     // Если курсор над окном

@@ -11,8 +11,10 @@ class CGameFont;
 
 DECLARE_MESSAGE(Stats);
 
-class CStatsPhysics
+class CStatsPhysics : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CStatsPhysics);
+
 public:
     CStatTimer ph_collision; // collision
     CStatTimer ph_core; // integrate
@@ -21,10 +23,12 @@ public:
 
 class CStats : public pureRender, public CStatsPhysics
 {
+    RTTI_DECLARE_TYPEINFO(CStats, pureRender, CStatsPhysics);
+
+public:
     CGameFont* pFont;
     CGameFont* pFontHW;
 
-public:
     float fFPS, fRFPS, fTPS; // FPS, RenderFPS, TPS
     u32 dwMem_calls;
     u32 dwSND_Played, dwSND_Allocated; // Play/Alloc

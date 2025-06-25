@@ -5,9 +5,11 @@
 
 class CUICustomEdit : public CUIWindow, public CUILinesOwner
 {
-    u32 m_max_symb_count;
+    RTTI_DECLARE_TYPEINFO(CUICustomEdit, CUIWindow, CUILinesOwner);
 
 public:
+    u32 m_max_symb_count;
+
     CUICustomEdit();
     virtual ~CUICustomEdit() = default;
     // CUILinesOwner

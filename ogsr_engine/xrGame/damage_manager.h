@@ -8,8 +8,10 @@
 
 #pragma once
 
-class CDamageManager
+class CDamageManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDamageManager);
+
 protected:
     float m_default_hit_factor;
     float m_default_wound_factor;

@@ -5,9 +5,11 @@
 
 class CWeaponGroza : public CWeaponMagazinedWGrenade
 {
-    typedef CWeaponMagazinedWGrenade inherited;
+    RTTI_DECLARE_TYPEINFO(CWeaponGroza, CWeaponMagazinedWGrenade);
 
 public:
+    typedef CWeaponMagazinedWGrenade inherited;
+
     CWeaponGroza(void);
     virtual ~CWeaponGroza(void);
 

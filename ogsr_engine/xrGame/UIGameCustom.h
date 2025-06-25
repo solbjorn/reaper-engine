@@ -30,6 +30,9 @@ typedef xr_vector<SDrawStaticStruct> st_vec;
 
 class CUIGameCustom : public DLL_Pure, public ISheduled
 {
+    RTTI_DECLARE_TYPEINFO(CUIGameCustom, DLL_Pure, ISheduled);
+
+public:
     typedef ISheduled inherited;
 
 protected:

@@ -23,6 +23,8 @@ struct CEdgePath
     template <typename TCompoundVertex>
     class CDataStorage : public CVertexPath<EuclidianHeuristics>::template CDataStorage<TCompoundVertex>
     {
+        RTTI_DECLARE_TYPEINFO(CDataStorage<TCompoundVertex>, typename CVertexPath<EuclidianHeuristics>::template CDataStorage<TCompoundVertex>);
+
     public:
         using Inherited = typename CVertexPath<EuclidianHeuristics>::template CDataStorage<TCompoundVertex>;
         using Vertex = TCompoundVertex;

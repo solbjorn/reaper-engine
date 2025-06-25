@@ -15,8 +15,10 @@ namespace LevelGraph
 class CVertex;
 };
 
-class CAI_ObjectLocation
+class CAI_ObjectLocation : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CAI_ObjectLocation);
+
 private:
     u32 m_level_vertex_id;
     GameGraph::_GRAPH_ID m_game_vertex_id;

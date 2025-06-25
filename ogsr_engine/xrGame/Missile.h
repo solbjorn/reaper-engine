@@ -7,10 +7,12 @@ struct SGameMtl;
 
 class CMissile : public CHudItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CMissile, CHudItemObject);
+
+public:
     friend class CWeaponScript;
     typedef CHudItemObject inherited;
 
-public:
     CMissile();
     virtual ~CMissile();
 
@@ -58,11 +60,11 @@ protected:
     void UpdatePosition(const Fmatrix& trans);
     void spawn_fake_missile();
 
-    //инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
+    // инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
     virtual void OnActiveItem();
     virtual void OnHiddenItem();
 
-    //для сети
+    // для сети
     virtual void net_Relcase(CObject* O);
 
 protected:
@@ -70,7 +72,7 @@ protected:
 
     bool HeadLampSwitch{}, NightVisionSwitch{};
 
-    //время уничтожения
+    // время уничтожения
     u32 m_dwDestroyTime;
     u32 m_dwDestroyTimeMax;
 
@@ -82,10 +84,10 @@ protected:
 
     CMissile* m_fake_missile;
 
-    //параметры броска
+    // параметры броска
 
     float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
-    
+
     bool m_constpower;
     float m_fThrowForce;
 
@@ -97,14 +99,14 @@ protected:
     bool has_already_contact{};
 
 protected:
-    //относительная точка и направление вылета гранаты
+    // относительная точка и направление вылета гранаты
     Fvector m_vThrowPoint;
     Fvector m_vThrowDir;
-    //для HUD
+    // для HUD
     Fvector m_vHudThrowPoint;
     Fvector m_vHudThrowDir;
 
-    //звук анимации "играния"
+    // звук анимации "играния"
     HUD_SOUND sndPlaying;
     HUD_SOUND sndItemOn;
 

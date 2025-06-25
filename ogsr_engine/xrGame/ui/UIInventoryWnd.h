@@ -21,6 +21,8 @@ class CUICellItem;
 
 class CUIInventoryWnd : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CUIInventoryWnd, CUIDialogWnd);
+
 private:
     typedef CUIDialogWnd inherited;
     bool m_b_need_reinit;
@@ -129,7 +131,7 @@ protected:
 
     CUIPropertiesBox UIPropertiesBox;
 
-    //информация о персонаже
+    // информация о персонаже
     CUIOutfitInfo UIOutfitInfo;
     CUIItemInfo UIItemInfo;
 

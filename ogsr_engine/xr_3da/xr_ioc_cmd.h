@@ -29,8 +29,10 @@
 // KRodin: закомментировано.
 // #include "xrSASH.h"
 
-class IConsole_Command
+class IConsole_Command : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IConsole_Command);
+
 public:
     friend class CConsole;
     using TInfo = string2048;
@@ -103,6 +105,8 @@ public:
 
 class CCC_Mask : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Mask, IConsole_Command);
+
 protected:
     Flags32* value;
     u32 mask;
@@ -140,6 +144,8 @@ public:
 
 class CCC_ToggleMask : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ToggleMask, IConsole_Command);
+
 protected:
     Flags32* value;
     u32 mask;
@@ -171,6 +177,8 @@ public:
 
 class CCC_Token : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Token, IConsole_Command);
+
 protected:
     u32* value;
     const xr_token* tokens;
@@ -252,6 +260,8 @@ public:
 
 class CCC_Float : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Float, IConsole_Command);
+
 protected:
     float* value;
     float min, max;
@@ -291,6 +301,8 @@ public:
 
 class CCC_Vector3 : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Vector3, IConsole_Command);
+
 protected:
     Fvector* value;
     Fvector min, max;
@@ -338,6 +350,8 @@ public:
 
 class CCC_Integer : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Integer, IConsole_Command);
+
 protected:
     int* value;
     int min, max;
@@ -373,6 +387,8 @@ public:
 
 class CCC_String : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_String, IConsole_Command);
+
 protected:
     LPSTR value;
     int size;
@@ -397,6 +413,8 @@ public:
 
 class CCC_LoadCFG : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_LoadCFG, IConsole_Command);
+
 public:
     virtual bool allow(LPCSTR cmd) { return true; };
     CCC_LoadCFG(LPCSTR N);
@@ -405,6 +423,8 @@ public:
 
 class CCC_LoadCFG_custom : public CCC_LoadCFG
 {
+    RTTI_DECLARE_TYPEINFO(CCC_LoadCFG_custom, CCC_LoadCFG);
+
     string64 m_cmd;
 
 public:
@@ -414,6 +434,8 @@ public:
 
 class CCC_Vector4 : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Vector4, IConsole_Command);
+
 protected:
     Fvector4* value;
     Fvector4 min, max;

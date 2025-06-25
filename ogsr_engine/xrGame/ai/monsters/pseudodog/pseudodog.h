@@ -5,9 +5,11 @@
 
 class CAI_PseudoDog : public CBaseMonster
 {
-    typedef CBaseMonster inherited;
+    RTTI_DECLARE_TYPEINFO(CAI_PseudoDog, CBaseMonster);
 
 public:
+    typedef CBaseMonster inherited;
+
     float m_anger_hunger_threshold;
     float m_anger_loud_threshold;
 
@@ -21,7 +23,6 @@ public:
         ePsyAttack = eAdditionalSounds | 0,
     };
 
-public:
     CAI_PseudoDog();
     virtual ~CAI_PseudoDog();
 

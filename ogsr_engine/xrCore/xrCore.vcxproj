@@ -232,6 +232,7 @@
     <ClInclude Include="xrDebug.h" />
     <ClInclude Include="xrDebug_macros.h" />
     <ClInclude Include="xr_resource.h" />
+    <ClInclude Include="xr_rtti.h" />
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />
     <ClInclude Include="intrusive_ptr.h" />

@@ -4,6 +4,9 @@
 
 class CUIInventoryCellItem : public CUICellItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIInventoryCellItem, CUICellItem);
+
+public:
     typedef CUICellItem inherited;
 
 protected:
@@ -26,6 +29,9 @@ public:
 
 class CUIAmmoCellItem : public CUIInventoryCellItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIAmmoCellItem, CUIInventoryCellItem);
+
+public:
     typedef CUIInventoryCellItem inherited;
 
 protected:
@@ -40,9 +46,11 @@ public:
 
 class CUIWeaponCellItem : public CUIInventoryCellItem
 {
-    typedef CUIInventoryCellItem inherited;
+    RTTI_DECLARE_TYPEINFO(CUIWeaponCellItem, CUIInventoryCellItem);
 
 public:
+    typedef CUIInventoryCellItem inherited;
+
     enum eAddonType
     {
         eSilencer = 0,
@@ -77,6 +85,9 @@ public:
 
 class CBuyItemCustomDrawCell : public ICustomDrawCell
 {
+    RTTI_DECLARE_TYPEINFO(CBuyItemCustomDrawCell, ICustomDrawCell);
+
+public:
     CGameFont* m_pFont;
     string16 m_string;
 

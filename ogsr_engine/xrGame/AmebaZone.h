@@ -2,10 +2,12 @@
 
 class CAmebaZone : public CVisualZone, public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CAmebaZone, CVisualZone, CPHUpdateObject);
+
+public:
     typedef CVisualZone inherited;
     float m_fVelocityLimit;
 
-public:
     CAmebaZone();
     ~CAmebaZone();
     virtual void Affect(SZoneObjectInfo* O);

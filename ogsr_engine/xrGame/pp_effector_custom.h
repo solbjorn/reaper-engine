@@ -6,9 +6,11 @@
 
 class CPPEffectorCustom : public CEffectorPP
 {
-    typedef CEffectorPP inherited;
+    RTTI_DECLARE_TYPEINFO(CPPEffectorCustom, CEffectorPP);
 
 public:
+    typedef CEffectorPP inherited;
+
     CPPEffectorCustom(const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
     EEffectorPPType get_type() { return m_type; }
 
@@ -29,8 +31,10 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 template <class _Effector>
-class CPPEffectorCustomController
+class CPPEffectorCustomController : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorCustomController<_Effector>);
+
 public:
     CPPEffectorCustomController();
     IC virtual void load(LPCSTR section);

@@ -19,13 +19,13 @@ struct SArticleData : CSharedResource
     shared_str name;
     shared_str group;
 
-    //картинка
+    // картинка
     CUIStatic image;
 
-    //текст статьи
+    // текст статьи
     xr_string text;
 
-    //секция ltx, откуда читать данные
+    // секция ltx, откуда читать данные
     //	shared_str ltx;
 
     // Тип статьи
@@ -39,6 +39,8 @@ class CEncyclopediaArticle;
 
 class CEncyclopediaArticle : public CSharedClass<SArticleData, shared_str, false>, public CXML_IdToIndex<CEncyclopediaArticle>
 {
+    RTTI_DECLARE_TYPEINFO(CEncyclopediaArticle, CSharedClass<SArticleData, shared_str, false>, CXML_IdToIndex<CEncyclopediaArticle>);
+
 private:
     typedef CSharedClass<SArticleData, shared_str, false> inherited_shared;
     typedef CXML_IdToIndex<CEncyclopediaArticle> id_to_index;

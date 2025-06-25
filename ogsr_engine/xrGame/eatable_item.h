@@ -7,12 +7,14 @@ class CEntityAlive;
 
 class CEatableItem : public CInventoryItem
 {
+    RTTI_DECLARE_TYPEINFO(CEatableItem, CInventoryItem);
+
+public:
     friend class CEatableItemScript;
 
 private:
     typedef CInventoryItem inherited;
 
-private:
     CPhysicItem* m_physic_item;
 
 public:
@@ -33,7 +35,7 @@ public:
     void SetRadiation(float rad);
 
 protected:
-    //влияние при поедании вещи на параметры игрока
+    // влияние при поедании вещи на параметры игрока
     float m_fHealthInfluence;
     float m_fPowerInfluence;
     float m_fSatietyInfluence;
@@ -41,10 +43,10 @@ protected:
     float m_fMaxPowerUpInfluence{};
     float m_fPsyHealthInfluence;
     float m_fThirstInfluence{};
-    //заживление ран на кол-во процентов
+    // заживление ран на кол-во процентов
     float m_fWoundsHealPerc{};
 
-    //количество порций еды,
+    // количество порций еды,
     //-1 - порция одна и больше не бывает (чтоб не выводить надпись в меню)
     int m_iPortionsNum;
     int m_iStartPortionsNum{};

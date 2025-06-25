@@ -12,8 +12,10 @@
 
 class CPHMovementControl;
 
-class CMaterialManager
+class CMaterialManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CMaterialManager);
+
 private:
     bool m_run_mode;
     float m_time_to_step{};

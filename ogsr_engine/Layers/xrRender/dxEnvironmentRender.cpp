@@ -59,6 +59,8 @@ constexpr u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 
 class CBlender_skybox : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_skybox, IBlender);
+
 public:
     const char* getComment() override { return "INTERNAL: combiner"; }
 

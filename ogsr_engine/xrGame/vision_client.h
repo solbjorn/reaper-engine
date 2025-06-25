@@ -17,6 +17,8 @@ class CVisualMemoryManager;
 
 class vision_client : public ISheduled, public Feel::Vision
 {
+    RTTI_DECLARE_TYPEINFO(vision_client, ISheduled, Feel::Vision);
+
 private:
     typedef ISheduled inherited;
 

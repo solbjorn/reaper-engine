@@ -12,6 +12,8 @@
 
 class CScriptActionPlannerWrapper : public CScriptActionPlanner, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CScriptActionPlannerWrapper, CScriptActionPlanner);
+
 public:
     virtual void setup(CScriptGameObject* object);
     static void setup_static(CScriptActionPlanner* planner, CScriptGameObject* object);

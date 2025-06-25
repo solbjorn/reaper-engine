@@ -12,6 +12,8 @@
 
 class CDistanceFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CDistanceFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -41,6 +43,8 @@ public:
 
 class CPersonalHealthFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalHealthFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -57,6 +61,8 @@ public:
 
 class CPersonalMoraleFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalMoraleFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -75,6 +81,8 @@ public:
 
 class CPersonalCreatureTypeFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalCreatureTypeFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -93,6 +101,8 @@ public:
 
 class CPersonalWeaponTypeFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalWeaponTypeFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -113,6 +123,8 @@ public:
 
 class CPersonalAccuracyFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalAccuracyFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -131,6 +143,8 @@ public:
 
 class CPersonalIntelligenceFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalIntelligenceFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -149,6 +163,8 @@ public:
 
 class CPersonalRelationFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalRelationFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -167,6 +183,8 @@ public:
 
 class CPersonalGreedFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalGreedFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -185,6 +203,8 @@ public:
 
 class CPersonalAggressivenessFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalAggressivenessFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -203,6 +223,8 @@ public:
 
 class CEnemyMoraleFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyMoraleFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -221,6 +243,8 @@ public:
 
 class CEnemyEquipmentCostFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyEquipmentCostFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -239,6 +263,8 @@ public:
 
 class CEnemyRukzakWeightFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyRukzakWeightFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -257,6 +283,8 @@ public:
 
 class CEnemyAnomalityFunction : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyAnomalityFunction, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -275,6 +303,8 @@ public:
 
 class CGraphPointType0 : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CGraphPointType0, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -293,6 +323,8 @@ public:
 
 class CPersonalEyeRange : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalEyeRange, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -311,6 +343,8 @@ public:
 
 class CPersonalMaxHealth : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CPersonalMaxHealth, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -330,6 +364,8 @@ public:
 
 class CEquipmentType : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEquipmentType, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -348,6 +384,8 @@ public:
 
 class CItemDeterioration : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CItemDeterioration, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -366,6 +404,8 @@ public:
 
 class CEquipmentPreference : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEquipmentPreference, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -384,6 +424,8 @@ public:
 
 class CMainWeaponType : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CMainWeaponType, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -402,6 +444,8 @@ public:
 
 class CMainWeaponPreference : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CMainWeaponPreference, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -420,6 +464,8 @@ public:
 
 class CItemValue : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CItemValue, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -438,6 +484,8 @@ public:
 
 class CWeaponAmmoCount : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponAmmoCount, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -457,6 +505,8 @@ public:
 
 class CEnemyAnomalyType : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyAnomalyType, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -475,6 +525,8 @@ public:
 
 class CDetectorType : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CDetectorType, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 
@@ -493,6 +545,8 @@ public:
 
 class CEnemyDistanceToGraphPoint : public CBaseFunction
 {
+    RTTI_DECLARE_TYPEINFO(CEnemyDistanceToGraphPoint, CBaseFunction);
+
 public:
     typedef CBaseFunction inherited;
 

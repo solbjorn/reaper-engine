@@ -10,10 +10,11 @@
 
 class CWeaponFORT : public CWeaponPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponFORT, CWeaponPistol);
+
 private:
     typedef CWeaponPistol inherited;
 
-protected:
 public:
     CWeaponFORT();
     virtual ~CWeaponFORT();

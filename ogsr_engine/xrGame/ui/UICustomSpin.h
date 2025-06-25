@@ -7,6 +7,7 @@
 // copyright 2005 GSC Game World
 
 #pragma once
+
 #include "UIWindow.h"
 #include "UIOptionsItem.h"
 
@@ -16,6 +17,8 @@ class CUILines;
 
 class CUICustomSpin : public CUIWindow, public CUIOptionsItem
 {
+    RTTI_DECLARE_TYPEINFO(CUICustomSpin, CUIWindow, CUIOptionsItem);
+
 public:
     CUICustomSpin();
     virtual ~CUICustomSpin();

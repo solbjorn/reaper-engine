@@ -11,14 +11,16 @@
 #include "gameobject.h"
 #include "PHShellCreator.h"
 #include "PhysicsShellHolder.h"
+
 class CPhysicItem : public CPhysicsShellHolder, public CPHShellSimpleCreator
 {
+    RTTI_DECLARE_TYPEINFO(CPhysicItem, CPhysicsShellHolder, CPHShellSimpleCreator);
+
+public:
     typedef CPhysicsShellHolder inherited;
 
-public:
     bool m_ready_to_destroy;
 
-public:
     CPhysicItem();
     virtual ~CPhysicItem();
     void init();

@@ -1,6 +1,5 @@
 #ifndef dxThunderboltDescRender_included
 #define dxThunderboltDescRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\ThunderboltDescRender.h"
 
@@ -8,6 +7,8 @@ class IRender_DetailModel;
 
 class dxThunderboltDescRender : public IThunderboltDescRender
 {
+    RTTI_DECLARE_TYPEINFO(dxThunderboltDescRender, IThunderboltDescRender);
+
 public:
     virtual void Copy(IThunderboltDescRender& _in);
 

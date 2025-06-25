@@ -5,9 +5,11 @@
 
 class CWeaponVintorez : public CWeaponMagazined
 {
-    typedef CWeaponMagazined inherited;
+    RTTI_DECLARE_TYPEINFO(CWeaponVintorez, CWeaponMagazined);
 
 public:
+    typedef CWeaponMagazined inherited;
+
     CWeaponVintorez(void);
     virtual ~CWeaponVintorez(void);
 

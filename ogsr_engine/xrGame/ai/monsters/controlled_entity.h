@@ -19,8 +19,10 @@ struct SControlledInfo
     float m_radius;
 };
 
-class CControlledEntityBase
+class CControlledEntityBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CControlledEntityBase);
+
 public:
     virtual bool is_under_control() = 0;
 
@@ -41,6 +43,9 @@ public:
 template <typename _Object>
 class CControlledEntity : public CControlledEntityBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlledEntity<_Object>, CControlledEntityBase);
+
+public:
     SControlledInfo m_data;
 
     struct SGroupID
@@ -53,7 +58,6 @@ class CControlledEntity : public CControlledEntityBase
     _Object* m_object;
     CController* m_controller;
 
-public:
     virtual bool is_under_control() { return (m_controller != 0); }
 
     virtual void set_data(const SControlledInfo& info) { m_data = info; }

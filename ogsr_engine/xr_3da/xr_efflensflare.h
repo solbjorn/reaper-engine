@@ -67,11 +67,13 @@ public:
 };
 DEFINE_VECTOR(CLensFlareDescriptor*, LensFlareDescVec, LensFlareDescIt);
 
-class CLensFlare
+class CLensFlare : public virtual RTTI::Enable
 {
-    friend class dxLensFlareRender;
+    RTTI_DECLARE_TYPEINFO(CLensFlare);
 
 public:
+    friend class dxLensFlareRender;
+
     enum
     {
         MAX_RAYS = 5

@@ -1,11 +1,12 @@
 #ifndef dxConsoleRender_included
 #define dxConsoleRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\ConsoleRender.h"
 
 class dxConsoleRender : public IConsoleRender
 {
+    RTTI_DECLARE_TYPEINFO(dxConsoleRender, IConsoleRender);
+
 public:
     dxConsoleRender();
 

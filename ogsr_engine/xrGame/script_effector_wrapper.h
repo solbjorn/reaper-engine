@@ -12,6 +12,8 @@
 
 class CScriptEffectorWrapper : public CScriptEffector, public luabind::wrap_base
 {
+    RTTI_DECLARE_TYPEINFO(CScriptEffectorWrapper, CScriptEffector);
+
 public:
     IC CScriptEffectorWrapper(int iType, float fTime);
     virtual ~CScriptEffectorWrapper();

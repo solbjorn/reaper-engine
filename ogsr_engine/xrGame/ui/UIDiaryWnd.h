@@ -17,6 +17,9 @@ class CEncyclopediaArticle;
 
 class CUIDiaryWnd : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIDiaryWnd, CUIWindow, CUIWndCallback);
+
+public:
     typedef CUIWindow inherited;
     enum EDiaryFilter
     {

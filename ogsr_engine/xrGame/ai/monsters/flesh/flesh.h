@@ -5,10 +5,12 @@
 
 class CAI_Flesh : public CBaseMonster, public CControlledEntity<CAI_Flesh>
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Flesh, CBaseMonster, CControlledEntity<CAI_Flesh>);
+
+public:
     typedef CBaseMonster inherited;
     typedef CControlledEntity<CAI_Flesh> CControlled;
 
-public:
     CAI_Flesh();
     virtual ~CAI_Flesh();
 

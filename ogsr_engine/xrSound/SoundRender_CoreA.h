@@ -34,6 +34,9 @@
 
 class CSoundRender_CoreA : public CSoundRender_Core
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_CoreA, CSoundRender_Core);
+
+public:
     typedef CSoundRender_Core inherited;
 
     EAXSet eaxSet; // EAXSet function, retrieved if EAX Extension is supported

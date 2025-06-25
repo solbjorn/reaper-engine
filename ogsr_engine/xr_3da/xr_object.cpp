@@ -317,7 +317,7 @@ void CObject::UpdateCL()
 void CObject::shedule_Update(u32 T)
 {
     // consistency check
-    // Msg						("-SUB-:[%x][%s] CObject::shedule_Update",dynamic_cast<void*>(this),*cName());
+    // Msg						("-SUB-:[%x][%s] CObject::shedule_Update",smart_cast<void*>(this),*cName());
     ISheduled::shedule_Update(T);
     spatial_update(base_spu_epsP * 1, base_spu_epsR * 1);
 

@@ -7,9 +7,11 @@ class dxEnvironmentRender;
 
 class dxEnvDescriptorRender : public IEnvDescriptorRender
 {
-    friend class dxEnvironmentRender;
+    RTTI_DECLARE_TYPEINFO(dxEnvDescriptorRender, IEnvDescriptorRender);
 
 public:
+    friend class dxEnvironmentRender;
+
     virtual void OnDeviceCreate(CEnvDescriptor& owner);
     virtual void OnDeviceDestroy();
 
@@ -23,6 +25,8 @@ private:
 
 class dxEnvironmentRender : public IEnvironmentRender
 {
+    RTTI_DECLARE_TYPEINFO(dxEnvironmentRender, IEnvironmentRender);
+
 public:
     dxEnvironmentRender();
     virtual void Copy(IEnvironmentRender& _in);

@@ -10,6 +10,8 @@
 
 class CScope : public CInventoryItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CScope, CInventoryItemObject);
+
 private:
     typedef CInventoryItemObject inherited;
 

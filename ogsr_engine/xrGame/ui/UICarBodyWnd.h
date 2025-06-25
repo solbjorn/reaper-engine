@@ -15,6 +15,8 @@ class CInventoryOwner;
 
 class CUICarBodyWnd : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CUICarBodyWnd, CUIDialogWnd);
+
 private:
     typedef CUIDialogWnd inherited;
     bool m_b_need_update;
@@ -59,7 +61,7 @@ protected:
     CUIStatic* m_pUIOurBagWnd;
     CUIStatic* m_pUIOthersBagWnd;
 
-    //информация о персонажах
+    // информация о персонажах
     CUIStatic* m_pUIOurIcon;
     CUIStatic* m_pUIOthersIcon;
     CUICharacterInfo* m_pUICharacterInfoLeft;

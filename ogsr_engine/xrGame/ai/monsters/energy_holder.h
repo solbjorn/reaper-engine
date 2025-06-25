@@ -1,7 +1,10 @@
 #pragma once
 
-class CEnergyHolder
+class CEnergyHolder : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CEnergyHolder);
+
+public:
     // энергия
     float m_value; // текущее значение энергии
     float m_restore_vel; // скорость восстановления (ltx-param)
@@ -24,7 +27,6 @@ class CEnergyHolder
     // состояние агрессивности
     bool m_aggressive;
 
-public:
     CEnergyHolder();
     virtual ~CEnergyHolder();
 
@@ -33,8 +35,8 @@ public:
 
     virtual void schedule_update();
 
-    virtual void on_activate(){};
-    virtual void on_deactivate(){};
+    virtual void on_activate() {};
+    virtual void on_deactivate() {};
 
     // активность поля
     void activate();

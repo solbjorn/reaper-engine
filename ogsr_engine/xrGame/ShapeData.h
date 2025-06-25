@@ -1,8 +1,11 @@
 #ifndef ShapeDataH
 #define ShapeDataH
 
-struct CShapeData
+struct CShapeData : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CShapeData);
+
+public:
     enum
     {
         cfSphere = 0,

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "missile.h"
 #include "explosive.h"
 #include "..\xr_3da\feel_touch.h"
@@ -7,9 +8,11 @@
 
 class CGrenade : public CMissile, public CExplosive
 {
-    typedef CMissile inherited;
+    RTTI_DECLARE_TYPEINFO(CGrenade, CMissile, CExplosive);
 
 public:
+    typedef CMissile inherited;
+
     CGrenade();
     virtual ~CGrenade();
 

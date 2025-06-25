@@ -6,9 +6,11 @@ class CCustomMonster;
 
 class CAnomalyDetector : public Feel::Touch
 {
-    CCustomMonster* m_object;
+    RTTI_DECLARE_TYPEINFO(CAnomalyDetector, Feel::Touch);
 
 public:
+    CCustomMonster* m_object;
+
     float m_radius;
     u32 m_time_to_rememeber;
     float m_detect_probability;

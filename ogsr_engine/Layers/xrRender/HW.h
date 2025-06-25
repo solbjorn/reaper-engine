@@ -15,6 +15,8 @@
 
 class CHW : public pureAppActivate, public pureAppDeactivate
 {
+    RTTI_DECLARE_TYPEINFO(CHW, pureAppActivate, pureAppDeactivate);
+
 public:
     //	Functions section
     CHW();

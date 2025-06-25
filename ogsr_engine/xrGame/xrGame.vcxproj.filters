@@ -4887,9 +4887,6 @@
     <ClInclude Include="..\COMMON_AI\shared_data.h">
       <Filter>Core\Common\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\smart_cast.h">
-      <Filter>Core\Common\SmartCast</Filter>
-    </ClInclude>
     <ClInclude Include="string_table.h">
       <Filter>Core\Common\StringTable</Filter>
     </ClInclude>

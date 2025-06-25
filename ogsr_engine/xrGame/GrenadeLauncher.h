@@ -8,6 +8,8 @@
 
 class CGrenadeLauncher : public CInventoryItemObject
 {
+    RTTI_DECLARE_TYPEINFO(CGrenadeLauncher, CInventoryItemObject);
+
 private:
     typedef CInventoryItemObject inherited;
 

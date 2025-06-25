@@ -1,8 +1,11 @@
 #pragma once
+
 #include "UIbutton.h"
 
 class CUIListItem : public CUIButton
 {
+    RTTI_DECLARE_TYPEINFO(CUIListItem, CUIButton);
+
 private:
     typedef CUIButton inherited;
 
@@ -30,20 +33,20 @@ public:
     int GetGroupID() { return m_iGroupID; }
     void SetGroupID(int ID) { m_iGroupID = ID; }
 
-    virtual void MarkSelected(bool b){};
+    virtual void MarkSelected(bool b) {};
     // переопределяем критерий подсвечивания текста
     virtual bool IsHighlightText();
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
 
 protected:
-    //указатель на произвольные данные, которые могут
-    //присоедениены к элементу
+    // указатель на произвольные данные, которые могут
+    // присоедениены к элементу
     void* m_pData;
 
-    //произвольное число, приписанное объекту
+    // произвольное число, приписанное объекту
     int m_iValue;
 
-    //индекс в списке
+    // индекс в списке
     int m_iIndex;
 
     // идентификатор группы

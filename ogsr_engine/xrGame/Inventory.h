@@ -1,4 +1,5 @@
 #pragma once
+
 #include "inventory_item.h"
 
 class CInventory;
@@ -23,6 +24,7 @@ public:
     int m_blockCounter;
     bool m_maySwitchFast;
 };
+
 enum EActivationReason
 {
     eGeneral,
@@ -32,11 +34,13 @@ enum EActivationReason
 
 typedef xr_vector<CInventorySlot> TISlotArr;
 
-class CInventory
+class CInventory : public virtual RTTI::Enable
 {
-    friend class CInventoryScript;
+    RTTI_DECLARE_TYPEINFO(CInventory);
 
 public:
+    friend class CInventoryScript;
+
     CInventory();
     virtual ~CInventory();
 
@@ -129,7 +133,7 @@ public:
     TIItemContainer m_ruck, m_belt;
     TISlotArr m_slots;
 
-    //возвращает все кроме PDA в слоте и болта
+    // возвращает все кроме PDA в слоте и болта
     void AddAvailableItems(TIItemContainer& items_container, bool for_trade) const;
 
     float GetTakeDist() const { return m_fTakeDist; }
@@ -160,7 +164,7 @@ protected:
     void UpdateDropItem(PIItem pIItem);
 
     // Активный слот и слот который станет активным после смены
-    //значения совпадают в обычном состоянии (нет смены слотов)
+    // значения совпадают в обычном состоянии (нет смены слотов)
     u32 m_iActiveSlot;
     u32 m_iNextActiveSlot;
     u32 m_iPrevActiveSlot;
@@ -170,21 +174,21 @@ protected:
 
     CInventoryOwner* m_pOwner;
 
-    //флаг, показывающий наличие пояса в инвенторе
+    // флаг, показывающий наличие пояса в инвенторе
     bool m_bBeltUseful;
-    //флаг, допускающий использование слотов
+    // флаг, допускающий использование слотов
     bool m_bSlotsUseful;
 
     // текущий вес в инвентаре
     float m_fTotalWeight;
 
     // Максимальное кол-во объектов
-    //на поясе
+    // на поясе
     u32 m_iMaxBelt;
     // Максимальное расстояние на котором можно подобрать объект
     float m_fTakeDist;
 
-    //кадр на котором произошло последнее изменение в инвенторе
+    // кадр на котором произошло последнее изменение в инвенторе
     u32 m_dwModifyFrame;
 
     bool m_drop_last_frame;

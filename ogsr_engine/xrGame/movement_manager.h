@@ -55,8 +55,11 @@ struct STravelPathPoint;
 class CLevelPathBuilder;
 class CDetailPathBuilder;
 
-class CMovementManager
+class CMovementManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CMovementManager);
+
+public:
     size_t grassbender_id{};
     u32 grassbender_frame{};
 

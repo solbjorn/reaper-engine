@@ -14,12 +14,14 @@
 #include "space_restriction_abstract.h"
 #include "ai_space.h"
 
-//#define USE_FREE_IN_RESTRICTIONS
+// #define USE_FREE_IN_RESTRICTIONS
 
 class CSpaceRestrictionManager;
 
 class CSpaceRestriction : public RestrictionSpace::CTimeIntrusiveBase, public CSpaceRestrictionAbstract
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestriction, RestrictionSpace::CTimeIntrusiveBase, CSpaceRestrictionAbstract);
+
 private:
     typedef CSpaceRestrictionAbstract inherited;
 

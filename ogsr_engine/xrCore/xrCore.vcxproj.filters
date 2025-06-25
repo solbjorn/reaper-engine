@@ -49,12 +49,6 @@
     <Filter Include="XML_Parser">
       <UniqueIdentifier>{c21187ca-a254-4508-b106-203dce0324bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Threading">
-      <UniqueIdentifier>{1359157e-93cd-4161-8071-b7f71df34faf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utils">
-      <UniqueIdentifier>{c4866ff7-f5fd-4722-9e1a-73ef37fde25e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -284,6 +278,9 @@
     </ClInclude>
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
+    </ClInclude>
+    <ClInclude Include="xr_rtti.h">
+      <Filter>Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrsharedmem.h">
       <Filter>shared memory/string library</Filter>

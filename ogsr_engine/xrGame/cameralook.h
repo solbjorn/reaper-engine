@@ -4,12 +4,14 @@
 
 class CCameraLook : public CCameraBase
 {
+    RTTI_DECLARE_TYPEINFO(CCameraLook, CCameraBase);
+
+public:
     typedef CCameraBase inherited;
 
     Fvector2 lim_zoom;
     float dist, prev_d;
 
-public:
     CCameraLook(CObject* p, u32 flags = 0);
     virtual ~CCameraLook();
     virtual void Load(LPCSTR section);
@@ -24,6 +26,8 @@ public:
 
 class CCameraLook2 : public CCameraLook
 {
+    RTTI_DECLARE_TYPEINFO(CCameraLook2, CCameraLook);
+
 public:
     static Fvector m_cam_offset;
 

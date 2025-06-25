@@ -4,9 +4,11 @@
 
 class CUIXml : public CXml
 {
-    int m_dbg_id;
+    RTTI_DECLARE_TYPEINFO(CUIXml, CXml);
 
 public:
+    int m_dbg_id;
+
     CUIXml();
     virtual ~CUIXml();
 

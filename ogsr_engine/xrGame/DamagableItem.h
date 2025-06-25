@@ -1,5 +1,7 @@
-class CDamagableItem
+class CDamagableItem : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDamagableItem);
+
 protected:
     u16 m_levels_num;
     float m_max_health;

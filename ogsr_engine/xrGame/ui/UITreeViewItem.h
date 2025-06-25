@@ -17,6 +17,9 @@ class CUIListWnd;
 
 class CUITreeViewItem : public CUIListItem
 {
+    RTTI_DECLARE_TYPEINFO(CUITreeViewItem, CUIListItem);
+
+public:
     typedef CUIListItem inherited;
     // Являемся ли мы началом подыерархии
     bool isRoot;
@@ -27,7 +30,6 @@ class CUITreeViewItem : public CUIListItem
     // Кому мы пренадлежим
     CUITreeViewItem* pOwner;
 
-public:
     void SetRoot(bool set);
     bool IsRoot() const { return isRoot; }
 

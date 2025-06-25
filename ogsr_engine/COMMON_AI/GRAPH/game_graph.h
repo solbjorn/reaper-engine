@@ -14,8 +14,10 @@
 
 #define GRAPH_NAME "game.graph"
 
-class CGameGraph
+class CGameGraph : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CGameGraph);
+
 private:
     friend class CRenumbererConverter;
 

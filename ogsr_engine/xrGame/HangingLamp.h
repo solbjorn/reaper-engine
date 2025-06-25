@@ -10,13 +10,18 @@
 #include "physicsshellholder.h"
 #include "PHSkeleton.h"
 #include "script_export_space.h"
+
 // refs
 class CLAItem;
 class CPhysicsElement;
 class CSE_ALifeObjectHangingLamp;
 class CPHElement;
+
 class CHangingLamp : public CPhysicsShellHolder, public CPHSkeleton
-{ // need m_pPhysicShell
+{
+    RTTI_DECLARE_TYPEINFO(CHangingLamp, CPhysicsShellHolder, CPHSkeleton);
+
+public:
     typedef CPhysicsShellHolder inherited;
 
 private:

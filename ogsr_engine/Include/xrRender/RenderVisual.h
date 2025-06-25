@@ -7,8 +7,10 @@ class IKinematicsAnimated;
 class IParticleCustom;
 struct vis_data;
 
-class IRenderVisual
+class IRenderVisual : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRenderVisual);
+
 public:
     virtual ~IRenderVisual() { ; }
 

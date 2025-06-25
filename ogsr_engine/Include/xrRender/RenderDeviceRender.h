@@ -3,8 +3,10 @@
 enum class DeviceState;
 class IResourceManager;
 
-class IRenderDeviceRender
+class IRenderDeviceRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRenderDeviceRender);
+
 public:
     virtual ~IRenderDeviceRender() { ; }
     virtual void Copy(IRenderDeviceRender& _in) = 0;

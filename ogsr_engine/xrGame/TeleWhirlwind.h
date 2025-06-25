@@ -6,15 +6,18 @@
 
 class CTeleWhirlwind;
 class CGameObject;
+
 class CTeleWhirlwindObject : public CTelekineticObject
 {
+    RTTI_DECLARE_TYPEINFO(CTeleWhirlwindObject, CTelekineticObject);
+
+public:
     typedef CTelekineticObject inherited;
     CTeleWhirlwind* m_telekinesis;
     bool b_destroyable{};
     float throw_power;
 
-public:
-    virtual ~CTeleWhirlwindObject(){};
+    virtual ~CTeleWhirlwindObject() {};
     CTeleWhirlwindObject();
     virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
     void set_throw_power(float throw_pow);

@@ -5,11 +5,13 @@
 
 class CWeaponBM16 : public CWeaponShotgun
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponBM16, CWeaponShotgun);
+
+public:
     typedef CWeaponShotgun inherited;
 
     HUD_SOUND m_sndReload1;
 
-public:
     virtual ~CWeaponBM16();
     virtual void Load(LPCSTR section);
 

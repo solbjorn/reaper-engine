@@ -33,6 +33,8 @@ class CSE_ALifeCreatureAbstract;
 
 class CALifeSimulatorBase : public IPureDestroyableObject
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSimulatorBase, IPureDestroyableObject);
+
 protected:
     xrServer* m_server;
     CALifeSimulatorHeader* m_header;

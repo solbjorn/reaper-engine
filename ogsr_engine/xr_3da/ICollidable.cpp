@@ -6,8 +6,9 @@
 ICollidable::ICollidable()
 {
     collidable.model = NULL;
-    ISpatial* self = dynamic_cast<ISpatial*>(this);
+    ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
         self->spatial.type |= STYPE_COLLIDEABLE;
 };
+
 ICollidable::~ICollidable() { xr_delete(collidable.model); };

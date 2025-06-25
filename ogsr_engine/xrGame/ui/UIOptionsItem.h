@@ -1,11 +1,13 @@
 #pragma once
 #include "UIOptionsManager.h"
 
-class CUIOptionsItem
+class CUIOptionsItem : public virtual RTTI::Enable
 {
-    friend class CUIOptionsManager;
+    RTTI_DECLARE_TYPEINFO(CUIOptionsItem);
 
 public:
+    friend class CUIOptionsManager;
+
     virtual ~CUIOptionsItem();
     virtual void Register(const char* entry, const char* group);
     static CUIOptionsManager* GetOptionsManager() { return &m_optionsManager; }
@@ -15,7 +17,7 @@ protected:
     virtual void SaveValue();
 
     virtual bool IsChanged() = 0;
-    virtual void SeveBackUpValue(){};
+    virtual void SeveBackUpValue() {};
     virtual void Undo() { SetCurrentValue(); };
 
     void SendMessage2Group(const char* group, const char* message);

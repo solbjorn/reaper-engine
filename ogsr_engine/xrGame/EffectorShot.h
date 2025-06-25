@@ -8,8 +8,10 @@
 #include "../xr_3da/cameramanager.h"
 #include "Actor.h"
 
-class CWeaponShotEffector
+class CWeaponShotEffector : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponShotEffector);
+
 protected:
     float fAngleVert;
     float fAngleVertMax;
@@ -29,7 +31,7 @@ protected:
 
 public:
     CWeaponShotEffector();
-    virtual ~CWeaponShotEffector(){};
+    virtual ~CWeaponShotEffector() {};
 
     void Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
     IC BOOL IsActive() { return bActive; }
@@ -49,6 +51,8 @@ public:
 
 class CCameraShotEffector : public CWeaponShotEffector, public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CCameraShotEffector, CWeaponShotEffector, CEffectorCam);
+
 protected:
     CActor* m_pActor;
 

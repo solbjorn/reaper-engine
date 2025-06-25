@@ -266,11 +266,12 @@ bool CPolterTele::tele_raise_objects()
 
     return false;
 }
-struct SCollisionHitCallback : public ICollisionHitCallback
 
+struct SCollisionHitCallback : public ICollisionHitCallback
 {
-    //	CollisionHitCallbackFun				*m_collision_hit_callback
-    //;
+    RTTI_DECLARE_TYPEINFO(SCollisionHitCallback, ICollisionHitCallback);
+
+public:
     CPhysicsShellHolder* m_object;
     float m_pmt_object_collision_damage;
     SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage) : m_object(object), m_pmt_object_collision_damage(pmt_object_collision_damage)

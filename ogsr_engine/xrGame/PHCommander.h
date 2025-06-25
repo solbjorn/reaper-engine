@@ -1,10 +1,13 @@
 #ifndef PH_COMMANDER_H
 #define PH_COMMANDER_H
+
 class CPHReqBase;
 class CPHReqComparerV;
 
-class CPHReqBase
+class CPHReqBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPHReqBase);
+
 public:
     virtual ~CPHReqBase() {}
     virtual bool obsolete() const = 0;
@@ -13,21 +16,27 @@ public:
 
 class CPHCondition : public CPHReqBase
 {
+    RTTI_DECLARE_TYPEINFO(CPHCondition, CPHReqBase);
+
 public:
     virtual bool is_true() = 0;
 };
 
 class CPHAction : public CPHReqBase
 {
+    RTTI_DECLARE_TYPEINFO(CPHAction, CPHReqBase);
+
 public:
     virtual void run() = 0;
 };
 
 class CPHOnesCondition : public CPHCondition
 {
-    bool b_called;
+    RTTI_DECLARE_TYPEINFO(CPHOnesCondition, CPHCondition);
 
 public:
+    bool b_called;
+
     CPHOnesCondition() { b_called = false; }
     virtual bool is_true()
     {
@@ -39,6 +48,8 @@ public:
 
 class CPHDummiAction : public CPHAction
 {
+    RTTI_DECLARE_TYPEINFO(CPHDummiAction, CPHAction);
+
 public:
     virtual void run() { ; }
     virtual bool obsolete() const { return false; }
@@ -67,6 +78,7 @@ public:
 };
 
 DEFINE_VECTOR(std::unique_ptr<CPHCall>, PHCALL_STORAGE, PHCALL_I);
+
 class CPHCommander
 {
     PHCALL_STORAGE m_calls;
@@ -86,4 +98,5 @@ public:
 
     void clear();
 };
+
 #endif

@@ -18,6 +18,8 @@ class CGameGraph;
 
 class CPatrolPathStorage : public IPureSerializeObject<IReader, IWriter>
 {
+    RTTI_DECLARE_TYPEINFO(CPatrolPathStorage, IPureSerializeObject<IReader, IWriter>);
+
 private:
     typedef IPureSerializeObject<IReader, IWriter> inherited;
 

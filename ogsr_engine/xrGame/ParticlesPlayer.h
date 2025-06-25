@@ -12,10 +12,12 @@ DEFINE_VECTOR(CParticlesObject*, PARTICLES_PTR_VECTOR, PARTICLES_PTR_VECTOR_IT);
 
 class CObject;
 
-class CParticlesPlayer
+class CParticlesPlayer : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CParticlesPlayer);
+
 public:
-    //структура с внутренней информацией о партикле
+    // структура с внутренней информацией о партикле
     struct SParticlesInfo
     {
         CParticlesObject* ps;
@@ -23,14 +25,14 @@ public:
         // Fmatrix				x_form;
         Fvector angles;
         u16 sender_id; // id - объекта, который запустил партиклы
-        u32 life_time; //время жизни партикла (-1) - бесконечно
+        u32 life_time; // время жизни партикла (-1) - бесконечно
 
         // int					cur_time;	//текущее время существования партикла
         // bool				auto_stop;	//автоматическая остановка партиклов, когда закончится время
     };
     DEFINE_VECTOR(SParticlesInfo, ParticlesInfoList, ParticlesInfoListIt);
 
-    //структура для косточки с списком запущенных партиклов
+    // структура для косточки с списком запущенных партиклов
     struct SBoneInfo
     {
         u16 index;
@@ -53,7 +55,7 @@ private:
     CObject* m_self_object;
 
 protected:
-    bool m_bActiveBones; //есть ли косточки на которых играются партиклы
+    bool m_bActiveBones; // есть ли косточки на которых играются партиклы
 
 public:
     IC SBoneInfo* get_bone_info(u16 bone_index)

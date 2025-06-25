@@ -126,8 +126,11 @@ public:
     void Save2(CInifile& ini, const shared_str& sect);
 };
 
-struct EParticleAction
+struct EParticleAction : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(EParticleAction);
+
+public:
     DEFINE_MAP(std::string, PDomain, PDomainMap, PDomainMapIt);
     DEFINE_MAP(std::string, PBool, PBoolMap, PBoolMapIt);
     DEFINE_MAP(std::string, PFloat, PFloatMap, PFloatMapIt);
@@ -239,178 +242,264 @@ public:
 
 struct EPAAvoid : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAAvoid, EParticleAction);
+
+public:
     EPAAvoid();
     virtual void Compile(IWriter& F);
 };
 
 struct EPABounce : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPABounce, EParticleAction);
+
+public:
     EPABounce();
     virtual void Compile(IWriter& F);
 };
 
 struct EPACopyVertexB : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPACopyVertexB, EParticleAction);
+
+public:
     EPACopyVertexB();
     virtual void Compile(IWriter& F);
 };
 
 struct EPADamping : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPADamping, EParticleAction);
+
+public:
     EPADamping();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAExplosion : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAExplosion, EParticleAction);
+
+public:
     EPAExplosion();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAFollow : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAFollow, EParticleAction);
+
+public:
     EPAFollow();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAGravitate : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAGravitate, EParticleAction);
+
+public:
     EPAGravitate();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAGravity : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAGravity, EParticleAction);
+
+public:
     EPAGravity();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAJet : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAJet, EParticleAction);
+
+public:
     EPAJet();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAKillOld : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAKillOld, EParticleAction);
+
+public:
     EPAKillOld();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAMatchVelocity : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAMatchVelocity, EParticleAction);
+
+public:
     EPAMatchVelocity();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAMove : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAMove, EParticleAction);
+
+public:
     EPAMove();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAOrbitLine : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAOrbitLine, EParticleAction);
+
+public:
     EPAOrbitLine();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAOrbitPoint : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAOrbitPoint, EParticleAction);
+
+public:
     EPAOrbitPoint();
     virtual void Compile(IWriter& F);
 };
 
 struct EPARandomAccel : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPARandomAccel, EParticleAction);
+
+public:
     EPARandomAccel();
     virtual void Compile(IWriter& F);
 };
 
 struct EPARandomDisplace : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPARandomDisplace, EParticleAction);
+
+public:
     EPARandomDisplace();
     virtual void Compile(IWriter& F);
 };
 
 struct EPARandomVelocity : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPARandomVelocity, EParticleAction);
+
+public:
     EPARandomVelocity();
     virtual void Compile(IWriter& F);
 };
 
 struct EPARestore : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPARestore, EParticleAction);
+
+public:
     EPARestore();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAScatter : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAScatter, EParticleAction);
+
+public:
     EPAScatter();
     virtual void Compile(IWriter& F);
 };
 
 struct EPASink : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPASink, EParticleAction);
+
+public:
     EPASink();
     virtual void Compile(IWriter& F);
 };
 
 struct EPASinkVelocity : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPASinkVelocity, EParticleAction);
+
+public:
     EPASinkVelocity();
     virtual void Compile(IWriter& F);
 };
 
 struct EPASpeedLimit : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPASpeedLimit, EParticleAction);
+
+public:
     EPASpeedLimit();
     virtual void Compile(IWriter& F);
 };
 
 struct EPASource : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPASource, EParticleAction);
+
+public:
     EPASource();
     virtual void Compile(IWriter& F);
 };
 
 struct EPATargetColor : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPATargetColor, EParticleAction);
+
+public:
     EPATargetColor();
     virtual void Compile(IWriter& F);
 };
 
 struct EPATargetSize : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPATargetSize, EParticleAction);
+
+public:
     EPATargetSize();
     virtual void Compile(IWriter& F);
 };
 
 struct EPATargetRotate : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPATargetRotate, EParticleAction);
+
+public:
     EPATargetRotate();
     virtual void Compile(IWriter& F);
 };
 
 struct EPATargetVelocity : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPATargetVelocity, EParticleAction);
+
+public:
     EPATargetVelocity();
     virtual void Compile(IWriter& F);
 };
 
 struct EPAVortex : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPAVortex, EParticleAction);
+
+public:
     EPAVortex();
     virtual void Compile(IWriter& F);
 };
 
 struct EPATurbulence : public EParticleAction
 {
+    RTTI_DECLARE_TYPEINFO(EPATurbulence, EParticleAction);
+
+public:
     float*** nval;
     float age;
 
-public:
     EPATurbulence();
 
     virtual void Compile(IWriter& F);

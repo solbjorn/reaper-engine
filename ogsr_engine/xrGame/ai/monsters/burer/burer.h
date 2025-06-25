@@ -11,6 +11,9 @@ class CBurerFastGravi;
 
 class CBurer : public CBaseMonster, public CTelekinesis
 {
+    RTTI_DECLARE_TYPEINFO(CBurer, CBaseMonster, CTelekinesis);
+
+public:
     typedef CBaseMonster inherited;
 
 private:

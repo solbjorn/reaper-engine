@@ -13,12 +13,13 @@
 
 class CEatableItemObject : public CEatableItem, public CPhysicItem
 {
+    RTTI_DECLARE_TYPEINFO(CEatableItemObject, CEatableItem, CPhysicItem);
+
 public:
     CEatableItemObject();
     virtual ~CEatableItemObject();
     virtual DLL_Pure* _construct();
 
-public:
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }
@@ -29,7 +30,6 @@ public:
     virtual CWeaponAmmo* cast_weapon_ammo() { return 0; }
     virtual CGameObject* cast_game_object() { return this; };
 
-public:
     virtual void Load(LPCSTR section);
     virtual void Hit(SHit* pHDS);
 

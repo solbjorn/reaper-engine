@@ -2,8 +2,10 @@
 #include "inventory_space.h"
 #include "GameObject.h"
 
-class IInventoryBox
+class IInventoryBox : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IInventoryBox);
+
 protected:
     xr_vector<u16> m_items;
 
@@ -27,10 +29,12 @@ public:
 template <class Based>
 class CCustomInventoryBox : public Based, public IInventoryBox
 {
+    RTTI_DECLARE_TYPEINFO(CCustomInventoryBox<Based>, Based, IInventoryBox);
+
+public:
     typedef Based inherited;
     typedef IInventoryBox inherited2;
 
-public:
     virtual void OnEvent(NET_Packet& P, u16 type)
     {
         inherited::OnEvent(P, type);
@@ -51,6 +55,8 @@ public:
 
 class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventoryBox
 {
+    RTTI_DECLARE_TYPEINFO(CInventoryBox, CCustomInventoryBox<CGameObject>);
+
 public:
     CInventoryBox() {}
 };

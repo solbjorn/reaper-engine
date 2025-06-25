@@ -12,8 +12,10 @@ enum DebugRenderType
     eDBGUndef
 };
 
-class DBG_ScriptObject
+class DBG_ScriptObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(DBG_ScriptObject);
+
 public:
     Fcolor m_color;
     bool m_visible;
@@ -37,6 +39,8 @@ public:
 
 class DBG_ScriptSphere : public DBG_ScriptObject
 {
+    RTTI_DECLARE_TYPEINFO(DBG_ScriptSphere, DBG_ScriptObject);
+
 public:
     Fmatrix m_mat;
 
@@ -51,6 +55,8 @@ public:
 
 class DBG_ScriptBox : public DBG_ScriptObject
 {
+    RTTI_DECLARE_TYPEINFO(DBG_ScriptBox, DBG_ScriptObject);
+
 public:
     Fmatrix m_mat;
     Fvector m_size;
@@ -70,6 +76,8 @@ public:
 
 class DBG_ScriptLine : public DBG_ScriptObject
 {
+    RTTI_DECLARE_TYPEINFO(DBG_ScriptLine, DBG_ScriptObject);
+
 public:
     Fvector m_point_a, m_point_b;
 

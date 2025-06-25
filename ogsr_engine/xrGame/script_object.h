@@ -13,6 +13,8 @@
 
 class CScriptObject : public CGameObject, public CScriptEntity
 {
+    RTTI_DECLARE_TYPEINFO(CScriptObject, CGameObject, CScriptEntity);
+
 public:
     CScriptObject();
     virtual ~CScriptObject();

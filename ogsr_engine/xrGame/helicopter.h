@@ -161,9 +161,16 @@ class CHelicopter : public CEntity,
 #endif
 
 {
-    typedef CEntity inherited;
+    RTTI_DECLARE_TYPEINFO(CHelicopter, CEntity, CShootingObject, CRocketLauncher, CPHSkeleton, CPHDestroyable, CHitImmunity, CExplosive
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
 
 public:
+    typedef CEntity inherited;
+
     enum EHeliState
     {
         eAlive = u32(0),

@@ -7,13 +7,15 @@ class CUIStatic;
 
 class CUICursor : public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(CUICursor, pureRender);
+
+public:
     bool bVisible{};
     Fvector2 vPos{}, vPrevPos{};
     std::unique_ptr<CUIStatic> m_static;
 
     void InitInternal();
 
-public:
     CUICursor();
     virtual ~CUICursor();
     void OnRender() override;

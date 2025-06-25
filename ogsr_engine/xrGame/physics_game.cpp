@@ -25,6 +25,9 @@ constexpr float minimal_plane_distance_between_liquid_particles = 0.2f;
 
 class CPHParticlesPlayCall : public CPHAction, public CPHReqComparerV
 {
+    RTTI_DECLARE_TYPEINFO(CPHParticlesPlayCall, CPHAction, CPHReqComparerV);
+
+public:
     LPCSTR ps_name;
     dContactGeom c;
 
@@ -35,7 +38,6 @@ class CPHParticlesPlayCall : public CPHAction, public CPHReqComparerV
 
     const CPhysicsShellHolder* m_object;
 
-public:
     CPHParticlesPlayCall(const dContactGeom& contact, bool invert_n, LPCSTR psn, const CPhysicsShellHolder* object = nullptr)
     {
         ps_name = psn;
@@ -85,6 +87,8 @@ public:
 
 class CPHParticlesCondition : public CPHCondition, public CPHReqComparerV
 {
+    RTTI_DECLARE_TYPEINFO(CPHParticlesCondition, CPHCondition, CPHReqComparerV);
+
 private:
     virtual bool compare(const CPHReqComparerV* v) const noexcept { return v->compare(this); }
 
@@ -95,10 +99,12 @@ private:
 
 class CPHFindParticlesComparer : public CPHReqComparerV
 {
+    RTTI_DECLARE_TYPEINFO(CPHFindParticlesComparer, CPHReqComparerV);
+
+public:
     Fvector m_position;
     const CPhysicsShellHolder* m_object;
 
-public:
     CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_position(position), m_object(object) {}
 
 private:
@@ -118,11 +124,13 @@ private:
 
 class CPHWallMarksCall : public CPHAction
 {
+    RTTI_DECLARE_TYPEINFO(CPHWallMarksCall, CPHAction);
+
+public:
     wm_shader pWallmarkShader;
     Fvector pos;
     CDB::TRI* T;
 
-public:
     CPHWallMarksCall(const Fvector& p, CDB::TRI* Tri, const wm_shader& s)
     {
         pWallmarkShader = s;

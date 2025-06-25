@@ -2,10 +2,16 @@
 //////////////////////////////////////////////////////////////////////
 #ifndef PH_JOINT
 #define PH_JOINT
+
 #include "PhysicsShell.h"
+
 class CPHJointDestroyInfo;
+
 class CPHJoint : public CPhysicsJoint
 {
+    RTTI_DECLARE_TYPEINFO(CPHJoint, CPhysicsJoint);
+
+public:
     ///////////////////////////////////////////////////////
     u16 m_bone_id;
     CPHElement* pFirst_element;

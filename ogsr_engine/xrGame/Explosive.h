@@ -14,10 +14,16 @@
 #include "DamageSource.h"
 #include "wallmark_manager.h"
 #include "ParticlesObject.h"
+
 class IRender_Light;
+
 DEFINE_VECTOR(CPhysicsShellHolder*, BLASTED_OBJECTS_V, BLASTED_OBJECTS_I);
+
 class CExplosive : public IDamageSource
 {
+    RTTI_DECLARE_TYPEINFO(CExplosive, IDamageSource);
+
+public:
     friend class CWeaponScript;
 
 private:
@@ -91,34 +97,34 @@ protected:
     Fvector m_vExplodeSize;
     Fvector m_vExplodeDir;
 
-    //параметры взрыва
+    // параметры взрыва
     float m_fBlastHit;
     float m_fBlastHitImpulse;
     float m_fBlastRadius;
 
-    //параметры и количество осколков
+    // параметры и количество осколков
     float m_fFragsRadius;
     float m_fFragHit;
     float m_fFragHitImpulse;
     int m_iFragsNum;
 
-    //типы наносимых хитов
+    // типы наносимых хитов
     ALife::EHitType m_eHitTypeBlast;
     ALife::EHitType m_eHitTypeFrag;
 
-    //фактор подпроса предмета вверх взрывной волной
+    // фактор подпроса предмета вверх взрывной волной
     float m_fUpThrowFactor;
 
-    //список пораженных объектов
+    // список пораженных объектов
     BLASTED_OBJECTS_V m_blasted_objects;
 
-    //текущая продолжительность взрыва
+    // текущая продолжительность взрыва
     float m_fExplodeDuration;
-    //общее время взрыва
+    // общее время взрыва
     float m_fExplodeDurationMax;
-    //Время, через которое надо сделать взрывчатку невиимой, если она не становится невидимой во время взрыва
+    // Время, через которое надо сделать взрывчатку невиимой, если она не становится невидимой во время взрыва
     float m_fExplodeHideDurationMax;
-    //флаг состояния взрыва
+    // флаг состояния взрыва
     enum
     {
         flExploding = 1 << 0,
@@ -128,7 +134,7 @@ protected:
     };
     Flags8 m_explosion_flags;
     ///////////////////////////////////////////////
-    //Должен ли объект быть скрыт после взрыва: true - для всех кроме дымовой гранаты
+    // Должен ли объект быть скрыт после взрыва: true - для всех кроме дымовой гранаты
     BOOL m_bHideInExplosion;
     bool m_bAlreadyHidden;
     virtual void HideExplosive();
@@ -136,20 +142,20 @@ protected:
     // bool						m_bExplodeEventSent;
 
     //////////////////////////////////////////////
-    //для разлета осколков
+    // для разлета осколков
     float m_fFragmentSpeed;
 
-    //звуки
+    // звуки
     ref_sound sndExplode;
     ESoundTypes m_eSoundExplode;
 
-    //размер отметки на стенах
+    // размер отметки на стенах
     float fWallmarkSize;
 
-    //эффекты и подсветка
+    // эффекты и подсветка
     shared_str m_sExplodeParticles;
 
-    //подсветка взрыва
+    // подсветка взрыва
     ref_light m_pLight;
     Fcolor m_LightColor;
     float m_fLightRange;

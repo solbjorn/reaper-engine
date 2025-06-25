@@ -24,6 +24,8 @@ class CObjectHandlerPlanner;
 
 class CObjectHandler : public CInventoryOwner
 {
+    RTTI_DECLARE_TYPEINFO(CObjectHandler, CInventoryOwner);
+
 protected:
     typedef CInventoryOwner inherited;
     typedef GraphEngineSpace::_solver_value_type _value_type;

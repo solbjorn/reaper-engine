@@ -215,6 +215,9 @@ void CLevel::net_Update()
 
 struct _NetworkProcessor : public pureFrame
 {
+    RTTI_DECLARE_TYPEINFO(_NetworkProcessor, pureFrame);
+
+public:
     virtual void OnFrame()
     {
         if (g_pGameLevel && !Device.Paused())

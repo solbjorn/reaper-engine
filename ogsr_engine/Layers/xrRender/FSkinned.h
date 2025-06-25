@@ -11,8 +11,11 @@
 #include "SkeletonX.h"
 
 struct SEnumVerticesCallback;
+
 class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
 {
+    RTTI_DECLARE_TYPEINFO(CSkeletonX_ext, CSkeletonX);
+
 protected:
     virtual void _Load_hw(Fvisual& V, void* data);
     virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
@@ -29,12 +32,12 @@ protected:
     virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
 
     virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount);
-
-public:
 };
 
 class CSkeletonX_ST : public Fvisual, public CSkeletonX_ext
 {
+    RTTI_DECLARE_TYPEINFO(CSkeletonX_ST, Fvisual, CSkeletonX_ext);
+
 private:
     typedef Fvisual inherited1;
     typedef CSkeletonX_ext inherited2;
@@ -58,6 +61,8 @@ private:
 
 class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
 {
+    RTTI_DECLARE_TYPEINFO(CSkeletonX_PM, FProgressive, CSkeletonX_ext);
+
 private:
     typedef FProgressive inherited1;
     typedef CSkeletonX_ext inherited2;

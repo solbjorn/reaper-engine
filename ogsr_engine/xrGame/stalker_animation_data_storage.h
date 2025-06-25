@@ -11,8 +11,10 @@
 class CStalkerAnimationData;
 class IKinematicsAnimated;
 
-class CStalkerAnimationDataStorage
+class CStalkerAnimationDataStorage : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerAnimationDataStorage);
+
 public:
     typedef std::pair<IKinematicsAnimated*, CStalkerAnimationData*> OBJECT;
     typedef xr_vector<OBJECT> OBJECTS;

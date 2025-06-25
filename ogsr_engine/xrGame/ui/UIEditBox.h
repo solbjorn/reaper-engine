@@ -17,6 +17,8 @@ class game_cl_GameState;
 
 class CUIEditBox : public CUIMultiTextureOwner, public CUIOptionsItem, public CUICustomEdit
 {
+    RTTI_DECLARE_TYPEINFO(CUIEditBox, CUIMultiTextureOwner, CUIOptionsItem, CUICustomEdit);
+
 public:
     CUIEditBox();
     virtual ~CUIEditBox();

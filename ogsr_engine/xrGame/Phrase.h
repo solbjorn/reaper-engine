@@ -10,8 +10,10 @@
 class CPhraseDialog;
 class CGameObject;
 
-class CPhrase
+class CPhrase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPhrase);
+
 private:
     friend CPhraseDialog;
 
@@ -31,15 +33,15 @@ public:
     CPhraseScript* GetPhraseScript() { return &m_PhraseScript; };
 
 protected:
-    //уникальный индекс в списке фраз диалога
+    // уникальный индекс в списке фраз диалога
     shared_str m_ID;
-    //текстовое представление фразы
+    // текстовое представление фразы
     xr_string m_text;
 
-    //минимальный уровень благосклоггости, необходимый для того
-    //чтоб фразу можно было сказать
+    // минимальный уровень благосклоггости, необходимый для того
+    // чтоб фразу можно было сказать
     int m_iGoodwillLevel;
 
-    //для вызова скриптовых функций
+    // для вызова скриптовых функций
     CPhraseScript m_PhraseScript;
 };

@@ -2,6 +2,8 @@
 
 class CBlender_blur : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_blur, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "Blur generation"; }
 
@@ -14,6 +16,8 @@ public:
 // SSS
 class CBlender_ssfx_ssr : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_ssr, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_ssr"; }
 
@@ -25,6 +29,8 @@ public:
 
 class CBlender_ssfx_volumetric_blur : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_volumetric_blur, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_volumetric_blur"; }
 
@@ -36,6 +42,8 @@ public:
 
 class CBlender_ssfx_ao : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_ao, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_ao"; }
 
@@ -47,6 +55,8 @@ public:
 
 class CBlender_ssfx_sss : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_sss, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_sss"; }
 
@@ -58,6 +68,8 @@ public:
 
 class CBlender_ssfx_sss_ext : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_sss_ext, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_sss_ext"; }
 
@@ -69,6 +81,8 @@ public:
 
 class CBlender_ssfx_rain : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_rain, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_rain"; }
 
@@ -80,6 +94,8 @@ public:
 
 class CBlender_ssfx_water_blur : public IBlender
 {
+    RTTI_DECLARE_TYPEINFO(CBlender_ssfx_water_blur, IBlender);
+
 public:
     virtual LPCSTR getComment() { return "ssfx_water"; }
 

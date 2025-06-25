@@ -6,9 +6,11 @@ class CWeaponFakeGrenade;
 
 class CWeaponMagazinedWGrenade : public CWeaponMagazined, public CRocketLauncher
 {
-    typedef CWeaponMagazined inherited;
+    RTTI_DECLARE_TYPEINFO(CWeaponMagazinedWGrenade, CWeaponMagazined, CRocketLauncher);
 
 public:
+    typedef CWeaponMagazined inherited;
+
     CWeaponMagazinedWGrenade(LPCSTR name = "AK74", ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
     virtual ~CWeaponMagazinedWGrenade();
 
@@ -49,14 +51,14 @@ public:
     virtual void UpdateSounds();
     virtual void StopHUDSounds();
 
-    //переключение в режим подствольника
+    // переключение в режим подствольника
     virtual bool SwitchMode();
     void PerformSwitchGL();
     void OnAnimationEnd(u32 state);
 
     virtual bool IsNecessaryItem(const shared_str& item_sect);
 
-    //виртуальные функции для проигрывания анимации HUD
+    // виртуальные функции для проигрывания анимации HUD
     virtual void PlayAnimShow();
     virtual void PlayAnimHide();
     virtual void PlayAnimReload();
@@ -68,8 +70,8 @@ public:
     HUD_SOUND sndReloadG;
     HUD_SOUND sndSwitch;
 
-    //дополнительные параметры патронов
-    //для подствольника
+    // дополнительные параметры патронов
+    // для подствольника
     CWeaponAmmo* m_pAmmo2{};
     shared_str m_ammoSect2;
     xr_vector<shared_str> m_ammoTypes2;
@@ -84,7 +86,7 @@ public:
 
     virtual void UpdateGrenadeVisibility(bool visibility);
 
-    //название косточки для гранаты подствольника в HUD
+    // название косточки для гранаты подствольника в HUD
     shared_str grenade_bone_name;
 
     int GetAmmoElapsed2() const override { return iAmmoElapsed2; }

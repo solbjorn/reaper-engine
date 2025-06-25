@@ -64,8 +64,10 @@ class Sound;
 class IRenderable;
 class IRender_Light;
 
-class ISpatial
+class ISpatial : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(ISpatial);
+
 public:
     struct _spatial
     {

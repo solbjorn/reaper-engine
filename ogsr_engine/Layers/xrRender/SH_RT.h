@@ -4,6 +4,8 @@
 //////////////////////////////////////////////////////////////////////////
 class CRT : public xr_resource_named
 {
+    RTTI_DECLARE_TYPEINFO(CRT, xr_resource_named);
+
 public:
     enum : u32 // extends xr_resource_flagged flags
     {

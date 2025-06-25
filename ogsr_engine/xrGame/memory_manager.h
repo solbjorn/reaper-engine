@@ -25,8 +25,10 @@ namespace MemorySpace
 struct CMemoryInfo;
 };
 
-class CMemoryManager
+class CMemoryManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CMemoryManager);
+
 public:
     typedef MemorySpace::CMemoryInfo CMemoryInfo;
 

@@ -10,6 +10,8 @@ struct OggVorbis_File;
 
 class CSoundRender_Emitter : public CSound_emitter
 {
+    RTTI_DECLARE_TYPEINFO(CSoundRender_Emitter, CSound_emitter);
+
 public:
     enum State : u32
     {

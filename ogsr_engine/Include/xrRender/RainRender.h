@@ -4,8 +4,10 @@ class CEffect_Rain;
 
 #include "../../xrCore/_sphere.h"
 
-class IRainRender
+class IRainRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRainRender);
+
 public:
     virtual ~IRainRender() { ; }
 

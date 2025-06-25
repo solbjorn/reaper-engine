@@ -14,11 +14,19 @@ struct _scissor : public Fbox2
 };
 
 // Connector
-class CPortal
+class CPortal : public virtual RTTI::Enable
 #ifdef DEBUG
-    : public pureRender
+    ,
+                public pureRender
 #endif
 {
+    RTTI_DECLARE_TYPEINFO(CPortal
+#ifdef DEBUG
+                          ,
+                          pureRender
+#endif
+    );
+
 public:
     using Poly = svector<Fvector, 6>;
     struct level_portal_data_t
@@ -72,8 +80,10 @@ public:
 class dxRender_Visual;
 
 // Main 'Sector' class
-class CSector
+class CSector : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSector);
+
 public:
     struct level_sector_data_t
     {

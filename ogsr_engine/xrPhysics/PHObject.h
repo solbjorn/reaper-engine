@@ -16,6 +16,9 @@ typedef void CollideCallback(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeom
 
 class CPHObject : public ISpatial
 {
+    RTTI_DECLARE_TYPEINFO(CPHObject, ISpatial);
+
+public:
 #ifdef DEBUG
     friend void DBG_DrawPHObject(CPHObject* obj);
 #endif
@@ -119,12 +122,14 @@ public:
     void CollideDynamics();
 };
 
-class CPHUpdateObject
+class CPHUpdateObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPHUpdateObject);
+
+public:
     DECLARE_PHLIST_ITEM(CPHUpdateObject);
     bool b_activated;
 
-public:
     CPHUpdateObject();
     virtual ~CPHUpdateObject() { Deactivate(); }
     void Activate();

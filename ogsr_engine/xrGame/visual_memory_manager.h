@@ -15,12 +15,14 @@ class CCustomMonster;
 class CAI_Stalker;
 class vision_client;
 
-class CVisualMemoryManager
+class CVisualMemoryManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CVisualMemoryManager);
+
+public:
 #ifdef DEBUG
     friend class CAI_Stalker;
 #endif
-public:
     typedef MemorySpace::CVisibleObject CVisibleObject;
     typedef MemorySpace::CNotYetVisibleObject CNotYetVisibleObject;
     typedef xr_deque<CVisibleObject> VISIBLES;

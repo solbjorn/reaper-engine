@@ -1,10 +1,8 @@
 #ifndef FBasicVisualH
 #define FBasicVisualH
-#pragma once
-
-#include "../../xr_3da/vis_common.h"
 
 #include "../../Include/xrRender/RenderVisual.h"
+#include "../../xr_3da/vis_common.h"
 
 #define VLOAD_NOVERTICES (1 << 0)
 
@@ -13,8 +11,11 @@ class CKinematicsAnimated;
 class CKinematics;
 class IParticleCustom;
 
-struct IRender_Mesh
+struct IRender_Mesh : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRender_Mesh);
+
+public:
     // format
     ref_geom rm_geom;
 
@@ -44,20 +45,24 @@ private:
 // The class itself
 class dxRender_Visual : public IRenderVisual
 {
+    RTTI_DECLARE_TYPEINFO(dxRender_Visual, IRenderVisual);
+
 public:
     shared_str dbg_name;
     virtual shared_str _BCL getDebugName() { return dbg_name; }
 
     // Common data for rendering
-    u32 Type; // visual's type
-    vis_data vis; // visibility-data
     ref_shader shader; // pipe state, shared
+    u32 Type; // visual's type
     bool IsHudVisual{};
 
     /************************* Add by Zander *******************************/
 private:
     bool renderFlag{true}; // if false, don`t push this to render / add by Zander
+
 public:
+    vis_data vis; // visibility-data
+
     inline bool getRZFlag() const { return renderFlag; }
     inline void setRZFlag(const bool f) { renderFlag = f; }
     /************************* End add *************************************/

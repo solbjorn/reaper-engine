@@ -133,6 +133,9 @@ void dxDebugRender::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p
 
 struct RDebugRender : public dxDebugRender, public pureRender
 {
+    RTTI_DECLARE_TYPEINFO(RDebugRender, dxDebugRender, pureRender);
+
+public:
     RDebugRender() { Device.seqRender.Add(this, REG_PRIORITY_LOW - 100); }
 
     virtual ~RDebugRender() { Device.seqRender.Remove(this); }

@@ -5,6 +5,9 @@
 
 class CWeaponSVD : public CWeaponCustomPistol
 {
+    RTTI_DECLARE_TYPEINFO(CWeaponSVD, CWeaponCustomPistol);
+
+public:
     typedef CWeaponCustomPistol inherited;
 
 protected:

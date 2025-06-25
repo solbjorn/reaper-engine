@@ -14,6 +14,9 @@ class NET_Packet;
 
 class CALifeStorageManager : public virtual CALifeSimulatorBase
 {
+    RTTI_DECLARE_TYPEINFO(CALifeStorageManager, CALifeSimulatorBase);
+
+public:
     friend class CALifeUpdatePredicate;
 
 protected:

@@ -5,6 +5,9 @@
 
 class CPHStaticGeomShell : public CPHGeometryOwner, public CPHObject, public CPHUpdateObject
 {
+    RTTI_DECLARE_TYPEINFO(CPHStaticGeomShell, CPHGeometryOwner, CPHObject, CPHUpdateObject);
+
+public:
     void get_spatial_params();
     virtual void EnableObject(CPHObject* obj) { CPHUpdateObject::Activate(); }
     virtual dGeomID dSpacedGeom() { return dSpacedGeometry(); }
@@ -14,7 +17,6 @@ class CPHStaticGeomShell : public CPHGeometryOwner, public CPHObject, public CPH
     virtual u16 get_elements_number() { return 0; };
     virtual CPHSynchronize* get_element_sync(u16 element) { return NULL; };
 
-public:
     void Activate(const Fmatrix& form);
     void Deactivate();
     CPHStaticGeomShell();

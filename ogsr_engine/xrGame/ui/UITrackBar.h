@@ -9,9 +9,11 @@ class CUITrackButton;
 
 class CUITrackBar : public CUIWindow, public CUIOptionsItem
 {
-    friend class CUITrackButton;
+    RTTI_DECLARE_TYPEINFO(CUITrackBar, CUIWindow, CUIOptionsItem);
 
 public:
+    friend class CUITrackButton;
+
     CUITrackBar();
     // CUIOptionsItem
     virtual void SetCurrentValue();

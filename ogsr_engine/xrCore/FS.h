@@ -20,8 +20,10 @@ extern void unregister_file_mapping(void* address, const u32& size);
 //------------------------------------------------------------------------------------
 // Write
 //------------------------------------------------------------------------------------
-class IWriter
+class IWriter : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IWriter);
+
 private:
     xr_stack<size_t> chunk_pos;
 
@@ -110,12 +112,14 @@ public:
 
 class CMemoryWriter : public IWriter
 {
+    RTTI_DECLARE_TYPEINFO(CMemoryWriter, IWriter);
+
+public:
     u8* data;
     size_t position;
     size_t mem_size;
     size_t file_size;
 
-public:
     CMemoryWriter()
     {
         data = nullptr;
@@ -157,8 +161,10 @@ public:
 // Read
 //------------------------------------------------------------------------------------
 template <typename implementation_type>
-class IReaderBase
+class IReaderBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IReaderBase<implementation_type>);
+
 public:
     virtual ~IReaderBase() {}
 
@@ -471,6 +477,8 @@ private:
 
 class IReader : public IReaderBase<IReader>
 {
+    RTTI_DECLARE_TYPEINFO(IReader, IReaderBase<IReader>);
+
 protected:
     char* data{};
     size_t Pos{};

@@ -8,25 +8,28 @@
 
 #pragma once
 
-struct intrusive_base
+struct intrusive_base : public virtual RTTI::Enable
 {
-    intrusive_base()  : m_ref_count(0) {}
+    RTTI_DECLARE_TYPEINFO(intrusive_base);
+
+public:
+    intrusive_base() : m_ref_count(0) {}
 
     template <typename T>
-    void release(T* object) 
+    void release(T* object)
     {
-        //try
+        // try
         //{
-            xr_delete(object);
+        xr_delete(object);
         //}
-        //catch (...) { }
+        // catch (...) { }
     }
 
-    void acquire()  { ++m_ref_count; }
+    void acquire() { ++m_ref_count; }
 
-    bool release()  { return --m_ref_count == 0; }
+    bool release() { return --m_ref_count == 0; }
 
-    bool released() const  { return m_ref_count == 0; }
+    bool released() const { return m_ref_count == 0; }
 
 private:
     size_t m_ref_count;
@@ -39,13 +42,12 @@ class intrusive_ptr
     using base_type = BaseType;
     using self_type = intrusive_ptr<object_type, base_type>;
 
-    static_assert(std::is_base_of_v<BaseType, ObjectType>,
-        "ObjectType must be derived from the BaseType");
+    static_assert(std::is_base_of_v<BaseType, ObjectType>, "ObjectType must be derived from the BaseType");
 
     object_type* m_object;
 
 protected:
-    void dec() 
+    void dec()
     {
         if (!m_object)
             return;
@@ -55,25 +57,25 @@ protected:
     }
 
 public:
-    intrusive_ptr()  : m_object(nullptr) {}
+    intrusive_ptr() : m_object(nullptr) {}
 
-    intrusive_ptr(object_type* rhs)  : m_object(rhs)
+    intrusive_ptr(object_type* rhs) : m_object(rhs)
     {
         if (m_object != nullptr)
             m_object->acquire();
     }
 
-    intrusive_ptr(const self_type& rhs)  : m_object(rhs.m_object)
+    intrusive_ptr(const self_type& rhs) : m_object(rhs.m_object)
     {
         if (m_object != nullptr)
             m_object->acquire();
     }
 
-    intrusive_ptr(self_type&& rhs)  : m_object(rhs.m_object) { rhs.m_object = nullptr; }
+    intrusive_ptr(self_type&& rhs) : m_object(rhs.m_object) { rhs.m_object = nullptr; }
 
-    ~intrusive_ptr()  { dec(); }
+    ~intrusive_ptr() { dec(); }
 
-    self_type& operator=(object_type* rhs) 
+    self_type& operator=(object_type* rhs)
     {
         dec();
         m_object = rhs;
@@ -83,7 +85,7 @@ public:
         return *this;
     }
 
-    self_type& operator=(const self_type& rhs) 
+    self_type& operator=(const self_type& rhs)
     {
         dec();
         m_object = rhs.m_object;
@@ -93,7 +95,7 @@ public:
         return *this;
     }
 
-    self_type& operator=(self_type&& rhs) 
+    self_type& operator=(self_type&& rhs)
     {
         dec();
         m_object = rhs.m_object;
@@ -102,41 +104,40 @@ public:
         return *this;
     }
 
-    object_type& operator*() const 
+    object_type& operator*() const
     {
         VERIFY(m_object);
         return *m_object;
     }
 
-    object_type* operator->() const 
+    object_type* operator->() const
     {
         VERIFY(m_object);
         return m_object;
     }
 
-    explicit operator bool() const  { return m_object != nullptr; }
+    explicit operator bool() const { return m_object != nullptr; }
 
-    bool operator==(const self_type& rhs) const  { return m_object == rhs.m_object; }
+    bool operator==(const self_type& rhs) const { return m_object == rhs.m_object; }
 
-    bool operator!=(const self_type& rhs) const  { return m_object != rhs.m_object; }
+    bool operator!=(const self_type& rhs) const { return m_object != rhs.m_object; }
 
-    bool operator<(const self_type& rhs) const  { return m_object < rhs.m_object; }
+    bool operator<(const self_type& rhs) const { return m_object < rhs.m_object; }
 
-    bool operator>(const self_type& rhs) const  { return m_object > rhs.m_object; }
+    bool operator>(const self_type& rhs) const { return m_object > rhs.m_object; }
 
-    void swap(self_type& rhs) 
+    void swap(self_type& rhs)
     {
         object_type* tmp = m_object;
         m_object = rhs.m_object;
         rhs.m_object = tmp;
     }
 
-    const object_type* get() const  { return m_object; }
+    const object_type* get() const { return m_object; }
 };
 
 template <typename object_type, typename base_type>
-void swap(intrusive_ptr<object_type, base_type>& lhs,
-          intrusive_ptr<object_type, base_type>& rhs) 
+void swap(intrusive_ptr<object_type, base_type>& lhs, intrusive_ptr<object_type, base_type>& rhs)
 {
     lhs.swap(rhs);
 }

@@ -9,8 +9,10 @@
 #pragma once
 
 template <typename T>
-class CObjectManager
+class CObjectManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CObjectManager<T>);
+
 public:
     typedef xr_vector<T*> OBJECTS;
 

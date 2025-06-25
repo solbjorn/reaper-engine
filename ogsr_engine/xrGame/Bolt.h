@@ -1,12 +1,16 @@
 #pragma once
+
 #include "missile.h"
 #include "DamageSource.h"
+
 class CBolt : public CMissile, public IDamageSource
 {
+    RTTI_DECLARE_TYPEINFO(CBolt, CMissile, IDamageSource);
+
+public:
     typedef CMissile inherited;
     u16 m_thrower_id;
 
-public:
     CBolt(void);
     virtual ~CBolt(void);
 

@@ -67,6 +67,8 @@ class CRestrictedObject;
 
 class CAI_Stalker : public CCustomMonster, public CObjectHandler, public CAI_PhraseDialogManager, public CStepManager
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Stalker, CCustomMonster, CObjectHandler, CAI_PhraseDialogManager, CStepManager);
+
 private:
     typedef CCustomMonster inherited;
 

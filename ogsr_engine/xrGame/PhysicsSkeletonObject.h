@@ -1,15 +1,18 @@
 #ifndef PHYSICS_SKELETON_OBJECT_H
 #define PHYSICS_SKELETON_OBJECT_H
+
 #include "physicsshellholder.h"
 #include "PHSkeleton.h"
 
 class CSE_ALifePHSkeletonObject;
-class CPhysicsSkeletonObject : public CPhysicsShellHolder, public CPHSkeleton
 
+class CPhysicsSkeletonObject : public CPhysicsShellHolder, public CPHSkeleton
 {
-    typedef CPhysicsShellHolder inherited;
+    RTTI_DECLARE_TYPEINFO(CPhysicsSkeletonObject, CPhysicsShellHolder, CPHSkeleton);
 
 public:
+    typedef CPhysicsShellHolder inherited;
+
     CPhysicsSkeletonObject(void);
     virtual ~CPhysicsSkeletonObject(void);
 

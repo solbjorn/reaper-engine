@@ -13,6 +13,8 @@
 
 class CHudItemObject : public CInventoryItemObject, public CHudItem
 {
+    RTTI_DECLARE_TYPEINFO(CHudItemObject, CInventoryItemObject, CHudItem);
+
 protected: // чтоб нельзя было вызвать на прямую
     CHudItemObject();
     virtual ~CHudItemObject();

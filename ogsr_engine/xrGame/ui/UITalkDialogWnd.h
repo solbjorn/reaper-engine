@@ -16,6 +16,8 @@ class CUIXml;
 
 class CUITalkDialogWnd : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUITalkDialogWnd, CUIWindow, CUIWndCallback);
+
 private:
     typedef CUIWindow inherited;
     CUIXml* m_uiXml;
@@ -37,9 +39,9 @@ public:
 
     shared_str m_ClickedQuestionID;
 
-    //список вопросов, которые мы можем задавать персонажу
+    // список вопросов, которые мы можем задавать персонажу
 
-    //элементы интерфейса диалога
+    // элементы интерфейса диалога
     CUIFrameLineWnd UIDialogFrame;
     CUIFrameLineWnd UIOurPhrasesFrame;
 
@@ -48,7 +50,7 @@ public:
 
     CUI3tButton UIToTradeButton;
 
-    //информация о персонажах
+    // информация о персонажах
     CUIStatic UIOurIcon;
     CUIStatic UIOthersIcon;
     CUICharacterInfo UICharacterInfoLeft;
@@ -78,6 +80,9 @@ private:
 
 class CUIQuestionItem : public CUIWindow, public CUIWndCallback
 {
+    RTTI_DECLARE_TYPEINFO(CUIQuestionItem, CUIWindow, CUIWndCallback);
+
+public:
     typedef CUIWindow inherited;
     float m_min_height;
 
@@ -94,6 +99,9 @@ public:
 
 class CUIAnswerItem : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIAnswerItem, CUIWindow);
+
+public:
     typedef CUIWindow inherited;
 
     float m_min_height;
@@ -108,6 +116,9 @@ public:
 
 class CUIAnswerItemIconed : public CUIAnswerItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIAnswerItemIconed, CUIAnswerItem);
+
+public:
     typedef CUIAnswerItem inherited;
     CUIStatic* m_icon;
 

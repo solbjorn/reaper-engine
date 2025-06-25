@@ -4,8 +4,10 @@
 
 class CUIWindow;
 
-class CUIWndCallback
+class CUIWndCallback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUIWndCallback);
+
 public:
     using void_function = CallMe::Delegate<void(CUIWindow*, void*)>;
 

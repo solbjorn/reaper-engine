@@ -11,8 +11,10 @@
 #include "object_interfaces.h"
 #include "alife_space.h"
 
-class CALifeTimeManager
+class CALifeTimeManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CALifeTimeManager);
+
 private:
     ALife::_TIME_ID m_game_time;
     float m_time_factor;
