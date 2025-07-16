@@ -7,29 +7,24 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_animation_action.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_animation_action.h"
 
 void CScriptAnimationAction::script_register(lua_State* L)
 {
-    module(L)[(class_<CScriptAnimationAction>("anim")
-                   .enum_("type")[(value("free", int(MonsterSpace::eMentalStateFree)), value("danger", int(MonsterSpace::eMentalStateDanger)),
-                                   value("panic", int(MonsterSpace::eMentalStatePanic)))]
-                   .enum_("monster")[(value("stand_idle", int(MonsterSpace::eAA_StandIdle)), value("sit_idle", int(MonsterSpace::eAA_SitIdle)),
-                                      value("lie_idle", int(MonsterSpace::eAA_LieIdle)), value("eat", int(MonsterSpace::eAA_Eat)), value("sleep", int(MonsterSpace::eAA_Sleep)),
-                                      value("rest", int(MonsterSpace::eAA_Rest)), value("attack", int(MonsterSpace::eAA_Attack)),
-                                      value("look_around", int(MonsterSpace::eAA_LookAround)), value("turn", int(MonsterSpace::eAA_Turn)))]
+    sol::state_view(L).new_usertype<CScriptAnimationAction>(
+        "anim", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptAnimationAction(), CScriptAnimationAction(LPCSTR), CScriptAnimationAction(LPCSTR, bool), CScriptAnimationAction(MonsterSpace::EMentalState),
+                          // Monster specific
+                          CScriptAnimationAction(MonsterSpace::EScriptMonsterAnimAction, int)>(),
 
-                   .def(constructor<>())
-                   .def(constructor<LPCSTR>())
-                   .def(constructor<LPCSTR, bool>())
-                   .def(constructor<MonsterSpace::EMentalState>())
+        // type
+        "free", sol::var(MonsterSpace::eMentalStateFree), "danger", sol::var(MonsterSpace::eMentalStateDanger), "panic", sol::var(MonsterSpace::eMentalStatePanic),
+        // monster
+        "stand_idle", sol::var(MonsterSpace::eAA_StandIdle), "sit_idle", sol::var(MonsterSpace::eAA_SitIdle), "lie_idle", sol::var(MonsterSpace::eAA_LieIdle), "eat",
+        sol::var(MonsterSpace::eAA_Eat), "sleep", sol::var(MonsterSpace::eAA_Sleep), "rest", sol::var(MonsterSpace::eAA_Rest), "attack", sol::var(MonsterSpace::eAA_Attack),
+        "look_around", sol::var(MonsterSpace::eAA_LookAround), "turn", sol::var(MonsterSpace::eAA_Turn),
 
-                   // Monster specific
-                   .def(constructor<MonsterSpace::EScriptMonsterAnimAction, int>())
-
-                   .def("anim", &CScriptAnimationAction::SetAnimation)
-                   .def("type", &CScriptAnimationAction::SetMentalState)
-                   .def("completed", (bool(CScriptAnimationAction::*)())(&CScriptAnimationAction::completed)))];
+        "anim", &CScriptAnimationAction::SetAnimation, "type", &CScriptAnimationAction::SetMentalState, "completed", sol::resolve<bool()>(&CScriptAnimationAction::completed));
 }

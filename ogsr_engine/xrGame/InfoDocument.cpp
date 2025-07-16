@@ -89,6 +89,8 @@ void CInfoDocument::OnH_A_Chield()
 
 void CInfoDocument::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
 
-using namespace luabind;
-
-void CInfoDocument::script_register(lua_State* L) { module(L)[class_<CInfoDocument, CGameObject>("CInfoDocument").def(constructor<>())]; }
+void CInfoDocument::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>), sol::base_classes,
+                                                   xr_sol_bases<CInfoDocument>());
+}

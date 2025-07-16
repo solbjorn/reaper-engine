@@ -1,11 +1,8 @@
 #include "stdafx.h"
 #include "bloodsucker.h"
 
-#include "luabind/luabind.hpp"
-
-using namespace luabind;
-
 void CAI_Bloodsucker::script_register(lua_State* L)
 {
-    module(L)[class_<CAI_Bloodsucker, CGameObject>("CAI_Bloodsucker").def(constructor<>()).def("force_visibility_state", &CAI_Bloodsucker::force_visibility_state)];
+    sol::state_view(L).new_usertype<CAI_Bloodsucker>("CAI_Bloodsucker", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Bloodsucker>),
+                                                     "force_visibility_state", &CAI_Bloodsucker::force_visibility_state, sol::base_classes, xr_sol_bases<CAI_Bloodsucker>());
 }

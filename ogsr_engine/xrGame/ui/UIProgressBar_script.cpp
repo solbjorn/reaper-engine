@@ -1,17 +1,12 @@
 #include "stdafx.h"
-#include "UIProgressBar.h"
 
-using namespace luabind;
+#include "../../xrScriptEngine/xr_sol.h"
+#include "UIProgressBar.h"
 
 void CUIProgressBar::script_register(lua_State* L)
 {
-    module(L)[class_<CUIProgressBar, CUIWindow>("CUIProgressBar")
-                  .def(constructor<>())
-                  .def("SetProgressPos", &CUIProgressBar::SetProgressPos)
-                  .def("GetProgressPos", &CUIProgressBar::GetProgressPos)
-
-                  .def("GetRange_min", &CUIProgressBar::GetRange_min)
-                  .def("GetRange_max", &CUIProgressBar::GetRange_max)
-
-    ];
+    sol::state_view(L).new_usertype<CUIProgressBar>("CUIProgressBar", sol::no_constructor, sol::call_constructor, sol::constructors<CUIProgressBar()>(), "SetProgressPos",
+                                                    &CUIProgressBar::SetProgressPos, "GetProgressPos", &CUIProgressBar::GetProgressPos, "GetRange_min",
+                                                    &CUIProgressBar::GetRange_min, "GetRange_max", &CUIProgressBar::GetRange_max, sol::base_classes,
+                                                    xr_sol_bases<CUIProgressBar>());
 }

@@ -7,36 +7,36 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "game_graph.h"
 #include "ai_space.h"
 
-using namespace luabind;
+static const CGameGraph* get_game_graph() { return (&ai().game_graph()); }
 
-const CGameGraph* get_game_graph() { return (&ai().game_graph()); }
+static const CGameGraph::CHeader* get_header(const CGameGraph* self) { return (&self->header()); }
 
-const CGameGraph::CHeader* get_header(const CGameGraph* self) { return (&self->header()); }
+static bool get_accessible1(const CGameGraph* self, const u32& vertex_id) { return (self->accessible(vertex_id)); }
 
-bool get_accessible1(const CGameGraph* self, const u32& vertex_id) { return (self->accessible(vertex_id)); }
+static void get_accessible2(const CGameGraph* self, const u32& vertex_id, bool value) { self->accessible(vertex_id, value); }
 
-void get_accessible2(const CGameGraph* self, const u32& vertex_id, bool value) { self->accessible(vertex_id, value); }
+static u32 vertex_count(const CGameGraph* self) { return self->header().vertex_count(); }
 
-u32 vertex_count(const CGameGraph* self) { return self->header().vertex_count(); }
-
-Fvector CVertex__level_point(const CGameGraph::CVertex* vertex)
+static Fvector CVertex__level_point(const CGameGraph::CVertex* vertex)
 {
     THROW(vertex);
     return (vertex->level_point());
 }
 
-Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
+static Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
 {
     THROW(vertex);
     return (vertex->game_point());
 }
 
-const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
+static const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
 
-Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
+static Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
 {
     const u8* mask = vertex->vertex_type();
     return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
@@ -44,26 +44,18 @@ Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
 
 void CGameGraph::script_register(lua_State* L)
 {
-    module(L)[(def("game_graph", &get_game_graph),
+    auto lua = sol::state_view(L);
 
-               class_<CGameGraph>("CGameGraph")
-                   .def("accessible", &get_accessible1)
-                   .def("accessible", &get_accessible2)
-                   .def("valid_vertex_id", &CGameGraph::valid_vertex_id)
-                   .def("vertex", &CGameGraph::vertex)
-                   .def("vertex_id", &CGameGraph::vertex_id)
-                   .def("vertex_count", &vertex_count),
+    lua.set_function("game_graph", &get_game_graph);
 
-               class_<CVertex>("GameGraph__CVertex")
-                   .def("level_point", &CVertex__level_point)
-                   .def("game_point", &CVertex__game_point)
-                   .def("level_id", &CVertex::level_id)
-                   .def("level_vertex_id", &CVertex::level_vertex_id)
-                   .def("mask", &CVertex__mask_),
+    lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible1, &get_accessible2), "valid_vertex_id",
+                                 &CGameGraph::valid_vertex_id, "vertex", &CGameGraph::vertex, "vertex_id", &CGameGraph::vertex_id, "vertex_count", &vertex_count);
 
-               def("cross_table", &get_cross_table),
+    lua.new_usertype<CVertex>("GameGraph__CVertex", sol::no_constructor, "level_point", &CVertex__level_point, "game_point", &CVertex__game_point, "level_id", &CVertex::level_id,
+                              "level_vertex_id", &CVertex::level_vertex_id, "mask", &CVertex__mask_);
 
-               class_<CGameLevelCrossTable>("CGameLevelCrossTable").def("vertex", &CGameLevelCrossTable::vertex),
+    lua.set_function("cross_table", &get_cross_table);
 
-               class_<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell").def("game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id))];
+    lua.new_usertype<CGameLevelCrossTable>("CGameLevelCrossTable", sol::no_constructor, "vertex", &CGameLevelCrossTable::vertex);
+    lua.new_usertype<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell", sol::no_constructor, "game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id);
 }

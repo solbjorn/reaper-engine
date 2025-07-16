@@ -10,41 +10,26 @@
 #include "script_sound.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
 void CScriptSound::script_register(lua_State* L)
 {
-    module(L)[(class_<CSound_params>("sound_params")
-                   .def_readwrite("position", &CSound_params::position)
-                   .def_readwrite("volume", &CSound_params::volume)
-                   .def_readwrite("frequency", &CSound_params::freq)
-                   .def_readwrite("min_distance", &CSound_params::min_distance)
-                   .def_readwrite("max_distance", &CSound_params::max_distance),
+    auto lua = sol::state_view(L);
 
-               class_<CScriptSound>("sound_object")
-                   .enum_("sound_play_type")[(value("looped", sm_Looped), value("s2d", sm_2D), value("s3d", 0))]
-                   .enum_("sound_type")[(value("effect", st_Effect), value("music", st_Music))]
+    lua.new_usertype<CSound_params>("sound_params", sol::no_constructor, "position", &CSound_params::position, "volume", &CSound_params::volume, "frequency", &CSound_params::freq,
+                                    "min_distance", &CSound_params::min_distance, "max_distance", &CSound_params::max_distance);
 
-                   .property("frequency", &CScriptSound::GetFrequency, &CScriptSound::SetFrequency)
-                   .property("min_distance", &CScriptSound::GetMinDistance, &CScriptSound::SetMinDistance)
-                   .property("max_distance", &CScriptSound::GetMaxDistance, &CScriptSound::SetMaxDistance)
-                   .property("volume", &CScriptSound::GetVolume, &CScriptSound::SetVolume)
-
-                   .def(constructor<LPCSTR>())
-                   .def(constructor<LPCSTR, ESoundTypes>())
-                   .def(constructor<LPCSTR, ESoundTypes, esound_type>())
-                   .def("get_position", &CScriptSound::GetPosition)
-                   .def("set_position", &CScriptSound::SetPosition)
-                   .def("play", (void(CScriptSound::*)(CScriptGameObject*))(&CScriptSound::Play))
-                   .def("play", (void(CScriptSound::*)(CScriptGameObject*, float))(&CScriptSound::Play))
-                   .def("play", (void(CScriptSound::*)(CScriptGameObject*, float, int))(&CScriptSound::Play))
-                   .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const Fvector&))(&CScriptSound::PlayAtPos))
-                   .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const Fvector&, float))(&CScriptSound::PlayAtPos))
-                   .def("play_at_pos", (void(CScriptSound::*)(CScriptGameObject*, const Fvector&, float, int))(&CScriptSound::PlayAtPos))
-                   .def("play_no_feedback", &CScriptSound::PlayNoFeedback)
-                   .def("stop", &CScriptSound::Stop)
-                   .def("stop_deffered", &CScriptSound::StopDeffered)
-                   .def("playing", &CScriptSound::IsPlaying)
-                   .def("length", &CScriptSound::Length)
-                   .def("set_start_time", &CScriptSound::SetTime))];
+    lua.new_usertype<CScriptSound>(
+        "sound_object", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptSound(LPCSTR), CScriptSound(LPCSTR, ESoundTypes), CScriptSound(LPCSTR, ESoundTypes, esound_type)>(), "looped", sol::var(sm_Looped), "s2d",
+        sol::var(sm_2D), "s3d", sol::var(0), "effect", sol::var(st_Effect), "music", sol::var(st_Music), "frequency",
+        sol::property(&CScriptSound::GetFrequency, &CScriptSound::SetFrequency), "min_distance", sol::property(&CScriptSound::GetMinDistance, &CScriptSound::SetMinDistance),
+        "max_distance", sol::property(&CScriptSound::GetMaxDistance, &CScriptSound::SetMaxDistance), "volume", sol::property(&CScriptSound::GetVolume, &CScriptSound::SetVolume),
+        "get_position", &CScriptSound::GetPosition, "set_position", &CScriptSound::SetPosition, "play",
+        sol::overload(sol::resolve<void(CScriptGameObject*)>(&CScriptSound::Play), sol::resolve<void(CScriptGameObject*, float)>(&CScriptSound::Play),
+                      sol::resolve<void(CScriptGameObject*, float, int)>(&CScriptSound::Play)),
+        "play_at_pos",
+        sol::overload(sol::resolve<void(CScriptGameObject*, const Fvector&)>(&CScriptSound::PlayAtPos),
+                      sol::resolve<void(CScriptGameObject*, const Fvector&, float)>(&CScriptSound::PlayAtPos),
+                      sol::resolve<void(CScriptGameObject*, const Fvector&, float, int)>(&CScriptSound::PlayAtPos)),
+        "play_no_feedback", &CScriptSound::PlayNoFeedback, "stop", &CScriptSound::Stop, "stop_deffered", &CScriptSound::StopDeffered, "playing", &CScriptSound::IsPlaying, "length",
+        &CScriptSound::Length, "set_start_time", &CScriptSound::SetTime);
 }

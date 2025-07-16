@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "snork.h"
 
-using namespace luabind;
-
-void CSnork::script_register(lua_State* L) { module(L)[class_<CSnork, CGameObject>("CSnork").def(constructor<>())]; }
+void CSnork::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSnork>("CSnork", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSnork>), sol::base_classes,
+                                            xr_sol_bases<CSnork>());
+}

@@ -1,4 +1,8 @@
 #include "stdafx.h"
+
+#include "../../xrScriptEngine/xr_sol.h"
+
+#include "UIButton.h"
 #include "UIWindow.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
@@ -11,232 +15,184 @@
 #include "UIScrollView.h"
 #include "UIIconParams.h"
 
-CFontManager& mngr() { return *(UI()->Font()); }
+static CFontManager& mngr() { return *(UI()->Font()); }
 
 // hud font
-CGameFont* GetFontSmall() { return mngr().pFontSmall; }
-CGameFont* GetFontMedium() { return mngr().pFontMedium; }
+static CGameFont* GetFontSmall() { return mngr().pFontSmall; }
+static CGameFont* GetFontMedium() { return mngr().pFontMedium; }
 
-CGameFont* GetFontDI() { return mngr().pFontDI; }
+static CGameFont* GetFontDI() { return mngr().pFontDI; }
 
 // шрифты для интерфейса
-CGameFont* GetFontGraffiti19Russian() { return mngr().pFontGraffiti19Russian; }
-CGameFont* GetFontGraffiti22Russian() { return mngr().pFontGraffiti22Russian; }
+static CGameFont* GetFontGraffiti19Russian() { return mngr().pFontGraffiti19Russian; }
+static CGameFont* GetFontGraffiti22Russian() { return mngr().pFontGraffiti22Russian; }
 
-CGameFont* GetFontLetterica16Russian() { return mngr().pFontLetterica16Russian; }
-CGameFont* GetFontLetterica18Russian() { return mngr().pFontLetterica18Russian; }
+static CGameFont* GetFontLetterica16Russian() { return mngr().pFontLetterica16Russian; }
+static CGameFont* GetFontLetterica18Russian() { return mngr().pFontLetterica18Russian; }
 
-CGameFont* GetFontGraffiti32Russian() { return mngr().pFontGraffiti32Russian; }
-CGameFont* GetFontGraffiti40Russian() { return mngr().pFontGraffiti40Russian; }
-CGameFont* GetFontGraffiti50Russian() { return mngr().pFontGraffiti50Russian; }
+static CGameFont* GetFontGraffiti32Russian() { return mngr().pFontGraffiti32Russian; }
+static CGameFont* GetFontGraffiti40Russian() { return mngr().pFontGraffiti40Russian; }
+static CGameFont* GetFontGraffiti50Russian() { return mngr().pFontGraffiti50Russian; }
 
-CGameFont* GetFontLetterica25() { return mngr().pFontLetterica25; }
+static CGameFont* GetFontLetterica25() { return mngr().pFontLetterica25; }
 
-CGameFont* GetFontArial14() { return mngr().pFontArial14; }
-CGameFont* GetFontArial21() { return mngr().pFontArial21; }
+static CGameFont* GetFontArial14() { return mngr().pFontArial14; }
+static CGameFont* GetFontArial21() { return mngr().pFontArial21; }
 
-CGameFont* GetFontCustom(LPCSTR section) { return mngr().InitializeCustomFont(section); }
+static CGameFont* GetFontCustom(LPCSTR section) { return mngr().InitializeCustomFont(section); }
 
-int GetARGB(u16 a, u16 r, u16 g, u16 b) { return color_argb(a, r, g, b); }
+static int GetARGB(u16 a, u16 r, u16 g, u16 b) { return color_argb(a, r, g, b); }
 
-Frect get_texture_rect(LPCSTR icon_name) { return CUITextureMaster::GetTextureRect(icon_name); }
+static Frect get_texture_rect(LPCSTR icon_name) { return CUITextureMaster::GetTextureRect(icon_name); }
 
-LPCSTR get_texture_name(LPCSTR icon_name) { return CUITextureMaster::GetTextureFileName(icon_name); }
+static LPCSTR get_texture_name(LPCSTR icon_name) { return CUITextureMaster::GetTextureFileName(icon_name); }
 
-TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name) { return CUITextureMaster::FindItem(name, def_name); }
+static TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name) { return CUITextureMaster::FindItem(name, def_name); }
 
-LPCSTR CIconParams__get_name(CIconParams* self) { return self->name.c_str(); }
+static LPCSTR CIconParams__get_name(CIconParams* self) { return self->name.c_str(); }
 
 template <typename T>
-T* wnd_object_cast(CUIWindow* wnd)
+static T* wnd_object_cast(CUIWindow* wnd)
 {
     return smart_cast<T*>(wnd);
 }
 
-#include "UIButton.h"
-using namespace luabind;
-
 void CUIWindow::script_register(lua_State* L)
 {
-    module(L)[(def("GetARGB", &GetARGB),
+    auto lua = sol::state_view(L);
 
-               def("GetFontSmall", &GetFontSmall), def("GetFontMedium", &GetFontMedium), def("GetFontDI", &GetFontDI), def("GetFontGraffiti19Russian", &GetFontGraffiti19Russian),
-               def("GetFontGraffiti22Russian", &GetFontGraffiti22Russian), def("GetFontLetterica16Russian", &GetFontLetterica16Russian),
-               def("GetFontLetterica18Russian", &GetFontLetterica18Russian), def("GetFontGraffiti32Russian", &GetFontGraffiti32Russian),
-               def("GetFontGraffiti40Russian", &GetFontGraffiti40Russian), def("GetFontGraffiti50Russian", &GetFontGraffiti50Russian), def("GetFontArial14", &GetFontArial14),
-               def("GetFontArial21", &GetFontArial21), def("GetFontLetterica25", &GetFontLetterica25), def("GetFontCustom", &GetFontCustom),
+    lua.set_function("GetARGB", &GetARGB);
+    lua.set_function("GetFontSmall", &GetFontSmall);
+    lua.set_function("GetFontMedium", &GetFontMedium);
+    lua.set_function("GetFontDI", &GetFontDI);
+    lua.set_function("GetFontGraffiti19Russian", &GetFontGraffiti19Russian);
+    lua.set_function("GetFontGraffiti22Russian", &GetFontGraffiti22Russian);
+    lua.set_function("GetFontLetterica16Russian", &GetFontLetterica16Russian);
+    lua.set_function("GetFontLetterica18Russian", &GetFontLetterica18Russian);
+    lua.set_function("GetFontGraffiti32Russian", &GetFontGraffiti32Russian);
+    lua.set_function("GetFontGraffiti40Russian", &GetFontGraffiti40Russian);
+    lua.set_function("GetFontGraffiti50Russian", &GetFontGraffiti50Russian);
+    lua.set_function("GetFontArial14", &GetFontArial14);
+    lua.set_function("GetFontArial21", &GetFontArial21);
+    lua.set_function("GetFontLetterica25", &GetFontLetterica25);
+    lua.set_function("GetFontCustom", &GetFontCustom);
 
-               class_<TEX_INFO>("TEX_INFO").def("get_file_name", &TEX_INFO::get_file_name).def("get_rect", &TEX_INFO::get_rect),
+    lua.new_usertype<TEX_INFO>("TEX_INFO", sol::no_constructor, "get_file_name", &TEX_INFO::get_file_name, "get_rect", &TEX_INFO::get_rect);
 
-               def("GetTextureName", &get_texture_name), def("GetTextureRect", &get_texture_rect), def("GetTextureInfo", &get_texture_info),
+    lua.set_function("GetTextureName", &get_texture_name);
+    lua.set_function("GetTextureRect", &get_texture_rect);
+    lua.set_function("GetTextureInfo", &get_texture_info);
 
-               class_<CUIWindow>("CUIWindow")
-                   .def(constructor<>())
-                   .def("AttachChild", &CUIWindow::AttachChild, adopt<2>())
-                   .def("DetachChild", &CUIWindow::DetachChild)
-                   .def("DetachAll", &CUIWindow::DetachAll)
-                   .def("SetAutoDelete", &CUIWindow::SetAutoDelete)
-                   .def("IsAutoDelete", &CUIWindow::IsAutoDelete)
+    lua.new_usertype<CUIWindow>(
+        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::constructors<CUIWindow()>(), "AttachChild", &CUIWindow::AttachChild, "DetachChild", &CUIWindow::DetachChild,
+        "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete, "SetWndRect",
+        sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)), "Init",
+        sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
+        "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize({w, h}); }, "GetWidth",
+        &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight", &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop", &CUIWindow::GetPosTop,
+        "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable, "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown", &CUIWindow::IsShown, "SetFont",
+        &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont, "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName", &CUIWindow::WindowName_script, "SetWindowName",
+        &CUIWindow::SetWindowName, "SetPPMode", &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY",
+        &CUIWindow::GetMousePosY, "GetParent", &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild,
+        "FindChild", sol::resolve<CUIWindow*(LPCSTR)>(&CUIWindow::FindChild), "GetButton", &wnd_object_cast<CUIButton>, "GetCUIStatic", &wnd_object_cast<CUIStatic>,
+        "GetAbsoluteRect", sol::resolve<void(Frect&)>(&CUIWindow::GetAbsoluteRect), sol::base_classes, xr_sol_bases<CUIWindow>());
 
-                   .def("SetWndRect", (void(CUIWindow::*)(Frect)) & CUIWindow::SetWndRect_script)
-                   .def("SetWndRect", (void(CUIWindow::*)(float, float, float, float)) & CUIWindow::SetWndRect_script)
-                   .def("Init", (void(CUIWindow::*)(float, float, float, float)) & CUIWindow::Init)
-                   .def("Init", (void(CUIWindow::*)(Frect*)) & CUIWindow::Init)
-                   .def("GetWndPos", &CUIWindow::GetWndPos)
-                   .def("SetWndPos", (void(CUIWindow::*)(float, float)) & CUIWindow::SetWndPos)
-                   .def("SetWndSize", (void(CUIWindow::*)(float, float)) & CUIWindow::SetWndSize)
-                   .def("GetWidth", &CUIWindow::GetWidth)
-                   .def("SetWidth", &CUIWindow::SetWidth)
-                   .def("GetHeight", &CUIWindow::GetHeight)
-                   .def("SetHeight", &CUIWindow::SetHeight)
+    lua.new_usertype<CDialogHolder>("CDialogHolder", sol::no_constructor, "MainInputReceiver", &CDialogHolder::MainInputReceiver, "start_stop_menu", &CDialogHolder::StartStopMenu,
+                                    "AddDialogToRender", &CDialogHolder::AddDialogToRender, "RemoveDialogToRender", &CDialogHolder::RemoveDialogToRender, sol::base_classes,
+                                    xr_sol_bases<CDialogHolder>());
 
-                   .def("GetPosTop", &CUIWindow::GetPosTop)
-                   .def("GetPosLeft", &CUIWindow::GetPosLeft)
+    lua.new_usertype<CUIDialogWnd>("CUIDialogWnd", sol::no_constructor, "GetHolder", &CUIDialogWnd::GetHolder, "SetHolder", &CUIDialogWnd::SetHolder, sol::base_classes,
+                                   xr_sol_bases<CUIDialogWnd>());
 
-                   .def("Enable", &CUIWindow::Enable)
-                   .def("IsEnabled", &CUIWindow::IsEnabled)
-                   .def("Show", &CUIWindow::Show)
-                   .def("IsShown", &CUIWindow::IsShown)
-                   .def("SetFont", &CUIWindow::SetFont)
-                   .def("GetFont", &CUIWindow::GetFont)
+    lua.new_usertype<CUIFrameWindow>("CUIFrameWindow", sol::no_constructor, sol::call_constructor, sol::constructors<CUIFrameWindow()>(), "SetWidth", &CUIFrameWindow::SetWidth,
+                                     "SetHeight", &CUIFrameWindow::SetHeight, "SetColor", &CUIFrameWindow::SetColor, "GetTitleStatic", &CUIFrameWindow::GetTitleStatic, "Init",
+                                     sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIFrameWindow::Init), sol::base_classes, xr_sol_bases<CUIFrameWindow>());
 
-                   .def("DetachFromParent", &CUIWindow::DetachFromParent)
+    lua.new_usertype<CUIFrameLineWnd>("CUIFrameLineWnd", sol::no_constructor, sol::call_constructor, sol::constructors<CUIFrameLineWnd()>(), "SetWidth", &CUIFrameLineWnd::SetWidth,
+                                      "SetHeight", &CUIFrameLineWnd::SetHeight, "SetOrientation", &CUIFrameLineWnd::SetOrientation, "SetColor", &CUIFrameLineWnd::SetColor,
+                                      "GetTitleStatic", &CUIFrameLineWnd::GetTitleStatic, "Init",
+                                      sol::resolve<void(LPCSTR, float, float, float, float, bool)>(&CUIFrameLineWnd::Init), sol::base_classes, xr_sol_bases<CUIFrameLineWnd>());
 
-                   .def("WindowName", &CUIWindow::WindowName_script)
-                   .def("SetWindowName", &CUIWindow::SetWindowName)
-                   .def("SetPPMode", &CUIWindow::SetPPMode)
-                   .def("ResetPPMode", &CUIWindow::ResetPPMode)
+    lua.new_usertype<CUILabel>("CUILabel", sol::no_constructor, sol::call_constructor, sol::constructors<CUILabel()>(), "SetText", &CUILabel::SetText, "GetText",
+                               &CUILabel::GetText, sol::base_classes, xr_sol_bases<CUILabel>());
 
-                   .def("GetMousePosX", &CUIWindow::GetMousePosX)
-                   .def("GetMousePosY", &CUIWindow::GetMousePosY)
-                   .def("GetParent", &CUIWindow::GetParent)
-                   .def("GetWndRect", (void(CUIWindow::*)(Frect&)) & CUIWindow::GetWndRect_script)
-                   .def("IsChild", &CUIWindow::IsChild)
-                   .def("FindChild", (CUIWindow * (CUIWindow::*)(LPCSTR)) & CUIWindow::FindChild)
-                   .def("GetButton", &wnd_object_cast<CUIButton>)
-                   .def("GetCUIStatic", &wnd_object_cast<CUIStatic>)
-                   .def("GetAbsoluteRect", (void(CUIWindow::*)(Frect&)) & CUIWindow::GetAbsoluteRect),
+    lua.new_usertype<CUIMMShniaga>("CUIMMShniaga", sol::no_constructor, "SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier, sol::base_classes, xr_sol_bases<CUIMMShniaga>());
 
-               class_<CDialogHolder>("CDialogHolder")
-                   .def("MainInputReceiver", &CDialogHolder::MainInputReceiver)
-                   .def("start_stop_menu", &CDialogHolder::StartStopMenu)
-                   .def("AddDialogToRender", &CDialogHolder::AddDialogToRender)
-                   .def("RemoveDialogToRender", &CDialogHolder::RemoveDialogToRender),
+    lua.new_usertype<CUIScrollView>("CUIScrollView", sol::no_constructor, sol::call_constructor, sol::constructors<CUIScrollView()>(), "AddWindow", &CUIScrollView::AddWindow,
+                                    "RemoveWindow", &CUIScrollView::RemoveWindow, "Clear", &CUIScrollView::Clear, "ScrollToBegin", &CUIScrollView::ScrollToBegin, "ScrollToEnd",
+                                    &CUIScrollView::ScrollToEnd, "GetMinScrollPos", &CUIScrollView::GetMinScrollPos, "GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos,
+                                    "GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos, "SetScrollPos", &CUIScrollView::SetScrollPos, "ForceUpdate",
+                                    &CUIScrollView::ForceUpdate, sol::base_classes, xr_sol_bases<CUIScrollView>());
 
-               class_<CUIDialogWnd, CUIWindow>("CUIDialogWnd").def("GetHolder", &CUIDialogWnd::GetHolder).def("SetHolder", &CUIDialogWnd::SetHolder),
+    lua.new_usertype<CIconParams>("CIconParams", sol::no_constructor, sol::call_constructor, sol::constructors<CIconParams(LPCSTR)>(), "icon_group",
+                                  sol::readonly(&CIconParams::icon_group), "grid_width", sol::readonly(&CIconParams::grid_width), "grid_height",
+                                  sol::readonly(&CIconParams::grid_height), "grid_x", sol::readonly(&CIconParams::grid_x), "grid_y", sol::readonly(&CIconParams::grid_y),
+                                  "icon_name", sol::property(&CIconParams__get_name), "original_rect", &CIconParams::original_rect, "set_shader",
+                                  sol::resolve<void(CUIStatic*)>(&CIconParams::set_shader));
 
-               class_<CUIFrameWindow, CUIWindow>("CUIFrameWindow")
-                   .def(constructor<>())
-                   .def("SetWidth", &CUIFrameWindow::SetWidth)
-                   .def("SetHeight", &CUIFrameWindow::SetHeight)
-                   .def("SetColor", &CUIFrameWindow::SetColor)
-                   .def("GetTitleStatic", &CUIFrameWindow::GetTitleStatic)
-                   .def("Init", (void(CUIFrameWindow::*)(LPCSTR, float, float, float, float)) & CUIFrameWindow::Init),
+    lua.new_enum("ui_events",
+                 // CUIWindow
+                 "WINDOW_LBUTTON_DOWN", WINDOW_LBUTTON_DOWN, "WINDOW_RBUTTON_DOWN", WINDOW_RBUTTON_DOWN, "WINDOW_LBUTTON_UP", WINDOW_LBUTTON_UP, "WINDOW_RBUTTON_UP",
+                 WINDOW_RBUTTON_UP, "WINDOW_MOUSE_MOVE", WINDOW_MOUSE_MOVE, "WINDOW_LBUTTON_DB_CLICK", WINDOW_LBUTTON_DB_CLICK, "WINDOW_KEY_PRESSED", WINDOW_KEY_PRESSED,
+                 "WINDOW_KEY_RELEASED", WINDOW_KEY_RELEASED, "WINDOW_MOUSE_CAPTURE_LOST", WINDOW_MOUSE_CAPTURE_LOST, "WINDOW_KEYBOARD_CAPTURE_LOST", WINDOW_KEYBOARD_CAPTURE_LOST,
 
-               class_<CUIFrameLineWnd, CUIWindow>("CUIFrameLineWnd")
-                   .def(constructor<>())
-                   .def("SetWidth", &CUIFrameLineWnd::SetWidth)
-                   .def("SetHeight", &CUIFrameLineWnd::SetHeight)
-                   .def("SetOrientation", &CUIFrameLineWnd::SetOrientation)
-                   .def("SetColor", &CUIFrameLineWnd::SetColor)
-                   .def("GetTitleStatic", &CUIFrameLineWnd::GetTitleStatic)
-                   .def("Init", (void(CUIFrameLineWnd::*)(LPCSTR, float, float, float, float, bool)) & CUIFrameLineWnd::Init),
+                 // CUIStatic
+                 "STATIC_FOCUS_RECEIVED", STATIC_FOCUS_RECEIVED, "STATIC_FOCUS_LOST", STATIC_FOCUS_LOST,
 
-               class_<CUILabel, CUIFrameLineWnd>("CUILabel").def(constructor<>()).def("SetText", &CUILabel::SetText).def("GetText", &CUILabel::GetText),
+                 // CUIButton
+                 "BUTTON_CLICKED", BUTTON_CLICKED, "BUTTON_DOWN", BUTTON_DOWN,
 
-               class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga").def("SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier),
+                 // CUITabControl
+                 "TAB_CHANGED", TAB_CHANGED,
 
-               class_<CUIScrollView, CUIWindow>("CUIScrollView")
-                   .def(constructor<>())
-                   .def("AddWindow", &CUIScrollView::AddWindow)
-                   .def("RemoveWindow", &CUIScrollView::RemoveWindow)
-                   .def("Clear", &CUIScrollView::Clear)
-                   .def("ScrollToBegin", &CUIScrollView::ScrollToBegin)
-                   .def("ScrollToEnd", &CUIScrollView::ScrollToEnd)
-                   .def("GetMinScrollPos", &CUIScrollView::GetMinScrollPos)
-                   .def("GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos)
-                   .def("GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos)
-                   .def("SetScrollPos", &CUIScrollView::SetScrollPos)
-                   .def("ForceUpdate", &CUIScrollView::ForceUpdate),
+                 // CUICustomEdit
+                 "EDIT_TEXT_CHANGED", EDIT_TEXT_CHANGED, "EDIT_TEXT_COMMIT", EDIT_TEXT_COMMIT,
 
-               class_<CIconParams>("CIconParams")
-                   .def(constructor<LPCSTR>())
-                   .def_readonly("icon_group", &CIconParams::icon_group)
-                   .def_readonly("grid_width", &CIconParams::grid_width)
-                   .def_readonly("grid_height", &CIconParams::grid_height)
-                   .def_readonly("grid_x", &CIconParams::grid_x)
-                   .def_readonly("grid_y", &CIconParams::grid_y)
-                   .property("icon_name", &CIconParams__get_name)
-                   .def("original_rect", &CIconParams::original_rect)
-                   .def("set_shader", (void(CIconParams::*)(CUIStatic*)) & CIconParams::set_shader),
+                 // CUICheckButton
+                 "CHECK_BUTTON_SET", CHECK_BUTTON_SET, "CHECK_BUTTON_RESET", CHECK_BUTTON_RESET,
 
-               class_<enum_exporter<EUIMessages>>("ui_events")
-                   .enum_("events")[(
-                       // CUIWindow
-                       value("WINDOW_LBUTTON_DOWN", int(WINDOW_LBUTTON_DOWN)), value("WINDOW_RBUTTON_DOWN", int(WINDOW_RBUTTON_DOWN)),
-                       value("WINDOW_LBUTTON_UP", int(WINDOW_LBUTTON_UP)), value("WINDOW_RBUTTON_UP", int(WINDOW_RBUTTON_UP)), value("WINDOW_MOUSE_MOVE", int(WINDOW_MOUSE_MOVE)),
-                       value("WINDOW_LBUTTON_DB_CLICK", int(WINDOW_LBUTTON_DB_CLICK)), value("WINDOW_KEY_PRESSED", int(WINDOW_KEY_PRESSED)),
-                       value("WINDOW_KEY_RELEASED", int(WINDOW_KEY_RELEASED)), value("WINDOW_MOUSE_CAPTURE_LOST", int(WINDOW_MOUSE_CAPTURE_LOST)),
-                       value("WINDOW_KEYBOARD_CAPTURE_LOST", int(WINDOW_KEYBOARD_CAPTURE_LOST)),
-
-                       // CUIStatic
-                       value("STATIC_FOCUS_RECEIVED", int(STATIC_FOCUS_RECEIVED)), value("STATIC_FOCUS_LOST", int(STATIC_FOCUS_LOST)),
-
-                       // CUIButton
-                       value("BUTTON_CLICKED", int(BUTTON_CLICKED)), value("BUTTON_DOWN", int(BUTTON_DOWN)),
-
-                       // CUITabControl
-                       value("TAB_CHANGED", int(TAB_CHANGED)),
-
-                       // CUICustomEdit
-                       value("EDIT_TEXT_CHANGED", int(EDIT_TEXT_CHANGED)), value("EDIT_TEXT_COMMIT", int(EDIT_TEXT_COMMIT)),
-
-                       // CUICheckButton
-                       value("CHECK_BUTTON_SET", int(CHECK_BUTTON_SET)), value("CHECK_BUTTON_RESET", int(CHECK_BUTTON_RESET)),
-
-                       // CUITrackBar
-                       value("TRACKBAR_CHANGED", int(TRACKBAR_CHANGED)),
+                 // CUITrackBar
+                 "TRACKBAR_CHANGED", TRACKBAR_CHANGED,
 
 #pragma todo("KRodin: ивент RADIOBUTTON_SET нигде не вызывается. Надо доделать по необходимости.")
-                       // CUIRadioButton
-                       value("RADIOBUTTON_SET", int(RADIOBUTTON_SET)),
+                 // CUIRadioButton
+                 "RADIOBUTTON_SET", RADIOBUTTON_SET,
 
-                       // CUIdragDropItem
-                       value("DRAG_DROP_ITEM_DRAG", int(DRAG_DROP_ITEM_DRAG)), value("DRAG_DROP_ITEM_DROP", int(DRAG_DROP_ITEM_DROP)),
-                       value("DRAG_DROP_ITEM_DB_CLICK", int(DRAG_DROP_ITEM_DB_CLICK)), value("DRAG_DROP_ITEM_RBUTTON_CLICK", int(DRAG_DROP_ITEM_RBUTTON_CLICK)),
+                 // CUIdragDropItem
+                 "DRAG_DROP_ITEM_DRAG", DRAG_DROP_ITEM_DRAG, "DRAG_DROP_ITEM_DROP", DRAG_DROP_ITEM_DROP, "DRAG_DROP_ITEM_DB_CLICK", DRAG_DROP_ITEM_DB_CLICK,
+                 "DRAG_DROP_ITEM_RBUTTON_CLICK", DRAG_DROP_ITEM_RBUTTON_CLICK,
 
-                       // CUIScrollBox
-                       value("SCROLLBOX_MOVE", int(SCROLLBOX_MOVE)),
+                 // CUIScrollBox
+                 "SCROLLBOX_MOVE", SCROLLBOX_MOVE,
 
-                       // CUIScrollBar
-                       value("SCROLLBAR_VSCROLL", int(SCROLLBAR_VSCROLL)), value("SCROLLBAR_HSCROLL", int(SCROLLBAR_HSCROLL)),
+                 // CUIScrollBar
+                 "SCROLLBAR_VSCROLL", SCROLLBAR_VSCROLL, "SCROLLBAR_HSCROLL", SCROLLBAR_HSCROLL,
 
-                       // CUIListWnd
-                       value("LIST_ITEM_CLICKED", int(LIST_ITEM_CLICKED)), value("LIST_ITEM_SELECT", int(LIST_ITEM_SELECT)),
+                 // CUIListWnd
+                 "LIST_ITEM_CLICKED", LIST_ITEM_CLICKED, "LIST_ITEM_SELECT", LIST_ITEM_SELECT,
 
-                       // UIPropertiesBox
-                       value("PROPERTY_CLICKED", int(PROPERTY_CLICKED)),
+                 // UIPropertiesBox
+                 "PROPERTY_CLICKED", PROPERTY_CLICKED,
 
-                       // CUIMessageBox
-                       value("MESSAGE_BOX_OK_CLICKED", int(MESSAGE_BOX_OK_CLICKED)), value("MESSAGE_BOX_YES_CLICKED", int(MESSAGE_BOX_YES_CLICKED)),
-                       value("MESSAGE_BOX_NO_CLICKED", int(MESSAGE_BOX_NO_CLICKED)), value("MESSAGE_BOX_CANCEL_CLICKED", int(MESSAGE_BOX_CANCEL_CLICKED)),
-                       value("MESSAGE_BOX_QUIT_GAME_CLICKED", int(MESSAGE_BOX_QUIT_GAME_CLICKED)), value("MESSAGE_BOX_QUIT_WIN_CLICKED", int(MESSAGE_BOX_QUIT_WIN_CLICKED)),
+                 // CUIMessageBox
+                 "MESSAGE_BOX_OK_CLICKED", MESSAGE_BOX_OK_CLICKED, "MESSAGE_BOX_YES_CLICKED", MESSAGE_BOX_YES_CLICKED, "MESSAGE_BOX_NO_CLICKED", MESSAGE_BOX_NO_CLICKED,
+                 "MESSAGE_BOX_CANCEL_CLICKED", MESSAGE_BOX_CANCEL_CLICKED, "MESSAGE_BOX_QUIT_GAME_CLICKED", MESSAGE_BOX_QUIT_GAME_CLICKED, "MESSAGE_BOX_QUIT_WIN_CLICKED",
+                 MESSAGE_BOX_QUIT_WIN_CLICKED,
 
-                       // CUITalkDialogWnd
-                       value("TALK_DIALOG_TRADE_BUTTON_CLICKED", int(TALK_DIALOG_TRADE_BUTTON_CLICKED)), value("TALK_DIALOG_QUESTION_CLICKED", int(TALK_DIALOG_QUESTION_CLICKED)),
+                 // CUITalkDialogWnd
+                 "TALK_DIALOG_TRADE_BUTTON_CLICKED", TALK_DIALOG_TRADE_BUTTON_CLICKED, "TALK_DIALOG_QUESTION_CLICKED", TALK_DIALOG_QUESTION_CLICKED,
 
 #pragma todo( \
     "KRodin: ивент PDA_CONTACTS_WND_CONTACT_SELECTED нигде не вызывается. Надо доделать по необходимости. Хотя я не очень представляю, для чего он может понадобиться в скриптах.")
-                       // CUIPdaContactsWnd
-                       value("PDA_CONTACTS_WND_CONTACT_SELECTED", int(PDA_CONTACTS_WND_CONTACT_SELECTED)),
+                 // CUIPdaContactsWnd
+                 "PDA_CONTACTS_WND_CONTACT_SELECTED", PDA_CONTACTS_WND_CONTACT_SELECTED,
 
-                       // CUITradeWnd
-                       value("TRADE_WND_CLOSED", int(TRADE_WND_CLOSED)),
+                 // CUITradeWnd
+                 "TRADE_WND_CLOSED", TRADE_WND_CLOSED,
 
-                       // CUIInventroyWnd
-                       value("INVENTORY_DROP_ACTION", int(INVENTORY_DROP_ACTION)), value("INVENTORY_EAT_ACTION", int(INVENTORY_EAT_ACTION)),
-                       value("INVENTORY_TO_BELT_ACTION", int(INVENTORY_TO_BELT_ACTION)), value("INVENTORY_TO_SLOT_ACTION", int(INVENTORY_TO_SLOT_ACTION)),
-                       value("INVENTORY_TO_BAG_ACTION", int(INVENTORY_TO_BAG_ACTION)), value("INVENTORY_ATTACH_ADDON", int(INVENTORY_ATTACH_ADDON)),
-                       value("INVENTORY_DETACH_SCOPE_ADDON", int(INVENTORY_DETACH_SCOPE_ADDON)), value("INVENTORY_DETACH_SILENCER_ADDON", int(INVENTORY_DETACH_SILENCER_ADDON)),
-                       value("INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON", int(INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON)))])];
+                 // CUIInventroyWnd
+                 "INVENTORY_DROP_ACTION", INVENTORY_DROP_ACTION, "INVENTORY_EAT_ACTION", INVENTORY_EAT_ACTION, "INVENTORY_TO_BELT_ACTION", INVENTORY_TO_BELT_ACTION,
+                 "INVENTORY_TO_SLOT_ACTION", INVENTORY_TO_SLOT_ACTION, "INVENTORY_TO_BAG_ACTION", INVENTORY_TO_BAG_ACTION, "INVENTORY_ATTACH_ADDON", INVENTORY_ATTACH_ADDON,
+                 "INVENTORY_DETACH_SCOPE_ADDON", INVENTORY_DETACH_SCOPE_ADDON, "INVENTORY_DETACH_SILENCER_ADDON", INVENTORY_DETACH_SILENCER_ADDON,
+                 "INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON", INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
 }

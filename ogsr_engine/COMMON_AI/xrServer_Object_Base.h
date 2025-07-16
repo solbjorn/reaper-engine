@@ -45,17 +45,18 @@ virtual void load(NET_Packet& tNetPacket);
 virtual void save(NET_Packet& tNetPacket);
 }
 ;
-add_to_type_list(CPureServerObject)
-#define script_type_list save_type_list(CPureServerObject)
 
-    SERVER_ENTITY_DECLARE_BEGIN3(CSE_Abstract, ISE_Abstract, CPureServerObject, CScriptValueContainer) public : enum ESpawnFlags {
-        flSpawnEnabled = u32(1 << 0),
-        flSpawnOnSurgeOnly = u32(1 << 1),
-        flSpawnSingleItemOnly = u32(1 << 2),
-        flSpawnIfDestroyedOnly = u32(1 << 3),
-        flSpawnInfiniteCount = u32(1 << 4),
-        flSpawnDestroyOnSpawn = u32(1 << 5),
-    };
+SERVER_ENTITY_DECLARE_BEGIN3(CSE_Abstract, ISE_Abstract, CPureServerObject, CScriptValueContainer)
+public:
+enum ESpawnFlags
+{
+    flSpawnEnabled = u32(1 << 0),
+    flSpawnOnSurgeOnly = u32(1 << 1),
+    flSpawnSingleItemOnly = u32(1 << 2),
+    flSpawnIfDestroyedOnly = u32(1 << 3),
+    flSpawnInfiniteCount = u32(1 << 4),
+    flSpawnDestroyOnSpawn = u32(1 << 5),
+};
 
 private:
 LPSTR s_name_replace;
@@ -104,7 +105,7 @@ virtual void load(NET_Packet& tNetPacket);
 
 CSE_Abstract(LPCSTR caSection);
 virtual ~CSE_Abstract();
-virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender){};
+virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) {};
 virtual BOOL Net_Relevant() { return TRUE; };
 //
 virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal);

@@ -200,7 +200,7 @@ void CScriptStorage::reinit(lua_State* LSVM)
 
 void CScriptStorage::print_stack() { Log(get_lua_traceback(lua())); }
 
-void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) //Используется в очень многих местах //Очень много пишет в лог.
+void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) // Используется в очень многих местах //Очень много пишет в лог.
 {
 #ifdef DEBUG
     va_list marker;
@@ -237,10 +237,10 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 {
     int l_iErrorCode = 0;
     const std::string_view strbuf{caBuffer, tSize};
-    if (strcmp(GlobalNamespace, caNameSpaceName)) //Все скрипты кроме _G
+    if (strcmp(GlobalNamespace, caNameSpaceName)) // Все скрипты кроме _G
     {
         // KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
-        //Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
+        // Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
         if (!strcmp("_g", caNameSpaceName))
             return false;
 
@@ -259,7 +259,7 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
     if (l_iErrorCode)
     {
         print_output(L, caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -272,7 +272,7 @@ bool CScriptStorage::do_file(
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
     {
-        //заменить на ассерт?
+        // заменить на ассерт?
         Msg("!![CScriptStorage::do_file] Cannot open file [%s]", caScriptName);
         return false;
     }
@@ -292,7 +292,7 @@ bool CScriptStorage::do_file(
     if (l_iErrorCode)
     {
         print_output(lua(), caScriptName, l_iErrorCode);
-        R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
+        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
         return false;
     }
     return true;
@@ -435,7 +435,7 @@ bool CScriptStorage::print_output(lua_State* L, const char* caScriptFileName,
 
     auto traceback = get_lua_traceback(L);
 
-    if (!lua_isstring(L, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+    if (!lua_isstring(L, -1)) // НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
     {
         Msg("*********************************************************************************");
         Msg("[print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);

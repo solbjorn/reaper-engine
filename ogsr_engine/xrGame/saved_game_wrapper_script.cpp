@@ -7,23 +7,23 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "saved_game_wrapper.h"
 #include "ai_space.h"
 #include "game_graph.h"
 #include "xr_time.h"
 
-using namespace luabind;
-
-xrTime CSavedGameWrapper__game_time(const CSavedGameWrapper* self) { return (xrTime(self->game_time())); }
+static xrTime CSavedGameWrapper__game_time(const CSavedGameWrapper* self) { return xrTime(self->game_time()); }
 
 void CSavedGameWrapper::script_register(lua_State* L)
 {
-    module(L)[(class_<CSavedGameWrapper>("CSavedGameWrapper")
-                   .def(constructor<LPCSTR>())
-                   .def("game_time", &CSavedGameWrapper__game_time)
-                   .def("level_name", &CSavedGameWrapper::level_name)
-                   .def("level_id", &CSavedGameWrapper::level_id)
-                   .def("actor_health", &CSavedGameWrapper::actor_health),
+    auto lua = sol::state_view(L);
 
-               def("valid_saved_game", (bool (*)(LPCSTR))(&valid_saved_game)))];
+    lua.new_usertype<CSavedGameWrapper>("CSavedGameWrapper", sol::no_constructor, sol::call_constructor, sol::constructors<CSavedGameWrapper(LPCSTR)>(), "game_time",
+                                        &CSavedGameWrapper__game_time, "level_name", &CSavedGameWrapper::level_name, "level_id", &CSavedGameWrapper::level_id, "actor_health",
+                                        &CSavedGameWrapper::actor_health);
+
+    lua.set_function("valid_saved_game", sol::resolve<bool(LPCSTR)>(&valid_saved_game));
 }

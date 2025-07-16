@@ -1,11 +1,13 @@
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "Physics.h"
 #include "PHWorld.h"
 #include "PHCommander.h"
 
-using namespace luabind;
-
 void CPHWorld::script_register(lua_State* L)
 {
-    module(L)[class_<CPHWorld>("physics_world").def("set_gravity", &CPHWorld::SetGravity).def("gravity", &CPHWorld::Gravity).def("add_call", &CPHWorld::AddCall)];
+    sol::state_view(L).new_usertype<CPHWorld>("physics_world", sol::no_constructor, "set_gravity", &CPHWorld::SetGravity, "gravity", &CPHWorld::Gravity, "add_call",
+                                              &CPHWorld::AddCall);
 }

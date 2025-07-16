@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "fracture.h"
 
-using namespace luabind;
-
-void CFracture::script_register(lua_State* L) { module(L)[class_<CFracture, CGameObject>("CFracture").def(constructor<>())]; }
+void CFracture::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CFracture>("CFracture", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CFracture>), sol::base_classes,
+                                               xr_sol_bases<CFracture>());
+}

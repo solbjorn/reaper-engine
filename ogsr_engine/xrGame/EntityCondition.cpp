@@ -564,46 +564,27 @@ void CEntityCondition::remove_links(const CObject* object)
     m_iWhoID = m_object->ID();
 }
 
-using namespace luabind;
+static void set_entity_health(CEntityCondition* E, float h) { E->health() = h; }
+static void set_entity_max_health(CEntityCondition* E, float h) { E->health() = h; }
 
-void set_entity_health(CEntityCondition* E, float h) { E->health() = h; }
-void set_entity_max_health(CEntityCondition* E, float h) { E->health() = h; }
-
-bool get_entity_crouch(CEntity::SEntityState* S) { return S->bCrouch; }
-bool get_entity_fall(CEntity::SEntityState* S) { return S->bFall; }
-bool get_entity_jump(CEntity::SEntityState* S) { return S->bJump; }
-bool get_entity_sprint(CEntity::SEntityState* S) { return S->bSprint; }
-
-// extern LPCSTR get_lua_class_name(luabind::object O);
+static bool get_entity_crouch(CEntity::SEntityState* S) { return S->bCrouch; }
+static bool get_entity_fall(CEntity::SEntityState* S) { return S->bFall; }
+static bool get_entity_jump(CEntity::SEntityState* S) { return S->bJump; }
+static bool get_entity_sprint(CEntity::SEntityState* S) { return S->bSprint; }
 
 void CEntityCondition::script_register(lua_State* L)
 {
-    module(L)[(class_<CEntity::SEntityState>("SEntityState")
-                   .property("crouch", &get_entity_crouch)
-                   .property("fall", &get_entity_fall)
-                   .property("jump", &get_entity_jump)
-                   .property("sprint", &get_entity_sprint)
-                   .def_readonly("velocity", &CEntity::SEntityState::fVelocity)
-                   .def_readonly("a_velocity", &CEntity::SEntityState::fAVelocity)
-               //.property     ("class_name"			,				&get_lua_class_name)
-               ,
-               class_<CEntityCondition>("CEntityCondition")
-                   .def("fdelta_time", &CEntityCondition::fdelta_time)
-                   .def_readonly("has_valid_time", &CEntityCondition::m_bTimeValid)
-                   .def_readwrite("power", &CEntityCondition::m_fPower)
-                   .def_readwrite("power_max", &CEntityCondition::m_fPowerMax)
-                   .def_readwrite("psy_health", &CEntityCondition::m_fPsyHealth)
-                   .def_readwrite("psy_health_max", &CEntityCondition::m_fPsyHealthMax)
-                   .def_readwrite("radiation", &CEntityCondition::m_fRadiation)
-                   .def_readwrite("radiation_max", &CEntityCondition::m_fRadiationMax)
-                   .def_readwrite("morale", &CEntityCondition::m_fEntityMorale)
-                   .def_readwrite("morale_max", &CEntityCondition::m_fEntityMoraleMax)
-                   .def_readwrite("min_wound_size", &CEntityCondition::m_fMinWoundSize)
-                   .def_readonly("is_bleeding", &CEntityCondition::m_bIsBleeding)
-                   //.def_readwrite("health_hit_part",			&CEntityCondition::m_fHealthHitPart)
-                   .def_readwrite("power_hit_part", &CEntityCondition::m_fPowerHitPart)
-                   .property("health", &CEntityCondition::GetHealth, &set_entity_health)
-                   .property("max_health", &CEntityCondition::GetMaxHealth, &set_entity_max_health)
-               //.property("class_name"				,				&get_lua_class_name)
-               )];
+    auto lua = sol::state_view(L);
+
+    lua.new_usertype<CEntity::SEntityState>("SEntityState", sol::no_constructor, "crouch", sol::property(&get_entity_crouch), "fall", sol::property(&get_entity_fall), "jump",
+                                            sol::property(&get_entity_jump), "sprint", sol::property(&get_entity_sprint), "velocity",
+                                            sol::readonly(&CEntity::SEntityState::fVelocity), "a_velocity", sol::readonly(&CEntity::SEntityState::fAVelocity));
+
+    lua.new_usertype<CEntityCondition>(
+        "CEntityCondition", sol::no_constructor, "fdelta_time", &CEntityCondition::fdelta_time, "has_valid_time", sol::readonly(&CEntityCondition::m_bTimeValid), "power",
+        &CEntityCondition::m_fPower, "power_max", &CEntityCondition::m_fPowerMax, "psy_health", &CEntityCondition::m_fPsyHealth, "psy_health_max",
+        &CEntityCondition::m_fPsyHealthMax, "radiation", &CEntityCondition::m_fRadiation, "radiation_max", &CEntityCondition::m_fRadiationMax, "morale",
+        &CEntityCondition::m_fEntityMorale, "morale_max", &CEntityCondition::m_fEntityMoraleMax, "min_wound_size", &CEntityCondition::m_fMinWoundSize, "is_bleeding",
+        sol::readonly(&CEntityCondition::m_bIsBleeding), "power_hit_part", &CEntityCondition::m_fPowerHitPart, "health",
+        sol::property(&CEntityCondition::GetHealth, &set_entity_health), "max_health", sol::property(&CEntityCondition::GetMaxHealth, &set_entity_max_health));
 }

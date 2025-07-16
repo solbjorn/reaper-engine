@@ -327,10 +327,7 @@ void CWeaponKnife::DeviceUpdate()
     }
 }
 
-void CWeaponKnife::UpdateCL()
-{
-    inherited::UpdateCL();
-}
+void CWeaponKnife::UpdateCL() { inherited::UpdateCL(); }
 
 void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 {
@@ -346,24 +343,24 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 
     // fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
     s_sHitPower_2 = pSettings->r_string_wb(section, strconcat(sizeof(full_name), full_name, prefix, "hit_power_2"));
-    fvHitPower_2[egdMaster] = (float)atof(_GetItem(*s_sHitPower_2, 0, buffer)); //первый параметр - это хит для уровня игры мастер
+    fvHitPower_2[egdMaster] = (float)atof(_GetItem(*s_sHitPower_2, 0, buffer)); // первый параметр - это хит для уровня игры мастер
 
-    fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster]; //изначально параметры для других уровней
-    fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster]; //сложности
-    fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster]; //такие же
+    fvHitPower_2[egdVeteran] = fvHitPower_2[egdMaster]; // изначально параметры для других уровней
+    fvHitPower_2[egdStalker] = fvHitPower_2[egdMaster]; // сложности
+    fvHitPower_2[egdNovice] = fvHitPower_2[egdMaster]; // такие же
 
-    int num_game_diff_param = _GetItemCount(*s_sHitPower_2); //узнаём колличество параметров для хитов
-    if (num_game_diff_param > 1) //если задан второй параметр хита
+    int num_game_diff_param = _GetItemCount(*s_sHitPower_2); // узнаём колличество параметров для хитов
+    if (num_game_diff_param > 1) // если задан второй параметр хита
     {
-        fvHitPower_2[egdVeteran] = (float)atof(_GetItem(*s_sHitPower_2, 1, buffer)); //то вычитываем его для уровня ветерана
+        fvHitPower_2[egdVeteran] = (float)atof(_GetItem(*s_sHitPower_2, 1, buffer)); // то вычитываем его для уровня ветерана
     }
-    if (num_game_diff_param > 2) //если задан третий параметр хита
+    if (num_game_diff_param > 2) // если задан третий параметр хита
     {
-        fvHitPower_2[egdStalker] = (float)atof(_GetItem(*s_sHitPower_2, 2, buffer)); //то вычитываем его для уровня сталкера
+        fvHitPower_2[egdStalker] = (float)atof(_GetItem(*s_sHitPower_2, 2, buffer)); // то вычитываем его для уровня сталкера
     }
-    if (num_game_diff_param > 3) //если задан четвёртый параметр хита
+    if (num_game_diff_param > 3) // если задан четвёртый параметр хита
     {
-        fvHitPower_2[egdNovice] = (float)atof(_GetItem(*s_sHitPower_2, 3, buffer)); //то вычитываем его для уровня новичка
+        fvHitPower_2[egdNovice] = (float)atof(_GetItem(*s_sHitPower_2, 3, buffer)); // то вычитываем его для уровня новичка
     }
 
     fHitImpulse_2 = pSettings->r_float(section, strconcat(sizeof(full_name), full_name, prefix, "hit_impulse_2"));

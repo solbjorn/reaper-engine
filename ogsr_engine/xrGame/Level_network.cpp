@@ -13,7 +13,6 @@
 #include "stalker_animation_data_storage.h"
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
-#include "script_vars_storage.h"
 #include "LevelDebugScript.h"
 
 constexpr int max_objects_size = 2 * 1024;
@@ -92,8 +91,6 @@ void CLevel::remove_objects()
 
     g_pGamePersistent->destroy_particles(false);
     ::Sound->stop_emitters();
-
-    g_ScriptVars.clear();
 
     // u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);

@@ -7,18 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "script_render_device.h"
 
-using namespace luabind;
-
-bool is_device_paused(CRenderDevice* d) { return !!Device.Paused(); }
-
-void set_device_paused(CRenderDevice* d, bool b) { Device.Pause(b, TRUE, FALSE, "set_device_paused_script"); }
+static bool is_device_paused(CRenderDevice* d) { return !!Device.Paused(); }
+static void set_device_paused(CRenderDevice* d, bool b) { Device.Pause(b, TRUE, FALSE, "set_device_paused_script"); }
 
 extern BOOL g_appLoaded;
-bool is_app_ready() { return !!g_appLoaded; }
 
-u32 time_global(const CRenderDevice* self)
+static bool is_app_ready() { return !!g_appLoaded; }
+
+static u32 time_global(const CRenderDevice* self)
 {
     THROW(self);
     return (self->dwTimeGlobal);
@@ -27,24 +27,14 @@ u32 time_global(const CRenderDevice* self)
 template <>
 void CScriptRenderDevice::script_register(lua_State* L)
 {
-    module(L)[(class_<CRenderDevice>("render_device")
-                   .def_readonly("width", static_cast<u32 CRenderDevice::*>(&CRenderDevice::dwWidth))
-                   .def_readonly("height", static_cast<u32 CRenderDevice::*>(&CRenderDevice::dwHeight))
-                   .def_readonly("time_delta", static_cast<u32 CRenderDevice::*>(&CRenderDevice::dwTimeDelta))
-                   .def_readonly("f_time_delta", static_cast<float CRenderDevice::*>(&CRenderDevice::fTimeDelta))
-                   .def_readonly("cam_pos", static_cast<Fvector CRenderDevice::*>(&CRenderDevice::vCameraPosition))
-                   .def_readonly("cam_dir", static_cast<Fvector CRenderDevice::*>(&CRenderDevice::vCameraDirection))
-                   .def_readonly("cam_top", static_cast<Fvector CRenderDevice::*>(&CRenderDevice::vCameraTop))
-                   .def_readonly("cam_right", static_cast<Fvector CRenderDevice::*>(&CRenderDevice::vCameraRight))
-                   //			.def_readonly("view",					&CRenderDevice::mView)
-                   //			.def_readonly("projection",				&CRenderDevice::mProject)
-                   //			.def_readonly("full_transform",			&CRenderDevice::mFullTransform)
-                   .def_readonly("fov", static_cast<float CRenderDevice::*>(&CRenderDevice::fFOV))
-                   .def_readonly("aspect_ratio", static_cast<float CRenderDevice::*>(&CRenderDevice::fASPECT))
-                   .def("time_global", &time_global)
-                   .def_readonly("precache_frame", static_cast<u32 CRenderDevice::*>(&CRenderDevice::dwPrecacheFrame))
-                   .def_readonly("frame", static_cast<u32 CRenderDevice::*>(&CRenderDevice::dwFrame))
-                   .def("is_paused", &is_device_paused)
-                   .def("pause", &set_device_paused),
-               def("app_ready", &is_app_ready))];
+    auto lua = sol::state_view(L);
+
+    lua.new_usertype<CRenderDevice>(
+        "render_device", sol::no_constructor, "width", sol::readonly(&CRenderDevice::dwWidth), "height", sol::readonly(&CRenderDevice::dwHeight), "time_delta",
+        sol::readonly(&CRenderDevice::dwTimeDelta), "f_time_delta", sol::readonly(&CRenderDevice::fTimeDelta), "cam_pos", sol::readonly(&CRenderDevice::vCameraPosition), "cam_dir",
+        sol::readonly(&CRenderDevice::vCameraDirection), "cam_top", sol::readonly(&CRenderDevice::vCameraTop), "cam_right", sol::readonly(&CRenderDevice::vCameraRight), "fov",
+        sol::readonly(&CRenderDevice::fFOV), "aspect_ratio", sol::readonly(&CRenderDevice::fASPECT), "time_global", &time_global, "precache_frame",
+        sol::readonly(&CRenderDevice::dwPrecacheFrame), "frame", sol::readonly(&CRenderDevice::dwFrame), "is_paused", &is_device_paused, "pause", &set_device_paused);
+
+    lua.set_function("app_ready", &is_app_ready);
 }

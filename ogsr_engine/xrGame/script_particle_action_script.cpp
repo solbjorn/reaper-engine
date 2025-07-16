@@ -7,23 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_particle_action.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_particle_action.h"
 
 void CScriptParticleAction::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptParticleAction>("particle")
-                  .def(constructor<>())
-                  .def(constructor<LPCSTR, LPCSTR>())
-                  .def(constructor<LPCSTR, LPCSTR, const CParticleParams&>())
-                  .def(constructor<LPCSTR, LPCSTR, const CParticleParams&, bool>())
-                  .def(constructor<LPCSTR, const CParticleParams&>())
-                  .def(constructor<LPCSTR, const CParticleParams&, bool>())
-                  .def("set_particle", &CScriptParticleAction::SetParticle)
-                  .def("set_bone", &CScriptParticleAction::SetBone)
-                  .def("set_position", &CScriptParticleAction::SetPosition)
-                  .def("set_angles", &CScriptParticleAction::SetAngles)
-                  .def("set_velocity", &CScriptParticleAction::SetVelocity)
-                  .def("completed", (bool(CScriptParticleAction::*)())(&CScriptParticleAction::completed))];
+    sol::state_view(L).new_usertype<CScriptParticleAction>(
+        "particle", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptParticleAction(), CScriptParticleAction(LPCSTR, LPCSTR), CScriptParticleAction(LPCSTR, LPCSTR, const CParticleParams&),
+                          CScriptParticleAction(LPCSTR, LPCSTR, const CParticleParams&, bool), CScriptParticleAction(LPCSTR, const CParticleParams&),
+                          CScriptParticleAction(LPCSTR, const CParticleParams&, bool)>(),
+
+        "set_particle", &CScriptParticleAction::SetParticle, "set_bone", &CScriptParticleAction::SetBone, "set_position", &CScriptParticleAction::SetPosition, "set_angles",
+        &CScriptParticleAction::SetAngles, "set_velocity", &CScriptParticleAction::SetVelocity, "completed", sol::resolve<bool()>(&CScriptParticleAction::completed));
 }

@@ -649,6 +649,7 @@ public:
 
         return *this;
     }
+    constexpr inline SelfRef translate_add(T x, T y, T z) { return translate_add(Tvector(x, y, z)); }
     constexpr inline SelfRef scale(T x, T y, T z) // setup scale matrix
     {
         mm = DirectX::XMMatrixScaling(x, y, z);
@@ -1069,6 +1070,7 @@ public:
 
         return *this;
     }
+    constexpr inline SelfRef setHPB(Tvector const& hpb) { return setHPB(hpb.x, hpb.y, hpb.z); }
     constexpr inline SelfRef setXYZ(T x, T y, T z) { return setHPB(y, x, z); }
     constexpr inline SelfRef setXYZ(Tvector const& xyz) { return setHPB(xyz.y, xyz.x, xyz.z); }
     constexpr inline SelfRef setXYZi(T x, T y, T z) { return setHPB(-y, -x, -z); }

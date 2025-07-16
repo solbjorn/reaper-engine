@@ -4,27 +4,23 @@
 #include "UI\UIMultiTextStatic.h"
 #include "MainMenu.h"
 
-using namespace luabind;
-
 CMainMenu* MainMenu();
 
 void UIRegistrator::script_register(lua_State* L)
 {
-    module(L)[(class_<CGameFont>("CGameFont")
-                   .enum_("EAligment")[(value("alLeft", int(CGameFont::alLeft)), value("alRight", int(CGameFont::alRight)), value("alCenter", int(CGameFont::alCenter)),
-                                        value("alJustified", int(CGameFont::alJustified)))]
+    auto lua = sol::state_view(L);
 
-                   .enum_("EVAlignment")[(value("valTop", int(EVTextAlignment::valTop)), value("valCenter", int(EVTextAlignment::valCenter)),
-                                          value("valBotton", int(EVTextAlignment::valBotton)))]
-                   .def("SizeOf", (float(CGameFont::*)(LPCSTR)) & CGameFont::SizeOf_)
-                   .def("CurrentHeight", &CGameFont::CurrentHeight_),
-               // убрал потому что не работает
-               // class_<CUICaption>("CUICaption")
-               //    .def("addCustomMessage", &CUICaption::addCustomMessage)
-               //    .def("setCaption", &CUICaption::setCaption)
-               //    .def("removeCustomMessage", &CUICaption::removeCustomMessage),
+    lua.new_usertype<CGameFont>("CGameFont", sol::no_constructor,
+                                // EAligment
+                                "alLeft", sol::var(CGameFont::alLeft), "alRight", sol::var(CGameFont::alRight), "alCenter", sol::var(CGameFont::alCenter), "alJustified",
+                                sol::var(CGameFont::alJustified),
+                                // EVAlignment
+                                "valTop", sol::var(EVTextAlignment::valTop), "valCenter", sol::var(EVTextAlignment::valCenter), "valBotton", sol::var(EVTextAlignment::valBotton),
 
-               class_<CMainMenu, CDialogHolder>("CMainMenu").def("GetGSVer", &CMainMenu::GetGSVer).def("PlaySound", &CMainMenu::PlaySound).def("IsActive", &CMainMenu::IsActive))],
+                                "SizeOf", sol::resolve<float(LPCSTR)>(&CGameFont::SizeOf_), "CurrentHeight", &CGameFont::CurrentHeight_);
 
-        module(L, "main_menu")[def("get_main_menu", &MainMenu)];
+    lua.new_usertype<CMainMenu>("CMainMenu", sol::no_constructor, "GetGSVer", &CMainMenu::GetGSVer, "PlaySound", &CMainMenu::PlaySound, "IsActive", &CMainMenu::IsActive,
+                                sol::base_classes, xr_sol_bases<CMainMenu>());
+
+    lua.create_named_table("main_menu", "get_main_menu", &MainMenu);
 }

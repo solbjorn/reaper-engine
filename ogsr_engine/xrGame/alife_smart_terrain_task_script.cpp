@@ -7,17 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "alife_smart_terrain_task.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "alife_smart_terrain_task.h"
 
 void CALifeSmartTerrainTask::script_register(lua_State* L)
 {
-    module(L)[class_<CALifeSmartTerrainTask>("CALifeSmartTerrainTask")
-                  .def(constructor<LPCSTR>())
-                  .def(constructor<LPCSTR, u32>())
-                  .def("game_vertex_id", &CALifeSmartTerrainTask::game_vertex_id)
-                  .def("level_vertex_id", &CALifeSmartTerrainTask::level_vertex_id)
-                  .def("point_raw", &CALifeSmartTerrainTask::point_raw)
-                  .def("position", &CALifeSmartTerrainTask::position)];
+    sol::state_view(L).new_usertype<CALifeSmartTerrainTask>("CALifeSmartTerrainTask", sol::no_constructor, sol::call_constructor,
+                                                            sol::constructors<CALifeSmartTerrainTask(LPCSTR), CALifeSmartTerrainTask(LPCSTR, u32)>(), "game_vertex_id",
+                                                            &CALifeSmartTerrainTask::game_vertex_id, "level_vertex_id", &CALifeSmartTerrainTask::level_vertex_id, "point_raw",
+                                                            &CALifeSmartTerrainTask::point_raw, "position", &CALifeSmartTerrainTask::position);
 }

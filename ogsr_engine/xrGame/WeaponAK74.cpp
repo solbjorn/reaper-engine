@@ -5,6 +5,8 @@ CWeaponAK74::CWeaponAK74(LPCSTR name, ESoundTypes eSoundType) : CWeaponMagazined
 
 CWeaponAK74::~CWeaponAK74() {}
 
-using namespace luabind;
-
-void CWeaponAK74::script_register(lua_State* L) { module(L)[class_<CWeaponAK74, CGameObject>("CWeaponAK74").def(constructor<>())]; }
+void CWeaponAK74::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponAK74>("CWeaponAK74", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponAK74>), sol::base_classes,
+                                                 xr_sol_bases<CWeaponAK74>());
+}

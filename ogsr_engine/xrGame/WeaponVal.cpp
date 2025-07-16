@@ -9,6 +9,8 @@ CWeaponVal::CWeaponVal(void) : CWeaponMagazined("VAL", SOUND_TYPE_WEAPON_SUBMACH
 
 CWeaponVal::~CWeaponVal(void) {}
 
-using namespace luabind;
-
-void CWeaponVal::script_register(lua_State* L) { module(L)[class_<CWeaponVal, CGameObject>("CWeaponVal").def(constructor<>())]; }
+void CWeaponVal::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponVal>("CWeaponVal", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponVal>), sol::base_classes,
+                                                xr_sol_bases<CWeaponVal>());
+}

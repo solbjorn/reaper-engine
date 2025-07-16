@@ -7,15 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "particle_params.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "particle_params.h"
 
 void CParticleParams::script_register(lua_State* L)
 {
-    module(L)[class_<CParticleParams>("particle_params")
-                  .def(constructor<>())
-                  .def(constructor<const Fvector&>())
-                  .def(constructor<const Fvector&, const Fvector&>())
-                  .def(constructor<const Fvector&, const Fvector&, const Fvector&>())];
+    sol::state_view(L).new_usertype<CParticleParams>("particle_params", sol::no_constructor, sol::call_constructor,
+                                                     sol::constructors<CParticleParams(), CParticleParams(const Fvector&), CParticleParams(const Fvector&, const Fvector&),
+                                                                       CParticleParams(const Fvector&, const Fvector&, const Fvector&)>());
 }

@@ -7,21 +7,17 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "script_world_state.h"
 #include "condition_state.h"
 
-using namespace luabind;
-
 void CScriptWorldStateWrapper::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptWorldState>("world_state")
-                  .def(constructor<>())
-                  .def(constructor<CScriptWorldState>())
-                  .def("add_property", (void(CScriptWorldState::*)(const CScriptWorldState::COperatorCondition&))(&CScriptWorldState::add_condition))
-                  .def("remove_property", (void(CScriptWorldState::*)(const CScriptWorldState::COperatorCondition::condition_type&))(&CScriptWorldState::remove_condition))
-                  .def("clear", &CScriptWorldState::clear)
-                  .def("includes", &CScriptWorldState::includes)
-                  .def("property", &CScriptWorldState::property)
-                  .def(const_self < CScriptWorldState())
-                  .def(const_self == CScriptWorldState())];
+    sol::state_view(L).new_usertype<CScriptWorldState>("world_state", sol::no_constructor, sol::call_constructor,
+                                                       sol::constructors<CScriptWorldState(), CScriptWorldState(CScriptWorldState)>(), "add_property",
+                                                       sol::resolve<void(const CScriptWorldState::COperatorCondition&)>(&CScriptWorldState::add_condition), "remove_property",
+                                                       sol::resolve<void(const CScriptWorldState::COperatorCondition::condition_type&)>(&CScriptWorldState::remove_condition),
+                                                       "clear", &CScriptWorldState::clear, "includes", &CScriptWorldState::includes, "property", &CScriptWorldState::property);
 }

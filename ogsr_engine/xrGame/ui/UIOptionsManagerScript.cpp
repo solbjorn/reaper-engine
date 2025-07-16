@@ -1,8 +1,9 @@
 #include "stdafx.h"
+
+#include "../../xrScriptEngine/xr_sol.h"
+
 #include "UIOptionsItem.h"
 #include "UIOptionsManagerScript.h"
-
-using namespace luabind;
 
 void CUIOptionsManagerScript::SetCurrentValues(const char* group) { CUIOptionsItem::GetOptionsManager()->SetCurrentValues(group); }
 
@@ -20,15 +21,9 @@ void CUIOptionsManagerScript::SendMessage2Group(const char* group, const char* m
 
 void CUIOptionsManagerScript::script_register(lua_State* L)
 {
-    module(L)[class_<CUIOptionsManagerScript>("COptionsManager")
-                  .def(constructor<>())
-                  .def("SaveBackupValues", &CUIOptionsManagerScript::SaveBackupValues)
-                  .def("SetCurrentValues", &CUIOptionsManagerScript::SetCurrentValues)
-                  .def("SaveValues", &CUIOptionsManagerScript::SaveValues)
-                  .def("IsGroupChanged", &CUIOptionsManagerScript::IsGroupChanged)
-                  .def("UndoGroup", &CUIOptionsManagerScript::UndoGroup)
-                  .def("OptionsPostAccept", &CUIOptionsManagerScript::OptionsPostAccept)
-                  .def("SendMessage2Group", &CUIOptionsManagerScript::SendMessage2Group)
-
-    ];
+    sol::state_view(L).new_usertype<CUIOptionsManagerScript>("COptionsManager", sol::no_constructor, sol::call_constructor, sol::constructors<CUIOptionsManagerScript()>(),
+                                                             "SaveBackupValues", &CUIOptionsManagerScript::SaveBackupValues, "SetCurrentValues",
+                                                             &CUIOptionsManagerScript::SetCurrentValues, "SaveValues", &CUIOptionsManagerScript::SaveValues, "IsGroupChanged",
+                                                             &CUIOptionsManagerScript::IsGroupChanged, "UndoGroup", &CUIOptionsManagerScript::UndoGroup, "OptionsPostAccept",
+                                                             &CUIOptionsManagerScript::OptionsPostAccept, "SendMessage2Group", &CUIOptionsManagerScript::SendMessage2Group);
 }

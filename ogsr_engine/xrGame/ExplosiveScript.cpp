@@ -1,6 +1,6 @@
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "Explosive.h"
 
-using namespace luabind;
-
-void CExplosive::script_register(lua_State* L) { module(L)[class_<CExplosive>("explosive").def("explode", (&CExplosive::Explode))]; }
+void CExplosive::script_register(lua_State* L) { sol::state_view(L).new_usertype<CExplosive>("explosive", sol::no_constructor, "explode", &CExplosive::Explode); }

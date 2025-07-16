@@ -7,17 +7,15 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "script_world_property.h"
 #include "operator_abstract.h"
 
-using namespace luabind;
-
 void CScriptWorldPropertyWrapper::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptWorldProperty>("world_property")
-                  .def(constructor<CScriptWorldProperty::condition_type, CScriptWorldProperty::value_type>())
-                  .def("condition", &CScriptWorldProperty::condition)
-                  .def("value", &CScriptWorldProperty::value)
-                  .def(const_self < other<CScriptWorldProperty>())
-                  .def(const_self == other<CScriptWorldProperty>())];
+    sol::state_view(L).new_usertype<CScriptWorldProperty>("world_property", sol::no_constructor, sol::call_constructor,
+                                                          sol::constructors<CScriptWorldProperty(CScriptWorldProperty::condition_type, CScriptWorldProperty::value_type)>(),
+                                                          "condition", &CScriptWorldProperty::condition, "value", &CScriptWorldProperty::value);
 }

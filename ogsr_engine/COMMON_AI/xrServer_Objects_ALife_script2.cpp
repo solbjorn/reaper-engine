@@ -7,31 +7,46 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "xrServer_Objects_ALife_Monsters.h"
-#include "xrServer_script_macroses.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "xrServer_Objects_ALife.h"
 
 void CSE_ALifeObjectProjector::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife1(CSE_ALifeObjectProjector, "cse_alife_object_projector", CSE_ALifeDynamicObjectVisual)];
+    sol::state_view(L).new_usertype<CSE_ALifeObjectProjector>("cse_alife_object_projector", sol::no_constructor, sol::call_constructor,
+                                                              sol::factories(std::make_unique<CSE_ALifeObjectProjector, LPCSTR>), sol::base_classes,
+                                                              xr_sol_bases<CSE_ALifeObjectProjector>());
 }
 
 void CSE_ALifeHelicopter::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife3(CSE_ALifeHelicopter, "cse_alife_helicopter", CSE_ALifeDynamicObjectVisual, CSE_Motion, CSE_PHSkeleton)];
+    sol::state_view(L).new_usertype<CSE_ALifeHelicopter>("cse_alife_helicopter", sol::no_constructor, sol::call_constructor,
+                                                         sol::factories(std::make_unique<CSE_ALifeHelicopter, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeHelicopter>());
 }
 
-void CSE_ALifeCar::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife2(CSE_ALifeCar, "cse_alife_car", CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton)]; }
+void CSE_ALifeCar::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeCar>("cse_alife_car", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeCar, LPCSTR>),
+                                                  sol::base_classes, xr_sol_bases<CSE_ALifeCar>());
+}
 
 void CSE_ALifeObjectBreakable::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife1(CSE_ALifeObjectBreakable, "cse_alife_object_breakable", CSE_ALifeDynamicObjectVisual)];
+    sol::state_view(L).new_usertype<CSE_ALifeObjectBreakable>("cse_alife_object_breakable", sol::no_constructor, sol::call_constructor,
+                                                              sol::factories(std::make_unique<CSE_ALifeObjectBreakable, LPCSTR>), sol::base_classes,
+                                                              xr_sol_bases<CSE_ALifeObjectBreakable>());
 }
 
-void CSE_ALifeObjectClimable::script_register(lua_State* L) { module(L)[luabind_class_abstract2(CSE_ALifeObjectClimable, "cse_alife_object_climable", CSE_Shape, CSE_Abstract)]; }
+void CSE_ALifeObjectClimable::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeObjectClimable>("cse_alife_object_climable", sol::no_constructor, sol::call_constructor,
+                                                             sol::factories(std::make_unique<CSE_ALifeObjectClimable, LPCSTR>), sol::base_classes,
+                                                             xr_sol_bases<CSE_ALifeObjectClimable>());
+}
 
 void CSE_ALifeMountedWeapon::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife1(CSE_ALifeMountedWeapon, "cse_alife_mounted_weapon", CSE_ALifeDynamicObjectVisual)];
+    sol::state_view(L).new_usertype<CSE_ALifeMountedWeapon>("cse_alife_mounted_weapon", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifeMountedWeapon, LPCSTR>), sol::base_classes,
+                                                            xr_sol_bases<CSE_ALifeMountedWeapon>());
 }

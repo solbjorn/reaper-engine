@@ -7,11 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "property_storage.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "property_storage.h"
 
 void CPropertyStorage::script_register(lua_State* L)
 {
-    module(L)[class_<CPropertyStorage>("property_storage").def(constructor<>()).def("set_property", &CPropertyStorage::set_property).def("property", &CPropertyStorage::property)];
+    sol::state_view(L).new_usertype<CPropertyStorage>("property_storage", sol::no_constructor, sol::call_constructor, sol::constructors<CPropertyStorage()>(), "set_property",
+                                                      &CPropertyStorage::set_property, "property", &CPropertyStorage::property);
 }

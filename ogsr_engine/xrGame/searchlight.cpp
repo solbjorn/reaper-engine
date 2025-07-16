@@ -241,14 +241,12 @@ void CProjector::Hit(SHit* pHDS)
 
 void CProjector::script_register(lua_State* L)
 {
-    luabind::module(L)[luabind::class_<CProjector, CGameObject>("projector")
-                           .def(luabind::constructor<>())
-                           .property("current_yaw", &CProjector::GetCurrentYaw, &CProjector::SetCurrentYaw)
-                           .property("current_pitch", &CProjector::GetCurrentPitch, &CProjector::SetCurrentPitch)
-                           .property("target_yaw", &CProjector::GetTargetYaw, &CProjector::SetTargetYaw)
-                           .property("target_pitch", &CProjector::GetTargetPitch, &CProjector::SetTargetPitch)
-                           .def("set_volumetric", [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); })
-                           .def("set_volumetric_quality", [](CProjector* self, const float val) { self->light_render->set_volumetric_quality(val); })
-                           .def("set_volumetric_intensity", [](CProjector* self, const float val) { self->light_render->set_volumetric_intensity(val); })
-                           .def("set_volumetric_distance", [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); })];
+    sol::state_view(L).new_usertype<CProjector>(
+        "projector", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CProjector>), "current_yaw",
+        sol::property(&CProjector::GetCurrentYaw, &CProjector::SetCurrentYaw), "current_pitch", sol::property(&CProjector::GetCurrentPitch, &CProjector::SetCurrentPitch),
+        "target_yaw", sol::property(&CProjector::GetTargetYaw, &CProjector::SetTargetYaw), "target_pitch", sol::property(&CProjector::GetTargetPitch, &CProjector::SetTargetPitch),
+        "set_volumetric", [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
+        [](CProjector* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
+        [](CProjector* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",
+        [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); }, sol::base_classes, xr_sol_bases<CProjector>());
 }

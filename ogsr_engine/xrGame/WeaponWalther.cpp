@@ -9,6 +9,8 @@ CWeaponWalther::CWeaponWalther(void) : CWeaponPistol("WALTHER")
 
 CWeaponWalther::~CWeaponWalther(void) {}
 
-using namespace luabind;
-
-void CWeaponWalther::script_register(lua_State* L) { module(L)[class_<CWeaponWalther, CGameObject>("CWeaponWalther").def(constructor<>())]; }
+void CWeaponWalther::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponWalther>("CWeaponWalther", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponWalther>),
+                                                    sol::base_classes, xr_sol_bases<CWeaponWalther>());
+}

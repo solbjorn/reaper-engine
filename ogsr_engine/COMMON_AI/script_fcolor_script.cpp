@@ -7,21 +7,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_fcolor.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_fcolor.h"
 
 template <>
 void CScriptFcolor::script_register(lua_State* L)
 {
-    module(L)[class_<Fcolor>("fcolor")
-                  .def_readwrite("r", &Fcolor::r)
-                  .def_readwrite("g", &Fcolor::g)
-                  .def_readwrite("b", &Fcolor::b)
-                  .def_readwrite("a", &Fcolor::a)
-                  .def(constructor<>())
-
-                  .def("set", (Fcolor & (Fcolor::*)(float, float, float, float))(&Fcolor::set), return_reference_to<1>())
-                  .def("set", (Fcolor & (Fcolor::*)(const Fcolor&))(&Fcolor::set), return_reference_to<1>())
-                  .def("set", (Fcolor & (Fcolor::*)(u32))(&Fcolor::set), return_reference_to<1>())];
+    sol::state_view(L).new_usertype<Fcolor>("fcolor", sol::no_constructor, sol::call_constructor, sol::constructors<Fcolor(), Fcolor(float, float, float, float)>(), "r",
+                                            &Fcolor::r, "g", &Fcolor::g, "b", &Fcolor::b, "a", &Fcolor::a, "set",
+                                            sol::policies(sol::overload(sol::resolve<Fcolor&(float, float, float, float)>(&Fcolor::set),
+                                                                        sol::resolve<Fcolor&(const Fcolor&)>(&Fcolor::set), sol::resolve<Fcolor&(u32)>(&Fcolor::set)),
+                                                          sol::returns_self()));
 }

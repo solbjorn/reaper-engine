@@ -9,13 +9,11 @@
 #include "stdafx.h"
 #include "client_spawn_manager.h"
 
-using namespace luabind;
-
 void CClientSpawnManager::script_register(lua_State* L)
 {
-    module(
-        L)[class_<CClientSpawnManager>("client_spawn_manager")
-               .def("add", (void(CClientSpawnManager::*)(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&, const luabind::object&))(&CClientSpawnManager::add))
-               .def("add", (void(CClientSpawnManager::*)(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&))(&CClientSpawnManager::add))
-               .def("remove", (void(CClientSpawnManager::*)(ALife::_OBJECT_ID, ALife::_OBJECT_ID))(&CClientSpawnManager::remove))];
+    sol::state_view(L).new_usertype<CClientSpawnManager>(
+        "client_spawn_manager", sol::no_constructor, "add",
+        sol::overload(sol::resolve<void(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&, const luabind::object&)>(&CClientSpawnManager::add),
+                      sol::resolve<void(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&)>(&CClientSpawnManager::add)),
+        "remove", sol::resolve<void(ALife::_OBJECT_ID, ALife::_OBJECT_ID)>(&CClientSpawnManager::remove));
 }

@@ -58,7 +58,7 @@ bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
     return true;
 }
 
-void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor) 
+void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor)
 {
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (!pGameSP)
@@ -328,7 +328,7 @@ void CScriptGameObject::DropItemAndTeleport(CScriptGameObject* pItem, Fvector po
     CGameObject::u_EventSend(PP);
 }
 
-//передаче вещи из своего инвентаря в инвентарь партнера
+// передаче вещи из своего инвентаря в инвентарь партнера
 void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho)
 {
     if (!pItem || !pForWho)
@@ -640,7 +640,7 @@ void CScriptGameObject::SwitchToTrade()
     if (!pActor)
         return;
 
-    //только если находимся в режиме single
+    // только если находимся в режиме single
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (!pGameSP)
         return;
@@ -823,15 +823,20 @@ bool CScriptGameObject::accessible_vertex_id(u32 level_vertex_id)
     return (monster->movement().restrictions().accessible(level_vertex_id));
 }
 
-u32 CScriptGameObject::accessible_nearest(const Fvector& position, Fvector& result)
+std::tuple<u32, Fvector> CScriptGameObject::accessible_nearest(const Fvector& position)
 {
+    u32 ret = u32(-1);
+    Fvector result{};
+
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
     if (!monster)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member accessible!");
-        return (u32(-1));
+        return std::make_tuple(ret, result);
     }
-    return (monster->movement().restrictions().accessible_nearest(position, result));
+
+    ret = monster->movement().restrictions().accessible_nearest(position, result);
+    return std::make_tuple(ret, result);
 }
 
 void CScriptGameObject::enable_attachable_item(bool value)

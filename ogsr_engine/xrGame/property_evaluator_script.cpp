@@ -7,24 +7,23 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_property_evaluator_wrapper.h"
+
 #include "script_game_object.h"
 #include "property_evaluator_const.h"
-
-using namespace luabind;
 
 template <>
 void CScriptPropertyEvaluator::script_register(lua_State* L)
 {
-    module(L)[(class_<CScriptPropertyEvaluator, CScriptPropertyEvaluatorWrapper>("property_evaluator")
-                   .def_readonly("object", &CScriptPropertyEvaluator::m_object)
-                   .def_readonly("storage", &CScriptPropertyEvaluator::m_storage)
-                   .def(constructor<>())
-                   .def(constructor<CScriptGameObject*>())
-                   .def(constructor<CScriptGameObject*, LPCSTR>())
-                   .def("setup", &CScriptPropertyEvaluator::setup, &CScriptPropertyEvaluatorWrapper::setup_static)
-                   .def("evaluate", &CScriptPropertyEvaluator::evaluate, &CScriptPropertyEvaluatorWrapper::evaluate_static),
+    auto lua = sol::state_view(L);
 
-               class_<CPropertyEvaluatorConst<CScriptGameObject>, CScriptPropertyEvaluator>("property_evaluator_const")
-                   .def(constructor<CPropertyEvaluatorConst<CScriptGameObject>::_value_type>()))];
+    lua.new_usertype<CScriptPropertyEvaluator>(
+        "property_evaluator", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptPropertyEvaluator(), CScriptPropertyEvaluator(CScriptGameObject*), CScriptPropertyEvaluator(CScriptGameObject*, LPCSTR)>(), "object",
+        sol::readonly(&CScriptPropertyEvaluator::m_object), "storage", sol::readonly(&CScriptPropertyEvaluator::m_storage), "setup", &CScriptPropertyEvaluator::setup, "evaluate",
+        &CScriptPropertyEvaluator::evaluate);
+
+    lua.new_usertype<CPropertyEvaluatorConst<CScriptGameObject>>(
+        "property_evaluator_const", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CPropertyEvaluatorConst<CScriptGameObject>(CPropertyEvaluatorConst<CScriptGameObject>::_value_type)>(), sol::base_classes,
+        xr_sol_bases<CPropertyEvaluatorConst<CScriptGameObject>>());
 }

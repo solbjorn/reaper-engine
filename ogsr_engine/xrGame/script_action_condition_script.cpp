@@ -7,18 +7,17 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_action_condition.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_action_condition.h"
 
 void CScriptActionCondition::script_register(lua_State* L)
 {
-    module(L)[(class_<CScriptActionCondition>("cond")
-                   .enum_("cond")[(value("move_end", int(CScriptActionCondition::MOVEMENT_FLAG)), value("look_end", int(CScriptActionCondition::WATCH_FLAG)),
-                                   value("anim_end", int(CScriptActionCondition::ANIMATION_FLAG)), value("sound_end", int(CScriptActionCondition::SOUND_FLAG)),
-                                   value("object_end", int(CScriptActionCondition::OBJECT_FLAG)), value("time_end", int(CScriptActionCondition::TIME_FLAG)),
-                                   value("act_end", int(CScriptActionCondition::ACT_FLAG)))]
-                   .def(constructor<>())
-                   .def(constructor<u32>())
-                   .def(constructor<u32, double>()))];
+    sol::state_view(L).new_usertype<CScriptActionCondition>(
+        "cond", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptActionCondition(), CScriptActionCondition(u32), CScriptActionCondition(u32, double)>(),
+
+        // cond
+        "move_end", sol::var(CScriptActionCondition::MOVEMENT_FLAG), "look_end", sol::var(CScriptActionCondition::WATCH_FLAG), "anim_end",
+        sol::var(CScriptActionCondition::ANIMATION_FLAG), "sound_end", sol::var(CScriptActionCondition::SOUND_FLAG), "object_end", sol::var(CScriptActionCondition::OBJECT_FLAG),
+        "time_end", sol::var(CScriptActionCondition::TIME_FLAG), "act_end", sol::var(CScriptActionCondition::ACT_FLAG));
 }

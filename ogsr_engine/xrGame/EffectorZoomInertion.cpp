@@ -147,33 +147,27 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
     return TRUE;
 }
 
-using namespace luabind;
+static Fvector get_current_point(CEffectorZoomInertion* E) { return E->m_vCurrentPoint; }
+static Fvector get_last_point(CEffectorZoomInertion* E) { return E->m_vLastPoint; }
+static Fvector get_target_point(CEffectorZoomInertion* E) { return E->m_vTargetPoint; }
 
-Fvector get_current_point(CEffectorZoomInertion* E) { return E->m_vCurrentPoint; }
-Fvector get_last_point(CEffectorZoomInertion* E) { return E->m_vLastPoint; }
-Fvector get_target_point(CEffectorZoomInertion* E) { return E->m_vTargetPoint; }
-
-void set_current_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vCurrentPoint.set(src); }
-void set_last_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vLastPoint.set(src); }
-void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTargetPoint.set(src); }
+static void set_current_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vCurrentPoint.set(src); }
+static void set_last_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vLastPoint.set(src); }
+static void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTargetPoint.set(src); }
 
 void CEffectorZoomInertion::script_register(lua_State* L)
 {
-    module(L)[(class_<CEffectorZoomInertion>("CEffectorZoomInertion")
-                   .def_readwrite("float_speed", &CEffectorZoomInertion::m_fFloatSpeed)
-                   .def_readwrite("disp_radius", &CEffectorZoomInertion::m_fDispRadius)
-                   .def_readwrite("epsilon", &CEffectorZoomInertion::m_fEpsilon)
-                   .property("current_point", &get_current_point, &set_current_point)
-                   .property("last_point", &get_last_point, &set_last_point)
-                   .property("target_point", &get_target_point, &set_target_point)
-                   .def_readwrite("target_vel", &CEffectorZoomInertion::m_vTargetVel)
-                   .def_readwrite("time_passed", &CEffectorZoomInertion::m_dwTimePassed)
-                   // settings for real-time modify
-                   .def_readwrite("camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon)
-                   .def_readwrite("disp_min", &CEffectorZoomInertion::m_fDispMin)
-                   .def_readwrite("speed_min", &CEffectorZoomInertion::m_fSpeedMin)
-                   .def_readwrite("zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK)
-                   .def_readwrite("zoom_aim_speed_k", &CEffectorZoomInertion::m_fZoomAimingSpeedK)
-                   .def_readwrite("delta_time", &CEffectorZoomInertion::m_dwDeltaTime),
-               def("find_effector_zi", &FindEffectorZoomInertion), def("switch_zoom_osc", &switch_zoom_osc))];
+    auto lua = sol::state_view(L);
+
+    lua.new_usertype<CEffectorZoomInertion>("CEffectorZoomInertion", sol::no_constructor, "float_speed", &CEffectorZoomInertion::m_fFloatSpeed, "disp_radius",
+                                            &CEffectorZoomInertion::m_fDispRadius, "epsilon", &CEffectorZoomInertion::m_fEpsilon, "current_point",
+                                            sol::property(&get_current_point, &set_current_point), "last_point", sol::property(&get_last_point, &set_last_point), "target_point",
+                                            sol::property(&get_target_point, &set_target_point), "target_vel", &CEffectorZoomInertion::m_vTargetVel, "time_passed",
+                                            &CEffectorZoomInertion::m_dwTimePassed,
+                                            // settings for real-time modify
+                                            "camera_move_epsilon", &CEffectorZoomInertion::m_fCameraMoveEpsilon, "disp_min", &CEffectorZoomInertion::m_fDispMin, "speed_min",
+                                            &CEffectorZoomInertion::m_fSpeedMin, "zoom_aim_disp_k", &CEffectorZoomInertion::m_fZoomAimingDispK, "zoom_aim_speed_k",
+                                            &CEffectorZoomInertion::m_fZoomAimingSpeedK, "delta_time", &CEffectorZoomInertion::m_dwDeltaTime);
+
+    lua.set("find_effector_zi", &FindEffectorZoomInertion, "switch_zoom_osc", &switch_zoom_osc);
 }

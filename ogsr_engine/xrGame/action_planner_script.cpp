@@ -7,37 +7,27 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_action_planner_wrapper.h"
+
+#include "action_planner.h"
 #include "script_game_object.h"
 
-using namespace luabind;
+static void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPlanner::CState* world_state) { action_planner->set_target_state(*world_state); }
 
-void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPlanner::CState* world_state) { action_planner->set_target_state(*world_state); }
-
-bool get_actual(const CScriptActionPlanner* action_planner) { return (action_planner->actual()); }
+static bool get_actual(const CScriptActionPlanner* action_planner) { return (action_planner->actual()); }
 
 template <>
 void CActionPlanner<CScriptGameObject>::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptActionPlanner, CScriptActionPlannerWrapper>("action_planner")
-                  .def_readonly("object", &CScriptActionPlanner::m_object)
-                  .def_readonly("storage", &CScriptActionPlanner::m_storage)
-                  .def(constructor<>())
-                  .def("actual", &get_actual)
-                  .def("setup", &CScriptActionPlanner::setup, &CScriptActionPlannerWrapper::setup_static)
-                  .def("update", &CScriptActionPlanner::update, &CScriptActionPlannerWrapper::update_static)
-                  .def("add_action", &CScriptActionPlanner::add_operator, adopt<3>())
-                  .def("remove_action", (void(CScriptActionPlanner::*)(const CScriptActionPlanner::_edge_type&))(&CScriptActionPlanner::remove_operator))
-                  .def("action", &CScriptActionPlanner::action)
-                  .def("add_evaluator", &CScriptActionPlanner::add_evaluator, adopt<3>())
-                  .def("remove_evaluator", (void(CScriptActionPlanner::*)(const CScriptActionPlanner::_condition_type&))(&CScriptActionPlanner::remove_evaluator))
-                  .def("evaluator", &CScriptActionPlanner::evaluator)
-                  .def("current_action_id", &CScriptActionPlanner::current_action_id)
-                  .def("current_action", &CScriptActionPlanner::current_action)
-                  .def("initialized", &CScriptActionPlanner::initialized)
-                  .def("set_goal_world_state", &set_goal_world_state)
+    sol::state_view(L).new_usertype<CScriptActionPlanner>(
+        "action_planner", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptActionPlanner()>(), "object", sol::readonly(&CScriptActionPlanner::m_object),
+        "storage", sol::readonly(&CScriptActionPlanner::m_storage), "actual", &get_actual, "setup", &CScriptActionPlanner::setup, "update", &CScriptActionPlanner::update,
+        "add_action", &CScriptActionPlanner::add_operator, "remove_action", sol::resolve<void(const CScriptActionPlanner::_edge_type&)>(&CScriptActionPlanner::remove_operator),
+        "action", &CScriptActionPlanner::action, "add_evaluator", &CScriptActionPlanner::add_evaluator, "remove_evaluator",
+        sol::resolve<void(const CScriptActionPlanner::_condition_type&)>(&CScriptActionPlanner::remove_evaluator), "evaluator", &CScriptActionPlanner::evaluator,
+        "current_action_id", &CScriptActionPlanner::current_action_id, "current_action", &CScriptActionPlanner::current_action, "initialized", &CScriptActionPlanner::initialized,
+        "set_goal_world_state", &set_goal_world_state,
 #ifdef LOG_ACTION
-                  .def("show", &CScriptActionPlanner::show)
+        "show", &CScriptActionPlanner::show,
 #endif
-    ];
+        sol::base_classes, xr_sol_bases<CScriptActionPlanner>());
 }

@@ -7,11 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "patrol_path_params.h"
 
-using namespace luabind;
-
-Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
+static Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
 {
     THROW(self);
     return (self->point(index));
@@ -19,25 +19,22 @@ Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
 
 void CPatrolPathParams::script_register(lua_State* L)
 {
-    module(L)[(class_<CPatrolPathParams>("patrol")
-                   .enum_("start")[(value("start", int(PatrolPathManager::ePatrolStartTypeFirst)), value("stop", int(PatrolPathManager::ePatrolStartTypeLast)),
-                                    value("nearest", int(PatrolPathManager::ePatrolStartTypeNearest)), value("custom", int(PatrolPathManager::ePatrolStartTypePoint)),
-                                    value("next", int(PatrolPathManager::ePatrolStartTypeNext)), value("dummy", int(PatrolPathManager::ePatrolStartTypeDummy)))]
-                   .enum_("stop")[(value("stop", int(PatrolPathManager::ePatrolRouteTypeStop)), value("continue", int(PatrolPathManager::ePatrolRouteTypeContinue)),
-                                   value("dummy", int(PatrolPathManager::ePatrolRouteTypeDummy)))]
-                   .def(constructor<LPCSTR>())
-                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType>())
-                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType>())
-                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType, bool>())
-                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType, bool, u32>())
-                   .def("count", &CPatrolPathParams::count)
-                   .def("level_vertex_id", &CPatrolPathParams::level_vertex_id)
-                   .def("game_vertex_id", &CPatrolPathParams::game_vertex_id)
-                   .def("point", &CPatrolPathParams__point)
-                   .def("name", &CPatrolPathParams::name)
-                   .def("index", (u32(CPatrolPathParams::*)(LPCSTR) const)(&CPatrolPathParams::point))
-                   .def("get_nearest", (u32(CPatrolPathParams::*)(const Fvector&) const)(&CPatrolPathParams::point))
-                   .def("flag", &CPatrolPathParams::flag)
-                   .def("flags", &CPatrolPathParams::flags)
-                   .def("terminal", &CPatrolPathParams::terminal))];
+    sol::state_view(L).new_usertype<CPatrolPathParams>(
+        "patrol", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CPatrolPathParams(LPCSTR), CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType),
+                          CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType),
+                          CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType, bool),
+                          CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType, bool, u32)>(),
+
+        // start
+        "start", sol::var(PatrolPathManager::ePatrolStartTypeFirst), "nearest", sol::var(PatrolPathManager::ePatrolStartTypeNearest), "custom",
+        sol::var(PatrolPathManager::ePatrolStartTypePoint), "next", sol::var(PatrolPathManager::ePatrolStartTypeNext),
+        // route
+        "stop", sol::var(PatrolPathManager::ePatrolRouteTypeStop), "continue", sol::var(PatrolPathManager::ePatrolRouteTypeContinue), "dummy",
+        sol::var(PatrolPathManager::ePatrolRouteTypeDummy),
+
+        "count", &CPatrolPathParams::count, "level_vertex_id", &CPatrolPathParams::level_vertex_id, "game_vertex_id", &CPatrolPathParams::game_vertex_id, "point",
+        &CPatrolPathParams__point, "name", &CPatrolPathParams::name, "index", sol::resolve<u32(LPCSTR) const>(&CPatrolPathParams::point), "get_nearest",
+        sol::resolve<u32(const Fvector&) const>(&CPatrolPathParams::point), "flag", &CPatrolPathParams::flag, "flags", &CPatrolPathParams::flags, "terminal",
+        &CPatrolPathParams::terminal);
 }

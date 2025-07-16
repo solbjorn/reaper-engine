@@ -9,14 +9,9 @@
 #include "stdafx.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
-class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject>&& instance)
+void CScriptGameObject::script_register_trader(CScriptGameObject::usertype& lua)
 {
-    return std::move(instance)
-        .def("set_trader_global_anim", &CScriptGameObject::set_trader_global_anim)
-        .def("set_trader_head_anim", &CScriptGameObject::set_trader_head_anim)
-        .def("set_trader_sound", &CScriptGameObject::set_trader_sound)
-        .def("external_sound_start", &CScriptGameObject::external_sound_start)
-        .def("external_sound_stop", &CScriptGameObject::external_sound_stop);
+    xr_sol_set(lua, "set_trader_global_anim", &CScriptGameObject::set_trader_global_anim, "set_trader_head_anim", &CScriptGameObject::set_trader_head_anim, "set_trader_sound",
+               &CScriptGameObject::set_trader_sound, "external_sound_start", &CScriptGameObject::external_sound_start, "external_sound_stop",
+               &CScriptGameObject::external_sound_stop);
 }

@@ -7,25 +7,52 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "xrServer_script_macroses.h"
 
-using namespace luabind;
+void CSE_ALifeItemPDA::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemPDA>("cse_alife_item_pda", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeItemPDA, LPCSTR>),
+                                                      sol::base_classes, xr_sol_bases<CSE_ALifeItemPDA>());
+}
 
-void CSE_ALifeItemPDA::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemPDA, "cse_alife_item_pda", CSE_ALifeItem)]; }
+void CSE_ALifeItemDocument::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemDocument>("cse_alife_item_document", sol::no_constructor, sol::call_constructor,
+                                                           sol::factories(std::make_unique<CSE_ALifeItemDocument, LPCSTR>), sol::base_classes,
+                                                           xr_sol_bases<CSE_ALifeItemDocument>());
+}
 
-void CSE_ALifeItemDocument::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemDocument, "cse_alife_item_document", CSE_ALifeItem)]; }
+void CSE_ALifeItemGrenade::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemGrenade>("cse_alife_item_grenade", sol::no_constructor, sol::call_constructor,
+                                                          sol::factories(std::make_unique<CSE_ALifeItemGrenade, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeItemGrenade>());
+}
 
-void CSE_ALifeItemGrenade::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemGrenade, "cse_alife_item_grenade", CSE_ALifeItem)]; }
+void CSE_ALifeItemExplosive::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemExplosive>("cse_alife_item_explosive", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifeItemExplosive, LPCSTR>), sol::base_classes,
+                                                            xr_sol_bases<CSE_ALifeItemExplosive>());
+}
 
-void CSE_ALifeItemExplosive::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemExplosive, "cse_alife_item_explosive", CSE_ALifeItem)]; }
+void CSE_ALifeItemBolt::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemBolt>("cse_alife_item_bolt", sol::no_constructor, sol::call_constructor,
+                                                       sol::factories(std::make_unique<CSE_ALifeItemBolt, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeItemBolt>());
+}
 
-void CSE_ALifeItemBolt::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemBolt, "cse_alife_item_bolt", CSE_ALifeItem)]; }
-
-void CSE_ALifeItemCustomOutfit::script_register(lua_State* L) { module(L)[luabind_class_item1(CSE_ALifeItemCustomOutfit, "cse_alife_item_custom_outfit", CSE_ALifeItem)]; }
+void CSE_ALifeItemCustomOutfit::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeItemCustomOutfit>("cse_alife_item_custom_outfit", sol::no_constructor, sol::call_constructor,
+                                                               sol::factories(std::make_unique<CSE_ALifeItemCustomOutfit, LPCSTR>), sol::base_classes,
+                                                               xr_sol_bases<CSE_ALifeItemCustomOutfit>());
+}
 
 void CSE_ALifeItemWeaponMagazined::script_register(lua_State* L)
 {
-    module(L)[luabind_class_item1(CSE_ALifeItemWeaponMagazined, "cse_alife_item_weapon_magazined", CSE_ALifeItemWeapon)
-                  .def_readwrite("current_fire_mode", &CSE_ALifeItemWeaponMagazined::m_u8CurFireMode)];
+    sol::state_view(L).new_usertype<CSE_ALifeItemWeaponMagazined>("cse_alife_item_weapon_magazined", sol::no_constructor, sol::call_constructor,
+                                                                  sol::factories(std::make_unique<CSE_ALifeItemWeaponMagazined, LPCSTR>), "current_fire_mode",
+                                                                  &CSE_ALifeItemWeaponMagazined::m_u8CurFireMode, sol::base_classes, xr_sol_bases<CSE_ALifeItemWeaponMagazined>());
 }

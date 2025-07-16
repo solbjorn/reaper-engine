@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "object_factory.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -14,14 +15,17 @@
 
 void CObjectFactory::register_script_class(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid)
 {
-    luabind::object client;
-    if (!ai().script_engine().function_object(client_class, client, LUA_TUSERDATA))
+    sol::function client;
+
+    if (!ai().script_engine().function(client_class, client))
     {
         ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", client_class);
         return;
     }
-    luabind::object server;
-    if (!ai().script_engine().function_object(server_class, server, LUA_TUSERDATA))
+
+    sol::function server;
+
+    if (!ai().script_engine().function(server_class, server))
     {
         ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", server_class);
         return;
@@ -32,49 +36,36 @@ void CObjectFactory::register_script_class(LPCSTR client_class, LPCSTR server_cl
 
 void CObjectFactory::register_script_class(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid)
 {
-    luabind::object creator;
-    if (!ai().script_engine().function_object(unknown_class, creator, LUA_TUSERDATA))
+    sol::function creator;
+
+    if (!ai().script_engine().function(unknown_class, creator))
     {
         ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", unknown_class);
         return;
     }
+
     add(xr_new<CObjectItemScript>(creator, creator, TEXT2CLSID(clsid), script_clsid));
 }
 
 void CObjectFactory::register_script_classes() { ai(); }
 
-using namespace luabind;
-
-struct CInternal
-{};
-
 void CObjectFactory::register_script() const
 {
     actualize();
 
-    luabind::class_<CInternal> instance("clsid");
+    sol::state_view lua(ai().script_engine().lua());
+    sol::table target = lua.create_table(clsids().size(), 0);
 
-    const_iterator I = clsids().begin(), B = I;
-    const_iterator E = clsids().end();
-    for (; I != E; ++I)
-        instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(), int(I - B))];
+    size_t id = 0;
+    for (const auto& item : clsids())
+        target.set(*item->script_clsid(), id++);
 
-    lua_State* L = ai().script_engine().lua();
-    luabind::module(L)[std::move(instance)]; // это представление нельзя обработать как таблицу
-
-    lua_newtable(L);
-    I = B;
-    for (; I != E; ++I)
-    {
-        lua_pushinteger(L, int(I - B));
-        lua_setfield(L, -2, *(*I)->script_clsid());
-    }
-    lua_setglobal(L, "clsid_table"); // это представление можно обработать как таблицу :)
+    xr_sol_new_enum(lua, "clsid", target);
 }
 
 void CObjectFactory::script_register(lua_State* L)
 {
-    module(L)[class_<CObjectFactory>("object_factory")
-                  .def("register", (void(CObjectFactory::*)(LPCSTR, LPCSTR, LPCSTR, LPCSTR))(&CObjectFactory::register_script_class))
-                  .def("register", (void(CObjectFactory::*)(LPCSTR, LPCSTR, LPCSTR))(&CObjectFactory::register_script_class))];
+    sol::state_view(L).new_usertype<CObjectFactory>("object_factory", sol::no_constructor, "register",
+                                                    sol::overload(sol::resolve<void(LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class),
+                                                                  sol::resolve<void(LPCSTR, LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class)));
 }

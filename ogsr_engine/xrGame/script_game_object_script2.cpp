@@ -32,252 +32,157 @@
 #include "detail_path_manager_space.h"
 #include "patrol_path_manager_space.h"
 
-using namespace luabind;
-
 extern CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
 
-class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&& instance)
+void CScriptGameObject::script_register1(CScriptGameObject::usertype& lua)
 {
-    return std::move(instance)
-        .enum_("relation")[(value("friend", int(ALife::eRelationTypeFriend)), value("neutral", int(ALife::eRelationTypeNeutral)), value("enemy", int(ALife::eRelationTypeEnemy)),
-                            value("worst_enemy", int(ALife::eRelationTypeWorstEnemy)), value("dummy", int(ALife::eRelationTypeDummy)))]
-        .enum_("action_types")[(value("movement", int(ScriptEntity::eActionTypeMovement)), value("watch", int(ScriptEntity::eActionTypeWatch)),
-                                value("animation", int(ScriptEntity::eActionTypeAnimation)), value("sound", int(ScriptEntity::eActionTypeSound)),
-                                value("particle", int(ScriptEntity::eActionTypeParticle)), value("object", int(ScriptEntity::eActionTypeObject)),
-                                value("action_type_count", int(ScriptEntity::eActionTypeCount)))]
-        .enum_("EPathType")[(value("game_path", int(MovementManager::ePathTypeGamePath)), value("level_path", int(MovementManager::ePathTypeLevelPath)),
-                             value("patrol_path", int(MovementManager::ePathTypePatrolPath)), value("no_path", int(MovementManager::ePathTypeNoPath)))]
+    xr_sol_set(
+        lua,
+        // relation
+        "friend", sol::var(ALife::eRelationTypeFriend), "neutral", sol::var(ALife::eRelationTypeNeutral), "enemy", sol::var(ALife::eRelationTypeEnemy), "worst_enemy",
+        sol::var(ALife::eRelationTypeWorstEnemy), "dummy", sol::var(ALife::eRelationTypeDummy),
+        // action_types
+        "movement", sol::var(ScriptEntity::eActionTypeMovement), "watch", sol::var(ScriptEntity::eActionTypeWatch), "animation", sol::var(ScriptEntity::eActionTypeAnimation),
+        "sound", sol::var(ScriptEntity::eActionTypeSound), "particle", sol::var(ScriptEntity::eActionTypeParticle), "object", sol::var(ScriptEntity::eActionTypeObject),
+        "action_type_count", sol::var(ScriptEntity::eActionTypeCount),
+        // EPathType
+        "game_path", sol::var(MovementManager::ePathTypeGamePath), "level_path", sol::var(MovementManager::ePathTypeLevelPath), "patrol_path",
+        sol::var(MovementManager::ePathTypePatrolPath), "no_path", sol::var(MovementManager::ePathTypeNoPath),
 
-        //		.property("visible",				&CScriptGameObject::getVisible,			&CScriptGameObject::setVisible)
-        //		.property("enabled",				&CScriptGameObject::getEnabled,			&CScriptGameObject::setEnabled)
-
-        //		.def_readonly("health",				&CScriptGameObject::GetHealth,			&CScriptGameObject::SetHealth)
-        .property("health", &CScriptGameObject::GetHealth, &CScriptGameObject::SetHealth)
-        .property("psy_health", &CScriptGameObject::GetPsyHealth, &CScriptGameObject::SetPsyHealth)
-        .property("power", &CScriptGameObject::GetPower, &CScriptGameObject::SetPower)
-        .property("satiety", &CScriptGameObject::GetSatiety, &CScriptGameObject::SetSatiety)
-        .property("radiation", &CScriptGameObject::GetRadiation, &CScriptGameObject::SetRadiation)
-        .property("morale", &CScriptGameObject::GetMorale, &CScriptGameObject::SetMorale)
+        "health", sol::property(&CScriptGameObject::GetHealth, &CScriptGameObject::SetHealth), "psy_health",
+        sol::property(&CScriptGameObject::GetPsyHealth, &CScriptGameObject::SetPsyHealth), "power", sol::property(&CScriptGameObject::GetPower, &CScriptGameObject::SetPower),
+        "satiety", sol::property(&CScriptGameObject::GetSatiety, &CScriptGameObject::SetSatiety), "radiation",
+        sol::property(&CScriptGameObject::GetRadiation, &CScriptGameObject::SetRadiation), "morale", sol::property(&CScriptGameObject::GetMorale, &CScriptGameObject::SetMorale),
         // KD
-        .property("alcohol", &CScriptGameObject::GetAlcohol, &CScriptGameObject::SetAlcohol)
-        .property("thirst", &CScriptGameObject::GetThirst, &CScriptGameObject::SetThirst)
-        .property("max_power", &CScriptGameObject::GetMaxPower, &CScriptGameObject::SetMaxPower)
-
+        "alcohol", sol::property(&CScriptGameObject::GetAlcohol, &CScriptGameObject::SetAlcohol), "thirst",
+        sol::property(&CScriptGameObject::GetThirst, &CScriptGameObject::SetThirst), "max_power", sol::property(&CScriptGameObject::GetMaxPower, &CScriptGameObject::SetMaxPower),
         // Actor State
-        //.property("jump_speed",				&CScriptGameObject::GetActorJumpSpeed,	&CScriptGameObject::SetActorJumpSpeed)
-        //.property("walk_accel",				&CScriptGameObject::GetActorWalkAccel,	&CScriptGameObject::SetActorWalkAccel)
-        .property("exo_factor", &CScriptGameObject::GetActorExoFactor, &CScriptGameObject::SetActorExoFactor)
+        "exo_factor", sol::property(&CScriptGameObject::GetActorExoFactor, &CScriptGameObject::SetActorExoFactor),
 
         // Other
-        .def("get_bleeding", &CScriptGameObject::GetBleeding)
-        .def("center", &CScriptGameObject::Center)
-        .def("position", &CScriptGameObject::Position)
-        .def("direction", &CScriptGameObject::Direction)
-        .def("clsid", &CScriptGameObject::clsid)
-        .def("id", &CScriptGameObject::ID)
-        .def("story_id", &CScriptGameObject::story_id)
-        .def("section", &CScriptGameObject::Section)
-        .def("name", &CScriptGameObject::Name)
-        .def("parent", &CScriptGameObject::Parent)
-        .def("mass", &CScriptGameObject::Mass)
-        .def("cost", &CScriptGameObject::Cost)
-        .def("condition", &CScriptGameObject::GetCondition)
-        .def("set_condition", &CScriptGameObject::SetCondition)
-        .def("death_time", &CScriptGameObject::DeathTime)
-        //		.def("armor",						&CScriptGameObject::Armor)
-        .def("max_health", &CScriptGameObject::MaxHealth)
-        .def("accuracy", &CScriptGameObject::Accuracy)
-        .def("alive", &CScriptGameObject::Alive)
-        .def("team", &CScriptGameObject::Team)
-        .def("squad", &CScriptGameObject::Squad)
-        .def("group", &CScriptGameObject::Group)
-        .def("change_team", (void(CScriptGameObject::*)(u8, u8, u8))(&CScriptGameObject::ChangeTeam))
-        .def("kill", &CScriptGameObject::Kill)
-        .def("hit", &CScriptGameObject::Hit)
-        .def("play_cycle", (void(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_cycle))
-        .def("play_cycle", (void(CScriptGameObject::*)(LPCSTR, bool))(&CScriptGameObject::play_cycle))
-        .def("fov", &CScriptGameObject::GetFOV)
-        .def("range", &CScriptGameObject::GetRange)
-        .def("relation", &CScriptGameObject::GetRelationType)
-        .def("is_relation_enemy", &CScriptGameObject::IsRelationEnemy)
-        .def("script", &CScriptGameObject::SetScriptControl)
-        .def("get_script", &CScriptGameObject::GetScriptControl)
-        .def("get_script_name", &CScriptGameObject::GetScriptControlName)
-        .def("reset_action_queue", &CScriptGameObject::ResetActionQueue)
-        .def("see", &CScriptGameObject::CheckObjectVisibility)
-        .def("see_right_now", &CScriptGameObject::CheckObjectVisibilityNow)
-        .def("see", &CScriptGameObject::CheckTypeVisibility)
+        "get_bleeding", &CScriptGameObject::GetBleeding, "center", &CScriptGameObject::Center, "position", &CScriptGameObject::Position, "direction", &CScriptGameObject::Direction,
+        "clsid", &CScriptGameObject::clsid, "id", &CScriptGameObject::ID, "story_id", &CScriptGameObject::story_id, "section", &CScriptGameObject::Section, "name",
+        &CScriptGameObject::Name, "parent", &CScriptGameObject::Parent, "mass", &CScriptGameObject::Mass, "cost", &CScriptGameObject::Cost, "condition",
+        &CScriptGameObject::GetCondition, "set_condition", &CScriptGameObject::SetCondition, "death_time", &CScriptGameObject::DeathTime, "max_health",
+        &CScriptGameObject::MaxHealth, "accuracy", &CScriptGameObject::Accuracy, "alive", &CScriptGameObject::Alive, "team", &CScriptGameObject::Team, "squad",
+        &CScriptGameObject::Squad, "group", &CScriptGameObject::Group, "change_team", sol::resolve<void(u8, u8, u8)>(&CScriptGameObject::ChangeTeam), "kill",
+        &CScriptGameObject::Kill, "hit", &CScriptGameObject::Hit, "play_cycle",
+        sol::overload(sol::resolve<void(LPCSTR)>(&CScriptGameObject::play_cycle), sol::resolve<void(LPCSTR, bool)>(&CScriptGameObject::play_cycle)),
 
-        .def("who_hit_name", &CScriptGameObject::WhoHitName)
-        .def("who_hit_section_name", &CScriptGameObject::WhoHitSectionName)
+        "fov", &CScriptGameObject::GetFOV, "range", &CScriptGameObject::GetRange, "relation", &CScriptGameObject::GetRelationType, "is_relation_enemy",
+        &CScriptGameObject::IsRelationEnemy, "script", &CScriptGameObject::SetScriptControl, "get_script", &CScriptGameObject::GetScriptControl, "get_script_name",
+        &CScriptGameObject::GetScriptControlName, "reset_action_queue", &CScriptGameObject::ResetActionQueue, "see",
+        sol::overload(&CScriptGameObject::CheckObjectVisibility, &CScriptGameObject::CheckTypeVisibility), "see_right_now", &CScriptGameObject::CheckObjectVisibilityNow,
+        "who_hit_name", &CScriptGameObject::WhoHitName, "who_hit_section_name", &CScriptGameObject::WhoHitSectionName,
 
-        .def("rank", &CScriptGameObject::GetRank)
-        .def("command", &CScriptGameObject::AddAction)
-        .def("action", &CScriptGameObject::GetCurrentAction, adopt<result>())
-        .def("object_count", &CScriptGameObject::GetInventoryObjectCount)
-        .def("object", (CScriptGameObject * (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::GetObjectByName))
-        .def("object", (CScriptGameObject * (CScriptGameObject::*)(int))(&CScriptGameObject::GetObjectByIndex))
-        .def("active_item", &CScriptGameObject::GetActiveItem)
+        "rank", &CScriptGameObject::GetRank, "command", &CScriptGameObject::AddAction, "action", &CScriptGameObject::GetCurrentAction, "object_count",
+        &CScriptGameObject::GetInventoryObjectCount, "object",
+        sol::overload(sol::resolve<CScriptGameObject*(LPCSTR) const>(&CScriptGameObject::GetObjectByName),
+                      sol::resolve<CScriptGameObject*(int) const>(&CScriptGameObject::GetObjectByIndex)),
+        "active_item", &CScriptGameObject::GetActiveItem,
 
-        .def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&))(&CScriptGameObject::SetCallback))
-        .def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType, const luabind::functor<void>&, const luabind::object&))(&CScriptGameObject::SetCallback))
-        .def("set_callback", (void(CScriptGameObject::*)(GameObject::ECallbackType))(&CScriptGameObject::SetCallback))
+        "set_callback",
+        sol::overload(sol::resolve<void(GameObject::ECallbackType, const luabind::functor<void>&)>(&CScriptGameObject::SetCallback),
+                      sol::resolve<void(GameObject::ECallbackType, const luabind::functor<void>&, const luabind::object&)>(&CScriptGameObject::SetCallback),
+                      sol::resolve<void(GameObject::ECallbackType)>(&CScriptGameObject::SetCallback)),
+        "set_patrol_extrapolate_callback",
+        sol::overload(sol::resolve<void()>(&CScriptGameObject::set_patrol_extrapolate_callback),
+                      sol::resolve<void(const luabind::functor<bool>&)>(&CScriptGameObject::set_patrol_extrapolate_callback),
+                      sol::resolve<void(const luabind::functor<bool>&, const luabind::object&)>(&CScriptGameObject::set_patrol_extrapolate_callback)),
+        "set_enemy_callback",
+        sol::overload(sol::resolve<void()>(&CScriptGameObject::set_enemy_callback), sol::resolve<void(const luabind::functor<bool>&)>(&CScriptGameObject::set_enemy_callback),
+                      sol::resolve<void(const luabind::functor<bool>&, const luabind::object&)>(&CScriptGameObject::set_enemy_callback)),
+        "patrol", &CScriptGameObject::GetPatrolPathName,
 
-        .def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)())(&CScriptGameObject::set_patrol_extrapolate_callback))
-        .def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_patrol_extrapolate_callback))
-        .def("set_patrol_extrapolate_callback",
-             (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(&CScriptGameObject::set_patrol_extrapolate_callback))
+        "get_ammo_in_magazine", &CScriptGameObject::GetAmmoElapsed, "get_ammo_total", &CScriptGameObject::GetAmmoCurrent, "set_ammo_elapsed", &CScriptGameObject::SetAmmoElapsed,
+        "set_queue_size", &CScriptGameObject::SetQueueSize,
 
-        .def("set_enemy_callback", (void(CScriptGameObject::*)())(&CScriptGameObject::set_enemy_callback))
-        .def("set_enemy_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_enemy_callback))
-        .def("set_enemy_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(&CScriptGameObject::set_enemy_callback))
-
-        .def("patrol", &CScriptGameObject::GetPatrolPathName)
-
-        .def("get_ammo_in_magazine", &CScriptGameObject::GetAmmoElapsed)
-        .def("get_ammo_total", &CScriptGameObject::GetAmmoCurrent)
-        .def("set_ammo_elapsed", &CScriptGameObject::SetAmmoElapsed)
-        .def("set_queue_size", &CScriptGameObject::SetQueueSize)
-        //		.def("best_hit",					&CScriptGameObject::GetBestHit)
-        //		.def("best_sound",					&CScriptGameObject::GetBestSound)
-        .def("best_danger", &CScriptGameObject::GetBestDanger)
-        .def("best_enemy", &CScriptGameObject::GetBestEnemy)
-        .def("best_item", &CScriptGameObject::GetBestItem)
-        .def("action_count", &CScriptGameObject::GetActionCount)
-        .def("action_by_index", &CScriptGameObject::GetActionByIndex)
-
-        //.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::object &, LPCSTR))(&CScriptGameObject::SetSoundCallback))
-        //.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::functor<void> &))(&CScriptGameObject::SetSoundCallback))
-        //.def("clear_hear_callback",		&CScriptGameObject::ClearSoundCallback)
+        "best_danger", &CScriptGameObject::GetBestDanger, "best_enemy", &CScriptGameObject::GetBestEnemy, "best_item", &CScriptGameObject::GetBestItem, "action_count",
+        &CScriptGameObject::GetActionCount, "action_by_index", &CScriptGameObject::GetActionByIndex,
 
         /************************* Add by Zander *******************************/
-        .def("dump_visual_to_log", &CScriptGameObject::GetModelDump)
-        .def("set_show_model_mesh", &CScriptGameObject::ShowModelMesh)
-        .def("get_show_model_mesh", &CScriptGameObject::GetShowMesh)
-        .def("get_mesh_count", &CScriptGameObject::GetMeshCount)
-        .def("set_show_model_mesh_hud", &CScriptGameObject::ShowModelMeshHUD)
-        .def("get_show_model_mesh_hud", &CScriptGameObject::GetShowMeshHUD)
-        .def("get_mesh_count_hud", &CScriptGameObject::GetMeshCountHUD)
+        "dump_visual_to_log", &CScriptGameObject::GetModelDump, "set_show_model_mesh", &CScriptGameObject::ShowModelMesh, "get_show_model_mesh", &CScriptGameObject::GetShowMesh,
+        "get_mesh_count", &CScriptGameObject::GetMeshCount, "set_show_model_mesh_hud", &CScriptGameObject::ShowModelMeshHUD, "get_show_model_mesh_hud",
+        &CScriptGameObject::GetShowMeshHUD, "get_mesh_count_hud", &CScriptGameObject::GetMeshCountHUD,
         /************************* End Add *************************************/
 
-        .def("memory_time", &CScriptGameObject::memory_time)
-        .def("memory_position", &CScriptGameObject::memory_position)
-        .def("best_weapon", &CScriptGameObject::best_weapon)
-        .def("explode", &CScriptGameObject::explode)
-        .def("explode_initiator", &CScriptGameObject::explode_initiator)
-        .def("is_exploded", &CScriptGameObject::is_exploded)
-        .def("is_ready_to_explode", &CScriptGameObject::is_ready_to_explode)
-        .def("get_enemy", &CScriptGameObject::GetEnemy)
-        .def("get_corpse", &CScriptGameObject::GetCorpse)
-        .def("get_enemy_strength", &CScriptGameObject::GetEnemyStrength)
-        .def("get_sound_info", &CScriptGameObject::GetSoundInfo)
-        .def("get_monster_hit_info", &CScriptGameObject::GetMonsterHitInfo)
-        .def("bind_object", &CScriptGameObject::bind_object, adopt<2>())
-        .def("motivation_action_manager", &script_action_planner)
+        "memory_time", &CScriptGameObject::memory_time, "memory_position", &CScriptGameObject::memory_position, "best_weapon", &CScriptGameObject::best_weapon, "explode",
+        &CScriptGameObject::explode, "explode_initiator", &CScriptGameObject::explode_initiator, "is_exploded", &CScriptGameObject::is_exploded, "is_ready_to_explode",
+        &CScriptGameObject::is_ready_to_explode, "get_enemy", &CScriptGameObject::GetEnemy, "get_corpse", &CScriptGameObject::GetCorpse, "get_enemy_strength",
+        &CScriptGameObject::GetEnemyStrength, "get_sound_info", &CScriptGameObject::GetSoundInfo, "get_monster_hit_info", &CScriptGameObject::GetMonsterHitInfo, "bind_object",
+        &CScriptGameObject::bind_object, "motivation_action_manager", &script_action_planner,
 
         // bloodsucker
-        .def("set_invisible", &CScriptGameObject::set_invisible)
-        .def("set_manual_invisibility", &CScriptGameObject::set_manual_invisibility)
-        .def("set_alien_control", &CScriptGameObject::set_alien_control)
+        "set_invisible", &CScriptGameObject::set_invisible, "set_manual_invisibility", &CScriptGameObject::set_manual_invisibility, "set_alien_control",
+        &CScriptGameObject::set_alien_control,
 
         // zombie
-        .def("fake_death_fall_down", &CScriptGameObject::fake_death_fall_down)
-        .def("fake_death_stand_up", &CScriptGameObject::fake_death_stand_up)
+        "fake_death_fall_down", &CScriptGameObject::fake_death_fall_down, "fake_death_stand_up", &CScriptGameObject::fake_death_stand_up,
 
         // base monster
-        .def("skip_transfer_enemy", &CScriptGameObject::skip_transfer_enemy)
-        .def("set_home", (void(CScriptGameObject::*)(LPCSTR, float, float, bool, float))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(LPCSTR, float, float, bool))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(LPCSTR, float, float))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(CPatrolPath*, float, float, bool, float))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(CPatrolPath*, float, float, bool))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(CPatrolPath*, float, float))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(u32, float, float, bool, float))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(u32, float, float, bool))(&CScriptGameObject::set_home))
-        .def("set_home", (void(CScriptGameObject::*)(u32, float, float))(&CScriptGameObject::set_home))
-        .def("at_home", (bool(CScriptGameObject::*)())(&CScriptGameObject::at_home))
-        .def("at_home", (bool(CScriptGameObject::*)(Fvector))(&CScriptGameObject::at_home))
-        .def("remove_home", &CScriptGameObject::remove_home)
-        .def("berserk", &CScriptGameObject::berserk)
-        .def("can_script_capture", &CScriptGameObject::can_script_capture)
-        .def("set_custom_panic_threshold", &CScriptGameObject::set_custom_panic_threshold)
-        .def("set_default_panic_threshold", &CScriptGameObject::set_default_panic_threshold)
+        "skip_transfer_enemy", &CScriptGameObject::skip_transfer_enemy,
+
+        "set_home",
+        sol::overload(
+            sol::resolve<void(LPCSTR, float, float, bool, float)>(&CScriptGameObject::set_home), sol::resolve<void(LPCSTR, float, float, bool)>(&CScriptGameObject::set_home),
+            sol::resolve<void(LPCSTR, float, float)>(&CScriptGameObject::set_home), sol::resolve<void(CPatrolPath*, float, float, bool, float)>(&CScriptGameObject::set_home),
+            sol::resolve<void(CPatrolPath*, float, float, bool)>(&CScriptGameObject::set_home), sol::resolve<void(CPatrolPath*, float, float)>(&CScriptGameObject::set_home),
+            sol::resolve<void(u32, float, float, bool, float)>(&CScriptGameObject::set_home), sol::resolve<void(u32, float, float, bool)>(&CScriptGameObject::set_home),
+            sol::resolve<void(u32, float, float)>(&CScriptGameObject::set_home)),
+        "at_home", sol::overload(sol::resolve<bool()>(&CScriptGameObject::at_home), sol::resolve<bool(Fvector)>(&CScriptGameObject::at_home)), "remove_home",
+        &CScriptGameObject::remove_home,
+
+        "berserk", &CScriptGameObject::berserk, "can_script_capture", &CScriptGameObject::can_script_capture, "set_custom_panic_threshold",
+        &CScriptGameObject::set_custom_panic_threshold, "set_default_panic_threshold", &CScriptGameObject::set_default_panic_threshold,
 
         // inventory owner
-        .def("get_current_outfit", &CScriptGameObject::GetCurrentOutfit)
-        .def("get_current_outfit_protection", &CScriptGameObject::GetCurrentOutfitProtection)
+        "get_current_outfit", &CScriptGameObject::GetCurrentOutfit, "get_current_outfit_protection", &CScriptGameObject::GetCurrentOutfitProtection,
 
         // searchlight
-        .def("get_current_direction", &CScriptGameObject::GetCurrentDirection)
-        .def("get_projector", &CScriptGameObject::GetProjector)
-        .def("projector_switch", &CScriptGameObject::SwitchProjector)
+        "get_current_direction", &CScriptGameObject::GetCurrentDirection, "get_projector", &CScriptGameObject::GetProjector, "projector_switch",
+        &CScriptGameObject::SwitchProjector,
 
         // movement manager
-        .def("set_body_state", &CScriptGameObject::set_body_state)
-        .def("set_movement_type", &CScriptGameObject::set_movement_type)
-        .def("set_mental_state", &CScriptGameObject::set_mental_state)
-        .def("set_path_type", &CScriptGameObject::set_path_type)
-        .def("set_detail_path_type", &CScriptGameObject::set_detail_path_type)
+        "set_body_state", &CScriptGameObject::set_body_state, "set_movement_type", &CScriptGameObject::set_movement_type, "set_mental_state", &CScriptGameObject::set_mental_state,
+        "set_path_type", &CScriptGameObject::set_path_type, "set_detail_path_type", &CScriptGameObject::set_detail_path_type,
 
-        .def("body_state", &CScriptGameObject::body_state)
-        .def("target_body_state", &CScriptGameObject::target_body_state)
-        .def("movement_type", &CScriptGameObject::movement_type)
-        .def("target_movement_type", &CScriptGameObject::target_movement_type)
-        .def("mental_state", &CScriptGameObject::mental_state)
-        .def("target_mental_state", &CScriptGameObject::target_mental_state)
-        .def("path_type", &CScriptGameObject::path_type)
-        .def("detail_path_type", &CScriptGameObject::detail_path_type)
+        "body_state", &CScriptGameObject::body_state, "target_body_state", &CScriptGameObject::target_body_state, "movement_type", &CScriptGameObject::movement_type,
+        "target_movement_type", &CScriptGameObject::target_movement_type, "mental_state", &CScriptGameObject::mental_state, "target_mental_state",
+        &CScriptGameObject::target_mental_state, "path_type", &CScriptGameObject::path_type, "detail_path_type", &CScriptGameObject::detail_path_type,
 
         //
-        .def("set_desired_position", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_position))
-        .def("set_desired_position", (void(CScriptGameObject::*)(const Fvector*))(&CScriptGameObject::set_desired_position))
-        .def("set_desired_direction", (void(CScriptGameObject::*)())(&CScriptGameObject::set_desired_direction))
-        .def("set_desired_direction", (void(CScriptGameObject::*)(const Fvector*))(&CScriptGameObject::set_desired_direction))
-        .def("set_patrol_path", &CScriptGameObject::set_patrol_path)
-        .def("set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id)
-        .def("level_vertex_id", &CScriptGameObject::level_vertex_id)
-        .def("level_vertex_light", &CScriptGameObject::level_vertex_light)
-        .def("game_vertex_id", &CScriptGameObject::game_vertex_id)
-        .def("add_animation", (void(CScriptGameObject::*)(LPCSTR, bool, bool))(&CScriptGameObject::add_animation))
-        .def("clear_animations", &CScriptGameObject::clear_animations)
-        .def("animation_count", &CScriptGameObject::animation_count)
-        .def("animation_slot", &CScriptGameObject::animation_slot)
+        "set_desired_position",
+        sol::overload(sol::resolve<void()>(&CScriptGameObject::set_desired_position), sol::resolve<void(const Fvector*)>(&CScriptGameObject::set_desired_position)),
+        "set_desired_direction",
+        sol::overload(sol::resolve<void()>(&CScriptGameObject::set_desired_direction), sol::resolve<void(const Fvector*)>(&CScriptGameObject::set_desired_direction)),
+        "set_patrol_path", &CScriptGameObject::set_patrol_path,
 
-        .def("ignore_monster_threshold", &CScriptGameObject::set_ignore_monster_threshold)
-        .def("restore_ignore_monster_threshold", &CScriptGameObject::restore_ignore_monster_threshold)
-        .def("ignore_monster_threshold", &CScriptGameObject::ignore_monster_threshold)
-        .def("max_ignore_monster_distance", &CScriptGameObject::set_max_ignore_monster_distance)
-        .def("restore_max_ignore_monster_distance", &CScriptGameObject::restore_max_ignore_monster_distance)
-        .def("max_ignore_monster_distance", &CScriptGameObject::max_ignore_monster_distance)
+        "set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id, "level_vertex_id", &CScriptGameObject::level_vertex_id, "level_vertex_light",
+        &CScriptGameObject::level_vertex_light, "game_vertex_id", &CScriptGameObject::game_vertex_id,
 
-        .def("eat", &CScriptGameObject::eat)
+        "add_animation", sol::resolve<void(LPCSTR, bool, bool)>(&CScriptGameObject::add_animation), "clear_animations", &CScriptGameObject::clear_animations, "animation_count",
+        &CScriptGameObject::animation_count, "animation_slot", &CScriptGameObject::animation_slot,
 
-        .def("extrapolate_length", (float(CScriptGameObject::*)() const)(&CScriptGameObject::extrapolate_length))
-        .def("extrapolate_length", (void(CScriptGameObject::*)(float))(&CScriptGameObject::extrapolate_length))
+        "ignore_monster_threshold", sol::overload(&CScriptGameObject::ignore_monster_threshold, &CScriptGameObject::set_ignore_monster_threshold),
+        "restore_ignore_monster_threshold", &CScriptGameObject::restore_ignore_monster_threshold, "max_ignore_monster_distance",
+        sol::overload(&CScriptGameObject::max_ignore_monster_distance, &CScriptGameObject::set_max_ignore_monster_distance), "restore_max_ignore_monster_distance",
+        &CScriptGameObject::restore_max_ignore_monster_distance,
 
-        .def("set_fov", &CScriptGameObject::set_fov)
-        .def("set_range", &CScriptGameObject::set_range)
+        "eat", &CScriptGameObject::eat, "extrapolate_length",
+        sol::overload(sol::resolve<float() const>(&CScriptGameObject::extrapolate_length), sol::resolve<void(float)>(&CScriptGameObject::extrapolate_length)),
 
-        .def("head_orientation", &CScriptGameObject::head_orientation)
+        "set_fov", &CScriptGameObject::set_fov, "set_range", &CScriptGameObject::set_range, "head_orientation", &CScriptGameObject::head_orientation, "set_actor_position",
+        &CScriptGameObject::SetActorPosition, "set_actor_direction", &CScriptGameObject::SetActorDirection, "set_npc_position", &CScriptGameObject::SetNpcPosition,
+        "vertex_in_direction", &CScriptGameObject::vertex_in_direction,
 
-        .def("set_actor_position", &CScriptGameObject::SetActorPosition)
-        .def("set_actor_direction", &CScriptGameObject::SetActorDirection)
+        "item_in_slot", &CScriptGameObject::item_in_slot, "active_slot", &CScriptGameObject::active_slot, "activate_slot", &CScriptGameObject::activate_slot, "switch_torch",
+        &CScriptGameObject::SwitchTorch,
 
-        .def("set_npc_position", &CScriptGameObject::SetNpcPosition)
-
-        .def("vertex_in_direction", &CScriptGameObject::vertex_in_direction)
-
-        .def("item_in_slot", &CScriptGameObject::item_in_slot)
-        .def("active_slot", &CScriptGameObject::active_slot)
-        .def("activate_slot", &CScriptGameObject::activate_slot)
-
-        .def("switch_torch", &CScriptGameObject::SwitchTorch)
-
-        .def("get_xform", &CScriptGameObject::GetXForm)
+        "get_xform", &CScriptGameObject::GetXForm,
 
 #ifdef DEBUG
-        .def("debug_planner", &CScriptGameObject::debug_planner)
+        "debug_planner", &CScriptGameObject::debug_planner,
 #endif // DEBUG
-        .def("invulnerable", (bool(CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
-        .def("invulnerable", (void(CScriptGameObject::*)(bool)) & CScriptGameObject::invulnerable);
+
+        "invulnerable", sol::overload(sol::resolve<bool() const>(&CScriptGameObject::invulnerable), sol::resolve<void(bool)>(&CScriptGameObject::invulnerable)));
 }

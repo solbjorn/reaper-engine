@@ -13,28 +13,26 @@
 #include "entity_alive.h"
 #include "danger_object.h"
 
-using namespace luabind;
-
-CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object)
+static CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object)
 {
     return (object.m_object && object.m_object->m_spawned ? object.m_object->lua_game_object() : nullptr);
 }
 
-int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
+static int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
 
 template <typename T>
-CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
+static CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
 {
     return (memory_object.m_object && memory_object.m_object->m_spawned ? memory_object.m_object->lua_game_object() : nullptr);
 }
 
-CScriptGameObject* CDangerObject_object(const CDangerObject* self)
+static CScriptGameObject* CDangerObject_object(const CDangerObject* self)
 {
     VERIFY(self);
     return (self->object() && self->object()->m_spawned ? self->object()->lua_game_object() : nullptr);
 }
 
-CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
+static CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
 {
     VERIFY(self);
     if (!self->dependent_object())
@@ -44,7 +42,7 @@ CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
     return (game_object && game_object->m_spawned ? game_object->lua_game_object() : nullptr);
 }
 
-Fvector CDangerObject__position(const CDangerObject* self)
+static Fvector CDangerObject__position(const CDangerObject* self)
 {
     THROW(self);
     return (self->position());
@@ -52,86 +50,87 @@ Fvector CDangerObject__position(const CDangerObject* self)
 
 void CMemoryInfo::script_register(lua_State* L)
 {
-    module(L)[(
+    auto lua = sol::state_view(L);
+
 #ifdef USE_ORIENTATION
-        class_<SRotation>("rotation").def_readonly("yaw", &SRotation::yaw).def_readonly("pitch", &SRotation::pitch),
+    lua.new_usertype<SRotation>("rotation", sol::no_constructor, "yaw", sol::readonly(&SRotation::yaw), "pitch", sol::readonly(&SRotation::pitch));
 #endif
 
-        class_<MemorySpace::SObjectParams>("object_params")
+    lua.new_usertype<MemorySpace::SObjectParams>("object_params", sol::no_constructor,
 #ifdef USE_ORIENTATION
-            .def_readonly("orientation", &MemorySpace::SObjectParams::m_orientation)
+                                                 "orientation", sol::readonly(&MemorySpace::SObjectParams::m_orientation),
 #endif
-            .def_readonly("level_vertex", &MemorySpace::SObjectParams::m_level_vertex_id)
-            .def_readonly("position", &MemorySpace::SObjectParams::m_position),
+                                                 "level_vertex", sol::readonly(&MemorySpace::SObjectParams::m_level_vertex_id), "position",
+                                                 sol::readonly(&MemorySpace::SObjectParams::m_position));
 
-        class_<MemorySpace::SMemoryObject>("memory_object")
+    lua.new_usertype<MemorySpace::SMemoryObject>("memory_object", sol::no_constructor
 #ifdef USE_GAME_TIME
-            .def_readonly("game_time", &MemorySpace::SMemoryObject::m_game_time)
+                                                 ,
+                                                 "game_time", sol::readonly(&MemorySpace::SMemoryObject::m_game_time)
 #endif
 #ifdef USE_LEVEL_TIME
-            .def_readonly("level_time", &MemorySpace::SMemoryObject::m_level_time)
+                                                                  ,
+                                                 "level_time", sol::readonly(&MemorySpace::SMemoryObject::m_level_time)
 #endif
 #ifdef USE_LAST_GAME_TIME
-            .def_readonly("last_game_time", &MemorySpace::SMemoryObject::m_last_game_time)
+                                                                   ,
+                                                 "last_game_time", sol::readonly(&MemorySpace::SMemoryObject::m_last_game_time)
 #endif
 #ifdef USE_LAST_LEVEL_TIME
-            .def_readonly("last_level_time", &MemorySpace::SMemoryObject::m_last_level_time)
+                                                                       ,
+                                                 "last_level_time", sol::readonly(&MemorySpace::SMemoryObject::m_last_level_time)
 #endif
 #ifdef USE_FIRST_GAME_TIME
-            .def_readonly("first_game_time", &MemorySpace::SMemoryObject::m_first_game_time)
+                                                                        ,
+                                                 "first_game_time", sol::readonly(&MemorySpace::SMemoryObject::m_first_game_time)
 #endif
 #ifdef USE_LEVEL_TIME // USE_FIRST_LEVEL_TIME
-            .def_readonly("first_level_time", &MemorySpace::SMemoryObject::m_first_level_time)
+                                                                        ,
+                                                 "first_level_time", sol::readonly(&MemorySpace::SMemoryObject::m_first_level_time)
 #endif
 #ifdef USE_UPDATE_COUNT
-            .def_readonly("update_count", &MemorySpace::SMemoryObject::m_update_count)
+                                                                         ,
+                                                 "update_count", sol::readonly(&MemorySpace::SMemoryObject::m_update_count)
 #endif
-            ,
+    );
 
-        class_<MemorySpace::CMemoryObject<CEntityAlive>, MemorySpace::SMemoryObject>("entity_memory_object")
-            .def_readonly("object_info", &MemorySpace::CMemoryObject<CEntityAlive>::m_object_params)
-            .def_readonly("self_info", &MemorySpace::CMemoryObject<CEntityAlive>::m_self_params)
-            .def("object", &get_memory_object<CEntityAlive>),
+    lua.new_usertype<MemorySpace::CMemoryObject<CEntityAlive>>("entity_memory_object", sol::no_constructor, "object_info",
+                                                               sol::readonly(&MemorySpace::CMemoryObject<CEntityAlive>::m_object_params), "self_info",
+                                                               sol::readonly(&MemorySpace::CMemoryObject<CEntityAlive>::m_self_params), "object", &get_memory_object<CEntityAlive>,
+                                                               sol::base_classes, xr_sol_bases<MemorySpace::CMemoryObject<CEntityAlive>>());
 
-        class_<MemorySpace::CMemoryObject<CGameObject>, MemorySpace::SMemoryObject>("game_memory_object")
-            .def_readonly("object_info", &MemorySpace::CMemoryObject<CGameObject>::m_object_params)
-            .def_readonly("self_info", &MemorySpace::CMemoryObject<CGameObject>::m_self_params)
-            .def("object", &get_memory_object<CGameObject>),
+    lua.new_usertype<MemorySpace::CMemoryObject<CGameObject>>("game_memory_object", sol::no_constructor, "object_info",
+                                                              sol::readonly(&MemorySpace::CMemoryObject<CGameObject>::m_object_params), "self_info",
+                                                              sol::readonly(&MemorySpace::CMemoryObject<CGameObject>::m_self_params), "object", &get_memory_object<CGameObject>,
+                                                              sol::base_classes, xr_sol_bases<MemorySpace::CMemoryObject<CGameObject>>());
 
-        class_<MemorySpace::CHitObject, MemorySpace::CMemoryObject<CEntityAlive>>("hit_memory_object")
-            .def_readonly("direction", &MemorySpace::CHitObject::m_direction)
-            .def_readonly("bone_index", &MemorySpace::CHitObject::m_bone_index)
-            .def_readonly("amount", &MemorySpace::CHitObject::m_amount),
+    lua.new_usertype<MemorySpace::CHitObject>("hit_memory_object", sol::no_constructor, "direction", sol::readonly(&MemorySpace::CHitObject::m_direction), "bone_index",
+                                              sol::readonly(&MemorySpace::CHitObject::m_bone_index), "amount", sol::readonly(&MemorySpace::CHitObject::m_amount), sol::base_classes,
+                                              xr_sol_bases<MemorySpace::CHitObject>());
 
-        class_<MemorySpace::CVisibleObject, MemorySpace::CMemoryObject<CGameObject>>("visible_memory_object"),
+    lua.new_usertype<MemorySpace::CVisibleObject>("visible_memory_object", sol::no_constructor, sol::base_classes, xr_sol_bases<MemorySpace::CVisibleObject>());
 
-        class_<MemorySpace::CMemoryInfo, MemorySpace::CVisibleObject>("memory_info")
-            .def_readonly("visual_info", &MemorySpace::CMemoryInfo::m_visual_info)
-            .def_readonly("sound_info", &MemorySpace::CMemoryInfo::m_sound_info)
-            .def_readonly("hit_info", &MemorySpace::CMemoryInfo::m_hit_info),
+    lua.new_usertype<MemorySpace::CMemoryInfo>("memory_info", sol::no_constructor, "visual_info", sol::readonly(&MemorySpace::CMemoryInfo::m_visual_info), "sound_info",
+                                               sol::readonly(&MemorySpace::CMemoryInfo::m_sound_info), "hit_info", sol::readonly(&MemorySpace::CMemoryInfo::m_hit_info),
+                                               sol::base_classes, xr_sol_bases<MemorySpace::CMemoryInfo>());
 
-        class_<MemorySpace::CSoundObject, MemorySpace::CMemoryObject<CGameObject>>("sound_memory_object")
-            .def("type", &MemorySpace::CSoundObject::sound_type)
-            .def_readonly("power", &MemorySpace::CSoundObject::m_power),
+    lua.new_usertype<MemorySpace::CSoundObject>("sound_memory_object", sol::no_constructor, "type", &MemorySpace::CSoundObject::sound_type, "power",
+                                                sol::readonly(&MemorySpace::CSoundObject::m_power), sol::base_classes, xr_sol_bases<MemorySpace::CSoundObject>());
 
-        class_<MemorySpace::CNotYetVisibleObject>("not_yet_visible_object")
-            .def_readonly("value", &MemorySpace::CNotYetVisibleObject::m_value)
-            .def("object", &not_yet_visible_object),
+    lua.new_usertype<MemorySpace::CNotYetVisibleObject>("not_yet_visible_object", sol::no_constructor, "value", sol::readonly(&MemorySpace::CNotYetVisibleObject::m_value),
+                                                        "object", &not_yet_visible_object);
 
-        class_<CDangerObject>("danger_object")
-            .enum_("danger_type")[(value("bullet_ricochet", CDangerObject::eDangerTypeBulletRicochet), value("attack_sound", CDangerObject::eDangerTypeAttackSound),
-                                   value("entity_attacked", CDangerObject::eDangerTypeEntityAttacked), value("entity_death", CDangerObject::eDangerTypeEntityDeath),
-                                   value("entity_corpse", CDangerObject::eDangerTypeFreshEntityCorpse), value("attacked", CDangerObject::eDangerTypeAttacked),
-                                   value("grenade", CDangerObject::eDangerTypeGrenade), value("enemy_sound", CDangerObject::eDangerTypeEnemySound))]
+    lua.new_usertype<CDangerObject>("danger_object", sol::no_constructor,
+                                    // danger_type
+                                    "bullet_ricochet", sol::var(CDangerObject::eDangerTypeBulletRicochet), "attack_sound", sol::var(CDangerObject::eDangerTypeAttackSound),
+                                    "entity_attacked", sol::var(CDangerObject::eDangerTypeEntityAttacked), "entity_death", sol::var(CDangerObject::eDangerTypeEntityDeath),
+                                    "entity_corpse", sol::var(CDangerObject::eDangerTypeFreshEntityCorpse), "attacked", sol::var(CDangerObject::eDangerTypeAttacked), "grenade",
+                                    sol::var(CDangerObject::eDangerTypeGrenade), "enemy_sound", sol::var(CDangerObject::eDangerTypeEnemySound),
 
-            .enum_("danger_perceive_type")[(value("visual", CDangerObject::eDangerPerceiveTypeVisual), value("sound", CDangerObject::eDangerPerceiveTypeSound),
-                                            value("hit", CDangerObject::eDangerPerceiveTypeHit))]
+                                    // danger_perceive_type
+                                    "visual", sol::var(CDangerObject::eDangerPerceiveTypeVisual), "sound", sol::var(CDangerObject::eDangerPerceiveTypeSound), "hit",
+                                    sol::var(CDangerObject::eDangerPerceiveTypeHit),
 
-            .def(const_self == other<CDangerObject>())
-            .def("position", &CDangerObject__position)
-            .def("time", &CDangerObject::time)
-            .def("type", &CDangerObject::type)
-            .def("perceive_type", &CDangerObject::perceive_type)
-            .def("object", &CDangerObject_object)
-            .def("dependent_object", &CDangerObject_dependent_object))];
+                                    "position", &CDangerObject__position, "time", &CDangerObject::time, "type", &CDangerObject::type, "perceive_type",
+                                    &CDangerObject::perceive_type, "object", &CDangerObject_object, "dependent_object", &CDangerObject_dependent_object);
 }

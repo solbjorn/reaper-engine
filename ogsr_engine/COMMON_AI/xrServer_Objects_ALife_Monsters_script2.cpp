@@ -7,21 +7,33 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "xrServer_script_macroses.h"
 
-using namespace luabind;
+void CSE_ALifeCreatureCrow::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeCreatureCrow>("cse_alife_creature_crow", sol::no_constructor, sol::call_constructor,
+                                                           sol::factories(std::make_unique<CSE_ALifeCreatureCrow, LPCSTR>), sol::base_classes,
+                                                           xr_sol_bases<CSE_ALifeCreatureCrow>());
+}
 
-void CSE_ALifeCreatureCrow::script_register(lua_State* L) { module(L)[luabind_class_creature1(CSE_ALifeCreatureCrow, "cse_alife_creature_crow", CSE_ALifeCreatureAbstract)]; }
-
-void CSE_ALifeMonsterZombie::script_register(lua_State* L) { module(L)[luabind_class_monster1(CSE_ALifeMonsterZombie, "cse_alife_monster_zombie", CSE_ALifeMonsterAbstract)]; }
+void CSE_ALifeMonsterZombie::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeMonsterZombie>("cse_alife_monster_zombie", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifeMonsterZombie, LPCSTR>), sol::base_classes,
+                                                            xr_sol_bases<CSE_ALifeMonsterZombie>());
+}
 
 void CSE_ALifeMonsterBase::script_register(lua_State* L)
 {
-    module(L)[luabind_class_monster2(CSE_ALifeMonsterBase, "cse_alife_monster_base", CSE_ALifeMonsterAbstract, CSE_PHSkeleton)];
+    sol::state_view(L).new_usertype<CSE_ALifeMonsterBase>("cse_alife_monster_base", sol::no_constructor, sol::call_constructor,
+                                                          sol::factories(std::make_unique<CSE_ALifeMonsterBase, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeMonsterBase>());
 }
 
 void CSE_ALifeHumanStalker::script_register(lua_State* L)
 {
-    module(L)[luabind_class_monster2(CSE_ALifeHumanStalker, "cse_alife_human_stalker", CSE_ALifeHumanAbstract, CSE_PHSkeleton)];
+    sol::state_view(L).new_usertype<CSE_ALifeHumanStalker>("cse_alife_human_stalker", sol::no_constructor, sol::call_constructor,
+                                                           sol::factories(std::make_unique<CSE_ALifeHumanStalker, LPCSTR>), sol::base_classes,
+                                                           xr_sol_bases<CSE_ALifeHumanStalker>());
 }

@@ -3,79 +3,52 @@
 #include "script_game_object.h"
 
 int CHelicopter::GetMovementState() { return m_movement.type; }
-
 int CHelicopter::GetHuntState() { return m_enemy.type; }
-
 int CHelicopter::GetBodyState() { return m_body.type; }
-
-using namespace luabind;
 
 void CHelicopter::script_register(lua_State* L)
 {
-    module(L)[(class_<CHelicopter, CGameObject>("CHelicopter")
-                   .def(constructor<>())
-                   .enum_("state")[(value("eAlive", int(CHelicopter::eAlive)), value("eDead", int(CHelicopter::eDead)))]
-                   .enum_("movement_state")[(value("eMovNone", int(eMovNone)), value("eMovToPoint", int(eMovToPoint)), value("eMovPatrolPath", int(eMovPatrolPath)),
-                                             value("eMovRoundPath", int(eMovRoundPath)), value("eMovLanding", int(eMovLanding)), value("eMovTakeOff", int(eMovTakeOff)))]
-                   .enum_("hunt_state")[(value("eEnemyNone", int(eEnemyNone)), value("eEnemyPoint", int(eEnemyPoint)), value("eEnemyEntity", int(eEnemyEntity)))]
-                   .enum_("body_state")[(value("eBodyByPath", int(eBodyByPath)), value("eBodyToPoint", int(eBodyToPoint)))]
+    sol::state_view(L).new_usertype<CHelicopter>(
+        "CHelicopter", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHelicopter>),
 
-                   .def("GetState", &CHelicopter::state_script)
-                   .def("GetMovementState", &CHelicopter::GetMovementState)
-                   .def("GetHuntState", &CHelicopter::GetHuntState)
-                   .def("GetBodyState", &CHelicopter::GetBodyState)
+        // state
+        "eAlive", sol::var(CHelicopter::eAlive), "eDead", sol::var(CHelicopter::eDead),
+        // movement_state
+        "eMovNone", sol::var(eMovNone), "eMovToPoint", sol::var(eMovToPoint), "eMovPatrolPath", sol::var(eMovPatrolPath), "eMovRoundPath", sol::var(eMovRoundPath), "eMovLanding",
+        sol::var(eMovLanding), "eMovTakeOff", sol::var(eMovTakeOff),
+        // hunt_state
+        "eEnemyNone", sol::var(eEnemyNone), "eEnemyPoint", sol::var(eEnemyPoint), "eEnemyEntity", sol::var(eEnemyEntity),
+        // body_state
+        "eBodyByPath", sol::var(eBodyByPath), "eBodyToPoint", sol::var(eBodyToPoint),
 
-                   .def("GetCurrVelocity", &CHelicopter::GetCurrVelocity)
-                   .def("GetMaxVelocity", &CHelicopter::GetMaxVelocity)
-                   .def("SetMaxVelocity", &CHelicopter::SetMaxVelocity)
-                   .def("GetCurrVelocityVec", &CHelicopter::GetCurrVelocityVec)
-                   .def("GetfHealth", &CHelicopter::GetHeliHealth)
-                   .def("SetfHealth", &CHelicopter::SetHeliHealth)
+        "GetState", &CHelicopter::state_script, "GetMovementState", &CHelicopter::GetMovementState, "GetHuntState", &CHelicopter::GetHuntState, "GetBodyState",
+        &CHelicopter::GetBodyState,
 
-                   .def("SetSpeedInDestPoint", &CHelicopter::SetSpeedInDestPoint)
-                   .def("GetSpeedInDestPoint", &CHelicopter::GetSpeedInDestPoint)
-                   //////////////////////Start By JoHnY///////////////////////
-                   .def("SetLinearAcc", &CHelicopter::SetLinearAcc)
-                   //////////////////////End By JoHnY/////////////////////////
+        "GetCurrVelocity", &CHelicopter::GetCurrVelocity, "GetMaxVelocity", &CHelicopter::GetMaxVelocity, "SetMaxVelocity", &CHelicopter::SetMaxVelocity, "GetCurrVelocityVec",
+        &CHelicopter::GetCurrVelocityVec, "GetfHealth", &CHelicopter::GetHeliHealth, "SetfHealth", &CHelicopter::SetHeliHealth, "SetSpeedInDestPoint",
+        &CHelicopter::SetSpeedInDestPoint, "GetSpeedInDestPoint", &CHelicopter::GetSpeedInDestPoint,
 
-                   .def("SetOnPointRangeDist", &CHelicopter::SetOnPointRangeDist)
-                   .def("GetOnPointRangeDist", &CHelicopter::GetOnPointRangeDist)
+        //////////////////////Start By JoHnY///////////////////////
+        "SetLinearAcc", &CHelicopter::SetLinearAcc,
+        //////////////////////End By JoHnY/////////////////////////
 
-                   .def("GetDistanceToDestPosition", &CHelicopter::GetDistanceToDestPosition)
+        "SetOnPointRangeDist", &CHelicopter::SetOnPointRangeDist, "GetOnPointRangeDist", &CHelicopter::GetOnPointRangeDist, "GetDistanceToDestPosition",
+        &CHelicopter::GetDistanceToDestPosition,
 
-                   .def("ClearEnemy", &CHelicopter::UnSetEnemy)
-                   .def("SetEnemy", (void(CHelicopter::*)(CScriptGameObject*)) & CHelicopter::SetEnemy)
-                   .def("SetEnemy", (void(CHelicopter::*)(Fvector*)) & CHelicopter::SetEnemy)
-                   .def("GoPatrolByPatrolPath", &CHelicopter::goPatrolByPatrolPath)
-                   .def("GoPatrolByRoundPath", &CHelicopter::goByRoundPath)
-                   .def("SetDestPosition", &CHelicopter::SetDestPosition)
-                   .def("LookAtPoint", &CHelicopter::LookAtPoint)
-                   .def("SetFireTrailLength", &CHelicopter::SetFireTrailLength)
-                   .def("SetBarrelDirTolerance", &CHelicopter::SetBarrelDirTolerance)
+        "ClearEnemy", &CHelicopter::UnSetEnemy, "SetEnemy",
+        sol::overload(sol::resolve<void(CScriptGameObject*)>(&CHelicopter::SetEnemy), sol::resolve<void(Fvector*)>(&CHelicopter::SetEnemy)), "GoPatrolByPatrolPath",
+        &CHelicopter::goPatrolByPatrolPath, "GoPatrolByRoundPath", &CHelicopter::goByRoundPath, "SetDestPosition", &CHelicopter::SetDestPosition, "LookAtPoint",
+        &CHelicopter::LookAtPoint, "SetFireTrailLength", &CHelicopter::SetFireTrailLength, "SetBarrelDirTolerance", &CHelicopter::SetBarrelDirTolerance,
 
-                   .def("UseFireTrail", (bool(CHelicopter::*)(void)) & CHelicopter::UseFireTrail)
-                   .def("UseFireTrail", (void(CHelicopter::*)(bool)) & CHelicopter::UseFireTrail)
+        "UseFireTrail", sol::overload(sol::resolve<bool()>(&CHelicopter::UseFireTrail), sol::resolve<void(bool)>(&CHelicopter::UseFireTrail)), "Die", &CHelicopter::DieHelicopter,
+        "StartFlame", &CHelicopter::StartFlame, "Explode", &CHelicopter::ExplodeHelicopter,
 
-                   .def("Die", &CHelicopter::DieHelicopter)
-                   .def("StartFlame", &CHelicopter::StartFlame)
-                   .def("Explode", &CHelicopter::ExplodeHelicopter)
+        "isVisible", &CHelicopter::isVisible, "GetRealAltitude", &CHelicopter::GetRealAltitude, "GetSafeAltitude", &CHelicopter::GetSafeAltitude, "TurnLighting",
+        &CHelicopter::TurnLighting, "TurnEngineSound", &CHelicopter::TurnEngineSound,
 
-                   .def("isVisible", &CHelicopter::isVisible)
-
-                   .def("GetRealAltitude", &CHelicopter::GetRealAltitude)
-                   .def("GetSafeAltitude", &CHelicopter::GetSafeAltitude)
-                   .def("TurnLighting", &CHelicopter::TurnLighting)
-                   .def("TurnEngineSound", &CHelicopter::TurnEngineSound)
-                   .def_readwrite("m_use_rocket_on_attack", &CHelicopter::m_use_rocket_on_attack)
-                   .def_readwrite("m_use_mgun_on_attack", &CHelicopter::m_use_mgun_on_attack)
-                   .def_readwrite("m_min_rocket_dist", &CHelicopter::m_min_rocket_dist)
-                   .def_readwrite("m_max_rocket_dist", &CHelicopter::m_max_rocket_dist)
-                   .def_readwrite("m_min_mgun_dist", &CHelicopter::m_min_mgun_dist)
-                   .def_readwrite("m_max_mgun_dist", &CHelicopter::m_max_mgun_dist)
-                   .def_readwrite("m_time_between_rocket_attack", &CHelicopter::m_time_between_rocket_attack)
-                   .def_readwrite("m_syncronize_rocket", &CHelicopter::m_syncronize_rocket)
-                   .def_readonly("m_flame_started", &CHelicopter::m_flame_started)
-                   .def_readonly("m_light_started", &CHelicopter::m_light_started)
-                   .def_readonly("m_exploded", &CHelicopter::m_exploded)
-                   .def_readonly("m_dead", &CHelicopter::m_dead))];
+        "m_use_rocket_on_attack", &CHelicopter::m_use_rocket_on_attack, "m_use_mgun_on_attack", &CHelicopter::m_use_mgun_on_attack, "m_min_rocket_dist",
+        &CHelicopter::m_min_rocket_dist, "m_max_rocket_dist", &CHelicopter::m_max_rocket_dist, "m_min_mgun_dist", &CHelicopter::m_min_mgun_dist, "m_max_mgun_dist",
+        &CHelicopter::m_max_mgun_dist, "m_time_between_rocket_attack", &CHelicopter::m_time_between_rocket_attack, "m_syncronize_rocket", &CHelicopter::m_syncronize_rocket,
+        "m_flame_started", sol::readonly(&CHelicopter::m_flame_started), "m_light_started", sol::readonly(&CHelicopter::m_light_started), "m_exploded",
+        sol::readonly(&CHelicopter::m_exploded), "m_dead", sol::readonly(&CHelicopter::m_dead), sol::base_classes, xr_sol_bases<CHelicopter>());
 }

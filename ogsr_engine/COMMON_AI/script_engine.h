@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "script_storage.h"
 #include "script_export_space.h"
 
@@ -40,6 +42,7 @@ public:
     bool process_file_if_exists(const char* file_name, bool warn_if_not_exist);
     bool process_file(const char* file_name);
     bool process_file(const char* file_name, bool reload_modules);
+    bool function(const char* function_to_call, sol::function& func);
     bool function_object(const char* function_to_call, luabind::object& object, int type = LUA_TFUNCTION);
     void register_script_classes();
     void parse_script_namespace(const char* name, char* ns, u32 nsSize, char* func, u32 funcSize);

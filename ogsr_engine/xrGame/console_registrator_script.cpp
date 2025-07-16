@@ -1,34 +1,35 @@
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+#include "../xr_3da/XR_IOConsole.h"
+#include "../xr_3da/xr_ioc_cmd.h"
+
 #include "console_registrator.h"
-#include "..\xr_3da\XR_IOConsole.h"
-#include "..\xr_3da\xr_ioc_cmd.h"
 
-using namespace luabind;
+static CConsole* console() { return Console; }
 
-CConsole* console() { return Console; }
-
-int get_console_integer(CConsole* c, LPCSTR cmd)
+static int get_console_integer(CConsole* c, LPCSTR cmd)
 {
     int val = 0, min = 0, max = 0;
     val = c->GetInteger(cmd, min, max);
     return val;
 }
 
-float get_console_float(CConsole* c, LPCSTR cmd)
+static float get_console_float(CConsole* c, LPCSTR cmd)
 {
     float val = 0, min = 0, max = 0;
     val = c->GetFloat(cmd, min, max);
     return val;
 }
 
-bool get_console_bool(CConsole* c, LPCSTR cmd)
+static bool get_console_bool(CConsole* c, LPCSTR cmd)
 {
     BOOL val;
     val = c->GetBool(cmd);
     return !!val;
 }
 
-IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
+static IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
 {
     CConsole::vecCMD_IT I = c->Commands.find(cmd);
     IConsole_Command* icmd = NULL;
@@ -39,14 +40,14 @@ IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
     return icmd;
 }
 
-void disable_cmd(CConsole* c, LPCSTR cmd)
+static void disable_cmd(CConsole* c, LPCSTR cmd)
 {
     IConsole_Command* icmd = find_cmd(c, cmd);
     if (icmd)
         icmd->SetEnabled(false);
 }
 
-void enable_cmd(CConsole* c, LPCSTR cmd)
+static void enable_cmd(CConsole* c, LPCSTR cmd)
 {
     IConsole_Command* icmd = find_cmd(c, cmd);
     if (icmd)
@@ -55,22 +56,13 @@ void enable_cmd(CConsole* c, LPCSTR cmd)
 
 void console_registrator::script_register(lua_State* L)
 {
-    module(L)[(def("get_console", &console),
-               class_<CConsole>("CConsole")
-                   .def("disable_command", &disable_cmd)
-                   .def("enable_command", &enable_cmd)
-                   .def("execute", ((void (CConsole::*)(LPCSTR))&CConsole::Execute))
-                   .def("execute", ((void (CConsole::*)(LPCSTR, LPCSTR))&CConsole::Execute))
-                   .def("execute_script", &CConsole::ExecuteScript)
-                   .def("show", &CConsole::Show)
-                   .def("hide", &CConsole::Hide)
-                   //		.def("save",						&CConsole::Save)
-                   .def("get_string", &CConsole::GetString)
-                   .def("get_integer", &get_console_integer)
-                   .def("get_bool", &get_console_bool)
-                   .def("get_float", &get_console_float)
-                   .def("get_token", &CConsole::GetToken)
-                   .def("get_vector", &CConsole::GetFVector)
-                   .def("get_vector4", &CConsole::GetFVector4)
-                   .def_readonly("visible", &CConsole::bVisible))];
+    auto lua = sol::state_view(L);
+
+    lua.set_function("get_console", &console);
+
+    lua.new_usertype<CConsole>("CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",
+                               sol::overload(sol::resolve<void(LPCSTR)>(&CConsole::Execute), sol::resolve<void(LPCSTR, LPCSTR)>(&CConsole::Execute)), "execute_script",
+                               &CConsole::ExecuteScript, "show", &CConsole::Show, "hide", &CConsole::Hide, "get_string", &CConsole::GetString, "get_integer", &get_console_integer,
+                               "get_bool", &get_console_bool, "get_float", &get_console_float, "get_token", &CConsole::GetToken, "get_vector", &CConsole::GetFVector, "get_vector4",
+                               &CConsole::GetFVector4, "visible", sol::readonly(&CConsole::bVisible));
 }

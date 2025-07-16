@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "dog.h"
 
-using namespace luabind;
-
-void CAI_Dog::script_register(lua_State* L) { module(L)[class_<CAI_Dog, CGameObject>("CAI_Dog").def(constructor<>())]; }
+void CAI_Dog::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CAI_Dog>("CAI_Dog", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Dog>), sol::base_classes,
+                                             xr_sol_bases<CAI_Dog>());
+}

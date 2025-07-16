@@ -111,30 +111,19 @@ void CTorch::SetVirtualSize(float size, int target)
     }
 }
 
-using namespace luabind;
-
 void CTorch::script_register(lua_State* L)
 {
-    module(L)[(class_<CTorch, CGameObject /*CInventoryItemObject*/>("CTorch")
-                   .def(constructor<>())
-                   // alpet: управление параметрами света
-                   .def_readonly("on", &CTorch::m_switched_on)
-                   .def("enable", (void(CTorch::*)(bool))(&CTorch::Switch))
-                   .def("switch", (void(CTorch::*)())(&CTorch::Switch))
-                   .def("get_light", &CTorch::GetLight)
-                   .def("set_animation", &CTorch::SetAnimation)
-                   .def("set_angle", &CTorch::SetAngle)
-                   .def("set_brightness", &CTorch::SetBrightness)
-                   .def("set_color", &CTorch::SetColor)
-                   .def("set_rgb", &CTorch::SetRGB)
-                   .def("set_range", &CTorch::SetRange)
-                   .def("set_texture", &CTorch::SetTexture)
-                   .def("set_virtual_size", &CTorch::SetVirtualSize)
-                   // работа с ПНВ
-                   .def_readonly("nvd_on", &CTorch::m_bNightVisionOn)
-                   .def("enable_nvd", (void(CTorch::*)(bool))(&CTorch::SwitchNightVision))
-                   .def("switch_nvd", (void(CTorch::*)())(&CTorch::SwitchNightVision))
+    auto lua = sol::state_view(L);
 
-                   ,
-               def("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); }))];
+    lua.new_usertype<CTorch>("CTorch", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CTorch>),
+                             // alpet: управление параметрами света
+                             "on", sol::readonly(&CTorch::m_switched_on), "enable", sol::resolve<void(bool)>(&CTorch::Switch), "switch", sol::resolve<void()>(&CTorch::Switch),
+                             "get_light", &CTorch::GetLight, "set_animation", &CTorch::SetAnimation, "set_angle", &CTorch::SetAngle, "set_brightness", &CTorch::SetBrightness,
+                             "set_color", &CTorch::SetColor, "set_rgb", &CTorch::SetRGB, "set_range", &CTorch::SetRange, "set_texture", &CTorch::SetTexture, "set_virtual_size",
+                             &CTorch::SetVirtualSize,
+                             // работа с ПНВ
+                             "nvd_on", sol::readonly(&CTorch::m_bNightVisionOn), "enable_nvd", sol::resolve<void(bool)>(&CTorch::SwitchNightVision), "switch_nvd",
+                             sol::resolve<void()>(&CTorch::SwitchNightVision), sol::base_classes, xr_sol_bases<CTorch>());
+
+    lua.set_function("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); });
 }

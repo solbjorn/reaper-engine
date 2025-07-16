@@ -19,8 +19,6 @@
 #include "ui\UIScrollView.h"
 #include "ui\UIProgressBar.h"
 
-using namespace luabind;
-
 void _attach_child(CUIWindow* _child, CUIWindow* _parent)
 {
     if (!_parent)
@@ -263,31 +261,13 @@ CUIProgressBar* CScriptXmlInit::InitProgressBar(LPCSTR path, CUIWindow* parent)
 
 void CScriptXmlInit::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptXmlInit>("CScriptXmlInit")
-                  .def(constructor<>())
-                  .def("ParseFile", &CScriptXmlInit::ParseFile)
-                  .def("ParseShTexInfo", &CScriptXmlInit::ParseShTexInfo)
-                  .def("InitWindow", &CScriptXmlInit::InitWindow)
-                  .def("InitFrame", &CScriptXmlInit::InitFrame)
-                  .def("InitFrameLine", &CScriptXmlInit::InitFrameLine)
-                  .def("InitLabel", &CScriptXmlInit::InitLabel)
-                  .def("InitEditBox", &CScriptXmlInit::InitEditBox)
-                  .def("InitEditBoxEx", &CScriptXmlInit::InitEditBoxEx)
-                  .def("InitStatic", &CScriptXmlInit::InitStatic)
-                  .def("InitAnimStatic", &CScriptXmlInit::InitAnimStatic)
-                  .def("InitCheck", &CScriptXmlInit::InitCheck)
-                  .def("InitSpinNum", &CScriptXmlInit::InitSpinNum)
-                  .def("InitSpinFlt", &CScriptXmlInit::InitSpinFlt)
-                  .def("InitSpinText", &CScriptXmlInit::InitSpinText)
-                  .def("InitComboBox", &CScriptXmlInit::InitComboBox)
-                  .def("InitButton", &CScriptXmlInit::InitButton)
-                  .def("Init3tButton", &CScriptXmlInit::Init3tButton)
-                  .def("InitList", &CScriptXmlInit::InitList)
-                  .def("InitTab", &CScriptXmlInit::InitTab)
-                  .def("InitTrackBar", &CScriptXmlInit::InitTrackBar)
-                  .def("InitKeyBinding", &CScriptXmlInit::InitKeyBinding)
-                  .def("InitMMShniaga", &CScriptXmlInit::InitMMShniaga)
-                  .def("InitScrollView", &CScriptXmlInit::InitScrollView)
-                  .def("InitAutoStaticGroup", &CScriptXmlInit::InitAutoStaticGroup)
-                  .def("InitProgressBar", &CScriptXmlInit::InitProgressBar)];
+    sol::state_view(L).new_usertype<CScriptXmlInit>(
+        "CScriptXmlInit", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptXmlInit()>(), "ParseFile", &CScriptXmlInit::ParseFile, "ParseShTexInfo",
+        &CScriptXmlInit::ParseShTexInfo, "InitWindow", &CScriptXmlInit::InitWindow, "InitFrame", &CScriptXmlInit::InitFrame, "InitFrameLine", &CScriptXmlInit::InitFrameLine,
+        "InitLabel", &CScriptXmlInit::InitLabel, "InitEditBox", &CScriptXmlInit::InitEditBox, "InitEditBoxEx", &CScriptXmlInit::InitEditBoxEx, "InitStatic",
+        &CScriptXmlInit::InitStatic, "InitAnimStatic", &CScriptXmlInit::InitAnimStatic, "InitCheck", &CScriptXmlInit::InitCheck, "InitSpinNum", &CScriptXmlInit::InitSpinNum,
+        "InitSpinFlt", &CScriptXmlInit::InitSpinFlt, "InitSpinText", &CScriptXmlInit::InitSpinText, "InitComboBox", &CScriptXmlInit::InitComboBox, "InitButton",
+        &CScriptXmlInit::InitButton, "Init3tButton", &CScriptXmlInit::Init3tButton, "InitList", &CScriptXmlInit::InitList, "InitTab", &CScriptXmlInit::InitTab, "InitTrackBar",
+        &CScriptXmlInit::InitTrackBar, "InitKeyBinding", &CScriptXmlInit::InitKeyBinding, "InitMMShniaga", &CScriptXmlInit::InitMMShniaga, "InitScrollView",
+        &CScriptXmlInit::InitScrollView, "InitAutoStaticGroup", &CScriptXmlInit::InitAutoStaticGroup, "InitProgressBar", &CScriptXmlInit::InitProgressBar);
 }

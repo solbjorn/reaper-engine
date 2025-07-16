@@ -20,17 +20,17 @@ public:
     xrTime operator-(const xrTime& other) { return xrTime(m_time - other.m_time); }
 
     float diffSec(const xrTime& other);
-    void add(const xrTime& other);
-    void sub(const xrTime& other);
+    xrTime& add(const xrTime& other);
+    xrTime& sub(const xrTime& other);
 
-    void add_script(xrTime* other) { add(*other); };
-    void sub_script(xrTime* other) { sub(*other); };
+    xrTime& add_script(xrTime* other) { return add(*other); };
+    xrTime& sub_script(xrTime* other) { return sub(*other); };
     float diffSec_script(xrTime* other) { return diffSec(*other); };
 
-    void setHMS(int h, int m, int s);
-    void setHMSms(int h, int m, int s, int ms);
-    void set(int y, int mo, int d, int h, int mi, int s, int ms);
-    void get(u32& y, u32& mo, u32& d, u32& h, u32& mi, u32& s, u32& ms);
+    xrTime& setHMS(int h, int m, int s);
+    xrTime& setHMSms(int h, int m, int s, int ms);
+    xrTime& set(int y, int mo, int d, int h, int mi, int s, int ms);
+    std::tuple<u32, u32, u32, u32, u32, u32, u32> get();
 
     LPCSTR dateToString(int mode);
     LPCSTR timeToString(int mode);

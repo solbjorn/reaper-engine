@@ -1,12 +1,11 @@
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "fs_registrator.h"
 #include "LocatorApi.h"
 
-using namespace luabind;
-
-LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm);
-
-LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
+static LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
 {
     string_path temp;
     shared_str temp_2;
@@ -56,21 +55,23 @@ struct FS_item
 };
 
 template <bool b>
-bool sizeSorter(const FS_item& itm1, const FS_item& itm2)
+static bool sizeSorter(const FS_item& itm1, const FS_item& itm2)
 {
     if (b)
         return (itm1.size < itm2.size);
     return (itm2.size < itm1.size);
 }
+
 template <bool b>
-bool modifSorter(const FS_item& itm1, const FS_item& itm2)
+static bool modifSorter(const FS_item& itm1, const FS_item& itm2)
 {
     if (b)
         return (itm1.modif < itm2.modif);
     return (itm2.modif < itm1.modif);
 }
+
 template <bool b>
-bool nameSorter(const FS_item& itm1, const FS_item& itm2)
+static bool nameSorter(const FS_item& itm1, const FS_item& itm2)
 {
     if (b)
         return (xr_strcmp(itm1.name, itm2.name) < 0);
@@ -96,7 +97,7 @@ public:
     u32 Size() { return m_file_items.size(); }
     FS_item GetAt(u32 idx) { return m_file_items[idx]; }
     void Sort(u32 flags);
-    decltype(m_file_items)& GetAll() { return m_file_items; }
+    xr_vector<FS_item>& GetAll() { return m_file_items; }
 };
 
 FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
@@ -137,13 +138,13 @@ void FS_file_list_ex::Sort(u32 flags)
         std::sort(m_file_items.begin(), m_file_items.end(), modifSorter<false>);
 }
 
-FS_file_list_ex file_list_open_ex(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
+static FS_file_list_ex file_list_open_ex(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
 
-FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
+static FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
 
-FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
+static FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
 
-LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
+static LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 {
     time_t t = fs->get_file_age(nm);
     struct tm* newtime;
@@ -227,107 +228,70 @@ static std::string get_last_write_time_string(const stdfs::directory_entry& file
 // Время последнего изменения файла в формате [02:01:2018 14:03:32]
 static std::string get_last_write_time_string_short(const stdfs::directory_entry& file) { return format_last_write_time(file, "[%d:%m:%Y %T]"); }
 
-void script_register_stdfs(lua_State* L)
+static void script_register_stdfs(sol::state_view& lua)
 {
     using self = stdfs::directory_entry;
 
-    module(L, "stdfs")[(def("VerifyPath", [](const char* path) { VerifyPath(path); }), def("directory_iterator", &directory_iterator),
-                        def("recursive_directory_iterator", &recursive_directory_iterator),
-                        class_<self>("path")
-                            .def(constructor<const char*>())
-                            // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
-                            .property("full_path_name", &get_full_path)
-                            .property("full_filename", &get_full_filename)
-                            .property("short_filename", &get_short_filename)
-                            .property("extension", &get_extension)
-                            .property("last_write_time", &get_last_write_time)
-                            .property("last_write_time_string", &get_last_write_time_string)
-                            .property("last_write_time_string_short", &get_last_write_time_string_short)
-                            .def("exists", (bool(self::*)() const)(&self::exists))
-                            .def("is_regular_file", (bool(self::*)() const)(&self::is_regular_file))
-                            .def("is_directory", (bool(self::*)() const)(&self::is_directory))
-                            .def("file_size", (uintmax_t(self::*)() const)(&self::file_size)))];
+    auto fs = lua.create_named_table(
+        "stdfs", "VerifyPath", [](const char* path) { VerifyPath(path); }, "directory_iterator", &directory_iterator, "recursive_directory_iterator",
+        &recursive_directory_iterator);
+
+    fs.new_usertype<self>("path", sol::no_constructor, sol::call_constructor, sol::constructors<self(const char*)>(),
+                          // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
+                          "full_path_name", sol::property(&get_full_path), "full_filename", sol::property(&get_full_filename), "short_filename", sol::property(&get_short_filename),
+                          "extension", sol::property(&get_extension), "last_write_time", sol::property(&get_last_write_time), "last_write_time_string",
+                          sol::property(&get_last_write_time_string), "last_write_time_string_short", sol::property(&get_last_write_time_string_short), "exists",
+                          sol::resolve<bool() const>(&self::exists), "is_regular_file", sol::resolve<bool() const>(&self::is_regular_file), "is_directory",
+                          sol::resolve<bool() const>(&self::is_directory), "file_size", sol::resolve<uintmax_t() const>(&self::file_size));
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void fs_registrator::script_register(lua_State* L)
 {
+    auto lua = sol::state_view(L);
+
     //
-    script_register_stdfs(L);
+    script_register_stdfs(lua);
     //
-    module(
-        L)[(class_<FS_item>("FS_item")
-                .def("NameFull", &FS_item::NameFull)
-                .def("NameShort", &FS_item::NameShort)
-                .def("Size", &FS_item::Size)
-                .def("ModifDigitOnly", &FS_item::ModifDigitOnly)
-                .def("Modif", &FS_item::Modif),
 
-            class_<FS_file_list_ex>("FS_file_list_ex")
-                .def("Size", &FS_file_list_ex::Size)
-                .def("GetAt", &FS_file_list_ex::GetAt)
-                .def("Sort", &FS_file_list_ex::Sort)
-                .def("GetAll", &FS_file_list_ex::GetAll, return_stl_iterator),
+    lua.new_usertype<FS_item>("FS_item", sol::no_constructor, "NameFull", &FS_item::NameFull, "NameShort", &FS_item::NameShort, "Size", &FS_item::Size, "ModifDigitOnly",
+                              &FS_item::ModifDigitOnly, "Modif", &FS_item::Modif);
 
-            class_<FS_file_list>("FS_file_list").def("Size", &FS_file_list::Size).def("GetAt", &FS_file_list::GetAt).def("Free", &FS_file_list::Free),
+    lua.new_usertype<FS_file_list_ex>("FS_file_list_ex", sol::no_constructor, "Size", &FS_file_list_ex::Size, "GetAt", &FS_file_list_ex::GetAt, "Sort", &FS_file_list_ex::Sort,
+                                      "GetAll", &FS_file_list_ex::GetAll);
+    lua.new_usertype<FS_file_list>("FS_file_list", sol::no_constructor, "Size", &FS_file_list::Size, "GetAt", &FS_file_list::GetAt, "Free", &FS_file_list::Free);
 
-            /*		class_<FS_Path>("FS_Path")
-                        .def_readonly("m_Path",						&FS_Path::m_Path)
-                        .def_readonly("m_Root",						&FS_Path::m_Root)
-                        .def_readonly("m_Add",						&FS_Path::m_Add)
-                        .def_readonly("m_DefExt",					&FS_Path::m_DefExt)
-                        .def_readonly("m_FilterCaption",			&FS_Path::m_FilterCaption),
-            */
-            class_<CLocatorAPI::file>("fs_file")
-                .def_readonly("name", &CLocatorAPI::file::name)
-                .def_readonly("vfs", &CLocatorAPI::file::vfs)
-                .def_readonly("ptr", &CLocatorAPI::file::ptr)
-                .def_readonly("size_real", &CLocatorAPI::file::size_real)
-                .def_readonly("size_compressed", &CLocatorAPI::file::size_compressed)
-                .def_readonly("modif", &CLocatorAPI::file::modif),
+    lua.new_usertype<CLocatorAPI::file>("fs_file", sol::no_constructor, "name", sol::readonly(&CLocatorAPI::file::name), "vfs", sol::readonly(&CLocatorAPI::file::vfs), "ptr",
+                                        sol::readonly(&CLocatorAPI::file::ptr), "size_real", sol::readonly(&CLocatorAPI::file::size_real), "size_compressed",
+                                        sol::readonly(&CLocatorAPI::file::size_compressed), "modif", sol::readonly(&CLocatorAPI::file::modif));
 
-            class_<CLocatorAPI>("FS")
-                .enum_("FS_sort_mode")[(value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
-                                        value("FS_sort_by_size_up", int(FS_file_list_ex::eSortBySizeUp)), value("FS_sort_by_size_down", int(FS_file_list_ex::eSortBySizeDown)),
-                                        value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown)))]
-                .enum_("FS_List")[(value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
-                                   value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower)))]
+    lua.new_usertype<CLocatorAPI>(
+        "FS", sol::no_constructor,
 
-                .def("path_exist", &CLocatorAPI::path_exist)
-                .def("update_path", &update_path_script)
-                .def("get_path", &CLocatorAPI::get_path)
-                .def("append_path", &CLocatorAPI::append_path)
+        // FS_sort_mode
+        "FS_sort_by_name_up", sol::var(FS_file_list_ex::eSortByNameUp), "FS_sort_by_name_down", sol::var(FS_file_list_ex::eSortByNameDown), "FS_sort_by_size_up",
+        sol::var(FS_file_list_ex::eSortBySizeUp), "FS_sort_by_size_down", sol::var(FS_file_list_ex::eSortBySizeDown), "FS_sort_by_modif_up",
+        sol::var(FS_file_list_ex::eSortByModifUp), "FS_sort_by_modif_down", sol::var(FS_file_list_ex::eSortByModifDown),
+        // FS_List
+        "FS_ListFiles", sol::var(FS_ListFiles), "FS_ListFolders", sol::var(FS_ListFolders), "FS_ClampExt", sol::var(FS_ClampExt), "FS_RootOnly", sol::var(FS_RootOnly),
+        "FS_NoLower", sol::var(FS_NoLower),
 
-                .def("file_delete", (void(CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
-                .def("file_delete", (void(CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
+        "path_exist", &CLocatorAPI::path_exist, "update_path", &update_path_script, "get_path", &CLocatorAPI::get_path, "append_path", &CLocatorAPI::append_path,
 
-                //.def("dir_delete", &dir_delete_script)
-                //.def("dir_delete", &dir_delete_script_2)
+        "file_delete", sol::overload(sol::resolve<void(LPCSTR, LPCSTR)>(&CLocatorAPI::file_delete), sol::resolve<void(LPCSTR)>(&CLocatorAPI::file_delete)), "application_dir",
+        &get_engine_dir, "file_rename", &CLocatorAPI::file_rename, "file_length", &CLocatorAPI::file_length, "file_copy", &CLocatorAPI::file_copy,
 
-                .def("application_dir", &get_engine_dir)
+        "exist", sol::overload(sol::resolve<const CLocatorAPI::file*(LPCSTR)>(&CLocatorAPI::exist), sol::resolve<const CLocatorAPI::file*(LPCSTR, LPCSTR)>(&CLocatorAPI::exist)),
+        "get_file_age", &CLocatorAPI::get_file_age, "get_file_age_str", &get_file_age_str,
 
-                .def("file_rename", &CLocatorAPI::file_rename)
-                .def("file_length", &CLocatorAPI::file_length)
-                .def("file_copy", &CLocatorAPI::file_copy)
+        "r_open", sol::overload(sol::resolve<IReader*(LPCSTR, LPCSTR)>(&CLocatorAPI::r_open), sol::resolve<IReader*(LPCSTR)>(&CLocatorAPI::r_open)), "r_close",
+        [](CLocatorAPI& self, IReader* file) { self.r_close(file); }, "w_open", sol::resolve<IWriter*(LPCSTR, LPCSTR)>(&CLocatorAPI::w_open), "w_close",
+        [](CLocatorAPI& self, IWriter* file) { self.w_close(file); },
 
-                .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))
-                .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::exist))
+        "file_list_open", sol::overload(&file_list_open_script, &file_list_open_script_2), "file_list_open_ex", &file_list_open_ex);
 
-                .def("get_file_age", &CLocatorAPI::get_file_age)
-                .def("get_file_age_str", &get_file_age_str)
-
-                .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
-                .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
-                .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
-
-                .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::w_open))
-                .def("w_close", &CLocatorAPI::w_close)
-
-                .def("file_list_open", &file_list_open_script)
-                .def("file_list_open", &file_list_open_script_2)
-                .def("file_list_open_ex", &file_list_open_ex),
-
-            def("getFS", [] { return &FS; }))];
+    lua.set_function("getFS", [] { return &FS; });
 }

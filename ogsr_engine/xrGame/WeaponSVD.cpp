@@ -14,6 +14,8 @@ void CWeaponSVD::switch2_Fire()
 
 void CWeaponSVD::OnAnimationEnd(u32 state) { inherited::OnAnimationEnd(state); }
 
-using namespace luabind;
-
-void CWeaponSVD::script_register(lua_State* L) { module(L)[class_<CWeaponSVD, CGameObject>("CWeaponSVD").def(constructor<>())]; }
+void CWeaponSVD::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponSVD>("CWeaponSVD", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponSVD>), sol::base_classes,
+                                                xr_sol_bases<CWeaponSVD>());
+}

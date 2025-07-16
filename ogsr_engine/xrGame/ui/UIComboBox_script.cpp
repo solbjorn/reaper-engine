@@ -10,19 +10,11 @@
 #include "stdafx.h"
 #include "UIComboBox.h"
 
-using namespace luabind;
-
 void CUIComboBox::script_register(lua_State* L)
 {
-    module(L)[class_<CUIComboBox, CUIWindow>("CUIComboBox")
-                  .def(constructor<>())
-                  .def("Init", (void(CUIComboBox::*)(float, float, float)) & CUIComboBox::Init)
-                  .def("Init", (void(CUIComboBox::*)(float, float, float, float)) & CUIComboBox::Init)
-                  .def("SetVertScroll", &CUIComboBox::SetVertScroll)
-                  .def("SetListLength", &CUIComboBox::SetListLength)
-                  .def("CurrentID", &CUIComboBox::CurrentID)
-                  .def("SetCurrentID", &CUIComboBox::SetItem)
-
-                  .def("AddItem", (CUIListBoxItem * (CUIComboBox::*)(LPCSTR)) & CUIComboBox::AddItem_)
-                  .def("GetText", &CUIComboBox::GetText)];
+    sol::state_view(L).new_usertype<CUIComboBox>(
+        "CUIComboBox", sol::no_constructor, sol::call_constructor, sol::constructors<CUIComboBox()>(), "Init",
+        sol::overload(sol::resolve<void(float, float, float)>(&CUIComboBox::Init), sol::resolve<void(float, float, float, float)>(&CUIComboBox::Init)), "SetVertScroll",
+        &CUIComboBox::SetVertScroll, "SetListLength", &CUIComboBox::SetListLength, "CurrentID", &CUIComboBox::CurrentID, "SetCurrentID", &CUIComboBox::SetItem, "AddItem",
+        sol::resolve<CUIListBoxItem*(LPCSTR)>(&CUIComboBox::AddItem_), "GetText", &CUIComboBox::GetText, sol::base_classes, xr_sol_bases<CUIComboBox>());
 }

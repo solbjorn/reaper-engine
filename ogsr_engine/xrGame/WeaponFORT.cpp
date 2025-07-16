@@ -5,6 +5,8 @@ CWeaponFORT::CWeaponFORT() : CWeaponPistol("FORT") {}
 
 CWeaponFORT::~CWeaponFORT() {}
 
-using namespace luabind;
-
-void CWeaponFORT::script_register(lua_State* L) { module(L)[class_<CWeaponFORT, CGameObject>("CWeaponFORT").def(constructor<>())]; }
+void CWeaponFORT::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponFORT>("CWeaponFORT", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponFORT>), sol::base_classes,
+                                                 xr_sol_bases<CWeaponFORT>());
+}

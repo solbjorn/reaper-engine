@@ -25,7 +25,6 @@
 #include "string_table.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "script_engine.h"
-#include "script_vars_storage.h"
 
 using namespace ALife;
 
@@ -63,8 +62,6 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
         spawns().save(stream);
         objects().save(stream);
         registry().save(stream);
-
-        g_ScriptVars.save(stream);
 
         if (pSettings->line_exist("engine_callbacks", "after_objs_save"))
         {
@@ -131,8 +128,6 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR fil
     }
 
     registry().load(source);
-
-    g_ScriptVars.load(source);
 
     if (pSettings->line_exist("engine_callbacks", "after_objs_load") && source.find_chunk(CALLBACK_CHUNK_DATA))
     {

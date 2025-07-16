@@ -4,38 +4,22 @@
 #include "CarWeapon.h"
 #include "script_game_object.h"
 
-using namespace luabind;
-
-u8 CCar__IsLightsOn(CCar* self) { return self->IsLightsOn() ? 1 : 0; }
-u8 CCar__IsEngineOn(CCar* self) { return self->IsEngineOn() ? 1 : 0; }
+static u8 CCar__IsLightsOn(CCar* self) { return self->IsLightsOn() ? 1 : 0; }
+static u8 CCar__IsEngineOn(CCar* self) { return self->IsEngineOn() ? 1 : 0; }
 
 void CCar::script_register(lua_State* L)
 {
-    module(L)[(class_<CCar, bases<CGameObject, CHolderCustom>>("CCar")
-                   .enum_("wpn_action")[(value("eWpnDesiredDir", int(CCarWeapon::eWpnDesiredDir)), value("eWpnDesiredPos", int(CCarWeapon::eWpnDesiredPos)),
-                                         value("eWpnActivate", int(CCarWeapon::eWpnActivate)), value("eWpnFire", int(CCarWeapon::eWpnFire)),
-                                         value("eWpnAutoFire", int(CCarWeapon::eWpnAutoFire)), value("eWpnToDefaultDir", int(CCarWeapon::eWpnToDefaultDir)))]
-                   .def("Action", &CCar::Action)
-                   //		.def("SetParam",		(void (CCar::*)(int,Fvector2)) &CCar::SetParam)
-                   .def("SetParam", (void(CCar::*)(int, Fvector)) & CCar::SetParam)
-                   .def("CanHit", &CCar::WpnCanHit)
-                   .def("FireDirDiff", &CCar::FireDirDiff)
-                   .def("IsObjectVisible", &CCar::isObjectVisible)
-                   .def("HasWeapon", &CCar::HasWeapon)
-                   .def("CurrentVel", &CCar::CurrentVel)
-                   .def("GetfHealth", &CCar::GetfHealth)
-                   .def("SetfHealth", &CCar::SetfHealth)
-                   .def("SetExplodeTime", &CCar::SetExplodeTime)
-                   .def("ExplodeTime", &CCar::ExplodeTime)
-                   .def("CarExplode", &CCar::CarExplode)
+    sol::state_view(L).new_usertype<CCar>(
+        "CCar", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CCar>),
 
-                   .def("GetFuelTank", &CCar::GetFuelTank)
-                   .def("GetFuel", &CCar::GetFuel)
-                   .def("SetFuel", &CCar::SetFuel)
-                   .def("IsLightsOn", &CCar__IsLightsOn)
-                   .def("IsEngineOn", &CCar__IsEngineOn)
-                   .def("SwitchEngine", &CCar::SwitchEngine)
-                   .def("SwitchLights", &CCar::SwitchLights)
-                   .def(constructor<>())
-                   .def_readonly("transmission", &CCar::m_current_transmission_num))];
+        // wpn_action
+        "eWpnDesiredDir", sol::var(CCarWeapon::eWpnDesiredDir), "eWpnDesiredPos", sol::var(CCarWeapon::eWpnDesiredPos), "eWpnActivate", sol::var(CCarWeapon::eWpnActivate),
+        "eWpnFire", sol::var(CCarWeapon::eWpnFire), "eWpnAutoFire", sol::var(CCarWeapon::eWpnAutoFire), "eWpnToDefaultDir", sol::var(CCarWeapon::eWpnToDefaultDir),
+
+        "Action", &CCar::Action, "SetParam", sol::resolve<void(int, Fvector)>(&CCar::SetParam), "CanHit", &CCar::WpnCanHit, "FireDirDiff", &CCar::FireDirDiff, "IsObjectVisible",
+        &CCar::isObjectVisible, "HasWeapon", &CCar::HasWeapon, "CurrentVel", &CCar::CurrentVel, "GetfHealth", &CCar::GetfHealth, "SetfHealth", &CCar::SetfHealth, "SetExplodeTime",
+        &CCar::SetExplodeTime, "ExplodeTime", &CCar::ExplodeTime, "CarExplode", &CCar::CarExplode,
+
+        "GetFuelTank", &CCar::GetFuelTank, "GetFuel", &CCar::GetFuel, "SetFuel", &CCar::SetFuel, "IsLightsOn", &CCar__IsLightsOn, "IsEngineOn", &CCar__IsEngineOn, "SwitchEngine",
+        &CCar::SwitchEngine, "SwitchLights", &CCar::SwitchLights, "transmission", sol::readonly(&CCar::m_current_transmission_num), sol::base_classes, xr_sol_bases<CCar>());
 }

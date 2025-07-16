@@ -7,20 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "alife_monster_brain.h"
 #include "alife_monster_movement_manager.h"
 
-using namespace luabind;
-
-CALifeMonsterMovementManager* get_movement(const CALifeMonsterBrain* brain) { return (&brain->movement()); }
+static CALifeMonsterMovementManager* get_movement(const CALifeMonsterBrain* brain) { return &brain->movement(); }
 
 void CALifeMonsterBrain::script_register(lua_State* L)
 {
-    module(L)[class_<CALifeMonsterBrain>("CALifeMonsterBrain")
-                  .def("movement", &get_movement)
-                  .def("update", &CALifeMonsterBrain::update_script)
-                  .def("can_choose_alife_tasks", (void(CALifeMonsterBrain::*)(bool)) & CALifeMonsterBrain::can_choose_alife_tasks)
-                  .def("can_choose_alife_tasks", (bool(CALifeMonsterBrain::*)() const) & CALifeMonsterBrain::can_choose_alife_tasks)
-                  .def_readwrite("m_time_interval", &CALifeMonsterBrain::m_time_interval)
-                  .def_readwrite("m_last_search_time", &CALifeMonsterBrain::m_last_search_time)];
+    sol::state_view(L).new_usertype<CALifeMonsterBrain>(
+        "CALifeMonsterBrain", sol::no_constructor, "movement", &get_movement, "update", &CALifeMonsterBrain::update_script, "can_choose_alife_tasks",
+        sol::overload(sol::resolve<void(bool)>(&CALifeMonsterBrain::can_choose_alife_tasks), sol::resolve<bool() const>(&CALifeMonsterBrain::can_choose_alife_tasks)),
+        "m_time_interval", &CALifeMonsterBrain::m_time_interval, "m_last_search_time", &CALifeMonsterBrain::m_last_search_time);
 }

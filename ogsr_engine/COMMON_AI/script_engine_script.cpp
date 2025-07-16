@@ -7,9 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+#include "../xr_3da/xr_input.h"
+
 #include "script_engine.h"
 #include "ai_space.h"
-#include "../../xr_3da/xr_input.h"
 
 struct profile_timer_script
 {
@@ -81,33 +84,27 @@ bool GetLAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU); }
 bool GetRAlt() { return !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 bool GetAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 
-using namespace luabind;
-
 void CScriptEngine::script_register(lua_State* L)
 {
-    module(L)[(def("log1", (void (*)(LPCSTR))&Log), def("fail", &msg_and_fail),
+    auto lua = sol::state_view(L);
 
-               def("screenshot", &take_screenshot),
-               class_<enum_exporter<IRender_interface::ScreenshotMode>>("screenshot_modes")
-                   .enum_("modes")[(value("normal", int(IRender_interface::ScreenshotMode::SM_NORMAL)), value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
-                                    value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)),
-                                    value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP)))],
-               class_<profile_timer_script>("profile_timer")
-                   .def(constructor<>())
-                   .def(constructor<profile_timer_script&>())
-                   .def(const_self + profile_timer_script())
-                   .def(const_self < profile_timer_script())
-                   .def("start", &profile_timer_script::start)
-                   .def("stop", &profile_timer_script::stop)
-                   .def("time", &profile_timer_script::time),
-               def("prefetch", [](const char* file_name) { ai().script_engine().process_file(file_name); }), def("editor", [] { return false; }),
+    lua.set_function("log1", sol::resolve<void(LPCSTR)>(&Log));
+    lua.set_function("fail", &msg_and_fail);
 
-               def("bit_and", [](const int i, const int j) { return i & j; }), def("bit_or", [](const int i, const int j) { return i | j; }),
-               def("bit_xor", [](const int i, const int j) { return i ^ j; }), def("bit_not", [](const int i) { return ~i; }),
+    lua.set_function("screenshot", &take_screenshot);
+    lua.new_enum("modes", "normal", IRender_interface::ScreenshotMode::SM_NORMAL, "cubemap", IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, "gamesave",
+                 IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, "levelmap", IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP);
 
-               def("user_name", [] { return Core.UserName; }), def("time_global", [] { return Device.dwTimeGlobal; }),
+    lua.new_usertype<profile_timer_script>("profile_timer", sol::no_constructor, sol::call_constructor,
+                                           sol::constructors<profile_timer_script(), profile_timer_script(const profile_timer_script&)>(), "start", &profile_timer_script::start,
+                                           "stop", &profile_timer_script::stop, "time", &profile_timer_script::time);
 
-               def("GetShift", &GetShift), def("GetLAlt", &GetLAlt), def("GetRAlt", &GetRAlt), def("GetAlt", &GetAlt),
-
-               def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); }))];
+    lua.set_function("user_name", [] { return Core.UserName; });
+    lua.set_function("time_global", [] { return Device.dwTimeGlobal; });
+    lua.set_function("GetShift", &GetShift);
+    lua.set_function("GetLAlt", &GetLAlt);
+    lua.set_function("GetRAlt", &GetRAlt);
+    lua.set_function("GetAlt", &GetAlt);
+    lua.set_function("device", [] { return &Device; });
+    lua.set_function("__debugbreak", [] { __debugbreak(); });
 }

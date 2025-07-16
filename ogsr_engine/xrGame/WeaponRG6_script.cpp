@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "WeaponRG6.h"
 
-using namespace luabind;
-
-void CWeaponRG6::script_register(lua_State* L) { module(L)[class_<CWeaponRG6, CGameObject>("CWeaponRG6").def(constructor<>())]; }
+void CWeaponRG6::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponRG6>("CWeaponRG6", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponRG6>), sol::base_classes,
+                                                xr_sol_bases<CWeaponRG6>());
+}

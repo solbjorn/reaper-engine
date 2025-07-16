@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "WeaponHPSA.h"
 
-using namespace luabind;
-
-void CWeaponHPSA::script_register(lua_State* L) { module(L)[class_<CWeaponHPSA, CGameObject>("CWeaponHPSA").def(constructor<>())]; }
+void CWeaponHPSA::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponHPSA>("CWeaponHPSA", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponHPSA>), sol::base_classes,
+                                                 xr_sol_bases<CWeaponHPSA>());
+}

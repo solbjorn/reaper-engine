@@ -7,20 +7,20 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "alife_monster_detail_path_manager.h"
 #include "alife_smart_terrain_task.h"
 
-using namespace luabind;
-
 void CALifeMonsterDetailPathManager::script_register(lua_State* L)
 {
-    module(L)[class_<CALifeMonsterDetailPathManager>("CALifeMonsterDetailPathManager")
-                  .def("target", (void(CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&, const u32&, const Fvector&))(&CALifeMonsterDetailPathManager::target))
-                  .def("target", (void(CALifeMonsterDetailPathManager::*)(const GameGraph::_GRAPH_ID&))(&CALifeMonsterDetailPathManager::target))
-                  .def("target", (void(CALifeMonsterDetailPathManager::*)(const CALifeSmartTerrainTask*))(&CALifeMonsterDetailPathManager::target))
-                  .def("speed", (void(CALifeMonsterDetailPathManager::*)(const float&))(&CALifeMonsterDetailPathManager::speed))
-                  .def("speed", (const float& (CALifeMonsterDetailPathManager::*)() const)(&CALifeMonsterDetailPathManager::speed))
-                  .def("completed", &CALifeMonsterDetailPathManager::completed)
-                  .def("actual", &CALifeMonsterDetailPathManager::actual)
-                  .def("failed", &CALifeMonsterDetailPathManager::failed)];
+    sol::state_view(L).new_usertype<CALifeMonsterDetailPathManager>(
+        "CALifeMonsterDetailPathManager", sol::no_constructor, "target",
+        sol::overload(sol::resolve<void(const GameGraph::_GRAPH_ID&, const u32&, const Fvector&)>(&CALifeMonsterDetailPathManager::target),
+                      sol::resolve<void(const GameGraph::_GRAPH_ID&)>(&CALifeMonsterDetailPathManager::target),
+                      sol::resolve<void(const CALifeSmartTerrainTask*)>(&CALifeMonsterDetailPathManager::target)),
+        "speed",
+        sol::overload(sol::resolve<void(const float&)>(&CALifeMonsterDetailPathManager::speed), sol::resolve<const float&() const>(&CALifeMonsterDetailPathManager::speed)),
+        "completed", &CALifeMonsterDetailPathManager::completed, "actual", &CALifeMonsterDetailPathManager::actual, "failed", &CALifeMonsterDetailPathManager::failed);
 }

@@ -5,6 +5,8 @@ CStalkerOutfit::CStalkerOutfit() {}
 
 CStalkerOutfit::~CStalkerOutfit() {}
 
-using namespace luabind;
-
-void CStalkerOutfit::script_register(lua_State* L) { module(L)[class_<CStalkerOutfit, CGameObject>("CStalkerOutfit").def(constructor<>())]; }
+void CStalkerOutfit::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CStalkerOutfit>("CStalkerOutfit", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CStalkerOutfit>),
+                                                    sol::base_classes, xr_sol_bases<CStalkerOutfit>());
+}

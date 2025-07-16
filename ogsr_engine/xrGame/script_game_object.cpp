@@ -112,14 +112,16 @@ void CScriptGameObject::ResetActionQueue()
         l_tpScriptMonster->ClearActionQueue();
 }
 
-CScriptEntityAction* CScriptGameObject::GetCurrentAction() const
+std::unique_ptr<CScriptEntityAction> CScriptGameObject::GetCurrentAction() const
 {
     CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
+
     if (!l_tpScriptMonster)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSciptEntity : cannot access class member GetCurrentAction!");
     else if (l_tpScriptMonster->GetCurrentAction())
-        return (xr_new<CScriptEntityAction>(l_tpScriptMonster->GetCurrentAction()));
-    return (0);
+        return std::make_unique<CScriptEntityAction>(l_tpScriptMonster->GetCurrentAction());
+
+    return std::move(std::unique_ptr<CScriptEntityAction>(nullptr));
 }
 
 void CScriptGameObject::AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority)

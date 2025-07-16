@@ -12,6 +12,8 @@ CWeaponPM::CWeaponPM() : CWeaponPistol("PM")
 
 CWeaponPM::~CWeaponPM() {}
 
-using namespace luabind;
-
-void CWeaponPM::script_register(lua_State* L) { module(L)[class_<CWeaponPM, CGameObject>("CWeaponPM").def(constructor<>())]; }
+void CWeaponPM::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponPM>("CWeaponPM", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponPM>), sol::base_classes,
+                                               xr_sol_bases<CWeaponPM>());
+}

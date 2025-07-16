@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include "../../xrScriptEngine/xr_sol.h"
+
 #include "UIButton.h"
 #include "UI3tButton.h"
 #include "UICheckButton.h"
@@ -7,37 +10,29 @@
 #include "UISpinText.h"
 #include "UITrackBar.h"
 
-using namespace luabind;
-
 void CUIButton::script_register(lua_State* L)
 {
-    module(L)[(class_<CUIButton, CUIStatic>("CUIButton")
-                   .def(constructor<>())
-                   .def("Init", (void(CUIButton::*)(float, float, float, float)) & CUIButton::Init)
-                   .def("Init", (void(CUIButton::*)(LPCSTR, float, float, float, float)) & CUIButton::Init)
-                   .def("SetHighlightColor", &CUIButton::SetHighlightColor)
-                   .def("EnableTextHighlighting", &CUIButton::EnableTextHighlighting)
-                   .def("SetAccelerator", &CUIButton::SetAccelerator),
+    auto lua = sol::state_view(L);
 
-               class_<CUI3tButton, CUIButton>("CUI3tButton").def(constructor<>()),
+    lua.new_usertype<CUIButton>(
+        "CUIButton", sol::no_constructor, sol::call_constructor, sol::constructors<CUIButton()>(), "Init",
+        sol::overload(sol::resolve<void(float, float, float, float)>(&CUIButton::Init), sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIButton::Init)),
+        "SetHighlightColor", &CUIButton::SetHighlightColor, "EnableTextHighlighting", &CUIButton::EnableTextHighlighting, "SetAccelerator", &CUIButton::SetAccelerator,
+        sol::base_classes, xr_sol_bases<CUIButton>());
 
-               class_<CUICheckButton, CUI3tButton>("CUICheckButton")
-                   .def(constructor<>())
-                   .def("GetCheck", &CUICheckButton::GetCheck)
-                   .def("SetCheck", &CUICheckButton::SetCheck)
-                   .def("SetDependControl", &CUICheckButton::SetDependControl),
+    lua.new_usertype<CUI3tButton>("CUI3tButton", sol::no_constructor, sol::call_constructor, sol::constructors<CUI3tButton()>(), sol::base_classes, xr_sol_bases<CUI3tButton>());
 
-               class_<CUICustomSpin, CUIWindow>("CUICustomSpin").def("Init", &CUICustomSpin::Init).def("GetText", &CUICustomSpin::GetText),
+    lua.new_usertype<CUICheckButton>("CUICheckButton", sol::no_constructor, sol::call_constructor, sol::constructors<CUICheckButton()>(), "GetCheck", &CUICheckButton::GetCheck,
+                                     "SetCheck", &CUICheckButton::SetCheck, "SetDependControl", &CUICheckButton::SetDependControl, sol::base_classes,
+                                     xr_sol_bases<CUICheckButton>());
 
-               class_<CUISpinNum, CUICustomSpin>("CUISpinNum").def(constructor<>()),
+    lua.new_usertype<CUICustomSpin>("CUICustomSpin", sol::no_constructor, "Init", &CUICustomSpin::Init, "GetText", &CUICustomSpin::GetText, sol::base_classes,
+                                    xr_sol_bases<CUICustomSpin>());
 
-               class_<CUISpinFlt, CUICustomSpin>("CUISpinFlt").def(constructor<>()),
+    lua.new_usertype<CUISpinNum>("CUISpinNum", sol::no_constructor, sol::call_constructor, sol::constructors<CUISpinNum()>(), sol::base_classes, xr_sol_bases<CUISpinNum>());
+    lua.new_usertype<CUISpinFlt>("CUISpinFlt", sol::no_constructor, sol::call_constructor, sol::constructors<CUISpinFlt()>(), sol::base_classes, xr_sol_bases<CUISpinFlt>());
+    lua.new_usertype<CUISpinText>("CUISpinText", sol::no_constructor, sol::call_constructor, sol::constructors<CUISpinText()>(), sol::base_classes, xr_sol_bases<CUISpinText>());
 
-               class_<CUISpinText, CUICustomSpin>("CUISpinText").def(constructor<>()),
-
-               class_<CUITrackBar, CUIWindow>("CUITrackBar")
-                   .def(constructor<>())
-                   .def("GetCheck", &CUITrackBar::GetCheck)
-                   .def("SetCheck", &CUITrackBar::SetCheck)
-                   .def("GetTrackValue", &CUITrackBar::GetTrackValue))];
+    lua.new_usertype<CUITrackBar>("CUITrackBar", sol::no_constructor, sol::call_constructor, sol::constructors<CUITrackBar()>(), "GetCheck", &CUITrackBar::GetCheck, "SetCheck",
+                                  &CUITrackBar::SetCheck, "GetTrackValue", &CUITrackBar::GetTrackValue, sol::base_classes, xr_sol_bases<CUITrackBar>());
 }

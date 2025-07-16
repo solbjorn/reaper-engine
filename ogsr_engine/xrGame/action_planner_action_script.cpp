@@ -7,24 +7,20 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_action_planner_action_wrapper.h"
-#include "script_game_object.h"
 
-using namespace luabind;
+#include "action_planner_action.h"
+#include "script_game_object.h"
 
 template <>
 void CActionPlannerAction<CScriptGameObject>::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptActionPlannerAction, CScriptActionPlannerActionWrapper, bases<CScriptActionPlanner, CScriptActionBase>>("planner_action")
-                  .def(constructor<>())
-                  .def(constructor<CScriptGameObject*>())
-                  .def(constructor<CScriptGameObject*, LPCSTR>())
-                  .def("setup", &CScriptActionPlannerAction::setup, &CScriptActionPlannerActionWrapper::setup_static)
-                  .def("initialize", &CScriptActionPlannerAction::initialize, &CScriptActionPlannerActionWrapper::initialize_static)
-                  .def("execute", &CScriptActionPlannerAction::execute, &CScriptActionPlannerActionWrapper::execute_static)
-                  .def("finalize", &CScriptActionPlannerAction::finalize, &CScriptActionPlannerActionWrapper::finalize_static)
+    sol::state_view(L).new_usertype<CScriptActionPlannerAction>(
+        "planner_action", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptActionPlannerAction(), CScriptActionPlannerAction(CScriptGameObject*), CScriptActionPlannerAction(CScriptGameObject*, LPCSTR)>(), "setup",
+        &CScriptActionPlannerAction::setup, "initialize", &CScriptActionPlannerAction::initialize, "execute", &CScriptActionPlannerAction::execute, "finalize",
+        &CScriptActionPlannerAction::finalize,
 #ifdef LOG_ACTION
-                  .def("show", &CScriptActionPlannerAction::show)
+        "show", &CScriptActionPlannerAction::show,
 #endif
-                  .def("weight", &CScriptActionPlannerAction::weight, &CScriptActionPlannerActionWrapper::weight_static)];
+        "weight", &CScriptActionPlannerAction::weight, sol::base_classes, xr_sol_bases<CScriptActionPlannerAction>());
 }

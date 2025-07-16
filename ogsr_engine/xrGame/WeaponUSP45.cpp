@@ -9,6 +9,8 @@ CWeaponUSP45::CWeaponUSP45(void) : CWeaponPistol("USP")
 
 CWeaponUSP45::~CWeaponUSP45(void) {}
 
-using namespace luabind;
-
-void CWeaponUSP45::script_register(lua_State* L) { module(L)[class_<CWeaponUSP45, CGameObject>("CWeaponUSP45").def(constructor<>())]; }
+void CWeaponUSP45::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponUSP45>("CWeaponUSP45", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponUSP45>), sol::base_classes,
+                                                  xr_sol_bases<CWeaponUSP45>());
+}

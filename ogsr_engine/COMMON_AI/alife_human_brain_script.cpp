@@ -7,8 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "alife_human_brain.h"
 
-using namespace luabind;
-
-void CALifeHumanBrain::script_register(lua_State* L) { module(L)[class_<CALifeHumanBrain, CALifeMonsterBrain>("CALifeHumanBrain")]; }
+void CALifeHumanBrain::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CALifeHumanBrain>("CALifeHumanBrain", sol::no_constructor, sol::base_classes, xr_sol_bases<CALifeHumanBrain>());
+}

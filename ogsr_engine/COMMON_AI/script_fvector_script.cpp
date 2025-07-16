@@ -7,180 +7,102 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_fvector.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_fvector.h"
 
 template <>
 void CScriptFvector::script_register(lua_State* L)
 {
-    module(L)[(
-        // Для инициализации векторов нулями
-        def("vector", [] { return Fvector{}; }), def("vector2", [] { return Fvector2{}; }), def("vector4", [] { return Fvector4{}; }),
+    auto lua = sol::state_view(L);
 
-        class_<Fvector>("___VECTOR")
-            .def_readwrite("x", &Fvector::x)
-            .def_readwrite("y", &Fvector::y)
-            .def_readwrite("z", &Fvector::z)
-            .def(constructor<>())
-#
-            .def("set", (Fvector & (Fvector::*)(float, float, float))(&Fvector::set), return_reference_to<1>())
-            .def("set", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::set), return_reference_to<1>())
-            .def("add", (Fvector & (Fvector::*)(float))(&Fvector::add), return_reference_to<1>())
-            .def("add", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::add), return_reference_to<1>())
-            .def("add", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::add), return_reference_to<1>())
-            .def("add", (Fvector & (Fvector::*)(const Fvector&, float))(&Fvector::add), return_reference_to<1>())
-            .def("sub", (Fvector & (Fvector::*)(float))(&Fvector::sub), return_reference_to<1>())
-            .def("sub", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::sub), return_reference_to<1>())
-            .def("sub", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::sub), return_reference_to<1>())
-            .def("sub", (Fvector & (Fvector::*)(const Fvector&, float))(&Fvector::sub), return_reference_to<1>())
-            .def("mul", (Fvector & (Fvector::*)(float))(&Fvector::mul), return_reference_to<1>())
-            .def("mul", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::mul), return_reference_to<1>())
-            .def("mul", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::mul), return_reference_to<1>())
-            .def("mul", (Fvector & (Fvector::*)(const Fvector&, float))(&Fvector::mul), return_reference_to<1>())
-            .def("div", (Fvector & (Fvector::*)(float))(&Fvector::div), return_reference_to<1>())
-            .def("div", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::div), return_reference_to<1>())
-            .def("div", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::div), return_reference_to<1>())
-            .def("div", (Fvector & (Fvector::*)(const Fvector&, float))(&Fvector::div), return_reference_to<1>())
-            .def("invert", (Fvector & (Fvector::*)())(&Fvector::invert), return_reference_to<1>())
-            .def("invert", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::invert), return_reference_to<1>())
-            .def("min", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::min), return_reference_to<1>())
-            .def("min", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::min), return_reference_to<1>())
-            .def("max", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::max), return_reference_to<1>())
-            .def("max", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::max), return_reference_to<1>())
-            .def("abs", &Fvector::abs, return_reference_to<1>())
-            .def("similar", &Fvector::similar)
-            .def("set_length", &Fvector::set_length, return_reference_to<1>())
-            .def("align", &Fvector::align, return_reference_to<1>())
+    lua.new_usertype<Fvector>(
+        "vector", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector& v) { v = Fvector{}; }), "x", &Fvector::x, "y", &Fvector::y, "z", &Fvector::z, "set",
+        sol::policies(sol::overload(sol::resolve<Fvector&(float, float, float)>(&Fvector::set), sol::resolve<Fvector&(const Fvector&)>(&Fvector::set)), sol::returns_self()), "add",
+        sol::policies(sol::overload(sol::resolve<Fvector&(float)>(&Fvector::add), sol::resolve<Fvector&(const Fvector&)>(&Fvector::add),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::add), sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::add)),
+                      sol::returns_self()),
+        "sub",
+        sol::policies(sol::overload(sol::resolve<Fvector&(float)>(&Fvector::sub), sol::resolve<Fvector&(const Fvector&)>(&Fvector::sub),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::sub), sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::sub)),
+                      sol::returns_self()),
+        "mul",
+        sol::policies(sol::overload(sol::resolve<Fvector&(float)>(&Fvector::mul), sol::resolve<Fvector&(const Fvector&)>(&Fvector::mul),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::mul), sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::mul)),
+                      sol::returns_self()),
+        "div",
+        sol::policies(sol::overload(sol::resolve<Fvector&(float)>(&Fvector::div), sol::resolve<Fvector&(const Fvector&)>(&Fvector::div),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::div), sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::div)),
+                      sol::returns_self()),
+        "invert", sol::policies(sol::overload(sol::resolve<Fvector&()>(&Fvector::invert), sol::resolve<Fvector&(const Fvector&)>(&Fvector::invert)), sol::returns_self()), "min",
+        sol::policies(sol::overload(sol::resolve<Fvector&(const Fvector&)>(&Fvector::min), sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::min)),
+                      sol::returns_self()),
+        "max",
+        sol::policies(sol::overload(sol::resolve<Fvector&(const Fvector&)>(&Fvector::max), sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::max)),
+                      sol::returns_self()),
+        "abs", sol::policies(&Fvector::abs, sol::returns_self()), "similar", &Fvector::similar, "set_length", sol::policies(&Fvector::set_length, sol::returns_self()), "align",
+        sol::policies(&Fvector::align, sol::returns_self()), "clamp",
+        sol::policies(sol::overload(sol::resolve<Fvector&(const Fvector&)>(&Fvector::clamp), sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::clamp)),
+                      sol::returns_self()),
+        "inertion", sol::policies(&Fvector::inertion, sol::returns_self()), "average",
+        sol::policies(sol::overload(sol::resolve<Fvector&(const Fvector&)>(&Fvector::average), sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::average)),
+                      sol::returns_self()),
+        "lerp", sol::policies(&Fvector::lerp, sol::returns_self()), "mad",
+        sol::policies(sol::overload(sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::mad), sol::resolve<Fvector&(const Fvector&, const Fvector&, float)>(&Fvector::mad),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::mad),
+                                    sol::resolve<Fvector&(const Fvector&, const Fvector&, const Fvector&)>(&Fvector::mad)),
+                      sol::returns_self()),
+        "magnitude", &Fvector::magnitude, "normalize",
+        sol::policies(sol::overload(sol::resolve<Fvector&()>(&Fvector::normalize_safe), sol::resolve<Fvector&(const Fvector&)>(&Fvector::normalize_safe)), sol::returns_self()),
+        "normalize_safe",
+        sol::policies(sol::overload(sol::resolve<Fvector&()>(&Fvector::normalize_safe), sol::resolve<Fvector&(const Fvector&)>(&Fvector::normalize_safe)), sol::returns_self()),
+        "dotproduct", &Fvector::dotproduct, "crossproduct", sol::policies(&Fvector::crossproduct, sol::returns_self()), "distance_to_xz", &Fvector::distance_to_xz,
+        "distance_to_sqr", &Fvector::distance_to_sqr, "distance_to", &Fvector::distance_to, "setHP", sol::policies(&Fvector::setHP, sol::returns_self()), "getH", &Fvector::getH,
+        "getP", &Fvector::getP, "reflect", sol::policies(&Fvector::reflect, sol::returns_self()), "slide", sol::policies(&Fvector::slide, sol::returns_self()));
 
-            .def("clamp", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::clamp), return_reference_to<1>())
-            .def("clamp", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::clamp), return_reference_to<1>())
-            .def("inertion", &Fvector::inertion, return_reference_to<1>())
-            .def("average", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::average), return_reference_to<1>())
-            .def("average", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::average), return_reference_to<1>())
-            .def("lerp", &Fvector::lerp, return_reference_to<1>())
-            .def("mad", (Fvector & (Fvector::*)(const Fvector&, float))(&Fvector::mad), return_reference_to<1>())
-            .def("mad", (Fvector & (Fvector::*)(const Fvector&, const Fvector&, float))(&Fvector::mad), return_reference_to<1>())
-            .def("mad", (Fvector & (Fvector::*)(const Fvector&, const Fvector&))(&Fvector::mad), return_reference_to<1>())
-            .def("mad", (Fvector & (Fvector::*)(const Fvector&, const Fvector&, const Fvector&))(&Fvector::mad), return_reference_to<1>())
+    lua.new_usertype<Fvector2>(
+        "vector2", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector2& v) { v = Fvector2{}; }), "x", &Fvector2::x, "y", &Fvector2::y, "set",
+        sol::policies(sol::overload(sol::resolve<Fvector2&(float, float)>(&Fvector2::set), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::set)), sol::returns_self()), "add",
+        sol::policies(sol::overload(sol::resolve<Fvector2&(float)>(&Fvector2::add), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::add),
+                                    sol::resolve<Fvector2&(const Fvector2&, const Fvector2&)>(&Fvector2::add), sol::resolve<Fvector2&(const Fvector2&, float)>(&Fvector2::add)),
+                      sol::returns_self()),
+        "sub",
+        sol::policies(sol::overload(sol::resolve<Fvector2&(float)>(&Fvector2::sub), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::sub),
+                                    sol::resolve<Fvector2&(const Fvector2&, const Fvector2&)>(&Fvector2::sub), sol::resolve<Fvector2&(const Fvector2&, float)>(&Fvector2::sub)),
+                      sol::returns_self()),
+        "mul", sol::policies(sol::overload(sol::resolve<Fvector2&(float)>(&Fvector2::mul), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::mul)), sol::returns_self()), "div",
+        sol::policies(sol::overload(sol::resolve<Fvector2&(float)>(&Fvector2::div), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::div)), sol::returns_self()), "min",
+        sol::policies(sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::min), sol::returns_self()), "max",
+        sol::policies(sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::max), sol::returns_self()), "abs", sol::policies(&Fvector2::abs, sol::returns_self()), "mad",
+        sol::policies(&Fvector2::mad, sol::returns_self()), "magnitude", &Fvector2::magnitude, "normalize",
+        sol::policies(sol::overload(sol::resolve<Fvector2&()>(&Fvector2::normalize_safe), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::normalize_safe)),
+                      sol::returns_self()),
+        "normalize_safe",
+        sol::policies(sol::overload(sol::resolve<Fvector2&()>(&Fvector2::normalize_safe), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::normalize_safe)),
+                      sol::returns_self()),
+        "dotproduct", &Fvector2::dotproduct, "crossproduct", sol::policies(&Fvector2::crossproduct, sol::returns_self()), "distance_to", &Fvector2::distance_to, "getH",
+        &Fvector2::getH);
 
-            .def("magnitude", &Fvector::magnitude)
+    lua.new_usertype<Fvector4>(
+        "vector4", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector4& v) { v = Fvector4{}; }), "x", sol::property(&Fvector4::getx, &Fvector4::setx), "y",
+        sol::property(&Fvector4::gety, &Fvector4::sety), "z", sol::property(&Fvector4::getz, &Fvector4::setz), "w", sol::property(&Fvector4::getw, &Fvector4::setw), "set",
+        sol::policies(sol::overload(sol::resolve<Fvector4&(float, float, float, float)>(&Fvector4::set), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::set)),
+                      sol::returns_self()),
+        "add",
+        sol::policies(sol::overload(sol::resolve<Fvector4&(float)>(&Fvector4::add), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::add),
+                                    sol::resolve<Fvector4&(const Fvector4&, const Fvector4&)>(&Fvector4::add), sol::resolve<Fvector4&(const Fvector4&, float)>(&Fvector4::add)),
+                      sol::returns_self()),
+        "sub",
+        sol::policies(sol::overload(sol::resolve<Fvector4&(float)>(&Fvector4::sub), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::sub),
+                                    sol::resolve<Fvector4&(const Fvector4&, const Fvector4&)>(&Fvector4::sub), sol::resolve<Fvector4&(const Fvector4&, float)>(&Fvector4::sub)),
+                      sol::returns_self()),
+        "mul", sol::policies(sol::overload(sol::resolve<Fvector4&(float)>(&Fvector4::mul), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::mul)), sol::returns_self()), "div",
+        sol::policies(sol::overload(sol::resolve<Fvector4&(float)>(&Fvector4::div), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::div)), sol::returns_self()), "magnitude",
+        &Fvector4::magnitude, "normalize", sol::policies(&Fvector4::normalize, sol::returns_self()));
 
-            .def("normalize", (Fvector & (Fvector::*)())(&Fvector::normalize_safe), return_reference_to<1>())
-            .def("normalize", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::normalize_safe), return_reference_to<1>())
-            .def("normalize_safe", (Fvector & (Fvector::*)())(&Fvector::normalize_safe), return_reference_to<1>())
-            .def("normalize_safe", (Fvector & (Fvector::*)(const Fvector&))(&Fvector::normalize_safe), return_reference_to<1>())
+    lua.new_usertype<Fbox>("Fbox", sol::no_constructor, sol::call_constructor, sol::initializers([](Fbox& b) { b = Fbox{}; }), "min", &Fbox::min, "max", &Fbox::max);
 
-            .def("dotproduct", &Fvector::dotproduct)
-            .def("crossproduct", &Fvector::crossproduct, return_reference_to<1>())
-            .def("distance_to_xz", &Fvector::distance_to_xz)
-            .def("distance_to_sqr", &Fvector::distance_to_sqr)
-            .def("distance_to", &Fvector::distance_to)
-
-            .def("setHP", &Fvector::setHP, return_reference_to<1>())
-
-            .def("getH", &Fvector::getH)
-            .def("getP", &Fvector::getP)
-
-            .def("reflect", &Fvector::reflect, return_reference_to<1>())
-            .def("slide", &Fvector::slide, return_reference_to<1>()),
-
-        class_<Fvector2>("___VECTOR2")
-            .def_readwrite("x", &Fvector2::x)
-            .def_readwrite("y", &Fvector2::y)
-            .def(constructor<>())
-
-            .def("set", (Fvector2 & (Fvector2::*)(float, float))(&Fvector2::set), return_reference_to<1>())
-            .def("set", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::set), return_reference_to<1>())
-            .def("add", (Fvector2 & (Fvector2::*)(float))(&Fvector2::add), return_reference_to<1>())
-            .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::add), return_reference_to<1>())
-            .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::add), return_reference_to<1>())
-            .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::add), return_reference_to<1>())
-            .def("sub", (Fvector2 & (Fvector2::*)(float))(&Fvector2::sub), return_reference_to<1>())
-            .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::sub), return_reference_to<1>())
-            .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::sub), return_reference_to<1>())
-            .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::sub), return_reference_to<1>())
-            .def("mul", (Fvector2 & (Fvector2::*)(float))(&Fvector2::mul), return_reference_to<1>())
-            .def("mul", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::mul), return_reference_to<1>())
-            .def("div", (Fvector2 & (Fvector2::*)(float))(&Fvector2::div), return_reference_to<1>())
-            .def("div", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::div), return_reference_to<1>())
-            .def("min", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::min), return_reference_to<1>())
-            .def("max", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::max), return_reference_to<1>())
-            .def("abs", &Fvector2::abs, return_reference_to<1>())
-            //.def("similar", &Fvector2::similar)
-
-            .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::mad), return_reference_to<1>())
-            .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&, float))(&Fvector2::mad), return_reference_to<1>())
-            .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::mad), return_reference_to<1>())
-            .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&, const Fvector2&))(&Fvector2::mad), return_reference_to<1>())
-
-            .def("magnitude", &Fvector2::magnitude)
-
-            .def("normalize", (Fvector2 & (Fvector2::*)())(&Fvector2::normalize_safe), return_reference_to<1>())
-            .def("normalize", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::normalize_safe), return_reference_to<1>())
-            .def("normalize_safe", (Fvector2 & (Fvector2::*)())(&Fvector2::normalize_safe), return_reference_to<1>())
-            .def("normalize_safe", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::normalize_safe), return_reference_to<1>())
-
-            .def("dotproduct", &Fvector2::dotproduct)
-            .def("crossproduct", &Fvector2::crossproduct, return_reference_to<1>())
-            .def("distance_to", &Fvector2::distance_to)
-
-            .def("getH", &Fvector2::getH),
-
-        class_<Fvector4>("___VECTOR4")
-            .property("x", &Fvector4::getx, &Fvector4::setx)
-            .property("y", &Fvector4::gety, &Fvector4::sety)
-            .property("z", &Fvector4::getz, &Fvector4::setz)
-            .property("w", &Fvector4::getw, &Fvector4::setw)
-            .def(constructor<>())
-
-            .def("set", (Fvector4 & (Fvector4::*)(float, float, float, float))(&Fvector4::set), return_reference_to<1>())
-            .def("set", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::set), return_reference_to<1>())
-            .def("add", (Fvector4 & (Fvector4::*)(float))(&Fvector4::add), return_reference_to<1>())
-            .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::add), return_reference_to<1>())
-            .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::add), return_reference_to<1>())
-            .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::add), return_reference_to<1>())
-            .def("sub", (Fvector4 & (Fvector4::*)(float))(&Fvector4::sub), return_reference_to<1>())
-            .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::sub), return_reference_to<1>())
-            .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::sub), return_reference_to<1>())
-            .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::sub), return_reference_to<1>())
-            .def("mul", (Fvector4 & (Fvector4::*)(float))(&Fvector4::mul), return_reference_to<1>())
-            .def("mul", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::mul), return_reference_to<1>())
-            .def("div", (Fvector4 & (Fvector4::*)(float))(&Fvector4::div), return_reference_to<1>())
-            .def("div", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::div), return_reference_to<1>())
-            //.def("min", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::min), return_reference_to<1>())
-            //.def("max", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::max), return_reference_to<1>())
-            //.def("abs", &Fvector4::abs, return_reference_to<1>())
-            //.def("similar", &Fvector4::similar)
-
-            //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::mad), return_reference_to<1>())
-            //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&, float))(&Fvector4::mad), return_reference_to<1>())
-            //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::mad), return_reference_to<1>())
-            //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&, const Fvector4&))(&Fvector4::mad), return_reference_to<1>())
-
-            .def("magnitude", &Fvector4::magnitude)
-
-            .def("normalize", (Fvector4 & (Fvector4::*)())(&Fvector4::normalize), return_reference_to<1>())
-            .def("normalize", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::normalize), return_reference_to<1>())
-        //.def("normalize_safe", (Fvector4 & (Fvector4::*)())(&Fvector4::normalize_safe), return_reference_to<1>())
-        //.def("normalize_safe", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::normalize_safe), return_reference_to<1>())
-
-        //.def("dotproduct", &Fvector4::dotproduct)
-        //.def("crossproduct", &Fvector4::crossproduct, return_reference_to<1>())
-        //.def("distance_to", &Fvector4::distance_to)
-
-        //.def("getH", &Fvector4::getH)
-        ,
-
-        class_<Fbox>("Fbox").def(constructor<>()).def_readwrite("min", &Fbox::min).def_readwrite("max", &Fbox::max),
-
-        class_<Frect>("Frect")
-            .def(constructor<>())
-            .def("set", (Frect & (Frect::*)(float, float, float, float))(&Frect::set), return_reference_to<1>())
-            .def_readwrite("lt", &Frect::lt)
-            .def_readwrite("rb", &Frect::rb)
-            .def_readwrite("x1", &Frect::x1)
-            .def_readwrite("x2", &Frect::x2)
-            .def_readwrite("y1", &Frect::y1)
-            .def_readwrite("y2", &Frect::y2))];
+    lua.new_usertype<Frect>("Frect", sol::no_constructor, sol::call_constructor, sol::initializers([](Frect& r) { r = Frect{}; }), "set",
+                            sol::policies(sol::resolve<Frect&(float, float, float, float)>(&Frect::set), sol::returns_self()), "lt", &Frect::lt, "rb", &Frect::rb, "x1", &Frect::x1,
+                            "x2", &Frect::x2, "y1", &Frect::y1, "y2", &Frect::y2);
 }

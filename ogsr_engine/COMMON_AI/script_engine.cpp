@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_engine.h"
 #include "ai_space.h"
 #include "MainMenu.h"
@@ -16,8 +17,6 @@ void export_classes(lua_State* L);
 
 CScriptEngine::CScriptEngine()
 {
-    // KRodin: luabind_allocator инитится в ResourceManager_Scripting.cpp, т.к там luabind инитится раньше всего.
-    //
     m_stack_level = 0;
     m_reload_modules = false;
 }
@@ -26,7 +25,7 @@ extern void destroy_lua_wpn_params();
 
 void CScriptEngine::unload()
 {
-    //lua_settop(lua(), m_stack_level);
+    // lua_settop(lua(), m_stack_level);
 
     destroy_lua_wpn_params();
     if (MainMenu())
@@ -75,6 +74,23 @@ void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
 }
 #endif
 
+static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
+                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
+{
+    if (!size)
+    {
+        void* non_const_pointer = const_cast<LPVOID>(pointer);
+        xr_free(non_const_pointer);
+        return nullptr;
+    }
+
+    if (!pointer)
+        return xr_malloc(size);
+
+    void* non_const_pointer = const_cast<LPVOID>(pointer);
+    return xr_realloc(non_const_pointer, size);
+}
+
 int auto_load(lua_State* L)
 {
     if ((lua_gettop(L) < 2) || !lua_istable(L, 1) || !lua_isstring(L, 2))
@@ -107,30 +123,42 @@ void CScriptEngine::setup_auto_load()
 void CScriptEngine::init()
 {
     // Msg("[CScriptEngine::init] Starting LuaJIT!");
-    lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
+
+    lua_State* LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
+
+    sol::set_default_state(LSVM);
+    sol::state_view(LSVM).open_libraries();
+
     reinit(LSVM);
-    luabind::open(LSVM); //Запуск луабинда
-    //--------------Установка калбеков------------------//
+
+//    luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
+//    luabind::allocator_parameter = nullptr;
+
+//    luabind::log = Msg;
+//    luabind::exception_filter = DbgLogExceptionFilter;
+
+//    luabind::open(LSVM); // Запуск луабинда
+//--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
-    luabind::set_error_callback(lua_error);
-    luabind::set_cast_failed_callback(lua_cast_failed);
+//    luabind::set_error_callback(lua_error);
+//    luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
-    luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
-    lua_atpanic(LSVM, lua_panic);
+    //    luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
+    //    lua_atpanic(LSVM, lua_panic);
     //-----------------------------------------------------//
-    export_classes(LSVM); //Тут регистрируются все движковые функции, импортированные в скрипты
-    luaL_openlibs(LSVM); //Инициализация функций LuaJIT
-    setup_auto_load(); //Построение метатаблицы
+    export_classes(LSVM); // Тут регистрируются все движковые функции, импортированные в скрипты
+    //    luaL_openlibs(LSVM); // Инициализация функций LuaJIT
+    setup_auto_load(); // Построение метатаблицы
     bool save = m_reload_modules;
     m_reload_modules = true;
-    process_file_if_exists(GlobalNamespace, false); //Компиляция _G.script
+    process_file_if_exists(GlobalNamespace, false); // Компиляция _G.script
     m_reload_modules = save;
 
     m_stack_level = lua_gettop(LSVM); //?
 
-    register_script_classes(); //Походу, запуск class_registrator.script
-    object_factory().register_script(); //Регистрация классов
+    register_script_classes(); // Походу, запуск class_registrator.script
+    object_factory().register_script(); // Регистрация классов
     // Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 
@@ -150,7 +178,6 @@ void CScriptEngine::parse_script_namespace(const char* name, char* ns, u32 nsSiz
     }
     xr_strcpy(func, funcSize, p + 1);
 }
-
 
 const char* ExtractFileName(const char* fname)
 {
@@ -222,7 +249,7 @@ bool LookupScript(string_path& fname, const char* base)
 bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) // KRodin: Функция проверяет существует ли скрипт на диске. Если существует - отправляет
                                                                                           // его в do_file. Вызывается из process_file, auto_load и не только.
 {
-    if (!warn_if_not_exist && no_file_exists(file_name)) //Это для оптимизации, чтоб постоянно не проверять, отсутствует ли этот файл.
+    if (!warn_if_not_exist && no_file_exists(file_name)) // Это для оптимизации, чтоб постоянно не проверять, отсутствует ли этот файл.
         return false;
     if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
     {
@@ -250,7 +277,6 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
     return true;
 }
 
-
 bool CScriptEngine::process_file(const char* file_name) { return process_file_if_exists(file_name, true); }
 
 bool CScriptEngine::process_file(const char* file_name, bool reload_modules)
@@ -263,9 +289,35 @@ bool CScriptEngine::process_file(const char* file_name, bool reload_modules)
 
 void CScriptEngine::register_script_classes()
 {
-    luabind::functor<void> result;
-    ASSERT_FMT(functor("class_registrator.register", result), "[%s] Cannot load class_registrator!", __FUNCTION__);
+    sol::function result = sol::state_view(lua())["class_registrator"]["register"];
     result(const_cast<CObjectFactory*>(&object_factory()));
+}
+
+bool CScriptEngine::function(const char* function_to_call, sol::function& func)
+{
+    if (!strlen(function_to_call))
+        return false;
+    string256 name_space, function;
+    parse_script_namespace(function_to_call, name_space, sizeof(name_space), function, sizeof(function));
+    if (xr_strcmp(name_space, GlobalNamespace))
+    {
+        auto file_name = strchr(name_space, '.');
+        if (!file_name)
+            process_file(name_space);
+        else
+        {
+            *file_name = 0;
+            process_file(name_space);
+            *file_name = '.';
+        }
+    }
+
+    auto x = sol::state_view(lua()).get<sol::optional<sol::function>>(std::tie(name_space, function));
+    if (!x)
+        return false;
+
+    func = x.value();
+    return true;
 }
 
 bool CScriptEngine::function_object(const char* function_to_call, luabind::object& object, int type)

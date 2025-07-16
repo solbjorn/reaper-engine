@@ -14,28 +14,40 @@
 #include "RustyHairArtifact.h"
 #include "GalantineArtifact.h"
 
-using namespace luabind;
-
 void CArtefact::script_register(lua_State* L)
 {
-    module(L)[(class_<CArtefact, CInventoryItemObject>("CArtefact")
-                   .def_readwrite("can_spawn_zone", &CArtefact::m_bCanSpawnZone)
+    auto lua = sol::state_view(L);
 
-                   .def_readwrite("health_restore_speed", &CArtefact::m_fHealthRestoreSpeed)
-                   .def_readwrite("psy_health_restore_speed", static_cast<float CArtefact::*>(&CArtefact::m_fPsyHealthRestoreSpeed))
-                   .def_readwrite("radiation_restore_speed", static_cast<float CArtefact::*>(&CArtefact::m_fRadiationRestoreSpeed))
-                   .def_readwrite("satiety_restore_speed", &CArtefact::m_fSatietyRestoreSpeed)
-                   .def_readwrite("power_restore_speed", &CArtefact::m_fPowerRestoreSpeed)
-                   .def_readwrite("bleeding_restore_speed", &CArtefact::m_fBleedingRestoreSpeed)
-                   .def_readwrite("thirst_restore_speed", &CArtefact::m_fThirstRestoreSpeed)
+    lua.new_usertype<CArtefact>("CArtefact", sol::no_constructor, "can_spawn_zone", &CArtefact::m_bCanSpawnZone, "health_restore_speed", &CArtefact::m_fHealthRestoreSpeed,
+                                "psy_health_restore_speed", &CArtefact::m_fPsyHealthRestoreSpeed, "radiation_restore_speed", &CArtefact::m_fRadiationRestoreSpeed,
+                                "satiety_restore_speed", &CArtefact::m_fSatietyRestoreSpeed, "power_restore_speed", &CArtefact::m_fPowerRestoreSpeed, "bleeding_restore_speed",
+                                &CArtefact::m_fBleedingRestoreSpeed, "thirst_restore_speed", &CArtefact::m_fThirstRestoreSpeed,
 
-                   .def_readwrite("additional_inventory_weight", &CArtefact::m_additional_weight)
-                   .def_readwrite("additional_inventory_weight2", &CArtefact::m_additional_weight2),
+                                "additional_inventory_weight", &CArtefact::m_additional_weight, "additional_inventory_weight2", &CArtefact::m_additional_weight2, sol::base_classes,
+                                xr_sol_bases<CArtefact>());
 
-               class_<CMercuryBall, CGameObject>("CMercuryBall").def(constructor<>()), class_<CBlackDrops, CGameObject>("CBlackDrops").def(constructor<>()),
-               class_<CBlackGraviArtefact, CGameObject>("CBlackGraviArtefact").def(constructor<>()), class_<CBastArtefact, CGameObject>("CBastArtefact").def(constructor<>()),
-               class_<CDummyArtefact, CGameObject>("CDummyArtefact").def(constructor<>()), class_<CZudaArtefact, CGameObject>("CZudaArtefact").def(constructor<>()),
-               class_<CThornArtefact, CGameObject>("CThornArtefact").def(constructor<>()), class_<CFadedBall, CGameObject>("CFadedBall").def(constructor<>()),
-               class_<CElectricBall, CGameObject>("CElectricBall").def(constructor<>()), class_<CRustyHairArtefact, CGameObject>("CRustyHairArtefact").def(constructor<>()),
-               class_<CGalantineArtefact, CGameObject>("CGalantineArtefact").def(constructor<>()), class_<CGraviArtefact, CGameObject>("CGraviArtefact").def(constructor<>()))];
+    lua.new_usertype<CMercuryBall>("CMercuryBall", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CMercuryBall>), sol::base_classes,
+                                   xr_sol_bases<CMercuryBall>());
+    lua.new_usertype<CBlackDrops>("CBlackDrops", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CBlackDrops>), sol::base_classes,
+                                  xr_sol_bases<CBlackDrops>());
+    lua.new_usertype<CBlackGraviArtefact>("CBlackGraviArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CBlackGraviArtefact>),
+                                          sol::base_classes, xr_sol_bases<CBlackGraviArtefact>());
+    lua.new_usertype<CBastArtefact>("CBastArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CBastArtefact>), sol::base_classes,
+                                    xr_sol_bases<CBastArtefact>());
+    lua.new_usertype<CDummyArtefact>("CDummyArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CDummyArtefact>), sol::base_classes,
+                                     xr_sol_bases<CDummyArtefact>());
+    lua.new_usertype<CZudaArtefact>("CZudaArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CZudaArtefact>), sol::base_classes,
+                                    xr_sol_bases<CZudaArtefact>());
+    lua.new_usertype<CThornArtefact>("CThornArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CThornArtefact>), sol::base_classes,
+                                     xr_sol_bases<CThornArtefact>());
+    lua.new_usertype<CFadedBall>("CFadedBall", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CFadedBall>), sol::base_classes,
+                                 xr_sol_bases<CFadedBall>());
+    lua.new_usertype<CElectricBall>("CElectricBall", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CElectricBall>), sol::base_classes,
+                                    xr_sol_bases<CElectricBall>());
+    lua.new_usertype<CRustyHairArtefact>("CRustyHairArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CRustyHairArtefact>), sol::base_classes,
+                                         xr_sol_bases<CRustyHairArtefact>());
+    lua.new_usertype<CGalantineArtefact>("CGalantineArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGalantineArtefact>), sol::base_classes,
+                                         xr_sol_bases<CGalantineArtefact>());
+    lua.new_usertype<CGraviArtefact>("CGraviArtefact", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGraviArtefact>), sol::base_classes,
+                                     xr_sol_bases<CGraviArtefact>());
 }

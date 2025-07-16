@@ -7,24 +7,21 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "alife_monster_movement_manager.h"
 #include "alife_monster_detail_path_manager.h"
 #include "alife_monster_patrol_path_manager.h"
 #include "movement_manager_space.h"
 
-using namespace luabind;
-
-CALifeMonsterDetailPathManager* get_detail(const CALifeMonsterMovementManager* self) { return (&self->detail()); }
-
-CALifeMonsterPatrolPathManager* get_patrol(const CALifeMonsterMovementManager* self) { return (&self->patrol()); }
+static CALifeMonsterDetailPathManager* get_detail(const CALifeMonsterMovementManager* self) { return &self->detail(); }
+static CALifeMonsterPatrolPathManager* get_patrol(const CALifeMonsterMovementManager* self) { return &self->patrol(); }
 
 void CALifeMonsterMovementManager::script_register(lua_State* L)
 {
-    module(L)[class_<CALifeMonsterMovementManager>("CALifeMonsterMovementManager")
-                  .def("detail", &get_detail)
-                  .def("patrol", &get_patrol)
-                  .def("path_type", (void(CALifeMonsterMovementManager::*)(const EPathType&))(&CALifeMonsterMovementManager::path_type))
-                  .def("path_type", (const EPathType& (CALifeMonsterMovementManager::*)() const)(&CALifeMonsterMovementManager::path_type))
-                  .def("actual", &CALifeMonsterMovementManager::actual)
-                  .def("completed", &CALifeMonsterMovementManager::completed)];
+    sol::state_view(L).new_usertype<CALifeMonsterMovementManager>("CALifeMonsterMovementManager", sol::no_constructor, "detail", &get_detail, "patrol", &get_patrol, "path_type",
+                                                                  sol::overload(sol::resolve<void(const EPathType&)>(&CALifeMonsterMovementManager::path_type),
+                                                                                sol::resolve<const EPathType&() const>(&CALifeMonsterMovementManager::path_type)),
+                                                                  "actual", &CALifeMonsterMovementManager::actual, "completed", &CALifeMonsterMovementManager::completed);
 }

@@ -2139,20 +2139,11 @@
     <ClInclude Include="action_script_base_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase\ActionScriptBase</Filter>
     </ClInclude>
-    <ClInclude Include="script_action_wrapper.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase\ScriptActionWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="script_action_wrapper_inline.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase\ScriptActionWrapper</Filter>
-    </ClInclude>
     <ClInclude Include="action_planner.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
     </ClInclude>
     <ClInclude Include="action_planner_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
-    </ClInclude>
-    <ClInclude Include="script_action_planner_wrapper.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner\ScriptActionPlannerWrapper</Filter>
     </ClInclude>
     <ClInclude Include="action_planner_script.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner\ActionPlannerScript</Filter>
@@ -2171,12 +2162,6 @@
     </ClInclude>
     <ClInclude Include="action_planner_action_script_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction\ActionPlannerActionScript</Filter>
-    </ClInclude>
-    <ClInclude Include="script_action_planner_action_wrapper.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction\ScriptActionPlannerActionWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="script_action_planner_action_wrapper_inline.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction\ScriptActionPlannerActionWrapper</Filter>
     </ClInclude>
     <ClInclude Include="property_storage.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\PropertyStorage</Filter>
@@ -2201,12 +2186,6 @@
     </ClInclude>
     <ClInclude Include="property_evaluator_member_inline.h">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\WorldPropertyEvaluator\member</Filter>
-    </ClInclude>
-    <ClInclude Include="script_property_evaluator_wrapper.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\WorldPropertyEvaluator\ScriptPropertyEvaluatorWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="script_property_evaluator_wrapper_inline.h">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\WorldPropertyEvaluator\ScriptPropertyEvaluatorWrapper</Filter>
     </ClInclude>
     <ClInclude Include="material_manager.h">
       <Filter>AI\AComponents\MaterialManager</Filter>
@@ -4011,20 +3990,11 @@
     <ClInclude Include="script_binder_object.h">
       <Filter>AI\AScript\ScriptClasses\ScriptBinderObject</Filter>
     </ClInclude>
-    <ClInclude Include="script_binder_object_wrapper.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptBinderObject\ScriptBinderObjectWrapper</Filter>
-    </ClInclude>
     <ClInclude Include="script_effector.h">
       <Filter>AI\AScript\ScriptClasses\ScriptEffector</Filter>
     </ClInclude>
     <ClInclude Include="script_effector_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptEffector</Filter>
-    </ClInclude>
-    <ClInclude Include="script_effector_wrapper.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptEffector\ScriptEffectorWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="script_effector_wrapper_inline.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptEffector\ScriptEffectorWrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_flags.h">
       <Filter>AI\AScript\ScriptClasses\ScriptFlags</Filter>
@@ -5496,9 +5466,6 @@
     <ClInclude Include="ui\UIScriptWnd.h">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\ScriptWnd</Filter>
     </ClInclude>
-    <ClInclude Include="ui\uiscriptwnd_script.h">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\ScriptWnd</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UI3tButton.h">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Buttons</Filter>
     </ClInclude>
@@ -5844,9 +5811,6 @@
     <ClInclude Include="script_game_object_impl.h">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClInclude>
-    <ClInclude Include="script_vars_storage.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UIIconParams.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>
     </ClInclude>
@@ -6064,29 +6028,17 @@
     <ClCompile Include="action_base_script.cpp">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase</Filter>
     </ClCompile>
-    <ClCompile Include="script_action_wrapper.cpp">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionBase\ScriptActionWrapper</Filter>
-    </ClCompile>
     <ClCompile Include="action_planner_script.cpp">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner</Filter>
     </ClCompile>
-    <ClCompile Include="script_action_planner_wrapper.cpp">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlanner\ScriptActionPlannerWrapper</Filter>
-    </ClCompile>
     <ClCompile Include="action_planner_action_script.cpp">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction</Filter>
-    </ClCompile>
-    <ClCompile Include="script_action_planner_action_wrapper.cpp">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\ActionPlannerAction\ScriptActionPlannerActionWrapper</Filter>
     </ClCompile>
     <ClCompile Include="property_storage_script.cpp">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\PropertyStorage</Filter>
     </ClCompile>
     <ClCompile Include="property_evaluator_script.cpp">
       <Filter>AI\AComponents\DecisionManagement\ActionManagement\WorldPropertyEvaluator</Filter>
-    </ClCompile>
-    <ClCompile Include="script_property_evaluator_wrapper.cpp">
-      <Filter>AI\AComponents\DecisionManagement\ActionManagement\WorldPropertyEvaluator\ScriptPropertyEvaluatorWrapper</Filter>
     </ClCompile>
     <ClCompile Include="material_manager.cpp">
       <Filter>AI\AComponents\MaterialManager</Filter>
@@ -7075,17 +7027,11 @@
     <ClCompile Include="script_binder_object_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptBinderObject</Filter>
     </ClCompile>
-    <ClCompile Include="script_binder_object_wrapper.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptBinderObject\ScriptBinderObjectWrapper</Filter>
-    </ClCompile>
     <ClCompile Include="script_effector.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptEffector</Filter>
     </ClCompile>
     <ClCompile Include="script_effector_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptEffector</Filter>
-    </ClCompile>
-    <ClCompile Include="script_effector_wrapper.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptEffector\ScriptEffectorWrapper</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_flags_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptFlags</Filter>
@@ -8602,9 +8548,6 @@
     <ClCompile Include="ui\UIScriptWnd_script.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\ScriptWnd</Filter>
     </ClCompile>
-    <ClCompile Include="ui\uiscriptwnd_script2.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\ScriptWnd</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UI3tButton.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Buttons</Filter>
     </ClCompile>
@@ -8763,9 +8706,6 @@
     </ClCompile>
     <ClCompile Include="script_game_object_script4.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="script_vars_storage.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptVarsStorage</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIIconParams.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common</Filter>

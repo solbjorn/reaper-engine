@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "../../xrScriptEngine/xr_sol.h"
 #include "../../xr_3da/Render.h"
 
 #include "../xrRender/ResourceManager.h"
@@ -175,25 +176,9 @@ public:
 };
 #pragma warning(pop)
 
-class adopt_blend
-{
-public:
-};
-
-class adopt_cmp_func
-{
-public:
-};
-
-class adopt_stencil_op
-{
-public:
-};
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-#include "../../xr_3da/ai_script_space.h"
 
-lua_State* LSVM = nullptr;
+static lua_State* LSVM = nullptr;
 
 constexpr const char* GlobalNamespace = "_G";
 static constexpr const char* FILE_HEADER =
@@ -205,82 +190,7 @@ local this; \
 module('{0}', package.seeall, function(m) this = m end); \
 {1}";
 
-static const char* get_lua_traceback(lua_State* L)
-{
-    luaL_traceback(L, L, nullptr, 0);
-    auto tb = lua_tostring(L, -1);
-    lua_pop(L, 1);
-    return tb;
-}
-
-bool print_output(const char* caScriptFileName, int errorCode)
-{
-    auto Prefix = "";
-    if (errorCode)
-    {
-        switch (errorCode)
-        {
-        case LUA_ERRRUN: {
-            Prefix = "SCRIPT RUNTIME ERROR";
-            break;
-        }
-        case LUA_ERRMEM: {
-            Prefix = "SCRIPT ERROR (memory allocation)";
-            break;
-        }
-        case LUA_ERRERR: {
-            Prefix = "SCRIPT ERROR (while running the error handler function)";
-            break;
-        }
-        case LUA_ERRFILE: {
-            Prefix = "SCRIPT ERROR (while running file)";
-            break;
-        }
-        case LUA_ERRSYNTAX: {
-            Prefix = "SCRIPT SYNTAX ERROR";
-            break;
-        }
-        case LUA_YIELD: {
-            Prefix = "Thread is yielded";
-            break;
-        }
-        default: NODEFAULT;
-        }
-    }
-    auto traceback = get_lua_traceback(LSVM);
-    if (!lua_isstring(LSVM, -1)) // НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
-    {
-        Msg("*********************************************************************************");
-        Msg("[ResourceManager_Scripting.print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
-        Msg("*********************************************************************************");
-        return false;
-    }
-    auto S = lua_tostring(LSVM, -1);
-    Msg("*********************************************************************************");
-    Msg("[ResourceManager_Scripting.print_output(%s)] %s:\n%s\n%s", caScriptFileName, Prefix, S, traceback);
-    Msg("*********************************************************************************");
-    return true;
-}
-
-bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName)
-{
-    const std::string_view strbuf{caBuffer, tSize};
-    const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
-
-    // Log("[CResourceManager::load_buffer] Loading buffer:");
-    // Log(script.c_str());
-
-    int l_iErrorCode = luaL_loadbuffer(LSVM, script.c_str(), script.size(), caScriptName);
-    if (l_iErrorCode)
-    {
-        print_output(caScriptName, l_iErrorCode);
-        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
-        return false;
-    }
-    return true;
-}
-
-bool do_file(const char* caScriptName, const char* caNameSpaceName)
+static bool do_file(sol::state_view lua, const char* caScriptName, const char* caNameSpaceName)
 {
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
@@ -295,17 +205,23 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
     string_path l_caLuaFileName;
     strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 
-    load_buffer(reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed(), l_caLuaFileName, caNameSpaceName);
+    const std::string_view strbuf{reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed()};
+    const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
 
     FS.r_close(l_tpFileReader);
 
-    int l_iErrorCode = lua_pcall(LSVM, 0, 0, 0); // KRodin: без этого скрипты не работают!
-    if (l_iErrorCode)
+    try
     {
-        print_output(caScriptName, l_iErrorCode);
+        lua.safe_script(script, l_caLuaFileName);
+    }
+    catch (const sol::error& e)
+    {
+        Msg(e.what());
         R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
+
         return false;
     }
+
     return true;
 }
 
@@ -405,54 +321,6 @@ bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
     return result;
 }
 
-#ifdef LUABIND_NO_EXCEPTIONS
-void LuaError(lua_State* L)
-{
-    print_output("[ResourceManager.lua_error]", LUA_ERRRUN);
-    Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-}
-
-static void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
-{
-    print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);
-
-    Msg("LUA error: cannot cast lua value to %s", info->name());
-}
-#endif
-
-int lua_pcall_failed(lua_State* L)
-{
-    print_output("[ResourceManager.lua_pcall_failed]", LUA_ERRRUN);
-    Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_pcall_failed]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-    if (lua_isstring(L, -1))
-        lua_pop(L, 1);
-    return LUA_ERRRUN;
-}
-
-int lua_panic(lua_State* L)
-{
-    print_output("[ResourceManager.lua_panic]", LUA_ERRRUN);
-    Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_panic]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-    return 0;
-}
-
-static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
-                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
-{
-    if (!size)
-    {
-        void* non_const_pointer = const_cast<LPVOID>(pointer);
-        xr_free(non_const_pointer);
-        return nullptr;
-    }
-
-    if (!pointer)
-        return xr_malloc(size);
-
-    void* non_const_pointer = const_cast<LPVOID>(pointer);
-    return xr_realloc(non_const_pointer, size);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LuaLog(const char* caMessage) { Log(caMessage); }
@@ -463,94 +331,36 @@ void CResourceManager::LS_Load()
     //**************************************************************//
     // Msg("[CResourceManager] Starting LuaJIT");
     R_ASSERT2(!LSVM, "! LuaJIT is already running"); // На всякий случай
-    //
-    luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
-    luabind::allocator_parameter = nullptr;
-
-    luabind::log = Msg;
-    luabind::exception_filter = DbgLogExceptionFilter;
 
     LSVM = luaL_newstate(); // Запускаем LuaJIT. Память себе он выделит сам.
-    luaL_openlibs(LSVM); // Инициализация функций LuaJIT
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); // Надо проверить, случается ли такое.
-    luabind::open(LSVM); // Запуск луабинда
-    //
-    //--------------Установка калбеков------------------//
-#ifdef LUABIND_NO_EXCEPTIONS
-    luabind::set_error_callback(LuaError); // Калбек на ошибки.
-    luabind::set_cast_failed_callback(lua_cast_failed);
-#endif
-    luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
-    lua_atpanic(LSVM, lua_panic);
-    // Msg("[CResourceManager] LuaJIT Started!");
-    //-----------------------------------------------------//
-    //***************************************************************//
+    sol::set_default_state(LSVM);
 
-    using namespace luabind;
+    sol::state_view lua(LSVM);
+    lua.open_libraries();
 
-    module(LSVM)[(def("log", &LuaLog),
-                  class_<adopt_dx10sampler>("_dx10sampler")
-                      //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
-                      //.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
-                      .def("clamp", &adopt_dx10sampler::_clamp, return_reference_to<1>())
-                  //.def("wrap",						    &adopt_sampler::_wrap			,return_reference_to(_1))
-                  //.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
-                  //.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
-                  //.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to(_1))
-                  //.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to(_1))
-                  //.def("f_linear",					    &adopt_sampler::_f_linear		,return_reference_to(_1))
-                  //.def("f_none",						&adopt_sampler::_f_none			,return_reference_to(_1))
-                  //.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to(_1))
-                  //.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to(_1))
-                  //.def("fmin_linear",					&adopt_sampler::_fmin_linear	,return_reference_to(_1))
-                  //.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		,return_reference_to(_1))
-                  //.def("fmip_none",					&adopt_sampler::_fmip_none		,return_reference_to(_1))
-                  //.def("fmip_point",					&adopt_sampler::_fmip_point		,return_reference_to(_1))
-                  //.def("fmip_linear",					&adopt_sampler::_fmip_linear	,return_reference_to(_1))
-                  //.def("fmag_none",					&adopt_sampler::_fmag_none		,return_reference_to(_1))
-                  //.def("fmag_point",					&adopt_sampler::_fmag_point		,return_reference_to(_1))
-                  //.def("fmag_linear",					&adopt_sampler::_fmag_linear	,return_reference_to(_1))
-                  ,
-
-                  class_<adopt_compiler>("_compiler")
-                      .def(constructor<const adopt_compiler&>())
-                      .def("begin", &adopt_compiler::_pass, return_reference_to<1>())
-                      .def("begin", &adopt_compiler::_passgs, return_reference_to<1>())
-                      .def("sorting", &adopt_compiler::_options, return_reference_to<1>())
-                      .def("emissive", &adopt_compiler::_o_emissive, return_reference_to<1>())
-                      .def("distort", &adopt_compiler::_o_distort, return_reference_to<1>())
-                      .def("wmark", &adopt_compiler::_o_wmark, return_reference_to<1>())
-                      .def("fog", &adopt_compiler::_fog, return_reference_to<1>())
-                      .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
-                      .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
-                      .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
-
-                      //	For compatibility only
-                      .def("dx10color_write_enable", &adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
-                      .def("color_write_enable", &adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
-                      .def("dx10texture", &adopt_compiler::_dx10texture, return_reference_to<1>())
-                      .def("dx10stencil", &adopt_compiler::_dx10Stencil, return_reference_to<1>())
-                      .def("dx10stencil_ref", &adopt_compiler::_dx10StencilRef, return_reference_to<1>())
-                      .def("dx10cullmode", &adopt_compiler::_dx10CullMode, return_reference_to<1>())
-                      .def("dx10zfunc", &adopt_compiler::_dx10ZFunc, return_reference_to<1>())
-
-                      // returns sampler-object
-                      .def("dx10sampler", &adopt_compiler::_dx10sampler),
-                  class_<adopt_blend>("blend").enum_(
-                      "blend")[(value("zero", int(D3DBLEND_ZERO)), value("one", int(D3DBLEND_ONE)), value("srccolor", int(D3DBLEND_SRCCOLOR)),
-                                value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), value("srcalpha", int(D3DBLEND_SRCALPHA)), value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
-                                value("destalpha", int(D3DBLEND_DESTALPHA)), value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), value("destcolor", int(D3DBLEND_DESTCOLOR)),
-                                value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), value("srcalphasat", int(D3DBLEND_SRCALPHASAT)))],
-
-                  class_<adopt_cmp_func>("cmp_func")
-                      .enum_("cmp_func")[(value("never", int(D3DCMP_NEVER)), value("less", int(D3DCMP_LESS)), value("equal", int(D3DCMP_EQUAL)),
-                                          value("lessequal", int(D3DCMP_LESSEQUAL)), value("greater", int(D3DCMP_GREATER)), value("notequal", int(D3DCMP_NOTEQUAL)),
-                                          value("greaterequal", int(D3DCMP_GREATEREQUAL)), value("always", int(D3DCMP_ALWAYS)))],
-
-                  class_<adopt_stencil_op>("stencil_op")
-                      .enum_("stencil_op")[(value("keep", int(D3DSTENCILOP_KEEP)), value("zero", int(D3DSTENCILOP_ZERO)), value("replace", int(D3DSTENCILOP_REPLACE)),
-                                            value("incrsat", int(D3DSTENCILOP_INCRSAT)), value("decrsat", int(D3DSTENCILOP_DECRSAT)), value("invert", int(D3DSTENCILOP_INVERT)),
-                                            value("incr", int(D3DSTENCILOP_INCR)), value("decr", int(D3DSTENCILOP_DECR)))])];
+    lua.set_function("log", LuaLog);
+    lua.new_usertype<adopt_dx10sampler>("_dx10sampler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_dx10sampler(const adopt_dx10sampler&)>(), "clamp",
+                                        sol::policies(&adopt_dx10sampler::_clamp, sol::returns_self()));
+    lua.new_usertype<adopt_compiler>(
+        "_compiler", sol::no_constructor, sol::call_constructor, sol::constructors<adopt_compiler(const adopt_compiler&)>(), "begin",
+        sol::policies(sol::overload(&adopt_compiler::_pass, &adopt_compiler::_passgs), sol::returns_self()), "sorting",
+        sol::policies(&adopt_compiler::_options, sol::returns_self()), "emissive", sol::policies(&adopt_compiler::_o_emissive, sol::returns_self()), "distort",
+        sol::policies(&adopt_compiler::_o_distort, sol::returns_self()), "wmark", sol::policies(&adopt_compiler::_o_wmark, sol::returns_self()), "fog",
+        sol::policies(&adopt_compiler::_fog, sol::returns_self()), "zb", sol::policies(&adopt_compiler::_ZB, sol::returns_self()), "blend",
+        sol::policies(&adopt_compiler::_blend, sol::returns_self()), "aref", sol::policies(&adopt_compiler::_aref, sol::returns_self()), "dx10color_write_enable",
+        sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "color_write_enable",
+        sol::policies(&adopt_compiler::_dx10color_write_enable, sol::returns_self()), "dx10texture", sol::policies(&adopt_compiler::_dx10texture, sol::returns_self()),
+        "dx10stencil", sol::policies(&adopt_compiler::_dx10Stencil, sol::returns_self()), "dx10stencil_ref", sol::policies(&adopt_compiler::_dx10StencilRef, sol::returns_self()),
+        "dx10cullmode", sol::policies(&adopt_compiler::_dx10CullMode, sol::returns_self()), "dx10zfunc", sol::policies(&adopt_compiler::_dx10ZFunc, sol::returns_self()),
+        "dx10sampler", &adopt_compiler::_dx10sampler);
+    lua.new_enum("blend", "zero", D3DBLEND_ZERO, "one", D3DBLEND_ONE, "srccolor", D3DBLEND_SRCCOLOR, "invsrccolor", D3DBLEND_INVSRCCOLOR, "srcalpha", D3DBLEND_SRCALPHA,
+                 "invsrcalpha", D3DBLEND_INVSRCALPHA, "destalpha", D3DBLEND_DESTALPHA, "invdestalpha", D3DBLEND_INVDESTALPHA, "destcolor", D3DBLEND_DESTCOLOR, "invdestcolor",
+                 D3DBLEND_INVDESTCOLOR, "srcalphasat", D3DBLEND_SRCALPHASAT);
+    lua.new_enum("cmp_func", "never", D3DCMP_NEVER, "less", D3DCMP_LESS, "equal", D3DCMP_EQUAL, "lessequal", D3DCMP_LESSEQUAL, "greater", D3DCMP_GREATER, "notequal",
+                 D3DCMP_NOTEQUAL, "greaterequal", D3DCMP_GREATEREQUAL, "always", D3DCMP_ALWAYS);
+    lua.new_enum("stencil_op", "keep", D3DSTENCILOP_KEEP, "zero", D3DSTENCILOP_ZERO, "replace", D3DSTENCILOP_REPLACE, "incrsat", D3DSTENCILOP_INCRSAT, "decrsat",
+                 D3DSTENCILOP_DECRSAT, "invert", D3DSTENCILOP_INVERT, "incr", D3DSTENCILOP_INCR, "decr", D3DSTENCILOP_DECR);
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);
@@ -566,7 +376,7 @@ void CResourceManager::LS_Load()
             xr_strcpy(namesp, "_G");
         strconcat(sizeof(fn), fn, RImplementation.getShaderPath(), (*folder)[it]);
         FS.update_path(fn, "$game_shaders$", fn);
-        do_file(fn, namesp);
+        do_file(lua, fn, namesp);
     }
     FS.file_list_close(folder);
 }
@@ -726,8 +536,7 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     LPCSTR t_1 = (L_textures.size() > 1) ? *L_textures[1] : "null";
     LPCSTR t_d = detail_texture ? detail_texture : "null";
 
-    luabind::object shader = luabind::get_globals(LSVM)[namesp];
-    luabind::object element = shader[name];
+    sol::function element = sol::state_view(LSVM)[namesp][name];
 
     bool bFirstPass = false;
     adopt_compiler ac = adopt_compiler(this, bFirstPass);

@@ -7,12 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "xrServer_Objects.h"
-#include "phnetstate.h"
-#include "xrServer_script_macroses.h"
-#include "script_ini_file.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
+
+#include "script_ini_file.h"
+#include "xrServer_Objects.h"
 
 LPCSTR get_section_name(const CSE_Abstract* abstract) { return (abstract->name()); }
 
@@ -34,78 +34,27 @@ void set_ini_string_script(CSE_Abstract* abstract, LPCSTR cd)
     abstract->m_ini_file = nullptr;
 }
 
-template <typename T>
-struct CWrapperBase : public T, public luabind::wrap_base
-{
-    RTTI_DECLARE_TYPEINFO(CWrapperBase<T>, T);
-
-public:
-    typedef T inherited;
-    typedef CWrapperBase<T> self_type;
-
-    IC CWrapperBase(LPCSTR section) : T(section) {}
-
-    virtual void STATE_Read(NET_Packet& p1) { call<void>("STATE_Read", &p1); }
-    static void STATE_Read_static(inherited* ptr, NET_Packet* p1)
-    {
-        Log("Attempt to call pure virtual method STATE_Read in CSE_Abstract");
-        // ptr->self_type::inherited::STATE_Read(*p1);
-    }
-    virtual void STATE_Write(NET_Packet& p1) { call<void>("STATE_Write", &p1); }
-    static void STATE_Write_static(inherited* ptr, NET_Packet* p1)
-    {
-        Log("Attempt to call pure virtual method STATE_Write in CSE_Abstract");
-        // ptr->self_type::inherited::STATE_Write(*p1);
-    }
-
-    virtual void UPDATE_Read(NET_Packet& p1) { call<void>("UPDATE_Read", &p1); }
-    static void UPDATE_Read_static(inherited* ptr, NET_Packet* p1)
-    {
-        Log("Attempt to call pure virtual method UPDATE_Read in CSE_Abstract");
-        // ptr->self_type::inherited::UPDATE_Read(*p1);
-    }
-    virtual void UPDATE_Write(NET_Packet& p1) { call<void>("UPDATE_Write", &p1); }
-    static void UPDATE_Write_static(inherited* ptr, NET_Packet* p1)
-    {
-        Log("Attempt to call pure virtual method UPDATE_Write in CSE_Abstract");
-        // ptr->self_type::inherited::UPDATE_Write(*p1);
-    }
-};
-
-void CPureServerObject::script_register(lua_State* L)
-{
-    module(L)[(class_<IPureLoadableObject<IReader>>("ipure_alife_load_object"), class_<IPureSavableObject<IWriter>>("ipure_alife_save_object"),
-               class_<IPureSerializeObject<IReader, IWriter>, bases<IPureLoadableObject<IReader>, IPureSavableObject<IWriter>>>("ipure_alife_load_save_object"),
-               class_<IPureServerObject, IPureSerializeObject<IReader, IWriter>>("ipure_server_object"), class_<CPureServerObject, IPureServerObject>("cpure_server_object"))];
-}
-
 void CSE_Abstract::script_register(lua_State* L)
 {
-    typedef CWrapperBase<CSE_Abstract> WrapType;
-    typedef CSE_Abstract BaseType;
-    module(L)[class_<CSE_Abstract, WrapType, CPureServerObject>("cse_abstract")
-                  .def_readonly("id", &BaseType::ID)
-                  .def_readonly("parent_id", &BaseType::ID_Parent)
-                  .def_readonly("script_version", &BaseType::m_script_version)
-                  .def_readwrite("position", &BaseType::o_Position)
-                  .def_readwrite("angle", &BaseType::o_Angle)
-                  .def("section_name", &get_section_name)
-                  .def("name", &get_name)
-                  .def("clsid", &BaseType::script_clsid)
-                  .def("spawn_ini", &get_spawn_ini)
-                  .def("STATE_Read", &BaseType::STATE_Read, &WrapType::STATE_Read_static)
-                  .def("STATE_Write", &BaseType::STATE_Write, &WrapType::STATE_Write_static)
-                  .def("UPDATE_Read", &BaseType::UPDATE_Read, &WrapType::UPDATE_Read_static)
-                  .def("UPDATE_Write", &BaseType::UPDATE_Write, &WrapType::UPDATE_Write_static)
-                  //			.def(		constructor<LPCSTR>())
-                  .property("custom_data", &get_ini_string_script, &set_ini_string_script)
-                  .def("save_spawn_ini", &save_spawn_ini)];
+    sol::state_view(L).new_usertype<CSE_Abstract>("cse_abstract", sol::no_constructor, "id", sol::readonly(&CSE_Abstract::ID), "parent_id", sol::readonly(&CSE_Abstract::ID_Parent),
+                                                  "script_version", sol::readonly(&CSE_Abstract::m_script_version), "position", &CSE_Abstract::o_Position, "angle",
+                                                  &CSE_Abstract::o_Angle, "section_name", &get_section_name, "name", &get_name, "clsid", &CSE_Abstract::script_clsid, "spawn_ini",
+                                                  &get_spawn_ini, "STATE_Read", &CSE_Abstract::STATE_Read, "STATE_Write", &CSE_Abstract::STATE_Write, "UPDATE_Read",
+                                                  &CSE_Abstract::UPDATE_Read, "UPDATE_Write", &CSE_Abstract::UPDATE_Write, "custom_data",
+                                                  sol::property(&get_ini_string_script, &set_ini_string_script), "save_spawn_ini", &save_spawn_ini);
 }
 
-void CSE_Shape::script_register(lua_State* L) { module(L)[class_<CSE_Shape>("cse_shape")]; }
+void CSE_Shape::script_register(lua_State* L) { sol::state_view(L).new_usertype<CSE_Shape>("cse_shape", sol::no_constructor); }
 
-void CSE_Visual::script_register(lua_State* L) { module(L)[class_<CSE_Visual>("cse_visual").property("visual_name", &CSE_Visual::get_visual, &CSE_Visual::set_visual)]; }
+void CSE_Visual::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_Visual>("cse_visual", sol::no_constructor, "visual_name", sol::property(&CSE_Visual::get_visual, &CSE_Visual::set_visual));
+}
 
-void CSE_Motion::script_register(lua_State* L) { module(L)[class_<CSE_Motion>("cse_motion")]; }
+void CSE_Motion::script_register(lua_State* L) { sol::state_view(L).new_usertype<CSE_Motion>("cse_motion", sol::no_constructor); }
 
-void CSE_Temporary::script_register(lua_State* L) { module(L)[luabind_class_abstract1(CSE_Temporary, "cse_temporary", CSE_Abstract)]; }
+void CSE_Temporary::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_Temporary>("cse_temporary", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_Temporary, LPCSTR>),
+                                                   sol::base_classes, xr_sol_bases<CSE_Temporary>());
+}

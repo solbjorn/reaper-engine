@@ -4,21 +4,18 @@
 #include "ai_monster_space.h"
 #include "AI/Monsters/monster_sound_defs.h"
 
-using namespace luabind;
-
-struct CMonsterSpace
-{};
-
 void CScriptMonsterHitInfo::script_register(lua_State* L)
 {
-    module(L)[(class_<CScriptMonsterHitInfo>("MonsterHitInfo")
-                   .def_readwrite("who", &CScriptMonsterHitInfo::who)
-                   .def_readwrite("direction", &CScriptMonsterHitInfo::direction)
-                   .def_readwrite("time", &CScriptMonsterHitInfo::time),
+    auto lua = sol::state_view(L);
 
-               class_<CMonsterSpace>("MonsterSpace")
-                   .enum_("sounds")[(value("sound_script", MonsterSound::eMonsterSoundScript))]
+    lua.new_usertype<CScriptMonsterHitInfo>("MonsterHitInfo", sol::no_constructor, "who", &CScriptMonsterHitInfo::who, "direction", &CScriptMonsterHitInfo::direction, "time",
+                                            &CScriptMonsterHitInfo::time);
 
-                   .enum_("head_anim")[(value("head_anim_normal", MonsterSpace::eHeadAnimNormal), value("head_anim_angry", MonsterSpace::eHeadAnimAngry),
-                                        value("head_anim_glad", MonsterSpace::eHeadAnimGlad), value("head_anim_kind", MonsterSpace::eHeadAnimKind))])];
+    lua.new_enum("MonsterSpace",
+                 // sounds
+                 "sound_script", MonsterSound::eMonsterSoundScript,
+
+                 // head_anim
+                 "head_anim_normal", MonsterSpace::eHeadAnimNormal, "head_anim_angry", MonsterSpace::eHeadAnimAngry, "head_anim_glad", MonsterSpace::eHeadAnimGlad,
+                 "head_anim_kind", MonsterSpace::eHeadAnimKind);
 }

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
 
@@ -16,15 +18,14 @@ class CObjectItemScript : public CObjectItemAbstract
     RTTI_DECLARE_TYPEINFO(CObjectItemScript, CObjectItemAbstract);
 
 protected:
-    typedef CObjectItemAbstract inherited;
+    using inherited = CObjectItemAbstract;
 
-protected:
-    luabind::object m_client_creator;
-    luabind::object m_server_creator;
+    sol::function m_client_creator;
+    sol::function m_server_creator;
 
 public:
-    CObjectItemScript(luabind::object client_creator, luabind::object server_creator, const CLASS_ID& clsid, LPCSTR script_clsid);
-    // CObjectItemScript(luabind::object creator, const CLASS_ID& clsid, LPCSTR script_clsid);
+    CObjectItemScript(sol::function& client_creator, sol::function& server_creator, const CLASS_ID& clsid, LPCSTR script_clsid);
+
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
 };

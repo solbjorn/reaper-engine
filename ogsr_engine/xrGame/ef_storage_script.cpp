@@ -15,6 +15,4 @@
 #include "ef_base.h"
 #include "xrServer_Objects_ALife.h"
 
-using namespace luabind;
-
 void CEF_Storage::script_register(lua_State* L) {}

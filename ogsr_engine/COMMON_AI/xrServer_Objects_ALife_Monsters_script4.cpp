@@ -7,11 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "xrServer_Objects_ALife_Monsters.h"
-#include "xrServer_script_macroses.h"
-#include "alife_human_brain.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "alife_human_brain.h"
 
 CALifeMonsterBrain* monster_brain(CSE_ALifeMonsterAbstract* monster)
 {
@@ -51,26 +51,26 @@ ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract* monster)
 
 void CSE_ALifeMonsterAbstract::script_register(lua_State* L)
 {
-    module(L)[luabind_class_monster2(CSE_ALifeMonsterAbstract, "cse_alife_monster_abstract", CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable)
-                  .def("smart_terrain_id", &smart_terrain_id)
-                  .def_readwrite("m_smart_terrain_id", &CSE_ALifeMonsterAbstract::m_smart_terrain_id)
-                  .def("clear_smart_terrain", &clear_smart_terrain)
-                  .def("brain", &monster_brain)
-                  .def("rank", &CSE_ALifeMonsterAbstract::Rank)
-                  .def("smart_terrain_task_activate", &smart_terrain_task_activate)
-                  .def("smart_terrain_task_deactivate", &smart_terrain_task_deactivate)];
+    sol::state_view(L).new_usertype<CSE_ALifeMonsterAbstract>(
+        "cse_alife_monster_abstract", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeMonsterAbstract, LPCSTR>), "smart_terrain_id",
+        &smart_terrain_id, "m_smart_terrain_id", &CSE_ALifeMonsterAbstract::m_smart_terrain_id, "clear_smart_terrain", &clear_smart_terrain, "brain", &monster_brain, "rank",
+        &CSE_ALifeMonsterAbstract::Rank, "smart_terrain_task_activate", &smart_terrain_task_activate, "smart_terrain_task_deactivate", &smart_terrain_task_deactivate,
+        sol::base_classes, xr_sol_bases<CSE_ALifeMonsterAbstract>());
 }
 
 void CSE_ALifeHumanAbstract::script_register(lua_State* L)
 {
-    module(L)[luabind_class_monster2(CSE_ALifeHumanAbstract, "cse_alife_human_abstract", CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract)
-                  .def("brain", &human_brain)
+    sol::state_view(L).new_usertype<CSE_ALifeHumanAbstract>("cse_alife_human_abstract", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifeHumanAbstract, LPCSTR>), "brain", &human_brain,
 #ifdef XRGAME_EXPORTS
-                  .def("rank", &CSE_ALifeTraderAbstract::Rank)
-                  .def("set_rank", &CSE_ALifeTraderAbstract::SetRank)
-
+                                                            "rank", &CSE_ALifeTraderAbstract::Rank, "set_rank", &CSE_ALifeTraderAbstract::SetRank,
 #endif
-    ];
+                                                            sol::base_classes, xr_sol_bases<CSE_ALifeHumanAbstract>());
 }
 
-void CSE_ALifePsyDogPhantom::script_register(lua_State* L) { module(L)[luabind_class_monster1(CSE_ALifePsyDogPhantom, "cse_alife_psydog_phantom", CSE_ALifeMonsterBase)]; }
+void CSE_ALifePsyDogPhantom::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifePsyDogPhantom>("cse_alife_psydog_phantom", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifePsyDogPhantom, LPCSTR>), sol::base_classes,
+                                                            xr_sol_bases<CSE_ALifePsyDogPhantom>());
+}

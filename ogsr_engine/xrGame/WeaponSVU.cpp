@@ -5,6 +5,8 @@ CWeaponSVU::CWeaponSVU(void) : CWeaponCustomPistol("SVU") {}
 
 CWeaponSVU::~CWeaponSVU(void) {}
 
-using namespace luabind;
-
-void CWeaponSVU::script_register(lua_State* L) { module(L)[class_<CWeaponSVU, CGameObject>("CWeaponSVU").def(constructor<>())]; }
+void CWeaponSVU::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponSVU>("CWeaponSVU", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponSVU>), sol::base_classes,
+                                                xr_sol_bases<CWeaponSVU>());
+}

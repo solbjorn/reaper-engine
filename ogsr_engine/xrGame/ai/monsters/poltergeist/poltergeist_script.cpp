@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "poltergeist.h"
 
-using namespace luabind;
-
-void CPoltergeist::script_register(lua_State* L) { module(L)[class_<CPoltergeist, CGameObject>("CPoltergeist").def(constructor<>())]; }
+void CPoltergeist::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CPoltergeist>("CPoltergeist", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CPoltergeist>), sol::base_classes,
+                                                  xr_sol_bases<CPoltergeist>());
+}

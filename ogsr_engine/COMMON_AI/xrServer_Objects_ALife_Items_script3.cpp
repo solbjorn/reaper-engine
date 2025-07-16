@@ -7,15 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "xrServer_Objects_ALife_Items.h"
-#include "xrServer_script_macroses.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "xrServer_Objects_ALife_Items.h"
 
 void CSE_ALifeItemWeaponMagazinedWGL::script_register(lua_State* L)
 {
-    module(L)[luabind_class_item1(CSE_ALifeItemWeaponMagazinedWGL, "cse_alife_item_weapon_magazined_w_gl", CSE_ALifeItemWeaponMagazined)
-                  .def_readwrite("ammo_type_2", &CSE_ALifeItemWeaponMagazinedWGL::ammo_type2)
-                  .def_readwrite("ammo_elapsed_2", &CSE_ALifeItemWeaponMagazinedWGL::a_elapsed2)
-                  .def_readwrite("gl_mode", &CSE_ALifeItemWeaponMagazinedWGL::m_bGrenadeMode)];
+    sol::state_view(L).new_usertype<CSE_ALifeItemWeaponMagazinedWGL>(
+        "cse_alife_item_weapon_magazined_w_gl", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeItemWeaponMagazinedWGL, LPCSTR>),
+        "ammo_type_2", &CSE_ALifeItemWeaponMagazinedWGL::ammo_type2, "ammo_elapsed_2", &CSE_ALifeItemWeaponMagazinedWGL::a_elapsed2, "gl_mode",
+        &CSE_ALifeItemWeaponMagazinedWGL::m_bGrenadeMode, sol::base_classes, xr_sol_bases<CSE_ALifeItemWeaponMagazinedWGL>());
 }

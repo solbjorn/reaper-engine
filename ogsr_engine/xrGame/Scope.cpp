@@ -5,6 +5,8 @@ CScope::CScope() {}
 
 CScope::~CScope() {}
 
-using namespace luabind;
-
-void CScope::script_register(lua_State* L) { module(L)[class_<CScope, CGameObject>("CScope").def(constructor<>())]; }
+void CScope::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CScope>("CScope", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScope>), sol::base_classes,
+                                            xr_sol_bases<CScope>());
+}

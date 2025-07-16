@@ -1,10 +1,13 @@
 #include "stdafx.h"
+
+#include "../../xrScriptEngine/xr_sol.h"
+
 #include "Level.h"
 #include "UIStatic.h"
 #include "UILines.h"
 #include "UIMap.h"
 
-void UIMiniMapZoom(CUIMiniMap* wnd, float scale)
+static void UIMiniMapZoom(CUIMiniMap* wnd, float scale)
 {
     Fvector2 wnd_size;
     float zoom_factor = float(wnd->GetParent()->GetWndRect().width()) / 100.0f;
@@ -13,7 +16,7 @@ void UIMiniMapZoom(CUIMiniMap* wnd, float scale)
     wnd->SetWndSize(wnd_size);
 }
 
-void UIMiniMapInit(CUIMiniMap* wnd)
+static void UIMiniMapInit(CUIMiniMap* wnd)
 {
     CUIWindow* parent = wnd->GetParent();
 
@@ -32,63 +35,27 @@ void UIMiniMapInit(CUIMiniMap* wnd)
     UIMiniMapZoom(wnd, 1.f);
 }
 
-using namespace luabind;
-
 void CUIStatic::script_register(lua_State* L)
 {
-    module(L)[(class_<CUIStatic, CUIWindow>("CUIStatic")
-                   .def(constructor<>())
+    auto lua = sol::state_view(L);
 
-                   .def("SetText", (void(CUIStatic::*)(LPCSTR))(&CUIStatic::SetText))
-                   .def("SetTextST", (void(CUIStatic::*)(LPCSTR))(&CUIStatic::SetTextST))
-                   .def("GetText", &CUIStatic::GetText)
-                   .def("IsMultibyteFont", [](CUIStatic* self) -> bool { return self->m_pLines->GetFont()->IsMultibyte(); })
+    lua.new_usertype<CUIStatic>(
+        "CUIStatic", sol::no_constructor, sol::call_constructor, sol::constructors<CUIStatic()>(), "SetText", sol::resolve<void(LPCSTR)>(&CUIStatic::SetText), "SetTextST",
+        sol::resolve<void(LPCSTR)>(&CUIStatic::SetTextST), "GetText", &CUIStatic::GetText, "IsMultibyteFont",
+        [](CUIStatic* self) -> bool { return self->m_pLines->GetFont()->IsMultibyte(); }, "SetTextX", &CUIStatic::SetTextX, "SetTextY", &CUIStatic::SetTextY, "GetTextX",
+        &CUIStatic::GetTextX, "GetTextY", &CUIStatic::GetTextY, "SetColor", &CUIStatic::SetColor, "GetColor", &CUIStatic::GetColor, "SetColorA",
+        [](CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); }, "SetTextColor", &CUIStatic::SetTextColor_script, "Init",
+        sol::overload(sol::resolve<void(float, float, float, float)>(&CUIStatic::Init), sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIStatic::Init)), "InitTexture",
+        &CUIStatic::InitTexture, "SetTextureOffset", &CUIStatic::SetTextureOffset, "GetOriginalRect", &CUIStatic::GetOriginalRect, "SetOriginalRect",
+        sol::resolve<void(float, float, float, float)>(&CUIStatic::SetOriginalRect), "ResetOriginalRect", &CUIStatic::ResetOriginalRect, "SetNoShaderCache",
+        &CUIStatic::SetNoShaderCache, "SetStretchTexture", &CUIStatic::SetStretchTexture, "GetStretchTexture", &CUIStatic::GetStretchTexture, "SetTextAlign",
+        &CUIStatic::SetTextAlign_script, "GetTextAlign", &CUIStatic::GetTextAlign_script, "SetHeading", &CUIStatic::SetHeading, "GetHeading", &CUIStatic::GetHeading,
+        "EnableHeading", &CUIStatic::EnableHeading, "ClipperOn", &CUIStatic::ClipperOn, "ClipperOff", sol::resolve<void()>(&CUIStatic::ClipperOff), "GetClipperState",
+        &CUIStatic::GetClipperState, "SetClipRect", &CUIStatic::SetClipRect, "GetClipRect", &CUIStatic::GetClipperRect, "SetTextComplexMode", &CUIStatic::SetTextComplexMode,
+        "AdjustWidthToText", &CUIStatic::AdjustWidthToText, "AdjustHeightToText", &CUIStatic::AdjustHeightToText, "SetVTextAlign", &CUIStatic::SetVTextAlignment, "SetTextPos",
+        &CUIStatic::SetTextPos, sol::base_classes, xr_sol_bases<CUIStatic>());
 
-                   .def("SetTextX", &CUIStatic::SetTextX)
-                   .def("SetTextY", &CUIStatic::SetTextY)
-                   .def("GetTextX", &CUIStatic::GetTextX)
-                   .def("GetTextY", &CUIStatic::GetTextY)
-
-                   .def("SetColor", &CUIStatic::SetColor)
-                   .def("GetColor", &CUIStatic::GetColor)
-                   .def("SetColorA", [](CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); })
-                   .def("SetTextColor", &CUIStatic::SetTextColor_script)
-                   .def("Init", (void(CUIStatic::*)(float, float, float, float)) & CUIStatic::Init)
-                   .def("Init", (void(CUIStatic::*)(LPCSTR, float, float, float, float)) & CUIStatic::Init)
-                   .def("InitTexture", &CUIStatic::InitTexture)
-                   .def("SetTextureOffset", &CUIStatic::SetTextureOffset)
-
-                   .def("GetOriginalRect", &CUIStatic::GetOriginalRect)
-                   .def("SetOriginalRect", (void(CUIStatic::*)(float, float, float, float)) & CUIStatic::SetOriginalRect)
-                   .def("ResetOriginalRect", &CUIStatic::ResetOriginalRect)
-                   .def("SetNoShaderCache", &CUIStatic::SetNoShaderCache)
-                   .def("SetStretchTexture", &CUIStatic::SetStretchTexture)
-                   .def("GetStretchTexture", &CUIStatic::GetStretchTexture)
-
-                   .def("SetTextAlign", &CUIStatic::SetTextAlign_script)
-                   .def("GetTextAlign", &CUIStatic::GetTextAlign_script)
-
-                   .def("SetHeading", &CUIStatic::SetHeading)
-                   .def("GetHeading", &CUIStatic::GetHeading)
-                   .def("EnableHeading", &CUIStatic::EnableHeading)
-
-                   .def("ClipperOn", &CUIStatic::ClipperOn)
-                   .def("ClipperOff", (void(CUIStatic::*)(void)) & CUIStatic::ClipperOff)
-                   .def("GetClipperState", &CUIStatic::GetClipperState)
-                   .def("SetClipRect", &CUIStatic::SetClipRect)
-                   .def("GetClipRect", &CUIStatic::GetClipperRect)
-
-                   .def("SetTextComplexMode", &CUIStatic::SetTextComplexMode)
-                   .def("AdjustWidthToText", &CUIStatic::AdjustWidthToText)
-                   .def("AdjustHeightToText", &CUIStatic::AdjustHeightToText)
-                   .def("SetVTextAlign", &CUIStatic::SetVTextAlignment)
-                   .def("SetTextPos", &CUIStatic::SetTextPos),
-
-               class_<CUIMiniMap, CUIStatic>("CUIMiniMap")
-                   .def(constructor<>())
-                   .def("SetRounded", &CUIMiniMap::SetRounded)
-                   .def("SetLocked", &CUIMiniMap::SetLocked)
-                   .def("Init", &UIMiniMapInit)
-                   .def("Zoom", &UIMiniMapZoom)
-                   .def("SetActivePoint", &CUIMiniMap::SetActivePoint))];
+    lua.new_usertype<CUIMiniMap>("CUIMiniMap", sol::no_constructor, sol::call_constructor, sol::constructors<CUIMiniMap()>(), "SetRounded", &CUIMiniMap::SetRounded, "SetLocked",
+                                 &CUIMiniMap::SetLocked, "Init", &UIMiniMapInit, "Zoom", &UIMiniMapZoom, "SetActivePoint", &CUIMiniMap::SetActivePoint, sol::base_classes,
+                                 xr_sol_bases<CUIMiniMap>());
 }

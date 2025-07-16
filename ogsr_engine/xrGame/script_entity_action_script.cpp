@@ -7,30 +7,24 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_entity_action.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "script_entity_action.h"
 
 void CScriptEntityAction::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptEntityAction>("entity_action")
-                  .def(constructor<>())
-                  .def(constructor<const CScriptEntityAction*>())
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptMovementAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptWatchAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptAnimationAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptSoundAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptParticleAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptObjectAction&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptActionCondition&))(&CScriptEntityAction::SetAction))
-                  .def("set_action", (void(CScriptEntityAction::*)(CScriptMonsterAction&))(&CScriptEntityAction::SetAction))
-                  .def("move", &CScriptEntityAction::CheckIfMovementCompleted)
-                  .def("look", &CScriptEntityAction::CheckIfWatchCompleted)
-                  .def("anim", &CScriptEntityAction::CheckIfAnimationCompleted)
-                  .def("sound", &CScriptEntityAction::CheckIfSoundCompleted)
-                  .def("particle", &CScriptEntityAction::CheckIfParticleCompleted)
-                  .def("object", &CScriptEntityAction::CheckIfObjectCompleted)
-                  .def("time", &CScriptEntityAction::CheckIfTimeOver)
-                  .def("all", (bool(CScriptEntityAction::*)())(&CScriptEntityAction::CheckIfActionCompleted))
-                  .def("completed", (bool(CScriptEntityAction::*)())(&CScriptEntityAction::CheckIfActionCompleted))];
+    sol::state_view(L).new_usertype<CScriptEntityAction>(
+        "entity_action", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptEntityAction(), CScriptEntityAction(const CScriptEntityAction*)>(), "set_action",
+        sol::overload(sol::resolve<void(CScriptMovementAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptWatchAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptAnimationAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptSoundAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptParticleAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptObjectAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptActionCondition&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
+                      sol::resolve<void(CScriptMonsterAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction)),
+        "move", &CScriptEntityAction::CheckIfMovementCompleted, "look", &CScriptEntityAction::CheckIfWatchCompleted, "anim", &CScriptEntityAction::CheckIfAnimationCompleted,
+        "sound", &CScriptEntityAction::CheckIfSoundCompleted, "particle", &CScriptEntityAction::CheckIfParticleCompleted, "object", &CScriptEntityAction::CheckIfObjectCompleted,
+        "time", &CScriptEntityAction::CheckIfTimeOver, "all", sol::resolve<bool()>(&CScriptEntityAction::CheckIfActionCompleted), "completed",
+        sol::resolve<bool()>(&CScriptEntityAction::CheckIfActionCompleted));
 }

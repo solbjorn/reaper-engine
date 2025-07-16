@@ -7,37 +7,48 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "xrServer_Objects_ALife_Monsters.h"
-#include "xrServer_script_macroses.h"
 
-using namespace luabind;
+#include "../xrScriptEngine/xr_sol.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 void CSE_ALifeCreatureActor::script_register(lua_State* L)
 {
-    module(L)[luabind_class_creature3(CSE_ALifeCreatureActor, "cse_alife_creature_actor", CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)];
+    sol::state_view(L).new_usertype<CSE_ALifeCreatureActor>("cse_alife_creature_actor", sol::no_constructor, sol::call_constructor,
+                                                            sol::factories(std::make_unique<CSE_ALifeCreatureActor, LPCSTR>), sol::base_classes,
+                                                            xr_sol_bases<CSE_ALifeCreatureActor>());
 }
 
-void CSE_ALifeTorridZone::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife2(CSE_ALifeTorridZone, "cse_torrid_zone", CSE_ALifeCustomZone, CSE_Motion)]; }
+void CSE_ALifeTorridZone::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeTorridZone>("cse_torrid_zone", sol::no_constructor, sol::call_constructor,
+                                                         sol::factories(std::make_unique<CSE_ALifeTorridZone, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeTorridZone>());
+}
 
-void CSE_ALifeZoneVisual::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife2(CSE_ALifeZoneVisual, "cse_zone_visual", CSE_ALifeAnomalousZone, CSE_Visual)]; }
+void CSE_ALifeZoneVisual::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSE_ALifeZoneVisual>("cse_zone_visual", sol::no_constructor, sol::call_constructor,
+                                                         sol::factories(std::make_unique<CSE_ALifeZoneVisual, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeZoneVisual>());
+}
 
 void CSE_ALifeCreaturePhantom::script_register(lua_State* L)
 {
-    module(L)[luabind_class_creature1(CSE_ALifeCreaturePhantom, "cse_alife_creature_phantom", CSE_ALifeCreatureAbstract)];
+    sol::state_view(L).new_usertype<CSE_ALifeCreaturePhantom>("cse_alife_creature_phantom", sol::no_constructor, sol::call_constructor,
+                                                              sol::factories(std::make_unique<CSE_ALifeCreaturePhantom, LPCSTR>), sol::base_classes,
+                                                              xr_sol_bases<CSE_ALifeCreaturePhantom>());
 }
 
 void CSE_ALifeCreatureAbstract::script_register(lua_State* L)
 {
-    module(L)[luabind_class_creature1(CSE_ALifeCreatureAbstract, "cse_alife_creature_abstract", CSE_ALifeDynamicObjectVisual)
-                  .def("health", &CSE_ALifeCreatureAbstract::g_Health)
-                  .def("set_health", &CSE_ALifeCreatureAbstract::s_Health)
-                  .def("alive", &CSE_ALifeCreatureAbstract::g_Alive)
-                  .def_readwrite("team", &CSE_ALifeCreatureAbstract::s_team)
-                  .def_readwrite("squad", &CSE_ALifeCreatureAbstract::s_squad)
-                  .def_readwrite("group", &CSE_ALifeCreatureAbstract::s_group)];
+    sol::state_view(L).new_usertype<CSE_ALifeCreatureAbstract>("cse_alife_creature_abstract", sol::no_constructor, sol::call_constructor,
+                                                               sol::factories(std::make_unique<CSE_ALifeCreatureAbstract, LPCSTR>), "health", &CSE_ALifeCreatureAbstract::g_Health,
+                                                               "set_health", &CSE_ALifeCreatureAbstract::s_Health, "alive", &CSE_ALifeCreatureAbstract::g_Alive, "team",
+                                                               &CSE_ALifeCreatureAbstract::s_team, "squad", &CSE_ALifeCreatureAbstract::s_squad, "group",
+                                                               &CSE_ALifeCreatureAbstract::s_group, sol::base_classes, xr_sol_bases<CSE_ALifeCreatureAbstract>());
 }
 
 void CSE_ALifeOnlineOfflineGroup::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife2(CSE_ALifeOnlineOfflineGroup, "cse_alife_online_offline_group", CSE_ALifeDynamicObject, CSE_ALifeSchedulable)];
+    sol::state_view(L).new_usertype<CSE_ALifeOnlineOfflineGroup>("cse_alife_online_offline_group", sol::no_constructor, sol::call_constructor,
+                                                                 sol::factories(std::make_unique<CSE_ALifeOnlineOfflineGroup, LPCSTR>), sol::base_classes,
+                                                                 xr_sol_bases<CSE_ALifeOnlineOfflineGroup>());
 }

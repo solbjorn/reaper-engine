@@ -14,45 +14,41 @@
 #include "Inventory.h"
 #include "Wound.h"
 
-// #include "../lua_tools.h"
-
-using namespace luabind;
-
-CPHMovementControl* get_movement(CActor* pActor) { return pActor->character_physics_support()->movement(); }
+static CPHMovementControl* get_movement(CActor* pActor) { return pActor->character_physics_support()->movement(); }
 
 typedef CScriptActor::SConditionChangeV SConditionChangeV;
 typedef float SConditionChangeV::* SConditionChangeVField;
 
 template <SConditionChangeVField field>
-float get_change_v(CActorCondition* C)
+static float get_change_v(CActorCondition* C)
 {
     return CScriptActor::sccv(C).*field;
 }
 
 template <SConditionChangeVField field>
-void set_change_v(CActorCondition* C, float v)
+static void set_change_v(CActorCondition* C, float v)
 {
     CScriptActor::sccv(C).*field = v;
 }
 
-void set_health(CActorCondition* C, float h) { C->health() = h; }
-void set_max_health(CActorCondition* C, float h) { C->max_health() = h; }
+static void set_health(CActorCondition* C, float h) { C->health() = h; }
+static void set_max_health(CActorCondition* C, float h) { C->max_health() = h; }
 
-float get_wound_size(CActorCondition* C, u32 bone, u32 hit_type)
+static float get_wound_size(CActorCondition* C, u32 bone, u32 hit_type)
 {
     if (C->wounds().size() <= bone)
         return 0;
     return C->wounds().at(bone)->TypeSize((ALife::EHitType)hit_type);
 }
 
-float get_wound_total_size(CActorCondition* C, u32 bone)
+static float get_wound_total_size(CActorCondition* C, u32 bone)
 {
     if (C->wounds().size() <= bone)
         return 0;
     return C->wounds().at(bone)->TotalSize();
 }
 
-float get_jump_up_velocity(CPHMovementControl* M)
+static float get_jump_up_velocity(CPHMovementControl* M)
 {
     CPHSimpleCharacter* sp = smart_cast<CPHSimpleCharacter*>(M->PHCharacter());
     if (sp)
@@ -60,183 +56,103 @@ float get_jump_up_velocity(CPHMovementControl* M)
     return 0;
 }
 
-float get_jump_speed(CActor* pActor) { return CScriptActor::jump_speed(pActor); }
-void set_jump_speed(CActor* pActor, float speed)
+static float get_jump_speed(CActor* pActor) { return CScriptActor::jump_speed(pActor); }
+
+static void set_jump_speed(CActor* pActor, float speed)
 {
     CScriptActor::jump_speed(pActor) = speed;
     get_movement(pActor)->SetJumpUpVelocity(speed);
 }
 
-CHitImmunity* get_immunities(CActor* pActor) { return pActor->conditions().cast_hit_immunities(); }
+static CHitImmunity* get_immunities(CActor* pActor) { return pActor->conditions().cast_hit_immunities(); }
 
-CEntity::SEntityState* get_actor_state(CActor* pActor)
+static CEntity::SEntityState* get_actor_state(CActor* pActor)
 {
     static CEntity::SEntityState state;
     pActor->g_State(state);
     return &state;
 }
 
-CActorConditionObject* get_actor_condition(CActor* pActor) { return (CActorConditionObject*)(&pActor->conditions()); }
+static CActorConditionObject* get_actor_condition(CActor* pActor) { return (CActorConditionObject*)(&pActor->conditions()); }
+static SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
+static EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
 
-SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
-
-EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
-
-// extern LPCSTR get_lua_class_name(luabind::object O);
-
-bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
-
-bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
-
-bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantSprint); }
-
-enum EInventorySlots
-{
-    KNIFE = KNIFE_SLOT,
-    FIRST_WEAPON = FIRST_WEAPON_SLOT,
-    SECOND_WEAPON = SECOND_WEAPON_SLOT,
-    GRENADE = GRENADE_SLOT,
-    APPARATUS = APPARATUS_SLOT,
-    BOLT = BOLT_SLOT,
-    OUTFIT = OUTFIT_SLOT,
-    PDA = PDA_SLOT,
-    DETECTOR = DETECTOR_SLOT,
-    TORCH = TORCH_SLOT,
-    HELMET = HELMET_SLOT,
-    NIGHT_VISION = NIGHT_VISION_SLOT,
-    BIODETECTOR = BIODETECTOR_SLOT,
-    TOTAL = SLOTS_TOTAL,
-    NO_ACTIVE = NO_ACTIVE_SLOT
-};
+static bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
+static bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
+static bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantSprint); }
 
 void CScriptActor::script_register(lua_State* L)
 {
-    module(
-        L)[(class_<CActorCondition>("CActorConditionBase")
-                .property("health", &CActorCondition::GetHealth, &set_health)
-                .property("health_max", &CActorCondition::GetMaxHealth, &set_max_health)
-                .def_readwrite("alcohol_health", &CActorCondition::m_fAlcohol)
-                .def_readwrite("alcohol_v", &CActorCondition::m_fV_Alcohol)
-                .def_readwrite("power_v", &CActorCondition::m_fV_Power)
-                .def_readwrite("satiety", &CActorCondition::m_fSatiety)
-                .def_readwrite("satiety_v", &CActorCondition::m_fV_Satiety)
-                .def_readwrite("satiety_health_v", &CActorCondition::m_fV_SatietyHealth)
-                .def_readwrite("satiety_power_v", &CActorCondition::m_fV_SatietyPower)
+    auto lua = sol::state_view(L);
 
-                .def_readwrite("thirst", &CActorCondition::m_fThirst)
-                .def_readwrite("thirst_v", &CActorCondition::m_fV_Thirst)
-                .def_readwrite("thirst_health_v", &CActorCondition::m_fV_ThirstHealth)
-                .def_readwrite("thirst_power_v", &CActorCondition::m_fV_ThirstPower)
+    lua.new_usertype<CActorCondition>(
+        "CActorConditionBase", sol::no_constructor, "health", sol::property(&CActorCondition::GetHealth, &set_health), "health_max",
+        sol::property(&CActorCondition::GetMaxHealth, &set_max_health), "alcohol_health", &CActorCondition::m_fAlcohol, "alcohol_v", &CActorCondition::m_fV_Alcohol, "power_v",
+        &CActorCondition::m_fV_Power, "satiety", &CActorCondition::m_fSatiety, "satiety_v", &CActorCondition::m_fV_Satiety, "satiety_health_v",
+        &CActorCondition::m_fV_SatietyHealth, "satiety_power_v", &CActorCondition::m_fV_SatietyPower,
 
-                .def_readwrite("max_power_leak_speed", &CActorCondition::m_fPowerLeakSpeed)
-                .def_readwrite("jump_power", &CActorCondition::m_fJumpPower)
-                .def_readwrite("stand_power", &CActorCondition::m_fStandPower)
-                .def_readwrite("walk_power", &CActorCondition::m_fWalkPower)
-                .def_readwrite("jump_weight_power", &CActorCondition::m_fJumpWeightPower)
-                .def_readwrite("walk_weight_power", &CActorCondition::m_fWalkWeightPower)
-                .def_readwrite("overweight_walk_k", &CActorCondition::m_fOverweightWalkK)
-                .def_readwrite("overweight_jump_k", &CActorCondition::m_fOverweightJumpK)
-                .def_readwrite("accel_k", &CActorCondition::m_fAccelK)
-                .def_readwrite("sprint_k", &CActorCondition::m_fSprintK)
-                .def_readwrite("max_walk_weight", &CActorCondition::m_MaxWalkWeight)
+        "thirst", &CActorCondition::m_fThirst, "thirst_v", &CActorCondition::m_fV_Thirst, "thirst_health_v", &CActorCondition::m_fV_ThirstHealth, "thirst_power_v",
+        &CActorCondition::m_fV_ThirstPower,
 
-                //.def_readwrite("health_hit_part",			&CActorCondition::m_fHealthHitPart)
-                .def_readwrite("power_hit_part", static_cast<float CActorCondition::*>(&CActorCondition::m_fPowerHitPart))
+        "max_power_leak_speed", &CActorCondition::m_fPowerLeakSpeed, "jump_power", &CActorCondition::m_fJumpPower, "stand_power", &CActorCondition::m_fStandPower, "walk_power",
+        &CActorCondition::m_fWalkPower, "jump_weight_power", &CActorCondition::m_fJumpWeightPower, "walk_weight_power", &CActorCondition::m_fWalkWeightPower, "overweight_walk_k",
+        &CActorCondition::m_fOverweightWalkK, "overweight_jump_k", &CActorCondition::m_fOverweightJumpK, "accel_k", &CActorCondition::m_fAccelK, "sprint_k",
+        &CActorCondition::m_fSprintK, "max_walk_weight", &CActorCondition::m_MaxWalkWeight,
 
-                .def_readwrite("limping_power_begin", &CActorCondition::m_fLimpingPowerBegin)
-                .def_readwrite("limping_power_end", &CActorCondition::m_fLimpingPowerEnd)
-                .def_readwrite("cant_walk_power_begin", &CActorCondition::m_fCantWalkPowerBegin)
-                .def_readwrite("cant_walk_power_end", &CActorCondition::m_fCantWalkPowerEnd)
-                .def_readwrite("cant_spint_power_begin", &CActorCondition::m_fCantSprintPowerBegin)
-                .def_readwrite("cant_spint_power_end", &CActorCondition::m_fCantSprintPowerEnd)
-                .def_readwrite("limping_health_begin", &CActorCondition::m_fLimpingHealthBegin)
-                .def_readwrite("limping_health_end", &CActorCondition::m_fLimpingHealthEnd)
-                .property("limping", &IsLimping)
-                .property("cant_walk", &IsCantWalk)
-                .property("cant_sprint", &IsCantSprint)
-                .property("radiation_v", &get_change_v<&SConditionChangeV::m_fV_Radiation>, &set_change_v<&SConditionChangeV::m_fV_Radiation>)
-                .property("psy_health_v", &get_change_v<&SConditionChangeV::m_fV_PsyHealth>, &set_change_v<&SConditionChangeV::m_fV_PsyHealth>)
-                .property("morale_v", &get_change_v<&SConditionChangeV::m_fV_EntityMorale>, &set_change_v<&SConditionChangeV::m_fV_EntityMorale>)
-                .property("radiation_health_v", &get_change_v<&SConditionChangeV::m_fV_RadiationHealth>, &set_change_v<&SConditionChangeV::m_fV_RadiationHealth>)
-                .property("bleeding_v", &get_change_v<&SConditionChangeV::m_fV_Bleeding>, &set_change_v<&SConditionChangeV::m_fV_Bleeding>)
-                .property("wound_incarnation_v", &get_change_v<&SConditionChangeV::m_fV_WoundIncarnation>, &set_change_v<&SConditionChangeV::m_fV_WoundIncarnation>)
-                .property("health_restore_v", &get_change_v<&SConditionChangeV::m_fV_HealthRestore>, &set_change_v<&SConditionChangeV::m_fV_HealthRestore>)
-                .def("get_wound_size", &get_wound_size)
-                .def("get_wound_total_size", &get_wound_total_size),
-            class_<CActorConditionObject, bases<CActorCondition, CEntityCondition>>("CActorCondition") // нормальное наследование свойств происходит через Ж (
-            ,
-            class_<CPHMovementControl>("CPHMovementControl")
-                .def_readwrite("ph_mass", &CPHMovementControl::fMass)
-                .def_readwrite("crash_speed_max", &CPHMovementControl::fMaxCrashSpeed)
-                .def_readwrite("crash_speed_min", &CPHMovementControl::fMinCrashSpeed)
-                .def_readwrite("collision_damage_factor", &CPHMovementControl::fCollisionDamageFactor)
-                .def_readwrite("air_control_param", &CPHMovementControl::fAirControlParam)
-                .property("jump_up_velocity", &get_jump_up_velocity, &CPHMovementControl::SetJumpUpVelocity),
-            class_<CActor, bases<CInventoryOwner, CGameObject>>("CActorBase")
-                .property("condition", &get_actor_condition)
-                .property("immunities", &get_immunities)
-                .def_readwrite("hit_slowmo", &CActor::hit_slowmo)
-                .def_readwrite("hit_probability", &CActor::hit_probability)
-                .def_readwrite("walk_accel", &CActor::m_fWalkAccel)
+        "power_hit_part", &CActorCondition::m_fPowerHitPart,
 
-                .def_readwrite("run_coef", &CActor::m_fRunFactor)
-                .def_readwrite("run_back_coef", &CActor::m_fRunBackFactor)
-                .def_readwrite("walk_back_coef", &CActor::m_fWalkBackFactor)
-                .def_readwrite("crouch_coef", &CActor::m_fCrouchFactor)
-                .def_readwrite("climb_coef", &CActor::m_fClimbFactor)
-                .def_readwrite("sprint_koef", &CActor::m_fSprintFactor)
-                .def_readwrite("walk_strafe_coef", &CActor::m_fWalk_StrafeFactor)
-                .def_readwrite("run_strafe_coef", &CActor::m_fRun_StrafeFactor)
-                .def_readwrite("disp_base", &CActor::m_fDispBase)
-                .def_readwrite("disp_aim", &CActor::m_fDispAim)
-                .def_readwrite("disp_vel_factor", &CActor::m_fDispVelFactor)
-                .def_readwrite("disp_accel_factor", &CActor::m_fDispAccelFactor)
-                .def_readwrite("disp_crouch_factor", &CActor::m_fDispCrouchFactor)
-                .def_readwrite("disp_crouch_no_acc_factor", &CActor::m_fDispCrouchNoAccelFactor)
+        "limping_power_begin", &CActorCondition::m_fLimpingPowerBegin, "limping_power_end", &CActorCondition::m_fLimpingPowerEnd, "cant_walk_power_begin",
+        &CActorCondition::m_fCantWalkPowerBegin, "cant_walk_power_end", &CActorCondition::m_fCantWalkPowerEnd, "cant_spint_power_begin", &CActorCondition::m_fCantSprintPowerBegin,
+        "cant_spint_power_end", &CActorCondition::m_fCantSprintPowerEnd, "limping_health_begin", &CActorCondition::m_fLimpingHealthBegin, "limping_health_end",
+        &CActorCondition::m_fLimpingHealthEnd, "limping", sol::property(&IsLimping), "cant_walk", sol::property(&IsCantWalk), "cant_sprint", sol::property(&IsCantSprint),
+        "radiation_v", sol::property(&get_change_v<&SConditionChangeV::m_fV_Radiation>, &set_change_v<&SConditionChangeV::m_fV_Radiation>), "psy_health_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_PsyHealth>, &set_change_v<&SConditionChangeV::m_fV_PsyHealth>), "morale_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_EntityMorale>, &set_change_v<&SConditionChangeV::m_fV_EntityMorale>), "radiation_health_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_RadiationHealth>, &set_change_v<&SConditionChangeV::m_fV_RadiationHealth>), "bleeding_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_Bleeding>, &set_change_v<&SConditionChangeV::m_fV_Bleeding>), "wound_incarnation_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_WoundIncarnation>, &set_change_v<&SConditionChangeV::m_fV_WoundIncarnation>), "health_restore_v",
+        sol::property(&get_change_v<&SConditionChangeV::m_fV_HealthRestore>, &set_change_v<&SConditionChangeV::m_fV_HealthRestore>), "get_wound_size", &get_wound_size,
+        "get_wound_total_size", &get_wound_total_size, sol::base_classes, xr_sol_bases<CActorCondition>());
 
-                .property("movement", &get_movement)
-                .property("jump_speed", &get_jump_speed, &set_jump_speed)
-                .property("state", &get_actor_state)
-                .property("orientation", &get_actor_orientation)
+    lua.new_usertype<CActorConditionObject>("CActorCondition", sol::no_constructor, sol::base_classes, xr_sol_bases<CActorConditionObject>());
 
-                // Real Wolf. Start. 14.10.2014.
-                .def("block_action", &CActor::block_action)
-                .def("unblock_action", &CActor::unblock_action)
-                .def("press_action", &CActor::IR_OnKeyboardPress)
-                .def("hold_action", &CActor::IR_OnKeyboardHold)
-                .def("release_action", &CActor::IR_OnKeyboardRelease)
-                .def("is_zoom_aiming_mode", &CActor::IsZoomAimingMode)
-                // Real Wolf. End. 14.10.2014.
+    lua.new_usertype<CPHMovementControl>("CPHMovementControl", sol::no_constructor, "ph_mass", &CPHMovementControl::fMass, "crash_speed_max", &CPHMovementControl::fMaxCrashSpeed,
+                                         "crash_speed_min", &CPHMovementControl::fMinCrashSpeed, "collision_damage_factor", &CPHMovementControl::fCollisionDamageFactor,
+                                         "air_control_param", &CPHMovementControl::fAirControlParam, "jump_up_velocity",
+                                         sol::property(&get_jump_up_velocity, &CPHMovementControl::SetJumpUpVelocity));
 
-                .def("get_body_state", &CActor::get_state)
-                .def("is_actor_normal", &CActor::is_actor_normal)
-                .def("is_actor_crouch", &CActor::is_actor_crouch)
-                .def("is_actor_creep", &CActor::is_actor_creep)
-                .def("is_actor_climb", &CActor::is_actor_climb)
-                .def("is_actor_walking", &CActor::is_actor_walking)
-                .def("is_actor_running", &CActor::is_actor_running)
-                .def("is_actor_sprinting", &CActor::is_actor_sprinting)
-                .def("is_actor_crouching", &CActor::is_actor_crouching)
-                .def("is_actor_creeping", &CActor::is_actor_creeping)
-                .def("is_actor_climbing", &CActor::is_actor_climbing)
-                .def("is_actor_moving", &CActor::is_actor_moving)
-                .def("UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt)
-                .def("IsDetectorActive", &CActor::IsDetectorActive)
+    lua.new_usertype<CActor>("CActorBase", sol::no_constructor, "condition", sol::property(&get_actor_condition), "immunities", sol::property(&get_immunities), "hit_slowmo",
+                             &CActor::hit_slowmo, "hit_probability", &CActor::hit_probability, "walk_accel", &CActor::m_fWalkAccel,
 
-                .property("active_cam", &get_active_cam)
-                .def("set_active_cam", &CActor::cam_Set),
-            class_<CActorObject, bases<CActor, CEntityAlive>>("CActor") // хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
-            ,
-            class_<enum_exporter<EActorCameras>>("EActorCameras")
-                .enum_("cameras")[(value("eacFirstEye", int(eacFirstEye)), value("eacLookAt", int(eacLookAt)), value("eacFreeLook", int(eacFreeLook)),
-                                   value("eacMaxCam", int(eacMaxCam)))],
-            class_<enum_exporter<EInventorySlots>>("inventory_slots")
-                .enum_("inventory_slots")[(value("KNIFE", int(KNIFE)), value("FIRST_WEAPON", int(FIRST_WEAPON)), value("SECOND_WEAPON", int(SECOND_WEAPON)),
-                                           value("GRENADE", int(GRENADE)), value("APPARATUS", int(APPARATUS)), value("BOLT", int(BOLT)), value("OUTFIT", int(OUTFIT)),
-                                           value("PDA", int(PDA)), value("DETECTOR", int(DETECTOR)), value("TORCH", int(TORCH)), value("HELMET", int(HELMET)),
-                                           value("NIGHT_VISION", int(NIGHT_VISION)), value("BIODETECTOR", int(BIODETECTOR)), value("TOTAL", int(TOTAL)),
-                                           value("NO_ACTIVE", int(NO_ACTIVE)))],
-            class_<enum_exporter<EItemPlace>>("item_place")
-                .enum_("item_place")[(value("undefined", int(eItemPlaceUndefined)), value("slot", int(eItemPlaceSlot)), value("belt", int(eItemPlaceBelt)),
-                                      value("ruck", int(eItemPlaceRuck)))])];
+                             "run_coef", &CActor::m_fRunFactor, "run_back_coef", &CActor::m_fRunBackFactor, "walk_back_coef", &CActor::m_fWalkBackFactor, "crouch_coef",
+                             &CActor::m_fCrouchFactor, "climb_coef", &CActor::m_fClimbFactor, "sprint_koef", &CActor::m_fSprintFactor, "walk_strafe_coef",
+                             &CActor::m_fWalk_StrafeFactor, "run_strafe_coef", &CActor::m_fRun_StrafeFactor, "disp_base", &CActor::m_fDispBase, "disp_aim", &CActor::m_fDispAim,
+                             "disp_vel_factor", &CActor::m_fDispVelFactor, "disp_accel_factor", &CActor::m_fDispAccelFactor, "disp_crouch_factor", &CActor::m_fDispCrouchFactor,
+                             "disp_crouch_no_acc_factor", &CActor::m_fDispCrouchNoAccelFactor,
+
+                             "movement", sol::property(&get_movement), "jump_speed", sol::property(&get_jump_speed, &set_jump_speed), "state", sol::property(&get_actor_state),
+                             "orientation", sol::property(&get_actor_orientation),
+
+                             // Real Wolf. Start. 14.10.2014.
+                             "block_action", &CActor::block_action, "unblock_action", &CActor::unblock_action, "press_action", &CActor::IR_OnKeyboardPress, "hold_action",
+                             &CActor::IR_OnKeyboardHold, "release_action", &CActor::IR_OnKeyboardRelease, "is_zoom_aiming_mode", &CActor::IsZoomAimingMode,
+                             // Real Wolf. End. 14.10.2014.
+
+                             "get_body_state", &CActor::get_state, "is_actor_normal", &CActor::is_actor_normal, "is_actor_crouch", &CActor::is_actor_crouch, "is_actor_creep",
+                             &CActor::is_actor_creep, "is_actor_climb", &CActor::is_actor_climb, "is_actor_walking", &CActor::is_actor_walking, "is_actor_running",
+                             &CActor::is_actor_running, "is_actor_sprinting", &CActor::is_actor_sprinting, "is_actor_crouching", &CActor::is_actor_crouching, "is_actor_creeping",
+                             &CActor::is_actor_creeping, "is_actor_climbing", &CActor::is_actor_climbing, "is_actor_moving", &CActor::is_actor_moving, "UpdateArtefactsOnBelt",
+                             &CActor::UpdateArtefactsOnBelt, "IsDetectorActive", &CActor::IsDetectorActive,
+
+                             "active_cam", sol::property(&get_active_cam), "set_active_cam", &CActor::cam_Set, sol::base_classes, xr_sol_bases<CActor>());
+
+    lua.new_usertype<CActorObject>("CActor", sol::no_constructor, sol::base_classes, xr_sol_bases<CActorObject>());
+
+    lua.new_enum("EActorCameras", "eacFirstEye", eacFirstEye, "eacLookAt", eacLookAt, "eacFreeLook", eacFreeLook, "eacMaxCam", eacMaxCam);
+
+    lua.new_enum("inventory_slots", "KNIFE", KNIFE_SLOT, "FIRST_WEAPON", FIRST_WEAPON_SLOT, "SECOND_WEAPON", SECOND_WEAPON_SLOT, "GRENADE", GRENADE_SLOT, "APPARATUS",
+                 APPARATUS_SLOT, "BOLT", BOLT_SLOT, "OUTFIT", OUTFIT_SLOT, "PDA", PDA_SLOT, "DETECTOR", DETECTOR_SLOT, "TORCH", TORCH_SLOT, "HELMET", HELMET_SLOT, "NIGHT_VISION",
+                 NIGHT_VISION_SLOT, "BIODETECTOR", BIODETECTOR_SLOT, "TOTAL", SLOTS_TOTAL, "NO_ACTIVE", NO_ACTIVE_SLOT);
+
+    lua.new_enum("item_place", "undefined", eItemPlaceUndefined, "slot", eItemPlaceSlot, "belt", eItemPlaceBelt, "ruck", eItemPlaceRuck);
 }

@@ -9,6 +9,8 @@ CWeaponGroza::CWeaponGroza(void) : CWeaponMagazinedWGrenade("GROZA", SOUND_TYPE_
 
 CWeaponGroza::~CWeaponGroza(void) {}
 
-using namespace luabind;
-
-void CWeaponGroza::script_register(lua_State* L) { module(L)[class_<CWeaponGroza, CGameObject>("CWeaponGroza").def(constructor<>())]; }
+void CWeaponGroza::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CWeaponGroza>("CWeaponGroza", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponGroza>), sol::base_classes,
+                                                  xr_sol_bases<CWeaponGroza>());
+}

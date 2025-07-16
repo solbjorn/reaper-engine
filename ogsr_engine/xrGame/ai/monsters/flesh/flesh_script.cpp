@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "flesh.h"
 
-using namespace luabind;
-
-void CAI_Flesh::script_register(lua_State* L) { module(L)[class_<CAI_Flesh, CGameObject>("CAI_Flesh").def(constructor<>())]; }
+void CAI_Flesh::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CAI_Flesh>("CAI_Flesh", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Flesh>), sol::base_classes,
+                                               xr_sol_bases<CAI_Flesh>());
+}

@@ -81,7 +81,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -140,7 +140,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;..\xrPhysics;$(SolutionDir)\3rd_party\Src\imdexlib;$(SolutionDir)\3rd_party\Src\ode;$(SolutionDir)\3rd_party\Src\oneTBB\oneTBB\include;$(SolutionDir)\3rd_party\Src\luajit2\luajit2\src;$(SolutionDir)\3rd_party\Src\luabind;$(SolutionDir)\3rd_party\Src\sol2\include;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\tinyxml2\tinyxml2;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -294,7 +294,6 @@
     <ClInclude Include="script_actor.h" />
     <ClInclude Include="script_game_object_impl.h" />
     <ClInclude Include="script_rq_result.h" />
-    <ClInclude Include="script_vars_storage.h" />
     <ClInclude Include="SimpleDetectorSHOC.h" />
     <ClInclude Include="steering_behaviour.h" />
     <ClInclude Include="steering_behaviour_alignment.h" />
@@ -317,19 +316,14 @@
     <ClInclude Include="action_base_inline.h" />
     <ClInclude Include="action_script_base.h" />
     <ClInclude Include="action_script_base_inline.h" />
-    <ClInclude Include="script_action_wrapper.h" />
-    <ClInclude Include="script_action_wrapper_inline.h" />
     <ClInclude Include="action_planner.h" />
     <ClInclude Include="action_planner_inline.h" />
-    <ClInclude Include="script_action_planner_wrapper.h" />
     <ClInclude Include="action_planner_script.h" />
     <ClInclude Include="action_planner_script_inline.h" />
     <ClInclude Include="action_planner_action.h" />
     <ClInclude Include="action_planner_action_inline.h" />
     <ClInclude Include="action_planner_action_script.h" />
     <ClInclude Include="action_planner_action_script_inline.h" />
-    <ClInclude Include="script_action_planner_action_wrapper.h" />
-    <ClInclude Include="script_action_planner_action_wrapper_inline.h" />
     <ClInclude Include="property_storage.h" />
     <ClInclude Include="property_storage_inline.h" />
     <ClInclude Include="property_evaluator.h" />
@@ -338,8 +332,6 @@
     <ClInclude Include="property_evaluator_const_inline.h" />
     <ClInclude Include="property_evaluator_member.h" />
     <ClInclude Include="property_evaluator_member_inline.h" />
-    <ClInclude Include="script_property_evaluator_wrapper.h" />
-    <ClInclude Include="script_property_evaluator_wrapper_inline.h" />
     <ClInclude Include="material_manager.h" />
     <ClInclude Include="material_manager_inline.h" />
     <ClInclude Include="memory_manager.h" />
@@ -941,11 +933,8 @@
     <ClInclude Include="script_entity_action.h" />
     <ClInclude Include="script_entity_action_inline.h" />
     <ClInclude Include="script_binder_object.h" />
-    <ClInclude Include="script_binder_object_wrapper.h" />
     <ClInclude Include="script_effector.h" />
     <ClInclude Include="script_effector_inline.h" />
-    <ClInclude Include="script_effector_wrapper.h" />
-    <ClInclude Include="script_effector_wrapper_inline.h" />
     <ClInclude Include="..\COMMON_AI\script_flags.h" />
     <ClInclude Include="..\COMMON_AI\script_fmatrix.h" />
     <ClInclude Include="..\COMMON_AI\script_fvector.h" />
@@ -1377,7 +1366,6 @@
     <ClInclude Include="ui\UITabControl.h" />
     <ClInclude Include="ui\UITreeViewItem.h" />
     <ClInclude Include="ui\UIScriptWnd.h" />
-    <ClInclude Include="ui\uiscriptwnd_script.h" />
     <ClInclude Include="ui\UI3tButton.h" />
     <ClInclude Include="ui\UIButton.h" />
     <ClInclude Include="ui\UICheckButton.h" />
@@ -1448,16 +1436,12 @@
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />
     <ClCompile Include="pose_extrapolation.cpp" />
-    <ClCompile Include="script_action_wrapper.cpp" />
     <ClCompile Include="action_planner_script.cpp" />
-    <ClCompile Include="script_action_planner_wrapper.cpp" />
     <ClCompile Include="action_planner_action_script.cpp" />
-    <ClCompile Include="script_action_planner_action_wrapper.cpp" />
     <ClCompile Include="property_storage_script.cpp" />
     <ClCompile Include="property_evaluator_script.cpp" />
     <ClCompile Include="script_actor.cpp" />
     <ClCompile Include="script_game_object_script4.cpp" />
-    <ClCompile Include="script_property_evaluator_wrapper.cpp" />
     <ClCompile Include="material_manager.cpp" />
     <ClCompile Include="memory_manager.cpp" />
     <ClCompile Include="memory_space_script.cpp" />
@@ -1467,7 +1451,6 @@
     <ClCompile Include="enemy_manager.cpp" />
     <ClCompile Include="hit_memory_manager.cpp" />
     <ClCompile Include="script_rq_result.cpp" />
-    <ClCompile Include="script_vars_storage.cpp" />
     <ClCompile Include="SimpleDetectorSHOC.cpp" />
     <ClCompile Include="sound_memory_manager.cpp" />
     <ClCompile Include="steering_behaviour.cpp" />
@@ -1803,10 +1786,8 @@
     <ClCompile Include="script_entity_action_script.cpp" />
     <ClCompile Include="script_binder_object.cpp" />
     <ClCompile Include="script_binder_object_script.cpp" />
-    <ClCompile Include="script_binder_object_wrapper.cpp" />
     <ClCompile Include="script_effector.cpp" />
     <ClCompile Include="script_effector_script.cpp" />
-    <ClCompile Include="script_effector_wrapper.cpp" />
     <ClCompile Include="..\COMMON_AI\script_flags_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_fmatrix_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_fvector_script.cpp" />
@@ -2274,7 +2255,6 @@
     <ClCompile Include="ui\UITreeViewItem.cpp" />
     <ClCompile Include="ui\UIScriptWnd.cpp" />
     <ClCompile Include="ui\UIScriptWnd_script.cpp" />
-    <ClCompile Include="ui\uiscriptwnd_script2.cpp" />
     <ClCompile Include="ui\UI3tButton.cpp" />
     <ClCompile Include="ui\UIButton.cpp" />
     <ClCompile Include="ui\UIButton_script.cpp" />

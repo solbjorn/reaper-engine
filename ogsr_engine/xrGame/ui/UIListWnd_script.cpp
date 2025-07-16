@@ -4,52 +4,24 @@
 #include "UISpinText.h"
 #include "UIComboBox.h"
 
-using namespace luabind;
-
 bool CUIListWnd::AddItem_script(CUIListItem* item) { return AddItem(item, -1); }
-
-struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
-{
-    RTTI_DECLARE_TYPEINFO(CUIListItemWrapper, CUIListItem);
-};
-
-struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
-{
-    RTTI_DECLARE_TYPEINFO(CUIListItemExWrapper, CUIListItemEx);
-};
 
 void CUIListWnd::script_register(lua_State* L)
 {
-    module(
-        L)[(class_<CUIListWnd, CUIWindow>("CUIListWnd")
-                .def(constructor<>())
-                .def("AddItem", &CUIListWnd::AddItem_script, adopt<2>())
-                .def("RemoveItem", &CUIListWnd::RemoveItem)
-                .def("RemoveAll", &CUIListWnd::RemoveAll)
-                .def("EnableScrollBar", &CUIListWnd::EnableScrollBar)
-                .def("IsScrollBarEnabled", &CUIListWnd::IsScrollBarEnabled)
-                .def("SetItemHeight", &CUIListWnd::SetItemHeight)
-                .def("GetItem", &CUIListWnd::GetItem)
-                .def("GetItemPos", &CUIListWnd::GetItemPos)
-                .def("GetSize", &CUIListWnd::GetItemsCount)
-                .def("ScrollToBegin", &CUIListWnd::ScrollToBegin)
-                .def("ScrollToEnd", &CUIListWnd::ScrollToEnd)
-                .def("ScrollToPos", &CUIListWnd::ScrollToPos)
-                .def("SetWidth", &CUIListWnd::SetWidth)
-                .def("SetTextColor", &CUIListWnd::SetTextColor)
-                .def("ActivateList", &CUIListWnd::ActivateList)
-                .def("IsListActive", &CUIListWnd::IsListActive)
-                .def("SetVertFlip", &CUIListWnd::SetVertFlip)
-                .def("GetVertFlip", &CUIListWnd::GetVertFlip)
-                .def("SetFocusedItem", &CUIListWnd::SetFocusedItem)
-                .def("GetFocusedItem", &CUIListWnd::GetFocusedItem)
-                .def("ShowSelectedItem", &CUIListWnd::ShowSelectedItem)
+    auto lua = sol::state_view(L);
 
-                .def("GetSelectedItem", &CUIListWnd::GetSelectedItem)
-                .def("SetSelectedItem", &CUIListWnd::SetSelectedItem)
-                .def("ResetFocusCapture", &CUIListWnd::ResetFocusCapture),
+    lua.new_usertype<CUIListWnd>("CUIListWnd", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListWnd()>(), "AddItem", &CUIListWnd::AddItem_script, "RemoveItem",
+                                 &CUIListWnd::RemoveItem, "RemoveAll", &CUIListWnd::RemoveAll, "EnableScrollBar", &CUIListWnd::EnableScrollBar, "IsScrollBarEnabled",
+                                 &CUIListWnd::IsScrollBarEnabled, "SetItemHeight", &CUIListWnd::SetItemHeight, "GetItem", &CUIListWnd::GetItem, "GetItemPos",
+                                 &CUIListWnd::GetItemPos, "GetSize", &CUIListWnd::GetItemsCount, "ScrollToBegin", &CUIListWnd::ScrollToBegin, "ScrollToEnd",
+                                 &CUIListWnd::ScrollToEnd, "ScrollToPos", &CUIListWnd::ScrollToPos, "SetWidth", &CUIListWnd::SetWidth, "SetTextColor", &CUIListWnd::SetTextColor,
+                                 "ActivateList", &CUIListWnd::ActivateList, "IsListActive", &CUIListWnd::IsListActive, "SetVertFlip", &CUIListWnd::SetVertFlip, "GetVertFlip",
+                                 &CUIListWnd::GetVertFlip, "SetFocusedItem", &CUIListWnd::SetFocusedItem, "GetFocusedItem", &CUIListWnd::GetFocusedItem, "ShowSelectedItem",
+                                 &CUIListWnd::ShowSelectedItem, "GetSelectedItem", &CUIListWnd::GetSelectedItem, "SetSelectedItem", &CUIListWnd::SetSelectedItem,
+                                 "ResetFocusCapture", &CUIListWnd::ResetFocusCapture, sol::base_classes, xr_sol_bases<CUIListWnd>());
 
-            class_<CUIListItem, CUIButton, CUIListItemWrapper>("CUIListItem").def(constructor<>()),
+    lua.new_usertype<CUIListItem>("CUIListItem", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListItem()>(), sol::base_classes, xr_sol_bases<CUIListItem>());
 
-            class_<CUIListItemEx, CUIListItem /**/, CUIListItemExWrapper /**/>("CUIListItemEx").def(constructor<>()).def("SetSelectionColor", &CUIListItemEx::SetSelectionColor))];
+    lua.new_usertype<CUIListItemEx>("CUIListItemEx", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListItemEx()>(), "SetSelectionColor",
+                                    &CUIListItemEx::SetSelectionColor, sol::base_classes, xr_sol_bases<CUIListItemEx>());
 }

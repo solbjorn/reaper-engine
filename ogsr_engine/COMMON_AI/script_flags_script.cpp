@@ -7,115 +7,70 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "script_flags.h"
 
-using namespace luabind;
-
 template <typename T>
-T& set(T* self, const typename T::TYPE mask, bool value)
+static T& one(T& self)
 {
-    return (self->set(mask, value));
+    return self.assign(typename T::TYPE(-1));
 }
 
 template <typename T>
-bool is(T* self, const typename T::TYPE mask)
+static T& set(T& self, const typename T::TYPE mask, bool value)
 {
-    return (!!self->is(mask));
+    return self.set(mask, value);
 }
 
 template <typename T>
-bool is_any(T* self, const typename T::TYPE mask)
+static bool is(const T& self, const typename T::TYPE mask)
 {
-    return (!!self->is_any(mask));
+    return !!self.is(mask);
 }
 
 template <typename T>
-bool test(T* self, const typename T::TYPE mask)
+static bool is_any(const T& self, const typename T::TYPE mask)
 {
-    return (!!self->test(mask));
+    return !!self.is_any(mask);
 }
 
 template <typename T>
-bool equal(T* self, const T& f)
+static bool test(const T& self, const typename T::TYPE mask)
 {
-    return (!!self->equal(f));
+    return !!self.test(mask);
 }
 
 template <typename T>
-bool equal(T* self, const T& f, const typename T::TYPE mask)
+static bool equal(const T& self, const T& f)
 {
-    return (!!self->equal(f, mask));
+    return !!self.equal(f);
 }
 
 template <typename T>
-void one(T* self)
+static bool equal(const T& self, const T& f, const typename T::TYPE mask)
 {
-    self->assign(typename T::TYPE(-1));
+    return !!self.equal(f, mask);
+}
+
+template <typename T>
+static void add_flags(sol::state_view& lua, absl::string_view alias)
+{
+    lua.new_usertype<T>(alias, sol::no_constructor, sol::call_constructor, sol::constructors<T()>(), "get", &T::get, "zero", &T::zero, "one", &one<T>, "invert",
+                        sol::overload(sol::resolve<T&()>(&T::invert), sol::resolve<T&(const T&)>(&T::invert), sol::resolve<T&(const typename T::TYPE)>(&T::invert)), "assign",
+                        sol::overload(sol::resolve<T&(const T&)>(&T::assign), sol::resolve<T&(const typename T::TYPE)>(&T::assign)), "or",
+                        sol::overload(sol::resolve<T&(const typename T::TYPE)>(&T::Or), sol::resolve<T&(const T&, const typename T::TYPE)>(&T::Or)), "and",
+                        sol::overload(sol::resolve<T&(const typename T::TYPE)>(&T::And), sol::resolve<T&(const T&, const typename T::TYPE)>(&T::And)), "set", &set<T>, "is", &is<T>,
+                        "is_any", &is_any<T>, "test", &test<T>, "equal",
+                        sol::overload(sol::resolve<bool(const T&, const T&)>(&equal<T>), sol::resolve<bool(const T&, const T&, const typename T::TYPE)>(&equal<T>)));
 }
 
 template <>
 void CScriptFlags::script_register(lua_State* L)
 {
-    module(L)[(class_<Flags8>("flags8")
-                   .def(constructor<>())
-                   .def("get", &Flags8::get)
-                   .def("zero", &Flags8::zero)
-                   .def("one", &one<Flags8>)
-                   .def("invert", (Flags8 & (Flags8::*)())(&Flags8::invert))
-                   .def("invert", (Flags8 & (Flags8::*)(const Flags8&))(&Flags8::invert))
-                   .def("invert", (Flags8 & (Flags8::*)(const Flags8::TYPE))(&Flags8::invert))
-                   .def("assign", (Flags8 & (Flags8::*)(const Flags8&))(&Flags8::assign))
-                   .def("assign", (Flags8 & (Flags8::*)(const Flags8::TYPE))(&Flags8::assign))
-                   .def("or", (Flags8 & (Flags8::*)(const Flags8::TYPE))(&Flags8::Or))
-                   .def("or", (Flags8 & (Flags8::*)(const Flags8&, const Flags8::TYPE))(&Flags8::Or))
-                   .def("and", (Flags8 & (Flags8::*)(const Flags8::TYPE))(&Flags8::And))
-                   .def("and", (Flags8 & (Flags8::*)(const Flags8&, const Flags8::TYPE))(&Flags8::And))
-                   .def("set", &set<Flags8>)
-                   .def("is", &is<Flags8>)
-                   .def("is_any", &is_any<Flags8>)
-                   .def("test", &test<Flags8>)
-                   .def("equal", (bool (*)(Flags8*, const Flags8&))(&equal<Flags8>))
-                   .def("equal", (bool (*)(Flags8*, const Flags8&, const Flags8::TYPE))(&equal<Flags8>)),
+    auto lua = sol::state_view(L);
 
-               class_<Flags16>("flags16")
-                   .def(constructor<>())
-                   .def("get", &Flags16::get)
-                   .def("zero", &Flags16::zero)
-                   .def("one", &one<Flags16>)
-                   .def("invert", (Flags16 & (Flags16::*)())(&Flags16::invert))
-                   .def("invert", (Flags16 & (Flags16::*)(const Flags16&))(&Flags16::invert))
-                   .def("invert", (Flags16 & (Flags16::*)(const Flags16::TYPE))(&Flags16::invert))
-                   .def("assign", (Flags16 & (Flags16::*)(const Flags16&))(&Flags16::assign))
-                   .def("assign", (Flags16 & (Flags16::*)(const Flags16::TYPE))(&Flags16::assign))
-                   .def("or", (Flags16 & (Flags16::*)(const Flags16::TYPE))(&Flags16::Or))
-                   .def("or", (Flags16 & (Flags16::*)(const Flags16&, const Flags16::TYPE))(&Flags16::Or))
-                   .def("and", (Flags16 & (Flags16::*)(const Flags16::TYPE))(&Flags16::And))
-                   .def("and", (Flags16 & (Flags16::*)(const Flags16&, const Flags16::TYPE))(&Flags16::And))
-                   .def("set", &set<Flags16>)
-                   .def("is", &is<Flags16>)
-                   .def("is_any", &is_any<Flags16>)
-                   .def("test", &test<Flags16>)
-                   .def("equal", (bool (*)(Flags16*, const Flags16&))(&equal<Flags16>))
-                   .def("equal", (bool (*)(Flags16*, const Flags16&, const Flags16::TYPE))(&equal<Flags16>)),
-
-               class_<Flags32>("flags32")
-                   .def(constructor<>())
-                   .def("get", &Flags32::get)
-                   .def("zero", &Flags32::zero)
-                   .def("one", &Flags32::one)
-                   .def("invert", (Flags32 & (Flags32::*)())(&Flags32::invert))
-                   .def("invert", (Flags32 & (Flags32::*)(const Flags32&))(&Flags32::invert))
-                   .def("invert", (Flags32 & (Flags32::*)(const Flags32::TYPE))(&Flags32::invert))
-                   .def("assign", (Flags32 & (Flags32::*)(const Flags32&))(&Flags32::assign))
-                   .def("assign", (Flags32 & (Flags32::*)(const Flags32::TYPE))(&Flags32::assign))
-                   .def("or", (Flags32 & (Flags32::*)(const Flags32::TYPE))(&Flags32::Or))
-                   .def("or", (Flags32 & (Flags32::*)(const Flags32&, const Flags32::TYPE))(&Flags32::Or))
-                   .def("and", (Flags32 & (Flags32::*)(const Flags32::TYPE))(&Flags32::And))
-                   .def("and", (Flags32 & (Flags32::*)(const Flags32&, const Flags32::TYPE))(&Flags32::And))
-                   .def("set", &set<Flags32>)
-                   .def("is", &is<Flags32>)
-                   .def("is_any", &is_any<Flags32>)
-                   .def("test", &test<Flags32>)
-                   .def("equal", (bool (*)(Flags32*, const Flags32&))(&equal<Flags32>))
-                   .def("equal", (bool (*)(Flags32*, const Flags32&, const Flags32::TYPE))(&equal<Flags32>)))];
+    add_flags<Flags8>(lua, "flags8");
+    add_flags<Flags16>(lua, "flags16");
+    add_flags<Flags32>(lua, "flags32");
 }

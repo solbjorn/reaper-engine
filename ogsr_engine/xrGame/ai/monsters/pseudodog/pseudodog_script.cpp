@@ -2,10 +2,20 @@
 #include "pseudodog.h"
 #include "psy_dog.h"
 
-using namespace luabind;
+void CAI_PseudoDog::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CAI_PseudoDog>("CAI_PseudoDog", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_PseudoDog>), sol::base_classes,
+                                                   xr_sol_bases<CAI_PseudoDog>());
+}
 
-void CAI_PseudoDog::script_register(lua_State* L) { module(L)[class_<CAI_PseudoDog, CGameObject>("CAI_PseudoDog").def(constructor<>())]; }
+void CPsyDog::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CPsyDog>("CPsyDog", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CPsyDog>), sol::base_classes,
+                                             xr_sol_bases<CPsyDog>());
+}
 
-void CPsyDog::script_register(lua_State* L) { module(L)[class_<CPsyDog, CGameObject>("CPsyDog").def(constructor<>())]; }
-
-void CPsyDogPhantom::script_register(lua_State* L) { module(L)[class_<CPsyDogPhantom, CGameObject>("CPsyDogPhantom").def(constructor<>())]; }
+void CPsyDogPhantom::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CPsyDogPhantom>("CPsyDogPhantom", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CPsyDogPhantom>),
+                                                    sol::base_classes, xr_sol_bases<CPsyDogPhantom>());
+}

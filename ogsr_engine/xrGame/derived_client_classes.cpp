@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+
 #include "base_client_classes.h"
 #include "derived_client_classes.h"
 #include "HUDManager.h"
@@ -22,77 +25,62 @@
    Alexander Petrov
 */
 
-using namespace luabind;
-
 // ================================ ANOMALY ZONE SCRIPT EXPORT =================== //
-Fvector get_restrictor_center(CSpaceRestrictor* SR)
+static Fvector get_restrictor_center(CSpaceRestrictor* SR)
 {
     Fvector result;
     SR->Center(result);
     return result;
 }
 
-u32 get_zone_state(CCustomZone* obj) { return (u32)obj->ZoneState(); }
+static u32 get_zone_state(CCustomZone* obj) { return (u32)obj->ZoneState(); }
+
 void CAnomalyZoneScript::set_zone_state(CCustomZone* obj, u32 new_state) { obj->SwitchZoneState((CCustomZone::EZoneState)new_state); }
 
 void CAnomalyZoneScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CSpaceRestrictor, CGameObject>("CSpaceRestrictor")
-                   .def(constructor<>())
-                   .property("restrictor_center", &get_restrictor_center)
-                   .property("restrictor_type", &CSpaceRestrictor::restrictor_type)
-                   .property("radius", &CSpaceRestrictor::Radius)
-                   .def("schedule_register", &CSpaceRestrictor::ScheduleRegister)
-                   .def("schedule_unregister", &CSpaceRestrictor::ScheduleUnregister)
-                   .def("is_scheduled", &CSpaceRestrictor::IsScheduled)
-                   .def("active_contact", &CSpaceRestrictor::active_contact),
-               class_<CCustomZone, CSpaceRestrictor>("CustomZone")
-                   //.def  ("get_state_time"						,				&CCustomZone::GetStateTime)
-                   .def("power", &CCustomZone::Power)
-                   .def("relative_power", &CCustomZone::RelativePower)
+    auto lua = sol::state_view(L);
 
-                   .def_readwrite("attenuation", &CCustomZone::m_fAttenuation)
-                   .def_readwrite("effective_radius", &CCustomZone::m_fEffectiveRadius)
-                   .def_readwrite("hit_impulse_scale", &CCustomZone::m_fHitImpulseScale)
-                   .def_readwrite("max_power", &CCustomZone::m_fMaxPower)
-                   .def_readwrite("state_time", &CCustomZone::m_iStateTime)
-                   .def_readwrite("start_time", &CCustomZone::m_StartTime)
-                   .def_readwrite("time_to_live", &CCustomZone::m_ttl)
-                   .def_readwrite("zone_active", &CCustomZone::m_bZoneActive)
-                   .property("zone_state", &get_zone_state, &CAnomalyZoneScript::set_zone_state)
+    lua.new_usertype<CSpaceRestrictor>("CSpaceRestrictor", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSpaceRestrictor>), "restrictor_center",
+                                       sol::property(&get_restrictor_center), "restrictor_type", sol::property(&CSpaceRestrictor::restrictor_type), "radius",
+                                       sol::property(&CSpaceRestrictor::Radius), "schedule_register", &CSpaceRestrictor::ScheduleRegister, "schedule_unregister",
+                                       &CSpaceRestrictor::ScheduleUnregister, "is_scheduled", &CSpaceRestrictor::IsScheduled, "active_contact", &CSpaceRestrictor::active_contact,
+                                       sol::base_classes, xr_sol_bases<CSpaceRestrictor>());
 
-                   )];
+    lua.new_usertype<CCustomZone>("CustomZone", sol::no_constructor, "power", &CCustomZone::Power, "relative_power", &CCustomZone::RelativePower, "attenuation",
+                                  &CCustomZone::m_fAttenuation, "effective_radius", &CCustomZone::m_fEffectiveRadius, "hit_impulse_scale", &CCustomZone::m_fHitImpulseScale,
+                                  "max_power", &CCustomZone::m_fMaxPower, "state_time", &CCustomZone::m_iStateTime, "start_time", &CCustomZone::m_StartTime, "time_to_live",
+                                  &CCustomZone::m_ttl, "zone_active", &CCustomZone::m_bZoneActive, "zone_state",
+                                  sol::property(&get_zone_state, &CAnomalyZoneScript::set_zone_state), sol::base_classes, xr_sol_bases<CCustomZone>());
 }
 
-IC void alive_entity_set_radiation(CEntityAlive* E, float value) { E->SetfRadiation(value); }
+static void alive_entity_set_radiation(CEntityAlive* E, float value) { E->SetfRadiation(value); }
 
 void CEntityScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CEntity, CGameObject>("CEntity"),
-               class_<CEntityAlive, CEntity>("CEntityAlive")
-                   .property("radiation", &CEntityAlive::g_Radiation, &alive_entity_set_radiation) // доза в %
-                   .property("condition", &CEntityAlive::conditions))];
+    auto lua = sol::state_view(L);
+
+    lua.new_usertype<CEntity>("CEntity", sol::no_constructor, sol::base_classes, xr_sol_bases<CEntity>());
+    lua.new_usertype<CEntityAlive>("CEntityAlive", sol::no_constructor, "radiation", sol::property(&CEntityAlive::g_Radiation, &alive_entity_set_radiation), "condition",
+                                   sol::property(&CEntityAlive::conditions), sol::base_classes, xr_sol_bases<CEntityAlive>());
 }
 
 void CEatableItemScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CEatableItem, CInventoryItem>("CEatableItem")
-                   .def_readwrite("eat_health", &CEatableItem::m_fHealthInfluence)
-                   .def_readwrite("eat_power", &CEatableItem::m_fPowerInfluence)
-                   .def_readwrite("eat_satiety", &CEatableItem::m_fSatietyInfluence)
-                   .def_readwrite("eat_radiation", &CEatableItem::m_fRadiationInfluence)
-                   .def_readwrite("eat_max_power", &CEatableItem::m_fMaxPowerUpInfluence)
-                   .def_readwrite("eat_psy_health", &CEatableItem::m_fPsyHealthInfluence)
-                   .def_readwrite("eat_thirst", &CEatableItem::m_fThirstInfluence)
-                   .def_readwrite("wounds_heal_perc", &CEatableItem::m_fWoundsHealPerc)
-                   .def_readwrite("eat_portions_num", &CEatableItem::m_iPortionsNum)
-                   .def_readwrite("eat_start_portions_num", &CEatableItem::m_iStartPortionsNum),
-               class_<CEatableItemObject, bases<CEatableItem, CGameObject>>("CEatableItemObject"))];
+    auto lua = sol::state_view(L);
+
+    lua.new_usertype<CEatableItem>("CEatableItem", sol::no_constructor, "eat_health", &CEatableItem::m_fHealthInfluence, "eat_power", &CEatableItem::m_fPowerInfluence,
+                                   "eat_satiety", &CEatableItem::m_fSatietyInfluence, "eat_radiation", &CEatableItem::m_fRadiationInfluence, "eat_max_power",
+                                   &CEatableItem::m_fMaxPowerUpInfluence, "eat_psy_health", &CEatableItem::m_fPsyHealthInfluence, "eat_thirst", &CEatableItem::m_fThirstInfluence,
+                                   "wounds_heal_perc", &CEatableItem::m_fWoundsHealPerc, "eat_portions_num", &CEatableItem::m_iPortionsNum, "eat_start_portions_num",
+                                   &CEatableItem::m_iStartPortionsNum, sol::base_classes, xr_sol_bases<CEatableItem>());
+
+    lua.new_usertype<CEatableItemObject>("CEatableItemObject", sol::no_constructor, sol::base_classes, xr_sol_bases<CEatableItemObject>());
 }
 
-void set_io_money(CInventoryOwner* IO, u32 money) { IO->set_money(money, true); }
+static void set_io_money(CInventoryOwner* IO, u32 money) { IO->set_money(money, true); }
 
-CScriptGameObject* item_lua_object(PIItem itm)
+static CScriptGameObject* item_lua_object(PIItem itm)
 {
     if (itm)
     {
@@ -103,8 +91,9 @@ CScriptGameObject* item_lua_object(PIItem itm)
     return NULL;
 }
 
-CScriptGameObject* inventory_active_item(CInventory* I) { return item_lua_object(I->ActiveItem()); }
-CScriptGameObject* inventory_selected_item(CInventory* I)
+static CScriptGameObject* inventory_active_item(CInventory* I) { return item_lua_object(I->ActiveItem()); }
+
+static CScriptGameObject* inventory_selected_item(CInventory* I)
 {
     CUIDialogWnd* IR = HUD().GetUI()->MainInputReceiver();
     if (!IR)
@@ -117,21 +106,20 @@ CScriptGameObject* inventory_selected_item(CInventory* I)
     return item_lua_object(wnd->CurrentIItem());
 }
 
-CScriptGameObject* get_inventory_target(CInventory* I) { return item_lua_object(I->m_pTarget); }
+static CScriptGameObject* get_inventory_target(CInventory* I) { return item_lua_object(I->m_pTarget); }
 
-LPCSTR get_item_name(CInventoryItem* I) { return I->Name(); }
-LPCSTR get_item_name_short(CInventoryItem* I) { return I->NameShort(); }
+static LPCSTR get_item_name(CInventoryItem* I) { return I->Name(); }
+static LPCSTR get_item_name_short(CInventoryItem* I) { return I->NameShort(); }
 
 #include "string_table.h"
-void set_item_name(CInventoryItem* item, LPCSTR name) { item->m_name = CStringTable().translate(name); }
 
-void set_item_name_short(CInventoryItem* item, LPCSTR name) { item->m_nameShort = CStringTable().translate(name); }
+static void set_item_name(CInventoryItem* item, LPCSTR name) { item->m_name = CStringTable().translate(name); }
+static void set_item_name_short(CInventoryItem* item, LPCSTR name) { item->m_nameShort = CStringTable().translate(name); }
 
-LPCSTR get_item_description(CInventoryItem* I) { return I->m_Description.c_str(); }
+static LPCSTR get_item_description(CInventoryItem* I) { return I->m_Description.c_str(); }
+static void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Description = CStringTable().translate(text); }
 
-void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Description = CStringTable().translate(text); }
-
-luabind::object get_slots(CInventoryItem* itm)
+static luabind::object get_slots(CInventoryItem* itm)
 {
     // lua_State* L = ai().script_engine().lua();
 
@@ -162,109 +150,73 @@ luabind::object get_slots(CInventoryItem* itm)
 
 void CInventoryScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CInventoryItem>("CInventoryItem")
-                   .def_readonly("item_place", &CInventoryItem::m_eItemPlace)
-                   .def_readwrite("item_condition", &CInventoryItem::m_fCondition)
-                   .def_readwrite("inv_weight", &CInventoryItem::m_weight)
-                   .def_readwrite("m_flags", &CInventoryItem::m_flags)
-                   .def_readwrite("always_ungroupable", &CInventoryItem::m_always_ungroupable)
+    auto lua = sol::state_view(L);
 
-                   .def_readwrite("psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed)
-                   .def_readwrite("radiation_restore_speed", &CInventoryItem::m_fRadiationRestoreSpeed)
+    lua.new_usertype<CInventoryItem>("CInventoryItem", sol::no_constructor, "item_place", sol::readonly(&CInventoryItem::m_eItemPlace), "item_condition",
+                                     &CInventoryItem::m_fCondition, "inv_weight", &CInventoryItem::m_weight, "m_flags", &CInventoryItem::m_flags, "always_ungroupable",
+                                     &CInventoryItem::m_always_ungroupable, "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed, "radiation_restore_speed",
+                                     &CInventoryItem::m_fRadiationRestoreSpeed, "inv_name", sol::property(&get_item_name, &set_item_name), "inv_name_short",
+                                     sol::property(&get_item_name_short, &set_item_name_short), "cost", sol::property(&CInventoryItem::Cost, &CInventoryItem::SetCost), "slot",
+                                     sol::property(&CInventoryItem::GetSlot, &CInventoryItem::SetSlot), "slots", sol::property(&get_slots), "description",
+                                     sol::property(&get_item_description, &set_item_description), sol::base_classes, xr_sol_bases<CInventoryItem>());
 
-                   //.property("class_name"						,			&get_lua_class_name)
-                   .property("inv_name", &get_item_name, &set_item_name)
-                   .property("inv_name_short", &get_item_name_short, &set_item_name_short)
-                   .property("cost", &CInventoryItem::Cost, &CInventoryItem::SetCost)
-                   .property("slot", &CInventoryItem::GetSlot, &CInventoryItem::SetSlot)
-                   .property("slots", &get_slots)
-                   .property("description", &get_item_description, &set_item_description),
-               class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
+    lua.new_usertype<CInventoryItemObject>("CInventoryItemObject", sol::no_constructor, sol::base_classes, xr_sol_bases<CInventoryItemObject>());
 
-               class_<CInventory>("CInventory")
-                   .def_readonly("max_belt", &CInventory::m_iMaxBelt)
-                   .def_readwrite("max_weight", &CInventory::m_fMaxWeight)
-                   .def_readwrite("take_dist", &CInventory::m_fTakeDist)
-                   .def_readonly("total_weight", &CInventory::m_fTotalWeight)
-                   .property("active_item", &inventory_active_item)
-                   .property("selected_item", &inventory_selected_item)
-                   .property("target", &get_inventory_target)
-                   .def("is_active_slot_blocked", &CInventory::IsActiveSlotBlocked)
+    lua.new_usertype<CInventory>("CInventory", sol::no_constructor, "max_belt", sol::readonly(&CInventory::m_iMaxBelt), "max_weight", &CInventory::m_fMaxWeight, "take_dist",
+                                 &CInventory::m_fTakeDist, "total_weight", sol::readonly(&CInventory::m_fTotalWeight), "active_item", sol::property(&inventory_active_item),
+                                 "selected_item", sol::property(&inventory_selected_item), "target", sol::property(&get_inventory_target), "is_active_slot_blocked",
+                                 &CInventory::IsActiveSlotBlocked);
 
-               //.property	  ("class_name"					,			&get_lua_class_name)
-               //.def		  ("to_belt"					,			&item_to_slot,   raw(_2))
-               //.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
-               //.def		  ("to_ruck"					,			&item_to_ruck,   raw(_2))
-               ,
-               class_<IInventoryBox>("IInventoryBox")
-                   .def("object", &IInventoryBox::GetObjectByIndex)
-                   .def("object", &IInventoryBox::GetObjectByName)
-                   .def("object_count", &IInventoryBox::GetSize)
-                   .def("empty", &IInventoryBox::IsEmpty),
-               class_<CInventoryBox, bases<IInventoryBox, CGameObject>>("CInventoryBox"),
-               class_<CInventoryContainer, bases<IInventoryBox, CInventoryItemObject>>("CInventoryContainer")
-                   .property("cost", &CInventoryContainer::Cost)
-                   .property("weight", &CInventoryContainer::Weight)
-                   .property("is_opened", &CInventoryContainer::IsOpened)
-                   .def("open", &CInventoryContainer::open)
-                   .def("close", &CInventoryContainer::close),
+    lua.new_usertype<IInventoryBox>("IInventoryBox", sol::no_constructor, "object", sol::overload(&IInventoryBox::GetObjectByIndex, &IInventoryBox::GetObjectByName),
+                                    "object_count", &IInventoryBox::GetSize, "empty", &IInventoryBox::IsEmpty);
+    lua.new_usertype<CInventoryBox>("CInventoryBox", sol::no_constructor, sol::base_classes, xr_sol_bases<CInventoryBox>());
 
-               class_<CInventoryOwner>("CInventoryOwner")
-                   .def_readonly("inventory", &CInventoryOwner::m_inventory)
-                   .def_readonly("talking", &CInventoryOwner::m_bTalking)
-                   .def_readwrite("allow_talk", &CInventoryOwner::m_bAllowTalk)
-                   .def_readwrite("allow_trade", &CInventoryOwner::m_bAllowTrade)
-                   .def_readwrite("raw_money", &CInventoryOwner::m_money)
-                   .property("money", &CInventoryOwner::get_money, &set_io_money)
-                   //.property	  ("class_name"					,			&get_lua_class_name)
-                   .def("Name", &CInventoryOwner::Name)
-                   .def("SetName", &CInventoryOwner::SetName))];
+    lua.new_usertype<CInventoryContainer>("CInventoryContainer", sol::no_constructor, "cost", sol::property(&CInventoryContainer::Cost), "weight",
+                                          sol::property(&CInventoryContainer::Weight), "is_opened", sol::property(&CInventoryContainer::IsOpened), "open",
+                                          &CInventoryContainer::open, "close", &CInventoryContainer::close, sol::base_classes, xr_sol_bases<CInventoryContainer>());
+
+    lua.new_usertype<CInventoryOwner>("CInventoryOwner", sol::no_constructor, "inventory", sol::readonly(&CInventoryOwner::m_inventory), "talking",
+                                      sol::readonly(&CInventoryOwner::m_bTalking), "allow_talk", &CInventoryOwner::m_bAllowTalk, "allow_trade", &CInventoryOwner::m_bAllowTrade,
+                                      "raw_money", &CInventoryOwner::m_money, "money", sol::property(&CInventoryOwner::get_money, &set_io_money), "Name", &CInventoryOwner::Name,
+                                      "SetName", &CInventoryOwner::SetName, sol::base_classes, xr_sol_bases<CInventoryOwner>());
 }
 
-CParticlesObject* monster_play_particles(CBaseMonster* monster, LPCSTR name, const Fvector& position, const Fvector& dir, BOOL auto_remove, BOOL xformed)
+static CParticlesObject* monster_play_particles(CBaseMonster* monster, LPCSTR name, const Fvector& position, const Fvector& dir, BOOL auto_remove, BOOL xformed)
 {
     return monster->PlayParticles(name, position, dir, auto_remove, xformed);
 }
 
 void CMonsterScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CBaseMonster, bases<CInventoryOwner, CEntityAlive>>("CBaseMonster")
-                   .def_readwrite("agressive", &CBaseMonster::m_bAggressive)
-                   .def_readwrite("angry", &CBaseMonster::m_bAngry)
-                   .def_readwrite("damaged", &CBaseMonster::m_bDamaged)
-                   .def_readwrite("grownlig", &CBaseMonster::m_bGrowling)
-                   .def_readwrite("run_turn_left", &CBaseMonster::m_bRunTurnLeft)
-                   .def_readwrite("run_turn_right", &CBaseMonster::m_bRunTurnRight)
-                   .def_readwrite("sleep", &CBaseMonster::m_bSleep)
-                   .def_readwrite("state_invisible", &CBaseMonster::state_invisible))];
+    sol::state_view(L).new_usertype<CBaseMonster>("CBaseMonster", sol::no_constructor, "agressive", &CBaseMonster::m_bAggressive, "angry", &CBaseMonster::m_bAngry, "damaged",
+                                                  &CBaseMonster::m_bDamaged, "grownlig", &CBaseMonster::m_bGrowling, "run_turn_left", &CBaseMonster::m_bRunTurnLeft,
+                                                  "run_turn_right", &CBaseMonster::m_bRunTurnRight, "sleep", &CBaseMonster::m_bSleep, "state_invisible",
+                                                  &CBaseMonster::state_invisible, sol::base_classes, xr_sol_bases<CBaseMonster>());
 }
 
-int curr_fire_mode(CWeaponMagazined* wpn) { return wpn->GetCurrentFireMode(); }
+static int curr_fire_mode(CWeaponMagazined* wpn) { return wpn->GetCurrentFireMode(); }
 
 void COutfitScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CCustomOutfit, CInventoryItemObject>("CCustomOutfit")
-                   .def_readwrite("additional_inventory_weight", &CCustomOutfit::m_additional_weight)
-                   .def_readwrite("additional_inventory_weight2", &CCustomOutfit::m_additional_weight2)
-                   .def_readwrite("power_loss", &CCustomOutfit::m_fPowerLoss)
-                   .property("burn_protection", &get_protection<ALife::eHitTypeBurn>, &set_protection<ALife::eHitTypeBurn>)
-                   .property("strike_protection", &get_protection<ALife::eHitTypeStrike>, &set_protection<ALife::eHitTypeStrike>)
-                   .property("shock_protection", &get_protection<ALife::eHitTypeShock>, &set_protection<ALife::eHitTypeShock>)
-                   .property("wound_protection", &get_protection<ALife::eHitTypeWound>, &set_protection<ALife::eHitTypeWound>)
-                   .property("radiation_protection", &get_protection<ALife::eHitTypeRadiation>, &set_protection<ALife::eHitTypeRadiation>)
-                   .property("telepatic_protection", &get_protection<ALife::eHitTypeTelepatic>, &set_protection<ALife::eHitTypeTelepatic>)
-                   .property("chemical_burn_protection", &get_protection<ALife::eHitTypeChemicalBurn>, &set_protection<ALife::eHitTypeChemicalBurn>)
-                   .property("explosion_protection", &get_protection<ALife::eHitTypeExplosion>, &set_protection<ALife::eHitTypeExplosion>)
-                   .property("fire_wound_protection", &get_protection<ALife::eHitTypeFireWound>, &set_protection<ALife::eHitTypeFireWound>)
-                   .property("wound_2_protection", &get_protection<ALife::eHitTypeWound_2>, &set_protection<ALife::eHitTypeWound_2>)
-                   .property("physic_strike_protection", &get_protection<ALife::eHitTypePhysicStrike>, &set_protection<ALife::eHitTypePhysicStrike>))];
+    sol::state_view(L).new_usertype<CCustomOutfit>(
+        "CCustomOutfit", sol::no_constructor, "additional_inventory_weight", &CCustomOutfit::m_additional_weight, "additional_inventory_weight2",
+        &CCustomOutfit::m_additional_weight2, "power_loss", &CCustomOutfit::m_fPowerLoss, "burn_protection",
+        sol::property(&get_protection<ALife::eHitTypeBurn>, &set_protection<ALife::eHitTypeBurn>), "strike_protection",
+        sol::property(&get_protection<ALife::eHitTypeStrike>, &set_protection<ALife::eHitTypeStrike>), "shock_protection",
+        sol::property(&get_protection<ALife::eHitTypeShock>, &set_protection<ALife::eHitTypeShock>), "wound_protection",
+        sol::property(&get_protection<ALife::eHitTypeWound>, &set_protection<ALife::eHitTypeWound>), "radiation_protection",
+        sol::property(&get_protection<ALife::eHitTypeRadiation>, &set_protection<ALife::eHitTypeRadiation>), "telepatic_protection",
+        sol::property(&get_protection<ALife::eHitTypeTelepatic>, &set_protection<ALife::eHitTypeTelepatic>), "chemical_burn_protection",
+        sol::property(&get_protection<ALife::eHitTypeChemicalBurn>, &set_protection<ALife::eHitTypeChemicalBurn>), "explosion_protection",
+        sol::property(&get_protection<ALife::eHitTypeExplosion>, &set_protection<ALife::eHitTypeExplosion>), "fire_wound_protection",
+        sol::property(&get_protection<ALife::eHitTypeFireWound>, &set_protection<ALife::eHitTypeFireWound>), "wound_2_protection",
+        sol::property(&get_protection<ALife::eHitTypeWound_2>, &set_protection<ALife::eHitTypeWound_2>), "physic_strike_protection",
+        sol::property(&get_protection<ALife::eHitTypePhysicStrike>, &set_protection<ALife::eHitTypePhysicStrike>), sol::base_classes, xr_sol_bases<CCustomOutfit>());
 }
 
-#ifdef NLC_EXTENSIONS
-extern void attach_upgrades(lua_State* L);
-#endif
-
 SRotation& CWeaponScript::FireDeviation(CWeapon* wpn) { return wpn->constDeviation; }
+
+using namespace luabind;
 
 luabind::object CWeaponScript::get_fire_modes(CWeaponMagazined* wpn)
 {
@@ -317,143 +269,94 @@ void CWeaponScript::set_hit_power(CWeapon* wpn, luabind::object const& t)
     vector.w = object_cast<float>(t[4]);
 }
 
-LPCSTR get_scope_name(CWeapon* I) { return I->m_sScopeName.c_str(); }
+static LPCSTR get_scope_name(CWeapon* I) { return I->m_sScopeName.c_str(); }
 
-void set_scope_name(CWeapon* item, LPCSTR text)
+static void set_scope_name(CWeapon* item, LPCSTR text)
 {
     item->m_allScopeNames.erase(std::remove(item->m_allScopeNames.begin(), item->m_allScopeNames.end(), item->m_sScopeName), item->m_allScopeNames.end());
     item->m_sScopeName = text;
     item->m_allScopeNames.push_back(item->m_sScopeName);
 }
 
-LPCSTR get_silencer_name(CWeapon* I) { return I->m_sSilencerName.c_str(); }
+static LPCSTR get_silencer_name(CWeapon* I) { return I->m_sSilencerName.c_str(); }
+static void set_silencer_name(CWeapon* item, LPCSTR text) { item->m_sSilencerName = text; }
 
-void set_silencer_name(CWeapon* item, LPCSTR text) { item->m_sSilencerName = text; }
-
-LPCSTR get_grenade_launcher_name(CWeapon* I) { return I->m_sGrenadeLauncherName.c_str(); }
-
-void set_grenade_launcher_name(CWeapon* item, LPCSTR text) { item->m_sGrenadeLauncherName = text; }
+static LPCSTR get_grenade_launcher_name(CWeapon* I) { return I->m_sGrenadeLauncherName.c_str(); }
+static void set_grenade_launcher_name(CWeapon* item, LPCSTR text) { item->m_sGrenadeLauncherName = text; }
 
 void CWeaponScript::script_register(lua_State* L)
 {
-#ifdef NLC_EXTENSIONS
-    attach_upgrades(L);
-#endif
-    module(L)[(class_<CWeapon, CInventoryItemObject>("CWeapon")
-                   // из неэкспортируемого класса CHudItemObject:
-                   .property("state", &CHudItemObject::GetState)
-                   .property("next_state", &CHudItemObject::GetNextState)
-                   // ============================================================================= //
-                   // параметры отдачи влияющие на камеру
-                   .def_readwrite("cam_max_angle", &CWeapon::camMaxAngle)
-                   .def_readwrite("cam_relax_speed", &CWeapon::camRelaxSpeed)
-                   .def_readwrite("cam_relax_speed_ai", &CWeapon::camRelaxSpeed_AI)
-                   .def_readwrite("cam_dispersion", &CWeapon::camDispersion)
-                   .def_readwrite("cam_dispersion_inc", &CWeapon::camDispersionInc)
-                   .def_readwrite("cam_dispertion_frac", &CWeapon::camDispertionFrac)
-                   .def_readwrite("cam_max_angle_horz", &CWeapon::camMaxAngleHorz)
-                   .def_readwrite("cam_step_angle_horz", &CWeapon::camStepAngleHorz)
+    auto lua = sol::state_view(L);
 
-                   .def_readwrite("fire_dispersion_condition_factor", &CWeapon::fireDispersionConditionFactor)
-                   .def_readwrite("misfire_probability", &CWeapon::misfireProbability)
-                   .def_readwrite("misfire_condition_k", &CWeapon::misfireConditionK)
-                   .def_readwrite("condition_shot_dec", &CWeapon::conditionDecreasePerShot)
-                   .def_readwrite("condition_shot_dec_silencer", &CWeapon::conditionDecreasePerShotSilencer)
+    lua.new_usertype<CWeapon>("CWeapon", sol::no_constructor,
+                              // из неэкспортируемого класса CHudItemObject:
+                              "state", sol::property(&CHudItemObject::GetState), "next_state", sol::property(&CHudItemObject::GetNextState),
+                              // ============================================================================= //
+                              // параметры отдачи влияющие на камеру
+                              "cam_max_angle", &CWeapon::camMaxAngle, "cam_relax_speed", &CWeapon::camRelaxSpeed, "cam_relax_speed_ai", &CWeapon::camRelaxSpeed_AI,
+                              "cam_dispersion", &CWeapon::camDispersion, "cam_dispersion_inc", &CWeapon::camDispersionInc, "cam_dispertion_frac", &CWeapon::camDispertionFrac,
+                              "cam_max_angle_horz", &CWeapon::camMaxAngleHorz, "cam_step_angle_horz", &CWeapon::camStepAngleHorz,
 
-                   .def_readwrite("PDM_disp_base", &CWeapon::m_fPDM_disp_base)
-                   .def_readwrite("PDM_disp_vel_factor", &CWeapon::m_fPDM_disp_vel_factor)
-                   .def_readwrite("PDM_disp_accel_factor", &CWeapon::m_fPDM_disp_accel_factor)
-                   .def_readwrite("PDM_crouch", &CWeapon::m_fPDM_disp_crouch)
-                   .def_readwrite("PDM_crouch_no_acc", &CWeapon::m_fPDM_disp_crouch_no_acc)
+                              "fire_dispersion_condition_factor", &CWeapon::fireDispersionConditionFactor, "misfire_probability", &CWeapon::misfireProbability,
+                              "misfire_condition_k", &CWeapon::misfireConditionK, "condition_shot_dec", &CWeapon::conditionDecreasePerShot, "condition_shot_dec_silencer",
+                              &CWeapon::conditionDecreasePerShotSilencer,
 
-                   .def_readwrite("hit_type", static_cast<ALife::EHitType CWeapon::*>(&CWeapon::m_eHitType))
-                   .def_readwrite("hit_impulse", static_cast<float CWeapon::*>(&CWeapon::fHitImpulse))
-                   .def_readwrite("bullet_speed", static_cast<float CWeapon::*>(&CWeapon::m_fStartBulletSpeed))
-                   .def_readwrite("fire_distance", static_cast<float CWeapon::*>(&CWeapon::fireDistance))
-                   .def_readwrite("fire_dispersion_base", static_cast<float CWeapon::*>(&CWeapon::fireDispersionBase))
-                   .def_readwrite("time_to_aim", static_cast<float CWeapon::*>(&CWeapon::m_fTimeToAim))
-                   .def_readwrite("time_to_fire", static_cast<float CWeapon::*>(&CWeapon::fTimeToFire))
-                   .def_readwrite("use_aim_bullet", static_cast<BOOL CWeapon::*>(&CWeapon::m_bUseAimBullet))
-                   .property("hit_power", &get_hit_power, &set_hit_power)
+                              "PDM_disp_base", &CWeapon::m_fPDM_disp_base, "PDM_disp_vel_factor", &CWeapon::m_fPDM_disp_vel_factor, "PDM_disp_accel_factor",
+                              &CWeapon::m_fPDM_disp_accel_factor, "PDM_crouch", &CWeapon::m_fPDM_disp_crouch, "PDM_crouch_no_acc", &CWeapon::m_fPDM_disp_crouch_no_acc,
 
-                   .def_readwrite("ammo_mag_size", &CWeapon::iMagazineSize)
-                   .def_readwrite("scope_dynamic_zoom", &CWeapon::m_bScopeDynamicZoom)
-                   .def_readwrite("zoom_enabled", &CWeapon::m_bZoomEnabled)
-                   .def_readwrite("zoom_factor", &CWeapon::m_fZoomFactor)
-                   .def_readwrite("zoom_rotate_time", static_cast<float CWeapon::*>(&CWeapon::m_fZoomRotateTime))
-                   .def_readwrite("iron_sight_zoom_factor", &CWeapon::m_fIronSightZoomFactor)
-                   .def_readwrite("scope_zoom_factor", &CWeapon::m_fScopeZoomFactor)
-                   .def_readonly("zoom_rotation_factor", static_cast<float CWeapon::*>(&CWeapon::m_fZoomRotationFactor))
-                   // переменные для подстройки положения аддонов из скриптов:
+                              "hit_type", &CWeapon::m_eHitType, "hit_impulse", &CWeapon::fHitImpulse, "bullet_speed", &CWeapon::m_fStartBulletSpeed, "fire_distance",
+                              &CWeapon::fireDistance, "fire_dispersion_base", &CWeapon::fireDispersionBase, "time_to_aim", &CWeapon::m_fTimeToAim, "time_to_fire",
+                              &CWeapon::fTimeToFire, "use_aim_bullet", &CWeapon::m_bUseAimBullet, "hit_power", sol::property(&get_hit_power, &set_hit_power),
 
-                   .def_readwrite("grenade_launcher_x", &CWeapon::m_iGrenadeLauncherX)
-                   .def_readwrite("grenade_launcher_y", &CWeapon::m_iGrenadeLauncherY)
-                   .def_readwrite("scope_x", &CWeapon::m_iScopeX)
-                   .def_readwrite("scope_y", &CWeapon::m_iScopeY)
-                   .def_readwrite("silencer_x", &CWeapon::m_iSilencerX)
-                   .def_readwrite("silencer_y", &CWeapon::m_iSilencerY)
+                              "ammo_mag_size", &CWeapon::iMagazineSize, "scope_dynamic_zoom", &CWeapon::m_bScopeDynamicZoom, "zoom_enabled", &CWeapon::m_bZoomEnabled,
+                              "zoom_factor", &CWeapon::m_fZoomFactor, "zoom_rotate_time", &CWeapon::m_fZoomRotateTime, "iron_sight_zoom_factor", &CWeapon::m_fIronSightZoomFactor,
+                              "scope_zoom_factor", &CWeapon::m_fScopeZoomFactor, "zoom_rotation_factor", sol::readonly(&CWeapon::m_fZoomRotationFactor),
 
-                   .def_readwrite("scope_status", &CWeapon::m_eScopeStatus)
-                   .def_readwrite("silencer_status", &CWeapon::m_eSilencerStatus)
-                   .def_readwrite("grenade_launcher_status", &CWeapon::m_eGrenadeLauncherStatus)
+                              // переменные для подстройки положения аддонов из скриптов:
+                              "grenade_launcher_x", &CWeapon::m_iGrenadeLauncherX, "grenade_launcher_y", &CWeapon::m_iGrenadeLauncherY, "scope_x", &CWeapon::m_iScopeX, "scope_y",
+                              &CWeapon::m_iScopeY, "silencer_x", &CWeapon::m_iSilencerX, "silencer_y", &CWeapon::m_iSilencerY,
 
-                   .property("scope_name", &get_scope_name, &set_scope_name)
-                   .property("silencer_name", &get_silencer_name, &set_silencer_name)
-                   .property("grenade_launcher_name", &get_grenade_launcher_name, &set_grenade_launcher_name)
+                              "scope_status", &CWeapon::m_eScopeStatus, "silencer_status", &CWeapon::m_eSilencerStatus, "grenade_launcher_status",
+                              &CWeapon::m_eGrenadeLauncherStatus, "scope_name", sol::property(&get_scope_name, &set_scope_name), "silencer_name",
+                              sol::property(&get_silencer_name, &set_silencer_name), "grenade_launcher_name", sol::property(&get_grenade_launcher_name, &set_grenade_launcher_name),
 
-                   .def_readonly("zoom_mode", &CWeapon::m_bZoomMode)
+                              "zoom_mode", sol::readonly(&CWeapon::m_bZoomMode), "scope_inertion_factor", &CWeapon::m_fScopeInertionFactor, "scope_lense_fov_factor",
+                              &CWeapon::m_fSecondVPZoomFactor, "second_vp_enabled", &CWeapon::SecondVPEnabled,
 
-                   .def_readwrite("scope_inertion_factor", &CWeapon::m_fScopeInertionFactor)
+                              // отклонение при стрельбе от целика (для непристрелляного оружия).
+                              "const_deviation", sol::property(&CWeaponScript::FireDeviation),
 
-                   .def_readwrite("scope_lense_fov_factor", &CWeapon::m_fSecondVPZoomFactor)
-                   .def("second_vp_enabled", &CWeapon::SecondVPEnabled)
+                              "ammo_elapsed", sol::property(&CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed), "get_ammo_current", &CWeapon::GetAmmoCurrent, "start_fire",
+                              &CWeapon::FireStart, "stop_fire", &CWeapon::FireEnd,
 
-                   .property("ammo_elapsed", &CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
-                   .property("const_deviation", &CWeaponScript::FireDeviation) // отклонение при стрельбе от целика (для непристрелляного оружия).
-                   .def("get_ammo_current", &CWeapon::GetAmmoCurrent)
-                   //.def("load_config"						,			&CWeapon::Load)
-                   .def("start_fire", &CWeapon::FireStart)
-                   .def("stop_fire", &CWeapon::FireEnd)
-                   .def("start_fire2", &CWeapon::Fire2Start) // огонь ножом - правой кнопкой? )
-                   .def("stop_fire2", &CWeapon::Fire2End)
-                   .def("stop_shoothing", &CWeapon::StopShooting)
-                   .def("get_particles_xform", &CWeapon::get_ParticlesXFORM)
-                   .def("get_fire_point", &CWeapon::get_CurrentFirePoint)
-                   .def("get_fire_point2", &CWeapon::get_CurrentFirePoint2)
-                   .def("get_fire_direction", &CWeapon::get_LastFD)
-                   .def("ready_to_kill", &CWeapon::ready_to_kill)
-                   .def("UseScopeTexture", &CWeapon::UseScopeTexture),
-               class_<CWeaponMagazined, CWeapon>("CWeaponMagazined")
-                   .def_readonly("shot_num", &CWeaponMagazined::m_iShotNum)
-                   .def_readwrite("queue_size", &CWeaponMagazined::m_iQueueSize)
-                   .def_readwrite("shoot_effector_start", &CWeaponMagazined::m_iShootEffectorStart)
-                   .def_readwrite("cur_fire_mode", &CWeaponMagazined::m_iCurFireMode)
-                   .property("fire_mode", &curr_fire_mode)
-                   .property("fire_modes", &get_fire_modes, &set_fire_modes)
-                   .def("attach_addon", &CWeaponMagazined::Attach)
-                   .def("detach_addon", &CWeaponMagazined::Detach)
-                   .def("can_attach_addon", &CWeaponMagazined::CanAttach)
-                   .def("can_detach_addon", &CWeaponMagazined::CanDetach),
-               class_<CWeaponMagazinedWGrenade, CWeaponMagazined>("CWeaponMagazinedWGrenade")
-                   .def_readwrite("gren_mag_size", &CWeaponMagazinedWGrenade::iMagazineSize2)
-                   .def("switch_gl", &CWeaponMagazinedWGrenade::SwitchMode),
-               class_<CMissile, CInventoryItemObject>("CMissile")
-                   .def_readwrite("destroy_time", &CMissile::m_dwDestroyTime)
-                   .def_readwrite("destroy_time_max", &CMissile::m_dwDestroyTimeMax),
-               class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonStatus>>("addon_status")
-                   .enum_("status")[(value("disabled", int(CSE_ALifeItemWeapon::eAddonDisabled)), value("permanent", int(CSE_ALifeItemWeapon::eAddonPermanent)),
-                                     value("attachable", int(CSE_ALifeItemWeapon::eAddonAttachable)))],
-               class_<enum_exporter<CSE_ALifeItemWeapon::EWeaponAddonState>>("addon_flags")
-                   .enum_("flags")[(value("scope", int(CSE_ALifeItemWeapon::eWeaponAddonScope)), value("grenade_launcher", int(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)),
-                                    value("silencer", int(CSE_ALifeItemWeapon::eWeaponAddonSilencer)), value("laser", int(CSE_ALifeItemWeapon::eWeaponAddonLaserOn)),
-                                    value("flashlight", int(CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn)), value("misfire", int(CSE_ALifeItemWeapon::eWeaponMisfire)))])];
+                              // огонь ножом - правой кнопкой? )
+                              "start_fire2", &CWeapon::Fire2Start, "stop_fire2", &CWeapon::Fire2End,
+
+                              "stop_shoothing", &CWeapon::StopShooting, "get_particles_xform", &CWeapon::get_ParticlesXFORM, "get_fire_point", &CWeapon::get_CurrentFirePoint,
+                              "get_fire_point2", &CWeapon::get_CurrentFirePoint2, "get_fire_direction", &CWeapon::get_LastFD, "ready_to_kill", &CWeapon::ready_to_kill,
+                              "UseScopeTexture", &CWeapon::UseScopeTexture, sol::base_classes, xr_sol_bases<CWeapon>());
+
+    lua.new_usertype<CWeaponMagazined>(
+        "CWeaponMagazined", sol::no_constructor, "shot_num", sol::readonly(&CWeaponMagazined::m_iShotNum), "queue_size", &CWeaponMagazined::m_iQueueSize, "shoot_effector_start",
+        &CWeaponMagazined::m_iShootEffectorStart, "cur_fire_mode", &CWeaponMagazined::m_iCurFireMode, "fire_mode", sol::property(&curr_fire_mode), "fire_modes",
+        sol::property(&get_fire_modes, &set_fire_modes), "attach_addon", &CWeaponMagazined::Attach, "detach_addon", &CWeaponMagazined::Detach, "can_attach_addon",
+        &CWeaponMagazined::CanAttach, "can_detach_addon", &CWeaponMagazined::CanDetach, sol::base_classes, xr_sol_bases<CWeaponMagazined>());
+
+    lua.new_usertype<CWeaponMagazinedWGrenade>("CWeaponMagazinedWGrenade", sol::no_constructor, "gren_mag_size", &CWeaponMagazinedWGrenade::iMagazineSize2, "switch_gl",
+                                               &CWeaponMagazinedWGrenade::SwitchMode, sol::base_classes, xr_sol_bases<CWeaponMagazinedWGrenade>());
+    lua.new_usertype<CMissile>("CMissile", sol::no_constructor, "destroy_time", &CMissile::m_dwDestroyTime, "destroy_time_max", &CMissile::m_dwDestroyTimeMax, sol::base_classes,
+                               xr_sol_bases<CMissile>());
+
+    lua.new_enum("addon_status", "disabled", CSE_ALifeItemWeapon::eAddonDisabled, "permanent", CSE_ALifeItemWeapon::eAddonPermanent, "attachable",
+                 CSE_ALifeItemWeapon::eAddonAttachable);
+    lua.new_enum("addon_flags", "scope", CSE_ALifeItemWeapon::eWeaponAddonScope, "grenade_launcher", CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, "silencer",
+                 CSE_ALifeItemWeapon::eWeaponAddonSilencer, "laser", CSE_ALifeItemWeapon::eWeaponAddonLaserOn, "flashlight", CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn,
+                 "misfire", CSE_ALifeItemWeapon::eWeaponMisfire);
 }
 
 void CCustomMonsterScript::script_register(lua_State* L)
 {
-    module(L)[(class_<CCustomMonster, bases<CEntityAlive>>("CCustomMonster")
-                   .def("get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId)
-                   .def_readwrite("visible_for_zones", &CCustomMonster::m_visible_for_zones)
-                   .def("anomaly_detector", &CCustomMonster::anomaly_detector)
-                   .def_readonly("curr_speed", &CCustomMonster::m_fCurSpeed))];
+    sol::state_view(L).new_usertype<CCustomMonster>("CCustomMonster", sol::no_constructor, "get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId, "visible_for_zones",
+                                                    &CCustomMonster::m_visible_for_zones, "anomaly_detector", &CCustomMonster::anomaly_detector, "curr_speed",
+                                                    sol::readonly(&CCustomMonster::m_fCurSpeed), sol::base_classes, xr_sol_bases<CCustomMonster>());
 }

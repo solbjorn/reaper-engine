@@ -226,7 +226,7 @@ public:
     _DECLARE_FUNCTION10(GetEnemyStrength, int);
     _DECLARE_FUNCTION10(can_script_capture, bool);
 
-    CScriptEntityAction* GetCurrentAction() const;
+    std::unique_ptr<CScriptEntityAction> GetCurrentAction() const;
     void AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority = false);
     void ResetActionQueue();
     // Actor only
@@ -537,7 +537,7 @@ public:
     LPCSTR base_out_restrictions();
     bool accessible_position(const Fvector& position);
     bool accessible_vertex_id(u32 level_vertex_id);
-    u32 accessible_nearest(const Fvector& position, Fvector& result);
+    std::tuple<u32, Fvector> accessible_nearest(const Fvector& position);
 
     const xr_deque<MemorySpace::CVisibleObject>& memory_visible_objects() const;
     const xr_deque<MemorySpace::CSoundObject>& memory_sound_objects() const;
@@ -831,6 +831,15 @@ public:
     void setVisible(bool value);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
+
+private:
+    using usertype = std::invoke_result_t<decltype(&sol::state_view::new_usertype<CScriptGameObject>), sol::state_view>;
+
+    static void script_register_trader(CScriptGameObject::usertype& lua);
+    static void script_register1(CScriptGameObject::usertype& lua);
+    static void script_register2(CScriptGameObject::usertype& lua);
+    static void script_register3(CScriptGameObject::usertype& lua);
+    static void script_register4(sol::state_view& lua);
 };
 add_to_type_list(CScriptGameObject)
 #undef script_type_list

@@ -7,32 +7,26 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_action_wrapper.h"
-#include "script_game_object.h"
 
-using namespace luabind;
+#include "action_base.h"
+#include "script_game_object.h"
 
 template <>
 void CActionBase<CScriptGameObject>::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptActionBase, CScriptActionWrapper>("action_base")
-                  .def_readonly("object", &CScriptActionBase::m_object)
-                  .def_readonly("storage", &CScriptActionBase::m_storage)
-                  .def(constructor<>())
-                  .def(constructor<CScriptGameObject*>())
-                  .def(constructor<CScriptGameObject*, LPCSTR>())
-                  .def("add_precondition", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition&))(&CScriptActionBase::add_condition))
-                  .def("add_effect", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition&))(&CScriptActionBase::add_effect))
-                  .def("remove_precondition", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::condition_type&))(&CScriptActionBase::remove_condition))
-                  .def("remove_effect", (void(CScriptActionBase::*)(const CScriptActionBase::COperatorCondition::condition_type&))(&CScriptActionBase::remove_effect))
-                  .def("setup", &CScriptActionBase::setup, &CScriptActionWrapper::setup_static)
-                  .def("initialize", &CScriptActionBase::initialize, &CScriptActionWrapper::initialize_static)
-                  .def("execute", &CScriptActionBase::execute, &CScriptActionWrapper::execute_static)
-                  .def("finalize", &CScriptActionBase::finalize, &CScriptActionWrapper::finalize_static)
-                  .def("weight", &CScriptActionBase::weight, &CScriptActionWrapper::weight_static)
-                  .def("set_weight", &CScriptActionBase::set_weight)
+    sol::state_view(L).new_usertype<CScriptActionBase>(
+        "action_base", sol::no_constructor, sol::call_constructor,
+        sol::constructors<CScriptActionBase(), CScriptActionBase(CScriptGameObject*), CScriptActionBase(CScriptGameObject*, LPCSTR)>(), "object",
+        sol::readonly(&CScriptActionBase::m_object), "storage", sol::readonly(&CScriptActionBase::m_storage), "add_precondition",
+        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_condition), "add_effect",
+        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_effect), "remove_precondition",
+        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_condition), "remove_effect",
+        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_effect), "setup", &CScriptActionBase::setup, "initialize",
+        &CScriptActionBase::initialize, "execute", &CScriptActionBase::execute, "finalize", &CScriptActionBase::finalize, "weight", &CScriptActionBase::weight, "set_weight",
+        &CScriptActionBase::set_weight
 #ifdef LOG_ACTION
-                  .def("show", &CScriptActionBase::show)
+        ,
+        "show", &CScriptActionBase::show
 #endif
-    ];
+    );
 }

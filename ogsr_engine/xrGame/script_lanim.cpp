@@ -7,13 +7,15 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "script_lanim.h"
+
+#include "../xrScriptEngine/xr_sol.h"
 #include "../xr_3da/LightAnimLibrary.h"
 
-using namespace luabind;
+#include "script_lanim.h"
 
 struct lanim_wrapper
 {
+private:
     CLAItem* item;
 
 public:
@@ -38,9 +40,6 @@ public:
 
 void lanim_registrator::script_register(lua_State* L)
 {
-    module(L)[class_<lanim_wrapper>("color_animator")
-                  .def(constructor<LPCSTR>())
-                  .def("load", &lanim_wrapper::load)
-                  .def("calculate", &lanim_wrapper::calculate)
-                  .def("length", &lanim_wrapper::length)];
+    sol::state_view(L).new_usertype<lanim_wrapper>("color_animator", sol::no_constructor, sol::call_constructor, sol::constructors<lanim_wrapper(LPCSTR)>(), "load",
+                                                   &lanim_wrapper::load, "calculate", &lanim_wrapper::calculate, "length", &lanim_wrapper::length);
 }

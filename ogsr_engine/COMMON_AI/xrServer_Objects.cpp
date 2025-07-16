@@ -71,9 +71,9 @@ void CSE_Temporary::STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_
 
 void CSE_Temporary::STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); };
 
-void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket){};
+void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {};
 
-void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket){};
+void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket) {};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
@@ -142,26 +142,3 @@ void CSE_PHSkeleton::load(NET_Packet& tNetPacket)
 void CSE_PHSkeleton::UPDATE_Write(NET_Packet& tNetPacket) {}
 
 void CSE_PHSkeleton::UPDATE_Read(NET_Packet& tNetPacket) {}
-
-CSE_AbstractVisual::CSE_AbstractVisual(LPCSTR section) : inherited1(section), inherited2(section) {}
-
-CSE_AbstractVisual::~CSE_AbstractVisual() {}
-
-void CSE_AbstractVisual::STATE_Read(NET_Packet& tNetPacket, u16 size)
-{
-    visual_read(tNetPacket, m_wVersion);
-    tNetPacket.r_stringZ(startup_animation);
-}
-
-void CSE_AbstractVisual::STATE_Write(NET_Packet& tNetPacket)
-{
-    visual_write(tNetPacket);
-    tNetPacket.w_stringZ(startup_animation);
-}
-
-void CSE_AbstractVisual::UPDATE_Read(NET_Packet& tNetPacket) {}
-
-void CSE_AbstractVisual::UPDATE_Write(NET_Packet& tNetPacket) {}
-LPCSTR CSE_AbstractVisual::getStartupAnimation() { return *startup_animation; }
-
-CSE_Visual* CSE_AbstractVisual::visual() { return this; }

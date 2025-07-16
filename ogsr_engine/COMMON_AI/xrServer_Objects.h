@@ -201,27 +201,6 @@ SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_PHSkeleton)
 #define script_type_list save_type_list(CSE_PHSkeleton)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual, CSE_Abstract, CSE_Visual) typedef CSE_Abstract inherited1;
-typedef CSE_Visual inherited2;
-
-CSE_AbstractVisual(LPCSTR caSection);
-virtual ~CSE_AbstractVisual();
-virtual CSE_Visual* __stdcall visual();
-LPCSTR getStartupAnimation();
-SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_AbstractVisual)
-#define script_type_list save_type_list(CSE_AbstractVisual)
-
     extern CSE_Abstract* F_entity_Create(LPCSTR caSection);
-
-/**
-SERVER_ENTITY_DECLARE_BEGIN(CSE_SpawnGroup,CSE_Abstract)
-public:
-                                    CSE_SpawnGroup	(LPCSTR caSection);
-    virtual							~CSE_SpawnGroup	();
-SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_SpawnGroup)
-#define script_type_list save_type_list(CSE_SpawnGroup)
-/**/
 
 #pragma warning(pop)

@@ -10,8 +10,14 @@
 #include "script_zone.h"
 #include "smart_zone.h"
 
-using namespace luabind;
+void CScriptZone::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CScriptZone>("ce_script_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScriptZone>), sol::base_classes,
+                                                 xr_sol_bases<CScriptZone>());
+}
 
-void CScriptZone::script_register(lua_State* L) { module(L)[class_<CScriptZone, DLL_Pure>("ce_script_zone").def(constructor<>())]; }
-
-void CSmartZone::script_register(lua_State* L) { module(L)[class_<CSmartZone, DLL_Pure>("ce_smart_zone").def(constructor<>())]; }
+void CSmartZone::script_register(lua_State* L)
+{
+    sol::state_view(L).new_usertype<CSmartZone>("ce_smart_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSmartZone>), sol::base_classes,
+                                                xr_sol_bases<CSmartZone>());
+}

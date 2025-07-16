@@ -7,19 +7,20 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../xrScriptEngine/xr_sol.h"
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
+
 #include "game_sv_base.h"
 #include "xrMessages.h"
 #include "ui/UIInventoryUtilities.h"
 #include "xr_time.h"
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "UI/UIGameTutorial.h"
 #include "string_table.h"
 #include "object_broker.h"
 #include "player_hud.h"
 
 #include <Objbase.h>
-
-using namespace luabind;
 
 CUISequencer* g_tutorial = NULL;
 CUISequencer* g_tutorial2 = NULL;
@@ -86,56 +87,29 @@ LPCSTR generate_id()
 
 void game_sv_GameState::script_register(lua_State* L)
 {
-    module(
-        L,
-        "game")[(class_<xrTime>("CTime")
-                     .enum_("date_format")[(value("DateToDay", int(InventoryUtilities::edpDateToDay)), value("DateToMonth", int(InventoryUtilities::edpDateToMonth)),
-                                            value("DateToYear", int(InventoryUtilities::edpDateToYear)))]
-                     .enum_("time_format")[(value("TimeToHours", int(InventoryUtilities::etpTimeToHours)), value("TimeToMinutes", int(InventoryUtilities::etpTimeToMinutes)),
-                                            value("TimeToSeconds", int(InventoryUtilities::etpTimeToSeconds)), value("TimeToMilisecs", int(InventoryUtilities::etpTimeToMilisecs)))]
-                     .def(constructor<>())
-                     .def(constructor<const xrTime&>())
-                     .def(const_self < xrTime())
-                     .def(const_self <= xrTime())
-                     .def(const_self > xrTime())
-                     .def(const_self >= xrTime())
-                     .def(const_self == xrTime())
-                     .def(self + xrTime())
-                     .def(self - xrTime())
+    auto lua = sol::state_view(L);
+    auto game = lua.create_named_table("game");
 
-                     .def("diffSec", &xrTime::diffSec_script)
-                     .def("add", &xrTime::add_script)
-                     .def("sub", &xrTime::sub_script)
+    game.new_usertype<xrTime>("CTime", sol::no_constructor, sol::call_constructor, sol::constructors<xrTime(), xrTime(const xrTime&)>(),
+                              // date_format
+                              "DateToDay", sol::var(InventoryUtilities::edpDateToDay), "DateToMonth", sol::var(InventoryUtilities::edpDateToMonth), "DateToYear",
+                              sol::var(InventoryUtilities::edpDateToYear),
 
-                     .def("setHMS", &xrTime::setHMS)
-                     .def("setHMSms", &xrTime::setHMSms)
-                     .def("set", &xrTime::set)
-                     .def("get", &xrTime::get,
-                          pure_out_value<2>() + pure_out_value<3>() + pure_out_value<4>() + pure_out_value<5>() + pure_out_value<6>() + pure_out_value<7>() + pure_out_value<8>())
+                              // time_format
+                              "TimeToHours", sol::var(InventoryUtilities::etpTimeToHours), "TimeToMinutes", sol::var(InventoryUtilities::etpTimeToMinutes), "TimeToSeconds",
+                              sol::var(InventoryUtilities::etpTimeToSeconds), "TimeToMilisecs", sol::var(InventoryUtilities::etpTimeToMilisecs),
 
-                     .def("dateToString", &xrTime::dateToString)
-                     .def("timeToString", &xrTime::timeToString),
+                              "diffSec", &xrTime::diffSec_script, "add", sol::policies(&xrTime::add_script, sol::returns_self()), "sub",
+                              sol::policies(&xrTime::sub_script, sol::returns_self()), "setHMS", sol::policies(&xrTime::setHMS, sol::returns_self()), "setHMSms",
+                              sol::policies(&xrTime::setHMSms, sol::returns_self()), "set", sol::policies(&xrTime::set, sol::returns_self()), "get", &xrTime::get, "dateToString",
+                              &xrTime::dateToString, "timeToString", &xrTime::timeToString);
 
-                 // declarations
-                 def("time", &get_time), def("get_game_time", &get_time_struct),
+    game.set("time", &get_time, "get_game_time", &get_time_struct, "start_tutorial", &start_tutorial, "stop_tutorial", &stop_tutorial, "has_active_tutorial", &has_active_tutotial,
+             "translate_string", &translate_string, "play_hud_motion", &PlayHudMotion, "stop_hud_motion", &StopHudMotion, "get_motion_length", &MotionLength, "hud_motion_allowed",
+             &AllowHudMotion, "play_hud_anm", &PlayBlendAnm, "stop_hud_anm", &StopBlendAnm, "stop_all_hud_anms", &StopAllBlendAnms, "set_hud_anm_time", &SetBlendAnmTime,
+             "generate_id", &generate_id, "StringHasUTF8", &StringHasUTF8, "StringToUTF8", &StringToUTF8, "StringFromUTF8", &StringFromUTF8);
 
-                 def("start_tutorial", &start_tutorial), def("stop_tutorial", &stop_tutorial), def("has_active_tutorial", &has_active_tutotial),
-
-                 def("translate_string", &translate_string),
-
-                 def("play_hud_motion", PlayHudMotion), def("stop_hud_motion", StopHudMotion), def("get_motion_length", MotionLength), def("hud_motion_allowed", AllowHudMotion),
-                 def("play_hud_anm", PlayBlendAnm), def("stop_hud_anm", StopBlendAnm), def("stop_all_hud_anms", StopAllBlendAnms), def("set_hud_anm_time", SetBlendAnmTime),
-                 // def("set_next_hud_motion_speed", SetNextHudMotionSpeed),
-
-                 def("generate_id", &generate_id),
-
-                 def("StringHasUTF8", &StringHasUTF8), def("StringToUTF8", &StringToUTF8), def("StringFromUTF8", &StringFromUTF8))];
-
-    module(L)[(class_<enum_exporter<EGamePlayerFlags>>("game_player_flags").enum_("flags")[value("GAME_PLAYER_FLAG_LOCAL", int(GAME_PLAYER_FLAG_LOCAL))],
-
-               class_<enum_exporter<EGamePhases>>("game_phases")
-                   .enum_("phases")[(value("GAME_PHASE_NONE", int(GAME_PHASE_NONE)), value("GAME_PHASE_INPROGRESS", int(GAME_PHASE_INPROGRESS)),
-                                     value("GAME_PHASE_PENDING", int(GAME_PHASE_PENDING)))],
-
-               class_<enum_exporter<EGameMessages>>("game_messages").enum_("messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED))])];
+    lua.new_enum("game_player_flags", "GAME_PLAYER_FLAG_LOCAL", GAME_PLAYER_FLAG_LOCAL);
+    lua.new_enum("game_phases", "GAME_PHASE_NONE", GAME_PHASE_NONE, "GAME_PHASE_INPROGRESS", GAME_PHASE_INPROGRESS, "GAME_PHASE_PENDING", GAME_PHASE_PENDING);
+    lua.new_enum("game_messages", "GAME_EVENT_PLAYER_CONNECTED", GAME_EVENT_PLAYER_CONNECTED);
 }
