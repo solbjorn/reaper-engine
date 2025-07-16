@@ -99,6 +99,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsquashfs", "3rd_party\Sr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "abseil", "3rd_party\Src\abseil\abseil.vcxproj", "{639AECFF-564B-474A-9EEB-B6A516288315}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hwloc", "3rd_party\Src\hwloc\hwloc.vcxproj", "{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luajit2", "3rd_party\Src\luajit2\luajit2.vcxproj", "{632AEEB6-DC06-4E15-9551-B2B09A4B73C5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lz4", "3rd_party\Src\lz4\lz4.vcxproj", "{D1E1660F-36EB-49A1-AAE1-D3913D72C1E1}"
@@ -106,6 +108,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mimalloc", "3rd_party\Src\mimalloc\mimalloc.vcxproj", "{C0E0A539-F615-4317-B12C-24B77195B41A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oneTBB", "3rd_party\Src\oneTBB\oneTBB.vcxproj", "{FD18CC23-5B32-4B39-9E74-80667FF8A9D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713} = {A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpCoDe", "3rd_party\Src\OpCoDe\OpCoDe.vcxproj", "{8B7E63C3-85BE-4671-999E-6C72D67F062D}"
 EndProject
@@ -227,6 +232,10 @@ Global
 		{639AECFF-564B-474A-9EEB-B6A516288315}.Debug|x64.Build.0 = Debug|x64
 		{639AECFF-564B-474A-9EEB-B6A516288315}.Release|x64.ActiveCfg = Release|x64
 		{639AECFF-564B-474A-9EEB-B6A516288315}.Release|x64.Build.0 = Release|x64
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}.Debug|x64.ActiveCfg = Debug|x64
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}.Debug|x64.Build.0 = Debug|x64
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}.Release|x64.ActiveCfg = Release|x64
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -254,6 +263,7 @@ Global
 		{F612C458-7AFD-4D2B-804E-AF9EF62218B4} = {6934D89E-B326-4C9B-BF76-F230DF37A423}
 		{E61C7C61-0119-4D89-9604-BD3B7C5F2ACA} = {6934D89E-B326-4C9B-BF76-F230DF37A423}
 		{639AECFF-564B-474A-9EEB-B6A516288315} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
+		{A3F8DB74-FED0-4ED3-9E51-F5B4E5AC9713} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}

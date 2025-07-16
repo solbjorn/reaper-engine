@@ -9,6 +9,7 @@ RD /s /q 3rd_party\Src\Xiph\ogg\_Build
 RD /s /q 3rd_party\Src\Xiph\theora\_Build
 RD /s /q 3rd_party\Src\Xiph\vorbis\_Build
 RD /s /q 3rd_party\Src\abseil\_Build
+RD /s /q 3rd_party\Src\hwloc\_Build
 RD /s /q 3rd_party\Src\libsquashfs\_Build
 RD /s /q 3rd_party\Src\lz4\_Build
 RD /s /q 3rd_party\Src\mimalloc\_Build

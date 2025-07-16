@@ -29,6 +29,10 @@
 [submodule "3rd_party/Src/concurrentqueue"]
 	path = 3rd_party/Src/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "3rd_party/Src/hwloc/hwloc"]
+	path = 3rd_party/Src/hwloc/hwloc
+	url = https://github.com/open-mpi/hwloc.git
+	branch = v2.x
 [submodule "3rd_party/Src/libsquashfs/squashfs-tools-ng"]
 	path = 3rd_party/Src/libsquashfs/squashfs-tools-ng
 	url = https://github.com/AgentD/squashfs-tools-ng.git
