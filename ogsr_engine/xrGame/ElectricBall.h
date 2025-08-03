@@ -8,6 +8,8 @@
 
 class CElectricBall : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CElectricBall, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -20,3 +22,4 @@ public:
 protected:
     virtual void UpdateCLChild();
 };
+XR_SOL_BASE_CLASSES(CElectricBall);

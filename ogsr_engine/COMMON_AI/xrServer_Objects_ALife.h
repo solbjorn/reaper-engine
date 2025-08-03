@@ -59,34 +59,39 @@ virtual CSE_ALifeDynamicObject* tpfGetBestDetector() = 0;
 #endif
 }
 ;
-add_to_type_list(CSE_ALifeSchedulable)
+
+add_to_type_list(CSE_ALifeSchedulable);
 #define script_type_list save_type_list(CSE_ALifeSchedulable)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeGraphPoint, CSE_Abstract) public : shared_str m_caConnectionLevelName;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeGraphPoint, CSE_Abstract) public : shared_str m_caConnectionLevelName;
 shared_str m_caConnectionPointName;
 u8 m_tLocations[GameGraph::LOCATION_TYPE_COUNT];
 
 CSE_ALifeGraphPoint(LPCSTR caSection);
 virtual ~CSE_ALifeGraphPoint();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeGraphPoint)
+XR_SOL_BASE_CLASSES(CSE_ALifeGraphPoint);
+
+add_to_type_list(CSE_ALifeGraphPoint);
 #define script_type_list save_type_list(CSE_ALifeGraphPoint)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObject, CSE_Abstract) enum {
-        flUseSwitches = u32(1) << 0,
-        flSwitchOnline = u32(1) << 1,
-        flSwitchOffline = u32(1) << 2,
-        flInteractive = u32(1) << 3,
-        flVisibleForAI = u32(1) << 4,
-        flUsefulForAI = u32(1) << 5,
-        flOfflineNoMove = u32(1) << 6,
-        flUsedAI_Locations = u32(1) << 7,
-        flGroupBehaviour = u32(1) << 8,
-        flCanSave = u32(1) << 9,
-        flVisibleForMap = u32(1) << 10,
-        flUseSmartTerrains = u32(1) << 11,
-        flCheckForSeparator = u32(1) << 12,
-    };
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObject, CSE_Abstract)
+enum
+{
+    flUseSwitches = u32(1) << 0,
+    flSwitchOnline = u32(1) << 1,
+    flSwitchOffline = u32(1) << 2,
+    flInteractive = u32(1) << 3,
+    flVisibleForAI = u32(1) << 4,
+    flUsefulForAI = u32(1) << 5,
+    flOfflineNoMove = u32(1) << 6,
+    flUsedAI_Locations = u32(1) << 7,
+    flGroupBehaviour = u32(1) << 8,
+    flCanSave = u32(1) << 9,
+    flVisibleForMap = u32(1) << 10,
+    flUseSmartTerrains = u32(1) << 11,
+    flCheckForSeparator = u32(1) << 12,
+};
 
 public:
 typedef CSE_Abstract inherited;
@@ -107,8 +112,10 @@ CSE_ALifeObject(LPCSTR caSection);
 virtual ~CSE_ALifeObject();
 virtual bool used_ai_locations() const;
 virtual bool can_save() const;
-virtual bool can_switch_online() const;
-virtual bool can_switch_offline() const;
+virtual bool __can_switch_online() const;
+bool can_switch_online() const;
+virtual bool __can_switch_offline() const;
+bool can_switch_offline() const;
 virtual bool interactive() const;
 virtual CSE_ALifeObject* cast_alife_object() { return this; }
 bool move_offline() const;
@@ -128,13 +135,16 @@ virtual void spawn_supplies(LPCSTR);
 virtual void spawn_supplies();
 CALifeSimulator& alife() const;
 virtual Fvector draw_level_position() const;
-virtual bool keep_saved_data_anyway() const;
+virtual bool __keep_saved_data_anyway() const;
+bool keep_saved_data_anyway() const;
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObject)
+XR_SOL_BASE_CLASSES(CSE_ALifeObject);
+
+add_to_type_list(CSE_ALifeObject);
 #define script_type_list save_type_list(CSE_ALifeObject)
 
-    SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeGroupAbstract) ALife::OBJECT_VECTOR m_tpMembers;
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeGroupAbstract) ALife::OBJECT_VECTOR m_tpMembers;
 bool m_bCreateSpawnPositions;
 u16 m_wCount;
 ALife::_TIME_ID m_tNextBirthTime;
@@ -155,11 +165,12 @@ virtual void switch_offline();
 virtual bool redundant() const;
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeGroupAbstract)
+
+add_to_type_list(CSE_ALifeGroupAbstract);
 #define script_type_list save_type_list(CSE_ALifeGroupAbstract)
 
-    template <class __A>
-    class CSE_ALifeGroupTemplate : public __A, public CSE_ALifeGroupAbstract
+template <class __A>
+class CSE_ALifeGroupTemplate : public __A, public CSE_ALifeGroupAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSE_ALifeGroupTemplate<__A>, __A, CSE_ALifeGroupAbstract);
 
@@ -172,16 +183,16 @@ public:
 
     virtual ~CSE_ALifeGroupTemplate() {};
 
-    virtual void STATE_Read(NET_Packet& tNetPacket, u16 size)
+    virtual void __STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
-        inherited1::STATE_Read(tNetPacket, size);
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited1::__STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
     };
 
-    virtual void STATE_Write(NET_Packet& tNetPacket)
+    virtual void __STATE_Write(NET_Packet& tNetPacket)
     {
-        inherited1::STATE_Write(tNetPacket);
-        inherited2::STATE_Write(tNetPacket);
+        inherited1::__STATE_Write(tNetPacket);
+        inherited2::__STATE_Write(tNetPacket);
     };
 
     virtual void UPDATE_Read(NET_Packet& tNetPacket)
@@ -234,9 +245,12 @@ CSE_ALifeDynamicObject(LPCSTR caSection);
 virtual ~CSE_ALifeDynamicObject();
 #ifdef XRGAME_EXPORTS
 virtual void on_spawn();
-virtual void on_before_register();
-virtual void on_register();
-virtual void on_unregister();
+virtual void __on_before_register();
+void on_before_register();
+virtual void __on_register();
+void on_register();
+virtual void __on_unregister();
+void on_unregister();
 virtual bool synchronize_location();
 virtual void try_switch_online();
 virtual void try_switch_offline();
@@ -250,17 +264,21 @@ void detach(CSE_ALifeInventoryItem* tpALifeInventoryItem, ALife::OBJECT_IT* I = 
 #endif
 virtual CSE_ALifeDynamicObject* cast_alife_dynamic_object() { return this; }
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeDynamicObject)
+XR_SOL_BASE_CLASSES(CSE_ALifeDynamicObject);
+
+add_to_type_list(CSE_ALifeDynamicObject);
 #define script_type_list save_type_list(CSE_ALifeDynamicObject)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeDynamicObjectVisual, CSE_ALifeDynamicObject, CSE_Visual) CSE_ALifeDynamicObjectVisual(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeDynamicObjectVisual, CSE_ALifeDynamicObject, CSE_Visual) CSE_ALifeDynamicObjectVisual(LPCSTR caSection);
 virtual ~CSE_ALifeDynamicObjectVisual();
 virtual CSE_Visual* __stdcall visual();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeDynamicObjectVisual)
+XR_SOL_BASE_CLASSES(CSE_ALifeDynamicObjectVisual);
+
+add_to_type_list(CSE_ALifeDynamicObjectVisual);
 #define script_type_list save_type_list(CSE_ALifeDynamicObjectVisual)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifePHSkeletonObject, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) CSE_ALifePHSkeletonObject(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifePHSkeletonObject, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) CSE_ALifePHSkeletonObject(LPCSTR caSection);
 virtual ~CSE_ALifePHSkeletonObject();
 virtual bool can_save() const;
 virtual bool used_ai_locations() const;
@@ -269,21 +287,25 @@ virtual CSE_Abstract* cast_abstract() { return this; }
 
 public:
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifePHSkeletonObject)
+XR_SOL_BASE_CLASSES(CSE_ALifePHSkeletonObject);
+
+add_to_type_list(CSE_ALifePHSkeletonObject);
 #define script_type_list save_type_list(CSE_ALifePHSkeletonObject)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSpaceRestrictor, CSE_ALifeDynamicObject, CSE_Shape) u8 m_space_restrictor_type;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSpaceRestrictor, CSE_ALifeDynamicObject, CSE_Shape) u8 m_space_restrictor_type;
 
 CSE_ALifeSpaceRestrictor(LPCSTR caSection);
 virtual ~CSE_ALifeSpaceRestrictor();
 virtual ISE_Shape* __stdcall shape();
-virtual bool can_switch_offline() const;
+virtual bool __can_switch_offline() const;
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeSpaceRestrictor)
+XR_SOL_BASE_CLASSES(CSE_ALifeSpaceRestrictor);
+
+add_to_type_list(CSE_ALifeSpaceRestrictor);
 #define script_type_list save_type_list(CSE_ALifeSpaceRestrictor)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger, CSE_ALifeSpaceRestrictor) GameGraph::_GRAPH_ID m_tNextGraphID;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger, CSE_ALifeSpaceRestrictor) GameGraph::_GRAPH_ID m_tNextGraphID;
 u32 m_dwNextNodeID;
 Fvector m_tNextPosition;
 Fvector m_tAngles;
@@ -294,10 +316,12 @@ u8 m_SilentMode;
 CSE_ALifeLevelChanger(LPCSTR caSection);
 virtual ~CSE_ALifeLevelChanger();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeLevelChanger)
+XR_SOL_BASE_CLASSES(CSE_ALifeLevelChanger);
+
+add_to_type_list(CSE_ALifeLevelChanger);
 #define script_type_list save_type_list(CSE_ALifeLevelChanger)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSmartZone, CSE_ALifeSpaceRestrictor, CSE_ALifeSchedulable) CSE_ALifeSmartZone(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSmartZone, CSE_ALifeSpaceRestrictor, CSE_ALifeSchedulable) CSE_ALifeSmartZone(LPCSTR caSection);
 virtual ~CSE_ALifeSmartZone();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -305,8 +329,8 @@ virtual CSE_Abstract* init();
 virtual CSE_Abstract* cast_abstract() { return this; };
 virtual CSE_ALifeSchedulable* cast_schedulable() { return this; };
 virtual void update();
-virtual float detect_probability();
-virtual void smart_touch(CSE_ALifeMonsterAbstract* monster);
+virtual float detect_probability() { return 0.f; }
+virtual void smart_touch(CSE_ALifeMonsterAbstract*) {}
 virtual bool used_ai_locations() const { return true; };
 virtual CSE_ALifeSmartZone* cast_smart_zone() { return this; };
 #ifdef XRGAME_EXPORTS
@@ -315,17 +339,19 @@ virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& 
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
 // additional functionality
-virtual bool enabled(CSE_ALifeMonsterAbstract* object) const { return false; };
-virtual float suitable(CSE_ALifeMonsterAbstract* object) const { return 0.f; };
-virtual void register_npc(CSE_ALifeMonsterAbstract* object) {};
-virtual void unregister_npc(CSE_ALifeMonsterAbstract* object) {};
-virtual CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object) { return 0; };
+virtual bool enabled(CSE_ALifeMonsterAbstract* object) const;
+virtual float suitable(CSE_ALifeMonsterAbstract* object) const;
+virtual void register_npc(CSE_ALifeMonsterAbstract* object);
+virtual void unregister_npc(CSE_ALifeMonsterAbstract* object);
+virtual CALifeSmartTerrainTask* task(CSE_ALifeMonsterAbstract* object);
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeSmartZone)
+XR_SOL_BASE_CLASSES(CSE_ALifeSmartZone);
+
+add_to_type_list(CSE_ALifeSmartZone);
 #define script_type_list save_type_list(CSE_ALifeSmartZone)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectPhysic, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) u32 type;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectPhysic, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) u32 type;
 f32 mass;
 shared_str fixed_bones;
 CSE_ALifeObjectPhysic(LPCSTR caSection);
@@ -338,21 +364,24 @@ virtual CSE_Abstract* cast_abstract() { return this; }
 //	using inherited::load(IReader&);
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObjectPhysic)
+XR_SOL_BASE_CLASSES(CSE_ALifeObjectPhysic);
+
+add_to_type_list(CSE_ALifeObjectPhysic);
 #define script_type_list save_type_list(CSE_ALifeObjectPhysic)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton)
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton)
 
-        enum {
-            flPhysic = (1 << 0),
-            flCastShadow = (1 << 1),
-            flR1 = (1 << 2),
-            flR2 = (1 << 3),
-            flTypeSpot = (1 << 4),
-            flPointAmbient = (1 << 5),
-            flVolumetricLight = (1 << 6),
-            flUseFlare = (1 << 7),
-        };
+enum
+{
+    flPhysic = (1 << 0),
+    flCastShadow = (1 << 1),
+    flR1 = (1 << 2),
+    flR2 = (1 << 3),
+    flTypeSpot = (1 << 4),
+    flPointAmbient = (1 << 5),
+    flVolumetricLight = (1 << 6),
+    flUseFlare = (1 << 7),
+};
 
 Flags16 flags;
 // light color
@@ -394,17 +423,21 @@ virtual bool __stdcall validate();
 virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
 virtual CSE_Abstract* cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObjectHangingLamp)
+XR_SOL_BASE_CLASSES(CSE_ALifeObjectHangingLamp);
+
+add_to_type_list(CSE_ALifeObjectHangingLamp);
 #define script_type_list save_type_list(CSE_ALifeObjectHangingLamp)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectProjector, CSE_ALifeDynamicObjectVisual) CSE_ALifeObjectProjector(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectProjector, CSE_ALifeDynamicObjectVisual) CSE_ALifeObjectProjector(LPCSTR caSection);
 virtual ~CSE_ALifeObjectProjector();
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObjectProjector)
+XR_SOL_BASE_CLASSES(CSE_ALifeObjectProjector);
+
+add_to_type_list(CSE_ALifeObjectProjector);
 #define script_type_list save_type_list(CSE_ALifeObjectProjector)
 
-    SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter, CSE_ALifeDynamicObjectVisual, CSE_Motion, CSE_PHSkeleton) shared_str engine_sound;
+SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter, CSE_ALifeDynamicObjectVisual, CSE_Motion, CSE_PHSkeleton) shared_str engine_sound;
 CSE_ALifeHelicopter(LPCSTR caSection);
 virtual ~CSE_ALifeHelicopter();
 virtual void load(NET_Packet& tNetPacket);
@@ -414,10 +447,12 @@ virtual CSE_Motion* __stdcall motion();
 virtual CSE_Abstract* cast_abstract() { return this; }
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeHelicopter)
+XR_SOL_BASE_CLASSES(CSE_ALifeHelicopter);
+
+add_to_type_list(CSE_ALifeHelicopter);
 #define script_type_list save_type_list(CSE_ALifeHelicopter)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) struct SDoorState
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton) struct SDoorState
 {
     void read(NET_Packet& P);
     void write(NET_Packet& P);
@@ -444,41 +479,50 @@ protected:
 virtual void data_load(NET_Packet& tNetPacket);
 virtual void data_save(NET_Packet& tNetPacket);
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCar)
+XR_SOL_BASE_CLASSES(CSE_ALifeCar);
+
+add_to_type_list(CSE_ALifeCar);
 #define script_type_list save_type_list(CSE_ALifeCar)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectBreakable, CSE_ALifeDynamicObjectVisual) float m_health;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectBreakable, CSE_ALifeDynamicObjectVisual) float m_health;
 CSE_ALifeObjectBreakable(LPCSTR caSection);
 virtual ~CSE_ALifeObjectBreakable();
 virtual bool used_ai_locations() const;
-virtual bool can_switch_offline() const;
+virtual bool __can_switch_offline() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObjectBreakable)
+XR_SOL_BASE_CLASSES(CSE_ALifeObjectBreakable);
+
+add_to_type_list(CSE_ALifeObjectBreakable);
 #define script_type_list save_type_list(CSE_ALifeObjectBreakable)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable, CSE_Shape, CSE_ALifeDynamicObject) CSE_ALifeObjectClimable(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable, CSE_Shape, CSE_ALifeDynamicObject) CSE_ALifeObjectClimable(LPCSTR caSection);
 virtual ~CSE_ALifeObjectClimable();
 virtual bool used_ai_locations() const;
-virtual bool can_switch_offline() const;
+virtual bool __can_switch_offline() const;
 virtual ISE_Shape* __stdcall shape();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeObjectClimable)
+XR_SOL_BASE_CLASSES(CSE_ALifeObjectClimable);
+
+add_to_type_list(CSE_ALifeObjectClimable);
 #define script_type_list save_type_list(CSE_ALifeObjectClimable)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMountedWeapon, CSE_ALifeDynamicObjectVisual) CSE_ALifeMountedWeapon(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMountedWeapon, CSE_ALifeDynamicObjectVisual) CSE_ALifeMountedWeapon(LPCSTR caSection);
 virtual ~CSE_ALifeMountedWeapon();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMountedWeapon)
+XR_SOL_BASE_CLASSES(CSE_ALifeMountedWeapon);
+
+add_to_type_list(CSE_ALifeMountedWeapon);
 #define script_type_list save_type_list(CSE_ALifeMountedWeapon)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun, CSE_ALifeDynamicObjectVisual) bool m_bWorking{};
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun, CSE_ALifeDynamicObjectVisual) bool m_bWorking{};
 Fvector m_destEnemyDir;
 
 CSE_ALifeStationaryMgun(LPCSTR caSection);
 virtual ~CSE_ALifeStationaryMgun();
 
 SERVER_ENTITY_DECLARE_END
-// add_to_type_list(CSE_ALifeStationaryMgun)
+
+// add_to_type_list(CSE_ALifeStationaryMgun);
 // #define script_type_list save_type_list(CSE_ALifeStationaryMgun)
 
 extern void add_online_impl(CSE_ALifeDynamicObject* object, const bool& update_registries);

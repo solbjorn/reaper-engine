@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "PhraseDialog_script.h"
 #include "PhraseDialog.h"
 
@@ -12,10 +10,8 @@ void CPhraseScript::AddDontHasInfo(LPCSTR str) { m_DontHasInfo.push_back(str); }
 void CPhraseScript::AddGiveInfo(LPCSTR str) { m_GiveInfo.push_back(str); }
 void CPhraseScript::AddDisableInfo(LPCSTR str) { m_DisableInfo.push_back(str); }
 
-void CPhraseDialogExporter::script_register(lua_State* L)
+void CPhraseDialogExporter::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CPhrase>("CPhrase", sol::no_constructor, "GetPhraseScript", &CPhrase::GetPhraseScript, "GetText", &CPhrase::GetText, "SetText", &CPhrase::SetText);
 
     lua.new_usertype<CPhraseDialog>("CPhraseDialog", sol::no_constructor, "AddPhrase", &CPhraseDialog::AddPhrase_script, "SetPriority", &CPhraseDialog::SetPriority, "SetCaption",

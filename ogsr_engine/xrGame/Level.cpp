@@ -829,9 +829,9 @@ void CLevel::OnChangeCurrentWeather(const char* sect)
 {
     if (on_change_weather_callback.empty())
         return;
-    luabind::functor<void> funct;
-    if (ai().script_engine().functor(on_change_weather_callback.c_str(), funct))
-        funct(sect);
+
+    if (sol::function func; ai().script_engine().function(on_change_weather_callback.c_str(), func))
+        func(sect);
 }
 
 u32 GameID() { return Game().Type(); }

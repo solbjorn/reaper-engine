@@ -5,7 +5,7 @@
 
 #include "SoundRender.h"
 
-class CSoundRender_Target : public virtual RTTI::Enable
+class XR_NOVTABLE CSoundRender_Target : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSoundRender_Target);
 
@@ -22,7 +22,7 @@ protected:
 
 public:
     CSoundRender_Target() = default;
-    virtual ~CSoundRender_Target() = default;
+    virtual ~CSoundRender_Target() = 0;
 
     CSoundRender_Emitter* get_emitter() const { return m_pEmitter; }
     bool get_Rendering() const { return rendering; }
@@ -42,5 +42,7 @@ public:
 
     ICF auto get_priority() const { return priority; }
 };
+
+inline CSoundRender_Target::~CSoundRender_Target() = default;
 
 #endif

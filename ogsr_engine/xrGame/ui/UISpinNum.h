@@ -8,6 +8,8 @@
 
 class CUISpinNum : public CUICustomSpin
 {
+    RTTI_DECLARE_TYPEINFO(CUISpinNum, CUICustomSpin);
+
 public:
     CUISpinNum();
 
@@ -37,9 +39,12 @@ protected:
     int m_iStep;
     int m_iVal;
 };
+XR_SOL_BASE_CLASSES(CUISpinNum);
 
 class CUISpinFlt : public CUICustomSpin
 {
+    RTTI_DECLARE_TYPEINFO(CUISpinFlt, CUICustomSpin);
+
 public:
     CUISpinFlt();
 
@@ -68,3 +73,4 @@ protected:
     float m_fStep;
     float m_fVal;
 };
+XR_SOL_BASE_CLASSES(CUISpinFlt);

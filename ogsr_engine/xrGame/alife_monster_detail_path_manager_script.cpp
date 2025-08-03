@@ -8,14 +8,12 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "alife_monster_detail_path_manager.h"
 #include "alife_smart_terrain_task.h"
 
-void CALifeMonsterDetailPathManager::script_register(lua_State* L)
+void CALifeMonsterDetailPathManager::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CALifeMonsterDetailPathManager>(
+    lua.new_usertype<CALifeMonsterDetailPathManager>(
         "CALifeMonsterDetailPathManager", sol::no_constructor, "target",
         sol::overload(sol::resolve<void(const GameGraph::_GRAPH_ID&, const u32&, const Fvector&)>(&CALifeMonsterDetailPathManager::target),
                       sol::resolve<void(const GameGraph::_GRAPH_ID&)>(&CALifeMonsterDetailPathManager::target),

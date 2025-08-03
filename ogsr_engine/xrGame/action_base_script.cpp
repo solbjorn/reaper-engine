@@ -12,21 +12,22 @@
 #include "script_game_object.h"
 
 template <>
-void CActionBase<CScriptGameObject>::script_register(lua_State* L)
+void CActionBase<CScriptGameObject>::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptActionBase>(
-        "action_base", sol::no_constructor, sol::call_constructor,
-        sol::constructors<CScriptActionBase(), CScriptActionBase(CScriptGameObject*), CScriptActionBase(CScriptGameObject*, LPCSTR)>(), "object",
-        sol::readonly(&CScriptActionBase::m_object), "storage", sol::readonly(&CScriptActionBase::m_storage), "add_precondition",
-        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_condition), "add_effect",
-        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_effect), "remove_precondition",
-        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_condition), "remove_effect",
-        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_effect), "setup", &CScriptActionBase::setup, "initialize",
-        &CScriptActionBase::initialize, "execute", &CScriptActionBase::execute, "finalize", &CScriptActionBase::finalize, "weight", &CScriptActionBase::weight, "set_weight",
-        &CScriptActionBase::set_weight
+    lua.new_usertype<CScriptActionBase>("action_base", sol::no_constructor, sol::call_constructor,
+                                        sol::factories(std::make_unique<CScriptActionBase>, std::make_unique<CScriptActionBase, CScriptGameObject*>,
+                                                       std::make_unique<CScriptActionBase, CScriptGameObject*, LPCSTR>),
+                                        "priv", &CScriptActionBase::priv, "ops", &CScriptActionBase::ops, "EXECUTE", sol::var(CScriptActionBase::EXECUTE), "FINALIZE",
+                                        sol::var(CScriptActionBase::FINALIZE), "INITIALIZE", sol::var(CScriptActionBase::INITIALIZE), "object",
+                                        sol::readonly(&CScriptActionBase::m_object), "storage", sol::readonly(&CScriptActionBase::m_storage), "add_precondition",
+                                        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_condition), "add_effect",
+                                        sol::resolve<void(const CScriptActionBase::COperatorCondition&)>(&CScriptActionBase::add_effect), "remove_precondition",
+                                        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_condition), "remove_effect",
+                                        sol::resolve<void(const CScriptActionBase::COperatorCondition::condition_type&)>(&CScriptActionBase::remove_effect), "setup",
+                                        &CScriptActionBase::setup, "weight", &CScriptActionBase::weight, "set_weight", &CScriptActionBase::set_weight
 #ifdef LOG_ACTION
-        ,
-        "show", &CScriptActionBase::show
+                                        ,
+                                        "show", &CScriptActionBase::show
 #endif
     );
 }

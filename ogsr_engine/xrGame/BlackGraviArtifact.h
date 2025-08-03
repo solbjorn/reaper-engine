@@ -58,3 +58,4 @@ protected:
 
     shared_str m_sParticleName;
 };
+XR_SOL_BASE_CLASSES(CBlackGraviArtefact);

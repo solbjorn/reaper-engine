@@ -12,9 +12,9 @@
 #include "script_game_object.h"
 
 template <>
-void CActionPlannerAction<CScriptGameObject>::script_register(lua_State* L)
+void CActionPlannerAction<CScriptGameObject>::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptActionPlannerAction>(
+    lua.new_usertype<CScriptActionPlannerAction>(
         "planner_action", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptActionPlannerAction(), CScriptActionPlannerAction(CScriptGameObject*), CScriptActionPlannerAction(CScriptGameObject*, LPCSTR)>(), "setup",
         &CScriptActionPlannerAction::setup, "initialize", &CScriptActionPlannerAction::initialize, "execute", &CScriptActionPlannerAction::execute, "finalize",

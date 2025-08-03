@@ -8,16 +8,16 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_fvector.h"
 
 template <>
-void CScriptFvector::script_register(lua_State* L)
+void CScriptFvector::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<Fvector>(
-        "vector", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector& v) { v = Fvector{}; }), "x", &Fvector::x, "y", &Fvector::y, "z", &Fvector::z, "set",
+        "vector", sol::no_constructor, sol::call_constructor,
+        sol::initializers([](Fvector& v) { v = Fvector{}; }, [](Fvector& v, const Fvector& other) { v = other; },
+                          [](Fvector& v, float x, float y, float z) { v = Fvector(x, y, z); }),
+        "x", &Fvector::x, "y", &Fvector::y, "z", &Fvector::z, "set",
         sol::policies(sol::overload(sol::resolve<Fvector&(float, float, float)>(&Fvector::set), sol::resolve<Fvector&(const Fvector&)>(&Fvector::set)), sol::returns_self()), "add",
         sol::policies(sol::overload(sol::resolve<Fvector&(float)>(&Fvector::add), sol::resolve<Fvector&(const Fvector&)>(&Fvector::add),
                                     sol::resolve<Fvector&(const Fvector&, const Fvector&)>(&Fvector::add), sol::resolve<Fvector&(const Fvector&, float)>(&Fvector::add)),
@@ -61,7 +61,9 @@ void CScriptFvector::script_register(lua_State* L)
         "getP", &Fvector::getP, "reflect", sol::policies(&Fvector::reflect, sol::returns_self()), "slide", sol::policies(&Fvector::slide, sol::returns_self()));
 
     lua.new_usertype<Fvector2>(
-        "vector2", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector2& v) { v = Fvector2{}; }), "x", &Fvector2::x, "y", &Fvector2::y, "set",
+        "vector2", sol::no_constructor, sol::call_constructor,
+        sol::initializers([](Fvector2& v) { v = Fvector2{}; }, [](Fvector2& v, const Fvector2& other) { v = other; }, [](Fvector2& v, float x, float y) { v = Fvector2(x, y); }),
+        "x", &Fvector2::x, "y", &Fvector2::y, "set",
         sol::policies(sol::overload(sol::resolve<Fvector2&(float, float)>(&Fvector2::set), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::set)), sol::returns_self()), "add",
         sol::policies(sol::overload(sol::resolve<Fvector2&(float)>(&Fvector2::add), sol::resolve<Fvector2&(const Fvector2&)>(&Fvector2::add),
                                     sol::resolve<Fvector2&(const Fvector2&, const Fvector2&)>(&Fvector2::add), sol::resolve<Fvector2&(const Fvector2&, float)>(&Fvector2::add)),
@@ -84,8 +86,11 @@ void CScriptFvector::script_register(lua_State* L)
         &Fvector2::getH);
 
     lua.new_usertype<Fvector4>(
-        "vector4", sol::no_constructor, sol::call_constructor, sol::initializers([](Fvector4& v) { v = Fvector4{}; }), "x", sol::property(&Fvector4::getx, &Fvector4::setx), "y",
-        sol::property(&Fvector4::gety, &Fvector4::sety), "z", sol::property(&Fvector4::getz, &Fvector4::setz), "w", sol::property(&Fvector4::getw, &Fvector4::setw), "set",
+        "vector4", sol::no_constructor, sol::call_constructor,
+        sol::initializers([](Fvector4& v) { v = Fvector4{}; }, [](Fvector4& v, const Fvector4& other) { v = other; },
+                          [](Fvector4& v, float x, float y, float z, float w) { v = Fvector4(x, y, z, w); }),
+        "x", sol::property(&Fvector4::getx, &Fvector4::setx), "y", sol::property(&Fvector4::gety, &Fvector4::sety), "z", sol::property(&Fvector4::getz, &Fvector4::setz), "w",
+        sol::property(&Fvector4::getw, &Fvector4::setw), "set",
         sol::policies(sol::overload(sol::resolve<Fvector4&(float, float, float, float)>(&Fvector4::set), sol::resolve<Fvector4&(const Fvector4&)>(&Fvector4::set)),
                       sol::returns_self()),
         "add",

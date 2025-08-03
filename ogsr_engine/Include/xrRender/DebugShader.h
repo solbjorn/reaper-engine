@@ -5,6 +5,6 @@
 #include "FactoryPtr.h"
 #include "UIShader.h"
 
-typedef FactoryPtr<IUIShader> debug_shader;
+using debug_shader = FactoryPtr<IUIShader>;
 
 #endif //	DebugShader_included

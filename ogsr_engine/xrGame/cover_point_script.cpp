@@ -8,10 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "cover_point.h"
 
-void CCoverPoint::script_register(lua_State* L)
+void CCoverPoint::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CCoverPoint>("cover_point", sol::no_constructor, "position", &CCoverPoint::position, "level_vertex_id", &CCoverPoint::level_vertex_id);
+    lua.new_usertype<CCoverPoint>("cover_point", sol::no_constructor, "position", &CCoverPoint::position, "level_vertex_id", &CCoverPoint::level_vertex_id);
 }

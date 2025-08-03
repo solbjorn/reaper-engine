@@ -5,14 +5,18 @@
 
 class CF1 : public CGrenade
 {
-    typedef CGrenade inherited;
+    RTTI_DECLARE_TYPEINFO(CF1, CGrenade);
 
 public:
+    typedef CGrenade inherited;
+
     CF1(void);
     virtual ~CF1(void);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CF1)
+XR_SOL_BASE_CLASSES(CF1);
+
+add_to_type_list(CF1);
 #undef script_type_list
 #define script_type_list save_type_list(CF1)

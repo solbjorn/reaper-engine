@@ -58,10 +58,13 @@ public:
         inherited_action::load(packet);
     }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+
 typedef CActionPlannerAction<CScriptGameObject> CScriptActionPlannerAction;
-add_to_type_list(CScriptActionPlannerAction)
+XR_SOL_BASE_CLASSES(CScriptActionPlannerAction);
+
+add_to_type_list(CScriptActionPlannerAction);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptActionPlannerAction)
 

@@ -81,10 +81,8 @@ static bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CAc
 static bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
 static bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantSprint); }
 
-void CScriptActor::script_register(lua_State* L)
+void CScriptActor::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CActorCondition>(
         "CActorConditionBase", sol::no_constructor, "health", sol::property(&CActorCondition::GetHealth, &set_health), "health_max",
         sol::property(&CActorCondition::GetMaxHealth, &set_max_health), "alcohol_health", &CActorCondition::m_fAlcohol, "alcohol_v", &CActorCondition::m_fV_Alcohol, "power_v",

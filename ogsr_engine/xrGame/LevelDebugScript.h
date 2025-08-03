@@ -52,6 +52,7 @@ public:
 
     virtual void Render();
 };
+XR_SOL_BASE_CLASSES(DBG_ScriptSphere);
 
 class DBG_ScriptBox : public DBG_ScriptObject
 {
@@ -73,6 +74,7 @@ public:
 
     virtual void Render();
 };
+XR_SOL_BASE_CLASSES(DBG_ScriptBox);
 
 class DBG_ScriptLine : public DBG_ScriptObject
 {
@@ -93,3 +95,4 @@ public:
 
     virtual void Render();
 };
+XR_SOL_BASE_CLASSES(DBG_ScriptLine);

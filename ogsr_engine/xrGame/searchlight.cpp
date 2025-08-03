@@ -239,9 +239,9 @@ void CProjector::Hit(SHit* pHDS)
     callback(GameObject::eHit)(lua_game_object(), HDS.power, HDS.dir, smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.bone());
 }
 
-void CProjector::script_register(lua_State* L)
+void CProjector::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CProjector>(
+    lua.new_usertype<CProjector>(
         "projector", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CProjector>), "current_yaw",
         sol::property(&CProjector::GetCurrentYaw, &CProjector::SetCurrentYaw), "current_pitch", sol::property(&CProjector::GetCurrentPitch, &CProjector::SetCurrentPitch),
         "target_yaw", sol::property(&CProjector::GetTargetYaw, &CProjector::SetTargetYaw), "target_pitch", sol::property(&CProjector::GetTargetPitch, &CProjector::SetTargetPitch),

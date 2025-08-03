@@ -45,13 +45,13 @@ DEFINE_MAP(u16, physicsBone, BONE_P_MAP, BONE_P_PAIR_IT);
 typedef const BONE_P_MAP ::iterator BONE_P_PAIR_CIT;
 
 // ABSTRACT:
-class CPhysicsBase : public virtual RTTI::Enable
+class XR_NOVTABLE CPhysicsBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPhysicsBase);
 
 public:
     Fmatrix mXFORM; // In parent space
-public:
+
     virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false) = 0;
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false) = 0;
     virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false) = 0;
@@ -105,12 +105,14 @@ public:
 
     virtual void SetAnimated(bool v) = 0;
 
-    virtual ~CPhysicsBase() {};
+    virtual ~CPhysicsBase() = 0;
 };
+
+inline CPhysicsBase::~CPhysicsBase() = default;
 
 // ABSTRACT:
 // Element is fully Rigid and consists of one or more forms, such as sphere, box, cylinder, etc.
-class CPhysicsElement : public CPhysicsBase, public IPhysicsElement
+class XR_NOVTABLE CPhysicsElement : public CPhysicsBase, public IPhysicsElement
 {
     RTTI_DECLARE_TYPEINFO(CPhysicsElement, CPhysicsBase, IPhysicsElement);
 
@@ -155,18 +157,22 @@ public:
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual ~CPhysicsElement() {};
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-};
+    virtual ~CPhysicsElement() = 0;
 
-add_to_type_list(CPhysicsElement)
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
+};
+XR_SOL_BASE_CLASSES(CPhysicsElement);
+
+inline CPhysicsElement::~CPhysicsElement() = default;
+
+add_to_type_list(CPhysicsElement);
 #undef script_type_list
 #define script_type_list save_type_list(CPhysicsElement)
 
-    // ABSTRACT:
-    //  Joint between two elements
+// ABSTRACT:
+//  Joint between two elements
 
-    class CPhysicsJoint : public virtual RTTI::Enable
+class XR_NOVTABLE CPhysicsJoint : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPhysicsJoint);
 
@@ -189,7 +195,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     enumType eType; // type of the joint
 public:
-    virtual ~CPhysicsJoint() {};
+    virtual ~CPhysicsJoint() = 0;
+
     virtual u16 BoneID() = 0;
     virtual void SetBoneID(u16 bone_id) = 0;
     virtual CPhysicsElement* PFirst_element() = 0;
@@ -235,19 +242,24 @@ public:
     virtual void GetAxisDir(int num, Fvector& axis, eVs& vs) = 0;
     virtual void GetAxisDirDynamic(int num, Fvector& axis) = 0;
     virtual void GetAnchorDynamic(Fvector& anchor) = 0;
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CPhysicsJoint)
+
+inline CPhysicsJoint::~CPhysicsJoint() = default;
+
+add_to_type_list(CPhysicsJoint);
 #undef script_type_list
 #define script_type_list save_type_list(CPhysicsJoint)
-    // ABSTRACT:
-    class CPHIsland;
+
+// ABSTRACT:
+class CPHIsland;
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 class CPhysicsShellAnimator;
 #endif
 
-class CPhysicsShell : public CPhysicsBase, public IPhysicsShell
+class XR_NOVTABLE CPhysicsShell : public CPhysicsBase, public IPhysicsShell
 {
     RTTI_DECLARE_TYPEINFO(CPhysicsShell, CPhysicsBase, IPhysicsShell);
 
@@ -358,13 +370,16 @@ public:
     virtual void SetPrefereExactIntegration() = 0;
     virtual ~CPhysicsShell();
     // build_FromKinematics		in returns elements  & joint pointers according bone IDs;
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CPhysicsShell)
+XR_SOL_BASE_CLASSES(CPhysicsShell);
+
+add_to_type_list(CPhysicsShell);
 #undef script_type_list
 #define script_type_list save_type_list(CPhysicsShell)
 
-    void get_box(CPhysicsShell* shell, const Fmatrix& form, Fvector& sz, Fvector& c);
+void get_box(CPhysicsShell* shell, const Fmatrix& form, Fvector& sz, Fvector& c);
 
 // Implementation creator
 CPhysicsJoint* P_create_Joint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysicsElement* second);

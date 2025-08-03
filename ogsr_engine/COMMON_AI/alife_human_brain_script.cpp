@@ -8,10 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "alife_human_brain.h"
 
-void CALifeHumanBrain::script_register(lua_State* L)
+void CALifeHumanBrain::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CALifeHumanBrain>("CALifeHumanBrain", sol::no_constructor, sol::base_classes, xr_sol_bases<CALifeHumanBrain>());
+    lua.new_usertype<CALifeHumanBrain>("CALifeHumanBrain", sol::no_constructor, sol::base_classes, xr_sol_bases<CALifeHumanBrain>());
 }

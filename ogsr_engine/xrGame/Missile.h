@@ -130,3 +130,4 @@ public:
     IC u32 destroy_time() const { return m_dwDestroyTime; };
     static void ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 };
+XR_SOL_BASE_CLASSES(CMissile);

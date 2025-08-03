@@ -4,12 +4,14 @@
 
 class CSnork : public CBaseMonster
 {
+    RTTI_DECLARE_TYPEINFO(CSnork, CBaseMonster);
+
+public:
     typedef CBaseMonster inherited;
 
     SVelocityParam m_fsVelocityJumpPrepare;
     SVelocityParam m_fsVelocityJumpGround;
 
-public:
     CSnork();
     virtual ~CSnork();
 
@@ -43,9 +45,10 @@ public:
     u32 m_target_node;
     bool start_threaten;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CSnork);
 
-add_to_type_list(CSnork)
+add_to_type_list(CSnork);
 #undef script_type_list
 #define script_type_list save_type_list(CSnork)

@@ -34,8 +34,10 @@ public:
     void remove_owner();
 };
 
-class CScriptParticles
+class CScriptParticles : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptParticles);
+
 private:
     Fmatrix m_transform;
 
@@ -65,9 +67,10 @@ public:
     int LifeTime() const;
     u32 Length() const;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptParticles)
+
+add_to_type_list(CScriptParticles);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptParticles)
 

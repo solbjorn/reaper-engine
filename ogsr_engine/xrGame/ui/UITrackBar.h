@@ -71,3 +71,4 @@ protected:
         };
     };
 };
+XR_SOL_BASE_CLASSES(CUITrackBar);

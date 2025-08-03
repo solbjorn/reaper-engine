@@ -572,9 +572,11 @@ public:
     IC void throw_time_interval(const u32& value);
 
 public:
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CAI_Stalker)
+XR_SOL_BASE_CLASSES(CAI_Stalker);
+
+add_to_type_list(CAI_Stalker);
 #undef script_type_list
 #define script_type_list save_type_list(CAI_Stalker)
 

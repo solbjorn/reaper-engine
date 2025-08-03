@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-
 #include "Level.h"
 #include "UIStatic.h"
 #include "UILines.h"
@@ -35,13 +33,11 @@ static void UIMiniMapInit(CUIMiniMap* wnd)
     UIMiniMapZoom(wnd, 1.f);
 }
 
-void CUIStatic::script_register(lua_State* L)
+void CUIStatic::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CUIStatic>(
-        "CUIStatic", sol::no_constructor, sol::call_constructor, sol::constructors<CUIStatic()>(), "SetText", sol::resolve<void(LPCSTR)>(&CUIStatic::SetText), "SetTextST",
-        sol::resolve<void(LPCSTR)>(&CUIStatic::SetTextST), "GetText", &CUIStatic::GetText, "IsMultibyteFont",
+        "CUIStatic", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIStatic>), "SetText", sol::resolve<void(LPCSTR)>(&CUIStatic::SetText),
+        "SetTextST", sol::resolve<void(LPCSTR)>(&CUIStatic::SetTextST), "GetText", &CUIStatic::GetText, "IsMultibyteFont",
         [](CUIStatic* self) -> bool { return self->m_pLines->GetFont()->IsMultibyte(); }, "SetTextX", &CUIStatic::SetTextX, "SetTextY", &CUIStatic::SetTextY, "GetTextX",
         &CUIStatic::GetTextX, "GetTextY", &CUIStatic::GetTextY, "SetColor", &CUIStatic::SetColor, "GetColor", &CUIStatic::GetColor, "SetColorA",
         [](CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); }, "SetTextColor", &CUIStatic::SetTextColor_script, "Init",

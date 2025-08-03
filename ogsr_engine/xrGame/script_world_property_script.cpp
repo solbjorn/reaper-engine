@@ -8,14 +8,12 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "script_world_property.h"
 #include "operator_abstract.h"
 
-void CScriptWorldPropertyWrapper::script_register(lua_State* L)
+void CScriptWorldPropertyWrapper::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptWorldProperty>("world_property", sol::no_constructor, sol::call_constructor,
-                                                          sol::constructors<CScriptWorldProperty(CScriptWorldProperty::condition_type, CScriptWorldProperty::value_type)>(),
-                                                          "condition", &CScriptWorldProperty::condition, "value", &CScriptWorldProperty::value);
+    lua.new_usertype<CScriptWorldProperty>("world_property", sol::no_constructor, sol::call_constructor,
+                                           sol::constructors<CScriptWorldProperty(CScriptWorldProperty::condition_type, CScriptWorldProperty::value_type)>(), "condition",
+                                           &CScriptWorldProperty::condition, "value", &CScriptWorldProperty::value);
 }

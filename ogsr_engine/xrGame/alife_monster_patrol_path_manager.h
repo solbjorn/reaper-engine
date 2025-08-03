@@ -73,9 +73,10 @@ public:
     const u32& target_level_vertex_id() const;
     const Fvector& target_position() const;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CALifeMonsterPatrolPathManager)
+
+add_to_type_list(CALifeMonsterPatrolPathManager);
 #undef script_type_list
 #define script_type_list save_type_list(CALifeMonsterPatrolPathManager)
 

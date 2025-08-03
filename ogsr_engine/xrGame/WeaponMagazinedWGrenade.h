@@ -101,3 +101,4 @@ public:
             return inherited::IsPartlyReloading();
     }
 };
+XR_SOL_BASE_CLASSES(CWeaponMagazinedWGrenade);

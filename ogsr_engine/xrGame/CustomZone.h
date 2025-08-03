@@ -419,3 +419,4 @@ public:
         processing_deactivate();
     }
 };
+XR_SOL_BASE_CLASSES(CCustomZone);

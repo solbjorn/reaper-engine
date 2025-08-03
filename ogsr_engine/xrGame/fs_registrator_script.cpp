@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "fs_registrator.h"
 #include "LocatorApi.h"
 
@@ -249,10 +247,8 @@ static void script_register_stdfs(sol::state_view& lua)
 ////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void fs_registrator::script_register(lua_State* L)
+void fs_registrator::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     //
     script_register_stdfs(lua);
     //

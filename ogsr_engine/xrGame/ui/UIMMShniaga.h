@@ -78,3 +78,4 @@ protected:
 
     Flags32 m_flags;
 };
+XR_SOL_BASE_CLASSES(CUIMMShniaga);

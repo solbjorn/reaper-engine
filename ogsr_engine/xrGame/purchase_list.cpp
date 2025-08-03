@@ -23,15 +23,13 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
 
     m_deficits.clear();
 
-    luabind::functor<void> lua_function;
+    sol::function lua_function;
 
     if (pSettings->line_exist("engine_callbacks", "trade_purchase_item_process"))
     {
         const char* callback = pSettings->r_string("engine_callbacks", "trade_purchase_item_process");
-        if (!ai().script_engine().functor(callback, lua_function))
-        {
-            Msg("Cannot get engine callback %s!", pSettings->r_string("engine_callbacks", "trade_purchase_item_process"));
-        }
+        if (!ai().script_engine().function(callback, lua_function))
+            Msg("Cannot get engine callback %s!", callback);
     }
 
     const CGameObject& game_object = *smart_cast<const CGameObject*>(&owner);
@@ -48,7 +46,7 @@ void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner&
 
 #include "script_game_object.h"
 
-void CPurchaseList::process(const CGameObject& owner, const shared_str& name, const u32& count, const float& probability, luabind::functor<void>& lua_function)
+void CPurchaseList::process(const CGameObject& owner, const shared_str& name, const u32& count, const float& probability, sol::function& lua_function)
 {
     VERIFY3(count, "Invalid count for section in the purchase list", *name);
     VERIFY3(!fis_zero(probability, EPS_S), "Invalid probability for section in the purchase list", *name);
@@ -68,9 +66,7 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
         CSE_Abstract* _abstract = Level().spawn_item(*name, position, level_vertex_id, id, true);
 
         if (lua_function)
-        {
             lua_function(owner.lua_game_object(), smart_cast<CSE_ALifeObject*>(_abstract));
-        }
 
         NET_Packet P;
         _abstract->Spawn_Write(P, TRUE);

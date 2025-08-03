@@ -6,11 +6,15 @@
 #include "r__sector.h"
 
 // feedback for receiving visuals
-class R_feedback
+class XR_NOVTABLE R_feedback
 {
 public:
+    virtual ~R_feedback() = 0;
+
     virtual void rfeedback_static(dxRender_Visual* V) = 0;
 };
+
+inline R_feedback::~R_feedback() = default;
 
 struct R_dsgraph_structure
 {

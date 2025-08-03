@@ -13,8 +13,10 @@ public:
     CWeaponWalther(void);
     virtual ~CWeaponWalther(void);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponWalther)
+XR_SOL_BASE_CLASSES(CWeaponWalther);
+
+add_to_type_list(CWeaponWalther);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponWalther)

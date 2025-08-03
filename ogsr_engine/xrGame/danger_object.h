@@ -10,8 +10,10 @@
 
 #include "entity_alive.h"
 
-class CDangerObject
+class CDangerObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CDangerObject);
+
 public:
     enum EDangerType
     {

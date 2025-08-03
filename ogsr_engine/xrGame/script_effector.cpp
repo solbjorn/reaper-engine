@@ -11,17 +11,17 @@
 #include "actor.h"
 #include "ActorEffector.h"
 
-CScriptEffector::~CScriptEffector(){
-// Msg("CScriptEffector::~CScriptEffector() called");
-#pragma todo("KRodin: для чего вывод в лог?")
-}
-
 BOOL CScriptEffector::Process(SPPInfo& pp)
 {
-    return (!!process(&pp));
-}
+    auto op = ops.find(PROCESS);
+    if (op == ops.end())
+        return !!inherited::Process(pp);
 
-bool CScriptEffector::process(SPPInfo* pp) { return (!!inherited::Process(*pp)); }
+    bool ret = op->second(this, pp);
+    inherited::Process(pp);
+
+    return ret;
+}
 
 void CScriptEffector::Add() { Actor()->Cameras().AddPPEffector(this); }
 

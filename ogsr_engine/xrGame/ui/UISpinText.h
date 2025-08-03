@@ -8,6 +8,8 @@
 
 class CUISpinText : public CUICustomSpin
 {
+    RTTI_DECLARE_TYPEINFO(CUISpinText, CUICustomSpin);
+
 public:
     CUISpinText();
     // CUIOptionsItem
@@ -25,8 +27,8 @@ public:
 protected:
     virtual bool CanPressUp();
     virtual bool CanPressDown();
-    virtual void IncVal(){};
-    virtual void DecVal(){};
+    virtual void IncVal() {};
+    virtual void DecVal() {};
     void SetItem();
     struct SInfo
     {
@@ -40,3 +42,4 @@ protected:
     Items m_list;
     int m_curItem;
 };
+XR_SOL_BASE_CLASSES(CUISpinText);

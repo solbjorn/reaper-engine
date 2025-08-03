@@ -7,7 +7,7 @@ namespace PAPI
 // refs
 struct ParticleEffect;
 
-struct ParticleAction : public virtual RTTI::Enable
+struct XR_NOVTABLE ParticleAction : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ParticleAction);
 
@@ -19,7 +19,9 @@ public:
     bool m_copFormat{};
     Flags32 m_Flags;
     PActionEnum type{}; // Type field
+
     ParticleAction() { m_Flags.zero(); }
+    virtual ~ParticleAction() = 0;
 
     virtual void Execute(ParticleEffect* pe, const float dt) = 0;
     virtual void Transform(const Fmatrix& m) = 0;
@@ -27,6 +29,8 @@ public:
     virtual void Load(IReader& F) = 0;
     virtual void Save(IWriter& F) = 0;
 };
+
+inline ParticleAction::~ParticleAction() = default;
 
 DEFINE_VECTOR(ParticleAction*, PAVec, PAVecIt);
 

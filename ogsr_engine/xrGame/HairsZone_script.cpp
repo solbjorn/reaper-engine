@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "HairsZone.h"
 
-void CHairsZone::script_register(lua_State* L)
+void CHairsZone::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CHairsZone>("CHairsZone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHairsZone>), sol::base_classes,
-                                                xr_sol_bases<CHairsZone>());
+    lua.new_usertype<CHairsZone>("CHairsZone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHairsZone>), "factory", &client_factory<CHairsZone>,
+                                 sol::base_classes, xr_sol_bases<CHairsZone>());
 }

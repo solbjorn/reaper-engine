@@ -18,7 +18,7 @@ struct SEnumVerticesCallback;
 // 10 fps
 #define UCalc_Interval (u32(100))
 
-class IKinematics : public virtual RTTI::Enable
+class XR_NOVTABLE IKinematics : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IKinematics);
 
@@ -30,7 +30,8 @@ public:
         Fvector tri[3];
     };
 
-public:
+    virtual ~IKinematics() = 0;
+
     /************************* Add by Zander *******************************/
     // Устанавливает видимость меша с указанным индексом
     virtual void SetRFlag(const u32 id, const bool v) = 0;
@@ -111,6 +112,8 @@ public:
     virtual shared_str getDebugName() = 0;
 #endif
 };
+
+inline IKinematics::~IKinematics() = default;
 
 IC IKinematics* PKinematics(IRenderVisual* V) { return V ? V->dcast_PKinematics() : 0; }
 

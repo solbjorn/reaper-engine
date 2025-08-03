@@ -8,11 +8,10 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "property_storage.h"
 
-void CPropertyStorage::script_register(lua_State* L)
+void CPropertyStorage::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPropertyStorage>("property_storage", sol::no_constructor, sol::call_constructor, sol::constructors<CPropertyStorage()>(), "set_property",
-                                                      &CPropertyStorage::set_property, "property", &CPropertyStorage::property);
+    lua.new_usertype<CPropertyStorage>("property_storage", sol::no_constructor, sol::call_constructor, sol::constructors<CPropertyStorage()>(), "set_property",
+                                       &CPropertyStorage::set_property, "property", &CPropertyStorage::property);
 }

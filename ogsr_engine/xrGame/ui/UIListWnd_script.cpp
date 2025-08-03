@@ -4,12 +4,10 @@
 #include "UISpinText.h"
 #include "UIComboBox.h"
 
-bool CUIListWnd::AddItem_script(CUIListItem* item) { return AddItem(item, -1); }
+bool CUIListWnd::AddItem_script(std::unique_ptr<CUIListItemEx>& ptr) { return AddItem(ptr.release(), -1); }
 
-void CUIListWnd::script_register(lua_State* L)
+void CUIListWnd::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CUIListWnd>("CUIListWnd", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListWnd()>(), "AddItem", &CUIListWnd::AddItem_script, "RemoveItem",
                                  &CUIListWnd::RemoveItem, "RemoveAll", &CUIListWnd::RemoveAll, "EnableScrollBar", &CUIListWnd::EnableScrollBar, "IsScrollBarEnabled",
                                  &CUIListWnd::IsScrollBarEnabled, "SetItemHeight", &CUIListWnd::SetItemHeight, "GetItem", &CUIListWnd::GetItem, "GetItemPos",
@@ -20,8 +18,9 @@ void CUIListWnd::script_register(lua_State* L)
                                  &CUIListWnd::ShowSelectedItem, "GetSelectedItem", &CUIListWnd::GetSelectedItem, "SetSelectedItem", &CUIListWnd::SetSelectedItem,
                                  "ResetFocusCapture", &CUIListWnd::ResetFocusCapture, sol::base_classes, xr_sol_bases<CUIListWnd>());
 
-    lua.new_usertype<CUIListItem>("CUIListItem", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListItem()>(), sol::base_classes, xr_sol_bases<CUIListItem>());
+    lua.new_usertype<CUIListItem>("CUIListItem", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListItem()>(), "priv", &CUIListItem::priv, sol::base_classes,
+                                  xr_sol_bases<CUIListItem>());
 
-    lua.new_usertype<CUIListItemEx>("CUIListItemEx", sol::no_constructor, sol::call_constructor, sol::constructors<CUIListItemEx()>(), "SetSelectionColor",
+    lua.new_usertype<CUIListItemEx>("CUIListItemEx", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIListItemEx>), "SetSelectionColor",
                                     &CUIListItemEx::SetSelectionColor, sol::base_classes, xr_sol_bases<CUIListItemEx>());
 }

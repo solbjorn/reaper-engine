@@ -46,6 +46,7 @@
 #include "level.h"
 #include "memory_space.h"
 #include "script_render_device.h"
+#include "../COMMON_AI/script_camera.h"
 #include "script_game_object.h"
 #include "cover_point.h"
 #include "patrol_path_params.h"
@@ -157,7 +158,6 @@
 #include "space_restrictor.h"
 #include "physicobject.h"
 #include "searchlight.h"
-#include "../xr_3da/camerabase.h"
 #include "script_rq_result.h"
 #include "EffectorZoomInertion.h"
 #endif

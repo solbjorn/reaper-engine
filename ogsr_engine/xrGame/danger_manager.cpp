@@ -86,9 +86,7 @@ CDangerManager::~CDangerManager() {}
 void CDangerManager::Load(LPCSTR section)
 {
     if (pSettings->section_exist("engine_callbacks") && pSettings->line_exist("engine_callbacks", "danger_on_before_add"))
-    {
         on_before_add = pSettings->r_string("engine_callbacks", "danger_on_before_add");
-    }
 }
 
 void CDangerManager::reinit()
@@ -229,10 +227,10 @@ void CDangerManager::add(const CVisibleObject& object)
     {
         if (!on_before_add.empty())
         {
-            luabind::functor<bool> funct;
-            if (ai().script_engine().functor(on_before_add.c_str(), funct))
-                if (!funct(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse,
-                           CDangerObject::eDangerPerceiveTypeVisual))
+            sol::function func;
+            if (ai().script_engine().function(on_before_add.c_str(), func))
+                if (!func(m_object->lua_game_object(), object, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse,
+                          CDangerObject::eDangerPerceiveTypeVisual))
                     return;
         }
         add(CDangerObject(obj, obj->Position(), object.m_level_time, CDangerObject::eDangerTypeFreshEntityCorpse, CDangerObject::eDangerPerceiveTypeVisual));

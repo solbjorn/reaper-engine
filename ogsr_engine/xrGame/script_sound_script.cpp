@@ -10,10 +10,8 @@
 #include "script_sound.h"
 #include "script_game_object.h"
 
-void CScriptSound::script_register(lua_State* L)
+void CScriptSound::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CSound_params>("sound_params", sol::no_constructor, "position", &CSound_params::position, "volume", &CSound_params::volume, "frequency", &CSound_params::freq,
                                     "min_distance", &CSound_params::min_distance, "max_distance", &CSound_params::max_distance);
 

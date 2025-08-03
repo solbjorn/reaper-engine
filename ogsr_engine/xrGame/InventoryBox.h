@@ -60,3 +60,4 @@ class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventory
 public:
     CInventoryBox() {}
 };
+XR_SOL_BASE_CLASSES(CInventoryBox);

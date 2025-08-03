@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "../xr_3da/XR_IOConsole.h"
 #include "../xr_3da/xr_ioc_cmd.h"
 
@@ -54,10 +53,8 @@ static void enable_cmd(CConsole* c, LPCSTR cmd)
         icmd->SetEnabled(true);
 }
 
-void console_registrator::script_register(lua_State* L)
+void console_registrator::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.set_function("get_console", &console);
 
     lua.new_usertype<CConsole>("CConsole", sol::no_constructor, "disable_command", &disable_cmd, "enable_command", &enable_cmd, "execute",

@@ -71,9 +71,11 @@ protected:
 
     // Разрешаем/запрещаем клавиатурные акселераторы
     bool m_bAcceleratorsEnable;
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-};
 
-add_to_type_list(CUITabControl)
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
+};
+XR_SOL_BASE_CLASSES(CUITabControl);
+
+add_to_type_list(CUITabControl);
 #undef script_type_list
 #define script_type_list save_type_list(CUITabControl)

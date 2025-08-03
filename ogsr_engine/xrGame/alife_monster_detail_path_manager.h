@@ -78,9 +78,9 @@ public:
     IC const float& walked_distance() const;
     Fvector draw_level_position() const;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CALifeMonsterDetailPathManager)
+add_to_type_list(CALifeMonsterDetailPathManager);
 #undef script_type_list
 #define script_type_list save_type_list(CALifeMonsterDetailPathManager)
 

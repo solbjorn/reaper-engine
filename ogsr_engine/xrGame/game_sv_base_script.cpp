@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 
 #include "game_sv_base.h"
@@ -85,9 +84,8 @@ LPCSTR generate_id()
     return r.c_str();
 }
 
-void game_sv_GameState::script_register(lua_State* L)
+void game_sv_GameState::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
     auto game = lua.create_named_table("game");
 
     game.new_usertype<xrTime>("CTime", sol::no_constructor, sol::call_constructor, sol::constructors<xrTime(), xrTime(const xrTime&)>(),

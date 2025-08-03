@@ -8,12 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_animation_action.h"
 
-void CScriptAnimationAction::script_register(lua_State* L)
+void CScriptAnimationAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptAnimationAction>(
+    lua.new_usertype<CScriptAnimationAction>(
         "anim", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptAnimationAction(), CScriptAnimationAction(LPCSTR), CScriptAnimationAction(LPCSTR, bool), CScriptAnimationAction(MonsterSpace::EMentalState),
                           // Monster specific

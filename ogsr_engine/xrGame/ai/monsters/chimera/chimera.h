@@ -4,6 +4,8 @@
 
 class CChimera : public CBaseMonster
 {
+    RTTI_DECLARE_TYPEINFO(CChimera, CBaseMonster);
+
 public:
     CChimera();
     virtual ~CChimera();
@@ -40,9 +42,10 @@ private:
 public:
     attack_params const& get_attack_params() const { return m_attack_params; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CChimera);
 
-add_to_type_list(CChimera)
+add_to_type_list(CChimera);
 #undef script_type_list
 #define script_type_list save_type_list(CChimera)

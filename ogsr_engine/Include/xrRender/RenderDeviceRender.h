@@ -3,12 +3,13 @@
 enum class DeviceState;
 class IResourceManager;
 
-class IRenderDeviceRender : public virtual RTTI::Enable
+class XR_NOVTABLE IRenderDeviceRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRenderDeviceRender);
 
 public:
-    virtual ~IRenderDeviceRender() { ; }
+    virtual ~IRenderDeviceRender() = 0;
+
     virtual void Copy(IRenderDeviceRender& _in) = 0;
 
     //	Gamma correction functions
@@ -48,3 +49,5 @@ public:
     virtual void OnAssetsChanged() = 0;
     virtual IResourceManager* GetResourceManager() const = 0;
 };
+
+inline IRenderDeviceRender::~IRenderDeviceRender() = default;

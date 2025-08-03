@@ -280,3 +280,4 @@ public:
     void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
     void removeFeelTouch(const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
 };
+XR_SOL_BASE_CLASSES(CGameObject);

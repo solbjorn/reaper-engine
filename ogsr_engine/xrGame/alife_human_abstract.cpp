@@ -41,14 +41,14 @@ CSE_ALifeDynamicObject* CSE_ALifeHumanAbstract::tpfGetBestDetector() { return (b
 
 CSE_ALifeItemWeapon* CSE_ALifeHumanAbstract::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) { return (brain().objects().best_weapon()); }
 
-void CSE_ALifeHumanAbstract::on_register()
+void CSE_ALifeHumanAbstract::__on_register()
 {
-    inherited2::on_register();
+    inherited2::__on_register();
     // because we need to load profile to setup graph vertex masks
     specific_character();
 }
 
-void CSE_ALifeHumanAbstract::on_unregister() { inherited2::on_unregister(); }
+void CSE_ALifeHumanAbstract::__on_unregister() { inherited2::__on_unregister(); }
 
 void CSE_ALifeHumanAbstract::spawn_supplies()
 {

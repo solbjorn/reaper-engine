@@ -12,6 +12,8 @@
 
 class CUIListItemEx : public CUIListItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIListItemEx, CUIListItem);
+
 private:
     typedef CUIListItem inherited;
 
@@ -26,3 +28,4 @@ public:
 protected:
     u32 m_dwSelectionColor;
 };
+XR_SOL_BASE_CLASSES(CUIListItemEx);

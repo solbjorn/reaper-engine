@@ -61,6 +61,12 @@ void CBaseAction::initialize()
 #endif
     m_start_level_time = Device.dwTimeGlobal;
     m_first_time = true;
+
+    auto op = ops.find(INITIALIZE);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -72,6 +78,12 @@ void CBaseAction::execute()
         debug_log(eActionStateExecuted);
     m_switched = false;
 #endif
+
+    auto op = ops.find(EXECUTE);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -82,6 +94,12 @@ void CBaseAction::finalize()
     if (m_use_log && xr_strlen(m_action_name))
         debug_log(eActionStateFinalized);
 #endif
+
+    auto op = ops.find(FINALIZE);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
 }
 
 TEMPLATE_SPECIALIZATION

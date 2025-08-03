@@ -19,8 +19,9 @@ typedef struct _SItemsInfo
 
 // CInventoryContainer
 class CInventoryContainer : public CCustomInventoryBox<CInventoryItemObject>
-
 {
+    RTTI_DECLARE_TYPEINFO(CInventoryContainer, CCustomInventoryBox<CInventoryItemObject>);
+
 private:
     typedef CCustomInventoryBox<CInventoryItemObject> inherited;
     bool m_opened;
@@ -43,3 +44,4 @@ public:
     void open();
     void close();
 };
+XR_SOL_BASE_CLASSES(CInventoryContainer);

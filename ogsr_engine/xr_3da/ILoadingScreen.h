@@ -8,12 +8,12 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-class ILoadingScreen : public virtual RTTI::Enable
+class XR_NOVTABLE ILoadingScreen : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ILoadingScreen);
 
 public:
-    virtual ~ILoadingScreen() = default;
+    virtual ~ILoadingScreen() = 0;
 
     virtual void Initialize() = 0;
 
@@ -29,3 +29,5 @@ public:
     virtual void SetStageTitle(const char* title) = 0;
     virtual void SetStageTip() = 0;
 };
+
+inline ILoadingScreen::~ILoadingScreen() = default;

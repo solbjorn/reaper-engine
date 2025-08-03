@@ -29,7 +29,7 @@ protected:
 
 public:
     HitImmunity::HitTypeSVec& immunities() { return m_HitTypeK; }
-    static void script_register(lua_State* L);
-
     virtual CHitImmunity* cast_hit_immunities() { return this; }
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

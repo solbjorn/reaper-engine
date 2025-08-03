@@ -68,3 +68,4 @@ protected:
 
     CLAItem* m_lanim;
 };
+XR_SOL_BASE_CLASSES(CUICustomEdit);

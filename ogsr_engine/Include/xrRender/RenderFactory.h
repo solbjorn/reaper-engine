@@ -1,6 +1,5 @@
 #ifndef RenderFactory_included
 #define RenderFactory_included
-#pragma once
 
 class IWallMarkArray;
 
@@ -23,9 +22,11 @@ class IConsoleRender;
 class IUIShader;
 class IUISequenceVideoItem;
 
-class IRenderFactory
+class XR_NOVTABLE IRenderFactory
 {
 public:
+    virtual ~IRenderFactory() = 0;
+
     virtual IUISequenceVideoItem* CreateUISequenceVideoItem() = 0;
     virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject) = 0;
     virtual IUIShader* CreateUIShader() = 0;
@@ -63,5 +64,7 @@ public:
     virtual IFontRender* CreateFontRender() = 0;
     virtual void DestroyFontRender(IFontRender* pObject) = 0;
 };
+
+inline IRenderFactory::~IRenderFactory() = default;
 
 #endif //	RenderFactory_included

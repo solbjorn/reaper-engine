@@ -25,8 +25,10 @@ protected:
 
     virtual size_t GetWeaponTypeForCollision() const override { return RG_6; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponRG6)
+XR_SOL_BASE_CLASSES(CWeaponRG6);
+
+add_to_type_list(CWeaponRG6);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponRG6)

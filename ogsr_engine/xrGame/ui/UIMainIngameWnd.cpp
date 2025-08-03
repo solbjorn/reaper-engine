@@ -776,4 +776,4 @@ void CUIMainIngameWnd::reset_ui()
     UIMotionIcon.ResetVisibility();
 }
 
-void CUIMainIngameWnd::script_register(lua_State* L) { sol::state_view(L).set("get_main_window", &GetMainIngameWindow, "setup_game_icon", &SetupGameIcon); }
+void CUIMainIngameWnd::script_register(sol::state_view& lua) { lua.set("get_main_window", &GetMainIngameWindow, "setup_game_icon", &SetupGameIcon); }

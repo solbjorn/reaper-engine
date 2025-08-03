@@ -24,9 +24,10 @@ public:
 private:
     bool ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CAI_Flesh);
 
-add_to_type_list(CAI_Flesh)
+add_to_type_list(CAI_Flesh);
 #undef script_type_list
 #define script_type_list save_type_list(CAI_Flesh)

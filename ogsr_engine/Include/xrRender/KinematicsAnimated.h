@@ -33,15 +33,14 @@ struct SKeyTable
     SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
-class IKinematicsAnimated : public virtual RTTI::Enable
+class XR_NOVTABLE IKinematicsAnimated : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IKinematicsAnimated);
 
 public:
-    virtual ~IKinematicsAnimated() { ; }
+    virtual ~IKinematicsAnimated() = 0;
 
     // Calculation
-public:
     virtual void OnCalculateBones() = 0;
 
     virtual std::pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID) = 0;
@@ -109,5 +108,7 @@ public:
     //	virtual	const BlendSVec			&blend_cycle	(const u32 &bone_part_id) const = 0;
     // #endif //	DEBUG
 };
+
+inline IKinematicsAnimated::~IKinematicsAnimated() = default;
 
 #endif //	KinematicsAnimated_included

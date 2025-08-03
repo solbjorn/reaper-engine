@@ -8,19 +8,19 @@
 
 #include "stdafx.h"
 
-#include "script_game_object.h"
 #include "property_evaluator_const.h"
+#include "script_game_object.h"
 
 template <>
-void CScriptPropertyEvaluator::script_register(lua_State* L)
+void CScriptPropertyEvaluator::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
-    lua.new_usertype<CScriptPropertyEvaluator>(
-        "property_evaluator", sol::no_constructor, sol::call_constructor,
-        sol::constructors<CScriptPropertyEvaluator(), CScriptPropertyEvaluator(CScriptGameObject*), CScriptPropertyEvaluator(CScriptGameObject*, LPCSTR)>(), "object",
-        sol::readonly(&CScriptPropertyEvaluator::m_object), "storage", sol::readonly(&CScriptPropertyEvaluator::m_storage), "setup", &CScriptPropertyEvaluator::setup, "evaluate",
-        &CScriptPropertyEvaluator::evaluate);
+    lua.new_usertype<CScriptPropertyEvaluator>("property_evaluator", sol::no_constructor, sol::call_constructor,
+                                               sol::factories(std::make_unique<CScriptPropertyEvaluator>, std::make_unique<CScriptPropertyEvaluator, CScriptGameObject*>,
+                                                              std::make_unique<CScriptPropertyEvaluator, CScriptGameObject*, LPCSTR>),
+                                               "priv", &CScriptPropertyEvaluator::priv, "ops", &CScriptPropertyEvaluator::ops, "EVALUATE",
+                                               sol::var(CScriptPropertyEvaluator::EVALUATE), "object", sol::readonly(&CScriptPropertyEvaluator::m_object), "storage",
+                                               sol::readonly(&CScriptPropertyEvaluator::m_storage), "setup", &CScriptPropertyEvaluator::setup, "evaluate",
+                                               &CScriptPropertyEvaluator::evaluate);
 
     lua.new_usertype<CPropertyEvaluatorConst<CScriptGameObject>>(
         "property_evaluator_const", sol::no_constructor, sol::call_constructor,

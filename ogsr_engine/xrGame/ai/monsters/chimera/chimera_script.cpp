@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "chimera.h"
 
-void CChimera::script_register(lua_State* L)
+void CChimera::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CChimera>("CChimera", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CChimera>), sol::base_classes,
-                                              xr_sol_bases<CChimera>());
+    lua.new_usertype<CChimera>("CChimera", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CChimera>), "factory", &client_factory<CChimera>,
+                               sol::base_classes, xr_sol_bases<CChimera>());
 }

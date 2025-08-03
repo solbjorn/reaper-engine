@@ -8,12 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_entity_action.h"
 
-void CScriptEntityAction::script_register(lua_State* L)
+void CScriptEntityAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptEntityAction>(
+    lua.new_usertype<CScriptEntityAction>(
         "entity_action", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptEntityAction(), CScriptEntityAction(const CScriptEntityAction*)>(), "set_action",
         sol::overload(sol::resolve<void(CScriptMovementAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
                       sol::resolve<void(CScriptWatchAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),

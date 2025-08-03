@@ -6,10 +6,8 @@
 
 CMainMenu* MainMenu();
 
-void UIRegistrator::script_register(lua_State* L)
+void UIRegistrator::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CGameFont>("CGameFont", sol::no_constructor,
                                 // EAligment
                                 "alLeft", sol::var(CGameFont::alLeft), "alRight", sol::var(CGameFont::alRight), "alCenter", sol::var(CGameFont::alCenter), "alJustified",

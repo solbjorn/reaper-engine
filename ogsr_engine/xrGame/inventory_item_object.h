@@ -68,5 +68,6 @@ public:
 public:
     virtual u32 ef_weapon_type() const;
 };
+XR_SOL_BASE_CLASSES(CInventoryItemObject);
 
 #include "inventory_item_inline.h"

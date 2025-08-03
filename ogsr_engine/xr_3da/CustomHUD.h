@@ -22,7 +22,7 @@ enum HUD_Flags : u32
 
 class CUI;
 
-class CCustomHUD : public DLL_Pure, public IEventReceiver
+class XR_NOVTABLE CCustomHUD : public DLL_Pure, public IEventReceiver
 {
     RTTI_DECLARE_TYPEINFO(CCustomHUD, DLL_Pure, IEventReceiver);
 

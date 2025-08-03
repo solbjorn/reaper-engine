@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "patrol_path_params.h"
 
 static Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
@@ -17,9 +16,9 @@ static Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index
     return (self->point(index));
 }
 
-void CPatrolPathParams::script_register(lua_State* L)
+void CPatrolPathParams::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPatrolPathParams>(
+    lua.new_usertype<CPatrolPathParams>(
         "patrol", sol::no_constructor, sol::call_constructor,
         sol::constructors<CPatrolPathParams(LPCSTR), CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType),
                           CPatrolPathParams(LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType),

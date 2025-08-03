@@ -320,16 +320,14 @@ public:
     void OnDestroyObject(u16 id) override;
     virtual void OnChangeCurrentWeather(const char* sect) override;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CLevel)
+
+add_to_type_list(CLevel);
 #undef script_type_list
 #define script_type_list save_type_list(CLevel)
 
-    IC CLevel& Level()
-{
-    return *((CLevel*)g_pGameLevel);
-}
+IC CLevel& Level() { return *((CLevel*)g_pGameLevel); }
 IC game_cl_GameState& Game() { return *Level().game; }
 u32 GameID();
 
@@ -384,7 +382,5 @@ extern BOOL g_bDebugEvents;
 struct CKeyBinding
 {
 public:
-    CKeyBinding() {};
-
-    bool ignore = false;
+    bool ignore{};
 };

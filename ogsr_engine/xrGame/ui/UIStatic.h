@@ -226,10 +226,10 @@ protected:
 private:
     Frect m_originalSizeRect;
 
-public:
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIStatic);
 
-add_to_type_list(CUIStatic)
+add_to_type_list(CUIStatic);
 #undef script_type_list
 #define script_type_list save_type_list(CUIStatic)

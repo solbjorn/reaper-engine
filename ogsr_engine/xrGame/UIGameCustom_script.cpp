@@ -1,16 +1,12 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "UIGameCustom.h"
 #include "level.h"
 #include "hudmanager.h"
 #include "ui/uistatic.h"
 
-void CUIGameCustom::script_register(lua_State* L)
+void CUIGameCustom::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<SDrawStaticStruct>("SDrawStaticStruct", sol::no_constructor, "m_endTime", &SDrawStaticStruct::m_endTime, "wnd", &SDrawStaticStruct::wnd);
 
     lua.new_usertype<CUIGameCustom>("CUIGameCustom", sol::no_constructor, "AddDialogToRender", &CUIGameCustom::AddDialogToRender, "RemoveDialogToRender",

@@ -3,10 +3,8 @@
 
 #include "IGame_Level.h"
 
-class pure_relcase : public virtual RTTI::Enable
+class pure_relcase
 {
-    RTTI_DECLARE_TYPEINFO(pure_relcase);
-
 private:
     int m_ID;
 

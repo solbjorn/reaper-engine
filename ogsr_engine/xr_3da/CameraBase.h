@@ -88,10 +88,3 @@ public:
     IC Fvector GetRotSpeed() const { return rot_speed; };
     IC float GetYaw() const { return yaw; };
 };
-
-#include "..\COMMON_AI\script_export_space.h"
-
-typedef class_exporter<CCameraBase> CCameraScript;
-add_to_type_list(CCameraScript)
-#undef script_type_list
-#define script_type_list save_type_list(CCameraScript)

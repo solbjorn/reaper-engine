@@ -7,10 +7,10 @@
 static u8 CCar__IsLightsOn(CCar* self) { return self->IsLightsOn() ? 1 : 0; }
 static u8 CCar__IsEngineOn(CCar* self) { return self->IsEngineOn() ? 1 : 0; }
 
-void CCar::script_register(lua_State* L)
+void CCar::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CCar>(
-        "CCar", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CCar>),
+    lua.new_usertype<CCar>(
+        "CCar", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CCar>), "factory", &client_factory<CCar>,
 
         // wpn_action
         "eWpnDesiredDir", sol::var(CCarWeapon::eWpnDesiredDir), "eWpnDesiredPos", sol::var(CCarWeapon::eWpnDesiredPos), "eWpnActivate", sol::var(CCarWeapon::eWpnActivate),

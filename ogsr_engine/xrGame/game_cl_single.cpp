@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "game_cl_single.h"
 #include "UIGameSP.h"
 #include "clsid_game.h"
@@ -26,7 +24,7 @@ CUIGameCustom* game_cl_Single::createGameUI()
 void game_cl_Single::OnDifficultyChanged() { Actor()->OnDifficultyChanged(); }
 
 template <>
-void CScriptGameDifficulty::script_register(lua_State* L)
+void CScriptGameDifficulty::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_enum("game_difficulty", "novice", egdNovice, "stalker", egdStalker, "veteran", egdVeteran, "master", egdMaster);
+    lua.new_enum("game_difficulty", "novice", egdNovice, "stalker", egdStalker, "veteran", egdVeteran, "master", egdMaster);
 }

@@ -692,3 +692,4 @@ private:
 public:
     void update_visual_bullet_textures(const bool forced = false);
 };
+XR_SOL_BASE_CLASSES(CWeapon);

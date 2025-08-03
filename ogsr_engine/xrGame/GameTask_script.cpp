@@ -1,12 +1,9 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "GameTask.h"
 
-void CGameTask::script_register(lua_State* L)
+void CGameTask::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_enum("task", "fail", eTaskStateFail, "in_progress", eTaskStateInProgress, "completed", eTaskStateCompleted, "task_dummy", eTaskStateDummy);
 
     lua.new_usertype<SGameTaskObjective>("SGameTaskObjective", sol::no_constructor, sol::call_constructor, sol::constructors<SGameTaskObjective(CGameTask*, int)>(),

@@ -52,9 +52,9 @@ public:
 
     virtual CEffectorZoomInertion* cast_effector_zoom_inertion() { return this; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(CEffectorZoomInertion)
+add_to_type_list(CEffectorZoomInertion);
 #undef script_type_list
 #define script_type_list save_type_list(CEffectorZoomInertion)

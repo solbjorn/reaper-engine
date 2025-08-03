@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_ini_file.h"
 
 std::tuple<bool, xr_string, xr_string> r_line(CScriptIniFile* self, LPCSTR S, int L)
@@ -59,10 +58,8 @@ CScriptIniFile* reload_system_ini()
     return ((CScriptIniFile*)pSettings);
 }
 
-void CScriptIniFile::script_register(lua_State* L)
+void CScriptIniFile::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CScriptIniFile>(
         "ini_file", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptIniFile(LPCSTR), CScriptIniFile(LPCSTR, bool)>(), "section_exist",
         &CScriptIniFile::section_exist_script, "line_exist", &CScriptIniFile::line_exist, "line_count", &CScriptIniFile::line_count, "remove_line", &CScriptIniFile::remove_line,
@@ -73,8 +70,7 @@ void CScriptIniFile::script_register(lua_State* L)
         "w_bool", &CScriptIniFile::w_bool, "w_string", &CScriptIniFile::w_string, "w_u32", &CScriptIniFile::w_u32, "w_s32", &CScriptIniFile::w_s32, "w_float",
         &CScriptIniFile::w_float, "w_vector2", &CScriptIniFile::w_fvector2, "w_vector", &CScriptIniFile::w_fvector3, "w_vector4", &CScriptIniFile::w_fvector4);
 
-    lua.set_function("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); });
-    lua.set_function("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); });
+    lua.set("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }, "game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); });
 
     // чтение ini как текста, без возможности сохранить
     lua.set_function("create_ini_file", [](const char* ini_string) {

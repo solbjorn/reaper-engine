@@ -12,7 +12,7 @@ class IMainMenu;
 class CPS_Instance;
 
 //-----------------------------------------------------------------------------------------------------------
-class IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
+class XR_NOVTABLE IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(IGame_Persistent, DLL_Pure, pureAppStart, pureAppEnd, pureAppActivate, pureAppDeactivate, pureFrame);
 
@@ -122,17 +122,20 @@ public:
     virtual void models_savePrefetch();
 };
 
-class IMainMenu : public virtual RTTI::Enable
+class XR_NOVTABLE IMainMenu : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IMainMenu);
 
 public:
-    virtual ~IMainMenu() {};
+    virtual ~IMainMenu() = 0;
+
     virtual void Activate(bool bActive) = 0;
     virtual bool IsActive() = 0;
     virtual bool CanSkipSceneRendering() = 0;
     virtual void DestroyInternal(bool bForce) = 0;
 };
+
+inline IMainMenu::~IMainMenu() = default;
 
 extern IGame_Persistent* g_pGamePersistent;
 extern BOOL g_prefetch;

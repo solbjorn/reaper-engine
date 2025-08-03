@@ -124,10 +124,8 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     if (pSettings->line_exist("engine_callbacks", "after_graph_load"))
     {
         const char* callback = pSettings->r_string("engine_callbacks", "after_graph_load");
-        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
-        {
+        if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
             lua_function(m_game_graph);
-        }
     }
 
     chunk = file_stream.open_chunk(1);

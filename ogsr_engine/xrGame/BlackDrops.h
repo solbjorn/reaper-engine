@@ -8,6 +8,8 @@
 
 class CBlackDrops : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CBlackDrops, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -19,3 +21,4 @@ public:
 
 protected:
 };
+XR_SOL_BASE_CLASSES(CBlackDrops);

@@ -326,5 +326,6 @@ public:
     CAnomalyDetector& anomaly_detector() { return (*m_anomaly_detector); }
     // -----------------------------------------------------------------------------
 };
+XR_SOL_BASE_CLASSES(CCustomMonster);
 
 #include "custommonster_inline.h"

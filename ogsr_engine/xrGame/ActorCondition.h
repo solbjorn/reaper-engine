@@ -155,3 +155,4 @@ public:
             monsters_aura_radius = r;
     };
 };
+XR_SOL_BASE_CLASSES(CActorCondition);

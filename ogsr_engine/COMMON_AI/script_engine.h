@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "script_storage.h"
 #include "script_export_space.h"
 
@@ -33,11 +31,6 @@ public:
     virtual ~CScriptEngine() = default;
     void init();
     virtual void unload();
-    static int lua_panic(lua_State* L);
-#ifdef LUABIND_NO_EXCEPTIONS
-    static void lua_error(lua_State* L);
-#endif
-    static int lua_pcall_failed(lua_State* L);
     void setup_auto_load();
     bool process_file_if_exists(const char* file_name, bool warn_if_not_exist);
     bool process_file(const char* file_name);
@@ -64,8 +57,9 @@ public:
         return true;
     }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptEngine)
+
+add_to_type_list(CScriptEngine);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptEngine)

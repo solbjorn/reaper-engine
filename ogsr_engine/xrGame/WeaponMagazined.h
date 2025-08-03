@@ -220,3 +220,4 @@ protected:
     virtual void OnMotionMark(u32 state, const motion_marks& M) override;
     int CheckAmmoBeforeReload(u32& v_ammoType);
 };
+XR_SOL_BASE_CLASSES(CWeaponMagazined);

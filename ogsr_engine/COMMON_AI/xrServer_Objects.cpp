@@ -67,9 +67,9 @@ CSE_Temporary::CSE_Temporary(LPCSTR caSection) : CSE_Abstract(caSection) { m_tNo
 
 CSE_Temporary::~CSE_Temporary() {}
 
-void CSE_Temporary::STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_u32(m_tNodeID); };
+void CSE_Temporary::__STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_u32(m_tNodeID); };
 
-void CSE_Temporary::STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); };
+void CSE_Temporary::__STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); };
 
 void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {};
 
@@ -86,7 +86,7 @@ CSE_PHSkeleton::CSE_PHSkeleton(LPCSTR caSection)
 
 CSE_PHSkeleton::~CSE_PHSkeleton() {}
 
-void CSE_PHSkeleton::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_PHSkeleton::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
     R_ASSERT(visual);
@@ -99,7 +99,7 @@ void CSE_PHSkeleton::STATE_Read(NET_Packet& tNetPacket, u16 size)
     }
 }
 
-void CSE_PHSkeleton::STATE_Write(NET_Packet& tNetPacket)
+void CSE_PHSkeleton::__STATE_Write(NET_Packet& tNetPacket)
 {
     CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
     R_ASSERT(visual);

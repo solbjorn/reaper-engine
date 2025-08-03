@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "physicsshell.h"
 
 static Fmatrix global_transform(CPhysicsElement* E)
@@ -48,9 +47,9 @@ static std::tuple<float, float> get_max_force_and_velocity(CPhysicsJoint& self, 
     return std::make_tuple(force, velocity);
 }
 
-void CPhysicsShell::script_register(lua_State* L)
+void CPhysicsShell::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPhysicsShell>(
+    lua.new_usertype<CPhysicsShell>(
         "physics_shell", sol::no_constructor, "apply_force", sol::resolve<void(float, float, float)>(&CPhysicsShell::applyForce), "get_element_by_bone_name",
         sol::resolve<CPhysicsElement*(LPCSTR)>(&CPhysicsShell::get_Element), "get_element_by_bone_id", sol::resolve<CPhysicsElement*(u16)>(&CPhysicsShell::get_Element),
         "get_element_by_order", &CPhysicsShell::get_ElementByStoreOrder, "get_elements_number", &CPhysicsShell::get_ElementsNumber, "get_joint_by_bone_name",
@@ -67,18 +66,18 @@ void CPhysicsShell::script_register(lua_State* L)
         &CPhysicsShell::Enable, "CollideAll", &CPhysicsShell::CollideAll, sol::base_classes, xr_sol_bases<CPhysicsShell>());
 }
 
-void CPhysicsElement::script_register(lua_State* L)
+void CPhysicsElement::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPhysicsElement>(
-        "physics_element", sol::no_constructor, "apply_force", sol::resolve<void(float, float, float)>(&CPhysicsElement::applyForce), "is_breakable", &CPhysicsElement::isBreakable,
-        "get_linear_vel", &CPhysicsElement::get_LinearVel, "get_angular_vel", &CPhysicsElement::get_AngularVel, "get_mass", &CPhysicsElement::getMass, "get_density",
-        &CPhysicsElement::getDensity, "get_volume", &CPhysicsElement::getVolume, "fix", &CPhysicsElement::Fix, "release_fixed", &CPhysicsElement::ReleaseFixed, "is_fixed",
-        &CPhysicsElement::isFixed, "global_transform", &global_transform, sol::base_classes, xr_sol_bases<CPhysicsElement>());
+    lua.new_usertype<CPhysicsElement>("physics_element", sol::no_constructor, "apply_force", sol::resolve<void(float, float, float)>(&CPhysicsElement::applyForce), "is_breakable",
+                                      &CPhysicsElement::isBreakable, "get_linear_vel", &CPhysicsElement::get_LinearVel, "get_angular_vel", &CPhysicsElement::get_AngularVel,
+                                      "get_mass", &CPhysicsElement::getMass, "get_density", &CPhysicsElement::getDensity, "get_volume", &CPhysicsElement::getVolume, "fix",
+                                      &CPhysicsElement::Fix, "release_fixed", &CPhysicsElement::ReleaseFixed, "is_fixed", &CPhysicsElement::isFixed, "global_transform",
+                                      &global_transform, sol::base_classes, xr_sol_bases<CPhysicsElement>());
 }
 
-void CPhysicsJoint::script_register(lua_State* L)
+void CPhysicsJoint::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPhysicsJoint>(
+    lua.new_usertype<CPhysicsJoint>(
         "physics_joint", sol::no_constructor, "get_bone_id", &CPhysicsJoint::BoneID, "get_first_element", &CPhysicsJoint::PFirst_element, "get_stcond_element",
         &CPhysicsJoint::PSecond_element, "set_anchor_global", sol::resolve<void(const float, const float, const float)>(&CPhysicsJoint::SetAnchor), "set_anchor_vs_first_element",
         sol::resolve<void(const float, const float, const float)>(&CPhysicsJoint::SetAnchorVsFirstElement), "set_anchor_vs_second_element",

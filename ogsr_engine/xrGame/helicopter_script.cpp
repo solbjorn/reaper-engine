@@ -6,10 +6,10 @@ int CHelicopter::GetMovementState() { return m_movement.type; }
 int CHelicopter::GetHuntState() { return m_enemy.type; }
 int CHelicopter::GetBodyState() { return m_body.type; }
 
-void CHelicopter::script_register(lua_State* L)
+void CHelicopter::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CHelicopter>(
-        "CHelicopter", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHelicopter>),
+    lua.new_usertype<CHelicopter>(
+        "CHelicopter", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHelicopter>), "factory", &client_factory<CHelicopter>,
 
         // state
         "eAlive", sol::var(CHelicopter::eAlive), "eDead", sol::var(CHelicopter::eDead),

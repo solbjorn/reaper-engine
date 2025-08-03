@@ -5,8 +5,8 @@ CScope::CScope() {}
 
 CScope::~CScope() {}
 
-void CScope::script_register(lua_State* L)
+void CScope::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScope>("CScope", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScope>), sol::base_classes,
-                                            xr_sol_bases<CScope>());
+    lua.new_usertype<CScope>("CScope", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScope>), "factory", &client_factory<CScope>, sol::base_classes,
+                             xr_sol_bases<CScope>());
 }

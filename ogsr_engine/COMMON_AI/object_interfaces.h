@@ -47,8 +47,8 @@ class IPureServerObject : public IPureSerializeObject<IReader, IWriter>
     RTTI_DECLARE_TYPEINFO(IPureServerObject, IPureSerializeObject<IReader, IWriter>);
 
 public:
-    virtual void STATE_Write(NET_Packet& tNetPacket) = 0;
-    virtual void STATE_Read(NET_Packet& tNetPacket, u16 size) = 0;
+    virtual void __STATE_Write(NET_Packet& tNetPacket) = 0;
+    virtual void __STATE_Read(NET_Packet& tNetPacket, u16 size) = 0;
     virtual void UPDATE_Write(NET_Packet& tNetPacket) = 0;
     virtual void UPDATE_Read(NET_Packet& tNetPacket) = 0;
 };

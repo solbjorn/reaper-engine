@@ -171,13 +171,15 @@ private:
 
     void StaminaHit();
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-
+public:
     void face_enemy();
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CBurer);
 
-bool actor_is_reloading_weapon();
-
-add_to_type_list(CBurer)
+add_to_type_list(CBurer);
 #undef script_type_list
 #define script_type_list save_type_list(CBurer)
+
+bool actor_is_reloading_weapon();

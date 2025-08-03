@@ -382,10 +382,8 @@ static LPCSTR get_loaded_save(CALifeSimulator* sim)
 
 static bool sim_is_unloading(CALifeSimulator* sim) { return sim->is_unloading(); }
 
-void CALifeSimulator::script_register(lua_State* L)
+void CALifeSimulator::script_register(sol::state_view& lua)
 {
-    sol::state_view lua(L);
-
     lua.new_usertype<CALifeSimulator>(
         "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id", &get_level_id, "level_name", &get_level_name, "objects", &alife_objects, "object",
         sol::overload(sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID)>(&alife_object),

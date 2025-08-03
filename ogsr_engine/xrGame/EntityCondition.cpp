@@ -572,10 +572,8 @@ static bool get_entity_fall(CEntity::SEntityState* S) { return S->bFall; }
 static bool get_entity_jump(CEntity::SEntityState* S) { return S->bJump; }
 static bool get_entity_sprint(CEntity::SEntityState* S) { return S->bSprint; }
 
-void CEntityCondition::script_register(lua_State* L)
+void CEntityCondition::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CEntity::SEntityState>("SEntityState", sol::no_constructor, "crouch", sol::property(&get_entity_crouch), "fall", sol::property(&get_entity_fall), "jump",
                                             sol::property(&get_entity_jump), "sprint", sol::property(&get_entity_sprint), "velocity",
                                             sol::readonly(&CEntity::SEntityState::fVelocity), "a_velocity", sol::readonly(&CEntity::SEntityState::fAVelocity));

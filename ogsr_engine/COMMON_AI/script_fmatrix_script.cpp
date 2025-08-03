@@ -8,16 +8,15 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_fmatrix.h"
 
 static void get_matrix_hpb(const Fmatrix& self, float* h, float* p, float* b) { self.getHPB(*h, *p, *b); }
 static void get_matrix_xyzi(const Fmatrix& self, float* x, float* y, float* z) { self.getXYZi(*x, *y, *z); }
 
 template <>
-void CScriptFmatrix::script_register(lua_State* L)
+void CScriptFmatrix::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<Fmatrix>(
+    lua.new_usertype<Fmatrix>(
         "matrix", sol::no_constructor, sol::call_constructor, sol::initializers([](Fmatrix& m) { m = Fmatrix{}; }), "i", &Fmatrix::i, "_14_",
         sol::property(&Fmatrix::get_14, &Fmatrix::set_14), "j", &Fmatrix::j, "_24_", sol::property(&Fmatrix::get_24, &Fmatrix::set_24), "k", &Fmatrix::k, "_34_",
         sol::property(&Fmatrix::get_34, &Fmatrix::set_34), "c", &Fmatrix::c, "_44_", sol::property(&Fmatrix::get_44, &Fmatrix::set_44), "set",

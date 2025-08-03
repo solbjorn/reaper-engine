@@ -42,8 +42,10 @@ protected:
 private:
     string128 guns_bm_aim_anm;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponBM16)
+XR_SOL_BASE_CLASSES(CWeaponBM16);
+
+add_to_type_list(CWeaponBM16);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponBM16)

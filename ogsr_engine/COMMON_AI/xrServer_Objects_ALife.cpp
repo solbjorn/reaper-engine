@@ -57,7 +57,7 @@ CSE_ALifeGraphPoint::CSE_ALifeGraphPoint(LPCSTR caSection) : CSE_Abstract(caSect
 
 CSE_ALifeGraphPoint::~CSE_ALifeGraphPoint() {}
 
-void CSE_ALifeGraphPoint::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeGraphPoint::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     tNetPacket.r_stringZ(m_caConnectionPointName);
     if (m_wVersion < 33)
@@ -70,7 +70,7 @@ void CSE_ALifeGraphPoint::STATE_Read(NET_Packet& tNetPacket, u16 size)
     tNetPacket.r_u8(m_tLocations[3]);
 };
 
-void CSE_ALifeGraphPoint::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeGraphPoint::__STATE_Write(NET_Packet& tNetPacket)
 {
     tNetPacket.w_stringZ(m_caConnectionPointName);
     tNetPacket.w_stringZ(m_caConnectionLevelName);
@@ -127,7 +127,7 @@ bool CSE_ALifeObject::visible_for_map() const { return (!!m_flags.test(flVisible
 
 void CSE_ALifeObject::visible_for_map(bool value) { m_flags.set(flVisibleForMap, value ? TRUE : FALSE); }
 
-void CSE_ALifeObject::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeObject::__STATE_Write(NET_Packet& tNetPacket)
 {
     tNetPacket.w(&m_tGraphID, sizeof(m_tGraphID));
     tNetPacket.w_float(m_fDistance);
@@ -139,7 +139,7 @@ void CSE_ALifeObject::STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w(&m_spawn_story_id, sizeof(m_spawn_story_id));
 }
 
-void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     if (m_wVersion >= 1)
     {
@@ -249,9 +249,31 @@ u32 CSE_ALifeObject::ef_detector_type() const
 
 bool CSE_ALifeObject::used_ai_locations() const { return (!!m_flags.is(flUsedAI_Locations)); }
 
-bool CSE_ALifeObject::can_switch_online() const { return (match_configuration() && !!m_flags.is(flSwitchOnline)); }
+bool CSE_ALifeObject::__can_switch_online() const { return match_configuration() && !!m_flags.is(flSwitchOnline); }
 
-bool CSE_ALifeObject::can_switch_offline() const { return (!match_configuration() || !!m_flags.is(flSwitchOffline)); }
+bool CSE_ALifeObject::can_switch_online() const
+{
+    bool ret = __can_switch_online();
+
+    auto op = ops.find(CAN_SWITCH_ONLINE);
+    if (op == ops.end())
+        return ret;
+
+    return op->second(this, ret);
+}
+
+bool CSE_ALifeObject::__can_switch_offline() const { return !match_configuration() || !!m_flags.is(flSwitchOffline); }
+
+bool CSE_ALifeObject::can_switch_offline() const
+{
+    bool ret = __can_switch_offline();
+
+    auto op = ops.find(CAN_SWITCH_OFFLINE);
+    if (op == ops.end())
+        return ret;
+
+    return op->second(this, ret);
+}
 
 bool CSE_ALifeObject::can_save() const { return (!!m_flags.is(flCanSave)); }
 
@@ -278,7 +300,7 @@ CSE_Abstract* CSE_ALifeGroupAbstract::init() { return (base()); }
 
 CSE_ALifeGroupAbstract::~CSE_ALifeGroupAbstract() {}
 
-void CSE_ALifeGroupAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeGroupAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     u16 m_wVersion = base()->m_wVersion;
     u32 dwDummy;
@@ -289,7 +311,7 @@ void CSE_ALifeGroupAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
         load_data(m_tpMembers, tNetPacket);
 };
 
-void CSE_ALifeGroupAbstract::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeGroupAbstract::__STATE_Write(NET_Packet& tNetPacket)
 {
     tNetPacket.w_u32(m_bCreateSpawnPositions);
     tNetPacket.w_u16(m_wCount);
@@ -317,9 +339,9 @@ CSE_ALifeDynamicObject::CSE_ALifeDynamicObject(LPCSTR caSection) : CSE_ALifeObje
 
 CSE_ALifeDynamicObject::~CSE_ALifeDynamicObject() {}
 
-void CSE_ALifeDynamicObject::STATE_Write(NET_Packet& tNetPacket) { inherited::STATE_Write(tNetPacket); }
+void CSE_ALifeDynamicObject::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
-void CSE_ALifeDynamicObject::STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::STATE_Read(tNetPacket, size); }
+void CSE_ALifeDynamicObject::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
 void CSE_ALifeDynamicObject::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); };
 
@@ -338,15 +360,15 @@ CSE_ALifeDynamicObjectVisual::~CSE_ALifeDynamicObjectVisual() {}
 
 CSE_Visual* CSE_ALifeDynamicObjectVisual::visual() { return (this); }
 
-void CSE_ALifeDynamicObjectVisual::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeDynamicObjectVisual::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
     visual_write(tNetPacket);
 }
 
-void CSE_ALifeDynamicObjectVisual::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeDynamicObjectVisual::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited1::STATE_Read(tNetPacket, size);
+    inherited1::__STATE_Read(tNetPacket, size);
     if (m_wVersion > 31)
         visual_read(tNetPacket, m_wVersion);
 }
@@ -366,17 +388,17 @@ CSE_ALifePHSkeletonObject::CSE_ALifePHSkeletonObject(LPCSTR caSection) : CSE_ALi
 
 CSE_ALifePHSkeletonObject::~CSE_ALifePHSkeletonObject() {}
 
-void CSE_ALifePHSkeletonObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifePHSkeletonObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited1::STATE_Read(tNetPacket, size);
+    inherited1::__STATE_Read(tNetPacket, size);
     if (m_wVersion >= 64)
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
 }
 
-void CSE_ALifePHSkeletonObject::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifePHSkeletonObject::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
-    inherited2::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
+    inherited2::__STATE_Write(tNetPacket);
 }
 
 void CSE_ALifePHSkeletonObject::load(NET_Packet& tNetPacket)
@@ -414,23 +436,23 @@ CSE_ALifeSpaceRestrictor::CSE_ALifeSpaceRestrictor(LPCSTR caSection) : CSE_ALife
 
 CSE_ALifeSpaceRestrictor::~CSE_ALifeSpaceRestrictor() {}
 
-bool CSE_ALifeSpaceRestrictor::can_switch_offline() const { return (false); }
+bool CSE_ALifeSpaceRestrictor::__can_switch_offline() const { return false; }
 
 bool CSE_ALifeSpaceRestrictor::used_ai_locations() const { return (false); }
 
 ISE_Shape* CSE_ALifeSpaceRestrictor::shape() { return (this); }
 
-void CSE_ALifeSpaceRestrictor::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeSpaceRestrictor::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited1::STATE_Read(tNetPacket, size);
+    inherited1::__STATE_Read(tNetPacket, size);
     cform_read(tNetPacket);
     if (m_wVersion > 74)
         m_space_restrictor_type = tNetPacket.r_u8();
 }
 
-void CSE_ALifeSpaceRestrictor::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeSpaceRestrictor::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
     cform_write(tNetPacket);
     tNetPacket.w_u8(m_space_restrictor_type);
 }
@@ -459,9 +481,9 @@ CSE_ALifeLevelChanger::CSE_ALifeLevelChanger(LPCSTR caSection) : CSE_ALifeSpaceR
 
 CSE_ALifeLevelChanger::~CSE_ALifeLevelChanger() {}
 
-void CSE_ALifeLevelChanger::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeLevelChanger::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited::STATE_Read(tNetPacket, size);
+    inherited::__STATE_Read(tNetPacket, size);
     if (m_wVersion < 34)
     {
         tNetPacket.r_u32();
@@ -486,9 +508,9 @@ void CSE_ALifeLevelChanger::STATE_Read(NET_Packet& tNetPacket, u16 size)
         m_SilentMode = tNetPacket.r_u8();
 }
 
-void CSE_ALifeLevelChanger::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeLevelChanger::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited::STATE_Write(tNetPacket);
+    inherited::__STATE_Write(tNetPacket);
     tNetPacket.w(&m_tNextGraphID, sizeof(m_tNextGraphID));
     tNetPacket.w_u32(m_dwNextNodeID);
     tNetPacket.w_float(m_tNextPosition.x);
@@ -522,23 +544,23 @@ CSE_ALifeObjectPhysic::CSE_ALifeObjectPhysic(LPCSTR caSection) : CSE_ALifeDynami
 
 CSE_ALifeObjectPhysic::~CSE_ALifeObjectPhysic() {}
 
-void CSE_ALifeObjectPhysic::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObjectPhysic::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     if (m_wVersion >= 14)
         if (m_wVersion >= 16)
         {
-            inherited1::STATE_Read(tNetPacket, size);
+            inherited1::__STATE_Read(tNetPacket, size);
             if (m_wVersion < 32)
                 visual_read(tNetPacket, m_wVersion);
         }
         else
         {
-            CSE_ALifeObject::STATE_Read(tNetPacket, size);
+            CSE_ALifeObject::__STATE_Read(tNetPacket, size);
             visual_read(tNetPacket, m_wVersion);
         }
 
     if (m_wVersion >= 64)
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
 
     tNetPacket.r_u32(type);
     tNetPacket.r_float(mass);
@@ -565,10 +587,10 @@ void CSE_ALifeObjectPhysic::STATE_Read(NET_Packet& tNetPacket, u16 size)
     set_editor_flag(flVisualAnimationChange);
 }
 
-void CSE_ALifeObjectPhysic::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeObjectPhysic::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
-    inherited2::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
+    inherited2::__STATE_Write(tNetPacket);
     tNetPacket.w_u32(type);
     tNetPacket.w_float(mass);
     tNetPacket.w_stringZ(fixed_bones);
@@ -619,12 +641,12 @@ CSE_ALifeObjectHangingLamp::CSE_ALifeObjectHangingLamp(LPCSTR caSection) : CSE_A
 
 CSE_ALifeObjectHangingLamp::~CSE_ALifeObjectHangingLamp() {}
 
-void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObjectHangingLamp::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     if (m_wVersion > 20)
-        inherited1::STATE_Read(tNetPacket, size);
+        inherited1::__STATE_Read(tNetPacket, size);
     if (m_wVersion >= 69)
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
     if (m_wVersion < 32)
         visual_read(tNetPacket, m_wVersion);
 
@@ -708,10 +730,10 @@ void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
     tNetPacket.r_float(m_smap_jitter);
 }
 
-void CSE_ALifeObjectHangingLamp::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeObjectHangingLamp::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
-    inherited2::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
+    inherited2::__STATE_Write(tNetPacket);
 
     // model
     tNetPacket.w_u32(color);
@@ -825,9 +847,9 @@ CSE_ALifeObjectProjector::CSE_ALifeObjectProjector(LPCSTR caSection) : CSE_ALife
 
 CSE_ALifeObjectProjector::~CSE_ALifeObjectProjector() {}
 
-void CSE_ALifeObjectProjector::STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::STATE_Read(tNetPacket, size); }
+void CSE_ALifeObjectProjector::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeObjectProjector::STATE_Write(NET_Packet& tNetPacket) { inherited::STATE_Write(tNetPacket); }
+void CSE_ALifeObjectProjector::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
 void CSE_ALifeObjectProjector::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
 
@@ -902,23 +924,23 @@ CSE_ALifeHelicopter::~CSE_ALifeHelicopter() {}
 
 CSE_Motion* CSE_ALifeHelicopter::motion() { return (this); }
 
-void CSE_ALifeHelicopter::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeHelicopter::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited1::STATE_Read(tNetPacket, size);
+    inherited1::__STATE_Read(tNetPacket, size);
     CSE_Motion::motion_read(tNetPacket);
     if (m_wVersion >= 69)
-        inherited3::STATE_Read(tNetPacket, size);
+        inherited3::__STATE_Read(tNetPacket, size);
     tNetPacket.r_stringZ(startup_animation);
     tNetPacket.r_stringZ(engine_sound);
 
     set_editor_flag(flVisualAnimationChange | flMotionChange);
 }
 
-void CSE_ALifeHelicopter::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeHelicopter::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
     CSE_Motion::motion_write(tNetPacket);
-    inherited3::STATE_Write(tNetPacket);
+    inherited3::__STATE_Write(tNetPacket);
     tNetPacket.w_stringZ(startup_animation);
     tNetPacket.w_stringZ(engine_sound);
 }
@@ -958,12 +980,12 @@ CSE_ALifeCar::CSE_ALifeCar(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSe
 
 CSE_ALifeCar::~CSE_ALifeCar() {}
 
-void CSE_ALifeCar::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeCar::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited1::STATE_Read(tNetPacket, size);
+    inherited1::__STATE_Read(tNetPacket, size);
 
     if (m_wVersion > 65)
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
     if ((m_wVersion > 52) && (m_wVersion < 55))
         tNetPacket.r_float();
     if (m_wVersion > 92)
@@ -972,10 +994,10 @@ void CSE_ALifeCar::STATE_Read(NET_Packet& tNetPacket, u16 size)
         health /= 100.0f;
 }
 
-void CSE_ALifeCar::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeCar::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited1::STATE_Write(tNetPacket);
-    inherited2::STATE_Write(tNetPacket);
+    inherited1::__STATE_Write(tNetPacket);
+    inherited2::__STATE_Write(tNetPacket);
     tNetPacket.w_float(health);
 }
 
@@ -1080,15 +1102,15 @@ CSE_ALifeObjectBreakable::CSE_ALifeObjectBreakable(LPCSTR caSection) : CSE_ALife
 
 CSE_ALifeObjectBreakable::~CSE_ALifeObjectBreakable() {}
 
-void CSE_ALifeObjectBreakable::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObjectBreakable::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    inherited::STATE_Read(tNetPacket, size);
+    inherited::__STATE_Read(tNetPacket, size);
     tNetPacket.r_float(m_health);
 }
 
-void CSE_ALifeObjectBreakable::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeObjectBreakable::__STATE_Write(NET_Packet& tNetPacket)
 {
-    inherited::STATE_Write(tNetPacket);
+    inherited::__STATE_Write(tNetPacket);
     tNetPacket.w_float(m_health);
 }
 
@@ -1098,7 +1120,7 @@ void CSE_ALifeObjectBreakable::UPDATE_Write(NET_Packet& tNetPacket) { inherited:
 
 bool CSE_ALifeObjectBreakable::used_ai_locations() const { return (false); }
 
-bool CSE_ALifeObjectBreakable::can_switch_offline() const { return (false); }
+bool CSE_ALifeObjectBreakable::__can_switch_offline() const { return false; }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeObjectClimable
@@ -1114,20 +1136,20 @@ CSE_ALifeObjectClimable::~CSE_ALifeObjectClimable() {}
 
 ISE_Shape* CSE_ALifeObjectClimable::shape() { return (this); }
 
-void CSE_ALifeObjectClimable::STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObjectClimable::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
-    // inherited1::STATE_Read		(tNetPacket,size);
+    // inherited1::__STATE_Read		(tNetPacket,size);
     if (m_wVersion == 99)
-        CSE_ALifeObject::STATE_Read(tNetPacket, size);
+        CSE_ALifeObject::__STATE_Read(tNetPacket, size);
     if (m_wVersion > 99)
-        inherited2::STATE_Read(tNetPacket, size);
+        inherited2::__STATE_Read(tNetPacket, size);
     cform_read(tNetPacket);
 }
 
-void CSE_ALifeObjectClimable::STATE_Write(NET_Packet& tNetPacket)
+void CSE_ALifeObjectClimable::__STATE_Write(NET_Packet& tNetPacket)
 {
-    // inherited1::STATE_Write		(tNetPacket);
-    inherited2::STATE_Write(tNetPacket);
+    // inherited1::__STATE_Write		(tNetPacket);
+    inherited2::__STATE_Write(tNetPacket);
     cform_write(tNetPacket);
 }
 
@@ -1145,7 +1167,7 @@ void CSE_ALifeObjectClimable::UPDATE_Write(NET_Packet& tNetPacket)
 
 bool CSE_ALifeObjectClimable::used_ai_locations() const { return (false); }
 
-bool CSE_ALifeObjectClimable::can_switch_offline() const { return (false); }
+bool CSE_ALifeObjectClimable::__can_switch_offline() const { return false; }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeMountedWeapon
@@ -1154,9 +1176,9 @@ CSE_ALifeMountedWeapon::CSE_ALifeMountedWeapon(LPCSTR caSection) : CSE_ALifeDyna
 
 CSE_ALifeMountedWeapon::~CSE_ALifeMountedWeapon() {}
 
-void CSE_ALifeMountedWeapon::STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::STATE_Read(tNetPacket, size); }
+void CSE_ALifeMountedWeapon::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeMountedWeapon::STATE_Write(NET_Packet& tNetPacket) { inherited::STATE_Write(tNetPacket); }
+void CSE_ALifeMountedWeapon::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
 void CSE_ALifeMountedWeapon::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
 
@@ -1180,9 +1202,9 @@ void CSE_ALifeStationaryMgun::UPDATE_Write(NET_Packet& tNetPacket)
     save_data(m_destEnemyDir, tNetPacket);
 }
 
-void CSE_ALifeStationaryMgun::STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::STATE_Read(tNetPacket, size); }
+void CSE_ALifeStationaryMgun::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeStationaryMgun::STATE_Write(NET_Packet& tNetPacket) { inherited::STATE_Write(tNetPacket); }
+void CSE_ALifeStationaryMgun::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeSmartZone
@@ -1203,16 +1225,64 @@ CSE_Abstract* CSE_ALifeSmartZone::init()
     return (this);
 }
 
-void CSE_ALifeSmartZone::STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited1::STATE_Read(tNetPacket, size); }
+void CSE_ALifeSmartZone::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited1::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeSmartZone::STATE_Write(NET_Packet& tNetPacket) { inherited1::STATE_Write(tNetPacket); }
+void CSE_ALifeSmartZone::__STATE_Write(NET_Packet& tNetPacket) { inherited1::__STATE_Write(tNetPacket); }
 
 void CSE_ALifeSmartZone::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
 
 void CSE_ALifeSmartZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
-void CSE_ALifeSmartZone::update() {}
+bool CSE_ALifeSmartZone::enabled(CSE_ALifeMonsterAbstract* object) const
+{
+    auto op = ops.find(ENABLED);
+    if (op == ops.end())
+        return false;
 
-float CSE_ALifeSmartZone::detect_probability() { return (0.f); }
+    return op->second(this, object);
+}
 
-void CSE_ALifeSmartZone::smart_touch(CSE_ALifeMonsterAbstract* monster) {}
+void CSE_ALifeSmartZone::register_npc(CSE_ALifeMonsterAbstract* object)
+{
+    auto op = ops.find(REGISTER_NPC);
+    if (op == ops.end())
+        return;
+
+    op->second(this, object);
+}
+
+float CSE_ALifeSmartZone::suitable(CSE_ALifeMonsterAbstract* object) const
+{
+    auto op = ops.find(SUITABLE);
+    if (op == ops.end())
+        return 0.f;
+
+    return op->second(this, object);
+}
+
+CALifeSmartTerrainTask* CSE_ALifeSmartZone::task(CSE_ALifeMonsterAbstract* object)
+{
+    auto op = ops.find(TASK);
+    if (op == ops.end())
+        return nullptr;
+
+    return op->second(this, object);
+}
+
+void CSE_ALifeSmartZone::unregister_npc(CSE_ALifeMonsterAbstract* object)
+{
+    auto op = ops.find(UNREGISTER_NPC);
+    if (op == ops.end())
+        return;
+
+    op->second(this, object);
+}
+
+void CSE_ALifeSmartZone::update()
+{
+    auto op = ops.find(UPDATE);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
+}

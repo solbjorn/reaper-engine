@@ -9,8 +9,8 @@ CWeaponVintorez::CWeaponVintorez(void) : CWeaponMagazined("VINTOREZ", SOUND_TYPE
 
 CWeaponVintorez::~CWeaponVintorez(void) {}
 
-void CWeaponVintorez::script_register(lua_State* L)
+void CWeaponVintorez::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CWeaponVintorez>("CWeaponVintorez", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponVintorez>),
-                                                     sol::base_classes, xr_sol_bases<CWeaponVintorez>());
+    lua.new_usertype<CWeaponVintorez>("CWeaponVintorez", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponVintorez>), "factory",
+                                      &client_factory<CWeaponVintorez>, sol::base_classes, xr_sol_bases<CWeaponVintorez>());
 }

@@ -23,8 +23,6 @@ ICollisionForm::ICollisionForm(CObject* _owner, ECollisionFormType tp)
     bv_sphere.identity();
 }
 
-ICollisionForm::~ICollisionForm() {}
-
 void CCF_Skeleton::SElement::center(Fvector& center) const
 {
     switch (type)

@@ -73,7 +73,7 @@ public:
 
 class CServerInfo;
 
-class IPureServer : public virtual RTTI::Enable
+class XR_NOVTABLE IPureServer : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureServer);
 

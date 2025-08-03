@@ -12,8 +12,10 @@ class CGameObject;
 class CInventoryOwner;
 class CUIXml;
 
-class CPhraseScript
+class CPhraseScript : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPhraseScript);
+
 public:
     CPhraseScript();
     virtual ~CPhraseScript();

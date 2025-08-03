@@ -4,10 +4,8 @@
 #include "ai_monster_space.h"
 #include "AI/Monsters/monster_sound_defs.h"
 
-void CScriptMonsterHitInfo::script_register(lua_State* L)
+void CScriptMonsterHitInfo::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CScriptMonsterHitInfo>("MonsterHitInfo", sol::no_constructor, "who", &CScriptMonsterHitInfo::who, "direction", &CScriptMonsterHitInfo::direction, "time",
                                             &CScriptMonsterHitInfo::time);
 

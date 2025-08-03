@@ -21,8 +21,6 @@ IBlender::IBlender()
     xr_strcpy(oT_Name, "$base0");
 }
 
-IBlender::~IBlender() {}
-
 void IBlenderXr::WriteInteger(CInifile* ini_file, LPCSTR section, LPCSTR line, const xrP_INTEGER v) { ini_file->w_ivector3(section, line, Ivector3{v.value, v.min, v.max}); }
 
 void IBlenderXr::WriteBool(CInifile* ini_file, LPCSTR section, LPCSTR line, const xrP_BOOL v) { ini_file->w_bool(section, line, v.value); }

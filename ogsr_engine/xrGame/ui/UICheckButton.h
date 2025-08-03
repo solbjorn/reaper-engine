@@ -38,3 +38,4 @@ private:
     bool b_backup_val{};
     CUIWindow* m_pDependControl;
 };
+XR_SOL_BASE_CLASSES(CUICheckButton);

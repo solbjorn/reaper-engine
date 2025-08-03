@@ -9,14 +9,18 @@ constexpr int REG_PRIORITY_CAPTURE = 0x7fffffff;
 constexpr int REG_PRIORITY_INVALID = std::numeric_limits<int>::lowest();
 
 #define DECLARE_MESSAGE(name) \
-    struct pure##name : public virtual RTTI::Enable \
+    struct XR_NOVTABLE pure##name : public virtual RTTI::Enable \
     { \
         RTTI_DECLARE_TYPEINFO(pure##name); \
 \
     public: \
+        virtual ~pure##name() = 0; \
+\
         virtual void On##name() = 0; \
         static ICF void __fastcall OnPure(pure##name* self) { self->On##name(); } \
-    }
+    }; \
+\
+    inline pure##name::~pure##name() = default
 
 DECLARE_MESSAGE(Frame);
 DECLARE_MESSAGE(Render);

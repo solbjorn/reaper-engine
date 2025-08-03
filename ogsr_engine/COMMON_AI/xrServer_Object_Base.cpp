@@ -126,6 +126,17 @@ CInifile& CSE_Abstract::spawn_ini()
     return (*m_ini_file);
 }
 
+void CSE_Abstract::STATE_Write(NET_Packet& tNetPacket)
+{
+    __STATE_Write(tNetPacket);
+
+    auto op = ops.find(STATE_WRITE);
+    if (op == ops.end())
+        return;
+
+    op->second(this, tNetPacket);
+}
+
 void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
 {
     // generic
@@ -152,7 +163,7 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
     tNetPacket.w_u16(script_server_object_version());
 
     // client object custom data serialization SAVE
-    u16 client_data_size = (u16)client_data.size(); //не может быть больше 256 байт
+    u16 client_data_size = (u16)client_data.size(); // не может быть больше 256 байт
     tNetPacket.w_u16(client_data_size);
     //	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
     if (client_data_size > 0)
@@ -175,6 +186,17 @@ void CSE_Abstract::Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal)
     u16 size = u16(tNetPacket.w_tell() - position);
     R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "object isn't successfully saved, get your backup :(", name_replace());
     tNetPacket.w_seek(position, &size, sizeof(u16));
+}
+
+void CSE_Abstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
+{
+    __STATE_Read(tNetPacket, size);
+
+    auto op = ops.find(STATE_READ);
+    if (op == ops.end())
+        return;
+
+    op->second(this, tNetPacket, size);
 }
 
 BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
@@ -218,7 +240,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
     // client object custom data serialization LOAD
     if (m_wVersion > 70)
     {
-        u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
+        u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); // не может быть больше 256 байт
         if (client_data_size > 0)
         {
             //			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");

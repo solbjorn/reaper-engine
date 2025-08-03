@@ -9,6 +9,8 @@
 
 class CMercuryBall : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CMercuryBall, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -21,15 +23,16 @@ public:
 protected:
     virtual void UpdateCLChild();
 
-    //время последнего обновления поведения шара
+    // время последнего обновления поведения шара
     ALife::_TIME_ID m_timeLastUpdate;
-    //время между апдейтами
+    // время между апдейтами
     ALife::_TIME_ID m_timeToUpdate;
 
-    //диапазон импульсов катания шара
+    // диапазон импульсов катания шара
     float m_fImpulseMin;
     float m_fImpulseMax;
 };
+XR_SOL_BASE_CLASSES(CMercuryBall);
 
 /*
 

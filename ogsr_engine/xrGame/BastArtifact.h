@@ -76,3 +76,4 @@ protected:
 public:
     virtual void setup_physic_shell();
 };
+XR_SOL_BASE_CLASSES(CBastArtefact);

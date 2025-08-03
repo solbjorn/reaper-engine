@@ -13,8 +13,10 @@
 
 class CScriptGameObject;
 
-class CScriptHit
+class CScriptHit : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptHit);
+
 public:
     float m_fPower;
     Fvector m_tDirection;
@@ -28,9 +30,11 @@ public:
     IC CScriptHit(const CScriptHit* tpLuaHit);
     virtual ~CScriptHit();
     IC void set_bone_name(LPCSTR bone_name);
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptHit)
+
+add_to_type_list(CScriptHit);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptHit)
 

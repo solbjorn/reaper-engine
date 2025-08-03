@@ -6,7 +6,7 @@
 
 #include "DebugShader.h"
 
-class IDebugRender : public virtual RTTI::Enable
+class XR_NOVTABLE IDebugRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IDebugRender);
 
@@ -25,7 +25,7 @@ public:
     };
 
 public:
-    virtual ~IDebugRender() {}
+    virtual ~IDebugRender() = 0;
 
     virtual void Render() = 0;
 
@@ -44,6 +44,8 @@ public:
 
     virtual void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) = 0;
 };
+
+inline IDebugRender::~IDebugRender() = default;
 
 // #endif // DEBUG
 

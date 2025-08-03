@@ -122,15 +122,18 @@ public:
 typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
 
 // Automatic constant setup
-class R_constant_setup : public virtual RTTI::Enable
+class XR_NOVTABLE R_constant_setup : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(R_constant_setup);
 
 public:
     R_constant_setup() = default;
+    virtual ~R_constant_setup() = 0;
+
     virtual void setup(CBackend& cmd_list, R_constant* C) = 0;
-    virtual ~R_constant_setup() = default;
 };
+
+inline R_constant_setup::~R_constant_setup() = default;
 
 class R_constant_table : public xr_resource_flagged
 {

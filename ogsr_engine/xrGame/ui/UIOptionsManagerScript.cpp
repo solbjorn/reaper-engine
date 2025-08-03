@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-
 #include "UIOptionsItem.h"
 #include "UIOptionsManagerScript.h"
 
@@ -19,11 +17,11 @@ void CUIOptionsManagerScript::OptionsPostAccept() { CUIOptionsItem::GetOptionsMa
 
 void CUIOptionsManagerScript::SendMessage2Group(const char* group, const char* message) { CUIOptionsItem::GetOptionsManager()->SendMessage2Group(group, message); }
 
-void CUIOptionsManagerScript::script_register(lua_State* L)
+void CUIOptionsManagerScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CUIOptionsManagerScript>("COptionsManager", sol::no_constructor, sol::call_constructor, sol::constructors<CUIOptionsManagerScript()>(),
-                                                             "SaveBackupValues", &CUIOptionsManagerScript::SaveBackupValues, "SetCurrentValues",
-                                                             &CUIOptionsManagerScript::SetCurrentValues, "SaveValues", &CUIOptionsManagerScript::SaveValues, "IsGroupChanged",
-                                                             &CUIOptionsManagerScript::IsGroupChanged, "UndoGroup", &CUIOptionsManagerScript::UndoGroup, "OptionsPostAccept",
-                                                             &CUIOptionsManagerScript::OptionsPostAccept, "SendMessage2Group", &CUIOptionsManagerScript::SendMessage2Group);
+    lua.new_usertype<CUIOptionsManagerScript>("COptionsManager", sol::no_constructor, sol::call_constructor, sol::constructors<CUIOptionsManagerScript()>(), "SaveBackupValues",
+                                              &CUIOptionsManagerScript::SaveBackupValues, "SetCurrentValues", &CUIOptionsManagerScript::SetCurrentValues, "SaveValues",
+                                              &CUIOptionsManagerScript::SaveValues, "IsGroupChanged", &CUIOptionsManagerScript::IsGroupChanged, "UndoGroup",
+                                              &CUIOptionsManagerScript::UndoGroup, "OptionsPostAccept", &CUIOptionsManagerScript::OptionsPostAccept, "SendMessage2Group",
+                                              &CUIOptionsManagerScript::SendMessage2Group);
 }

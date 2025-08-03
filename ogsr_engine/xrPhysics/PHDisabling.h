@@ -25,12 +25,13 @@ struct SDisableUpdateState
     SDisableUpdateState();
 };
 
-struct CBaseDisableData : public virtual RTTI::Enable
+struct XR_NOVTABLE CBaseDisableData : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CBaseDisableData);
 
 public:
     CBaseDisableData();
+    virtual ~CBaseDisableData() = 0;
 
 protected:
     u16 m_count;
@@ -56,6 +57,8 @@ protected:
     virtual void UpdateL2() = 0;
     virtual dBodyID get_body() = 0;
 };
+
+inline CBaseDisableData::~CBaseDisableData() = default;
 
 class CPHDisablingBase : public virtual CBaseDisableData
 {

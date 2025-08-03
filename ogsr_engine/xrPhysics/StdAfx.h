@@ -8,6 +8,7 @@
 #pragma warning(4 : 4244)
 #pragma warning(disable : 4505)
 
+#include "../xrScriptEngine/xr_sol.h"
 #include "..\xr_3da\ai_script_space.h" //KRodin: пусть луа для рендера и скриптов инитится в одном месте.
 
 #define THROW VERIFY

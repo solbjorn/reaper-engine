@@ -47,7 +47,7 @@ public:
     virtual void IR_OnActivate(void);
 };
 
-class CUISequenceItem : public virtual RTTI::Enable
+class XR_NOVTABLE CUISequenceItem : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CUISequenceItem);
 
@@ -65,15 +65,16 @@ protected:
         etiNeedPauseSound = (1 << 5),
         eti_last = 6
     };
-    xr_vector<luabind::functor<void>> m_start_lua_functions;
-    xr_vector<luabind::functor<void>> m_stop_lua_functions;
+    xr_vector<sol::function> m_start_lua_functions;
+    xr_vector<sol::function> m_stop_lua_functions;
 
     Flags32 m_flags;
     CUISequencer* m_owner;
 
 public:
     CUISequenceItem(CUISequencer* owner) : m_owner(owner) { m_flags.zero(); }
-    virtual ~CUISequenceItem() {}
+    virtual ~CUISequenceItem() = 0;
+
     virtual void Load(CUIXml* xml, int idx) = 0;
 
     virtual void Start() = 0;
@@ -88,6 +89,8 @@ public:
     bool AllowKey(int dik);
     bool GrabInput() { return !!m_flags.test(etiGrabInput); }
 };
+
+inline CUISequenceItem::~CUISequenceItem() = default;
 
 class CUISequenceSimpleItem : public CUISequenceItem
 {

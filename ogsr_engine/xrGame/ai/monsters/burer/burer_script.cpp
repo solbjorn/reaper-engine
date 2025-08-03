@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "burer.h"
 
-void CBurer::script_register(lua_State* L)
+void CBurer::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CBurer>("CBurer", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CBurer>), sol::base_classes,
-                                            xr_sol_bases<CBurer>());
+    lua.new_usertype<CBurer>("CBurer", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CBurer>), "factory", &client_factory<CBurer>, sol::base_classes,
+                             xr_sol_bases<CBurer>());
 }

@@ -414,11 +414,11 @@ void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit)
     // light_render->set_lsf_params(_speed, _amount, _jit);
 }
 
-void CHangingLamp::script_register(lua_State* L)
+void CHangingLamp::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CHangingLamp>(
-        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "turn_on", &CHangingLamp::TurnOn, "turn_off",
-        &CHangingLamp::TurnOff, "set_lsf_params", &CHangingLamp::SetLSFParams, "set_volumetric",
+    lua.new_usertype<CHangingLamp>(
+        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "factory", &client_factory<CHangingLamp>, "turn_on",
+        &CHangingLamp::TurnOn, "turn_off", &CHangingLamp::TurnOff, "set_lsf_params", &CHangingLamp::SetLSFParams, "set_volumetric",
         [](CHangingLamp* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",

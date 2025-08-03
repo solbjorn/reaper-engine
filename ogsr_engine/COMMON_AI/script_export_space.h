@@ -8,32 +8,46 @@
 
 #pragma once
 
+#ifdef SCRIPT_REGISTRATOR
+
 #include <typelist.hpp>
 
-struct lua_State;
-
-#ifdef SCRIPT_REGISTRATOR
 #define script_type_list imdexlib::typelist<>
-#define add_to_type_list(type) using TypeList_##type = imdexlib::ts_prepend_t<type, script_type_list>;
+#define add_to_type_list(type) using TypeList_##type = imdexlib::ts_prepend_t<type, script_type_list>
 #define save_type_list(type) TypeList_##type
+
 #else
+
 #define script_type_list
-#define add_to_type_list(type) ;
+#define add_to_type_list(type) static_assert(true, "")
 #define save_type_list(type)
+
 #endif
 
-#define DECLARE_SCRIPT_REGISTER_FUNCTION \
+#define DECLARE_SCRIPT_REGISTER_FUNCTION() \
 public: \
-    static void script_register(lua_State*);
-#define DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT static void script_register(lua_State*);
+    static void script_register(sol::state_view& lua)
 
 template <typename T>
 struct enum_exporter
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+
 template <typename T>
 struct class_exporter
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+
+template <typename T>
+inline std::unique_ptr<DLL_Pure> client_factory(std::unique_ptr<T>& self)
+{
+    return std::move(std::unique_ptr<DLL_Pure>(static_cast<DLL_Pure*>(self.release())));
+}
+
+template <typename T>
+inline std::unique_ptr<CSE_Abstract> server_factory(std::unique_ptr<T>& self)
+{
+    return std::move(std::unique_ptr<CSE_Abstract>(static_cast<CSE_Abstract*>(self.release())));
+}

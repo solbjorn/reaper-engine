@@ -8,12 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_action_condition.h"
 
-void CScriptActionCondition::script_register(lua_State* L)
+void CScriptActionCondition::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptActionCondition>(
+    lua.new_usertype<CScriptActionCondition>(
         "cond", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptActionCondition(), CScriptActionCondition(u32), CScriptActionCondition(u32, double)>(),
 
         // cond

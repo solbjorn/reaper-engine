@@ -10,6 +10,8 @@
 
 class CStalkerOutfit : public CCustomOutfit
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerOutfit, CCustomOutfit);
+
 private:
     typedef CCustomOutfit inherited;
 
@@ -17,8 +19,10 @@ public:
     CStalkerOutfit(void);
     virtual ~CStalkerOutfit(void);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CStalkerOutfit)
+XR_SOL_BASE_CLASSES(CStalkerOutfit);
+
+add_to_type_list(CStalkerOutfit);
 #undef script_type_list
 #define script_type_list save_type_list(CStalkerOutfit)

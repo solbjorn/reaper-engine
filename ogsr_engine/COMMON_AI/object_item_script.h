@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
 

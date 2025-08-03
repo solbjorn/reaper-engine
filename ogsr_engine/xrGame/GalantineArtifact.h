@@ -8,6 +8,8 @@
 
 class CGalantineArtefact : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CGalantineArtefact, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -16,6 +18,5 @@ public:
     virtual ~CGalantineArtefact(void);
 
     virtual void Load(LPCSTR section);
-
-protected:
 };
+XR_SOL_BASE_CLASSES(CGalantineArtefact);

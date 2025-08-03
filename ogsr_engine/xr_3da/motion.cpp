@@ -24,8 +24,6 @@ CCustomMotion::CCustomMotion()
 
 CCustomMotion::CCustomMotion(CCustomMotion* source) { *this = *source; }
 
-CCustomMotion::~CCustomMotion() {}
-
 void CCustomMotion::Save(IWriter& F)
 {
 #ifdef _LW_EXPORT

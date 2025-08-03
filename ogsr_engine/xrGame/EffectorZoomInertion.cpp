@@ -155,10 +155,8 @@ static void set_current_point(CEffectorZoomInertion* E, const Fvector src) { E->
 static void set_last_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vLastPoint.set(src); }
 static void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTargetPoint.set(src); }
 
-void CEffectorZoomInertion::script_register(lua_State* L)
+void CEffectorZoomInertion::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CEffectorZoomInertion>("CEffectorZoomInertion", sol::no_constructor, "float_speed", &CEffectorZoomInertion::m_fFloatSpeed, "disp_radius",
                                             &CEffectorZoomInertion::m_fDispRadius, "epsilon", &CEffectorZoomInertion::m_fEpsilon, "current_point",
                                             sol::property(&get_current_point, &set_current_point), "last_point", sol::property(&get_last_point, &set_last_point), "target_point",

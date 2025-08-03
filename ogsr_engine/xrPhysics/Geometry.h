@@ -23,7 +23,7 @@ class CPHObject;
 
 #include "../xr_3da/IPhysicsDefinitions.h"
 
-class CODEGeom : public IPhysicsGeometry
+class XR_NOVTABLE CODEGeom : public IPhysicsGeometry
 {
     RTTI_DECLARE_TYPEINFO(CODEGeom, IPhysicsGeometry);
 

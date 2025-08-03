@@ -8,18 +8,14 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_effector.h"
 
-static void SPPInfo_assign(SPPInfo* self, SPPInfo* obj) { *self = *obj; }
+static void SPPInfo_assign(SPPInfo* self, const SPPInfo* obj) { *self = *obj; }
 
-static void add_effector(CScriptEffector* self) { self->Add(); }
-static void remove_effector(CScriptEffector* self) { self->Remove(); }
+static void add_effector(std::unique_ptr<CScriptEffector>& ptr) { ptr.release()->Add(); }
 
-void CScriptEffector::script_register(lua_State* L)
+void CScriptEffector::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<SPPInfo::SDuality>("duality", sol::no_constructor, sol::call_constructor, sol::constructors<SPPInfo::SDuality(), SPPInfo::SDuality(float, float)>(), "h",
                                         &SPPInfo::SDuality::h, "v", &SPPInfo::SDuality::v, "set", &SPPInfo::SDuality::set);
 
@@ -33,6 +29,7 @@ void CScriptEffector::script_register(lua_State* L)
                               &SPPInfo::duality, "noise", &SPPInfo::noise, "color_base", &SPPInfo::color_base, "color_gray", &SPPInfo::color_gray, "color_add", &SPPInfo::color_add,
                               "assign", &SPPInfo_assign);
 
-    lua.new_usertype<CScriptEffector>("effector", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptEffector(int, float)>(), "start", &add_effector, "finish",
-                                      &remove_effector, "process", &CScriptEffector::process);
+    lua.new_usertype<CScriptEffector>("effector", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScriptEffector, int, float>), "priv",
+                                      &CScriptEffector::priv, "ops", &CScriptEffector::ops, "PROCESS", sol::var(CScriptEffector::PROCESS), "start", &add_effector, "finish",
+                                      &CScriptEffector::Remove);
 }

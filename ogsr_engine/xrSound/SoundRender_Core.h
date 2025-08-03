@@ -18,7 +18,7 @@ inline LPALFILTERF alFilterf{};
 inline LPALFILTERI alFilteri{};
 } // namespace efx_api
 
-class CSoundRender_Core : public CSound_manager_interface
+class XR_NOVTABLE CSoundRender_Core : public CSound_manager_interface
 {
     RTTI_DECLARE_TYPEINFO(CSoundRender_Core, CSound_manager_interface);
 

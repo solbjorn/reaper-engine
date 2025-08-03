@@ -20,7 +20,7 @@ extern void unregister_file_mapping(void* address, const u32& size);
 //------------------------------------------------------------------------------------
 // Write
 //------------------------------------------------------------------------------------
-class IWriter : public virtual RTTI::Enable
+class XR_NOVTABLE IWriter : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IWriter);
 

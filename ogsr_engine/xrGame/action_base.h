@@ -49,6 +49,16 @@ protected:
     mutable edge_value_type m_weight;
     bool m_first_time;
 
+    sol::object priv;
+    xr_map<u32, sol::function> ops;
+
+    enum
+    {
+        EXECUTE,
+        FINALIZE,
+        INITIALIZE,
+    };
+
 #ifdef LOG_ACTION
 public:
     LPCSTR m_action_name;
@@ -62,7 +72,7 @@ public:
 #endif
 
 public:
-    IC CActionBase(_object_type* object, LPCSTR action_name = "");
+    IC CActionBase(_object_type* object = nullptr, LPCSTR action_name = "");
     virtual ~CActionBase();
     IC void init(_object_type* object, LPCSTR action_name);
     virtual void setup(_object_type* object, CPropertyStorage* storage);
@@ -82,10 +92,11 @@ public:
     virtual void save(NET_Packet& packet) {}
     virtual void load(IReader& packet) {}
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 typedef CActionBase<CScriptGameObject> CScriptActionBase;
-add_to_type_list(CScriptActionBase)
+
+add_to_type_list(CScriptActionBase);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptActionBase)
 

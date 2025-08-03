@@ -12,8 +12,8 @@ CWeaponPM::CWeaponPM() : CWeaponPistol("PM")
 
 CWeaponPM::~CWeaponPM() {}
 
-void CWeaponPM::script_register(lua_State* L)
+void CWeaponPM::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CWeaponPM>("CWeaponPM", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponPM>), sol::base_classes,
-                                               xr_sol_bases<CWeaponPM>());
+    lua.new_usertype<CWeaponPM>("CWeaponPM", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponPM>), "factory", &client_factory<CWeaponPM>,
+                                sol::base_classes, xr_sol_bases<CWeaponPM>());
 }

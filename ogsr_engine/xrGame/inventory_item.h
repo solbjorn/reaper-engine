@@ -283,5 +283,6 @@ public:
     bool m_highlight_equipped;
     bool m_always_ungroupable;
 };
+XR_SOL_BASE_CLASSES(CInventoryItem);
 
 #include "inventory_item_inline.h"

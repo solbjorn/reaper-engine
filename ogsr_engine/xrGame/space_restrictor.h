@@ -80,5 +80,6 @@ public:
     bool active_contact(u16) const;
     float distance_to(Fvector&);
 };
+XR_SOL_BASE_CLASSES(CSpaceRestrictor);
 
 #include "space_restrictor_inline.h"

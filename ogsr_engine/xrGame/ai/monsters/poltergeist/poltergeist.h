@@ -144,18 +144,20 @@ public:
 #endif
 
     friend class CPolterFlame;
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-};
 
-add_to_type_list(CPoltergeist)
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
+};
+XR_SOL_BASE_CLASSES(CPoltergeist);
+
+add_to_type_list(CPoltergeist);
 #undef script_type_list
 #define script_type_list save_type_list(CPoltergeist)
 
-    //////////////////////////////////////////////////////////////////////////
-    // Interface
-    //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Interface
+//////////////////////////////////////////////////////////////////////////
 
-    class CPolterSpecialAbility : public virtual RTTI::Enable
+class CPolterSpecialAbility : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPolterSpecialAbility);
 

@@ -32,6 +32,7 @@ public:
                                      _world_operator_ptr, _condition_evaluator_ptr>;
     using COperator = typename inherited::COperator;
     using CConditionEvaluator = typename inherited::CConditionEvaluator;
+    using condition_evaluator_ptr = _condition_evaluator_ptr;
     using _condition_type = typename inherited::condition_type;
     using _edge_type = typename inherited::edge_type;
     using _value_type = typename inherited::value_type;
@@ -86,10 +87,13 @@ public:
     virtual void save(NET_Packet& packet);
     virtual void load(IReader& packet);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+
 typedef CActionPlanner<CScriptGameObject> CScriptActionPlanner;
-add_to_type_list(CScriptActionPlanner)
+XR_SOL_BASE_CLASSES(CScriptActionPlanner);
+
+add_to_type_list(CScriptActionPlanner);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptActionPlanner)
 

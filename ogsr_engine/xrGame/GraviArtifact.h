@@ -9,6 +9,8 @@
 
 class CGraviArtefact : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CGraviArtefact, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -20,7 +22,8 @@ public:
 
 protected:
     virtual void UpdateCLChild();
-    //параметры артефакта
+    // параметры артефакта
     float m_fJumpHeight;
     float m_fEnergy;
 };
+XR_SOL_BASE_CLASSES(CGraviArtefact);

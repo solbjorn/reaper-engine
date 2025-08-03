@@ -3,15 +3,18 @@
 
 class CEffect_Thunderbolt;
 
-class IThunderboltRender : public virtual RTTI::Enable
+class XR_NOVTABLE IThunderboltRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IThunderboltRender);
 
 public:
-    virtual ~IThunderboltRender() { ; }
+    virtual ~IThunderboltRender() = 0;
+
     virtual void Copy(IThunderboltRender& _in) = 0;
 
     virtual void Render(CEffect_Thunderbolt& owner) = 0;
 };
+
+inline IThunderboltRender::~IThunderboltRender() = default;
 
 #endif //	ThunderboltRender_included

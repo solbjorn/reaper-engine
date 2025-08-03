@@ -46,7 +46,7 @@ CHARACTER_RANK_VALUE m_rank;
 xr_string m_character_name;
 
 #ifdef XRGAME_EXPORTS
-//для работы с relation system
+// для работы с relation system
 u16 object_id() const;
 CHARACTER_COMMUNITY_INDEX Community() const;
 LPCSTR CommunityName() const;
@@ -59,7 +59,7 @@ void SetRank(CHARACTER_RANK_VALUE val);
 shared_str m_sCharacterProfile;
 shared_str m_SpecificCharacter;
 
-//буферный вектор проверенных персонажей
+// буферный вектор проверенных персонажей
 xr_vector<shared_str> m_CheckedCharacters;
 xr_vector<shared_str> m_DefaultCharacters;
 
@@ -72,7 +72,7 @@ virtual const CSE_Abstract* base() const = 0;
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* cast_abstract() { return 0; };
 virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
-    // end of the virtual inheritance dependant code
+// end of the virtual inheritance dependant code
 
 #ifdef XRGAME_EXPORTS
 virtual void add_online(const bool& update_registries);
@@ -84,10 +84,11 @@ void vfInitInventory();
 virtual void spawn_supplies();
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTraderAbstract)
+
+add_to_type_list(CSE_ALifeTraderAbstract);
 #define script_type_list save_type_list(CSE_ALifeTraderAbstract)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract) CSE_ALifeTrader(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract) CSE_ALifeTrader(LPCSTR caSection);
 virtual ~CSE_ALifeTrader();
 virtual bool interactive() const;
 virtual CSE_Abstract* init();
@@ -108,12 +109,14 @@ virtual CSE_Abstract* cast_abstract() { return this; };
 virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
 virtual CSE_ALifeTrader* cast_trader() { return this; };
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTrader)
+XR_SOL_BASE_CLASSES(CSE_ALifeTrader);
+
+add_to_type_list(CSE_ALifeTrader);
 #define script_type_list save_type_list(CSE_ALifeTrader)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone, CSE_ALifeSpaceRestrictor)
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone, CSE_ALifeSpaceRestrictor)
 
-        ALife::EHitType m_tHitType;
+ALife::EHitType m_tHitType;
 u32 m_owner_id;
 u32 m_enabled_time;
 u32 m_disabled_time;
@@ -122,10 +125,12 @@ u32 m_start_time_shift;
 CSE_ALifeCustomZone(LPCSTR caSection);
 virtual ~CSE_ALifeCustomZone();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCustomZone)
+XR_SOL_BASE_CLASSES(CSE_ALifeCustomZone);
+
+add_to_type_list(CSE_ALifeCustomZone);
 #define script_type_list save_type_list(CSE_ALifeCustomZone)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone, CSE_ALifeCustomZone) CSE_ALifeItemWeapon* m_tpCurrentBestWeapon{};
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone, CSE_ALifeCustomZone) CSE_ALifeItemWeapon* m_tpCurrentBestWeapon{};
 float m_offline_interactive_radius;
 u32 m_artefact_position_offset{};
 u16 m_artefact_spawn_count;
@@ -149,29 +154,35 @@ virtual bool bfActive();
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeAnomalousZone)
+XR_SOL_BASE_CLASSES(CSE_ALifeAnomalousZone);
+
+add_to_type_list(CSE_ALifeAnomalousZone);
 #define script_type_list save_type_list(CSE_ALifeAnomalousZone)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion) CSE_ALifeTorridZone(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion) CSE_ALifeTorridZone(LPCSTR caSection);
 virtual ~CSE_ALifeTorridZone();
 virtual CSE_Motion* __stdcall motion();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTorridZone)
+XR_SOL_BASE_CLASSES(CSE_ALifeTorridZone);
+
+add_to_type_list(CSE_ALifeTorridZone);
 #define script_type_list save_type_list(CSE_ALifeTorridZone)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual) shared_str attack_animation;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual) shared_str attack_animation;
 CSE_ALifeZoneVisual(LPCSTR caSection);
 virtual ~CSE_ALifeZoneVisual();
 virtual CSE_Visual* __stdcall visual();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeZoneVisual)
+XR_SOL_BASE_CLASSES(CSE_ALifeZoneVisual);
+
+add_to_type_list(CSE_ALifeZoneVisual);
 #define script_type_list save_type_list(CSE_ALifeZoneVisual)
 
-    //---------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract, CSE_ALifeDynamicObjectVisual) u8 s_team;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract, CSE_ALifeDynamicObjectVisual) u8 s_team;
 u8 s_squad;
 u8 s_group;
 float fHealth;
@@ -204,24 +215,27 @@ IC float g_Health() const { return fHealth; }
 IC void s_Health(float v) { fHealth = v; }
 IC bool g_Alive() const { return (g_Health() > 0.f); }
 virtual bool used_ai_locations() const;
-virtual bool can_switch_online() const;
-virtual bool can_switch_offline() const;
+virtual bool __can_switch_online() const;
+virtual bool __can_switch_offline() const;
 virtual u32 ef_creature_type() const;
 virtual u32 ef_weapon_type() const;
 virtual u32 ef_detector_type() const;
 virtual CSE_ALifeCreatureAbstract* cast_creature_abstract() { return this; };
 #ifdef XRGAME_EXPORTS
-virtual void on_death(CSE_Abstract* killer);
+virtual void __on_death(CSE_Abstract* killer);
+void on_death(CSE_Abstract* killer);
 virtual void on_spawn();
 #endif
 #ifdef DEBUG
 virtual bool match_configuration() const;
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureAbstract)
+XR_SOL_BASE_CLASSES(CSE_ALifeCreatureAbstract);
+
+add_to_type_list(CSE_ALifeCreatureAbstract);
 #define script_type_list save_type_list(CSE_ALifeCreatureAbstract)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract, CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable) GameGraph::_GRAPH_ID m_tNextGraphID;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract, CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable) GameGraph::_GRAPH_ID m_tNextGraphID;
 GameGraph::_GRAPH_ID m_tPrevGraphID;
 float m_fGoingSpeed;
 float m_fCurrentLevelGoingSpeed;
@@ -277,18 +291,18 @@ virtual u32 ef_detector_type() const;
 IC int Rank() { return m_rank; }
 
 #ifndef XRGAME_EXPORTS
-virtual void update(){};
+virtual void update() {};
 #else
 virtual void update();
 virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
 virtual bool bfActive();
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
-virtual void vfDetachAll(bool bFictitious = false){};
+virtual void vfDetachAll(bool bFictitious = false) {};
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
-virtual void on_register();
-virtual void on_unregister();
+virtual void __on_register();
+virtual void __on_unregister();
 virtual Fvector draw_level_position() const;
 virtual bool redundant() const;
 #endif
@@ -299,12 +313,14 @@ CALifeMonsterBrain* m_brain;
 
 public:
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterAbstract)
+XR_SOL_BASE_CLASSES(CSE_ALifeMonsterAbstract);
+
+add_to_type_list(CSE_ALifeMonsterAbstract);
 #define script_type_list save_type_list(CSE_ALifeMonsterAbstract)
 
-    SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor, CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)
+SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor, CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)
 
-        u16 mstate{};
+u16 mstate{};
 Fvector accel;
 Fvector velocity;
 //	float							fArmor;
@@ -341,26 +357,32 @@ virtual bool match_configuration() const;
 virtual CSE_Abstract* cast_abstract() { return this; };
 virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureActor)
+XR_SOL_BASE_CLASSES(CSE_ALifeCreatureActor);
+
+add_to_type_list(CSE_ALifeCreatureActor);
 #define script_type_list save_type_list(CSE_ALifeCreatureActor)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract) CSE_ALifeCreatureCrow(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract) CSE_ALifeCreatureCrow(LPCSTR caSection);
 virtual ~CSE_ALifeCreatureCrow();
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureCrow)
+XR_SOL_BASE_CLASSES(CSE_ALifeCreatureCrow);
+
+add_to_type_list(CSE_ALifeCreatureCrow);
 #define script_type_list save_type_list(CSE_ALifeCreatureCrow)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract) CSE_ALifeCreaturePhantom(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract) CSE_ALifeCreaturePhantom(LPCSTR caSection);
 virtual ~CSE_ALifeCreaturePhantom();
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreaturePhantom)
+XR_SOL_BASE_CLASSES(CSE_ALifeCreaturePhantom);
+
+add_to_type_list(CSE_ALifeCreaturePhantom);
 #define script_type_list save_type_list(CSE_ALifeCreaturePhantom)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie, CSE_ALifeMonsterAbstract)
-    // Personal characteristics:
-    float fEyeFov;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie, CSE_ALifeMonsterAbstract)
+// Personal characteristics:
+float fEyeFov;
 float fEyeRange;
 float fMinSpeed;
 float fMaxSpeed;
@@ -376,10 +398,12 @@ float fAttackAngle;
 CSE_ALifeMonsterZombie(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterZombie();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterZombie)
+XR_SOL_BASE_CLASSES(CSE_ALifeMonsterZombie);
+
+add_to_type_list(CSE_ALifeMonsterZombie);
 #define script_type_list save_type_list(CSE_ALifeMonsterZombie)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE_PHSkeleton) u16 m_spec_object_id;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE_PHSkeleton) u16 m_spec_object_id;
 
 CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
@@ -393,19 +417,23 @@ virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 #endif // XRGAME_EXPORTS
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterBase)
+XR_SOL_BASE_CLASSES(CSE_ALifeMonsterBase);
+
+add_to_type_list(CSE_ALifeMonsterBase);
 #define script_type_list save_type_list(CSE_ALifeMonsterBase)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase) CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase) CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifePsyDogPhantom();
 virtual CSE_Abstract* cast_abstract() { return this; }
 virtual bool bfActive() { return false; }
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifePsyDogPhantom)
+XR_SOL_BASE_CLASSES(CSE_ALifePsyDogPhantom);
+
+add_to_type_list(CSE_ALifePsyDogPhantom);
 #define script_type_list save_type_list(CSE_ALifePsyDogPhantom)
 
-    //-------------------------------
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract, CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract) public : CSE_ALifeHumanAbstract(LPCSTR caSection);
+//-------------------------------
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract, CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract) public : CSE_ALifeHumanAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeHumanAbstract();
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
@@ -433,8 +461,8 @@ virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSche
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
 virtual void vfDetachAll(bool bFictitious = false);
 virtual void spawn_supplies();
-virtual void on_register();
-virtual void on_unregister();
+virtual void __on_register();
+virtual void __on_unregister();
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 #endif
@@ -443,20 +471,24 @@ private:
 CALifeHumanBrain* m_brain{};
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeHumanAbstract)
+XR_SOL_BASE_CLASSES(CSE_ALifeHumanAbstract);
+
+add_to_type_list(CSE_ALifeHumanAbstract);
 #define script_type_list save_type_list(CSE_ALifeHumanAbstract)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_PHSkeleton) shared_str m_start_dialog;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_PHSkeleton) shared_str m_start_dialog;
 
 CSE_ALifeHumanStalker(LPCSTR caSection);
 virtual ~CSE_ALifeHumanStalker();
 virtual void load(NET_Packet& tNetPacket);
 virtual CSE_Abstract* cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeHumanStalker)
+XR_SOL_BASE_CLASSES(CSE_ALifeHumanStalker);
+
+add_to_type_list(CSE_ALifeHumanStalker);
 #define script_type_list save_type_list(CSE_ALifeHumanStalker)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable) public : CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable) public : CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
 virtual ~CSE_ALifeOnlineOfflineGroup();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -490,7 +522,7 @@ void register_member(ALife::_OBJECT_ID member_id);
 void unregister_member(ALife::_OBJECT_ID member_id);
 void notify_on_member_death(MEMBER* member);
 MEMBER* member(ALife::_OBJECT_ID member_id, bool no_assert = false);
-virtual void on_before_register();
+virtual void __on_before_register();
 void on_after_game_load();
 virtual bool synchronize_location();
 virtual void try_switch_online();
@@ -500,11 +532,13 @@ virtual void switch_offline();
 virtual bool redundant() const;
 ALife::_OBJECT_ID commander_id();
 #else
-virtual void update(){};
+virtual void update() {};
 #endif
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeOnlineOfflineGroup)
+XR_SOL_BASE_CLASSES(CSE_ALifeOnlineOfflineGroup);
+
+add_to_type_list(CSE_ALifeOnlineOfflineGroup);
 #define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
 
 #pragma warning(pop)

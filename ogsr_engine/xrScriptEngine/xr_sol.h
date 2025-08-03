@@ -1,16 +1,29 @@
 #ifndef __XRSCRIPT_SOL_H
 #define __XRSCRIPT_SOL_H
 
-#include <rtti.hh>
-
 // Uncomment to turn on protected mode for every call and type conversion
 #define SOL_ALL_SAFETIES_ON 1
 
 #include <sol/sol.hpp>
+#include <rtti.hh>
 
-// Generate sol::bases<> using the RTTI annotations
+// Generate sol::bases<> and sol::base<T> using RTTI annotations
+
 template <typename T>
 using xr_sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<sol::bases>;
+
+#define XR_SOL_BASE_CLASSES(T) \
+    namespace sol \
+    { \
+    template <> \
+    struct base<T> : std::true_type \
+    { \
+        typedef RTTI::type_descriptor<T>::declared_base_types ::template to<sol::types> type; \
+    }; \
+    } \
+    static_assert(T::TypeInfo::Name() == RTTI::TypeName<T>())
+
+// ^ Bonus assertion that T::TypeInfo is declared explicitly, not inherited
 
 // Generate enum-style table with non-constexpr values (clsids, story IDs etc.)
 template <bool read_only = true>

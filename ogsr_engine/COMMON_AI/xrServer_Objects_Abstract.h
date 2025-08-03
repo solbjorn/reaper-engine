@@ -60,10 +60,12 @@ LPCSTR get_visual() const { return *visual_name; };
 virtual CSE_Visual* __stdcall visual() = 0;
 }
 ;
-add_to_type_list(CSE_Visual)
+
+add_to_type_list(CSE_Visual);
 #define script_type_list save_type_list(CSE_Visual)
 
-    SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion) public : shared_str motion_name;
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion) public : shared_str motion_name;
+
 public:
 CSE_Motion(LPCSTR name = 0);
 virtual ~CSE_Motion();
@@ -77,16 +79,17 @@ LPCSTR get_motion() const { return *motion_name; };
 virtual CSE_Motion* __stdcall motion() = 0;
 }
 ;
-add_to_type_list(CSE_Motion)
+
+add_to_type_list(CSE_Motion);
 #define script_type_list save_type_list(CSE_Motion)
 
-    struct ISE_AbstractLEOwner
+struct ISE_AbstractLEOwner
 {
     virtual ~ISE_AbstractLEOwner() = default;
     virtual void __stdcall get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
 };
 
-struct ISE_Abstract : public virtual RTTI::Enable
+struct XR_NOVTABLE ISE_Abstract : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ISE_Abstract);
 
@@ -100,6 +103,8 @@ public:
     };
     Flags32 m_editor_flags;
     IC void set_editor_flag(u32 mask) { m_editor_flags.set(mask, TRUE); }
+
+    virtual ~ISE_Abstract() = 0;
 
     virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal) = 0;
     virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket) = 0;
@@ -116,5 +121,7 @@ public:
     virtual bool __stdcall validate() = 0;
     virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F) = 0;
 };
+
+inline ISE_Abstract::~ISE_Abstract() = default;
 
 #pragma warning(pop)

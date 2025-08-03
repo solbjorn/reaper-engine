@@ -4,7 +4,7 @@ class CEnvironment;
 class CEnvDescriptor;
 class CEnvDescriptorMixer;
 
-class IEnvDescriptorRender : public virtual RTTI::Enable
+class XR_NOVTABLE IEnvDescriptorRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IEnvDescriptorRender);
 
@@ -18,7 +18,7 @@ public:
 
 inline IEnvDescriptorRender::~IEnvDescriptorRender() = default;
 
-class IEnvironmentRender : public virtual RTTI::Enable
+class XR_NOVTABLE IEnvironmentRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IEnvironmentRender);
 

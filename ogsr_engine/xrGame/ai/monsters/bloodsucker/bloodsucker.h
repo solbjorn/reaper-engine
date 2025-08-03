@@ -207,9 +207,10 @@ public:
     virtual void on_attack_on_run_hit();
     bool done_enough_hits_before_vampire();
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CAI_Bloodsucker);
 
-add_to_type_list(CAI_Bloodsucker)
+add_to_type_list(CAI_Bloodsucker);
 #undef script_type_list
 #define script_type_list save_type_list(CAI_Bloodsucker)

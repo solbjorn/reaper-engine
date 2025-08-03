@@ -15,4 +15,4 @@
 #include "ef_base.h"
 #include "xrServer_Objects_ALife.h"
 
-void CEF_Storage::script_register(lua_State* L) {}
+void CEF_Storage::script_register(sol::state_view& lua) {}

@@ -21,3 +21,4 @@ public:
 protected:
     CUIFrameWindow* m_pFrameWindow;
 };
+XR_SOL_BASE_CLASSES(CUIEditBoxEx);

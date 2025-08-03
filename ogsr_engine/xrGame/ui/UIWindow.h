@@ -161,9 +161,8 @@ public:
     IC void SetCustomDraw(bool b) { m_bCustomDraw = b; }
 
 protected:
-    bool m_bCustomDraw{};
-
     shared_str m_windowName;
+
     // список дочерних окон
     WINDOW_LIST m_ChildWndList;
 
@@ -191,6 +190,8 @@ protected:
 
     u32 m_dwFocusReceiveTime;
 
+    bool m_bCustomDraw{};
+
     // флаг автоматического удаления во время вызова деструктора
     bool m_bAutoDelete;
 
@@ -213,9 +214,10 @@ public:
     inline float GetMousePosX() const { return cursor_pos.x; }
     inline float GetMousePosY() const { return cursor_pos.y; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIWindow);
 
-add_to_type_list(CUIWindow)
+add_to_type_list(CUIWindow);
 #undef script_type_list
 #define script_type_list save_type_list(CUIWindow)

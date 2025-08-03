@@ -8,6 +8,8 @@
 
 class CDummyArtefact : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CDummyArtefact, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -16,6 +18,5 @@ public:
     virtual ~CDummyArtefact(void);
 
     virtual void Load(LPCSTR section);
-
-protected:
 };
+XR_SOL_BASE_CLASSES(CDummyArtefact);

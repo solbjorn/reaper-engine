@@ -71,8 +71,10 @@ public:
 
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponKnife)
+XR_SOL_BASE_CLASSES(CWeaponKnife);
+
+add_to_type_list(CWeaponKnife);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponKnife)

@@ -8,8 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "level.h"
 #include "actor.h"
 #include "script_game_object.h"
@@ -1042,10 +1040,8 @@ static DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
     return dbg_obj;
 }
 
-void CLevel::script_register(lua_State* L)
+void CLevel::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CEnvDescriptor>("CEnvDescriptor", sol::no_constructor, "fog_density", &CEnvDescriptor::fog_density, "fog_distance", &CEnvDescriptor::fog_distance, "far_plane",
                                      &CEnvDescriptor::far_plane, "sun_dir", &CEnvDescriptor::sun_dir, "wind_velocity", &CEnvDescriptor::wind_velocity, "wind_direction",
                                      &CEnvDescriptor::wind_direction, "m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity, "m_fSunShaftsIntensity",

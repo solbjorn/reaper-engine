@@ -8,6 +8,8 @@
 
 class CThornArtefact : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CThornArtefact, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -16,6 +18,5 @@ public:
     virtual ~CThornArtefact(void);
 
     virtual void Load(LPCSTR section);
-
-protected:
 };
+XR_SOL_BASE_CLASSES(CThornArtefact);

@@ -9,8 +9,8 @@ CWeaponVal::CWeaponVal(void) : CWeaponMagazined("VAL", SOUND_TYPE_WEAPON_SUBMACH
 
 CWeaponVal::~CWeaponVal(void) {}
 
-void CWeaponVal::script_register(lua_State* L)
+void CWeaponVal::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CWeaponVal>("CWeaponVal", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponVal>), sol::base_classes,
-                                                xr_sol_bases<CWeaponVal>());
+    lua.new_usertype<CWeaponVal>("CWeaponVal", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponVal>), "factory", &client_factory<CWeaponVal>,
+                                 sol::base_classes, xr_sol_bases<CWeaponVal>());
 }

@@ -15,10 +15,8 @@
 #include "hit_immunity.h"
 #include "EntityCondition.h"
 
-void CScriptGameObject::script_register(lua_State* L)
+void CScriptGameObject::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CSightParams>(
         "CSightParams", sol::no_constructor, sol::call_constructor, sol::constructors<CSightParams()>(),
         // sight_type
@@ -70,6 +68,6 @@ void CScriptGameObject::script_register(lua_State* L)
     lua.set_function("show_condition", &::show_condition);
 
     script_register4(lua);
-    CHitImmunity::script_register(L);
-    CEntityCondition::script_register(L);
+    CHitImmunity::script_register(lua);
+    CEntityCondition::script_register(lua);
 }

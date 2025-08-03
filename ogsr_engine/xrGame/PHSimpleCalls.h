@@ -26,27 +26,30 @@ public:
 
 private:
     IC bool time_out() const;
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(CPHCallOnStepCondition)
+add_to_type_list(CPHCallOnStepCondition);
 #undef script_type_list
 #define script_type_list save_type_list(CPHCallOnStepCondition)
 
-    class CPHExpireOnStepCondition : public CPHCallOnStepCondition
+class CPHExpireOnStepCondition : public CPHCallOnStepCondition
 {
     RTTI_DECLARE_TYPEINFO(CPHExpireOnStepCondition, CPHCallOnStepCondition);
 
 public:
     virtual bool is_true() { return true; }
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-};
 
-add_to_type_list(CPHExpireOnStepCondition)
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
+};
+XR_SOL_BASE_CLASSES(CPHExpireOnStepCondition);
+
+add_to_type_list(CPHExpireOnStepCondition);
 #undef script_type_list
 #define script_type_list save_type_list(CPHExpireOnStepCondition)
 
-    class CPHShellBasedAction : public CPHAction
+class CPHShellBasedAction : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHShellBasedAction, CPHAction);
 
@@ -72,13 +75,15 @@ public:
 
     virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
     virtual bool compare(const CPhysicsShell* shl) const { return CPHShellBasedAction::compare(shl); }
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CPHConstForceAction)
+
+add_to_type_list(CPHConstForceAction);
 #undef script_type_list
 #define script_type_list save_type_list(CPHConstForceAction)
 
-    class CPHReqComparerHasShell : public CPHReqComparerV
+class CPHReqComparerHasShell : public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHReqComparerHasShell, CPHReqComparerV);
 

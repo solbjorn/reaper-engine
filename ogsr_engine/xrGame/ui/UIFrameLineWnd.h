@@ -31,3 +31,4 @@ protected:
     bool m_bTextureAvailable;
     CUIFrameLine UIFrameLine;
 };
+XR_SOL_BASE_CLASSES(CUIFrameLineWnd);

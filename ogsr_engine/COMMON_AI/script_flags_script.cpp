@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_flags.h"
 
 template <typename T>
@@ -66,10 +65,8 @@ static void add_flags(sol::state_view& lua, absl::string_view alias)
 }
 
 template <>
-void CScriptFlags::script_register(lua_State* L)
+void CScriptFlags::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     add_flags<Flags8>(lua, "flags8");
     add_flags<Flags16>(lua, "flags16");
     add_flags<Flags32>(lua, "flags32");

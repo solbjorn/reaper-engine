@@ -232,7 +232,7 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
         const char* callback = pSettings->r_string("engine_callbacks", "after_objs_load");
         IReader empty(nullptr, 0);
 
-        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+        if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
             lua_function(&empty);
     }
 

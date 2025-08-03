@@ -111,11 +111,9 @@ void CTorch::SetVirtualSize(float size, int target)
     }
 }
 
-void CTorch::script_register(lua_State* L)
+void CTorch::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
-    lua.new_usertype<CTorch>("CTorch", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CTorch>),
+    lua.new_usertype<CTorch>("CTorch", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CTorch>), "factory", &client_factory<CTorch>,
                              // alpet: управление параметрами света
                              "on", sol::readonly(&CTorch::m_switched_on), "enable", sol::resolve<void(bool)>(&CTorch::Switch), "switch", sol::resolve<void()>(&CTorch::Switch),
                              "get_light", &CTorch::GetLight, "set_animation", &CTorch::SetAnimation, "set_angle", &CTorch::SetAngle, "set_brightness", &CTorch::SetBrightness,

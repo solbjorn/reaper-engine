@@ -9,8 +9,8 @@ CWeaponWalther::CWeaponWalther(void) : CWeaponPistol("WALTHER")
 
 CWeaponWalther::~CWeaponWalther(void) {}
 
-void CWeaponWalther::script_register(lua_State* L)
+void CWeaponWalther::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CWeaponWalther>("CWeaponWalther", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponWalther>),
-                                                    sol::base_classes, xr_sol_bases<CWeaponWalther>());
+    lua.new_usertype<CWeaponWalther>("CWeaponWalther", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponWalther>), "factory",
+                                     &client_factory<CWeaponWalther>, sol::base_classes, xr_sol_bases<CWeaponWalther>());
 }

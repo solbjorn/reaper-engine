@@ -86,3 +86,4 @@ public:
     u32 GetTextColor() { return m_text_color; }
     virtual void SetTextColor(u32 color) { m_text_color = color; }
 };
+XR_SOL_BASE_CLASSES(CUIScrollView);

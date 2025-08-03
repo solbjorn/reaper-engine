@@ -88,7 +88,7 @@ enum ECollisionFormType
     cftShape
 };
 
-class ICollisionForm : public virtual RTTI::Enable
+class XR_NOVTABLE ICollisionForm : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollisionForm);
 
@@ -106,7 +106,7 @@ private:
 
 public:
     ICollisionForm(CObject* _owner, ECollisionFormType tp);
-    virtual ~ICollisionForm();
+    virtual ~ICollisionForm() = 0;
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
     // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags)	= 0;
@@ -117,6 +117,8 @@ public:
     const Fsphere& getSphere() const { return bv_sphere; }
     ECollisionFormType Type() const { return m_type; }
 };
+
+inline ICollisionForm::~ICollisionForm() = default;
 
 class CCF_Skeleton : public ICollisionForm
 {

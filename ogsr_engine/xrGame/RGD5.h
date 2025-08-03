@@ -5,14 +5,18 @@
 
 class CRGD5 : public CGrenade
 {
-    typedef CGrenade inherited;
+    RTTI_DECLARE_TYPEINFO(CRGD5, CGrenade);
 
 public:
+    typedef CGrenade inherited;
+
     CRGD5(void);
     virtual ~CRGD5(void);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CRGD5)
+XR_SOL_BASE_CLASSES(CRGD5);
+
+add_to_type_list(CRGD5);
 #undef script_type_list
 #define script_type_list save_type_list(CRGD5)

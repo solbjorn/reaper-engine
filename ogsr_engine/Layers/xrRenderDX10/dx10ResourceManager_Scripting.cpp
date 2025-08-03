@@ -216,9 +216,7 @@ static bool do_file(sol::state_view lua, const char* caScriptName, const char* c
     }
     catch (const sol::error& e)
     {
-        Msg(e.what());
-        R_ASSERT(false); // НЕ ЗАКОММЕНТИРОВАТЬ!
-
+        ASSERT_FMT(false, e.what());
         return false;
     }
 
@@ -320,8 +318,6 @@ bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
     VERIFY(lua_gettop(LSVM) == start);
     return result;
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LuaLog(const char* caMessage) { Log(caMessage); }
 

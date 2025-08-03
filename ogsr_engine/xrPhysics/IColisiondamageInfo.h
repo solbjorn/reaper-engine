@@ -3,11 +3,13 @@
 
 class ICollisionHitCallback;
 
-class ICollisionDamageInfo : public virtual RTTI::Enable
+class XR_NOVTABLE ICollisionDamageInfo : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollisionDamageInfo);
 
 public:
+    virtual ~ICollisionDamageInfo() = 0;
+
     virtual float ContactVelocity() const = 0;
     virtual void HitDir(Fvector& dir) const = 0;
     virtual const Fvector& HitPos() const = 0;
@@ -20,5 +22,7 @@ public:
     virtual bool IsInitiated() const = 0;
     virtual bool GetAndResetInitiated() = 0;
 };
+
+inline ICollisionDamageInfo::~ICollisionDamageInfo() = default;
 
 #endif

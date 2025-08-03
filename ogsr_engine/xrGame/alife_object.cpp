@@ -63,7 +63,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
                 if (::Random.randF(1.f) < p)
                 {
                     CSE_Abstract* E = alife().spawn_item(N, o_Position, m_tNodeID, m_tGraphID, ID);
-                    //подсоединить аддоны к оружию, если включены соответствующие флажки
+                    // подсоединить аддоны к оружию, если включены соответствующие флажки
                     CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(E);
                     if (W)
                     {
@@ -83,4 +83,13 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
     }
 }
 
-bool CSE_ALifeObject::keep_saved_data_anyway() const { return (false); }
+bool CSE_ALifeObject::__keep_saved_data_anyway() const { return false; }
+
+bool CSE_ALifeObject::keep_saved_data_anyway() const
+{
+    auto op = ops.find(KEEP_SAVED_DATA_ANYWAY);
+    if (op == ops.end())
+        return __keep_saved_data_anyway();
+
+    return op->second(this);
+}

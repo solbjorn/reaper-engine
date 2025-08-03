@@ -15,9 +15,9 @@
 #include "patrol_path_params.h"
 #include "patrol_path.h"
 
-void CScriptMovementAction::script_register(lua_State* L)
+void CScriptMovementAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptMovementAction>(
+    lua.new_usertype<CScriptMovementAction>(
         "move", sol::no_constructor, sol::call_constructor,
         sol::constructors<
             CScriptMovementAction(), CScriptMovementAction(const CScriptMovementAction::EInputKeys), CScriptMovementAction(const CScriptMovementAction::EInputKeys, float),

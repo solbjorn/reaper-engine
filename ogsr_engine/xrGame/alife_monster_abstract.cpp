@@ -34,15 +34,15 @@ void CSE_ALifeMonsterAbstract::add_offline(const xr_vector<ALife::_OBJECT_ID>& s
     brain().on_switch_offline();
 }
 
-void CSE_ALifeMonsterAbstract::on_register()
+void CSE_ALifeMonsterAbstract::__on_register()
 {
-    inherited1::on_register();
+    inherited1::__on_register();
     brain().on_register();
 }
 
-void CSE_ALifeMonsterAbstract::on_unregister()
+void CSE_ALifeMonsterAbstract::__on_unregister()
 {
-    inherited1::on_unregister();
+    inherited1::__on_unregister();
     if (!ai().alife().is_unloading())
         RELATION_REGISTRY().ClearRelations(ID);
     brain().on_unregister();

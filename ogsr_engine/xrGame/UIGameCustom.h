@@ -99,8 +99,9 @@ public:
     virtual shared_str shedule_Name() const { return shared_str("CUIGameCustom"); };
     virtual bool shedule_Needed() { return true; };
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CUIGameCustom)
+
+add_to_type_list(CUIGameCustom);
 #undef script_type_list
 #define script_type_list save_type_list(CUIGameCustom)

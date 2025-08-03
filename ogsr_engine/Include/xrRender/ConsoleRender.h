@@ -1,14 +1,16 @@
 #ifndef ConsoleRender_included
 #define ConsoleRender_included
 
-class IConsoleRender : public virtual RTTI::Enable
+class XR_NOVTABLE IConsoleRender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IConsoleRender);
 
 public:
-    virtual ~IConsoleRender() { ; }
+    virtual ~IConsoleRender() = 0;
     virtual void Copy(IConsoleRender& _in) = 0;
     virtual void OnRender(bool bGame) = 0;
 };
+
+inline IConsoleRender::~IConsoleRender() = default;
 
 #endif //	ConsoleRender_included

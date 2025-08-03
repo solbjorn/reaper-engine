@@ -8,7 +8,7 @@ namespace Feel
 {
 class Touch : public virtual RTTI::Enable, private pure_relcase
 {
-    RTTI_DECLARE_TYPEINFO(Touch, pure_relcase);
+    RTTI_DECLARE_TYPEINFO(Touch);
 
 public:
     friend class pure_relcase;

@@ -154,7 +154,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     }
     if (UICost)
     {
-        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();  
+        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
         UICost->SetText(std::format("{} {}", pInvItem->Cost(), StMoneyDescr).c_str());
     }
 
@@ -227,10 +227,8 @@ void CUIItemInfo::TryAddCustomInfo(CPhysicsShellHolder& obj)
     if (pSettings->line_exist("engine_callbacks", "ui_item_info_callback"))
     {
         const char* callback = pSettings->r_string("engine_callbacks", "ui_item_info_callback");
-        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
-        {
+        if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
             lua_function(UIDesc, obj.lua_game_object());
-        }
     }
 }
 

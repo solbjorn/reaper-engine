@@ -13,10 +13,8 @@
 #include "../../script_game_object.h"
 #include "../../stalker_planner.h"
 
-void CAI_Stalker::script_register(lua_State* L)
+void CAI_Stalker::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_enum(
         "stalker_ids",
         // properties
@@ -100,6 +98,6 @@ void CAI_Stalker::script_register(lua_State* L)
 
         "sound_script", StalkerSpace::eStalkerSoundScript);
 
-    lua.new_usertype<CAI_Stalker>("CAI_Stalker", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Stalker>), sol::base_classes,
-                                  xr_sol_bases<CAI_Stalker>());
+    lua.new_usertype<CAI_Stalker>("CAI_Stalker", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Stalker>), "factory", &client_factory<CAI_Stalker>,
+                                  sol::base_classes, xr_sol_bases<CAI_Stalker>());
 }

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "zombie.h"
 
-void CZombie::script_register(lua_State* L)
+void CZombie::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CZombie>("CZombie", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CZombie>), sol::base_classes,
-                                             xr_sol_bases<CZombie>());
+    lua.new_usertype<CZombie>("CZombie", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CZombie>), "factory", &client_factory<CZombie>,
+                              sol::base_classes, xr_sol_bases<CZombie>());
 }

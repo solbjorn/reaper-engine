@@ -76,9 +76,10 @@ private:
     pcstr anim_extra_10;
     pcstr anim_extra_11;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CAI_Dog);
 
-add_to_type_list(CAI_Dog)
+add_to_type_list(CAI_Dog);
 #undef script_type_list
 #define script_type_list save_type_list(CAI_Dog)

@@ -8,9 +8,7 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-
 #include "script_net_packet.h"
 
 static bool r_eof(NET_Packet* self) { return (!!self->r_eof()); }
@@ -65,10 +63,8 @@ static ClientID r_clientID(NET_Packet* self)
 extern u16 script_server_object_version();
 
 template <>
-void CScriptNetPacket::script_register(lua_State* L)
+void CScriptNetPacket::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.set_function("script_server_object_version", &script_server_object_version);
 
     lua.new_usertype<ClientID>("ClientID", sol::no_constructor, sol::call_constructor, sol::constructors<ClientID(), ClientID(u32)>(), "value", &ClientID::value, "set",

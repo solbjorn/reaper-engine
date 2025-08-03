@@ -48,10 +48,10 @@ protected:
     CUIMotionIcon UIMotionIcon;
     CUIZoneMap* UIZoneMap;
 
-    //иконка, показывающая количество активных PDA
+    // иконка, показывающая количество активных PDA
     CUIStatic UIPdaOnline;
 
-    //изображение оружия
+    // изображение оружия
     CUIStatic UIWeaponBack;
     CUIStatic UIWeaponSignAmmo;
     CUIStatic UIWeaponIcon;
@@ -136,7 +136,7 @@ protected:
     DEF_MAP(FlashingIcons, EFlashingIcons, CUIStatic*);
     FlashingIcons m_FlashingIcons;
 
-    //для текущего активного актера и оружия
+    // для текущего активного актера и оружия
     CActor* m_pActor;
     CWeapon* m_pWeapon;
     CMissile* m_pGrenade;
@@ -165,9 +165,9 @@ protected:
 public:
     void SetPickUpItem(CInventoryItem* PickUpItem);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(CUIMainIngameWnd)
+add_to_type_list(CUIMainIngameWnd);
 #undef script_type_list
 #define script_type_list save_type_list(CUIMainIngameWnd)

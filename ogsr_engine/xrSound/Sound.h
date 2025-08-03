@@ -69,15 +69,18 @@ enum esound_type
 
 class CSound_UserDataVisitor;
 
-class CSound_UserData : public xr_resource
+class XR_NOVTABLE CSound_UserData : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(CSound_UserData, xr_resource);
 
 public:
-    virtual ~CSound_UserData() {}
+    virtual ~CSound_UserData() = 0;
+
     virtual void accept(CSound_UserDataVisitor*) = 0;
     virtual void invalidate() = 0;
 };
+
+inline CSound_UserData::~CSound_UserData() = default;
 
 typedef resptr_core<CSound_UserData, resptr_base<CSound_UserData>> CSound_UserDataPtr;
 
@@ -221,8 +224,10 @@ extern float getSmoothedValue(float, float, float);
 }; // namespace soundSmoothingParams
 
 /// definition (Sound Params)
-class CSound_params
+class CSound_params : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSound_params);
+
 public:
     Fvector position{};
     Fvector velocity{}; // Cribbledirge.  Added for doppler effect.
@@ -271,11 +276,13 @@ public:
 };
 
 /// definition (Sound Interface)
-class CSound_emitter : public virtual RTTI::Enable
+class XR_NOVTABLE CSound_emitter : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSound_emitter);
 
 public:
+    virtual ~CSound_emitter() = 0;
+
     virtual bool is_2D() const = 0;
     virtual void switch_to_2D() = 0;
     virtual void switch_to_3D() = 0;
@@ -290,6 +297,8 @@ public:
     virtual const CSound_params* get_params() = 0;
     virtual u32 play_time() = 0;
 };
+
+inline CSound_emitter::~CSound_emitter() = default;
 
 /// definition (Sound Stream Interface)
 class CSound_stream_interface
@@ -336,7 +345,7 @@ public:
 typedef void __stdcall sound_event(ref_sound_data_ptr S, float range, float time_to_stop);
 
 /// definition (Sound Manager Interface)
-class CSound_manager_interface : public virtual RTTI::Enable
+class XR_NOVTABLE CSound_manager_interface : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSound_manager_interface);
 
@@ -350,7 +359,7 @@ protected:
     virtual void _destroy_data(ref_sound_data& S) = 0;
 
 public:
-    virtual ~CSound_manager_interface() {}
+    virtual ~CSound_manager_interface() = 0;
 
     static void _create(int stage);
     static void _destroy();
@@ -391,6 +400,8 @@ public:
     virtual void DbgCurrentEnvPaused(bool v) = 0;
     virtual void DbgCurrentEnvSave() = 0;
 };
+
+inline CSound_manager_interface::~CSound_manager_interface() = default;
 
 class CSound_manager_interface;
 extern CSound_manager_interface* Sound;

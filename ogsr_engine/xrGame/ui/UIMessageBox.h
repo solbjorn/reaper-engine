@@ -8,6 +8,8 @@ class CUIEditBox;
 
 class CUIMessageBox : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIMessageBox, CUIStatic);
+
 private:
     typedef CUIStatic inherited;
 
@@ -15,7 +17,7 @@ public:
     CUIMessageBox();
     virtual ~CUIMessageBox();
 
-    //разновидности MessageBox
+    // разновидности MessageBox
     typedef enum
     {
         MESSAGEBOX_OK,
@@ -57,9 +59,11 @@ protected:
     CUIEditBox* m_UIEditUserPass;
 
     E_MESSAGEBOX_STYLE m_eMessageBoxStyle{};
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-};
 
-add_to_type_list(CUIMessageBox)
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
+};
+XR_SOL_BASE_CLASSES(CUIMessageBox);
+
+add_to_type_list(CUIMessageBox);
 #undef script_type_list
 #define script_type_list save_type_list(CUIMessageBox)

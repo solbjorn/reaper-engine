@@ -11,8 +11,10 @@
 #include "script_export_space.h"
 #include "alife_space.h"
 
-class CScriptActionCondition
+class CScriptActionCondition : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptActionCondition);
+
 public:
     enum EActionFlags
     {
@@ -37,9 +39,10 @@ public:
     virtual ~CScriptActionCondition();
     IC void initialize();
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptActionCondition)
+
+add_to_type_list(CScriptActionCondition);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptActionCondition)
 

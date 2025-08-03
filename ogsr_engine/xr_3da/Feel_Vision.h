@@ -16,7 +16,7 @@ const float lr_granularity = 0.1f; // assume similar positions
 
 class Vision : public virtual RTTI::Enable, private pure_relcase
 {
-    RTTI_DECLARE_TYPEINFO(Vision, pure_relcase);
+    RTTI_DECLARE_TYPEINFO(Vision);
 
 public:
     friend class pure_relcase;

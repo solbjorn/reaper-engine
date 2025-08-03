@@ -38,8 +38,10 @@ protected:
 
     virtual size_t GetWeaponTypeForCollision() const override { return RPG; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponRPG7)
+XR_SOL_BASE_CLASSES(CWeaponRPG7);
+
+add_to_type_list(CWeaponRPG7);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponRPG7)

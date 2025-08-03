@@ -1,12 +1,12 @@
 #ifndef ParticleCustom_included
 #define ParticleCustom_included
 
-class IParticleCustom : public virtual RTTI::Enable
+class XR_NOVTABLE IParticleCustom : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IParticleCustom);
 
 public:
-    virtual ~IParticleCustom() { ; }
+    virtual ~IParticleCustom() = 0;
 
     virtual void OnDeviceCreate() = 0;
     virtual void OnDeviceDestroy() = 0;
@@ -27,5 +27,7 @@ public:
     virtual void SetHudMode(BOOL b) = 0;
     virtual BOOL GetHudMode() = 0;
 };
+
+inline IParticleCustom::~IParticleCustom() = default;
 
 #endif //	ParticleCustom_included

@@ -9,7 +9,7 @@
 #include "ode/src/util.h"
 #include "../xr_3da/gamemtllib.h"
 
-CPHCharacter::CPHCharacter(void) : CPHDisablingTranslational()
+CPHCharacter::CPHCharacter() : CPHDisablingTranslational()
 {
     m_params.acceleration = 0.001f;
     m_params.velocity = 0.0001f;
@@ -26,8 +26,6 @@ CPHCharacter::CPHCharacter(void) : CPHDisablingTranslational()
     b_in_touch_resrtrictor = false;
     m_current_object_radius = -1.f;
 }
-
-CPHCharacter::~CPHCharacter(void) {}
 
 void CPHCharacter::FreezeContent()
 {

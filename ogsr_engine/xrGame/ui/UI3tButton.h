@@ -71,3 +71,4 @@ private:
     ref_sound m_sound_h;
     ref_sound m_sound_t;
 };
+XR_SOL_BASE_CLASSES(CUI3tButton);

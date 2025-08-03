@@ -7,6 +7,10 @@
 class CUIProgressBar : public CUIWindow
 {
     friend class CUIXmlInit;
+
+    RTTI_DECLARE_TYPEINFO(CUIProgressBar, CUIWindow);
+
+public:
     typedef CUIWindow inherited;
 
 protected:
@@ -66,9 +70,10 @@ public:
     virtual void Draw();
     virtual void Update();
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIProgressBar);
 
-add_to_type_list(CUIProgressBar)
+add_to_type_list(CUIProgressBar);
 #undef script_type_list
 #define script_type_list save_type_list(CUIProgressBar)

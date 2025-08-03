@@ -17,45 +17,51 @@
 class CAnomalyZoneScript
 {
     static void set_zone_state(CCustomZone* obj, u32 new_state);
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CAnomalyZoneScript)
+
+add_to_type_list(CAnomalyZoneScript);
 #undef script_type_list
 #define script_type_list save_type_list(CAnomalyZoneScript)
 
-    class CInventoryScript
+class CInventoryScript
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CInventoryScript)
+
+add_to_type_list(CInventoryScript);
 #undef script_type_list
 #define script_type_list save_type_list(CInventoryScript)
 
-    class CEatableItemScript
+class CEatableItemScript
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CEatableItemScript)
+
+add_to_type_list(CEatableItemScript);
 #undef script_type_list
 #define script_type_list save_type_list(CEatableItemScript)
 
-    class CEntityScript
+class CEntityScript
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CEntityScript)
+
+add_to_type_list(CEntityScript);
 #undef script_type_list
 #define script_type_list save_type_list(CEntityScript)
 
-    class CMonsterScript
+class CMonsterScript
 {
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CMonsterScript)
+
+add_to_type_list(CMonsterScript);
 #undef script_type_list
 #define script_type_list save_type_list(CMonsterScript)
 
-    class COutfitScript
+class COutfitScript
 {
 protected:
     template <ALife::EHitType idx>
@@ -72,14 +78,14 @@ protected:
         O->m_HitTypeProtection[idx] = value;
     }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(COutfitScript)
+add_to_type_list(COutfitScript);
 #undef script_type_list
 #define script_type_list save_type_list(COutfitScript)
 
-    class CWeaponScript
+class CWeaponScript
 {
 public:
     static SRotation& FireDeviation(CWeapon* wpn);
@@ -87,16 +93,18 @@ public:
     static void set_fire_modes(CWeaponMagazined* wpn, luabind::object const& t);
     static luabind::object get_hit_power(CWeapon* wpn);
     static void set_hit_power(CWeapon* wpn, luabind::object const& t);
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponScript)
+
+add_to_type_list(CWeaponScript);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponScript)
 
-    class CCustomMonsterScript
+class CCustomMonsterScript
 {
 public:
-    u32 GetDestVertexId(CCustomMonster* monster)
+    static u32 GetDestVertexId(CCustomMonster* monster)
     {
         u32 vertex = 0;
         if (monster->m_movement_manager != NULL)
@@ -106,8 +114,9 @@ public:
         return vertex;
     }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CCustomMonsterScript)
+
+add_to_type_list(CCustomMonsterScript);
 #undef script_type_list
 #define script_type_list save_type_list(CCustomMonsterScript)

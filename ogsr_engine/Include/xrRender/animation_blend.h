@@ -187,8 +187,12 @@ IC bool CBlend::update(float dt, PlayCallback _Callback)
     return false;
 }
 
-class IBlendDestroyCallback
+class XR_NOVTABLE IBlendDestroyCallback
 {
 public:
+    virtual ~IBlendDestroyCallback() = 0;
+
     virtual void BlendDestroy(CBlend& blend) = 0;
 };
+
+inline IBlendDestroyCallback::~IBlendDestroyCallback() = default;

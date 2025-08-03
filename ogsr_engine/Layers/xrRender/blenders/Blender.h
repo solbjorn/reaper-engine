@@ -31,7 +31,7 @@ public:
     }
 };
 
-class IBlender : public virtual RTTI::Enable
+class XR_NOVTABLE IBlender : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IBlender);
 
@@ -57,8 +57,10 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     IBlender();
-    virtual ~IBlender();
+    virtual ~IBlender() = 0;
 };
+
+inline IBlender::~IBlender() = default;
 
 class IBlenderXr : public IBlender, public CPropertyBase
 {

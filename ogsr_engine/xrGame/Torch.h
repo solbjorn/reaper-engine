@@ -97,9 +97,10 @@ public:
     void SetTexture(LPCSTR texture, int target = 0);
     void SetVirtualSize(float size, int target = 0);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CTorch);
 
-add_to_type_list(CTorch)
+add_to_type_list(CTorch);
 #undef script_type_list
 #define script_type_list save_type_list(CTorch)

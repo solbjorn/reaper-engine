@@ -1,11 +1,13 @@
 #ifndef STREAM_READER_H
 #define STREAM_READER_H
 
-class CStreamReader : public IReaderBase<CStreamReader>
+class XR_NOVTABLE CStreamReader : public IReaderBase<CStreamReader>
 {
     RTTI_DECLARE_TYPEINFO(CStreamReader, IReaderBase<CStreamReader>);
 
 public:
+    virtual ~CStreamReader() = 0;
+
     virtual intptr_t elapsed() const = 0;
     virtual const size_t& length() const = 0;
     virtual void seek(const int& offset) = 0;
@@ -16,6 +18,8 @@ public:
     virtual void r(void* buffer, size_t buffer_size) = 0;
     virtual CStreamReader* open_chunk(const size_t& chunk_id) = 0;
 };
+
+inline CStreamReader::~CStreamReader() = default;
 
 class CMapStreamReader : public CStreamReader
 {

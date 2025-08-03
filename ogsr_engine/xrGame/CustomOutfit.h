@@ -69,3 +69,4 @@ public:
 
     u32 get_artefact_count() const { return m_artefact_count; }
 };
+XR_SOL_BASE_CLASSES(CCustomOutfit);

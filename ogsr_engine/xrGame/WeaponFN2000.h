@@ -17,8 +17,10 @@ public:
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return FN2000; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponFN2000)
+XR_SOL_BASE_CLASSES(CWeaponFN2000);
+
+add_to_type_list(CWeaponFN2000);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponFN2000)

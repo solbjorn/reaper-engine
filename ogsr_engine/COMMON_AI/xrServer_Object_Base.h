@@ -99,6 +99,40 @@ Flags32 m_spawn_flags;
 
 // client object custom data serialization
 xr_vector<u8> client_data;
+
+protected:
+sol::object priv;
+xr_map<u32, sol::function> ops;
+
+enum
+{
+    // CSE_Abstract
+    STATE_READ,
+    STATE_WRITE,
+
+    // CSE_ALifeObject
+    CAN_SWITCH_OFFLINE,
+    CAN_SWITCH_ONLINE,
+    KEEP_SAVED_DATA_ANYWAY,
+
+    // CSE_ALifeDynamicObject
+    ON_BEFORE_REGISTER,
+    ON_REGISTER,
+    ON_UNREGISTER,
+
+    // CSE_ALifeCreatureAbstract
+    ON_DEATH,
+
+    // CSE_ALifeSmartZone
+    ENABLED,
+    REGISTER_NPC,
+    SUITABLE,
+    TASK,
+    UNREGISTER_NPC,
+    UPDATE,
+};
+
+public:
 virtual void load(NET_Packet& tNetPacket);
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,7 +142,9 @@ virtual ~CSE_Abstract();
 virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) {};
 virtual BOOL Net_Relevant() { return TRUE; };
 //
+void STATE_Write(NET_Packet& tNetPacket);
 virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal);
+void STATE_Read(NET_Packet& tNetPacket, u16 size);
 virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket);
 virtual LPCSTR __stdcall name() const;
 virtual LPCSTR __stdcall name_replace() const;
@@ -164,7 +200,8 @@ virtual CSE_ALifeOnlineOfflineGroup* cast_online_offline_group() { return 0; };
 virtual CSE_ALifeItemPDA* cast_item_pda() { return 0; };
 }
 ;
-add_to_type_list(CSE_Abstract)
+
+add_to_type_list(CSE_Abstract);
 #define script_type_list save_type_list(CSE_Abstract)
 
 #pragma warning(pop)

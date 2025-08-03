@@ -163,3 +163,4 @@ public:
 protected:
     virtual void UpdateSpots();
 };
+XR_SOL_BASE_CLASSES(CUIMiniMap);

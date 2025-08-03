@@ -12,23 +12,32 @@
 #include "script_export_space.h"
 #include "script_engine_export.h"
 
-template <typename TList>
-struct Register
-{
-    static void _Register(lua_State* L)
-    {
-        imdexlib::ts_apply<imdexlib::ts_reverse_t<TList>>([&](const auto type) { registerOne(L, type); });
-    }
+template <typename List>
+struct ts_converter;
 
-private:
-    template <typename T>
-    static void registerOne(lua_State* L, imdexlib::identity<T>)
+template <typename... Ts>
+struct ts_converter<imdexlib::typelist<Ts...>>
+{
+    using handler_type = void (*)(sol::state_view& lua);
+
+    static constexpr handler_type arr[] = {(&Ts::script_register)...};
+#ifdef DEBUG
+    static constexpr const char* const names[] = {(RTTI::TypeName<Ts>().data())...};
+#endif
+
+    static void script_register(sol::state_view& lua)
     {
 #ifdef DEBUG
-        Msg("Exporting [%s]", typeid(T).name());
+        size_t i = 0;
 #endif
-        T::script_register(L);
+        for (auto handler : arr)
+        {
+#ifdef DEBUG
+            Msg("Exporting [%s]", names[i++]);
+#endif
+            handler(lua);
+        }
     }
 };
 
-void export_classes(lua_State* L) { Register<script_type_list>::_Register(L); }
+void export_classes(sol::state_view& lua) { ts_converter<imdexlib::ts_reverse_t<script_type_list>>::script_register(lua); }

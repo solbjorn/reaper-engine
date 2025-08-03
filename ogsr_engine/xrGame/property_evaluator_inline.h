@@ -36,7 +36,14 @@ TEMPLATE_SPECIALIZATION
 void CEvaluator::Load(LPCSTR section) {}
 
 TEMPLATE_SPECIALIZATION
-typename CEvaluator::_value_type CEvaluator::evaluate() { return (0); }
+typename CEvaluator::_value_type CEvaluator::evaluate()
+{
+    auto op = ops.find(EVALUATE);
+    if (op == ops.end())
+        return 0;
+
+    return op->second(this);
+}
 
 TEMPLATE_SPECIALIZATION
 IC typename CEvaluator::_value_type CEvaluator::property(const _condition_type& condition_id) const

@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-
 #include "UIButton.h"
 #include "UIWindow.h"
 #include "UIFrameWindow.h"
@@ -51,41 +49,28 @@ static TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name) { return CUITextu
 
 static LPCSTR CIconParams__get_name(CIconParams* self) { return self->name.c_str(); }
 
+static void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild, bool bottom = false) { return self.AttachChild(pChild.release(), bottom); }
+
 template <typename T>
 static T* wnd_object_cast(CUIWindow* wnd)
 {
     return smart_cast<T*>(wnd);
 }
 
-void CUIWindow::script_register(lua_State* L)
+void CUIWindow::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
-    lua.set_function("GetARGB", &GetARGB);
-    lua.set_function("GetFontSmall", &GetFontSmall);
-    lua.set_function("GetFontMedium", &GetFontMedium);
-    lua.set_function("GetFontDI", &GetFontDI);
-    lua.set_function("GetFontGraffiti19Russian", &GetFontGraffiti19Russian);
-    lua.set_function("GetFontGraffiti22Russian", &GetFontGraffiti22Russian);
-    lua.set_function("GetFontLetterica16Russian", &GetFontLetterica16Russian);
-    lua.set_function("GetFontLetterica18Russian", &GetFontLetterica18Russian);
-    lua.set_function("GetFontGraffiti32Russian", &GetFontGraffiti32Russian);
-    lua.set_function("GetFontGraffiti40Russian", &GetFontGraffiti40Russian);
-    lua.set_function("GetFontGraffiti50Russian", &GetFontGraffiti50Russian);
-    lua.set_function("GetFontArial14", &GetFontArial14);
-    lua.set_function("GetFontArial21", &GetFontArial21);
-    lua.set_function("GetFontLetterica25", &GetFontLetterica25);
-    lua.set_function("GetFontCustom", &GetFontCustom);
+    lua.set("GetARGB", &GetARGB, "GetFontSmall", &GetFontSmall, "GetFontMedium", &GetFontMedium, "GetFontDI", &GetFontDI, "GetFontGraffiti19Russian", &GetFontGraffiti19Russian,
+            "GetFontGraffiti22Russian", &GetFontGraffiti22Russian, "GetFontLetterica16Russian", &GetFontLetterica16Russian, "GetFontLetterica18Russian", &GetFontLetterica18Russian,
+            "GetFontGraffiti32Russian", &GetFontGraffiti32Russian, "GetFontGraffiti40Russian", &GetFontGraffiti40Russian, "GetFontGraffiti50Russian", &GetFontGraffiti50Russian,
+            "GetFontArial14", &GetFontArial14, "GetFontArial21", &GetFontArial21, "GetFontLetterica25", &GetFontLetterica25, "GetFontCustom", &GetFontCustom);
 
     lua.new_usertype<TEX_INFO>("TEX_INFO", sol::no_constructor, "get_file_name", &TEX_INFO::get_file_name, "get_rect", &TEX_INFO::get_rect);
 
-    lua.set_function("GetTextureName", &get_texture_name);
-    lua.set_function("GetTextureRect", &get_texture_rect);
-    lua.set_function("GetTextureInfo", &get_texture_info);
+    lua.set("GetTextureName", &get_texture_name, "GetTextureRect", &get_texture_rect, "GetTextureInfo", &get_texture_info);
 
     lua.new_usertype<CUIWindow>(
-        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::constructors<CUIWindow()>(), "AttachChild", &CUIWindow::AttachChild, "DetachChild", &CUIWindow::DetachChild,
-        "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete, "SetWndRect",
+        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIWindow>), "AttachChild", &AttachChild_script, "DetachChild",
+        &CUIWindow::DetachChild, "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete, "SetWndRect",
         sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)), "Init",
         sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
         "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize({w, h}); }, "GetWidth",

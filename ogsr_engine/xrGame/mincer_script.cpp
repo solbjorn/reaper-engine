@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "mincer.h"
 
-void CMincer::script_register(lua_State* L)
+void CMincer::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CMincer>("CMincer", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CMincer>), sol::base_classes,
-                                             xr_sol_bases<CMincer>());
+    lua.new_usertype<CMincer>("CMincer", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CMincer>), "factory", &client_factory<CMincer>,
+                              sol::base_classes, xr_sol_bases<CMincer>());
 }

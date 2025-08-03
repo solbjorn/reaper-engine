@@ -13,9 +13,11 @@
 
 class CUITabButton : public CUI3tButton
 {
-    typedef CUI3tButton inherited;
+    RTTI_DECLARE_TYPEINFO(CUITabButton, CUI3tButton);
 
 public:
+    typedef CUI3tButton inherited;
+
     CUITabButton();
     virtual ~CUITabButton();
 
@@ -32,3 +34,4 @@ public:
     // associated window
     //.	CUIFrameWindow* m_pAssociatedWindow;
 };
+XR_SOL_BASE_CLASSES(CUITabButton);

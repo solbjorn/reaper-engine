@@ -206,7 +206,7 @@ u32 CTrade::GetItemPrice(PIItem pItem, bool b_buying)
     if (pSettings->line_exist("engine_callbacks", price_callback))
     {
         const char* callback = pSettings->r_string("engine_callbacks", price_callback);
-        if (luabind::functor<float> lua_function; ai().script_engine().functor(callback, lua_function))
+        if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
         {
             result = lua_function(smart_cast<const CGameObject*>(pThis.inv_owner)->lua_game_object(), // trader
                                   pItem->object().cNameSect().c_str(), // item section

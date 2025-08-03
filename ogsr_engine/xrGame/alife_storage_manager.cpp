@@ -67,7 +67,7 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
         {
             const char* callback = pSettings->r_string("engine_callbacks", "after_objs_save");
 
-            if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+            if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
             {
                 stream.open_chunk(CALLBACK_CHUNK_DATA);
                 lua_function((IWriter*)&stream);
@@ -133,7 +133,7 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, LPCSTR fil
     {
         const char* callback = pSettings->r_string("engine_callbacks", "after_objs_load");
 
-        if (luabind::functor<void> lua_function; ai().script_engine().functor(callback, lua_function))
+        if (sol::function lua_function; ai().script_engine().function(callback, lua_function))
             lua_function((IReader*)&source);
     }
 

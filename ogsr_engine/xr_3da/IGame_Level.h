@@ -50,7 +50,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------------
-class IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
+class XR_NOVTABLE IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
 {
     RTTI_DECLARE_TYPEINFO(IGame_Level, DLL_Pure, IInputReceiver, pureRender, pureFrame, IEventReceiver);
 

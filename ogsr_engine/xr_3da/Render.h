@@ -32,7 +32,7 @@ extern int g_3dscopes_fps_factor;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
-class IRender_Light : public xr_resource
+class XR_NOVTABLE IRender_Light : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(IRender_Light, xr_resource);
 
@@ -75,15 +75,17 @@ public:
 
     virtual ~IRender_Light();
 };
+
 struct resptrcode_light : public resptr_base<IRender_Light>
 {
     void destroy() { _set(NULL); }
 };
+
 typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Glow)
-class IRender_Glow : public xr_resource
+class XR_NOVTABLE IRender_Glow : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(IRender_Glow, xr_resource);
 
@@ -96,17 +98,20 @@ public:
     virtual void set_texture(LPCSTR name) = 0;
     virtual void set_color(const Fcolor& C) = 0;
     virtual void set_color(float r, float g, float b) = 0;
+
     virtual ~IRender_Glow();
 };
+
 struct resptrcode_glow : public resptr_base<IRender_Glow>
 {
     void destroy() { _set(NULL); }
 };
+
 typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Per-object render-specific data)
-class IRender_ObjectSpecific : public virtual RTTI::Enable
+class XR_NOVTABLE IRender_ObjectSpecific : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_ObjectSpecific);
 
@@ -119,18 +124,19 @@ public:
         TRACE_ALL = (TRACE_LIGHTS | TRACE_SUN | TRACE_HEMI),
     };
 
-public:
     virtual void force_mode(u32 mode) = 0;
     virtual float get_luminocity() = 0;
     virtual float get_luminocity_hemi() = 0;
     virtual float* get_luminocity_hemi_cube() = 0;
 
-    virtual ~IRender_ObjectSpecific() {};
+    virtual ~IRender_ObjectSpecific() = 0;
 };
+
+inline IRender_ObjectSpecific::~IRender_ObjectSpecific() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
-class IRender_Target : public virtual RTTI::Enable
+class XR_NOVTABLE IRender_Target : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_Target);
 
@@ -150,8 +156,11 @@ public:
     virtual void set_cm_imfluence(float f) = 0;
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
-    virtual ~IRender_Target() {};
+
+    virtual ~IRender_Target() = 0;
 };
+
+inline IRender_Target::~IRender_Target() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
@@ -163,7 +172,7 @@ enum class DeviceState
     NeedReset
 };
 
-class IRender_interface
+class XR_NOVTABLE IRender_interface
 {
 public:
     enum ScreenshotMode
@@ -175,7 +184,6 @@ public:
         SM_forcedword = u32(-1)
     };
 
-public:
     // options
     bool hud_loading{};
     s32 m_skinning;
@@ -186,7 +194,6 @@ public:
     // data
     CFrustum ViewBase;
 
-public:
     // Loading / Unloading
     virtual void create() = 0;
     virtual void destroy() = 0;
@@ -260,18 +267,20 @@ public:
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
 
     // Constructor/destructor
-    virtual ~IRender_interface();
+    virtual ~IRender_interface() = 0;
 
 protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
 };
 
-class ITexture : public virtual RTTI::Enable
+inline IRender_interface::~IRender_interface() = default;
+
+class XR_NOVTABLE ITexture : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ITexture);
 
 public:
-    virtual ~ITexture() = default;
+    virtual ~ITexture() = 0;
 
     virtual const char* GetName() const = 0;
 
@@ -279,15 +288,19 @@ public:
     virtual void Unload() = 0;
 };
 
-class IResourceManager : public virtual RTTI::Enable
+inline ITexture::~ITexture() = default;
+
+class XR_NOVTABLE IResourceManager : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IResourceManager);
 
 public:
-    virtual ~IResourceManager() = default;
+    virtual ~IResourceManager() = 0;
 
     virtual xr_vector<ITexture*> FindTexture(const char* Name) const = 0;
 };
+
+inline IResourceManager::~IResourceManager() = default;
 
 class ShExports final
 {

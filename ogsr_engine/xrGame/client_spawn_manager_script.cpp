@@ -9,9 +9,9 @@
 #include "stdafx.h"
 #include "client_spawn_manager.h"
 
-void CClientSpawnManager::script_register(lua_State* L)
+void CClientSpawnManager::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CClientSpawnManager>(
+    lua.new_usertype<CClientSpawnManager>(
         "client_spawn_manager", sol::no_constructor, "add",
         sol::overload(sol::resolve<void(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&, const luabind::object&)>(&CClientSpawnManager::add),
                       sol::resolve<void(ALife::_OBJECT_ID, ALife::_OBJECT_ID, const luabind::functor<void>&)>(&CClientSpawnManager::add)),

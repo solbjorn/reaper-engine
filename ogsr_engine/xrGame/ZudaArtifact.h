@@ -8,6 +8,8 @@
 
 class CZudaArtefact : public CArtefact
 {
+    RTTI_DECLARE_TYPEINFO(CZudaArtefact, CArtefact);
+
 private:
     typedef CArtefact inherited;
 
@@ -16,6 +18,5 @@ public:
     virtual ~CZudaArtefact(void);
 
     virtual void Load(LPCSTR section);
-
-protected:
 };
+XR_SOL_BASE_CLASSES(CZudaArtefact);

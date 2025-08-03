@@ -10,14 +10,14 @@
 #include "script_zone.h"
 #include "smart_zone.h"
 
-void CScriptZone::script_register(lua_State* L)
+void CScriptZone::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptZone>("ce_script_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScriptZone>), sol::base_classes,
-                                                 xr_sol_bases<CScriptZone>());
+    lua.new_usertype<CScriptZone>("ce_script_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScriptZone>), sol::base_classes,
+                                  xr_sol_bases<CScriptZone>());
 }
 
-void CSmartZone::script_register(lua_State* L)
+void CSmartZone::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CSmartZone>("ce_smart_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSmartZone>), sol::base_classes,
-                                                xr_sol_bases<CSmartZone>());
+    lua.new_usertype<CSmartZone>("ce_smart_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSmartZone>), "factory", &client_factory<CSmartZone>,
+                                 sol::base_classes, xr_sol_bases<CSmartZone>());
 }

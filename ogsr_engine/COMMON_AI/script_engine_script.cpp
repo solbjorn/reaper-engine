@@ -8,11 +8,10 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "../xr_3da/xr_input.h"
 
-#include "script_engine.h"
 #include "ai_space.h"
+#include "script_engine.h"
 
 struct profile_timer_script
 {
@@ -84,14 +83,10 @@ bool GetLAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU); }
 bool GetRAlt() { return !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 bool GetAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 
-void CScriptEngine::script_register(lua_State* L)
+void CScriptEngine::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
+    lua.set("log1", sol::resolve<void(LPCSTR)>(&Log), "fail", &msg_and_fail, "screenshot", &take_screenshot);
 
-    lua.set_function("log1", sol::resolve<void(LPCSTR)>(&Log));
-    lua.set_function("fail", &msg_and_fail);
-
-    lua.set_function("screenshot", &take_screenshot);
     lua.new_enum("modes", "normal", IRender_interface::ScreenshotMode::SM_NORMAL, "cubemap", IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP, "gamesave",
                  IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE, "levelmap", IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP);
 
@@ -99,12 +94,7 @@ void CScriptEngine::script_register(lua_State* L)
                                            sol::constructors<profile_timer_script(), profile_timer_script(const profile_timer_script&)>(), "start", &profile_timer_script::start,
                                            "stop", &profile_timer_script::stop, "time", &profile_timer_script::time);
 
-    lua.set_function("user_name", [] { return Core.UserName; });
-    lua.set_function("time_global", [] { return Device.dwTimeGlobal; });
-    lua.set_function("GetShift", &GetShift);
-    lua.set_function("GetLAlt", &GetLAlt);
-    lua.set_function("GetRAlt", &GetRAlt);
-    lua.set_function("GetAlt", &GetAlt);
-    lua.set_function("device", [] { return &Device; });
-    lua.set_function("__debugbreak", [] { __debugbreak(); });
+    lua.set(
+        "user_name", [] { return Core.UserName; }, "time_global", [] { return Device.dwTimeGlobal; }, "GetShift", &GetShift, "GetLAlt", &GetLAlt, "GetRAlt", &GetRAlt, "GetAlt",
+        &GetAlt, "device", [] { return &Device; }, "__debugbreak", [] { __debugbreak(); });
 }

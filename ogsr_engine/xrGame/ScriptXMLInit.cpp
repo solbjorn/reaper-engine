@@ -259,9 +259,9 @@ CUIProgressBar* CScriptXmlInit::InitProgressBar(LPCSTR path, CUIWindow* parent)
     return pWnd;
 }
 
-void CScriptXmlInit::script_register(lua_State* L)
+void CScriptXmlInit::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptXmlInit>(
+    lua.new_usertype<CScriptXmlInit>(
         "CScriptXmlInit", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptXmlInit()>(), "ParseFile", &CScriptXmlInit::ParseFile, "ParseShTexInfo",
         &CScriptXmlInit::ParseShTexInfo, "InitWindow", &CScriptXmlInit::InitWindow, "InitFrame", &CScriptXmlInit::InitFrame, "InitFrameLine", &CScriptXmlInit::InitFrameLine,
         "InitLabel", &CScriptXmlInit::InitLabel, "InitEditBox", &CScriptXmlInit::InitEditBox, "InitEditBoxEx", &CScriptXmlInit::InitEditBoxEx, "InitStatic",

@@ -8,12 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_sound_action.h"
 
-void CScriptSoundAction::script_register(lua_State* L)
+void CScriptSoundAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptSoundAction>(
+    lua.new_usertype<CScriptSoundAction>(
         "sound", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptSoundAction(), CScriptSoundAction(LPCSTR, LPCSTR), CScriptSoundAction(LPCSTR, LPCSTR, const Fvector&),
                           CScriptSoundAction(LPCSTR, LPCSTR, const Fvector&, const Fvector&), CScriptSoundAction(LPCSTR, LPCSTR, const Fvector&, const Fvector&, bool),

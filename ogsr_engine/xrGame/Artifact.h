@@ -151,8 +151,10 @@ public:
     void SwitchAfParticles(bool bOn);
     IC u8 GetAfRank() const { return m_af_rank; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CArtefact)
+XR_SOL_BASE_CLASSES(CArtefact);
+
+add_to_type_list(CArtefact);
 #undef script_type_list
 #define script_type_list save_type_list(CArtefact)

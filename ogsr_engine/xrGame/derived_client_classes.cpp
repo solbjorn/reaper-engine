@@ -8,8 +8,6 @@
 
 #include "StdAfx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
 #include "base_client_classes.h"
 #include "derived_client_classes.h"
 #include "HUDManager.h"
@@ -37,15 +35,13 @@ static u32 get_zone_state(CCustomZone* obj) { return (u32)obj->ZoneState(); }
 
 void CAnomalyZoneScript::set_zone_state(CCustomZone* obj, u32 new_state) { obj->SwitchZoneState((CCustomZone::EZoneState)new_state); }
 
-void CAnomalyZoneScript::script_register(lua_State* L)
+void CAnomalyZoneScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
-    lua.new_usertype<CSpaceRestrictor>("CSpaceRestrictor", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSpaceRestrictor>), "restrictor_center",
-                                       sol::property(&get_restrictor_center), "restrictor_type", sol::property(&CSpaceRestrictor::restrictor_type), "radius",
-                                       sol::property(&CSpaceRestrictor::Radius), "schedule_register", &CSpaceRestrictor::ScheduleRegister, "schedule_unregister",
-                                       &CSpaceRestrictor::ScheduleUnregister, "is_scheduled", &CSpaceRestrictor::IsScheduled, "active_contact", &CSpaceRestrictor::active_contact,
-                                       sol::base_classes, xr_sol_bases<CSpaceRestrictor>());
+    lua.new_usertype<CSpaceRestrictor>("CSpaceRestrictor", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSpaceRestrictor>), "factory",
+                                       &client_factory<CSpaceRestrictor>, "restrictor_center", sol::property(&get_restrictor_center), "restrictor_type",
+                                       sol::property(&CSpaceRestrictor::restrictor_type), "radius", sol::property(&CSpaceRestrictor::Radius), "schedule_register",
+                                       &CSpaceRestrictor::ScheduleRegister, "schedule_unregister", &CSpaceRestrictor::ScheduleUnregister, "is_scheduled",
+                                       &CSpaceRestrictor::IsScheduled, "active_contact", &CSpaceRestrictor::active_contact, sol::base_classes, xr_sol_bases<CSpaceRestrictor>());
 
     lua.new_usertype<CCustomZone>("CustomZone", sol::no_constructor, "power", &CCustomZone::Power, "relative_power", &CCustomZone::RelativePower, "attenuation",
                                   &CCustomZone::m_fAttenuation, "effective_radius", &CCustomZone::m_fEffectiveRadius, "hit_impulse_scale", &CCustomZone::m_fHitImpulseScale,
@@ -56,19 +52,16 @@ void CAnomalyZoneScript::script_register(lua_State* L)
 
 static void alive_entity_set_radiation(CEntityAlive* E, float value) { E->SetfRadiation(value); }
 
-void CEntityScript::script_register(lua_State* L)
+void CEntityScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CEntity>("CEntity", sol::no_constructor, sol::base_classes, xr_sol_bases<CEntity>());
+
     lua.new_usertype<CEntityAlive>("CEntityAlive", sol::no_constructor, "radiation", sol::property(&CEntityAlive::g_Radiation, &alive_entity_set_radiation), "condition",
                                    sol::property(&CEntityAlive::conditions), sol::base_classes, xr_sol_bases<CEntityAlive>());
 }
 
-void CEatableItemScript::script_register(lua_State* L)
+void CEatableItemScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CEatableItem>("CEatableItem", sol::no_constructor, "eat_health", &CEatableItem::m_fHealthInfluence, "eat_power", &CEatableItem::m_fPowerInfluence,
                                    "eat_satiety", &CEatableItem::m_fSatietyInfluence, "eat_radiation", &CEatableItem::m_fRadiationInfluence, "eat_max_power",
                                    &CEatableItem::m_fMaxPowerUpInfluence, "eat_psy_health", &CEatableItem::m_fPsyHealthInfluence, "eat_thirst", &CEatableItem::m_fThirstInfluence,
@@ -148,10 +141,8 @@ static luabind::object get_slots(CInventoryItem* itm)
     return table;
 }
 
-void CInventoryScript::script_register(lua_State* L)
+void CInventoryScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CInventoryItem>("CInventoryItem", sol::no_constructor, "item_place", sol::readonly(&CInventoryItem::m_eItemPlace), "item_condition",
                                      &CInventoryItem::m_fCondition, "inv_weight", &CInventoryItem::m_weight, "m_flags", &CInventoryItem::m_flags, "always_ungroupable",
                                      &CInventoryItem::m_always_ungroupable, "psy_health_restore_speed", &CInventoryItem::m_fPsyHealthRestoreSpeed, "radiation_restore_speed",
@@ -186,32 +177,32 @@ static CParticlesObject* monster_play_particles(CBaseMonster* monster, LPCSTR na
     return monster->PlayParticles(name, position, dir, auto_remove, xformed);
 }
 
-void CMonsterScript::script_register(lua_State* L)
+void CMonsterScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CBaseMonster>("CBaseMonster", sol::no_constructor, "agressive", &CBaseMonster::m_bAggressive, "angry", &CBaseMonster::m_bAngry, "damaged",
-                                                  &CBaseMonster::m_bDamaged, "grownlig", &CBaseMonster::m_bGrowling, "run_turn_left", &CBaseMonster::m_bRunTurnLeft,
-                                                  "run_turn_right", &CBaseMonster::m_bRunTurnRight, "sleep", &CBaseMonster::m_bSleep, "state_invisible",
-                                                  &CBaseMonster::state_invisible, sol::base_classes, xr_sol_bases<CBaseMonster>());
+    lua.new_usertype<CBaseMonster>("CBaseMonster", sol::no_constructor, "agressive", &CBaseMonster::m_bAggressive, "angry", &CBaseMonster::m_bAngry, "damaged",
+                                   &CBaseMonster::m_bDamaged, "grownlig", &CBaseMonster::m_bGrowling, "run_turn_left", &CBaseMonster::m_bRunTurnLeft, "run_turn_right",
+                                   &CBaseMonster::m_bRunTurnRight, "sleep", &CBaseMonster::m_bSleep, "state_invisible", &CBaseMonster::state_invisible, sol::base_classes,
+                                   xr_sol_bases<CBaseMonster>());
 }
 
 static int curr_fire_mode(CWeaponMagazined* wpn) { return wpn->GetCurrentFireMode(); }
 
-void COutfitScript::script_register(lua_State* L)
+void COutfitScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CCustomOutfit>(
-        "CCustomOutfit", sol::no_constructor, "additional_inventory_weight", &CCustomOutfit::m_additional_weight, "additional_inventory_weight2",
-        &CCustomOutfit::m_additional_weight2, "power_loss", &CCustomOutfit::m_fPowerLoss, "burn_protection",
-        sol::property(&get_protection<ALife::eHitTypeBurn>, &set_protection<ALife::eHitTypeBurn>), "strike_protection",
-        sol::property(&get_protection<ALife::eHitTypeStrike>, &set_protection<ALife::eHitTypeStrike>), "shock_protection",
-        sol::property(&get_protection<ALife::eHitTypeShock>, &set_protection<ALife::eHitTypeShock>), "wound_protection",
-        sol::property(&get_protection<ALife::eHitTypeWound>, &set_protection<ALife::eHitTypeWound>), "radiation_protection",
-        sol::property(&get_protection<ALife::eHitTypeRadiation>, &set_protection<ALife::eHitTypeRadiation>), "telepatic_protection",
-        sol::property(&get_protection<ALife::eHitTypeTelepatic>, &set_protection<ALife::eHitTypeTelepatic>), "chemical_burn_protection",
-        sol::property(&get_protection<ALife::eHitTypeChemicalBurn>, &set_protection<ALife::eHitTypeChemicalBurn>), "explosion_protection",
-        sol::property(&get_protection<ALife::eHitTypeExplosion>, &set_protection<ALife::eHitTypeExplosion>), "fire_wound_protection",
-        sol::property(&get_protection<ALife::eHitTypeFireWound>, &set_protection<ALife::eHitTypeFireWound>), "wound_2_protection",
-        sol::property(&get_protection<ALife::eHitTypeWound_2>, &set_protection<ALife::eHitTypeWound_2>), "physic_strike_protection",
-        sol::property(&get_protection<ALife::eHitTypePhysicStrike>, &set_protection<ALife::eHitTypePhysicStrike>), sol::base_classes, xr_sol_bases<CCustomOutfit>());
+    lua.new_usertype<CCustomOutfit>("CCustomOutfit", sol::no_constructor, "additional_inventory_weight", &CCustomOutfit::m_additional_weight, "additional_inventory_weight2",
+                                    &CCustomOutfit::m_additional_weight2, "power_loss", &CCustomOutfit::m_fPowerLoss, "burn_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeBurn>, &set_protection<ALife::eHitTypeBurn>), "strike_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeStrike>, &set_protection<ALife::eHitTypeStrike>), "shock_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeShock>, &set_protection<ALife::eHitTypeShock>), "wound_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeWound>, &set_protection<ALife::eHitTypeWound>), "radiation_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeRadiation>, &set_protection<ALife::eHitTypeRadiation>), "telepatic_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeTelepatic>, &set_protection<ALife::eHitTypeTelepatic>), "chemical_burn_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeChemicalBurn>, &set_protection<ALife::eHitTypeChemicalBurn>), "explosion_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeExplosion>, &set_protection<ALife::eHitTypeExplosion>), "fire_wound_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeFireWound>, &set_protection<ALife::eHitTypeFireWound>), "wound_2_protection",
+                                    sol::property(&get_protection<ALife::eHitTypeWound_2>, &set_protection<ALife::eHitTypeWound_2>), "physic_strike_protection",
+                                    sol::property(&get_protection<ALife::eHitTypePhysicStrike>, &set_protection<ALife::eHitTypePhysicStrike>), sol::base_classes,
+                                    xr_sol_bases<CCustomOutfit>());
 }
 
 SRotation& CWeaponScript::FireDeviation(CWeapon* wpn) { return wpn->constDeviation; }
@@ -284,10 +275,8 @@ static void set_silencer_name(CWeapon* item, LPCSTR text) { item->m_sSilencerNam
 static LPCSTR get_grenade_launcher_name(CWeapon* I) { return I->m_sGrenadeLauncherName.c_str(); }
 static void set_grenade_launcher_name(CWeapon* item, LPCSTR text) { item->m_sGrenadeLauncherName = text; }
 
-void CWeaponScript::script_register(lua_State* L)
+void CWeaponScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CWeapon>("CWeapon", sol::no_constructor,
                               // из неэкспортируемого класса CHudItemObject:
                               "state", sol::property(&CHudItemObject::GetState), "next_state", sol::property(&CHudItemObject::GetNextState),
@@ -354,9 +343,9 @@ void CWeaponScript::script_register(lua_State* L)
                  "misfire", CSE_ALifeItemWeapon::eWeaponMisfire);
 }
 
-void CCustomMonsterScript::script_register(lua_State* L)
+void CCustomMonsterScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CCustomMonster>("CCustomMonster", sol::no_constructor, "get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId, "visible_for_zones",
-                                                    &CCustomMonster::m_visible_for_zones, "anomaly_detector", &CCustomMonster::anomaly_detector, "curr_speed",
-                                                    sol::readonly(&CCustomMonster::m_fCurSpeed), sol::base_classes, xr_sol_bases<CCustomMonster>());
+    lua.new_usertype<CCustomMonster>("CCustomMonster", sol::no_constructor, "get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId, "visible_for_zones",
+                                     &CCustomMonster::m_visible_for_zones, "anomaly_detector", &CCustomMonster::anomaly_detector, "curr_speed",
+                                     sol::readonly(&CCustomMonster::m_fCurSpeed), sol::base_classes, xr_sol_bases<CCustomMonster>());
 }

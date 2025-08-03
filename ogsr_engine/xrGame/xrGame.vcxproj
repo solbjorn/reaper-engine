@@ -234,6 +234,7 @@
     <ClInclude Include="..\COMMON_AI\profiler.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
+    <ClInclude Include="..\xrScriptEngine\xr_sol.h" />
     <ClInclude Include="AdvancedDetector.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
     <ClInclude Include="embedded_editor\embedded_editor_helper.h" />
@@ -905,7 +906,6 @@
     <ClInclude Include="path_manager_params_nearest_vertex.h" />
     <ClInclude Include="path_manager_solver.h" />
     <ClInclude Include="path_manager_solver_inline.h" />
-    <ClInclude Include="..\COMMON_AI\script_export_macroses.h" />
     <ClInclude Include="..\COMMON_AI\script_export_space.h" />
     <ClInclude Include="script_bind_macroses.h" />
     <ClInclude Include="script_abstract_action.h" />
@@ -957,7 +957,6 @@
     <ClInclude Include="fs_registrator.h" />
     <ClInclude Include="console_registrator.h" />
     <ClInclude Include="base_client_classes.h" />
-    <ClInclude Include="base_client_classes_wrappers.h" />
     <ClInclude Include="script_callback_ex.h" />
     <ClInclude Include="script_lanim.h" />
     <ClInclude Include="..\COMMON_AI\script_fcolor.h" />
@@ -1246,7 +1245,6 @@
     <ClInclude Include="id_generator.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_Abstract.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife_All.h" />
-    <ClInclude Include="..\COMMON_AI\xrServer_script_macroses.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Object_Base.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects.h" />
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife.h" />

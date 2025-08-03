@@ -8,38 +8,35 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-
+#include "../COMMON_AI/script_camera.h"
 #include "base_client_classes.h"
-#include "base_client_classes_wrappers.h"
 #include "script_game_object.h"
 #include "exported_classes_def.h"
 
 #pragma todo("KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.")
 
 template <>
-void DLL_PureScript::script_register(lua_State* L)
+void DLL_PureScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<DLL_Pure>("DLL_Pure", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<DLL_Pure>), "_construct",
-                                              &DLL_Pure::_construct);
+    lua.new_usertype<DLL_Pure>("DLL_Pure", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<DLL_Pure>), "_construct", &DLL_Pure::_construct);
 }
 
 template <>
-void ISheduledScript::script_register(lua_State* L)
+void ISheduledScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<ISheduled>("ISheduled", sol::no_constructor);
+    lua.new_usertype<ISheduled>("ISheduled", sol::no_constructor);
 }
 
 template <>
-void IRenderableScript::script_register(lua_State* L)
+void IRenderableScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<IRenderable>("IRenderable", sol::no_constructor);
+    lua.new_usertype<IRenderable>("IRenderable", sol::no_constructor);
 }
 
 template <>
-void ICollidableScript::script_register(lua_State* L)
+void ICollidableScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<ICollidable>("ICollidable", sol::no_constructor, sol::call_constructor, sol::constructors<ICollidable()>());
+    lua.new_usertype<ICollidable>("ICollidable", sol::no_constructor, sol::call_constructor, sol::constructors<ICollidable()>());
 }
 
 static Fvector rotation_get_dir(SRotation* R, bool v_inverse)
@@ -72,18 +69,16 @@ static void rotation_init(SRotation* R, float y, float p, float r)
 }
 
 template <>
-void CRotationScript::script_register(lua_State* L)
+void CRotationScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<SRotation>("SRotation", sol::no_constructor, sol::call_constructor, sol::constructors<SRotation(), SRotation(float, float, float)>(), "pitch",
-                                               &SRotation::pitch, "yaw", &SRotation::yaw, "roll", &SRotation::roll, "get_dir", &rotation_get_dir, "set_dir", &rotation_set_dir,
-                                               "set", sol::overload(&rotation_copy, &rotation_init));
+    lua.new_usertype<SRotation>("SRotation", sol::no_constructor, sol::call_constructor, sol::constructors<SRotation(), SRotation(float, float, float)>(), "pitch",
+                                &SRotation::pitch, "yaw", &SRotation::yaw, "roll", &SRotation::roll, "get_dir", &rotation_get_dir, "set_dir", &rotation_set_dir, "set",
+                                sol::overload(&rotation_copy, &rotation_init));
 }
 
 template <>
-void CObjectScript::script_register(lua_State* L)
+void CObjectScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CGameObject>("CGameObject", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGameObject>), "_construct", &CGameObject::_construct,
                                   "Visual", &CGameObject::Visual, "net_Spawn", &CGameObject::net_Spawn, "use", &CGameObject::use, "getVisible", &CGameObject::getVisible,
                                   "getEnabled", &CGameObject::getEnabled, sol::base_classes, xr_sol_bases<CGameObject>());
@@ -127,10 +122,8 @@ static CCameraBase* actor_camera(u16 index)
 }
 
 template <>
-void CCameraScript::script_register(lua_State* L)
+void CCameraScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CCameraBase>("CCameraBase", sol::no_constructor, "aspect", &CCameraBase::f_aspect, "direction", sol::readonly(&CCameraBase::vDirection), "fov",
                                   &CCameraBase::f_fov, "position", &CCameraBase::vPosition, "lim_yaw", &CCameraBase::lim_yaw, "lim_pitch", &CCameraBase::lim_pitch, "lim_roll",
                                   &CCameraBase::lim_roll, "yaw", &CCameraBase::yaw, "pitch", &CCameraBase::pitch, "roll", &CCameraBase::roll);
@@ -139,32 +132,31 @@ void CCameraScript::script_register(lua_State* L)
 }
 
 template <>
-void CAnomalyDetectorScript::script_register(lua_State* L)
+void CAnomalyDetectorScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CAnomalyDetector>("CAnomalyDetector", sol::no_constructor, "Anomaly_Detect_Radius", &CAnomalyDetector::m_radius, "Anomaly_Detect_Time_Remember",
-                                                      &CAnomalyDetector::m_time_to_rememeber, "Anomaly_Detect_Probability", &CAnomalyDetector::m_detect_probability, "is_active",
-                                                      sol::readonly(&CAnomalyDetector::m_active), "activate", &CAnomalyDetector::activate, "deactivate",
-                                                      &CAnomalyDetector::deactivate, "remove_all_restrictions", &CAnomalyDetector::remove_all_restrictions, "remove_restriction",
-                                                      &CAnomalyDetector::remove_restriction);
+    lua.new_usertype<CAnomalyDetector>("CAnomalyDetector", sol::no_constructor, "Anomaly_Detect_Radius", &CAnomalyDetector::m_radius, "Anomaly_Detect_Time_Remember",
+                                       &CAnomalyDetector::m_time_to_rememeber, "Anomaly_Detect_Probability", &CAnomalyDetector::m_detect_probability, "is_active",
+                                       sol::readonly(&CAnomalyDetector::m_active), "activate", &CAnomalyDetector::activate, "deactivate", &CAnomalyDetector::deactivate,
+                                       "remove_all_restrictions", &CAnomalyDetector::remove_all_restrictions, "remove_restriction", &CAnomalyDetector::remove_restriction);
 }
 
 LPCSTR CPatrolPointScript::getName(CPatrolPoint* pp) { return pp->m_name.c_str(); }
 
 void CPatrolPointScript::setName(CPatrolPoint* pp, LPCSTR str) { pp->m_name = shared_str(str); }
 
-void CPatrolPointScript::script_register(lua_State* L)
+void CPatrolPointScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPatrolPoint>(
-        "CPatrolPoint", sol::no_constructor, sol::call_constructor, sol::constructors<CPatrolPoint()>(), "m_position", &CPatrolPoint::m_position, "m_flags", &CPatrolPoint::m_flags,
-        "m_level_vertex_id", &CPatrolPoint::m_level_vertex_id, "m_game_vertex_id", &CPatrolPoint::m_game_vertex_id, "m_name",
-        sol::property(&CPatrolPointScript::getName, &CPatrolPointScript::setName), "position", sol::resolve<CPatrolPoint&(Fvector)>(&CPatrolPoint::position));
+    lua.new_usertype<CPatrolPoint>("CPatrolPoint", sol::no_constructor, sol::call_constructor, sol::constructors<CPatrolPoint()>(), "m_position", &CPatrolPoint::m_position,
+                                   "m_flags", &CPatrolPoint::m_flags, "m_level_vertex_id", &CPatrolPoint::m_level_vertex_id, "m_game_vertex_id", &CPatrolPoint::m_game_vertex_id,
+                                   "m_name", sol::property(&CPatrolPointScript::getName, &CPatrolPointScript::setName), "position",
+                                   sol::resolve<CPatrolPoint&(Fvector)>(&CPatrolPoint::position));
 }
 
-void CPatrolPathScript::script_register(lua_State* L)
+void CPatrolPathScript::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CPatrolPath>("CPatrolPath", sol::no_constructor, sol::call_constructor, sol::constructors<CPatrolPath()>(), "add_point",
-                                                 &CPatrolPath::add_point, "point", sol::resolve<CPatrolPoint(u32), CPatrolPath>(&CPatrolPath::point), "point_raw",
-                                                 &CPatrolPath::point_raw, "add_vertex", &CPatrolPath::add_vertex, sol::base_classes, xr_sol_bases<CPatrolPath>());
+    lua.new_usertype<CPatrolPath>("CPatrolPath", sol::no_constructor, sol::call_constructor, sol::constructors<CPatrolPath()>(), "add_point", &CPatrolPath::add_point, "point",
+                                  sol::resolve<CPatrolPoint(u32), CPatrolPath>(&CPatrolPath::point), "point_raw", &CPatrolPath::point_raw, "add_vertex", &CPatrolPath::add_vertex,
+                                  sol::base_classes, xr_sol_bases<CPatrolPath>());
 }
 
 static luabind::object script_texture_find(const char* name)
@@ -186,19 +178,15 @@ static void script_texture_load(ITexture* t, const char* name)
 }
 
 template <>
-void ITextureScript::script_register(lua_State* L)
+void ITextureScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.set_function("texture_find", &script_texture_find);
     lua.new_usertype<ITexture>("ITexture", sol::no_constructor, "load", &script_texture_load, "get_name", &ITexture::GetName);
 }
 
 template <>
-void CPHCaptureScript::script_register(lua_State* L)
+void CPHCaptureScript::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CPHCapture>("CPHCapture", sol::no_constructor, "e_state", sol::readonly(&CPHCapture::e_state), "capture_force", &CPHCapture::m_capture_force, "distance",
                                  &CPHCapture::m_capture_distance, "hard_mode", &CPHCapture::m_hard_mode, "pull_distance", &CPHCapture::m_pull_distance, "pull_force",
                                  &CPHCapture::m_pull_force, "time_limit", &CPHCapture::m_capture_time);

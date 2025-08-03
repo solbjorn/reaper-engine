@@ -87,10 +87,10 @@ public:
     void SetTextColor(u32 color) { m_textColor[0] = color; };
     void SetTextColorD(u32 color) { m_textColor[1] = color; };
 
-protected:
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIComboBox);
 
-add_to_type_list(CUIComboBox)
+add_to_type_list(CUIComboBox);
 #undef script_type_list
 #define script_type_list save_type_list(CUIComboBox)

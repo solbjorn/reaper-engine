@@ -22,3 +22,4 @@ public:
 
     CUIMessageBox* m_pMessageBox;
 };
+XR_SOL_BASE_CLASSES(CUIMessageBoxEx);

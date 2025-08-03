@@ -45,11 +45,15 @@ public:
     CPatrolPoint point(u32);
     CPatrolPoint* point_raw(u32);
 
+    // Inherited from CGraphAbstract<CPatrolPoint>, while the latter doesn't have a comparison operator
+    bool operator==(const CPatrolPath& other) const = delete;
+
 #ifdef DEBUG
 public:
     virtual void load(IReader& stream);
     IC void name(const shared_str& name);
 #endif
 };
+XR_SOL_BASE_CLASSES(CPatrolPath);
 
 #include "patrol_path_inline.h"

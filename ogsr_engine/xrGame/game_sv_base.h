@@ -90,9 +90,9 @@ public:
     virtual shared_str level_name(const shared_str& server_options) const;
     virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(game_sv_GameState)
+add_to_type_list(game_sv_GameState);
 #undef script_type_list
 #define script_type_list save_type_list(game_sv_GameState)

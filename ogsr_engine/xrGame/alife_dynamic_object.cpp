@@ -24,7 +24,7 @@ void CSE_ALifeDynamicObject::on_spawn()
 #endif
 }
 
-void CSE_ALifeDynamicObject::on_register()
+void CSE_ALifeDynamicObject::__on_register()
 {
     CSE_ALifeObject* object = this;
     while (object->ID_Parent != ALife::_OBJECT_ID(-1))
@@ -37,12 +37,45 @@ void CSE_ALifeDynamicObject::on_register()
         client_data.clear();
 }
 
-void CSE_ALifeDynamicObject::on_before_register() {}
+void CSE_ALifeDynamicObject::on_register()
+{
+    __on_register();
+
+    auto op = ops.find(ON_REGISTER);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
+}
+
+void CSE_ALifeDynamicObject::__on_before_register() {}
+
+void CSE_ALifeDynamicObject::on_before_register()
+{
+    __on_before_register();
+
+    auto op = ops.find(ON_BEFORE_REGISTER);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
+}
 
 #include "level.h"
 #include "map_manager.h"
 
-void CSE_ALifeDynamicObject::on_unregister() { Level().MapManager().RemoveMapLocationByObjectID(ID); }
+void CSE_ALifeDynamicObject::__on_unregister() { Level().MapManager().RemoveMapLocationByObjectID(ID); }
+
+void CSE_ALifeDynamicObject::on_unregister()
+{
+    __on_unregister();
+
+    auto op = ops.find(ON_UNREGISTER);
+    if (op == ops.end())
+        return;
+
+    op->second(this);
+}
 
 void CSE_ALifeDynamicObject::switch_online()
 {

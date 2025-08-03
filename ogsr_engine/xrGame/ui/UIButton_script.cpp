@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-
 #include "UIButton.h"
 #include "UI3tButton.h"
 #include "UICheckButton.h"
@@ -10,10 +8,8 @@
 #include "UISpinText.h"
 #include "UITrackBar.h"
 
-void CUIButton::script_register(lua_State* L)
+void CUIButton::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CUIButton>(
         "CUIButton", sol::no_constructor, sol::call_constructor, sol::constructors<CUIButton()>(), "Init",
         sol::overload(sol::resolve<void(float, float, float, float)>(&CUIButton::Init), sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIButton::Init)),

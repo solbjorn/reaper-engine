@@ -14,7 +14,7 @@ class CPHMoveStorage;
 class CPHSynchronize;
 typedef void CollideCallback(CPHObject* obj1, CPHObject* obj2, dGeomID o1, dGeomID o2);
 
-class CPHObject : public ISpatial
+class XR_NOVTABLE CPHObject : public ISpatial
 {
     RTTI_DECLARE_TYPEINFO(CPHObject, ISpatial);
 
@@ -99,6 +99,8 @@ public:
     // virtual void StepFrameUpdate(dReal step)=0;
 
     CPHObject();
+    virtual ~CPHObject() = 0;
+
     void activate();
     IC bool is_active() { return !!m_flags.test(st_activated) /*b_activated*/; }
     void deactivate();
@@ -122,7 +124,9 @@ public:
     void CollideDynamics();
 };
 
-class CPHUpdateObject : public virtual RTTI::Enable
+inline CPHObject::~CPHObject() = default;
+
+class XR_NOVTABLE CPHUpdateObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPHUpdateObject);
 

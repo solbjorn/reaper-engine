@@ -7,12 +7,13 @@
 
 typedef CGameFont::EAligment ETextAlignment;
 
-class IUIFontControl : public virtual RTTI::Enable
+class XR_NOVTABLE IUIFontControl : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUIFontControl);
 
 public:
-    virtual ~IUIFontControl() {};
+    virtual ~IUIFontControl() = 0;
+
     virtual void SetTextColor(u32 color) = 0;
     virtual u32 GetTextColor() = 0;
     virtual void SetFont(CGameFont* pFont) = 0;
@@ -21,6 +22,8 @@ public:
     virtual ETextAlignment GetTextAlignment() = 0;
 };
 
+inline IUIFontControl::~IUIFontControl() = default;
+
 typedef enum
 {
     valTop = 0,
@@ -28,23 +31,27 @@ typedef enum
     valBotton
 } EVTextAlignment;
 
-class IUITextControl : public IUIFontControl
+class XR_NOVTABLE IUITextControl : public IUIFontControl
 {
     RTTI_DECLARE_TYPEINFO(IUITextControl, IUIFontControl);
 
 public:
-    virtual ~IUITextControl() {};
+    virtual ~IUITextControl() = 0;
+
     virtual void SetText(LPCSTR text) = 0;
     virtual LPCSTR GetText() = 0;
 };
 
+inline IUITextControl::~IUITextControl() = default;
+
 // Texture controls
-class IUISimpleTextureControl : public virtual RTTI::Enable
+class XR_NOVTABLE IUISimpleTextureControl : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUISimpleTextureControl);
 
 public:
-    virtual ~IUISimpleTextureControl() {}
+    virtual ~IUISimpleTextureControl() = 0;
+
     virtual void CreateShader(const char* tex, const char* sh = "hud\\default") = 0;
     virtual void SetShader(const ui_shader& sh) = 0;
     virtual void SetTextureColor(u32 color) = 0;
@@ -53,17 +60,22 @@ public:
     virtual void SetOriginalRectEx(const Frect& r) = 0;
 };
 
-class IUIMultiTextureOwner : public virtual RTTI::Enable
+inline IUISimpleTextureControl::~IUISimpleTextureControl() = default;
+
+class XR_NOVTABLE IUIMultiTextureOwner : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUIMultiTextureOwner);
 
 public:
-    virtual ~IUIMultiTextureOwner() {}
+    virtual ~IUIMultiTextureOwner() = 0;
+
     virtual void InitTexture(const char* texture) = 0;
     virtual bool GetTextureAvailability() = 0;
     virtual void SetTextureVisible(bool vis) = 0;
     virtual bool GetTextureVisible() = 0;
 };
+
+inline IUIMultiTextureOwner::~IUIMultiTextureOwner() = default;
 
 class CUIMultiTextureOwner : public IUIMultiTextureOwner
 {
@@ -84,15 +96,19 @@ protected:
     bool m_bTextureVisible;
 };
 
-class IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl
+class XR_NOVTABLE IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl
 {
     RTTI_DECLARE_TYPEINFO(IUISingleTextureOwner, CUIMultiTextureOwner, IUISimpleTextureControl);
 
 public:
+    virtual ~IUISingleTextureOwner() = 0;
+
     virtual void InitTextureEx(const char* texture, const char* shader) = 0;
     virtual void SetStretchTexture(bool stretch) = 0;
     virtual bool GetStretchTexture() = 0;
 };
+
+inline IUISingleTextureOwner::~IUISingleTextureOwner() = default;
 
 class CUISingleTextureOwner : public IUISingleTextureOwner
 {
@@ -117,7 +133,7 @@ enum EWindowAlignment
     waCenter = 16
 };
 
-class IUISimpleWindow : public virtual RTTI::Enable
+class XR_NOVTABLE IUISimpleWindow : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUISimpleWindow);
 
@@ -125,7 +141,7 @@ public:
     IUISimpleWindow() {};
     IUISimpleWindow(const IUISimpleWindow&) = delete;
     void operator=(const IUISimpleWindow&) = delete;
-    virtual ~IUISimpleWindow() {};
+    virtual ~IUISimpleWindow() = 0;
 
     virtual void Init(float x, float y, float width, float height) = 0;
     virtual void Draw() = 0;
@@ -143,6 +159,8 @@ public:
         IUISimpleWindow&	operator =										( const IUISimpleWindow& other );
     */
 };
+
+inline IUISimpleWindow::~IUISimpleWindow() = default;
 
 class CUISimpleWindow : public IUISimpleWindow
 {

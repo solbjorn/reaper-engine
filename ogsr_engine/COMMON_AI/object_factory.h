@@ -64,13 +64,15 @@ public:
     void register_script_class(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid);
     void register_script_class(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid);
     void register_script_classes();
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CObjectFactory)
+
+add_to_type_list(CObjectFactory);
 #undef script_type_list
 #define script_type_list save_type_list(CObjectFactory)
 
-    extern CObjectFactory* g_object_factory;
+extern CObjectFactory* g_object_factory;
 
 IC const CObjectFactory& object_factory();
 

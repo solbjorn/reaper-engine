@@ -245,7 +245,7 @@ bool CSE_ALifeOnlineOfflineGroup::redundant() const { return (m_members.empty())
 
 void CSE_ALifeOnlineOfflineGroup::notify_on_member_death(MEMBER* member) { unregister_member(member->ID); }
 
-void CSE_ALifeOnlineOfflineGroup::on_before_register()
+void CSE_ALifeOnlineOfflineGroup::__on_before_register()
 {
     m_tGraphID = GameGraph::_GRAPH_ID(-1);
     m_flags.set(flUsedAI_Locations, FALSE);

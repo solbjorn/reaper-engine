@@ -1,12 +1,13 @@
 #ifndef UISequenceVideoItem_included
 #define UISequenceVideoItem_included
 
-class IUISequenceVideoItem : public virtual RTTI::Enable
+class XR_NOVTABLE IUISequenceVideoItem : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IUISequenceVideoItem);
 
 public:
-    virtual ~IUISequenceVideoItem() { ; }
+    virtual ~IUISequenceVideoItem() = 0;
+
     virtual void Copy(IUISequenceVideoItem& _in) = 0;
 
     virtual bool HasTexture() = 0;
@@ -17,5 +18,7 @@ public:
     virtual void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF) = 0;
     virtual void video_Stop() = 0;
 };
+
+inline IUISequenceVideoItem::~IUISequenceVideoItem() = default;
 
 #endif //	UISequenceVideoItem_included

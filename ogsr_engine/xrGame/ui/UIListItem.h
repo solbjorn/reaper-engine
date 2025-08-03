@@ -4,6 +4,8 @@
 
 class CUIListItem : public CUIButton
 {
+    friend class CUIListWnd;
+
     RTTI_DECLARE_TYPEINFO(CUIListItem, CUIButton);
 
 private:
@@ -43,6 +45,8 @@ protected:
     // присоедениены к элементу
     void* m_pData;
 
+    sol::object priv;
+
     // произвольное число, приписанное объекту
     int m_iValue;
 
@@ -55,3 +59,4 @@ protected:
     // подсвечивается кнопка или нет?
     bool m_bHighlightText;
 };
+XR_SOL_BASE_CLASSES(CUIListItem);

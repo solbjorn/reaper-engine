@@ -59,3 +59,4 @@ public:
     virtual void OnFrame();
     virtual bool UseIndicators() { return true; }
 };
+XR_SOL_BASE_CLASSES(CDialogHolder);

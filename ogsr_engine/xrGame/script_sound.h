@@ -13,14 +13,16 @@
 
 class CScriptGameObject;
 
-class CScriptSound
+class CScriptSound : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptSound);
+
+public:
     mutable ref_sound m_sound;
     shared_str m_caSoundToPlay;
 
     friend class CScriptSoundAction;
 
-public:
     CScriptSound(LPCSTR caSoundName, ESoundTypes game_type = SOUND_TYPE_NO_SOUND, esound_type kind = st_Effect);
     virtual ~CScriptSound();
     IC u32 Length();
@@ -48,9 +50,10 @@ public:
     IC const float GetVolume() const;
     IC bool IsPlaying() const;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptSound)
+
+add_to_type_list(CScriptSound);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptSound)
 

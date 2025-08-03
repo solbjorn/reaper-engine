@@ -1,14 +1,10 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-
 #include "UIEditBox.h"
 #include "UIEditBoxEx.h"
 
-void CUIEditBox::script_register(lua_State* L)
+void CUIEditBox::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CUICustomEdit>("CUICustomEdit", sol::no_constructor, "SetText", &CUICustomEdit::SetText, "GetText", &CUICustomEdit::GetText, "SetTextColor",
                                     &CUICustomEdit::SetTextColor, "GetTextColor", &CUICustomEdit::GetTextColor, "SetFont", &CUICustomEdit::SetFont, "GetFont",
                                     &CUICustomEdit::GetFont, "SetTextAlignment", &CUICustomEdit::SetTextAlignment, "GetTextAlignment", &CUICustomEdit::GetTextAlignment,

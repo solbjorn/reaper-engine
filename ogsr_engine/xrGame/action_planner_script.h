@@ -15,6 +15,8 @@ class CScriptGameObject;
 template <typename _object_type>
 class CActionPlannerScript : public CScriptActionPlanner
 {
+    RTTI_DECLARE_TYPEINFO(CActionPlannerScript<_object_type>, CScriptActionPlanner);
+
 protected:
     typedef CScriptActionPlanner inherited;
 

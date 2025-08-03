@@ -234,5 +234,6 @@ public:
 
     void SetNextItemSlot(u32);
 };
+XR_SOL_BASE_CLASSES(CInventoryOwner);
 
 #include "inventory_owner_inline.h"

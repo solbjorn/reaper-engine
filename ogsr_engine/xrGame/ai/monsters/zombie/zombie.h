@@ -59,9 +59,10 @@ public:
     #endif
     */
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CZombie);
 
-add_to_type_list(CZombie)
+add_to_type_list(CZombie);
 #undef script_type_list
 #define script_type_list save_type_list(CZombie)

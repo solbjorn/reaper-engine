@@ -45,3 +45,4 @@ protected:
 private:
     inline void ClampMax_Zero(Frect& r);
 };
+XR_SOL_BASE_CLASSES(CUIFrameWindow);

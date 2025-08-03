@@ -13,7 +13,7 @@
 #include "MainMenu.h"
 #include "object_factory.h"
 
-void export_classes(lua_State* L);
+void export_classes(sol::state_view& lua);
 
 CScriptEngine::CScriptEngine()
 {
@@ -40,58 +40,7 @@ void CScriptEngine::unload()
     no_files.clear();
 }
 
-#define DEF_LUA_ERROR_TEMPLATE(L) \
-    print_output(L, "[" __FUNCTION__ "]", LUA_ERRRUN); \
-    FATAL("[%s]: %s", __FUNCTION__, lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-
-int CScriptEngine::lua_panic(lua_State* L)
-{
-    DEF_LUA_ERROR_TEMPLATE(L)
-    return 0;
-}
-
-#ifdef LUABIND_NO_EXCEPTIONS
-void CScriptEngine::lua_error(lua_State* L) { DEF_LUA_ERROR_TEMPLATE(L) }
-#endif
-
-int CScriptEngine::lua_pcall_failed(lua_State* L)
-{
-    DEF_LUA_ERROR_TEMPLATE(L)
-    if (lua_isstring(L, -1))
-        lua_pop(L, 1);
-    return LUA_ERRRUN;
-}
-
-#ifdef LUABIND_NO_EXCEPTIONS
-void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
-{
-    CScriptEngine::print_output(L, "[" __FUNCTION__ "]", LUA_ERRRUN);
-
-    const char* info_name = info->name();
-
-    Msg("!![%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name);
-    // FATAL("[%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name); //KRodin: Тут наверное вылетать не надо.
-}
-#endif
-
-static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
-                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
-{
-    if (!size)
-    {
-        void* non_const_pointer = const_cast<LPVOID>(pointer);
-        xr_free(non_const_pointer);
-        return nullptr;
-    }
-
-    if (!pointer)
-        return xr_malloc(size);
-
-    void* non_const_pointer = const_cast<LPVOID>(pointer);
-    return xr_realloc(non_const_pointer, size);
-}
-
-int auto_load(lua_State* L)
+static int auto_load(lua_State* L)
 {
     if ((lua_gettop(L) < 2) || !lua_istable(L, 1) || !lua_isstring(L, 2))
     {
@@ -128,27 +77,14 @@ void CScriptEngine::init()
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
 
     sol::set_default_state(LSVM);
-    sol::state_view(LSVM).open_libraries();
+
+    auto lua = sol::state_view(LSVM);
+    lua.open_libraries();
 
     reinit(LSVM);
 
-//    luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
-//    luabind::allocator_parameter = nullptr;
-
-//    luabind::log = Msg;
-//    luabind::exception_filter = DbgLogExceptionFilter;
-
-//    luabind::open(LSVM); // Запуск луабинда
-//--------------Установка калбеков------------------//
-#ifdef LUABIND_NO_EXCEPTIONS
-//    luabind::set_error_callback(lua_error);
-//    luabind::set_cast_failed_callback(lua_cast_failed);
-#endif
-    //    luabind::set_pcall_callback(lua_pcall_failed); // KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
-    //    lua_atpanic(LSVM, lua_panic);
     //-----------------------------------------------------//
-    export_classes(LSVM); // Тут регистрируются все движковые функции, импортированные в скрипты
-    //    luaL_openlibs(LSVM); // Инициализация функций LuaJIT
+    export_classes(lua); // Тут регистрируются все движковые функции, импортированные в скрипты
     setup_auto_load(); // Построение метатаблицы
     bool save = m_reload_modules;
     m_reload_modules = true;
@@ -312,7 +248,10 @@ bool CScriptEngine::function(const char* function_to_call, sol::function& func)
         }
     }
 
-    auto x = sol::state_view(lua()).get<sol::optional<sol::function>>(std::tie(name_space, function));
+    const char* ns = name_space;
+    const char* fn = function;
+
+    auto x = sol::state_view(lua()).get<sol::optional<sol::function>>(std::tie(ns, fn));
     if (!x)
         return false;
 

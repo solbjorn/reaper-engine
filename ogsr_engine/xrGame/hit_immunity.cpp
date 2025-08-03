@@ -66,9 +66,9 @@ static void set_wound_2_immunity(CHitImmunity* I, float i) { I->immunities()[ALi
 static float get_physic_strike_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypePhysicStrike]; }
 static void set_physic_strike_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypePhysicStrike] = i; }
 
-void CHitImmunity::script_register(lua_State* L)
+void CHitImmunity::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CHitImmunity>(
+    lua.new_usertype<CHitImmunity>(
         "CHitImmunity", sol::no_constructor, "burn_immunity", sol::property(&get_burn_immunity, &set_burn_immunity), "strike_immunity",
         sol::property(&get_strike_immunity, &set_strike_immunity), "shock_immunity", sol::property(&get_shock_immunity, &set_shock_immunity), "wound_immunity",
         sol::property(&get_wound_immunity, &set_wound_immunity), "radiation_immunity", sol::property(&get_radiation_immunity, &set_radiation_immunity), "telepatic_immunity",

@@ -4,14 +4,15 @@
 #include "FactoryPtr.h"
 #include "UIShader.h"
 
-typedef FactoryPtr<IUIShader> wm_shader;
+using wm_shader = FactoryPtr<IUIShader>;
 
-class IWallMarkArray : public virtual RTTI::Enable
+class XR_NOVTABLE IWallMarkArray : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IWallMarkArray);
 
 public:
-    virtual ~IWallMarkArray() { ; }
+    virtual ~IWallMarkArray() = 0;
+
     virtual void Copy(IWallMarkArray& _in) = 0;
 
     virtual void AppendMark(LPCSTR s_textures) = 0;
@@ -22,5 +23,7 @@ public:
     //	passing IWallMarkArray directly to renderer.
     virtual wm_shader GenerateWallmark() = 0;
 };
+
+inline IWallMarkArray::~IWallMarkArray() = default;
 
 #endif //	WallMarkArray_included

@@ -11,9 +11,9 @@
 #include "script_game_object.h"
 #include "sight_manager_space.h"
 
-void CScriptWatchAction::script_register(lua_State* L)
+void CScriptWatchAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptWatchAction>(
+    lua.new_usertype<CScriptWatchAction>(
         "look", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptWatchAction(), CScriptWatchAction(SightManager::ESightType), CScriptWatchAction(SightManager::ESightType, Fvector&),
                           CScriptWatchAction(SightManager::ESightType, CScriptGameObject*), CScriptWatchAction(SightManager::ESightType, CScriptGameObject*, LPCSTR),

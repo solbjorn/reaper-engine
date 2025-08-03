@@ -7,6 +7,8 @@
 
 class CUIPropertiesBox : public CUIFrameWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIPropertiesBox, CUIFrameWindow);
+
 private:
     typedef CUIFrameWindow inherited;
 
@@ -39,9 +41,10 @@ public:
 protected:
     CUIListBox m_UIListWnd;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIPropertiesBox);
 
-add_to_type_list(CUIPropertiesBox)
+add_to_type_list(CUIPropertiesBox);
 #undef script_type_list
 #define script_type_list save_type_list(CUIPropertiesBox)

@@ -32,8 +32,6 @@ class CUIProgressBar;
 class CScriptXmlInit
 {
 public:
-    DECLARE_SCRIPT_REGISTER_FUNCTION
-
     CScriptXmlInit();
     CScriptXmlInit(const CScriptXmlInit& other);
     CScriptXmlInit& operator=(const CScriptXmlInit& other);
@@ -68,8 +66,10 @@ public:
 
 protected:
     CUIXml m_xml;
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
-add_to_type_list(CScriptXmlInit)
+add_to_type_list(CScriptXmlInit);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptXmlInit)

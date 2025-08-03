@@ -13,7 +13,7 @@
 #include "alife_space.h"
 #include "script_export_space.h"
 
-//#define USE_GAME_TIME
+// #define USE_GAME_TIME
 #define USE_LEVEL_TIME
 
 #ifdef USE_GAME_TIME
@@ -27,12 +27,12 @@
 #define USE_FIRST_GAME_TIME
 #endif
 #ifdef USE_LEVEL_TIME
-//#	define USE_FIRST_LEVEL_TIME
+// #	define USE_FIRST_LEVEL_TIME
 #endif
 
-//#define USE_UPDATE_COUNT
+// #define USE_UPDATE_COUNT
 
-//#define USE_ORIENTATION
+// #define USE_ORIENTATION
 
 // #define USE_STALKER_VISION_FOR_MONSTERS
 
@@ -67,8 +67,11 @@ struct CObjectParams : public SObjectParams
     IC void fill(const T* game_object);
 };
 
-struct SMemoryObject
+struct SMemoryObject : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(SMemoryObject);
+
+public:
 #ifdef USE_GAME_TIME
     ALife::_TIME_ID m_game_time;
 #endif
@@ -124,6 +127,9 @@ struct SMemoryObject
 template <typename T>
 struct CMemoryObject : public SMemoryObject
 {
+    RTTI_DECLARE_TYPEINFO(CMemoryObject<T>, SMemoryObject);
+
+public:
     const T* m_object;
     CObjectParams<T> m_object_params;
     CObjectParams<T> m_self_params;
@@ -137,10 +143,12 @@ struct CMemoryObject : public SMemoryObject
 
 struct CVisibleObject : CMemoryObject<CGameObject>
 {
+    RTTI_DECLARE_TYPEINFO(CVisibleObject, CMemoryObject<CGameObject>);
+
+public:
     typedef CMemoryObject<CGameObject> inherited;
     _flags<squad_mask_type> m_visible;
 
-public:
     IC CVisibleObject() { m_visible.zero(); }
 
     IC bool visible(const squad_mask_type& mask) const { return (!!m_visible.test(mask)); }
@@ -156,6 +164,9 @@ public:
 
 struct CHitObject : public CMemoryObject<CEntityAlive>
 {
+    RTTI_DECLARE_TYPEINFO(CHitObject, CMemoryObject<CEntityAlive>);
+
+public:
     Fvector m_direction;
     u16 m_bone_index;
     float m_amount;
@@ -163,6 +174,9 @@ struct CHitObject : public CMemoryObject<CEntityAlive>
 
 struct CSoundObject : public CMemoryObject<CGameObject>
 {
+    RTTI_DECLARE_TYPEINFO(CSoundObject, CMemoryObject<CGameObject>);
+
+public:
     ESoundTypes m_sound_type;
     float m_power;
 
@@ -178,6 +192,9 @@ struct CSoundObject : public CMemoryObject<CGameObject>
 
 struct CMemoryInfo : public CVisibleObject
 {
+    RTTI_DECLARE_TYPEINFO(CMemoryInfo, CVisibleObject);
+
+public:
     bool m_visual_info;
     bool m_sound_info;
     bool m_hit_info;
@@ -188,17 +205,26 @@ struct CMemoryInfo : public CVisibleObject
         m_sound_info = false;
         m_hit_info = false;
     }
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CMemoryInfo)
+
+add_to_type_list(CMemoryInfo);
 #undef script_type_list
 #define script_type_list save_type_list(CMemoryInfo)
 
-    template <typename T>
-    struct SLevelTimePredicate
+template <typename T>
+struct SLevelTimePredicate
 {
     bool operator()(const CMemoryObject<T>& object1, const CMemoryObject<T>& object2) const { return (object1.m_level_time < object2.m_level_time); }
 };
 }; // namespace MemorySpace
+
+XR_SOL_BASE_CLASSES(MemorySpace::CMemoryObject<CEntityAlive>);
+XR_SOL_BASE_CLASSES(MemorySpace::CMemoryObject<CGameObject>);
+XR_SOL_BASE_CLASSES(MemorySpace::CVisibleObject);
+XR_SOL_BASE_CLASSES(MemorySpace::CHitObject);
+XR_SOL_BASE_CLASSES(MemorySpace::CSoundObject);
+XR_SOL_BASE_CLASSES(MemorySpace::CMemoryInfo);
 
 using namespace MemorySpace;

@@ -63,9 +63,9 @@ void CObjectFactory::register_script() const
     xr_sol_new_enum(lua, "clsid", target);
 }
 
-void CObjectFactory::script_register(lua_State* L)
+void CObjectFactory::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CObjectFactory>("object_factory", sol::no_constructor, "register",
-                                                    sol::overload(sol::resolve<void(LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class),
-                                                                  sol::resolve<void(LPCSTR, LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class)));
+    lua.new_usertype<CObjectFactory>("object_factory", sol::no_constructor, "register",
+                                     sol::overload(sol::resolve<void(LPCSTR, LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class),
+                                                   sol::resolve<void(LPCSTR, LPCSTR, LPCSTR)>(&CObjectFactory::register_script_class)));
 }

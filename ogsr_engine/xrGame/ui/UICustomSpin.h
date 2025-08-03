@@ -55,3 +55,4 @@ protected:
 
     u32 m_textColor[2];
 };
+XR_SOL_BASE_CLASSES(CUICustomSpin);

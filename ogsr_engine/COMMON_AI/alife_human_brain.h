@@ -49,9 +49,11 @@ public:
     IC object_type& object() const;
     IC object_handler_type& objects() const;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CALifeHumanBrain)
+XR_SOL_BASE_CLASSES(CALifeHumanBrain);
+
+add_to_type_list(CALifeHumanBrain);
 #undef script_type_list
 #define script_type_list save_type_list(CALifeHumanBrain)
 

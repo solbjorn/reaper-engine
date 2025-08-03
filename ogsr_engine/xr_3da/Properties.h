@@ -56,17 +56,21 @@ struct xrP_TOKEN
 };
 
 // Base class
-class CPropertyBase : public virtual RTTI::Enable
+class XR_NOVTABLE CPropertyBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPropertyBase);
 
 public:
+    virtual ~CPropertyBase() = 0;
+
     virtual void Save(IWriter& fs) = 0;
     virtual void Load(IReader& fs, u16 version) = 0;
 
     virtual void SaveIni(CInifile* ini_file, LPCSTR section) = 0;
     virtual void LoadIni(CInifile* ini_file, LPCSTR section) = 0;
 };
+
+inline CPropertyBase::~CPropertyBase() = default;
 
 // Writers
 IC void xrPWRITE(IWriter& fs, u32 ID, LPCSTR name, LPCVOID data, u32 size)

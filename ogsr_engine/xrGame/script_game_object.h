@@ -830,7 +830,7 @@ public:
 
     void setVisible(bool value);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 
 private:
     using usertype = std::invoke_result_t<decltype(&sol::state_view::new_usertype<CScriptGameObject>), sol::state_view>;
@@ -841,11 +841,12 @@ private:
     static void script_register3(CScriptGameObject::usertype& lua);
     static void script_register4(sol::state_view& lua);
 };
-add_to_type_list(CScriptGameObject)
+
+add_to_type_list(CScriptGameObject);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptGameObject)
 
-    extern void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
+extern void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
 extern void sell_condition(float friend_factor, float enemy_factor);
 extern void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
 extern void buy_condition(float friend_factor, float enemy_factor);

@@ -10,9 +10,9 @@
 #include "script_object_action.h"
 #include "script_game_object.h"
 
-void CScriptObjectAction::script_register(lua_State* L)
+void CScriptObjectAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptObjectAction>(
+    lua.new_usertype<CScriptObjectAction>(
         "object", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptObjectAction(), CScriptObjectAction(CScriptGameObject*, MonsterSpace::EObjectAction),
                           CScriptObjectAction(CScriptGameObject*, MonsterSpace::EObjectAction, u32), CScriptObjectAction(MonsterSpace::EObjectAction),

@@ -8,9 +8,8 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
-#include "game_graph.h"
 #include "ai_space.h"
+#include "game_graph.h"
 
 static const CGameGraph* get_game_graph() { return (&ai().game_graph()); }
 
@@ -42,10 +41,8 @@ static Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
     return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
 }
 
-void CGameGraph::script_register(lua_State* L)
+void CGameGraph::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.set_function("game_graph", &get_game_graph);
 
     lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible1, &get_accessible2), "valid_vertex_id",

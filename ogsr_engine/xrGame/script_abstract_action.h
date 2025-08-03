@@ -8,8 +8,10 @@
 
 #pragma once
 
-class CScriptAbstractAction
+class CScriptAbstractAction : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScriptAbstractAction);
+
 public:
     bool m_bCompleted;
 

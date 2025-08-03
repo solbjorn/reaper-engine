@@ -58,18 +58,19 @@ private:
 private:
     xr_vector<CPsyDogPhantom*> m_storage;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CPsyDog);
 
-add_to_type_list(CPsyDog)
+add_to_type_list(CPsyDog);
 #undef script_type_list
 #define script_type_list save_type_list(CPsyDog)
 
-    //////////////////////////////////////////////////////////////////////////
-    // Phantom Psy Dog
-    //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Phantom Psy Dog
+//////////////////////////////////////////////////////////////////////////
 
-    class CPsyDogPhantom : public CAI_PseudoDog
+class CPsyDogPhantom : public CAI_PseudoDog
 {
     RTTI_DECLARE_TYPEINFO(CPsyDogPhantom, CAI_PseudoDog);
 
@@ -109,9 +110,10 @@ private:
     void try_to_register_to_parent();
     bool is_wait_to_destroy_object() { return (m_parent_id == 0xffff); }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CPsyDogPhantom);
 
-add_to_type_list(CPsyDogPhantom)
+add_to_type_list(CPsyDogPhantom);
 #undef script_type_list
 #define script_type_list save_type_list(CPsyDogPhantom)

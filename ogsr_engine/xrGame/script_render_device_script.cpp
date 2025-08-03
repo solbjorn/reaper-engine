@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_render_device.h"
 
 static bool is_device_paused(CRenderDevice* d) { return !!Device.Paused(); }
@@ -25,10 +24,8 @@ static u32 time_global(const CRenderDevice* self)
 }
 
 template <>
-void CScriptRenderDevice::script_register(lua_State* L)
+void CScriptRenderDevice::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CRenderDevice>(
         "render_device", sol::no_constructor, "width", sol::readonly(&CRenderDevice::dwWidth), "height", sol::readonly(&CRenderDevice::dwHeight), "time_delta",
         sol::readonly(&CRenderDevice::dwTimeDelta), "f_time_delta", sol::readonly(&CRenderDevice::fTimeDelta), "cam_pos", sol::readonly(&CRenderDevice::vCameraPosition), "cam_dir",

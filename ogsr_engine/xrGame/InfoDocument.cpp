@@ -89,8 +89,8 @@ void CInfoDocument::OnH_A_Chield()
 
 void CInfoDocument::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
 
-void CInfoDocument::script_register(lua_State* L)
+void CInfoDocument::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>), sol::base_classes,
-                                                   xr_sol_bases<CInfoDocument>());
+    lua.new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>), sol::base_classes,
+                                    xr_sol_bases<CInfoDocument>());
 }

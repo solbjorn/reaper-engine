@@ -129,3 +129,4 @@ public:
 private:
     bool m_registered_member;
 };
+XR_SOL_BASE_CLASSES(CEntity);

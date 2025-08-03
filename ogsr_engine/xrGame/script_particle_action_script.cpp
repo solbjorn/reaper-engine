@@ -8,12 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xrScriptEngine/xr_sol.h"
 #include "script_particle_action.h"
 
-void CScriptParticleAction::script_register(lua_State* L)
+void CScriptParticleAction::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CScriptParticleAction>(
+    lua.new_usertype<CScriptParticleAction>(
         "particle", sol::no_constructor, sol::call_constructor,
         sol::constructors<CScriptParticleAction(), CScriptParticleAction(LPCSTR, LPCSTR), CScriptParticleAction(LPCSTR, LPCSTR, const CParticleParams&),
                           CScriptParticleAction(LPCSTR, LPCSTR, const CParticleParams&, bool), CScriptParticleAction(LPCSTR, const CParticleParams&),

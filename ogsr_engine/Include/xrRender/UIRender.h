@@ -1,10 +1,9 @@
 #ifndef UIRender_included
 #define UIRender_included
-#pragma once
 
 class IUIShader;
 
-class IUIRender
+class XR_NOVTABLE IUIRender
 {
 public:
     enum ePrimitiveType
@@ -32,7 +31,7 @@ public:
     };
 
 public:
-    // virtual ~IUIRender() {;}
+    virtual ~IUIRender() = 0;
 
     virtual void CreateUIGeom() = 0;
     virtual void DestroyUIGeom() = 0;
@@ -50,7 +49,7 @@ public:
     //.	virtual void FlushLineStrip() = 0;
     //.	virtual void StartLineList(u32 iMaxVerts) = 0;
     //.	virtual void FlushLineList() = 0;
-    virtual void SetScissor(Irect* rect = NULL) = 0;
+    virtual void SetScissor(Irect* rect = nullptr) = 0;
     virtual void GetActiveTextureResolution(Fvector2& res) = 0;
 
     //.	virtual void PushPoint(float x, float y, u32 c, float u, float v) = 0;
@@ -65,5 +64,7 @@ public:
     virtual void CacheSetXformWorld(const Fmatrix& M) = 0;
     virtual void CacheSetCullMode(CullMode) = 0;
 };
+
+inline IUIRender::~IUIRender() = default;
 
 #endif //	UIRender_included

@@ -192,5 +192,6 @@ public:
     IC bool const& is_start_attack() const;
     IC void is_start_attack(bool const& value);
 };
+XR_SOL_BASE_CLASSES(CEntityAlive);
 
 #include "entity_alive_inline.h"

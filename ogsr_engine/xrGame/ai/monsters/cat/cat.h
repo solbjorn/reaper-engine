@@ -4,9 +4,11 @@
 
 class CCat : public CBaseMonster
 {
-    typedef CBaseMonster inherited;
+    RTTI_DECLARE_TYPEINFO(CCat, CBaseMonster);
 
 public:
+    typedef CBaseMonster inherited;
+
     CCat();
     virtual ~CCat();
 
@@ -21,9 +23,10 @@ public:
 
     virtual void HitEntityInJump(const CEntity* pEntity);
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CCat);
 
-add_to_type_list(CCat)
+add_to_type_list(CCat);
 #undef script_type_list
 #define script_type_list save_type_list(CCat)

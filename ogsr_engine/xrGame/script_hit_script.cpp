@@ -10,10 +10,8 @@
 #include "script_hit.h"
 #include "script_game_object.h"
 
-void CScriptHit::script_register(lua_State* L)
+void CScriptHit::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<CScriptHit>("hit", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptHit(), CScriptHit(const CScriptHit*)>(), "burn",
                                  sol::var(ALife::eHitTypeBurn), "shock", sol::var(ALife::eHitTypeShock), "strike", sol::var(ALife::eHitTypeStrike), "wound",
                                  sol::var(ALife::eHitTypeWound), "radiation", sol::var(ALife::eHitTypeRadiation), "telepatic", sol::var(ALife::eHitTypeTelepatic), "chemical_burn",

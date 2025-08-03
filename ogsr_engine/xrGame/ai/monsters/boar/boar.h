@@ -33,9 +33,10 @@ public:
 
     IC virtual bool ability_can_drag() { return true; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CAI_Boar);
 
-add_to_type_list(CAI_Boar)
+add_to_type_list(CAI_Boar);
 #undef script_type_list
 #define script_type_list save_type_list(CAI_Boar)

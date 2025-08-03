@@ -1,6 +1,7 @@
 #pragma once
+
+#include "UIListItemEx.h"
 #include "uiwindow.h"
-#include "uilistitem.h"
 #include "uiscrollbar.h"
 
 #include "../script_export_space.h"
@@ -42,7 +43,7 @@ public:
     template <class Element>
     bool AddItem(const char* str, const float shift = 0.0f, void* pData = NULL, int value = 0, int insertBeforeIdx = -1);
 
-    virtual bool AddItem_script(CUIListItem* item);
+    bool AddItem_script(std::unique_ptr<CUIListItemEx>& ptr);
 
     template <class Element>
     bool AddItem(Element* pItem, int insertBeforeIdx = -1);
@@ -157,11 +158,12 @@ protected:
     // Текущий уникальный идентификатор
     int m_iLastUniqueID;
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
+XR_SOL_BASE_CLASSES(CUIListWnd);
 
-#include "UIListWnd_inline.h"
-
-add_to_type_list(CUIListWnd)
+add_to_type_list(CUIListWnd);
 #undef script_type_list
 #define script_type_list save_type_list(CUIListWnd)
+
+#include "UIListWnd_inline.h"

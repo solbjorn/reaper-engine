@@ -126,7 +126,7 @@ public:
     void Save2(CInifile& ini, const shared_str& sect);
 };
 
-struct EParticleAction : public virtual RTTI::Enable
+struct XR_NOVTABLE EParticleAction : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(EParticleAction);
 
@@ -182,7 +182,8 @@ public:
         type = _type;
     }
 
-public:
+    virtual ~EParticleAction() = 0;
+
     void appendFloat(LPCSTR name, float v, float mn, float mx);
     void appendInt(LPCSTR name, int v, int mn = -P_MAXINT, int mx = P_MAXINT);
     void appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn = -P_MAXFLOAT, float mx = P_MAXFLOAT);
@@ -230,7 +231,6 @@ public:
         return (it != bools.end()) ? &it->second : 0;
     }
 
-public:
     virtual void Compile(IWriter& F) = 0;
 
     virtual bool Load(IReader& F);
@@ -239,6 +239,8 @@ public:
     virtual void Load2(CInifile& ini, const shared_str& sect);
     virtual void Save2(CInifile& ini, const shared_str& sect);
 };
+
+inline EParticleAction::~EParticleAction() = default;
 
 struct EPAAvoid : public EParticleAction
 {

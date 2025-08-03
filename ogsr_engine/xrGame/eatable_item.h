@@ -51,3 +51,4 @@ protected:
     int m_iPortionsNum;
     int m_iStartPortionsNum{};
 };
+XR_SOL_BASE_CLASSES(CEatableItem);

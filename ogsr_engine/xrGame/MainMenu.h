@@ -100,5 +100,6 @@ public:
 
     void PlaySound(LPCSTR Path);
 };
+XR_SOL_BASE_CLASSES(CMainMenu);
 
 extern CMainMenu* MainMenu();

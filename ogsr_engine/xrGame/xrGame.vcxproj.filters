@@ -3906,9 +3906,6 @@
     <ClInclude Include="path_manager_solver_inline.h">
       <Filter>AI\ANavigation\Pathfinding\PathManagers\path_manager_solver</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_export_macroses.h">
-      <Filter>AI\AScript</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_export_space.h">
       <Filter>AI\AScript</Filter>
     </ClInclude>
@@ -4062,9 +4059,6 @@
     <ClInclude Include="base_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\BaseClientClasses</Filter>
     </ClInclude>
-    <ClInclude Include="base_client_classes_wrappers.h">
-      <Filter>AI\AScript\ScriptClasses\BaseClientClasses</Filter>
-    </ClInclude>
     <ClInclude Include="script_callback_ex.h">
       <Filter>AI\AScript\ScriptClasses\ScriptCallbackEx</Filter>
     </ClInclude>
@@ -4080,7 +4074,10 @@
     <ClInclude Include="script_particles_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptParticles</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_engine.h">
+    <ClInclude Include="..\xrScriptEngine\xr_sol.h">
+      <Filter>AI\AScript\ScriptEngine</Filter>
+    </ClInclude>
+     <ClInclude Include="..\COMMON_AI\script_engine.h">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_engine_export.h">
@@ -4918,9 +4915,6 @@
       <Filter>Core\Server\ServerEntities</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_ALife_All.h">
-      <Filter>Core\Server\ServerEntities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\xrServer_script_macroses.h">
       <Filter>Core\Server\ServerEntities</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\xrServer_Object_Base.h">

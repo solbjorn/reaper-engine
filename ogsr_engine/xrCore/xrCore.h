@@ -50,8 +50,13 @@
 #define ICF __forceinline // !!! this should be used only in critical places found by PROFILER
 #define ICN __declspec(noinline)
 
+#ifdef _MSC_VER
+#define XR_NOVTABLE __declspec(novtable)
+#else
+#define XR_NOVTABLE
+#endif
+
 #include <time.h>
-#define ALIGN(a) alignas(a)
 #include <sys\utime.h>
 
 // Warnings
@@ -77,7 +82,6 @@
 #include <string>
 #include <functional>
 #include <mutex>
-#include <typeinfo>
 #pragma warning(pop)
 
 // Our headers

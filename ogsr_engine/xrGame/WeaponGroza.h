@@ -16,8 +16,10 @@ public:
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return Groza; }
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CWeaponGroza)
+XR_SOL_BASE_CLASSES(CWeaponGroza);
+
+add_to_type_list(CWeaponGroza);
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponGroza)

@@ -193,7 +193,8 @@ public:
     IC float& hit_bone_scale() { return (m_fHitBoneScale); }
     IC float& wound_bone_scale() { return (m_fWoundBoneScale); }
     virtual CEntityCondition* cast_entity_condition() { return this; }
-    static void script_register(lua_State* L);
     virtual float GetParamByName(LPCSTR name);
     IC SConditionChangeV& GetChangeValues() { return m_change_v; }
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

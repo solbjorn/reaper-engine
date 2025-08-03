@@ -13,7 +13,7 @@ class CKinematics;
 
 struct SEnumVerticesCallback;
 
-class CSkeletonX : public virtual RTTI::Enable
+class XR_NOVTABLE CSkeletonX : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonX);
 
@@ -87,11 +87,14 @@ protected:
 
 public:
     BOOL has_visible_bones();
+
     CSkeletonX()
     {
         Parent = 0;
         ChildIDX = u16(-1);
     }
+
+    virtual ~CSkeletonX() = 0;
 
     virtual void SetParent(CKinematics* K) { Parent = K; }
     virtual void AfterLoad(CKinematics* parent, u16 child_idx) = 0;
@@ -105,6 +108,8 @@ protected:
     //	Index buffer replica since we can't read from index buffer in DX10
     ref_smem<u16> m_Indices;
 };
+
+inline CSkeletonX::~CSkeletonX() = default;
 
 template <typename T_vertex, typename T_buffer>
 BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)

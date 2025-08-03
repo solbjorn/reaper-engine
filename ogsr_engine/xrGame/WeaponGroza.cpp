@@ -9,8 +9,8 @@ CWeaponGroza::CWeaponGroza(void) : CWeaponMagazinedWGrenade("GROZA", SOUND_TYPE_
 
 CWeaponGroza::~CWeaponGroza(void) {}
 
-void CWeaponGroza::script_register(lua_State* L)
+void CWeaponGroza::script_register(sol::state_view& lua)
 {
-    sol::state_view(L).new_usertype<CWeaponGroza>("CWeaponGroza", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponGroza>), sol::base_classes,
-                                                  xr_sol_bases<CWeaponGroza>());
+    lua.new_usertype<CWeaponGroza>("CWeaponGroza", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CWeaponGroza>), "factory",
+                                   &client_factory<CWeaponGroza>, sol::base_classes, xr_sol_bases<CWeaponGroza>());
 }

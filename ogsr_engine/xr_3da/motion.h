@@ -48,7 +48,7 @@ struct st_BoneMotion
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
 //--------------------------------------------------------------------------
-class CCustomMotion : public virtual RTTI::Enable
+class XR_NOVTABLE CCustomMotion : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CCustomMotion);
 
@@ -69,7 +69,7 @@ public:
 public:
     CCustomMotion();
     CCustomMotion(CCustomMotion* src);
-    virtual ~CCustomMotion();
+    virtual ~CCustomMotion() = 0;
 
     void SetName(const char* n)
     {
@@ -105,6 +105,8 @@ public:
     CEnvelope* CreateEnvelope(LWChannelID chan, LWChannelID* chan_parent = 0);
 #endif
 };
+
+inline CCustomMotion::~CCustomMotion() = default;
 
 //--------------------------------------------------------------------------
 class COMotion : public CCustomMotion

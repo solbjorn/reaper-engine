@@ -20,6 +20,8 @@ class CScriptGameObject;
 
 class CScriptWatchAction : public CScriptAbstractAction
 {
+    RTTI_DECLARE_TYPEINFO(CScriptWatchAction, CScriptAbstractAction);
+
 public:
     enum EGoalType
     {
@@ -58,9 +60,10 @@ public:
     IC void SetWatchBone(LPCSTR bone_to_watch);
     IC void initialize();
 
-    DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
-add_to_type_list(CScriptWatchAction)
+
+add_to_type_list(CScriptWatchAction);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptWatchAction)
 

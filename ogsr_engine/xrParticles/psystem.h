@@ -161,11 +161,11 @@ enum PActionEnum
 };
 struct ParticleAction;
 
-class IParticleManager
+class XR_NOVTABLE IParticleManager
 {
 public:
     IParticleManager() {}
-    virtual ~IParticleManager() {}
+    virtual ~IParticleManager() = 0;
 
     // create&destroy
     virtual int CreateEffect(u32 max_particles) = 0;
@@ -193,6 +193,8 @@ public:
     virtual ParticleAction* CreateAction(PActionEnum type) = 0;
     virtual u32 LoadActions(int alist_id, IReader& R, bool copFormat) = 0;
 };
+
+inline IParticleManager::~IParticleManager() = default;
 
 IParticleManager* ParticleManager();
 }; // namespace PAPI

@@ -21,13 +21,13 @@ class CPHAICharacter;
     peInAir
 };
 
-class CPHCharacter : public CPHObject,
-                     public CPHSynchronize,
-                     public CPHDisablingTranslational,
-                     public IPhysicsElement
+class XR_NOVTABLE CPHCharacter : public CPHObject,
+                                 public CPHSynchronize,
+                                 public CPHDisablingTranslational,
+                                 public IPhysicsElement
 #ifdef DEBUG
     ,
-                     public pureRender
+                                 public pureRender
 #endif
 {
     RTTI_DECLARE_TYPEINFO(CPHCharacter, CPHObject, CPHSynchronize, CPHDisablingTranslational, IPhysicsElement
@@ -72,7 +72,6 @@ public:
         rtActor
     };
 
-private:
 protected:
     ERestrictionType m_new_restriction_type;
     ERestrictionType m_restriction_type;
@@ -194,9 +193,12 @@ public:
 
 public:
     virtual void step(float dt) = 0; //{ step( dt ); }
+
 public:
-    CPHCharacter(void);
-    virtual ~CPHCharacter(void);
+    CPHCharacter();
+    virtual ~CPHCharacter() = 0;
 };
+
+inline CPHCharacter::~CPHCharacter() = default;
 
 void virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);

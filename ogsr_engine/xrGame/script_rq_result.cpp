@@ -41,10 +41,8 @@ void script_rq_result::set_result(collide::rq_result _res)
 static LPCSTR get_name(const SGameMtl* self) { return (*self->m_Name); }
 static LPCSTR get_desc(const SGameMtl* self) { return (*self->m_Desc); }
 
-void script_rq_result::script_register(lua_State* L)
+void script_rq_result::script_register(sol::state_view& lua)
 {
-    auto lua = sol::state_view(L);
-
     lua.new_usertype<script_rq_result>("rq_result", sol::no_constructor, "range", sol::readonly(&script_rq_result::range), "object", sol::readonly(&script_rq_result::object),
                                        "element", sol::readonly(&script_rq_result::element), "result", sol::readonly(&script_rq_result::result), "mtl",
                                        sol::readonly(&script_rq_result::mtl));

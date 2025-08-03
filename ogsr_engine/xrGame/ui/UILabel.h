@@ -25,3 +25,4 @@ public:
     CUILabel();
     void SetLightAnim(LPCSTR lanim);
 };
+XR_SOL_BASE_CLASSES(CUILabel);
