@@ -500,7 +500,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 }
 
 static CTimer phase_timer;
-extern BOOL g_appLoaded = FALSE;
+BOOL g_appLoaded = FALSE;
 
 void CApplication::LoadBegin()
 {
@@ -636,7 +636,7 @@ static void generate_logo_path(string_path& path, pcstr level_name, int num = -1
 
     string16 buff;
     xr_strcat(path, sizeof(path), "_");
-    xr_strcat(path, sizeof(path), itoa(num + 1, buff, 10));
+    xr_strcat(path, sizeof(path), _itoa(num + 1, buff, 10));
 }
 
 // Taken from OpenXray/xray-16 and refactored
@@ -696,7 +696,7 @@ int CApplication::Level_ID(LPCSTR name)
     strconcat(sizeof(buffer), buffer, name, "\\");
     for (u32 I = 0; I < Levels.size(); I++)
     {
-        if (0 == stricmp(buffer, Levels[I].folder))
+        if (!_stricmp(buffer, Levels[I].folder))
             return int(I);
     }
     return -1;

@@ -59,16 +59,16 @@ void xrMemory::mem_compact()
         g_pSharedMemoryContainer->clean();
 }
 
-void* xrMemory::mem_alloc(size_t size)
+[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc(size_t size) noexcept
 {
     void* ptr = malloc(size);
 
     return ptr;
 }
 
-void xrMemory::mem_free(void* P) { free(P); }
+void xrMemory::mem_free(void* P) noexcept { free(P); }
 
-void* xrMemory::mem_realloc(void* P, size_t size)
+[[nodiscard]] void* xrMemory::mem_realloc(void* P, size_t size) noexcept
 {
     void* ptr = realloc(P, size);
 

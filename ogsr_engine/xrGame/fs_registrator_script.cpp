@@ -195,15 +195,11 @@ static std::string get_short_filename(const stdfs::directory_entry& file) { retu
 // расширение файла.
 static std::string get_extension(const stdfs::directory_entry& file) { return file.path().extension().string(); }
 
-extern "C" int64_t __cdecl _Last_write_time(const wchar_t*); // так не надо делать нигде и никогда
-
 // Время последнего изменения файла
 static decltype(auto) get_last_write_time(const stdfs::directory_entry& file)
 {
-    // Это ужасный костыль на самом деле, надо переписать нормально под новый стандарт, но мне щас лень возиться.
-    const auto ftime = std::chrono::system_clock::time_point{std::chrono::system_clock::duration{_Last_write_time(file.path().c_str())}};
-    const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
-    return cftime;
+    const auto sys = std::chrono::file_clock::to_sys(file.last_write_time());
+    return decltype(sys)::clock::to_time_t(std::chrono::time_point_cast<std::chrono::microseconds>(sys));
 }
 
 static auto format_last_write_time = [](const stdfs::directory_entry& file, const char* fmt) {
@@ -228,12 +224,9 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 
 static void script_register_stdfs(sol::state_view& lua)
 {
+    auto fs = lua.create_named_table("stdfs", "VerifyPath", &VerifyPath, "directory_iterator", &directory_iterator, "recursive_directory_iterator", &recursive_directory_iterator);
+
     using self = stdfs::directory_entry;
-
-    auto fs = lua.create_named_table(
-        "stdfs", "VerifyPath", [](const char* path) { VerifyPath(path); }, "directory_iterator", &directory_iterator, "recursive_directory_iterator",
-        &recursive_directory_iterator);
-
     fs.new_usertype<self>("path", sol::no_constructor, sol::call_constructor, sol::constructors<self(const char*)>(),
                           // TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
                           "full_path_name", sol::property(&get_full_path), "full_filename", sol::property(&get_full_filename), "short_filename", sol::property(&get_short_filename),

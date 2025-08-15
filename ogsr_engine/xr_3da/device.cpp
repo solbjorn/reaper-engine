@@ -145,7 +145,11 @@ void CRenderDevice::CalcFrameStats()
 
     // calc FPS & TPS
     if (fTimeDelta <= EPS_S)
-        goto out;
+    {
+    out:
+        stats.RenderTOTAL.FrameStart();
+        return;
+    }
 
     const float fps = 1.f / fTimeDelta;
     constexpr float fOne = 0.3f;
@@ -159,8 +163,7 @@ void CRenderDevice::CalcFrameStats()
         stats.fRFPS = fInv * stats.fRFPS + fOne * 1000.f / stats.RenderTOTAL.result;
     }
 
-out:
-    stats.RenderTOTAL.FrameStart();
+    goto out;
 }
 
 extern int ps_framelimiter;
@@ -375,7 +378,7 @@ void CRenderDevice::Run()
 
     Log("Starting engine...");
     set_current_thread_name("X-RAY Primary thread");
-    Msg("Main thread id: [%u]", _Thrd_id());
+    Msg("Main thread id: [%s]", std::format("{0}", std::this_thread::get_id()).c_str());
 
     // Startup timers and calculate timer delta
     dwTimeGlobal = 0;

@@ -3,7 +3,7 @@
 #define DEBUG_INFO __FILE__, __LINE__, __FUNCTION__
 
 // KRodin: Добавил ASSERT как в скриптах, с поддержкой форматирования строки и неограниченным кол-вом аргументов.
-#define FATAL(...) Debug.fatal(DEBUG_INFO, __VA_ARGS__)
+#define FATAL(...) Debug.fatal(DEBUG_INFO, ##__VA_ARGS__)
 #define ASSERT_FMT(expr, ...) \
     do \
     { \
@@ -22,7 +22,7 @@
     do \
     { \
         if (!(expr)) [[unlikely]] \
-            Debug.fail(#expr, __VA_ARGS__, DEBUG_INFO); \
+            Debug.fail(#expr, ##__VA_ARGS__, DEBUG_INFO); \
     } while (0)
 #define R_ASSERT2 R_ASSERT
 #define R_ASSERT3 R_ASSERT
@@ -32,7 +32,7 @@
     { \
         HRESULT hr = expr; \
         if (FAILED(hr)) [[unlikely]] \
-            Debug.error(hr, #expr, __VA_ARGS__, DEBUG_INFO); \
+            Debug.error(hr, #expr, ##__VA_ARGS__, DEBUG_INFO); \
     } while (0)
 #define R_CHK2 R_CHK
 

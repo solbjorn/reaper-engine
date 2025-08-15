@@ -10,46 +10,53 @@ public:
     typedef const Self& SelfCRef;
 
 public:
-    T flags;
+    T flags{};
 
     constexpr IC TYPE get() const { return flags; }
 
-    IC SelfRef zero()
+    constexpr IC SelfRef zero()
     {
         flags = T(0);
         return *this;
     }
-    IC SelfRef one()
+
+    constexpr IC SelfRef one()
     {
         flags = T(-1);
         return *this;
     }
-    IC SelfRef invert()
+
+    constexpr IC SelfRef invert()
     {
         flags = ~flags;
         return *this;
     }
-    IC SelfRef invert(const Self& f)
+
+    constexpr IC SelfRef invert(const Self& f)
     {
         flags = ~f.flags;
         return *this;
     }
-    IC SelfRef invert(const T mask)
+
+    constexpr IC SelfRef invert(const T mask)
     {
         flags ^= mask;
         return *this;
     }
-    IC SelfRef assign(const Self& f)
+
+    constexpr IC SelfRef assign(const Self& f)
     {
         flags = f.flags;
         return *this;
     }
-    IC SelfRef assign(const T mask)
+
+    constexpr IC SelfRef assign(const T mask)
     {
         flags = mask;
         return *this;
     }
-    IC SelfRef set(const T mask, BOOL value)
+
+    constexpr IC SelfRef set(const T mask, BOOL value)
     {
         if (value)
             flags |= mask;
@@ -62,22 +69,25 @@ public:
     constexpr IC BOOL is_any(const T mask) const { return BOOL(!!(flags & mask)); }
     constexpr IC BOOL test(const T mask) const { return BOOL(!!(flags & mask)); }
 
-    IC SelfRef Or(const T mask)
+    constexpr IC SelfRef Or(const T mask)
     {
         flags |= mask;
         return *this;
     }
-    IC SelfRef Or(const Self& f, const T mask)
+
+    constexpr IC SelfRef Or(const Self& f, const T mask)
     {
         flags = f.flags | mask;
         return *this;
     }
-    IC SelfRef And(const T mask)
+
+    constexpr IC SelfRef And(const T mask)
     {
         flags &= mask;
         return *this;
     }
-    IC SelfRef And(const Self& f, const T mask)
+
+    constexpr IC SelfRef And(const Self& f, const T mask)
     {
         flags = f.flags & mask;
         return *this;
@@ -88,6 +98,13 @@ public:
 };
 
 using Flags8 = _flags<u8>;
+static_assert(sizeof(Flags8) == sizeof(u8));
+
 using Flags16 = _flags<u16>;
+static_assert(sizeof(Flags16) == sizeof(u16));
+
 using Flags32 = _flags<u32>;
+static_assert(sizeof(Flags32) == sizeof(u32));
+
 using Flags64 = _flags<u64>;
+static_assert(sizeof(Flags64) == sizeof(u64));

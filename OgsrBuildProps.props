@@ -18,6 +18,12 @@
     <EnableASAN>true</EnableASAN>
   </PropertyGroup-->
 
+  <PropertyGroup Label="UserMacros">
+    <ConformanceOptions>/bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing -Wstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0</ConformanceOptions>
+    <LLVMOptions>-march=haswell -mavx2 -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp</LLVMOptions>
+    <libcxxOptions>-Xclang -stdlib=libc++ -I $(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS -Dfdopen=_fdopen</libcxxOptions>
+  </PropertyGroup>
+
   <ItemDefinitionGroup>
     <ClCompile>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='x64'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -27,13 +33,14 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/Zc:__cplusplus /EHsc -march=haswell -mavx2 -mtune=native -flto=thin -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp -Xclang -stdlib=libc++ %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)'=='Release'">/D_ITERATOR_DEBUG_LEVEL=0 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)'=='Debug'">/D_ITERATOR_DEBUG_LEVEL=2 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) $(ConformanceOptions) $(LLVMOptions) $(libcxxOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /D_ITERATOR_DEBUG_LEVEL=0</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Debug'">%(AdditionalOptions) /D_ITERATOR_DEBUG_LEVEL=2</AdditionalOptions>
     </ClCompile>
 
     <Link>
       <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /opt:lldlto=3 /opt:lldltocgo=3</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 </Project>

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <queue>
-
 #include <absl/container/btree_map.h>
 #include <absl/container/btree_set.h>
 #include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
+#include <stack>
 
 #include "xalloc.h"
 
@@ -32,9 +31,6 @@ using xr_deque = std::deque<T, allocator>;
 
 template <typename T, class C = xr_deque<T>>
 using xr_stack = std::stack<T, C>;
-
-template <typename T, class C = xr_deque<T>>
-using xr_queue = std::queue<T, C>;
 
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_list = std::list<T, allocator>;
@@ -79,15 +75,9 @@ struct pred_stri
 #define DEF_MAP(N, K, T) \
     using N = xr_map<K, T>; \
     using N##_it = N::iterator
-#define DEFINE_STACK(T, N) \
-    using N = xr_stack<T>; \
-    using N##_it = N::iterator
 
 #define DEFINE_DEQUE(T, N, I) \
     using N = xr_deque<T>; \
-    using I = N::iterator
-#define DEFINE_LIST(T, N, I) \
-    using N = xr_list<T>; \
     using I = N::iterator
 #define DEFINE_VECTOR(T, N, I) \
     using N = xr_vector<T>; \

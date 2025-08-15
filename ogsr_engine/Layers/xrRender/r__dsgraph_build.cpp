@@ -697,7 +697,13 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
 
     // Calculate sector(s) and their objects
     if (o_sector_id == INVALID_SECTOR_ID)
-        goto last;
+    {
+    last:
+        if (g_pGameLevel)
+            g_hud->Render_Last(context_id); // HUD
+
+        return;
+    }
 
     if (RImplementation.rmPortals)
     {
@@ -821,11 +827,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
         }
     }
 
-last:
-    if (!g_pGameLevel)
-        return;
-
-    g_hud->Render_Last(context_id); // HUD
+    goto last;
 }
 
 // sub-space rendering - PHASE_SMAP

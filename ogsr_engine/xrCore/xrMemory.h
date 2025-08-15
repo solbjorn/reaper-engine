@@ -12,6 +12,12 @@ extern BOOL g_enable_memory_debug;
 
 #endif
 
+#if _MSC_VER >= 1900 && !defined(__EDG__)
+#define XR_RESTRICT __declspec(allocator) __declspec(restrict)
+#else
+#define XR_RESTRICT __declspec(restrict)
+#endif
+
 class xrMemory
 {
 public:
@@ -22,12 +28,12 @@ public:
     static u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
     void mem_compact();
 
-    void* mem_alloc(size_t size);
-    void* mem_realloc(void* p, size_t size);
-    void mem_free(void* p);
+    [[nodiscard]] XR_RESTRICT static void* mem_alloc(size_t size) noexcept;
+    [[nodiscard]] static void* mem_realloc(void* p, size_t size) noexcept;
+    static void mem_free(void* p) noexcept;
 
-    void*(WINAPIV* mem_copy)(void*, const void*, size_t) = std::memcpy;
-    void*(WINAPIV* mem_fill)(void*, int, size_t) = std::memset;
+    static ICF void mem_copy(void* dst, const void* src, size_t len) { std::memcpy(dst, src, len); }
+    static ICF void mem_fill(void* dst, int c, size_t len) { std::memset(dst, c, len); }
 };
 extern xrMemory Memory;
 
@@ -40,7 +46,7 @@ extern xrMemory Memory;
 
 #ifdef USE_MEMORY_VALIDATOR
 
-inline void* xr_malloc(size_t size, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] inline void* xr_malloc(size_t size, const std::source_location& loc = std::source_location::current())
 {
     void* ptr = Memory.mem_alloc(size);
     if (g_enable_memory_debug)
@@ -51,7 +57,7 @@ inline void* xr_malloc(size_t size, const std::source_location& loc = std::sourc
     return ptr;
 }
 
-inline void* xr_realloc(void* p, size_t size, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] inline void* xr_realloc(void* p, size_t size, const std::source_location& loc = std::source_location::current())
 {
     PointerRegistryRelease(p, loc);
     void* ptr = Memory.mem_realloc(p, size);
@@ -71,7 +77,7 @@ inline void xr_mfree(void* p, const std::source_location& loc = std::source_loca
 
 // generic "C"-like allocations/deallocations
 template <class T>
-IC T* xr_alloc(size_t count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] IC T* xr_alloc(size_t count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(count * sizeof(T)));
     if (g_enable_memory_debug)
@@ -105,7 +111,7 @@ void registerClass(T* ptr, const std::source_location& loc)
 }
 
 template <typename T>
-T* xr_new(const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -113,7 +119,7 @@ T* xr_new(const std::source_location& loc = std::source_location::current())
 }
 
 template <typename T, typename A0>
-T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -121,7 +127,7 @@ T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::curre
 }
 
 template <typename T, typename A0, typename A1>
-T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -129,7 +135,7 @@ T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_locati
 }
 
 template <typename T, typename A0, typename A1, typename A2>
-T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -137,7 +143,7 @@ T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::sour
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3>
-T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -145,7 +151,7 @@ T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = 
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4>
-T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -153,7 +159,7 @@ T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_locatio
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     registerClass(ptr, loc);
@@ -191,14 +197,14 @@ IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_locatio
 
 // generic "C"-like allocations/deallocations
 template <class T>
-IC T* xr_alloc(size_t count)
+[[nodiscard]] IC XR_RESTRICT T* xr_alloc(size_t count) noexcept
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(count * sizeof(T)));
     return ptr;
 }
 
 template <class T>
-IC void xr_free(T*& P)
+IC void xr_free(T*& P) noexcept
 {
     if (P)
     {
@@ -208,7 +214,7 @@ IC void xr_free(T*& P)
 }
 
 template <typename T, typename... Args>
-T* xr_new(Args&&... args)
+[[nodiscard]] T* xr_new(Args&&... args)
 {
     T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
     return new (ptr) T(std::forward<Args>(args)...);

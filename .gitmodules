@@ -36,10 +36,13 @@
 [submodule "3rd_party/Src/libsquashfs/squashfs-tools-ng"]
 	path = 3rd_party/Src/libsquashfs/squashfs-tools-ng
 	url = https://github.com/AgentD/squashfs-tools-ng.git
+[submodule "3rd_party/Src/llvm/llvm-project"]
+	path = 3rd_party/Src/llvm/llvm-project
+	url = https://github.com/llvm/llvm-project.git
+	branch = release/21.x
 [submodule "3rd_party/Src/luajit2/luajit2"]
 	path = 3rd_party/Src/luajit2/luajit2
 	url = https://github.com/openresty/luajit2.git
-	ignore = untracked
 [submodule "3rd_party/Src/lz4/lz4"]
 	path = 3rd_party/Src/lz4/lz4
 	url = https://github.com/lz4/lz4.git

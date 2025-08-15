@@ -2,8 +2,8 @@
 
 #include "xrdebug.h"
 
-#include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
+#include <use_ansi.h> // for _set_new_mode
 
 xrDebug Debug;
 HWND gGameWindow = nullptr;

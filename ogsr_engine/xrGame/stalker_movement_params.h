@@ -10,20 +10,20 @@
 
 namespace MonsterSpace
 {
-enum EBodyState;
-enum EMovementType;
-enum EMentalState;
-enum EPathType;
+enum EBodyState : u32;
+enum EMovementType : u32;
+enum EMentalState : u32;
+enum EPathType : u32;
 }; // namespace MonsterSpace
 
 namespace MovementManager
 {
-enum EPathType;
+enum EPathType : u32;
 };
 
 namespace DetailPathManager
 {
-enum EDetailPathType;
+enum EDetailPathType : u32;
 };
 
 class CStalkerMovementParams

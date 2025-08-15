@@ -9,6 +9,7 @@
 class CKinematics;
 class CInifile;
 class CBoneData;
+class CSkeletonX;
 struct SEnumVerticesCallback;
 
 #pragma warning(push)

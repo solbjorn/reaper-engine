@@ -28,7 +28,7 @@ public:
     using intrusive_base::release;
 };
 
-enum ERestrictorTypes
+enum ERestrictorTypes : u32
 {
     eDefaultRestrictorTypeNone = u8(0),
     eDefaultRestrictorTypeOut = u8(1),

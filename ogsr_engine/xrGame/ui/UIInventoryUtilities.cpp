@@ -107,7 +107,7 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 
 bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _item, int width, int height)
 {
-    bool* ruck_room = (bool*)alloca(width * height);
+    bool* ruck_room = (bool*)_alloca(width * height);
 
     int i, j, k, m;
     int place_row = 0, place_col = 0;
@@ -134,8 +134,8 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
         PIItem pItem = *it;
         int iWidth = pItem->GetGridWidth();
         int iHeight = pItem->GetGridHeight();
-        //проверить можно ли разместить элемент,
-        //проверяем последовательно каждую клеточку
+        // проверить можно ли разместить элемент,
+        // проверяем последовательно каждую клеточку
         found_place = false;
 
         for (i = 0; (i < height - iHeight + 1) && !found_place; ++i)
@@ -162,7 +162,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
             }
         }
 
-        //разместить элемент на найденном месте
+        // разместить элемент на найденном месте
         if (found_place)
         {
             for (k = 0; k < iHeight; ++k)
@@ -178,7 +178,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
     // remove
     item_list.erase(std::remove(item_list.begin(), item_list.end(), _item), item_list.end());
 
-    //для какого-то элемента места не нашлось
+    // для какого-то элемента места не нашлось
     if (!found_place)
         return false;
 
@@ -194,7 +194,7 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
         if (icon_group > 0)
         {
             strcat_s(file, "_");
-            itoa(icon_group, file + strlen(file), 10);
+            _itoa(icon_group, file + strlen(file), 10);
         }
 
         g_EquipmentIconsShaders[icon_group]->create("hud\\default", file);

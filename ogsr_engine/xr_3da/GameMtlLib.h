@@ -196,7 +196,7 @@ public:
 
     auto GetMaterialIt(const char* name)
     {
-        auto pred = [&](const SGameMtl* mtl) { return !strcmpi(mtl->m_Name.c_str(), name); };
+        auto pred = [&](const SGameMtl* mtl) { return !_stricmp(mtl->m_Name.c_str(), name); };
         return std::find_if(materials.begin(), materials.end(), pred);
     }
     auto GetMaterialIt(const shared_str& name)

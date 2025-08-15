@@ -532,7 +532,7 @@ struct _uniq_mode
 {
     _uniq_mode(LPCSTR v) : _val(v) {}
     LPCSTR _val;
-    bool operator()(LPCSTR _other) { return !stricmp(_val, _other); }
+    bool operator()(LPCSTR _other) { return !_stricmp(_val, _other); }
 };
 
 void free_vid_mode_list()

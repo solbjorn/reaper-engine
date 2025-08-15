@@ -4,12 +4,17 @@
 #include "resource.h"
 
 // какой то говнокод что б подключить <atlimage.h>
-#define min(x, y) ((x) < (y) ? (x) : (y))
-#define max(x, y) ((x) > (y) ? (x) : (y))
-#include <atlstr.h>
+#define _FORCENAMELESSUNION
+
+namespace ATL
+{
+inline errno_t AtlCrtErrorCheck(const char*) { return 0; }
+} // namespace ATL
+
+#define __ATLBASE_H__
 #include <atlimage.h>
-#undef min
-#undef max
+
+#undef _FORCENAMELESSUNION
 
 #pragma comment(lib, "Windowscodecs")
 

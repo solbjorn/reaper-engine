@@ -24,10 +24,8 @@ struct CDestroyer
     template <typename T, int size>
     IC static void delete_data(svector<T, size>& data)
     {
-        auto I = data.begin();
-        auto E = data.end();
-        for (; I != E; ++I)
-            delete_data(*I);
+        for (auto& it : data)
+            delete_data(it);
         data.clear();
     }
 
@@ -48,7 +46,13 @@ struct CDestroyer
     }
 
     template <typename T1, typename T2>
-    IC static void delete_data(xr_stack<T1, T2>& data)
+    static void delete_data(xr_stack<T1, T2>& data)
+    {
+        delete_data(data, true);
+    }
+
+    template <typename T1, typename T2, typename T3>
+    static void delete_data(std::priority_queue<T1, T2, T3>& data)
     {
         delete_data(data, true);
     }
@@ -90,10 +94,8 @@ struct CDestroyer
         template <typename T>
         IC static void delete_data(T& data)
         {
-            auto I = data.begin();
-            auto E = data.end();
-            for (; I != E; ++I)
-                CDestroyer::delete_data(*I);
+            for (auto& it : data)
+                CDestroyer::delete_data(it);
             data.clear();
         }
     };

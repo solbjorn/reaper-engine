@@ -21,7 +21,7 @@ public:
         VerifyPath(*fName);
         if (exclusive)
         {
-            int handle = _sopen(*fName, _O_WRONLY | _O_TRUNC | _O_CREAT | _O_BINARY, SH_DENYWR);
+            int handle = _sopen(*fName, _O_WRONLY | _O_TRUNC | _O_CREAT | _O_BINARY, _SH_DENYWR);
             hf = _fdopen(handle, "wb");
         }
         else

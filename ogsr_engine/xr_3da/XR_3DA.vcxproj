@@ -106,8 +106,9 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
@@ -177,8 +178,9 @@
       <Culture>0x0422</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>llvmlibc.lib;$(AbseilLibs);ode.lib;vorbis.lib;vorbisfile.lib;OpenAL32.lib;ogg.lib;theora.lib;vfw32.lib;winmm.lib;dinput8.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;libomp.lib;libsquashfs.lib;lz4.lib;tinyxml2.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LLVMInstallDir)\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /force:multiple</AdditionalOptions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>

@@ -34,8 +34,8 @@ static void AddOne(std::string& split, bool first_line)
             const auto time = system_clock::to_time_t(now);
             const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
             std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", std::localtime(&time));
-            sprintf_s(curTime, "\n[%s.%03lld] [%u] ", buf, ms.count(), _Thrd_id());
-            split = curTime + split;
+            sprintf_s(curTime, "\n[%s.%03lld]", buf, ms.count());
+            split = std::format("{0} [{1}] {2}", curTime, std::this_thread::get_id(), split);
         }
         else
         {

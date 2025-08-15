@@ -71,14 +71,17 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
 void smem_container::clean()
 {
     cs.Enter();
-    cdb::iterator it = container.begin();
-    cdb::iterator end = container.end();
-    for (; it != end; it++)
-        if (0 == (*it)->dwReference)
-            xr_free(*it);
-    container.erase(remove(container.begin(), container.end(), (smem_value*)0), container.end());
+
+    for (auto& elem : container)
+    {
+        if (!elem->dwReference)
+            xr_free(elem);
+    }
+
+    container.erase(std::remove(container.begin(), container.end(), static_cast<smem_value*>(nullptr)), container.end());
     if (container.empty())
         container.clear();
+
     cs.Leave();
 }
 

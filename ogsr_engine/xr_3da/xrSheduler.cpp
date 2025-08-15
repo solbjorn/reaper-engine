@@ -352,7 +352,7 @@ void CSheduler::ProcessStep()
 #endif
 
             // Calc next update interval
-            const u32 dwMin = _max(u32(30), item.Object->shedule.t_min);
+            const u32 dwMin = _max(30u, static_cast<u32>(item.Object->shedule.t_min));
             u32 dwMax = (1000 + item.Object->shedule.t_max) / 2;
             const float scale = item.Object->shedule_Scale();
             u32 dwUpdate = dwMin + iFloor(float(dwMax - dwMin) * scale);

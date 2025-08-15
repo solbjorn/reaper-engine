@@ -97,7 +97,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         sh_map.emplace(sh->set_name(name), sh);
-        if (0 == stricmp(name, "null"))
+        if (!_stricmp(name, "null"))
         {
             sh->sh = NULL;
             return sh;

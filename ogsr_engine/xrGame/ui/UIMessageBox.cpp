@@ -74,35 +74,35 @@ void CUIMessageBox::Init(LPCSTR box_template)
     R_ASSERT(_type);
 
     m_eMessageBoxStyle = MESSAGEBOX_OK;
-    if (0 == stricmp(_type, "ok"))
+    if (!_stricmp(_type, "ok"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_OK;
     }
-    else if (0 == stricmp(_type, "yes_no"))
+    else if (!_stricmp(_type, "yes_no"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_YES_NO;
     }
-    else if (0 == stricmp(_type, "yes_no_cancel"))
+    else if (!_stricmp(_type, "yes_no_cancel"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_YES_NO_CANCEL;
     }
-    else if (0 == stricmp(_type, "direct_ip"))
+    else if (!_stricmp(_type, "direct_ip"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_DIRECT_IP;
     }
-    else if (0 == stricmp(_type, "password"))
+    else if (!_stricmp(_type, "password"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_PASSWORD;
     }
-    else if (0 == stricmp(_type, "quit_windows"))
+    else if (!_stricmp(_type, "quit_windows"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_QUIT_WINDOWS;
     }
-    else if (0 == stricmp(_type, "quit_game"))
+    else if (!_stricmp(_type, "quit_game"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_QUIT_GAME;
     }
-    else if (0 == stricmp(_type, "info"))
+    else if (!_stricmp(_type, "info"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_INFO;
     };

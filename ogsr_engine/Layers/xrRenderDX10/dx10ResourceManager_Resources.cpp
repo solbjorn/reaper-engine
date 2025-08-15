@@ -127,7 +127,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_vs.insert(mk_pair(_vs->set_name(name), _vs));
 
-        if (0 == stricmp(_name, "null"))
+        if (!_stricmp(_name, "null"))
             return _vs;
 
         string_path shName;
@@ -224,7 +224,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         SPS* _ps = xr_new<SPS>();
         _ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_ps.insert(mk_pair(_ps->set_name(name), _ps));
-        if (0 == stricmp(_name, "null"))
+        if (!_stricmp(_name, "null"))
         {
             _ps->ps = NULL;
             return _ps;
@@ -292,7 +292,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         SGS* _gs = xr_new<SGS>();
         _gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_gs.insert(mk_pair(_gs->set_name(name), _gs));
-        if (0 == stricmp(name, "null"))
+        if (!_stricmp(name, "null"))
         {
             _gs->gs = NULL;
             return _gs;

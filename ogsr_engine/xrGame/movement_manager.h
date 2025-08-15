@@ -14,12 +14,12 @@
 
 namespace MovementManager
 {
-enum EPathType;
+enum EPathType : u32;
 };
 
 namespace DetailPathManager
 {
-enum EDetailPathType;
+enum EDetailPathType : u32;
 };
 
 template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>

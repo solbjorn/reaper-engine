@@ -186,9 +186,17 @@ private:
     bool Decode(int total_size);
 
 public:
+    IC LzHuf();
+
     void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz);
     bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size);
 };
+
+IC LzHuf::LzHuf()
+{
+    static_assert(!offsetof(LzHuf, fs));
+    memset(this, 0, sizeof(LzHuf));
+}
 
 //************************** Internal FS
 IC void LzHuf::InitTree() /* initialize trees */
@@ -653,9 +661,6 @@ bool LzHuf::Decode(int total_size) /* recover */
 
 void LzHuf::_compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz)
 {
-    static_assert(!offsetof(LzHuf, fs));
-    memset(this, 0, sizeof(LzHuf));
-
     u8* start = (u8*)src;
     fs.Init_Input(start, start + src_sz);
     Encode();
@@ -665,8 +670,6 @@ void LzHuf::_compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz)
 
 bool LzHuf::_decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size)
 {
-    memset(this, 0, sizeof(LzHuf));
-
     u8* start = (u8*)src;
     fs.Init_Input(start, start + src_sz);
 

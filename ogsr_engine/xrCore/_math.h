@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 struct _processor_info;
 
 namespace CPU

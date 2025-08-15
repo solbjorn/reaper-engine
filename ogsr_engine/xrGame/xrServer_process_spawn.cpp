@@ -121,7 +121,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
             strcat_s(s_name_replace, "0");
         if (E->ID < 10)
             strcat_s(s_name_replace, "0");
-        strcat_s(s_name_replace, itoa(E->ID, S1, 10));
+        strcat_s(s_name_replace, _itoa(E->ID, S1, 10));
 
         E->set_name_replace(s_name_replace);
     }

@@ -76,7 +76,7 @@ enum EMeetActionType
     eMeetActionTypeDummy = u32(-1),
 };
 
-enum ERelationType
+enum ERelationType : u32
 {
     eRelationTypeFriend = u32(0),
     eRelationTypeNeutral,
@@ -137,25 +137,25 @@ enum EWeaponAddonStatus
 
 IC EHitType g_tfString2HitType(LPCSTR caHitType)
 {
-    if (!stricmp(caHitType, "burn"))
+    if (!_stricmp(caHitType, "burn"))
         return (eHitTypeBurn);
-    else if (!stricmp(caHitType, "shock"))
+    else if (!_stricmp(caHitType, "shock"))
         return (eHitTypeShock);
-    else if (!stricmp(caHitType, "strike"))
+    else if (!_stricmp(caHitType, "strike"))
         return (eHitTypeStrike);
-    else if (!stricmp(caHitType, "wound"))
+    else if (!_stricmp(caHitType, "wound"))
         return (eHitTypeWound);
-    else if (!stricmp(caHitType, "radiation"))
+    else if (!_stricmp(caHitType, "radiation"))
         return (eHitTypeRadiation);
-    else if (!stricmp(caHitType, "telepatic"))
+    else if (!_stricmp(caHitType, "telepatic"))
         return (eHitTypeTelepatic);
-    else if (!stricmp(caHitType, "fire_wound"))
+    else if (!_stricmp(caHitType, "fire_wound"))
         return (eHitTypeFireWound);
-    else if (!stricmp(caHitType, "chemical_burn"))
+    else if (!_stricmp(caHitType, "chemical_burn"))
         return (eHitTypeChemicalBurn);
-    else if (!stricmp(caHitType, "explosion"))
+    else if (!_stricmp(caHitType, "explosion"))
         return (eHitTypeExplosion);
-    else if (!stricmp(caHitType, "wound_2"))
+    else if (!_stricmp(caHitType, "wound_2"))
         return (eHitTypeWound_2);
     else
         FATAL("Unsupported hit type!");

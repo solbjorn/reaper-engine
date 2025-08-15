@@ -55,6 +55,7 @@
       <!--SDLCheck>true</SDLCheck-->
       <FloatingPointModel>Fast</FloatingPointModel>
       <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -D_FORCENAMELESSUNION</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>DirectXTex\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -88,6 +89,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0A00;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -D_FORCENAMELESSUNION</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>DirectXTex\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

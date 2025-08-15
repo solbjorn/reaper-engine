@@ -117,7 +117,7 @@ void CPlanner::update()
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CPlanner::COperator& CPlanner::action(const _action_id_type& action_id) { return (*get_operator(action_id)); }
+IC typename CPlanner::COperator& CPlanner::action(const _action_id_type& action_id) { return (*(this->get_operator(action_id))); }
 
 TEMPLATE_SPECIALIZATION
 IC typename CPlanner::CConditionEvaluator& CPlanner::evaluator(const _condition_type& evaluator_id) { return (*inherited::evaluator(evaluator_id)); }
@@ -183,27 +183,22 @@ TEMPLATE_SPECIALIZATION
 IC void CPlanner::set_use_log(bool value)
 {
     m_use_log = value;
-    auto I = m_operators.begin();
-    auto E = m_operators.end();
-    for (; I != E; ++I)
-        (*I).get_operator()->set_use_log(m_use_log);
+    for (auto& it : this->m_operators)
+        it.get_operator()->set_use_log(m_use_log);
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CPlanner::show_current_world_state()
 {
     Msg("Current world state :");
-    auto I = evaluators().cbegin();
-    auto E = evaluators().cend();
-    for (; I != E; ++I)
+    for (const auto& it : this->evaluators())
     {
-        xr_vector<COperatorCondition>::const_iterator J =
-            std::lower_bound(current_state().conditions().begin(), current_state().conditions().end(), CWorldProperty((*I).first, false));
+        auto J = std::lower_bound(this->current_state().conditions().cbegin(), this->current_state().conditions().cend(), CWorldProperty(it.first, false));
         char temp = '?';
-        if ((J != current_state().conditions().end()) && ((*J).condition() == (*I).first))
+        if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("%5c : [%d][%s]", temp, (*I).first, property2string((*I).first));
+            Msg("%5c : [%d][%s]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -212,17 +207,14 @@ TEMPLATE_SPECIALIZATION
 IC void CPlanner::show_target_world_state()
 {
     Msg("Target world state :");
-    auto I = evaluators().cbegin();
-    auto E = evaluators().cend();
-    for (; I != E; ++I)
+    for (const auto& it : this->evaluators())
     {
-        xr_vector<COperatorCondition>::const_iterator J =
-            std::lower_bound(target_state().conditions().begin(), target_state().conditions().end(), CWorldProperty((*I).first, false));
+        auto J = std::lower_bound(this->target_state().conditions().cbegin(), this->target_state().conditions().cend(), CWorldProperty(it.first, false));
         char temp = '?';
-        if ((J != target_state().conditions().end()) && ((*J).condition() == (*I).first))
+        if ((J != this->target_state().conditions().end()) && ((*J).condition() == it.first))
         {
             temp = (*J).value() ? '+' : '-';
-            Msg("%5c : [%d][%s]", temp, (*I).first, property2string((*I).first));
+            Msg("%5c : [%d][%s]", temp, it.first, property2string(it.first));
         }
     }
 }
@@ -232,37 +224,33 @@ IC void CPlanner::show(LPCSTR offset)
 {
     string256 temp;
     strconcat(sizeof(temp), temp, offset, "    ");
+    Msg("\n%sEVALUATORS : %d\n", offset, this->evaluators().size());
+
+    for (const auto& it : this->evaluators())
     {
-        Msg("\n%sEVALUATORS : %d\n", offset, evaluators().size());
-        auto I = evaluators().cbegin();
-        auto E = evaluators().cend();
-        for (; I != E; ++I)
-            Msg("%sevaluator   [%d][%s]", offset, (*I).first, property2string((*I).first));
-    }
-    {
-        Msg("\n%sOPERATORS : %d\n", offset, operators().size());
-        auto I = operators().cbegin();
-        auto E = operators().cend();
-        for (; I != E; ++I)
+        auto J = std::lower_bound(this->current_state().conditions().cbegin(), this->current_state().conditions().cend(), CWorldProperty(it.first, false));
+        char current = '?';
+
+        if ((J != this->current_state().conditions().end()) && ((*J).condition() == it.first))
         {
-            Msg("%soperator    [%d][%s]", offset, (*I).m_operator_id, (*I).m_operator->m_action_name);
-
-            {
-                auto i = (*I).m_operator->conditions().conditions().cbegin();
-                auto e = (*I).m_operator->conditions().conditions().cend();
-                for (; i != e; ++i)
-                    Msg("%s	condition [%d][%s] = %s", offset, (*i).condition(), property2string((*i).condition()), (*i).value() ? "TRUE" : "FALSE");
-            }
-            {
-                auto i = (*I).m_operator->effects().conditions().cbegin();
-                auto e = (*I).m_operator->effects().conditions().cend();
-                for (; i != e; ++i)
-                    Msg("%s	effect    [%d][%s] = %s", offset, (*i).condition(), property2string((*i).condition()), (*i).value() ? "TRUE" : "FALSE");
-            }
-
-            (*I).m_operator->show(temp);
-            Msg(" ");
+            current = (*J).value() ? '+' : '-';
         }
+
+        Msg("%sevaluator   [%d][%s][%c]", offset, it.first, property2string(it.first), current);
+    }
+
+    Msg("\n%sOPERATORS : %d\n", offset, this->operators().size());
+    for (const auto& it : this->operators())
+    {
+        Msg("%soperator    [%d][%s]", offset, it.m_operator_id, it.m_operator->m_action_name);
+
+        for (const auto& it2 : it.m_operator->conditions().conditions())
+            Msg("%s	condition [%d][%s] = %s", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+        for (const auto& it2 : it.m_operator->effects().conditions())
+            Msg("%s	effect    [%d][%s] = %s", offset, it2.condition(), property2string(it2.condition()), it2.value() ? "TRUE" : "FALSE");
+
+        it.m_operator->show(temp);
+        Msg(" ");
     }
 }
 #endif
@@ -270,49 +258,28 @@ IC void CPlanner::show(LPCSTR offset)
 TEMPLATE_SPECIALIZATION
 IC void CPlanner::save(NET_Packet& packet)
 {
-    {
-        auto I = m_evaluators.begin();
-        auto E = m_evaluators.end();
-        for (; I != E; ++I)
-            (*I).second->save(packet);
-    }
+    for (auto& it : this->m_evaluators)
+        it.second->save(packet);
 
-    {
-        auto I = m_operators.begin();
-        auto E = m_operators.end();
-        for (; I != E; ++I)
-            (*I).m_operator->save(packet);
-    }
+    for (auto& it : this->m_operators)
+        it.m_operator->save(packet);
 
+    packet.w_u32(m_storage.m_storage.size());
+    for (const auto& it : m_storage.m_storage)
     {
-        packet.w_u32(m_storage.m_storage.size());
-        typedef CPropertyStorage::CConditionStorage CConditionStorage;
-        CConditionStorage::const_iterator I = m_storage.m_storage.begin();
-        CConditionStorage::const_iterator E = m_storage.m_storage.end();
-        for (; I != E; ++I)
-        {
-            packet.w(&(*I).m_condition, sizeof((*I).m_condition));
-            packet.w(&(*I).m_value, sizeof((*I).m_value));
-        }
+        packet.w(&it.m_condition, sizeof(it.m_condition));
+        packet.w(&it.m_value, sizeof(it.m_value));
     }
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CPlanner::load(IReader& packet)
 {
-    {
-        auto I = m_evaluators.begin();
-        auto E = m_evaluators.end();
-        for (; I != E; ++I)
-            (*I).second->load(packet);
-    }
+    for (auto& it : this->m_evaluators)
+        it.second->load(packet);
 
-    {
-        auto I = m_operators.begin();
-        auto E = m_operators.end();
-        for (; I != E; ++I)
-            (*I).m_operator->load(packet);
-    }
+    for (auto& it : this->m_operators)
+        it.m_operator->load(packet);
 
     {
         u32 count = packet.r_u32();

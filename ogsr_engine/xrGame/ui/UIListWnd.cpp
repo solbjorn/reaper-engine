@@ -51,7 +51,7 @@ void CUIListWnd::Init(float x, float y, float width, float height, float item_he
 {
     CUIWindow::Init(x, y, width, height);
 
-    //добавить полосу прокрутки
+    // добавить полосу прокрутки
     m_ScrollBar = xr_new<CUIScrollBar>();
     m_ScrollBar->SetAutoDelete(true);
     AttachChild(m_ScrollBar);
@@ -119,7 +119,7 @@ void CUIListWnd::RemoveItem(int index)
 
     LIST_ITEM_LIST_it it;
 
-    //выбрать нужный элемент
+    // выбрать нужный элемент
     it = m_ItemList.begin();
     for (int i = 0; i < index; ++i, ++it)
         ;
@@ -130,7 +130,7 @@ void CUIListWnd::RemoveItem(int index)
 
     UpdateList();
 
-    //обновить полосу прокрутки
+    // обновить полосу прокрутки
     if (m_ItemList.size() > 0)
         m_ScrollBar->SetRange(0, s16(m_ItemList.size() - 1));
     else
@@ -140,7 +140,7 @@ void CUIListWnd::RemoveItem(int index)
     m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
     m_ScrollBar->Refresh();
 
-    //перенумеровать индексы заново
+    // перенумеровать индексы заново
     int i = 0;
     for (LIST_ITEM_LIST_it it = m_ItemList.begin(); m_ItemList.end() != it; ++it, i++)
     {
@@ -157,7 +157,7 @@ CUIListItem* CUIListWnd::GetItem(int index)
 
     LIST_ITEM_LIST_it it;
 
-    //выбрать нужный элемент
+    // выбрать нужный элемент
     it = m_ItemList.begin();
     for (int i = 0; i < index; ++i, ++it)
         ;
@@ -190,7 +190,7 @@ void CUIListWnd::RemoveAll()
     UpdateList();
     Reset();
 
-    //обновить полосу прокрутки
+    // обновить полосу прокрутки
     m_ScrollBar->SetRange(0, 0);
     m_ScrollBar->SetPageSize(0);
     m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
@@ -210,15 +210,15 @@ void CUIListWnd::UpdateList()
 
     LIST_ITEM_LIST_it it = m_ItemList.begin();
 
-    //спрятать все элементы до участка
-    //отображающейся в данный момент
-    for (int i = 0; i < _min(m_ItemList.size(), m_iFirstShownIndex); ++i, ++it)
+    // спрятать все элементы до участка
+    // отображающейся в данный момент
+    for (int i = 0; i < _min(static_cast<int>(m_ItemList.size()), m_iFirstShownIndex); ++i, ++it)
     {
         (*it)->Show(false);
     }
 
-    //показать текущий список
-    for (int i = m_iFirstShownIndex; i < _min(m_ItemList.size(), m_iFirstShownIndex + m_iRowNum + 1); ++i, ++it)
+    // показать текущий список
+    for (int i = m_iFirstShownIndex; i < _min(static_cast<int>(m_ItemList.size()), m_iFirstShownIndex + m_iRowNum + 1); ++i, ++it)
     {
         (*it)->SetWndRect((*it)->GetWndRect().left, m_bVertFlip ? GetHeight() - (i - m_iFirstShownIndex) * m_iItemHeight - m_iItemHeight : (i - m_iFirstShownIndex) * m_iItemHeight,
                           m_iItemWidth, m_iItemHeight);
@@ -232,7 +232,7 @@ void CUIListWnd::UpdateList()
 
     --it;
 
-    //спрятать все после
+    // спрятать все после
     for (u32 k = m_iFirstShownIndex + m_iRowNum; k < m_ItemList.size(); ++k, ++it)
     {
         (*it)->Show(false);
@@ -257,7 +257,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     }
     else
     {
-        //если сообщение пришло от одного из элементов списка
+        // если сообщение пришло от одного из элементов списка
 
         if (IsChild(pWnd))
         {
@@ -434,7 +434,7 @@ void CUIListWnd::Reset()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//находит первый элемент с заданной pData, иначе -1
+// находит первый элемент с заданной pData, иначе -1
 //////////////////////////////////////////////////////////////////////////
 
 int CUIListWnd::FindItem(void* pData)

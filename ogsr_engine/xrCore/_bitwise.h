@@ -1,9 +1,30 @@
 #pragma once
 
-inline bool negative(const float f) { return std::signbit(f); }
-inline bool positive(const float f) { return !std::signbit(f); }
-inline void set_negative(float& f) { f = -fabsf(f); }
-inline void set_positive(float& f) { f = fabsf(f); }
+#include <cmath>
+
+template <typename T>
+constexpr inline bool negative(T f)
+{
+    return std::signbit(f);
+}
+
+template <typename T>
+constexpr inline bool positive(T f)
+{
+    return !std::signbit(f);
+}
+
+template <typename T>
+constexpr inline void set_negative(T& f)
+{
+    f = -std::abs(f);
+}
+
+template <typename T>
+constexpr inline void set_positive(T& f)
+{
+    f = std::abs(f);
+}
 
 /*
  * Here are a few nice tricks for 2's complement based machines

@@ -284,7 +284,7 @@ void CTexture::Load(const char* Name)
     flags.bLoaded = true;
     flags.memUsage = 0;
 
-    if (!stricmp(Name, "$null"))
+    if (!_stricmp(Name, "$null"))
         return;
 
     // we need to check only the beginning of the string,
@@ -394,7 +394,7 @@ void CTexture::Load(const char* Name)
 
         flags.seqCycles = FALSE;
         _fs->r_string(buffer, sizeof(buffer));
-        if (0 == stricmp(buffer, "cycled"))
+        if (!_stricmp(buffer, "cycled"))
         {
             flags.seqCycles = TRUE;
             _fs->r_string(buffer, sizeof(buffer));

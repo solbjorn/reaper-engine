@@ -38,7 +38,7 @@ IC CSGraphVertex::~CVertex()
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_id_type& vertex_id) const
+IC const typename _graph_type::CEdge* CSGraphVertex::edge(const _vertex_id_type& vertex_id) const
 {
     auto I = std::find(edges().begin(), edges().end(), vertex_id);
     if (m_edges.end() == I)
@@ -47,7 +47,7 @@ IC const typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_i
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_id_type& vertex_id)
+IC typename _graph_type::CEdge* CSGraphVertex::edge(const _vertex_id_type& vertex_id)
 {
     auto I = std::find(m_edges.begin(), m_edges.end(), vertex_id);
     if (m_edges.end() == I)
@@ -56,11 +56,11 @@ IC typename CSGraphVertex::_edge_type* CSGraphVertex::edge(const _vertex_id_type
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CSGraphVertex::add_edge(CVertex* vertex, const _edge_weight_type& edge_weight)
+IC void CSGraphVertex::add_edge(CVertex* vertex, const typename _graph_type::CEdge::edge_weight_type& edge_weight)
 {
     VERIFY(m_edges.end() == std::find(m_edges.begin(), m_edges.end(), vertex->vertex_id()));
     vertex->on_edge_addition(this);
-    m_edges.push_back(_edge_type(edge_weight, vertex));
+    m_edges.push_back(typename _graph_type::CEdge(edge_weight, vertex));
     ++*m_edge_count;
 }
 

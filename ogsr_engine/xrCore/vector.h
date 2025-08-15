@@ -84,9 +84,6 @@ constexpr float snapto(float value, float snap) noexcept
 template <class T>
 struct _quaternion;
 
-#pragma pack(push)
-#pragma pack(1)
-
 #include "_color.h"
 #include "_vector3d.h"
 #include "_vector2.h"
@@ -104,8 +101,6 @@ struct _quaternion;
 #include "_plane.h"
 #include "_plane2.h"
 #include "_flags.h"
-
-#pragma pack(pop)
 
 // normalize angle (0..2PI)
 ICF float angle_normalize_always(float a)

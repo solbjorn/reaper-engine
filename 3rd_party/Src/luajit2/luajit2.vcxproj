@@ -27,55 +27,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <NMakeOutput>luajit2\src\lua51.dll</NMakeOutput>
+    <NMakeOutput>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\luajit.lib</NMakeOutput>
     <NMakeUseOemCodePage>true</NMakeUseOemCodePage>
     <NMakeBuildCommandLine>
-      if not exist "luajit2\src\lua51.dll" (
-        cd luajit2\src\
-        call ..\..\msvcbuild.bat $(PlatformShortName)
-        cd ..\..\
-      )
-
-      if not exist "$(SolutionDir)\bin_$(PlatformShortName)\lua51.dll" (
-        if not exist "$(SolutionDir)\bin_$(PlatformShortName)\*.*" (
-          md "$(SolutionDir)\bin_$(PlatformShortName)"
-        )
-        copy /Y "luajit2\src\lua51.dll" "$(SolutionDir)\bin_$(PlatformShortName)\lua51.dll"
-        copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\lua51.pdb"
-      )
-      if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib" (
-        if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
-          md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
-        )
-        copy /Y "luajit2\src\lua51.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib"
-        copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.pdb"
-      )
+      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja;%VSAPPIDDIR%CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\mingw64\bin"
+      md _Build
+      cd _Build
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DLUAJIT_DIR="$(ProjectDir)luajit2" -DLUAJIT_ENABLE_LUA52COMPAT=ON ..\cmake
+      cmake --build . --config $(Configuration)
+      cmake --install . --config $(Configuration)
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\luajit.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\luajit.lib"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
-      cd luajit2\src\
-      del /F *.exe *.lib *.pdb lua51.*
-      call ..\..\msvcbuild.bat $(PlatformShortName)
-      cd ..\..\
-
-      if not exist "$(SolutionDir)\bin_$(PlatformShortName)\*.*" (
-        md "$(SolutionDir)\bin_$(PlatformShortName)"
-      )
-      copy /Y "luajit2\src\lua51.dll" "$(SolutionDir)\bin_$(PlatformShortName)\lua51.dll"
-      copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\lua51.pdb"
-      if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
-        md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
-      )
-      copy /Y "luajit2\src\lua51.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.lib"
-      copy /Y "luajit2\src\lua51.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\lua51.pdb"
-      if not exist "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\*.*" (
-        md "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\"
-      )
+      RD /S/Q _Build
+      $(NMakeBuildCommandLine)
     </NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>
-      cd luajit2\src\
-      del /F *.exe *.lib *.pdb lua51.*
-      cd ..\..\
-    </NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>

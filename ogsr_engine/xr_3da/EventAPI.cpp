@@ -19,7 +19,7 @@ public:
     LPCSTR GetFull() { return Name; }
     u32 RefCount() { return dwRefCount; }
 
-    BOOL Equal(CEvent& E) { return stricmp(Name, E.Name) == 0; }
+    BOOL Equal(CEvent& E) { return !_stricmp(Name, E.Name); }
 
     void Attach(IEventReceiver* H)
     {
@@ -170,7 +170,7 @@ BOOL CEventAPI::Peek(LPCSTR EName)
     for (u32 I = 0; I < Events_Deferred.size(); I++)
     {
         Deferred& DEF = Events_Deferred[I];
-        if (stricmp(DEF.E->GetFull(), EName) == 0)
+        if (!_stricmp(DEF.E->GetFull(), EName))
         {
             CS.Leave();
             return TRUE;

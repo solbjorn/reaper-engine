@@ -179,7 +179,12 @@ bool MODEL::deserialize_tree(IReader* stream)
     xr_memcpy128(ptr, stream->pointer(), size);
 
     if (XXH3_64bits(ptr, size) != hdr.nodes_xxh)
-        goto err;
+    {
+        xr_free(ptr);
+        xr_delete(mTree);
+
+        return false;
+    }
 
     for (u32 i = 0; i < hdr.nodes_num; i++)
     {
@@ -218,12 +223,6 @@ bool MODEL::deserialize_tree(IReader* stream)
     fm->mTree = mTree;
 
     return true;
-
-err:
-    xr_free(ptr);
-    xr_delete(mTree);
-
-    return false;
 }
 
 bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback)
@@ -233,7 +232,11 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
         return false;
 
     if (callback && !callback(*rstream))
-        goto err_close;
+    {
+    err_close:
+        FS.r_close(rstream);
+        return false;
+    }
 
     if (rstream->r_u64() != xxh)
         goto err_close;
@@ -257,7 +260,11 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     rstream->advance(trisSize);
 
     if (XXH3_64bits(tris, trisSize) != mid.tris_xxh)
-        goto err_tris;
+    {
+    err_tris:
+        xr_free(tris);
+        goto err_close;
+    }
 
     verts = xr_alloc<Fvector>(verts_count);
     const size_t vertsSize = roundup(verts_count * sizeof(Fvector), 16);
@@ -265,30 +272,26 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     rstream->advance(vertsSize);
 
     if (XXH3_64bits(verts, vertsSize) != mid.verts_xxh)
-        goto err_verts;
+    {
+    err_verts:
+        xr_free(verts);
+        goto err_tris;
+    }
 
     if (rstream->eof())
         return true;
 
     tree = xr_new<Model>();
     if (!deserialize_tree(rstream))
-        goto err_tree;
+    {
+        xr_delete(tree);
+        goto err_verts;
+    }
 
     FS.r_close(rstream);
     status = S_READY;
 
     return true;
-
-err_tree:
-    xr_delete(tree);
-err_verts:
-    xr_free(verts);
-err_tris:
-    xr_free(tris);
-err_close:
-    FS.r_close(rstream);
-
-    return false;
 }
 
 COLLIDER::~COLLIDER() { r_free(); }

@@ -2,6 +2,7 @@
 #include "pseudodog.h"
 #include "script_export_space.h"
 
+class CPsyDogAura;
 class CPsyDogPhantom;
 
 class CPsyDog : public CAI_PseudoDog

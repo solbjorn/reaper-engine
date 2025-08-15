@@ -39,10 +39,10 @@ public:
 private:
     ITEM_TABLE* m_pTable;
     LPCSTR table_sect;
-    //ширина таблицы, если -1 то таблица делается квадратной (ширина равна высоте)
+    // ширина таблицы, если -1 то таблица делается квадратной (ширина равна высоте)
     int table_width;
 
-    //перобразование из LPCSTR в T_ITEM
+    // перобразование из LPCSTR в T_ITEM
     decltype(auto) convert(const char* str)
     {
         if constexpr (std::is_same_v<T_ITEM, float>)
@@ -88,8 +88,8 @@ typename CSIni_Table::ITEM_TABLE& CSIni_Table::table()
     m_pTable = xr_new<ITEM_TABLE>();
 
     VERIFY(table_sect);
-    std::size_t table_size = T_INI_LOADER::GetMaxIndex() + 1;
-    std::size_t cur_table_width = (table_width == -1) ? table_size : (std::size_t)table_width;
+    size_t table_size = T_INI_LOADER::GetMaxIndex() + 1;
+    size_t cur_table_width = (table_width == -1) ? table_size : (size_t)table_width;
 
     m_pTable->resize(table_size);
 
@@ -100,13 +100,13 @@ typename CSIni_Table::ITEM_TABLE& CSIni_Table::table()
 
     for (const auto& i : table_ini.Data)
     {
-        auto cur_index = T_INI_LOADER::IdToIndex(i.first, type_max(T_INI_LOADER::index_type));
+        auto cur_index = T_INI_LOADER::IdToIndex(i.first, type_max<typename T_INI_LOADER::index_type>);
 
-        if (type_max(T_INI_LOADER::index_type) == cur_index)
+        if (type_max<typename T_INI_LOADER::index_type> == cur_index)
             Debug.fatal(DEBUG_INFO, "wrong community %s in section [%s]", i.first.c_str(), table_sect);
 
         (*m_pTable)[cur_index].resize(cur_table_width);
-        for (std::size_t j = 0; j < cur_table_width; j++)
+        for (size_t j = 0; j < cur_table_width; j++)
         {
             (*m_pTable)[cur_index][j] = convert(_GetItem(i.second.c_str(), (int)j, buffer));
         }

@@ -4,6 +4,7 @@
 #include "UIWndCallback.h"
 
 class CGameTask;
+class CUI3tButton;
 class CUIStatic;
 class CUIButton;
 class SGameTaskObjective;

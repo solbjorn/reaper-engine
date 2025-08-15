@@ -311,7 +311,7 @@ void CLocatorAPI::LoadArchive(archive& A)
     fs_entry_point[0] = 0;
 
     shared_str read_path = A.entry_point() ?: "gamedata";
-    if (0 == stricmp(read_path.c_str(), "gamedata"))
+    if (!_stricmp(read_path.c_str(), "gamedata"))
     {
         read_path = "$fs_root$";
         PathPairIt P = pathes.find(read_path.c_str());
@@ -1060,7 +1060,7 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
     if (I != files.end())
     {
         // remove file
-        unlink(I->name);
+        _unlink(I->name);
         char* str = LPSTR(I->name);
         xr_free(str);
         files.erase(I);
@@ -1099,7 +1099,7 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
         {
             if (!bOwerwrite)
                 return;
-            unlink(D->name);
+            _unlink(D->name);
             char* str = LPSTR(D->name);
             xr_free(str);
             files.erase(D);

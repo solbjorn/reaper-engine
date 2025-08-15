@@ -23,7 +23,7 @@ public:
 void fix_texture_thm_name(LPSTR fn)
 {
     LPSTR _ext = strext(fn);
-    if (_ext && (0 == stricmp(_ext, ".tga") || 0 == stricmp(_ext, ".thm") || 0 == stricmp(_ext, ".dds") || 0 == stricmp(_ext, ".bmp") || 0 == stricmp(_ext, ".ogm")))
+    if (_ext && (!_stricmp(_ext, ".tga") || !_stricmp(_ext, ".thm") || !_stricmp(_ext, ".dds") || !_stricmp(_ext, ".bmp") || !_stricmp(_ext, ".ogm")))
         *_ext = 0;
 }
 

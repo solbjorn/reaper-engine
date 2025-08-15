@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <exception>
 #include <iterator>
 #include <tuple>
 

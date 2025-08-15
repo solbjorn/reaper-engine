@@ -50,13 +50,13 @@ template <typename To, typename From>
     else
 #ifdef XR_RTTI_DEBUG
     {
-        auto ret = from->cast<std::remove_pointer_t<Target>>();
+        auto ret = from->template cast<std::remove_pointer_t<Target>>();
         R_ASSERT(ret == dynamic_cast<To>(from));
 
         return ret;
     }
 #else
-        return from->cast<std::remove_pointer_t<Target>>();
+        return from->template cast<std::remove_pointer_t<Target>>();
 #endif
 }
 

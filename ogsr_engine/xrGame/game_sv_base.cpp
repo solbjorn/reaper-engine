@@ -167,9 +167,7 @@ void game_sv_GameState::net_Export_GameTime(NET_Packet& P)
 
 void game_sv_GameState::OnPlayerConnect(ClientID /**id_who/**/) { signal_Syncronize(); }
 
-void game_sv_GameState::Create(shared_str& options)
-{
-}
+void game_sv_GameState::Create(shared_str& options) {}
 
 void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {
@@ -197,10 +195,7 @@ game_sv_GameState::game_sv_GameState()
     m_event_queue = xr_new<GameEventQueue>();
 }
 
-game_sv_GameState::~game_sv_GameState()
-{
-    xr_delete(m_event_queue);
-}
+game_sv_GameState::~game_sv_GameState() { xr_delete(m_event_queue); }
 
 bool game_sv_GameState::change_level(NET_Packet& net_packet, ClientID sender) { return (true); }
 
@@ -250,7 +245,7 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Clie
     break;
     default: {
         string16 tmp;
-        R_ASSERT(0, "Game Event not implemented!!!", itoa(type, tmp, 10));
+        R_ASSERT(0, "Game Event not implemented!!!", _itoa(type, tmp, 10));
     }
     }
 }
@@ -301,4 +296,3 @@ void game_sv_GameState::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)
     VERIFY(creature->m_killer_id == ALife::_OBJECT_ID(-1));
     creature->m_killer_id = e_src->ID;
 }
-

@@ -1,7 +1,10 @@
 LIST(APPEND CMAKE_PROGRAM_PATH "$ENV{LLVMInstallDir}/bin/")
 
+set(CMAKE_AR llvm-lib)
+set(CMAKE_ASM_MASM_COMPILER llvm-ml)
 set(CMAKE_C_COMPILER clang-cl)
-set(CMAKE_C_LINKER lld-link)
 set(CMAKE_CXX_COMPILER clang-cl)
-set(CMAKE_CXX_LINKER lld-link)
+set(CMAKE_LINKER lld-link)
+set(CMAKE_LINKER_TYPE LLD)
 set(CMAKE_MT llvm-mt)
+set(CMAKE_RC_COMPILER llvm-rc)

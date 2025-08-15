@@ -1,6 +1,6 @@
 #pragma once
 
-enum ETaskState
+enum ETaskState : u32
 {
     eTaskStateFail = 0,
     eTaskStateInProgress,

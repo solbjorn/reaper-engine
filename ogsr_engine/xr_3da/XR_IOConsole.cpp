@@ -384,7 +384,7 @@ void CConsole::OnRender()
     }
 
     string16 q;
-    itoa(log_line, q, 10);
+    _itoa(log_line, q, 10);
     u32 qn = xr_strlen(q);
     pFont->SetColor(total_font_color);
     pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%d]", log_line + 1);
@@ -796,7 +796,7 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
         if (name_sz >= in_sz)
         {
             name2.assign(name, in_sz);
-            if (!stricmp(name2.c_str(), in_str))
+            if (!_stricmp(name2.c_str(), in_str))
             {
                 shared_str temp;
                 temp._set(name);

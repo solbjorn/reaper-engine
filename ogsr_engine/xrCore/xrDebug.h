@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstdarg>
+#include <cstdio>
+#include <string>
+
 #define DEBUG_INVOKE __debugbreak()
 
 class xrDebug
@@ -33,15 +37,21 @@ public:
 
 // warning
 // this function can be used for debug purposes only
-IC std::string __cdecl make_string(const char* format, ...)
+IC std::string make_string(const char* format, ...)
 {
-    va_list args;
+    std::va_list args, args_copy;
+
     va_start(args, format);
+    va_copy(args_copy, args);
 
-    char temp[4096];
-    vsprintf(temp, format, args);
+    auto sz = std::vsnprintf(nullptr, 0, format, args) + 1;
+    std::string result(sz, ' ');
+    std::vsnprintf(&result.front(), sz, format, args_copy);
 
-    return (temp);
+    va_end(args_copy);
+    va_end(args);
+
+    return result;
 }
 
 extern xrDebug Debug;

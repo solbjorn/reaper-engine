@@ -91,7 +91,7 @@ void CObjectHandlerPlanner::set_goal(MonsterSpace::EObjectAction object_action, 
         m_max_queue_interval = max_queue_interval;
 
         if (m_max_queue_size == m_min_queue_size)
-            m_queue_size = _max(1, m_min_queue_size);
+            m_queue_size = _max(1u, m_min_queue_size);
         else
             m_queue_size = _max(1, ::Random.randI(m_min_queue_size, m_max_queue_size));
 
@@ -535,7 +535,7 @@ void CObjectHandlerPlanner::update()
     inherited::update();
 }
 
-//Вынесено из object_handler_planner_impl.h
+// Вынесено из object_handler_planner_impl.h
 /*IC*/ CObjectHandlerPlanner::_condition_type CObjectHandlerPlanner::uid(const u32 id0, const u32 id1) const
 {
     VERIFY(!((id0 << 16) & id1));

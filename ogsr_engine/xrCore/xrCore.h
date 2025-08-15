@@ -41,11 +41,6 @@
 
 #include "xrCore_platform.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <math.h>
-
 #define IC inline
 #define ICF __forceinline // !!! this should be used only in critical places found by PROFILER
 #define ICN __declspec(noinline)
@@ -56,40 +51,13 @@
 #define XR_NOVTABLE
 #endif
 
-#include <time.h>
-#include <sys\utime.h>
-
-// Warnings
-#pragma warning(disable : 4251) // object needs DLL interface
-#pragma warning(disable : 4201) // nonstandard extension used : nameless struct/union
-#pragma warning(disable : 4100) // unreferenced formal parameter //TODO: Надо б убрать игнор и всё поправить.
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4714) // __forceinline not inlined
-#ifdef _M_X64
-#pragma warning(disable : 4512)
-#endif
-
-// stl
-#pragma warning(push)
-#pragma warning(disable : 4702)
-#include <algorithm>
-#include <limits>
-#include <vector>
-#include <stack>
-#include <list>
-#include <set>
-#include <map>
-#include <string>
-#include <functional>
-#include <mutex>
-#pragma warning(pop)
-
 // Our headers
 
 #include "xrDebug.h"
 #include "vector.h"
 
 #include "clsid.h"
+#include "xr_rtti.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"
 
@@ -97,8 +65,6 @@
 #include "log.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
-
-#include "xr_rtti.h"
 #include "xr_resource.h"
 
 // stl ext

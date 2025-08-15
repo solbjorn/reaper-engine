@@ -89,7 +89,7 @@ static constexpr ov_callbacks g_ov_callbacks = {
     // read
     [](void* ptr, size_t size, size_t nmemb, void* datasource) -> size_t {
         IReader* F = (IReader*)datasource;
-        const size_t exist_block = _max(0ul, iFloor(F->elapsed() / (float)size));
+        const size_t exist_block = _max(0, iFloor(F->elapsed() / (float)size));
         const size_t read_block = std::min(exist_block, nmemb);
         F->r(ptr, read_block * size);
         return read_block;
@@ -231,7 +231,7 @@ void CSoundRender_Source::load(LPCSTR name)
 {
     string_path fn, N;
     xr_strcpy(N, name);
-    strlwr(N);
+    _strlwr(N);
     if (strext(N))
         *strext(N) = 0;
 

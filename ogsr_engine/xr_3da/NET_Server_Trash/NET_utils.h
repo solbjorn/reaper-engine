@@ -2,8 +2,6 @@
 
 #include "client_id.h"
 
-#pragma pack(push, 1)
-
 constexpr u32 NET_PacketSizeLimit = 8192;
 
 struct NET_Buffer
@@ -441,5 +439,3 @@ public:
         C.set(tmp);
     }
 };
-
-#pragma pack(pop)

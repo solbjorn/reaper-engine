@@ -1067,9 +1067,9 @@ struct CCC_StartTimeSingle : public IConsole_Command
     {
         u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
         sscanf(args, "%d.%d.%d %d:%d:%d.%d", &year, &month, &day, &hours, &mins, &secs, &milisecs);
-        year = _max(year, 1);
-        month = _max(month, 1);
-        day = _max(day, 1);
+        year = _max(year, 1u);
+        month = _max(month, 1u);
+        day = _max(day, 1u);
         g_qwStartGameTime = generate_time(year, month, day, hours, mins, secs, milisecs);
 
         if (!g_pGameLevel)
