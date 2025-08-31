@@ -3,7 +3,7 @@
 // monster base sound types
 namespace MonsterSound
 {
-enum EType
+enum EType : u32
 {
     eMonsterSoundBase = u32(0),
     eMonsterSoundIdle = eMonsterSoundBase | 1,
@@ -26,7 +26,7 @@ enum EType
     eMonsterSoundDummy = u32(-1),
 };
 
-enum EPriority
+enum EPriority : u32
 {
     eCriticalPriority = u32(1),
     eHighPriority = u32(1) << 3,
@@ -34,7 +34,7 @@ enum EPriority
     eLowPriority = u32(1) << 15
 };
 
-enum EVirtualChannels
+enum EVirtualChannels : u32
 {
     eBaseChannel = u32(1) << 7,
     eChannelIndependent = u32(1) << 15, // can be played in any time with any conditions (need shift operator for every id)

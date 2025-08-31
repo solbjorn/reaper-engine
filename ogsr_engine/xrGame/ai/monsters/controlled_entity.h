@@ -1,9 +1,10 @@
 #pragma once
+
 #include "controller/controller.h"
 
 class CEntity;
 
-enum ETask
+enum ETask : u32
 {
     eTaskFollow = u32(0),
     eTaskAttack,

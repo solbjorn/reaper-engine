@@ -16,15 +16,16 @@ class CParticlesObject;
 
 class CScriptParticleAction : public CScriptAbstractAction
 {
+    RTTI_DECLARE_TYPEINFO(CScriptParticleAction, CScriptAbstractAction);
+
 public:
-    enum EGoalType
+    enum EGoalType : u32
     {
         eGoalTypeParticleAttached = u32(0),
         eGoalTypeParticlePosition,
         eGoalTypeDummy = u32(-1),
     };
 
-public:
     shared_str m_caParticleToRun;
     shared_str m_caBoneName;
     EGoalType m_tGoalType;
@@ -35,7 +36,6 @@ public:
     Fvector m_tParticleVelocity;
     bool m_bAutoRemove;
 
-public:
     IC CScriptParticleAction();
     IC CScriptParticleAction(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams& tParticleParams = CParticleParams(), bool bAutoRemove = false);
     IC CScriptParticleAction(LPCSTR caPartcileToRun, const CParticleParams& tParticleParams = CParticleParams(), bool bAutoRemove = false);

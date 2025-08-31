@@ -8,8 +8,9 @@
 
 namespace ALife
 {
-enum EHitType;
+enum EHitType : u32;
 };
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

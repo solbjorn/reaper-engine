@@ -619,14 +619,14 @@ void CAI_Stalker::UpdateCL()
         {
             sight().update();
         }
-        __except (ExceptStackTrace("[" __FUNCTION__ "] stack trace:\n"))
+        __except (ExceptStackTrace("[CAI_Stalker::UpdateCL] stack trace:\n"))
         {
             __try
             {
                 sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
                 sight().update();
             }
-            __except (ExceptStackTrace("[" __FUNCTION__ "] - 2 stack trace:\n"))
+            __except (ExceptStackTrace("[CAI_Stalker::UpdateCL] - 2 stack trace:\n"))
             {
                 Msg("!![%s] error in sight().update() of NPC [%s]", __FUNCTION__, this->Name());
             }
@@ -648,7 +648,7 @@ void CAI_Stalker::UpdateCL()
     STOP_PROFILE
 }
 
-void CAI_Stalker ::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
+void CAI_Stalker::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
 
 CPHDestroyable* CAI_Stalker::ph_destroyable() { return smart_cast<CPHDestroyable*>(character_physics_support()); }
 

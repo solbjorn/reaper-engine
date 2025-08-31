@@ -1,6 +1,6 @@
 #pragma once
 
-enum EGameActions
+enum EGameActions : u32
 {
     kLEFT,
     kRIGHT,
@@ -73,7 +73,6 @@ enum EGameActions
 
     kLASTACTION = u32(-3),
     kNOTBINDED = u32(-2),
-    kFORCEDWORD = u32(-1)
 };
 
 struct _keyboard

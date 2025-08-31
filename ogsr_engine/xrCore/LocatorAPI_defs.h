@@ -1,14 +1,12 @@
 #pragma once
 
-enum FS_List
+enum FS_List : u32
 {
     FS_ListFiles = (1 << 0),
     FS_ListFolders = (1 << 1),
     FS_ClampExt = (1 << 2),
     FS_RootOnly = (1 << 3),
     FS_NoLower = 1 << 4,
-
-    FS_forcedword = u32(-1)
 };
 
 class FS_Path

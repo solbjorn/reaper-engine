@@ -175,13 +175,12 @@ enum class DeviceState
 class XR_NOVTABLE IRender_interface
 {
 public:
-    enum ScreenshotMode
+    enum ScreenshotMode : u32
     {
         SM_NORMAL = 0, // jpeg,	name ignored
         SM_FOR_CUBEMAP = 1, // tga,		name used as postfix
         SM_FOR_GAMESAVE = 2, // dds/dxt1,name used as full-path
         SM_FOR_LEVELMAP = 3, // tga,		name used as postfix (level_name)
-        SM_forcedword = u32(-1)
     };
 
     // options

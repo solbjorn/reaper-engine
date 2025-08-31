@@ -4,9 +4,10 @@
 
 #include "PHCharacter.h"
 #include "MathUtils.h"
+
 namespace ALife
 {
-enum EHitType;
+enum EHitType : u32;
 };
 
 namespace DetailPathManager
@@ -224,8 +225,8 @@ public:
     }
     void SetPhysicsRefObject(CPhysicsShellHolder* ref_object) { m_character->SetPhysicsRefObject(ref_object); };
 
-    void CalcMaximumVelocity(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/){};
-    void CalcMaximumVelocity(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
+    void CalcMaximumVelocity(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/) {};
+    void CalcMaximumVelocity(float& /**dest/**/, float /**accel/**/, float /**friction/**/) {};
     void ActivateBox(DWORD id, BOOL Check = false);
     bool ActivateBoxDynamic(DWORD id, int num_it = 9, int num_steps = 5, float resolve_depth = 0.01f);
     void InterpolateBox(DWORD id, float k);
@@ -376,4 +377,5 @@ public:
 private:
     void UpdateCollisionDamage();
 };
+
 #endif

@@ -9,7 +9,7 @@ class CGameFont
     friend class dxFontRender;
 
 public:
-    enum EAligment
+    enum EAligment : u32
     {
         alLeft = 0,
         alRight,
@@ -53,14 +53,12 @@ protected:
     u32 uFlags;
 
 public:
-    enum
+    enum : u32
     {
         fsGradient = (1 << 0),
         fsDeviceIndependent = (1 << 1),
         fsValid = (1 << 2),
         fsMultibyte = (1 << 3),
-
-        fsForceDWORD = u32(-1)
     };
 
     IC const Fvector& GetCharTC(u16 c) const { return TCMap[c]; }

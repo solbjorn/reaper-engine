@@ -13,7 +13,7 @@ class CControllerAnimation : public CControlAnimationBase
     CController* m_controller;
 
 public:
-    enum ELegsActionType
+    enum ELegsActionType : u32
     {
         eLegsTypeBase = u32(1) << 15,
 
@@ -53,7 +53,7 @@ public:
         eLegsUndefined = u32(-1),
     };
 
-    enum ETorsoActionType
+    enum ETorsoActionType : u32
     {
         eTorsoIdle,
         eTorsoSteal,

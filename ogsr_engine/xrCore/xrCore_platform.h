@@ -27,17 +27,18 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4005)
-#include <string.h>
+#include <cstring>
 
-_CRT_BEGIN_C_HEADER
+#ifndef _INC_STRING
+#error Wrong include order to override UCRT functions
+#endif
 
-static __forceinline _Check_return_ int _stricmp(const char* left, const char* right)
-{
-    extern int strcasecmp(const char* left, const char* right);
-    return strcasecmp(left, right);
+// llvm-libc
+extern "C" {
+extern int strcasecmp(const char* left, const char* right);
 }
 
-_CRT_END_C_HEADER
+#define _stricmp(l, r) strcasecmp(l, r)
 
 #include <windows.h>
 #include <windowsx.h>

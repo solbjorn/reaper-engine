@@ -71,7 +71,7 @@ void LogStackTrace(const char* header, const bool dump_lua_locals)
         if (auto pCrashHandler = Debug.get_crashhandler())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![" __FUNCTION__ "] Thread: [%s]", GetThreadName());
+        Msg("!![%s] Thread: [%s]", __FUNCTION__, GetThreadName());
         Log(BuildStackTrace(header));
         Log("********************************************************************************");
     }
@@ -86,7 +86,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool
         if (auto pCrashHandler = Debug.get_crashhandler())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![" __FUNCTION__ "] Thread: [%s], ExceptionCode: [%x]", GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
+        Msg("!![%s] Thread: [%s], ExceptionCode: [%x]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
         auto save = *pExceptionInfo->ContextRecord;
         Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
         *pExceptionInfo->ContextRecord = save;
@@ -335,7 +335,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Log("Exception catched in function [" __FUNCTION__ "]");
+        Msg("Exception catched in function [%s]", __FUNCTION__);
     }
 }
 #endif
@@ -359,7 +359,7 @@ static void format_message(char* buffer, const size_t& buffer_size)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        Log("Exception catched in function [" __FUNCTION__ "]");
+        Msg("Exception catched in function [%s]", __FUNCTION__);
     }
 }
 

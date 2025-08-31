@@ -2,14 +2,14 @@
 
 namespace ControlCom
 {
-enum EControlType
+enum EControlType : u32
 {
     // 1st level
     eControlMovement = u32(0), // linear velocity
     eControlPath, // path builder
     eControlDir, // model direction
     eControlAnimation, // animation manager
-    //		eControlSound,					// sound manager
+                       //		eControlSound,					// sound manager
 
     // 2nd level
     eControlSequencer, // capture: anim
@@ -43,7 +43,7 @@ struct IComData
 struct IEventData
 {};
 
-enum EEventType
+enum EEventType : u32
 {
     eventAnimationStart = u32(0),
     eventAnimationEnd,
@@ -71,7 +71,7 @@ enum EEventType
     eventCriticalWoundEnd
 };
 
-enum ECaptureType
+enum ECaptureType : u32
 {
     eCapturePath = u32(1) << 0,
     eCaptureMovement = u32(1) << 1,

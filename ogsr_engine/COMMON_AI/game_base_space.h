@@ -9,18 +9,14 @@ enum EGameTypes
     GAME_DUMMY = 255 // temporary game type
 };
 
-enum EGamePlayerFlags
+enum EGamePlayerFlags : u32
 {
     GAME_PLAYER_FLAG_LOCAL = (1 << 0),
-
-    GAME_PLAYER_FLAG_FORCEDWORD = u32(-1)
 };
 
-enum EGamePhases
+enum EGamePhases : u32
 {
     GAME_PHASE_NONE = 0,
     GAME_PHASE_INPROGRESS,
     GAME_PHASE_PENDING,
-    
-    GAME_PHASE_FORCEDWORD = u32(-1)
 };

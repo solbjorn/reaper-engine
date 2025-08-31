@@ -39,11 +39,11 @@ enum
     M_STATISTIC_UPDATE,
     M_STATISTIC_UPDATE_RESPOND,
     //-----------------------------------------------------
-    
+
     M_CHANGE_SELF_NAME,
 };
 
-enum
+enum : u32
 {
     GE_OWNERSHIP_TAKE, // DUAL: Client request for ownership of an item
     GE_OWNERSHIP_REJECT, // DUAL: Client request ownership rejection
@@ -77,12 +77,12 @@ enum
     GEG_PLAYER_ITEM2BELT,
     GEG_PLAYER_ITEM2RUCK,
     GEG_PLAYER_ITEM_EAT,
-    //GEG_PLAYER_ITEM_SELL,
+    // GEG_PLAYER_ITEM_SELL,
     GEG_PLAYER_ACTIVATEARTEFACT,
 
     GEG_PLAYER_ATTACH_HOLDER,
     GEG_PLAYER_DETACH_HOLDER,
-    
+
     //-------------------------------------
     GE_KILL_SOMEONE,
 
@@ -91,24 +91,20 @@ enum
 
     GE_TRANSFER_TAKE,
     GE_TRANSFER_REJECT,
-
-    GE_FORCEDWORD = u32(-1)
 };
 
-enum EGameMessages
-{ // game_cl <----> game_sv messages
-
+// game_cl <----> game_sv messages
+enum EGameMessages : u32
+{
     GAME_EVENT_PLAYER_CONNECTED,
 
     GAME_EVENT_CREATE_CLIENT,
     GAME_EVENT_ON_HIT,
 
     GAME_EVENT_PLAYER_AUTH,
-    
-    GAME_EVENT_FORCEDWORD = u32(-1)
 };
 
-enum
+enum : u32
 {
     M_SPAWN_OBJECT_LOCAL = (1 << 0), // after spawn it becomes local (authorative)
     M_SPAWN_OBJECT_HASUPDATE = (1 << 2), // after spawn info it has update inside message
@@ -118,8 +114,6 @@ enum
     M_SPAWN_UPDATE = (1 << 6), // + update packet
     M_SPAWN_TIME = (1 << 7), // + spawn time
     M_SPAWN_DENIED = (1 << 8), // don't spawn entity with this flag
-
-    M_SPAWN_OBJECT_FORCEDWORD = u32(-1)
 };
 
 #endif /*_INCDEF_XRMESSAGES_H_*/

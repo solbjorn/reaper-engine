@@ -104,9 +104,10 @@ struct Particle
 
 typedef void (*OnBirthParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
 typedef void (*OnDeadParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
+
 //////////////////////////////////////////////////////////////////////
 // Type codes for domains
-enum PDomainEnum
+enum PDomainEnum : u32
 {
     PDPoint = 0, // Single point
     PDLine = 1, // Line segment
@@ -119,11 +120,11 @@ enum PDomainEnum
     PDBlob = 8, // Gaussian blob
     PDDisc = 9, // Arbitrarily-oriented disc
     PDRectangle = 10, // Rhombus-shaped planar region
-    domain_enum_force_dword = u32(-1)
 };
+
 //////////////////////////////////////////////////////////////////////
 // Type codes for all actions
-enum PActionEnum
+enum PActionEnum : u32
 {
     PAAvoidID, // Avoid entering the domain of space.
     PABounceID, // Bounce particles off a domain of space.
@@ -157,8 +158,8 @@ enum PActionEnum
     PAVortexID, //
     PATurbulenceID, //
     PAScatterID, //
-    action_enum_force_dword = u32(-1)
 };
+
 struct ParticleAction;
 
 class XR_NOVTABLE IParticleManager

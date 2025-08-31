@@ -23,7 +23,7 @@ class CScriptWatchAction : public CScriptAbstractAction
     RTTI_DECLARE_TYPEINFO(CScriptWatchAction, CScriptAbstractAction);
 
 public:
-    enum EGoalType
+    enum EGoalType : u32
     {
         eGoalTypeObject = u32(0),
         eGoalTypeWatchType,
@@ -32,7 +32,6 @@ public:
         eGoalTypeDummy = u32(-1),
     };
 
-public:
     CObject* m_tpObjectToWatch;
     SightManager::ESightType m_tWatchType{};
     EGoalType m_tGoalType{};
@@ -44,7 +43,6 @@ public:
     float vel_bone_x{};
     float vel_bone_y{};
 
-public:
     CScriptWatchAction();
     IC CScriptWatchAction(SightManager::ESightType tWatchType);
     IC CScriptWatchAction(SightManager::ESightType tWatchType, const Fvector& tDirection);

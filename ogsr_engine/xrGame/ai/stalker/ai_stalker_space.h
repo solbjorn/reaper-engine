@@ -12,7 +12,7 @@
 
 namespace StalkerSpace
 {
-enum EStalkerSounds
+enum EStalkerSounds : u32
 {
     eStalkerSoundDie = u32(0),
     eStalkerSoundDieInAnomaly,
@@ -40,10 +40,9 @@ enum EStalkerSounds
     eStalkerSoundEnemyKilledOrWounded,
 
     eStalkerSoundScript,
-    eStalkerSoundDummy = u32(-1),
 };
 
-enum EStalkerSoundMasks
+enum EStalkerSoundMasks : u32
 {
     eStalkerSoundMaskAnySound = u32(0),
     eStalkerSoundMaskDie = u32(-1),
@@ -74,13 +73,11 @@ enum EStalkerSoundMasks
     eStalkerSoundMaskTolls = eStalkerSoundMaskDanger,
     eStalkerSoundMaskGrenadeAlarm = eStalkerSoundMaskDanger,
     eStalkerSoundMaskFriendlyGrenadeAlarm = eStalkerSoundMaskDanger,
-    eStalkerSoundMaskDummy = u32(-1),
 };
 
 enum EBodyAction : u32
 {
     eBodyActionNone = u32(0),
     eBodyActionHello,
-    eBodyActionDummy = u32(-1),
 };
 }; // namespace StalkerSpace

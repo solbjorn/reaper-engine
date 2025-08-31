@@ -15,7 +15,7 @@ class CDangerObject : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CDangerObject);
 
 public:
-    enum EDangerType
+    enum EDangerType : u32
     {
         eDangerTypeBulletRicochet = u32(0),
         eDangerTypeAttackSound,
@@ -25,15 +25,13 @@ public:
         eDangerTypeAttacked,
         eDangerTypeGrenade,
         eDangerTypeEnemySound,
-        eDangerTypeDummy = u32(-1),
     };
 
-    enum EDangerPerceiveType
+    enum EDangerPerceiveType : u32
     {
         eDangerPerceiveTypeVisual = u32(0),
         eDangerPerceiveTypeSound,
         eDangerPerceiveTypeHit,
-        eDangerPerceiveTypeDummy = u32(-1),
     };
 
 private:

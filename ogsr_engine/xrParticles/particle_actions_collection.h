@@ -286,13 +286,13 @@ struct PASource : public ParticleAction
     RTTI_DECLARE_TYPEINFO(PASource, ParticleAction);
 
 public:
-    enum
+    enum : u32
     {
         flSingleSize = (1ul << 29ul), // True to get positionB from position.
         flSilent = (1ul << 30ul),
         flVertexB_tracks = (1ul << 31ul), // True to get positionB from position.
-        fl_FORCEDWORD = u32(-1)
     };
+
     pDomain positionL; // Choose a position in this domain. (local_space)
     pDomain velocityL; // Choose a velocity in this domain. (local_space)
     pDomain position; // Choose a position in this domain.

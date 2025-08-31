@@ -33,13 +33,11 @@ public:
     typedef xr_map<shared_str, CSpaceRestrictionBridge*> RESTRICTIONS;
 
 private:
-    enum
+    enum : u32
     {
         MAX_RESTRICTION_PER_TYPE_COUNT = u32(128),
-        dummy = u32(-1),
     };
 
-private:
     RESTRICTIONS m_restrictions;
     shared_str m_default_out_restrictions;
     shared_str m_default_in_restrictions;

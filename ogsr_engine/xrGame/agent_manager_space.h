@@ -10,7 +10,7 @@
 
 namespace AgentManager
 {
-enum EProperties
+enum EProperties : u32
 {
     ePropertyOrders = u32(0),
     ePropertyItem,
@@ -18,10 +18,9 @@ enum EProperties
     ePropertyDanger,
 
     ePropertyScript,
-    ePropertyDummy = u32(-1),
 };
 
-enum EOperators
+enum EOperators : u32
 {
     eOperatorNoOrders = u32(0),
     eOperatorGatherItem,
@@ -29,6 +28,5 @@ enum EOperators
     eOperatorReactOnDanger,
 
     eOperatorScript,
-    eOperatorDummy = u32(-1),
 };
 }; // namespace AgentManager

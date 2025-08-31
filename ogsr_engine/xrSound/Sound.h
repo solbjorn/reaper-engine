@@ -37,34 +37,30 @@ enum : u32
     ss_UseFloat32 = 1ul << 3ul, //!< Use 32-bit float sound instead of 16-bit
 };
 
-enum
+enum : u32
 {
     sq_DEFAULT,
     sq_NOVIRT,
     sq_LIGHT,
     sq_HIGH,
-    sq_forcedword = u32(-1)
 };
 
-enum
+enum : u32
 {
     sg_Undefined = 0,
     sg_SourceType = u32(-1),
-    sg_forcedword = u32(-1),
 };
 
-enum
+enum : u32
 {
     sm_Looped = (1ul << 0ul), //!< Looped
     sm_2D = (1ul << 1ul), //!< 2D mode
-    sm_forcedword = u32(-1),
 };
 
-enum esound_type
+enum esound_type : u32
 {
     st_Effect = 0,
     st_Music = 1,
-    st_forcedword = u32(-1),
 };
 
 class CSound_UserDataVisitor;

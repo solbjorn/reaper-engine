@@ -39,7 +39,7 @@ class CScriptMovementAction : public CScriptAbstractAction
     RTTI_DECLARE_TYPEINFO(CScriptMovementAction, CScriptAbstractAction);
 
 public:
-    enum EGoalType
+    enum EGoalType : u32
     {
         eGoalTypeObject = u32(0),
         eGoalTypePatrolPath,
@@ -52,7 +52,7 @@ public:
         eGoalTypeDummy = u32(-1),
     };
 
-    enum EInputKeys
+    enum EInputKeys : u32
     {
         eInputKeyNone = u32(1) << 0,
         eInputKeyForward = u32(1) << 1,

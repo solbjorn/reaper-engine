@@ -1,6 +1,6 @@
 #pragma once
 
-enum EMonsterState
+enum EMonsterState : u32
 {
     eGlobalState = u32(1) << 15,
 

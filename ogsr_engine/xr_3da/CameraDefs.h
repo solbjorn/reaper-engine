@@ -42,14 +42,13 @@ struct SCamEffectorInfo
     }
 };
 
-enum ECameraStyle
+enum ECameraStyle : u32
 {
     csCamDebug,
     csFirstEye,
     csLookAt,
     csMax,
     csFixed,
-    cs_forcedword = u32(-1)
 };
 
 enum ECamEffectorType

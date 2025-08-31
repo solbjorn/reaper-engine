@@ -13,7 +13,7 @@ namespace text_editor
 {
 class base;
 
-enum key_state // Flags32
+enum key_state : u32
 {
     ks_free = u32(0),
     ks_LShift = u32(1) << 0,
@@ -27,8 +27,6 @@ enum key_state // Flags32
     ks_Shift = u32(ks_LShift | ks_RShift),
     ks_Ctrl = u32(ks_LCtrl | ks_RCtrl),
     ks_Alt = u32(ks_LAlt | ks_RAlt),
-
-    ks_force = u32(-1)
 }; // enum key_state
 
 enum init_mode

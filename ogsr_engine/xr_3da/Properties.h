@@ -8,7 +8,7 @@
 // stringZ	name
 // []		data
 
-enum xrProperties
+enum xrProperties : u32
 {
     xrPID_MARKER = 0,
     xrPID_MATRIX, // really only name(stringZ) is written into stream
@@ -22,7 +22,6 @@ enum xrProperties
     xrPID_OBJECT, // really only name(stringZ) is written into stream
     xrPID_STRING, // really only name(stringZ) is written into stream
     xrPID_MARKER_TEMPLATE,
-    xrPID_FORCEDWORD = u32(-1)
 };
 
 struct xrP_INTEGER

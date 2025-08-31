@@ -22,11 +22,11 @@ class CALifeOnlineOfflineGroupBrain;
 #pragma warning(disable : 4005)
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
-enum eTraderFlags
+enum eTraderFlags : u32
 {
     eTraderFlagInfiniteAmmo = u32(1) << 0,
-    eTraderFlagDummy = u32(-1),
 };
+
 //	float							m_fCumulativeItemMass;
 //	int								m_iCumulativeItemVolume;
 u32 m_dwMoney;

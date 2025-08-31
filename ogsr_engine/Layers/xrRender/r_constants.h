@@ -16,6 +16,7 @@ enum
     RC_dx10texture = 100, //	For DX10 sampler and texture are different resources
     RC_dx11UAV = 101
 };
+
 enum
 {
     RC_1x1 = 0, // vector1, or scalar
@@ -29,7 +30,8 @@ enum
     RC_3x4a, // array: 4x3 matrix, transpose
     RC_4x4a // array: 4x4 matrix, transpose
 };
-enum
+
+enum : u32
 {
     //	Don't change this since some code relies on magic numbers
     RC_dest_pixel = (1 << 0),

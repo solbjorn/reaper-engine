@@ -80,7 +80,7 @@ protected:
     typedef CBasePathManager<CLevelGraph, SBaseParameters<float, u32, u32>, u32, u32> CLevelPathManager;
 
 private:
-    enum EPathState
+    enum EPathState : u32
     {
         ePathStateSelectGameVertex = u32(0),
         ePathStateBuildGamePath,

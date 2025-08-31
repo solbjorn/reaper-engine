@@ -9,7 +9,7 @@
 
 namespace ScriptStorage
 {
-enum ELuaMessageType
+enum ELuaMessageType : u32
 {
     eLuaMessageTypeInfo = u32(0),
     eLuaMessageTypeError,
@@ -18,9 +18,9 @@ enum ELuaMessageType
     eLuaMessageTypeHookReturn,
     eLuaMessageTypeHookLine,
     eLuaMessageTypeHookCount,
-    eLuaMessageTypeHookTailReturn = u32(-1),
 };
 }
+
 using namespace ScriptStorage;
 
 struct lua_State;

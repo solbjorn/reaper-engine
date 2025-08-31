@@ -1,7 +1,7 @@
 #pragma once
 
 // MESH as it is represented in file
-enum MT
+enum MT : u32
 {
     MT_NORMAL = 0,
     MT_HIERRARHY = 1,
@@ -19,7 +19,7 @@ enum MT
     MT_3DFLUIDVOLUME = 12,
 };
 
-enum OGF_Chuncks
+enum OGF_Chuncks : u32
 {
     OGF_HEADER = 1,
     OGF_TEXTURE = 2,
@@ -45,10 +45,9 @@ enum OGF_Chuncks
     OGF_FASTPATH = 22, // * extended/fast geometry
     OGF_S_LODS = 23, // * For skeletons only (Ini-file)
     OGF_S_MOTION_REFS2 = 24, // * changes in format
-    OGF_forcedword = 0xFFFFFFFF
 };
 
-enum OGF_SkeletonVertType
+enum OGF_SkeletonVertType : u32
 {
     OGF_VERTEXFORMAT_FVF_1L = 1 * 0x12071980,
     OGF_VERTEXFORMAT_FVF_2L = 2 * 0x12071980,

@@ -17,15 +17,16 @@
 
 class CScriptSoundAction : public CScriptAbstractAction
 {
+    RTTI_DECLARE_TYPEINFO(CScriptSoundAction, CScriptAbstractAction);
+
 public:
-    enum EGoalType
+    enum EGoalType : u32
     {
         eGoalTypeSoundAttached = u32(0),
         eGoalTypeSoundPosition,
         eGoalTypeDummy = u32(-1),
     };
 
-public:
     shared_str m_caSoundToPlay;
     shared_str m_caBoneName;
     EGoalType m_tGoalType;
@@ -38,7 +39,6 @@ public:
     int m_monster_sound_delay{};
     MonsterSpace::EMonsterHeadAnimType m_tHeadAnimType;
 
-public:
     IC CScriptSoundAction();
     IC CScriptSoundAction(LPCSTR caSoundToPlay, LPCSTR caBoneName, const Fvector& tPositionOffset = Fvector().set(0, 0, 0), const Fvector& tAngleOffset = Fvector().set(0, 0, 0),
                           bool bLooped = false, ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);

@@ -49,7 +49,7 @@ struct SSumStackCell
     int iCurrentSum;
 };
 
-enum ECombatResult
+enum ECombatResult : u32
 {
     eCombatResultRetreat1 = u32(0),
     eCombatResultRetreat2,
@@ -57,23 +57,20 @@ enum ECombatResult
     eCombatResult1Kill2,
     eCombatResult2Kill1,
     eCombatResultBothKilled,
-    eCombatDummy = u32(-1),
 };
 
-enum ECombatAction
+enum ECombatAction : u32
 {
     eCombatActionAttack = u32(0),
     eCombatActionRetreat,
-    eCombatActionDummy = u32(-1),
 };
 
-enum EMeetActionType
+enum EMeetActionType : u32
 {
     eMeetActionTypeAttack = u32(0),
     eMeetActionTypeInteract,
     eMeetActionTypeIgnore,
     eMeetActionSmartTerrain,
-    eMeetActionTypeDummy = u32(-1),
 };
 
 enum ERelationType : u32
@@ -86,7 +83,7 @@ enum ERelationType : u32
     eRelationTypeDummy = u32(-1),
 };
 
-enum EHitType
+enum EHitType : u32
 {
     eHitTypeBurn = u32(0),
     eHitTypeShock,
@@ -109,22 +106,20 @@ enum ETakeType
     eTakeTypeRest,
 };
 
-enum EWeaponPriorityType
+enum EWeaponPriorityType : u32
 {
     eWeaponPriorityTypeKnife = u32(0),
     eWeaponPriorityTypeSecondary,
     eWeaponPriorityTypePrimary,
     eWeaponPriorityTypeGrenade,
-    eWeaponPriorityTypeDummy = u32(-1),
 };
 
-enum ECombatType
+enum ECombatType : u32
 {
     eCombatTypeMonsterMonster = u32(0),
     eCombatTypeMonsterAnomaly,
     eCombatTypeAnomalyMonster,
     eCombatTypeSmartTerrain,
-    eCombatTypeDummy = u32(-1),
 };
 
 // возможность подключения аддонов

@@ -20,12 +20,12 @@ extern BOOL bDebug;
         if (x) \
         { \
             x->AddRef(); \
-            Msg("[" __FUNCTION__ "] refCount of [" #x "]: [%u]", x->Release()); \
+            Msg("[%s] refCount of [" #x "]: [%u]", __FUNCTION__, x->Release()); \
         } \
     }
 
 // psDeviceFlags
-enum
+enum : u32
 {
     /* 1ul << 0ul, */
     rsClearBB = (1ul << 1ul),
@@ -59,7 +59,7 @@ extern u32 psCurrentVidMode[];
 extern Flags32 psDeviceFlags;
 extern Flags32 psDeviceFlags2;
 
-enum
+enum : u32
 {
     rsOptShadowGeom = 1 << 0,
 };

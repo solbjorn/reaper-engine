@@ -171,11 +171,10 @@ class CHelicopter : public CEntity,
 public:
     typedef CEntity inherited;
 
-    enum EHeliState
+    enum EHeliState : u32
     {
         eAlive = u32(0),
         eDead,
-        eForce = u32(-1)
     };
 
     // heli weapons

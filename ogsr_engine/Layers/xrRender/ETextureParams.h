@@ -3,16 +3,16 @@
 
 struct STextureParams
 {
-    enum ETType
+    enum ETType : u32
     {
         ttImage = 0,
         ttCubeMap,
         ttBumpMap,
         ttNormalMap,
         ttTerrain,
-        ttForceU32 = u32(-1)
     };
-    enum ETFormat
+
+    enum ETFormat : u32
     {
         tfDXT1 = 0,
         tfADXT1,
@@ -28,25 +28,25 @@ struct STextureParams
         tfA8,
         tfL8,
         tfA8L8,
-        tfForceU32 = u32(-1)
     };
-    enum ETBumpMode
+
+    enum ETBumpMode : u32
     {
         tbmResereved = 0,
         tbmNone,
         tbmUse,
         tbmUseParallax,
-        tbmForceU32 = u32(-1)
     };
-    enum ETMaterial
+
+    enum ETMaterial : u32
     {
         tmOrenNayar_Blin = 0,
         tmBlin_Phong,
         tmPhong_Metal,
         tmMetal_OrenNayar,
-        tmForceU32 = u32(-1)
     };
-    enum
+
+    enum : u32
     {
         kMIPFilterAdvanced = 5,
 
@@ -69,7 +69,7 @@ struct STextureParams
         kMIPFilterKaiser = 14,
     };
 
-    enum
+    enum : u32
     {
         flGenerateMipMaps = (1 << 0),
         flBinaryAlpha = (1 << 1),
@@ -85,8 +85,6 @@ struct STextureParams
         flImplicitLighted = (1 << 24),
         flHasAlpha = (1 << 25),
         flBumpDetail = (1 << 26),
-
-        flForceU32 = u32(-1)
     };
 
     // texture part
@@ -178,4 +176,5 @@ struct STextureParams
 #define THUMB_HEIGHT 128
 #define THUMB_SIZE THUMB_HEIGHT* THUMB_WIDTH
 //----------------------------------------------------
+
 #endif /*_INCDEF_TextureParams_H_*/

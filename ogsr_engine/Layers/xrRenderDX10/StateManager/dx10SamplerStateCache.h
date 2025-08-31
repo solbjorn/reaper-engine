@@ -4,7 +4,7 @@
 class dx10SamplerStateCache
 {
 public:
-    enum
+    enum : u32
     {
         hInvalidHandle = 0xFFFFFFFF
     };

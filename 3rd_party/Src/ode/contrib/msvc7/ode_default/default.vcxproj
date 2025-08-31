@@ -71,7 +71,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>../../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;dSINGLE;MSVC;dNODEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -Dalloca=_alloca</AdditionalOptions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -85,7 +85,6 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -128,7 +127,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>../../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;dSINGLE;MSVC;dNODEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Dalloca=_alloca</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -Dalloca=_alloca</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -142,7 +141,6 @@
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -217,24 +215,26 @@
     <ClCompile Include="..\..\..\ode\src\array.cpp" />
     <ClCompile Include="..\..\..\ode\src\Bounder33.cpp" />
     <ClCompile Include="..\..\..\ode\src\collision_kernel.cpp" />
-    <ClCompile Include="..\..\..\ode\src\collision_quadtreespace.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
+    <ClCompile Include="..\..\..\ode\src\collision_quadtreespace.cpp" />
     <ClCompile Include="..\..\..\ode\src\collision_space.cpp" />
-    <ClCompile Include="..\..\..\ode\src\collision_std.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
+    <ClCompile Include="..\..\..\ode\src\collision_std.cpp" />
     <ClCompile Include="..\..\..\ode\src\collision_transform.cpp" />
     <ClCompile Include="..\..\..\ode\src\collision_util.cpp" />
     <ClCompile Include="de_padf_integration.cpp" />
     <ClCompile Include="..\..\..\ode\src\error.cpp" />
     <ClCompile Include="..\..\..\ode\src\export-dif.cpp" />
-    <ClCompile Include="..\..\..\ode\src\fastdot.c" />
-    <ClCompile Include="..\..\..\ode\src\fastldlt.c" />
-    <ClCompile Include="..\..\..\ode\src\fastlsolve.c" />
-    <ClCompile Include="..\..\..\ode\src\fastltsolve.c" />
+    <ClCompile Include="..\..\..\ode\src\fastdot.c">
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c23</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ode\src\fastldlt.c">
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c23</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ode\src\fastlsolve.c">
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c23</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ode\src\fastltsolve.c">
+      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c23</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\..\ode\src\joint.cpp" />
     <ClCompile Include="..\..\..\ode\src\lcp.cpp" />
     <ClCompile Include="..\..\..\ode\src\mass.cpp" />

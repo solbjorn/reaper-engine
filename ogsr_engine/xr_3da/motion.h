@@ -53,12 +53,12 @@ class XR_NOVTABLE CCustomMotion : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CCustomMotion);
 
 protected:
-    enum EMotionType
+    enum EMotionType : u32
     {
         mtObject = 0,
         mtSkeleton,
-        ForceDWORD = u32(-1)
     };
+
     EMotionType mtype{};
     int iFrameStart, iFrameEnd;
     float fFPS;
@@ -211,4 +211,5 @@ public:
     virtual bool Load(IReader& F);
     bool Equal(CClip* c);
 };
+
 #endif

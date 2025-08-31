@@ -118,7 +118,7 @@ struct SVelocityParam
 };
 
 // Activities
-enum EMotionAnim
+enum EMotionAnim : u32
 {
     eAnimStandIdle = u32(0),
     eAnimStandTurnLeft,
@@ -232,7 +232,7 @@ enum EMotionAnim
 };
 
 // Generic actions
-enum EAction
+enum EAction : u32
 {
     ACT_STAND_IDLE = u32(0),
     ACT_SIT_IDLE,
@@ -250,7 +250,6 @@ enum EAction
     ACT_LOOK_AROUND,
     ACT_HOME_WALK_GROWL,
     ACT_HOME_WALK_SMELLING,
-    ACT_NONE = u32(-1)
 };
 
 enum EPState

@@ -56,7 +56,7 @@ enum EWorldProperties : u32
     eWorldPropertyDummy = u32(-1),
 };
 
-enum EWorldOperators
+enum EWorldOperators : u32
 {
     eWorldOperatorShow = u32(0),
     eWorldOperatorHide,
@@ -96,6 +96,5 @@ enum EWorldOperators
     eWorldOperatorUse,
 
     eWorldOperatorNoItemsIdle = u32((u16(-1) << 16) | eWorldOperatorIdle),
-    eWorldOperatorDummy = u32(-1),
 };
 }; // namespace ObjectHandlerSpace

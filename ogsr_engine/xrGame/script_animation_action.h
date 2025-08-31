@@ -17,14 +17,13 @@ class CScriptAnimationAction : public CScriptAbstractAction
     RTTI_DECLARE_TYPEINFO(CScriptAnimationAction, CScriptAbstractAction);
 
 public:
-    enum EGoalType
+    enum EGoalType : u32
     {
         eGoalTypeAnimation = u32(0),
         eGoalTypeMental,
         eGoalTypeDummy = u32(-1),
     };
 
-public:
     shared_str m_caAnimationToPlay;
     MonsterSpace::EMentalState m_tMentalState{};
     EGoalType m_tGoalType{};
@@ -32,7 +31,6 @@ public:
     MonsterSpace::EScriptMonsterAnimAction m_tAnimAction;
     int anim_index{};
 
-public:
     IC CScriptAnimationAction();
     IC CScriptAnimationAction(LPCSTR caAnimationToPlay, bool use_animation_movement_controller = false);
     IC CScriptAnimationAction(MonsterSpace::EMentalState tMentalState);

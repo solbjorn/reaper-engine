@@ -10,7 +10,7 @@
 
 namespace StalkerMovement
 {
-enum eVelocities
+enum eVelocities : u32
 {
     eVelocityStanding = u32(1) << 0,
     eVelocityWalk = u32(1) << 1,

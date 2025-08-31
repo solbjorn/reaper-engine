@@ -751,7 +751,7 @@ class includer final : public ID3DInclude
     IReader* R{};
 
 public:
-    HRESULT __stdcall Open(D3D10_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+    STDMETHOD(Open)(D3D10_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
     {
         string_path pname;
         strconcat(sizeof(pname), pname, RImplementation.getShaderPath(), pFileName);
@@ -771,7 +771,7 @@ public:
         return D3D_OK;
     }
 
-    HRESULT __stdcall Close(LPCVOID) override
+    STDMETHOD(Close)(LPCVOID) override
     {
         if (R)
             FS.r_close(R);

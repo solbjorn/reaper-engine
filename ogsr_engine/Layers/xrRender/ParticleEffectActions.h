@@ -57,13 +57,11 @@ struct PVector
     float mn;
     float mx;
 
-    enum EType
+    enum EType : u32
     {
         vNum,
         vAngle,
         vColor,
-
-        _force_u32 = u32(-1),
     };
 
     EType type;
@@ -92,16 +90,14 @@ public:
         Fvector v[3];
     };
 
-    enum EType
+    enum EType : u32
     {
         vNum,
         vAngle,
         vColor,
-
-        _force_u32 = u32(-1),
     };
 
-    enum
+    enum : u32
     {
         flRenderable = (1 << 0)
     };

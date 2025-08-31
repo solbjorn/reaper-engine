@@ -55,19 +55,8 @@
       copy /Y "..\configs\CIAIR_48000.mhr" "$(SolutionDir)\bin_$(PlatformShortName)\CIAIR_48000.mhr"
     </NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
-      set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       RD /S/Q _Build
-      md _Build
-      cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DALSOFT_UTILS=OFF -DALSOFT_EXAMPLES=OFF ..\openal-soft
-      cmake --build . --config $(Configuration)
-      copy /Y "OpenAL32.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.lib"
-      copy /Y "OpenAL32.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\OpenAL32.pdb"
-      md "$(SolutionDir)\bin_$(PlatformShortName)"
-      copy /Y "OpenAL32.dll" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.dll"
-      copy /Y "OpenAL32.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\OpenAL32.pdb"
-      copy /Y "..\configs\alsoft.ini" "$(SolutionDir)\bin_$(PlatformShortName)\alsoft.ini"
-      copy /Y "..\configs\CIAIR_48000.mhr" "$(SolutionDir)\bin_$(PlatformShortName)\CIAIR_48000.mhr"
+      $(NMakeBuildCommandLine)
     </NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q _Build</NMakeCleanCommandLine>
   </PropertyGroup>
