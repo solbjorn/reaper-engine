@@ -18,7 +18,7 @@ class CUIArtefactDetectorBase : public virtual RTTI::Enable
 
 public:
     virtual ~CUIArtefactDetectorBase() = default;
-    virtual void update() {};
+    virtual void update() {}
 };
 
 class CUIDetectorWave : public CUIFrameLineWnd
@@ -29,11 +29,12 @@ public:
     typedef CUIFrameLineWnd inherited;
 
 protected:
-    float m_curr_v;
-    float m_step;
+    float m_curr_v{};
+    float m_step{};
 
 public:
-    CUIDetectorWave() : m_curr_v(0.0f), m_step(0.0f) {};
+    CUIDetectorWave() = default;
+
     void InitFromXML(CUIXml& xml, LPCSTR path);
     void SetVelocity(float v);
     virtual void Update() override;

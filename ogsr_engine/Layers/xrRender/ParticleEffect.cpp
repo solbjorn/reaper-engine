@@ -374,7 +374,7 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
 
         _mm_prefetch((char*)&particles[i + 1], _MM_HINT_NTA);
 
-        if (angle != m.rot.x)
+        if (!fsimilar(angle, m.rot.x))
         {
             angle = m.rot.x;
             DirectX::XMScalarSinCos(&sina, &cosa, angle);

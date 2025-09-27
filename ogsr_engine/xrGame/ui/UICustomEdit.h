@@ -12,6 +12,7 @@ public:
 
     CUICustomEdit();
     virtual ~CUICustomEdit() = default;
+
     // CUILinesOwner
     virtual void SetFont(CGameFont* pFont) { CUILinesOwner::SetFont(pFont); }
     virtual CGameFont* GetFont() { return CUILinesOwner::GetFont(); }
@@ -19,7 +20,7 @@ public:
     virtual void SetTextColorD(u32 color);
 
     virtual void Init(float x, float y, float width, float height);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual bool OnKeyboard(u32 dik, EUIMessages keyboard_action);

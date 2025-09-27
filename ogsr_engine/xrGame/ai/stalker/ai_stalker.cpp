@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "../ai_monsters_misc.h"
 #include "../../weapon.h"
@@ -18,7 +19,7 @@
 #include "game_graph.h"
 #include "../../inventory.h"
 #include "../../artifact.h"
-#include "../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../../cover_evaluators.h"
 #include "../../xrserver.h"
@@ -76,19 +77,7 @@ using namespace StalkerSpace;
 
 extern int g_AI_inactive_time;
 
-CAI_Stalker::CAI_Stalker()
-{
-    m_sound_user_data_visitor = 0;
-    m_movement_manager = 0;
-    m_group_behaviour = true;
-    m_boneHitProtection = NULL;
-    m_power_fx_factor = flt_max;
-    m_wounded = false;
-#ifdef DEBUG
-    m_debug_planner = 0;
-#endif // DEBUG
-    m_registered_in_combat_on_migration = false;
-}
+CAI_Stalker::CAI_Stalker() = default;
 
 CAI_Stalker::~CAI_Stalker()
 {
@@ -115,11 +104,11 @@ void CAI_Stalker::reinit()
 
     m_pPhysics_support->in_Init();
 
-    m_best_item_to_kill = 0;
+    m_best_item_to_kill = nullptr;
     m_best_item_value = 0.f;
-    m_best_ammo = 0;
-    m_best_found_item_to_kill = 0;
-    m_best_found_ammo = 0;
+    m_best_ammo = nullptr;
+    m_best_found_item_to_kill = nullptr;
+    m_best_found_ammo = nullptr;
     m_item_actuality = false;
     m_sell_info_actuality = false;
 
@@ -146,7 +135,7 @@ void CAI_Stalker::reinit()
     m_pick_distance = 0.f;
     m_pick_frame_id = 0;
 
-    m_best_cover = 0;
+    m_best_cover = nullptr;
     m_best_cover_actual = false;
     m_best_cover_value = flt_max;
 
@@ -192,7 +181,7 @@ void CAI_Stalker::LoadSounds(LPCSTR section)
     sound().add_deferred(pSettings->r_string(section, "sound_death"), 100, SOUND_TYPE_MONSTER_DYING, 0, u32(eStalkerSoundMaskDie), eStalkerSoundDie, head_bone_name,
                          xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_anomaly_death"), 100, SOUND_TYPE_MONSTER_DYING, 0, u32(eStalkerSoundMaskDieInAnomaly), eStalkerSoundDieInAnomaly,
-                         head_bone_name, 0);
+                         head_bone_name, nullptr);
     sound().add_deferred(pSettings->r_string(section, "sound_hit"), 100, SOUND_TYPE_MONSTER_INJURING, 1, u32(eStalkerSoundMaskInjuring), eStalkerSoundInjuring, head_bone_name,
                          xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_friendly_fire"), 100, SOUND_TYPE_MONSTER_INJURING, 1, u32(eStalkerSoundMaskInjuringByFriend),
@@ -223,7 +212,8 @@ void CAI_Stalker::LoadSounds(LPCSTR section)
                          eStalkerSoundSearch1NoAllies, head_bone_name, xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_search1_with_allies"), 100, SOUND_TYPE_MONSTER_TALKING, 5, u32(eStalkerSoundMaskSearch1WithAllies),
                          eStalkerSoundSearch1WithAllies, head_bone_name, xr_new<CStalkerSoundData>(this));
-    sound().add_deferred(pSettings->r_string(section, "sound_humming"), 100, SOUND_TYPE_MONSTER_TALKING, 6, u32(eStalkerSoundMaskHumming), eStalkerSoundHumming, head_bone_name, 0);
+    sound().add_deferred(pSettings->r_string(section, "sound_humming"), 100, SOUND_TYPE_MONSTER_TALKING, 6, u32(eStalkerSoundMaskHumming), eStalkerSoundHumming, head_bone_name,
+                         nullptr);
     sound().add_deferred(pSettings->r_string(section, "sound_need_backup"), 100, SOUND_TYPE_MONSTER_TALKING, 4, u32(eStalkerSoundMaskNeedBackup), eStalkerSoundNeedBackup,
                          head_bone_name, xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_running_in_danger"), 100, SOUND_TYPE_MONSTER_TALKING, 6, u32(eStalkerSoundMaskMovingInDanger),
@@ -374,7 +364,7 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
     if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
         movement().set_game_dest_vertex(tpHuman->m_tNextGraphID);
 
-    R_ASSERT2(ai().get_game_graph() && ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),
+    R_ASSERT2(ai().get_game_graph() && ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != std::numeric_limits<GameGraph::_LEVEL_ID>::max()),
               "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
 
     setEnabled(TRUE);
@@ -472,7 +462,7 @@ void CAI_Stalker::net_Save(NET_Packet& P)
     m_pPhysics_support->in_NetSave(P);
 }
 
-BOOL CAI_Stalker::net_SaveRelevant() { return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL)); }
+BOOL CAI_Stalker::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell(); }
 
 void CAI_Stalker::net_Export(CSE_Abstract* E)
 {
@@ -982,7 +972,7 @@ void CAI_Stalker::fill_bones_body_parts(LPCSTR bone_id, const ECriticalWoundType
 
     CInifile::Sect& body_part_section = pSettings->r_section(body_part_section_id);
     for (const auto& I : body_part_section.Data)
-        m_bones_body_parts.insert(std::make_pair(kinematics->LL_BoneID(I.first), u32(wound_type)));
+        m_bones_body_parts.emplace(kinematics->LL_BoneID(I.first), u32(wound_type));
 }
 
 void CAI_Stalker::on_before_change_team() { m_registered_in_combat_on_migration = agent_manager().member().registered_in_combat(this); }

@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include "telekinesis.h"
 #include "../../entity_alive.h"
 #include "PhysicsShell.h"
 
-CTelekinesis::CTelekinesis() { active = false; }
+CTelekinesis::CTelekinesis() = default;
+
 CTelekinesis::~CTelekinesis()
 {
     for (TELE_OBJECTS_IT it = objects.begin(); it != objects.end(); ++it)
@@ -21,7 +23,7 @@ CTelekineticObject* CTelekinesis::activate(CPhysicsShellHolder* obj, float stren
     if (!tele_object->init(this, obj, strength, height, max_time_keep, rot))
     {
         xr_delete(tele_object);
-        return 0;
+        return nullptr;
     }
 
     // добавить объект
@@ -29,10 +31,12 @@ CTelekineticObject* CTelekinesis::activate(CPhysicsShellHolder* obj, float stren
 
     if (!objects.empty())
         CPHUpdateObject::Activate();
+
     return tele_object;
 }
 
 void CTelekinesis::clear() { objects.clear(); }
+
 void CTelekinesis::deactivate()
 {
     active = false;
@@ -208,7 +212,7 @@ void CTelekinesis::PhTune(dReal step)
         switch (objects[i]->get_state())
         {
         case TS_Raise:
-        case TS_Keep: objects[i]->enable();
+        case TS_Keep: objects[i]->enable(); break;
         case TS_None: break;
         }
     }

@@ -13,13 +13,11 @@
 
 TEMPLATE_SPECIALIZATION
 IC CScriptBaseAction::CActionScriptBase(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects, _object_type* object, LPCSTR action_name)
-    : inherited(conditions, effects, object ? object->lua_game_object() : 0, action_name)
-{
-    m_object = object;
-}
+    : inherited{conditions, effects, object ? object->lua_game_object() : nullptr, action_name}, m_object{object}
+{}
 
 TEMPLATE_SPECIALIZATION
-IC CScriptBaseAction::CActionScriptBase(_object_type* object, LPCSTR action_name) : inherited(object ? object->lua_game_object() : 0, action_name) { m_object = object; }
+IC CScriptBaseAction::CActionScriptBase(_object_type* object, LPCSTR action_name) : inherited{object ? object->lua_game_object() : nullptr, action_name}, m_object{object} {}
 
 TEMPLATE_SPECIALIZATION
 CScriptBaseAction::~CActionScriptBase() {}

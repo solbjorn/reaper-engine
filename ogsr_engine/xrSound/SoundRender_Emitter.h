@@ -40,7 +40,7 @@ public:
 #endif
 
     CSoundRender_Target* target{};
-    ref_sound_data_ptr owner_data;
+    ref_sound_data_ptr owner_data{};
 
     [[nodiscard]] CSoundRender_Source* source() const { return (CSoundRender_Source*)owner_data->handle; }
     [[nodiscard]] u32 get_bytes_total() const;

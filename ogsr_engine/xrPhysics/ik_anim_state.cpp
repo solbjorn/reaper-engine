@@ -41,7 +41,8 @@ float time_to_next_mark(const CBlend& b, const motion_marks& marks)
     return b.timeTotal - l_blend_time;
 }
 
-bool blend_in(const CBlend& b, const motion_marks& marks) { return NULL != marks.pick_mark(blend_time(b)); }
+bool blend_in(const CBlend& b, const motion_marks& marks) { return !!marks.pick_mark(blend_time(b)); }
+
 IC bool b_is_blending(const CBlend* current_blend, const CBlend* b)
 {
     return current_blend && current_blend->blend_state() != CBlend::eFREE_SLOT && current_blend != b && b->blendAmount < b->blendPower - EPS_L;
@@ -51,15 +52,18 @@ void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
 {
     // Andy	is_step = m && b && blend_in( *b, m->get_interval( i ) );
     VERIFY(K);
+
     is_step = false;
     is_idle = false;
     do_glue = false;
     is_blending = false;
+
     if (!b)
     {
-        current_blend = 0;
+        current_blend = nullptr;
         return;
     }
+
     CMotionDef& m_def_new = *K->LL_GetMotionDef(b->motionID);
 
     if (m_def_new.marks.size() <= i)
@@ -78,8 +82,8 @@ void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
 
         // is_step = step_all || any_idle && is_cur_step || is_new_step;
 
-        do_glue = step_all || any_idle && is_new_step;
-        is_step = (!any_idle && any_step) || any_idle && do_glue;
+        do_glue = step_all || (any_idle && is_new_step);
+        is_step = (!any_idle && any_step) || (any_idle && do_glue);
         // do_glue =true;
     }
     else

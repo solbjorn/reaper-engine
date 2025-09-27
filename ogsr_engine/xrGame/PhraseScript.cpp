@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PhraseScript.h"
 #include "script_engine.h"
 #include "ai_space.h"
@@ -13,7 +14,7 @@
 CPhraseScript::CPhraseScript() {}
 CPhraseScript::~CPhraseScript() {}
 
-//загрузка из XML файла
+// загрузка из XML файла
 void CPhraseScript::Load(CUIXml* uiXml, XML_NODE* phrase_node)
 {
     m_sScriptTextFunc = uiXml->Read(phrase_node, "script_text", 0, "");
@@ -35,7 +36,7 @@ void CPhraseScript::LoadSequence(CUIXml* uiXml, XML_NODE* phrase_node, LPCSTR ta
     str_vector.clear();
     for (int i = 0; i < tag_num; i++)
     {
-        LPCSTR tag_text = uiXml->Read(phrase_node, tag, i, NULL);
+        LPCSTR tag_text = uiXml->Read(phrase_node, tag, i, nullptr);
         str_vector.push_back(tag_text);
     }
 }

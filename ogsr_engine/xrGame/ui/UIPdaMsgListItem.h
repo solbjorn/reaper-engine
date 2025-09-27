@@ -4,11 +4,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "UIStatic.h"
 #include "..\InventoryOwner.h"
 
 class CUIPdaMsgListItem : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaMsgListItem, CUIStatic);
+
 public:
     virtual void Init(float x, float y, float width, float height);
     virtual void InitCharacter(CInventoryOwner* pInvOwner);
@@ -16,7 +19,7 @@ public:
     virtual void SetFont(CGameFont* pFont);
     virtual void SetColor(u32 color);
 
-    //информация о персонаже
+    // информация о персонаже
     CUIStatic UIIcon;
     CUIStatic UIName;
     CUIStatic UIMsgText;

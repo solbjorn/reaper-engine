@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_danger_grenade_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -30,7 +31,7 @@ using namespace StalkerDecisionSpace;
 // CStalkerActionDangerGrenadeTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeTakeCover::CStalkerActionDangerGrenadeTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerGrenadeTakeCover::CStalkerActionDangerGrenadeTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerGrenadeTakeCover::initialize()
 {
@@ -39,7 +40,7 @@ void CStalkerActionDangerGrenadeTakeCover::initialize()
     set_property(eWorldPropertyCoverReached, false);
     set_property(eWorldPropertyLookedAround, false);
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_movement_type(eMovementTypeRun);
@@ -111,13 +112,13 @@ void CStalkerActionDangerGrenadeTakeCover::finalize() { inherited::finalize(); }
 // CStalkerActionDangerGrenadeWaitForExplosion
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeWaitForExplosion::CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerGrenadeWaitForExplosion::CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerGrenadeWaitForExplosion::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_movement_type(eMovementTypeStand);
@@ -144,7 +145,7 @@ void CStalkerActionDangerGrenadeWaitForExplosion::finalize() { inherited::finali
 // CStalkerActionDangerGrenadeTakeCoverAfterExplosion
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeTakeCoverAfterExplosion::CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerGrenadeTakeCoverAfterExplosion::CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::initialize()
 {
@@ -153,7 +154,7 @@ void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::initialize()
     set_property(eWorldPropertyCoverReached, false);
     set_property(eWorldPropertyLookedAround, false);
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -198,7 +199,7 @@ void CStalkerActionDangerGrenadeTakeCoverAfterExplosion::finalize() { inherited:
 // CStalkerActionDangerGrenadeLookAround
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeLookAround::CStalkerActionDangerGrenadeLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerGrenadeLookAround::CStalkerActionDangerGrenadeLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerGrenadeLookAround::initialize()
 {
@@ -206,7 +207,7 @@ void CStalkerActionDangerGrenadeLookAround::initialize()
 
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_movement_type(eMovementTypeStand);
@@ -236,12 +237,12 @@ void CStalkerActionDangerGrenadeLookAround::finalize() { inherited::finalize(); 
 // CStalkerActionDangerGrenadeSearch
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerGrenadeSearch::CStalkerActionDangerGrenadeSearch(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerGrenadeSearch::CStalkerActionDangerGrenadeSearch(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerGrenadeSearch::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();

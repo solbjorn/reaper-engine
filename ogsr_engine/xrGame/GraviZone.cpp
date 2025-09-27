@@ -19,8 +19,9 @@
 #include "PhysicsShellHolder.h"
 #include "Level.h"
 #include "CharacterPhysicsSupport.h"
-CBaseGraviZone ::CBaseGraviZone(void) { m_dwTeleTime = 0; }
-CBaseGraviZone ::~CBaseGraviZone(void) {}
+
+CBaseGraviZone::CBaseGraviZone() = default;
+CBaseGraviZone::~CBaseGraviZone() = default;
 
 void CBaseGraviZone ::Load(LPCSTR section)
 {
@@ -38,15 +39,16 @@ void CBaseGraviZone ::Load(LPCSTR section)
     if (pSettings->line_exist(section, "tele_particles_big"))
         m_sTeleParticlesBig = pSettings->r_string(section, "tele_particles_big");
     else
-        m_sTeleParticlesBig = NULL;
+        m_sTeleParticlesBig = nullptr;
 
     if (pSettings->line_exist(section, "tele_particles_small"))
         m_sTeleParticlesSmall = pSettings->r_string(section, "tele_particles_small");
     else
-        m_sTeleParticlesSmall = NULL;
+        m_sTeleParticlesSmall = nullptr;
 }
 
 BOOL CBaseGraviZone ::net_Spawn(CSE_Abstract* DC) { return inherited::net_Spawn(DC); }
+
 void CBaseGraviZone ::net_Destroy()
 {
     Telekinesis().deactivate();
@@ -164,7 +166,7 @@ void CBaseGraviZone ::Affect(SZoneObjectInfo* O)
         //////////////////////////////////////////////////////////////////////////
         // выброс аномалии
 
-        //если время выброса еще не пришло
+        // если время выброса еще не пришло
         if (m_dwBlowoutExplosionTime < (u32)m_iPreviousStateTime || m_dwBlowoutExplosionTime >= (u32)m_iStateTime)
         {
             AffectPull(GO, throw_in_dir, BlowoutRadiusPercent(GO) * Radius());
@@ -175,6 +177,7 @@ void CBaseGraviZone ::Affect(SZoneObjectInfo* O)
 }
 
 void CBaseGraviZone ::ThrowInCenter(Fvector& C) { Center(C); }
+
 void CBaseGraviZone ::AffectPull(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
 {
     CEntityAlive* EA = smart_cast<CEntityAlive*>(GO);
@@ -187,6 +190,7 @@ void CBaseGraviZone ::AffectPull(CPhysicsShellHolder* GO, const Fvector& throw_i
         AffectPullDead(GO, throw_in_dir, dist);
     }
 }
+
 void CBaseGraviZone ::AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist)
 {
     float rel_power = RelativePower(dist);
@@ -198,10 +202,12 @@ void CBaseGraviZone ::AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_
     vel.mul(throw_power);
     EA->character_physics_support()->movement()->AddControlVel(vel);
 }
+
 void CBaseGraviZone ::AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
 {
     GO->PPhysicsShell()->applyImpulse(throw_in_dir, dist * m_fThrowInImpulse * GO->GetMass() / 100.f);
 }
+
 void CBaseGraviZone ::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
 {
     Fvector position_in_bone_space;
@@ -217,7 +223,7 @@ void CBaseGraviZone ::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, c
     // else
     //	throw_in_dir.normalize();
 
-    //статистика по объекту
+    // статистика по объекту
     O->total_damage += power;
     O->hit_num++;
 
@@ -236,9 +242,9 @@ void CBaseGraviZone ::PlayTeleParticles(CGameObject* pObject)
     if (!PP)
         return;
 
-    shared_str particle_str = NULL;
+    shared_str particle_str;
 
-    //разные партиклы для объектов разного размера
+    // разные партиклы для объектов разного размера
     if (pObject->Radius() < SMALL_OBJECT_RADIUS)
     {
         if (!m_sTeleParticlesSmall)
@@ -249,6 +255,7 @@ void CBaseGraviZone ::PlayTeleParticles(CGameObject* pObject)
     {
         if (!m_sTeleParticlesBig)
             return;
+
         particle_str = m_sTeleParticlesBig;
     }
 
@@ -259,23 +266,26 @@ void CBaseGraviZone ::StopTeleParticles(CGameObject* pObject)
     CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
     if (!PP)
         return;
-    shared_str particle_str = NULL;
 
-    //разные партиклы для объектов разного размера
+    shared_str particle_str;
+
+    // разные партиклы для объектов разного размера
     if (pObject->Radius() < SMALL_OBJECT_RADIUS)
     {
         if (!m_sTeleParticlesSmall)
             return;
+
         particle_str = m_sTeleParticlesSmall;
     }
     else
     {
         if (!m_sTeleParticlesBig)
             return;
+
         particle_str = m_sTeleParticlesBig;
     }
 
-    //остановить партиклы
+    // остановить партиклы
     PP->StopParticles(particle_str, BI_NONE, true);
 }
 

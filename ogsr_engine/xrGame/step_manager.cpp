@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "step_manager_defs.h"
 #include "step_manager.h"
@@ -12,9 +13,8 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 
-CStepManager::CStepManager() {}
-
-CStepManager::~CStepManager() {}
+CStepManager::CStepManager() = default;
+CStepManager::~CStepManager() = default;
 
 DLL_Pure* CStepManager::_construct()
 {
@@ -62,7 +62,7 @@ void CStepManager::reload(LPCSTR section)
         if (!motion_id)
             continue;
 
-        m_steps_map.insert(mk_pair(motion_id, param));
+        m_steps_map.emplace(motion_id, param);
     }
 
     // reload foot bones
@@ -71,7 +71,7 @@ void CStepManager::reload(LPCSTR section)
     reload_foot_bones();
 
     m_time_anim_started = 0;
-    m_blend = 0;
+    m_blend = nullptr;
 }
 
 void CStepManager::on_animation_start(MotionID motion_id, CBlend* blend)
@@ -165,7 +165,7 @@ void CStepManager::update()
             {
                 LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
 
-                //отыграть партиклы столкновения материалов
+                // отыграть партиклы столкновения материалов
                 CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
 
                 // вычислить позицию и направленность партикла

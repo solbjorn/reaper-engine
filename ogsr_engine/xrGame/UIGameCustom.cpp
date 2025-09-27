@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIGameCustom.h"
 #include "ui.h"
 #include "ui/UIInventoryUtilities.h"
@@ -44,7 +45,7 @@ CUIGameCustom::~CUIGameCustom()
     delete_data(m_msgs_xml);
 }
 
-float CUIGameCustom::shedule_Scale() const { return 0.5f; };
+float CUIGameCustom::shedule_Scale() const { return 0.5f; }
 
 void CUIGameCustom::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
 
@@ -84,17 +85,15 @@ void CUIGameCustom::Render()
 }
 
 bool CUIGameCustom::IR_OnKeyboardPress(int dik) { return false; }
-
 bool CUIGameCustom::IR_OnKeyboardRelease(int dik) { return false; }
 
 bool CUIGameCustom::IR_OnMouseMove(int dx, int dy) { return false; }
 bool CUIGameCustom::IR_OnMouseWheel(int direction) { return false; }
 
 void CUIGameCustom::AddDialogToRender(CUIWindow* pDialog) { HUD().GetUI()->AddDialogToRender(pDialog); }
-
 void CUIGameCustom::RemoveDialogToRender(CUIWindow* pDialog) { HUD().GetUI()->RemoveDialogToRender(pDialog); }
 
-CUIDialogWnd* CUIGameCustom::MainInputReceiver() { return HUD().GetUI()->MainInputReceiver(); };
+CUIDialogWnd* CUIGameCustom::MainInputReceiver() { return HUD().GetUI()->MainInputReceiver(); }
 
 void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color /* LPCSTR def_text*/)
 {
@@ -140,10 +139,9 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 {
     st_vec::iterator it = std::find(m_custom_statics.begin(), m_custom_statics.end(), id);
     if (it != m_custom_statics.end())
-    {
         return &(*it);
-    }
-    return NULL;
+
+    return nullptr;
 }
 
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
@@ -180,7 +178,7 @@ void CUIGameCustom::reset_ui()
 
 SDrawStaticStruct::SDrawStaticStruct()
 {
-    m_static = NULL;
+    m_static = nullptr;
     m_endTime = -1.0f;
 }
 
@@ -190,6 +188,7 @@ bool SDrawStaticStruct::IsActual()
 {
     if (m_endTime < 0)
         return true;
+
     return Device.fTimeGlobal < m_endTime;
 }
 

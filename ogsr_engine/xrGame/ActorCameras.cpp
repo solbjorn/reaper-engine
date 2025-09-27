@@ -173,7 +173,7 @@ void CActor::cam_Update(float dt, float fFOV)
     current_ik_cam_shift = 0;
 
     // Alex ADD: smooth crouch fix
-    if (CurrentHeight != CameraHeight())
+    if (!fsimilar(CurrentHeight, CameraHeight()))
     {
         float smoothK = cam_HeightInterpolationSpeed * dt;
         if (smoothK > 1.0f)
@@ -268,7 +268,7 @@ void CActor::cam_Update(float dt, float fFOV)
     float flCurrentPlayerY = xform.c.y;
 
     // Smooth out stair step ups
-    if ((character_physics_support()->movement()->Environment() == peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
+    if ((character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
     {
         fPrevCamPos += dt * 1.5f;
         if (fPrevCamPos > flCurrentPlayerY)
@@ -374,7 +374,7 @@ void CActor::update_camera(CCameraShotEffector* effector)
             pACam->pitch += PI_MUL_2;
         while (pACam->pitch > pACam->lim_pitch[1])
             pACam->pitch -= PI_MUL_2;
-    };
+    }
 
     effector->ApplyLastAngles(&(pACam->pitch), &(pACam->yaw));
 

@@ -8,6 +8,7 @@
 // Copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
 #include "UI_IB_Static.h"
 
 void CUI_IB_Static::SetTextureOffset(float x, float y)

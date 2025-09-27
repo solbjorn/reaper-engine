@@ -32,7 +32,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
             E->UPDATE_Read(P);
 
             if (g_Dump_Update_Read)
-                Msg("* %s : %d - %d", E->name(), size, P.r_tell() - _pos);
+                Msg("* %s : %u - %u", E->name(), size, P.r_tell() - _pos);
 
             if ((P.r_tell() - _pos) != size)
             {

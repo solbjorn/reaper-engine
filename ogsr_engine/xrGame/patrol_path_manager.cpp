@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "gameobject.h"
 #include "patrol_path_manager.h"
 #include "script_game_object.h"
@@ -59,7 +60,7 @@ bool CPatrolPathManager::extrapolate_path()
 
 void CPatrolPathManager::reinit()
 {
-    m_path = 0;
+    m_path = nullptr;
     m_actuality = true;
     m_failed = false;
     m_completed = true;
@@ -86,7 +87,7 @@ struct CAccessabilityEvaluator
 void CPatrolPathManager::select_point(const Fvector& position, u32& dest_vertex_id)
 {
     VERIFY(m_path && !m_path->vertices().empty());
-    const CPatrolPath::CVertex* vertex = 0;
+    const CPatrolPath::CVertex* vertex{};
     if (!actual() || !m_path->vertex(m_curr_point_index))
     {
         switch (m_start_type)

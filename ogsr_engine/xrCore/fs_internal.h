@@ -27,14 +27,14 @@ public:
         else
         {
             hf = fopen(*fName, "wb");
-            if (hf == 0)
+            if (!hf)
                 Msg("!Can't write file: '%s'. Error: '%s'.", *fName, _sys_errlist[errno]);
         }
     }
 
     virtual ~CFileWriter()
     {
-        if (0 != hf)
+        if (hf)
         {
             fclose(hf);
             // release RO attrib
@@ -46,22 +46,25 @@ public:
             }
         }
     }
+
     // kernel
     virtual void w(const void* _ptr, size_t count)
     {
-        if ((0 != hf) && (0 != count))
+        if (hf && count)
         {
             const size_t W = fwrite(_ptr, sizeof(char), count, hf);
             R_ASSERT3(W == count, "Can't write mem block to file. Disk maybe full.", _sys_errlist[errno]);
         }
-    };
+    }
+
     virtual void seek(size_t pos)
     {
-        if (0 != hf)
+        if (hf)
             fseek(hf, pos, SEEK_SET);
-    };
-    virtual size_t tell() { return (0 != hf) ? ftell(hf) : 0; };
-    virtual bool valid() { return (0 != hf); }
+    }
+
+    virtual size_t tell() { return hf ? ftell(hf) : 0; }
+    virtual bool valid() { return !!hf; }
     virtual size_t flush() { return fflush(hf); }
 };
 

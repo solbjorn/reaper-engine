@@ -29,7 +29,7 @@ public:
 
     // произвольное число - приоритет диалога (0 по умолчанию), может быть отрицательным
     // в окне выбора у актера диалоги будут сортироваться по этому значению от меньшего (снизу) к большему (сверху)
-    int m_iPriority;
+    int m_iPriority{};
 
     bool b_bForceReload{};
 
@@ -67,7 +67,7 @@ public:
     // связь диалога между двумя DialogManager
     virtual void Init(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second);
 
-    IC bool IsInited() const { return ((FirstSpeaker() != NULL) && (SecondSpeaker() != NULL)); }
+    IC bool IsInited() const { return FirstSpeaker() && SecondSpeaker(); }
 
     // реинициализация диалога
     virtual void Reset();
@@ -120,14 +120,14 @@ protected:
     // ID последней сказанной фразы в диалоге, "" если такой не было
     shared_str m_SaidPhraseID;
     // диалог закончен
-    bool m_bFinished;
+    bool m_bFinished{};
 
     // список указателей на фразы доступные в данный момент
     PHRASE_VECTOR m_PhraseVector;
 
     // указатели на собеседников в диалоге
-    CPhraseDialogManager* m_pSpeakerFirst;
-    CPhraseDialogManager* m_pSpeakerSecond;
+    CPhraseDialogManager* m_pSpeakerFirst{};
+    CPhraseDialogManager* m_pSpeakerSecond{};
     bool m_bFirstIsSpeaking{};
 
     const SPhraseDialogData* data() const
@@ -149,11 +149,11 @@ protected:
 
 public:
     CPhrase* AddPhrase(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level);
-    CPhrase* AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level) { return AddPhrase(text, phrase_id, prev_phrase_id, goodwil_level); };
+    CPhrase* AddPhrase_script(LPCSTR text, LPCSTR phrase_id, LPCSTR prev_phrase_id, int goodwil_level) { return AddPhrase(text, phrase_id, prev_phrase_id, goodwil_level); }
     void SetCaption(LPCSTR str);
     void SetPriority(int val);
     CPhrase* GetPhrase(const shared_str& phrase_id);
-    CPhraseScript* GetPhraseScript() { return &(data()->m_PhraseScript); };
+    CPhraseScript* GetPhraseScript() { return &(data()->m_PhraseScript); }
 
     void SetForceReload(bool value = false) { data()->b_bForceReload = value; }
     bool GetForceReload() { return data()->b_bForceReload; }

@@ -20,38 +20,10 @@
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
-CShootingObject::CShootingObject(void)
-{
-    fTime = 0;
-    fTimeToFire = 0;
-    // fHitPower						= 0.0f;
-    fvHitPower.set(0.0f, 0.0f, 0.0f, 0.0f);
-    m_fStartBulletSpeed = 1000.f;
+CShootingObject::CShootingObject() { reinit(); }
+CShootingObject::~CShootingObject() = default;
 
-    m_vCurrentShootDir.set(0, 0, 0);
-    m_vCurrentShootPos.set(0, 0, 0);
-    m_iCurrentParentID = 0xFFFF;
-
-    m_fPredBulletTime = 0.0f;
-    m_bUseAimBullet = false;
-    m_fTimeToAim = 0.0f;
-
-    // particles
-    m_sFlameParticlesCurrent = m_sFlameParticles = NULL;
-    m_sSmokeParticlesCurrent = m_sSmokeParticles = NULL;
-    m_sShellParticles = NULL;
-    m_bForcedParticlesHudMode = false;
-    m_bParticlesHudMode = false;
-
-    bWorking = false;
-
-    light_render = 0;
-
-    reinit();
-}
-CShootingObject::~CShootingObject(void) {}
-
-void CShootingObject::reinit() { m_pFlameParticles = NULL; }
+void CShootingObject::reinit() { m_pFlameParticles = nullptr; }
 
 void CShootingObject::Load(LPCSTR section)
 {
@@ -201,7 +173,7 @@ void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR parti
     if (!particles_name)
         return;
 
-    if (pParticles != NULL)
+    if (pParticles)
     {
         UpdateParticles(pParticles, pos, vel);
         return;
@@ -216,7 +188,7 @@ void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR parti
 
 void CShootingObject::StopParticles(CParticlesObject*& pParticles)
 {
-    if (pParticles == NULL)
+    if (!pParticles)
         return;
 
     pParticles->Stop();
@@ -311,13 +283,14 @@ void CShootingObject::StartSmokeParticles(const Fvector& play_pos, const Fvector
 {
     if (!ParentIsActor() && Core.Features.test(xrCore::Feature::npc_simplified_shooting))
         return;
-    CParticlesObject* pSmokeParticles = NULL;
+
+    CParticlesObject* pSmokeParticles{};
     StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, parent_vel, true);
 }
 
 void CShootingObject::StartFlameParticles()
 {
-    if (0 == m_sFlameParticlesCurrent.size())
+    if (m_sFlameParticlesCurrent.empty())
         return;
 
     // если партиклы циклические
@@ -333,22 +306,25 @@ void CShootingObject::StartFlameParticles()
     BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
     m_pFlameParticles->Play(hudMode);
 }
+
 void CShootingObject::StopFlameParticles()
 {
-    if (0 == m_sFlameParticlesCurrent.size())
+    if (m_sFlameParticlesCurrent.empty())
         return;
-    if (m_pFlameParticles == NULL)
+
+    if (!m_pFlameParticles)
         return;
 
     m_pFlameParticles->SetAutoRemove(true);
     m_pFlameParticles->Stop();
-    m_pFlameParticles = NULL;
+    m_pFlameParticles = nullptr;
 }
 
 void CShootingObject::UpdateFlameParticles()
 {
-    if (0 == m_sFlameParticlesCurrent.size())
+    if (m_sFlameParticlesCurrent.empty())
         return;
+
     if (!m_pFlameParticles)
         return;
 
@@ -407,7 +383,7 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
         }
         return true;
     }
-};
+}
 
 void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit)
 {
@@ -479,6 +455,6 @@ void CShootingObject::FireEnd() { bWorking = false; }
 
 void CShootingObject::StartShotParticles()
 {
-    CParticlesObject* pSmokeParticles = NULL;
+    CParticlesObject* pSmokeParticles{};
     StartParticles(pSmokeParticles, *m_sShotParticles, m_vCurrentShootPos, m_vCurrentShootDir, true);
 }

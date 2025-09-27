@@ -5,9 +5,11 @@
 
 #include "ActorEffector.h"
 #include "holder_custom.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -28,9 +30,9 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 {
     if (!vehicle)
         return;
-
     if (m_holder)
         return;
+
     PickupModeOff();
     m_holder = vehicle;
 
@@ -39,9 +41,10 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
     if (!m_holder->attach_Actor(this))
     {
-        m_holder = NULL;
+        m_holder = nullptr;
         return;
     }
+
     // temp play animation
     CCar* car = smart_cast<CCar*>(m_holder);
     u16 anim_type = car->DriverAnimationType();
@@ -58,7 +61,7 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
     SetWeaponHideState(INV_STATE_CAR, true);
 
-    CStepManager::on_animation_start(MotionID(), 0);
+    CStepManager::on_animation_start(MotionID(), nullptr);
 
     this->callback(GameObject::eAttachVehicle)(car->lua_game_object());
 }
@@ -67,20 +70,26 @@ void CActor::detach_Vehicle()
 {
     if (!m_holder)
         return;
+
     CCar* car = smart_cast<CCar*>(m_holder);
     if (!car)
         return;
+
     CPHShellSplitterHolder* sh = car->PPhysicsShell()->SplitterHolder();
     if (sh)
         sh->Deactivate();
+
     if (!character_physics_support()->movement()->ActivateBoxDynamic(0))
     {
         if (sh)
             sh->Activate();
+
         return;
     }
+
     if (sh)
         sh->Activate();
+
     m_holder->detach_Actor(); //
 
     character_physics_support()->movement()->SetPosition(m_holder->ExitPosition());
@@ -89,7 +98,7 @@ void CActor::detach_Vehicle()
     r_model_yaw = -m_holder->Camera()->yaw;
     r_torso.yaw = r_model_yaw;
     r_model_yaw_dest = r_model_yaw;
-    m_holder = NULL;
+    m_holder = nullptr;
     SetCallbacks();
     IKinematicsAnimated* V = smart_cast<IKinematicsAnimated*>(Visual());
     R_ASSERT(V);
@@ -112,13 +121,18 @@ bool CActor::use_Vehicle(CHolderCustom* object)
     if (m_holder)
     {
         if (!vehicle && m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+        {
             detach_Vehicle();
+        }
         else
         {
             if (m_holder == vehicle)
+            {
                 if (m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
                     detach_Vehicle();
+            }
         }
+
         return true;
     }
     else
@@ -130,12 +144,11 @@ bool CActor::use_Vehicle(CHolderCustom* object)
                 if (pCamBobbing)
                 {
                     Cameras().RemoveCamEffector(eCEBobbing);
-                    pCamBobbing = NULL;
+                    pCamBobbing = nullptr;
                 }
 
                 attach_Vehicle(vehicle);
             }
-
             else if (auto car = smart_cast<CCar*>(vehicle))
             {
                 this->callback(GameObject::eUseVehicle)(car->lua_game_object());
@@ -143,6 +156,7 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 
             return true;
         }
+
         return false;
     }
 }

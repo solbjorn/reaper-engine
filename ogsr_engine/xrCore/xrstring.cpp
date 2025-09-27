@@ -2,10 +2,14 @@
 
 #include "xrstring.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
+
 #pragma comment(lib, "xxhash")
 
-str_container* g_pStringContainer = NULL;
+str_container* g_pStringContainer{};
 
 struct str_container_impl
 {
@@ -76,7 +80,7 @@ struct str_container_impl
             const str_value* value = buffer[i];
             while (value)
             {
-                const XXH64_hash_t xxh = XXH3_64bits(value->value, value->dwLength);
+                const xxh::XXH64_hash_t xxh = xxh::XXH3_64bits(value->value, value->dwLength);
                 if (xxh != value->dwXXH)
                 {
                     string32 xxh_str;
@@ -157,7 +161,7 @@ str_value* str_container::dock(pcstr value) const
     str_value* sv = (str_value*)header;
     sv->dwReference = 0;
     sv->dwLength = static_cast<u32>(s_len);
-    sv->dwXXH = XXH3_64bits(value, s_len);
+    sv->dwXXH = xxh::XXH3_64bits(value, s_len);
 
     // search
     result = impl->find(sv, value);

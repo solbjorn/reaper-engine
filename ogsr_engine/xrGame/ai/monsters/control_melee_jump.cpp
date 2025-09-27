@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_melee_jump.h"
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
@@ -92,6 +93,6 @@ void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEvent
 {
     switch (type)
     {
-    case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventMeleeJumpEnd, 0); break;
+    case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventMeleeJumpEnd, nullptr); break;
     }
 }

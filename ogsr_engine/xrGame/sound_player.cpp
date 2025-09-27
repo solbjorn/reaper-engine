@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "sound_player.h"
 #include "script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"
@@ -90,7 +91,7 @@ CSoundPlayer::CSoundCollection* CSoundPlayer::add_deferred(LPCSTR prefix, u32 ma
     const SOUND_COLLECTION_PAIR& pair = sound_collection_storage().object(sound_params);
     VERIFY(pair.first == (CSoundCollectionParams&)sound_params);
     VERIFY(pair.second);
-    m_sounds.insert(std::make_pair(internal_type, std::make_pair(sound_params, pair.second)));
+    m_sounds.emplace(internal_type, std::make_pair(sound_params, pair.second));
 
     return pair.second;
 }

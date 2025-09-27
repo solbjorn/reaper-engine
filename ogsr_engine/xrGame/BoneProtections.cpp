@@ -52,8 +52,8 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
                 continue;
 
             s16 bone_id = kinematics->LL_BoneID(i.first);
-            R_ASSERT2(BI_NONE != bone_id, i.first.c_str());
-            m_bones_koeff.insert(mk_pair(bone_id, BP));
+            R_ASSERT2(gsl::narrow_cast<decltype(BI_NONE)>(bone_id) != BI_NONE, i.first.c_str());
+            m_bones_koeff.try_emplace(bone_id, BP);
         }
     }
 }

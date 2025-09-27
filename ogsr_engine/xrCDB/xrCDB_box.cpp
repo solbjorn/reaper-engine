@@ -1,6 +1,11 @@
 #include "stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <Opcode.h>
+
+XR_DIAG_POP();
 
 using namespace CDB;
 using namespace Opcode;
@@ -15,7 +20,7 @@ using namespace Opcode;
     if (x2 < min) \
         min = x2; \
     if (x2 > max) \
-        max = x2;
+    max = x2
 
 //! TO BE DOCUMENTED
 ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const IceMaths::Point& maxbox)
@@ -54,7 +59,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.y + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_X2(a, b, fa, fb) \
@@ -68,7 +73,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.y + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Y02(a, b, fa, fb) \
@@ -82,7 +87,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.x + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Y1(a, b, fa, fb) \
@@ -96,7 +101,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.x + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Z12(a, b, fa, fb) \
@@ -110,7 +115,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.x + fb * extents.y; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Z0(a, b, fa, fb) \
@@ -124,7 +129,7 @@ ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const Ice
     } \
     rad = fa * extents.x + fb * extents.y; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 template <bool bClass3, bool bFirst>
 class box_collider
@@ -164,7 +169,7 @@ public:
         if (b_min.z > C.z + E.z)
             return false;
         return true;
-    };
+    }
     ICF bool _tri()
     {
         // move everything so that the boxcenter is in (0,0,0)

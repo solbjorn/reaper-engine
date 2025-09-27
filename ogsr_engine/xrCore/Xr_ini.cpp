@@ -87,7 +87,8 @@ LPCSTR CInifile::Sect::r_string(LPCSTR L)
         return A->second.c_str();
     else
         FATAL("Can't find variable %s in [%s]", L, Name.c_str());
-    return 0;
+
+    return nullptr;
 }
 
 float CInifile::Sect::r_float(LPCSTR L)
@@ -122,16 +123,16 @@ u32 CInifile::Sect::line_count() { return u32(Data.size()); }
 
 CInifile::CInifile(IReader* F, LPCSTR path)
 {
-    fName = 0;
+    fName = nullptr;
     bReadOnly = true;
     bSaveAtEnd = FALSE;
 
-    Load(F, path, FALSE, NULL, true, "");
+    Load(F, path, FALSE, nullptr, true, "");
 }
 
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd)
 {
-    fName = szFileName ? xr_strdup(szFileName) : 0;
+    fName = szFileName ? xr_strdup(szFileName) : nullptr;
     bReadOnly = !!ReadOnly;
     bSaveAtEnd = SaveAtEnd;
 
@@ -254,7 +255,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 string_path fn, inc_path, folder;
                 strconcat(sizeof(fn), fn, path, inc_name);
                 _fullpath(fn, fn, sizeof(fn));
-                _splitpath(fn, inc_path, folder, 0, 0);
+                _splitpath(fn, inc_path, folder, nullptr, nullptr);
                 strcat_s(inc_path, folder);
 
                 const auto loadFile = [&](const string_path _fn) {
@@ -301,7 +302,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
             R_ASSERT(strchr(str, ']'), "Bad ini section found: ", str);
 
             LPCSTR inherited_names = strstr(str, "]:");
-            if (0 != inherited_names)
+            if (inherited_names)
             {
                 inherited_names += 2;
 
@@ -354,7 +355,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 {
                     Item I;
                     I.first = name;
-                    I.second = str2[0] ? str2 : 0;
+                    I.second = str2[0] ? str2 : nullptr;
                     if (bReadOnly)
                     {
                         if (*I.first)
@@ -380,7 +381,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
 void CInifile::load_file(BOOL allow_dup_sections, const CInifile* f)
 {
     string_path path, folder;
-    _splitpath(fName, path, folder, 0, 0);
+    _splitpath(fName, path, folder, nullptr, nullptr);
     strcat_s(path, folder);
 
     IReader* R = FS.r_open(fName);
@@ -527,14 +528,16 @@ LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)
         return A->second.c_str();
     else
         FATAL("Can't find variable %s in [%s]", L, S);
-    return 0;
+
+    return nullptr;
 }
 
 shared_str CInifile::r_string_wb(LPCSTR S, LPCSTR L)
 {
     LPCSTR _base = r_string(S, L);
-    if (0 == _base)
-        return shared_str(0);
+    if (!_base)
+        return shared_str{};
+
     string512 _original;
     strcpy_s(_original, _base);
     u32 _len = xr_strlen(_original);
@@ -601,7 +604,7 @@ u32 CInifile::r_color(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     u32 r = 0, g = 0, b = 0, a = 255;
-    sscanf(C, "%d,%d,%d,%d", &r, &g, &b, &a);
+    sscanf(C, "%u,%u,%u,%u", &r, &g, &b, &a);
     return color_rgba(r, g, b, a);
 }
 
@@ -625,7 +628,7 @@ Ivector4 CInifile::r_ivector4(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     Ivector4 V{};
-    u32 x, y, z, w;
+    s32 x, y, z, w;
     sscanf(C, "%d,%d,%d,%d", &x, &y, &z, &w);
     V.set(x, y, z, w);
     return V;
@@ -731,7 +734,7 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
     // duplicate & insert
     Item I;
     I.first = line;
-    I.second = value[0] ? value : 0;
+    I.second = value[0] ? value : nullptr;
 
     Sect* data = &r_section(sect);
     insert_item(data, I);

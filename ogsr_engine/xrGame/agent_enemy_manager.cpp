@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_enemy_manager.h"
 #include "agent_manager.h"
 #include "agent_memory_manager.h"
@@ -145,10 +146,11 @@ void CAgentEnemyManager::fill_enemies()
 
 float CAgentEnemyManager::evaluate(const CEntityAlive* object0, const CEntityAlive* object1) const
 {
-    ai().ef_storage().non_alife().member_item() = 0;
-    ai().ef_storage().non_alife().enemy_item() = 0;
+    ai().ef_storage().non_alife().member_item() = nullptr;
+    ai().ef_storage().non_alife().enemy_item() = nullptr;
     ai().ef_storage().non_alife().member() = object0;
     ai().ef_storage().non_alife().enemy() = object1;
+
     return (ai().ef_storage().m_pfVictoryProbability->ffGetValue() / 100.f);
 }
 
@@ -466,9 +468,9 @@ void CAgentEnemyManager::assign_wounded()
     u32 population_level = 0;
     while (population(assigned) < combat_member_count)
     {
-        CMemberEnemy* enemy = 0;
-        const CAI_Stalker* processor = 0;
-        float best_distance_sqr = flt_max;
+        CMemberEnemy* enemy{};
+        const CAI_Stalker* processor{};
+        float best_distance_sqr = std::numeric_limits<float>::max();
 
         for (int i = 0; i < 2; ++i)
         {

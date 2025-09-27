@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "encyclopedia_article.h"
 #include "ui/xrUIXmlParser.h"
 #include "ui/UIXmlInit.h"
@@ -20,7 +21,7 @@ void ARTICLE_DATA::load(IReader& stream)
     load_data(article_type, stream);
 }
 
-void ARTICLE_DATA::save(IWriter& stream)
+void ARTICLE_DATA::save(IWriter& stream) const
 {
     save_data(receive_time, stream);
     save_data(article_id, stream);
@@ -45,7 +46,7 @@ void CEncyclopediaArticle::Load	(ARTICLE_STR_ID str_id)
 void CEncyclopediaArticle::Load(shared_str id)
 {
     m_ArticleId = id;
-    inherited_shared::load_shared(m_ArticleId, NULL);
+    inherited_shared::load_shared(m_ArticleId, nullptr);
 }
 
 void CEncyclopediaArticle::load_shared(LPCSTR)
@@ -66,7 +67,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
     // группа
     data()->group = pXML->ReadAttrib(pNode, "group", "");
     // секция ltx, откуда читать данные
-    LPCSTR ltx = pXML->Read(pNode, "ltx", 0, NULL);
+    LPCSTR ltx = pXML->Read(pNode, "ltx", 0, nullptr);
 
     if (ltx)
     {
@@ -108,7 +109,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
         }
 
         data()->image.SetWndRect(0, 0, r.width(), r.height());
-    };
+    }
 
     // Тип статьи
     xr_string atricle_type = pXML->ReadAttrib(pNode, "article_type", "encyclopedia");

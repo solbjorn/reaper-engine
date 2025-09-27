@@ -72,8 +72,7 @@ CPatrolPath& CPatrolPath::load_ini(CInifile::Sect& section)
                 u32 vertex_idx;
                 float probability;
 
-                sscanf(link, "p%d(%f)", &vertex_idx, &probability);
-
+                sscanf(link, "p%u(%f)", &vertex_idx, &probability);
                 add_edge(i, vertex_idx, probability);
             }
         }
@@ -103,7 +102,4 @@ CPatrolPoint CPatrolPath::add_point(Fvector pos)
 
 CPatrolPoint CPatrolPath::point(u32 index) { return vertex(index)->data(); }
 
-CPatrolPoint* CPatrolPath::point_raw(u32 index)
-{
-    return &vertex(index)->data();
-}
+CPatrolPoint* CPatrolPath::point_raw(u32 index) { return &vertex(index)->data(); }

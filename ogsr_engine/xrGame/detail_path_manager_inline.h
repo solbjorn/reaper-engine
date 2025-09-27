@@ -92,10 +92,12 @@ IC void CDetailPathManager::assign_angle(float& angle, const float start_yaw, co
         angle = dest_yaw - start_yaw - PI_MUL_2;
 
     if (!start && ((direction_type == eDirectionTypePP) || (direction_type == eDirectionTypeNN)))
+    {
         if (angle <= 0.f)
             angle = angle + PI_MUL_2;
         else
             angle = angle - PI_MUL_2;
+    }
 
     VERIFY(_valid(angle));
 }
@@ -163,7 +165,7 @@ IC const CDetailPathManager::STravelParams& CDetailPathManager::velocity(const u
     return ((*I).second);
 }
 
-IC void CDetailPathManager::add_velocity(const u32& velocity_id, const STravelParams& params) { m_movement_params.insert(std::make_pair(velocity_id, params)); }
+IC void CDetailPathManager::add_velocity(const u32& velocity_id, const STravelParams& params) { m_movement_params.emplace(velocity_id, params); }
 
 IC void CDetailPathManager::extrapolate_length(float extrapolate_length)
 {

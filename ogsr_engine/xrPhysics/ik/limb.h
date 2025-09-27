@@ -96,7 +96,14 @@ public:
     void get_R1R2psi(AngleIntList psi[]);
     void get_R1psi(AngleIntList psi[]);
 
-    Limb() {}
+    Limb() = default;
+    Limb(const Limb&);
+    Limb(Limb&&);
+    ~Limb() = default;
+
+    Limb& operator=(const Limb&);
+    Limb& operator=(Limb&&);
+
     void init(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float min[7], const float max[7]);
 
     Limb(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float Min[7], const float Max[7])
@@ -104,7 +111,6 @@ public:
         init(T, S, s1_euler, s2_euler, proj_axis, pos_axis, Min, Max);
     }
 
-    ~Limb() {}
     void SetTMatrix(const Matrix TT) { solver.SetTMatrix(TT); }
     void SetSMatrix(const Matrix SS) { solver.SetSMatrix(SS); }
     int SetGoalPos(const float g[3], const Matrix E, int limits_on);
@@ -117,11 +123,9 @@ public:
     float PosToAngle(const float p[3]);
     float KneeAngle(const float goal_pos[3], const float knee_pos[3]);
 
-    int Solve(float x[7], float* new_psi = 0, float* new_pos = 0);
-
-    int SolveByAngle(float psi, float x[7], float* new_psi = 0, float* new_pos = 0);
-
-    int SolveByPos(const float pos[3], float x[7], float* new_psi = 0, float* new_pos = 0);
+    int Solve(float x[7], float* new_psi = nullptr, float* new_pos = nullptr);
+    int SolveByAngle(float psi, float x[7], float* new_psi = nullptr, float* new_pos = nullptr);
+    int SolveByPos(const float pos[3], float x[7], float* new_psi = nullptr, float* new_pos = nullptr);
 
     int InLimits(const float x[7]) const;
     void Debug(char* file1, char* file2);

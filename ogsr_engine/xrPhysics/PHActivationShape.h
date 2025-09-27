@@ -1,13 +1,17 @@
 #ifndef PH_ACTIVATION_SHAPE
 #define PH_ACTIVATION_SHAPE
-#endif
+
 #include "MathUtils.h"
 #include "phvalidevalues.h"
+
 class CPHActivationShape : public CPHObject
 {
-    dBodyID m_body;
+    RTTI_DECLARE_TYPEINFO(CPHActivationShape, CPHObject);
+
+private:
+    dBodyID m_body{};
     dGeomID m_geom{};
-    Flags16 m_flags;
+    Flags16 m_flags{};
     CSafeFixedRotationState m_safe_state;
 
 public:
@@ -43,5 +47,7 @@ private:
     virtual dGeomID dSpacedGeom();
     virtual void get_spatial_params();
     virtual u16 get_elements_number() { return 0; }
-    virtual CPHSynchronize* get_element_sync(u16 element) { return NULL; }
+    virtual CPHSynchronize* get_element_sync(u16 element) { return nullptr; }
 };
+
+#endif

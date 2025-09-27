@@ -21,10 +21,10 @@ void CObjectHandlerPlanner::add_evaluators(CMissile* missile)
 {
     u16 id = missile->ID();
     // dynamic state properties
-    add_evaluator(uid(id, eWorldPropertyHidden), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, CMissile::eHidden));
-    add_evaluator(uid(id, eWorldPropertyThrowStarted), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, CMissile::eThrowStart));
-    add_evaluator(uid(id, eWorldPropertyThrowIdle), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, CMissile::eThrow));
-    add_evaluator(uid(id, eWorldPropertyThrow), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, CMissile::eThrowEnd));
+    add_evaluator(uid(id, eWorldPropertyHidden), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, gsl::narrow<u32>(CMissile::eHidden)));
+    add_evaluator(uid(id, eWorldPropertyThrowStarted), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, gsl::narrow<u32>(CMissile::eThrowStart)));
+    add_evaluator(uid(id, eWorldPropertyThrowIdle), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, gsl::narrow<u32>(CMissile::eThrow)));
+    add_evaluator(uid(id, eWorldPropertyThrow), xr_new<CObjectPropertyEvaluatorMissile>(missile, m_object, gsl::narrow<u32>(CMissile::eThrowEnd)));
 
     // const properties
     add_evaluator(uid(id, eWorldPropertyDropped), xr_new<CObjectPropertyEvaluatorConst>(false));
@@ -73,7 +73,7 @@ void CObjectHandlerPlanner::add_operators(CMissile* missile)
     add_operator(uid(id, eWorldOperatorIdle), action);
 
     // fire start
-    action = xr_new<CObjectActionFire>(missile, m_object, &m_storage, 0, "throw start");
+    action = xr_new<CObjectActionFire>(missile, m_object, &m_storage, 0u, "throw start");
     add_condition(action, id, eWorldPropertyHidden, false);
     add_condition(action, id, eWorldPropertyThrowStarted, false);
     add_effect(action, id, eWorldPropertyThrowStarted, true);

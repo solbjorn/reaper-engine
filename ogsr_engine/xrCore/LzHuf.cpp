@@ -72,13 +72,15 @@ public:
     IC size_t InputSize() { return size_t(in_end - in_start); }
     IC size_t OutSize() { return size_t(out_iterator - out_start); }
     IC u8* OutPointer() { return out_start; }
+
     IC void OutRelease()
     {
         xr_free(out_start);
-        out_start = 0;
-        out_end = 0;
-        out_iterator = 0;
+        out_start = nullptr;
+        out_end = nullptr;
+        out_iterator = nullptr;
     }
+
     IC int GetBit(void) /* get one bit */
     {
         unsigned i;

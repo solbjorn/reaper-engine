@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "LevelGameDef.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -16,32 +17,33 @@ BOOL net_sv_control_hit = FALSE;
 game_PlayerState* game_sv_GameState::get_it(u32 it)
 {
     xrClientData* C = (xrClientData*)m_server->client_Get(it);
-    if (0 == C)
-        return 0;
-    else
-        return C->ps;
+    if (!C)
+        return nullptr;
+
+    return C->ps;
 }
 
 game_PlayerState* game_sv_GameState::get_id(ClientID id)
 {
     xrClientData* C = (xrClientData*)m_server->ID_to_client(id);
-    if (0 == C)
-        return NULL;
-    else
-        return C->ps;
+    if (!C)
+        return nullptr;
+
+    return C->ps;
 }
 
 ClientID game_sv_GameState::get_it_2_id(u32 it)
 {
     xrClientData* C = (xrClientData*)m_server->client_Get(it);
-    if (0 == C)
+    if (!C)
     {
         ClientID clientID;
         clientID.set(0);
+
         return clientID;
     }
-    else
-        return C->ID;
+
+    return C->ID;
 }
 
 u32 game_sv_GameState::get_players_count() { return m_server->client_Count(); }
@@ -49,11 +51,13 @@ u32 game_sv_GameState::get_players_count() { return m_server->client_Count(); }
 u16 game_sv_GameState::get_id_2_eid(ClientID id)
 {
     xrClientData* C = (xrClientData*)m_server->ID_to_client(id);
-    if (0 == C)
+    if (!C)
         return 0xffff;
+
     CSE_Abstract* E = C->owner;
-    if (0 == E)
+    if (!E)
         return 0xffff;
+
     return E->ID;
 }
 
@@ -62,6 +66,7 @@ void* game_sv_GameState::get_client(u16 id) // if exist
     CSE_Abstract* entity = get_entity_from_eid(id);
     if (entity && entity->owner && entity->owner->ps && entity->owner->ps->GameID == id)
         return entity->owner;
+
     //-------------------------------------------------
     u32 cnt = get_players_count();
     for (u32 it = 0; it < cnt; ++it)
@@ -72,9 +77,10 @@ void* game_sv_GameState::get_client(u16 id) // if exist
         //		game_PlayerState*	ps	=	get_it	(it);
         if (C->ps->HasOldID(id))
             return C;
-    };
+    }
     //-------------------------------------------------
-    return NULL;
+
+    return nullptr;
 }
 
 CSE_Abstract* game_sv_GameState::get_entity_from_eid(u16 id) { return m_server->ID_to_entity(id); }
@@ -101,8 +107,9 @@ void game_sv_GameState::net_Export_State(NET_Packet& P, ClientID to)
         xrClientData* C = (xrClientData*)m_server->client_Get(p_it);
         if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to))
             continue;
+
         p_count++;
-    };
+    }
 
     P.w_u16(u16(p_count));
     game_PlayerState* Base = get_id(to);
@@ -115,12 +122,10 @@ void game_sv_GameState::net_Export_State(NET_Packet& P, ClientID to)
             continue;
 
         CSE_Abstract* C_e = C->owner;
-        if (0 == C_e)
+        if (!C_e)
             strcpy_s(p_name, "Unknown");
         else
-        {
             strcpy_s(p_name, C_e->name_replace());
-        }
 
         A->setName(p_name);
         u16 tmp_flags = A->flags__;
@@ -152,8 +157,8 @@ void game_sv_GameState::net_Export_Update(NET_Packet& P, ClientID id_to, ClientI
         P.w_clientID(id);
         A->net_Export(P);
         A->flags__ = bk_flags;
-    };
-};
+    }
+}
 
 void game_sv_GameState::net_Export_GameTime(NET_Packet& P)
 {
@@ -163,7 +168,7 @@ void game_sv_GameState::net_Export_GameTime(NET_Packet& P)
     // Syncronize EnvironmentGameTime
     P.w_u64(GetEnvironmentGameTime());
     P.w_float(GetEnvironmentGameTimeFactor());
-};
+}
 
 void game_sv_GameState::OnPlayerConnect(ClientID /**id_who/**/) { signal_Syncronize(); }
 
@@ -229,10 +234,8 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Clie
     break;
     case GAME_EVENT_CREATE_CLIENT: {
         IClient* CL = (IClient*)m_server->ID_to_client(sender);
-        if (CL == NULL)
-        {
+        if (!CL)
             break;
-        }
 
         CL->flags.bConnected = TRUE;
         m_server->AttachNewClient(CL);
@@ -264,8 +267,8 @@ void game_sv_GameState::AddDelayedEvent(NET_Packet& tNetPacket, u16 type, u32 ti
 
 void game_sv_GameState::ProcessDelayedEvent()
 {
-    GameEvent* ge = NULL;
-    while ((ge = m_event_queue->Retreive()) != 0)
+    GameEvent* ge{};
+    while ((ge = m_event_queue->Retreive()) != nullptr)
     {
         OnEvent(ge->P, ge->type, ge->time, ge->sender);
         m_event_queue->Release();

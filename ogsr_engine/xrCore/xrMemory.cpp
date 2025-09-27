@@ -7,8 +7,14 @@
 #endif
 
 #ifdef USE_MIMALLOC
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <mimalloc-override.h>
 #include <mimalloc-new-delete.h>
+
+XR_DIAG_POP();
 
 #pragma comment(lib, "mimalloc.dll.lib")
 #endif
@@ -27,7 +33,7 @@ void xrMemory::_initialize()
 
     if (disableMemoryPool)
     {
-        Msg("--[%s] memory pool disabled due to available memory limit: [%u MB]", __FUNCTION__, disableMemoryTotalMb);
+        Msg("--[%s] memory pool disabled due to available memory limit: [%llu MB]", __FUNCTION__, disableMemoryTotalMb);
     }
 
     g_pStringContainer = xr_new<str_container>();
@@ -59,21 +65,11 @@ void xrMemory::mem_compact()
         g_pSharedMemoryContainer->clean();
 }
 
-[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc(size_t size) noexcept
-{
-    void* ptr = malloc(size);
+[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc_aligned(size_t size, size_t align) noexcept { return _aligned_malloc(size, align); }
 
-    return ptr;
-}
+[[nodiscard]] void* xrMemory::mem_realloc_aligned(void* P, size_t size, size_t align) noexcept { return _aligned_realloc(P, size, align); }
 
-void xrMemory::mem_free(void* P) noexcept { free(P); }
-
-[[nodiscard]] void* xrMemory::mem_realloc(void* P, size_t size) noexcept
-{
-    void* ptr = realloc(P, size);
-
-    return ptr;
-}
+void xrMemory::mem_free_aligned(void* P) noexcept { _aligned_free(P); }
 
 u32 xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree) { return u32(mem_usage_impl(pBlocksUsed, pBlocksFree)); }
 

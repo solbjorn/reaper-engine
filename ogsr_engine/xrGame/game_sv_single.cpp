@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "game_sv_single.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "alife_simulator.h"
@@ -13,12 +14,7 @@
 #include "ui/UILoadingScreen.h"
 #include "Actor_Flags.h"
 
-game_sv_Single::game_sv_Single()
-{
-    m_alife_simulator = NULL;
-    m_type = GAME_SINGLE;
-};
-
+game_sv_Single::game_sv_Single() { m_type = GAME_SINGLE; }
 game_sv_Single::~game_sv_Single() { delete_data(m_alife_simulator); }
 
 void game_sv_Single::Create(shared_str& options)

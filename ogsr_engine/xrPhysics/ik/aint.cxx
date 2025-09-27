@@ -213,9 +213,10 @@ int AngleInt::merge(const AngleInt& a, AngleInt& b, float eps) const
 // Returns the size of the range
 //
 float AngleInt::Range() const { return (low < high) ? (high - low) : high + (2 * M_PI - low); }
+
 void AngleIntList::add(float l, float h)
 {
-    AngleIntListNode* t = xr_new<AngleIntListNode>(l, h, (AngleIntListNode*)0);
+    AngleIntListNode* t = xr_new<AngleIntListNode>(l, h, nullptr);
 
     if (!head)
         head = tail = t;
@@ -232,7 +233,7 @@ void AngleIntList::remove(AngleIntListNode* t)
 
     if (head == t)
     {
-        prev = 0;
+        prev = nullptr;
         head = t->next;
     }
     else
@@ -387,7 +388,7 @@ int AngleIntList::NumIntervals() const
 AngleInt* AngleIntList::Largest() const
 {
     if (!head)
-        return 0;
+        return nullptr;
 
     AngleInt* l = &head->D;
     float d = head->D.Range();
@@ -619,10 +620,7 @@ static void aint_union(const AngleInt& a, const AngleInt& b, AngleIntList& c)
 
 void AngleIntList::wrap(float eps)
 {
-    AngleIntListNode *s, *t;
-
-    s = 0;
-    t = 0;
+    AngleIntListNode *s{}, *t{};
 
     for (AngleIntListNode* temp = head; temp; temp = temp->next)
     {

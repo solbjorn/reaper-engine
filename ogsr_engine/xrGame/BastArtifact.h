@@ -4,9 +4,9 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 #include "..\xr_3da\feel_touch.h"
-
 #include "entity_alive.h"
 
 struct SGameMtl;
@@ -22,8 +22,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CBastArtefact(void);
-    virtual ~CBastArtefact(void);
+    CBastArtefact();
+    virtual ~CBastArtefact();
 
     virtual void Load(LPCSTR section);
     virtual void shedule_Update(u32 dt);
@@ -39,7 +39,7 @@ public:
     virtual void feel_touch_delete(CObject* O);
     virtual BOOL feel_touch_contact(CObject* O);
 
-    bool IsAttacking() { return NULL != m_AttakingEntity; }
+    bool IsAttacking() { return !!m_AttakingEntity; }
 
 protected:
     virtual void UpdateCLChild();
@@ -64,14 +64,14 @@ protected:
 
     // флаг, того что артефакт получил хит
     // и теперь может совершить бросок
-    bool m_bStrike;
+    bool m_bStrike{};
 
     // список живых существ в зоне досягаемости артефакта
     ALIVE_LIST m_AliveList;
     // то, что мы ударили
     CEntityAlive* m_pHitedEntity{};
     // то что атакуем
-    CEntityAlive* m_AttakingEntity;
+    CEntityAlive* m_AttakingEntity{};
 
 public:
     virtual void setup_physic_shell();

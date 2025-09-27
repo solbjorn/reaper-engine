@@ -1,8 +1,8 @@
 #ifndef GamePersistentH
 #define GamePersistentH
-#pragma once
 
 #include "..\xr_3da\IGame_Persistent.h"
+
 class CMainMenu;
 class CUICursor;
 class CParticlesObject;
@@ -14,22 +14,22 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
     RTTI_DECLARE_TYPEINFO(CGamePersistent, IGame_Persistent, IEventReceiver);
 
 public:
-    bool GameAutopaused = false;
-
     // ambient particles
-    CParticlesObject* ambient_particles;
+    CParticlesObject* ambient_particles{};
     u32 ambient_sound_next_time[40]{}; // max snd channels
     u32 ambient_sound_next_time_shoc{};
-    u32 ambient_effect_next_time;
+    u32 ambient_effect_next_time{};
     u32 ambient_effect_stop_time;
 
-    float ambient_effect_wind_start;
-    float ambient_effect_wind_in_time;
-    float ambient_effect_wind_end;
-    float ambient_effect_wind_out_time;
-    bool ambient_effect_wind_on;
+    float ambient_effect_wind_start{};
+    float ambient_effect_wind_in_time{};
+    float ambient_effect_wind_end{};
+    float ambient_effect_wind_out_time{};
+    bool ambient_effect_wind_on{};
 
-    CUISequencer* m_intro;
+    bool GameAutopaused{};
+
+    CUISequencer* m_intro{};
     EVENT eQuickLoad;
 
     CallMe::Delegate<void()> m_intro_event;
@@ -40,14 +40,14 @@ public:
     void update_game_intro();
 
 #ifdef DEBUG
-    u32 m_frame_counter;
-    u32 m_last_stats_frame;
+    u32 m_frame_counter{};
+    u32 m_last_stats_frame{std::numeric_limits<u32>::max() - 1};
 #endif
 
     void WeathersUpdate();
 
 public:
-    ui_core* m_pUI_core;
+    ui_core* m_pUI_core{};
     IReader* pDemoFile;
     u32 uTime2Change;
     EVENT eDemoStart;

@@ -13,22 +13,19 @@
 
 class CScriptGameObject;
 
-class CScriptHit : public virtual RTTI::Enable
+class CScriptHit
 {
-    RTTI_DECLARE_TYPEINFO(CScriptHit);
-
 public:
-    float m_fPower;
-    Fvector m_tDirection;
+    float m_fPower{100.f};
+    Fvector m_tDirection{1.f, 0.f, 0.f};
     shared_str m_caBoneName;
-    CScriptGameObject* m_tpDraftsman;
-    float m_fImpulse;
-    int m_tHitType;
+    CScriptGameObject* m_tpDraftsman{};
+    float m_fImpulse{100.f};
+    int m_tHitType{ALife::eHitTypeWound};
 
 public:
     IC CScriptHit();
-    IC CScriptHit(const CScriptHit* tpLuaHit);
-    virtual ~CScriptHit();
+
     IC void set_bone_name(LPCSTR bone_name);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

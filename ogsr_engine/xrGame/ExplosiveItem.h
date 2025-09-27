@@ -37,6 +37,6 @@ public:
     virtual bool shedule_Needed();
 
     virtual void UpdateCL();
-    virtual void ChangeCondition(float fDeltaCondition) { CInventoryItem::ChangeCondition(fDeltaCondition); };
+    virtual void ChangeCondition(float fDeltaCondition) { CInventoryItem::ChangeCondition(fDeltaCondition); }
     virtual void StartTimerEffects();
 };

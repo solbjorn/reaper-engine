@@ -105,7 +105,7 @@ public:
     CTexture* _CreateTexture(LPCSTR Name);
     void _DeleteTexture(const CTexture* T);
 
-    R_constant_table* _CreateConstantTable(R_constant_table& C);
+    R_constant_table* _CreateConstantTable(const R_constant_table& C);
     void _DeleteConstantTable(const R_constant_table* C);
 
     dx10ConstantBuffer* _CreateConstantBuffer(ctx_id_t context_id, ID3DShaderReflectionConstantBuffer* pTable);

@@ -6,21 +6,20 @@
 
 //	DX10: TODO: Implement alpha referense control
 
-dx10StateManager::dx10StateManager()
-{
-    //	If dx10StateManager would ever own any object
-    //	implement correct state manager
-    Reset();
-}
+dx10StateManager::dx10StateManager(const dx10StateManager&) = default;
+dx10StateManager::dx10StateManager(dx10StateManager&&) = default;
+
+dx10StateManager& dx10StateManager::operator=(const dx10StateManager&) = default;
+dx10StateManager& dx10StateManager::operator=(dx10StateManager&&) = default;
 
 //	Set all states to default
 void dx10StateManager::Reset()
 {
     UnmapConstants();
 
-    m_pRState = 0;
-    m_pDepthStencilState = 0;
-    m_pBlendState = 0;
+    m_pRState = nullptr;
+    m_pDepthStencilState = nullptr;
+    m_pBlendState = nullptr;
 
     m_uiStencilRef = 0;
     m_uiAlphaRef = 0;
@@ -46,7 +45,7 @@ void dx10StateManager::Reset()
     m_uiSampleMask = 0xffffffff;
 }
 
-void dx10StateManager::UnmapConstants() { m_cAlphaRef = 0; }
+void dx10StateManager::UnmapConstants() { m_cAlphaRef = nullptr; }
 
 void dx10StateManager::SetRasterizerState(ID3DRasterizerState* pRState)
 {

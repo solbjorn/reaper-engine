@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "character_reputation.h"
 
 #define GAME_RELATIONS_SECT "game_relations"

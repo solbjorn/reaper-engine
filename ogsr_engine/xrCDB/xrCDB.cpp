@@ -3,8 +3,17 @@
 
 #include "stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <Opcode.h>
+
+XR_DIAG_POP();
+
+namespace xxh
+{
 #include <xxhash.h>
+}
 
 using namespace CDB;
 using namespace Opcode;
@@ -14,18 +23,13 @@ MODEL::MODEL()
 #ifdef PROFILE_CRITICAL_SECTIONS
     : cs(MUTEX_PROFILE_ID(MODEL))
 #endif // PROFILE_CRITICAL_SECTIONS
-{
-    tree = 0;
-    tris = 0;
-    tris_count = 0;
-    verts = 0;
-    verts_count = 0;
-    status = S_INIT;
-}
+{}
+
 MODEL::~MODEL()
 {
     syncronize(); // maybe model still in building
     status = S_INIT;
+
     xr_delete(tree);
     xr_free(tris);
     tris_count = 0;
@@ -61,15 +65,15 @@ void MODEL::build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_c
     // Release data pointers
     status = S_BUILD;
 
-    MeshInterface* mif = xr_new<MeshInterface>();
-    mif->SetNbTriangles(tris_count);
-    mif->SetNbVertices(verts_count);
-    mif->SetPointers(reinterpret_cast<const IceMaths::IndexedTriangle*>(tris), reinterpret_cast<const IceMaths::Point*>(verts));
-    mif->SetStrides(sizeof(TRI));
+    MeshInterface mif;
+    mif.SetNbTriangles(tris_count);
+    mif.SetNbVertices(verts_count);
+    mif.SetPointers(reinterpret_cast<const IceMaths::IndexedTriangle*>(tris), reinterpret_cast<const IceMaths::Point*>(verts));
+    mif.SetStrides(sizeof(TRI));
 
     // Build a non quantized no-leaf tree
-    OPCODECREATE OPCC = OPCODECREATE();
-    OPCC.mIMesh = mif;
+    OPCODECREATE OPCC;
+    OPCC.mIMesh = &mif;
     OPCC.mQuantized = false;
 
     tree = xr_new<Model>();
@@ -77,11 +81,7 @@ void MODEL::build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_c
     {
         xr_free(verts);
         xr_free(tris);
-        xr_delete(mif);
-        return;
-    };
-
-    xr_delete(mif);
+    }
 }
 
 size_t MODEL::memory()
@@ -100,8 +100,8 @@ struct alignas(16) model_mid_hdr
 {
     u64 tris_count;
     u64 verts_count;
-    XXH64_hash_t tris_xxh;
-    XXH64_hash_t verts_xxh;
+    xxh::XXH64_hash_t tris_xxh;
+    xxh::XXH64_hash_t verts_xxh;
 };
 
 struct alignas(16) model_end_hdr
@@ -109,7 +109,7 @@ struct alignas(16) model_end_hdr
     u32 model_code;
     u32 nodes_num;
     u64 nodes;
-    XXH64_hash_t nodes_xxh;
+    xxh::XXH64_hash_t nodes_xxh;
     u64 pad;
 };
 
@@ -117,13 +117,13 @@ void MODEL::serialize_tree(IWriter* stream) const
 {
     const u32 nodes_num = tree->GetNbNodes();
     const auto* root = ((const AABBNoLeafTree*)tree->GetTree())->GetNodes();
-    const size_t size = roundup(nodes_num * sizeof(AABBNoLeafNode), 16);
+    const size_t size = roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
 
     const model_end_hdr hdr = {
         .model_code = tree->GetModelCode(),
         .nodes_num = nodes_num,
         .nodes = (uintptr_t)root,
-        .nodes_xxh = XXH3_64bits(root, size),
+        .nodes_xxh = xxh::XXH3_64bits(root, size),
         .pad = 0,
     };
 
@@ -141,16 +141,16 @@ bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) co
         callback(*wstream);
 
     wstream->w_u64(xxh);
-    wstream->seek(roundup(wstream->tell(), 16));
+    wstream->seek(roundup(wstream->tell(), 16uz));
 
     const size_t trs = sizeof(TRI) * tris_count;
-    const size_t vrs = roundup(sizeof(Fvector) * verts_count, 16);
+    const size_t vrs = roundup(sizeof(Fvector) * verts_count, 16uz);
 
     const model_mid_hdr hdr = {
         .tris_count = tris_count,
         .verts_count = verts_count,
-        .tris_xxh = XXH3_64bits(tris, trs),
-        .verts_xxh = XXH3_64bits(verts, vrs),
+        .tris_xxh = xxh::XXH3_64bits(tris, trs),
+        .verts_xxh = xxh::XXH3_64bits(verts, vrs),
     };
 
     wstream->w(&hdr, sizeof(hdr));
@@ -178,7 +178,7 @@ bool MODEL::deserialize_tree(IReader* stream)
     const size_t size = hdr.nodes_num * sizeof(AABBNoLeafNode);
     xr_memcpy128(ptr, stream->pointer(), size);
 
-    if (XXH3_64bits(ptr, size) != hdr.nodes_xxh)
+    if (xxh::XXH3_64bits(ptr, size) != hdr.nodes_xxh)
     {
         xr_free(ptr);
         xr_delete(mTree);
@@ -241,7 +241,7 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     if (rstream->r_u64() != xxh)
         goto err_close;
 
-    rstream->seek(roundup(rstream->tell(), 16));
+    rstream->seek(roundup(rstream->tell(), 16uz));
 
     xr_free(tris);
     xr_free(verts);
@@ -259,7 +259,7 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     xr_memcpy128(tris, rstream->pointer(), trisSize);
     rstream->advance(trisSize);
 
-    if (XXH3_64bits(tris, trisSize) != mid.tris_xxh)
+    if (xxh::XXH3_64bits(tris, trisSize) != mid.tris_xxh)
     {
     err_tris:
         xr_free(tris);
@@ -267,11 +267,11 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     }
 
     verts = xr_alloc<Fvector>(verts_count);
-    const size_t vertsSize = roundup(verts_count * sizeof(Fvector), 16);
+    const size_t vertsSize = roundup(verts_count * sizeof(Fvector), 16uz);
     xr_memcpy128(verts, rstream->pointer(), vertsSize);
     rstream->advance(vertsSize);
 
-    if (XXH3_64bits(verts, vertsSize) != mid.verts_xxh)
+    if (xxh::XXH3_64bits(verts, vertsSize) != mid.verts_xxh)
     {
     err_verts:
         xr_free(verts);
@@ -296,6 +296,6 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
 
 COLLIDER::~COLLIDER() { r_free(); }
 
-RESULT& COLLIDER::r_add() { return rd.emplace_back(RESULT()); }
+RESULT& COLLIDER::r_add() { return rd.emplace_back(); }
 
 void COLLIDER::r_free() { rd.clear(); }

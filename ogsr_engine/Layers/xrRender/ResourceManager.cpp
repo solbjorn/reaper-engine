@@ -9,7 +9,13 @@
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+
 #include <oneapi/tbb/parallel_for_each.h>
+
+XR_DIAG_POP();
 
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
@@ -81,8 +87,10 @@ ShaderElement* CResourceManager::_CreateElement(ShaderElement&& S)
             return elem;
 
     // Create _new_ entry
-    ShaderElement* N = v_elements.emplace_back(xr_new<ShaderElement>(std::move(S)));
+    ShaderElement* N = v_elements.emplace_back(xr_new<ShaderElement>());
+    N->clone(std::move(S));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+
     return N;
 }
 
@@ -203,8 +211,10 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
             return v_shaders[it];
 
     // Create _new_ entry
-    Shader* N = v_shaders.emplace_back(xr_new<Shader>(std::move(S)));
+    Shader* N = v_shaders.emplace_back(xr_new<Shader>());
+    N->clone(std::move(S));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+
     return N;
 }
 
@@ -222,7 +232,7 @@ void CResourceManager::DeferredUpload()
     if (!Device.b_is_Ready)
         return;
 
-    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%u]", m_textures.size());
+    Msg("CResourceManager::DeferredUpload [MT] -> START, size = [%zu]", m_textures.size());
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
 
     u32 m_base = 0;
@@ -291,7 +301,7 @@ void CResourceManager::_DumpMemoryUsage()
         xr_multimap<u32, std::pair<u32, shared_str>>::iterator I = mtex.begin();
         xr_multimap<u32, std::pair<u32, shared_str>>::iterator E = mtex.end();
         for (; I != E; I++)
-            Msg("* %4.1f : [%4d] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
+            Msg("* %4.1f : [%4u] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
     }
 }
 

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "weapon.h"
 #include "entity_alive.h"
 #include "inventoryowner.h"
@@ -21,7 +22,7 @@
 #include "alife_human_brain.h"
 #include "alife_human_object_handler.h"
 
-//#define NO_HUMAN_BRAIN
+// #define NO_HUMAN_BRAIN
 
 IC CLASS_ID CBaseFunction::clsid_member_item() const
 {
@@ -167,7 +168,7 @@ float CPersonalWeaponTypeFunction::ffGetTheBestWeapon()
                         u32 dwCurrentBestWeapon = dwfGetWeaponType();
                         if (dwCurrentBestWeapon > dwBestWeapon)
                             dwBestWeapon = dwCurrentBestWeapon;
-                        ef_storage().non_alife().member_item() = 0;
+                        ef_storage().non_alife().member_item() = nullptr;
                     }
                 }
         }

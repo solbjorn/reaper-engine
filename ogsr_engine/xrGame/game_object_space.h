@@ -4,7 +4,7 @@ namespace GameObject
 {
 enum ECallbackType : u32
 {
-    eTradeStart = u32(0),
+    eTradeStart = 0,
     eTradeStop,
     eTradeSellBuyItem,
     eTradePerformTradeOperation,
@@ -104,6 +104,6 @@ enum ECallbackType : u32
     eOnActorLand,
     eOnActorJump,
 
-    eDummy = u32(-1),
+    eDummy = std::numeric_limits<u32>::max(),
 };
-};
+} // namespace GameObject

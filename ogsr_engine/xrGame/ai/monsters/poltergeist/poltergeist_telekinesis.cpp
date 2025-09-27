@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "poltergeist.h"
 #include "../../../PhysicsShellHolder.h"
 #include "../../../level.h"
@@ -85,6 +86,7 @@ void CPolterTele::update_schedule()
         m_time = time();
         m_time_next = 0;
         m_state = eFireObjects;
+        [[fallthrough]];
     case eFireObjects:
         if (m_time + m_time_next < time())
         {
@@ -132,7 +134,7 @@ public:
         float dist3 = enemy_pos.distance_to(monster_pos);
 
         return ((dist1 < dist3) && (dist2 > dist3));
-    };
+    }
 };
 
 class best_object_predicate2
@@ -155,7 +157,7 @@ public:
         float dist2 = enemy_pos.distance_to(tpObject2->Position());
 
         return (dist1 < dist2);
-    };
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -188,7 +190,7 @@ bool CPolterTele::trace_object(CObject* obj, const Fvector& target)
 void CPolterTele::tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos)
 {
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, pos, m_pmt_radius, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, pos, m_pmt_radius, nullptr);
 
     for (u32 i = 0; i < m_nearest.size(); i++)
     {
@@ -286,7 +288,7 @@ public:
         di->SetInitiated();
 
         if (m_object)
-            m_object->set_collision_hit_callback(0); // delete this!!
+            m_object->set_collision_hit_callback(nullptr); // delete this!!
         else
             Msg("!![%s] CPhysicsShellHolder is nullptr!", __FUNCTION__);
     }
@@ -296,7 +298,7 @@ void CPolterTele::tele_fire_objects()
 {
     for (u32 i = 0; i < m_object->CTelekinesis::get_objects_total_count(); i++)
     {
-        CTelekineticObject tele_object = m_object->CTelekinesis::get_object_by_index(i);
+        CTelekineticObject& tele_object = m_object->CTelekinesis::get_object_by_index(i);
         // if (tele_object.get_state() != TS_Fire) {
         if ((tele_object.get_state() == TS_Raise) || (tele_object.get_state() == TS_Keep))
         {

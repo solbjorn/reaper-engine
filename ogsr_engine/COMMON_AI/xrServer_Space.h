@@ -92,5 +92,5 @@ template <class T>
 void F_entity_Destroy(T*& P)
 {
     xr_delete(P);
-};
+}
 #endif

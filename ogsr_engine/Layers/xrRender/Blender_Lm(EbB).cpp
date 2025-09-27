@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 
-
 #include "blender_Lm(EbB).h"
 
 //////////////////////////////////////////////////////////////////////
@@ -23,7 +22,7 @@ CBlender_LmEbB::~CBlender_LmEbB() {}
 
 void CBlender_LmEbB::Save(IWriter& fs)
 {
-    //description.version = 0x1;
+    // description.version = 0x1;
     IBlenderXr::Save(fs);
     xrPWRITE_MARKER(fs, "Environment map");
     xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT2_Name);
@@ -62,7 +61,6 @@ void CBlender_LmEbB::LoadIni(CInifile* ini_file, LPCSTR section)
 
     ReadBool(ini_file, section, "alpha_blend", oBlend);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // R3

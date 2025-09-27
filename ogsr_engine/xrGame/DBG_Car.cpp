@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#ifdef DEBUG
 
+#ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
@@ -18,6 +18,7 @@ void CCar::InitDebug()
     m_dbg_dynamic_plot = 0;
     b_plots = false;
 }
+
 void CCar::DbgSheduleUpdate()
 {
     if (ph_dbg_draw_mask.test(phDbgDrawCarPlots) && m_pPhysicsShell && OwnerActor() && static_cast<CObject*>(Owner()) == Level().CurrentViewEntity())
@@ -187,5 +188,4 @@ void CCar::DbgUbdateCl()
         }
     }
 }
-
 #endif

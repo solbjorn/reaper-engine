@@ -133,7 +133,7 @@ public:
     virtual void ClipperOff();
     virtual void ClipperOff(CUIStaticItem& UIStaticItem);
     virtual bool GetClipperState() { return m_bClipper; }
-    void TextureClipper(float offset_x = 0, float offset_y = 0, Frect* pClipRect = NULL);
+    void TextureClipper(float offset_x = 0, float offset_y = 0, Frect* pClipRect = nullptr);
     void TextureClipper(float offset_x, float offset_y, Frect* pClipRect, CUIStaticItem& UIStaticItem);
 
     void SetShader(const ui_shader& sh);
@@ -169,7 +169,7 @@ public:
 
     void SetElipsis(EElipsisPosition pos, int indent);
 
-    void SetHeading(float f) { m_fHeading = f; };
+    void SetHeading(float f) { m_fHeading = f; }
     float GetHeading() { return m_fHeading; }
     bool Heading() { return m_bHeading; }
     virtual void EnableHeading(bool b)
@@ -190,10 +190,10 @@ public:
 
     void SetTextColor(u32 color, E4States state);
 
-    CUILines* m_pLines;
+    CUILines* m_pLines{};
 
 protected:
-    bool m_bEnableTextHighlighting;
+    bool m_bEnableTextHighlighting{};
     // Цвет подсветки
     u32 m_HighlightColor{};
 
@@ -202,25 +202,25 @@ protected:
     u32 m_dwTextColor[4]{};
     bool m_bUseTextColor[4]{}; // note: 0 index will be ignored
 
-    bool m_bClipper;
-    bool m_bStretchTexture;
-    bool m_bAvailableTexture;
-    bool m_bTextureEnable;
+    bool m_bClipper{};
+    bool m_bStretchTexture{};
+    bool m_bAvailableTexture{};
+    bool m_bTextureEnable{true};
     CUIStaticItem m_UIStaticItem;
 
-    Fvector2 m_TextOffset;
+    Fvector2 m_TextOffset{};
 
-    bool m_bHeading;
-    float m_fHeading;
+    bool m_bHeading{};
+    float m_fHeading{};
 
     // Для вывода текстуры с обрезанием по маске используем CUIFrameWindow
-    CUIFrameWindow* m_pMask;
-    Fvector2 m_TextureOffset;
+    CUIFrameWindow* m_pMask{};
+    Fvector2 m_TextureOffset{};
 
     // Обрезка надписи
-    EElipsisPosition m_ElipsisPos;
+    EElipsisPosition m_ElipsisPos{eepNone};
     void Elipsis(const Frect& rect, EElipsisPosition elipsisPos);
-    int m_iElipsisIndent;
+    int m_iElipsisIndent{};
     Frect m_ClipRect;
 
 private:

@@ -25,7 +25,7 @@ public:
     float GetItemHeight();
     float GetLongestLength();
 
-    virtual void SetSelected(CUIWindow* w) { CUIScrollView::SetSelected(w); };
+    virtual void SetSelected(CUIWindow* w) { CUIScrollView::SetSelected(w); }
     u32 GetSelectedIDX();
     void SetSelectedIDX(u32 idx);
     void SetSelectedTAG(u32 tag_val);
@@ -33,7 +33,7 @@ public:
     void SetImmediateSelection(bool f);
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = 0);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     // IUIFontControl
     virtual void SetTextColor(u32 color);

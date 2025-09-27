@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "burer.h"
 #include "PhysicsShell.h"
 #include "../../../characterphysicssupport.h"
@@ -115,7 +116,7 @@ void CBurer::Load(LPCSTR section)
 
     m_shield_cooldown = READ_IF_EXISTS(pSettings, r_u32, section, "shield_cooldown", 4000);
     m_shield_time = READ_IF_EXISTS(pSettings, r_u32, section, "shield_time", 3000);
-    m_shield_keep_particle = READ_IF_EXISTS(pSettings, r_string, section, "shield_keep_particle", 0);
+    m_shield_keep_particle = READ_IF_EXISTS(pSettings, r_string, section, "shield_keep_particle", nullptr);
     m_shield_keep_particle_period = READ_IF_EXISTS(pSettings, r_u32, section, "shield_keep_particle_period", 1000);
 
     m_tele_max_handled_objects = pSettings->r_u32(section, "Tele_Max_Handled_Objects");
@@ -303,7 +304,7 @@ void CBurer::UpdateGraviObject()
     float trace_dist = float(m_gravi.step);
 
     collide::rq_result l_rq;
-    if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, NULL))
+    if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr))
     {
         const CObject* enemy = smart_cast<const CObject*>(m_gravi_object.enemy);
         if ((l_rq.O == enemy) && (l_rq.range < trace_dist))
@@ -355,7 +356,7 @@ void CBurer::UpdateGraviObject()
 
     // hit objects
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, m_gravi_object.cur_pos, m_gravi.radius, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, m_gravi_object.cur_pos, m_gravi.radius, nullptr);
     // xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
     for (u32 i = 0; i < m_nearest.size(); i++)
@@ -375,12 +376,11 @@ void CBurer::UpdateGraviObject()
 
     Fvector snd_pos = m_gravi_object.cur_pos;
     snd_pos.y += 0.5f;
+
     if (sound_gravi_wave._feedback())
-    {
         sound_gravi_wave.set_position(snd_pos);
-    }
     else
-        ::Sound->play_at_pos(sound_gravi_wave, 0, snd_pos);
+        ::Sound->play_at_pos(sound_gravi_wave, nullptr, snd_pos);
 }
 
 void CBurer::UpdateCL()

@@ -20,7 +20,15 @@ public:
         d = P.d;
         return *this;
     }
-    IC BOOL similar(Self& P, T eps_n = EPS, T eps_d = EPS) { return (n.similar(P.n, eps_n) && (_abs(d - P.d) < eps_d)); }
+
+    constexpr inline bool similar(Self& P, T eps_n = EPS, T eps_d = EPS)
+    {
+        if constexpr (std::is_floating_point_v<T>)
+            return n.similar(P.n, eps_n) && fsimilar(d, P.d, eps_d);
+        else
+            return n.similar(P.n, eps_n) && d == P.d;
+    }
+
     IC SelfRef build(const _vector2<T>& _p, const _vector2<T>& _n)
     {
         d = -n.normalize(_n).dotproduct(_p);

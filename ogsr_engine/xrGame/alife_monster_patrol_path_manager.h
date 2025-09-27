@@ -18,7 +18,7 @@ namespace PatrolPathManager
 {
 enum EPatrolStartType : u32;
 enum EPatrolRouteType : u32;
-}; // namespace PatrolPathManager
+} // namespace PatrolPathManager
 
 class CALifeMonsterPatrolPathManager
 {
@@ -30,21 +30,18 @@ public:
 
 private:
     object_type* m_object;
-
-private:
-    const CPatrolPath* m_path;
+    const CPatrolPath* m_path{};
     EPatrolStartType m_start_type;
     EPatrolRouteType m_route_type;
-    bool m_use_randomness;
-    u32 m_start_vertex_index;
 
-private:
-    bool m_actual;
-    bool m_completed;
-    u32 m_current_vertex_index;
-    u32 m_previous_vertex_index;
+    bool m_use_randomness{true};
+    bool m_actual{true};
+    bool m_completed{true};
 
-private:
+    u32 m_start_vertex_index{std::numeric_limits<u32>::max()};
+    u32 m_current_vertex_index{std::numeric_limits<u32>::max()};
+    u32 m_previous_vertex_index{std::numeric_limits<u32>::max()};
+
     void select_nearest();
     void actualize();
     bool location_reached() const;

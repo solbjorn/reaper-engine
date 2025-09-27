@@ -6,23 +6,17 @@
 #include "ik_anim_state.h"
 #include "CharacterPhysicsSupport.h"
 #include "../xr_3da/motion.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif // DEBUG
 
-CIKLimbsController::CIKLimbsController()
-#ifdef DEBUG
-    : m_legs_blend(nullptr), m_object(nullptr), anim_name(nullptr), anim_set_name(nullptr)
-{}
-#else
-    : m_legs_blend(nullptr), m_object(nullptr)
-{}
-#endif
+CIKLimbsController::CIKLimbsController() = default;
 
 void CIKLimbsController::Create(CGameObject* O)
 {
     VERIFY(O);
-    m_legs_blend = 0;
+    m_legs_blend = nullptr;
 
     IKinematics* K = smart_cast<IKinematics*>(O->Visual());
     m_object = O;
@@ -65,16 +59,18 @@ void CIKLimbsController::LimbUpdate(CIKLimb& L)
 IC void update_blend(CBlend*& b)
 {
     if (b && CBlend::eFREE_SLOT == b->blend_state())
-        b = 0;
+        b = nullptr;
 }
 
 IC float lerp(float t, float a, float b) { return (a + t * (b - a)); }
+
 void y_shift_bones(IKinematics* K, float shift)
 {
     u16 bc = K->LL_BoneCount();
     for (u16 i = 0; bc > i; ++i)
         K->LL_GetTransform(i).c.y += shift;
 }
+
 float CIKLimbsController::LegLengthShiftLimit(float current_shift, const SCalculateData cd[max_size])
 {
     float shift_down = -phInfinity;
@@ -88,7 +84,12 @@ float CIKLimbsController::LegLengthShiftLimit(float current_shift, const SCalcul
         }
     return shift_down;
 }
-static const float static_shift_object_speed = .2f;
+
+namespace
+{
+constexpr float static_shift_object_speed{.2f};
+}
+
 float CIKLimbsController::StaticObjectShift(const SCalculateData cd[max_size])
 {
     const float current_shift = _object_shift.shift();
@@ -248,12 +249,10 @@ void CIKLimbsController::Calculate()
     BOOL sv_root_cb_ovwr = root_bi.callback_overwrite();
     BoneCallback sv_root_cb = root_bi.callback();
 
-    root_bi.set_callback(root_bi.callback_type(), 0, root_bi.callback_param(), TRUE);
+    root_bi.set_callback(root_bi.callback_type(), nullptr, root_bi.callback_param(), TRUE);
 
     if (ik_shift_object) //&& ! m_object->animation_movement_controlled( )
-    {
         ShiftObject(cd);
-    }
 
     const u16 sz = (u16)_bone_chains.size();
     for (u16 j = 0; sz > j; ++j)

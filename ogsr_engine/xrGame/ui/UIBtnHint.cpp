@@ -1,11 +1,12 @@
 #include "stdafx.h"
+
 #include "UIBtnHint.h"
 #include "UIFrameLineWnd.h"
 #include "UIXmlInit.h"
 
-CUIButtonHint* g_btnHint = NULL;
+CUIButtonHint* g_btnHint{};
 
-CUIButtonHint::CUIButtonHint() : m_ownerWnd(NULL), m_enabledOnFrame(false)
+CUIButtonHint::CUIButtonHint()
 {
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 

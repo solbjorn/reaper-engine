@@ -17,7 +17,7 @@ void CRender::render_menu()
 
     // Main Render
     {
-        Target->u_setrt(RCache, Target->rt_Generic_0, 0, 0, Target->rt_Base_Depth); // LDR RT
+        Target->u_setrt(RCache, Target->rt_Generic_0, nullptr, nullptr, Target->rt_Base_Depth); // LDR RT
         g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
     }
 
@@ -25,13 +25,13 @@ void CRender::render_menu()
     {
         constexpr Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 
-        Target->u_setrt(RCache, Target->rt_Generic_1, 0, 0, Target->rt_Base_Depth); // Now RT is a distortion mask
+        Target->u_setrt(RCache, Target->rt_Generic_1, nullptr, nullptr, Target->rt_Base_Depth); // Now RT is a distortion mask
         RCache.ClearRT(Target->rt_Generic_1, ColorRGBA);
         g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
     }
 
     // Actual Display
-    Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), NULL, NULL, Target->get_base_zb());
+    Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, Target->get_base_zb());
     RCache.set_Shader(Target->s_menu);
     RCache.set_Geometry(Target->g_menu);
 
@@ -72,12 +72,12 @@ void CRender::Render()
         return;
     }
 
-    IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
-    bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
+    IMainMenu* pMainMenu{g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : nullptr};
+    bool bMenu{pMainMenu ? pMainMenu->CanSkipSceneRendering() : false};
 
     if (!(g_pGameLevel && g_hud) || bMenu)
     {
-        Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), NULL, NULL, Target->get_base_zb());
+        Target->u_setrt(RCache, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, Target->get_base_zb());
         return;
     }
 
@@ -106,7 +106,7 @@ void CRender::Render()
         constexpr Fcolor ColorRGBA = {1.0f, 0.0f, 0.0f, 1.0f};
         RCache.ClearRT(Target->rt_ssfx_hud, ColorRGBA);
 
-        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_hud, NULL, NULL, Target->get_base_zb());
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_hud, nullptr, nullptr, Target->get_base_zb());
         dsgraph.render_hud(true);
 
         // Reset Depth
@@ -115,7 +115,7 @@ void CRender::Render()
 
     if (ps_r2_ls_flags.test(R2FLAG_TERRAIN_PREPASS))
     {
-        Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, Target->rt_MSAADepth);
+        Target->u_setrt(dsgraph.cmd_list, Device.dwWidth, Device.dwHeight, nullptr, nullptr, nullptr, Target->rt_MSAADepth);
         dsgraph.render_landscape(0, false);
     }
 
@@ -280,7 +280,7 @@ void CRender::Render()
         // Render Emissive on `rt_ssfx_bloom_emissive`
         RCache.ClearRT(Target->rt_ssfx_bloom_emissive, {});
 
-        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, NULL, NULL, Target->rt_MSAADepth);
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, nullptr, nullptr, Target->rt_MSAADepth);
         dsgraph.render_emissive(true, true);
     }
 

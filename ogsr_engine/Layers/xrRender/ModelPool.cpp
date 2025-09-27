@@ -17,7 +17,7 @@
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
-    dxRender_Visual* V = NULL;
+    dxRender_Visual* V{};
 
     // Check types
     switch (type)
@@ -42,7 +42,9 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
     default: FATAL("Unknown visual type"); break;
     }
     R_ASSERT(V);
+
     V->Type = type;
+
     return V;
 }
 
@@ -69,7 +71,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
     string_path name;
 
     // Add default ext if no ext at all
-    if (0 == strext(N))
+    if (!strext(N))
         strconcat(sizeof(name), name, N, ".ogf");
     else
         xr_strcpy(name, sizeof(name), N);
@@ -210,8 +212,9 @@ CModelPool::~CModelPool()
 
 dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 {
-    dxRender_Visual* Model = 0;
+    dxRender_Visual* Model{};
     xr_vector<ModelDef>::iterator I;
+
     for (I = Models.begin(); I != Models.end(); I++)
     {
         if (I->name[0] && (0 == xr_strcmp(*I->name, N)))
@@ -220,6 +223,7 @@ dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
             break;
         }
     }
+
     return Model;
 }
 
@@ -248,15 +252,16 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
     {
         // 1. Search for already loaded model (reference, base model)
         dxRender_Visual* Base = Instance_Find(low_name);
-
-        if (0 == Base)
+        if (!Base)
         {
             // 2. If not found
             bAllowChildrenDuplicate = FALSE;
+
             if (data)
                 Base = Instance_Load(low_name, data, TRUE);
             else
                 Base = Instance_Load(low_name, TRUE);
+
             bAllowChildrenDuplicate = TRUE;
         }
 
@@ -304,7 +309,7 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
     // 1. Search for already loaded model
     dxRender_Visual* Base = Instance_Find(low_name);
     //.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
-    if (0 == Base)
+    if (!Base)
     {
         if (data)
             Base = Instance_Load(low_name, data, FALSE);
@@ -317,12 +322,15 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 }
 
 extern BOOL g_bRendering;
+
 void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
 {
     VERIFY(!g_bRendering);
     if (!V)
         return;
+
     V->Depart();
+
     if (bDiscard || bForceDiscard)
     {
         Discard(V, TRUE);
@@ -342,13 +350,15 @@ void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
             xr_delete(V);
         }
     }
-    V = NULL;
+
+    V = nullptr;
 }
 
 void CModelPool::Delete(dxRender_Visual*& V, BOOL bDiscard)
 {
-    if (NULL == V)
+    if (!V)
         return;
+
     if (g_bRendering)
     {
         VERIFY(!bDiscard);
@@ -358,13 +368,15 @@ void CModelPool::Delete(dxRender_Visual*& V, BOOL bDiscard)
     {
         DeleteInternal(V, bDiscard);
     }
-    V = NULL;
+
+    V = nullptr;
 }
 
 void CModelPool::DeleteQueue()
 {
     for (u32 it = 0; it < ModelsToDelete.size(); it++)
         DeleteInternal(ModelsToDelete[it]);
+
     ModelsToDelete.clear();
 }
 
@@ -417,7 +429,8 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
         // Registry entry not-found - just special type of visual / particles / etc.
         xr_delete(V);
     }
-    V = NULL;
+
+    V = nullptr;
 }
 
 void CModelPool::Prefetch()
@@ -456,7 +469,7 @@ void CModelPool::Prefetch()
 
     if (!vis_prefetch_ini || !vis_prefetch_ini->section_exist("prefetch"))
     {
-        Msg("[%s] models prefetching time (%zi): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+        Msg("[%s] models prefetching time (%u): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
         return;
     }
 
@@ -486,7 +499,7 @@ void CModelPool::Prefetch()
 
     now_prefetch2 = false;
     Logging(TRUE);
-    Msg("[%s] models prefetching time (%zi): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
+    Msg("[%s] models prefetching time (%u): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
 }
 
 void CModelPool::ClearPool(BOOL b_complete)
@@ -530,13 +543,13 @@ void CModelPool::dump()
         {
             u32 cur = K->mem_usage(false);
             sz += cur;
-            Msg("#%3d: [%3d/%5d Kb] - %s", k++, I->refs, cur / 1024, I->name.c_str());
+            Msg("#%3u: [%3u/%5u Kb] - %s", k++, I->refs, cur / 1024, I->name.c_str());
         }
     }
-    Msg("--- models: %d, mem usage: %d Kb ", k, sz / 1024);
+    Msg("--- models: %u, mem usage: %u Kb ", k, sz / 1024);
     sz = 0;
     k = 0;
-    int free_cnt = 0;
+    u32 free_cnt{};
     for (REGISTRY_IT it = Registry.begin(); it != Registry.end(); it++)
     {
         CKinematics* K = PCKinematics((dxRender_Visual*)it->first);
@@ -548,10 +561,10 @@ void CModelPool::dump()
             bool b_free = (Pool.find(it->second) != Pool.end());
             if (b_free)
                 ++free_cnt;
-            Msg("#%3d: [%s] [%5d Kb] - %s", k++, (b_free) ? "free" : "used", cur / 1024, it->second.c_str());
+            Msg("#%3u: [%s] [%5u Kb] - %s", k++, (b_free) ? "free" : "used", cur / 1024, it->second.c_str());
         }
     }
-    Msg("--- instances: %d, free %d, mem usage: %d Kb ", k, free_cnt, sz / 1024);
+    Msg("--- instances: %u, free %u, mem usage: %u Kb ", k, free_cnt, sz / 1024);
     Log("--- model pool --- end.");
 }
 
@@ -569,8 +582,7 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     {
         dxRender_Visual* ptr = it->model;
         Fvisual* vis_ptr = smart_cast<Fvisual*>(ptr);
-
-        if (vis_ptr == NULL)
+        if (!vis_ptr)
             continue;
 
         D3D_BUFFER_DESC IB_desc{};

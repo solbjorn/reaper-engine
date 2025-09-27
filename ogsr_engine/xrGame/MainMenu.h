@@ -16,7 +16,7 @@ class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, pu
     RTTI_DECLARE_TYPEINFO(CMainMenu, IMainMenu, IInputReceiver, pureRender, CDialogHolder, CUIWndCallback, CDeviceResetNotifier);
 
 public:
-    CUIDialogWnd* m_startDialog;
+    CUIDialogWnd* m_startDialog{};
 
     enum
     {
@@ -86,12 +86,12 @@ public:
 
     void OnDeviceCreate();
 
-    void Screenshot(IRender_interface::ScreenshotMode mode = IRender_interface::SM_NORMAL, LPCSTR name = 0);
+    void Screenshot(IRender_interface::ScreenshotMode mode = IRender_interface::SM_NORMAL, LPCSTR name = nullptr);
     void RegisterPPDraw(CUIWindow* w);
     void UnregisterPPDraw(CUIWindow* w);
 
     void SetErrorDialog(EErrorDlg ErrDlg);
-    EErrorDlg GetErrorDialogType() const { return m_NeedErrDialog; };
+    EErrorDlg GetErrorDialogType() const { return m_NeedErrDialog; }
     void CheckForErrorDlg();
     void OnSessionTerminate(LPCSTR reason);
     void SetNeedVidRestart();

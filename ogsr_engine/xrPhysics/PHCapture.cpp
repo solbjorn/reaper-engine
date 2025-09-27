@@ -1,5 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
+
 #include "phcharacter.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
@@ -14,8 +15,9 @@
 
 void CPHCapture::CreateBody()
 {
-    m_body = dBodyCreate(0);
+    m_body = dBodyCreate(nullptr);
     m_island.AddBody(m_body);
+
     dMass m;
     dMassSetSphere(&m, 1.f, 1000000.f);
     dMassAdjust(&m, 100000.f);
@@ -24,10 +26,12 @@ void CPHCapture::CreateBody()
 }
 
 CPHCapture::~CPHCapture() { Deactivate(); }
+
 void CPHCapture::PhDataUpdate(dReal /**step/**/)
 {
     if (b_failed)
         return;
+
     switch (e_state)
     {
     case cstPulling: PullingUpdate(); break;
@@ -41,21 +45,17 @@ void CPHCapture::PhTune(dReal /**step/**/)
 {
     if (b_failed)
         return;
-    // if(!m_taget_object->PPhysicsShell())	{
-    //	b_failed=true;
-    //	return;			//. hack
-    // }
+
     bool act_capturer = m_character->CPHObject::is_active();
     bool act_taget = m_taget_object->PPhysicsShell()->isEnabled();
     b_disabled = !act_capturer && !act_taget;
+
     if (act_capturer)
-    {
         m_taget_element->Enable();
-    }
+
     if (act_taget)
-    {
         m_character->Enable();
-    }
+
     switch (e_state)
     {
     case cstPulling:; break;
@@ -97,9 +97,9 @@ void CPHCapture::PullingUpdate()
     {
         m_back_force = 0.f;
 
-        m_joint = dJointCreateBall(0, 0);
+        m_joint = dJointCreateBall(nullptr, nullptr);
         m_island.AddJoint(m_joint);
-        m_ajoint = dJointCreateAMotor(0, 0);
+        m_ajoint = dJointCreateAMotor(nullptr, nullptr);
         m_island.AddJoint(m_ajoint);
         dJointSetAMotorMode(m_ajoint, dAMotorEuler);
         dJointSetAMotorNumAxes(m_ajoint, 3);
@@ -238,14 +238,13 @@ void CPHCapture::ReleaseInCallBack()
 
 void CPHCapture::object_contactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
-    dxGeomUserData* l_pUD1 = NULL;
-    dxGeomUserData* l_pUD2 = NULL;
+    dxGeomUserData* l_pUD1{};
+    dxGeomUserData* l_pUD2{};
     l_pUD1 = retrieveGeomUserData(c.geom.g1);
     l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
     if (!l_pUD1)
         return;
-
     if (!l_pUD2)
         return;
 

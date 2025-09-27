@@ -39,12 +39,12 @@ void CMovementManager::process_patrol_path()
         }
 
         m_path_state = ePathStateBuildLevelPath;
+        [[fallthrough]];
     }
     case ePathStateBuildLevelPath: {
         if (can_use_distributed_computations(mtLevelPath))
         {
             level_path_builder().setup(object().ai_location().level_vertex_id(), level_dest_vertex_id());
-
             break;
         }
 
@@ -54,13 +54,13 @@ void CMovementManager::process_patrol_path()
             break;
 
         m_path_state = ePathStateContinueLevelPath;
-
         break;
     }
     case ePathStateContinueLevelPath: {
         level_path().select_intermediate_vertex();
 
         m_path_state = ePathStateBuildDetailPath;
+        [[fallthrough]];
     }
     case ePathStateBuildDetailPath: {
         detail().set_state_patrol_path(patrol().extrapolate_path());
@@ -71,12 +71,10 @@ void CMovementManager::process_patrol_path()
         if (can_use_distributed_computations(mtDetailPath))
         {
             detail_path_builder().setup(level_path().path(), level_path().intermediate_index());
-
             break;
         }
 
         detail().build_path(level_path().path(), level_path().intermediate_index());
-
         on_build_path();
 
         if (detail().failed())
@@ -86,7 +84,6 @@ void CMovementManager::process_patrol_path()
         }
 
         m_path_state = ePathStatePathVerification;
-
         break;
     }
     case ePathStatePathVerification: {

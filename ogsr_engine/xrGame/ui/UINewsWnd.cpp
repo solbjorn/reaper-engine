@@ -16,7 +16,6 @@
 #define NEWS_XML "news.xml"
 
 CUINewsWnd::CUINewsWnd() {}
-
 CUINewsWnd::~CUINewsWnd() {}
 
 void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
@@ -81,7 +80,8 @@ void CUINewsWnd::AddNews()
 
 void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data, bool top)
 {
-    CUIWindow* itm = NULL;
+    CUIWindow* itm{};
+
     switch (news_data.m_type)
     {
     case GAME_NEWS_DATA::eNews: {
@@ -98,7 +98,8 @@ void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data, bool top)
         itm = _itm;
     }
     break;
-    };
+    }
+
     UIScrollWnd->AddWindow(itm, true, top);
 }
 

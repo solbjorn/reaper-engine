@@ -5,33 +5,35 @@
 
 #include "console_registrator.h"
 
-static CConsole* console() { return Console; }
+namespace
+{
+CConsole* console() { return Console; }
 
-static int get_console_integer(CConsole* c, LPCSTR cmd)
+int get_console_integer(CConsole* c, LPCSTR cmd)
 {
     int val = 0, min = 0, max = 0;
     val = c->GetInteger(cmd, min, max);
     return val;
 }
 
-static float get_console_float(CConsole* c, LPCSTR cmd)
+float get_console_float(CConsole* c, LPCSTR cmd)
 {
     float val = 0, min = 0, max = 0;
     val = c->GetFloat(cmd, min, max);
     return val;
 }
 
-static bool get_console_bool(CConsole* c, LPCSTR cmd)
+bool get_console_bool(CConsole* c, LPCSTR cmd)
 {
     BOOL val;
     val = c->GetBool(cmd);
     return !!val;
 }
 
-static IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
+IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
 {
     CConsole::vecCMD_IT I = c->Commands.find(cmd);
-    IConsole_Command* icmd = NULL;
+    IConsole_Command* icmd{};
 
     if (I != c->Commands.end())
         icmd = I->second;
@@ -39,19 +41,20 @@ static IConsole_Command* find_cmd(CConsole* c, LPCSTR cmd)
     return icmd;
 }
 
-static void disable_cmd(CConsole* c, LPCSTR cmd)
+void disable_cmd(CConsole* c, LPCSTR cmd)
 {
     IConsole_Command* icmd = find_cmd(c, cmd);
     if (icmd)
         icmd->SetEnabled(false);
 }
 
-static void enable_cmd(CConsole* c, LPCSTR cmd)
+void enable_cmd(CConsole* c, LPCSTR cmd)
 {
     IConsole_Command* icmd = find_cmd(c, cmd);
     if (icmd)
         icmd->SetEnabled(true);
 }
+} // namespace
 
 void console_registrator::script_register(sol::state_view& lua)
 {

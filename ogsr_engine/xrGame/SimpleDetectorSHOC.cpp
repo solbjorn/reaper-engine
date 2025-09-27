@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "SimpleDetectorSHOC.h"
 #include "customzone.h"
 #include "hudmanager.h"
@@ -12,21 +13,15 @@
 #include "actorcondition.h"
 #include "ActorEffector.h"
 
-ZONE_INFO_SHOC::ZONE_INFO_SHOC() { pParticle = NULL; }
-
 ZONE_INFO_SHOC::~ZONE_INFO_SHOC()
 {
     if (pParticle)
         CParticlesObject::Destroy(pParticle);
 }
 
-CCustomDetectorSHOC::CCustomDetectorSHOC(void)
-{
-    m_bWorking = false;
-    radiation_snd_time = 0;
-}
+CCustomDetectorSHOC::CCustomDetectorSHOC() : m_bWorking{false}, radiation_snd_time{0} {}
 
-CCustomDetectorSHOC::~CCustomDetectorSHOC(void)
+CCustomDetectorSHOC::~CCustomDetectorSHOC()
 {
     ZONE_TYPE_MAP_IT it;
     for (it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
@@ -38,10 +33,10 @@ CCustomDetectorSHOC::~CCustomDetectorSHOC(void)
 
 BOOL CCustomDetectorSHOC::net_Spawn(CSE_Abstract* DC)
 {
-    m_pCurrentActor = NULL;
-    m_pCurrentInvOwner = NULL;
+    m_pCurrentActor = nullptr;
+    m_pCurrentInvOwner = nullptr;
 
-    return (inherited::net_Spawn(DC));
+    return inherited::net_Spawn(DC);
 }
 
 void CCustomDetectorSHOC::Load(LPCSTR section)
@@ -56,7 +51,7 @@ void CCustomDetectorSHOC::Load(LPCSTR section)
     u32 i = 1;
     string256 temp;
 
-    //загрузить звуки для обозначения различных типов зон
+    // загрузить звуки для обозначения различных типов зон
     do
     {
         sprintf_s(temp, "zone_class_%d", i);
@@ -65,7 +60,7 @@ void CCustomDetectorSHOC::Load(LPCSTR section)
             LPCSTR z_Class = pSettings->r_string(section, temp);
             CLASS_ID zone_cls = TEXT2CLSID(pSettings->r_string(z_Class, "class"));
 
-            m_ZoneTypeMap.insert(std::make_pair(zone_cls, ZONE_TYPE_SHOC()));
+            m_ZoneTypeMap.try_emplace(zone_cls);
             ZONE_TYPE_SHOC& zone_type = m_ZoneTypeMap[zone_cls];
             sprintf_s(temp, "zone_min_freq_%d", i);
             zone_type.min_freq = pSettings->r_float(section, temp);
@@ -144,7 +139,7 @@ void CCustomDetectorSHOC::UpdateCL()
         CCustomZone* pZone = it->first;
         ZONE_INFO_SHOC& zone_info = it->second;
 
-        //такой тип зон не обнаруживается
+        // такой тип зон не обнаруживается
         if (m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() || !pZone->VisibleByDetector())
             continue;
 
@@ -178,7 +173,7 @@ void CCustomDetectorSHOC::UpdateCL()
         float fRelPow = 1.f - dist_to_zone / zone_type.m_fRadius;
         clamp(fRelPow, 0.f, 1.f);
 
-        //определить текущую частоту срабатывания сигнала
+        // определить текущую частоту срабатывания сигнала
         zone_info.cur_freq = zone_type.min_freq + (zone_type.max_freq - zone_type.min_freq) * fRelPow * fRelPow * fRelPow * fRelPow;
 
         float current_snd_time = 1000.f * 1.f / zone_info.cur_freq;
@@ -216,7 +211,7 @@ void CCustomDetectorSHOC::feel_touch_delete(CObject* O)
     }
 }
 
-BOOL CCustomDetectorSHOC::feel_touch_contact(CObject* O) { return (NULL != smart_cast<CCustomZone*>(O)); }
+BOOL CCustomDetectorSHOC::feel_touch_contact(CObject* O) { return !!smart_cast<CCustomZone*>(O); }
 
 void CCustomDetectorSHOC::OnH_A_Chield()
 {
@@ -229,8 +224,8 @@ void CCustomDetectorSHOC::OnH_B_Independent(bool just_before_destroy)
 {
     inherited::OnH_B_Independent(just_before_destroy);
 
-    m_pCurrentActor = NULL;
-    m_pCurrentInvOwner = NULL;
+    m_pCurrentActor = nullptr;
+    m_pCurrentInvOwner = nullptr;
 
     StopAllSounds();
 
@@ -289,7 +284,7 @@ void CCustomDetectorSHOC::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
             if (!Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
                 Level().MapManager().AddMapLocation(*zone_type.zone_map_location, pZone->ID());
         }
-        else 
+        else
         {
             if (Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
                 Level().MapManager().RemoveMapLocation(*zone_type.zone_map_location, pZone->ID());
@@ -308,8 +303,7 @@ void CCustomDetectorSHOC::UpdateMapLocations() // called on turn on/off only
 
 void CCustomDetectorSHOC::UpdateNightVisionMode()
 {
-    bool bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision)) != NULL;
-
+    bool bNightVision = !!Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision));
     bool bOn = bNightVision && m_pCurrentActor && m_pCurrentActor == Level().CurrentViewEntity() && IsWorking() && m_nightvision_particle.size();
 
     ZONE_INFO_MAP_IT it;

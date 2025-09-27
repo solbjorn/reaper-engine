@@ -7,10 +7,10 @@
 #define USE_OWN_MINI_DUMP
 
 // Включает новые отладочные сообщения и ассерты - LogDbg, MsgDbg, FuncDbg, ASSERT_FMT_DBG
-//#define OGSR_TOTAL_DBG
+// #define OGSR_TOTAL_DBG
 
 // Включает вылет, если в vertex() будет передан не валидный вертекс. Совсем строгий режим, более строгий чем OGSR_TOTAL_DBG, поэтому отдельно.
-//#define CRASH_ON_INVALID_VERTEX_ID
+// #define CRASH_ON_INVALID_VERTEX_ID
 
 // Отключить все отладочные ассерты DEBUG конфигурации
 // Это может пригодиться в случае, если нужно отлаживать какой-нибудь мод, но отладочную сборку с этим модом запустить нереально.
@@ -19,7 +19,7 @@
 #define DISABLE_DBG_ASSERTIONS
 
 // Валидатор желательно использовать только при отладке проблем с памятью.
-//#define USE_MEMORY_VALIDATOR
+// #define USE_MEMORY_VALIDATOR
 //****************************************************************************************************
 
 #define FSLTX "fsgame.ltx"
@@ -33,30 +33,27 @@
 // Проверить статус - wpn:get_weapon_sg().is_duplet_enabled
 // Сделано для того, что бы сохранить возможность прицеливания
 // KRodin to all: Дуплет вообще надо вынести в отдельный режим стрельбы, и убрать эту опцию вообще.
-//#define DUPLET_STATE_SWITCH
+// #define DUPLET_STATE_SWITCH
 
 // Включает учет параметра k_ap у патрона при расчета урона для НПС
 // Формула такая же как при расчете урона для ГГ
 // Может потребовать перенстройку конфигов патронов
-//#define APPLY_ARMOR_PIERCING_TO_NPC
+#define APPLY_ARMOR_PIERCING_TO_NPC
 
 // В этом режиме удаление поршня, в котором указаны <article>, удалит и эти
 // статьи.
-//#define REMOVE_ARTICLES_ON_DISABLE_INFO
+// #define REMOVE_ARTICLES_ON_DISABLE_INFO
 
 // Бывают ситуации когда надо переспавнить объект, у которого в оллспавне прописан стори_айди, но не прописан спавн_айди.
 // К примеру alife():create( alife():spawn_id( story_ids.bar_dolg_captain_ivancov ) ). Вот включив эту опцию будет достаточно одного стори_айди.
-//#define USE_STORY_ID_AS_SPAWN_ID
+// #define USE_STORY_ID_AS_SPAWN_ID
 
 //****************************************************************************************************
 // Включить поддержку textures.ltx, parallax из OGSE так же поддерживается
 #define USE_TEXTURES_LTX
 
 // Включить обработку секции [reduce_lod_texture_list]
-//#define USE_REDUCE_LOD_TEXTURE_LIST
-
-// Убрать поддержку статического рендера
-#define EXCLUDE_R1
+// #define USE_REDUCE_LOD_TEXTURE_LIST
 //****************************************************************************************************
 
 // Включает поддержку анимированных физобъектов типа крутящегося вентилятора в подземке агропрома из ЧН.

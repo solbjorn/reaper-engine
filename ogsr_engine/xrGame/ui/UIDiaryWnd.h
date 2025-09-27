@@ -1,9 +1,10 @@
 
 #pragma once
 
+#include "../encyclopedia_article_defs.h"
 #include "UIWindow.h"
 #include "UIWndCallback.h"
-#include "../encyclopedia_article_defs.h"
+
 class CUINewsWnd;
 class CUIFrameLineWnd;
 class CUIFrameWindow;
@@ -53,7 +54,7 @@ protected:
     CUIStatic* m_updatedSectionImage;
     CUIStatic* m_oldSectionImage;
 
-    xr_vector<CEncyclopediaArticle> m_ArticlesDB;
+    xr_vector<std::unique_ptr<CEncyclopediaArticle>> m_ArticlesDB;
 
     void OnFilterChanged(CUIWindow*, void*);
     void OnSrcListItemClicked(CUIWindow*, void*);

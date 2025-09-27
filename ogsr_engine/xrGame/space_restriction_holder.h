@@ -18,12 +18,12 @@ namespace RestrictionSpace
 {
 struct CTimeIntrusiveBase;
 enum ERestrictorTypes : u32;
-}; // namespace RestrictionSpace
+} // namespace RestrictionSpace
 
 namespace SpaceRestrictionHolder
 {
 typedef intrusive_ptr<CSpaceRestrictionBridge, RestrictionSpace::CTimeIntrusiveBase> CBaseRestrictionPtr;
-};
+}
 
 class CSpaceRestrictionHolder : public virtual RTTI::Enable
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIGameTutorial.h"
 #include "UIWindow.h"
 #include "UIStatic.h"
@@ -38,9 +39,12 @@ CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
     auto _I = wl.begin();
     auto _E = wl.end();
     for (; _I != _E; ++_I)
+    {
         if ((*_I)->WindowName() == _name)
             return (*_I);
-    return NULL;
+    }
+
+    return nullptr;
 }
 
 void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
@@ -73,12 +77,12 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     LPCSTR str2 = xml->Read("pause_sound", 0, "ignore");
     m_flags.set(etiNeedPauseSound, 0 == _stricmp(str2, "on"));
 
-    str = xml->Read("guard_key", 0, NULL);
+    str = xml->Read("guard_key", 0, nullptr);
     m_continue_dik_guard = -1;
     if (str && !_stricmp(str, "any"))
     {
         m_continue_dik_guard = 9999;
-        str = NULL;
+        str = nullptr;
     }
     if (str)
     {
@@ -89,7 +93,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     m_flags.set(etiCanBeStopped, (m_continue_dik_guard == -1));
     m_flags.set(etiGrabInput, 1 == xml->ReadInt("grab_input", 0, 1));
 
-    int actions_count = xml->GetNodesNum(0, 0, "action");
+    int actions_count = xml->GetNodesNum(nullptr, 0, "action");
     m_actions.resize(actions_count);
     for (int idx = 0; idx < actions_count; ++idx)
     {
@@ -166,15 +170,16 @@ void CUISequenceSimpleItem::Update()
     if (g_pGameLevel)
     {
         CUIGameSP* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-
         if (ui_game_sp)
         {
-            if (!m_pda_section || 0 == xr_strlen(m_pda_section))
+            if (!xr_strlen(m_pda_section))
+            {
                 if (ui_game_sp->PdaMenu->IsShown() || ui_game_sp->InventoryMenu->IsShown() || ui_game_sp->TalkMenu->IsShown() || ui_game_sp->UICarBodyMenu->IsShown() ||
                     ui_game_sp->UIChangeLevelWnd->IsShown())
                     m_UIWindow->Show(false);
                 else
                     m_UIWindow->Show(true);
+            }
         }
     }
 }
@@ -201,7 +206,7 @@ void CUISequenceSimpleItem::Start()
     m_owner->MainWnd()->AttachChild(m_UIWindow);
 
     if (m_sound._handle())
-        m_sound.play(NULL, sm_2D);
+        m_sound.play(nullptr, sm_2D);
 
     if (g_pGameLevel)
     {
@@ -296,11 +301,12 @@ void CUISequenceSimpleItem::OnKeyboardPress(int dik)
     {
         if (is_binded(itm.m_action, dik))
         {
-            luabind::functor<void> functor_to_call;
-            const bool functor_exists = ai().script_engine().functor(itm.m_functor.c_str(), functor_to_call);
-            ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find script function described in tutorial item [%s]", __FUNCTION__, itm.m_functor.c_str());
-            if (functor_exists)
-                functor_to_call();
+            sol::function function_to_call;
+            const bool function_exists = ai().script_engine().function(itm.m_functor.c_str(), function_to_call);
+            ASSERT_FMT_DBG(function_exists, "!![%s] Cannot find script function described in tutorial item [%s]", __FUNCTION__, itm.m_functor.c_str());
+
+            if (function_exists)
+                function_to_call();
 
             if (itm.m_bfinalize)
             {

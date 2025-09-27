@@ -6,13 +6,13 @@ class CBaseMonster;
 
 class CMonsterEnemyMemory
 {
-    CBaseMonster* monster;
-    TTime time_memory;
+    CBaseMonster* monster{};
+    TTime time_memory{15000};
 
     ENEMIES_MAP m_objects;
 
 public:
-    CMonsterEnemyMemory();
+    CMonsterEnemyMemory() = default;
     ~CMonsterEnemyMemory();
 
     void init_external(CBaseMonster* M, TTime mem_time);

@@ -7,8 +7,6 @@ CUILabel::CUILabel()
 {
     m_textPos.set(0, 0);
     m_lines.SetVTextAlignment(valCenter);
-    m_lainm_start_time = -1.0f;
-    m_lanim = NULL;
 }
 
 void CUILabel::Init(float x, float y, float width, float height)
@@ -44,7 +42,7 @@ void CUILabel::SetLightAnim(LPCSTR lanim)
     if (lanim && xr_strlen(lanim))
         m_lanim = LALib.FindItem(lanim);
     else
-        m_lanim = NULL;
+        m_lanim = nullptr;
 }
 
 void CUILabel::Update()

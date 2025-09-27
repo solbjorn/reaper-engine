@@ -32,7 +32,7 @@ protected:
         RM_SKINNING_4B
     };
 
-    CKinematics* Parent; // setted up by parent
+    CKinematics* Parent{}; // setted up by parent
     ref_smem<vertBoned1W> Vertices1W; // shared
     ref_smem<vertBoned2W> Vertices2W; // shared
     ref_smem<vertBoned3W> Vertices3W; // shared
@@ -40,7 +40,7 @@ protected:
     ref_smem<u16> BonesUsed; // actual bones which have influence on vertices
 
     u16 RenderMode{};
-    u16 ChildIDX;
+    u16 ChildIDX{std::numeric_limits<u16>::max()};
 
     // render-mode specifics
     union
@@ -88,12 +88,7 @@ protected:
 public:
     BOOL has_visible_bones();
 
-    CSkeletonX()
-    {
-        Parent = 0;
-        ChildIDX = u16(-1);
-    }
-
+    CSkeletonX() = default;
     virtual ~CSkeletonX() = 0;
 
     virtual void SetParent(CKinematics* K) { Parent = K; }
@@ -128,8 +123,9 @@ BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result&
         {
             r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
             return TRUE;
-        };
+        }
     }
+
     return FALSE;
 }
 

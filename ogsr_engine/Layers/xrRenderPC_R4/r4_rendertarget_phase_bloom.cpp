@@ -71,7 +71,7 @@ void CRenderTarget::phase_bloom()
     u32 Offset;
 
     // Targets
-    u_setrt(RCache, rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
+    u_setrt(RCache, rt_Bloom_1, nullptr, nullptr, nullptr); // No need for ZBuffer at all
 
     // Clear	- don't clear - it's stupid here :)
     // Stencil	- disable
@@ -220,7 +220,7 @@ void CRenderTarget::phase_bloom()
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g;
         CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_2, NULL, NULL, NULL); // No need for ZBuffer at all
+        u_setrt(RCache, rt_Bloom_2, nullptr, nullptr, nullptr); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[1]);
         RCache.set_ca("weight", 0, w0);
         RCache.set_ca("weight", 1, w1);
@@ -300,7 +300,7 @@ void CRenderTarget::phase_bloom()
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g * float(Device.dwHeight) / float(Device.dwWidth);
         CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
+        u_setrt(RCache, rt_Bloom_1, nullptr, nullptr, nullptr); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[2]);
         RCache.set_ca("weight", 0, w0);
         RCache.set_ca("weight", 1, w1);
@@ -330,7 +330,7 @@ void CRenderTarget::phase_ssfx_bloom()
     // Half resolution is the max size for everything
     RCache.set_viewport_size(w / 2.0f, h / 2.0f);
 
-    u_setrt(RCache, rt_ssfx_bloom1, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_bloom1, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -356,7 +356,7 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         RCache.set_viewport_size(w / 4.0f, h / 4.0f);
 
-        u_setrt(RCache, rt_ssfx_bloom_tmp4, 0, 0, NULL);
+        u_setrt(RCache, rt_ssfx_bloom_tmp4, nullptr, nullptr, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -382,7 +382,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         for (int lensblur = 0; lensblur < 2; lensblur++)
         {
-            u_setrt(RCache, *rt_LensBlur[lensblur], 0, 0, NULL);
+            u_setrt(RCache, *rt_LensBlur[lensblur], nullptr, nullptr, nullptr);
             RCache.set_CullMode(CULL_NONE);
             RCache.set_Stencil(FALSE);
 
@@ -417,7 +417,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Down[downsample], 0, 0, NULL);
+        u_setrt(RCache, *rt_Down[downsample], nullptr, nullptr, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -450,7 +450,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Up[upsample], 0, 0, NULL);
+        u_setrt(RCache, *rt_Up[upsample], nullptr, nullptr, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -476,7 +476,7 @@ void CRenderTarget::phase_ssfx_bloom()
     // The Upsample ends with `Half Res`
 
     // BLOOM COMBINE ///////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx_bloom1, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_bloom1, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 

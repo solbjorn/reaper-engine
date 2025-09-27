@@ -185,15 +185,16 @@ struct comparer
     IC bool operator()(LPCSTR s1, LPSTR s2) const { return (P<int>()(xr_strcmp(s1, s2), 0)); }
     IC bool operator()(LPSTR s1, LPCSTR s2) const { return (P<int>()(xr_strcmp(s1, s2), 0)); }
 };
-}; // namespace detail
-}; // namespace object_comparer
+} // namespace detail
+} // namespace object_comparer
 
 #define declare_comparer(a, b) \
     template <typename T1, typename T2> \
     IC bool a(const T1& p0, const T2& p1) \
     { \
         return (compare(p0, p1, object_comparer::detail::comparer<b>())); \
-    }
+    } \
+    XR_MACRO_END()
 
 declare_comparer(equal, std::equal_to);
 declare_comparer(greater_equal, std::greater_equal);

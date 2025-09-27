@@ -18,7 +18,6 @@
 
 void CLevel::ClientReceive()
 {
-
     m_dwRPC = 0;
     m_dwRPS = 0;
 
@@ -79,7 +78,6 @@ void CLevel::ClientReceive()
         case M_RELOAD_GAME:
         case M_LOAD_GAME:
         case M_CHANGE_LEVEL: {
-
             // костыль для автозакрытия любого диалога в случае смены уровня
             if (HUD().GetUI()->MainInputReceiver())
             {
@@ -107,7 +105,7 @@ void CLevel::ClientReceive()
         }
         break;
         case M_SAVE_GAME: {
-            //ClientSave();
+            // ClientSave();
         }
         break;
         case M_AUTH_CHALLENGE: {
@@ -144,7 +142,7 @@ void CLevel::ClientReceive()
 
                 Engine.Event.Defer("KERNEL:disconnect");
                 Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
-            };
+            }
         }
         break;
         case M_CHANGE_SELF_NAME: {
@@ -160,8 +158,4 @@ void CLevel::ClientReceive()
     //	if (!g_bDebugEvents) ProcessGameSpawns();
 }
 
-void CLevel::OnMessage(void* data, u32 size)
-{
-    IPureClient::OnMessage(data, size);
-
-};
+void CLevel::OnMessage(void* data, u32 size) { IPureClient::OnMessage(data, size); }

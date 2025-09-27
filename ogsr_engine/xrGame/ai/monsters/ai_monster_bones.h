@@ -19,11 +19,12 @@ struct bonesAxis
 // бона с параметрами движения по осям
 struct bonesBone
 {
-    CBoneInstance* bone;
+    CBoneInstance* bone{};
     bonesAxis params;
     u8 axis;
 
-    bonesBone() { bone = 0; }
+    bonesBone() = default;
+
     void Set(CBoneInstance* b, u8 a, float ty, float cy, float r_s);
     bool NeedTurn(); // необходим поворот по оси p_axis?
     void Turn(u32 dt); // выполнить поворот по оси p_axis

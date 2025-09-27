@@ -26,8 +26,10 @@ enum UIState
 template <class T>
 class CUIInteractiveBackground : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIInteractiveBackground<T>, CUIWindow);
+
 public:
-    CUIInteractiveBackground();
+    CUIInteractiveBackground() = default;
     virtual ~CUIInteractiveBackground();
 
     virtual void Init(float x, float y, float width, float height);
@@ -51,22 +53,12 @@ public:
     virtual void SetHeight(float heigth);
 
 protected:
-    T* m_stateCurrent;
-    T* m_stateEnabled;
-    T* m_stateDisabled;
-    T* m_stateHighlighted;
-    T* m_stateTouched;
+    T* m_stateCurrent{};
+    T* m_stateEnabled{};
+    T* m_stateDisabled{};
+    T* m_stateHighlighted{};
+    T* m_stateTouched{};
 };
-
-template <class T>
-CUIInteractiveBackground<T>::CUIInteractiveBackground()
-{
-    m_stateCurrent = NULL;
-    m_stateEnabled = NULL;
-    m_stateDisabled = NULL;
-    m_stateHighlighted = NULL;
-    m_stateTouched = NULL;
-}
 
 template <class T>
 CUIInteractiveBackground<T>::~CUIInteractiveBackground()

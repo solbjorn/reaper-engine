@@ -3,7 +3,10 @@
 #include "dx10ConstantBuffer.h"
 #include "dx10BufferUtils.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
 
 dx10ConstantBuffer::~dx10ConstantBuffer()
 {
@@ -43,7 +46,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
         m_MembersNames[i] = var_desc.Name;
     }
 
-    m_uiMembersXXH = XXH3_64bits(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
+    m_uiMembersXXH = xxh::XXH3_64bits(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
 
     R_CHK(dx10BufferUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
     VERIFY(m_pBuffer);

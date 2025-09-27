@@ -8,11 +8,13 @@
 // copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
 #include "UITextureMaster.h"
 #include "uiabstract.h"
 #include "xrUIXmlParser.h"
 
 xr_map<shared_str, TEX_INFO> CUITextureMaster::m_textures;
+
 #ifdef DEBUG
 u32 CUITextureMaster::m_time = 0;
 #endif
@@ -53,14 +55,11 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 
                 shared_str id = xml.ReadAttrib(node, "texture", i, "id");
 
-                /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed.
-                /* Also used more efficient C++11 std::map::emplace method instead of outdated std::pair::make_pair */
-                /* XXX: avo: note that xxx.insert(mk_pair(v1,v2)) pattern is used extensively throughout solution so there is a good potential for other bug fixes/improvements */
+                /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed. */
                 if (m_textures.find(id) == m_textures.end())
                     m_textures.emplace(id, info);
                 else
                     m_textures[id] = info;
-                // m_textures.insert(mk_pair(id,info)); // original GSC insert call
                 /* avo: end */
             }
 
@@ -86,14 +85,11 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 
             shared_str id = xml.ReadAttrib("texture", i, "id");
 
-            /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed.
-            /* Also used more efficient C++11 std::map::emplace method instead of outdated std::pair::make_pair */
-            /* XXX: avo: note that xxx.insert(mk_pair(v1,v2)) pattern is used extensively throughout solution so there is a good potential for other bug fixes/improvements */
+            /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed. */
             if (m_textures.find(id) == m_textures.end())
                 m_textures.emplace(id, info);
             else
                 m_textures[id] = info;
-            // m_textures.insert(mk_pair(id,info)); // original GSC insert call
             /* avo: end */
         }
     }
@@ -153,66 +149,53 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
 
 float CUITextureMaster::GetTextureHeight(const char* texture_name)
 {
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
         return (*it).second.rect.height();
-    // KD: we don't need to die :)
-    //	R_ASSERT3(false,"CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
-    Msg("! CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
+
+    Msg("! CUITextureMaster::GetTextureHeight Can't find texture %s", texture_name);
+
     return 0;
 }
 
 Frect CUITextureMaster::GetTextureRect(const char* texture_name)
 {
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
+    auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
         return (*it).second.rect;
 
-    // KD: we don't need to die :)
-    //	R_ASSERT3(false,"CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
-    Msg("! CUITextureMaster::GetTextureRect Can't find texture", texture_name);
-    return Frect();
+    Msg("! CUITextureMaster::GetTextureRect Can't find texture %s", texture_name);
+
+    return Frect{};
 }
 
 float CUITextureMaster::GetTextureWidth(const char* texture_name)
 {
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
         return (*it).second.rect.width();
-    // KD: we don't need to die :)
-    //	R_ASSERT3(false,"CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
-    Msg("! CUITextureMaster::GetTextureWidth Can't find texture", texture_name);
+
+    Msg("! CUITextureMaster::GetTextureWidth Can't find texture %s", texture_name);
+
     return 0;
 }
 
 LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
 {
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
         return *((*it).second.file);
-    // KD: we don't need to die :)
-    //	R_ASSERT3(false,"CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
-    Msg("! CUITextureMaster::GetTextureFileName Can't find texture", texture_name);
-    return 0;
+
+    Msg("! CUITextureMaster::GetTextureFileName Can't find texture %s", texture_name);
+    return nullptr;
 }
 
 TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name)
 {
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(texture_name);
     if (it != m_textures.end())
         return (it->second);
-    else
-    {
-        R_ASSERT2(m_textures.find(def_texture_name) != m_textures.end(), texture_name);
-        return FindItem(def_texture_name, NULL);
-    }
+
+    R_ASSERT2(m_textures.find(def_texture_name) != m_textures.end(), texture_name);
+    return FindItem(def_texture_name, nullptr);
 }

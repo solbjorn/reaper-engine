@@ -5,18 +5,21 @@
 
 using namespace PAPI;
 
+namespace
+{
 // To offset [0 .. 1] vectors to [-.5 .. .5]
-static pVector vHalf(0.5, 0.5, 0.5);
+constexpr pVector vHalf{0.5f, 0.5f, 0.5f};
 
 ICF pVector RandVec() { return pVector(drand48(), drand48(), drand48()); }
+} // namespace
 
 // Return a random number with a normal distribution.
 float PAPI::NRand(float sigma)
 {
 #define ONE_OVER_SIGMA_EXP (1.0f / 0.7975f)
 
-    if (sigma == 0)
-        return 0;
+    if (fis_zero(sigma))
+        return 0.f;
 
     float y;
     do
@@ -316,7 +319,7 @@ void pDomain::Generate(pVector& pos) const
 
         // Scale unit sphere pos by [0..r] and translate
         // (should distribute as r^2 law)
-        if (radius1 == radius2)
+        if (fsimilar(radius1, radius2))
             pos = p1 + pos * radius1;
         else
             pos = p1 + pos * (radius2 + drand48() * (radius1 - radius2));

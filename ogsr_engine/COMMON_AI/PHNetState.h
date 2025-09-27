@@ -42,6 +42,7 @@ private:
 DEFINE_VECTOR(SPHNetState, PHNETSTATE_VECTOR, PHNETSTATE_I);
 
 #include "..\xr_3da\vismask.h"
+
 struct SPHBonesData
 {
     VisMask bones_mask;
@@ -59,4 +60,5 @@ public:
     const Fvector& get_min() const { return m_min; }
     const Fvector& get_max() const { return m_max; }
 };
+
 #endif

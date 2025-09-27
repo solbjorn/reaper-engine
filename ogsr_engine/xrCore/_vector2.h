@@ -183,9 +183,21 @@ public:
         return kCross;
     }
 
-    constexpr inline bool similar(Self& p, T eu, T ev) const { return _abs(x - p.x) < eu && _abs(y - p.y) < ev; }
+    constexpr inline bool similar(Self& p, T eu, T ev) const
+    {
+        if constexpr (std::is_floating_point_v<T>)
+            return fsimilar(x, p.x, eu) && fsimilar(y, p.y, ev);
+        else
+            return x == p.x && y == p.y;
+    }
 
-    constexpr inline bool similar(const Self& p, float E = EPS_L) const { return _abs(x - p.x) < E && _abs(y - p.y) < E; };
+    constexpr inline bool similar(const Self& p, T E = EPS_L) const
+    {
+        if constexpr (std::is_floating_point_v<T>)
+            return fsimilar(x, p.x, E) && fsimilar(y, p.y, E);
+        else
+            return x == p.x && y == p.y;
+    }
 
     // average arithmetic
     constexpr inline SelfRef averageA(Self& p1, Self& p2)

@@ -8,10 +8,8 @@ class CGameTaskManager;
 class CMapLocation;
 class CGameTask;
 
-class SScriptObjectiveHelper : public IPureSerializeObject<IReader, IWriter>
+class SScriptObjectiveHelper
 {
-    RTTI_DECLARE_TYPEINFO(SScriptObjectiveHelper, IPureSerializeObject<IReader, IWriter>);
-
 public:
     xr_vector<shared_str> m_s_complete_lua_functions;
     xr_vector<shared_str> m_s_fail_lua_functions;
@@ -20,19 +18,31 @@ public:
     xr_vector<shared_str> m_s_lua_functions_on_fail;
 
 public:
-    bool not_empty() { return m_s_complete_lua_functions.size() || m_s_fail_lua_functions.size() || m_s_lua_functions_on_complete.size() || m_s_lua_functions_on_fail.size(); }
+    bool not_empty() const
+    {
+        return m_s_complete_lua_functions.size() || m_s_fail_lua_functions.size() || m_s_lua_functions_on_complete.size() || m_s_lua_functions_on_fail.size();
+    }
 
-    virtual void save(IWriter& stream);
-    virtual void load(IReader& stream);
+    void save(IWriter& stream) const;
+    void load(IReader& stream);
 
     void init_functors(xr_vector<shared_str>& v_src, xr_vector<luabind::functor<bool>>& v_dest);
 };
 
-class SGameTaskObjective : public IPureSerializeObject<IReader, IWriter>
+template <typename M>
+struct object_loader::default_load<SScriptObjectiveHelper, M>
 {
-    RTTI_DECLARE_TYPEINFO(SGameTaskObjective, IPureSerializeObject<IReader, IWriter>);
+    void operator()(SScriptObjectiveHelper& data, M& stream) const { data.load(stream); }
+};
 
-public:
+template <typename M>
+struct object_saver::default_save<SScriptObjectiveHelper, M>
+{
+    void operator()(const SScriptObjectiveHelper& data, M& stream) const { data.save(stream); }
+};
+
+class SGameTaskObjective
+{
     friend struct SGameTaskKey;
     friend class CGameTaskManager;
 
@@ -44,12 +54,12 @@ private:
     bool CheckFunctions(xr_vector<luabind::functor<bool>>& v);
 
 public:
-    ETaskState task_state;
+    ETaskState task_state{eTaskStateInProgress};
     int idx;
     void SetTaskState(ETaskState new_state);
     SScriptObjectiveHelper m_pScriptHelper;
-    virtual void save(IWriter& stream);
-    virtual void load(IReader& stream);
+    void save(IWriter& stream) const;
+    void load(IReader& stream);
 
     SGameTaskObjective(CGameTask* parent, int idx);
     SGameTaskObjective();
@@ -57,14 +67,14 @@ public:
     shared_str article_id;
     shared_str map_hint;
     shared_str map_location;
-    u16 object_id;
+    u16 object_id{std::numeric_limits<u16>::max()};
     CMapLocation* LinkedMapLocation();
-    ETaskState TaskState() { return task_state; };
+    ETaskState TaskState() { return task_state; }
     ETaskState UpdateState();
 
     shared_str icon_texture_name;
     Frect icon_rect;
-    bool def_location_enabled;
+    bool def_location_enabled{true};
     // complete/fail stuff
     xr_vector<shared_str> m_completeInfos;
     xr_vector<shared_str> m_failInfos;
@@ -80,7 +90,7 @@ public:
     // for scripting access
     void SetDescription_script(LPCSTR _descr);
     void SetArticleID_script(LPCSTR _id);
-    int GetIDX_script() { return idx; };
+    int GetIDX_script() { return idx; }
     void SetMapHint_script(LPCSTR _str);
     void SetMapLocation_script(LPCSTR _str);
     void SetObjectID_script(u16 id);
@@ -96,8 +106,20 @@ public:
     void AddFailFunc_script(LPCSTR _str);
     void AddOnCompleteFunc_script(LPCSTR _str);
     void AddOnFailFunc_script(LPCSTR _str);
-    LPCSTR GetDescription_script() { return *description; };
+    LPCSTR GetDescription_script() { return *description; }
     void ChangeStateCallback();
+};
+
+template <typename M>
+struct object_loader::default_load<SGameTaskObjective, M>
+{
+    void operator()(SGameTaskObjective& data, M& stream) const { data.load(stream); }
+};
+
+template <typename M>
+struct object_saver::default_save<SGameTaskObjective, M>
+{
+    void operator()(const SGameTaskObjective& data, M& stream) const { data.save(stream); }
 };
 
 DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
@@ -105,7 +127,8 @@ DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
 class CGameTask
 {
 private:
-    CGameTask(const CGameTask&) {}; // disable copy ctor
+    CGameTask(const CGameTask&) = delete; // disable copy ctor
+
 protected:
     void Load(const TASK_ID& id);
     void sync_task_version();
@@ -120,10 +143,10 @@ public:
     SGameTaskObjective& Objective(int objectice_id) { return m_Objectives.at(objectice_id); }
 
     TASK_ID m_ID;
-    shared_str m_Title;
+    shared_str m_Title{};
     OBJECTIVE_VECTOR m_Objectives;
-    ALife::_TIME_ID m_ReceiveTime;
-    ALife::_TIME_ID m_FinishTime;
+    ALife::_TIME_ID m_ReceiveTime{};
+    ALife::_TIME_ID m_FinishTime{};
     ALife::_TIME_ID m_TimeToComplete{};
     u32 m_priority{};
     u32 m_version;
@@ -133,9 +156,9 @@ public:
     // for scripting access
     void Load_script(LPCSTR _id);
     void SetTitle_script(LPCSTR _title);
-    LPCSTR GetTitle_script() { return *m_Title; };
+    LPCSTR GetTitle_script() { return *m_Title; }
     void SetPriority_script(int _prio);
-    int GetPriority_script() { return m_priority; };
+    int GetPriority_script() { return m_priority; }
     void AddObjective_script(SGameTaskObjective* O);
     SGameTaskObjective* GetObjective_script(int objective_id) { return &(Objective(objective_id)); }
     LPCSTR GetID_script() { return *m_ID; }

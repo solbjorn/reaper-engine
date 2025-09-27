@@ -5,18 +5,18 @@
 
 class CUIStatic;
 
-//размеры сетки в текстуре инвентаря
+// размеры сетки в текстуре инвентаря
 #define INV_GRID_WIDTH 50
 #define INV_GRID_HEIGHT 50
 
-//размеры сетки в текстуре иконок персонажей
+// размеры сетки в текстуре иконок персонажей
 #define ICON_GRID_WIDTH 64
 #define ICON_GRID_HEIGHT 64
-//размер иконки персонажа для инвенторя и торговли
+// размер иконки персонажа для инвенторя и торговли
 #define CHAR_ICON_WIDTH 2
 #define CHAR_ICON_HEIGHT 2
 
-//размер иконки персонажа в полный рост
+// размер иконки персонажа в полный рост
 #define CHAR_ICON_FULL_WIDTH 2
 #define CHAR_ICON_FULL_HEIGHT 5
 
@@ -25,15 +25,15 @@ class CUIStatic;
 namespace InventoryUtilities
 {
 
-//сравнивает элементы по пространству занимаемому ими в рюкзаке
-//для сортировки
+// сравнивает элементы по пространству занимаемому ими в рюкзаке
+// для сортировки
 bool GreaterRoomInRuck(PIItem item1, PIItem item2);
-//для проверки свободного места
+// для проверки свободного места
 bool FreeRoom_inBelt(TIItemContainer& item_list, PIItem item, int width, int height);
 
-//получить shader на иконки инвенторя
+// получить shader на иконки инвенторя
 ui_shader& GetEquipmentIconsShader(size_t icon_group = 0);
-//удаляем все шейдеры
+// удаляем все шейдеры
 void DestroyShaders();
 void CreateShaders();
 
@@ -76,4 +76,4 @@ void SendInfoToActor(LPCSTR info_id);
 u32 GetGoodwillColor(CHARACTER_GOODWILL gw);
 u32 GetRelationColor(ALife::ERelationType r);
 u32 GetReputationColor(CHARACTER_REPUTATION_VALUE rv);
-}; // namespace InventoryUtilities
+} // namespace InventoryUtilities

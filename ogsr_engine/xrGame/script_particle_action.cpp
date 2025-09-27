@@ -23,3 +23,18 @@ void CScriptParticleAction::SetParticle(LPCSTR caParticleToRun, bool bAutoRemove
     m_bStartedToPlay = false;
     m_bCompleted = false;
 }
+
+void CScriptParticleAction::clone(const CScriptParticleAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_caParticleToRun = from.m_caParticleToRun;
+    m_caBoneName = from.m_caBoneName;
+    m_tGoalType = from.m_tGoalType;
+    m_tpParticleSystem = from.m_tpParticleSystem;
+    m_bStartedToPlay = from.m_bStartedToPlay;
+    m_tParticlePosition = from.m_tParticlePosition;
+    m_tParticleAngles = from.m_tParticleAngles;
+    m_tParticleVelocity = from.m_tParticleVelocity;
+    m_bAutoRemove = from.m_bAutoRemove;
+}

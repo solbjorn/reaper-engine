@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife_All.h"
@@ -25,11 +26,11 @@ xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
 
 void xrClientData::Clear()
 {
-    owner = NULL;
+    owner = nullptr;
     net_Ready = FALSE;
     net_Accepted = FALSE;
     net_PassUpdates = TRUE;
-};
+}
 
 xrClientData::~xrClientData() { xr_delete(ps); }
 
@@ -61,12 +62,13 @@ CSE_Abstract* xrServer::ID_to_entity(u16 ID)
 {
     // #pragma todo("??? to all : ID_to_entity - must be replaced to 'game->entity_from_eid()'")
     if (0xffff == ID)
-        return 0;
+        return nullptr;
+
     xrS_entities::iterator I = entities.find(ID);
     if (entities.end() != I)
         return I->second;
-    else
-        return 0;
+
+    return nullptr;
 }
 
 //--------------------------------------------------------------------
@@ -88,7 +90,7 @@ IClient* xrServer::client_Find_Get(ClientID ID)
 
     Msg("# Player not found. New player created.");
     return newCL;
-};
+}
 
 INT g_sv_Client_Reconnect_Time = 0;
 
@@ -106,8 +108,8 @@ void xrServer::client_Destroy(IClient* C)
             xr_delete(C);
             net_Players_disconnected.erase(net_Players_disconnected.begin() + DI);
             break;
-        };
-    };
+        }
+    }
 
     for (u32 I = 0; I < net_Players.size(); I++)
     {
@@ -140,10 +142,11 @@ void xrServer::client_Destroy(IClient* C)
                 C->dwTime_LastUpdate = Device.dwTimeGlobal;
                 net_Players_disconnected.push_back(C);
                 ((xrClientData*)C)->Clear();
-            };
+            }
+
             net_Players.erase(net_Players.begin() + I);
             break;
-        };
+        }
     }
 
     csPlayers.Leave();
@@ -268,7 +271,7 @@ void xrServer::SendUpdatesToAll()
             { // all entities
                 CSE_Abstract& Test = *(I->second);
 
-                if (0 == Test.owner)
+                if (!Test.owner)
                     continue;
                 if (!Test.net_Ready)
                     continue;
@@ -318,18 +321,15 @@ void xrServer::SendUpdatesToAll()
             NET_Packet& ToSend = m_aUpdatePackets[p];
             if (ToSend.B.count > 2)
             {
-                //.#ifdef DEBUG
-                if (g_Dump_Update_Write && Client->ps != NULL)
-                {
-                    Msg("- Server Update[%d] to Client[%s]  : %d", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
-                }
-                //.#endif
+                if (g_Dump_Update_Write && Client->ps)
+                    Msg("- Server Update[%u] to Client[%s]  : %u", *((u16*)ToSend.B.data), Client->ps->getName(), ToSend.B.count);
 
                 SendTo(Client->ID, ToSend, net_flags(FALSE, TRUE));
             }
         }
 
-    }; // for each client
+    } // for each client
+
 #ifdef DEBUG
     g_sv_SendUpdate = 0;
 #endif
@@ -415,7 +415,8 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
             CL->net_Ready = TRUE;
             CL->ps->DeathTime = Device.dwTimeGlobal;
             CL->ps->setName(CL->name.c_str());
-        };
+        }
+
         game->signal_Syncronize();
         VERIFY(verify_entities());
     }
@@ -502,7 +503,7 @@ void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwT
         if (!pClient)
             return;
 
-        FATAL(""); //Это не должно быть вызвано
+        FATAL(""); // Это не должно быть вызвано
     }
 }
 
@@ -519,17 +520,15 @@ void xrServer::entity_Destroy(CSE_Abstract*& P)
     m_tID_Generator.vfFreeID(P->ID, Device.TimerAsync());
 
     if (P->owner && P->owner->owner == P)
-        P->owner->owner = NULL;
+        P->owner->owner = nullptr;
 
-    P->owner = NULL;
+    P->owner = nullptr;
+
     if (!ai().get_alife() || !P->m_bALifeControl)
-    {
         F_entity_Destroy(P);
-    }
 }
 
 #ifdef DEBUG
-
 static BOOL _ve_initialized = FALSE;
 static BOOL _ve_use = TRUE;
 
@@ -582,7 +581,6 @@ void xrServer::verify_entity(const CSE_Abstract* entity) const
                 (*J).second->name_replace());
     }
 }
-
 #endif // DEBUG
 
 shared_str xrServer::level_name(const shared_str& server_options) const { return (game->level_name(server_options)); }
@@ -608,7 +606,7 @@ void xrServer::ProceedDelayedPackets()
         m_aDelayedPackets.pop_front();
     }
     DelayedPackestCS.Leave();
-};
+}
 
 void xrServer::AddDelayedPacket(NET_Packet& Packet, ClientID Sender)
 {

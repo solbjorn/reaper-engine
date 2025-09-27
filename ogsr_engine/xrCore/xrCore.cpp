@@ -80,9 +80,9 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
     if (init_fs)
     {
         u32 flags = 0;
-        if (0 != strstr(Params, "-build"))
+        if (strstr(Params, "-build"))
             flags |= CLocatorAPI::flBuildCopy;
-        if (0 != strstr(Params, "-ebuild"))
+        if (strstr(Params, "-ebuild"))
             flags |= CLocatorAPI::flBuildCopy | CLocatorAPI::flEBuildCopy;
 #ifdef DEBUG
         if constexpr (false) /*(strstr(Params,"-cache"))*/
@@ -92,10 +92,10 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 #endif // DEBUG
         flags |= CLocatorAPI::flScanAppRoot;
 
-        if (0 != strstr(Params, "-file_activity"))
+        if (strstr(Params, "-file_activity"))
             flags |= CLocatorAPI::flDumpFileActivity;
 
-        FS._initialize(flags, 0, fs_fname);
+        FS._initialize(flags, nullptr, fs_fname);
 
         Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
         if (strlen(APPVEYOR_BUILD_VERSION))

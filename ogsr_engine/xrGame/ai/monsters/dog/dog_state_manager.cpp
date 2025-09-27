@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dog.h"
 #include "dog_state_manager.h"
 #include "ai_space.h"
@@ -17,19 +18,16 @@
 #include "../group_states/group_state_panic.h"
 #include "../group_states/group_state_hear_danger_sound.h"
 
-namespace detail
+namespace
 {
-namespace dog
-{
-const float atack_decision_maxdist = 6.f;
-} // namespace dog
-} // namespace detail
+constexpr float atack_decision_maxdist{6.f};
+}
 
 CStateManagerDog::CStateManagerDog(CAI_Dog* monster) : inherited(monster)
 {
     // add_state(eStateRest, xr_new<CStateGroupRest<CAI_Dog>>(monster)); //KRodin: ЗП-шный вариант кривой, из-за него собаки часто занимаются ходьбой на одном месте и всё, другие
     // состояния "отдыха" не работают.
-    add_state(eStateRest, xr_new<CStateMonsterRest<CAI_Dog>>(monster)); //А вот ТЧ-шный работает правильно.
+    add_state(eStateRest, xr_new<CStateMonsterRest<CAI_Dog>>(monster)); // А вот ТЧ-шный работает правильно.
     add_state(eStatePanic, xr_new<CStateGroupPanic<CAI_Dog>>(monster));
     add_state(eStateAttack, xr_new<CStateGroupAttack<CAI_Dog>>(monster));
     add_state(eStateEat, xr_new<CStateGroupEat<CAI_Dog>>(monster));
@@ -38,7 +36,7 @@ CStateManagerDog::CStateManagerDog(CAI_Dog* monster) : inherited(monster)
     add_state(eStateHitted, xr_new<CStateMonsterHitted<CAI_Dog>>(monster));
     add_state(eStateControlled, xr_new<CStateMonsterControlled<CAI_Dog>>(monster));
     add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound<CAI_Dog>>(monster));
-    object->EatedCorpse = NULL;
+    object->EatedCorpse = nullptr;
 }
 
 void CStateManagerDog::execute()
@@ -57,7 +55,7 @@ void CStateManagerDog::execute()
             if (object->Home->at_min_home(enemy_pos))
                 squad->set_home_in_danger();
 
-            if (object->Position().distance_to(enemy_pos) < detail::dog::atack_decision_maxdist)
+            if (object->Position().distance_to(enemy_pos) < atack_decision_maxdist)
                 squad->set_home_in_danger();
 
             if (squad->home_in_danger())

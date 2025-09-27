@@ -45,7 +45,7 @@ public:
     void FitToHeight(float height);
 
     float GetCurrentZoom() const { return GetWndRect().width() / m_BoundRect.width(); }
-    const Frect& BoundRect() const { return m_BoundRect; };
+    const Frect& BoundRect() const { return m_BoundRect; }
     virtual void OptimalFit(const Frect& r);
 
     shared_str MapName() { return m_name; }
@@ -62,11 +62,11 @@ public:
     bool IsRounded() const { return m_flags.test(eRounded); }
     void SetRounded(bool b) { m_flags.set(eRounded, b); }
 
-    void SetPointerDistance(float d) { m_pointer_dist = d; };
-    float GetPointerDistance() const { return m_pointer_dist; };
+    void SetPointerDistance(float d) { m_pointer_dist = d; }
+    float GetPointerDistance() const { return m_pointer_dist; }
 
 protected:
-    virtual void UpdateSpots() {};
+    virtual void UpdateSpots() {}
 };
 
 class CUIGlobalMap : public CUICustomMap

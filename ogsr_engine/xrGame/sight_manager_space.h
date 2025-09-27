@@ -12,7 +12,7 @@ namespace SightManager
 {
 enum ESightType : u32
 {
-    eSightTypeCurrentDirection = u32(0),
+    eSightTypeCurrentDirection = 0,
     eSightTypePathDirection,
     eSightTypeDirection,
     eSightTypePosition,
@@ -23,6 +23,6 @@ enum ESightType : u32
     eSightTypeCoverLookOver,
     eSightTypeFireObject,
     eSightTypeFirePosition, // must be removed
-    eSightTypeDummy = u32(-1),
+    eSightTypeDummy = std::numeric_limits<u32>::max(),
 };
-};
+} // namespace SightManager

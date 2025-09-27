@@ -33,6 +33,9 @@ void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated& ca
     for (u16 i = 0; num_anims > i; ++i)
         block_times[i] = 0;
 }
+
+namespace
+{
 ICF int sign(float x) { return x < 0 ? -1 : 1; }
 
 IC void set_blend_params(CBlend* B)
@@ -50,7 +53,7 @@ IC void play_cycle(IKinematicsAnimated* CA, const MotionID& m, u8 channel, u32& 
     float power = base_power;
     if (Device.dwTimeGlobal > time_block)
     {
-        CBlend* B = (CA->PlayCycle(m, mixin, 0, 0, channel));
+        CBlend* B = (CA->PlayCycle(m, mixin, nullptr, nullptr, channel));
 
         if (Device.dwTimeGlobal < time_block + dellay1)
             power *= 0.5f;
@@ -59,6 +62,7 @@ IC void play_cycle(IKinematicsAnimated* CA, const MotionID& m, u8 channel, u32& 
         time_block = Device.dwTimeGlobal + dellay;
     }
 }
+} // namespace
 
 void character_hit_animation_controller::PlayHitMotion(const Fvector& dir, const Fvector& bone_pos, u16 bi, CEntityAlive& ea) const
 {

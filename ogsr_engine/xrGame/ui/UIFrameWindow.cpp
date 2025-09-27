@@ -88,8 +88,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
     m_UIWndFrame.UpdateSize();
 
     // Проверяем на видимость фрейма
-    if (max(ourAbsR.right, parentAbsR.left) == parentAbsR.left || min(ourAbsR.left, parentAbsR.right) == parentAbsR.right ||
-        min(ourAbsR.top, parentAbsR.bottom) == parentAbsR.bottom || max(ourAbsR.bottom, parentAbsR.top) == parentAbsR.top)
+    if (fsimilar(max(ourAbsR.right, parentAbsR.left), parentAbsR.left) || fsimilar(min(ourAbsR.left, parentAbsR.right), parentAbsR.right) ||
+        fsimilar(min(ourAbsR.top, parentAbsR.bottom), parentAbsR.bottom) || fsimilar(max(ourAbsR.bottom, parentAbsR.top), parentAbsR.top))
     {
         m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile(0, 0, 0, 0);
         m_UIWndFrame.frame[CUIFrameRect::fmR].SetTile(0, 0, 0, 0);

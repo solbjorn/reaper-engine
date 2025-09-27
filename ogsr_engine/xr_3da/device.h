@@ -124,7 +124,7 @@ public:
 class CRenderDevice : public CRenderDeviceBase
 {
 private:
-    u32 camFrame{u32(-1)};
+    u32 camFrame{std::numeric_limits<u32>::max()};
 
     // Main objects used for creating and rendering the 3D scene
     u32 m_dwWindowStyle;
@@ -147,7 +147,7 @@ public:
     void OnWM_Activate(WPARAM wParam, LPARAM lParam);
 
 public:
-    IRenderDeviceRender* m_pRender;
+    IRenderDeviceRender* m_pRender{};
 
     BOOL m_bNearer;
     void SetNearer(BOOL enabled)
@@ -175,9 +175,9 @@ public:
 
     CStats* Statistic;
 
-    CRenderDevice() : m_pRender(0)
+    CRenderDevice()
     {
-        m_hWnd = NULL;
+        m_hWnd = nullptr;
         b_is_Active = FALSE;
         b_is_Ready = FALSE;
         Timer.Start();
@@ -186,7 +186,7 @@ public:
         //--#SM+#-- +SecondVP+
         m_SecondViewport.SetSVPActive(false);
         m_SecondViewport.m_bCamReady = false;
-    };
+    }
 
     void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
     BOOL Paused();

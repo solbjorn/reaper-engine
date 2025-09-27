@@ -15,9 +15,10 @@ class CPhysicObject : public CPhysicsShellHolder, public CPHSkeleton
 
 public:
     typedef CPhysicsShellHolder inherited;
-    EPOType m_type;
-    float m_mass;
-    ICollisionHitCallback* m_collision_hit_callback;
+
+    EPOType m_type{epotBox};
+    float m_mass{10.f};
+    ICollisionHitCallback* m_collision_hit_callback{};
 
 private:
     // Creating
@@ -26,8 +27,8 @@ private:
     void AddElement(CPhysicsElement* root_e, int id);
 
 public:
-    CPhysicObject(void);
-    virtual ~CPhysicObject(void);
+    CPhysicObject();
+    virtual ~CPhysicObject();
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void CreatePhysicsShell(CSE_Abstract* e);

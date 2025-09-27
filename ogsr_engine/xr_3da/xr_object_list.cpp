@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
@@ -15,7 +16,7 @@ class fClassEQ
     CLASS_ID cls;
 
 public:
-    fClassEQ(CLASS_ID C) : cls(C) {};
+    fClassEQ(CLASS_ID C) : cls{C} {}
     IC bool operator()(CObject* O) { return cls == O->CLS_ID; }
 };
 
@@ -41,6 +42,7 @@ CObject* CObjectList::FindObjectByName(shared_str name)
 
     return nullptr;
 }
+
 CObject* CObjectList::FindObjectByName(LPCSTR name) { return FindObjectByName(shared_str(name)); }
 
 CObject* CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
@@ -56,7 +58,7 @@ CObject* CObjectList::FindObjectByCLS_ID(CLASS_ID cls)
             return *O;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CObjectList::o_remove(xr_vector<CObject*>& v, CObject* O)
@@ -115,7 +117,7 @@ void CObjectList::SingleUpdate(CObject* O)
     if (O->getDestroy() && (Device.dwFrame != O->dwFrame_UpdateCL))
     {
         //		destroy_queue.push_back(O);
-        Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%d]", O->cName().c_str(), O->ID(), Device.dwFrame);
+        Msg("- !!!processing_enabled ->destroy_queue.push_back %s[%d] frame [%u]", O->cName().c_str(), O->ID(), Device.dwFrame);
     }
 }
 
@@ -136,7 +138,7 @@ void CObjectList::Update(bool bForce)
             // Select Crow-Mode
             Device.Statistic->UpdateClient_updated = 0;
             Device.Statistic->UpdateClient_crows = crows->size();
-            xr_vector<CObject*>* workload = 0;
+            xr_vector<CObject*>* workload{};
             if (!psDeviceFlags.test(rsDisableObjectsAsCrows))
             {
                 workload = crows;
@@ -217,7 +219,7 @@ void CObjectList::net_Register(CObject* O)
 {
     R_ASSERT(O);
     ASSERT_FMT(map_NETID.find(O->ID()) == map_NETID.end(), "%s ID[%u] already registered", O->cName().c_str(), O->ID());
-    map_NETID.insert(mk_pair(O->ID(), O));
+    map_NETID.try_emplace(O->ID(), O);
     // Msg			("-------------------------------- Register: %s",O->cName());
 }
 
@@ -234,7 +236,7 @@ void CObjectList::net_Unregister(CObject* O)
 CObject* CObjectList::net_Find(u32 ID)
 {
     xr_map<u32, CObject*>::iterator it = map_NETID.find(ID);
-    return (it == map_NETID.end()) ? 0 : it->second;
+    return it == map_NETID.end() ? nullptr : it->second;
 }
 
 void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() && destroy_queue.empty() && objects_sleeping.empty()); }
@@ -242,13 +244,13 @@ void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() 
 void CObjectList::Unload()
 {
     if (objects_sleeping.size() || objects_active.size())
-        Msg("! objects-leaked: %d", objects_sleeping.size() + objects_active.size());
+        Msg("! objects-leaked: %zu", objects_sleeping.size() + objects_active.size());
 
     // Destroy objects
     while (objects_sleeping.size())
     {
         CObject* O = objects_sleeping.back();
-        Msg("! [%x] s[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
+        Msg("! s[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
         O->setDestroy(TRUE);
 
 #ifdef DEBUG
@@ -260,7 +262,7 @@ void CObjectList::Unload()
     while (objects_active.size())
     {
         CObject* O = objects_active.back();
-        Msg("! [%x] a[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
+        Msg("! a[%4d]-[%s]-[%s]", O->ID(), *O->cNameSect(), *O->cName());
         O->setDestroy(TRUE);
 
 #ifdef DEBUG
@@ -281,8 +283,9 @@ CObject* CObjectList::Create(LPCSTR name)
 
 void CObjectList::Destroy(CObject* O)
 {
-    if (0 == O)
+    if (!O)
         return;
+
     net_Unregister(O);
 
     // crows
@@ -332,7 +335,7 @@ void dump_list(xr_vector<CObject*>& v, LPCSTR reason)
     xr_vector<CObject*>::iterator it_e = v.end();
     Msg("----------------dump_list [%s]", reason);
     for (; it != it_e; ++it)
-        Msg("%x - name [%s] ID[%d] parent[%s] getDestroy()=[%s]", (*it), (*it)->cName().c_str(), (*it)->ID(), ((*it)->H_Parent()) ? (*it)->H_Parent()->cName().c_str() : "",
+        Msg("name [%s] ID[%d] parent[%s] getDestroy()=[%s]", (*it)->cName().c_str(), (*it)->ID(), ((*it)->H_Parent()) ? (*it)->H_Parent()->cName().c_str() : "",
             ((*it)->getDestroy()) ? "yes" : "no");
 }
 
@@ -357,7 +360,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d] [%u]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }
@@ -367,7 +370,7 @@ void CObjectList::register_object_to_destroy(CObject* object_to_destroy)
         CObject* O = it;
         if (!O->getDestroy() && O->H_Parent() == object_to_destroy)
         {
-            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
+            Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d] [%u]", object_to_destroy->ID(), O->ID(), Device.dwFrame);
             O->setDestroy(TRUE);
         }
     }

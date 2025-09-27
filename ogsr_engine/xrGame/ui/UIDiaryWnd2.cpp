@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIDiaryWnd.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
@@ -140,7 +141,7 @@ void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
     {
     case eJournal: UnloadJournalTab(); break;
     case eNews: UnloadNewsTab(); break;
-    };
+    }
 
     m_currFilter = new_filter;
 
@@ -148,11 +149,10 @@ void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
     {
     case eJournal: LoadJournalTab(); break;
     case eNews: LoadNewsTab(); break;
-    };
+    }
 }
 
 void CUIDiaryWnd::AddNews() { m_UINewsWnd->AddNews(); }
-
 void CUIDiaryWnd::MarkNewsAsRead(bool status) {}
 
 void CUIDiaryWnd::UnloadJournalTab()
@@ -198,7 +198,7 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow* w, void* p)
     {
         CUIEncyclopediaArticleWnd* article_info = xr_new<CUIEncyclopediaArticleWnd>();
         article_info->Init("encyclopedia_item.xml", "encyclopedia_wnd:objective_item");
-        article_info->SetArticle(&m_ArticlesDB[pSelItem->GetValue()]);
+        article_info->SetArticle(m_ArticlesDB[pSelItem->GetValue()].get());
         m_DescrView->AddWindow(article_info, true);
 
         // Исправление отображения зеленым цветом прочитанных записей в дневнике КПК
@@ -209,7 +209,7 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow* w, void* p)
                 for (ARTICLE_VECTOR::iterator it = Actor()->encyclopedia_registry->registry().objects().begin(); it != Actor()->encyclopedia_registry->registry().objects().end();
                      it++)
                 {
-                    if (ARTICLE_DATA::eJournalArticle == it->article_type && m_ArticlesDB[pSelItem->GetValue()].Id() == it->article_id)
+                    if (ARTICLE_DATA::eJournalArticle == it->article_type && m_ArticlesDB[pSelItem->GetValue()]->Id() == it->article_id)
                     {
                         it->readed = true;
                         break;
@@ -221,6 +221,7 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow* w, void* p)
 }
 
 void draw_sign(CUIStatic* s, Fvector2& pos);
+
 void CUIDiaryWnd::Draw()
 {
     inherited::Draw();
@@ -280,17 +281,19 @@ void CUIDiaryWnd::UpdateJournal()
     {
         ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
         std::advance(it, prevArticlesCount);
+
         for (; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
         {
             if (it->article_type == ARTICLE_DATA::eJournalArticle)
             {
-                auto& a = m_ArticlesDB.emplace_back();
-                a.Load(it->article_id);
+                auto& a = m_ArticlesDB.emplace_back(std::make_unique<CEncyclopediaArticle>());
+                a->Load(it->article_id);
                 bool bReaded = it->readed;
-                CreateTreeBranch(a.data()->group, a.data()->name, m_SrcListWnd, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor,
+                CreateTreeBranch(a->data()->group, a->data()->name, m_SrcListWnd, m_ArticlesDB.size() - 1, m_pTreeRootFont, m_uTreeRootColor, m_pTreeItemFont, m_uTreeItemColor,
                                  bReaded);
             }
         }
+
         prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
     }
 }

@@ -5,6 +5,7 @@
 //	Author		: Alexander Petrov
 //	Description : XRay derived client classes script export
 ////////////////////////////////////////////////////////////////////////////
+
 #include "script_export_space.h"
 #include "CustomOutfit.h"
 #include "CustomMonster.h"
@@ -106,11 +107,11 @@ class CCustomMonsterScript
 public:
     static u32 GetDestVertexId(CCustomMonster* monster)
     {
-        u32 vertex = 0;
-        if (monster->m_movement_manager != NULL)
-        {
+        u32 vertex{};
+
+        if (monster->m_movement_manager)
             vertex = monster->m_movement_manager->level_dest_vertex_id();
-        }
+
         return vertex;
     }
 

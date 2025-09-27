@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIWindow.h"
 
 class CUIXml;
@@ -6,6 +7,8 @@ class CUIStatic;
 
 class CUIArtefactParams : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIArtefactParams, CUIWindow);
+
 public:
     CUIArtefactParams();
     virtual ~CUIArtefactParams();

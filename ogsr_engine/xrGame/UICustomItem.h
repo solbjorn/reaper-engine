@@ -10,8 +10,10 @@ enum EUIItemAlign
     alCenter = 0x0010
 };
 
-class CUICustomItem
+class CUICustomItem : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUICustomItem);
+
 protected:
     enum
     {
@@ -22,11 +24,11 @@ protected:
         flNoShaderCache = (1 << 4),
     };
 
-    //прямоугольник(в пикселях)
-    //геом. регион  на который натягикается текстура с текстурными координатами iOriginalRect
+    // прямоугольник(в пикселях)
+    // геом. регион  на который натягикается текстура с текстурными координатами iOriginalRect
     Frect iVisRect;
 
-    //фрейм текстуры в пикселях отн. 0/0
+    // фрейм текстуры в пикселях отн. 0/0
     Frect iOriginalRect;
 
     // точка, относительно которой применяем поворот
@@ -68,6 +70,6 @@ public:
     void Render(const Fvector2& pos, u32 color);
     void Render(const Fvector2& pos, u32 color, float angle);
 
-    IC void SetAlign(u32 align) { uAlign = align; };
+    IC void SetAlign(u32 align) { uAlign = align; }
     IC u32 GetAlign() { return uAlign; }
 };

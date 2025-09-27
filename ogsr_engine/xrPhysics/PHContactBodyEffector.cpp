@@ -1,10 +1,12 @@
 #include "stdafx.h"
+
 #include "PHContactBodyEffector.h"
 #include "ExtendedGeom.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
 #include "../xr_3da/gamemtllib.h"
 #include "MathUtils.h"
+
 void CPHContactBodyEffector::Init(dBodyID body, const dContact& contact, SGameMtl* material)
 {
     CPHBaseBodyEffector::Init(body);
@@ -34,7 +36,7 @@ void CPHContactBodyEffector::Apply()
 
     if (!fis_zero(l_air))
     {
-        dVector3 force = {-linear_velocity[0] * l_air, -linear_velocity[1] * l_air, -linear_velocity[2] * l_air, 0.f};
+        dVector3 force{-linear_velocity[0] * l_air, -linear_velocity[1] * l_air, -linear_velocity[2] * l_air, 0.f};
 
         if (!m_material->Flags.is(SGameMtl::flPassable))
         {
@@ -47,7 +49,9 @@ void CPHContactBodyEffector::Apply()
             force[1] -= prg * norm[1];
             force[2] -= prg * norm[2];
         }
+
         dBodyAddForce(m_body, force[0], force[1], force[2]);
     }
-    dBodySetData(m_body, NULL);
+
+    dBodySetData(m_body, nullptr);
 }

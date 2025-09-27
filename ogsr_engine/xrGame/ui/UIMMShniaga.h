@@ -24,7 +24,7 @@ public:
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = 0);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void SetVisibleMagnifier(bool f);
     virtual void OnDeviceReset();
 
@@ -56,18 +56,18 @@ protected:
     CUIStatic* m_gratings[2];
     CUIScrollView* m_view;
 
-    u32 m_start_time;
-    u32 m_run_time;
-    float m_origin;
-    float m_destination;
-    float m_mag_pos;
+    u32 m_start_time{};
+    u32 m_run_time{};
+    float m_origin{};
+    float m_destination{};
+    float m_mag_pos{};
     float m_offset{};
 
     xr_vector<CUIStatic*> m_buttons;
     xr_vector<CUIStatic*> m_buttons_new;
-    int m_selected_btn;
-    int m_page;
-    CUIWindow* m_selected;
+    int m_selected_btn{-1};
+    int m_page{-1};
+    CUIWindow* m_selected{};
     CMMSound* m_sound;
     Fvector2 m_wheel_size[2]{};
     enum

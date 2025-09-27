@@ -60,17 +60,17 @@ private:
     CEntityAlive& m_EntityAlife;
     Fmatrix& mXFORM;
     CPhysicsShell*& m_pPhysicsShell;
-    CPhysicsShell* m_physics_skeleton;
+    CPhysicsShell* m_physics_skeleton{};
     CPHMovementControl* m_PhysicMovementControl;
     CPHSoundPlayer m_ph_sound_player;
-    CIKLimbsController* m_ik_controller;
-    ICollisionHitCallback* m_collision_hit_callback;
+    CIKLimbsController* m_ik_controller{};
+    ICollisionHitCallback* m_collision_hit_callback{};
     character_hit_animation_controller m_hit_animations;
     death_anims m_death_anims;
 
     physics_shell_animated* m_physics_shell_animated{};
 
-    interactive_motion* m_interactive_motion;
+    interactive_motion* m_interactive_motion{};
     // skeleton modell(!share?)
     float skel_airr_lin_factor;
     float skel_airr_ang_factor;
@@ -92,10 +92,10 @@ private:
     float skeleton_skin_friction_end;
     float skeleton_skin_ddelay_after_wound;
     float skeleton_skin_remain_time_after_wound;
-    bool m_was_wounded;
-    float m_Pred_Time; // Для вычисления дельта времени между пересчётами сопротивления в джоинтах и коэффициента NPC
+    float m_Pred_Time{}; // Для вычисления дельта времени между пересчётами сопротивления в джоинтах и коэффициента NPC
     float m_time_delta;
     float pelvis_factor_low_pose_detect;
+    bool m_was_wounded{};
     BOOL character_have_wounded_state;
 
     u32 m_physics_shell_animated_time_destroy{u32(-1)};

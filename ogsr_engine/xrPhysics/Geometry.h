@@ -14,9 +14,9 @@
     (A)[6] op dDOT14((B + 8), (C + 1)); \
     (A)[8] op dDOT14((B), (C + 2)); \
     (A)[9] op dDOT14((B + 4), (C + 2)); \
-    (A)[10] op dDOT14((B + 8), (C + 2));
+    (A)[10] op dDOT14((B + 8), (C + 2))
 
-inline void dMULTIPLY3_333(dReal* A, const dReal* B, const dReal* C) { dMULTIPLYOP3_333(A, =, B, C) }
+inline void dMULTIPLY3_333(dReal* A, const dReal* B, const dReal* C) { dMULTIPLYOP3_333(A, =, B, C); }
 
 class CGameObject;
 class CPHObject;
@@ -28,8 +28,8 @@ class XR_NOVTABLE CODEGeom : public IPhysicsGeometry
     RTTI_DECLARE_TYPEINFO(CODEGeom, IPhysicsGeometry);
 
 protected:
-    dGeomID m_geom_transform;
-    u16 m_bone_id;
+    dGeomID m_geom_transform{};
+    u16 m_bone_id{std::numeric_limits<u16>::max()};
     Flags16 m_flags{};
 
 public:
@@ -57,7 +57,7 @@ public:
     void clear_cashed_tries();
     IC dGeomID geom() { return dGeomTransformGetGeom(m_geom_transform); }
     IC dGeomID geometry_transform() { return m_geom_transform; }
-    IC dGeomID geometry() { return m_geom_transform ? (geom() ? geom() : m_geom_transform) : NULL; }
+    IC dGeomID geometry() { return m_geom_transform ? (geom() ? geom() : m_geom_transform) : nullptr; }
     IC dGeomID geometry_bt()
     {
         if (is_transformed_bt())
@@ -101,7 +101,8 @@ public:
     virtual void set_position(const Fvector& ref_point); // for build geom
     void move_local_basis(const Fmatrix& inv_new_mul_old);
     void destroy();
-    CODEGeom();
+
+    CODEGeom() = default;
     virtual ~CODEGeom();
 };
 
@@ -139,7 +140,7 @@ public:
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector& dir) {};
+    virtual void get_max_area_dir_bt(Fvector& dir) {}
     virtual void get_mass(dMass& m); // unit dencity mass;
     virtual const Fvector& local_center();
     virtual void get_local_form(Fmatrix& form);
@@ -160,7 +161,7 @@ public:
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector& dir) {};
+    virtual void get_max_area_dir_bt(Fvector& dir) {}
     virtual const Fvector& local_center();
     virtual void get_mass(dMass& m); // unit dencity mass;
     virtual void get_local_form(Fmatrix& form);

@@ -29,8 +29,8 @@ float psSoundTimeFactor = 1.0f; //--#SM+#--
 float psSoundVMusic = 1.f;
 float psSoundVMusicFactor = 1.f;
 
-CSoundRender_Core* SoundRender = 0;
-CSound_manager_interface* Sound = 0;
+CSoundRender_Core* SoundRender{};
+CSound_manager_interface* Sound{};
 
 //////////////////////////////////////////////////
 #include <efx.h>
@@ -51,12 +51,6 @@ CSoundRender_Core::CSoundRender_Core()
     bPresent = FALSE;
     bEAX = FALSE;
     bDeferredEAX = FALSE;
-    geom_OCC = nullptr;
-    geom_ENV = NULL;
-    geom_SOM = NULL;
-    s_environment = NULL;
-    Handler = NULL;
-    s_emitters_u = 0;
     e_current.set_identity();
     e_target = get_environment_def();
     bReady = FALSE;
@@ -162,7 +156,7 @@ void CSoundRender_Core::env_load()
         {
             shared_str name = s_environment->Library()[chunk]->name;
 
-            Msg("~ env id=[%d] name=[%s]", chunk, name.c_str());
+            Msg("~ env id=[%u] name=[%s]", chunk, name.c_str());
         }
     }
 }
@@ -200,7 +194,8 @@ void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M) { geom_OCC = M; }
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
     xr_delete(geom_SOM);
-    if (0 == I)
+
+    if (!I)
         return;
 
     // check version
@@ -250,9 +245,9 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 {
     xr_delete(geom_ENV);
 
-    if (0 == I)
+    if (!I)
         return;
-    if (0 == s_environment)
+    if (!s_environment)
         return;
 
     // Associate names
@@ -265,7 +260,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
         int id = s_environment->GetID(n);
         R_ASSERT(id >= 0);
         ids.push_back(u16(id));
-        Msg("~ set_geometry_env id=%d name[%s]=environment id[%d]", ids.size() - 1, n, id);
+        Msg("~ set_geometry_env id=%zu name[%s]=environment id[%d]", ids.size() - 1, n, id);
     }
     names->close();
 
@@ -276,7 +271,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
     memcpy(_data, geom_ch->pointer(), geom_ch->length());
 
-    IReader* geom = xr_new<IReader>(_data, geom_ch->length(), 0);
+    IReader* geom = xr_new<IReader>(_data, geom_ch->length(), 0uz);
 
     hdrCFORM H;
     geom->r(&H, sizeof(hdrCFORM));
@@ -452,9 +447,9 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
     S.handle = (CSound_source*)SoundRender->i_create_source(fn);
     S.g_type = (game_type == sg_SourceType) ? S.handle->game_type() : game_type;
     S.s_type = sound_type;
-    S.feedback = 0;
-    S.g_object = 0;
-    S.g_userdata = 0;
+    S.feedback = nullptr;
+    S.g_object = nullptr;
+    S.g_userdata = nullptr;
     S.dwBytesTotal = S.handle->bytes_total();
     S.fTimeTotal = S.handle->length_sec();
 }
@@ -467,7 +462,7 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
         E->stop(FALSE);
     }
 
-    R_ASSERT(0 == S.feedback);
+    R_ASSERT(!S.feedback);
     SoundRender->i_destroy_source((CSoundRender_Source*)S.handle);
 
     S.handle = nullptr;

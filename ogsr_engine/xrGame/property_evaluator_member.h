@@ -13,6 +13,8 @@
 template <typename _object_type>
 class CPropertyEvaluatorMember : public CPropertyEvaluator<_object_type>
 {
+    RTTI_DECLARE_TYPEINFO(CPropertyEvaluatorMember<_object_type>, CPropertyEvaluator<_object_type>);
+
 protected:
     typedef CPropertyEvaluator<_object_type> inherited;
     using _condition_type = typename inherited::_condition_type;

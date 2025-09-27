@@ -51,6 +51,12 @@ public:
     // If possible use precompiled texture list.
     u32 find_texture_stage(const shared_str& TexName) const;
     void create_texture(u32 stage, const char* textureName);
+
+    void clone(const STextureList& from)
+    {
+        xr_resource_flagged::clone(from);
+        *static_cast<inherited_vec*>(this) = from;
+    }
 };
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
 
@@ -125,7 +131,16 @@ public:
 
     ShaderElement();
     ~ShaderElement();
-    BOOL equal(ShaderElement& S);
+
+    bool equal(const ShaderElement& S) const;
+
+    void clone(ShaderElement&& from)
+    {
+        xr_resource_flagged::clone(from);
+
+        flags = std::move(from.flags);
+        passes = std::move(from.passes);
+    }
 };
 
 using ref_selement = resptr_core<ShaderElement, resptr_base<ShaderElement>>;
@@ -138,10 +153,18 @@ struct Shader : public xr_resource_flagged
 public:
     ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
                        // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+
     Shader() = default;
     ~Shader();
-    BOOL equal(Shader* S);
-    BOOL equal(Shader* S, int index);
+
+    bool equal(const Shader* S) const;
+    bool equal(const Shader* S, int index) const;
+
+    void clone(Shader&& from)
+    {
+        xr_resource_flagged::clone(from);
+        std::ranges::move(from.E, E);
+    }
 };
 
 struct resptrcode_shader : public resptr_base<Shader>
@@ -160,7 +183,7 @@ struct resptrcode_shader : public resptr_base<Shader>
         create(&blender, s_shader, s_textures);
     }
 
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
 };
 
 using ref_shader = resptr_core<Shader, resptrcode_shader>;

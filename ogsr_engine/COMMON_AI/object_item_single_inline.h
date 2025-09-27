@@ -9,8 +9,6 @@
 #ifndef object_item_single_inlineH
 #define object_item_single_inlineH
 
-#pragma once
-
 #define TEMPLATE_SPECIALIZATION template <typename _unknown_type, bool _client_object>
 #define CSObjectItemSingle CObjectItemSingle<_unknown_type, _client_object>
 
@@ -21,7 +19,7 @@ TEMPLATE_SPECIALIZATION
 ObjectFactory::CLIENT_BASE_CLASS* CSObjectItemSingle::client_object() const
 {
     FATAL("Cannot instantiate client object, because client class is not declared!");
-    return (0);
+    return nullptr;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -41,9 +39,10 @@ template <typename _unknown_type>
 ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server_object(LPCSTR section) const
 {
     FATAL("Cannot instantiate server object, because server class is not declared!");
-    return (0);
+    return nullptr;
 }
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CSObjectItemSingle
+
 #endif

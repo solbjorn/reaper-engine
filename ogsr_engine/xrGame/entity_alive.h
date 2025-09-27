@@ -27,8 +27,8 @@ public:
     bool m_bMobility;
     float m_fAccuracy;
     float m_fIntelligence;
-    u32 m_use_timeout;
-    u8 m_squad_index;
+    u32 m_use_timeout{5000};
+    u8 m_squad_index{std::numeric_limits<u8>::max()};
 
 private:
     bool m_is_agresive;
@@ -120,7 +120,7 @@ protected:
 public:
     static void UnloadBloodyWallmarks();
 
-    void ClearBloodWounds() { m_BloodWounds.clear(); };
+    void ClearBloodWounds() { m_BloodWounds.clear(); }
 
 protected:
     virtual void PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, float trace_dist, float wallmark_size, IWallMarkArray* wallmarks_vector);
@@ -158,8 +158,8 @@ public:
 
 private:
     CEntityCondition* m_entity_condition;
-    CMaterialManager* m_material_manager;
-    bool b_eating;
+    CMaterialManager* m_material_manager{};
+    bool b_eating{};
 
 protected:
     virtual CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec);
@@ -174,8 +174,8 @@ public:
 
 protected:
     u32 m_ef_creature_type;
-    u32 m_ef_weapon_type;
-    u32 m_ef_detector_type;
+    u32 m_ef_weapon_type{std::numeric_limits<u32>::max()};
+    u32 m_ef_detector_type{std::numeric_limits<u32>::max()};
 
 public:
     virtual u32 ef_creature_type() const;
@@ -183,7 +183,7 @@ public:
     virtual u32 ef_detector_type() const;
 
 public:
-    virtual CVisualMemoryManager* visual_memory() const { return (0); }
+    virtual CVisualMemoryManager* visual_memory() const { return nullptr; }
     virtual void net_Relcase(CObject* O);
 
 public:

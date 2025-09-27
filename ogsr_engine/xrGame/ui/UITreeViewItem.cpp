@@ -7,6 +7,7 @@
 //=============================================================================
 
 #include "stdafx.h"
+
 #include "UITreeViewItem.h"
 #include "UIListWnd.h"
 #include "../string_table.h"
@@ -16,23 +17,24 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace
+{
 // Смещение относительно родителя
-const int subShift = 1;
-const char* const treeItemBackgroundTexture = "ui\\ui_pda_over_list";
+constexpr int subShift{1};
+constexpr const char* treeItemBackgroundTexture = "ui\\ui_pda_over_list";
 // Цвет непрочитанного элемента
-static const u32 unreadColor = 0xff00ff00;
+constexpr u32 unreadColor{0xff00ff00};
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 
-CUITreeViewItem::CUITreeViewItem() : isRoot(false), isOpened(false), iTextShift(0), pOwner(NULL), m_uUnreadedColor(UNREAD_COLOR), m_uReadedColor(READ_COLOR)
+CUITreeViewItem::CUITreeViewItem() : m_uUnreadedColor{UNREAD_COLOR}, m_uReadedColor{READ_COLOR}
 {
     AttachChild(&UIBkg);
     UIBkg.InitTexture(treeItemBackgroundTexture);
     UIBkg.TextureOff();
     UIBkg.SetTextureOffset(-20, 0);
     EnableTextHighlighting(false);
-
-    m_bManualSetColor = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -244,7 +246,7 @@ void CUITreeViewItem::SetText(LPCSTR str)
 
 void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-    static CUITreeViewItem* pPrevFocusedItem = NULL;
+    static CUITreeViewItem* pPrevFocusedItem{};
 
     if (pWnd == this && BUTTON_CLICKED == msg)
     {
@@ -270,10 +272,12 @@ void CUITreeViewItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     else if (pWnd == this && STATIC_FOCUS_LOST == msg)
     {
         UIBkg.TextureOff();
-        pPrevFocusedItem = NULL;
+        pPrevFocusedItem = nullptr;
     }
     else
+    {
         inherited::SendMessage(pWnd, msg, pData);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -282,7 +286,7 @@ CUITreeViewItem* CUITreeViewItem::Find(LPCSTR text) const
 {
     // Пробегаемся по списку подчиненных элементов, и ищем элемент с заданным текстом
     // Если среди подч. эл-тов есть root'ы, то ищем рекурсивно в них
-    CUITreeViewItem* pResult = NULL;
+    CUITreeViewItem* pResult{};
     xr_string caption;
 
     for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
@@ -311,7 +315,7 @@ CUITreeViewItem* CUITreeViewItem::Find(LPCSTR text) const
 
 CUITreeViewItem* CUITreeViewItem::Find(int value) const
 {
-    CUITreeViewItem* pResult = NULL;
+    CUITreeViewItem* pResult{};
 
     for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
     {
@@ -332,7 +336,7 @@ CUITreeViewItem* CUITreeViewItem::Find(int value) const
 
 CUITreeViewItem* CUITreeViewItem::Find(CUITreeViewItem* pItem) const
 {
-    CUITreeViewItem* pResult = NULL;
+    CUITreeViewItem* pResult{};
 
     for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
     {
@@ -451,7 +455,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
         CUITreeViewItem* operator()(GroupTree_it it, GroupTree& cont, CUITreeViewItem* pItemToIns)
         {
             // Вставляем иерархию разделов в энциклопедию
-            CUITreeViewItem* pNewItem = NULL;
+            CUITreeViewItem* pNewItem{};
 
             for (GroupTree_it it2 = it; it2 != cont.end(); ++it2)
             {
@@ -503,7 +507,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
     }
 
     // Теперь ищем нет ли затребованных групп уже в наличии
-    CUITreeViewItem *pTVItem = NULL, *pTVItemChilds = NULL;
+    CUITreeViewItem *pTVItem{}, *pTVItemChilds{};
     bool status = false;
 
     // Для всех рутовых элементов

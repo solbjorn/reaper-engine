@@ -39,7 +39,7 @@ private:
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 private:
-    CEntity* m_leader;
+    CEntity* m_leader{};
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
 public:
@@ -48,7 +48,7 @@ public:
     CGroupHierarchyHolder& group(u32 group_id) const;
     IC CTeamHierarchyHolder& team() const;
     IC const GROUP_REGISTRY& groups() const;
-    IC u32 id() const { return squad_id; };
+    IC u32 id() const { return squad_id; }
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 public:

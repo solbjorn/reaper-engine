@@ -19,13 +19,7 @@ IRender_Mesh::~IRender_Mesh()
     _RELEASE(p_rm_Indices);
 }
 
-dxRender_Visual::dxRender_Visual()
-{
-    Type = 0;
-    shader = 0;
-    vis.clear();
-}
-
+dxRender_Visual::dxRender_Visual() { vis.clear(); }
 dxRender_Visual::~dxRender_Visual() {}
 
 void dxRender_Visual::Release() {}

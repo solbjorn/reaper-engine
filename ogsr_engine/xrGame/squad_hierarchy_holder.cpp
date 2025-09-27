@@ -20,7 +20,7 @@ CGroupHierarchyHolder& CSquadHierarchyHolder::group(u32 group_id) const
 {
     if (group_id >= m_groups.size())
     {
-        Msg("* [%s]: [team:%u][squad:%u] group_id[%u]: resize m_groups: %u -> %u", __FUNCTION__, team().id(), id(), group_id, m_groups.size(), group_id + 1);
+        Msg("* [%s]: [team:%u][squad:%u] group_id[%u]: resize m_groups: %zu -> %u", __FUNCTION__, team().id(), id(), group_id, m_groups.size(), group_id + 1);
         m_groups.resize(group_id + 1, nullptr);
     }
     if (!m_groups[group_id])

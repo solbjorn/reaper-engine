@@ -24,7 +24,7 @@ public:
 
     // Also we can display textual caption on the frame
     CUIStatic UITitleText;
-    CUIStatic* GetTitleStatic() { return &UITitleText; };
+    CUIStatic* GetTitleStatic() { return &UITitleText; }
 
 protected:
     bool bHorizontal;

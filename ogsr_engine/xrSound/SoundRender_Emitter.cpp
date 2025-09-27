@@ -35,8 +35,6 @@ CSoundRender_Emitter::CSoundRender_Emitter()
 #endif
 
     tg = &xr_task_group_get();
-    target = NULL;
-    owner_data = NULL;
     smooth_volume = 1.f;
     occluder_volume = 1.f;
     fade_volume = 1.f;
@@ -59,9 +57,11 @@ CSoundRender_Emitter::CSoundRender_Emitter()
 
 CSoundRender_Emitter::~CSoundRender_Emitter()
 {
+    canceling = true;
+    tg->wait_put();
+
     // try to release dependencies, events, for example
     Event_ReleaseOwner();
-    tg->wait_put();
 }
 
 //////////////////////////////////////////////////////////////////////

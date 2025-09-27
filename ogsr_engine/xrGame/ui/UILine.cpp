@@ -7,10 +7,11 @@
 // Copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
 #include "UILine.h"
 #include "uilinestd.h"
 
-//#define LOG_ALL_LINES
+// #define LOG_ALL_LINES
 #ifdef LOG_ALL_LINES
 int ListLinesCount = 0;
 struct DBGList
@@ -66,7 +67,7 @@ CUILine::~CUILine()
 CUILine::CUILine(const CUILine& other)
 {
     m_subLines = other.m_subLines;
-    m_tmpLine = NULL;
+
 #ifdef LOG_ALL_LINES
     ListLinesCount++;
     dbg_list_lines.push_back(DBGList());
@@ -155,7 +156,7 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
     const int size = m_subLines.size();
 
     float total_w = 0.f;
-    
+
     int last_nonEmpty = 0;
     int nonEmptyCount = 0;
 
@@ -173,7 +174,7 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
         }
     }
 
-    float def_add_w = 0.f; 
+    float def_add_w = 0.f;
     bool use_def_add_w = false;
 
     float add_w = 0.f;
@@ -188,7 +189,7 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
 
         add_w = space_w / (float)(nonEmptyCount - 1);
 
-        if (total_w < max_w * 3/4)
+        if (total_w < max_w * 3 / 4)
         {
             add_w = def_add_w;
             use_def_add_w = true;

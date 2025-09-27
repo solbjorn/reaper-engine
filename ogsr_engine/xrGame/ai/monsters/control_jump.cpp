@@ -1,8 +1,9 @@
 #include "stdafx.h"
+
 #include "control_jump.h"
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
-#include "../../PHMovementControl.h"
+#include "PHMovementControl.h"
 #include "../../../Include\xrRender\Kinematics.h"
 #include "../../detail_path_manager.h"
 #include "../../level.h"
@@ -64,7 +65,7 @@ bool CControlJump::check_start_conditions()
 void CControlJump::remove_links(CObject* object)
 {
     if (m_data.target_object == object)
-        m_data.target_object = NULL;
+        m_data.target_object = nullptr;
 }
 
 void CControlJump::activate()
@@ -413,7 +414,7 @@ void CControlJump::grounding()
     }
 }
 
-void CControlJump::stop() { m_man->notify(ControlCom::eventJumpEnd, 0); }
+void CControlJump::stop() { m_man->notify(ControlCom::eventJumpEnd, nullptr); }
 
 //////////////////////////////////////////////////////////////////////////
 // Get target point in world space
@@ -446,7 +447,7 @@ void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData*
     {
         SEventVelocityBounce* event_data = (SEventVelocityBounce*)data;
         // !TEMP!
-        if ((event_data->m_ratio < 0) && !m_velocity_bounced && (m_jump_time != 0))
+        if ((event_data->m_ratio < 0) && !m_velocity_bounced && !fis_zero(m_jump_time))
         {
             if (is_on_the_ground())
             {
@@ -578,8 +579,8 @@ bool CControlJump::jump_intersect_geometry(Fvector const& target, CObject* const
 
     Fvector collide_position;
     collide::rq_results temp_rq_results;
-    xr_vector<trajectory_pick>* pass_jump_picks = NULL;
-    xr_vector<Fvector>* pass_collide_tris = NULL;
+    xr_vector<trajectory_pick>* pass_jump_picks{};
+    xr_vector<Fvector>* pass_collide_tris{};
     /*
     #ifdef DEBUG
         xr_vector<trajectory_pick>	jump_picks;

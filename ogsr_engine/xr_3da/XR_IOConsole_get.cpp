@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
 
@@ -44,9 +45,9 @@ IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const
 {
     vecCMD_CIT it = Commands.find(cmd);
     if (it == Commands.end())
-        return NULL;
-    else
-        return it->second;
+        return nullptr;
+
+    return it->second;
 }
 
 int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
@@ -75,10 +76,11 @@ LPCSTR CConsole::GetString(LPCSTR cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
     if (!cc)
-        return NULL;
+        return nullptr;
 
     static IConsole_Command::TStatus stat;
     cc->Status(stat);
+
     return stat;
 }
 
@@ -87,14 +89,14 @@ LPCSTR CConsole::GetToken(LPCSTR cmd) const { return GetString(cmd); }
 const xr_token* CConsole::GetXRToken(LPCSTR cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
-
     CCC_Token* cf = smart_cast<CCC_Token*>(cc);
     if (cf)
     {
         const xr_token* v = cf->GetToken();
         return v;
     }
-    return NULL;
+
+    return nullptr;
 }
 
 Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const
@@ -102,20 +104,18 @@ Fvector* CConsole::GetFVectorPtr(LPCSTR cmd) const
     IConsole_Command* cc = GetCommand(cmd);
     CCC_Vector3* cf = smart_cast<CCC_Vector3*>(cc);
     if (cf)
-    {
         return cf->GetValuePtr();
-    }
-    return NULL;
+
+    return nullptr;
 }
 
 Fvector CConsole::GetFVector(LPCSTR cmd) const
 {
     Fvector* pV = GetFVectorPtr(cmd);
     if (pV)
-    {
         return *pV;
-    }
-    return Fvector().set(0.0f, 0.0f, 0.0f);
+
+    return Fvector{};
 }
 
 Fvector4* CConsole::GetFVector4Ptr(const char* cmd) const
@@ -130,5 +130,5 @@ Fvector4 CConsole::GetFVector4(const char* cmd) const
 {
     const Fvector4* pV = GetFVector4Ptr(cmd);
 
-    return pV ? *pV : Fvector4().set(0.0f, 0.0f, 0.0f, 0.f);
+    return pV ? *pV : Fvector4{};
 }

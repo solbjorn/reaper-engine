@@ -42,10 +42,13 @@ void CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1)
 void CRenderTarget::u_calc_tc_duality_ss(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1)
 {
     // Calculate ordinaty TCs from blur and SS
-    const float tw = float(get_width(RCache));
-    const float th = float(get_height(RCache));
-    if (th != Device.dwHeight)
+    float tw = gsl::narrow_cast<float>(get_width(RCache));
+    u32 dh = get_height(RCache);
+    float th = gsl::narrow_cast<float>(dh);
+
+    if (dh != Device.dwHeight)
         param_blur = 1.f;
+
     Fvector2 shift, p0, p1;
     shift.set(.5f / tw, .5f / th);
     shift.mul(param_blur);
@@ -115,7 +118,7 @@ static_assert(sizeof(TL_2c3uv) == 48);
 void CRenderTarget::phase_pp()
 {
     // combination/postprocess
-    u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), NULL, NULL, get_base_zb());
+    u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
 
     //	Element 0 for for normal post-process
     //	Element 4 for color map post-process

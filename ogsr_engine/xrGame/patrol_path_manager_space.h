@@ -26,4 +26,4 @@ enum EPatrolRouteType : u32
     ePatrolRouteTypeContinue,
     ePatrolRouteTypeDummy = u32(-1),
 };
-}; // namespace PatrolPathManager
+} // namespace PatrolPathManager

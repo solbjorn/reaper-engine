@@ -14,16 +14,7 @@
 #define CPlanner CActionPlanner<_object_type, _reverse_search, _world_operator, _condition_evaluator, _world_operator_ptr, _condition_evaluator_ptr>
 
 TEMPLATE_SPECIALIZATION
-IC CPlanner::CActionPlanner()
-{
-    m_initialized = false;
-#ifdef LOG_ACTION
-    m_use_log = false;
-#endif
-}
-
-TEMPLATE_SPECIALIZATION
-IC CPlanner::~CActionPlanner() { m_object = 0; }
+IC CPlanner::~CActionPlanner() { m_object = nullptr; }
 
 TEMPLATE_SPECIALIZATION
 void CPlanner::setup(_object_type* object)

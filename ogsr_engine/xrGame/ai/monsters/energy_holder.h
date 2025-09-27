@@ -35,8 +35,8 @@ public:
 
     virtual void schedule_update();
 
-    virtual void on_activate() {};
-    virtual void on_deactivate() {};
+    virtual void on_activate() {}
+    virtual void on_deactivate() {}
 
     // активность поля
     void activate();

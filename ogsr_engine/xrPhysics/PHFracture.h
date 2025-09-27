@@ -15,15 +15,16 @@ class CPHFracturesHolder // stored in CPHElement
 {
     friend class CPHElement;
     friend class CPHShellSplitterHolder;
-    bool m_has_breaks;
 
     FRACTURE_STORAGE m_fractures;
     PH_IMPACT_STORAGE m_impacts; // filled in anytime from CPHElement applyImpulseTrace cleared in PhDataUpdate
     CFEEDBACK_STORAGE m_feedbacks; // this store feedbacks for non contact joints
-public:
-    CPHFracturesHolder();
+    bool m_has_breaks{};
 
+public:
+    CPHFracturesHolder() = default;
     ~CPHFracturesHolder();
+
     void DistributeAdditionalMass(u16 geom_num, const dMass& m); //
     void SubFractureMass(u16 fracture_num);
     void AddImpact(const Fvector& force, const Fvector& point, u16 id);

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "sight_manager.h"
 #include "custommonster.h"
 #include "ai/stalker/ai_stalker.h"
@@ -21,7 +22,7 @@ using namespace StalkerSpace;
 
 // #define SIGHT_DEBUG
 
-CSightManager::CSightManager(CAI_Stalker* object) : inherited(object)
+CSightManager::CSightManager(CAI_Stalker* object) : inherited{object}
 {
     m_enabled = true;
     m_turning_in_place = false;
@@ -126,7 +127,7 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex* tpNode, float f
     m_object->update_range_fov(range, fAngleOfView, m_object->eye_range, m_object->eye_fov);
     fAngleOfView = (fAngleOfView / 180.f * PI) / 2.f;
 
-    CLevelGraph::CVertex* tpNextNode = 0;
+    CLevelGraph::CVertex* tpNextNode{};
     u32 node_id;
     bool bOk = false;
     if (bDifferenceLook && !m_object->movement().detail().path().empty() &&
@@ -370,7 +371,7 @@ bool CSightManager::GetDirectionAngles(float& yaw, float& pitch)
         return (true);
     }
     return (GetDirectionAnglesByPrevPositions(yaw, pitch));
-};
+}
 
 bool CSightManager::GetDirectionAnglesByPrevPositions(float& yaw, float& pitch)
 {

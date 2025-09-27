@@ -1,8 +1,17 @@
 #include "stdafx.h"
+
 #include "dx10StateUtils.h"
+
+namespace xxh
+{
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #define XXH_INLINE_ALL
 #include <xxhash.h>
+
+XR_DIAG_POP();
+} // namespace xxh
 
 namespace dx10StateUtils
 {
@@ -208,9 +217,9 @@ bool operator==(const D3D_RASTERIZER_DESC& desc1, const D3D_RASTERIZER_DESC& des
         return false;
     if (desc1.DepthBias != desc2.DepthBias)
         return false;
-    if (desc1.DepthBiasClamp != desc2.DepthBiasClamp)
+    if (!fsimilar(desc1.DepthBiasClamp, desc2.DepthBiasClamp))
         return false;
-    if (desc1.SlopeScaledDepthBias != desc2.SlopeScaledDepthBias)
+    if (!fsimilar(desc1.SlopeScaledDepthBias, desc2.SlopeScaledDepthBias))
         return false;
     if (desc1.DepthClipEnable != desc2.DepthClipEnable)
         return false;
@@ -315,25 +324,25 @@ bool operator==(const D3D_SAMPLER_DESC& desc1, const D3D_SAMPLER_DESC& desc2)
     //	if( desc1.MaxAnisotropy != desc2.MaxAnisotropy) return false;
     if (desc1.ComparisonFunc != desc2.ComparisonFunc)
         return false;
-    if (desc1.BorderColor[0] != desc2.BorderColor[0])
+    if (!fsimilar(desc1.BorderColor[0], desc2.BorderColor[0]))
         return false;
-    if (desc1.BorderColor[1] != desc2.BorderColor[1])
+    if (!fsimilar(desc1.BorderColor[1], desc2.BorderColor[1]))
         return false;
-    if (desc1.BorderColor[2] != desc2.BorderColor[2])
+    if (!fsimilar(desc1.BorderColor[2], desc2.BorderColor[2]))
         return false;
-    if (desc1.BorderColor[3] != desc2.BorderColor[3])
+    if (!fsimilar(desc1.BorderColor[3], desc2.BorderColor[3]))
         return false;
-    if (desc1.MinLOD != desc2.MinLOD)
+    if (!fsimilar(desc1.MinLOD, desc2.MinLOD))
         return false;
-    if (desc1.MaxLOD != desc2.MaxLOD)
+    if (!fsimilar(desc1.MaxLOD, desc2.MaxLOD))
         return false;
 
     return true;
 }
 
-u64 GetHash(const D3D_RASTERIZER_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
-u64 GetHash(const D3D_DEPTH_STENCIL_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
-u64 GetHash(const D3D_BLEND_DESC& desc) { return XXH3_64bits(&desc, sizeof(desc)); }
+u64 GetHash(const D3D_RASTERIZER_DESC& desc) { return xxh::XXH3_64bits(&desc, sizeof(desc)); }
+u64 GetHash(const D3D_DEPTH_STENCIL_DESC& desc) { return xxh::XXH3_64bits(&desc, sizeof(desc)); }
+u64 GetHash(const D3D_BLEND_DESC& desc) { return xxh::XXH3_64bits(&desc, sizeof(desc)); }
 
 u64 GetHash(const D3D_SAMPLER_DESC& desc)
 {
@@ -354,7 +363,7 @@ u64 GetHash(const D3D_SAMPLER_DESC& desc)
     static_assert(offsetof(D3D_SAMPLER_DESC, BorderColor[3]) == 40);
     static_assert(sizeof(desc) == 52);
 
-    return XXH3_64bits(&buf[0], sizeof(buf));
+    return xxh::XXH3_64bits(&buf[0], sizeof(buf));
 }
 
 void ValidateState(D3D_RASTERIZER_DESC& desc) {}
@@ -448,4 +457,4 @@ void ValidateState(D3D_SAMPLER_DESC& desc)
         desc.MaxAnisotropy = 1;
     }
 }
-}; // namespace dx10StateUtils
+} // namespace dx10StateUtils

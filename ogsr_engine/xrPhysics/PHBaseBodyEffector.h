@@ -11,4 +11,5 @@ protected:
 public:
     void Init(dBodyID body) { m_body = body; }
 };
+
 #endif

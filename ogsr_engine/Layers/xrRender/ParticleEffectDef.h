@@ -74,7 +74,7 @@ public:
     // texture
     shared_str m_ShaderName;
     shared_str m_TextureName;
-    ref_shader m_CachedShader;
+    ref_shader m_CachedShader{};
     SFrame m_Frame{};
     // compiled actions
     CMemoryWriter m_Actions;
@@ -118,8 +118,8 @@ public:
 
     void Compile(EPAVec& v);
 };
+} // namespace PS
 
-}; // namespace PS
 #define PED_VERSION 0x0001
 #define PED_CHUNK_VERSION 0x0001
 #define PED_CHUNK_NAME 0x0002

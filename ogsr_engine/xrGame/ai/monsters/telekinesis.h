@@ -10,9 +10,10 @@ class CTelekinesis : public CPHUpdateObject
 protected:
     using TELE_OBJECTS = xr_vector<CTelekineticObject*>;
     using TELE_OBJECTS_IT = TELE_OBJECTS::iterator;
+
     TELE_OBJECTS objects;
     xr_vector<CObject*> m_nearest;
-    bool active;
+    bool active{};
 
 public:
     CTelekinesis();
@@ -58,7 +59,7 @@ public:
 
     // вернуть объект по индексу в массиве
     // a	copy of the object!
-    CTelekineticObject get_object_by_index(u32 index)
+    CTelekineticObject& get_object_by_index(u32 index)
     {
         VERIFY(objects.size() > index);
         return *objects[index];

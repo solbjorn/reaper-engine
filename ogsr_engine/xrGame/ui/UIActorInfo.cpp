@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIActorInfo.h"
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"
@@ -81,7 +82,7 @@ void CUIActorInfoWnd::Init()
     UICharacterWindow->AttachChild(UICharacterInfo);
     UICharacterInfo->Init(0, 0, UICharacterWindow->GetWidth(), UICharacterWindow->GetHeight(), ACTOR_CHARACTER_XML);
 
-    //Элементы автоматического добавления
+    // Элементы автоматического добавления
     xml_init.InitAutoStatic(uiXml, "right_auto_static", UICharIconFrame);
     xml_init.InitAutoStatic(uiXml, "left_auto_static", UIInfoFrame);
 }
@@ -307,7 +308,7 @@ void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
     xml_init.InitAutoStaticGroup(*xml, "auto", 0, this);
 
-    m_id = xml->ReadAttrib(xml->GetLocalRoot(), "id", NULL);
+    m_id = xml->ReadAttrib(xml->GetLocalRoot(), "id", nullptr);
 
     m_stored_alpha = color_get_A(m_text1->GetTextColor());
     xml->SetLocalRoot(_stored_root);

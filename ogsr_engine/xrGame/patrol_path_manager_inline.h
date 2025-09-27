@@ -8,23 +8,10 @@
 
 #pragma once
 
-IC CPatrolPathManager::CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object)
+IC CPatrolPathManager::CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object) : m_object{object}, m_game_object{game_object}
 {
-    m_object = object;
     VERIFY(game_object);
-    m_game_object = game_object;
-    m_path = 0;
     m_path_name = "";
-    m_start_type = ePatrolStartTypeDummy;
-    m_route_type = ePatrolRouteTypeDummy;
-    m_actuality = true;
-    m_failed = false;
-    m_completed = true;
-    m_random = false;
-    m_curr_point_index = u32(-1);
-    m_prev_point_index = u32(-1);
-    m_start_point_index = u32(-1);
-    m_dest_position.set(flt_max, flt_max, flt_max);
 }
 
 IC bool CPatrolPathManager::actual() const { return (m_actuality); }

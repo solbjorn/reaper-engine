@@ -11,8 +11,11 @@ class CUIStatic;
 class CCharacterInfo;
 class CUIXml;
 class CUIScrollView;
+
 class CUICharacterInfo : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUICharacterInfo, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
 
@@ -21,10 +24,11 @@ protected:
     void ResetAllStrings();
     void UpdateRelation();
     bool hasOwner() { return (m_ownerID != u16(-1)); }
+
     // Biography
-    CUIScrollView* pUIBio;
-    bool m_bForceUpdate;
-    u16 m_ownerID;
+    CUIScrollView* pUIBio{};
+    bool m_bForceUpdate{};
+    u16 m_ownerID{std::numeric_limits<u16>::max()};
 
     enum
     {
@@ -40,7 +44,7 @@ protected:
         eUIRelationCaption,
         eMaxCaption,
     };
-    CUIStatic* m_icons[eMaxCaption];
+    CUIStatic* m_icons[eMaxCaption]{};
     shared_str m_texture_name;
 
 public:

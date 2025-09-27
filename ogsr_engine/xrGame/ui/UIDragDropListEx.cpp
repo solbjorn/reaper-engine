@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIDragDropListEx.h"
 #include "UIScrollBar.h"
 #include "../object_broker.h"
@@ -8,16 +9,16 @@
 #include "UITradeWnd.h"
 #include "UICarBodyWnd.h"
 
-CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
+CUIDragItem* CUIDragDropListEx::m_drag_item{};
 
 void CUICell::Clear()
 {
     m_bMainItem = false;
+
     if (m_item)
-        m_item->SetOwnerList(NULL);
-    m_item = NULL;
-    // cell_disabled = false;
-    // is_highlighted = false;
+        m_item->SetOwnerList(nullptr);
+
+    m_item = nullptr;
 }
 
 CUIDragDropListEx::CUIDragDropListEx()
@@ -26,7 +27,7 @@ CUIDragDropListEx::CUIDragDropListEx()
     m_container = xr_new<CUICellContainer>(this);
     m_vScrollBar = xr_new<CUIScrollBar>();
     m_vScrollBar->SetAutoDelete(true);
-    m_selected_item = NULL;
+    m_selected_item = nullptr;
     m_bConditionProgBarVisible = false;
 
     SetCellSize(Ivector2().set(50, 50));
@@ -229,7 +230,7 @@ void CUIDragDropListEx::ClearAll(bool bDestroy)
 {
     DestroyDragItem();
     m_container->ClearAll(bDestroy);
-    m_selected_item = NULL;
+    m_selected_item = nullptr;
     m_container->SetWndPos(0, 0);
     ResetCellsCapacity();
 }
@@ -249,6 +250,7 @@ void CUIDragDropListEx::Compact()
 }
 
 #include "../HUDManager.h"
+
 void CUIDragDropListEx::Draw()
 {
     inherited::Draw();
@@ -262,7 +264,7 @@ void CUIDragDropListEx::Draw()
         F->SetColor(0xffffffff);
         Ivector2 pt = m_container->PickCell(GetUICursor()->GetCursorPosition());
         F->OutNext("%d-%d", pt.x, pt.y);
-    };
+    }
 }
 
 void CUIDragDropListEx::Update()
@@ -276,11 +278,11 @@ void CUIDragDropListEx::Update()
         Fvector2 cp = GetUICursor()->GetCursorPosition();
         if (wndRect.in(cp))
         {
-            if (NULL == m_drag_item->BackList())
+            if (!m_drag_item->BackList())
                 m_drag_item->SetBackList(this);
         }
         else if (this == m_drag_item->BackList())
-            m_drag_item->SetBackList(NULL);
+            m_drag_item->SetBackList(nullptr);
     }
 }
 
@@ -425,7 +427,8 @@ bool CUIDragDropListEx::CanSetItem(CUICellItem* itm)
 CUICellItem* CUIDragDropListEx::RemoveItem(CUICellItem* itm, bool force_root)
 {
     CUICellItem* i = m_container->RemoveItem(itm, force_root);
-    i->SetOwnerList((CUIDragDropListEx*)NULL);
+    i->SetOwnerList(static_cast<CUIDragDropListEx*>(nullptr));
+
     return i;
 }
 
@@ -457,6 +460,7 @@ void CUIDragDropListEx::SetCellsVertAlignment(xr_string alignment)
     }
     m_virtual_cells_alignment.y = 1;
 }
+
 void CUIDragDropListEx::SetCellsHorizAlignment(xr_string alignment)
 {
     if (strchr(alignment.c_str(), 'l'))
@@ -472,9 +476,9 @@ void CUIDragDropListEx::SetCellsHorizAlignment(xr_string alignment)
     m_virtual_cells_alignment.x = 1;
 }
 
-Ivector2 CUIDragDropListEx::PickCell(const Fvector2& abs_pos) { return m_container->PickCell(abs_pos); };
+Ivector2 CUIDragDropListEx::PickCell(const Fvector2& abs_pos) { return m_container->PickCell(abs_pos); }
 
-CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos) { return m_container->GetCellAt(pos); };
+CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos) { return m_container->GetCellAt(pos); }
 
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
@@ -499,7 +503,7 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
         itm->SetOwnerList(m_pParentDragDropList);
     }
 
-    return (i != NULL);
+    return !!i;
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
@@ -515,7 +519,8 @@ CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
         if (i->EqualTo(itm))
             return i;
     }
-    return NULL;
+
+    return nullptr;
 }
 
 void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
@@ -586,14 +591,17 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
         std::swap(cs.x, cs.y);
 
     for (int x = 0; x < cs.x; ++x)
+    {
         for (int y = 0; y < cs.y; ++y)
         {
             CUICell& C = GetCellAt(Ivector2().set(x, y).add(pos));
             C.Clear();
         }
+    }
 
-    itm->SetOwnerList(NULL);
+    itm->SetOwnerList(nullptr);
     DetachChild(itm);
+
     return itm;
 }
 
@@ -601,29 +609,41 @@ Ivector2 CUICellContainer::FindFreeCell(const Ivector2& _size)
 {
     Ivector2 tmp;
     Ivector2 size = _size;
+
     if (m_pParentDragDropList->GetVerticalPlacement())
         std::swap(size.x, size.y);
 
     for (tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
+    {
         for (tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
+        {
             if (IsRoomFree(tmp, _size))
                 return tmp;
+        }
+    }
 
     if (m_pParentDragDropList->IsAutoGrow())
     {
         Grow();
-        return FindFreeCell(size);
+        tmp = FindFreeCell(size);
+
+        return tmp;
     }
     else
     {
         m_pParentDragDropList->Compact();
         for (tmp.y = 0; tmp.y <= m_cellsCapacity.y - size.y; ++tmp.y)
+        {
             for (tmp.x = 0; tmp.x <= m_cellsCapacity.x - size.x; ++tmp.x)
+            {
                 if (IsRoomFree(tmp, _size))
                     return tmp;
+            }
+        }
 
         Msg("!![CUICellContainer::FindFreeCell] There are no free room to place item");
     }
+
     return tmp;
 }
 
@@ -941,7 +961,8 @@ void CUICellContainer::clear_select_armament()
     CUITradeWnd* TradeWnd = nullptr;
 
     if (!InvWnd && !CarBodyWnd)
-    { // Окно торговли приаттачено к CUITalkWnd, поэтому придётся извращаться с его поиском
+    {
+        // Окно торговли приаттачено к CUITalkWnd, поэтому придётся извращаться с его поиском
         auto Parent = this->GetParent();
         do
         {

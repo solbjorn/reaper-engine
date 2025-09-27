@@ -5,8 +5,6 @@
 // Description : edit actions class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-
 #ifndef EDIT_ACTIONS_H_INCLUDED
 #define EDIT_ACTIONS_H_INCLUDED
 
@@ -19,13 +17,14 @@ class base : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(base);
 
 public:
-    base();
+    base() = default;
     virtual ~base();
+
     void on_assign(base* const prev_action);
     virtual void on_key_press(line_edit_control* const control);
 
 protected:
-    base* m_previous_action;
+    base* m_previous_action{};
 }; // class base
 
 // -------------------------------------------------------------------------------------------------

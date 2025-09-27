@@ -7,9 +7,8 @@
 
 #include "ftreevisual.h"
 
-FTreeVisual::FTreeVisual(void) {}
-
-FTreeVisual::~FTreeVisual(void) {}
+FTreeVisual::FTreeVisual() {}
+FTreeVisual::~FTreeVisual() {}
 
 void FTreeVisual::Release() { dxRender_Visual::Release(); }
 
@@ -17,7 +16,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
     dxRender_Visual::Load(N, data, dwFlags);
 
-    const D3DVERTEXELEMENT9* vFormat = NULL;
+    const D3DVERTEXELEMENT9* vFormat{};
 
     // read vertices
     R_ASSERT(data->find_chunk(OGF_GCONTAINER));
@@ -28,7 +27,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         vCount = data->r_u32();
         vFormat = RImplementation.getVB_Format(ID);
 
-        VERIFY(NULL == p_rm_Vertices);
+        VERIFY(!p_rm_Vertices);
 
         p_rm_Vertices = RImplementation.getVB(ID);
         p_rm_Vertices->AddRef();
@@ -40,7 +39,7 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         iCount = data->r_u32();
         dwPrimitives = iCount / 3;
 
-        VERIFY(NULL == p_rm_Indices);
+        VERIFY(!p_rm_Indices);
         p_rm_Indices = RImplementation.getIB(ID);
         p_rm_Indices->AddRef();
     }

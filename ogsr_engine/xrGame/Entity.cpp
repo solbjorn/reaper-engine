@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "hudmanager.h"
 #include "Entity.h"
 #include "actor.h"
@@ -61,7 +62,8 @@ void CEntity::OnEvent(NET_Packet& P, u16 type)
             }
             else if (bDebug)
                 Msg("%s %s", *cName(), "Crashed...");
-        };
+        }
+
         Die(who);
     }
     break;
@@ -83,7 +85,7 @@ void CEntity::Die(CObject* who)
     }
 }
 
-//обновление состояния
+// обновление состояния
 float CEntity::CalcCondition(float hit)
 {
     // If Local() - perform some logic
@@ -205,7 +207,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
         auto& squad = Level().seniority_holder().team(g_Team()).squad(g_Squad());
         while (squad.group(g_Group()).members().size() == sizeof(squad_mask_type) * 8)
         {
-            Msg("* [%s]: [%s]: group [team:%u][squad:%u][group:%u] is full (%u), try next group %u", __FUNCTION__,
+            Msg("* [%s]: [%s]: group [team:%d][squad:%d][group:%d] is full (%zu), try next group %d", __FUNCTION__,
                 (E && E->name_replace()[0]) ? E->name_replace() : cName().c_str(), g_Team(), g_Squad(), g_Group(), squad.group(g_Group()).members().size(), g_Group() + 1);
             ++id_Group;
         }
@@ -217,7 +219,6 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
     {
         m_level_death_time = Device.dwTimeGlobal;
         m_game_death_time = E->m_game_death_time;
-        ;
     }
 
     if (!inherited::net_Spawn(DC))
@@ -225,7 +226,7 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
 
     //	SetfHealth			(E->fHealth);
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
-    CInifile* ini = NULL;
+    CInifile* ini{};
 
     if (pKinematics)
         ini = pKinematics->LL_UserData();
@@ -288,7 +289,7 @@ void CEntity::KillEntity(u16 whoID)
 
         u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
     }
-};
+}
 
 // void CEntity::KillEntity(CObject* who)
 //{
@@ -300,9 +301,9 @@ void CEntity::reinit() { inherited::reinit(); }
 
 void CEntity::reload(LPCSTR section)
 {
-	inherited::reload			(section);
-	if ( Ready() && !use_simplified_visual() )
-		CDamageManager::reload	(section,"damage",pSettings);
+    inherited::reload(section);
+    if (Ready() && !use_simplified_visual())
+        CDamageManager::reload(section, "damage", pSettings);
 }
 
 void CEntity::set_death_time()
@@ -318,8 +319,10 @@ DLL_Pure* CEntity::_construct()
 {
     inherited::_construct();
     CDamageManager::_construct();
-    m_entity_condition = create_entity_condition(NULL);
-    return (this);
+
+    m_entity_condition = create_entity_condition(nullptr);
+
+    return this;
 }
 
 void CEntity::shedule_Update(u32 dt)
@@ -339,7 +342,6 @@ void CEntity::shedule_Update(u32 dt)
 }
 
 void CEntity::on_before_change_team() {}
-
 void CEntity::on_after_change_team() {}
 
 void CEntity::ChangeTeam(int team, int squad, int group)

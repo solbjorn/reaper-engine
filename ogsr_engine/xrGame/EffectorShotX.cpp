@@ -8,7 +8,7 @@ CCameraShotEffectorX::CCameraShotEffectorX(float max_angle, float relax_speed, f
 
 CCameraShotEffectorX::~CCameraShotEffectorX() {}
 
-BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo& info) { return TRUE; };
+BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo& info) { return TRUE; }
 
 void CCameraShotEffectorX::GetDeltaAngle(Fvector& delta_angle)
 {
@@ -32,7 +32,7 @@ void CCameraShotEffectorX::Clear()
 {
     fAngleVert = -EPS_S;
     fAngleHorz = 0.0f;
-};
+}
 
 void CCameraShotEffectorX::UpdateActorCamera(float dPitch, float dYaw)
 {
@@ -49,7 +49,7 @@ void CCameraShotEffectorX::UpdateActorCamera(float dPitch, float dYaw)
             pACam->pitch += PI_MUL_2;
         while (pACam->pitch > pACam->lim_pitch[1])
             pACam->pitch -= PI_MUL_2;
-    };
+    }
 
     pACam->pitch += dPitch;
     pACam->yaw += dYaw;

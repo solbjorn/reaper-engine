@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"
@@ -72,7 +73,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
     }
     break;
     case GE_DESTROY: {
-        Process_event_destroy(P, sender, timestamp, destination, NULL);
+        Process_event_destroy(P, sender, timestamp, destination, nullptr);
         VERIFY(verify_entities());
     }
     break;
@@ -97,7 +98,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
         VERIFY(verify_entities());
     }
     break;
-    case GE_HIT:{
+    case GE_HIT: {
         P.r_pos -= 2;
         game->AddDelayedEvent(P, GAME_EVENT_ON_HIT, 0, ClientID());
     }
@@ -116,7 +117,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
             creature->m_killer_id = id_src;
 
         //		Msg							("[%d][%s] killed [%d][%s]",id_src,id_src==u16(-1) ? "UNKNOWN" :
-        //game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
+        // game->get_entity_from_eid(id_src)->name_replace(),id_dest,e_dest->name_replace());
 
         break;
     }
@@ -146,7 +147,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
             xrClientData* C = (xrClientData*)game->get_client(id_src);
             if (C)
                 e_src = C->owner;
-        };
+        }
+
         if (!e_src)
             e_src = e_dest;
         VERIFY(e_src);
@@ -212,12 +214,12 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
         game->remove_all_restrictions(P, destination);
     }
     break;
-    //case GE_MONEY: {
-    //    CSE_Abstract* e_dest = receiver;
-    //    CSE_ALifeTraderAbstract* pTa = smart_cast<CSE_ALifeTraderAbstract*>(e_dest);
-    //    pTa->m_dwMoney = P.r_u32();
-    //}
-    //break;
+    // case GE_MONEY: {
+    //     CSE_Abstract* e_dest = receiver;
+    //     CSE_ALifeTraderAbstract* pTa = smart_cast<CSE_ALifeTraderAbstract*>(e_dest);
+    //     pTa->m_dwMoney = P.r_u32();
+    // }
+    // break;
     case GE_FREEZE_OBJECT: break;
     default: R_ASSERT2(0, "Game Event not implemented!!!"); break;
     }

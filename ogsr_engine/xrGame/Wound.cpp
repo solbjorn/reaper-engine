@@ -30,14 +30,15 @@ CWound::~CWound(void) {}
 // serialization
 void CWound::save(NET_Packet& output_packet)
 {
-    output_packet.w_u8(m_iBoneNum == BI_NONE ? u8(-1) : (u8)m_iBoneNum);
+    output_packet.w_u8(m_iBoneNum == BI_NONE ? std::numeric_limits<u8>::max() : gsl::narrow_cast<u8>(m_iBoneNum));
     for (int i = 0; i < ALife::eHitTypeMax; i++)
         output_packet.w_float_q8(m_Wounds[i], 0.f, WOUND_MAX);
 }
+
 void CWound::load(IReader& input_packet)
 {
-    m_iBoneNum = (u8)input_packet.r_u8();
-    if (m_iBoneNum == u8(-1))
+    m_iBoneNum = input_packet.r_u8();
+    if (m_iBoneNum == std::numeric_limits<u8>::max())
         m_iBoneNum = BI_NONE;
     for (int i = 0; i < ALife::eHitTypeMax; i++)
     {
@@ -60,7 +61,7 @@ float CWound::TotalSize()
 
 float CWound::TypeSize(ALife::EHitType hit_type) { return m_Wounds[hit_type]; }
 
-//кол-во кровавых ран
+// кол-во кровавых ран
 float CWound::BloodSize() { return m_Wounds[ALife::eHitTypeWound] + m_Wounds[ALife::eHitTypeFireWound]; }
 
 void CWound::AddHit(float hit_power, ALife::EHitType hit_type)
@@ -80,7 +81,7 @@ void CWound::Incarnation(float percent, float min_wound_size)
         return;
     }
 
-    //заживить все раны пропорционально их размеру
+    // заживить все раны пропорционально их размеру
     for (int i = 0; i < ALife::eHitTypeMax; i++)
     {
         m_Wounds[i] -= percent /* *m_Wounds[i]*/;

@@ -32,9 +32,9 @@
 #ifndef _AINTH
 #define _AINTH
 
-//#ifdef _WINDOWS
-//#define M_PI            3.14159265358979323846
-//#endif
+// #ifdef _WINDOWS
+// #define M_PI            3.14159265358979323846
+// #endif
 
 #define AINT_EPSILON (1e-5f)
 #define AINT_BIG_EPSILON (.01f)
@@ -201,21 +201,30 @@ struct AngleIntListNode
 {
     AngleInt D;
     AngleIntListNode* next;
-    short flag;
+    s16 flag{};
 
-    AngleIntListNode(float low, float high, AngleIntListNode* n) : D(low, high), next(n), flag(0) {}
+    AngleIntListNode(float low, float high, AngleIntListNode* n) : D{low, high}, next{n} {}
 };
 
 class AngleIntList
 {
-    AngleIntListNode *head, *tail;
     friend class AngleIntListIterator;
+
+    AngleIntListNode* head{};
+    AngleIntListNode* tail{};
 
     void remove(AngleIntListNode* t);
     void add(float l, float h);
 
 public:
-    AngleIntList() : head(0), tail(0) {}
+    AngleIntList() = default;
+    AngleIntList(const AngleIntList&) = default;
+    AngleIntList(AngleIntList&&) = default;
+    ~AngleIntList() { Clear(); }
+
+    AngleIntList& operator=(const AngleIntList&) = default;
+    AngleIntList& operator=(AngleIntList&&) = default;
+
     void Clear()
     {
         while (head)
@@ -224,17 +233,18 @@ public:
             head = head->next;
             xr_delete(temp);
         }
-        head = tail = 0;
+
+        head = nullptr;
+        tail = nullptr;
     }
 
-    ~AngleIntList() { Clear(); }
     void AddList(AngleIntList& dest, float eps = AINT_BIG_EPSILON) const;
 
     void Copy(AngleIntList& dest) const;
 
     void Add(float l, float h, float eps = AINT_BIG_EPSILON);
 
-    void Map(void (*f)(AngleInt& a, void*), void* data = 0) const
+    void Map(void (*f)(AngleInt& a, void*), void* data = nullptr) const
     {
         for (AngleIntListNode* t = head; t; t = t->next)
             f(t->D, data);
@@ -268,18 +278,21 @@ void Intersect(const AngleIntList& a, const AngleIntList& b, AngleIntList& c);
 //
 class AngleIntListIterator
 {
-    AngleIntListNode* a;
+    AngleIntListNode* a{};
 
 public:
-    AngleIntListIterator() { a = 0; }
+    AngleIntListIterator() = default;
+
     void Start(const AngleIntList& A) { a = A.head; }
     AngleIntListIterator(const AngleIntList& A) { Start(A); }
+
     AngleInt* Next()
     {
         AngleIntListNode* t = a;
         if (a)
             a = a->next;
-        return t ? &t->D : 0;
+
+        return t ? &t->D : nullptr;
     }
 };
 

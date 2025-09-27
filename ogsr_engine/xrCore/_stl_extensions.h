@@ -1,6 +1,12 @@
 #pragma once
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wnrvo");
+
 #include <absl/container/btree_map.h>
+
+XR_DIAG_POP();
+
 #include <absl/container/btree_set.h>
 #include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
@@ -49,8 +55,6 @@ using xr_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
 
 template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
-
-#define mk_pair std::make_pair // TODO: Везде заменить, а это убрать.
 
 struct pred_str
 {

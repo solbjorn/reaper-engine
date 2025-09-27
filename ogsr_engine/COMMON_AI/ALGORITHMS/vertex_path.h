@@ -11,11 +11,9 @@
 template <bool EuclidianHeuristics = true>
 struct CVertexPath
 {
-#pragma pack(push, 1)
     template <typename TCompoundVertex>
     struct VertexData
     {};
-#pragma pack(pop)
 
     template <typename TCompoundVertex>
     class CDataStorage : public virtual RTTI::Enable

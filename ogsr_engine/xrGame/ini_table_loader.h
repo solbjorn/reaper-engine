@@ -22,7 +22,7 @@ TEMPLATE_SPECIALIZATION_D
 class CIni_Table
 {
 public:
-    CIni_Table();
+    CIni_Table() = default;
     ~CIni_Table();
 
     typedef xr_vector<T_ITEM> ITEM_VECTOR;
@@ -37,10 +37,10 @@ public:
     }
 
 private:
-    ITEM_TABLE* m_pTable;
-    LPCSTR table_sect;
+    ITEM_TABLE* m_pTable{};
+    LPCSTR table_sect{};
     // ширина таблицы, если -1 то таблица делается квадратной (ширина равна высоте)
-    int table_width;
+    int table_width{-1};
 
     // перобразование из LPCSTR в T_ITEM
     decltype(auto) convert(const char* str)
@@ -65,14 +65,6 @@ LPCSTR CSIni_Table::table_sect = NULL;
 TEMPLATE_SPECIALIZATION
 int CSIni_Table::table_width = -1;
 */
-
-TEMPLATE_SPECIALIZATION
-CSIni_Table::CIni_Table()
-{
-    m_pTable = NULL;
-    table_sect = NULL;
-    table_width = -1;
-}
 
 TEMPLATE_SPECIALIZATION
 CSIni_Table::~CIni_Table() { xr_delete(m_pTable); }

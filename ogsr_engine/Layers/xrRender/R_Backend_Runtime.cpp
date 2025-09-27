@@ -26,62 +26,63 @@ void CBackend::OnFrameBegin()
 
 void CBackend::Invalidate()
 {
-    pRT[0] = NULL;
-    pRT[1] = NULL;
-    pRT[2] = NULL;
-    pRT[3] = NULL;
-    pZB = NULL;
+    pRT[0] = nullptr;
+    pRT[1] = nullptr;
+    pRT[2] = nullptr;
+    pRT[3] = nullptr;
+    pZB = nullptr;
 
-    decl = NULL;
-    vb = NULL;
-    ib = NULL;
+    decl = nullptr;
+    vb = nullptr;
+    ib = nullptr;
     vb_stride = 0;
 
-    state = NULL;
-    ps = NULL;
-    vs = NULL;
-    gs = NULL;
+    state = nullptr;
+    ps = nullptr;
+    vs = nullptr;
+    gs = nullptr;
 
-    hs = 0;
-    ds = 0;
-    cs = 0;
+    hs = nullptr;
+    ds = nullptr;
+    cs = nullptr;
 
-    ctable = NULL;
-    T = NULL;
+    ctable = nullptr;
+    T = nullptr;
 
-    stencil_enable = u32(-1);
-    stencil_func = u32(-1);
-    stencil_ref = u32(-1);
-    stencil_mask = u32(-1);
-    stencil_writemask = u32(-1);
-    stencil_fail = u32(-1);
-    stencil_pass = u32(-1);
-    stencil_zfail = u32(-1);
-    cull_mode = u32(-1);
-    fill_mode = u32(-1);
-    z_enable = u32(-1);
-    z_func = u32(-1);
-    alpha_ref = u32(-1);
-    colorwrite_mask = u32(-1);
+    stencil_enable = std::numeric_limits<u32>::max();
+    stencil_func = std::numeric_limits<u32>::max();
+    stencil_ref = std::numeric_limits<u32>::max();
+    stencil_mask = std::numeric_limits<u32>::max();
+    stencil_writemask = std::numeric_limits<u32>::max();
+    stencil_fail = std::numeric_limits<u32>::max();
+    stencil_pass = std::numeric_limits<u32>::max();
+    stencil_zfail = std::numeric_limits<u32>::max();
+    cull_mode = std::numeric_limits<u32>::max();
+    fill_mode = std::numeric_limits<u32>::max();
+    z_enable = std::numeric_limits<u32>::max();
+    z_func = std::numeric_limits<u32>::max();
+    alpha_ref = std::numeric_limits<u32>::max();
+    colorwrite_mask = std::numeric_limits<u32>::max();
 
     // Since constant buffers are unmapped (for DirecX 10)
     // transform setting handlers should be unmapped too.
     xforms.unmap();
 
-    m_pInputLayout = NULL;
+    m_pInputLayout = nullptr;
     m_PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
     m_bChangedRTorZB = false;
-    m_pInputSignature = NULL;
+    m_pInputSignature = nullptr;
 
     for (int i = 0; i < MaxCBuffers; ++i)
     {
-        m_aPixelConstants[i] = 0;
-        m_aVertexConstants[i] = 0;
-        m_aGeometryConstants[i] = 0;
-        m_aHullConstants[i] = 0;
-        m_aDomainConstants[i] = 0;
-        m_aComputeConstants[i] = 0;
+        m_aPixelConstants[i] = nullptr;
+        m_aVertexConstants[i] = nullptr;
+        m_aGeometryConstants[i] = nullptr;
+        m_aHullConstants[i] = nullptr;
+        m_aDomainConstants[i] = nullptr;
+        m_aComputeConstants[i] = nullptr;
     }
+
     StateManager.Reset();
     // Redundant call. Just no note that we need to unmap const
     // if we create dedicated class.
@@ -89,13 +90,13 @@ void CBackend::Invalidate()
     SRVSManager.ResetDeviceState();
 
     for (u32 gs_it = 0; gs_it < CTexture::mtMaxGeometryShaderTextures;)
-        textures_gs[gs_it++] = 0;
+        textures_gs[gs_it++] = nullptr;
     for (u32 hs_it = 0; hs_it < CTexture::mtMaxHullShaderTextures;)
-        textures_hs[hs_it++] = 0;
+        textures_hs[hs_it++] = nullptr;
     for (u32 ds_it = 0; ds_it < CTexture::mtMaxDomainShaderTextures;)
-        textures_ds[ds_it++] = 0;
+        textures_ds[ds_it++] = nullptr;
     for (u32 cs_it = 0; cs_it < CTexture::mtMaxComputeShaderTextures;)
-        textures_cs[cs_it++] = 0;
+        textures_cs[cs_it++] = nullptr;
 
     context_id = R__IMM_CTX_ID;
 
@@ -294,21 +295,24 @@ void CBackend::set_Textures(STextureList* textures_list)
         if (!textures_ps[_last_ps])
             continue;
 
-        textures_ps[_last_ps] = 0;
+        textures_ps[_last_ps] = nullptr;
+
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         // HW.pDevice->PSSetShaderResources(_last_ps, 1, &pRes);
         SRVSManager.SetPSResource(_last_ps, pRes);
     }
+
     // clear remaining stages (VS)
     for (++_last_vs; _last_vs < CTexture::mtMaxVertexShaderTextures; _last_vs++)
     {
         if (!textures_vs[_last_vs])
             continue;
 
-        textures_vs[_last_vs] = 0;
+        textures_vs[_last_vs] = nullptr;
+
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         // HW.pDevice->VSSetShaderResources(_last_vs, 1, &pRes);
         SRVSManager.SetVSResource(_last_vs, pRes);
     }
@@ -319,44 +323,47 @@ void CBackend::set_Textures(STextureList* textures_list)
         if (!textures_gs[_last_gs])
             continue;
 
-        textures_gs[_last_gs] = 0;
+        textures_gs[_last_gs] = nullptr;
 
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         // HW.pDevice->GSSetShaderResources(_last_gs, 1, &pRes);
         SRVSManager.SetGSResource(_last_gs, pRes);
     }
+
     for (++_last_hs; _last_hs < CTexture::mtMaxHullShaderTextures; _last_hs++)
     {
         if (!textures_hs[_last_hs])
             continue;
 
-        textures_hs[_last_hs] = 0;
+        textures_hs[_last_hs] = nullptr;
 
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         SRVSManager.SetHSResource(_last_hs, pRes);
     }
+
     for (++_last_ds; _last_ds < CTexture::mtMaxDomainShaderTextures; _last_ds++)
     {
         if (!textures_ds[_last_ds])
             continue;
 
-        textures_ds[_last_ds] = 0;
+        textures_ds[_last_ds] = nullptr;
 
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         SRVSManager.SetDSResource(_last_ds, pRes);
     }
+
     for (++_last_cs; _last_cs < CTexture::mtMaxComputeShaderTextures; _last_cs++)
     {
         if (!textures_cs[_last_cs])
             continue;
 
-        textures_cs[_last_cs] = 0;
+        textures_cs[_last_cs] = nullptr;
 
         // TODO: DX10: Optimise: set all resources at once
-        ID3DShaderResourceView* pRes = 0;
+        ID3DShaderResourceView* pRes{};
         SRVSManager.SetCSResource(_last_cs, pRes);
     }
 }

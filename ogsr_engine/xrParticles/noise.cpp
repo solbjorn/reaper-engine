@@ -11,7 +11,7 @@ __forceinline int iFloor_SSE(float const x) { return _mm_cvtt_ss2si(_mm_set_ss(x
 #define B 256
 
 #define DOT(a, b) (a[0] * b[0] + a[1] * b[1] + a[2] * b[2])
-#define AT(rx, ry, rz) (rx * q[0] + ry * q[1] + rz * q[2]);
+#define AT(rx, ry, rz) (rx * q[0] + ry * q[1] + rz * q[2])
 #define S_CURVE(t) (t * t * (3.f - 2.f * t))
 #define LERP(t, a, b) (a + t * (b - a))
 
@@ -21,7 +21,7 @@ __forceinline int iFloor_SSE(float const x) { return _mm_cvtt_ss2si(_mm_set_ss(x
     b0 = tt & (B - 1); \
     b1 = (b0 + 1) & (B - 1); \
     r0 = t - float(tt); \
-    r1 = r0 - 1.f;
+    r1 = r0 - 1.f
 
 static int p[B + B + 2];
 static float g[B + B + 2][3];

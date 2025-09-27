@@ -13,22 +13,25 @@ class CZoneEffector;
 // информация о объекте, находящемся в зоне
 struct SZoneObjectInfo
 {
-    SZoneObjectInfo() : object(NULL), zone_ignore(false), time_in_zone(0), hit_num(0), total_damage(0), small_object(false), nonalive_object(false), death_in_zone(false) {}
-    CGameObject* object;
-    bool small_object;
-    bool nonalive_object;
-    // игнорирование объекта в зоне
-    bool zone_ignore;
+    CGameObject* object{};
     // присоединенные партиклы
     xr_vector<CParticlesObject*> particles_vector;
-    // время прибывания в зоне
-    u32 time_in_zone;
-    // количество раз, сколько зона воздействовала на объект
-    u32 hit_num;
-    // количество повреждений нанесенных зоной
-    float total_damage;
+
+    bool small_object{};
+    bool nonalive_object{};
+    // игнорирование объекта в зоне
+    bool zone_ignore{};
     // существо померло в зоне
-    bool death_in_zone;
+    bool death_in_zone{};
+
+    // время прибывания в зоне
+    u32 time_in_zone{};
+    // количество раз, сколько зона воздействовала на объект
+    u32 hit_num{};
+    // количество повреждений нанесенных зоной
+    float total_damage{};
+
+    SZoneObjectInfo() = default;
 
     bool operator==(const CGameObject* O) const { return object == O; }
 };
@@ -44,10 +47,10 @@ private:
     typedef CSpaceRestrictor inherited;
 
 public:
-    CZoneEffector* m_effector;
+    CZoneEffector* m_effector{};
 
 public:
-    CCustomZone(void);
+    CCustomZone();
     virtual ~CCustomZone();
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
@@ -109,7 +112,7 @@ protected:
     u32 m_owner_id; // if created from artefact
     u32 m_ttl;
     // список объетков, находящихся в зоне
-    CActor* m_pLocalActor;
+    CActor* m_pLocalActor{};
 
     // максимальная сила заряда зоны
     float m_fMaxPower;
@@ -126,7 +129,7 @@ protected:
     ALife::EHitType m_eHitTypeBlowout;
 
     EZoneState m_eZoneState;
-    bool m_keep_update;
+    bool m_keep_update{};
 
     // текущее время пребывания зоны в определенном состоянии
     int m_iStateTime;
@@ -159,7 +162,7 @@ protected:
     virtual void GoDisabledState();
 
 public:
-    bool IsEnabled() { return m_eZoneState != eZoneStateDisabled; };
+    bool IsEnabled() { return m_eZoneState != eZoneStateDisabled; }
     void ZoneEnable();
     void ZoneDisable(bool = false);
     EZoneState ZoneState() { return m_eZoneState; }
@@ -171,13 +174,13 @@ protected:
     // воздействовать на все объекты в зоне
     virtual void AffectObjects();
 
-    u32 m_dwAffectFrameNum;
+    u32 m_dwAffectFrameNum{};
 
     u32 m_dwDeltaTime;
     u32 m_dwPeriod;
     //	bool					m_bZoneReady;
     // если в зоне есть не disabled объекты
-    bool m_bZoneActive;
+    bool m_bZoneActive{};
 
     // параметры для выброса, с какой задержкой
     // включать эффекты и логику
@@ -226,7 +229,7 @@ protected:
     // нахождение большого и мальнекого объекта в зоне
     shared_str m_sIdleObjectParticlesSmall;
     shared_str m_sIdleObjectParticlesBig;
-    BOOL m_bIdleObjectParticlesDontStop;
+    BOOL m_bIdleObjectParticlesDontStop{};
 
     ref_sound m_idle_sound;
     ref_sound m_awaking_sound;
@@ -258,21 +261,21 @@ protected:
     void GrassZoneUpdate();
 
     // объект партиклов обычного состояния зоны
-    CParticlesObject* m_pIdleParticles;
+    CParticlesObject* m_pIdleParticles{};
 
     //////////////////////////////
     // подсветка аномалии
 
     // подсветка idle состояния
-    ref_light m_pIdleLight;
+    ref_light m_pIdleLight{};
     Fcolor m_IdleLightColor;
     float m_fIdleLightRange;
     float m_fIdleLightRangeDelta;
     float m_fIdleLightHeight;
-    CLAItem* m_pIdleLAnim;
+    CLAItem* m_pIdleLAnim{};
 
     // подсветка выброса
-    ref_light m_pLight;
+    ref_light m_pLight{};
     Fcolor m_LightColor;
     float m_fLightRange;
     float m_fLightHeight;
@@ -386,12 +389,12 @@ protected:
     float m_fDistanceToCurEntity;
 
     // bak / флаг для рождения артефакта
-    bool m_bBornOnBlowoutFlag;
+    bool m_bBornOnBlowoutFlag{};
 
 protected:
     u32 m_ef_anomaly_type;
     u32 m_ef_weapon_type;
-    BOOL m_b_always_fastmode;
+    BOOL m_b_always_fastmode{};
 
     bool DestroyAfterBlowout{}; // Для самоудаления мин после взрыва
     u32 LastBlowoutTime{};

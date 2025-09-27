@@ -34,14 +34,14 @@ public:
     ~CHARACTER_COMMUNITY();
 
     void set(CHARACTER_COMMUNITY_ID);
-    void set(CHARACTER_COMMUNITY_INDEX index) { m_current_index = index; };
+    void set(CHARACTER_COMMUNITY_INDEX index) { m_current_index = index; }
 
     CHARACTER_COMMUNITY_ID id() const;
-    CHARACTER_COMMUNITY_INDEX index() const { return m_current_index; };
+    CHARACTER_COMMUNITY_INDEX index() const { return m_current_index; }
     u8 team() const;
 
 private:
-    CHARACTER_COMMUNITY_INDEX m_current_index;
+    CHARACTER_COMMUNITY_INDEX m_current_index{NO_COMMUNITY_INDEX};
 
     static void InitIdToIndex();
 

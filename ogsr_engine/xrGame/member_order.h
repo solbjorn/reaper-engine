@@ -31,7 +31,7 @@ public:
 
         IC void clear()
         {
-            m_member = 0;
+            m_member = nullptr;
             m_time = 0;
             m_processing = false;
         }
@@ -48,8 +48,8 @@ public:
 
         IC void clear()
         {
-            m_grenade = 0;
-            m_game_object = 0;
+            m_grenade = nullptr;
+            m_game_object = nullptr;
             m_time = 0;
             m_processing = false;
         }
@@ -57,15 +57,15 @@ public:
 
 protected:
     CAI_Stalker* m_object;
-    mutable const CCoverPoint* m_cover;
+    mutable const CCoverPoint* m_cover{};
     bool m_initialized;
-    float m_probability;
+    float m_probability{1.f};
     xr_vector<u32> m_enemies;
-    bool m_processed;
-    u32 m_selected_enemy;
+    bool m_processed{};
+    u32 m_selected_enemy{};
     CMemberDeathReaction m_member_death_reaction;
     CGrenadeReaction m_grenade_reaction;
-    bool m_detour;
+    bool m_detour{};
 
 public:
     IC CMemberOrder(CAI_Stalker* object);

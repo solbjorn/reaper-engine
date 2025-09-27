@@ -97,8 +97,7 @@ IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosi
 
     VERIFY(iFloor((source_position.z - box_z) / cell_size + .5f) < (int)m_row_length);
 
-    const int packed_xz = iFloor((source_position.x - box_x) / cell_size + .5f)
-                        * m_row_length + iFloor((source_position.z - box_z) / cell_size + .5f);
+    const int packed_xz = iFloor((source_position.x - box_x) / cell_size + .5f) * m_row_length + iFloor((source_position.z - box_z) / cell_size + .5f);
     VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
 
     int packed_y = iFloor(65535.f * (source_position.y - box_y) / header().factor_y() + EPS_S);
@@ -176,12 +175,10 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector& position, const 
 
 IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector2& position) const
 {
-    [[maybe_unused]]
-    const auto [box_x, box_y, box_z] = header().box().min;
+    [[maybe_unused]] const auto [box_x, box_y, box_z] = header().box().min;
     const auto cell_size = header().cell_size();
 
-    const int packed_xz = iFloor((position.x - box_x) / cell_size + .5f) * m_row_length +
-        iFloor((position.y - box_z) / cell_size + .5f);
+    const int packed_xz = iFloor((position.x - box_x) / cell_size + .5f) * m_row_length + iFloor((position.y - box_z) / cell_size + .5f);
     VERIFY(packed_xz < (1 << MAX_NODE_BIT_COUNT) - 1);
     const bool b = vertex(vertex_id)->position().xz() == u32(packed_xz);
     return b;
@@ -270,8 +267,9 @@ IC void CLevelGraph::set_invalid_vertex(u32& vertex_id, CVertex** vertex) const
 {
     vertex_id = u32(-1);
     VERIFY(!valid_vertex_id(vertex_id));
+
     if (vertex)
-        *vertex = NULL;
+        *vertex = nullptr;
 }
 
 IC const u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex* vertex) const

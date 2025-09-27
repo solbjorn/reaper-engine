@@ -29,8 +29,8 @@ void CLevel::remove_objects()
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ ObjectResources unload...");
-    Msg("~ ObjectResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ ObjectResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ ObjectResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     Game().reset_ui();
 
@@ -96,8 +96,8 @@ void CLevel::remove_objects()
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ ObjectResources unload completed!");
-    Msg("~ ObjectResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ ObjectResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ ObjectResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     ai().script_engine().collect_all_garbage();
 
@@ -264,13 +264,15 @@ BOOL CLevel::Connect2Server(LPCSTR options)
         }
         //-----------------------------------------
     }
+
     Msg("%c client : connection %s - <%s>", m_bConnectResult ? '*' : '!', m_bConnectResult ? "accepted" : "rejected", m_sConnectResult.c_str());
+
     if (!m_bConnectResult)
     {
         OnConnectRejected();
         Disconnect();
         return FALSE;
-    };
+    }
 
     net_Syncronised = TRUE;
 
@@ -279,7 +281,7 @@ BOOL CLevel::Connect2Server(LPCSTR options)
     Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
     //---------------------------------------------------------------------------
     return TRUE;
-};
+}
 
 void CLevel::OnBuildVersionChallenge()
 {
@@ -288,7 +290,7 @@ void CLevel::OnBuildVersionChallenge()
     u64 auth = 0;
     P.w_u64(auth);
     Send(P, net_flags(TRUE, TRUE, TRUE, TRUE));
-};
+}
 
 void CLevel::OnConnectResult(NET_Packet* P)
 {
@@ -302,9 +304,9 @@ void CLevel::OnConnectResult(NET_Packet* P)
         m_bConnectResult = false;
 
     m_sConnectResult = ResultStr;
-};
+}
 
-void CLevel::OnConnectRejected() { IPureClient::OnConnectRejected(); };
+void CLevel::OnConnectRejected() { IPureClient::OnConnectRejected(); }
 
 void CLevel::net_OnChangeSelfName(NET_Packet* P)
 {

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <Opcode.h>
+
+XR_DIAG_POP();
 
 using namespace CDB;
 using namespace Opcode;

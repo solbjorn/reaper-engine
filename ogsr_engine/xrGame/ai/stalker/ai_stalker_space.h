@@ -77,7 +77,7 @@ enum EStalkerSoundMasks : u32
 
 enum EBodyAction : u32
 {
-    eBodyActionNone = u32(0),
+    eBodyActionNone = 0,
     eBodyActionHello,
 };
-}; // namespace StalkerSpace
+} // namespace StalkerSpace

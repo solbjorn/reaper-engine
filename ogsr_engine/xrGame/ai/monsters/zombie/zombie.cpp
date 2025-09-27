@@ -83,7 +83,7 @@ void CZombie::reinit()
     time_resurrect = 0;
     fake_death_left = fake_death_count;
 
-    active_triple_idx = u8(-1);
+    active_triple_idx = std::numeric_limits<u8>::max();
 }
 
 void CZombie::reload(LPCSTR section)
@@ -100,9 +100,7 @@ void CZombie::BoneCallback(CBoneInstance* B)
 {
     CZombie* this_class = static_cast<CZombie*>(B->callback_param());
 
-    START_PROFILE("Zombie/Bones Update");
     this_class->Bones.Update(B, Device.dwTimeGlobal);
-    STOP_PROFILE("AI/Zombie/Bones Update");
 }
 
 void CZombie::vfAssignBones()

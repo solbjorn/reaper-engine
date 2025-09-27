@@ -7,46 +7,50 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "memory_space.h"
 #include "script_game_object.h"
 #include "gameobject.h"
 #include "entity_alive.h"
 #include "danger_object.h"
 
-static CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object)
+namespace
+{
+CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object)
 {
     return (object.m_object && object.m_object->m_spawned ? object.m_object->lua_game_object() : nullptr);
 }
 
-static int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
+int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
 
 template <typename T>
-static CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
+CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
 {
     return (memory_object.m_object && memory_object.m_object->m_spawned ? memory_object.m_object->lua_game_object() : nullptr);
 }
 
-static CScriptGameObject* CDangerObject_object(const CDangerObject* self)
+CScriptGameObject* CDangerObject_object(const CDangerObject* self)
 {
     VERIFY(self);
     return (self->object() && self->object()->m_spawned ? self->object()->lua_game_object() : nullptr);
 }
 
-static CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
+CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
 {
     VERIFY(self);
     if (!self->dependent_object())
-        return (0);
+        return nullptr;
 
     const CGameObject* game_object = smart_cast<const CGameObject*>(self->dependent_object());
     return (game_object && game_object->m_spawned ? game_object->lua_game_object() : nullptr);
 }
 
-static Fvector CDangerObject__position(const CDangerObject* self)
+Fvector CDangerObject__position(const CDangerObject* self)
 {
     THROW(self);
     return (self->position());
 }
+} // namespace
 
 void CMemoryInfo::script_register(sol::state_view& lua)
 {

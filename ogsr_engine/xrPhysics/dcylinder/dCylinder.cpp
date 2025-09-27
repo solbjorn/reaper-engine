@@ -182,7 +182,7 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
                        dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
 {
     dVector3 p, pp, normalC;
-    const dReal* normalR = 0;
+    const dReal* normalR{};
     dReal B1, B2, B3, R11, R12, R13, R21, R22, R23, R31, R32, R33, Q11, Q12, Q13, Q21, Q22, Q23, Q31, Q32, Q33, s, s2, l, sQ21, sQ22, sQ23;
     int i, invert_normal;
 
@@ -239,7 +239,8 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
         normalR = norm; \
         invert_normal = ((expr1) < 0); \
         *code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     s = -dInfinity;
     invert_normal = 0;
@@ -272,13 +273,14 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
     if (s2 > s) \
     { \
         s = s2; \
-        normalR = 0; \
+        normalR = nullptr; \
         normalC[0] = (n1); \
         normalC[1] = (n2); \
         normalC[2] = (n3); \
         invert_normal = ((expr1) < 0); \
         *code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     // separating axis is a normal to the cylinder axis passing across the nearest box vertex
     // used when a box vertex touches the lateral surface of the cylinder
@@ -418,14 +420,15 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
         if (s2 > s) \
         { \
             s = s2; \
-            normalR = 0; \
+            normalR = nullptr; \
             normalC[0] = (n1) / l; \
             normalC[1] = (n2) / l; \
             normalC[2] = (n3) / l; \
             invert_normal = ((expr1) < 0); \
             *code = (cc); \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
     // crosses between cylinder axis and box axes
     //  separating axis = u2 x (v1,v2,v3)
@@ -634,7 +637,7 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
                        dVector3 normal, dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
 {
     dVector3 p, pp1, pp2, normalC;
-    const dReal* normalR = 0;
+    const dReal* normalR{};
     dReal hlz1, hlz2, s, s2;
     int i, invert_normal;
 
@@ -660,7 +663,8 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
         normalR = norm; \
         invert_normal = ((expr1) < 0); \
         *code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     s = -dInfinity;
     invert_normal = 0;
@@ -683,13 +687,14 @@ extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1
     if (s2 > s) \
     { \
         s = s2; \
-        normalR = 0; \
+        normalR = nullptr; \
         normalC[0] = (n1); \
         normalC[1] = (n2); \
         normalC[2] = (n3); \
         invert_normal = ((expr1) < 0); \
         *code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     dVector3 tAx, Ax, pa, pb;
 
@@ -1104,7 +1109,7 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     const dReal* p2 = dGeomGetPosition(o2);
     const dReal* R = dGeomGetRotation(o1);
     dVector3 p, normalC, normal;
-    const dReal* normalR = 0;
+    const dReal* normalR{};
     dReal cylRadius;
     dReal hl;
     dGeomCylinderGetParams(o1, &cylRadius, &hl);
@@ -1131,7 +1136,8 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
         normalR = norm; \
         invert_normal = ((expr1) < 0); \
         code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     s = -dInfinity;
     invert_normal = 0;
@@ -1150,13 +1156,14 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     if (s2 > s) \
     { \
         s = s2; \
-        normalR = 0; \
+        normalR = nullptr; \
         normalC[0] = (n1); \
         normalC[1] = (n2); \
         normalC[2] = (n3); \
         invert_normal = ((expr1) < 0); \
         code = (cc); \
-    }
+    } \
+    XR_MACRO_END()
 
     // making ax which is perpendicular to cyl1 ax to sphere center//
 
@@ -1510,7 +1517,7 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
     q[2] = start[2] - (p[2] + k * R[2 * 4 + 1]);
     dReal alpha = -dDOT14(q, R + 1);
     dReal k2 = dDOT14(dir, R + 1);
-    if (k2 == 0)
+    if (fis_zero(k2))
         return 0; // ray parallel to the plane
     alpha /= k2;
     if (alpha < 0 || alpha > length)
@@ -1536,7 +1543,8 @@ static dColliderFn* dCylinderColliderFn(int num)
         return (dColliderFn*)&dCollideCylCyl;
     if (num == dPlaneClass)
         return (dColliderFn*)&dCollideCylPlane;
-    return 0;
+
+    return nullptr;
 }
 
 static void dCylinderAABB(dxGeom* geom, dReal aabb[6])
@@ -1563,14 +1571,15 @@ static void dCylinderAABB(dxGeom* geom, dReal aabb[6])
 dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz)
 {
     VERIFY(r > 0 && lz > 0);
+
     if (dCylinderClassUser == -1)
     {
         dGeomClass c;
         c.bytes = sizeof(dxCylinder);
         c.collider = &dCylinderColliderFn;
         c.aabb = &dCylinderAABB;
-        c.aabb_test = 0;
-        c.dtor = 0;
+        c.aabb_test = nullptr;
+        c.dtor = nullptr;
         dCylinderClassUser = dCreateGeomClass(&c);
     }
 
@@ -1581,6 +1590,7 @@ dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz)
 
     c->radius = r;
     c->lz = lz;
+
     return g;
 }
 

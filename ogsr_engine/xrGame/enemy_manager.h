@@ -11,7 +11,6 @@
 #include "object_manager.h"
 #include "entity_alive.h"
 #include "custommonster.h"
-#include "script_callback_ex.h"
 
 class CAI_Stalker;
 
@@ -22,7 +21,6 @@ class CEnemyManager : public CObjectManager<const CEntityAlive>
 public:
     typedef CObjectManager<const CEntityAlive> inherited;
     typedef OBJECTS ENEMIES;
-    typedef CScriptCallbackEx<bool> USEFULE_CALLBACK;
 
 private:
     CCustomMonster* m_object;
@@ -31,7 +29,10 @@ private:
     float m_max_ignore_distance;
     u32 m_last_enemy_time;
     const CEntityAlive* m_last_enemy{};
-    USEFULE_CALLBACK m_useful_callback;
+
+    sol::function m_useful_callback;
+    sol::object m_useful_object;
+
     bool m_enable_enemy_change;
 
 private:
@@ -59,7 +60,7 @@ public:
     virtual void update();
     IC u32 last_enemy_time() const;
     IC const CEntityAlive* last_enemy() const;
-    IC USEFULE_CALLBACK& useful_callback();
+    inline void set_useful_callback(sol::function& function, sol::object& object);
     void remove_links(CObject* object);
 
 public:

@@ -19,7 +19,7 @@ protected:
     void UpdateBarrelDir();
     virtual const Fvector& get_CurrentFirePoint();
     virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; };
+    virtual bool IsHudModeNow() { return false; }
 
     CPhysicsShellHolder* m_object;
     bool m_bActive;
@@ -48,7 +48,7 @@ public:
     bool AllowFire();
     float FireDirDiff();
     IC bool IsActive() { return m_bActive; }
-    float _height() const { return m_weapon_h; };
+    float _height() const { return m_weapon_h; }
     const Fvector& ViewCameraPos();
     const Fvector& ViewCameraDir();
     const Fvector& ViewCameraNorm();

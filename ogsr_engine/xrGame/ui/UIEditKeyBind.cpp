@@ -5,18 +5,14 @@
 #include "../xr_level_controller.h"
 #include "../object_broker.h"
 
-CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
+CUIEditKeyBind::CUIEditKeyBind(bool bPrim) : m_bPrimary{bPrim}
 {
-    m_bPrimary = bPrim;
-    m_bEditMode = false;
-
     m_pAnimation = xr_new<CUIColorAnimatorWrapper>("ui_map_area_anim");
     m_pAnimation->Cyclic(true);
     m_bChanged = false;
     m_lines.SetTextComplexMode(false);
-    m_keyboard = NULL;
-    m_action = NULL;
 }
+
 CUIEditKeyBind::~CUIEditKeyBind() { delete_data(m_pAnimation); }
 
 u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
@@ -159,7 +155,7 @@ void CUIEditKeyBind::SetCurrentValue()
     if (m_keyboard)
         SetText(m_keyboard->key_local_name.c_str());
     else
-        SetText(NULL);
+        SetText(nullptr);
 }
 
 void CUIEditKeyBind::SaveValue()
@@ -171,6 +167,7 @@ void CUIEditKeyBind::SaveValue()
 }
 
 #include "..\..\xr_3da\xr_ioconsole.h"
+
 void CUIEditKeyBind::BindAction2Key()
 {
     xr_string comm_unbind = (m_bPrimary) ? "unbind " : "unbind_sec ";
@@ -197,16 +194,16 @@ void CUIEditKeyBind::OnMessage(const char* message)
     if (!m_keyboard)
         return;
 
-    if (0 != xr_strcmp(m_keyboard->key_name, message + eq + 1))
+    if (xr_strcmp(m_keyboard->key_name, message + eq + 1))
         return;
 
     string64 command;
     strcpy_s(command, message);
     command[eq] = 0;
 
-    if (0 == xr_strcmp(m_action->action_name, command))
+    if (!xr_strcmp(m_action->action_name, command))
         return; // fuck
 
     SetText("---");
-    m_keyboard = NULL;
+    m_keyboard = nullptr;
 }

@@ -1,5 +1,6 @@
 #ifndef TELE_WHIRLWIND
 #define TELE_WHIRLWIND
+
 #include "ai/monsters/telekinesis.h"
 #include "ai/monsters/telekinetic_object.h"
 #include "PHImpact.h"
@@ -13,12 +14,14 @@ class CTeleWhirlwindObject : public CTelekineticObject
 
 public:
     typedef CTelekineticObject inherited;
-    CTeleWhirlwind* m_telekinesis;
-    bool b_destroyable{};
-    float throw_power;
 
-    virtual ~CTeleWhirlwindObject() {};
+    CTeleWhirlwind* m_telekinesis{};
+    float throw_power{};
+    bool b_destroyable{};
+
     CTeleWhirlwindObject();
+    virtual ~CTeleWhirlwindObject();
+
     virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
     void set_throw_power(float throw_pow);
     virtual bool can_activate(CPhysicsShellHolder* obj);
@@ -35,15 +38,18 @@ public:
 class CTeleWhirlwind : public CTelekinesis
 {
     typedef CTelekinesis inherited;
-    Fvector m_center;
-    float m_keep_radius;
-    float m_throw_power;
-    CGameObject* m_owner_object;
+
+    Fvector m_center{};
+    float m_keep_radius{1.f};
+    float m_throw_power{100.f};
+    CGameObject* m_owner_object{};
     PH_IMPACT_STORAGE m_saved_impacts;
     shared_str m_destroying_particles;
 
 public:
     CTeleWhirlwind();
+    virtual ~CTeleWhirlwind();
+
     CGameObject* OwnerObject() const { return m_owner_object; }
     const Fvector& Center() const { return m_center; }
     void SetCenter(const Fvector center) { m_center.set(center); }

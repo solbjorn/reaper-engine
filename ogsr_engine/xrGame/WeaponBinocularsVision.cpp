@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "WeaponBinocularsVision.h"
 #include "WeaponBinoculars.h"
 #include "ui\UIFrameWindow.h"
@@ -145,10 +146,8 @@ CBinocularsVision::CBinocularsVision(CWeaponMagazined* parent)
     m_parent = parent;
     Load(m_parent->cNameSect());
 }
-CBinocularsVision::~CBinocularsVision()
-{
-    m_snd_found.destroy();
-}
+
+CBinocularsVision::~CBinocularsVision() { m_snd_found.destroy(); }
 
 void CBinocularsVision::Update()
 {
@@ -195,8 +194,8 @@ void CBinocularsVision::Update()
             new_vis_obj->create_default(m_frame_color.get());
             new_vis_obj->m_upd_speed = m_rotating_speed;
             new_vis_obj->m_visible_time = Device.dwTimeGlobal + m_min_visible_time;
-            if (NULL == m_snd_found._feedback())
-                m_snd_found.play_at_pos(0, Fvector().set(0, 0, 0), sm_2D);
+            if (!m_snd_found._feedback())
+                m_snd_found.play_at_pos(nullptr, Fvector{}, sm_2D);
         }
     }
 

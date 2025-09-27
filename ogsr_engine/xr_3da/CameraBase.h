@@ -49,10 +49,10 @@ public:
         parent = p;
         VERIFY(p);
     }
-    virtual void OnActivate(CCameraBase* old_cam) { ; }
-    virtual void OnDeactivate() { ; }
-    virtual void Move(int cmd, float val = 0, float factor = 1.0f) { ; }
-    virtual void Update(Fvector& point, Fvector& noise_angle) { ; }
+    virtual void OnActivate(CCameraBase* old_cam) {}
+    virtual void OnDeactivate() {}
+    virtual void Move(int cmd, float val = 0, float factor = 1.0f) {}
+    virtual void Update(Fvector& point, Fvector& noise_angle) {}
     virtual void Get(Fvector& P, Fvector& D, Fvector& N)
     {
         P.set(vPosition);
@@ -72,19 +72,19 @@ public:
         roll = R;
     }
 
-    virtual float GetWorldYaw() { return 0; };
-    virtual float GetWorldPitch() { return 0; };
+    virtual float GetWorldYaw() { return 0; }
+    virtual float GetWorldPitch() { return 0; }
 
     virtual float CheckLimYaw();
     virtual float CheckLimPitch();
     virtual float CheckLimRoll();
 
-    IC void SetLimYaw(Fvector2 _lim_yaw) { lim_yaw = _lim_yaw; };
-    IC void SetLimPitch(Fvector2 _lim_pitch) { lim_pitch = _lim_pitch; };
-    IC void SetRotSpeed(Fvector _rot_speed) { rot_speed = _rot_speed; };
-    IC void SetYaw(float _yaw) { yaw = _yaw; };
-    IC Fvector2 GetLimYaw() const { return lim_yaw; };
-    IC Fvector2 GetLimPitch() const { return lim_pitch; };
-    IC Fvector GetRotSpeed() const { return rot_speed; };
-    IC float GetYaw() const { return yaw; };
+    IC void SetLimYaw(Fvector2 _lim_yaw) { lim_yaw = _lim_yaw; }
+    IC void SetLimPitch(Fvector2 _lim_pitch) { lim_pitch = _lim_pitch; }
+    IC void SetRotSpeed(Fvector _rot_speed) { rot_speed = _rot_speed; }
+    IC void SetYaw(float _yaw) { yaw = _yaw; }
+    IC Fvector2 GetLimYaw() const { return lim_yaw; }
+    IC Fvector2 GetLimPitch() const { return lim_pitch; }
+    IC Fvector GetRotSpeed() const { return rot_speed; }
+    IC float GetYaw() const { return yaw; }
 };

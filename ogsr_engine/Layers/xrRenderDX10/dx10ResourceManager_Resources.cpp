@@ -125,7 +125,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         SVS* _vs = xr_new<SVS>();
         _vs->skinning = skinning;
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-        m_vs.insert(mk_pair(_vs->set_name(name), _vs));
+        m_vs.try_emplace(_vs->set_name(name), _vs);
 
         if (!_stricmp(_name, "null"))
             return _vs;
@@ -223,10 +223,11 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
     {
         SPS* _ps = xr_new<SPS>();
         _ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-        m_ps.insert(mk_pair(_ps->set_name(name), _ps));
+        m_ps.try_emplace(_ps->set_name(name), _ps);
+
         if (!_stricmp(_name, "null"))
         {
-            _ps->ps = NULL;
+            _ps->ps = nullptr;
             return _ps;
         }
 
@@ -291,10 +292,11 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
     {
         SGS* _gs = xr_new<SGS>();
         _gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-        m_gs.insert(mk_pair(_gs->set_name(name), _gs));
+        m_gs.try_emplace(_gs->set_name(name), _gs);
+
         if (!_stricmp(name, "null"))
         {
-            _gs->gs = NULL;
+            _gs->gs = nullptr;
             return _gs;
         }
 
@@ -379,7 +381,7 @@ void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
+R_constant_table* CResourceManager::_CreateConstantTable(const R_constant_table& C)
 {
     if (C.empty())
         return nullptr;
@@ -388,7 +390,8 @@ R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
         if (table->equal(C))
             return table;
 
-    R_constant_table* table = v_constant_tables.emplace_back(xr_new<R_constant_table>(C));
+    R_constant_table* table = v_constant_tables.emplace_back(xr_new<R_constant_table>());
+    table->clone(C);
     table->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 
     return table;
@@ -545,7 +548,8 @@ STextureList* CResourceManager::_CreateTextureList(STextureList& L)
             return base;
     }
 
-    STextureList* lst = lst_textures.emplace_back(xr_new<STextureList>(L));
+    STextureList* lst = lst_textures.emplace_back(xr_new<STextureList>());
+    lst->clone(L);
     lst->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 
     return lst;

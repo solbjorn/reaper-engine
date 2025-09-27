@@ -1,7 +1,9 @@
 #pragma once
-class CEntityAlive;
 
 #include "..\Include/xrRender/KinematicsAnimated.h"
+
+class CEntityAlive;
+
 class character_hit_animation_controller
 {
 public:
@@ -12,8 +14,6 @@ public:
 private:
     bool IsEffected(u16 bi, IKinematics& ca) const;
 
-protected:
-private:
     //
     u16 base_bone;
     MotionID bkhit_motion;

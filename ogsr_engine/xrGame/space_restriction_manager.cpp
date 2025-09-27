@@ -7,13 +7,17 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restriction.h"
 #include "restriction_space.h"
 #include "space_restriction_manager.h"
 #include "space_restriction_bridge.h"
 #include "object_broker.h"
 
-const u32 time_to_delete = 300000;
+namespace
+{
+constexpr u32 time_to_delete{300000};
+}
 
 struct CSpaceRestrictionManager::CClientRestriction
 {
@@ -164,7 +168,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
 {
     string4096 m_temp;
     if (!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
-        return (0);
+        return nullptr;
 
     out_restrictors = normalize_string(out_restrictors);
     in_restrictors = normalize_string(in_restrictors);
@@ -177,7 +181,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
         return ((*I).second);
 
     CSpaceRestriction* client_restriction = xr_new<CSpaceRestriction>(this, out_restrictors, in_restrictors);
-    m_space_restrictions.insert(std::make_pair(space_restrictions, client_restriction));
+    m_space_restrictions.try_emplace(space_restrictions, client_restriction);
     return (client_restriction);
 }
 

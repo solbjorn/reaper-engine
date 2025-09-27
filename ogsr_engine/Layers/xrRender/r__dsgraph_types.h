@@ -97,4 +97,4 @@ using mapMatrixPasses_T = mapMatrix_T[SHADER_PASSES_MAX];
 using map_item = xr_multimap<float, _MatrixItemS>;
 using map_sorted = xr_multimap<float, _MatrixItemS, std::greater<float>>;
 using map_lod = xr_multimap<float, _LodItem>;
-}; // namespace R_dsgraph
+} // namespace R_dsgraph

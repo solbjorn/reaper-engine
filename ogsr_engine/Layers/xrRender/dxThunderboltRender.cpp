@@ -18,7 +18,13 @@ dxThunderboltRender::~dxThunderboltRender()
     hGeom_gradient.destroy();
 }
 
-void dxThunderboltRender::Copy(IThunderboltRender& _in) { *this = *(dxThunderboltRender*)&_in; }
+void dxThunderboltRender::Copy(IThunderboltRender& _in)
+{
+    auto& in{*smart_cast<const dxThunderboltRender*>(&_in)};
+
+    hGeom_model = in.hGeom_model;
+    hGeom_gradient = in.hGeom_gradient;
+}
 
 void dxThunderboltRender::Render(CEffect_Thunderbolt& owner)
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIInventoryWnd.h"
 #include "../actor.h"
 #include "../silencer.h"
@@ -21,7 +22,8 @@
 
 void CUIInventoryWnd::EatItem(PIItem itm)
 {
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
+
     if (!itm->Useful())
         return;
 
@@ -32,6 +34,7 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 
 #include "../Medkit.h"
 #include "../Antirad.h"
+
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
     // Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
@@ -68,7 +71,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
                     }
                     else
                     {
-                        UIPropertiesBox.AddItem("st_move_to_slot", NULL, INVENTORY_TO_SLOT_ACTION);
+                        UIPropertiesBox.AddItem("st_move_to_slot", nullptr, INVENTORY_TO_SLOT_ACTION);
                         b_show = true;
                         break;
                     }
@@ -79,7 +82,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 
     if (CurrentIItem()->Belt() && m_pInv->CanPutInBelt(CurrentIItem()))
     {
-        UIPropertiesBox.AddItem("st_move_on_belt", NULL, INVENTORY_TO_BELT_ACTION);
+        UIPropertiesBox.AddItem("st_move_on_belt", nullptr, INVENTORY_TO_BELT_ACTION);
         b_show = true;
     }
 
@@ -87,34 +90,36 @@ void CUIInventoryWnd::ActivatePropertiesBox()
         (CurrentIItem()->GetSlot() == NO_ACTIVE_SLOT || !m_pInv->m_slots[CurrentIItem()->GetSlot()].m_bPersistent))
     {
         if (!pOutfit)
-            UIPropertiesBox.AddItem("st_move_to_bag", NULL, INVENTORY_TO_BAG_ACTION);
+            UIPropertiesBox.AddItem("st_move_to_bag", nullptr, INVENTORY_TO_BAG_ACTION);
         else
-            UIPropertiesBox.AddItem("st_undress_outfit", NULL, INVENTORY_TO_BAG_ACTION);
+            UIPropertiesBox.AddItem("st_undress_outfit", nullptr, INVENTORY_TO_BAG_ACTION);
+
         bAlreadyDressed = true;
         b_show = true;
     }
+
     if (pOutfit && !bAlreadyDressed)
     {
-        UIPropertiesBox.AddItem("st_dress_outfit", NULL, INVENTORY_TO_SLOT_ACTION);
+        UIPropertiesBox.AddItem("st_dress_outfit", nullptr, INVENTORY_TO_SLOT_ACTION);
         b_show = true;
     }
 
-    //отсоединение аддонов от вещи
+    // отсоединение аддонов от вещи
     if (pWeapon)
     {
         if (pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
         {
-            UIPropertiesBox.AddItem("st_detach_gl", NULL, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
+            UIPropertiesBox.AddItem("st_detach_gl", nullptr, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
             b_show = true;
         }
         if (pWeapon->ScopeAttachable() && pWeapon->IsScopeAttached())
         {
-            UIPropertiesBox.AddItem("st_detach_scope", NULL, INVENTORY_DETACH_SCOPE_ADDON);
+            UIPropertiesBox.AddItem("st_detach_scope", nullptr, INVENTORY_DETACH_SCOPE_ADDON);
             b_show = true;
         }
         if (pWeapon->SilencerAttachable() && pWeapon->IsSilencerAttached())
         {
-            UIPropertiesBox.AddItem("st_detach_silencer", NULL, INVENTORY_DETACH_SILENCER_ADDON);
+            UIPropertiesBox.AddItem("st_detach_silencer", nullptr, INVENTORY_DETACH_SILENCER_ADDON);
             b_show = true;
         }
         if (smart_cast<CWeaponMagazined*>(pWeapon))
@@ -139,13 +144,13 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 
             if (b)
             {
-                UIPropertiesBox.AddItem("st_unload_magazine", NULL, INVENTORY_UNLOAD_MAGAZINE);
+                UIPropertiesBox.AddItem("st_unload_magazine", nullptr, INVENTORY_UNLOAD_MAGAZINE);
                 b_show = true;
             }
         }
     }
 
-    //присоединение аддонов к оружиям в слотах
+    // присоединение аддонов к оружиям в слотах
     for (u32 i = 0; i < SLOTS_TOTAL; ++i)
     {
         PIItem tgt = m_pInv->m_slots[i].m_pIItem;
@@ -153,8 +158,15 @@ void CUIInventoryWnd::ActivatePropertiesBox()
         {
             // В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
             const std::string trans_str = "st_attach_addon_to_wpn_in_slot_" + std::to_string(i);
-            string512 str{};
-            std::snprintf(str, sizeof str, CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+            string512 str;
+
+            XR_DIAG_PUSH();
+            XR_DIAG_IGNORE("-Wformat-nonliteral");
+
+            std::snprintf(str, sizeof(str), CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+
+            XR_DIAG_POP();
+
             UIPropertiesBox.AddItem(str, (void*)tgt, INVENTORY_ATTACH_ADDON);
             b_show = true;
         }
@@ -176,7 +188,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 
     if (_action)
     {
-        UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT_ACTION);
+        UIPropertiesBox.AddItem(_action, nullptr, INVENTORY_EAT_ACTION);
         b_show = true;
     }
 
@@ -185,7 +197,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 
     if (!disallow_drop)
     {
-        UIPropertiesBox.AddItem("st_drop", NULL, INVENTORY_DROP_ACTION);
+        UIPropertiesBox.AddItem("st_drop", nullptr, INVENTORY_DROP_ACTION);
         b_show = true;
 
         if (CurrentItem()->ChildsCount())
@@ -317,8 +329,8 @@ bool CUIInventoryWnd::DropItem(PIItem itm, CUIDragDropListEx* lst)
                 return				true;
         */
     }
-    CUICellItem* _citem = lst->ItemsCount() ? lst->GetItemIdx(0) : NULL;
-    PIItem _iitem = _citem ? (PIItem)_citem->m_pData : NULL;
+    CUICellItem* _citem = lst->ItemsCount() ? lst->GetItemIdx(0) : nullptr;
+    PIItem _iitem = _citem ? (PIItem)_citem->m_pData : nullptr;
 
     if (!_iitem)
         return false;

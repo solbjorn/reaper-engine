@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "EffectorShot.h"
 
 //-----------------------------------------------------------------------------
@@ -115,7 +116,7 @@ void CWeaponShotEffector::Update()
                 if (fLastDeltaVert > 0.f)
                     bSSActive = FALSE;
             }
-        };
+        }
 
         //-------------------------------------------------------
         if (!bActive)
@@ -142,7 +143,7 @@ void CWeaponShotEffector::Clear()
     bActive = false;
     fAngleVert = 0.f;
     fAngleHorz = 0.f;
-};
+}
 
 void CWeaponShotEffector::GetDeltaAngle(Fvector& delta_angle)
 {
@@ -156,30 +157,32 @@ void CWeaponShotEffector::GetLastDelta(Fvector& delta_angle)
     delta_angle.x = -fLastDeltaVert;
     delta_angle.y = -fLastDeltaHorz;
     delta_angle.z = 0.0f;
-};
+}
 
 void CWeaponShotEffector::ApplyLastAngles(float* pitch, float* yaw)
 {
     *pitch -= fLastDeltaVert;
     *yaw -= fLastDeltaHorz;
 }
+
 void CWeaponShotEffector::ApplyDeltaAngles(float* pitch, float* yaw)
 {
     *pitch -= fAngleVert;
     *yaw -= fAngleHorz;
-};
+}
+
 //-----------------------------------------------------------------------------
 // Camera shot effector
 //-----------------------------------------------------------------------------
 CCameraShotEffector::CCameraShotEffector(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac) : CEffectorCam(eCEShot, 100000.f)
 {
     CWeaponShotEffector::Initialize(max_angle, relax_speed, max_angle_horz, step_angle_horz, angle_frac);
-    m_pActor = NULL;
+    m_pActor = nullptr;
 }
 
 CCameraShotEffector::~CCameraShotEffector() {}
 
-//В ЗП здесь сделано по-другому
+// В ЗП здесь сделано по-другому
 BOOL CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
     if (bActive)

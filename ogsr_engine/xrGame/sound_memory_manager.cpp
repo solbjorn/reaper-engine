@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "sound_memory_manager.h"
 #include "memory_manager.h"
 #include "hit_memory_manager.h"
@@ -52,7 +53,7 @@ void CSoundMemoryManager::Load(LPCSTR section) {}
 
 void CSoundMemoryManager::reinit()
 {
-    m_sounds = 0;
+    m_sounds = nullptr;
     m_priorities.clear();
     m_last_sound_time = 0;
     m_sound_threshold = m_min_sound_threshold;

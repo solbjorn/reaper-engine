@@ -21,10 +21,11 @@ protected:
     typedef CScriptActionPlanner inherited;
 
 public:
-    _object_type* m_object;
+    _object_type* m_object{};
 
 public:
-    IC CActionPlannerScript();
+    IC CActionPlannerScript() = default;
+
     virtual void setup(_object_type* object);
 };
 

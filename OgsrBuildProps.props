@@ -19,10 +19,10 @@
   </PropertyGroup-->
 
   <PropertyGroup Label="UserMacros">
-    <ConformanceOptions>/bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0</ConformanceOptions>
-    <LLVMOptions>-march=haswell -mavx2 -flto -fmerge-all-constants -fwhole-program-vtables -Xclang -fopenmp</LLVMOptions>
+    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0</ConformanceOptions>
+    <LLVMOptions>-march=skylake -mavx2 -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables -Xclang -fcoro-aligned-allocation -Xclang -fopenmp</LLVMOptions>
     <libcxxOptions>-Xclang -stdlib=libc++ -I $(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -Dfdopen=_fdopen</libcxxOptions>
-    <WarningOptions>-Wextra -Werror=microsoft -Werror=strict-aliasing -Werror=typename-missing -Wzero-as-null-pointer-constant</WarningOptions>
+    <WarningOptions>-Wextra -Wmost -Werror=deprecated -Werror=float-equal -Werror=format -Werror=format-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=extra-semi -Werror=extra-semi-stmt -Werror=implicit-fallthrough -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=newline-eof -Werror=nrvo -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables -Werror=zero-as-null-pointer-constant</WarningOptions>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -35,7 +35,7 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>%(AdditionalOptions) $(ConformanceOptions) $(LLVMOptions) $(libcxxOptions) $(WarningOptions) /D_MSVC_STL_HARDENING=1</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) $(ConformanceOptions) $(LLVMOptions) $(libcxxOptions) $(WarningOptions) /Gw /D_MSVC_STL_HARDENING=1</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /DNDEBUG /D_ITERATOR_DEBUG_LEVEL=0</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Debug'">%(AdditionalOptions) /D_ITERATOR_DEBUG_LEVEL=2</AdditionalOptions>
     </ClCompile>

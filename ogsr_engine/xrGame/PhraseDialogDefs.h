@@ -11,4 +11,5 @@ DEFINE_VECTOR(shared_str, DIALOG_ID_VECTOR, DIALOG_ID_IT);
 //. #define  NO_PHRASE				-1
 //. #define  START_PHRASE			0
 //. #define  START_PHRASE_STR		"0"
+
 #include "PhraseDialog.h"

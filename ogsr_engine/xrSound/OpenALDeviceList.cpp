@@ -150,7 +150,7 @@ void ALDeviceList::Enumerate()
         xr_strcpy(m_defaultDeviceName, m_defaultDeviceName + strlen(prefix));
     }
 
-    Msg("~~SOUND: OpenAL: Default sound device name is [%s], device name size: [%u]", m_defaultDeviceName, strlen(m_defaultDeviceName));
+    Msg("~~SOUND: OpenAL: Default sound device name is [%s], device name size: [%zu]", m_defaultDeviceName, strlen(m_defaultDeviceName));
 
     if (0 != GetNumDevices())
     {
@@ -160,7 +160,7 @@ void ALDeviceList::Enumerate()
         {
             ALDeviceDesc al_device_desc = GetDeviceDesc(j);
 
-            Msg("%d. %s (full name [%s]). al_soft [%d]", j + 1, snd_devices_token[j].name, al_device_desc.name, al_device_desc.is_al_soft);
+            Msg("%u. %s (full name [%s]). al_soft [%d]", j + 1, snd_devices_token[j].name, al_device_desc.name, al_device_desc.is_al_soft);
         }
     }
     else

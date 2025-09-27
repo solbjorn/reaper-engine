@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>

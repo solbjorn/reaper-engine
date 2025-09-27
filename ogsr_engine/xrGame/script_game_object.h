@@ -31,23 +31,27 @@ enum ETaskState : u32;
 namespace ALife
 {
 enum ERelationType : u32;
-};
+}
+
 namespace ScriptEntity
 {
 enum EActionType : u32;
-};
+}
+
 namespace MovementManager
 {
 enum EPathType : u32;
-};
+}
+
 namespace DetailPathManager
 {
 enum EDetailPathType : u32;
-};
+}
+
 namespace SightManager
 {
 enum ESightType : u32;
-};
+}
 
 class NET_Packet;
 class CGameTask;
@@ -56,7 +60,7 @@ namespace PatrolPathManager
 {
 enum EPatrolStartType : u32;
 enum EPatrolRouteType : u32;
-}; // namespace PatrolPathManager
+} // namespace PatrolPathManager
 
 namespace MemorySpace
 {
@@ -65,7 +69,7 @@ struct CVisibleObject;
 struct CSoundObject;
 struct CHitObject;
 struct CNotYetVisibleObject;
-}; // namespace MemorySpace
+} // namespace MemorySpace
 
 namespace MonsterSpace
 {
@@ -84,12 +88,12 @@ enum EScriptSoundAnim : u32;
 enum EMonsterSounds : u32;
 enum EMonsterHeadAnimType : u32;
 struct SBoneRotation;
-}; // namespace MonsterSpace
+} // namespace MonsterSpace
 
 namespace GameObject
 {
 enum ECallbackType : u32;
-};
+}
 
 class CGameObject;
 class CScriptHit;
@@ -368,16 +372,16 @@ public:
     CScriptGameObject* GetObjectByIndex(int iIndex) const;
 
     // Callbacks
-    void SetCallback(GameObject::ECallbackType type, const luabind::functor<void>& functor);
-    void SetCallback(GameObject::ECallbackType type, const luabind::functor<void>& functor, const luabind::object& object);
+    void SetCallback(GameObject::ECallbackType type, sol::function function, sol::object object);
+    void SetCallback(GameObject::ECallbackType type, sol::function function);
     void SetCallback(GameObject::ECallbackType type);
 
     void set_patrol_extrapolate_callback(const luabind::functor<bool>& functor);
     void set_patrol_extrapolate_callback(const luabind::functor<bool>& functor, const luabind::object& object);
     void set_patrol_extrapolate_callback();
 
-    void set_enemy_callback(const luabind::functor<bool>& functor);
-    void set_enemy_callback(const luabind::functor<bool>& functor, const luabind::object& object);
+    void set_enemy_callback(sol::function function, sol::object object);
+    void set_enemy_callback(sol::function function);
     void set_enemy_callback();
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -387,7 +391,7 @@ public:
     void SetNonscriptUsable(bool nonscript_usable);
     bool GetNonscriptUsable() const;
     ///////////////////////////////////////////////////////////////////////////////////////////
-    void set_fastcall(const luabind::functor<bool>& functor, const luabind::object& object);
+    void set_fastcall(sol::function function, sol::object object);
     void set_const_force(const Fvector& dir, float value, u32 time_interval);
     //////////////////////////////////////////////////////////////////////////
 
@@ -443,7 +447,7 @@ public:
     CScriptGameObject* GetCorpse() const;
     CScriptSoundInfo GetSoundInfo();
     CScriptMonsterHitInfo GetMonsterHitInfo();
-    void bind_object(CScriptBinderObject* object);
+    void bind_object(std::unique_ptr<CScriptBinderObject>& game_object);
     CScriptGameObject* GetCurrentOutfit() const;
     float GetCurrentOutfitProtection(int hit_type);
 

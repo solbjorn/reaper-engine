@@ -22,8 +22,6 @@ CCustomMotion::CCustomMotion()
     fFPS = 30.f;
 }
 
-CCustomMotion::CCustomMotion(CCustomMotion* source) { *this = *source; }
-
 void CCustomMotion::Save(IWriter& F)
 {
 #ifdef _LW_EXPORT
@@ -52,13 +50,6 @@ COMotion::COMotion() : CCustomMotion()
     mtype = mtObject;
     for (int ch = 0; ch < ctMaxChannel; ch++)
         envs[ch] = xr_new<CEnvelope>();
-}
-
-COMotion::COMotion(COMotion* source) : CCustomMotion(source)
-{
-    // bone motions
-    for (int ch = 0; ch < ctMaxChannel; ch++)
-        envs[ch] = xr_new<CEnvelope>(source->envs[ch]);
 }
 
 COMotion::~COMotion() { Clear(); }
@@ -92,9 +83,9 @@ void COMotion::SaveMotion(const char* buf)
 
 bool COMotion::LoadMotion(const char* buf)
 {
-    destructor<IReader> F(FS.r_open(buf));
-    R_ASSERT(F().find_chunk(EOBJ_OMOTION));
-    return Load(F());
+    std::unique_ptr<IReader> F{FS.r_open(buf)};
+    R_ASSERT(F->find_chunk(EOBJ_OMOTION));
+    return Load(*F);
 }
 
 void COMotion::Save(IWriter& F)
@@ -243,7 +234,7 @@ bool CClip::Equal(CClip* c)
         return false;
     if (!fx.equal(c->fx))
         return false;
-    if (length != c->length)
+    if (!fsimilar(length, c->length))
         return false;
     return true;
 }

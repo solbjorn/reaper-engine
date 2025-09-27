@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrMessages.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "clsid_game.h"
@@ -18,9 +19,11 @@
 #define PHPH_DEBUG
 #endif
 #endif
+
 #ifdef PHPH_DEBUG
 #include "PHDebug.h"
 #endif
+
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeInventoryItem
 ////////////////////////////////////////////////////////////////////////////
@@ -118,7 +121,7 @@ void CSE_ALifeInventoryItem::UPDATE_Write(NET_Packet& tNetPacket)
         tNetPacket.w_float_q8(State.linear_vel.y, -32.f, 32.f);
         tNetPacket.w_float_q8(State.linear_vel.z, -32.f, 32.f);
     }
-};
+}
 
 void CSE_ALifeInventoryItem::UPDATE_Read(NET_Packet& tNetPacket)
 {
@@ -160,7 +163,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read(NET_Packet& tNetPacket)
     }
     else
         State.linear_vel.set(0.f, 0.f, 0.f);
-};
+}
 
 bool CSE_ALifeInventoryItem::bfUseful() { return (true); }
 
@@ -210,7 +213,7 @@ void CSE_ALifeItem::UPDATE_Write(NET_Packet& tNetPacket)
 #ifdef XRGAME_EXPORTS
     m_last_update_time = Device.dwTimeGlobal;
 #endif // XRGAME_EXPORTS
-};
+}
 
 void CSE_ALifeItem::UPDATE_Read(NET_Packet& tNetPacket)
 {
@@ -218,7 +221,7 @@ void CSE_ALifeItem::UPDATE_Read(NET_Packet& tNetPacket)
     inherited2::UPDATE_Read(tNetPacket);
 
     m_physics_disabled = false;
-};
+}
 
 BOOL CSE_ALifeItem::Net_Relevant()
 {
@@ -643,13 +646,8 @@ BOOL CSE_ALifeItemArtefact::Net_Relevant() { return (inherited::Net_Relevant());
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemPDA
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemPDA::CSE_ALifeItemPDA(LPCSTR caSection) : CSE_ALifeItem(caSection)
-{
-    m_original_owner = 0xffff;
-    m_specific_character = NULL;
-    m_info_portion = NULL;
-}
 
+CSE_ALifeItemPDA::CSE_ALifeItemPDA(LPCSTR caSection) : CSE_ALifeItem{caSection} {}
 CSE_ALifeItemPDA::~CSE_ALifeItemPDA() {}
 
 void CSE_ALifeItemPDA::__STATE_Read(NET_Packet& tNetPacket, u16 size)
@@ -659,20 +657,21 @@ void CSE_ALifeItemPDA::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r(&m_original_owner, sizeof(m_original_owner));
 
     if (m_wVersion > 89)
-
-        if ((m_wVersion > 89) && (m_wVersion < 98))
+    {
+        if (m_wVersion < 98)
         {
             int tmp, tmp2;
             tNetPacket.r(&tmp, sizeof(int));
             tNetPacket.r(&tmp2, sizeof(int));
-            m_info_portion = NULL;
-            m_specific_character = NULL;
+            m_info_portion = nullptr;
+            m_specific_character = nullptr;
         }
         else
         {
             tNetPacket.r_stringZ(m_specific_character);
             tNetPacket.r_stringZ(m_info_portion);
         }
+    }
 }
 
 void CSE_ALifeItemPDA::__STATE_Write(NET_Packet& tNetPacket)
@@ -683,8 +682,8 @@ void CSE_ALifeItemPDA::__STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_stringZ(m_specific_character);
     tNetPacket.w_stringZ(m_info_portion);
 #else
-    shared_str tmp_1 = NULL;
-    shared_str tmp_2 = NULL;
+    shared_str tmp_1{};
+    shared_str tmp_2{};
 
     tNetPacket.w_stringZ(tmp_1);
     tNetPacket.w_stringZ(tmp_2);
@@ -698,8 +697,8 @@ void CSE_ALifeItemPDA::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemDocument
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemDocument::CSE_ALifeItemDocument(LPCSTR caSection) : CSE_ALifeItem(caSection) { m_wDoc = NULL; }
 
+CSE_ALifeItemDocument::CSE_ALifeItemDocument(LPCSTR caSection) : CSE_ALifeItem{caSection} {}
 CSE_ALifeItemDocument::~CSE_ALifeItemDocument() {}
 
 void CSE_ALifeItemDocument::__STATE_Read(NET_Packet& tNetPacket, u16 size)
@@ -710,10 +709,12 @@ void CSE_ALifeItemDocument::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
         u16 tmp;
         tNetPacket.r_u16(tmp);
-        m_wDoc = NULL;
+        m_wDoc = nullptr;
     }
     else
+    {
         tNetPacket.r_stringZ(m_wDoc);
+    }
 }
 
 void CSE_ALifeItemDocument::__STATE_Write(NET_Packet& tNetPacket)
@@ -787,9 +788,9 @@ void CSE_ALifeItemBolt::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STA
 
 void CSE_ALifeItemBolt::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeItemBolt::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); };
+void CSE_ALifeItemBolt::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
 
-void CSE_ALifeItemBolt::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); };
+void CSE_ALifeItemBolt::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
 
 bool CSE_ALifeItemBolt::can_save() const
 {

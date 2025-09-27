@@ -1,6 +1,7 @@
 // Реализация окна с закладками.
 
 #include "StdAfx.h"
+
 #include "UITabControl.h"
 #include "UITabButton.h"
 
@@ -55,7 +56,7 @@ bool CUITabControl::AddItem(CUITabButton* pButton)
 
     // Нажимаем кнопку по умолчанию
     if (m_iPushedIndex == static_cast<int>(m_TabsArr.size() - 1))
-        m_TabsArr[m_iPushedIndex]->SendMessage(m_TabsArr[m_iPushedIndex], TAB_CHANGED, NULL);
+        m_TabsArr[m_iPushedIndex]->SendMessage(m_TabsArr[m_iPushedIndex], TAB_CHANGED, nullptr);
 
     AttachChild(pButton);
     m_TabsArr.push_back(pButton);
@@ -135,9 +136,10 @@ void CUITabControl::OnStaticFocusLost(CUIWindow* pWnd) { GetMessageTarget()->Sen
 void CUITabControl::OnTabChange(int iCur, int iPrev)
 {
     if (iPrev != -1)
-        m_TabsArr[iPrev]->SendMessage(m_TabsArr[iCur], TAB_CHANGED, NULL);
-    m_TabsArr[iCur]->SendMessage(m_TabsArr[iCur], TAB_CHANGED, NULL);
-    GetMessageTarget()->SendMessage(this, TAB_CHANGED, NULL);
+        m_TabsArr[iPrev]->SendMessage(m_TabsArr[iCur], TAB_CHANGED, nullptr);
+
+    m_TabsArr[iCur]->SendMessage(m_TabsArr[iCur], TAB_CHANGED, nullptr);
+    GetMessageTarget()->SendMessage(this, TAB_CHANGED, nullptr);
 }
 
 void CUITabControl::SetNewActiveTab(const int iNewTab)
@@ -163,6 +165,7 @@ bool CUITabControl::OnKeyboard(int dik, EUIMessages keyboard_action)
             }
         }
     }
+
     return false;
 }
 
@@ -172,22 +175,23 @@ CUIButton* CUITabControl::GetButtonByIndex(int i)
     return m_TabsArr[i];
 }
 
-const shared_str CUITabControl::GetCommandName(int i) { return (GetButtonByIndex(i))->WindowName(); };
+const shared_str CUITabControl::GetCommandName(int i) { return (GetButtonByIndex(i))->WindowName(); }
 
 CUIButton* CUITabControl::GetButtonByCommand(const shared_str& n)
 {
     for (u32 i = 0; i < m_TabsArr.size(); ++i)
+    {
         if (m_TabsArr[i]->WindowName() == n)
             return m_TabsArr[i];
+    }
 
-    return NULL;
+    return nullptr;
 }
 
 void CUITabControl::ResetTab()
 {
     for (u32 i = 0; i < m_TabsArr.size(); ++i)
-    {
         m_TabsArr[i]->SetButtonMode(CUIButton::BUTTON_NORMAL);
-    }
+
     m_iPushedIndex = m_iPrevPushedIndex = -1;
 }

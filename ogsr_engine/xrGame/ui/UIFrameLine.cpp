@@ -65,9 +65,9 @@ void CUIFrameLine::UpdateSize()
 
     // Dimentions of element textures must be the same
     if (bHorizontalOrientation)
-        R_ASSERT(s_height == f_height);
+        R_ASSERT(fsimilar(s_height, f_height));
     else
-        R_ASSERT(f_width == s_width);
+        R_ASSERT(fsimilar(f_width, s_width));
 
     // Now stretch back texture to remaining space
     float back_width, back_height;

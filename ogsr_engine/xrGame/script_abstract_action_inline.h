@@ -9,3 +9,5 @@
 #pragma once
 
 IC CScriptAbstractAction::CScriptAbstractAction() { m_bCompleted = true; }
+
+inline void CScriptAbstractAction::clone(const CScriptAbstractAction& from) { m_bCompleted = from.m_bCompleted; }

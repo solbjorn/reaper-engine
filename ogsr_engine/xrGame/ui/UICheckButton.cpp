@@ -3,18 +3,18 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include ".\uicheckbutton.h"
 #include "../HUDManager.h"
 #include "UILines.h"
 
-CUICheckButton::CUICheckButton(void)
+CUICheckButton::CUICheckButton()
 {
     SetTextAlignment(CGameFont::alLeft);
     m_bCheckMode = true;
-    m_pDependControl = NULL;
 }
 
-CUICheckButton::~CUICheckButton(void) {}
+CUICheckButton::~CUICheckButton() {}
 
 void CUICheckButton::SetDependControl(CUIWindow* pWnd) { m_pDependControl = pWnd; }
 

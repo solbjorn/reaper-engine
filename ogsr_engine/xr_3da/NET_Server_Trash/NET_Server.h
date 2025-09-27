@@ -67,7 +67,7 @@ public:
     DWORD m_dwPort;
     u32 process_id;
 
-    IPureServer* server;
+    IPureServer* server{};
     bool operator==(ClientID const&) = delete;
 };
 
@@ -93,7 +93,7 @@ protected:
     xrCriticalSection csPlayers;
     xr_vector<IClient*> net_Players;
     xr_vector<IClient*> net_Players_disconnected;
-    IClient* SV_Client;
+    IClient* SV_Client{};
 
     CTimer* device_timer;
 
@@ -124,5 +124,5 @@ public:
     IC u32 client_Count() { return net_Players.size(); }
     IC IClient* client_Get(u32 num) { return net_Players[num]; }
 
-    IClient* GetServerClient() { return SV_Client; };
+    IClient* GetServerClient() { return SV_Client; }
 };

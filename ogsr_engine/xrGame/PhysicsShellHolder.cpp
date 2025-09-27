@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PhysicsShellHolder.h"
 #include "PhysicsShell.h"
 #include "xrMessages.h"
@@ -19,15 +20,11 @@
 #include "Actor.h"
 
 CPhysicsShellHolder::CPhysicsShellHolder() { init(); }
-
-CPhysicsShellHolder::~CPhysicsShellHolder()
-{
-    xr_delete(m_ph_sound_player);
-}
+CPhysicsShellHolder::~CPhysicsShellHolder() { xr_delete(m_ph_sound_player); }
 
 void CPhysicsShellHolder::net_Destroy()
 {
-    //удалить партиклы из ParticlePlayer
+    // удалить партиклы из ParticlePlayer
     CParticlesPlayer::net_DestroyParticles();
     CCharacterPhysicsSupport* char_support = character_physics_support();
     if (char_support)
@@ -94,12 +91,13 @@ void CPhysicsShellHolder::create_physic_shell()
 
 void CPhysicsShellHolder::init()
 {
-    m_pPhysicsShell = NULL;
+    m_pPhysicsShell = nullptr;
     b_sheduled = false;
     m_activation_speed_is_overriden = false;
     m_ph_sound_player = xr_new<CPHSoundPlayer>(this);
     m_collide_snd_dist = {-1.f, -1.f};
 }
+
 void CPhysicsShellHolder::correct_spawn_pos()
 {
     VERIFY(PPhysicsShell());
@@ -199,7 +197,7 @@ void CPhysicsShellHolder::setup_physic_shell()
 
 void CPhysicsShellHolder::deactivate_physics_shell()
 {
-    CParticlesPlayer::DestroyParticles(); //удалить партиклы из ParticlePlayer
+    CParticlesPlayer::DestroyParticles(); // удалить партиклы из ParticlePlayer
 
     if (m_pPhysicsShell)
         m_pPhysicsShell->Deactivate();
@@ -221,9 +219,11 @@ IPhysicsShell* CPhysicsShellHolder::physics_shell() const
 {
     if (m_pPhysicsShell)
         return m_pPhysicsShell;
+
     const CCharacterPhysicsSupport* char_support = character_physics_support();
     if (!char_support || !char_support->animation_collision())
-        return 0;
+        return nullptr;
+
     return char_support->animation_collision()->shell();
 }
 
@@ -231,9 +231,11 @@ IPhysicsElement* CPhysicsShellHolder::physics_character() const
 {
     const CCharacterPhysicsSupport* char_support = character_physics_support();
     if (!char_support)
-        return 0;
+        return nullptr;
+
     const CPHMovementControl* mov = character_physics_support()->movement();
     VERIFY(mov);
+
     return mov->IElement();
 }
 
@@ -279,9 +281,10 @@ CPHSynchronize* CPhysicsShellHolder::PHGetSyncItem(u16 item)
 {
     if (m_pPhysicsShell)
         return m_pPhysicsShell->get_ElementSync(item);
-    else
-        return 0;
+
+    return nullptr;
 }
+
 void CPhysicsShellHolder::PHUnFreeze()
 {
     if (m_pPhysicsShell)
@@ -297,7 +300,8 @@ void CPhysicsShellHolder::PHFreeze()
 void CPhysicsShellHolder::OnChangeVisual()
 {
     inherited::OnChangeVisual();
-    if (0 == renderable.visual)
+
+    if (!renderable.visual)
     {
         CCharacterPhysicsSupport* char_support = character_physics_support();
         if (char_support)
@@ -305,17 +309,19 @@ void CPhysicsShellHolder::OnChangeVisual()
 
         if (m_pPhysicsShell)
             m_pPhysicsShell->Deactivate();
+
         xr_delete(m_pPhysicsShell);
-        VERIFY(0 == m_pPhysicsShell);
+        VERIFY(!m_pPhysicsShell);
     }
 }
 
 void CPhysicsShellHolder::UpdateCL()
 {
     inherited::UpdateCL();
-    //обновить присоединенные партиклы
+    // обновить присоединенные партиклы
     UpdateParticles();
 }
+
 float CPhysicsShellHolder::EffectiveGravity() { return ph_world->Gravity(); }
 
 void CPhysicsShellHolder::save(NET_Packet& output_packet)
@@ -353,7 +359,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     }
     else
     {
-        P.w_u64(u64(-1));
+        P.w_u64(std::numeric_limits<u64>::max());
         P.w_u16(0);
     }
     /////////////////////////////
@@ -395,7 +401,7 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet& P)
     if (bones_number > 64)
     {
         Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [%u]!", bones_number);
-        P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
+        P.w_u64(K ? _vm._visimask_ex.flags : std::numeric_limits<u64>::max());
     }
 
     for (u16 i = 0; i < bones_number; i++)
@@ -420,7 +426,7 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
         _low = P.r_u64();
         K->LL_SetBoneRoot(P.r_u16());
     }
-    else //Скорее всего K есть всегда, но на всякий случай.
+    else // Скорее всего K есть всегда, но на всякий случай.
     {
         P.r_u64();
         P.r_u16();
@@ -455,7 +461,7 @@ bool CPhysicsShellHolder::ActorCanCapture() const
         return false;
     if (pSettings->line_exist("ph_capture_visuals", cNameVisual().c_str()))
         return true;
-    
+
     std::string p{cNameVisual().c_str()};
     while (xr_string_utils::SplitFilename(p))
     {

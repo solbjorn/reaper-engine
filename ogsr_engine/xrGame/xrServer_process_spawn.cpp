@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "hudmanager.h"
 #include "xrserver_objects.h"
@@ -25,7 +26,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         {
             // Msg			("- SERVER: Entity [%s] incompatible with current game type.",*E->s_name);
             F_entity_Destroy(E);
-            return NULL;
+            return nullptr;
         }
 
         //		E->m_bALifeControl = false;
@@ -34,7 +35,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
     {
         VERIFY(E->m_bALifeControl);
         //		E->owner			= CL;
-        //		if (CL != NULL)
+        //		if (CL != nullptr)
         //		{
         //			int x=0;
         //			x=x;
@@ -42,7 +43,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         //		E->m_bALifeControl = true;
     }
 
-    CSE_Abstract* e_parent = 0;
+    CSE_Abstract* e_parent{};
     if (E->ID_Parent != 0xffff)
     {
         e_parent = ID_to_entity(E->ID_Parent);
@@ -51,15 +52,14 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
             R_ASSERT(!tpExistedEntity);
             //			VERIFY3			(smart_cast<CSE_ALifeItemBolt*>(E) || smart_cast<CSE_ALifeItemGrenade*>(E),*E->s_name,E->name_replace());
             F_entity_Destroy(E);
-            return NULL;
+
+            return nullptr;
         }
     }
 
     // check if we can assign entity to some client
-    if (0 == CL && !net_Players.empty())
-    {
+    if (!CL && !net_Players.empty())
         CL = SelectBestClientToMigrateTo(E);
-    }
 
     // check for respawn-capability and create phantom as needed
     if (E->RespawnTime && (0xffff == E->ID_Phantom))
@@ -70,8 +70,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         Phantom->Spawn_Read(P);
         Phantom->ID = PerformIDgen(0xffff);
         Phantom->ID_Phantom = Phantom->ID; // Self-linked to avoid phantom-breeding
-        Phantom->owner = NULL;
-        entities.insert(mk_pair(Phantom->ID, Phantom));
+        Phantom->owner = nullptr;
+        entities.try_emplace(Phantom->ID, Phantom);
 
         Phantom->s_flags.set(M_SPAWN_OBJECT_PHANTOM, TRUE);
 
@@ -79,7 +79,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         E->ID = PerformIDgen(E->ID);
         E->ID_Phantom = Phantom->ID;
         E->owner = CL;
-        entities.insert(mk_pair(E->ID, E));
+        entities.try_emplace(E->ID, E);
     }
     else
     {
@@ -89,7 +89,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
             E->ID = PerformIDgen(0xffff);
             E->owner = CL; //		= SelectBestClientToMigrateTo	(E);
             E->s_flags.set(M_SPAWN_OBJECT_PHANTOM, FALSE);
-            entities.insert(mk_pair(E->ID, E));
+            entities.try_emplace(E->ID, E);
         }
         else
         {
@@ -103,7 +103,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
             }
             E->ID = PerformIDgen(E->ID);
             E->owner = CL;
-            entities.insert(mk_pair(E->ID, E));
+            entities.try_emplace(E->ID, E);
         }
     }
 
@@ -173,10 +173,9 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         clientID.set(0);
         SendBroadcast(clientID, Packet, net_flags(TRUE, TRUE));
     }
+
     if (!tpExistedEntity)
-    {
         game->OnPostCreate(E->ID);
-    };
 
     // log
     // Msg		("- SERVER: Spawning '%s'(%d,%d,%d) as #%d, on '%s'", E->s_name_replace, E->g_team(), E->g_squad(), E->g_group(), E->ID, CL?CL->name:"*SERVER*");

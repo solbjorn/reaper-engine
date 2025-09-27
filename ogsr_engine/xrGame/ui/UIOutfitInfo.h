@@ -10,6 +10,8 @@ struct ActorRestoreParams;
 
 class CUIOutfitInfo : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIOutfitInfo, CUIWindow);
+
 public:
     CUIOutfitInfo();
     virtual ~CUIOutfitInfo();

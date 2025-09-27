@@ -1,11 +1,14 @@
 #include "stdafx.h"
+
 #include "Actor_Flags.h"
 #include "hudmanager.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif // DEBUG
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -65,6 +68,8 @@
 #include "PHCapture.h"
 #include "CustomDetector.h"
 
+namespace
+{
 // Tip for action for object we're looking at
 constexpr const char* m_sCarCharacterUseAction = "car_character_use";
 constexpr const char* m_sCharacterUseAction = "character_use";
@@ -74,22 +79,10 @@ constexpr const char* m_sInventoryItemUseAction = "inventory_item_use";
 constexpr const char* m_sInventoryItemUseOrDragAction = "inventory_item_use_or_drag";
 constexpr const char* m_sGameObjectDragAction = "game_object_drag";
 
-const u32 patch_frames = 50;
-const float respawn_delay = 1.f;
-const float respawn_auto = 7.f;
-
-static float IReceived = 0;
-static float ICoincidenced = 0;
-
-// skeleton
-static Fbox bbStandBox;
-static Fbox bbCrouchBox;
-static Fvector vFootCenter;
-static Fvector vFootExt;
+bool updated;
+} // namespace
 
 Flags32 psActorFlags = {AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
-
-static bool updated;
 
 CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 {
@@ -121,10 +114,6 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     fPrevCamPos = 0.0f;
     vPrevCamDir.set(0.f, 0.f, 1.f);
     fCurAVelocity = 0.0f;
-    // эффекторы
-    pCamBobbing = 0;
-    m_pSleepEffector = NULL;
-    m_pSleepEffectorPP = NULL;
 
     r_torso.yaw = 0;
     r_torso.pitch = 0;
@@ -145,10 +134,7 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     m_fFallTime = s_fFallTime;
     m_bAnimTorsoPlayed = false;
 
-    m_pPhysicsShell = NULL;
-
-    m_holder = NULL;
-    m_holderID = u16(-1);
+    m_pPhysicsShell = nullptr;
 
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW);
@@ -157,35 +143,14 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     // разрешить использование пояса в inventory
     inventory().SetBeltUseful(true);
 
-    m_pPersonWeLookingAt = NULL;
-    m_pVehicleWeLookingAt = NULL;
-    m_pObjectWeLookingAt = NULL;
-    m_bPickupMode = false;
-
-    pStatGraph = NULL;
-
-    m_pActorEffector = NULL;
-
-    m_bZoomAimingMode = false;
-
-    m_sDefaultObjAction = nullptr;
-
     m_fSprintFactor = 4.f;
-
-    m_pUsableObject = NULL;
 
     m_anims = xr_new<SActorMotions>();
     m_vehicle_anims = xr_new<SActorVehicleAnims>();
-    m_entity_condition = NULL;
-    m_iLastHitterID = u16(-1);
-    m_iLastHittingWeaponID = u16(-1);
-    m_game_task_manager = NULL;
-    m_statistic_manager = NULL;
+
     //-----------------------------------------------------------------------------------
     m_memory = xr_new<CActorMemory>(this);
-    m_bOutBorder = false;
     hit_probability = 1.f;
-    m_feel_touch_characters = 0;
     //-----------------------------------------------------------------------------------
 
     m_location_manager = xr_new<CLocationManager>(this);
@@ -193,13 +158,7 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     m_fDrugPsyProtectionCoeff = 1.f;
     m_fDrugRadProtectionCoeff = 1.f;
 
-    m_loaded_ph_box_id = 0;
     updated = false;
-
-    // Alex ADD: for smooth crouch fix
-    CurrentHeight = 0.f;
-
-    hit_slowmo = 0.f;
 }
 
 CActor::~CActor()
@@ -240,10 +199,10 @@ void CActor::reinit()
     character_physics_support()->in_Init();
     material().reinit();
 
-    m_pUsableObject = NULL;
+    m_pUsableObject = nullptr;
     memory().reinit();
 
-    set_input_external_handler(0);
+    set_input_external_handler(nullptr);
     m_time_lock_accel = 0;
 }
 
@@ -425,7 +384,7 @@ void CActor::Load(LPCSTR section)
     m_fDispCrouchFactor = pSettings->r_float(section, "disp_crouch_factor");
     m_fDispCrouchNoAccelFactor = pSettings->r_float(section, "disp_crouch_no_acc_factor");
 
-    LPCSTR default_outfit = READ_IF_EXISTS(pSettings, r_string, section, "default_outfit", 0);
+    LPCSTR default_outfit = READ_IF_EXISTS(pSettings, r_string, section, "default_outfit", nullptr);
     SetDefaultVisualOutfit(default_outfit);
 
     //-----------------------------------------
@@ -447,7 +406,7 @@ void CActor::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H, !g_Alive()); }
 
 struct playing_pred
 {
-    IC bool operator()(ref_sound& s) { return (NULL != s._feedback()); }
+    IC bool operator()(ref_sound& s) { return !!s._feedback(); }
 };
 
 void CActor::Hit(SHit* pHDS)
@@ -505,12 +464,13 @@ void CActor::Hit(SHit* pHDS)
             else
                 bPlaySound = false;
         }
+
         if (bPlaySound && !b_snd_hit_playing)
         {
             Fvector point = Position();
             point.y += CameraHeight();
             S.play_at_pos(this, point);
-        };
+        }
     }
 
     // slow actor, only when he gets hit
@@ -522,7 +482,7 @@ void CActor::Hit(SHit* pHDS)
         CObject* pLastHitter = Level().Objects.net_Find(m_iLastHitterID);
         CObject* pLastHittingWeapon = Level().Objects.net_Find(m_iLastHittingWeaponID);
         HitSector(pLastHitter, pLastHittingWeapon);
-    };
+    }
 
     if ((mstate_real & mcSprint) && Level().CurrentControlEntity() == this && conditions().DisableSprint(pHDS))
     {
@@ -647,7 +607,9 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
         callback(GameObject::eHit)(lua_game_object(), perc, vLocalDir, smart_cast<const CGameObject*>(who)->lua_game_object(), element);
     }
 }
+
 void start_tutorial(LPCSTR name);
+
 void CActor::Die(CObject* who)
 {
     inherited::Die(who);
@@ -671,10 +633,11 @@ void CActor::Die(CObject* who)
                 CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>((*I).m_pIItem);
                 if (pOutfit)
                     continue;
-            };
+            }
+
             if ((*I).m_pIItem)
                 inventory().Ruck((*I).m_pIItem);
-        };
+        }
 
         ///!!! чистка пояса
         TIItemContainer& l_blist = inventory().m_belt;
@@ -747,7 +710,7 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
             bool b_hit_initiated = di->GetAndResetInitiated();
             Fvector hdir;
             di->HitDir(hdir);
-            SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
+            SetHitInfo(this, nullptr, 0, Fvector{}, hdir);
             //				Hit
             //(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 +
             // 2*::Random.randI(0,2))
@@ -1052,7 +1015,7 @@ void CActor::shedule_Update(u32 DT)
     if (this == Level().CurrentViewEntity() && !m_holder)
     {
         UpdateMotionIcon(mstate_real);
-    };
+    }
 
     NET_Jump = 0;
 
@@ -1175,13 +1138,13 @@ void CActor::shedule_Update(u32 DT)
     }
     else
     {
-        inventory().m_pTarget = NULL;
-        m_pPersonWeLookingAt = NULL;
+        inventory().m_pTarget = nullptr;
+        m_pPersonWeLookingAt = nullptr;
         m_sDefaultObjAction = nullptr;
-        m_pUsableObject = NULL;
-        m_pObjectWeLookingAt = NULL;
-        m_pVehicleWeLookingAt = NULL;
-        m_pInvBoxWeLookingAt = NULL;
+        m_pUsableObject = nullptr;
+        m_pObjectWeLookingAt = nullptr;
+        m_pVehicleWeLookingAt = nullptr;
+        m_pInvBoxWeLookingAt = nullptr;
     }
 
     //	UpdateSleep									();
@@ -1192,7 +1155,7 @@ void CActor::shedule_Update(u32 DT)
         m_pPhysics_support->in_shedule_Update(DT);
 
     updated = true;
-};
+}
 
 #include "debug_renderer.h"
 
@@ -1215,7 +1178,7 @@ void CActor::g_PerformDrop()
     b_DropActivated = FALSE;
 
     PIItem pItem = inventory().ActiveItem();
-    if (0 == pItem)
+    if (!pItem)
         return;
 
     u32 s = inventory().GetActiveSlot();
@@ -1235,6 +1198,7 @@ void CActor::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) { g_p
 static float mid_size = 0.097f;
 static float fontsize = 15.0f;
 static float upsize = 0.33f;
+
 void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
     if (!g_Alive())
@@ -1285,11 +1249,11 @@ void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
     pFont->SetAligment(CGameFont::alCenter);
     pFont->SetColor(color);
     //	pFont->SetHeight	(NewFontSize);
-    pFont->Out(x, y, Text);
+    pFont->Out(x, y, "%s", Text);
     //-------------------------------------------------
     //	pFont->SetHeight(OldFontSize);
     *pdup = delta_up;
-};
+}
 
 void CActor::SetPhPosition(const Fmatrix& transform)
 {
@@ -1331,7 +1295,7 @@ float CActor::Radius() const
     return R;
 }
 
-bool CActor::use_bolts() const { return CInventoryOwner::use_bolts(); };
+bool CActor::use_bolts() const { return CInventoryOwner::use_bolts(); }
 
 void CActor::OnItemTake(CInventoryItem* inventory_item) { CInventoryOwner::OnItemTake(inventory_item); }
 
@@ -1754,7 +1718,7 @@ bool CActor::is_on_ground() { return (character_physics_support()->movement()->E
 CCustomOutfit* CActor::GetOutfit() const
 {
     PIItem _of = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-    return _of ? smart_cast<CCustomOutfit*>(_of) : NULL;
+    return _of ? smart_cast<CCustomOutfit*>(_of) : nullptr;
 }
 
 void CActor::block_action(EGameActions cmd)

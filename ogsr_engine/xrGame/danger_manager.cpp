@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "danger_manager.h"
 #include "custommonster.h"
 #include "memory_space.h"
@@ -94,18 +95,18 @@ void CDangerManager::reinit()
     m_objects.clear();
     m_ignored.clear();
     m_time_line = 0;
-    m_selected = 0;
+    m_selected = nullptr;
 }
 
 void CDangerManager::reload(LPCSTR section) {}
 
 void CDangerManager::update()
 {
-    START_PROFILE("Memory Manager/dangers::update")
     m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), CRemoveByTimePredicate(time_line(), this)), m_objects.end());
 
     float result = flt_max;
-    m_selected = 0;
+    m_selected = nullptr;
+
     OBJECTS::const_iterator I = m_objects.begin();
     OBJECTS::const_iterator E = m_objects.end();
     for (; I != E; ++I)
@@ -118,14 +119,12 @@ void CDangerManager::update()
             m_selected = &*I;
         }
     }
-
-    STOP_PROFILE
 }
 
 void CDangerManager::remove_links(const CObject* object)
 {
-    if (m_selected && m_selected->object() && (m_selected->object()->ID() == object->ID()))
-        m_selected = 0;
+    if (m_selected && m_selected->object() && m_selected->object()->ID() == object->ID())
+        m_selected = nullptr;
 
     {
         OBJECTS::iterator I = std::remove_if(m_objects.begin(), m_objects.end(), CDangerPredicate(object));

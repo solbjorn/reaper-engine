@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIInventoryUtilities.h"
 #include "../WeaponAmmo.h"
 #include "../UIStaticItem.h"
@@ -18,22 +19,24 @@
 
 #define EQUIPMENT_ICONS "ui\\ui_icon_equipment"
 
+namespace
+{
 constexpr LPCSTR relationsLtxSection = "game_relations";
 constexpr LPCSTR ratingField = "rating_names";
 constexpr LPCSTR reputationgField = "reputation_names";
 constexpr LPCSTR goodwillField = "goodwill_names";
 
-static xr_unordered_map<size_t, ui_shader> g_EquipmentIconsShaders;
+xr_unordered_map<size_t, ui_shader> g_EquipmentIconsShaders;
 
 typedef std::pair<CHARACTER_RANK_VALUE, shared_str> CharInfoStringID;
 DEF_MAP(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);
 
-CharInfoStrings* charInfoReputationStrings = NULL;
-CharInfoStrings* charInfoRankStrings = NULL;
-CharInfoStrings* charInfoGoodwillStrings = NULL;
+CharInfoStrings* charInfoReputationStrings{};
+CharInfoStrings* charInfoRankStrings{};
+CharInfoStrings* charInfoGoodwillStrings{};
+} // namespace
 
 void InventoryUtilities::CreateShaders() {}
-
 void InventoryUtilities::DestroyShaders() { g_EquipmentIconsShaders.clear(); }
 
 bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
@@ -54,12 +57,8 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 
         if (r1.y == r2.y)
         {
-            auto item1ClassName = typeid(*item1).name();
-            auto item2ClassName = typeid(*item2).name();
-
-            int s = xr_strcmp(item1ClassName, item2ClassName);
-
-            if (s == 0)
+            auto s = s64{item1->typeId()} - item2->typeId();
+            if (!s)
             {
                 const CLASS_ID class1 = TEXT2CLSID(pSettings->r_string(item1->object().cNameSect(), "class"));
                 const CLASS_ID class2 = TEXT2CLSID(pSettings->r_string(item2->object().cNameSect(), "class"));
@@ -99,9 +98,8 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
                 return s < 0;
             }
         }
-
-        return false;
     }
+
     return false;
 }
 

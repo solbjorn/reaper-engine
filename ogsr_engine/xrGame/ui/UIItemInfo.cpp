@@ -16,21 +16,7 @@
 #include "ui_af_params.h"
 #include <format>
 
-CUIItemInfo::CUIItemInfo()
-{
-    UIItemImageSize.set(0.0f, 0.0f);
-    UICondProgresBar = NULL;
-    UICondition = NULL;
-    UICost = NULL;
-    UIWeight = NULL;
-    UIItemImage = NULL;
-    UIDesc = NULL;
-    UIWpnParams = NULL;
-    UIArtefactParams = NULL;
-    UIName = NULL;
-    m_pInvItem = NULL;
-    m_b_force_drawing = false;
-}
+CUIItemInfo::CUIItemInfo() = default;
 
 CUIItemInfo::~CUIItemInfo()
 {

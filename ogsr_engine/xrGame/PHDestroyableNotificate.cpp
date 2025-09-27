@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PHDestroyableNotificate.h"
 #include "alife_space.h"
 #include "hit.h"
@@ -8,9 +9,10 @@
 #include "..\xr_3da\xr_object.h"
 #include "PhysicsShellHolder.h"
 #include "xrServer_Objects.h"
+
 void CPHDestroyableNotificate::spawn_notificate(CSE_Abstract* so)
 {
-    CPHDestroyableNotificator* D = NULL;
+    CPHDestroyableNotificator* D{};
     CSE_PHSkeleton* po = smart_cast<CSE_PHSkeleton*>(so);
     u16 id = u16(-1);
     if (po)

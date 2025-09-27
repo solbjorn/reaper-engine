@@ -37,7 +37,7 @@ public:
     CSquadHierarchyHolder& squad(u32 squad_id) const;
     IC CSeniorityHierarchyHolder& team() const;
     IC const SQUAD_REGISTRY& squads() const;
-    IC u32 id() const { return team_id; };
+    IC u32 id() const { return team_id; }
 };
 
 #include "team_hierarchy_holder_inline.h"

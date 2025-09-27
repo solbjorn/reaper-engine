@@ -29,6 +29,7 @@ void R_xforms::set_V(const Fmatrix& m)
     auto& cl = cmd_list();
 
     m_v.set(m);
+    m_invv.invert(m_v);
     m_wv.mul_43(m_v, m_w);
     m_vp.mul(m_p, m_v);
     m_wvp.mul(m_p, m_wv);
@@ -79,13 +80,13 @@ void R_xforms::apply_invw()
 
 void R_xforms::unmap()
 {
-    c_w = NULL;
-    c_invw = NULL;
-    c_v = NULL;
-    c_p = NULL;
-    c_wv = NULL;
-    c_vp = NULL;
-    c_wvp = NULL;
+    c_w = nullptr;
+    c_invw = nullptr;
+    c_v = nullptr;
+    c_p = nullptr;
+    c_wv = nullptr;
+    c_vp = nullptr;
+    c_wvp = nullptr;
 }
 
 R_xforms::R_xforms()

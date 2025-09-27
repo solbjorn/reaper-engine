@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "weaponammo.h"
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
@@ -16,7 +17,7 @@
 CCartridge::CCartridge()
 {
     m_flags.assign(cfTracer | cfRicochet);
-    m_ammoSect = NULL;
+    m_ammoSect = nullptr;
     m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = 1.f;
     m_kAP = 0.0f;
     m_kAirRes = 0.0f;
@@ -239,7 +240,7 @@ CInventoryItem* CWeaponAmmo::can_make_killing(const CInventory* inventory) const
             return (weapon);
     }
 
-    return (0);
+    return nullptr;
 }
 
 float CWeaponAmmo::Weight() const

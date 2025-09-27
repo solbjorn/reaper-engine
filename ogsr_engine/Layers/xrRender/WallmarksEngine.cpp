@@ -33,11 +33,13 @@ constexpr float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
 constexpr u32 MAX_TRIS = 1024 * 16;
 
 IC bool operator==(const CWallmarksEngine::wm_slot* slot, const ref_shader& shader) { return slot->shader == shader; }
+
 CWallmarksEngine::wm_slot* CWallmarksEngine::FindSlot(const ref_shader& shader)
 {
     WMSlotVecIt it = std::find(marks.begin(), marks.end(), shader);
-    return (it != marks.end()) ? *it : 0;
+    return (it != marks.end()) ? *it : nullptr;
 }
+
 CWallmarksEngine::wm_slot* CWallmarksEngine::AppendSlot(const ref_shader& shader)
 {
     marks.push_back(xr_new<wm_slot>(shader));
@@ -55,7 +57,7 @@ CWallmarksEngine::CWallmarksEngine()
 {
     static_pool.reserve(256);
     marks.reserve(256);
-    hGeom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), NULL);
+    hGeom.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), nullptr);
 }
 
 CWallmarksEngine::~CWallmarksEngine()

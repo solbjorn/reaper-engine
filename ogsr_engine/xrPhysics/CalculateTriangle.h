@@ -15,6 +15,7 @@ ICF void GetNormal(CDB::TRI* XTri, Fvector& n)
     sd2.sub(V_array[XTri->verts[2]], V_array[XTri->verts[1]]);
     n.crossproduct(sd1, sd2);
 }
+
 ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle)
 {
     const Fvector* V_array = Level().ObjectSpace.GetStaticVerts();
@@ -26,17 +27,19 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle)
     cast_fv(triangle.norm).normalize();
     triangle.pos = dDOT(VRT[0], triangle.norm);
 }
+
 ICF void CalculateTriangle(CDB::TRI* XTri, const float* pos, Triangle& triangle)
 {
     InitTriangle(XTri, triangle);
     triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;
 }
+
 ICF void CalculateTriangle(CDB::TRI* XTri, dGeomID g, Triangle& triangle)
 {
     dVector3 v;
     dMatrix3 m;
-    const float* p = NULL;
-    const float* r = NULL;
+    const float* p{};
+    const float* r{};
     VERIFY(g);
     CODEGeom::get_final_tx(g, p, r, v, m);
     VERIFY(p);

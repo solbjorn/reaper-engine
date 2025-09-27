@@ -54,4 +54,4 @@ struct SContour : public SSegment
     Fvector v3;
     Fvector v4;
 };
-}; // namespace LevelGraph
+} // namespace LevelGraph

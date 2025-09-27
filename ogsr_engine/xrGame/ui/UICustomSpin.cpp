@@ -7,6 +7,7 @@
 // copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
 #include "UI3tButton.h"
 #include "UIFrameLineWnd.h"
 #include "UILines.h"
@@ -111,11 +112,12 @@ void CUICustomSpin::Update()
             m_time_begin = Device.dwTimeContinual;
             float tmp = float(m_u_delay);
             float step = powf(tmp, 0.7f);
+
             while (tmp > 0)
             {
                 IncVal();
                 tmp -= step;
-            };
+            }
 
             m_u_delay += 50;
 
@@ -130,11 +132,12 @@ void CUICustomSpin::Update()
             m_time_begin = Device.dwTimeContinual;
             float tmp = float(m_u_delay);
             float step = powf(tmp, 0.7f);
+
             while (tmp > 0)
             {
                 DecVal();
                 tmp -= step;
-            };
+            }
 
             m_u_delay += 50;
 

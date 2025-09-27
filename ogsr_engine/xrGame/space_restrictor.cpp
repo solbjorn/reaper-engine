@@ -419,16 +419,18 @@ void CSpaceRestrictor::OnRender()
         CCustomZone* z = smart_cast<CCustomZone*>(this);
         if (z)
         {
-            string64 str;
+            const char* str;
             switch (z->ZoneState())
             {
-            case CCustomZone::eZoneStateIdle: strcpy_s(str, "IDLE"); break;
-            case CCustomZone::eZoneStateAwaking: strcpy_s(str, "AWAKING"); break;
-            case CCustomZone::eZoneStateBlowout: strcpy_s(str, "BLOWOUT"); break;
-            case CCustomZone::eZoneStateAccumulate: strcpy_s(str, "ACCUMULATE"); break;
-            case CCustomZone::eZoneStateDisabled: strcpy_s(str, "DISABLED"); break;
-            };
-            HUD().Font().pFontMedium->OutNext(str);
+            case CCustomZone::eZoneStateIdle: str = "IDLE"; break;
+            case CCustomZone::eZoneStateAwaking: str = "AWAKING"; break;
+            case CCustomZone::eZoneStateBlowout: str = "BLOWOUT"; break;
+            case CCustomZone::eZoneStateAccumulate: str = "ACCUMULATE"; break;
+            case CCustomZone::eZoneStateDisabled: str = "DISABLED"; break;
+            default: str = "UNKNOWN"; break;
+            }
+
+            HUD().Font().pFontMedium->OutNext("%s", str);
         }
     }
 }

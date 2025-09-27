@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "actorcondition.h"
 #include "actor.h"
 #include "actorEffector.h"
@@ -411,7 +412,8 @@ void CActorCondition::UpdatePower()
 CWound* CActorCondition::ConditionHit(SHit* pHDS)
 {
     if (GodMode())
-        return NULL;
+        return nullptr;
+
     return inherited::ConditionHit(pHDS);
 }
 

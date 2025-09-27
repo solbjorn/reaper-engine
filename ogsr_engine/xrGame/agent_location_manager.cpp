@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_location_manager.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
@@ -14,7 +15,9 @@
 #include "ai/stalker/ai_stalker.h"
 #include "cover_point.h"
 
-const float MIN_SUITABLE_ENEMY_DISTANCE = 3.f; // 10.f;
+namespace
+{
+constexpr float MIN_SUITABLE_ENEMY_DISTANCE{3.f}; // 10.f;
 
 struct CRemoveOldDangerCover
 {
@@ -55,13 +58,15 @@ struct CDangerLocationPredicate
 
     IC bool operator()(const CAgentLocationManager::CDangerLocationPtr& location) const { return (*location == m_position); }
 };
+} // namespace
 
 IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(const Fvector& position)
 {
     LOCATIONS::iterator I = std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CDangerLocationPredicate(position));
     if (I != m_danger_locations.end())
         return (*I);
-    return (0);
+
+    return nullptr;
 }
 
 bool CAgentLocationManager::suitable(CAI_Stalker* object, const CCoverPoint* location, bool use_enemy_info) const
@@ -122,7 +127,7 @@ void CAgentLocationManager::make_suitable(CAI_Stalker* object, const CCoverPoint
         {
             //			Msg						("%6d : object [%s] disabled cover for object [%s]",Device.dwFrame,*object->cName(),*(*I)->object().cName());
             (*I)->object().on_cover_blocked((*I)->cover());
-            (*I)->cover(0);
+            (*I)->cover(nullptr);
         }
     }
 }

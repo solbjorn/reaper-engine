@@ -99,7 +99,7 @@ static constexpr Fvector hemi_3[HEMI3_VERTS] = {
 
 void xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
 {
-    const Fvector* hemi = 0;
+    const Fvector* hemi{};
     int h_count = xrHemisphereVertices(quality, hemi);
     VERIFY(h_count > 0);
     // Calculate energy

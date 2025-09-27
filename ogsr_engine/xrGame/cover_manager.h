@@ -15,7 +15,7 @@
 namespace LevelGraph
 {
 class CVertex;
-};
+}
 
 class CCoverManager : public virtual RTTI::Enable
 {
@@ -25,7 +25,7 @@ public:
     typedef CQuadTree<CCoverPoint> CPointQuadTree;
 
 protected:
-    CPointQuadTree* m_covers;
+    CPointQuadTree* m_covers{};
     xr_vector<bool> m_temp;
     mutable xr_vector<CCoverPoint*> m_nearest;
 
@@ -40,8 +40,9 @@ private:
     IC bool inertia(float radius, _evaluator_type& evaluator, const _restrictor_type& restrictor) const;
 
 public:
-    CCoverManager();
+    CCoverManager() = default;
     virtual ~CCoverManager();
+
     void compute_static_cover();
     IC CPointQuadTree& covers() const;
     IC CPointQuadTree* get_covers();

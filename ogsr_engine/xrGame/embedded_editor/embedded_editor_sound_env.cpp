@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "imgui.h"
 #include "embedded_editor_sound_env.h"
 
@@ -45,11 +46,11 @@ void ShowSoundEnvEditor(bool& show)
     ImGui::SliderFloat("EnvironmentDiffusion", &env->EnvironmentDiffusion, EAXLISTENER_MINENVIRONMENTDIFFUSION, EAXLISTENER_MAXENVIRONMENTDIFFUSION);
     ImGui::SliderFloat("AirAbsorptionHF", &env->AirAbsorptionHF, EAXLISTENER_MINAIRABSORPTIONHF, EAXLISTENER_MAXAIRABSORPTIONHF);
 
-/* // Закомментировано, т.к. у нас вот это Environment нигде не используется, его менять смысла нет.
-    ImGui::SliderInt("Current: ", reinterpret_cast<int*>(&env->Environment), 0, EAX_ENVIRONMENT_COUNT - 1);
-    ImGui::SameLine();
-    ImGui::Text(env_names[env->Environment]);
-*/
+    /* // Закомментировано, т.к. у нас вот это Environment нигде не используется, его менять смысла нет.
+        ImGui::SliderInt("Current: ", reinterpret_cast<int*>(&env->Environment), 0, EAX_ENVIRONMENT_COUNT - 1);
+        ImGui::SameLine();
+        ImGui::Text(env_names[env->Environment]);
+    */
 
     if (ImGui::Button("Save"))
     {

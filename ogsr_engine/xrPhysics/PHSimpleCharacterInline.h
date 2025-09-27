@@ -1,3 +1,6 @@
+#ifndef __PHSIMPLECHARACTERINLINE_H
+#define __PHSIMPLECHARACTERINLINE_H
+
 void CPHSimpleCharacter::UpdateStaticDamage(dContact* c, SGameMtl* tri_material, bool bo1)
 {
     const dReal* v = dBodyGetLinearVel(m_body);
@@ -144,3 +147,5 @@ IC void CPHSimpleCharacter::foot_material_update(u16 contact_material_idx, u16 f
     else
         *p_lastMaterialIDX = foot_material_idx;
 }
+
+#endif // __PHSIMPLECHARACTERINLINE_H

@@ -18,15 +18,17 @@ void SetupGPU(IRenderDeviceRender* pRender)
     BOOL bForceGPU_NonPure;
     BOOL bForceGPU_REF;
 
-    if (strstr(lpCmdLine, "-gpu_sw") != NULL)
+    if (strstr(lpCmdLine, "-gpu_sw"))
         bForceGPU_SW = TRUE;
     else
         bForceGPU_SW = FALSE;
-    if (strstr(lpCmdLine, "-gpu_nopure") != NULL)
+
+    if (strstr(lpCmdLine, "-gpu_nopure"))
         bForceGPU_NonPure = TRUE;
     else
         bForceGPU_NonPure = FALSE;
-    if (strstr(lpCmdLine, "-gpu_ref") != NULL)
+
+    if (strstr(lpCmdLine, "-gpu_ref"))
         bForceGPU_REF = TRUE;
     else
         bForceGPU_REF = FALSE;

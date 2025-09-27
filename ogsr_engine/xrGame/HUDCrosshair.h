@@ -15,7 +15,7 @@ private:
     float min_radius_perc;
     float max_radius_perc;
 
-    //текущий радиус прицела
+    // текущий радиус прицела
     float radius;
     float target_radius;
     float radius_speed_perc;

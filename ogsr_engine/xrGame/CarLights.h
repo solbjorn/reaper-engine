@@ -1,6 +1,5 @@
 #ifndef CAR_LIGHTS_H
 #define CAR_LIGHTS_H
-#pragma once
 
 #include "..\xr_3da\render.h"
 
@@ -9,12 +8,14 @@ class CCar;
 
 struct SCarLight
 {
-    ref_light light_render;
-    ref_glow glow_render;
+    ref_light light_render{};
+    ref_glow glow_render{};
+    CCarLights* m_holder{};
     u16 bone_id;
-    CCarLights* m_holder;
+
     SCarLight();
     ~SCarLight();
+
     void Switch();
     void TurnOn();
     void TurnOff();
@@ -62,7 +63,6 @@ protected:
         Ivector2		m_gabarites								;
         Ivector2		m_door_gabarites						;
     */
-private:
 };
 
 #endif

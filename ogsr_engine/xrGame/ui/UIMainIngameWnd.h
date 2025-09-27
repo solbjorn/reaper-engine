@@ -59,7 +59,7 @@ protected:
     Frect UIWeaponIcon_rect;
 
 public:
-    CUIStatic* GetPDAOnline() { return &UIPdaOnline; };
+    CUIStatic* GetPDAOnline() { return &UIPdaOnline; }
     CUIZoneMap* GetUIZoneMap() { return UIZoneMap; }
 
 protected:
@@ -98,6 +98,8 @@ public:
         ewiThirst,
         //		ewiSleep,
         //		ewiArtefact,
+
+        ewiCount,
     };
 
     // Задаем цвет соответствующей иконке
@@ -137,22 +139,22 @@ protected:
     FlashingIcons m_FlashingIcons;
 
     // для текущего активного актера и оружия
-    CActor* m_pActor;
-    CWeapon* m_pWeapon;
-    CMissile* m_pGrenade;
-    CInventoryItem* m_pItem;
+    CActor* m_pActor{};
+    CWeapon* m_pWeapon{};
+    CMissile* m_pGrenade{};
+    CInventoryItem* m_pItem{};
 
     // Отображение подсказок при наведении прицела на объект
     void RenderQuickInfos();
 
 public:
-    CUICarPanel& CarPanel() { return UICarPanel; };
+    CUICarPanel& CarPanel() { return UICarPanel; }
     CUIMotionIcon& MotionIcon() { return UIMotionIcon; }
     void OnConnected();
     void reset_ui();
 
 protected:
-    CInventoryItem* m_pPickUpItem;
+    CInventoryItem* m_pPickUpItem{};
     CUIStatic UIPickUpItemIcon;
 
     float m_iPickUpItemIconX{};

@@ -22,7 +22,7 @@ IC void CEvaluator::init(_object_type* object, LPCSTR evaluator_name)
 {
     m_object = object;
     m_evaluator_name = evaluator_name;
-    m_storage = 0;
+    m_storage = nullptr;
 }
 
 TEMPLATE_SPECIALIZATION

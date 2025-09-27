@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_manager.h"
 #include "control_combase.h"
 #include "BaseMonster/base_monster.h"
@@ -201,7 +202,7 @@ ControlCom::IComData* CControl_Manager::data(CControl_Com* who, ControlCom::ECon
         return target->ced()->data();
     }
 
-    return 0;
+    return nullptr;
 }
 
 // TODO: check construction of SControl_Element and check init in add-function
@@ -210,13 +211,13 @@ void CControl_Manager::add(CControl_Com* com, ControlCom::EControlType type)
     m_control_elems[type] = com;
     com->init_external(this, m_object);
 }
+
 void CControl_Manager::set_base_controller(CControl_Com* com, ControlCom::EControlType type) { m_base_elems[type] = com; }
 
 void CControl_Manager::install_path_manager(CControlPathBuilder* pman) { m_path = pman; }
 
-bool CControl_Manager::is_pure(CControl_Com* com) { return (com->cing() == 0); }
-
-bool CControl_Manager::is_base(CControl_Com* com) { return (com->ced() == 0); }
+bool CControl_Manager::is_pure(CControl_Com* com) { return !com->cing(); }
+bool CControl_Manager::is_base(CControl_Com* com) { return !com->ced(); }
 bool CControl_Manager::is_locked(CControl_Com* com) { return (com->ced() && com->ced()->is_locked()); }
 
 // capture
@@ -278,9 +279,7 @@ CControl_Com* CControl_Manager::get_capturer(ControlCom::EControlType type)
 {
     CControl_Com* target = m_control_elems[type];
     if (!target || !target->ced())
-    {
-        return 0;
-    }
+        return nullptr;
 
     return target->ced()->capturer();
 }
@@ -295,7 +294,7 @@ void CControl_Manager::release(CControl_Com* com, ControlCom::EControlType type)
     if (it != m_base_elems.end())
     {
         com->cing()->on_stop_control(type);
-        target->ced()->set_capturer(0);
+        target->ced()->set_capturer(nullptr);
 
         capture(m_base_elems[type], type);
     }
@@ -309,7 +308,7 @@ void CControl_Manager::release(CControl_Com* com, ControlCom::EControlType type)
         }
 
         com->cing()->on_stop_control(type);
-        target->ced()->set_capturer(0);
+        target->ced()->set_capturer(nullptr);
     }
 }
 
@@ -424,7 +423,7 @@ void CControl_Manager::check_active_com(CControl_Com* com, bool b_add)
     {
         auto it = std::find(m_active_elems.begin(), m_active_elems.end(), com);
         if (it != m_active_elems.end())
-            (*it) = 0; // do not remove just mark
+            (*it) = nullptr; // do not remove just mark
     }
 }
 

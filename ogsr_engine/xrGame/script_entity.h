@@ -87,11 +87,11 @@ public:
     virtual bool CheckObjectVisibility(const CGameObject* tpObject);
     virtual bool CheckObjectVisibilityNow(const CGameObject* tpObject);
     virtual bool CheckTypeVisibility(const char* section_name);
-    virtual bool CheckIfCompleted() const { return false; };
+    virtual bool CheckIfCompleted() const { return false; }
     virtual CScriptEntityAction* GetCurrentAction();
     virtual void AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority = false);
     virtual void ProcessScripts();
-    virtual void ResetScriptData(void* P = 0);
+    virtual void ResetScriptData(void* P = nullptr);
     virtual void ClearActionQueue();
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);

@@ -37,12 +37,6 @@ Flags32& get_flags_ref(CSE_ALifeObject* sobj) { return sobj->m_flags; }
 
 void cse_obj_set_position(CSE_ALifeObject* o, const Fvector& pos) { o->position().set(pos); }
 
-template <typename T>
-T* cse_object_cast(CSE_ALifeDynamicObject* se_obj)
-{
-    return smart_cast<T*>(se_obj);
-}
-
 void CSE_ALifeObject::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeObject>(
@@ -57,14 +51,7 @@ void CSE_ALifeObject::script_register(sol::state_view& lua)
         // alpet: для коррекции позиции в оффлайне
         "set_position", &cse_obj_set_position, "m_level_vertex_id", &CSE_ALifeObject::m_tNodeID, "m_game_vertex_id", &CSE_ALifeObject::m_tGraphID, "m_story_id",
         sol::readonly(&CSE_ALifeObject::m_story_id), "m_flags", sol::property(&get_flags_ref), "level_id", sol::property(&se_obj_level_id), "level_name",
-        sol::property(&se_obj_level_name), "is_alive", sol::property(&se_obj_is_alive), "get_inventory_item", &cse_object_cast<CSE_ALifeInventoryItem>, "get_level_changer",
-        &cse_object_cast<CSE_ALifeLevelChanger>, "get_space_restrictor", &cse_object_cast<CSE_ALifeSpaceRestrictor>, "get_weapon", &cse_object_cast<CSE_ALifeItemWeapon>,
-        "get_weapon_m", &cse_object_cast<CSE_ALifeItemWeaponMagazined>, "get_weapon_gl", &cse_object_cast<CSE_ALifeItemWeaponMagazinedWGL>, "get_trader",
-        &cse_object_cast<CSE_ALifeTraderAbstract>, "get_visual", &cse_object_cast<CSE_Visual>,
-
-        "get_object_physic", &cse_object_cast<CSE_ALifeObjectPhysic>, "get_start_zone", &cse_object_cast<CSE_ALifeSmartZone>, "get_anomalous_zone",
-        &cse_object_cast<CSE_ALifeAnomalousZone>, "get_creature", &cse_object_cast<CSE_ALifeCreatureAbstract>, "get_human", &cse_object_cast<CSE_ALifeHumanAbstract>, "get_monster",
-        &cse_object_cast<CSE_ALifeMonsterAbstract>, sol::base_classes, xr_sol_bases<CSE_ALifeObject>());
+        sol::property(&se_obj_level_name), "is_alive", sol::property(&se_obj_is_alive), sol::base_classes, xr_sol_bases<CSE_ALifeObject>());
 }
 
 void CSE_ALifeGroupAbstract::script_register(sol::state_view& lua) { lua.new_usertype<CSE_ALifeGroupAbstract>("cse_alife_group_abstract", sol::no_constructor); }

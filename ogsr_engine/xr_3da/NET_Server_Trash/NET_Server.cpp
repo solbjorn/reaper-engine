@@ -7,7 +7,7 @@ ClientID BroadcastCID(0xffffffff);
 void ip_address::set(LPCSTR src_string) // Это нужно
 {
     u32 buff[4];
-    int cnt = sscanf(src_string, "%d.%d.%d.%d", &buff[0], &buff[1], &buff[2], &buff[3]);
+    int cnt = sscanf(src_string, "%u.%u.%u.%u", &buff[0], &buff[1], &buff[2], &buff[3]);
     if (cnt == 4)
     {
         m_data.a1 = u8(buff[0] & 0xff);
@@ -22,7 +22,7 @@ void ip_address::set(LPCSTR src_string) // Это нужно
     }
 }
 
-IClient::IClient(CTimer* timer) : server(NULL)
+IClient::IClient(CTimer* timer)
 {
     dwTime_LastUpdate = 0;
     flags.bLocal = FALSE;
@@ -35,8 +35,9 @@ IClient::~IClient() {}
 
 IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не резать. net_Players - не пустой вектор
 {
-    if (0 == ID.value())
-        return NULL;
+    if (!ID.value())
+        return nullptr;
+
     csPlayers.Enter();
 
     for (u32 client = 0; client < net_Players.size(); ++client)
@@ -47,6 +48,7 @@ IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не �
             return net_Players[client];
         }
     }
+
     if (ScanAll)
     {
         for (u32 client = 0; client < net_Players_disconnected.size(); ++client)
@@ -57,9 +59,11 @@ IClient* IPureServer::ID_to_client(ClientID ID, bool ScanAll) // пока не �
                 return net_Players_disconnected[client];
             }
         }
-    };
+    }
+
     csPlayers.Leave();
-    return NULL;
+
+    return nullptr;
 }
 
 IPureServer::IPureServer(CTimer* timer)
@@ -68,10 +72,9 @@ IPureServer::IPureServer(CTimer* timer)
 #endif // PROFILE_CRITICAL_SECTIONS
 {
     device_timer = timer;
-    SV_Client = NULL;
 }
 
-IPureServer::~IPureServer() { SV_Client = NULL; }
+IPureServer::~IPureServer() { SV_Client = nullptr; }
 
 IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вида [имя_сейва/single/alife]
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
@@ -10,17 +11,12 @@
 #include "xrLevel.h"
 #include "CameraManager.h"
 
-IGame_Level* g_pGameLevel = NULL;
+IGame_Level* g_pGameLevel{};
 
 IGame_Level::IGame_Level()
 {
     m_pCameras = xr_new<CCameraManager>(true);
     g_pGameLevel = this;
-    pLevel = NULL;
-    bReady = false;
-    pCurrentEntity = NULL;
-    pCurrentViewEntity = NULL;
-    pHUD = NULL;
 }
 
 // #include "resourcemanager.h"
@@ -130,7 +126,7 @@ void IGame_Level::OnFrame()
         int id = ::Random.randI(Sounds_Random.size());
         if (Sounds_Random_Enabled)
         {
-            Sounds_Random[id].play_at_pos(0, pos, 0);
+            Sounds_Random[id].play_at_pos(nullptr, pos, 0);
             Sounds_Random[id].set_volume(1.f);
             Sounds_Random[id].set_range(10, 200);
         }

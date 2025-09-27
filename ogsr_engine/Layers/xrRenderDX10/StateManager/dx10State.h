@@ -25,14 +25,12 @@ public:
 private:
     typedef dx10SamplerStateCache::HArray tSamplerHArray;
 
-private:
     static void InitSamplers(tSamplerHArray& SamplerArray, SimulatorStates& state_code, int iBaseSamplerIndex);
 
-private:
     //	All states are supposed to live along all application lifetime
-    ID3DRasterizerState* m_pRasterizerState; //	Weak link
-    ID3DDepthStencilState* m_pDepthStencilState; //	Weak link
-    ID3DBlendState* m_pBlendState; //	Weak link
+    ID3DRasterizerState* m_pRasterizerState{}; //	Weak link
+    ID3DDepthStencilState* m_pDepthStencilState{}; //	Weak link
+    ID3DBlendState* m_pBlendState{}; //	Weak link
 
     tSamplerHArray m_VSSamplers;
     tSamplerHArray m_PSSamplers;
@@ -41,11 +39,8 @@ private:
     tSamplerHArray m_HSSamplers;
     tSamplerHArray m_DSSamplers;
 
-    UINT m_uiStencilRef;
-    UINT m_uiAlphaRef;
-
-    //	Private data
-private:
+    UINT m_uiStencilRef{std::numeric_limits<u32>::max()};
+    UINT m_uiAlphaRef{};
 };
 
 #endif //	dx10State_included

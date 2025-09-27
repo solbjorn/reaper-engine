@@ -156,4 +156,4 @@ enum ESightActionType : u32
     eSightActionTypeWatchItem = u32(0),
     eSightActionTypeWatchEnemy,
 };
-}; // namespace StalkerDecisionSpace
+} // namespace StalkerDecisionSpace

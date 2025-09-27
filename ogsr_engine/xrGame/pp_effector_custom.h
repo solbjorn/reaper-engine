@@ -36,20 +36,15 @@ class CPPEffectorCustomController : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPPEffectorCustomController<_Effector>);
 
 public:
-    CPPEffectorCustomController();
+    CPPEffectorCustomController() = default;
+
     IC virtual void load(LPCSTR section);
-    IC virtual bool active() { return (m_effector != 0); }
+    IC virtual bool active() { return !!m_effector; }
 
 protected:
-    _Effector* m_effector;
+    _Effector* m_effector{};
     SPPInfo m_state;
 };
-
-template <class _Effector>
-CPPEffectorCustomController<_Effector>::CPPEffectorCustomController()
-{
-    m_effector = 0;
-}
 
 template <class _Effector>
 void CPPEffectorCustomController<_Effector>::load(LPCSTR section)

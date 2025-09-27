@@ -226,8 +226,10 @@ static u32 vertex_in_direction(u32 level_vertex_id, Fvector direction, float max
     direction.mul(max_distance);
     Fvector start_position = ai().level_graph().vertex_position(level_vertex_id);
     Fvector finish_position = Fvector(start_position).add(direction);
-    u32 result = u32(-1);
-    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, 0);
+
+    u32 result{std::numeric_limits<u32>::max()};
+    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr);
+
     return (ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id);
 }
 
@@ -443,61 +445,72 @@ static bool is_level_present() { return (!!g_pGameLevel); }
 
 static bool is_removing_objects_script() { return Level().is_removing_objects(); }
 
-static CPHCall* add_call(const luabind::functor<bool>& condition, const luabind::functor<void>& action)
+static CPHCall* add_call(sol::function condition, sol::function action)
 {
-    luabind::functor<bool> _condition = condition;
-    luabind::functor<void> _action = action;
-    CPHScriptCondition* c = xr_new<CPHScriptCondition>(_condition);
-    CPHScriptAction* a = xr_new<CPHScriptAction>(_action);
+    CPHScriptCondition* c = xr_new<CPHScriptCondition>(condition);
+    CPHScriptAction* a = xr_new<CPHScriptAction>(action);
+
     return Level().ph_commander_scripts().add_call(c, a);
 }
 
-static void remove_call(const luabind::functor<bool>& condition, const luabind::functor<void>& action)
+static void remove_call(sol::function condition, sol::function action)
 {
     CPHScriptCondition c(condition);
     CPHScriptAction a(action);
+
     Level().ph_commander_scripts().remove_call(&c, &a);
 }
 
-static CPHCall* add_call(const luabind::object& lua_object, LPCSTR condition, LPCSTR action)
+static CPHCall* add_call(sol::object lua_object, LPCSTR condition, LPCSTR action)
 {
-    //	try{
-    //		CPHScriptObjectCondition	*c=xr_new<CPHScriptObjectCondition>(lua_object,condition);
-    //		CPHScriptObjectAction		*a=xr_new<CPHScriptObjectAction>(lua_object,action);
-    luabind::functor<bool> _condition = luabind::object_cast<luabind::functor<bool>>(lua_object[condition]);
-    luabind::functor<void> _action = luabind::object_cast<luabind::functor<void>>(lua_object[action]);
+    sol::function _condition, _action;
+
+    switch (lua_object.get_type())
+    {
+    case sol::type::userdata:
+        _condition = lua_object.as<sol::userdata>()[condition];
+        _action = lua_object.as<sol::userdata>()[action];
+        break;
+    case sol::type::table:
+        _condition = lua_object.as<sol::table>()[condition];
+        _action = lua_object.as<sol::table>()[action];
+        break;
+    default: break;
+    }
+
+    R_ASSERT(_condition && _action);
+
     CPHScriptObjectConditionN* c = xr_new<CPHScriptObjectConditionN>(lua_object, _condition);
     CPHScriptObjectActionN* a = xr_new<CPHScriptObjectActionN>(lua_object, _action);
+
     return Level().ph_commander_scripts().add_call_unique(c, c, a, a);
-    //	}
-    //	catch(...)
-    //	{
-    //		Msg("add_call excepted!!");
-    //	}
 }
 
-static void remove_call(const luabind::object& lua_object, LPCSTR condition, LPCSTR action)
+static void remove_call(sol::object lua_object, LPCSTR condition, LPCSTR action)
 {
     CPHScriptObjectCondition c(lua_object, condition);
     CPHScriptObjectAction a(lua_object, action);
+
     Level().ph_commander_scripts().remove_call(&c, &a);
 }
 
-static CPHCall* add_call(const luabind::object& lua_object, const luabind::functor<bool>& condition, const luabind::functor<void>& action)
+static CPHCall* add_call(sol::object lua_object, sol::function condition, sol::function action)
 {
     CPHScriptObjectConditionN* c = xr_new<CPHScriptObjectConditionN>(lua_object, condition);
     CPHScriptObjectActionN* a = xr_new<CPHScriptObjectActionN>(lua_object, action);
+
     return Level().ph_commander_scripts().add_call(c, a);
 }
 
-static void remove_call(const luabind::object& lua_object, const luabind::functor<bool>& condition, const luabind::functor<void>& action)
+static void remove_call(sol::object lua_object, sol::function condition, sol::function action)
 {
     CPHScriptObjectConditionN c(lua_object, condition);
     CPHScriptObjectActionN a(lua_object, action);
+
     Level().ph_commander_scripts().remove_call(&c, &a);
 }
 
-static void remove_calls_for_object(const luabind::object& lua_object)
+static void remove_calls_for_object(sol::object lua_object)
 {
     CPHSriptReqObjComparer c(lua_object);
     Level().ph_commander_scripts().remove_calls(&c);
@@ -543,8 +556,15 @@ static void spawn_phantom(const Fvector& position) { Level().spawn_item("m_phant
 
 static Fbox get_bounding_volume() { return Level().ObjectSpace.GetBoundingVolume(); }
 
-static void iterate_sounds(LPCSTR prefix, u32 max_count, const CScriptCallbackEx<void>& callback)
+static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function, sol::object object)
 {
+    auto callback = [&function, &object](const char* str) {
+        if (object)
+            function(str, object);
+        else
+            function(str);
+    };
+
     for (int j = 0, N = _GetItemCount(prefix); j < N; ++j)
     {
         string_path fn, s;
@@ -563,19 +583,7 @@ static void iterate_sounds(LPCSTR prefix, u32 max_count, const CScriptCallbackEx
     }
 }
 
-static void iterate_sounds1(LPCSTR prefix, u32 max_count, const luabind::functor<void>& functor)
-{
-    CScriptCallbackEx<void> temp;
-    temp.set(functor);
-    iterate_sounds(prefix, max_count, temp);
-}
-
-static void iterate_sounds2(LPCSTR prefix, u32 max_count, const luabind::object& object, const luabind::functor<void>& functor)
-{
-    CScriptCallbackEx<void> temp;
-    temp.set(functor, object);
-    iterate_sounds(prefix, max_count, temp);
-}
+static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function) { iterate_sounds(prefix, max_count, function, sol::object{}); }
 
 #include "actoreffector.h"
 
@@ -890,7 +898,7 @@ static bool CSpaceRestrictionBase_inside(Fsphere m_sphere, u32 level_vertex_id, 
                 CSpaceRestrictionBase_inside(m_sphere, Fvector().set(position.x, position.y, position.z), radius));
 }
 
-static void iterate_vertices_inside(Fvector P, float R, bool partially_inside, const luabind::functor<void>& funct)
+static void iterate_vertices_inside(Fvector P, float R, bool partially_inside, sol::function funct)
 {
     Fvector start, dest;
     start.sub(Fvector().set(0, 0, 0), Fvector().set(R, 0.f, R));
@@ -906,7 +914,7 @@ static void iterate_vertices_inside(Fvector P, float R, bool partially_inside, c
     });
 }
 
-static void iterate_vertices_border(Fvector P, float R, const luabind::functor<void>& funct)
+static void iterate_vertices_border(Fvector P, float R, sol::function funct)
 {
     Fvector start, dest;
     start.sub(Fvector().set(0, 0, 0), Fvector().set(R, 0.f, R));
@@ -972,22 +980,20 @@ static void demo_record_set_direct_input(bool f)
 
 static CEffectorBobbing* get_effector_bobbing() { return Actor()->GetEffectorBobbing(); }
 
-static void iterate_nearest(const Fvector& pos, float radius, luabind::functor<bool> functor)
+static void iterate_nearest(const Fvector& pos, float radius, sol::function function)
 {
     xr_vector<CObject*> m_nearest;
-    Level().ObjectSpace.GetNearest(m_nearest, pos, radius, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, pos, radius, nullptr);
 
-    if (!m_nearest.size())
+    if (m_nearest.empty())
         return;
 
-    xr_vector<CObject*>::iterator it = m_nearest.begin();
-    xr_vector<CObject*>::iterator it_e = m_nearest.end();
-    for (; it != it_e; it++)
+    for (auto item : m_nearest)
     {
-        CGameObject* obj = smart_cast<CGameObject*>(*it);
+        CGameObject* obj = smart_cast<CGameObject*>(item);
         if (!obj)
             continue;
-        if (functor(obj->lua_game_object()))
+        if (function(obj->lua_game_object()))
             break;
     }
 }
@@ -1035,7 +1041,7 @@ static DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
     }
 
     R_ASSERT(dbg_obj);
-    Level().getScriptRenderQueue()->emplace(mk_pair(id, dbg_obj));
+    Level().getScriptRenderQueue()->try_emplace(id, dbg_obj);
 
     return dbg_obj;
 }
@@ -1099,26 +1105,26 @@ void CLevel::script_register(sol::state_view& lua)
         &map_change_spot_ser, "map_add_user_spot", &map_add_user_spot, "start_stop_menu", &start_stop_menu, "add_dialog_to_render", &add_dialog_to_render,
         "remove_dialog_to_render", &remove_dialog_to_render, "main_input_receiver", &main_input_receiver, "hide_indicators", &hide_indicators, "show_indicators", &show_indicators,
         "game_indicators_shown", &game_indicators_shown, "get_hud_flags", &get_hud_flags, "add_call",
-        sol::overload(sol::resolve<CPHCall*(const luabind::functor<bool>&, const luabind::functor<void>&)>(&add_call),
-                      sol::resolve<CPHCall*(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)>(&add_call),
-                      sol::resolve<CPHCall*(const luabind::object&, LPCSTR, LPCSTR)>(&add_call)),
+        sol::overload(sol::resolve<CPHCall*(sol::function, sol::function)>(&add_call), sol::resolve<CPHCall*(sol::object, sol::function, sol::function)>(&add_call),
+                      sol::resolve<CPHCall*(sol::object, LPCSTR, LPCSTR)>(&add_call)),
         "remove_call",
-        sol::overload(sol::resolve<void(const luabind::functor<bool>&, const luabind::functor<void>&)>(&remove_call),
-                      sol::resolve<void(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)>(&remove_call),
-                      sol::resolve<void(const luabind::object&, LPCSTR, LPCSTR)>(&remove_call)),
+        sol::overload(sol::resolve<void(sol::function, sol::function)>(&remove_call), sol::resolve<void(sol::object, sol::function, sol::function)>(&remove_call),
+                      sol::resolve<void(sol::object, LPCSTR, LPCSTR)>(&remove_call)),
         "remove_calls_for_object", &remove_calls_for_object, "present", &is_level_present, "disable_input", &disable_input, "enable_input", &enable_input, "only_allow_movekeys",
         &block_all_except_movement, "only_movekeys_allowed", &only_movement_allowed, "set_actor_allow_ladder", &set_actor_allow_ladder, "actor_ladder_allowed",
         &actor_ladder_allowed, "set_actor_allow_pda", &set_actor_allow_pda, "actor_pda_allowed", &actor_pda_allowed, "spawn_phantom", &spawn_phantom, "get_bounding_volume",
-        &get_bounding_volume, "iterate_sounds", &iterate_sounds1, "iterate_sounds", &iterate_sounds2, "physics_world", &physics_world, "get_snd_volume", &get_snd_volume,
-        "get_rain_volume", &get_rain_volume, "set_snd_volume", &set_snd_volume, "add_cam_effector", &add_cam_effector, "add_cam_effector2", &add_cam_effector2,
-        "remove_cam_effector", &remove_cam_effector, "add_pp_effector", &add_pp_effector, "set_pp_effector_factor", &set_pp_effector_factor, "set_pp_effector_factor",
-        &set_pp_effector_factor2, "remove_pp_effector", &remove_pp_effector, "has_pp_effector", &has_pp_effector, "add_monster_cam_effector", &add_monster_cam_effector,
-        "get_music_volume", &get_music_volume, "set_music_volume", &set_music_volume, "demo_record_start", &demo_record_start, "demo_record_stop", &demo_record_stop,
-        "demo_record_get_position", &demo_record_get_position, "demo_record_set_position", &demo_record_set_position, "demo_record_get_HPB", &demo_record_get_HPB,
-        "demo_record_set_HPB", &demo_record_set_HPB, "demo_record_set_direct_input", &demo_record_set_direct_input, "add_complex_effector", &add_complex_effector,
-        "remove_complex_effector", &remove_complex_effector, "game_id", &GameID, "set_ignore_game_state_update", &set_ignore_game_state_update, "get_inventory_wnd",
-        &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow, "get_trade_wnd", &GetTradeWindow, "get_pda_wnd", &GetPdaWindow, "get_car_body_wnd", &GetCarBodyWindow,
-        "get_second_talker", &GetSecondTalker, "get_car_body_target", &GetCarBodyTarget, "get_change_level_wnd", &GetUIChangeLevelWnd, "ray_query", &PerformRayQuery,
+        &get_bounding_volume, "iterate_sounds",
+        sol::overload(sol::resolve<void(LPCSTR, u32, sol::function, sol::object)>(&iterate_sounds), sol::resolve<void(LPCSTR, u32, sol::function)>(&iterate_sounds)),
+        "physics_world", &physics_world, "get_snd_volume", &get_snd_volume, "get_rain_volume", &get_rain_volume, "set_snd_volume", &set_snd_volume, "add_cam_effector",
+        &add_cam_effector, "add_cam_effector2", &add_cam_effector2, "remove_cam_effector", &remove_cam_effector, "add_pp_effector", &add_pp_effector, "set_pp_effector_factor",
+        &set_pp_effector_factor, "set_pp_effector_factor", &set_pp_effector_factor2, "remove_pp_effector", &remove_pp_effector, "has_pp_effector", &has_pp_effector,
+        "add_monster_cam_effector", &add_monster_cam_effector, "get_music_volume", &get_music_volume, "set_music_volume", &set_music_volume, "demo_record_start",
+        &demo_record_start, "demo_record_stop", &demo_record_stop, "demo_record_get_position", &demo_record_get_position, "demo_record_set_position", &demo_record_set_position,
+        "demo_record_get_HPB", &demo_record_get_HPB, "demo_record_set_HPB", &demo_record_set_HPB, "demo_record_set_direct_input", &demo_record_set_direct_input,
+        "add_complex_effector", &add_complex_effector, "remove_complex_effector", &remove_complex_effector, "game_id", &GameID, "set_ignore_game_state_update",
+        &set_ignore_game_state_update, "get_inventory_wnd", &GetInventoryWindow, "get_talk_wnd", &GetTalkWindow, "get_trade_wnd", &GetTradeWindow, "get_pda_wnd", &GetPdaWindow,
+        "get_car_body_wnd", &GetCarBodyWindow, "get_second_talker", &GetSecondTalker, "get_car_body_target", &GetCarBodyTarget, "get_change_level_wnd", &GetUIChangeLevelWnd,
+        "ray_query", &PerformRayQuery,
 
         // Real Wolf 07.07.2014
         "vertex_id", sol::overload(sol::resolve<u32(const Fvector&)>(&vertex_id), sol::resolve<u32(u32, const Fvector&)>(&vertex_id)),
@@ -1163,5 +1169,5 @@ void CLevel::script_register(sol::state_view& lua)
     lua.new_enum("rq_target", "rqtNone", collide::rqtNone, "rqtObject", collide::rqtObject, "rqtStatic", collide::rqtStatic, "rqtShape", collide::rqtShape, "rqtObstacle",
                  collide::rqtObstacle, "rqtBoth", collide::rqtBoth, "rqtDyn", collide::rqtDyn);
 
-    lua.create_named_table("lib", "get_random_double_below", &get_random_double_below, "get_random_s64", &get_random_s64, "get_random_u64", &get_random_u64);
+    lua.create_named_table("lib", "random_double_below", &xr::random_double_below, "random_s64", &xr::random_s64, "random_u64", &xr::random_u64);
 }

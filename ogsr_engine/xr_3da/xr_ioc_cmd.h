@@ -4,27 +4,36 @@
     { \
         static cls x##cls(); \
         Console->AddCommand(&x##cls); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define CMD1(cls, p1) \
     { \
         static cls x##cls(p1); \
         Console->AddCommand(&x##cls); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define CMD2(cls, p1, p2) \
     { \
         static cls x##cls(p1, p2); \
         Console->AddCommand(&x##cls); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define CMD3(cls, p1, p2, p3) \
     { \
         static cls x##cls(p1, p2, p3); \
         Console->AddCommand(&x##cls); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define CMD4(cls, p1, p2, p3, p4) \
     { \
         static cls x##cls(p1, p2, p3, p4); \
         Console->AddCommand(&x##cls); \
-    }
+    } \
+    XR_MACRO_END()
 
 // KRodin: закомментировано.
 // #include "xrSASH.h"
@@ -56,16 +65,19 @@ protected:
     IC bool EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1, S2) == 0; }
 
 public:
-    IConsole_Command(LPCSTR N BENCH_SEC_SIGN) : cName(N), bEnabled(TRUE), bLowerCaseArgs(TRUE), bEmptyArgsHandled(FALSE)
+    IConsole_Command() = delete;
+
+    IConsole_Command(LPCSTR N BENCH_SEC_SIGN, bool empty = false) : cName{N}, bEnabled{true}, bLowerCaseArgs{true}, bEmptyArgsHandled{empty}
     {
         m_LRU.reserve(LRU_MAX_COUNT + 1);
         m_LRU.clear();
     }
+
     virtual ~IConsole_Command()
     {
         if (Console)
             Console->RemoveCommand(this);
-    };
+    }
 
     BENCH_SEC_SCRAMBLEVTBL3
 
@@ -112,7 +124,7 @@ protected:
     u32 mask;
 
 public:
-    CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M) {};
+    CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N}, value{V}, mask{M} {}
     const BOOL GetValue() const { return value->test(mask); }
     virtual void Execute(LPCSTR args)
     {
@@ -151,7 +163,7 @@ protected:
     u32 mask;
 
 public:
-    CCC_ToggleMask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command(N), value(V), mask(M) { bEmptyArgsHandled = TRUE; };
+    CCC_ToggleMask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N, true}, value{V}, mask{M} {}
     const BOOL GetValue() const { return value->test(mask); }
     virtual void Execute(LPCSTR args)
     {
@@ -184,7 +196,7 @@ protected:
     const xr_token* tokens;
 
 public:
-    CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command(N), value(V), tokens(T) {};
+    CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command{N}, value{V}, tokens{T} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -267,8 +279,8 @@ protected:
     float min, max;
 
 public:
-    CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1) : IConsole_Command(N), value(V), min(_min), max(_max) {};
-    const float GetValue() const { return *value; };
+    CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
+    const float GetValue() const { return *value; }
     void GetBounds(float& fmin, float& fmax) const
     {
         fmin = min;
@@ -308,13 +320,14 @@ protected:
     Fvector min, max;
 
 public:
-    CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) : IConsole_Command(N), value(V)
+    CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) : IConsole_Command{N}, value{V}
     {
         min.set(_min);
         max.set(_max);
-    };
-    const Fvector GetValue() const { return *value; };
-    Fvector* GetValuePtr() const { return value; };
+    }
+
+    const Fvector GetValue() const { return *value; }
+    Fvector* GetValuePtr() const { return value; }
 
     virtual void Execute(LPCSTR args)
     {
@@ -357,14 +370,14 @@ protected:
     int min, max;
 
 public:
-    const int GetValue() const { return *value; };
+    const int GetValue() const { return *value; }
     void GetBounds(int& imin, int& imax) const
     {
         imin = min;
         imax = max;
     }
 
-    CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command(N), value(V), min(_min), max(_max) {};
+    CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -394,12 +407,12 @@ protected:
     int size;
 
 public:
-    CCC_String(LPCSTR N, LPSTR V, int _size = 2) : IConsole_Command(N), value(V), size(_size)
+    CCC_String(LPCSTR N, LPSTR V, int _size = 2) : IConsole_Command{N}, value{V}, size{_size}
     {
         bLowerCaseArgs = FALSE;
         R_ASSERT(V);
         R_ASSERT(size > 1);
-    };
+    }
 
     virtual void Execute(LPCSTR args) { strncpy_s(value, size, args, size - 1); }
     virtual void Status(TStatus& S) { xr_strcpy(S, value); }
@@ -416,7 +429,7 @@ class CCC_LoadCFG : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_LoadCFG, IConsole_Command);
 
 public:
-    virtual bool allow(LPCSTR cmd) { return true; };
+    virtual bool allow(LPCSTR cmd) { return true; }
     CCC_LoadCFG(LPCSTR N);
     virtual void Execute(LPCSTR args);
 };

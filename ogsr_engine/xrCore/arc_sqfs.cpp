@@ -2,6 +2,9 @@
 
 #include <concurrentqueue.h>
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <sqfs/compressor.h>
 #include <sqfs/data_reader.h>
 #include <sqfs/dir_entry.h>
@@ -9,6 +12,8 @@
 #include <sqfs/id_table.h>
 #include <sqfs/inode.h>
 #include <sqfs/io.h>
+
+XR_DIAG_POP();
 
 #include "FS_internal.h"
 #include "stream_reader.h"
@@ -324,7 +329,7 @@ IReader* CLocatorAPI::archive::read_sqfs(const char* fname, const struct file& d
     xr_free(inode);
     fs->put(rd);
 
-    return xr_new<CTempReader>(dest, desc.size_real, 0);
+    return xr_new<CTempReader>(dest, desc.size_real, 0uz);
 }
 
 CStreamReader* CLocatorAPI::archive::stream_sqfs(const char* fname, const struct file& desc)

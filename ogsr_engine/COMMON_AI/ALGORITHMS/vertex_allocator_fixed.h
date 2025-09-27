@@ -20,13 +20,13 @@ struct CVertexAllocatorFixed
     {
         RTTI_DECLARE_TYPEINFO(CDataStorage<TCompoundVertex>);
 
-    public:
+    private:
         using Index = typename TCompoundVertex::Index;
         using VertexContainer = xr_vector<TCompoundVertex>;
 
     protected:
-        u32 m_vertex_count;
         VertexContainer m_vertices;
+        u32 m_vertex_count{std::numeric_limits<u32>::max()};
 
     public:
         inline CDataStorage();

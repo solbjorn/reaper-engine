@@ -6,8 +6,6 @@
 
 void CControlPathBuilderBase::update_frame()
 {
-    START_PROFILE("Base Monster/Path Builder Base/Frame Update");
-
     // обновить состояние билдера
     update_path_builder_state();
 
@@ -16,8 +14,6 @@ void CControlPathBuilderBase::update_frame()
 
     // set params
     set_path_builder_params();
-
-    STOP_PROFILE;
 }
 
 void CControlPathBuilderBase::update_target_point()

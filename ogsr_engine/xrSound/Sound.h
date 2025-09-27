@@ -86,22 +86,23 @@ class ref_sound_data : public xr_resource
 
 public:
     //	shared_str						nm;
-    CSound_source* handle; //!< Pointer to wave-source interface
-    CSound_emitter* feedback; //!< Pointer to emitter, automaticaly clears on emitter-stop
-    esound_type s_type;
-    int g_type; //!< Sound type, usually for AI
-    CObject* g_object; //!< Game object that emitts ref_sound
+    CSound_source* handle{}; //!< Pointer to wave-source interface
+    CSound_emitter* feedback{}; //!< Pointer to emitter, automaticaly clears on emitter-stop
+    esound_type s_type{st_Effect};
+    int g_type{}; //!< Sound type, usually for AI
+    CObject* g_object{}; //!< Game object that emitts ref_sound
     CSound_UserDataPtr g_userdata;
     shared_str fn_attached[2];
 
-    u32 dwBytesTotal;
-    float fTimeTotal;
+    u32 dwBytesTotal{};
+    float fTimeTotal{};
 
 public:
-    ref_sound_data();
+    ref_sound_data() = default;
     ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual ~ref_sound_data();
-    float get_length_sec() const { return fTimeTotal; };
+
+    float get_length_sec() const { return fTimeTotal; }
 };
 
 typedef resptr_core<ref_sound_data, resptr_base<ref_sound_data>> ref_sound_data_ptr;
@@ -118,11 +119,8 @@ struct ref_sound
     ref_sound_data_ptr _p;
 
 public:
-    ref_sound() {}
-    ~ref_sound() {}
-
-    IC CSound_source* _handle() const { return _p ? _p->handle : NULL; }
-    IC CSound_emitter* _feedback() { return _p ? _p->feedback : 0; }
+    IC CSound_source* _handle() const { return _p ? _p->handle : nullptr; }
+    IC CSound_emitter* _feedback() { return _p ? _p->feedback : nullptr; }
 
     IC CObject* _g_object()
     {
@@ -157,7 +155,7 @@ public:
 
     IC void play(CObject* O, u32 flags = 0, float delay = 0.f);
     IC void play_at_pos(CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
-    IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0);
+    IC void play_no_feedback(CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr, Fvector2* range = nullptr);
 
     IC void stop();
     IC void stop_deffered(float speed_k);
@@ -172,7 +170,7 @@ public:
 
     IC const CSound_params* get_params();
     IC void set_params(CSound_params* p);
-    IC float get_length_sec() const { return _p ? _p->get_length_sec() : 0.0f; };
+    IC float get_length_sec() const { return _p ? _p->get_length_sec() : 0.0f; }
 };
 
 /// definition (Sound Source)
@@ -217,13 +215,11 @@ extern float alpha;
 extern float getAlpha();
 extern float getTimeDeltaSmoothing();
 extern float getSmoothedValue(float, float, float);
-}; // namespace soundSmoothingParams
+} // namespace soundSmoothingParams
 
 /// definition (Sound Params)
-class CSound_params : public virtual RTTI::Enable
+class CSound_params
 {
-    RTTI_DECLARE_TYPEINFO(CSound_params);
-
 public:
     Fvector position{};
     Fvector velocity{}; // Cribbledirge.  Added for doppler effect.
@@ -245,7 +241,7 @@ private:
 
 public:
     // Functions added by Cribbledirge for doppler effect.
-    IC virtual void update_position(const Fvector& newPosition)
+    IC void update_position(const Fvector& newPosition)
     {
         // If the position has been set already, start getting a moving average of the velocity.
         if (set)
@@ -260,7 +256,7 @@ public:
         position.set(newPosition);
     }
 
-    IC virtual void update_velocity(const float dt)
+    IC void update_velocity(const float dt)
     {
         float a = soundSmoothingParams::getTimeDeltaSmoothing();
         float p = soundSmoothingParams::power;
@@ -371,7 +367,8 @@ public:
 
     virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f) = 0;
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f) = 0;
-    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0) = 0;
+    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
+                                  Fvector2* range = nullptr) = 0;
 
     virtual void set_master_volume(float f = 1.f) = 0;
     virtual void set_master_gain(float low_pass, float high_pass) = 0;
@@ -403,16 +400,6 @@ class CSound_manager_interface;
 extern CSound_manager_interface* Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
-IC ref_sound_data::ref_sound_data()
-{
-    handle = 0;
-    feedback = 0;
-    g_type = 0;
-    g_object = 0;
-    s_type = st_Effect;
-    dwBytesTotal = 0;
-    fTimeTotal = 0.0f;
-}
 
 IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
 

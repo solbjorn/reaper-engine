@@ -9,7 +9,6 @@
 
 namespace ACTOR_DEFS
 {
-
 enum ESoundCcount
 {
     //	SND_HIT_COUNT=8,
@@ -23,12 +22,13 @@ enum EActorCameras
     eacFreeLook,
     eacMaxCam
 };
+
 enum EDamages
 {
     DAMAGE_FX_COUNT = 12
 };
 
-enum EMoveCommand
+enum EMoveCommand : u32
 {
     mcFwd = (1ul << 0ul),
     mcBack = (1ul << 1ul),
@@ -50,5 +50,4 @@ enum EMoveCommand
     mcAnyState = (mcCrouch | mcAccel | mcClimb | mcSprint),
     mcLookout = (mcLLookout | mcRLookout),
 };
-
-}; // namespace ACTOR_DEFS
+} // namespace ACTOR_DEFS

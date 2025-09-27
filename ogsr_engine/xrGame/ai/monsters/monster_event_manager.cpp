@@ -9,13 +9,9 @@ void CMonsterEventManager::add_delegate(EEventType event, typeEvent delegate)
 {
     EVENT_MAP_IT it = m_event_storage.find(event);
     if (it == m_event_storage.end())
-    {
-        std::pair<EVENT_MAP_IT, bool> res;
-        res = m_event_storage.insert(mk_pair(event, EVENT_VECTOR()));
-        it = res.first;
-    }
+        it = m_event_storage.try_emplace(event).first;
 
-    it->second.push_back(event_struc(delegate));
+    it->second.emplace_back(delegate);
 }
 
 void CMonsterEventManager::remove_delegate(EEventType event, typeEvent delegate)

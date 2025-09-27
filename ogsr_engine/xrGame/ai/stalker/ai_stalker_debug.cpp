@@ -1041,5 +1041,4 @@ void CAI_Stalker::dbg_draw_visibility_rays()
         }
     }
 }
-
 #endif // DEBUG

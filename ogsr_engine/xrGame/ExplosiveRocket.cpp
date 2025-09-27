@@ -139,6 +139,7 @@ void CExplosiveRocket::setup_physic_shell() { inherited::setup_physic_shell(); }
 void CExplosiveRocket::create_physic_shell() { inherited::create_physic_shell(); }
 
 bool CExplosiveRocket::Useful() const { return (inherited::Useful()); }
+
 void CExplosiveRocket::net_Relcase(CObject* O)
 {
     CExplosive::net_Relcase(O);

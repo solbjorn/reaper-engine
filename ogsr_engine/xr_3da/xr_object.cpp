@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 
 #include "xr_object.h"
@@ -32,7 +33,7 @@ void CObject::cNameVisual_set(shared_str N)
         NameVisual = N;
         renderable.visual = Render->model_Create(*N);
 
-        IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : NULL;
+        IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : nullptr;
         IKinematics* new_k = renderable.visual->dcast_PKinematics();
 
         /*
@@ -52,8 +53,9 @@ void CObject::cNameVisual_set(shared_str N)
     else
     {
         ::Render->model_Delete(renderable.visual);
-        NameVisual = 0;
+        NameVisual = nullptr;
     }
+
     OnChangeVisual();
 }
 
@@ -127,11 +129,11 @@ CObject::CObject() : ISpatial(g_SpatialSpace)
     // Transform
     Props.storage = 0;
 
-    Parent = NULL;
+    Parent = nullptr;
 
-    NameObject = NULL;
-    NameSection = NULL;
-    NameVisual = NULL;
+    NameObject = nullptr;
+    NameSection = nullptr;
+    NameVisual = nullptr;
 
 #ifdef DEBUG
     dbg_update_shedule = u32(-1) / 2;
@@ -141,9 +143,9 @@ CObject::CObject() : ISpatial(g_SpatialSpace)
 
 CObject::~CObject()
 {
-    cNameVisual_set(0);
-    cName_set(0);
-    cNameSect_set(0);
+    cNameVisual_set(nullptr);
+    cName_set(nullptr);
+    cNameSect_set(nullptr);
 }
 
 void CObject::Load(LPCSTR section)
@@ -173,14 +175,14 @@ BOOL CObject::net_Spawn(CSE_Abstract* data)
 
     VERIFY(_valid(renderable.xform));
 
-    if (0 == Visual() && pSettings->line_exist(cNameSect(), "visual"))
+    if (!Visual() && pSettings->line_exist(cNameSect(), "visual"))
     {
         shared_str visual_name = pSettings->r_string(cNameSect(), "visual");
         Msg("! [%s]: zero Visual() in %s found, use %s instead", __FUNCTION__, cName().c_str(), visual_name.c_str());
         cNameVisual_set(visual_name);
     }
 
-    if (0 == collidable.model)
+    if (!collidable.model)
     {
         if (pSettings->line_exist(cNameSect(), "cform"))
         {
@@ -188,6 +190,7 @@ BOOL CObject::net_Spawn(CSE_Abstract* data)
             collidable.model = xr_new<CCF_Skeleton>(this);
         }
     }
+
     R_ASSERT(spatial.space);
     spatial_register();
 
@@ -213,12 +216,13 @@ void CObject::net_Destroy()
     spatial_unregister();
     //	setDestroy					(true);
     // remove visual
-    cNameVisual_set(0);
+    cNameVisual_set(nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////
 const float base_spu_epsP = 0.05f;
 const float base_spu_epsR = 0.05f;
+
 void CObject::spatial_update(float eps_P, float eps_R)
 {
     //
@@ -252,6 +256,7 @@ void CObject::spatial_update(float eps_P, float eps_R)
                 PositionStack[1] = PositionStack[2];
                 PositionStack[2] = PositionStack[3];
             }
+
             PositionStack.back().dwTime = Device.dwTimeGlobal;
             PositionStack.back().vPosition = Position();
         }
@@ -358,25 +363,28 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
         return new_parent;
 
     CObject* old_parent = Parent;
-
-    VERIFY2((new_parent == 0) || (old_parent == 0), "Before set parent - execute H_SetParent(0)");
+    VERIFY2(!new_parent || !old_parent, "Before set parent - execute H_SetParent(0)");
 
     // if (Parent) Parent->H_ChildRemove	(this);
-    if (0 == old_parent)
+    if (!old_parent)
         OnH_B_Chield(); // before attach
     else
         OnH_B_Independent(just_before_destroy); // before detach
+
     if (new_parent)
         spatial_unregister();
     else
         spatial_register();
+
     Parent = new_parent;
-    if (0 == old_parent)
+    if (!old_parent)
         OnH_A_Chield(); // after attach
     else
         OnH_A_Independent(); // after detach
+
     // if (Parent)	Parent->H_ChildAdd		(this);
     MakeMeCrow();
+
     return old_parent;
 }
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIDialogHolder.h"
 #include "ui\UIDialogWnd.h"
 #include "UICursor.h"
@@ -78,7 +79,8 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
         if (A && pDialog->StopAnyMove())
         {
             A->StopAnyMove();
-        };
+        }
+
         if (A)
         {
             A->PickupModeOff();
@@ -110,16 +112,17 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
             else
                 HUD().GetUI()->HideGameIndicators();
         }
+
         RemoveDialogToRender(pDialog);
-        SetMainInputReceiver(NULL, false);
-        pDialog->SetHolder(NULL);
+        SetMainInputReceiver(nullptr, false);
+        pDialog->SetHolder(nullptr);
         pDialog->Hide();
     }
     else
     {
         RemoveDialogToRender(pDialog);
         SetMainInputReceiver(pDialog, true);
-        pDialog->SetHolder(NULL);
+        pDialog->SetHolder(nullptr);
         pDialog->Hide();
     }
 
@@ -163,10 +166,11 @@ void CDialogHolder::DoRenderDialogs()
 
 CUIDialogWnd* CDialogHolder::MainInputReceiver()
 {
-    if (!m_input_receivers.empty())
-        return m_input_receivers.back().m_item;
-    return NULL;
-};
+    if (m_input_receivers.empty())
+        return nullptr;
+
+    return m_input_receivers.back().m_item;
+}
 
 void CDialogHolder::SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, const Flags8 flags)
 {
@@ -203,9 +207,8 @@ void CDialogHolder::SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, co
         if (!flags.equal(Flags8{}))
             m_input_receivers.back().m_flags = flags;
     }
-};
-//. #include "ai_space.h"
-//. #include "script_engine.h"
+}
+
 void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
     //.	ai().script_engine().script_log	(eLuaMessageTypeError,"foo");

@@ -5,6 +5,7 @@
 #include "../xr_3da/camerabase.h"
 #include "ActorEffector.h"
 #include "CharacterPhysicsSupport.h"
+
 bool CActor::use_MountedWeapon(CHolderCustom* object)
 {
     //	CHolderCustom* wpn	=smart_cast<CHolderCustom*>(object);
@@ -15,8 +16,9 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
         {
             m_holder->detach_Actor();
             character_physics_support()->movement()->CreateCharacter();
-            m_holder = NULL;
+            m_holder = nullptr;
         }
+
         return true;
     }
     else
@@ -25,6 +27,7 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
         {
             Fvector center;
             Center(center);
+
             if (wpn->Use(Device.vCameraPosition, Device.vCameraDirection, center))
             {
                 if (wpn->attach_Actor(this))
@@ -33,15 +36,18 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
                     character_physics_support()->movement()->DestroyCharacter();
                     PickupModeOff();
                     m_holder = wpn;
+
                     if (pCamBobbing)
                     {
                         Cameras().RemoveCamEffector(eCEBobbing);
-                        pCamBobbing = NULL;
+                        pCamBobbing = nullptr;
                     }
+
                     return true;
                 }
             }
         }
     }
+
     return false;
 }

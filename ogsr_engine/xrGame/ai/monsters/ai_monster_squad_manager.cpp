@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ai_monster_squad_manager.h"
 #include "ai_monster_squad.h"
 #include "../../entity.h"
@@ -6,9 +7,10 @@
 //////////////////////////////////////////////////////////////////////////
 // SQUAD MANAGER Implementation
 //////////////////////////////////////////////////////////////////////////
-CMonsterSquadManager* g_monster_squad = 0;
+CMonsterSquadManager* g_monster_squad{};
 
 CMonsterSquadManager::CMonsterSquadManager() {}
+
 CMonsterSquadManager::~CMonsterSquadManager()
 {
     for (u32 team_id = 0; team_id < team.size(); team_id++)
@@ -35,7 +37,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
         team[team_id][squad_id].resize(group_id + 1);
 
         for (u32 i = 0; i < group_id; i++)
-            team[team_id][squad_id][i] = 0;
+            team[team_id][squad_id][i] = nullptr;
 
         pSquad = xr_new<CMonsterSquad>();
         team[team_id][squad_id][group_id] = pSquad;
@@ -48,7 +50,7 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
         team[team_id][squad_id].resize(group_id + 1);
 
         for (u32 i = 0; i < group_id; i++)
-            team[team_id][squad_id][i] = 0;
+            team[team_id][squad_id][i] = nullptr;
 
         pSquad = xr_new<CMonsterSquad>();
         team[team_id][squad_id][group_id] = pSquad;
@@ -61,14 +63,14 @@ void CMonsterSquadManager::register_member(u8 team_id, u8 squad_id, u8 group_id,
         team[team_id][squad_id].resize(group_id + 1);
 
         for (u32 i = prev_size; i < group_id; i++)
-            team[team_id][squad_id][i] = 0;
+            team[team_id][squad_id][i] = nullptr;
 
         pSquad = xr_new<CMonsterSquad>();
         team[team_id][squad_id][group_id] = pSquad;
     }
     else
     {
-        if (team[team_id][squad_id][group_id] == 0)
+        if (!team[team_id][squad_id][group_id])
         {
             pSquad = xr_new<CMonsterSquad>();
             team[team_id][squad_id][group_id] = pSquad;

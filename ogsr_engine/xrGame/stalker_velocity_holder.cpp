@@ -7,11 +7,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_velocity_holder.h"
 #include "object_broker.h"
 #include "stalker_velocity_collection.h"
 
-CStalkerVelocityHolder* g_stalker_velocity_holder = 0;
+CStalkerVelocityHolder* g_stalker_velocity_holder{};
 
 CStalkerVelocityHolder::~CStalkerVelocityHolder() { delete_data(m_collections); }
 
@@ -22,6 +23,7 @@ const CStalkerVelocityHolder::COLLECTION& CStalkerVelocityHolder::collection(con
         return (*(*I).second);
 
     COLLECTION* collection = xr_new<COLLECTION>(section);
-    m_collections.insert(std::make_pair(section, collection));
-    return (*collection);
+    m_collections.emplace(section, collection);
+
+    return *collection;
 }

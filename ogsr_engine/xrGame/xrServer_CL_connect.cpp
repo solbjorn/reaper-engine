@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrserver.h"
 #include "xrmessages.h"
 #include "hudmanager.h"
@@ -29,7 +30,8 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
     Flags16 save = E->s_flags;
     //-------------------------------------------------
     E->s_flags.set(M_SPAWN_UPDATE, TRUE);
-    if (0 == E->owner)
+
+    if (!E->owner)
     {
         // PROCESS NAME; Name this entity
         if (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
@@ -49,6 +51,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
         E->Spawn_Write(P, FALSE);
         E->UPDATE_Write(P);
     }
+
     //-----------------------------------------------------
     E->s_flags = save;
     SendTo(CL->ID, P, net_flags(TRUE, TRUE));
@@ -71,7 +74,7 @@ void xrServer::SendConnectionData(IClient* _CL)
     // Send "finished" signal
     P.w_begin(M_SV_CONFIG_FINISHED);
     SendTo(CL->ID, P, mode);
-};
+}
 
 void xrServer::OnCL_Connected(IClient* _CL)
 {
@@ -111,7 +114,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* Resul
     P.w_stringZ(Level().m_caServerOptions);
 
     SendTo(CL->ID, P);
-};
+}
 
 void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
@@ -133,10 +136,10 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
     {
         Check_BuildVersion_Success(CL);
     }
-};
+}
 
 void xrServer::Check_BuildVersion_Success(IClient* CL)
 {
     CL->flags.bVerified = TRUE;
     SendConnectResult(CL, 1, 0, "All Ok");
-};
+}

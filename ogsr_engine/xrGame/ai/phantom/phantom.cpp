@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "phantom.h"
 #include "../../../xr_3da/NET_Server_Trash/net_utils.h"
 #include "level.h"
@@ -34,7 +35,7 @@ void CPhantom::Load(LPCSTR section)
     fASpeed = pSettings->r_float(section, "angular_speed");
     fContactHit = pSettings->r_float(section, "contact_hit");
 
-    LPCSTR snd_name = 0;
+    LPCSTR snd_name{};
     m_state_data[stBirth].particles = pSettings->r_string(section, "particles_birth");
     snd_name = pSettings->r_string(section, "sound_birth");
     if (snd_name && snd_name[0])
@@ -85,7 +86,7 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
     VERIFY(m_enemy);
 
     // default init
-    m_fly_particles = 0;
+    m_fly_particles = nullptr;
     SetfHealth(0.001f);
 
     // orientate to enemy
@@ -174,7 +175,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
         case stBirth: {
             SStateData& sdata = m_state_data[new_state];
             PlayParticles(sdata.particles.c_str(), TRUE, xform);
-            sdata.sound.play_at_pos(0, xform.c);
+            sdata.sound.play_at_pos(nullptr, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
@@ -182,14 +183,14 @@ void CPhantom::SwitchToState_internal(EState new_state)
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnFlyState>(this);
             SStateData& sdata = m_state_data[new_state];
             m_fly_particles = PlayParticles(sdata.particles.c_str(), FALSE, xform);
-            sdata.sound.play_at_pos(0, xform.c, sm_Looped);
+            sdata.sound.play_at_pos(nullptr, xform.c, sm_Looped);
             K->PlayCycle(sdata.motion);
         }
         break;
         case stContact: {
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
-            sdata.sound.play_at_pos(0, xform.c);
+            sdata.sound.play_at_pos(nullptr, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
@@ -197,7 +198,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
             PlayParticles(sdata.particles.c_str(), TRUE, xform);
-            sdata.sound.play_at_pos(0, xform.c);
+            sdata.sound.play_at_pos(nullptr, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
         break;
@@ -232,7 +233,9 @@ void CPhantom::OnFlyState()
         }
     }
 }
+
 void CPhantom::OnDeadState() { UpdateFlyMedia(); }
+
 void CPhantom::UpdateFlyMedia()
 {
     UpdatePosition(m_enemy->Position());
@@ -295,7 +298,8 @@ CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemo
     CParticlesObject* ps = CParticlesObject::Create(name.c_str(), bAutoRemove);
     ps->UpdateParent(xform, zero_vel);
     ps->Play();
-    return bAutoRemove ? 0 : ps;
+
+    return bAutoRemove ? nullptr : ps;
 }
 
 //---------------------------------------------------------------------

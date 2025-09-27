@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UICellCustomItems.h"
 #include "UIInventoryUtilities.h"
 #include "../Weapon.h"
@@ -56,7 +57,7 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 CUIInventoryCellItem::~CUIInventoryCellItem()
 {
     if (auto item = object())
-        item->m_cell_item = NULL;
+        item->m_cell_item = nullptr;
 }
 
 void CUIInventoryCellItem::OnFocusReceive()
@@ -110,7 +111,8 @@ bool CUIInventoryCellItem::OnMouse(float x, float y, EUIMessages action)
 CUIDragItem* CUIInventoryCellItem::CreateDragItem()
 {
     CUIDragItem* i = inherited::CreateDragItem();
-    CUIStatic* s = NULL;
+    CUIStatic* s{};
+
     if (!b_auto_drag_childs)
         return i;
 
@@ -210,9 +212,10 @@ void CUIAmmoCellItem::UpdateItemText()
 CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm) : inherited(itm)
 {
     b_auto_drag_childs = false;
-    m_addons[eSilencer] = NULL;
-    m_addons[eScope] = NULL;
-    m_addons[eLauncher] = NULL;
+
+    m_addons[eSilencer] = nullptr;
+    m_addons[eScope] = nullptr;
+    m_addons[eLauncher] = nullptr;
 
     m_cell_size.set(INV_GRID_WIDTHF, INV_GRID_HEIGHTF);
 
@@ -248,7 +251,7 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t, CIconParams& params)
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)
 {
     DetachChild(m_addons[t]);
-    m_addons[t] = NULL;
+    m_addons[t] = nullptr;
 }
 
 CUIStatic* CUIWeaponCellItem::GetIcon(eAddonType t) { return m_addons[t]; }
@@ -318,9 +321,10 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 {
     const Ivector2& cs = parent_list->CellSize();
     m_cell_size.set((float)cs.x, (float)cs.y);
-    CUIStatic* s_silencer = is_silencer() ? GetIcon(eSilencer) : NULL;
-    CUIStatic* s_scope = is_scope() ? GetIcon(eScope) : NULL;
-    CUIStatic* s_launcher = is_launcher() ? GetIcon(eLauncher) : NULL;
+
+    CUIStatic* s_silencer = is_silencer() ? GetIcon(eSilencer) : nullptr;
+    CUIStatic* s_scope = is_scope() ? GetIcon(eScope) : nullptr;
+    CUIStatic* s_launcher = is_launcher() ? GetIcon(eLauncher) : nullptr;
 
     InitAllAddons(s_silencer, s_scope, s_launcher, parent_list->GetVerticalPlacement());
 }
@@ -504,6 +508,6 @@ void CBuyItemCustomDrawCell::OnDraw(CUICellItem* cell)
     Fvector2 pos;
     cell->GetAbsolutePos(pos);
     UI()->ClientToScreenScaled(pos, pos.x, pos.y);
-    m_pFont->Out(pos.x, pos.y, m_string);
+    m_pFont->Out(pos.x, pos.y, "%s", m_string);
     m_pFont->OnRender();
 }

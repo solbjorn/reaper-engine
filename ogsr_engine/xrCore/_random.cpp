@@ -1,115 +1,118 @@
 #include "stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdeprecated-copy-with-dtor");
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <absl/random/random.h>
+
+XR_DIAG_POP();
+
 #include <concurrentqueue.h>
 
-class xr_random
+namespace xr
+{
+namespace
+{
+class random
 {
 private:
-    moodycamel::ConcurrentQueue<absl::BitGen*> q;
+    moodycamel::ConcurrentQueue<std::unique_ptr<absl::BitGen>> q;
 
 public:
-    absl::BitGen* get()
+    [[nodiscard]] std::unique_ptr<absl::BitGen> get()
     {
-        absl::BitGen* gen;
+        std::unique_ptr<absl::BitGen> gen;
 
         if (!q.try_dequeue(gen))
-            gen = xr_new<absl::BitGen>();
+            gen = std::make_unique<absl::BitGen>();
 
         return gen;
     }
 
-    bool put(absl::BitGen* gen) { return q.enqueue(gen); }
-
-    xr_random() = default;
-
-    ~xr_random()
-    {
-        absl::BitGen* gen;
-
-        while (q.try_dequeue(gen))
-            xr_delete(gen);
-    }
+    void put(std::unique_ptr<absl::BitGen>&& gen) { q.enqueue(std::move(gen)); }
 };
 
-static xr_random rnd;
+random rnd;
+} // namespace
 
-u32 get_random_u32(u32 min, u32 max)
+s32 random_s32(s32 min, s32 max)
 {
-    absl::BitGen* gen = rnd.get();
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
 
-    u32 ret = absl::Uniform<u32>(absl::IntervalClosed, *gen, min, max);
-    rnd.put(gen);
+    s32 ret = absl::Uniform<s32>(absl::IntervalClosed, *gen, min, max);
+    rnd.put(std::move(gen));
 
     return ret;
 }
 
-u32 get_random_u32_below(u32 min, u32 max)
+s32 random_s32_below(s32 min, s32 max)
 {
-    absl::BitGen* gen = rnd.get();
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
 
-    u32 ret = absl::Uniform<u32>(*gen, min, max);
-    rnd.put(gen);
+    s32 ret = absl::Uniform<s32>(*gen, min, max);
+    rnd.put(std::move(gen));
 
     return ret;
 }
 
-int get_random_int(int min, int max)
+s64 random_s64(s64 min, s64 max)
 {
-    absl::BitGen* gen = rnd.get();
-
-    int ret = absl::Uniform<int>(absl::IntervalClosed, *gen, min, max);
-    rnd.put(gen);
-
-    return ret;
-}
-
-int get_random_int_below(int min, int max)
-{
-    absl::BitGen* gen = rnd.get();
-
-    int ret = absl::Uniform<int>(*gen, min, max);
-    rnd.put(gen);
-
-    return ret;
-}
-
-float get_random_float(float min, float max)
-{
-    absl::BitGen* gen = rnd.get();
-
-    float ret = absl::Uniform<float>(absl::IntervalClosed, *gen, min, max);
-    rnd.put(gen);
-
-    return ret;
-}
-
-u64 get_random_u64(u64 min, u64 max)
-{
-    absl::BitGen* gen = rnd.get();
-
-    u64 ret = absl::Uniform<u64>(absl::IntervalClosed, *gen, min, max);
-    rnd.put(gen);
-
-    return ret;
-}
-
-s64 get_random_s64(s64 min, s64 max)
-{
-    absl::BitGen* gen = rnd.get();
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
 
     s64 ret = absl::Uniform<s64>(absl::IntervalClosed, *gen, min, max);
-    rnd.put(gen);
+    rnd.put(std::move(gen));
 
     return ret;
 }
 
-double get_random_double_below(double min, double max)
+u32 random_u32(u32 min, u32 max)
 {
-    absl::BitGen* gen = rnd.get();
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
+
+    u32 ret = absl::Uniform<u32>(absl::IntervalClosed, *gen, min, max);
+    rnd.put(std::move(gen));
+
+    return ret;
+}
+
+u32 random_u32_below(u32 min, u32 max)
+{
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
+
+    u32 ret = absl::Uniform<u32>(*gen, min, max);
+    rnd.put(std::move(gen));
+
+    return ret;
+}
+
+u64 random_u64(u64 min, u64 max)
+{
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
+
+    u64 ret = absl::Uniform<u64>(absl::IntervalClosed, *gen, min, max);
+    rnd.put(std::move(gen));
+
+    return ret;
+}
+
+float random_float(float min, float max)
+{
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
+
+    float ret = absl::Uniform<float>(absl::IntervalClosed, *gen, min, max);
+    rnd.put(std::move(gen));
+
+    return ret;
+}
+
+double random_double_below(double min, double max)
+{
+    std::unique_ptr<absl::BitGen> gen = rnd.get();
 
     double ret = absl::Uniform<double>(*gen, min, max);
-    rnd.put(gen);
+    rnd.put(std::move(gen));
 
     return ret;
 }
+} // namespace xr

@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "Blender_Detail_still.h"
+#include "uber_deffer.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -39,7 +40,7 @@ void CBlender_Detail_Still::LoadIni(CInifile* ini_file, LPCSTR section) { IBlend
 //////////////////////////////////////////////////////////////////////////
 // R3
 //////////////////////////////////////////////////////////////////////////
-#include "uber_deffer.h"
+
 void CBlender_Detail_Still::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
@@ -47,14 +48,14 @@ void CBlender_Detail_Still::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_R2_NORMAL_HQ: // deffer wave
-        uber_deffer(C, false, "detail_w", "base", true, 0, true);
+        uber_deffer(C, false, "detail_w", "base", true, nullptr, true);
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
         C.r_CullMode(D3DCULL_NONE);
         C.r_End();
         break;
     case SE_R2_NORMAL_LQ: // deffer still
-        uber_deffer(C, false, "detail_s", "base", true, 0, true);
+        uber_deffer(C, false, "detail_s", "base", true, nullptr, true);
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
         C.r_CullMode(D3DCULL_NONE);

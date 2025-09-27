@@ -15,7 +15,7 @@ namespace MemorySpace
 struct CVisibleObject;
 struct CSoundObject;
 struct CHitObject;
-}; // namespace MemorySpace
+} // namespace MemorySpace
 
 class CDangerManager : public virtual RTTI::Enable
 {

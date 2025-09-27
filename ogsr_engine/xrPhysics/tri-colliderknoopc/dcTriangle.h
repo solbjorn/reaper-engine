@@ -1,4 +1,5 @@
 #pragma once
+
 struct Triangle
 {
     // dReal* v0;
@@ -10,13 +11,11 @@ struct Triangle
     dReal dist;
     dReal pos;
     dReal depth;
-    CDB::TRI* T;
+    CDB::TRI* T{};
+
     Triangle()
-    {
-        T = NULL;
 #ifdef DEBUG
-        depth = -dInfinity;
-        dist = -dInfinity;
+        : dist{-dInfinity}, depth{-dInfinity}
 #endif
-    }
+    {}
 };

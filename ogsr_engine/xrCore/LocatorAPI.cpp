@@ -4,14 +4,18 @@
 
 #include "stdafx.h"
 
-#pragma warning(disable : 4995)
 #include <direct.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-#pragma warning(default : 4995)
 
 #include <filesystem>
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <sqfs/super.h>
+
+XR_DIAG_POP();
 
 #include "FS_internal.h"
 #include "stream_reader.h"
@@ -132,7 +136,7 @@ void _dump_open_files(int mode)
                     Log("----opened files");
 
                 bShow = true;
-                Msg("[%d] fname:%s", file._used, file._fn.c_str());
+                Msg("[%zu] fname:%s", file._used, file._fn.c_str());
             }
         }
     }
@@ -142,11 +146,11 @@ void _dump_open_files(int mode)
         for (const auto& file : g_open_files)
         {
             if (file._reader == nullptr)
-                Msg("[%d] fname:%s", file._used, file._fn.c_str());
+                Msg("[%zu] fname:%s", file._used, file._fn.c_str());
         }
     }
     if (bShow)
-        Msg("----total count = [%lu]", g_open_files.size());
+        Msg("----total count = [%zu]", g_open_files.size());
 }
 
 CLocatorAPI::CLocatorAPI()
@@ -245,7 +249,7 @@ void CLocatorAPI::archive::open()
     if (hSrcFile && hSrcMap)
         return;
 
-    hSrcFile = CreateFile(*path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+    hSrcFile = CreateFile(*path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     R_ASSERT(hSrcFile != INVALID_HANDLE_VALUE);
 
     LARGE_INTEGER sz;
@@ -301,7 +305,7 @@ void CLocatorAPI::archive::close()
         close_db();
 
     CloseHandle(hSrcFile);
-    hSrcFile = NULL;
+    hSrcFile = nullptr;
 }
 
 void CLocatorAPI::LoadArchive(archive& A)
@@ -399,7 +403,7 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse)
     {
         if (!m_Flags.is(flTargetFolderOnly) && strext(N) && (!strncmp(strext(N), ".db", 3) || !strncmp(strext(N), ".xdb", 4) || !strncmp(strext(N), ".sq", 3)))
         {
-            Msg("--Found base arch: [%s], size: [%u]", N, F.size);
+            Msg("--Found base arch: [%s], size: [%lu]", N, F.size);
             ProcessArchive(N);
         }
         else
@@ -489,7 +493,7 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     _findclose(hFile);
 
     if (log_if_found)
-        Msg("  files: [%u]", rec_files.size());
+        Msg("  files: [%zu]", rec_files.size());
 
     std::ranges::sort(rec_files, [](const _finddata_t& x, const _finddata_t& y) { return xr_strcmp(x.name, y.name) < 0; });
 
@@ -521,20 +525,18 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
     // scan root directory
     string4096 buf;
-    IReader* pFSltx = 0;
+    IReader* pFSltx{};
 
     // append working folder
-    LPCSTR fs_ltx = NULL;
+    LPCSTR fs_ltx{};
 
     // append application path
     if (m_Flags.is(flScanAppRoot))
-    {
-        append_path("$app_root$", Core.ApplicationPath, 0, FALSE);
-    }
+        append_path("$app_root$", Core.ApplicationPath, nullptr, FALSE);
 
     if (m_Flags.is(flTargetFolderOnly))
     {
-        append_path("$fs_root$", "", 0, FALSE);
+        append_path("$fs_root$", "", nullptr, FALSE);
     }
     else
     {
@@ -552,7 +554,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
                 string_path currentDir;
                 GetCurrentDirectory(std::size(currentDir) - 1, currentDir);
                 currentDir[std::size(currentDir) - 1] = '\0';
-                append_path("$fs_root$", currentDir, 0, FALSE);
+                append_path("$fs_root$", currentDir, nullptr, FALSE);
             }
             else
             {
@@ -564,16 +566,16 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
                     if (strrchr(tmpAppPath, '\\'))
                         *(strrchr(tmpAppPath, '\\') + 1) = 0;
 
-                    append_path("$fs_root$", tmpAppPath, 0, FALSE);
+                    append_path("$fs_root$", tmpAppPath, nullptr, FALSE);
                 }
                 else
-                    append_path("$fs_root$", "", 0, FALSE);
+                    append_path("$fs_root$", "", nullptr, FALSE);
             }
 
             pFSltx = r_open("$fs_root$", fs_ltx);
         }
         else
-            append_path("$fs_root$", "", 0, FALSE);
+            append_path("$fs_root$", "", nullptr, FALSE);
 
         Msg("using fs-ltx: [%s]", fs_ltx);
     }
@@ -583,7 +585,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     // target folder
     if (m_Flags.is(flTargetFolderOnly))
     {
-        append_path("$target_folder$", target_folder, 0, TRUE);
+        append_path("$target_folder$", target_folder, nullptr, TRUE);
     }
     else
     {
@@ -625,9 +627,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             xr_strlwr(id);
 
             xr_strlwr(root);
-            lp_add = (cnt >= 4) ? xr_strlwr(add) : 0;
-            lp_def = (cnt >= 5) ? def : 0;
-            lp_capt = (cnt >= 6) ? capt : 0;
+            lp_add = (cnt >= 4) ? xr_strlwr(add) : nullptr;
+            lp_def = (cnt >= 5) ? def : nullptr;
+            lp_capt = (cnt >= 6) ? capt : nullptr;
 
             PathPairIt p_it = pathes.find(root);
 
@@ -655,10 +657,10 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             RecurseScanPhysicalPath(P->m_Path, true, !P->m_Flags.test(FS_Path::flRecurse));
 #endif
         }
-    };
+    }
 
     const size_t M2 = Memory.mem_usage();
-    Msg("FS: %d files cached, %dKb memory used.", files.size(), (M2 - M1) / 1024);
+    Msg("FS: %zu files cached, %zu Kb memory used.", files.size(), (M2 - M1) / 1024);
 
     m_Flags.set(flReady, TRUE);
 
@@ -681,7 +683,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     }
     //-----------------------------------------------------------
 
-    CreateLog(0 != strstr(Core.Params, "-nolog"));
+    CreateLog(!!strstr(Core.Params, "-nolog"));
 }
 
 void CLocatorAPI::_destroy()
@@ -711,7 +713,7 @@ void CLocatorAPI::_destroy()
 const CLocatorAPI::file* CLocatorAPI::exist(const char* fn)
 {
     files_it it = file_find_it(fn);
-    return (it != files.end()) ? &(*it) : 0;
+    return (it != files.end()) ? &(*it) : nullptr;
 }
 
 const CLocatorAPI::file* CLocatorAPI::exist(const char* path, const char* name)
@@ -761,7 +763,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
     desc.name = N;
     files_it I = files.find(desc);
     if (I == files.end())
-        return 0;
+        return nullptr;
 
     xr_vector<char*>* dest = xr_new<xr_vector<char*>>();
 
@@ -784,7 +786,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
             dest->push_back(xr_strdup(entry_begin));
             LPSTR fname = dest->back();
             if (flags & FS_ClampExt)
-                if (0 != strext(fname))
+                if (strext(fname))
                     *strext(fname) = 0;
         }
         else
@@ -1139,10 +1141,13 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 {
     VERIFY(root);
     VERIFY(false == path_exist(path_alias));
-    FS_Path* P = xr_new<FS_Path>(root, add, LPCSTR(0), LPCSTR(0), 0);
+
+    FS_Path* P = xr_new<FS_Path>(root, add, nullptr, nullptr, 0u);
     bool bNoRecurse = !recursive;
+
     RecurseScanPhysicalPath(P->m_Path, false, bNoRecurse);
     pathes.emplace(xr_strdup(path_alias), P);
+
     return P;
 }
 

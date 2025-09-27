@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "attachment_owner.h"
 #include "attachable_item.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -126,9 +127,9 @@ void CAttachmentOwner::detach(CInventoryItem* inventory_item)
     }
 }
 
-bool CAttachmentOwner::attached(const CInventoryItem* inventory_item) const { return (attachedItem(inventory_item->object().ID()) != NULL); }
+bool CAttachmentOwner::attached(const CInventoryItem* inventory_item) const { return !!attachedItem(inventory_item->object().ID()); }
 
-bool CAttachmentOwner::attached(shared_str sect_name) const { return (attachedItem(sect_name) != NULL); }
+bool CAttachmentOwner::attached(shared_str sect_name) const { return !!attachedItem(sect_name); }
 
 bool CAttachmentOwner::can_attach(const CInventoryItem* inventory_item) const
 {
@@ -167,10 +168,12 @@ CAttachableItem* CAttachmentOwner::attachedItem(CLASS_ID clsid) const
     xr_vector<CAttachableItem*>::const_iterator I = m_attached_objects.begin();
     xr_vector<CAttachableItem*>::const_iterator E = m_attached_objects.end();
     for (; I != E; ++I)
+    {
         if ((*I)->item().object().CLS_ID == clsid)
             return (*I);
+    }
 
-    return NULL;
+    return nullptr;
 }
 
 CAttachableItem* CAttachmentOwner::attachedItem(u16 id) const
@@ -178,10 +181,12 @@ CAttachableItem* CAttachmentOwner::attachedItem(u16 id) const
     xr_vector<CAttachableItem*>::const_iterator I = m_attached_objects.begin();
     xr_vector<CAttachableItem*>::const_iterator E = m_attached_objects.end();
     for (; I != E; ++I)
+    {
         if ((*I)->item().object().ID() == id)
             return (*I);
+    }
 
-    return NULL;
+    return nullptr;
 }
 
 CAttachableItem* CAttachmentOwner::attachedItem(const shared_str& section) const
@@ -189,8 +194,10 @@ CAttachableItem* CAttachmentOwner::attachedItem(const shared_str& section) const
     xr_vector<CAttachableItem*>::const_iterator I = m_attached_objects.begin();
     xr_vector<CAttachableItem*>::const_iterator E = m_attached_objects.end();
     for (; I != E; ++I)
+    {
         if (!xr_strcmp((*I)->item().object().cNameSect(), section) && !(*I)->item().IsInvalid())
             return (*I);
+    }
 
-    return NULL;
+    return nullptr;
 }

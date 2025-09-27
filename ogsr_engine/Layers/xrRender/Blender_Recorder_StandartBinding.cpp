@@ -83,7 +83,7 @@ static class cl_fog_plane final : public R_constant_setup
     {
         // Plane
         Fvector4 plane;
-        const Fmatrix& M = Device.mFullTransform;
+        const Fmatrix& M = cmd_list.xforms.m_vp;
         plane.set(-(M._14 + M._13), -(M._24 + M._23), -(M._34 + M._33), -(M._44 + M._43));
         float denom = -1.0f / _sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
         plane.mul(denom);
@@ -210,7 +210,7 @@ static class cl_sun0_dir_e final : public R_constant_setup
     {
         Fvector D;
         CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-        Device.mView.transform_dir(D, desc.sun_dir);
+        cmd_list.xforms.m_v.transform_dir(D, desc.sun_dir);
         D.normalize();
         result.set(D, 0);
 
@@ -382,7 +382,7 @@ static class cl_ogsr_game_time final : public R_constant_setup
 
 static class cl_inv_v final : public R_constant_setup
 {
-    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, Device.mInvView); }
+    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, cmd_list.xforms.m_invv); }
 } binder_inv_v;
 
 static class cl_pda_params final : public R_constant_setup

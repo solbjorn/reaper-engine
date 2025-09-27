@@ -50,7 +50,7 @@ protected:
     SListener Listener{};
 
     bool bListenerMoved{};
-    bool e_currentPaused{false};
+    bool e_currentPaused{};
 
 private:
     volatile bool bLocked{};
@@ -132,7 +132,8 @@ public:
 
     virtual void play(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f);
     virtual void play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags = 0, float delay = 0.f);
-    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = 0, float* vol = 0, float* freq = 0, Fvector2* range = 0);
+    virtual void play_no_feedback(ref_sound& S, CObject* O, u32 flags = 0, float delay = 0.f, Fvector* pos = nullptr, float* vol = nullptr, float* freq = nullptr,
+                                  Fvector2* range = nullptr);
     virtual void set_master_volume(float f) = 0;
     virtual void set_master_gain(float low_pass, float high_pass);
     virtual void set_geometry_env(IReader* I);

@@ -12,13 +12,7 @@
 
 using namespace ALife;
 
-CALifeGraphRegistry::CALifeGraphRegistry()
-{
-    m_level = 0;
-    m_process_time = 0;
-    m_actor = 0;
-}
-
+CALifeGraphRegistry::CALifeGraphRegistry() = default;
 CALifeGraphRegistry::~CALifeGraphRegistry() { xr_delete(m_level); }
 
 void CALifeGraphRegistry::on_load()
@@ -136,7 +130,9 @@ void CALifeGraphRegistry::detach(CSE_Abstract& object, CSE_ALifeInventoryItem* i
            (ai().game_graph().vertex(smart_cast<CSE_ALifeDynamicObject*>(&object)->m_tGraphID)->level_id() == level().level_id()));
 
     if (dynamic_object)
-        dynamic_object->detach(item, 0, alife_query, remove_children);
+    {
+        dynamic_object->detach(item, nullptr, alife_query, remove_children);
+    }
     else
     {
 #ifdef DEBUG
@@ -147,7 +143,7 @@ void CALifeGraphRegistry::detach(CSE_Abstract& object, CSE_ALifeInventoryItem* i
                 object.ID, *item->base()->s_name);
         }
 #endif // DEBUG
-        //		R_ASSERT2				(value,"Can't detach an item which is not on my own");
+       //		R_ASSERT2				(value,"Can't detach an item which is not on my own");
     }
 }
 

@@ -29,11 +29,11 @@ public:
 private:
     object_type* m_object;
     movement_manager_type* m_movement_manager;
-    bool m_can_choose_alife_tasks;
+    bool m_can_choose_alife_tasks{true};
 
 public:
-    CSE_ALifeSmartZone* m_smart_terrain;
-    ALife::_TIME_ID m_last_search_time;
+    CSE_ALifeSmartZone* m_smart_terrain{};
+    ALife::_TIME_ID m_last_search_time{};
     ALife::_TIME_ID m_time_interval;
 
     // sad, but true
@@ -60,7 +60,7 @@ public:
 
 public:
     void update(const bool forced = false);
-    inline void update_script() { this->update(true); }; // Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
+    inline void update_script() { this->update(true); } // Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
 
     bool perform_attack();
     ALife::EMeetActionType action_type(CSE_ALifeSchedulable* tpALifeSchedulable, const int& iGroupIndex, const bool& bMutualDetection);

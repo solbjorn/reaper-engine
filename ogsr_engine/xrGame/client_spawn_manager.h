@@ -10,9 +10,6 @@
 
 #include "alife_space.h"
 #include "script_export_space.h"
-#include "script_callback_ex.h"
-
-class CGameObject;
 
 class CClientSpawnManager : public virtual RTTI::Enable
 {
@@ -21,14 +18,13 @@ class CClientSpawnManager : public virtual RTTI::Enable
 public:
     using CALLBACK_TYPE = CallMe::Delegate<void(CObject*)>;
 
-public:
     struct CSpawnCallback
     {
         CALLBACK_TYPE m_object_callback;
-        CScriptCallbackEx<void> m_callback;
+        sol::function m_callback;
+        sol::object m_object;
     };
 
-public:
     typedef xr_map<ALife::_OBJECT_ID, CSpawnCallback> REQUESTED_REGISTRY;
     typedef xr_map<ALife::_OBJECT_ID, REQUESTED_REGISTRY> REQUEST_REGISTRY;
 
@@ -42,8 +38,8 @@ protected:
 public:
     IC CClientSpawnManager();
     virtual ~CClientSpawnManager();
-    void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, const luabind::functor<void>& functor, const luabind::object& object);
-    void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, const luabind::functor<void>& lua_function);
+    void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function, sol::object object);
+    void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function);
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, const CALLBACK_TYPE& object_callback);
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, CSpawnCallback& callback);
     void remove(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id);

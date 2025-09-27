@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "UIButton.h"
 #include "../HUDManager.h"
 #include "UILines.h"
@@ -72,7 +73,7 @@ bool CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
             if (mouse_action == WINDOW_LBUTTON_DOWN || mouse_action == WINDOW_LBUTTON_DB_CLICK)
             {
                 m_eButtonState = BUTTON_PUSHED;
-                GetMessageTarget()->SendMessage(this, BUTTON_DOWN, NULL);
+                GetMessageTarget()->SendMessage(this, BUTTON_DOWN, nullptr);
             }
         }
         else if (m_eButtonState == BUTTON_PUSHED)

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UISpinText.h"
 #include "UILines.h"
 #include "../string_table.h"

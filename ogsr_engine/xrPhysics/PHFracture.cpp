@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PHFracture.h"
 #include "Physics.h"
 #include "PHElement.h"
@@ -6,12 +7,12 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/bone.h"
 
-#pragma warning(disable : 4995)
 #include "ode/src/joint.h"
-#pragma warning(default : 4995)
+
 extern class CPHWorld* ph_world;
+
 static const float torque_factor = 10000000.f;
-CPHFracturesHolder::CPHFracturesHolder() { m_has_breaks = false; }
+
 CPHFracturesHolder::~CPHFracturesHolder()
 {
     m_has_breaks = false;
@@ -19,6 +20,7 @@ CPHFracturesHolder::~CPHFracturesHolder()
     m_impacts.clear();
     m_feedbacks.clear();
 }
+
 void CPHFracturesHolder::ApplyImpactsToElement(CPHElement* E)
 {
     PH_IMPACT_I i = m_impacts.begin(), e = m_impacts.end();
@@ -32,6 +34,7 @@ void CPHFracturesHolder::ApplyImpactsToElement(CPHElement* E)
     // E->bActive=ac_state;
     E->m_flags.set(CPHElement::flActive, ac_state);
 }
+
 element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element, u16 fracture)
 {
     FRACTURE_I fract_i = m_fractures.begin() + fracture;
@@ -73,14 +76,13 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element, u16 fract
     //									   fract_i->m_break_torque,
     //									   fract_i->m_add_torque_z);
     // BodyCutForce(new_element_body,default_l_limit,default_w_limit);
-    element_fracture ret = mk_pair(new_element, (CShellSplitInfo)(*fract_i));
+    element_fracture ret = std::make_pair(new_element, (CShellSplitInfo)(*fract_i));
 
     if (m_fractures.size() - fracture > 0)
     {
-        if (new_element->m_fratures_holder == NULL) // create fractures holder if it was not created before
-        {
+        if (!new_element->m_fratures_holder) // create fractures holder if it was not created before
             new_element->m_fratures_holder = xr_new<CPHFracturesHolder>();
-        }
+
         PassEndFractures(fracture, new_element);
     }
 

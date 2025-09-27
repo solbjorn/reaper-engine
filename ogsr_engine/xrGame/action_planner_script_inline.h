@@ -12,9 +12,6 @@
 #define _CActionPlannerScript CActionPlannerScript<_object_type>
 
 TEMPLATE_SPECIALIZATION
-IC _CActionPlannerScript::CActionPlannerScript() { m_object = 0; }
-
-TEMPLATE_SPECIALIZATION
 void _CActionPlannerScript::setup(_object_type* object)
 {
     VERIFY(object);

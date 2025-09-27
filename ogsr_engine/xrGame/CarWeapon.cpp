@@ -111,7 +111,7 @@ void CCarWeapon::UpdateFire()
         }
         else
             FireEnd();
-    };
+    }
 
     if (!IsWorking())
     {
@@ -284,8 +284,7 @@ void CCarWeapon::SetParam(int id, Fvector val)
     case eWpnDesiredPos: m_destEnemyDir.sub(val, m_fire_pos).normalize_safe(); break;
     }
 }
+
 const Fvector& CCarWeapon::ViewCameraPos() { return m_fire_pos; }
-
 const Fvector& CCarWeapon::ViewCameraDir() { return m_fire_dir; }
-
 const Fvector& CCarWeapon::ViewCameraNorm() { return m_fire_norm; }

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "../../stalker_animation_manager.h"
 #include "../../script_entity_action.h"
@@ -37,13 +38,13 @@ u32 CAI_Stalker::GetWeaponAmmo() const
 CInventoryItem* CAI_Stalker::GetMedikit() const
 {
 #pragma todo("Dima to Dima : Return correct medikit")
-    return (0);
+    return nullptr;
 }
 
 CInventoryItem* CAI_Stalker::GetFood() const
 {
 #pragma todo("Dima to Dima : Return correct food")
-    return (0);
+    return nullptr;
 }
 
 void CAI_Stalker::ResetScriptData(void* P) { inherited::ResetScriptData(P); }

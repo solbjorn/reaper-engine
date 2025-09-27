@@ -1,13 +1,15 @@
 #ifndef dxObjectSpaceRender_included
 #define dxObjectSpaceRender_included
-#pragma once
 
 #ifdef DEBUG
 
 #include "..\..\Include\xrRender\ObjectSpaceRender.h"
 #include "..\..\xrengine\xr_collide_form.h"
+
 class dxObjectSpaceRender : public IObjectSpaceRender
 {
+    RTTI_DECLARE_TYPEINFO(dxObjectSpaceRender, IObjectSpaceRender);
+
 public:
     dxObjectSpaceRender();
     virtual ~dxObjectSpaceRender();

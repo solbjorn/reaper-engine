@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CElectricBall : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CElectricBall(void);
-    virtual ~CElectricBall(void);
+    CElectricBall();
+    virtual ~CElectricBall();
 
     virtual void Load(LPCSTR section);
 

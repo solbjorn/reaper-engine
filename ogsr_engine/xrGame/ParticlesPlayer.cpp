@@ -3,9 +3,11 @@
 // интерфейс для проигрывания партиклов на объекте
 ///////////////////////////////////////////////////////////////
 #include "stdafx.h"
+
 #include "ParticlesPlayer.h"
 #include "..\xr_3da\xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
+
 //-------------------------------------------------------------------------------------
 static void generate_orthonormal_basis(const Fvector& dir, Fmatrix& result)
 {
@@ -13,22 +15,27 @@ static void generate_orthonormal_basis(const Fvector& dir, Fmatrix& result)
     result.k.normalize(dir);
     Fvector::generate_orthonormal_basis(result.k, result.j, result.i);
 }
+
 CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::FindParticles(const shared_str& ps_name)
 {
     for (ParticlesInfoListIt it = particles.begin(); it != particles.end(); it++)
         if (it->ps && it->ps->Name() == ps_name)
             return &(*it);
-    return 0;
+
+    return nullptr;
 }
+
 CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(CObject* object, const shared_str& ps_name)
 {
     SParticlesInfo* pi = FindParticles(ps_name);
     if (pi)
         return pi;
+
     pi = &particles.emplace_back();
     pi->ps = CParticlesObject::Create(*ps_name, FALSE);
     return pi;
 }
+
 void CParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool bDestroy)
 {
     SParticlesInfo* pi = FindParticles(ps_name);
@@ -59,11 +66,9 @@ CParticlesPlayer::CParticlesPlayer()
     bone_mask = u64(1) << u64(0);
 
     m_bActiveBones = false;
-
-    m_Bones.emplace_back(0, Fvector().set(0, 0, 0));
+    m_Bones.emplace_back(0, Fvector{});
 
     SetParentVel(zero_vel);
-    m_self_object = 0;
 }
 
 CParticlesPlayer::~CParticlesPlayer() { VERIFY(!m_self_object); }
@@ -74,8 +79,8 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 
     m_Bones.clear();
 
-    //считать список косточек и соответствующих
-    //офсетов  куда можно вешать партиклы
+    // считать список косточек и соответствующих
+    // офсетов  куда можно вешать партиклы
     CInifile* ini = K->LL_UserData();
     if (ini && ini->section_exist("particle_bones"))
     {
@@ -98,7 +103,7 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
         m_Bones.emplace_back(K->LL_GetBoneRoot(), Fvector().set(0, 0, 0));
     }
 }
-//уничтожение партиклов на net_Destroy
+// уничтожение партиклов на net_Destroy
 void CParticlesPlayer::net_DestroyParticles()
 {
     VERIFY(m_self_object);
@@ -162,7 +167,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
 
         particles_info.life_time = auto_stop ? life_time : u32(-1);
         xform.getHPB(particles_info.angles);
-        //начать играть партиклы
+        // начать играть партиклы
 
         Fmatrix m;
         m.set(xform);
@@ -214,7 +219,7 @@ void CParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, boo
     UpdateParticles();
 }
 
-//остановка партиклов, по истечении их времени жизни
+// остановка партиклов, по истечении их времени жизни
 void CParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id, u32 life_time)
 {
     if (BI_NONE == bone_id)
@@ -254,13 +259,13 @@ void CParticlesPlayer::UpdateParticles()
             SParticlesInfo& p_info = *p_it;
             if (!p_info.ps)
                 continue;
-            //обновить позицию партиклов
+            // обновить позицию партиклов
             Fmatrix xform;
             xform.setHPB(p_info.angles.x, p_info.angles.y, p_info.angles.z);
             GetBonePos(object, b_info.index, b_info.offset, xform.c);
             p_info.ps->UpdateParent(xform, parent_vel);
 
-            //обновить время существования
+            // обновить время существования
             if (p_info.life_time != u32(-1))
             {
                 if (p_info.life_time > Device.dwTimeDelta)

@@ -18,7 +18,7 @@ protected:
     static LPCSTR update(LPCSTR file_name);
 
 public:
-    CScriptIniFile(IReader* F, LPCSTR path = 0);
+    CScriptIniFile(IReader* F, LPCSTR path = nullptr);
     CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
     virtual ~CScriptIniFile();
 

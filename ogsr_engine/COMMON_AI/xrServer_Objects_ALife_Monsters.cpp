@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -120,7 +121,6 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(LPCSTR caSection)
     m_fMaxItemMass = pSettings->r_float(caSection, "max_item_mass");
 
     m_sCharacterProfile = READ_IF_EXISTS(pSettings, r_string, caSection, "character_profile", "default");
-    m_SpecificCharacter = NULL;
 
 #ifdef XRGAME_EXPORTS
     m_community_index = NO_COMMUNITY_INDEX;
@@ -198,7 +198,7 @@ void CSE_ALifeTraderAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
             if (tmp != -1)
                 m_SpecificCharacter = CSpecificCharacter::IndexToId(tmp);
             else
-                m_SpecificCharacter = NULL;
+                m_SpecificCharacter = nullptr;
         }
         else if (m_wVersion >= 98)
         {
@@ -296,11 +296,11 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
                     if (char_info.data()->m_Reputation == NO_REPUTATION || _abs(spec_char.Reputation() - char_info.data()->m_Reputation) < REPUTATION_DELTA)
                     {
 #ifdef XRGAME_EXPORTS
-                        int* count = NULL;
+                        int* count{};
                         if (ai().get_alife())
                             count = ai().alife().registry(specific_characters).object(id, true);
                         // если индекс еще не был использован
-                        if (NULL == count)
+                        if (!count)
 #endif
                             m_CheckedCharacters.push_back(id);
                     }
@@ -453,9 +453,9 @@ CHARACTER_REPUTATION_VALUE CSE_ALifeTraderAbstract::Reputation()
 
 #endif
 
-void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet& tNetPacket) {};
+void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet& tNetPacket) {}
 
-void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet& tNetPacket) {};
+void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet& tNetPacket) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeTrader
@@ -532,13 +532,13 @@ void CSE_ALifeTrader::UPDATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Write(tNetPacket);
     inherited2::UPDATE_Write(tNetPacket);
-};
+}
 
 void CSE_ALifeTrader::UPDATE_Read(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Read(tNetPacket);
     inherited2::UPDATE_Read(tNetPacket);
-};
+}
 
 bool CSE_ALifeTrader::interactive() const { return (false); }
 
@@ -697,8 +697,10 @@ void CSE_ALifeAnomalousZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r_float();
         tNetPacket.r_float();
     }
-    if ((m_wVersion == 102))
-    { // fuck
+
+    if (m_wVersion == 102)
+    {
+        // fuck
         u32 dummy;
         tNetPacket.r_u32(dummy);
     }
@@ -912,7 +914,7 @@ void CSE_ALifeCreatureAbstract::UPDATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_u8(s_team);
     tNetPacket.w_u8(s_squad);
     tNetPacket.w_u8(s_group);
-};
+}
 
 void CSE_ALifeCreatureAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 {
@@ -931,7 +933,7 @@ void CSE_ALifeCreatureAbstract::UPDATE_Read(NET_Packet& tNetPacket)
     tNetPacket.r_u8(s_team);
     tNetPacket.r_u8(s_squad);
     tNetPacket.r_u8(s_group);
-};
+}
 
 u8 CSE_ALifeCreatureAbstract::g_team() { return s_team; }
 
@@ -948,7 +950,7 @@ bool CSE_ALifeCreatureAbstract::__can_switch_offline() const { return inherited:
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeMonsterAbstract
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(LPCSTR caSection) : CSE_ALifeCreatureAbstract(caSection), CSE_ALifeSchedulable(caSection)
+CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(LPCSTR caSection) : CSE_ALifeCreatureAbstract{caSection}, CSE_ALifeSchedulable{caSection}
 {
     m_group_id = 0xffff;
     m_tNextGraphID = m_tGraphID;
@@ -996,7 +998,6 @@ CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(LPCSTR caSection) : CSE_ALife
 
     m_tpBestDetector = this;
 
-    m_brain = 0;
     m_smart_terrain_id = 0xffff;
     m_task_reached = false;
 
@@ -1069,7 +1070,7 @@ void CSE_ALifeMonsterAbstract::UPDATE_Write(NET_Packet& tNetPacket)
     //	tNetPacket.w				(&m_fCurSpeed,				sizeof(m_fCurSpeed));
     tNetPacket.w(&m_fDistanceFromPoint, sizeof(m_fDistanceFromPoint));
     tNetPacket.w(&m_fDistanceToPoint, sizeof(m_fDistanceToPoint));
-};
+}
 
 void CSE_ALifeMonsterAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 {
@@ -1080,7 +1081,7 @@ void CSE_ALifeMonsterAbstract::UPDATE_Read(NET_Packet& tNetPacket)
     //	tNetPacket.r				(&m_fCurSpeed,				sizeof(m_fCurSpeed));
     tNetPacket.r(&m_fDistanceFromPoint, sizeof(m_fDistanceFromPoint));
     tNetPacket.r(&m_fDistanceToPoint, sizeof(m_fDistanceToPoint));
-};
+}
 
 bool CSE_ALifeMonsterAbstract::need_update(CSE_ALifeDynamicObject* object) { return (CSE_ALifeSchedulable::need_update(object) && (fHealth > EPS_L)); }
 
@@ -1145,7 +1146,7 @@ void CSE_ALifeCreatureActor::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
         m_holderID = tNetPacket.r_u16();
     }
-};
+}
 
 void CSE_ALifeCreatureActor::__STATE_Write(NET_Packet& tNetPacket)
 {
@@ -1153,7 +1154,7 @@ void CSE_ALifeCreatureActor::__STATE_Write(NET_Packet& tNetPacket)
     inherited2::__STATE_Write(tNetPacket);
     inherited3::__STATE_Write(tNetPacket);
     tNetPacket.w_u16(m_holderID);
-};
+}
 
 void CSE_ALifeCreatureActor::load(NET_Packet& tNetPacket)
 {
@@ -1161,6 +1162,7 @@ void CSE_ALifeCreatureActor::load(NET_Packet& tNetPacket)
     inherited3::load(tNetPacket);
     m_holderID = tNetPacket.r_u16();
 }
+
 void CSE_ALifeCreatureActor::UPDATE_Read(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Read(tNetPacket);
@@ -1194,15 +1196,18 @@ void CSE_ALifeCreatureActor::UPDATE_Read(NET_Packet& tNetPacket)
         tNetPacket.r_float(m_AliveState.quaternion.w);
 
         return;
-    };
+    }
+
     ////////////// Import dead body ////////////////////
     Msg("A mi ni hera tut ne chitaem (m_u16NumItems == %d)", m_u16NumItems);
+
     {
         m_BoneDataSize = tNetPacket.r_u8();
         u32 BodyDataSize = 24 + m_BoneDataSize * m_u16NumItems;
         tNetPacket.r(m_DeadBodyData, BodyDataSize);
-    };
-};
+    }
+}
+
 void CSE_ALifeCreatureActor::UPDATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Write(tNetPacket);
@@ -1235,13 +1240,14 @@ void CSE_ALifeCreatureActor::UPDATE_Write(NET_Packet& tNetPacket)
         tNetPacket.w_float(m_AliveState.quaternion.w);
 
         return;
-    };
+    }
+
     ////////////// Export dead body ////////////////////
     {
         tNetPacket.w_u8(m_BoneDataSize);
         u32 BodyDataSize = 24 + m_BoneDataSize * m_u16NumItems;
         tNetPacket.w(m_DeadBodyData, BodyDataSize);
-    };
+    }
 }
 
 #ifdef XRGAME_EXPORTS
@@ -1482,7 +1488,7 @@ void CSE_ALifeHumanAbstract::UPDATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Write(tNetPacket);
     inherited2::UPDATE_Write(tNetPacket);
-};
+}
 
 void CSE_ALifeHumanAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 {
@@ -1495,7 +1501,7 @@ void CSE_ALifeHumanAbstract::UPDATE_Read(NET_Packet& tNetPacket)
         tNetPacket.r_u32();
         tNetPacket.r_u32();
     }
-};
+}
 
 //////////////////////////////////////////////////////////////////////////
 // CSE_ALifeHumanStalker
@@ -1599,10 +1605,9 @@ void CSE_ALifeOnlineOfflineGroup::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     u32 container_size = tNetPacket.r_u32();
     for (u32 i = 0; i < container_size; ++i)
     {
-        MEMBERS::value_type pair;
-        load_data(pair.first, tNetPacket);
-        pair.second = 0;
-        m_members.insert(pair);
+        MEMBERS::key_type first;
+        load_data(first, tNetPacket);
+        m_members.emplace(first, nullptr);
     }
 #endif
 }

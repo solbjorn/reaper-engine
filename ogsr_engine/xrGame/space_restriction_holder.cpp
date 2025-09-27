@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restriction_holder.h"
 #include "object_broker.h"
 #include "space_restrictor.h"
@@ -15,7 +16,10 @@
 #include "space_restriction_composition.h"
 #include "restriction_space.h"
 
-const u32 time_to_delete = 300000;
+namespace
+{
+constexpr u32 time_to_delete{300000};
+}
 
 CSpaceRestrictionHolder::~CSpaceRestrictionHolder() { clear(); }
 
@@ -88,7 +92,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
 SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction(shared_str space_restrictors)
 {
     if (!xr_strlen(space_restrictors))
-        return (0);
+        return nullptr;
 
     space_restrictors = normalize_string(space_restrictors);
 
@@ -100,7 +104,7 @@ SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction
 
     CSpaceRestrictionBase* composition = xr_new<CSpaceRestrictionComposition>(this, space_restrictors);
     CSpaceRestrictionBridge* bridge = xr_new<CSpaceRestrictionBridge>(composition);
-    m_restrictions.insert(std::make_pair(space_restrictors, bridge));
+    m_restrictions.try_emplace(space_restrictors, bridge);
     return (bridge);
 }
 
@@ -110,7 +114,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     shared_str space_restrictors = space_restrictor->cName();
     if (restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone)
     {
-        shared_str *temp = 0, temp1;
+        shared_str *temp{}, temp1;
         if (restrictor_type == RestrictionSpace::eDefaultRestrictorTypeOut)
             temp = &m_default_out_restrictions;
         else if (restrictor_type == RestrictionSpace::eDefaultRestrictorTypeIn)
@@ -142,7 +146,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     if (I == m_restrictions.end())
     {
         CSpaceRestrictionBridge* bridge = xr_new<CSpaceRestrictionBridge>(shape);
-        m_restrictions.insert(std::make_pair(space_restrictors, bridge));
+        m_restrictions.try_emplace(space_restrictors, bridge);
         return;
     }
 
@@ -196,7 +200,7 @@ void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_rest
 
     CSpaceRestrictionBase* composition = xr_new<CSpaceRestrictionComposition>(this, restrictor_id);
     bridge->change_implementation(composition);
-    m_restrictions.insert(std::make_pair(restrictor_id, bridge));
+    m_restrictions.try_emplace(restrictor_id, bridge);
 
     collect_garbage();
 }

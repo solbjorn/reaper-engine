@@ -11,7 +11,7 @@ IC bool CCustomMonster::angle_lerp_bounds(float& a, float b, float c, float d)
     angle_lerp(a, b, c, d);
 
     return (false);
-};
+}
 
 IC void CCustomMonster::vfNormalizeSafe(Fvector& Vector)
 {

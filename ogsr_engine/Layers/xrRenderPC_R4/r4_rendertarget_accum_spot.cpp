@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../xrRender/du_cone.h"
 
 void CRenderTarget::accum_spot(light* L)
@@ -202,7 +203,7 @@ void CRenderTarget::accum_spot(light* L)
         }
     }
 
-    RCache.set_Scissor(0);
+    RCache.set_Scissor(nullptr);
     increment_light_marker(RCache);
 }
 
@@ -233,7 +234,7 @@ void CRenderTarget::accum_volumetric(light* L)
             RCache.ClearRT(rt_ssfx_volumetric, {});
         }
 
-        u_setrt(RCache, rt_ssfx_volumetric, NULL, NULL, NULL);
+        u_setrt(RCache, rt_ssfx_volumetric, nullptr, nullptr, nullptr);
 
         RCache.set_Stencil(FALSE);
         RCache.set_CullMode(CULL_NONE);
@@ -410,7 +411,7 @@ void CRenderTarget::accum_volumetric(light* L)
         PlaneTransform.transpose(Device.mInvFullTransform);
         // HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
 
-        for (int i = 0; i < 6; ++i)
+        for (gsl::index i = 0; i < 6; ++i)
         {
             Fvector4& ClipPlane = *(Fvector4*)&ClipFrustum.planes[i].n.x;
             Fvector4 TransformedPlane;
@@ -427,8 +428,8 @@ void CRenderTarget::accum_volumetric(light* L)
         RCache.Render(D3DPT_TRIANGLELIST, 0, 0, iNumSlices * 4, 0, iNumSlices * 2);
 
         RCache.set_ColorWriteEnable();
-        RCache.set_ClipPlanes(FALSE, (Fmatrix*)0, 0);
+        RCache.set_ClipPlanes(FALSE, static_cast<Fmatrix*>(nullptr), 0);
     }
 
-    RCache.set_Scissor(0);
+    RCache.set_Scissor(nullptr);
 }

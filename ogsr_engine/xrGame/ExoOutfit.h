@@ -9,10 +9,12 @@
 
 class CExoOutfit : public CCustomOutfit
 {
+    RTTI_DECLARE_TYPEINFO(CExoOutfit, CCustomOutfit);
+
 private:
     typedef CCustomOutfit inherited;
 
 public:
-    CExoOutfit(void);
-    virtual ~CExoOutfit(void);
+    CExoOutfit();
+    virtual ~CExoOutfit();
 };

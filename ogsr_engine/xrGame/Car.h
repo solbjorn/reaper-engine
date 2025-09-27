@@ -1,4 +1,5 @@
 #pragma once
+
 #include "entity.h"
 #include "PHDynamicData.h"
 #include "PhysicsShell.h"
@@ -16,6 +17,7 @@
 #include "Explosive.h"
 #include "PHDestroyable.h"
 #include "DelayedActionFuse.h"
+
 // refs
 class CBoneInstance;
 class CActor;
@@ -88,7 +90,7 @@ private:
     virtual void ApplyDamage(u16 level);
     virtual float Health() { return GetfHealth(); }
     virtual void ChangeCondition(float fDeltaCondition);
-    virtual void StartTimerEffects() {};
+    virtual void StartTimerEffects() {}
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual CPhysicsShellHolder* PPhysicsShellHolder() { return static_cast<CPhysicsShellHolder*>(this); }
     virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return static_cast<CPHCollisionDamageReceiver*>(this); }
@@ -106,7 +108,7 @@ protected:
     };
 
 public:
-    bool rsp, lsp, fwp, bkp, brp;
+    bool rsp{}, lsp{}, fwp{}, bkp{}, brp{};
     Fmatrix m_root_transform;
     Fvector m_exit_position;
 
@@ -127,34 +129,39 @@ public:
 
     eStateSteer e_state_steer;
 
-    bool b_wheels_limited;
-    bool b_engine_on;
+    bool b_wheels_limited{};
+    bool b_engine_on{};
     bool b_clutch;
     bool b_starting;
     bool b_stalling;
-    bool b_breaks;
+    bool b_breaks{};
     bool b_transmission_switching;
 
     u32 m_dwStartTime;
     float m_fuel;
     float m_fuel_tank;
     float m_fuel_consumption;
-    u16 m_driver_anim_type;
+    u16 m_driver_anim_type{};
 
-    float m_break_start;
+    float m_break_start{};
     float m_break_time;
     float m_breaks_to_back_rate;
     float m_power_neutral_factor; // multiplier for power when accelerator is not pressed (0-1,0.25)
-    bool b_exploded;
+    bool b_exploded{};
 
     struct SWheel : public CDamagableHealthItem
     {
+        RTTI_DECLARE_TYPEINFO(SWheel, CDamagableHealthItem);
+
+    public:
         typedef CDamagableHealthItem inherited;
-        u16 bone_id;
-        bool inited;
+
+        CPhysicsJoint* joint{};
+        CCar* car{};
         float radius{};
-        CPhysicsJoint* joint;
-        CCar* car;
+        u16 bone_id{BI_NONE};
+        bool inited{};
+
         struct SWheelCollisionParams
         {
             float spring_factor;
@@ -162,6 +169,8 @@ public:
             float mu_factor;
             SWheelCollisionParams();
         } collision_params;
+
+        SWheel(CCar* acar) : car{acar} {}
 
         IC static void applywheelCollisionParams(const dxGeomUserData* ud, bool& do_colide, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
         static void WheellCollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
@@ -182,26 +191,22 @@ public:
         void SetSteerLimits(float hi, float lo);
 
         virtual void ApplyDamage(u16 level);
-        SWheel(CCar* acar)
-        {
-            bone_id = BI_NONE;
-            car = acar;
-            joint = NULL;
-            inited = false;
-        }
     };
+
     struct SWheelDrive
     {
         SWheel* pwheel;
         float pos_fvd;
         float gear_factor;
+
         void Init();
         void Drive();
         void Neutral();
         void UpdatePower();
         float ASpeed();
-        void Load(LPCSTR /*section*/){};
+        void Load(LPCSTR) {}
     };
+
     struct SWheelSteer
     {
         SWheel* pwheel;
@@ -211,19 +216,22 @@ public:
         float steering_velocity;
         float steering_torque;
         bool limited; // zero limited for idle steering drive
+
         float GetSteerAngle() { return -pos_right * dJointGetHinge2Angle1(pwheel->joint->GetDJoint()); }
         void Init();
         void SteerRight();
         void SteerLeft();
         void SteerIdle();
         void Limit();
-        void Load(LPCSTR /*section*/){};
+        void Load(LPCSTR) {}
     };
+
     struct SWheelBreak
     {
         SWheel* pwheel;
         float break_torque;
         float hand_break_torque;
+
         void Init();
         void Break(float k);
         void HandBreak();
@@ -233,37 +241,41 @@ public:
 
     struct SExhaust
     {
-        u16 bone_id;
         Fmatrix transform;
         // Fvector				velocity;
-        CParticlesObject* p_pgobject;
-        CPhysicsElement* pelement;
+        CParticlesObject* p_pgobject{};
+        CPhysicsElement* pelement{};
         CCar* pcar;
+        u16 bone_id{BI_NONE};
+
         void Init();
         void Play();
         void Stop();
         void Update();
         void Clear();
-        SExhaust(CCar* acar)
-        {
-            bone_id = BI_NONE;
-            pcar = acar;
-            p_pgobject = NULL;
-            pelement = NULL;
-        }
+
+        SExhaust(CCar* acar) : pcar{acar} {}
+        SExhaust(const SExhaust&) = default;
+        SExhaust(SExhaust&&) = default;
         ~SExhaust();
+
+        SExhaust& operator=(const SExhaust&) = default;
+        SExhaust& operator=(SExhaust&&) = default;
     };
 
-    struct SDoor;
     struct SDoor : public CDamagableHealthItem
     {
+        RTTI_DECLARE_TYPEINFO(SDoor, CDamagableHealthItem);
+
+    public:
         typedef CDamagableHealthItem inherited;
-        u16 bone_id;
+
+        u16 bone_id{BI_NONE};
         CCar* pcar;
         bool update{};
-        CPhysicsJoint* joint;
-        float torque;
-        float a_vel;
+        CPhysicsJoint* joint{};
+        float torque{500.f};
+        float a_vel{M_PI};
         float pos_open{};
         float opened_angle{};
         float closed_angle{};
@@ -310,6 +322,7 @@ public:
         void SaveNetState(CSE_ALifeCar::SDoorState&);
         void RestoreNetState(const CSE_ALifeCar::SDoorState& a_state);
         void SetDefaultNetState();
+
         enum eState
         {
             opening,
@@ -318,16 +331,9 @@ public:
             closed,
             broken
         };
-        eState state;
-        SDoor(CCar* acar)
-        {
-            bone_id = BI_NONE;
-            pcar = acar;
-            joint = NULL;
-            state = closed;
-            torque = 500.f;
-            a_vel = M_PI;
-        }
+        eState state{closed};
+
+        SDoor(CCar* acar) : pcar{acar} {}
     };
 
     struct SCarSound
@@ -375,33 +381,30 @@ private:
     typedef CEntity inherited;
 
 private:
-    CCarWeapon* m_car_weapon;
-    float m_steer_angle;
-    bool m_repairing;
-    u16 m_bone_steer;
+    CCarWeapon* m_car_weapon{};
+    float m_steer_angle{};
+    bool m_repairing{};
+    u16 m_bone_steer{BI_NONE};
     CCameraBase* camera[3];
-    CCameraBase* active_camera;
+    CCameraBase* active_camera{};
 
     Fvector m_camera_position[ectNum];
 
 public:
-    IC CCameraBase* get_active_camera() { return active_camera; };
+    IC CCameraBase* get_active_camera() { return active_camera; }
 
 private:
     ////////////////////////////////////////////////////
     friend struct SWheel;
     friend struct SDoor;
 
-    template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
-    using xr_legacy_map = std::map<K, V, P, allocator>;
-
-    xr_legacy_map<u16, SWheel> m_wheels_map;
+    xr_map<u16, std::unique_ptr<SWheel>> m_wheels_map;
     xr_vector<SWheelDrive> m_driving_wheels;
     xr_vector<SWheelSteer> m_steering_wheels;
     xr_vector<SWheelBreak> m_breaking_wheels;
     xr_vector<SExhaust> m_exhausts;
     shared_str m_exhaust_particles;
-    xr_map<u16, SDoor> m_doors;
+    xr_map<u16, std::unique_ptr<SDoor>> m_doors;
     xr_vector<SDoor*> m_doors_update;
     xr_vector<Fvector> m_gear_ratious;
     Fmatrix m_sits_transforms; // driver_place
@@ -422,8 +425,8 @@ private:
     /////////////////////porabola
     float m_a, m_b, m_c;
 
-    float m_current_engine_power;
-    float m_current_rpm;
+    float m_current_engine_power{};
+    float m_current_rpm{};
 
     float m_axle_friction;
 
@@ -507,7 +510,7 @@ private:
     void ClearExhausts();
     void UpdateFuel(float time_delta);
     float AddFuel(float ammount); // ammount - fuel to load, ret - fuel loaded
-    float GetFuel() { return m_fuel; };
+    float GetFuel() { return m_fuel; }
     void SetFuel(float amount) { m_fuel = amount; }
     float GetFuelTank() { return m_fuel_tank; }
     void CarExplode();
@@ -525,7 +528,7 @@ private:
     bool DoorHit(float P, s16 element, ALife::EHitType hit_type);
 
 public:
-    virtual bool allowWeapon() const { return false; }; //	{return true;};
+    virtual bool allowWeapon() const { return false; }
     virtual bool HUDView() const;
     virtual Fvector ExitPosition() { return m_exit_position; }
     virtual Fvector ExitVelocity();
@@ -533,7 +536,7 @@ public:
     void cam_Update(float dt, float fov);
     void detach_Actor();
     bool attach_Actor(CGameObject* actor) override;
-    bool is_Door(u16 id, xr_map<u16, SDoor>::iterator& i);
+    bool is_Door(u16 id, xr_map<u16, std::unique_ptr<SDoor>>::iterator& i);
     bool is_Door(u16 id);
     bool DoorOpen(u16 id);
     bool DoorClose(u16 id);
@@ -557,7 +560,7 @@ public:
     virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
 
     virtual void net_Export(CSE_Abstract* E);
-    virtual BOOL net_Relevant() { return getLocal(); }; // relevant for export to server
+    virtual BOOL net_Relevant() { return getLocal(); } // relevant for export to server
     virtual BOOL UsedAI_Locations();
     virtual void net_Relcase(CObject* O);
     // Input
@@ -570,8 +573,8 @@ public:
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void GetRayExplosionSourcePos(Fvector& pos);
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {};
-    virtual void ResetScriptData(void* P = 0);
+    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {}
+    virtual void ResetScriptData(void* P = nullptr);
 
     virtual void Action(int id, u32 flags);
     virtual void SetParam(int id, Fvector2 val);
@@ -581,13 +584,13 @@ public:
     float FireDirDiff();
     bool isObjectVisible(CScriptGameObject* O);
     Fvector CurrentVel();
-    virtual float GetfHealth() const { return CEntity::GetfHealth(); };
-    virtual float SetfHealth(float value) { return CEntity::SetfHealth(value); };
+    virtual float GetfHealth() const { return CEntity::GetfHealth(); }
+    virtual float SetfHealth(float value) { return CEntity::SetfHealth(value); }
 
     // Hits
-    virtual void HitSignal(float /**HitAmount/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/) {};
-    virtual void HitImpulse(float /**amount/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/) {};
-    virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
+    virtual void HitSignal(float, Fvector&, CObject*, s16) {}
+    virtual void HitImpulse(float, Fvector&, Fvector&) {}
+    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool for_cursor = false) override {}
     virtual u16 Initiator();
     // HUD
     void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
@@ -623,7 +626,7 @@ private:
     template <class T>
     IC void fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels);
     IC void fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts);
-    IC void fill_doors_map(LPCSTR S, xr_map<u16, SDoor>& doors);
+    IC void fill_doors_map(LPCSTR S, xr_map<u16, std::unique_ptr<SDoor>>& doors);
 
     // Inventory for the car
     CInventory* inventory;
@@ -639,7 +642,7 @@ private:
     virtual CHolderCustom* cast_holder_custom() { return this; }
 
 private:
-    car_memory* m_memory;
+    car_memory* m_memory{};
 
 public:
     DECLARE_SCRIPT_REGISTER_FUNCTION();

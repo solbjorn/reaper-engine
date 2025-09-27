@@ -86,8 +86,8 @@ public: //	Public class members (must be encapsulated further)
 
     CallMe::Delegate<void(CBackend& cmd_list, u32)> bind;
 
-    CAviPlayerCustom* pAVI;
-    CTheoraSurface* pTheora;
+    CAviPlayerCustom* pAVI{};
+    CTheoraSurface* pTheora{};
     float m_material;
     shared_str m_bumpmap;
 

@@ -2,6 +2,7 @@
 
 class CPHShell;
 class CPHShellSplitterHolder;
+
 #include "PHJoint.h"
 #include "PHElement.h"
 #include "PHDefs.h"
@@ -25,15 +26,16 @@ public:
         flActivating = 1 << 1,
         flRemoveCharacterCollisionAfterDisable = 1 << 2,
     };
-    s16 m_active_count;
+
+    s16 m_active_count{};
     Flags8 m_flags;
     ELEMENT_STORAGE elements;
     JOINT_STORAGE joints;
-    CPHShellSplitterHolder* m_spliter_holder;
+    CPHShellSplitterHolder* m_spliter_holder{};
     CPHMoveStorage m_traced_geoms;
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    CPhysicsShellAnimator* m_pPhysicsShellAnimatorC;
+    CPhysicsShellAnimator* m_pPhysicsShellAnimatorC{};
 #endif
 
 protected:
@@ -66,7 +68,7 @@ public:
     virtual void GetAirResistance(float& linear, float& angular) { (*elements.begin())->GetAirResistance(linear, angular); }
     virtual void add_Joint(CPhysicsJoint* J);
 
-    virtual CPHIsland* PIsland() { return &Island(); };
+    virtual CPHIsland* PIsland() { return &Island(); }
     virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val);
 
     virtual void Update();
@@ -78,7 +80,7 @@ public:
     virtual void Activate(const Fmatrix& start_from, bool disable = false) {}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; };
+    virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; }
 #endif
 
 private:
@@ -209,16 +211,16 @@ public:
     virtual void CollideAll();
     virtual void PhDataUpdate(dReal step);
     virtual void PhTune(dReal step);
-    virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) {};
+    virtual void InitContact(dContact*, bool&, u16, u16) {}
     virtual void FreezeContent();
     virtual void UnFreezeContent();
     virtual void Freeze();
     virtual void UnFreeze();
     virtual void NetInterpolationModeON() { CPHObject::NetInterpolationON(); }
     virtual void NetInterpolationModeOFF() { CPHObject::NetInterpolationOFF(); }
-    virtual void StepFrameUpdate(dReal step) {};
+    virtual void StepFrameUpdate(dReal step) {}
     virtual CPHMoveStorage* MoveStorage() { return &m_traced_geoms; }
-    virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL);
+    virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr);
     virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map);
     virtual void ZeroCallbacks();
     virtual void ResetCallbacks(u16 id, VisMask& mask);

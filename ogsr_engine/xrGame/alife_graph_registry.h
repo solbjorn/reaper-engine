@@ -39,9 +39,9 @@ public:
 protected:
     GRAPH_REGISTRY m_objects;
     TERRAIN_REGISTRY m_terrain[GameGraph::LOCATION_TYPE_COUNT][GameGraph::LOCATION_COUNT];
-    CALifeLevelRegistry* m_level;
-    CSE_ALifeCreatureActor* m_actor;
-    float m_process_time;
+    CALifeLevelRegistry* m_level{};
+    CSE_ALifeCreatureActor* m_actor{};
+    float m_process_time{};
     xr_vector<CSE_ALifeDynamicObject*> m_temp;
 
 protected:
@@ -52,6 +52,7 @@ protected:
 public:
     CALifeGraphRegistry();
     virtual ~CALifeGraphRegistry();
+
     void on_load();
     void update(CSE_ALifeDynamicObject* object);
     void attach(CSE_Abstract& object, CSE_ALifeInventoryItem* item, GameGraph::_GRAPH_ID game_vertex_id, bool alife_query = true, bool add_children = true);

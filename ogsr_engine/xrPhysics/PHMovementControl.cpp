@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity.h"
@@ -19,7 +20,7 @@
 #define GROUND_FRICTION 10.0f
 #define AIR_FRICTION 0.01f
 #define WALL_FRICTION 3.0f
-//#define AIR_RESIST		0.001f
+// #define AIR_RESIST		0.001f
 
 #define def_X_SIZE_2 0.35f
 #define def_Y_SIZE_2 0.8f
@@ -68,17 +69,18 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 
     fContactSpeed = 0.f;
     fAirControlParam = 0.f;
-    m_character = NULL;
+    m_character = nullptr;
     m_dwCurBox = 0xffffffff;
     fCollisionDamageFactor = 1.f;
     in_dead_area_count = 0;
-    block_damage_step_end = u64(-1);
+    block_damage_step_end = std::numeric_limits<u64>::max();
 }
 
-CPHMovementControl::~CPHMovementControl(void)
+CPHMovementControl::~CPHMovementControl()
 {
     if (m_character)
         m_character->Destroy();
+
     DeleteCharacterObject();
     xr_delete(m_capture);
 }
@@ -184,7 +186,7 @@ void CPHMovementControl::UpdateCollisionDamage()
     const ICollisionDamageInfo* di = m_character->CollisionDamageInfo();
     fContactSpeed = di->ContactVelocity();
 
-    if (block_damage_step_end != u64(-1))
+    if (block_damage_step_end != std::numeric_limits<u64>::max())
     {
         if (ph_world->StepsNum() < block_damage_step_end)
         {
@@ -192,7 +194,7 @@ void CPHMovementControl::UpdateCollisionDamage()
             return;
         }
         else
-            block_damage_step_end = u64(-1);
+            block_damage_step_end = std::numeric_limits<u64>::max();
     }
 
     // calc new
@@ -424,7 +426,7 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
         }
     }
 
-    if (m_path_distance == dInfinity) // after whall path
+    if (std::isinf(m_path_distance) && m_path_distance > 0.f) // after whall path
     {
         R_ASSERT2(after_line, "Must be after line");
         vtemp.sub(new_position, path[i].position);
@@ -434,6 +436,7 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
         index = i;
         near_line = false;
     }
+
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && stricmp(PH_DBG_ObjectTrack(), *pObject->cName()) == 0)
     {
@@ -441,7 +444,6 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
         Msg("CPHMovementControl::Calculate out %s (CPHMovementControl::vPosition) %f,%f,%f", PH_DBG_ObjectTrack(), vPosition.x, vPosition.y, vPosition.z);
     }
 #endif
-    return;
 }
 
 void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManager::STravelPathPoint>& path, // in path
@@ -517,7 +519,7 @@ void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManage
         }
     }
 
-    if (m_path_distance == dInfinity && i == m_path_size - 1)
+    if (std::isinf(m_path_distance) && m_path_distance > 0.f && i == m_path_size - 1)
     {
         R_ASSERT2(after_line, "Must be after line");
         vtemp.sub(new_position, path[i].position);
@@ -527,8 +529,6 @@ void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManage
         index = i;
         near_line = false;
     }
-
-    return;
 }
 
 void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathManager::STravelPathPoint>& path, // in path
@@ -605,7 +605,7 @@ void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathMana
         }
     }
 
-    if (m_path_distance == dInfinity && i == 1)
+    if (std::isinf(m_path_distance) && m_path_distance > 0.f && i == 1)
     {
         R_ASSERT2(after_line, "Must be after line");
         vtemp.sub(new_position, path[i].position);
@@ -615,8 +615,6 @@ void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathMana
         index = i;
         near_line = false;
     }
-
-    return;
 }
 
 void CPHMovementControl::CorrectPathDir(const Fvector& real_path_dir, const xr_vector<DetailPathManager::STravelPathPoint>& path, int index, Fvector& corrected_path_dir)
@@ -762,7 +760,7 @@ void CPHMovementControl::Load(LPCSTR section)
     float cs_max = pSettings->r_float(section, "ph_crash_speed_max");
     float mass = pSettings->r_float(section, "ph_mass");
     xr_token retrictor_types[] = {
-        {"actor", CPHCharacter::rtActor}, {"medium_monster", CPHCharacter::rtMonsterMedium}, {"stalker", CPHCharacter::rtStalker}, {"none", CPHCharacter::rtNone}, {0, 0}};
+        {"actor", CPHCharacter::rtActor}, {"medium_monster", CPHCharacter::rtMonsterMedium}, {"stalker", CPHCharacter::rtStalker}, {"none", CPHCharacter::rtNone}, {nullptr, 0}};
 
     if (pSettings->line_exist(section, "actor_restrictor"))
         SetRestrictionType(CPHCharacter::ERestrictionType(pSettings->r_token(section, "actor_restrictor", retrictor_types)));
@@ -927,7 +925,8 @@ Fmatrix CPHMovementControl::PHCaptureGetNearestElemTransform(CPhysicsShellHolder
 IPhysicsElement* CPHMovementControl::IElement() const
 {
     if (!CharacterExist())
-        return 0;
+        return nullptr;
+
     return m_character;
 }
 
@@ -1026,6 +1025,7 @@ void CPHMovementControl::SetMaterial(u16 material)
         m_character->SetMaterial(material);
     }
 }
+
 void CPHMovementControl::CreateCharacter()
 {
     dVector3 size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
@@ -1048,18 +1048,21 @@ void CPHMovementControl::CreateCharacter()
     trying_poses[3].set(vPosition);
     trying_poses[4].set(vPosition);
 }
+
 CPHSynchronize* CPHMovementControl::GetSyncItem()
 {
     if (m_character)
         return smart_cast<CPHSynchronize*>(m_character);
-    else
-        return 0;
+
+    return nullptr;
 }
+
 void CPHMovementControl::Freeze()
 {
     if (m_character)
         m_character->Freeze();
 }
+
 void CPHMovementControl::UnFreeze()
 {
     if (m_character)
@@ -1107,9 +1110,9 @@ void CPHMovementControl::MulFrictionFactor(float f) { m_character->FrictionFacto
 CElevatorState* CPHMovementControl::ElevatorState()
 {
     if (!m_character || !m_character->b_exist)
-        return NULL;
+        return nullptr;
+
     return m_character->ElevatorState();
-    // m_character->SetElevator()
 }
 
 struct STraceBorderQParams
@@ -1121,24 +1124,26 @@ struct STraceBorderQParams
     {
         VERIFY(FALSE);
         return p;
-    } //Эта функция в дебаге должна вылетать что-ли? //-V790
+    } // Эта функция в дебаге должна вылетать что-ли? //-V790
 };
 
 BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
 {
     STraceBorderQParams& p = *(STraceBorderQParams*)params;
     u16 mtl_idx = GAMEMTL_NONE_IDX;
-    CDB::TRI* T = NULL;
+    CDB::TRI* T{};
+
     if (result.O)
     {
         return true;
     }
     else
     {
-        //получить треугольник и узнать его материал
+        // получить треугольник и узнать его материал
         T = Level().ObjectSpace.GetStaticTris() + result.element;
         mtl_idx = T->material;
     }
+
     VERIFY(T);
     SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
     if (mtl->Flags.test(SGameMtl::flInjurious))
@@ -1150,6 +1155,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
         else
             p.m_movement->in_dead_area_count--;
     }
+
     return true;
 }
 
@@ -1158,10 +1164,12 @@ void CPHMovementControl::TraceBorder(const Fvector& prev_position)
     const Fvector& from_pos = prev_position;
     const Fvector& to_position = vPosition;
     Fvector dir;
+
     dir.sub(to_position, from_pos);
     float sq_mag = dir.square_magnitude();
-    if (sq_mag == 0.f)
+    if (fis_zero(sq_mag))
         return;
+
     float mag = _sqrt(sq_mag);
     dir.mul(1.f / mag);
     collide::ray_defs RD(from_pos, dir, mag, 0, collide::rqtStatic);
@@ -1169,7 +1177,7 @@ void CPHMovementControl::TraceBorder(const Fvector& prev_position)
 
     STraceBorderQParams p(this, dir);
     storage.r_clear();
-    g_pGameLevel->ObjectSpace.RayQuery(storage, RD, BorderTraceCallback, &p, NULL, static_cast<CObject*>(m_character->PhysicsRefObject()));
+    g_pGameLevel->ObjectSpace.RayQuery(storage, RD, BorderTraceCallback, &p, nullptr, static_cast<CObject*>(m_character->PhysicsRefObject()));
 }
 
 void CPHMovementControl::UpdateObjectBox(CPHCharacter* ach)

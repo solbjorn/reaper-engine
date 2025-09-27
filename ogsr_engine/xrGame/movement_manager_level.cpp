@@ -20,8 +20,6 @@
 
 void CMovementManager::process_level_path()
 {
-    START_PROFILE("Build Path/Process Level Path");
-
     if (!level_path().actual() && (m_path_state > ePathStateBuildLevelPath))
         m_path_state = ePathStateBuildLevelPath;
 
@@ -31,7 +29,6 @@ void CMovementManager::process_level_path()
         if (can_use_distributed_computations(mtLevelPath))
         {
             level_path_builder().setup(object().ai_location().level_vertex_id(), level_dest_vertex_id());
-
             break;
         }
 
@@ -45,6 +42,8 @@ void CMovementManager::process_level_path()
         //			if (time_over())
         if (!m_build_at_once)
             break;
+
+        [[fallthrough]];
     }
     case ePathStateContinueLevelPath: {
         level_path().select_intermediate_vertex();
@@ -53,6 +52,8 @@ void CMovementManager::process_level_path()
 
         //			if (time_over())
         //				break;
+
+        [[fallthrough]];
     }
     case ePathStateBuildDetailPath: {
         detail().set_state_patrol_path(extrapolate_path());
@@ -62,12 +63,10 @@ void CMovementManager::process_level_path()
         if (can_use_distributed_computations(mtDetailPath))
         {
             detail_path_builder().setup(level_path().path(), level_path().intermediate_index());
-
             break;
         }
 
         detail().build_path(level_path().path(), level_path().intermediate_index());
-
         on_build_path();
 
         if (detail().failed())
@@ -106,5 +105,4 @@ void CMovementManager::process_level_path()
     }
     default: NODEFAULT;
     }
-    STOP_PROFILE;
 }

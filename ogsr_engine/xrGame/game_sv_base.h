@@ -56,9 +56,9 @@ public:
     void u_EventSend(NET_Packet& P, u32 dwFlags = 0x0008);
 
     // Events
-    virtual BOOL OnPreCreate(CSE_Abstract* E) { return TRUE; };
-    virtual void OnCreate(u16 id_who) {};
-    virtual void OnPostCreate(u16 id_who) {};
+    virtual BOOL OnPreCreate(CSE_Abstract* E) { return TRUE; }
+    virtual void OnCreate(u16 id_who) {}
+    virtual void OnPostCreate(u16 id_who) {}
     virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) = 0; // TRUE=allow ownership, FALSE=denied
     virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
 
@@ -84,8 +84,8 @@ public:
     virtual void remove_restriction(NET_Packet& packet, u16 id);
     virtual void remove_all_restrictions(NET_Packet& packet, u16 id);
 
-    virtual bool custom_sls_default() { return false; };
-    virtual void sls_default() {};
+    virtual bool custom_sls_default() { return false; }
+    virtual void sls_default() {}
 
     virtual shared_str level_name(const shared_str& server_options) const;
     virtual void on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);

@@ -9,8 +9,8 @@ class CPHSoundPlayer : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPHSoundPlayer);
 
 public:
+    CPhysicsShellHolder* m_object{};
     xr_unordered_map<SGameMtlPair*, ref_sound> m_sound;
-    CPhysicsShellHolder* m_object;
     xr_unordered_map<SGameMtlPair*, u32> m_next_snd_time;
 
     void Init(CPhysicsShellHolder* m_object);
@@ -18,7 +18,7 @@ public:
     void Play(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
     void PlayNext(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
 
-    CPHSoundPlayer() : m_object(nullptr) {};
+    CPHSoundPlayer() = default;
     CPHSoundPlayer(CPhysicsShellHolder* m_object);
     virtual ~CPHSoundPlayer();
 };

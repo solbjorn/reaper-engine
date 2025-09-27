@@ -6,9 +6,11 @@ struct SPPInfo
 {
     struct SColor
     {
-        float r, g, b;
-        SColor() {};
-        SColor(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
+        float r{}, g{}, b{};
+
+        SColor() = default;
+        SColor(float _r, float _g, float _b) : r{_r}, g{_g}, b{_b} {}
+
         IC operator u32()
         {
             int _r = clampr(iFloor(r * 255.f + .5f), 0, 255);
@@ -40,12 +42,16 @@ struct SPPInfo
             return *this;
         }
     };
-    float blur, gray;
+
+    float blur{}, gray{};
+
     struct SDuality
     {
-        float h, v;
-        SDuality() {};
-        SDuality(float _h, float _v) : h(_h), v(_v) {}
+        float h{}, v{};
+
+        SDuality() = default;
+        SDuality(float _h, float _v) : h{_h}, v{_v} {}
+
         IC SDuality& set(float _h, float _v)
         {
             h = _h;
@@ -53,12 +59,15 @@ struct SPPInfo
             return *this;
         }
     } duality;
+
     struct SNoise
     {
-        float intensity, grain;
-        float fps;
-        SNoise() {};
-        SNoise(float _i, float _g, float _f) : intensity(_i), grain(_g), fps(_f) {}
+        float intensity{}, grain{};
+        float fps{};
+
+        SNoise() = default;
+        SNoise(float _i, float _g, float _f) : intensity{_i}, grain{_g}, fps{_f} {}
+
         IC SNoise& set(float _i, float _g, float _f)
         {
             intensity = _i;

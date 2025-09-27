@@ -86,21 +86,16 @@ int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, 
 
 dColliderFn* dTriListColliderFn(int num)
 {
-    //	Log("in dTriListColliderFn ");
-    //	Msg("num=%d",num);
     if (num == dBoxClass)
-    {
         return (dColliderFn*)&dCollideBTL;
-    }
+
     if (num == dSphereClass)
-    {
         return (dColliderFn*)&dCollideSTL;
-    }
 
     if (num == dCylinderClassUser)
         return (dColliderFn*)&dCollideCTL;
 
-    return 0;
+    return nullptr;
 }
 
 int dAABBTestTL(dxGeom* TriList, dxGeom* Object, dReal AABB[6]) noexcept { return 1; }

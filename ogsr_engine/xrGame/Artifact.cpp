@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "artifact.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
@@ -17,26 +18,10 @@
 #include "actor.h"
 #include "patrol_path_storage.h"
 
-#define FASTMODE_DISTANCE (50.f) // distance to camera from sphere, when zone switches to fast update sequence
-
-#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z) \
-    if (x > y) \
-        if (x > z) \
-        { \
-            inst_x; \
-        } \
-        else \
-        { \
-            inst_z; \
-        } \
-    else if (y > z) \
-    { \
-        inst_y; \
-    } \
-    else \
-    { \
-        inst_z; \
-    }
+namespace
+{
+constexpr float FASTMODE_DISTANCE{50.f}; // distance to camera from sphere, when zone switches to fast update sequence
+}
 
 struct SArtefactActivation
 {
@@ -49,21 +34,22 @@ struct SArtefactActivation
         eSpawnZone,
         eMax
     };
+
     struct SStateDef
     {
-        float m_time;
         shared_str m_snd;
-        Fcolor m_light_color;
-        float m_light_range{};
         shared_str m_particle;
         shared_str m_animation;
+        Fcolor m_light_color;
+        float m_light_range{};
+        float m_time{};
 
-        SStateDef() : m_time(0.0f){};
         void Load(LPCSTR section, LPCSTR name);
     };
 
     SArtefactActivation(CArtefact* af, u32 owner_id);
     ~SArtefactActivation();
+
     CArtefact* m_af;
     svector<SStateDef, eMax> m_activation_states;
     EActivationStates m_cur_activation_state;
@@ -259,7 +245,7 @@ void CArtefact::StartLights()
     if (!m_bLightsEnabled)
         return;
 
-    //включить световую подсветку от двигателя
+    // включить световую подсветку от двигателя
     m_pTrailLight->set_color(m_TrailLightColor.r, m_TrailLightColor.g, m_TrailLightColor.b);
 
     m_pTrailLight->set_range(m_fTrailLightRange);
@@ -301,21 +287,23 @@ bool CArtefact::CanTake() const
 {
     if (!inherited::CanTake())
         return false;
-    return (m_activationObj == NULL);
+
+    return !m_activationObj;
 }
 
 void CArtefact::Hide(bool now) { SwitchState(eHiding); }
-
 void CArtefact::Show(bool now) { SwitchState(eShowing); }
+
 #include "inventoryOwner.h"
 #include "Entity_alive.h"
+
 void CArtefact::UpdateXForm()
 {
     if (Device.dwFrame != dwXF_Frame)
     {
         dwXF_Frame = Device.dwFrame;
 
-        if (0 == H_Parent())
+        if (!H_Parent())
             return;
 
         // Get access to entity and its visual
@@ -357,7 +345,9 @@ void CArtefact::UpdateXForm()
         XFORM().mul(mRes, offset());
     }
 }
+
 #include "xr_level_controller.h"
+
 bool CArtefact::Action(s32 cmd, u32 flags)
 {
     switch (cmd)
@@ -547,13 +537,14 @@ void SArtefactActivation::PhDataUpdate(dReal step)
     if (m_cur_activation_state == eFlying)
     {
         Fvector dir = {0, -1.f, 0};
-        if (Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth, NULL, m_af))
+        if (Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth, nullptr, m_af))
         {
             dir.y = ph_world->Gravity() * 1.1f;
             m_af->m_pPhysicsShell->applyGravityAccel(dir);
         }
     }
 }
+
 void SArtefactActivation::ChangeEffects()
 {
     VERIFY(!ph_world->Processing());
@@ -566,7 +557,7 @@ void SArtefactActivation::ChangeEffects()
     {
         m_snd.create(*state_def.m_snd, st_Effect, sg_SourceType);
         m_snd.play_at_pos(m_af, m_af->Position());
-    };
+    }
 
     m_light->set_range(state_def.m_light_range);
     m_light->set_color(state_def.m_light_color.r, state_def.m_light_color.g, state_def.m_light_color.b);
@@ -577,7 +568,8 @@ void SArtefactActivation::ChangeEffects()
         dir.set(0, 1, 0);
 
         m_af->CParticlesPlayer::StartParticles(state_def.m_particle, dir, m_af->ID(), iFloor(state_def.m_time * 1000));
-    };
+    }
+
     if (state_def.m_animation.size())
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(m_af->Visual());
@@ -634,10 +626,10 @@ void SArtefactActivation::SpawnAnomaly()
 
 static shared_str clear_brackets(LPCSTR src)
 {
-    if (0 == src)
-        return shared_str(0);
+    if (!src)
+        return shared_str{};
 
-    if (NULL == strchr(src, '"'))
+    if (!strchr(src, '"'))
         return shared_str(src);
 
     string512 _original;
@@ -651,6 +643,7 @@ static shared_str clear_brackets(LPCSTR src)
         return shared_str(&_original[0] + 1); // skip begin
     return shared_str(_original);
 }
+
 void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
 {
     LPCSTR str = pSettings->r_string(section, name);
@@ -672,9 +665,9 @@ void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
     m_animation = clear_brackets(_GetItem(str, 7, tmp));
 }
 
-SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A) : m_parent(A), m_currPatrolPath(NULL), m_currPatrolVertex(NULL), m_switchVisTime(0) {}
-
+SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A) : m_parent{A} {}
 SArtefactDetectorsSupport::~SArtefactDetectorsSupport() { m_sound.destroy(); }
+
 void SArtefactDetectorsSupport::SetVisible(bool b)
 {
     m_switchVisTime = Device.dwTimeGlobal;
@@ -700,7 +693,7 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 
         curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_snd" : "det_hide_snd");
         m_sound.create(curr, st_Effect, sg_SourceType);
-        m_sound.play_at_pos(0, m_parent->Position(), 0);
+        m_sound.play_at_pos(nullptr, m_parent->Position(), 0);
     }
 
     m_parent->setVisible(b);

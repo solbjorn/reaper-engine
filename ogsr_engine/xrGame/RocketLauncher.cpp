@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "RocketLauncher.h"
 #include "CustomRocket.h"
 #include "xrserver_objects_alife_items.h"
@@ -15,7 +16,9 @@ CRocketLauncher::CRocketLauncher()
 {
     //	m_pRocket =  NULL;
 }
+
 CRocketLauncher::~CRocketLauncher() {}
+
 void CRocketLauncher::Load(LPCSTR section) { m_fLaunchSpeed = pSettings->r_float(section, "launch_speed"); }
 
 void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject* parent_rocket_launcher)
@@ -64,19 +67,19 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 
     {
         VERIFY((It != m_rockets.end()) || (It_l != m_launched_rockets.end()));
-    };
+    }
 
     if (It != m_rockets.end())
     {
         (*It)->m_bLaunched = bLaunch;
-        (*It)->H_SetParent(NULL);
+        (*It)->H_SetParent(nullptr);
         m_rockets.erase(It);
-    };
+    }
 
     if (It_l != m_launched_rockets.end())
     {
         (*It)->m_bLaunched = bLaunch;
-        (*It_l)->H_SetParent(NULL);
+        (*It_l)->H_SetParent(nullptr);
         m_launched_rockets.erase(It_l);
     }
 }
@@ -97,10 +100,10 @@ void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, con
 
 CCustomRocket* CRocketLauncher::getCurrentRocket()
 {
-    if (m_rockets.size())
+    if (!m_rockets.empty())
         return m_rockets.back();
-    else
-        return (CCustomRocket*)0;
+
+    return nullptr;
 }
 
 void CRocketLauncher::dropCurrentRocket() { m_rockets.pop_back(); }

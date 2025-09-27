@@ -54,7 +54,7 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
         else
             fReminderFactor = 0.f;
     }
-    if (!fsimilar(fReminderFactor, 0))
+    if (!fsimilar(fReminderFactor, 0.f))
     {
         Fmatrix M;
         M.identity();

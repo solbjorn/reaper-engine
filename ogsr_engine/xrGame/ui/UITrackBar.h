@@ -28,9 +28,9 @@ public:
     virtual void Init(float x, float y, float width, float height);
     virtual void Enable(bool status);
     void SetInvert(bool v) { m_b_invert = v; }
-    bool GetInvert() const { return m_b_invert; };
+    bool GetInvert() const { return m_b_invert; }
     void SetStep(float step);
-    void SetType(bool b_float) { m_b_is_float = b_float; };
+    void SetType(bool b_float) { m_b_is_float = b_float; }
     bool GetCheck();
     void SetCheck(bool b);
     float GetTrackValue();

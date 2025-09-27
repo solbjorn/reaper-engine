@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ai_monster_squad.h"
 #include "../../entity.h"
 #include "../../entity_alive.h"
@@ -6,7 +7,7 @@
 
 #include "basemonster/base_monster.h"
 
-CMonsterSquad::CMonsterSquad() : leader(0), m_home_danger_end_tick(0), m_home_danger_mode_time(8000)
+CMonsterSquad::CMonsterSquad()
 {
     m_locked_covers.reserve(20);
     m_locked_corpses.reserve(10);
@@ -18,12 +19,12 @@ void CMonsterSquad::RegisterMember(CEntity* pE)
 {
     // Добавить цель
     SMemberGoal G;
-    m_goals.insert(std::make_pair(pE, G));
+    m_goals.try_emplace(pE, G);
 
     // Добавить команду
     SSquadCommand C;
     C.type = SC_NONE;
-    m_commands.insert(std::make_pair(pE, C));
+    m_commands.try_emplace(pE, C);
 
     // установить лидера
     if (!leader)
@@ -48,7 +49,7 @@ void CMonsterSquad::RemoveMember(CEntity* pE)
     if (leader == pE)
     {
         if (m_goals.empty())
-            leader = 0;
+            leader = nullptr;
         else
             leader = m_goals.begin()->first;
     }
@@ -174,7 +175,7 @@ void CMonsterSquad::remove_links(CObject* O)
         SMemberGoal goal = it_goal->second;
         if (goal.entity == O)
         {
-            it_goal->second.entity = 0;
+            it_goal->second.entity = nullptr;
             it_goal->second.type = MG_None;
         }
     }
@@ -185,7 +186,7 @@ void CMonsterSquad::remove_links(CObject* O)
         SSquadCommand com = it->second;
         if (com.entity == O)
         {
-            it->second.entity = 0;
+            it->second.entity = nullptr;
             it->second.type = SC_NONE;
         }
     }
@@ -211,7 +212,7 @@ u8 CMonsterSquad::get_count(const CEntity* object, float radius)
     for (auto it_goal = m_goals.begin(); it_goal != m_goals.end(); ++it_goal)
     {
         SMemberGoal goal = it_goal->second;
-        if ((goal.entity != 0) && (goal.entity != object) && (goal.entity->g_Alive()))
+        if (goal.entity && goal.entity != object && goal.entity->g_Alive())
         {
             if (goal.entity->Position().distance_to(object->Position()) < radius)
                 count++;
@@ -236,10 +237,10 @@ void CMonsterSquad::unlock_corpse(const CEntityAlive* corpse)
 }
 //////////////////////////////////////////////////////////////////////////
 
-squad_grouping_behaviour::squad_grouping_behaviour(CEntity* self, Fvector cohesion_factor, Fvector separate_factor, float max_separate_range)
-    : self(self), squad(NULL), steering_behaviour::grouping::params(cohesion_factor, separate_factor, max_separate_range)
+squad_grouping_behaviour::squad_grouping_behaviour(CEntity* _self, Fvector cohesion_factor, Fvector separate_factor, float max_separate_range)
+    : self{_self}, steering_behaviour::grouping::params{cohesion_factor, separate_factor, max_separate_range}
 {
-    VERIFY(self);
+    VERIFY(_self);
 }
 
 void squad_grouping_behaviour::set_squad(CMonsterSquad* squad_) { squad = squad_; }
@@ -247,9 +248,7 @@ void squad_grouping_behaviour::set_squad(CMonsterSquad* squad_) { squad = squad_
 void squad_grouping_behaviour::first_nearest(Fvector& v)
 {
     if (!squad)
-    {
         return;
-    }
 
     it_cur = squad->get_commands()->begin();
     if (it_cur->first == self)
@@ -266,9 +265,7 @@ void squad_grouping_behaviour::first_nearest(Fvector& v)
 bool squad_grouping_behaviour::nomore_nearest()
 {
     if (!squad)
-    {
         return true;
-    }
 
     return it_cur == squad->get_commands()->end();
 }
@@ -276,33 +273,24 @@ bool squad_grouping_behaviour::nomore_nearest()
 void squad_grouping_behaviour::next_nearest(Fvector& v)
 {
     if (!squad)
-    {
         return;
-    }
 
     if (it_cur != squad->get_commands()->end())
-    {
         ++it_cur;
-    }
 
     // if cur == self move onto next
     if (it_cur != squad->get_commands()->end())
     {
         if (it_cur->first == self)
-        {
             ++it_cur;
-        }
     }
 
     if (it_cur != squad->get_commands()->end())
-    {
         v = (*it_cur).first->Position();
-    }
 }
 
 bool squad_grouping_behaviour::update()
 {
     pos = self->Position();
-
     return true;
 }

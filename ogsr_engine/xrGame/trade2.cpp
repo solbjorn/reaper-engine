@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "trade.h"
 #include "actor.h"
 #include "ai/stalker/ai_stalker.h"
@@ -19,7 +20,7 @@ bool CTrade::CanTrade()
     CEntity* pEntity;
 
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, pThis.base->Position(), 2.f, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, pThis.base->Position(), 2.f, nullptr);
     if (!m_nearest.empty())
     {
         for (u32 i = 0, n = m_nearest.size(); i < n; ++i)
@@ -28,6 +29,7 @@ bool CTrade::CanTrade()
             pEntity = smart_cast<CEntity*>(m_nearest[i]);
             if (pEntity && !pEntity->g_Alive())
                 return false;
+
             if (SetPartner(pEntity))
                 break;
         }
@@ -166,15 +168,15 @@ u32 CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 
     if (buying)
     {
-        if (!pThis.inv_owner->trade_parameters().enabled(CTradeParameters::action_buy(0), pItem->object().cNameSect()))
+        if (!pThis.inv_owner->trade_parameters().enabled(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()))
             return 0;
-        p_trade_factors = &pThis.inv_owner->trade_parameters().factors(CTradeParameters::action_buy(0), pItem->object().cNameSect());
+        p_trade_factors = &pThis.inv_owner->trade_parameters().factors(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect());
     }
     else
     {
-        if (!pThis.inv_owner->trade_parameters().enabled(CTradeParameters::action_sell(0), pItem->object().cNameSect()))
+        if (!pThis.inv_owner->trade_parameters().enabled(CTradeParameters::action_sell(nullptr), pItem->object().cNameSect()))
             return 0;
-        p_trade_factors = &pThis.inv_owner->trade_parameters().factors(CTradeParameters::action_sell(0), pItem->object().cNameSect());
+        p_trade_factors = &pThis.inv_owner->trade_parameters().factors(CTradeParameters::action_sell(nullptr), pItem->object().cNameSect());
     }
     const CTradeFactors& trade_factors = *p_trade_factors;
 

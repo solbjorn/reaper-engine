@@ -16,7 +16,7 @@ void register_file_mapping(void* address, const u32& size, LPCSTR file_name)
 
     FILE_MAPPINGS::const_iterator I = g_file_mappings.find(*(u32*)&address);
     VERIFY(I == g_file_mappings.end());
-    g_file_mappings.insert(std::make_pair(*(u32*)&address, std::make_pair(size, shared_str(file_name))));
+    g_file_mappings.try_emplace(*(u32*)&address, size, shared_str(file_name));
 
     g_file_mapped_memory += size;
     ++g_file_mapped_count;
@@ -79,11 +79,13 @@ void CMemoryWriter::w(const void* ptr, size_t count)
             mem_size = 1024 * 1024;
         while (mem_size <= (position + count))
             mem_size *= 2;
-        if (0 == data)
+
+        if (!data)
             data = (BYTE*)xr_malloc(mem_size);
         else
             data = (BYTE*)xr_realloc(data, mem_size);
     }
+
     CopyMemory(data + position, ptr, count);
     position += count;
     if (position > file_size)
@@ -133,8 +135,8 @@ size_t IWriter::chunk_size()
 
 void IWriter::w_compressed(void* ptr, size_t count, const bool encrypt, const bool is_ww)
 {
-    BYTE* dest = 0;
-    size_t dest_sz = 0;
+    BYTE* dest{};
+    size_t dest_sz{};
     _compressLZ(&dest, &dest_sz, ptr, count);
 
     if (encrypt)
@@ -201,9 +203,9 @@ IReader* IReader::open_chunk(u32 ID)
             return xr_new<IReader>(pointer(), dwSize, tell() + dwSize);
         }
     }
-    else
-        return 0;
-};
+
+    return nullptr;
+}
 
 void IReader::close()
 {
@@ -213,7 +215,7 @@ void IReader::close()
 
 IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 {
-    if (0 == _prev)
+    if (!_prev)
     {
         // first
         rewind();
@@ -235,7 +237,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     // На всякий случай тут тоже так сделаем по аналогии с find_chunk()
     if (elapsed() < static_cast<long>(_size))
     {
-        Msg("!![%s] chunk [%u] has invalid size [%lu], return elapsed size [%ld]", __FUNCTION__, ID, _size, elapsed());
+        Msg("!![%s] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, ID, _size, elapsed());
         _size = elapsed();
     }
 
@@ -289,7 +291,7 @@ void IReader::r(void* p, size_t cnt)
         FS.dwOpenCounter++;
     }
 #endif
-};
+}
 
 constexpr bool is_term(const char a) { return a == '\r' || a == '\n'; }
 
@@ -393,11 +395,11 @@ void IReader::skip_stringZ()
         Pos++;
 
     Pos++;
-};
+}
 
 //---------------------------------------------------
 // temp stream
-CTempReader::~CTempReader() { xr_free(data); };
+CTempReader::~CTempReader() { xr_free(data); }
 
 //---------------------------------------------------
 // pack stream
@@ -408,7 +410,7 @@ CPackReader::~CPackReader()
 #endif // DEBUG
 
     UnmapViewOfFile(base_address);
-};
+}
 //---------------------------------------------------
 
 CVirtualFileReader::CVirtualFileReader(const char* cFileName)
@@ -416,7 +418,7 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
     Pos = 0;
 
     // Open the file
-    hSrcFile = CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+    hSrcFile = CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     R_ASSERT3(hSrcFile != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
 
     LARGE_INTEGER sz;
@@ -426,7 +428,7 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
     if (Size == 0)
         Msg("~~[%s] Found empty file: [%s]", __FUNCTION__, cFileName);
 
-    hSrcMap = CreateFileMapping(hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
+    hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
     R_ASSERT3(hSrcMap != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
 
     data = (char*)MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, 0, 0);

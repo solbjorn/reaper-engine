@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIGameTutorial.h"
 #include "UIWindow.h"
 #include "UIStatic.h"
@@ -16,9 +17,9 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
     int disabled_cnt = xml->GetNodesNum(xml->GetLocalRoot(), "disabled_key");
     for (int i = 0; i < disabled_cnt; ++i)
     {
-        LPCSTR str = xml->Read("disabled_key", i, NULL);
+        LPCSTR str = xml->Read("disabled_key", i, nullptr);
         m_disabled_actions.push_back(action_name_to_id(str));
-    };
+    }
 
     LPCSTR str;
     bool function_exists;
@@ -27,7 +28,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
     m_start_lua_functions.resize(f_num);
     for (j = 0; j < f_num; ++j)
     {
-        str = xml->Read(xml->GetLocalRoot(), "function_on_start", j, NULL);
+        str = xml->Read(xml->GetLocalRoot(), "function_on_start", j, nullptr);
         function_exists = ai().script_engine().function(str, m_start_lua_functions[j]);
         THROW3(function_exists, "Cannot find script function described in tutorial item ", str);
     }
@@ -36,7 +37,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
     m_stop_lua_functions.resize(f_num);
     for (j = 0; j < f_num; ++j)
     {
-        str = xml->Read(xml->GetLocalRoot(), "function_on_stop", j, NULL);
+        str = xml->Read(xml->GetLocalRoot(), "function_on_stop", j, nullptr);
         function_exists = ai().script_engine().function(str, m_stop_lua_functions[j]);
         THROW3(function_exists, "Cannot find script function described in tutorial item ", str);
     }
@@ -49,8 +50,8 @@ bool CUISequenceItem::AllowKey(int dik)
     xr_vector<int>::iterator it = std::find(m_disabled_actions.begin(), m_disabled_actions.end(), get_binded_action(dik));
     if (it == m_disabled_actions.end())
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 void CallFunctions(xr_vector<sol::function>& v)
@@ -98,11 +99,13 @@ void CUISequencer::Start(LPCSTR tutor_name)
     {
         LPCSTR _tp = uiXml.ReadAttrib("item", i, "type", "");
         bool bVideo = 0 == _stricmp(_tp, "video");
-        CUISequenceItem* pItem = 0;
+        CUISequenceItem* pItem{};
+
         if (bVideo)
             pItem = xr_new<CUISequenceVideoItem>(this);
         else
             pItem = xr_new<CUISequenceSimpleItem>(this);
+
         m_items.push_back(pItem);
         pItem->Load(&uiXml, i);
     }
@@ -122,7 +125,7 @@ void CUISequencer::Destroy()
     delete_data(m_items);
     delete_data(m_UIWindow);
     IR_Release();
-    m_pStoredInputReceiver = NULL;
+    m_pStoredInputReceiver = nullptr;
 }
 
 void CUISequencer::Stop()
@@ -197,10 +200,10 @@ void CUISequencer::Next()
 
 bool CUISequencer::GrabInput()
 {
-    if (m_items.size())
+    if (!m_items.empty())
         return m_items.front()->GrabInput();
-    else
-        return false;
+
+    return false;
 }
 
 void CUISequencer::IR_OnMousePress(int btn)
@@ -281,8 +284,7 @@ void CUISequencer::IR_OnActivate()
     if (!pInput)
         return;
 
-    int i;
-    for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+    for (u32 i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
     {
         if (IR_GetKeyState(i))
         {
@@ -305,7 +307,7 @@ void CUISequencer::IR_OnActivate()
                 IR_OnKeyboardPress(i);
             }
             break;
-            };
-        };
+            }
+        }
     }
 }

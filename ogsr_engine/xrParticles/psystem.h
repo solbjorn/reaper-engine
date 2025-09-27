@@ -17,48 +17,57 @@ namespace PAPI
 class pVector : public Fvector
 {
 public:
-    IC pVector(float ax, float ay, float az) { set(ax, ay, az); }
-    pVector() = default;
-    IC float length() const { return _sqrt(x * x + y * y + z * z); }
-    IC float length2() const { return (x * x + y * y + z * z); }
-    IC float operator*(const pVector& a) const { return x * a.x + y * a.y + z * a.z; }
-    IC pVector operator*(const float s) const { return pVector(x * s, y * s, z * s); }
-    IC pVector operator/(const float s) const
+    constexpr IC pVector(float ax, float ay, float az) { set(ax, ay, az); }
+    constexpr pVector(const pVector& a) { set(a.x, a.y, a.z); }
+    constexpr pVector() = default;
+
+    constexpr IC float length() const { return _sqrt(x * x + y * y + z * z); }
+    constexpr IC float length2() const { return (x * x + y * y + z * z); }
+    constexpr IC float operator*(const pVector& a) const { return x * a.x + y * a.y + z * a.z; }
+    constexpr IC pVector operator*(const float s) const { return pVector(x * s, y * s, z * s); }
+
+    constexpr IC pVector operator/(const float s) const
     {
         float invs = 1.0f / s;
         return pVector(x * invs, y * invs, z * invs);
     }
-    IC pVector operator+(const pVector& a) const { return pVector(x + a.x, y + a.y, z + a.z); }
-    IC pVector operator-(const pVector& a) const { return pVector(x - a.x, y - a.y, z - a.z); }
-    IC pVector operator-()
+
+    constexpr IC pVector operator+(const pVector& a) const { return pVector(x + a.x, y + a.y, z + a.z); }
+    constexpr IC pVector operator-(const pVector& a) const { return pVector(x - a.x, y - a.y, z - a.z); }
+
+    constexpr IC pVector operator-()
     {
         x = -x;
         y = -y;
         z = -z;
         return *this;
     }
-    IC pVector& operator+=(const pVector& a)
+
+    constexpr IC pVector& operator+=(const pVector& a)
     {
         x += a.x;
         y += a.y;
         z += a.z;
         return *this;
     }
-    IC pVector& operator-=(const pVector& a)
+
+    constexpr IC pVector& operator-=(const pVector& a)
     {
         x -= a.x;
         y -= a.y;
         z -= a.z;
         return *this;
     }
-    IC pVector& operator*=(const float a)
+
+    constexpr IC pVector& operator*=(const float a)
     {
         x *= a;
         y *= a;
         z *= a;
         return *this;
     }
-    IC pVector& operator/=(const float a)
+
+    constexpr IC pVector& operator/=(const float a)
     {
         float b = 1.0f / a;
         x *= b;
@@ -66,15 +75,18 @@ public:
         z *= b;
         return *this;
     }
-    IC pVector& operator=(const pVector& a)
+
+    constexpr IC pVector& operator=(const pVector& a)
     {
         x = a.x;
         y = a.y;
         z = a.z;
         return *this;
     }
-    IC pVector operator^(const pVector& b) const { return pVector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
+
+    constexpr IC pVector operator^(const pVector& b) const { return pVector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
 };
+
 // A single particle
 struct Rotation
 {
@@ -198,4 +210,4 @@ public:
 inline IParticleManager::~IParticleManager() = default;
 
 IParticleManager* ParticleManager();
-}; // namespace PAPI
+} // namespace PAPI

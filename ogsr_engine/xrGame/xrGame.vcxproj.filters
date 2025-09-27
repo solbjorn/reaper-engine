@@ -1900,9 +1900,6 @@
     <Filter Include="Core\Client\Objects\physics\Hit">
       <UniqueIdentifier>{c4d6f91a-7b00-49fa-b0f5-27023ea959c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\physics\IK">
-      <UniqueIdentifier>{b024e9b8-9f53-480a-8f74-57f1b9c91606}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptClasses\UI\Common">
       <UniqueIdentifier>{1ed124f7-98a2-4464-8996-9dd13989e6fa}</UniqueIdentifier>
     </Filter>
@@ -4950,9 +4947,6 @@
     <ClInclude Include="ode_redefine.h">
       <Filter>Core\Client\Objects\physics\Base</Filter>
     </ClInclude>
-    <ClInclude Include="PHDebug.h">
-      <Filter>Core\Client\Objects\physics\Base</Filter>
-    </ClInclude>
     <ClInclude Include="phvalide.h">
       <Filter>Core\Client\Objects\physics\Base</Filter>
     </ClInclude>
@@ -5033,9 +5027,6 @@
     </ClInclude>
     <ClInclude Include="PHCapture.h">
       <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\Capture</Filter>
-    </ClInclude>
-    <ClInclude Include="PHMovementControl.h">
-      <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\MovementControl</Filter>
     </ClInclude>
     <ClInclude Include="ElevatorState.h">
       <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\SipmpleCharacter</Filter>
@@ -5180,39 +5171,6 @@
     </ClInclude>
     <ClInclude Include="Hit.h">
       <Filter>Core\Client\Objects\physics\Hit</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\aint.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\Dof7control.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\eqn.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\eulersolver.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_anim_state.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\IKLimb.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="IKLimbsController.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\jtlimits.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\limb.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\math3d.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="Ik\mathTrig.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
     </ClInclude>
     <ClInclude Include="MainMenu.h">
       <Filter>AI\AScript\ScriptClasses\UI</Filter>
@@ -5936,42 +5894,6 @@
       <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
     </ClInclude>
     <ClInclude Include="ui\UIHelper.h" />
-    <ClInclude Include="ik_object_shift.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_limb_state_predict.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_limb_state.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_foot_collider.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_dbg_matrix.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_calculate_state.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_collide_data.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="ik_calculate_data.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="IKFoot_inl.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="IKFoot.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="pose_extrapolation.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
-    <ClInclude Include="matrix_utils.h">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClInclude>
     <ClInclude Include="player_hud.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
     </ClInclude>
@@ -6048,9 +5970,6 @@
     </ClCompile>
     <ClCompile Include="danger_manager.cpp">
       <Filter>AI\AComponents\MemoryManager\clsuterized_data_managers\DangerManager</Filter>
-    </ClCompile>
-    <ClCompile Include="danger_object.cpp">
-      <Filter>AI\AComponents\MemoryManager\clsuterized_data_managers\DangerManager\danger_object</Filter>
     </ClCompile>
     <ClCompile Include="enemy_manager.cpp">
       <Filter>AI\AComponents\MemoryManager\clsuterized_data_managers\EnemyManager</Filter>
@@ -7072,9 +6991,6 @@
     <ClCompile Include="script_game_object_use2.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptGameObject</Filter>
     </ClCompile>
-    <ClCompile Include="script_hit.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptHit</Filter>
-    </ClCompile>
     <ClCompile Include="script_hit_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptHit</Filter>
     </ClCompile>
@@ -7145,9 +7061,6 @@
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_engine_export.cpp">
-      <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="script_engine_help.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_engine_script.cpp">
@@ -8059,9 +7972,6 @@
     <ClCompile Include="xrServer_process_update.cpp">
       <Filter>Core\Server\ServerProcess</Filter>
     </ClCompile>
-    <ClCompile Include="PHDebug.cpp">
-      <Filter>Core\Client\Objects\physics\Base</Filter>
-    </ClCompile>
     <ClCompile Include="PHWorld.cpp">
       <Filter>Core\Client\Objects\physics\Base</Filter>
     </ClCompile>
@@ -8121,9 +8031,6 @@
     </ClCompile>
     <ClCompile Include="PHCaptureInit.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\Capture</Filter>
-    </ClCompile>
-    <ClCompile Include="PHMovementControl.cpp">
-      <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\MovementControl</Filter>
     </ClCompile>
     <ClCompile Include="ElevatorState.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\PhyMove\SipmpleCharacter</Filter>
@@ -8244,39 +8151,6 @@
     </ClCompile>
     <ClCompile Include="Hit.cpp">
       <Filter>Core\Client\Objects\physics\Hit</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\aint.cxx">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\Dof7control.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\eqn.cxx">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\eulersolver.cxx">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="ik_anim_state.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\IKLimb.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="IKLimbsController.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\jtlimits.cxx">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\limb.cxx">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\math3d.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="Ik\mathTrig.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
     </ClCompile>
     <ClCompile Include="MainMenu.cpp">
       <Filter>AI\AScript\ScriptClasses\UI</Filter>
@@ -8726,27 +8600,6 @@
       <Filter>AI\AScript\ScriptClasses\UI\LoadScreen</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIHelper.cpp" />
-    <ClCompile Include="ik_object_shift.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="ik_limb_state.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="ik_foot_collider.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="ik_dbg_matrix.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="ik_calculate_data.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="IKFoot.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
-    <ClCompile Include="pose_extrapolation.cpp">
-      <Filter>Core\Client\Objects\physics\IK</Filter>
-    </ClCompile>
     <ClCompile Include="player_hud.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Weapons\HUD</Filter>
     </ClCompile>

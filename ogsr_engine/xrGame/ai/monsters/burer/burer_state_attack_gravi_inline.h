@@ -25,20 +25,17 @@ void CStateBurerAttackGravi<Object>::execute()
     switch (m_action)
     {
     case ACTION_GRAVI_STARTED: ExecuteGraviStart(); break;
-
     case ACTION_GRAVI_CONTINUE: ExecuteGraviContinue(); break;
-
     case ACTION_GRAVI_FIRE:
         ExecuteGraviFire();
         m_action = ACTION_WAIT_ANIM_END;
         break;
-
     case ACTION_WAIT_ANIM_END:
         if (current_time() > m_anim_end_tick)
         {
             m_action = ACTION_COMPLETED;
         }
-
+        break;
     case ACTION_COMPLETED: break;
     }
 

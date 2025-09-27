@@ -32,19 +32,19 @@ private:
     friend inherited;
 
 public:
-    CHARACTER_RANK() : m_current_value(NO_RANK) {};
-    ~CHARACTER_RANK() {};
+    CHARACTER_RANK() = default;
+    ~CHARACTER_RANK() = default;
 
     void set(CHARACTER_RANK_VALUE);
 
     shared_str id() const;
-    int index() const { return m_current_index; };
-    CHARACTER_RANK_VALUE value() const { return m_current_value; };
+    int index() const { return m_current_index; }
+    CHARACTER_RANK_VALUE value() const { return m_current_value; }
 
     static int ValueToIndex(CHARACTER_RANK_VALUE);
 
 private:
-    CHARACTER_RANK_VALUE m_current_value;
+    CHARACTER_RANK_VALUE m_current_value{NO_RANK};
     int m_current_index{};
 
     static void InitIdToIndex();

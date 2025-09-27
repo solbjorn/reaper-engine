@@ -51,7 +51,8 @@ void type_motion::set_motion(IKinematicsAnimated* k, u16 id_motion, const char* 
 
 type_motion* type_motion::setup(IKinematicsAnimated* k, CInifile* ini, const char* section, const char* type)
 {
-    anims.resize(dirs_number, 0);
+    anims.resize(dirs_number, nullptr);
+
     if (ini->line_exist(section, type))
     {
         const char* line = ini->r_string(section, type);
@@ -152,21 +153,26 @@ void death_anims::clear()
 
 MotionID death_anims::motion(CEntityAlive& ea, const SHit& H, float& angle) const
 {
-    angle = 0;
-    if (anims.empty())
-        return rnd_anims.motion();
-
     MotionID m;
-    xr_vector<type_motion*>::const_iterator i = anims.begin(), e = anims.end();
-    for (; e != i; ++i)
-        if ((*i)->predicate(ea, H, m, angle) && m.valid())
-            return m;
+
+    if (!anims.empty())
+    {
+        xr_vector<type_motion*>::const_iterator i = anims.begin(), e = anims.end();
+        for (; e != i; ++i)
+        {
+            if ((*i)->predicate(ea, H, m, angle) && m.valid())
+                return m;
+        }
+    }
 
     angle = 0;
-    // Msg("No specific anim was found, use random");
-    return rnd_anims.motion();
+    m = rnd_anims.motion();
+
+    return m;
 }
 
+namespace
+{
 Fvector& global_hit_position(Fvector& gp, CEntityAlive& ea, const SHit& H)
 {
     VERIFY(ea.Visual());
@@ -195,12 +201,7 @@ bool find_in_parents(const u16 bone_to_find, const u16 from_bone, IKinematics& c
     return false;
 }
 
-inline bool is_bone_head(IKinematics& K, u16 bone)
-{
-    const u16 head_bone = K.LL_BoneID("bip01_head");
-    const u16 neck_bone = K.LL_BoneID("bip01_neck");
-    return (bone != BI_NONE) && neck_bone == bone || find_in_parents(head_bone, bone, K);
-}
+inline bool is_bone_head(IKinematics& K, u16 bone) { return bone != BI_NONE && (bone == K.LL_BoneID("bip01_neck") || find_in_parents(K.LL_BoneID("bip01_head"), bone, K)); }
 
 // 1.	Инерционное движение вперед от попадания в голову
 class type_motion0 : public type_motion
@@ -427,6 +428,7 @@ public:
         return false;
     }
 };
+} // namespace
 
 void death_anims::setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini)
 {

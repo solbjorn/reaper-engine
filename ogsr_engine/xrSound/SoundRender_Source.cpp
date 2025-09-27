@@ -3,7 +3,12 @@
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <vorbis/vorbisfile.h>
+
+XR_DIAG_POP();
 
 CSoundRender_Source::~CSoundRender_Source() { unload(); }
 

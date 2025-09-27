@@ -120,7 +120,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
     // Create a screen quad for all render to texture operations
     static constexpr Fvector3 svQuad[]{{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
-    m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
+    m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, nullptr);
 }
 
 void dx103DFluidRenderer::CreateJitterTexture()

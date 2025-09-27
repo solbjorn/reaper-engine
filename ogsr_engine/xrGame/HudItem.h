@@ -109,12 +109,12 @@ public:
     ///////////////////////////////////////////////
     // общие функции HUD
     ///////////////////////////////////////////////
-    virtual void StopHUDSounds() {};
+    virtual void StopHUDSounds() {}
 
     // для предачи команд владельцем
     virtual bool Action(s32 cmd, u32 flags);
 
-    virtual void OnDrawUI() {};
+    virtual void OnDrawUI() {}
 
     virtual bool IsHidden() const { return GetState() == eHidden; } // Does weapon is in hidden state
     virtual bool IsHiding() const { return GetState() == eHiding; }
@@ -136,11 +136,11 @@ public:
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
 
-    virtual void OnActiveItem() {};
-    virtual void OnHiddenItem() {};
+    virtual void OnActiveItem() {}
+    virtual void OnHiddenItem() {}
 
     virtual void OnAnimationEnd(u32 state);
-    virtual void OnMotionMark(u32 state, const motion_marks&) {};
+    virtual void OnMotionMark(u32 state, const motion_marks&) {}
     virtual void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
 
     virtual void PlayAnimIdle();
@@ -154,7 +154,7 @@ public:
     virtual void PlayAnimSprintEnd();
     virtual void PlayAnimIdleMovingCrouch();
     virtual void PlayAnimIdleMovingCrouchSlow();
-    virtual void PlayAnimDeviceSwitch() {};
+    virtual void PlayAnimDeviceSwitch() {}
 
     virtual bool NeedBlendAnm();
 
@@ -187,8 +187,8 @@ public:
 
     void PlayBlendAnm(LPCSTR name, float speed = 1.f, float power = 1.f, bool stop_old = true);
 
-    virtual void render_hud_mode() {};
-    virtual bool need_renderable() { return true; };
+    virtual void render_hud_mode() {}
+    virtual bool need_renderable() { return true; }
     virtual void render_item_3d_ui() {}
     virtual bool render_item_3d_ui_query() { return false; }
     virtual bool CheckCompatibility(CHudItem*) { return true; }
@@ -302,7 +302,7 @@ protected:
     bool HudInertionAllowed() const { return m_huditem_flags.test(fl_inertion_allow); }
     void AllowHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
     void TimeLockAnimation();
-    virtual void DeviceUpdate() {};
+    virtual void DeviceUpdate() {}
 
 private:
     shared_str world_sect;

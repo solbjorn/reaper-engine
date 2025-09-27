@@ -38,7 +38,7 @@ public:
     // for shooting object
     virtual const Fvector& get_CurrentFirePoint() { return fire_pos; }
     virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; };
+    virtual bool IsHudModeNow() { return false; }
 
     //////////////////////////////////////////////////
     // непосредственно обработка стрельбы
@@ -86,7 +86,7 @@ public:
     virtual void OnKeyboardRelease(int dik);
     virtual void OnKeyboardHold(int dik);
 
-    virtual CInventory* GetInventory() { return 0; }
+    virtual CInventory* GetInventory() { return nullptr; }
 
     virtual void cam_Update(float dt, float fov = 90.0f);
 
@@ -94,8 +94,8 @@ public:
     virtual bool attach_Actor(CGameObject* actor);
     virtual void detach_Actor();
     virtual Fvector ExitPosition();
-    virtual bool allowWeapon() const { return false; };
-    virtual bool HUDView() const { return true; };
+    virtual bool allowWeapon() const { return false; }
+    virtual bool HUDView() const { return true; }
 
     virtual CCameraBase* Camera();
 };

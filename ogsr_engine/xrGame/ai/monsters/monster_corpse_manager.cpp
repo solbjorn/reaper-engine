@@ -1,14 +1,8 @@
 #include "stdafx.h"
+
 #include "monster_corpse_manager.h"
 #include "BaseMonster/base_monster.h"
 #include "../../ai_object_location.h"
-
-CMonsterCorpseManager::CMonsterCorpseManager()
-{
-    monster = 0;
-    corpse = 0;
-    forced = false;
-}
 
 void CMonsterCorpseManager::init_external(CBaseMonster* M) { monster = M; }
 
@@ -18,14 +12,13 @@ void CMonsterCorpseManager::update()
     {
         if (corpse->m_fFood < 1)
         {
-            corpse = 0;
+            corpse = nullptr;
             return;
         }
     }
     else
     {
         corpse = monster->CorpseMemory.get_corpse();
-
         if (corpse)
         {
             SMonsterCorpse corpse_info = monster->CorpseMemory.get_corpse_info();
@@ -49,7 +42,6 @@ void CMonsterCorpseManager::force_corpse(const CEntityAlive* corpse)
 void CMonsterCorpseManager::unforce_corpse()
 {
     corpse = monster->CorpseMemory.get_corpse();
-
     if (corpse)
     {
         SMonsterCorpse corpse_info = monster->CorpseMemory.get_corpse_info();
@@ -63,7 +55,7 @@ void CMonsterCorpseManager::unforce_corpse()
 
 void CMonsterCorpseManager::reinit()
 {
-    corpse = 0;
+    corpse = nullptr;
     forced = false;
     time_last_seen = 0;
 }
@@ -71,7 +63,5 @@ void CMonsterCorpseManager::reinit()
 void CMonsterCorpseManager::remove_links(CObject* O)
 {
     if (corpse == O)
-    {
-        corpse = NULL;
-    }
+        corpse = nullptr;
 }

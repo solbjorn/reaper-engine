@@ -13,9 +13,8 @@
 #include "property_evaluator.h"
 #include "property_storage.h"
 #include "script_export_space.h"
+#include "script_game_object.h"
 #include "ai_debug.h"
-
-class CScriptGameObject;
 
 template <typename _object_type, bool _reverse_search = false, typename _world_operator = CActionBase<_object_type>,
           typename _condition_evaluator = CPropertyEvaluator<_object_type>, typename _world_operator_ptr = _world_operator*,
@@ -42,12 +41,12 @@ public:
     using world_operator = _world_operator;
 
 protected:
-    bool m_initialized;
+    bool m_initialized{};
     _action_id_type m_current_action_id;
 
 #ifdef LOG_ACTION
 public:
-    bool m_use_log;
+    bool m_use_log{};
     string64 m_temp_string;
 
 public:
@@ -70,8 +69,9 @@ public:
 #endif
 
 public:
-    CActionPlanner();
+    CActionPlanner() = default;
     virtual ~CActionPlanner();
+
     virtual void setup(_object_type* object);
     virtual void update();
     IC COperator& action(const _action_id_type& action_id);

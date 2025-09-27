@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "hudtarget.h"
 #include "hudmanager.h"
 #include "../xr_3da/GameMtlLib.h"
@@ -42,7 +43,7 @@ CHUDTarget::CHUDTarget()
 
     hShader->create("hud\\cursor", "ui\\cursor");
 
-    RQ.set(NULL, 0.f, -1);
+    RQ.set(nullptr, 0.f, -1);
 
     Load();
     m_bShowCrosshair = false;
@@ -51,7 +52,7 @@ CHUDTarget::CHUDTarget()
 void CHUDTarget::net_Relcase(CObject* O)
 {
     if (RQ.O == O)
-        RQ.O = NULL;
+        RQ.O = nullptr;
 
     RQR.r_clear();
 }

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_kill_wounded_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory.h"
@@ -29,13 +30,15 @@
 #include "agent_enemy_manager.h"
 #include "../Include\xrRender\Kinematics.h"
 
-const u32 MIN_QUEUE = 0;
-const u32 MAX_QUEUE = 1;
-const u32 MIN_INTERVAL = 1000;
-const u32 MAX_INTERVAL = 1500;
-
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
+
+namespace
+{
+constexpr u32 MIN_QUEUE{0};
+constexpr u32 MAX_QUEUE{1};
+constexpr u32 MIN_INTERVAL{1000};
+constexpr u32 MAX_INTERVAL{1500};
 
 CInventoryItem* weapon_to_kill(const CAI_Stalker* object)
 {
@@ -63,12 +66,13 @@ bool should_process(CAI_Stalker& object, const CEntityAlive* enemy)
 
     return (true);
 }
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 // CStalkerActionReachWounded
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionReachWounded::CStalkerActionReachWounded(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionReachWounded::CStalkerActionReachWounded(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionReachWounded::initialize()
 {
@@ -76,7 +80,7 @@ void CStalkerActionReachWounded::initialize()
 
     m_storage->set_property(eWorldPropertyWoundedEnemyPrepared, false);
     m_storage->set_property(eWorldPropertyWoundedEnemyAimed, false);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -153,13 +157,13 @@ void CStalkerActionReachWounded::execute()
 // CStalkerActionAimWounded
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionAimWounded::CStalkerActionAimWounded(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionAimWounded::CStalkerActionAimWounded(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionAimWounded::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -215,13 +219,13 @@ void CStalkerActionAimWounded::finalize()
 // CStalkerActionPrepareWounded
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionPrepareWounded::CStalkerActionPrepareWounded(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionPrepareWounded::CStalkerActionPrepareWounded(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionPrepareWounded::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -269,14 +273,14 @@ void CStalkerActionPrepareWounded::execute()
 // CStalkerActionKillWounded
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionKillWounded::CStalkerActionKillWounded(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionKillWounded::CStalkerActionKillWounded(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionKillWounded::initialize()
 {
     inherited::initialize();
 
     m_storage->set_property(eWorldPropertyPausedAfterKill, true);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -324,13 +328,13 @@ void CStalkerActionKillWounded::execute()
 // CStalkerActionPauseAfterKill
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionPauseAfterKill::CStalkerActionPauseAfterKill(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionPauseAfterKill::CStalkerActionPauseAfterKill(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionPauseAfterKill::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);

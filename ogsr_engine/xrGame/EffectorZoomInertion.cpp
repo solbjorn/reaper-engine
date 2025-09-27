@@ -3,10 +3,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "EffectorZoomInertion.h"
 
 #include "Actor.h"
 #include "ActorEffector.h"
+#include "EffectorZoomInertion.h"
 
 constexpr const char* EFFECTOR_ZOOM_SECTION = "zoom_inertion_effector";
 
@@ -18,11 +18,13 @@ CEffectorZoomInertion* FindEffectorZoomInertion()
 {
     CActor* actor = Actor();
     if (!actor)
-        return NULL;
+        return nullptr;
+
     const CEffectorCam* eff = actor->Cameras().GetCamEffector(eCEZoom);
     if (eff)
         return (CEffectorZoomInertion*)(eff);
-    return NULL;
+
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -49,7 +51,7 @@ void CEffectorZoomInertion::LoadParams(LPCSTR Section, LPCSTR Prefix)
     m_fZoomAimingSpeedK = READ_IF_EXISTS(pSettings, r_float, Section, strconcat(sizeof(full_name), full_name, Prefix, "zoom_aim_speed_k"),
                                          pSettings->r_float(EFFECTOR_ZOOM_SECTION, "zoom_aim_speed_k"));
     m_dwDeltaTime = READ_IF_EXISTS(pSettings, r_u32, Section, strconcat(sizeof(full_name), full_name, Prefix, "delta_time"), pSettings->r_u32(EFFECTOR_ZOOM_SECTION, "delta_time"));
-};
+}
 
 void CEffectorZoomInertion::Load()
 {
@@ -74,7 +76,7 @@ void CEffectorZoomInertion::Init(CWeaponMagazined* pWeapon)
         return;
 
     LoadParams(*pWeapon->cNameSect(), "ezi_");
-};
+}
 
 void CEffectorZoomInertion::SetParams(float disp)
 {
@@ -103,7 +105,7 @@ void CEffectorZoomInertion::CalcNextPoint()
     m_vTargetPoint.y = ::Random.randF(-half_disp_radius, half_disp_radius);
 
     m_vTargetVel.sub(m_vTargetPoint, m_vLastPoint);
-};
+}
 
 BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 {
@@ -132,7 +134,7 @@ BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 
             m_vLastPoint.set(m_vTargetPoint);
             CalcNextPoint();
-        };
+        }
     }
 
     m_vCurrentPoint.lerp(m_vLastPoint, m_vTargetPoint, float(m_dwTimePassed) / m_dwDeltaTime);

@@ -1257,7 +1257,7 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m, Fmatrix& m2)
             fReminderFactor = 0.f;
     }
 
-    if (!fsimilar(fReminderFactor, 0))
+    if (!fsimilar(fReminderFactor, 0.f))
     {
         float k = (dwMState & ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
         float k2 = k;

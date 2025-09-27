@@ -1,12 +1,13 @@
 #include "stdafx.h"
+
 #include "control_animation.h"
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
 #include "profiler.h"
 
-//#ifdef DEBUG
-//#include "control_animation_base.h"
-//#endif
+// #ifdef DEBUG
+// #include "control_animation_base.h"
+// #endif
 
 void SAnimationPart::set_motion(MotionID const& m)
 {
@@ -43,23 +44,14 @@ void CControlAnimation::update_frame()
         return;
 
     // move to schedule update
-    START_PROFILE("Base Monster/Animation/Update Tracks");
     m_skeleton_animated->UpdateTracks();
-    STOP_PROFILE;
 
-    START_PROFILE("Base Monster/Animation/Check callbacks");
     check_callbacks();
-    STOP_PROFILE;
-
-    START_PROFILE("Base Monster/Animation/Play");
     play();
-    STOP_PROFILE;
 
-    START_PROFILE("Base Monster/Animation/Check Events");
     check_events(m_data.global);
     check_events(m_data.torso);
     check_events(m_data.legs);
-    STOP_PROFILE;
 }
 
 static void global_animation_end_callback(CBlend* B)
@@ -119,17 +111,17 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
     if (part.blend && !part.blend->stop_at_end)
         pos = fmod(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
 #ifdef DEBUG
-        // IKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
-        // Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second,
-        // *(m_object->cName()));
+    // IKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
+    // Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second,
+    // *(m_object->cName()));
 #endif
 
     part.blend = m_skeleton_animated->LL_PlayCycle(bone_or_part, part.get_motion(), TRUE, callback, this);
 
     ///////////////////////////////////////////////////////////////////////////////
-    //#ifdef DEBUG
+    // #ifdef DEBUG
     //	Msg("Monster[%s] Time[%u] Anim[%s]",*(m_object->cName()), Device.dwTimeGlobal,*(m_object->anim().GetAnimTranslation(part.motion)));
-    //#endif
+    // #endif
     ///////////////////////////////////////////////////////////////////////////////
 
     // synchronize prev and current animations
@@ -141,7 +133,7 @@ void CControlAnimation::play_part(SAnimationPart& part, PlayCallback callback)
     part.time_started = Device.dwTimeGlobal;
     part.actual = true;
 
-    m_man->notify(ControlCom::eventAnimationStart, 0);
+    m_man->notify(ControlCom::eventAnimationStart, nullptr);
 
     if ((part.get_motion() != m_data.torso.get_motion()) && part.blend)
         m_object->CStepManager::on_animation_start(part.get_motion(), part.blend);
@@ -207,19 +199,19 @@ void CControlAnimation::check_callbacks()
 {
     if (m_global_animation_end)
     {
-        m_man->notify(ControlCom::eventAnimationEnd, 0);
+        m_man->notify(ControlCom::eventAnimationEnd, nullptr);
         m_global_animation_end = false;
     }
 
     if (m_legs_animation_end)
     {
-        m_man->notify(ControlCom::eventLegsAnimationEnd, 0);
+        m_man->notify(ControlCom::eventLegsAnimationEnd, nullptr);
         m_legs_animation_end = false;
     }
 
     if (m_torso_animation_end)
     {
-        m_man->notify(ControlCom::eventTorsoAnimationEnd, 0);
+        m_man->notify(ControlCom::eventTorsoAnimationEnd, nullptr);
         m_torso_animation_end = false;
     }
 }
@@ -254,6 +246,7 @@ void CControlAnimation::restart()
     if (m_data.torso.blend)
         restart(m_data.torso, torso_animation_end_callback);
 }
+
 void CControlAnimation::freeze()
 {
     if (m_freeze)

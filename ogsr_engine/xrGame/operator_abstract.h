@@ -26,9 +26,9 @@ protected:
 protected:
     CSConditionState m_conditions;
     CSConditionState m_effects;
-    bool* m_actuality;
+    bool* m_actuality{};
     mutable bool m_weight_actual;
-    mutable _edge_value_type m_min_weight;
+    mutable _edge_value_type m_min_weight{};
 
 protected:
     IC void actual(bool value);

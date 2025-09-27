@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uicustomitem.h"
 #include "hudmanager.h"
 
@@ -32,14 +33,14 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color, float x1, float y1, f
 
     Fvector2 LTp, RBp;
     Fvector2 LTt, RBt;
-    //координаты на экране в пикселях
+    // координаты на экране в пикселях
     UI()->ClientToScreenScaled(LTp, x1, y1);
     LTp.add(pos);
 
     UI()->ClientToScreenScaled(RBp, x2, y2);
     RBp.add(pos);
 
-    //текстурные координаты
+    // текстурные координаты
     LTt.set(iOriginalRect.x1 / ts.x, iOriginalRect.y1 / ts.y);
     RBt.set(iOriginalRect.x2 / ts.x, iOriginalRect.y2 / ts.y);
 
@@ -55,7 +56,7 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color, float x1, float y1, f
     S[3].set(LTp.x + offset, RBp.y + offset, LTt.x, RBt.y); // LB
 
     sPoly2D D;
-    sPoly2D* R = NULL;
+    sPoly2D* R{};
 
     if (UI()->m_currentPointType != IUIRender::pttLIT)
         R = UI()->ScreenFrustum().ClipPoly(S, D);

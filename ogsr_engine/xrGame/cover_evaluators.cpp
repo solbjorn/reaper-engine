@@ -113,7 +113,7 @@ void CCoverEvaluatorBest::evaluate(const CCoverPoint* cover_point, float weight)
 
     value /= weight;
 
-    if ((value > m_best_value) || ((value == m_best_value) && (cover_point > m_selected)))
+    if ((value > m_best_value) || (fsimilar(value, m_best_value) && (cover_point > m_selected)))
         return;
 
     if (m_callback && !m_callback(cover_point))

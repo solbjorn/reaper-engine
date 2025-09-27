@@ -1,17 +1,22 @@
 #include "stdafx.h"
+
 #include "cardamageparticles.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
+
 extern CPHWorld* ph_world;
+
 void read_bones(IKinematics* K, LPCSTR S, xr_vector<u16>& bones)
 {
     string64 S1;
@@ -27,6 +32,7 @@ void read_bones(IKinematics* K, LPCSTR S, xr_vector<u16>& bones)
         bones.push_back(bone_id);
     }
 }
+
 void CCarDamageParticles::Init(CCar* car)
 {
     IKinematics* K = smart_cast<IKinematics*>(car->Visual());

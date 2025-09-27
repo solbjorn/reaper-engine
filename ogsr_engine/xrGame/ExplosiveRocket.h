@@ -26,7 +26,7 @@ public:
     virtual CExplosive* cast_explosive() { return this; }
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }
-    virtual CWeapon* cast_weapon() { return NULL; }
+    virtual CWeapon* cast_weapon() { return nullptr; }
     virtual CGameObject* cast_game_object() { return this; }
     virtual IDamageSource* cast_IDamageSource() { return CExplosive::cast_IDamageSource(); }
     virtual void on_activate_physic_shell();
@@ -44,7 +44,7 @@ public:
 
     virtual void OnEvent(NET_Packet& P, u16 type);
 
-    virtual void Hit(SHit* pHDS) { inherited::Hit(pHDS); };
+    virtual void Hit(SHit* pHDS) { inherited::Hit(pHDS); }
 
 public:
     virtual BOOL UsedAI_Locations() { return inherited::UsedAI_Locations(); }
@@ -73,5 +73,5 @@ protected:
     shared_str real_grenade_name;
 
 public:
-    void SetRealGrenadeName(shared_str name) { real_grenade_name = name; };
+    void SetRealGrenadeName(shared_str name) { real_grenade_name = name; }
 };

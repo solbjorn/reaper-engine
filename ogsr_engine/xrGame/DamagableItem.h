@@ -1,3 +1,6 @@
+#ifndef __DAMAGABLE_ITEM_H
+#define __DAMAGABLE_ITEM_H
+
 class CDamagableItem : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDamagableItem);
@@ -22,6 +25,9 @@ protected:
 
 class CDamagableHealthItem : public CDamagableItem
 {
+    RTTI_DECLARE_TYPEINFO(CDamagableHealthItem, CDamagableItem);
+
+private:
     typedef CDamagableItem inherited;
     float m_health;
 
@@ -33,3 +39,5 @@ public:
 protected:
     virtual float Health() { return m_health; }
 };
+
+#endif // __DAMAGABLE_ITEM_H

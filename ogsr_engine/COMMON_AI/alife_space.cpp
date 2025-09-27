@@ -3,7 +3,6 @@
 
 namespace ALife
 {
-
 xr_token hit_types_token[] = {{"burn", eHitTypeBurn},
                               {"shock", eHitTypeShock},
                               {"strike", eHitTypeStrike},
@@ -15,6 +14,5 @@ xr_token hit_types_token[] = {{"burn", eHitTypeBurn},
                               {"explosion", eHitTypeExplosion},
                               {"wound_2", eHitTypeWound_2},
                               {"physic_strike", eHitTypePhysicStrike},
-                              {0, 0}};
-
-};
+                              {nullptr, 0}};
+} // namespace ALife

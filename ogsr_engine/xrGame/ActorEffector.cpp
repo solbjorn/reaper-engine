@@ -104,7 +104,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_FUN
         cam_anm->Start(fn);
         A->Cameras().AddCamEffector(cam_anm);
     }
-};
+}
 
 void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
 {
@@ -139,7 +139,7 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
         cam_anm->Start(fn);
         A->Cameras().AddCamEffector(cam_anm);
     }
-};
+}
 
 void RemoveEffector(CActor* A, int type)
 {
@@ -148,6 +148,7 @@ void RemoveEffector(CActor* A, int type)
 }
 
 CEffectorController::~CEffectorController() { R_ASSERT(!m_ce && !m_pe); }
+
 CAnimatorCamEffector::CAnimatorCamEffector()
 {
     m_bCyclic = true;
@@ -157,6 +158,7 @@ CAnimatorCamEffector::CAnimatorCamEffector()
 }
 
 CAnimatorCamEffector::~CAnimatorCamEffector() { xr_delete(m_objectAnimator); }
+
 void CAnimatorCamEffector::Start(LPCSTR fn)
 {
     m_objectAnimator->Load(fn);
@@ -256,8 +258,9 @@ CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c) : m
     SetFactorFunc(CallMe::fromMethod<&CEffectorController::GetFactor>(m_controller));
 }
 
-CCameraEffectorControlled::~CCameraEffectorControlled() { m_controller->SetCam(NULL); }
+CCameraEffectorControlled::~CCameraEffectorControlled() { m_controller->SetCam(nullptr); }
 BOOL CCameraEffectorControlled::Valid() { return m_controller->Valid(); }
+
 #define SND_MIN_VOLUME_FACTOR (0.1f)
 
 SndShockEffector::SndShockEffector() : m_end_time(0), m_life_time(0)
@@ -279,6 +282,7 @@ SndShockEffector::~SndShockEffector()
 
 BOOL SndShockEffector::Valid() { return (m_cur_length <= m_snd_length); }
 BOOL SndShockEffector::InWork() { return inherited::Valid(); }
+
 float SndShockEffector::GetFactor()
 {
     float f = (m_end_time - Device.fTimeGlobal) / m_life_time;
@@ -325,8 +329,11 @@ void SndShockEffector::Update()
 #define DELTA_ANGLE_Z 0.5f * PI / 180
 #define ANGLE_SPEED 1.5f
 
-const float _base_fov = 170.f;
-const float _max_fov_add = 30.f;
+namespace
+{
+constexpr float _base_fov{170.f};
+constexpr float _max_fov_add{30.f};
+} // namespace
 
 CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov)
     : inherited(eCEControllerPsyHit, flt_max)
@@ -402,10 +409,12 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 
     return TRUE;
 }
+
 bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
 {
     return (c1.p.similar(c2.p, EPS_L) && c1.d.similar(c2.d, EPS_L) && c1.n.similar(c2.n, EPS_L) && c1.r.similar(c2.r, EPS_L));
 }
+
 void CActorCameraManager::UpdateCamEffectors()
 {
     m_cam_info_hud = m_cam_info;

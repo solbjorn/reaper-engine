@@ -9,8 +9,8 @@ class CUILabel : public CUIFrameLineWnd, public CUILinesOwner // IUITextControl
     RTTI_DECLARE_TYPEINFO(CUILabel, CUIFrameLineWnd, CUILinesOwner);
 
 public:
-    CLAItem* m_lanim;
-    float m_lainm_start_time;
+    CLAItem* m_lanim{};
+    float m_lainm_start_time{-1.f};
 
     // IUISimpleWindow
     virtual void SetWidth(float width);

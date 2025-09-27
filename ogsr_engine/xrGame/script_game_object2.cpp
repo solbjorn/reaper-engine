@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -76,12 +77,12 @@ CScriptGameObject* CScriptGameObject::best_weapon()
     if (!object_handler)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptEntity : cannot access class member best_weapon!");
-        return (0);
+        return nullptr;
     }
     else
     {
-        CGameObject* game_object = object_handler->best_weapon() ? &object_handler->best_weapon()->object() : 0;
-        return (game_object ? game_object->lua_game_object() : 0);
+        CGameObject* game_object = object_handler->best_weapon() ? &object_handler->best_weapon()->object() : nullptr;
+        return game_object ? game_object->lua_game_object() : nullptr;
     }
 }
 
@@ -100,7 +101,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
     if (!object_handler)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CObjectHandler : cannot access class member set_item!");
     else
-        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0);
+        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : nullptr);
 }
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* lua_game_object, u32 queue_size)
@@ -109,7 +110,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
     if (!object_handler)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CObjectHandler : cannot access class member set_item!");
     else
-        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0, queue_size, queue_size);
+        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : nullptr, queue_size, queue_size);
 }
 
 void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScriptGameObject* lua_game_object, u32 queue_size, u32 queue_interval)
@@ -118,7 +119,7 @@ void CScriptGameObject::set_item(MonsterSpace::EObjectAction object_action, CScr
     if (!object_handler)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CObjectHandler : cannot access class member set_item!");
     else
-        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : 0, queue_size, queue_size, queue_interval, queue_interval);
+        object_handler->set_goal(object_action, lua_game_object ? &lua_game_object->object() : nullptr, queue_size, queue_size, queue_interval, queue_interval);
 }
 
 void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
@@ -148,7 +149,7 @@ void CScriptGameObject::Hit(CScriptHit* tpLuaHit)
     NET_Packet P;
     SHit HS;
     HS.GenHeader(GE_HIT, object().ID()); //	object().u_EventGen(P,GE_HIT,object().ID());
-    THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator??!"); //	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
+    THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator?!"); //	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
     HS.whoID = u16(tLuaHit.m_tpDraftsman->ID()); //	P.w_u16			(u16(tLuaHit.m_tpDraftsman->ID()));
     HS.weaponID = 0; //	P.w_u16			(0);
     HS.dir = tLuaHit.m_tDirection; //	P.w_dir			(tLuaHit.m_tDirection);
@@ -174,21 +175,22 @@ CScriptGameObject* CScriptGameObject::GetBestEnemy()
 {
     const CCustomMonster* monster = smart_cast<const CCustomMonster*>(&object());
     if (!monster)
-        return (0);
+        return nullptr;
 
     if (monster->memory().enemy().selected())
         return (monster->memory().enemy().selected()->lua_game_object());
-    return (0);
+
+    return nullptr;
 }
 
 const CDangerObject* CScriptGameObject::GetBestDanger()
 {
     const CCustomMonster* monster = smart_cast<const CCustomMonster*>(&object());
     if (!monster)
-        return (0);
+        return nullptr;
 
     if (!monster->memory().danger().selected())
-        return (0);
+        return nullptr;
 
     return (monster->memory().danger().selected());
 }
@@ -197,11 +199,12 @@ CScriptGameObject* CScriptGameObject::GetBestItem()
 {
     const CCustomMonster* monster = smart_cast<const CCustomMonster*>(&object());
     if (!monster)
-        return (0);
+        return nullptr;
 
     if (monster->memory().item().selected())
         return (monster->memory().item().selected()->lua_game_object());
-    return (0);
+
+    return nullptr;
 }
 
 u32 CScriptGameObject::memory_time(const CScriptGameObject& lua_game_object)
@@ -341,7 +344,6 @@ void CScriptGameObject::SetActorPosition(Fvector pos, bool skipCollisionCorrect)
                 actor->character_physics_support()->movement()->SetPosition(F.c);
                 actor->character_physics_support()->movement()->SetVelocity(0.f, 0.f, 0.f);
             }
-
         }
         else
         {
@@ -391,7 +393,6 @@ void CScriptGameObject::SetNpcPosition(Fvector pos, bool skipCollisionCorrect)
         obj->movement().detail().make_inactual();
         if (obj->animation_movement_controlled())
             obj->destroy_anim_mov_ctrl();
-
     }
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetNpcPosition method for non-CCustomMonster object");
@@ -400,11 +401,10 @@ void CScriptGameObject::SetNpcPosition(Fvector pos, bool skipCollisionCorrect)
 CHolderCustom* CScriptGameObject::get_current_holder()
 {
     CActor* actor = smart_cast<CActor*>(&object());
-
     if (actor)
         return actor->Holder();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 void CScriptGameObject::set_ignore_monster_threshold(float ignore_monster_threshold)

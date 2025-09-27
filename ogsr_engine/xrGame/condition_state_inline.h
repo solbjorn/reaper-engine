@@ -12,16 +12,6 @@
 #define CConditionStateAbstract CConditionState<_world_property>
 
 TEMPLATE_SPECIALIZATION
-IC CConditionStateAbstract::CConditionState()
-{
-    //	m_conditions.reserve	(32);
-    m_hash = 0;
-}
-
-TEMPLATE_SPECIALIZATION
-CConditionStateAbstract::~CConditionState() {}
-
-TEMPLATE_SPECIALIZATION
 IC const xr_vector<_world_property>& CConditionStateAbstract::conditions() const { return (m_conditions); }
 
 TEMPLATE_SPECIALIZATION
@@ -184,9 +174,9 @@ IC const _world_property* CConditionStateAbstract::property(const typename _worl
     typename xr_vector<_world_property>::const_iterator I =
         std::lower_bound(conditions().begin(), conditions().end(), _world_property(condition, typename _world_property::value_type(0)));
     if (I == m_conditions.end())
-        return (0);
-    else
-        return (&*I);
+        return nullptr;
+
+    return (&*I);
 }
 
 #undef TEMPLATE_SPECIALIZATION

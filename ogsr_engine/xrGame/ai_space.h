@@ -30,14 +30,14 @@ private:
     friend class CLevel;
 
 private:
-    CGameGraph* m_game_graph;
-    CLevelGraph* m_level_graph;
-    CGraphEngine* m_graph_engine;
-    CEF_Storage* m_ef_storage;
-    CALifeSimulator* m_alife_simulator;
-    CCoverManager* m_cover_manager;
-    CScriptEngine* m_script_engine;
-    CPatrolPathStorage* m_patrol_path_storage;
+    CGameGraph* m_game_graph{};
+    CLevelGraph* m_level_graph{};
+    CGraphEngine* m_graph_engine{};
+    CEF_Storage* m_ef_storage{};
+    CALifeSimulator* m_alife_simulator{};
+    CCoverManager* m_cover_manager{};
+    CScriptEngine* m_script_engine{};
+    CPatrolPathStorage* m_patrol_path_storage{};
 
 private:
     void load(LPCSTR level_name);
@@ -49,6 +49,7 @@ private:
 public:
     CAI_Space();
     virtual ~CAI_Space();
+
     void init();
     IC CGameGraph& game_graph() const;
     IC CGameGraph* get_game_graph() const;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "phcollisiondamagereceiver.h"
 #include "PhysicsShellHolder.h"
 #include "xr_ini.h"
@@ -16,6 +17,7 @@ void CPHCollisionDamageReceiver::BoneInsert(u16 id, float k)
     R_ASSERT2(FindBone(id) == m_controled_bones.end(), "duplicate bone!");
     m_controled_bones.emplace_back(id, k);
 }
+
 void CPHCollisionDamageReceiver::Init()
 {
     CPhysicsShellHolder* sh = PPhysicsShellHolder();
@@ -50,7 +52,7 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
     SGameMtl* material_damager = bo1 ? material_2 : material_1;
     VERIFY(ud_self);
     CPhysicsShellHolder* o_self = ud_self->ph_ref_object;
-    CPhysicsShellHolder* o_damager = NULL;
+    CPhysicsShellHolder* o_damager{};
     if (ud_damager)
         o_damager = ud_damager->ph_ref_object;
     u16 source_id = o_damager ? o_damager->ID() : u16(-1);
@@ -76,7 +78,11 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
     dr->Hit(source_id, ud_self->bone_id, E_NL(b1, b2, c.geom.normal) * damager_material_factor / dfs, dir, pos);
 }
 
-const static float hit_threthhold = 5.f;
+namespace
+{
+constexpr float hit_threthhold{5.f};
+}
+
 void CPHCollisionDamageReceiver::Hit(u16 source_id, u16 bone_id, float power, const Fvector& dir, Fvector& pos)
 {
     DAMAGE_BONES_I i = FindBone(bone_id);

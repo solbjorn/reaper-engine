@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "monster_enemy_memory.h"
 #include "BaseMonster/base_monster.h"
 #include "../../memory_manager.h"
@@ -11,12 +12,6 @@
 #include "ai_monster_squad_manager.h"
 #include "../../actor.h"
 #include "../../actor_memory.h"
-
-CMonsterEnemyMemory::CMonsterEnemyMemory()
-{
-    monster = 0;
-    time_memory = 15000;
-}
 
 CMonsterEnemyMemory::~CMonsterEnemyMemory() {}
 
@@ -131,7 +126,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy)
     else
     {
         // добавить врага в список объектов
-        m_objects.insert(std::make_pair(enemy, enemy_info));
+        m_objects.try_emplace(enemy, enemy_info);
     }
 }
 
@@ -153,7 +148,7 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive* enemy, const Fvector& po
     else
     {
         // добавить врага в список объектов
-        m_objects.insert(std::make_pair(enemy, enemy_info));
+        m_objects.try_emplace(enemy, enemy_info);
     }
 }
 
@@ -178,7 +173,8 @@ const CEntityAlive* CMonsterEnemyMemory::get_enemy()
     ENEMIES_MAP_IT it = find_best_enemy();
     if (it != m_objects.end())
         return it->first;
-    return (0);
+
+    return nullptr;
 }
 
 SMonsterEnemy CMonsterEnemyMemory::get_enemy_info()

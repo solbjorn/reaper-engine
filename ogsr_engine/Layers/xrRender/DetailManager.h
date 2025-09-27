@@ -121,14 +121,14 @@ public:
 
     SSwingValue swing_desc[2];
     SSwingValue swing_current;
-    float m_time_rot_1;
-    float m_time_rot_2;
-    float m_time_pos;
-    float m_global_time_old;
+    float m_time_rot_1{};
+    float m_time_rot_2{};
+    float m_time_pos{};
+    float m_global_time_old{};
 
-    IReader* dtFS;
+    IReader* dtFS{};
     DetailHeader dtH;
-    DetailSlot* dtSlots; // note: pointer into VFS
+    DetailSlot* dtSlots{}; // note: pointer into VFS
     DetailSlot DS_empty;
 
     DetailVec objects;
@@ -151,10 +151,10 @@ private:
     void Render(CBackend& cmd_list, float fade_distance, const Fvector* light_position);
 
     // Hardware processor
-    ref_geom hw_Geom;
-    size_t hw_BatchSize;
-    ID3DVertexBuffer* hw_VB;
-    ID3DIndexBuffer* hw_IB;
+    ref_geom hw_Geom{};
+    size_t hw_BatchSize{};
+    ID3DVertexBuffer* hw_VB{};
+    ID3DIndexBuffer* hw_IB{};
 
     void hw_Load();
     void hw_Load_Geom();

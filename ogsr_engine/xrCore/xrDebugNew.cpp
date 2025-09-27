@@ -53,9 +53,11 @@ static const char* GetThreadName()
                 if (wThreadName)
                 {
                     static string64 ResThreadName{};
+
                     WideCharToMultiByte(CP_OEMCP, 0, wThreadName, int(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
                     LocalFree(wThreadName);
-                    if (ResThreadName && strlen(ResThreadName))
+
+                    if (strlen(ResThreadName))
                         return ResThreadName;
                 }
             }
@@ -86,7 +88,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool
         if (auto pCrashHandler = Debug.get_crashhandler())
             pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
-        Msg("!![%s] Thread: [%s], ExceptionCode: [%x]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
+        Msg("!![%s] Thread: [%s], ExceptionCode: [0x%lx]", __FUNCTION__, GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
         auto save = *pExceptionInfo->ContextRecord;
         Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
         *pExceptionInfo->ContextRecord = save;
@@ -207,24 +209,27 @@ const char* xrDebug::DXerror2string(const HRESULT code) const { return error2str
 const char* xrDebug::error2string(const DWORD code) const
 {
     static string1024 desc_storage;
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, code, 0, desc_storage, sizeof(desc_storage) - 1, 0);
+    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, code, 0, desc_storage, sizeof(desc_storage) - 1, nullptr);
     return desc_storage;
 }
 
-void xrDebug::error(const HRESULT hr, const char* expr, const char* file, int line, const char* function) { backend(DXerror2string(hr), expr, 0, 0, file, line, function); }
+void xrDebug::error(const HRESULT hr, const char* expr, const char* file, int line, const char* function)
+{
+    backend(DXerror2string(hr), expr, nullptr, nullptr, file, line, function);
+}
 
 void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char* file, int line, const char* function)
 {
-    backend(DXerror2string(hr), expr, e2, 0, file, line, function);
+    backend(DXerror2string(hr), expr, e2, nullptr, file, line, function);
 }
 
-void xrDebug::fail(const char* e1, const char* file, int line, const char* function) { backend("assertion failed", e1, 0, 0, file, line, function); }
+void xrDebug::fail(const char* e1, const char* file, int line, const char* function) { backend("assertion failed", e1, nullptr, nullptr, file, line, function); }
 
-void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function) { backend(e1, e2.c_str(), 0, 0, file, line, function); }
+void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function) { backend(e1, e2.c_str(), nullptr, nullptr, file, line, function); }
 
-void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function) { backend(e1, e2, 0, 0, file, line, function); }
+void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function) { backend(e1, e2, nullptr, nullptr, file, line, function); }
 
-void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function) { backend(e1, e2, e3, 0, file, line, function); }
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function) { backend(e1, e2, e3, nullptr, file, line, function); }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function)
 {
@@ -258,9 +263,9 @@ static int out_of_memory_handler(size_t size)
     size_t process_heap = mem_usage_impl(nullptr, nullptr);
     u32 eco_strings = g_pStringContainer->stat_economy();
     u32 eco_smem = g_pSharedMemoryContainer->stat_economy();
-    Msg("* [x-ray]: process heap[%d K]", process_heap / 1024);
-    Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", eco_strings / 1024, eco_smem);
-    FATAL("Out of memory. Memory request: [%d K]", size / 1024);
+    Msg("* [x-ray]: process heap[%zu K]", process_heap / 1024);
+    Msg("* [x-ray]: economy: strings[%u K], smem[%u K]", eco_strings / 1024, eco_smem);
+    FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
     return 1;
 }
 
@@ -354,7 +359,7 @@ static void format_message(char* buffer, const size_t& buffer_size)
         void* message = nullptr;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&message, 0, nullptr);
 
-        sprintf(buffer, "[error][%8d] : [%s]", error_code, (char*)message);
+        sprintf(buffer, "[error][0x%lx] : [%s]", error_code, (char*)message);
         LocalFree(message);
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
@@ -477,7 +482,7 @@ void xrDebug::_initialize()
     signal(SIGFPE, floating_point_handler);
     signal(SIGILL, illegal_instruction_handler);
     // signal(SIGSEGV, segment_violation);
-    signal(SIGINT, 0);
+    signal(SIGINT, nullptr);
     signal(SIGTERM, termination_handler);
 
     _set_invalid_parameter_handler(&invalid_parameter_handler);

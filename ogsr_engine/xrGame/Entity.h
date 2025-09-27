@@ -119,8 +119,8 @@ private:
     ALife::_OBJECT_ID m_killer_id;
 
 public:
-    IC u16 killer_id() const { return m_killer_id; };
-    virtual bool use_simplified_visual() const { return false; };
+    IC u16 killer_id() const { return m_killer_id; }
+    virtual bool use_simplified_visual() const { return false; }
 
 public:
     virtual void on_before_change_team();

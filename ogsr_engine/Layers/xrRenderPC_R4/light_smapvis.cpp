@@ -19,7 +19,7 @@ smapvis::~smapvis()
 void smapvis::invalidate()
 {
     state = state_counting;
-    testQ_V = 0;
+    testQ_V = nullptr;
     frame_sleep = Device.dwFrame + ps_r__LightSleepFrames;
     invisible.clear();
     resetoccq();
@@ -37,7 +37,7 @@ void smapvis::begin()
         break;
     case state_working:
         // mark already known to be invisible visuals, set breakpoint
-        testQ_V = 0;
+        testQ_V = nullptr;
         resetoccq();
         testQ_id = 0;
         mark();
@@ -58,7 +58,7 @@ void smapvis::end()
     u32 ts, td;
     dsgraph.get_Counters(ts, td);
     RImplementation.stats.ic_total += ts;
-    dsgraph.set_Feedback(0, 0);
+    dsgraph.set_Feedback(nullptr, 0);
 
     switch (state)
     {
@@ -118,7 +118,7 @@ void smapvis::flushoccq()
         test_current++;
     }
 
-    testQ_V = 0;
+    testQ_V = nullptr;
 
     if (test_current == test_count)
     {
@@ -155,5 +155,5 @@ void smapvis::mark()
 void smapvis::rfeedback_static(dxRender_Visual* V)
 {
     testQ_V = V;
-    RImplementation.get_context(id).set_Feedback(0, 0);
+    RImplementation.get_context(id).set_Feedback(nullptr, 0);
 }

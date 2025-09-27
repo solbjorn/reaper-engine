@@ -270,8 +270,12 @@ struct Fcolor
             return lerp(c1, c2, t * 2.f);
     }
 
-    bool similar_rgba(const Fcolor& v, float E = EPS_L) const noexcept { return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E && _abs(a - v.a) < E; }
-    bool similar_rgb(const Fcolor& v, float E = EPS_L) const noexcept { return _abs(r - v.r) < E && _abs(g - v.g) < E && _abs(b - v.b) < E; }
+    constexpr inline bool similar_rgba(const Fcolor& v, float E = EPS_L) const noexcept
+    {
+        return fsimilar(r, v.r, E) && fsimilar(g, v.g, E) && fsimilar(b, v.b, E) && fsimilar(a, v.a, E);
+    }
+
+    constexpr inline bool similar_rgb(const Fcolor& v, float E = EPS_L) const noexcept { return fsimilar(r, v.r, E) && fsimilar(g, v.g, E) && fsimilar(b, v.b, E); }
 };
 
 IC bool _valid(const Fcolor& c) noexcept { return _valid(c.r) && _valid(c.g) && _valid(c.b) && _valid(c.a); }

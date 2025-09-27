@@ -2,13 +2,17 @@
 #include "monster_sound_memory.h"
 #include "BaseMonster/base_monster.h"
 
+namespace
+{
 #define CHECK_SOUND_TYPE(a, b, c) \
     { \
-        if ((a & b) == b) \
-            return c; \
-    }
+        if (((a) & (b)) == (b)) \
+            return (c); \
+    } \
+    XR_MACRO_END()
 
-const u32 time_help_sound_remember = 10000;
+constexpr u32 time_help_sound_remember{10000};
+} // namespace
 
 TSoundDangerValue tagSoundElement::ConvertSoundType(ESoundTypes stype)
 {

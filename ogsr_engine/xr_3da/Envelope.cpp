@@ -2,13 +2,20 @@
 
 #include "envelope.h"
 
+CEnvelope::CEnvelope(const CEnvelope& source) { *this = source; }
 CEnvelope::~CEnvelope() { Clear(); }
 
-CEnvelope::CEnvelope(CEnvelope* source)
+CEnvelope& CEnvelope::operator=(const CEnvelope& source)
 {
-    *this = *source;
-    for (u32 i = 0; i < source->keys.size(); i++)
-        keys[i] = xr_new<st_Key>(*source->keys[i]);
+    keys.resize(source.keys.size());
+
+    size_t i = 0;
+    for (auto key : source.keys)
+        keys[i++] = xr_new<st_Key>(*key);
+
+    std::ranges::copy(source.behavior, behavior);
+
+    return *this;
 }
 
 void CEnvelope::Clear()
@@ -40,14 +47,21 @@ void CEnvelope::FindNearestKey(float t, KeyIt& min_k, KeyIt& max_k, float eps)
 
 KeyIt CEnvelope::FindKey(float t, float eps)
 {
-    for (KeyIt k_it = keys.begin(); k_it != keys.end(); k_it++)
+    KeyIt ret = keys.end();
+
+    for (KeyIt k_it = keys.begin(); k_it != ret; k_it++)
     {
         if (fsimilar((*k_it)->time, t, eps))
-            return k_it;
+        {
+            ret = k_it;
+            return ret;
+        }
+
         if ((*k_it)->time > t)
-            return keys.end();
+            return ret;
     }
-    return keys.end();
+
+    return ret;
 }
 
 void CEnvelope::InsertKey(float t, float val)

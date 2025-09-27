@@ -143,11 +143,12 @@ public:
                 Fcylinder c_cylinder;
             };
         };
+
         u16 type;
         u16 elem_id;
 
-        constexpr inline SElement() : elem_id(u16(-1)), type(0) {}
-        constexpr inline SElement(u16 id, u16 t) : elem_id(id), type(t) {}
+        constexpr inline SElement() : type{0}, elem_id{std::numeric_limits<u16>::max()} {}
+        constexpr inline SElement(u16 id, u16 t) : type{t}, elem_id{id} {}
         constexpr inline SElement(const SElement& s) { xr_memcpy128(this, &s, sizeof(s)); }
 
         constexpr inline SElement& operator=(const SElement& s)

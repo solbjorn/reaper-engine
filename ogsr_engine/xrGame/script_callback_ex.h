@@ -84,7 +84,7 @@ public:
         new (&m_object) object_type();
     }
 
-    operator unspecified_bool_type() const { return !m_functor.is_valid() ? 0 : &CScriptCallbackEx_::empty; }
+    operator unspecified_bool_type() const { return m_functor.is_valid() ? &CScriptCallbackEx_::empty : nullptr; }
 };
 
 template <typename _return_type>

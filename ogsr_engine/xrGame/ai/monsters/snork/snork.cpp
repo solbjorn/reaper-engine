@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "snork.h"
 #include "snork_state_manager.h"
 #include "../../../detail_path_manager_space.h"
@@ -8,7 +9,7 @@
 #include "../../../sound_player.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
-#include "../../../PHMovementControl.h"
+#include "PHMovementControl.h"
 
 /*
 #ifdef DEBUG
@@ -121,7 +122,8 @@ void CSnork::reinit()
     if (CCustomMonster::use_simplified_visual())
         return;
     move().load_velocity(*cNameSect(), "Velocity_JumpGround", MonsterMovement::eSnorkVelocityParameterJumpGround);
-    com_man().load_jump_data("stand_attack_2_0", 0, "stand_attack_2_1", "stand_somersault_0", u32(-1), MonsterMovement::eSnorkVelocityParameterJumpGround, 0);
+    com_man().load_jump_data("stand_attack_2_0", nullptr, "stand_attack_2_1", "stand_somersault_0", std::numeric_limits<u32>::max(),
+                             MonsterMovement::eSnorkVelocityParameterJumpGround, 0);
 
     start_threaten = false;
     com_man().set_threaten_data("stand_threaten_0", 0.63f);

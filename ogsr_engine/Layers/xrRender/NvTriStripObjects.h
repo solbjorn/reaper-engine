@@ -51,37 +51,25 @@ public:
 class NvEdgeInfo
 {
 public:
-    // constructor puts 1 ref on us
-    NvEdgeInfo(int v0, int v1)
-    {
-        m_v0 = v0;
-        m_v1 = v1;
-        m_face0 = NULL;
-        m_face1 = NULL;
-        m_nextV0 = NULL;
-        m_nextV1 = NULL;
-
-        // we will appear in 2 lists.  this is a good
-        // way to make sure we _delete it the second time
-        // we hit it in the edge infos
-        m_refCount = 2;
-    }
+    // we will appear in 2 lists.  this is a good
+    // way to make sure we _delete it the second time
+    // we hit it in the edge infos
+    NvEdgeInfo(int v0, int v1) : m_refCount{2}, m_v0{v0}, m_v1{v1} {}
 
     // ref and unref
     bool Unref()
     {
         if (--m_refCount == 0)
-        {
             return true;
-        }
+
         return false;
     }
 
     // data members are left public
     UINT m_refCount;
-    NvFaceInfo *m_face0, *m_face1;
+    NvFaceInfo *m_face0{}, *m_face1{};
     int m_v0, m_v1;
-    NvEdgeInfo *m_nextV0, *m_nextV1;
+    NvEdgeInfo *m_nextV0{}, *m_nextV1{};
 };
 
 // This class is a quick summary of parameters used
@@ -91,12 +79,8 @@ public:
 class NvStripStartInfo
 {
 public:
-    NvStripStartInfo(NvFaceInfo* startFace, NvEdgeInfo* startEdge, bool toV1)
-    {
-        m_startFace = startFace;
-        m_startEdge = startEdge;
-        m_toV1 = toV1;
-    }
+    NvStripStartInfo(NvFaceInfo* startFace, NvEdgeInfo* startEdge, bool toV1) : m_startFace{startFace}, m_startEdge{startEdge}, m_toV1{toV1} {}
+
     NvFaceInfo* m_startFace;
     NvEdgeInfo* m_startEdge;
     bool m_toV1;
@@ -137,7 +121,7 @@ public:
 
     inline bool IsInStrip(const NvFaceInfo* faceInfo) const
     {
-        if (faceInfo == NULL)
+        if (!faceInfo)
             return false;
 
         return (m_experimentId >= 0 ? faceInfo->m_testStripId == m_stripId : faceInfo->m_stripId == m_stripId);

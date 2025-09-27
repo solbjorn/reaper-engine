@@ -1,8 +1,9 @@
 #include "stdafx.h"
+
 #include "poltergeist.h"
 #include "poltergeist_state_manager.h"
 #include "../../../characterphysicssupport.h"
-#include "../../../PHMovementControl.h"
+#include "PHMovementControl.h"
 #include "PhysicsShellHolder.h"
 #include "../../../ai_debug.h"
 #include "poltergeist_movement.h"
@@ -25,10 +26,6 @@ CPoltergeist::CPoltergeist()
     StateMan = xr_new<CStateManagerPoltergeist>(this);
 
     invisible_vel.set(0.1f, 0.1f);
-
-    m_flame = 0;
-    m_tele = 0;
-    m_actor_ignore = false;
 }
 
 CPoltergeist::~CPoltergeist()
@@ -206,7 +203,6 @@ void CPoltergeist::update_detection()
             for (m_detection_pp_type_index = (u32)effPoltergeistTeleDetectStartEffect; Actor()->Cameras().GetPPEffector((EEffectorPPType)m_detection_pp_type_index);
                  ++m_detection_pp_type_index)
             {
-                ;
             }
 
             AddEffector(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, CallMe::fromMethod<&CPoltergeist::get_post_process_factor>(this));

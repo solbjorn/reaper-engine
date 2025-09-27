@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife_All.h"
 #include "level.h"
 #include "game_cl_base.h"
@@ -29,7 +30,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
     // force object to be local for server client
     {
         E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
-    };
+    }
 
     if (std::find(m_just_destroyed.begin(), m_just_destroyed.end(), E->ID) != m_just_destroyed.end())
     {
@@ -57,7 +58,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
         }
         if (postpone)
         {
-            //Msg( "* [%s]: delay spawn ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, E->ID, E->ID_Parent, E->name_replace() );
+            // Msg( "* [%s]: delay spawn ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, E->ID, E->ID_Parent, E->name_replace() );
             game_spawn_queue.push_back(E);
             return;
         }
@@ -71,7 +72,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 
     F_entity_Destroy(E);
     //*/
-};
+}
 
 void CLevel::g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 {
@@ -127,7 +128,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
     // Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
 
     //	T.Start		();
-    if (0 == O || (!O->net_Spawn(E)))
+    if (!O || !O->net_Spawn(E))
     {
         O->net_Destroy();
         client_spawn_manager().clear(O->ID());
@@ -140,7 +141,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
         // Msg			("--spawn--SPAWN: %f ms",1000.f*T.GetAsync());
         if ((E->s_flags.is(M_SPAWN_OBJECT_LOCAL)) && (E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER)))
         {
-            if (CurrentEntity() != NULL)
+            if (CurrentEntity())
             {
                 CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
                 if (pGO)
@@ -176,7 +177,7 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 le
             dynamic_object->m_tGraphID = ai().cross_table().vertex(level_vertex_id).game_vertex_id();
     }
 
-    //оружие спавним с полным магазинои
+    // оружие спавним с полным магазинои
     CSE_ALifeItemWeapon* weapon = smart_cast<CSE_ALifeItemWeapon*>(abstract);
     if (weapon)
         weapon->a_elapsed = weapon->get_ammo_magsize();
@@ -199,12 +200,11 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 le
         abstract->Spawn_Write(P, TRUE);
         Send(P, net_flags(TRUE));
         F_entity_Destroy(abstract);
-        return (0);
+        return nullptr;
     }
-    else
-        return (abstract);
-}
 
+    return abstract;
+}
 
 void CLevel::ProcessGameSpawns()
 {
@@ -213,7 +213,7 @@ void CLevel::ProcessGameSpawns()
     {
         CSE_Abstract* E = game_spawn_queue.front();
         game_spawn_queue.pop_front();
-        //Msg( "* [%s]: delayed spawn dwFrame[%u] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, E->ID, E->ID_Parent, E->name_replace() );
+        // Msg( "* [%s]: delayed spawn dwFrame[%u] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, E->ID, E->ID_Parent, E->name_replace() );
         g_sv_Spawn(E);
         if (smart_cast<CSE_ALifeMonsterAbstract*>(E) || smart_cast<CSE_ALifeTraderAbstract*>(E))
         {
@@ -246,13 +246,13 @@ void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
 
     game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(),
                                           [&](auto& E) {
-                                                  if (E->ID == dest || E->ID_Parent == dest)
-                                                  {
-                                                      // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]", dest,
-                                                      // E->ID, E->ID_Parent, E->name_replace() );
-                                                      F_entity_Destroy(E);
-                                                      return true;
-                                                  }
+                                              if (E->ID == dest || E->ID_Parent == dest)
+                                              {
+                                                  // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]", dest,
+                                                  // E->ID, E->ID_Parent, E->name_replace() );
+                                                  F_entity_Destroy(E);
+                                                  return true;
+                                              }
                                               return false;
                                           }),
                            game_spawn_queue.end());

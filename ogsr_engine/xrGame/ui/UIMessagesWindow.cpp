@@ -18,12 +18,7 @@
 #include "../InfoPortion.h"
 #include "../string_table.h"
 
-CUIMessagesWindow::CUIMessagesWindow()
-{
-    m_pGameLog = NULL;
-    Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
-}
-
+CUIMessagesWindow::CUIMessagesWindow() { Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT); }
 CUIMessagesWindow::~CUIMessagesWindow() {}
 
 void CUIMessagesWindow::Init(float x, float y, float width, float height)

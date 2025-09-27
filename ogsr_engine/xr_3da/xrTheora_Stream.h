@@ -18,13 +18,13 @@ public:
     theora_comment t_comment;
     theora_state t_state;
 
-    CStreamReader* source;
+    CStreamReader* source{};
     yuv_buffer t_yuv_buffer;
 
-    ogg_int64_t d_frame;
-    u32 tm_total;
-    u32 key_rate; // theora have const key rate
-    float fpms;
+    ogg_int64_t d_frame{-1};
+    u32 tm_total{};
+    u32 key_rate{}; // theora have const key rate
+    float fpms{};
 
 protected:
     int ReadData();

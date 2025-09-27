@@ -57,7 +57,7 @@ void CStateGroupAttackAbstract::initialize()
         goal.type = MG_AttackEnemy;
         goal.entity = const_cast<CEntityAlive*>(m_enemy);
 
-        if (squad->get_index(object) == u8(-1))
+        if (squad->get_index(object) == std::numeric_limits<u8>::max())
         {
             squad->SetLeader(object);
             monster_squad().get_squad(object)->set_squad_index(object->EnemyMan.get_enemy());
@@ -75,7 +75,7 @@ void CStateGroupAttackAbstract::initialize()
     m_delta_distance = Random.randF(0, 3);
 }
 
-//#define FIND_ENEMY_DELAY	12000
+// #define FIND_ENEMY_DELAY	12000
 
 TEMPLATE_SPECIALIZATION
 void CStateGroupAttackAbstract::finalize()
@@ -515,9 +515,7 @@ TEMPLATE_SPECIALIZATION
 void CStateGroupAttackAbstract::remove_links(CObject* object)
 {
     if (m_enemy == object)
-    {
-        m_enemy = 0;
-    }
+        m_enemy = nullptr;
 }
 
 #undef TEMPLATE_SPECIALIZATION

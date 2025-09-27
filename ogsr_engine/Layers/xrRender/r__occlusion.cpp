@@ -13,7 +13,7 @@ void R_occlusion::occq_create()
 
 void R_occlusion::occq_destroy()
 {
-    Msg("* [%s]: fids[%u] used[%u] pool[%u]", __FUNCTION__, fids.size(), used.size(), pool.size());
+    Msg("* [%s]: fids[%zu] used[%zu] pool[%zu]", __FUNCTION__, fids.size(), used.size(), pool.size());
     size_t p_cnt = pool.size(), u_cnt = 0;
     for (const auto& it : used)
         if (it.Q)
@@ -23,7 +23,7 @@ void R_occlusion::occq_destroy()
     pool.clear();
     fids.clear();
 
-    Msg("* [%s]: released [%u] used and [%u] pool queries", __FUNCTION__, u_cnt, p_cnt);
+    Msg("* [%s]: released [%zu] used and [%zu] pool queries", __FUNCTION__, u_cnt, p_cnt);
 }
 
 void R_occlusion::cleanup_lost()
@@ -66,7 +66,7 @@ u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)
         if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3D_QUERY_OCCLUSION)))
         {
             if (Device.dwFrame % 100 == 0)
-                Msg("RENDER [Warning]: Too many occlusion queries were issued: %u !!!", used.size());
+                Msg("RENDER [Warning]: Too many occlusion queries were issued: %zu !!!", used.size());
             ID = iInvalidHandle;
             return 0;
         }

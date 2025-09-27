@@ -17,8 +17,8 @@ protected:
     virtual void SaveValue();
 
     virtual bool IsChanged() = 0;
-    virtual void SeveBackUpValue() {};
-    virtual void Undo() { SetCurrentValue(); };
+    virtual void SeveBackUpValue() {}
+    virtual void Undo() { SetCurrentValue(); }
 
     void SendMessage2Group(const char* group, const char* message);
     virtual void OnMessage(const char* message);

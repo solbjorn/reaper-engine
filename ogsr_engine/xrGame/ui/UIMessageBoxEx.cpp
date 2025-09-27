@@ -36,7 +36,7 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NUL
         case MESSAGE_BOX_NO_CLICKED:
         case MESSAGE_BOX_CANCEL_CLICKED:
         case MESSAGE_BOX_QUIT_WIN_CLICKED:
-        case MESSAGE_BOX_QUIT_GAME_CLICKED: GetHolder()->StartStopMenu(this, true);
+        case MESSAGE_BOX_QUIT_GAME_CLICKED: GetHolder()->StartStopMenu(this, true); break;
         default: break;
         }
 

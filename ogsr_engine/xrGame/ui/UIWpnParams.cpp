@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIWpnParams.h"
 #include "UIXmlInit.h"
 #include "../Level.h"
@@ -8,32 +9,38 @@
 #include "clsid_game.h"
 #include "script_game_object.h"
 
+namespace
+{
 struct SLuaWpnParams
 {
-    luabind::functor<float> m_functorRPM;
-    luabind::functor<float> m_functorAccuracy;
-    luabind::functor<float> m_functorDamage;
-    luabind::functor<float> m_functorHandling;
+    sol::function m_functionRPM;
+    sol::function m_functionAccuracy;
+    sol::function m_functionDamage;
+    sol::function m_functionHandling;
+
     SLuaWpnParams();
     ~SLuaWpnParams();
 };
 
 SLuaWpnParams::SLuaWpnParams()
 {
-    bool functor_exists;
-    functor_exists = ai().script_engine().functor("ui_wpn_params.GetRPM", m_functorRPM);
-    VERIFY(functor_exists);
-    functor_exists = ai().script_engine().functor("ui_wpn_params.GetDamage", m_functorDamage);
-    VERIFY(functor_exists);
-    functor_exists = ai().script_engine().functor("ui_wpn_params.GetHandling", m_functorHandling);
-    VERIFY(functor_exists);
-    functor_exists = ai().script_engine().functor("ui_wpn_params.GetAccuracy", m_functorAccuracy);
-    VERIFY(functor_exists);
+    auto& lua = ai().script_engine();
+    bool function_exists;
+
+    function_exists = lua.function("ui_wpn_params.GetRPM", m_functionRPM);
+    VERIFY(function_exists);
+    function_exists = lua.function("ui_wpn_params.GetDamage", m_functionDamage);
+    VERIFY(function_exists);
+    function_exists = lua.function("ui_wpn_params.GetHandling", m_functionHandling);
+    VERIFY(function_exists);
+    function_exists = lua.function("ui_wpn_params.GetAccuracy", m_functionAccuracy);
+    VERIFY(function_exists);
 }
 
 SLuaWpnParams::~SLuaWpnParams() {}
 
-SLuaWpnParams* g_lua_wpn_params = NULL;
+SLuaWpnParams* g_lua_wpn_params;
+} // namespace
 
 void destroy_lua_wpn_params()
 {
@@ -86,10 +93,10 @@ void CUIWpnParams::SetInfo(CPhysicsShellHolder& obj /*const shared_str& wpn_sect
 
     const shared_str& wpn_section = obj.cNameSect();
 
-    m_progressRPM.SetProgressPos(g_lua_wpn_params->m_functorRPM(*wpn_section, obj.lua_game_object()));
-    m_progressAccuracy.SetProgressPos(g_lua_wpn_params->m_functorAccuracy(*wpn_section, obj.lua_game_object()));
-    m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functorDamage(*wpn_section, obj.lua_game_object()));
-    m_progressHandling.SetProgressPos(g_lua_wpn_params->m_functorHandling(*wpn_section, obj.lua_game_object()));
+    m_progressRPM.SetProgressPos(g_lua_wpn_params->m_functionRPM(*wpn_section, obj.lua_game_object()));
+    m_progressAccuracy.SetProgressPos(g_lua_wpn_params->m_functionAccuracy(*wpn_section, obj.lua_game_object()));
+    m_progressDamage.SetProgressPos(g_lua_wpn_params->m_functionDamage(*wpn_section, obj.lua_game_object()));
+    m_progressHandling.SetProgressPos(g_lua_wpn_params->m_functionHandling(*wpn_section, obj.lua_game_object()));
 }
 
 bool CUIWpnParams::Check(CPhysicsShellHolder& obj /*const shared_str& wpn_section*/)

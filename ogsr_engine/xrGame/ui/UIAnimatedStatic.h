@@ -8,6 +8,9 @@
 
 class CUIAnimatedStatic : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIAnimatedStatic, CUIStatic);
+
+private:
     typedef CUIStatic inherited;
     // Количекство кадров анимации
     u32 m_uFrameCount;
@@ -38,7 +41,7 @@ public:
     CUIAnimatedStatic();
 
     // Устанавливаем параметры
-    void SetOffset(float x, float y) { m_pos.set(x, y); };
+    void SetOffset(float x, float y) { m_pos.set(x, y); }
     void SetFramesCount(u32 frameCnt)
     {
         m_uFrameCount = frameCnt;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "bloodsucker_alien.h"
 #include "bloodsucker.h"
 #include "../../../level.h"
@@ -8,7 +9,7 @@
 #include "../../../../xr_3da/CustomHUD.h"
 #include "../../../ActorEffector.h"
 
-#define EFFECTOR_ID_GEN(type) (type(u32(u64(this) & u32(-1))))
+#define EFFECTOR_ID_GEN(type) type(hash_64(reinterpret_cast<uintptr_t>(this), 32))
 
 ////////////////////////////////////////////////////////////////////////////////////
 // CAlienEffectorPP
@@ -183,8 +184,6 @@ BOOL CAlienEffector::ProcessCam(SCamEffectorInfo& info)
 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-CBloodsuckerAlien::CBloodsuckerAlien() { m_object = 0; }
-
 void CBloodsuckerAlien::init_external(CAI_Bloodsucker* obj) { m_object = obj; }
 
 void CBloodsuckerAlien::reinit()
@@ -240,12 +239,12 @@ void CBloodsuckerAlien::deactivate()
 
     // Stop camera effector
     Actor()->Cameras().RemoveCamEffector(EFFECTOR_ID_GEN(ECamEffectorType));
-    m_effector = 0;
+    m_effector = nullptr;
 
     // Stop postprocess effector
     Actor()->Cameras().RemovePPEffector(EFFECTOR_ID_GEN(EEffectorPPType));
     m_effector_pp->Destroy();
-    m_effector_pp = 0;
+    m_effector_pp = nullptr;
 
     m_active = false;
 

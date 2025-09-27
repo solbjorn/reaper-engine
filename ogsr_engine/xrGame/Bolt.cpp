@@ -1,10 +1,11 @@
 #include "stdafx.h"
+
 #include "bolt.h"
 #include "ParticlesObject.h"
 #include "PhysicsShell.h"
 #include "xr_level_controller.h"
 
-CBolt::CBolt(void)
+CBolt::CBolt()
 {
     m_weight = .1f;
     SetSlot(BOLT_SLOT);
@@ -12,7 +13,7 @@ CBolt::CBolt(void)
     m_thrower_id = u16(-1);
 }
 
-CBolt::~CBolt(void) {}
+CBolt::~CBolt() {}
 
 void CBolt::OnH_A_Chield()
 {

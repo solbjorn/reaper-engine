@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "hudmanager.h"
 #include "game_cl_base.h"
 #include "level.h"
@@ -13,9 +14,6 @@
 
 game_cl_GameState::game_cl_GameState()
 {
-    local_player = 0;
-    m_game_type_name = 0;
-
     shedule.t_min = 5;
     shedule.t_max = 20;
     shedule_register();
@@ -102,7 +100,7 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
             IP = I->second;
             IP->net_Import(P);
             // Msg("!![%s] Called net_import - 1", __FUNCTION__);
-            players_new.insert(mk_pair(ID, IP));
+            players_new.try_emplace(ID, IP);
             players.erase(I);
         }
         else
@@ -110,7 +108,7 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
             IP = createPlayerState();
             IP->net_Import(P);
             // Msg("!![%s] Called net_import - 2", __FUNCTION__);
-            players_new.insert(mk_pair(ID, IP));
+            players_new.try_emplace(ID, IP);
         }
         if (IP->testFlag(GAME_PLAYER_FLAG_LOCAL))
             local_player = IP;
@@ -162,9 +160,10 @@ game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
         game_PlayerState* P = I->second;
         if (P->GameID == GameID)
             return P;
-    };
-    return NULL;
-};
+    }
+
+    return nullptr;
+}
 
 game_PlayerState* game_cl_GameState::GetPlayerByOrderID(u32 idx)
 {
@@ -228,7 +227,7 @@ void game_cl_GameState::OnSwitchPhase(u32 old_phase, u32 new_phase)
     default: {
     }
     break;
-    };
+    }
 
     switch (new_phase)
     {
@@ -247,12 +246,13 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
     u_EventGen(P, GE_OWNERSHIP_TAKE, ID_who);
     P.w_u16(ID_what);
     u_EventSend(P);
-};
+}
 
 void game_cl_GameState::set_type_name(LPCSTR s) { m_game_type_name = s; }
 
 void game_cl_GameState::reset_ui()
-{ // KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!
+{
+    // KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!
     auto h = smart_cast<CHUDManager*>(Level().pHUD);
 
     auto ui = h->GetUI();

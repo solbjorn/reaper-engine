@@ -8,19 +8,22 @@
 #include "draymotions.h"
 #include "PHCollideValidator.h"
 #include "../xr_3da/gamemtllib.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "PHCommander.h"
 #include "PHSimpleCalls.h"
 #include "PHSynchronize.h"
 #include "phnetstate.h"
+
 //////////////////////////////////////////////////////////////
 //////////////CPHMesh///////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 BOOL g_bDebugDumpPhysicsStep = 0;
 
-void CPHMesh ::Create(dSpaceID space, dWorldID world) { Geom = dCreateTriList(space, 0, 0); }
+void CPHMesh ::Create(dSpaceID space, dWorldID world) { Geom = dCreateTriList(space, nullptr, nullptr); }
 /////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////
@@ -40,9 +43,9 @@ dGeomID plane;
 #endif
 
 #ifdef DEBUG
-
 void CPHWorld::OnRender() { PH_DBG_Render(); }
 #endif
+
 CPHWorld::CPHWorld()
 {
     disable_count = 0;
@@ -60,6 +63,7 @@ CPHWorld::CPHWorld()
     m_gravity = default_world_gravity;
     b_exist = false;
 }
+
 void CPHWorld::SetStep(dReal s)
 {
     fixed_step = s;
@@ -76,9 +80,10 @@ void CPHWorld::SetStep(dReal s)
         ph_world->m_frame_time = frame_time;
     }
 }
+
 void CPHWorld::Create()
 {
-    dWorldID phWorld = 0;
+    dWorldID phWorld{};
 
     Device.seqFrameMT.Add(this, REG_PRIORITY_HIGH);
 
@@ -95,15 +100,14 @@ void CPHWorld::Create()
 
 #ifdef ODE_SLOW_SOLVER
 #else
-
     dWorldSetAutoEnableDepthSF1(phWorld, 100000000);
     /// dWorldSetContactSurfaceLayer(phWorld,0.f);
     // phWorld->contactp.min_depth =0.f;
-
 #endif
+
     ContactGroup = dJointGroupCreate(0);
     dWorldSetGravity(phWorld, 0, -Gravity(), 0); //-2.f*9.81f
-    Mesh.Create(0, phWorld);
+    Mesh.Create(nullptr, phWorld);
 #ifdef PH_PLAIN
     plane = dCreatePlane(Space, 0, 1, 0, 0.3f);
 #endif
@@ -115,7 +119,7 @@ void CPHWorld::Create()
     // dWorldSetERP(phWorld,  0.2f);
     // dWorldSetCFM(phWorld,  0.000001f);
     disable_count = 0;
-    m_motion_ray = dCreateRayMotions(0);
+    m_motion_ray = dCreateRayMotions(nullptr);
     phBoundaries.set(Level().ObjectSpace.GetBoundingVolume());
     phBoundaries.y1 -= 30.f;
     CPHCollideValidator::Init();
@@ -147,10 +151,11 @@ void CPHWorld::Destroy()
     Device.seqFrame.Remove(this);
     b_exist = false;
 }
+
 void CPHWorld::SetGravity(float g)
 {
     m_gravity = g;
-    dWorldID phWorld = 0;
+    dWorldID phWorld{};
     dWorldSetGravity(phWorld, 0, -m_gravity, 0); //-2.f*9.81f
 }
 
@@ -294,7 +299,7 @@ void CPHWorld::Step()
     {
         physics_step_time_callback(start_time, start_time + u32(fixed_step * 1000));
         start_time += u32(fixed_step * 1000);
-    };
+    }
 }
 
 void CPHWorld::StepTouch()
@@ -334,7 +339,7 @@ u32 CPHWorld::CalcNumSteps(u32 dTime)
     //	if (dTime < fixed_step*1000) return 0;
     //	u32 res = iFloor((float(dTime) / 1000 / fixed_step)+0.5f);
     return res;
-};
+}
 
 void CPHWorld::FrameStep(dReal step)
 {
@@ -381,7 +386,7 @@ void CPHWorld::FrameStep(dReal step)
 
     start_time = Device.dwTimeGlobal; // - u32(m_frame_time*1000);
     if (g_bDebugDumpPhysicsStep && it_number > 20)
-        Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
+        Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %u !!!", it_number);
     for (UINT i = 0; i < it_number; ++i)
         Step();
     b_processing = false;
@@ -392,7 +397,8 @@ void CPHWorld::AddObject(CPHObject* object)
     m_objects.push_back(object);
     // xr_list <CPHObject*> ::iterator i= m_objects.end();
     // return (--m_objects.end());
-};
+}
+
 void CPHWorld::AddRecentlyDisabled(CPHObject* object) { m_recently_disabled_objects.push_back(object); }
 void CPHWorld::RemoveFromRecentlyDisabled(PH_OBJECT_I i) { m_recently_disabled_objects.erase(i); }
 
@@ -404,7 +410,7 @@ void CPHWorld::AddUpdateObject(CPHUpdateObject* object)
 
 void CPHWorld::RemoveUpdateObject(PH_UPDATE_OBJECT_I i) { m_update_objects.erase(i); }
 
-void CPHWorld::RemoveObject(PH_OBJECT_I i) { m_objects.erase((i)); };
+void CPHWorld::RemoveObject(PH_OBJECT_I i) { m_objects.erase((i)); }
 
 void CPHWorld::AddFreezedObject(CPHObject* obj) { m_freezed_objects.push_back(obj); }
 

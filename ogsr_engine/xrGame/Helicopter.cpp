@@ -21,10 +21,6 @@ float STEP = 0.02f;
 
 CHelicopter::CHelicopter()
 {
-    m_pParticle = NULL;
-    m_light_render = NULL;
-    m_lanim = NULL;
-
     ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
         self->spatial.type |= STYPE_VISIBLEFORAI;
@@ -72,7 +68,7 @@ void CHelicopter::reinit()
     m_movement.reinit();
     m_body.reinit();
     m_enemy.reinit();
-};
+}
 
 void CHelicopter::Load(LPCSTR section)
 {
@@ -179,7 +175,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
         {
             pUserData->r_line(s, i, &name, &value);
             boneID = K->LL_BoneID(name);
-            m_hitBones.insert(std::make_pair(boneID, (float)atof(value)));
+            m_hitBones.try_emplace(boneID, (float)atof(value));
         }
     }
 
@@ -211,7 +207,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     }
 
     m_engineSound.create(*heli->engine_sound, st_Effect, sg_SourceType);
-    m_engineSound.play_at_pos(0, XFORM().c, sm_Looped);
+    m_engineSound.play_at_pos(nullptr, XFORM().c, sm_Looped);
 
     if (m_bLightShotEnabled)
         CShootingObject::Light_Create();
@@ -336,7 +332,7 @@ void CHelicopter::MoveStep()
             m_movement.curLinearAcc = 0.0f;
             m_movement.curLinearSpeed = 0.0f;
         }
-    };
+    }
 
     if (m_body.b_looking_at_point)
     {
@@ -446,9 +442,7 @@ void CHelicopter::shedule_Update(u32 time_delta)
 }
 
 void CHelicopter::goPatrolByPatrolPath(LPCSTR path_name, int start_idx) { m_movement.goPatrolByPatrolPath(path_name, start_idx); }
-
 void CHelicopter::goByRoundPath(Fvector center, float radius, bool clockwise) { m_movement.goByRoundPath(center, radius, clockwise); }
-
 void CHelicopter::LookAtPoint(Fvector point, bool do_it) { m_body.LookAtPoint(point, do_it); }
 
 void CHelicopter::save(NET_Packet& output_packet)
@@ -486,6 +480,7 @@ void CHelicopter::load(IReader& input_packet)
     load_data(m_time_between_rocket_attack, input_packet);
     load_data(m_syncronize_rocket, input_packet);
 }
+
 void CHelicopter::net_Relcase(CObject* O)
 {
     CExplosive::net_Relcase(O);

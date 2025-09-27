@@ -130,7 +130,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
 
         //	Use for intermediate results
         //	Patch normal
-        u_setrt(RCache, rt_Accumulator, NULL, NULL, rt_MSAADepth);
+        u_setrt(RCache, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
 
         RCache.set_Element(s_rain->E[1]);
         RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
@@ -171,7 +171,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
         RCache.set_c("m_shadow", m_shadow);
         RCache.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Position, NULL, NULL, rt_MSAADepth);
+        u_setrt(RCache, rt_Position, nullptr, nullptr, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {
@@ -197,7 +197,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
         RCache.set_c("m_shadow", m_shadow);
         RCache.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Color, NULL, NULL, rt_MSAADepth);
+        u_setrt(RCache, rt_Color, nullptr, nullptr, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {

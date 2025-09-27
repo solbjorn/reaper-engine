@@ -7,7 +7,7 @@ class CBaseMonster;
 class CMonsterCoverManager
 {
     CBaseMonster* m_object;
-    CCoverEvaluator* m_ce_best;
+    CCoverEvaluator* m_ce_best{};
 
 public:
     CMonsterCoverManager(CBaseMonster* monster);

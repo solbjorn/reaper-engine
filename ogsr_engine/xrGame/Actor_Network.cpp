@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "actor.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_monsters.h"
@@ -39,7 +40,7 @@
 #include "debug_renderer.h"
 #endif
 
-CActor* g_actor = NULL;
+CActor* g_actor{};
 
 CActor* Actor()
 {
@@ -48,20 +49,22 @@ CActor* Actor()
     // Т.ч. вылетать не будем в этом случае.
     // VERIFY		(g_actor);
     return g_actor;
-};
+}
 
 BOOL CActor::net_Spawn(CSE_Abstract* DC)
 {
     m_holder_id = ALife::_OBJECT_ID(-1);
     m_feel_touch_characters = 0;
     m_snd_noise = 0.0f;
-    m_sndShockEffector = NULL;
+    m_sndShockEffector = nullptr;
     /*	m_followers			= NULL;*/
+
     if (m_pPhysicsShell)
     {
         m_pPhysicsShell->Deactivate();
         xr_delete(m_pPhysicsShell);
-    };
+    }
+
     // force actor to be local on server client
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeCreatureActor* E = smart_cast<CSE_ALifeCreatureActor*>(e);
@@ -78,8 +81,8 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
 
     // motions
     m_bAnimTorsoPlayed = false;
-    m_current_legs_blend = 0;
-    m_current_jump_blend = 0;
+    m_current_legs_blend = nullptr;
+    m_current_jump_blend = nullptr;
     m_current_legs.invalidate();
     m_current_torso.invalidate();
     m_current_head.invalidate();
@@ -94,7 +97,7 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
         {
             size_t s = news.size();
             news.erase(news.begin(), news.begin() + (news.size() - NewsToShow()));
-            Msg("[%s]: purge %u news items, %u left", __FUNCTION__, s - news.size(), news.size());
+            Msg("[%s]: purge %zu news items, %zu left", __FUNCTION__, s - news.size(), news.size());
         }
     }
 
@@ -263,7 +266,7 @@ void CActor::net_Destroy()
     xr_delete(m_sndShockEffector);
     xr_delete(pStatGraph);
     xr_delete(m_pActorEffector);
-    pCamBobbing = NULL;
+    pCamBobbing = nullptr;
 
 #ifdef DEBUG
     LastPosS.clear();
@@ -272,13 +275,13 @@ void CActor::net_Destroy()
 #endif
 
     processing_deactivate();
-    m_holder = NULL;
+    m_holder = nullptr;
     m_holderID = u16(-1);
 
-    SetDefaultVisualOutfit(NULL);
+    SetDefaultVisualOutfit(nullptr);
 
     if (g_actor == this)
-        g_actor = NULL;
+        g_actor = nullptr;
 
     Engine.Sheduler.Unregister(this);
 }
@@ -286,21 +289,21 @@ void CActor::net_Destroy()
 void CActor::net_Relcase(CObject* O)
 {
     VERIFY(O);
+
     CGameObject* GO = smart_cast<CGameObject*>(O);
     if (GO && m_pObjectWeLookingAt == GO)
-    {
-        m_pObjectWeLookingAt = NULL;
-    }
+        m_pObjectWeLookingAt = nullptr;
+
     CHolderCustom* HC = smart_cast<CHolderCustom*>(GO);
     if (HC && HC == m_pVehicleWeLookingAt)
-    {
-        m_pVehicleWeLookingAt = NULL;
-    }
+        m_pVehicleWeLookingAt = nullptr;
+
     if (HC && HC == m_holder)
     {
         m_holder->detach_Actor();
-        m_holder = NULL;
+        m_holder = nullptr;
     }
+
     inherited::net_Relcase(O);
 
     memory().remove_links(O);
@@ -326,6 +329,7 @@ void CActor::SetCallbacks()
     V->LL_GetBoneInstance(u16(shoulder_bone)).set_callback(bctCustom, ShoulderCallback, this);
     V->LL_GetBoneInstance(u16(head_bone)).set_callback(bctCustom, HeadCallback, this);
 }
+
 void CActor::ResetCallbacks()
 {
     IKinematics* V = smart_cast<IKinematics*>(Visual());
@@ -345,10 +349,10 @@ void CActor::OnChangeVisual()
     ///	inherited::OnChangeVisual();
     {
         CPhysicsShell* tmp_shell = PPhysicsShell();
-        PPhysicsShell() = NULL;
+        PPhysicsShell() = nullptr;
         inherited::OnChangeVisual();
         PPhysicsShell() = tmp_shell;
-        tmp_shell = NULL;
+        tmp_shell = nullptr;
     }
 
     IKinematicsAnimated* V = smart_cast<IKinematicsAnimated*>(Visual());
@@ -380,18 +384,19 @@ void CActor::OnChangeVisual()
         m_current_head.invalidate();
         m_current_legs.invalidate();
         m_current_torso.invalidate();
-        m_current_legs_blend = NULL;
-        m_current_torso_blend = NULL;
-        m_current_jump_blend = NULL;
+        m_current_legs_blend = nullptr;
+        m_current_torso_blend = nullptr;
+        m_current_jump_blend = nullptr;
 
         CStepManager::reload(*cNameSect());
     }
-};
+}
 
 void CActor::ChangeVisual(shared_str NewVisual)
 {
     if (!NewVisual.size())
         return;
+
     if (cNameVisual().size())
     {
         if (cNameVisual() == NewVisual)
@@ -403,7 +408,7 @@ void CActor::ChangeVisual(shared_str NewVisual)
     g_SetAnimation(mstate_real);
     Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
     Visual()->dcast_PKinematics()->CalculateBones();
-};
+}
 
 void CActor::save(NET_Packet& output_packet)
 {
@@ -512,14 +517,14 @@ BOOL CActor::net_SaveRelevant() { return TRUE; }
 
 void CActor::SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)
 {
-    m_iLastHitterID = (who != NULL) ? who->ID() : u16(-1);
-    m_iLastHittingWeaponID = (weapon != NULL) ? weapon->ID() : u16(-1);
+    m_iLastHitterID = who ? who->ID() : std::numeric_limits<u16>::max();
+    m_iLastHittingWeaponID = weapon ? weapon->ID() : std::numeric_limits<u16>::max();
     m_s16LastHittedElement = element;
     m_fLastHealth = GetfHealth();
     m_bWasHitted = true;
     m_vLastHitDir = Dir;
     m_vLastHitPos = Pos;
-};
+}
 
 bool CActor::InventoryAllowSprint()
 {
@@ -540,11 +545,10 @@ bool CActor::InventoryAllowSprint()
 
     const PIItem pOutfitItem = inventory().ItemFromSlot(OUTFIT_SLOT);
     if (pOutfitItem && !pOutfitItem->IsSprintAllowed())
-    {
         return false;
-    }
+
     return true;
-};
+}
 
 void CActor::On_B_NotCurrentEntity() { inventory().Items_SetCurrentEntityHud(false); }
 
@@ -571,4 +575,4 @@ void CActor::net_Export(CSE_Abstract* E)
     actor->weapon = u8(inventory().GetActiveSlot());
     /////////////////////////////////////////////////
     actor->m_u16NumItems = 0;
-};
+}

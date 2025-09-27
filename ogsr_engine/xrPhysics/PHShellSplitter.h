@@ -1,5 +1,6 @@
 #ifndef PHSHELL_SPLITTER_H
 #define PHSHELL_SPLITTER_H
+
 #include "PHDefs.h"
 #include "PHObject.h"
 
@@ -29,7 +30,6 @@ public:
 // class CPHShellSplitter;
 class CPHShell;
 class CODEGeom;
-typedef std::pair<u16, CODEGeom*> id_geom;
 DEFINE_MAP(u16, CODEGeom*, GEOM_MAP, GEOM_MAP_I);
 DEFINE_VECTOR(CPHShellSplitter, SPLITTER_STORAGE, SPLITTER_I);
 typedef xr_vector<CPHShellSplitter>::reverse_iterator SPLITTER_RI;
@@ -58,7 +58,7 @@ public:
     void AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint);
     void AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint, u16 position);
     void SplitProcess(PHSHELL_PAIR_VECTOR& out_shels);
-    void AddToGeomMap(const id_geom& id_rootgeom);
+    void AddToGeomMap(u16 id, CODEGeom* rootgeom);
     u16 FindRootGeom(u16 bone_id);
     IC bool Breaked() { return m_has_breaks; }
     IC bool isEmpty() { return m_splitters.empty(); }

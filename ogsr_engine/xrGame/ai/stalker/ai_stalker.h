@@ -32,12 +32,12 @@ typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>,
 namespace MonsterSpace
 {
 enum EMovementDirection : u32;
-};
+}
 
 namespace StalkerSpace
 {
 enum EBodyAction : u32;
-};
+}
 
 enum ECriticalWoundType : u32;
 
@@ -80,15 +80,15 @@ private:
     CStalkerAnimationManager* m_animation_manager;
     CStalkerPlanner* m_brain{};
     CSightManager* m_sight_manager;
-    CStalkerMovementManager* m_movement_manager;
+    CStalkerMovementManager* m_movement_manager{};
 
 #ifdef DEBUG
-    const script_planner* m_debug_planner;
+    const script_planner* m_debug_planner{};
 #endif
 
     // ALife
 private:
-    SBoneProtections* m_boneHitProtection;
+    SBoneProtections* m_boneHitProtection{};
 
     // weapon dispersion
 public:
@@ -106,7 +106,7 @@ private:
     bool m_fast_can_kill_entity;
 
 private:
-    float m_power_fx_factor;
+    float m_power_fx_factor{std::numeric_limits<float>::max()};
 
 private:
     float m_fRankDisperison;
@@ -219,7 +219,7 @@ public:
     virtual CInventoryItem* GetFood() const;
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);
-    virtual void ResetScriptData(void* P = 0);
+    virtual void ResetScriptData(void* P = nullptr);
     virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignAnimation(CScriptEntityAction* tpEntityAction);
 
@@ -349,7 +349,7 @@ public:
     IC CSightManager& sight() const;
 
 private:
-    CStalkerSoundDataVisitor* m_sound_user_data_visitor;
+    CStalkerSoundDataVisitor* m_sound_user_data_visitor{};
 
 protected:
     virtual CSound_UserDataVisitor* create_sound_visitor();
@@ -368,7 +368,7 @@ private:
     void process_enemies();
 
 private:
-    bool m_group_behaviour;
+    bool m_group_behaviour{true};
 
 public:
     IC bool group_behaviour() const;
@@ -389,7 +389,7 @@ public:
     IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
     virtual void UpdateCamera();
     virtual bool can_attach(const CInventoryItem* inventory_item) const;
-    virtual bool use_simplified_visual() const { return (already_dead()); };
+    virtual bool use_simplified_visual() const { return already_dead(); }
 #ifdef DEBUG
     void debug_planner(const script_planner* planner);
 #endif
@@ -551,7 +551,7 @@ private:
     void remove_critical_hit();
     //////////////////////////////////////////////////////////////////////////
 private:
-    bool m_registered_in_combat_on_migration;
+    bool m_registered_in_combat_on_migration{};
 
 public:
     virtual void on_before_change_team();

@@ -23,3 +23,10 @@ IC CScriptActionCondition::CScriptActionCondition(u32 dwFlags, double dTime)
 }
 
 IC void CScriptActionCondition::initialize() { m_tStartTime = Device.dwTimeGlobal; }
+
+inline void CScriptActionCondition::clone(const CScriptActionCondition& from)
+{
+    m_dwFlags = from.m_dwFlags;
+    m_tLifeTime = from.m_tLifeTime;
+    m_tStartTime = from.m_tStartTime;
+}

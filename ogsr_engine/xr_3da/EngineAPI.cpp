@@ -13,16 +13,8 @@ extern xr_token* vid_quality_token;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CEngineAPI::CEngineAPI()
-{
-    hGame = 0;
-    hRender = 0;
-    hTuner = 0;
-    pCreate = 0;
-    pDestroy = 0;
-}
-
-CEngineAPI::~CEngineAPI() {}
+CEngineAPI::CEngineAPI() = default;
+CEngineAPI::~CEngineAPI() = default;
 
 extern "C" {
 DLL_Pure* xrFactory_Create(CLASS_ID clsid);
@@ -45,17 +37,18 @@ void CEngineAPI::Initialize()
 
 void CEngineAPI::Destroy()
 {
-    pCreate = 0;
-    pDestroy = 0;
+    pCreate = nullptr;
+    pDestroy = nullptr;
+
     Engine.Event._destroy();
     XRC.r_clear_compact();
+
     // destroy quality token here
     if (vid_quality_token)
     {
         for (int i = 0; vid_quality_token[i].name; i++)
-        {
             xr_free(vid_quality_token[i].name);
-        }
+
         xr_free(vid_quality_token);
         vid_quality_token = nullptr;
     }

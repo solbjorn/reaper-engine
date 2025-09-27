@@ -18,6 +18,7 @@ class NET_Packet;
 #include "character_community.h"
 #include "character_rank.h"
 #include "character_reputation.h"
+
 class CSE_ALifeTraderAbstract;
 #endif
 
@@ -26,6 +27,9 @@ class CSE_ALifeTraderAbstract;
 //////////////////////////////////////////////////////////////////////////
 struct SCharacterProfile : CSharedResource
 {
+    RTTI_DECLARE_TYPEINFO(SCharacterProfile, CSharedResource);
+
+public:
     SCharacterProfile();
     virtual ~SCharacterProfile();
 
@@ -35,8 +39,8 @@ struct SCharacterProfile : CSharedResource
 
     // требуемые параметры персонажа
     CHARACTER_CLASS m_Class;
-    CHARACTER_RANK_VALUE m_Rank;
-    CHARACTER_REPUTATION_VALUE m_Reputation;
+    CHARACTER_RANK_VALUE m_Rank{NO_RANK};
+    CHARACTER_REPUTATION_VALUE m_Reputation{NO_REPUTATION};
 };
 
 class CInventoryOwner;
@@ -100,33 +104,29 @@ protected:
 
     // загруженная информация о конкретном персонаже
     CSpecificCharacter m_SpecificCharacter;
-#endif
 
 public:
-#ifdef XRGAME_EXPORTS
     shared_str Profile() const;
     LPCSTR Name() const;
     shared_str Bio() const;
 
-    const CHARACTER_COMMUNITY& Community() const { return m_CurrentCommunity; };
-    const CHARACTER_RANK& Rank() const { return m_CurrentRank; };
-    const CHARACTER_REPUTATION& Reputation() const { return m_CurrentReputation; };
+    const CHARACTER_COMMUNITY& Community() const { return m_CurrentCommunity; }
+    const CHARACTER_RANK& Rank() const { return m_CurrentRank; }
+    const CHARACTER_REPUTATION& Reputation() const { return m_CurrentReputation; }
 
-    // доступут только у InventoryOwner
+    // доступ только у InventoryOwner
 protected:
     void SetRank(CHARACTER_RANK_VALUE rank);
     void SetReputation(CHARACTER_REPUTATION_VALUE reputation);
-    void SetCommunity(const CHARACTER_COMMUNITY& community) { m_CurrentCommunity = community; };
+    void SetCommunity(const CHARACTER_COMMUNITY& community) { m_CurrentCommunity.set(community.index()); }
 
 public:
     const shared_str& IconName() const;
 
     shared_str StartDialog() const;
     const DIALOG_ID_VECTOR& ActorDialogs() const;
-#endif
 
 protected:
-#ifdef XRGAME_EXPORTS
     CHARACTER_RANK m_CurrentRank;
     CHARACTER_REPUTATION m_CurrentReputation;
     CHARACTER_COMMUNITY m_CurrentCommunity;

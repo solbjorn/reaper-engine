@@ -4,7 +4,13 @@
 #include "SkeletonXVertRender.h"
 #include "xrSkinXW.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+
 #include <oneapi/tbb/parallel_for.h>
+
+XR_DIAG_POP();
 
 void Skin1W(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* Bones)
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PHShellCreator.h"
 #include "PhysicsShell.h"
 #include "gameobject.h"
@@ -21,7 +22,7 @@ void CPHShellSimpleCreator::CreatePhysicsShell()
 #ifdef DEBUG
     owner->PPhysicsShell()->dbg_obj = owner;
 #endif
-    owner->m_pPhysicsShell->build_FromKinematics(pKinematics, 0);
+    owner->m_pPhysicsShell->build_FromKinematics(pKinematics, nullptr);
 
     if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
     {

@@ -131,22 +131,8 @@ CLensFlare::CLensFlare()
     // Device
     dwFrame = 0xfffffffe;
 
-    fBlend = 0.f;
-
     LightColor.set(0xFFFFFFFF);
-    fGradientValue = 0.f;
-
-    m_Current = 0;
-
     m_State = lfsNone;
-    m_StateBlend = 0.f;
-
-    for (int i = 0; i < MAX_RAYS; ++i)
-    {
-        m_ray_cache[i].verts[0].set(0, 0, 0);
-        m_ray_cache[i].verts[1].set(0, 0, 0);
-        m_ray_cache[i].verts[2].set(0, 0, 0);
-    }
 
     OnDeviceCreate();
 }
@@ -229,7 +215,7 @@ void CLensFlare::OnFrame(shared_str id)
     Fvector& c = g_pGamePersistent->Environment().CurrentEnv->sun_color;
     LightColor.set(c.x, c.y, c.z, 1.f);
 
-    CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
+    CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : nullptr;
 
     //	LFState			previous_state = m_State;
     switch (m_State)
@@ -263,7 +249,7 @@ void CLensFlare::OnFrame(shared_str id)
     //	Msg				("%6d : [%s] -> [%s]", Device.dwFrame, state_to_string(previous_state), state_to_string(m_State));
     clamp(m_StateBlend, 0.f, 1.f);
 
-    if ((m_Current == 0) || (LightColor.magnitude_rgb() == 0.f))
+    if (!m_Current || (LightColor.magnitude_rgb() == 0.f))
     {
         bRender = false;
         return;
@@ -370,7 +356,7 @@ void CLensFlare::OnFrame(shared_str id)
             {
                 // cache outdated. real query.
                 r_dest.r_clear();
-                if (g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, NULL, o_main))
+                if (g_pGameLevel->ObjectSpace.RayQuery(r_dest, RD, material_callback, &TP, nullptr, o_main))
                     m_ray_cache[i].result = FALSE;
             }
         }

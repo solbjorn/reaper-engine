@@ -23,7 +23,7 @@ private:
     typedef CUIDialogWnd inherited;
 
 protected:
-    //элементы декоративного интерфейса
+    // элементы декоративного интерфейса
     CUIFrameLineWnd* UIMainButtonsBackground;
     CUIFrameLineWnd* UITimerBackground;
 
@@ -37,8 +37,8 @@ protected:
 protected:
     // Бэкграунд
     CUIStatic* UIMainPdaFrame;
-    CUIStatic* m_updatedSectionImage;
-    CUIStatic* m_oldSectionImage;
+    CUIStatic* m_updatedSectionImage{};
+    CUIStatic* m_oldSectionImage{};
 
     // Текущий активный диалог
     CUIWindow* m_pActiveDialog;
@@ -47,13 +47,14 @@ protected:
 public:
     EPdaTabs m_pActiveSection;
     // Поддиалоги PDA
-    CUIMapWnd* UIMapWnd;
-    CUIPdaContactsWnd* UIPdaContactsWnd;
-    CUIEncyclopediaWnd* UIEncyclopediaWnd;
-    CUIDiaryWnd* UIDiaryWnd;
-    CUIActorInfoWnd* UIActorInfo;
-    CUIStalkersRankingWnd* UIStalkersRanking;
-    CUIEventsWnd* UIEventsWnd;
+    CUIMapWnd* UIMapWnd{};
+    CUIPdaContactsWnd* UIPdaContactsWnd{};
+    CUIEncyclopediaWnd* UIEncyclopediaWnd{};
+    CUIDiaryWnd* UIDiaryWnd{};
+    CUIActorInfoWnd* UIActorInfo{};
+    CUIStalkersRankingWnd* UIStalkersRanking{};
+    CUIEventsWnd* UIEventsWnd{};
+
     virtual void Reset();
 
 public:
@@ -62,7 +63,7 @@ public:
 
     virtual void Init();
 
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual void Draw();
     virtual void Update();

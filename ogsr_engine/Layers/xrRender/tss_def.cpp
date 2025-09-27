@@ -7,7 +7,7 @@ IDirect3DStateBlock9* SimulatorStates::record()
 {
     //	TODO: DX10: Implement equivalent for SimulatorStates::record for DX10
     // VERIFY(!"SimulatorStates::record not implemented!");
-    return 0;
+    return nullptr;
 }
 
 void SimulatorStates::set_RS(u32 a, u32 b)

@@ -1,25 +1,23 @@
 #include "stdafx.h"
+
 #include "CarLights.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
+
 extern CPHWorld* ph_world;
 
-SCarLight::SCarLight()
-{
-    light_render = NULL;
-    glow_render = NULL;
-    bone_id = BI_NONE;
-    m_holder = NULL;
-}
+SCarLight::SCarLight() : bone_id{BI_NONE} {}
 
 SCarLight::~SCarLight()
 {
@@ -74,6 +72,7 @@ void SCarLight::Switch()
     else
         TurnOn();
 }
+
 void SCarLight::TurnOn()
 {
     VERIFY(!ph_world->Processing());
@@ -87,6 +86,7 @@ void SCarLight::TurnOn()
     light_render->set_active(true);
     Update();
 }
+
 void SCarLight::TurnOff()
 {
     VERIFY(!ph_world->Processing());
@@ -109,6 +109,7 @@ void SCarLight::Update()
     VERIFY(!ph_world->Processing());
     if (!isOn())
         return;
+
     CCar* pcar = m_holder->PCar();
     CBoneInstance& BI = smart_cast<IKinematics*>(pcar->Visual())->LL_GetBoneInstance(bone_id);
     Fmatrix M;
@@ -121,7 +122,7 @@ void SCarLight::Update()
 
 CCarLights::CCarLights()
 {
-    m_pcar = NULL;
+    m_pcar = nullptr;
     m_is_on = false;
 }
 
@@ -136,6 +137,7 @@ void CCarLights::ParseDefinitions()
     CInifile* ini = smart_cast<IKinematics*>(m_pcar->Visual())->LL_UserData();
     if (!ini->section_exist("lights"))
         return;
+
     LPCSTR S = ini->r_string("lights", "headlights");
     string64 S1;
     int count = _GetItemCount(S);
@@ -178,6 +180,7 @@ void CCarLights::TurnOnHeadLights()
         (*i)->TurnOn();
     m_is_on = true;
 }
+
 void CCarLights::TurnOffHeadLights()
 {
     VERIFY(!ph_world->Processing());
@@ -189,9 +192,10 @@ void CCarLights::TurnOffHeadLights()
 
 bool CCarLights::IsLight(u16 bone_id)
 {
-    SCarLight* light = NULL;
+    SCarLight* light{};
     return findLight(bone_id, light);
 }
+
 bool CCarLights::findLight(u16 bone_id, SCarLight*& light)
 {
     SCarLight find_light;
@@ -204,9 +208,10 @@ bool CCarLights::findLight(u16 bone_id, SCarLight*& light)
         light = *i;
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
+
 CCarLights::~CCarLights()
 {
     LIGHTS_I i = m_lights.begin(), e = m_lights.end();

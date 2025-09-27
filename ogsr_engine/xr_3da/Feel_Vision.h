@@ -80,4 +80,4 @@ public:
 
     float feel_vision_get_transparency(const CObject* _O) const;
 };
-}; // namespace Feel
+} // namespace Feel

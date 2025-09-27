@@ -128,8 +128,8 @@ public:
 
     virtual void net_Export(CSE_Abstract* E);
 
-    virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
-    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/) {};
+    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool for_cursor = false) override {}
+    virtual void g_WeaponBones(int&, int&, int&) {}
 
     virtual void HitSignal(float HitAmount, Fvector& local_dir, CObject* who, s16 element);
     virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);

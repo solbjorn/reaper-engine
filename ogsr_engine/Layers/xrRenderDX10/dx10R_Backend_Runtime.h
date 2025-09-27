@@ -22,7 +22,7 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 
         //	Reset all RT's here to allow RT to be bounded as input
         if (!m_bChangedRTorZB)
-            context()->OMSetRenderTargets(0, 0, 0);
+            context()->OMSetRenderTargets(0, nullptr, nullptr);
 
         m_bChangedRTorZB = true;
     }
@@ -38,7 +38,7 @@ IC void CBackend::set_ZB(ID3DDepthStencilView* ZB)
 
         //	Reset all RT's here to allow RT to be bounded as input
         if (!m_bChangedRTorZB)
-            context()->OMSetRenderTargets(0, 0, 0);
+            context()->OMSetRenderTargets(0, nullptr, nullptr);
 
         m_bChangedRTorZB = true;
     }
@@ -69,7 +69,7 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
         PGO(Msg("PGO:Pshader:%x", _ps));
         stat.ps++;
         ps = _ps;
-        context()->PSSetShader(ps, 0, 0);
+        context()->PSSetShader(ps, nullptr, 0);
 
 #ifdef DEBUG
         ps_name = _n;
@@ -85,7 +85,7 @@ ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
         //	TODO: DX10: Get statistics for G Shader change
         // stat.gs			++;
         gs = _gs;
-        context()->GSSetShader(gs, 0, 0);
+        context()->GSSetShader(gs, nullptr, 0);
 
 #ifdef DEBUG
         gs_name = _n;
@@ -101,7 +101,7 @@ ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
         //	TODO: DX10: Get statistics for H Shader change
         // stat.hs			++;
         hs = _hs;
-        context()->HSSetShader(hs, 0, 0);
+        context()->HSSetShader(hs, nullptr, 0);
 
 #ifdef DEBUG
         hs_name = _n;
@@ -117,7 +117,7 @@ ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
         //	TODO: DX10: Get statistics for D Shader change
         // stat.ds			++;
         ds = _ds;
-        context()->DSSetShader(ds, 0, 0);
+        context()->DSSetShader(ds, nullptr, 0);
 
 #ifdef DEBUG
         ds_name = _n;
@@ -133,7 +133,7 @@ ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
         //	TODO: DX10: Get statistics for D Shader change
         // stat.cs			++;
         cs = _cs;
-        context()->CSSetShader(cs, 0, 0);
+        context()->CSSetShader(cs, nullptr, 0);
 
 #ifdef DEBUG
         cs_name = _n;
@@ -151,7 +151,7 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
         stat.vs++;
         vs = _vs;
 
-        context()->VSSetShader(vs, 0, 0);
+        context()->VSSetShader(vs, nullptr, 0);
 
 #ifdef DEBUG
         vs_name = _n;
@@ -252,7 +252,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
     u32 iIndexCount = GetIndexCount(T, PC);
 
     //!!! HACK !!!
-    if (hs != 0 || ds != 0)
+    if (hs || ds)
     {
         R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
@@ -321,7 +321,7 @@ IC void CBackend::set_Scissor(Irect* R)
     else
     {
         StateManager.EnableScissoring(FALSE);
-        pContext->RSSetScissorRects(0, 0);
+        pContext->RSSetScissorRects(0, nullptr);
     }
 }
 
@@ -427,13 +427,15 @@ IC void CBackend::set_Constants(R_constant_table* C)
     // caching
     if (ctable == C)
         return;
+
     ctable = C;
     xforms.unmap();
     hemi.unmap();
     tree.unmap();
     LOD.unmap();
     StateManager.UnmapConstants();
-    if (0 == C)
+
+    if (!C)
         return;
 
     PGO(Msg("PGO:c-table"));
@@ -457,13 +459,13 @@ IC void CBackend::set_Constants(R_constant_table* C)
             aDomainConstants[i] = m_aDomainConstants[i];
             aComputeConstants[i] = m_aComputeConstants[i];
 
-            m_aPixelConstants[i] = 0;
-            m_aVertexConstants[i] = 0;
-            m_aGeometryConstants[i] = 0;
+            m_aPixelConstants[i] = nullptr;
+            m_aVertexConstants[i] = nullptr;
+            m_aGeometryConstants[i] = nullptr;
 
-            m_aHullConstants[i] = 0;
-            m_aDomainConstants[i] = 0;
-            m_aComputeConstants[i] = 0;
+            m_aHullConstants[i] = nullptr;
+            m_aDomainConstants[i] = nullptr;
+            m_aComputeConstants[i] = nullptr;
         }
 
         R_constant_table::cb_table::iterator it = C->m_CBTable[context_id].begin();
@@ -521,7 +523,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aPixelConstants[i])
                     tempBuffer[i] = m_aPixelConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
 
             pContext->PSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
@@ -536,7 +538,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aVertexConstants[i])
                     tempBuffer[i] = m_aVertexConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
             pContext->VSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
@@ -550,7 +552,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aGeometryConstants[i])
                     tempBuffer[i] = m_aGeometryConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
             pContext->GSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
@@ -564,7 +566,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aHullConstants[i])
                     tempBuffer[i] = m_aHullConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
             pContext->HSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
@@ -578,7 +580,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aDomainConstants[i])
                     tempBuffer[i] = m_aDomainConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
             pContext->DSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
@@ -592,7 +594,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                 if (m_aComputeConstants[i])
                     tempBuffer[i] = m_aComputeConstants[i]->GetBuffer();
                 else
-                    tempBuffer[i] = 0;
+                    tempBuffer[i] = nullptr;
             }
             pContext->CSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
         }
@@ -624,15 +626,17 @@ IC void CBackend::get_ConstantDirect(const char* n, size_t DataSize, void** pVDa
     ref_constant C = get_c(n);
 
     if (C)
+    {
         constants.access_direct(&*C, DataSize, pVData, pGData, pPData);
+    }
     else
     {
         if (pVData)
-            *pVData = 0;
+            *pVData = nullptr;
         if (pGData)
-            *pGData = 0;
+            *pGData = nullptr;
         if (pPData)
-            *pPData = 0;
+            *pPData = nullptr;
     }
 }
 

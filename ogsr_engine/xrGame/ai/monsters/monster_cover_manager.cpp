@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "monster_cover_manager.h"
 #include "BaseMonster/base_monster.h"
 #include "../../cover_evaluators.h"
@@ -147,7 +148,8 @@ void CCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
 // Cover Manager
 //=============================================================================
 
-CMonsterCoverManager::CMonsterCoverManager(CBaseMonster* monster) : m_object(monster) { m_ce_best = 0; }
+CMonsterCoverManager::CMonsterCoverManager(CBaseMonster* monster) : m_object{monster} {}
+
 CMonsterCoverManager::~CMonsterCoverManager() { xr_delete(m_ce_best); }
 
 void CMonsterCoverManager::load() { m_ce_best = xr_new<CCoverEvaluator>(&(m_object->control().path_builder().restrictions())); }

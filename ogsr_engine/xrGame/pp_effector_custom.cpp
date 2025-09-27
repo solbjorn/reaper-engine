@@ -1,9 +1,10 @@
 #include "stdafx.h"
+
 #include "pp_effector_custom.h"
 #include "actor.h"
 #include "ActorEffector.h"
 
-#define TRANSLATE_TYPE(val) EEffectorPPType(val ? u32(u64(typeid(this).name())) : u32(u64(this) & u32(-1)))
+#define TRANSLATE_TYPE(val) EEffectorPPType(val ? (this)->typeId() : hash_64(reinterpret_cast<uintptr_t>(this), 32))
 
 #pragma warning(push)
 #pragma warning(disable : 4355) // 'this' : used in base member initializer list
@@ -68,7 +69,7 @@ void CPPEffectorController::deactivate()
     VERIFY(m_effector);
 
     Actor()->Cameras().RemovePPEffector(m_effector->get_type());
-    m_effector = 0;
+    m_effector = nullptr;
 }
 
 void CPPEffectorController::frame_update()
@@ -79,5 +80,7 @@ void CPPEffectorController::frame_update()
             deactivate();
     }
     else if (check_start_conditions())
+    {
         activate();
+    }
 }

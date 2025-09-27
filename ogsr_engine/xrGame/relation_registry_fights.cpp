@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "relation_registry.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -63,7 +64,7 @@ RELATION_REGISTRY::FIGHT_DATA* RELATION_REGISTRY::FindFight(u16 object_id, bool 
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool fight_time_pred(RELATION_REGISTRY::FIGHT_DATA& fight_data)

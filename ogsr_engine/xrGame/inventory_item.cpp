@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "inventory_item.h"
 #include "inventory_item_impl.h"
 #include "inventory.h"
@@ -33,31 +34,19 @@
 CInventoryItem::CInventoryItem()
 {
     SetSlot(NO_ACTIVE_SLOT);
+
     m_flags.zero();
     m_flags.set(Fbelt, FALSE);
     m_flags.set(Fruck, TRUE);
     m_flags.set(FRuckDefault, TRUE);
-    m_pCurrentInventory = NULL;
 
     SetDropManual(FALSE);
 
     m_flags.set(FCanTake, TRUE);
     m_flags.set(FCanTrade, TRUE);
     m_flags.set(FUsingCondition, FALSE);
-    m_fCondition = 1.0f;
 
-    m_name = m_nameShort = NULL;
-
-    m_eItemPlace = eItemPlaceUndefined;
     m_Description = "";
-    m_cell_item = NULL;
-
-    m_fPsyHealthRestoreSpeed = 0.f;
-    m_fRadiationRestoreSpeed = 0.f;
-
-    loaded_belt_index = (u8)(-1);
-    m_highlight_equipped = false;
-    m_always_ungroupable = false;
 }
 
 CInventoryItem::~CInventoryItem()
@@ -72,7 +61,7 @@ CInventoryItem::~CInventoryItem()
         if (p)
             Msg("parent name is [%s]", p->cName().c_str());
 
-        Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%d]", object().ID(), p ? p->cName().c_str() : "none", p ? p->ID() : -1, Device.dwFrame);
+        Msg("! ERROR item_id[%d] H_Parent=[%s][%d] [%u]", object().ID(), p ? p->cName().c_str() : "none", p ? p->ID() : -1, Device.dwFrame);
     }
 }
 
@@ -139,7 +128,7 @@ void CInventoryItem::Load(LPCSTR section)
 
     m_flags.set(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", TRUE));
     m_fControlInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "control_inertion_factor", 1.0f);
-    m_icon_name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", NULL);
+    m_icon_name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr);
 
     m_fPsyHealthRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "psy_health_restore_speed", 0.f);
     m_fRadiationRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.f);
@@ -267,13 +256,15 @@ void CInventoryItem::UpdateCL()
 
 void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 {
-    if (type == GE_CHANGE_POS) {
+    if (type == GE_CHANGE_POS)
+    {
         Fvector p;
         P.r_vec3(p);
-        CPHSynchronize* pSyncObj = NULL;
+        CPHSynchronize* pSyncObj{};
         pSyncObj = object().PHGetSyncItem(0);
         if (!pSyncObj)
             return;
+
         SPHNetState state;
         pSyncObj->get_State(state);
         state.position = p;
@@ -282,9 +273,9 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
     }
 }
 
-//процесс отсоединения вещи заключается в спауне новой вещи
-//в инвентаре и установке соответствующих флагов в родительском
-//объекте, поэтому функция должна быть переопределена
+// процесс отсоединения вещи заключается в спауне новой вещи
+// в инвентаре и установке соответствующих флагов в родительском
+// объекте, поэтому функция должна быть переопределена
 bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 {
     if (b_spawn_item)
@@ -350,7 +341,7 @@ BOOL CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy()
 {
-    //инвентарь которому мы принадлежали
+    // инвентарь которому мы принадлежали
     //.	m_pCurrentInventory = NULL;
 }
 
@@ -382,7 +373,7 @@ void CInventoryItem::net_Export(CSE_Abstract* E)
 {
     CSE_ALifeInventoryItem* item = smart_cast<CSE_ALifeInventoryItem*>(E);
     item->m_u8NumItems = 0;
-};
+}
 
 void CInventoryItem::load(IReader& packet)
 {
@@ -398,15 +389,21 @@ void CInventoryItem::load(IReader& packet)
             m_eItemPlace = eItemPlaceRuck;
         }
     }
+
     m_fCondition = packet.r_float();
+
     if (m_eItemPlace == eItemPlaceSlot)
+    {
         if (ai().get_alife()->header().version() < 4)
         {
             auto slots = GetSlots();
             SetSlot(slots.size() ? slots[0] : NO_ACTIVE_SLOT);
         }
         else
+        {
             SetSlot(packet.r_u8());
+        }
+    }
 
     u8 tmp = packet.r_u8();
     if (!tmp)
@@ -431,17 +428,15 @@ void CInventoryItem::reload(LPCSTR section)
 
 void CInventoryItem::reinit()
 {
-    m_pCurrentInventory = NULL;
+    m_pCurrentInventory = nullptr;
     m_eItemPlace = eItemPlaceUndefined;
 }
 
 bool CInventoryItem::can_kill() const { return (false); }
 
-CInventoryItem* CInventoryItem::can_kill(CInventory* inventory) const { return (0); }
-
-const CInventoryItem* CInventoryItem::can_kill(const xr_vector<const CGameObject*>& items) const { return (0); }
-
-CInventoryItem* CInventoryItem::can_make_killing(const CInventory* inventory) const { return (0); }
+CInventoryItem* CInventoryItem::can_kill(CInventory* inventory) const { return nullptr; }
+const CInventoryItem* CInventoryItem::can_kill(const xr_vector<const CGameObject*>& items) const { return nullptr; }
+CInventoryItem* CInventoryItem::can_make_killing(const CInventory* inventory) const { return nullptr; }
 
 bool CInventoryItem::ready_to_kill() const { return (false); }
 
@@ -452,7 +447,7 @@ void CInventoryItem::activate_physic_shell()
     {
         on_activate_physic_shell();
         return;
-    };
+    }
 
     UpdateXForm();
 
@@ -461,7 +456,7 @@ void CInventoryItem::activate_physic_shell()
 
 void CInventoryItem::UpdateXForm()
 {
-    if (0 == object().H_Parent())
+    if (!object().H_Parent())
         return;
 
     // Get access to entity and its visual
@@ -520,7 +515,6 @@ void CInventoryItem::UpdateXForm()
 }
 
 #ifdef DEBUG
-
 void CInventoryItem::OnRender()
 {
     if (bDebug && object().Visual())
@@ -561,16 +555,13 @@ bool CInventoryItem::CanTrade() const
 }
 
 int CInventoryItem::GetGridWidth() const { return (int)m_icon_params.grid_width; }
-
 int CInventoryItem::GetGridHeight() const { return (int)m_icon_params.grid_height; }
-
 int CInventoryItem::GetIconIndex() const { return m_icon_params.icon_group; }
 
 int CInventoryItem::GetXPos() const { return (int)m_icon_params.grid_x; }
 int CInventoryItem::GetYPos() const { return (int)m_icon_params.grid_y; }
 
-bool CInventoryItem::IsNecessaryItem(CInventoryItem* item) { return IsNecessaryItem(item->object().cNameSect()); };
-
+bool CInventoryItem::IsNecessaryItem(CInventoryItem* item) { return IsNecessaryItem(item->object().cNameSect()); }
 BOOL CInventoryItem::IsInvalid() const { return object().getDestroy() || GetDropManual(); }
 
 bool CInventoryItem::GetInvShowCondition() const { return m_icon_params.show_condition; }
@@ -598,7 +589,7 @@ void CInventoryItem::OnMoveToSlot()
             m_highlight_equipped = true;
         }
     }
-};
+}
 
 void CInventoryItem::OnMoveToBelt()
 {
@@ -617,7 +608,7 @@ void CInventoryItem::OnMoveToBelt()
             m_highlight_equipped = true;
         }
     }
-};
+}
 
 void CInventoryItem::OnMoveToRuck(EItemPlace prevPlace)
 {
@@ -636,4 +627,4 @@ void CInventoryItem::OnMoveToRuck(EItemPlace prevPlace)
             m_highlight_equipped = false;
         }
     }
-};
+}

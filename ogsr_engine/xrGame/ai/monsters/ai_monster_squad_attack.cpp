@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ai_monster_squad.h"
 #include "../../entity.h"
 #include "../../entity_alive.h"
@@ -28,7 +29,7 @@ void CMonsterSquad::ProcessAttack()
             else
             {
                 m_temp_entities.push_back(it_goal->first);
-                m_enemy_map.insert(std::make_pair(goal.entity, m_temp_entities));
+                m_enemy_map.try_emplace(goal.entity, m_temp_entities);
             }
         }
     }
@@ -62,7 +63,7 @@ struct sort_predicate
 
     sort_predicate(const CEntity* pEnemy) : enemy(pEnemy) {}
 
-    bool operator()(const CEntity* pE1, const CEntity* pE2) const { return (pE1->Position().distance_to(enemy->Position()) > pE2->Position().distance_to(enemy->Position())); };
+    bool operator()(const CEntity* pE1, const CEntity* pE2) const { return (pE1->Position().distance_to(enemy->Position()) > pE2->Position().distance_to(enemy->Position())); }
 };
 
 void CMonsterSquad::set_rat_squad_index(const CEntity* m_enemy)
@@ -86,7 +87,7 @@ void CMonsterSquad::set_rat_squad_index(const CEntity* m_enemy)
             else
             {
                 m_entities.push_back(it_goal->first);
-                m_enemy_maps.insert(std::make_pair(m_enemy, m_entities));
+                m_enemy_maps.try_emplace(m_enemy, m_entities);
             }
         }
     }
@@ -132,7 +133,7 @@ void CMonsterSquad::set_squad_index(const CEntity* m_enemy)
             else
             {
                 m_entities.push_back(it_goal->first);
-                m_enemy_maps.insert(std::make_pair(m_enemy, m_entities));
+                m_enemy_maps.try_emplace(m_enemy, m_entities);
             }
         }
     }
@@ -272,35 +273,36 @@ Fvector CMonsterSquad::calc_monster_target_dir(CBaseMonster* monster, const CEnt
     Fvector home2enemy = enemy_pos;
     home2enemy.sub(monster->Home->get_home_point());
 
+    Fvector dir;
+
     const float home2enemy_mag = home2enemy.magnitude();
 
     // enemy pos == home pos?
     const float near_zero = 0.00001f;
     if (home2enemy_mag < near_zero)
     {
-        Fvector enemy2monster = monster->Position();
-        enemy2monster.sub(enemy_pos);
-        const float enemy2monster_mag = enemy2monster.magnitude();
+        dir = monster->Position();
+        dir.sub(enemy_pos);
+        const float enemy2monster_mag = dir.magnitude();
+
         // monster pos == enemy pos?
         if (enemy2monster_mag < near_zero)
         {
             VERIFY2(false, "Enemy and Monster should not have same pos!");
-            Fvector dir = {1.f, 0.f, 0.f}; // happy with random dir then :)
+            dir = {1.f, 0.f, 0.f}; // happy with random dir then :)
             return dir;
         }
 
-        enemy2monster.normalize();
-        return enemy2monster;
+        dir.normalize();
+        return dir;
     }
 
     const u8 squad_size = squad_alife_count();
     VERIFY(squad_size);
 
     u8 squad_index = get_index(monster);
-    if (squad_index == u8(-1))
-    {
+    if (squad_index == std::numeric_limits<u8>::max())
         squad_index = 0;
-    }
 
     float heading, pitch;
     home2enemy.getHP(heading, pitch);
@@ -309,7 +311,6 @@ Fvector CMonsterSquad::calc_monster_target_dir(CBaseMonster* monster, const CEnt
     heading += M_PI * 2.f * squad_index / squad_size;
     heading = angle_normalize(heading);
 
-    Fvector dir;
     dir.setHP(heading, pitch);
     dir.normalize();
 

@@ -17,7 +17,7 @@
 namespace MemorySpace
 {
 struct CSoundObject;
-};
+}
 
 enum ESoundTypes : u32;
 

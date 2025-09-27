@@ -17,7 +17,8 @@ class CUIDialogWnd : public CUIWindow
 
 private:
     typedef CUIWindow inherited;
-    CDialogHolder* m_pHolder;
+
+    CDialogHolder* m_pHolder{};
 
 protected:
     bool IR_process();
@@ -26,7 +27,8 @@ protected:
     u32 m_dwLastClickTime;
 
 public:
-    bool m_bWorkInPause;
+    bool m_bWorkInPause{};
+
     CUIDialogWnd();
     virtual ~CUIDialogWnd();
 
@@ -42,8 +44,8 @@ public:
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual bool OnKeyboardHold(int dik);
 
-    CDialogHolder* GetHolder() { return m_pHolder; };
-    void SetHolder(CDialogHolder* h) { m_pHolder = h; };
+    CDialogHolder* GetHolder() { return m_pHolder; }
+    void SetHolder(CDialogHolder* h) { m_pHolder = h; }
     virtual bool StopAnyMove() { return true; }
     virtual bool NeedCursor() const { return true; }
     virtual bool WorkInPause() const { return m_bWorkInPause; }

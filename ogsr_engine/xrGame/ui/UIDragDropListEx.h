@@ -31,9 +31,11 @@ struct CUICell
         VERIFY(m_item);
         m_bMainItem = bMain;
     }
-    bool Empty() { return m_item == NULL; }
+
+    bool Empty() { return !m_item; }
     bool MainItem() { return m_bMainItem; }
     void Clear();
+
     bool operator==(const CUICell& C) const { return (m_item == C.m_item); }
 };
 
@@ -101,12 +103,12 @@ public:
     {
         m_orig_cell_capacity = c;
         SetCellsCapacity(c);
-    };
+    }
     void ResetCellsCapacity()
     {
         VERIFY(ItemsCount() == 0);
         SetCellsCapacity(m_orig_cell_capacity);
-    };
+    }
     const Ivector2& CellSize();
     void SetCellSize(const Ivector2 new_sz);
     const Ivector2& CellsSpacing();
@@ -114,7 +116,7 @@ public:
     void SetCellsVertAlignment(xr_string alignment);
     void SetCellsHorizAlignment(xr_string alignment);
 
-    const Ivector2 GetVirtualCellsAlignment() { return m_virtual_cells_alignment; };
+    const Ivector2 GetVirtualCellsAlignment() { return m_virtual_cells_alignment; }
 
     int ScrollPos();
     void SetScrollPos(int _pos);
@@ -138,8 +140,8 @@ public:
     bool GetHighlightAllCells();
     void SetHighlightAllCells(bool b);
 
-    bool GetConditionProgBarVisibility() { return m_bConditionProgBarVisible; };
-    void SetConditionProgBarVisibility(bool b) { m_bConditionProgBarVisible = b; };
+    bool GetConditionProgBarVisibility() { return m_bConditionProgBarVisible; }
+    void SetConditionProgBarVisibility(bool b) { m_bConditionProgBarVisible = b; }
 
 public:
     // items management
@@ -166,7 +168,7 @@ public:
     virtual void Draw();
     virtual void Update();
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     void enable_highlight(const bool);
 };
@@ -202,15 +204,15 @@ public:
 protected:
     virtual void Draw();
 
-    IC const Ivector2& CellsCapacity() { return m_cellsCapacity; };
+    IC const Ivector2& CellsCapacity() { return m_cellsCapacity; }
     void SetCellsCapacity(const Ivector2& c);
     void SetCellsAvailable(const u32 count);
 
     void enable_highlight(const bool);
 
-    IC const Ivector2& CellSize() { return m_cellSize; };
+    IC const Ivector2& CellSize() { return m_cellSize; }
     void SetCellSize(const Ivector2& new_sz);
-    IC const Ivector2& CellsSpacing() { return m_cellSpacing; };
+    IC const Ivector2& CellsSpacing() { return m_cellSpacing; }
     void SetCellsSpacing(const Ivector2& new_sz);
     Ivector2 TopVisibleCell();
 

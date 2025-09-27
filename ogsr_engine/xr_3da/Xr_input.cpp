@@ -3,7 +3,7 @@
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
-CInput* pInput = NULL;
+CInput* pInput{};
 IInputReceiver dummyController;
 
 float psMouseSens = 1.f;
@@ -28,7 +28,7 @@ CInput::CInput(bool bExclusive, int deviceForInit)
     iCapture(&dummyController);
 
     if (!pDI)
-        CHK_DX(DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL));
+        CHK_DX(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, nullptr));
 
     // KEYBOARD
     if (deviceForInit & keyboard_device_key)
@@ -246,7 +246,8 @@ void CInput::MouseUpdate()
         hr = pMouse->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), &od[0], &dwElements, 0);
         if (hr != S_OK)
             return;
-    };
+    }
+
     BOOL mouse_prev[COUNT_MOUSE_BUTTONS];
 
     mouse_prev[0] = mouseState[0];
@@ -506,8 +507,8 @@ IInputReceiver* CInput::CurrentIR()
 {
     if (cbStack.size())
         return cbStack.back();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 u16 CInput::DikToChar(const int dik, const bool utf)

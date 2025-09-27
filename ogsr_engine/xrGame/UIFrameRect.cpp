@@ -1,7 +1,9 @@
 #include "stdafx.h"
+
 #include "uiFrameRect.h"
 #include "hudmanager.h"
 #include "ui\uitexturemaster.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -119,7 +121,7 @@ void CUIFrameRect::UpdateSize()
     float size_left = m_wndSize.y - _lt.y - _lb.y;
     float size_right = m_wndSize.y - _rt.y - _rb.y;
 
-    //Фон
+    // Фон
     ts.set(_bk.x, _bk.y);
     rem_x = fmod(size_top, ts.x);
     rem_y = fmod(size_left, ts.y);
@@ -131,7 +133,7 @@ void CUIFrameRect::UpdateSize()
     frame[fmBK].SetPos(wnd_pos.x + _lt.x, wnd_pos.y + _lt.y);
     frame[fmBK].SetTile(tile_x, tile_y, rem_x, rem_y);
 
-    //Обрамление
+    // Обрамление
     ts.set(_t.x, _t.y);
     rem_x = fmod(size_top, ts.x);
     tile_x = iFloor(size_top / ts.x);

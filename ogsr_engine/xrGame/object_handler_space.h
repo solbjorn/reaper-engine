@@ -12,7 +12,7 @@ namespace ObjectHandlerSpace
 {
 enum EWorldProperties : u32
 {
-    eWorldPropertyItemID = u32(0),
+    eWorldPropertyItemID = 0,
     eWorldPropertyHidden,
     eWorldPropertyStrapped,
     eWorldPropertyStrapped2Idle,
@@ -51,14 +51,14 @@ enum EWorldProperties : u32
     eWorldPropertyUsed,
     eWorldPropertyUseEnough,
 
-    eWorldPropertyNoItems = u32((u16(-1) << 16) | eWorldPropertyItemID),
-    eWorldPropertyNoItemsIdle = u32((u16(-1) << 16) | eWorldPropertyIdle),
-    eWorldPropertyDummy = u32(-1),
+    eWorldPropertyNoItems = (u32{std::numeric_limits<u16>::max()} << 16) | eWorldPropertyItemID,
+    eWorldPropertyNoItemsIdle = (u32{std::numeric_limits<u16>::max()} << 16) | eWorldPropertyIdle,
+    eWorldPropertyDummy = std::numeric_limits<u32>::max(),
 };
 
 enum EWorldOperators : u32
 {
-    eWorldOperatorShow = u32(0),
+    eWorldOperatorShow = 0,
     eWorldOperatorHide,
     eWorldOperatorDrop,
     eWorldOperatorStrapping,
@@ -95,6 +95,6 @@ enum EWorldOperators : u32
     eWorldOperatorPrepare,
     eWorldOperatorUse,
 
-    eWorldOperatorNoItemsIdle = u32((u16(-1) << 16) | eWorldOperatorIdle),
+    eWorldOperatorNoItemsIdle = (u32{std::numeric_limits<u16>::max()} << 16) | eWorldOperatorIdle,
 };
-}; // namespace ObjectHandlerSpace
+} // namespace ObjectHandlerSpace

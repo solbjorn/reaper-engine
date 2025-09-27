@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "PHIsland.h"
 #include "physics.h"
+
 void CPHIsland::Step(dReal step)
 {
     if (!m_flags.is_active())
@@ -21,6 +23,7 @@ void CPHIsland::Enable()
     for (dxBody* body = DWorld()->firstbody; body; body = (dxBody*)body->next)
         body->flags &= ~dxBodyDisabled;
 }
+
 void CPHIsland::Repair()
 {
     if (!m_flags.is_active())

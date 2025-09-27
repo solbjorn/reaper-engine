@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
@@ -25,7 +26,7 @@ DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
 }
 
 void __cdecl xrFactory_Destroy(DLL_Pure* O) { xr_delete(O); }
-};
+}
 
 extern void CCC_RegisterCommands();
 extern float g_fTimeFactor;

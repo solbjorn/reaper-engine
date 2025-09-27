@@ -8,8 +8,8 @@ class CPhraseDialogManager : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPhraseDialogManager);
 
 public:
-    CPhraseDialogManager(void);
-    virtual ~CPhraseDialogManager(void);
+    CPhraseDialogManager();
+    virtual ~CPhraseDialogManager();
 
     virtual void InitDialog(CPhraseDialogManager* dialog_partner, DIALOG_SHARED_PTR& phrase_dialog);
     virtual void AddDialog(DIALOG_SHARED_PTR& phrase_dialog);

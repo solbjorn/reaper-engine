@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "controller.h"
 #include "controller_state_manager.h"
 #include "../controlled_entity.h"
@@ -276,7 +277,7 @@ void CController::set_controlled_task(u32 task)
     if (!HasUnderControl())
         return;
 
-    const CEntity* object = ((((ETask)task) == eTaskNone) ? 0 : ((((ETask)task) == eTaskFollow) ? this : EnemyMan.get_enemy()));
+    const CEntity* object = ((((ETask)task) == eTaskNone) ? nullptr : ((((ETask)task) == eTaskFollow) ? this : EnemyMan.get_enemy()));
 
     for (u32 i = 0; i < m_controlled_objects.size(); i++)
     {
@@ -350,7 +351,7 @@ void CController::reinit()
         MonsterMovement::eControllerVelocityParameterMoveBkwd,
         CDetailPathManager::STravelParams(m_velocity_move_bkwd.velocity.linear, m_velocity_move_bkwd.velocity.angular_path, m_velocity_move_bkwd.velocity.angular_real));
 
-    m_sndShockEffector = 0;
+    m_sndShockEffector = nullptr;
     active_control_fx = false;
 }
 

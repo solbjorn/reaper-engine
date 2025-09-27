@@ -41,30 +41,11 @@ CEnvironment::CEnvironment()
 {
     USED_COP_WEATHER = FS.path_exist("$game_weathers$");
 
-    m_last_weather_shift = 0;
-    bWFX = false;
-    Current[0] = 0;
-    Current[1] = 0;
-    CurrentWeather = 0;
-    CurrentWeatherName = 0;
-    eff_Rain = 0;
-    eff_LensFlare = 0;
-    eff_Thunderbolt = 0;
+    CurrentWeatherName = nullptr;
     OnDeviceCreate();
 
-    fGameTime = 0.f;
     fTimeFactor = 12.f;
-
-    wind_strength_factor = 0.f;
-    wind_gust_factor = 0.f;
-
-    wetness_factor = 0.f;
-
-    wind_blast_strength = 0.f;
     wind_blast_direction.set(1.f, 0.f, 0.f);
-
-    wind_blast_strength_start_value = 0.f;
-    wind_blast_strength_stop_value = 0.f;
 
     // fill clouds hemi verts & faces
     const Fvector* verts;
@@ -159,8 +140,8 @@ void CEnvironment::invalidate_descs()
     if (Current[1])
         Current[1]->put();
 
-    Current[0] = 0;
-    Current[1] = 0;
+    Current[0] = nullptr;
+    Current[1] = nullptr;
 }
 
 void CEnvironment::Invalidate()
@@ -201,7 +182,8 @@ float CEnvironment::TimeWeight(float val, float min_t, float max_t)
     }
     return weight;
 }
-void CEnvironment::ChangeGameTime(float game_time) { fGameTime = NormalizeTime(fGameTime + game_time); };
+
+void CEnvironment::ChangeGameTime(float game_time) { fGameTime = NormalizeTime(fGameTime + game_time); }
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
@@ -392,7 +374,7 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 void CEnvironment::SelectEnvs(float gt)
 {
     VERIFY(CurrentWeather);
-    if ((Current[0] == Current[1]) && (Current[0] == 0))
+    if (Current[0] == Current[1] && !Current[0])
     {
         VERIFY(!bWFX);
         // first or forced start

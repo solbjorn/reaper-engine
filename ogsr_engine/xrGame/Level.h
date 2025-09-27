@@ -61,8 +61,9 @@ class CLevel : public IGame_Level, public IPureClient
 
 private:
 #ifdef DEBUG
-    bool m_bSynchronization;
+    bool m_bSynchronization{};
 #endif
+
 protected:
     typedef IGame_Level inherited;
 
@@ -89,10 +90,10 @@ protected:
     EVENT eEnvironment;
     EVENT eEntitySpawn;
     //---------------------------------------------
-    CStatGraph* pStatGraphS;
+    CStatGraph* pStatGraphS{};
     u32 m_dwSPC; // SendedPacketsCount
     u32 m_dwSPS; // SendedPacketsSize
-    CStatGraph* pStatGraphR;
+    CStatGraph* pStatGraphR{};
     u32 m_dwRPC; // ReceivedPacketsCount
     u32 m_dwRPS; // ReceivedPacketsSize
     //---------------------------------------------
@@ -112,7 +113,7 @@ public:
     virtual void OnConnectRejected();
 
 private:
-    CObject* pCurrentControlEntity;
+    CObject* pCurrentControlEntity{};
     xrServer::EConnect m_connect_server_err;
 
 public:
@@ -137,12 +138,12 @@ public:
     DEFINE_VECTOR(CParticlesObject*, POVec, POIt);
     POVec m_StaticParticles;
 
-    game_cl_GameState* game;
-    BOOL m_bGameConfigStarted;
-    BOOL game_configured;
+    game_cl_GameState* game{};
+    BOOL m_bGameConfigStarted{};
+    BOOL game_configured{};
     NET_Queue_Event* game_events;
     xr_deque<CSE_Abstract*> game_spawn_queue;
-    xrServer* Server;
+    xrServer* Server{};
     GlobalFeelTouch m_feel_deny;
     xr_vector<u16> m_just_destroyed;
 
@@ -303,15 +304,15 @@ public:
     CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
 
 protected:
-    u32 m_dwCL_PingDeltaSend;
-    u32 m_dwCL_PingLastSendTime;
-    u32 m_dwRealPing;
+    u32 m_dwCL_PingDeltaSend{1000};
+    u32 m_dwCL_PingLastSendTime{};
+    u32 m_dwRealPing{};
 
 public:
-    virtual u32 GetRealPing() { return m_dwRealPing; };
+    virtual u32 GetRealPing() { return m_dwRealPing; }
 
 private:
-    bool m_is_removing_objects;
+    bool m_is_removing_objects{};
 
 public:
     bool is_removing_objects() { return m_is_removing_objects; }

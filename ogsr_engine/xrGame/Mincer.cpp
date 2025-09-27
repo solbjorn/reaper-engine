@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -13,9 +14,9 @@
 #include "clsid_game.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-CMincer::CMincer(void) { m_fActorBlowoutRadiusPercent = 0.5f; }
+CMincer::CMincer() { m_fActorBlowoutRadiusPercent = 0.5f; }
+CMincer::~CMincer() {}
 
-CMincer::~CMincer(void) {}
 void CMincer::OnStateSwitch(EZoneState new_state)
 {
     if (m_eZoneState != eZoneStateBlowout && new_state == eZoneStateBlowout)
@@ -81,7 +82,8 @@ void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fve
 {
     inherited::AffectThrow(O, GO, throw_in_dir, dist);
 
-    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x, Radius() * 4.0f);
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x,
+                                                Radius() * 4.0f);
 }
 
 bool CMincer::BlowoutState()
@@ -125,7 +127,7 @@ void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
     {
         PP->StartParticles(m_torn_particles, Fvector().set(0, 1, 0), ID());
     }
-    m_tearing_sound.play_at_pos(0, m_telekinetics.Center());
+    m_tearing_sound.play_at_pos(nullptr, m_telekinetics.Center());
 
     Fvector position_in_bone_space, throw_in_dir;
     position_in_bone_space.set(0.0f, 0.0f, 0.0f);

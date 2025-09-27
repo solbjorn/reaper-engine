@@ -134,7 +134,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
 
     // Particles
     CEffect_Rain::Particle* P = owner.particle_active;
-    if (0 == P)
+    if (!P)
         return;
 
     {

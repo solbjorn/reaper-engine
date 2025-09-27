@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "searchlight.h"
 #include "..\xr_3da\LightAnimLibrary.h"
 #include "script_entity_action.h"
@@ -19,7 +20,7 @@ CProjector::CProjector()
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
     glow_render = ::Render->glow_create();
-    lanim = 0;
+    lanim = nullptr;
     bone_x.id = BI_NONE;
     bone_y.id = BI_NONE;
 }

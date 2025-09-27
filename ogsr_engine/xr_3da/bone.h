@@ -68,11 +68,12 @@ public:
 
     void _BCL reset_callback()
     {
-        Callback = 0;
-        Callback_Param = 0;
-        Callback_overwrite = FALSE;
+        Callback = nullptr;
+        Callback_Param = nullptr;
+        Callback_overwrite = false;
         Callback_type = 0;
     }
+
     void _BCL set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
 
     void set_param(u32 idx, float data);
@@ -240,7 +241,8 @@ struct SBoneShape
         case stBox: return !fis_zero(box.m_halfsize.x) && !fis_zero(box.m_halfsize.y) && !fis_zero(box.m_halfsize.z);
         case stSphere: return !fis_zero(sphere.R);
         case stCylinder: return !fis_zero(cylinder.m_height) && !fis_zero(cylinder.m_radius) && !fis_zero(cylinder.m_direction.square_magnitude());
-        };
+        }
+
         return true;
     }
 };
@@ -399,13 +401,13 @@ public:
         rest_offset.set(offset);
         rest_rotate.set(rotate);
         rest_length = length;
-    };
+    }
 
     shared_str Name() { return name; }
     shared_str ParentName() { return parent_name; }
     shared_str WMap() { return wmap; }
     IC CBone* Parent() { return parent; }
-    IC BOOL IsRoot() { return (parent == 0); }
+    IC BOOL IsRoot() { return !parent; }
     shared_str& NameRef() { return name; }
 
     //// transformation

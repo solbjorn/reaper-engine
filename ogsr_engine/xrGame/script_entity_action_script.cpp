@@ -13,7 +13,7 @@
 void CScriptEntityAction::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CScriptEntityAction>(
-        "entity_action", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptEntityAction(), CScriptEntityAction(const CScriptEntityAction*)>(), "set_action",
+        "entity_action", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptEntityAction()>(), "clone", &CScriptEntityAction::clone, "set_action",
         sol::overload(sol::resolve<void(CScriptMovementAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
                       sol::resolve<void(CScriptWatchAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),
                       sol::resolve<void(CScriptAnimationAction&), CScriptEntityAction>(&CScriptEntityAction::SetAction),

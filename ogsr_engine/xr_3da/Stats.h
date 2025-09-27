@@ -26,10 +26,10 @@ class CStats : public pureRender, public CStatsPhysics
     RTTI_DECLARE_TYPEINFO(CStats, pureRender, CStatsPhysics);
 
 public:
-    CGameFont* pFont;
+    CGameFont* pFont{};
     CGameFont* pFontHW;
 
-    float fFPS, fRFPS, fTPS; // FPS, RenderFPS, TPS
+    float fFPS{30.f}, fRFPS{30.f}, fTPS{}; // FPS, RenderFPS, TPS
     u32 dwMem_calls;
     u32 dwSND_Played, dwSND_Allocated; // Play/Alloc
     float fShedulerLoad;
@@ -76,7 +76,7 @@ public:
     CStatTimer RenderDUMP_DT_VIS; // ...details visibility detection
     CStatTimer RenderDUMP_DT_Render; // ...details rendering
     CStatTimer RenderDUMP_DT_Cache; // ...details slot cache access
-    u32 RenderDUMP_DT_Count; // ...number of DT-elements
+    u32 RenderDUMP_DT_Count{}; // ...number of DT-elements
     CStatTimer RenderDUMP_Pcalc; // ...projectors	building
     CStatTimer RenderDUMP_Scalc; // ...shadows		building
     CStatTimer RenderDUMP_Srender; // ...shadows		render

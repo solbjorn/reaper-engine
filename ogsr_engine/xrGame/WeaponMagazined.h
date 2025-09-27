@@ -35,13 +35,13 @@ protected:
     HUD_SOUND sndAimStart, sndAimEnd;
     HUD_SOUND sndItemOn;
     // звук текущего выстрела
-    HUD_SOUND* m_pSndShotCurrent;
+    HUD_SOUND* m_pSndShotCurrent{};
 
     virtual void StopHUDSounds();
 
     // дополнительная информация о глушителе
-    LPCSTR m_sSilencerFlameParticles;
-    LPCSTR m_sSilencerSmokeParticles;
+    LPCSTR m_sSilencerFlameParticles{};
+    LPCSTR m_sSilencerSmokeParticles{};
     HUD_SOUND sndSilencerShot;
 
     ESoundTypes m_eSoundShow;
@@ -128,15 +128,15 @@ public:
     virtual bool SwitchMode();
     virtual bool SingleShotMode() { return 1 == m_iQueueSize; }
     virtual void SetQueueSize(int size);
-    IC int GetQueueSize() const { return m_iQueueSize; };
+    IC int GetQueueSize() const { return m_iQueueSize; }
     virtual bool StopedAfterQueueFired() { return m_bStopedAfterQueueFired; }
     virtual void StopedAfterQueueFired(bool value) { m_bStopedAfterQueueFired = value; }
 
 protected:
     // максимальный размер очереди, которой можно стрельнуть
-    int m_iQueueSize;
+    int m_iQueueSize{WEAPON_ININITE_QUEUE};
     // количество реально выстреляных патронов
-    int m_iShotNum;
+    int m_iShotNum{};
     //  [7/20/2005]
     // после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-зи Абакана)
     int m_iShootEffectorStart;
@@ -147,7 +147,7 @@ protected:
     bool m_bStopedAfterQueueFired;
     // флаг того, что хотя бы один выстрел мы должны сделать
     //(даже если очень быстро нажали на курок и вызвалось FireEnd)
-    bool m_bFireSingleShot;
+    bool m_bFireSingleShot{};
     // режимы стрельбы
     bool m_bHasDifferentFireModes;
     xr_vector<int> m_aFireModes;
@@ -158,14 +158,14 @@ protected:
 
     // переменная блокирует использование
     // только разных типов патронов
-    bool m_bLockType;
+    bool m_bLockType{};
 
     const char* m_str_count_tmpl;
 
     // режим выделения рамкой противников
 protected:
-    bool m_bVision;
-    CBinocularsVision* m_binoc_vision;
+    CBinocularsVision* m_binoc_vision{};
+    bool m_bVision{};
 
     //////////////////////////////////////////////
     // режим приближения
@@ -176,9 +176,9 @@ public:
     virtual void OnZoomChanged();
     virtual void OnNextFireMode(bool = false);
     virtual void OnPrevFireMode(bool = false);
-    virtual bool HasFireModes() { return m_bHasDifferentFireModes; };
-    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; };
-    virtual LPCSTR GetCurrentFireModeStr() { return m_sCurFireMode; };
+    virtual bool HasFireModes() { return m_bHasDifferentFireModes; }
+    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
+    virtual LPCSTR GetCurrentFireModeStr() { return m_sCurFireMode; }
 
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);

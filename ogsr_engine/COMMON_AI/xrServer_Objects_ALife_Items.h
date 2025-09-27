@@ -55,8 +55,8 @@ virtual ~CSE_ALifeInventoryItem();
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
 virtual CSE_Abstract* init();
-virtual CSE_Abstract* cast_abstract() { return 0; };
-virtual CSE_ALifeInventoryItem* cast_inventory_item() { return this; };
+virtual CSE_Abstract* cast_abstract() { return nullptr; }
+virtual CSE_ALifeInventoryItem* cast_inventory_item() { return this; }
 virtual u32 update_rate() const;
 // end of the virtual inheritance dependant code
 
@@ -79,8 +79,8 @@ virtual ~CSE_ALifeItem();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
 virtual CSE_Abstract* init();
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeInventoryItem* cast_inventory_item() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeInventoryItem* cast_inventory_item() { return this; }
 virtual BOOL Net_Relevant();
 virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 SERVER_ENTITY_DECLARE_END
@@ -115,7 +115,7 @@ u16 m_boxSize;
 
 CSE_ALifeItemAmmo(LPCSTR caSection);
 virtual ~CSE_ALifeItemAmmo();
-virtual CSE_ALifeItemAmmo* cast_item_ammo() { return this; };
+virtual CSE_ALifeItemAmmo* cast_item_ammo() { return this; }
 virtual bool __can_switch_online() const;
 virtual bool __can_switch_offline() const;
 SERVER_ENTITY_DECLARE_END
@@ -242,20 +242,20 @@ XR_SOL_BASE_CLASSES(CSE_ALifeItemArtefact);
 add_to_type_list(CSE_ALifeItemArtefact);
 #define script_type_list save_type_list(CSE_ALifeItemArtefact)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA, CSE_ALifeItem) u16 m_original_owner;
-shared_str m_specific_character;
-shared_str m_info_portion;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA, CSE_ALifeItem) u16 m_original_owner{std::numeric_limits<u16>::max()};
+shared_str m_specific_character{};
+shared_str m_info_portion{};
 
 CSE_ALifeItemPDA(LPCSTR caSection);
 virtual ~CSE_ALifeItemPDA();
-virtual CSE_ALifeItemPDA* cast_item_pda() { return this; };
+virtual CSE_ALifeItemPDA* cast_item_pda() { return this; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemPDA);
 
 add_to_type_list(CSE_ALifeItemPDA);
 #define script_type_list save_type_list(CSE_ALifeItemPDA)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDocument, CSE_ALifeItem) shared_str m_wDoc;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDocument, CSE_ALifeItem) shared_str m_wDoc{};
 CSE_ALifeItemDocument(LPCSTR caSection);
 virtual ~CSE_ALifeItemDocument();
 SERVER_ENTITY_DECLARE_END
@@ -310,8 +310,9 @@ class CSE_InventoryContainer : public CSE_InventoryBoxAbstract, public CSE_ALife
     RTTI_DECLARE_TYPEINFO(CSE_InventoryContainer, CSE_InventoryBoxAbstract, CSE_ALifeItem);
 
 public:
-    CSE_InventoryContainer(LPCSTR caSection) : CSE_ALifeItem(caSection) {};
-    virtual ~CSE_InventoryContainer() {};
+    CSE_InventoryContainer(LPCSTR caSection) : CSE_ALifeItem{caSection} {}
+    virtual ~CSE_InventoryContainer() {}
+
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
     {
         add_offline_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), saved_children, update_registries);
@@ -321,7 +322,7 @@ public:
     {
         add_online_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), update_registries);
         CSE_ALifeItem::add_online(update_registries);
-    };
+    }
 };
 
 // KRodin: Закомментировал, попытка предотвратить повторную регистрацию cse_alife_item в луабинде.

@@ -226,8 +226,7 @@ public:
         VERIFY(bones);
         u32 sz = sizeof(vecBones);
         u32 sz1 = sizeof(((*bones)[bone_id])->children);
-        Msg("sz: %d", sz);
-        Msg("sz1: %d", sz1);
+        Msg("sz: %u, sz1: %u", sz, sz1);
         CBoneData* bd = ((*bones)[bone_id]);
         return bd;
     }
@@ -293,7 +292,7 @@ public:
     virtual void Depart();
     virtual void Release();
 
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
+    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
     virtual IRenderVisual* _BCL dcast_RenderVisual() { return this; }
     virtual IKinematics* _BCL dcast_PKinematics() { return this; }
     //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
@@ -315,4 +314,4 @@ private:
     bool m_is_original_lod;
 };
 
-IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : 0; }
+IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? smart_cast<CKinematics*>(V->dcast_PKinematics()) : nullptr; }

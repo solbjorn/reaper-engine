@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "weaponshotgun.h"
 #include "entity.h"
 #include "ParticlesObject.h"
@@ -7,7 +8,7 @@
 #include "level.h"
 #include "actor.h"
 
-CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
+CWeaponShotgun::CWeaponShotgun() : CWeaponCustomPistol{"TOZ34"}
 {
     m_eSoundShotBoth = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
     m_eSoundClose = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
@@ -15,7 +16,7 @@ CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
     m_bLockType = true; // Запрещает заряжать в дробовики патроны разного типа
 }
 
-CWeaponShotgun::~CWeaponShotgun(void)
+CWeaponShotgun::~CWeaponShotgun()
 {
     // sounds
     HUD_SOUND::DestroySound(sndShotBoth);
@@ -107,14 +108,14 @@ void CWeaponShotgun::Fire2End()
 
 void CWeaponShotgun::OnShotBoth()
 {
-    //если патронов меньше, чем 2
+    // если патронов меньше, чем 2
     if (iAmmoElapsed < iMagazineSize)
     {
         OnShot();
         return;
     }
 
-    //звук выстрела дуплетом
+    // звук выстрела дуплетом
     PlaySound(sndShotBoth, get_LastFP());
 
     // Camera
@@ -128,16 +129,16 @@ void CWeaponShotgun::OnShotBoth()
     PHGetLinearVell(vel);
     OnShellDrop(get_LastSP(), vel);
 
-    //огонь из 2х стволов
+    // огонь из 2х стволов
     StartFlameParticles();
     StartFlameParticles2();
 
-    //дым из 2х стволов
+    // дым из 2х стволов
     if (ParentIsActor())
     {
-        CParticlesObject* pSmokeParticles = NULL;
+        CParticlesObject* pSmokeParticles{};
         CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), zero_vel, true);
-        pSmokeParticles = NULL;
+        pSmokeParticles = nullptr;
         CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), zero_vel, true);
     }
 }
@@ -146,8 +147,8 @@ void CWeaponShotgun::UpdateCL()
 {
     float dt = Device.fTimeDelta;
 
-    //когда происходит апдейт состояния оружия
-    //ничего другого не делать
+    // когда происходит апдейт состояния оружия
+    // ничего другого не делать
     if (GetNextState() == GetState())
     {
         switch (GetState())
@@ -212,7 +213,7 @@ void CWeaponShotgun::switch2_Fire2()
 
         OnShotBoth();
 
-        //выстрел из обоих стволов
+        // выстрел из обоих стволов
         FireTrace(p1, d);
         FireTrace(p1, d);
         fTime += fTimeToFire * 2.f;
@@ -286,7 +287,7 @@ bool CWeaponShotgun::Action(s32 cmd, u32 flags)
         {
         case kWPN_FIRE:
         case kWPN_NEXT:
-        //case kWPN_RELOAD:
+        // case kWPN_RELOAD:
         case kWPN_ZOOM:
             // остановить перезарядку
             m_stop_triStateReload = true;
@@ -296,7 +297,7 @@ bool CWeaponShotgun::Action(s32 cmd, u32 flags)
 
 #ifndef DUPLET_STATE_SWITCH
 
-    //если оружие чем-то занято, то ничего не делать
+    // если оружие чем-то занято, то ничего не делать
     if (IsPending())
         return false;
 
@@ -354,7 +355,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
         ProcessReloadEnd();
         break;
     }
-    };
+    }
 }
 
 void CWeaponShotgun::Reload()
@@ -454,7 +455,7 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
         SetPending(TRUE);
         break;
     }
-    };
+    }
 }
 
 bool CWeaponShotgun::HaveCartridgeInInventory(u8 cnt)
@@ -527,7 +528,7 @@ u8 CWeaponShotgun::AddCartridge(u8 cnt)
 
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-    //выкинуть коробку патронов, если она пустая
+    // выкинуть коробку патронов, если она пустая
     if (m_pAmmo && !m_pAmmo->m_boxCurr)
         m_pAmmo->SetDropManual(TRUE);
 
@@ -560,7 +561,7 @@ void CWeaponShotgun::TryReload()
 }
 
 void CWeaponShotgun::ReloadMagazine()
-{ //Используется только при отключенном tri_state_reload
+{ // Используется только при отключенном tri_state_reload
     m_dwAmmoCurrentCalcFrame = 0;
 
     if (IsMisfire())

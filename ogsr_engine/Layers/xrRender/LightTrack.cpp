@@ -105,10 +105,12 @@ void CROS_impl::update(IRenderable* O)
     if (dwFrame == Device.dwFrame)
         return;
     dwFrame = Device.dwFrame;
-    if (0 == O)
+
+    if (!O)
         return;
-    if (0 == O->renderable.visual)
+    if (!O->renderable.visual)
         return;
+
     VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
     // float	dt			=	Device.fTimeDelta;
 
@@ -223,19 +225,22 @@ void CROS_impl::update(IRenderable* O)
     approximate = accum;
 }
 
+namespace
+{
 //	Update ticks settings
-constexpr s32 s_iUTFirstTimeMin = 1;
-constexpr s32 s_iUTFirstTimeMax = 1;
-constexpr s32 s_iUTPosChangedMin = 3;
-constexpr s32 s_iUTPosChangedMax = 6;
-constexpr s32 s_iUTIdleMin = 1000;
-constexpr s32 s_iUTIdleMax = 2000;
+constexpr s32 s_iUTFirstTimeMin{1};
+constexpr s32 s_iUTFirstTimeMax{1};
+constexpr s32 s_iUTPosChangedMin{3};
+constexpr s32 s_iUTPosChangedMax{6};
+constexpr s32 s_iUTIdleMin{1000};
+constexpr s32 s_iUTIdleMax{2000};
+} // namespace
 
 void CROS_impl::smart_update(IRenderable* O)
 {
     if (!O)
         return;
-    if (0 == O->renderable.visual)
+    if (!O->renderable.visual)
         return;
 
     --ticks_to_update;

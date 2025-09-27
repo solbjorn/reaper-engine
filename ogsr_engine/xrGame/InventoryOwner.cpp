@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "InventoryOwner.h"
 #include "entity_alive.h"
 #include "pda.h"
@@ -32,9 +33,6 @@
 
 CInventoryOwner::CInventoryOwner()
 {
-    m_pTrade = NULL;
-    m_trade_parameters = 0;
-
     m_inventory = xr_new<CInventory>();
     m_pCharacterInfo = xr_new<CCharacterInfo>();
 
@@ -43,15 +41,14 @@ CInventoryOwner::CInventoryOwner()
 
     m_known_info_registry = xr_new<CInfoPortionWrapper>();
     m_tmp_active_slot_num = NO_ACTIVE_SLOT;
-    m_need_osoznanie_mode = FALSE;
 
     m_tmp_next_item_slot = NO_ACTIVE_SLOT;
 }
 
 DLL_Pure* CInventoryOwner::_construct()
 {
-    m_trade_parameters = 0;
-    m_purchase_list = 0;
+    m_trade_parameters = nullptr;
+    m_purchase_list = nullptr;
 
     return (smart_cast<DLL_Pure*>(this));
 }
@@ -89,7 +86,7 @@ void CInventoryOwner::reload(LPCSTR section)
 
     m_money = 0;
     m_bTalking = false;
-    m_pTalkPartner = NULL;
+    m_pTalkPartner = nullptr;
 
     CAttachmentOwner::reload(section);
 }
@@ -119,7 +116,7 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
         return FALSE;
     CSE_Abstract* E = (CSE_Abstract*)(DC);
 
-    CSE_ALifeTraderAbstract* pTrader = NULL;
+    CSE_ALifeTraderAbstract* pTrader{};
     if (E)
         pTrader = smart_cast<CSE_ALifeTraderAbstract*>(E);
     if (!pTrader)
@@ -257,13 +254,14 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
     if (start_trade)
         GetTrade()->StartTrade(talk_partner);
 }
+
 #include "UIGameSP.h"
 #include "HUDmanager.h"
 #include "ui\UITalkWnd.h"
 
 void CInventoryOwner::StopTalk()
 {
-    m_pTalkPartner = NULL;
+    m_pTalkPartner = nullptr;
     m_bTalking = false;
 
     GetTrade()->StopTrade();
@@ -498,7 +496,7 @@ void CInventoryOwner::sell_useless_items()
 
 bool CInventoryOwner::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
 {
-    return (trade_parameters().enabled(CTradeParameters::action_sell(0), item->object().cNameSect()));
+    return (trade_parameters().enabled(CTradeParameters::action_sell(nullptr), item->object().cNameSect()));
 }
 
 void CInventoryOwner::set_money(u32 amount, bool bSendEvent)

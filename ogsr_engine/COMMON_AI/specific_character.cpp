@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "specific_character.h"
 
 #ifdef XRGAME_EXPORTS
@@ -8,30 +9,16 @@
 SSpecificCharacterData::SSpecificCharacterData()
 {
     m_sGameName.clear();
-    m_sBioText = NULL;
     m_sVisual.clear();
     m_sSupplySpawn.clear();
     m_sNpcConfigSect.clear();
-
-    m_StartDialog = NULL;
     m_ActorDialogs.clear();
-
-    m_Rank = NO_RANK;
-    m_Reputation = NO_REPUTATION;
-
-    m_bNoRandom = false;
-    m_bDefaultForCommunity = false;
-    m_fPanic_threshold = 0.0f;
-    m_fHitProbabilityFactor = 1.f;
-    m_crouch_type = 0;
 }
 
 SSpecificCharacterData::~SSpecificCharacterData() {}
-
 #endif
 
-CSpecificCharacter::CSpecificCharacter() { m_OwnId = NULL; }
-
+CSpecificCharacter::CSpecificCharacter() = default;
 CSpecificCharacter::~CSpecificCharacter() {}
 
 void CSpecificCharacter::InitXmlIdToIndex()
@@ -46,7 +33,7 @@ void CSpecificCharacter::Load(shared_str id)
 {
     R_ASSERT(id.size());
     m_OwnId = id;
-    inherited_shared::load_shared(m_OwnId, NULL);
+    inherited_shared::load_shared(m_OwnId, nullptr);
 }
 
 void CSpecificCharacter::load_shared(LPCSTR)
@@ -81,14 +68,13 @@ void CSpecificCharacter::load_shared(LPCSTR)
     R_ASSERT3(!(data()->m_bNoRandom && data()->m_bDefaultForCommunity), "cannot set 'no_random' and 'team_default' flags simultaneously, profile id", *shared_str(item_data.id));
 
 #ifdef XRGAME_EXPORTS
-
-    LPCSTR start_dialog = pXML->Read("start_dialog", 0, NULL);
+    LPCSTR start_dialog = pXML->Read("start_dialog", 0, nullptr);
     if (start_dialog)
     {
         data()->m_StartDialog = start_dialog;
     }
     else
-        data()->m_StartDialog = NULL;
+        data()->m_StartDialog = nullptr;
 
     int dialogs_num = pXML->GetNodesNum(pXML->GetLocalRoot(), "actor_dialog");
     data()->m_ActorDialogs.clear();
@@ -100,7 +86,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 
     data()->m_icon_name = pXML->Read("icon", 0, "ui_npc_u_barman");
 
-    //игровое имя персонажа
+    // игровое имя персонажа
     data()->m_sGameName = pXML->Read("name", 0, "");
     data()->m_sBioText = CStringTable().translate(pXML->Read("bio", 0, ""));
 
@@ -109,7 +95,6 @@ void CSpecificCharacter::load_shared(LPCSTR)
     data()->m_crouch_type = pXML->ReadInt("crouch_type", 0, 0);
 
     data()->m_critical_wound_weights = pXML->Read("critical_wound_weights", 0, "1");
-
 #endif
 
     data()->m_sVisual = pXML->Read("visual", 0, "");
@@ -133,7 +118,6 @@ void CSpecificCharacter::load_shared(LPCSTR)
     data()->m_sound_voice_prefix = pXML->Read("snd_config", 0, "");
 
     data()->m_terrain_sect = pXML->Read("terrain_sect", 0, "");
-
 #endif
 
     data()->m_Classes.clear();
@@ -151,8 +135,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
     }
 
 #ifdef XRGAME_EXPORTS
-
-    LPCSTR team = pXML->Read("community", 0, NULL);
+    LPCSTR team = pXML->Read("community", 0, nullptr);
     R_ASSERT3(team != NULL, "'community' field not fulfiled for specific character", *m_OwnId);
 
     char* buf_str = xr_strdup(team);
@@ -181,7 +164,6 @@ void CSpecificCharacter::load_shared(LPCSTR)
         MoneyDef().max_money = 0;
         MoneyDef().inf_money = false;
     }
-
 #endif
 
 #if 0
@@ -190,7 +172,6 @@ void CSpecificCharacter::load_shared(LPCSTR)
 }
 
 #ifdef XRGAME_EXPORTS
-
 LPCSTR CSpecificCharacter::Name() const { return data()->m_sGameName.c_str(); }
 
 shared_str CSpecificCharacter::Bio() const { return data()->m_sBioText; }
@@ -210,7 +191,6 @@ float CSpecificCharacter::hit_probability_factor() const { return data()->m_fHit
 int CSpecificCharacter::crouch_type() const { return data()->m_crouch_type; }
 
 LPCSTR CSpecificCharacter::critical_wound_weights() const { return data()->m_critical_wound_weights.c_str(); }
-
 #endif
 
 shared_str CSpecificCharacter::terrain_sect() const { return data()->m_terrain_sect; }

@@ -34,6 +34,6 @@ void ValidateState(D3D_RASTERIZER_DESC& desc);
 void ValidateState(D3D_DEPTH_STENCIL_DESC& desc);
 void ValidateState(D3D_BLEND_DESC& desc);
 void ValidateState(D3D_SAMPLER_DESC& desc);
-}; // namespace dx10StateUtils
+} // namespace dx10StateUtils
 
 #endif /* __XRRENDER_DX10_STATE_UTILS_H */

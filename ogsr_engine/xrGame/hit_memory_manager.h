@@ -17,7 +17,7 @@
 namespace MemorySpace
 {
 struct CHitObject;
-};
+}
 
 class CEntityAlive;
 class CCustomMonster;

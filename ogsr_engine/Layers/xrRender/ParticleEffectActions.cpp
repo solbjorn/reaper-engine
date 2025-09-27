@@ -1038,7 +1038,7 @@ EPATurbulence::EPATurbulence() : EParticleAction(PAPI::PATurbulenceID)
     appendFloat("Delta", 0.01f, -P_MAXFLOAT, P_MAXFLOAT);
     appendVector("Movement", PVector::vNum, 1, 1, 1);
     // -
-    nval = 0;
+    nval = nullptr;
     age = 0.f;
 }
 
@@ -1080,7 +1080,10 @@ PDomain::PDomain(const PDomain& inDomain)
     f[8] = inDomain.f[8];
 }
 
-PDomain::~PDomain() {}
+PDomain::PDomain(PDomain&&) = default;
+
+PDomain& PDomain::operator=(const PDomain&) = default;
+PDomain& PDomain::operator=(PDomain&&) = default;
 
 void PDomain::Load(IReader& F)
 {

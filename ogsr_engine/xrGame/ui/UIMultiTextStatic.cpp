@@ -8,12 +8,13 @@
 //=============================================================================
 
 #include "stdafx.h"
+
 #include "UIMultiTextStatic.h"
 #include "../../xr_3da/CustomHUD.h"
 
 //////////////////////////////////////////////////////////////////////////
-CUIMultiTextStatic::CUIMultiTextStatic() { m_vPhrases.clear(); };
 
+CUIMultiTextStatic::CUIMultiTextStatic() { m_vPhrases.clear(); }
 CUIMultiTextStatic::~CUIMultiTextStatic() {}
 
 CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::AddPhrase()
@@ -38,7 +39,7 @@ void CUIMultiTextStatic::Draw()
 
     for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
     {
-        it->effect.Out(it->outX + p.x, it->outY + p.y, *it->str);
+        it->effect.Out(it->outX + p.x, it->outY + p.y, "%s", *it->str);
     }
 
     inherited::Draw();

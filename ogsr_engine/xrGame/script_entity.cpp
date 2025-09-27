@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_entity.h"
 #include "CustomMonster.h"
 #include "..\xr_3da\feel_vision.h"
@@ -161,16 +162,26 @@ bool CScriptEntity::CheckTypeVisibility(const char* section_name)
 void CScriptEntity::AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority)
 {
     const bool empty = m_tpActionQueue.empty();
+    CScriptEntityAction* l_tpEntityAction;
+
     if (!bHighPriority || m_tpActionQueue.empty())
-        m_tpActionQueue.push_back(xr_new<CScriptEntityAction>(*tpEntityAction));
+    {
+        l_tpEntityAction = xr_new<CScriptEntityAction>();
+        l_tpEntityAction->clone(*tpEntityAction);
+        m_tpActionQueue.push_back(l_tpEntityAction);
+    }
     else
     {
         VERIFY(m_tpActionQueue.front());
-        CScriptEntityAction* l_tpEntityAction = xr_new<CScriptEntityAction>(*m_tpActionQueue.front());
+        l_tpEntityAction = xr_new<CScriptEntityAction>();
+        l_tpEntityAction->clone(*m_tpActionQueue.front());
         vfFinishAction(m_tpActionQueue.front());
         xr_delete(m_tpActionQueue.front());
+
         m_tpActionQueue.front() = l_tpEntityAction;
-        m_tpActionQueue.insert(m_tpActionQueue.begin(), xr_new<CScriptEntityAction>(*tpEntityAction));
+        l_tpEntityAction = xr_new<CScriptEntityAction>();
+        l_tpEntityAction->clone(*tpEntityAction);
+        m_tpActionQueue.insert(m_tpActionQueue.begin(), l_tpEntityAction);
     }
 
     if (empty && m_initialized)
@@ -360,6 +371,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
     if (m_current_sound)
     {
         if (!m_current_sound->_feedback())
+        {
             if (!l_tSoundAction.m_bStartedToPlay)
             {
 #ifdef DEBUG
@@ -373,6 +385,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
             {
                 l_tSoundAction.m_bCompleted = true;
             }
+        }
     }
     else
     {
@@ -382,9 +395,12 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction* tpEntityAction)
             m_current_sound->create(*l_tSoundAction.m_caSoundToPlay, st_Effect, l_tSoundAction.m_sound_type);
         }
         else
+        {
             l_tSoundAction.m_bCompleted = true;
+        }
     }
-    return (!l_tSoundAction.m_bCompleted);
+
+    return !l_tSoundAction.m_bCompleted;
 }
 
 bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
@@ -395,6 +411,7 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
     if (l_tParticleAction.m_tpParticleSystem)
     {
         if (true /** !l_tParticleAction.m_tpParticleSystem/**/)
+        {
             if (!l_tParticleAction.m_bStartedToPlay)
             {
                 const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
@@ -407,11 +424,14 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
             {
                 l_tParticleAction.m_bCompleted = true;
             }
+        }
     }
     else
+    {
         l_tParticleAction.m_bCompleted = true;
+    }
 
-    return (!l_tParticleAction.m_bCompleted);
+    return !l_tParticleAction.m_bCompleted;
 }
 
 bool CScriptEntity::bfAssignObject(CScriptEntityAction* tpEntityAction) { return (GetCurrentAction() && !GetCurrentAction()->m_tObjectAction.m_bCompleted); }
@@ -631,8 +651,8 @@ void CScriptEntity::sound_callback(const CObject* object, int sound_type, const 
     m_saved_sounds.emplace_back(smart_cast<const CGameObject*>(object)->lua_game_object(), sound_type, position, sound_power, time_to_stop);
 }
 
-CEntity* CScriptEntity::GetCurrentEnemy() { return (0); }
-CEntity* CScriptEntity::GetCurrentCorpse() { return (0); }
+CEntity* CScriptEntity::GetCurrentEnemy() { return nullptr; }
+CEntity* CScriptEntity::GetCurrentCorpse() { return nullptr; }
 
 int CScriptEntity::get_enemy_strength() { return (0); }
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "eventapi.h"
 #include "xr_ioconsole.h"
 
@@ -53,7 +54,7 @@ void CEventAPI::Dump()
 {
     std::ranges::sort(Events, [](CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); });
     for (u32 i = 0; i < Events.size(); i++)
-        Msg("* [%d] %s", Events[i]->RefCount(), Events[i]->GetFull());
+        Msg("* [%u32] %s", Events[i]->RefCount(), Events[i]->GetFull());
 }
 
 EVENT CEventAPI::Create(const char* N)
@@ -101,19 +102,22 @@ EVENT CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
 
 void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
 {
-    if (0 == E)
+    if (!E)
         return;
+
     CS.Enter();
     E->Detach(H);
     Destroy(E);
     CS.Leave();
 }
+
 void CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
 {
     CS.Enter();
     E->Signal(P1, P2);
     CS.Leave();
 }
+
 void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
 {
     CS.Enter();
@@ -122,6 +126,7 @@ void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
     Destroy(E);
     CS.Leave();
 }
+
 void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
 {
     CS.Enter();
@@ -132,6 +137,7 @@ void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
     Events_Deferred.back().P2 = P2;
     CS.Leave();
 }
+
 void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 {
     CS.Enter();

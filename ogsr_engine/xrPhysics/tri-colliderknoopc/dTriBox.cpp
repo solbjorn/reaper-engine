@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dTriColliderCommon.h"
 #include "dTriBox.h"
 #include "dcTriListCollider.h"
@@ -69,16 +70,19 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 #define FOO(i, op) \
     pos[0] op hside[i] * R[0 + i]; \
     pos[1] op hside[i] * R[4 + i]; \
-    pos[2] op hside[i] * R[8 + i];
+    pos[2] op hside[i] * R[8 + i]
+
 #define BAR(i, iinc) \
     if (A##iinc > 0) \
     { \
-        FOO(i, -=) \
+        FOO(i, -=); \
     } \
     else \
     { \
-        FOO(i, +=) \
-    }
+        FOO(i, +=); \
+    } \
+    XR_MACRO_END()
+
         BAR(0, 1);
         BAR(1, 2);
         BAR(2, 3);
@@ -99,21 +103,22 @@ int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSi
 #define FOO(i, j, op) \
     CONTACT(contact, i* skip)->pos[0] = pos[0] op 2.f * hside[j] * R[0 + j]; \
     CONTACT(contact, i* skip)->pos[1] = pos[1] op 2.f * hside[j] * R[4 + j]; \
-    CONTACT(contact, i* skip)->pos[2] = pos[2] op 2.f * hside[j] * R[8 + j];
+    CONTACT(contact, i* skip)->pos[2] = pos[2] op 2.f * hside[j] * R[8 + j]
+
 #define BAR(ctact, side, sideinc) \
     depth -= B##sideinc; \
     if (depth < 0) \
         goto done; \
     if (A##sideinc > 0) \
     { \
-        FOO(ctact, side, +) \
+        FOO(ctact, side, +); \
     } \
     else \
     { \
-        FOO(ctact, side, -) \
+        FOO(ctact, side, -); \
     } \
     CONTACT(contact, ctact* skip)->depth = depth; \
-    ++ret;
+    ++ret
 
         CONTACT(contact, skip)->normal[0] = triAx[0] * signum;
         CONTACT(contact, skip)->normal[1] = triAx[1] * signum;
@@ -306,7 +311,7 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
             } \
     } \
     else \
-        return 0;
+        return 0
 
 #define TEST(sd, c) \
 \
@@ -331,12 +336,13 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 \
     if (isPdist0 == isPdist1 && isPdist1 == isPdist2) \
     { \
-        CMP(sd, c) \
-    }
+        CMP(sd, c); \
+    } \
+    XR_MACRO_END()
 
-    TEST(0, 1)
-    TEST(1, 4)
-    TEST(2, 7)
+    TEST(0, 1);
+    TEST(1, 4);
+    TEST(2, 7);
 
 #undef CMP
 #undef TEST
@@ -424,12 +430,13 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
             else \
                 return 0; \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
     dVector3 crpos;
-    TEST(0, 2, 10)
-    TEST(1, 0, 13)
-    TEST(2, 1, 16)
+    TEST(0, 2, 10);
+    TEST(1, 0, 13);
+    TEST(2, 1, 16);
 
 #undef TEST
 
@@ -462,16 +469,19 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 #define FOO(i, op) \
     pos[0] op hside[i] * R[0 + i]; \
     pos[1] op hside[i] * R[4 + i]; \
-    pos[2] op hside[i] * R[8 + i];
+    pos[2] op hside[i] * R[8 + i]
+
 #define BAR(i, iinc) \
     if (A##iinc > 0) \
     { \
-        FOO(i, -=) \
+        FOO(i, -=); \
     } \
     else \
     { \
-        FOO(i, +=) \
-    }
+        FOO(i, +=); \
+    } \
+    XR_MACRO_END()
+
         BAR(0, 1);
         BAR(1, 2);
         BAR(2, 3);
@@ -496,7 +506,9 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 \
         if (dDOT(cross0, pos) - ds0 > 0.f && dDOT(cross1, pos) - ds1 > 0.f && dDOT(cross2, pos) - ds2 > 0.f) \
             ++ret; \
-    }
+    } \
+    XR_MACRO_END()
+
         ///////////////////////////////////////////////////////////
 
         // get the second and third contact points by starting from `p' and going
@@ -505,21 +517,23 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
         dReal* pdepth;
         dContactGeom *prc, *c = CONTACT(contact, ret * skip);
         prc = c;
+
 #define FOO(j, op, spoint) \
     c->pos[0] = (spoint)[0] op 2.f * hside[j] * R[0 + j]; \
     c->pos[1] = (spoint)[1] op 2.f * hside[j] * R[4 + j]; \
-    c->pos[2] = (spoint)[2] op 2.f * hside[j] * R[8 + j];
+    c->pos[2] = (spoint)[2] op 2.f * hside[j] * R[8 + j]
+
 #define BAR(side, sideinc, spos, sdepth) \
     { \
         pdepth = &(c->depth); \
         *pdepth = sdepth - B##sideinc; \
         if (A##sideinc > 0) \
         { \
-            FOO(side, +, spos) \
+            FOO(side, +, spos); \
         } \
         else \
         { \
-            FOO(side, -, spos) \
+            FOO(side, -, spos); \
         } \
         prc = c; \
         if (!(*pdepth < 0)) \
@@ -527,7 +541,9 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
             ++ret; \
             c = CONTACT(contact, ret * skip); \
         } \
-    }
+    } \
+    XR_MACRO_END()
+
         // TRI_CONTAIN_POINT(CONTACT(contact,ret*skip)->pos)
 
         if (B1 < B2)

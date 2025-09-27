@@ -1,15 +1,18 @@
 #include "stdafx.h"
+
 #include "wallmark_manager.h"
 #include "Level.h"
 #include "..\xr_3da\GameMtlLib.h"
 #include "CalculateTriangle.h"
 #include "profiler.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
 
 CWalmarkManager::CWalmarkManager() {}
 CWalmarkManager::~CWalmarkManager() { Clear(); }
+
 void CWalmarkManager::Clear() { m_wallmarks->clear(); }
 
 void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
@@ -87,7 +90,7 @@ void CWalmarkManager::StartWorkflow()
 
         if (test > 0.f)
         {
-            if (Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, NULL, m_owner))
+            if (Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, nullptr, m_owner))
             {
                 ++_ray_test;
                 continue;

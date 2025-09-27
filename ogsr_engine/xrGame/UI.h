@@ -16,7 +16,7 @@ class CUI : public CDialogHolder
     RTTI_DECLARE_TYPEINFO(CUI, CDialogHolder);
 
 public:
-    CUIGameCustom* pUIGame;
+    CUIGameCustom* pUIGame{};
     bool m_bShowGameIndicators;
 
     CHUDManager* m_Parent;
@@ -44,7 +44,7 @@ public:
 
     void ShowGameIndicators();
     void HideGameIndicators();
-    bool GameIndicatorsShown() { return m_bShowGameIndicators; };
+    bool GameIndicatorsShown() { return m_bShowGameIndicators; }
 
     void ShowCrosshair();
     void HideCrosshair();

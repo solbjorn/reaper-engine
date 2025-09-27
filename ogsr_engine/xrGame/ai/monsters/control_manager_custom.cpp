@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_manager_custom.h"
 #include "BaseMonster/base_monster.h"
 #include "control_sequencer.h"
@@ -10,16 +11,7 @@
 #include "control_animation_base.h"
 #include "control_critical_wound.h"
 
-CControlManagerCustom::CControlManagerCustom()
-{
-    m_sequencer = 0;
-    m_triple_anim = 0;
-    m_rotation_jump = 0;
-    m_jump = 0;
-    m_run_attack = 0;
-    m_threaten = 0;
-    m_melee_jump = 0;
-}
+CControlManagerCustom::CControlManagerCustom() = default;
 
 CControlManagerCustom::~CControlManagerCustom()
 {
@@ -66,7 +58,7 @@ void CControlManagerCustom::add_ability(ControlCom::EControlType type)
     case ControlCom::eControlThreaten:
         m_threaten = xr_new<CControlThreaten>();
         m_man->add(m_threaten, ControlCom::eControlThreaten);
-        set_threaten_data(0, 0.f);
+        set_threaten_data(nullptr, 0.f);
         break;
     case ControlCom::eControlMeleeJump:
         m_melee_jump = xr_new<CControlMeleeJump>();
@@ -374,7 +366,7 @@ void CControlManagerCustom::jump(const Fvector& position)
     SControlJumpData* ctrl_data = (SControlJumpData*)m_man->data(this, ControlCom::eControlJump);
     VERIFY(ctrl_data);
 
-    ctrl_data->target_object = 0;
+    ctrl_data->target_object = nullptr;
     ctrl_data->target_position = position;
     ctrl_data->flags.Or(SControlJumpData::ePrepareSkip);
     ctrl_data->force_factor = -1.f;
@@ -404,7 +396,7 @@ void CControlManagerCustom::script_jump(const Fvector& position, float factor)
     SControlJumpData* ctrl_data = (SControlJumpData*)m_man->data(this, ControlCom::eControlJump);
     VERIFY(ctrl_data);
 
-    ctrl_data->target_object = 0;
+    ctrl_data->target_object = nullptr;
     ctrl_data->target_position = position;
     ctrl_data->force_factor = factor;
 
@@ -496,7 +488,7 @@ void CControlManagerCustom::check_jump_over_physics()
 
         // получить список объектов вокруг врага
         m_nearest.clear();
-        Level().ObjectSpace.GetNearest(m_nearest, travel_point.position, m_object->Radius(), NULL);
+        Level().ObjectSpace.GetNearest(m_nearest, travel_point.position, m_object->Radius(), nullptr);
 
         for (u32 k = 0; k < m_nearest.size(); k++)
         {
@@ -527,7 +519,7 @@ void CControlManagerCustom::check_jump_over_physics()
             // --------------------------------------------------------
 
             m_jump->setup_data().flags.set(SControlJumpData::ePrepareSkip, true);
-            m_jump->setup_data().target_object = 0;
+            m_jump->setup_data().target_object = nullptr;
             m_jump->setup_data().target_position = target;
 
             jump(m_jump->setup_data());

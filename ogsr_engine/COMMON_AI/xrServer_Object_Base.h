@@ -59,7 +59,7 @@ enum ESpawnFlags
 };
 
 private:
-LPSTR s_name_replace;
+LPSTR s_name_replace{};
 
 public:
 BOOL net_Ready;
@@ -72,7 +72,7 @@ u16 RespawnTime;
 u16 ID; // internal ID
 u16 ID_Parent; // internal ParentID, 0xffff means no parent
 u16 ID_Phantom; // internal PhantomID, 0xffff means no phantom
-xrClientData* owner;
+xrClientData* owner{};
 
 // spawn data
 shared_str s_name;
@@ -87,7 +87,7 @@ Fvector o_Angle;
 CLASS_ID m_tClassID;
 int m_script_clsid;
 shared_str m_ini_string;
-CInifile* m_ini_file;
+CInifile* m_ini_file{};
 
 // for ALife control
 bool m_bALifeControl;
@@ -139,8 +139,8 @@ virtual void load(NET_Packet& tNetPacket);
 
 CSE_Abstract(LPCSTR caSection);
 virtual ~CSE_Abstract();
-virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) {};
-virtual BOOL Net_Relevant() { return TRUE; };
+virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) {}
+virtual BOOL Net_Relevant() { return TRUE; }
 //
 void STATE_Write(NET_Packet& tNetPacket);
 virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal);
@@ -148,12 +148,12 @@ void STATE_Read(NET_Packet& tNetPacket, u16 size);
 virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket);
 virtual LPCSTR __stdcall name() const;
 virtual LPCSTR __stdcall name_replace() const;
-virtual void __stdcall set_name(LPCSTR s) { s_name = s; };
+virtual void __stdcall set_name(LPCSTR s) { s_name = s; }
 virtual void __stdcall set_name_replace(LPCSTR s)
 {
     xr_free(s_name_replace);
     s_name_replace = xr_strdup(s);
-};
+}
 virtual Fvector& __stdcall position();
 virtual Fvector& __stdcall angle();
 virtual Flags16& __stdcall flags();
@@ -164,7 +164,7 @@ virtual bool __stdcall validate();
 virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F) {}
 //
 
-IC const Fvector& Position() const { return o_Position; };
+IC const Fvector& Position() const { return o_Position; }
 // we need this to prevent virtual inheritance :-(
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -179,25 +179,25 @@ IC int script_clsid() const
 CInifile& spawn_ini();
 
 // for smart cast
-virtual CSE_ALifeGroupAbstract* cast_group_abstract() { return 0; };
-virtual CSE_ALifeSchedulable* cast_schedulable() { return 0; };
-virtual CSE_ALifeInventoryItem* cast_inventory_item() { return 0; };
-virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return 0; };
+virtual CSE_ALifeGroupAbstract* cast_group_abstract() { return nullptr; }
+virtual CSE_ALifeSchedulable* cast_schedulable() { return nullptr; }
+virtual CSE_ALifeInventoryItem* cast_inventory_item() { return nullptr; }
+virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return nullptr; }
 
-virtual CSE_ALifeObject* cast_alife_object() { return 0; }
-virtual CSE_ALifeDynamicObject* cast_alife_dynamic_object() { return 0; }
-virtual CSE_ALifeItemAmmo* cast_item_ammo() { return 0; }
-virtual CSE_ALifeItemWeapon* cast_item_weapon() { return 0; }
-virtual CSE_ALifeItemDetector* cast_item_detector() { return 0; }
-virtual CSE_ALifeMonsterAbstract* cast_monster_abstract() { return 0; };
-virtual CSE_ALifeHumanAbstract* cast_human_abstract() { return 0; };
-virtual CSE_ALifeAnomalousZone* cast_anomalous_zone() { return 0; };
-virtual CSE_ALifeTrader* cast_trader() { return 0; };
+virtual CSE_ALifeObject* cast_alife_object() { return nullptr; }
+virtual CSE_ALifeDynamicObject* cast_alife_dynamic_object() { return nullptr; }
+virtual CSE_ALifeItemAmmo* cast_item_ammo() { return nullptr; }
+virtual CSE_ALifeItemWeapon* cast_item_weapon() { return nullptr; }
+virtual CSE_ALifeItemDetector* cast_item_detector() { return nullptr; }
+virtual CSE_ALifeMonsterAbstract* cast_monster_abstract() { return nullptr; }
+virtual CSE_ALifeHumanAbstract* cast_human_abstract() { return nullptr; }
+virtual CSE_ALifeAnomalousZone* cast_anomalous_zone() { return nullptr; }
+virtual CSE_ALifeTrader* cast_trader() { return nullptr; }
 
-virtual CSE_ALifeCreatureAbstract* cast_creature_abstract() { return 0; };
-virtual CSE_ALifeSmartZone* cast_smart_zone() { return 0; };
-virtual CSE_ALifeOnlineOfflineGroup* cast_online_offline_group() { return 0; };
-virtual CSE_ALifeItemPDA* cast_item_pda() { return 0; };
+virtual CSE_ALifeCreatureAbstract* cast_creature_abstract() { return nullptr; }
+virtual CSE_ALifeSmartZone* cast_smart_zone() { return nullptr; }
+virtual CSE_ALifeOnlineOfflineGroup* cast_online_offline_group() { return nullptr; }
+virtual CSE_ALifeItemPDA* cast_item_pda() { return nullptr; }
 }
 ;
 

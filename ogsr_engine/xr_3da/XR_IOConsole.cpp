@@ -36,7 +36,7 @@ static u32 const tips_word_color = color_rgba(5, 100, 56, 200);
 static u32 const tips_scroll_back_color = color_rgba(15, 15, 15, 230);
 static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
 
-CConsole* Console = NULL;
+CConsole* Console{};
 
 extern char const* const ioc_prompt;
 char const* const ioc_prompt = ">>> ";
@@ -115,11 +115,11 @@ bool CConsole::is_mark(Console_mark type)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CConsole::CConsole() : m_hShader_back(NULL)
+CConsole::CConsole()
 {
     m_editor = xr_new<text_editor::line_editor>((u32)CONSOLE_BUF_SIZE);
     m_cmd_history_max = cmd_history_max;
-    m_disable_tips = false;
+
     Register_callbacks();
     Device.seqResolutionChanged.Add(this);
     lineDistance = LDIST;
@@ -129,12 +129,12 @@ void CConsole::Initialize()
 {
     scroll_delta = 0;
     bVisible = false;
-    pFont = NULL;
-    pFont2 = NULL;
+    pFont = nullptr;
+    pFont2 = nullptr;
 
     m_mouse_pos.x = 0;
     m_mouse_pos.y = 0;
-    m_last_cmd = NULL;
+    m_last_cmd = nullptr;
 
     m_cmd_history.reserve(m_cmd_history_max + 2);
     m_cmd_history.clear();
@@ -147,7 +147,7 @@ void CConsole::Initialize()
 
     m_tips_mode = 0;
     m_prev_length_str = 0;
-    m_cur_cmd = NULL;
+    m_cur_cmd = nullptr;
     reset_selected_tip();
 
     // Commands
@@ -387,7 +387,7 @@ void CConsole::OnRender()
     _itoa(log_line, q, 10);
     u32 qn = xr_strlen(q);
     pFont->SetColor(total_font_color);
-    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%d]", log_line + 1);
+    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%u]", log_line + 1);
 
     pFont->OnRender();
     pFont2->OnRender();
@@ -568,7 +568,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
         c[0] = mark2;
         c[1] = 0;
 
-        if (m_last_cmd.c_str() == 0 || xr_strcmp(m_last_cmd, edt.c_str()) != 0)
+        if (!m_last_cmd.c_str() || xr_strcmp(m_last_cmd, edt.c_str()))
         {
             Msg("%s %s", c, edt.c_str());
             add_cmd_history(edt.c_str());
@@ -849,7 +849,7 @@ void CConsole::reset_tips()
     m_temp_tips.clear();
     m_tips.clear();
 
-    m_cur_cmd = NULL;
+    m_cur_cmd = nullptr;
 }
 
 void CConsole::update_tips()

@@ -83,42 +83,67 @@ bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
     case 12:
         if (planes[11].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 11:
         if (planes[10].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 10:
         if (planes[9].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 9:
         if (planes[8].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 8:
         if (planes[7].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 7:
         if (planes[6].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 6:
         if (planes[5].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 5:
         if (planes[4].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 4:
         if (planes[3].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 3:
         if (planes[2].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 2:
         if (planes[1].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 1:
         if (planes[0].classify(c) > r)
             return FALSE;
+
+        [[fallthrough]];
     case 0: break;
     default: NODEFAULT;
     }
+
     return TRUE;
 }
 
@@ -379,7 +404,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
                     // segment intersects plane
                     D2.sub((*src)[j + 1], (*src)[j]);
                     denum = P.n.dotproduct(D2);
-                    if (denum != 0)
+                    if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
                         dest->last().mad((*src)[j], D2, t);
@@ -396,7 +421,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
                     // segment intersects plane
                     D2.sub((*src)[j + 1], (*src)[j]);
                     denum = P.n.dotproduct(D2);
-                    if (denum != 0)
+                    if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
                         dest->last().mad((*src)[j], D2, t);
@@ -408,8 +433,9 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
         // here we end up with complete polygon in 'dest' which is inside plane #i
         if (dest->size() < 3)
-            return 0;
+            return nullptr;
     }
+
     return dest;
 }
 
@@ -423,7 +449,7 @@ bool CFrustum::CreateFromClipPoly(Fvector* p, size_t count, Fvector& vBase, CFru
     sPoly* dest = clip.ClipPoly(poly1, poly2);
 
     // here we end up with complete frustum-polygon in 'dest'
-    if (0 == dest)
+    if (!dest)
         return false;
 
     CreateFromPoints(dest->begin(), dest->size(), vBase);

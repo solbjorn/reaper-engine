@@ -52,7 +52,9 @@ using namespace InventoryUtilities;
 #define DEFAULT_MAP_SCALE 1.f
 #define MAININGAME_XML "maingame.xml"
 
-static CUIMainIngameWnd* GetMainIngameWindow()
+namespace
+{
+CUIMainIngameWnd* GetMainIngameWindow()
 {
     if (g_hud)
     {
@@ -63,13 +65,13 @@ static CUIMainIngameWnd* GetMainIngameWindow()
     return nullptr;
 }
 
-static CUIStatic* warn_icon_list[8]{};
+CUIStatic* warn_icon_list[CUIMainIngameWnd::EWarningIcons::ewiCount]{};
 
 // alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
-static bool external_icon_ctrl = false;
+bool external_icon_ctrl = false;
 
 // позволяет расцветить иконку или изменить её размер
-static bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float width, float height)
+bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float width, float height)
 {
     auto window = GetMainIngameWindow();
     if (!window)
@@ -78,7 +80,7 @@ static bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float wi
         return false;
     }
 
-    R_ASSERT(icon > 0 && icon < std::size(warn_icon_list), "!!Invalid first arg for setup_game_icon!");
+    R_ASSERT(icon > CUIMainIngameWnd::EWarningIcons::ewiAll && icon < CUIMainIngameWnd::EWarningIcons::ewiCount, "!!Invalid first arg for setup_game_icon!");
 
     CUIStatic* sIcon = warn_icon_list[icon];
 
@@ -94,15 +96,11 @@ static bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float wi
     external_icon_ctrl = true;
     return true;
 }
+} // namespace
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
-    m_pActor = NULL;
-    m_pWeapon = NULL;
-    m_pGrenade = NULL;
-    m_pItem = NULL;
     UIZoneMap = xr_new<CUIZoneMap>();
-    m_pPickUpItem = NULL;
 
     warn_icon_list[ewiWeaponJammed] = &UIWeaponJammedIcon;
     warn_icon_list[ewiRadiation] = &UIRadiaitionIcon;
@@ -114,6 +112,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 }
 
 #include "UIProgressShape.h"
+
 extern CUIProgressShape* g_MissileForceShape;
 
 CUIMainIngameWnd::~CUIMainIngameWnd()
@@ -274,8 +273,6 @@ void CUIMainIngameWnd::Init()
     HUD_SOUND::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 }
 
-float UIStaticDiskIO_start_time = 0.0f;
-
 void CUIMainIngameWnd::Draw()
 {
     if (!m_pActor)
@@ -294,7 +291,7 @@ void CUIMainIngameWnd::SetAmmoIcon(const shared_str& sect_name)
     {
         UIWeaponIcon.Show(false);
         return;
-    };
+    }
 
     UIWeaponIcon.Show(true);
     // properties used by inventory menu
@@ -316,16 +313,16 @@ void CUIMainIngameWnd::SetAmmoIcon(const shared_str& sect_name)
 
     UIWeaponIcon.SetWidth(w);
     UIWeaponIcon.SetHeight(h);
-};
+}
 
 void CUIMainIngameWnd::Update()
 {
     m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
     if (!m_pActor)
     {
-        m_pItem = NULL;
-        m_pWeapon = NULL;
-        m_pGrenade = NULL;
+        m_pItem = nullptr;
+        m_pWeapon = nullptr;
+        m_pGrenade = nullptr;
         CUIWindow::Update();
         return;
     }
@@ -344,7 +341,7 @@ void CUIMainIngameWnd::Update()
         {
             UIPdaOnline.SetText("");
         }
-    };
+    }
 
     if (!(Device.dwFrame % 5))
     {
@@ -475,11 +472,11 @@ void CUIMainIngameWnd::RenderQuickInfos()
     if (!m_pActor)
         return;
 
-    static CGameObject* pObject = NULL;
+    static CGameObject* pObject{};
     LPCSTR actor_action = m_pActor->GetDefaultActionForObject();
-    UIStaticQuickHelp.Show(NULL != actor_action);
+    UIStaticQuickHelp.Show(!!actor_action);
 
-    if (NULL != actor_action)
+    if (actor_action)
     {
         if (_stricmp(actor_action, UIStaticQuickHelp.GetText()))
             UIStaticQuickHelp.SetTextST(actor_action);
@@ -528,37 +525,44 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
     // Задаем цвет требуемой иконки
     switch (icon)
     {
-    case ewiAll: bMagicFlag = false;
+    case ewiAll: bMagicFlag = false; [[fallthrough]];
     case ewiWeaponJammed:
         SetWarningIconColor(&UIWeaponJammedIcon, cl);
         if (bMagicFlag)
             break;
+
+        [[fallthrough]];
     case ewiRadiation:
         SetWarningIconColor(&UIRadiaitionIcon, cl);
         if (bMagicFlag)
             break;
+
+        [[fallthrough]];
     case ewiWound:
         SetWarningIconColor(&UIWoundIcon, cl);
         if (bMagicFlag)
             break;
+
+        [[fallthrough]];
     case ewiStarvation:
         SetWarningIconColor(&UIStarvationIcon, cl);
         if (bMagicFlag)
             break;
+
+        [[fallthrough]];
     case ewiThirst:
         SetWarningIconColor(&UIThirstIcon, cl);
         if (bMagicFlag)
             break;
+
+        [[fallthrough]];
     case ewiPsyHealth:
         SetWarningIconColor(&UIPsyHealthIcon, cl);
         if (bMagicFlag)
             break;
-    case ewiInvincible:
-        SetWarningIconColor(&UIInvincibleIcon, cl);
-        if (bMagicFlag)
-            break;
-        break;
 
+        [[fallthrough]];
+    case ewiInvincible: SetWarningIconColor(&UIInvincibleIcon, cl); break;
     default: R_ASSERT(!"Unknown warning icon type");
     }
 }
@@ -579,7 +583,7 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
     int staticsCount = node->GetNodesNum("", 0, flashingIconNodeName);
 
     CUIXmlInit xml_init;
-    CUIStatic* pIcon = NULL;
+    CUIStatic* pIcon{};
     // Пробегаемся по всем нодам и инициализируем из них статики
     for (int i = 0; i < staticsCount; ++i)
     {
@@ -631,7 +635,7 @@ void CUIMainIngameWnd::AnimateContacts(bool b_snd)
     UIPdaOnline.ResetClrAnimation();
 
     if (b_snd)
-        HUD_SOUND::PlaySound(m_contactSnd, Fvector().set(0, 0, 0), 0, true);
+        HUD_SOUND::PlaySound(m_contactSnd, Fvector().set(0, 0, 0), nullptr, true);
 }
 
 void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
@@ -643,7 +647,7 @@ void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
         UIPickUpItemIcon.Show(false);
         UIPickUpItemIcon.DetachAll();
     }
-};
+}
 
 #include "UICellCustomItems.h"
 #include "../game_object_space.h"
@@ -653,6 +657,8 @@ void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
 
 typedef CUIWeaponCellItem::eAddonType eAddonType;
 
+namespace
+{
 CUIStatic* init_addon(CUIWeaponCellItem* cell_item, LPCSTR sect, float scale, float scale_x, eAddonType idx)
 {
     CUIStatic* addon = xr_new<CUIStatic>();
@@ -670,18 +676,18 @@ CUIStatic* init_addon(CUIWeaponCellItem* cell_item, LPCSTR sect, float scale, fl
 
     return addon;
 }
+} // namespace
 
 void CUIMainIngameWnd::UpdatePickUpItem()
 {
     if (!m_pPickUpItem || !Level().CurrentViewEntity() || Level().CurrentViewEntity()->CLS_ID != CLSID_OBJECT_ACTOR)
     {
         if (UIPickUpItemIcon.IsShown())
-        {
             UIPickUpItemIcon.Show(false);
-        }
 
         return;
-    };
+    }
+
     if (UIPickUpItemIcon.IsShown())
         return;
 
@@ -735,7 +741,7 @@ void CUIMainIngameWnd::UpdatePickUpItem()
     g_actor->callback(GameObject::eUIPickUpItemShowing)(m_pPickUpItem->object().lua_game_object(), &UIPickUpItemIcon);
 
     UIPickUpItemIcon.Show(true);
-};
+}
 
 void CUIMainIngameWnd::UpdateActiveItemInfo()
 {
@@ -768,11 +774,11 @@ void CUIMainIngameWnd::OnConnected() { UIZoneMap->SetupCurrentMap(); }
 
 void CUIMainIngameWnd::reset_ui()
 {
-    m_pActor = NULL;
-    m_pWeapon = NULL;
-    m_pGrenade = NULL;
-    m_pItem = NULL;
-    m_pPickUpItem = NULL;
+    m_pActor = nullptr;
+    m_pWeapon = nullptr;
+    m_pGrenade = nullptr;
+    m_pItem = nullptr;
+    m_pPickUpItem = nullptr;
     UIMotionIcon.ResetVisibility();
 }
 

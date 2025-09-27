@@ -31,13 +31,13 @@ protected:
 
 public:
     CWeaponShotEffector();
-    virtual ~CWeaponShotEffector() {};
+    virtual ~CWeaponShotEffector() {}
 
     void Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
     IC BOOL IsActive() { return bActive; }
-    virtual void SetActive(BOOL Active) { bActive = Active; };
+    virtual void SetActive(BOOL Active) { bActive = Active; }
     IC BOOL IsSingleShot() { return bSingleShoot; }
-    virtual void SetSingleShoot(BOOL Single) { bSingleShoot = Single; };
+    virtual void SetSingleShoot(BOOL Single) { bSingleShoot = Single; }
     void Update();
 
     virtual void Shot(float angle);
@@ -62,7 +62,7 @@ public:
 
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 
-    virtual void SetActor(CActor* pActor) { m_pActor = pActor; };
+    virtual void SetActor(CActor* pActor) { m_pActor = pActor; }
 
     virtual CCameraShotEffector* cast_effector_shot() { return this; }
 };

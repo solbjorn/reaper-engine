@@ -1,7 +1,7 @@
 #pragma once
-#include "control_com_defs.h"
 
 #include "../../../Include\xrRender\animation_motion.h"
+#include "control_com_defs.h"
 
 class CControl_Manager;
 class CBaseMonster;
@@ -36,14 +36,15 @@ public:
     virtual void update_schedule() {}
     virtual void update_frame() {}
 
-    virtual CControl_ComControlled* ced() { return 0; }
-    virtual CControl_ComControlling* cing() { return 0; }
+    virtual CControl_ComControlled* ced() { return nullptr; }
+    virtual CControl_ComControlling* cing() { return nullptr; }
 
     void set_active(bool val = true)
     {
         m_active = val;
         val ? activate() : deactivate();
     }
+
     bool is_active() { return m_active; }
     bool is_inited() { return m_inited; }
 
@@ -72,12 +73,12 @@ public:
     virtual void reinit()
     {
         m_locked = false;
-        m_capturer = 0;
+        m_capturer = nullptr;
         reset_data();
     }
-    virtual void reset_data() {}
 
-    virtual ControlCom::IComData* data() { return 0; }
+    virtual void reset_data() {}
+    virtual ControlCom::IComData* data() { return nullptr; }
 
     // init/deinit current work
     virtual void on_capture() { reset_data(); }

@@ -9,6 +9,7 @@ public:
     Fmatrix m_w; // Basic	- world
     Fmatrix m_invw; // derived	- world2local, cached
     Fmatrix m_v; // Basic	- view
+    Fmatrix m_invv;
     Fmatrix m_p; // Basic	- projection
     Fmatrix m_wv; // Derived	- world2view
     Fmatrix m_vp; // Derived	- view2projection

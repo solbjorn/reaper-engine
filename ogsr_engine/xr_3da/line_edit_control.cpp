@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "line_edit_control.h"
 
 #include "os_clipboard.h"
@@ -183,7 +184,7 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
     for (u32 i = 0; i < DIK_COUNT; ++i)
     {
         xr_delete(m_actions[i]);
-        m_actions[i] = NULL;
+        m_actions[i] = nullptr;
     }
 
     if (mode == im_read_only)

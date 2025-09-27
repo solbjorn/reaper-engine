@@ -5,13 +5,7 @@
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
 
-CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist* polter)
-{
-    m_object = polter;
-
-    m_particles_object = 0;
-    m_particles_object_electro = 0;
-}
+CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist* polter) : m_object{polter} {}
 
 CPolterSpecialAbility::~CPolterSpecialAbility()
 {
@@ -114,7 +108,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 void CPoltergeist::PhysicalImpulse(const Fvector& position)
 {
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, position, IMPULSE_RADIUS, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, position, IMPULSE_RADIUS, nullptr);
     if (m_nearest.empty())
         return;
 

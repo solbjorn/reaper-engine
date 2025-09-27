@@ -137,7 +137,8 @@ inline void CBucketList::add_to_bucket(typename TManagerDataStorage::Vertex& ver
         vertex.m_bucket_id = m_bucket_id;
         vertex.m_path_id = this->current_path_id();
         m_buckets[m_bucket_id] = &vertex;
-        vertex.next() = vertex.prev() = 0;
+        vertex.next() = nullptr;
+        vertex.prev() = nullptr;
         verify_buckets();
         return;
     }
@@ -147,7 +148,7 @@ inline void CBucketList::add_to_bucket(typename TManagerDataStorage::Vertex& ver
     {
         m_buckets[m_bucket_id] = &vertex;
         vertex.next() = i;
-        vertex.prev() = 0;
+        vertex.prev() = nullptr;
         i->prev() = &vertex;
         verify_buckets();
         return;
@@ -155,7 +156,7 @@ inline void CBucketList::add_to_bucket(typename TManagerDataStorage::Vertex& ver
     if (!i->next())
     {
         vertex.prev() = i;
-        vertex.next() = 0;
+        vertex.next() = nullptr;
         i->next() = &vertex;
         verify_buckets();
         return;
@@ -183,7 +184,7 @@ inline void CBucketList::add_to_bucket(typename TManagerDataStorage::Vertex& ver
     }
     else
     {
-        vertex.next() = 0;
+        vertex.next() = nullptr;
         vertex.prev() = i;
         i->next() = &vertex;
         verify_buckets();
@@ -226,7 +227,7 @@ inline void CBucketList::remove_best_opened()
     VERIFY(m_buckets[m_min_bucket_id] && this->is_visited(m_buckets[m_min_bucket_id]->index()));
     m_buckets[m_min_bucket_id] = m_buckets[m_min_bucket_id]->next();
     if (m_buckets[m_min_bucket_id])
-        m_buckets[m_min_bucket_id]->prev() = 0;
+        m_buckets[m_min_bucket_id]->prev() = nullptr;
     verify_buckets();
 }
 

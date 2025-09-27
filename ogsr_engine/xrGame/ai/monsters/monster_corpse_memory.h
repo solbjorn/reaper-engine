@@ -5,13 +5,13 @@ class CBaseMonster;
 
 class CMonsterCorpseMemory
 {
-    CBaseMonster* monster;
-    TTime time_memory;
+    CBaseMonster* monster{};
+    TTime time_memory{10000};
 
     CORPSE_MAP m_objects;
 
 public:
-    CMonsterCorpseMemory();
+    CMonsterCorpseMemory() = default;
     ~CMonsterCorpseMemory();
 
     void init_external(CBaseMonster* M, TTime mem_time);

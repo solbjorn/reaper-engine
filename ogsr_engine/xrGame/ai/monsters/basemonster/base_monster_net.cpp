@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
 
 #include "xrserver_objects_alife_monsters.h"
@@ -9,13 +10,14 @@
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
+
 void CBaseMonster::net_Save(NET_Packet& P)
 {
     inherited::net_Save(P);
     m_pPhysics_support->in_NetSave(P);
 }
 
-BOOL CBaseMonster::net_SaveRelevant() { return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL)); }
+BOOL CBaseMonster::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell(); }
 
 void CBaseMonster::net_Export(CSE_Abstract* E)
 {

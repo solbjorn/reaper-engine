@@ -34,19 +34,7 @@ CUIMMShniaga::CUIMMShniaga()
     m_anims[1] = xr_new<CUIStatic>();
     m_shniaga->AttachChild(m_anims[1]);
 
-    m_mag_pos = 0;
-
-    m_selected = NULL;
-
-    m_start_time = 0;
-    m_origin = 0;
-    m_destination = 0;
-    m_run_time = 0;
-
     m_flags.zero();
-
-    m_selected_btn = -1;
-    m_page = -1;
 }
 
 CUIMMShniaga::~CUIMMShniaga()

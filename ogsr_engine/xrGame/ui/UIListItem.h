@@ -35,7 +35,7 @@ public:
     int GetGroupID() { return m_iGroupID; }
     void SetGroupID(int ID) { m_iGroupID = ID; }
 
-    virtual void MarkSelected(bool b) {};
+    virtual void MarkSelected(bool b) {}
     // переопределяем критерий подсвечивания текста
     virtual bool IsHighlightText();
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
@@ -43,20 +43,20 @@ public:
 protected:
     // указатель на произвольные данные, которые могут
     // присоедениены к элементу
-    void* m_pData;
+    void* m_pData{};
 
     sol::object priv;
 
     // произвольное число, приписанное объекту
-    int m_iValue;
+    int m_iValue{};
 
     // индекс в списке
-    int m_iIndex;
+    int m_iIndex{-1};
 
     // идентификатор группы
-    int m_iGroupID;
+    int m_iGroupID{-1};
 
     // подсвечивается кнопка или нет?
-    bool m_bHighlightText;
+    bool m_bHighlightText{};
 };
 XR_SOL_BASE_CLASSES(CUIListItem);

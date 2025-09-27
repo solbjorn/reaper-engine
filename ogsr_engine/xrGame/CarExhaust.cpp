@@ -1,15 +1,18 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
+
 extern CPHWorld* ph_world;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

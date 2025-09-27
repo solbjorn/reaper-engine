@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
@@ -31,7 +32,9 @@ void CPHShell::ExplosionHit(const Fvector& pos, const Fvector& dir, float val, c
 {
     if (!isActive())
         return;
-    EnableObject(0);
+
+    EnableObject(nullptr);
+
     // Fvector local_pos;local_pos.set(0.f,0.f,0.f);
     ELEMENT_I i = elements.begin(), e = elements.end();
     float impulse = val / _sqrt(_sqrt((float)elements.size()));

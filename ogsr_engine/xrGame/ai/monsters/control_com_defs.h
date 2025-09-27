@@ -77,4 +77,4 @@ enum ECaptureType : u32
     eCaptureMovement = u32(1) << 1,
     eCaptureDir = u32(1) << 2,
 };
-}; // namespace ControlCom
+} // namespace ControlCom

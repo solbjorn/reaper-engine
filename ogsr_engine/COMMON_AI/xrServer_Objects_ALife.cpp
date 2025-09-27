@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -23,25 +24,6 @@ LPCSTR GAME_CONFIG = "game.ltx";
 #else
 #include "../xr_3da/Render.h"
 #endif
-
-bool SortStringsByAlphabetPred(const shared_str& s1, const shared_str& s2)
-{
-    R_ASSERT(s1.size());
-    R_ASSERT(s2.size());
-
-    return (xr_strcmp(s1, s2) < 0);
-};
-
-struct story_name_predicate
-{
-    IC bool operator()(const xr_rtoken& _1, const xr_rtoken& _2) const
-    {
-        VERIFY(_1.name.size());
-        VERIFY(_2.name.size());
-
-        return (xr_strcmp(_1.name, _2.name) < 0);
-    }
-};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeGraphPoint
@@ -68,7 +50,7 @@ void CSE_ALifeGraphPoint::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     tNetPacket.r_u8(m_tLocations[1]);
     tNetPacket.r_u8(m_tLocations[2]);
     tNetPacket.r_u8(m_tLocations[3]);
-};
+}
 
 void CSE_ALifeGraphPoint::__STATE_Write(NET_Packet& tNetPacket)
 {
@@ -78,7 +60,8 @@ void CSE_ALifeGraphPoint::__STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_u8(m_tLocations[1]);
     tNetPacket.w_u8(m_tLocations[2]);
     tNetPacket.w_u8(m_tLocations[3]);
-};
+}
+
 void CSE_ALifeGraphPoint::UPDATE_Read(NET_Packet& tNetPacket) {}
 
 void CSE_ALifeGraphPoint::UPDATE_Write(NET_Packet& tNetPacket) {}
@@ -99,9 +82,6 @@ CSE_ALifeObject::CSE_ALifeObject(LPCSTR caSection) : CSE_Abstract(caSection)
     m_flags.one();
     m_story_id = INVALID_STORY_ID;
     m_spawn_story_id = INVALID_SPAWN_STORY_ID;
-#ifdef XRGAME_EXPORTS
-    m_alife_simulator = 0;
-#endif
     m_flags.set(flOfflineNoMove, FALSE);
 }
 
@@ -211,7 +191,7 @@ void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 
 void CSE_ALifeObject::UPDATE_Write(NET_Packet& tNetPacket) {}
 
-void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket) {};
+void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket) {}
 
 u32 CSE_ALifeObject::ef_equipment_type() const
 {
@@ -309,23 +289,23 @@ void CSE_ALifeGroupAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     tNetPacket.r_u16(m_wCount);
     if (m_wVersion > 19)
         load_data(m_tpMembers, tNetPacket);
-};
+}
 
 void CSE_ALifeGroupAbstract::__STATE_Write(NET_Packet& tNetPacket)
 {
     tNetPacket.w_u32(m_bCreateSpawnPositions);
     tNetPacket.w_u16(m_wCount);
     save_data(m_tpMembers, tNetPacket);
-};
+}
 
 void CSE_ALifeGroupAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 {
     u32 dwDummy;
     tNetPacket.r_u32(dwDummy);
     m_bCreateSpawnPositions = !!dwDummy;
-};
+}
 
-void CSE_ALifeGroupAbstract::UPDATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_bCreateSpawnPositions); };
+void CSE_ALifeGroupAbstract::UPDATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_bCreateSpawnPositions); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeDynamicObject
@@ -334,7 +314,7 @@ void CSE_ALifeGroupAbstract::UPDATE_Write(NET_Packet& tNetPacket) { tNetPacket.w
 CSE_ALifeDynamicObject::CSE_ALifeDynamicObject(LPCSTR caSection) : CSE_ALifeObject(caSection)
 {
     m_tTimeID = 0;
-    m_switch_counter = u64(-1);
+    m_switch_counter = std::numeric_limits<u64>::max();
 }
 
 CSE_ALifeDynamicObject::~CSE_ALifeDynamicObject() {}
@@ -343,9 +323,9 @@ void CSE_ALifeDynamicObject::__STATE_Write(NET_Packet& tNetPacket) { inherited::
 
 void CSE_ALifeDynamicObject::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
-void CSE_ALifeDynamicObject::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); };
+void CSE_ALifeDynamicObject::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
 
-void CSE_ALifeDynamicObject::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); };
+void CSE_ALifeDynamicObject::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeDynamicObjectVisual
@@ -373,9 +353,9 @@ void CSE_ALifeDynamicObjectVisual::__STATE_Read(NET_Packet& tNetPacket, u16 size
         visual_read(tNetPacket, m_wVersion);
 }
 
-void CSE_ALifeDynamicObjectVisual::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); };
+void CSE_ALifeDynamicObjectVisual::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
-void CSE_ALifeDynamicObjectVisual::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); };
+void CSE_ALifeDynamicObjectVisual::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifePHSkeletonObject
@@ -410,13 +390,13 @@ void CSE_ALifePHSkeletonObject::UPDATE_Write(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Write(tNetPacket);
     inherited2::UPDATE_Write(tNetPacket);
-};
+}
 
 void CSE_ALifePHSkeletonObject::UPDATE_Read(NET_Packet& tNetPacket)
 {
     inherited1::UPDATE_Read(tNetPacket);
     inherited2::UPDATE_Read(tNetPacket);
-};
+}
 
 bool CSE_ALifePHSkeletonObject::can_save() const { return CSE_PHSkeleton::need_save(); }
 
@@ -465,7 +445,7 @@ xr_token defaul_retrictor_types[] = {{"NOT A restrictor", RestrictionSpace::eRes
                                      {"NONE default restrictor", RestrictionSpace::eDefaultRestrictorTypeNone},
                                      {"OUT default restrictor", RestrictionSpace::eDefaultRestrictorTypeOut},
                                      {"IN default restrictor", RestrictionSpace::eDefaultRestrictorTypeIn},
-                                     {0, 0}};
+                                     {nullptr, 0}};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeLevelChanger
@@ -547,6 +527,7 @@ CSE_ALifeObjectPhysic::~CSE_ALifeObjectPhysic() {}
 void CSE_ALifeObjectPhysic::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     if (m_wVersion >= 14)
+    {
         if (m_wVersion >= 16)
         {
             inherited1::__STATE_Read(tNetPacket, size);
@@ -558,6 +539,7 @@ void CSE_ALifeObjectPhysic::__STATE_Read(NET_Packet& tNetPacket, u16 size)
             CSE_ALifeObject::__STATE_Read(tNetPacket, size);
             visual_read(tNetPacket, m_wVersion);
         }
+    }
 
     if (m_wVersion >= 64)
         inherited2::__STATE_Read(tNetPacket, size);
@@ -861,13 +843,7 @@ bool CSE_ALifeObjectProjector::used_ai_locations() const { return (false); }
 // CSE_ALifeSchedulable
 ////////////////////////////////////////////////////////////////////////////
 
-CSE_ALifeSchedulable::CSE_ALifeSchedulable(LPCSTR caSection)
-{
-    m_tpCurrentBestWeapon = 0;
-    m_tpBestDetector = 0;
-    m_schedule_counter = u64(-1);
-}
-
+CSE_ALifeSchedulable::CSE_ALifeSchedulable(LPCSTR) {}
 CSE_ALifeSchedulable::~CSE_ALifeSchedulable() {}
 
 bool CSE_ALifeSchedulable::need_update(CSE_ALifeDynamicObject* object)

@@ -82,8 +82,8 @@ protected:
 
 public:
     virtual ECastType CastType() { return CPHObject::tpCharacter; }
-    virtual CPHActorCharacter* CastActorCharacter() { return NULL; }
-    virtual CPHAICharacter* CastAICharacter() { return NULL; }
+    virtual CPHActorCharacter* CastActorCharacter() { return nullptr; }
+    virtual CPHAICharacter* CastAICharacter() { return nullptr; }
     ERestrictionType RestrictionType() { return m_restriction_type; }
     void SetNewRestrictionType(ERestrictionType rt) { m_new_restriction_type = rt; }
     void SetRestrictionType(ERestrictionType rt) { m_new_restriction_type = m_restriction_type = rt; }
@@ -96,7 +96,7 @@ public:
     virtual dBodyID get_body() { return m_body; }
     virtual dSpaceID dSpace() = 0;
     virtual void Disable();
-    virtual void ReEnable() { ; }
+    virtual void ReEnable() {}
     virtual void Enable(); //!!
     virtual void SwitchOFFInitContact() = 0;
     virtual void SwitchInInitContact() = 0;
@@ -114,7 +114,7 @@ public:
     void SetPLastMaterialIDX(u16* p) { p_lastMaterialIDX = p; }
     const u16& LastMaterialIDX() const { return *p_lastMaterialIDX; }
     virtual bool TouchRestrictor(ERestrictionType rttype) = 0;
-    virtual void SetElevator(CClimableObject* climable) {};
+    virtual void SetElevator(CClimableObject* climable) {}
     virtual void SetMaterial(u16 material) = 0;
     virtual void SetMaximumVelocity(dReal /**vel/**/) {} //!!
     virtual dReal GetMaximumVelocity() { return 0; }
@@ -146,7 +146,7 @@ public:
     virtual void SetObjectContactCallbackData(void* callback) = 0;
     virtual void SetObjectContactCallback(ObjectContactCallbackFun* callback) = 0;
     virtual void SetWheelContactCallback(ObjectContactCallbackFun* callback) = 0;
-    virtual ObjectContactCallbackFun* ObjectContactCallBack() { return NULL; }
+    virtual ObjectContactCallbackFun* ObjectContactCallBack() { return nullptr; }
     virtual void GetVelocity(Fvector& vvel) = 0;
     virtual void GetSavedVelocity(Fvector& vvel);
     virtual void GetSmothedVelocity(Fvector& vvel) = 0;
@@ -171,24 +171,24 @@ public:
     virtual float FootRadius() = 0;
     virtual void get_State(SPHNetState& state);
     virtual void set_State(const SPHNetState& state);
-    virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) { ; }
-    virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) { ; }
+    virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) {}
+    virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) {}
     virtual const Fvector& ControlAccel() const = 0;
     virtual float& FrictionFactor() = 0;
     virtual void CutVelocity(float l_limit, float a_limit);
-    virtual u16 get_elements_number() { return 1; };
+    virtual u16 get_elements_number() { return 1; }
     virtual CPHSynchronize* get_element_sync(u16 element)
     {
         VERIFY(element == 0);
         return static_cast<CPHSynchronize*>(this);
-    };
+    }
     virtual CElevatorState* ElevatorState() = 0;
 
     virtual const Fmatrix& XFORM() const override;
     virtual void get_LinearVel(Fvector& velocity) override;
     virtual void get_AngularVel(Fvector& velocity) override;
     virtual u16 numberOfGeoms() override { return 0; }
-    virtual IPhysicsGeometry* geometry(u16 i) const override { return 0; }
+    virtual IPhysicsGeometry* geometry(u16 i) const override { return nullptr; }
     virtual const Fvector& mass_Center() override;
 
 public:

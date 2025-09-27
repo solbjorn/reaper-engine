@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
 #include "game_cl_base.h"
@@ -20,9 +21,13 @@
 
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 
-SBullet::SBullet() : m_on_bullet_hit(false) {}
+SBullet::SBullet() = default;
+SBullet::SBullet(const SBullet&) = default;
+SBullet::SBullet(SBullet&&) = default;
+SBullet::~SBullet() = default;
 
-SBullet::~SBullet() {}
+SBullet& SBullet::operator=(const SBullet&) = default;
+SBullet& SBullet::operator=(SBullet&&) = default;
 
 void SBullet::Init(const Fvector& position, const Fvector& direction, float starting_speed, float power, float impulse, u16 sender_id, u16 sendersweapon_id,
                    ALife::EHitType e_hit_type, float maximum_distance, const CCartridge& cartridge, bool SendHit)
@@ -129,7 +134,7 @@ void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvec
 {
     if (m_WhineSounds.empty())
         return;
-    if (bullet->m_whine_snd._feedback() != NULL)
+    if (bullet->m_whine_snd._feedback())
         return;
     if (bullet->hit_type != ALife::eHitTypeFireWound)
         return;
@@ -222,7 +227,7 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
     collide::ray_defs RD(bullet->pos, bullet->dir, range, CDB::OPT_CULL, collide::rqtBoth);
     BOOL result = FALSE;
     VERIFY(!fis_zero(RD.dir.square_magnitude()));
-    result = Level().ObjectSpace.RayQuery(rq_storage, RD, firetrace_callback, &bullet_data, test_callback, NULL);
+    result = Level().ObjectSpace.RayQuery(rq_storage, RD, firetrace_callback, &bullet_data, test_callback, nullptr);
 
     if (result && bullet_data.bStopTracing)
     {

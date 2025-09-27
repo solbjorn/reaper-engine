@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "phdestroyable.h"
@@ -16,9 +17,11 @@
 #include "PHCollideValidator.h"
 #include "PHShell.h"
 #include "MathUtils.h"
+
 #ifdef DEBUG
 #include "PHWorld.h"
 #endif
+
 #include "../Include/xrRender/Kinematics.h"
 
 /*
@@ -46,6 +49,7 @@ CPHDestroyable::CPHDestroyable()
     m_flags.set(fl_released, TRUE);
     m_depended_objects = 0;
 }
+
 /////////spawn object representing destroyed item//////////////////////////////////////////////////////////////////////////////////
 void CPHDestroyable::GenSpawnReplace(u16 ref_id, LPCSTR section, shared_str visual_name)
 {
@@ -69,8 +73,8 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id, LPCSTR section, shared_str visu
         // Destroy
         F_entity_Destroy(D);
         m_depended_objects++;
-    };
-};
+    }
+}
 
 void CPHDestroyable::InitServerObject(CSE_Abstract* D)
 {

@@ -19,15 +19,17 @@ class CFoodItem;
 namespace ObjectHandlerSpace
 {
 enum EWorldProperties : u32;
-};
+}
 
 namespace MonsterSpace
 {
 enum EObjectAction : u32;
-};
+}
 
 class CObjectHandlerPlanner : public CActionPlanner<CAI_Stalker, true>
 {
+    RTTI_DECLARE_TYPEINFO(CObjectHandlerPlanner, CActionPlanner<CAI_Stalker, true>);
+
 public:
     typedef CActionPlanner<CAI_Stalker, true> inherited;
     typedef GraphEngineSpace::_solver_value_type _value_type;

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "animation_movement_controller.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
@@ -21,14 +22,16 @@ animation_movement_controller::~animation_movement_controller()
     if (isActive())
         deinitialize();
 }
+
 void animation_movement_controller::deinitialize()
 {
     CBoneInstance& B = m_pKinematicsC->LL_GetBoneInstance(m_pKinematicsC->LL_GetBoneRoot());
     VERIFY(B.Callback == RootBoneCallback);
     VERIFY(B.callback_param() == (void*)this);
     B.reset_callback();
-    m_control_blend = 0;
+    m_control_blend = nullptr;
 }
+
 void animation_movement_controller::OnFrame()
 {
     m_pKinematicsC->CalculateBones();

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "GameObject.h"
 #include "PhysicsShell.h"
 #include "ai_space.h"
@@ -37,15 +38,12 @@
 CGameObject::CGameObject()
 {
     init();
+
     //-----------------------------------------
-    m_spawn_time = 0;
     m_ai_location = xr_new<CAI_ObjectLocation>();
     m_server_flags.one();
 
-    auto dummy_callback = std::make_unique<GOCallbackInfo>();
-    this->m_callbacks[GameObject::eDummy] = std::move(dummy_callback);
-
-    m_anim_mov_ctrl = 0;
+    m_callbacks.try_emplace(GameObject::eDummy);
 }
 
 CGameObject::~CGameObject()
@@ -69,14 +67,15 @@ CSE_ALifeDynamicObject* CGameObject::alife_object() const
     const CALifeSimulator* sim = ai().get_alife();
     if (sim)
         return sim->objects().object(ID(), true);
-    return NULL;
+
+    return nullptr;
 }
 
 void CGameObject::init()
 {
-    m_lua_game_object = 0;
+    m_lua_game_object = nullptr;
     m_script_clsid = -1;
-    m_ini_file = 0;
+    m_ini_file = nullptr;
     m_spawned = false;
 }
 
@@ -99,7 +98,12 @@ void CGameObject::reinit()
 
     // clear callbacks
     for (auto& pair : m_callbacks)
-        pair.second->m_callback.clear();
+    {
+        auto& info = pair.second;
+
+        info.m_callback = sol::function{};
+        info.m_object = sol::object{};
+    }
 }
 
 void CGameObject::reload(LPCSTR section) { m_script_clsid = object_factory().script_clsid(CLS_ID); }
@@ -122,7 +126,7 @@ void CGameObject::net_Destroy()
 
     m_script_clsid = -1;
     if (Visual() && smart_cast<IKinematics*>(Visual()))
-        smart_cast<IKinematics*>(Visual())->Callback(0, 0);
+        smart_cast<IKinematics*>(Visual())->Callback(nullptr, nullptr);
 
     inherited::net_Destroy();
     setReady(FALSE);
@@ -130,8 +134,8 @@ void CGameObject::net_Destroy()
 
     if (this == Level().CurrentEntity())
     {
-        Level().SetEntity(0);
-        Level().SetControlEntity(0);
+        Level().SetEntity(nullptr);
+        Level().SetControlEntity(nullptr);
     }
 
     // remove calls
@@ -190,7 +194,7 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
     case GE_DESTROY: {
         if (H_Parent())
         {
-            Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%d]", ID(), cName().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(),
+            Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%u]", ID(), cName().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(),
                 Device.dwFrame);
         }
         if (!Level().is_removing_objects())
@@ -235,14 +239,14 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             shared_str config_visual = pSettings->r_string(cNameSect(), "visual");
 
             string_path config_visual_file;
-            if (0 == strext(*config_visual))
+            if (!strext(*config_visual))
                 strconcat(sizeof(config_visual_file), config_visual_file, *config_visual, ".ogf");
             else
                 strcpy_s(config_visual_file, sizeof(config_visual_file), *config_visual);
             xr_strlwr(config_visual_file);
 
             string_path saved_visual_file;
-            if (0 == strext(saved_visual))
+            if (!strext(saved_visual))
                 strconcat(sizeof(saved_visual_file), saved_visual_file, saved_visual, ".ogf");
             else
                 strcpy_s(saved_visual_file, sizeof(saved_visual_file), saved_visual);
@@ -349,10 +353,12 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             // test the whole spawn sequence
             Parent = this;
             inherited::net_Spawn(DC);
-            Parent = 0;
+            Parent = nullptr;
         }
         else
+        {
             inherited::net_Spawn(DC);
+        }
     }
     else
     {
@@ -507,18 +513,20 @@ void CGameObject::spawn_supplies()
             if (n > 0)
                 j = atoi(_GetItem(V, 0, temp)); // count
 
-            if (NULL != strstr(V, "prob="))
+            if (strstr(V, "prob="))
                 p = (float)atof(strstr(V, "prob=") + 5);
             if (fis_zero(p))
                 p = 1.f;
             if (!j)
                 j = 1;
-            if (NULL != strstr(V, "cond="))
+            if (strstr(V, "cond="))
                 f_cond = (float)atof(strstr(V, "cond=") + 5);
-            bScope = (NULL != strstr(V, "scope"));
-            bSilencer = (NULL != strstr(V, "silencer"));
-            bLauncher = (NULL != strstr(V, "launcher"));
+
+            bScope = !!strstr(V, "scope");
+            bSilencer = !!strstr(V, "silencer");
+            bLauncher = !!strstr(V, "launcher");
         }
+
         for (u32 i = 0; i < j; ++i)
             if (::Random.randF(1.f) < p)
             {
@@ -677,8 +685,8 @@ void CGameObject::dbg_DrawSkeleton()
             Level().debug_renderer().draw_ellipse(l_ball, color_rgba(0, 255, 0, 255));
         }
         break;
-        };
-    };
+        }
+    }
 }
 
 void CGameObject::renderable_Render(u32 context_id, IRenderable* root)
@@ -770,11 +778,12 @@ void CGameObject::SetKinematicsCallback(bool set)
 {
     if (!Visual())
         return;
+
     if (set)
         smart_cast<IKinematics*>(Visual())->Callback(VisualCallback, this);
     else
-        smart_cast<IKinematics*>(Visual())->Callback(0, 0);
-};
+        smart_cast<IKinematics*>(Visual())->Callback(nullptr, nullptr);
+}
 
 void VisualCallback(IKinematics* tpKinematics)
 {
@@ -888,13 +897,13 @@ void CGameObject::net_Relcase(CObject* O)
     CScriptBinder::net_Relcase(O);
 }
 
-CScriptCallbackEx<void>& CGameObject::callback(GameObject::ECallbackType type) const
+const GOCallbackInfo& CGameObject::callback(GameObject::ECallbackType type) const
 {
-    if (auto it = m_callbacks.find(type); it != m_callbacks.end())
-        return (*it).second->m_callback;
-    else // KRodin: вот по-нормальному, надо возвращать nullptr и проверять в вызывающей функции, есть ли каллбек вообще. Но это кучу функций переделать надо, поэтому буду
-         // возвращать фейковый каллбек.
-        return m_callbacks.at(GameObject::eDummy)->m_callback;
+    auto it = m_callbacks.find(type);
+    if (it == m_callbacks.end())
+        it = m_callbacks.find(GameObject::eDummy);
+
+    return it->second;
 }
 
 LPCSTR CGameObject::visual_name(CSE_Abstract* server_entity)
@@ -931,7 +940,7 @@ bool CGameObject::shedule_Needed()
 {
     return (!getDestroy());
     //	return						(processing_enabled() || CScriptBinder::object());
-};
+}
 
 void CGameObject::create_anim_mov_ctrl(CBlend* b)
 {
@@ -943,6 +952,7 @@ void CGameObject::create_anim_mov_ctrl(CBlend* b)
     VERIFY(K);
     m_anim_mov_ctrl = xr_new<animation_movement_controller>(&XFORM(), K, b);
 }
+
 void CGameObject::destroy_anim_mov_ctrl() { xr_delete(m_anim_mov_ctrl); }
 
 ///////////////////Перенесено из ai_object_location_impl.h////////////////////////

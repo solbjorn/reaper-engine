@@ -315,4 +315,4 @@ void CollectorPacked::clear()
             for (u32 _z = 0; _z <= clpMZ; _z++)
                 VM[_x][_y][_z].clear();
 }
-}; // namespace CDB
+} // namespace CDB

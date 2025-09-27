@@ -238,7 +238,7 @@ void CGameFont::OutSet(float x, float y)
 
 void CGameFont::OutSetI(float x, float y) { OutSet(DI2PX(x), DI2PY(y)); }
 
-u32 CGameFont::SmartLength(const char* S) { return (IsMultibyte() ? mbhMulti2Wide(NULL, NULL, 0, S) : xr_strlen(S)); }
+u32 CGameFont::SmartLength(const char* S) { return (IsMultibyte() ? mbhMulti2Wide(nullptr, nullptr, 0, S) : xr_strlen(S)); }
 
 void CGameFont::OnRender()
 {
@@ -348,13 +348,14 @@ void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords,
         va_start(p, fmt); \
         MasterOut(CHECK_DEVICE, USE_COORDS, SCALE_COORDS, USE_SKIP, X, Y, SKIP, FMT, p); \
         va_end(p); \
-    }
+    } \
+    XR_MACRO_END()
 
-void __cdecl CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt); };
+void __cdecl CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt); }
 
-void __cdecl CGameFont::Out(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt); };
+void __cdecl CGameFont::Out(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt); }
 
-void __cdecl CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt); };
+void __cdecl CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt); }
 
 void CGameFont::OutSkip(float val) { fCurrentY += val * CurrentHeight_(); }
 
@@ -383,7 +384,7 @@ float CGameFont::SizeOf_(LPCSTR s)
     {
         wide_char wsStr[MAX_MB_CHARS];
 
-        mbhMulti2Wide(wsStr, NULL, MAX_MB_CHARS, s);
+        mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, s);
 
         return SizeOf_(wsStr);
     }
@@ -424,13 +425,13 @@ void CGameFont::SetHeightI(float S)
 {
     VERIFY(uFlags & fsDeviceIndependent);
     fCurrentHeight = S * Device.dwHeight;
-};
+}
 
 void CGameFont::SetHeight(float S)
 {
     VERIFY(!(uFlags & fsDeviceIndependent));
     fCurrentHeight = S;
-};
+}
 
 float CGameFont::GetWidthScale() const
 {
@@ -439,6 +440,7 @@ float CGameFont::GetWidthScale() const
 
     return g_fontWidthScale * (!fis_zero(fXScale) ? fXScale : 1);
 }
+
 float CGameFont::GetHeightScale() const
 {
     if (uFlags & fsDeviceIndependent)

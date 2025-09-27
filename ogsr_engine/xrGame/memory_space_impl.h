@@ -44,14 +44,15 @@ IC void CObjectParams<T>::fill(const T* game_object)
         m_position.set(game_object->Position().x, m_position.y, game_object->Position().z);
     }
     else
-        m_position = Fvector().set(0.f, 0.f, 0.f);
+    {
+        m_position = Fvector{};
+    }
 }
 
 template <typename T>
 IC CMemoryObject<T>::CMemoryObject()
 {
     m_squad_mask.one();
-    m_object = 0;
 }
 
 template <typename T>

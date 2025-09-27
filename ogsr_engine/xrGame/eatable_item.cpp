@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "eatable_item.h"
 #include "physic_item.h"
 #include "Level.h"
@@ -14,20 +15,8 @@
 #include "EntityCondition.h"
 #include "InventoryOwner.h"
 
-CEatableItem::CEatableItem()
-{
-    m_fHealthInfluence = 0;
-    m_fPowerInfluence = 0;
-    m_fSatietyInfluence = 0;
-    m_fRadiationInfluence = 0;
-    m_fPsyHealthInfluence = 0;
-
-    m_iPortionsNum = -1;
-
-    m_physic_item = 0;
-}
-
-CEatableItem::~CEatableItem() {}
+CEatableItem::CEatableItem() = default;
+CEatableItem::~CEatableItem() = default;
 
 DLL_Pure* CEatableItem::_construct()
 {
@@ -61,14 +50,14 @@ BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
     m_iPortionsNum = m_iStartPortionsNum;
 
     return TRUE;
-};
+}
 
 bool CEatableItem::Useful() const
 {
     if (!inherited::Useful())
         return false;
 
-    //проверить не все ли еще съедено
+    // проверить не все ли еще съедено
     if (Empty())
         return false;
 
@@ -103,12 +92,13 @@ void CEatableItem::UseBy(CEntityAlive* entity_alive)
 
     entity_alive->conditions().SetMaxPower(entity_alive->conditions().GetMaxPower() + m_fMaxPowerUpInfluence);
 
-    //уменьшить количество порций
+    // уменьшить количество порций
     if (m_iPortionsNum > 0)
         --(m_iPortionsNum);
     else
         m_iPortionsNum = 0;
 }
+
 void CEatableItem::ZeroAllEffects()
 {
     m_fHealthInfluence = 0.f;
@@ -120,4 +110,5 @@ void CEatableItem::ZeroAllEffects()
     m_fWoundsHealPerc = 0.f;
     m_fThirstInfluence = 0.f;
 }
+
 void CEatableItem::SetRadiation(float _rad) { m_fRadiationInfluence = _rad; }

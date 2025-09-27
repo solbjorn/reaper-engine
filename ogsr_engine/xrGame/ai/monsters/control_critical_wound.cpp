@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_critical_wound.h"
 #include "BaseMonster/base_monster.h"
 #include "control_animation_base.h"
@@ -44,6 +45,6 @@ void CControlCriticalWound::on_event(ControlCom::EEventType type, ControlCom::IE
 {
     switch (type)
     {
-    case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventCriticalWoundEnd, 0); break;
+    case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventCriticalWoundEnd, nullptr); break;
     }
 }

@@ -171,6 +171,6 @@ DEFINE_VECTOR(CSE_ALifeSchedulable*, SCHEDULE_P_VECTOR, SCHEDULE_P_IT);
 
 DEFINE_MAP(_OBJECT_ID, CSE_ALifeDynamicObject*, D_OBJECT_P_MAP, D_OBJECT_P_PAIR_IT);
 DEFINE_MAP(_STORY_ID, CSE_ALifeDynamicObject*, STORY_P_MAP, STORY_P_PAIR_IT);
-}; // namespace ALife
+} // namespace ALife
 
 #endif // XRAY_ALIFE_SPACE

@@ -59,7 +59,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 
         float sd, abs_sd, sg_sd;
         u32 v;
-        if (sg_sd0 == sg_sd1)
+        if (fsimilar(sg_sd0, sg_sd1))
         {
             sd = -sd0 - sd1;
             abs_sd = abs_sd0 + abs_sd1;
@@ -86,7 +86,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
         float sg_dist = sgn(dist);
         float abs_dist = sg_dist * dist;
 
-        if (sg_dist != sg_sd)
+        if (!fsimilar(sg_dist, sg_sd))
         {
             if (abs_dist - abs_sd > box.x)
                 return false;
@@ -117,7 +117,7 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
         float ov_prg = crs.dotproduct(verts[ov]);
         float dist = c_prg - sv_prg;
         float sg_dist = sgn(dist);
-        if (sgn(ov_prg - c_prg) != sg_dist)
+        if (!fsimilar(sgn(ov_prg - c_prg), sg_dist))
         {
             if (_abs(fv_dir.dotproduct(crs)) * box.z + _abs(side_dir.dotproduct(crs)) * box.x < sg_dist * dist)
                 return false;
@@ -127,65 +127,21 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 }
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////class//CPHSimpleCharacter////////////////////
-CPHSimpleCharacter::CPHSimpleCharacter()
+CPHSimpleCharacter::CPHSimpleCharacter() : jump_up_velocity{6.f}, m_max_velocity{5.f}
 {
-    m_object_contact_callback = NULL;
-
-    m_geom_shell = NULL;
-    m_wheel = NULL;
-
-    m_space = NULL;
-    m_wheel_transform = NULL;
-    m_shell_transform = NULL;
-
-    m_hat = NULL;
-    m_hat_transform = NULL;
-    m_acceleration.set(0, 0, 0);
-    b_external_impulse = false;
-    m_ext_impuls_stop_step = u64(-1);
-    m_ext_imulse.set(0, 0, 0);
-    m_phys_ref_object = NULL;
-    b_on_object = false;
-    m_friction_factor = 1.f;
+    m_phys_ref_object = nullptr;
     dVectorSetZero(m_control_force);
     dVectorSetZero(m_depart_position);
-    is_contact = false;
-    was_contact = false;
-    is_control = false;
-    b_depart = false;
-    b_meet = false;
-    b_lose_control = true;
-    b_lose_ground = true;
-    b_jump = false;
-    b_side_contact = false;
-    b_was_side_contact = false;
-    b_clamb_jump = false;
-    b_any_contacts = false;
-    b_valide_ground_contact = false;
-    b_valide_wall_contact = false;
-    b_jump = false;
     b_exist = false;
     m_mass = 70.f;
-    m_max_velocity = 5.f;
-    // m_update_time=0.f;
-    b_meet_control = false;
-    b_jumping = false;
-    b_death_pos = false;
-    jump_up_velocity = 6.f;
-    m_air_control_factor = 0;
-    m_capture_joint = NULL;
-    m_cap = NULL;
-    m_cap_transform = NULL;
     dVectorSetZero(m_safe_velocity);
-    m_collision_damage_factor = 1.f;
-    b_collision_restrictor_touch = false;
-    b_foot_mtl_check = true;
 }
 
 void CPHSimpleCharacter::TestPathCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
     do_colide = false;
-    CPHSimpleCharacter* ch = NULL;
+    CPHSimpleCharacter* ch{};
+
     if (bo1)
     {
         ch = static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(c.geom.g1)->ph_object);
@@ -194,6 +150,7 @@ void CPHSimpleCharacter::TestPathCallback(bool& do_colide, bool bo1, dContact& c
     {
         ch = static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(c.geom.g2)->ph_object);
     }
+
     VERIFY(ch);
     ch->b_side_contact = true;
 }
@@ -222,6 +179,7 @@ void CPHSimpleCharacter::SetBox(const dVector3& sizes)
     dGeomSphereSetRadius(m_cap, test_radius);
     dGeomSetPosition(m_cap, 0.f, test_height, 0.f);
 }
+
 void CPHSimpleCharacter::Create(dVector3 sizes)
 {
     if (b_exist)
@@ -242,14 +200,14 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
     const dReal k = 1.20f;
     dReal doun = m_radius * _sqrt(1.f - 1.f / k / k) / 2.f;
 
-    m_geom_shell = dCreateCylinder(0, m_radius / k, m_cyl_hight + doun);
+    m_geom_shell = dCreateCylinder(nullptr, m_radius / k, m_cyl_hight + doun);
 
-    m_wheel = dCreateSphere(0, m_radius);
-    m_hat = dCreateSphere(0, m_radius / k);
+    m_wheel = dCreateSphere(nullptr, m_radius);
+    m_hat = dCreateSphere(nullptr, m_radius / k);
 
-    m_shell_transform = dCreateGeomTransform(0);
+    m_shell_transform = dCreateGeomTransform(nullptr);
     dGeomTransformSetCleanup(m_shell_transform, 0);
-    m_hat_transform = dCreateGeomTransform(0);
+    m_hat_transform = dCreateGeomTransform(nullptr);
     dGeomTransformSetCleanup(m_hat_transform, 0);
     // m_wheel_transform=dCreateGeomTransform(0);
 
@@ -269,7 +227,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
     dGeomTransformSetGeom(m_hat_transform, m_hat);
 
     dGeomTransformSetGeom(m_shell_transform, m_geom_shell);
-    m_body = dBodyCreate(0);
+    m_body = dBodyCreate(nullptr);
     Island().AddBody(m_body);
 
     dGeomSetBody(m_shell_transform, m_body);
@@ -292,7 +250,7 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
     dMassAdjust(&m, m_mass);
     dBodySetMass(m_body, &m);
 
-    m_space = dSimpleSpaceCreate(0);
+    m_space = dSimpleSpaceCreate(nullptr);
     // dGeomGroupAdd(m_geom_group,m_wheel_transform);
     dSpaceAdd(m_space, m_wheel);
 
@@ -303,9 +261,9 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
 
     float test_radius = m_radius * 2.f;
     float test_height = test_radius + m_radius / 2.f;
-    m_cap = dCreateSphere(0, test_radius);
+    m_cap = dCreateSphere(nullptr, test_radius);
     dGeomSetPosition(m_cap, 0.f, test_height, 0.f);
-    m_cap_transform = dCreateGeomTransform(0);
+    m_cap_transform = dCreateGeomTransform(nullptr);
     dGeomTransformSetCleanup(m_cap_transform, 0);
     dGeomTransformSetInfo(m_cap_transform, 1);
     dGeomTransformSetGeom(m_cap_transform, m_cap);
@@ -333,18 +291,20 @@ void CPHSimpleCharacter::Create(dVector3 sizes)
     CPHCollideValidator::SetCharacterClass(*this);
     m_collision_damage_info.Construct();
 }
+
 void CPHSimpleCharacter::SwitchOFFInitContact()
 {
     VERIFY(b_exist);
-    dGeomUserDataSetPhObject(m_wheel, 0);
-    dGeomUserDataSetPhObject(m_geom_shell, 0);
-    dGeomUserDataSetPhObject(m_hat, 0);
+    dGeomUserDataSetPhObject(m_wheel, nullptr);
+    dGeomUserDataSetPhObject(m_geom_shell, nullptr);
+    dGeomUserDataSetPhObject(m_hat, nullptr);
     b_lose_control = true;
     b_any_contacts = false;
     is_contact = false;
     b_foot_mtl_check = true;
     b_on_ground = b_valide_ground_contact = false;
 }
+
 void CPHSimpleCharacter::SwitchInInitContact()
 {
     VERIFY(b_exist);
@@ -352,6 +312,7 @@ void CPHSimpleCharacter::SwitchInInitContact()
     dGeomUserDataSetPhObject(m_geom_shell, (CPHObject*)this);
     dGeomUserDataSetPhObject(m_hat, (CPHObject*)this);
 }
+
 void CPHSimpleCharacter::Destroy()
 {
     if (!b_exist)
@@ -369,71 +330,77 @@ void CPHSimpleCharacter::Destroy()
     {
         dGeomDestroyUserData(m_cap);
         dGeomDestroy(m_cap);
-        m_cap = NULL;
+        m_cap = nullptr;
     }
 
     if (m_cap_transform)
     {
         dGeomDestroyUserData(m_cap_transform);
         dGeomDestroy(m_cap_transform);
-        m_cap_transform = NULL;
+        m_cap_transform = nullptr;
     }
 
     if (m_geom_shell)
     {
         dGeomDestroyUserData(m_geom_shell);
         dGeomDestroy(m_geom_shell);
-        m_geom_shell = NULL;
+        m_geom_shell = nullptr;
     }
 
     if (m_wheel)
     {
         dGeomDestroyUserData(m_wheel);
         dGeomDestroy(m_wheel);
-        m_wheel = NULL;
+        m_wheel = nullptr;
     }
 
     if (m_shell_transform)
     {
         dGeomDestroyUserData(m_shell_transform);
         dGeomDestroy(m_shell_transform);
-        m_shell_transform = NULL;
+        m_shell_transform = nullptr;
     }
 
     if (m_wheel_transform)
     {
         dGeomDestroyUserData(m_wheel_transform);
         dGeomDestroy(m_wheel_transform);
-        m_wheel_transform = NULL;
+        m_wheel_transform = nullptr;
     }
 
     if (m_hat)
     {
         dGeomDestroyUserData(m_hat);
         dGeomDestroy(m_hat);
-        m_hat = NULL;
+        m_hat = nullptr;
     }
+
     if (m_hat_transform)
     {
         dGeomDestroyUserData(m_hat_transform);
         dGeomDestroy(m_hat_transform);
-        m_hat_transform = NULL;
+        m_hat_transform = nullptr;
     }
 
     if (m_space)
     {
         dSpaceDestroy(m_space);
-        m_space = NULL;
+        m_space = nullptr;
     }
 
     if (m_body)
     {
         Island().RemoveBody(m_body);
         dBodyDestroy(m_body);
-        m_body = NULL;
+        m_body = nullptr;
     }
 }
-const static u64 impulse_time_constant = 30;
+
+namespace
+{
+constexpr u64 impulse_time_constant{30};
+}
+
 void CPHSimpleCharacter::ApplyImpulse(const Fvector& dir, dReal P)
 {
     if (!b_exist || b_external_impulse)
@@ -487,7 +454,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
     if (ph_world->m_steps_num > m_ext_impuls_stop_step)
     {
         b_external_impulse = false;
-        m_ext_impuls_stop_step = u64(-1);
+        m_ext_impuls_stop_step = std::numeric_limits<u64>::max();
         m_ext_imulse.set(0, 0, 0);
         Fvector vel;
         GetVelocity(vel);
@@ -1144,7 +1111,7 @@ void CPHSimpleCharacter::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
 
 void CPHSimpleCharacter::CaptureObject(dBodyID body, const dReal* anchor)
 {
-    m_capture_joint = dJointCreateBall(0, 0);
+    m_capture_joint = dJointCreateBall(nullptr, nullptr);
     Island().AddJoint(m_capture_joint);
     dJointAttach(m_capture_joint, m_body, body);
     dJointSetBallAnchor(m_capture_joint, anchor[0], anchor[1], anchor[2]);
@@ -1703,23 +1670,26 @@ void CPHSimpleCharacter::SCollisionDamageInfo::HitDir(Fvector& dir) const
 //	if(ds) return ds->Initiator();
 //	return u16(-1);
 // }
+
 void CPHSimpleCharacter::SCollisionDamageInfo::Reinit()
 {
     // m_damege_contact;
 
-    m_obj_id = u16(-1);
-    m_hit_callback = NULL;
+    m_obj_id = std::numeric_limits<u16>::max();
+    m_hit_callback = nullptr;
     m_contact_velocity = 0;
     is_initiated = false;
     // float					m_dmc_signum;
     // enum{ctStatic,ctObject}	m_dmc_type;
 }
+
 bool CPHSimpleCharacter::GetAndResetInitiated()
 {
     bool ret = m_collision_damage_info.is_initiated;
     m_collision_damage_info.is_initiated = false;
     return ret;
 }
+
 void CPHSimpleCharacter::GetSmothedVelocity(Fvector& vvel)
 {
     if (!b_exist)
@@ -1727,6 +1697,7 @@ void CPHSimpleCharacter::GetSmothedVelocity(Fvector& vvel)
         vvel.set(0, 0, 0);
         return;
     }
+
     vvel.set(m_last_move);
 
     // if(IsEnabled()&&m_count<m_frames)
@@ -1749,12 +1720,18 @@ ALife::EHitType CPHSimpleCharacter::HitType() const
 CElevatorState* CPHSimpleCharacter::ElevatorState() { return &m_elevator_state; }
 
 ICollisionHitCallback* CPHSimpleCharacter::HitCallback() const { return m_collision_damage_info.m_hit_callback; }
-const float resolve_depth = 0.05f;
-static float restrictor_depth = 0.f;
+
+namespace
+{
+constexpr float resolve_depth{0.05f};
+float restrictor_depth{};
+} // namespace
+
 void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-    dGeomID g_this = NULL;
-    dGeomID g_obj = NULL;
+    dGeomID g_this{};
+    dGeomID g_obj{};
+
     if (bo1)
     {
         g_this = c.geom.g1;
@@ -1765,6 +1742,7 @@ void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool 
         g_this = c.geom.g2;
         g_obj = c.geom.g1;
     }
+
     dxGeomUserData* obj_data = retrieveGeomUserData(g_obj);
     if (!obj_data)
         return;
@@ -1772,9 +1750,11 @@ void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool 
         return;
     if (obj_data->ph_object->CastType() != tpCharacter)
         return;
+
     CPHActorCharacter* actor_character = (static_cast<CPHCharacter*>(obj_data->ph_object))->CastActorCharacter();
     if (!actor_character)
         return;
+
     VERIFY(static_cast<CPHSimpleCharacter*>(retrieveGeomUserData(g_this)->ph_object));
     save_max(restrictor_depth, c.geom.depth);
     do_colide = true;

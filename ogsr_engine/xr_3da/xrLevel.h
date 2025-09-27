@@ -170,7 +170,7 @@ public:
         default: NODEFAULT;
         }
 #ifdef DEBUG
-        return (u8(-1));
+        return std::numeric_limits<u8>::max();
 #endif
     }
 

@@ -39,6 +39,8 @@ public:
     virtual ~CScriptActionCondition();
     IC void initialize();
 
+    inline void clone(const CScriptActionCondition& from);
+
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 

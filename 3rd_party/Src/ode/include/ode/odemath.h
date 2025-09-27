@@ -80,11 +80,13 @@ PURE_INLINE dReal dDOT44 (const dReal *a, const dReal *b) { return dDOTpq(a,b,4,
 #define dCROSS(a,op,b,c) \
   (a)[0] op ((b)[1]*(c)[2] - (b)[2]*(c)[1]); \
   (a)[1] op ((b)[2]*(c)[0] - (b)[0]*(c)[2]); \
-  (a)[2] op ((b)[0]*(c)[1] - (b)[1]*(c)[0]);
+  (a)[2] op ((b)[0]*(c)[1] - (b)[1]*(c)[0])
+
 #define dCROSSpqr(a,op,b,c,p,q,r) \
   (a)[  0] op ((b)[  q]*(c)[2*r] - (b)[2*q]*(c)[  r]); \
   (a)[  p] op ((b)[2*q]*(c)[  0] - (b)[  0]*(c)[2*r]); \
-  (a)[2*p] op ((b)[  0]*(c)[  r] - (b)[  q]*(c)[  0]);
+  (a)[2*p] op ((b)[  0]*(c)[  r] - (b)[  q]*(c)[  0])
+
 #define dCROSS114(a,op,b,c) dCROSSpqr(a,op,b,c,1,1,4)
 #define dCROSS141(a,op,b,c) dCROSSpqr(a,op,b,c,1,4,1)
 #define dCROSS144(a,op,b,c) dCROSSpqr(a,op,b,c,1,4,4)
@@ -108,7 +110,7 @@ PURE_INLINE dReal dDOT44 (const dReal *a, const dReal *b) { return dDOTpq(a,b,4,
   (A)[(skip)+0] = plus (a)[2]; \
   (A)[(skip)+2] = minus (a)[0]; \
   (A)[2*(skip)+0] = minus (a)[1]; \
-  (A)[2*(skip)+1] = plus (a)[0];
+  (A)[2*(skip)+1] = plus (a)[0]
 
 
 /*
@@ -133,15 +135,18 @@ PURE_INLINE double dDISTANCE (const double a[3], const double b[3])
 #define dMULTIPLYOP0_331(A,op,B,C) \
   (A)[0] op dDOT((B),(C)); \
   (A)[1] op dDOT((B+4),(C)); \
-  (A)[2] op dDOT((B+8),(C));
+  (A)[2] op dDOT((B+8),(C))
+
 #define dMULTIPLYOP1_331(A,op,B,C) \
   (A)[0] op dDOT41((B),(C)); \
   (A)[1] op dDOT41((B+1),(C)); \
-  (A)[2] op dDOT41((B+2),(C));
+  (A)[2] op dDOT41((B+2),(C))
+
 #define dMULTIPLYOP0_133(A,op,B,C) \
   (A)[0] op dDOT14((B),(C)); \
   (A)[1] op dDOT14((B),(C+1)); \
-  (A)[2] op dDOT14((B),(C+2));
+  (A)[2] op dDOT14((B),(C+2))
+
 #define dMULTIPLYOP0_333(A,op,B,C) \
   (A)[0] op dDOT14((B),(C)); \
   (A)[1] op dDOT14((B),(C+1)); \
@@ -151,7 +156,8 @@ PURE_INLINE double dDISTANCE (const double a[3], const double b[3])
   (A)[6] op dDOT14((B+4),(C+2)); \
   (A)[8] op dDOT14((B+8),(C)); \
   (A)[9] op dDOT14((B+8),(C+1)); \
-  (A)[10] op dDOT14((B+8),(C+2));
+  (A)[10] op dDOT14((B+8),(C+2))
+
 #define dMULTIPLYOP1_333(A,op,B,C) \
   (A)[0] op dDOT44((B),(C)); \
   (A)[1] op dDOT44((B),(C+1)); \
@@ -161,7 +167,8 @@ PURE_INLINE double dDISTANCE (const double a[3], const double b[3])
   (A)[6] op dDOT44((B+1),(C+2)); \
   (A)[8] op dDOT44((B+2),(C)); \
   (A)[9] op dDOT44((B+2),(C+1)); \
-  (A)[10] op dDOT44((B+2),(C+2));
+  (A)[10] op dDOT44((B+2),(C+2))
+
 #define dMULTIPLYOP2_333(A,op,B,C) \
   (A)[0] op dDOT((B),(C)); \
   (A)[1] op dDOT((B),(C+4)); \
@@ -171,25 +178,25 @@ PURE_INLINE double dDISTANCE (const double a[3], const double b[3])
   (A)[6] op dDOT((B+4),(C+8)); \
   (A)[8] op dDOT((B+8),(C)); \
   (A)[9] op dDOT((B+8),(C+4)); \
-  (A)[10] op dDOT((B+8),(C+8));
+  (A)[10] op dDOT((B+8),(C+8))
 
 #ifdef __cplusplus
 
 #define DECL template <class TA, class TB, class TC> PURE_INLINE void
 
-DECL dMULTIPLY0_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_331(A,=,B,C) }
-DECL dMULTIPLY1_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_331(A,=,B,C) }
-DECL dMULTIPLY0_133(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_133(A,=,B,C) }
-DECL dMULTIPLY0_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_333(A,=,B,C) }
-DECL dMULTIPLY1_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_333(A,=,B,C) }
-DECL dMULTIPLY2_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP2_333(A,=,B,C) }
+DECL dMULTIPLY0_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_331(A,=,B,C); }
+DECL dMULTIPLY1_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_331(A,=,B,C); }
+DECL dMULTIPLY0_133(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_133(A,=,B,C); }
+DECL dMULTIPLY0_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_333(A,=,B,C); }
+DECL dMULTIPLY1_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_333(A,=,B,C); }
+DECL dMULTIPLY2_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP2_333(A,=,B,C); }
 
-DECL dMULTIPLYADD0_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_331(A,+=,B,C) }
-DECL dMULTIPLYADD1_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_331(A,+=,B,C) }
-DECL dMULTIPLYADD0_133(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_133(A,+=,B,C) }
-DECL dMULTIPLYADD0_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_333(A,+=,B,C) }
-DECL dMULTIPLYADD1_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_333(A,+=,B,C) }
-DECL dMULTIPLYADD2_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP2_333(A,+=,B,C) }
+DECL dMULTIPLYADD0_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_331(A,+=,B,C); }
+DECL dMULTIPLYADD1_331(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_331(A,+=,B,C); }
+DECL dMULTIPLYADD0_133(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_133(A,+=,B,C); }
+DECL dMULTIPLYADD0_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP0_333(A,+=,B,C); }
+DECL dMULTIPLYADD1_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP1_333(A,+=,B,C); }
+DECL dMULTIPLYADD2_333(TA *A, const TB *B, const TC *C) { dMULTIPLYOP2_333(A,+=,B,C); }
 
 #undef DECL
 

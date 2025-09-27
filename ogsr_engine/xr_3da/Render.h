@@ -55,7 +55,7 @@ public:
     virtual void set_volumetric_quality(float) = 0;
     virtual void set_volumetric_intensity(float) = 0;
     virtual void set_volumetric_distance(float) = 0;
-    virtual void set_indirect(bool) {};
+    virtual void set_indirect(bool) {}
     virtual void set_position(const Fvector& P) = 0;
     virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
     virtual void set_cone(float angle) = 0;
@@ -78,7 +78,7 @@ public:
 
 struct resptrcode_light : public resptr_base<IRender_Light>
 {
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
 };
 
 typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
@@ -104,7 +104,7 @@ public:
 
 struct resptrcode_glow : public resptr_base<IRender_Glow>
 {
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
 };
 
 typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
@@ -209,7 +209,7 @@ public:
     virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result) = 0;
 
     // Information
-    virtual void Statistics(CGameFont* F) {};
+    virtual void Statistics(CGameFont* F) {}
 
     virtual LPCSTR getShaderPath() = 0;
     virtual IRenderVisual* getVisual(int id) = 0;
@@ -233,13 +233,13 @@ public:
 
     // Lighting/glowing
     virtual IRender_Light* light_create() = 0;
-    virtual void light_destroy(IRender_Light* p_) {};
+    virtual void light_destroy(IRender_Light* p_) {}
     virtual IRender_Glow* glow_create() = 0;
-    virtual void glow_destroy(IRender_Glow* p_) {};
+    virtual void glow_destroy(IRender_Glow* p_) {}
 
     // Models
     virtual IRenderVisual* model_CreateParticles(LPCSTR name) = 0;
-    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = 0) = 0;
+    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = nullptr) = 0;
     virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data) = 0;
     virtual IRenderVisual* model_Duplicate(IRenderVisual* V) = 0;
 
@@ -263,7 +263,7 @@ public:
     virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
     virtual void AfterUIRender() = 0; // После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
-    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
+    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr) = 0;
 
     // Constructor/destructor
     virtual ~IRender_interface() = 0;
@@ -309,7 +309,7 @@ class ShExports final
         T Positions[Size]{};
         T& operator[](const u32& key)
         {
-            ASSERT_FMT(key < std::size(Positions), "Out of range! key: [%u], size: [%u]", key, std::size(Positions));
+            ASSERT_FMT(key < std::size(Positions), "Out of range! key: [%u], size: [%zu]", key, std::size(Positions));
             return Positions[key];
         }
     };
@@ -320,11 +320,11 @@ class ShExports final
     Fvector pda_params{}, actor_params{};
 
 public:
-    void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] = _pos; };
-    void set_anomaly_position(const u32& _i, const Fvector2& _pos) { anomalys_position[_i] = _pos; };
-    void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
-    void set_pda_params(const Fvector& _pos) { pda_params = _pos; };
-    void set_actor_params(const Fvector& _pos) { actor_params = _pos; };
+    void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] = _pos; }
+    void set_anomaly_position(const u32& _i, const Fvector2& _pos) { anomalys_position[_i] = _pos; }
+    void set_detector_params(const Ivector2& _pos) { detector_params = _pos; }
+    void set_pda_params(const Fvector& _pos) { pda_params = _pos; }
+    void set_actor_params(const Fvector& _pos) { actor_params = _pos; }
 
     const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
     const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }

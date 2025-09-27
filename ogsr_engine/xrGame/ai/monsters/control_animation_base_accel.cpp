@@ -1,10 +1,12 @@
 #include "stdafx.h"
+
 #include "control_animation_base.h"
 #include "BaseMonster/base_monster.h"
 #include "../../detail_path_manager.h"
 #include "monster_velocity_space.h"
 
 void CControlAnimationBase::accel_init() { m_accel.active = false; }
+
 void CControlAnimationBase::accel_load(LPCSTR section)
 {
     m_accel.calm = pSettings->r_float(section, "Accel_Calm");
@@ -15,7 +17,6 @@ void CControlAnimationBase::accel_activate(EAccelType type)
 {
     m_accel.active = true;
     m_accel.type = type;
-
     m_accel.enable_braking = true;
 }
 
@@ -56,8 +57,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
         auto IT_B = I->begin();
         auto IT_E = I->end();
         auto best_anim = IT_E;
-        SVelocityParam* best_param = 0;
-
+        SVelocityParam* best_param{};
         bool found = false;
 
         // Пройти по текущему вектору

@@ -11,19 +11,7 @@
 //////////////////////////////////////////////////////////////////////////
 // CCoverEvaluatorBase
 //////////////////////////////////////////////////////////////////////////
-IC CCoverEvaluatorBase::CCoverEvaluatorBase(CRestrictedObject* object)
-{
-    m_inertia_time = 0;
-    m_last_update = 0;
-    m_inertia_time = 0;
-    m_best_value = flt_max;
-    m_initialized = false;
-    m_start_position.set(flt_max, flt_max, flt_max);
-    m_selected = 0;
-    m_object = object;
-    m_actuality = true;
-    m_last_radius = flt_max;
-}
+IC CCoverEvaluatorBase::CCoverEvaluatorBase(CRestrictedObject* object) : m_object{object} {}
 
 IC const CCoverPoint* CCoverEvaluatorBase::selected() const { return (m_selected); }
 
@@ -50,9 +38,11 @@ IC void CCoverEvaluatorBase::setup(const std::function<bool(const CCoverPoint*)>
 IC void CCoverEvaluatorBase::initialize(const Fvector& start_position, bool fake_call)
 {
     VERIFY(initialized());
+
     m_start_position = start_position;
-    m_selected = 0;
+    m_selected = nullptr;
     m_best_value = 1000.f;
+
     if (!fake_call)
         m_last_update = Device.dwTimeGlobal;
 }
@@ -126,7 +116,6 @@ IC CCoverEvaluatorAngle::CCoverEvaluatorAngle(CRestrictedObject* object) : inher
     m_direction.set(flt_max, flt_max, flt_max);
     m_best_direction.set(flt_max, flt_max, flt_max);
     m_best_alpha = flt_max;
-    ;
     m_level_vertex_id = u32(-1);
 }
 
@@ -181,5 +170,4 @@ IC CCoverEvaluatorAmbush::CCoverEvaluatorAmbush(CRestrictedObject* object) : inh
     m_my_position.set(flt_max, flt_max, flt_max);
     m_enemy_position.set(flt_max, flt_max, flt_max);
     m_min_enemy_distance = flt_max;
-    ;
 }

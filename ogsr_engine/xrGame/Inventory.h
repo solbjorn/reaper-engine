@@ -10,19 +10,16 @@ class CInventoryOwner;
 class CInventorySlot
 {
 public:
-    CInventorySlot();
-    virtual ~CInventorySlot();
+    PIItem m_pIItem{};
+    int m_blockCounter{};
+    bool m_bPersistent{};
+    bool m_bVisible{true};
+    bool m_maySwitchFast{};
 
     bool CanBeActivated() const;
     bool IsBlocked() const;
     bool maySwitchFast() const;
     void setSwitchFast(bool);
-
-    PIItem m_pIItem;
-    bool m_bPersistent;
-    bool m_bVisible;
-    int m_blockCounter;
-    bool m_maySwitchFast;
 };
 
 enum EActivationReason
@@ -68,7 +65,7 @@ public:
 
     bool Activate(u32 slot, EActivationReason reason = eGeneral, bool bForce = false, bool now = false);
     void Activate_deffered(u32 slot, u32 _frame);
-    PIItem ActiveItem() const { return m_iActiveSlot == NO_ACTIVE_SLOT ? NULL : m_slots[m_iActiveSlot].m_pIItem; }
+    PIItem ActiveItem() const { return m_iActiveSlot == NO_ACTIVE_SLOT ? nullptr : m_slots[m_iActiveSlot].m_pIItem; }
     PIItem ItemFromSlot(u32 slot) const;
     bool Action(s32 cmd, u32 flags);
     void Update();

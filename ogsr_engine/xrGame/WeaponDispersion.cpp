@@ -13,7 +13,7 @@
 #include "effectorshot.h"
 #include "EffectorShotX.h"
 
-//возвращает 1, если оружие в отличном состоянии и >1 если повреждено
+// возвращает 1, если оружие в отличном состоянии и >1 если повреждено
 float CWeapon::GetConditionDispersionFactor() const
 {
     if (Core.Features.test(xrCore::Feature::npc_simplified_shooting))
@@ -34,13 +34,13 @@ float CWeapon::GetFireDispersion(bool with_cartridge)
     return GetFireDispersion(m_fCurrentCartirdgeDisp);
 }
 
-//текущая дисперсия (в радианах) оружия с учетом используемого патрона
+// текущая дисперсия (в радианах) оружия с учетом используемого патрона
 float CWeapon::GetFireDispersion(float cartridge_k)
 {
-    //учет базовой дисперсии, состояние оружия и влияение патрона
+    // учет базовой дисперсии, состояние оружия и влияение патрона
     float fire_disp = fireDispersionBase * cartridge_k * GetConditionDispersionFactor();
 
-    //вычислить дисперсию, вносимую самим стрелком
+    // вычислить дисперсию, вносимую самим стрелком
     if (auto pOwner = smart_cast<const CInventoryOwner*>(H_Parent()))
     {
         const float parent_disp = pOwner->GetWeaponAccuracy();
@@ -52,10 +52,7 @@ float CWeapon::GetFireDispersion(float cartridge_k)
 
 //////////////////////////////////////////////////////////////////////////
 // Для эффекта отдачи оружия
-void CWeapon::AddShotEffector()
-{
-    inventory_owner().on_weapon_shot_start(this);
-}
+void CWeapon::AddShotEffector() { inventory_owner().on_weapon_shot_start(this); }
 
 void CWeapon::RemoveShotEffector()
 {
@@ -69,7 +66,7 @@ void CWeapon::ClearShotEffector()
     CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(H_Parent());
     if (pInventoryOwner)
         pInventoryOwner->on_weapon_hide(this);
-};
+}
 
 /**
 const Fvector& CWeapon::GetRecoilDeltaAngle()

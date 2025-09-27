@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_danger_by_sound_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -20,12 +21,12 @@
 // CStalkerActionDangerBySoundListenTo
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerBySoundListenTo::CStalkerActionDangerBySoundListenTo(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerBySoundListenTo::CStalkerActionDangerBySoundListenTo(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerBySoundListenTo::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -44,12 +45,12 @@ void CStalkerActionDangerBySoundListenTo::finalize() { inherited::finalize(); }
 // CStalkerActionDangerBySoundCheck
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerBySoundCheck::CStalkerActionDangerBySoundCheck(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerBySoundCheck::CStalkerActionDangerBySoundCheck(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerBySoundCheck::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -68,12 +69,12 @@ void CStalkerActionDangerBySoundCheck::finalize() { inherited::finalize(); }
 // CStalkerActionDangerBySoundTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerBySoundTakeCover::CStalkerActionDangerBySoundTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerBySoundTakeCover::CStalkerActionDangerBySoundTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerBySoundTakeCover::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -92,12 +93,12 @@ void CStalkerActionDangerBySoundTakeCover::finalize() { inherited::finalize(); }
 // CStalkerActionDangerBySoundLookOut
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerBySoundLookOut::CStalkerActionDangerBySoundLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerBySoundLookOut::CStalkerActionDangerBySoundLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerBySoundLookOut::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -116,12 +117,12 @@ void CStalkerActionDangerBySoundLookOut::finalize() { inherited::finalize(); }
 // CStalkerActionDangerBySoundLookAround
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerBySoundLookAround::CStalkerActionDangerBySoundLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerBySoundLookAround::CStalkerActionDangerBySoundLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerBySoundLookAround::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();

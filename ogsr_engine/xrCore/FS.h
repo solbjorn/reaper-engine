@@ -97,7 +97,7 @@ public:
     IC void w_angle8(float a) { w_float_q8(angle_normalize(a), 0, PI_MUL_2); }
     IC void w_dir(const Fvector& D) { w_u16(pvCompress(D)); }
     void w_sdir(const Fvector& D);
-    void __cdecl w_printf(const char* format, ...);
+    void __cdecl XR_PRINTF(2, 3) w_printf(const char* format, ...);
 
     // generalized chunking
     u32 align();
@@ -171,7 +171,7 @@ public:
     IC implementation_type& impl() { return *(implementation_type*)this; }
     IC const implementation_type& impl() const { return *(implementation_type*)this; }
 
-    IC BOOL eof() const { return impl().elapsed() <= 0; };
+    IC BOOL eof() const { return impl().elapsed() <= 0; }
 
     IC void r(void* p, int cnt) { impl().r(p, cnt); }
 
@@ -180,67 +180,67 @@ public:
         Fvector tmp;
         r(&tmp, 3 * sizeof(float));
         return tmp;
-    };
+    }
     virtual Fvector4 r_vec4()
     {
         Fvector4 tmp;
         r(&tmp, 4 * sizeof(float));
         return tmp;
-    };
+    }
     virtual u64 r_u64()
     {
         u64 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual u32 r_u32()
     {
         u32 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual u16 r_u16()
     {
         u16 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual u8 r_u8()
     {
         u8 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual s64 r_s64()
     {
         s64 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual s32 r_s32()
     {
         s32 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual s16 r_s16()
     {
         s16 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual s8 r_s8()
     {
         s8 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
     virtual float r_float()
     {
         float tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
-    };
+    }
 
     virtual void r_fvector4(Fvector4& v) { r(&v, sizeof(Fvector4)); }
     virtual void r_fvector3(Fvector3& v) { r(&v, sizeof(Fvector3)); }
@@ -346,7 +346,7 @@ public:
         }
         else
         {
-            Msg("!![%s] chunk [%u] has invalid size [%lu], return elapsed size [%ld]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![%s] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
             return impl().elapsed();
         }
@@ -412,7 +412,7 @@ public:
                                         break; // found start of next section
                                     length++;
                                 }
-                                Msg("!![%s] THM [%s] chunk [%u] fixed, wrong size = [%lu], correct size = [%lu]", __FUNCTION__, dbg_name, ID, dwSize, length);
+                                Msg("!![%s] THM [%s] chunk [%u] fixed, wrong size = [%zu], correct size = [%zu]", __FUNCTION__, dbg_name, ID, dwSize, length);
                             }
                         }
 
@@ -440,7 +440,7 @@ public:
         }
         else
         {
-            Msg("!![%s][%p] chunk [%u] has invalid size [%lu], return elapsed size [%ld]", __FUNCTION__, impl().pointer(), ID, dwSize, impl().elapsed());
+            Msg("!![%s][%p] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, impl().pointer(), ID, dwSize, impl().elapsed());
             m_last_pos = 0;
             return impl().elapsed();
         }
@@ -526,7 +526,7 @@ public:
     IReader* open_chunk(u32 ID);
 
     // iterators
-    IReader* open_chunk_iterator(u32& ID, IReader* previous = NULL); // NULL=first
+    IReader* open_chunk_iterator(u32& ID, IReader* previous = nullptr); // nullptr => first
 
     void skip_bom(const char* dbg_name);
 
@@ -675,4 +675,10 @@ public:
         pvDecompress(A, t);
         A.mul(s);
     }
+};
+
+template <>
+struct std::default_delete<IReader>
+{
+    constexpr void operator()(IReader* ptr) const noexcept { ptr->close(); }
 };

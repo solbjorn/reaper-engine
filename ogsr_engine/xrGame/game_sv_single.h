@@ -13,13 +13,13 @@ private:
     typedef game_sv_GameState inherited;
 
 protected:
-    CALifeSimulator* m_alife_simulator;
+    CALifeSimulator* m_alife_simulator{};
 
 public:
     game_sv_Single();
     virtual ~game_sv_Single();
 
-    virtual LPCSTR type_name() const { return "single"; };
+    virtual LPCSTR type_name() const { return "single"; }
     virtual void Create(shared_str& options);
 
     virtual void OnCreate(u16 id_who);
@@ -46,7 +46,7 @@ public:
     virtual void remove_restriction(NET_Packet& packet, u16 id);
     virtual void remove_all_restrictions(NET_Packet& packet, u16 id);
 
-    virtual bool custom_sls_default() { return !!m_alife_simulator; };
+    virtual bool custom_sls_default() { return !!m_alife_simulator; }
     virtual void sls_default();
 
     virtual shared_str level_name(const shared_str& server_options) const;

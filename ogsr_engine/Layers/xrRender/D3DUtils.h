@@ -47,16 +47,16 @@ public:
     SPrimitiveBuffer m_WireCylinder;
     SPrimitiveBuffer m_SolidBox;
     SPrimitiveBuffer m_WireBox;
-    CGameFont* m_Font;
+    CGameFont* m_Font{};
 
-    ref_geom vs_L;
-    ref_geom vs_TL;
-    ref_geom vs_LIT;
+    ref_geom vs_L{};
+    ref_geom vs_TL{};
+    ref_geom vs_LIT{};
 
 protected:
-    FVF::L* m_DD_pv;
-    FVF::L* m_DD_pv_start;
-    u32 m_DD_base;
+    FVF::L* m_DD_pv{};
+    FVF::L* m_DD_pv_start{};
+    u32 m_DD_base{};
     BOOL m_DD_wire{};
     void DD_DrawFace_flush(BOOL try_again);
 
@@ -66,16 +66,7 @@ public:
     void DD_DrawFace_end();
 
 public:
-    CDrawUtilities()
-    {
-        vs_L = 0;
-        vs_TL = 0;
-        vs_LIT = 0;
-        m_DD_pv = 0;
-        m_DD_pv_start = 0;
-        m_DD_base = 0;
-        m_Font = 0;
-    }
+    CDrawUtilities() = default;
 
     void OnDeviceCreate();
     virtual void __stdcall OnDeviceDestroy();
@@ -97,10 +88,10 @@ public:
     virtual void __stdcall DrawSound(const Fvector& p, float radius, u32 clr);
     virtual void __stdcall DrawLineSphere(const Fvector& p, float radius, u32 clr, BOOL bCross);
 
-    virtual void __stdcall dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption = 0, u32 clr_font = 0xffffffff);
-    virtual void __stdcall dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption = 0);
-    virtual void __stdcall dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption = 0);
-    virtual void __stdcall dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption = 0);
+    virtual void __stdcall dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption = nullptr, u32 clr_font = std::numeric_limits<u32>::max());
+    virtual void __stdcall dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption = nullptr);
+    virtual void __stdcall dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption = nullptr);
+    virtual void __stdcall dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption = nullptr);
 
     virtual void __stdcall DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire);
     virtual void __stdcall DrawLine(const Fvector& p0, const Fvector& p1, u32 clr);
@@ -123,8 +114,8 @@ public:
         P.mad(C, N, size);
         DrawLine(C, P, clr);
     }
-    virtual void __stdcall DrawSelectionBox(const Fvector& center, const Fvector& size, u32* c = 0);
-    IC virtual void __stdcall DrawSelectionBoxB(const Fbox& box, u32* c = 0)
+    virtual void __stdcall DrawSelectionBox(const Fvector& center, const Fvector& size, u32* c = nullptr);
+    IC virtual void __stdcall DrawSelectionBoxB(const Fbox& box, u32* c = nullptr)
     {
         Fvector S, C;
         box.getsize(S);
@@ -160,7 +151,8 @@ public:
     virtual void __stdcall DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
     virtual void __stdcall DrawIndexedPrimitive(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size,
-                                                const u32& clr_argb, float scale = 1.0f){};
+                                                const u32& clr_argb, float scale = 1.0f)
+    {}
     virtual void __stdcall DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
     virtual void __stdcall DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
     virtual void __stdcall DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
@@ -169,6 +161,7 @@ public:
 
     virtual void OnRender();
 };
+
 extern CDrawUtilities DUImpl;
 //----------------------------------------------------
 

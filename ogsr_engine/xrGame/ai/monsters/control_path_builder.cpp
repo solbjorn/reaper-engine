@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_path_builder.h"
 #include "control_manager.h"
 #include "BaseMonster/base_monster.h"
@@ -51,8 +52,6 @@ void CControlPathBuilder::reinit()
 
 void CControlPathBuilder::update_schedule()
 {
-    START_PROFILE("Base Monster/Path Builder/Schedule Update");
-
     // the one and only reason is because of the restriction-change, so wait until
     // position and node will be in valid state
     if (m_data.path_type != MovementManager::ePathTypePatrolPath)
@@ -114,18 +113,16 @@ void CControlPathBuilder::update_schedule()
 
     update_path();
 
-    m_man->notify(ControlCom::eventPathUpdated, 0);
-
-    STOP_PROFILE;
+    m_man->notify(ControlCom::eventPathUpdated, nullptr);
 }
 
 void CControlPathBuilder::on_travel_point_change(const u32& previous_travel_point_index)
 {
     inherited::on_travel_point_change(previous_travel_point_index);
-    m_man->notify(ControlCom::eventTravelPointChange, 0);
+    m_man->notify(ControlCom::eventTravelPointChange, nullptr);
 }
 
-void CControlPathBuilder::on_build_path() { m_man->notify(ControlCom::eventPathBuilt, 0); }
+void CControlPathBuilder::on_build_path() { m_man->notify(ControlCom::eventPathBuilt, nullptr); }
 
 //////////////////////////////////////////////////////////////////////////
 // Special Build Path

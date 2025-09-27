@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai/stalker/ai_stalker.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -23,10 +24,12 @@
 #include "ef_pattern.h"
 #include "trade_parameters.h"
 
-u32 get_rank(const shared_str&) { return u32(-1); }
+namespace
+{
+constexpr inline u32 get_rank(const shared_str&) { return std::numeric_limits<u32>::max(); }
 
-static const int MAX_AMMO_ATTACH_COUNT = 10;
-// static const int enough_ammo_box_count = 1;
+constexpr u32 MAX_AMMO_ATTACH_COUNT{10};
+} // namespace
 
 IC bool CAI_Stalker::CTradeItem::operator<(const CTradeItem& trade_item) const { return (m_item->object().ID() < trade_item.m_item->object().ID()); }
 
@@ -45,7 +48,7 @@ bool CAI_Stalker::tradable_item(CInventoryItem* inventory_item, const u16& curre
             return (false);
     }
 
-    return (trade_parameters().enabled(CTradeParameters::action_sell(0), inventory_item->object().cNameSect()));
+    return (trade_parameters().enabled(CTradeParameters::action_sell(nullptr), inventory_item->object().cNameSect()));
 }
 
 u32 CAI_Stalker::fill_items(CInventory& inventory, CGameObject* old_owner, ALife::_OBJECT_ID new_owner_id)
@@ -119,8 +122,9 @@ void CAI_Stalker::attach_available_ammo(CWeapon* weapon)
 
 void CAI_Stalker::choose_weapon(ALife::EWeaponPriorityType weapon_priority_type)
 {
-    CTradeItem* best_weapon = 0;
-    float best_value = -1.f;
+    CTradeItem* best_weapon{};
+    float best_value{-1.f};
+
     ai().ef_storage().non_alife().member() = this;
 
     xr_vector<CTradeItem>::iterator I = m_temp_items.begin();
@@ -238,7 +242,7 @@ void CAI_Stalker::update_sell_info()
     m_sell_info_actuality = true;
 
     m_temp_items.clear();
-    m_current_trader = 0;
+    m_current_trader = nullptr;
     m_total_money = get_money();
     u32 money_delta = fill_items(inventory(), this, ALife::_OBJECT_ID(-1));
     m_total_money += money_delta;
@@ -265,7 +269,7 @@ bool CAI_Stalker::can_sell(CInventoryItem const* item)
 bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
 {
     if (!g_Alive())
-        return (trade_parameters().enabled(CTradeParameters::action_show(0), item->object().cNameSect()));
+        return (trade_parameters().enabled(CTradeParameters::action_show(nullptr), item->object().cNameSect()));
 
     return (const_cast<CAI_Stalker*>(this)->can_sell(item));
 }

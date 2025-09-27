@@ -1,9 +1,14 @@
 #include "stdafx.h"
-#include "dxWallMarkArray.h"
 
 #include "dxUIShader.h"
+#include "dxWallMarkArray.h"
 
-void dxWallMarkArray::Copy(IWallMarkArray& _in) { *this = *(dxWallMarkArray*)&_in; }
+void dxWallMarkArray::Copy(IWallMarkArray& _in)
+{
+    auto& in{*smart_cast<const dxWallMarkArray*>(&_in)};
+
+    m_CollideMarks = in.m_CollideMarks;
+}
 
 dxWallMarkArray::~dxWallMarkArray()
 {
@@ -34,9 +39,11 @@ bool dxWallMarkArray::empty() { return m_CollideMarks.empty(); }
 wm_shader dxWallMarkArray::GenerateWallmark()
 {
     wm_shader res;
+
     if (!m_CollideMarks.empty())
         ((dxUIShader*)&*res)->hShader = m_CollideMarks[::Random.randI(0, m_CollideMarks.size())];
+
     return res;
 }
 
-ref_shader* dxWallMarkArray::dxGenerateWallmark() { return m_CollideMarks.empty() ? NULL : &m_CollideMarks[::Random.randI(0, m_CollideMarks.size())]; }
+ref_shader* dxWallMarkArray::dxGenerateWallmark() { return m_CollideMarks.empty() ? nullptr : &m_CollideMarks[::Random.randI(0, m_CollideMarks.size())]; }

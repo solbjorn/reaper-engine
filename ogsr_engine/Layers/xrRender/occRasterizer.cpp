@@ -16,21 +16,24 @@ occRasterizer Raster;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-static constexpr ptrdiff_t __declspec(align(32)) zeros[32 / sizeof(occTri*)]{};
-static constexpr float __declspec(align(32)) ones[32 / sizeof(float)] = {1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f};
-
-static ICF void MemFill(void* dst, const void* src, size_t size)
+namespace
 {
-    u8* cdst = reinterpret_cast<u8*>(dst);
-    const u8* csrc = reinterpret_cast<const u8*>(src);
+constexpr uintptr_t __declspec(align(sizeof(__m256i))) zeros[sizeof(__m256i) / sizeof(occTri*)]{};
+constexpr float __declspec(align(sizeof(__m256i))) ones[sizeof(__m256i) / sizeof(float)]{1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f};
+
+ICF void MemFill(void* dst, const void* src, size_t size)
+{
+    __m256i* cdst = static_cast<__m256i*>(std::assume_aligned<sizeof(__m256i)>(dst));
+    const __m256i* csrc = static_cast<const __m256i*>(std::assume_aligned<sizeof(__m256i)>(src));
 
     do
     {
-        _mm256_store_si256((__m256i*)cdst, _mm256_load_si256((const __m256i*)csrc));
-        cdst += 32;
-        size -= 32;
-    } while (size >= 32);
+        _mm256_store_si256(cdst, _mm256_load_si256(csrc));
+        cdst++;
+        size -= sizeof(__m256i);
+    } while (size >= sizeof(__m256i));
 }
+} // namespace
 
 occRasterizer::occRasterizer()
 #ifdef DEBUG
@@ -38,8 +41,8 @@ occRasterizer::occRasterizer()
 #endif
 {
     static_assert(!offsetof(occRasterizer, bufFrame));
-    static_assert(!(sizeof(bufFrame) % 32));
-    static_assert(!(sizeof(bufDepth) % 32));
+    static_assert(!(sizeof(bufFrame) % sizeof(__m256i)));
+    static_assert(!(sizeof(bufDepth) % sizeof(__m256i)));
 
     MemFill(this, zeros, sizeof(*this));
 }

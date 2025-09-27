@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_alife_task_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"
@@ -45,7 +46,7 @@ using namespace StalkerDecisionSpace;
 // CStalkerActionSolveZonePuzzle
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionSolveZonePuzzle::CStalkerActionSolveZonePuzzle(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionSolveZonePuzzle::CStalkerActionSolveZonePuzzle(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionSolveZonePuzzle::initialize()
 {
@@ -54,10 +55,10 @@ void CStalkerActionSolveZonePuzzle::initialize()
 #ifndef GRENADE_TEST
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
     if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-        m_stop_weapon_handling_time += get_random_u32(30000, 60000);
+        m_stop_weapon_handling_time += xr::random_u32(30000, 60000);
 
     //	object().movement().set_desired_position	(0);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeGamePath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -167,13 +168,13 @@ void CStalkerActionSolveZonePuzzle::execute()
 // CStalkerActionSmartTerrain
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionSmartTerrain::CStalkerActionSmartTerrain(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) { set_inertia_time(30000); }
+CStalkerActionSmartTerrain::CStalkerActionSmartTerrain(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} { set_inertia_time(30000); }
 
 void CStalkerActionSmartTerrain::initialize()
 {
     inherited::initialize();
     //	object().movement().set_desired_position		(0);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().game_selector().set_selection_type(eSelectionTypeMask);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);

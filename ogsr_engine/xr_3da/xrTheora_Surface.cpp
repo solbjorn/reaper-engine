@@ -1,20 +1,7 @@
 #include "stdafx.h"
+
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
-
-CTheoraSurface::CTheoraSurface()
-{
-    ready = FALSE;
-    // streams
-    m_rgb = 0;
-    m_alpha = 0;
-    // timing
-    tm_play = 0;
-    tm_total = 0;
-    // controls
-    playing = FALSE;
-    looped = FALSE;
-}
 
 CTheoraSurface::~CTheoraSurface()
 {
@@ -141,14 +128,13 @@ u32 CTheoraSurface::Height(bool bRealSize)
         return m_rgb->t_info.frame_height;
     else
         return btwPow2_Ceil((u32)m_rgb->t_info.frame_height);
-    ;
 }
 
 void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
 {
     VERIFY(m_rgb);
     yuv_buffer* yuv_rgb = m_rgb->CurrentFrame();
-    yuv_buffer* yuv_alpha = m_alpha ? m_alpha->CurrentFrame() : 0;
+    yuv_buffer* yuv_alpha = m_alpha ? m_alpha->CurrentFrame() : nullptr;
 
     u32 width = Width(true);
     u32 height = Height(true);

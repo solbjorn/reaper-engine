@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ParticlesObject.h"
 #include "../xr_3da/gamemtllib.h"
 #include "level.h"
@@ -75,7 +76,7 @@ public:
 
         if (m_object && psLifeTime > 0)
             remove_time = Device.dwTimeGlobal + iFloor(psLifeTime / 2.f);
-    };
+    }
 
     virtual bool obsolete() const noexcept { return Device.dwTimeGlobal > remove_time; }
 
@@ -137,11 +138,13 @@ public:
         pos.set(p);
         T = Tri;
     }
+
     virtual void run()
     {
         // добавить отметку на материале
         ::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
-    };
+    }
+
     virtual bool obsolete() const { return false; }
 };
 

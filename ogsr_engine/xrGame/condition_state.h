@@ -11,20 +11,18 @@
 #include "operator_condition.h"
 
 template <typename _world_property>
-class CConditionState : public virtual RTTI::Enable
+class CConditionState
 {
-    RTTI_DECLARE_TYPEINFO(CConditionState<_world_property>);
-
 public:
-    typedef _world_property COperatorCondition;
+    using COperatorCondition = _world_property;
 
 protected:
     xr_vector<_world_property> m_conditions;
-    u64 m_hash;
+    u64 m_hash{};
 
 public:
-    IC CConditionState();
-    IC virtual ~CConditionState();
+    IC CConditionState() = default;
+
     IC const xr_vector<_world_property>& conditions() const;
     IC u8 weight(const _world_property& condition) const;
     IC void add_condition(const _world_property& condition);

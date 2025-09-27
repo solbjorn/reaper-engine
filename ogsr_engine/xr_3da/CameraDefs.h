@@ -23,23 +23,13 @@ struct SCamEffectorInfo
     float offsetY; // Required for Nvidia Ansel
     bool dont_apply;
     bool affected_on_hud;
+
     SCamEffectorInfo();
-    SCamEffectorInfo& operator=(const SCamEffectorInfo& other)
-    {
-        p = other.p;
-        d = other.d;
-        n = other.n;
-        r = other.r;
-        fFov = other.fFov;
-        fNear = other.fNear;
-        fFar = other.fFar;
-        fAspect = other.fAspect;
-        offsetX = other.offsetX;
-        offsetY = other.offsetY;
-        dont_apply = other.dont_apply;
-        affected_on_hud = other.affected_on_hud;
-        return *this;
-    }
+    SCamEffectorInfo(const SCamEffectorInfo&);
+    SCamEffectorInfo(SCamEffectorInfo&&);
+
+    SCamEffectorInfo& operator=(const SCamEffectorInfo&);
+    SCamEffectorInfo& operator=(SCamEffectorInfo&&);
 };
 
 enum ECameraStyle : u32

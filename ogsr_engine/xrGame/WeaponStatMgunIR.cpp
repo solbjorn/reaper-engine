@@ -32,17 +32,18 @@ void CWeaponStatMgun::OnKeyboardPress(int dik)
     switch (dik)
     {
     case kWPN_FIRE: FireStart(); break;
-    };
+    }
 }
 
 void CWeaponStatMgun::OnKeyboardRelease(int dik)
 {
     if (Remote())
         return;
+
     switch (dik)
     {
     case kWPN_FIRE: FireEnd(); break;
-    };
+    }
 }
 
 void CWeaponStatMgun::OnKeyboardHold(int dik) {}

@@ -49,9 +49,9 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     auto& desc = RImplementation.Resources->m_textures_description;
 
     // Analyze possibility to detail this shader
-    detail_texture = NULL;
-    detail_scaler = NULL;
-    LPCSTR base = NULL;
+    detail_texture = nullptr;
+    detail_scaler = nullptr;
+    LPCSTR base = nullptr;
 
     if (bDetail && BT->canBeDetailed())
     {

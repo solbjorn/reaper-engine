@@ -13,6 +13,16 @@
 
 using namespace R_dsgraph;
 
+namespace
+{
+// Open-coded since multimaps don't have ::try_emplace(), but we want to use piecewise_construct
+template <class M, class K, class... Args>
+constexpr ICF auto try_emplace(M& m, K&& k, Args&&... args)
+{
+    return m.emplace(std::piecewise_construct, std::forward_as_tuple(std::forward<K>(k)), std::forward_as_tuple(std::forward<Args>(args)...));
+}
+} // namespace
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Scene graph actual insertion and sorting ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,12 +73,12 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
         auto& map = hud ? mapHUDDistort : mapDistort;
-        map.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        try_emplace(map, distSQ, SSA, root, pVisual, xform, sh_d);
     }
 
     // Select shader
     ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(root, pVisual, distSQ, phase);
-    if (0 == sh)
+    if (!sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
         return;
@@ -79,20 +89,20 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
         if (sh->flags.bStrictB2F)
         {
             if (sh->flags.bEmissive)
-                mapHUDEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+                try_emplace(mapHUDEmissive, distSQ, SSA, root, pVisual, xform, sh_d);
 
-            mapHUDSorted.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+            try_emplace(mapHUDSorted, distSQ, SSA, root, pVisual, xform, sh);
             return;
         }
         else
         {
-            mapHUD.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+            try_emplace(mapHUD, distSQ, SSA, root, pVisual, xform, sh);
 
             if (RImplementation.o.ssfx_core && !sh->passes[0]->ps->hud_disabled)
-                HUDMask.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+                try_emplace(HUDMask, distSQ, SSA, root, pVisual, xform, sh);
 
             if (sh->flags.bEmissive)
-                mapHUDEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+                try_emplace(mapHUDEmissive, distSQ, SSA, root, pVisual, xform, sh_d);
 
             return;
         }
@@ -101,7 +111,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        try_emplace(mapSorted, distSQ, SSA, root, pVisual, xform, sh);
         return;
     }
 
@@ -111,11 +121,11 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
     // c) Should not cast shadows
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
-        mapEmissive.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        try_emplace(mapEmissive, distSQ, SSA, root, pVisual, xform, sh_d);
 
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.emplace(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        try_emplace(mapWmark, distSQ, SSA, root, pVisual, xform, sh);
         return;
     }
 
@@ -126,7 +136,7 @@ void R_dsgraph_structure::insert_dynamic(IRenderable* root, dxRender_Visual* pVi
         mapMatrixItems& matrixItems = map[pass];
 
         // Create common node
-        matrixItems.emplace(SSA, _MatrixItem{root, pVisual, xform});
+        try_emplace(matrixItems, SSA, root, pVisual, xform);
 
         // Need to sort for HZB efficient use
         if (SSA > matrixItems.ssa)
@@ -153,11 +163,11 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     VERIFY(pVisual->shader._get());
     ShaderElement* sh_d = pVisual->shader->E[4]._get();
     if (sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
-        mapDistort.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
+        try_emplace(mapDistort, distSQ, SSA, pVisual, sh_d);
 
     // Select shader
     ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ, phase);
-    if (0 == sh)
+    if (!sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
         return;
@@ -165,14 +175,14 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     // Water rendering
     if (sh->flags.isWater && RImplementation.o.ssfx_water)
     {
-        mapWater.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        try_emplace(mapWater, distSQ, SSA, pVisual, sh);
         return;
     }
 
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        try_emplace(mapSorted, distSQ, SSA, pVisual, sh);
         return;
     }
 
@@ -182,11 +192,11 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
     // c) Should not cast shadows
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
-        mapEmissive.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh_d}));
+        try_emplace(mapEmissive, distSQ, SSA, pVisual, sh_d);
 
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        try_emplace(mapWmark, distSQ, SSA, pVisual, sh);
         return;
     }
 
@@ -197,7 +207,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
 
     if (sh->flags.bLandscape && phase == CRender::PHASE_NORMAL)
     {
-        mapLandscape.emplace(distSQ, _MatrixItemS({SSA, pVisual, sh}));
+        try_emplace(mapLandscape, distSQ, SSA, pVisual, sh);
         return;
     }
 
@@ -207,7 +217,7 @@ void R_dsgraph_structure::insert_static(dxRender_Visual* pVisual)
         mapNormal_T& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
         mapNormalItems& normalItems = map[pass];
 
-        normalItems.emplace(SSA, _NormalItem{pVisual});
+        try_emplace(normalItems, SSA, pVisual);
 
         // Need to sort for HZB efficient use
         if (SSA > normalItems.ssa)
@@ -476,7 +486,8 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
     {
     case MT_PARTICLE_GROUP: {
         // Add all children, doesn't perform any tests
-        PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+        PS::CParticleGroup* pG{smart_cast<PS::CParticleGroup*>(pVisual)};
+
         for (auto& it : pG->items)
         {
             PS::CParticleGroup::SItem& I = it;
@@ -490,15 +501,16 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
     }
         return;
     case MT_HIERRARHY: {
-        for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+        for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
             if (Vis->getRZFlag())
                 add_leafs_dynamic(root, Vis, xform, ignore);
     }
         return;
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID: {
-        auto pV = reinterpret_cast<CKinematics*>(pVisual);
-        BOOL _use_lod = FALSE;
+        auto pV = smart_cast<CKinematics*>(pVisual);
+        BOOL _use_lod{};
+
         if (pV->m_lod)
         {
             Fvector Tpos;
@@ -508,6 +520,7 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
             if (ssa < r_ssaLOD_A)
                 _use_lod = TRUE;
         }
+
         if (_use_lod)
         {
             add_leafs_dynamic(root, pV->m_lod, xform, ignore);
@@ -548,14 +561,14 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     {
     case MT_PARTICLE_GROUP: return;
     case MT_HIERRARHY: {
-        for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+        for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
             if (Vis->getRZFlag())
                 add_leafs_static(Vis);
     }
         return;
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID: {
-        auto pV = reinterpret_cast<CKinematics*>(pVisual);
+        auto pV = smart_cast<CKinematics*>(pVisual);
         pV->CalculateBones(TRUE);
 
         for (dxRender_Visual* Vis : pV->children)
@@ -564,7 +577,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     }
         return;
     case MT_LOD: {
-        auto pV = reinterpret_cast<FLOD*>(pVisual);
+        auto pV = smart_cast<FLOD*>(pVisual);
         float D;
         float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
         ssa *= pV->lod_factor;
@@ -573,7 +586,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
             if (ssa < r_ssaDISCARD)
                 return;
 
-            mapLOD.emplace(D, _LodItem({ssa, pVisual}));
+            try_emplace(mapLOD, D, ssa, pVisual);
         }
 
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)
@@ -620,13 +633,13 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     case MT_HIERRARHY: {
         if (fcvPartial == VIS)
         {
-            for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+            for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
                 if (Vis->getRZFlag())
                     add_static(Vis, view, planes);
         }
         else
         {
-            for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+            for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
                 if (Vis->getRZFlag())
                     add_leafs_static(Vis);
         }
@@ -634,7 +647,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     break;
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID: {
-        auto pV = reinterpret_cast<CKinematics*>(pVisual);
+        auto pV = smart_cast<CKinematics*>(pVisual);
         pV->CalculateBones(TRUE);
 
         if (fcvPartial == VIS)
@@ -652,7 +665,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     }
     break;
     case MT_LOD: {
-        auto pV = reinterpret_cast<FLOD*>(pVisual);
+        auto pV = smart_cast<FLOD*>(pVisual);
         float D;
         float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
         ssa *= pV->lod_factor;
@@ -661,7 +674,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
             if (ssa < r_ssaDISCARD)
                 return;
 
-            mapLOD.emplace(D, _LodItem({ssa, pVisual}));
+            try_emplace(mapLOD, D, ssa, pVisual);
         }
 
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)

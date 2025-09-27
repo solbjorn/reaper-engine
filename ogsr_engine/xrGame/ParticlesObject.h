@@ -24,7 +24,7 @@ public:
     CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load);
     virtual ~CParticlesObject();
 
-    virtual bool shedule_Needed() { return true; };
+    virtual bool shedule_Needed() { return true; }
     virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
     void renderable_Render(u32 context_id, IRenderable* root) override;
@@ -54,14 +54,15 @@ public:
     {
         return xr_new<CParticlesObject>(p_name, bAutoRemove, remove_on_game_load);
     }
+
     static void Destroy(CParticlesObject*& p)
     {
         if (p)
         {
             p->PSI_destroy();
-            p = 0;
+            p = nullptr;
         }
     }
 };
 
-#endif /*ParticlesObjectH*/
+#endif // ParticlesObjectH

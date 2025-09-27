@@ -38,24 +38,17 @@ typedef enum
 
 typedef struct tagSoundElement
 {
-    const CObject* who;
-    TSoundDangerValue type;
-    Fvector position; // позиция звука, не объекта, издавшего звук
-    float power;
-    TTime time; // время обнаружения звука
+    const CObject* who{};
+    TSoundDangerValue type{NONE_DANGEROUS_SOUND};
+    Fvector position{}; // позиция звука, не объекта, издавшего звук
+    TTime time{}; // время обнаружения звука
+    float power{};
+    int value{}; // оценочное значение данного звука
 
-    int value; // оценочное значение данного звука
+    tagSoundElement() = default;
 
-    tagSoundElement()
-    {
-        who = 0;
-        type = NONE_DANGEROUS_SOUND;
-        position.set(0, 0, 0);
-        power = 0.f;
-        time = 0;
-        value = 0;
-    }
     bool operator<(const tagSoundElement& s) const { return (value < s.value); }
+
     IC void SetConvert(const CObject* who, int eType, const Fvector& position, float power, TTime time)
     {
         this->who = who;
@@ -64,6 +57,7 @@ typedef struct tagSoundElement
         this->power = power;
         this->time = time;
     }
+
     TSoundDangerValue ConvertSoundType(ESoundTypes stype);
 
     void CalcValue(TTime cur_time, Fvector cur_pos)
@@ -71,7 +65,6 @@ typedef struct tagSoundElement
         value = FACTOR_SOUND_TYPE * u32(NONE_DANGEROUS_SOUND - WEAPON_SHOOTING) - iFloor(FACTOR_DISTANCE * cur_pos.distance_to(position)) -
             FACTOR_DELTA_TIME * iFloor(float((cur_time - time) / 1000)) + FACTOR_SOUND_POWER * iFloor(power);
     }
-
 } SoundElem;
 
 class CMonsterSoundMemory

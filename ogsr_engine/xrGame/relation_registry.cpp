@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "relation_registry.h"
 #include "alife_registry_wrappers.h"
 
@@ -30,7 +31,7 @@ void RELATION_DATA::load(IReader& stream)
     load_data(communities, stream);
 }
 
-void RELATION_DATA::save(IWriter& stream)
+void RELATION_DATA::save(IWriter& stream) const
 {
     save_data(personal, stream);
     save_data(communities, stream);
@@ -49,9 +50,9 @@ RELATION_REGISTRY::RELATION_MAP_SPOTS::RELATION_MAP_SPOTS()
 }
 //////////////////////////////////////////////////////////////////////////
 
-CRelationRegistryWrapper* RELATION_REGISTRY::m_relation_registry = NULL;
-RELATION_REGISTRY::FIGHT_VECTOR* RELATION_REGISTRY::m_fight_registry = NULL;
-RELATION_REGISTRY::RELATION_MAP_SPOTS* RELATION_REGISTRY::m_spot_names = NULL;
+CRelationRegistryWrapper* RELATION_REGISTRY::m_relation_registry{};
+RELATION_REGISTRY::FIGHT_VECTOR* RELATION_REGISTRY::m_fight_registry{};
+RELATION_REGISTRY::RELATION_MAP_SPOTS* RELATION_REGISTRY::m_spot_names{};
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -169,7 +170,7 @@ CHARACTER_GOODWILL RELATION_REGISTRY::GetGoodwill(u16 from, u16 to) const
             return relation.Goodwill();
         }
     }
-    //если отношение еще не задано, то возвращаем нейтральное
+    // если отношение еще не задано, то возвращаем нейтральное
     return NEUTRAL_GOODWILL;
 }
 
@@ -221,7 +222,7 @@ CHARACTER_GOODWILL RELATION_REGISTRY::GetCommunityGoodwill(CHARACTER_COMMUNITY_I
             return relation.Goodwill();
         }
     }
-    //если отношение еще не задано, то возвращаем нейтральное
+    // если отношение еще не задано, то возвращаем нейтральное
     return NEUTRAL_GOODWILL;
 }
 

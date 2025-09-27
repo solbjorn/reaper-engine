@@ -19,8 +19,8 @@ public:
     virtual void OnActivate(CCameraBase* old_cam);
     virtual void Update(Fvector& point, Fvector& noise_angle);
 
-    virtual float GetWorldYaw() { return -yaw; };
-    virtual float GetWorldPitch() { return pitch; };
+    virtual float GetWorldYaw() { return -yaw; }
+    virtual float GetWorldPitch() { return pitch; }
 };
 
 #endif // __CAMERALOOK_H__

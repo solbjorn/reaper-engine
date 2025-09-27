@@ -57,9 +57,9 @@ public:
     IC CPhysicsShell*& PPhysicsShell() { return m_pPhysicsShell; }
 
     IC CPhysicsShellHolder* PhysicsShellHolder() { return this; }
-    virtual CPHDestroyable* ph_destroyable() { return NULL; }
-    virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return NULL; }
-    virtual CPHSkeleton* PHSkeleton() { return NULL; }
+    virtual CPHDestroyable* ph_destroyable() { return nullptr; }
+    virtual CPHCollisionDamageReceiver* PHCollisionDamageReceiver() { return nullptr; }
+    virtual CPHSkeleton* PHSkeleton() { return nullptr; }
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
     virtual CParticlesPlayer* cast_particles_player() { return this; }
     virtual IDamageSource* cast_IDamageSource() { return nullptr; }
@@ -68,8 +68,8 @@ public:
     virtual CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
     virtual CIKLimbsController* character_ik_controller() { return nullptr; }
     virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
-    virtual void set_collision_hit_callback(ICollisionHitCallback* cc) { ; }
-    virtual void enable_notificate() { ; }
+    virtual void set_collision_hit_callback(ICollisionHitCallback* cc) {}
+    virtual void enable_notificate() {}
 
     virtual IPhysicsShell* physics_shell() const override;
     virtual IPhysicsElement* physics_character() const override;

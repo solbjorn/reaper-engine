@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "HUDManager.h"
 #include "hudtarget.h"
 
@@ -136,9 +137,10 @@ CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
             return font;
     }
 
-    CGameFont* pFontAdd = NULL;
+    CGameFont* pFontAdd{};
     InitializeFont(pFontAdd, section, flags);
     pFontAdd->m_bCustom = true;
+
     return pFontAdd;
 }
 
@@ -180,7 +182,6 @@ void CFontManager::OnDeviceReset() { InitializeFonts(); }
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager()
 {
-    pUI = 0;
     m_pHUDTarget = xr_new<CHUDTarget>();
     OnDisconnected();
 }
@@ -201,8 +202,10 @@ void CHUDManager::Load()
         pUI->Load(pUI->UIGame());
         return;
     }
+
     pUI = xr_new<CUI>(this);
-    pUI->Load(NULL);
+    pUI->Load(nullptr);
+
     OnDisconnected();
 }
 //--------------------------------------------------------------------
@@ -210,8 +213,10 @@ void CHUDManager::OnFrame()
 {
     if (!b_online)
         return;
+
     if (pUI)
         pUI->UIOnFrame();
+
     m_pHUDTarget->CursorOnFrame();
 }
 //--------------------------------------------------------------------
@@ -237,7 +242,7 @@ void CHUDManager::Render_First(u32 context_id)
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
 
-    if (pUI == nullptr)
+    if (!pUI)
         return;
 
     if (!need_render_hud())
@@ -254,17 +259,20 @@ void CHUDManager::Render_Last(u32 context_id)
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
-    if (0 == pUI)
+
+    if (!pUI)
         return;
+
     CObject* O = g_pGameLevel->CurrentViewEntity();
-    if (0 == O)
+    if (!O)
         return;
+
     CActor* A = smart_cast<CActor*>(O);
     if (A && !A->HUDview())
         return;
+
     if (O->CLS_ID == CLSID_CAR)
         return;
-
     if (O->CLS_ID == CLSID_SPECTATOR)
         return;
 
@@ -305,13 +313,12 @@ void CHUDManager::RenderUI()
     {
         CGameFont* pFont = Font().pFontGraffiti50Russian;
         pFont->SetColor(0x80FF0000);
-        LPCSTR _str = CStringTable().translate("st_game_paused").c_str();
 
         Fvector2 _pos;
         _pos.set(UI_BASE_WIDTH / 2.0f, UI_BASE_HEIGHT / 2.0f);
         UI()->ClientToScreenScaled(_pos);
         pFont->SetAligment(CGameFont::alCenter);
-        pFont->Out(_pos.x, _pos.y, _str);
+        pFont->Out(_pos.x, _pos.y, "%s", CStringTable().translate("st_game_paused").c_str());
         pFont->OnRender();
     }
 }

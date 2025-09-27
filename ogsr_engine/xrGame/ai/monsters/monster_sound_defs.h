@@ -40,6 +40,6 @@ enum EVirtualChannels : u32
     eChannelIndependent = u32(1) << 15, // can be played in any time with any conditions (need shift operator for every id)
     eCaptureAllChannels = u32(-1), // play only this one
 };
-}; // namespace MonsterSound
+} // namespace MonsterSound
 
 #define DEFAULT_SAMPLE_COUNT 16

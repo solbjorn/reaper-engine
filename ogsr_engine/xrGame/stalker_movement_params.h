@@ -14,17 +14,17 @@ enum EBodyState : u32;
 enum EMovementType : u32;
 enum EMentalState : u32;
 enum EPathType : u32;
-}; // namespace MonsterSpace
+} // namespace MonsterSpace
 
 namespace MovementManager
 {
 enum EPathType : u32;
-};
+}
 
 namespace DetailPathManager
 {
 enum EDetailPathType : u32;
-};
+}
 
 class CStalkerMovementParams
 {

@@ -7,7 +7,13 @@ dxConsoleRender::dxConsoleRender()
     m_Geom.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 }
 
-void dxConsoleRender::Copy(IConsoleRender& _in) { *this = *(dxConsoleRender*)&_in; }
+void dxConsoleRender::Copy(IConsoleRender& _in)
+{
+    auto& in{*smart_cast<const dxConsoleRender*>(&_in)};
+
+    m_Shader = in.m_Shader;
+    m_Geom = in.m_Geom;
+}
 
 void dxConsoleRender::OnRender(bool bGame)
 {

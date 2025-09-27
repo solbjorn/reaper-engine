@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../level.h"
 #include "../map_location.h"
 #include "../map_manager.h"
@@ -79,6 +80,7 @@ Fvector2 CUICustomMap::ConvertLocalToReal(const Fvector2& src) const
 Fvector2 CUICustomMap::ConvertRealToLocal(const Fvector2& src, bool for_drawing) // meters->pixels (relatively own left-top pos)
 {
     Fvector2 res;
+
     if (!Heading())
     {
         Frect bound_rect = BoundRect();
@@ -97,7 +99,8 @@ Fvector2 CUICustomMap::ConvertRealToLocal(const Fvector2& src, bool for_drawing)
         RotateCoord(res.x, res.y, GetHeading(), res.x, res.y, for_drawing ? UI()->get_current_kx() : 1.0f);
 
         res.add(heading_pivot);
-    };
+    }
+
     return res;
 }
 

@@ -338,8 +338,9 @@ public:
         float c_R = n_R / 2;
         for (u32 octant = 0; octant < 8; octant++)
         {
-            if (0 == N->children[octant])
+            if (!N->children[octant])
                 continue;
+
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
             walk(N->children[octant], c_C, c_R);

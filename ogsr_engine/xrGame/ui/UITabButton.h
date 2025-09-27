@@ -8,6 +8,7 @@
 // Copyright: 2004 GSC Game World
 
 #pragma once
+
 #include "UI3tButton.h"
 //.#include "UIFrameWindow.h"
 
@@ -25,7 +26,7 @@ public:
     //.	virtual void AssociateWindow(CUIFrameWindow* pWindow);
     //.	virtual CUIFrameWindow* GetAssociatedWindow();
     //.	virtual void ShowAssociatedWindow(bool bShow = true);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = 0);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual bool OnMouseDown(int mouse_btn);
     virtual void Update();

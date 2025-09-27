@@ -1,11 +1,12 @@
 #include "stdafx.h"
+
 #include "chimera.h"
 #include "chimera_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../detail_path_manager.h"
 #include "../monster_velocity_space.h"
 #include "../../../level.h"
-//#include "../../../PhysicsShell.h"
+// #include "../../../PhysicsShell.h"
 #include "../../../sound_player.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
@@ -149,10 +150,10 @@ void CChimera::reinit()
 
     move().load_velocity(*cNameSect(), "Velocity_JumpGround", MonsterMovement::eChimeraVelocityParameterJumpGround);
 
-    com_man().load_jump_data(0, //"jump_attack_0",
-                             0, //"jump_attack_0",
+    com_man().load_jump_data(nullptr, //"jump_attack_0",
+                             nullptr, //"jump_attack_0",
                              "jump_attack_1", "jump_attack_2",
-                             u32(-1), // MonsterMovement::eVelocityParameterRunNormal,
+                             std::numeric_limits<u32>::max(), // MonsterMovement::eVelocityParameterRunNormal,
                              MonsterMovement::eChimeraVelocityParameterJumpGround, 0);
 }
 

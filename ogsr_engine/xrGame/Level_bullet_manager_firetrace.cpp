@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "Level_Bullet_Manager.h"
 #include "entity.h"
 #include "../xr_3da/gamemtllib.h"
@@ -49,7 +50,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
         if (entity && entity->g_Alive() && (entity->ID() != bullet->parent_id))
         {
             ICollisionForm* cform = entity->collidable.model;
-            if ((NULL != cform) && (cftObject == cform->Type()))
+            if (cform && cftObject == cform->Type())
             {
                 CActor* actor = smart_cast<CActor*>(entity);
                 // CAI_Stalker* stalker= smart_cast<CAI_Stalker*>(entity);
@@ -159,12 +160,12 @@ BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
     if (result.O)
     {
         // получить косточку и ее материал
-        IKinematics* V = 0;
+        IKinematics* V{};
         // если мы попали по родителю на первых же
         // кадре, то игнорировать это, так как это он
         // и стрелял
         VERIFY(!(result.O->ID() == bullet->parent_id && bullet->fly_dist < PARENT_IGNORE_DIST));
-        if (0 != (V = smart_cast<IKinematics*>(result.O->Visual())))
+        if (nullptr != (V = smart_cast<IKinematics*>(result.O->Visual())))
         {
             CBoneData& B = V->LL_GetData((u16)result.element);
             hit_material_idx = B.game_mtl_idx;
@@ -226,7 +227,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
         }
     }
 
-    ref_sound* pSound = (!mtl_pair || mtl_pair->CollideSounds.empty()) ? NULL : &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
+    ref_sound* pSound = (!mtl_pair || mtl_pair->CollideSounds.empty()) ? nullptr : &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
 
     // проиграть звук
     if (pSound && ShowMark)
@@ -236,7 +237,7 @@ void CBulletManager::FireShotmark(SBullet* bullet, const Fvector& vDir, const Fv
         bullet->m_mtl_snd.play_at_pos(O, vEnd, 0);
     }
 
-    LPCSTR ps_name = (!mtl_pair || mtl_pair->CollideParticles.empty()) ? NULL : *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
+    LPCSTR ps_name = (!mtl_pair || mtl_pair->CollideParticles.empty()) ? nullptr : *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
 
     SGameMtl* tgt_mtl = GMLib.GetMaterialByIdx(target_material);
     BOOL bStatic = !tgt_mtl->Flags.test(SGameMtl::flDynamic);
@@ -349,7 +350,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
                 CGameObject::u_EventSend (P);
         */
 
-        SHit Hit = SHit(power, original_dir, NULL, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
+        SHit Hit = SHit(power, original_dir, nullptr, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
 
         Hit.GenHeader(u16(GE_HIT) & 0xffff, E.R.O->ID());
         Hit.whoID = E.bullet.parent_id;

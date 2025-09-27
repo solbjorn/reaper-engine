@@ -1,4 +1,5 @@
-
+#ifndef __PHELEMENTINLINE_H
+#define __PHELEMENTINLINE_H
 
 IC void CPHElement::InverceLocalForm(Fmatrix& m)
 {
@@ -15,3 +16,5 @@ IC void CPHElement::MulB43InverceLocalForm(Fmatrix& m)
     m.transform_dir(ic);
     m.c.add(ic);
 }
+
+#endif // __PHELEMENTINLINE_H

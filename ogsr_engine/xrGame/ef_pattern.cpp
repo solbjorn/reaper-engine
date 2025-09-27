@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ef_pattern.h"
 #include "ef_primary.h"
 #include "ai_space.h"
@@ -14,27 +15,17 @@
 #include "ai_debug.h"
 #include "ef_storage.h"
 
-CPatternFunction::CPatternFunction(LPCSTR caFileName, CEF_Storage* storage) : CBaseFunction(storage)
-{
-    m_dwPatternCount = 0;
-    m_dwVariableCount = 0;
-    m_dwParameterCount = 0;
-    m_dwaVariableTypes = 0;
-    m_dwaAtomicFeatureRange = 0;
-    m_dwaPatternIndexes = 0;
-    m_tpPatterns = 0;
-    m_faParameters = 0;
-    m_dwaVariableValues = 0;
-    vfLoadEF(caFileName);
-}
+CPatternFunction::CPatternFunction(LPCSTR caFileName, CEF_Storage* storage) : CBaseFunction{storage} { vfLoadEF(caFileName); }
 
 CPatternFunction::~CPatternFunction()
 {
     xr_free(m_dwaVariableTypes);
     xr_free(m_dwaAtomicFeatureRange);
     xr_free(m_dwaPatternIndexes);
+
     for (u32 i = 0; i < m_dwPatternCount; ++i)
         xr_free(m_tpPatterns[i].dwaVariableIndexes);
+
     xr_free(m_tpPatterns);
     xr_free(m_faParameters);
     xr_free(m_dwaVariableValues);
@@ -110,7 +101,7 @@ void CPatternFunction::vfLoadEF(LPCSTR caFileName)
 
     ef_storage().m_fpaBaseFunctions[m_dwFunctionType] = this;
 
-    _splitpath(caPath, 0, 0, m_caName, 0);
+    _splitpath(caPath, nullptr, nullptr, m_caName, nullptr);
 
     // Msg			("* Evaluation function \"%s\" is successfully loaded",m_caName);
 }

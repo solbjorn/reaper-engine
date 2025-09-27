@@ -24,6 +24,7 @@ struct SThunderboltDesc
     FactoryPtr<IThunderboltDescRender> m_pRender;
     // sound
     ref_sound snd;
+
     // gradient
     struct SFlare
     {
@@ -39,8 +40,9 @@ struct SThunderboltDesc
             fRadius.set(0.f, 0.f);
         }
     };
-    SFlare* m_GradientTop;
-    SFlare* m_GradientCenter;
+
+    SFlare* m_GradientTop{};
+    SFlare* m_GradientCenter{};
     shared_str name;
     CLAItem* color_anim{};
 
@@ -82,7 +84,7 @@ class CEffect_Thunderbolt
 protected:
     DEFINE_VECTOR(SThunderboltCollection*, CollectionVec, CollectionVecIt);
     CollectionVec collection;
-    SThunderboltDesc* current;
+    SThunderboltDesc* current{};
 
 private:
     Fmatrix current_xform;
@@ -96,7 +98,7 @@ private:
         stIdle,
         stWorking
     };
-    EState state;
+    EState state{stIdle};
 
     // ref_geom			  		hGeom_gradient;
 
@@ -104,10 +106,10 @@ private:
     float lightning_size{};
     float lightning_phase{};
 
-    float life_time;
+    float life_time{};
     float current_time{};
-    float next_lightning_time;
-    BOOL bEnabled;
+    float next_lightning_time{};
+    BOOL bEnabled{};
 
     // params
     //	Fvector2					p_var_alt;

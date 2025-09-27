@@ -19,7 +19,7 @@ IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     m_enabled.assign(header().vertex_count(), true);
 
-	if (m_separated_graphs)
+    if (m_separated_graphs)
     {
         m_cross_tables = nullptr;
         m_current_level_cross_table = nullptr;
@@ -65,7 +65,7 @@ IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphI
     for (; i != e; ++i)
         if (value(tGraphID0, i) == tGraphID1)
             return (edge_weight(i));
-    //#pragma todo("KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.")
+    // #pragma todo("KD: не всегда построенный путь для монстра валидный. Пока вывожу в лог и сбрасываю путь в вызвавшей функции.")
     //	R_ASSERT2					(false,"There is no proper graph point neighbour!");
     Msg("!![%s] There is no way to get distance from vertex [%u] to vertex [%u]!!!", __FUNCTION__, tGraphID0, tGraphID1);
     return (_GRAPH_ID(-1));
@@ -170,7 +170,7 @@ IC const GameGraph::SLevel* GameGraph::CHeader::level(LPCSTR level_name, bool) c
         if (!xr_strcmp((*I).second.name(), level_name))
             return (&(*I).second);
 
-    return (0);
+    return nullptr;
 }
 
 IC const xrGUID& CGameGraph::CHeader::guid() const { return (m_guid); }
@@ -255,7 +255,7 @@ IC void GameGraph::CHeader::load(IReader* reader)
     {
         SLevel l_tLevel;
         l_tLevel.load(reader);
-        m_levels.insert(mk_pair(l_tLevel.id(), l_tLevel));
+        m_levels.emplace(l_tLevel.id(), l_tLevel);
     }
 }
 

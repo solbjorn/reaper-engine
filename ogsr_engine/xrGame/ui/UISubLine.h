@@ -25,6 +25,6 @@ public:
 
     xr_string m_text;
     u32 m_color;
-    CUISubLine* m_pTempLine;
+    CUISubLine* m_pTempLine{};
     bool m_last_in_line;
 };

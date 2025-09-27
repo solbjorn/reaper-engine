@@ -6,7 +6,10 @@
 #include "SoundRender_Target.h"
 
 extern float psSoundCull;
-constexpr float TIME_TO_STOP_INFINITE = static_cast<float>(0xffffffff);
+
+namespace
+{
+constexpr float TIME_TO_STOP_INFINITE = std::numeric_limits<float>::max();
 
 inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const float& fFreq, const WAVEFORMATEX& wfx)
 {
@@ -20,6 +23,7 @@ inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTi
     const u32 curr_sample_num = iFloor((fTime - fTimeStarted) * fFreq * wfx.nSamplesPerSec);
     return curr_sample_num * (wfx.wBitsPerSample / 8) * wfx.nChannels;
 }
+} // namespace
 
 void CSoundRender_Emitter::update(float fTime, float dt)
 {
@@ -215,7 +219,7 @@ void CSoundRender_Emitter::update(float fTime, float dt)
         if (fTimeToRewind > 0.0f)
         {
             const float fLength = get_length_sec();
-            const bool bLooped = (fTimeToStop == 0xffffffff);
+            const bool bLooped = fsimilar(fTimeToStop, TIME_TO_STOP_INFINITE);
 
             R_ASSERT2(fLength >= fTimeToRewind, "set_time: target time is bigger than length of sound");
 
@@ -244,6 +248,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
 
             fTimeToRewind = 0.0f;
         }
+
+        break;
     default: break;
     }
     //--#SM+# End--
@@ -266,8 +272,8 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     else if (owner_data)
     {
         VERIFY(this == owner_data->feedback);
-        owner_data->feedback = 0;
-        owner_data = 0;
+        owner_data->feedback = nullptr;
+        owner_data = nullptr;
     }
 }
 

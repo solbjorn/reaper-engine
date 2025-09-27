@@ -17,7 +17,7 @@ enum EPdaTabs
     eptRanking,
     eptActorStatistic,
     eptEncyclopedia,
-    eptNoActiveTab = u16(-1)
+    eptNoActiveTab = std::numeric_limits<u16>::max(),
 };
 
 extern const char* const ALL_PDA_HEADER_PREFIX;
@@ -39,4 +39,4 @@ enum part
     journal = diary | (1 << 3),
 
 };
-};
+}

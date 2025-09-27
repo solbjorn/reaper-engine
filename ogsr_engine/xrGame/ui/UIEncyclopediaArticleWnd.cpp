@@ -1,13 +1,13 @@
 #include "stdafx.h"
+
 #include "UIEncyclopediaArticleWnd.h"
 #include "UIStatic.h"
 #include "../encyclopedia_article.h"
 #include "UIXmlInit.h"
 #include "../string_table.h"
 
-CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd() : m_Article(NULL) {}
-
-CUIEncyclopediaArticleWnd::~CUIEncyclopediaArticleWnd() {}
+CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd() = default;
+CUIEncyclopediaArticleWnd::~CUIEncyclopediaArticleWnd() = default;
 
 void CUIEncyclopediaArticleWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 {
@@ -46,7 +46,8 @@ void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
         float img_x = (GetWidth() - m_UIImage->GetWidth()) / 2.0f;
         img_x = _max(0.0f, img_x);
         m_UIImage->SetWndPos(img_x, m_UIImage->GetWndPos().y);
-    };
+    }
+
     m_UIText->SetText(*CStringTable().translate(article->data()->text.c_str()));
     m_UIText->AdjustHeightToText();
 

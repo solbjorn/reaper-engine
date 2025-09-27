@@ -104,10 +104,11 @@ void CTorch::SetVirtualSize(float size, int target)
 {
     switch (target)
     {
-    case 0: light_render->set_virtual_size(size);
+    case 0: light_render->set_virtual_size(size); break;
     case 1:
         if (light_omni)
             light_omni->set_virtual_size(size);
+        break;
     }
 }
 

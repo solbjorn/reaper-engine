@@ -1,7 +1,7 @@
 #pragma once
 
 #include "uiwindow.h"
-//#include "uipointergage.h"
+// #include "uipointergage.h"
 
 class CUICarPanel : public CUIWindow
 {

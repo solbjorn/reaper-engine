@@ -26,13 +26,12 @@ public:
     float m_height;
     bool m_disable_hide;
     bool m_dead_always_visible;
+    bool m_actor_ignore{};
 
     SMotionVel invisible_vel;
 
-    CPolterSpecialAbility* m_flame;
-    CPolterSpecialAbility* m_tele;
-
-    bool m_actor_ignore;
+    CPolterSpecialAbility* m_flame{};
+    CPolterSpecialAbility* m_tele{};
 
     TTime m_last_detection_time;
     Fvector m_last_actor_pos;
@@ -162,8 +161,8 @@ class CPolterSpecialAbility : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPolterSpecialAbility);
 
 public:
-    CParticlesObject* m_particles_object;
-    CParticlesObject* m_particles_object_electro;
+    CParticlesObject* m_particles_object{};
+    CParticlesObject* m_particles_object_electro{};
 
     LPCSTR m_particles_hidden;
     LPCSTR m_particles_damage;

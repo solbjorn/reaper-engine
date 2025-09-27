@@ -81,19 +81,19 @@ public:
     virtual void Disconnect();
 
     IGame_ObjectPool ObjectPool;
-    IMainMenu* m_pMainMenu;
+    IMainMenu* m_pMainMenu{};
 
     bool IsMainMenuActive() const;
     bool MainMenuActiveOrLevelNotExist() const;
 
     CEnvironment* pEnvironment;
-    CEnvironment& Environment() { return *pEnvironment; };
+    CEnvironment& Environment() { return *pEnvironment; }
 
     ShadersExternalData m_pGShaderConstants; //--#SM+#--
 
-    virtual bool OnRenderPPUI_query() { return FALSE; }; // should return true if we want to have second function called
-    virtual void OnRenderPPUI_main() {};
-    virtual void OnRenderPPUI_PP() {};
+    virtual bool OnRenderPPUI_query() { return FALSE; } // should return true if we want to have second function called
+    virtual void OnRenderPPUI_main() {}
+    virtual void OnRenderPPUI_PP() {}
 
     virtual void OnAppStart();
     virtual void OnAppEnd();
@@ -114,7 +114,7 @@ public:
     IGame_Persistent();
     virtual ~IGame_Persistent();
 
-    u32 GameType() { return m_game_params.m_e_game_type; };
+    u32 GameType() { return m_game_params.m_e_game_type; }
     virtual void Statistics(CGameFont* F) = 0;
     virtual void LoadTitle(const char* title_name) = 0;
     virtual void SetTip() = 0;

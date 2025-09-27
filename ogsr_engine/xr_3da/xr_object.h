@@ -90,7 +90,7 @@ public:
     BOOL GetTmpPreDestroy() const { return Props.bPreDestroy; }
     void SetTmpPreDestroy(BOOL b) { Props.bPreDestroy = b; }
     virtual float shedule_Scale() const { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
-    virtual bool shedule_Needed() { return processing_enabled(); };
+    virtual bool shedule_Needed() { return processing_enabled(); }
 
     // Parentness
     IC CObject* H_Parent() { return Parent; }
@@ -137,7 +137,7 @@ public:
     void cNameSect_set(shared_str N);
     ICF shared_str cNameVisual() const { return NameVisual; }
     void cNameVisual_set(shared_str N);
-    virtual shared_str shedule_Name() const { return cName(); };
+    virtual shared_str shedule_Name() const { return cName(); }
     ICF LPCSTR Name_script() const { return NameObject.c_str(); }
 
     // Properties
@@ -163,7 +163,7 @@ public:
     virtual ~CObject();
 
     virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section) {};
+    virtual void reload(LPCSTR section) {}
 
     // Update
     virtual void shedule_Update(u32 dt); // Called by sheduler
@@ -172,9 +172,9 @@ public:
     virtual void UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E) {}; // export to server
-    virtual BOOL net_Relevant() { return FALSE; }; // relevant for export to server
-    virtual void net_Relcase(CObject* O) {}; // destroy all links to another objects
+    virtual void net_Export(CSE_Abstract* E) {} // export to server
+    virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
+    virtual void net_Relcase(CObject* O) {} // destroy all links to another objects
 
     // Position stack
     IC u32 ps_Size() const { return PositionStack.size(); }
@@ -184,7 +184,7 @@ public:
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
     // HUD
-    virtual void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) {};
+    virtual void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) {}
 
     // Active/non active
     virtual void OnH_B_Chield(); // before
@@ -192,7 +192,7 @@ public:
     virtual void OnH_A_Chield(); // after
     virtual void OnH_A_Independent();
 
-    virtual const IObjectPhysicsCollision* physics_collision() { return 0; }
+    virtual const IObjectPhysicsCollision* physics_collision() { return nullptr; }
 
 public:
     virtual bool register_schedule() const { return true; }

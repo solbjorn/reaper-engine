@@ -16,6 +16,9 @@
 //////////////////////////////////////////////////////////////////////////
 struct SArticleData : CSharedResource
 {
+    RTTI_DECLARE_TYPEINFO(SArticleData, CSharedResource);
+
+public:
     shared_str name;
     shared_str group;
 

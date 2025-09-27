@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "InventoryOwner.h"
 #include "GameObject.h"
 #include "xrMessages.h"
@@ -27,9 +28,9 @@ void CInventoryOwner::OnEvent(NET_Packet& P, u16 type)
         shared_str info_id;
         u8 add_info;
 
-        P.r_u16(id); //отправитель
-        P.r_stringZ(info_id); //номер полученной информации
-        P.r_u8(add_info); //добавление или убирание информации
+        P.r_u16(id); // отправитель
+        P.r_stringZ(info_id); // номер полученной информации
+        P.r_u8(add_info); // добавление или убирание информации
 
         if (add_info)
             OnReceiveInfo(info_id);
@@ -53,7 +54,7 @@ private:
 bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 {
     VERIFY(info_id.size());
-    //добавить запись в реестр
+    // добавить запись в реестр
     KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
     KNOWN_INFO_VECTOR_IT it = std::find_if(known_info.begin(), known_info.end(), CFindByIDPred(info_id));
     if (known_info.end() == it)
@@ -66,7 +67,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
         Msg("[%s] Received Info [%s]", Name(), *info_id);
 #endif
 
-    //Запустить скриптовый callback
+    // Запустить скриптовый callback
     const CGameObject* pThisGameObject = smart_cast<const CGameObject*>(this);
     VERIFY(pThisGameObject);
 
@@ -76,10 +77,10 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
     CInfoPortion info_portion;
     info_portion.Load(info_id);
 
-    //запустить скриптовые функции
+    // запустить скриптовые функции
     info_portion.RunScriptActions(pThisGameObject);
 
-    //выкинуть те info portions которые стали неактуальными
+    // выкинуть те info portions которые стали неактуальными
     for (u32 i = 0; i < info_portion.DisableInfos().size(); i++)
         TransferInfo(info_portion.DisableInfos()[i], false);
 
@@ -104,7 +105,7 @@ void CInventoryOwner::DumpInfo() const
 void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 {
     VERIFY(info_id.size());
-    //удалить запись из реестра
+    // удалить запись из реестра
 
 #ifdef DEBUG
     if (psAI_Flags.test(aiInfoPortion))

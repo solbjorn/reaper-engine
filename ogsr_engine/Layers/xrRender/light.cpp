@@ -134,7 +134,7 @@ void light::set_range(float R)
         return;
     range = R;
     spatial_move();
-};
+}
 
 void light::set_cone(float angle)
 {
@@ -202,7 +202,7 @@ vis_data& light::get_homdata()
     hom.box.set(spatial.sphere.P, spatial.sphere.P);
     hom.box.grow(spatial.sphere.R);
     return hom;
-};
+}
 
 Fvector light::spatial_sector_point() { return position; }
 

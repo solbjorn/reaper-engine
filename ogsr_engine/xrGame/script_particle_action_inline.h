@@ -12,14 +12,7 @@ IC CScriptParticleAction::CScriptParticleAction()
 {
     m_caParticleToRun = "";
     m_caBoneName = "";
-    m_tGoalType = eGoalTypeDummy;
     m_bCompleted = false;
-    m_bStartedToPlay = false;
-    m_tpParticleSystem = 0;
-    m_tParticlePosition.set(0, 0, 0);
-    m_tParticleAngles.set(0, 0, 0);
-    m_tParticleVelocity.set(0, 0, 0);
-    m_bAutoRemove = true;
 }
 
 IC CScriptParticleAction::CScriptParticleAction(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams& tParticleParams, bool bAutoRemove)

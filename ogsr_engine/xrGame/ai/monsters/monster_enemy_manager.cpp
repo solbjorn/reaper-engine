@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "monster_enemy_manager.h"
 #include "BaseMonster/base_monster.h"
 #include "../ai_monsters_misc.h"
@@ -8,19 +9,7 @@
 #include "../../actor.h"
 #include "../../actor_memory.h"
 
-CMonsterEnemyManager::CMonsterEnemyManager()
-{
-    monster = 0;
-    enemy = 0;
-    flags.zero();
-    forced = false;
-    prev_enemy = 0;
-    danger_type = eNone;
-    my_vertex_enemy_last_seen = u32(-1);
-    enemy_vertex_enemy_last_seen = u32(-1);
-    m_time_updated = 0;
-    m_time_start_see_enemy = 0;
-}
+CMonsterEnemyManager::CMonsterEnemyManager() = default;
 
 void CMonsterEnemyManager::init_external(CBaseMonster* M) { monster = M; }
 
@@ -35,20 +24,16 @@ void CMonsterEnemyManager::update()
         // проверить валидность force-объекта
         if (!enemy || enemy->getDestroy() || !enemy->g_Alive())
         {
-            enemy = 0;
+            enemy = nullptr;
             return;
         }
     }
     else
     {
         if (m_script_enemy)
-        {
             enemy = m_script_enemy;
-        }
         else
-        {
             enemy = monster->EnemyMemory.get_enemy();
-        }
 
         if (enemy)
         {
@@ -60,9 +45,7 @@ void CMonsterEnemyManager::update()
     }
 
     if (!enemy)
-    {
         return;
-    }
 
     // обновить информацию о враге в соответствии со звуковой информацией
     if (monster->SoundMemory.IsRememberSound())
@@ -187,11 +170,11 @@ u32 CMonsterEnemyManager::get_enemies_count() { return monster->EnemyMemory.get_
 
 void CMonsterEnemyManager::reinit()
 {
-    enemy = 0;
+    enemy = nullptr;
     time_last_seen = 0;
     flags.zero();
     forced = false;
-    prev_enemy = 0;
+    prev_enemy = nullptr;
     danger_type = eNone;
 
     my_vertex_enemy_last_seen = monster->ai_location().level_vertex_id();
@@ -276,22 +259,18 @@ void CMonsterEnemyManager::transfer_enemy(CBaseMonster* friend_monster)
 
 u32 CMonsterEnemyManager::see_enemy_duration() { return ((m_time_start_see_enemy == 0) ? 0 : (time() - m_time_start_see_enemy)); }
 
-void CMonsterEnemyManager::script_enemy() { m_script_enemy = 0; }
+void CMonsterEnemyManager::script_enemy() { m_script_enemy = nullptr; }
 
 void CMonsterEnemyManager::script_enemy(const CEntityAlive& enemy) { m_script_enemy = &enemy; }
 
 void CMonsterEnemyManager::remove_links(CObject* O)
 {
     if (enemy == O)
-    {
-        enemy = NULL;
-    }
+        enemy = nullptr;
+
     if (prev_enemy == O)
-    {
-        prev_enemy = NULL;
-    }
+        prev_enemy = nullptr;
+
     if (m_script_enemy == O)
-    {
-        m_script_enemy = NULL;
-    }
+        m_script_enemy = nullptr;
 }

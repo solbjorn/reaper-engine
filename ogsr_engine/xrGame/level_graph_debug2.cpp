@@ -195,7 +195,7 @@ void CLevelGraph::draw_nodes()
                     continue;
                 F->SetHeightI(0.05f / _sqrt(_abs(S.w)));
                 F->SetColor(0xffffffff);
-                F->OutI(S.x, -S.y, "~%d", Nid);
+                F->OutI(S.x, -S.y, "~%u", Nid);
             }
         }
     }
@@ -333,8 +333,6 @@ void CLevelGraph::draw_objects()
     }
 }
 
-#ifdef DEBUG
-
 void CLevelGraph::draw_debug_node()
 {
     if (g_bDebugNode)
@@ -362,6 +360,4 @@ void CLevelGraph::draw_debug_node()
         }
     }
 }
-#endif
-
 #endif // DEBUG

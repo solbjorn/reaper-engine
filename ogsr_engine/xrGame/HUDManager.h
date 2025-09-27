@@ -51,7 +51,7 @@ public:
     friend class CUI;
 
 private:
-    CUI* pUI;
+    CUI* pUI{};
     CHitMarker HitMarker;
     CHUDTarget* m_pHUDTarget;
     bool b_online;
@@ -92,5 +92,5 @@ public:
     virtual bool RenderActiveItemUIQuery();
 
     virtual void net_Relcase(CObject* object);
-    CHUDTarget* GetTarget() const { return m_pHUDTarget; };
+    CHUDTarget* GetTarget() const { return m_pHUDTarget; }
 };

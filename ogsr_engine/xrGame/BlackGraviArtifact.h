@@ -23,8 +23,8 @@ private:
     typedef CGraviArtefact inherited;
 
 public:
-    CBlackGraviArtefact(void);
-    virtual ~CBlackGraviArtefact(void);
+    CBlackGraviArtefact();
+    virtual ~CBlackGraviArtefact();
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
 

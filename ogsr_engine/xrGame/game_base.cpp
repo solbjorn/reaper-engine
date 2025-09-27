@@ -58,7 +58,7 @@ game_PlayerState::~game_PlayerState()
 {
     pItemList.clear();
     pSpawnPointsList.clear();
-};
+}
 
 bool game_PlayerState::testFlag(u16 f) const { return !!(flags__ & f); }
 
@@ -90,7 +90,7 @@ void game_PlayerState::net_Export(NET_Packet& P,
     P.w_u8(m_bCurrentVoteAgreed);
 
     P.w_u32(Device.dwTimeGlobal - DeathTime);
-};
+}
 
 void game_PlayerState::net_Import(NET_Packet& P) // KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Это походу единственный нет_импорт, который нужен.
 {
@@ -118,17 +118,17 @@ void game_PlayerState::net_Import(NET_Packet& P) // KRodin: НЕ ИЗМЕНЯТ�
     P.r_u8(m_bCurrentVoteAgreed);
 
     DeathTime = P.r_u32();
-};
+}
 
 void game_PlayerState::SetGameID(u16 NewID)
 {
     if (mOldIDs.size() >= 10)
-    {
         mOldIDs.pop_front();
-    };
+
     mOldIDs.push_back(GameID);
     GameID = NewID;
 }
+
 bool game_PlayerState::HasOldID(u16 ID)
 {
     OLD_GAME_ID_it ID_i = std::find(mOldIDs.begin(), mOldIDs.end(), ID);

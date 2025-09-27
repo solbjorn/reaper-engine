@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIScrollView.h"
 #include "UIScrollBar.h"
 #include "../ui_base.h"
@@ -7,15 +8,8 @@
 
 CUIScrollView::CUIScrollView()
 {
-    m_rightIndent = 0.0f;
-    m_leftIndent = 0.0f;
-    m_vertInterval = 0.0f;
-    m_upIndent = 0.0f;
-    m_downIndent = 0.0f;
     m_flags.zero();
     SetFixedScrollBar(true);
-    m_pad = NULL;
-    m_VScrollBar = NULL;
 }
 
 CUIScrollView::~CUIScrollView() { Clear(); }
@@ -143,7 +137,7 @@ void CUIScrollView::RecalcSize()
             pad_size.y += m_vertInterval;
             pad_size.x = _max(pad_size.x, (*it)->GetWndSize().x);
         }
-    };
+    }
 
     m_pad->SetWndSize(pad_size);
 
@@ -263,12 +257,12 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
             return true;
         }
         break;
-    };
+    }
+
     return false;
 }
 
 int CUIScrollView::GetMinScrollPos() { return m_VScrollBar->GetMinRange(); }
-
 int CUIScrollView::GetMaxScrollPos() { return m_VScrollBar->GetMaxRange(); }
 int CUIScrollView::GetCurrentScrollPos() { return m_VScrollBar->GetScrollPos(); }
 
@@ -287,11 +281,11 @@ void CUIScrollView::SetScrollPos(int position)
             clamp(position, GetMinScrollPos(), GetMaxScrollPos());
         }
     }
+
     m_VScrollBar->SetScrollPos(position);
+
     if (!m_flags.test(eInverseDir))
-    {
-        OnScrollV(NULL, NULL);
-    }
+        OnScrollV(nullptr, nullptr);
 }
 
 void CUIScrollView::ScrollToBegin()
@@ -300,7 +294,7 @@ void CUIScrollView::ScrollToBegin()
         RecalcSize();
 
     m_VScrollBar->SetScrollPos(m_VScrollBar->GetMinRange());
-    OnScrollV(NULL, NULL);
+    OnScrollV(nullptr, nullptr);
 }
 
 void CUIScrollView::ScrollToEnd()
@@ -309,7 +303,7 @@ void CUIScrollView::ScrollToEnd()
         RecalcSize();
 
     m_VScrollBar->SetScrollPos(m_VScrollBar->GetMaxRange());
-    OnScrollV(NULL, NULL);
+    OnScrollV(nullptr, nullptr);
 }
 
 void CUIScrollView::SetWndSize(const Fvector2& size)
@@ -387,7 +381,7 @@ void CUIScrollView::SetSelected(CUIWindow* w)
 CUIWindow* CUIScrollView::GetSelected()
 {
     if (!m_flags.test(eItemsSelectabe))
-        return NULL;
+        return nullptr;
 
     for (WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end() != it; ++it)
     {
@@ -395,7 +389,7 @@ CUIWindow* CUIScrollView::GetSelected()
             return *it;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CUIScrollView::UpdateChildrenLenght()

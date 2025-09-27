@@ -4,24 +4,16 @@
 
 class script_rq_result
 {
-    float range;
-    CScriptGameObject* object;
-    int element;
-    bool result;
-    SGameMtl* mtl;
+    CScriptGameObject* object{};
+    SGameMtl* mtl{};
+    int element{-1};
+    float range{};
+    bool result{};
 
 public:
-    script_rq_result()
-    {
-        object = nullptr;
-        range = 0.f;
-        element = -1;
-        result = false;
-        mtl = nullptr;
-    };
+    script_rq_result() = default;
+
     void set_result(collide::rq_result _res);
-    /*	IC CScriptGameObject	*get_object		()		const				{ return object; };
-        IC float				get_range		()		const				{ return range; };*/
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

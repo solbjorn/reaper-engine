@@ -7,6 +7,9 @@
 [submodule "3rd_party/Src/DirectXTex/DirectXTex"]
 	path = 3rd_party/Src/DirectXTex/DirectXTex
 	url = https://github.com/microsoft/DirectXTex.git
+[submodule "3rd_party/Src/GSL"]
+	path = 3rd_party/Src/GSL
+	url = https://github.com/microsoft/GSL.git
 [submodule "3rd_party/Src/OpCoDe/OpCoDe"]
 	path = 3rd_party/Src/OpCoDe/OpCoDe
 	url = https://github.com/solbjorn/OpCoDe

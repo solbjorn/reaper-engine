@@ -10,7 +10,7 @@
 #endif
 
 // Constants
-constexpr float EPS_S = 0.0000001f;
+constexpr float EPS_S = std::numeric_limits<float>::epsilon();
 constexpr float EPS = 0.0000100f;
 constexpr float EPS_L = 0.0010000f;
 
@@ -33,12 +33,19 @@ constexpr float PI_DIV_8 = 0.3926990816987241548078304229099f;
 #include "_bitwise.h"
 #include "_std_extensions.h"
 
-// comparisions
-IC BOOL fsimilar(float a, float b, float cmp = EPS) { return _abs(a - b) < cmp; }
-IC BOOL dsimilar(double a, double b, double cmp = EPS) { return _abs(a - b) < cmp; }
+// comparisons
 
-IC BOOL fis_zero(float val, float cmp = EPS_S) { return _abs(val) < cmp; }
-IC BOOL dis_zero(double val, double cmp = EPS_S) { return _abs(val) < cmp; }
+template <std::floating_point T>
+constexpr inline bool fsimilar(T a, T b, T rel = EPS)
+{
+    return std::abs(a - b) <= rel;
+}
+
+template <std::floating_point T>
+constexpr inline bool fis_zero(T val, T eps = EPS_S)
+{
+    return std::abs(val) <= eps;
+}
 
 // degree 2 radians and vice-versa
 namespace implement
@@ -47,13 +54,15 @@ template <class T>
 constexpr T deg2rad(T val)
 {
     return (val * T(M_PI) / T(180));
-};
+}
+
 template <class T>
 constexpr T rad2deg(T val)
 {
     return (val * T(180) / T(M_PI));
-};
-}; // namespace implement
+}
+} // namespace implement
+
 constexpr float deg2rad(float val) { return implement::deg2rad(val); }
 constexpr double deg2rad(double val) { return implement::deg2rad(val); }
 constexpr float rad2deg(float val) { return implement::rad2deg(val); }
@@ -63,20 +72,17 @@ constexpr double rad2deg(double val) { return implement::rad2deg(val); }
 template <typename T>
 constexpr void clamp(T& val, const T& _low, const T& _high) noexcept
 {
-    if (val < _low)
-        val = _low;
-    else if (val > _high)
-        val = _high;
-};
+    val = std::clamp(val, _low, _high);
+}
 
-#define clampr std::clamp
+XR_FUNCTION_ALIAS_1(clampr, std::clamp);
 
 constexpr float snapto(float value, float snap) noexcept
 {
     if (snap <= 0.f)
         return value;
     return float(iFloor((value + (snap * 0.5f)) / snap)) * snap;
-};
+}
 
 #include "_random.h"
 

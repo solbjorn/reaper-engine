@@ -24,12 +24,12 @@ public:
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }
-    virtual CWeapon* cast_weapon() { return 0; }
-    virtual CFoodItem* cast_food_item() { return 0; }
-    virtual CMissile* cast_missile() { return 0; }
-    virtual CHudItem* cast_hud_item() { return 0; }
-    virtual CWeaponAmmo* cast_weapon_ammo() { return 0; }
-    virtual CGameObject* cast_game_object() { return this; };
+    virtual CWeapon* cast_weapon() { return nullptr; }
+    virtual CFoodItem* cast_food_item() { return nullptr; }
+    virtual CMissile* cast_missile() { return nullptr; }
+    virtual CHudItem* cast_hud_item() { return nullptr; }
+    virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
+    virtual CGameObject* cast_game_object() { return this; }
 
 public:
     virtual void Load(LPCSTR section);

@@ -9,8 +9,6 @@
 #ifndef object_factory_inlineH
 #define object_factory_inlineH
 
-#pragma once
-
 IC const CObjectFactory& object_factory()
 {
     if (!g_object_factory)
@@ -39,10 +37,10 @@ IC void CObjectFactory::add(CObjectItemAbstract* item)
 {
     ASSERT_FMT_DBG(std::find_if(clsids().cbegin(), clsids().cend(), [item](const CObjectItemAbstract* item_compare) { return item->clsid() == item_compare->clsid(); }) ==
                        clsids().end(),
-                   "!![%s] Clsid [%u] already exists! Script clsid: [%s]", __FUNCTION__, item->clsid(), item->script_clsid().c_str());
+                   "!![%s] Clsid [%llu] already exists! Script clsid: [%s]", __FUNCTION__, item->clsid(), item->script_clsid().c_str());
     ASSERT_FMT_DBG(std::find_if(clsids().cbegin(), clsids().cend(),
                                 [item](const CObjectItemAbstract* item_compare) { return item->script_clsid() == item_compare->script_clsid(); }) == clsids().end(),
-                   "!![%s] Script clsid [%s] already exists! Clsid: [%u]", __FUNCTION__, item->script_clsid().c_str(), item->clsid());
+                   "!![%s] Script clsid [%s] already exists! Clsid: [%llu]", __FUNCTION__, item->script_clsid().c_str(), item->clsid());
 
     m_actual = false;
     m_clsids.push_back(item);

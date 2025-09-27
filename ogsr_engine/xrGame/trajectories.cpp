@@ -143,7 +143,7 @@ static bool trajectory_check_collision(float low, float high, Fvector const& pos
     if (range < distance)
         collide_position.mad(start, start_to_target, range);
 
-    return (range == distance);
+    return fsimilar(range, distance);
 }
 
 bool trajectory_intersects_geometry(float trajectory_time, Fvector const& trajectory_start, Fvector const& trajectory_end, Fvector const& trajectory_velocity,

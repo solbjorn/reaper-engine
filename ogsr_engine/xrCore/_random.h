@@ -1,37 +1,41 @@
-#ifndef __XRCORE_RANDOM_H
-#define __XRCORE_RANDOM_H
+#ifndef __XR_RANDOM_H
+#define __XR_RANDOM_H
 
-u32 get_random_u32(u32 min, u32 max);
-u32 get_random_u32_below(u32 min, u32 max);
-int get_random_int(int min, int max);
-int get_random_int_below(int min, int max);
-float get_random_float(float min, float max);
+namespace xr
+{
+s32 random_s32(s32 min, s32 max);
+s32 random_s32_below(s32 min, s32 max);
+s64 random_s64(s64 min, s64 max);
 
-u64 get_random_u64(u64 min, u64 max);
-s64 get_random_s64(s64 min, s64 max);
-double get_random_double_below(double min, double max);
+u32 random_u32(u32 min, u32 max);
+u32 random_u32_below(u32 min, u32 max);
+u64 random_u64(u64 min, u64 max);
 
-inline u32 get_random_u32(u32 max) { return get_random_u32(0u, max); }
-inline u32 get_random_u32_below(u32 max) { return get_random_u32_below(0u, max); }
-inline int get_random_int(int max) { return get_random_int(0, max); }
-inline int get_random_int_below(int max) { return get_random_int_below(0, max); }
-inline float get_random_float(float max) { return get_random_float(0.f, max); }
+float random_float(float min, float max);
+double random_double_below(double min, double max);
+
+inline s32 random_s32(s32 max) { return random_s32(0, max); }
+inline s32 random_s32_below(s32 max) { return random_s32_below(0, max); }
+inline u32 random_u32(u32 max) { return random_u32(0u, max); }
+inline u32 random_u32_below(u32 max) { return random_u32_below(0u, max); }
+inline float random_float(float max) { return random_float(0.f, max); }
+} // namespace xr
 
 class CRandom final
 {
 public:
-    [[nodiscard]] inline s32 randI(const s32 max) { return get_random_int_below(max); }
-    [[nodiscard]] inline s32 randI(const s32 min, const s32 max) { return get_random_int_below(min, max); }
+    [[nodiscard]] inline s32 randI(const s32 max) { return xr::random_s32_below(max); }
+    [[nodiscard]] inline s32 randI(const s32 min, const s32 max) { return xr::random_s32_below(min, max); }
 
-    [[nodiscard]] inline float randF() { return get_random_float(1.f); }
-    [[nodiscard]] inline float randF(const float max) { return get_random_float(max); }
-    [[nodiscard]] inline float randF(const float min, const float max) { return get_random_float(min, max); }
-    [[nodiscard]] inline float randFs(const float range) { return get_random_float(-range, range); }
-    [[nodiscard]] inline float randFs(const float range, const float offs) { return get_random_float(offs - range, offs + range); }
+    [[nodiscard]] inline float randF() { return xr::random_float(1.f); }
+    [[nodiscard]] inline float randF(const float max) { return xr::random_float(max); }
+    [[nodiscard]] inline float randF(const float min, const float max) { return xr::random_float(min, max); }
+    [[nodiscard]] inline float randFs(const float range) { return xr::random_float(-range, range); }
+    [[nodiscard]] inline float randFs(const float range, const float offs) { return xr::random_float(offs - range, offs + range); }
 };
 
 inline CRandom Random;
 
-inline int rand() { return get_random_int(RAND_MAX); }
+inline s32 rand() { return xr::random_s32(std::numeric_limits<s32>::max()); }
 
-#endif /* __XRCORE_RANDOM_H */
+#endif /* __XR_RANDOM_H */

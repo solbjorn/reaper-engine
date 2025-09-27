@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "zone_effector.h"
 #include "level.h"
 #include "clsid_game.h"
@@ -8,14 +9,7 @@
 #include "actoreffector.h"
 #include "postprocessanimator.h"
 
-CZoneEffector::CZoneEffector()
-{
-    radius = 1;
-    m_pp_effector = NULL;
-    m_pActor = NULL;
-    m_factor = 0.1f;
-}
-
+CZoneEffector::CZoneEffector() = default;
 CZoneEffector::~CZoneEffector() { Stop(); }
 
 void CZoneEffector::Load(LPCSTR section)
@@ -32,8 +26,9 @@ void CZoneEffector::Activate()
     m_pActor = smart_cast<CActor*>(Level().CurrentEntity());
     if (!m_pActor)
         return;
+
     m_pp_effector = xr_new<CPostprocessAnimatorLerp>();
-    m_pp_effector->SetType(EEffectorPPType(u32(u64(this) & u32(-1))));
+    m_pp_effector->SetType(EEffectorPPType(hash_64(reinterpret_cast<uintptr_t>(this), 32)));
     m_pp_effector->SetCyclic(true);
     m_pp_effector->SetFactorFunc(CallMe::fromMethod<&CZoneEffector::GetFactor>(this));
     m_pp_effector->Load(*m_pp_fname);
@@ -45,10 +40,10 @@ void CZoneEffector::Stop()
     if (!m_pp_effector)
         return;
 
-    m_pActor->Cameras().RemovePPEffector(EEffectorPPType(u32(u64(this) & u32(-1))));
-    m_pp_effector = NULL;
-    m_pActor = NULL;
-};
+    m_pActor->Cameras().RemovePPEffector(EEffectorPPType(hash_64(reinterpret_cast<uintptr_t>(this), 32)));
+    m_pp_effector = nullptr;
+    m_pActor = nullptr;
+}
 
 void CZoneEffector::Update(float dist)
 {

@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "AI_PhraseDialogManager.h"
 #include "PhraseDialog.h"
 #include "inventoryowner.h"
@@ -13,9 +14,8 @@
 #include "gameobject.h"
 #include "relation_registry.h"
 
-CAI_PhraseDialogManager::CAI_PhraseDialogManager(void) { m_sStartDialog = m_sDefaultStartDialog = NULL; }
-
-CAI_PhraseDialogManager::~CAI_PhraseDialogManager(void) {}
+CAI_PhraseDialogManager::CAI_PhraseDialogManager() = default;
+CAI_PhraseDialogManager::~CAI_PhraseDialogManager() {}
 
 // PhraseDialogManager
 void CAI_PhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
@@ -23,6 +23,7 @@ void CAI_PhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
     AnswerPhrase(phrase_dialog);
     CPhraseDialogManager::ReceivePhrase(phrase_dialog);
 }
+
 #include "uigamesp.h"
 #include "hudmanager.h"
 #include "level.h"
@@ -43,8 +44,8 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
 
         xr_vector<int> phrases;
         CHARACTER_GOODWILL phrase_goodwill = NO_GOODWILL;
-        //если не найдем более подходяещей выводим фразу
-        //последнюю из списка (самую грубую)
+        // если не найдем более подходяещей выводим фразу
+        // последнюю из списка (самую грубую)
         int phrase_num = phrase_dialog->PhraseList().size() - 1;
         for (u32 i = 0; i < phrase_dialog->PhraseList().size(); ++i)
         {

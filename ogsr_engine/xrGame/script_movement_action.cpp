@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_movement_action.h"
 #include "script_game_object.h"
 #include "detail_path_manager_space.h"
@@ -46,13 +47,13 @@ CScriptMovementAction::CScriptMovementAction()
     SetBodyState(MonsterSpace::eBodyStateStand);
     SetMovementType(MonsterSpace::eMovementTypeStand);
     SetPathType(DetailPathManager::eDetailPathTypeSmooth);
-    SetPatrolPath(0, "");
+    SetPatrolPath(nullptr, "");
     SetPatrolStart(PatrolPathManager::ePatrolStartTypeNearest);
     SetPatrolStop(PatrolPathManager::ePatrolRouteTypeContinue);
     SetPatrolRandom(true);
     SetSpeed(0);
-    SetObjectToGo(0);
-    SetPosition(Fvector().set(0, 0, 0));
+    SetObjectToGo(nullptr);
+    SetPosition(Fvector{});
     m_tGoalType = eGoalTypeDummy;
     m_bCompleted = true;
 }
@@ -116,7 +117,32 @@ void CScriptMovementAction::SetObjectToGo(CScriptGameObject* tpObjectToGo)
     if (tpObjectToGo)
         m_tpObjectToGo = tpObjectToGo->operator CObject*();
     else
-        m_tpObjectToGo = 0;
+        m_tpObjectToGo = nullptr;
+
     m_tGoalType = eGoalTypeObject;
     m_bCompleted = false;
+}
+
+void CScriptMovementAction::clone(const CScriptMovementAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_path_name = from.m_path_name;
+    m_tBodyState = from.m_tBodyState;
+    m_tMovementType = from.m_tMovementType;
+    m_tPathType = from.m_tPathType;
+    m_tpObjectToGo = from.m_tpObjectToGo;
+    m_path = from.m_path;
+    m_tPatrolPathStart = from.m_tPatrolPathStart;
+    m_tPatrolPathStop = from.m_tPatrolPathStop;
+    m_tDestinationPosition = from.m_tDestinationPosition;
+    m_tNodeID = from.m_tNodeID;
+    m_tGoalType = from.m_tGoalType;
+    m_fSpeed = from.m_fSpeed;
+    m_bRandom = from.m_bRandom;
+    m_tInputKeys = from.m_tInputKeys;
+    m_tMoveAction = from.m_tMoveAction;
+    m_tSpeedParam = from.m_tSpeedParam;
+    m_previous_patrol_point = from.m_previous_patrol_point;
+    m_fDistToEnd = from.m_fDistToEnd;
 }

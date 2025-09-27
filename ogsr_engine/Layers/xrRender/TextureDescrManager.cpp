@@ -3,8 +3,14 @@
 #include "TextureDescrManager.h"
 #include "ETextureParams.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+
 #include <oneapi/tbb/parallel_for_each.h>
 #include <oneapi/tbb/spin_mutex.h>
+
+XR_DIAG_POP();
 
 // eye-params
 float r__dtex_range = 50;
@@ -16,7 +22,7 @@ class cl_dt_scaler : public R_constant_setup
 public:
     float scale;
 
-    cl_dt_scaler(float s) : scale(s) {};
+    cl_dt_scaler(float s) : scale{s} {}
     virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.set_c(C, scale, scale, scale, 1 / r__dtex_range); }
 };
 
@@ -32,7 +38,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
     FS_FileSet flist;
     FS.file_list(flist, initial, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
 
-    Msg("Count of *textures*.ltx files in [%s]: [%u]", initial, flist.size());
+    Msg("Count of *textures*.ltx files in [%s]: [%zu]", initial, flist.size());
 
     if (flist.empty())
         return;
@@ -121,7 +127,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
     FS_FileSet flist;
     FS.file_list(flist, initial, FS_ListFiles, "*.thm");
 
-    Msg("Count of .thm files in [%s]: [%u]", initial, flist.size());
+    Msg("Count of .thm files in [%s]: [%zu]", initial, flist.size());
 
     if (flist.empty())
         return;
@@ -296,9 +302,11 @@ BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res
             texture_assoc* TA = I->second.m_assoc;
             res = TA->detail_name.c_str();
             auto It2 = m_detail_scalers.find(tex_name);
-            CS = It2 == m_detail_scalers.end() ? 0 : It2->second; // TA->cs;
+            CS = It2 == m_detail_scalers.end() ? nullptr : It2->second; // TA->cs;
+
             return TRUE;
         }
     }
+
     return FALSE;
 }

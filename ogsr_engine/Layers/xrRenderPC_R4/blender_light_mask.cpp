@@ -37,12 +37,7 @@ void CBlender_accum_direct_mask::Compile(CBlender_Compile& C)
     }
 }
 
-CBlender_accum_direct_mask_msaa::CBlender_accum_direct_mask_msaa()
-{
-    Name = 0;
-    Definition = 0;
-    description.CLS = 0;
-}
+CBlender_accum_direct_mask_msaa::CBlender_accum_direct_mask_msaa() { description.CLS = 0; }
 CBlender_accum_direct_mask_msaa::~CBlender_accum_direct_mask_msaa() {}
 
 //	TODO: DX10:	implement CBlender_accum_direct_mask::Compile
@@ -80,5 +75,6 @@ void CBlender_accum_direct_mask_msaa::Compile(CBlender_Compile& C)
     case SE_MASK_ACCUM_2D: break;
     case SE_MASK_ALBEDO: break;
     }
+
     RImplementation.m_MSAASample = -1;
 }

@@ -60,7 +60,7 @@ private:
     bool m_thrown;
 
 protected:
-    virtual void UpdateXForm() { CMissile::UpdateXForm(); };
+    virtual void UpdateXForm() { CMissile::UpdateXForm(); }
 
 public:
     virtual BOOL UsedAI_Locations();

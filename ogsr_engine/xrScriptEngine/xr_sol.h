@@ -1,10 +1,41 @@
 #ifndef __XRSCRIPT_SOL_H
 #define __XRSCRIPT_SOL_H
 
-// Uncomment to turn on protected mode for every call and type conversion
+// Enable checks for types and arguments
 #define SOL_ALL_SAFETIES_ON 1
+// Don't allow any script errors
+#define SOL_SAFE_FUNCTIONS 0
+
+// Don't rely on LuaJIT's non-conformant exceptions
+#define SOL_EXCEPTIONS_ALWAYS_UNSAFE 1
+#define SOL_EXCEPTIONS_CATCH_ALL 1
+
+// Override poor compiler auto-detection
+#define SOL_COMPILER_CLANG 1
+#define SOL_COMPILER_VCXX 0
+
+// Re-enable RTTI (gets disabled by `VCXX 0`)
+#ifndef _CPPRTTI
+#define SOL_NO_RTTI 1
+#else
+#define SOL_NO_RTTI 0
+#endif
+
+// Isn't defined by default for some reason
+#define SOL_HEADER_ONLY 1
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wimplicit-fallthrough");
+XR_DIAG_IGNORE("-Wnewline-eof");
+XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <sol/sol.hpp>
+
+XR_DIAG_POP();
+
 #include <rtti.hh>
 
 // Generate sol::bases<> and sol::base<T> using RTTI annotations
@@ -13,14 +44,11 @@ template <typename T>
 using xr_sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<sol::bases>;
 
 #define XR_SOL_BASE_CLASSES(T) \
-    namespace sol \
-    { \
     template <> \
-    struct base<T> : std::true_type \
+    struct sol::base<T> : std::true_type \
     { \
         typedef RTTI::type_descriptor<T>::declared_base_types ::template to<sol::types> type; \
     }; \
-    } \
     static_assert(T::TypeInfo::Name() == RTTI::TypeName<T>())
 
 // ^ Bonus assertion that T::TypeInfo is declared explicitly, not inherited

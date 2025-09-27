@@ -35,7 +35,7 @@ void INetQueue::CreateCommit(NET_Packet* P)
 
 NET_Packet* INetQueue::CreateGet()
 {
-    NET_Packet* P = 0;
+    NET_Packet* P{};
     cs.Enter();
 
     if (unused.empty())
@@ -55,7 +55,7 @@ NET_Packet* INetQueue::CreateGet()
 
 NET_Packet* INetQueue::Retreive()
 {
-    NET_Packet* P = 0;
+    NET_Packet* P{};
     cs.Enter();
     if (!ready.empty())
         P = ready.front();

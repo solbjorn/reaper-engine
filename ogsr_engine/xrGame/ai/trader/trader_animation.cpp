@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "trader_animation.h"
 #include "ai_trader.h"
 #include "../../script_callback_ex.h"
@@ -13,14 +14,13 @@ void CTraderAnimation::reinit()
 {
     m_motion_head.invalidate();
     m_motion_global.invalidate();
-    m_sound = 0;
+    m_sound = nullptr;
     m_external_sound = 0;
 
-    m_anim_global = 0;
-    m_anim_head = 0;
+    m_anim_global = nullptr;
+    m_anim_head = nullptr;
 
-    m_head =
-        smart_cast<IKinematics*>(m_trader->Visual())->LL_BoneID("bip01_head");
+    m_head = smart_cast<IKinematics*>(m_trader->Visual())->LL_BoneID("bip01_head");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -144,10 +144,8 @@ void CTraderAnimation::external_sound_stop()
 
 Fvector CTraderAnimation::sound_position()
 {
-    IKinematics* kinematics =
-        smart_cast<IKinematics*>(m_trader->Visual());
+    IKinematics* kinematics = smart_cast<IKinematics*>(m_trader->Visual());
     Fmatrix l_tMatrix;
-    l_tMatrix.mul_43(
-        m_trader->XFORM(), kinematics->LL_GetBoneInstance(m_head).mTransform);
+    l_tMatrix.mul_43(m_trader->XFORM(), kinematics->LL_GetBoneInstance(m_head).mTransform);
     return l_tMatrix.c;
 }

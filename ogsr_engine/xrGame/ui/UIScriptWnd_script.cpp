@@ -20,8 +20,8 @@ IC T* CUIDialogWndEx::GetControl(LPCSTR name)
 {
     shared_str n = name;
     CUIWindow* pWnd = FindChild(n);
-    if (pWnd == NULL)
-        return NULL;
+    if (!pWnd)
+        return nullptr;
 
     return smart_cast<T*>(pWnd);
 }

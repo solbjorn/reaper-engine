@@ -24,15 +24,12 @@ public:
     CActor* OwnerActor() const { return m_ownerActor; }
 
 public:
-    CHolderCustom()
-    {
-        m_owner = NULL;
-        m_ownerActor = NULL;
-    }
-    virtual ~CHolderCustom() { ; }
-    virtual void UpdateEx(float fov) {}; // called by owner
+    CHolderCustom() = default;
+    virtual ~CHolderCustom() {}
+
+    virtual void UpdateEx(float fov) {} // called by owner
     virtual CHolderCustom* cast_holder_custom() { return this; }
-    bool Engaged() { return m_owner != NULL; }
+    bool Engaged() { return !!m_owner; }
     virtual void OnMouseMove(int x, int y) = 0;
     virtual void OnKeyboardPress(int dik) = 0;
     virtual void OnKeyboardRelease(int dik) = 0;
@@ -48,11 +45,11 @@ public:
     virtual bool allowWeapon() const = 0;
     virtual bool HUDView() const = 0;
     virtual Fvector ExitPosition() = 0;
-    virtual Fvector ExitVelocity() { return Fvector().set(0, 0, 0); }
+    virtual Fvector ExitVelocity() { return Fvector{}; }
     virtual CCameraBase* Camera() = 0;
-    virtual void Action(int id, u32 flags) {};
-    virtual void SetParam(int id, Fvector2 val) {};
-    virtual void SetParam(int id, Fvector val) {};
+    virtual void Action(int id, u32 flags) {}
+    virtual void SetParam(int id, Fvector2 val) {}
+    virtual void SetParam(int id, Fvector val) {}
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

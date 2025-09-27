@@ -42,10 +42,11 @@ protected:
     void close();
 
 public:
-    lua_State* lua() { return m_virtual_machine; };
     CScriptStorage() = default;
     virtual ~CScriptStorage();
-    void script_log(ScriptStorage::ELuaMessageType message, const char* caFormat, ...);
+
+    lua_State* lua() { return m_virtual_machine; }
+    void XR_PRINTF(3, 4) script_log(ScriptStorage::ELuaMessageType message, const char* caFormat, ...);
     static bool print_output(lua_State* L, const char* caScriptName, int iErorCode = 0);
     static constexpr const char* GlobalNamespace = "_G";
     void print_stack();

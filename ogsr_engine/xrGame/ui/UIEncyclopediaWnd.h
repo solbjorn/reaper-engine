@@ -37,7 +37,7 @@ public:
 
     virtual void Init();
     virtual void Show(bool status);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     virtual void Draw();
 
     CEncyclopediaArticle* AddArticle(shared_str, bool);
@@ -62,7 +62,7 @@ protected:
     CUIStatic* UIArticleHeader;
 
     // Хранилище статей
-    xr_vector<CEncyclopediaArticle> m_ArticlesDB;
+    xr_vector<std::unique_ptr<CEncyclopediaArticle>> m_ArticlesDB;
 
     CGameFont* m_pTreeRootFont;
     u32 m_uTreeRootColor;

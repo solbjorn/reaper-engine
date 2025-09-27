@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_danger_in_direction_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -97,15 +98,15 @@ void CStalkerActionDangerInDirectionTakeCover::finalize() { inherited::finalize(
 // CStalkerActionDangerInDirectionLookOut
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerInDirectionLookOut::CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerInDirectionLookOut::CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerInDirectionLookOut::initialize()
 {
     inherited::initialize();
 
-    m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!get_random_u32_below(2));
+    m_storage->set_property(eWorldPropertyUseCrouchToLookOut, !!xr::random_u32_below(2));
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -172,13 +173,13 @@ void CStalkerActionDangerInDirectionLookOut::finalize() { inherited::finalize();
 // CStalkerActionDangerInDirectionHoldPosition
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerInDirectionHoldPosition::CStalkerActionDangerInDirectionHoldPosition(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerInDirectionHoldPosition::CStalkerActionDangerInDirectionHoldPosition(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerInDirectionHoldPosition::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -191,7 +192,7 @@ void CStalkerActionDangerInDirectionHoldPosition::initialize()
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
-    set_inertia_time(get_random_u32(5000, 10000));
+    set_inertia_time(xr::random_u32(5000, 10000));
 }
 
 void CStalkerActionDangerInDirectionHoldPosition::execute()
@@ -228,14 +229,14 @@ void CStalkerActionDangerInDirectionHoldPosition::finalize() { inherited::finali
 // CStalkerActionDangerInDirectionDetour
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerInDirectionDetour::CStalkerActionDangerInDirectionDetour(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerInDirectionDetour::CStalkerActionDangerInDirectionDetour(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerInDirectionDetour::initialize()
 {
     inherited::initialize();
 
     object().agent_manager().member().member(&object()).detour(true);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -245,7 +246,7 @@ void CStalkerActionDangerInDirectionDetour::initialize()
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().agent_manager().member().member(m_object).cover(0);
+    object().agent_manager().member().member(m_object).cover(nullptr);
 }
 
 void CStalkerActionDangerInDirectionDetour::execute()
@@ -293,13 +294,13 @@ void CStalkerActionDangerInDirectionDetour::finalize() { inherited::finalize(); 
 // CStalkerActionDangerInDirectionSearch
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerInDirectionSearch::CStalkerActionDangerInDirectionSearch(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerInDirectionSearch::CStalkerActionDangerInDirectionSearch(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerInDirectionSearch::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -311,7 +312,7 @@ void CStalkerActionDangerInDirectionSearch::initialize()
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
-    object().agent_manager().member().member(m_object).cover(0);
+    object().agent_manager().member().member(m_object).cover(nullptr);
 }
 
 void CStalkerActionDangerInDirectionSearch::execute()

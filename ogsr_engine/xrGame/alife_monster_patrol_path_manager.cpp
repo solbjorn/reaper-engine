@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_monster_patrol_path_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
@@ -17,22 +18,9 @@
 #include "game_graph.h"
 
 CALifeMonsterPatrolPathManager::CALifeMonsterPatrolPathManager(object_type* object)
+    : m_object{object}, m_start_type{PatrolPathManager::ePatrolStartTypeNearest}, m_route_type{PatrolPathManager::ePatrolRouteTypeContinue}
 {
     VERIFY(object);
-    m_object = object;
-
-    m_path = 0;
-
-    m_actual = true;
-    m_completed = true;
-
-    m_current_vertex_index = u32(-1);
-    m_previous_vertex_index = u32(-1);
-    m_start_vertex_index = u32(-1);
-
-    start_type(PatrolPathManager::ePatrolStartTypeNearest);
-    route_type(PatrolPathManager::ePatrolRouteTypeContinue);
-    use_randomness(true);
 }
 
 void CALifeMonsterPatrolPathManager::path(const shared_str& path_name) { path(ai().patrol_paths().safe_path(path_name)); }
@@ -101,7 +89,7 @@ void CALifeMonsterPatrolPathManager::actualize()
     case PatrolPathManager::ePatrolStartTypeNext:
         // we advisedly do not process this case since it is far-fetched
     default: NODEFAULT;
-    };
+    }
 
     VERIFY(path().vertices().size() > m_current_vertex_index);
 }
@@ -142,7 +130,7 @@ void CALifeMonsterPatrolPathManager::navigate()
             VERIFY(!m_completed);
             m_completed = true;
             break;
-        };
+        }
         case PatrolPathManager::ePatrolRouteTypeContinue: {
             if (vertex.edges().empty())
             {
@@ -155,9 +143,9 @@ void CALifeMonsterPatrolPathManager::navigate()
             VERIFY(vertex.edges().front().vertex_id() == m_previous_vertex_index);
             std::swap(m_current_vertex_index, m_previous_vertex_index);
             break;
-        };
+        }
         default: NODEFAULT;
-        };
+        }
     }
 
     const u32 chosen = use_randomness() ? ::Random.randI(branching_factor) : 0;

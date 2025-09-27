@@ -290,8 +290,9 @@ class player_hud
 public:
     player_hud();
     ~player_hud();
+
     void load(const shared_str& model_name, bool force = false);
-    void load_default() { load("actor_hud_05"); };
+    void load_default() { load("actor_hud_05"); }
     void update(const Fmatrix& trans);
     void render_hud(u32 context_id, IRenderable* root);
     void render_item_ui();
@@ -305,7 +306,7 @@ public:
 
     void attach_item(CHudItem* item);
     bool allow_activation(CHudItem* item);
-    attachable_hud_item* attached_item(u16 item_idx) { return m_attached_items[item_idx]; };
+    attachable_hud_item* attached_item(u16 item_idx) { return m_attached_items[item_idx]; }
     void detach_item_idx(u16 idx);
     void detach_item(CHudItem* item);
     void detach_all_items()
@@ -344,7 +345,7 @@ public:
     {
         script_override_arms = false;
         load(m_sect_name, true);
-    };
+    }
 
     u32 script_anim_play(u8 hand, LPCSTR itm_name, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false);
     void script_anim_stop();

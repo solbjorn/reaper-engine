@@ -8,22 +8,22 @@ class CTheoraSurface : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CTheoraSurface);
 
 public:
-    CTheoraStream* m_rgb;
-    CTheoraStream* m_alpha;
+    CTheoraStream* m_rgb{};
+    CTheoraStream* m_alpha{};
 
     u32 tm_start{};
-    u32 tm_play;
-    u32 tm_total;
-    BOOL ready;
+    u32 tm_play{};
+    u32 tm_total{};
+    BOOL ready{};
 
-    BOOL playing;
-    BOOL looped;
+    BOOL playing{};
+    BOOL looped{};
 
 protected:
     void Reset();
 
 public:
-    CTheoraSurface();
+    CTheoraSurface() = default;
     virtual ~CTheoraSurface();
 
     BOOL Valid();

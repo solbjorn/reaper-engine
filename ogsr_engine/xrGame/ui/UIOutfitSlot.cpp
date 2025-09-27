@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIOutfitSlot.h"
 #include "UIStatic.h"
 #include "UICellItem.h"
@@ -90,8 +91,10 @@ void CUIOutfitDragDropList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 CUICellItem* CUIOutfitDragDropList::RemoveItem(CUICellItem* itm, bool force_root)
 {
     VERIFY(!force_root);
+
     CUICellItem* ci = inherited::RemoveItem(itm, force_root);
-    SetOutfit(NULL);
+    SetOutfit(nullptr);
+
     return ci;
 }
 

@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "character_community.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -19,8 +20,9 @@ CHARACTER_COMMUNITY::GOODWILL_TABLE CHARACTER_COMMUNITY::m_relation_table;
 CHARACTER_COMMUNITY::SYMPATHY_TABLE CHARACTER_COMMUNITY::m_sympathy_table;
 
 //////////////////////////////////////////////////////////////////////////
-CHARACTER_COMMUNITY::CHARACTER_COMMUNITY() { m_current_index = NO_COMMUNITY_INDEX; }
-CHARACTER_COMMUNITY::~CHARACTER_COMMUNITY() {}
+
+CHARACTER_COMMUNITY::CHARACTER_COMMUNITY() = default;
+CHARACTER_COMMUNITY::~CHARACTER_COMMUNITY() = default;
 
 void CHARACTER_COMMUNITY::set(CHARACTER_COMMUNITY_ID id) { m_current_index = IdToIndex(id); }
 

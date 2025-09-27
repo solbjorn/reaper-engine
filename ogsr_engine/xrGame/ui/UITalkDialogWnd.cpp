@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include <dinput.h>
 #include "UITalkDialogWnd.h"
 
@@ -18,8 +19,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-CUITalkDialogWnd::CUITalkDialogWnd() : m_pNameTextFont(NULL) { m_ClickedQuestionID = ""; }
-
+CUITalkDialogWnd::CUITalkDialogWnd() { m_ClickedQuestionID = ""; }
 CUITalkDialogWnd::~CUITalkDialogWnd() { xr_delete(m_uiXml); }
 
 void CUITalkDialogWnd::Init(float x, float y, float width, float height)
@@ -80,7 +80,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
     // шрифт для индикации имени персонажа в окне разговора
     CUIXmlInit::InitFont(*m_uiXml, "font", 0, m_iNameTextColor, m_pNameTextFont);
 
-    CGameFont* pFont = NULL;
+    CGameFont* pFont{};
     CUIXmlInit::InitFont(*m_uiXml, "font", 1, m_uOurReplicsColor, pFont);
 
     SetWindowName("----CUITalkDialogWnd");

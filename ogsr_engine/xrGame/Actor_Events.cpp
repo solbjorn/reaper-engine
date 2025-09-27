@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "actor.h"
 #include "customdetector.h"
 #include "uigamesp.h"
@@ -20,6 +21,7 @@
 #include "holder_custom.h"
 #include "ui/uiinventoryWnd.h"
 #include "game_base_space.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
@@ -57,22 +59,20 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
             inventory().Take(_GO, false, true);
 
-            CUIGameSP* pGameSP = NULL;
+            CUIGameSP* pGameSP{};
             CUI* ui = HUD().GetUI();
             if (ui && ui->UIGame())
             {
                 pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
                 if (Level().CurrentViewEntity() == this)
                     HUD().GetUI()->UIGame()->ReInitShownUI();
-            };
+            }
 
-            //добавить отсоединенный аддон в инвентарь
+            // добавить отсоединенный аддон в инвентарь
             if (pGameSP)
             {
                 if (pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
-                {
                     pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(O));
-                }
             }
         }
         else
@@ -102,7 +102,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
         O->SetTmpPreDestroy(just_before_destroy);
         if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy())
         {
-            O->H_SetParent(0, dont_create_shell);
+            O->H_SetParent(nullptr, dont_create_shell);
             //.				feel_touch_deny(O,2000);
             Level().m_feel_deny.feel_touch_deny(O, 1000);
         }
@@ -154,10 +154,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
         CObject* O = Level().Objects.net_Find(id);
         if (!O)
         {
-            Msg("! Error: No object to attach holder [%d]", id);
+            Msg("! Error: No object to attach holder [%u]", id);
             break;
         }
-        VERIFY(m_holder == NULL);
+        VERIFY(!m_holder);
         CHolderCustom* holder = smart_cast<CHolderCustom*>(O);
         if (!holder->Engaged())
             use_Holder(holder);
@@ -170,8 +170,9 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
         u32 id =
 #endif
             P.r_u32();
+
         VERIFY(id == smart_cast<CGameObject*>(m_holder)->ID());
-        use_Holder(NULL);
+        use_Holder(nullptr);
     }
     break;
     }

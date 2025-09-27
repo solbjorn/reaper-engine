@@ -15,9 +15,11 @@
 #define CSAStar CAStar<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, TVertexData>
 
 TEMPLATE_SPECIALIZATION
-inline CSAStar::CAStar(const u32 max_vertex_count) : Inherited(max_vertex_count) {}
+inline CSAStar::CAStar(const u32 max_vertex_count) : Inherited{max_vertex_count} {}
+
 TEMPLATE_SPECIALIZATION
 inline CSAStar::~CAStar() {}
+
 TEMPLATE_SPECIALIZATION
 template <typename TPathManager>
 inline void CSAStar::initialize(TPathManager& path_manager)
@@ -36,7 +38,7 @@ inline void CSAStar::initialize(TPathManager& path_manager)
     start.h() = path_manager.estimate(start.index());
     start.f() = start.g() + start.h();
     // assign null parent to the start node
-    data_storage.assign_parent(start, 0);
+    data_storage.assign_parent(start, nullptr);
     // add start node to the opened list
     data_storage.add_opened(start);
 }

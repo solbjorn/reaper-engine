@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <string>
 
+#include <gsl/narrow>
+
 #define DEBUG_INVOKE __debugbreak()
 
 class xrDebug
@@ -15,8 +17,8 @@ private:
 public:
     void _initialize();
 
-    crashhandler* get_crashhandler() const { return handler; };
-    void set_crashhandler(crashhandler* handler) { this->handler = handler; };
+    crashhandler* get_crashhandler() const { return handler; }
+    void set_crashhandler(crashhandler* _handler) { handler = _handler; }
 
     const char* DXerror2string(const HRESULT code) const;
     const char* error2string(const DWORD code) const;
@@ -28,7 +30,7 @@ public:
     void fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function);
     void error(const HRESULT code, const char* e1, const char* file, int line, const char* function);
     void error(const HRESULT code, const char* e1, const char* e2, const char* file, int line, const char* function);
-    void _cdecl fatal(const char* file, int line, const char* function, const char* F, ...);
+    void _cdecl XR_PRINTF(5, 6) fatal(const char* file, int line, const char* function, const char* F, ...);
     void backend(const char* reason, const char* expression, const char* argument0, const char* argument1, const char* file, int line, const char* function);
     static void do_exit(const std::string& message);
 
@@ -37,16 +39,20 @@ public:
 
 // warning
 // this function can be used for debug purposes only
-IC std::string make_string(const char* format, ...)
+IC XR_PRINTF(1, 2) std::string make_string(const char* format, ...)
 {
     std::va_list args, args_copy;
 
     va_start(args, format);
     va_copy(args_copy, args);
 
-    auto sz = std::vsnprintf(nullptr, 0, format, args) + 1;
-    std::string result(sz, ' ');
-    std::vsnprintf(&result.front(), sz, format, args_copy);
+    int sz = std::vsnprintf(nullptr, 0, format, args);
+    if (sz <= 0)
+        return std::string();
+
+    auto n = gsl::narrow_cast<size_t>(sz + 1);
+    std::string result(n, ' ');
+    std::vsnprintf(&result.front(), n, format, args_copy);
 
     va_end(args_copy);
     va_end(args);

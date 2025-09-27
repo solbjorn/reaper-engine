@@ -1,17 +1,11 @@
 #include "stdafx.h"
+
 #include "PHInterpolation.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "MathUtils.h"
 
 extern CPHWorld* ph_world;
-
-CPHInterpolation::CPHInterpolation()
-{
-    m_body = NULL;
-
-    //	fTimeDelta=0.f;
-}
 
 void CPHInterpolation::SetBody(dBodyID body)
 {

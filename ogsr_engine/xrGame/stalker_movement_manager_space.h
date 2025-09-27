@@ -69,4 +69,4 @@ enum eVelocities : u32
     eVelocityRunDangerCrouchNegative = eVelocityRunDangerCrouch | eVelocityNegativeVelocity,
     eVelocityRunPanicStandNegative = eVelocityRunPanicStand | eVelocityNegativeVelocity,
 };
-};
+}

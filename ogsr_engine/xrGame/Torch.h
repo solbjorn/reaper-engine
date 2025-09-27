@@ -15,16 +15,16 @@ private:
     typedef CInventoryItemObject inherited;
 
 protected:
-    float fBrightness;
-    CLAItem* lanim;
-    float time2hide;
+    float fBrightness{1.f};
+    CLAItem* lanim{};
+    float time2hide{};
 
     u16 guid_bone{};
     shared_str light_trace_bone;
 
-    float m_delta_h;
-    Fvector2 m_prev_hp;
-    bool m_switched_on;
+    float m_delta_h{};
+    Fvector2 m_prev_hp{};
+    bool m_switched_on{};
     ref_light light_render;
     ref_light light_omni;
     ref_glow glow_render;
@@ -35,8 +35,8 @@ private:
     bool useVolumetric{}, useVolumetricForActor{};
 
 public:
-    CTorch(void);
-    virtual ~CTorch(void);
+    CTorch();
+    virtual ~CTorch();
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

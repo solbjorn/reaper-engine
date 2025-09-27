@@ -54,7 +54,7 @@ struct st_Key
     {
         if (!fsimilar(value, tgt.value))
             return false;
-        if (!fsimilar(shape, tgt.shape))
+        if (shape != tgt.shape)
             return false;
         if (!fsimilar(tension, tgt.tension))
             return false;
@@ -122,22 +122,19 @@ DEFINE_VECTOR(st_Key*, KeyVec, KeyIt);
 // refs
 class CExporter;
 
-class CEnvelope : public virtual RTTI::Enable
+class CEnvelope
 {
-    RTTI_DECLARE_TYPEINFO(CEnvelope);
-
 public:
     KeyVec keys;
-    int behavior[2];
+    int behavior[2]{1, 1};
 
-public:
-    CEnvelope()
-    {
-        behavior[0] = 1;
-        behavior[1] = 1;
-    }
-    CEnvelope(CEnvelope* source);
-    virtual ~CEnvelope();
+    CEnvelope() = default;
+    CEnvelope(const CEnvelope& source);
+    CEnvelope(CEnvelope&&) = default;
+    ~CEnvelope();
+
+    CEnvelope& operator=(const CEnvelope& source);
+    CEnvelope& operator=(CEnvelope&&) = default;
 
     float Evaluate(float t);
 

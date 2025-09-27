@@ -14,7 +14,7 @@
 namespace SightManager
 {
 enum ESightType : u32;
-};
+}
 
 class CScriptGameObject;
 
@@ -32,10 +32,10 @@ public:
         eGoalTypeDummy = u32(-1),
     };
 
-    CObject* m_tpObjectToWatch;
-    SightManager::ESightType m_tWatchType{};
-    EGoalType m_tGoalType{};
-    Fvector m_tWatchVector;
+    CObject* m_tpObjectToWatch{};
+    SightManager::ESightType m_tWatchType;
+    EGoalType m_tGoalType{eGoalTypeCurrent};
+    Fvector m_tWatchVector{};
     shared_str m_bone_to_watch;
 
     // Searchlight
@@ -57,6 +57,8 @@ public:
     IC void SetWatchDirection(const Fvector& tDirection);
     IC void SetWatchBone(LPCSTR bone_to_watch);
     IC void initialize();
+
+    void clone(const CScriptWatchAction& from);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -1,6 +1,9 @@
 #pragma once
+
 class CCar;
+
 DEFINE_VECTOR(u16, BIDS, BIDS_I);
+
 struct CCarDamageParticles
 {
     BIDS bones1;

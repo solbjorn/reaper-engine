@@ -1,11 +1,13 @@
 #include "stdafx.h"
+
 #include "ui_base.h"
 #include "GamePersistent.h"
 #include "UICursor.h"
 #include "HUDManager.h"
 
-CUICursor* GetUICursor() { return UI()->GetUICursor(); };
-ui_core* UI() { return GamePersistent().m_pUI_core; };
+CUICursor* GetUICursor() { return UI()->GetUICursor(); }
+ui_core* UI() { return GamePersistent().m_pUI_core; }
+
 extern Fvector2 g_current_font_scale;
 
 void S2DVert::rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx)
@@ -74,7 +76,7 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
                     dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
                     dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
                     denum = P.n.dotproduct(dir_pt);
-                    if (denum != 0)
+                    if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
                         dest->last().pt.mad((*src)[j].pt, dir_pt, t);
@@ -93,7 +95,7 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
                     dir_pt.sub((*src)[j + 1].pt, (*src)[j].pt);
                     dir_uv.sub((*src)[j + 1].uv, (*src)[j].uv);
                     denum = P.n.dotproduct(dir_pt);
-                    if (denum != 0)
+                    if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
                         dest->last().pt.mad((*src)[j].pt, dir_pt, t);
@@ -106,8 +108,9 @@ sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
 
         // here we end up with complete polygon in 'dest' which is inside plane #i
         if (dest->size() < 3)
-            return 0;
+            return nullptr;
     }
+
     return dest;
 }
 
@@ -202,7 +205,9 @@ void ui_core::PopScissor()
     m_Scissors.pop();
 
     if (m_Scissors.empty())
-        UIRender->SetScissor(NULL);
+    {
+        UIRender->SetScissor(nullptr);
+    }
     else
     {
         const Frect& top = m_Scissors.top();
@@ -274,7 +279,7 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
     if (!is_widescreen())
     {
         sprintf_s(str, "%s", fn);
-        if (NULL == strext(fn))
+        if (!strext(fn))
             strcat_s(str, ".xml");
     }
     else
@@ -289,10 +294,10 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
         else
             sprintf_s(str, "%s_16", fn);
 
-        if (NULL == FS.exist(str_, "$game_config$", "ui\\", str))
+        if (!FS.exist(str_, "$game_config$", "ui\\", str))
         {
             sprintf_s(str, "%s", fn);
-            if (NULL == strext(fn))
+            if (!strext(fn))
                 strcat_s(str, ".xml");
         }
 #ifdef DEBUG

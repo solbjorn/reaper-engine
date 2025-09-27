@@ -67,6 +67,6 @@ public:
     void lock() { m_bLocked.lock(); }
     void unlock() { m_bLocked.unlock(); }
 };
-}; // namespace PAPI
+} // namespace PAPI
 //---------------------------------------------------------------------------
 #endif

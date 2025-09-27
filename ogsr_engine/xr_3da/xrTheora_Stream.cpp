@@ -1,20 +1,16 @@
 #include "stdafx.h"
+
 #include "xrtheora_stream.h"
 
 CTheoraStream::CTheoraStream()
 {
-    // clear self
-    source = 0;
-    fpms = 0.f;
-    d_frame = -1;
-    tm_total = 0;
-    key_rate = 0;
     // start up Ogg stream synchronization layer
     ogg_sync_init(&o_sync_state);
     // init supporting Theora structures needed in header parsing
     theora_comment_init(&t_comment);
     theora_info_init(&t_info);
     // clear struct
+
     Memory.mem_fill(&o_stream_state, 0, sizeof(o_stream_state));
     Memory.mem_fill(&o_page, 0, sizeof(o_page));
     Memory.mem_fill(&t_state, 0, sizeof(t_state));
@@ -243,7 +239,7 @@ BOOL CTheoraStream::Load(const char* fname)
 {
     VERIFY(0 == source);
     // open source
-    source = FS.rs_open(0, fname);
+    source = FS.rs_open(nullptr, fname);
     VERIFY(source);
 
     // parse headers

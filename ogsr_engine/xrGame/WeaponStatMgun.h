@@ -65,7 +65,7 @@ protected:
     void UpdateBarrelDir();
     virtual const Fvector& get_CurrentFirePoint();
     virtual const Fmatrix& get_ParticlesXFORM();
-    virtual bool IsHudModeNow() { return false; };
+    virtual bool IsHudModeNow() { return false; }
 
     virtual void FireStart();
     virtual void FireEnd();
@@ -76,23 +76,23 @@ protected:
     void SetDesiredDir(float h, float p);
     // HolderCustom
 public:
-    virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) { return !Owner(); };
+    virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) { return !Owner(); }
     virtual void OnMouseMove(int x, int y);
     virtual void OnKeyboardPress(int dik);
     virtual void OnKeyboardRelease(int dik);
     virtual void OnKeyboardHold(int dik);
-    virtual CInventory* GetInventory() { return NULL; };
+    virtual CInventory* GetInventory() { return nullptr; }
     virtual void cam_Update(float dt, float fov = 90.0f);
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual bool attach_Actor(CGameObject* actor);
     virtual void detach_Actor();
-    virtual bool allowWeapon() const { return false; };
-    virtual bool HUDView() const { return true; };
-    virtual Fvector ExitPosition() { return Fvector().set(0.0f, 0.0f, 0.0f); };
+    virtual bool allowWeapon() const { return false; }
+    virtual bool HUDView() const { return true; }
+    virtual Fvector ExitPosition() { return Fvector{}; }
 
-    virtual CCameraBase* Camera() { return camera; };
+    virtual CCameraBase* Camera() { return camera; }
 
     virtual void Action(int id, u32 flags);
     virtual void SetParam(int id, Fvector2 val);

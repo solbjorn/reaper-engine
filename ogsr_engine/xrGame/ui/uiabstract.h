@@ -138,7 +138,7 @@ class XR_NOVTABLE IUISimpleWindow : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUISimpleWindow);
 
 public:
-    IUISimpleWindow() {};
+    IUISimpleWindow() = default;
     IUISimpleWindow(const IUISimpleWindow&) = delete;
     void operator=(const IUISimpleWindow&) = delete;
     virtual ~IUISimpleWindow() = 0;
@@ -189,7 +189,7 @@ public:
     IC float GetWidth() const { return m_wndSize.x; }
     IC void SetVisible(bool vis) { m_bShowMe = vis; }
     IC bool GetVisible() const { return m_bShowMe; }
-    IC void SetAlignment(EWindowAlignment al) { m_alignment = al; };
+    IC void SetAlignment(EWindowAlignment al) { m_alignment = al; }
     virtual void SetWndRect(float x, float y, float width, float height)
     {
         m_wndPos.set(x, y);
@@ -214,14 +214,14 @@ public:
         }
         break;
         default: NODEFAULT;
-        };
+        }
     }
     void MoveWndDelta(float dx, float dy)
     {
         m_wndPos.x += dx;
         m_wndPos.y += dy;
     }
-    void MoveWndDelta(const Fvector2& d) { MoveWndDelta(d.x, d.y); };
+    void MoveWndDelta(const Fvector2& d) { MoveWndDelta(d.x, d.y); }
 
 protected:
     bool m_bShowMe{};
@@ -240,5 +240,5 @@ protected:
 public:
     CUISelectable() : m_bSelected(false) {}
     bool GetSelected() const { return m_bSelected; }
-    virtual void SetSelected(bool b) { m_bSelected = b; };
+    virtual void SetSelected(bool b) { m_bSelected = b; }
 };

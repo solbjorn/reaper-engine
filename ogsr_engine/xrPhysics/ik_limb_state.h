@@ -1,23 +1,25 @@
 #pragma once
 
+#include "../Include/xrRender/Kinematics.h"
 #include "ik_calculate_data.h"
 
-#include "../Include/xrRender/Kinematics.h"
-
 class CIKLimb;
+
 IC bool state_valide(const calculate_state& prev_state);
 
 class ik_limb_state
 {
-    calculate_state state;
-    const CIKLimb* limb;
+    calculate_state state{};
+    const CIKLimb* limb{};
+
 #ifdef IK_DBG_STATE_SEQUENCE
     xr_vector<calculate_state> sv_state;
 #endif
 
 public:
-    ik_limb_state() : state(), limb(0) {}
-    ik_limb_state(const CIKLimb* l, const ik_limb_state& s) : state(s.state), limb(l) {}
+    ik_limb_state() = default;
+    ik_limb_state(const CIKLimb* l, const ik_limb_state& s) : state{s.state}, limb{l} {}
+
     void set_limb(CIKLimb* l);
 
     IC void save_new_state(const calculate_state& s)
@@ -27,6 +29,7 @@ public:
             sv_state.erase(sv_state.begin());
         sv_state.push_back(state);
 #endif
+
         state = s;
     }
 

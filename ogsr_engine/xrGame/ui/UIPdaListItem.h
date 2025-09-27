@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "UIWindow.h"
 
 class CUIFrameWindow;
@@ -12,19 +13,22 @@ class CInventoryOwner;
 
 class CUIPdaListItem : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaListItem, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
 
 public:
     CUIPdaListItem();
     virtual ~CUIPdaListItem();
+
     virtual void Init(float x, float y, float width, float height);
     virtual void InitCharacter(CInventoryOwner* pInvOwner);
 
     void* m_data{};
 
 protected:
-    //информация о персонаже
-    CUIFrameWindow* UIMask;
-    CUICharacterInfo* UIInfo;
+    // информация о персонаже
+    CUIFrameWindow* UIMask{};
+    CUICharacterInfo* UIInfo{};
 };

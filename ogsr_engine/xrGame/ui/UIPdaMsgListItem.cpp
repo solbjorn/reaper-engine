@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "UIPdaMsgListItem.h"
 #include "../Entity.h"
 #include "../character_info.h"

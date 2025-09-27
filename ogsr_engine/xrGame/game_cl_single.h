@@ -8,11 +8,12 @@ class game_cl_Single : public game_cl_GameState
 
 public:
     game_cl_Single();
-    virtual CUIGameCustom* createGameUI();
-    virtual bool IsServerControlHits() { return true; };
 
-    virtual ALife::_TIME_ID GetEnvironmentGameTime() { return GetGameTime(); };
-    virtual float GetEnvironmentGameTimeFactor() { return GetGameTimeFactor(); };
+    virtual CUIGameCustom* createGameUI();
+    virtual bool IsServerControlHits() { return true; }
+
+    virtual ALife::_TIME_ID GetEnvironmentGameTime() { return GetGameTime(); }
+    virtual float GetEnvironmentGameTimeFactor() { return GetGameTimeFactor(); }
 
     void OnDifficultyChanged();
 };

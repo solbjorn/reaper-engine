@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_rain()
 {
-    u_setrt(RCache, rt_Color, NULL, NULL, rt_MSAADepth);
+    u_setrt(RCache, rt_Color, nullptr, nullptr, rt_MSAADepth);
     RImplementation.rmNormal(RCache);
 }
 
@@ -17,7 +17,7 @@ void CRenderTarget::phase_ssfx_rain()
 
     RCache.set_viewport_size(w / 8.0f, h / 8.0f);
 
-    u_setrt(RCache, rt_ssfx_rain, 0, 0, NULL);
+    u_setrt(RCache, rt_ssfx_rain, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 

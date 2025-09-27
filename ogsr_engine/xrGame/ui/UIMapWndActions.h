@@ -8,6 +8,8 @@ class CUILevelMap;
 
 class CMapActionPlanner : public CActionPlanner<CUIMapWnd, true>
 {
+    RTTI_DECLARE_TYPEINFO(CMapActionPlanner, CActionPlanner<CUIMapWnd, true>);
+
 private:
     typedef CActionPlanner<CUIMapWnd, true> inherited;
 

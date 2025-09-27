@@ -2,7 +2,6 @@
 
 namespace MonsterMovement
 {
-
 enum EMovementParameters
 {
     eVelocityParameterIdle = u32(1) << 1,
@@ -60,5 +59,4 @@ enum EMovementParametersGiant
     eGiantVelocityParameterJumpPrepare = eVelocityParameterCustom << 1,
     eGiantVelocityParameterJumpGround = eVelocityParameterCustom << 2,
 };
-
-}; // namespace MonsterMovement
+} // namespace MonsterMovement

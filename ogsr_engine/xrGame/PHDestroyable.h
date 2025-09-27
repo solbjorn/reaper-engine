@@ -72,7 +72,6 @@ public:
 private:
     void NotificatePart(CPHDestroyableNotificate* dn);
     void PhysicallyRemovePart(CPHDestroyableNotificate* dn);
-    ;
 };
 
 #endif

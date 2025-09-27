@@ -3,6 +3,7 @@
 #include "../state.h"
 #include "../../../entitycondition.h"
 #include "../states/state_data.h"
+
 template <typename _Object>
 class CStateGroupRest : public CState<_Object>
 {

@@ -26,11 +26,11 @@ void CHangingLamp::Init()
     fHealth = 100.f;
     light_bone = BI_NONE;
     ambient_bone = BI_NONE;
-    lanim = 0;
+    lanim = nullptr;
     ambient_power = 0.f;
-    light_render = 0;
-    light_ambient = 0;
-    glow_render = 0;
+    light_render = nullptr;
+    light_ambient = nullptr;
+    glow_render = nullptr;
 }
 
 void CHangingLamp::RespawnInit()
@@ -191,13 +191,14 @@ void CHangingLamp::CopySpawnInit()
     if (!K->LL_GetBoneVisible(light_bone))
         TurnOff();
 }
+
 void CHangingLamp::net_Save(NET_Packet& P)
 {
     inherited::net_Save(P);
     CPHSkeleton::SaveNetState(P);
 }
 
-BOOL CHangingLamp::net_SaveRelevant() { return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != NULL)); }
+BOOL CHangingLamp::net_SaveRelevant() { return inherited::net_SaveRelevant() || PPhysicsShell(); }
 
 void CHangingLamp::shedule_Update(u32 dt)
 {
@@ -371,12 +372,12 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
             _GetItem(fixed_bones, i, fixed_bone);
             u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
             R_ASSERT2(BI_NONE != fixed_bone_id, "wrong fixed bone");
-            bone_map.insert(mk_pair(fixed_bone_id, physicsBone()));
+            bone_map.try_emplace(fixed_bone_id);
         }
     }
     else
     {
-        bone_map.insert(mk_pair(pKinematics->LL_GetBoneRoot(), physicsBone()));
+        bone_map.try_emplace(pKinematics->LL_GetBoneRoot());
     }
 
     m_pPhysicsShell->build_FromKinematics(pKinematics, &bone_map);

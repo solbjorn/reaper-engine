@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "entitycondition.h"
 #include "inventoryowner.h"
 #include "customoutfit.h"
@@ -25,48 +26,30 @@ CEntityConditionSimple::CEntityConditionSimple()
 
 CEntityConditionSimple::~CEntityConditionSimple() {}
 
-CEntityCondition::CEntityCondition(CEntityAlive* object) : CEntityConditionSimple()
+CEntityCondition::CEntityCondition(CEntityAlive* object) : CEntityConditionSimple{}, m_object{object}
 {
     VERIFY(object);
-
-    m_object = object;
-
-    m_use_limping_state = false;
-    m_iLastTimeCalled = 0;
-    m_bTimeValid = false;
 
     m_fPowerMax = MAX_POWER;
     m_fRadiationMax = MAX_RADIATION;
     m_fPsyHealthMax = MAX_PSY_HEALTH;
-    m_fEntityMorale = m_fEntityMoraleMax = 1.f;
+    m_fEntityMorale = 1.f;
+    m_fEntityMoraleMax = 1.f;
 
     m_fPower = MAX_POWER;
     m_fRadiation = 0;
     m_fPsyHealth = MAX_PSY_HEALTH;
 
     m_fMinWoundSize = 0.00001f;
-
     m_fPowerHitPart = 0.5f;
-
-    m_fDeltaHealth = 0;
-    m_fDeltaPower = 0;
-    m_fDeltaRadiation = 0;
-    m_fDeltaPsyHealth = 0;
-
-    m_fHealthLost = 0.f;
-    m_pWho = NULL;
-    m_iWhoID = 0;
 
     m_WoundVector.clear();
 
     m_fHitBoneScale = 1.f;
     m_fWoundBoneScale = 1.f;
-
-    m_bIsBleeding = false;
-    m_bCanBeHarmed = true;
 }
 
-CEntityCondition::~CEntityCondition(void) { ClearWounds(); }
+CEntityCondition::~CEntityCondition() { ClearWounds(); }
 
 void CEntityCondition::ClearWounds()
 {
@@ -123,8 +106,8 @@ void CEntityCondition::reinit()
     m_fDeltaPsyHealth = 0;
 
     m_fHealthLost = 0.f;
-    m_pWho = NULL;
-    m_iWhoID = NULL;
+    m_pWho = nullptr;
+    m_iWhoID = 0;
 
     ClearWounds();
 }
@@ -149,7 +132,7 @@ void CEntityCondition::ChangeBleeding(float percent)
     for (WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
     {
         (*it)->Incarnation(percent, m_fMinWoundSize);
-        if (0 == (*it)->TotalSize())
+        if (fis_zero((*it)->TotalSize()))
             (*it)->SetDestroy(true);
     }
 }
@@ -214,17 +197,13 @@ void CEntityCondition::UpdateCondition()
     UpdateHealth();
     //-----------------------------------------
     if (!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
-    {
         CriticalHealth = true;
-    };
     //-----------------------------------------
     UpdatePower();
     UpdateRadiation();
     //-----------------------------------------
     if (!CriticalHealth && m_fDeltaHealth + GetHealth() <= 0)
-    {
         CriticalHealth = true;
-    };
     //-----------------------------------------
     UpdatePsyHealth();
 
@@ -311,7 +290,7 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
             break;
     }
 
-    CWound* pWound = NULL;
+    CWound* pWound{};
 
     // новая рана
     if (it == m_WoundVector.end())
@@ -335,7 +314,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 {
     // кто нанес последний хит
     m_pWho = pHDS->who;
-    m_iWhoID = (NULL != pHDS->who) ? pHDS->who->ID() : 0;
+    m_iWhoID = pHDS->who ? pHDS->who->ID() : 0;
 
     float hit_power_org = pHDS->damage();
     float hit_power = hit_power_org;
@@ -380,7 +359,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
         break;
     case ALife::eHitTypeRadiation:
         m_fDeltaRadiation += hit_power;
-        return NULL;
+        return nullptr;
         break;
     case ALife::eHitTypeExplosion:
     case ALife::eHitTypeStrike:
@@ -406,11 +385,12 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
     if (bDebug)
         Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
+
     // раны добавляются только живому
     if (bAddWound && GetHealth() > 0)
         return AddWound(hit_power * m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 float CEntityCondition::BleedingSpeed()

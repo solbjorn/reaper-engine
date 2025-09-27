@@ -28,13 +28,14 @@ public:
     static u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
     void mem_compact();
 
-    [[nodiscard]] XR_RESTRICT static void* mem_alloc(size_t size) noexcept;
-    [[nodiscard]] static void* mem_realloc(void* p, size_t size) noexcept;
-    static void mem_free(void* p) noexcept;
+    [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(size_t size, size_t align) noexcept;
+    [[nodiscard]] static void* mem_realloc_aligned(void* p, size_t size, size_t align) noexcept;
+    static void mem_free_aligned(void* p) noexcept;
 
     static ICF void mem_copy(void* dst, const void* src, size_t len) { std::memcpy(dst, src, len); }
     static ICF void mem_fill(void* dst, int c, size_t len) { std::memset(dst, c, len); }
 };
+
 extern xrMemory Memory;
 
 #undef ZeroMemory
@@ -44,48 +45,62 @@ extern xrMemory Memory;
 #define CopyMemory(a, b, c) std::memcpy(a, b, c)
 #define FillMemory(a, b, c) std::memset(a, c, b)
 
+namespace xr
+{
+constexpr inline size_t default_align_v = std::max(16uz, __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+
+template <typename T>
+constexpr inline size_t align_v = std::max(alignof(T), xr::default_align_v);
+} // namespace xr
+
 #ifdef USE_MEMORY_VALIDATOR
 
 [[nodiscard]] inline void* xr_malloc(size_t size, const std::source_location& loc = std::source_location::current())
 {
-    void* ptr = Memory.mem_alloc(size);
+    void* ptr = Memory.mem_alloc_aligned(size, xr::default_align_v);
+
     if (g_enable_memory_debug)
     {
         std::string id = std::string{"raw: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name();
         PointerRegistryAdd(ptr, {std::move(id), loc.line(), false, false, size});
     }
+
     return ptr;
 }
 
 [[nodiscard]] inline void* xr_realloc(void* p, size_t size, const std::source_location& loc = std::source_location::current())
 {
     PointerRegistryRelease(p, loc);
-    void* ptr = Memory.mem_realloc(p, size);
+    void* ptr = Memory.mem_realloc_aligned(p, size, xr::default_align_v);
+
     if (g_enable_memory_debug)
     {
         std::string id = std::string{"raw: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name();
         PointerRegistryAdd(ptr, {std::move(id), loc.line(), false, false, size});
     }
+
     return ptr;
 }
 
 inline void xr_mfree(void* p, const std::source_location& loc = std::source_location::current())
 {
     PointerRegistryRelease(p, loc);
-    Memory.mem_free(p);
+    Memory.mem_free_aligned(p);
 }
 
 // generic "C"-like allocations/deallocations
 template <class T>
 [[nodiscard]] IC T* xr_alloc(size_t count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(count * sizeof(T)));
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * sizeof(T), xr::align_v<T>));
+
     if (g_enable_memory_debug)
     {
         std::string id = std::string{is_container ? "xr_allocator: " : "xr_alloc: "} + loc.file_name() + "." + std::to_string(loc.line()) + ": " + loc.function_name() + " (" +
             typeid(T).name() + ")";
         PointerRegistryAdd(ptr, {std::move(id), loc.line(), false, is_container, count * sizeof(T)});
     }
+
     return ptr;
 }
 
@@ -95,7 +110,8 @@ IC void xr_free(T*& P, const std::source_location& loc = std::source_location::c
     if (P)
     {
         PointerRegistryRelease((void*)P, loc);
-        Memory.mem_free((void*)P);
+        Memory.mem_free_aligned((void*)P);
+
         P = nullptr;
     }
 }
@@ -111,95 +127,130 @@ void registerClass(T* ptr, const std::source_location& loc)
 }
 
 template <typename T>
-[[nodiscard]] T* xr_new(const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T();
+
+    return new (ptr) T{};
 }
 
 template <typename T, typename A0>
-[[nodiscard]] T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0));
+
+    return new (ptr) T{std::forward<A0>(a0)};
 }
 
 template <typename T, typename A0, typename A1>
-[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0), std::forward<A1>(a1)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1));
+
+    return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1)};
 }
 
 template <typename T, typename A0, typename A1, typename A2>
-[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2));
+
+    return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2)};
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3>
-[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3));
+
+    return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)};
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4>
-[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4));
+
+    return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)};
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-[[nodiscard]] T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    if (std::is_constant_evaluated())
+        return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
     registerClass(ptr, loc);
-    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5));
+
+    return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)};
 }
 
 template <class T>
-IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())
+constexpr inline void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())
 {
     if (ptr)
     {
-        if constexpr (std::is_polymorphic_v<T>)
+        if (std::is_constant_evaluated())
+        {
+            delete ptr;
+        }
+        else if constexpr (std::is_polymorphic_v<T>)
         {
             void* _real_ptr = smart_cast<void*>(ptr);
 
             ptr->~T();
             PointerRegistryRelease(_real_ptr, loc, true);
-            Memory.mem_free(_real_ptr);
+
+            Memory.mem_free_aligned(_real_ptr);
         }
         else
         {
             ptr->~T();
             PointerRegistryRelease(ptr, loc, true);
-            Memory.mem_free(ptr);
+
+            Memory.mem_free_aligned(ptr);
         }
+
         ptr = nullptr;
     }
 }
 
 #else
 
-#define xr_malloc(size) Memory.mem_alloc(size)
-#define xr_realloc(p, size) Memory.mem_realloc(p, size)
-#define xr_mfree(p) Memory.mem_free(p)
+#define xr_malloc(size) Memory.mem_alloc_aligned(size, xr::default_align_v)
+#define xr_realloc(p, size) Memory.mem_realloc_aligned(p, size, xr::default_align_v)
+#define xr_mfree(p) Memory.mem_free_aligned(p)
 
 // generic "C"-like allocations/deallocations
 template <class T>
 [[nodiscard]] IC XR_RESTRICT T* xr_alloc(size_t count) noexcept
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(count * sizeof(T)));
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * sizeof(T), xr::align_v<T>));
     return ptr;
 }
 
@@ -208,34 +259,43 @@ IC void xr_free(T*& P) noexcept
 {
     if (P)
     {
-        Memory.mem_free((void*)P);
+        Memory.mem_free_aligned((void*)P);
         P = nullptr;
     }
 }
 
 template <typename T, typename... Args>
-[[nodiscard]] T* xr_new(Args&&... args)
+[[nodiscard]] constexpr inline T* xr_new(Args&&... args)
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
-    return new (ptr) T(std::forward<Args>(args)...);
+    if (std::is_constant_evaluated())
+        return new T{std::forward<Args>(args)...};
+
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(sizeof(T), xr::align_v<T>));
+    return new (ptr) T{std::forward<Args>(args)...};
 }
 
 template <class T>
-IC void xr_delete(T*& ptr)
+constexpr inline void xr_delete(T*& ptr)
 {
     if (ptr)
     {
-        if constexpr (std::is_polymorphic_v<T>)
+        if (std::is_constant_evaluated())
+        {
+            delete ptr;
+        }
+        else if constexpr (std::is_polymorphic_v<T>)
         {
             void* _real_ptr = smart_cast<void*>(ptr);
             ptr->~T();
-            Memory.mem_free(_real_ptr);
+
+            Memory.mem_free_aligned(_real_ptr);
         }
         else
         {
             ptr->~T();
-            Memory.mem_free(ptr);
+            Memory.mem_free_aligned(ptr);
         }
+
         ptr = nullptr;
     }
 }
@@ -259,4 +319,5 @@ struct SProcessMemInfo
 
     u32 MemoryLoad;
 };
+
 void GetProcessMemInfo(SProcessMemInfo& minfo);

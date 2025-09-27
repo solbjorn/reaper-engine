@@ -110,7 +110,7 @@ void CScanningAbilityAbstract::schedule_update()
                 if (object->can_scan)
                 {
                     // играть звук
-                    ::Sound->play_at_pos(sound_scan, 0, scan_obj->Position());
+                    ::Sound->play_at_pos(sound_scan, nullptr, scan_obj->Position());
 
                     // постпроцесс
                     // TODO: make this postprocess with static check (only one for all scanners)

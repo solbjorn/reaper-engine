@@ -11,31 +11,21 @@
 //=============================================================================
 
 #include "stdafx.h"
+
 #include "UIColorAnimatorWrapper.h"
 #include "../../xr_3da/LightAnimLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIColorAnimatorWrapper::CUIColorAnimatorWrapper() : colorAnimation(NULL), animationTime(0), color(NULL), isDone(false), reverse(false), kRev(0.0f)
-{
-    prevGlobalTime = Device.dwTimeContinual / 1000.0f;
-    currColor = 0xffff0000;
-}
+CUIColorAnimatorWrapper::CUIColorAnimatorWrapper() : currColor{0xffff0000} { prevGlobalTime = Device.dwTimeContinual / 1000.0f; }
 
-CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify) : colorAnimation(NULL), animationTime(0), color(NULL), isDone(false), reverse(false), kRev(0.0f)
-{
-    prevGlobalTime = Device.dwTimeContinual / 1000.0f;
-    color = colorToModify;
-    currColor = 0xffff0000;
-}
+CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32* colorToModify) : color{colorToModify}, currColor{0xffff0000} { prevGlobalTime = Device.dwTimeContinual / 1000.0f; }
 //////////////////////////////////////////////////////////////////////////
 
-CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName)
-    : colorAnimation(LALib.FindItem(*animationName)), animationTime(0), color(NULL), isDone(false), reverse(false), kRev(0.0f)
+CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str& animationName) : colorAnimation{LALib.FindItem(*animationName)}, currColor{0xffff0000}
 {
     VERIFY(colorAnimation);
     prevGlobalTime = Device.dwTimeContinual / 1000.0f;
-    currColor = 0xffff0000;
 }
 
 void CUIColorAnimatorWrapper::SetColorAnimation(const shared_str& animationName)
@@ -47,7 +37,7 @@ void CUIColorAnimatorWrapper::SetColorAnimation(const shared_str& animationName)
     }
     else
     {
-        colorAnimation = NULL;
+        colorAnimation = nullptr;
     }
 }
 

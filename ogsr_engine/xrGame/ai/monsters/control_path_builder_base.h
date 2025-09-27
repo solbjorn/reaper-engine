@@ -80,7 +80,7 @@ class CControlPathBuilderBase : public CControl_ComBase
         eRetreatFromTarget,
     } m_target_type;
 
-    CCoverEvaluatorCloseToEnemy* m_cover_approach;
+    CCoverEvaluatorCloseToEnemy* m_cover_approach{};
 
     // -----------------------------------------------------------
 

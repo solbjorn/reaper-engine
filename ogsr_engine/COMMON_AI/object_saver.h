@@ -8,6 +8,18 @@
 
 #pragma once
 
+#include "object_interfaces.h"
+#include "object_type_traits.h"
+
+namespace object_saver
+{
+template <typename T, typename M>
+struct default_save
+{
+    void operator()(const T& data, M& stream) const { stream.w(&data, sizeof(T)); }
+};
+} // namespace object_saver
+
 template <class M, typename P>
 struct CSaver
 {
@@ -18,7 +30,7 @@ struct CSaver
         IC static void save_data(std::enable_if_t<!a, const T&> data, M& stream, const P& /*p*/)
         {
             static_assert(!std::is_polymorphic<T>::value, "Cannot save polymorphic classes as binary data.");
-            stream.w(&data, sizeof(T));
+            object_saver::default_save<T, M>{}(data, stream);
         }
 
         template <bool a>
@@ -113,7 +125,7 @@ struct CSaver
             }
             stream.w_u32(mask);
         }
-    };
+    }
 
     template <typename T, int size>
     IC static void save_data(const svector<T, size>& data, M& stream, const P& p)
@@ -176,8 +188,8 @@ struct CEmptyPredicate
         return true;
     }
 };
-}; // namespace detail
-}; // namespace object_saver
+} // namespace detail
+} // namespace object_saver
 
 template <typename T, typename M, typename P>
 IC void save_data(const T& data, M& stream, const P& p)

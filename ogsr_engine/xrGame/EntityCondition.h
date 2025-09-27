@@ -27,7 +27,7 @@ public:
     IC float& health() { return m_fHealth; }
     IC float& max_health() { return m_fHealthMax; }
 
-    virtual CEntityCondition* cast_entity_condition() { return NULL; }
+    virtual CEntityCondition* cast_entity_condition() { return nullptr; }
 };
 
 class CEntityCondition : public CEntityConditionSimple, public CHitImmunity
@@ -35,7 +35,7 @@ class CEntityCondition : public CEntityConditionSimple, public CHitImmunity
     RTTI_DECLARE_TYPEINFO(CEntityCondition, CEntityConditionSimple, CHitImmunity);
 
 private:
-    bool m_use_limping_state;
+    bool m_use_limping_state{};
     CEntityAlive* m_object;
 
 public:
@@ -62,16 +62,16 @@ public:
     void ChangePower(float value);
     void ChangeRadiation(float value);
     void ChangePsyHealth(float value);
-    virtual void ChangeSatiety(float value) {};
-    virtual void ChangeAlcohol(float value) {};
-    virtual void ChangeThirst(float value) {};
+    virtual void ChangeSatiety(float value) {}
+    virtual void ChangeAlcohol(float value) {}
+    virtual void ChangeThirst(float value) {}
 
     IC void SetMaxPower(float val)
     {
         m_fPowerMax = val;
         clamp(m_fPowerMax, 0.1f, 1.0f);
-    };
-    IC float GetMaxPower() const { return m_fPowerMax; };
+    }
+    IC float GetMaxPower() const { return m_fPowerMax; }
 
     void ChangeBleeding(float percent);
 
@@ -82,7 +82,7 @@ public:
     virtual void UpdateCondition();
     void UpdateWounds();
     void UpdateConditionTime();
-    IC void SetConditionDeltaTime(float DeltaTime) { m_fDeltaTime = DeltaTime; };
+    IC void SetConditionDeltaTime(float DeltaTime) { m_fDeltaTime = DeltaTime; }
 
     virtual void UpdatePower();
 
@@ -95,7 +95,7 @@ public:
     CWound* AddWound(float hit_power, ALife::EHitType hit_type, u16 element);
 
     IC void SetCanBeHarmedState(bool CanBeHarmed) { m_bCanBeHarmed = CanBeHarmed; }
-    IC bool CanBeHarmed() const { return m_bCanBeHarmed; };
+    IC bool CanBeHarmed() const { return m_bCanBeHarmed; }
 
     void ClearWounds();
 
@@ -150,30 +150,30 @@ protected:
     float m_fEntityMoraleMax;
 
     // величины изменения параметров на каждом обновлении
-    float m_fDeltaHealth;
-    float m_fDeltaPower;
-    float m_fDeltaRadiation;
-    float m_fDeltaPsyHealth;
+    float m_fDeltaHealth{};
+    float m_fDeltaPower{};
+    float m_fDeltaRadiation{};
+    float m_fDeltaPsyHealth{};
     float m_fDeltaEntityMorale{};
 
     SConditionChangeV m_change_v{};
 
     float m_fMinWoundSize;
-    bool m_bIsBleeding;
+    bool m_bIsBleeding{};
 
     // части хита, затрачиваемые на уменьшение здоровья и силы
     float m_fHealthHitPart[ALife::eHitTypeMax]{};
     float m_fPowerHitPart;
 
     // потеря здоровья от последнего хита
-    float m_fHealthLost;
+    float m_fHealthLost{};
 
     // для отслеживания времени
-    u64 m_iLastTimeCalled;
+    u64 m_iLastTimeCalled{};
     float m_fDeltaTime{};
     // кто нанес последний хит
-    CObject* m_pWho;
-    u16 m_iWhoID;
+    CObject* m_pWho{};
+    u16 m_iWhoID{};
 
     // для передачи параметров из DamageManager
     float m_fHitBoneScale;
@@ -181,8 +181,8 @@ protected:
 
     float m_limping_threshold{};
 
-    bool m_bTimeValid;
-    bool m_bCanBeHarmed;
+    bool m_bTimeValid{};
+    bool m_bCanBeHarmed{true};
 
 public:
     virtual void reinit();

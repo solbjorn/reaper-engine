@@ -76,7 +76,7 @@ struct R_dsgraph_structure
     }
     void clear_Counters() { counter_S = counter_D = 0; }
 
-    R_dsgraph_structure() { r_pmask(true, true); };
+    R_dsgraph_structure() { r_pmask(true, true); }
 
     void reset()
     {

@@ -12,7 +12,7 @@
 
 extern Fvector4 ps_ssfx_grass_interactive;
 
-IGame_Persistent* g_pGamePersistent = NULL;
+IGame_Persistent* g_pGamePersistent{};
 BOOL g_prefetch{TRUE};
 
 bool IGame_Persistent::IsMainMenuActive() const { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
@@ -25,8 +25,6 @@ IGame_Persistent::IGame_Persistent()
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1);
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
-
-    m_pMainMenu = NULL;
 
     PerlinNoise1D = xr_new<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
     PerlinNoise1D->SetOctaves(2);
@@ -127,7 +125,7 @@ void IGame_Persistent::OnGameStart()
     u32 p_mem = Memory.mem_usage() - mem_0;
 
     Msg("* [prefetch] time:    %d ms", iFloor(p_time));
-    Msg("* [prefetch] memory:  %dKb", p_mem / 1024);
+    Msg("* [prefetch] memory:  %u Kb", p_mem / 1024);
 }
 
 void IGame_Persistent::OnGameEnd()
@@ -525,13 +523,16 @@ float IGame_Persistent::GrassBenderToValue(float& current, const float go_to, co
 bool IGame_Persistent::IsActorInHideout() const
 {
     static bool actor_in_hideout = true;
-    static u32 last_ray_pick_time = Device.dwTimeGlobal;
-    if (Device.dwTimeGlobal > (last_ray_pick_time + 1000))
-    { // Апдейт рейтрейса - раз в секунду. Чаще апдейтить нет смысла.
-        last_ray_pick_time = Device.dwTimeGlobal;
+    static u32 next_ray_pick_time = 0;
+
+    if (Device.dwTimeGlobal >= next_ray_pick_time)
+    {
+        // Апдейт рейтрейса - 5 раз в секунду. Чаще апдейтить нет смысла.
+        next_ray_pick_time = Device.dwTimeGlobal + 200;
 
         collide::rq_result RQ;
         actor_in_hideout = !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector{0.f, 1.f, 0.f}, 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
     }
+
     return actor_in_hideout;
 }

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../xr_3da/fdemorecord.h"
 #include "../xr_3da/fdemoplay.h"
 #include "../xr_3da/environment.h"
@@ -57,7 +58,7 @@
 
 #include "embedded_editor/embedded_editor_main.h"
 
-CPHWorld* ph_world = 0;
+CPHWorld* ph_world{};
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -70,26 +71,18 @@ CLevel::CLevel()
       DemoCS(MUTEX_PROFILE_ID(DemoCS))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-    g_bDebugEvents = strstr(Core.Params, "-debug_ge") ? TRUE : FALSE;
+    g_bDebugEvents = !!strstr(Core.Params, "-debug_ge");
 
-    Server = NULL;
-
-    game = NULL;
     //	game						= xr_new<game_cl_GameState>();
     game_events = xr_new<NET_Queue_Event>();
-
-    game_configured = FALSE;
-    m_bGameConfigStarted = FALSE;
 
     eChangeRP = Engine.Event.Handler_Attach("LEVEL:ChangeRP", this);
     eDemoPlay = Engine.Event.Handler_Attach("LEVEL:PlayDEMO", this);
     eChangeTrack = Engine.Event.Handler_Attach("LEVEL:PlayMusic", this);
     eEnvironment = Engine.Event.Handler_Attach("LEVEL:Environment", this);
-
     eEntitySpawn = Engine.Event.Handler_Attach("LEVEL:spawn", this);
 
     m_pBulletManager = xr_new<CBulletManager>();
-
     m_map_manager = xr_new<CMapManager>();
 
     physics_step_time_callback = (PhysicsStepTimeCallback*)&PhisStepsCallback;
@@ -106,20 +99,6 @@ CLevel::CLevel()
 
     m_ph_commander = xr_new<CPHCommander>();
     m_ph_commander_scripts = xr_new<CPHCommander>();
-
-#ifdef DEBUG
-    m_bSynchronization = false;
-#endif
-    //---------------------------------------------------------
-    pStatGraphR = NULL;
-    pStatGraphS = NULL;
-    //---------------------------------------------------------
-    pCurrentControlEntity = NULL;
-
-    //---------------------------------------------------------
-    m_dwCL_PingLastSendTime = 0;
-    m_dwCL_PingDeltaSend = 1000;
-    m_dwRealPing = 0;
 
     //---------------------------------------------------------
 
@@ -153,8 +132,6 @@ CLevel::CLevel()
     }
     */
     //---------------------------------------------------------
-
-    m_is_removing_objects = false;
 
     g_player_hud = xr_new<player_hud>();
     g_player_hud->load_default();
@@ -200,13 +177,9 @@ CLevel::~CLevel()
     static_Sounds.clear();
 
     xr_delete(m_level_sound_manager);
-
     xr_delete(m_space_restriction_manager);
-
     xr_delete(m_seniority_hierarchy_holder);
-
     xr_delete(m_client_spawn_manager);
-
     xr_delete(m_debug_renderer);
 
     xr_delete(game);
@@ -347,7 +320,7 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 {
     //			Msg				("--- event[%d] for [%d]",type,dest);
     CObject* O = Objects.net_Find(dest);
-    if (0 == O)
+    if (!O)
     {
 #ifdef DEBUG
         Msg("* WARNING: c_EVENT[%d] to [%d]: unknown dest", type, dest);
@@ -476,7 +449,7 @@ void CLevel::OnFrame()
 
         pStatGraphR->AppendItem(float(m_dwRPC) * fRPC_Mult, 0xffff0000, 1);
         pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
-    };
+    }
 
     ShowEditor();
 }
@@ -694,7 +667,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
         string_path RealName;
         strcpy_s(RealName, name);
         strcat_s(RealName, ".xrdemo");
-        Cameras().AddCamEffector(xr_new<CDemoPlay>(RealName, 1.3f, 0));
+        Cameras().AddCamEffector(xr_new<CDemoPlay>(RealName, 1.3f, 0u));
     }
     else if (E == eChangeTrack && P1)
     {
@@ -849,8 +822,9 @@ struct delete_predicate_by_time
         if (left.Expire <= expire_time)
             return true;
         return false;
-    };
+    }
 };
+
 struct objects_ptrs_equal
 {
     bool operator()(Feel::Touch::DenyTouch const& left, CObject const* const right) const

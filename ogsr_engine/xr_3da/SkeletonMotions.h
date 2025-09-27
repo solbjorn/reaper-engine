@@ -151,10 +151,12 @@ class CPartDef
 public:
     shared_str Name;
     xr_vector<u32> bones;
-    CPartDef() : Name(0) {};
+
+    CPartDef() = default;
 
     u32 mem_usage() { return sizeof(*this) + bones.size() * sizeof(u32) + sizeof(Name); }
 };
+
 class CPartition
 {
     CPartDef P[MAX_PARTS];
@@ -165,6 +167,7 @@ public:
     u16 part_id(const shared_str& name) const;
     u32 mem_usage() { return P[0].mem_usage() * MAX_PARTS; }
     void load(IKinematics* V, LPCSTR model_name);
+
     u8 count() const
     {
         u8 ret = 0;
@@ -172,7 +175,7 @@ public:
             if (P[i].Name.size())
                 ret++;
         return ret;
-    };
+    }
 };
 
 // shared motions
@@ -221,17 +224,18 @@ extern motions_container* g_pMotionsContainer;
 class shared_motions
 {
 private:
-    motions_value* p_;
+    motions_value* p_{};
 
 protected:
     // ref-counting
     void destroy()
     {
-        if (0 == p_)
+        if (!p_)
             return;
+
         p_->m_dwReference--;
         if (0 == p_->m_dwReference)
-            p_ = 0;
+            p_ = nullptr;
     }
 
 public:
@@ -240,12 +244,8 @@ public:
     bool create(shared_motions const& rhs); //	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
 public:
     // construction
-    shared_motions() { p_ = 0; }
-    shared_motions(shared_motions const& rhs)
-    {
-        p_ = 0;
-        create(rhs);
-    }
+    shared_motions() = default;
+    shared_motions(shared_motions const& rhs) { create(rhs); }
     ~shared_motions() { destroy(); }
 
     // assignment & accessors
@@ -254,6 +254,7 @@ public:
         create(rhs);
         return *this;
     }
+
     bool operator==(shared_motions const& rhs) const { return (p_ == rhs.p_); }
 
     // misc func

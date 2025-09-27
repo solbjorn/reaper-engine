@@ -126,7 +126,7 @@ void CRenderTarget::accum_point(light* L)
         }
     }
 
-    RCache.set_Scissor(0);
+    RCache.set_Scissor(nullptr);
 
     increment_light_marker(RCache);
 

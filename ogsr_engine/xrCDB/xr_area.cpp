@@ -6,7 +6,10 @@
 #include "../xr_3da/igame_level.h"
 #include "../xr_3da/xrLevel.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
 
 using namespace collide;
 
@@ -16,14 +19,17 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
 {
     if (!g_bLoaded)
         return;
+
     if (!S)
         return;
+
     if (S->g_object && S->g_object->getDestroy())
     {
-        S->g_object = 0;
+        S->g_object = nullptr;
         return;
     }
-    if (0 == S->feedback)
+
+    if (!S->feedback)
         return;
 
     clamp(range, 0.1f, 500.f);
@@ -51,8 +57,9 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
     for (; it != end; it++)
     {
         Feel::Sound* L = (*it)->dcast_FeelSound();
-        if (0 == L)
+        if (!L)
             continue;
+
         CObject* CO = (*it)->dcast_CObject();
         VERIFY(CO);
         if (CO->getDestroy())
@@ -152,10 +159,12 @@ int CObjectSpace::GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*
     for (; it != end; it++)
     {
         CObject* O = (*it)->dcast_CObject();
-        if (0 == O)
+        if (!O)
             continue;
+
         if (O == ignore_object)
             continue;
+
         Fsphere mS = {O->spatial.sphere.P, O->spatial.sphere.R};
         if (Q.intersect(mS))
             q_nearest.push_back(O);
@@ -195,7 +204,7 @@ void CObjectSpace::Load()
     R_ASSERT(CFORM_CURRENT_VERSION == H.version);
 
     F->seek(0);
-    XXH64_hash_t xxh = XXH3_64bits(F->pointer(), F->length());
+    xxh::XXH64_hash_t xxh = xxh::XXH3_64bits(F->pointer(), F->length());
 
     string_path cache;
     xr_strcpy(cache, "levels_cache\\");

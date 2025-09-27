@@ -7,9 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_storage.h"
 #include "script_engine.h"
 #include "ai_space.h"
+
 #include <format>
 
 // KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы luabind'а регистрировались внутри модуля в котором находятся, а не в _G
@@ -47,7 +49,7 @@ void CScriptStorage::dump_state()
         Msg("\tLocals: ");
         const char* name = nullptr;
         int VarID = 1;
-        while ((name = lua_getlocal(L, &l_tDebugInfo, VarID++)) != NULL)
+        while ((name = lua_getlocal(L, &l_tDebugInfo, VarID++)) != nullptr)
         {
             LogVariable(L, name, 1);
 
@@ -135,7 +137,7 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
             // Dump class and element pointer if available
             if (const auto objectClass = obj->crep())
             {
-                auto cpp_name = objectClass->type()->name();
+                auto cpp_name = LUABIND_TYPE_INFO_NAME(objectClass->type());
 
                 xr_sprintf(value, "(%s): %p", cpp_name ? cpp_name : objectClass->name(), obj->ptr());
             }
@@ -406,9 +408,14 @@ luabind::object CScriptStorage::name_space(const char* namespace_name)
     {
         if (!xr_strlen(S))
             return lua_namespace;
+
         auto I = strchr(S, '.');
         if (!I)
-            return lua_namespace[S];
+        {
+            lua_namespace = lua_namespace[S];
+            return lua_namespace;
+        }
+
         *I = 0;
         lua_namespace = lua_namespace[S];
         S = I + 1;

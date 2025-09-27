@@ -15,7 +15,7 @@ IC float getTimeDeltaSmoothing()
     // return min(1.0f, alpha * (Device.fTimeDelta / steps));
 }
 IC float getSmoothedValue(float target, float current, float smoothing = getTimeDeltaSmoothing()) { return current + smoothing * (target - current); }
-}; // namespace soundSmoothingParams
+} // namespace soundSmoothingParams
 
 CSoundRender_CoreA::CSoundRender_CoreA()
 {

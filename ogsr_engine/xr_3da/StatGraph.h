@@ -39,8 +39,8 @@ protected:
     {
         EStyle style;
         ElementsDeq elements;
-        SSubGraph(EStyle s) { style = s; };
-        void SetStyle(EStyle s) { style = s; };
+        SSubGraph(EStyle s) { style = s; }
+        void SetStyle(EStyle s) { style = s; }
     };
     DEFINE_VECTOR(SSubGraph, SubGraphVec, SubGraphVecIt);
     SubGraphVec subgraphs;
@@ -114,7 +114,7 @@ public:
         {
             while (it->elements.size() > max_item_count)
                 it->elements.pop_front();
-        };
+        }
     }
     IC void AppendItem(float d, u32 clr, u32 SubGraphID = 0)
     {
@@ -127,12 +127,12 @@ public:
         it->elements.push_back(SElement(d, clr));
         while (it->elements.size() > max_item_count)
             it->elements.pop_front();
-    };
+    }
     IC u32 AppendSubGraph(EStyle S)
     {
         subgraphs.emplace_back(S);
         return subgraphs.size() - 1;
-    };
+    }
 
     IC void AddMarker(EStyle Style, float pos, u32 Color)
     {
@@ -142,13 +142,13 @@ public:
         NewMarker.m_fPos = pos;
 
         m_Markers.push_back(NewMarker);
-    };
+    }
 
     IC const SMarker& Marker(u32 ID)
     {
         VERIFY(ID < m_Markers.size());
         return m_Markers[ID];
-    };
+    }
 
     IC void UpdateMarkerPos(u32 ID, float NewPos)
     {
@@ -156,7 +156,7 @@ public:
             return;
         SMarker& pMarker = m_Markers[ID];
         pMarker.m_fPos = NewPos;
-    };
+    }
     IC void ClearMarkers() { m_Markers.clear(); }
 
     IC void RemoveMarker(u32 ID)

@@ -5,8 +5,6 @@
 #ifndef UI_TEXT_BANNER_H_
 #define UI_TEXT_BANNER_H_
 
-// #pragma once;
-
 #include "UIStatic.h"
 
 //-----------------------------------------------------------------------------/
@@ -16,18 +14,19 @@
 struct EffectParams
 {
     friend class CUITextBanner;
-    float fPeriod;
-    bool bCyclic;
-    bool bOn;
-    int iAdditionalParam;
-    float fAdditionalParam;
-    int iEffectStage;
+
+    float fPeriod{};
+    bool bCyclic{true};
+    bool bOn{true};
+    int iAdditionalParam{};
+    float fAdditionalParam{};
+    int iEffectStage{};
 
     // Constructor
-    EffectParams() : fPeriod(0.0f), fTimePassed(0.0f), iEffectStage(0), fAdditionalParam(0.0f), iAdditionalParam(0), bCyclic(true), bOn(true) {}
+    EffectParams() = default;
 
 private:
-    float fTimePassed;
+    float fTimePassed{};
 };
 
 //-----------------------------------------------------------------------------/
@@ -43,12 +42,12 @@ public:
         tbsFlicker = 1,
         tbsFade = 1 << 1
     };
+
     // Ctor and Dtor
-    CUITextBanner();
-    ~CUITextBanner();
+    CUITextBanner() = default;
 
     virtual void Update();
-    void Out(float x, float y, const char* fmt, ...);
+    void XR_PRINTF(4, 5) Out(float x, float y, const char* fmt, ...);
 
     // Установить параметры визуализации баннера. Флаги см. перечисление TextBannerStyles
     EffectParams* SetStyleParams(const TextBannerStyles styleName);
@@ -81,15 +80,15 @@ protected:
     void EffectFlicker();
 
     // Флаг, который определяет состояние анимации
-    bool m_bAnimate;
+    bool m_bAnimate{true};
 
     // Font
-    CGameFont* m_pFont;
-    float fontSize;
-    CGameFont::EAligment aligment;
+    CGameFont* m_pFont{};
+    float fontSize{-1.f};
+    CGameFont::EAligment aligment{CGameFont::alLeft};
 
     // Letters color
-    u32 m_Cl;
+    u32 m_Cl{std::numeric_limits<u32>::max()};
 };
 
-#endif
+#endif // UI_TEXT_BANNER_H_

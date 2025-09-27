@@ -64,7 +64,7 @@ void CStateMonsterPanicAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::check_force_state()
 {
-    if ((current_substate == eStatePanic_FaceUnprotectedArea))
+    if (current_substate == eStatePanic_FaceUnprotectedArea)
     {
         // если видит врага
         if (object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal)

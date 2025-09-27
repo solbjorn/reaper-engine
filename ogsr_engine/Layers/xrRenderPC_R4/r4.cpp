@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "r4.h"
 #include "../xrRender/fbasicvisual.h"
 #include "../../xr_3da/xr_object.h"
@@ -14,7 +15,11 @@
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
+
 #include "xr_task.h"
 
 CRender RImplementation;
@@ -23,10 +28,11 @@ CRender RImplementation;
 class CGlow : public IRender_Glow
 {
 public:
-    bool bActive;
+    bool bActive{};
 
 public:
-    CGlow() : bActive(false) {}
+    CGlow() = default;
+
     virtual void set_active(bool b) { bActive = b; }
     virtual bool get_active() { return bActive; }
     virtual void set_position(const Fvector& P) {}
@@ -329,7 +335,7 @@ void CRender::model_Delete(IRenderVisual*& V, BOOL bDiscard)
 {
     dxRender_Visual* pVisual = (dxRender_Visual*)V;
     Models->Delete(pVisual, bDiscard);
-    V = 0;
+    V = nullptr;
 }
 
 IRender_DetailModel* CRender::model_CreateDM(IReader* F)
@@ -346,7 +352,7 @@ void CRender::model_Delete(IRender_DetailModel*& F)
         CDetail* D = (CDetail*)F;
         D->Unload();
         xr_delete(D);
-        F = NULL;
+        F = nullptr;
     }
 }
 
@@ -528,25 +534,25 @@ CRender::~CRender()
 void CRender::Statistics(CGameFont* _F)
 {
     CGameFont& F = *_F;
-    F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);
+    F.OutNext(" **** LT:%2u,LV:%2u **** ", stats.l_total, stats.l_visible);
     stats.l_visible = 0;
-    F.OutNext("    S(%2d)   | (%2d)NS   ", stats.l_shadowed, stats.l_unshadowed);
+    F.OutNext("    S(%2u)   | (%2u)NS   ", stats.l_shadowed, stats.l_unshadowed);
     F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);
     stats.s_used = 0;
     stats.s_merged = 0;
     stats.s_finalclip = 0;
     F.OutSkip();
     F.OutNext(" **** Occ-Q(%03.1f) **** ", 100.f * f32(stats.o_culled) / f32(stats.o_queries ? stats.o_queries : 1));
-    F.OutNext(" total  : %2d", stats.o_queries);
+    F.OutNext(" total  : %2u", stats.o_queries);
     stats.o_queries = 0;
-    F.OutNext(" culled : %2d", stats.o_culled);
+    F.OutNext(" culled : %2u", stats.o_culled);
     stats.o_culled = 0;
     F.OutSkip();
     u32 ict = stats.ic_total + stats.ic_culled;
     F.OutNext(" **** iCULL(%03.1f) **** ", 100.f * f32(stats.ic_culled) / f32(ict ? ict : 1));
-    F.OutNext(" visible: %2d", stats.ic_total);
+    F.OutNext(" visible: %2u", stats.ic_total);
     stats.ic_total = 0;
-    F.OutNext(" culled : %2d", stats.ic_culled);
+    F.OutNext(" culled : %2u", stats.ic_culled);
     stats.ic_culled = 0;
 #ifdef DEBUG
     HOM.stats();
@@ -559,8 +565,10 @@ void CRender::addShaderOption(const char* name, const char* value)
     m_ShaderOptions.push_back(macro);
 }
 
+namespace
+{
 template <typename T>
-static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, bool const disasm, const char* dbg_name)
+HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, bool const disasm, const char* dbg_name)
 {
     result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
 
@@ -569,7 +577,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         result->sh->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
     }
 
-    ID3DShaderReflection* pReflection = 0;
+    ID3DShaderReflection* pReflection{};
 
     HRESULT const _hr = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
     if (SUCCEEDED(_hr) && pReflection)
@@ -581,13 +589,13 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     }
     else
     {
-        Msg("! D3DReflectShader %s hr == 0x%08x", file_name, _hr);
+        Msg("! D3DReflectShader %s hr == 0x%lx", file_name, gsl::narrow_cast<unsigned long>(_hr));
     }
 
     return _hr;
 }
 
-static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result, bool const disasm)
+HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result, bool const disasm)
 {
     string128 dbg_name{}, dbg_ext{};
     _splitpath(file_name, nullptr, nullptr, dbg_name, dbg_ext);
@@ -597,11 +605,11 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     if (pTarget[0] == 'p')
     {
         SPS* sps_result = (SPS*)result;
-        _result = HW.pDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
+        _result = HW.pDevice->CreatePixelShader(buffer, buffer_size, nullptr, &sps_result->ps);
         if (!SUCCEEDED(_result))
         {
             Msg("! PS: [%s]", file_name);
-            Msg("! CreatePixelShader hr == 0x%08x", _result);
+            Msg("! CreatePixelShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
             return E_FAIL;
         }
 
@@ -610,7 +618,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             sps_result->ps->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
         }
 
-        ID3DShaderReflection* pReflection = 0;
+        ID3DShaderReflection* pReflection{};
 
         _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
 
@@ -626,19 +634,18 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         else
         {
             Msg("! PS: [%s]", file_name);
-            Msg("! D3DReflectShader hr == 0x%08x", _result);
+            Msg("! D3DReflectShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
         }
     }
     else if (pTarget[0] == 'v')
     {
         SVS* svs_result = (SVS*)result;
 
-        _result = HW.pDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
-
+        _result = HW.pDevice->CreateVertexShader(buffer, buffer_size, nullptr, &svs_result->vs);
         if (!SUCCEEDED(_result))
         {
             Msg("! VS: [%s]", file_name);
-            Msg("! CreateVertexShader hr == 0x%08x", _result);
+            Msg("! CreateVertexShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
             return E_FAIL;
         }
 
@@ -647,7 +654,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             svs_result->vs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
         }
 
-        ID3DShaderReflection* pReflection = 0;
+        ID3DShaderReflection* pReflection{};
 
         _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
 
@@ -675,17 +682,18 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         else
         {
             Msg("! VS: [%s]", file_name);
-            Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
+            Msg("! D3DXFindShaderComment hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
         }
     }
     else if (pTarget[0] == 'g')
     {
         SGS* sgs_result = (SGS*)result;
-        _result = HW.pDevice->CreateGeometryShader(buffer, buffer_size, 0, &sgs_result->gs);
+
+        _result = HW.pDevice->CreateGeometryShader(buffer, buffer_size, nullptr, &sgs_result->gs);
         if (!SUCCEEDED(_result))
         {
             Msg("! GS: [%s]", file_name);
-            Msg("! CreateGeometryShaderhr == 0x%08x", _result);
+            Msg("! CreateGeometryShaderhr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
             return E_FAIL;
         }
 
@@ -694,7 +702,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             sgs_result->gs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
         }
 
-        ID3DShaderReflection* pReflection = 0;
+        ID3DShaderReflection* pReflection{};
 
         _result = D3DReflect(buffer, buffer_size, IID_PPV_ARGS(&pReflection));
 
@@ -710,7 +718,7 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
         else
         {
             Msg("! PS: [%s]", file_name);
-            Msg("! D3DReflectShader hr == 0x%08x", _result);
+            Msg("! D3DReflectShader hr == 0x%lx", gsl::narrow_cast<unsigned long>(_result));
         }
     }
     else if (pTarget[0] == 'c')
@@ -732,13 +740,16 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
 
     if (disasm)
     {
-        ID3DBlob* disasm = 0;
-        D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm);
+        ID3DBlob* disasm{};
+        D3DDisassemble(buffer, buffer_size, false, nullptr, &disasm);
+
         string_path dname;
         xr_strconcat(dname, file_name, "\\disasm.txt");
+
         IWriter* W = FS.w_open(dname);
         W->w(disasm->GetBufferPointer(), (u32)disasm->GetBufferSize());
         FS.w_close(W);
+
         _RELEASE(disasm);
     }
 
@@ -778,6 +789,7 @@ public:
         return D3D_OK;
     }
 };
+} // namespace
 
 HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
 {
@@ -941,17 +953,17 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     LPD3DBLOB pShaderBuf{};
     LPD3DBLOB pErrorBuf{};
     HRESULT _result;
-    XXH64_hash_t xxh = XXH64_hash_t(-1);
+    xxh::XXH64_hash_t xxh = std::numeric_limits<xxh::XXH64_hash_t>::max();
 
     _result = D3DPreprocess(pSrcData, SrcDataLen, "", defines.data(), &Includer, &pShaderBuf, &pErrorBuf);
     if (SUCCEEDED(_result))
-        xxh = XXH3_64bits(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+        xxh = xxh::XXH3_64bits(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
     if (pShaderBuf)
         pShaderBuf->Release();
     if (pErrorBuf)
         pErrorBuf->Release();
 
-    snprintf(file, sizeof(file), "%s\\%s-%s-%x", file_name, pFunctionName, pTarget, Flags);
+    snprintf(file, sizeof(file), "%s\\%s-%s-%lx", file_name, pFunctionName, pTarget, Flags);
     if (FS.exist(file))
     {
         IReader* fp = FS.r_open(file);
@@ -959,11 +971,11 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
         if (fp->elapsed() > 2 * sizeof(xxh))
         {
-            XXH64_hash_t xxh_read = fp->r_u64();
+            xxh::XXH64_hash_t xxh_read = fp->r_u64();
             if (SUCCEEDED(_result) && xxh_read != xxh)
                 _result = E_FAIL;
             xxh_read = fp->r_u64();
-            if (SUCCEEDED(_result) && xxh_read != XXH3_64bits(fp->pointer(), fp->elapsed()))
+            if (SUCCEEDED(_result) && xxh_read != xxh::XXH3_64bits(fp->pointer(), fp->elapsed()))
                 _result = E_FAIL;
             if (SUCCEEDED(_result))
                 _result = create_shader(pTarget, (DWORD*)fp->pointer(), fp->elapsed(), file_name, result, o.disasm);
@@ -976,8 +988,8 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     else
         _result = E_FAIL;
 
-    pShaderBuf = NULL;
-    pErrorBuf = NULL;
+    pShaderBuf = nullptr;
+    pErrorBuf = nullptr;
 
     if (FAILED(_result))
     {
@@ -989,7 +1001,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
             IWriter* fp = FS.w_open(file);
             fp->w_u64(xxh);
 
-            xxh = XXH3_64bits(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+            xxh = xxh::XXH3_64bits(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
             fp->w_u64(xxh);
 
             fp->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
@@ -1005,7 +1017,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         if (pErrorBuf)
             Log("! error: " + std::string{reinterpret_cast<const char*>(pErrorBuf->GetBufferPointer())});
         else
-            Msg("Can't compile shader hr=0x%08x", _result);
+            Msg("Can't compile shader hr=0x%lx", gsl::narrow_cast<unsigned long>(_result));
     }
 
     if (pErrorBuf)

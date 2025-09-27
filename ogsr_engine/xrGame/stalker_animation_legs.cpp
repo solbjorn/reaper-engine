@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"
@@ -18,21 +19,23 @@
 #include "inventory.h"
 #include "stalker_animation_manager_impl.h"
 
-const float right_forward_angle = PI_DIV_4;
-const float left_forward_angle = PI_DIV_4;
-const float standing_turn_angle = PI_DIV_6;
-const float epsilon = EPS_L;
+namespace
+{
+constexpr float right_forward_angle{PI_DIV_4};
+constexpr float left_forward_angle{PI_DIV_4};
+constexpr float standing_turn_angle{PI_DIV_6};
+constexpr float epsilon{EPS_L};
 
-const u32 direction_switch_interval = 500;
+constexpr u32 direction_switch_interval{500};
+constexpr u32 need_look_back_time_delay{};
 
-const u32 need_look_back_time_delay = 0;
-
-const float direction_angles[] = {
+constexpr float direction_angles[]{
     0.f, //	eMovementDirectionForward
     PI, //	eMovementDirectionBackward
     PI_DIV_2, //	eMovementDirectionLeft
     -PI_DIV_2 //	eMovementDirectionRight
 };
+} // namespace
 
 void CStalkerAnimationManager::legs_play_callback(CBlend* blend)
 {
@@ -149,7 +152,6 @@ MotionID CStalkerAnimationManager::legs_move_animation()
     object().sight().GetDirectionAngles(yaw, pitch);
 
     yaw = angle_normalize_signed(-yaw);
-    ;
     legs_process_direction(yaw);
 
     float body_current = movement.body_orientation().current.yaw;

@@ -13,9 +13,9 @@ public:
     struct
     {
         Fmatrix xform;
-        IRenderVisual* visual;
-        IRender_ObjectSpecific* pROS;
-        BOOL pROS_Allowed;
+        IRenderVisual* visual{};
+        IRender_ObjectSpecific* pROS{};
+        BOOL pROS_Allowed{true};
         bool hud{};
     } renderable;
 

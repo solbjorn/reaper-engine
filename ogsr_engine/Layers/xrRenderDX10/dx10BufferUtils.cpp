@@ -28,7 +28,7 @@ HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
     desc.BindFlags = D3D_BIND_CONSTANT_BUFFER;
     desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 
-    return HW.pDevice->CreateBuffer(&desc, 0, ppBuffer);
+    return HW.pDevice->CreateBuffer(&desc, nullptr, ppBuffer);
 }
 
 struct VertexFormatPairs
@@ -105,7 +105,7 @@ LPCSTR ConvertSemantic(D3DDECLUSAGE Semantic)
     }
 
     VERIFY(!"ConvertSemantic didn't find appropriate dx10 input semantic!");
-    return 0;
+    return nullptr;
 }
 
 void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vector<D3D_INPUT_ELEMENT_DESC>& declOut)
@@ -130,4 +130,4 @@ void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vec
     if (iDeclSize >= 0)
         ZeroMemory(&declOut[iDeclSize], sizeof(declOut[iDeclSize]));
 }
-}; // namespace dx10BufferUtils
+} // namespace dx10BufferUtils

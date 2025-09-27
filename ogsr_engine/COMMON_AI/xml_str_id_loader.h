@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../xrGame/ui/xrUIXmlParser.h"
+
 #ifndef XRGAME_EXPORTS
 #include "object_broker.h"
 #endif // XRGAME_EXPORTS
@@ -53,7 +54,8 @@ public:
         const ITEM_DATA* item = GetById(str_id, no_assert);
         return item ? item->index : default_index;
     }
-    static const shared_str IndexToId(int index, shared_str default_id = NULL, bool no_assert = false)
+
+    static const shared_str IndexToId(int index, shared_str default_id = nullptr, bool no_assert = false)
     {
         const ITEM_DATA* item = GetByIndex(index, no_assert);
         return item ? item->id : default_id;
@@ -66,12 +68,13 @@ public:
 };
 
 TEMPLATE_SPECIALIZATION
-T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = NULL;
+T_VECTOR* CSXML_IdToIndex::m_pItemDataVector{};
 
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::file_str = NULL;
+LPCSTR CSXML_IdToIndex::file_str{};
+
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::tag_name = NULL;
+LPCSTR CSXML_IdToIndex::tag_name{};
 
 TEMPLATE_SPECIALIZATION
 CSXML_IdToIndex::CXML_IdToIndex() {}
@@ -98,7 +101,7 @@ const ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, bool no_asse
             Msg("[%d]=[%s]", i, *(*it).id);
 
         R_ASSERT3(no_assert, "item not found, id", *str_id);
-        return NULL;
+        return nullptr;
     }
 
     return &(*it);
@@ -110,8 +113,9 @@ const ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
     if ((size_t)index >= m_pItemDataVector->size())
     {
         R_ASSERT3(no_assert, "item by index not found in files", file_str);
-        return NULL;
+        return nullptr;
     }
+
     return &(*m_pItemDataVector)[index];
 }
 
@@ -153,7 +157,7 @@ void CSXML_IdToIndex::InitInternal()
 
         for (int i = 0; i < items_num; ++i)
         {
-            LPCSTR item_name = uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
+            LPCSTR item_name = uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", nullptr);
 
             string256 buf;
             sprintf_s(buf, "id for item don't set, number %d in %s", i, xml_file);
@@ -179,7 +183,8 @@ void CSXML_IdToIndex::InitInternal()
 
             index++;
         }
-        if (0 == items_num)
+
+        if (!items_num)
             xr_delete(uiXml);
     }
 }

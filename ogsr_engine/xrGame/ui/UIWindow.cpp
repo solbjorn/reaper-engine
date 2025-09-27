@@ -2,6 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+
 #include "UIWindow.h"
 #include "../UICursor.h"
 #include "../MainMenu.h"
@@ -9,14 +10,21 @@
 #include "../Include/xrRender/DebugRender.h"
 
 // #define LOG_ALL_WNDS
+
 #ifdef LOG_ALL_WNDS
+namespace
+{
 int ListWndCount = 0;
+
 struct DBGList
 {
     int num;
     bool closed;
 };
+
 xr_vector<DBGList> dbg_list_wnds;
+} // namespace
+
 void dump_list_wnd()
 {
     Msg("------Total  wnds %d", dbg_list_wnds.size());
@@ -30,6 +38,7 @@ void dump_list_wnd() {}
 #endif
 
 static xr_vector<std::pair<shared_str, Frect>> g_wnds_rects;
+
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
 BOOL g_show_wnd_rect_text = FALSE;
@@ -59,7 +68,7 @@ static void draw_rect(const Frect& r, const u32 color, const shared_str& name)
         CGameFont* F = UI()->Font()->pFontDI;
         const float x = r.lt.x - (r.lt.x >= 20 ? 20 : 0);
         const float y = r.lt.y > Device.dwHeight / 2 ? r.lt.y - F->CurrentHeight_() - 20 : r.rb.y + 20;
-        F->Out(x, y, name.c_str());
+        F->Out(x, y, "%s", name.c_str());
         F->SetColor(D3DCOLOR_XRGB(255, 0, 255));
     }
 }
@@ -84,7 +93,7 @@ void CUIWindow::SetPPMode()
     m_bPP = true;
     MainMenu()->RegisterPPDraw(this);
     Show(false);
-};
+}
 
 void CUIWindow::ResetPPMode()
 {
@@ -98,20 +107,11 @@ void CUIWindow::ResetPPMode()
 CUIWindow::CUIWindow()
 {
     //.	m_dbg_flag.zero			();
-    m_pFont = NULL;
-    m_pParentWnd = NULL;
     Reset();
-    m_pMessageTarget = NULL;
-    m_pKeyboardCapturer = NULL;
     SetWndRect(0, 0, 0, 0);
-    m_bAutoDelete = false;
     Show(true);
     Enable(true);
-    m_bCursorOverWindow = false;
-    m_bCursorOverWindowChanged = false;
-    m_bClickable = false;
-    m_bPP = false;
-    m_dwFocusReceiveTime = 0;
+
 #ifdef LOG_ALL_WNDS
     ListWndCount++;
     m_dbg_id = ListWndCount;
@@ -268,7 +268,7 @@ void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
     if (GetMouseCapturer() == pChild)
         SetMouseCapture(pChild, false);
 
-    pChild->SetParent(NULL);
+    pChild->SetParent(nullptr);
 
     if (from_destructor && pChild->IsAutoDelete())
     {
@@ -309,11 +309,12 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 {
     //.	Frect rect;
 
-    if (GetParent() == NULL)
+    if (!GetParent())
     {
         GetWndRect(r);
         return;
     }
+
     //.	rect = GetParent()->GetAbsoluteRect();
     GetParent()->GetAbsoluteRect(r);
 
@@ -337,10 +338,11 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
     cursor_pos.x = x;
     cursor_pos.y = y;
 
-    if (GetParent() == NULL)
+    if (!GetParent())
     {
         if (!wndRect.in(cursor_pos))
             return false;
+
         // получить координаты относительно окна
         cursor_pos.x -= wndRect.left;
         cursor_pos.y -= wndRect.top;
@@ -433,6 +435,7 @@ bool CUIWindow::OnDbClick()
 {
     if (GetMessageTarget())
         GetMessageTarget()->SendMessage(this, WINDOW_LBUTTON_DB_CLICK);
+
     return false;
 }
 
@@ -565,19 +568,21 @@ bool CUIWindow::OnKeyboardHold(int dik)
 
 void CUIWindow::SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status)
 {
-    if (NULL != GetParent())
+    if (GetParent())
         GetParent()->SetKeyboardCapture(this, capture_status);
 
     if (capture_status)
     {
         // оповестить дочернее окно о потере фокуса клавиатуры
-        if (NULL != m_pKeyboardCapturer)
+        if (m_pKeyboardCapturer)
             m_pKeyboardCapturer->SendMessage(this, WINDOW_KEYBOARD_CAPTURE_LOST);
 
         m_pKeyboardCapturer = pChildWindow;
     }
     else
-        m_pKeyboardCapturer = NULL;
+    {
+        m_pKeyboardCapturer = nullptr;
+    }
 }
 
 // обработка сообщений
@@ -648,13 +653,11 @@ bool CUIWindow::BringToBottom(CUIWindow* pChild)
 // поднять на вершину списка всех родителей окна и его самого
 void CUIWindow::BringAllToTop()
 {
-    if (GetParent() == NULL)
+    if (!GetParent())
         return;
-    else
-    {
-        GetParent()->BringToTop(this);
-        GetParent()->BringAllToTop();
-    }
+
+    GetParent()->BringToTop(this);
+    GetParent()->BringAllToTop();
 }
 
 // для перевода окна и потомков в исходное состояние
@@ -683,8 +686,8 @@ CUIWindow* CUIWindow::FindChild(const shared_str name, u32 max_nested)
     if (WindowName() == name)
         return this;
 
-    if (0 == max_nested)
-        return NULL;
+    if (!max_nested)
+        return nullptr;
 
     //.	m_dbg_flag.set(256,TRUE);
     WINDOW_LIST::const_iterator it = m_ChildWndList.begin();
@@ -692,12 +695,12 @@ CUIWindow* CUIWindow::FindChild(const shared_str name, u32 max_nested)
     for (; it != it_e; ++it)
     {
         CUIWindow* pRes = (*it)->FindChild(name, max_nested - 1);
-        if (pRes != NULL)
+        if (pRes)
             return pRes;
     }
 
     //.	m_dbg_flag.set(256,FALSE);
-    return NULL;
+    return nullptr;
 }
 
 const shared_str CUIWindow::WindowName() const
@@ -705,7 +708,7 @@ const shared_str CUIWindow::WindowName() const
     if (0 != m_windowName.size())
         return m_windowName;
 
-    if (NULL == GetParent())
+    if (!GetParent())
         return m_windowName;
 
     WINDOW_LIST& pcl = GetParent()->GetChildWndList();
@@ -726,7 +729,7 @@ const shared_str CUIWindow::WindowName() const
     return m_windowName;
 }
 
-void CUIWindow::SetWindowName(LPCSTR wn, BOOL ifnset)
+void CUIWindow::SetWindowName(const char* wn, bool ifnset)
 {
     if (ifnset && 0 != m_windowName.size()) // alpet: имя обновить, только если оно не установленно ранее
         return;

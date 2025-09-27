@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "monster_home.h"
 #include "BaseMonster/base_monster.h"
 #include "../../ai_space.h"
@@ -25,8 +26,8 @@ void check_path(const CBaseMonster* monster, const CPatrolPath* path)
 
 void CMonsterHome::load(LPCSTR line)
 {
-    m_path = 0;
-    m_level_vertex_id = u32(-1);
+    m_path = nullptr;
+    m_level_vertex_id = std::numeric_limits<u32>::max();
     m_radius_min = 20.f;
     m_radius_middle = 30.f;
     m_radius_max = 40.f;
@@ -56,16 +57,12 @@ void CMonsterHome::load(LPCSTR line)
         {
             m_radius_middle = m_radius_min + (m_radius_max - m_radius_min) / 2;
         }
+
         if (m_object->spawn_ini()->line_exist(line, "min_move_dist"))
-        {
             min_move_dist = m_object->spawn_ini()->r_u32(line, "min_move_dist");
-            ;
-        }
         if (m_object->spawn_ini()->line_exist(line, "max_move_dist"))
-        {
             max_move_dist = m_object->spawn_ini()->r_u32(line, "max_move_dist");
-            ;
-        }
+
         if (min_move_dist >= max_move_dist)
         {
             min_move_dist = u32(7);
@@ -114,18 +111,15 @@ void CMonsterHome::setup(CPatrolPath* path, float min_radius, float max_radius, 
 
 void CMonsterHome::setup(u32 lv_ID, float min_radius, float max_radius, bool aggressive, float middle_radius)
 {
-    m_path = 0;
+    m_path = nullptr;
     m_level_vertex_id = lv_ID;
     m_radius_min = min_radius;
     m_radius_max = max_radius;
+
     if (middle_radius > max_radius || middle_radius < min_radius)
-    {
         m_radius_middle = m_radius_min + (m_radius_max - m_radius_min) / 2;
-    }
     else
-    {
         m_radius_middle = middle_radius;
-    }
 
     m_aggressive = aggressive;
 }
@@ -491,8 +485,8 @@ bool CMonsterHome::at_home(const Fvector& pos, float const radius)
 
 void CMonsterHome::remove_home()
 {
-    m_path = 0;
-    m_level_vertex_id = u32(-1);
+    m_path = nullptr;
+    m_level_vertex_id = std::numeric_limits<u32>::max();
     m_aggressive = false;
 }
 

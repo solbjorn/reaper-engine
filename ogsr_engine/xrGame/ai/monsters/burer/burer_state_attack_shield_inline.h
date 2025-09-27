@@ -32,7 +32,7 @@ void CStateBurerShield<Object>::execute()
         object->ActivateShield();
     }
 
-    if (m_started && object->m_shield_keep_particle != 0 && current_time() > m_next_particle_allowed)
+    if (m_started && object->m_shield_keep_particle && current_time() > m_next_particle_allowed)
     {
         object->CParticlesPlayer::StartParticles(object->m_shield_keep_particle, Fvector().set(0, 1, 0), object->ID(), -1, true);
 

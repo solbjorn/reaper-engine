@@ -7,11 +7,12 @@
 // Copyright 2005 GSC Game World
 
 #include "StdAfx.h"
+
 #include "UISubLine.h"
 #include "uilinestd.h"
 #include "../ui_base.h"
 
-//#define LOG_ALL_LINES
+// #define LOG_ALL_LINES
 #ifdef LOG_ALL_LINES
 int ListSubLinesCount = 0;
 struct DBGList
@@ -36,7 +37,7 @@ CUISubLine::CUISubLine(const CUISubLine& other)
     m_color = other.m_color;
     m_last_in_line = other.m_last_in_line;
     m_text = other.m_text;
-    m_pTempLine = NULL;
+
 #ifdef LOG_ALL_LINES
     ListSubLinesCount++;
     dbg_list_sublines.push_back(DBGList());
@@ -57,8 +58,8 @@ CUISubLine& CUISubLine::operator=(const CUISubLine& other)
 CUISubLine::CUISubLine()
 {
     m_color = 0;
-    m_pTempLine = NULL;
     m_last_in_line = false;
+
 #ifdef LOG_ALL_LINES
     ListSubLinesCount++;
     dbg_list_sublines.push_back(DBGList());
@@ -70,7 +71,8 @@ CUISubLine::CUISubLine()
 CUISubLine::~CUISubLine()
 {
     xr_delete(m_pTempLine);
-    m_pTempLine = NULL;
+    m_pTempLine = nullptr;
+
 #ifdef LOG_ALL_LINES
     xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
     bool bOK = false;
@@ -90,7 +92,7 @@ CUISubLine::~CUISubLine()
 
 const CUISubLine* CUISubLine::Cut2Pos(int i)
 {
-    R_ASSERT2(i < (int)m_text.size(), make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%d]", i, m_text.size()).c_str());
+    R_ASSERT2(i < (int)m_text.size(), make_string("CUISubLine::Cut2Pos - invalid parameter [%d][%zu]", i, m_text.size()).c_str());
 
     //	xr_delete(m_pTempLine);
     if (!m_pTempLine)

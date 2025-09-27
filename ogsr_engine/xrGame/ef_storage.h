@@ -65,18 +65,16 @@ public:
 
     IC void clear()
     {
-        m_member = 0;
-        m_enemy = 0;
-        m_member_item = 0;
-        m_enemy_item = 0;
+        m_member = nullptr;
+        m_enemy = nullptr;
+        m_member_item = nullptr;
+        m_enemy_item = nullptr;
     }
 
     IC T1*& member() { return (m_member); }
-
     IC T1*& enemy() { return (m_enemy); }
 
     IC T2*& member_item() { return (m_member_item); }
-
     IC T2*& enemy_item() { return (m_enemy_item); }
 };
 

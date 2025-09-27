@@ -48,7 +48,7 @@ public:
     virtual void net_Export(CSE_Abstract* E);
 
     virtual CWeapon* cast_weapon() { return this; }
-    virtual CWeaponMagazined* cast_weapon_magazined() { return 0; }
+    virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
 
     // serialization
     virtual void save(NET_Packet& output_packet);
@@ -183,7 +183,7 @@ public:
     const shared_str& GetScopeName() const { return m_sScopeName; }
     const shared_str& GetSilencerName() const { return m_sSilencerName; }
 
-    u8 GetAddonsState() const { return m_flagsAddOnState; };
+    u8 GetAddonsState() const { return m_flagsAddOnState; }
     void SetAddonsState(u8 st) { m_flagsAddOnState = st; }
 
     // названия секций подключаемых аддонов
@@ -392,7 +392,7 @@ protected:
     virtual void DeviceSwitch();
 
     // обработка визуализации выстрела
-    virtual void OnShot() {};
+    virtual void OnShot() {}
     virtual void AddShotEffector();
     virtual void RemoveShotEffector();
     virtual void ClearShotEffector();
@@ -486,14 +486,14 @@ public:
     void SetAmmoElapsed(int ammo_count);
 
     virtual void OnMagazineEmpty();
-    void SpawnAmmo(u32 boxCurr = 0xffffffff, LPCSTR ammoSect = NULL, u32 ParentID = 0xffffffff);
+    void SpawnAmmo(u32 boxCurr = std::numeric_limits<u32>::max(), LPCSTR ammoSect = nullptr, u32 ParentID = std::numeric_limits<u32>::max());
 
     //  [8/3/2005]
-    virtual float Get_PDM_Base() const { return m_fPDM_disp_base; };
-    virtual float Get_PDM_Vel_F() const { return m_fPDM_disp_vel_factor; };
-    virtual float Get_PDM_Accel_F() const { return m_fPDM_disp_accel_factor; };
-    virtual float Get_PDM_Crouch() const { return m_fPDM_disp_crouch; };
-    virtual float Get_PDM_Crouch_NA() const { return m_fPDM_disp_crouch_no_acc; };
+    virtual float Get_PDM_Base() const { return m_fPDM_disp_base; }
+    virtual float Get_PDM_Vel_F() const { return m_fPDM_disp_vel_factor; }
+    virtual float Get_PDM_Accel_F() const { return m_fPDM_disp_accel_factor; }
+    virtual float Get_PDM_Crouch() const { return m_fPDM_disp_crouch; }
+    virtual float Get_PDM_Crouch_NA() const { return m_fPDM_disp_crouch_no_acc; }
     //  [8/3/2005]
 protected:
     int iAmmoElapsed; // ammo in magazine, currently
@@ -520,7 +520,7 @@ public:
     float m_fCurrentCartirdgeDisp;
 
     bool unlimited_ammo();
-    IC bool can_be_strapped() const { return m_can_be_strapped; };
+    IC bool can_be_strapped() const { return m_can_be_strapped; }
 
     LPCSTR GetCurrentAmmo_ShortName();
     float GetMagazineWeight(const decltype(m_magazine)& mag) const;

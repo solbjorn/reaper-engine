@@ -21,18 +21,17 @@ static ref_shader& GetCachedUIShader(const char* sh, const char* tex)
     }
 }
 
-void dxUIShader::Copy(IUIShader& _in) { *this = *((dxUIShader*)&_in); }
+void dxUIShader::Copy(IUIShader& _in)
+{
+    auto& in{*smart_cast<const dxUIShader*>(&_in)};
+
+    hShader = in.hShader;
+}
 
 void dxUIShader::create(LPCSTR sh, LPCSTR tex, bool no_cache)
 {
     if (no_cache)
-    {
         hShader.create(sh, tex);
-    }
     else
-    {
         hShader = GetCachedUIShader(sh, tex);
-    }
 }
-
-//void dxUIShader::destroy() { hShader.destroy(); }

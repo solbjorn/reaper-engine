@@ -1,16 +1,11 @@
 #include "stdafx.h"
+
 #include "monster_corpse_memory.h"
 #include "BaseMonster/base_monster.h"
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
 #include "../../item_manager.h"
 #include "../../ai_object_location.h"
-
-CMonsterCorpseMemory::CMonsterCorpseMemory()
-{
-    monster = 0;
-    time_memory = 10000;
-}
 
 CMonsterCorpseMemory::~CMonsterCorpseMemory() {}
 
@@ -54,7 +49,7 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive* corpse)
     else
     {
         // добавить врага в список объектов
-        m_objects.insert(std::make_pair(corpse, corpse_info));
+        m_objects.try_emplace(corpse, corpse_info);
     }
 }
 
@@ -96,11 +91,12 @@ const CEntityAlive* CMonsterCorpseMemory::get_corpse()
     if (it != m_objects.end())
     {
         if (const_cast<CEntityAlive*>(it->first)->is_locked_corpse())
-            return (0);
+            return nullptr;
 
         return it->first;
     }
-    return (0);
+
+    return nullptr;
 }
 
 SMonsterCorpse CMonsterCorpseMemory::get_corpse_info()

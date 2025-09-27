@@ -1,7 +1,8 @@
 #pragma once
 
+#include "object_destroyer.h"
 #include "script_export_space.h"
-#include "object_interfaces.h"
+
 // refs
 class CUI;
 class game_cl_GameState;
@@ -11,10 +12,10 @@ class CUIStatic;
 class CUIWindow;
 class CUIXml;
 
-struct SDrawStaticStruct : public IPureDestroyableObject
+struct SDrawStaticStruct
 {
     SDrawStaticStruct();
-    virtual void destroy();
+    void destroy();
     CUIStatic* m_static;
     float m_endTime;
     int m_priority{};
@@ -26,7 +27,13 @@ struct SDrawStaticStruct : public IPureDestroyableObject
     bool operator==(LPCSTR str) { return (m_name == str); }
 };
 
-typedef xr_vector<SDrawStaticStruct> st_vec;
+template <>
+struct object_destroyer::default_destroy<SDrawStaticStruct>
+{
+    void operator()(SDrawStaticStruct& data) const { data.destroy(); }
+};
+
+using st_vec = xr_vector<SDrawStaticStruct>;
 
 class CUIGameCustom : public DLL_Pure, public ISheduled
 {
@@ -61,7 +68,7 @@ protected:
 public:
     st_vec m_custom_statics;
     xr_vector<st_vec::size_type> m_custom_statics_sorted;
-    virtual void SetClGame(game_cl_GameState* g) {};
+    virtual void SetClGame(game_cl_GameState* g) {}
 
     virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
@@ -69,7 +76,7 @@ public:
     CUIGameCustom();
     virtual ~CUIGameCustom();
 
-    virtual void Init() {};
+    virtual void Init() {}
 
     virtual void Render();
     virtual void OnFrame();
@@ -85,7 +92,7 @@ public:
 
     CUIDialogWnd* MainInputReceiver();
     virtual void ReInitShownUI() = 0;
-    virtual void HideShownDialogs() {};
+    virtual void HideShownDialogs() {}
 
     void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color);
     void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color /*, LPCSTR def_text*/, float flicker);
@@ -96,8 +103,8 @@ public:
     SDrawStaticStruct* GetCustomStatic(LPCSTR id);
     void RemoveCustomStatic(LPCSTR id);
 
-    virtual shared_str shedule_Name() const { return shared_str("CUIGameCustom"); };
-    virtual bool shedule_Needed() { return true; };
+    virtual shared_str shedule_Name() const { return shared_str("CUIGameCustom"); }
+    virtual bool shedule_Needed() { return true; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

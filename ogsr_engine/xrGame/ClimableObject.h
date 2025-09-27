@@ -1,5 +1,7 @@
 #pragma once
+
 #include "physicsshellholder.h"
+
 class CPHLeaderGeomShell;
 class CPHCharacter;
 struct dContact;
@@ -11,7 +13,8 @@ class CClimableObject : public CPhysicsShellHolder
 
 public:
     typedef CPhysicsShellHolder inherited;
-    CPHLeaderGeomShell* m_pStaticShell;
+
+    CPHLeaderGeomShell* m_pStaticShell{};
     Fobb m_box{};
     Fvector m_axis;
     Fvector m_side;
@@ -20,6 +23,7 @@ public:
 
     CClimableObject();
     ~CClimableObject();
+
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

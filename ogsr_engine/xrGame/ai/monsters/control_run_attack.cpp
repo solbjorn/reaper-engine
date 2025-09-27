@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_run_attack.h"
 #include "BaseMonster/base_monster.h"
 #include "monster_velocity_space.h"
@@ -88,7 +89,7 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
     {
     case ControlCom::eventAnimationEnd:
         m_time_next_attack = time() + Random.randI(m_min_delay, m_max_delay);
-        m_man->notify(ControlCom::eventRunAttackEnd, 0);
+        m_man->notify(ControlCom::eventRunAttackEnd, nullptr);
         break;
     case ControlCom::eventAnimationStart: // handle blend params
     {
@@ -117,7 +118,7 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 
         if (!m_man->build_path_line(this, target_position, u32(-1), velocity_mask | MonsterMovement::eVelocityParameterStand))
         {
-            m_man->notify(ControlCom::eventRunAttackEnd, 0);
+            m_man->notify(ControlCom::eventRunAttackEnd, nullptr);
         }
         else
         {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIFrameLineWnd.h"
 
 CUIFrameLineWnd::CUIFrameLineWnd() : bHorizontal(true), m_bTextureAvailable(false) { AttachChild(&UITitleText); }

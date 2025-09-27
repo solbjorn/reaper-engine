@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIEventsWnd.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
@@ -140,7 +141,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 
     for (const auto& task : game_tasks)
     {
-        CUITaskItem* pTaskItem = NULL;
+        CUITaskItem* pTaskItem{};
         /*
                 if(task->m_Objectives[0].TaskState()==eTaskUserDefined)
                 {
@@ -292,12 +293,13 @@ bool CUIEventsWnd::ItemHasDescription(CUITaskItem* itm)
     {
         SGameTaskObjective* obj = itm->Objective();
         CMapLocation* ml = obj->LinkedMapLocation();
-        bool bHasLocation = (NULL != ml);
+        bool bHasLocation = !!ml;
         bool bIsMapMode = GetDescriptionMode();
         bool b = (bIsMapMode && bHasLocation && ml->SpotEnabled());
         return b;
     }
 }
+
 void CUIEventsWnd::Reset()
 {
     inherited::Reset();

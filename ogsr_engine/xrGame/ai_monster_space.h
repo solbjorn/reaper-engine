@@ -139,4 +139,4 @@ enum EMonsterHeadAnimType : u32
 
     eHeadAnimNone = u32(-1),
 };
-}; // namespace MonsterSpace
+} // namespace MonsterSpace

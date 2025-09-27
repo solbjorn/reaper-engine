@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_explosive_manager.h"
 #include "agent_manager.h"
 #include "agent_location_manager.h"
@@ -19,13 +20,16 @@
 #include "visual_memory_manager.h"
 #include "danger_object_location.h"
 
-const float GRENADE_RADIUS = 10.f;
-const u32 AFTER_GRENADE_DESTROYED_INTERVAL = 1000;
+namespace
+{
+constexpr float GRENADE_RADIUS{10.f};
+constexpr u32 AFTER_GRENADE_DESTROYED_INTERVAL{1000};
 
 struct CRemoveExplosivesPredicate
 {
     IC bool operator()(CDangerExplosive& explosive) const { return (!!explosive.m_reactor); }
 };
+} // namespace
 
 void CAgentExplosiveManager::remove_links(CObject* object)
 {
@@ -64,8 +68,9 @@ void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, con
 
 bool CAgentExplosiveManager::process_explosive(CMemberOrder& member)
 {
-    float min_dist_sqr = flt_max;
-    CDangerExplosive* best_grenade = 0;
+    float min_dist_sqr = std::numeric_limits<float>::max();
+    CDangerExplosive* best_grenade{};
+
     xr_vector<CDangerExplosive>::iterator I = m_explosives.begin();
     xr_vector<CDangerExplosive>::iterator E = m_explosives.end();
     for (; I != E; ++I)

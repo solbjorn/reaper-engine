@@ -72,7 +72,7 @@ inline profile_timer_script operator+(const profile_timer_script& portion0, cons
 
 void msg_and_fail(LPCSTR msg)
 {
-    Msg(msg);
+    Msg("%s", msg);
     R_ASSERT(false);
 }
 

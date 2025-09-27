@@ -248,7 +248,7 @@ public:
     CCoverEvaluatorCloseToEnemy* m_cover_evaluator_close_point;
 
     // ---------------------------------------------------------------------------------
-    IStateManagerBase* StateMan;
+    IStateManagerBase* StateMan{};
     // ---------------------------------------------------------------------------------
 
     CMonsterEnemyMemory EnemyMemory;
@@ -259,10 +259,10 @@ public:
     CMonsterEnemyManager EnemyMan;
     CMonsterCorpseManager CorpseMan;
 
-    const CEntityAlive* EatedCorpse;
+    const CEntityAlive* EatedCorpse{};
     // Lain: added
     bool check_eated_corpse_draggable();
-    virtual bool is_base_monster_with_enemy() { return EnemyMan.get_enemy() != NULL; }
+    virtual bool is_base_monster_with_enemy() { return !!EnemyMan.get_enemy(); }
 
     bool hear_dangerous_sound;
     bool hear_interesting_sound;
@@ -280,7 +280,7 @@ public:
 
     // -----------------------------------------------------------------------------
 
-    CControlledEntityBase* m_controlled;
+    CControlledEntityBase* m_controlled{};
 
     // -----------------------------------------------------------------------------
     enum EMonsterType
@@ -467,18 +467,18 @@ public:
     virtual bool can_use_agressive_jump(const CObject*) { return false; }
 
 private:
-    steering_behaviour::manager* m_steer_manager;
-    squad_grouping_behaviour* m_grouping_behaviour; // freed by manager
+    steering_behaviour::manager* m_steer_manager{};
+    squad_grouping_behaviour* m_grouping_behaviour{}; // freed by manager
 
     void update_enemy_accessible_and_at_home_info();
     // updates position by applying little "pushing" force
     // so that monsters rarely intersect
     void update_pos_by_grouping_behaviour();
-    TTime m_last_grouping_behaviour_update_tick;
+    TTime m_last_grouping_behaviour_update_tick{};
 
-    float m_feel_enemy_who_made_sound_max_distance;
-    float m_feel_enemy_who_just_hit_max_distance;
-    float m_feel_enemy_max_distance;
+    float m_feel_enemy_who_made_sound_max_distance{};
+    float m_feel_enemy_who_just_hit_max_distance{};
+    float m_feel_enemy_max_distance{};
 
     //-------------------------------------------------------------------
     // CBaseMonster's  Atack on Move Parameters
@@ -530,7 +530,7 @@ protected:
     //-------------------------------------------------------------------
     // CBaseMonster's  Anti-Aim Ability
     //-------------------------------------------------------------------
-    anti_aim_ability* m_anti_aim;
+    anti_aim_ability* m_anti_aim{};
 
 private:
     pcstr m_head_bone_name;
@@ -554,9 +554,9 @@ private:
     Fvector m_action_target_pos;
     u32 m_action_target_node;
 
-    TTime m_first_tick_enemy_inaccessible;
-    TTime m_last_tick_enemy_inaccessible;
-    TTime m_first_tick_object_not_at_home;
+    TTime m_first_tick_enemy_inaccessible{};
+    TTime m_last_tick_enemy_inaccessible{};
+    TTime m_first_tick_object_not_at_home{};
 
 public:
     virtual bool run_home_point_when_enemy_inaccessible() const { return true; }

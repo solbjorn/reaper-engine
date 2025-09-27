@@ -13,7 +13,7 @@ namespace Opcode
 {
 class AABBNoLeafTree;
 class Model;
-}; // namespace Opcode
+} // namespace Opcode
 
 template <typename T>
 concept class_exists = requires(T const* ptr)

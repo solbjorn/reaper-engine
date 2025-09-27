@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "purchase_list.h"
 #include "inventoryowner.h"
 #include "gameobject.h"
@@ -15,12 +16,14 @@
 #include "xrServer_Object_Base.h"
 #include "xrServer_Objects_ALife.h"
 
-static float min_deficit_factor = .3f;
+namespace
+{
+constexpr float min_deficit_factor{.3f};
+}
 
 void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner& owner)
 {
     owner.sell_useless_items();
-
     m_deficits.clear();
 
     sol::function lua_function;
@@ -75,5 +78,5 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
     }
 
     VERIFY3(m_deficits.find(name) == m_deficits.end(), "Duplicate section in the purchase list", *name);
-    m_deficits.insert(std::make_pair(name, (float)count * probability / _max((float)j, min_deficit_factor)));
+    m_deficits.emplace(name, (float)count * probability / _max((float)j, min_deficit_factor));
 }

@@ -1,6 +1,5 @@
 #ifndef Kinematics_included
 #define Kinematics_included
-#pragma once
 
 #include "RenderVisual.h"
 #include "../../Layers/xrRender/KinematicsAddBoneTransform.h"
@@ -16,7 +15,7 @@ struct VisMask;
 struct SEnumVerticesCallback;
 
 // 10 fps
-#define UCalc_Interval (u32(100))
+constexpr u32 UCalc_Interval{100};
 
 class XR_NOVTABLE IKinematics : public virtual RTTI::Enable
 {
@@ -115,6 +114,6 @@ public:
 
 inline IKinematics::~IKinematics() = default;
 
-IC IKinematics* PKinematics(IRenderVisual* V) { return V ? V->dcast_PKinematics() : 0; }
+IC IKinematics* PKinematics(IRenderVisual* V) { return V ? V->dcast_PKinematics() : nullptr; }
 
 #endif //	Kinematics_included

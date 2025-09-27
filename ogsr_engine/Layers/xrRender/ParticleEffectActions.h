@@ -53,9 +53,9 @@ struct PInt
 
 struct PVector
 {
-    Fvector val;
-    float mn;
-    float mx;
+    Fvector val{};
+    float mn{};
+    float mx{};
 
     enum EType : u32
     {
@@ -64,16 +64,10 @@ struct PVector
         vColor,
     };
 
-    EType type;
+    EType type{vNum};
 
-    PVector()
-    {
-        val.set(0, 0, 0);
-        mn = 0.f;
-        mx = 0.f;
-    }
-
-    PVector(EType t, Fvector _val, float _mn, float _mx) : type(t), val(_val), mn(_mn), mx(_mx) {}
+    PVector() = default;
+    PVector(EType t, Fvector _val, float _mn, float _mx) : val{_val}, mn{_mn}, mx{_mx}, type{t} {}
 
     void set(const Fvector& v) { val.set(v); }
     void set(float x, float y, float z) { val.set(x, y, z); }
@@ -81,7 +75,6 @@ struct PVector
 
 struct PDomain
 {
-public:
     PAPI::PDomainEnum type;
 
     union
@@ -106,14 +99,14 @@ public:
     Flags32 flags;
     u32 clr;
 
-public:
-    PDomain() {}
-
+    PDomain() = default;
     PDomain(EType et, BOOL renderable, u32 color = 0x00000000, PAPI::PDomainEnum type = PAPI::PDPoint, float inA0 = 0.0f, float inA1 = 0.0f, float inA2 = 0.0f, float inA3 = 0.0f,
             float inA4 = 0.0f, float inA5 = 0.0f, float inA6 = 0.0f, float inA7 = 0.0f, float inA8 = 0.0f);
-
     PDomain(const PDomain& in);
-    ~PDomain();
+    PDomain(PDomain&&);
+
+    PDomain& operator=(const PDomain&);
+    PDomain& operator=(PDomain&&);
 
     void Load(IReader& F);
     void Save(IWriter& F);
@@ -224,7 +217,7 @@ public:
     PBool* _bool_safe(LPCSTR name)
     {
         PBoolMapIt it = bools.find(name);
-        return (it != bools.end()) ? &it->second : 0;
+        return (it != bools.end()) ? &it->second : nullptr;
     }
 
     virtual void Compile(IWriter& F) = 0;
@@ -502,8 +495,6 @@ public:
 
     virtual void Compile(IWriter& F);
 };
-
-extern xr_token2 actions_token[];
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
 extern _CreateEAction pCreateEAction;

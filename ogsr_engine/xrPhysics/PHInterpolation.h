@@ -1,13 +1,14 @@
-#include "CycleConstStorage.h"
 #ifndef PHINTERPOLATON_H
 #define PHINTERPOLATON_H
 
+#include "CycleConstStorage.h"
 #include "ode_include.h"
 
 class CPHInterpolation
 {
 public:
-    CPHInterpolation();
+    CPHInterpolation() = default;
+
     void SetBody(dBodyID body);
     static const u16 PH_INTERPOLATION_POINTS = 2;
     void InterpolatePosition(Fvector& pos);
@@ -22,8 +23,9 @@ public:
     void SetPosition(const Fvector& p, u16 num);
 
 private:
-    dBodyID m_body;
+    dBodyID m_body{};
     CCycleConstStorage<Fvector, PH_INTERPOLATION_POINTS> qPositions;
     CCycleConstStorage<Fquaternion, PH_INTERPOLATION_POINTS> qRotations;
 };
+
 #endif

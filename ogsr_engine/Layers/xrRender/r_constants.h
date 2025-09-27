@@ -70,10 +70,12 @@ enum //	Constant buffer index masks
 
 struct R_constant_load
 {
-    u16 index; // linear index (pixel)
-    u16 cls; // element class
+    // linear index (pixel)
+    u16 index{std::numeric_limits<u16>::max()};
+    // element class
+    u16 cls{std::numeric_limits<u16>::max()};
 
-    R_constant_load() : index(u16(-1)), cls(u16(-1)) {};
+    R_constant_load() = default;
 
     IC BOOL equal(R_constant_load& C) { return (index == C.index) && (cls == C.cls); }
 };
@@ -165,9 +167,17 @@ public:
     ref_constant get(LPCSTR name) const; // slow search
     ref_constant get(const shared_str& name) const; // fast search
 
-    BOOL equal(R_constant_table& C);
-    BOOL equal(R_constant_table* C) { return equal(*C); }
-    BOOL empty() { return 0 == table.size(); }
+    BOOL equal(const R_constant_table& C) const;
+    BOOL equal(const R_constant_table* C) const { return equal(*C); }
+    BOOL empty() const { return table.empty(); }
+
+    void clone(const R_constant_table& from)
+    {
+        xr_resource_flagged::clone(from);
+
+        table = from.table;
+        std::ranges::copy(from.m_CBTable, m_CBTable);
+    }
 };
 typedef resptr_core<R_constant_table, resptr_base<R_constant_table>> ref_ctable;
 

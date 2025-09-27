@@ -43,7 +43,7 @@ void CRenderDevice::Destroy(void)
     seqParallel.clear();
 
     RenderFactory->DestroyRenderDeviceRender(m_pRender);
-    m_pRender = 0;
+    m_pRender = nullptr;
     xr_delete(Statistic);
 }
 
@@ -68,7 +68,7 @@ void CRenderDevice::Reset(bool precache)
 
     u32 tm_end = TimerAsync();
 
-    Msg("*** RESET [%d ms]", tm_end - tm_start);
+    Msg("*** RESET [%u ms]", tm_end - tm_start);
 
     //	TODO: Remove this! It may hide crash
 #pragma todo("KRodin: ??? Remove this! It may hide crash ???")

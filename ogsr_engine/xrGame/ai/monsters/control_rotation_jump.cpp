@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_rotation_jump.h"
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
@@ -86,7 +87,7 @@ void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEv
         if ((m_stage == eStop) && (m_data.flags.is(SControlRotationJumpData::eRotateOnce) == FALSE))
             build_line_second();
         else
-            m_man->notify(ControlCom::eventRotationJumpEnd, 0);
+            m_man->notify(ControlCom::eventRotationJumpEnd, nullptr);
         break;
     }
 }
@@ -167,7 +168,7 @@ void CControlRotationJump::build_line_first()
 
     if (!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
     {
-        m_man->notify(ControlCom::eventRotationJumpEnd, 0);
+        m_man->notify(ControlCom::eventRotationJumpEnd, nullptr);
     }
     else
     {
@@ -196,7 +197,7 @@ void CControlRotationJump::build_line_second()
 {
     if (!m_object->EnemyMan.get_enemy())
     {
-        m_man->notify(ControlCom::eventRotationJumpEnd, 0);
+        m_man->notify(ControlCom::eventRotationJumpEnd, nullptr);
         return;
     }
 
@@ -242,7 +243,7 @@ void CControlRotationJump::build_line_second()
 
     if (!m_man->build_path_line(this, target_position, u32(-1), velocity_mask))
     {
-        m_man->notify(ControlCom::eventRotationJumpEnd, 0);
+        m_man->notify(ControlCom::eventRotationJumpEnd, nullptr);
     }
     else
     {

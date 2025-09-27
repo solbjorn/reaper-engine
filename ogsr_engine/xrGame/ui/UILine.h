@@ -23,7 +23,7 @@ public:
     CUILine(const CUILine& other);
 
     ~CUILine();
-    
+
     CUILine& operator=(const CUILine& other);
 
     void AddSubLine(const xr_string& str, u32 color);
@@ -42,8 +42,8 @@ protected:
     int GetSize();
 
     const CUILine* GetEmptyLine();
-    
+
     xr_vector<CUISubLine> m_subLines;
 
-    CUILine* m_tmpLine;
+    CUILine* m_tmpLine{};
 };

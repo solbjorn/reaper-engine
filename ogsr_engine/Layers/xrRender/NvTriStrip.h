@@ -24,18 +24,25 @@ enum PrimType
 
 struct PrimitiveGroup
 {
-    PrimType type;
-    unsigned int numIndices;
-    unsigned short* indices;
+    PrimType type{PT_STRIP};
+    u32 numIndices{};
+    u16* indices{};
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    PrimitiveGroup() : type(PT_STRIP), numIndices(0), indices(NULL) {}
+    PrimitiveGroup() = default;
+
     ~PrimitiveGroup()
     {
         if (indices)
             xr_free(indices);
     }
+
+    PrimitiveGroup(const PrimitiveGroup&) = default;
+    PrimitiveGroup& operator=(const PrimitiveGroup&) = default;
+
+    PrimitiveGroup(PrimitiveGroup&&) = default;
+    PrimitiveGroup& operator=(PrimitiveGroup&&) = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////

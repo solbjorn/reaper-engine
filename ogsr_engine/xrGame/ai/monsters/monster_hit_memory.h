@@ -5,13 +5,13 @@ class CBaseMonster;
 
 class CMonsterHitMemory
 {
-    CBaseMonster* monster;
-    TTime time_memory;
+    CBaseMonster* monster{};
+    TTime time_memory{10000};
 
     MONSTER_HIT_VECTOR m_hits;
 
 public:
-    CMonsterHitMemory();
+    CMonsterHitMemory() = default;
     ~CMonsterHitMemory();
 
     void init_external(CBaseMonster* M, TTime mem_time);

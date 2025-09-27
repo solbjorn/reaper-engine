@@ -1,17 +1,16 @@
 #pragma once
-#include "UIWindow.h"
-
-#include "UIProgressBar.h"
-
-class CUIXml;
 
 #include "../script_export_space.h"
+#include "UIProgressBar.h"
+#include "UIWindow.h"
 
-struct SLuaWpnParams;
 class CPhysicsShellHolder;
+class CUIXml;
 
 class CUIWpnParams : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIWpnParams, CUIWindow);
+
 public:
     CUIWpnParams();
     virtual ~CUIWpnParams();

@@ -12,9 +12,31 @@
 RENDERDOC_API_1_0_0* g_renderdoc_api{};
 #endif
 
-dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0) { ; }
+dxRenderDeviceRender::dxRenderDeviceRender() {}
 
-void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in) { *this = *(dxRenderDeviceRender*)&_in; }
+void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in)
+{
+    auto& in{*smart_cast<const dxRenderDeviceRender*>(&_in)};
+
+    Resources = in.Resources;
+
+    m_WireShader = in.m_WireShader;
+    m_SelectionShader = in.m_SelectionShader;
+    m_PortalFadeShader = in.m_PortalFadeShader;
+    m_PortalFadeGeom = in.m_PortalFadeGeom;
+
+    Vertex = in.Vertex;
+    Index = in.Index;
+
+    QuadIB = in.QuadIB;
+    old_QuadIB = in.old_QuadIB;
+
+    contexts_used = in.contexts_used;
+    std::ranges::copy(in.contexts_pool, contexts_pool);
+
+    m_Gamma = in.m_Gamma;
+    b_loaded = in.b_loaded;
+}
 
 void dxRenderDeviceRender::setGamma(float fGamma) { m_Gamma.Gamma(fGamma); }
 
@@ -107,7 +129,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     m_WireShader.create("editor\\wire");
     m_SelectionShader.create("editor\\selection");
     m_PortalFadeShader.create("portal");
-    m_PortalFadeGeom.create(FVF::F_L, Vertex.Buffer(), 0);
+    m_PortalFadeGeom.create(FVF::F_L, Vertex.Buffer(), nullptr);
 
     DUImpl.OnDeviceCreate();
     UIRender->CreateUIGeom();

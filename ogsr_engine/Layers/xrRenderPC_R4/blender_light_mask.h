@@ -31,6 +31,6 @@ public:
     CBlender_accum_direct_mask_msaa();
     virtual ~CBlender_accum_direct_mask_msaa();
 
-    LPCSTR Name;
-    LPCSTR Definition;
+    LPCSTR Name{};
+    LPCSTR Definition{};
 };

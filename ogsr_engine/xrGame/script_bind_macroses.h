@@ -41,10 +41,6 @@
     return ((D)(E)); \
     }
 
-#define GET_MEMBER(C, D) \
-    return ((D)(l_tpEntity->C)); \
-    }
-
 #define CALL_FUNCTION10(C, D) \
     return ((D)(l_tpEntity->C())); \
     }
@@ -69,37 +65,38 @@
     l_tpEntity->C(); \
     }
 
-#define BIND_MEMBER(Z, A, B, C, D, E) \
-    DECLARE_FUNCTION10(A, D) \
-    CAST_OBJECT1(Z, A, B, D, E) \
-    GET_MEMBER(C, D)
-
 #define BIND_FUNCTION00(Z, A, B, C) \
     DECLARE_FUNCTION10(A, void) \
     CAST_OBJECT0(Z, A, B) \
-    CALL_FUNCTION00(C)
+    CALL_FUNCTION00(C) \
+    XR_MACRO_END()
 
 #define BIND_FUNCTION10(Z, A, B, C, D, E) \
     DECLARE_FUNCTION10(A, D) \
     CAST_OBJECT1(Z, A, B, D, E) \
-    CALL_FUNCTION10(C, D)
+    CALL_FUNCTION10(C, D) \
+    XR_MACRO_END()
 
 #define BIND_FUNCTION11(Z, A, B, C, D, E, F, I) \
     DECLARE_FUNCTION11(A, D, F) \
     CAST_OBJECT1(Z, A, B, D, E) \
-    CALL_FUNCTION11(C, D, I)
+    CALL_FUNCTION11(C, D, I) \
+    XR_MACRO_END()
 
 #define BIND_FUNCTION01(Z, A, B, C, F, I) \
     DECLARE_FUNCTION11(A, void, F) \
     CAST_OBJECT0(Z, A, B) \
-    CALL_FUNCTION01(C, I)
+    CALL_FUNCTION01(C, I) \
+    XR_MACRO_END()
 
 #define BIND_FUNCTION02(Z, A, B, C, F, G, I, J) \
     DECLARE_FUNCTION12(A, void, F, G) \
     CAST_OBJECT0(Z, A, B) \
-    CALL_FUNCTION02(C, I, J)
+    CALL_FUNCTION02(C, I, J) \
+    XR_MACRO_END()
 
 #define BIND_FUNCTION03(Z, A, B, C, F, G, H, I, J, K) \
     DECLARE_FUNCTION13(A, void, F, G, H) \
     CAST_OBJECT0(Z, A, B) \
-    CALL_FUNCTION03(C, I, J, K)
+    CALL_FUNCTION03(C, I, J, K) \
+    XR_MACRO_END()

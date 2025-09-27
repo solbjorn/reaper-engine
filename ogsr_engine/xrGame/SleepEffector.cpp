@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "SleepEffector.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,11 +44,11 @@ BOOL CSleepEffectorPP::Process(SPPInfo& pp)
     }
     else if (SLEEPING == m_eSleepState)
     {
-        //не изменять значение fLifeTime пока спим
+        // не изменять значение fLifeTime пока спим
         fLifeTime = m_attack * m_total;
         factor = 1.0f;
     }
-    else if (AWAKING == m_eSleepState) //просыпаемся
+    else if (AWAKING == m_eSleepState) // просыпаемся
         factor = (1.0f - time_past_perc) / (1.0f - m_release);
 
     clamp(factor, 0.01f, 1.0f);

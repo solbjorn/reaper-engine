@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ParticlesObject.h"
 #include "Physics.h"
 
@@ -38,15 +39,11 @@ extern CPHWorld* ph_world;
 
 CCar::CCar()
 {
-    m_memory = NULL;
-    m_driver_anim_type = 0;
-    m_bone_steer = BI_NONE;
-    active_camera = 0;
-    camera[ectFirst] = xr_new<CCameraFirstEye>(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid);
+    camera[ectFirst] = xr_new<CCameraFirstEye>(this, gsl::narrow<u32>(CCameraBase::flRelativeLink | CCameraBase::flPositionRigid));
     camera[ectFirst]->tag = ectFirst;
     camera[ectFirst]->Load("car_firsteye_cam");
 
-    camera[ectChase] = xr_new<CCameraLook>(this, CCameraBase::flRelativeLink);
+    camera[ectChase] = xr_new<CCameraLook>(this, gsl::narrow<u32>(CCameraBase::flRelativeLink));
     camera[ectChase]->tag = ectChase;
     camera[ectChase]->Load("car_look_cam");
 
@@ -55,21 +52,12 @@ CCar::CCar()
     camera[ectFree]->Load("car_free_cam");
     OnCameraChange(ectFirst);
 
-    m_repairing = false;
-
     ///////////////////////////////
     //////////////////////////////
     /////////////////////////////
-    b_wheels_limited = false;
-    b_engine_on = false;
     e_state_steer = idle;
     e_state_drive = neutral;
-    m_current_gear_ratio = dInfinity;
-    rsp = false;
-    lsp = false;
-    fwp = false;
-    bkp = false;
-    brp = false;
+    m_current_gear_ratio = std::numeric_limits<float>::max();
     ///////////////////////////////
     //////////////////////////////
     /////////////////////////////
@@ -84,24 +72,17 @@ CCar::CCar()
     m_rpm_increment_factor = 0.5f;
     m_power_decrement_factor = 0.5f;
     m_rpm_decrement_factor = 0.5f;
-    b_breaks = false;
-    m_break_start = 0.f;
-    m_break_time = 1.;
+    m_break_time = 1.f;
     m_breaks_to_back_rate = 1.f;
 
-    b_exploded = false;
-    m_car_weapon = NULL;
     m_power_neutral_factor = 0.25f;
-    m_steer_angle = 0.f;
-    m_current_rpm = 0.f;
-    m_current_engine_power = 0.f;
 
 #ifdef DEBUG
     InitDebug();
 #endif
 }
 
-CCar::~CCar(void)
+CCar::~CCar()
 {
     xr_delete(camera[0]);
     xr_delete(camera[1]);
@@ -291,21 +272,21 @@ void CCar::SaveNetState(NET_Packet& P)
         XFORM().getXYZ(Angle);
         P.w_vec3(Angle);
         {
-            xr_map<u16,SDoor>::iterator i,e;
+            xr_map<u16, std::unique_ptr<SDoor>>::iterator i,e;
             i=m_doors.begin();
             e=m_doors.end();
             P.w_u16(u16(m_doors.size()));
             for(;i!=e;++i)
-                i->second.SaveNetState(P);
+                i->second->SaveNetState(P);
         }
 
         {
-            xr_legacy_map<u16, SWheel>::iterator i, e;
+            xr_map<u16, std::unique_ptr<SWheel>>::iterator i, e;
             i=m_wheels_map.begin();
             e=m_wheels_map.end();
             P.w_u16(u16(m_wheels_map.size()));
             for(;i!=e;++i)
-                i->second.SaveNetState(P);
+                i->second->SaveNetState(P);
         }
         P.w_float(GetfHealth());
     */
@@ -345,7 +326,7 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
         */
     }
     else
-        Msg("~ [%s]: [%s] has different state in m_doors[%u] door_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_doors.size(), co->door_states.size(),
+        Msg("~ [%s]: [%s] has different state in m_doors[%zu] door_states[%zu] Visual[%s]", __FUNCTION__, obj->Name_script(), m_doors.size(), co->door_states.size(),
             obj->cNameVisual().c_str());
     co->door_states.clear();
 
@@ -357,12 +338,12 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
             int i = 0;
             for ( auto& it : m_wheels_map ) {
               const auto& ws = co->wheel_states.at( i++ );
-              it.second.RestoreNetState( ws );
+              it.second->RestoreNetState( ws );
             }
         */
     }
     else
-        Msg("~ [%s]: [%s] has different state in m_wheels_map[%u] wheel_states[%u] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(),
+        Msg("~ [%s]: [%s] has different state in m_wheels_map[%zu] wheel_states[%zu] Visual[%s]", __FUNCTION__, obj->Name_script(), m_wheels_map.size(), co->wheel_states.size(),
             obj->cNameVisual().c_str());
     co->wheel_states.clear();
 
@@ -418,12 +399,13 @@ void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
     if (po->_flags.test(CSE_PHSkeleton::flSavedData))
         return;
-    xr_map<u16, SDoor>::iterator i, e;
+
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i, e;
     i = m_doors.begin();
     e = m_doors.end();
     for (; i != e; ++i)
     {
-        i->second.SetDefaultNetState();
+        i->second->SetDefaultNetState();
     }
 }
 void CCar::shedule_Update(u32 dt)
@@ -674,7 +656,7 @@ bool CCar::attach_Actor(CGameObject* actor)
     return true;
 }
 
-bool CCar::is_Door(u16 id, xr_map<u16, SDoor>::iterator& i)
+bool CCar::is_Door(u16 id, xr_map<u16, std::unique_ptr<SDoor>>::iterator& i)
 {
     i = m_doors.find(id);
     if (i == m_doors.end())
@@ -683,7 +665,7 @@ bool CCar::is_Door(u16 id, xr_map<u16, SDoor>::iterator& i)
     }
     else
     {
-        if (i->second.joint) // temp for fake doors
+        if (i->second->joint) // temp for fake doors
             return true;
         else
             return false;
@@ -691,7 +673,7 @@ bool CCar::is_Door(u16 id, xr_map<u16, SDoor>::iterator& i)
 }
 bool CCar::is_Door(u16 id)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
     i = m_doors.find(id);
     if (i == m_doors.end())
     {
@@ -702,7 +684,7 @@ bool CCar::is_Door(u16 id)
 
 bool CCar::Enter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
-    xr_map<u16, SDoor>::iterator i, e;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i, e;
 
     i = m_doors.begin();
     e = m_doors.end();
@@ -711,7 +693,7 @@ bool CCar::Enter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos
     enter_pos.mul(0.5f);
     for (; i != e; ++i)
     {
-        if (i->second.CanEnter(pos, dir, enter_pos))
+        if (i->second->CanEnter(pos, dir, enter_pos))
             return true;
     }
     return false;
@@ -719,15 +701,15 @@ bool CCar::Enter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos
 
 bool CCar::Exit(const Fvector& pos, const Fvector& dir)
 {
-    xr_map<u16, SDoor>::iterator i, e;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i, e;
 
     i = m_doors.begin();
     e = m_doors.end();
     for (; i != e; ++i)
     {
-        if (i->second.CanExit(pos, dir))
+        if (i->second->CanExit(pos, dir))
         {
-            i->second.GetExitPosition(m_exit_position);
+            i->second->GetExitPosition(m_exit_position);
             return true;
         }
     }
@@ -739,7 +721,7 @@ void CCar::ParseDefinitions()
     bone_map.clear();
 
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
-    bone_map.insert(mk_pair(pKinematics->LL_GetBoneRoot(), physicsBone()));
+    bone_map.try_emplace(pKinematics->LL_GetBoneRoot());
     CInifile* ini = pKinematics->LL_UserData();
     R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
     CExplosive::Load(ini, "explosion");
@@ -874,7 +856,7 @@ void CCar::Init()
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     CInifile* ini = pKinematics->LL_UserData();
     R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
-    /// SWheel& ref_wheel=m_wheels_map.find(pKinematics->LL_BoneID(ini->r_string("car_definition","reference_wheel")))->second;
+    /// SWheel& ref_wheel = *m_wheels_map.find(pKinematics->LL_BoneID(ini->r_string("car_definition","reference_wheel")))->second;
 
     if (ini->section_exist("air_resistance"))
     {
@@ -902,13 +884,13 @@ void CCar::Init()
     float l_time_to_explosion = READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion", 120.f);
     CDelayedActionFuse::Initialize(l_time_to_explosion, CDamagableItem::DamageLevelToHealth(2));
     {
-        xr_legacy_map<u16, SWheel>::iterator i, e;
+        xr_map<u16, std::unique_ptr<SWheel>>::iterator i, e;
         i = m_wheels_map.begin();
         e = m_wheels_map.end();
         for (; i != e; ++i)
         {
-            i->second.Init();
-            i->second.CDamagableHealthItem::Init(100.f, 2);
+            i->second->Init();
+            i->second->CDamagableHealthItem::Init(100.f, 2);
         }
     }
 
@@ -945,13 +927,13 @@ void CCar::Init()
     }
 
     {
-        xr_map<u16, SDoor>::iterator i, e;
+        xr_map<u16, std::unique_ptr<SDoor>>::iterator i, e;
         i = m_doors.begin();
         e = m_doors.end();
         for (; i != e; ++i)
         {
-            i->second.Init();
-            i->second.CDamagableHealthItem::Init(100, 1);
+            i->second->Init();
+            i->second->CDamagableHealthItem::Init(100, 1);
         }
     }
 
@@ -962,15 +944,17 @@ void CCar::Init()
         {
             u16 index = pKinematics->LL_BoneID(item.first.c_str());
             R_ASSERT3(index != BI_NONE, "Wrong bone name", item.first.c_str());
-            auto i = m_wheels_map.find(index);
 
+            auto i = m_wheels_map.find(index);
             if (i != m_wheels_map.end())
-                i->second.CDamagableHealthItem::Init(float(atof(item.second.c_str())), 2);
+            {
+                i->second->CDamagableHealthItem::Init(float(atof(item.second.c_str())), 2);
+            }
             else
             {
-                xr_map<u16, SDoor>::iterator i = m_doors.find(index);
+                xr_map<u16, std::unique_ptr<SDoor>>::iterator i = m_doors.find(index);
                 R_ASSERT3(i != m_doors.end(), "only wheel and doors bones allowed for damage defs", item.first.c_str());
-                i->second.CDamagableHealthItem::Init(float(atof(item.second.c_str())), 1);
+                i->second->CDamagableHealthItem::Init(float(atof(item.second.c_str())), 1);
             }
         }
     }
@@ -1448,7 +1432,7 @@ void CCar::ClearExhausts()
 
 bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
 
     if (!Owner())
     {
@@ -1468,10 +1452,10 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
             collide::rq_result* I = R.r_begin() + k;
             if (is_Door((u16)I->element, i))
             {
-                bool front = i->second.IsFront(pos, dir);
+                bool front = i->second->IsFront(pos, dir);
                 if ((Owner() && !front) || (!Owner() && front))
-                    i->second.Use();
-                if (i->second.state == SDoor::broken)
+                    i->second->Use();
+                if (i->second->state == SDoor::broken)
                     break;
                 return false;
             }
@@ -1483,12 +1467,13 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 
     return false;
 }
+
 bool CCar::DoorUse(u16 id)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
     if (is_Door(id, i))
     {
-        i->second.Use();
+        i->second->Use();
         return true;
     }
     else
@@ -1499,10 +1484,10 @@ bool CCar::DoorUse(u16 id)
 
 bool CCar::DoorSwitch(u16 id)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
     if (is_Door(id, i))
     {
-        i->second.Switch();
+        i->second->Switch();
         return true;
     }
     else
@@ -1510,12 +1495,13 @@ bool CCar::DoorSwitch(u16 id)
         return false;
     }
 }
+
 bool CCar::DoorClose(u16 id)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
     if (is_Door(id, i))
     {
-        i->second.Close();
+        i->second->Close();
         return true;
     }
     else
@@ -1526,10 +1512,10 @@ bool CCar::DoorClose(u16 id)
 
 bool CCar::DoorOpen(u16 id)
 {
-    xr_map<u16, SDoor>::iterator i;
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i;
     if (is_Door(id, i))
     {
-        i->second.Open();
+        i->second->Open();
         return true;
     }
     else
@@ -1537,6 +1523,7 @@ bool CCar::DoorOpen(u16 id)
         return false;
     }
 }
+
 void CCar::InitParabola()
 {
     // float t1=(m_power_rpm-m_torque_rpm);
@@ -1712,9 +1699,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
         O->SetTmpPreDestroy(just_before_destroy);
 
         if (GetInventory()->DropItem(smart_cast<CGameObject*>(O)))
-        {
-            O->H_SetParent(0, dont_create_shell);
-        }
+            O->H_SetParent(nullptr, dont_create_shell);
     }
     break;
     }
@@ -1785,7 +1770,7 @@ void CCar::CarExplode()
     if (A)
     {
         if (!m_doors.empty())
-            m_doors.begin()->second.GetExitPosition(m_exit_position);
+            m_doors.begin()->second->GetExitPosition(m_exit_position);
         else
             m_exit_position.set(Position());
         A->detach_Vehicle();
@@ -1863,17 +1848,17 @@ IC void CCar::fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels)
         BONE_P_PAIR_IT J = bone_map.find(bone_id);
         if (J == bone_map.end())
         {
-            bone_map.insert(mk_pair(bone_id, physicsBone()));
+            bone_map.try_emplace(bone_id);
 
-            SWheel& wheel = (m_wheels_map.insert(mk_pair(bone_id, SWheel(this)))).first->second;
-            wheel.bone_id = bone_id;
-            twheel.pwheel = &wheel;
-            wheel.Load(S1);
+            SWheel* wheel = m_wheels_map.try_emplace(bone_id, std::make_unique<SWheel>(this)).first->second.get();
+            wheel->bone_id = bone_id;
+            twheel.pwheel = wheel;
+            wheel->Load(S1);
             twheel.Load(S1);
         }
         else
         {
-            twheel.pwheel = &(m_wheels_map.find(bone_id))->second;
+            twheel.pwheel = m_wheels_map.find(bone_id)->second.get();
             twheel.Load(S1);
         }
     }
@@ -1895,13 +1880,11 @@ IC void CCar::fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts)
 
         BONE_P_PAIR_IT J = bone_map.find(bone_id);
         if (J == bone_map.end())
-        {
-            bone_map.insert(mk_pair(bone_id, physicsBone()));
-        }
+            bone_map.try_emplace(bone_id);
     }
 }
 
-IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, SDoor>& doors)
+IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, std::unique_ptr<SDoor>>& doors)
 {
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     string64 S1;
@@ -1911,14 +1894,12 @@ IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, SDoor>& doors)
         _GetItem(S, i, S1);
 
         u16 bone_id = pKinematics->LL_BoneID(S1);
-        SDoor door(this);
-        door.bone_id = bone_id;
-        doors.insert(mk_pair(bone_id, door));
+        auto door = std::make_unique<SDoor>(this);
+        door->bone_id = bone_id;
+        doors.try_emplace(bone_id, std::move(door));
         BONE_P_PAIR_IT J = bone_map.find(bone_id);
         if (J == bone_map.end())
-        {
-            bone_map.insert(mk_pair(bone_id, physicsBone()));
-        }
+            bone_map.try_emplace(bone_id);
     }
 }
 
@@ -2031,7 +2012,7 @@ void CCar::SyncNetState()
     for (auto& it : m_doors)
     {
         CSE_ALifeCar::SDoorState ds;
-        it.second.SaveNetState(ds);
+        it.second->SaveNetState(ds);
         co->door_states.push_back(ds);
     }
 
@@ -2039,7 +2020,7 @@ void CCar::SyncNetState()
     for (auto& it : m_wheels_map)
     {
         CSE_ALifeCar::SWheelState ws;
-        it.second.SaveNetState(ws);
+        it.second->SaveNetState(ws);
         co->wheel_states.push_back(ws);
     }
 

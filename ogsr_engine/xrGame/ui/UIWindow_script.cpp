@@ -49,13 +49,20 @@ static TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name) { return CUITextu
 
 static LPCSTR CIconParams__get_name(CIconParams* self) { return self->name.c_str(); }
 
-static void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild, bool bottom = false) { return self.AttachChild(pChild.release(), bottom); }
+namespace
+{
+void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild, bool bottom) { self.AttachChild(pChild.release(), bottom); }
+inline void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIWindow>& pChild) { AttachChild_script(self, pChild, false); }
+
+void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIStatic>& pChild, bool bottom) { self.AttachChild(static_cast<CUIWindow*>(pChild.release()), bottom); }
+inline void AttachChild_script(CUIWindow& self, std::unique_ptr<CUIStatic>& pChild) { AttachChild_script(self, pChild, false); }
 
 template <typename T>
-static T* wnd_object_cast(CUIWindow* wnd)
+inline T* wnd_object_cast(CUIWindow* wnd)
 {
     return smart_cast<T*>(wnd);
 }
+} // namespace
 
 void CUIWindow::script_register(sol::state_view& lua)
 {
@@ -69,18 +76,23 @@ void CUIWindow::script_register(sol::state_view& lua)
     lua.set("GetTextureName", &get_texture_name, "GetTextureRect", &get_texture_rect, "GetTextureInfo", &get_texture_info);
 
     lua.new_usertype<CUIWindow>(
-        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIWindow>), "AttachChild", &AttachChild_script, "DetachChild",
-        &CUIWindow::DetachChild, "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete, "SetWndRect",
-        sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)), "Init",
-        sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
+        "CUIWindow", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CUIWindow>), "AttachChild",
+        sol::overload(sol::resolve<void(CUIWindow&, std::unique_ptr<CUIWindow>&, bool)>(&AttachChild_script),
+                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIWindow>&)>(&AttachChild_script),
+                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIStatic>&, bool)>(&AttachChild_script),
+                      sol::resolve<void(CUIWindow&, std::unique_ptr<CUIStatic>&)>(&AttachChild_script)),
+        "DetachChild", &CUIWindow::DetachChild, "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete,
+        "SetWndRect", sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)),
+        "Init", sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
         "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize({w, h}); }, "GetWidth",
         &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight", &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop", &CUIWindow::GetPosTop,
         "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable, "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown", &CUIWindow::IsShown, "SetFont",
         &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont, "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName", &CUIWindow::WindowName_script, "SetWindowName",
-        &CUIWindow::SetWindowName, "SetPPMode", &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY",
-        &CUIWindow::GetMousePosY, "GetParent", &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild,
-        "FindChild", sol::resolve<CUIWindow*(LPCSTR)>(&CUIWindow::FindChild), "GetButton", &wnd_object_cast<CUIButton>, "GetCUIStatic", &wnd_object_cast<CUIStatic>,
-        "GetAbsoluteRect", sol::resolve<void(Frect&)>(&CUIWindow::GetAbsoluteRect), sol::base_classes, xr_sol_bases<CUIWindow>());
+        sol::overload(sol::resolve<void(const char*, bool)>(&CUIWindow::SetWindowName), sol::resolve<void(const char*)>(&CUIWindow::SetWindowName)), "SetPPMode",
+        &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY", &CUIWindow::GetMousePosY, "GetParent",
+        &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild, "FindChild",
+        sol::resolve<CUIWindow*(LPCSTR)>(&CUIWindow::FindChild), "GetButton", &wnd_object_cast<CUIButton>, "GetCUIStatic", &wnd_object_cast<CUIStatic>, "GetAbsoluteRect",
+        sol::resolve<void(Frect&)>(&CUIWindow::GetAbsoluteRect), sol::base_classes, xr_sol_bases<CUIWindow>());
 
     lua.new_usertype<CDialogHolder>("CDialogHolder", sol::no_constructor, "MainInputReceiver", &CDialogHolder::MainInputReceiver, "start_stop_menu", &CDialogHolder::StartStopMenu,
                                     "AddDialogToRender", &CDialogHolder::AddDialogToRender, "RemoveDialogToRender", &CDialogHolder::RemoveDialogToRender, sol::base_classes,

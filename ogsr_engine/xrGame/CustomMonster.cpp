@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_debug.h"
 #include "CustomMonster.h"
 #include "hudmanager.h"
@@ -79,17 +80,7 @@ void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCustomMonster::CCustomMonster()
-{
-    m_sound_user_data_visitor = 0;
-    m_memory_manager = 0;
-    m_movement_manager = 0;
-    m_sound_player = 0;
-    m_already_dead = false;
-    m_invulnerable = false;
-    m_visible_for_zones = true;
-    m_anomaly_detector = xr_new<CAnomalyDetector>(this);
-}
+CCustomMonster::CCustomMonster() { m_anomaly_detector = xr_new<CAnomalyDetector>(this); }
 
 CCustomMonster::~CCustomMonster()
 {
@@ -107,6 +98,7 @@ CCustomMonster::~CCustomMonster()
     Msg("dumping client spawn manager stuff for object with id %d", ID());
     Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
+
     if (g_pGameLevel)
         Level().client_spawn_manager().clear(ID());
 }
@@ -380,13 +372,10 @@ void CCustomMonster::update_sound_player() { sound().update(client_update_fdelta
 
 void CCustomMonster::UpdateCL()
 {
-    START_PROFILE("CustomMonster/client_update")
     m_client_update_delta = Device.dwTimeGlobal - m_last_client_update_time;
     m_last_client_update_time = Device.dwTimeGlobal;
 
-    START_PROFILE("CustomMonster/client_update/inherited")
     inherited::UpdateCL();
-    STOP_PROFILE
 
     CScriptEntity::process_sound_callbacks();
 
@@ -402,13 +391,8 @@ void CCustomMonster::UpdateCL()
     if (g_mt_config.test(mtSoundPlayer))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
     else
-    {
-        START_PROFILE("CustomMonster/client_update/sound_player")
         update_sound_player();
-        STOP_PROFILE
-    }
 
-    START_PROFILE("CustomMonster/client_update/network extrapolation")
     if (NET.empty())
     {
         update_animation_movement_controller();
@@ -458,7 +442,6 @@ void CCustomMonster::UpdateCL()
             }
         }
     }
-    STOP_PROFILE
 
     if (Local() && g_Alive())
     {
@@ -489,29 +472,25 @@ void CCustomMonster::UpdateCL()
 #endif // DEBUG
 
     update_animation_movement_controller();
-
-    STOP_PROFILE
 }
 
 void CCustomMonster::UpdatePositionAnimation()
 {
-    START_PROFILE("CustomMonster/client_update/movement")
     movement().on_frame(character_physics_support()->movement(), NET_Last.p_pos);
-    STOP_PROFILE
 
-    START_PROFILE("CustomMonster/client_update/animation")
     if (!bfScriptAnimation())
         SelectAnimation(XFORM().k, movement().detail().direction(), movement().speed());
-    STOP_PROFILE
 }
 
 BOOL CCustomMonster::feel_visible_isRelevant(CObject* O)
 {
     CEntityAlive* E = smart_cast<CEntityAlive*>(O);
-    if (0 == E)
+    if (!E)
         return FALSE;
+
     if (E->g_Team() == g_Team())
         return FALSE;
+
     return TRUE;
 }
 
@@ -819,7 +798,7 @@ CSound_UserDataVisitor* CCustomMonster::create_sound_visitor() { return (m_sound
 
 CMemoryManager* CCustomMonster::create_memory_manager() { return (xr_new<CMemoryManager>(this, create_sound_visitor())); }
 
-const SRotation CCustomMonster::Orientation() const { return (movement().m_body.current); };
+const SRotation CCustomMonster::Orientation() const { return movement().m_body.current; }
 
 const MonsterSpace::SBoneRotation& CCustomMonster::head_orientation() const { return (movement().m_body); }
 

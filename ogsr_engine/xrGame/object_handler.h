@@ -69,7 +69,7 @@ public:
     virtual void attach(CInventoryItem* inventory_item);
     virtual void detach(CInventoryItem* inventory_item);
     CInventoryItem* best_weapon() const;
-    void set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object = 0, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300,
+    void set_goal(MonsterSpace::EObjectAction object_action, CGameObject* game_object = nullptr, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300,
                   u32 max_queue_interval = 300);
     void set_goal(MonsterSpace::EObjectAction object_action, CInventoryItem* inventory_item, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300,
                   u32 max_queue_interval = 300);

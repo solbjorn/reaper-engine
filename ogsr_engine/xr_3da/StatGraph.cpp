@@ -31,4 +31,4 @@ void CStatGraph::OnDeviceCreate() { m_pRender->OnDeviceCreate(); }
 
 void CStatGraph::OnDeviceDestroy() { m_pRender->OnDeviceDestroy(); }
 
-void CStatGraph::OnRender() { m_pRender->OnRender(*this); };
+void CStatGraph::OnRender() { m_pRender->OnRender(*this); }

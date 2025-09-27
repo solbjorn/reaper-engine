@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "../telekinesis.h"
 #include "../anim_triple.h"
@@ -29,20 +30,16 @@ public:
 
     struct GraviObject
     {
-        bool active;
+        const CEntityAlive* enemy{};
+
         Fvector cur_pos;
         Fvector target_pos;
         Fvector from_pos;
 
         u32 time_last_update{};
+        bool active{};
 
-        const CEntityAlive* enemy;
-
-        GraviObject()
-        {
-            active = false;
-            enemy = 0;
-        }
+        GraviObject() = default;
 
         void activate(const CEntityAlive* e, const Fvector& cp, const Fvector& tp)
         {
@@ -55,7 +52,6 @@ public:
         }
 
         void deactivate() { active = false; }
-
     } m_gravi_object;
 
     LPCSTR particle_gravi_wave;

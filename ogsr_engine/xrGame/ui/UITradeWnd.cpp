@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "UITradeWnd.h"
 
+#include "UITradeWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 
@@ -76,12 +76,12 @@ struct CUITradeInternal
 
 bool others_zero_trade;
 
-CUITradeWnd::CUITradeWnd() : m_bDealControlsVisible(false), m_pTrade(NULL), m_pOthersTrade(NULL), bStarted(false)
+CUITradeWnd::CUITradeWnd()
 {
     m_uidata = xr_new<CUITradeInternal>();
     Init();
     Hide();
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
     others_zero_trade = !!READ_IF_EXISTS(pSettings, r_bool, "trade", "others_zero_trade", false);
 }
 
@@ -174,7 +174,7 @@ void CUITradeWnd::Init()
     m_pUIPropertiesBox->Init(0, 0, 300, 300);
     m_pUIPropertiesBox->Hide();
 
-    m_uidata->UIDealMsg = NULL;
+    m_uidata->UIDealMsg = nullptr;
 
     BindDragDropListEvents(&m_uidata->UIOurBagList);
     BindDragDropListEvents(&m_uidata->UIOthersBagList);
@@ -189,7 +189,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
     m_pInvOwner = pOur;
     m_pOthersInvOwner = pOthers;
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*CStringTable().translate("ui_st_opponent_items"));
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText("%s", *CStringTable().translate("ui_st_opponent_items"));
 
     m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner->object_id());
     m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
@@ -278,21 +278,22 @@ void CUITradeWnd::Update()
         {
             HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
             HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
-            m_uidata->UIDealMsg = NULL;
+            m_uidata->UIDealMsg = nullptr;
         }
     }
 }
 
 #include "UIInventoryUtilities.h"
+
 void CUITradeWnd::Show()
 {
     InventoryUtilities::SendInfoToActor("ui_trade");
     inherited::Show(true);
     inherited::Enable(true);
 
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
     ResetAll();
-    m_uidata->UIDealMsg = NULL;
+    m_uidata->UIDealMsg = nullptr;
 
     if (Core.Features.test(xrCore::Feature::engine_ammo_repacker) && !Core.Features.test(xrCore::Feature::hard_ammo_reload))
         if (auto pActor = Actor())
@@ -307,7 +308,7 @@ void CUITradeWnd::Hide()
     if (bStarted)
         StopTrade();
 
-    m_uidata->UIDealMsg = NULL;
+    m_uidata->UIDealMsg = nullptr;
 
     if (HUD().GetUI()->UIGame())
     {
@@ -340,6 +341,7 @@ void CUITradeWnd::StopTrade()
 }
 
 #include "../trade_parameters.h"
+
 bool CUITradeWnd::CanMoveToOther(PIItem pItem, bool our)
 {
     if (pItem->m_flags.test(CInventoryItem::FIAlwaysUntradable))
@@ -354,10 +356,10 @@ bool CUITradeWnd::CanMoveToOther(PIItem pItem, bool our)
     float otherInvWeight = m_pOthersInv->CalcTotalWeight();
     float otherMaxWeight = m_pOthersInv->GetMaxWeight();
 
-    if (!m_pOthersInvOwner->trade_parameters().enabled(CTradeParameters::action_buy(0), pItem->object().cNameSect()))
-        return (false);
+    if (!m_pOthersInvOwner->trade_parameters().enabled(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()))
+        return false;
 
-    if (pItem->GetCondition() < m_pOthersInvOwner->trade_parameters().factors(CTradeParameters::action_buy(0), pItem->object().cNameSect()).min_condition())
+    if (pItem->GetCondition() < m_pOthersInvOwner->trade_parameters().factors(CTradeParameters::action_buy(nullptr), pItem->object().cNameSect()).min_condition())
         return false;
 
     if (otherInvWeight - r2 + r1 + itmWeight > otherMaxWeight)
@@ -481,7 +483,8 @@ void CUITradeWnd::PerformTrade()
 
         m_uidata->UIDealMsg->m_endTime = Device.fTimeGlobal + 2.0f; // sec
     }
-    SetCurrentItem(NULL);
+
+    SetCurrentItem(nullptr);
 }
 
 #include "../xr_level_controller.h"
@@ -519,7 +522,7 @@ void CUITradeWnd::ActivatePropertiesBox()
 
     bool hasMany = CurrentItem()->ChildsCount() > 0;
 
-    m_pUIPropertiesBox->AddItem("st_move", NULL, INVENTORY_MOVE_ACTION);
+    m_pUIPropertiesBox->AddItem("st_move", nullptr, INVENTORY_MOVE_ACTION);
 
     if (hasMany)
         m_pUIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_MOVE_ACTION);
@@ -742,7 +745,7 @@ void CUITradeWnd::MoveItems(CUICellItem* itm)
 
     UpdatePrices();
 
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
 }
 
 bool CUITradeWnd::MoveItem(CUICellItem* itm)
@@ -763,7 +766,7 @@ bool CUITradeWnd::MoveItem(CUICellItem* itm)
 
 CUICellItem* CUITradeWnd::CurrentItem() { return m_pCurrentCellItem; }
 
-PIItem CUITradeWnd::CurrentIItem() { return (m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : NULL; }
+PIItem CUITradeWnd::CurrentIItem() { return (m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : nullptr; }
 
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
@@ -809,13 +812,13 @@ void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted
     {
         if (highlight_cop_enabled)
             itm->m_select_untradable = true;
-        itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrUntradable);
+        itm->SetColor(static_cast<CInventoryItem*>(itm->m_pData)->ClrUntradable);
     }
     else
     {
         if (highlight_cop_enabled)
             itm->m_select_untradable = false;
         if (highlighted)
-            itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
+            itm->SetColor(static_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
     }
 }

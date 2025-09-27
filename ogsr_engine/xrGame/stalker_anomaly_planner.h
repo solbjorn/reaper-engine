@@ -14,11 +14,13 @@ class CAI_Stalker;
 
 class CStalkerAnomalyPlanner : public CActionPlannerActionScript<CAI_Stalker>
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerAnomalyPlanner, CActionPlannerActionScript<CAI_Stalker>);
+
 private:
     typedef CActionPlannerActionScript<CAI_Stalker> inherited;
 
 public:
-    CStalkerAnomalyPlanner(CAI_Stalker* object = 0, LPCSTR action_name = "");
+    CStalkerAnomalyPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
     virtual ~CStalkerAnomalyPlanner();
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();

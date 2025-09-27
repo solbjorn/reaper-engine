@@ -15,8 +15,6 @@
 
 CUILines::CUILines()
 {
-    m_pFont = NULL;
-    m_interval = 0.0f;
     m_eTextAlign = CGameFont::alLeft;
     m_eVTextAlign = valTop;
     m_dwTextColor = 0xffffffff;
@@ -32,9 +30,6 @@ CUILines::CUILines()
     uFlags.set(flRecognizeNewLine, TRUE);
 
     m_pFont = UI()->Font()->pFontLetterica16Russian;
-    m_cursor_pos.set(0, 0);
-    m_iCursorPos = 0;
-    m_bDrawCursor = false;
     m_wndSize.set(0.f, 0.f);
     m_wndPos.set(0.f, 0.f);
 }
@@ -296,8 +291,7 @@ void CUILines::ParseText()
 
             for (size_t idx{}; idx < sub_len;)
             {
-                bool is_wide_char =
-                    m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
+                bool is_wide_char = m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
 
                 auto get_str_width = [](CGameFont* pFont, const char ch) {
                     float fDelta = pFont->SizeOf_(ch);
@@ -328,8 +322,7 @@ void CUILines::ParseText()
                     Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
                 */
 
-                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx])
-                                                : get_str_width(m_pFont, sbl.m_text[idx]);
+                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) : get_str_width(m_pFont, sbl.m_text[idx]);
 
                 UI()->ClientToScreenScaledWidth(char_width);
 
@@ -359,7 +352,7 @@ void CUILines::ParseText()
                     curr_width += char_width;
                 }
 
-                if (bOver || b_last_ch && sbl.m_last_in_line)
+                if (bOver || (b_last_ch && sbl.m_last_in_line))
                 {
                     m_lines.push_back(tmp_line);
                     tmp_line.Clear();

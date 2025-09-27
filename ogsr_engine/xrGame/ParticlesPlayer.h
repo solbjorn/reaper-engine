@@ -41,7 +41,7 @@ public:
         SParticlesInfo* FindParticles(const shared_str& ps_name);
 
     public:
-        SBoneInfo(u16 idx, const Fvector& offs) : index(idx), offset(offs) { ; }
+        SBoneInfo(u16 idx, const Fvector& offs) : index{idx}, offset{offs} {}
         SParticlesInfo* AppendParticles(CObject* object, const shared_str& ps_name);
         void StopParticles(const shared_str& ps_name, bool bDestroy);
         void StopParticles(u16 sender_id, bool bDestroy);
@@ -52,7 +52,7 @@ private:
     // список костей
     u64 bone_mask; // используемые кости
     BoneInfoVec m_Bones;
-    CObject* m_self_object;
+    CObject* m_self_object{};
 
 protected:
     bool m_bActiveBones; // есть ли косточки на которых играются партиклы
@@ -61,12 +61,15 @@ public:
     IC SBoneInfo* get_bone_info(u16 bone_index)
     {
         if (BI_NONE == bone_index)
-            return 0;
+            return nullptr;
+
         for (BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
             if (it->index == bone_index)
                 return &(*it);
-        return 0;
+
+        return nullptr;
     }
+
     SBoneInfo* get_nearest_bone_info(IKinematics* K, u16 bone_index);
     Fvector parent_vel;
 

@@ -16,7 +16,7 @@
 namespace MonsterSpace
 {
 struct SBoneRotation;
-};
+}
 
 class CMotionDef;
 class IKinematicsAnimated;
@@ -39,9 +39,9 @@ private:
     friend class CCustomMonsterScript;
 
 private:
-    CMemoryManager* m_memory_manager;
-    CMovementManager* m_movement_manager;
-    CSoundPlayer* m_sound_player;
+    CMemoryManager* m_memory_manager{};
+    CMovementManager* m_movement_manager{};
+    CSoundPlayer* m_sound_player{};
 
 private:
     u32 m_client_update_delta;
@@ -142,7 +142,7 @@ public:
     virtual void Die(CObject* who);
 
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who);
-    virtual void g_WeaponBones(int& /**L/**/, int& /**R1/**/, int& /**R2/**/) {};
+    virtual void g_WeaponBones(int&, int&, int&) {}
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
 
@@ -159,7 +159,7 @@ public:
     void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
 #endif
 
-    virtual bool bfExecMovement() { return (false); };
+    virtual bool bfExecMovement() { return false; }
 
     IC bool angle_lerp_bounds(float& a, float b, float c, float d);
     IC void vfNormalizeSafe(Fvector& Vector);
@@ -225,7 +225,7 @@ public:
     IC float panic_threshold() const;
 
 private:
-    CSound_UserDataVisitor* m_sound_user_data_visitor;
+    CSound_UserDataVisitor* m_sound_user_data_visitor{};
 
 protected:
     virtual CSound_UserDataVisitor* create_sound_visitor();
@@ -250,11 +250,11 @@ public:
     virtual LPCSTR visual_name(CSE_Abstract* server_entity);
 
 private:
-    bool m_already_dead;
+    bool m_already_dead{};
 
 public:
-    IC const bool& already_dead() const { return (m_already_dead); };
-    virtual bool use_simplified_visual() const { return (already_dead()); };
+    IC const bool& already_dead() const { return m_already_dead; }
+    virtual bool use_simplified_visual() const { return already_dead(); }
     virtual void on_enemy_change(const CEntityAlive* enemy);
     virtual CVisualMemoryManager* visual_memory() const;
 
@@ -297,7 +297,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 private:
-    bool m_invulnerable;
+    bool m_invulnerable{};
 
 public:
     IC void invulnerable(const bool& invulnerable);
@@ -313,7 +313,8 @@ public:
     virtual void create_anim_mov_ctrl(CBlend* b);
     virtual void destroy_anim_mov_ctrl();
 
-    bool m_visible_for_zones;
+    bool m_visible_for_zones{true};
+
     virtual bool IsVisibleForZones() { return m_visible_for_zones; }
     void ForceTransform(const Fmatrix& m) override;
 

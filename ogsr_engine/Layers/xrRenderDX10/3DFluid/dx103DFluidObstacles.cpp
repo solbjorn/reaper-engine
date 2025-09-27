@@ -40,8 +40,7 @@ dx103DFluidObstacles::dx103DFluidObstacles(int gridWidth, int gridHeight, int gr
 dx103DFluidObstacles::~dx103DFluidObstacles()
 {
     DestroyShaders();
-
-    m_pGrid = 0;
+    m_pGrid = nullptr;
 }
 
 void dx103DFluidObstacles::InitShaders()
@@ -60,7 +59,7 @@ void dx103DFluidObstacles::DestroyShaders()
     for (int i = 0; i < OS_NumShaders; ++i)
     {
         //	Release shader's element.
-        m_ObstacleTechnique[i] = 0;
+        m_ObstacleTechnique[i] = nullptr;
     }
 }
 

@@ -159,7 +159,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
     }
 
     // Task performer
-    if (cache_task.size() == dm_cache_size) // full unpack, first time
+    if (cache_task.size() == dm_cache_size || Device.dwPrecacheFrame == 1) // full unpack, first time
     {
         while (!cache_task.empty())
         {

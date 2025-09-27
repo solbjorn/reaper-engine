@@ -22,16 +22,17 @@ protected:
         eItemsSelectabe = (1 << 3),
         eInverseDir = (1 << 4) /*,eMultiSelect=(1<<5)*/
     };
-    CUIScrollBar* m_VScrollBar;
-    CUIWindow* m_pad;
+
+    CUIScrollBar* m_VScrollBar{};
+    CUIWindow* m_pad{};
 
     float m_targetScrollPosition{};
-    float m_rightIndent;
-    float m_leftIndent;
-    float m_upIndent;
-    float m_downIndent;
+    float m_rightIndent{};
+    float m_leftIndent{};
+    float m_upIndent{};
+    float m_downIndent{};
 
-    float m_vertInterval;
+    float m_vertInterval{};
     u32 m_text_color;
 
     Flags16 m_flags;
@@ -51,8 +52,9 @@ public:
 
     CUIScrollView();
     virtual ~CUIScrollView();
+
     void Init(); // need parent to be initialized
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual void Draw();
     virtual void Update();

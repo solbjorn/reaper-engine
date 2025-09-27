@@ -41,9 +41,9 @@ public:
 
     void ApplyZoom() const;
 
-    CUIStatic* Background() const { return m_background; };
-    CUIStatic* ClipFrame() const { return m_clipFrame; }; // alpet: для экспорта в скрипты
-    CUIStatic* Compass() const { return m_compass; }; // alpet: для экспорта в скрипты
+    CUIStatic* Background() const { return m_background; }
+    CUIStatic* ClipFrame() const { return m_clipFrame; } // alpet: для экспорта в скрипты
+    CUIStatic* Compass() const { return m_compass; } // alpet: для экспорта в скрипты
 
     void SetupCurrentMap();
 };

@@ -8,6 +8,7 @@
 //
 
 #include "StdAfx.h"
+
 #include "UI3tButton.h"
 #include "UIXmlInit.h"
 
@@ -58,11 +59,14 @@ bool CUI3tButton::OnMouseDown(int mouse_btn)
             else
                 m_eButtonState = BUTTON_NORMAL;
         }
-        GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
+
+        GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
         return true;
     }
     else
+    {
         return CUIButton::OnMouseDown(mouse_btn);
+    }
 }
 
 void CUI3tButton::OnFocusLost()
@@ -85,13 +89,13 @@ void CUI3tButton::InitSoundT(LPCSTR sound_file) { ::Sound->create(m_sound_t, sou
 void CUI3tButton::PlaySoundT()
 {
     if (m_sound_t._handle())
-        m_sound_t.play(NULL, sm_2D);
+        m_sound_t.play(nullptr, sm_2D);
 }
 
 void CUI3tButton::PlaySoundH()
 {
     if (m_sound_h._handle())
-        m_sound_h.play(NULL, sm_2D);
+        m_sound_h.play(nullptr, sm_2D);
 }
 
 void CUI3tButton::Init(float x, float y, float width, float height)

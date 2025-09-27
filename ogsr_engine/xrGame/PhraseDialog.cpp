@@ -1,26 +1,15 @@
 #include "stdafx.h"
+
 #include "phrasedialog.h"
 #include "phrasedialogmanager.h"
 #include "gameobject.h"
 #include "ai_debug.h"
 
-SPhraseDialogData::SPhraseDialogData()
-{
-    m_PhraseGraph.clear();
-    m_iPriority = 0;
-}
+SPhraseDialogData::SPhraseDialogData() { m_PhraseGraph.clear(); }
+SPhraseDialogData::~SPhraseDialogData() = default;
 
-SPhraseDialogData::~SPhraseDialogData() {}
-
-CPhraseDialog::CPhraseDialog()
-{
-    m_bFinished = false;
-    m_pSpeakerFirst = NULL;
-    m_pSpeakerSecond = NULL;
-    m_DialogId = NULL;
-}
-
-CPhraseDialog::~CPhraseDialog() {}
+CPhraseDialog::CPhraseDialog() = default;
+CPhraseDialog::~CPhraseDialog() = default;
 
 void CPhraseDialog::Init(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second)
 {
@@ -40,7 +29,7 @@ void CPhraseDialog::Init(CPhraseDialogManager* speaker_first, CPhraseDialogManag
     m_bFirstIsSpeaking = true;
 }
 
-//обнуляем все связи
+// обнуляем все связи
 void CPhraseDialog::Reset() {}
 
 CPhraseDialogManager* CPhraseDialog::OurPartner(CPhraseDialogManager* dialog_manager) const
@@ -54,7 +43,7 @@ CPhraseDialogManager* CPhraseDialog::OurPartner(CPhraseDialogManager* dialog_man
 CPhraseDialogManager* CPhraseDialog::CurrentSpeaker() const { return FirstIsSpeaking() ? m_pSpeakerFirst : m_pSpeakerSecond; }
 CPhraseDialogManager* CPhraseDialog::OtherSpeaker() const { return (!FirstIsSpeaking()) ? m_pSpeakerFirst : m_pSpeakerSecond; }
 
-//предикат для сортировки вектора фраз
+// предикат для сортировки вектора фраз
 static bool PhraseGoodwillPred(const CPhrase* phrase1, const CPhrase* phrase2) { return phrase1->GoodwillLevel() > phrase2->GoodwillLevel(); }
 
 bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str& phrase_id)
@@ -78,12 +67,12 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
 
     CPhrase* last_phrase = phrase_vertex->data();
 
-    //вызвать скриптовую присоединенную функцию
-    //активируется после сказанной фразы
-    //первый параметр - тот кто говорит фразу, второй - тот кто слушает
+    // вызвать скриптовую присоединенную функцию
+    // активируется после сказанной фразы
+    // первый параметр - тот кто говорит фразу, второй - тот кто слушает
     last_phrase->m_PhraseScript.Action(pSpeakerGO1, pSpeakerGO2, *phrase_dialog->m_DialogId, phrase_id.c_str());
 
-    //больше нет фраз, чтоб говорить
+    // больше нет фраз, чтоб говорить
     phrase_dialog->m_PhraseVector.clear();
     if (phrase_vertex->edges().empty())
     {
@@ -91,7 +80,7 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
     }
     else
     {
-        //обновить список фраз, которые сейчас сможет говорить собеседник
+        // обновить список фраз, которые сейчас сможет говорить собеседник
         for (xr_vector<CPhraseGraph::CEdge>::const_iterator it = phrase_vertex->edges().begin(); it != phrase_vertex->edges().end(); it++)
         {
             const CPhraseGraph::CEdge& edge = *it;
@@ -114,12 +103,12 @@ bool CPhraseDialog::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str
 
         R_ASSERT2(!phrase_dialog->m_PhraseVector.empty(), make_string("No available phrase to say, dialog[%s]", *phrase_dialog->m_DialogId));
 
-        //упорядочить списко по убыванию благосклонности
+        // упорядочить списко по убыванию благосклонности
         std::sort(phrase_dialog->m_PhraseVector.begin(), phrase_dialog->m_PhraseVector.end(), PhraseGoodwillPred);
     }
 
-    //сообщить CDialogManager, что сказана фраза
-    //и ожидается ответ
+    // сообщить CDialogManager, что сказана фраза
+    // и ожидается ответ
     if (first_is_speaking)
         phrase_dialog->SecondSpeaker()->ReceivePhrase(phrase_dialog);
     else
@@ -140,8 +129,8 @@ LPCSTR CPhraseDialog::GetPhraseText(const shared_str& phrase_id, bool current_sp
 {
     CPhrase* ph = GetPhrase(phrase_id);
 
-    CGameObject* pSpeakerGO1 = (current_speaking) ? smart_cast<CGameObject*>(FirstSpeaker()) : 0;
-    CGameObject* pSpeakerGO2 = (current_speaking) ? smart_cast<CGameObject*>(SecondSpeaker()) : 0;
+    CGameObject* pSpeakerGO1 = (current_speaking) ? smart_cast<CGameObject*>(FirstSpeaker()) : nullptr;
+    CGameObject* pSpeakerGO2 = (current_speaking) ? smart_cast<CGameObject*>(SecondSpeaker()) : nullptr;
 
     return ph->m_PhraseScript.GetScriptText(ph->GetText(), pSpeakerGO1, pSpeakerGO2, m_DialogId.c_str(), phrase_id.c_str());
 }
@@ -154,7 +143,7 @@ void CPhraseDialog::Load(shared_str dialog_id)
 {
     m_DialogId = dialog_id;
 
-    inherited_shared::load_shared(m_DialogId, NULL);
+    inherited_shared::load_shared(m_DialogId, nullptr);
 
     if (GetForceReload())
     {
@@ -189,19 +178,19 @@ void CPhraseDialog::load_shared(LPCSTR)
 
     SetPriority(pXML->ReadAttribInt(dialog_node, "priority", 0));
 
-    //заголовок
-    SetCaption(pXML->Read(dialog_node, "caption", 0, NULL));
+    // заголовок
+    SetCaption(pXML->Read(dialog_node, "caption", 0, nullptr));
 
     SetForceReload(!!pXML->ReadAttribInt(dialog_node, "force_reload", 0));
 
-    //предикаты начала диалога
+    // предикаты начала диалога
     data()->m_PhraseScript.Load(pXML, dialog_node);
 
-    //заполнить граф диалога фразами
+    // заполнить граф диалога фразами
     data()->m_PhraseGraph.clear();
 
     XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
-    if (NULL == phrase_list_node && !GetForceReload())
+    if (!phrase_list_node && !GetForceReload())
     {
         data()->m_sInitFunction = pXML->Read(dialog_node, "init_func", 0, "");
 
@@ -220,10 +209,10 @@ void CPhraseDialog::load_shared(LPCSTR)
 
 #ifdef DEBUG // debug & mixed
     LPCSTR wrong_phrase_id = pXML->CheckUniqueAttrib(phrase_list_node, "phrase", "id");
-    THROW3(wrong_phrase_id == NULL, *item_data.id, wrong_phrase_id);
+    THROW3(!wrong_phrase_id, *item_data.id, wrong_phrase_id);
 #endif
 
-    //ищем стартовую фразу
+    // ищем стартовую фразу
     XML_NODE* phrase_node = pXML->NavigateToNodeWithAttribute("phrase", "id", "0");
     THROW(phrase_node);
     AddPhrase(pXML, phrase_node, "0", "");
@@ -235,7 +224,7 @@ void CPhraseDialog::SetPriority(int val) { data()->m_iPriority = val; }
 
 CPhrase* CPhraseDialog::AddPhrase(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
 {
-    CPhrase* phrase = NULL;
+    CPhrase* phrase{};
     CPhraseGraph::CVertex* _vertex = data()->m_PhraseGraph.vertex(phrase_id);
     if (!_vertex)
     {
@@ -265,7 +254,7 @@ void CPhraseDialog::AddPhrase(CUIXml* pXml, XML_NODE* phrase_node, const shared_
 
     ph->m_PhraseScript.Load(pXml, phrase_node);
 
-    //фразы которые собеседник может говорить после этой
+    // фразы которые собеседник может говорить после этой
     int next_num = pXml->GetNodesNum(phrase_node, "next");
     for (int i = 0; i < next_num; ++i)
     {

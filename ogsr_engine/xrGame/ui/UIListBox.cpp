@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIListBox.h"
 #include "UIListBoxItem.h"
 #include "UIScrollBar.h"
@@ -36,15 +37,17 @@ bool CUIListBox::OnMouse(float x, float y, EUIMessages mouse_action)
         m_VScrollBar->TryScrollInc();
         return true;
         break;
-    };
+    }
+
     return false;
 }
 
 #include "../string_table.h"
+
 CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
 {
     if (!text)
-        return NULL;
+        return nullptr;
 
     CUIListBoxItem* pItem = xr_new<CUIListBoxItem>();
     pItem->Init(0, 0, this->GetDesiredChildWidth() - 5, m_def_item_height);
@@ -59,6 +62,7 @@ CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
     pItem->SetTextColor(m_text_color, m_text_color_s);
     pItem->SetMessageTarget(this);
     AddWindow(pItem, true);
+
     return pItem;
 }
 
@@ -84,21 +88,19 @@ void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 CUIListBoxItem* CUIListBox::GetSelectedItem()
 {
     CUIWindow* w = GetSelected();
-
     if (w)
         return smart_cast<CUIListBoxItem*>(w);
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 LPCSTR CUIListBox::GetSelectedText()
 {
     CUIWindow* w = GetSelected();
-
     if (w)
         return smart_cast<IUITextControl*>(w)->GetText();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 u32 CUIListBox::GetSelectedIDX()
@@ -180,9 +182,7 @@ void CUIListBox::MoveSelectedDown()
 }
 
 void CUIListBox::SetSelectedIDX(u32 idx) { SetSelected(GetItemByIDX(idx)); }
-
 void CUIListBox::SetSelectedTAG(u32 tag_val) { SetSelected(GetItemByTAG(tag_val)); }
-
 void CUIListBox::SetSelectedText(LPCSTR txt) { SetSelected(GetItemByText(txt)); }
 
 CUIListBoxItem* CUIListBox::GetItemByTAG(u32 tag_val)
@@ -196,7 +196,8 @@ CUIListBoxItem* CUIListBox::GetItemByTAG(u32 tag_val)
                 return item;
         }
     }
-    return NULL;
+
+    return nullptr;
 }
 
 CUIListBoxItem* CUIListBox::GetItemByIDX(u32 idx)
@@ -212,7 +213,8 @@ CUIListBoxItem* CUIListBox::GetItemByIDX(u32 idx)
             ++_idx;
         }
     }
-    return NULL;
+
+    return nullptr;
 }
 
 CUIListBoxItem* CUIListBox::GetItemByText(LPCSTR txt)
@@ -226,7 +228,8 @@ CUIListBoxItem* CUIListBox::GetItemByText(LPCSTR txt)
                 return item;
         }
     }
-    return NULL;
+
+    return nullptr;
 }
 
 void CUIListBox::SetItemHeight(float h) { m_def_item_height = h; }

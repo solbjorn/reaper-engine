@@ -15,9 +15,9 @@ struct CTimeIntrusiveBase : public intrusive_base
     RTTI_DECLARE_TYPEINFO(CTimeIntrusiveBase, intrusive_base);
 
 public:
-    u32 m_last_time_dec;
+    u32 m_last_time_dec{};
 
-    IC CTimeIntrusiveBase() : m_last_time_dec(0) {}
+    IC CTimeIntrusiveBase() = default;
 
     template <typename T>
     IC void release(T*)
@@ -30,11 +30,11 @@ public:
 
 enum ERestrictorTypes : u32
 {
-    eDefaultRestrictorTypeNone = u8(0),
-    eDefaultRestrictorTypeOut = u8(1),
-    eDefaultRestrictorTypeIn = u8(2),
-    eRestrictorTypeNone = u8(3),
-    eRestrictorTypeIn = u8(4),
-    eRestrictorTypeOut = u8(5),
+    eDefaultRestrictorTypeNone = 0,
+    eDefaultRestrictorTypeOut,
+    eDefaultRestrictorTypeIn,
+    eRestrictorTypeNone,
+    eRestrictorTypeIn,
+    eRestrictorTypeOut,
 };
-}; // namespace RestrictionSpace
+} // namespace RestrictionSpace

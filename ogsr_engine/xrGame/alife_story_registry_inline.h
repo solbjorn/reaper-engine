@@ -18,7 +18,7 @@ IC void CALifeStoryRegistry::remove(ALife::_STORY_ID id, bool no_assert)
     {
         if (!no_assert)
         {
-            Msg("Cannot find story object with id [%d] in the Story registry!", id);
+            Msg("Cannot find story object with id [%u] in the Story registry!", id);
             THROW(false);
         }
         return;
@@ -31,17 +31,19 @@ IC const CALifeStoryRegistry::STORY_REGISTRY& CALifeStoryRegistry::objects() con
 IC CSE_ALifeDynamicObject* CALifeStoryRegistry::object(ALife::_STORY_ID id, bool no_assert) const
 {
     if (id == INVALID_STORY_ID)
-        return (0);
+        return nullptr;
 
     STORY_REGISTRY::const_iterator I = m_objects.find(id);
     if (I == m_objects.end())
     {
         if (!no_assert)
         {
-            Msg("Cannot find story object with id [%d] in the Story registry!", id);
+            Msg("Cannot find story object with id [%u] in the Story registry!", id);
             THROW(false);
         }
-        return (0);
+
+        return nullptr;
     }
+
     return ((*I).second);
 }

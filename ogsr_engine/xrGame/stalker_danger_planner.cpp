@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_danger_planner.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/stalker/ai_stalker_space.h"
@@ -66,7 +67,7 @@ void CStalkerDangerPlanner::initialize()
 {
     inherited::initialize();
     object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
-    object().agent_manager().member().member(m_object).cover(0);
+    object().agent_manager().member().member(m_object).cover(nullptr);
 }
 
 void CStalkerDangerPlanner::add_evaluators()

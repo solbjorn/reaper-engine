@@ -6,6 +6,7 @@
 //	AlexMX		- Alexander Maksimchuk
 //-----------------------------------------------------------------------------
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
@@ -19,7 +20,13 @@
 #include "DiscordRPC.hpp"
 #include "splash.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+
 #include <oneapi/tbb/global_control.h>
+
+XR_DIAG_POP();
+
 #include "xr_task.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
@@ -45,8 +52,8 @@ public:
 } g_sound_renderer;
 
 // global variables
-CApplication* pApp = NULL;
-static HWND logoWindow = NULL;
+CApplication* pApp{};
+static HWND logoWindow{};
 
 bool g_bBenchmark = false;
 string512 g_sBenchmarkName;
@@ -150,7 +157,7 @@ static void Startup(xr_task_group& spatial_tg)
 
     // Destroy LOGO
     DestroyWindow(logoWindow);
-    logoWindow = NULL;
+    logoWindow = nullptr;
 
     Discord.Init();
 
@@ -216,7 +223,7 @@ struct damn_keys_filter
 
         if (bScreenSaverState)
             // Disable screensaver
-            SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
+            SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, nullptr, 0);
 
         dwStickyKeysFlags = 0;
         dwFilterKeysFlags = 0;
@@ -264,7 +271,7 @@ struct damn_keys_filter
     {
         if (bScreenSaverState)
             // Restoring screen saver
-            SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, NULL, 0);
+            SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, nullptr, 0);
 
         if (dwStickyKeysFlags)
         {
@@ -334,7 +341,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
     if (strstr(lpCmdLine, tok))
         sscanf(strstr(lpCmdLine, tok) + xr_strlen(tok), "%[^ ] ", fsgame);
 
-    Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
+    Core._initialize("xray", nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
     InitSettings();
 
     {
@@ -454,8 +461,8 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
     {
         LPSTR op_server = LPSTR(P1);
         LPSTR op_client = LPSTR(P2);
-        R_ASSERT(0 == g_pGameLevel);
-        R_ASSERT(0 != g_pGamePersistent);
+        R_ASSERT(!g_pGameLevel);
+        R_ASSERT(g_pGamePersistent);
 
         {
             Console->Execute("main_menu off");
@@ -494,7 +501,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             }
         }
 
-        R_ASSERT(0 != g_pGamePersistent);
+        R_ASSERT(g_pGamePersistent);
         g_pGamePersistent->Disconnect();
     }
 }
@@ -519,8 +526,8 @@ void CApplication::LoadEnd()
     ll_dwReference--;
     if (0 == ll_dwReference)
     {
-        Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
-        Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
+        Msg("* phase time: %llu ms", phase_timer.GetElapsed_ms());
+        Msg("* phase cmem: %u K", Memory.mem_usage() / 1024);
         Console->Execute("stat_memory");
         g_appLoaded = TRUE;
     }
@@ -565,8 +572,9 @@ void CApplication::LoadStage()
 {
     VERIFY(ll_dwReference);
 
-    Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
-    Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
+    Msg("* phase time: %llu ms", phase_timer.GetElapsed_ms());
+    Msg("* phase cmem: %u K", Memory.mem_usage() / 1024);
+
     phase_timer.Start();
 
     // if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))

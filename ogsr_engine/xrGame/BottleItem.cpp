@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "BottleItem.h"
 #include "xrmessages.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
@@ -41,19 +42,19 @@ void CBottleItem::OnEvent(NET_Packet& P, u16 type)
 
 void CBottleItem::BreakToPieces()
 {
-    //играем звук
-    sndBreaking.play_at_pos(0, Position(), false);
+    // играем звук
+    sndBreaking.play_at_pos(nullptr, Position(), false);
 
-    //отыграть партиклы разбивания
+    // отыграть партиклы разбивания
     if (*m_sBreakParticles)
     {
-        //показываем эффекты
+        // показываем эффекты
         CParticlesObject* pStaticPG;
         pStaticPG = CParticlesObject::Create(*m_sBreakParticles, TRUE);
         pStaticPG->play_at_pos(Position());
     }
 
-    //ликвидировать сам объект
+    // ликвидировать сам объект
     if (Local())
     {
         DestroyObject();
@@ -72,7 +73,7 @@ void CBottleItem::Hit(SHit* pHDS)
             NET_Packet P;
             u_EventGen(P, GE_GRENADE_EXPLODE, ID());
             u_EventSend(P);
-        };
+        }
     }
 }
 

@@ -5,40 +5,38 @@ class CBaseMonster;
 
 class CMonsterEnemyManager
 {
-    CBaseMonster* monster;
-
-    const CEntityAlive* enemy;
+    CBaseMonster* monster{};
+    const CEntityAlive* enemy{};
 
     Fvector position;
     u32 vertex{};
     u32 time_last_seen{};
 
-    Flags32 flags;
-    bool forced;
+    Flags32 flags{};
 
-    bool expediency{};
-
-    const CEntityAlive* prev_enemy;
+    const CEntityAlive* prev_enemy{};
     Fvector prev_enemy_position;
 
+    bool forced{};
+    bool expediency{};
     bool enemy_see_me{};
 
-    EDangerType danger_type;
+    EDangerType danger_type{eNone};
 
     // node, where monster saw enemy last time
-    u32 my_vertex_enemy_last_seen;
+    u32 my_vertex_enemy_last_seen{std::numeric_limits<u32>::max()};
     // node, of enemy (its always valid unlike vertex)
-    u32 enemy_vertex_enemy_last_seen;
+    u32 enemy_vertex_enemy_last_seen{std::numeric_limits<u32>::max()};
 
-    u32 m_time_updated;
-    u32 m_time_start_see_enemy;
+    u32 m_time_updated{};
+    u32 m_time_start_see_enemy{};
 
 public:
     CMonsterEnemyManager();
     ~CMonsterEnemyManager() = default;
+
     void init_external(CBaseMonster* M);
     void reinit();
-
     void update();
 
     void force_enemy(const CEntityAlive* enemy);

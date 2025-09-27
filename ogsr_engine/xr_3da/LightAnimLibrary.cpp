@@ -214,7 +214,7 @@ void ELightAnimLibrary::DbgDumpInfo() const
     std::ranges::sort(tmp, [](const CLAItem* a, const CLAItem* b) { return xr_strcmp(a->cName, b->cName) < 0; });
 
     for (auto& Item : tmp)
-        Msg("~ ELightAnimLibrary Item [%s] FPS: %.2f, FrameCount: %d, KeyCount: %d", Item->cName.c_str(), Item->fFPS, Item->iFrameCount, Item->Keys.size());
+        Msg("~ ELightAnimLibrary Item [%s] FPS: %.2f, FrameCount: %d, KeyCount: %zu", Item->cName.c_str(), Item->fFPS, Item->iFrameCount, Item->Keys.size());
 }
 
 void ELightAnimLibrary::Load()
@@ -294,7 +294,7 @@ LAItemIt ELightAnimLibrary::FindItemI(LPCSTR name)
 CLAItem* ELightAnimLibrary::FindItem(LPCSTR name)
 {
     LAItemIt it = FindItemI(name);
-    return (it != Items.end()) ? *it : 0;
+    return (it != Items.end()) ? *it : nullptr;
 }
 
 CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)

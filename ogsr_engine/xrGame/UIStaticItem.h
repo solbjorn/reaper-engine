@@ -7,6 +7,9 @@ class IUIShader;
 
 class CUIStaticItem : public IUISimpleTextureControl, public CUICustomItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIStaticItem, IUISimpleTextureControl, CUICustomItem);
+
+private:
     ui_shader hShader;
 
     Fvector2 iPos;
@@ -30,7 +33,7 @@ public:
     CUIStaticItem();
     virtual ~CUIStaticItem();
 
-    void SetAlphaRef(int val) { alpha_ref = val; };
+    void SetAlphaRef(int val) { alpha_ref = val; }
 
     virtual void CreateShader(const char* tex, const char* sh = "hud\\default");
 

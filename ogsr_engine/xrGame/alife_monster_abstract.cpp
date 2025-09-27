@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -143,10 +144,11 @@ void CSE_ALifeMonsterAbstract::update()
 
 CSE_ALifeItemWeapon* CSE_ALifeMonsterAbstract::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower)
 {
-    m_tpCurrentBestWeapon = 0;
+    m_tpCurrentBestWeapon = nullptr;
     fHitPower = m_fHitPower;
     tHitType = m_tHitType;
-    return (m_tpCurrentBestWeapon);
+
+    return m_tpCurrentBestWeapon;
 }
 
 ALife::EMeetActionType CSE_ALifeMonsterAbstract::tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
@@ -181,14 +183,12 @@ CSE_ALifeDynamicObject* CSE_ALifeMonsterAbstract::tpfGetBestDetector()
 {
     CSE_ALifeGroupAbstract* l_tpALifeGroupAbstract = smart_cast<CSE_ALifeGroupAbstract*>(this);
     if (!l_tpALifeGroupAbstract)
-        return (this);
-    else
-    {
-        if (!l_tpALifeGroupAbstract->m_wCount)
-            return (0);
-        else
-            return (ai().alife().objects().object(l_tpALifeGroupAbstract->m_tpMembers[0]));
-    }
+        return this;
+
+    if (!l_tpALifeGroupAbstract->m_wCount)
+        return nullptr;
+
+    return ai().alife().objects().object(l_tpALifeGroupAbstract->m_tpMembers[0]);
 }
 
 Fvector CSE_ALifeMonsterAbstract::draw_level_position() const

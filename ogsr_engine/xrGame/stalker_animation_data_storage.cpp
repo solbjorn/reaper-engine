@@ -12,7 +12,7 @@
 #include "object_broker.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 
-CStalkerAnimationDataStorage* g_stalker_animation_data_storage = 0;
+CStalkerAnimationDataStorage* g_stalker_animation_data_storage{};
 
 class data_predicate
 {

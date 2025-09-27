@@ -15,10 +15,19 @@ struct alignas(16) _sphere
     };
 
 public:
-    constexpr inline _sphere() = default;
-    constexpr inline _sphere(const _sphere<T>& s) { set(s); }
-    constexpr inline _sphere(const _vector3<T>& _P, T _R) { set(_P, _R); }
-    constexpr inline _sphere<T>& operator=(const _sphere<T>& s) { return set(s); }
+    constexpr inline _sphere() noexcept = default;
+    constexpr inline _sphere(const _vector3<T>& _P, T _R) noexcept { set(_P, _R); }
+
+    constexpr inline _sphere(const _sphere<T>& s) noexcept { set(s); }
+    constexpr _sphere(_sphere<T>&& that) noexcept { *this = std::move(that); }
+
+    constexpr inline _sphere<T>& operator=(const _sphere<T>& s) noexcept { return set(s); }
+
+    constexpr _sphere<T>& operator=(_sphere<T>&& that) noexcept
+    {
+        this->v = std::move(that.v);
+        return *this;
+    }
 
     constexpr IC void set(const _vector3<T>& _P, T _R) { v.set(_P, _R); }
     constexpr IC _sphere<T>& set(const _sphere<T>& S)

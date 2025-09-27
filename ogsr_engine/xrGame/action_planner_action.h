@@ -37,7 +37,7 @@ public:
 #endif
 
 public:
-    IC CActionPlannerAction(_object_type* object = 0, LPCSTR action_name = "");
+    IC CActionPlannerAction(_object_type* object = nullptr, LPCSTR action_name = "");
     virtual ~CActionPlannerAction();
     virtual void setup(_object_type* object, CPropertyStorage* storage);
     virtual void initialize();

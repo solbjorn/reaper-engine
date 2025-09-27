@@ -32,13 +32,11 @@ struct CVertexManagerFixed
         using CDataStorageBase = typename TPathBuilder::template CDataStorage<TCompoundVertex>;
         using CDataStorageAllocator = typename TVertexAllocator::template CDataStorage<TCompoundVertex>;
 
-#pragma pack(push, 1)
         struct IndexVertex
         {
             TPathId m_path_id;
             TCompoundVertex* m_vertex;
         };
-#pragma pack(pop)
 
     protected:
         TPathId m_current_path_id;

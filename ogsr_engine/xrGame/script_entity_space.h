@@ -12,7 +12,7 @@ namespace ScriptEntity
 {
 enum EActionType : u32
 {
-    eActionTypeMovement = u32(0),
+    eActionTypeMovement = 0,
     eActionTypeWatch,
     eActionTypeAnimation,
     eActionTypeSound,
@@ -20,4 +20,4 @@ enum EActionType : u32
     eActionTypeObject,
     eActionTypeCount
 };
-};
+} // namespace ScriptEntity

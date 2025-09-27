@@ -16,11 +16,7 @@
 #define CSelectorTemplate CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>
 
 TEMPLATE_SPECIALIZATION
-IC CSelectorTemplate::CAbstractLocationSelector(CRestrictedObject* object)
-{
-    m_restricted_object = object;
-    VERIFY(m_restricted_object);
-}
+IC CSelectorTemplate::CAbstractLocationSelector(CRestrictedObject* object) : m_restricted_object{object} { VERIFY(m_restricted_object); }
 
 TEMPLATE_SPECIALIZATION
 IC CSelectorTemplate::~CAbstractLocationSelector() {}
@@ -30,12 +26,12 @@ IC void CSelectorTemplate::reinit(const _Graph* graph)
 {
     m_failed = false;
     m_selected_vertex_id = _vertex_id_type(-1);
-    m_evaluator = 0;
+    m_evaluator = nullptr;
     m_last_query_time = 0;
     m_query_interval = 0;
     m_graph = graph;
-    m_path = 0;
-    dest_vertex_id = 0;
+    m_path = nullptr;
+    dest_vertex_id = nullptr;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -86,8 +82,6 @@ IC void CSelectorTemplate::select_location(const _vertex_id_type start_vertex_id
 TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::perform_search(const _vertex_id_type vertex_id)
 {
-    START_PROFILE("Build Path/Selector Path");
-
     VERIFY(m_evaluator && m_graph);
 
     _vertex_id_type start_vertex_id = vertex_id;
@@ -96,15 +90,13 @@ IC void CSelectorTemplate::perform_search(const _vertex_id_type vertex_id)
     m_last_query_time = Device.dwTimeGlobal;
 
     m_evaluator->m_path = m_path;
-    ai().graph_engine().search(*m_graph, start_vertex_id, start_vertex_id, 0, *m_evaluator);
+    ai().graph_engine().search(*m_graph, start_vertex_id, start_vertex_id, nullptr, *m_evaluator);
     m_failed = !m_graph->valid_vertex_id(m_evaluator->selected_vertex_id()) || (m_evaluator->selected_vertex_id() == m_selected_vertex_id);
 
     if (!failed())
         m_selected_vertex_id = m_evaluator->selected_vertex_id();
 
     after_search();
-
-    STOP_PROFILE;
 }
 
 TEMPLATE_SPECIALIZATION

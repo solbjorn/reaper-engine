@@ -34,8 +34,8 @@ public:
 
     // текст заголовка
     CUIStatic* UITitleText;
-    CUIStatic* GetTitleStatic() { return UITitleText; };
-    void SetVisiblePart(CUIFrameRect::EFramePart p, BOOL b) { m_UIWndFrame.SetVisiblePart(p, b); };
+    CUIStatic* GetTitleStatic() { return UITitleText; }
+    void SetVisiblePart(CUIFrameRect::EFramePart p, BOOL b) { m_UIWndFrame.SetVisiblePart(p, b); }
 
 protected:
     CUIFrameRect m_UIWndFrame;

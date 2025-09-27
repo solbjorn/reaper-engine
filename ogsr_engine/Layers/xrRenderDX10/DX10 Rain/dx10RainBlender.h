@@ -16,18 +16,15 @@ class CBlender_rain_msaa : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_rain_msaa, IBlender);
 
 public:
-    CBlender_rain_msaa()
-    {
-        Name = 0;
-        Definition = 0;
-    }
+    LPCSTR Name{};
+    LPCSTR Definition{};
+
+    CBlender_rain_msaa() = default;
+
     virtual LPCSTR getComment() { return "INTERNAL: DX10 MSAA rain blender"; }
 
     virtual void Compile(CBlender_Compile& C);
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition);
-
-    LPCSTR Name;
-    LPCSTR Definition;
 };
 
 #endif //	dx10RainBlender_included

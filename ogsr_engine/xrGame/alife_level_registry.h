@@ -19,12 +19,9 @@ class CSE_ALifeDynamicObject;
 
 class CALifeLevelRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>
 {
-    RTTI_DECLARE_TYPEINFO(CALifeLevelRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>);
-
 protected:
     typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject> inherited;
 
-protected:
     GameGraph::_LEVEL_ID m_level_id;
 
 public:

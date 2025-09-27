@@ -8,12 +8,7 @@
 
 #pragma once
 
-IC CScriptObjectAction::CScriptObjectAction()
-{
-    m_tpObject = 0;
-    m_tGoalType = MonsterSpace::eObjectActionIdle;
-    m_bCompleted = true;
-}
+IC CScriptObjectAction::CScriptObjectAction() { m_bCompleted = true; }
 
 IC CScriptObjectAction::CScriptObjectAction(CScriptGameObject* tpLuaGameObject, MonsterSpace::EObjectAction tObjectActionType, u32 dwQueueSize)
 {
@@ -49,3 +44,13 @@ IC void CScriptObjectAction::SetQueueSize(u32 dwQueueSize)
 }
 
 IC void CScriptObjectAction::initialize() {}
+
+inline void CScriptObjectAction::clone(const CScriptObjectAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_tpObject = from.m_tpObject;
+    m_tGoalType = from.m_tGoalType;
+    m_dwQueueSize = from.m_dwQueueSize;
+    m_caBoneName = from.m_caBoneName;
+}

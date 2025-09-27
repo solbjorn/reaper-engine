@@ -1,10 +1,11 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "../../../ai_space.h"
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
-#include "../../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../ai_monster_squad_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../detail_path_manager.h"
@@ -32,20 +33,15 @@
 #include "../../../actor.h"
 #include "../../../actorcondition.h"
 
-namespace detail
+namespace
 {
-namespace base_monster
-{
-const float aom_far_radius = 9;
-const float aom_prepare_radius = 7;
-const float aom_prepare_time = 0;
-const float aom_attack_radius = 0.6f;
-const float aom_update_side_period = 4000;
-const float aom_prediction_factor = 1.3f;
-
-} // namespace base_monster
-
-} // namespace detail
+constexpr float aom_far_radius{9.f};
+constexpr float aom_prepare_radius{7.f};
+constexpr float aom_prepare_time{0.f};
+constexpr float aom_attack_radius{0.6f};
+constexpr float aom_update_side_period{4000.f};
+constexpr float aom_prediction_factor{1.3f};
+} // namespace
 
 void CBaseMonster::Load(LPCSTR section)
 {
@@ -53,8 +49,8 @@ void CBaseMonster::Load(LPCSTR section)
     inherited::Load(section);
 
     m_head_bone_name = READ_IF_EXISTS(pSettings, r_string, section, "bone_head", "bip01_head");
-    m_left_eye_bone_name = READ_IF_EXISTS(pSettings, r_string, section, "bone_eye_left", 0);
-    m_right_eye_bone_name = READ_IF_EXISTS(pSettings, r_string, section, "bone_eye_right", 0);
+    m_left_eye_bone_name = READ_IF_EXISTS(pSettings, r_string, section, "bone_eye_left", nullptr);
+    m_right_eye_bone_name = READ_IF_EXISTS(pSettings, r_string, section, "bone_eye_right", nullptr);
 
     m_corpse_cover_evaluator = xr_new<CMonsterCorpseCoverEvaluator>(&movement().restrictions());
     m_enemy_cover_evaluator = xr_new<CCoverEvaluatorFarFromEnemy>(&movement().restrictions());
@@ -126,12 +122,12 @@ void CBaseMonster::PostLoad(LPCSTR section)
     attack_on_move_params_t& aom = m_attack_on_move_params;
 
     aom.enabled = (READ_IF_EXISTS(pSettings, r_bool, section, "aom_enabled", FALSE)) != 0;
-    aom.far_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_far_radius", detail::base_monster::aom_far_radius);
-    aom.attack_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_attack_radius", detail::base_monster::aom_attack_radius);
-    aom.update_side_period = READ_IF_EXISTS(pSettings, r_float, section, "aom_update_side_period", detail::base_monster::aom_update_side_period);
-    aom.prediction_factor = READ_IF_EXISTS(pSettings, r_float, section, "aom_prediction_factor", detail::base_monster::aom_prediction_factor);
-    aom.prepare_time = READ_IF_EXISTS(pSettings, r_float, section, "aom_prepare_time", detail::base_monster::aom_prepare_time);
-    aom.prepare_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_prepare_radius", detail::base_monster::aom_prepare_radius);
+    aom.far_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_far_radius", aom_far_radius);
+    aom.attack_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_attack_radius", aom_attack_radius);
+    aom.update_side_period = READ_IF_EXISTS(pSettings, r_float, section, "aom_update_side_period", aom_update_side_period);
+    aom.prediction_factor = READ_IF_EXISTS(pSettings, r_float, section, "aom_prediction_factor", aom_prediction_factor);
+    aom.prepare_time = READ_IF_EXISTS(pSettings, r_float, section, "aom_prepare_time", aom_prepare_time);
+    aom.prepare_radius = READ_IF_EXISTS(pSettings, r_float, section, "aom_prepare_radius", aom_prepare_radius);
     aom.max_go_close_time = READ_IF_EXISTS(pSettings, r_float, section, "aom_max_go_close_time", 8.f);
 
     if (aom.enabled)
@@ -169,7 +165,7 @@ steering_behaviour::manager* CBaseMonster::get_steer_manager()
 // if sound is absent just do not load that one
 #define LOAD_SOUND(sound_name, _type, _prior, _mask, _int_type) \
     if (pSettings->line_exist(section, sound_name)) \
-        sound().add_deferred(pSettings->r_string(section, sound_name), DEFAULT_SAMPLE_COUNT, _type, _prior, u32(_mask), _int_type, m_head_bone_name);
+    sound().add_deferred(pSettings->r_string(section, sound_name), DEFAULT_SAMPLE_COUNT, _type, _prior, u32(_mask), _int_type, m_head_bone_name)
 
 void CBaseMonster::reload(LPCSTR section)
 {
@@ -288,11 +284,10 @@ BOOL CBaseMonster::net_Spawn(CSE_Abstract* DC)
                                         // поэтому в основной версии на всякий случай пусть будет здесь,
                                         // но для animation movement controllr он должен быть в конце чтобы знать что он создался на споне
 
-    R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),
+    R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && ai().level_graph().level_id() != std::numeric_limits<GameGraph::_LEVEL_ID>::max(),
               "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
 
     monster_squad().register_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
-
     settings_overrides();
 
     if (GetScriptControl())
@@ -371,7 +366,8 @@ void CBaseMonster::net_Destroy()
             var = ltx->method(section, name); \
         else if (ltx->line_exist(section, name)) \
             var = ltx->method(section, name); \
-    }
+    } \
+    XR_MACRO_END()
 
 void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings& data)
 {
@@ -494,5 +490,5 @@ void CBaseMonster::fill_bones_body_parts(LPCSTR body_part, CriticalWoundType wou
 
     CInifile::Sect& body_part_section = pSettings->r_section(body_parts_section);
     for (const auto& I : body_part_section.Data)
-        m_bones_body_parts.insert(std::make_pair(kinematics->LL_BoneID(I.first), u32(wound_type)));
+        m_bones_body_parts.emplace(kinematics->LL_BoneID(I.first), u32(wound_type));
 }

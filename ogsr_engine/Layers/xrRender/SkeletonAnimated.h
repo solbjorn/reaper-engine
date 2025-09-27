@@ -154,16 +154,16 @@ public:
     // cycles
     MotionID ID_Cycle(const shared_str& N) override;
     MotionID ID_Cycle_Safe(const shared_str& N) override;
-    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
-    CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-    CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0) override;
+    CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
+    CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
     // fx'es
     MotionID ID_FX(LPCSTR N);
     MotionID ID_FX_Safe(LPCSTR N);
     CBlend* PlayFX(LPCSTR N, float power_scale);
     CBlend* PlayFX(MotionID M, float power_scale);
 
-    const CPartition& partitions() const { return *m_Partition; };
+    const CPartition& partitions() const { return *m_Partition; }
 
     // General "Visual" stuff
     virtual void Copy(dxRender_Visual* pFrom);
@@ -174,8 +174,8 @@ public:
     virtual IRenderVisual* _BCL dcast_RenderVisual() { return this; }
     virtual IKinematics* _BCL dcast_PKinematics() { return this; }
 
-    virtual ~CKinematicsAnimated();
     CKinematicsAnimated();
+    virtual ~CKinematicsAnimated();
 
     virtual u32 mem_usage(bool bInstance)
     {
@@ -191,7 +191,8 @@ public:
 
     virtual float get_animation_length(MotionID motion_ID);
 };
-// IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?V->dcast_PKinematicsAnimated():0; }
-IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : 0; }
+
+inline CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? smart_cast<CKinematicsAnimated*>(V->dcast_PKinematicsAnimated()) : nullptr; }
+
 //---------------------------------------------------------------------------
 #endif

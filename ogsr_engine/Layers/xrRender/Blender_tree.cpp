@@ -88,7 +88,7 @@ void CBlender_Tree::Compile(CBlender_Compile& C)
         if (oBlend.value && RImplementation.o.ssfx_branches)
             tvs = "tree_branch";
 
-        uber_deffer(C, true, tvs, "base", oBlend.value, 0, true);
+        uber_deffer(C, true, tvs, "base", oBlend.value, nullptr, true);
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
         C.r_dx10Texture("s_waves", "fx\\wind_wave");
@@ -96,7 +96,7 @@ void CBlender_Tree::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case SE_R2_NORMAL_LQ: // deffer
-        uber_deffer(C, false, tvs, "base", oBlend.value, 0, true);
+        uber_deffer(C, false, tvs, "base", oBlend.value, nullptr, true);
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
         C.r_dx10Texture("s_waves", "fx\\wind_wave");

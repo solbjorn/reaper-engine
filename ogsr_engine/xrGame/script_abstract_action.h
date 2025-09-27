@@ -19,6 +19,8 @@ public:
     IC CScriptAbstractAction();
     virtual ~CScriptAbstractAction();
     virtual bool completed();
+
+    inline void clone(const CScriptAbstractAction& from);
 };
 
 #include "script_abstract_action_inline.h"

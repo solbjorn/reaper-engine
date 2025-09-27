@@ -6,7 +6,7 @@ void CRenderTarget::phase_accumulator(CBackend& cmd_list)
     if (dwAccumulatorClearMark == Device.dwFrame)
     {
         // normal operation - setup
-        u_setrt(cmd_list, rt_Accumulator, NULL, NULL, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
     }
     else
     {
@@ -14,13 +14,13 @@ void CRenderTarget::phase_accumulator(CBackend& cmd_list)
         dwAccumulatorClearMark = Device.dwFrame;
 
         // clear
-        u_setrt(cmd_list, rt_Accumulator, NULL, NULL, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
         reset_light_marker(cmd_list);
 
         //	Igor: AMD bug workaround. Should be fixed in 8.7 catalyst
         //	Need for MSAA to work correctly.
         if (RImplementation.o.dx10_msaa)
-            cmd_list.context()->OMSetRenderTargets(1, &rt_Accumulator->pRT, 0);
+            cmd_list.context()->OMSetRenderTargets(1, &rt_Accumulator->pRT, nullptr);
 
         cmd_list.ClearRT(rt_Accumulator, {});
 
@@ -45,7 +45,7 @@ void CRenderTarget::phase_vol_accumulator(CBackend& cmd_list)
             cmd_list.ClearRT(rt_Generic_2, {});
         }
 
-        u_setrt(cmd_list, rt_Generic_2, NULL, NULL, NULL);
+        u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, nullptr);
     }
     else
     {
@@ -53,12 +53,12 @@ void CRenderTarget::phase_vol_accumulator(CBackend& cmd_list)
         {
             m_bHasActiveVolumetric = true;
 
-            u_setrt(cmd_list, rt_Generic_2, NULL, NULL, rt_MSAADepth);
+            u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, rt_MSAADepth);
             cmd_list.ClearRT(rt_Generic_2, {});
         }
         else
         {
-            u_setrt(cmd_list, rt_Generic_2, NULL, NULL, rt_MSAADepth);
+            u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, rt_MSAADepth);
         }
     }
 

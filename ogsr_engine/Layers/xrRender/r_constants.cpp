@@ -7,7 +7,7 @@
 
 R_constant_table::~R_constant_table() { RImplementation.Resources->_DeleteConstantTable(this); }
 
-void R_constant_table::fatal(LPCSTR S) { FATAL(S); }
+void R_constant_table::fatal(LPCSTR S) { FATAL("%s", S); }
 
 ref_constant R_constant_table::get(LPCSTR S) const
 {
@@ -94,7 +94,7 @@ void R_constant_table::merge(R_constant_table* T)
 void R_constant_table::clear()
 {
     for (u32 it = 0; it < table.size(); it++)
-        table[it] = 0;
+        table[it] = nullptr;
 
     table.clear();
 
@@ -102,7 +102,7 @@ void R_constant_table::clear()
         m_CBTable[id].clear();
 }
 
-BOOL R_constant_table::equal(R_constant_table& C)
+BOOL R_constant_table::equal(const R_constant_table& C) const
 {
     if (table.size() != C.table.size())
         return FALSE;

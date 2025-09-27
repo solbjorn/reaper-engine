@@ -53,7 +53,7 @@ public:
     bool bWasChanged{};
 
 public:
-    CInifile(IReader*, LPCSTR = 0);
+    CInifile(IReader*, LPCSTR = nullptr);
     CInifile(LPCSTR, BOOL ReadOnly = TRUE, BOOL bLoad = TRUE, BOOL SaveAtEnd = TRUE);
 
     virtual ~CInifile();
@@ -62,9 +62,9 @@ public:
 
     virtual const xr_vector<RootItem>& sections_ordered() const { return Ordered_DATA; }
 
-    void load_file(BOOL allow_dup_sections = FALSE, const CInifile* f = NULL);
+    void load_file(BOOL allow_dup_sections = FALSE, const CInifile* f = nullptr);
 
-    bool save_as(LPCSTR = 0);
+    bool save_as(LPCSTR = nullptr);
     std::string get_as_string();
 
     LPCSTR fname() { return fName; }

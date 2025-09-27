@@ -22,7 +22,7 @@ CBaseAction::~CActionBase() {}
 TEMPLATE_SPECIALIZATION
 void CBaseAction::init(_object_type* object, LPCSTR action_name)
 {
-    m_storage = 0;
+    m_storage = nullptr;
     m_object = object;
     m_weight = edge_value_type(1);
 

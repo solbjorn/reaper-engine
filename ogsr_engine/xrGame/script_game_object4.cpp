@@ -199,7 +199,7 @@ CSightParams CScriptGameObject::sight_params()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member sight_params!");
 
         CSightParams result;
-        result.m_object = 0;
+        result.m_object = nullptr;
         result.m_vector = Fvector().set(flt_max, flt_max, flt_max);
         result.m_sight_type = SightManager::eSightTypeDummy;
         return (result);
@@ -208,7 +208,7 @@ CSightParams CScriptGameObject::sight_params()
     const CSightControlAction& action = stalker->sight().current_action();
     CSightParams result;
     result.m_sight_type = action.sight_type();
-    result.m_object = action.object_to_look() ? action.object_to_look()->lua_game_object() : 0;
+    result.m_object = action.object_to_look() ? action.object_to_look()->lua_game_object() : nullptr;
     result.m_vector = action.vector3d();
     return (result);
 }
@@ -265,50 +265,51 @@ bool CScriptGameObject::IsInvBoxEmpty()
             return false; \
         else \
             return true; \
-    };
+    } \
+    XR_MACRO_END()
 
-TEST_OBJECT_CLASS(CScriptGameObject::IsGameObject, CGameObject)
-TEST_OBJECT_CLASS(CScriptGameObject::IsCar, CCar)
-TEST_OBJECT_CLASS(CScriptGameObject::IsHeli, CHelicopter)
-TEST_OBJECT_CLASS(CScriptGameObject::IsHolderCustom, CHolderCustom)
-TEST_OBJECT_CLASS(CScriptGameObject::IsEntityAlive, CEntityAlive)
-TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryItem, CInventoryItem)
-TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryOwner, CInventoryOwner)
-TEST_OBJECT_CLASS(CScriptGameObject::IsActor, CActor)
-TEST_OBJECT_CLASS(CScriptGameObject::IsCustomMonster, CCustomMonster)
-TEST_OBJECT_CLASS(CScriptGameObject::IsWeapon, CWeapon)
-TEST_OBJECT_CLASS(CScriptGameObject::IsMedkit, CMedkit)
-TEST_OBJECT_CLASS(CScriptGameObject::IsEatableItem, CEatableItem)
-TEST_OBJECT_CLASS(CScriptGameObject::IsAntirad, CAntirad)
-TEST_OBJECT_CLASS(CScriptGameObject::IsCustomOutfit, CCustomOutfit)
-TEST_OBJECT_CLASS(CScriptGameObject::IsScope, CScope)
-TEST_OBJECT_CLASS(CScriptGameObject::IsSilencer, CSilencer)
-TEST_OBJECT_CLASS(CScriptGameObject::IsGrenadeLauncher, CGrenadeLauncher)
-TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponMagazined, CWeaponMagazined)
-TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponShotgun, CWeaponShotgun)
-TEST_OBJECT_CLASS(CScriptGameObject::IsSpaceRestrictor, CSpaceRestrictor)
-TEST_OBJECT_CLASS(CScriptGameObject::IsStalker, CAI_Stalker)
-TEST_OBJECT_CLASS(CScriptGameObject::IsAnomaly, CCustomZone)
-TEST_OBJECT_CLASS(CScriptGameObject::IsMonster, CBaseMonster)
-TEST_OBJECT_CLASS(CScriptGameObject::IsExplosive, CExplosive)
-TEST_OBJECT_CLASS(CScriptGameObject::IsScriptZone, CScriptZone)
-TEST_OBJECT_CLASS(CScriptGameObject::IsProjector, CProjector)
-TEST_OBJECT_CLASS(CScriptGameObject::IsLamp, CHangingLamp)
-TEST_OBJECT_CLASS(CScriptGameObject::IsTrader, CAI_Trader)
-TEST_OBJECT_CLASS(CScriptGameObject::IsHudItem, CHudItem)
-TEST_OBJECT_CLASS(CScriptGameObject::IsFoodItem, CFoodItem)
-TEST_OBJECT_CLASS(CScriptGameObject::IsArtefact, CArtefact)
-TEST_OBJECT_CLASS(CScriptGameObject::IsAmmo, CWeaponAmmo)
-TEST_OBJECT_CLASS(CScriptGameObject::IsMissile, CMissile)
-TEST_OBJECT_CLASS(CScriptGameObject::IsPhysicsShellHolder, CPhysicsShellHolder)
-TEST_OBJECT_CLASS(CScriptGameObject::IsGrenade, CGrenade)
-TEST_OBJECT_CLASS(CScriptGameObject::IsBottleItem, CBottleItem)
-TEST_OBJECT_CLASS(CScriptGameObject::IsTorch, CTorch)
-TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponGL, CWeaponMagazinedWGrenade)
-TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, IInventoryBox)
-TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponBinoculars, CWeaponBinoculars)
-TEST_OBJECT_CLASS(CScriptGameObject::IsKnife, CWeaponKnife)
-TEST_OBJECT_CLASS(CScriptGameObject::IsPistol, CWeaponPistol)
+TEST_OBJECT_CLASS(CScriptGameObject::IsGameObject, CGameObject);
+TEST_OBJECT_CLASS(CScriptGameObject::IsCar, CCar);
+TEST_OBJECT_CLASS(CScriptGameObject::IsHeli, CHelicopter);
+TEST_OBJECT_CLASS(CScriptGameObject::IsHolderCustom, CHolderCustom);
+TEST_OBJECT_CLASS(CScriptGameObject::IsEntityAlive, CEntityAlive);
+TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryItem, CInventoryItem);
+TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryOwner, CInventoryOwner);
+TEST_OBJECT_CLASS(CScriptGameObject::IsActor, CActor);
+TEST_OBJECT_CLASS(CScriptGameObject::IsCustomMonster, CCustomMonster);
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeapon, CWeapon);
+TEST_OBJECT_CLASS(CScriptGameObject::IsMedkit, CMedkit);
+TEST_OBJECT_CLASS(CScriptGameObject::IsEatableItem, CEatableItem);
+TEST_OBJECT_CLASS(CScriptGameObject::IsAntirad, CAntirad);
+TEST_OBJECT_CLASS(CScriptGameObject::IsCustomOutfit, CCustomOutfit);
+TEST_OBJECT_CLASS(CScriptGameObject::IsScope, CScope);
+TEST_OBJECT_CLASS(CScriptGameObject::IsSilencer, CSilencer);
+TEST_OBJECT_CLASS(CScriptGameObject::IsGrenadeLauncher, CGrenadeLauncher);
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponMagazined, CWeaponMagazined);
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponShotgun, CWeaponShotgun);
+TEST_OBJECT_CLASS(CScriptGameObject::IsSpaceRestrictor, CSpaceRestrictor);
+TEST_OBJECT_CLASS(CScriptGameObject::IsStalker, CAI_Stalker);
+TEST_OBJECT_CLASS(CScriptGameObject::IsAnomaly, CCustomZone);
+TEST_OBJECT_CLASS(CScriptGameObject::IsMonster, CBaseMonster);
+TEST_OBJECT_CLASS(CScriptGameObject::IsExplosive, CExplosive);
+TEST_OBJECT_CLASS(CScriptGameObject::IsScriptZone, CScriptZone);
+TEST_OBJECT_CLASS(CScriptGameObject::IsProjector, CProjector);
+TEST_OBJECT_CLASS(CScriptGameObject::IsLamp, CHangingLamp);
+TEST_OBJECT_CLASS(CScriptGameObject::IsTrader, CAI_Trader);
+TEST_OBJECT_CLASS(CScriptGameObject::IsHudItem, CHudItem);
+TEST_OBJECT_CLASS(CScriptGameObject::IsFoodItem, CFoodItem);
+TEST_OBJECT_CLASS(CScriptGameObject::IsArtefact, CArtefact);
+TEST_OBJECT_CLASS(CScriptGameObject::IsAmmo, CWeaponAmmo);
+TEST_OBJECT_CLASS(CScriptGameObject::IsMissile, CMissile);
+TEST_OBJECT_CLASS(CScriptGameObject::IsPhysicsShellHolder, CPhysicsShellHolder);
+TEST_OBJECT_CLASS(CScriptGameObject::IsGrenade, CGrenade);
+TEST_OBJECT_CLASS(CScriptGameObject::IsBottleItem, CBottleItem);
+TEST_OBJECT_CLASS(CScriptGameObject::IsTorch, CTorch);
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponGL, CWeaponMagazinedWGrenade);
+TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, IInventoryBox);
+TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponBinoculars, CWeaponBinoculars);
+TEST_OBJECT_CLASS(CScriptGameObject::IsKnife, CWeaponKnife);
+TEST_OBJECT_CLASS(CScriptGameObject::IsPistol, CWeaponPistol);
 // KD
 
 void CScriptGameObject::SetActorCamDir(Fvector _dir)
@@ -918,12 +919,6 @@ void CScriptGameObject::unregister_in_combat()
         stalker->agent_manager().member().unregister_in_combat(stalker);
 }
 
-void CScriptGameObject::setEnabled(bool value)
-{
-    object().setEnabled(value);
-}
+void CScriptGameObject::setEnabled(bool value) { object().setEnabled(value); }
 
-void CScriptGameObject::setVisible(bool value)
-{
-    object().setVisible(value);
-}
+void CScriptGameObject::setVisible(bool value) { object().setVisible(value); }

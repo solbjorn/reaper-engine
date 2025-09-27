@@ -21,13 +21,11 @@
 extern void add_profile_portion(LPCSTR id, const u64& time);
 #endif // PROFILE_CRITICAL_SECTIONS
 
-#pragma pack(push, 4)
 struct CProfileResultPortion
 {
     u64 m_time;
     LPCSTR m_timer_id;
 };
-#pragma pack(pop)
 
 struct CProfilePortion : public CProfileResultPortion
 {

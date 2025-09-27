@@ -38,16 +38,16 @@ class CEffectorController : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CEffectorController);
 
 protected:
-    CEffectorCam* m_ce;
-    CEffectorPP* m_pe;
+    CEffectorCam* m_ce{};
+    CEffectorPP* m_pe{};
 
 public:
-    CEffectorController() : m_ce(NULL), m_pe(NULL) {}
+    CEffectorController() = default;
     virtual ~CEffectorController();
 
     void SetPP(CEffectorPP* p) { m_pe = p; }
     void SetCam(CEffectorCam* p) { m_ce = p; }
-    virtual BOOL Valid() { return m_ce || m_pe; };
+    virtual BOOL Valid() { return m_ce || m_pe; }
     virtual float GetFactor() = 0;
 };
 
@@ -70,11 +70,12 @@ public:
 
     CAnimatorCamEffector();
     virtual ~CAnimatorCamEffector();
+
     void Start(LPCSTR fn);
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
     void SetCyclic(bool b) { m_bCyclic = b; }
     virtual BOOL Valid();
-    float GetAnimatorLength() { return fLifeTime; };
+    float GetAnimatorLength() { return fLifeTime; }
     virtual bool AbsolutePositioning() { return m_bAbsolutePositioning; }
 };
 
@@ -89,7 +90,8 @@ protected:
     using inherited = CAnimatorCamEffector;
 
 public:
-    CAnimatorCamEffectorScriptCB(LPCSTR _cb) { cb_name = _cb; };
+    CAnimatorCamEffectorScriptCB(LPCSTR _cb) : cb_name{_cb} {}
+
     virtual BOOL Valid();
     virtual BOOL AllowProcessingIfInvalid() { return m_bAbsolutePositioning; }
     virtual void ProcessIfInvalid(SCamEffectorInfo& info);
@@ -117,6 +119,7 @@ protected:
 
 public:
     CAnimatorCamLerpEffectorConst();
+
     void SetFactor(float v)
     {
         m_factor = v;
@@ -134,6 +137,7 @@ public:
 
     CCameraEffectorControlled(CEffectorController* c);
     virtual ~CCameraEffectorControlled();
+
     virtual BOOL Valid();
 };
 
@@ -155,6 +159,7 @@ public:
 public:
     SndShockEffector();
     virtual ~SndShockEffector();
+
     void Start(CActor* A, float snd_length, float power);
     void Update();
 

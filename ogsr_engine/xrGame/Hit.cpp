@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "ode_include.h"
@@ -30,29 +31,32 @@ SHit::SHit(float aPower, Fvector& adir, CObject* awho, u16 aelement, Fvector ap_
 }
 
 SHit::SHit() { invalidate(); }
+
 void SHit::invalidate()
 {
+    constexpr auto inval = std::numeric_limits<float>::lowest();
+
     Time = 0;
     PACKET_TYPE = 0;
     DestID = 0;
 
-    power = -dInfinity;
-    dir.set(-dInfinity, -dInfinity, -dInfinity);
-    who = NULL;
+    power = inval;
+    dir.set(inval, inval, inval);
+    who = nullptr;
     whoID = 0;
     weaponID = 0;
 
     boneID = BI_NONE;
-    p_in_bone_space.set(-dInfinity, -dInfinity, -dInfinity);
+    p_in_bone_space.set(inval, inval, inval);
 
-    impulse = -dInfinity;
+    impulse = inval;
     hit_type = ALife::eHitTypeMax;
 
     ap = 0.0f;
     BulletID = 0;
     SenderID = 0;
     aim_bullet = false;
-    full_power = -dInfinity;
+    full_power = inval;
 }
 
 bool SHit::is_valide() const { return hit_type != ALife::eHitTypeMax; }
@@ -62,7 +66,7 @@ void SHit::GenHeader(u16 PacketType, u16 ID)
     DestID = ID;
     PACKET_TYPE = PacketType;
     Time = Level().timeServer();
-};
+}
 
 void SHit::Read_Packet(NET_Packet Packet)
 {
@@ -72,7 +76,7 @@ void SHit::Read_Packet(NET_Packet Packet)
     Packet.r_u16(PACKET_TYPE);
     Packet.r_u16(DestID);
     Read_Packet_Cont(Packet);
-};
+}
 
 void SHit::Read_Packet_Cont(NET_Packet Packet)
 {
@@ -116,7 +120,7 @@ void SHit::Write_Packet(NET_Packet& Packet)
     Packet.w_u16(u16(DestID & 0xffff));
 
     Write_Packet_Cont(Packet);
-};
+}
 
 #ifdef DEBUG
 void SHit::_dump()
@@ -145,6 +149,7 @@ void SHit::set_hit_initiator(CScriptGameObject* script_obj)
     }
     who = obj;
 }
+
 CScriptGameObject* SHit::get_hit_initiator() const
 {
     if (who)
@@ -155,5 +160,6 @@ CScriptGameObject* SHit::get_hit_initiator() const
         else
             Msg("!![SHit::get_hit_initiator] Cast failed! CObject: [%s]", who->cName().c_str());
     }
+
     return nullptr;
 }

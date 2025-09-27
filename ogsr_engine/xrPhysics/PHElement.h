@@ -25,13 +25,13 @@ public:
 
     // float						m_start_time;				//uu ->to shell ??	//aux
     dMass m_mass; // e ??				//bl
-    dBodyID m_body; // e					//st
+    dBodyID m_body{}; // e					//st
     dReal m_l_scale; // ->to shell ??	//bl
     dReal m_w_scale; // ->to shell ??	//bl
-    CPHElement* m_parent_element; // bool !			//bl
-    CPHShell* m_shell; // e					//bl
+    CPHElement* m_parent_element{}; // bool !			//bl
+    CPHShell* m_shell{}; // e					//bl
     CPHInterpolation m_body_interpolation; // e					//bl
-    CPHFracturesHolder* m_fratures_holder; // e					//bl
+    CPHFracturesHolder* m_fratures_holder{}; // e					//bl
 
     dReal m_w_limit; //->to shell ??		//bl
     dReal m_l_limit; //->to shell ??		//bl
@@ -118,7 +118,7 @@ public: //
     virtual void setDensityMC(float M, const Fvector& mass_center); // aux
     virtual void setInertia(const dMass& M); // aux
     virtual void addInertia(const dMass& M);
-    virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = NULL); // aux
+    virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = nullptr); // aux
     virtual void set_BoxMass(const Fobb& box, float mass); // aux
     virtual void setMass(float M); // aux
     virtual float getMass() { return m_mass.mass; } // aux
@@ -215,10 +215,10 @@ public: //
     virtual CPhysicsShell* PhysicsShell(); // aux
     CPHShell* PHShell();
     virtual void set_ParentElement(CPhysicsElement* p) { m_parent_element = (CPHElement*)p; } // aux
-    virtual CPhysicsElement* get_ParentElement() { return m_parent_element; };
+    virtual CPhysicsElement* get_ParentElement() { return m_parent_element; }
     void SetShell(CPHShell* p); // aux
-    virtual dBodyID get_body() { return m_body; }; // aux
-    virtual const dBodyID get_bodyConst() const { return m_body; }; // aux
+    virtual dBodyID get_body() { return m_body; } // aux
+    virtual const dBodyID get_bodyConst() const { return m_body; } // aux
     //////////////////////////////////////////////////////Breakable//////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     IC CPHFracturesHolder* FracturesHolder() { return m_fratures_holder; } // aux
@@ -251,7 +251,7 @@ public: //
     CPHElement(); // aux
     virtual ~CPHElement(); // aux
 
-    virtual IPhysicsGeometry* geometry(u16 i) const override { return CPHGeometryOwner::Geom(i); };
+    virtual IPhysicsGeometry* geometry(u16 i) const override { return CPHGeometryOwner::Geom(i); }
     virtual void SetAnimated(bool v) override { m_flags.set(flAnimated, BOOL(v)); }
 };
 

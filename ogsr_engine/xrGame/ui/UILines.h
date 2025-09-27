@@ -64,12 +64,12 @@ public:
     float GetVisibleHeight();
 
     // cursor control
-    int m_iCursorPos;
+    int m_iCursorPos{};
     void IncCursorPos();
     void DecCursorPos();
 
 protected:
-    Ivector2 m_cursor_pos;
+    Ivector2 m_cursor_pos{};
     void UpdateCursor();
     // %c[255,255,255,255]
     u32 GetColorFromText(const xr_string& str) const;
@@ -84,8 +84,8 @@ protected:
     typedef xr_vector<CUILine> LinesVector;
     typedef LinesVector::iterator LinesVector_it;
     LinesVector m_lines; // parsed text
-    float m_interval; // interval
-    bool m_bDrawCursor;
+    float m_interval{}; // interval
+    bool m_bDrawCursor{};
 
     Text m_text;
     xr_vector<bool> m_text_mask;

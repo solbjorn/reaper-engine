@@ -22,9 +22,6 @@ IC CSSafeMapIterator::CSafeMapIterator()
 }
 
 TEMPLATE_SPEZIALIZATION
-CSSafeMapIterator::~CSafeMapIterator() {}
-
-TEMPLATE_SPEZIALIZATION
 IC void CSSafeMapIterator::add(const _key_type& id, _data_type* value, bool no_assert)
 {
     _const_iterator I = m_objects.find(id);

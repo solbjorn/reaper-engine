@@ -1,10 +1,16 @@
 #include "stdafx.h"
 
-#include <oneapi/tbb/parallel_for_each.h>
-
 #include "string_table.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+
+#include <oneapi/tbb/parallel_for_each.h>
+
+XR_DIAG_POP();
 
 std::mutex CStringTable::pDataMutex;
 STRING_TABLE_DATA* CStringTable::pData{};
@@ -19,7 +25,7 @@ shared_str CStringTable::GetLanguage() { return pData->m_sLanguage; }
 
 void CStringTable::Init()
 {
-    if (NULL != pData)
+    if (pData)
         return;
 
     pData = xr_new<STRING_TABLE_DATA>();
@@ -79,7 +85,7 @@ void CStringTable::Load(LPCSTR xml_file)
 
     for (size_t i = 0; i < string_num; i++)
     {
-        LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", NULL);
+        LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
 
         string32 node;
         strconcat(sizeof(node), node, "string:", nf ? lang : "text");
@@ -123,7 +129,7 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
     string256 srcbuff;
     bool b_hit = false;
 
-    while ((b = strstr(str + k, ACTION_STR)) != 0)
+    while ((b = strstr(str + k, ACTION_STR)) != nullptr)
     {
         buff[0] = 0;
         srcbuff[0] = 0;
@@ -142,7 +148,7 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
         k += LEN;
         k += 2;
         b_hit = true;
-    };
+    }
 
     if (k < (int)xr_strlen(str))
     {
@@ -157,16 +163,18 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 
 STRING_VALUE CStringTable::translate(const STRING_ID& str_id) const
 {
+    STRING_VALUE res = str_id;
+
     if (!pData)
-        return str_id;
+        return res;
 
-    STRING_VALUE res = pData->m_StringTable[str_id];
-
+    res = pData->m_StringTable[str_id];
     if (!res)
     {
         if (WriteErrorsToLog && *str_id != nullptr && xr_strlen(*str_id) > 0)
             Msg("!![%s] [%s] has no entry!", __FUNCTION__, *str_id);
-        return str_id;
+
+        res = str_id;
     }
 
     return res;

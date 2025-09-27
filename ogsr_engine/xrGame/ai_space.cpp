@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "game_graph.h"
 #include "game_level_cross_table.h"
 #include "level_graph.h"
@@ -19,19 +20,9 @@
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 
-CAI_Space* g_ai_space = 0;
+CAI_Space* g_ai_space{};
 
-CAI_Space::CAI_Space()
-{
-    m_ef_storage = 0;
-    m_game_graph = 0;
-    m_graph_engine = 0;
-    m_cover_manager = 0;
-    m_level_graph = 0;
-    m_alife_simulator = 0;
-    m_patrol_path_storage = 0;
-    m_script_engine = 0;
-}
+CAI_Space::CAI_Space() = default;
 
 void CAI_Space::init()
 {
@@ -39,7 +30,7 @@ void CAI_Space::init()
     m_ef_storage = xr_new<CEF_Storage>();
 
     VERIFY(!m_graph_engine);
-    m_graph_engine = xr_new<CGraphEngine>(1024); // game_graph().header().vertex_count() ???
+    m_graph_engine = xr_new<CGraphEngine>(1024u); // game_graph().header().vertex_count() ???
 
     VERIFY(!m_cover_manager);
     m_cover_manager = xr_new<CCoverManager>();

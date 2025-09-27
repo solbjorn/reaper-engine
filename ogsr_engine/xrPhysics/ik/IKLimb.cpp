@@ -84,24 +84,29 @@ CIKLimb& CIKLimb::operator=(const CIKLimb& l)
 
 void CIKLimb::Invalidate()
 {
-    m_id = u16(-1);
+    m_id = std::numeric_limits<u16>::max();
     m_bones[0] = BI_NONE;
     m_bones[1] = BI_NONE;
     m_bones[2] = BI_NONE;
     m_bones[3] = BI_NONE;
-    m_K = 0;
+    m_K = nullptr;
     m_collide = false;
+
 #ifdef DEBUG
     dbg_disabled = false;
 #endif
 }
+
 void XM_IM(const Fmatrix& XM, Fmatrix& IM) { IM.mul_43(xm2im, XM); }
+
 void XM_IM(const Fmatrix& XM, Matrix& IM)
 {
     //((Fmatrix*)(&IM))->mul_43(xm2im,XM);
     XM_IM(XM, *((Fmatrix*)(&IM)));
 }
+
 void IM_XM(const Matrix& IM, Fmatrix& XM) { XM.mul_43(xm2im, *((Fmatrix*)(&IM))); }
+
 void XM2IM(const Fmatrix& XM, Fmatrix& IM)
 {
     // IM=xm2im*XM*xm2im^-1
@@ -109,11 +114,14 @@ void XM2IM(const Fmatrix& XM, Fmatrix& IM)
     tmp.mul_43(xm2im, XM);
     IM.mul_43(tmp, xm2im);
 }
+
 void XM2IM(const Fmatrix& XM, Matrix& IM) { XM2IM(XM, *((Fmatrix*)(&IM))); }
 void IM2XM(const Matrix& IM, Fmatrix& XM) { XM2IM(*((Fmatrix*)(&IM)), XM); }
 void XV2IV(const Fvector& XV, IVektor& IV) { xm2im.transform_dir(cast_fv(IV), XV); }
 void IV2XV(const IVektor& IV, Fvector& XV) { xm2im.transform_dir(XV), cast_fv(IV); }
+
 IC Fmatrix& CIKLimb::ref_bone_to_foot(Fmatrix& ref_bone) const { return m_foot.ref_bone_to_foot(ref_bone); }
+
 void CIKLimb::ApplyState(SCalculateData& cd)
 {
     m_foot.set_ref_bone();
@@ -303,12 +311,14 @@ void CIKLimb::Create(u16 id, IKinematicsAnimated* K, bool collide_)
     {
         string32 section;
         string32 buff;
+
         strconcat(sizeof(section), section, "ik_limb", _itoa(id, buff, 10));
         parse_bones_string(CK, CK->LL_UserData()->r_string(section, "bones"), m_bones);
         m_foot.Create(CK, section, m_bones);
     }
     else
-        m_foot.Create(CK, 0, m_bones);
+        m_foot.Create(CK, nullptr, m_bones);
+
     ////////////////////////////////////////////////////////////////////
     sv_state.set_limb(this);
     m_collide = collide_;
@@ -954,11 +964,13 @@ struct ssaved_callback
     const u32 callback_type;
     CBoneInstance& _bi;
 };
+
 static void get_matrix(CBoneInstance* P)
 {
     VERIFY(_valid(P->mTransform));
     *((Fmatrix*)P->callback_param()) = P->mTransform;
 }
+
 u16 CIKLimb::foot_matrix_predict(Fmatrix& foot, Fmatrix& toe, float time, IKinematicsAnimated* K) const
 {
     // CBlend *control = 0;
@@ -974,7 +986,7 @@ u16 CIKLimb::foot_matrix_predict(Fmatrix& foot, Fmatrix& toe, float time, IKinem
     for (u32 i = 0; i < blends_count; ++i)
     {
         CBlend& B = *K->LL_PartBlend(0, i);
-        if (B.update(time, 0))
+        if (B.update(time, nullptr))
             B.blendAmount = 0;
     }
 
@@ -986,7 +998,7 @@ u16 CIKLimb::foot_matrix_predict(Fmatrix& foot, Fmatrix& toe, float time, IKinem
     bi2.set_callback(bctCustom, get_matrix, &m_b2, FALSE);
     bi3.set_callback(bctCustom, get_matrix, &m_b3, FALSE);
 
-    Kinematics()->Bone_GetAnimPos(foot, m_bones[3], u8(-1), false);
+    Kinematics()->Bone_GetAnimPos(foot, m_bones[3], std::numeric_limits<u8>::max(), false);
     u16 ref_b = m_foot.get_ref_bone(m_b2, m_b3);
     foot = m_b2;
     toe = m_b3;
@@ -1004,9 +1016,11 @@ void CIKLimb::step_predict(CGameObject* O, const CBlend* b, ik_limb_state_predic
 {
     if (!b)
         return;
+
     state.time_to_footstep = get_time_to_step_begin(*b);
-    if (state.time_to_footstep == phInfinity)
+    if (std::isinf(state.time_to_footstep) && state.time_to_footstep > 0.f)
         return;
+
     float footstep_time = Device.fTimeGlobal + state.time_to_footstep;
 
     Fmatrix footstep_object;

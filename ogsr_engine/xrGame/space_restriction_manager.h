@@ -16,7 +16,7 @@
 namespace RestrictionSpace
 {
 struct CTimeIntrusiveBase;
-};
+}
 
 template <typename _1, typename _2>
 class intrusive_ptr;

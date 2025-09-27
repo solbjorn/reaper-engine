@@ -17,10 +17,10 @@ protected:
     typedef ancestor<_base_object_type> inherited;
 
 protected:
-    _object_type* m_object;
+    _object_type* m_object{};
 
 public:
-    IC CWrapperAbstract();
+    IC CWrapperAbstract() = default;
     template <typename T1>
     IC CWrapperAbstract(T1 t1);
     template <typename T1, typename T2, typename T3>
@@ -40,10 +40,10 @@ protected:
     typedef ancestor<_base_object_type> inherited;
 
 protected:
-    _object_type* m_object;
+    _object_type* m_object{};
 
 public:
-    IC CWrapperAbstract2();
+    IC CWrapperAbstract2() = default;
     template <typename T1>
     IC CWrapperAbstract2(T1 t1);
     template <typename T1, typename T2>

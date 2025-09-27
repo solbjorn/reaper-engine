@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uilistwnd.h"
 //.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
@@ -12,22 +13,13 @@ static const char cSeparatorChar = '%';
 
 CUIListWnd::CUIListWnd()
 {
-    m_ActiveBackgroundFrame = NULL;
     m_bListActivity = true;
     m_iFocusedItem = -1;
     m_iSelectedItem = -1;
     m_iFocusedItemGroupID = -1;
     m_iSelectedItemGroupID = -1;
-    m_bShowSelectedItem = false;
-    m_bActiveBackground = false;
     m_dwFontColor = 0xFFFFFFFF;
     SetItemHeight(DEFAULT_ITEM_HEIGHT);
-    m_bVertFlip = false;
-    m_bUpdateMouseMove = false;
-    m_bForceFocusedItem = false;
-    m_iLastUniqueID = 0;
-    m_bAlwaysShowScroll = false;
-    m_bAlwaysShowScroll_enable = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -153,7 +145,7 @@ void CUIListWnd::RemoveItem(int index)
 CUIListItem* CUIListWnd::GetItem(int index)
 {
     if (index < 0 || index >= (int)m_ItemList.size())
-        return NULL;
+        return nullptr;
 
     LIST_ITEM_LIST_it it;
 
@@ -252,7 +244,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
         {
             m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
             UpdateList();
-            GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL, NULL);
+            GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL, nullptr);
         }
     }
     else

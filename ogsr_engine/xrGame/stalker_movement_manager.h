@@ -32,7 +32,7 @@ public:
     typedef DetailPathManager::EDetailPathType EDetailPathType;
 
 private:
-    const CStalkerVelocityCollection* m_velocities;
+    const CStalkerVelocityCollection* m_velocities{};
 
 protected:
     CStalkerMovementParams m_current{};
@@ -103,12 +103,12 @@ public:
     IC CAI_Stalker& object() const;
 
 private:
-    const CGameObject* m_last_query_object;
-    Fvector m_last_query_position;
-    Fvector m_last_query_object_position;
-    float m_last_query_distance;
-    bool m_last_query_result;
-    bool m_force_update;
+    const CGameObject* m_last_query_object{};
+    Fvector m_last_query_position{std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    Fvector m_last_query_object_position{std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    float m_last_query_distance{std::numeric_limits<float>::max()};
+    bool m_last_query_result{};
+    bool m_force_update{};
 
 public:
     virtual void on_build_path();

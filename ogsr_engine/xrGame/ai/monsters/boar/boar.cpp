@@ -106,7 +106,8 @@ void CAI_Boar::reinit()
     inherited::reinit();
     if (CCustomMonster::use_simplified_visual())
         return;
-    com_man().add_rotation_jump_data("stand_jump_left_0", 0, "stand_jump_right_0", 0, PI - PI_DIV_6, SControlRotationJumpData::eStopAtOnce | SControlRotationJumpData::eRotateOnce);
+    com_man().add_rotation_jump_data("stand_jump_left_0", nullptr, "stand_jump_right_0", nullptr, PI - PI_DIV_6,
+                                     SControlRotationJumpData::eStopAtOnce | SControlRotationJumpData::eRotateOnce);
 }
 
 void CAI_Boar::BoneCallback(CBoneInstance* B)
@@ -126,7 +127,7 @@ BOOL CAI_Boar::net_Spawn(CSE_Abstract* DC)
     if (!inherited::net_Spawn(DC))
         return (FALSE);
 
-    if (!PPhysicsShell()) //нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+    if (!PPhysicsShell()) // нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
     {
         CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
         BI.set_callback(bctCustom, BoneCallback, this);

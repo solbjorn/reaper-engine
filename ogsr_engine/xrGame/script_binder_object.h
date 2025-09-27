@@ -22,6 +22,24 @@ public:
     typedef CSE_ALifeObject* SpawnType;
     CScriptGameObject* m_object;
 
+protected:
+    sol::object priv;
+    xr_map<u32, sol::function> ops;
+
+    enum : u32
+    {
+        LOAD,
+        NET_DESTROY,
+        NET_RELCASE,
+        NET_SAVE_RELEVANT,
+        NET_SPAWN,
+        REINIT,
+        RELOAD,
+        SAVE,
+        UPDATE,
+    };
+
+public:
     CScriptBinderObject(CScriptGameObject* object);
     virtual ~CScriptBinderObject();
     virtual void reinit();

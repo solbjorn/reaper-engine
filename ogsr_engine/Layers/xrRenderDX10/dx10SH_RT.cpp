@@ -163,7 +163,9 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/
             set_slice_write(id, -1);
     }
     else
-        CHK_DX(HW.pDevice->CreateRenderTargetView(pSurface, 0, &pRT));
+    {
+        CHK_DX(HW.pDevice->CreateRenderTargetView(pSurface, nullptr, &pRT));
+    }
 
     if (desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
     {
@@ -186,10 +188,11 @@ void CRT::destroy()
 {
     if (pTexture._get())
     {
-        pTexture->surface_set(0);
+        pTexture->surface_set(nullptr);
         pTexture.destroy();
         pTexture = nullptr;
     }
+
     _RELEASE(pRT);
 
     for (auto& dsv : dsv_per_slice)

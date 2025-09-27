@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "../COMMON_AI/xrServer_Objects_ALife.h"
 #include "script_binder_object.h"
 #include "script_game_object.h"
 
@@ -20,20 +22,83 @@ CScriptBinderObject::~CScriptBinderObject()
 #endif
 }
 
-void CScriptBinderObject::reinit() {}
+void CScriptBinderObject::reinit()
+{
+    auto op = ops.find(REINIT);
+    if (op == ops.end())
+        return;
 
-void CScriptBinderObject::reload(LPCSTR section) {}
+    op->second(this);
+}
 
-bool CScriptBinderObject::net_Spawn(SpawnType DC) { return (true); }
+void CScriptBinderObject::reload(LPCSTR section)
+{
+    auto op = ops.find(RELOAD);
+    if (op == ops.end())
+        return;
 
-void CScriptBinderObject::net_Destroy() {}
+    op->second(this, section);
+}
 
-void CScriptBinderObject::shedule_Update(u32 time_delta) {}
+bool CScriptBinderObject::net_Spawn(SpawnType DC)
+{
+    auto op = ops.find(NET_SPAWN);
+    if (op == ops.end())
+        return true;
 
-void CScriptBinderObject::save(NET_Packet* output_packet) {}
+    return op->second(this, DC);
+}
 
-void CScriptBinderObject::load(IReader* input_packet) {}
+void CScriptBinderObject::net_Destroy()
+{
+    auto op = ops.find(NET_DESTROY);
+    if (op == ops.end())
+        return;
 
-bool CScriptBinderObject::net_SaveRelevant() { return (false); }
+    op->second(this);
+}
 
-void CScriptBinderObject::net_Relcase(CScriptGameObject* object) {}
+void CScriptBinderObject::shedule_Update(u32 time_delta)
+{
+    auto op = ops.find(UPDATE);
+    if (op == ops.end())
+        return;
+
+    op->second(this, time_delta);
+}
+
+void CScriptBinderObject::save(NET_Packet* output_packet)
+{
+    auto op = ops.find(SAVE);
+    if (op == ops.end())
+        return;
+
+    op->second(this, output_packet);
+}
+
+void CScriptBinderObject::load(IReader* input_packet)
+{
+    auto op = ops.find(LOAD);
+    if (op == ops.end())
+        return;
+
+    op->second(this, input_packet);
+}
+
+bool CScriptBinderObject::net_SaveRelevant()
+{
+    auto op = ops.find(NET_SAVE_RELEVANT);
+    if (op == ops.end())
+        return false;
+
+    return op->second(this);
+}
+
+void CScriptBinderObject::net_Relcase(CScriptGameObject* object)
+{
+    auto op = ops.find(NET_RELCASE);
+    if (op == ops.end())
+        return;
+
+    op->second(this, object);
+}

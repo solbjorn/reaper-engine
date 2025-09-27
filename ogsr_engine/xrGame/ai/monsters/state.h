@@ -18,7 +18,7 @@ class CState : public virtual RTTI::Enable
 public:
     typedef CState<_Object> CSState;
 
-    CState(_Object* obj, void* data = 0);
+    CState(_Object* obj, void* data = nullptr);
     virtual ~CState();
 
     virtual void reinit();
@@ -87,8 +87,9 @@ protected:
     using inherited = CState<_Object>;
 
 public:
-    CStateMove(_Object* obj, void* data = 0) : inherited(obj, data) {}
+    CStateMove(_Object* obj, void* data = nullptr) : inherited{obj, data} {}
     virtual ~CStateMove() {}
+
     virtual void initialize()
     {
         inherited::initialize();

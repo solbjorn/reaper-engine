@@ -10,15 +10,16 @@
 struct SAnimationPart
 {
     CBlend* blend;
-    bool actual;
     u32 time_started;
+    bool actual;
 
     void init()
     {
         motion.invalidate();
-        blend = 0;
-        actual = true;
+
+        blend = nullptr;
         time_started = 0;
+        actual = true;
     }
 
     void set_motion(MotionID const& m);
@@ -35,8 +36,8 @@ struct SControlAnimationData : public ControlCom::IComData
     {
         _speed = v;
         VERIFY2(_abs(_speed) < 1000, "SControlAnimationData::set_speed too big");
-    };
-    IC float get_speed() { return _speed; };
+    }
+    IC float get_speed() { return _speed; }
     SAnimationPart global;
     SAnimationPart legs;
     SAnimationPart torso;

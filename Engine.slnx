@@ -1,0 +1,102 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/3rd_party/">
+    <Project Path="3rd_party/Src/abseil/abseil.vcxproj" Id="639aecff-564b-474a-9eeb-b6a516288315">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/hwloc/hwloc.vcxproj" Id="a3f8db74-fed0-4ed3-9e51-f5b4e5ac9713" />
+    <Project Path="3rd_party/Src/imgui/imgui.vcxproj" Id="c8fbc3ce-d6de-4fc3-bc15-7b647614db09">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/llvm/llvm.vcxproj" Id="a2f5a99e-1330-4dc5-90da-c55d0fcc6bdf" />
+    <Project Path="3rd_party/Src/mimalloc/mimalloc.vcxproj" Id="c0e0a539-f615-4317-b12c-24b77195b41a" />
+    <Project Path="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" Id="1bf75feb-87dd-486c-880b-227987d191c2">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/oneTBB/oneTBB.vcxproj" Id="fd18cc23-5b32-4b39-9e74-80667ff8a9d0">
+      <BuildDependency Project="3rd_party/Src/hwloc/hwloc.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" Id="8b7e63c3-85be-4671-999e-6c72d67f062d">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/openal-soft/openal-soft.vcxproj" Id="8c67b3ec-af96-48db-b93e-e561c79f48d7" />
+    <Project Path="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" Id="ddc9ea5d-33c3-4b1c-a8c4-f2ec3d0e1c07">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/xxHash/xxHash.vcxproj" Id="d466a3a1-7cd5-4e89-8310-2515731edf67" />
+  </Folder>
+  <Folder Name="/3rd_party/Compression/">
+    <Project Path="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" Id="e61c7c61-0119-4d89-9604-bd3b7c5f2aca">
+      <BuildDependency Project="3rd_party/Src/lz4/lz4.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/lz4/lz4.vcxproj" Id="d1e1660f-36eb-49a1-aae1-d3913d72c1e1" />
+    <Project Path="3rd_party/Src/zstd/zstd.vcxproj" Id="f612c458-7afd-4d2b-804e-af9ef62218b4" />
+  </Folder>
+  <Folder Name="/3rd_party/DX/">
+    <Project Path="3rd_party/Src/DirectXTex/DirectXTex.vcxproj" Id="286cc988-2191-467a-9f6d-abb7954d4f78">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/3rd_party/Lua/">
+    <Project Path="3rd_party/Src/luabind/luabind.vcxproj" Id="ccd4afae-aa10-42c6-a452-fdee497ccdf1">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/luajit2/luajit2.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/luajit2/luajit2.vcxproj" Id="632aeeb6-dc06-4e15-9551-b2b09a4b73c5" />
+  </Folder>
+  <Folder Name="/3rd_party/Xiph.org/">
+    <Project Path="3rd_party/Src/Xiph/ogg/ogg.vcxproj" Id="1659bf1b-6fcd-46e4-b5d4-0b760598cb2e">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/Xiph/theora/theora.vcxproj" Id="d6aea327-48bc-45c8-b0e9-bf775e451904">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    </Project>
+    <Project Path="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" Id="0f3163c6-fae6-4fbd-bf88-037eb0420daf">
+      <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+      <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="ogsr_engine/xray.natvis" />
+  </Folder>
+  <Project Path="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" Id="ac9b12ed-a2d7-4337-a981-5bd8430e96d8">
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xrCDB/xrCDB.vcxproj" Id="a19b1df2-82ec-4364-8bdf-85d13a1c89b5">
+    <BuildDependency Project="3rd_party/Src/OpCoDe/OpCoDe.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xrCore/xrCore.vcxproj" Id="a0f7d1fb-59a7-4717-a7e4-96f37e91998e">
+    <BuildDependency Project="3rd_party/Src/abseil/abseil.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/libsquashfs/libsquashfs.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/llvm/llvm.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/mimalloc/mimalloc.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/tinyxml2/tinyxml2.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/xxHash/xxHash.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xrGame/xrGame.vcxproj" Id="200652a6-043e-4634-8837-87983b3bd5e0">
+    <BuildDependency Project="3rd_party/Src/luabind/luabind.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/zstd/zstd.vcxproj" />
+    <BuildDependency Project="ogsr_engine/xrPhysics/xrPhysics.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xrParticles/xrParticles.vcxproj" Id="94a1c366-3d19-48e6-8170-4adc2e70df97" />
+  <Project Path="ogsr_engine/xrPhysics/xrPhysics.vcxproj" Id="dfe83c79-b305-40b1-b566-00f78a6d2568">
+    <BuildDependency Project="3rd_party/Src/ode/contrib/msvc7/ode_default/default.vcxproj" />
+    <BuildDependency Project="ogsr_engine/xrCore/xrCore.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xrSound/xrSound.vcxproj" Id="ccca7859-eb86-493e-9b53-c4235f45b3c5">
+    <BuildDependency Project="3rd_party/Src/oneTBB/oneTBB.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/openal-soft/openal-soft.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/Xiph/ogg/ogg.vcxproj" />
+    <BuildDependency Project="3rd_party/Src/Xiph/vorbis/vorbis.vcxproj" />
+  </Project>
+  <Project Path="ogsr_engine/xr_3da/XR_3DA.vcxproj" Id="2578c6d8-660d-48ae-9322-7422f8664f06">
+    <BuildDependency Project="3rd_party/Src/Xiph/theora/theora.vcxproj" />
+    <BuildDependency Project="ogsr_engine/Layers/xrRenderPC_R4/xrRender_R4.vcxproj" />
+    <BuildDependency Project="ogsr_engine/xrGame/xrGame.vcxproj" />
+  </Project>
+</Solution>

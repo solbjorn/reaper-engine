@@ -31,3 +31,20 @@ void CScriptSoundAction::SetSound(LPCSTR caSoundToPlay)
         m_bCompleted = true;
     }
 }
+
+void CScriptSoundAction::clone(const CScriptSoundAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_caSoundToPlay = from.m_caSoundToPlay;
+    m_caBoneName = from.m_caBoneName;
+    m_tGoalType = from.m_tGoalType;
+    m_bLooped = from.m_bLooped;
+    m_bStartedToPlay = from.m_bStartedToPlay;
+    m_tSoundPosition = from.m_tSoundPosition;
+    m_tSoundAngles = from.m_tSoundAngles;
+    m_sound_type = from.m_sound_type;
+    m_monster_sound = from.m_monster_sound;
+    m_monster_sound_delay = from.m_monster_sound_delay;
+    m_tHeadAnimType = from.m_tHeadAnimType;
+}

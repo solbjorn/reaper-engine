@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "telewhirlwind.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
@@ -8,13 +9,9 @@
 #include "xrmessages.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
-CTeleWhirlwind ::CTeleWhirlwind()
-{
-    m_owner_object = NULL;
-    m_center.set(0.f, 0.f, 0.f);
-    m_keep_radius = 1.f;
-    m_throw_power = 100.f;
-}
+
+CTeleWhirlwind::CTeleWhirlwind() = default;
+CTeleWhirlwind::~CTeleWhirlwind() = default;
 
 CTelekineticObject* CTeleWhirlwind::activate(CPhysicsShellHolder* obj, float strength, float height, u32 max_time_keep, bool rot)
 {
@@ -25,9 +22,10 @@ CTelekineticObject* CTeleWhirlwind::activate(CPhysicsShellHolder* obj, float str
         o->set_throw_power(m_throw_power);
         return o;
     }
-    else
-        return 0;
+
+    return nullptr;
 }
+
 void CTeleWhirlwind::clear_impacts() { m_saved_impacts.clear(); }
 void CTeleWhirlwind::clear() { inherited::clear(); }
 
@@ -39,6 +37,7 @@ void CTeleWhirlwind::add_impact(const Fvector& dir, float val)
     point.set(0.f, 0.f, 0.f);
     m_saved_impacts.emplace_back(force, point, 0);
 }
+
 void CTeleWhirlwind::set_throw_power(float throw_pow) { m_throw_power = throw_pow; }
 
 void CTeleWhirlwind::draw_out_impact(Fvector& dir, float& val)
@@ -58,16 +57,14 @@ static bool RemovePred(CTelekineticObject* tele_object) { return (!tele_object->
 
 void CTeleWhirlwind::clear_notrelevant()
 {
-    //убрать все объеты со старыми параметрами
+    // убрать все объеты со старыми параметрами
     objects.erase(std::remove_if(objects.begin(), objects.end(), &RemovePred), objects.end());
 }
 
 void CTeleWhirlwind::play_destroy(CTeleWhirlwindObject* obj) {}
-CTeleWhirlwindObject::CTeleWhirlwindObject()
-{
-    m_telekinesis = 0;
-    throw_power = 0.f;
-}
+
+CTeleWhirlwindObject::CTeleWhirlwindObject() = default;
+CTeleWhirlwindObject::~CTeleWhirlwindObject() = default;
 
 bool CTeleWhirlwindObject::init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot)
 {
@@ -327,4 +324,4 @@ void CTeleWhirlwindObject::fire(const Fvector& target, float power)
 void CTeleWhirlwindObject::set_throw_power(float throw_pow) { throw_power = throw_pow; }
 void CTeleWhirlwindObject::switch_state(ETelekineticState new_state) { inherited::switch_state(new_state); }
 
-bool CTeleWhirlwindObject::can_activate(CPhysicsShellHolder* obj) { return (obj != NULL); }
+bool CTeleWhirlwindObject::can_activate(CPhysicsShellHolder* obj) { return !!obj; }

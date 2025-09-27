@@ -5,6 +5,7 @@
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "phdestroyable.h"
@@ -106,7 +107,8 @@ bool CCar::bfAssignObject(CScriptEntityAction* tpEntityAction)
         }
         return false;
     }
-    SCarLight* light = NULL;
+
+    SCarLight* light{};
     if (m_lights.findLight(l_sBoneID, light))
     {
         switch (l_tObjectAction.m_tGoalType)
@@ -181,13 +183,14 @@ void CCar::OnKeyboardPress(int cmd)
     }
     break;
     case kUSE: break;
-    };
+    }
 }
 
 void CCar::OnKeyboardRelease(int cmd)
 {
     if (Remote())
         return;
+
     switch (cmd)
     {
     case kACCEL: break;
@@ -204,7 +207,7 @@ void CCar::OnKeyboardRelease(int cmd)
             OwnerActor()->steer_Vehicle(0);
         break;
     case kJUMP: ReleaseBreaks(); break;
-    };
+    }
 }
 
 void CCar::OnKeyboardHold(int cmd)
@@ -244,21 +247,25 @@ void CCar::OnKeyboardHold(int cmd)
     //	clamp(m_vCamDeltaHP.x, -PI_DIV_2,	PI_DIV_2);
     //	clamp(m_vCamDeltaHP.y, active_camera->lim_pitch.x,	active_camera->lim_pitch.y);
 }
+
 void CCar::Action(int id, u32 flags)
 {
     if (m_car_weapon)
         m_car_weapon->Action(id, flags);
 }
+
 void CCar::SetParam(int id, Fvector2 val)
 {
     if (m_car_weapon)
         m_car_weapon->SetParam(id, val);
 }
+
 void CCar::SetParam(int id, Fvector val)
 {
     if (m_car_weapon)
         m_car_weapon->SetParam(id, val);
 }
+
 bool CCar::WpnCanHit()
 {
     if (m_car_weapon)
@@ -272,6 +279,7 @@ float CCar::FireDirDiff()
         return m_car_weapon->FireDirDiff();
     return 0.0f;
 }
+
 #include "script_game_object.h"
 #include "car_memory.h"
 #include "visual_memory_manager.h"
@@ -305,12 +313,12 @@ bool CCar::isObjectVisible(CScriptGameObject* O_)
         dir_to_object.sub(to_point, from_point).normalize_safe();
         float ray_length = from_point.distance_to(to_point);
 
-        BOOL res = Level().ObjectSpace.RayTest(from_point, dir_to_object, ray_length, collide::rqtStatic, NULL, NULL);
-        return (0 == res);
+        bool res = Level().ObjectSpace.RayTest(from_point, dir_to_object, ray_length, collide::rqtStatic, nullptr, nullptr);
+        return !res;
     }
 }
 
-bool CCar::HasWeapon() { return (m_car_weapon != NULL); }
+bool CCar::HasWeapon() { return !!m_car_weapon; }
 
 Fvector CCar::CurrentVel()
 {

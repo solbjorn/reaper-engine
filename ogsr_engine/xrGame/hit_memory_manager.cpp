@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "hit_memory_manager.h"
 #include "memory_space_impl.h"
 #include "custommonster.h"
@@ -58,11 +59,12 @@ CHitMemoryManager::~CHitMemoryManager()
 const CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
 {
     VERIFY(m_hits);
+
     HITS::const_iterator I = std::find_if(m_hits->begin(), m_hits->end(), CHitObjectPredicate(object));
     if (m_hits->end() != I)
         return (&*I);
 
-    return (0);
+    return nullptr;
 }
 
 void CHitMemoryManager::add(const CEntityAlive* entity_alive) { add(0, Fvector().set(0, 0, 1), entity_alive, 0); }
@@ -71,8 +73,8 @@ void CHitMemoryManager::Load(LPCSTR section) {}
 
 void CHitMemoryManager::reinit()
 {
-    m_hits = 0;
-    m_last_hit_object_id = ALife::_OBJECT_ID(-1);
+    m_hits = nullptr;
+    m_last_hit_object_id = std::numeric_limits<ALife::_OBJECT_ID>::max();
 }
 
 void CHitMemoryManager::reload(LPCSTR section)

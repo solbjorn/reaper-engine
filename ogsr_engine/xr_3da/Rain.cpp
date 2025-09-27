@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#pragma once
 
 #include "Rain.h"
 #include "igame_persistent.h"
@@ -144,9 +143,11 @@ void CEffect_Rain::OnFrame()
             rain_volume = 0.0f;
             return;
         }
-        snd_Ambient.play(0, sm_Looped);
-        snd_Ambient.set_position(Fvector().set(0, 0, 0));
+
+        snd_Ambient.play(nullptr, sm_Looped);
+        snd_Ambient.set_position(Fvector{});
         snd_Ambient.set_range(source_offset, source_offset * 2.f);
+
         state = stWorking;
         break;
     case stWorking:
@@ -192,7 +193,7 @@ void CEffect_Rain::Hit(Fvector& pos)
         return;
 
     Particle* P = p_allocate();
-    if (0 == P)
+    if (!P)
         return;
 
     const Fsphere& bv_sphere = m_pRender->GetDropBounds();
@@ -212,12 +213,12 @@ void CEffect_Rain::p_create()
     for (size_t it = 0; it < particle_pool.size(); it++)
     {
         Particle& P = particle_pool[it];
-        P.prev = it ? (&particle_pool[it - 1]) : 0;
-        P.next = (it < (particle_pool.size() - 1)) ? (&particle_pool[it + 1]) : 0;
+        P.prev = it ? (&particle_pool[it - 1]) : nullptr;
+        P.next = (it < (particle_pool.size() - 1)) ? (&particle_pool[it + 1]) : nullptr;
     }
 
     // active and idle lists
-    particle_active = 0;
+    particle_active = nullptr;
     particle_idle = &particle_pool.front();
 }
 
@@ -225,8 +226,8 @@ void CEffect_Rain::p_create()
 void CEffect_Rain::p_destroy()
 {
     // active and idle lists
-    particle_active = 0;
-    particle_idle = 0;
+    particle_active = nullptr;
+    particle_idle = nullptr;
 
     // pool
     particle_pool.clear();
@@ -237,13 +238,15 @@ void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 {
     VERIFY(P);
     Particle* prev = P->prev;
-    P->prev = NULL;
+    P->prev = nullptr;
     Particle* next = P->next;
-    P->next = NULL;
+    P->next = nullptr;
+
     if (prev)
         prev->next = next;
     if (next)
         next->prev = prev;
+
     if (LST == P)
         LST = next;
 }
@@ -252,24 +255,28 @@ void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 void CEffect_Rain::p_insert(Particle* P, Particle*& LST)
 {
     VERIFY(P);
-    P->prev = 0;
+    P->prev = nullptr;
     P->next = LST;
+
     if (LST)
         LST->prev = P;
+
     LST = P;
 }
 
 // determine size of _list_
 int CEffect_Rain::p_size(Particle* P)
 {
-    if (0 == P)
+    if (!P)
         return 0;
+
     int cnt = 0;
     while (P)
     {
         P = P->next;
         cnt += 1;
     }
+
     return cnt;
 }
 
@@ -277,10 +284,12 @@ int CEffect_Rain::p_size(Particle* P)
 CEffect_Rain::Particle* CEffect_Rain::p_allocate()
 {
     Particle* P = particle_idle;
-    if (0 == P)
-        return NULL;
+    if (!P)
+        return nullptr;
+
     p_remove(P, particle_idle);
     p_insert(P, particle_active);
+
     return P;
 }
 

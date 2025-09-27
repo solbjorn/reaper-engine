@@ -6,6 +6,7 @@
 
 #include "weaponammo.h"
 #include "tracer.h"
+
 // структура, описывающая пулю и ее свойства в полете
 struct SBullet
 {
@@ -47,24 +48,32 @@ struct SBullet
     float pierce;
     float wallmark_size;
     //-------------------------------------------------------------------
-    u8 m_u8ColorID;
-    RStringVec m_ExplodeParticles;
 
     // тип наносимого хита
     ALife::EHitType hit_type;
     //---------------------------------
     u32 m_dwID;
-    ref_sound m_whine_snd;
-    ref_sound m_mtl_snd;
     //---------------------------------
     u16 targetID;
-    bool operator==(u32 ID) { return ID == m_dwID; }
+    u8 m_u8ColorID;
+    //---------------------------------
+    bool m_on_bullet_hit{};
 
-    bool m_on_bullet_hit;
+    RStringVec m_ExplodeParticles;
+
+    ref_sound m_whine_snd;
+    ref_sound m_mtl_snd;
+
+    bool operator==(u32 ID) const { return ID == m_dwID; }
 
 public:
     SBullet();
+    SBullet(const SBullet&);
+    SBullet(SBullet&&);
     ~SBullet();
+
+    SBullet& operator=(const SBullet&);
+    SBullet& operator=(SBullet&&);
 
     void Init(const Fvector& position, const Fvector& direction, float start_speed, float power, float impulse, u16 sender_id, u16 sendersweapon_id, ALife::EHitType e_hit_type,
               float maximum_distance, const CCartridge& cartridge, bool SendHit);
@@ -90,13 +99,12 @@ private:
 
     friend CLevel;
 
-    enum EventType
+    enum EventType : u8
     {
-        EVENT_HIT = u8(0),
+        EVENT_HIT = 0,
         EVENT_REMOVE,
-
-        EVENT_DUMMY = u8(-1),
     };
+
     struct _event
     {
         EventType Type;

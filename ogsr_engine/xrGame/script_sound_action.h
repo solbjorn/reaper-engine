@@ -66,6 +66,8 @@ public:
     IC void SetSoundType(const ESoundTypes sound_type);
     IC void initialize();
 
+    void clone(const CScriptSoundAction& from);
+
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 

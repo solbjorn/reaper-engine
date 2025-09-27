@@ -1,7 +1,9 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+#if !__FINITE_MATH_ONLY__
 constexpr float phInfinity = std::numeric_limits<float>::infinity();
+#endif
 
 IC float* cast_fp(Fvector& fv) { return (float*)(&fv); }
 
@@ -369,8 +371,11 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
     u8 ret = TransferenceAndThrowVelToTgA(transference, throw_vel, gravity_accel, tgA, s);
     switch (ret)
     {
-    case 0: return 0; break;
-    case 2: throw_dir[1].y = tgA.y * s; throw_dir[1].normalize();
+    case 0: return 0;
+    case 2:
+        throw_dir[1].y = tgA.y * s;
+        throw_dir[1].normalize();
+        [[fallthrough]];
     case 1:
         throw_dir[0].y = tgA.x * s;
         throw_dir[0].normalize();
@@ -401,7 +406,8 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
         { \
             on_z; \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
 #define MIN_OF(x, on_x, y, on_y, z, on_z) \
     if (x < y) \
@@ -425,7 +431,8 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
         { \
             on_z; \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
 #define NON_MIN_OF(x, on_x1, on_x2, y, on_y1, on_y2, z, on_z1, on_z2) \
     if (x < y) \
@@ -469,7 +476,8 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
             on_x1; \
             on_y2; \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
 #define SORT(x, on_x1, on_x2, on_x3, y, on_y1, on_y2, on_y3, z, on_z1, on_z2, on_z3) \
     if (x < y) \
@@ -519,7 +527,9 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector& transference, float throw
             on_y2; \
             on_z3; \
         } \
-    }
+    } \
+    XR_MACRO_END()
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 struct SInertVal
@@ -543,7 +553,8 @@ IC bool valid_pos(const Fvector& P, const Fbox& B)
 }
 
 #ifdef DEBUG
-const float DET_CHECK_EPS = 0.15f; // scale -35%  !? ;)
+constexpr float DET_CHECK_EPS{0.15f}; // scale -35%  !? ;)
+
 #define VERIFY_RMATRIX(M) \
     { \
         float d = DET(M); \
@@ -553,8 +564,10 @@ const float DET_CHECK_EPS = 0.15f; // scale -35%  !? ;)
             Log("determinant- ", d); \
             VERIFY2(0, "Is not valid rotational matrix"); \
         } \
-    };
+    } \
+    XR_MACRO_END()
 #else
-#define VERIFY_RMATRIX(M)
+#define VERIFY_RMATRIX(M) XR_MACRO_END()
 #endif
-#endif
+
+#endif // MATH_UTILS_H

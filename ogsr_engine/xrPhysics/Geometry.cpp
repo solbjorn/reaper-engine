@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Geometry.h"
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
@@ -65,12 +66,6 @@ void TransformedGeometryExtensionLocalParams(dGeomID geom_transform, const dReal
     dMULTIPLY1_331(local_axis, rot, axis);
     dMULTIPLY1_331(local_pos, rot, pos);
     local_center_prg = center_prg - dDOT(local_pos, local_axis);
-}
-
-CODEGeom::CODEGeom()
-{
-    m_geom_transform = NULL;
-    m_bone_id = u16(-1);
 }
 
 CODEGeom::~CODEGeom()
@@ -266,6 +261,7 @@ void CODEGeom::set_obj_contact_cb(ObjectContactCallbackFun* occb)
         dGeomUserDataSetObjectContactCallback(m_geom_transform, occb);
     }
 }
+
 void CODEGeom::add_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
     if (!m_geom_transform)
@@ -281,6 +277,7 @@ void CODEGeom::add_obj_contact_cb(ObjectContactCallbackFun* occb)
         dGeomUserDataAddObjectContactCallback(m_geom_transform, occb);
     }
 }
+
 void CODEGeom::remove_obj_contact_cb(ObjectContactCallbackFun* occb)
 {
     if (!m_geom_transform)
@@ -296,10 +293,12 @@ void CODEGeom::remove_obj_contact_cb(ObjectContactCallbackFun* occb)
         dGeomUserDataRemoveObjectContactCallback(m_geom_transform, occb);
     }
 }
+
 void CODEGeom::set_callback_data(void* cd)
 {
     if (!m_geom_transform)
         return;
+
     if (geom())
     {
         VERIFY(dGeomGetUserData(geom()));
@@ -311,10 +310,12 @@ void CODEGeom::set_callback_data(void* cd)
         dGeomUserDataSetCallbackData(m_geom_transform, cd);
     }
 }
+
 void* CODEGeom::get_callback_data()
 {
     if (!m_geom_transform)
-        return NULL;
+        return nullptr;
+
     if (geom())
     {
         VERIFY(dGeomGetUserData(geom()));
@@ -326,10 +327,12 @@ void* CODEGeom::get_callback_data()
         return dGeomGetUserData(m_geom_transform)->callback_data;
     }
 }
+
 void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
 {
     if (!m_geom_transform)
         return;
+
     if (geom())
     {
         VERIFY(dGeomGetUserData(geom()));
@@ -357,6 +360,7 @@ void CODEGeom::set_ph_object(CPHObject* o)
         dGeomGetUserData(m_geom_transform)->ph_object = o;
     }
 }
+
 void CODEGeom::move_local_basis(const Fmatrix& inv_new_mul_old)
 {
     Fmatrix new_form;
@@ -364,35 +368,40 @@ void CODEGeom::move_local_basis(const Fmatrix& inv_new_mul_old)
     new_form.mulA_43(inv_new_mul_old);
     set_local_form(new_form);
 }
+
 void CODEGeom::build(const Fvector& ref_point)
 {
     init();
     set_position(ref_point);
 }
+
 void CODEGeom::init()
 {
     dGeomID geom = create();
-    m_geom_transform = dCreateGeomTransform(0);
+    m_geom_transform = dCreateGeomTransform(nullptr);
     dGeomTransformSetCleanup(m_geom_transform, 0);
-    dGeomSetData(m_geom_transform, 0);
+    dGeomSetData(m_geom_transform, nullptr);
     dGeomTransformSetGeom(m_geom_transform, geom);
     dGeomTransformSetInfo(m_geom_transform, 1);
     dGeomCreateUserData(geom);
     dGeomUserDataSetBoneId(geom, m_bone_id);
 }
+
 void CODEGeom::destroy()
 {
     if (!m_geom_transform)
         return;
+
     if (geom())
     {
         dGeomDestroyUserData(geom());
         dGeomDestroy(geom());
-        dGeomTransformSetGeom(m_geom_transform, 0);
+        dGeomTransformSetGeom(m_geom_transform, nullptr);
     }
+
     dGeomDestroyUserData(m_geom_transform);
     dGeomDestroy(m_geom_transform);
-    m_geom_transform = NULL;
+    m_geom_transform = nullptr;
 }
 
 CBoxGeom::CBoxGeom(const Fobb& box) { m_box = box; }
@@ -407,14 +416,15 @@ void CBoxGeom::get_mass(dMass& m)
 }
 
 float CBoxGeom::volume() { return m_box.m_halfsize.x * m_box.m_halfsize.y * m_box.m_halfsize.z * 8.f; }
-
 float CBoxGeom::radius() { return m_box.m_halfsize.x; }
+
 void CODEGeom::get_final_tx_bt(const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM)
 {
     VERIFY(m_geom_transform);
     // dGeomID		g		=	geometry_bt()						;
     get_final_tx(m_geom_transform, p, R, bufV, bufM);
 }
+
 void CODEGeom::get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* bufV, dReal* bufM)
 {
     if (is_transform(g))
@@ -429,11 +439,12 @@ void CODEGeom::get_final_tx(dGeomID g, const dReal*& p, const dReal*& R, dReal* 
         p = dGeomGetPosition(g);
     }
 }
+
 void CBoxGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
     VERIFY(m_geom_transform);
-    const dReal* rot = NULL;
-    const dReal* pos = NULL;
+    const dReal* rot{};
+    const dReal* pos{};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
@@ -506,6 +517,7 @@ void CBoxGeom::get_local_form(Fmatrix& form)
     form.k.set(m_box.m_rotate.k);
     form.c.set(m_box.m_translate);
 }
+
 void CBoxGeom::set_local_form(const Fmatrix& form)
 {
     m_box.m_rotate.i.set(form.i);
@@ -513,7 +525,8 @@ void CBoxGeom::set_local_form(const Fmatrix& form)
     m_box.m_rotate.k.set(form.k);
     m_box.m_translate.set(form.c);
 }
-dGeomID CBoxGeom::create() { return dCreateBox(0, m_box.m_halfsize.x * 2.f, m_box.m_halfsize.y * 2.f, m_box.m_halfsize.z * 2.f); }
+
+dGeomID CBoxGeom::create() { return dCreateBox(nullptr, m_box.m_halfsize.x * 2.f, m_box.m_halfsize.y * 2.f, m_box.m_halfsize.z * 2.f); }
 
 void CBoxGeom::set_position(const Fvector& ref_point)
 {
@@ -527,23 +540,23 @@ void CBoxGeom::set_position(const Fvector& ref_point)
 }
 
 CSphereGeom::CSphereGeom(const Fsphere& sphere) { m_sphere = sphere; }
+
 void CSphereGeom::get_mass(dMass& m) { dMassSetSphere(&m, 1.f, m_sphere.R); }
-
 float CSphereGeom::volume() { return 4.f * M_PI * m_sphere.R * m_sphere.R * m_sphere.R / 3.f; }
-
 float CSphereGeom::radius() { return m_sphere.R; }
 
 void CSphereGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
     VERIFY(m_geom_transform);
-    const dReal* rot = NULL;
-    const dReal* pos = NULL;
+    const dReal* rot{};
+    const dReal* pos{};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
     get_final_tx_bt(pos, rot, p, r);
     GetSphereExtensions(g, cast_fp(axis), pos, center_prg, &lo_ext, &hi_ext);
 }
+
 const Fvector& CSphereGeom::local_center() { return m_sphere.P; }
 
 void CSphereGeom::get_local_form(Fmatrix& form)
@@ -551,8 +564,9 @@ void CSphereGeom::get_local_form(Fmatrix& form)
     form.identity();
     form.c.set(m_sphere.P);
 }
+
 void CSphereGeom::set_local_form(const Fmatrix& form) { m_sphere.P.set(form.c); }
-dGeomID CSphereGeom::create() { return dCreateSphere(0, m_sphere.R); }
+dGeomID CSphereGeom::create() { return dCreateSphere(nullptr, m_sphere.R); }
 
 void CSphereGeom::set_position(const Fvector& ref_point)
 {
@@ -563,6 +577,7 @@ void CSphereGeom::set_position(const Fvector& ref_point)
 }
 
 CCylinderGeom::CCylinderGeom(const Fcylinder& cyl) { m_cylinder = cyl; }
+
 void CCylinderGeom::get_mass(dMass& m)
 {
     dMassSetCylinder(&m, 1.f, 2, m_cylinder.m_radius, m_cylinder.m_height);
@@ -575,20 +590,20 @@ void CCylinderGeom::get_mass(dMass& m)
 }
 
 float CCylinderGeom::volume() { return M_PI * m_cylinder.m_radius * m_cylinder.m_radius * m_cylinder.m_height; }
-
 float CCylinderGeom::radius() { return m_cylinder.m_radius; }
 
 void CCylinderGeom::get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext)
 {
     VERIFY(m_geom_transform);
-    const dReal* rot = NULL;
-    const dReal* pos = NULL;
+    const dReal* rot{};
+    const dReal* pos{};
     dVector3 p;
     dMatrix3 r;
     dGeomID g = geometry_bt();
     get_final_tx_bt(pos, rot, p, r);
     GetCylinderExtensions(g, cast_fp(axis), pos, rot, center_prg, &lo_ext, &hi_ext);
 }
+
 const Fvector& CCylinderGeom::local_center() { return m_cylinder.m_center; }
 
 void CCylinderGeom::get_local_form(Fmatrix& form)
@@ -601,18 +616,22 @@ void CCylinderGeom::get_local_form(Fmatrix& form)
     Fvector::generate_orthonormal_basis(form.j, form.k, form.i);
     form.c.set(m_cylinder.m_center);
 }
+
 void CCylinderGeom::set_local_form(const Fmatrix& form)
 {
     m_cylinder.m_center.set(form.c);
     m_cylinder.m_direction.set(form.j);
 }
-dGeomID CCylinderGeom::create() { return dCreateCylinder(0, m_cylinder.m_radius, m_cylinder.m_height); }
+
+dGeomID CCylinderGeom::create() { return dCreateCylinder(nullptr, m_cylinder.m_radius, m_cylinder.m_height); }
+
 void CCylinderGeom::set_position(const Fvector& ref_point)
 {
     inherited::set_position(ref_point);
-    dVector3 local_position = {m_cylinder.m_center.x - ref_point.x, m_cylinder.m_center.y - ref_point.y, m_cylinder.m_center.z - ref_point.z};
 
+    dVector3 local_position{m_cylinder.m_center.x - ref_point.x, m_cylinder.m_center.y - ref_point.y, m_cylinder.m_center.z - ref_point.z};
     dGeomSetPosition(geom(), local_position[0], local_position[1], local_position[2]);
+
     dMatrix3 R;
     Fmatrix33 m33;
     m33.j.set(m_cylinder.m_direction);

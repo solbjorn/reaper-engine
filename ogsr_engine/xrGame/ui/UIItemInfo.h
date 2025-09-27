@@ -1,4 +1,5 @@
 #pragma once
+
 #include "uiwindow.h"
 
 class CInventoryItem;
@@ -13,6 +14,8 @@ class CPhysicsShellHolder;
 
 class CUIItemInfo : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIItemInfo, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
     struct _desc_info
@@ -21,7 +24,7 @@ private:
         u32 uDescClr;
         bool bShowDescrText;
     } m_desc_info{};
-    CInventoryItem* m_pInvItem;
+    CInventoryItem* m_pInvItem{};
 
 public:
     CUIItemInfo();
@@ -36,16 +39,17 @@ public:
     void TryAddCustomInfo(CPhysicsShellHolder& obj);
 
     virtual void Draw();
-    bool m_b_force_drawing;
-    CUIStatic* UIName;
-    CUIStatic* UIWeight;
-    CUIStatic* UICost;
-    CUIStatic* UICondition;
-    CUIScrollView* UIDesc;
-    CUIProgressBar* UICondProgresBar;
-    CUIWpnParams* UIWpnParams;
-    CUIArtefactParams* UIArtefactParams;
 
-    Fvector2 UIItemImageSize;
-    CUIStatic* UIItemImage;
+    bool m_b_force_drawing{};
+    CUIStatic* UIName{};
+    CUIStatic* UIWeight{};
+    CUIStatic* UICost{};
+    CUIStatic* UICondition{};
+    CUIScrollView* UIDesc{};
+    CUIProgressBar* UICondProgresBar{};
+    CUIWpnParams* UIWpnParams{};
+    CUIArtefactParams* UIArtefactParams{};
+
+    Fvector2 UIItemImageSize{};
+    CUIStatic* UIItemImage{};
 };

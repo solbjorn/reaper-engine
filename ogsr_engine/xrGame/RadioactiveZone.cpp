@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "radioactivezone.h"
 #include "hudmanager.h"
 #include "level.h"
@@ -8,9 +9,8 @@
 #include "Hit.h"
 #include "../xr_3da/bone.h"
 
-CRadioactiveZone::CRadioactiveZone(void) {}
-
-CRadioactiveZone::~CRadioactiveZone(void) {}
+CRadioactiveZone::CRadioactiveZone() = default;
+CRadioactiveZone::~CRadioactiveZone() = default;
 
 void CRadioactiveZone::Load(LPCSTR section) { inherited::Load(section); }
 

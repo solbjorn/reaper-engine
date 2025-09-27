@@ -1,7 +1,11 @@
 #include "stdafx.h"
+
 #include "GameMtlLib.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
 
 CGameMtlLibrary GMLib;
 
@@ -107,7 +111,7 @@ void CGameMtlLibrary::Load()
     }
 
     const u32 mtlCount = materials.size();
-    material_pairs_rt.resize(mtlCount * mtlCount, 0);
+    material_pairs_rt.resize(mtlCount * mtlCount, nullptr);
 
     for (const auto& mtlPair : material_pairs)
     {
@@ -131,14 +135,14 @@ void CGameMtlLibrary::Load()
 
 u64 CGameMtlLibrary::get_hash()
 {
-    XXH64_hash_t xxh = XXH64_hash_t(-1);
+    xxh::XXH64_hash_t xxh = std::numeric_limits<xxh::XXH64_hash_t>::max();
     string_path name;
 
     if (!FS.exist(name, _game_data_, GAMEMTL_FILENAME))
         return xxh;
 
     IReader* r = FS.r_open(name);
-    xxh = XXH3_64bits(r->pointer(), r->length());
+    xxh = xxh::XXH3_64bits(r->pointer(), r->length());
     FS.r_close(r);
 
     return xxh;

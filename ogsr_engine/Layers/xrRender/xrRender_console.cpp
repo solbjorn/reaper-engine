@@ -354,18 +354,22 @@ class CCC_tf_Aniso : public CCC_Integer
 public:
     void apply()
     {
-        if (0 == HW.pDevice)
+        if (!HW.pDevice)
             return;
+
         int val = *value;
         clamp(val, 1, 16);
         SSManager.SetMaxAnisotropy(val);
     }
-    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 1, 16) {}
+
+    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer{N, v, 1, 16} {}
+
     virtual void Execute(LPCSTR args)
     {
         CCC_Integer::Execute(args);
         apply();
     }
+
     virtual void Status(TStatus& S)
     {
         CCC_Integer::Status(S);
@@ -380,18 +384,20 @@ class CCC_tf_MipBias : public CCC_Float
 public:
     void apply()
     {
-        if (0 == HW.pDevice)
+        if (!HW.pDevice)
             return;
 
         SSManager.SetMipLODBias(*value);
     }
 
-    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.f, +3.f) {}
+    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float{N, v, -3.f, +3.f} {}
+
     virtual void Execute(LPCSTR args)
     {
         CCC_Float::Execute(args);
         apply();
     }
+
     virtual void Status(TStatus& S)
     {
         CCC_Float::Status(S);
@@ -405,12 +411,14 @@ class CCC_Screenshot : public IConsole_Command
 
 public:
     CCC_Screenshot(LPCSTR N) : IConsole_Command(N) {}
+
     virtual void Execute(LPCSTR args)
     {
         string_path name;
         name[0] = 0;
+
         sscanf(args, "%s", name);
-        LPCSTR image = xr_strlen(name) ? name : 0;
+        LPCSTR image = xr_strlen(name) ? name : nullptr;
         RImplementation.Screenshot(IRender_interface::SM_NORMAL, image);
     }
 };
@@ -420,7 +428,8 @@ class CCC_ModelPoolStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ModelPoolStat, IConsole_Command);
 
 public:
-    CCC_ModelPoolStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { RImplementation.Models->dump(); }
 };
 
@@ -457,7 +466,7 @@ class CCC_VideoMemoryStats : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_VideoMemoryStats, IConsole_Command);
 
 public:
-    CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -497,7 +506,8 @@ class CCC_DumpResources : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpResources, IConsole_Command);
 
 public:
-    CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         RImplementation.Models->dump();
@@ -515,7 +525,7 @@ class CCC_Fog_Reload : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Fog_Reload, IConsole_Command);
 
 public:
-    CCC_Fog_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_Fog_Reload(LPCSTR N) : IConsole_Command{N, true} {}
     virtual void Execute(LPCSTR args) { FluidManager.UpdateProfiles(); }
 };
 #endif //	DEBUG
@@ -525,7 +535,7 @@ class CCC_PART_Export : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PART_Export, IConsole_Command);
 
 public:
-    CCC_PART_Export(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_PART_Export(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -547,7 +557,7 @@ class CCC_PART_Import : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PART_Import, IConsole_Command);
 
 public:
-    CCC_PART_Import(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {

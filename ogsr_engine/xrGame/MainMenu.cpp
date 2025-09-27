@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "MainMenu.h"
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
@@ -19,19 +20,20 @@ string128 ErrMsgBoxTemplate[] = {"message_box_session_full", "msg_box_error_load
 
 extern bool b_shniaganeed_pp;
 
-CMainMenu* MainMenu() { return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
+CMainMenu* MainMenu() { return (CMainMenu*)g_pGamePersistent->m_pMainMenu; }
+
 //----------------------------------------------------------------------------------
 #define INIT_MSGBOX(_box, _template) \
     { \
         _box = xr_new<CUIMessageBoxEx>(); \
         _box->Init(_template); \
-    }
+    } \
+    XR_MACRO_END()
 //----------------------------------------------------------------------------------
 
 CMainMenu::CMainMenu()
 {
     m_Flags.zero();
-    m_startDialog = NULL;
     m_screenshotFrame = u32(-1);
     g_pGamePersistent->m_pMainMenu = this;
     if (Device.b_is_Ready)
@@ -39,7 +41,7 @@ CMainMenu::CMainMenu()
 
     ReadTextureInfo();
 
-    g_btnHint = NULL;
+    g_btnHint = nullptr;
     m_deactivated_frame = 0;
 
     //---------------------------------------------------------------
@@ -60,7 +62,7 @@ CMainMenu::~CMainMenu()
 {
     xr_delete(g_btnHint);
     xr_delete(m_startDialog);
-    g_pGamePersistent->m_pMainMenu = NULL;
+    g_pGamePersistent->m_pMainMenu = nullptr;
     delete_data(m_pMB_ErrDlgs);
     CurrentSound.destroy();
 }
@@ -92,7 +94,7 @@ void CMainMenu::ReadTextureInfo()
     for (; fit != fit_e; ++fit)
     {
         string_path fn1, fn2, fn3;
-        _splitpath((*fit).name.c_str(), fn1, fn2, fn3, 0);
+        _splitpath((*fit).name.c_str(), fn1, fn2, fn3, nullptr);
 
         xr_strcpy(fn1, "textures_descr\\");
         xr_strcat(fn1, fn3);
@@ -158,7 +160,7 @@ void CMainMenu::Activate(bool bActivate)
             Device.seqFrame.Remove(g_pGameLevel);
             Device.seqRender.Remove(g_pGameLevel);
             CCameraManager::ResetPP();
-        };
+        }
         Device.seqRender.Add(this, 4); // 1-console 2-cursor 3-tutorial
 
         if (!g_pGameLevel)
@@ -196,7 +198,8 @@ void CMainMenu::Activate(bool bActivate)
         {
             Device.seqFrame.Add(g_pGameLevel);
             Device.seqRender.Add(g_pGameLevel);
-        };
+        }
+
         if (m_Flags.test(flRestoreConsole))
             Console->Show();
 
@@ -223,14 +226,15 @@ bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
 
 // IInputReceiver
-static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
+constexpr int mouse_button_2_key[]{MOUSE_1, MOUSE_2, MOUSE_3};
+
 void CMainMenu::IR_OnMousePress(int btn)
 {
     if (!IsActive())
         return;
 
     IR_OnKeyboardPress(mouse_button_2_key[btn]);
-};
+}
 
 void CMainMenu::IR_OnMouseRelease(int btn)
 {
@@ -238,7 +242,7 @@ void CMainMenu::IR_OnMouseRelease(int btn)
         return;
 
     IR_OnKeyboardRelease(mouse_button_2_key[btn]);
-};
+}
 
 void CMainMenu::IR_OnMouseHold(int btn)
 {
@@ -246,7 +250,7 @@ void CMainMenu::IR_OnMouseHold(int btn)
         return;
 
     IR_OnKeyboardHold(mouse_button_2_key[btn]);
-};
+}
 
 void CMainMenu::IR_OnMouseMove(int x, int y)
 {
@@ -255,9 +259,9 @@ void CMainMenu::IR_OnMouseMove(int x, int y)
 
     if (MainInputReceiver())
         MainInputReceiver()->IR_OnMouseMove(x, y);
-};
+}
 
-void CMainMenu::IR_OnMouseStop(int x, int y) {};
+void CMainMenu::IR_OnMouseStop(int x, int y) {}
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {
@@ -277,7 +281,7 @@ void CMainMenu::IR_OnKeyboardPress(int dik)
 
     if (MainInputReceiver())
         MainInputReceiver()->IR_OnKeyboardPress(dik);
-};
+}
 
 void CMainMenu::IR_OnKeyboardRelease(int dik)
 {
@@ -286,7 +290,7 @@ void CMainMenu::IR_OnKeyboardRelease(int dik)
 
     if (MainInputReceiver())
         MainInputReceiver()->IR_OnKeyboardRelease(dik);
-};
+}
 
 void CMainMenu::IR_OnKeyboardHold(int dik)
 {
@@ -295,7 +299,7 @@ void CMainMenu::IR_OnKeyboardHold(int dik)
 
     if (MainInputReceiver())
         MainInputReceiver()->IR_OnKeyboardHold(dik);
-};
+}
 
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
@@ -392,7 +396,7 @@ void CMainMenu::OnFrame()
         {
             Device.seqFrame.Remove(g_pGameLevel);
             Device.seqRender.Remove(g_pGameLevel);
-        };
+        }
 
         if (m_Flags.test(flRestoreConsole))
             Console->Show();
@@ -414,11 +418,13 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, LPCSTR name)
     {
         m_Flags.set(flGameSaveScreenshot, TRUE);
         strcpy_s(m_screenshot_name, name);
+
         if (g_pGameLevel && m_Flags.test(flActive))
         {
             Device.seqFrame.Add(g_pGameLevel);
             Device.seqRender.Add(g_pGameLevel);
-        };
+        }
+
         m_screenshotFrame = Device.dwFrame + 1;
         m_Flags.set(flRestoreConsole, Console->bVisible);
         Console->Hide();
@@ -433,7 +439,7 @@ void CMainMenu::RegisterPPDraw(CUIWindow* w)
 
 void CMainMenu::UnregisterPPDraw(CUIWindow* w) { m_pp_draw_wnds.erase(std::remove(m_pp_draw_wnds.begin(), m_pp_draw_wnds.end(), w), m_pp_draw_wnds.end()); }
 
-void CMainMenu::SetErrorDialog(EErrorDlg ErrDlg) { m_NeedErrDialog = ErrDlg; };
+void CMainMenu::SetErrorDialog(EErrorDlg ErrDlg) { m_NeedErrDialog = ErrDlg; }
 
 void CMainMenu::CheckForErrorDlg()
 {
@@ -441,7 +447,7 @@ void CMainMenu::CheckForErrorDlg()
         return;
     StartStopMenu(m_pMB_ErrDlgs[m_NeedErrDialog], false);
     m_NeedErrDialog = ErrNoError;
-};
+}
 
 void CMainMenu::DestroyInternal(bool bForce)
 {

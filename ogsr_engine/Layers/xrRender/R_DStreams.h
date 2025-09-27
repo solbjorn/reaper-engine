@@ -1,6 +1,5 @@
 #ifndef r_DStreamsH
 #define r_DStreamsH
-#pragma once
 
 enum
 {
@@ -15,13 +14,26 @@ private:
     u32 mSize; // size in bytes
     u32 mPosition; // position in bytes
     u32 mDiscardID; // ID of discard - usually for caching
-public:
-    ID3DVertexBuffer* old_pVB;
+
 #ifdef DEBUG
     u32 dbg_lock;
 #endif
+
+public:
+    ID3DVertexBuffer* old_pVB;
+
 private:
-    void _clear();
+    void _clear()
+    {
+        pVB = nullptr;
+        mSize = 0;
+        mPosition = 0;
+        mDiscardID = 0;
+
+#ifdef DEBUG
+        dbg_lock = 0;
+#endif
+    }
 
 public:
     void Create();
@@ -37,8 +49,13 @@ public:
     void Unlock(u32 Count, u32 Stride);
     u32 GetSize() const { return mSize; }
 
-    _VertexStream();
-    ~_VertexStream() { Destroy(); };
+    _VertexStream() { _clear(); }
+    _VertexStream(const _VertexStream&) = default;
+    _VertexStream(_VertexStream&&) = default;
+    ~_VertexStream() { Destroy(); }
+
+    _VertexStream& operator=(const _VertexStream&) = default;
+    _VertexStream& operator=(_VertexStream&&) = default;
 };
 
 class _IndexStream
@@ -55,7 +72,7 @@ public:
 private:
     void _clear()
     {
-        pIB = NULL;
+        pIB = nullptr;
         mSize = 0;
         mPosition = 0;
         mDiscardID = 0;
@@ -74,7 +91,13 @@ public:
     u16* Lock(u32 Count, u32& vOffset);
     void Unlock(u32 RealCount);
 
-    _IndexStream() { _clear(); };
-    ~_IndexStream() { Destroy(); };
+    _IndexStream() { _clear(); }
+    _IndexStream(const _IndexStream&) = default;
+    _IndexStream(_IndexStream&&) = default;
+    ~_IndexStream() { Destroy(); }
+
+    _IndexStream& operator=(const _IndexStream&) = default;
+    _IndexStream& operator=(_IndexStream&&) = default;
 };
+
 #endif

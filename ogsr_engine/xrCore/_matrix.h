@@ -307,9 +307,9 @@ public:
     __declspec(property(get = get_43, put = set_43)) T _43;
     __declspec(property(get = get_44, put = set_44)) T _44;
 
-    constexpr inline _matrix() = default;
-    constexpr inline _matrix(const Self& a) { set(a); }
-    constexpr inline _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15)
+    constexpr inline _matrix() noexcept = default;
+
+    constexpr inline _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15) noexcept
     {
         if (std::is_constant_evaluated())
             cm = DirectX::XMFLOAT4X4A(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
@@ -317,7 +317,20 @@ public:
             mm = DirectX::XMMatrixSet(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
     }
 
-    constexpr inline SelfRef operator=(const Self& a) { return set(a); }
+    constexpr inline _matrix(const Self& a) noexcept { set(a); }
+    constexpr _matrix(Self&& that) noexcept { *this = std::move(that); }
+
+    constexpr inline SelfRef operator=(const Self& a) noexcept { return set(a); }
+
+    constexpr Self& operator=(Self&& that) noexcept
+    {
+        if (std::is_constant_evaluated())
+            this->cm = std::move(that.cm);
+        else
+            this->mm = std::move(that.mm);
+
+        return *this;
+    }
 
     // Class members
     constexpr inline SelfRef set(const Self& a)
@@ -423,28 +436,28 @@ public:
         B.set(*this);
         mul(A, B);
         return *this;
-    };
+    }
     constexpr inline SelfRef mulB_44(const Self& B) // mul before
     {
         Self A;
         A.set(*this);
         mul(A, B);
         return *this;
-    };
+    }
     constexpr ICF SelfRef mulA_43(const Self& A) // mul after (no projection)
     {
         Self B;
         B.set(*this);
         mul_43(A, B);
         return *this;
-    };
+    }
     constexpr ICF SelfRef mulB_43(const Self& B) // mul before (no projection)
     {
         Self A;
         A.set(*this);
         mul_43(A, B);
         return *this;
-    };
+    }
     constexpr inline SelfRef invert(const Self& a)
     { // important: this is 4x3 invert, not the 4x4 one
         // faster than self-invert

@@ -17,10 +17,11 @@ class FS_file_list
     xr_vector<LPSTR>* m_p;
 
 public:
-    FS_file_list(xr_vector<LPSTR>* p) : m_p(p) {}
+    FS_file_list(xr_vector<LPSTR>* p) : m_p{p} {}
+
     u32 Size() { return m_p->size(); }
     LPCSTR GetAt(u32 idx) { return m_p->at(idx); }
-    void Free() { FS.file_list_close(m_p); };
+    void Free() { FS.file_list_close(m_p); }
 };
 
 struct FS_item
@@ -162,7 +163,7 @@ namespace stdfs = std::filesystem;
 static std::string get_engine_dir() { return stdfs::current_path().string(); }
 
 // Перебор файлов в папке, подкаталоги не учитываются.
-static void directory_iterator(const char* dir, const luabind::functor<void>& iterator_func)
+static void directory_iterator(const char* dir, sol::function iterator_func)
 {
     if (!stdfs::exists(dir))
         return;
@@ -173,7 +174,7 @@ static void directory_iterator(const char* dir, const luabind::functor<void>& it
 }
 
 // Перебор файлов в папке включая подкаталоги.
-static void recursive_directory_iterator(const char* dir, const luabind::functor<void>& iterator_func)
+static void recursive_directory_iterator(const char* dir, sol::function iterator_func)
 {
     if (!stdfs::exists(dir))
         return;

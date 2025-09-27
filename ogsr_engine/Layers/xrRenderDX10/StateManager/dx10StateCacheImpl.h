@@ -41,7 +41,8 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::GetState(StateDecs& desc)
 template <class IDeviceState, class StateDecs>
 IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs& desc, u64 StateXXH)
 {
-    u32 res = 0xffffffff;
+    u32 res{std::numeric_limits<u32>::max()};
+
     for (u32 i = 0; i < m_StateArray.size(); ++i)
     {
         if (m_StateArray[i].m_xxh == StateXXH)
@@ -56,10 +57,10 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs
         }
     }
 
-    if (res != 0xffffffff)
+    if (res != std::numeric_limits<u32>::max())
         return m_StateArray[res].m_pState;
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 #endif //	dx10StateCacheImpl_included

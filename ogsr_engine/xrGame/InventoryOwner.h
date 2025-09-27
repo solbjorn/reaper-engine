@@ -54,7 +54,7 @@ public:
 
     // обновление
     virtual void UpdateInventoryOwner(u32 deltaT);
-    virtual bool CanPutInSlot(PIItem item, u32 slot) { return true; };
+    virtual bool CanPutInSlot(PIItem item, u32 slot) { return true; }
 
     CPda* GetPDA() const;
 
@@ -65,7 +65,7 @@ public:
     // торговля и общение с персонажем
 
     virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
-    virtual void OnFollowerCmd(int cmd) {}; // redefine for CAI_Stalkker
+    virtual void OnFollowerCmd(int cmd) {} // redefine for CAI_Stalkker
     // инициализация объекта торговли
     CTrade* GetTrade();
 
@@ -91,17 +91,17 @@ public:
     virtual LPCSTR Name() const;
     u32 get_money() const { return m_money; }
     void set_money(u32 amount, bool bSendEvent);
-    void SetName(LPCSTR name) { m_game_name = name; };
+    void SetName(LPCSTR name) { m_game_name = name; }
 
 protected:
-    u32 m_money;
     // торговля
-    CTrade* m_pTrade;
-    bool m_bTalking;
-    CInventoryOwner* m_pTalkPartner;
-
-    bool m_bAllowTalk;
+    CTrade* m_pTrade{};
+    u32 m_money;
     bool m_bAllowTrade;
+
+    bool m_bTalking;
+    bool m_bAllowTalk;
+    CInventoryOwner* m_pTalkPartner;
 
     u32 m_tmp_active_slot_num;
 
@@ -147,7 +147,7 @@ public:
     virtual float GetCarryWeight() const;
     virtual float MaxCarryWeight() const;
 
-    virtual CCustomOutfit* GetOutfit() const { return NULL; };
+    virtual CCustomOutfit* GetOutfit() const { return nullptr; }
 
     //////////////////////////////////////////////////////////////////////////
     // игровые характеристики персонажа
@@ -157,7 +157,7 @@ public:
         VERIFY(m_pCharacterInfo);
         return *m_pCharacterInfo;
     }
-    IC const CSpecificCharacter& SpecificCharacter() const { return CharacterInfo().m_SpecificCharacter; };
+    IC const CSpecificCharacter& SpecificCharacter() const { return CharacterInfo().m_SpecificCharacter; }
     bool InfinitiveMoney() { return CharacterInfo().m_SpecificCharacter.MoneyDef().inf_money; }
 
     // установка группировки на клиентском и серверном объкте
@@ -169,9 +169,9 @@ public:
 
     // для работы с relation system
     u16 object_id() const;
-    CHARACTER_COMMUNITY_INDEX Community() const { return CharacterInfo().Community().index(); };
-    CHARACTER_RANK_VALUE Rank() const { return CharacterInfo().Rank().value(); };
-    CHARACTER_REPUTATION_VALUE Reputation() const { return CharacterInfo().Reputation().value(); };
+    CHARACTER_COMMUNITY_INDEX Community() const { return CharacterInfo().Community().index(); }
+    CHARACTER_RANK_VALUE Rank() const { return CharacterInfo().Rank().value(); }
+    CHARACTER_REPUTATION_VALUE Reputation() const { return CharacterInfo().Reputation().value(); }
 
 protected:
     CCharacterInfo* m_pCharacterInfo;
@@ -188,7 +188,7 @@ public:
     virtual void OnItemDrop(CInventoryItem* inventory_item);
 
     virtual void OnItemDropUpdate();
-    virtual bool use_bolts() const { return (true); }
+    virtual bool use_bolts() const { return true; }
     virtual void spawn_supplies();
 
     CInventoryItem* GetCurrentOutfit() const;
@@ -212,12 +212,12 @@ public:
     virtual void on_weapon_hide(CWeapon* weapon);
 
 public:
-    virtual bool use_simplified_visual() const { return (false); };
+    virtual bool use_simplified_visual() const { return false; }
 
 private:
-    CTradeParameters* m_trade_parameters;
+    CTradeParameters* m_trade_parameters{};
     CPurchaseList* m_purchase_list;
-    BOOL m_need_osoznanie_mode;
+    bool m_need_osoznanie_mode{};
 
 public:
     IC CTradeParameters& trade_parameters() const;
@@ -230,7 +230,7 @@ public:
     virtual bool use_default_throw_force();
     virtual float missile_throw_force();
     virtual bool use_throw_randomness();
-    virtual bool NeedOsoznanieMode() { return m_need_osoznanie_mode != FALSE; }
+    virtual bool NeedOsoznanieMode() { return m_need_osoznanie_mode; }
 
     void SetNextItemSlot(u32);
 };

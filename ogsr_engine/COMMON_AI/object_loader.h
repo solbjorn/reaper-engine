@@ -8,6 +8,18 @@
 
 #pragma once
 
+#include "object_interfaces.h"
+#include "object_type_traits.h"
+
+namespace object_loader
+{
+template <typename T, typename M>
+struct default_load
+{
+    void operator()(T& data, M& stream) const { stream.r(&data, sizeof(T)); }
+};
+} // namespace object_loader
+
 template <class M, typename P>
 struct CLoader
 {
@@ -18,7 +30,7 @@ struct CLoader
         static void load_data(std::enable_if_t<!a, T&> data, M& stream, const P& /*p*/)
         {
             static_assert(!std::is_polymorphic<T>::value, "Cannot load polymorphic classes as binary data.");
-            stream.r(&data, sizeof(T));
+            object_loader::default_load<T, M>{}(data, stream);
         }
 
         template <bool a>
@@ -72,22 +84,22 @@ struct CLoader
         struct add_helper
         {
             template <bool a>
-            static void add(std::enable_if_t<!a, T1&> data, T2& value)
+            static void add(std::enable_if_t<!a, T1&> data, T2&& value)
             {
-                data.push_back(value);
+                data.push_back(std::move(value));
             }
 
             template <bool a>
-            static void add(std::enable_if_t<a, T1&> data, T2& value)
+            static void add(std::enable_if_t<a, T1&> data, T2&& value)
             {
-                data.insert(value);
+                data.insert(std::move(value));
             }
         };
 
         template <typename T1, typename T2>
-        IC static void add(T1& data, T2& value)
+        IC static void add(T1& data, T2&& value)
         {
-            add_helper<T1, T2>::template add<is_tree_structure<T1>::value>(data, value);
+            add_helper<T1, T2>::template add<is_tree_structure<T1>::value>(data, std::move(value));
         }
 
         template <typename T>
@@ -101,7 +113,7 @@ struct CLoader
                 typename T::value_type temp;
                 CLoader<M, P>::load_data(temp, stream, p);
                 if (p(data, temp))
-                    add(data, temp);
+                    add(data, std::move(temp));
             }
         }
     };
@@ -171,7 +183,7 @@ struct CLoader
             }
             *I = !!(mask & (u32(1) << j));
         }
-    };
+    }
 
     template <typename T, int size>
     IC static void load_data(svector<T, size>& data, M& stream, const P& p)
@@ -184,7 +196,7 @@ struct CLoader
             typename svector<T, size>::value_type temp;
             CLoader<M, P>::load_data(temp, stream, p);
             if (p(data, temp))
-                data.push_back(temp);
+                data.push_back(std::move(temp));
         }
     }
 
@@ -203,7 +215,7 @@ struct CLoader
             typename T1<T2, T3>::value_type t;
             CLoader<M, P>::load_data(t, stream, p);
             if (p(temp, t))
-                temp.push(t);
+                temp.push(std::move(t));
         }
         for (; !temp.empty(); temp.pop())
             data.push(temp.top());
@@ -224,7 +236,7 @@ struct CLoader
             typename T1<T2, T3, T4>::value_type t;
             CLoader<M, P>::load_data(t, stream, p);
             if (p(temp, t))
-                temp.push(t);
+                temp.push(std::move(t));
         }
         for (; !temp.empty(); temp.pop())
             data.push(temp.top());
@@ -265,8 +277,8 @@ struct CEmptyPredicate
     bool can_clear() const { return true; }
     bool can_add() const { return true; }
 };
-}; // namespace detail
-}; // namespace object_loader
+} // namespace detail
+} // namespace object_loader
 
 // Be careful with pointer:
 // it will allocate memory if pointers is nullptr,

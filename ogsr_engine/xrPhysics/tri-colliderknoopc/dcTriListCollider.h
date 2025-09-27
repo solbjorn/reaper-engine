@@ -15,7 +15,7 @@ enum
     fl_engaged_s1 = 1 << 4,
     fl_engaged_s2 = 1 << 5,
 };
-class dcTriListCollider;
+
 class dcTriListCollider
 {
     dxGeom* Geometry; // The geom object
@@ -36,8 +36,8 @@ public:
 private:
     IC void VxToGlClTriState(u32 v, CDB::TRI* T_array);
     IC void SideToGlClTriState(u32 v0, u32 v1, CDB::TRI* T_array);
-    template <class T>
-    IC int dSortTriPrimitiveCollide(T primitive, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip, const Fvector& AABB);
+    template <class Prim>
+    IC int dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip, const Fvector& AABB);
     IC dReal PointSphereTest(const dReal* center, const dReal radius, const dReal* pt, dReal* norm);
     IC dReal FragmentonSphereTest(const dReal* center, const dReal radius, const dReal* pt1, const dReal* pt2, dReal* norm);
     IC bool FragmentonSphereTest(const dReal* center, const dReal radius, const dReal* pt1, const dReal* pt2, dReal* norm, dReal& depth);
@@ -75,14 +75,16 @@ private:
     IC int Collide(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
     IC int CollidePlain(const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact,
                         int skip);
-    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Cyl)
-    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Sphere)
-    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Box)
+
+    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Cyl);
+    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Sphere);
+    TRI_PRIMITIVE_COLIDE_CLASS_DECLARE(Box);
 };
 
-TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Box)
-TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Cyl)
-TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Sphere)
+TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Box);
+TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Cyl);
+TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Sphere);
+
 IC void dcTriListCollider::VxToGlClTriState(u32 v, CDB::TRI* T_array)
 {
     // CDB::TRI*       T_array      = Level().ObjectSpace.GetStaticTris();
@@ -116,4 +118,4 @@ IC void dcTriListCollider::SideToGlClTriState(u32 v0, u32 v1, CDB::TRI* T_array)
     }
 }
 
-#endif //__DCTRILISTCOLLIDER_INCLUDED__(
+#endif // __DCTRILISTCOLLIDER_INCLUDED__

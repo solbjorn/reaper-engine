@@ -14,7 +14,7 @@ xr_token actor_stats_token[]={
     {0,						0}
 };
 */
-void SStatDetailBData::save(IWriter& stream)
+void SStatDetailBData::save(IWriter& stream) const
 {
     save_data(key, stream);
     save_data(int_count, stream);
@@ -33,11 +33,11 @@ void SStatDetailBData::load(IReader& stream)
 }
 
 ////////////////////////////////////////////////
-void SStatSectionData::save(IWriter& stream)
+void SStatSectionData::save(IWriter& stream) const
 {
     save_data(data, stream);
     save_data(key, stream);
-};
+}
 
 void SStatSectionData::load(IReader& stream)
 {
@@ -61,7 +61,7 @@ void SStatSectionData::load(IReader& stream)
     }
     else
         load_data(key, stream);
-};
+}
 
 SStatDetailBData& SStatSectionData::GetData(const shared_str& key)
 {

@@ -13,9 +13,9 @@ class CDeviceResetNotifier : public pureDeviceReset
     RTTI_DECLARE_TYPEINFO(CDeviceResetNotifier, pureDeviceReset);
 
 public:
-    CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); };
-    virtual ~CDeviceResetNotifier() { Device.seqDeviceReset.Remove(this); };
-    virtual void OnDeviceReset() {};
+    CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); }
+    virtual ~CDeviceResetNotifier() { Device.seqDeviceReset.Remove(this); }
+    virtual void OnDeviceReset() {}
 };
 
 //---------------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ public:
     Fvector2 m_scale_;
     Fvector2* m_current_scale;
 
-    IC float ClientToScreenScaledX(float left) { return left * m_current_scale->x; };
-    IC float ClientToScreenScaledY(float top) { return top * m_current_scale->y; };
+    IC float ClientToScreenScaledX(float left) { return left * m_current_scale->x; }
+    IC float ClientToScreenScaledY(float top) { return top * m_current_scale->y; }
 
     xr_stack<Frect> m_Scissors;
 

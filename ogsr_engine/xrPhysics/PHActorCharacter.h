@@ -5,21 +5,16 @@
 
 struct SPHCharacterRestrictor
 {
-    SPHCharacterRestrictor(CPHCharacter::ERestrictionType Ttype)
-    {
-        m_type = Ttype;
-        m_character = NULL;
-        m_restrictor = NULL;
-        m_restrictor_transform = NULL;
-        m_restrictor_radius = 0.1f;
-    }
-    ~SPHCharacterRestrictor() { Destroy(); };
-    CPHCharacter* m_character;
-    CPHCharacter::ERestrictionType m_type;
+    SPHCharacterRestrictor(CPHCharacter::ERestrictionType Ttype) : m_type{Ttype} {}
+    ~SPHCharacterRestrictor() { Destroy(); }
 
-    dGeomID m_restrictor;
-    dGeomID m_restrictor_transform;
-    float m_restrictor_radius;
+    CPHCharacter* m_character{};
+    dGeomID m_restrictor{};
+    dGeomID m_restrictor_transform{};
+
+    CPHCharacter::ERestrictionType m_type;
+    float m_restrictor_radius{0.1f};
+
     void SetObjectContactCallback(ObjectContactCallbackFun* callback);
     void SetMaterial(u16 material);
     void Create(CPHCharacter* ch, dVector3 sizes);
@@ -31,8 +26,10 @@ struct SPHCharacterRestrictor
 template <CPHCharacter::ERestrictionType Ttype>
 struct TPHCharacterRestrictor : public SPHCharacterRestrictor
 {
-    TPHCharacterRestrictor() : SPHCharacterRestrictor(Ttype) {}
+    TPHCharacterRestrictor() : SPHCharacterRestrictor{Ttype} {}
+
     void Create(CPHCharacter* ch, dVector3 sizes) { dGeomUserDataSetObjectContactCallback(m_restrictor, RestrictorCallBack); }
+
     static void RestrictorCallBack(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
     {
         do_colide = false;
@@ -45,19 +42,22 @@ struct TPHCharacterRestrictor : public SPHCharacterRestrictor
         if (!(ud1 && ud2))
             return;
 
-        CPHObject* o1 = NULL;
+        CPHObject* o1{};
         if (ud1)
             o1 = ud1->ph_object;
-        CPHObject* o2 = NULL;
+
+        CPHObject* o2{};
         if (ud2)
             o2 = ud2->ph_object;
+
         if (!(o1 && o2))
             return;
+
         if (o1->CastType() != CPHObject::tpCharacter || o2->CastType() != CPHObject::tpCharacter)
             return;
 
-        CPHCharacter* ch1 = static_cast<CPHCharacter*>(o1);
-        CPHCharacter* ch2 = static_cast<CPHCharacter*>(o2);
+        CPHCharacter* ch1{static_cast<CPHCharacter*>(o1)};
+        CPHCharacter* ch2{static_cast<CPHCharacter*>(o2)};
 
         if (bo1)
         {
@@ -71,9 +71,11 @@ struct TPHCharacterRestrictor : public SPHCharacterRestrictor
         }
     }
 };
+
 DEFINE_VECTOR(SPHCharacterRestrictor*, RESRICTORS_V, RESTRICTOR_I);
 // typedef SPHCharacterRestrictor*		RESRICTORS_V[2];
 // typedef SPHCharacterRestrictor**	RESTRICTOR_I;
+
 IC RESTRICTOR_I begin(RESRICTORS_V& v)
 {
     // return v;

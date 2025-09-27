@@ -149,10 +149,11 @@ protected:
 
 public:
     void net_Relcase(CObject* O);
+
     void set_monsters_aura_radius(float r)
     {
         if (r > monsters_aura_radius)
             monsters_aura_radius = r;
-    };
+    }
 };
 XR_SOL_BASE_CLASSES(CActorCondition);

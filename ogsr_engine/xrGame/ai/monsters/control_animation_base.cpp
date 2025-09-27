@@ -1,9 +1,10 @@
 #include "stdafx.h"
+
 #include "control_animation_base.h"
 #include "control_direction_base.h"
 #include "control_movement_base.h"
 #include "BaseMonster/base_monster.h"
-#include "../../PHMovementControl.h"
+#include "PHMovementControl.h"
 #include "anim_triple.h"
 #include "../../../Include\xrRender\Kinematics.h"
 #include "../../detail_path_manager.h"
@@ -53,7 +54,7 @@ void CControlAnimationBase::reinit()
     m_cur_anim.time_started = 0;
     m_cur_anim.speed._set_current(-1.f);
     m_cur_anim.speed._set_target(-1.f);
-    m_cur_anim.blend = 0;
+    m_cur_anim.blend = nullptr;
     m_cur_anim.speed_change_vel = 1.f;
 
     prev_motion = cur_anim_info().get_motion();
@@ -224,7 +225,7 @@ void CControlAnimationBase::select_animation(bool anim_end)
     string128 s1, s2;
     MotionID cur_anim = smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2, *anim_it->target_name, _itoa(index, s1, 10)));
     if (!cur_anim.valid())
-        FATAL(s2);
+        FATAL("%s", s2);
 
     // Setup Com
     ctrl_data->global.set_motion(cur_anim);
@@ -329,7 +330,7 @@ SAAParam& CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
     // искать текущую анимацию в AA_VECTOR
     for (SAAParam& attack_anim : m_attack_anims)
     {
-        if ((attack_anim.motion == motion) && (attack_anim.time == time_perc))
+        if (attack_anim.motion == motion && fsimilar(attack_anim.time, time_perc))
             return attack_anim;
     }
 
@@ -340,7 +341,7 @@ SAAParam& CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 EPState CControlAnimationBase::GetState(EMotionAnim a)
 {
     // найти анимацию
-    ASSERT_FMT(u32(a) < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%u]", __FUNCTION__, m_object->cName().c_str(), a, m_anim_storage.size());
+    ASSERT_FMT(u32(a) < m_anim_storage.size(), "[%s]: %s: a[%u] m_anim_storage.size[%zu]", __FUNCTION__, m_object->cName().c_str(), a, m_anim_storage.size());
     SAnimItem* item_it = m_anim_storage[a];
     ASSERT_FMT(item_it, "[%s]: %s: m_anim_storage[%u] is NULL", __FUNCTION__, m_object->cName().c_str(), a); // VERIFY(item_it);
 
@@ -546,7 +547,8 @@ CMotionDef* CControlAnimationBase::get_motion_def(SAnimItem* it, u32 index)
     return (skeleton_animated->LL_GetMotionDef(motion_id));
 }
 
-void CControlAnimationBase::AddAnimTranslation(const MotionID& motion, LPCSTR str) { m_anim_motion_map.insert(std::make_pair(motion, str)); }
+void CControlAnimationBase::AddAnimTranslation(const MotionID& motion, LPCSTR str) { m_anim_motion_map.try_emplace(motion, str); }
+
 shared_str CControlAnimationBase::GetAnimTranslation(const MotionID& motion)
 {
     shared_str ret_value;
@@ -680,7 +682,7 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
         collide::rq_results RQR;
         collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
         ray_query_param params(m_object, enemy);
-        Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, NULL, m_object);
+        Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
         should_hit = params.m_can_hit_enemy;
     }
 
@@ -772,7 +774,7 @@ void CControlAnimationBase::init_anim_storage()
 {
     m_anim_storage.reserve(eAnimCount);
     for (u32 i = 0; i < eAnimCount; i++)
-        m_anim_storage.push_back((SAnimItem*)0);
+        m_anim_storage.emplace_back(nullptr);
 }
 
 void CControlAnimationBase::free_anim_storage()
@@ -783,7 +785,7 @@ void CControlAnimationBase::free_anim_storage()
         if (item)
         {
             xr_delete(item);
-            m_anim_storage[i] = 0;
+            m_anim_storage[i] = nullptr;
         }
     }
 }

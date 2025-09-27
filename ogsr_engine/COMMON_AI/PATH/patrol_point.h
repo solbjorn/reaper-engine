@@ -13,14 +13,12 @@ class CLevelGraph;
 class CGameLevelCrossTable;
 class CGameGraph;
 
-#include "object_interfaces.h"
 #include "game_graph_space.h"
+#include "object_loader.h"
+#include "object_saver.h"
 
-class CPatrolPoint : public IPureSerializeObject<IReader, IWriter>
+class CPatrolPoint
 {
-    RTTI_DECLARE_TYPEINFO(CPatrolPoint, IPureSerializeObject<IReader, IWriter>);
-
-public:
     friend class CPatrolPathStorage;
     friend class CPatrolPointScript;
 
@@ -45,9 +43,9 @@ private:
 
 public:
     CPatrolPoint(const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name);
-    CPatrolPoint(const CPatrolPath* path = 0);
-    virtual void load(IReader& stream);
-    virtual void save(IWriter& stream);
+    CPatrolPoint(const CPatrolPath* path = nullptr);
+    void save(IWriter& stream) const;
+    void load(IReader& stream);
     CPatrolPoint& load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream);
     CPatrolPoint& load_ini(CInifile::Sect& section, LPSTR prefix);
     IC const Fvector& position() const;
@@ -67,6 +65,18 @@ public:
 public:
     IC void path(const CPatrolPath* path);
 #endif
+};
+
+template <typename M>
+struct object_loader::default_load<CPatrolPoint, M>
+{
+    void operator()(CPatrolPoint& data, M& stream) const { data.load(stream); }
+};
+
+template <typename M>
+struct object_saver::default_save<CPatrolPoint, M>
+{
+    void operator()(const CPatrolPoint& data, M& stream) const { data.save(stream); }
 };
 
 #include "patrol_point_inline.h"

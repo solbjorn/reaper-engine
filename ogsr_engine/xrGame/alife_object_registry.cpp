@@ -99,7 +99,7 @@ void CALifeObjectRegistry::save(IWriter& memory_stream)
 
     memory_stream.close_chunk();
 
-    Msg("* %d objects are successfully saved", object_count);
+    Msg("* %u objects are successfully saved", object_count);
 
     // Real Wolf: колбек после сохранения всех объектов. 01.08.2014.
     if (g_actor)
@@ -150,15 +150,8 @@ void CALifeObjectRegistry::load(IReader& file_stream)
     m_object_ids.clear();
 
     u32 count = file_stream.r_u32();
-    CSE_ALifeDynamicObject** objects = (CSE_ALifeDynamicObject**)_alloca(count * sizeof(CSE_ALifeDynamicObject*));
+    for (u32 i = 0; i < count; i++)
+        add(get_object(file_stream));
 
-    CSE_ALifeDynamicObject** I = objects;
-    CSE_ALifeDynamicObject** E = objects + count;
-    for (; I != E; ++I)
-    {
-        *I = get_object(file_stream);
-        add(*I);
-    }
-
-    Msg("* %d objects are successfully loaded", count);
+    Msg("* %u objects are successfully loaded", count);
 }

@@ -106,7 +106,7 @@ public:
     void Perform_reject(CSE_Abstract* what, CSE_Abstract* from, int delta);
     void Perform_destroy(CSE_Abstract* tpSE_Abstract, u32 mode);
 
-    CSE_Abstract* Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpawnWithClientsMainEntityAsParent = FALSE, CSE_Abstract* tpExistedEntity = 0);
+    CSE_Abstract* Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpawnWithClientsMainEntityAsParent = false, CSE_Abstract* tpExistedEntity = nullptr);
     void Process_update(NET_Packet& P, ClientID sender);
     void Process_save(NET_Packet& P, ClientID sender);
     void Process_event(NET_Packet& P, ClientID sender);

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "postprocessanimator.h"
 #include "ActorEffector.h"
 
@@ -142,7 +143,7 @@ void CPostprocessAnimator::SetDesiredFactor(float f, float sp)
     m_factor_speed = sp;
     VERIFY(_valid(m_factor));
     VERIFY(_valid(m_dest_factor));
-};
+}
 
 void CPostprocessAnimator::SetCurrentFactor(float f)
 {
@@ -150,7 +151,7 @@ void CPostprocessAnimator::SetCurrentFactor(float f)
     m_dest_factor = f;
     VERIFY(_valid(m_factor));
     VERIFY(_valid(m_dest_factor));
-};
+}
 
 BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 {
@@ -250,6 +251,7 @@ BOOL CPostprocessAnimatorLerp::Process(SPPInfo& PPInfo)
 {
     if (!m_bStop)
         m_factor = m_get_factor_func();
+
     return CPostprocessAnimator::Process(PPInfo);
 }
 
@@ -257,6 +259,7 @@ BOOL CPostprocessAnimatorLerpConst::Process(SPPInfo& PPInfo)
 {
     if (!m_bStop)
         m_factor = m_power;
+
     return CPostprocessAnimator::Process(PPInfo);
 }
 
@@ -266,6 +269,6 @@ CPostprocessAnimatorControlled::CPostprocessAnimatorControlled(CEffectorControll
     SetFactorFunc(CallMe::fromMethod<&CEffectorController::GetFactor>(m_controller));
 }
 
-CPostprocessAnimatorControlled::~CPostprocessAnimatorControlled() { m_controller->SetPP(NULL); }
+CPostprocessAnimatorControlled::~CPostprocessAnimatorControlled() { m_controller->SetPP(nullptr); }
 
 BOOL CPostprocessAnimatorControlled::Valid() { return m_controller->Valid(); }

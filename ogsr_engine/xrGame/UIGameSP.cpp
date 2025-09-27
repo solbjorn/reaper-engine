@@ -24,8 +24,6 @@
 
 CUIGameSP::CUIGameSP()
 {
-    m_game = NULL;
-
     InventoryMenu = xr_new<CUIInventoryWnd>();
     PdaMenu = xr_new<CUIPdaWnd>();
     TalkMenu = xr_new<CUITalkWnd>();
@@ -195,7 +193,7 @@ void CUIGameSP::ReInitShownUI()
         InventoryMenu->InitInventory_delayed();
     else if (UICarBodyMenu->IsShown())
         UICarBodyMenu->UpdateLists_delayed();
-};
+}
 
 extern BOOL bShowPauseString;
 

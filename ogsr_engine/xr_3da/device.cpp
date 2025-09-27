@@ -70,7 +70,7 @@ void CRenderDevice::RenderEnd(void)
 
             Memory.mem_compact();
 
-            Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
+            Msg("* MEMORY USAGE: %u K", Memory.mem_usage() / 1024);
             Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
         }
     }
@@ -130,12 +130,10 @@ float GetMonitorRefresh()
     lpDevMode.dmSize = sizeof(DEVMODE);
     lpDevMode.dmDriverExtra = 0;
 
-    if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &lpDevMode) == 0)
-    {
+    if (!EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &lpDevMode))
         return 60.f;
-    }
-    else
-        return lpDevMode.dmDisplayFrequency;
+
+    return lpDevMode.dmDisplayFrequency;
 }
 
 void CRenderDevice::CalcFrameStats()
@@ -336,10 +334,10 @@ void CRenderDevice::ProcessFrame()
 void CRenderDevice::message_loop()
 {
     MSG msg;
-    PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
+    PeekMessage(&msg, nullptr, 0U, 0U, PM_NOREMOVE);
     while (msg.message != WM_QUIT)
     {
-        if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -361,7 +359,7 @@ static void LogOsVersion()
 
         if (NT_SUCCESS(RtlGetVersion(&osInfo)))
         {
-            Msg("--OS Version major: [%d] minor: [%d], build: [%d]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+            Msg("--OS Version major: [%lu] minor: [%lu], build: [%lu]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
                 osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
             return;
         }

@@ -15,6 +15,8 @@ class CObject;
 
 class CAgentManagerPlanner : public CActionPlanner<CAgentManager>
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerPlanner, CActionPlanner<CAgentManager>);
+
 private:
     typedef CActionPlanner<CAgentManager> inherited;
 

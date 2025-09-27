@@ -1,9 +1,11 @@
 #pragma once
+
 #include "inventory_item_object.h"
 #include "..\xr_3da\feel_touch.h"
 #include "hudsound.h"
 
 class CCustomZone;
+
 // описание типа зоны
 struct ZONE_TYPE_SHOC
 {
@@ -25,10 +27,15 @@ struct ZONE_INFO_SHOC
     // текущая частота работы датчика
     float cur_freq;
     // particle for night-vision mode
-    CParticlesObject* pParticle;
+    CParticlesObject* pParticle{};
 
-    ZONE_INFO_SHOC();
+    ZONE_INFO_SHOC() = default;
+    ZONE_INFO_SHOC(const ZONE_INFO_SHOC&) = default;
+    ZONE_INFO_SHOC(ZONE_INFO_SHOC&&) = default;
     ~ZONE_INFO_SHOC();
+
+    ZONE_INFO_SHOC& operator=(const ZONE_INFO_SHOC&) = default;
+    ZONE_INFO_SHOC& operator=(ZONE_INFO_SHOC&&) = default;
 };
 
 class CInventoryOwner;
@@ -40,8 +47,8 @@ class CCustomDetectorSHOC : public CInventoryItemObject, public Feel::Touch
 public:
     typedef CInventoryItemObject inherited;
 
-    CCustomDetectorSHOC(void);
-    virtual ~CCustomDetectorSHOC(void);
+    CCustomDetectorSHOC();
+    virtual ~CCustomDetectorSHOC();
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);
@@ -71,7 +78,6 @@ protected:
     void UpdateNightVisionMode();
 
     bool m_bWorking;
-
     float m_fRadius;
 
     // если хозяин текущий актер

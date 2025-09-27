@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_alife_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory_item.h"
@@ -39,14 +40,14 @@ using namespace StalkerSpace;
 // CStalkerActionNoALife
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionNoALife::CStalkerActionNoALife(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionNoALife::CStalkerActionNoALife(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionNoALife::initialize()
 {
     inherited::initialize();
 #ifndef STALKER_DEBUG_MODE
-    object().movement().set_desired_position(0);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_position(nullptr);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeGamePath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -56,13 +57,13 @@ void CStalkerActionNoALife::initialize()
 
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
     if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-        m_stop_weapon_handling_time += get_random_u32(30000, 60000);
+        m_stop_weapon_handling_time += xr::random_u32(30000, 60000);
 
 #else
     object().movement().set_mental_state(eMentalStateDanger);
     object().movement().set_movement_type(eMovementTypeStand);
     object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
@@ -76,7 +77,7 @@ void CStalkerActionNoALife::finalize()
 {
     inherited::finalize();
 
-    object().movement().set_desired_position(0);
+    object().movement().set_desired_position(nullptr);
 
     if (!object().g_Alive())
         return;
@@ -105,12 +106,12 @@ void CStalkerActionNoALife::execute()
 // CStalkerActionGatherItems
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionGatherItems::CStalkerActionGatherItems(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionGatherItems::CStalkerActionGatherItems(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionGatherItems::initialize()
 {
     inherited::initialize();
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -127,7 +128,7 @@ void CStalkerActionGatherItems::finalize()
 {
     inherited::finalize();
 
-    object().movement().set_desired_position(0);
+    object().movement().set_desired_position(nullptr);
 
     if (!object().g_Alive())
         return;

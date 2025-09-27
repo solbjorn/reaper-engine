@@ -174,7 +174,7 @@ void CBreakableObject::net_Destroy()
         SheduleUnregister();
     }
 
-    m_pPhysicsShell = NULL;
+    m_pPhysicsShell = nullptr;
     inherited::net_Destroy();
     xr_delete(collidable.model);
     Init();
@@ -182,6 +182,7 @@ void CBreakableObject::net_Destroy()
     Render->model_Delete(renderable.visual, TRUE);
     cNameVisual_set("");
 }
+
 void CBreakableObject::Split()
 {
     // for (u16 k=0; k<K->LL_BoneCount(); k++){
@@ -322,8 +323,8 @@ void CBreakableObject::ApplyExplosion(const Fvector& dir, float impulse)
 void CBreakableObject::Init()
 {
     fHealth = 1.f;
-    m_pUnbrokenObject = NULL;
-    m_Shell = NULL;
+    m_pUnbrokenObject = nullptr;
+    m_Shell = nullptr;
     bRemoved = false;
     m_max_frame_damage = 0.f;
     b_resived_damage = false;

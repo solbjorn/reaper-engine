@@ -534,9 +534,7 @@ static void verify_vertex(const vertex_type& v, const Fvisual* V, const CKinemat
 
 void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 {
-    u16* indices = 0;
-
-    indices = *m_Indices;
+    u16* indices{*m_Indices};
     indices += iBase;
 
     {
@@ -651,9 +649,8 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
     CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
-    BOOL result = FALSE;
-    u16* indices = 0;
-    indices = *m_Indices;
+    BOOL result{};
+    u16* indices{*m_Indices};
 
     if (*Vertices1W)
         result = _PickBoneSoft1W(r, dist, start, dir, indices + iBase, *faces);
@@ -669,10 +666,12 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
 
     return result;
 }
+
 BOOL CSkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
     return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase, iCount);
 }
+
 BOOL CSkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
     FSlideWindow& SW = nSWI.sw[0];
@@ -711,8 +710,7 @@ void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, c
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
     CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
-    u16* indices = 0;
-    indices = *m_Indices;
+    u16* indices{*m_Indices};
 
     if (*Vertices1W)
         _FillVerticesSoft1W(view, wm, normal, size, indices + iBase, *faces);
@@ -757,7 +755,7 @@ void CSkeletonX_ext::_EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
     CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
-    u16* indices = 0;
+    u16* indices{};
     //.	R_CHK				(V->pIndices->Lock(iBase,iCount,		(void**)&indices,	D3DLOCK_READONLY));
 
     VERIFY(*m_Indices);

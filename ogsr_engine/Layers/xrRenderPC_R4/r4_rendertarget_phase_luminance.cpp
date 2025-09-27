@@ -29,7 +29,7 @@ void CRenderTarget::phase_luminance()
     RCache.set_Z(FALSE);
 
     // 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
-    u_setrt(RCache, rt_LUM_64, NULL, NULL, NULL);
+    u_setrt(RCache, rt_LUM_64, nullptr, nullptr, nullptr);
 
     {
         constexpr float ts = 64;
@@ -79,7 +79,7 @@ void CRenderTarget::phase_luminance()
     }
 
     // 111: Perform LUM-SAT, pass 1, 64x64 => 8x8
-    u_setrt(RCache, rt_LUM_8, NULL, NULL, NULL);
+    u_setrt(RCache, rt_LUM_8, nullptr, nullptr, nullptr);
 
     {
         // Build filter-kernel
@@ -120,7 +120,7 @@ void CRenderTarget::phase_luminance()
 
     // 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
     u32 gpu_id = Device.dwFrame % HW.Caps.iGPUNum;
-    u_setrt(RCache, rt_LUM_pool[gpu_id * 2 + 1], NULL, NULL, NULL);
+    u_setrt(RCache, rt_LUM_pool[gpu_id * 2 + 1], nullptr, nullptr, nullptr);
 
     {
         // Build filter-kernel

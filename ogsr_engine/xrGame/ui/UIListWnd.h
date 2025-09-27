@@ -37,11 +37,11 @@ public:
     virtual void Draw();
     virtual void Update();
     virtual void DetachChild(CUIWindow* pChild, bool from_destructor = false);
-    void SetScrollBarProfile(LPCSTR profile) { m_scrollbar_profile = profile; };
+    void SetScrollBarProfile(LPCSTR profile) { m_scrollbar_profile = profile; }
 
     // Добавление элементов в листбокс
     template <class Element>
-    bool AddItem(const char* str, const float shift = 0.0f, void* pData = NULL, int value = 0, int insertBeforeIdx = -1);
+    bool AddItem(const char* str, const float shift = 0.0f, void* pData = nullptr, int value = 0, int insertBeforeIdx = -1);
 
     bool AddItem_script(std::unique_ptr<CUIListItemEx>& ptr);
 
@@ -135,28 +135,28 @@ protected:
     int m_iSelectedItem;
     int m_iSelectedItemGroupID;
 
-    bool m_bShowSelectedItem;
-    bool m_bAlwaysShowScroll_enable;
-    bool m_bAlwaysShowScroll;
-    bool m_bActiveBackground;
+    bool m_bShowSelectedItem{};
+    bool m_bAlwaysShowScroll_enable{};
+    bool m_bAlwaysShowScroll{};
+    bool m_bActiveBackground{};
     // Если хотим принудительно выставлять фокус, то поднять этот флаг
-    bool m_bForceFocusedItem;
+    bool m_bForceFocusedItem{};
 
     // подсветка активного элемента
-    CUIFrameLineWnd* m_ActiveBackgroundFrame;
+    CUIFrameLineWnd* m_ActiveBackgroundFrame{};
 
     // текущий цвет текста
     u32 m_dwFontColor;
     bool m_bListActivity;
 
     // переворот списка по вертикали
-    bool m_bVertFlip;
+    bool m_bVertFlip{};
 
     // Признак того, что мышь подвинули
-    bool m_bUpdateMouseMove;
+    bool m_bUpdateMouseMove{};
 
     // Текущий уникальный идентификатор
-    int m_iLastUniqueID;
+    int m_iLastUniqueID{};
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

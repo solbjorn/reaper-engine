@@ -150,20 +150,20 @@ protected:
     //	u8								teamInPossession;//ah,ZoneMap
 protected:
     virtual void switch_Phase(u32 new_phase);
-    virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) {};
+    virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) {}
 
 public:
     game_GameState();
     virtual ~game_GameState() {}
-    u32 Type() const { return m_type; };
-    u16 Phase() const { return m_phase; };
-    s32 Round() const { return m_round; };
-    u32 StartTime() const { return m_start_time; };
-    virtual void Create(shared_str& options) {};
-    virtual LPCSTR type_name() const { return "base game"; };
+    u32 Type() const { return m_type; }
+    u16 Phase() const { return m_phase; }
+    s32 Round() const { return m_round; }
+    u32 StartTime() const { return m_start_time; }
+    virtual void Create(shared_str& options) {}
+    virtual LPCSTR type_name() const { return "base game"; }
     // for scripting enhancement
     static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);
-    virtual game_PlayerState* createPlayerState() { return xr_new<game_PlayerState>(); };
+    virtual game_PlayerState* createPlayerState() { return xr_new<game_PlayerState>(); }
 
     // moved from game_sv_base (time routines)
 private:

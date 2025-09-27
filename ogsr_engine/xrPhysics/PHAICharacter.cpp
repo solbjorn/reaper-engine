@@ -180,6 +180,7 @@ void CPHAICharacter::InitContact(dContact* c, bool& do_collide, u16 material_idx
         do_collide = false;
 #endif
 }
+
 #ifdef DEBUG
 void CPHAICharacter::OnRender()
 {

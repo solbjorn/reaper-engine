@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx103DFluidEmitters.h"
 #include "dx103DFluidBlenders.h"
 #include "dx103DFluidData.h"
@@ -20,8 +21,7 @@ dx103DFluidEmitters::dx103DFluidEmitters(int gridWidth, int gridHeight, int grid
 dx103DFluidEmitters::~dx103DFluidEmitters()
 {
     DestroyShaders();
-
-    m_pGrid = 0;
+    m_pGrid = nullptr;
 }
 
 void dx103DFluidEmitters::InitShaders()
@@ -40,7 +40,7 @@ void dx103DFluidEmitters::DestroyShaders()
     for (int i = 0; i < ET_EmittersTypeNum; ++i)
     {
         //	Release shader's element.
-        m_EmitterTechnique[i] = 0;
+        m_EmitterTechnique[i] = nullptr;
     }
 }
 

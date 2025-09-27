@@ -1,12 +1,15 @@
 #include "stdafx.h"
+
 #include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"
 #include "../xr_3da/camerabase.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -69,7 +72,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
         {
             mstate_wishful &= ~mcSprint;
         }
-
     }
     break;
     default: {
@@ -352,9 +354,9 @@ bool CActor::use_Holder(CHolderCustom* holder)
         CGameObject* holderGO = smart_cast<CGameObject*>(m_holder);
 
         if (smart_cast<CCar*>(holderGO))
-            b = use_Vehicle(0);
+            b = use_Vehicle(nullptr);
         else if (holderGO->CLS_ID == CLSID_OBJECT_W_MOUNTED || holderGO->CLS_ID == CLSID_OBJECT_W_STATMGUN)
-            b = use_MountedWeapon(0);
+            b = use_MountedWeapon(nullptr);
 
         if (inventory().ActiveItem())
         {
@@ -452,10 +454,10 @@ void CActor::ActorUse()
                 TryToTalk();
                 return;
             }
-            //обыск трупа
+            // обыск трупа
             else if (!Level().IR_GetKeyState(DIK_LSHIFT))
             {
-                //только если находимся в режиме single
+                // только если находимся в режиме single
                 CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
                 if (pGameSP)
                     pGameSP->StartCarBody(this, m_pPersonWeLookingAt);

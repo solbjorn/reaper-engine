@@ -7,7 +7,7 @@
 class dxUIRender : public IUIRender
 {
 public:
-    dxUIRender() : PrimitiveType(ptNone), m_PointType(pttNone) { ; }
+    dxUIRender() : PrimitiveType{ptNone}, m_PointType{pttNone} {}
 
     virtual void CreateUIGeom();
     virtual void DestroyUIGeom();
@@ -15,7 +15,7 @@ public:
     virtual void SetShader(IUIShader& shader);
     virtual void SetAlphaRef(int aref);
 
-    virtual void SetScissor(Irect* rect = NULL);
+    virtual void SetScissor(Irect* rect = nullptr);
     virtual void GetActiveTextureResolution(Fvector2& res);
 
     virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);

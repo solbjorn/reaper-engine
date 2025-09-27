@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "DamagableItem.h"
 
 CDamagableItem::CDamagableItem()
@@ -20,7 +21,9 @@ u16 CDamagableItem::DamageLevel()
     else
         return m_levels_num;
 }
+
 float CDamagableItem::DamageLevelToHealth(u16 dl) { return m_max_health * (float(m_levels_num - dl) / m_levels_num); }
+
 void CDamagableItem::Init(float max_health, u16 level_num)
 {
     m_max_health = max_health;
@@ -34,6 +37,7 @@ void CDamagableItem::HitEffect()
     for (u16 i = m_level_applied + 1; i <= new_lewel; i++)
         ApplyDamage(i);
 }
+
 void CDamagableItem::ApplyDamage(u16 level) { m_level_applied = level; }
 
 void CDamagableHealthItem::Init(float max_health, u16 level_num)

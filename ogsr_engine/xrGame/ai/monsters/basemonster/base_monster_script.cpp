@@ -1,7 +1,8 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "../../../script_entity_action.h"
-#include "../../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../../../sight_manager.h"
 #include "../../../detail_path_manager.h"
 #include "../../../ai_object_location.h"
@@ -197,7 +198,7 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
         ALife::_OBJECT_ID leader_id = group.commander_id();
         bool const should_follow_leader = leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
-        CCustomMonster* const leader = should_follow_leader ? smart_cast<CCustomMonster*>(Level().Objects.net_Find(leader_id)) : NULL;
+        CCustomMonster* const leader = should_follow_leader ? smart_cast<CCustomMonster*>(Level().Objects.net_Find(leader_id)) : nullptr;
 
         if (!should_follow_leader || !leader || !leader->GetScriptControl())
         {
@@ -491,29 +492,30 @@ void CBaseMonster::ProcessScripts()
 CEntity* CBaseMonster::GetCurrentEnemy()
 {
     VERIFY(g_Alive());
-    CEntity* enemy = 0;
+    CEntity* enemy{};
 
     if (EnemyMan.get_enemy())
         enemy = const_cast<CEntity*>(static_cast<CEntity const*>(EnemyMan.get_enemy()));
 
     if (!enemy || enemy->getDestroy() || !enemy->g_Alive())
-        enemy = 0;
+        enemy = nullptr;
 
-    return (enemy);
+    return enemy;
 }
 
 CEntity* CBaseMonster::GetCurrentCorpse()
 {
-    CEntity* corpse = 0;
+    CEntity* corpse{};
 
     if (CorpseMan.get_corpse())
         corpse = const_cast<CEntity*>(smart_cast<const CEntity*>(CorpseMan.get_corpse()));
 
     if (!corpse || corpse->getDestroy() || corpse->g_Alive())
-        corpse = 0;
+        corpse = nullptr;
 
-    return (corpse);
+    return corpse;
 }
+
 void CBaseMonster::SetEnemy(const CEntityAlive* sent) { EnemyMan.script_enemy(*sent); }
 
 void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScriptName)

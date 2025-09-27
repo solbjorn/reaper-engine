@@ -109,11 +109,11 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         if (RImplementation.o.ssfx_terrain)
         {
             C.SH->flags.isLandscape = TRUE;
-            uber_deffer(C, true, "terrain", "terrain_high", false, oT2_Name[0] ? oT2_Name : 0, true, z_prepass);
+            uber_deffer(C, true, "terrain", "terrain_high", false, oT2_Name[0] ? oT2_Name : nullptr, true, z_prepass);
         }
         else
         {
-            uber_deffer(C, true, "impl", "impl", false, oT2_Name[0] ? oT2_Name : 0, true, z_prepass);
+            uber_deffer(C, true, "impl", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true, z_prepass);
         }
 
         if (z_prepass)
@@ -165,12 +165,12 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         if (RImplementation.o.ssfx_terrain)
         {
             C.SH->flags.isLandscape = TRUE;
-            uber_deffer(C, false, "base", "terrain_mid", false, oT2_Name[0] ? oT2_Name : 0, true, z_prepass);
+            uber_deffer(C, false, "base", "terrain_mid", false, oT2_Name[0] ? oT2_Name : nullptr, true, z_prepass);
         }
         else
         {
             // Vanilla
-            uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : 0, true, z_prepass);
+            uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true, z_prepass);
         }
 
         if (z_prepass)
@@ -211,7 +211,7 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
 
         C.SH->flags.isLandscape = TRUE;
 
-        uber_deffer(C, false, "base", "terrain_low", false, oT2_Name[0] ? oT2_Name : 0, true, z_prepass);
+        uber_deffer(C, false, "base", "terrain_low", false, oT2_Name[0] ? oT2_Name : nullptr, true, z_prepass);
         if (z_prepass)
             C.RS.SetRS(D3DRS_ZFUNC, D3DCMP_EQUAL);
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "trade.h"
 #include "actor.h"
 #include "ai/stalker/ai_stalker.h"
@@ -21,7 +22,7 @@ CTrade::CTrade(CInventoryOwner* p_io)
 {
     TradeState = false;
     m_dwLastTradeTime = 0;
-    pPartner.Set(TT_NONE, 0, 0);
+    pPartner.Set(TT_NONE, nullptr, nullptr);
 
     // Заполнить pThis
     CAI_Trader* pTrader;
@@ -48,7 +49,7 @@ CTrade::CTrade(CInventoryOwner* p_io)
 
 CTrade::~CTrade() {}
 
-void CTrade::RemovePartner() { pPartner.Set(TT_NONE, 0, 0); }
+void CTrade::RemovePartner() { pPartner.Set(TT_NONE, nullptr, nullptr); }
 
 bool CTrade::SetPartner(CEntity* p)
 {
@@ -111,7 +112,7 @@ void CTrade::StopTrade()
     m_dwLastTradeTime = 0;
     //	Msg("--TRADE:: [%s]: Trade stopped...",*pThis.base->cName());
 
-    CAI_Trader* pTrader = NULL;
+    CAI_Trader* pTrader{};
     if (pThis.type == TT_TRADER)
     {
         // pTrader = smart_cast<CAI_Trader*>(pThis.base);

@@ -156,10 +156,10 @@ public:
         etiDelayed = (1 << (eti_last + 2)),
         etiBackVisible = (1 << (eti_last + 3)),
     };
-    float m_delay;
-    CUIStatic* m_wnd;
-    u32 m_time_start;
-    u32 m_sync_time;
+    float m_delay{};
+    CUIStatic* m_wnd{};
+    u32 m_time_start{};
+    u32 m_sync_time{};
 
     CUISequenceVideoItem(CUISequencer* owner);
     virtual ~CUISequenceVideoItem();

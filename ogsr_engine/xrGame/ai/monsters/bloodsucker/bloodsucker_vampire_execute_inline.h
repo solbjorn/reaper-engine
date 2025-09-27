@@ -11,8 +11,8 @@
 
 #define CStateBloodsuckerVampireExecuteAbstract CStateBloodsuckerVampireExecute<_Object>
 
-//#define VAMPIRE_MIN_DIST		0.5f
-//#define VAMPIRE_MAX_DIST		1.f
+// #define VAMPIRE_MIN_DIST		0.5f
+// #define VAMPIRE_MAX_DIST		1.f
 
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::initialize()
@@ -58,20 +58,17 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
         execute_vampire_prepare();
         m_action = eActionContinue;
         break;
-
     case eActionContinue: execute_vampire_continue(); break;
-
     case eActionFire:
         execute_vampire_hit();
         m_action = eActionWaitTripleEnd;
         break;
-
     case eActionWaitTripleEnd:
         if (!object->com_man().ta_is_active())
         {
             m_action = eActionCompleted;
         }
-
+        break;
     case eActionCompleted: break;
     }
 

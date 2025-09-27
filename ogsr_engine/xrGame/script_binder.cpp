@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 #include "script_binder.h"
@@ -20,7 +21,7 @@ CScriptBinder::CScriptBinder() { init(); }
 
 CScriptBinder::~CScriptBinder() { VERIFY(!m_object); }
 
-void CScriptBinder::init() { m_object = 0; }
+void CScriptBinder::init() { m_object = nullptr; }
 
 void CScriptBinder::clear()
 {
@@ -51,15 +52,15 @@ void CScriptBinder::reload(LPCSTR section)
         return;
 
     auto script_func_name = pSettings->r_string(section, "script_binding");
-    luabind::functor<void> lua_function;
-    if (!ai().script_engine().functor(script_func_name, lua_function))
+    sol::function lua_function;
+    if (!ai().script_engine().function(script_func_name, lua_function))
     {
         Msg("!![CScriptBinder::reload] function [%s] not loaded!", script_func_name);
         return;
     }
 
     auto game_object = smart_cast<CGameObject*>(this);
-    if (!game_object) //Объекта нет - значит тут делать нечего.
+    if (!game_object) // Объекта нет - значит тут делать нечего.
     {
         Msg("!![[CScriptBinder::reload] failed cast to CGameObject!");
         return;
@@ -140,8 +141,11 @@ BOOL CScriptBinder::net_SaveRelevant()
 
 void CScriptBinder::net_Relcase(CObject* object)
 {
+    if (!m_object)
+        return;
+
     CGameObject* game_object = smart_cast<CGameObject*>(object);
-    if (m_object && game_object)
+    if (game_object)
     {
         m_object->net_Relcase(game_object->lua_game_object());
     }

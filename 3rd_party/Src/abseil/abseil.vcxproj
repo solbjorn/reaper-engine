@@ -45,7 +45,7 @@
       set "LIBCXX_OPTIONS=$(libcxxOptions)"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" ..\abseil-cpp
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DABSL_PROPAGATE_CXX_STD=ON ..\abseil-cpp
       cmake --build . --config $(Configuration)
       md ..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base
       copy /Y "absl\base\absl_base.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\absl\base\absl_base.lib"

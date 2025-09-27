@@ -5,20 +5,20 @@ class CBaseMonster;
 
 class CMonsterCorpseManager
 {
-    CBaseMonster* monster;
+    CBaseMonster* monster{};
+    const CEntityAlive* corpse{};
 
-    const CEntityAlive* corpse;
     Fvector position;
     u32 vertex{};
     TTime time_last_seen{};
 
-    bool forced;
+    bool forced{};
 
 public:
-    CMonsterCorpseManager();
+    CMonsterCorpseManager() = default;
     ~CMonsterCorpseManager() = default;
-    void init_external(CBaseMonster* M);
 
+    void init_external(CBaseMonster* M);
     void update();
 
     void force_corpse(const CEntityAlive* corpse);

@@ -7,7 +7,7 @@
 #include "motion.h"
 #include "..\Include\xrRender\Kinematics.h"
 
-motions_container* g_pMotionsContainer = 0;
+motions_container* g_pMotionsContainer{};
 
 u16 CPartition::part_id(const shared_str& name) const
 {
@@ -98,7 +98,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
         }
 
-        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%u]", __FUNCTION__, N, part_bone_cnt,
+        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%zu]", __FUNCTION__, N, part_bone_cnt,
                        bones->size());
 
         if (bRes)
@@ -203,7 +203,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 {
                     M._keysT8.create(dwLen, (CKeyQT8*)MS->pointer());
                     MS->advance(dwLen * sizeof(CKeyQT8));
-                };
+                }
 
                 MS->r_fvector3(M._sizeT);
                 MS->r_fvector3(M._initT);
@@ -243,11 +243,11 @@ bool motions_container::has(shared_str key) { return (container.find(key) != con
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
-    motions_value* result = 0;
+    motions_value* result{};
     auto I = container.find(key);
     if (I != container.end())
         result = I->second;
-    if (0 == result)
+    if (!result)
     {
         // loading motions
         VERIFY(data);
@@ -259,8 +259,10 @@ motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* 
         else
             xr_delete(result);
     }
+
     return result;
 }
+
 void motions_container::clean(bool force_destroy)
 {
     auto it = container.begin();
@@ -303,9 +305,9 @@ void motions_container::dump()
     for (u32 k = 0; it != _E; k++, it++)
     {
         sz += it->second->mem_usage();
-        Msg("#%3d: [%3d/%5d Kb] - %s", k, it->second->m_dwReference, it->second->mem_usage() / 1024, it->first.c_str());
+        Msg("#%3u: [%3u/%5u Kb] - %s", k, it->second->m_dwReference, it->second->mem_usage() / 1024, it->first.c_str());
     }
-    Msg("--- items: %d, mem usage: %d Kb ", container.size(), sz / 1024);
+    Msg("--- items: %zu, mem usage: %u Kb ", container.size(), sz / 1024);
     Log("--- motion container --- end.");
 }
 
@@ -362,21 +364,25 @@ bool CMotionDef::StopAtEnd() const { return !!(flags & esmStopAtEnd); }
 bool shared_motions::create(shared_str key, IReader* data, vecBones* bones)
 {
     motions_value* v = g_pMotionsContainer->dock(key, data, bones);
-    if (0 != v)
+    if (v)
         v->m_dwReference++;
+
     destroy();
     p_ = v;
-    return (0 != v);
+
+    return !!v;
 }
 
 bool shared_motions::create(shared_motions const& rhs)
 {
     motions_value* v = rhs.p_;
-    if (0 != v)
+    if (v)
         v->m_dwReference++;
+
     destroy();
     p_ = v;
-    return (0 != v);
+
+    return !!v;
 }
 
 const motion_marks::interval* motion_marks::pick_mark(const float& t) const
@@ -393,7 +399,8 @@ const motion_marks::interval* motion_marks::pick_mark(const float& t) const
         if (I.first > t)
             break;
     }
-    return NULL;
+
+    return nullptr;
 }
 
 bool motion_marks::is_mark_between(float const& t0, float const& t1) const
@@ -406,8 +413,8 @@ bool motion_marks::is_mark_between(float const& t0, float const& t1) const
     {
         VERIFY((*i).first <= (*i).second);
 
-        if ((*i).first == t0)
-            return (true);
+        if (fsimilar((*i).first, t0))
+            return true;
 
         if ((*i).first > t0)
         {
@@ -423,8 +430,8 @@ bool motion_marks::is_mark_between(float const& t0, float const& t1) const
         if ((*i).second < t0)
             continue;
 
-        if ((*i).second == t0)
-            return (true);
+        if (fsimilar((*i).second, t0))
+            return true;
 
         return (true);
     }

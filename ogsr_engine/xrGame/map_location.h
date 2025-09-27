@@ -28,19 +28,19 @@ protected:
     LPCSTR m_type;
     Flags32 m_flags;
     shared_str m_hint;
-    CMapSpot* m_level_spot;
-    CMapSpotPointer* m_level_spot_pointer;
-    CMiniMapSpot* m_minimap_spot;
-    CMapSpotPointer* m_minimap_spot_pointer;
+    CMapSpot* m_level_spot{};
+    CMapSpotPointer* m_level_spot_pointer{};
+    CMiniMapSpot* m_minimap_spot{};
+    CMapSpotPointer* m_minimap_spot_pointer{};
 
-    CMapSpot* m_level_map_spot_border;
-    CMapSpot* m_mini_map_spot_border;
+    CMapSpot* m_level_map_spot_border{};
+    CMapSpot* m_mini_map_spot_border{};
 
-    u16 m_objectID;
     CSE_ALifeDynamicObject* m_owner_se_object;
+    u16 m_objectID;
     u16 m_refCount;
     int m_ttl;
-    u32 m_actual_time;
+    u32 m_actual_time{};
     Fvector m_position_global; // last global position, actual time only current frame
 
     struct SCachedValues
@@ -55,7 +55,7 @@ protected:
     SCachedValues m_cached;
 
 private:
-    CMapLocation(const CMapLocation&){}; // disable copy ctor
+    CMapLocation(const CMapLocation&) = delete; // disable copy ctor
 
 protected:
     void LoadSpot(LPCSTR type, bool bReload);
@@ -70,20 +70,20 @@ public:
     virtual void destroy();
     LPCSTR GetHint();
     void SetHint(const shared_str& hint);
-    bool PointerEnabled() { return SpotEnabled() && !!m_flags.test(ePointerEnabled); };
-    void EnablePointer() { m_flags.set(ePointerEnabled, TRUE); };
-    void DisablePointer() { m_flags.set(ePointerEnabled, FALSE); };
+    bool PointerEnabled() { return SpotEnabled() && !!m_flags.test(ePointerEnabled); }
+    void EnablePointer() { m_flags.set(ePointerEnabled, TRUE); }
+    void DisablePointer() { m_flags.set(ePointerEnabled, FALSE); }
 
-    LPCSTR GetType() const { return m_type; };
+    LPCSTR GetType() const { return m_type; }
     Fvector2 SpotSize();
     IC bool IsUserDefined() const { return !!m_flags.test(eUserDefined); }
     IC void SetUserDefinedFlag(BOOL state) { m_flags.set(eUserDefined, state); }
     void InitUserSpot(const shared_str& level_name, const Fvector& pos);
     void HighlightSpot(bool state, const Fcolor& color);
 
-    bool SpotEnabled() { return !!m_flags.test(eSpotEnabled); };
-    void EnableSpot() { m_flags.set(eSpotEnabled, TRUE); };
-    void DisableSpot() { m_flags.set(eSpotEnabled, FALSE); };
+    bool SpotEnabled() { return !!m_flags.test(eSpotEnabled); }
+    void EnableSpot() { m_flags.set(eSpotEnabled, TRUE); }
+    void DisableSpot() { m_flags.set(eSpotEnabled, FALSE); }
     virtual void UpdateMiniMap(CUICustomMap* map);
     virtual void UpdateLevelMap(CUICustomMap* map);
 
@@ -100,7 +100,7 @@ public:
     }
     u16 ObjectID() { return m_objectID; }
     virtual bool Update(); // returns actual
-    Fvector GetLastPosition() { return m_position_global; };
+    Fvector GetLastPosition() { return m_position_global; }
     bool Serializable() const { return !!m_flags.test(eSerailizable); }
     void SetSerializable(bool b) { m_flags.set(eSerailizable, b); }
 
@@ -108,7 +108,7 @@ public:
     virtual void load(IReader& stream);
 
 #ifdef DEBUG
-    virtual void Dump(){};
+    virtual void Dump() {}
 #endif
 };
 

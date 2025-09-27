@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Physics.h"
 #include "PHShell.h"
 #include "PHShellSplitter.h"
@@ -8,6 +9,7 @@
 #include "MathUtils.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHCollideValidator.h"
+
 CPHShellSplitterHolder::CPHShellSplitterHolder(CPHShell* shell)
 {
     m_pShell = shell;
@@ -21,6 +23,7 @@ CPHShellSplitterHolder::~CPHShellSplitterHolder()
     m_splitters.clear();
     m_geom_root_map.clear();
 }
+
 // the simpliest case - a joint to be destroied
 shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
 {
@@ -37,7 +40,7 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
     u16 end_element = m_pShell->joints[start_joint]->JointDestroyInfo()->m_end_element;
     u16 end_joint = m_pShell->joints[start_joint]->JointDestroyInfo()->m_end_joint;
 
-    shell_root ret = mk_pair(new_shell, (m_pShell->joints[start_joint])->BoneID());
+    shell_root ret = std::make_pair(new_shell, (m_pShell->joints[start_joint])->BoneID());
 
     CShellSplitInfo split_inf;
     split_inf.m_bone_id = m_pShell->joints[start_joint]->BoneID();
@@ -52,12 +55,13 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
     InitNewShell(new_shell_desc);
     m_pShell->PassEndElements(start_element, end_element, new_shell_desc);
     m_pShell->PassEndJoints(start_joint + 1, end_joint, new_shell_desc);
-    new_shell_desc->set_PhysicsRefObject(0);
+    new_shell_desc->set_PhysicsRefObject(nullptr);
     new_shell_desc->PureActivate();
     // new_shell_desc->ObjectInRoot().identity();
     m_pShell->DeleteJoint(start_joint);
-    new_shell->set_ObjectContactCallback(NULL);
-    new_shell->set_PhysicsRefObject(NULL);
+    new_shell->set_ObjectContactCallback(nullptr);
+    new_shell->set_PhysicsRefObject(nullptr);
+
     return ret;
 }
 
@@ -352,18 +356,19 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& sp
     m_pShell->PassEndElements(split_elem.second.m_start_el_num, split_elem.second.m_end_el_num, new_shell_last_desc);
 
     m_pShell->PassEndJoints(split_elem.second.m_start_jt_num, split_elem.second.m_end_jt_num, new_shell_last_desc);
-    new_shell_last_desc->set_PhysicsRefObject(0);
+    new_shell_last_desc->set_PhysicsRefObject(nullptr);
     ///////////////////temporary for initialization set old Kinematics in new shell/////////////////
     new_shell_last->set_Kinematics(m_pShell->PKinematics());
     new_shell_last_desc->AfterSetActive();
-    new_shell_last->set_Kinematics(NULL);
+    new_shell_last->set_Kinematics(nullptr);
     VERIFY2(split_elem.second.m_bone_id < 64, "strange root");
     VERIFY(_valid(new_shell_last->mXFORM));
     VERIFY(dBodyStateValide(source_element->get_bodyConst()));
     VERIFY(dBodyStateValide(split_elem.first->get_body()));
-    new_shell_last->set_ObjectContactCallback(NULL);
-    new_shell_last->set_PhysicsRefObject(NULL);
-    return mk_pair(new_shell_last, split_elem.second.m_bone_id);
+    new_shell_last->set_ObjectContactCallback(nullptr);
+    new_shell_last->set_PhysicsRefObject(nullptr);
+
+    return std::make_pair(new_shell_last, split_elem.second.m_bone_id);
 }
 
 IC void correct_diapasones(ELEMENT_PAIR_VECTOR& element_pairs)
@@ -497,7 +502,7 @@ CPHShellSplitter::CPHShellSplitter(CPHShellSplitter::EType type, u16 element, u1
     m_joint = joint;
 }
 
-void CPHShellSplitterHolder::AddToGeomMap(const id_geom& id_rootgeom) { m_geom_root_map.insert(id_rootgeom); }
+void CPHShellSplitterHolder::AddToGeomMap(u16 id, CODEGeom* rootgeom) { m_geom_root_map.try_emplace(id, rootgeom); }
 
 u16 CPHShellSplitterHolder::FindRootGeom(u16 bone_id)
 {

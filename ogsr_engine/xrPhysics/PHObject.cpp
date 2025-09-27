@@ -1,13 +1,16 @@
 #include "stdafx.h"
+
 #include "Physics.h"
 #include "PHObject.h"
 #include "PHWorld.h"
 #include "PHMoveStorage.h"
 #include "dRayMotions.h"
 #include "PHCollideValidator.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
+
 extern CPHWorld* ph_world;
 
 CPHObject::CPHObject() : ISpatial(g_SpatialSpacePhysic)
@@ -90,15 +93,17 @@ void CPHObject::Collide()
         CPHMoveStorage::iterator I = tracers->begin(), E = tracers->end();
         for (; E != I; I++)
         {
-            const Fvector *from = 0, *to = 0;
+            const Fvector *from{}, *to{};
             Fvector dir;
             I.Positions(from, to);
-            if (from->x == -dInfinity)
+            if (std::isinf(from->x) && from->x < 0.f)
                 continue;
+
             dir.sub(*to, *from);
             float magnitude = dir.magnitude();
             if (magnitude < EPS)
                 continue;
+
             dir.mul(1.f / magnitude);
             g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, STYPE_PHYSIC, *from, dir, magnitude); //|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
@@ -114,9 +119,10 @@ void CPHObject::Collide()
             qResultIt i = result.begin(), e = result.end();
             for (; i != e; ++i)
             {
-                CPHObject* obj2 = static_cast<CPHObject*>(*i);
+                CPHObject* obj2{static_cast<CPHObject*>(*i)};
                 if (obj2 == this || !obj2->m_flags.test(st_dirty))
                     continue;
+
                 dGeomID motion_ray = ph_world->GetMotionRayGeom();
                 dGeomRayMotionSetGeom(motion_ray, I.dGeom());
                 dGeomRayMotionsSet(motion_ray, (const dReal*)from, (const dReal*)&dir, magnitude);
@@ -124,6 +130,7 @@ void CPHObject::Collide()
             }
         }
     }
+
     CollideDynamics();
     ///////////////////////////////
     if (CPHCollideValidator::DoCollideStatic(*this))

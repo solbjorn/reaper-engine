@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Helicopter.h"
 #include "level.h"
 #include "patrol_path.h"
@@ -29,7 +30,7 @@ void SHeliMovementState::Load(LPCSTR section)
     if (pSettings->line_exist(section, "flag_by_new_acc"))
         isAdnAcc = pSettings->r_float(section, "flag_by_new_acc");
     else
-        isAdnAcc = 0;
+        isAdnAcc = 0.f;
     onPointRangeDist = pSettings->r_float(section, "on_point_range_dist");
     maxLinearSpeed = pSettings->r_float(section, "velocity");
     min_altitude = pSettings->r_float(section, "min_altitude");
@@ -54,11 +55,10 @@ float SHeliMovementState::GetAngSpeedPitch(float speed)
 
 float SHeliMovementState::GetAngSpeedHeading(float speed)
 {
-    if (isAdnAcc == 0)
+    if (fis_zero(isAdnAcc))
         return HeadingSpK * speed + HeadingSpB;
 
-    else
-        return AngSH / (2 * HeadingSpB - AngSH + speed * (HeadingSpB - AngSH) / 2);
+    return AngSH / (2 * HeadingSpB - AngSH + speed * (HeadingSpB - AngSH) / 2);
     // HeadingSpK*speed+HeadingSpB; old veersion
 }
 
@@ -73,14 +73,14 @@ void SHeliMovementState::Update()
     case eMovLanding:
     case eMovTakeOff: break;
     default: NODEFAULT;
-    };
+    }
 }
 
 void SHeliMovementState::reinit()
 {
     type = eMovNone;
-    currPatrolPath = NULL;
-    currPatrolVertex = NULL;
+    currPatrolPath = nullptr;
+    currPatrolVertex = nullptr;
     patrol_begin_idx = 0;
     patrol_path_name = "";
     need_to_del_path = false;
@@ -170,7 +170,7 @@ void SHeliMovementState::getPathAltitude(Fvector& point, float base_altitude)
     point.y = boundingVolume.max.y + EPS_L;
     VERIFY(_valid(point));
 
-    Level().ObjectSpace.RayPick(point, down_dir, boundSize.y + 1.0f, collide::rqtStatic, cR, NULL);
+    Level().ObjectSpace.RayPick(point, down_dir, boundSize.y + 1.0f, collide::rqtStatic, cR, nullptr);
 
     point.y = point.y - cR.range;
 
@@ -186,6 +186,7 @@ void SHeliMovementState::getPathAltitude(Fvector& point, float base_altitude)
     clamp(point.y, minY, maxY);
     VERIFY(_valid(point));
 }
+
 void SHeliMovementState::SetDestPosition(Fvector* pos)
 {
     desiredPoint = *pos;
@@ -415,6 +416,7 @@ float SHeliMovementState::GetSpeedInDestPoint()
     else
         return speedInDestPoint;
 }
+
 void SHeliMovementState::SetSpeedInDestPoint(float val) { speedInDestPoint = val; }
 
 Fvector CHelicopter::GetCurrVelocityVec()

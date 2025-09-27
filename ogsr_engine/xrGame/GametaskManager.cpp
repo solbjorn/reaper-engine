@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "GameTaskManager.h"
 #include "alife_registry_wrappers.h"
 #include "ui/xrUIXmlParser.h"
@@ -18,11 +19,7 @@
 shared_str g_active_task_id;
 u16 g_active_task_objective_id = u16(-1);
 
-
-CGameTaskManager::CGameTaskManager()
-{
-    m_gametasks = xr_new<CGameTaskWrapper>();
-}
+CGameTaskManager::CGameTaskManager() { m_gametasks = xr_new<CGameTaskWrapper>(); }
 
 CGameTaskManager::~CGameTaskManager() { delete_data(m_gametasks); }
 
@@ -44,13 +41,14 @@ CGameTask* CGameTaskManager::HasGameTask(const TASK_ID& id)
     if (it != GameTasks().end())
         return (*it).game_task;
 
-    return 0;
+    return nullptr;
 }
 
 CGameTask* CGameTaskManager::GiveGameTaskToActor(const TASK_ID& id, u32 timeToComplete, bool bCheckExisting)
 {
     if (bCheckExisting && HasGameTask(id))
-        return NULL;
+        return nullptr;
+
     CGameTask* t = xr_new<CGameTask>(id);
 
     return GiveGameTaskToActor(t, timeToComplete, bCheckExisting);
@@ -97,15 +95,15 @@ CGameTask* CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
         SetActiveTask(t->m_ID, 1, true);
     }
 
-    //установить флажок необходимости прочтения тасков в PDA
+    // установить флажок необходимости прочтения тасков в PDA
     if (HUD().GetUI())
     {
         CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
         if (pGameSP)
             pGameSP->PdaMenu->PdaContentsChanged(pda_section::quests);
     }
-    //if (t->m_ID!="user_task")
-        t->Objective(0).ChangeStateCallback();
+    // if (t->m_ID!="user_task")
+    t->Objective(0).ChangeStateCallback();
 
     return t;
 }
@@ -124,7 +122,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     if ((state == eTaskStateFail || state == eTaskStateCompleted) && ml)
     {
         Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
-        o->map_location = NULL;
+        o->map_location = nullptr;
         o->object_id = u16(-1);
     }
 
@@ -166,7 +164,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
         }
     }
 
-    if (isRoot && eTaskStateCompleted == state || eTaskStateFail == state)
+    if ((isRoot && eTaskStateCompleted == state) || eTaskStateFail == state)
         t->m_FinishTime = Level().GetGameTime();
 
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -179,11 +177,12 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 void CGameTaskManager::SetTaskState(const TASK_ID& id, u16 objective_num, ETaskState state)
 {
     CGameTask* t = HasGameTask(id);
-    if (NULL == t)
+    if (!t)
     {
         Msg("actor does not has task [%s]", *id);
         return;
     }
+
     SetTaskState(t, objective_num, state);
 }
 
@@ -199,7 +198,7 @@ void CGameTaskManager::UpdateTasks()
 
     size_t processed{};
     auto iter = tasks.rbegin();
-    while (iter != tasks.rend()) //Реверсивный перебор тасков из-за того что походу внутри SetTaskState таски могут удалиться, из-за этого обычный итератор тут крашится.
+    while (iter != tasks.rend()) // Реверсивный перебор тасков из-за того что походу внутри SetTaskState таски могут удалиться, из-за этого обычный итератор тут крашится.
     {
         const auto size = tasks.size();
 
@@ -259,8 +258,9 @@ void CGameTaskManager::UpdateTasks()
 CGameTask* CGameTaskManager::ActiveTask()
 {
     const TASK_ID& t_id = g_active_task_id;
-    if (!t_id.size())
-        return NULL;
+    if (t_id.empty())
+        return nullptr;
+
     return HasGameTask(t_id);
 }
 
@@ -274,7 +274,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
         if (t && t->m_Objectives.size() < (idx + 1))
         {
             ASSERT_FMT(!t->m_Objectives.empty(), "!![%s] m_Objectives is empty! Something strange!", __FUNCTION__);
-            g_active_task_objective_id = t->m_Objectives.size() - 1; //Некторые таски могут содержать всего один objective
+            g_active_task_objective_id = t->m_Objectives.size() - 1; // Некторые таски могут содержать всего один objective
 
             if (g_active_task_objective_id == 0)
                 Msg("!![%s - 1] g_active_task_objective_idx == 0", __FUNCTION__);
@@ -312,7 +312,7 @@ SGameTaskObjective* CGameTaskManager::ActiveObjective()
 {
     CGameTask* t = ActiveTask();
 
-    return (t) ? &t->Objective(g_active_task_objective_id) : NULL;
+    return (t) ? &t->Objective(g_active_task_objective_id) : nullptr;
 }
 
 void CGameTaskManager::cleanup()

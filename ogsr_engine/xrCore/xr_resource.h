@@ -7,18 +7,12 @@ struct xr_resource : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(xr_resource);
 
 public:
+    std::atomic<u32> ref_count{};
+
     xr_resource() = default;
     virtual ~xr_resource() = default;
 
-    xr_resource(xr_resource const& other) { *this = other; }
-
-    xr_resource& operator=(xr_resource const& other)
-    {
-        ref_count.exchange(other.ref_count);
-        return *this;
-    }
-
-    std::atomic<u32> ref_count{};
+    void clone(const xr_resource& from) { ref_count.exchange(from.ref_count); }
 };
 
 struct xr_resource_flagged : public xr_resource
@@ -34,6 +28,15 @@ public:
     u32 dwFlags{};
     int skinning;
     bool hud_disabled;
+
+    void clone(const xr_resource_flagged& from)
+    {
+        xr_resource::clone(from);
+
+        dwFlags = from.dwFlags;
+        skinning = from.skinning;
+        hud_disabled = from.hud_disabled;
+    }
 };
 
 struct xr_resource_named : public xr_resource_flagged
@@ -130,7 +133,7 @@ public:
 
     // unspecified bool type
     typedef T* (resptr_core::*unspecified_bool_type)() const;
-    operator unspecified_bool_type() const { return C::p_ == 0 ? 0 : &resptr_core::_get; }
+    operator unspecified_bool_type() const { return C::p_ ? &resptr_core::_get : nullptr; }
 
     bool operator!() const { return !C::p_; }
 

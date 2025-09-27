@@ -1,7 +1,13 @@
 #include "stdafx.h"
 
-#include <wincodec.h>
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
+
 #include <DirectXTex.h>
+
+XR_DIAG_POP();
+
+#include <wincodec.h>
 
 using namespace DirectX;
 

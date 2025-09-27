@@ -14,15 +14,18 @@ extern BOOL bDebug;
             x->Release(); \
             x = nullptr; \
         } \
-    }
+    } \
+    XR_MACRO_END()
+
 #define _SHOW_REF(unused_arg, x) \
     { \
         if (x) \
         { \
             x->AddRef(); \
-            Msg("[%s] refCount of [" #x "]: [%u]", __FUNCTION__, x->Release()); \
+            Msg("[%s] refCount of [" #x "]: [%lu]", __FUNCTION__, x->Release()); \
         } \
-    }
+    } \
+    XR_MACRO_END()
 
 // psDeviceFlags
 enum : u32

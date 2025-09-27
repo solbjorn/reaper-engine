@@ -53,8 +53,8 @@ void CSoundRender_Emitter::i_stop()
         source()->close(ovf);
         Event_ReleaseOwner();
         VERIFY(this == owner_data->feedback);
-        owner_data->feedback = NULL;
-        owner_data = NULL;
+        owner_data->feedback = nullptr;
+        owner_data = nullptr;
     }
     m_current_state = stStopped;
     fStoppingSpeed_k = 1.f;

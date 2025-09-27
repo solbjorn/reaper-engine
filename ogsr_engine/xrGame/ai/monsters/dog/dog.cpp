@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dog.h"
 #include "dog_state_manager.h"
 #include "../monster_velocity_space.h"
@@ -50,15 +51,10 @@ void CAI_Dog::Load(LPCSTR section)
     m_drive_out_time = (pSettings->line_exist(section, "drive_out_time")) ? 1000 * pSettings->r_u32(section, "drive_out_time") : 10000;
 
     if (pSettings->line_exist(section, "min_move_dist"))
-    {
         min_move_dist = pSettings->r_u32(section, "min_move_dist");
-        ;
-    }
     if (pSettings->line_exist(section, "max_move_dist"))
-    {
         max_move_dist = pSettings->r_u32(section, "max_move_dist");
-        ;
-    }
+
     if (max_move_dist < min_move_dist)
     {
         min_move_dist = u32(5);
@@ -282,7 +278,7 @@ void CAI_Dog::start_animation()
 {
     // Lain: check if animation is captured
     CControl_Com* capturer = control().get_capturer(ControlCom::eControlAnimation);
-    if (capturer && capturer->ced() != 0)
+    if (capturer && capturer->ced())
         return;
 
     b_state_anim = true;
@@ -314,33 +310,33 @@ LPCSTR CAI_Dog::get_current_animation()
 {
     switch (current_anim)
     {
-    case 1: return anim_extra_1; //Нюхает вверх
-    case 2: return anim_extra_2; //Нюхает вниз
-    case 3: return anim_extra_3; //Нюхает по кругу
-    case 4: return anim_extra_4; //Обнюховает и роет землю
-    case 5: return anim_extra_5; //Воет
-    case 6: return anim_extra_6; //Рычит стоя
-    case 7: return anim_extra_7; //Отряхивается !!!!!
-    case 8: return "stand_sit_down_0"; //Садиться
+    case 1: return anim_extra_1; // Нюхает вверх
+    case 2: return anim_extra_2; // Нюхает вниз
+    case 3: return anim_extra_3; // Нюхает по кругу
+    case 4: return anim_extra_4; // Обнюховает и роет землю
+    case 5: return anim_extra_5; // Воет
+    case 6: return anim_extra_6; // Рычит стоя
+    case 7: return anim_extra_7; // Отряхивается !!!!!
+    case 8: return "stand_sit_down_0"; // Садиться
     case 9: return "sit_idle_0"; // Cидит
-    case 10: return anim_extra_10; //Чухается сидя
-    case 11: return anim_extra_11; //Оглядывается сидя
-    case 12: return "sit_stand_up_0"; //Встает
-    case 13: return "sit_lie_down_0"; //Ложится
-    case 14: return "lie_to_sit_0"; //Подымается
-    case 15: return "stand_eat_0"; //Отрывает куски
-    case 16: return "stand_threaten_0"; //Лает
-    default: return "stand_idle_1"; //Нюхает вперед
+    case 10: return anim_extra_10; // Чухается сидя
+    case 11: return anim_extra_11; // Оглядывается сидя
+    case 12: return "sit_stand_up_0"; // Встает
+    case 13: return "sit_lie_down_0"; // Ложится
+    case 14: return "lie_to_sit_0"; // Подымается
+    case 15: return "stand_eat_0"; // Отрывает куски
+    case 16: return "stand_threaten_0"; // Лает
+    default: return "stand_idle_1"; // Нюхает вперед
     }
 }
 
 void CAI_Dog::reload(LPCSTR section)
 {
     inherited::reload(section);
-    pcstr jump_ataka_01 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_01", 0 /*"jump_ataka_01"*/);
+    pcstr jump_ataka_01 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_01", nullptr /*"jump_ataka_01"*/);
     pcstr jump_ataka_02 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_02", "jump_right_0" /*"jump_ataka_02"*/);
-    pcstr jump_ataka_03 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_03", 0 /*"jump_ataka_03"*/);
-    com_man().load_jump_data(0, jump_ataka_01, jump_ataka_02, jump_ataka_03, MonsterMovement::eVelocityParameterRunNormal, MonsterMovement::eVelocityParameterRunNormal, 0);
+    pcstr jump_ataka_03 = READ_IF_EXISTS(pSettings, r_string, section, "anim_jump_ataka_03", nullptr /*"jump_ataka_03"*/);
+    com_man().load_jump_data(nullptr, jump_ataka_01, jump_ataka_02, jump_ataka_03, MonsterMovement::eVelocityParameterRunNormal, MonsterMovement::eVelocityParameterRunNormal, 0);
 }
 
 void CAI_Dog::HitEntityInJump(const CEntity* pEntity)

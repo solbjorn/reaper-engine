@@ -28,7 +28,7 @@ public:
 
     virtual void Init(float x, float y, float width, float height);
 
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual void Show();
     virtual void Hide();
@@ -69,7 +69,7 @@ private:
     CUIScrollView* UIAnswersList;
 
     // Шрифт и цвет текста с именем персонажа
-    CGameFont* m_pNameTextFont;
+    CGameFont* m_pNameTextFont{};
     u32 m_iNameTextColor;
     // Цвет тeкста и шрифт наших реплик
     u32 m_uOurReplicsColor;
@@ -93,7 +93,7 @@ public:
     CUIQuestionItem(CUIXml* xml_doc, LPCSTR path);
     void Init(LPCSTR val, LPCSTR text);
 
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void OnTextClicked(CUIWindow* w, void*);
 };
 

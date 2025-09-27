@@ -19,8 +19,10 @@ private:
     };
 
 public:
-    constexpr inline _ivector4(const Self& v) { set(v); }
-    constexpr inline _ivector4(T x = 0, T y = 0, T z = 0, T w = 0) { set(x, y, z, w); }
+    constexpr inline _ivector4(T x = 0, T y = 0, T z = 0, T w = 0) noexcept { set(x, y, z, w); }
+
+    constexpr inline _ivector4(const Self& v) noexcept { set(v); }
+    constexpr _ivector4(Self&& that) noexcept { *this = std::move(that); }
 
     constexpr inline T getx() const { return cv.i[0]; }
     constexpr inline T gety() const { return cv.i[1]; }
@@ -36,7 +38,17 @@ public:
     __declspec(property(get = getz, put = setz)) T z;
     __declspec(property(get = getw, put = setw)) T w;
 
-    constexpr inline SelfRef operator=(const Self& v) { return set(v); }
+    constexpr inline SelfRef operator=(const Self& v) noexcept { return set(v); }
+
+    constexpr Self& operator=(Self&& that) noexcept
+    {
+        if (std::is_constant_evaluated())
+            this->cv = std::move(that.cv);
+        else
+            this->mv = std::move(that.mv);
+
+        return *this;
+    }
 
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
     constexpr inline T& operator[](int i) const { return *((T*)this + i); }
@@ -219,9 +231,6 @@ public:
     }
 };
 
-typedef _ivector4<s32> Ivector4;
-static_assert(sizeof(Ivector4) == 16);
-
 template <class T>
 struct alignas(16) _fvector4
 {
@@ -239,9 +248,11 @@ private:
     };
 
 public:
-    constexpr inline _fvector4() = default;
-    constexpr inline _fvector4(const Self& v) { set(v); }
-    constexpr inline _fvector4(T x, T y, T z, T w) { set(x, y, z, w); }
+    constexpr inline _fvector4() noexcept = default;
+    constexpr inline _fvector4(T x, T y, T z, T w) noexcept { set(x, y, z, w); }
+
+    constexpr inline _fvector4(const Self& v) noexcept { set(v); }
+    constexpr _fvector4(Self&& that) noexcept { *this = std::move(that); }
 
     constexpr inline T getx() const
     {
@@ -305,7 +316,17 @@ public:
     __declspec(property(get = getz, put = setz)) T z;
     __declspec(property(get = getw, put = setw)) T w;
 
-    constexpr inline SelfRef operator=(const Self& v) { return set(v); }
+    constexpr inline SelfRef operator=(const Self& v) noexcept { return set(v); }
+
+    constexpr Self& operator=(Self&& that) noexcept
+    {
+        if (std::is_constant_evaluated())
+            this->cv = std::move(that.cv);
+        else
+            this->mv = std::move(that.mv);
+
+        return *this;
+    }
 
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
     constexpr inline T& operator[](int i) const { return *((T*)this + i); }
@@ -602,10 +623,10 @@ public:
     constexpr inline BOOL similar(const Self& v, T E = EPS_L)
     {
         if (std::is_constant_evaluated())
-            return _abs(cv.f[0] - v.x) < E && _abs(cv.f[1] - v.y) < E && _abs(cv.f[2] - v.z) < E && _abs(cv.f[3] - v.w) < E;
+            return fsimilar(cv.f[0], v.x, E) && fsimilar(cv.f[1], v.y, E) && fsimilar(cv.f[2], v.z, E) && fsimilar(cv.f[3], v.w, E);
         else
-            return DirectX::XMVector4NearEqual(mv, v.mv, E);
-    };
+            return DirectX::XMVector4NearEqual(mv, v.mv, DirectX::XMVectorReplicate(E));
+    }
 
     constexpr inline T magnitude_sqr()
     {
@@ -663,5 +684,8 @@ public:
 
 typedef _fvector4<float> Fvector4;
 static_assert(sizeof(Fvector4) == 16);
+
+typedef _ivector4<s32> Ivector4;
+static_assert(sizeof(Ivector4) == 16);
 
 #endif /* __XR_CORE_VECTOR4_H */

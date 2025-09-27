@@ -10,7 +10,7 @@ class CAI_Trader;
 namespace MonsterSpace
 {
 enum EMonsterHeadAnimType : u32;
-};
+}
 
 class CTraderAnimation
 {
@@ -28,7 +28,7 @@ class CTraderAnimation
     bool m_external_sound;
 
 public:
-    CTraderAnimation(CAI_Trader* trader) : m_trader(trader) {}
+    CTraderAnimation(CAI_Trader* trader) : m_trader{trader} {}
 
     void reinit();
 

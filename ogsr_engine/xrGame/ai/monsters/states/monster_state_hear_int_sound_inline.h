@@ -79,7 +79,8 @@ Fvector CStateMonsterHearInterestingSoundAbstract::get_target_position()
     if (object->Home->at_home(snd_pos))
         return snd_pos;
 
-    return ai().level_graph().vertex_position(object->Home->get_place());
+    snd_pos = ai().level_graph().vertex_position(object->Home->get_place());
+    return snd_pos;
 }
 
 #undef TEMPLATE_SPECIALIZATION

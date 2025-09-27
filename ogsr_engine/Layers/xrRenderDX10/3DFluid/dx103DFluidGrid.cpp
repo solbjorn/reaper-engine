@@ -73,7 +73,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
         InitScreenSlice(&renderQuad, z, index);
 
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pRenderQuadBuffer, renderQuad, vSize * m_iNumVerticesRenderQuad));
-    m_GeomRenderQuad.create(layoutDesc, m_pRenderQuadBuffer, 0);
+    m_GeomRenderQuad.create(layoutDesc, m_pRenderQuadBuffer, nullptr);
 
     // Vertex buffer for "m_vDim[2]" quads to draw all the slices to a 3D texture
     // (a Geometry Shader is used to send each quad to the appropriate slice)
@@ -83,7 +83,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
     VERIFY(index == m_iNumVerticesSlices);
 
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pSlicesBuffer, slices, vSize * m_iNumVerticesSlices));
-    m_GeomSlices.create(layoutDesc, m_pSlicesBuffer, 0);
+    m_GeomSlices.create(layoutDesc, m_pSlicesBuffer, nullptr);
 
     // Vertex buffers for boundary geometry
     //   2 boundary slices
@@ -92,7 +92,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
     VERIFY(index == m_iNumVerticesBoundarySlices);
 
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pBoundarySlicesBuffer, boundarySlices, vSize * m_iNumVerticesBoundarySlices));
-    m_GeomBoundarySlices.create(layoutDesc, m_pBoundarySlicesBuffer, 0);
+    m_GeomBoundarySlices.create(layoutDesc, m_pBoundarySlicesBuffer, nullptr);
 
     //   ( 4 * "m_vDim[2]" ) boundary lines
     index = 0;
@@ -100,7 +100,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
     VERIFY(index == m_iNumVerticesBoundaryLines);
 
     CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pBoundaryLinesBuffer, boundaryLines, vSize * m_iNumVerticesBoundaryLines));
-    m_GeomBoundaryLines.create(layoutDesc, m_pBoundaryLinesBuffer, 0);
+    m_GeomBoundaryLines.create(layoutDesc, m_pBoundaryLinesBuffer, nullptr);
 
     // cleanup:
     xr_free(renderQuad);

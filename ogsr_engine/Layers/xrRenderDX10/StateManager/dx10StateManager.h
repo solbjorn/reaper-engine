@@ -6,8 +6,19 @@ class CBackend;
 class dx10StateManager
 {
 public:
-    dx10StateManager();
+    dx10StateManager()
+    {
+        //	If dx10StateManager would ever own any object
+        //	implement correct state manager
+        Reset();
+    }
+
+    dx10StateManager(const dx10StateManager&);
+    dx10StateManager(dx10StateManager&&);
     ~dx10StateManager() = default;
+
+    dx10StateManager& operator=(const dx10StateManager&);
+    dx10StateManager& operator=(dx10StateManager&&);
 
     //	Set all states to default
     void Reset();

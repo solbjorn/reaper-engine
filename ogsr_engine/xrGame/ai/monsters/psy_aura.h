@@ -13,10 +13,10 @@ public:
     typedef CEnergyHolder inherited;
 
     // владелец поля
-    CBaseMonster* m_object;
+    CBaseMonster* m_object{};
 
     // радиус поля
-    float m_radius;
+    float m_radius{1.f};
 
     CPsyAura();
     virtual ~CPsyAura();

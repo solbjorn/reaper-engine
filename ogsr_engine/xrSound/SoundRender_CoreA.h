@@ -7,29 +7,39 @@
 #include <eax.h>
 
 #ifdef DEBUG
+
 #define A_CHK(expr) \
     { \
         alGetError(); \
         expr; \
         ALenum error = alGetError(); \
         VERIFY2(error == AL_NO_ERROR, (LPCSTR)alGetString(error)); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define AC_CHK(expr) \
     { \
         alcGetError(pDevice); \
         expr; \
         ALCenum error = alcGetError(pDevice); \
         VERIFY2(error == ALC_NO_ERROR, (LPCSTR)alcGetString(pDevice, error)); \
-    }
+    } \
+    XR_MACRO_END()
+
 #else
+
 #define A_CHK(expr) \
     { \
         expr; \
-    }
+    } \
+    XR_MACRO_END()
+
 #define AC_CHK(expr) \
     { \
         expr; \
-    }
+    } \
+    XR_MACRO_END()
+
 #endif
 
 class CSoundRender_CoreA : public CSoundRender_Core

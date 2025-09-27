@@ -16,7 +16,7 @@
 #define CPathManagerTemplate CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>
 
 TEMPLATE_SPECIALIZATION
-IC CPathManagerTemplate::CAbstractPathManager(CRestrictedObject* object) { m_object = object; }
+IC CPathManagerTemplate::CAbstractPathManager(CRestrictedObject* object) : m_object{object} {}
 
 TEMPLATE_SPECIALIZATION
 IC CPathManagerTemplate::~CAbstractPathManager() {}
@@ -26,7 +26,7 @@ IC void CPathManagerTemplate::reinit(const _Graph* graph)
 {
     m_actuality = false;
     m_failed = false;
-    m_evaluator = 0;
+    m_evaluator = nullptr;
     m_graph = graph;
     m_current_index = _index_type(-1);
     m_intermediate_index = _index_type(-1);

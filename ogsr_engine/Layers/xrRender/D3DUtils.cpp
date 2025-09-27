@@ -32,13 +32,16 @@ static Fvector boxvert[boxvertcount];
         constexpr Fvector4 divisor = {255.f, 255.f, 255.f, 255.f}; \
         tfactor.div(divisor); \
         RCache.set_c("tfactor", tfactor); \
-    }
+    } \
+    XR_MACRO_END()
+
 #define DU_DRAW_SH(sh) \
     { \
         RCache.set_Shader(sh); \
         constexpr Fvector4 tfactor = {1.f, 1.f, 1.f, 1.f}; \
         RCache.set_c("tfactor", tfactor); \
-    }
+    } \
+    XR_MACRO_END()
 
 #define FILL_MODE D3DFILL_SOLID
 #define SHADE_MODE D3DSHADE_GOURAUD
@@ -810,7 +813,8 @@ void CDrawUtilities::DrawFace(const Fvector& p0, const Fvector& p1, const Fvecto
 }
 //----------------------------------------------------
 
-static const u32 MAX_VERT_COUNT = 0xFFFF;
+constexpr u32 MAX_VERT_COUNT{std::numeric_limits<u16>::max()};
+
 void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
 {
     VERIFY(m_DD_pv_start == 0);
@@ -818,6 +822,7 @@ void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
     m_DD_pv_start = (FVF::L*)RImplementation.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
     m_DD_pv = m_DD_pv_start;
 }
+
 void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
 {
     RImplementation.Vertex.Unlock((u32)(m_DD_pv - m_DD_pv_start), vs_L->vb_stride);
@@ -832,6 +837,7 @@ void CDrawUtilities::DD_DrawFace_flush(BOOL try_again)
         m_DD_pv = m_DD_pv_start;
     }
 }
+
 void CDrawUtilities::DD_DrawFace_push(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr)
 {
     m_DD_pv->set(p0, clr);
@@ -843,11 +849,13 @@ void CDrawUtilities::DD_DrawFace_push(const Fvector& p0, const Fvector& p1, cons
     if (m_DD_pv - m_DD_pv_start == MAX_VERT_COUNT)
         DD_DrawFace_flush(TRUE);
 }
+
 void CDrawUtilities::DD_DrawFace_end()
 {
     DD_DrawFace_flush(FALSE);
-    m_DD_pv_start = 0;
+    m_DD_pv_start = nullptr;
 }
+
 //----------------------------------------------------
 
 void CDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& center, const Fvector& dir, float height, float radius, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire)
@@ -1394,8 +1402,8 @@ void CDrawUtilities::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 sha
         p.y = (float)iFloor(_y2real(-p.y));
 
         m_Font->SetColor(shadow_color);
-        m_Font->Out(p.x, p.y, (LPSTR)text);
+        m_Font->Out(p.x, p.y, "%s", text);
         m_Font->SetColor(color);
-        m_Font->Out(p.x - 1, p.y - 1, (LPSTR)text);
+        m_Font->Out(p.x - 1, p.y - 1, "%s", text);
     }
 }

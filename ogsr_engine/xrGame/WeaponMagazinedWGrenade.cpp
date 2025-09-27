@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "weaponmagazinedwgrenade.h"
 #include "HUDManager.h"
 #include "entity.h"
@@ -162,7 +163,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 {
     if (m_bGrenadeMode)
     {
-        CartridgeInTheChamber = 0; //Это очень важно!
+        CartridgeInTheChamber = 0; // Это очень важно!
 
         PlaySound(sndReloadG, get_LastFP2());
 
@@ -184,15 +185,15 @@ void CWeaponMagazinedWGrenade::OnShot()
 
         PlayAnimShoot();
 
-        //партиклы огня вылета гранаты из подствольника
+        // партиклы огня вылета гранаты из подствольника
         StartFlameParticles2();
     }
     else
         inherited::OnShot();
 }
-//переход в режим подствольника или выход из него
-//если мы в режиме стрельбы очередями, переключиться
-//на одиночные, а уже потом на подствольник
+// переход в режим подствольника или выход из него
+// если мы в режиме стрельбы очередями, переключиться
+// на одиночные, а уже потом на подствольник
 bool CWeaponMagazinedWGrenade::SwitchMode()
 {
     bool bUsefulStateToSwitch = ((eIdle == GetState()) || (eHidden == GetState()) || (eMisfire == GetState()) || (eMagEmpty == GetState()));
@@ -263,7 +264,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 {
     VERIFY(fTimeToFire > 0.f);
 
-    //режим стрельбы подствольника
+    // режим стрельбы подствольника
     if (m_bGrenadeMode)
     {
         fTime -= dt;
@@ -314,7 +315,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
         if (m_iShotNum == m_iQueueSize)
             FireEnd();
     }
-    //режим стрельбы очередями
+    // режим стрельбы очередями
     else
         inherited::state_Fire(dt);
 }
@@ -323,7 +324,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 {
     inherited::SwitchState(S);
 
-    //стрельнуть из подствольника
+    // стрельнуть из подствольника
     if (m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount())
     {
         Fvector p1, d;
@@ -383,11 +384,9 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 #endif
 
                 if (canfire0 != 0)
-                {
                     d = res[0];
-                };
             }
-        };
+        }
 
         d.normalize();
         d.mul(CRocketLauncher::m_fLaunchSpeed);
@@ -405,7 +404,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
             u_EventGen(P, GE_LAUNCH_ROCKET, ID());
             P.w_u16(getCurrentRocket()->ID());
             u_EventSend(P);
-        };
+        }
     }
 }
 
@@ -434,7 +433,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 {
     inherited::ReloadMagazine();
 
-    //перезарядка подствольного гранатомета
+    // перезарядка подствольного гранатомета
     if (iAmmoElapsed && !getRocketCount() && m_bGrenadeMode)
     {
         //.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
@@ -494,7 +493,7 @@ bool CWeaponMagazinedWGrenade::CanAttach(PIItem pIItem)
 {
     CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
 
-    if (pGrenadeLauncher && CSE_ALifeItemWeapon::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
+    if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
         !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
         return true;
     else
@@ -503,7 +502,7 @@ bool CWeaponMagazinedWGrenade::CanAttach(PIItem pIItem)
 
 bool CWeaponMagazinedWGrenade::CanDetach(const char* item_section_name)
 {
-    if (CSE_ALifeItemWeapon::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
+    if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
         !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
         return true;
     else
@@ -514,14 +513,14 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 {
     CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
 
-    if (pGrenadeLauncher && CSE_ALifeItemWeapon::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
+    if (pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
         !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
     {
         m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
         CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
-        //уничтожить подствольник из инвентаря
+        // уничтожить подствольник из инвентаря
         if (b_send_event)
         {
             //.			pIItem->Drop();
@@ -537,7 +536,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 
 bool CWeaponMagazinedWGrenade::Detach(const char* item_section_name, bool b_spawn_item)
 {
-    if (CSE_ALifeItemWeapon::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
+    if (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
         !xr_strcmp(*m_sGrenadeLauncherName, item_section_name))
     {
         // https://github.com/revolucas/CoC-Xray/pull/5/commits/9ca73da34a58ceb48713b1c67608198c6af26db2
@@ -588,7 +587,7 @@ float CWeaponMagazinedWGrenade::CurrentZoomFactor()
         return inherited::CurrentZoomFactor();
 }
 
-//виртуальные функции для проигрывания анимации HUD
+// виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimShow()
 {
     if (IsGrenadeLauncherAttached())
@@ -723,12 +722,12 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
                 {
                     if (!(State & mcCrouch))
                     {
-                        if (State & mcAccel) //Ходьба медленная (SHIFT)
+                        if (State & mcAccel) // Ходьба медленная (SHIFT)
                             act_state = AnimStateMovingSlow;
                         else
                             act_state = AnimStateMoving;
                     }
-                    else if (State & mcAccel) //Ходьба в присяде (CTRL+SHIFT)
+                    else if (State & mcAccel) // Ходьба в присяде (CTRL+SHIFT)
                         act_state = AnimStateMovingCrouchSlow;
                     else
                         act_state = AnimStateMovingCrouch;
@@ -816,7 +815,7 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
 {
     if (m_bGrenadeMode)
     {
-        //анимация стрельбы из подствольника
+        // анимация стрельбы из подствольника
         string128 guns_shoot_anm;
         xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? "_aim" : "", IsMisfire() ? "_jammed" : (iAmmoElapsed2 == 0 ? "_empty" : ""), "_g");
         PlayHUDMotion({guns_shoot_anm, "anim_shoot_g", "anm_shots_g"}, false, GetState());

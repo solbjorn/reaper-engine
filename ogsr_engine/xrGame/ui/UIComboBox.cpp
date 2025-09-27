@@ -8,6 +8,7 @@
 //
 
 #include "StdAfx.h"
+
 #include "UIComboBox.h"
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"
@@ -107,11 +108,12 @@ void CUIComboBox::OnListItemSelect()
     if (bk_itoken_id != m_itoken_id)
     {
         SaveValue();
-        GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, NULL);
+        GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, nullptr);
     }
 }
 
 #include "../string_table.h"
+
 void CUIComboBox::SetCurrentValue()
 {
     m_list.Clear();

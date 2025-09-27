@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "InventoryBox.h"
 #include "level.h"
 #include "actor.h"
@@ -50,7 +51,7 @@ void IInventoryBox::ProcessEvent(CGameObject* O, NET_Packet& P, u16 type)
         if (it != m_items.end())
             m_items.erase(it);
         else
-            Msg("!![%s.GE_TRANSFER_REJECT] object with id [%u] not found! itm: [%p]", __FUNCTION__, id, itm);
+            Msg("!![%s.GE_TRANSFER_REJECT] object with id [%u] not found!", __FUNCTION__, id);
 
         bool just_before_destroy = !P.r_eof() && P.r_u8();
         bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
@@ -58,7 +59,7 @@ void IInventoryBox::ProcessEvent(CGameObject* O, NET_Packet& P, u16 type)
         if (!itm)
             return;
 
-        itm->H_SetParent(NULL, dont_create_shell);
+        itm->H_SetParent(nullptr, dont_create_shell);
 
         if (auto obj = smart_cast<CGameObject*>(itm))
         {
@@ -71,10 +72,11 @@ void IInventoryBox::ProcessEvent(CGameObject* O, NET_Packet& P, u16 type)
         }
     }
     break;
-    };
+    }
 }
 
 #include "inventory_item.h"
+
 void IInventoryBox::AddAvailableItems(TIItemContainer& items_container) const
 {
     xr_vector<u16>::const_iterator it = m_items.begin();
@@ -97,7 +99,7 @@ CScriptGameObject* IInventoryBox::GetObjectByName(LPCSTR name)
     {
         CObject* self = this->object().dcast_CObject();
         if (result->H_Parent() != self)
-            return NULL; // объект существует, но не принадлежит сему контейнеру
+            return nullptr; // объект существует, но не принадлежит сему контейнеру
     }
     else
     {
@@ -110,7 +112,8 @@ CScriptGameObject* IInventoryBox::GetObjectByName(LPCSTR name)
                     result = obj; // поиск по секции в качестве резерва
             }
     }
-    return result ? smart_cast<CGameObject*>(result)->lua_game_object() : NULL;
+
+    return result ? smart_cast<CGameObject*>(result)->lua_game_object() : nullptr;
 }
 
 CScriptGameObject* IInventoryBox::GetObjectByIndex(u32 id)
@@ -121,6 +124,7 @@ CScriptGameObject* IInventoryBox::GetObjectByIndex(u32 id)
         if (auto obj = smart_cast<CGameObject*>(Level().Objects.net_Find(obj_id)); obj && !obj->getDestroy())
             return obj->lua_game_object();
     }
+
     return nullptr;
 }
 

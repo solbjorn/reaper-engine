@@ -110,7 +110,7 @@ public:
     void r_CullMode(D3DCULL Mode);
 
     void r_dx10Texture(LPCSTR ResourceName, LPCSTR texture);
-    void r_dx10Texture(LPCSTR ResourceName, shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str()); };
+    void r_dx10Texture(LPCSTR ResourceName, shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str()); }
     u32 r_dx10Sampler(LPCSTR ResourceName);
     void r_ColorWriteEnable(bool cR = true, bool cG = true, bool cB = true, bool cA = true);
     void r_End();

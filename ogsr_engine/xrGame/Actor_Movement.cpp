@@ -135,7 +135,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
             cam_UnsetLadder();
         }
         mstate_real &= ~mcClimb;
-    };
+    }
 
     if (mstate_wf != mstate_real)
     {
@@ -152,7 +152,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
     if (!CanAccelerate() && isActorAccelerated(mstate_real, IsZoomAimingMode()))
     {
         mstate_real ^= mcAccel;
-    };
+    }
 
     if (this == Level().CurrentControlEntity())
     {
@@ -162,9 +162,9 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
         if (bOnClimbNow != bOnClimbOld)
         {
             SetWeaponHideState(INV_STATE_LADDER, bOnClimbNow);
-        };
-    };
-};
+        }
+    }
+}
 
 static float moving_box_delay = 0;
 static bool crouch_move = false;
@@ -252,7 +252,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                 // CActor_on_jump
                 this->callback(GameObject::eOnActorJump)(this->lua_game_object());
 
-                //уменьшить силу игрока из-за выполненого прыжка
+                // уменьшить силу игрока из-за выполненого прыжка
                 if (!GodMode())
                 {
                     conditions().ConditionJump(weight);
@@ -578,8 +578,9 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
     unaffected_r_torso.pitch = r_torso.pitch;
     unaffected_r_torso.roll = r_torso.roll;
 
-    CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(
-        inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ : NULL);
+    CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ?
+                                                              inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ :
+                                                              nullptr);
     if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
     {
         Fvector dangle = weapon_recoil_last_delta();

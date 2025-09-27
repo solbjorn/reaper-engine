@@ -31,7 +31,7 @@ public:
         CUITextBanner effect;
         shared_str str;
 
-        void SetText(const char* fmt, ...);
+        void XR_PRINTF(2, 3) SetText(const char* fmt, ...);
 
         // Ctor
         SPh();

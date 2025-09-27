@@ -18,4 +18,4 @@ enum EPathType : u32
     ePathTypeNoPath,
     ePathTypeDummy = u32(-1),
 };
-};
+}

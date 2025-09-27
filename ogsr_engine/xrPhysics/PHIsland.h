@@ -1,10 +1,14 @@
 #ifndef PH_ISLAND_H
 #define PH_ISLAND_H
 
-#pragma warning(disable : 4995)
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include "ode/src/objects.h"
 #include "ode/src/joint.h"
-#pragma warning(default : 4995)
+
+XR_DIAG_POP();
+
 #include "PhysicsCommon.h"
 
 class CPHIslandFlags
@@ -77,16 +81,19 @@ public:
 
     IC dWorldID DWorld() { return (dWorldID)this; }
     IC dWorldID DActiveWorld() { return (dWorldID)DActiveIsland(); }
+
     IC CPHIsland* DActiveIsland()
     {
         GoActive();
         return m_self_active;
     }
+
     IC void GoActive()
     {
         while (!m_self_active->m_flags.is_active())
             m_self_active = m_self_active->m_self_active;
     }
+
     IC void Merge(CPHIsland* island)
     {
         // VERIFY2(b_active&&island->b_active,"no active island");
@@ -114,6 +121,7 @@ public:
         // second_island->b_active=false;
         m_flags.merge(second_island->m_flags);
     }
+
     IC void Unmerge()
     {
         firstjoint = m_first_joint;
@@ -121,32 +129,37 @@ public:
         if (!m_nj)
         {
             m_joints_tail = &firstjoint;
-            *m_joints_tail = 0;
+            *m_joints_tail = nullptr;
         }
         else
         {
             firstjoint->tome = (dObject**)&firstjoint;
         }
-        *m_joints_tail = 0;
-        *m_bodies_tail = 0;
+
+        *m_joints_tail = nullptr;
+        *m_bodies_tail = nullptr;
         // b_active=true;
         m_flags.unmerge();
         m_self_active = this;
         nj = m_nj;
         nb = m_nb;
     }
+
     IC void Init()
     {
         // b_active=true;
         m_flags.init();
         m_nj = nj = 0;
         m_nb = nb = 0;
-        m_first_joint = firstjoint = 0;
-        m_first_body = firstbody = 0;
+        m_first_joint = nullptr;
+        firstjoint = nullptr;
+        m_first_body = nullptr;
+        firstbody = nullptr;
         m_joints_tail = &firstjoint;
         m_bodies_tail = &firstbody;
         m_self_active = this;
     }
+
     IC void AddBody(dxBody* body)
     {
         VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -158,6 +171,7 @@ public:
         }
         m_nb++;
     }
+
     IC void RemoveBody(dxBody* body)
     {
         VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -170,6 +184,7 @@ public:
         dWorldRemoveBody((dxWorld*)this, body);
         m_nb--;
     }
+
     IC void AddJoint(dxJoint* joint)
     {
         VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
@@ -215,8 +230,6 @@ public:
     void Step(dReal step);
     void Enable();
     void Repair();
-
-protected:
-private:
 };
+
 #endif

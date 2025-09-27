@@ -12,7 +12,11 @@ IC u32 CEnemyManager::last_enemy_time() const { return (m_last_enemy_time); }
 
 IC const CEntityAlive* CEnemyManager::last_enemy() const { return (m_last_enemy); }
 
-IC CEnemyManager::USEFULE_CALLBACK& CEnemyManager::useful_callback() { return (m_useful_callback); }
+inline void CEnemyManager::set_useful_callback(sol::function& function, sol::object& object)
+{
+    m_useful_callback = function;
+    m_useful_object = object;
+}
 
 IC void CEnemyManager::enable_enemy_change(const bool& value) { m_enable_enemy_change = value; }
 

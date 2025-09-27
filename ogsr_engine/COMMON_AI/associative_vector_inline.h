@@ -109,9 +109,9 @@ IC typename _associative_vector::mapped_type& _associative_vector::operator[](co
 {
     iterator I = find(key);
     if (I != end())
-        return ((*I).second);
+        return I->second;
 
-    return (insert(value_type(key, mapped_type())).first->second);
+    return emplace(key, mapped_type()).first->second;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -239,28 +239,30 @@ TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::iterator _associative_vector::find(const key_type& key)
 {
     actualize();
+
     iterator I = lower_bound(key);
     if (I == end())
-        return (end());
+        return I;
 
     if ((*this)(key, (*I).first))
-        return (end());
+        I = end();
 
-    return (I);
+    return I;
 }
 
 TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::const_iterator _associative_vector::find(const key_type& key) const
 {
     actualize();
+
     const_iterator I = lower_bound(key);
     if (I == end())
-        return (end());
+        return I;
 
     if ((*this)(key, (*I).first))
-        return (end());
+        I = end();
 
-    return (I);
+    return I;
 }
 
 TEMPLATE_SPECIALIZATION

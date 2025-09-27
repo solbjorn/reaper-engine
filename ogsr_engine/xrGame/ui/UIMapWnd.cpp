@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIMapWnd.h"
 #include "UIMap.h"
 #include "UIXmlInit.h"
@@ -26,23 +27,19 @@
 #include <dinput.h> //remove me !!!
 #include "..\..\xr_3da\xr_input.h" //remove me !!!
 
-const int SCROLLBARS_SHIFT = 5;
-const int VSCROLLBAR_STEP = 20; // В пикселях
-const int HSCROLLBAR_STEP = 20; // В пикселях
+namespace
+{
+constexpr int SCROLLBARS_SHIFT{5};
+constexpr int VSCROLLBAR_STEP{20}; // В пикселях
+constexpr int HSCROLLBAR_STEP{20}; // В пикселях
 
-static bool MAP_FLY_MODE = true;
+bool MAP_FLY_MODE = true;
+} // namespace
 
 CUIMapWnd::CUIMapWnd()
 {
-    m_tgtMap = NULL;
-    m_GlobalMap = NULL;
     m_flags.zero();
     m_currentZoom = 1.0f;
-    m_hint = NULL;
-    m_text_hint = NULL;
-
-    m_UserSpotWnd = nullptr;
-    m_cur_location = nullptr;
 }
 
 CUIMapWnd::~CUIMapWnd()
@@ -258,7 +255,7 @@ void CUIMapWnd::Show(bool status)
         if (m_flags.test(lmFirst))
         {
             inherited::Update(); // only maps, not action planner
-            OnToolActorClicked(NULL, NULL);
+            OnToolActorClicked(nullptr, nullptr);
             m_flags.set(lmFirst, FALSE);
         }
         InventoryUtilities::SendInfoToActor("ui_pda_map_local");
@@ -275,8 +272,7 @@ void CUIMapWnd::Show(bool status)
             it->second->DetachAll();
     }
 
-    m_hint->SetOwner(NULL);
-
+    m_hint->SetOwner(nullptr);
     m_UserSpotWnd->Exit();
 }
 
@@ -380,13 +376,16 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
             pos_delta.x += 1.0f;
         if (dik == DIK_RIGHT)
             pos_delta.x -= 1.0f;
+
         GlobalMap()->MoveWndDelta(pos_delta);
         UpdateScroll();
-        m_hint->SetOwner(NULL);
+        m_hint->SetOwner(nullptr);
+
         return true;
     }
     break;
     }
+
     return false;
 }
 
@@ -428,7 +427,8 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
             {
                 GlobalMap()->MoveWndDelta(GetUICursor()->GetCursorPositionDelta());
                 UpdateScroll();
-                m_hint->SetOwner(NULL);
+                m_hint->SetOwner(nullptr);
+
                 return true;
             }
             break;
@@ -465,7 +465,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
                     break;
             */
         }
-    };
+    }
 
     if (((mouse_action == WINDOW_LBUTTON_DOWN) && (m_flags.is_any(lmZoomIn + lmZoomOut))) || (mouse_action == WINDOW_MOUSE_WHEEL_DOWN) || (mouse_action == WINDOW_MOUSE_WHEEL_UP))
     {
@@ -493,9 +493,11 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
             gm->GetAbsolutePos(_p);
             m_tgtCenter.sub(_p);
             m_tgtCenter.div(gm->GetCurrentZoom());
+
             ResetActionPlanner();
-            m_hint->SetOwner(NULL);
+            m_hint->SetOwner(nullptr);
         }
+
         return true;
     }
 
@@ -644,7 +646,7 @@ void CUIMapWnd::OnToolZoomOutClicked(CUIWindow* w, void*)
 
 void CUIMapWnd::ValidateToolBar()
 {
-    CUI3tButton* btn = NULL;
+    CUI3tButton* btn{};
     btn = m_ToolBar[eZoomIn];
     if (btn)
         btn->SetCheck(!!m_flags.test(lmZoomIn));
@@ -663,7 +665,7 @@ void CUIMapWnd::OnToolActorClicked(CUIWindow*, void*)
     Fvector2 v2;
     v2.set(v.x, v.z);
 
-    CUICustomMap* lm = NULL;
+    CUICustomMap* lm{};
     u16 idx = GetIdxByName(Level().name());
     if (idx != u16(-1))
     {
@@ -711,7 +713,7 @@ void CUIMapWnd::ShowHint(CUIWindow* parent, LPCSTR text)
 void CUIMapWnd::HideHint(CUIWindow* parent)
 {
     if (m_hint->GetOwner() == parent)
-        m_hint->SetOwner(NULL);
+        m_hint->SetOwner(nullptr);
 }
 
 void CUIMapWnd::Hint(const shared_str& text) { m_text_hint->SetTextST(*text); }

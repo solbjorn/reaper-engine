@@ -18,7 +18,7 @@ void CStateBurerAttackTele<Object>::initialize()
     inherited::initialize();
 
     m_action = ACTION_TELE_STARTED;
-    selected_object = 0;
+    selected_object = nullptr;
 
     SelectObjects();
 
@@ -58,12 +58,10 @@ void CStateBurerAttackTele<Object>::execute()
             }
         }
         break;
-
     case ACTION_TELE_CONTINUE:
         object->anim().set_override_animation(eAnimTelekinesis, 1);
         ExecuteTeleContinue();
         break;
-
     case ACTION_TELE_FIRE: {
         object->anim().set_override_animation(eAnimTeleFire, 0);
         ExecuteTeleFire();
@@ -72,7 +70,6 @@ void CStateBurerAttackTele<Object>::execute()
         m_action = ACTION_WAIT_FIRE_END;
         break;
     }
-
     case ACTION_WAIT_FIRE_END:
         object->anim().set_override_animation(eAnimTeleFire, 0);
         if (current_time() > m_anim_end_tick)
@@ -86,7 +83,7 @@ void CStateBurerAttackTele<Object>::execute()
                 m_action = ACTION_COMPLETED;
             }
         }
-
+        break;
     case ACTION_COMPLETED: break;
     }
 
@@ -188,7 +185,7 @@ bool CStateBurerAttackTele<Object>::check_completion()
 template <typename Object>
 void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*>& tpObjects, const Fvector& pos)
 {
-    Level().ObjectSpace.GetNearest(tpObjects, pos, object->m_tele_find_radius, NULL);
+    Level().ObjectSpace.GetNearest(tpObjects, pos, object->m_tele_find_radius, nullptr);
 
     for (u32 i = 0; i < tpObjects.size(); i++)
     {
@@ -286,14 +283,14 @@ void CStateBurerAttackTele<Object>::ExecuteTeleContinue()
         return;
 
     bool object_found = false;
-    CTelekineticObject tele_object;
+    CTelekineticObject* tele_object;
 
     u32 i = 0;
     while (i < object->CTelekinesis::get_objects_count())
     {
-        tele_object = object->CTelekinesis::get_object_by_index(i);
+        tele_object = &object->CTelekinesis::get_object_by_index(i);
 
-        if ((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Device.dwTimeGlobal))
+        if ((tele_object->get_state() == TS_Keep) && (tele_object->time_keep_started + 1500 < Device.dwTimeGlobal))
         {
             object_found = true;
             break;
@@ -305,7 +302,7 @@ void CStateBurerAttackTele<Object>::ExecuteTeleContinue()
     if (object_found)
     {
         m_action = ACTION_TELE_FIRE;
-        selected_object = tele_object.get_object();
+        selected_object = tele_object->get_object();
     }
     else
     {
@@ -383,7 +380,7 @@ public:
         float dist3 = enemy_pos.distance_to(monster_pos);
 
         return ((dist1 < dist3) && (dist2 > dist3));
-    };
+    }
 };
 
 class best_object_predicate2
@@ -456,7 +453,7 @@ void CStateBurerAttackTele<Object>::HandleGrenades()
     }
 
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, object->Position(), object->m_tele_find_radius, NULL);
+    Level().ObjectSpace.GetNearest(m_nearest, object->Position(), object->m_tele_find_radius, nullptr);
 
     for (u32 i = 0; i < m_nearest.size(); ++i)
     {

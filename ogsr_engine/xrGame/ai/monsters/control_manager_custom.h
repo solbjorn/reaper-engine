@@ -19,14 +19,14 @@ class CControlManagerCustom : public CControl_ComBase
 
     xr_vector<CObject*> m_nearest;
 
-    CAnimationSequencer* m_sequencer;
-    CAnimationTriple* m_triple_anim;
+    CAnimationSequencer* m_sequencer{};
+    CAnimationTriple* m_triple_anim{};
 
-    CControlRotationJump* m_rotation_jump;
-    CControlJump* m_jump;
-    CControlRunAttack* m_run_attack;
-    CControlThreaten* m_threaten;
-    CControlMeleeJump* m_melee_jump;
+    CControlRotationJump* m_rotation_jump{};
+    CControlJump* m_jump{};
+    CControlRunAttack* m_run_attack{};
+    CControlThreaten* m_threaten{};
+    CControlMeleeJump* m_melee_jump{};
     CControlCriticalWound* m_critical_wound{};
 
     using ROT_JUMP_DATA_VEC = xr_vector<SControlRotationJumpData>;

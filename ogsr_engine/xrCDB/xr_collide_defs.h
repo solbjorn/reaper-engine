@@ -105,7 +105,7 @@ struct rq_result
     {
         if (I->range < range)
         {
-            set(0, I->range, I->id);
+            set(nullptr, I->range, I->id);
             return TRUE;
         }
         else
@@ -156,7 +156,7 @@ public:
             return FALSE;
         }
 
-        rq_result& rq = results.emplace_back(rq_result());
+        rq_result& rq = results.emplace_back();
         rq.range = _range;
         rq.element = _element;
         rq.O = _who;
@@ -182,4 +182,4 @@ public:
 };
 typedef BOOL rq_callback(rq_result& result, LPVOID user_data);
 typedef BOOL test_callback(const ray_defs& rd, CObject* object, LPVOID user_data);
-}; // namespace collide
+} // namespace collide

@@ -73,7 +73,7 @@ void ISpatial::spatial_unregister()
     {
         // remove
         spatial.space->remove(this);
-        spatial.node_ptr = NULL;
+        spatial.node_ptr = nullptr;
         spatial.sector_id = INVALID_SECTOR_ID;
     }
     else
@@ -127,10 +127,12 @@ void ISpatial_NODE::_insert(ISpatial* S)
 
 void ISpatial_NODE::_remove(ISpatial* S)
 {
-    S->spatial.node_ptr = NULL;
+    S->spatial.node_ptr = nullptr;
+
     auto it = std::find(items.begin(), items.end(), S);
     if (it != items.end())
         items.erase(it);
+
     S->spatial.space->stat_objects--;
 }
 
@@ -183,8 +185,9 @@ void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 {
     VERIFY(P->_empty());
     stat_nodes--;
+
     allocator_pool.push_back(P);
-    P = NULL;
+    P = nullptr;
 }
 
 void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
@@ -217,13 +220,14 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
         VERIFY(octant == _octant(n_C, c_C)); // check table assosiations
         ISpatial_NODE*& chield = N->children[octant];
 
-        if (0 == chield)
+        if (!chield)
         {
             chield = _node_create();
             VERIFY(chield);
             chield->_init(N);
             VERIFY(chield);
         }
+
         VERIFY(chield);
         _insert(chield, c_C, c_R);
         VERIFY(chield);
@@ -283,7 +287,7 @@ void ISpatial_DB::insert(ISpatial* S)
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 {
-    if (0 == N)
+    if (!N)
         return;
 
     //*** we are assured that node contains N_sub and this subnode is empty

@@ -18,9 +18,10 @@
 
 void CScriptBinderObject::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CScriptBinderObject>("object_binder", sol::no_constructor, sol::call_constructor, sol::constructors<CScriptBinderObject(CScriptGameObject*)>(), "object",
-                                          sol::readonly(&CScriptBinderObject::m_object), "reinit", &CScriptBinderObject::reinit, "reload", &CScriptBinderObject::reload,
-                                          "net_spawn", &CScriptBinderObject::net_Spawn, "net_destroy", &CScriptBinderObject::net_Destroy, "update",
-                                          &CScriptBinderObject::shedule_Update, "save", &CScriptBinderObject::save, "load", &CScriptBinderObject::load, "net_save_relevant",
-                                          &CScriptBinderObject::net_SaveRelevant, "net_Relcase", &CScriptBinderObject::net_Relcase);
+    lua.new_usertype<CScriptBinderObject>("object_binder", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CScriptBinderObject, CScriptGameObject*>),
+                                          "priv", &CScriptBinderObject::priv, "ops", &CScriptBinderObject::ops, "LOAD", sol::var(CScriptBinderObject::LOAD), "NET_DESTROY",
+                                          sol::var(CScriptBinderObject::NET_DESTROY), "NET_RELCASE", sol::var(CScriptBinderObject::NET_RELCASE), "NET_SAVE_RELEVANT",
+                                          sol::var(CScriptBinderObject::NET_SAVE_RELEVANT), "NET_SPAWN", sol::var(CScriptBinderObject::NET_SPAWN), "REINIT",
+                                          sol::var(CScriptBinderObject::REINIT), "RELOAD", sol::var(CScriptBinderObject::RELOAD), "SAVE", sol::var(CScriptBinderObject::SAVE),
+                                          "UPDATE", sol::var(CScriptBinderObject::UPDATE), "object", sol::readonly(&CScriptBinderObject::m_object));
 }

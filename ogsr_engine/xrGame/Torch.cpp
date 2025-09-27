@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "torch.h"
 #include "entity.h"
 #include "actor.h"
@@ -18,17 +19,20 @@
 #include "actorEffector.h"
 #include "CustomOutfit.h"
 
-static const float TIME_2_HIDE = 5.f;
-static const float TORCH_INERTION_CLAMP = PI_DIV_6;
-static const float TORCH_INERTION_SPEED_MAX = 7.5f;
-static const float TORCH_INERTION_SPEED_MIN = 0.5f;
-static Fvector TORCH_OFFSET = {-0.2f, +0.1f, -0.3f};
-static const Fvector OMNI_OFFSET = {-0.2f, +0.1f, -0.1f};
-static const float OPTIMIZATION_DISTANCE = 100.f;
+namespace
+{
+constexpr float TIME_2_HIDE{5.f};
+constexpr float TORCH_INERTION_CLAMP{PI_DIV_6};
+constexpr float TORCH_INERTION_SPEED_MAX{7.5f};
+constexpr float TORCH_INERTION_SPEED_MIN{0.5f};
+constexpr Fvector TORCH_OFFSET = {-0.2f, +0.1f, -0.3f};
+constexpr Fvector OMNI_OFFSET{-0.2f, +0.1f, -0.1f};
+constexpr float OPTIMIZATION_DISTANCE{100.f};
 
-static bool stalker_use_dynamic_lights = false;
+bool stalker_use_dynamic_lights = false;
+} // namespace
 
-CTorch::CTorch(void)
+CTorch::CTorch()
 {
     light_render = ::Render->light_create();
     light_render->set_type(IRender_Light::SPOT);
@@ -39,22 +43,15 @@ CTorch::CTorch(void)
     light_omni->set_shadow(false);
     light_omni->set_moveable(true);
 
-    m_switched_on = false;
     glow_render = ::Render->glow_create();
-    lanim = 0;
-    time2hide = 0;
-    fBrightness = 1.f;
 
     /*m_NightVisionRechargeTime	= 6.f;
     m_NightVisionRechargeTimeMin= 2.f;
     m_NightVisionDischargeTime	= 10.f;
     m_NightVisionChargeTime		= 0.f;*/
-
-    m_prev_hp.set(0, 0);
-    m_delta_h = 0;
 }
 
-CTorch::~CTorch(void)
+CTorch::~CTorch()
 {
     light_render.destroy();
     light_omni.destroy();

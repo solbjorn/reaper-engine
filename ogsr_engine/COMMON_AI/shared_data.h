@@ -17,18 +17,19 @@ public:
     static bool _on_self_delete;
 
 public:
-    CSingleton() {}
-    virtual ~CSingleton() { _self = NULL; }
+    CSingleton() = default;
+    virtual ~CSingleton() { _self = nullptr; }
 
     static void DestroySingleton()
     {
         if (!_self)
             return;
+
         Msg("DestroySingleton::RefCounter: [%d]", _refcount);
         VERIFY(_on_self_delete == false);
         VERIFY(_refcount == 0);
         xr_delete(_self);
-    };
+    }
 
 public:
     static T* Instance()
@@ -38,6 +39,7 @@ public:
         ++_refcount;
         return _self;
     }
+
     void FreeInst()
     {
         if (0 == --_refcount)
@@ -52,11 +54,13 @@ public:
 };
 
 template <class T>
-T* CSingleton<T>::_self = NULL;
+T* CSingleton<T>::_self{};
+
 template <class T>
-int CSingleton<T>::_refcount = 0;
+int CSingleton<T>::_refcount{};
+
 template <class T>
-bool CSingleton<T>::_on_self_delete = true;
+bool CSingleton<T>::_on_self_delete{true};
 
 template <class SHARED_TYPE, class KEY_TYPE>
 class CSharedObj : public CSingleton<CSharedObj<SHARED_TYPE, KEY_TYPE>>
@@ -67,7 +71,8 @@ public:
     xr_map<KEY_TYPE, SHARED_TYPE*> _shared_tab;
     typedef typename xr_map<KEY_TYPE, SHARED_TYPE*>::iterator SHARED_DATA_MAP_IT;
 
-    CSharedObj() {};
+    CSharedObj() = default;
+
     virtual ~CSharedObj()
     {
         for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it)
@@ -87,7 +92,7 @@ public:
         if (_shared_tab.end() == shared_it)
         {
             _data = xr_new<SHARED_TYPE>();
-            _shared_tab.insert(mk_pair(id, _data));
+            _shared_tab.try_emplace(id, _data);
         }
         else
             _data = shared_it->second;
@@ -115,10 +120,10 @@ class CSharedClass : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSharedClass<SHARED_TYPE, KEY_TYPE, auto_delete>);
 
 public:
-    SHARED_TYPE* _sd;
+    SHARED_TYPE* _sd{};
     CSharedObj<SHARED_TYPE, KEY_TYPE>* pSharedObj;
 
-    CSharedClass() : _sd(NULL)
+    CSharedClass()
     {
         pSharedObj = CSharedObj<SHARED_TYPE, KEY_TYPE>::Instance();
         pSharedObj->_on_self_delete = auto_delete;

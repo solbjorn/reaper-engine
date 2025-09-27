@@ -7,7 +7,8 @@
 static constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
 
 using sector_id_t = size_t;
-constexpr sector_id_t INVALID_SECTOR_ID = sector_id_t(-1);
+
+constexpr sector_id_t INVALID_SECTOR_ID = std::numeric_limits<sector_id_t>::max();
 
 /*
 Requirements:
@@ -98,10 +99,10 @@ public:
         spatial_updatesector_internal(sector_id);
     }
 
-    virtual CObject* dcast_CObject() { return 0; }
-    virtual Feel::Sound* dcast_FeelSound() { return 0; }
-    virtual IRenderable* dcast_Renderable() { return 0; }
-    virtual IRender_Light* dcast_Light() { return 0; }
+    virtual CObject* dcast_CObject() { return nullptr; }
+    virtual Feel::Sound* dcast_FeelSound() { return nullptr; }
+    virtual IRenderable* dcast_Renderable() { return nullptr; }
+    virtual IRender_Light* dcast_Light() { return nullptr; }
 
     ISpatial(ISpatial_DB* space) { spatial.space = space; }
     virtual ~ISpatial();

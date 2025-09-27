@@ -6,7 +6,7 @@
 #include "../../../ai_debug.h"
 #include "../state_defs.h"
 #include "../state_manager.h"
-#include "../../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../../../characterphysicssupport.h"
 #include "../../../actor.h"
 

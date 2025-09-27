@@ -245,7 +245,7 @@ void CHW::CreateDevice(HWND hwnd)
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
     size_t memory = Desc.DedicatedVideoMemory;
-    Msg("*     Texture memory: %d M", memory / (1024 * 1024));
+    Msg("*     Texture memory: %zu M", memory / (1024 * 1024));
 
     //	Create render target and depth-stencil views here
 
@@ -269,7 +269,7 @@ void CHW::DestroyDevice()
 
     //	Must switch to windowed mode to release swap chain
     if (!m_ChainDescFullscreen.Windowed)
-        m_pSwapChain->SetFullscreenState(FALSE, NULL);
+        m_pSwapChain->SetFullscreenState(FALSE, nullptr);
 
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
@@ -299,7 +299,7 @@ void CHW::Reset(HWND hwnd)
 
     cd_fs.Windowed = bWindowed;
 
-    m_pSwapChain->SetFullscreenState(!bWindowed, NULL);
+    m_pSwapChain->SetFullscreenState(!bWindowed, nullptr);
 
     selectResolution(cd.Width, cd.Height, bWindowed);
 
@@ -382,7 +382,7 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
     UINT flags = 0;
 
     // Get the number of display modes available
-    pOutput->GetDisplayModeList(format, flags, &num, 0);
+    pOutput->GetDisplayModeList(format, flags, &num, nullptr);
 
     // Get the list of display modes
     modes.resize(num);
@@ -538,17 +538,17 @@ struct _uniq_mode
 void free_vid_mode_list()
 {
     for (int i = 0; vid_mode_token[i].name; i++)
-    {
         xr_free(vid_mode_token[i].name);
-    }
+
     xr_free(vid_mode_token);
-    vid_mode_token = NULL;
+    vid_mode_token = nullptr;
 }
 
 void fill_vid_mode_list(CHW* _hw)
 {
-    if (vid_mode_token != NULL)
+    if (vid_mode_token)
         return;
+
     xr_vector<LPCSTR> _tmp;
     xr_vector<DXGI_MODE_DESC> modes;
 
@@ -561,7 +561,7 @@ void fill_vid_mode_list(CHW* _hw)
     UINT flags = 0;
 
     // Get the number of display modes available
-    pOutput->GetDisplayModeList(format, flags, &num, 0);
+    pOutput->GetDisplayModeList(format, flags, &num, nullptr);
 
     // Get the list of display modes
     modes.resize(num);
@@ -582,7 +582,7 @@ void fill_vid_mode_list(CHW* _hw)
         if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
             continue;
 
-        _tmp.push_back(NULL);
+        _tmp.emplace_back(nullptr);
         _tmp.back() = xr_strdup(str);
     }
 
@@ -591,7 +591,7 @@ void fill_vid_mode_list(CHW* _hw)
     vid_mode_token = xr_alloc<xr_token>(_cnt);
 
     vid_mode_token[_cnt - 1].id = -1;
-    vid_mode_token[_cnt - 1].name = NULL;
+    vid_mode_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
     Msg("Available video modes[%d]:", _tmp.size());

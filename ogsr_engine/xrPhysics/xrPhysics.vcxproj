@@ -187,6 +187,27 @@
     <ClInclude Include="ExtendedGeom.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="IColisiondamageInfo.h" />
+    <ClInclude Include="IKFoot.h" />
+    <ClInclude Include="IKFoot_inl.h" />
+    <ClInclude Include="ik_calculate_data.h" />
+    <ClInclude Include="ik_calculate_state.h" />
+    <ClInclude Include="ik_collide_data.h" />
+    <ClInclude Include="ik_dbg_matrix.h" />
+    <ClInclude Include="ik_foot_collider.h" />
+    <ClInclude Include="ik_limb_state.h" />
+    <ClInclude Include="ik_limb_state_predict.h" />
+    <ClInclude Include="ik_object_shift.h" />
+    <ClInclude Include="Ik\aint.h" />
+    <ClInclude Include="Ik\Dof7control.h" />
+    <ClInclude Include="Ik\eqn.h" />
+    <ClInclude Include="Ik\eulersolver.h" />
+    <ClInclude Include="ik_anim_state.h" />
+    <ClInclude Include="Ik\IKLimb.h" />
+    <ClInclude Include="IKLimbsController.h" />
+    <ClInclude Include="Ik\jtlimits.h" />
+    <ClInclude Include="Ik\limb.h" />
+    <ClInclude Include="Ik\math3d.h" />
+    <ClInclude Include="Ik\mathTrig.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="PHAICharacter.h" />
     <ClInclude Include="PHActivationShape.h" />
@@ -196,6 +217,7 @@
     <ClInclude Include="PHCharacter.h" />
     <ClInclude Include="PHCollideValidator.h" />
     <ClInclude Include="PHContactBodyEffector.h" />
+    <ClInclude Include="PHDebug.h" />
     <ClInclude Include="PHDefs.h" />
     <ClInclude Include="PHDisabling.h" />
     <ClInclude Include="PHDynamicData.h" />
@@ -209,6 +231,7 @@
     <ClInclude Include="PHItemList.h" />
     <ClInclude Include="PHJoint.h" />
     <ClInclude Include="PHJointDestroyInfo.h" />
+    <ClInclude Include="PHMovementControl.h" />
     <ClInclude Include="PHMoveStorage.h" />
     <ClInclude Include="PHObject.h" />
     <ClInclude Include="PHShell.h" />
@@ -231,6 +254,7 @@
     <ClInclude Include="ode_include.h" />
     <ClInclude Include="ode_redefine.h" />
     <ClInclude Include="phvalide.h" />
+    <ClInclude Include="pose_extrapolation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tri-colliderknoopc\dcTriListCollider.cpp">
@@ -244,6 +268,23 @@
     <ClCompile Include="DisablingParams.cpp" />
     <ClCompile Include="ElevatorState.cpp" />
     <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="IKFoot.cpp" />
+    <ClCompile Include="ik_calculate_data.cpp" />
+    <ClCompile Include="ik_dbg_matrix.cpp" />
+    <ClCompile Include="ik_foot_collider.cpp" />
+    <ClCompile Include="ik_limb_state.cpp" />
+    <ClCompile Include="ik_object_shift.cpp" />
+    <ClCompile Include="Ik\aint.cxx" />
+    <ClCompile Include="Ik\Dof7control.cpp" />
+    <ClCompile Include="Ik\eqn.cxx" />
+    <ClCompile Include="Ik\eulersolver.cxx" />
+    <ClCompile Include="ik_anim_state.cpp" />
+    <ClCompile Include="Ik\IKLimb.cpp" />
+    <ClCompile Include="IKLimbsController.cpp" />
+    <ClCompile Include="Ik\jtlimits.cxx" />
+    <ClCompile Include="Ik\limb.cxx" />
+    <ClCompile Include="Ik\math3d.cpp" />
+    <ClCompile Include="Ik\mathTrig.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PHAICharacter.cpp" />
     <ClCompile Include="PHActivationShape.cpp" />
@@ -253,6 +294,7 @@
     <ClCompile Include="PHCharacter.cpp" />
     <ClCompile Include="PHCollideValidator.cpp" />
     <ClCompile Include="PHContactBodyEffector.cpp" />
+    <ClCompile Include="PHDebug.cpp" />
     <ClCompile Include="PHDisabling.cpp" />
     <ClCompile Include="PHDynamicData.cpp" />
     <ClCompile Include="PHElement.cpp" />
@@ -263,6 +305,7 @@
     <ClCompile Include="PHIsland.cpp" />
     <ClCompile Include="PHJoint.cpp" />
     <ClCompile Include="PHJointDestroyInfo.cpp" />
+    <ClCompile Include="PHMovementControl.cpp" />
     <ClCompile Include="PHMoveStorage.cpp" />
     <ClCompile Include="PHObject.cpp" />
     <ClCompile Include="PHShell.cpp" />
@@ -281,6 +324,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="dRayMotions.cpp" />
+    <ClCompile Include="pose_extrapolation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">

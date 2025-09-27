@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "controller_psy_aura.h"
 #include "controller.h"
 #include "../../../actor.h"
@@ -95,7 +96,7 @@ void CControllerAura::update_schedule()
             if (active())
             {
                 m_effector->switch_off();
-                m_effector = 0;
+                m_effector = nullptr;
             }
         }
         else
@@ -106,7 +107,7 @@ void CControllerAura::update_schedule()
                 if (m_time_fake_aura < time())
                 {
                     m_effector->switch_off();
-                    m_effector = 0;
+                    m_effector = nullptr;
                     m_time_fake_aura = time() + 5000 + Random.randI(FAKE_AURA_DELAY);
                 }
             }
@@ -115,7 +116,7 @@ void CControllerAura::update_schedule()
                 // check to start
                 if (m_time_fake_aura < time())
                 {
-                    m_effector = xr_new<CPPEffectorControllerAura>(m_state, 5000, aura_sound.left, aura_sound.right);
+                    m_effector = xr_new<CPPEffectorControllerAura>(m_state, 5000u, aura_sound.left, aura_sound.right);
                     Actor()->Cameras().AddPPEffector(m_effector);
 
                     m_time_fake_aura = time() + 5000 + Random.randI(FAKE_AURA_DURATION);
@@ -134,7 +135,7 @@ void CControllerAura::update_schedule()
             if (!need_be_active)
             {
                 m_effector->switch_off();
-                m_effector = 0;
+                m_effector = nullptr;
             }
         }
         else
@@ -142,7 +143,7 @@ void CControllerAura::update_schedule()
             if (need_be_active)
             {
                 // create effector
-                m_effector = xr_new<CPPEffectorControllerAura>(m_state, 5000, aura_sound.left, aura_sound.right);
+                m_effector = xr_new<CPPEffectorControllerAura>(m_state, 5000u, aura_sound.left, aura_sound.right);
                 Actor()->Cameras().AddPPEffector(m_effector);
                 m_time_started = time();
             }
@@ -170,7 +171,7 @@ void CControllerAura::on_death()
     if (active())
     {
         m_effector->switch_off();
-        m_effector = 0;
+        m_effector = nullptr;
     }
 }
 

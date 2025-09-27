@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrcpuid.h"
 #include "GameFont.h"
 #include "../xrcdb/ISpatial.h"
@@ -25,15 +26,7 @@ Flags32 g_stats_flags = {0};
 //////////////////////////////////////////////////////////////////////
 BOOL g_bDisableRedText = FALSE;
 
-CStats::CStats()
-{
-    fFPS = 30.f;
-    fRFPS = 30.f;
-    fTPS = 0;
-    pFont = 0;
-    RenderDUMP_DT_Count = 0;
-    Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
-}
+CStats::CStats() { Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000); }
 
 CStats::~CStats()
 {
@@ -128,7 +121,7 @@ void CStats::Show()
         b_ps = .99f * b_ps + .01f * (clBOX.count / clBOX.result);
 
         CSound_stats snd_stat;
-        ::Sound->statistic(&snd_stat, 0);
+        ::Sound->statistic(&snd_stat, nullptr);
         F.SetColor(0xFFFFFFFF);
 
         F.OutSet(0, 0);
@@ -137,7 +130,7 @@ void CStats::Show()
         m_pRender->OutData1(F);
 #ifdef DEBUG
         F.OutSkip();
-        F.OutNext("mapped:      %d", g_file_mapped_memory);
+        F.OutNext("mapped:      %u", g_file_mapped_memory);
         F.OutSkip();
         m_pRender->OutData2(F);
 #endif
@@ -146,23 +139,23 @@ void CStats::Show()
 
 #define PPP(a) (100.f * float(a) / float(EngineTOTAL.result))
         F.OutNext("*** ENGINE:  %2.2fms", EngineTOTAL.result);
-        F.OutNext("uClients:    %2.2fms, %2.1f%%, crow(%d)/active(%d)/total(%d)", UpdateClient.result, PPP(UpdateClient.result), UpdateClient_crows, UpdateClient_active,
+        F.OutNext("uClients:    %2.2fms, %2.1f%%, crow(%u)/active(%u)/total(%u)", UpdateClient.result, PPP(UpdateClient.result), UpdateClient_crows, UpdateClient_active,
                   UpdateClient_total);
         F.OutNext("uSheduler:   %2.2fms, %2.1f%%", Sheduler.result, PPP(Sheduler.result));
         F.OutNext("uSheduler_L: %2.2fms", fShedulerLoad);
-        F.OutNext("uParticles:  Qstart[%d] Qactive[%d] Qdestroy[%d]", Particles_starting, Particles_active, Particles_destroy);
+        F.OutNext("uParticles:  Qstart[%u] Qactive[%u] Qdestroy[%u]", Particles_starting, Particles_active, Particles_destroy);
         F.OutNext("spInsert:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]", g_SpatialSpace->stat_insert.result, PPP(g_SpatialSpace->stat_insert.result),
                   g_SpatialSpacePhysic->stat_insert.result, PPP(g_SpatialSpacePhysic->stat_insert.result));
         F.OutNext("spRemove:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]", g_SpatialSpace->stat_remove.result, PPP(g_SpatialSpace->stat_remove.result),
                   g_SpatialSpacePhysic->stat_remove.result, PPP(g_SpatialSpacePhysic->stat_remove.result));
         F.OutNext("Physics:     %2.2fms, %2.1f%%", Physics.result, PPP(Physics.result));
         F.OutNext("  collider:  %2.2fms", ph_collision.result);
-        F.OutNext("  solver:    %2.2fms, %d", ph_core.result, ph_core.count);
-        F.OutNext("aiThink:     %2.2fms, %d", AI_Think.result, AI_Think.count);
-        F.OutNext("  aiRange:   %2.2fms, %d", AI_Range.result, AI_Range.count);
-        F.OutNext("  aiPath:    %2.2fms, %d", AI_Path.result, AI_Path.count);
-        F.OutNext("  aiNode:    %2.2fms, %d", AI_Node.result, AI_Node.count);
-        F.OutNext("aiVision:    %2.2fms, %d", AI_Vis.result, AI_Vis.count);
+        F.OutNext("  solver:    %2.2fms, %u", ph_core.result, ph_core.count);
+        F.OutNext("aiThink:     %2.2fms, %u", AI_Think.result, AI_Think.count);
+        F.OutNext("  aiRange:   %2.2fms, %u", AI_Range.result, AI_Range.count);
+        F.OutNext("  aiPath:    %2.2fms, %u", AI_Path.result, AI_Path.count);
+        F.OutNext("  aiNode:    %2.2fms, %u", AI_Node.result, AI_Node.count);
+        F.OutNext("aiVision:    %2.2fms, %u", AI_Vis.result, AI_Vis.count);
         F.OutNext("  Query:     %2.2fms", AI_Vis_Query.result);
         F.OutNext("  RayCast:   %2.2fms", AI_Vis_RayTests.result);
         F.OutSkip();
@@ -171,56 +164,56 @@ void CStats::Show()
 #define PPP(a) (100.f * float(a) / float(RenderTOTAL.result))
         F.OutNext("*** RENDER:  %2.2fms", RenderTOTAL.result);
         F.OutNext("R_CALC:      %2.2fms, %2.1f%%", RenderCALC.result, PPP(RenderCALC.result));
-        F.OutNext("  HOM:       %2.2fms, %d", RenderCALC_HOM.result, RenderCALC_HOM.count);
-        F.OutNext("  Skeletons: %2.2fms, %d", Animation.result, Animation.count);
+        F.OutNext("  HOM:       %2.2fms, %u", RenderCALC_HOM.result, RenderCALC_HOM.count);
+        F.OutNext("  Skeletons: %2.2fms, %u", Animation.result, Animation.count);
         F.OutNext("R_DUMP:      %2.2fms, %2.1f%%", RenderDUMP.result, PPP(RenderDUMP.result));
         F.OutNext("  Wait-L:    %2.2fms", RenderDUMP_Wait.result);
         F.OutNext("  Wait-S:    %2.2fms", RenderDUMP_Wait_S.result);
         F.OutNext("  Wait-P:    %2.2fms", RenderDUMP_Wait_P.result);
         F.OutNext("  Skinning:  %2.2fms", RenderDUMP_SKIN.result);
-        F.OutNext("  DT_Vis/Cnt:%2.2fms/%d", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
+        F.OutNext("  DT_Vis/Cnt:%2.2fms/%u", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
         F.OutNext("  DT_Render: %2.2fms", RenderDUMP_DT_Render.result);
         F.OutNext("  DT_Cache:  %2.2fms", RenderDUMP_DT_Cache.result);
-        F.OutNext("  Wallmarks: %2.2fms, %d/%d - %d", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
+        F.OutNext("  Wallmarks: %2.2fms, %u/%u - %u", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
         F.OutNext("  Glows:     %2.2fms", RenderDUMP_Glows.result);
-        F.OutNext("  Lights:    %2.2fms, %d", RenderDUMP_Lights.result, RenderDUMP_Lights.count);
-        F.OutNext("  RT:        %2.2fms, %d", RenderDUMP_RT.result, RenderDUMP_RT.count);
+        F.OutNext("  Lights:    %2.2fms, %u", RenderDUMP_Lights.result, RenderDUMP_Lights.count);
+        F.OutNext("  RT:        %2.2fms, %u", RenderDUMP_RT.result, RenderDUMP_RT.count);
         F.OutNext("  HUD:       %2.2fms", RenderDUMP_HUD.result);
         F.OutNext("  P_calc:    %2.2fms", RenderDUMP_Pcalc.result);
         F.OutNext("  S_calc:    %2.2fms", RenderDUMP_Scalc.result);
-        F.OutNext("  S_render:  %2.2fms, %d", RenderDUMP_Srender.result, RenderDUMP_Srender.count);
+        F.OutNext("  S_render:  %2.2fms, %u", RenderDUMP_Srender.result, RenderDUMP_Srender.count);
         F.OutSkip();
         F.OutNext("*** SOUND:   %2.2fms", SoundUpdate.result);
         F.OutNext("  RENDER:    %2.2fms", SoundRender.result);
-        F.OutNext("  TGT/SIM/E: %d/%d/%d", snd_stat._rendered, snd_stat._simulated, snd_stat._events);
+        F.OutNext("  TGT/SIM/E: %u/%u/%u", snd_stat._rendered, snd_stat._simulated, snd_stat._events);
         F.OutSkip();
         F.OutNext("Input:       %2.2fms", Input.result);
-        F.OutNext("clRAY:       %2.2fms, %d, %2.0fK", clRAY.result, clRAY.count, r_ps);
-        F.OutNext("clBOX:       %2.2fms, %d, %2.0fK", clBOX.result, clBOX.count, b_ps);
-        F.OutNext("clFRUSTUM:   %2.2fms, %d", clFRUSTUM.result, clFRUSTUM.count);
+        F.OutNext("clRAY:       %2.2fms, %u, %2.0fK", clRAY.result, clRAY.count, r_ps);
+        F.OutNext("clBOX:       %2.2fms, %u, %2.0fK", clBOX.result, clBOX.count, b_ps);
+        F.OutNext("clFRUSTUM:   %2.2fms, %u", clFRUSTUM.result, clFRUSTUM.count);
         F.OutSkip();
-        F.OutNext("netClientRecv:   %2.2fms, %d", netClient1.result, netClient1.count);
-        F.OutNext("netClientSend:   %2.2fms, %d", netClient2.result, netClient2.count);
-        F.OutNext("netServer:   %2.2fms, %d", netServer.result, netServer.count);
+        F.OutNext("netClientRecv:   %2.2fms, %u", netClient1.result, netClient1.count);
+        F.OutNext("netClientSend:   %2.2fms, %u", netClient2.result, netClient2.count);
+        F.OutNext("netServer:   %2.2fms, %u", netServer.result, netServer.count);
         F.OutNext("netClientCompressor:   %2.2fms", netClientCompressor.result);
         F.OutNext("netServerCompressor:   %2.2fms", netServerCompressor.result);
 
         F.OutSkip();
 
         F.OutSkip();
-        F.OutNext("TEST 0:      %2.2fms, %d", TEST0.result, TEST0.count);
-        F.OutNext("TEST 1:      %2.2fms, %d", TEST1.result, TEST1.count);
-        F.OutNext("TEST 2:      %2.2fms, %d", TEST2.result, TEST2.count);
-        F.OutNext("TEST 3:      %2.2fms, %d", TEST3.result, TEST3.count);
+        F.OutNext("TEST 0:      %2.2fms, %u", TEST0.result, TEST0.count);
+        F.OutNext("TEST 1:      %2.2fms, %u", TEST1.result, TEST1.count);
+        F.OutNext("TEST 2:      %2.2fms, %u", TEST2.result, TEST2.count);
+        F.OutNext("TEST 3:      %2.2fms, %u", TEST3.result, TEST3.count);
 #ifdef DEBUG_MEMORY_MANAGER
         F.OutSkip();
-        F.OutNext("str: cmp[%3d], dock[%3d], qpc[%3d]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
+        F.OutNext("str: cmp[%3u], dock[%3u], qpc[%3u]", Memory.stat_strcmp, Memory.stat_strdock, CPU::qpc_counter);
         Memory.stat_strcmp = 0;
         Memory.stat_strdock = 0;
         CPU::qpc_counter = 0;
 #else // DEBUG_MEMORY_MANAGER
         F.OutSkip();
-        F.OutNext("qpc[%3d]", CPU::qpc_counter);
+        F.OutNext("qpc[%3u]", CPU::qpc_counter);
         CPU::qpc_counter = 0;
 #endif // DEBUG_MEMORY_MANAGER
         F.OutSkip();
@@ -243,13 +236,14 @@ void CStats::Show()
         F.SetHeightI(f_base_size);
         seqStats.Process();
         pFont->OnRender();
-    };
+    }
 
     if (/*psDeviceFlags.test(rsStatistic) ||*/ psDeviceFlags.test(rsCameraPos))
     {
         _draw_cam_pos(pFont);
         pFont->OnRender();
-    };
+    }
+
 #ifdef DEBUG
     //////////////////////////////////////////////////////////////////////////
     // PERF ALERT
@@ -356,6 +350,7 @@ void CStats::Show()
         g_SpatialSpacePhysic->stat_insert.FrameStart();
         g_SpatialSpacePhysic->stat_remove.FrameStart();
     }
+
     dwSND_Played = dwSND_Allocated = 0;
     Particles_starting = Particles_active = Particles_destroy = 0;
 }
@@ -441,7 +436,7 @@ void CStats::Show_HW_Stats()
     float dwScale = 100;
     for (size_t i = 0; i < CPU::ID.m_dwNumberOfProcessors; i++)
     {
-        pFontHW->Out(10, dwScale, "CPU%u: %0.0f%%", i, CPU::ID.fUsage[i]);
+        pFontHW->Out(10, dwScale, "CPU%zu: %0.0f%%", i, CPU::ID.fUsage[i]);
         dwScale += 15;
     }
 
@@ -463,7 +458,7 @@ void CStats::OnDeviceCreate()
 
 void CStats::OnDeviceDestroy()
 {
-    SetLogCB(0);
+    SetLogCB(nullptr);
     xr_delete(pFont);
     xr_delete(pFontHW);
 }

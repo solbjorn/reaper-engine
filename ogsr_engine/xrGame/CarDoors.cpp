@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xr_3da/StatGraph.h"
 #include "PHDebug.h"
 #endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -12,24 +14,26 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
 {
     if (hit_type == ALife::eHitTypeStrike && P > 20.f)
     {
-        xr_map<u16, SDoor>::iterator i = m_doors.begin(), e = m_doors.end();
+        xr_map<u16, std::unique_ptr<SDoor>>::iterator i = m_doors.begin(), e = m_doors.end();
         for (; e != i; ++i)
-            i->second.Open();
+            i->second->Open();
     }
-    xr_map<u16, SDoor>::iterator i = m_doors.find(element);
+    xr_map<u16, std::unique_ptr<SDoor>>::iterator i = m_doors.find(element);
     if (i != m_doors.end())
     {
-        i->second.Hit(P);
+        i->second->Hit(P);
         return true;
     }
     else
         return false;
 }
+
 void CCar::SDoor::Init()
 {
     update = false;
@@ -183,16 +187,21 @@ void CCar::SDoor::Open()
     if (!joint)
     {
         state = opened;
-
         return;
     }
 
     switch (state)
     {
-    case closed: ClosedToOpening(); PlaceInUpdate();
-    case closing: state = opening; ApplyOpenTorque();
+    case closed:
+        ClosedToOpening();
+        PlaceInUpdate();
+        [[fallthrough]];
+    case closing:
+        state = opening;
+        ApplyOpenTorque();
+        break;
     case opened:
-    case opening: break;
+    case opening:
     case broken: break;
     default: NODEFAULT;
     }
@@ -208,8 +217,11 @@ void CCar::SDoor::Close()
 
     switch (state)
     {
-    case opened: PlaceInUpdate();
-    case opening: state = closing; ApplyCloseTorque();
+    case opened: PlaceInUpdate(); [[fallthrough]];
+    case opening:
+        state = closing;
+        ApplyCloseTorque();
+        break;
     case closed:
     case closing: break;
     default: NODEFAULT;
@@ -345,7 +357,7 @@ void CCar::SDoor::ClosingToClosed()
     IKinematics* pKinematics = smart_cast<IKinematics*>(pcar->Visual());
     //	CBoneData& bone_data= pKinematics->LL_GetData(u16(bone_id));
     CBoneInstance& bone_instance = pKinematics->LL_GetBoneInstance(u16(bone_id));
-    bone_instance.set_callback(bctPhysics, 0, joint->PFirst_element());
+    bone_instance.set_callback(bctPhysics, nullptr, joint->PFirst_element());
     bone_instance.set_callback_overwrite(FALSE);
     joint->PSecond_element()->Deactivate();
     joint->Deactivate();
@@ -477,7 +489,8 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
         pos.sub(add);
 
         MIN_OF(bb.m_halfsize.x, add1.set(pf.i); add1.mul(bb.m_halfsize.x), bb.m_halfsize.y, add1.set(pf.j); add1.mul(bb.m_halfsize.y), bb.m_halfsize.z, add1.set(pf.k);
-               add1.mul(bb.m_halfsize.z))
+               add1.mul(bb.m_halfsize.z));
+
         Fvector dir_from_car;
         dir_from_car.sub(pf.c, pcar->Position());
         dir_from_car.y = 0.f;
@@ -628,9 +641,10 @@ void CCar::SDoor::Break()
     {
     case closed: ClosedToOpening(); break;
     case opened:
-    case closing: RemoveFromUpdate();
-    case opening: ApplyTorque(torque / 10.f, 0.f);
+    case closing: RemoveFromUpdate(); [[fallthrough]];
+    case opening: ApplyTorque(torque / 10.f, 0.f); break;
     }
+
     if (joint)
     {
         dVector3 v;
@@ -669,12 +683,14 @@ void CCar::SDoor::ApplyDamage(u16 level)
     case 1: Break();
     }
 }
+
 CCar::SDoor::SDoorway::SDoorway()
 {
-    door = NULL;
+    door = nullptr;
     door_plane_ext.set(0.f, 0.f);
     door_plane_axes.set(0, 0);
 }
+
 void CCar::SDoor::SDoorway::Init(SDoor* adoor)
 {
     door = adoor;
@@ -781,4 +797,5 @@ void CCar::SDoor::SDoorway::Init(SDoor* adoor)
     }
     */
 }
+
 void CCar::SDoor::SDoorway::Trace(const Fvector& point, const Fvector& dir) {}

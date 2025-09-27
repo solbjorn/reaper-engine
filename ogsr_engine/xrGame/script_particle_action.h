@@ -28,13 +28,13 @@ public:
 
     shared_str m_caParticleToRun;
     shared_str m_caBoneName;
-    EGoalType m_tGoalType;
-    CParticlesObject* m_tpParticleSystem;
-    bool m_bStartedToPlay;
-    Fvector m_tParticlePosition;
-    Fvector m_tParticleAngles;
-    Fvector m_tParticleVelocity;
-    bool m_bAutoRemove;
+    EGoalType m_tGoalType{eGoalTypeDummy};
+    CParticlesObject* m_tpParticleSystem{};
+    bool m_bStartedToPlay{};
+    Fvector m_tParticlePosition{};
+    Fvector m_tParticleAngles{};
+    Fvector m_tParticleVelocity{};
+    bool m_bAutoRemove{true};
 
     IC CScriptParticleAction();
     IC CScriptParticleAction(LPCSTR caPartcileToRun, LPCSTR caBoneName, const CParticleParams& tParticleParams = CParticleParams(), bool bAutoRemove = false);
@@ -46,6 +46,8 @@ public:
     IC void SetAngles(const Fvector& tAngleOffset);
     IC void SetVelocity(const Fvector& tVelocity);
     IC void initialize();
+
+    void clone(const CScriptParticleAction& from);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -103,10 +103,11 @@ void CGrenade::State(u32 state, u32 oldState)
 #endif
                 DestroyObject();
             }
-        };
+        }
     }
     break;
-    };
+    }
+
     inherited::State(state, oldState);
 }
 
@@ -258,12 +259,12 @@ bool CGrenade::Action(s32 cmd, u32 flags)
                             }
                         }*/
                     xr_map<shared_str, CGrenade*> tmp;
-                    tmp.insert(mk_pair(cNameSect(), this));
+                    tmp.try_emplace(cNameSect(), this);
                     for (; it != it_e; ++it)
                     {
                         CGrenade* pGrenade = smart_cast<CGrenade*>(*it);
                         if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
-                            tmp.insert(mk_pair(pGrenade->cNameSect(), pGrenade));
+                            tmp.try_emplace(pGrenade->cNameSect(), pGrenade);
                     }
                     xr_map<shared_str, CGrenade*>::iterator curr_it = tmp.find(cNameSect());
                     curr_it++;
@@ -278,9 +279,11 @@ bool CGrenade::Action(s32 cmd, u32 flags)
                 }
             }
         }
+
         return true;
-    };
     }
+    }
+
     return false;
 }
 
@@ -320,10 +323,11 @@ void CGrenade::Deactivate(bool now)
                         }
                     }
                 }
+
                 Throw();
-            };
-        };
-    };
+            }
+        }
+    }
 
     inherited::Deactivate(now || (GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow));
 }

@@ -43,7 +43,7 @@ void CWeaponMounted::BoneCallbackY(CBoneInstance* B)
 
 CWeaponMounted::CWeaponMounted()
 {
-    camera = xr_new<CCameraFirstEye>(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid | CCameraBase::flDirectionRigid);
+    camera = xr_new<CCameraFirstEye>(this, gsl::narrow<u32>(CCameraBase::flRelativeLink | CCameraBase::flPositionRigid | CCameraBase::flDirectionRigid));
     camera->Load("mounted_weapon_cam");
 }
 
@@ -177,6 +177,7 @@ void CWeaponMounted::OnMouseMove(int dx, int dy)
         C->Move((d > 0) ? kUP : kDOWN, _abs(d));
     }
 }
+
 void CWeaponMounted::OnKeyboardPress(int dik)
 {
     if (Remote())
@@ -185,8 +186,9 @@ void CWeaponMounted::OnKeyboardPress(int dik)
     switch (dik)
     {
     case kWPN_FIRE: FireStart(); break;
-    };
+    }
 }
+
 void CWeaponMounted::OnKeyboardRelease(int dik)
 {
     if (Remote())
@@ -194,8 +196,9 @@ void CWeaponMounted::OnKeyboardRelease(int dik)
     switch (dik)
     {
     case kWPN_FIRE: FireEnd(); break;
-    };
+    }
 }
+
 void CWeaponMounted::OnKeyboardHold(int dik)
 {
     if (Remote())
@@ -242,6 +245,7 @@ void CWeaponMounted::cam_Update(float dt, float fov)
 }
 
 bool CWeaponMounted::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) { return !Owner(); }
+
 bool CWeaponMounted::attach_Actor(CGameObject* actor)
 {
     m_dAngle.set(0.0f, 0.0f);
@@ -266,6 +270,7 @@ bool CWeaponMounted::attach_Actor(CGameObject* actor)
     processing_activate();
     return true;
 }
+
 void CWeaponMounted::detach_Actor()
 {
     CHolderCustom::detach_Actor();
@@ -292,6 +297,7 @@ void CWeaponMounted::FireStart()
     m_dAngle.set(0.0f, 0.0f);
     CShootingObject::FireStart();
 }
+
 void CWeaponMounted::FireEnd()
 {
     m_dAngle.set(0.0f, 0.0f);

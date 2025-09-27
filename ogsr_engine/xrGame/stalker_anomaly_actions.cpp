@@ -33,7 +33,7 @@ using namespace StalkerDecisionSpace;
 // CStalkerActionGetOutOfAnomaly
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionGetOutOfAnomaly::CStalkerActionGetOutOfAnomaly(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionGetOutOfAnomaly::CStalkerActionGetOutOfAnomaly(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionGetOutOfAnomaly::initialize()
 {
@@ -41,7 +41,7 @@ void CStalkerActionGetOutOfAnomaly::initialize()
 
     object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_body_state(eBodyStateStand);
@@ -103,7 +103,7 @@ void CStalkerActionDetectAnomaly::initialize()
 {
     inherited::initialize();
     object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
-    m_inertia_time = get_random_u32(15000, 20000);
+    m_inertia_time = xr::random_u32(15000, 20000);
 
     Fvector result;
     object().eye_matrix.transform_tiny(result, Fvector().set(0.f, 0.f, 10.f));

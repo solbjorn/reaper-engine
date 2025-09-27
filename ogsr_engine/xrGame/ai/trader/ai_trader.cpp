@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_trader.h"
 #include "../../trade.h"
 #include "../../script_entity_action.h"
@@ -118,7 +119,7 @@ BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
     CSE_ALifeTrader* l_tpTrader = smart_cast<CSE_ALifeTrader*>(e);
     R_ASSERT(l_tpTrader);
 
-    //проспавнить PDA у InventoryOwner
+    // проспавнить PDA у InventoryOwner
     if (!CInventoryOwner::net_Spawn(DC))
         return (FALSE);
 
@@ -186,7 +187,7 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
         bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
         Obj->SetTmpPreDestroy(just_before_destroy);
         if (inventory().DropItem(smart_cast<CGameObject*>(Obj)))
-            Obj->H_SetParent(0, dont_create_shell);
+            Obj->H_SetParent(nullptr, dont_create_shell);
     }
     break;
     case GE_TRANSFER_AMMO: break;

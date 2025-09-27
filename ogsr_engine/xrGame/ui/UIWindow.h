@@ -1,5 +1,7 @@
 #pragma once
+
 #include "../xr_level_controller.h"
+
 class CUIWindow;
 
 #include "UIMessages.h"
@@ -37,11 +39,12 @@ public:
     // получить окно самого верхнего уровня
     CUIWindow* GetTop()
     {
-        if (m_pParentWnd == NULL)
+        if (!m_pParentWnd)
             return this;
-        else
-            return m_pParentWnd->GetTop();
+
+        return m_pParentWnd->GetTop();
     }
+
     CUIWindow* GetCurrentMouseHandler();
     CUIWindow* GetChildMouseHandler();
 
@@ -84,7 +87,7 @@ public:
     // ф-ция должна переопределяться
     //  pWnd - указатель на окно, которое послало сообщение
     //  pData - указатель на дополнительные данные, которые могут понадобиться
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     // запрещение/разрешение на ввод с клавиатуры
     virtual void Enable(bool status) { m_bIsEnabled = status; }
@@ -123,21 +126,22 @@ public:
 
     void SetPPMode();
     void ResetPPMode();
-    IC bool GetPPMode() { return m_bPP; };
+    IC bool GetPPMode() { return m_bPP; }
     // для перевода окна и потомков в исходное состояние
     virtual void Reset();
     void ResetAll();
 
     // временно!!!! (а может уже и нет)
     virtual void SetFont(CGameFont* pFont) { m_pFont = pFont; }
+
     CGameFont* GetFont()
     {
         if (m_pFont)
             return m_pFont;
-        if (m_pParentWnd == NULL)
+        if (!m_pParentWnd)
             return m_pFont;
-        else
-            return m_pParentWnd->GetFont();
+
+        return m_pParentWnd->GetFont();
     }
 
     using WINDOW_LIST = xr_list<CUIWindow*>;
@@ -150,8 +154,10 @@ public:
 
     // Name of the window
     const shared_str WindowName() const;
-    void SetWindowName(LPCSTR wn, BOOL ifnset = FALSE);
+    void SetWindowName(const char* wn, bool ifnset);
+    inline void SetWindowName(const char* wn) { SetWindowName(wn, false); }
     LPCSTR WindowName_script() { return *m_windowName; }
+
     CUIWindow* FindChild(const shared_str name, u32 max_nested = 15);
     CUIWindow* FindChild(LPCSTR s) { return FindChild(shared_str(s)); }
 
@@ -167,7 +173,7 @@ protected:
     WINDOW_LIST m_ChildWndList;
 
     // указатель на родительское окно
-    CUIWindow* m_pParentWnd;
+    CUIWindow* m_pParentWnd{};
 
     // дочернее окно которое, захватило ввод мыши
     CUIWindow* m_pMouseCapturer;
@@ -178,32 +184,32 @@ protected:
     CUIWindow* m_pOrignMouseCapturer;
 
     // дочернее окно которое, захватило ввод клавиатуры
-    CUIWindow* m_pKeyboardCapturer;
+    CUIWindow* m_pKeyboardCapturer{};
 
     // кому шлем сообщения
-    CUIWindow* m_pMessageTarget;
+    CUIWindow* m_pMessageTarget{};
 
-    CGameFont* m_pFont;
+    CGameFont* m_pFont{};
 
     // Последняя позиция мышки
     Fvector2 cursor_pos;
 
-    u32 m_dwFocusReceiveTime;
+    u32 m_dwFocusReceiveTime{};
 
     bool m_bCustomDraw{};
 
     // флаг автоматического удаления во время вызова деструктора
-    bool m_bAutoDelete;
+    bool m_bAutoDelete{};
 
     // Флаг разрешающий/запрещающий генерацию даблклика
-    bool m_bPP;
+    bool m_bPP{};
     // разрешен ли ввод пользователя
     bool m_bIsEnabled;
 
     // Если курсор над окном
-    bool m_bCursorOverWindow;
-    bool m_bCursorOverWindowChanged;
-    bool m_bClickable;
+    bool m_bCursorOverWindow{};
+    bool m_bCursorOverWindowChanged{};
+    bool m_bClickable{};
 
 #ifdef DEBUG
     int m_dbg_id;

@@ -15,8 +15,8 @@ class FProgressive : public Fvisual
 
 protected:
     FSlideWindowItem nSWI;
-    FSlideWindowItem* xSWI;
-    u32 last_lod;
+    FSlideWindowItem* xSWI{};
+    u32 last_lod{};
 
 public:
     FProgressive();

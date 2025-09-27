@@ -43,6 +43,8 @@ public:
     IC void SetMentalState(MonsterSpace::EMentalState tMentalState);
     IC void initialize();
 
+    inline void clone(const CScriptAnimationAction& from);
+
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 

@@ -14,7 +14,7 @@
 namespace MemorySpace
 {
 struct CMemoryInfo;
-};
+}
 
 class CAI_Stalker;
 class CGameObject;

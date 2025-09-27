@@ -34,7 +34,7 @@ u64 QPC()
 
 void _initialize_cpu()
 {
-    Msg("* Detected CPU: %s [%s], F%d/M%d/S%d", CPU::ID.brand, CPU::ID.vendor, CPU::ID.family, CPU::ID.model, CPU::ID.stepping);
+    Msg("* Detected CPU: %s [%s], F%u/M%u/S%u", CPU::ID.brand, CPU::ID.vendor, CPU::ID.family, CPU::ID.model, CPU::ID.stepping);
 
     // WTF???
     // if (strstr(Core.Params, "-x86"))

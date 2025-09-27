@@ -12,16 +12,12 @@ struct CRemoveDangerObject
 {
     const CObject* m_object;
 
-    IC CRemoveDangerObject(const CObject* object) { m_object = object; }
+    IC CRemoveDangerObject(const CObject* object) : m_object{object} {}
 
     IC bool operator()(const CAgentLocationManager::CDangerLocationPtr& location) const { return (*location == m_object); }
 };
 
-IC CAgentLocationManager::CAgentLocationManager(CAgentManager* object)
-{
-    VERIFY(object);
-    m_object = object;
-}
+IC CAgentLocationManager::CAgentLocationManager(CAgentManager* object) : m_object{object} { VERIFY(object); }
 
 IC CAgentManager& CAgentLocationManager::object() const
 {
@@ -36,7 +32,8 @@ IC CAgentLocationManager::CDangerLocationPtr CAgentLocationManager::location(con
     LOCATIONS::iterator I = std::find_if(m_danger_locations.begin(), m_danger_locations.end(), CRemoveDangerObject(object));
     if (I != m_danger_locations.end())
         return (*I);
-    return (0);
+
+    return nullptr;
 }
 
 const CAgentLocationManager::LOCATIONS& CAgentLocationManager::locations() const { return (m_danger_locations); }

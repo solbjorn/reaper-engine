@@ -16,6 +16,8 @@ class CAI_Stalker;
 
 class CStalkerPlanner : public CActionPlannerScript<CAI_Stalker>
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPlanner, CActionPlannerScript<CAI_Stalker>);
+
 protected:
     typedef CActionPlannerScript<CAI_Stalker> inherited;
     typedef CActionScriptBase<CAI_Stalker> CAction;

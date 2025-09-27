@@ -1,28 +1,38 @@
 #include "stdafx.h"
+
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"
 #include "UIMap.h"
 #include "UIMapWnd.h"
 
-typedef CActionBase<CUIMapWnd> WORLD_OPERATOR;
-static const float map_resize_speed = 650.f; // y.e./sec
-static const float map_zoom_time = 0.5f; // sec
-static const float min_move_time = 0.25f; // sec
+namespace
+{
+using WORLD_OPERATOR = CActionBase<CUIMapWnd>;
+
+constexpr float map_resize_speed{650.f}; // y.e./sec
+constexpr float map_zoom_time{0.5f}; // sec
+constexpr float min_move_time{0.25f}; // sec
+
 // actions
 class CSomeMapAction : public WORLD_OPERATOR
 {
+    RTTI_DECLARE_TYPEINFO(CSomeMapAction, WORLD_OPERATOR);
+
 private:
     typedef WORLD_OPERATOR inherited;
 
 public:
-    CSomeMapAction(LPCSTR action_name) : inherited((CUIMapWnd*)NULL, action_name) {}
-    virtual void initialize() { inherited::initialize(); };
-    virtual void execute() { inherited::execute(); };
-    virtual void finalize() { inherited::finalize(); };
+    CSomeMapAction(LPCSTR action_name) : inherited{static_cast<CUIMapWnd*>(nullptr), action_name} {}
+
+    virtual void initialize() { inherited::initialize(); }
+    virtual void execute() { inherited::execute(); }
+    virtual void finalize() { inherited::finalize(); }
 };
 
 class CMapActionZoomControl : public CSomeMapAction
 {
+    RTTI_DECLARE_TYPEINFO(CMapActionZoomControl, CSomeMapAction);
+
 private:
     typedef CSomeMapAction inherited;
 
@@ -34,7 +44,8 @@ protected:
     void update_target_state();
 
 public:
-    CMapActionZoomControl(LPCSTR action_name) : inherited(action_name) {}
+    CMapActionZoomControl(LPCSTR action_name) : inherited{action_name} {}
+
     virtual void execute();
     virtual void initialize();
     virtual void finalize();
@@ -42,33 +53,42 @@ public:
 
 class CMapActionResize : public CMapActionZoomControl
 {
+    RTTI_DECLARE_TYPEINFO(CMapActionResize, CMapActionZoomControl);
+
 private:
     typedef CMapActionZoomControl inherited;
 
 public:
-    CMapActionResize(LPCSTR action_name) : inherited(action_name) {}
+    CMapActionResize(LPCSTR action_name) : inherited{action_name} {}
+
     virtual void initialize();
     virtual void finalize();
 };
 
 class CMapActionMinimize : public CMapActionZoomControl
 {
+    RTTI_DECLARE_TYPEINFO(CMapActionMinimize, CMapActionZoomControl);
+
 private:
     typedef CMapActionZoomControl inherited;
 
 public:
-    CMapActionMinimize(LPCSTR action_name) : inherited(action_name) {}
+    CMapActionMinimize(LPCSTR action_name) : inherited{action_name} {}
+
     virtual void initialize();
     virtual void finalize();
 };
 
 class CMapActionIdle : public CSomeMapAction
 {
+    RTTI_DECLARE_TYPEINFO(CMapActionIdle, CSomeMapAction);
+
 private:
     typedef CSomeMapAction inherited;
 
 public:
-    CMapActionIdle(LPCSTR action_name) : inherited(action_name) {}
+    CMapActionIdle(LPCSTR action_name) : inherited{action_name} {}
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -77,60 +97,77 @@ public:
 // evaluators
 class CSomeMapEvaluator : public CPropertyEvaluator<CUIMapWnd>
 {
+    RTTI_DECLARE_TYPEINFO(CSomeMapEvaluator, CPropertyEvaluator<CUIMapWnd>);
+
 private:
     typedef CPropertyEvaluator<CUIMapWnd> inherited;
 
 public:
-    CSomeMapEvaluator(LPCSTR evaluator_name) : inherited((CUIMapWnd*)NULL, evaluator_name) {}
-    virtual ~CSomeMapEvaluator() {};
+    CSomeMapEvaluator(LPCSTR evaluator_name) : inherited{static_cast<CUIMapWnd*>(nullptr), evaluator_name} {}
+    virtual ~CSomeMapEvaluator() = default;
 };
 
 class CEvaluatorTargetMapShown : public CSomeMapEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CEvaluatorTargetMapShown, CSomeMapEvaluator);
+
 private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorTargetMapShown(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
+    CEvaluatorTargetMapShown(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+
     virtual bool evaluate();
 };
 
 class CEvaluatorMapMinimized : public CSomeMapEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CEvaluatorMapMinimized, CSomeMapEvaluator);
+
 private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapMinimized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
+    CEvaluatorMapMinimized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+
     virtual bool evaluate();
 };
 
 class CEvaluatorMapResized : public CSomeMapEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CEvaluatorMapResized, CSomeMapEvaluator);
+
 private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapResized(LPCSTR evaluator_name = 0) : inherited(evaluator_name) {};
+    CEvaluatorMapResized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+
     virtual bool evaluate();
 };
 
 class CEvaluatorMapConst : public CSomeMapEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CEvaluatorMapResized, CSomeMapEvaluator);
+
 private:
     typedef CSomeMapEvaluator inherited;
     bool ret_value;
 
 public:
-    CEvaluatorMapConst(bool val = false, LPCSTR evaluator_name = 0) : inherited(evaluator_name) { ret_value = val; };
-    virtual bool evaluate() { return ret_value; };
+    CEvaluatorMapConst(bool val = false, LPCSTR evaluator_name = nullptr) : inherited{evaluator_name}, ret_value{val} {}
+
+    virtual bool evaluate() { return ret_value; }
 };
+} // namespace
 
 using namespace UIMapWndActionsSpace;
 
 CMapActionPlanner::CMapActionPlanner() {}
 CMapActionPlanner::~CMapActionPlanner() {}
+
 LPCSTR CMapActionPlanner::object_name() const { return (""); }
+
 void CMapActionPlanner::setup(CUIMapWnd* object)
 {
 #ifdef LOG_ACTION

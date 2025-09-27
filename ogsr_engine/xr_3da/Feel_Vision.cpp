@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "feel_vision.h"
 #include "render.h"
 #include "xr_object.h"
@@ -25,7 +26,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
     SFeelParam* fp = (SFeelParam*)params;
     float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
     fp->vis *= vis;
-    if (NULL == result.O && fis_zero(vis))
+    if (!result.O && fis_zero(vis))
     {
         CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
         Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
@@ -152,7 +153,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
     xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
     for (; I != E; I++)
     {
-        if (0 == I->O->CFORM())
+        if (!I->O->CFORM())
         {
             I->fuzzy = -1;
             I->trans = 0.f;
@@ -213,7 +214,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
                 {
                     // cache outdated. real query.
                     VERIFY(!fis_zero(RD.dir.square_magnitude()));
-                    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
+                    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, nullptr))
                     {
                         I->Cache_vis = feel_params.vis;
                         I->Cache.set(P, D, f, TRUE);
@@ -258,4 +259,4 @@ float Vision::feel_vision_get_transparency(const CObject* _O) const
             return it.trans;
     return -1.f;
 }
-}; // namespace Feel
+} // namespace Feel

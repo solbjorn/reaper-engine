@@ -1,8 +1,11 @@
 #include "stdafx.h"
 
+namespace xxh
+{
 #include <xxhash.h>
+}
 
-smem_container* g_pSharedMemoryContainer = NULL;
+smem_container* g_pSharedMemoryContainer{};
 
 smem_value* smem_container::dock(u32 dwSize, void* ptr)
 {
@@ -13,16 +16,16 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
         smem_value* result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
         result->dwSize = dwSize;
-        result->dwXXH = XXH64_hash_t(-1);
+        result->dwXXH = std::numeric_limits<xxh::XXH64_hash_t>::max();
         CopyMemory(result->value, ptr, dwSize);
 
         return result;
     }
 
     cs.Enter();
-    smem_value* result = 0;
+    smem_value* result{};
 
-    XXH64_hash_t dwXXH = XXH3_64bits(ptr, dwSize);
+    xxh::XXH64_hash_t dwXXH = xxh::XXH3_64bits(ptr, dwSize);
 
     // search a place to insert
     u8 storage[sizeof(smem_value)];
@@ -53,7 +56,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
     }
 
     // if not found - create new entry
-    if (0 == result)
+    if (!result)
     {
         result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;

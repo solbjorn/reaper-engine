@@ -31,13 +31,12 @@ public:
     CScriptObjectAction m_tObjectAction;
     CScriptActionCondition m_tActionCondition;
     CScriptMonsterAction m_tMonsterAction;
-    void* m_user_data;
-    bool m_started;
+    void* m_user_data{};
+    bool m_started{};
 
-public:
-    IC CScriptEntityAction();
-    IC CScriptEntityAction(const CScriptEntityAction* entity_action);
-    virtual ~CScriptEntityAction();
+    IC CScriptEntityAction() = default;
+    virtual ~CScriptEntityAction() = default;
+
     template <typename T>
     IC void SetAction(const T& t, T& tt);
     IC void SetAction(CScriptMovementAction& tMovementAction);
@@ -61,7 +60,6 @@ public:
     IC bool CheckIfActionCompleted();
     IC void initialize();
 
-public:
     IC const CScriptMovementAction& move();
     IC const CScriptWatchAction& look();
     IC const CScriptAnimationAction& anim();
@@ -69,6 +67,8 @@ public:
     IC const CScriptObjectAction& object();
     IC const CScriptActionCondition& cond();
     IC void* data();
+
+    void clone(const CScriptEntityAction& from);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

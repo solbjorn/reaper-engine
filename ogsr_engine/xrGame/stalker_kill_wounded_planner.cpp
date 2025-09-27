@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_kill_wounded_planner.h"
 #include "stalker_kill_wounded_actions.h"
 #include "ai/stalker/ai_stalker_space.h"
@@ -76,10 +77,11 @@ void CStalkerKillWoundedPlanner::add_evaluators()
     add_evaluator(eWorldPropertyWoundedEnemyReached, xr_new<CStalkerPropertyEvaluatorEnemyReached>(m_object, "is enemy reached"));
 
     add_evaluator(eWorldPropertyWoundedEnemyPrepared,
-                  xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyWoundedEnemyPrepared, true, true, "is enemy prepared"));
-    add_evaluator(eWorldPropertyWoundedEnemyAimed, xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyWoundedEnemyAimed, true, true, "is enemy aimed"));
+                  xr_new<CStalkerPropertyEvaluatorMember>(static_cast<CPropertyStorage*>(nullptr), eWorldPropertyWoundedEnemyPrepared, true, true, "is enemy prepared"));
+    add_evaluator(eWorldPropertyWoundedEnemyAimed,
+                  xr_new<CStalkerPropertyEvaluatorMember>(static_cast<CPropertyStorage*>(nullptr), eWorldPropertyWoundedEnemyAimed, true, true, "is enemy aimed"));
     add_evaluator(eWorldPropertyPausedAfterKill,
-                  xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyPausedAfterKill, true, true, "is paused after enemy kill"));
+                  xr_new<CStalkerPropertyEvaluatorMember>(static_cast<CPropertyStorage*>(nullptr), eWorldPropertyPausedAfterKill, true, true, "is paused after enemy kill"));
 }
 
 void CStalkerKillWoundedPlanner::add_actions()

@@ -48,8 +48,8 @@ void CDetailManager::hw_Load_Geom()
         dwIndices += D.number_indices * hw_BatchSize;
     }
     u32 vSize = sizeof(vertHW);
-    Msg("* [DETAILS] %d v(%d), %d p", dwVerts, vSize, dwIndices / 3);
-    Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
+    Msg("* [DETAILS] %u v(%u), %u p", dwVerts, vSize, dwIndices / 3);
+    Msg("* [DETAILS] Batch(%zu), VB(%uK), IB(%uK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
     // Fill VB
     {

@@ -36,6 +36,12 @@
 
 // #define SRSDEBUG
 
+SRS::SRS(const SRS&) = default;
+SRS::SRS(SRS&&) = default;
+
+SRS& SRS::operator=(const SRS&) = default;
+SRS& SRS::operator=(SRS&&) = default;
+
 //
 // Constructor stores the T and S matrices and the
 // lengths of the upper and lower links
@@ -261,7 +267,7 @@ int SRS::SetGoalPos(const float eee[3], const Matrix E, float& rangle)
     // the ee in the R1 frame as p_r1 and ee_r1
 
     get_translation(T, p_r1);
-    hmatmult(Temp, (float(*)[4])E, S);
+    hmatmult(Temp, (float (*)[4])E, S);
     get_translation(Temp, s);
     cpvector(ee, eee);
 

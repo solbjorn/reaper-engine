@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "script_game_object.h"
 #include "UsableScriptObject.h"
 #include "GameObject.h"
@@ -16,6 +17,7 @@
 #include "PHScriptCall.h"
 #include "PHSimpleCalls.h"
 #include "phworld.h"
+
 void CScriptGameObject::SetTipText(LPCSTR tip_text)
 {
     CUsableScriptObject* l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
@@ -104,8 +106,8 @@ CScriptGameObject* CScriptGameObject::Parent() const
     CGameObject* l_tpGameObject = smart_cast<CGameObject*>(object().H_Parent());
     if (l_tpGameObject)
         return (l_tpGameObject->lua_game_object());
-    else
-        return (0);
+
+    return nullptr;
 }
 
 int CScriptGameObject::clsid() const { return (object().clsid()); }
@@ -193,18 +195,7 @@ IC T* CScriptGameObject::action_planner()
 
 CScriptActionPlanner* script_action_planner(CScriptGameObject* obj) { return obj->action_planner<CScriptActionPlanner>(); }
 
-void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor)
-{
-    CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    if (!monster)
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
-        return;
-    }
-    monster->memory().enemy().useful_callback().set(functor);
-}
-
-void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor, const luabind::object& object)
+void CScriptGameObject::set_enemy_callback(sol::function function, sol::object object)
 {
     CCustomMonster* monster = smart_cast<CCustomMonster*>(&this->object());
     if (!monster)
@@ -212,55 +203,39 @@ void CScriptGameObject::set_enemy_callback(const luabind::functor<bool>& functor
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
         return;
     }
-    monster->memory().enemy().useful_callback().set(functor, object);
+
+    monster->memory().enemy().set_useful_callback(function, object);
 }
 
-void CScriptGameObject::set_enemy_callback()
-{
-    CCustomMonster* monster = smart_cast<CCustomMonster*>(&object());
-    if (!monster)
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomMonster : cannot access class member set_enemy_callback!");
-        return;
-    }
-    monster->memory().enemy().useful_callback().clear();
-}
+void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(function, sol::object{}); }
 
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type, const luabind::functor<void>& functor)
+void CScriptGameObject::set_enemy_callback() { set_enemy_callback(sol::function{}, sol::object{}); }
+
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function, sol::object object)
 {
     if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
-        (*it).second->m_callback.set(functor);
+    {
+        auto& info = it->second;
+
+        info.m_callback = function;
+        info.m_object = object;
+    }
     else
     {
-        auto callback = std::make_unique<GOCallbackInfo>();
-        callback->m_callback.set(functor);
-        this->object().m_callbacks[type] = std::move(callback);
+        this->object().m_callbacks.try_emplace(type, function, object);
     }
 }
 
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type, const luabind::functor<void>& functor, const luabind::object& object)
-{
-    if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
-        (*it).second->m_callback.set(functor, object);
-    else
-    {
-        auto callback = std::make_unique<GOCallbackInfo>();
-        callback->m_callback.set(functor, object);
-        this->object().m_callbacks[type] = std::move(callback);
-    }
-}
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function) { SetCallback(type, function, sol::object{}); }
 
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type)
-{
-    if (auto it = this->object().m_callbacks.find(type); it != this->object().m_callbacks.end())
-        (*it).second->m_callback.clear();
-}
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type) { SetCallback(type, sol::function{}, sol::object{}); }
 
-void CScriptGameObject::set_fastcall(const luabind::functor<bool>& functor, const luabind::object& object)
+void CScriptGameObject::set_fastcall(sol::function function, sol::object object)
 {
-    CPHScriptGameObjectCondition* c = xr_new<CPHScriptGameObjectCondition>(object, functor, m_game_object);
+    CPHScriptGameObjectCondition* c = xr_new<CPHScriptGameObjectCondition>(object, function, m_game_object);
     CPHDummiAction* a = xr_new<CPHDummiAction>();
     CPHSriptReqGObjComparer cmpr(m_game_object);
+
     Level().ph_commander_scripts().remove_calls(&cmpr);
     Level().ph_commander_scripts().add_call(c, a);
 }

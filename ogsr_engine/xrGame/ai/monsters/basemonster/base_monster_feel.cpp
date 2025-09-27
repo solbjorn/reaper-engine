@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
@@ -119,7 +120,6 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
 
         if (pEntityNC == Actor() && draw_hit_marks)
         {
-            START_PROFILE("BaseMonster/Animation/HitEntity");
             SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("monster_claws", false);
             s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
 
@@ -131,7 +131,6 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
             float d = -h1 + hd.getH();
             s->wnd()->SetHeading(d);
             s->wnd()->SetHeadingPivot(Fvector2().set(256, 512), Fvector2().set(0, 0), false);
-            STOP_PROFILE;
 
             if (db().m_attack_effector_present)
                 SetAttackEffector();
@@ -217,7 +216,8 @@ BOOL CBaseMonster::feel_vision_isRelevant(CObject* O)
 {
     if (!g_Alive())
         return FALSE;
-    if (0 == smart_cast<CEntity*>(O))
+
+    if (!smart_cast<CEntity*>(O))
         return FALSE;
 
     if ((O->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
@@ -345,7 +345,7 @@ void CBaseMonster::critical_wounded_state_start()
 {
     VERIFY(m_critical_wound_type != u32(-1));
 
-    LPCSTR anim = 0;
+    LPCSTR anim{};
     switch (m_critical_wound_type)
     {
     case critical_wound_type_head: anim = m_critical_wound_anim_head; break;

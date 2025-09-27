@@ -76,7 +76,7 @@ public:
     virtual void SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
 
     virtual void OnEvent(NET_Packet& P, u16 type);
-    bool m_bLaunched;
+    bool m_bLaunched{};
 
 protected:
     // указатель на владельца RocketLauncher - который стреляет ракету
@@ -85,8 +85,8 @@ protected:
     SRoketContact m_contact;
     // параметры которые задаются RocketLauncher-ом перед пуском
     Fmatrix m_LaunchXForm;
-    Fvector m_vLaunchVelocity;
-    Fvector m_vLaunchAngularVelocity;
+    Fvector m_vLaunchVelocity{};
+    Fvector m_vLaunchAngularVelocity{};
 
     enum ERocketState
     {
@@ -97,10 +97,10 @@ protected:
     };
 
     // текущее состояние ракеты
-    ERocketState m_eState;
+    ERocketState m_eState{eInactive};
 
     // двигатель присутствует
-    bool m_bEnginePresent;
+    bool m_bEnginePresent{};
     // время работы двигателя с момента старта
     int m_dwEngineWorkTime;
     // сила работы двигателя (размер импульса в секунду)
@@ -119,12 +119,12 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 protected:
     // флаг, что подсветка может быть включена
-    bool m_bLightsEnabled;
+    bool m_bLightsEnabled{};
     // флаг, что подсветка будет остановлена
     // вместе с двигателем
-    bool m_bStopLightsWithEngine;
+    bool m_bStopLightsWithEngine{true};
     // подсветка во время полета и работы двигателя
-    ref_light m_pTrailLight;
+    ref_light m_pTrailLight{};
     Fcolor m_TrailLightColor;
     float m_fTrailLightRange;
     ref_sound m_flyingSound;
@@ -145,7 +145,7 @@ protected:
     shared_str m_sFlyParticles;
     CParticlesObject* m_pFlyParticles;
 
-    Fvector m_vPrevVel;
+    Fvector m_vPrevVel{};
     float m_time_to_explode;
 #ifdef DEBUG
     float gbg_rocket_speed1;

@@ -14,7 +14,7 @@
 
 void CEnvironment::RenderSky()
 {
-    if (0 == g_pGameLevel)
+    if (!g_pGameLevel)
         return;
 
     m_pRender->RenderSky(*this);
@@ -22,7 +22,7 @@ void CEnvironment::RenderSky()
 
 void CEnvironment::RenderClouds()
 {
-    if (0 == g_pGameLevel)
+    if (!g_pGameLevel)
         return;
 
     // draw clouds
@@ -34,7 +34,7 @@ void CEnvironment::RenderClouds()
 
 void CEnvironment::RenderFlares()
 {
-    if (0 == g_pGameLevel)
+    if (!g_pGameLevel)
         return;
     // 1
     eff_LensFlare->Render(false, true, true);

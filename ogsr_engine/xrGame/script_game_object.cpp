@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
 #include "script_entity_action.h"
 #include "ai_space.h"
@@ -117,11 +118,17 @@ std::unique_ptr<CScriptEntityAction> CScriptGameObject::GetCurrentAction() const
     CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>(&object());
 
     if (!l_tpScriptMonster)
+    {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSciptEntity : cannot access class member GetCurrentAction!");
+    }
     else if (l_tpScriptMonster->GetCurrentAction())
-        return std::make_unique<CScriptEntityAction>(l_tpScriptMonster->GetCurrentAction());
+    {
+        auto ret = std::make_unique<CScriptEntityAction>();
+        ret->clone(*l_tpScriptMonster->GetCurrentAction());
+        return ret;
+    }
 
-    return std::move(std::unique_ptr<CScriptEntityAction>(nullptr));
+    return std::unique_ptr<CScriptEntityAction>{};
 }
 
 void CScriptGameObject::AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority)
@@ -139,10 +146,10 @@ const CScriptEntityAction* CScriptGameObject::GetActionByIndex(u32 action_index)
     if (!l_tpScriptMonster)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptEntity : cannot access class member GetActionByIndex!");
-        return (0);
+        return nullptr;
     }
-    else
-        return (l_tpScriptMonster->GetActionByIndex(action_index));
+
+    return l_tpScriptMonster->GetActionByIndex(action_index);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -153,7 +160,8 @@ CPhysicsShell* CScriptGameObject::get_physics_shell() const
 {
     CPhysicsShellHolder* ph_shell_holder = smart_cast<CPhysicsShellHolder*>(&object());
     if (!ph_shell_holder)
-        return NULL;
+        return nullptr;
+
     return ph_shell_holder->PPhysicsShell();
 }
 
@@ -201,24 +209,20 @@ LPCSTR CScriptGameObject::WhoHitName()
 {
     CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(&object());
     if (entity_alive)
-        return entity_alive->conditions().GetWhoHitLastTime() ? (*entity_alive->conditions().GetWhoHitLastTime()->cName()) : NULL;
-    else
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject : cannot access class member  WhoHitName()");
-        return NULL;
-    }
+        return entity_alive->conditions().GetWhoHitLastTime() ? (*entity_alive->conditions().GetWhoHitLastTime()->cName()) : nullptr;
+
+    ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject : cannot access class member  WhoHitName()");
+    return nullptr;
 }
 
 LPCSTR CScriptGameObject::WhoHitSectionName()
 {
     CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(&object());
     if (entity_alive)
-        return entity_alive->conditions().GetWhoHitLastTime() ? (*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()) : NULL;
-    else
-    {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject : cannot access class member  WhoHitName()");
-        return NULL;
-    }
+        return entity_alive->conditions().GetWhoHitLastTime() ? (*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()) : nullptr;
+
+    ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject : cannot access class member  WhoHitName()");
+    return nullptr;
 }
 
 bool CScriptGameObject::CheckObjectVisibility(const CScriptGameObject* tpLuaGameObject)
@@ -287,7 +291,7 @@ bool CScriptGameObject::CheckObjectVisibilityNow(const CScriptGameObject* tpLuaG
 
 CScriptBinderObject* CScriptGameObject::binded_object() { return (object().object()); }
 
-void CScriptGameObject::bind_object(CScriptBinderObject* game_object) { object().set_object(game_object); }
+void CScriptGameObject::bind_object(std::unique_ptr<CScriptBinderObject>& game_object) { object().set_object(game_object.release()); }
 
 void CScriptGameObject::set_previous_point(int point_index)
 {
@@ -563,9 +567,10 @@ u32 CScriptGameObject::vertex_in_direction(u32 level_vertex_id, Fvector directio
     direction.mul(max_distance);
     Fvector start_position = ai().level_graph().vertex_position(level_vertex_id);
     Fvector finish_position = Fvector(start_position).add(direction);
-    u32 result = u32(-1);
+
+    u32 result{std::numeric_limits<u32>::max()};
     monster->movement().restrictions().add_border(level_vertex_id, max_distance);
-    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, 0, true);
+    ai().level_graph().farthest_vertex_in_direction(level_vertex_id, start_position, finish_position, result, nullptr, true);
     monster->movement().restrictions().remove_border();
     return (ai().level_graph().valid_vertex_id(result) ? result : level_vertex_id);
 }
@@ -623,6 +628,7 @@ float CScriptGameObject::GetActorJumpSpeed() const
     }
     return act->GetJumpSpeed();
 }
+
 float CScriptGameObject::GetActorWalkAccel() const
 {
     const CActor* act = smart_cast<CActor*>(&object());
@@ -633,6 +639,7 @@ float CScriptGameObject::GetActorWalkAccel() const
     }
     return act->GetWalkAccel();
 }
+
 float CScriptGameObject::GetActorExoFactor() const
 {
     const CActor* act = smart_cast<CActor*>(&object());
@@ -643,6 +650,7 @@ float CScriptGameObject::GetActorExoFactor() const
     }
     return act->GetExoFactor();
 }
+
 void CScriptGameObject::SetActorWalkAccel(float _factor)
 {
     CActor* act = smart_cast<CActor*>(&object());
@@ -653,6 +661,7 @@ void CScriptGameObject::SetActorWalkAccel(float _factor)
     }
     act->SetWalkAccel(_factor);
 }
+
 void CScriptGameObject::SetActorJumpSpeed(float _factor)
 {
     CActor* act = smart_cast<CActor*>(&object());
@@ -663,6 +672,7 @@ void CScriptGameObject::SetActorJumpSpeed(float _factor)
     }
     act->SetJumpSpeed(_factor);
 }
+
 void CScriptGameObject::SetActorExoFactor(float _factor)
 {
     CActor* act = smart_cast<CActor*>(&object());
@@ -678,14 +688,16 @@ CUIStatic* CScriptGameObject::GetCellItem() const
 {
     if (auto obj = smart_cast<CInventoryItem*>(&object()))
         return (CUIStatic*)obj->m_cell_item;
-    return NULL;
+
+    return nullptr;
 }
 
 LPCSTR CScriptGameObject::GetBoneName(u16 id) const
 {
     if (auto K = smart_cast<IKinematics*>(object().Visual()))
         return K->LL_BoneName_dbg(id);
-    return 0;
+
+    return nullptr;
 }
 
 /************************* Add by Zander *******************************/

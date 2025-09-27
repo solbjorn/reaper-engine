@@ -174,6 +174,7 @@ void CParticleGroup::SItem::Clear()
     _children_related.clear();
     _children_free.clear();
 }
+
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
 {
     CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
@@ -185,11 +186,13 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
     Fvector vel;
     vel.sub(m.pos, m.posB);
     vel.div(C->m_Def->GetFStep());
+
     if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
     {
         M.set(emitter->m_XFORM);
         M.transform_dir(vel);
-    };
+    }
+
     Fvector p;
     M.transform_tiny(p, m.pos);
     M.c.set(p);
@@ -197,6 +200,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
     C->UpdateParent(M, vel, FALSE);
     _children_related.push_back(C);
 }
+
 void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 {
     VERIFY(idx < _children_related.size());
@@ -206,6 +210,7 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
     _children_related[idx] = _children_related.back();
     _children_related.pop_back();
 }
+
 void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, PAPI::Particle& m)
 {
     CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
@@ -219,11 +224,13 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
         Fvector vel;
         vel.sub(m.pos, m.posB);
         vel.div(C->m_Def->GetFStep());
+
         if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
         {
             M.set(emitter->m_XFORM);
             M.transform_dir(vel);
-        };
+        }
+
         Fvector p;
         M.transform_tiny(p, m.pos);
         M.c.set(p);
@@ -236,6 +243,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
         FATAL("Can't use looped effect '%s' as 'On Birth' child for group.", nm);
     }
 }
+
 void CParticleGroup::SItem::Play()
 {
     CParticleEffect* E = static_cast<CParticleEffect*>(_effect);

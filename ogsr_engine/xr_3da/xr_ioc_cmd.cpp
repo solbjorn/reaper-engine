@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 
 // #include "xr_effgamma.h"
@@ -59,7 +60,8 @@ void IConsole_Command::add_LRU_to_tips(vecTips& tips)
 class CCC_Quit : public IConsole_Command
 {
 public:
-    CCC_Quit(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_Quit(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         Console->Hide();
@@ -72,7 +74,8 @@ public:
 class CCC_MemStat : public IConsole_Command
 {
 public:
-    CCC_MemStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         string_path fn;
@@ -91,7 +94,8 @@ public:
 class CCC_DbgMemCheck : public IConsole_Command
 {
 public:
-    CCC_DbgMemCheck(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (Memory.debug_mode)
@@ -109,21 +113,24 @@ public:
 class CCC_DbgStrCheck : public IConsole_Command
 {
 public:
-    CCC_DbgStrCheck(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { g_pStringContainer->verify(); }
 };
 
 class CCC_DbgStrDump : public IConsole_Command
 {
 public:
-    CCC_DbgStrDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { g_pStringContainer->dump(); }
 };
 
 class CCC_DbgLALibDump : public IConsole_Command
 {
 public:
-    CCC_DbgLALibDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { LALib.DbgDumpInfo(); }
 };
 
@@ -131,13 +138,15 @@ public:
 class CCC_MotionsStat : public IConsole_Command
 {
 public:
-    CCC_MotionsStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { g_pMotionsContainer->dump(); }
 };
 class CCC_TexturesStat : public IConsole_Command
 {
 public:
-    CCC_TexturesStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         Device.DumpResourcesMemoryUsage();
@@ -150,13 +159,16 @@ public:
 class CCC_E_Dump : public IConsole_Command
 {
 public:
-    CCC_E_Dump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { Engine.Event.Dump(); }
 };
+
 class CCC_E_Signal : public IConsole_Command
 {
 public:
-    CCC_E_Signal(LPCSTR N) : IConsole_Command(N) {};
+    CCC_E_Signal(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         char Event[128], Param[128];
@@ -171,7 +183,8 @@ public:
 class CCC_Help : public IConsole_Command
 {
 public:
-    CCC_Help(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         Log("- --- Command listing: start ---");
@@ -212,7 +225,8 @@ void _dump_open_files(int mode);
 class CCC_DumpOpenFiles : public IConsole_Command
 {
 public:
-    CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = FALSE; };
+    CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         int _mode = atoi(args);
@@ -224,7 +238,8 @@ public:
 class CCC_SaveCFG : public IConsole_Command
 {
 public:
-    CCC_SaveCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         string_path cfg_full_name;
@@ -256,7 +271,8 @@ public:
             Msg("!Cannot store config file [%s]", cfg_full_name);
     }
 };
-CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) {};
+
+CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command{N} {}
 
 void CCC_LoadCFG::Execute(LPCSTR args)
 {
@@ -275,7 +291,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     // if( NULL == FS.exist(cfg_full_name) )
     //	FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
 
-    if (NULL == FS.exist(cfg_full_name))
+    if (!FS.exist(cfg_full_name))
         xr_strcpy(cfg_full_name, cfg_name);
 
     IReader* F = FS.r_open(cfg_full_name);
@@ -318,8 +334,9 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     }
 }
 
-CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd) : CCC_LoadCFG(cmd) { xr_strcpy(m_cmd, cmd); };
-bool CCC_LoadCFG_custom::allow(LPCSTR cmd) { return (cmd == strstr(cmd, m_cmd)); };
+CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd) : CCC_LoadCFG{cmd} { xr_strcpy(m_cmd, cmd); }
+
+bool CCC_LoadCFG_custom::allow(LPCSTR cmd) { return (cmd == strstr(cmd, m_cmd)); }
 
 //-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
@@ -334,7 +351,8 @@ private:
     }
 
 public:
-    CCC_Start(const char* N) : IConsole_Command(N) {};
+    CCC_Start(const char* N) : IConsole_Command{N} {}
+
     void Execute(const char* args) override
     {
         auto str = parse(args);
@@ -345,7 +363,8 @@ public:
 class CCC_Disconnect : public IConsole_Command
 {
 public:
-    CCC_Disconnect(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_Disconnect(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { Engine.Event.Defer("KERNEL:disconnect"); }
 };
 
@@ -353,7 +372,8 @@ public:
 class CCC_VID_Reset : public IConsole_Command
 {
 public:
-    CCC_VID_Reset(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_VID_Reset(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (Device.b_is_Ready)
@@ -362,16 +382,18 @@ public:
         }
     }
 };
+
 class CCC_VidMode : public CCC_Token
 {
     u32 _dummy{};
 
 public:
-    CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
+    CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
+
     virtual void Execute(LPCSTR args)
     {
         u32 _w, _h;
-        int cnt = sscanf(args, "%dx%d", &_w, &_h);
+        int cnt = sscanf(args, "%ux%u", &_w, &_h);
         if (cnt == 2)
         {
             psCurrentVidMode[0] = _w;
@@ -422,7 +444,7 @@ extern void GetMonitorResolution(u32& horizontal, u32& vertical);
 class CCC_Screenmode : public CCC_Token
 {
 public:
-    CCC_Screenmode(LPCSTR N) : CCC_Token(N, &g_screenmode, screen_mode_tokens) {};
+    CCC_Screenmode(LPCSTR N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -485,7 +507,8 @@ public:
 class CCC_SND_Restart : public IConsole_Command
 {
 public:
-    CCC_SND_Restart(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { Sound->_restart(); }
 };
 
@@ -520,7 +543,7 @@ private:
     u32 renderer_value{};
 
 public:
-    CCC_r2(LPCSTR N) : inherited(N, &renderer_value, nullptr) {};
+    CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
     virtual ~CCC_r2() = default;
 
     virtual void Execute(LPCSTR args)
@@ -554,7 +577,7 @@ class CCC_soundDevice : public CCC_Token
     typedef CCC_Token inherited;
 
 public:
-    CCC_soundDevice(LPCSTR N) : inherited(N, &snd_device_id, NULL) {};
+    CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
     virtual ~CCC_soundDevice() {}
 
     virtual void Execute(LPCSTR args)
@@ -593,7 +616,7 @@ class CCC_ExclusiveMode : public CCC_Mask
     using inherited = CCC_Mask;
 
 public:
-    CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited(N, V, M) {}
+    CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited{N, V, M} {}
 
     void Execute(const char* args) override
     {
@@ -608,7 +631,7 @@ public:
 class CCC_HideConsole : public IConsole_Command
 {
 public:
-    CCC_HideConsole(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+    CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args) { Console->Hide(); }
     virtual void Status(TStatus& S) { S[0] = 0; }
@@ -618,7 +641,7 @@ public:
 class CCC_SoundParamsSmoothing : public CCC_Integer
 {
 public:
-    CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+    CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -795,4 +818,4 @@ void CCC_Register()
     CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
 
     CMD1(CCC_DbgLALibDump, "dbg_lalib_dump");
-};
+}

@@ -50,7 +50,7 @@ void CHelicopter::MGunUpdateFire()
     if (delta_t < 0)
     {
         delta_t = Device.fTimeGlobal;
-        flag_by_fire = 0;
+        flag_by_fire = false;
     }
     float time_f = Device.fTimeGlobal - delta_t;
 
@@ -77,19 +77,19 @@ void CHelicopter::MGunUpdateFire()
     }
     if (no_fire_time > 0 && fire_time > 0)
     {
-        if (flag_by_fire == 1 && time_f > fire_time)
+        if (flag_by_fire && time_f > fire_time)
         {
             delta_t = Device.fTimeGlobal;
             time_f = Device.fTimeGlobal - delta_t;
-            flag_by_fire = 0;
+            flag_by_fire = false;
         }
-        if (time_f > no_fire_time && flag_by_fire == 0)
+        if (time_f > no_fire_time && !flag_by_fire)
         {
             delta_t = Device.fTimeGlobal;
             time_f = Device.fTimeGlobal - delta_t;
-            flag_by_fire = 1;
+            flag_by_fire = true;
         }
-        if (flag_by_fire == 0 && time_f < no_fire_time)
+        if (!flag_by_fire && time_f < no_fire_time)
             return;
     }
 
@@ -141,7 +141,7 @@ void CHelicopter::OnShot()
 
         enemy_pos.add(disp_dir);
         fire_dir.sub(enemy_pos, fire_pos).normalize_safe();
-    };
+    }
 
     FireBullet(fire_pos, fire_dir, fireDispersionBase, m_CurrentAmmo, ID(), ID(), TRUE);
 
@@ -203,13 +203,9 @@ bool between(const float& src, const float& min, const float& max) { return ((sr
 void CHelicopter::UpdateWeapons()
 {
     if (isOnAttack())
-    {
         UpdateMGunDir();
-    }
     else
-    {
         m_tgt_rot.set(0.0f, 0.0f);
-    };
 
     // lerp angle
     angle_lerp(m_cur_rot.x, m_tgt_rot.x, PI, Device.fTimeDelta);

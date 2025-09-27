@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UI.h"
 #include "..\xr_3da\xr_IOConsole.h"
 #include "Entity.h"
@@ -11,14 +12,11 @@
 #include "ui/UIMessagesWindow.h"
 #include "ui/UIPdaWnd.h"
 
-CUI::CUI(CHUDManager* p)
+CUI::CUI(CHUDManager* p) : m_Parent{p}
 {
     UIMainIngameWnd = xr_new<CUIMainIngameWnd>();
     UIMainIngameWnd->Init();
     m_pMessagesWnd = xr_new<CUIMessagesWindow>();
-
-    m_Parent = p;
-    pUIGame = NULL;
 
     ShowGameIndicators();
     ShowCrosshair();
@@ -41,6 +39,7 @@ void CUI::Load(CUIGameCustom* pGameUI)
         pGameUI->SetClGame(&Game());
         return;
     }
+
     pUIGame = Game().createGameUI();
     R_ASSERT(pUIGame);
 }

@@ -15,7 +15,7 @@
 #include "level_bullet_manager.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-float CWeapon::GetWeaponDeterioration() { return conditionDecreasePerShot; };
+float CWeapon::GetWeaponDeterioration() { return conditionDecreasePerShot; }
 
 void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
 {
@@ -27,10 +27,10 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
     //-------------------------------------------------------------
 #pragma todo("KRodin: мне кажется, или здесь должно быть && вместо & ? Надо б посмотреть, работает ли оно вообще.")
     l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
-    if (m_u8TracerColorID != u8(-1))
+    if (m_u8TracerColorID != std::numeric_limits<u8>::max())
         l_cartridge.m_u8ColorID = m_u8TracerColorID;
     //-------------------------------------------------------------
-    //повысить изношенность оружия с учетом влияния конкретного патрона
+    // повысить изношенность оружия с учетом влияния конкретного патрона
     //	float Deterioration = GetWeaponDeterioration();
     //	Msg("Deterioration = %f", Deterioration);
     if (Core.Features.test(xrCore::Feature::npc_simplified_shooting))
@@ -45,7 +45,7 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
     float fire_disp = GetFireDispersion(true);
 
     bool SendHit = SendHitAllowed(H_Parent());
-    //выстерлить пулю (с учетом возможной стрельбы дробью)
+    // выстерлить пулю (с учетом возможной стрельбы дробью)
     for (int i = 0; i < l_cartridge.m_buckShot; ++i)
     {
         FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
@@ -63,7 +63,7 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
     m_magazine.pop_back();
     --iAmmoElapsed;
 
-    //проверить не произошла ли осечка
+    // проверить не произошла ли осечка
     // CheckForMisfire();
 
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -72,7 +72,7 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
 void CWeapon::Fire2Start() { bWorking2 = true; }
 void CWeapon::Fire2End()
 {
-    //принудительно останавливать зацикленные партиклы
+    // принудительно останавливать зацикленные партиклы
     if (m_pFlameParticles2 && m_pFlameParticles2->IsLooped())
         StopFlameParticles2();
 
@@ -83,7 +83,7 @@ void CWeapon::StopShooting()
 {
     // m_bPending = true;
 
-    //принудительно останавливать зацикленные партиклы
+    // принудительно останавливать зацикленные партиклы
     if (m_pFlameParticles && m_pFlameParticles->IsLooped())
         StopFlameParticles();
 
@@ -102,6 +102,7 @@ void CWeapon::FireEnd()
 
 void CWeapon::StartFlameParticles2() { CShootingObject::StartParticles(m_pFlameParticles2, *m_sFlameParticles2, get_LastFP2()); }
 void CWeapon::StopFlameParticles2() { CShootingObject::StopParticles(m_pFlameParticles2); }
+
 void CWeapon::UpdateFlameParticles2()
 {
     if (m_pFlameParticles2)

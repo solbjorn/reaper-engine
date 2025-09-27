@@ -27,8 +27,8 @@ public:
         this->Definition = Definition;
     }
 
-    LPCSTR Name;
-    LPCSTR Definition;
+    LPCSTR Name{};
+    LPCSTR Definition{};
 
     CBlender_accum_direct_msaa();
     virtual ~CBlender_accum_direct_msaa();
@@ -51,8 +51,8 @@ public:
     CBlender_accum_direct_volumetric_msaa();
     virtual ~CBlender_accum_direct_volumetric_msaa();
 
-    LPCSTR Name;
-    LPCSTR Definition;
+    LPCSTR Name{};
+    LPCSTR Definition{};
 };
 
 class CBlender_accum_direct_volumetric_sun_msaa : public IBlender
@@ -72,6 +72,6 @@ public:
     CBlender_accum_direct_volumetric_sun_msaa();
     virtual ~CBlender_accum_direct_volumetric_sun_msaa();
 
-    LPCSTR Name;
-    LPCSTR Definition;
+    LPCSTR Name{};
+    LPCSTR Definition{};
 };

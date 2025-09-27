@@ -13,16 +13,16 @@ class CPHJoint : public CPhysicsJoint
 
 public:
     ///////////////////////////////////////////////////////
-    u16 m_bone_id;
+    u16 m_bone_id{std::numeric_limits<u16>::max()};
     CPHElement* pFirst_element;
     CPHElement* pSecond_element;
-    CODEGeom* pFirstGeom;
+    CODEGeom* pFirstGeom{};
     /////////////////////////////////////////////////////////
-    CPHShell* pShell;
-    dJointID m_joint;
-    dJointID m_joint1;
-    CPhysicsJoint** m_back_ref;
-    CPHJointDestroyInfo* m_destroy_info;
+    CPHShell* pShell{};
+    dJointID m_joint{};
+    dJointID m_joint1{};
+    CPhysicsJoint** m_back_ref{};
+    CPHJointDestroyInfo* m_destroy_info{};
     float m_erp; // joint erp
     float m_cfm; // joint cfm
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,4 +265,5 @@ IC void axis_angleA(const Fmatrix& m, const Fvector& axis, float& angle)
     // if(angle>M_PI) angle=angle-2.f*M_PI;
     // if(angle<-M_PI) angle=angle+2.f*M_PI;
 }
+
 #endif

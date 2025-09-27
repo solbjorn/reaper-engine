@@ -33,6 +33,6 @@ struct pDomain
 #pragma pack(pop)
 // misc
 float NRand(float sigma = 1.0f);
-}; // namespace PAPI
+} // namespace PAPI
 //---------------------------------------------------------------------------
 #endif

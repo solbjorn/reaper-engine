@@ -41,10 +41,10 @@ FS_Path::FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCaptio
     if (temp[0] && temp[xr_strlen(temp) - 1] != '\\')
         strcat_s(temp, "\\");
     m_Path = xr_strlwr(xr_strdup(temp));
-    m_DefExt = _DefExt ? xr_strlwr(xr_strdup(_DefExt)) : 0;
-    m_FilterCaption = _FilterCaption ? xr_strlwr(xr_strdup(_FilterCaption)) : 0;
-    m_Add = _Add ? xr_strlwr(xr_strdup(_Add)) : 0;
-    m_Root = _Root ? xr_strlwr(xr_strdup(_Root)) : 0;
+    m_DefExt = _DefExt ? xr_strlwr(xr_strdup(_DefExt)) : nullptr;
+    m_FilterCaption = _FilterCaption ? xr_strlwr(xr_strdup(_FilterCaption)) : nullptr;
+    m_Add = _Add ? xr_strlwr(xr_strdup(_Add)) : nullptr;
+    m_Root = _Root ? xr_strlwr(xr_strdup(_Root)) : nullptr;
     m_Flags.assign(flags);
 }
 
@@ -103,11 +103,15 @@ LPCSTR FS_Path::_update(string_path& dest, LPCSTR src) const
 
 bool PatternMatch(LPCSTR s, LPCSTR mask)
 {
-    LPCSTR cp = 0;
-    LPCSTR mp = 0;
+    LPCSTR cp{};
+    LPCSTR mp{};
+
     for (; *s && *mask != '*'; mask++, s++)
+    {
         if (*mask != *s && *mask != '?')
             return false;
+    }
+
     for (;;)
     {
         if (!*s)

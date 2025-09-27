@@ -7,7 +7,7 @@ namespace Opcode
 {
 class Model;
 class AABBNoLeafNode;
-}; // namespace Opcode
+} // namespace Opcode
 
 namespace CDB
 {
@@ -67,14 +67,14 @@ class MODEL : Noncopyable
 
 private:
     xrCriticalSection cs;
-    Opcode::Model* tree;
-    u32 status; // 0=ready, 1=init, 2=building
+    Opcode::Model* tree{};
+    u32 status{S_INIT}; // 0=ready, 1=init, 2=building
 
     // tris
-    TRI* tris;
-    size_t tris_count;
-    Fvector* verts;
-    size_t verts_count;
+    TRI* tris{};
+    size_t tris_count{};
+    Fvector* verts{};
+    size_t verts_count{};
 
 public:
     MODEL();
@@ -156,19 +156,24 @@ class COLLIDER
 
 public:
     COLLIDER() = default;
+    COLLIDER(const COLLIDER&) = default;
+    COLLIDER(COLLIDER&&) = default;
     ~COLLIDER();
+
+    COLLIDER& operator=(const COLLIDER&) = default;
+    COLLIDER& operator=(COLLIDER&&) = default;
 
     void ray_query(u32 ray_mode, const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f);
     void box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim);
     void frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustum& F);
 
-    ICF RESULT* r_begin() { return &*rd.begin(); };
-    ICF xr_vector<RESULT>* r_get() { return &rd; };
+    ICF RESULT* r_begin() { return &*rd.begin(); }
+    ICF xr_vector<RESULT>* r_get() { return &rd; }
     RESULT& r_add();
     void r_free();
-    ICF size_t r_count() { return rd.size(); };
-    ICF void r_clear() { rd.clear(); };
-    ICF void r_clear_compact() { rd.clear(); };
+    ICF size_t r_count() { return rd.size(); }
+    ICF void r_clear() { rd.clear(); }
+    ICF void r_clear_compact() { rd.clear(); }
 };
 
 //
@@ -236,4 +241,4 @@ public:
     void clear();
 };
 #pragma warning(pop)
-}; // namespace CDB
+} // namespace CDB

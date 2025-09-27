@@ -13,14 +13,6 @@
 #define CGenericPathManager CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-IC CGenericPathManager::CPathManagerGeneric()
-{
-    graph = 0;
-    data_storage = 0;
-    path = 0;
-}
-
-TEMPLATE_SPECIALIZATION
 CGenericPathManager::~CPathManagerGeneric() {}
 
 TEMPLATE_SPECIALIZATION
@@ -97,7 +89,7 @@ IC bool CGenericPathManager::is_accessible(const _index_type& vertex_id) const
 TEMPLATE_SPECIALIZATION
 IC bool CGenericPathManager::is_metric_euclidian() const
 {
-    //#pragma todo("Dima to Dima : implement path manager for non-euclidian heuristics")
+    // #pragma todo("Dima to Dima : implement path manager for non-euclidian heuristics")
     return (true);
 }
 

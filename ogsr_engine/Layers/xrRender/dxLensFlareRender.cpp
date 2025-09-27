@@ -5,7 +5,12 @@
 
 #define MAX_Flares 24
 
-void dxFlareRender::Copy(IFlareRender& _in) { *this = *(dxFlareRender*)&_in; }
+void dxFlareRender::Copy(IFlareRender& _in)
+{
+    auto& in{*smart_cast<const dxFlareRender*>(&_in)};
+
+    hShader = in.hShader;
+}
 
 void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 {
@@ -15,7 +20,12 @@ void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 
 void dxFlareRender::DestroyShader() { hShader.destroy(); }
 
-void dxLensFlareRender::Copy(ILensFlareRender& _in) { *this = *(dxLensFlareRender*)&_in; }
+void dxLensFlareRender::Copy(ILensFlareRender& _in)
+{
+    auto& in{*smart_cast<const dxLensFlareRender*>(&_in)};
+
+    hGeom = in.hGeom;
+}
 
 void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient)
 {

@@ -33,17 +33,16 @@ struct st_BoneMotion
     {
         flWorldOrient = 1 << 0,
     };
+
     shared_str name;
-    CEnvelope* envs[ctMaxChannel];
-    Flags8 m_Flags;
-    st_BoneMotion()
-    {
-        name = 0;
-        m_Flags.zero();
-        ZeroMemory(envs, sizeof(CEnvelope*) * ctMaxChannel);
-    }
+    CEnvelope* envs[ctMaxChannel]{};
+    Flags8 m_Flags{};
+
+    st_BoneMotion() = default;
+
     void SetName(LPCSTR nm) { name = nm; }
 };
+
 // vector по костям
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
@@ -68,7 +67,6 @@ public:
 
 public:
     CCustomMotion();
-    CCustomMotion(CCustomMotion* src);
     virtual ~CCustomMotion() = 0;
 
     void SetName(const char* n)
@@ -117,7 +115,6 @@ public:
     CEnvelope* envs[ctMaxChannel];
 
     COMotion();
-    COMotion(COMotion* src);
     virtual ~COMotion();
 
     void Clear();

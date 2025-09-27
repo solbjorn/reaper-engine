@@ -51,5 +51,4 @@ public:
 				void		Solve			()														;
 };
 
-
 #endif

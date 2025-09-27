@@ -112,7 +112,7 @@ public:
     inline SSndChannelVec& get_snd_channels() { return m_sound_channels; }
     void load_shoc(const shared_str& section);
 
-    IC ref_sound* get_rnd_sound() { return sounds.empty() ? 0 : &sounds[Random.randI(sounds.size())]; }
+    IC ref_sound* get_rnd_sound() { return sounds.empty() ? nullptr : &sounds[Random.randI(sounds.size())]; }
     IC u32 get_rnd_sound_time() { return Random.randI(sound_period.x, sound_period.y); }
     IC float get_rnd_sound_dist() { return Random.randF(sound_dist.x, sound_dist.y); }
     IC u32 get_rnd_effect_time_shoc() { return Random.randI(effect_period.x, effect_period.y); }
@@ -166,10 +166,10 @@ public:
 
     void set_sun(LPCSTR sect, CEnvironment* parent);
 
-    CEnvAmbient* env_ambient;
+    CEnvAmbient* env_ambient{};
     void setEnvAmbient(LPCSTR sect, CEnvironment* parent);
 
-    CEnvDescriptor(shared_str const& identifier = 0);
+    CEnvDescriptor(shared_str const& identifier = nullptr);
 
     void load(CEnvironment& environment, CInifile& config);
     void load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S);
@@ -239,47 +239,47 @@ public:
 protected:
     CPerlinNoise1D* PerlinNoise1D;
 
-    float fGameTime;
+    float fGameTime{};
 
 public:
     FactoryPtr<IEnvironmentRender> m_pRender;
 
-    float wind_strength_factor;
-    float wind_gust_factor;
-    float wetness_factor;
+    float wind_strength_factor{};
+    float wind_gust_factor{};
+    float wetness_factor{};
     Fvector4 wind_anim{};
 
     // wind blast params
-    float wind_blast_strength;
+    float wind_blast_strength{};
     Fvector wind_blast_direction;
     Fquaternion wind_blast_start_time;
     Fquaternion wind_blast_stop_time;
-    float wind_blast_strength_start_value;
-    float wind_blast_strength_stop_value;
+    float wind_blast_strength_start_value{};
+    float wind_blast_strength_stop_value{};
     Fquaternion wind_blast_current;
 
     // Environments
     CEnvDescriptorMixer* CurrentEnv{};
-    CEnvDescriptor* Current[2];
+    CEnvDescriptor* Current[2]{};
 
-    bool bWFX;
+    bool bWFX{};
     float wfx_time;
     CEnvDescriptor* WFX_end_desc[2];
 
-    EnvVec* CurrentWeather;
+    EnvVec* CurrentWeather{};
     shared_str CurrentWeatherName;
     shared_str PrevWeatherName;
     shared_str CurrentCycleName;
-    u32 m_last_weather_shift;
+    u32 m_last_weather_shift{};
 
     EnvsMap WeatherCycles;
     EnvsMap WeatherFXs;
     xr_vector<CEnvModifier> Modifiers;
     EnvAmbVec Ambients;
 
-    CEffect_Rain* eff_Rain;
-    CLensFlare* eff_LensFlare;
-    CEffect_Thunderbolt* eff_Thunderbolt;
+    CEffect_Rain* eff_Rain{};
+    CLensFlare* eff_LensFlare{};
+    CEffect_Thunderbolt* eff_Thunderbolt{};
 
     bool USED_COP_WEATHER{};
 

@@ -58,11 +58,11 @@ static IReader* open_chunk(void* ptr, u32 ID, const char* archiveName, size_t ar
                 CHECK_OR_EXIT(result, make_string("[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName));
 
                 xr_free(src_data);
-                return xr_new<CTempReader>(dest, dest_sz, 0);
+                return xr_new<CTempReader>(dest, dest_sz, 0uz);
             }
             else
             {
-                return xr_new<CTempReader>(src_data, dwSize, 0);
+                return xr_new<CTempReader>(src_data, dwSize, 0uz);
             }
         }
         else
@@ -72,13 +72,13 @@ static IReader* open_chunk(void* ptr, u32 ID, const char* archiveName, size_t ar
         }
     }
     return nullptr;
-};
+}
 
 void CLocatorAPI::archive::open_db()
 {
     type = container::DB;
 
-    hSrcMap = CreateFileMapping(hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
+    hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
     R_ASSERT(hSrcMap != INVALID_HANDLE_VALUE);
 }
 
@@ -96,7 +96,7 @@ bool CLocatorAPI::archive::autoload_db()
     // Read header
     bool load = true;
 
-    IReader* hdr = !key ? open_chunk(hSrcFile, CFS_HeaderChunkID, path.c_str(), size) : NULL;
+    IReader* hdr = !key ? open_chunk(hSrcFile, CFS_HeaderChunkID, path.c_str(), size) : nullptr;
     if (hdr)
     {
         header = xr_new<CInifile>(hdr, "archive_header");

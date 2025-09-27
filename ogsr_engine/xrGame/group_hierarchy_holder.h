@@ -41,28 +41,28 @@ private:
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 private:
-    CEntity* m_leader;
+    CEntity* m_leader{};
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
 private:
     u32 group_id;
     CSquadHierarchyHolder* m_squad;
     MEMBER_REGISTRY m_members;
-    VISIBLE_OBJECTS* m_visible_objects;
-    SOUND_OBJECTS* m_sound_objects;
-    HIT_OBJECTS* m_hit_objects;
+    VISIBLE_OBJECTS* m_visible_objects{};
+    SOUND_OBJECTS* m_sound_objects{};
+    HIT_OBJECTS* m_hit_objects{};
 
     // TODO: for stalker only, should be removed
 private:
-    CAgentManager* m_agent_manager;
+    CAgentManager* m_agent_manager{};
 
     // TODO: for rats only, should be removed
 public:
-    u32 m_dwLastActionTime;
-    u32 m_dwLastAction;
-    u32 m_dwActiveCount;
-    u32 m_dwAliveCount;
-    u32 m_dwStandingCount;
+    u32 m_dwLastActionTime{};
+    u32 m_dwLastAction{};
+    u32 m_dwActiveCount{};
+    u32 m_dwAliveCount{};
+    u32 m_dwStandingCount{};
 
 private:
     IC CAgentManager* get_agent_manager() const;
@@ -92,7 +92,7 @@ public:
     void register_member(CEntity* member);
     void unregister_member(CEntity* member);
     IC CSquadHierarchyHolder& squad() const;
-    IC u32 id() const { return group_id; };
+    IC u32 id() const { return group_id; }
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
 public:

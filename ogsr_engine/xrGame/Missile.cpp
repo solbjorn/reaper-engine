@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "missile.h"
 #include "PhysicsShell.h"
 #include "actor.h"
@@ -12,9 +13,11 @@
 #include "ExtendedGeom.h"
 #include "characterphysicssupport.h"
 #include "inventory.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
+
 #include "../xr_3da/x_ray.h"
 
 #include "ui/UIProgressShape.h"
@@ -23,7 +26,7 @@
 #include "CalculateTriangle.h"
 #include "tri-colliderknoopc/dcTriangle.h"
 
-CUIProgressShape* g_MissileForceShape = NULL;
+CUIProgressShape* g_MissileForceShape{};
 
 void create_force_progress()
 {
@@ -37,13 +40,9 @@ void create_force_progress()
     xml_init.InitProgressShape(uiXml, "progress", 0, g_MissileForceShape);
 }
 
-CMissile::CMissile(void)
-{
-    m_dwStateTime = 0;
-    m_throwMotionMarksAvailable = false;
-}
+CMissile::CMissile() { m_dwStateTime = 0; }
 
-CMissile::~CMissile(void)
+CMissile::~CMissile()
 {
     HUD_SOUND::DestroySound(sndPlaying);
     HUD_SOUND::DestroySound(sndItemOn);
@@ -105,7 +104,7 @@ BOOL CMissile::net_Spawn(CSE_Abstract* DC)
 void CMissile::net_Destroy()
 {
     inherited::net_Destroy();
-    m_fake_missile = 0;
+    m_fake_missile = nullptr;
 }
 
 void CMissile::OnActiveItem()
@@ -404,17 +403,16 @@ void CMissile::UpdateXForm()
     {
         dwXF_Frame = Device.dwFrame;
 
-        if (0 == H_Parent())
+        if (!H_Parent())
             return;
 
         // Get access to entity and its visual
         CEntityAlive* E = smart_cast<CEntityAlive*>(H_Parent());
-
         if (!E)
             return;
 
         const CInventoryOwner* parent = smart_cast<const CInventoryOwner*>(E);
-        if (!parent || parent && parent->use_simplified_visual())
+        if (!parent || parent->use_simplified_visual())
             return;
 
         if (parent->attached(this))
@@ -550,16 +548,13 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
     case GE_OWNERSHIP_REJECT: {
         P.r_u16(id);
         if (m_fake_missile && (id == m_fake_missile->ID()))
-        {
-            m_fake_missile = NULL;
-        }
+            m_fake_missile = nullptr;
 
         CMissile* missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));
         if (!missile)
-        {
             break;
-        }
-        missile->H_SetParent(0, !P.r_eof() && P.r_u8());
+
+        missile->H_SetParent(nullptr, !P.r_eof() && P.r_u8());
         break;
     }
     }
@@ -693,12 +688,13 @@ void CMissile::activate_physic_shell()
 void CMissile::net_Relcase(CObject* O)
 {
     inherited::net_Relcase(O);
+
     if (PPhysicsShell() && PPhysicsShell()->isActive())
     {
         if (O == smart_cast<CObject*>((CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData()))
         {
             PPhysicsShell()->remove_ObjectContactCallback(ExitContactCallback);
-            PPhysicsShell()->set_CallbackData(NULL);
+            PPhysicsShell()->set_CallbackData(nullptr);
         }
     }
 }
@@ -743,7 +739,7 @@ void CMissile::OnDrawUI()
 
 void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-    dxGeomUserData *gd1 = NULL, *gd2 = NULL;
+    dxGeomUserData *gd1{}, *gd2{};
     if (bo1)
     {
         gd1 = retrieveGeomUserData(c.geom.g1);
@@ -764,10 +760,10 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
         dxGeomUserData* l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
         SGameMtl* material;
-        CMissile* l_this = l_pUD1 ? smart_cast<CMissile*>(l_pUD1->ph_ref_object) : NULL;
+        CMissile* l_this = l_pUD1 ? smart_cast<CMissile*>(l_pUD1->ph_ref_object) : nullptr;
         if (!l_this)
         {
-            l_this = l_pUD2 ? smart_cast<CMissile*>(l_pUD2->ph_ref_object) : NULL;
+            l_this = l_pUD2 ? smart_cast<CMissile*>(l_pUD2->ph_ref_object) : nullptr;
             material = material_1;
         }
         else
@@ -791,7 +787,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
         {
             if (!l_pUD1 || !l_pUD2)
             {
-                dGeomID g = NULL;
+                dGeomID g{};
                 dxGeomUserData*& l_pUD = l_pUD1 ? l_pUD1 : l_pUD2;
                 if (l_pUD1)
                     g = c.geom.g1;

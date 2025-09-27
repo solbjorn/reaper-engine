@@ -21,7 +21,8 @@ private:
 
 public:
     virtual ~CUIWndCallback() = default;
-    virtual void OnEvent(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+
+    virtual void OnEvent(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void Register(CUIWindow* pChild);
     void AddCallback(LPCSTR control_id, s16 event, const void_function& f);
     void AddCallback(const shared_str& control_id, s16 event, const void_function& f);

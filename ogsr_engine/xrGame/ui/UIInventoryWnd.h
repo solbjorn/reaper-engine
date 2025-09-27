@@ -25,8 +25,9 @@ class CUIInventoryWnd : public CUIDialogWnd
 
 private:
     typedef CUIDialogWnd inherited;
-    bool m_b_need_reinit;
-    bool m_b_need_update_stats;
+
+    bool m_b_need_reinit{};
+    bool m_b_need_update_stats{};
 
 public:
     CUIInventoryWnd();
@@ -77,7 +78,7 @@ protected:
     CUIStatic UIBeltSlots;
     CUIStatic UIBack;
     CUIStatic* UIRankFrame;
-    CUIStatic* UIRank;
+    CUIStatic* UIRank{};
 
     CUIStatic UIBagWnd;
     CUIStatic UIMoneyWnd;
@@ -92,20 +93,20 @@ protected:
 
     CUIStatic UIStaticPersonal;
 
-    CUIDragDropListEx* m_pUIBagList;
-    CUIDragDropListEx* m_pUIBeltList;
+    CUIDragDropListEx* m_pUIBagList{};
+    CUIDragDropListEx* m_pUIBeltList{};
 
-    CUIDragDropListEx* m_pUIPistolList;
-    CUIDragDropListEx* m_pUIAutomaticList;
-    CUIOutfitDragDropList* m_pUIOutfitList;
+    CUIDragDropListEx* m_pUIPistolList{};
+    CUIDragDropListEx* m_pUIAutomaticList{};
+    CUIOutfitDragDropList* m_pUIOutfitList{};
 
-    CUIDragDropListEx* m_pUIKnifeList;
-    CUIDragDropListEx* m_pUIHelmetList;
-    CUIDragDropListEx* m_pUIBIODetList;
-    CUIDragDropListEx* m_pUINightVisionList;
-    CUIDragDropListEx* m_pUIDetectorList;
-    CUIDragDropListEx* m_pUITorchList;
-    CUIDragDropListEx* m_pUIBinocularList;
+    CUIDragDropListEx* m_pUIKnifeList{};
+    CUIDragDropListEx* m_pUIHelmetList{};
+    CUIDragDropListEx* m_pUIBIODetList{};
+    CUIDragDropListEx* m_pUINightVisionList{};
+    CUIDragDropListEx* m_pUIDetectorList{};
+    CUIDragDropListEx* m_pUITorchList{};
+    CUIDragDropListEx* m_pUIBinocularList{};
 
     // alpet: для индексированного доступа
     CUIDragDropListEx* m_slots_array[SLOTS_TOTAL];
@@ -171,7 +172,7 @@ protected:
     CUICellItem* CurrentItem();
 
     TIItemContainer ruck_list;
-    u32 m_iCurrentActiveSlot;
+    u32 m_iCurrentActiveSlot{NO_ACTIVE_SLOT};
 
 private:
     bool dont_update_belt_flag{};

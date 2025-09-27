@@ -21,14 +21,15 @@ class CUITreeViewItem : public CUIListItem
 
 public:
     typedef CUIListItem inherited;
+
     // Являемся ли мы началом подыерархии
-    bool isRoot;
+    bool isRoot{};
     // Если мы рут, то этот флаг показывает открыта наша подыерархия или нет
-    bool isOpened;
+    bool isOpened{};
     // Смещение в пробелах
-    int iTextShift;
+    int iTextShift{};
     // Кому мы пренадлежим
-    CUITreeViewItem* pOwner;
+    CUITreeViewItem* pOwner{};
 
     void SetRoot(bool set);
     bool IsRoot() const { return isRoot; }
@@ -114,7 +115,7 @@ private:
     bool m_bArticleRead{};
     // Если true, то MarkArticleAsRead не будет вызывать
     // SetItemColor()
-    bool m_bManualSetColor;
+    bool m_bManualSetColor{};
 };
 
 //////////////////////////////////////////////////////////////////////////

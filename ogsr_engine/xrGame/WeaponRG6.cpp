@@ -36,7 +36,7 @@ BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
     }
 
     return l_res;
-};
+}
 
 void CWeaponRG6::Load(LPCSTR section)
 {
@@ -112,9 +112,9 @@ void CWeaponRG6::LaunchGrenade(const Fvector& p1, const Fvector& d1)
                 {
                     //					Msg ("d[%f,%f,%f] - res [%f,%f,%f]", d.x, d.y, d.z, res[0].x, res[0].y, res[0].z);
                     d = res[0];
-                };
+                }
             }
-        };
+        }
 
         d.normalize();
         d.mul(m_fLaunchSpeed);

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "PHCharacter.h"
 #include "Physics.h"
 #include "MathUtils.h"
@@ -9,7 +10,7 @@
 namespace ALife
 {
 enum EHitType : u32;
-};
+}
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -50,29 +51,29 @@ protected:
     };
     SCollisionDamageInfo m_collision_damage_info{};
     /////////////////////////// callback
-    ObjectContactCallbackFun* m_object_contact_callback;
+    ObjectContactCallbackFun* m_object_contact_callback{};
     ////////////////////////// geometry
     Fvector m_last_move;
-    dGeomID m_geom_shell;
-    dGeomID m_wheel;
-    dGeomID m_hat;
-    dGeomID m_cap;
+    dGeomID m_geom_shell{};
+    dGeomID m_wheel{};
+    dGeomID m_hat{};
+    dGeomID m_cap{};
 
-    dGeomID m_hat_transform;
-    dGeomID m_wheel_transform;
-    dGeomID m_shell_transform;
-    dGeomID m_cap_transform;
+    dGeomID m_hat_transform{};
+    dGeomID m_wheel_transform{};
+    dGeomID m_shell_transform{};
+    dGeomID m_cap_transform{};
 
     dSpaceID m_space{};
 
     dReal m_radius;
     dReal m_cyl_hight;
     ///////////////////////////////////
-    dJointID m_capture_joint;
+    dJointID m_capture_joint{};
     dJointFeedback m_capture_joint_feedback;
     ////////////////////////// movement
     dVector3 m_control_force;
-    Fvector m_acceleration;
+    Fvector m_acceleration{};
     Fvector m_cam_dir;
     dVector3 m_wall_contact_normal;
     dVector3 m_ground_contact_normal;
@@ -81,49 +82,49 @@ protected:
     dVector3 m_wall_contact_position;
     dVector3 m_ground_contact_position;
     dReal jump_up_velocity; //=6.0f;//5.6f;
-    dReal m_collision_damage_factor;
+    dReal m_collision_damage_factor{1.f};
     dReal m_max_velocity;
 
-    float m_air_control_factor;
+    float m_air_control_factor{};
 
     dVector3 m_jump_depart_position;
     dVector3 m_death_position;
     Fvector m_jump_accel;
 
     // movement state
-    bool is_contact;
-    bool was_contact;
-    bool b_depart;
-    bool b_meet;
-    bool b_side_contact;
-    bool b_was_side_contact;
-    bool b_any_contacts;
+    bool is_contact{};
+    bool was_contact{};
+    bool b_depart{};
+    bool b_meet{};
+    bool b_side_contact{};
+    bool b_was_side_contact{};
+    bool b_any_contacts{};
     bool b_air_contact_state;
 
-    bool b_valide_ground_contact;
-    bool b_valide_wall_contact;
-    bool b_on_object;
+    bool b_valide_ground_contact{};
+    bool b_valide_wall_contact{};
+    bool b_on_object{};
     bool b_was_on_object;
     bool b_on_ground;
-    bool b_lose_ground;
-    bool b_collision_restrictor_touch;
+    bool b_lose_ground{};
+    bool b_collision_restrictor_touch{};
     u32 m_contact_count;
 
-    bool is_control;
-    bool b_meet_control;
-    bool b_lose_control;
+    bool is_control{};
+    bool b_meet_control{};
+    bool b_lose_control{};
     bool was_control;
     bool b_stop_control;
     bool b_depart_control;
-    bool b_jump;
-    bool b_jumping;
-    bool b_clamb_jump;
-    bool b_external_impulse;
-    u64 m_ext_impuls_stop_step;
-    Fvector m_ext_imulse;
-    bool b_death_pos;
-    bool b_foot_mtl_check;
-    dReal m_friction_factor;
+    bool b_jump{};
+    bool b_jumping{};
+    bool b_clamb_jump{};
+    bool b_external_impulse{};
+    u64 m_ext_impuls_stop_step{std::numeric_limits<u64>::max()};
+    Fvector m_ext_imulse{};
+    bool b_death_pos{};
+    bool b_foot_mtl_check{};
+    dReal m_friction_factor{1.f};
 
 public:
     CPHSimpleCharacter();
@@ -168,7 +169,7 @@ private:
     virtual bool IsInitiated() const;
     virtual bool GetAndResetInitiated();
     virtual ICollisionHitCallback* HitCallback() const;
-    virtual void Reinit() { m_collision_damage_info.Reinit(); };
+    virtual void Reinit() { m_collision_damage_info.Reinit(); }
 
 public:
     // Creating
@@ -195,7 +196,7 @@ public:
     virtual void SwitchOFFInitContact();
     virtual void SwitchInInitContact();
     virtual void SetAcceleration(Fvector accel);
-    virtual Fvector GetAcceleration() { return m_acceleration; };
+    virtual Fvector GetAcceleration() { return m_acceleration; }
     virtual void SetCamDir(const Fvector& cam_dir);
     virtual const Fvector& CamDir() const { return m_cam_dir; }
     virtual void SetMaterial(u16 material);
@@ -204,7 +205,7 @@ public:
     virtual void GetSmothedVelocity(Fvector& vvel);
     virtual void SetVelocity(Fvector vel);
     virtual void SetAirControlFactor(float factor) { m_air_control_factor = factor; }
-    virtual void SetElevator(CClimableObject* climable) { m_elevator_state.SetElevator(climable); };
+    virtual void SetElevator(CClimableObject* climable) { m_elevator_state.SetElevator(climable); }
     virtual CElevatorState* ElevatorState();
     virtual void SetCollisionDamageFactor(float f) { m_collision_damage_factor = f; }
     virtual void GetPosition(Fvector& vpos);
@@ -221,12 +222,12 @@ public:
     virtual void SetMaximumVelocity(dReal vel) { m_max_velocity = vel; }
     virtual dReal GetMaximumVelocity() { return m_max_velocity; }
     virtual void SetJupmUpVelocity(dReal velocity) { jump_up_velocity = velocity; }
-    virtual bool JumpState() { return b_jumping || b_jump; };
+    virtual bool JumpState() { return b_jumping || b_jump; }
     virtual const Fvector& ControlAccel() const { return m_acceleration; }
     virtual bool TouchRestrictor(ERestrictionType rttype);
     virtual float& FrictionFactor() { return m_friction_factor; }
     virtual void SetMas(dReal mass);
-    virtual float Mass() { return m_mass; };
+    virtual float Mass() { return m_mass; }
     virtual void SetPhysicsRefObject(CPhysicsShellHolder* ref_object);
 
     virtual void CaptureObject(dBodyID body, const dReal* anchor);

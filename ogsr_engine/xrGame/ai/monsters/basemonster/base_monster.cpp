@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "PhysicsShell.h"
 #include "../../../hit.h"
@@ -7,7 +8,7 @@
 #include "game_level_cross_table.h"
 #include "game_graph.h"
 #include "level_graph.h"
-#include "../../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../ai_monster_squad_manager.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../corpse_cover.h"
@@ -46,10 +47,9 @@
 #include "../anti_aim_ability.h"
 #include "../../../game_object_space.h"
 
-CBaseMonster::CBaseMonster() : m_psy_aura(this, "psy"), m_fire_aura(this, "fire"), m_radiation_aura(this, "radiation"), m_base_aura(this, "base")
+CBaseMonster::CBaseMonster() : m_psy_aura{this, "psy"}, m_fire_aura{this, "fire"}, m_radiation_aura{this, "radiation"}, m_base_aura{this, "base"}
 {
     m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting, this);
-
     m_pPhysics_support->in_Init();
 
     // Components external init
@@ -66,12 +66,8 @@ CBaseMonster::CBaseMonster() : m_psy_aura(this, "psy"), m_fire_aura(this, "fire"
 
     // Инициализация параметров анимации
 
-    StateMan = 0;
-
     MeleeChecker.init_external(this);
     Morale.init_external(this);
-
-    m_controlled = 0;
 
     control().add(&m_com_manager, ControlCom::eControlCustom);
 
@@ -79,27 +75,11 @@ CBaseMonster::CBaseMonster() : m_psy_aura(this, "psy"), m_fire_aura(this, "fire"
     m_com_manager.add_ability(ControlCom::eControlTripleAnimation);
 
     CoverMan = xr_new<CMonsterCoverManager>(this);
-
     Home = xr_new<CMonsterHome>(this);
 
     com_man().add_ability(ControlCom::eComCriticalWound);
 
-    EatedCorpse = NULL;
-
-    m_steer_manager = NULL;
-    m_grouping_behaviour = NULL;
-
-    m_last_grouping_behaviour_update_tick = 0;
-    m_feel_enemy_who_made_sound_max_distance = 0;
-    m_feel_enemy_who_just_hit_max_distance = 0;
-    m_feel_enemy_max_distance = 0;
-
-    m_anti_aim = nullptr;
     m_head_bone_name = "bip01_head";
-
-    m_first_tick_enemy_inaccessible = 0;
-    m_last_tick_enemy_inaccessible = 0;
-    m_first_tick_object_not_at_home = 0;
 }
 
 CBaseMonster::~CBaseMonster()
@@ -299,9 +279,7 @@ void CBaseMonster::update_enemy_accessible_and_at_home_info()
 void CBaseMonster::UpdateCL()
 {
     if (EatedCorpse && !CorpseMemory.is_valid_corpse(EatedCorpse))
-    {
-        EatedCorpse = NULL;
-    }
+        EatedCorpse = nullptr;
 
     inherited::UpdateCL();
 
@@ -375,9 +353,7 @@ void CBaseMonster::Die(CObject* who)
     monster_squad().remove_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 
     if (m_grouping_behaviour)
-    {
-        m_grouping_behaviour->set_squad(NULL);
-    }
+        m_grouping_behaviour->set_squad(nullptr);
 
     if (m_controlled)
         m_controlled->on_die();
@@ -850,7 +826,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
         O->SetTmpPreDestroy(just_before_destroy);
         if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy())
         {
-            O->H_SetParent(0, dont_create_shell);
+            O->H_SetParent(nullptr, dont_create_shell);
             feel_touch_deny(O, 2000);
         }
     }

@@ -54,3 +54,15 @@ IC void CScriptAnimationAction::SetMentalState(MonsterSpace::EMentalState tMenta
 }
 
 IC void CScriptAnimationAction::initialize() {}
+
+inline void CScriptAnimationAction::clone(const CScriptAnimationAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_caAnimationToPlay = from.m_caAnimationToPlay;
+    m_tMentalState = from.m_tMentalState;
+    m_tGoalType = from.m_tGoalType;
+    m_use_animation_movement_controller = from.m_use_animation_movement_controller;
+    m_tAnimAction = from.m_tAnimAction;
+    anim_index = from.anim_index;
+}

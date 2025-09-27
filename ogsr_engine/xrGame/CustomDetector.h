@@ -29,7 +29,12 @@ struct ITEM_INFO
     CParticlesObject* pParticle{};
 
     ITEM_INFO() = default;
+    ITEM_INFO(const ITEM_INFO&) = default;
+    ITEM_INFO(ITEM_INFO&&) = default;
     ~ITEM_INFO();
+
+    ITEM_INFO& operator=(const ITEM_INFO&) = default;
+    ITEM_INFO& operator=(ITEM_INFO&&) = default;
 };
 
 template <typename K>

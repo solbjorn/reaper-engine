@@ -76,8 +76,41 @@ public:
     }
 };
 
-void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in) { *this = *(dxEnvDescriptorRender*)&_in; }
-void dxEnvironmentRender::Copy(IEnvironmentRender& _in) { *this = *(dxEnvironmentRender*)&_in; }
+void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in)
+{
+    auto& in{*smart_cast<const dxEnvDescriptorRender*>(&_in)};
+
+    sky_texture = in.sky_texture;
+    sky_texture_env = in.sky_texture_env;
+    clouds_texture = in.clouds_texture;
+}
+
+void dxEnvironmentRender::Copy(IEnvironmentRender& _in)
+{
+    auto& in{*smart_cast<const dxEnvironmentRender*>(&_in)};
+
+    sky_r_textures.clone(in.sky_r_textures);
+    clouds_r_textures.clone(in.clouds_r_textures);
+
+    sh_2sky = in.sh_2sky;
+    sh_2geom = in.sh_2geom;
+    clouds_sh = in.clouds_sh;
+    clouds_geom = in.clouds_geom;
+
+    tsky0 = in.tsky0;
+    tsky1 = in.tsky1;
+    t_envmap_0 = in.t_envmap_0;
+    t_envmap_1 = in.t_envmap_1;
+    tonemap = in.tonemap;
+
+    tsky0_tstage = in.tsky0_tstage;
+    tsky1_tstage = in.tsky1_tstage;
+    tclouds0_tstage = in.tclouds0_tstage;
+    tclouds1_tstage = in.tclouds1_tstage;
+
+    tonemap_tstage_2sky = in.tonemap_tstage_2sky;
+    tonemap_tstage_clouds = in.tonemap_tstage_clouds;
+}
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
 {

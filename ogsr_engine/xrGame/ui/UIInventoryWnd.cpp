@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "UIInventoryWnd.h"
 
+#include "UIInventoryWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 #include "../string_table.h"
@@ -34,20 +34,14 @@ using namespace InventoryUtilities;
 #define INVENTORY_ITEM_XML "inventory_item.xml"
 #define INVENTORY_XML "inventory_new.xml"
 
-CUIInventoryWnd* g_pInvWnd = NULL;
+CUIInventoryWnd* g_pInvWnd{};
 
 CUIInventoryWnd::CUIInventoryWnd()
-    : m_pUIBagList(nullptr), m_pUIBeltList(nullptr), m_pUIPistolList(nullptr), m_pUIAutomaticList(nullptr), m_pUIKnifeList(nullptr), m_pUIHelmetList(nullptr),
-      m_pUIBIODetList(nullptr), m_pUINightVisionList(nullptr), m_pUIDetectorList(nullptr), m_pUITorchList(nullptr), m_pUIBinocularList(nullptr), m_pUIOutfitList(nullptr)
 {
-    m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
-    UIRank = NULL;
     Init();
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
 
     g_pInvWnd = this;
-    m_b_need_reinit = false;
-    m_b_need_update_stats = false;
     Hide();
 }
 
@@ -187,7 +181,8 @@ void CUIInventoryWnd::Init()
     }
 
     for (u8 i = 0; i < SLOTS_TOTAL; i++)
-        m_slots_array[i] = NULL;
+        m_slots_array[i] = nullptr;
+
     m_slots_array[OUTFIT_SLOT] = m_pUIOutfitList;
     if (Core.Features.test(xrCore::Feature::ogse_new_slots))
         m_slots_array[KNIFE_SLOT] = m_pUIKnifeList;
@@ -223,16 +218,16 @@ void CUIInventoryWnd::Init()
 
     XML_NODE* stored_root = uiXml.GetLocalRoot();
     uiXml.SetLocalRoot(uiXml.NavigateToNode("action_sounds", 0));
-    ::Sound->create(sounds[eInvSndOpen], uiXml.Read("snd_open", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvSndClose], uiXml.Read("snd_close", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToSlot], uiXml.Read("snd_item_to_slot", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToBelt], uiXml.Read("snd_item_to_belt", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemToRuck], uiXml.Read("snd_item_to_ruck", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvProperties], uiXml.Read("snd_properties", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvDropItem], uiXml.Read("snd_drop_item", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvAttachAddon], uiXml.Read("snd_attach_addon", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvDetachAddon], uiXml.Read("snd_detach_addon", 0, NULL), st_Effect, sg_SourceType);
-    ::Sound->create(sounds[eInvItemUse], uiXml.Read("snd_item_use", 0, NULL), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvSndOpen], uiXml.Read("snd_open", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvSndClose], uiXml.Read("snd_close", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvItemToSlot], uiXml.Read("snd_item_to_slot", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvItemToBelt], uiXml.Read("snd_item_to_belt", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvItemToRuck], uiXml.Read("snd_item_to_ruck", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvProperties], uiXml.Read("snd_properties", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvDropItem], uiXml.Read("snd_drop_item", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvAttachAddon], uiXml.Read("snd_attach_addon", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvDetachAddon], uiXml.Read("snd_detach_addon", 0, nullptr), st_Effect, sg_SourceType);
+    ::Sound->create(sounds[eInvItemUse], uiXml.Read("snd_item_use", 0, nullptr), st_Effect, sg_SourceType);
 
     uiXml.SetLocalRoot(stored_root);
 }
@@ -257,7 +252,7 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 void CUIInventoryWnd::PlaySnd(eInventorySndAction a)
 {
     if (sounds[a]._handle())
-        sounds[a].play(NULL, sm_2D);
+        sounds[a].play(nullptr, sm_2D);
 }
 
 CUIInventoryWnd::~CUIInventoryWnd()
@@ -420,7 +415,7 @@ void CUIInventoryWnd::SendEvent_Item2Slot(PIItem pItem)
     pItem->object().u_EventSend(P);
     g_pInvWnd->PlaySnd(eInvItemToSlot);
     m_b_need_update_stats = true;
-};
+}
 
 void CUIInventoryWnd::SendEvent_Item2Belt(PIItem pItem)
 {
@@ -430,7 +425,7 @@ void CUIInventoryWnd::SendEvent_Item2Belt(PIItem pItem)
     pItem->object().u_EventSend(P);
     g_pInvWnd->PlaySnd(eInvItemToBelt);
     m_b_need_update_stats = true;
-};
+}
 
 void CUIInventoryWnd::SendEvent_Item2Ruck(PIItem pItem)
 {
@@ -440,7 +435,7 @@ void CUIInventoryWnd::SendEvent_Item2Ruck(PIItem pItem)
     pItem->object().u_EventSend(P);
     g_pInvWnd->PlaySnd(eInvItemToRuck);
     m_b_need_update_stats = true;
-};
+}
 
 void CUIInventoryWnd::SendEvent_Item_Drop(PIItem pItem)
 {
@@ -448,7 +443,7 @@ void CUIInventoryWnd::SendEvent_Item_Drop(PIItem pItem)
 
     g_pInvWnd->PlaySnd(eInvDropItem);
     m_b_need_update_stats = true;
-};
+}
 
 void CUIInventoryWnd::SendEvent_Item_Eat(PIItem pItem)
 {
@@ -457,7 +452,7 @@ void CUIInventoryWnd::SendEvent_Item_Eat(PIItem pItem)
     pItem->object().u_EventGen(P, GEG_PLAYER_ITEM_EAT, pItem->object().H_Parent()->ID());
     P.w_u16(pItem->object().ID());
     pItem->object().u_EventSend(P);
-};
+}
 
 void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {

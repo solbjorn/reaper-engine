@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include <dinput.h>
 #include "HUDmanager.h"
 #include "..\xr_3da\XR_IOConsole.h"
@@ -29,9 +30,7 @@
 
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
-#endif
 
-#ifdef DEBUG
 extern void try_change_current_entity();
 extern void restore_actor();
 #endif
@@ -73,12 +72,10 @@ void CLevel::IR_OnMouseWheel(int direction)
     }
 }
 
-static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
+constexpr int mouse_button_2_key[]{MOUSE_1, MOUSE_2, MOUSE_3};
 
 void CLevel::IR_OnMousePress(int btn) { IR_OnKeyboardPress(mouse_button_2_key[btn]); }
-
 void CLevel::IR_OnMouseRelease(int btn) { IR_OnKeyboardRelease(mouse_button_2_key[btn]); }
-
 void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]); }
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
@@ -122,13 +119,9 @@ void CLevel::IR_OnKeyboardPress(int key)
 
     switch (_curr)
     {
-    case kSCREENSHOT:
-        Render->Screenshot();
-        return;
+    case kSCREENSHOT: Render->Screenshot(); return;
 
-    case kCONSOLE:
-        Console->Show();
-        return;
+    case kCONSOLE: Console->Show(); return;
 
     case kQUIT: {
         if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
@@ -142,7 +135,7 @@ void CLevel::IR_OnKeyboardPress(int key)
         else
             Console->Execute("main_menu");
         return;
-        }
+    }
 
     case kPAUSE:
         if (!g_block_pause)
@@ -154,7 +147,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 
     if (g_bDisableAllInput)
         return;
-    
+
     if (g_block_all_except_movement)
     {
         if (!(_curr < kCAM_1 || _curr == kPAUSE || _curr == kSCREENSHOT || _curr == kQUIT || _curr == kCONSOLE))
@@ -208,29 +201,39 @@ void CLevel::IR_OnKeyboardPress(int key)
     }
 
 #ifdef DEBUG
-    case DIK_RETURN:
-    case DIK_NUMPADENTER: bDebug = !bDebug; return;
+case DIK_RETURN:
+case DIK_NUMPADENTER: bDebug = !bDebug; return;
 
-    case DIK_BACK: HW.Caps.SceneMode = (HW.Caps.SceneMode + 1) % 3; return;
+case DIK_BACK: HW.Caps.SceneMode = (HW.Caps.SceneMode + 1) % 3; return;
 
-    case DIK_F4: {
-        if (pInput->iGetAsyncKeyState(DIK_LALT))
-            break;
+case DIK_F4: {
+    if (pInput->iGetAsyncKeyState(DIK_LALT))
+        break;
 
-        if (pInput->iGetAsyncKeyState(DIK_RALT))
-            break;
+    if (pInput->iGetAsyncKeyState(DIK_RALT))
+        break;
 
-        bool bOk = false;
-        u32 i = 0, j, n = Objects.o_count();
-        if (pCurrentEntity)
-            for (; i < n; ++i)
-                if (Objects.o_get_by_iterator(i) == pCurrentEntity)
-                    break;
-        if (i < n)
+    bool bOk = false;
+    u32 i = 0, j, n = Objects.o_count();
+    if (pCurrentEntity)
+        for (; i < n; ++i)
+            if (Objects.o_get_by_iterator(i) == pCurrentEntity)
+                break;
+    if (i < n)
+    {
+        j = i;
+        bOk = false;
+        for (++i; i < n; ++i)
         {
-            j = i;
-            bOk = false;
-            for (++i; i < n; ++i)
+            CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
+            if (tpEntityAlive)
+            {
+                bOk = true;
+                break;
+            }
+        }
+        if (!bOk)
+            for (i = 0; i < j; ++i)
             {
                 CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
                 if (tpEntityAlive)
@@ -239,79 +242,69 @@ void CLevel::IR_OnKeyboardPress(int key)
                     break;
                 }
             }
-            if (!bOk)
-                for (i = 0; i < j; ++i)
-                {
-                    CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
-                    if (tpEntityAlive)
-                    {
-                        bOk = true;
-                        break;
-                    }
-                }
-            if (bOk)
+        if (bOk)
+        {
+            CObject* tpObject = CurrentEntity();
+            CObject* __I = Objects.o_get_by_iterator(i);
+            CObject** I = &__I;
+
+            SetEntity(*I);
+            if (tpObject != *I)
             {
-                CObject* tpObject = CurrentEntity();
-                CObject* __I = Objects.o_get_by_iterator(i);
-                CObject** I = &__I;
-
-                SetEntity(*I);
-                if (tpObject != *I)
-                {
-                    CActor* pActor = smart_cast<CActor*>(tpObject);
-                    if (pActor)
-                        pActor->inventory().Items_SetCurrentEntityHud(false);
-                }
-                if (tpObject)
-                {
-                    Engine.Sheduler.Unregister(tpObject);
-                    Engine.Sheduler.Register(tpObject, TRUE);
-                };
-                Engine.Sheduler.Unregister(*I);
-                Engine.Sheduler.Register(*I, TRUE);
-
-                CActor* pActor = smart_cast<CActor*>(*I);
+                CActor* pActor = smart_cast<CActor*>(tpObject);
                 if (pActor)
-                {
-                    pActor->inventory().Items_SetCurrentEntityHud(true);
+                    pActor->inventory().Items_SetCurrentEntityHud(false);
+            }
+            if (tpObject)
+            {
+                Engine.Sheduler.Unregister(tpObject);
+                Engine.Sheduler.Register(tpObject, TRUE);
+            };
+            Engine.Sheduler.Unregister(*I);
+            Engine.Sheduler.Register(*I, TRUE);
 
-                    CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-                    if (pHudItem)
-                    {
-                        pHudItem->OnStateSwitch(pHudItem->GetState());
-                    }
+            CActor* pActor = smart_cast<CActor*>(*I);
+            if (pActor)
+            {
+                pActor->inventory().Items_SetCurrentEntityHud(true);
+
+                CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
+                if (pHudItem)
+                {
+                    pHudItem->OnStateSwitch(pHudItem->GetState());
                 }
             }
         }
+    }
+    return;
+}
+case MOUSE_1: {
+    if (pInput->iGetAsyncKeyState(DIK_LALT))
+    {
+        if (CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
+            try_change_current_entity();
+        else
+            restore_actor();
         return;
     }
-    case MOUSE_1: {
-        if (pInput->iGetAsyncKeyState(DIK_LALT))
-        {
-            if (CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
-                try_change_current_entity();
-            else
-                restore_actor();
-            return;
-        }
-        break;
-    }
-        /**/
+    break;
+}
+    /**/
 
-    case DIK_DIVIDE:
-        if (OnServer())
-        {
-            //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
-            Server->game->SetGameTimeFactor(g_fTimeFactor);
-        }
-        break;
-    case DIK_MULTIPLY:
-        if (OnServer())
-        {
-            float NewTimeFactor = 1000.f;
-            Server->game->SetGameTimeFactor(NewTimeFactor);
-        }
-        break;
+case DIK_DIVIDE:
+    if (OnServer())
+    {
+        //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
+        Server->game->SetGameTimeFactor(g_fTimeFactor);
+    }
+    break;
+case DIK_MULTIPLY:
+    if (OnServer())
+    {
+        float NewTimeFactor = 1000.f;
+        Server->game->SetGameTimeFactor(NewTimeFactor);
+    }
+    break;
 #endif
 
     if (bindConsoleCmds.execute(key))
@@ -415,14 +408,14 @@ void CLevel::IR_OnKeyboardHold(int key)
     }
 }
 
-void CLevel::IR_OnMouseStop(int /**axis/**/, int /**value/**/) {}
+void CLevel::IR_OnMouseStop(int, int) {}
 
 void CLevel::IR_OnActivate()
 {
     if (!pInput)
         return;
-    int i;
-    for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
+
+    for (gsl::index i = 0; i < CInput::COUNT_KB_BUTTONS; ++i)
     {
         if (IR_GetKeyState(i))
         {
@@ -445,7 +438,7 @@ void CLevel::IR_OnActivate()
                 IR_OnKeyboardPress(i);
             }
             break;
-            };
-        };
+            }
+        }
     }
 }

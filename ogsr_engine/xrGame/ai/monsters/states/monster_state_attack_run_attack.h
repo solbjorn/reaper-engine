@@ -4,11 +4,14 @@
 template <typename _Object>
 class CStateMonsterAttackRunAttack : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttackRunAttack<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterAttackRunAttack(_Object* obj) : inherited(obj){};
+    CStateMonsterAttackRunAttack(_Object* obj) : inherited{obj} {}
 
     virtual void initialize();
     virtual void execute();

@@ -67,9 +67,9 @@ struct CObjectParams : public SObjectParams
     IC void fill(const T* game_object);
 };
 
-struct SMemoryObject : public virtual RTTI::Enable
+struct SMemoryObject
 {
-    RTTI_DECLARE_TYPEINFO(SMemoryObject);
+    RTTI_DECLARE_TRIVIAL(SMemoryObject);
 
 public:
 #ifdef USE_GAME_TIME
@@ -127,10 +127,10 @@ public:
 template <typename T>
 struct CMemoryObject : public SMemoryObject
 {
-    RTTI_DECLARE_TYPEINFO(CMemoryObject<T>, SMemoryObject);
+    RTTI_DECLARE_TRIVIAL(CMemoryObject<T>, SMemoryObject);
 
 public:
-    const T* m_object;
+    const T* m_object{};
     CObjectParams<T> m_object_params;
     CObjectParams<T> m_self_params;
     _flags<squad_mask_type> m_squad_mask;
@@ -143,7 +143,7 @@ public:
 
 struct CVisibleObject : CMemoryObject<CGameObject>
 {
-    RTTI_DECLARE_TYPEINFO(CVisibleObject, CMemoryObject<CGameObject>);
+    RTTI_DECLARE_TRIVIAL(CVisibleObject, CMemoryObject<CGameObject>);
 
 public:
     typedef CMemoryObject<CGameObject> inherited;
@@ -164,7 +164,7 @@ public:
 
 struct CHitObject : public CMemoryObject<CEntityAlive>
 {
-    RTTI_DECLARE_TYPEINFO(CHitObject, CMemoryObject<CEntityAlive>);
+    RTTI_DECLARE_TRIVIAL(CHitObject, CMemoryObject<CEntityAlive>);
 
 public:
     Fvector m_direction;
@@ -174,7 +174,7 @@ public:
 
 struct CSoundObject : public CMemoryObject<CGameObject>
 {
-    RTTI_DECLARE_TYPEINFO(CSoundObject, CMemoryObject<CGameObject>);
+    RTTI_DECLARE_TRIVIAL(CSoundObject, CMemoryObject<CGameObject>);
 
 public:
     ESoundTypes m_sound_type;
@@ -192,7 +192,7 @@ public:
 
 struct CMemoryInfo : public CVisibleObject
 {
-    RTTI_DECLARE_TYPEINFO(CMemoryInfo, CVisibleObject);
+    RTTI_DECLARE_TRIVIAL(CMemoryInfo, CVisibleObject);
 
 public:
     bool m_visual_info;
@@ -218,7 +218,7 @@ struct SLevelTimePredicate
 {
     bool operator()(const CMemoryObject<T>& object1, const CMemoryObject<T>& object2) const { return (object1.m_level_time < object2.m_level_time); }
 };
-}; // namespace MemorySpace
+} // namespace MemorySpace
 
 XR_SOL_BASE_CLASSES(MemorySpace::CMemoryObject<CEntityAlive>);
 XR_SOL_BASE_CLASSES(MemorySpace::CMemoryObject<CGameObject>);

@@ -1,7 +1,9 @@
 #include "stdafx.h"
+
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
 #include "UIXmlInit.h"
+
 constexpr LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
 CUIMotionIcon::CUIMotionIcon()
@@ -113,7 +115,7 @@ void CUIMotionIcon::Update()
     {
         float len = m_noise_progress.GetRange_max() - m_noise_progress.GetRange_min();
         float cur_pos = m_luminosity_progress.GetProgressPos();
-        if (cur_pos != m_luminosity)
+        if (!fsimilar(cur_pos, m_luminosity))
         {
             float _diff = _abs(m_luminosity - cur_pos);
             if (m_luminosity > cur_pos)
@@ -138,7 +140,7 @@ void CUIMotionIcon::SetActorVisibility(u16 who_id, float value)
 
     xr_vector<_npc_visibility>::iterator it = std::find(m_npc_visibility.begin(), m_npc_visibility.end(), who_id);
 
-    if (it == m_npc_visibility.end() && value != 0)
+    if (it == m_npc_visibility.end() && !fis_zero(value))
     {
         m_npc_visibility.resize(m_npc_visibility.size() + 1);
         _npc_visibility& v = m_npc_visibility.back();

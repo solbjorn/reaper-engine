@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "uizonemap.h"
 
+#include "uizonemap.h"
 #include "hudmanager.h"
 
 #include "InfoPortion.h"
@@ -99,7 +99,7 @@ void CUIZoneMap::SetHeading(float angle) const
 {
     m_activeMap->SetHeading(angle);
     m_compass->SetHeading(angle);
-};
+}
 
 void CUIZoneMap::UpdateRadar(Fvector pos) const
 {

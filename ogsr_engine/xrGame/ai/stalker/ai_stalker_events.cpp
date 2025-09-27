@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "../../pda.h"
 #include "../../inventory.h"
@@ -90,7 +91,7 @@ void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 
         if (inventory().DropItem(smart_cast<CGameObject*>(O)) && !O->getDestroy())
         {
-            O->H_SetParent(0, dont_create_shell);
+            O->H_SetParent(nullptr, dont_create_shell);
             feel_touch_deny(O, 2000);
         }
 
@@ -116,8 +117,7 @@ void CAI_Stalker::feel_touch_new(CObject* O)
     auto ePropertyFoundItemToKill = eu.find(StalkerDecisionSpace::eWorldPropertyFoundItemToKill);
     auto ePropertyItemToKill = eu.find(StalkerDecisionSpace::eWorldPropertyItemToKill);
 
-    if (ePropertyFoundItemToKill != eu.end() && 
-        ePropertyItemToKill != eu.end())
+    if (ePropertyFoundItemToKill != eu.end() && ePropertyItemToKill != eu.end())
     {
         propertyFoundItemToKill = (*ePropertyFoundItemToKill).second->evaluate() && !(*ePropertyItemToKill).second->evaluate();
     }

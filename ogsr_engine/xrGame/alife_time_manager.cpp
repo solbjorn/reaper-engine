@@ -17,8 +17,8 @@ CALifeTimeManager::~CALifeTimeManager() {}
 void CALifeTimeManager::init(LPCSTR section)
 {
     u32 years, months, days, hours, minutes, seconds;
-    sscanf(pSettings->r_string(section, "start_time"), "%d:%d:%d", &hours, &minutes, &seconds);
-    sscanf(pSettings->r_string(section, "start_date"), "%d.%d.%d", &days, &months, &years);
+    sscanf(pSettings->r_string(section, "start_time"), "%u:%u:%u", &hours, &minutes, &seconds);
+    sscanf(pSettings->r_string(section, "start_date"), "%u.%u.%u", &days, &months, &years);
     m_start_game_time = generate_time(years, months, days, hours, minutes, seconds);
     m_time_factor = pSettings->r_float(section, "time_factor");
     m_normal_time_factor = pSettings->r_float(section, "normal_time_factor");
@@ -35,7 +35,7 @@ void CALifeTimeManager::save(IWriter& memory_stream)
     memory_stream.w_float(m_time_factor);
     memory_stream.w_float(m_normal_time_factor);
     memory_stream.close_chunk();
-};
+}
 
 void CALifeTimeManager::load(IReader& file_stream)
 {
@@ -44,4 +44,4 @@ void CALifeTimeManager::load(IReader& file_stream)
     m_time_factor = file_stream.r_float();
     /* m_normal_time_factor		= */ file_stream.r_float();
     m_start_time = Device.dwTimeGlobal;
-};
+}

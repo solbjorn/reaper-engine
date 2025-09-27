@@ -31,4 +31,4 @@ struct STravelPathPoint
 
     IC u32 get_vertex_id() { return (vertex_id); }
 };
-}; // namespace DetailPathManager
+} // namespace DetailPathManager

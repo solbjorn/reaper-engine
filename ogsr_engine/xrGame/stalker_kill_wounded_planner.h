@@ -14,6 +14,8 @@ class CAI_Stalker;
 
 class CStalkerKillWoundedPlanner : public CActionPlannerActionScript<CAI_Stalker>
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerKillWoundedPlanner, CActionPlannerActionScript<CAI_Stalker>);
+
 private:
     typedef CActionPlannerActionScript<CAI_Stalker> inherited;
 
@@ -22,7 +24,7 @@ private:
     void add_actions();
 
 public:
-    CStalkerKillWoundedPlanner(CAI_Stalker* object = 0, LPCSTR action_name = "");
+    CStalkerKillWoundedPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
     virtual ~CStalkerKillWoundedPlanner();
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();

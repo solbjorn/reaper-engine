@@ -90,12 +90,14 @@ struct FSlideWindow
     u16 num_tris;
     u16 num_verts;
 };
+
 struct FSlideWindowItem
 {
-    FSlideWindow* sw;
-    u32 count;
+    FSlideWindow* sw{};
+    u32 count{};
     u32 reserved[4];
-    FSlideWindowItem() : sw(0), count(0) {};
+
+    FSlideWindowItem() = default;
 };
 
 // OGF_TEXTURE1

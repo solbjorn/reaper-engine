@@ -34,18 +34,18 @@ private:
     typedef CScriptCallbackEx<bool> CExtrapolateCallback;
 
 private:
-    const CPatrolPath* m_path;
+    const CPatrolPath* m_path{};
     shared_str m_path_name;
-    EPatrolStartType m_start_type;
-    EPatrolRouteType m_route_type;
-    bool m_actuality;
-    bool m_failed;
-    bool m_completed;
-    bool m_random;
-    u32 m_curr_point_index;
-    u32 m_prev_point_index;
-    u32 m_start_point_index;
-    Fvector m_dest_position;
+    EPatrolStartType m_start_type{ePatrolStartTypeDummy};
+    EPatrolRouteType m_route_type{ePatrolRouteTypeDummy};
+    bool m_actuality{true};
+    bool m_failed{};
+    bool m_completed{true};
+    bool m_random{};
+    u32 m_curr_point_index{std::numeric_limits<u32>::max()};
+    u32 m_prev_point_index{std::numeric_limits<u32>::max()};
+    u32 m_start_point_index{std::numeric_limits<u32>::max()};
+    Fvector m_dest_position{std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
     CExtrapolateCallback m_extrapolate_callback;
     CRestrictedObject* m_object;
     CGameObject* m_game_object;

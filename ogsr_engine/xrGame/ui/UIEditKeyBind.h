@@ -3,18 +3,18 @@
 #include "UILabel.h"
 #include "UIOptionsItem.h"
 
+class CUIColorAnimatorWrapper;
 struct _action;
 struct _keyboard;
-class CUIColorAnimatorWrapper;
 
 class CUIEditKeyBind : public CUILabel, public CUIOptionsItem
 {
     RTTI_DECLARE_TYPEINFO(CUIEditKeyBind, CUILabel, CUIOptionsItem);
 
 public:
+    _action* m_action{};
+    _keyboard* m_keyboard{};
     bool m_bPrimary;
-    _action* m_action;
-    _keyboard* m_keyboard;
 
     CUIEditKeyBind(bool bPrim);
     virtual ~CUIEditKeyBind();
@@ -38,8 +38,8 @@ protected:
     void BindAction2Key();
     virtual void InitTexture(LPCSTR texture, bool horizontal = true);
 
-    bool m_bEditMode;
-    bool m_bChanged;
+    bool m_bEditMode{};
+    bool m_bChanged{};
 
     CUIColorAnimatorWrapper* m_pAnimation;
 };

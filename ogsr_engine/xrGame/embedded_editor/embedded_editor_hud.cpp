@@ -1,9 +1,16 @@
 #include "stdAfx.h"
-#include "embedded_editor_hud.h"
+
 #include "../../XR_3DA/device.h"
 #include "../player_hud.h"
+#include "embedded_editor_hud.h"
 #include "embedded_editor_helper.h"
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <addons/ImGuizmo/ImGuizmo.h>
+
+XR_DIAG_POP();
 
 void ShowHudEditor(bool& show)
 {
@@ -64,7 +71,7 @@ void ShowHudEditor(bool& show)
         ImGui::InputFloat3("item_orientation 1", (float*)&item->m_measures.m_item_attach[1], "%.3f");
         ImGui::InputFloat3("fire_point 1", (float*)&item->m_measures.m_fire_point_offset[0], "%.3f");
         ImGui::InputFloat3("fire_point2 1", (float*)&item->m_measures.m_fire_point2_offset[0], "%.3f");
-        ImGui::InputFloat3("shell_point 1", (float*)&item->m_measures.m_shell_point_offset[0], "%.3f" );
+        ImGui::InputFloat3("shell_point 1", (float*)&item->m_measures.m_shell_point_offset[0], "%.3f");
 
         ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, mode, ImGuizmo::WORLD, (float*)&item->m_attach_offset);
 

@@ -120,7 +120,7 @@ void CKinematics::IBoneInstances_Destroy()
     if (bone_instances)
     {
         xr_free(bone_instances);
-        bone_instances = NULL;
+        bone_instances = nullptr;
     }
 }
 
@@ -136,8 +136,8 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     // Msg				("skeleton: %s",N);
     inherited::Load(N, data, dwFlags);
 
-    pUserData = NULL;
-    m_lod = NULL;
+    pUserData = nullptr;
+    m_lod = nullptr;
     // loading lods
 
     IReader* LD = data->open_chunk(OGF_S_LODS);
@@ -148,15 +148,14 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
             string_path lod_name;
             LD->r_string(lod_name, sizeof(lod_name));
             //.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
-            m_lod = (dxRender_Visual*)RImplementation.model_CreateChild(lod_name, NULL);
+            m_lod = (dxRender_Visual*)RImplementation.model_CreateChild(lod_name, nullptr);
 
             if (CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod))
-            {
                 lod_kinematics->m_is_original_lod = true;
-            }
 
             VERIFY3(m_lod, "Cant create LOD model for", N);
         }
+
         LD->close();
     }
 
@@ -184,7 +183,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 
     // Globals
     bones = xr_new<vecBones>();
-    bone_instances = NULL;
+    bone_instances = nullptr;
 
     // Load bones
 #pragma todo("container is created in stack!")
@@ -313,9 +312,9 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     }
 
     // reset update_callback
-    Update_Callback = NULL;
+    Update_Callback = nullptr;
     // reset update frame
-    wm_frame = u32(-1);
+    wm_frame = std::numeric_limits<u32>::max();
 
     LL_Validate();
 }
@@ -402,7 +401,7 @@ void CKinematics::Copy(dxRender_Visual* P)
 
     CalculateBones_Invalidate();
 
-    m_lod = (pFrom->m_lod) ? (dxRender_Visual*)RImplementation.model_Duplicate(pFrom->m_lod) : 0;
+    m_lod = (pFrom->m_lod) ? (dxRender_Visual*)RImplementation.model_Duplicate(pFrom->m_lod) : nullptr;
 }
 
 void CKinematics::CalculateBones_Invalidate()
@@ -414,11 +413,14 @@ void CKinematics::CalculateBones_Invalidate()
 void CKinematics::Spawn()
 {
     inherited::Spawn();
+
     // bones
     for (u32 i = 0; i < bones->size(); i++)
         bone_instances[i].construct();
-    Update_Callback = NULL;
+
+    Update_Callback = nullptr;
     CalculateBones_Invalidate();
+
     // wallmarks
     ClearWallmarks();
     Visibility_Invalidate();
@@ -722,7 +724,7 @@ void CKinematics::CalculateWallmarks(bool hud)
         }
         if (need_remove)
         {
-            auto new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const auto& x) { return x == 0; });
+            auto new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const auto& x) { return !x; });
             wallmarks.erase(new_end, wallmarks.end());
         }
     }
@@ -735,7 +737,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*&
     VERIFY2(bones, "Invalid visual. Bones already released.");
     VERIFY2(bone_instances, "Invalid visual. bone_instances already deleted.");
 
-    if ((wm == 0) || (0 == bones) || (0 == bone_instances))
+    if (!wm || !bones || !bone_instances)
         return;
 
     // skin vertices

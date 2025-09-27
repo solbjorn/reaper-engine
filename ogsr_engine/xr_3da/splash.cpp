@@ -62,10 +62,10 @@ static IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
 
 HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
 {
-    WNDCLASS wc = {0};
+    WNDCLASS wc{};
     wc.lpfnWndProc = DefWindowProc;
     wc.hInstance = hInstance;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.lpszClassName = c_szSplashClass;
     RegisterClass(&wc);
 
@@ -99,8 +99,8 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
         splashHeight = img.GetHeight();
     }
 
-    const HWND hwndOwner = CreateWindow(c_szSplashClass, NULL, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-    const HWND hWnd = CreateWindowEx(WS_EX_LAYERED, c_szSplashClass, NULL, WS_POPUP, 0, 0, 0, 0, hwndOwner, NULL, hInstance, NULL);
+    const HWND hwndOwner = CreateWindow(c_szSplashClass, nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+    const HWND hWnd = CreateWindowEx(WS_EX_LAYERED, c_szSplashClass, nullptr, WS_POPUP, 0, 0, 0, 0, hwndOwner, nullptr, hInstance, nullptr);
 
     if (!hWnd)
         return nullptr;

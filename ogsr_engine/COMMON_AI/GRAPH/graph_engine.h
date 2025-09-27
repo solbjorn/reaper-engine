@@ -45,7 +45,7 @@ public:
     using CAlgorithm = CAStar<_dist_type, CPriorityQueue, CVertexManager, CVertexAllocator, true, AlgorithmStorage>;
 
     // solver algorithm
-    static constexpr size_t SolverMaxVertexCount = 16 * 1024;
+    static constexpr u32 SolverMaxVertexCount{16 * 1024};
     using CSolverPriorityQueue = CDataStorageBinaryHeap;
     using CSolverVertexManager = CVertexManagerHashFixed<u32, _solver_index_type, 256, 8 * 1024>;
     using CSolverVertexAllocator = CVertexAllocatorFixed<8 * 1024>;

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_sound_data.h"
 #include "sound_user_data_visitor.h"
 #include "ai/stalker/ai_stalker.h"
@@ -21,4 +22,4 @@ void CStalkerSoundData::accept(CSound_UserDataVisitor* visitor)
     visitor->visit(this);
 }
 
-void CStalkerSoundData::invalidate() { m_object = 0; }
+void CStalkerSoundData::invalidate() { m_object = nullptr; }

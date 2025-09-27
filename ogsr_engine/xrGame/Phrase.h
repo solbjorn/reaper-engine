@@ -30,7 +30,7 @@ public:
     int GoodwillLevel() const { return m_iGoodwillLevel; }
 
     bool IsDummy() const;
-    CPhraseScript* GetPhraseScript() { return &m_PhraseScript; };
+    CPhraseScript* GetPhraseScript() { return &m_PhraseScript; }
 
 protected:
     // уникальный индекс в списке фраз диалога

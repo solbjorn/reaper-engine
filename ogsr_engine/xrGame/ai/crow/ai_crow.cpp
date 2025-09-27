@@ -247,7 +247,6 @@ void CAI_Crow::state_Flying(float fdt)
     Position().mad(vOldPosition, vDirection, fSpeed * fdt);
 }
 
-static Fvector vV = {0, 0, 0};
 void CAI_Crow::state_DeathFall()
 {
     Fvector tAcceleration;
@@ -272,7 +271,8 @@ void CAI_Crow::Die(CObject* who)
     processing_activate(); // enable UpdateCL for dead crows - especially for physics support
                            // and do it especially before Creating physics shell or it definitely throws processing enable/disable calls: underflow
     CreateSkeleton();
-};
+}
+
 void CAI_Crow::UpdateWorkload(float fdt)
 {
     if (o_workload_frame == Device.dwFrame)
@@ -285,6 +285,7 @@ void CAI_Crow::UpdateWorkload(float fdt)
     case eDeathFall: state_DeathFall(); break;
     }
 }
+
 void CAI_Crow::UpdateCL()
 {
     inherited::UpdateCL();

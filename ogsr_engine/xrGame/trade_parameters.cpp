@@ -7,16 +7,20 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "trade_parameters.h"
 
-CTradeParameters* CTradeParameters::g_default_instance = 0;
+CTradeParameters* CTradeParameters::g_default_instance{};
 
 void CTradeParameters::process(action_show, CInifile& ini_file, const shared_str& section)
 {
     VERIFY(ini_file.section_exist(section));
     m_show.clear();
+
     CInifile::Sect& S = ini_file.r_section(section);
     for (const auto& I : S.Data)
+    {
         if (!I.second.size())
             m_show.disable(I.first);
+    }
 }

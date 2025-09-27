@@ -11,7 +11,7 @@ namespace PAPI
     virtual void Load(IReader& F); \
     virtual void Save(IWriter& F); \
     virtual void Execute(ParticleEffect* pe, const float dt); \
-    virtual void Transform(const Fmatrix& m);
+    virtual void Transform(const Fmatrix& m)
 
 struct PAAvoid : public ParticleAction
 {
@@ -388,7 +388,7 @@ public:
 
     _METHODS;
 };
-}; // namespace PAPI
+} // namespace PAPI
 
 //---------------------------------------------------------------------------
 #endif

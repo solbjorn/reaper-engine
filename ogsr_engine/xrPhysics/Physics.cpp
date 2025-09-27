@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
@@ -7,22 +8,24 @@
 #include "gameobject.h"
 #include "PhysicsShellHolder.h"
 #include "PHCollideValidator.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 ///////////////////////////////////////////////////////////////
-#pragma warning(disable : 4995)
+
 #include "ode/src/collision_kernel.h"
 #include "ode/src/joint.h"
 #include "ode/src/objects.h"
-#pragma warning(default : 4995)
 
 extern CPHWorld* ph_world;
 ///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
+
 // union dInfBytes dInfinityValue = {{0,0,0x80,0x7f}};
-PhysicsStepTimeCallback* physics_step_time_callback = 0;
+PhysicsStepTimeCallback* physics_step_time_callback{};
 
 const dReal default_w_limit = 9.8174770f; //(M_PI/16.f/(fixed_step=0.02f));
 const dReal default_l_limit = 150.f; //(3.f/fixed_step=0.02f);
@@ -116,8 +119,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
         bool pushing_neg = false;
         bool do_collide = true;
 
-        dxGeomUserData* usr_data_1 = NULL;
-        dxGeomUserData* usr_data_2 = NULL;
+        dxGeomUserData* usr_data_1{};
+        dxGeomUserData* usr_data_2{};
         u16 material_idx_1 = 0;
         u16 material_idx_2 = 0;
 
@@ -262,14 +265,17 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
         if (do_collide && collided_contacts < MAX_CONTACTS)
         {
             ++collided_contacts;
+
 #ifdef DEBUG
             DBG_DrawContact(c);
 #endif
-            dJointID contact_joint = dJointCreateContact(0, jointGroup, &c);
+
+            dJointID contact_joint = dJointCreateContact(nullptr, jointGroup, &c);
             world->ConnectJoint(contact_joint);
             dJointAttach(contact_joint, dGeomGetBody(g1), dGeomGetBody(g2));
         }
     }
+
     return collided_contacts;
 }
 

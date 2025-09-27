@@ -13,7 +13,7 @@ CPHCharacter::CPHCharacter() : CPHDisablingTranslational()
 {
     m_params.acceleration = 0.001f;
     m_params.velocity = 0.0001f;
-    m_body = NULL;
+    m_body = nullptr;
     m_safe_velocity[0] = 0.f;
     m_safe_velocity[1] = 0.f;
     m_safe_velocity[2] = 0.f;
@@ -21,8 +21,8 @@ CPHCharacter::CPHCharacter() : CPHDisablingTranslational()
     m_new_restriction_type = m_restriction_type = rtNone;
     b_actor_movable = true;
     p_lastMaterialIDX = &lastMaterialIDX;
-    lastMaterialIDX = u16(-1);
-    m_creation_step = u64(-1);
+    lastMaterialIDX = std::numeric_limits<u16>::max();
+    m_creation_step = std::numeric_limits<u64>::max();
     b_in_touch_resrtrictor = false;
     m_current_object_radius = -1.f;
 }
@@ -84,14 +84,12 @@ void CPHCharacter::set_State(const SPHNetState& state)
 
     if (!b_exist)
         return;
+
     if (state.enabled)
-    {
         Enable();
-    };
     if (!state.enabled)
-    {
         Disable();
-    };
+
     VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE WAS SET");
 }
 
@@ -158,14 +156,14 @@ void virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGam
 
     c.surface.mu = 0;
     c.surface.soft_cfm = 0.01f;
-    dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c); // dJointCreateContactSpecial(0, ContactGroup, &c);
+    dJointID contact_joint = dJointCreateContact(nullptr, ContactGroup, &c); // dJointCreateContactSpecial(0, ContactGroup, &c);
     CPHObject* obj = (CPHObject*)my_data->callback_data;
     VERIFY(obj);
 
     obj->Island().DActiveIsland()->ConnectJoint(contact_joint);
 
     if (bo1)
-        dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), 0);
+        dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), nullptr);
     else
-        dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
+        dJointAttach(contact_joint, nullptr, dGeomGetBody(c.geom.g2));
 }

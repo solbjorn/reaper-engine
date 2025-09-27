@@ -4,62 +4,60 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "BastArtifact.h"
 #include "PhysicsShell.h"
 #include "extendedgeom.h"
 #include "ParticlesObject.h"
 
-CBastArtefact::CBastArtefact(void)
+CBastArtefact::CBastArtefact()
 {
     m_fImpulseThreshold = 10.f;
 
     m_fRadius = 10.f;
     m_fStrikeImpulse = 15.f;
 
-    m_bStrike = false;
-    m_AttakingEntity = NULL;
-
     m_fEnergy = 0.f;
     m_fEnergyMax = m_fStrikeImpulse * 100.f;
     m_fEnergyDecreasePerTime = 1.1f;
 }
 
-CBastArtefact::~CBastArtefact(void) {}
+CBastArtefact::~CBastArtefact() {}
 
-//вызывается при столкновении мочалки с чем-то
+// вызывается при столкновении мочалки с чем-то
 void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
-    dxGeomUserData* l_pUD1 = NULL;
-    dxGeomUserData* l_pUD2 = NULL;
+    dxGeomUserData* l_pUD1{};
+    dxGeomUserData* l_pUD2{};
     l_pUD1 = retrieveGeomUserData(c.geom.g1);
     l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
     if (!l_pUD1 || !l_pUD2)
         return;
 
-    //определить кто есть кто, из двух столкнувшихся предметов
-    CBastArtefact* pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : NULL;
+    // определить кто есть кто, из двух столкнувшихся предметов
+    CBastArtefact* pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : nullptr;
     if (!pBastArtefact)
-        pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : NULL;
+        pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : nullptr;
     if (!pBastArtefact)
         return;
     if (!pBastArtefact->IsAttacking())
         return;
 
-    CEntityAlive* pEntityAlive = NULL;
-    pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : NULL;
+    CEntityAlive* pEntityAlive{};
+    pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : nullptr;
     if (!pEntityAlive)
-        pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : NULL;
+        pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : nullptr;
 
     pBastArtefact->BastCollision(pEntityAlive);
 }
 
 void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
 {
-    //попали во что-то живое
+    // попали во что-то живое
     if (pEntityAlive && pEntityAlive->g_Alive())
     {
-        m_AttakingEntity = NULL;
+        m_AttakingEntity = nullptr;
         m_pHitedEntity = pEntityAlive;
 
         if (m_AliveList.size() > 1)
@@ -86,8 +84,8 @@ BOOL CBastArtefact::net_Spawn(CSE_Abstract* DC)
         return FALSE;
 
     m_bStrike = false;
-    m_AttakingEntity = NULL;
-    m_pHitedEntity = NULL;
+    m_AttakingEntity = nullptr;
+    m_pHitedEntity = nullptr;
     m_AliveList.clear();
 
     return TRUE;
@@ -98,8 +96,8 @@ void CBastArtefact::net_Destroy()
     inherited::net_Destroy();
 
     m_bStrike = false;
-    m_AttakingEntity = NULL;
-    m_pHitedEntity = NULL;
+    m_AttakingEntity = nullptr;
+    m_pHitedEntity = nullptr;
     m_AliveList.clear();
 }
 
@@ -131,7 +129,7 @@ void CBastArtefact::UpdateCLChild()
     // Log						("--- A - CBastArtefact",*cName());
     // Log						("--- A - CBastArtefact",renderable.xform);
 
-    //современем энергия по немногу тоже уменьшается
+    // современем энергия по немногу тоже уменьшается
     if (m_fEnergy > 0)
         m_fEnergy -= m_fEnergyDecreasePerTime * Device.fTimeDelta;
 
@@ -139,10 +137,10 @@ void CBastArtefact::UpdateCLChild()
     {
         if (m_bStrike)
         {
-            //выбрать жертву, если она еще не выбрана
-            if (!m_AliveList.empty() && m_AttakingEntity == NULL)
+            // выбрать жертву, если она еще не выбрана
+            if (!m_AliveList.empty() && !m_AttakingEntity)
             {
-                CEntityAlive* pEntityToHit = NULL;
+                CEntityAlive* pEntityToHit{};
                 if (m_AliveList.size() > 1)
                 {
                     do
@@ -166,7 +164,7 @@ void CBastArtefact::UpdateCLChild()
             {
                 m_fEnergy -= m_fStrikeImpulse;
 
-                //бросить артефакт на выбранную цель
+                // бросить артефакт на выбранную цель
                 Fvector dir;
                 m_AttakingEntity->Center(dir);
                 dir.sub(this->Position());
@@ -176,7 +174,7 @@ void CBastArtefact::UpdateCLChild()
             }
             else
             {
-                m_AttakingEntity = NULL;
+                m_AttakingEntity = nullptr;
                 m_bStrike = false;
             }
         }
@@ -196,7 +194,9 @@ void CBastArtefact::UpdateCLChild()
         }
     }
     else if (H_Parent())
+    {
         XFORM().set(H_Parent()->XFORM());
+    }
 }
 
 // void CBastArtefact::Hit(float P, Fvector &dir,
@@ -210,14 +210,14 @@ void CBastArtefact::Hit(SHit* pHDS)
     if (HDS.impulse > m_fImpulseThreshold && !m_AliveList.empty())
     {
         m_bStrike = true;
-        m_AttakingEntity = m_pHitedEntity = NULL;
+        m_AttakingEntity = m_pHitedEntity = nullptr;
 
         m_fEnergy += m_fStrikeImpulse * HDS.impulse;
 
         if (m_fEnergy > m_fEnergyMax)
             m_fEnergy = m_fEnergyMax;
 
-        //чтоб выстрел не повлиял на траекторию полета артефакта
+        // чтоб выстрел не повлиял на траекторию полета артефакта
         HDS.impulse = 0;
     }
 
@@ -225,7 +225,7 @@ void CBastArtefact::Hit(SHit* pHDS)
     inherited::Hit(&HDS);
 }
 
-//объект можно поднять только в спокойном состоянии
+// объект можно поднять только в спокойном состоянии
 bool CBastArtefact::Useful() const
 {
     if (m_fEnergy > 0)
@@ -269,5 +269,5 @@ void CBastArtefact::setup_physic_shell()
     inherited::setup_physic_shell();
     m_pPhysicsShell->set_PhysicsRefObject(this);
     m_pPhysicsShell->set_ObjectContactCallback(ObjectContactCallback);
-    m_pPhysicsShell->set_ContactCallback(NULL);
+    m_pPhysicsShell->set_ContactCallback(nullptr);
 }

@@ -38,7 +38,7 @@ public:
     template <typename T>
     struct CPool
     {
-        CPool(u32 max_object_count) : m_max_object_count(max_object_count), m_free(0) {}
+        CPool(u32 max_object_count) : m_max_object_count{max_object_count} {}
 
         T* get_object()
         {
@@ -56,7 +56,7 @@ public:
         {
             node->next() = m_free;
             m_free = node;
-            node = 0;
+            node = nullptr;
         }
 
         void createBlock()
@@ -65,7 +65,7 @@ public:
                 p->~T();
                 xr_free(p);
             });
-            T* B = 0;
+            T* B{};
             T* I = m_blocks.back().get();
             T* E = I + m_max_object_count;
             for (; I != E; B = I, ++I)
@@ -74,7 +74,7 @@ public:
         }
 
         xr_vector<std::unique_ptr<T, void (*)(T*)>> m_blocks;
-        T* m_free;
+        T* m_free{};
         u32 m_max_object_count;
     };
 
@@ -82,13 +82,13 @@ public:
     typedef CPool<CListItem> CListItemStorage;
 
 protected:
+    CQuadNode* m_root{};
+    CQuadNodeStorage* m_nodes;
+    CListItemStorage* m_list_items;
+    size_t m_leaf_count{};
     Fvector m_center;
     float m_radius;
     int m_max_depth;
-    CQuadNode* m_root;
-    CQuadNodeStorage* m_nodes;
-    CListItemStorage* m_list_items;
-    size_t m_leaf_count;
 
 protected:
     IC u32 neighbour_index(const Fvector& position, Fvector& center, float distance) const;

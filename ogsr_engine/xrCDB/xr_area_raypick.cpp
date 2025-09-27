@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xr_area.h"
 
 #include "../xr_3da/xr_collide_form.h"
@@ -106,12 +107,13 @@ BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 
     return _res;
 }
+
 BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
 {
     collide::rq_results r_temp;
     xr_vector<ISpatial*> r_spatial;
 
-    R.O = 0;
+    R.O = nullptr;
     R.range = range;
     R.element = -1;
     // static test
@@ -133,10 +135,12 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
         for (auto* spatial : r_spatial)
         {
             CObject* collidable = spatial->dcast_CObject();
-            if (0 == collidable)
+            if (!collidable)
                 continue;
+
             if (collidable == ignore_object)
                 continue;
+
             ECollisionFormType tp = collidable->collidable.model->Type();
             if (((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((tgt & rqtShape) && (tp == cftShape)))
             {
@@ -193,7 +197,7 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
         xrc.ray_query(R.flags, &Static, R.start, R.dir, R.range);
 
         for (auto& i : *xrc.r_get())
-            r_temp.append_result(rq_result().set(0, i.range, i.id));
+            r_temp.append_result(rq_result().set(nullptr, i.range, i.id));
     }
     // Test dynamic
     if (R.tgt & d_mask)
@@ -203,10 +207,12 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
         for (auto& p_spatial : r_spatial)
         {
             CObject* collidable = p_spatial->dcast_CObject();
-            if (0 == collidable)
+            if (!collidable)
                 continue;
+
             if (collidable == ignore_object)
                 continue;
+
             ICollisionForm* cform = collidable->collidable.model;
             ECollisionFormType tp = cform->Type();
             if (((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((R.tgt & rqtShape) && (tp == cftShape)))
@@ -255,12 +261,13 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
     rq_target d_mask = rq_target(((R.tgt & rqtObject) ? rqtObject : rqtNone) | ((R.tgt & rqtObstacle) ? rqtObstacle : rqtNone) | ((R.tgt & rqtShape) ? rqtShape : rqtNone));
     u32 d_flags = STYPE_COLLIDEABLE | ((R.tgt & rqtObstacle) ? STYPE_OBSTACLE : 0) | ((R.tgt & rqtShape) ? STYPE_SHAPE : 0);
 
-    s_res.set(0, s_rd.range, -1);
+    s_res.set(nullptr, s_rd.range, -1);
     do
     {
         if ((R.tgt & s_mask) && sd_test.is(s_mask) && (next_test & s_mask))
         {
-            s_res.set(0, s_rd.range, -1);
+            s_res.set(nullptr, s_rd.range, -1);
+
             // Test static model
             if (s_rd.range > EPS)
             {
@@ -296,16 +303,19 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
                 for (auto& p_spatial : r_spatial)
                 {
                     CObject* collidable = p_spatial->dcast_CObject();
-                    if (0 == collidable)
+                    if (!collidable)
                         continue;
+
                     if (collidable == ignore_object)
                         continue;
+
                     ICollisionForm* cform = collidable->collidable.model;
                     ECollisionFormType tp = cform->Type();
                     if (((R.tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((R.tgt & rqtShape) && (tp == cftShape)))
                     {
                         if (tb && !tb(d_rd, collidable, user_data))
                             continue;
+
                         cform->_RayQuery(d_rd, r_temp);
                     }
 #ifdef DEBUG

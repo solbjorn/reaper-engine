@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "enemy_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -68,7 +69,13 @@ bool CEnemyManager::useful(const CEntityAlive* entity_alive) const
         (m_object->Position().distance_to(entity_alive->Position()) >= m_max_ignore_distance))
         return (false);
 
-    return (m_useful_callback ? m_useful_callback(m_object->lua_game_object(), entity_alive->lua_game_object()) : true);
+    if (!m_useful_callback)
+        return true;
+
+    if (!m_useful_object)
+        return m_useful_callback(m_object->lua_game_object(), entity_alive->lua_game_object());
+
+    return m_useful_callback(m_object->lua_game_object(), entity_alive->lua_game_object(), m_useful_object);
 }
 
 float CEnemyManager::do_evaluate(const CEntityAlive* object) const { return (m_object->evaluate(this, object)); }
@@ -105,21 +112,21 @@ float CEnemyManager::evaluate(const CEntityAlive* object) const
     if (m_object->memory().visual().visible_now(object))
         penalty -= 1000.f;
 
-        // if object is actor and he/she sees us
-        //	if (actor) {
-        //		if (smart_cast<const CActor*>(object)->memory().visual().visible_now(m_object))
-        //			penalty			-= 900.f;
-        //	}
-        //	else {
-        //		// if object is npc and it sees us
-        //		const CCustomMonster	*monster = smart_cast<const CCustomMonster*>(object);
-        //		if (monster && monster->memory().visual().visible_now(m_object))
-        //			penalty			-= 300.f;
-        //	}
+    // if object is actor and he/she sees us
+    //	if (actor) {
+    //		if (smart_cast<const CActor*>(object)->memory().visual().visible_now(m_object))
+    //			penalty			-= 900.f;
+    //	}
+    //	else {
+    //		// if object is npc and it sees us
+    //		const CCustomMonster	*monster = smart_cast<const CCustomMonster*>(object);
+    //		if (monster && monster->memory().visual().visible_now(m_object))
+    //			penalty			-= 300.f;
+    //	}
 
 #ifdef USE_EVALUATOR
-    ai().ef_storage().non_alife().member_item() = 0;
-    ai().ef_storage().non_alife().enemy_item() = 0;
+    ai().ef_storage().non_alife().member_item() = nullptr;
+    ai().ef_storage().non_alife().enemy_item() = nullptr;
     ai().ef_storage().non_alife().member() = m_object;
     ai().ef_storage().non_alife().enemy() = object;
 
@@ -150,9 +157,11 @@ void CEnemyManager::reload(LPCSTR section)
     m_ignore_monster_threshold = READ_IF_EXISTS(pSettings, r_float, section, "ignore_monster_threshold", 1.f);
     m_max_ignore_distance = READ_IF_EXISTS(pSettings, r_float, section, "max_ignore_distance", 0.f);
     m_last_enemy_time = 0;
-    m_last_enemy = 0;
+    m_last_enemy = nullptr;
     m_last_enemy_change = 0;
-    m_useful_callback.clear();
+
+    m_useful_callback = sol::function{};
+    m_useful_object = sol::object{};
 }
 
 void CEnemyManager::remove_links(CObject* object)
@@ -164,10 +173,10 @@ void CEnemyManager::remove_links(CObject* object)
         m_objects.erase(I);
 
     if (m_last_enemy == object)
-        m_last_enemy = 0;
+        m_last_enemy = nullptr;
 
     if (m_selected == object)
-        m_selected = 0;
+        m_selected = nullptr;
 }
 
 void CEnemyManager::ignore_monster_threshold(const float& ignore_monster_threshold) { m_ignore_monster_threshold = ignore_monster_threshold; }

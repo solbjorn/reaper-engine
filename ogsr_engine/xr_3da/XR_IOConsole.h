@@ -15,7 +15,7 @@ namespace text_editor
 {
 class line_editor;
 class line_edit_control;
-}; // namespace text_editor
+} // namespace text_editor
 
 struct TipString
 {
@@ -89,10 +89,10 @@ protected:
     CGameFont* pFont;
     CGameFont* pFont2;
 
-    FactoryPtr<IUIShader>* m_hShader_back;
+    FactoryPtr<IUIShader>* m_hShader_back{};
 
     POINT m_mouse_pos;
-    bool m_disable_tips;
+    bool m_disable_tips{};
 
 private:
     vecHistory m_cmd_history;

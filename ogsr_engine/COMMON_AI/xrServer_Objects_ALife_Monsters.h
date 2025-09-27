@@ -57,7 +57,7 @@ void SetRank(CHARACTER_RANK_VALUE val);
 #endif
 
 shared_str m_sCharacterProfile;
-shared_str m_SpecificCharacter;
+shared_str m_SpecificCharacter{};
 
 // буферный вектор проверенных персонажей
 xr_vector<shared_str> m_CheckedCharacters;
@@ -70,8 +70,8 @@ virtual ~CSE_ALifeTraderAbstract();
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
 virtual CSE_Abstract* init();
-virtual CSE_Abstract* cast_abstract() { return 0; };
-virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
+virtual CSE_Abstract* cast_abstract() { return nullptr; }
+virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; }
 // end of the virtual inheritance dependant code
 
 #ifdef XRGAME_EXPORTS
@@ -105,9 +105,9 @@ virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, con
 #ifdef DEBUG
 virtual bool match_configuration() const;
 #endif
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
-virtual CSE_ALifeTrader* cast_trader() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; }
+virtual CSE_ALifeTrader* cast_trader() { return this; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeTrader);
 
@@ -140,8 +140,8 @@ virtual ~CSE_ALifeAnomalousZone();
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeAnomalousZone* cast_anomalous_zone() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeAnomalousZone* cast_anomalous_zone() { return this; }
 virtual u32 ef_anomaly_type() const;
 virtual u32 ef_weapon_type() const;
 virtual u32 ef_creature_type() const;
@@ -220,7 +220,7 @@ virtual bool __can_switch_offline() const;
 virtual u32 ef_creature_type() const;
 virtual u32 ef_weapon_type() const;
 virtual u32 ef_detector_type() const;
-virtual CSE_ALifeCreatureAbstract* cast_creature_abstract() { return this; };
+virtual CSE_ALifeCreatureAbstract* cast_creature_abstract() { return this; }
 #ifdef XRGAME_EXPORTS
 virtual void __on_death(CSE_Abstract* killer);
 void on_death(CSE_Abstract* killer);
@@ -274,9 +274,9 @@ IC float g_MaxHealth() const { return m_fMaxHealthValue; }
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeSchedulable* cast_schedulable() { return this; };
-virtual CSE_ALifeMonsterAbstract* cast_monster_abstract() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeSchedulable* cast_schedulable() { return this; }
+virtual CSE_ALifeMonsterAbstract* cast_monster_abstract() { return this; }
 
 IC CALifeMonsterBrain& brain() const
 {
@@ -298,7 +298,7 @@ virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& 
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
 virtual bool bfActive();
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
-virtual void vfDetachAll(bool bFictitious = false) {};
+virtual void vfDetachAll(bool bFictitious = false) {}
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 virtual void __on_register();
@@ -309,7 +309,7 @@ virtual bool redundant() const;
 virtual bool need_update(CSE_ALifeDynamicObject* object);
 
 private:
-CALifeMonsterBrain* m_brain;
+CALifeMonsterBrain* m_brain{};
 
 public:
 SERVER_ENTITY_DECLARE_END
@@ -354,8 +354,8 @@ virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, con
 #ifdef DEBUG
 virtual bool match_configuration() const;
 #endif
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreatureActor);
 
@@ -438,9 +438,9 @@ virtual ~CSE_ALifeHumanAbstract();
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; };
-virtual CSE_ALifeHumanAbstract* cast_human_abstract() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeTraderAbstract* cast_trader_abstract() { return this; }
+virtual CSE_ALifeHumanAbstract* cast_human_abstract() { return this; }
 virtual bool natural_weapon() const { return false; }
 virtual bool natural_detector() const { return false; }
 IC CALifeHumanBrain& brain() const
@@ -493,9 +493,9 @@ virtual ~CSE_ALifeOnlineOfflineGroup();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
 virtual CSE_Abstract* init();
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeSchedulable* cast_schedulable() { return this; };
-virtual CSE_ALifeOnlineOfflineGroup* cast_online_offline_group() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeSchedulable* cast_schedulable() { return this; }
+virtual CSE_ALifeOnlineOfflineGroup* cast_online_offline_group() { return this; }
 
 public:
 typedef CSE_ALifeHumanStalker MEMBER;
@@ -505,7 +505,6 @@ private:
 MEMBERS m_members;
 
 #ifdef XRGAME_EXPORTS
-
 private:
 CALifeOnlineOfflineGroupBrain* m_brain{};
 
@@ -532,7 +531,7 @@ virtual void switch_offline();
 virtual bool redundant() const;
 ALife::_OBJECT_ID commander_id();
 #else
-virtual void update() {};
+virtual void update() {}
 #endif
 
 SERVER_ENTITY_DECLARE_END

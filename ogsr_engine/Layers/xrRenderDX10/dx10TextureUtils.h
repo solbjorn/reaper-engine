@@ -1,6 +1,5 @@
 #ifndef dx10TextureUtils_included
 #define dx10TextureUtils_included
-#pragma once
 
 namespace dx10TextureUtils
 {

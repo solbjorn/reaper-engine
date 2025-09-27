@@ -16,19 +16,20 @@ class CAttachableItem : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CAttachableItem);
 
 private:
-    CInventoryItem* m_item;
+    CInventoryItem* m_item{};
     shared_str m_bone_name;
     Fmatrix m_offset;
     u16 m_bone_id{};
-    bool m_enabled;
-//	bool						m_auto_attach;
+    bool m_enabled{true};
+
 #ifdef DEBUG
-    bool m_valid;
+    bool m_valid{};
 #endif
 
 public:
     IC CAttachableItem();
     virtual ~CAttachableItem();
+
     virtual DLL_Pure* _construct();
     virtual CAttachableItem* cast_attachable_item() { return this; }
     virtual void reload(LPCSTR section);

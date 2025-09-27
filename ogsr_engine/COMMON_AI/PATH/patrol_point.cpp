@@ -128,7 +128,7 @@ void CPatrolPoint::load(IReader& stream)
 #endif
 }
 
-void CPatrolPoint::save(IWriter& stream)
+void CPatrolPoint::save(IWriter& stream) const
 {
     save_data(m_name, stream);
     save_data(m_position, stream);

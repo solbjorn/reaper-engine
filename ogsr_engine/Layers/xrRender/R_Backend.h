@@ -241,19 +241,19 @@ public:
 
     ICF void set_Format(SDeclaration* _decl);
 
-    ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = 0);
+    ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = nullptr);
     ICF void set_PS(ref_ps& _ps) { set_PS(_ps->ps, _ps->cName.c_str()); }
 
-    ICF void set_GS(ID3DGeometryShader* _gs, LPCSTR _n = 0);
+    ICF void set_GS(ID3DGeometryShader* _gs, LPCSTR _n = nullptr);
     ICF void set_GS(ref_gs& _gs) { set_GS(_gs->gs, _gs->cName.c_str()); }
 
-    ICF void set_HS(ID3D11HullShader* _hs, LPCSTR _n = 0);
+    ICF void set_HS(ID3D11HullShader* _hs, LPCSTR _n = nullptr);
     ICF void set_HS(ref_hs& _hs) { set_HS(_hs->sh, _hs->cName.c_str()); }
 
-    ICF void set_DS(ID3D11DomainShader* _ds, LPCSTR _n = 0);
+    ICF void set_DS(ID3D11DomainShader* _ds, LPCSTR _n = nullptr);
     ICF void set_DS(ref_ds& _ds) { set_DS(_ds->sh, _ds->cName.c_str()); }
 
-    ICF void set_CS(ID3D11ComputeShader* _cs, LPCSTR _n = 0);
+    ICF void set_CS(ID3D11ComputeShader* _cs, LPCSTR _n = nullptr);
     ICF void set_CS(ref_cs& _cs) { set_CS(_cs->sh, _cs->cName.c_str()); }
 
     ICF bool is_TessEnabled();
@@ -262,7 +262,7 @@ public:
     ICF void set_VS(SVS* _vs);
 
 protected: //	In DX10 we need input shader signature which is stored in ref_vs
-    ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = 0);
+    ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);
 
 public:
     ICF void set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride);
@@ -397,7 +397,7 @@ public:
     void dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
     void dbg_DrawEllipse(Fmatrix& T, u32 C);
 
-    CBackend() { Invalidate(); };
+    CBackend() { Invalidate(); }
 
 private:
     // Debug Draw

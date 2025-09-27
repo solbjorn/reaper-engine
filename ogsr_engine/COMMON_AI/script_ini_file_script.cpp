@@ -15,16 +15,16 @@ std::tuple<bool, xr_string, xr_string> r_line(CScriptIniFile* self, LPCSTR S, in
     THROW3(self->section_exist(S), "Cannot find section", S);
     THROW2((int)self->line_count(S) > L, "Invalid line number");
 
-    LPCSTR n, v;
+    LPCSTR n{}, v{};
     bool result = !!self->r_line(S, L, &n, &v);
 
-    return std::tuple<bool, xr_string, xr_string>(result, n, v);
+    return std::tuple<bool, xr_string, xr_string>(result, n ?: "", v ?: "");
 }
 
-void iterate_sections(CScriptIniFile* self, const luabind::functor<void>& functor)
+static void iterate_sections(CScriptIniFile& self, sol::function func)
 {
-    for (const auto& it : self->sections())
-        functor(it.first.c_str());
+    for (const auto& it : self.sections())
+        func(it.first.c_str());
 }
 
 CScriptIniFile* reload_system_ini()

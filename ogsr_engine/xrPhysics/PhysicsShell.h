@@ -33,14 +33,12 @@ typedef u32 CGID;
 
 struct physicsBone
 {
-    CPhysicsJoint* joint;
-    CPhysicsElement* element;
-    physicsBone()
-    {
-        joint = NULL;
-        element = NULL;
-    }
+    CPhysicsJoint* joint{};
+    CPhysicsElement* element{};
+
+    physicsBone() = default;
 };
+
 DEFINE_MAP(u16, physicsBone, BONE_P_MAP, BONE_P_PAIR_IT);
 typedef const BONE_P_MAP ::iterator BONE_P_PAIR_CIT;
 
@@ -128,7 +126,7 @@ public:
     virtual void add_Shape(const SBoneShape& shape, const Fmatrix& offset) = 0;
     virtual CODEGeom* last_geom() = 0;
     virtual bool has_geoms() = 0;
-    virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = NULL) = 0;
+    virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = nullptr) = 0;
     virtual void set_ParentElement(CPhysicsElement* p) = 0;
     virtual CPhysicsElement* get_ParentElement() = 0;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +272,7 @@ public:
     IC IKinematics* PKinematics() { return m_pKinematics; }
 
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
-    virtual IPhysicsElement& IElement(u16 index) override { return *get_ElementByStoreOrder(index); };
+    virtual IPhysicsElement& IElement(u16 index) override { return *get_ElementByStoreOrder(index); }
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     virtual CPhysicsShellAnimator* PPhysicsShellAnimator() = 0;
@@ -350,10 +348,10 @@ public:
     virtual void SetGlTransformDynamic(const Fmatrix& form) = 0;
     virtual void CollideAll() = 0;
     virtual CPhysicsElement* NearestToPoint(const Fvector& point) = 0;
-    virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) = 0;
-    virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) = 0;
+    virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr) = 0;
+    virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr) = 0;
     virtual void Build(bool disable = false) = 0;
-    virtual void SetMaxAABBRadius(float size) {};
+    virtual void SetMaxAABBRadius(float size) {}
     virtual void AddTracedGeom(u16 element = 0, u16 geom = 0) = 0;
     virtual void SetAllGeomTraced() = 0;
     virtual void RunSimulation(bool place_current_forms = true) = 0;

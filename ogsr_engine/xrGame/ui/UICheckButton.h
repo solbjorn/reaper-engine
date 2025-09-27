@@ -8,8 +8,8 @@ class CUICheckButton : public CUI3tButton, public CUIOptionsItem
     RTTI_DECLARE_TYPEINFO(CUICheckButton, CUI3tButton, CUIOptionsItem);
 
 public:
-    CUICheckButton(void);
-    virtual ~CUICheckButton(void);
+    CUICheckButton();
+    virtual ~CUICheckButton();
 
     virtual void Update();
 
@@ -36,6 +36,6 @@ public:
 
 private:
     bool b_backup_val{};
-    CUIWindow* m_pDependControl;
+    CUIWindow* m_pDependControl{};
 };
 XR_SOL_BASE_CLASSES(CUICheckButton);

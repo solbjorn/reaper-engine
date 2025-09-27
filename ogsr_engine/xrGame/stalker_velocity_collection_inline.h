@@ -58,9 +58,10 @@ inline float CStalkerVelocityCollection::velocity(const MonsterSpace::EMentalSta
         VERIFY(movement_type == MonsterSpace::eMovementTypeRun);
         VERIFY(movement_direction == MonsterSpace::eMovementDirectionForward);
         return (m_panic);
-    };
+    }
     default: NODEFAULT;
-    };
+    }
+
 #ifdef DEBUG
     volatile float a = 0.f;
     volatile float b = 0.f;

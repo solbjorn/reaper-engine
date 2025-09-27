@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_death_planner.h"
 #include "stalker_death_actions.h"
 #include "stalker_decision_space.h"
@@ -16,7 +17,7 @@
 
 using namespace StalkerDecisionSpace;
 
-CStalkerDeathPlanner::CStalkerDeathPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerDeathPlanner::CStalkerDeathPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 CStalkerDeathPlanner::~CStalkerDeathPlanner() {}
 
@@ -34,7 +35,7 @@ void CStalkerDeathPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage)
 void CStalkerDeathPlanner::add_evaluators()
 {
     add_evaluator(eWorldPropertyAlreadyDead, xr_new<CStalkerPropertyEvaluatorConst>(false, "resurrecting"));
-    add_evaluator(eWorldPropertyDead, xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyDead, true, true, "completely dead"));
+    add_evaluator(eWorldPropertyDead, xr_new<CStalkerPropertyEvaluatorMember>(static_cast<CPropertyStorage*>(nullptr), eWorldPropertyDead, true, true, "completely dead"));
 }
 
 void CStalkerDeathPlanner::add_actions()

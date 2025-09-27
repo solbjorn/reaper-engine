@@ -18,12 +18,15 @@
 #include "WeaponKnife.h"
 #include "WeaponBinoculars.h"
 
-constexpr float VEL_MAX = 10.f;
-constexpr float VEL_A_MAX = 10.f;
+namespace
+{
+constexpr float VEL_MAX{10.f};
+constexpr float VEL_A_MAX{10.f};
+} // namespace
 
 #define GetWeaponParam(pWeapon, func_name, def_value) ((pWeapon) ? (pWeapon->func_name) : def_value)
 
-//возвращает текуший разброс стрельбы (в радианах)с учетом движения
+// возвращает текуший разброс стрельбы (в радианах)с учетом движения
 float CActor::GetWeaponAccuracy() const
 {
     CWeapon* W = smart_cast<CWeapon*>(inventory().ActiveItem());
@@ -134,7 +137,8 @@ void CActor::HitSector(CObject* who, CObject* weapon)
             {
                 bShowHitSector = false;
                 if (pWeapon->IsGrenadeLauncherAttached())
-                {}
+                {
+                }
             }
         }
     }
@@ -169,7 +173,7 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
         {
             effector->SetSingleShoot(FALSE);
         }
-    };
+    }
 
     effector->SetActor(this);
     effector->Shot(weapon->camDispersion + weapon->camDispersionInc * float(weapon->ShotsFired()));

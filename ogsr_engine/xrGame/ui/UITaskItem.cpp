@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UITaskItem.h"
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
@@ -14,8 +15,7 @@
 #include "../actor.h"
 #include "../gametaskmanager.h"
 
-CUITaskItem::CUITaskItem(CUIEventsWnd* w) : m_GameTask(NULL), m_TaskObjectiveIdx(u16(-1)), m_EventsWnd(w) {}
-
+CUITaskItem::CUITaskItem(CUIEventsWnd* w) : m_EventsWnd{w} {}
 CUITaskItem::~CUITaskItem() {}
 
 void CUITaskItem::SetGameTask(CGameTask* gt, u16 obj_idx)
@@ -160,7 +160,7 @@ void CUITaskRootItem::OnSwitchDescriptionClicked(CUIWindow*, void*)
     m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 
     m_EventsWnd->SetDescriptionMode(!m_EventsWnd->GetDescriptionMode());
-    OnItemClicked(this, NULL);
+    OnItemClicked(this, nullptr);
 }
 
 void CUITaskRootItem::MarkSelected(bool b) {}
@@ -231,7 +231,7 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
         m_descriptionStatic->SetTextColor(m_accomplished_color);
         break;
     default: NODEFAULT;
-    };
+    }
 }
 
 void CUITaskSubItem::Update()

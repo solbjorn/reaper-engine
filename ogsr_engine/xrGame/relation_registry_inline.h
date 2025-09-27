@@ -59,18 +59,18 @@ ALife::ERelationType RELATION_REGISTRY::GetRelationType(T from, T to) const
 template <typename T>
 CHARACTER_GOODWILL RELATION_REGISTRY::GetAttitude(T from, T to) const
 {
-    //личное отношение from к to
+    // личное отношение from к to
     CHARACTER_GOODWILL presonal_goodwill = GetGoodwill(from->object_id(), to->object_id());
     VERIFY(presonal_goodwill != NO_GOODWILL);
-    //влияние репутации персонажей
+    // влияние репутации персонажей
     CHARACTER_GOODWILL reputation_goodwill = GetReputationRelation(from->Reputation(), to->Reputation());
-    //влияние рангов персонажей
+    // влияние рангов персонажей
     CHARACTER_GOODWILL rank_goodwill = GetRankRelation(from->Rank(), to->Rank());
 
-    //отношение группировки from персонально к to
+    // отношение группировки from персонально к to
     CHARACTER_GOODWILL community_goodwill = GetCommunityGoodwill(from->Community(), to->object_id());
     VERIFY(community_goodwill != NO_GOODWILL);
-    //отношение группировки from к группировки to
+    // отношение группировки from к группировки to
     CHARACTER_GOODWILL community_to_community = GetCommunityRelation(from->Community(), to->Community());
 
     CHARACTER_GOODWILL attitude = presonal_goodwill + reputation_goodwill + rank_goodwill + community_goodwill + community_to_community;

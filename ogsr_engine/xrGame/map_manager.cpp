@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "map_manager.h"
 #include "alife_registry_wrappers.h"
 #include "inventoryowner.h"
@@ -34,7 +35,7 @@ struct FindLocation
     bool operator()(const SLocationKey& key) { return (ml == key.location); }
 };
 
-void SLocationKey::save(IWriter& stream)
+void SLocationKey::save(IWriter& stream) const
 {
     stream.w(&object_id, sizeof(object_id));
 
@@ -129,7 +130,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 {
     if (!Level().CurrentViewEntity())
-        return NULL;
+        return nullptr;
 
     ALife::ERelationType relation = ALife::eRelationTypeFriend;
     CInventoryOwner* pActor = smart_cast<CInventoryOwner*>(Level().CurrentViewEntity());
@@ -222,7 +223,7 @@ CMapLocation* CMapManager::GetMapLocation(const shared_str& spot_type, u16 id)
     if (it != Locations().end())
         return (*it).location;
 
-    return 0;
+    return nullptr;
 }
 
 void CMapManager::Update()

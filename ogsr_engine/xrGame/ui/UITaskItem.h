@@ -20,15 +20,16 @@ public:
     typedef CUIListItem inherited;
 
 protected:
-    CGameTask* m_GameTask;
-    u16 m_TaskObjectiveIdx;
+    CGameTask* m_GameTask{};
+    u16 m_TaskObjectiveIdx{std::numeric_limits<u16>::max()};
+
     void OnItemClicked(CUIWindow*, void*);
     void Init();
 
 public:
     CUITaskItem(CUIEventsWnd* w);
     virtual ~CUITaskItem();
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
 

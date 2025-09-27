@@ -10,7 +10,7 @@
 
 void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int type)
 {
-    hud_snd.m_activeSnd = NULL;
+    hud_snd.m_activeSnd = nullptr;
     hud_snd.sounds.clear();
 
     string256 sound_line;
@@ -38,7 +38,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
     _GetItem(str, 0, buf_str);
     snd.create(buf_str, st_Effect, type);
 
-    if (volume != NULL)
+    if (volume)
     {
         *volume = 1.f;
         if (count > 1)
@@ -49,7 +49,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
         }
     }
 
-    if (delay != NULL)
+    if (delay)
     {
         *delay = 0;
         if (count > 2)
@@ -60,7 +60,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
         }
     }
 
-    if (freq != NULL)
+    if (freq)
     {
         *freq = 1.f;
         if (count > 3)
@@ -79,7 +79,7 @@ void HUD_SOUND::DestroySound(HUD_SOUND& hud_snd)
         (*it).snd.destroy();
     hud_snd.sounds.clear();
 
-    hud_snd.m_activeSnd = NULL;
+    hud_snd.m_activeSnd = nullptr;
 }
 
 void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const CObject* parent, bool b_hud_mode, bool looped, bool overlap)
@@ -103,7 +103,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const COb
 
     if (overlap)
     {
-        hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol , &freq);
+        hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol, &freq);
     }
     else
     {

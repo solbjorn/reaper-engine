@@ -17,7 +17,7 @@ class CMonsterHome
     bool m_aggressive;
 
 public:
-    CMonsterHome(CBaseMonster* obj) { m_object = obj; }
+    CMonsterHome(CBaseMonster* obj) : m_object{obj} {}
 
     void load(LPCSTR line);
     void setup(LPCSTR path_name, float min_radius, float max_radius, bool aggressive = false, float middle_radius = 0.f);
@@ -39,8 +39,8 @@ public:
     Fvector get_home_point();
     float get_min_radius() { return m_radius_min; }
     float get_mid_radius() { return m_radius_middle; }
-    float get_max_radius() { return m_radius_max; };
-    IC bool has_home() { return (m_path != 0 || m_level_vertex_id != u32(-1)); }
+    float get_max_radius() { return m_radius_max; }
+    IC bool has_home() { return !!m_path || m_level_vertex_id != std::numeric_limits<u32>::max(); }
     IC bool is_aggressive() { return m_aggressive; }
     void setup(CPatrolPath*, float, float, bool = false, float = 0.f);
 };

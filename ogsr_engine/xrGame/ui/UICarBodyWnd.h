@@ -19,7 +19,7 @@ class CUICarBodyWnd : public CUIDialogWnd
 
 private:
     typedef CUIDialogWnd inherited;
-    bool m_b_need_update;
+    bool m_b_need_update{};
 
 public:
     CUICarBodyWnd();
@@ -73,7 +73,7 @@ public:
     CUICellItem* m_pCurrentCellItem;
 
     CInventoryOwner* m_pOthersObject;
-    IInventoryBox* m_pInventoryBox;
+    IInventoryBox* m_pInventoryBox{};
 
 protected:
     void UpdateLists();

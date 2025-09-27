@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_planner.h"
 #include "stalker_property_evaluators.h"
 #include "stalker_danger_property_evaluators.h"
@@ -19,9 +20,9 @@
 #include "stalker_danger_planner.h"
 #include "stalker_alife_actions.h"
 #include "stalker_combat_planner.h"
-//#include "stalker_combat_planner_new.h"
+// #include "stalker_combat_planner_new.h"
 
-//#define GOAP_DEBUG
+// #define GOAP_DEBUG
 
 using namespace StalkerDecisionSpace;
 
@@ -133,7 +134,7 @@ void CStalkerPlanner::add_evaluators()
     add_evaluator(eWorldPropertyAlreadyDead, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_already_dead"));
     add_evaluator(eWorldPropertyPuzzleSolved, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_zone_puzzle_solved"));
     add_evaluator(eWorldPropertyAlive, xr_new<CStalkerPropertyEvaluatorAlive>(m_object, "is_alive"));
-    add_evaluator(eWorldPropertyEnemy, xr_new<CStalkerPropertyEvaluatorEnemies>(m_object, "is_there_enemies", CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL));
+    add_evaluator(eWorldPropertyEnemy, xr_new<CStalkerPropertyEvaluatorEnemies>(m_object, "is_there_enemies", gsl::narrow<u32>(CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL)));
     add_evaluator(eWorldPropertyDanger, xr_new<CStalkerPropertyEvaluatorDangers>(m_object, "is_there_danger"));
     add_evaluator(eWorldPropertyAnomaly, xr_new<CStalkerPropertyEvaluatorAnomaly>(m_object, "is_there_anomalies"));
     add_evaluator(eWorldPropertyItems, xr_new<CStalkerPropertyEvaluatorItems>(m_object, "is_there_items_to_pick_up"));

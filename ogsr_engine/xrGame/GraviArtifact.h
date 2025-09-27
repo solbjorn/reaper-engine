@@ -15,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CGraviArtefact(void);
-    virtual ~CGraviArtefact(void);
+    CGraviArtefact();
+    virtual ~CGraviArtefact();
 
     virtual void Load(LPCSTR section);
 

@@ -151,13 +151,13 @@ using namespace Opcode;
     if (x2 < min) \
         min = x2; \
     if (x2 > max) \
-        max = x2;
+    max = x2
 
 #define EXITMINMAX(x0, x1, x2, min, max) \
     if (x0 < min && x1 < min && x2 < min) \
         return false; \
     if (x0 > max && x1 > max && x2 > max) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 ICF bool planeBoxOverlap_slow(const Point& normal, const float d, const Point& maxbox)
@@ -221,7 +221,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.y + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_X2(a, b, fa, fb) \
@@ -235,7 +235,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.y + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Y02(a, b, fa, fb) \
@@ -249,7 +249,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.x + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Y1(a, b, fa, fb) \
@@ -263,7 +263,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.x + fb * extents.z; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Z12(a, b, fa, fb) \
@@ -277,7 +277,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.x + fb * extents.y; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 //! TO BE DOCUMENTED
 #define AXISTEST_Z0(a, b, fa, fb) \
@@ -291,7 +291,7 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
     } \
     rad = fa * extents.x + fb * extents.y; \
     if (min > rad || max < -rad) \
-        return false;
+    return false
 
 IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
 {
@@ -306,7 +306,7 @@ IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
     // Find min, max of the triangle in x-direction, and test for overlap in X
     // FINDMINMAX(v0.x, v1.x, v2.x, min, max);
     // if(min>extents.x || max<-extents.x) return false;
-    EXITMINMAX(v0.x, v1.x, v2.x, -extents.x, extents.x)
+    EXITMINMAX(v0.x, v1.x, v2.x, -extents.x, extents.x);
     // Same for Y
     v0.y = mLeafVerts[0].y - center.y;
     v1.y = mLeafVerts[1].y - center.y;
@@ -314,7 +314,7 @@ IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
 
     // FINDMINMAX(v0.y, v1.y, v2.y, min, max);
     // if(min>extents.y || max<-extents.y) return false;
-    EXITMINMAX(v0.y, v1.y, v2.y, -extents.y, extents.y)
+    EXITMINMAX(v0.y, v1.y, v2.y, -extents.y, extents.y);
     // Same for Z
     v0.z = mLeafVerts[0].z - center.z;
     v1.z = mLeafVerts[1].z - center.z;
@@ -322,7 +322,7 @@ IC bool aabb_tri_aabb(Point center, Point extents, const Point* mLeafVerts)
 
     // FINDMINMAX(v0.z, v1.z, v2.z, min, max);
     // if(min>extents.z || max<-extents.z) return false;
-    EXITMINMAX(v0.z, v1.z, v2.z, -extents.z, extents.z)
+    EXITMINMAX(v0.z, v1.z, v2.z, -extents.z, extents.z);
     // 2) Test if the box intersects the plane of the triangle
     // compute plane equation of triangle: normal*x+d=0
     // ### could be precomputed since we use the same leaf triangle several times

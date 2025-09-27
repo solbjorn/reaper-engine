@@ -22,15 +22,15 @@ class CCoverEvaluatorBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CCoverEvaluatorBase);
 
 protected:
-    const CCoverPoint* m_selected;
-    u32 m_last_update;
-    u32 m_inertia_time;
-    float m_best_value;
-    bool m_initialized;
-    Fvector m_start_position;
+    const CCoverPoint* m_selected{};
+    u32 m_last_update{};
+    u32 m_inertia_time{};
+    float m_best_value{std::numeric_limits<float>::max()};
+    bool m_initialized{};
+    bool m_actuality{true};
+    Fvector m_start_position{std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    float m_last_radius{std::numeric_limits<float>::max()};
     CRestrictedObject* m_object;
-    bool m_actuality;
-    float m_last_radius;
     std::function<bool(const CCoverPoint*)> m_callback;
 
 public:

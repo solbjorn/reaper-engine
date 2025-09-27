@@ -172,11 +172,11 @@ public:
     void AddGameNews_deffered(GAME_NEWS_DATA& news_data, u32 delay);
     virtual void AddGameNews(GAME_NEWS_DATA& news_data);
     void PushNewsData(GAME_NEWS_DATA& news_data);
-    u32 NewsToShow() { return m_news_to_show; };
+    u32 NewsToShow() { return m_news_to_show; }
 
 protected:
-    CGameTaskManager* m_game_task_manager;
-    CActorStatisticMgr* m_statistic_manager;
+    CGameTaskManager* m_game_task_manager{};
+    CActorStatisticMgr* m_statistic_manager{};
 
 public:
     void StartTalk(CInventoryOwner* talk_partner, bool = true) override;
@@ -243,7 +243,7 @@ protected:
     // misc properties
 protected:
     // Death
-    float hit_slowmo;
+    float hit_slowmo{};
     float hit_probability;
     bool m_hit_slowmo_jump;
 
@@ -261,13 +261,13 @@ protected:
     BOOL b_DropActivated;
     float f_DropPower;
 
-    bool m_bOutBorder;
+    bool m_bOutBorder{};
     // сохраняет счетчик объектов в feel_touch, для которых необходимо обновлять размер колижена с актером
-    u32 m_feel_touch_characters;
+    u32 m_feel_touch_characters{};
     // разрешения на удаление трупа актера
     // после того как контролирующий его игрок зареспавнился заново.
     // устанавливается в game
-    u8 m_loaded_ph_box_id;
+    u8 m_loaded_ph_box_id{};
 
 private:
     void SwitchOutBorder(bool new_border_state);
@@ -280,8 +280,9 @@ public:
     virtual bool can_attach(const CInventoryItem* inventory_item) const;
 
 protected:
-    CHolderCustom* m_holder;
-    u16 m_holderID;
+    CHolderCustom* m_holder{};
+    u16 m_holderID{std::numeric_limits<u16>::max()};
+
     bool use_Holder(CHolderCustom* holder);
 
     bool use_Vehicle(CHolderCustom* object);
@@ -326,8 +327,8 @@ public:
     static void HeadCallback(CBoneInstance*);
     static void VehicleHeadCallback(CBoneInstance*);
 
-    virtual const SRotation Orientation() const { return r_torso; };
-    SRotation& Orientation() { return r_torso; };
+    virtual const SRotation Orientation() const { return r_torso; }
+    SRotation& Orientation() { return r_torso; }
 
     void g_SetAnimation(u32 mstate_rl);
     void g_SetSprintAnimation(u32 mstate_rl, MotionID& head, MotionID& torso, MotionID& legs);
@@ -352,7 +353,7 @@ public:
         return *m_pActorEffector;
     }
     IC CCameraBase* cam_Active() { return cameras[cam_active]; }
-    IC CCameraBase* cam_ByIndex(u16 index) { return (index < eacMaxCam ? cameras[index] : NULL); }
+    IC CCameraBase* cam_ByIndex(u16 index) { return (index < eacMaxCam ? cameras[index] : nullptr); }
     IC CCameraBase* cam_FirstEye() { return cameras[eacFirstEye]; }
     IC EActorCameras active_cam() { return cam_active; } // KD: need to know which cam active outside actor methods
     CEffectorBobbing* GetEffectorBobbing() { return pCamBobbing; }
@@ -372,17 +373,17 @@ protected:
     float current_ik_cam_shift;
     Fvector vPrevCamDir;
     float fCurAVelocity;
-    CEffectorBobbing* pCamBobbing;
+    CEffectorBobbing* pCamBobbing{};
 
     //	void					LoadShootingEffector	(LPCSTR section);
     //	SShootingEffector*		m_pShootingEffector;
 
     void LoadSleepEffector(LPCSTR section);
-    SSleepEffector* m_pSleepEffector;
-    CSleepEffectorPP* m_pSleepEffectorPP;
+    SSleepEffector* m_pSleepEffector{};
+    CSleepEffectorPP* m_pSleepEffectorPP{};
 
     // менеджер эффекторов, есть у каждого актрера
-    CActorCameraManager* m_pActorEffector;
+    CActorCameraManager* m_pActorEffector{};
     static float f_Ladder_cam_limit;
     ////////////////////////////////////////////
     // для взаимодействия с другими персонажами
@@ -404,18 +405,18 @@ protected:
     //.	void					DestroyFollowerInternal();//hack
     //.	CActorFollowerMngr&		Followers	();
     //.	CActorFollowerMngr*		m_followers;
-    CUsableScriptObject* m_pUsableObject;
+    CUsableScriptObject* m_pUsableObject{};
     // Person we're looking at
-    CInventoryOwner* m_pPersonWeLookingAt;
-    CHolderCustom* m_pVehicleWeLookingAt;
-    CGameObject* m_pObjectWeLookingAt;
+    CInventoryOwner* m_pPersonWeLookingAt{};
+    CHolderCustom* m_pVehicleWeLookingAt{};
+    CGameObject* m_pObjectWeLookingAt{};
     IInventoryBox* m_pInvBoxWeLookingAt;
 
     // Tip for action for object we're looking at
-    const char* m_sDefaultObjAction;
+    const char* m_sDefaultObjAction{};
 
     // режим подбирания предметов
-    bool m_bPickupMode;
+    bool m_bPickupMode{};
     // расстояние подсветки предметов
     float m_fPickupInfoRadius;
 
@@ -443,13 +444,13 @@ public:
     bool CanJump(float weight);
     bool CanMove();
     float CameraHeight();
-    float CurrentHeight;
+    float CurrentHeight{};
     bool CanSprint();
     bool CanRun();
     void StopAnyMove();
 
-    bool AnyAction() { return (mstate_real & mcAnyAction) != 0; };
-    bool AnyMove() { return (mstate_real & mcAnyMove) != 0; };
+    bool AnyAction() { return (mstate_real & mcAnyAction) != 0; }
+    bool AnyMove() { return (mstate_real & mcAnyMove) != 0; }
 
     bool is_jump();
     bool is_crouch();
@@ -493,11 +494,12 @@ public:
     virtual void IR_OnKeyboardHold(int dik);
     virtual void IR_OnMouseWheel(int direction);
     virtual float GetLookFactor();
+
     IC void ResetStates()
     {
         mstate_old = 0;
         mstate_real = 0;
-    };
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // Weapon fire control (оружие актрера)
@@ -511,7 +513,7 @@ public:
 
 protected:
     // если актер целится в прицел
-    bool m_bZoomAimingMode;
+    bool m_bZoomAimingMode{};
 
     // настройки аккуратности стрельбы
     // базовая дисперсия (когда игрок стоит на месте)
@@ -601,9 +603,9 @@ public:
     virtual void spawn_supplies();
     virtual bool human_being() const { return (true); }
 
-    virtual shared_str GetDefaultVisualOutfit() const { return m_DefaultVisualOutfit; };
-    virtual void SetDefaultVisualOutfit(shared_str DefaultOutfit) { m_DefaultVisualOutfit = DefaultOutfit; };
-    virtual void UpdateAnimation() { g_SetAnimation(mstate_real); };
+    virtual shared_str GetDefaultVisualOutfit() const { return m_DefaultVisualOutfit; }
+    virtual void SetDefaultVisualOutfit(shared_str DefaultOutfit) { m_DefaultVisualOutfit = DefaultOutfit; }
+    virtual void UpdateAnimation() { g_SetAnimation(mstate_real); }
 
     virtual void ChangeVisual(shared_str NewVisual);
     virtual void OnChangeVisual();
@@ -615,8 +617,8 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     void set_input_external_handler(CActorInputHandler* handler);
-    bool input_external_handler_installed() const { return (m_input_external_handler != 0); }
 
+    bool input_external_handler_installed() const { return !!m_input_external_handler; }
     IC void lock_accel_for(u32 time) { m_time_lock_accel = Device.dwTimeGlobal + time; }
 
 private:
@@ -626,7 +628,7 @@ private:
     /////////////////////////////////////////
     // DEBUG INFO
 protected:
-    CStatGraph* pStatGraph;
+    CStatGraph* pStatGraph{};
 
     shared_str m_DefaultVisualOutfit;
 
@@ -640,7 +642,7 @@ public:
     virtual CCustomOutfit* GetOutfit() const;
 
 private:
-    CActorCondition* m_entity_condition;
+    CActorCondition* m_entity_condition{};
 
 protected:
     virtual CEntityConditionSimple* create_entity_condition(CEntityConditionSimple* ec);
@@ -653,8 +655,8 @@ public:
     virtual bool use_center_to_aim() const;
 
 protected:
-    u16 m_iLastHitterID;
-    u16 m_iLastHittingWeaponID;
+    u16 m_iLastHitterID{std::numeric_limits<u16>::max()};
+    u16 m_iLastHittingWeaponID{std::numeric_limits<u16>::max()};
     s16 m_s16LastHittedElement;
     Fvector m_vLastHitDir;
     Fvector m_vLastHitPos;
@@ -689,8 +691,8 @@ public:
     IC CActorMemory& memory() const
     {
         VERIFY(m_memory);
-        return (*m_memory);
-    };
+        return *m_memory;
+    }
 
     void OnDifficultyChanged();
 
@@ -755,8 +757,8 @@ private:
     float m_fDrugRadProtectionCoeff;
 
 public:
-    IC void SetDrugRadProtection(float _prot) { m_fDrugRadProtectionCoeff = _prot; };
-    IC void SetDrugPsyProtection(float _prot) { m_fDrugPsyProtectionCoeff = _prot; };
+    IC void SetDrugRadProtection(float _prot) { m_fDrugRadProtectionCoeff = _prot; }
+    IC void SetDrugPsyProtection(float _prot) { m_fDrugPsyProtectionCoeff = _prot; }
 };
 XR_SOL_BASE_CLASSES(CActor);
 

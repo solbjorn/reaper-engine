@@ -17,4 +17,4 @@ typedef CSE_Abstract SERVER_BASE_CLASS;
 
 typedef DLL_Pure CLIENT_SCRIPT_BASE_CLASS;
 typedef CSE_Abstract SERVER_SCRIPT_BASE_CLASS;
-}; // namespace ObjectFactory
+} // namespace ObjectFactory

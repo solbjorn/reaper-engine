@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include "ElevatorState.h"
 #include "ClimableObject.h"
 #include "PHCharacter.h"
 #include "MathUtils.h"
 #include "PHWorld.h"
+
 #ifdef DEBUG
 #include "../xr_3da/Statgraph.h"
 #include "PHDebug.h"
@@ -21,12 +23,7 @@ static const float lookup_angle_sine = 0.34202014f; // 20
 extern CPHWorld* ph_world;
 extern bool g_actor_allow_ladder;
 
-CElevatorState::CElevatorState()
-{
-    m_state = clbNoLadder;
-    m_ladder = NULL;
-    m_character = NULL;
-}
+CElevatorState::CElevatorState() = default;
 
 float CElevatorState::ClimbDirection()
 {
@@ -52,7 +49,7 @@ void CElevatorState::PhTune(float step)
         else
         {
             m_state = clbNoLadder;
-            m_ladder = NULL;
+            m_ladder = nullptr;
         }
 
         return;
@@ -66,12 +63,11 @@ void CElevatorState::PhTune(float step)
     case clbClimbingUp: UpdateStClimbingUp(); break;
     case clbClimbingDown: UpdateStClimbingDown(); break;
     case clbDepart: UpdateDepart(); break;
-    case clbNoLadder: m_ladder = NULL; break;
+    case clbNoLadder: m_ladder = nullptr; break;
     }
 }
 
 void CElevatorState::PhDataUpdate(float step) {}
-
 void CElevatorState::InitContact(dContact* c, bool& do_collide, u16, u16) {}
 
 void CElevatorState::SetElevator(CClimableObject* climable)
@@ -366,8 +362,8 @@ void CElevatorState::Deactivate()
 {
     SwitchState(clbNoLadder);
     m_state = clbNoLadder;
-    m_ladder = NULL;
-    m_character = NULL;
+    m_ladder = nullptr;
+    m_character = nullptr;
 }
 
 CElevatorState::SEnertionState CElevatorState::m_etable[CElevatorState::clbNoState][CElevatorState::clbNoState] = {

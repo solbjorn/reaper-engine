@@ -62,7 +62,7 @@ void CCustomOutfit::Load(LPCSTR section)
     if (pSettings->line_exist(section, "actor_visual"))
         m_ActorVisual = pSettings->r_string(section, "actor_visual");
     else
-        m_ActorVisual = NULL;
+        m_ActorVisual = nullptr;
 
     m_ef_equipment_type = pSettings->r_u32(section, "ef_equipment_type");
     if (pSettings->line_exist(section, "power_loss"))
@@ -76,7 +76,7 @@ void CCustomOutfit::Load(LPCSTR section)
     if (pSettings->line_exist(section, "nightvision_sect"))
         m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
     else
-        m_NightVisionSect = NULL;
+        m_NightVisionSect = nullptr;
 
     m_full_icon_name = pSettings->r_string(section, "full_icon_name");
 
@@ -115,7 +115,7 @@ float CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
     if (NewHitPower < hit_power * m_boneProtection->m_fHitFrac)
         return hit_power * m_boneProtection->m_fHitFrac;
     return NewHitPower;
-};
+}
 
 #include "torch.h"
 
@@ -193,8 +193,7 @@ u32 CCustomOutfit::ef_equipment_type() const { return (m_ef_equipment_type); }
 float CCustomOutfit::GetPowerLoss()
 {
     if (m_fPowerLoss < 1 && GetCondition() <= 0)
-    {
         return 1.0f;
-    };
+
     return m_fPowerLoss;
-};
+}

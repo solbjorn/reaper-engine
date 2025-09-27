@@ -21,7 +21,7 @@ void CStateGroupSquadMoveToRadiusExAbstract::execute()
     CMonsterSquad* squad = monster_squad().get_squad(object);
     if (squad && squad->SquadActive())
     {
-        if (squad->get_index(object) != u8(-1))
+        if (squad->get_index(object) != std::numeric_limits<u8>::max())
         {
             float m_Angle = (PI - PI_DIV_2) / (squad->squad_alife_count() - 1) * (squad->get_index(object) - 1);
             float m_Delta_Angle = Random.randF(PI_DIV_3 / (squad->squad_alife_count() - 1));

@@ -98,7 +98,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP
             u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
             R_ASSERT2(BI_NONE != fixed_bone_id,
                       make_string("wrong fixed bone [%s] for object [%s] with visual [%s]", fixed_bone, obj->cName().c_str(), obj->cNameVisual().c_str()));
-            p_bone_map->insert(mk_pair(fixed_bone_id, physicsBone()));
+            p_bone_map->try_emplace(fixed_bone_id);
         }
 
         pPhysicsShell = P_build_Shell(obj, not_active_state, p_bone_map);
@@ -147,7 +147,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, U16Vec& fi
     CPhysicsShell* pPhysicsShell;
     if (!fixed_bones.empty())
         for (U16It it = fixed_bones.begin(); it != fixed_bones.end(); it++)
-            bone_map.insert(mk_pair(*it, physicsBone()));
+            bone_map.try_emplace(*it);
     pPhysicsShell = P_build_Shell(obj, not_active_state, &bone_map);
 
     // fix bones

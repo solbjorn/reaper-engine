@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
@@ -12,8 +13,6 @@
 
 void CBaseMonster::Think()
 {
-    START_PROFILE("Base Monster/Think");
-
     if (!g_Alive() || getDestroy())
         return;
 
@@ -22,21 +21,13 @@ void CBaseMonster::Think()
     anim().ScheduledInit();
 
     // Обновить память
-    START_PROFILE("Base Monster/Think/Update Memory");
     UpdateMemory();
-    STOP_PROFILE;
 
     // Обновить сквад
-    START_PROFILE("Base Monster/Think/Update Squad");
     monster_squad().update(this);
-    STOP_PROFILE;
 
     // Запустить FSM
-    START_PROFILE("Base Monster/Think/FSM");
     update_fsm();
-    STOP_PROFILE;
-
-    STOP_PROFILE;
 }
 
 void CBaseMonster::update_fsm()
@@ -117,7 +108,7 @@ void CBaseMonster::squad_notify()
         else if (state == eStateRest_LookOpenPlace)
             goal.type = MG_Rest;
         else
-            goal.entity = 0;
+            goal.entity = nullptr;
     }
     else if (is_state(state, eStateSquad))
     {

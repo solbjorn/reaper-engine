@@ -78,4 +78,4 @@ using CStraightLineParams = SStraightLineParams<_dist_type, _index_type, _iterat
 using CNearestVertexParameters = SNearestVertex<_dist_type, _index_type, _iteration_type>;
 using CGameLevelParams = SGameLevel<_dist_type, _index_type, _iteration_type>;
 using CGameVertexParams = SGameVertex<_dist_type, _index_type, _iteration_type>;
-}; // namespace GraphEngineSpace
+} // namespace GraphEngineSpace

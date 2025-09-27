@@ -10,10 +10,8 @@
 
 #include "entity_alive.h"
 
-class CDangerObject : public virtual RTTI::Enable
+class CDangerObject
 {
-    RTTI_DECLARE_TYPEINFO(CDangerObject);
-
 public:
     enum EDangerType : u32
     {
@@ -44,8 +42,8 @@ private:
 
 public:
     IC CDangerObject(const CEntityAlive* object, const Fvector& position, u32 time, const EDangerType& type, const EDangerPerceiveType& perceive_type,
-                     const CObject* dependent_object = 0);
-    virtual ~CDangerObject();
+                     const CObject* dependent_object = nullptr);
+
     IC const CEntityAlive* object() const;
     IC const Fvector& position() const;
     IC u32 time() const;

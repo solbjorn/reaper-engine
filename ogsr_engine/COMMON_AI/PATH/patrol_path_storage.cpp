@@ -57,8 +57,7 @@ void CPatrolPathStorage::append_from_ini(CInifile& way_inifile)
         if (it.second->line_count() == 0)
             continue;
 
-        m_registry.insert(std::make_pair(patrol_name, &xr_new<CPatrolPath>(patrol_name)->load_ini(*it.second)));
-
+        m_registry.emplace(patrol_name, &xr_new<CPatrolPath>(patrol_name)->load_ini(*it.second));
         i++;
     }
 
@@ -135,7 +134,7 @@ void CPatrolPathStorage::remove_path(shared_str patrol_name) { m_registry.erase(
 void CPatrolPathStorage::add_path(shared_str patrol_name, CPatrolPath* path)
 {
     remove_path(patrol_name);
-    m_registry.insert(std::make_pair(patrol_name, path));
+    m_registry.emplace(patrol_name, path);
 }
 
 const CPatrolPath* CPatrolPathStorage::safe_path(shared_str patrol_name, bool no_assert, bool on_level) const

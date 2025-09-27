@@ -9,13 +9,15 @@ void CDetail::Unload()
     if (vertices)
     {
         xr_free(vertices);
-        vertices = 0;
+        vertices = nullptr;
     }
+
     if (indices)
     {
         xr_free(indices);
-        indices = 0;
+        indices = nullptr;
     }
+
     shader.destroy();
 }
 

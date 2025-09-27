@@ -224,7 +224,7 @@ bool SelectTexture(const char* label, shared_str& texName)
         prevValue = texName;
     }
     ImGui::SameLine();
-    ImGui::Text(label);
+    ImGui::Text("%s", label);
 
     ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_FirstUseEver);
     if (ImGui::BeginPopupModal("Choose texture", nullptr, 0))

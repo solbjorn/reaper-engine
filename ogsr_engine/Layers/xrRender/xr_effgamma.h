@@ -17,7 +17,7 @@ public:
         Brightness(1.f);
         Contrast(1.f);
         Balance(1.f, 1.f, 1.f);
-    };
+    }
 
     IC void Balance(float _r, float _g, float _b) { cBalance.set(_r, _g, _b, 1); }
     IC void Balance(Fcolor& C) { Balance(C.r, C.g, C.b); }

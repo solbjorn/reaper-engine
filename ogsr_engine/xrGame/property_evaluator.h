@@ -37,7 +37,7 @@ protected:
     };
 
 public:
-    IC CPropertyEvaluator(_object_type* object = 0, LPCSTR evaluator_name = "");
+    IC CPropertyEvaluator(_object_type* object = nullptr, LPCSTR evaluator_name = "");
     virtual ~CPropertyEvaluator();
     IC void init(_object_type* object, LPCSTR evaluator_name);
     virtual void setup(_object_type* object, CPropertyStorage* storage);

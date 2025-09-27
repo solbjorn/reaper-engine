@@ -4,12 +4,12 @@
 
 class xrTime
 {
-    ALife::_TIME_ID m_time;
+    ALife::_TIME_ID m_time{};
 
 public:
-    xrTime() : m_time(0) {}
-    xrTime(const xrTime& other) : m_time(other.m_time) {}
-    xrTime(ALife::_TIME_ID t) : m_time(t) {}
+    xrTime() = default;
+    xrTime(ALife::_TIME_ID t) : m_time{t} {}
+    xrTime(const xrTime& other) : m_time{other.m_time} {}
 
     bool operator<(const xrTime& other) const { return m_time < other.m_time; }
     bool operator>(const xrTime& other) const { return m_time > other.m_time; }
@@ -23,9 +23,9 @@ public:
     xrTime& add(const xrTime& other);
     xrTime& sub(const xrTime& other);
 
-    xrTime& add_script(xrTime* other) { return add(*other); };
-    xrTime& sub_script(xrTime* other) { return sub(*other); };
-    float diffSec_script(xrTime* other) { return diffSec(*other); };
+    xrTime& add_script(xrTime* other) { return add(*other); }
+    xrTime& sub_script(xrTime* other) { return sub(*other); }
+    float diffSec_script(xrTime* other) { return diffSec(*other); }
 
     xrTime& setHMS(int h, int m, int s);
     xrTime& setHMSms(int h, int m, int s, int ms);

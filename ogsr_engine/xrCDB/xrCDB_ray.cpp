@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "xrcpuid.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wfloat-equal");
+
 #include <Opcode.h>
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
+XR_DIAG_POP();
+
 #include <xmmintrin.h>
-#pragma warning(pop)
 
 using namespace CDB;
 using namespace Opcode;

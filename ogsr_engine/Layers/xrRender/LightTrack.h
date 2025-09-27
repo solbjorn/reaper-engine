@@ -83,13 +83,13 @@ private:
     s32 sky_rays_uptodate;
 
 public:
-    virtual void force_mode(u32 mode) { MODE = mode; };
+    virtual void force_mode(u32 mode) { MODE = mode; }
     virtual float get_luminocity()
     {
         float result = _max(approximate.x, _max(approximate.y, approximate.z));
         clamp(result, 0.f, 1.f);
         return (result);
-    };
+    }
     virtual float get_luminocity_hemi() { return get_hemi(); }
     virtual float* get_luminocity_hemi_cube() { return smooth.hemi_cube; }
 
@@ -114,7 +114,7 @@ public:
     }
 
     CROS_impl();
-    virtual ~CROS_impl() {};
+    virtual ~CROS_impl() {}
 
 private:
     // static inline CubeFaces get_cube_face(Fvector3& dir);

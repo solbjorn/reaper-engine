@@ -63,7 +63,7 @@ ShaderElement::ShaderElement()
     flags.isWater = FALSE;
 }
 
-BOOL ShaderElement::equal(ShaderElement& S)
+bool ShaderElement::equal(const ShaderElement& S) const
 {
     if (flags.iPriority != S.flags.iPriority)
         return FALSE;
@@ -85,7 +85,7 @@ BOOL ShaderElement::equal(ShaderElement& S)
     return TRUE;
 }
 
-BOOL Shader::equal(Shader* S, int index)
+bool Shader::equal(const Shader* S, int index) const
 {
     if (nullptr == E[index] && nullptr == S->E[index])
         return TRUE;
@@ -95,7 +95,7 @@ BOOL Shader::equal(Shader* S, int index)
     return E[index]->equal(*S->E[index]);
 }
 
-BOOL Shader::equal(Shader* S)
+bool Shader::equal(const Shader* S) const
 {
     for (int i = 0; i < 5; i++)
     {

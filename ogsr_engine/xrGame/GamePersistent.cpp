@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "gamepersistent.h"
 #include "../xr_3da/fmesh.h"
 #include "..\xr_3da\XR_IOConsole.h"
@@ -33,35 +34,20 @@ static void* ode_alloc(size_t size) { return xr_malloc(size); }
 static void* ode_realloc(void* ptr, size_t oldsize, size_t newsize) { return xr_realloc(ptr, newsize); }
 static void ode_free(void* ptr, size_t size) { return xr_free(ptr); }
 
-CGamePersistent::CGamePersistent(void)
+CGamePersistent::CGamePersistent()
 {
     m_game_params.m_e_game_type = GAME_ANY;
-    ambient_effect_next_time = 0;
-    ambient_effect_stop_time = 0;
-    ambient_particles = 0;
 
-    ambient_effect_wind_start = 0.f;
-    ambient_effect_wind_in_time = 0.f;
-    ambient_effect_wind_end = 0.f;
-    ambient_effect_wind_out_time = 0.f;
-    ambient_effect_wind_on = false;
-
-    m_pUI_core = NULL;
-    m_pMainMenu = NULL;
-    m_intro = NULL;
+    m_pMainMenu = nullptr;
     m_intro_event = CallMe::fromMethod<&CGamePersistent::start_logo_intro>(this);
-#ifdef DEBUG
-    m_frame_counter = 0;
-    m_last_stats_frame = u32(-2);
-#endif
+
     //
     dSetAllocHandler(ode_alloc);
     dSetReallocHandler(ode_realloc);
     dSetFreeHandler(ode_free);
 
     //
-    BOOL bDemoMode = (0 != strstr(Core.Params, "-demomode "));
-    if (bDemoMode)
+    if (strstr(Core.Params, "-demomode "))
     {
         string256 fname;
         LPCSTR name = strstr(Core.Params, "-demomode ") + 10;
@@ -75,14 +61,14 @@ CGamePersistent::CGamePersistent(void)
     }
     else
     {
-        pDemoFile = NULL;
-        eDemoStart = NULL;
+        pDemoFile = nullptr;
+        eDemoStart = nullptr;
     }
 
     eQuickLoad = Engine.Event.Handler_Attach("Game:QuickLoad", this);
 }
 
-CGamePersistent::~CGamePersistent(void)
+CGamePersistent::~CGamePersistent()
 {
     FS.r_close(pDemoFile);
     Device.seqFrame.Remove(this);
@@ -295,7 +281,7 @@ void CGamePersistent::WeathersUpdate()
                         pos.add(Device.vCameraPosition, eff->offset);
                         ambient_particles->play_at_pos(pos);
                         if (eff->sound._handle())
-                            eff->sound.play_at_pos(0, pos);
+                            eff->sound.play_at_pos(nullptr, pos);
 
                         Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
                         Environment().wind_blast_strength_stop_value = eff->wind_blast_strength;
@@ -411,7 +397,7 @@ void CGamePersistent::WeathersUpdate()
                         pos.z = _sin(angle);
                         pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
                         pos.y += 10.f;
-                        snd->play_at_pos(0, pos);
+                        snd->play_at_pos(nullptr, pos);
                     }
                 }
 
@@ -429,7 +415,7 @@ void CGamePersistent::WeathersUpdate()
                         pos.add(Device.vCameraPosition, eff->offset);
                         ambient_particles->play_at_pos(pos);
                         if (eff->sound._handle())
-                            eff->sound.play_at_pos(0, pos);
+                            eff->sound.play_at_pos(nullptr, pos);
                     }
                 }
                 else if (!ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time)
@@ -465,12 +451,12 @@ void CGamePersistent::start_logo_intro()
         return;
     }
 
-    if (Device.dwPrecacheFrame == 0)
+    if (!Device.dwPrecacheFrame)
     {
         m_intro_event = CallMe::fromMethod<&CGamePersistent::update_logo_intro>(this);
-        if (0 == xr_strlen(m_game_params.m_game_or_spawn) && NULL == g_pGameLevel)
+        if (!xr_strlen(m_game_params.m_game_or_spawn) && !g_pGameLevel)
         {
-            VERIFY(NULL == m_intro);
+            VERIFY(!m_intro);
             m_intro = xr_new<CUISequencer>();
             m_intro->Start("intro_logo");
             Console->Hide();
@@ -573,7 +559,7 @@ void CGamePersistent::OnFrame()
             }
             else
             {
-                CCameraBase* C = NULL;
+                CCameraBase* C{};
                 if (g_actor)
                 {
                     if (!Actor()->Holder())
@@ -589,7 +575,7 @@ void CGamePersistent::OnFrame()
 #else // MASTER_GOLD
         if (g_actor)
         {
-            CCameraBase* C = NULL;
+            CCameraBase* C{};
             if (!Actor()->Holder())
                 C = Actor()->cam_Active();
             else
@@ -609,7 +595,7 @@ void CGamePersistent::OnFrame()
     if (!Device.Paused())
         WeathersUpdate();
 
-    if (0 != pDemoFile)
+    if (pDemoFile)
     {
         if (Device.dwTimeGlobal > uTime2Change)
         {
@@ -622,7 +608,7 @@ void CGamePersistent::OnFrame()
             pDemoFile->r_string(params, sizeof(params));
             string256 o_server, o_client, o_demo;
             u32 o_time;
-            sscanf(params, "%[^,],%[^,],%[^,],%d", o_server, o_client, o_demo, &o_time);
+            sscanf(params, "%[^,],%[^,],%[^,],%u", o_server, o_client, o_demo, &o_time);
 
             // Start _new level + demo
             Engine.Event.Defer("KERNEL:disconnect");

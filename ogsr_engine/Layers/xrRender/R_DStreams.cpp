@@ -20,7 +20,7 @@ void _VertexStream::Create()
     bufferDesc.BindFlags = D3D_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 
-    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pVB));
+    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pVB));
     HW.stats_manager.increment_stats_vb(pVB);
 
     R_ASSERT(pVB);
@@ -28,7 +28,7 @@ void _VertexStream::Create()
     mPosition = 0;
     mDiscardID = 0;
 
-    Msg("* DVB created: %dK", mSize / 1024);
+    Msg("* DVB created: %uK", mSize / 1024);
 }
 
 void _VertexStream::Destroy()
@@ -60,7 +60,7 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 
     // Check if there is need to flush and perform lock
     auto* pContext = HW.get_imm_context();
-    BYTE* pData = 0;
+    BYTE* pData{};
 
     if ((vl_Count + vl_mPosition) >= vl_mSize)
     {
@@ -113,19 +113,6 @@ void _VertexStream::reset_end()
     // old_pVB				= NULL;
 }
 
-_VertexStream::_VertexStream() { _clear(); };
-
-void _VertexStream::_clear()
-{
-    pVB = NULL;
-    mSize = 0;
-    mPosition = 0;
-    mDiscardID = 0;
-#ifdef DEBUG
-    dbg_lock = 0;
-#endif
-}
-
 //////////////////////////////////////////////////////////////////////////
 void _IndexStream::Create()
 {
@@ -137,7 +124,7 @@ void _IndexStream::Create()
     bufferDesc.BindFlags = D3D_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 
-    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pIB));
+    R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, nullptr, &pIB));
     HW.stats_manager.increment_stats_ib(pIB);
 
     R_ASSERT(pIB);
@@ -145,7 +132,7 @@ void _IndexStream::Create()
     mPosition = 0;
     mDiscardID = 0;
 
-    Msg("* DIB created: %dK", mSize / 1024);
+    Msg("* DIB created: %uK", mSize / 1024);
 }
 
 void _IndexStream::Destroy()
@@ -161,7 +148,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 
     PGO(Msg("PGO:IB_LOCK:%d", Count));
     vOffset = 0;
-    BYTE* pLockedData = 0;
+    BYTE* pLockedData{};
 
     // Ensure there is enough space in the VB for this data
     R_ASSERT((2 * Count <= mSize) && Count);

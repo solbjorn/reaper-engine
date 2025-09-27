@@ -14,7 +14,7 @@ public:
 
 protected:
     virtual void PhTune(dReal step);
-    virtual void PhDataUpdate(dReal step) { ; }
+    virtual void PhDataUpdate(dReal step) {}
     virtual bool BlowoutState();
     virtual void SwitchZoneState(EZoneState new_state);
     virtual void Load(LPCSTR section);

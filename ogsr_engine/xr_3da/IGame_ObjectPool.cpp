@@ -1,12 +1,12 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "IGame_Persistent.h"
 #include "igame_objectpool.h"
 #include "xr_object.h"
 
-IGame_ObjectPool::IGame_ObjectPool(void) {}
-
-IGame_ObjectPool::~IGame_ObjectPool(void) { R_ASSERT(m_PrefetchObjects.empty()); }
+IGame_ObjectPool::IGame_ObjectPool() = default;
+IGame_ObjectPool::~IGame_ObjectPool() { R_ASSERT(m_PrefetchObjects.empty()); }
 
 void IGame_ObjectPool::prefetch()
 {
@@ -40,7 +40,7 @@ void IGame_ObjectPool::prefetch()
                 Msg("! [%s] unknown section %s in %s", __FUNCTION__, item.first.c_str(), section);
         }
         Render->models_begin_prefetch1(false);
-        Msg("[%s] objects prefetching time (%zi): [%.2f s.]", __FUNCTION__, p_count, T.GetElapsed_sec());
+        Msg("[%s] objects prefetching time (%d): [%.2f s.]", __FUNCTION__, p_count, T.GetElapsed_sec());
     }
 
     // out statistic
@@ -52,10 +52,12 @@ void IGame_ObjectPool::clear()
     // Clear POOL
     ObjectVecIt it = m_PrefetchObjects.begin();
     ObjectVecIt itE = m_PrefetchObjects.end();
-    for (; it != itE; it++) {
-        (*it)->cNameVisual_set(0);
+    for (; it != itE; it++)
+    {
+        (*it)->cNameVisual_set(nullptr);
         xr_delete(*it);
     }
+
     m_PrefetchObjects.clear();
 }
 
@@ -64,6 +66,7 @@ CObject* IGame_ObjectPool::create(LPCSTR name)
     CLASS_ID CLS = pSettings->r_clsid(name, "class");
     CObject* O = (CObject*)NEW_INSTANCE(CLS);
     O->Load(name);
+
     return O;
 }
 

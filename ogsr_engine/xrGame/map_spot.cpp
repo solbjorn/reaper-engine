@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "map_spot.h"
 #include "map_location.h"
 
@@ -43,7 +44,7 @@ void CMapSpot::Update()
         VERIFY(m_dwFocusReceiveTime >= 0);
         if (Device.dwTimeGlobal > (m_dwFocusReceiveTime + 500))
         {
-            GetMessageTarget()->SendMessage(this, MAP_SHOW_HINT, NULL);
+            GetMessageTarget()->SendMessage(this, MAP_SHOW_HINT, nullptr);
         }
     }
 }
@@ -64,7 +65,7 @@ void CMapSpot::OnFocusLost()
     inherited::OnFocusLost();
     LPCSTR h = GetHint();
     if (h && xr_strlen(h))
-        GetMessageTarget()->SendMessage(this, MAP_HIDE_HINT, NULL);
+        GetMessageTarget()->SendMessage(this, MAP_HIDE_HINT, nullptr);
 }
 
 CMapSpotPointer::CMapSpotPointer(CMapLocation* ml) : inherited(ml) { ClipperOn(); }
@@ -73,7 +74,7 @@ CMapSpotPointer::~CMapSpotPointer() {}
 
 LPCSTR CMapSpotPointer::GetHint()
 {
-    return NULL;
+    return nullptr;
     /*
         m_pointer_hint = "to: ";
         m_pointer_hint += inherited::GetHint();
@@ -97,7 +98,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
     inherited::Load(xml, path);
 
     string256 buf;
-    XML_NODE* n = NULL;
+    XML_NODE* n{};
 
     Frect base_rect;
     base_rect.x1 = 0;
@@ -111,7 +112,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
     n = xml->NavigateToNode(buf, 0);
     if (n)
     {
-        LPCSTR texture = xml->Read(buf, 0, NULL);
+        LPCSTR texture = xml->Read(buf, 0, nullptr);
         CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
         if (strchr(texture, '\\'))
         {
@@ -131,7 +132,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
     n = xml->NavigateToNode(buf, 0);
     if (n)
     {
-        LPCSTR texture = xml->Read(buf, 0, NULL);
+        LPCSTR texture = xml->Read(buf, 0, nullptr);
         CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
         if (strchr(texture, '\\'))
         {
@@ -150,7 +151,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
     n = xml->NavigateToNode(buf, 0);
     if (n)
     {
-        LPCSTR texture = xml->Read(buf, 0, NULL);
+        LPCSTR texture = xml->Read(buf, 0, nullptr);
         CUITextureMaster::InitTexture(texture, "hud\\default", &m_UIStaticItem);
         if (strchr(texture, '\\'))
         {
@@ -192,7 +193,7 @@ void CMiniMapSpot::Draw()
             GetUIStaticItem().SetShader(m_icon_normal);
             GetUIStaticItem().SetOriginalRect(m_tex_rect_normal.x1, m_tex_rect_normal.y1, m_tex_rect_normal.width(), m_tex_rect_normal.height());
         }
-    };
+    }
 
     inherited::Draw();
 }

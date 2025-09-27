@@ -44,7 +44,7 @@ public:
     // methods
     CUIListBox* GetListWnd();
     void SetListLength(int length);
-    void SetVertScroll(bool bVScroll = true) { m_list.SetFixedScrollBar(bVScroll); };
+    void SetVertScroll(bool bVScroll = true) { m_list.SetFixedScrollBar(bVScroll); }
     //.	virtual void		AddItem					(LPCSTR str, bool bSelected);
     CUIListBoxItem* AddItem_(LPCSTR str, int _data);
     CUIListBoxItem* AddItem_(LPCSTR str);
@@ -52,7 +52,7 @@ public:
     void SetItem(int i);
 
     virtual void Init(float x, float y, float width, float height);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = 0);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     virtual void OnFocusLost();
     virtual void OnFocusReceive();
 
@@ -84,8 +84,8 @@ protected:
 
 public:
     CUIListBox m_list;
-    void SetTextColor(u32 color) { m_textColor[0] = color; };
-    void SetTextColorD(u32 color) { m_textColor[1] = color; };
+    void SetTextColor(u32 color) { m_textColor[0] = color; }
+    void SetTextColorD(u32 color) { m_textColor[1] = color; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

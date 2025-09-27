@@ -33,7 +33,7 @@ public:
     virtual void Init();
 
     virtual bool StopAnyMove() { return true; }
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual void Draw();
     virtual void Update();
@@ -45,7 +45,7 @@ public:
 
     void UpdateQuestions();
     void NeedUpdateQuestions();
-    //инициализации начального диалога собеседника
+    // инициализации начального диалога собеседника
     void InitOthersStartDialog();
     virtual bool IR_OnKeyboardPress(int dik);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
@@ -54,7 +54,7 @@ public:
     void AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
 
 protected:
-    //диалог
+    // диалог
     void InitTalkDialog();
     void AskQuestion();
 
@@ -69,26 +69,26 @@ public:
     IC CInventoryOwner* GetSecondTalker() { return m_pOthersInvOwner; }
 
 protected:
-    //для режима торговли
+    // для режима торговли
     CUITradeWnd* UITradeWnd;
     CUITalkDialogWnd* UITalkDialogWnd;
 
-    //указатель на владельца инвентаря вызвавшего менюшку
-    //и его собеседника
-    CActor* m_pActor;
-    CInventoryOwner* m_pOurInvOwner;
-    CInventoryOwner* m_pOthersInvOwner;
+    // указатель на владельца инвентаря вызвавшего менюшку
+    // и его собеседника
+    CActor* m_pActor{};
+    CInventoryOwner* m_pOurInvOwner{};
+    CInventoryOwner* m_pOthersInvOwner{};
 
-    CPhraseDialogManager* m_pOurDialogManager;
-    CPhraseDialogManager* m_pOthersDialogManager;
+    CPhraseDialogManager* m_pOurDialogManager{};
+    CPhraseDialogManager* m_pOthersDialogManager{};
 
-    //спец. переменная, нужна для того чтобы RemoveAll
-    //могла быть корректно вызвана из SendMessage
-    //так как иначе возникает ситуация, что класс, который
-    //вызвал нам SendMessage обращается к удаленному объекту pListItem
-    bool m_bNeedToUpdateQuestions;
+    // спец. переменная, нужна для того чтобы RemoveAll
+    // могла быть корректно вызвана из SendMessage
+    // так как иначе возникает ситуация, что класс, который
+    // вызвал нам SendMessage обращается к удаленному объекту pListItem
+    bool m_bNeedToUpdateQuestions{};
 
-    //текущий диалог, если NULL, то переходим в режим выбора темы
+    // текущий диалог, если NULL, то переходим в режим выбора темы
     DIALOG_SHARED_PTR m_pCurrentDialog;
     bool TopicMode();
     void ToTopicMode();

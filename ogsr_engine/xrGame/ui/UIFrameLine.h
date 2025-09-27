@@ -12,12 +12,13 @@
 #ifndef UI_FRAME_LINE_H_
 #define UI_FRAME_LINE_H_
 
-#pragma once
-
 #include "../UIStaticItem.h"
 
 class CUIFrameLine : public CUICustomItem
 {
+    RTTI_DECLARE_TYPEINFO(CUIFrameLine, CUICustomItem);
+
+private:
     friend class CUIFrameLineWnd;
     enum
     {

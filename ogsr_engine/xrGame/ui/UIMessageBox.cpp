@@ -1,30 +1,16 @@
 #include "stdafx.h"
+
 #include "UIMessageBox.h"
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "UIEditBox.h"
 #include "../string_table.h"
 
-CUIMessageBox::CUIMessageBox()
-{
-    m_UIButtonYesOk = NULL;
-    m_UIButtonNo = NULL;
-    m_UIButtonCancel = NULL;
-    m_UIStaticPicture = NULL;
-    m_UIStaticText = NULL;
-
-    m_UIEditPass = NULL;
-    m_UIEditUserPass = NULL;
-    m_UIEditHost = NULL;
-    m_UIStaticPass = NULL;
-    m_UIStaticUserPass = NULL;
-    m_UIStaticHost = NULL;
-}
-
-CUIMessageBox::~CUIMessageBox() { Clear(); }
-
 #define BUTTON_UP_OFFSET 75
 #define BUTTON_WIDTH 140
+
+CUIMessageBox::CUIMessageBox() = default;
+CUIMessageBox::~CUIMessageBox() { Clear(); }
 
 void CUIMessageBox::Clear()
 {
@@ -70,7 +56,7 @@ void CUIMessageBox::Init(LPCSTR box_template)
     strcpy_s(str, box_template);
     xml_init.InitStatic(uiXml, str, 0, this);
 
-    LPCSTR _type = uiXml.ReadAttrib(str, 0, "type", NULL);
+    LPCSTR _type = uiXml.ReadAttrib(str, 0, "type", nullptr);
     R_ASSERT(_type);
 
     m_eMessageBoxStyle = MESSAGEBOX_OK;
@@ -105,7 +91,7 @@ void CUIMessageBox::Init(LPCSTR box_template)
     else if (!_stricmp(_type, "info"))
     {
         m_eMessageBoxStyle = MESSAGEBOX_INFO;
-    };
+    }
 
     switch (m_eMessageBoxStyle)
     {
@@ -173,6 +159,7 @@ void CUIMessageBox::Init(LPCSTR box_template)
         AttachChild(m_UIEditPass);
         xml_init.InitEditBox(uiXml, str, 0, m_UIEditPass);
 
+        [[fallthrough]];
     case MESSAGEBOX_QUIT_WINDOWS:
     case MESSAGEBOX_QUIT_GAME:
     case MESSAGEBOX_YES_NO: {
@@ -205,7 +192,7 @@ void CUIMessageBox::Init(LPCSTR box_template)
         xml_init.Init3tButton(uiXml, str, 0, m_UIButtonCancel);
     }
     break;
-    };
+    }
 }
 
 void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -251,8 +238,9 @@ void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                 GetMessageTarget()->SendMessage(this, MESSAGE_BOX_CANCEL_CLICKED);
             }
             break;
-        };
-    };
+        }
+    }
+
     inherited::SendMessage(pWnd, msg, pData);
 }
 
@@ -279,24 +267,24 @@ LPCSTR CUIMessageBox::GetHost()
 
         return m_ret_val.c_str();
     }
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 LPCSTR CUIMessageBox::GetPassword()
 {
     if (m_UIEditPass)
         return m_UIEditPass->GetText();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 LPCSTR CUIMessageBox::GetUserPassword()
 {
     if (m_UIEditUserPass)
         return m_UIEditUserPass->GetText();
-    else
-        return NULL;
+
+    return nullptr;
 }
 
 void CUIMessageBox::SetUserPasswordMode(bool b)
@@ -306,6 +294,7 @@ void CUIMessageBox::SetUserPasswordMode(bool b)
     if (m_UIStaticUserPass)
         m_UIStaticUserPass->Show(b);
 }
+
 void CUIMessageBox::SetPasswordMode(bool b)
 {
     if (m_UIEditPass)

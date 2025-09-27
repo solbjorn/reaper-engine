@@ -134,4 +134,4 @@ struct STerrainPlace
 };
 
 DEFINE_VECTOR(STerrainPlace, TERRAIN_VECTOR, TERRAIN_IT);
-}; // namespace GameGraph
+} // namespace GameGraph

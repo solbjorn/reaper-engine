@@ -7,12 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife.h"
 
-CSE_ALifeItemWeapon* CSE_ALifeSmartZone::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower)
+CSE_ALifeItemWeapon* CSE_ALifeSmartZone::tpfGetBestWeapon(ALife::EHitType&, float&)
 {
-    m_tpCurrentBestWeapon = 0;
-    return (m_tpCurrentBestWeapon);
+    m_tpCurrentBestWeapon = nullptr;
+    return m_tpCurrentBestWeapon;
 }
 
 ALife::EMeetActionType CSE_ALifeSmartZone::tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
@@ -27,5 +28,5 @@ bool CSE_ALifeSmartZone::bfActive() { return (true); }
 CSE_ALifeDynamicObject* CSE_ALifeSmartZone::tpfGetBestDetector()
 {
     VERIFY2(false, "This function shouldn't be called");
-    return (0);
+    return nullptr;
 }

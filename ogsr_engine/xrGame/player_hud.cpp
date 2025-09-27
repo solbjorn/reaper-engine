@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "player_hud.h"
 #include "physic_item.h"
 #include "actor.h"
@@ -685,7 +686,7 @@ player_hud::player_hud()
     m_transform.identity();
     m_transform_2.identity();
 
-    script_anim_part = u8(-1);
+    script_anim_part = std::numeric_limits<u8>::max();
     script_anim_offset_factor = 0.f;
     m_item_pos.identity();
     script_override_arms = false;
@@ -868,7 +869,7 @@ void player_hud::render_hud(u32 context_id, IRenderable* root)
     bool b_has_hands =
         (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands) || script_anim_item_model;
 
-    if (b_has_hands || script_anim_part != u8(-1))
+    if (b_has_hands || script_anim_part != std::numeric_limits<u8>::max())
     {
         ::Render->add_Visual(context_id, root, m_model->dcast_RenderVisual(), m_transform);
         ::Render->add_Visual(context_id, root, m_model_2->dcast_RenderVisual(), m_transform_2);
@@ -1122,7 +1123,7 @@ void player_hud::update(const Fmatrix& cam_trans)
             anm->anm->Update(Device.fTimeDelta);
         }
 
-        if (anm->blend_amount[0] == anm->blend_amount[1])
+        if (fsimilar(anm->blend_amount[0], anm->blend_amount[1]))
         {
             Fmatrix blend = anm->XFORM(0);
             m_transform.mulB_43(blend);
@@ -1149,7 +1150,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
     {
         // single hand offset smoothing + syncing back to other hand animation on end
-        if (script_anim_part != u8(-1))
+        if (script_anim_part != std::numeric_limits<u8>::max())
         {
             if (need_update_collision_local)
                 script_anim_offset_factor += Device.fTimeDelta * 2.5f;
@@ -1176,7 +1177,7 @@ u32 player_hud::anim_play(u16 part, const motion_params& P, const motion_descr& 
         if (attached_item(0) && attached_item(1))
             part_id = m_model->partitions().part_id((part == 0) ? "right_hand" : "left_hand");
 
-        if (script_anim_part != u8(-1))
+        if (script_anim_part != std::numeric_limits<u8>::max())
         {
             if (script_anim_part != 2)
                 part_id = script_anim_part == 0 ? 1 : 0;
@@ -1555,7 +1556,7 @@ bool player_hud::allow_script_anim()
         return false;
     else if (m_attached_items[1] && (m_attached_items[1]->m_parent_hud_item->IsPending() || m_attached_items[1]->m_parent_hud_item->GetState() == CHudItem::EHudStates::eBore))
         return false;
-    else if (script_anim_part != u8(-1))
+    else if (script_anim_part != std::numeric_limits<u8>::max())
         return false;
 
     return true;
@@ -1739,7 +1740,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 void player_hud::script_anim_stop()
 {
     u8 part = script_anim_part;
-    script_anim_part = u8(-1);
+    script_anim_part = std::numeric_limits<u8>::max();
     script_anim_item_model = nullptr;
     script_override_item = false;
 
@@ -1759,7 +1760,7 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
         return 0;
     }
 
-    IKinematicsAnimated* animatedHudItem = NULL;
+    IKinematicsAnimated* animatedHudItem{};
 
     if (pSettings->line_exist(hud_section, "item_visual"))
     {
@@ -1806,16 +1807,13 @@ void player_hud::updateMovementLayerState()
         return;
 
     CActor* pActor = Actor();
-
     if (!pActor)
         return;
 
     for (movement_layer* anm : m_movement_layers)
-    {
         anm->Stop(false);
-    }
 
-    bool need_blend = (script_anim_part != u8(-1) || (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->NeedBlendAnm()) ||
+    bool need_blend = (script_anim_part != std::numeric_limits<u8>::max() || (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->NeedBlendAnm()) ||
                        (m_attached_items[1] && m_attached_items[1]->m_parent_hud_item->NeedBlendAnm()));
 
     if (pActor->AnyMove() && need_blend)

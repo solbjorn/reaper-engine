@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "control_sequencer.h"
 #include "control_manager.h"
 
@@ -31,9 +32,8 @@ void CAnimationSequencer::on_event(ControlCom::EEventType type, ControlCom::IEve
         }
         else
         {
-            m_man->notify(ControlCom::eventSequenceEnd, 0);
+            m_man->notify(ControlCom::eventSequenceEnd, nullptr);
         }
-        return;
     }
 }
 

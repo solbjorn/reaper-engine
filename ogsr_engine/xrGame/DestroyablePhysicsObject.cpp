@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PHCollisionDamageReceiver.h"
 #include "PhysicObject.h"
 #include "hit.h"
@@ -12,10 +13,13 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "PhysicsShell.h"
+
 #ifdef DEBUG
 #include "PHWorld.h"
+
 extern CPHWorld* ph_world;
 #endif
+
 CDestroyablePhysicsObject ::CDestroyablePhysicsObject() { m_fHealth = 1.f; }
 
 CDestroyablePhysicsObject::~CDestroyablePhysicsObject() {}
@@ -96,12 +100,15 @@ void CDestroyablePhysicsObject::Hit(SHit* pHDS)
             Destroy();
     }
 }
+
 void CDestroyablePhysicsObject::Destroy()
 {
     VERIFY(!ph_world->Processing());
+
     const CGameObject* who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
-    callback(GameObject::eDeath)(lua_game_object(),
-                                 who_object ? who_object->lua_game_object() : 0); // https://github.com/OpenXRay/xray-16/commit/32005e8e253ff084469ca19e405de2b2a35c4c90
+    // https://github.com/OpenXRay/xray-16/commit/32005e8e253ff084469ca19e405de2b2a35c4c90
+    callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : nullptr);
+
     CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
     if (m_destroy_sound._handle())
     {
@@ -133,6 +140,7 @@ void CDestroyablePhysicsObject::Destroy()
     }
     SheduleRegister();
 }
+
 void CDestroyablePhysicsObject::InitServerObject(CSE_Abstract* D)
 {
     CSE_PHSkeleton* ps = smart_cast<CSE_PHSkeleton*>(D);
@@ -146,6 +154,7 @@ void CDestroyablePhysicsObject::InitServerObject(CSE_Abstract* D)
     if (PO)
         PO->type = epotSkeleton;
 }
+
 void CDestroyablePhysicsObject::shedule_Update(u32 dt)
 {
     inherited::shedule_Update(dt);
@@ -156,6 +165,7 @@ bool CDestroyablePhysicsObject::CanRemoveObject()
 {
     return !CParticlesPlayer::IsPlaying() && !m_destroy_sound._feedback(); //&& sound!
 }
+
 DLL_Pure* CDestroyablePhysicsObject::_construct()
 {
     CDamageManager::_construct();

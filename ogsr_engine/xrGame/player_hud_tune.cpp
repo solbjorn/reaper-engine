@@ -372,7 +372,7 @@ void hud_draw_adjust_mode()
         F->SetAligment(CGameFont::alCenter);
         F->OutSetI(0.f, -0.8f);
         F->SetColor(D3DCOLOR_XRGB(125, 0, 0));
-        F->OutNext(_text);
+        F->OutNext("%s", _text);
         F->OutNext("for item: [%d] [%s]", g_bHudAdjustItemIdx,
                    g_player_hud->attached_item(u16(g_bHudAdjustItemIdx)) ? g_player_hud->attached_item(u16(g_bHudAdjustItemIdx))->m_sect_name.c_str() : "NOT FOUND");
         F->OutNext("delta values: dP=[%f], dR=[%f]", g_bHudAdjustDeltaPos, g_bHudAdjustDeltaRot);
@@ -382,7 +382,7 @@ void hud_draw_adjust_mode()
 
 void hud_adjust_mode_keyb(int dik)
 {
-    if (!g_bHudAdjustMode) //Включать этот режим только через консоль
+    if (!g_bHudAdjustMode) // Включать этот режим только через консоль
         return;
 
     if (pInput->iGetAsyncKeyState(DIK_LSHIFT))

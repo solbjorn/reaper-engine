@@ -13,9 +13,6 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-
 #ifdef XRGAME_EXPORTS
 class CALifeSimulator;
 #endif
@@ -27,9 +24,9 @@ class CALifeSmartTerrainTask;
 class CALifeMonsterAbstract;
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeSchedulable, IPureSchedulableObject)
-CSE_ALifeItemWeapon* m_tpCurrentBestWeapon;
-CSE_ALifeDynamicObject* m_tpBestDetector;
-u64 m_schedule_counter;
+CSE_ALifeItemWeapon* m_tpCurrentBestWeapon{};
+CSE_ALifeDynamicObject* m_tpBestDetector{};
+u64 m_schedule_counter{std::numeric_limits<u64>::max()};
 
 CSE_ALifeSchedulable(LPCSTR caSection);
 virtual ~CSE_ALifeSchedulable();
@@ -37,8 +34,8 @@ virtual ~CSE_ALifeSchedulable();
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
 virtual CSE_Abstract* init();
-virtual CSE_ALifeSchedulable* cast_schedulable() { return this; };
-virtual CSE_Abstract* cast_abstract() { return 0; };
+virtual CSE_ALifeSchedulable* cast_schedulable() { return this; }
+virtual CSE_Abstract* cast_abstract() { return nullptr; }
 // end of the virtual inheritance dependant code
 virtual bool need_update(CSE_ALifeDynamicObject* object);
 virtual u32 ef_creature_type() const;
@@ -49,10 +46,10 @@ virtual bool natural_weapon() const { return true; }
 virtual bool natural_detector() const { return true; }
 #ifdef XRGAME_EXPORTS
 virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) = 0;
-virtual bool bfPerformAttack() { return (true); };
-virtual void vfUpdateWeaponAmmo() {};
-virtual void vfProcessItems() {};
-virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll) {};
+virtual bool bfPerformAttack() { return true; }
+virtual void vfUpdateWeaponAmmo() {}
+virtual void vfProcessItems() {}
+virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll) {}
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection) = 0;
 virtual bool bfActive() = 0;
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector() = 0;
@@ -105,7 +102,7 @@ ALife::_STORY_ID m_story_id;
 ALife::_SPAWN_STORY_ID m_spawn_story_id;
 
 #ifdef XRGAME_EXPORTS
-CALifeSimulator* m_alife_simulator;
+CALifeSimulator* m_alife_simulator{};
 #endif
 
 CSE_ALifeObject(LPCSTR caSection);
@@ -154,8 +151,8 @@ virtual ~CSE_ALifeGroupAbstract();
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
-virtual CSE_ALifeGroupAbstract* cast_group_abstract() { return this; };
-virtual CSE_Abstract* cast_abstract() { return 0; };
+virtual CSE_ALifeGroupAbstract* cast_group_abstract() { return this; }
+virtual CSE_Abstract* cast_abstract() { return nullptr; }
 #ifdef XRGAME_EXPORTS
 virtual bool synchronize_location();
 virtual void try_switch_online();
@@ -179,39 +176,40 @@ public:
     typedef CSE_ALifeGroupAbstract inherited2;
 
     CSE_ALifeGroupTemplate(LPCSTR caSection)
-        : __A(pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section") : caSection), CSE_ALifeGroupAbstract(caSection) {};
+        : __A{pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section") : caSection}, CSE_ALifeGroupAbstract{caSection}
+    {}
 
-    virtual ~CSE_ALifeGroupTemplate() {};
+    virtual ~CSE_ALifeGroupTemplate() {}
 
     virtual void __STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
         inherited1::__STATE_Read(tNetPacket, size);
         inherited2::__STATE_Read(tNetPacket, size);
-    };
+    }
 
     virtual void __STATE_Write(NET_Packet& tNetPacket)
     {
         inherited1::__STATE_Write(tNetPacket);
         inherited2::__STATE_Write(tNetPacket);
-    };
+    }
 
     virtual void UPDATE_Read(NET_Packet& tNetPacket)
     {
         inherited1::UPDATE_Read(tNetPacket);
         inherited2::UPDATE_Read(tNetPacket);
-    };
+    }
 
     virtual void UPDATE_Write(NET_Packet& tNetPacket)
     {
         inherited1::UPDATE_Write(tNetPacket);
         inherited2::UPDATE_Write(tNetPacket);
-    };
+    }
 
     virtual CSE_Abstract* init()
     {
         inherited1::init();
         inherited2::init();
-        return (base());
+        return base();
     }
 
     virtual CSE_Abstract* base() { return (inherited1::base()); }
@@ -260,7 +258,7 @@ virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 virtual bool redundant() const;
 void attach(CSE_ALifeInventoryItem* tpALifeInventoryItem, bool bALifeRequest, bool bAddChildren = true);
-void detach(CSE_ALifeInventoryItem* tpALifeInventoryItem, ALife::OBJECT_IT* I = 0, bool bALifeRequest = true, bool bRemoveChildren = true);
+void detach(CSE_ALifeInventoryItem* tpALifeInventoryItem, ALife::OBJECT_IT* I = nullptr, bool bALifeRequest = true, bool bRemoveChildren = true);
 #endif
 virtual CSE_ALifeDynamicObject* cast_alife_dynamic_object() { return this; }
 SERVER_ENTITY_DECLARE_END
@@ -326,16 +324,16 @@ virtual ~CSE_ALifeSmartZone();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
 virtual CSE_Abstract* init();
-virtual CSE_Abstract* cast_abstract() { return this; };
-virtual CSE_ALifeSchedulable* cast_schedulable() { return this; };
+virtual CSE_Abstract* cast_abstract() { return this; }
+virtual CSE_ALifeSchedulable* cast_schedulable() { return this; }
 virtual void update();
 virtual float detect_probability() { return 0.f; }
 virtual void smart_touch(CSE_ALifeMonsterAbstract*) {}
-virtual bool used_ai_locations() const { return true; };
-virtual CSE_ALifeSmartZone* cast_smart_zone() { return this; };
+virtual bool used_ai_locations() const { return true; }
+virtual CSE_ALifeSmartZone* cast_smart_zone() { return this; }
 #ifdef XRGAME_EXPORTS
 virtual bool bfActive();
-virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
+virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType&, float&);
 virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
 // additional functionality
@@ -544,8 +542,9 @@ class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual, public CSE_Invento
     RTTI_DECLARE_TYPEINFO(CSE_InventoryBox, CSE_ALifeDynamicObjectVisual, CSE_InventoryBoxAbstract);
 
 public:
-    CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {};
-    virtual ~CSE_InventoryBox() {};
+    CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual{caSection} {}
+    virtual ~CSE_InventoryBox() {}
+
 #ifdef XRGAME_EXPORTS
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
     {
@@ -556,10 +555,8 @@ public:
     {
         add_online_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), update_registries);
         CSE_ALifeDynamicObjectVisual::add_online(update_registries);
-    };
+    }
 #endif
 };
-
-#pragma warning(pop)
 
 #endif

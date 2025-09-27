@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ui\uistatic.h"
+
 class CObject;
 class CWeaponBinoculars;
 
@@ -8,9 +10,9 @@ enum
     flVisObjNotValid = (1 << 0),
     flTargetLocked = (1 << 1),
 };
+
 struct SBinocVisibleObj
 {
-    SBinocVisibleObj(){};
     CObject* m_object;
     CUIStatic m_lt;
     CUIStatic m_lb;
@@ -27,6 +29,7 @@ struct SBinocVisibleObj
 };
 
 class CWeaponMagazined;
+
 class CBinocularsVision
 {
     xr_vector<std::unique_ptr<SBinocVisibleObj>> m_active_objects;
@@ -34,6 +37,7 @@ class CBinocularsVision
 public:
     CBinocularsVision(CWeaponMagazined* parent);
     ~CBinocularsVision();
+
     void Update();
     void Draw();
     void remove_links(CObject* object);

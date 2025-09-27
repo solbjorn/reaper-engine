@@ -225,7 +225,7 @@ void CDetailManager::hw_Render_dump(CBackend& cmd_list, const Fvector4& consts, 
             if (ps_ssfx_grass_shadows.x <= 0)
             {
                 // fade_distance == fade_scene only during PHASE_NORMAL
-                bool use_fast_geo = fade_distance != fade_scene;
+                bool use_fast_geo = !fsimilar(fade_distance, fade_scene);
 
                 if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
                     ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && use_fast_geo) // phase smap with shadows

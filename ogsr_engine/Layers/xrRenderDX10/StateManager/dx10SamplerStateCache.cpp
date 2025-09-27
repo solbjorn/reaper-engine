@@ -163,7 +163,7 @@ void dx10SamplerStateCache::SetMaxAnisotropy(u32 uiMaxAniso)
 
 void dx10SamplerStateCache::SetMipLODBias(float uiMipLODBias)
 {
-    if (m_uiMipLODBias == uiMipLODBias)
+    if (fsimilar(m_uiMipLODBias, uiMipLODBias))
         return;
 
     m_uiMipLODBias = uiMipLODBias;

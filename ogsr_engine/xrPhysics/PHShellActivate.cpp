@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "tri-colliderknoopc/dTriList.h"
@@ -23,21 +24,25 @@
 ///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
-
 #include "PHElement.h"
 #include "PHShell.h"
+
 void CPHShell::activate(bool disable)
 {
     PresetActive();
+
     if (!CPHObject::is_active())
         vis_update_deactivate();
+
     if (!disable)
-        EnableObject(0);
+        EnableObject(nullptr);
 }
+
 void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable)
 {
     if (isActive())
         return;
+
     activate(disable);
     //	ELEMENT_I i;
     mXFORM.set(m0);
@@ -124,10 +129,11 @@ void CPHShell::Activate(bool disable, bool not_set_bone_callbacks)
         return;
 
     activate(disable);
+
     {
         IKinematics* K = m_pKinematics;
         if (not_set_bone_callbacks)
-            m_pKinematics = 0;
+            m_pKinematics = nullptr;
 
         ELEMENT_I i = elements.begin(), e = elements.end();
         for (; i != e; ++i)
@@ -136,16 +142,13 @@ void CPHShell::Activate(bool disable, bool not_set_bone_callbacks)
         m_pKinematics = K;
     }
 
-    {
-        JOINT_I i = joints.begin(), e = joints.end();
-        for (; i != e; ++i)
-            (*i)->Activate();
-    }
+    JOINT_I i = joints.begin(), e = joints.end();
+    for (; i != e; ++i)
+        (*i)->Activate();
 
     if (PKinematics() && !not_set_bone_callbacks)
-    {
         SetCallbacks(GetBonesCallback());
-    }
+
     spatial_register();
     m_flags.set(flActivating, TRUE);
     m_flags.set(flActive, TRUE);
@@ -179,8 +182,8 @@ void CPHShell::RunSimulation(bool place_current_forms /*true*/)
 {
     if (!CPHObject::is_active())
         vis_update_deactivate();
-    EnableObject(0);
 
+    EnableObject(nullptr);
     dSpaceSetCleanup(m_space, 0);
 
     {
@@ -214,11 +217,13 @@ void CPHShell::PureActivate()
 {
     if (isActive())
         return;
-    // bActive=true;
+
     m_flags.set(flActive, TRUE);
+
     if (!CPHObject::is_active())
         vis_update_deactivate();
-    EnableObject(0);
+
+    EnableObject(nullptr);
     m_object_in_root.identity();
     spatial_register();
 }
@@ -226,9 +231,10 @@ void CPHShell::PureActivate()
 void CPHShell::PresetActive()
 {
     VERIFY(!isActive());
+
     if (!m_space)
     {
-        m_space = dSimpleSpaceCreate(0);
+        m_space = dSimpleSpaceCreate(nullptr);
         dSpaceSetCleanup(m_space, 0);
     }
 }
@@ -281,10 +287,9 @@ void CPHShell::Deactivate()
     if (m_space)
     {
         dSpaceDestroy(m_space);
-        m_space = NULL;
+        m_space = nullptr;
     }
-    // bActive=false;
-    // bActivating=false;
+
     m_flags.set(flActivating, FALSE);
     m_flags.set(flActive, FALSE);
     m_traced_geoms.clear();

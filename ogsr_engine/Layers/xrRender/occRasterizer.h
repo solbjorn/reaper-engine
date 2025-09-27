@@ -20,7 +20,7 @@ public:
 constexpr float occQ_s32 = float(0x40000000); // [-2..2]
 typedef s32 occD;
 
-class alignas(32) occRasterizer
+class alignas(sizeof(__m256i)) occRasterizer
 {
 private:
     occTri* bufFrame[occ_dim][occ_dim];

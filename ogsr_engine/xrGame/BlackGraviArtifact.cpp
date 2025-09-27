@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "BlackGraviArtifact.h"
 #include "PhysicsShell.h"
 #include "entity_alive.h"
@@ -16,8 +17,10 @@
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "PHWorld.h"
 #include "CharacterPhysicsSupport.h"
+
 extern CPHWorld* ph_world;
-CBlackGraviArtefact::CBlackGraviArtefact(void)
+
+CBlackGraviArtefact::CBlackGraviArtefact()
 {
     m_fImpulseThreshold = 10.f;
     m_fRadius = 10.f;
@@ -26,7 +29,7 @@ CBlackGraviArtefact::CBlackGraviArtefact(void)
     m_bStrike = false;
 }
 
-CBlackGraviArtefact::~CBlackGraviArtefact(void) { m_GameObjectList.clear(); }
+CBlackGraviArtefact::~CBlackGraviArtefact() { m_GameObjectList.clear(); }
 
 void CBlackGraviArtefact::Load(LPCSTR section)
 {
@@ -117,7 +120,7 @@ void CBlackGraviArtefact::Hit(SHit* pHDS)
     if (HDS.impulse > m_fImpulseThreshold)
     {
         m_bStrike = true;
-        //чтоб выстрел не повлиял на траекторию полета артефакта
+        // чтоб выстрел не повлиял на траекторию полета артефакта
         HDS.impulse = 0;
     }
 
@@ -185,7 +188,7 @@ void CBlackGraviArtefact::GraviStrike()
         {
             //?			BOOL		enabled = getEnabled();
             //?			setEnabled	(FALSE);
-            impulse *= CExplosive::ExplosionEffect(rq_storage, NULL, pGameObject, Position(), m_fRadius);
+            impulse *= CExplosive::ExplosionEffect(rq_storage, nullptr, pGameObject, Position(), m_fRadius);
             //?			setEnabled	(enabled);
         }
 

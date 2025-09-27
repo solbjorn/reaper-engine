@@ -19,13 +19,10 @@ static pcstr const s_enable_for_dead_string = "_enable_for_dead";
 
 } // namespace detail
 
-monster_aura::monster_aura(CBaseMonster* const object, pcstr const name) : m_object(object), m_pp_effector_name(NULL), m_pp_index(0)
+monster_aura::monster_aura(CBaseMonster* const object, pcstr const name) : m_object{object}
 {
     strcpy_s(m_name, name);
     this_is_psy_aura = !!strstr(name, "psy");
-    m_detect_snd_time = 0.0f;
-    m_enabled = false;
-    m_enable_for_dead = false;
 }
 
 monster_aura::~monster_aura() { remove_pp_effector(); }
@@ -33,7 +30,6 @@ monster_aura::~monster_aura() { remove_pp_effector(); }
 float monster_aura::calculate() const
 {
     float const distance = m_object->Position().distance_to(Actor()->Position());
-
     float const epsilon = 0.0001f;
 
     using namespace detail;
@@ -43,14 +39,10 @@ float monster_aura::calculate() const
     float max_distance = m_max_distance;
 
     if (distance > max_distance)
-    {
         return 0;
-    }
 
     if (distance < epsilon)
-    {
         return (linear_factor > epsilon) || (quadratic_factor > epsilon) ? max_power : 0;
-    }
 
     float const power = linear_factor / distance + quadratic_factor / distance * distance;
 
@@ -62,7 +54,7 @@ void monster_aura::load_from_ini(CInifile* ini, pcstr const section, bool enable
     using namespace detail;
     string512 tempBuffer;
     xr_strconcat(tempBuffer, m_name, s_pp_effector_name_string);
-    m_pp_effector_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, NULL);
+    m_pp_effector_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, nullptr);
 
     xr_strconcat(tempBuffer, m_name, s_pp_highest_at_string);
     m_pp_highest_at = READ_IF_EXISTS(ini, r_float, section, tempBuffer, 1.f);
@@ -80,10 +72,10 @@ void monster_aura::load_from_ini(CInifile* ini, pcstr const section, bool enable
     m_max_distance = READ_IF_EXISTS(ini, r_float, section, tempBuffer, 0.f);
 
     xr_strconcat(tempBuffer, m_name, s_sound_string);
-    LPCSTR sound_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, NULL);
+    LPCSTR sound_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, nullptr);
 
     xr_strconcat(tempBuffer, m_name, s_detect_sound_string);
-    LPCSTR detect_sound_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, NULL);
+    LPCSTR detect_sound_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, nullptr);
 
     xr_strconcat(tempBuffer, m_name, s_enable_for_dead_string);
 

@@ -1,5 +1,6 @@
 RD /s /q 3rd_party\_LIB
 RD /s /q 3rd_party\_TEMP
+RD /s /q 3rd_party\Src\DirectXTex\DirectXTex\DirectXTex\Shaders\Compiled
 RD /s /q 3rd_party\Src\OpCoDe\_Build
 RD /s /q 3rd_party\Src\Xiph\ogg\_Build
 RD /s /q 3rd_party\Src\Xiph\theora\_Build

@@ -52,7 +52,7 @@ SInputSignature::SInputSignature(ID3DBlob* pBlob)
     VERIFY(pBlob);
     signature = pBlob;
     signature->AddRef();
-};
+}
 
 SInputSignature::~SInputSignature()
 {

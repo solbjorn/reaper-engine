@@ -8,24 +8,7 @@
 
 #pragma once
 
-IC CGroupHierarchyHolder::CGroupHierarchyHolder(CSquadHierarchyHolder* squad, u32 id)
-{
-    VERIFY(squad);
-    m_squad = squad;
-#ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
-    m_leader = 0;
-#endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
-    m_visible_objects = 0;
-    m_sound_objects = 0;
-    m_hit_objects = 0;
-    m_agent_manager = 0;
-    m_dwLastActionTime = 0;
-    m_dwLastAction = 0;
-    m_dwActiveCount = 0;
-    m_dwAliveCount = 0;
-    m_dwStandingCount = 0;
-    group_id = id;
-}
+IC CGroupHierarchyHolder::CGroupHierarchyHolder(CSquadHierarchyHolder* squad, u32 id) : group_id{id}, m_squad{squad} { VERIFY(squad); }
 
 IC CAgentManager& CGroupHierarchyHolder::agent_manager() const
 {

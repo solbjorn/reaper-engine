@@ -31,7 +31,7 @@ IC CDangerObject::EDangerPerceiveType CDangerObject::perceive_type() const { ret
 
 IC const CObject* CDangerObject::dependent_object() const { return (m_dependent_object); }
 
-IC void CDangerObject::clear_dependent_object() { m_dependent_object = 0; }
+IC void CDangerObject::clear_dependent_object() { m_dependent_object = nullptr; }
 
 IC bool CDangerObject::operator==(const CDangerObject& object) const
 {

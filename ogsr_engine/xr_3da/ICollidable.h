@@ -9,7 +9,7 @@ class ICollidable : public virtual RTTI::Enable
 public:
     struct
     {
-        ICollisionForm* model;
+        ICollisionForm* model{};
     } collidable;
 
 public:

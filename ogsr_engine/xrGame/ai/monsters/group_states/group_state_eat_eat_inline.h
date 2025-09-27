@@ -1,4 +1,5 @@
 #pragma once
+
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 
 #define CStateGroupEatingAbstract CStateGroupEating<_Object>
@@ -43,10 +44,8 @@ bool CStateGroupEatingAbstract::check_start_conditions()
     VERIFY(corpse);
 
     Fvector nearest_bone_pos;
-    if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
-    {
+    if (!corpse->m_pPhysicsShell || !corpse->m_pPhysicsShell->isActive())
         nearest_bone_pos = corpse->Position();
-    }
     else
         nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 
@@ -55,6 +54,7 @@ bool CStateGroupEatingAbstract::check_start_conditions()
 
     if (dist + 0.5f < dist_to_corpse)
         return true;
+
     return false;
 }
 
@@ -80,15 +80,14 @@ bool CStateGroupEatingAbstract::check_completion()
         return true;
 
     Fvector nearest_bone_pos;
-    if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive()))
-    {
+    if (!corpse->m_pPhysicsShell || !corpse->m_pPhysicsShell->isActive())
         nearest_bone_pos = corpse->Position();
-    }
     else
         nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 
     float dist = nearest_bone_pos.distance_to(object->Position());
     float dist_to_corpse = object->db().m_fDistToCorpse;
+
     if (dist > dist_to_corpse + 0.5f)
         return true;
 
@@ -99,7 +98,7 @@ TEMPLATE_SPECIALIZATION
 void CStateGroupEatingAbstract::remove_links(CObject* object)
 {
     if (corpse == object)
-        corpse = 0;
+        corpse = nullptr;
 }
 
 #undef TEMPLATE_SPECIALIZATION

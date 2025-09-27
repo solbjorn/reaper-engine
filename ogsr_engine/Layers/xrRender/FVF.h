@@ -10,7 +10,8 @@ struct alignas(16) L
 {
     Fvector p;
     u32 color;
-    IC void set(const L& src) { *this = src; };
+
+    IC void set(const L& src) { *this = src; }
     IC void set(float x, float y, float z, u32 C)
     {
         p.set(x, y, z);
@@ -29,7 +30,8 @@ struct V
 {
     Fvector p;
     float tx, ty;
-    IC void set(const V& src) { *this = src; };
+
+    IC void set(const V& src) { *this = src; }
     IC void set(float x, float y, float z, float u, float v)
     {
         p.set(x, y, z);
@@ -51,7 +53,8 @@ struct alignas(8) LIT
     Fvector p;
     u32 color;
     Fvector2 t;
-    IC void set(const LIT& src) { *this = src; };
+
+    IC void set(const LIT& src) { *this = src; }
     IC void set(float x, float y, float z, u32 C, float u, float v)
     {
         p.set(x, y, z);
@@ -72,9 +75,10 @@ struct TL0uv
 {
     float px, py, pz, pw;
     u32 color;
-    IC void set(const TL0uv& src) { *this = src; };
-    IC void set(float x, float y, u32 c) { set(x, y, .0001f, .9999f, c); };
-    IC void set(int x, int y, u32 c) { set(float(x), float(y), .0001f, .9999f, c); };
+
+    IC void set(const TL0uv& src) { *this = src; }
+    IC void set(float x, float y, u32 c) { set(x, y, .0001f, .9999f, c); }
+    IC void set(int x, int y, u32 c) { set(float(x), float(y), .0001f, .9999f, c); }
     IC void set(float x, float y, float z, float w, u32 c)
     {
         px = x;
@@ -82,7 +86,7 @@ struct TL0uv
         pz = z;
         pw = w;
         color = c;
-    };
+    }
     IC void transform(const Fvector& v, const Fmatrix& matSet)
     {
         // Transform it through the matrix set. Takes in mean projection.
@@ -93,7 +97,7 @@ struct TL0uv
         px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
         py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
         pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
-    };
+    }
 };
 static_assert(sizeof(struct TL0uv) == 20);
 constexpr u32 F_TL0uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
@@ -103,11 +107,12 @@ struct TL
     float px, py, pz, pw;
     u32 color;
     float uvx, uvy;
-    IC void set(const TL& src) { *this = src; };
-    IC void set(float x, float y, u32 c, Fvector2& t) { set(x, y, .0001f, .9999f, c, t.x, t.y); };
-    IC void set(float x, float y, u32 c, float u, float v) { set(x, y, .0001f, .9999f, c, u, v); };
-    IC void set(int x, int y, u32 c, float u, float v) { set(float(x), float(y), .0001f, .9999f, c, u, v); };
-    IC void set(float x, float y, float z, float w, u32 c) { set(x, y, z, w, c, uvx, uvy); };
+
+    IC void set(const TL& src) { *this = src; }
+    IC void set(float x, float y, u32 c, Fvector2& t) { set(x, y, .0001f, .9999f, c, t.x, t.y); }
+    IC void set(float x, float y, u32 c, float u, float v) { set(x, y, .0001f, .9999f, c, u, v); }
+    IC void set(int x, int y, u32 c, float u, float v) { set(float(x), float(y), .0001f, .9999f, c, u, v); }
+    IC void set(float x, float y, float z, float w, u32 c) { set(x, y, z, w, c, uvx, uvy); }
     IC void set(float x, float y, float z, float w, u32 c, float u, float v)
     {
         px = x;
@@ -117,7 +122,7 @@ struct TL
         color = c;
         uvx = u;
         uvy = v;
-    };
+    }
     IC void transform(const Fvector& v, const Fmatrix& matSet)
     {
         // Transform it through the matrix set. Takes in mean projection.
@@ -128,7 +133,7 @@ struct TL
         px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
         py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
         pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
-    };
+    }
 };
 static_assert(sizeof(struct TL) == 28);
 constexpr u32 F_TL = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
@@ -138,11 +143,12 @@ struct TL2uv
     float px, py, pz, pw;
     u32 color;
     float uv0x, uv0y, uv1x, uv1y;
-    IC void set(const TL2uv& src) { *this = src; };
-    IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); };
-    IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); };
-    IC void set(float x, float y, u32 c, float u, float v, float u2, float v2) { set(x, y, .0001f, .9999f, c, u, v, u2, v2); };
-    IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); };
+
+    IC void set(const TL2uv& src) { *this = src; }
+    IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); }
+    IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); }
+    IC void set(float x, float y, u32 c, float u, float v, float u2, float v2) { set(x, y, .0001f, .9999f, c, u, v, u2, v2); }
+    IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); }
     IC void set(float x, float y, float z, float w, u32 c, float u, float v, float u2, float v2)
     {
         px = x;
@@ -154,7 +160,7 @@ struct TL2uv
         uv0y = v;
         uv1x = u2;
         uv1y = v2;
-    };
+    }
     IC void transform(const Fvector& v, const Fmatrix& matSet)
     {
         // Transform it through the matrix set. Takes in mean projection.
@@ -165,7 +171,7 @@ struct TL2uv
         px = (matSet._11 * v.x + matSet._21 * v.y + matSet._31 * v.z + matSet._41) / pw;
         py = -(matSet._12 * v.x + matSet._22 * v.y + matSet._32 * v.z + matSet._42) / pw;
         pz = (matSet._13 * v.x + matSet._23 * v.y + matSet._33 * v.z + matSet._43) / pw;
-    };
+    }
 };
 static_assert(sizeof(struct TL2uv) == 36);
 constexpr u32 F_TL2uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
@@ -175,11 +181,12 @@ struct TL4uv
     float px, py, pz, pw;
     u32 color;
     float uv0x, uv0y, uv1x, uv1y, uv2x, uv2y, uv3x, uv3y;
-    IC void set(const TL4uv& src) { *this = src; };
-    IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); };
-    IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); };
-    IC void set(float x, float y, u32 c, float u, float v, float u2, float v2) { set(x, y, .0001f, .9999f, c, u, v, u2, v2); };
-    IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); };
+
+    IC void set(const TL4uv& src) { *this = src; }
+    IC void set(float x, float y, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, .0001f, .9999f, c, t0.x, t0.y, t1.x, t1.y); }
+    IC void set(float x, float y, float z, float w, u32 c, Fvector2& t0, Fvector2& t1) { set(x, y, z, w, c, t0.x, t0.y, t1.x, t1.y); }
+    IC void set(float x, float y, u32 c, float u, float v, float u2, float v2) { set(x, y, .0001f, .9999f, c, u, v, u2, v2); }
+    IC void set(int x, int y, u32 c, float u, float v, float u2, float v2) { set(float(x), float(y), .0001f, .9999f, c, u, v, u2, v2); }
     IC void set(float x, float y, float z, float w, u32 c, float u, float v, float u2, float v2)
     {
         px = x;
@@ -191,11 +198,11 @@ struct TL4uv
         uv0y = v;
         uv1x = u2;
         uv1y = v2;
-    };
+    }
 };
 static_assert(sizeof(struct TL4uv) == 52);
 constexpr u32 F_TL4uv = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
-}; // namespace FVF
+} // namespace FVF
 
 //-----------------------------------------------------------------------------
 #endif

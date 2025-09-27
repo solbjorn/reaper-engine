@@ -48,6 +48,9 @@ public:
 
 class CParticleGroup : public dxParticleCustom
 {
+    RTTI_DECLARE_TYPEINFO(CParticleGroup, dxParticleCustom);
+
+private:
     const CPGDef* m_Def{};
     float m_CurrentTime{};
     Fvector m_InitialPosition;

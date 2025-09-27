@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIPdaWnd.h"
 #include "../Pda.h"
 
@@ -13,7 +14,7 @@
 #include "UIStatic.h"
 #include "UIFrameWindow.h"
 #include "UITabControl.h"
-//#include "UIPdaCommunication.h"
+// #include "UIPdaCommunication.h"
 #include "UIPdaContactsWnd.h"
 #include "UIMapWnd.h"
 #include "UIDiaryWnd.h"
@@ -33,22 +34,13 @@
 #include "inventory.h"
 
 #define PDA_XML "pda.xml"
+
 u32 g_pda_info_state = 0;
 
 void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_places);
 
 CUIPdaWnd::CUIPdaWnd()
 {
-    UIMapWnd = NULL;
-    UIPdaContactsWnd = NULL;
-    UIEncyclopediaWnd = NULL;
-    UIDiaryWnd = NULL;
-    UIActorInfo = NULL;
-    UIStalkersRanking = NULL;
-    UIEventsWnd = NULL;
-    m_updatedSectionImage = NULL;
-    m_oldSectionImage = NULL;
-
     last_cursor_pos.set(UI_BASE_WIDTH / 2.f, UI_BASE_HEIGHT / 2.f);
 
     Init();
@@ -77,7 +69,7 @@ void CUIPdaWnd::Init()
 
     CUIXmlInit xml_init;
 
-    m_pActiveDialog = NULL;
+    m_pActiveDialog = nullptr;
 
     xml_init.InitWindow(uiXml, "main", 0, this);
 
@@ -86,7 +78,7 @@ void CUIPdaWnd::Init()
     AttachChild(UIMainPdaFrame);
     xml_init.InitStatic(uiXml, "background_static", 0, UIMainPdaFrame);
 
-    //Элементы автоматического добавления
+    // Элементы автоматического добавления
     xml_init.InitAutoStatic(uiXml, "auto_static", this);
 
     // Main buttons background
@@ -431,6 +423,7 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash)
         HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
     }
 }
+
 void draw_sign(CUIStatic* s, Fvector2& pos)
 {
     s->SetWndPos(pos);
@@ -530,7 +523,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
     sign_sz.set(9.0f + 3.0f, 11.0f);
     u32 idx = 0;
     float btn_text_len = 0.0f;
-    CUIStatic* st = NULL;
+    CUIStatic* st{};
 
     for (; it != it_e; ++it, ++idx)
     {
@@ -559,6 +552,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
         pos.x += btn_text_len + 3.0f;
     }
 }
+
 bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (WINDOW_KEY_PRESSED == keyboard_action && IsShown())

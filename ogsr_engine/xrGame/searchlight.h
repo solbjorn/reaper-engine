@@ -55,14 +55,14 @@ public:
 
     virtual void Hit(SHit* pHDS);
 
-    IC void SetCurrentYaw(float _yaw) { _current.yaw = _yaw; };
-    IC void SetTargetYaw(float _yaw) { _target.yaw = _yaw; };
-    IC void SetCurrentPitch(float _pitch) { _current.pitch = _pitch; };
-    IC void SetTargetPitch(float _pitch) { _target.pitch = _pitch; };
-    IC float GetCurrentYaw() const { return _current.yaw; };
-    IC float GetTargetYaw() const { return _target.yaw; };
-    IC float GetCurrentPitch() const { return _current.pitch; };
-    IC float GetTargetPitch() const { return _target.pitch; };
+    IC void SetCurrentYaw(float _yaw) { _current.yaw = _yaw; }
+    IC void SetTargetYaw(float _yaw) { _target.yaw = _yaw; }
+    IC void SetCurrentPitch(float _pitch) { _current.pitch = _pitch; }
+    IC void SetTargetPitch(float _pitch) { _target.pitch = _pitch; }
+    IC float GetCurrentYaw() const { return _current.yaw; }
+    IC float GetTargetYaw() const { return _target.yaw; }
+    IC float GetCurrentPitch() const { return _current.pitch; }
+    IC float GetTargetPitch() const { return _target.pitch; }
 
 private:
     // Rotation routines

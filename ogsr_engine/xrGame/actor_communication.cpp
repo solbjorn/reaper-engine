@@ -41,6 +41,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
     xr_vector<pda_section::part> updated_pda;
     auto update_pda_section = [&updated_pda](const auto& data) {
         pda_section::part p = pda_section::encyclopedia;
+
         switch (data.article_type)
         {
         case ARTICLE_DATA::eEncyclopediaArticle: p = pda_section::encyclopedia; break;
@@ -48,7 +49,8 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
         case ARTICLE_DATA::eInfoArticle: p = pda_section::info; break;
         case ARTICLE_DATA::eTaskArticle: p = pda_section::quests; break;
         default: NODEFAULT;
-        };
+        }
+
         auto it = std::find(updated_pda.begin(), updated_pda.end(), p);
         if (it == updated_pda.end())
             updated_pda.push_back(p);
@@ -149,7 +151,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
     if (!HUD().GetUI())
         return false;
-    //только если находимся в режиме single
+    // только если находимся в режиме single
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (!pGameSP)
         return false;
@@ -175,7 +177,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
     if (!HUD().GetUI())
         return;
 
-    //только если находимся в режиме single
+    // только если находимся в режиме single
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (!pGameSP)
         return;
@@ -186,7 +188,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
 
 void CActor::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
 {
-    //только если находимся в режиме single
+    // только если находимся в режиме single
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (!pGameSP)
         return;
@@ -207,7 +209,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
         for (KNOWN_INFO_VECTOR::const_iterator it = CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
              CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
         {
-            //подгрузить кусочек информации с которым мы работаем
+            // подгрузить кусочек информации с которым мы работаем
             CInfoPortion info_portion;
             info_portion.Load((*it).info_id);
 
@@ -216,7 +218,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
         }
     }
 
-    //добавить актерский диалог собеседника
+    // добавить актерский диалог собеседника
     CInventoryOwner* pInvOwnerPartner = smart_cast<CInventoryOwner*>(partner);
     VERIFY(pInvOwnerPartner);
 
@@ -238,11 +240,11 @@ void CActor::TryToTalk()
 
 void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 {
-    //предложить поговорить с нами
+    // предложить поговорить с нами
     if (talk_partner->OfferTalk(this))
     {
         StartTalk(talk_partner);
-        //только если находимся в режиме single
+        // только если находимся в режиме single
         CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
         if (pGameSP)
         {
@@ -307,7 +309,7 @@ void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
             Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
         }
         Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
-    };
+    }
 
     if (HUD().GetUI())
     {

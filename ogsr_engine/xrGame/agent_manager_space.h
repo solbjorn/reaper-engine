@@ -29,4 +29,4 @@ enum EOperators : u32
 
     eOperatorScript,
 };
-}; // namespace AgentManager
+} // namespace AgentManager

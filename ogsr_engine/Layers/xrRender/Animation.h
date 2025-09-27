@@ -46,4 +46,4 @@ public:
         def.factor = factors[channel];
     }
 };
-}; // namespace animation
+} // namespace animation

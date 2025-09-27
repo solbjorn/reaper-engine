@@ -30,19 +30,19 @@ private:
     friend inherited;
 
 public:
-    CHARACTER_REPUTATION() : m_current_value(NO_REPUTATION) {};
-    ~CHARACTER_REPUTATION() {};
+    CHARACTER_REPUTATION() = default;
+    ~CHARACTER_REPUTATION() = default;
 
     void set(CHARACTER_REPUTATION_VALUE);
 
     shared_str id() const;
-    int index() const { return m_current_index; };
-    CHARACTER_REPUTATION_VALUE value() const { return m_current_value; };
+    int index() const { return m_current_index; }
+    CHARACTER_REPUTATION_VALUE value() const { return m_current_value; }
 
     static int ValueToIndex(CHARACTER_REPUTATION_VALUE);
 
 private:
-    CHARACTER_REPUTATION_VALUE m_current_value;
+    CHARACTER_REPUTATION_VALUE m_current_value{NO_REPUTATION};
     int m_current_index{};
 
     static void InitIdToIndex();

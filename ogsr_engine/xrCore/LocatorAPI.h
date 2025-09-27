@@ -58,8 +58,8 @@ private:
     struct archive
     {
         shared_str path;
-        size_t vfs_idx;
-        size_t size;
+        size_t vfs_idx{VFS_STANDARD_FILE};
+        size_t size{};
 
     private:
         class xr_sqfs_stream;
@@ -71,16 +71,16 @@ private:
             SQFS,
             DB,
         };
-        container type : 3;
+        container type{container::STANDARD};
 
         union
         {
             // SquashFS
             struct
             {
-                sqfs_file_t* file;
-                sqfs_compressor_t* cmp;
-                xr_sqfs* fs;
+                sqfs_file_t* file{};
+                sqfs_compressor_t* cmp{};
+                xr_sqfs* fs{};
             };
 
             // DB
@@ -92,10 +92,10 @@ private:
             };
         };
 
-        void* hSrcFile;
+        void* hSrcFile{};
 
     public:
-        archive() : hSrcFile(NULL), vfs_idx(VFS_STANDARD_FILE), size(0), type(container::STANDARD), file(nullptr), cmp(nullptr), fs(nullptr) {}
+        archive() = default;
 
         // Implementation wrappers
         void open();
@@ -188,19 +188,20 @@ private:
 public:
     CLocatorAPI();
     ~CLocatorAPI();
-    void _initialize(u32 flags, LPCSTR target_folder = 0, LPCSTR fs_name = 0);
+
+    void _initialize(u32 flags, LPCSTR target_folder = nullptr, LPCSTR fs_name = nullptr);
     void _destroy();
 
     CStreamReader* rs_open(LPCSTR initial, LPCSTR N);
     IReader* r_open(LPCSTR initial, LPCSTR N);
-    IC IReader* r_open(LPCSTR N) { return r_open(0, N); }
+    IC IReader* r_open(LPCSTR N) { return r_open(nullptr, N); }
     void r_close(IReader*& S);
     void r_close(CStreamReader*& fs);
 
     IWriter* w_open(LPCSTR initial, LPCSTR N);
-    IC IWriter* w_open(LPCSTR N) { return w_open(0, N); }
+    IC IWriter* w_open(LPCSTR N) { return w_open(nullptr, N); }
     IWriter* w_open_ex(LPCSTR initial, LPCSTR N);
-    IC IWriter* w_open_ex(LPCSTR N) { return w_open_ex(0, N); }
+    IC IWriter* w_open_ex(LPCSTR N) { return w_open_ex(nullptr, N); }
     void w_close(IWriter*& S);
 
     const file* exist(LPCSTR N);
@@ -209,7 +210,7 @@ public:
     const file* exist(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
 
     void file_delete(LPCSTR path, LPCSTR nm);
-    void file_delete(LPCSTR full_path) { file_delete(0, full_path); }
+    void file_delete(LPCSTR full_path) { file_delete(nullptr, full_path); }
     void file_copy(LPCSTR src, LPCSTR dest);
     void file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite = true);
     int file_length(LPCSTR src);
@@ -225,7 +226,7 @@ public:
     FS_Path* append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive);
     LPCSTR update_path(string_path& dest, LPCSTR initial, LPCSTR src);
 
-    size_t file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = 0);
+    size_t file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = nullptr);
 
     // editor functions
     void rescan_physical_pathes();

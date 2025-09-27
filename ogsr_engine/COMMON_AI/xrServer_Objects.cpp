@@ -67,13 +67,13 @@ CSE_Temporary::CSE_Temporary(LPCSTR caSection) : CSE_Abstract(caSection) { m_tNo
 
 CSE_Temporary::~CSE_Temporary() {}
 
-void CSE_Temporary::__STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_u32(m_tNodeID); };
+void CSE_Temporary::__STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_u32(m_tNodeID); }
 
-void CSE_Temporary::__STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); };
+void CSE_Temporary::__STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); }
 
-void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {};
+void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {}
 
-void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket) {};
+void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
@@ -139,6 +139,7 @@ void CSE_PHSkeleton::load(NET_Packet& tNetPacket)
     */
     source_id = u16(-1); //.
 }
+
 void CSE_PHSkeleton::UPDATE_Write(NET_Packet& tNetPacket) {}
 
 void CSE_PHSkeleton::UPDATE_Read(NET_Packet& tNetPacket) {}

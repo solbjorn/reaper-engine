@@ -12,8 +12,8 @@ struct SAnimParams;
 // class
 class CDemoPlay : public CEffectorCam
 {
-    COMotion* m_pMotion;
-    SAnimParams* m_MParam;
+    COMotion* m_pMotion{};
+    SAnimParams* m_MParam{};
 
     xr_vector<Fmatrix> seq;
     int m_count;

@@ -105,31 +105,25 @@ public:
         if (ppPData)
         {
             if (C->destination & RC_dest_pixel)
-            {
                 access_direct<BT_PixelBuffer>(C, C->ps, ppPData, DataSize);
-            }
             else
-                *ppPData = 0;
+                *ppPData = nullptr;
         }
 
         if (ppVData)
         {
             if (C->destination & RC_dest_vertex)
-            {
                 access_direct<BT_VertexBuffer>(C, C->vs, ppVData, DataSize);
-            }
             else
-                *ppVData = 0;
+                *ppVData = nullptr;
         }
 
         if (ppGData)
         {
             if (C->destination & RC_dest_geometry)
-            {
                 access_direct<BT_GeometryBuffer>(C, C->gs, ppGData, DataSize);
-            }
             else
-                *ppGData = 0;
+                *ppGData = nullptr;
         }
     }
 

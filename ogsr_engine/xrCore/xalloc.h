@@ -38,14 +38,8 @@ public:
         return *this;
     }
 
-    static pointer allocate(const size_type n, const void* = nullptr)
-    {
-        return xr_alloc<T>(n, true);
-    }
-    static void deallocate(pointer p, const size_type /*n*/)
-    {
-        xr_free(p);
-    }
+    static pointer allocate(const size_type n, const void* = nullptr) { return xr_alloc<T>(n, true); }
+    static void deallocate(pointer p, const size_type /*n*/) { xr_free(p); }
 
     template <class U, class... Args>
     static void construct(U* ptr, Args&&... args)

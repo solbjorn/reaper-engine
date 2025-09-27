@@ -92,8 +92,8 @@ public:
     virtual LPCSTR NameShort();
     //.	virtual LPCSTR				NameComplex			();
     shared_str ItemDescription() { return m_Description; }
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
-    virtual bool NeedBriefInfo() { return m_need_brief_info; };
+    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {}
+    virtual bool NeedBriefInfo() { return m_need_brief_info; }
 
     virtual void OnEvent(NET_Packet& P, u16 type);
 
@@ -105,8 +105,8 @@ public:
     virtual bool CanAttach(PIItem pIItem) { return false; }
     virtual bool CanDetach(LPCSTR item_section_name) { return false; }
 
-    virtual EHandDependence HandDependence() const { return hd1Hand; };
-    virtual bool IsSingleHanded() const { return true; };
+    virtual EHandDependence HandDependence() const { return hd1Hand; }
+    virtual bool IsSingleHanded() const { return true; }
     virtual bool Activate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     virtual void Deactivate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     virtual bool Action(s32 cmd, u32 flags) { return false; } // true если известная команда, иначе false
@@ -134,35 +134,35 @@ public:
     virtual void SetCost(u32 cost) { m_cost = cost; }
     virtual float Weight() const { return m_weight; }
 
-    float m_fPsyHealthRestoreSpeed;
+    float m_fPsyHealthRestoreSpeed{};
     virtual float PsyHealthRestoreSpeed() const { return m_fPsyHealthRestoreSpeed; }
 
-    float m_fRadiationRestoreSpeed;
+    float m_fRadiationRestoreSpeed{};
     virtual float RadiationRestoreSpeed() const { return m_fRadiationRestoreSpeed; }
 
 public:
-    CInventory* m_pCurrentInventory;
+    CInventory* m_pCurrentInventory{};
 
     u32 m_cost;
     float m_weight;
     shared_str m_Description;
-    CUIInventoryCellItem* m_cell_item;
+    CUIInventoryCellItem* m_cell_item{};
 
     shared_str m_name;
     shared_str m_nameShort;
     shared_str m_nameComplex;
 
-    EItemPlace m_eItemPlace;
+    EItemPlace m_eItemPlace{eItemPlaceUndefined};
 
     virtual void OnMoveToSlot();
     virtual void OnMoveToBelt();
     virtual void OnMoveToRuck(EItemPlace prevPlace);
-    virtual void OnDrop() {};
-    virtual void OnBeforeDrop() {};
+    virtual void OnDrop() {}
+    virtual void OnBeforeDrop() {}
 
     int GetGridWidth() const;
     int GetGridHeight() const;
-    const shared_str& GetIconName() const { return m_icon_name; };
+    const shared_str& GetIconName() const { return m_icon_name; }
     int GetIconIndex() const;
     int GetXPos() const;
     int GetYPos() const;
@@ -198,12 +198,12 @@ public:
     virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
     bool CanTrade() const;
     virtual bool IsNecessaryItem(CInventoryItem* item);
-    virtual bool IsNecessaryItem(const shared_str& item_sect) { return false; };
+    virtual bool IsNecessaryItem(const shared_str& item_sect) { return false; }
 
 protected:
     xr_vector<u8> m_slots;
     LPCSTR m_slots_sect;
-    float m_fCondition;
+    float m_fCondition{1.f};
 
     float m_fControlInertionFactor;
     shared_str m_icon_name;
@@ -216,9 +216,9 @@ public:
 public:
     virtual void activate_physic_shell();
 
-    virtual bool IsSprintAllowed() const { return !!m_flags.test(FAllowSprint); };
+    virtual bool IsSprintAllowed() const { return !!m_flags.test(FAllowSprint); }
 
-    virtual float GetControlInertionFactor() const { return m_fControlInertionFactor; };
+    virtual float GetControlInertionFactor() const { return m_fControlInertionFactor; }
 
     virtual bool StopSprintOnFire() { return true; }
 
@@ -265,23 +265,23 @@ private:
 public:
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return 0; }
-    virtual CEatableItem* cast_eatable_item() { return 0; }
-    virtual CWeapon* cast_weapon() { return 0; }
-    virtual CFoodItem* cast_food_item() { return 0; }
-    virtual CMissile* cast_missile() { return 0; }
-    virtual CHudItem* cast_hud_item() { return 0; }
-    virtual CWeaponAmmo* cast_weapon_ammo() { return 0; }
-    virtual CGameObject* cast_game_object() { return 0; };
+    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
+    virtual CEatableItem* cast_eatable_item() { return nullptr; }
+    virtual CWeapon* cast_weapon() { return nullptr; }
+    virtual CFoodItem* cast_food_item() { return nullptr; }
+    virtual CMissile* cast_missile() { return nullptr; }
+    virtual CHudItem* cast_hud_item() { return nullptr; }
+    virtual CWeaponAmmo* cast_weapon_ammo() { return nullptr; }
+    virtual CGameObject* cast_game_object() { return nullptr; }
 
 private:
-    u8 loaded_belt_index;
+    u8 loaded_belt_index{std::numeric_limits<u8>::max()};
     void SetLoadedBeltIndex(u8);
 
 public:
-    u8 GetLoadedBeltIndex() { return loaded_belt_index; };
-    bool m_highlight_equipped;
-    bool m_always_ungroupable;
+    u8 GetLoadedBeltIndex() { return loaded_belt_index; }
+    bool m_highlight_equipped{};
+    bool m_always_ungroupable{};
 };
 XR_SOL_BASE_CLASSES(CInventoryItem);
 

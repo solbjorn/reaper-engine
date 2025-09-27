@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "uidialogwnd.h"
 #include "../hudmanager.h"
 #include "../xr_level_controller.h"
@@ -10,13 +11,7 @@
 #include "../level.h"
 #include "../GameObject.h"
 
-CUIDialogWnd::CUIDialogWnd()
-{
-    m_pHolder = NULL;
-    m_bWorkInPause = false;
-    Hide();
-}
-
+CUIDialogWnd::CUIDialogWnd() { Hide(); }
 CUIDialogWnd::~CUIDialogWnd() {}
 
 void CUIDialogWnd::Show()
@@ -164,7 +159,7 @@ bool CUIDialogWnd::IR_OnMouseMove(int dx, int dy)
 
             IR->IR_OnMouseMove(dx, dy);
         }
-    };
+    }
 
     return true;
 }

@@ -9,7 +9,14 @@
 
 #include "dxRenderDeviceRender.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wextra-semi-stmt");
+
 #include <oneapi/tbb/parallel_for.h>
+
+XR_DIAG_POP();
+
 #include "xr_task.h"
 
 //////////////////////////////////////////////////////////////////////

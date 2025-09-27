@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "detail_path_manager.h"
 #include "ai_space.h"
 #include "profiler.h"
@@ -275,13 +276,14 @@ bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const S
                                           const u32 velocity3)
 {
     u32 vertex_id;
+
     if (!build_circle_trajectory(start, path, &vertex_id, velocity1))
         return (false);
 
     if (!build_line_trajectory(start, dest, vertex_id, path, velocity2))
         return (false);
 
-    if (!build_circle_trajectory(dest, path, 0, velocity3))
+    if (!build_circle_trajectory(dest, path, nullptr, velocity3))
         return (false);
 
     return (true);
@@ -384,7 +386,7 @@ bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint
                 dest.direction.mul(-1.f);
 
             m_temp_path.clear();
-            if (compute_trajectory(start, dest, m_tpTravelLine ? &m_temp_path : 0, time, (*I).index, real_straight_line_index, (*i).index, direction_type))
+            if (compute_trajectory(start, dest, m_tpTravelLine ? &m_temp_path : nullptr, time, (*I).index, real_straight_line_index, (*i).index, direction_type))
             {
                 if (!m_try_min_time || (time < min_time))
                 {
@@ -398,7 +400,9 @@ bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint
                             return (true);
                     }
                     else
+                    {
                         return (true);
+                    }
                 }
             }
         }
@@ -583,7 +587,10 @@ IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point
         direction21.add(point1.position);
         //.
         if (!ai().level_graph().valid_vertex_position(ai().level_graph().v3d(direction21)))
-            return (point1);
+        {
+            result = point1;
+            return result;
+        }
 
         if (!reverse_order)
             vertex_id = ai().level_graph().check_position_in_direction(point0.vertex_id, point0.position, direction21);
@@ -613,7 +620,7 @@ IC CDetailPathManager::STravelPoint CDetailPathManager::compute_better_key_point
         c = (a + b) * .5f;
     } while (!fsimilar(a, b, .01f));
 
-    return (result);
+    return result;
 }
 
 IC bool CDetailPathManager::better_key_point(const STravelPoint& point0, const STravelPoint& point2, const STravelPoint& point10, const STravelPoint& point11)
@@ -771,8 +778,6 @@ void CDetailPathManager::add_patrol_point()
 
 void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32 intermediate_index)
 {
-    START_PROFILE("Build Path/Detail Path");
-
     m_failed = true;
 
     u32 straight_line_index, straight_line_index_negative;
@@ -816,6 +821,4 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
 
     if (m_restricted_object)
         m_restricted_object->remove_border();
-
-    STOP_PROFILE;
 }

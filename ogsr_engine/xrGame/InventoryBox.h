@@ -20,8 +20,8 @@ public:
     CScriptGameObject* GetObjectByName(LPCSTR);
     CScriptGameObject* GetObjectByIndex(u32);
 
-    virtual CGameObject* cast_game_object() { return NULL; };
-    virtual CInventoryItem* cast_inventory_item() { return NULL; }
+    virtual CGameObject* cast_game_object() { return nullptr; }
+    virtual CInventoryItem* cast_inventory_item() { return nullptr; }
     virtual CGameObject& object() = 0;
     virtual bool IsOpened() const { return true; }
 };
@@ -39,7 +39,7 @@ public:
     {
         inherited::OnEvent(P, type);
         ProcessEvent(smart_cast<CGameObject*>(this), P, type);
-    };
+    }
 
     virtual BOOL net_Spawn(CSE_Abstract* DC)
     {
@@ -58,6 +58,6 @@ class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventory
     RTTI_DECLARE_TYPEINFO(CInventoryBox, CCustomInventoryBox<CGameObject>);
 
 public:
-    CInventoryBox() {}
+    CInventoryBox() = default;
 };
 XR_SOL_BASE_CLASSES(CInventoryBox);

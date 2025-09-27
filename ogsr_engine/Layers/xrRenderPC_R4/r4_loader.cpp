@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "r4.h"
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/fbasicvisual.h"
@@ -26,8 +27,8 @@ void CRender::level_Load(IReader* fs)
     ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load...");
-    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     // Begin
     pApp->LoadBegin();
@@ -110,8 +111,8 @@ void CRender::level_Load(IReader* fs)
     ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources load completed!");
-    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     // signal loaded
     b_loaded = TRUE;
@@ -128,8 +129,8 @@ void CRender::level_Unload()
     ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload...");
-    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     // HOM
     HOM.Unload();
@@ -190,8 +191,8 @@ void CRender::level_Unload()
     ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ LevelResources unload completed!");
-    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
-    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+    Msg("~ LevelResources - base: %u, %u K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %u, %u K", c_lmaps, m_lmaps / 1024);
 
     b_loaded = FALSE;
 }
@@ -275,7 +276,7 @@ void CRender::LoadVisuals(IReader* fs)
     u32 index = 0;
     IReader* chunk = nullptr;
 
-    while ((chunk = fs->open_chunk(index)) != 0)
+    while ((chunk = fs->open_chunk(index)) != nullptr)
     {
         ogf_header H;
         chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));

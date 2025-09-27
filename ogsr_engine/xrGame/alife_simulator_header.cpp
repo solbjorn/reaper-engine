@@ -24,7 +24,7 @@ void CALifeSimulatorHeader::load(IReader& file_stream)
     m_version = file_stream.r_u32();
 
     R_ASSERT2(m_version >= 0x0002, "ALife version mismatch! (Delete saved game and try again)");
-};
+}
 
 bool CALifeSimulatorHeader::valid(IReader& file_stream) const
 {

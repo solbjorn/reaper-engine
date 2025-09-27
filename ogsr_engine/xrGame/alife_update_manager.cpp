@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_update_manager.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
@@ -78,9 +79,7 @@ void CALifeUpdateManager::update_switch()
 {
     init_ef_storage();
 
-    START_PROFILE("ALife/switch");
     graph().level().update(CSwitchPredicate(this));
-    STOP_PROFILE
 }
 
 void CALifeUpdateManager::update_scheduled(bool init_ef)
@@ -88,9 +87,7 @@ void CALifeUpdateManager::update_scheduled(bool init_ef)
     if (init_ef)
         init_ef_storage();
 
-    START_PROFILE("ALife/scheduled");
     scheduled().update();
-    STOP_PROFILE
 }
 
 void CALifeUpdateManager::update()
@@ -114,9 +111,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
     m_first_time = false;
 
-    START_PROFILE("ALife/update")
     update();
-    STOP_PROFILE
 }
 
 void CALifeUpdateManager::set_process_time(int microseconds) { graph().set_process_time(float(microseconds) - float(microseconds) * update_monster_factor() / 1000000.f); }
@@ -150,7 +145,7 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
     u32 holder_safe_level_vertex_id = u32(-1);
     Fvector holder_safe_position = Fvector().set(flt_max, flt_max, flt_max);
     Fvector holder_safe_angles = Fvector().set(flt_max, flt_max, flt_max);
-    CSE_ALifeObject* holder = 0;
+    CSE_ALifeObject* holder = nullptr;
 
     net_packet.r(&graph().actor()->m_tGraphID, sizeof(graph().actor()->m_tGraphID));
     net_packet.r(&graph().actor()->m_tNodeID, sizeof(graph().actor()->m_tNodeID));
@@ -342,7 +337,7 @@ void CALifeUpdateManager::jump_to_level(LPCSTR level_name) const
 
 #else
     GraphEngineSpace::CGameLevelParams evaluator(level.id());
-    bool failed = !ai().graph_engine().search(ai().game_graph(), graph().actor()->m_tGraphID, GameGraph::_GRAPH_ID(-1), 0, evaluator);
+    bool failed = !ai().graph_engine().search(ai().game_graph(), graph().actor()->m_tGraphID, GameGraph::_GRAPH_ID(-1), nullptr, evaluator);
     if (failed)
     {
         Msg("! Cannot build path via game graph from the current level to the level %s!", level_name);

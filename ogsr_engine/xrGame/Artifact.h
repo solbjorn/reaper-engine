@@ -14,9 +14,9 @@ struct SArtefactDetectorsSupport
     ref_sound m_sound;
 
     Fvector m_path_moving_force;
-    u32 m_switchVisTime;
-    const CPatrolPath* m_currPatrolPath;
-    const CPatrolPath::CVertex* m_currPatrolVertex;
+    u32 m_switchVisTime{};
+    const CPatrolPath* m_currPatrolPath{};
+    const CPatrolPath::CVertex* m_currPatrolVertex{};
     Fvector m_destPoint;
 
     SArtefactDetectorsSupport(CArtefact* A);
@@ -60,7 +60,7 @@ public:
     virtual CArtefact* cast_artefact() { return this; }
 
 protected:
-    virtual void UpdateCLChild() {};
+    virtual void UpdateCLChild() {}
 
     u16 m_CarringBoneID;
     shared_str m_sParticlesName;
@@ -87,10 +87,10 @@ public:
     virtual void StartLights();
     virtual void StopLights();
     void ActivateArtefact();
-    bool CanBeActivated() { return m_bCanSpawnZone; }; // does artefact can spawn anomaly zone
+    bool CanBeActivated() { return m_bCanSpawnZone; } // does artefact can spawn anomaly zone
 
     virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step) {};
+    virtual void PhTune(dReal step) {}
 
     bool m_bCanSpawnZone;
 

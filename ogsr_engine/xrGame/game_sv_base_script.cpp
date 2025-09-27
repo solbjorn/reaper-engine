@@ -21,8 +21,8 @@
 
 #include <Objbase.h>
 
-CUISequencer* g_tutorial = NULL;
-CUISequencer* g_tutorial2 = NULL;
+CUISequencer* g_tutorial{};
+CUISequencer* g_tutorial2{};
 
 void start_tutorial(LPCSTR name)
 {
@@ -30,7 +30,7 @@ void start_tutorial(LPCSTR name)
     {
         VERIFY(!g_tutorial2);
         g_tutorial2 = g_tutorial;
-    };
+    }
 
     g_tutorial = xr_new<CUISequencer>();
     g_tutorial->Start(name);
@@ -68,7 +68,7 @@ float SetBlendAnmTime(LPCSTR name, float time) { return g_player_hud->SetBlendAn
 
 LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
 
-bool has_active_tutotial() { return (g_tutorial != NULL); }
+bool has_active_tutotial() { return !!g_tutorial; }
 
 LPCSTR generate_id()
 {
@@ -77,7 +77,7 @@ LPCSTR generate_id()
 
     // 32 hex chars + 4 hyphens + null terminator
     char guid_string[37];
-    snprintf(guid_string, sizeof(guid_string), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2],
+    snprintf(guid_string, sizeof(guid_string), "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2],
              guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
 
     shared_str r = guid_string;

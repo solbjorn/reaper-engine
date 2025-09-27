@@ -1,10 +1,12 @@
 #include "stdafx.h"
+
 #include "map_hint.h"
 #include "UIStatic.h"
 #include "UIFrameWindow.h"
 #include "UIXmlInit.h"
 
-CUIMapHint::~CUIMapHint() {}
+CUIMapHint::CUIMapHint() = default;
+CUIMapHint::~CUIMapHint() = default;
 
 void CUIMapHint::Init()
 {
@@ -35,4 +37,5 @@ void CUIMapHint::SetText(LPCSTR text)
     m_border->SetWidth(GetWndSize().x);
     m_border->SetHeight(GetWndSize().y);
 }
+
 void CUIMapHint::Draw_() { inherited::Draw(); }

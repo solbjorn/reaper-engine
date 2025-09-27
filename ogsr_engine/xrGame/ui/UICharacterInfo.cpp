@@ -35,20 +35,15 @@ CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id)
     }
 }
 
-CUICharacterInfo::CUICharacterInfo() : m_ownerID(u16(-1)), pUIBio(NULL)
-{
-    ZeroMemory(m_icons, sizeof(m_icons));
-    m_bForceUpdate = false;
-}
-
-CUICharacterInfo::~CUICharacterInfo() {}
+CUICharacterInfo::CUICharacterInfo() = default;
+CUICharacterInfo::~CUICharacterInfo() = default;
 
 void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml* xml_doc)
 {
     inherited::Init(x, y, width, height);
 
     CUIXmlInit xml_init;
-    CUIStatic* pItem = NULL;
+    CUIStatic* pItem{};
 
     if (xml_doc->NavigateToNode("icon_static", 0))
     {
@@ -209,7 +204,8 @@ void CUICharacterInfo::InitCharacter(u16 id)
             pItem->AdjustHeightToText();
             pItem->SetTextComplexMode(true);
 
-            if (pUIBio->GetFont()) {
+            if (pUIBio->GetFont())
+            {
                 pItem->SetFont(pUIBio->GetFont());
                 pItem->SetTextColor(pUIBio->GetTextColor());
             }
@@ -292,14 +288,16 @@ void CUICharacterInfo::Update()
     if (hasOwner() && (m_bForceUpdate || (Device.dwFrame % 100 == 0)))
     {
         m_bForceUpdate = false;
-        CSE_ALifeTraderAbstract* T = detail::object_exists_in_alife_registry(m_ownerID) ? ch_info_get_from_id(m_ownerID) : NULL;
-        if (NULL == T)
+        CSE_ALifeTraderAbstract* T = detail::object_exists_in_alife_registry(m_ownerID) ? ch_info_get_from_id(m_ownerID) : nullptr;
+        if (!T)
         {
             m_ownerID = u16(-1);
             return;
         }
         else
+        {
             UpdateRelation();
+        }
 
         /* Не вижу смысла подкрашивать картинку
         if(m_icons[eUIIcon]){

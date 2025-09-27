@@ -91,7 +91,7 @@ void CStalkerAnimationManager::reload(CAI_Stalker* _object)
     legs().set_dbg_info(*object().cName(), "Legs  ");
     script().set_dbg_info(*object().cName(), "Script");
 #endif
-};
+}
 
 void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 {

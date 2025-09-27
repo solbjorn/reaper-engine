@@ -84,7 +84,6 @@ struct ts_head<typelist<T, Ts...>>
 
 template <typename List>
 using ts_head_t = typename ts_head<List>::type;
-;
 
 template <typename List>
 struct ts_tail;

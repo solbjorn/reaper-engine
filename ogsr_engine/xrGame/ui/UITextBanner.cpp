@@ -3,13 +3,8 @@
 //=============================================================================
 
 #include "stdafx.h"
+
 #include "UITextBanner.h"
-
-CUITextBanner::CUITextBanner() : m_bAnimate(true), m_Cl(0xffffffff), m_pFont(NULL), fontSize(-1.0f), aligment(CGameFont::alLeft) {}
-
-////////////////////////////////////////////////////////////////////////////////
-
-CUITextBanner::~CUITextBanner() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +14,8 @@ EffectParams* CUITextBanner::SetStyleParams(const TextBannerStyles styleName)
     {
         if (!m_StyleParams.empty())
             m_StyleParams.clear();
-        return NULL;
+
+        return nullptr;
     }
 
     return &m_StyleParams[styleName];

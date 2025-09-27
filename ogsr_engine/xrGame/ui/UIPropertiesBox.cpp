@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIPropertiesBox.h"
 #include "../hudmanager.h"
 #include "../level.h"

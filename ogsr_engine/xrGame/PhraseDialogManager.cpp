@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "PhraseDialogManager.h"
 #include "PhraseDialog.h"
 
@@ -13,8 +14,8 @@
 #include "gameobject.h"
 #include "script_game_object.h"
 
-CPhraseDialogManager::CPhraseDialogManager(void) {}
-CPhraseDialogManager::~CPhraseDialogManager(void) {}
+CPhraseDialogManager::CPhraseDialogManager() {}
+CPhraseDialogManager::~CPhraseDialogManager() {}
 
 const DIALOG_SHARED_PTR& CPhraseDialogManager::GetDialogByID(const shared_str& dialog_id) const
 {
@@ -93,8 +94,8 @@ bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialo
     DIALOG_SHARED_PTR phrase_dialog(xr_new<CPhraseDialog>());
     phrase_dialog->Load(dialog_id);
 
-    //вызвать скриптовую присоединенную функцию
-    //активируется после сказанной фразы
+    // вызвать скриптовую присоединенную функцию
+    // активируется после сказанной фразы
     const CGameObject* pSpeakerGO1 = smart_cast<const CGameObject*>(this);
     VERIFY(pSpeakerGO1);
     const CGameObject* pSpeakerGO2 = smart_cast<const CGameObject*>(partner);

@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
@@ -176,11 +177,12 @@ CCameraManager::~CCameraManager()
 CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)
 {
     for (auto it = m_EffectorsCam.begin(); it != m_EffectorsCam.end(); ++it)
+    {
         if ((*it)->eType == type)
-        {
             return *it;
-        }
-    return 0;
+    }
+
+    return nullptr;
 }
 
 CEffectorCam* CCameraManager::AddCamEffector(CEffectorCam* ef)
@@ -220,9 +222,12 @@ void CCameraManager::RemoveCamEffector(ECamEffectorType type)
 CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)
 {
     for (auto it = m_EffectorsPP.begin(); it != m_EffectorsPP.end(); ++it)
+    {
         if ((*it)->Type() == type)
             return *it;
-    return 0;
+    }
+
+    return nullptr;
 }
 
 ECamEffectorType CCameraManager::RequestCamEffectorId()
@@ -230,8 +235,8 @@ ECamEffectorType CCameraManager::RequestCamEffectorId()
     ECamEffectorType index = (ECamEffectorType)effCustomEffectorStartID;
     for (; GetCamEffector(index); index = (ECamEffectorType)(index + 1))
     {
-        ;
     }
+
     return index;
 }
 
@@ -240,8 +245,8 @@ EEffectorPPType CCameraManager::RequestPPEffectorId()
     EEffectorPPType index = (EEffectorPPType)effCustomEffectorStartID;
     for (; GetPPEffector(index); index = (EEffectorPPType)(index + 1))
     {
-        ;
     }
+
     return index;
 }
 

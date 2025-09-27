@@ -41,7 +41,7 @@ void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_
                                                   const bool& use_animation_movement_control)
 #endif
 {
-    m_blend = 0;
+    m_blend = nullptr;
     for (u16 i = 0; i < MAX_PARTS; ++i)
     {
 #ifdef USE_HEAD_BONE_PART_FAKE
@@ -49,7 +49,7 @@ void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_
             continue;
 #endif
 
-        CBlend* blend = 0;
+        CBlend* blend{};
         if (!m_blend)
         {
             blend = skeleton_animated->LL_PlayCycle(i, animation(), TRUE, callback, object);
@@ -57,7 +57,7 @@ void CStalkerAnimationPair::play_global_animation(IKinematicsAnimated* skeleton_
                 object->create_anim_mov_ctrl(blend);
         }
         else
-            skeleton_animated->LL_PlayCycle(i, animation(), TRUE, 0, 0);
+            skeleton_animated->LL_PlayCycle(i, animation(), TRUE, nullptr, nullptr);
 
         if (blend && !m_blend)
             m_blend = blend;
@@ -91,7 +91,7 @@ void CStalkerAnimationPair::play(IKinematicsAnimated* skeleton_animated, PlayCal
     if (animation() != m_array_animation)
     {
         m_array_animation.invalidate();
-        m_array = 0;
+        m_array = nullptr;
     }
 
 #ifdef DEBUG
@@ -226,8 +226,8 @@ void CStalkerAnimationPair::on_animation_end()
 
     for (size_t size{m_callbacks.size()}, processed{1}; !m_callbacks.empty(); processed++)
     {
-        //Вставил ассерт на случай если вдруг когда то появится багованый каллбек который сам себя не удалит.
-        R_ASSERT(size >= processed , "!!Something strange in CStalkerAnimationPair::on_animation_end()");
+        // Вставил ассерт на случай если вдруг когда то появится багованый каллбек который сам себя не удалит.
+        R_ASSERT(size >= processed, "!!Something strange in CStalkerAnimationPair::on_animation_end()");
 
         m_callbacks.front()();
     }

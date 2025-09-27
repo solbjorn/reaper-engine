@@ -1,21 +1,24 @@
 #include "stdafx.h"
+
 #include "control_path_builder_base.h"
 #include "BaseMonster/base_monster.h"
-#include "../../phmovementcontrol.h"
+#include "PHMovementControl.h"
 #include "../../cover_evaluators.h"
 #include "../../level_path_manager.h"
 #include "../../detail_path_manager.h"
 #include "../../level_location_selector.h"
 #include "../../ai_object_location.h"
 
-const u32 pmt_global_failed_duration = 3000;
+namespace
+{
+constexpr u32 pmt_global_failed_duration{3000};
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 //////////////////////////////////////////////////////////////////////////
 
-CControlPathBuilderBase::CControlPathBuilderBase() { m_cover_approach = 0; }
-
+CControlPathBuilderBase::CControlPathBuilderBase() = default;
 CControlPathBuilderBase::~CControlPathBuilderBase() { xr_delete(m_cover_approach); }
 
 void CControlPathBuilderBase::reinit()

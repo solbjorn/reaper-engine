@@ -190,7 +190,7 @@ IC bool TestRayTri2(const Fvector& C, const Fvector& D, Fvector** p, float& rang
     if (NdD > R) \
         return false; \
     else if (NdD < -R) \
-        return false;
+    return false
 //---------------------------------------------------------------------------
 // compare [-r,r] to [min{p,p+d0,p+d1},max{p,p+d0,p+d1}]
 #define TESTV1(p, d0, d1, r) \
@@ -245,7 +245,8 @@ IC bool TestRayTri2(const Fvector& C, const Fvector& D, Fvector** p, float& rang
                     return false; \
             } \
         } \
-    }
+    } \
+    XR_MACRO_END()
 //---------------------------------------------------------------------------
 // compare [-r,r] to [min{p,p+d},max{p,p+d}]
 #define TESTV2(p, d, r) \
@@ -274,7 +275,8 @@ IC bool TestRayTri2(const Fvector& C, const Fvector& D, Fvector** p, float& rang
                     return false; \
             } \
         } \
-    }
+    } \
+    XR_MACRO_END()
 //---------------------------------------------------------------------------
 
 IC bool TestBBoxTri(const Fmatrix33& A, const Fvector& T, const Fvector& extA, Fvector** p, BOOL bCulling)
@@ -898,6 +900,6 @@ IC bool TestRayOBB(const Fvector3& origin, const Fvector3& direction, const Fobb
     return true;
 }
 //----------------------------------------------------------------------------
-}; // namespace CDB
+} // namespace CDB
 
 #endif

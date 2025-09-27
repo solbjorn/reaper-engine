@@ -57,7 +57,6 @@ void CLevelGraph::render()
 }
 
 #ifdef DEBUG
-
 void CLevelGraph::setup_current_level(const int& level_id)
 {
     if (m_current_level_id == level_id)
@@ -516,5 +515,4 @@ void CLevelGraph::draw_game_graph()
             draw_objects(i);
     }
 }
-
 #endif // DEBUG

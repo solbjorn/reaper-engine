@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "holder_custom.h"
 #include "actor.h"
 
@@ -12,6 +13,6 @@ bool CHolderCustom::attach_Actor(CGameObject* actor)
 
 void CHolderCustom::detach_Actor()
 {
-    m_owner = NULL;
-    m_ownerActor = NULL;
+    m_owner = nullptr;
+    m_ownerActor = nullptr;
 }

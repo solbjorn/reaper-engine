@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "..\xr_3da\XR_IOConsole.h"
 #include "..\xr_3da\xr_ioc_cmd.h"
 #include "../xr_3da/customhud.h"
@@ -136,7 +137,8 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 class CCC_MemStats : public IConsole_Command
 {
 public:
-    CCC_MemStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         Memory.mem_compact();
@@ -151,10 +153,10 @@ public:
 
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);
-        Msg("[%I64dMB] physical memory installed, [%I64dMB] available, [%ld] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
-            memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
 
-        Msg("PageFile total: [%I64dMB], free~ [%I64dMB]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
+        Msg("[%llu Mb] physical memory installed, [%llu Mb] available, [%u] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
+            memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
+        Msg("PageFile total: [%llu Mb], free~ [%llu Mb]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
 
         // PeakWorkingSetSize
         //
@@ -164,7 +166,7 @@ public:
         //
         // The current working set size, in bytes.
 
-        Msg("Engine memory usage (Working Set): [%I64dMB], peak: [%I64dMB]", memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
+        Msg("Engine memory usage (Working Set): [%llu Mb], peak: [%llu Mb]", memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
 
         // PagefileUsage
         //
@@ -174,7 +176,7 @@ public:
         //
         // The peak value in bytes of the Commit Charge during the lifetime of this process.
 
-        Msg("Engine memory usage (Commit Charge): [%I64dMB], peak: [%I64dMB]", memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
+        Msg("Engine memory usage (Commit Charge): [%llu Mb], peak: [%llu Mb]", memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
 
         Log("--------------------------------------------------------------------------------");
 
@@ -182,13 +184,13 @@ public:
         const u32 _eco_strings = g_pStringContainer->stat_economy();
         const u32 _eco_smem = g_pSharedMemoryContainer->stat_economy();
 
-        Msg("* [ D3D ]: textures count [%d]", (c_base + c_lmaps));
-        Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
-        Msg("* [x-ray]: process heap[%d K]", _process_heap / 1024);
-        Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
+        Msg("* [ D3D ]: textures count [%u]", (c_base + c_lmaps));
+        Msg("* [ D3D ]: textures[%u K]", (m_base + m_lmaps) / 1024);
+        Msg("* [x-ray]: process heap[%zu K]", _process_heap / 1024);
+        Msg("* [x-ray]: economy: strings[%u K], smem[%u K]", _eco_strings / 1024, _eco_smem);
 
 #ifdef DEBUG
-        Msg("* [x-ray]: file mapping: memory[%d K], count[%d]", g_file_mapped_memory / 1024, g_file_mapped_count);
+        Msg("* [x-ray]: file mapping: memory[%u K], count[%u]", g_file_mapped_memory / 1024, g_file_mapped_count);
         dump_file_mappings();
 #endif // DEBUG
     }
@@ -198,7 +200,8 @@ public:
 class CCC_GameDifficulty : public CCC_Token
 {
 public:
-    CCC_GameDifficulty(LPCSTR N) : CCC_Token(N, (u32*)&g_SingleGameDifficulty, difficulty_type_token) {};
+    CCC_GameDifficulty(LPCSTR N) : CCC_Token{N, (u32*)&g_SingleGameDifficulty, difficulty_type_token} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!Core.Features.test(xrCore::Feature::gd_master_only))
@@ -211,6 +214,7 @@ public:
             game->OnDifficultyChanged();
         }
     }
+
     virtual void Info(TInfo& I) { strcpy_s(I, "game difficulty"); }
 };
 
@@ -218,7 +222,8 @@ public:
 class CCC_ALifePath : public IConsole_Command
 {
 public:
-    CCC_ALifePath(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifePath(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!ai().get_level_graph())
@@ -251,7 +256,8 @@ public:
 class CCC_ALifeTimeFactor : public IConsole_Command
 {
 public:
-    CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         float id1 = 0.0f;
@@ -268,7 +274,8 @@ public:
 class CCC_ALifeSwitchDistance : public IConsole_Command
 {
 public:
-    CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (ai().get_alife())
@@ -293,7 +300,8 @@ public:
 class CCC_ALifeProcessTime : public IConsole_Command
 {
 public:
-    CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (ai().get_alife())
@@ -315,7 +323,8 @@ public:
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command
 {
 public:
-    CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (ai().get_alife())
@@ -334,7 +343,8 @@ public:
 class CCC_ALifeSwitchFactor : public IConsole_Command
 {
 public:
-    CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (ai().get_alife())
@@ -355,7 +365,8 @@ public:
 class CCC_TimeFactor : public IConsole_Command
 {
 public:
-    CCC_TimeFactor(LPCSTR N) : IConsole_Command(N) {}
+    CCC_TimeFactor(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         float time_factor = (float)atof(args);
@@ -369,7 +380,8 @@ public:
 class CCC_DemoRecord : public IConsole_Command
 {
 public:
-    CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {}
+    CCC_DemoRecord(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!g_pGameLevel)
@@ -395,10 +407,11 @@ public:
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
-    CCC_DemoPlay(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
-        if (0 == g_pGameLevel)
+        if (!g_pGameLevel)
         {
             Msg("! There are no level(s) started");
         }
@@ -424,13 +437,14 @@ bool valid_file_name(LPCSTR file_name)
 {
     LPCSTR I = file_name;
     LPCSTR E = file_name + xr_strlen(file_name);
+
     for (; I != E; ++I)
     {
         if (!strchr("/\\:*?\"<>|", *I))
             continue;
 
         return (false);
-    };
+    }
 
     return (true);
 }
@@ -441,7 +455,8 @@ bool valid_file_name(LPCSTR file_name)
 class CCC_ALifeSave : public IConsole_Command
 {
 public:
-    CCC_ALifeSave(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_ALifeSave(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!g_actor || !Actor()->g_Alive())
@@ -508,7 +523,8 @@ public:
 class CCC_ALifeLoadFrom : public IConsole_Command
 {
 public:
-    CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!ai().get_alife())
@@ -573,7 +589,7 @@ public:
 class CCC_LoadLastSave : public IConsole_Command
 {
 public:
-    CCC_LoadLastSave(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+    CCC_LoadLastSave(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -613,17 +629,16 @@ public:
 class CCC_FloatBlock : public CCC_Float
 {
 public:
-    CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float(N, V, _min, _max) {};
+    CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
 
     virtual void Execute(LPCSTR args) { CCC_Float::Execute(args); }
 };
 
 #ifdef DEBUG
-
 class CCC_DrawGameGraphAll : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+    CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -637,7 +652,7 @@ public:
 class CCC_DrawGameGraphCurrent : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+    CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -651,7 +666,7 @@ public:
 class CCC_DrawGameGraphLevel : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command(N) {}
+    CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -682,7 +697,8 @@ public:
 class CCC_DumpInfos : public IConsole_Command
 {
 public:
-    CCC_DumpInfos(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_DumpInfos(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         CActor* A = smart_cast<CActor*>(Level().CurrentEntity());
@@ -691,20 +707,25 @@ public:
     }
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all infoportions that actor have"); }
 };
+
 #include "map_manager.h"
+
 class CCC_DumpMap : public IConsole_Command
 {
 public:
-    CCC_DumpMap(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_DumpMap(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { Level().MapManager().Dump(); }
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all currentmap locations"); }
 };
 
 #include "alife_graph_registry.h"
+
 class CCC_DumpCreatures : public IConsole_Command
 {
 public:
-    CCC_DumpCreatures(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_DumpCreatures(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>::_REGISTRY::const_iterator const_iterator;
@@ -726,14 +747,15 @@ public:
 class CCC_DebugFonts : public IConsole_Command
 {
 public:
-    CCC_DebugFonts(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+    CCC_DebugFonts(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args) { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
 };
 
 class CCC_DebugNode : public IConsole_Command
 {
 public:
-    CCC_DebugNode(LPCSTR N) : IConsole_Command(N) {};
+    CCC_DebugNode(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -763,7 +785,7 @@ public:
 class CCC_ShowMonsterInfo : public IConsole_Command
 {
 public:
-    CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command(N) {};
+    CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -782,10 +804,12 @@ public:
         monster->set_show_debug_info(u8(value2));
     }
 };
+
 class CCC_DbgPhTrackObj : public IConsole_Command
 {
 public:
-    CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command(N) {};
+    CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args /**/)
     {
         ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, TRUE);
@@ -808,24 +832,27 @@ public:
 class CCC_PHIterations : public CCC_Integer
 {
 public:
-    CCC_PHIterations(LPCSTR N) : CCC_Integer(N, &phIterations, 15, 50) {};
+    CCC_PHIterations(LPCSTR N) : CCC_Integer{N, &phIterations, 15, 50} {}
+
     virtual void Execute(LPCSTR args)
     {
         CCC_Integer::Execute(args);
-        dWorldSetQuickStepNumIterations(NULL, phIterations);
+        dWorldSetQuickStepNumIterations(nullptr, phIterations);
     }
 };
 
 class CCC_PHGravity : public IConsole_Command
 {
 public:
-    CCC_PHGravity(LPCSTR N) : IConsole_Command(N) {};
+    CCC_PHGravity(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         if (!ph_world)
             return;
         ph_world->SetGravity(float(atof(args)));
     }
+
     virtual void Status(TStatus& S)
     {
         if (ph_world)
@@ -840,30 +867,24 @@ public:
 class CCC_PHFps : public IConsole_Command
 {
 public:
-    CCC_PHFps(LPCSTR N) : IConsole_Command(N) {};
+    CCC_PHFps(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         float step_count = (float)atof(args);
         clamp(step_count, 50.f, 200.f);
         CPHWorld::SetStep(1.f / step_count);
     }
+
     virtual void Status(TStatus& S) { sprintf_s(S, "%3.5f", 1.f / fixed_step); }
-};
-
-extern void print_help(lua_State* L);
-
-struct CCC_LuaHelp : public IConsole_Command
-{
-    CCC_LuaHelp(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-    virtual void Execute(LPCSTR args) { print_help(ai().script_engine().lua()); }
 };
 
 // #ifndef MASTER_GOLD
 #include "game_graph.h"
+
 struct CCC_JumpToLevel : public IConsole_Command
 {
-    CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N) {};
+    CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -1041,14 +1062,15 @@ public:
 class CCC_MainMenu : public IConsole_Command
 {
 public:
-    CCC_MainMenu(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_MainMenu(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR args)
     {
         bool bWhatToDo = TRUE;
         if (0 == xr_strlen(args))
         {
             bWhatToDo = !MainMenu()->IsActive();
-        };
+        }
 
         if (EQ(args, "on") || EQ(args, "1"))
             bWhatToDo = TRUE;
@@ -1062,11 +1084,12 @@ public:
 
 struct CCC_StartTimeSingle : public IConsole_Command
 {
-    CCC_StartTimeSingle(LPCSTR N) : IConsole_Command(N) {};
+    CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
+
     virtual void Execute(LPCSTR args)
     {
         u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
-        sscanf(args, "%d.%d.%d %d:%d:%d.%d", &year, &month, &day, &hours, &mins, &secs, &milisecs);
+        sscanf(args, "%u.%u.%u %u:%u:%u.%u", &year, &month, &day, &hours, &mins, &secs, &milisecs);
         year = _max(year, 1u);
         month = _max(month, 1u);
         day = _max(day, 1u);
@@ -1088,13 +1111,13 @@ struct CCC_StartTimeSingle : public IConsole_Command
     {
         u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
         split_time(g_qwStartGameTime, year, month, day, hours, mins, secs, milisecs);
-        sprintf_s(S, "%d.%d.%d %d:%d:%d.%d", year, month, day, hours, mins, secs, milisecs);
+        sprintf_s(S, "%u.%u.%u %u:%u:%u.%u", year, month, day, hours, mins, secs, milisecs);
     }
 };
 
 struct CCC_TimeFactorSingle : public CCC_Float
 {
-    CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float(N, V, _min, _max) {};
+    CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float{N, V, _min, _max} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -1115,12 +1138,14 @@ struct CCC_TimeFactorSingle : public CCC_Float
 
 #ifdef DEBUG
 class CCC_RadioGroupMask2;
+
 class CCC_RadioMask : public CCC_Mask
 {
-    CCC_RadioGroupMask2* group;
+    CCC_RadioGroupMask2* group{};
 
 public:
-    CCC_RadioMask(LPCSTR N, Flags32* V, u32 M) : CCC_Mask(N, V, M) { group = NULL; }
+    CCC_RadioMask(LPCSTR N, Flags32* V, u32 M) : CCC_Mask{N, V, M} {}
+
     void SetGroup(CCC_RadioGroupMask2* G) { group = G; }
     virtual void Execute(LPCSTR args);
 
@@ -1140,6 +1165,7 @@ public:
         mask0->SetGroup(this);
         mask1->SetGroup(this);
     }
+
     void Execute(CCC_RadioMask& m, LPCSTR args)
     {
         BOOL value = m.GetValue();
@@ -1166,11 +1192,12 @@ void CCC_RadioMask::Execute(LPCSTR args)
         static CCC_RadioMask x##CCC_RadioMask2(p4, p5, p6); \
         Console->AddCommand(&x##CCC_RadioMask2); \
         static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2(&x##CCC_RadioMask1, &x##CCC_RadioMask2); \
-    }
+    } \
+    XR_MACRO_END()
 
 struct CCC_DbgBullets : public CCC_Integer
 {
-    CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {};
+    CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -1189,10 +1216,12 @@ struct CCC_DbgBullets : public CCC_Integer
 #include "Inventory.h"
 #include "HUDManager.h"
 #include "HUDTarget.h"
+
 class CCC_TuneAttachableItem : public IConsole_Command
 {
 public:
-    CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command(N) {};
+    CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command{N} {}
+
     void Execute(LPCSTR args) override
     {
         if (!g_pGameLevel) // level not loaded
@@ -1244,7 +1273,8 @@ public:
 class CCC_TuneAttachableItemInSlot : public IConsole_Command
 {
 public:
-    CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command(N) {};
+    CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command{N} {}
+
     void Execute(LPCSTR args) override
     {
         if (!g_pGameLevel) // level not loaded
@@ -1296,8 +1326,9 @@ public:
 class CCC_Crash : public IConsole_Command
 {
 public:
-    CCC_Crash(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-    virtual void Execute(LPCSTR /**args/**/)
+    CCC_Crash(LPCSTR N) : IConsole_Command{N, true} {}
+
+    virtual void Execute(LPCSTR)
     {
         VERIFY3(false, "This is a test crash", "Do not post it as a bug");
         int* pointer = 0;
@@ -1308,7 +1339,7 @@ public:
 class CCC_DumpModelBones : public IConsole_Command
 {
 public:
-    CCC_DumpModelBones(LPCSTR N) : IConsole_Command(N) {}
+    CCC_DumpModelBones(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR arguments)
     {
@@ -1354,16 +1385,17 @@ extern void show_animation_stats();
 class CCC_ShowAnimationStats : public IConsole_Command
 {
 public:
-    CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR) { show_animation_stats(); }
 };
-
 #endif // DEBUG
 
 class CCC_DumpObjects : public IConsole_Command
 {
 public:
-    CCC_DumpObjects(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+    CCC_DumpObjects(LPCSTR N) : IConsole_Command{N, true} {}
+
     virtual void Execute(LPCSTR) { Level().Objects.dump_all_objects(); }
 };
 
@@ -1371,7 +1403,7 @@ public:
 class CCC_SetWeather : public IConsole_Command
 {
 public:
-    CCC_SetWeather(LPCSTR N) : IConsole_Command(N) {}
+    CCC_SetWeather(LPCSTR N) : IConsole_Command{N} {}
 
     void Execute(LPCSTR args) override
     {
@@ -1398,11 +1430,10 @@ public:
 };
 
 #ifdef USE_MEMORY_VALIDATOR
-
 class CCC_DbgMemoryDump : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; }
+    CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -1420,7 +1451,7 @@ public:
 class CCC_DbgMemoryClear : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; }
+    CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args) { PointerRegistryClear(); }
 };
@@ -1428,12 +1459,11 @@ public:
 class CCC_DbgMemoryInfo : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; }
+    CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command{N, true} {}
 
     virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
 };
-
-#endif
+#endif // USE_MEMORY_VALIDATOR
 
 void CCC_RegisterCommands()
 {
@@ -1595,13 +1625,11 @@ void CCC_RegisterCommands()
 
     CMD3(CCC_Mask, "g_first_person_death", &psActorFlags, AF_FIRST_PERSON_DEATH);
 
-    CMD1(CCC_TimeFactor, "time_factor")
+    CMD1(CCC_TimeFactor, "time_factor");
     CMD1(CCC_SetWeather, "set_weather");
     // #endif // MASTER_GOLD
 
     CMD3(CCC_Mask, "g_music_tracks", &psActorFlags, AF_MUSIC_TRACKS);
-
-    CMD1(CCC_LuaHelp, "lua_help");
 
     CMD3(CCC_Mask, "g_zones_dbg", &psActorFlags, AF_ZONES_DBG);
     CMD3(CCC_Mask, "g_vertex_dbg", &psActorFlags, AF_VERTEX_DBG);

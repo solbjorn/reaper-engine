@@ -44,15 +44,30 @@ class CBlend;
 namespace GameObject
 {
 enum ECallbackType : u32;
+}
+
+struct GOCallbackInfo
+{
+    sol::function m_callback;
+    sol::object m_object;
+
+    operator bool() const noexcept { return !!m_callback; }
+
+    template <typename... Args>
+    void operator()(Args&&... args) const
+    {
+        if (!m_callback)
+            return;
+
+        if (m_object)
+            m_callback(m_object, std::forward<Args>(args)...);
+        else
+            m_callback(std::forward<Args>(args)...);
+    }
 };
 
 template <typename _return_type>
 class CScriptCallbackEx;
-
-struct GOCallbackInfo
-{
-    CScriptCallbackEx<void> m_callback;
-};
 
 struct FeelTouchAddon
 {
@@ -71,7 +86,7 @@ public:
     Flags32 m_server_flags;
     CAI_ObjectLocation* m_ai_location;
     ALife::_STORY_ID m_story_id;
-    animation_movement_controller* m_anim_mov_ctrl;
+    animation_movement_controller* m_anim_mov_ctrl{};
 
 protected:
     // время удаления объекта
@@ -83,31 +98,31 @@ public:
 
 public:
     // functions used for avoiding most of the smart_cast
-    virtual CAttachmentOwner* cast_attachment_owner() { return NULL; }
-    virtual CInventoryOwner* cast_inventory_owner() { return NULL; }
-    virtual CInventoryItem* cast_inventory_item() { return NULL; }
-    virtual CEntity* cast_entity() { return NULL; }
-    virtual CEntityAlive* cast_entity_alive() { return NULL; }
-    virtual CActor* cast_actor() { return NULL; }
+    virtual CAttachmentOwner* cast_attachment_owner() { return nullptr; }
+    virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
+    virtual CInventoryItem* cast_inventory_item() { return nullptr; }
+    virtual CEntity* cast_entity() { return nullptr; }
+    virtual CEntityAlive* cast_entity_alive() { return nullptr; }
+    virtual CActor* cast_actor() { return nullptr; }
     virtual CGameObject* cast_game_object() { return this; }
-    virtual CCustomZone* cast_custom_zone() { return NULL; }
-    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return NULL; }
-    virtual IInputReceiver* cast_input_receiver() { return NULL; }
-    virtual CParticlesPlayer* cast_particles_player() { return NULL; }
-    virtual CArtefact* cast_artefact() { return NULL; }
-    virtual CCustomMonster* cast_custom_monster() { return NULL; }
-    virtual CAI_Stalker* cast_stalker() { return NULL; }
-    virtual CScriptEntity* cast_script_entity() { return NULL; }
-    virtual CWeapon* cast_weapon() { return NULL; }
-    virtual CExplosive* cast_explosive() { return NULL; }
-    virtual CSpaceRestrictor* cast_restrictor() { return NULL; }
-    virtual CAttachableItem* cast_attachable_item() { return NULL; }
-    virtual CHolderCustom* cast_holder_custom() { return NULL; }
-    virtual CBaseMonster* cast_base_monster() { return NULL; }
+    virtual CCustomZone* cast_custom_zone() { return nullptr; }
+    virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
+    virtual IInputReceiver* cast_input_receiver() { return nullptr; }
+    virtual CParticlesPlayer* cast_particles_player() { return nullptr; }
+    virtual CArtefact* cast_artefact() { return nullptr; }
+    virtual CCustomMonster* cast_custom_monster() { return nullptr; }
+    virtual CAI_Stalker* cast_stalker() { return nullptr; }
+    virtual CScriptEntity* cast_script_entity() { return nullptr; }
+    virtual CWeapon* cast_weapon() { return nullptr; }
+    virtual CExplosive* cast_explosive() { return nullptr; }
+    virtual CSpaceRestrictor* cast_restrictor() { return nullptr; }
+    virtual CAttachableItem* cast_attachable_item() { return nullptr; }
+    virtual CHolderCustom* cast_holder_custom() { return nullptr; }
+    virtual CBaseMonster* cast_base_monster() { return nullptr; }
 
 public:
     virtual BOOL feel_touch_on_contact(CObject*) { return TRUE; }
-    virtual bool use(CGameObject* who_use) { return CUsableScriptObject::use(who_use); };
+    virtual bool use(CGameObject* who_use) { return CUsableScriptObject::use(who_use); }
 
 public:
     CInifile* m_ini_file;
@@ -143,8 +158,8 @@ public:
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void Hit(SHit* pHDS) {};
-    virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) {};
+    virtual void Hit(SHit* pHDS) {}
+    virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) {}
 
     // игровое имя объекта
     virtual LPCSTR Name() const;
@@ -195,7 +210,7 @@ public:
         rotation.yaw = h;
         rotation.pitch = p;
         return (rotation);
-    };
+    }
 
     virtual bool use_parent_ai_locations() const { return (true); }
 
@@ -230,7 +245,7 @@ public:
 
 protected:
     virtual void spawn_supplies();
-    virtual bool load_upgrades(CSE_Abstract* DC) { return false; };
+    virtual bool load_upgrades(CSE_Abstract* DC) { return false; }
 
 public:
     IC CAI_ObjectLocation& ai_location() const
@@ -240,7 +255,7 @@ public:
     }
 
 private:
-    u32 m_spawn_time;
+    u32 m_spawn_time{};
 
 public:
     IC u32 spawn_time() const
@@ -262,12 +277,12 @@ public:
     virtual bool natural_detector() const { return true; }
     virtual bool use_center_to_aim() const { return false; }
 
-    xr_map<GameObject::ECallbackType, std::unique_ptr<GOCallbackInfo>> m_callbacks;
+    xr_map<GameObject::ECallbackType, GOCallbackInfo> m_callbacks;
 
-    CScriptCallbackEx<void>& callback(GameObject::ECallbackType type) const;
+    const GOCallbackInfo& callback(GameObject::ECallbackType type) const;
     virtual LPCSTR visual_name(CSE_Abstract* server_entity);
 
-    virtual void On_B_NotCurrentEntity() {};
+    virtual void On_B_NotCurrentEntity() {}
 
     CSE_ALifeDynamicObject* alife_object() const; // alpet: возвращает серверный экземпляр для этого объекта
 

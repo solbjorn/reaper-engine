@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "game_sv_single.h"
 #include "alife_simulator.h"
@@ -38,7 +39,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
         Msg("!SV:ge_destroy: [%d] not found on server", id_dest);
 #endif
         return;
-    };
+    }
 
     R_ASSERT(e_dest);
     xrClientData* c_dest = e_dest->owner; // клиент, чей юнит
@@ -63,7 +64,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
             Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
     }
 
-    if (0xffff == parent_id && NULL == pEventPack)
+    if (0xffff == parent_id && !pEventPack)
     {
         SendBroadcast(BroadcastCID, P, MODE);
     }
@@ -81,7 +82,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 
             pEventPack->w_u8(u8(tmpP.B.count));
             pEventPack->w(&tmpP.B.data, tmpP.B.count);
-        };
+        }
 
         game->u_EventGen(tmpP, GE_DESTROY, id_dest); //-V595
 
@@ -89,10 +90,8 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
         pEventPack->w(&tmpP.B.data, tmpP.B.count);
     }
 
-    if (NULL == pEPack && NULL != pEventPack)
-    {
+    if (!pEPack && pEventPack)
         SendBroadcast(BroadcastCID, *pEventPack, MODE);
-    }
 
     // Everything OK, so perform entity-destroy
     if (e_dest->m_bALifeControl && ai().get_alife())

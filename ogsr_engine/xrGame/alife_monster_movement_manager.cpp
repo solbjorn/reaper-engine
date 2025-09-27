@@ -39,7 +39,7 @@ void CALifeMonsterMovementManager::update()
     case MovementManager::ePathTypeGamePath: {
         detail().update();
         break;
-    };
+    }
     case MovementManager::ePathTypePatrolPath: {
         patrol().update();
 
@@ -48,12 +48,12 @@ void CALifeMonsterMovementManager::update()
         detail().update();
 
         break;
-    };
+    }
     case MovementManager::ePathTypeNoPath: {
         break;
-    };
+    }
     default: NODEFAULT;
-    };
+    }
 }
 
 void CALifeMonsterMovementManager::on_switch_online() { detail().on_switch_online(); }

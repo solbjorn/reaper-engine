@@ -27,6 +27,8 @@ public:
     virtual ~CScriptMonsterAction();
     void SetObject(CScriptGameObject* tObj);
 
+    inline void clone(const CScriptMonsterAction& from);
+
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 

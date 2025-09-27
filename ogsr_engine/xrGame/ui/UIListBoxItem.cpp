@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIListBoxItem.h"
 #include "UIScrollView.h"
 #include "../object_broker.h"
@@ -112,7 +113,8 @@ LPCSTR CUIListBoxItem::GetField(LPCSTR key)
         if (0 == xr_strcmp(fields[i]->WindowName(), key))
             return fields[i]->GetText();
     }
-    return NULL;
+
+    return nullptr;
 }
 
 void CUIListBoxItem::SetData(void* data) { pData = data; }

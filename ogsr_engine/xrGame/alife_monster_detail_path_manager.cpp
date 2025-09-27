@@ -194,7 +194,7 @@ void CALifeMonsterDetailPathManager::follow_path(const ALife::_TIME_ID& time_del
         float update_distance = (last_time_delta / ai().alife().time_manager().normal_time_factor()) * speed();
 
         float distance_between = ai().game_graph().distance(object().m_tGraphID, (GameGraph::_GRAPH_ID)m_path[m_path.size() - 2]);
-        if (distance_between == -1) // нет пути, сбрасываем
+        if (fsimilar(distance_between, -1.f)) // нет пути, сбрасываем
         {
             m_path.clear();
             return;

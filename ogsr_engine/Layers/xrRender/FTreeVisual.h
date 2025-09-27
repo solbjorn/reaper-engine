@@ -27,8 +27,8 @@ public:
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();
 
-    FTreeVisual(void);
-    virtual ~FTreeVisual(void);
+    FTreeVisual();
+    virtual ~FTreeVisual();
 };
 
 class FTreeVisual_ST : public FTreeVisual

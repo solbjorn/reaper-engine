@@ -51,15 +51,15 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& 
     if (_1)
         cmd_list.set_RT(_1->pRT, 0);
     else
-        cmd_list.set_RT(NULL, 0);
+        cmd_list.set_RT(nullptr, 0);
     if (_2)
         cmd_list.set_RT(_2->pRT, 1);
     else
-        cmd_list.set_RT(NULL, 1);
+        cmd_list.set_RT(nullptr, 1);
     if (_3)
         cmd_list.set_RT(_3->pRT, 2);
     else
-        cmd_list.set_RT(NULL, 2);
+        cmd_list.set_RT(nullptr, 2);
 
     cmd_list.set_ZB(zb);
 }
@@ -97,11 +97,11 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& 
     if (_1)
         cmd_list.set_RT(_1->pRT, 0);
     else
-        cmd_list.set_RT(NULL, 0);
+        cmd_list.set_RT(nullptr, 0);
     if (_2)
         cmd_list.set_RT(_2->pRT, 1);
     else
-        cmd_list.set_RT(NULL, 1);
+        cmd_list.set_RT(nullptr, 1);
 
     cmd_list.set_ZB(zb);
 }
@@ -488,7 +488,7 @@ CRenderTarget::CRenderTarget()
             RCache.ClearRT(rt_LUM_pool[it], ColorRGBA);
         }
 
-        u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), NULL, NULL, get_base_zb());
+        u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
 
     // COMBINE
@@ -580,8 +580,8 @@ CRenderTarget::CRenderTarget()
 CRenderTarget::~CRenderTarget()
 {
     // Textures
-    t_LUM_src->surface_set(NULL);
-    t_LUM_dest->surface_set(NULL);
+    t_LUM_src->surface_set(nullptr);
+    t_LUM_dest->surface_set(nullptr);
 
     // Jitter
     for (size_t it = 0; it < TEX_jitter_count; it++)

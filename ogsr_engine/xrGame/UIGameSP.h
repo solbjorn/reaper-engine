@@ -22,7 +22,7 @@ class CUIGameSP : public CUIGameCustom
     RTTI_DECLARE_TYPEINFO(CUIGameSP, CUIGameCustom);
 
 private:
-    game_cl_Single* m_game;
+    game_cl_Single* m_game{};
     typedef CUIGameCustom inherited;
 
 public:
@@ -70,7 +70,8 @@ public:
     bool m_b_position_cancel;
 
     CChangeLevelWnd();
-    virtual ~CChangeLevelWnd() {};
+    virtual ~CChangeLevelWnd() {}
+
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     virtual bool WorkInPause() const { return true; }
     virtual void Show();

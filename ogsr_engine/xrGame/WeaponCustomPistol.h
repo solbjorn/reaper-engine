@@ -14,7 +14,8 @@ private:
 public:
     CWeaponCustomPistol(LPCSTR name);
     virtual ~CWeaponCustomPistol();
-    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; };
+
+    virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
 
 protected:
     virtual void switch2_Fire();

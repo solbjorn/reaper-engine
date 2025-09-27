@@ -14,7 +14,7 @@
 namespace DetailPathManager
 {
 enum EDetailPathType : u32;
-};
+}
 
 namespace MonsterSpace
 {
@@ -22,13 +22,13 @@ enum EBodyState : u32;
 enum EMovementType : u32;
 enum EScriptMonsterMoveAction : u32;
 enum EScriptMonsterSpeedParam : u32;
-}; // namespace MonsterSpace
+} // namespace MonsterSpace
 
 namespace PatrolPathManager
 {
 enum EPatrolStartType : u32;
 enum EPatrolRouteType : u32;
-}; // namespace PatrolPathManager
+} // namespace PatrolPathManager
 
 class CPatrolPath;
 class CScriptGameObject;
@@ -120,6 +120,8 @@ public:
     IC void SetPatrolRandom(bool bRandom);
     IC void SetInputKeys(const EInputKeys tInputKeys);
     IC void initialize();
+
+    void clone(const CScriptMovementAction& from);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "physicsshell.h"
 #include "phinterpolation.h"
 #include "phelement.h"
@@ -23,6 +24,7 @@ void CPHElement::get_State(SPHNetState& state)
     }
     state.enabled = !!dBodyIsEnabled(m_body);
 }
+
 void CPHElement::set_State(const SPHNetState& state)
 {
     // bUpdate=true;
@@ -37,18 +39,22 @@ void CPHElement::set_State(const SPHNetState& state)
     set_AngularVel(state.angular_vel);
     setForce(state.force);
     setTorque(state.torque);
+
     if (!isActive())
         return;
+
     if (state.enabled && !dBodyIsEnabled(m_body))
     {
         dBodyEnable(m_body);
-        m_shell->EnableObject(0);
+        m_shell->EnableObject(nullptr);
     }
+
     if (!state.enabled && dBodyIsEnabled(m_body))
     {
         m_shell->DisableObject();
         Disable();
     }
+
     CPHDisablingFull::Reinit();
     m_flags.set(flUpdate, TRUE);
 }

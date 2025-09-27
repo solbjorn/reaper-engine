@@ -8,6 +8,18 @@
 
 #pragma once
 
+#include "object_interfaces.h"
+#include "object_type_traits.h"
+
+namespace object_destroyer
+{
+template <typename T>
+struct default_destroy
+{
+    void operator()(T&) const {}
+};
+} // namespace object_destroyer
+
 struct CDestroyer
 {
     IC static void delete_data(LPCSTR data) {}
@@ -61,8 +73,10 @@ struct CDestroyer
     struct CHelper1
     {
         template <bool a>
-        static void delete_data(std::enable_if_t<!a, T&>)
-        {}
+        static void delete_data(std::enable_if_t<!a, T&> data)
+        {
+            object_destroyer::default_destroy<T>{}(data);
+        }
 
         template <bool a>
         static void delete_data(std::enable_if_t<a, T&> data)

@@ -7,17 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_particles.h"
 #include "../xr_3da/objectanimator.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 
-CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName) : CParticlesObject(caParticlesName, FALSE, true)
-{
-    //	Msg							("CScriptParticlesCustom: 0x%08x",*(int*)&owner);
-    m_owner = owner;
-    m_animator = 0;
-}
+CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName) : CParticlesObject{caParticlesName, false, true}, m_owner{owner} {}
 
 CScriptParticlesCustom::~CScriptParticlesCustom()
 {
@@ -28,14 +24,16 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 void CScriptParticlesCustom::PSI_internal_delete()
 {
     if (m_owner)
-        m_owner->m_particles = NULL;
+        m_owner->m_particles = nullptr;
+
     CParticlesObject::PSI_internal_delete();
 }
 
 void CScriptParticlesCustom::PSI_destroy()
 {
     if (m_owner)
-        m_owner->m_particles = NULL;
+        m_owner->m_particles = nullptr;
+
     CParticlesObject::PSI_destroy();
 }
 
@@ -52,26 +50,31 @@ void CScriptParticlesCustom::shedule_Update(u32 _dt)
         UpdateParent(m_animator->XFORM(), vel);
     }
 }
+
 void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)
 {
     if (!m_animator)
         m_animator = xr_new<CObjectAnimator>();
-    if ((0 == m_animator->Name()) || (0 != xr_strcmp(m_animator->Name(), caPathName)))
+
+    if (!m_animator->Name() || xr_strcmp(m_animator->Name(), caPathName))
     {
         m_animator->Clear();
         m_animator->Load(caPathName);
     }
 }
+
 void CScriptParticlesCustom::StartPath(bool looped)
 {
     VERIFY(m_animator);
     m_animator->Play(looped);
 }
+
 void CScriptParticlesCustom::PausePath(bool val)
 {
     VERIFY(m_animator);
     m_animator->Pause(val);
 }
+
 void CScriptParticlesCustom::StopPath()
 {
     VERIFY(m_animator);
@@ -81,9 +84,8 @@ void CScriptParticlesCustom::StopPath()
 void CScriptParticlesCustom::remove_owner()
 {
     R_ASSERT(m_owner);
-    m_owner = 0;
+    m_owner = nullptr;
 }
-
 
 CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 {

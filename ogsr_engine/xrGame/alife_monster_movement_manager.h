@@ -17,7 +17,7 @@ class CALifeMonsterPatrolPathManager;
 namespace MovementManager
 {
 enum EPathType : u32;
-};
+}
 
 class CALifeMonsterMovementManager
 {

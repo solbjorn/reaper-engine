@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_corpse_manager.h"
 #include "member_order.h"
 #include "ai/stalker/ai_stalker.h"
@@ -34,8 +35,9 @@ struct CRemoveOfflineCorpsesPredicate
 
 bool CAgentCorpseManager::process_corpse(CMemberOrder& member)
 {
-    float min_dist_sqr = flt_max;
-    CMemberCorpse* best_corpse = 0;
+    float min_dist_sqr{std::numeric_limits<float>::max()};
+    CMemberCorpse* best_corpse{};
+
     xr_vector<CMemberCorpse>::iterator I = m_corpses.begin();
     xr_vector<CMemberCorpse>::iterator E = m_corpses.end();
     for (; I != E; ++I)

@@ -29,10 +29,10 @@ public:
     virtual void __stdcall DrawSound(const Fvector& p, float radius, u32 clr) = 0;
     virtual void __stdcall DrawLineSphere(const Fvector& p, float radius, u32 clr, BOOL bCross) = 0;
 
-    virtual void __stdcall dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption = 0, u32 clr_font = 0xffffffff) = 0;
-    virtual void __stdcall dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption = 0) = 0;
-    virtual void __stdcall dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption = 0) = 0;
-    virtual void __stdcall dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption = 0) = 0;
+    virtual void __stdcall dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption = nullptr, u32 clr_font = std::numeric_limits<u32>::max()) = 0;
+    virtual void __stdcall dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption = nullptr) = 0;
+    virtual void __stdcall dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption = nullptr) = 0;
+    virtual void __stdcall dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption = nullptr) = 0;
 
     virtual void __stdcall DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, BOOL bSolid, BOOL bWire) = 0;
     virtual void __stdcall DrawLine(const Fvector& p0, const Fvector& p1, u32 clr) = 0;
@@ -40,8 +40,8 @@ public:
     virtual void __stdcall DrawFaceNormal(const Fvector& p0, const Fvector& p1, const Fvector& p2, float size, u32 clr) = 0;
     virtual void __stdcall DrawFaceNormal(const Fvector* p, float size, u32 clr) = 0;
     virtual void __stdcall DrawFaceNormal(const Fvector& C, const Fvector& N, float size, u32 clr) = 0;
-    virtual void __stdcall DrawSelectionBox(const Fvector& center, const Fvector& size, u32* c = 0) = 0;
-    virtual void __stdcall DrawSelectionBoxB(const Fbox& box, u32* c = 0) = 0;
+    virtual void __stdcall DrawSelectionBox(const Fvector& center, const Fvector& size, u32* c = nullptr) = 0;
+    virtual void __stdcall DrawSelectionBoxB(const Fbox& box, u32* c = nullptr) = 0;
     virtual void __stdcall DrawIdentSphere(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w) = 0;
     virtual void __stdcall DrawIdentSpherePart(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w) = 0;
     virtual void __stdcall DrawIdentCone(BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w) = 0;

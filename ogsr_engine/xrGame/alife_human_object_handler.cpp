@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_human_object_handler.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
@@ -45,8 +46,8 @@ void CALifeHumanObjectHandler::update_weapon_ammo() {}
 
 void CALifeHumanObjectHandler::process_items() {}
 
-CSE_ALifeDynamicObject* CALifeHumanObjectHandler::best_detector() { return (0); }
+CSE_ALifeDynamicObject* CALifeHumanObjectHandler::best_detector() { return nullptr; }
 
-CSE_ALifeItemWeapon* CALifeHumanObjectHandler::best_weapon() { return (0); }
+CSE_ALifeItemWeapon* CALifeHumanObjectHandler::best_weapon() { return nullptr; }
 
 void CALifeHumanObjectHandler::attach_items() {}

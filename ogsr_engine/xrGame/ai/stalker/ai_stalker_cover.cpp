@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "cover_point.h"
 #include "../../cover_evaluators.h"
@@ -15,13 +16,16 @@
 #include "../../stalker_movement_restriction.h"
 #include "level_graph.h"
 
-extern const float MIN_SUITABLE_ENEMY_DISTANCE = 3.f;
+namespace
+{
+constexpr float MIN_SUITABLE_ENEMY_DISTANCE{3.f};
 
 #ifdef DEBUG
-static int g_advance_search_count = 0;
-static int g_near_cover_search_count = 0;
-static int g_far_cover_search_count = 0;
+static int g_advance_search_count{};
+static int g_near_cover_search_count{};
+static int g_far_cover_search_count{};
 #endif
+} // namespace
 
 void CAI_Stalker::subscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate)
 {
@@ -148,7 +152,7 @@ const CCoverPoint* CAI_Stalker::best_cover(const Fvector& position_to_cover_from
     {
         on_best_cover_changed(best_cover, m_best_cover);
         m_best_cover = best_cover;
-        m_best_cover_advance_cover = 0;
+        m_best_cover_advance_cover = nullptr;
         m_best_cover_can_try_advance = false;
     }
     m_best_cover_value = m_best_cover ? best_cover_value(position_to_cover_from) : flt_max;

@@ -36,7 +36,6 @@ public:
     static void WriteLog();
 
 protected:
-
     //	typedef xr_string region_name;
     //	typedef xr_string shader_name;
     //	typedef xr_map<region_name, Frect>				regions;

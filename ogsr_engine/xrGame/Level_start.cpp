@@ -45,9 +45,11 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
         else
         {
             m_caClientOptions = op_client;
-        };
-    };
+        }
+    }
+
     m_caServerOptions = op_server;
+
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------------
     g_loading_events.push_back(CallMe::fromMethod<&CLevel::net_start1>(this));
@@ -95,6 +97,7 @@ bool CLevel::net_start1()
             }
         }
     }
+
     return true;
 }
 
@@ -112,6 +115,7 @@ bool CLevel::net_start2()
         Server->SLS_Default();
         m_name = Server->level_name(m_caServerOptions);
     }
+
     return true;
 }
 
@@ -147,10 +151,13 @@ bool CLevel::net_start5()
         NET_Packet NP;
         NP.w_begin(M_CLIENTREADY);
         Send(NP, net_flags(TRUE, TRUE));
-    };
+    }
+
     return true;
 }
+
 #include "hudmanager.h"
+
 BOOL g_start_total_res = TRUE;
 xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
 

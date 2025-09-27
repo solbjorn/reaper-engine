@@ -1,4 +1,3 @@
-#pragma once
 #ifndef CPHMOVEMENT_CONTROL_H
 #define CPHMOVEMENT_CONTROL_H
 
@@ -8,12 +7,12 @@
 namespace ALife
 {
 enum EHitType : u32;
-};
+}
 
 namespace DetailPathManager
 {
 struct STravelPathPoint;
-};
+}
 
 class CPHAICharacter;
 class CPHSimpleCharacter;
@@ -72,7 +71,7 @@ public:
     void Jump(const Fvector& start_point, const Fvector& end_point, float time);
     void Jump(const Fvector& end_point, float time);
     float Jump(const Fvector& end_point);
-    bool JumpState() { return (m_character && m_character->b_exist && m_character->IsEnabled() && m_character->JumpState()); };
+    bool JumpState() { return (m_character && m_character->b_exist && m_character->IsEnabled() && m_character->JumpState()); }
     ///
     bool PhysicsOnlyMode();
     bool PhyssicsOnlyMode() { return PhysicsOnlyMode(); }
@@ -168,13 +167,15 @@ public:
 #endif
 
     void SetPLastMaterialIDX(u16* p) { m_character->SetPLastMaterialIDX(p); }
+
     dBodyID GetBody()
     {
         if (m_character)
             return m_character->get_body();
-        else
-            return NULL;
+
+        return nullptr;
     }
+
     const Fvector& GetVelocity() { return vVelocity; }
     const Fvector& GetPathDir() { return _vPathDir; }
     void SetPathDir(const Fvector& v);
@@ -223,10 +224,10 @@ public:
         if (m_character)
             m_character->SetVelocity(v);
     }
-    void SetPhysicsRefObject(CPhysicsShellHolder* ref_object) { m_character->SetPhysicsRefObject(ref_object); };
+    void SetPhysicsRefObject(CPhysicsShellHolder* ref_object) { m_character->SetPhysicsRefObject(ref_object); }
 
-    void CalcMaximumVelocity(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/) {};
-    void CalcMaximumVelocity(float& /**dest/**/, float /**accel/**/, float /**friction/**/) {};
+    void CalcMaximumVelocity(Fvector&, Fvector&, float) {}
+    void CalcMaximumVelocity(float&, float, float) {}
     void ActivateBox(DWORD id, BOOL Check = false);
     bool ActivateBoxDynamic(DWORD id, int num_it = 9, int num_steps = 5, float resolve_depth = 0.01f);
     void InterpolateBox(DWORD id, float k);
@@ -241,14 +242,16 @@ public:
             return m_character->FootRadius();
         else
             return 0.f;
-    };
+    }
     void CollisionEnable(BOOL enable)
     {
-        if (m_character)
-            if (enable)
-                m_character->collision_enable();
-            else
-                m_character->collision_disable();
+        if (!m_character)
+            return;
+
+        if (enable)
+            m_character->collision_enable();
+        else
+            m_character->collision_disable();
     }
     void SetBox(DWORD id, const Fbox& BB)
     {
@@ -335,42 +338,52 @@ public:
     void ApplyImpulse(const Fvector& dir, const dReal P);
     void ApplyHit(const Fvector& dir, const dReal P, ALife::EHitType hit_type);
     void SetJumpUpVelocity(float velocity) { m_character->SetJupmUpVelocity(velocity); }
+
     void EnableCharacter()
     {
         if (m_character && m_character->b_exist)
             m_character->Enable();
     }
+
     void SetOjectContactCallback(ObjectContactCallbackFun* callback)
     {
         if (m_character)
             m_character->SetObjectContactCallback(callback);
     }
+
     void SetFootCallBack(ObjectContactCallbackFun* callback)
     {
         VERIFY(m_character);
         m_character->SetWheelContactCallback(callback);
     }
+
     static BOOL BorderTraceCallback(collide::rq_result& result, LPVOID params);
+
     ObjectContactCallbackFun* ObjectContactCallback()
     {
         if (m_character)
             return m_character->ObjectContactCallBack();
-        else
-            return NULL;
+
+        return nullptr;
     }
+
     u16 ContactBone() { return m_character->ContactBone(); }
+
     const ICollisionDamageInfo* CollisionDamageInfo() const
     {
         VERIFY(m_character);
         return m_character->CollisionDamageInfo();
     }
+
     ICollisionDamageInfo* CollisionDamageInfo()
     {
         VERIFY(m_character);
         return m_character->CollisionDamageInfo();
     }
+
     void GetDesiredPos(Fvector& dpos) { m_character->GetDesiredPosition(dpos); }
     bool CharacterExist() const { return (m_character && m_character->b_exist); }
+
     CPHMovementControl(CObject* parent);
     ~CPHMovementControl(void);
 

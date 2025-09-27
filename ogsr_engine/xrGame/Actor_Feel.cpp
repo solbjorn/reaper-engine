@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "actor.h"
 #include "weapon.h"
 #include "mercuryball.h"
@@ -115,7 +116,7 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
             collide::ray_defs RD(from, dir, range, CDB::OPT_CULL, collide::rqtBoth);
             VERIFY(!fis_zero(RD.dir.square_magnitude()));
             RQR.r_clear();
-            Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, NULL, item);
+            Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
         }
     }
     return !bOverlaped;
@@ -148,7 +149,7 @@ void CActor::PickupModeUpdate_COD()
 
     if (!g_Alive() || eacFirstEye != cam_active)
     {
-        HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
+        HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(nullptr);
         return;
     }
 
@@ -198,15 +199,15 @@ void CActor::PickupModeUpdate_COD()
 
     float maxlen = 1000.0f;
 
-    CInventoryItem* pNearestItem = NULL;
+    CInventoryItem* pNearestItem{};
     for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
     {
         ISpatial* spatial = ISpatialResult[o_it];
         CInventoryItem* pIItem = smart_cast<CInventoryItem*>(spatial->dcast_CObject());
-        if (0 == pIItem)
+        if (!pIItem)
             continue;
 
-        if (pIItem->object().H_Parent() != NULL)
+        if (pIItem->object().H_Parent())
             continue;
 
         if (!pIItem->CanTake())
@@ -246,13 +247,13 @@ void CActor::PickupModeUpdate_COD()
         CFrustum frustum;
         frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
         if (!CanPickItem(frustum, Device.vCameraPosition, &pNearestItem->object()))
-            pNearestItem = NULL;
+            pNearestItem = nullptr;
     }
 
     if (pNearestItem && pNearestItem->cast_game_object())
     {
         if (Level().m_feel_deny.is_object_denied(pNearestItem->cast_game_object()))
-            pNearestItem = NULL;
+            pNearestItem = nullptr;
     }
 
     if (pNearestItem)
@@ -285,11 +286,11 @@ void CActor::PickupModeUpdate_COD()
     }
 
     HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
-};
+}
 
 void CActor::PickupInfoDraw(CObject* object)
 {
-    LPCSTR draw_str = NULL;
+    LPCSTR draw_str{};
 
     CInventoryItem* item = smart_cast<CInventoryItem*>(object);
     //.	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(object);
@@ -317,7 +318,7 @@ void CActor::PickupInfoDraw(CObject* object)
 
     HUD().Font().pFontLetterica16Russian->SetAligment(CGameFont::alCenter);
     HUD().Font().pFontLetterica16Russian->SetColor(PICKUP_INFO_COLOR);
-    HUD().Font().pFontLetterica16Russian->Out(x, y, draw_str);
+    HUD().Font().pFontLetterica16Russian->Out(x, y, "%s", draw_str);
 }
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop)

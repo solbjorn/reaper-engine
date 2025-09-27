@@ -140,7 +140,7 @@ bool CPSLibrary::Load(const char* nm)
     // final
     FS.r_close(F);
 
-    Msg("Loaded xr_particle files: [%u]", loaded_count);
+    Msg("Loaded xr_particle files: [%zu]", loaded_count);
 
     return bRes;
 }
@@ -207,7 +207,7 @@ bool CPSLibrary::Load2()
     for (; it != it_e; ++it)
     {
         const FS_File& f = (*it);
-        _splitpath(f.name.c_str(), 0, p_path, p_name, p_ext);
+        _splitpath(f.name.c_str(), nullptr, p_path, p_name, p_ext);
         FS.update_path(_path, "$game_particles$", f.name.c_str());
         CInifile ini(_path, TRUE, TRUE, FALSE);
 
@@ -234,7 +234,7 @@ bool CPSLibrary::Load2()
         }
     }
 
-    Msg("Loaded particle files: [%u]", files.size());
+    Msg("Loaded particle files: [%zu]", files.size());
 
     return something_loaded;
 }

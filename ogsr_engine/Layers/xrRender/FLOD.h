@@ -3,6 +3,9 @@
 
 class FLOD : public FHierrarhyVisual
 {
+    RTTI_DECLARE_TYPEINFO(FLOD, FHierrarhyVisual);
+
+private:
     typedef FHierrarhyVisual inherited;
 
 public:

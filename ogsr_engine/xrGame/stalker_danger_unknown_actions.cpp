@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_danger_unknown_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -26,14 +27,17 @@
 
 using namespace StalkerDecisionSpace;
 
-const float DANGER_DISTANCE = 5.f;
-const u32 DANGER_INTERVAL = 120000;
+namespace
+{
+constexpr float DANGER_DISTANCE{5.f};
+constexpr u32 DANGER_INTERVAL{120000};
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 // CStalkerActionDangerUnknownTakeCover
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerUnknownTakeCover::CStalkerActionDangerUnknownTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerUnknownTakeCover::CStalkerActionDangerUnknownTakeCover(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerUnknownTakeCover::initialize()
 {
@@ -42,7 +46,7 @@ void CStalkerActionDangerUnknownTakeCover::initialize()
     set_property(eWorldPropertyCoverReached, false);
     set_property(eWorldPropertyLookedAround, false);
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_mental_state(eMentalStateDanger);
@@ -88,7 +92,7 @@ void CStalkerActionDangerUnknownTakeCover::finalize() { inherited::finalize(); }
 // CStalkerActionDangerUnknownLookAround
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerUnknownLookAround::CStalkerActionDangerUnknownLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerUnknownLookAround::CStalkerActionDangerUnknownLookAround(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerUnknownLookAround::initialize()
 {
@@ -96,7 +100,7 @@ void CStalkerActionDangerUnknownLookAround::initialize()
 
     inherited::initialize();
 
-    object().movement().set_desired_direction(0);
+    object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_movement_type(eMovementTypeStand);
@@ -126,7 +130,7 @@ void CStalkerActionDangerUnknownLookAround::finalize() { inherited::finalize(); 
 // CStalkerActionDangerUnknownSearch
 //////////////////////////////////////////////////////////////////////////
 
-CStalkerActionDangerUnknownSearch::CStalkerActionDangerUnknownSearch(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+CStalkerActionDangerUnknownSearch::CStalkerActionDangerUnknownSearch(CAI_Stalker* object, LPCSTR action_name) : inherited{object, action_name} {}
 
 void CStalkerActionDangerUnknownSearch::initialize() { inherited::initialize(); }
 

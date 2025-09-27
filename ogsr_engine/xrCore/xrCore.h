@@ -45,11 +45,21 @@
 #define ICF __forceinline // !!! this should be used only in critical places found by PROFILER
 #define ICN __declspec(noinline)
 
+// Require function-like macros to end with a ';'
+#define XR_MACRO_END() static_assert(true, "")
+
+#define __XR_DIAG_STR(s) #s
+#define XR_DIAG_PUSH() _Pragma(__XR_DIAG_STR(clang diagnostic push)) XR_MACRO_END()
+#define XR_DIAG_IGNORE(s) _Pragma(__XR_DIAG_STR(clang diagnostic ignored s)) XR_MACRO_END()
+#define XR_DIAG_POP() _Pragma(__XR_DIAG_STR(clang diagnostic pop)) XR_MACRO_END()
+
 #ifdef _MSC_VER
 #define XR_NOVTABLE __declspec(novtable)
 #else
 #define XR_NOVTABLE
 #endif
+
+#define XR_PRINTF(a, b) __attribute__((__format__(printf, a, b)))
 
 // Our headers
 
@@ -67,25 +77,7 @@
 #include "xrstring.h"
 #include "xr_resource.h"
 
-// stl ext
-struct xr_rtoken
-{
-    shared_str name;
-    int id;
-    xr_rtoken(LPCSTR _nm, int _id)
-    {
-        name = _nm;
-        id = _id;
-    }
-
-public:
-    void rename(LPCSTR _nm) { name = _nm; }
-    bool equal(LPCSTR _nm) { return (0 == xr_strcmp(*name, _nm)); }
-};
-
 DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
-DEFINE_SET(shared_str, RStringSet, RStringSetIt);
-DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 
 #include "FS.h"
 #include "xr_trims.h"
@@ -111,18 +103,6 @@ DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 #include "LocatorAPI.h"
 #include "FTimer.h"
 #include "intrusive_ptr.h"
-
-// destructor
-template <class T>
-class destructor
-{
-    T* ptr;
-
-public:
-    destructor(T* p) { ptr = p; }
-    ~destructor() { xr_delete(ptr); }
-    IC T& operator()() { return *ptr; }
-};
 
 // ********************************************** The Core definition
 class xrCore
@@ -163,7 +143,7 @@ private:
 public:
     bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
 
-    void _initialize(LPCSTR ApplicationName, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0);
+    void _initialize(LPCSTR ApplicationName, LogCallback cb = nullptr, BOOL init_fs = TRUE, LPCSTR fs_fname = nullptr);
     void _destroy();
 
     constexpr const char* GetBuildConfiguration();

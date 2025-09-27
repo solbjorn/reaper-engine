@@ -1,7 +1,9 @@
 #pragma once
+
 #include "../xr_3da/bone.h"
 
 class CBlend;
+
 class animation_movement_controller
 {
     Fmatrix& m_pObjXForm;

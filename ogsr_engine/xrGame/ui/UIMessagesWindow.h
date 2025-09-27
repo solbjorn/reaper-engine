@@ -19,6 +19,8 @@ class CUIProgressShape;
 
 class CUIMessagesWindow : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIMessagesWindow, CUIWindow);
+
 public:
     CUIMessagesWindow();
     virtual ~CUIMessagesWindow();
@@ -30,6 +32,6 @@ public:
 protected:
     virtual void Init(float x, float y, float width, float height);
 
-    CUIGameLog* m_pGameLog;
+    CUIGameLog* m_pGameLog{};
     //	Frect				m_ListPos2;
 };

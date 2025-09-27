@@ -9,10 +9,12 @@
 
 class CMilitaryOutfit : public CCustomOutfit
 {
+    RTTI_DECLARE_TYPEINFO(CMilitaryOutfit, CCustomOutfit);
+
 private:
     typedef CCustomOutfit inherited;
 
 public:
-    CMilitaryOutfit(void);
-    virtual ~CMilitaryOutfit(void);
+    CMilitaryOutfit();
+    virtual ~CMilitaryOutfit();
 };

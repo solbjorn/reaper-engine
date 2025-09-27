@@ -30,8 +30,8 @@ private:
     collide::rq_results rq_storage;
 
 public:
-    CExplosive(void);
-    virtual ~CExplosive(void);
+    CExplosive();
+    virtual ~CExplosive();
 
     virtual void Load(LPCSTR section);
     virtual void Load(CInifile* ini, LPCSTR section);
@@ -72,7 +72,7 @@ public:
     void SetExplosionSize(const Fvector& new_size);
     virtual bool Useful() const;
     bool IsExploded() { return !!m_explosion_flags.test(flExploded); }
-    bool IsReadyToExplode() { return !!m_explosion_flags.test(flReadyToExplode); };
+    bool IsReadyToExplode() { return !!m_explosion_flags.test(flReadyToExplode); }
 
 protected:
     bool IsSoundPlaying() { return !!sndExplode._feedback(); }
@@ -123,7 +123,7 @@ protected:
     // общее время взрыва
     float m_fExplodeDurationMax;
     // Время, через которое надо сделать взрывчатку невиимой, если она не становится невидимой во время взрыва
-    float m_fExplodeHideDurationMax;
+    float m_fExplodeHideDurationMax{};
     // флаг состояния взрыва
     enum
     {
@@ -135,7 +135,7 @@ protected:
     Flags8 m_explosion_flags;
     ///////////////////////////////////////////////
     // Должен ли объект быть скрыт после взрыва: true - для всех кроме дымовой гранаты
-    BOOL m_bHideInExplosion;
+    BOOL m_bHideInExplosion{true};
     bool m_bAlreadyHidden;
     virtual void HideExplosive();
     // bool						m_bExploding;
@@ -164,8 +164,9 @@ protected:
     virtual void StartLight();
     virtual void StopLight();
 
-    BOOL m_bDynamicParticles;
-    CParticlesObject* m_pExpParticle;
+    BOOL m_bDynamicParticles{};
+    CParticlesObject* m_pExpParticle{};
+
     virtual void UpdateExplosionParticles();
 
     // эффектор

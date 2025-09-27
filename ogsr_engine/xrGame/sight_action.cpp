@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "sight_action.h"
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"
@@ -14,7 +15,7 @@
 #include "stalker_movement_manager.h"
 #include "inventory.h"
 
-//#define SIGHT_TEST
+// #define SIGHT_TEST
 
 void CSightAction::initialize()
 {
@@ -81,7 +82,7 @@ void CSightAction::remove_links(CObject* object)
 
     //	execute				();
 
-    m_object_to_look = 0;
+    m_object_to_look = nullptr;
 
     m_sight_type = SightManager::eSightTypeDirection;
     m_vector3d.setHP(-this->object().movement().m_head.target.yaw, this->object().movement().m_head.target.pitch);

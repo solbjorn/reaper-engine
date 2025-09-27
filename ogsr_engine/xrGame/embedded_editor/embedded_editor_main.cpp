@@ -81,7 +81,7 @@ void ShowMain()
 
     static xr_vector<float> frames;
 
-    	// Get frames
+    // Get frames
     if (frames.size() > 100) // Max seconds to show
     {
         for (size_t i = 1; i < frames.size(); i++)
@@ -97,7 +97,7 @@ void ShowMain()
 
     ImGui::Text("TPS %.3f ms/frame (%.1f FPS)", 1000.0f / framerate, framerate);
 
-    ImGui::PlotHistogram("", &frames[0], frames.size(), 0, NULL, 0.0f, 300.0f, ImVec2(300, 100));
+    ImGui::PlotHistogram("", &frames[0], frames.size(), 0, nullptr, 0.0f, 300.0f, ImVec2(300, 100));
 }
 
 void ShowEditor()
@@ -131,12 +131,12 @@ void ShowEditor()
         ShowHudEditor(show_hud_editor);
     if (show_sound_env_window)
         ShowSoundEnvEditor(show_sound_env_window);
-    //if (show_prop_window)
-    //    ShowPropEditor(show_prop_window);
-    //if (show_lua_binder)
-    //    ShowLuaBinder(show_lua_binder);
-    //if (show_logic_editor)
-    //    ShowLogicEditor(show_logic_editor);
+    // if (show_prop_window)
+    //     ShowPropEditor(show_prop_window);
+    // if (show_lua_binder)
+    //     ShowLuaBinder(show_lua_binder);
+    // if (show_logic_editor)
+    //     ShowLogicEditor(show_logic_editor);
 }
 
 bool isRControl = false, isLControl = false, isRShift = false, isLShift = false;
@@ -191,14 +191,14 @@ bool Editor_KeyPress(int key)
         if (const u16 ch = pInput->DikToChar(key, false))
             io.AddInputCharacter(ch);
 
-            // пример подключения шрифт и нормального ввода в utf
-            // запишем что б не забыть, но хз надо ли оно реально
+        // пример подключения шрифт и нормального ввода в utf
+        // запишем что б не забыть, но хз надо ли оно реально
 
-            //io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
+        // io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
 
-            //wchar_t wch;
-            //MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, (char*)&ch, 1, &wch, 1);
-            //io.AddInputCharacter(wch);
+        // wchar_t wch;
+        // MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, (char*)&ch, 1, &wch, 1);
+        // io.AddInputCharacter(wch);
     }
     return true;
 }
@@ -270,15 +270,15 @@ bool Editor_MouseWheel(int direction)
 
     s_direction = direction;
 
-    //ImGuiIO& io = ImGui::GetIO();
-    //io.MouseWheel += direction > 0 ? +1.0f : -1.0f;
+    // ImGuiIO& io = ImGui::GetIO();
+    // io.MouseWheel += direction > 0 ? +1.0f : -1.0f;
     return true;
 }
 
 void Editor_OnFrame()
 {
     if (s_direction != 0)
-    {       
+    {
         ImGuiIO& io = ImGui::GetIO();
         io.MouseWheel += s_direction > 0 ? +1.0f : -1.0f;
         s_direction = 0;

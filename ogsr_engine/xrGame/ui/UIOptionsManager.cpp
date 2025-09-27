@@ -27,7 +27,7 @@ void CUIOptionsManager::RegisterItem(CUIOptionsItem* item, const char* group)
         items_list list;
 
         list.push_back(item);
-        m_groups.insert(mk_pair(gr_name, list));
+        m_groups.try_emplace(gr_name, list);
     }
 }
 
@@ -38,6 +38,7 @@ void CUIOptionsManager::UnRegisterGroup(const char* group)
     if (it != m_groups.end())
         m_groups.erase(it);
 }
+
 void CUIOptionsManager::UnRegisterItem(CUIOptionsItem* item)
 {
     groups_it it;

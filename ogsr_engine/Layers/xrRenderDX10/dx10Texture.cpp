@@ -1,6 +1,11 @@
 #include "stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
+
 #include <DirectXTex.h>
+
+XR_DIAG_POP();
 
 void fix_texture_name(const char* fn)
 {
@@ -130,7 +135,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
         DirectX::ScratchImage texture{};
         if (const auto hr = LoadFromDDSMemory(static_cast<std::byte*>(File->pointer()), File->length(), dds_flags, &IMG, texture); FAILED(hr))
         {
-            Msg("! Failed to load DDS texture from memory: [%s], hr: [%d]", fn, hr);
+            Msg("! Failed to load DDS texture from memory: [%s], hr: [0x%lx]", fn, gsl::narrow_cast<unsigned long>(hr));
             break;
         }
 
@@ -164,7 +169,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 
         if (!allowFallback)
         {
-            Msg("! Failed CreateTextureEx: [%s], hr: [%d]", fn, hr);
+            Msg("! Failed CreateTextureEx: [%s], hr: [0x%lx]", fn, gsl::narrow_cast<unsigned long>(hr));
             break; // Уже была вторая попытка, прекращаем.
         }
 

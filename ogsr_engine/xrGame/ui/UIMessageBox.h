@@ -45,18 +45,18 @@ public:
 
 protected:
     xr_string m_ret_val;
-    CUI3tButton* m_UIButtonYesOk;
-    CUI3tButton* m_UIButtonNo;
-    CUI3tButton* m_UIButtonCancel;
+    CUI3tButton* m_UIButtonYesOk{};
+    CUI3tButton* m_UIButtonNo{};
+    CUI3tButton* m_UIButtonCancel{};
 
-    CUIStatic* m_UIStaticPicture;
-    CUIStatic* m_UIStaticText;
-    CUIStatic* m_UIStaticHost;
-    CUIStatic* m_UIStaticPass;
-    CUIStatic* m_UIStaticUserPass;
-    CUIEditBox* m_UIEditHost;
-    CUIEditBox* m_UIEditPass;
-    CUIEditBox* m_UIEditUserPass;
+    CUIStatic* m_UIStaticPicture{};
+    CUIStatic* m_UIStaticText{};
+    CUIStatic* m_UIStaticHost{};
+    CUIStatic* m_UIStaticPass{};
+    CUIStatic* m_UIStaticUserPass{};
+    CUIEditBox* m_UIEditHost{};
+    CUIEditBox* m_UIEditPass{};
+    CUIEditBox* m_UIEditUserPass{};
 
     E_MESSAGEBOX_STYLE m_eMessageBoxStyle{};
 

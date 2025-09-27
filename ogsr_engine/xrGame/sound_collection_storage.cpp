@@ -7,10 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "sound_collection_storage.h"
 #include "object_broker.h"
 
-CSoundCollectionStorage* g_sound_collection_storage = 0;
+CSoundCollectionStorage* g_sound_collection_storage{};
 
 class collection_predicate
 {

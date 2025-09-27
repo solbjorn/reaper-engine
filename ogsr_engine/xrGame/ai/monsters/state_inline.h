@@ -134,7 +134,7 @@ CStateAbstract* CStateAbstract::get_state(u32 state_id)
 }
 
 TEMPLATE_SPECIALIZATION
-void CStateAbstract::add_state(u32 state_id, CSState* s) { substates.insert(std::make_pair(state_id, s)); }
+void CStateAbstract::add_state(u32 state_id, CSState* s) { substates.try_emplace(state_id, s); }
 
 TEMPLATE_SPECIALIZATION
 void CStateAbstract::free_mem()
@@ -190,13 +190,14 @@ TEMPLATE_SPECIALIZATION
 CStateAbstract* CStateAbstract::get_state_current()
 {
     if (substates.empty() || (current_substate == u32(-1)))
-        return 0;
+        return nullptr;
 
     STATE_MAP_IT it = substates.find(current_substate);
     VERIFY(it != substates.end());
 
     return it->second;
 }
+
 TEMPLATE_SPECIALIZATION
 EMonsterState CStateAbstract::get_state_type()
 {

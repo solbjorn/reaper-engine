@@ -18,10 +18,6 @@ void resptrcode_texture::create(LPCSTR _name) { _set(RImplementation.Resources->
 //////////////////////////////////////////////////////////////////////
 CTexture::CTexture()
 {
-    pSurface = NULL;
-    m_pSRView = NULL;
-    pAVI = NULL;
-    pTheora = NULL;
     seqMSPF = 0;
     flags.memUsage = 0;
     flags.bLoaded = false;
@@ -156,7 +152,7 @@ void CTexture::apply_load(CBackend& cmd_list, u32 dwStage)
     else
         PostLoad();
     bind(cmd_list, dwStage);
-};
+}
 
 void CTexture::Apply(CBackend& cmd_list, u32 dwStage) const
 {
@@ -258,7 +254,7 @@ void CTexture::apply_seq(CBackend& cmd_list, u32 dwStage)
     Apply(cmd_list, dwStage);
 }
 
-void CTexture::apply_normal(CBackend& cmd_list, u32 dwStage) const { Apply(cmd_list, dwStage); };
+void CTexture::apply_normal(CBackend& cmd_list, u32 dwStage) const { Apply(cmd_list, dwStage); }
 
 void CTexture::set_slice(int slice)
 {
@@ -313,7 +309,7 @@ void CTexture::Load(const char* Name)
             pTheora->Play(TRUE, Device.dwTimeContinual);
 
             // Now create texture
-            ID3DTexture2D* pTexture = 0;
+            ID3DTexture2D* pTexture{};
 
             D3D_TEXTURE2D_DESC desc{};
             desc.Width = pTheora->Width(false);
@@ -333,8 +329,8 @@ void CTexture::Load(const char* Name)
                 FATAL("Invalid video stream");
                 R_CHK(hrr);
                 xr_delete(pTheora);
-                pSurface = 0;
-                m_pSRView = 0;
+                pSurface = nullptr;
+                m_pSRView = nullptr;
             }
             else
             {
@@ -357,7 +353,7 @@ void CTexture::Load(const char* Name)
         {
             flags.memUsage = pAVI->m_dwWidth * pAVI->m_dwHeight * 4;
 
-            ID3DTexture2D* pTexture = 0;
+            ID3DTexture2D* pTexture{};
 
             D3D_TEXTURE2D_DESC desc{};
             desc.Width = pAVI->m_dwWidth;
@@ -376,8 +372,8 @@ void CTexture::Load(const char* Name)
                 FATAL("Invalid video stream");
                 R_CHK(hrr);
                 xr_delete(pAVI);
-                pSurface = 0;
-                m_pSRView = 0;
+                pSurface = nullptr;
+                m_pSRView = nullptr;
             }
             else
             {
@@ -416,7 +412,7 @@ void CTexture::Load(const char* Name)
                 if (pSurface)
                 {
                     seqDATA.push_back(pSurface);
-                    m_seqSRView.push_back(0);
+                    m_seqSRView.push_back(nullptr);
 
                     HW.pDevice->CreateShaderResourceView(pSurface, nullptr, &m_seqSRView.back());
                     flags.memUsage += mem;
@@ -443,7 +439,7 @@ void CTexture::Load(const char* Name)
             }
         }
 
-        pSurface = 0;
+        pSurface = nullptr;
     }
     else
     {
@@ -504,7 +500,7 @@ void CTexture::Unload()
         seqDATA.clear();
         m_seqSRView.clear();
 
-        pSurface = 0;
+        pSurface = nullptr;
     }
 
     _RELEASE(pSurface);

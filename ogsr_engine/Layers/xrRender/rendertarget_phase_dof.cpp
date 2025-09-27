@@ -15,7 +15,7 @@ void CRenderTarget::phase_dof()
 
     //////////////////////////////////////////////////////////////////////////
     // Set MSAA/NonMSAA rendertarget
-    u_setrt(RCache, rt_dof, 0, 0, get_base_zb());
+    u_setrt(RCache, rt_dof, nullptr, nullptr, get_base_zb());
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -66,4 +66,4 @@ void CRenderTarget::phase_dof()
 
     // Resolve RT
     RCache.context()->CopyResource(rt_Generic_0->pTexture->surface_get(), dest_rt->pTexture->surface_get());
-};
+}

@@ -12,11 +12,11 @@ template <typename _Graph, typename _DataStorage, typename _Parameters, typename
 class CPathManagerGeneric
 {
 public:
-    const _Graph* graph;
-    xr_vector<_index_type>* path;
+    const _Graph* graph{};
+    xr_vector<_index_type>* path{};
 
 protected:
-    _DataStorage* data_storage;
+    _DataStorage* data_storage{};
     _index_type start_node_index;
     _index_type goal_node_index;
     _dist_type max_range;
@@ -27,8 +27,9 @@ protected:
 public:
     typedef typename _Graph::const_iterator const_iterator;
 
-    CPathManagerGeneric();
+    CPathManagerGeneric() = default;
     virtual ~CPathManagerGeneric();
+
     IC void init();
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   const _Parameters& params);

@@ -7,13 +7,18 @@
 #include "Tracer.h"
 #include "..\xr_3da\render.h"
 
+namespace
+{
 constexpr u32 MAX_TRACERS = (1024 * 5);
 constexpr float TRACER_SIZE = 0.13f;
+} // namespace
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 #define TRACERS_COLOR_TABLE "tracers_color_table"
+
 CTracer::CTracer()
 {
     const char* sh_name = READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_shader", "effects\\bullet_tracer");
@@ -21,6 +26,7 @@ CTracer::CTracer()
     sh_Tracer->create(sh_name, tx_name);
 
     m_aColors.clear();
+
     for (u8 i = 0; i < 255; i++)
     {
         shared_str LineName;
@@ -30,7 +36,7 @@ CTracer::CTracer()
         float r, g, b;
         sscanf(pSettings->r_string(TRACERS_COLOR_TABLE, *LineName), "%f,%f,%f", &r, &g, &b);
         m_aColors.push_back(color_argb_f(1.0f, r, g, b));
-    };
+    }
 }
 
 CTracer::~CTracer() {}

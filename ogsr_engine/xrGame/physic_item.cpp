@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "physic_item.h"
 #include "physicsshell.h"
 #include "xrserver_objects.h"
@@ -35,7 +36,7 @@ CPhysicItem::CPhysicItem() { init(); }
 
 CPhysicItem::~CPhysicItem() { xr_delete(m_pPhysicsShell); }
 
-void CPhysicItem::init() { m_pPhysicsShell = 0; }
+void CPhysicItem::init() { m_pPhysicsShell = nullptr; }
 
 void CPhysicItem::reinit()
 {

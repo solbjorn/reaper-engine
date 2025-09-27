@@ -1,6 +1,5 @@
 #ifndef FactoryPtr_included
 #define FactoryPtr_included
-#pragma once
 
 #include "RenderFactory.h"
 #include "../../Include/xrAPI/xrAPI.h"
@@ -29,8 +28,8 @@ public:
 
     // unspecified bool type
     typedef T const* (FactoryPtr::*unspecified_bool_type)() const;
-    operator unspecified_bool_type() const { return (!m_pObject ? 0 : &FactoryPtr::get); }
-    bool operator!() const { return m_pObject == 0; }
+    operator unspecified_bool_type() const { return m_pObject ? &FactoryPtr::get : nullptr; }
+    bool operator!() const { return !m_pObject; }
 
 private:
     void CreateObject();
@@ -130,7 +129,7 @@ inline void FactoryPtr<IStatsRender>::DestroyObject()
 {
     RenderFactory->DestroyStatsRender(m_pObject);
     m_pObject = nullptr;
-};
+}
 
 template <>
 inline void FactoryPtr<IFlareRender>::CreateObject()

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -16,7 +17,7 @@
 #include "game_level_cross_table.h"
 #include "level_graph.h"
 
-CSE_ALifeItemWeapon* CSE_ALifeOnlineOfflineGroup::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) { return (0); }
+CSE_ALifeItemWeapon* CSE_ALifeOnlineOfflineGroup::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) { return nullptr; }
 
 ALife::EMeetActionType CSE_ALifeOnlineOfflineGroup::tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
 {
@@ -25,9 +26,9 @@ ALife::EMeetActionType CSE_ALifeOnlineOfflineGroup::tfGetActionType(CSE_ALifeSch
 
 bool CSE_ALifeOnlineOfflineGroup::bfActive() { return (false); }
 
-CSE_ALifeDynamicObject* CSE_ALifeOnlineOfflineGroup::tpfGetBestDetector() { return (0); }
+CSE_ALifeDynamicObject* CSE_ALifeOnlineOfflineGroup::tpfGetBestDetector() { return nullptr; }
 
-void CSE_ALifeOnlineOfflineGroup::update() { return; }
+void CSE_ALifeOnlineOfflineGroup::update() {}
 
 void CSE_ALifeOnlineOfflineGroup::register_member(ALife::_OBJECT_ID member_id)
 {
@@ -41,7 +42,7 @@ void CSE_ALifeOnlineOfflineGroup::register_member(ALife::_OBJECT_ID member_id)
     stalker->m_group_id = ID;
 
     bool empty = m_members.empty();
-    m_members.insert(std::make_pair(member_id, stalker));
+    m_members.emplace(member_id, stalker);
     if (empty)
     {
         o_Position = stalker->o_Position;
@@ -103,9 +104,11 @@ CSE_ALifeOnlineOfflineGroup::MEMBER* CSE_ALifeOnlineOfflineGroup::member(ALife::
     {
         if (!no_assert)
             Msg("! There is no member with id %d in the OnlineOfflineGroup id %d", member_id, ID);
+
         VERIFY(no_assert);
-        return (0);
+        return nullptr;
     }
+
     return ((*I).second);
 }
 

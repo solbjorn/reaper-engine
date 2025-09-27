@@ -19,7 +19,7 @@
         template <typename P> \
         static std::false_type select(...); \
         static constexpr auto value = std::is_same<std::true_type, decltype(select<T>(nullptr))>::value; \
-    };
+    }
 
 template <bool expression, typename T1, typename T2>
 struct _if
@@ -94,4 +94,4 @@ struct is_stl_container
         value = has_iterator<T>::value && has_const_iterator<T>::value && has_size_type<T>::value && has_value_type<T>::value
     };
 };
-}; // namespace object_type_traits
+} // namespace object_type_traits

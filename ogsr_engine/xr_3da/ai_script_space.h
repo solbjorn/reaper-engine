@@ -3,13 +3,12 @@
 
 #pragma comment(lib, "Luabind.lib")
 
-#pragma warning(push)
-
-#pragma warning(disable : 4459) // declaration of 'x' hides global declaration
-#pragma warning(disable : 4913) // user defined binary operator 'x' exists but no overload could convert all operands
-#pragma warning(disable : 4297) // function assumed not to throw exception but does
-
 #include <lua.hpp>
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <luabind/luabind.hpp>
 #include <luabind/class.hpp>
 #include <luabind/object.hpp>
@@ -20,4 +19,4 @@
 #include <luabind/iterator_policy.hpp>
 #include <luabind/iterator_pair_policy.hpp>
 
-#pragma warning(pop)
+XR_DIAG_POP();

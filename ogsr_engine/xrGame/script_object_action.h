@@ -17,8 +17,8 @@ class CScriptGameObject;
 class CScriptObjectAction : public CScriptAbstractAction
 {
 public:
-    CObject* m_tpObject;
-    MonsterSpace::EObjectAction m_tGoalType;
+    CObject* m_tpObject{};
+    MonsterSpace::EObjectAction m_tGoalType{MonsterSpace::eObjectActionIdle};
     u32 m_dwQueueSize{};
     shared_str m_caBoneName;
 
@@ -33,6 +33,8 @@ public:
     IC void SetObjectAction(MonsterSpace::EObjectAction tObjectActionType);
     IC void SetQueueSize(u32 dwQueueSize);
     IC void initialize();
+
+    inline void clone(const CScriptObjectAction& from);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

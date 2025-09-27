@@ -19,7 +19,7 @@ void CALifeGroupRegistry::add(CSE_ALifeDynamicObject* object)
         return;
 
     VERIFY(objects().find(group->ID) == objects().end());
-    m_objects.insert(std::make_pair(group->ID, group));
+    m_objects.try_emplace(group->ID, group);
 }
 
 void CALifeGroupRegistry::remove(CSE_ALifeDynamicObject* object)

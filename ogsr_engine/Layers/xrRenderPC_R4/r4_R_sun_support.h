@@ -252,7 +252,7 @@ public:
                 continue;
             }
 
-            if (tmp_dist < 0 && orient < 0 || tmp_dist > 0 && orient > 0)
+            if ((tmp_dist < 0 && orient < 0) || (tmp_dist > 0 && orient > 0))
                 continue;
 
             valid = false;

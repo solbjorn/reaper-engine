@@ -1,9 +1,11 @@
 #ifndef ELEVATOR_STAETE
 #define ELEVATOR_STAETE
+
 class CPHCharacter;
 struct dContact;
 struct SGameMtl;
 class CClimableObject;
+
 class CElevatorState
 {
 public:
@@ -20,7 +22,7 @@ public:
     };
 
 private:
-    Estate m_state;
+    Estate m_state{clbNoLadder};
 
     struct SEnertionState
     {
@@ -30,13 +32,14 @@ private:
 
     static SEnertionState m_etable[CElevatorState::clbNoState][CElevatorState::clbNoState];
 
-    CClimableObject* m_ladder;
-    CPHCharacter* m_character;
+    CClimableObject* m_ladder{};
+    CPHCharacter* m_character{};
     Fvector m_start_position; // for depart state
     u32 m_start_time{};
 
 public:
     CElevatorState();
+
     void PhTune(float step);
     void SetCharacter(CPHCharacter* character);
     void SetElevator(CClimableObject* climable);

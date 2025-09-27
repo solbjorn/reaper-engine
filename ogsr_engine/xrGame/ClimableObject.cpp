@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "climableobject.h "
 #include "PHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
@@ -9,8 +10,11 @@
 #include "level.h"
 #include "PHDebug.h"
 
-static const float down_leader_extension_tolerance = 0.2f;
-static const float up_leader_extension_tolerance = 0.0f;
+namespace
+{
+constexpr float down_leader_extension_tolerance{0.2f};
+constexpr float up_leader_extension_tolerance{0.0f};
+} // namespace
 
 IC void OrientToNorm(const Fvector& normal, Fmatrix& form, Fobb& box)
 {
@@ -60,9 +64,11 @@ void CPHLeaderGeomShell::near_callback(CPHObject* obj)
     }
 }
 
-CClimableObject::CClimableObject() { m_pStaticShell = NULL; }
+CClimableObject::CClimableObject() = default;
 CClimableObject::~CClimableObject() {}
+
 void CClimableObject::Load(LPCSTR section) { inherited::Load(section); }
+
 BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
 {
     CSE_Abstract* e = (CSE_Abstract*)(DC);
@@ -99,7 +105,7 @@ BOOL CClimableObject::net_Spawn(CSE_Abstract* DC)
     CObject::Position().sub(shift);
     m_box.xform_set(Fidentity);
     m_pStaticShell = xr_new<CPHLeaderGeomShell>(this);
-    P_BuildStaticGeomShell(smart_cast<CPHStaticGeomShell*>(m_pStaticShell), smart_cast<CGameObject*>(this), 0, m_box);
+    P_BuildStaticGeomShell(smart_cast<CPHStaticGeomShell*>(m_pStaticShell), smart_cast<CGameObject*>(this), nullptr, m_box);
     m_pStaticShell->SetMaterial("materials\\fake_ladders");
 
     if (m_axis.y < 0.f)
@@ -305,11 +311,12 @@ void CClimableObject::ObjectContactCallback(bool& do_colide, bool bo1, dContact&
 {
     dxGeomUserData* usr_data_1 = retrieveGeomUserData(c.geom.g1);
     dxGeomUserData* usr_data_2 = retrieveGeomUserData(c.geom.g2);
-    dxGeomUserData* usr_data_ch = NULL;
-    dxGeomUserData* usr_data_lad = NULL;
-    CClimableObject* this_object = NULL;
-    CPHCharacter* ch = NULL;
-    float norm_sign = 0.f;
+    dxGeomUserData* usr_data_ch{};
+    dxGeomUserData* usr_data_lad{};
+    CClimableObject* this_object{};
+    CPHCharacter* ch{};
+    float norm_sign{};
+
     if (bo1)
     {
         usr_data_ch = usr_data_2;

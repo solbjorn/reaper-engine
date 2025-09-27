@@ -19,7 +19,7 @@ struct VisMask final
     {
         _visimask.assign(_low);
         _visimask_ex.assign(_high);
-    };
+    }
 
     IC bool operator!=(const VisMask& _second) const noexcept
     {

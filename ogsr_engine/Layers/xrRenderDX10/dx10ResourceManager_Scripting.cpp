@@ -19,13 +19,13 @@ class adopt_dx10sampler
 public:
     adopt_dx10sampler(CBlender_Compile* C, u32 SamplerIndex) : m_pC(C), m_SI(SamplerIndex)
     {
-        if (u32(-1) == m_SI)
-            m_pC = 0;
+        if (m_SI == std::numeric_limits<u32>::max())
+            m_pC = nullptr;
     }
     adopt_dx10sampler(const adopt_dx10sampler& _C) : m_pC(_C.m_pC), m_SI(_C.m_SI)
     {
-        if (u32(-1) == m_SI)
-            m_pC = 0;
+        if (m_SI == std::numeric_limits<u32>::max())
+            m_pC = nullptr;
     }
 
     //	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
@@ -216,7 +216,7 @@ static bool do_file(sol::state_view lua, const char* caScriptName, const char* c
     }
     catch (const sol::error& e)
     {
-        ASSERT_FMT(false, e.what());
+        ASSERT_FMT(false, "%s", e.what());
         return false;
     }
 
@@ -365,7 +365,7 @@ void CResourceManager::LS_Load()
     {
         string_path namesp, fn;
         xr_strcpy(namesp, (*folder)[it]);
-        if (0 == strext(namesp) || 0 != xr_strcmp(strext(namesp), ".s"))
+        if (!strext(namesp) || 0 != xr_strcmp(strext(namesp), ".s"))
             continue;
         *strext(namesp) = 0;
         if (0 == namesp[0])
@@ -420,13 +420,13 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     LPCSTR s_shader = undercorated;
 
     // Access to template
-    C.BT = NULL;
+    C.BT = nullptr;
     C.bDetail = FALSE;
 
     // Prepare
     _ParseList(C.L_textures, s_textures);
-    C.detail_texture = NULL;
-    C.detail_scaler = NULL;
+    C.detail_texture = nullptr;
+    C.detail_scaler = nullptr;
 
     // Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
     bool bUseNewWorkflow = false;
@@ -516,8 +516,10 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             return v_shader;
 
     // Create _new_ entry
-    Shader* N = v_shaders.emplace_back(xr_new<Shader>(S));
+    Shader* N = v_shaders.emplace_back(xr_new<Shader>());
+    N->clone(std::move(S));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+
     return N;
 }
 
@@ -540,5 +542,6 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
 
     r_End();
     ShaderElement* _r = RImplementation.Resources->_CreateElement(std::move(E));
+
     return _r;
 }

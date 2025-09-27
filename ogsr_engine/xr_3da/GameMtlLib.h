@@ -281,7 +281,8 @@ public:
     { \
         VERIFY2(!(_mtl_pair_)->_a_vector_.empty(), (_mtl_pair_)->dbg_Name()); \
         _res_.clone(GET_RANDOM((_mtl_pair_)->_a_vector_), st_Effect, sg_SourceType); \
-    }
+    } \
+    XR_MACRO_END()
 
 extern CGameMtlLibrary GMLib;
 

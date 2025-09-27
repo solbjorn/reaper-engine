@@ -95,16 +95,19 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
         R_ASSERT3(!strchr(*temp, ' '), invalid_id_description, *temp);
         R_ASSERT2(xr_strcmp(*temp, INVALID_ID_STRING), invalid_id_redefinition);
 
-        auto ret = result.insert(std::make_pair(*temp, atoi(N)));
-        ASSERT_FMT(ret.second == true, duplicated_id_description, *temp);
+        auto ret = result.try_emplace(*temp, atoi(N));
+        ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, *temp);
     }
 
-    result.insert(std::make_pair(INVALID_ID_STRING, INVALID_ID));
+    result.try_emplace(INVALID_ID_STRING, INVALID_ID);
 }
 
-static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id) { alife->kill_entity(monster, game_vertex_id, 0); }
+static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id)
+{
+    alife->kill_entity(monster, game_vertex_id, nullptr);
+}
 
-static void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID, 0); }
+static void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID, nullptr); }
 
 static void add_in_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, ALife::_OBJECT_ID id)
 {
@@ -165,7 +168,7 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
     if (!object)
     {
         Msg("! invalid parent id [%d] specified", id_parent);
-        return (0);
+        return nullptr;
     }
 
     if (!object->m_bOnline)
@@ -192,16 +195,15 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
 static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id,
                                                  ALife::_OBJECT_ID id_parent, int ammo_to_spawn)
 {
-    //	if (id_parent == ALife::_OBJECT_ID(-1))
-    //		return							(self->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
-    CSE_ALifeDynamicObject* object = 0;
+    CSE_ALifeDynamicObject* object{};
+
     if (id_parent != ALife::_OBJECT_ID(-1))
     {
         object = ai().alife().objects().object(id_parent, true);
         if (!object)
         {
             Msg("! invalid parent id [%d] specified", id_parent);
-            return (0);
+            return nullptr;
         }
     }
 
@@ -366,17 +368,19 @@ static bool dont_has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& 
 static LPCSTR get_save_name(CALifeSimulator* sim)
 {
     // alpet: обертка предотвращает вылет, при обращении к свойству на ранней стадии  инициализации
-    LPCSTR result = NULL;
+    LPCSTR result{};
     if (sim)
         result = sim->save_name(FALSE);
+
     return result ? result : "NULL";
 }
 
 static LPCSTR get_loaded_save(CALifeSimulator* sim)
 {
-    LPCSTR result = NULL;
+    LPCSTR result{};
     if (sim)
         result = sim->save_name(TRUE);
+
     return result ? result : "NULL";
 }
 
@@ -410,7 +414,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
 
     if (story_ids.empty())
         generate_story_ids(story_ids, INVALID_STORY_ID, "story_ids", "INVALID_STORY_ID", "Invalid story id description (contains spaces)!", "INVALID_STORY_ID redifinition!",
-                           "Duplicated story id description %s!");
+                           "Duplicated story id description");
 
     target = lua.create_table(story_ids.size(), 0);
 
@@ -421,7 +425,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
 
     if (spawn_story_ids.empty())
         generate_story_ids(spawn_story_ids, INVALID_SPAWN_STORY_ID, "spawn_story_ids", "INVALID_SPAWN_STORY_ID", "Invalid spawn story id description (contains spaces)!",
-                           "INVALID_SPAWN_STORY_ID redifinition!", "Duplicated spawn story id description %s!");
+                           "INVALID_SPAWN_STORY_ID redifinition!", "Duplicated spawn story id description");
 
     target = lua.create_table(spawn_story_ids.size(), 0);
 

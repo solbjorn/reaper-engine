@@ -9,10 +9,12 @@
 
 class CScientificOutfit : public CCustomOutfit
 {
+    RTTI_DECLARE_TYPEINFO(CScientificOutfit, CCustomOutfit);
+
 private:
     typedef CCustomOutfit inherited;
 
 public:
-    CScientificOutfit(void);
-    virtual ~CScientificOutfit(void);
+    CScientificOutfit();
+    virtual ~CScientificOutfit();
 };

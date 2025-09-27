@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "CustomDetector.h"
 #include "ui/ArtefactDetectorUI.h"
 #include "HUDManager.h"
@@ -258,9 +259,8 @@ void CCustomDetector::UpdateVisibility()
         bool bClimb = ((Actor()->MovingState() & mcClimb) != 0);
         if (!bClimb)
         {
-            CHudItem* huditem = (i0) ? i0->m_parent_hud_item : nullptr;
-            bool bChecked = !huditem || CheckCompatibilityInt(huditem, 0);
-
+            CHudItem* huditem = i0 ? i0->m_parent_hud_item : nullptr;
+            bool bChecked = !huditem || CheckCompatibilityInt(huditem, nullptr);
             if (bChecked)
                 ShowDetector(true);
         }
@@ -324,14 +324,14 @@ void CCustomDetector::TurnDetectorInternal(bool b)
 Fvector CCustomDetector::GetPositionForCollision()
 {
     Fvector det_pos{}, det_dir{};
-    //Офсет подобрал через худ аждаст, это скорее всего временно, но такое решение подходит всем детекторам более-менее.
+    // Офсет подобрал через худ аждаст, это скорее всего временно, но такое решение подходит всем детекторам более-менее.
     GetBoneOffsetPosDir("wpn_body", det_pos, det_dir, Fvector{-0.247499f, -0.810510f, 0.178999f});
     return det_pos;
 }
 
 Fvector CCustomDetector::GetDirectionForCollision()
 {
-    //Пока и так нормально, в будущем мб придумаю решение получше.
+    // Пока и так нормально, в будущем мб придумаю решение получше.
     return Device.vCameraDirection;
 }
 

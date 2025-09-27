@@ -6,7 +6,7 @@ class CAlienEffectorPP;
 
 class CBloodsuckerAlien
 {
-    CAI_Bloodsucker* m_object;
+    CAI_Bloodsucker* m_object{};
 
     bool m_active;
 
@@ -16,7 +16,7 @@ class CBloodsuckerAlien
     bool m_crosshair_show;
 
 public:
-    CBloodsuckerAlien();
+    CBloodsuckerAlien() = default;
     ~CBloodsuckerAlien() = default;
 
     void init_external(CAI_Bloodsucker* obj);

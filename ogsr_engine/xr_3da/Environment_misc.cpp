@@ -236,7 +236,7 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
 //-----------------------------------------------------------------------------
 // Environment descriptor
 //-----------------------------------------------------------------------------
-CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(identifier)
+CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier{identifier}
 {
     exec_time = 0.0f;
     exec_time_loaded = 0.0f;
@@ -274,15 +274,14 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
 
     lens_flare_id = "";
     tb_id = "";
-
-    env_ambient = NULL;
 }
 
 #define C_CHECK(C) \
     if (C.x < 0 || C.x > 2 || C.y < 0 || C.y > 2 || C.z < 0 || C.z > 2) \
     { \
         Msg("! Invalid '%s' in env-section '%s'", #C, m_identifier.c_str()); \
-    }
+    } \
+    XR_MACRO_END()
 
 void CEnvDescriptor::load_common(CInifile* config)
 {
@@ -382,7 +381,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
                                                    config.r_string(m_identifier.c_str(), "thunderbolt_collection"));
     bolt_period = (tb_id.size()) ? config.r_float(m_identifier.c_str(), "thunderbolt_period") : 0.f;
     bolt_duration = (tb_id.size()) ? config.r_float(m_identifier.c_str(), "thunderbolt_duration") : 0.f;
-    env_ambient = config.line_exist(m_identifier.c_str(), "ambient") ? environment.AppendEnvAmb(config.r_string(m_identifier.c_str(), "ambient")) : 0;
+    env_ambient = config.line_exist(m_identifier.c_str(), "ambient") ? environment.AppendEnvAmb(config.r_string(m_identifier.c_str(), "ambient")) : nullptr;
 
     if (config.line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = config.r_float(m_identifier.c_str(), "sun_shafts_intensity");
@@ -455,7 +454,7 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     tb_id = environment.eff_Thunderbolt->AppendDef_shoc(environment, pSettings, pSettings->r_string(m_identifier.c_str(), "thunderbolt"));
     bolt_period = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_period") : 0.f;
     bolt_duration = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_duration") : 0.f;
-    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string(m_identifier.c_str(), "env_ambient")) : 0;
+    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string(m_identifier.c_str(), "env_ambient")) : nullptr;
 
     if (pSettings->line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = pSettings->r_float(m_identifier.c_str(), "sun_shafts_intensity");
@@ -699,7 +698,7 @@ void CEnvironment::load_sun()
     for (u32 i = 0; i < 24; i++)
     {
         char sun_identifier[10];
-        sprintf(sun_identifier, i >= 10 ? "%d:00:00" : "0%d:00:00", i);
+        sprintf(sun_identifier, i >= 10 ? "%u:00:00" : "0%u:00:00", i);
 
         float sun_alt = m_sun_pos_config->r_float(sun_identifier, "sun_altitude");
         float sun_long = m_sun_pos_config->r_float(sun_identifier, "sun_longitude");

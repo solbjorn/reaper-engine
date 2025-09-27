@@ -25,6 +25,7 @@ enum EHeliHuntState
     eEnemyPoint,
     eEnemyEntity
 };
+
 struct SHeliEnemy
 {
     EHeliHuntState type;
@@ -46,6 +47,7 @@ enum EHeliBodyState
     eBodyByPath,
     eBodyToPoint
 };
+
 struct SHeliBodyState
 {
     CHelicopter* parent;
@@ -78,15 +80,20 @@ enum EHeilMovementState
     eMovLanding,
     eMovTakeOff
 };
+
 struct SHeliMovementState
 {
     struct STmpPt
     {
-        Fvector point;
-        float dir_h;
-        STmpPt(const Fvector& p, const float h) : point(p), dir_h(h) {};
+        Fvector point{};
+        float dir_h{};
+
+        STmpPt() = default;
+        STmpPt(const Fvector& p, const float h) : point{p}, dir_h{h} {}
     };
+
     ~SHeliMovementState();
+
     CHelicopter* parent;
     EHeilMovementState type;
     // specified path
@@ -206,7 +213,7 @@ public:
     shared_str m_sAmmoType, m_sRocketSection;
     CCartridge m_CurrentAmmo;
     float delta_t;
-    float flag_by_fire;
+    bool flag_by_fire;
     Fmatrix m_left_rocket_bone_xform, m_right_rocket_bone_xform;
 
     static void BoneMGunCallbackX(CBoneInstance* B);
@@ -214,9 +221,9 @@ public:
     void startRocket(u16 idx);
 
     // CShootingObject
-    virtual const Fmatrix& ParticlesXFORM() const { return m_fire_bone_xform; };
+    virtual const Fmatrix& ParticlesXFORM() const { return m_fire_bone_xform; }
 
-    virtual const Fvector& CurrentFirePoint() { return m_fire_pos; };
+    virtual const Fvector& CurrentFirePoint() { return m_fire_pos; }
 
     void MGunFireStart();
     void MGunFireEnd();
@@ -248,13 +255,13 @@ protected:
     ref_sound m_engineSound;
     ref_sound m_brokenSound;
     //	ref_sound						m_explodeSound;
-    ref_light m_light_render;
-    CLAItem* m_lanim;
+    ref_light m_light_render{};
+    CLAItem* m_lanim{};
     u16 m_light_bone, m_smoke_bone;
     float m_light_range, m_light_brightness;
     Fcolor m_light_color;
     shared_str m_smoke_particle;
-    CParticlesObject* m_pParticle;
+    CParticlesObject* m_pParticle{};
     Fmatrix m_particleXFORM;
 
     void StartFlame();
@@ -263,9 +270,9 @@ protected:
     void TurnLighting(bool bOn);
     void TurnEngineSound(bool bOn);
     // explosive
-    virtual void OnAfterExplosion() {};
+    virtual void OnAfterExplosion() {}
     virtual void GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {};
+    virtual void ActivateExplosionBox(const Fvector&, Fvector&) {}
     // general
     EHeliState m_curState;
 
@@ -281,11 +288,11 @@ public:
     CHelicopter();
     virtual ~CHelicopter();
 
-    CHelicopter::EHeliState state() { return m_curState; };
-    int state_script() { return m_curState; };
+    CHelicopter::EHeliState state() { return m_curState; }
+    int state_script() { return m_curState; }
 
     void setState(CHelicopter::EHeliState s);
-    void setState_script(u32 s) { setState((CHelicopter::EHeliState)s); };
+    void setState_script(u32 s) { setState((CHelicopter::EHeliState)s); }
 
     void init();
     virtual void reinit();
@@ -295,7 +302,7 @@ public:
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E) {};
+    virtual void net_Export(CSE_Abstract* E) {}
     virtual void net_Relcase(CObject* O);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
@@ -303,7 +310,7 @@ public:
     virtual void SpawnInitPhysics(CSE_Abstract* D);
     virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
     virtual void net_Save(NET_Packet& P);
-    virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell() != NULL)) || m_exploded; };
+    virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && PPhysicsShell()) || m_exploded; }
 
     virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
@@ -316,12 +323,12 @@ public:
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
     // CEntity
-    virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) { ; }
-    virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) { ; }
+    virtual void HitSignal(float, Fvector&, CObject*, s16) {}
+    virtual void HitImpulse(float, Fvector&, Fvector&) {}
 
     virtual const Fmatrix& get_ParticlesXFORM();
     virtual const Fvector& get_CurrentFirePoint();
-    virtual bool IsHudModeNow() { return false; };
+    virtual bool IsHudModeNow() { return false; }
 
     virtual CGameObject* cast_game_object() { return this; }
     virtual CExplosive* cast_explosive() { return this; }
@@ -352,7 +359,7 @@ public:
     void SetLinearAcc(float LAcc_fw, float LAcc_bw);
     //////////////////////End By JoHnY/////////////////////////
     Fvector GetCurrVelocityVec();
-    void SetBarrelDirTolerance(float val) { m_barrel_dir_tolerance = val; };
+    void SetBarrelDirTolerance(float val) { m_barrel_dir_tolerance = val; }
     void SetEnemy(CScriptGameObject* e);
     void SetEnemy(Fvector* pos);
     void UnSetEnemy();
@@ -367,7 +374,7 @@ public:
     int GetBodyState();
 
     virtual DLL_Pure* _construct();
-    float GetSafeAltitude() { return m_movement.GetSafeAltitude(); };
+    float GetSafeAltitude() { return m_movement.GetSafeAltitude(); }
     float GetHeliHealth() const { return inherited::GetfHealth(); }
     float SetHeliHealth(float value) { return inherited::SetfHealth(value); }
 

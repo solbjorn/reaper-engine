@@ -26,3 +26,11 @@ IC CScriptMonsterAction::CScriptMonsterAction(MonsterSpace::EScriptMonsterGlobal
     m_bCompleted = false;
     SetObject(tObj);
 }
+
+inline void CScriptMonsterAction::clone(const CScriptMonsterAction& from)
+{
+    CScriptAbstractAction::clone(from);
+
+    m_tAction = from.m_tAction;
+    m_tObject = from.m_tObject;
+}

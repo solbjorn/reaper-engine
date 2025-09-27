@@ -17,13 +17,8 @@
 
 #define PDA_CONTACT_CHAR "pda_character.xml"
 
-CUIPdaListItem::CUIPdaListItem()
-{
-    UIMask = NULL;
-    UIInfo = NULL;
-}
-
-CUIPdaListItem::~CUIPdaListItem() {}
+CUIPdaListItem::CUIPdaListItem() = default;
+CUIPdaListItem::~CUIPdaListItem() = default;
 
 void CUIPdaListItem::Init(float x, float y, float width, float height)
 {

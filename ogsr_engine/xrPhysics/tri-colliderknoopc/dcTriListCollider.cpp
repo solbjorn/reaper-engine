@@ -33,8 +33,7 @@ int dcTriListCollider::CollideBox(dxGeom* Box, int Flags, dContactGeom* Contacts
         AABB.z += dFabs(velocity[2]) * 0.04f;
     }
 
-    BoxTri bt(*this);
-    return dSortTriPrimitiveCollide(bt, Box, Geometry, Flags, Contacts, Stride, AABB);
+    return dSortTriPrimitiveCollide<BoxTri>(Box, Geometry, Flags, Contacts, Stride, AABB);
 }
 
 int dcTriListCollider::CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom* Contacts, int Stride)
@@ -57,8 +56,7 @@ int dcTriListCollider::CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom
     AABB.y += dFabs(velocity[1]) * 0.04f;
     AABB.z += dFabs(velocity[2]) * 0.04f;
 
-    CylTri ct(*this);
-    return dSortTriPrimitiveCollide(ct, Cylinder, Geometry, Flags, Contacts, Stride, AABB);
+    return dSortTriPrimitiveCollide<CylTri>(Cylinder, Geometry, Flags, Contacts, Stride, AABB);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -78,6 +76,6 @@ int dcTriListCollider::CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Co
     AABB.x += dFabs(velocity[0]) * 0.04f;
     AABB.y += dFabs(velocity[1]) * 0.04f;
     AABB.z += dFabs(velocity[2]) * 0.04f;
-    SphereTri st(*this);
-    return dSortTriPrimitiveCollide(st, Sphere, Geometry, Flags, Contacts, Stride, AABB);
+
+    return dSortTriPrimitiveCollide<SphereTri>(Sphere, Geometry, Flags, Contacts, Stride, AABB);
 }

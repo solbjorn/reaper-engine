@@ -2,7 +2,6 @@
 
 namespace UIMapWndActionsSpace
 {
-
 enum EWorldProperties
 {
     ePropTargetMapShown,
@@ -10,7 +9,7 @@ enum EWorldProperties
     ePropMapResized,
     ePropMapIdle,
     ePropMapCentered,
-    ePropDummy = u16(-1),
+    ePropDummy = std::numeric_limits<u16>::max(),
 };
 
 enum EWorldOperators
@@ -19,6 +18,6 @@ enum EWorldOperators
     eOperatorMapMinimize,
     eOperatorMapIdle,
     eOperatorMapCenter,
-    eWorldOperatorDummy = u16(-1),
+    eWorldOperatorDummy = std::numeric_limits<u16>::max(),
 };
-}; // namespace UIMapWndActionsSpace
+} // namespace UIMapWndActionsSpace

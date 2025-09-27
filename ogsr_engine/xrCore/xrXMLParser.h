@@ -6,7 +6,12 @@ constexpr LPCSTR UI_PATH = "ui";
 constexpr LPCSTR GAME_PATH = "gameplay";
 constexpr LPCSTR STRING_TABLE_PATH = "text";
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
+
 #include <tinyxml2.h>
+
+XR_DIAG_POP();
 
 using XML_NODE = tinyxml2::XMLNode;
 using XML_ATTRIBUTE = tinyxml2::XMLAttribute;
@@ -17,8 +22,10 @@ class CXml : public virtual RTTI::Enable
 
 public:
     string_path m_xml_file_name{};
+
     CXml();
     virtual ~CXml();
+
     void ClearInternal();
 
     bool Init(LPCSTR path_alias, LPCSTR path, LPCSTR xml_filename);
@@ -78,13 +85,14 @@ public:
     XML_NODE* GetRoot() { return m_root; }
 
 protected:
-    XML_NODE* m_root;
-    XML_NODE* m_pLocalRoot;
+    XML_NODE* m_root{};
+    XML_NODE* m_pLocalRoot{};
 
 #ifdef DEBUG // debug & mixed
     // буфферный вектор для проверки уникальность аттрибутов
     xr_vector<shared_str> m_AttribValues;
 #endif
+
 public:
     virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn) { return fn; }
 

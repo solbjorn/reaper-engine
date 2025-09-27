@@ -27,7 +27,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
     if (0xffff == e_entity->ID_Parent)
     {
         MsgDbg("! ERROR: can't detach independent object. entity[%s][%d], parent[%s][%d], section[%s]", e_entity->name_replace(), id_entity, e_parent->name_replace(), id_parent,
-            e_entity->s_name.c_str());
+               e_entity->s_name.c_str());
         return false;
     }
 
@@ -36,7 +36,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
     {
         // it can't be !!!
 
-        Msg("! ERROR: e_entity->ID_Parent = [%d]  parent = [%d][%s]  entity_id = [%d]  frame = [%d]", e_entity->ID_Parent, id_parent, e_parent->name_replace(), id_entity,
+        Msg("! ERROR: e_entity->ID_Parent = [%d]  parent = [%d][%s]  entity_id = [%d]  frame = [%u]", e_entity->ID_Parent, id_parent, e_parent->name_replace(), id_entity,
             Device.dwFrame);
     }
 

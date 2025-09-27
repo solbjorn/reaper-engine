@@ -23,7 +23,7 @@ class CSound_UserDataVisitor;
 namespace MemorySpace
 {
 struct CMemoryInfo;
-};
+}
 
 class CMemoryManager : public virtual RTTI::Enable
 {

@@ -29,9 +29,9 @@ public:
     {
         m_storage = storage;
         VERIFY(m_storage);
-    };
+    }
 
-    virtual ~CBaseFunction() {};
+    virtual ~CBaseFunction() {}
 
     IC CEF_Storage& ef_storage() const
     {

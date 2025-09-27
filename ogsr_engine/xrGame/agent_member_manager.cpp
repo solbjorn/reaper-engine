@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "object_broker.h"
@@ -34,7 +35,7 @@ void CAgentMemberManager::add(CEntity* member)
     if (!stalker || !stalker->g_Alive())
         return;
 
-    ASSERT_FMT(sizeof(squad_mask_type) * 8 > members().size(), "[%s]: too many stalkers in group [team:%u][squad:%u][group:%u]!", __FUNCTION__,
+    ASSERT_FMT(sizeof(squad_mask_type) * 8 > members().size(), "[%s]: too many stalkers in group [team:%d][squad:%d][group:%d]!", __FUNCTION__,
                m_members.front()->object().g_Team(), m_members.front()->object().g_Squad(), m_members.front()->object().g_Group());
 
     VERIFY(std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker)) == m_members.end());
@@ -219,7 +220,7 @@ CMemberOrder* CAgentMemberManager::get_member(const ALife::_OBJECT_ID& object_id
 {
     iterator I = std::find_if(members().begin(), members().end(), CMemberPredicate2(object_id));
     if (I == members().end())
-        return (0);
+        return nullptr;
 
     return (&**I);
 }

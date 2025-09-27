@@ -13,8 +13,8 @@ enum ETask : u32
 
 struct SControlledInfo
 {
-    ETask m_task;
     const CEntity* m_object;
+    ETask m_task;
     Fvector m_position;
     u32 m_node;
     float m_radius;
@@ -59,7 +59,7 @@ public:
     _Object* m_object;
     CController* m_controller;
 
-    virtual bool is_under_control() { return (m_controller != 0); }
+    virtual bool is_under_control() { return !!m_controller; }
 
     virtual void set_data(const SControlledInfo& info) { m_data = info; }
     virtual SControlledInfo& get_data() { return m_data; }

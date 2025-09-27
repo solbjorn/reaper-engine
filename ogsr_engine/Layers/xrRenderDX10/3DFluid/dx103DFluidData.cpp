@@ -1,9 +1,13 @@
 #include "stdafx.h"
+
 #include "dx103DFluidData.h"
 #include "dx103DFluidManager.h"
 
-constexpr xr_token simulation_type_token[] = {{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {0, 0}};
-constexpr xr_token emitter_type_token[] = {{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {0, 0}};
+namespace
+{
+constexpr xr_token simulation_type_token[]{{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {nullptr, 0}};
+constexpr xr_token emitter_type_token[]{{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {nullptr, 0}};
+} // namespace
 
 dx103DFluidData::dx103DFluidData()
 {

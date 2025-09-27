@@ -65,7 +65,7 @@ static CEntityCondition* get_obj_conditions(CScriptGameObject* script_obj)
     if (pE)
         return pE->conditions();
 
-    return NULL;
+    return nullptr;
 }
 
 static CHitImmunity* get_obj_immunities(CScriptGameObject* script_obj)
@@ -78,7 +78,8 @@ static CHitImmunity* get_obj_immunities(CScriptGameObject* script_obj)
     CArtefact* pArt = smart_cast<CArtefact*>(obj);
     if (pArt)
         return &pArt->m_ArtefactHitImmunities;
-    return NULL;
+
+    return nullptr;
 }
 
 static CInventory* get_obj_inventory(CScriptGameObject* script_obj)
@@ -86,10 +87,12 @@ static CInventory* get_obj_inventory(CScriptGameObject* script_obj)
     CInventoryOwner* owner = smart_cast<CInventoryOwner*>(&script_obj->object());
     if (owner)
         return owner->m_inventory;
+
     CHolderCustom* holder = script_obj->get_current_holder();
     if (holder)
         return holder->GetInventory();
-    return NULL;
+
+    return nullptr;
 }
 
 CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const { return object().alife_object(); }
@@ -131,10 +134,10 @@ static bool actor_can_take(CScriptGameObject* O)
         return false;
 
     CInventoryItem* pIItem = smart_cast<CInventoryItem*>(obj);
-    if (0 == pIItem)
+    if (!pIItem)
         return false;
 
-    if (pIItem->object().H_Parent() != NULL)
+    if (pIItem->object().H_Parent())
         return false;
 
     if (!pIItem->CanTake())

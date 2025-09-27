@@ -70,15 +70,15 @@ public:
 
     void Initialize(LPCSTR shader, LPCSTR texture, const char* sect);
 
-    IC void SetColor(u32 C) { dwCurrentColor = C; };
+    IC void SetColor(u32 C) { dwCurrentColor = C; }
 
     void SetHeightI(float S);
     void SetHeight(float S);
 
     IC float GetHeight() const { return fCurrentHeight; }
 
-    IC void SetInterval(float x, float y) { vInterval.set(x, y); };
-    IC void SetInterval(const Fvector2& v) { vInterval.set(v); };
+    IC void SetInterval(float x, float y) { vInterval.set(x, y); }
+    IC void SetInterval(const Fvector2& v) { vInterval.set(v); }
 
     IC const Fvector2& GetInterval() const { return vInterval; }
 
@@ -97,7 +97,7 @@ public:
     void OutSetI(float x, float y);
     void OutSet(float x, float y);
 
-    void MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p);
+    void XR_PRINTF(9, 0) MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p);
 
     BOOL IsMultibyte() const { return (uFlags & fsMultibyte); }
 
@@ -106,15 +106,15 @@ public:
     u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
     u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
-    void OutI(float _x, float _y, LPCSTR fmt, ...);
-    void Out(float _x, float _y, LPCSTR fmt, ...);
-    void OutNext(LPCSTR fmt, ...);
+    void XR_PRINTF(4, 5) OutI(float _x, float _y, LPCSTR fmt, ...);
+    void XR_PRINTF(4, 5) Out(float _x, float _y, LPCSTR fmt, ...);
+    void XR_PRINTF(2, 3) OutNext(LPCSTR fmt, ...);
 
     void OutSkip(float val = 1.f);
 
     void OnRender();
 
-    IC void Clear() { strings.clear(); };
+    IC void Clear() { strings.clear(); }
 
     float GetWidthScale() const;
     float GetHeightScale() const;

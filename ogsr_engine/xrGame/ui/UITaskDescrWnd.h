@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIWindow.h"
 
 class CUIScrollView;
@@ -9,6 +10,9 @@ class CEncyclopediaArticle;
 
 class CUITaskDescrWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUITaskDescrWnd, CUIWindow);
+
+private:
     typedef CUIWindow inherited;
 
 protected:

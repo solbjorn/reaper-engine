@@ -14,9 +14,9 @@ public:
     friend class dxWallMarkArray;
     friend class CRender;
 
-    virtual ~dxUIShader() { ; }
+    virtual ~dxUIShader() {}
     virtual void Copy(IUIShader& _in);
-    virtual void create(LPCSTR sh, LPCSTR tex = 0, bool no_cache = false);
+    virtual void create(LPCSTR sh, LPCSTR tex = nullptr, bool no_cache = false);
     virtual bool inited() { return hShader; }
     // virtual void destroy();
 

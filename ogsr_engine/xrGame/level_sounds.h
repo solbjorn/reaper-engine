@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------
 #ifndef LevelSoundsH
 #define LevelSoundsH
-#pragma once
 
 struct SStaticSound
 {

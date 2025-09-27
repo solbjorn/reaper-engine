@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "WeaponStatMgun.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PhysicsShell.h"
@@ -32,7 +33,7 @@ void CWeaponStatMgun::BoneCallbackY(CBoneInstance* B)
 CWeaponStatMgun::CWeaponStatMgun()
 {
     m_Ammo = xr_new<CCartridge>();
-    camera = xr_new<CCameraFirstEye>(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid | CCameraBase::flDirectionRigid);
+    camera = xr_new<CCameraFirstEye>(this, gsl::narrow<u32>(CCameraBase::flRelativeLink | CCameraBase::flPositionRigid | CCameraBase::flDirectionRigid));
     camera->Load("mounted_weapon_cam");
 }
 
@@ -157,7 +158,7 @@ void CWeaponStatMgun::UpdateCL()
 //							float impulse, ALife::EHitType hit_type)
 void CWeaponStatMgun::Hit(SHit* pHDS)
 {
-    if (NULL == Owner())
+    if (!Owner())
         //		inheritedPH::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
         inheritedPH::Hit(pHDS);
 }

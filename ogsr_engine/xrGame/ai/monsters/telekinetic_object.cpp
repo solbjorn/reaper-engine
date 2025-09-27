@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../../physicsshellholder.h"
 #include "telekinetic_object.h"
 #include "PhysicsShell.h"
@@ -11,15 +12,8 @@
 #define FIRE_TIME 3000
 #define RAISE_MAX_TIME 5000
 
-CTelekineticObject::CTelekineticObject()
-{
-    state = TS_None;
-    object = 0;
-    telekinesis = 0;
-    m_rotate = false;
-}
-
-CTelekineticObject::~CTelekineticObject() {}
+CTelekineticObject::CTelekineticObject() = default;
+CTelekineticObject::~CTelekineticObject() = default;
 
 bool CTelekineticObject::init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot)
 {
@@ -232,7 +226,7 @@ void CTelekineticObject::fire(const Fvector& target, float power)
     // выполнить бросок
     for (u32 i = 0; i < object->m_pPhysicsShell->get_ElementsNumber(); i++)
         object->m_pPhysicsShell->get_ElementByStoreOrder(u16(i))->applyImpulse(dir, power * 20.f * object->m_pPhysicsShell->getMass() / object->m_pPhysicsShell->Elements().size());
-};
+}
 
 bool CTelekineticObject::check_height()
 {
@@ -241,6 +235,7 @@ bool CTelekineticObject::check_height()
 
     return (object->Position().y > target_height);
 }
+
 bool CTelekineticObject::check_raise_time_out()
 {
     if (time_raise_started + RAISE_MAX_TIME < Device.dwTimeGlobal)

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "controller_psy_hit.h"
 #include "../BaseMonster/base_monster.h"
 #include "controller.h"
@@ -153,7 +154,7 @@ bool check_actor_visibility(const Fvector trace_from, const Fvector trace_to, CO
     // DBG().level_info(this).add_item	(trace_from,trace_to,D3DCOLOR_XRGB(0,150,150));
 
     collide::rq_result l_rq;
-    l_rq.O = NULL;
+    l_rq.O = nullptr;
     Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, object);
 
     return l_rq.O == Actor() || (l_rq.range >= dist - 0.1f);

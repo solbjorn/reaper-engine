@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PHSkeleton.h"
 #include "PhysicsShellHolder.h"
 #include "xrServer_Objects_ALife.h"
@@ -16,6 +17,7 @@
 #include "game_graph.h"
 #include "PHDestroyable.h"
 #include "PHElement.h"
+
 #define F_MAX 3.402823466e+38F
 
 u32 CPHSkeleton::existence_time = 5000;
@@ -60,9 +62,9 @@ void CPHSkeleton::RespawnInit()
 
 void CPHSkeleton::Init()
 {
-    m_remove_time = u32(-1);
+    m_remove_time = std::numeric_limits<u32>::max();
     b_removing = false;
-    m_startup_anim = NULL;
+    m_startup_anim = nullptr;
 }
 
 bool CPHSkeleton::Spawn(CSE_Abstract* D)
@@ -88,7 +90,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
     else
     {
         CPhysicsShellHolder* obj = PPhysicsShellHolder();
-        IKinematics* K = NULL;
+        IKinematics* K{};
         if (obj->Visual())
         {
             K = smart_cast<IKinematics*>(obj->Visual());
@@ -200,7 +202,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
         }
         else
         {
-            P.w_u64(u64(-1));
+            P.w_u64(std::numeric_limits<u64>::max());
             P.w_u16(0);
         }
         /////////////////////////////
@@ -235,7 +237,7 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
         if (bones_number > 64)
         {
             Msg("!![CPHSkeleton::SaveNetState] bones_number is [%u]!", bones_number);
-            P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
+            P.w_u64(K ? _vm._visimask_ex.flags : std::numeric_limits<u64>::max());
         }
 
         for(u16 i=0;i<bones_number;i++)
@@ -308,7 +310,7 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* /*po*/)
     {
         bool alive = obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f;
 
-        Msg("~ [%s]: [%s] has different state in saved_bones[%u] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(),
+        Msg("~ [%s]: [%s] has different state in saved_bones[%zu] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(),
             obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), alive ? "yes" : "no");
     }
 
@@ -523,7 +525,7 @@ void CPHSkeleton::SyncNetState()
     }
     else
     {
-        saved_bones.bones_mask.set(u64(-1), u64(-1));
+        saved_bones.bones_mask.set(std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max());
         saved_bones.root_bone = 0;
     }
 

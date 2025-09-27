@@ -81,7 +81,8 @@ static CScriptGameObject* item_lua_object(PIItem itm)
         if (obj)
             return obj->lua_game_object();
     }
-    return NULL;
+
+    return nullptr;
 }
 
 static CScriptGameObject* inventory_active_item(CInventory* I) { return item_lua_object(I->ActiveItem()); }
@@ -90,12 +91,15 @@ static CScriptGameObject* inventory_selected_item(CInventory* I)
 {
     CUIDialogWnd* IR = HUD().GetUI()->MainInputReceiver();
     if (!IR)
-        return NULL;
+        return nullptr;
+
     CUIInventoryWnd* wnd = smart_cast<CUIInventoryWnd*>(IR);
     if (!wnd)
-        return NULL;
+        return nullptr;
+
     if (wnd->GetInventory() != I)
-        return NULL;
+        return nullptr;
+
     return item_lua_object(wnd->CurrentIItem());
 }
 

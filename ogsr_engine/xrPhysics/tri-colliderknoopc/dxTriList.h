@@ -29,7 +29,12 @@ struct dcVector3
         z = (float)v[2];
     }
 
+    dcVector3(const dcVector3&) = default;
+    dcVector3(dcVector3&&) = default;
     ~dcVector3() = default;
+
+    dcVector3& operator=(const dcVector3&) = default;
+    dcVector3& operator=(dcVector3&&) = default;
 
     operator float*()
     { //&slipch
@@ -203,9 +208,9 @@ struct dcVector3
 
     /* Comparison */
 
-    bool operator==(const dcVector3& v) const { return x == v.x && y == v.y && z == v.z; }
+    bool operator==(const dcVector3& v) const { return fsimilar(x, v.x) && fsimilar(y, v.y) && fsimilar(z, v.z); }
 
-    bool operator!=(const dcVector3& v) const { return v.x != x || v.y != y || v.z != z; }
+    bool operator!=(const dcVector3& v) const { return !fsimilar(v.x, x) || !fsimilar(v.y, y) || !fsimilar(v.z, z); }
 
     float DotProduct(const dcVector3& v) const { return x * v.x + y * v.y + z * v.z; }
 

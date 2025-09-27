@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uiscrollbar.h"
 #include "UI3tButton.h"
 #include "UIScrollBox.h"
@@ -89,7 +90,7 @@ void CUIScrollBar::Init(float x, float y, float length, bool bIsHorizontal, LPCS
     UpdateScrollBar();
 }
 
-//корректировка размеров скроллера
+// корректировка размеров скроллера
 void CUIScrollBar::SetWidth(float width)
 {
     if (width <= 0.0f)
@@ -139,7 +140,7 @@ void CUIScrollBar::UpdateScrollBar()
 {
     if (IsShown())
     {
-        //уcтановить размер и положение каретки
+        // уcтановить размер и положение каретки
         if (m_iMaxPos == m_iMinPos)
             m_iMaxPos++;
 
@@ -214,7 +215,8 @@ bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
         TryScrollDec();
         return true;
         break;
-    };
+    }
+
     return inherited::OnMouse(x, y, mouse_action);
 }
 
@@ -277,7 +279,7 @@ void CUIScrollBar::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     {
         if (msg == SCROLLBOX_MOVE)
         {
-            //вычислить новое положение прокрутки
+            // вычислить новое положение прокрутки
             ClampByViewRect();
             if (m_bIsHorizontal)
             {
@@ -298,20 +300,24 @@ void CUIScrollBar::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIScrollBar::TryScrollInc()
 {
-    if (ScrollInc())
-        if (m_bIsHorizontal)
-            GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
-        else
-            GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+    if (!ScrollInc())
+        return;
+
+    if (m_bIsHorizontal)
+        GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
+    else
+        GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
 }
 
 void CUIScrollBar::TryScrollDec()
 {
-    if (ScrollDec())
-        if (m_bIsHorizontal)
-            GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
-        else
-            GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+    if (!ScrollDec())
+        return;
+
+    if (m_bIsHorizontal)
+        GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
+    else
+        GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
 }
 
 bool CUIScrollBar::ScrollDec()
@@ -348,7 +354,7 @@ void CUIScrollBar::Reset()
 
 void CUIScrollBar::Draw()
 {
-    //нарисовать фоновую подложку
+    // нарисовать фоновую подложку
     Frect rect;
     GetAbsoluteRect(rect);
     if (m_bIsHorizontal)

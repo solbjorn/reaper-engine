@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Actor.h"
 #include "actor_anim_defs.h"
 
@@ -8,9 +9,11 @@
 #include "inventory.h"
 #include "missile.h"
 #include "level.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -23,18 +26,21 @@
 #include "IKLimbsController.h"
 #include "player_hud.h"
 
-static const float y_spin0_factor = 0.0f;
-static const float y_spin1_factor = 0.4f;
-static const float y_shoulder_factor = 0.4f;
-static const float y_head_factor = 0.2f;
-static const float p_spin0_factor = 0.0f;
-static const float p_spin1_factor = 0.2f;
-static const float p_shoulder_factor = 0.7f;
-static const float p_head_factor = 0.1f;
-static const float r_spin0_factor = 0.3f;
-static const float r_spin1_factor = 0.3f;
-static const float r_shoulder_factor = 0.2f;
-static const float r_head_factor = 0.2f;
+namespace
+{
+constexpr float y_spin0_factor{0.0f};
+constexpr float y_spin1_factor{0.4f};
+constexpr float y_shoulder_factor{0.4f};
+constexpr float y_head_factor{0.2f};
+constexpr float p_spin0_factor{0.0f};
+constexpr float p_spin1_factor{0.2f};
+constexpr float p_shoulder_factor{0.7f};
+constexpr float p_head_factor{0.1f};
+constexpr float r_spin0_factor{0.3f};
+constexpr float r_spin1_factor{0.3f};
+constexpr float r_shoulder_factor{0.2f};
+constexpr float r_head_factor{0.2f};
+} // namespace
 
 void CActor::Spin0Callback(CBoneInstance* B)
 {
@@ -317,11 +323,12 @@ void CActor::g_SetAnimation(u32 mstate_rl)
     {
         if (m_current_legs || m_current_torso)
         {
-            SActorState* ST = 0;
+            SActorState* ST{};
             if (mstate_rl & mcCrouch)
                 ST = &m_anims->m_crouch;
             else
                 ST = &m_anims->m_normal;
+
             mstate_real = 0;
             m_current_legs.invalidate();
             m_current_torso.invalidate();
@@ -331,9 +338,10 @@ void CActor::g_SetAnimation(u32 mstate_rl)
 
         return;
     }
+
     STorsoWpn::eMovingState moving_idx = STorsoWpn::eIdle;
-    SActorState* ST = 0;
-    SAnimState* AS = 0;
+    SActorState* ST{};
+    SAnimState* AS{};
 
     if (mstate_rl & mcCrouch)
         ST = &m_anims->m_crouch;
@@ -433,7 +441,7 @@ void CActor::g_SetAnimation(u32 mstate_rl)
                     {
                         Msg("! drop animation for %s", *(H->object().cName()));
                         M_torso = ST->m_torso_idle;
-                    };
+                    }
                     m_bAnimTorsoPlayed = TRUE;
                 }
                 else

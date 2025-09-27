@@ -48,7 +48,7 @@ public:
 protected:
     CUITradeInternal* m_uidata;
 
-    bool bStarted;
+    bool bStarted{};
     bool ToOurTrade(CUICellItem* itm);
     bool ToOthersTrade(CUICellItem* itm);
     bool ToOurBag(CUICellItem* itm);
@@ -77,7 +77,7 @@ protected:
 
     void FillList(TIItemContainer&, CUIDragDropListEx&, bool);
 
-    bool m_bDealControlsVisible;
+    bool m_bDealControlsVisible{};
 
     bool CanMoveToOther(PIItem, bool);
 
@@ -86,8 +86,8 @@ protected:
     CInventory* m_pOthersInv;
     CInventoryOwner* m_pInvOwner;
     CInventoryOwner* m_pOthersInvOwner;
-    CTrade* m_pTrade;
-    CTrade* m_pOthersTrade;
+    CTrade* m_pTrade{};
+    CTrade* m_pOthersTrade{};
     CUIPropertiesBox* m_pUIPropertiesBox;
 
     u32 m_iOurTradePrice;

@@ -56,8 +56,8 @@ class XR_NOVTABLE IGame_Level : public DLL_Pure, public IInputReceiver, public p
 
 protected:
     // Network interface
-    CObject* pCurrentEntity;
-    CObject* pCurrentViewEntity;
+    CObject* pCurrentEntity{};
+    CObject* pCurrentViewEntity{};
 
     // Static sounds
     xr_vector<ref_sound> Sounds_Random;
@@ -75,10 +75,10 @@ public:
 
     CCameraManager& Cameras() const { return *m_pCameras; }
 
-    BOOL bReady;
+    BOOL bReady{};
 
-    CInifile* pLevel;
-    CCustomHUD* pHUD;
+    CInifile* pLevel{};
+    CCustomHUD* pHUD{};
 
 public: // deferred sound events
     struct _esound_delegate
@@ -104,8 +104,8 @@ public:
     virtual void net_Update() = 0;
 
     virtual BOOL Load(u32 dwNum);
-    virtual BOOL Load_GameSpecific_Before() { return TRUE; }; // before object loading
-    virtual BOOL Load_GameSpecific_After() { return TRUE; }; // after object loading
+    virtual BOOL Load_GameSpecific_Before() { return TRUE; } // before object loading
+    virtual BOOL Load_GameSpecific_After() { return TRUE; } // after object loading
 
     virtual void Load_GameSpecific_CFORM_Serialize(IWriter& writer) = 0;
     virtual bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) = 0;

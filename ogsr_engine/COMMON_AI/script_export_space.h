@@ -19,7 +19,7 @@
 #else
 
 #define script_type_list
-#define add_to_type_list(type) static_assert(true, "")
+#define add_to_type_list(type) XR_MACRO_END()
 #define save_type_list(type)
 
 #endif
@@ -43,11 +43,11 @@ struct class_exporter
 template <typename T>
 inline std::unique_ptr<DLL_Pure> client_factory(std::unique_ptr<T>& self)
 {
-    return std::move(std::unique_ptr<DLL_Pure>(static_cast<DLL_Pure*>(self.release())));
+    return std::unique_ptr<DLL_Pure>(static_cast<DLL_Pure*>(self.release()));
 }
 
 template <typename T>
 inline std::unique_ptr<CSE_Abstract> server_factory(std::unique_ptr<T>& self)
 {
-    return std::move(std::unique_ptr<CSE_Abstract>(static_cast<CSE_Abstract*>(self.release())));
+    return std::unique_ptr<CSE_Abstract>(static_cast<CSE_Abstract*>(self.release()));
 }

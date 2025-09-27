@@ -10,10 +10,8 @@
 #include "xml_str_id_loader.h"
 
 #ifdef XRGAME_EXPORTS
-
 #include "PhraseDialogDefs.h"
 #include "character_community.h"
-
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -22,7 +20,9 @@
 struct SSpecificCharacterData : CSharedResource
 {
 #ifdef XRGAME_EXPORTS
+    RTTI_DECLARE_TYPEINFO(SSpecificCharacterData, CSharedResource);
 
+public:
     SSpecificCharacterData();
     virtual ~SSpecificCharacterData();
 
@@ -37,9 +37,9 @@ struct SSpecificCharacterData : CSharedResource
     // имя секции конфигурации звука для NPC персонажа
     xr_string m_sound_voice_prefix;
 
-    float m_fPanic_threshold;
-    float m_fHitProbabilityFactor;
-    int m_crouch_type;
+    float m_fPanic_threshold{};
+    float m_fHitProbabilityFactor{1.f};
+    int m_crouch_type{};
 
     xr_string m_critical_wound_weights;
 #endif
@@ -49,7 +49,6 @@ struct SSpecificCharacterData : CSharedResource
     xr_string m_sVisual;
 
 #ifdef XRGAME_EXPORTS
-
     // начальный диалог
     shared_str m_StartDialog;
     // диалоги актера, которые будут доступны только при встрече с данным персонажем
@@ -62,9 +61,9 @@ struct SSpecificCharacterData : CSharedResource
 #endif
 
     // ранг
-    CHARACTER_RANK_VALUE m_Rank;
+    CHARACTER_RANK_VALUE m_Rank{NO_RANK};
     // репутация
-    CHARACTER_REPUTATION_VALUE m_Reputation;
+    CHARACTER_REPUTATION_VALUE m_Reputation{NO_REPUTATION};
 
     // классы персонажа (военные-ветераны, ученые и т.д.)
     // к которым он принадлежит
@@ -72,9 +71,10 @@ struct SSpecificCharacterData : CSharedResource
 
     // указание на то что персонаж не предназначен для случайного выбора
     // и задается только через явное указание ID
-    bool m_bNoRandom;
+    bool m_bNoRandom{};
     // если персонаж является заданым по умолчанию для своей команды
-    bool m_bDefaultForCommunity;
+    bool m_bDefaultForCommunity{};
+
 #ifdef XRGAME_EXPORTS
     struct SMoneyDef
     {
@@ -148,7 +148,7 @@ public:
     int crouch_type() const;
     LPCSTR critical_wound_weights() const;
 
-    const shared_str& IconName() const { return data()->m_icon_name; };
+    const shared_str& IconName() const { return data()->m_icon_name; }
 #endif
     shared_str terrain_sect() const;
 };
