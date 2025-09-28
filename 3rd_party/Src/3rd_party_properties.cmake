@@ -7,6 +7,11 @@ set(llvm_options "-march=skylake -mavx2 -flto -fmerge-all-constants -fforce-emit
 
 set(warning_options "-Wextra -Wmost -Wno-error=unused-command-line-argument -Werror=format -Wformat-nonliteral -Werror=format-pedantic -Werror=format-signedness -Werror=format-type-confusion -Werror=microsoft -Werror=move -Werror=nan-infinity-disabled -Werror=parentheses -Werror=strict-aliasing -Werror=tautological-compare -Werror=typename-missing -Werror=weak-vtables")
 
+# DirectXTex
+if(DEFINED BUILD_TOOLS)
+  set(conformance_options "${conformance_options} -D_FORCENAMELESSUNION")
+endif()
+
 # abseil
 if(ABSL_PROPAGATE_CXX_STD)
   set(warning_options "${warning_options} -Wno-error=format")
