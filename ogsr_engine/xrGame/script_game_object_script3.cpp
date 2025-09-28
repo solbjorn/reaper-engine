@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
 #include "alife_space.h"
 #include "script_entity_space.h"
@@ -34,7 +35,7 @@
 
 void CScriptGameObject::script_register2(CScriptGameObject::usertype& lua)
 {
-    xr_sol_set(
+    xr::sol_set(
         lua, "add_sound",
         sol::overload(sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32)>(&CScriptGameObject::add_sound),
                       sol::resolve<u32(LPCSTR, u32, ESoundTypes, u32, u32, u32, LPCSTR)>(&CScriptGameObject::add_sound)),

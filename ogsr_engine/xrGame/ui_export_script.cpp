@@ -18,7 +18,7 @@ void UIRegistrator::script_register(sol::state_view& lua)
                                 "SizeOf", sol::resolve<float(LPCSTR)>(&CGameFont::SizeOf_), "CurrentHeight", &CGameFont::CurrentHeight_);
 
     lua.new_usertype<CMainMenu>("CMainMenu", sol::no_constructor, "GetGSVer", &CMainMenu::GetGSVer, "PlaySound", &CMainMenu::PlaySound, "IsActive", &CMainMenu::IsActive,
-                                sol::base_classes, xr_sol_bases<CMainMenu>());
+                                sol::base_classes, xr::sol_bases<CMainMenu>());
 
     lua.create_named_table("main_menu", "get_main_menu", &MainMenu);
 }

@@ -13,7 +13,7 @@
 
 BOOL CScriptEffector::Process(SPPInfo& pp)
 {
-    auto op = ops.find(PROCESS);
+    auto op = ops.find(effector_ops::PROCESS);
     if (op == ops.end())
         return !!inherited::Process(pp);
 

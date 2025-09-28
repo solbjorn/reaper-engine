@@ -18,12 +18,12 @@ void CScriptPropertyEvaluator::script_register(sol::state_view& lua)
                                                sol::factories(std::make_unique<CScriptPropertyEvaluator>, std::make_unique<CScriptPropertyEvaluator, CScriptGameObject*>,
                                                               std::make_unique<CScriptPropertyEvaluator, CScriptGameObject*, LPCSTR>),
                                                "priv", &CScriptPropertyEvaluator::priv, "ops", &CScriptPropertyEvaluator::ops, "EVALUATE",
-                                               sol::var(CScriptPropertyEvaluator::EVALUATE), "object", sol::readonly(&CScriptPropertyEvaluator::m_object), "storage",
+                                               sol::var(CScriptPropertyEvaluator::evaluator_ops::EVALUATE), "object", sol::readonly(&CScriptPropertyEvaluator::m_object), "storage",
                                                sol::readonly(&CScriptPropertyEvaluator::m_storage), "setup", &CScriptPropertyEvaluator::setup, "evaluate",
                                                &CScriptPropertyEvaluator::evaluate);
 
     lua.new_usertype<CPropertyEvaluatorConst<CScriptGameObject>>(
         "property_evaluator_const", sol::no_constructor, sol::call_constructor,
         sol::constructors<CPropertyEvaluatorConst<CScriptGameObject>(CPropertyEvaluatorConst<CScriptGameObject>::_value_type)>(), sol::base_classes,
-        xr_sol_bases<CPropertyEvaluatorConst<CScriptGameObject>>());
+        xr::sol_bases<CPropertyEvaluatorConst<CScriptGameObject>>());
 }

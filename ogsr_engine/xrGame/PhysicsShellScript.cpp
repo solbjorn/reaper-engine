@@ -63,7 +63,7 @@ void CPhysicsShell::script_register(sol::state_view& lua)
         "freeze", &freeze, "unfreeze", &unfreeze,
 
         "DisableCollision", &CPhysicsShell::DisableCollision, "EnableCollision", &CPhysicsShell::EnableCollision, "Disable", &CPhysicsShell::Disable, "Enable",
-        &CPhysicsShell::Enable, "CollideAll", &CPhysicsShell::CollideAll, sol::base_classes, xr_sol_bases<CPhysicsShell>());
+        &CPhysicsShell::Enable, "CollideAll", &CPhysicsShell::CollideAll, sol::base_classes, xr::sol_bases<CPhysicsShell>());
 }
 
 void CPhysicsElement::script_register(sol::state_view& lua)
@@ -72,7 +72,7 @@ void CPhysicsElement::script_register(sol::state_view& lua)
                                       &CPhysicsElement::isBreakable, "get_linear_vel", &CPhysicsElement::get_LinearVel, "get_angular_vel", &CPhysicsElement::get_AngularVel,
                                       "get_mass", &CPhysicsElement::getMass, "get_density", &CPhysicsElement::getDensity, "get_volume", &CPhysicsElement::getVolume, "fix",
                                       &CPhysicsElement::Fix, "release_fixed", &CPhysicsElement::ReleaseFixed, "is_fixed", &CPhysicsElement::isFixed, "global_transform",
-                                      &global_transform, sol::base_classes, xr_sol_bases<CPhysicsElement>());
+                                      &global_transform, sol::base_classes, xr::sol_bases<CPhysicsElement>());
 }
 
 void CPhysicsJoint::script_register(sol::state_view& lua)

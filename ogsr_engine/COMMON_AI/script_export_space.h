@@ -40,6 +40,8 @@ struct class_exporter
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 
+namespace xr
+{
 template <typename T>
 inline std::unique_ptr<DLL_Pure> client_factory(std::unique_ptr<T>& self)
 {
@@ -51,3 +53,4 @@ inline std::unique_ptr<CSE_Abstract> server_factory(std::unique_ptr<T>& self)
 {
     return std::unique_ptr<CSE_Abstract>(static_cast<CSE_Abstract*>(self.release()));
 }
+} // namespace xr

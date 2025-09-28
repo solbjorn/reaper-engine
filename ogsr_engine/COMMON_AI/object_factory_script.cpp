@@ -60,7 +60,7 @@ void CObjectFactory::register_script() const
     for (const auto& item : clsids())
         target.set(*item->script_clsid(), id++);
 
-    xr_sol_new_enum(lua, "clsid", target);
+    xr::sol_new_enum(lua, "clsid", target);
 }
 
 void CObjectFactory::script_register(sol::state_view& lua)

@@ -6,5 +6,5 @@ void CUIProgressBar::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CUIProgressBar>("CUIProgressBar", sol::no_constructor, sol::call_constructor, sol::constructors<CUIProgressBar()>(), "SetProgressPos",
                                      &CUIProgressBar::SetProgressPos, "GetProgressPos", &CUIProgressBar::GetProgressPos, "GetRange_min", &CUIProgressBar::GetRange_min,
-                                     "GetRange_max", &CUIProgressBar::GetRange_max, sol::base_classes, xr_sol_bases<CUIProgressBar>());
+                                     "GetRange_max", &CUIProgressBar::GetRange_max, sol::base_classes, xr::sol_bases<CUIProgressBar>());
 }

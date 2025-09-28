@@ -23,10 +23,7 @@ public:
     CScriptGameObject* m_object;
 
 protected:
-    sol::object priv;
-    xr_map<u32, sol::function> ops;
-
-    enum : u32
+    enum class binder_ops : s32
     {
         LOAD,
         NET_DESTROY,
@@ -38,6 +35,9 @@ protected:
         SAVE,
         UPDATE,
     };
+
+    sol::object priv;
+    xr_map<binder_ops, sol::function> ops;
 
 public:
     CScriptBinderObject(CScriptGameObject* object);

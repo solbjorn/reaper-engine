@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "../../stalker_decision_space.h"
 #include "ai_stalker_space.h"
@@ -98,6 +99,6 @@ void CAI_Stalker::script_register(sol::state_view& lua)
 
         "sound_script", StalkerSpace::eStalkerSoundScript);
 
-    lua.new_usertype<CAI_Stalker>("CAI_Stalker", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Stalker>), "factory", &client_factory<CAI_Stalker>,
-                                  sol::base_classes, xr_sol_bases<CAI_Stalker>());
+    lua.new_usertype<CAI_Stalker>("CAI_Stalker", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CAI_Stalker>), "factory",
+                                  &xr::client_factory<CAI_Stalker>, sol::base_classes, xr::sol_bases<CAI_Stalker>());
 }

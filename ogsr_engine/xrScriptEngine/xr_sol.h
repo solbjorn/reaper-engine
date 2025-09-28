@@ -1,5 +1,5 @@
-#ifndef __XRSCRIPT_SOL_H
-#define __XRSCRIPT_SOL_H
+#ifndef __XR_SOL_H
+#define __XR_SOL_H
 
 // Enable checks for types and arguments
 #define SOL_ALL_SAFETIES_ON 1
@@ -38,10 +38,12 @@ XR_DIAG_POP();
 
 #include <rtti.hh>
 
+namespace xr
+{
 // Generate sol::bases<> and sol::base<T> using RTTI annotations
 
 template <typename T>
-using xr_sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<sol::bases>;
+using sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<sol::bases>;
 
 #define XR_SOL_BASE_CLASSES(T) \
     template <> \
@@ -55,7 +57,7 @@ using xr_sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to
 
 // Generate enum-style table with non-constexpr values (clsids, story IDs etc.)
 template <bool read_only = true>
-sol::table xr_sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table& target)
+sol::table sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table& target)
 {
     if constexpr (read_only)
     {
@@ -74,19 +76,20 @@ sol::table xr_sol_new_enum(sol::state_view& lua, absl::string_view name, sol::ta
 
 // Essentially a copy of sol::usertype<T>::tuple_set() which is private, but needed for the function below
 template <typename Class, std::size_t... I, typename... Args>
-sol::usertype<Class>& xr_sol_tuple_set(sol::usertype<Class>& ut, std::index_sequence<I...>, std::tuple<Args...>&& args)
+sol::usertype<Class>& sol_tuple_set(sol::usertype<Class>& ut, std::index_sequence<I...>, std::tuple<Args...>&& args)
 {
-    (void)sol::detail::swallow{0, (ut.set(std::get<I * 2>(std::move(args)), std::get<I * 2 + 1>(std::move(args))), 0)...};
+    std::ignore = sol::detail::swallow{0, (ut.set(std::get<I * 2>(std::move(args)), std::get<I * 2 + 1>(std::move(args))), 0)...};
     return ut;
 }
 
 // sol::table::set() can take varargs; however, sol::usertype<T>::set() can not.
 // Fix this using the same semantics as in the vararg sol::table::new_usertype<T>().
 template <typename Class, typename... Args>
-sol::usertype<Class>& xr_sol_set(sol::usertype<Class>& ut, Args&&... args)
+sol::usertype<Class>& sol_set(sol::usertype<Class>& ut, Args&&... args)
 {
     static_assert(!(sizeof...(Args) % 2));
-    return xr_sol_tuple_set(ut, std::make_index_sequence<(sizeof...(Args)) / 2>(), std::forward_as_tuple(std::forward<Args>(args)...));
+    return sol_tuple_set(ut, std::make_index_sequence<(sizeof...(Args)) / 2>(), std::forward_as_tuple(std::forward<Args>(args)...));
 }
+} // namespace xr
 
-#endif /* __XRSCRIPT_SOL_H */
+#endif // __XR_SOL_H

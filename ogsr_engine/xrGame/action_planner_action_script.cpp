@@ -22,5 +22,5 @@ void CActionPlannerAction<CScriptGameObject>::script_register(sol::state_view& l
 #ifdef LOG_ACTION
         "show", &CScriptActionPlannerAction::show,
 #endif
-        "weight", &CScriptActionPlannerAction::weight, sol::base_classes, xr_sol_bases<CScriptActionPlannerAction>());
+        "weight", &CScriptActionPlannerAction::weight, sol::base_classes, xr::sol_bases<CScriptActionPlannerAction>());
 }

@@ -41,5 +41,5 @@ void CActionPlanner<CScriptGameObject>::script_register(sol::state_view& lua)
 #ifdef LOG_ACTION
                                            "show", &CScriptActionPlanner::show,
 #endif
-                                           sol::base_classes, xr_sol_bases<CScriptActionPlanner>());
+                                           sol::base_classes, xr::sol_bases<CScriptActionPlanner>());
 }

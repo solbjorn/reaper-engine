@@ -163,38 +163,38 @@ static LPCSTR obj_level_name(CScriptGameObject* O) { return get_level_name_by_id
 
 void CScriptGameObject::script_register3(CScriptGameObject::usertype& lua)
 {
-    xr_sol_set(lua,
-               // alpet: export object cast
-               "get_game_object", &CScriptGameObject::object, "get_alife_object", &CScriptGameObject::alife_object, "get_actor", &script_game_object_cast<CActorObject>,
-               "get_anomaly", &script_game_object_cast<CCustomZone>, "get_artefact", &script_game_object_cast<CArtefact>, "get_base_monster",
-               &script_game_object_cast<CBaseMonster>, "get_container", &script_game_object_cast<CInventoryContainer>, "get_custom_monster",
-               &script_game_object_cast<CCustomMonster>, "get_eatable_item", &script_game_object_cast<CEatableItem>, "get_grenade", &script_game_object_cast<CGrenade>,
-               "get_inventory_box", &script_game_object_cast<IInventoryBox>, "get_inventory_item", &script_game_object_cast<CInventoryItem>, "get_inventory_owner",
-               &script_game_object_cast<CInventoryOwner>, "get_missile", &script_game_object_cast<CMissile>, "get_outfit", &script_game_object_cast<CCustomOutfit>,
-               "get_space_restrictor", &script_game_object_cast<CSpaceRestrictor>, "get_torch", &script_game_object_cast<CTorch>, "get_weapon", &script_game_object_cast<CWeapon>,
-               "get_weapon_m", &script_game_object_cast<CWeaponMagazined>, "get_weapon_magazined", &script_game_object_cast<CWeaponMagazined>, "get_weapon_mwg",
-               &script_game_object_cast<CWeaponMagazinedWGrenade>, "get_weapon_gl", &script_game_object_cast<CWeaponMagazinedWGrenade>, "get_weapon_sg",
-               &script_game_object_cast<CWeaponShotgun>, "get_weapon_shotgun", &script_game_object_cast<CWeaponShotgun>,
+    xr::sol_set(lua,
+                // alpet: export object cast
+                "get_game_object", &CScriptGameObject::object, "get_alife_object", &CScriptGameObject::alife_object, "get_actor", &script_game_object_cast<CActorObject>,
+                "get_anomaly", &script_game_object_cast<CCustomZone>, "get_artefact", &script_game_object_cast<CArtefact>, "get_base_monster",
+                &script_game_object_cast<CBaseMonster>, "get_container", &script_game_object_cast<CInventoryContainer>, "get_custom_monster",
+                &script_game_object_cast<CCustomMonster>, "get_eatable_item", &script_game_object_cast<CEatableItem>, "get_grenade", &script_game_object_cast<CGrenade>,
+                "get_inventory_box", &script_game_object_cast<IInventoryBox>, "get_inventory_item", &script_game_object_cast<CInventoryItem>, "get_inventory_owner",
+                &script_game_object_cast<CInventoryOwner>, "get_missile", &script_game_object_cast<CMissile>, "get_outfit", &script_game_object_cast<CCustomOutfit>,
+                "get_space_restrictor", &script_game_object_cast<CSpaceRestrictor>, "get_torch", &script_game_object_cast<CTorch>, "get_weapon", &script_game_object_cast<CWeapon>,
+                "get_weapon_m", &script_game_object_cast<CWeaponMagazined>, "get_weapon_magazined", &script_game_object_cast<CWeaponMagazined>, "get_weapon_mwg",
+                &script_game_object_cast<CWeaponMagazinedWGrenade>, "get_weapon_gl", &script_game_object_cast<CWeaponMagazinedWGrenade>, "get_weapon_sg",
+                &script_game_object_cast<CWeaponShotgun>, "get_weapon_shotgun", &script_game_object_cast<CWeaponShotgun>,
 
-               "ph_capture_object",
-               sol::overload(sol::resolve<void(CScriptGameObject*)>(&CScriptGameObject::PHCaptureObject),
-                             sol::resolve<void(CScriptGameObject*, LPCSTR)>(&CScriptGameObject::PHCaptureObject),
-                             sol::resolve<void(CScriptGameObject*, u16)>(&CScriptGameObject::PHCaptureObject),
-                             sol::resolve<void(CScriptGameObject*, u16, LPCSTR)>(&CScriptGameObject::PHCaptureObject)),
-               "ph_release_object", &CScriptGameObject::PHReleaseObject, "ph_capture", &CScriptGameObject::PHCapture, "throw_target",
-               sol::overload(sol::resolve<bool(const Fvector&, CScriptGameObject*)>(&CScriptGameObject::throw_target),
-                             sol::resolve<bool(const Fvector&, u32 const, CScriptGameObject*)>(&CScriptGameObject::throw_target)),
+                "ph_capture_object",
+                sol::overload(sol::resolve<void(CScriptGameObject*)>(&CScriptGameObject::PHCaptureObject),
+                              sol::resolve<void(CScriptGameObject*, LPCSTR)>(&CScriptGameObject::PHCaptureObject),
+                              sol::resolve<void(CScriptGameObject*, u16)>(&CScriptGameObject::PHCaptureObject),
+                              sol::resolve<void(CScriptGameObject*, u16, LPCSTR)>(&CScriptGameObject::PHCaptureObject)),
+                "ph_release_object", &CScriptGameObject::PHReleaseObject, "ph_capture", &CScriptGameObject::PHCapture, "throw_target",
+                sol::overload(sol::resolve<bool(const Fvector&, CScriptGameObject*)>(&CScriptGameObject::throw_target),
+                              sol::resolve<bool(const Fvector&, u32 const, CScriptGameObject*)>(&CScriptGameObject::throw_target)),
 
-               "g_fireParams", &CScriptGameObject::g_fireParams, "can_kill_enemy", &CScriptGameObject::can_kill_enemy, "can_fire_to_enemy", &CScriptGameObject::can_fire_to_enemy,
-               "register_in_combat", &CScriptGameObject::register_in_combat, "unregister_in_combat", &CScriptGameObject::unregister_in_combat, "stalker_disp_base",
-               sol::overload(sol::resolve<float()>(&CScriptGameObject::stalker_disp_base), sol::resolve<void(float)>(&CScriptGameObject::stalker_disp_base),
-                             sol::resolve<void(float, float)>(&CScriptGameObject::stalker_disp_base)),
+                "g_fireParams", &CScriptGameObject::g_fireParams, "can_kill_enemy", &CScriptGameObject::can_kill_enemy, "can_fire_to_enemy", &CScriptGameObject::can_fire_to_enemy,
+                "register_in_combat", &CScriptGameObject::register_in_combat, "unregister_in_combat", &CScriptGameObject::unregister_in_combat, "stalker_disp_base",
+                sol::overload(sol::resolve<float()>(&CScriptGameObject::stalker_disp_base), sol::resolve<void(float)>(&CScriptGameObject::stalker_disp_base),
+                              sol::resolve<void(float, float)>(&CScriptGameObject::stalker_disp_base)),
 
-               "drop_item_and_throw", &CScriptGameObject::DropItemAndThrow, "controller_psy_hit_active", &CScriptGameObject::controller_psy_hit_active, "setEnabled",
-               &CScriptGameObject::setEnabled, "setVisible", &CScriptGameObject::setVisible, "actor_can_take", &actor_can_take,
+                "drop_item_and_throw", &CScriptGameObject::DropItemAndThrow, "controller_psy_hit_active", &CScriptGameObject::controller_psy_hit_active, "setEnabled",
+                &CScriptGameObject::setEnabled, "setVisible", &CScriptGameObject::setVisible, "actor_can_take", &actor_can_take,
 
-               "inventory", sol::property(&get_obj_inventory), "immunities", sol::property(&get_obj_immunities), "is_alive", sol::property(&get_obj_alive), "conditions",
-               sol::property(&get_obj_conditions), "level_id", sol::property(&obj_level_id), "level_name", sol::property(&obj_level_name));
+                "inventory", sol::property(&get_obj_inventory), "immunities", sol::property(&get_obj_immunities), "is_alive", sol::property(&get_obj_alive), "conditions",
+                sol::property(&get_obj_conditions), "level_id", sol::property(&obj_level_id), "level_name", sol::property(&obj_level_name));
 }
 
 void CScriptGameObject::script_register4(sol::state_view& lua)

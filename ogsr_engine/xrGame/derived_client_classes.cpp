@@ -38,26 +38,26 @@ void CAnomalyZoneScript::set_zone_state(CCustomZone* obj, u32 new_state) { obj->
 void CAnomalyZoneScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSpaceRestrictor>("CSpaceRestrictor", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSpaceRestrictor>), "factory",
-                                       &client_factory<CSpaceRestrictor>, "restrictor_center", sol::property(&get_restrictor_center), "restrictor_type",
+                                       &xr::client_factory<CSpaceRestrictor>, "restrictor_center", sol::property(&get_restrictor_center), "restrictor_type",
                                        sol::property(&CSpaceRestrictor::restrictor_type), "radius", sol::property(&CSpaceRestrictor::Radius), "schedule_register",
                                        &CSpaceRestrictor::ScheduleRegister, "schedule_unregister", &CSpaceRestrictor::ScheduleUnregister, "is_scheduled",
-                                       &CSpaceRestrictor::IsScheduled, "active_contact", &CSpaceRestrictor::active_contact, sol::base_classes, xr_sol_bases<CSpaceRestrictor>());
+                                       &CSpaceRestrictor::IsScheduled, "active_contact", &CSpaceRestrictor::active_contact, sol::base_classes, xr::sol_bases<CSpaceRestrictor>());
 
     lua.new_usertype<CCustomZone>("CustomZone", sol::no_constructor, "power", &CCustomZone::Power, "relative_power", &CCustomZone::RelativePower, "attenuation",
                                   &CCustomZone::m_fAttenuation, "effective_radius", &CCustomZone::m_fEffectiveRadius, "hit_impulse_scale", &CCustomZone::m_fHitImpulseScale,
                                   "max_power", &CCustomZone::m_fMaxPower, "state_time", &CCustomZone::m_iStateTime, "start_time", &CCustomZone::m_StartTime, "time_to_live",
                                   &CCustomZone::m_ttl, "zone_active", &CCustomZone::m_bZoneActive, "zone_state",
-                                  sol::property(&get_zone_state, &CAnomalyZoneScript::set_zone_state), sol::base_classes, xr_sol_bases<CCustomZone>());
+                                  sol::property(&get_zone_state, &CAnomalyZoneScript::set_zone_state), sol::base_classes, xr::sol_bases<CCustomZone>());
 }
 
 static void alive_entity_set_radiation(CEntityAlive* E, float value) { E->SetfRadiation(value); }
 
 void CEntityScript::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CEntity>("CEntity", sol::no_constructor, sol::base_classes, xr_sol_bases<CEntity>());
+    lua.new_usertype<CEntity>("CEntity", sol::no_constructor, sol::base_classes, xr::sol_bases<CEntity>());
 
     lua.new_usertype<CEntityAlive>("CEntityAlive", sol::no_constructor, "radiation", sol::property(&CEntityAlive::g_Radiation, &alive_entity_set_radiation), "condition",
-                                   sol::property(&CEntityAlive::conditions), sol::base_classes, xr_sol_bases<CEntityAlive>());
+                                   sol::property(&CEntityAlive::conditions), sol::base_classes, xr::sol_bases<CEntityAlive>());
 }
 
 void CEatableItemScript::script_register(sol::state_view& lua)
@@ -66,9 +66,9 @@ void CEatableItemScript::script_register(sol::state_view& lua)
                                    "eat_satiety", &CEatableItem::m_fSatietyInfluence, "eat_radiation", &CEatableItem::m_fRadiationInfluence, "eat_max_power",
                                    &CEatableItem::m_fMaxPowerUpInfluence, "eat_psy_health", &CEatableItem::m_fPsyHealthInfluence, "eat_thirst", &CEatableItem::m_fThirstInfluence,
                                    "wounds_heal_perc", &CEatableItem::m_fWoundsHealPerc, "eat_portions_num", &CEatableItem::m_iPortionsNum, "eat_start_portions_num",
-                                   &CEatableItem::m_iStartPortionsNum, sol::base_classes, xr_sol_bases<CEatableItem>());
+                                   &CEatableItem::m_iStartPortionsNum, sol::base_classes, xr::sol_bases<CEatableItem>());
 
-    lua.new_usertype<CEatableItemObject>("CEatableItemObject", sol::no_constructor, sol::base_classes, xr_sol_bases<CEatableItemObject>());
+    lua.new_usertype<CEatableItemObject>("CEatableItemObject", sol::no_constructor, sol::base_classes, xr::sol_bases<CEatableItemObject>());
 }
 
 static void set_io_money(CInventoryOwner* IO, u32 money) { IO->set_money(money, true); }
@@ -153,9 +153,9 @@ void CInventoryScript::script_register(sol::state_view& lua)
                                      &CInventoryItem::m_fRadiationRestoreSpeed, "inv_name", sol::property(&get_item_name, &set_item_name), "inv_name_short",
                                      sol::property(&get_item_name_short, &set_item_name_short), "cost", sol::property(&CInventoryItem::Cost, &CInventoryItem::SetCost), "slot",
                                      sol::property(&CInventoryItem::GetSlot, &CInventoryItem::SetSlot), "slots", sol::property(&get_slots), "description",
-                                     sol::property(&get_item_description, &set_item_description), sol::base_classes, xr_sol_bases<CInventoryItem>());
+                                     sol::property(&get_item_description, &set_item_description), sol::base_classes, xr::sol_bases<CInventoryItem>());
 
-    lua.new_usertype<CInventoryItemObject>("CInventoryItemObject", sol::no_constructor, sol::base_classes, xr_sol_bases<CInventoryItemObject>());
+    lua.new_usertype<CInventoryItemObject>("CInventoryItemObject", sol::no_constructor, sol::base_classes, xr::sol_bases<CInventoryItemObject>());
 
     lua.new_usertype<CInventory>("CInventory", sol::no_constructor, "max_belt", sol::readonly(&CInventory::m_iMaxBelt), "max_weight", &CInventory::m_fMaxWeight, "take_dist",
                                  &CInventory::m_fTakeDist, "total_weight", sol::readonly(&CInventory::m_fTotalWeight), "active_item", sol::property(&inventory_active_item),
@@ -164,16 +164,16 @@ void CInventoryScript::script_register(sol::state_view& lua)
 
     lua.new_usertype<IInventoryBox>("IInventoryBox", sol::no_constructor, "object", sol::overload(&IInventoryBox::GetObjectByIndex, &IInventoryBox::GetObjectByName),
                                     "object_count", &IInventoryBox::GetSize, "empty", &IInventoryBox::IsEmpty);
-    lua.new_usertype<CInventoryBox>("CInventoryBox", sol::no_constructor, sol::base_classes, xr_sol_bases<CInventoryBox>());
+    lua.new_usertype<CInventoryBox>("CInventoryBox", sol::no_constructor, sol::base_classes, xr::sol_bases<CInventoryBox>());
 
     lua.new_usertype<CInventoryContainer>("CInventoryContainer", sol::no_constructor, "cost", sol::property(&CInventoryContainer::Cost), "weight",
                                           sol::property(&CInventoryContainer::Weight), "is_opened", sol::property(&CInventoryContainer::IsOpened), "open",
-                                          &CInventoryContainer::open, "close", &CInventoryContainer::close, sol::base_classes, xr_sol_bases<CInventoryContainer>());
+                                          &CInventoryContainer::open, "close", &CInventoryContainer::close, sol::base_classes, xr::sol_bases<CInventoryContainer>());
 
     lua.new_usertype<CInventoryOwner>("CInventoryOwner", sol::no_constructor, "inventory", sol::readonly(&CInventoryOwner::m_inventory), "talking",
                                       sol::readonly(&CInventoryOwner::m_bTalking), "allow_talk", &CInventoryOwner::m_bAllowTalk, "allow_trade", &CInventoryOwner::m_bAllowTrade,
                                       "raw_money", &CInventoryOwner::m_money, "money", sol::property(&CInventoryOwner::get_money, &set_io_money), "Name", &CInventoryOwner::Name,
-                                      "SetName", &CInventoryOwner::SetName, sol::base_classes, xr_sol_bases<CInventoryOwner>());
+                                      "SetName", &CInventoryOwner::SetName, sol::base_classes, xr::sol_bases<CInventoryOwner>());
 }
 
 static CParticlesObject* monster_play_particles(CBaseMonster* monster, LPCSTR name, const Fvector& position, const Fvector& dir, BOOL auto_remove, BOOL xformed)
@@ -186,7 +186,7 @@ void CMonsterScript::script_register(sol::state_view& lua)
     lua.new_usertype<CBaseMonster>("CBaseMonster", sol::no_constructor, "agressive", &CBaseMonster::m_bAggressive, "angry", &CBaseMonster::m_bAngry, "damaged",
                                    &CBaseMonster::m_bDamaged, "grownlig", &CBaseMonster::m_bGrowling, "run_turn_left", &CBaseMonster::m_bRunTurnLeft, "run_turn_right",
                                    &CBaseMonster::m_bRunTurnRight, "sleep", &CBaseMonster::m_bSleep, "state_invisible", &CBaseMonster::state_invisible, sol::base_classes,
-                                   xr_sol_bases<CBaseMonster>());
+                                   xr::sol_bases<CBaseMonster>());
 }
 
 static int curr_fire_mode(CWeaponMagazined* wpn) { return wpn->GetCurrentFireMode(); }
@@ -206,7 +206,7 @@ void COutfitScript::script_register(sol::state_view& lua)
                                     sol::property(&get_protection<ALife::eHitTypeFireWound>, &set_protection<ALife::eHitTypeFireWound>), "wound_2_protection",
                                     sol::property(&get_protection<ALife::eHitTypeWound_2>, &set_protection<ALife::eHitTypeWound_2>), "physic_strike_protection",
                                     sol::property(&get_protection<ALife::eHitTypePhysicStrike>, &set_protection<ALife::eHitTypePhysicStrike>), sol::base_classes,
-                                    xr_sol_bases<CCustomOutfit>());
+                                    xr::sol_bases<CCustomOutfit>());
 }
 
 SRotation& CWeaponScript::FireDeviation(CWeapon* wpn) { return wpn->constDeviation; }
@@ -327,18 +327,18 @@ void CWeaponScript::script_register(sol::state_view& lua)
 
                               "stop_shoothing", &CWeapon::StopShooting, "get_particles_xform", &CWeapon::get_ParticlesXFORM, "get_fire_point", &CWeapon::get_CurrentFirePoint,
                               "get_fire_point2", &CWeapon::get_CurrentFirePoint2, "get_fire_direction", &CWeapon::get_LastFD, "ready_to_kill", &CWeapon::ready_to_kill,
-                              "UseScopeTexture", &CWeapon::UseScopeTexture, sol::base_classes, xr_sol_bases<CWeapon>());
+                              "UseScopeTexture", &CWeapon::UseScopeTexture, sol::base_classes, xr::sol_bases<CWeapon>());
 
     lua.new_usertype<CWeaponMagazined>(
         "CWeaponMagazined", sol::no_constructor, "shot_num", sol::readonly(&CWeaponMagazined::m_iShotNum), "queue_size", &CWeaponMagazined::m_iQueueSize, "shoot_effector_start",
         &CWeaponMagazined::m_iShootEffectorStart, "cur_fire_mode", &CWeaponMagazined::m_iCurFireMode, "fire_mode", sol::property(&curr_fire_mode), "fire_modes",
         sol::property(&get_fire_modes, &set_fire_modes), "attach_addon", &CWeaponMagazined::Attach, "detach_addon", &CWeaponMagazined::Detach, "can_attach_addon",
-        &CWeaponMagazined::CanAttach, "can_detach_addon", &CWeaponMagazined::CanDetach, sol::base_classes, xr_sol_bases<CWeaponMagazined>());
+        &CWeaponMagazined::CanAttach, "can_detach_addon", &CWeaponMagazined::CanDetach, sol::base_classes, xr::sol_bases<CWeaponMagazined>());
 
     lua.new_usertype<CWeaponMagazinedWGrenade>("CWeaponMagazinedWGrenade", sol::no_constructor, "gren_mag_size", &CWeaponMagazinedWGrenade::iMagazineSize2, "switch_gl",
-                                               &CWeaponMagazinedWGrenade::SwitchMode, sol::base_classes, xr_sol_bases<CWeaponMagazinedWGrenade>());
+                                               &CWeaponMagazinedWGrenade::SwitchMode, sol::base_classes, xr::sol_bases<CWeaponMagazinedWGrenade>());
     lua.new_usertype<CMissile>("CMissile", sol::no_constructor, "destroy_time", &CMissile::m_dwDestroyTime, "destroy_time_max", &CMissile::m_dwDestroyTimeMax, sol::base_classes,
-                               xr_sol_bases<CMissile>());
+                               xr::sol_bases<CMissile>());
 
     lua.new_enum("addon_status", "disabled", CSE_ALifeItemWeapon::eAddonDisabled, "permanent", CSE_ALifeItemWeapon::eAddonPermanent, "attachable",
                  CSE_ALifeItemWeapon::eAddonAttachable);
@@ -351,5 +351,5 @@ void CCustomMonsterScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CCustomMonster>("CCustomMonster", sol::no_constructor, "get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId, "visible_for_zones",
                                      &CCustomMonster::m_visible_for_zones, "anomaly_detector", &CCustomMonster::anomaly_detector, "curr_speed",
-                                     sol::readonly(&CCustomMonster::m_fCurSpeed), sol::base_classes, xr_sol_bases<CCustomMonster>());
+                                     sol::readonly(&CCustomMonster::m_fCurSpeed), sol::base_classes, xr::sol_bases<CCustomMonster>());
 }

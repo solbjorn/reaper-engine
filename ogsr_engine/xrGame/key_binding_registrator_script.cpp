@@ -20,7 +20,7 @@ void key_binding_registrator::script_register(sol::state_view& lua)
             kb.set(action.export_name, action.id);
     }
 
-    xr_sol_new_enum(lua, "key_bindings", kb);
+    xr::sol_new_enum(lua, "key_bindings", kb);
 
     lua.new_enum("DIK_keys", "DIK_ESCAPE", DIK_ESCAPE, "DIK_2", DIK_2, "DIK_4", DIK_4, "DIK_6", DIK_6, "DIK_8", DIK_8, "DIK_0", DIK_0, "DIK_EQUALS", DIK_EQUALS, "DIK_TAB", DIK_TAB,
                  "DIK_W", DIK_W, "DIK_R", DIK_R, "DIK_Y", DIK_Y, "DIK_I", DIK_I, "DIK_P", DIK_P, "DIK_RBRACKET", DIK_RBRACKET, "DIK_LCONTROL", DIK_LCONTROL, "DIK_S", DIK_S,

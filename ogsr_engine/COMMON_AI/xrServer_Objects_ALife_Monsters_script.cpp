@@ -33,18 +33,19 @@ static ALife::_OBJECT_ID CSE_AlifeTrader__smart_terrain_id(CSE_ALifeTrader* trad
 void CSE_ALifeTrader::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeTrader>("cse_alife_trader", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeTrader, LPCSTR>), "factory",
-                                      &server_factory<CSE_ALifeTrader>, "smart_terrain_id", &CSE_AlifeTrader__smart_terrain_id, sol::base_classes, xr_sol_bases<CSE_ALifeTrader>());
+                                      &xr::server_factory<CSE_ALifeTrader>, "smart_terrain_id", &CSE_AlifeTrader__smart_terrain_id, sol::base_classes,
+                                      xr::sol_bases<CSE_ALifeTrader>());
 }
 
 void CSE_ALifeCustomZone::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeCustomZone>("cse_custom_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeCustomZone, LPCSTR>),
-                                          sol::base_classes, xr_sol_bases<CSE_ALifeCustomZone>());
+                                          sol::base_classes, xr::sol_bases<CSE_ALifeCustomZone>());
 }
 
 void CSE_ALifeAnomalousZone::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeAnomalousZone>("cse_anomalous_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeAnomalousZone, LPCSTR>),
-                                             "factory", &server_factory<CSE_ALifeAnomalousZone>, "spawn_artefacts", &CSE_ALifeAnomalousZone::spawn_artefacts, sol::base_classes,
-                                             xr_sol_bases<CSE_ALifeAnomalousZone>());
+                                             "factory", &xr::server_factory<CSE_ALifeAnomalousZone>, "spawn_artefacts", &CSE_ALifeAnomalousZone::spawn_artefacts, sol::base_classes,
+                                             xr::sol_bases<CSE_ALifeAnomalousZone>());
 }

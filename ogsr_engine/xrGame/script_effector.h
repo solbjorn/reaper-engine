@@ -21,13 +21,13 @@ public:
     EEffectorPPType m_tEffectorType;
 
 private:
-    sol::object priv;
-    xr_map<u32, sol::function> ops;
-
-    enum
+    enum class effector_ops : s32
     {
         PROCESS
     };
+
+    sol::object priv;
+    xr_map<effector_ops, sol::function> ops;
 
 public:
     IC CScriptEffector(int iType, float time);

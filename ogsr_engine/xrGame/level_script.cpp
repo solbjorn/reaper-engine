@@ -1075,11 +1075,11 @@ void CLevel::script_register(sol::state_view& lua)
                                        &DBG_ScriptObject::cast_dbg_line, "color", &DBG_ScriptObject::m_color, "hud", &DBG_ScriptObject::m_hud, "visible",
                                        &DBG_ScriptObject::m_visible);
 
-    lua.new_usertype<DBG_ScriptSphere>("DBG_ScriptSphere", sol::no_constructor, "matrix", &DBG_ScriptSphere::m_mat, sol::base_classes, xr_sol_bases<DBG_ScriptSphere>());
+    lua.new_usertype<DBG_ScriptSphere>("DBG_ScriptSphere", sol::no_constructor, "matrix", &DBG_ScriptSphere::m_mat, sol::base_classes, xr::sol_bases<DBG_ScriptSphere>());
     lua.new_usertype<DBG_ScriptBox>("DBG_ScriptBox", sol::no_constructor, "matrix", &DBG_ScriptBox::m_mat, "size", &DBG_ScriptBox::m_size, sol::base_classes,
-                                    xr_sol_bases<DBG_ScriptBox>());
+                                    xr::sol_bases<DBG_ScriptBox>());
     lua.new_usertype<DBG_ScriptLine>("DBG_ScriptLine", sol::no_constructor, "point_a", &DBG_ScriptLine::m_point_a, "point_b", &DBG_ScriptLine::m_point_b, sol::base_classes,
-                                     xr_sol_bases<DBG_ScriptLine>());
+                                     xr::sol_bases<DBG_ScriptLine>());
 
     lua.new_usertype<CKeyBinding>("CKeyBinding", sol::no_constructor, "ignore", &CKeyBinding::ignore);
 

@@ -834,7 +834,7 @@ void CSE_ALifeCreatureAbstract::on_death(CSE_Abstract* killer)
 {
     __on_death(killer);
 
-    auto op = ops.find(ON_DEATH);
+    auto op = ops.find(server_ops::ON_DEATH);
     if (op == ops.end())
         return;
 

@@ -127,7 +127,7 @@ void CSE_Abstract::STATE_Write(NET_Packet& tNetPacket)
 {
     __STATE_Write(tNetPacket);
 
-    auto op = ops.find(STATE_WRITE);
+    auto op = ops.find(server_ops::STATE_WRITE);
     if (op == ops.end())
         return;
 
@@ -189,7 +189,7 @@ void CSE_Abstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     __STATE_Read(tNetPacket, size);
 
-    auto op = ops.find(STATE_READ);
+    auto op = ops.find(server_ops::STATE_READ);
     if (op == ops.end())
         return;
 

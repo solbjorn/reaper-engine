@@ -249,5 +249,5 @@ void CProjector::script_register(sol::state_view& lua)
         "set_volumetric", [](CProjector* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
         [](CProjector* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
         [](CProjector* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",
-        [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); }, sol::base_classes, xr_sol_bases<CProjector>());
+        [](CProjector* self, const float val) { self->light_render->set_volumetric_distance(val); }, sol::base_classes, xr::sol_bases<CProjector>());
 }

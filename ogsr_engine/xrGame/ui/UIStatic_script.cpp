@@ -49,9 +49,9 @@ void CUIStatic::script_register(sol::state_view& lua)
         "EnableHeading", &CUIStatic::EnableHeading, "ClipperOn", &CUIStatic::ClipperOn, "ClipperOff", sol::resolve<void()>(&CUIStatic::ClipperOff), "GetClipperState",
         &CUIStatic::GetClipperState, "SetClipRect", &CUIStatic::SetClipRect, "GetClipRect", &CUIStatic::GetClipperRect, "SetTextComplexMode", &CUIStatic::SetTextComplexMode,
         "AdjustWidthToText", &CUIStatic::AdjustWidthToText, "AdjustHeightToText", &CUIStatic::AdjustHeightToText, "SetVTextAlign", &CUIStatic::SetVTextAlignment, "SetTextPos",
-        &CUIStatic::SetTextPos, sol::base_classes, xr_sol_bases<CUIStatic>());
+        &CUIStatic::SetTextPos, sol::base_classes, xr::sol_bases<CUIStatic>());
 
     lua.new_usertype<CUIMiniMap>("CUIMiniMap", sol::no_constructor, sol::call_constructor, sol::constructors<CUIMiniMap()>(), "SetRounded", &CUIMiniMap::SetRounded, "SetLocked",
                                  &CUIMiniMap::SetLocked, "Init", &UIMiniMapInit, "Zoom", &UIMiniMapZoom, "SetActivePoint", &CUIMiniMap::SetActivePoint, sol::base_classes,
-                                 xr_sol_bases<CUIMiniMap>());
+                                 xr::sol_bases<CUIMiniMap>());
 }

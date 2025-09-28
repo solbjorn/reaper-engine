@@ -99,25 +99,25 @@ void CMemoryInfo::script_register(sol::state_view& lua)
     lua.new_usertype<MemorySpace::CMemoryObject<CEntityAlive>>("entity_memory_object", sol::no_constructor, "object_info",
                                                                sol::readonly(&MemorySpace::CMemoryObject<CEntityAlive>::m_object_params), "self_info",
                                                                sol::readonly(&MemorySpace::CMemoryObject<CEntityAlive>::m_self_params), "object", &get_memory_object<CEntityAlive>,
-                                                               sol::base_classes, xr_sol_bases<MemorySpace::CMemoryObject<CEntityAlive>>());
+                                                               sol::base_classes, xr::sol_bases<MemorySpace::CMemoryObject<CEntityAlive>>());
 
     lua.new_usertype<MemorySpace::CMemoryObject<CGameObject>>("game_memory_object", sol::no_constructor, "object_info",
                                                               sol::readonly(&MemorySpace::CMemoryObject<CGameObject>::m_object_params), "self_info",
                                                               sol::readonly(&MemorySpace::CMemoryObject<CGameObject>::m_self_params), "object", &get_memory_object<CGameObject>,
-                                                              sol::base_classes, xr_sol_bases<MemorySpace::CMemoryObject<CGameObject>>());
+                                                              sol::base_classes, xr::sol_bases<MemorySpace::CMemoryObject<CGameObject>>());
 
     lua.new_usertype<MemorySpace::CHitObject>("hit_memory_object", sol::no_constructor, "direction", sol::readonly(&MemorySpace::CHitObject::m_direction), "bone_index",
                                               sol::readonly(&MemorySpace::CHitObject::m_bone_index), "amount", sol::readonly(&MemorySpace::CHitObject::m_amount), sol::base_classes,
-                                              xr_sol_bases<MemorySpace::CHitObject>());
+                                              xr::sol_bases<MemorySpace::CHitObject>());
 
-    lua.new_usertype<MemorySpace::CVisibleObject>("visible_memory_object", sol::no_constructor, sol::base_classes, xr_sol_bases<MemorySpace::CVisibleObject>());
+    lua.new_usertype<MemorySpace::CVisibleObject>("visible_memory_object", sol::no_constructor, sol::base_classes, xr::sol_bases<MemorySpace::CVisibleObject>());
 
     lua.new_usertype<MemorySpace::CMemoryInfo>("memory_info", sol::no_constructor, "visual_info", sol::readonly(&MemorySpace::CMemoryInfo::m_visual_info), "sound_info",
                                                sol::readonly(&MemorySpace::CMemoryInfo::m_sound_info), "hit_info", sol::readonly(&MemorySpace::CMemoryInfo::m_hit_info),
-                                               sol::base_classes, xr_sol_bases<MemorySpace::CMemoryInfo>());
+                                               sol::base_classes, xr::sol_bases<MemorySpace::CMemoryInfo>());
 
     lua.new_usertype<MemorySpace::CSoundObject>("sound_memory_object", sol::no_constructor, "type", &MemorySpace::CSoundObject::sound_type, "power",
-                                                sol::readonly(&MemorySpace::CSoundObject::m_power), sol::base_classes, xr_sol_bases<MemorySpace::CSoundObject>());
+                                                sol::readonly(&MemorySpace::CSoundObject::m_power), sol::base_classes, xr::sol_bases<MemorySpace::CSoundObject>());
 
     lua.new_usertype<MemorySpace::CNotYetVisibleObject>("not_yet_visible_object", sol::no_constructor, "value", sol::readonly(&MemorySpace::CNotYetVisibleObject::m_value),
                                                         "object", &not_yet_visible_object);

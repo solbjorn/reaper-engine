@@ -38,7 +38,7 @@ void CEvaluator::Load(LPCSTR section) {}
 TEMPLATE_SPECIALIZATION
 typename CEvaluator::_value_type CEvaluator::evaluate()
 {
-    auto op = ops.find(EVALUATE);
+    auto op = ops.find(evaluator_ops::EVALUATE);
     if (op == ops.end())
         return 0;
 

@@ -92,34 +92,35 @@ void CUIWindow::script_register(sol::state_view& lua)
         &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY", &CUIWindow::GetMousePosY, "GetParent",
         &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild, "FindChild",
         sol::resolve<CUIWindow*(LPCSTR)>(&CUIWindow::FindChild), "GetButton", &wnd_object_cast<CUIButton>, "GetCUIStatic", &wnd_object_cast<CUIStatic>, "GetAbsoluteRect",
-        sol::resolve<void(Frect&)>(&CUIWindow::GetAbsoluteRect), sol::base_classes, xr_sol_bases<CUIWindow>());
+        sol::resolve<void(Frect&)>(&CUIWindow::GetAbsoluteRect), sol::base_classes, xr::sol_bases<CUIWindow>());
 
     lua.new_usertype<CDialogHolder>("CDialogHolder", sol::no_constructor, "MainInputReceiver", &CDialogHolder::MainInputReceiver, "start_stop_menu", &CDialogHolder::StartStopMenu,
                                     "AddDialogToRender", &CDialogHolder::AddDialogToRender, "RemoveDialogToRender", &CDialogHolder::RemoveDialogToRender, sol::base_classes,
-                                    xr_sol_bases<CDialogHolder>());
+                                    xr::sol_bases<CDialogHolder>());
 
     lua.new_usertype<CUIDialogWnd>("CUIDialogWnd", sol::no_constructor, "GetHolder", &CUIDialogWnd::GetHolder, "SetHolder", &CUIDialogWnd::SetHolder, sol::base_classes,
-                                   xr_sol_bases<CUIDialogWnd>());
+                                   xr::sol_bases<CUIDialogWnd>());
 
     lua.new_usertype<CUIFrameWindow>("CUIFrameWindow", sol::no_constructor, sol::call_constructor, sol::constructors<CUIFrameWindow()>(), "SetWidth", &CUIFrameWindow::SetWidth,
                                      "SetHeight", &CUIFrameWindow::SetHeight, "SetColor", &CUIFrameWindow::SetColor, "GetTitleStatic", &CUIFrameWindow::GetTitleStatic, "Init",
-                                     sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIFrameWindow::Init), sol::base_classes, xr_sol_bases<CUIFrameWindow>());
+                                     sol::resolve<void(LPCSTR, float, float, float, float)>(&CUIFrameWindow::Init), sol::base_classes, xr::sol_bases<CUIFrameWindow>());
 
     lua.new_usertype<CUIFrameLineWnd>("CUIFrameLineWnd", sol::no_constructor, sol::call_constructor, sol::constructors<CUIFrameLineWnd()>(), "SetWidth", &CUIFrameLineWnd::SetWidth,
                                       "SetHeight", &CUIFrameLineWnd::SetHeight, "SetOrientation", &CUIFrameLineWnd::SetOrientation, "SetColor", &CUIFrameLineWnd::SetColor,
                                       "GetTitleStatic", &CUIFrameLineWnd::GetTitleStatic, "Init",
-                                      sol::resolve<void(LPCSTR, float, float, float, float, bool)>(&CUIFrameLineWnd::Init), sol::base_classes, xr_sol_bases<CUIFrameLineWnd>());
+                                      sol::resolve<void(LPCSTR, float, float, float, float, bool)>(&CUIFrameLineWnd::Init), sol::base_classes, xr::sol_bases<CUIFrameLineWnd>());
 
     lua.new_usertype<CUILabel>("CUILabel", sol::no_constructor, sol::call_constructor, sol::constructors<CUILabel()>(), "SetText", &CUILabel::SetText, "GetText",
-                               &CUILabel::GetText, sol::base_classes, xr_sol_bases<CUILabel>());
+                               &CUILabel::GetText, sol::base_classes, xr::sol_bases<CUILabel>());
 
-    lua.new_usertype<CUIMMShniaga>("CUIMMShniaga", sol::no_constructor, "SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier, sol::base_classes, xr_sol_bases<CUIMMShniaga>());
+    lua.new_usertype<CUIMMShniaga>("CUIMMShniaga", sol::no_constructor, "SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier, sol::base_classes,
+                                   xr::sol_bases<CUIMMShniaga>());
 
     lua.new_usertype<CUIScrollView>("CUIScrollView", sol::no_constructor, sol::call_constructor, sol::constructors<CUIScrollView()>(), "AddWindow", &CUIScrollView::AddWindow,
                                     "RemoveWindow", &CUIScrollView::RemoveWindow, "Clear", &CUIScrollView::Clear, "ScrollToBegin", &CUIScrollView::ScrollToBegin, "ScrollToEnd",
                                     &CUIScrollView::ScrollToEnd, "GetMinScrollPos", &CUIScrollView::GetMinScrollPos, "GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos,
                                     "GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos, "SetScrollPos", &CUIScrollView::SetScrollPos, "ForceUpdate",
-                                    &CUIScrollView::ForceUpdate, sol::base_classes, xr_sol_bases<CUIScrollView>());
+                                    &CUIScrollView::ForceUpdate, sol::base_classes, xr::sol_bases<CUIScrollView>());
 
     lua.new_usertype<CIconParams>("CIconParams", sol::no_constructor, sol::call_constructor, sol::constructors<CIconParams(LPCSTR)>(), "icon_group",
                                   sol::readonly(&CIconParams::icon_group), "grid_width", sol::readonly(&CIconParams::grid_width), "grid_height",

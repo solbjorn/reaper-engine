@@ -421,7 +421,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     for (const auto& pair : story_ids)
         target.set(*pair.first, pair.second);
 
-    xr_sol_new_enum(lua, "story_ids", target);
+    xr::sol_new_enum(lua, "story_ids", target);
 
     if (spawn_story_ids.empty())
         generate_story_ids(spawn_story_ids, INVALID_SPAWN_STORY_ID, "spawn_story_ids", "INVALID_SPAWN_STORY_ID", "Invalid spawn story id description (contains spaces)!",
@@ -432,7 +432,7 @@ void CALifeSimulator::script_register(sol::state_view& lua)
     for (const auto& pair : spawn_story_ids)
         target.set(*pair.first, pair.second);
 
-    xr_sol_new_enum(lua, "spawn_story_ids", target);
+    xr::sol_new_enum(lua, "spawn_story_ids", target);
 }
 
 #if 0 // def DEBUG

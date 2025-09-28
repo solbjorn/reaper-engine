@@ -28,13 +28,13 @@ public:
     LPCSTR m_evaluator_name;
 
 protected:
-    sol::object priv;
-    xr_map<u32, sol::function> ops;
-
-    enum
+    enum class evaluator_ops : s32
     {
         EVALUATE,
     };
+
+    sol::object priv;
+    xr_map<evaluator_ops, sol::function> ops;
 
 public:
     IC CPropertyEvaluator(_object_type* object = nullptr, LPCSTR evaluator_name = "");

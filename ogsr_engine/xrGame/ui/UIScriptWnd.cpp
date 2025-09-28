@@ -42,7 +42,7 @@ bool CUIDialogWndEx::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     bool ret = inherited::OnKeyboard(dik, keyboard_action);
 
-    auto op = ops.find(ON_KEYBOARD);
+    auto op = ops.find(wnd_ops::ON_KEYBOARD);
     if (op == ops.end())
         return ret;
 

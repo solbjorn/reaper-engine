@@ -15,7 +15,7 @@ void CPHCallOnStepCondition::script_register(sol::state_view& lua)
 void CPHExpireOnStepCondition::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CPHExpireOnStepCondition>("phcondition_expireonstep", sol::no_constructor, sol::call_constructor, sol::constructors<CPHExpireOnStepCondition()>(),
-                                               sol::base_classes, xr_sol_bases<CPHExpireOnStepCondition>());
+                                               sol::base_classes, xr::sol_bases<CPHExpireOnStepCondition>());
 }
 
 void CPHConstForceAction::script_register(sol::state_view& lua)

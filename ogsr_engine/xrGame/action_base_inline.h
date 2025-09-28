@@ -62,7 +62,7 @@ void CBaseAction::initialize()
     m_start_level_time = Device.dwTimeGlobal;
     m_first_time = true;
 
-    auto op = ops.find(INITIALIZE);
+    auto op = ops.find(action_ops::INITIALIZE);
     if (op == ops.end())
         return;
 
@@ -79,7 +79,7 @@ void CBaseAction::execute()
     m_switched = false;
 #endif
 
-    auto op = ops.find(EXECUTE);
+    auto op = ops.find(action_ops::EXECUTE);
     if (op == ops.end())
         return;
 
@@ -95,7 +95,7 @@ void CBaseAction::finalize()
         debug_log(eActionStateFinalized);
 #endif
 
-    auto op = ops.find(FINALIZE);
+    auto op = ops.find(action_ops::FINALIZE);
     if (op == ops.end())
         return;
 

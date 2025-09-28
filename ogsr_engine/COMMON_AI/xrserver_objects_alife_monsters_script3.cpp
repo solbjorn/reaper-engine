@@ -13,40 +13,40 @@
 void CSE_ALifeCreatureActor::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeCreatureActor>("cse_alife_creature_actor", sol::no_constructor, sol::call_constructor,
-                                             sol::factories(std::make_unique<CSE_ALifeCreatureActor, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeCreatureActor>());
+                                             sol::factories(std::make_unique<CSE_ALifeCreatureActor, LPCSTR>), sol::base_classes, xr::sol_bases<CSE_ALifeCreatureActor>());
 }
 
 void CSE_ALifeTorridZone::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeTorridZone>("cse_torrid_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeTorridZone, LPCSTR>),
-                                          sol::base_classes, xr_sol_bases<CSE_ALifeTorridZone>());
+                                          sol::base_classes, xr::sol_bases<CSE_ALifeTorridZone>());
 }
 
 void CSE_ALifeZoneVisual::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeZoneVisual>("cse_zone_visual", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeZoneVisual, LPCSTR>), "factory",
-                                          &server_factory<CSE_ALifeZoneVisual>, sol::base_classes, xr_sol_bases<CSE_ALifeZoneVisual>());
+                                          &xr::server_factory<CSE_ALifeZoneVisual>, sol::base_classes, xr::sol_bases<CSE_ALifeZoneVisual>());
 }
 
 void CSE_ALifeCreaturePhantom::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeCreaturePhantom>("cse_alife_creature_phantom", sol::no_constructor, sol::call_constructor,
-                                               sol::factories(std::make_unique<CSE_ALifeCreaturePhantom, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifeCreaturePhantom>());
+                                               sol::factories(std::make_unique<CSE_ALifeCreaturePhantom, LPCSTR>), sol::base_classes, xr::sol_bases<CSE_ALifeCreaturePhantom>());
 }
 
 void CSE_ALifeCreatureAbstract::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeCreatureAbstract>(
         "cse_alife_creature_abstract", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeCreatureAbstract, LPCSTR>), "ON_DEATH",
-        sol::var(CSE_ALifeCreatureAbstract::ON_DEATH), "health", &CSE_ALifeCreatureAbstract::g_Health, "set_health", &CSE_ALifeCreatureAbstract::s_Health, "alive",
+        sol::var(CSE_ALifeCreatureAbstract::server_ops::ON_DEATH), "health", &CSE_ALifeCreatureAbstract::g_Health, "set_health", &CSE_ALifeCreatureAbstract::s_Health, "alive",
         &CSE_ALifeCreatureAbstract::g_Alive, "team", &CSE_ALifeCreatureAbstract::s_team, "squad", &CSE_ALifeCreatureAbstract::s_squad, "group", &CSE_ALifeCreatureAbstract::s_group,
         "g_team", &CSE_ALifeCreatureAbstract::g_team, "g_squad", &CSE_ALifeCreatureAbstract::g_squad, "g_group", &CSE_ALifeCreatureAbstract::g_group, sol::base_classes,
-        xr_sol_bases<CSE_ALifeCreatureAbstract>());
+        xr::sol_bases<CSE_ALifeCreatureAbstract>());
 }
 
 void CSE_ALifeOnlineOfflineGroup::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeOnlineOfflineGroup>("cse_alife_online_offline_group", sol::no_constructor, sol::call_constructor,
                                                   sol::factories(std::make_unique<CSE_ALifeOnlineOfflineGroup, LPCSTR>), sol::base_classes,
-                                                  xr_sol_bases<CSE_ALifeOnlineOfflineGroup>());
+                                                  xr::sol_bases<CSE_ALifeOnlineOfflineGroup>());
 }

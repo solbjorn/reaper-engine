@@ -41,7 +41,7 @@ void CSE_ALifeDynamicObject::on_register()
 {
     __on_register();
 
-    auto op = ops.find(ON_REGISTER);
+    auto op = ops.find(server_ops::ON_REGISTER);
     if (op == ops.end())
         return;
 
@@ -54,7 +54,7 @@ void CSE_ALifeDynamicObject::on_before_register()
 {
     __on_before_register();
 
-    auto op = ops.find(ON_BEFORE_REGISTER);
+    auto op = ops.find(server_ops::ON_BEFORE_REGISTER);
     if (op == ops.end())
         return;
 
@@ -70,7 +70,7 @@ void CSE_ALifeDynamicObject::on_unregister()
 {
     __on_unregister();
 
-    auto op = ops.find(ON_UNREGISTER);
+    auto op = ops.find(server_ops::ON_UNREGISTER);
     if (op == ops.end())
         return;
 

@@ -235,7 +235,7 @@ bool CSE_ALifeObject::can_switch_online() const
 {
     bool ret = __can_switch_online();
 
-    auto op = ops.find(CAN_SWITCH_ONLINE);
+    auto op = ops.find(server_ops::CAN_SWITCH_ONLINE);
     if (op == ops.end())
         return ret;
 
@@ -248,7 +248,7 @@ bool CSE_ALifeObject::can_switch_offline() const
 {
     bool ret = __can_switch_offline();
 
-    auto op = ops.find(CAN_SWITCH_OFFLINE);
+    auto op = ops.find(server_ops::CAN_SWITCH_OFFLINE);
     if (op == ops.end())
         return ret;
 
@@ -1211,7 +1211,7 @@ void CSE_ALifeSmartZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDA
 
 bool CSE_ALifeSmartZone::enabled(CSE_ALifeMonsterAbstract* object) const
 {
-    auto op = ops.find(ENABLED);
+    auto op = ops.find(server_ops::ENABLED);
     if (op == ops.end())
         return false;
 
@@ -1220,7 +1220,7 @@ bool CSE_ALifeSmartZone::enabled(CSE_ALifeMonsterAbstract* object) const
 
 void CSE_ALifeSmartZone::register_npc(CSE_ALifeMonsterAbstract* object)
 {
-    auto op = ops.find(REGISTER_NPC);
+    auto op = ops.find(server_ops::REGISTER_NPC);
     if (op == ops.end())
         return;
 
@@ -1229,7 +1229,7 @@ void CSE_ALifeSmartZone::register_npc(CSE_ALifeMonsterAbstract* object)
 
 float CSE_ALifeSmartZone::suitable(CSE_ALifeMonsterAbstract* object) const
 {
-    auto op = ops.find(SUITABLE);
+    auto op = ops.find(server_ops::SUITABLE);
     if (op == ops.end())
         return 0.f;
 
@@ -1238,7 +1238,7 @@ float CSE_ALifeSmartZone::suitable(CSE_ALifeMonsterAbstract* object) const
 
 CALifeSmartTerrainTask* CSE_ALifeSmartZone::task(CSE_ALifeMonsterAbstract* object)
 {
-    auto op = ops.find(TASK);
+    auto op = ops.find(server_ops::TASK);
     if (op == ops.end())
         return nullptr;
 
@@ -1247,7 +1247,7 @@ CALifeSmartTerrainTask* CSE_ALifeSmartZone::task(CSE_ALifeMonsterAbstract* objec
 
 void CSE_ALifeSmartZone::unregister_npc(CSE_ALifeMonsterAbstract* object)
 {
-    auto op = ops.find(UNREGISTER_NPC);
+    auto op = ops.find(server_ops::UNREGISTER_NPC);
     if (op == ops.end())
         return;
 
@@ -1256,7 +1256,7 @@ void CSE_ALifeSmartZone::unregister_npc(CSE_ALifeMonsterAbstract* object)
 
 void CSE_ALifeSmartZone::update()
 {
-    auto op = ops.find(UPDATE);
+    auto op = ops.find(server_ops::UPDATE);
     if (op == ops.end())
         return;
 

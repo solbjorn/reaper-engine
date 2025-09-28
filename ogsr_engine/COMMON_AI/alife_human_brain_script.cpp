@@ -12,5 +12,5 @@
 
 void CALifeHumanBrain::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CALifeHumanBrain>("CALifeHumanBrain", sol::no_constructor, sol::base_classes, xr_sol_bases<CALifeHumanBrain>());
+    lua.new_usertype<CALifeHumanBrain>("CALifeHumanBrain", sol::no_constructor, sol::base_classes, xr::sol_bases<CALifeHumanBrain>());
 }

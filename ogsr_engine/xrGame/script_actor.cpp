@@ -5,7 +5,9 @@
 //	Author		: Alexander Petrov
 //	Description : Script Actor (params)
 ////////////////////////////////////////////////////////////////////////////
+
 #include "StdAfx.h"
+
 #include "base_client_classes.h"
 #include "script_game_object.h"
 #include "CharacterPhysicsSupport.h"
@@ -110,9 +112,9 @@ void CScriptActor::script_register(sol::state_view& lua)
         sol::property(&get_change_v<&SConditionChangeV::m_fV_Bleeding>, &set_change_v<&SConditionChangeV::m_fV_Bleeding>), "wound_incarnation_v",
         sol::property(&get_change_v<&SConditionChangeV::m_fV_WoundIncarnation>, &set_change_v<&SConditionChangeV::m_fV_WoundIncarnation>), "health_restore_v",
         sol::property(&get_change_v<&SConditionChangeV::m_fV_HealthRestore>, &set_change_v<&SConditionChangeV::m_fV_HealthRestore>), "get_wound_size", &get_wound_size,
-        "get_wound_total_size", &get_wound_total_size, sol::base_classes, xr_sol_bases<CActorCondition>());
+        "get_wound_total_size", &get_wound_total_size, sol::base_classes, xr::sol_bases<CActorCondition>());
 
-    lua.new_usertype<CActorConditionObject>("CActorCondition", sol::no_constructor, sol::base_classes, xr_sol_bases<CActorConditionObject>());
+    lua.new_usertype<CActorConditionObject>("CActorCondition", sol::no_constructor, sol::base_classes, xr::sol_bases<CActorConditionObject>());
 
     lua.new_usertype<CPHMovementControl>("CPHMovementControl", sol::no_constructor, "ph_mass", &CPHMovementControl::fMass, "crash_speed_max", &CPHMovementControl::fMaxCrashSpeed,
                                          "crash_speed_min", &CPHMovementControl::fMinCrashSpeed, "collision_damage_factor", &CPHMovementControl::fCollisionDamageFactor,
@@ -142,9 +144,9 @@ void CScriptActor::script_register(sol::state_view& lua)
                              &CActor::is_actor_creeping, "is_actor_climbing", &CActor::is_actor_climbing, "is_actor_moving", &CActor::is_actor_moving, "UpdateArtefactsOnBelt",
                              &CActor::UpdateArtefactsOnBelt, "IsDetectorActive", &CActor::IsDetectorActive,
 
-                             "active_cam", sol::property(&get_active_cam), "set_active_cam", &CActor::cam_Set, sol::base_classes, xr_sol_bases<CActor>());
+                             "active_cam", sol::property(&get_active_cam), "set_active_cam", &CActor::cam_Set, sol::base_classes, xr::sol_bases<CActor>());
 
-    lua.new_usertype<CActorObject>("CActor", sol::no_constructor, sol::base_classes, xr_sol_bases<CActorObject>());
+    lua.new_usertype<CActorObject>("CActor", sol::no_constructor, sol::base_classes, xr::sol_bases<CActorObject>());
 
     lua.new_enum("EActorCameras", "eacFirstEye", eacFirstEye, "eacLookAt", eacLookAt, "eacFreeLook", eacFreeLook, "eacMaxCam", eacMaxCam);
 

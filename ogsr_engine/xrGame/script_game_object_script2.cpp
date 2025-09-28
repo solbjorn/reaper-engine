@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_game_object.h"
 #include "alife_space.h"
 #include "script_entity_space.h"
@@ -36,7 +37,7 @@ extern CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
 
 void CScriptGameObject::script_register1(CScriptGameObject::usertype& lua)
 {
-    xr_sol_set(
+    xr::sol_set(
         lua,
         // relation
         "friend", sol::var(ALife::eRelationTypeFriend), "neutral", sol::var(ALife::eRelationTypeNeutral), "enemy", sol::var(ALife::eRelationTypeEnemy), "worst_enemy",

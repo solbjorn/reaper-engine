@@ -101,10 +101,7 @@ Flags32 m_spawn_flags;
 xr_vector<u8> client_data;
 
 protected:
-sol::object priv;
-xr_map<u32, sol::function> ops;
-
-enum
+enum class server_ops : s32
 {
     // CSE_Abstract
     STATE_READ,
@@ -131,6 +128,9 @@ enum
     UNREGISTER_NPC,
     UPDATE,
 };
+
+sol::object priv;
+xr_map<server_ops, sol::function> ops;
 
 public:
 virtual void load(NET_Packet& tNetPacket);

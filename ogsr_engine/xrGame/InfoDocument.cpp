@@ -2,7 +2,9 @@
 // InfoDocument.cpp
 // InfoDocument - документ, содержащий сюжетную информацию
 ///////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
+
 #include "InfoDocument.h"
 #include "PhysicsShell.h"
 #include "PDA.h"
@@ -92,5 +94,5 @@ void CInfoDocument::OnH_B_Independent(bool just_before_destroy) { inherited::OnH
 void CInfoDocument::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CInfoDocument>("CInfoDocument", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CInfoDocument>), sol::base_classes,
-                                    xr_sol_bases<CInfoDocument>());
+                                    xr::sol_bases<CInfoDocument>());
 }

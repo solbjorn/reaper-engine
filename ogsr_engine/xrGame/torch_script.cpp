@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "torch.h"
 #include "script_game_object.h"
 #include "inventory_item_object.h"
@@ -114,7 +115,7 @@ void CTorch::SetVirtualSize(float size, int target)
 
 void CTorch::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<CTorch>("CTorch", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CTorch>), "factory", &client_factory<CTorch>,
+    lua.new_usertype<CTorch>("CTorch", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CTorch>), "factory", &xr::client_factory<CTorch>,
                              // alpet: управление параметрами света
                              "on", sol::readonly(&CTorch::m_switched_on), "enable", sol::resolve<void(bool)>(&CTorch::Switch), "switch", sol::resolve<void()>(&CTorch::Switch),
                              "get_light", &CTorch::GetLight, "set_animation", &CTorch::SetAnimation, "set_angle", &CTorch::SetAngle, "set_brightness", &CTorch::SetBrightness,
@@ -122,7 +123,7 @@ void CTorch::script_register(sol::state_view& lua)
                              &CTorch::SetVirtualSize,
                              // работа с ПНВ
                              "nvd_on", sol::readonly(&CTorch::m_bNightVisionOn), "enable_nvd", sol::resolve<void(bool)>(&CTorch::SwitchNightVision), "switch_nvd",
-                             sol::resolve<void()>(&CTorch::SwitchNightVision), sol::base_classes, xr_sol_bases<CTorch>());
+                             sol::resolve<void()>(&CTorch::SwitchNightVision), sol::base_classes, xr::sol_bases<CTorch>());
 
     lua.set_function("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); });
 }

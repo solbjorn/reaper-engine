@@ -24,7 +24,7 @@ CScriptBinderObject::~CScriptBinderObject()
 
 void CScriptBinderObject::reinit()
 {
-    auto op = ops.find(REINIT);
+    auto op = ops.find(binder_ops::REINIT);
     if (op == ops.end())
         return;
 
@@ -33,7 +33,7 @@ void CScriptBinderObject::reinit()
 
 void CScriptBinderObject::reload(LPCSTR section)
 {
-    auto op = ops.find(RELOAD);
+    auto op = ops.find(binder_ops::RELOAD);
     if (op == ops.end())
         return;
 
@@ -42,7 +42,7 @@ void CScriptBinderObject::reload(LPCSTR section)
 
 bool CScriptBinderObject::net_Spawn(SpawnType DC)
 {
-    auto op = ops.find(NET_SPAWN);
+    auto op = ops.find(binder_ops::NET_SPAWN);
     if (op == ops.end())
         return true;
 
@@ -51,7 +51,7 @@ bool CScriptBinderObject::net_Spawn(SpawnType DC)
 
 void CScriptBinderObject::net_Destroy()
 {
-    auto op = ops.find(NET_DESTROY);
+    auto op = ops.find(binder_ops::NET_DESTROY);
     if (op == ops.end())
         return;
 
@@ -60,7 +60,7 @@ void CScriptBinderObject::net_Destroy()
 
 void CScriptBinderObject::shedule_Update(u32 time_delta)
 {
-    auto op = ops.find(UPDATE);
+    auto op = ops.find(binder_ops::UPDATE);
     if (op == ops.end())
         return;
 
@@ -69,7 +69,7 @@ void CScriptBinderObject::shedule_Update(u32 time_delta)
 
 void CScriptBinderObject::save(NET_Packet* output_packet)
 {
-    auto op = ops.find(SAVE);
+    auto op = ops.find(binder_ops::SAVE);
     if (op == ops.end())
         return;
 
@@ -78,7 +78,7 @@ void CScriptBinderObject::save(NET_Packet* output_packet)
 
 void CScriptBinderObject::load(IReader* input_packet)
 {
-    auto op = ops.find(LOAD);
+    auto op = ops.find(binder_ops::LOAD);
     if (op == ops.end())
         return;
 
@@ -87,7 +87,7 @@ void CScriptBinderObject::load(IReader* input_packet)
 
 bool CScriptBinderObject::net_SaveRelevant()
 {
-    auto op = ops.find(NET_SAVE_RELEVANT);
+    auto op = ops.find(binder_ops::NET_SAVE_RELEVANT);
     if (op == ops.end())
         return false;
 
@@ -96,7 +96,7 @@ bool CScriptBinderObject::net_SaveRelevant()
 
 void CScriptBinderObject::net_Relcase(CScriptGameObject* object)
 {
-    auto op = ops.find(NET_RELCASE);
+    auto op = ops.find(binder_ops::NET_RELCASE);
     if (op == ops.end())
         return;
 

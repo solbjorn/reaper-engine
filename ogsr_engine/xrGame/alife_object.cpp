@@ -90,7 +90,7 @@ bool CSE_ALifeObject::__keep_saved_data_anyway() const { return false; }
 
 bool CSE_ALifeObject::keep_saved_data_anyway() const
 {
-    auto op = ops.find(KEEP_SAVED_DATA_ANYWAY);
+    auto op = ops.find(server_ops::KEEP_SAVED_DATA_ANYWAY);
     if (op == ops.end())
         return __keep_saved_data_anyway();
 

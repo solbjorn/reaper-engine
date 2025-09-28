@@ -17,25 +17,25 @@
 void CSE_ALifeObjectHangingLamp::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeObjectHangingLamp>("cse_alife_object_hanging_lamp", sol::no_constructor, sol::call_constructor,
-                                                 sol::factories(std::make_unique<CSE_ALifeObjectHangingLamp, LPCSTR>), "factory", &server_factory<CSE_ALifeObjectHangingLamp>,
-                                                 sol::base_classes, xr_sol_bases<CSE_ALifeObjectHangingLamp>());
+                                                 sol::factories(std::make_unique<CSE_ALifeObjectHangingLamp, LPCSTR>), "factory", &xr::server_factory<CSE_ALifeObjectHangingLamp>,
+                                                 sol::base_classes, xr::sol_bases<CSE_ALifeObjectHangingLamp>());
 }
 
 void CSE_ALifeObjectPhysic::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeObjectPhysic>(
         "cse_alife_object_physic", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeObjectPhysic, LPCSTR>), "factory",
-        &server_factory<CSE_ALifeObjectPhysic>, "mass", &CSE_ALifeObjectPhysic::mass, "fixed_bones",
+        &xr::server_factory<CSE_ALifeObjectPhysic>, "mass", &CSE_ALifeObjectPhysic::mass, "fixed_bones",
         sol::property([](CSE_ALifeObjectPhysic* self) { return self->fixed_bones.c_str(); }, [](CSE_ALifeObjectPhysic* self, const char* name) { self->fixed_bones = name; }),
-        sol::base_classes, xr_sol_bases<CSE_ALifeObjectPhysic>());
+        sol::base_classes, xr::sol_bases<CSE_ALifeObjectPhysic>());
 }
 
 void CSE_ALifeSmartZone::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifeSmartZone>("cse_alife_smart_zone", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeSmartZone, LPCSTR>),
-                                         "factory", &server_factory<CSE_ALifeSmartZone>, "ENABLED", sol::var(CSE_ALifeSmartZone::ENABLED), "REGISTER_NPC",
-                                         sol::var(CSE_ALifeSmartZone::REGISTER_NPC), "SUITABLE", sol::var(CSE_ALifeSmartZone::SUITABLE), "TASK", sol::var(CSE_ALifeSmartZone::TASK),
-                                         "UNREGISTER_NPC", sol::var(CSE_ALifeSmartZone::UNREGISTER_NPC), "UPDATE", sol::var(CSE_ALifeSmartZone::UPDATE), "register_npc",
-                                         &CSE_ALifeSmartZone::register_npc, "unregister_npc", &CSE_ALifeSmartZone::unregister_npc, "update", &CSE_ALifeSmartZone::update,
-                                         sol::base_classes, xr_sol_bases<CSE_ALifeSmartZone>());
+                                         "factory", &xr::server_factory<CSE_ALifeSmartZone>, "ENABLED", sol::var(CSE_ALifeSmartZone::server_ops::ENABLED), "REGISTER_NPC",
+                                         sol::var(CSE_ALifeSmartZone::server_ops::REGISTER_NPC), "SUITABLE", sol::var(CSE_ALifeSmartZone::server_ops::SUITABLE), "TASK",
+                                         sol::var(CSE_ALifeSmartZone::server_ops::TASK), "UNREGISTER_NPC", sol::var(CSE_ALifeSmartZone::server_ops::UNREGISTER_NPC), "UPDATE",
+                                         sol::var(CSE_ALifeSmartZone::server_ops::UPDATE), "register_npc", &CSE_ALifeSmartZone::register_npc, "unregister_npc",
+                                         &CSE_ALifeSmartZone::unregister_npc, "update", &CSE_ALifeSmartZone::update, sol::base_classes, xr::sol_bases<CSE_ALifeSmartZone>());
 }

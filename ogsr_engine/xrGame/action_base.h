@@ -49,15 +49,15 @@ protected:
     mutable edge_value_type m_weight;
     bool m_first_time;
 
-    sol::object priv;
-    xr_map<u32, sol::function> ops;
-
-    enum
+    enum class action_ops : s32
     {
         EXECUTE,
         FINALIZE,
         INITIALIZE,
     };
+
+    sol::object priv;
+    xr_map<action_ops, sol::function> ops;
 
 #ifdef LOG_ACTION
 public:

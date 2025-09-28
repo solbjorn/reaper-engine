@@ -53,7 +53,7 @@ void CSE_ALifeMonsterAbstract::script_register(sol::state_view& lua)
                                                sol::factories(std::make_unique<CSE_ALifeMonsterAbstract, LPCSTR>), "smart_terrain_id", &smart_terrain_id, "m_smart_terrain_id",
                                                &CSE_ALifeMonsterAbstract::m_smart_terrain_id, "clear_smart_terrain", &clear_smart_terrain, "brain", &monster_brain, "rank",
                                                &CSE_ALifeMonsterAbstract::Rank, "smart_terrain_task_activate", &smart_terrain_task_activate, "smart_terrain_task_deactivate",
-                                               &smart_terrain_task_deactivate, sol::base_classes, xr_sol_bases<CSE_ALifeMonsterAbstract>());
+                                               &smart_terrain_task_deactivate, sol::base_classes, xr::sol_bases<CSE_ALifeMonsterAbstract>());
 }
 
 void CSE_ALifeHumanAbstract::script_register(sol::state_view& lua)
@@ -63,11 +63,11 @@ void CSE_ALifeHumanAbstract::script_register(sol::state_view& lua)
 #ifdef XRGAME_EXPORTS
                                              "rank", &CSE_ALifeTraderAbstract::Rank, "set_rank", &CSE_ALifeTraderAbstract::SetRank,
 #endif
-                                             sol::base_classes, xr_sol_bases<CSE_ALifeHumanAbstract>());
+                                             sol::base_classes, xr::sol_bases<CSE_ALifeHumanAbstract>());
 }
 
 void CSE_ALifePsyDogPhantom::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CSE_ALifePsyDogPhantom>("cse_alife_psydog_phantom", sol::no_constructor, sol::call_constructor,
-                                             sol::factories(std::make_unique<CSE_ALifePsyDogPhantom, LPCSTR>), sol::base_classes, xr_sol_bases<CSE_ALifePsyDogPhantom>());
+                                             sol::factories(std::make_unique<CSE_ALifePsyDogPhantom, LPCSTR>), sol::base_classes, xr::sol_bases<CSE_ALifePsyDogPhantom>());
 }

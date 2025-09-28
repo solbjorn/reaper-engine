@@ -21,13 +21,13 @@ public:
     typedef CALLBACKS::iterator CALLBACK_IT;
 
 private:
-    sol::object priv;
-    xr_map<u32, sol::function> ops;
-
-    enum
+    enum class wnd_ops : s32
     {
         ON_KEYBOARD
     };
+
+    sol::object priv;
+    xr_map<wnd_ops, sol::function> ops;
 
     CALLBACKS m_callbacks;
 

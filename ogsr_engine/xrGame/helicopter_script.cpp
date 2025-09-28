@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "helicopter.h"
 #include "script_game_object.h"
 
@@ -9,7 +10,7 @@ int CHelicopter::GetBodyState() { return m_body.type; }
 void CHelicopter::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CHelicopter>(
-        "CHelicopter", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHelicopter>), "factory", &client_factory<CHelicopter>,
+        "CHelicopter", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHelicopter>), "factory", &xr::client_factory<CHelicopter>,
 
         // state
         "eAlive", sol::var(CHelicopter::eAlive), "eDead", sol::var(CHelicopter::eDead),
@@ -50,5 +51,5 @@ void CHelicopter::script_register(sol::state_view& lua)
         &CHelicopter::m_min_rocket_dist, "m_max_rocket_dist", &CHelicopter::m_max_rocket_dist, "m_min_mgun_dist", &CHelicopter::m_min_mgun_dist, "m_max_mgun_dist",
         &CHelicopter::m_max_mgun_dist, "m_time_between_rocket_attack", &CHelicopter::m_time_between_rocket_attack, "m_syncronize_rocket", &CHelicopter::m_syncronize_rocket,
         "m_flame_started", sol::readonly(&CHelicopter::m_flame_started), "m_light_started", sol::readonly(&CHelicopter::m_light_started), "m_exploded",
-        sol::readonly(&CHelicopter::m_exploded), "m_dead", sol::readonly(&CHelicopter::m_dead), sol::base_classes, xr_sol_bases<CHelicopter>());
+        sol::readonly(&CHelicopter::m_exploded), "m_dead", sol::readonly(&CHelicopter::m_dead), sol::base_classes, xr::sol_bases<CHelicopter>());
 }

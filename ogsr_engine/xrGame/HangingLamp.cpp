@@ -418,11 +418,11 @@ void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit)
 void CHangingLamp::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CHangingLamp>(
-        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "factory", &client_factory<CHangingLamp>, "turn_on",
+        "hanging_lamp", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CHangingLamp>), "factory", &xr::client_factory<CHangingLamp>, "turn_on",
         &CHangingLamp::TurnOn, "turn_off", &CHangingLamp::TurnOff, "set_lsf_params", &CHangingLamp::SetLSFParams, "set_volumetric",
         [](CHangingLamp* self, const bool val) { self->light_render->set_volumetric(val); }, "set_volumetric_quality",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_quality(val); }, "set_volumetric_intensity",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_intensity(val); }, "set_volumetric_distance",
         [](CHangingLamp* self, const float val) { self->light_render->set_volumetric_distance(val); }, "health", sol::readonly(&CHangingLamp::fHealth), sol::base_classes,
-        xr_sol_bases<CHangingLamp>());
+        xr::sol_bases<CHangingLamp>());
 }

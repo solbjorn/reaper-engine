@@ -81,7 +81,7 @@ void CObjectScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CGameObject>("CGameObject", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CGameObject>), "_construct", &CGameObject::_construct,
                                   "Visual", &CGameObject::Visual, "net_Spawn", &CGameObject::net_Spawn, "use", &CGameObject::use, "getVisible", &CGameObject::getVisible,
-                                  "getEnabled", &CGameObject::getEnabled, sol::base_classes, xr_sol_bases<CGameObject>());
+                                  "getEnabled", &CGameObject::getEnabled, sol::base_classes, xr::sol_bases<CGameObject>());
 
     lua.new_enum("global_flags",
                  // inventory_item
@@ -156,7 +156,7 @@ void CPatrolPathScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CPatrolPath>("CPatrolPath", sol::no_constructor, sol::call_constructor, sol::constructors<CPatrolPath()>(), "add_point", &CPatrolPath::add_point, "point",
                                   sol::resolve<CPatrolPoint(u32), CPatrolPath>(&CPatrolPath::point), "point_raw", &CPatrolPath::point_raw, "add_vertex", &CPatrolPath::add_vertex,
-                                  sol::base_classes, xr_sol_bases<CPatrolPath>());
+                                  sol::base_classes, xr::sol_bases<CPatrolPath>());
 }
 
 static luabind::object script_texture_find(const char* name)
