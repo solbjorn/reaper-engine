@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CGalantineArtefact : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CGalantineArtefact(void);
-    virtual ~CGalantineArtefact(void);
+    CGalantineArtefact();
+    virtual ~CGalantineArtefact();
 
     virtual void Load(LPCSTR section);
 };

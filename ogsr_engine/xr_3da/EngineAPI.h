@@ -22,10 +22,8 @@ public:
 };
 
 // Class creation/destroying interface
-extern "C" {
-typedef DLL_Pure* __cdecl Factory_Create(CLASS_ID CLS_ID);
-typedef void __cdecl Factory_Destroy(DLL_Pure* O);
-}
+typedef DLL_Pure* Factory_Create(CLASS_ID CLS_ID);
+typedef void Factory_Destroy(DLL_Pure* O);
 
 class CEngineAPI
 {

@@ -4,11 +4,12 @@
 
 #include "xr_collide_defs.h"
 
-static constexpr Fvector c_spatial_offset[8] = {{-1, -1, -1}, {1, -1, -1}, {-1, 1, -1}, {1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {-1, 1, 1}, {1, 1, 1}};
+constexpr inline Fvector c_spatial_offset[8]{{-1.f, -1.f, -1.f}, {1.f, -1.f, -1.f}, {-1.f, 1.f, -1.f}, {1.f, 1.f, -1.f},
+                                             {-1.f, -1.f, 1.f},  {1.f, -1.f, 1.f},  {-1.f, 1.f, 1.f},  {1.f, 1.f, 1.f}};
 
 using sector_id_t = size_t;
 
-constexpr sector_id_t INVALID_SECTOR_ID = std::numeric_limits<sector_id_t>::max();
+constexpr inline sector_id_t INVALID_SECTOR_ID{std::numeric_limits<sector_id_t>::max()};
 
 /*
 Requirements:

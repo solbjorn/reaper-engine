@@ -183,9 +183,6 @@ Fvector& global_hit_position(Fvector& gp, CEntityAlive& ea, const SHit& H)
     return gp;
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4273)
-
 bool find_in_parents(const u16 bone_to_find, const u16 from_bone, IKinematics& ca)
 {
     const u16 root = ca.LL_GetBoneRoot();
@@ -459,5 +456,3 @@ void death_anims::setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini)
     if (ini->line_exist(section, "random_death_animations"))
         rnd_anims.setup(k, ini->r_string(section, "random_death_animations"));
 }
-
-#pragma warning(pop)

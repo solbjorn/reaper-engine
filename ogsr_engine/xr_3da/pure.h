@@ -2,11 +2,11 @@
 #define _PURE_H_AAA_
 
 // messages
-constexpr int REG_PRIORITY_LOW = 0x11111111;
-constexpr int REG_PRIORITY_NORMAL = 0x22222222;
-constexpr int REG_PRIORITY_HIGH = 0x33333333;
-constexpr int REG_PRIORITY_CAPTURE = 0x7fffffff;
-constexpr int REG_PRIORITY_INVALID = std::numeric_limits<int>::lowest();
+constexpr inline int REG_PRIORITY_LOW{0x11111111};
+constexpr inline int REG_PRIORITY_NORMAL{0x22222222};
+constexpr inline int REG_PRIORITY_HIGH{0x33333333};
+constexpr inline int REG_PRIORITY_CAPTURE{0x7fffffff};
+constexpr inline int REG_PRIORITY_INVALID{std::numeric_limits<int>::lowest()};
 
 #define DECLARE_MESSAGE(name) \
     struct XR_NOVTABLE pure##name : public virtual RTTI::Enable \

@@ -4,13 +4,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "Tracer.h"
 #include "..\xr_3da\render.h"
 
 namespace
 {
-constexpr u32 MAX_TRACERS = (1024 * 5);
-constexpr float TRACER_SIZE = 0.13f;
+constexpr u32 MAX_TRACERS{1024 * 5};
+constexpr float TRACER_SIZE{0.13f};
 } // namespace
 
 //////////////////////////////////////////////////////////////////////
@@ -39,7 +40,7 @@ CTracer::CTracer()
     }
 }
 
-CTracer::~CTracer() {}
+CTracer::~CTracer() = default;
 
 IC void FillSprite_Circle(const Fvector& pos, const float width, const float length, u32 color)
 {

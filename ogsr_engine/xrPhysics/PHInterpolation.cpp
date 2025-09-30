@@ -31,9 +31,8 @@ void CPHInterpolation::UpdateRotations()
     VERIFY(m_body);
     // VERIFY2(dM_valid(dBodyGetRotation(m_body)),"invalid body rotation in update interpolation");
     const dReal* dQ = dBodyGetQuaternion(m_body);
-    Fquaternion fQ;
+    auto& fQ = qRotations.emplace_back();
     fQ.set(-dQ[0], dQ[1], dQ[2], dQ[3]);
-    qRotations.push_back(fQ);
 }
 
 void CPHInterpolation::InterpolatePosition(Fvector& pos)

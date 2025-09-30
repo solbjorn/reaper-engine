@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CFadedBall : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CFadedBall(void);
-    virtual ~CFadedBall(void);
+    CFadedBall();
+    virtual ~CFadedBall();
 
     virtual void Load(LPCSTR section);
 };

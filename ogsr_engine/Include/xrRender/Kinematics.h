@@ -15,7 +15,7 @@ struct VisMask;
 struct SEnumVerticesCallback;
 
 // 10 fps
-constexpr u32 UCalc_Interval{100};
+constexpr inline u32 UCalc_Interval{100};
 
 class XR_NOVTABLE IKinematics : public virtual RTTI::Enable
 {

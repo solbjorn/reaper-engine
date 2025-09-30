@@ -10,22 +10,22 @@
 #endif
 
 // Constants
-constexpr float EPS_S = std::numeric_limits<float>::epsilon();
-constexpr float EPS = 0.0000100f;
-constexpr float EPS_L = 0.0010000f;
+constexpr inline float EPS_S{std::numeric_limits<float>::epsilon()};
+constexpr inline float EPS{0.0000100f};
+constexpr inline float EPS_L{0.0010000f};
 
-constexpr float M_PI = 3.1415926535897932384626433832795f;
-constexpr float PI = 3.1415926535897932384626433832795f;
-constexpr float PI_MUL_2 = 6.2831853071795864769252867665590f;
-constexpr float PI_MUL_3 = 9.4247779607693797153879301498385f;
-constexpr float PI_MUL_4 = 12.566370614359172953850573533118f;
-constexpr float PI_MUL_6 = 18.849555921538759430775860299677f;
-constexpr float PI_MUL_8 = 25.132741228718345907701147066236f;
-constexpr float PI_DIV_2 = 1.5707963267948966192313216916398f;
-constexpr float PI_DIV_3 = 1.0471975511965977461542144610932f;
-constexpr float PI_DIV_4 = 0.7853981633974483096156608458199f;
-constexpr float PI_DIV_6 = 0.5235987755982988730771072305466f;
-constexpr float PI_DIV_8 = 0.3926990816987241548078304229099f;
+constexpr inline float M_PI{3.1415926535897932384626433832795f};
+constexpr inline float PI{3.1415926535897932384626433832795f};
+constexpr inline float PI_MUL_2{6.2831853071795864769252867665590f};
+constexpr inline float PI_MUL_3{9.4247779607693797153879301498385f};
+constexpr inline float PI_MUL_4{12.566370614359172953850573533118f};
+constexpr inline float PI_MUL_6{18.849555921538759430775860299677f};
+constexpr inline float PI_MUL_8{25.132741228718345907701147066236f};
+constexpr inline float PI_DIV_2{1.5707963267948966192313216916398f};
+constexpr inline float PI_DIV_3{1.0471975511965977461542144610932f};
+constexpr inline float PI_DIV_4{0.7853981633974483096156608458199f};
+constexpr inline float PI_DIV_6{0.5235987755982988730771072305466f};
+constexpr inline float PI_DIV_8{0.3926990816987241548078304229099f};
 
 // Define types and namespaces (CPU & FPU)
 #include "_types.h"
@@ -109,7 +109,7 @@ struct _quaternion;
 #include "_flags.h"
 
 // normalize angle (0..2PI)
-ICF float angle_normalize_always(float a)
+constexpr ICF float angle_normalize_always(float a)
 {
     float div = a / PI_MUL_2;
     int rnd = (div > 0) ? iFloor(div) : iCeil(div);
@@ -120,7 +120,7 @@ ICF float angle_normalize_always(float a)
 }
 
 // normalize angle (0..2PI)
-ICF float angle_normalize(float a)
+constexpr ICF float angle_normalize(float a)
 {
     if (a >= 0 && a <= PI_MUL_2)
         return a;
@@ -129,7 +129,7 @@ ICF float angle_normalize(float a)
 }
 
 // -PI .. +PI
-ICF float angle_normalize_signed(float a)
+constexpr ICF float angle_normalize_signed(float a)
 {
     if (a >= (-PI) && a <= PI)
         return a;
@@ -140,7 +140,7 @@ ICF float angle_normalize_signed(float a)
 }
 
 // -PI..PI
-ICF float angle_difference_signed(float a, float b)
+constexpr ICF float angle_difference_signed(float a, float b)
 {
     float diff = angle_normalize_signed(a) - angle_normalize_signed(b);
     if (diff > 0)
@@ -157,9 +157,9 @@ ICF float angle_difference_signed(float a, float b)
 }
 
 // 0..PI
-ICF float angle_difference(float a, float b) { return _abs(angle_difference_signed(a, b)); }
+constexpr ICF float angle_difference(float a, float b) { return _abs(angle_difference_signed(a, b)); }
 
-IC bool are_ordered(float const value0, float const value1, float const value2)
+constexpr IC bool are_ordered(float const value0, float const value1, float const value2)
 {
     if ((value1 >= value0) && (value1 <= value2))
         return true;
@@ -170,10 +170,10 @@ IC bool are_ordered(float const value0, float const value1, float const value2)
     return false;
 }
 
-IC bool is_between(float const value, float const left, float const right) { return are_ordered(left, value, right); }
+constexpr IC bool is_between(float const value, float const left, float const right) { return are_ordered(left, value, right); }
 
 // c=current, t=target, s=speed, dt=dt
-IC bool angle_lerp(float& c, float t, float s, float dt)
+constexpr IC bool angle_lerp(float& c, float t, float s, float dt)
 {
     float const before = c;
     float diff = t - c;
@@ -209,7 +209,7 @@ IC bool angle_lerp(float& c, float t, float s, float dt)
 }
 
 // Just lerp :)	expects normalized angles in range [0..2PI)
-ICF float angle_lerp(float A, float B, float f)
+constexpr ICF float angle_lerp(float A, float B, float f)
 {
     float diff = B - A;
     if (diff > PI)
@@ -220,7 +220,7 @@ ICF float angle_lerp(float A, float B, float f)
     return A + diff * f;
 }
 
-IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
+constexpr IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
 {
     float a = angle_normalize_signed(tgt);
     angle_lerp(src, a, speed, dt);
@@ -231,7 +231,7 @@ IC float angle_inertion(float src, float tgt, float speed, float clmp, float dt)
     return src;
 }
 
-IC float angle_inertion_var(float src, float tgt, float min_speed, float max_speed, float clmp, float dt)
+constexpr IC float angle_inertion_var(float src, float tgt, float min_speed, float max_speed, float clmp, float dt)
 {
     tgt = angle_normalize_signed(tgt);
     src = angle_normalize_signed(src);
@@ -309,7 +309,7 @@ constexpr IC _matrix<T>& _matrix<T>::mk_xform(const _quaternion<T>& Q, const Tve
 }
 
 template <class T>
-IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
+constexpr IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 {
     float trace, s;
 

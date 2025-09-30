@@ -2,13 +2,13 @@
 
 #include "weaponvintorez.h"
 
-CWeaponVintorez::CWeaponVintorez(void) : CWeaponMagazined("VINTOREZ", SOUND_TYPE_WEAPON_SNIPERRIFLE)
+CWeaponVintorez::CWeaponVintorez() : CWeaponMagazined{"VINTOREZ", SOUND_TYPE_WEAPON_SNIPERRIFLE}
 {
     m_weight = 1.5f;
     SetSlot(SECOND_WEAPON_SLOT);
 }
 
-CWeaponVintorez::~CWeaponVintorez(void) {}
+CWeaponVintorez::~CWeaponVintorez() = default;
 
 void CWeaponVintorez::script_register(sol::state_view& lua)
 {

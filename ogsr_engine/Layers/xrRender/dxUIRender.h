@@ -1,6 +1,5 @@
 #ifndef dxUIRender_included
 #define dxUIRender_included
-#pragma once
 
 #include "..\..\Include\xrRender\UIRender.h"
 

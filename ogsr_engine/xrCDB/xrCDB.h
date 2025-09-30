@@ -204,9 +204,8 @@ public:
     }
 };
 
-#pragma warning(push)
-#pragma warning(disable : 4275)
-const u32 clpMX = 24, clpMY = 16, clpMZ = 24;
+constexpr inline u32 clpMX{24}, clpMY{16}, clpMZ{24};
+
 class CollectorPacked : public Noncopyable
 {
     using DWORDList = xr_vector<u32>;
@@ -240,5 +239,4 @@ public:
     size_t getTS() { return faces.size(); }
     void clear();
 };
-#pragma warning(pop)
 } // namespace CDB

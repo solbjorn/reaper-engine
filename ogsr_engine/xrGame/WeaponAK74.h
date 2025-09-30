@@ -1,8 +1,6 @@
 #ifndef __XR_WEAPON_AK74_H__
 #define __XR_WEAPON_AK74_H__
 
-#pragma once
-
 #include "WeaponMagazinedWGrenade.h"
 #include "script_export_space.h"
 

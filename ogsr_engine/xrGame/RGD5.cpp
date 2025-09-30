@@ -2,9 +2,8 @@
 
 #include "rgd5.h"
 
-CRGD5::CRGD5(void) { SetSlot(GRENADE_SLOT); }
-
-CRGD5::~CRGD5(void) {}
+CRGD5::CRGD5() { SetSlot(GRENADE_SLOT); }
+CRGD5::~CRGD5() = default;
 
 void CRGD5::script_register(sol::state_view& lua)
 {

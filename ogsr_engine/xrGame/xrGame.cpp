@@ -13,8 +13,7 @@
 #include "xr_level_controller.h"
 #include "profiler.h"
 
-extern "C" {
-DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
+DLL_Pure* xrFactory_Create(CLASS_ID clsid)
 {
     DLL_Pure* object = object_factory().client_object(clsid);
 #ifdef DEBUG
@@ -25,8 +24,7 @@ DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
     return (object);
 }
 
-void __cdecl xrFactory_Destroy(DLL_Pure* O) { xr_delete(O); }
-}
+void xrFactory_Destroy(DLL_Pure* O) { xr_delete(O); }
 
 extern void CCC_RegisterCommands();
 extern float g_fTimeFactor;

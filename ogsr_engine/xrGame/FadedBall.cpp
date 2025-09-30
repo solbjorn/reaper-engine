@@ -4,11 +4,11 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "FadedBall.h"
 #include "PhysicsShell.h"
 
-CFadedBall::CFadedBall(void) {}
-
-CFadedBall::~CFadedBall(void) {}
+CFadedBall::CFadedBall() = default;
+CFadedBall::~CFadedBall() = default;
 
 void CFadedBall::Load(LPCSTR section) { inherited::Load(section); }

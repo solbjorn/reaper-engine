@@ -1,4 +1,5 @@
 #pragma once
+
 #include "CycleConstStorage.h"
 
 namespace extrapolation
@@ -25,10 +26,20 @@ public:
     point() : m_time(-FLT_MAX) {}
     IC const pose& get_pose() const { return p; }
     IC float time() const { return m_time; }
-    IC point& set(const extrapolation::pose& p_, float time)
+
+    point& set(const extrapolation::pose& p_, float time)
     {
         p = p_;
         m_time = time;
+
+        return *this;
+    }
+
+    point& set(const Fmatrix& m, float time)
+    {
+        p.set(m);
+        m_time = time;
+
         return *this;
     }
 

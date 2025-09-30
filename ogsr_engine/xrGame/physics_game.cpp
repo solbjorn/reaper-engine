@@ -14,15 +14,18 @@
 #include "PHReqComparer.h"
 #include "PHWorld.h"
 
+namespace
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-static const float PARTICLE_EFFECT_DIST = 70.f;
-static const float SOUND_EFFECT_DIST = 70.f;
+constexpr float PARTICLE_EFFECT_DIST{70.f};
+constexpr float SOUND_EFFECT_DIST{70.f};
 //////////////////////////////////////////////////////////////////////////////////
-static const float SQUARE_PARTICLE_EFFECT_DIST = PARTICLE_EFFECT_DIST * PARTICLE_EFFECT_DIST;
-static const float SQUARE_SOUND_EFFECT_DIST = SOUND_EFFECT_DIST * SOUND_EFFECT_DIST;
+constexpr float SQUARE_PARTICLE_EFFECT_DIST{PARTICLE_EFFECT_DIST * PARTICLE_EFFECT_DIST};
+constexpr float SQUARE_SOUND_EFFECT_DIST{SOUND_EFFECT_DIST * SOUND_EFFECT_DIST};
 
-constexpr float minimal_plane_distance_between_liquid_particles = 0.2f;
+constexpr float minimal_plane_distance_between_liquid_particles{0.2f};
+} // namespace
 
 class CPHParticlesPlayCall : public CPHAction, public CPHReqComparerV
 {
@@ -123,6 +126,8 @@ private:
     }
 };
 
+namespace
+{
 class CPHWallMarksCall : public CPHAction
 {
     RTTI_DECLARE_TYPEINFO(CPHWallMarksCall, CPHAction);
@@ -148,7 +153,7 @@ public:
     virtual bool obsolete() const { return false; }
 };
 
-static CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }
+CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }
 
 template <class Pars>
 void TContactShotMark(CDB::TRI* T, dContactGeom* c)
@@ -232,6 +237,7 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
         }
     }
 }
+} // namespace
 
 ContactCallbackFun* ContactShotMark = &TContactShotMark<EffectPars>;
 ContactCallbackFun* CharacterContactShotMark = &TContactShotMark<CharacterEffectPars>;

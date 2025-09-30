@@ -3,6 +3,8 @@
 #include "xrtheora_surface.h"
 #include "xrtheora_stream.h"
 
+CTheoraSurface::CTheoraSurface() = default;
+
 CTheoraSurface::~CTheoraSurface()
 {
     xr_delete(m_rgb);

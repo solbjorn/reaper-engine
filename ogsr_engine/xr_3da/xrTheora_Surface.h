@@ -23,7 +23,7 @@ protected:
     void Reset();
 
 public:
-    CTheoraSurface() = default;
+    CTheoraSurface();
     virtual ~CTheoraSurface();
 
     BOOL Valid();

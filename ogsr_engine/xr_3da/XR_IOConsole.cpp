@@ -2,6 +2,7 @@
 // modify 15.05.2008 sea
 
 #include "stdafx.h"
+
 #include "XR_IOConsole.h"
 #include "line_editor.h"
 
@@ -15,26 +16,29 @@
 
 #include "../Include/xrRender/UIRender.h"
 
-static float const UI_BASE_WIDTH = 1024.0f;
-static float const UI_BASE_HEIGHT = 768.0f;
+namespace
+{
+constexpr float UI_BASE_WIDTH{1024.0f};
+constexpr float UI_BASE_HEIGHT{768.0f};
 
-static float const LDIST = 0.05f;
+constexpr float LDIST{0.05f};
 
-static u32 const cmd_history_max = 64;
+constexpr u32 cmd_history_max{64};
 
-static u32 const prompt_font_color = color_rgba(228, 228, 255, 255);
-static u32 const tips_font_color = color_rgba(230, 250, 230, 255);
-static u32 const cmd_font_color = color_rgba(138, 138, 245, 255);
-static u32 const cursor_font_color = color_rgba(255, 255, 255, 255);
-static u32 const total_font_color = color_rgba(250, 250, 15, 180);
-static u32 const default_font_color = color_rgba(250, 250, 250, 250);
+constexpr u32 prompt_font_color{color_rgba(228, 228, 255, 255)};
+constexpr u32 tips_font_color{color_rgba(230, 250, 230, 255)};
+constexpr u32 cmd_font_color{color_rgba(138, 138, 245, 255)};
+constexpr u32 cursor_font_color{color_rgba(255, 255, 255, 255)};
+constexpr u32 total_font_color{color_rgba(250, 250, 15, 180)};
+constexpr u32 default_font_color{color_rgba(250, 250, 250, 250)};
 
-static u32 const back_color = color_rgba(20, 20, 20, 200);
-static u32 const tips_back_color = color_rgba(20, 20, 20, 200);
-static u32 const tips_select_color = color_rgba(90, 90, 140, 230);
-static u32 const tips_word_color = color_rgba(5, 100, 56, 200);
-static u32 const tips_scroll_back_color = color_rgba(15, 15, 15, 230);
-static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
+constexpr u32 back_color{color_rgba(20, 20, 20, 200)};
+constexpr u32 tips_back_color{color_rgba(20, 20, 20, 200)};
+constexpr u32 tips_select_color{color_rgba(90, 90, 140, 230)};
+constexpr u32 tips_word_color{color_rgba(5, 100, 56, 200)};
+constexpr u32 tips_scroll_back_color{color_rgba(15, 15, 15, 230)};
+constexpr u32 tips_scroll_pos_color{color_rgba(70, 70, 70, 240)};
+} // namespace
 
 CConsole* Console{};
 

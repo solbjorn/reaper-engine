@@ -10,8 +10,8 @@ class CRGD5 : public CGrenade
 public:
     typedef CGrenade inherited;
 
-    CRGD5(void);
-    virtual ~CRGD5(void);
+    CRGD5();
+    virtual ~CRGD5();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

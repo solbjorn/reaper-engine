@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CRustyHairArtefact : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CRustyHairArtefact(void);
-    virtual ~CRustyHairArtefact(void);
+    CRustyHairArtefact();
+    virtual ~CRustyHairArtefact();
 
     virtual void Load(LPCSTR section);
 };

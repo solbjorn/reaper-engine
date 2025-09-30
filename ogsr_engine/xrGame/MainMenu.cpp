@@ -222,11 +222,13 @@ void CMainMenu::Activate(bool bActivate)
 }
 
 bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
-
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
 
 // IInputReceiver
+namespace
+{
 constexpr int mouse_button_2_key[]{MOUSE_1, MOUSE_2, MOUSE_3};
+}
 
 void CMainMenu::IR_OnMousePress(int btn)
 {

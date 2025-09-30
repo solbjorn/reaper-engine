@@ -52,5 +52,6 @@ public:
     virtual u32 LoadActions(int alist_id, IReader& R, bool copFormat);
 };
 } // namespace PAPI
+
 //---------------------------------------------------------------------------
 #endif

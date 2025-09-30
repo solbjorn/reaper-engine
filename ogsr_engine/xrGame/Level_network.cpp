@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
@@ -15,8 +16,11 @@
 #include "seniority_hierarchy_holder.h"
 #include "LevelDebugScript.h"
 
-constexpr int max_objects_size = 2 * 1024;
-constexpr int max_objects_size_in_save = 6 * 1024;
+namespace
+{
+constexpr int max_objects_size{2 * 1024};
+constexpr int max_objects_size_in_save{6 * 1024};
+} // namespace
 
 void Remove_all_statics();
 

@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "EngineAPI.h"
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
@@ -13,13 +14,11 @@ extern xr_token* vid_quality_token;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CEngineAPI::CEngineAPI() = default;
-CEngineAPI::~CEngineAPI() = default;
-
-extern "C" {
 DLL_Pure* xrFactory_Create(CLASS_ID clsid);
 void xrFactory_Destroy(DLL_Pure* O);
-}
+
+CEngineAPI::CEngineAPI() = default;
+CEngineAPI::~CEngineAPI() = default;
 
 void CEngineAPI::Initialize()
 {

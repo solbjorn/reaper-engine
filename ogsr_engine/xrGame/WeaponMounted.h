@@ -1,6 +1,5 @@
 #ifndef WeaponMountedH
 #define WeaponMountedH
-#pragma once
 
 #include "holder_custom.h"
 #include "shootingobject.h"

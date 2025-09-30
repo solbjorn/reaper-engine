@@ -123,20 +123,20 @@
 
 ***************************************************************************/
 
-constexpr float UNIT_TOLERANCE = 0.001f;
+constexpr inline float UNIT_TOLERANCE{0.001f};
 // Quaternion magnitude must be closer than this tolerance to 1.0 to be
 // considered a unit quaternion
 
-constexpr float QZERO_TOLERANCE = 0.00001f;
+constexpr inline float QZERO_TOLERANCE{0.00001f};
 // quaternion magnitude must be farther from this tolerance to 0.0 to be
 // normalized
 
-constexpr float TRACE_QZERO_TOLERANCE = 0.1f;
+constexpr inline float TRACE_QZERO_TOLERANCE{0.1f};
 // trace of matrix must be greater than this to be used for converting a matrix
 // to a quaternion.
 
-constexpr float AA_QZERO_TOLERANCE = 0.0001f;
-constexpr float QEPSILON = 0.00001f;
+constexpr inline float AA_QZERO_TOLERANCE{0.0001f};
+constexpr inline float QEPSILON{0.00001f};
 
 template <class T>
 struct _quaternion
@@ -148,7 +148,7 @@ public:
     typedef const Self& SelfCRef;
 
 private:
-    IC T _asin_(T x)
+    constexpr T _asin_(T x)
     {
         const T c1 = 0.892399f;
         const T c3 = 1.693204f;
@@ -160,12 +160,13 @@ private:
 
         return d;
     }
-    IC T _acos_(T x) { return PI_DIV_2 - _asin_(x); }
+
+    constexpr T _acos_(T x) { return PI_DIV_2 - _asin_(x); }
 
 public:
     T x, y, z, w;
 
-    IC SelfRef set(T W, T X, T Y, T Z) // don't normalize
+    constexpr SelfRef set(T W, T X, T Y, T Z) // don't normalize
     {
         x = X;
         y = Y;
@@ -173,13 +174,14 @@ public:
         w = W;
         return *this;
     }
-    IC SelfRef set(SelfCRef Q) // don't normalize
+
+    constexpr SelfRef set(SelfCRef Q) // don't normalize
     {
         set(Q.w, Q.x, Q.y, Q.z);
         return *this;
     }
 
-    IC SelfRef set(const _matrix<T>& m);
+    constexpr SelfRef set(const _matrix<T>& m);
 
     // multiplies q1 * q2, and places the result in *this.
     // no failure. 	renormalization not automatic
@@ -191,7 +193,8 @@ public:
             (w1*y2 - x1*z2 + y1*w2 + z1*x2)j    {y3}
             (w1*z2 + x1*y2 - y1*x2 + z1*w2)k	{z3}
     */
-    IC SelfRef mul(SelfCRef q1l, SelfCRef q2l)
+
+    constexpr SelfRef mul(SelfCRef q1l, SelfCRef q2l)
     {
         VERIFY(q1l.isValid());
         VERIFY(q2l.isValid());
@@ -206,7 +209,7 @@ public:
         return *this;
     }
 
-    IC SelfRef add(SelfCRef q1, SelfCRef q2)
+    constexpr SelfRef add(SelfCRef q1, SelfCRef q2)
     {
         x = q1.x + q2.x;
         y = q1.y + q2.y;
@@ -214,7 +217,8 @@ public:
         w = q1.w + q2.w;
         return *this;
     }
-    IC SelfRef sub(SelfCRef q1, SelfCRef q2)
+
+    constexpr SelfRef sub(SelfCRef q1, SelfCRef q2)
     {
         x = q1.x - q2.x;
         y = q1.y - q2.y;
@@ -223,7 +227,7 @@ public:
         return *this;
     }
 
-    IC SelfRef add(SelfCRef q)
+    constexpr SelfRef add(SelfCRef q)
     {
         x += q.x;
         y += q.y;
@@ -231,7 +235,8 @@ public:
         w += q.w;
         return *this;
     }
-    IC SelfRef sub(SelfCRef q)
+
+    constexpr SelfRef sub(SelfCRef q)
     {
         x -= q.x;
         y -= q.y;
@@ -241,7 +246,7 @@ public:
     }
 
     // validates numerical stability
-    IC BOOL isValid() const
+    constexpr BOOL isValid() const
     {
         if ((w * w) < 0.0f)
             return false;
@@ -255,7 +260,7 @@ public:
     }
 
     // checks for Unit-length quaternion
-    IC BOOL isUnit() const
+    constexpr BOOL isUnit() const
     {
         T m = magnitude();
 
@@ -265,7 +270,7 @@ public:
     }
 
     // normalizes Q to be a unit geQuaternion
-    IC SelfRef normalize()
+    constexpr SelfRef normalize()
     {
         T m, one_over_magnitude;
 
@@ -284,19 +289,19 @@ public:
     }
 
     // inversion
-    IC SelfRef inverse(SelfCRef Q) { return set(Q.w, -Q.x, -Q.y, -Q.z); }
-    IC SelfRef inverse() { return set(w, -x, -y, -z); }
-    IC SelfRef inverse_with_w(SelfCRef Q) { return set(-Q.w, -Q.x, -Q.y, -Q.z); }
-    IC SelfRef inverse_with_w() { return set(-w, -x, -y, -z); }
+    constexpr SelfRef inverse(SelfCRef Q) { return set(Q.w, -Q.x, -Q.y, -Q.z); }
+    constexpr SelfRef inverse() { return set(w, -x, -y, -z); }
+    constexpr SelfRef inverse_with_w(SelfCRef Q) { return set(-Q.w, -Q.x, -Q.y, -Q.z); }
+    constexpr SelfRef inverse_with_w() { return set(-w, -x, -y, -z); }
 
     // identity - no rotation
-    IC SelfRef identity(void) { return set(1.f, 0.f, 0.f, 0.f); }
+    constexpr SelfRef identity() { return set(1.f, 0.f, 0.f, 0.f); }
 
     // square length
-    IC T magnitude(void) { return w * w + x * x + y * y + z * z; }
+    constexpr T magnitude() { return w * w + x * x + y * y + z * z; }
 
     // makes unit rotation
-    IC SelfRef rotationYawPitchRoll(T _x, T _y, T _z)
+    constexpr SelfRef rotationYawPitchRoll(T _x, T _y, T _z)
     {
         T fSinYaw = _sin(_x * .5f);
         T fCosYaw = _cos(_x * .5f);
@@ -313,10 +318,10 @@ public:
     }
 
     // makes unit rotation
-    IC SelfRef rotationYawPitchRoll(const Fvector& ypr) { return rotationYawPitchRoll(ypr.x, ypr.y, ypr.z); }
+    constexpr SelfRef rotationYawPitchRoll(const Fvector& ypr) { return rotationYawPitchRoll(ypr.x, ypr.y, ypr.z); }
 
     // set a quaternion from an axis and a rotation around the axis
-    IC SelfRef rotation(Fvector& axis, T angle)
+    constexpr SelfRef rotation(Fvector& axis, T angle)
     {
         T sinTheta;
 
@@ -332,7 +337,7 @@ public:
     // returns TRUE if there is an axis.
     // returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
 
-    IC BOOL get_axis_angle(Fvector& axis, T& angle)
+    constexpr BOOL get_axis_angle(Fvector& axis, T& angle)
     {
         T s = _sqrt(x * x + y * y + z * z);
         if (s > EPS_S)
@@ -357,7 +362,7 @@ public:
     // with t==0 being all q0, and t==1 being all q1.
     // returns a quaternion with a positive W - always takes shortest route
     // through the positive W domain.
-    ICF SelfRef slerp(SelfCRef Q0, SelfCRef Q1, T tm)
+    constexpr SelfRef slerp(SelfCRef Q0, SelfCRef Q1, T tm)
     {
         T Scale0, Scale1, sign;
 
@@ -403,7 +408,7 @@ public:
     }
 
     // return TRUE if quaternions differ elementwise by less than Tolerance.
-    IC BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
+    constexpr BOOL cmp(SelfCRef Q, T Tolerance = 0.0001f)
     {
         if ( // they are the same but with opposite signs
             ((_abs(x + Q.x) <= Tolerance) && (_abs(y + Q.y) <= Tolerance) && (_abs(z + Q.z) <= Tolerance) && (_abs(w + Q.w) <= Tolerance)) || // they are the same with same signs
@@ -412,7 +417,8 @@ public:
         else
             return false;
     }
-    IC SelfRef ln(SelfCRef Q)
+
+    constexpr SelfRef ln(SelfCRef Q)
     {
         T n = Q.x * Q.x + Q.y * Q.y + Q.z * Q.z;
         T r = _sqrt(n);
@@ -423,7 +429,8 @@ public:
         w = .5f * _log(n + Q.w * Q.w);
         return *this;
     }
-    IC SelfRef exp(SelfCRef Q)
+
+    constexpr SelfRef exp(SelfCRef Q)
     {
         T r = _sqrt(Q.x * Q.x + Q.y * Q.y + Q.z * Q.z);
         T et = expf(Q.w);
@@ -440,7 +447,7 @@ typedef _quaternion<float> Fquaternion;
 typedef _quaternion<double> Dquaternion;
 
 template <class T>
-BOOL _valid(const _quaternion<T>& s)
+constexpr inline BOOL _valid(const _quaternion<T>& s)
 {
     return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);
 }

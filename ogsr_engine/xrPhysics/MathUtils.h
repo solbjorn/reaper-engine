@@ -2,7 +2,7 @@
 #define MATH_UTILS_H
 
 #if !__FINITE_MATH_ONLY__
-constexpr float phInfinity = std::numeric_limits<float>::infinity();
+constexpr inline float phInfinity{std::numeric_limits<float>::infinity()};
 #endif
 
 IC float* cast_fp(Fvector& fv) { return (float*)(&fv); }
@@ -553,7 +553,7 @@ IC bool valid_pos(const Fvector& P, const Fbox& B)
 }
 
 #ifdef DEBUG
-constexpr float DET_CHECK_EPS{0.15f}; // scale -35%  !? ;)
+constexpr inline float DET_CHECK_EPS{0.15f}; // scale -35%  !? ;)
 
 #define VERIFY_RMATRIX(M) \
     { \

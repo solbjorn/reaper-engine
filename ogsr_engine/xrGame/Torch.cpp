@@ -25,11 +25,11 @@ constexpr float TIME_2_HIDE{5.f};
 constexpr float TORCH_INERTION_CLAMP{PI_DIV_6};
 constexpr float TORCH_INERTION_SPEED_MAX{7.5f};
 constexpr float TORCH_INERTION_SPEED_MIN{0.5f};
-constexpr Fvector TORCH_OFFSET = {-0.2f, +0.1f, -0.3f};
+constexpr Fvector TORCH_OFFSET{-0.2f, +0.1f, -0.3f};
 constexpr Fvector OMNI_OFFSET{-0.2f, +0.1f, -0.1f};
 constexpr float OPTIMIZATION_DISTANCE{100.f};
 
-bool stalker_use_dynamic_lights = false;
+bool stalker_use_dynamic_lights{};
 } // namespace
 
 CTorch::CTorch()

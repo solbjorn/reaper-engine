@@ -2,13 +2,13 @@
 
 #include "weaponval.h"
 
-CWeaponVal::CWeaponVal(void) : CWeaponMagazined("VAL", SOUND_TYPE_WEAPON_SUBMACHINEGUN)
+CWeaponVal::CWeaponVal() : CWeaponMagazined{"VAL", SOUND_TYPE_WEAPON_SUBMACHINEGUN}
 {
     m_weight = 1.5f;
     SetSlot(SECOND_WEAPON_SLOT);
 }
 
-CWeaponVal::~CWeaponVal(void) {}
+CWeaponVal::~CWeaponVal() = default;
 
 void CWeaponVal::script_register(sol::state_view& lua)
 {

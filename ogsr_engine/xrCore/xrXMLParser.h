@@ -1,10 +1,10 @@
 #pragma once
 
-constexpr LPCSTR GAMEDATA_PATH = "$game_data$";
-constexpr LPCSTR CONFIG_PATH = "$game_config$";
-constexpr LPCSTR UI_PATH = "ui";
-constexpr LPCSTR GAME_PATH = "gameplay";
-constexpr LPCSTR STRING_TABLE_PATH = "text";
+constexpr inline LPCSTR GAMEDATA_PATH = "$game_data$";
+constexpr inline LPCSTR CONFIG_PATH = "$game_config$";
+constexpr inline LPCSTR UI_PATH = "ui";
+constexpr inline LPCSTR GAME_PATH = "gameplay";
+constexpr inline LPCSTR STRING_TABLE_PATH = "text";
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");

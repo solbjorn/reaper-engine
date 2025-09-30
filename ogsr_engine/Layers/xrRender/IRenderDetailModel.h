@@ -5,7 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Detail Model)
-class IRender_DetailModel : public virtual RTTI::Enable
+class XR_NOVTABLE IRender_DetailModel : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_DetailModel);
 

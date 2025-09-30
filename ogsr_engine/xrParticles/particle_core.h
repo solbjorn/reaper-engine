@@ -7,7 +7,6 @@
 
 namespace PAPI
 {
-#pragma pack(push, 4)
 struct pDomain
 {
     PDomainEnum type{}; // PABoxDomain, PASphereDomain, PAConeDomain...
@@ -30,9 +29,10 @@ struct pDomain
     pDomain(PDomainEnum dtype, float a0 = 0.0f, float a1 = 0.0f, float a2 = 0.0f, float a3 = 0.0f, float a4 = 0.0f, float a5 = 0.0f, float a6 = 0.0f, float a7 = 0.0f,
             float a8 = 0.0f);
 };
-#pragma pack(pop)
+
 // misc
 float NRand(float sigma = 1.0f);
 } // namespace PAPI
+
 //---------------------------------------------------------------------------
 #endif

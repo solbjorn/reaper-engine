@@ -10,8 +10,8 @@ class CWeaponVal : public CWeaponMagazined
 public:
     typedef CWeaponMagazined inherited;
 
-    CWeaponVal(void);
-    virtual ~CWeaponVal(void);
+    CWeaponVal();
+    virtual ~CWeaponVal();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

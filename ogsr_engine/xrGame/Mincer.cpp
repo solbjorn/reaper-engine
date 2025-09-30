@@ -14,8 +14,8 @@
 #include "clsid_game.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-CMincer::CMincer() { m_fActorBlowoutRadiusPercent = 0.5f; }
-CMincer::~CMincer() {}
+CMincer::CMincer() = default;
+CMincer::~CMincer() = default;
 
 void CMincer::OnStateSwitch(EZoneState new_state)
 {

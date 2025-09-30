@@ -4,11 +4,11 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ZudaArtifact.h"
 #include "PhysicsShell.h"
 
-CZudaArtefact::CZudaArtefact(void) {}
-
-CZudaArtefact::~CZudaArtefact(void) {}
+CZudaArtefact::CZudaArtefact() = default;
+CZudaArtefact::~CZudaArtefact() = default;
 
 void CZudaArtefact::Load(LPCSTR section) { inherited::Load(section); }

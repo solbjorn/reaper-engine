@@ -23,8 +23,8 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
 
-constexpr float def_min_zoom_k = 0.3f;
-constexpr float def_zoom_step_count = 4.0f;
+constexpr inline float def_min_zoom_k{0.3f};
+constexpr inline float def_zoom_step_count{4.0f};
 
 class CWeapon : public CHudItemObject, public CShootingObject
 {

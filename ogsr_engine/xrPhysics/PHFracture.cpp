@@ -11,7 +11,10 @@
 
 extern class CPHWorld* ph_world;
 
-static const float torque_factor = 10000000.f;
+namespace
+{
+constexpr float torque_factor{10000000.f};
+}
 
 CPHFracturesHolder::~CPHFracturesHolder()
 {

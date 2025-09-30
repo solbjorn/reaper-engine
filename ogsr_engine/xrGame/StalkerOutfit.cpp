@@ -2,8 +2,8 @@
 
 #include "StalkerOutfit.h"
 
-CStalkerOutfit::CStalkerOutfit() {}
-CStalkerOutfit::~CStalkerOutfit() {}
+CStalkerOutfit::CStalkerOutfit() = default;
+CStalkerOutfit::~CStalkerOutfit() = default;
 
 void CStalkerOutfit::script_register(sol::state_view& lua)
 {

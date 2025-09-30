@@ -2,13 +2,13 @@
 
 #include "weaponwalther.h"
 
-CWeaponWalther::CWeaponWalther(void) : CWeaponPistol("WALTHER")
+CWeaponWalther::CWeaponWalther() : CWeaponPistol{"WALTHER"}
 {
     m_weight = .5f;
     SetSlot(FIRST_WEAPON_SLOT);
 }
 
-CWeaponWalther::~CWeaponWalther(void) {}
+CWeaponWalther::~CWeaponWalther() = default;
 
 void CWeaponWalther::script_register(sol::state_view& lua)
 {

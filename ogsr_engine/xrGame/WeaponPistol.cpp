@@ -10,7 +10,7 @@ CWeaponPistol::CWeaponPistol(LPCSTR name) : CWeaponCustomPistol(name)
     m_opened = false;
 }
 
-CWeaponPistol::~CWeaponPistol(void) {}
+CWeaponPistol::~CWeaponPistol() = default;
 
 void CWeaponPistol::net_Destroy()
 {

@@ -26,7 +26,10 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
+namespace
+{
 constexpr const char* grenade_launcher_def_bone_cop = "grenade";
+}
 
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name, ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
@@ -35,7 +38,7 @@ CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name, ESoundTypes eSou
     m_bGrenadeMode = false;
 }
 
-CWeaponMagazinedWGrenade::~CWeaponMagazinedWGrenade(void)
+CWeaponMagazinedWGrenade::~CWeaponMagazinedWGrenade()
 {
     // sounds
     HUD_SOUND::DestroySound(sndShotG);

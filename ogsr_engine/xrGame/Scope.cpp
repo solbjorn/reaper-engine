@@ -2,8 +2,8 @@
 
 #include "scope.h"
 
-CScope::CScope() {}
-CScope::~CScope() {}
+CScope::CScope() = default;
+CScope::~CScope() = default;
 
 void CScope::script_register(sol::state_view& lua)
 {

@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CThornArtefact : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CThornArtefact(void);
-    virtual ~CThornArtefact(void);
+    CThornArtefact();
+    virtual ~CThornArtefact();
 
     virtual void Load(LPCSTR section);
 };

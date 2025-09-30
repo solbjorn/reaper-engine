@@ -1,4 +1,5 @@
 #pragma once
+
 #include "weaponcustompistol.h"
 
 class CWeaponPistol : public CWeaponCustomPistol
@@ -9,7 +10,7 @@ public:
     typedef CWeaponCustomPistol inherited;
 
     CWeaponPistol(LPCSTR name);
-    virtual ~CWeaponPistol(void);
+    virtual ~CWeaponPistol();
 
     virtual void Load(LPCSTR section);
 

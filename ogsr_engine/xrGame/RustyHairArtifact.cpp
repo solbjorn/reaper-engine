@@ -4,10 +4,10 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "RustyHairArtifact.h"
 
-CRustyHairArtefact::CRustyHairArtefact(void) {}
-
-CRustyHairArtefact::~CRustyHairArtefact(void) {}
+CRustyHairArtefact::CRustyHairArtefact() = default;
+CRustyHairArtefact::~CRustyHairArtefact() = default;
 
 void CRustyHairArtefact::Load(LPCSTR section) { inherited::Load(section); }

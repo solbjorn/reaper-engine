@@ -1,6 +1,5 @@
 #ifndef KinematicsAnimated_included
 #define KinematicsAnimated_included
-#pragma once
 
 #include "../../xr_3da/SkeletonMotions.h"
 #include "animation_blend.h"

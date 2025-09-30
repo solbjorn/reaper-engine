@@ -2,9 +2,8 @@
 
 #include "f1.h"
 
-CF1::CF1(void) {}
-
-CF1::~CF1(void) {}
+CF1::CF1() = default;
+CF1::~CF1() = default;
 
 void CF1::script_register(sol::state_view& lua)
 {

@@ -174,16 +174,20 @@ public:
 };
 
 /// definition (Sound Source)
-class CSound_source : public virtual RTTI::Enable
+class XR_NOVTABLE CSound_source : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSound_source);
 
 public:
+    virtual ~CSound_source() = 0;
+
     virtual float length_sec() const = 0;
     virtual u32 game_type() const = 0;
     virtual LPCSTR file_name() const = 0;
     virtual u32 bytes_total() const = 0;
 };
+
+inline CSound_source::~CSound_source() = default;
 
 /// definition (Sound Source)
 class CSound_environment

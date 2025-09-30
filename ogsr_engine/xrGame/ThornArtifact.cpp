@@ -4,11 +4,11 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ThornArtifact.h"
 #include "PhysicsShell.h"
 
-CThornArtefact::CThornArtefact(void) {}
-
-CThornArtefact::~CThornArtefact(void) {}
+CThornArtefact::CThornArtefact() = default;
+CThornArtefact::~CThornArtefact() = default;
 
 void CThornArtefact::Load(LPCSTR section) { inherited::Load(section); }

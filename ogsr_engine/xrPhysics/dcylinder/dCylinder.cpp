@@ -6,6 +6,8 @@
 
 int dCylinderClassUser = -1;
 
+namespace
+{
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////circleIntersection//////////////////////////////////////////////////
 // this does following:
@@ -178,8 +180,8 @@ void lineClosestApproach(const dVector3 pa, const dVector3 ua, const dVector3 pb
 
 // @@@ some stuff to optimize here, reuse code in contact point calculations.
 
-extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius, const dReal lz, const dVector3 p2, const dMatrix3 R2, const dVector3 side2, dVector3 normal,
-                       dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
+int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius, const dReal lz, const dVector3 p2, const dMatrix3 R2, const dVector3 side2, dVector3 normal, dReal* depth,
+            int* code, int maxc, dContactGeom* contact, int skip)
 {
     dVector3 p, pp, normalC;
     const dReal* normalR{};
@@ -633,8 +635,8 @@ extern "C" int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius,
 
 //****************************************************************************
 
-extern "C" int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1, const dReal lz1, const dVector3 p2, const dMatrix3 R2, const dReal radius2, const dReal lz2,
-                       dVector3 normal, dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
+int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1, const dReal lz1, const dVector3 p2, const dMatrix3 R2, const dReal radius2, const dReal lz2, dVector3 normal,
+            dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
 {
     dVector3 p, pp1, pp2, normalC;
     const dReal* normalR{};
@@ -1402,6 +1404,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
     }
     return ret;
 }
+} // namespace
 
 int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
 {

@@ -24,9 +24,9 @@
 
 #include "fvf.h"
 
-const u32 CULL_CCW = D3DCULL_CCW;
-const u32 CULL_CW = D3DCULL_CW;
-const u32 CULL_NONE = D3DCULL_NONE;
+constexpr inline u32 CULL_CCW{D3DCULL_CCW};
+constexpr inline u32 CULL_CW{D3DCULL_CW};
+constexpr inline u32 CULL_NONE{D3DCULL_NONE};
 
 ///		detailed statistic
 struct R_statistics_element
@@ -55,8 +55,6 @@ struct R_statistics
     R_statistics_element s_dynamic_4B;
 };
 
-#pragma warning(push)
-#pragma warning(disable : 4324)
 class CBackend
 {
 public:
@@ -425,7 +423,6 @@ public:
 
     SMAP_Allocator LP_smap_pool;
 };
-#pragma warning(pop)
 
 #define RCache (RImplementation.get_imm_context().cmd_list)
 

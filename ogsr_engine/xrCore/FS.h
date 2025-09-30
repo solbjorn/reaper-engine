@@ -4,8 +4,8 @@
 
 #pragma once
 
-constexpr auto CFS_CompressMark = 1ul << 31ul;
-constexpr auto CFS_HeaderChunkID = 666;
+constexpr inline u32 CFS_CompressMark{1ul << 31ul};
+constexpr inline u32 CFS_HeaderChunkID{666};
 
 void VerifyPath(const std::string_view path);
 
@@ -143,8 +143,7 @@ public:
         file_size = 0;
         position = 0;
     }
-#pragma warning(push)
-#pragma warning(disable : 4995)
+
     IC void free()
     {
         file_size = 0;
@@ -152,7 +151,7 @@ public:
         mem_size = 0;
         xr_free(data);
     }
-#pragma warning(pop)
+
     bool save_to(LPCSTR fn) const;
     void reserve(const size_t count);
 };

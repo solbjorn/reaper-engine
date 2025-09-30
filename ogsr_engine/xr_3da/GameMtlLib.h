@@ -1,34 +1,34 @@
 #ifndef GameMtlLibH
 #define GameMtlLibH
 
-constexpr u32 GAMEMTLS_CHUNK_VERSION = 0x1000;
-constexpr u32 GAMEMTLS_CHUNK_AUTOINC = 0x1001;
-constexpr u32 GAMEMTLS_CHUNK_MTLS = 0x1002;
-constexpr u32 GAMEMTLS_CHUNK_MTLS_PAIR = 0x1003;
+constexpr inline u32 GAMEMTLS_CHUNK_VERSION{0x1000};
+constexpr inline u32 GAMEMTLS_CHUNK_AUTOINC{0x1001};
+constexpr inline u32 GAMEMTLS_CHUNK_MTLS{0x1002};
+constexpr inline u32 GAMEMTLS_CHUNK_MTLS_PAIR{0x1003};
 
-constexpr u32 GAMEMTL_CHUNK_MAIN = 0x1000;
-constexpr u32 GAMEMTL_CHUNK_FLAGS = 0x1001;
-constexpr u32 GAMEMTL_CHUNK_PHYSICS = 0x1002;
-constexpr u32 GAMEMTL_CHUNK_FACTORS = 0x1003;
-constexpr u32 GAMEMTL_CHUNK_FLOTATION = 0x1004;
-constexpr u32 GAMEMTL_CHUNK_DESC = 0x1005;
-constexpr u32 GAMEMTL_CHUNK_INJURIOUS = 0x1006;
-constexpr u32 GAMEMTL_CHUNK_DENSITY = 0x1007;
-constexpr u32 GAMEMTL_CHUNK_FACTORS_MP = 0x1008;
+constexpr inline u32 GAMEMTL_CHUNK_MAIN{0x1000};
+constexpr inline u32 GAMEMTL_CHUNK_FLAGS{0x1001};
+constexpr inline u32 GAMEMTL_CHUNK_PHYSICS{0x1002};
+constexpr inline u32 GAMEMTL_CHUNK_FACTORS{0x1003};
+constexpr inline u32 GAMEMTL_CHUNK_FLOTATION{0x1004};
+constexpr inline u32 GAMEMTL_CHUNK_DESC{0x1005};
+constexpr inline u32 GAMEMTL_CHUNK_INJURIOUS{0x1006};
+constexpr inline u32 GAMEMTL_CHUNK_DENSITY{0x1007};
+constexpr inline u32 GAMEMTL_CHUNK_FACTORS_MP{0x1008};
 
-constexpr u32 GAMEMTLPAIR_CHUNK_PAIR = 0x1000;
-constexpr u32 GAMEMTLPAIR_CHUNK_BREAKING = 0x1002;
-constexpr u32 GAMEMTLPAIR_CHUNK_STEP = 0x1003;
-constexpr u32 GAMEMTLPAIR_CHUNK_COLLIDE = 0x1005;
+constexpr inline u32 GAMEMTLPAIR_CHUNK_PAIR{0x1000};
+constexpr inline u32 GAMEMTLPAIR_CHUNK_BREAKING{0x1002};
+constexpr inline u32 GAMEMTLPAIR_CHUNK_STEP{0x1003};
+constexpr inline u32 GAMEMTLPAIR_CHUNK_COLLIDE{0x1005};
 
-constexpr int GAMEMTL_SUBITEM_COUNT = 4;
+constexpr inline int GAMEMTL_SUBITEM_COUNT{4};
 
-constexpr u32 GAMEMTL_NONE_ID = u32(-1);
-constexpr u32 GAMEMTL_NONE_IDX = u16(-1);
+constexpr inline u32 GAMEMTL_NONE_ID{std::numeric_limits<u32>::max()};
+constexpr inline u32 GAMEMTL_NONE_IDX{std::numeric_limits<u16>::max()};
 
-constexpr const char* GAMEMTL_FILENAME = "gamemtl.xr";
+constexpr inline const char* GAMEMTL_FILENAME = "gamemtl.xr";
 
-constexpr u32 GAMEMTL_CURRENT_VERSION = 1;
+constexpr inline u32 GAMEMTL_CURRENT_VERSION{1};
 
 #include "../Include/xrRender/WallMarkArray.h"
 #include "../Include/xrRender/RenderFactory.h"

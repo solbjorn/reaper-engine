@@ -60,7 +60,7 @@ IC void CSGraphVertex::add_edge(CVertex* vertex, const typename _graph_type::CEd
 {
     VERIFY(m_edges.end() == std::find(m_edges.begin(), m_edges.end(), vertex->vertex_id()));
     vertex->on_edge_addition(this);
-    m_edges.push_back(typename _graph_type::CEdge(edge_weight, vertex));
+    m_edges.emplace_back(edge_weight, vertex);
     ++*m_edge_count;
 }
 

@@ -8,8 +8,6 @@
 
 #include "stdafx.h"
 
-#include <zstd.h>
-
 #include "alife_storage_manager.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
@@ -26,11 +24,16 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "script_engine.h"
 
+namespace zstd
+{
+#include <zstd.h>
+}
+
 using namespace ALife;
 
 extern string_path g_last_saved_game;
 
-CALifeStorageManager::~CALifeStorageManager() {}
+CALifeStorageManager::~CALifeStorageManager() = default;
 
 void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 {
@@ -77,11 +80,11 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 
         source_count = stream.tell();
         void* source_data = stream.pointer();
-        dest_count = ZSTD_compressBound(source_count);
+        dest_count = zstd::ZSTD_compressBound(source_count);
         dest_data = xr_malloc(dest_count);
 
-        dest_count = ZSTD_compress(dest_data, dest_count, source_data, source_count, 1);
-        R_ASSERT(!ZSTD_isError(dest_count));
+        dest_count = zstd::ZSTD_compress(dest_data, dest_count, source_data, source_count, 1);
+        R_ASSERT(!zstd::ZSTD_isError(dest_count));
     }
 
     string_path temp;
@@ -178,7 +181,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
 
     u32 source_count = stream->r_u32();
     void* source_data = xr_malloc(source_count);
-    R_ASSERT(ZSTD_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32)) == source_count);
+    R_ASSERT(zstd::ZSTD_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32)) == source_count);
 
     FS.r_close(stream);
     load(source_data, source_count, file_name);

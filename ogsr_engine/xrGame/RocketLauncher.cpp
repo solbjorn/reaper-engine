@@ -12,12 +12,8 @@
 #include "ai_object_location.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
-CRocketLauncher::CRocketLauncher()
-{
-    //	m_pRocket =  NULL;
-}
-
-CRocketLauncher::~CRocketLauncher() {}
+CRocketLauncher::CRocketLauncher() = default;
+CRocketLauncher::~CRocketLauncher() = default;
 
 void CRocketLauncher::Load(LPCSTR section) { m_fLaunchSpeed = pSettings->r_float(section, "launch_speed"); }
 

@@ -9,14 +9,14 @@ class CObject;
 class CInifile;
 
 // t-defs
-constexpr u32 clGET_TRIS = (1 << 0);
-constexpr u32 clGET_BOXES = (1 << 1);
-constexpr u32 clGET_SPHERES = (1 << 2);
-constexpr u32 clQUERY_ONLYFIRST = (1 << 3); // stop if was any collision
-constexpr u32 clQUERY_TOPLEVEL = (1 << 4); // get only top level of model box/sphere
-constexpr u32 clQUERY_STATIC = (1 << 5); // static
-constexpr u32 clQUERY_DYNAMIC = (1 << 6); // dynamic
-constexpr u32 clCOARSE = (1 << 7); // coarse test (triangles vs obb)
+constexpr inline u32 clGET_TRIS{1 << 0};
+constexpr inline u32 clGET_BOXES{1 << 1};
+constexpr inline u32 clGET_SPHERES{1 << 2};
+constexpr inline u32 clQUERY_ONLYFIRST{1 << 3}; // stop if was any collision
+constexpr inline u32 clQUERY_TOPLEVEL{1 << 4}; // get only top level of model box/sphere
+constexpr inline u32 clQUERY_STATIC{1 << 5}; // static
+constexpr inline u32 clQUERY_DYNAMIC{1 << 6}; // dynamic
+constexpr inline u32 clCOARSE{1 << 7}; // coarse test (triangles vs obb)
 
 struct alignas(16) clQueryTri
 {

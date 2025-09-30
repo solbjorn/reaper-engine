@@ -4,10 +4,10 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "GalantineArtifact.h"
 
-CGalantineArtefact::CGalantineArtefact(void) {}
-
-CGalantineArtefact::~CGalantineArtefact(void) {}
+CGalantineArtefact::CGalantineArtefact() = default;
+CGalantineArtefact::~CGalantineArtefact() = default;
 
 void CGalantineArtefact::Load(LPCSTR section) { inherited::Load(section); }

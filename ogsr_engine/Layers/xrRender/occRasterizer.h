@@ -2,8 +2,8 @@
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
-constexpr int occ_dim_0 = 64;
-constexpr int occ_dim = occ_dim_0 + 4; // 2 pixel border around frame
+constexpr inline gsl::index occ_dim_0{64};
+constexpr inline gsl::index occ_dim{occ_dim_0 + 4}; // 2 pixel border around frame
 
 class occTri
 {
@@ -17,7 +17,9 @@ public:
     Fvector center;
 };
 
-constexpr float occQ_s32 = float(0x40000000); // [-2..2]
+// [-2..2]
+constexpr inline float occQ_s32{1024.0f * 1024.0f * 1024.0f};
+
 typedef s32 occD;
 
 class alignas(sizeof(__m256i)) occRasterizer

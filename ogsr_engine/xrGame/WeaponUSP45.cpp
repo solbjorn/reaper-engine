@@ -2,13 +2,13 @@
 
 #include "weaponusp45.h"
 
-CWeaponUSP45::CWeaponUSP45(void) : CWeaponPistol("USP")
+CWeaponUSP45::CWeaponUSP45() : CWeaponPistol{"USP"}
 {
     m_weight = .5f;
     SetSlot(FIRST_WEAPON_SLOT);
 }
 
-CWeaponUSP45::~CWeaponUSP45(void) {}
+CWeaponUSP45::~CWeaponUSP45() = default;
 
 void CWeaponUSP45::script_register(sol::state_view& lua)
 {
