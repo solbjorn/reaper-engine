@@ -1,14 +1,12 @@
 #include "stdafx.h"
 
-#include <fstream>
-
-#include "imgui.h"
+#include "embedded_editor_pos_informer.h"
+#include "embedded_editor_helper.h"
 
 #include "Actor.h"
 #include "ai_object_location.h"
 
-#include "embedded_editor_pos_informer.h"
-#include "embedded_editor_helper.h"
+#include <fstream>
 
 string256 section_name = "section";
 

@@ -17,8 +17,8 @@ u32 CBreakableObject ::m_remove_time = 0;
 float CBreakableObject ::m_damage_threshold = 5.f;
 float CBreakableObject ::m_health_threshhold = 0.f;
 float CBreakableObject ::m_immunity_factor = 0.1f;
-CBreakableObject::CBreakableObject() { Init(); }
 
+CBreakableObject::CBreakableObject() { Init(); }
 CBreakableObject::~CBreakableObject() {}
 
 void CBreakableObject::Load(LPCSTR section)
@@ -94,11 +94,11 @@ void CBreakableObject::Hit(SHit* pHDS)
     }
 }
 
-void CBreakableObject::net_Export(CSE_Abstract* E) { VERIFY(Local()); }
-
+void CBreakableObject::net_Export(CSE_Abstract*) { VERIFY(Local()); }
 BOOL CBreakableObject::UsedAI_Locations() { return (FALSE); }
 
 void CBreakableObject::CreateUnbroken() { m_pUnbrokenObject = P_BuildStaticGeomShell(smart_cast<CGameObject*>(this), ObjectContactCallback); }
+
 void CBreakableObject::DestroyUnbroken()
 {
     if (!m_pUnbrokenObject)
@@ -226,18 +226,20 @@ void CBreakableObject::SendDestroy()
     bRemoved = true;
 }
 
-void CBreakableObject::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void CBreakableObject::ObjectContactCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*)
 {
     dxGeomUserData* usr_data_1 = retrieveGeomUserData(c.geom.g1);
     dxGeomUserData* usr_data_2 = retrieveGeomUserData(c.geom.g2);
     CBreakableObject* this_object;
     dBodyID body;
     float norm_sign;
+
     if (usr_data_1 && usr_data_1->ph_ref_object && usr_data_1->ph_ref_object->CLS_ID == CLSID_OBJECT_BREAKABLE)
     {
         body = dGeomGetBody(c.geom.g2);
         if (!body)
             return;
+
         this_object = static_cast<CBreakableObject*>(usr_data_1->ph_ref_object);
         norm_sign = -1.f;
     }
@@ -250,10 +252,13 @@ void CBreakableObject::ObjectContactCallback(bool& /**do_colide/**/, bool bo1, d
         norm_sign = 1.f;
     }
     else
+    {
         return;
+    }
 
     if (!this_object->m_pUnbrokenObject)
         return;
+
     float c_damage = E_NlS(body, c.geom.normal, norm_sign);
     if (this_object->m_damage_threshold < c_damage && this_object->m_max_frame_damage < c_damage)
     {

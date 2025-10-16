@@ -36,7 +36,7 @@ public:
     virtual void OnDeviceCreate();
     virtual void OnDeviceDestroy();
     virtual void Clear();
-    virtual void lerp(CEnvDescriptorMixer& currentEnv, IEnvDescriptorRender* inA, IEnvDescriptorRender* inB);
+    virtual void lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB);
 
 private:
     STextureList sky_r_textures;

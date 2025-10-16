@@ -9,11 +9,11 @@
 #include "../../entity_alive.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 
-class CMotionDef;
-class CBlend;
-
 class CAI_Crow : public CEntity
 {
+    RTTI_DECLARE_TYPEINFO(CAI_Crow, CEntity);
+
+private:
     typedef CEntity inherited;
     enum ECrowStates
     {
@@ -54,7 +54,7 @@ class CAI_Crow : public CEntity
     };
 
 public:
-    void OnHitEndPlaying(CBlend* B);
+    void OnHitEndPlaying();
 
 protected:
     struct SCrowAnimations
@@ -114,6 +114,7 @@ public:
 public:
     CAI_Crow();
     virtual ~CAI_Crow();
+
     virtual void Load(LPCSTR section);
     void init();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
@@ -128,11 +129,11 @@ public:
 
     virtual void net_Export(CSE_Abstract* E);
 
-    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool for_cursor = false) override {}
+    void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) override {}
     virtual void g_WeaponBones(int&, int&, int&) {}
 
-    virtual void HitSignal(float HitAmount, Fvector& local_dir, CObject* who, s16 element);
-    virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);
+    void HitSignal(float, Fvector&, CObject*, s16) override;
+    void HitImpulse(float, Fvector&, Fvector&) override;
     virtual void Hit(SHit* pHDS);
     virtual void Die(CObject* who);
     virtual float ffGetFov() const { return 150.f; }

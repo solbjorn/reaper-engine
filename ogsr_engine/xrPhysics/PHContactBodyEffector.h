@@ -13,7 +13,7 @@ class CPHContactBodyEffector : public CPHBaseBodyEffector
 
 public:
     void Init(dBodyID body, const dContact& contact, SGameMtl* material);
-    void Merge(const dContact& contact, SGameMtl* material);
+    void Merge(SGameMtl* material);
     void Apply();
 };
 

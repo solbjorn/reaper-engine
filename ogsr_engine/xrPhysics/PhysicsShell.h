@@ -224,8 +224,6 @@ public:
     virtual void SetAxisDirVsSecondElement(const float x, const float y, const float z, const int axis_num) = 0;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void SetLimits(const float low, const float high, const int axis_num) = 0;
-    virtual void SetLimitsVsFirstElement(const float low, const float high, const int axis_num) = 0;
-    virtual void SetLimitsVsSecondElement(const float low, const float high, const int axis_num) = 0;
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void SetBreakable(float force, float torque) = 0;
     virtual CPHJointDestroyInfo* JointDestroyInfo() = 0;
@@ -351,7 +349,7 @@ public:
     virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr) = 0;
     virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr) = 0;
     virtual void Build(bool disable = false) = 0;
-    virtual void SetMaxAABBRadius(float size) {}
+    virtual void SetMaxAABBRadius(float) {}
     virtual void AddTracedGeom(u16 element = 0, u16 geom = 0) = 0;
     virtual void SetAllGeomTraced() = 0;
     virtual void RunSimulation(bool place_current_forms = true) = 0;
@@ -387,7 +385,7 @@ CPhysicsShell* P_create_splited_Shell();
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, LPCSTR fixed_bones);
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, U16Vec& fixed_bones);
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map, LPCSTR fixed_bones);
-CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map = nullptr, bool not_set_bone_callbacks = false);
+CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map = nullptr);
 CPhysicsShell* P_build_SimpleShell(CGameObject* obj, float mass, bool not_active_state);
 
 void ApplySpawnIniToPhysicShell(CInifile* ini, CPhysicsShell* physics_shell, bool fixed);

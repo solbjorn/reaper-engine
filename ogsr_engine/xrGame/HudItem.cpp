@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "HudItem.h"
 #include "player_hud.h"
 #include "../xr_3da/gamemtllib.h"
@@ -189,8 +190,7 @@ void CHudItem::Load(LPCSTR section)
 void CHudItem::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, bool overlap) { HUD_SOUND::PlaySound(hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap); }
 
 void CHudItem::net_Destroy() { m_dwStateTime = 0; }
-
-BOOL CHudItem::net_Spawn(CSE_Abstract* DC) { return TRUE; }
+BOOL CHudItem::net_Spawn(CSE_Abstract*) { return TRUE; }
 
 void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
 {
@@ -214,7 +214,7 @@ void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
     }
 }
 
-bool CHudItem::Action(s32 cmd, u32 flags) { return false; }
+bool CHudItem::Action(s32, u32) { return false; }
 
 void CHudItem::SwitchState(u32 S)
 {
@@ -243,7 +243,7 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
     }
 }
 
-void CHudItem::OnStateSwitch(u32 S, u32 oldState)
+void CHudItem::OnStateSwitch(u32 S, u32)
 {
     m_dwStateTime = 0;
     SetState(S);
@@ -336,7 +336,7 @@ void CHudItem::OnH_B_Chield()
     m_nearwall_last_hud_fov = m_base_fov > 0.0f ? m_base_fov : psHUD_FOV_def;
 }
 
-void CHudItem::OnH_B_Independent(bool just_before_destroy)
+void CHudItem::OnH_B_Independent(bool)
 {
     StopHUDSounds();
     UpdateXForm();
@@ -348,6 +348,7 @@ void CHudItem::OnH_A_Independent()
 {
     if (HudItemData())
         g_player_hud->detach_item(this);
+
     StopCurrentAnimWithoutCallback();
 }
 
@@ -651,7 +652,7 @@ bool CHudItem::NeedBlendAnm()
     return (state != eIdle && state != eHidden);
 }
 
-void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
+void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand)
 {
     if (GetState() == eIdle && !m_bStopAtEndAnimIsRunning)
     {

@@ -20,19 +20,19 @@ class UILoadingScreen : public ILoadingScreen, public CUIWindow
 public:
     std::recursive_mutex loadingLock;
 
-    CUIProgressBar* loadingProgress;
-    CUIStatic* loadingProgressPercent;
-    CUIStatic* loadingLogo;
+    CUIProgressBar* loadingProgress{};
+    CUIStatic* loadingProgressPercent{};
+    CUIStatic* loadingLogo{};
 
-    CUIStatic* loadingStage;
-    CUIStatic* loadingHeader;
-    CUIStatic* loadingTipNumber;
-    CUIStatic* loadingTip;
+    CUIStatic* loadingStage{};
+    CUIStatic* loadingHeader{};
+    CUIStatic* loadingTipNumber{};
+    CUIStatic* loadingTip{};
 
-    CUIStatic* loadingLevelName;
-    CUIStatic* loadingLevelDescription;
+    CUIStatic* loadingLevelName{};
+    CUIStatic* loadingLevelDescription{};
 
-    u32 maxTip;
+    u32 maxTip{100};
 
 public:
     UILoadingScreen();

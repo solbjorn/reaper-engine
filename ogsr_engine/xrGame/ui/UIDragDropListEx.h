@@ -73,10 +73,10 @@ public:
 protected:
     CUIScrollBar* m_vScrollBar;
 
-    void OnScrollV(CUIWindow* w, void* pData);
+    void OnScrollV(CUIWindow*, void*);
     void OnItemStartDragging(CUIWindow* w, void* pData);
     void OnItemDrop(CUIWindow* w, void* pData);
-    void OnItemSelected(CUIWindow* w, void* pData);
+    void OnItemSelected(CUIWindow* w, void*);
     void OnItemRButtonClick(CUIWindow* w, void* pData);
     void OnItemDBClick(CUIWindow* w, void* pData);
 

@@ -23,9 +23,11 @@
 #include "sound_memory_manager.h"
 #include "hit_memory_manager.h"
 #include "enemy_manager.h"
-#include "memory_space_impl.h"
+#include "memory_space.h"
 
-const float wounded_enemy_reached_distance = 3.f;
+namespace
+{
+constexpr float wounded_enemy_reached_distance{3.f};
 
 IC u32 population(const squad_mask_type& b)
 {
@@ -72,6 +74,7 @@ struct remove_wounded_predicate
         return (true);
     }
 };
+} // namespace
 
 void CAgentEnemyManager::fill_enemies()
 {
@@ -360,20 +363,18 @@ void CAgentEnemyManager::permutate_enemies()
 }
 
 template <typename T>
-IC void CAgentEnemyManager::setup_mask(xr_deque<T>& objects, CMemberEnemy& enemy, const squad_mask_type& non_combat_members)
+void CAgentEnemyManager::setup_mask(xr_deque<T>& objects, CMemberEnemy& enemy)
 {
     auto I = std::find(objects.begin(), objects.end(), enemy.m_object->ID());
     if (I != objects.end())
-    {
         (*I).m_squad_mask.assign((*I).m_squad_mask.get() | enemy.m_distribute_mask.get());
-    }
 }
 
-IC void CAgentEnemyManager::setup_mask(CMemberEnemy& enemy, const squad_mask_type& non_combat_members)
+void CAgentEnemyManager::setup_mask(CMemberEnemy& enemy)
 {
-    setup_mask(object().memory().visibles(), enemy, non_combat_members);
-    setup_mask(object().memory().sounds(), enemy, non_combat_members);
-    setup_mask(object().memory().hits(), enemy, non_combat_members);
+    setup_mask(object().memory().visibles(), enemy);
+    setup_mask(object().memory().sounds(), enemy);
+    setup_mask(object().memory().hits(), enemy);
 }
 
 void CAgentEnemyManager::assign_enemy_masks()
@@ -390,12 +391,8 @@ void CAgentEnemyManager::assign_enemy_masks()
         }
     }
 
-    squad_mask_type non_combat_members = object().member().non_combat_members_mask();
-
-    ENEMIES::iterator I = m_enemies.begin();
-    ENEMIES::iterator E = m_enemies.end();
-    for (; I != E; ++I)
-        setup_mask(*I, non_combat_members);
+    for (auto& enemy : m_enemies)
+        setup_mask(enemy);
 }
 
 void CAgentEnemyManager::assign_wounded()

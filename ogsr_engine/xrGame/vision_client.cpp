@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "vision_client.h"
 #include "entity.h"
 #include "visual_memory_manager.h"
@@ -50,7 +51,7 @@ void vision_client::eye_pp_s01()
     mProject.build_projection(field_of_view, aspect_ratio, near_plane, far_plane);
     mFull.mul(mProject, mView);
 
-    feel_vision_query(mFull, c);
+    feel_vision_query(mFull);
 
     Device.Statistic->AI_Vis_Query.End();
 }

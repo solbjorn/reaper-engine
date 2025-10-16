@@ -50,8 +50,13 @@ void interactive_motion::play(CPhysicsShell* s)
     state_start(s);
 }
 
-float depth = 0;
-void get_depth(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/) { save_max(depth, c.geom.depth); }
+namespace
+{
+float depth{};
+
+void get_depth(bool&, bool, dContact& c, SGameMtl*, SGameMtl*) { save_max(depth, c.geom.depth); }
+} // namespace
+
 void interactive_motion::state_start(CPhysicsShell* s)
 {
     s->add_ObjectContactCallback(get_depth);
@@ -83,7 +88,7 @@ void interactive_motion::state_end()
     state_end(shell);
 }
 
-    void interactive_motion::update(CPhysicsShell* s)
+void interactive_motion::update(CPhysicsShell* s)
 {
     IKinematics* K = s->PKinematics();
     VERIFY(K);
@@ -164,7 +169,7 @@ void imotion_velocity::state_end(CPhysicsShell* s)
     s->set_ApplyByGravity(true);
 }
 
-void imotion_velocity::collide(CPhysicsShell* s) {}
+void imotion_velocity::collide(CPhysicsShell*) {}
 
 void imotion_velocity::move_update(CPhysicsShell* s)
 {

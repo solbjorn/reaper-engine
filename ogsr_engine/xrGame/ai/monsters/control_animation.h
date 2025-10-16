@@ -48,7 +48,8 @@ struct SAnimationSignalEventData : public ControlCom::IEventData
     MotionID motion;
     float time_perc;
     u32 event_id;
-    IC SAnimationSignalEventData(MotionID m, float perc, u32 id) : time_perc(perc), event_id(id), motion(m) {}
+
+    IC SAnimationSignalEventData(MotionID m, float perc, u32 id) : motion{m}, time_perc{perc}, event_id{id} {}
 };
 
 class CControlAnimation : public CControl_ComPure<SControlAnimationData>

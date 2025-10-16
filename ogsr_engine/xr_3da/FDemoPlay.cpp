@@ -45,21 +45,25 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
             g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
             return;
         }
+
         IReader* fs = FS.r_open(name);
         u32 sz = fs->length();
         if (sz % sizeof(Fmatrix) != 0)
         {
             FS.r_close(fs);
             g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+
             return;
         }
 
         seq.resize(sz / sizeof(Fmatrix));
         m_count = seq.size();
-        CopyMemory(&*seq.begin(), fs->pointer(), sz);
+        CopyMemory(&seq.begin()->cm, fs->pointer(), sz);
+
         FS.r_close(fs);
         Msg("~ Total key-frames: [%d]", m_count);
     }
+
     stat_started = FALSE;
     Device.PreCache(50, false, false);
 }

@@ -143,7 +143,7 @@ public:
         }
     }
 
-    virtual void load_shared(LPCSTR section) {}
+    virtual void load_shared(LPCSTR) {}
 
     SHARED_TYPE* get_sd() { return _sd; }
     const SHARED_TYPE* get_sd() const { return _sd; }

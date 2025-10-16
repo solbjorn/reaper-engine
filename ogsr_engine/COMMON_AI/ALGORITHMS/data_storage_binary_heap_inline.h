@@ -53,7 +53,7 @@ inline void CBinaryHeap::add_opened(Vertex& vertex)
 }
 
 TEMPLATE_SPECIALIZATION
-inline void CBinaryHeap::decrease_opened(Vertex& vertex, const Distance value)
+inline void CBinaryHeap::decrease_opened(Vertex& vertex)
 {
     VERIFY(!is_opened_empty());
     Vertex** i = m_heap_head;

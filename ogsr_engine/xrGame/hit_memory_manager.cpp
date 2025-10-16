@@ -9,7 +9,7 @@
 #include "stdafx.h"
 
 #include "hit_memory_manager.h"
-#include "memory_space_impl.h"
+#include "memory_space.h"
 #include "custommonster.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
@@ -69,7 +69,7 @@ const CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
 
 void CHitMemoryManager::add(const CEntityAlive* entity_alive) { add(0, Fvector().set(0, 0, 1), entity_alive, 0); }
 
-void CHitMemoryManager::Load(LPCSTR section) {}
+void CHitMemoryManager::Load(LPCSTR) {}
 
 void CHitMemoryManager::reinit()
 {

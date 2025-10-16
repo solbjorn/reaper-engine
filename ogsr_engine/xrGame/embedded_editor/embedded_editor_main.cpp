@@ -1,12 +1,5 @@
 #include "stdAfx.h"
 
-#include <dinput.h>
-
-#include "imgui.h"
-
-#include "../../XR_3DA/xr_input.h"
-#include "xr_level_controller.h"
-
 #include "embedded_editor_main.h"
 #include "embedded_editor_helper.h"
 #include "embedded_editor_weather.h"
@@ -14,8 +7,13 @@
 #include "embedded_editor_pos_informer.h"
 #include "embedded_editor_sound_env.h"
 
-bool bShowWindow = true;
+#include "../../XR_3DA/xr_input.h"
+#include "xr_level_controller.h"
 
+#include <dinput.h>
+
+namespace
+{
 bool show_test_window = false;
 bool show_weather_window = false;
 bool show_hud_editor = false;
@@ -31,7 +29,7 @@ bool show_occ_window = false;
 bool show_node_editor = false;
 */
 
-static bool isAlt = false;
+bool isAlt = false;
 
 enum class EditorStage
 {
@@ -47,6 +45,7 @@ EditorStage stage = EditorStage::None;
 bool IsEditorActive() { return stage == EditorStage::Full || (stage == EditorStage::Light && isAlt); }
 
 bool IsEditor() { return stage != EditorStage::None; }
+} // namespace
 
 void ShowMain()
 {
@@ -241,14 +240,9 @@ bool Editor_KeyRelease(int key)
     return active;
 }
 
-bool Editor_KeyHold(int key)
-{
-    if (!IsEditorActive())
-        return false;
-    return true;
-}
+bool Editor_KeyHold() { return IsEditorActive(); }
 
-bool Editor_MouseMove(int dx, int dy)
+bool Editor_MouseMove()
 {
     if (!IsEditorActive())
         return false;
@@ -258,6 +252,7 @@ bool Editor_MouseMove(int dx, int dy)
     GetCursorPos(&p);
     io.MousePos.x = p.x;
     io.MousePos.y = p.y;
+
     return true;
 }
 

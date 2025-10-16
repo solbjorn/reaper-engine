@@ -26,21 +26,22 @@ public:
     typedef CSetupManager<CSightControlAction, CAI_Stalker, u32> inherited;
 
 private:
-    bool m_enabled;
-    bool m_turning_in_place;
     float m_max_left_angle{};
     float m_max_right_angle{};
+    bool m_enabled{true};
+    bool m_turning_in_place{};
 
 public:
     CSightManager(CAI_Stalker* object);
     virtual ~CSightManager();
-    virtual void Load(LPCSTR section);
+
+    virtual void Load(LPCSTR);
     virtual void reinit();
     virtual void reload(LPCSTR section);
     void remove_links(CObject* object);
     void Exec_Look(float dt);
     bool bfIf_I_SeePosition(Fvector tPosition) const;
-    void SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object = nullptr);
+    void SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch);
     void SetFirePointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object = nullptr);
     void SetDirectionLook();
     void SetLessCoverLook(const LevelGraph::CVertex* tpNode, bool bDifferenceLook);

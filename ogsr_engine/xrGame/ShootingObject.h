@@ -13,11 +13,9 @@
 class CCartridge;
 class CParticlesObject;
 
-extern const Fvector zero_vel;
-
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
-class CShootingObject : public virtual RTTI::Enable
+class XR_NOVTABLE CShootingObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CShootingObject);
 
@@ -29,7 +27,7 @@ protected:
     virtual ~CShootingObject();
 
     void reinit();
-    void reload(LPCSTR section) {}
+    void reload(LPCSTR) {}
     void Load(LPCSTR section);
 
     Fvector m_vCurrentShootDir{};
@@ -123,9 +121,9 @@ protected:
 
     ////////////////////////////////////////////////
     // общие функции для работы с партиклами оружия
-    virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel = zero_vel, bool auto_remove_flag = false);
+    virtual void StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, bool auto_remove_flag = false);
     virtual void StopParticles(CParticlesObject*& pParticles);
-    virtual void UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos, const Fvector& vel = zero_vel);
+    virtual void UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos);
 
     virtual void LoadShellParticles(LPCSTR section, LPCSTR prefix);
     virtual void LoadFlameParticles(LPCSTR section, LPCSTR prefix);
@@ -138,7 +136,7 @@ protected:
     virtual void UpdateFlameParticles();
 
     // партиклы дыма
-    virtual void StartSmokeParticles(const Fvector& play_pos, const Fvector& parent_vel);
+    virtual void StartSmokeParticles(const Fvector& play_pos);
 
     // партиклы полосы от пули
     virtual void StartShotParticles();

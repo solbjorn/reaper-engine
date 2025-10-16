@@ -13,7 +13,7 @@
 #include "hit_memory_manager.h"
 #include "visual_memory_manager.h"
 #include "enemy_manager.h"
-#include "memory_space_impl.h"
+#include "memory_space.h"
 #include "custommonster.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
@@ -39,8 +39,6 @@
 #define SAVE_FRIEND_SOUNDS
 // #define SAVE_VISIBLE_OBJECT_SOUNDS
 
-const float COMBAT_SOUND_PERCEIVE_RADIUS_SQR = _sqr(5.f);
-
 CSoundMemoryManager::~CSoundMemoryManager()
 {
     clear_delayed_objects();
@@ -49,7 +47,7 @@ CSoundMemoryManager::~CSoundMemoryManager()
 #endif
 }
 
-void CSoundMemoryManager::Load(LPCSTR section) {}
+void CSoundMemoryManager::Load(LPCSTR) {}
 
 void CSoundMemoryManager::reinit()
 {
@@ -136,7 +134,7 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 #endif
 
     // ignore unknown sounds
-    if (sound_type == 0xffffffff)
+    if (sound_type == -1)
         return;
 
     CEntityAlive* entity_alive = m_object;

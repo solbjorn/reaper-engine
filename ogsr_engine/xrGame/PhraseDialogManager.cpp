@@ -60,7 +60,7 @@ void CPhraseDialogManager::AddDialog(DIALOG_SHARED_PTR& phrase_dialog)
     m_ActiveDialogs.push_back(phrase_dialog);
 }
 
-void CPhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog) {}
+void CPhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR&) {}
 
 void CPhraseDialogManager::SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str& phrase_id)
 {
@@ -82,7 +82,7 @@ static bool dialog_priority(DIALOG_SHARED_PTR dialog1, DIALOG_SHARED_PTR dialog2
         return false;
 }
 
-void CPhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partner) { std::sort(m_AvailableDialogs.begin(), m_AvailableDialogs.end(), dialog_priority); }
+void CPhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager*) { std::sort(m_AvailableDialogs.begin(), m_AvailableDialogs.end(), dialog_priority); }
 
 bool CPhraseDialogManager::AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager* partner)
 {

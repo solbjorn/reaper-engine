@@ -34,9 +34,10 @@ void CBlendInstance::blend_add(CBlend* H)
     VERIFY(Blend.size() < MAX_BLENDED);
     Blend.push_back(H);
 }
+
 void CBlendInstance::blend_remove(CBlend* H)
 {
-    CBlend** I = std::find(Blend.begin(), Blend.end(), H);
+    auto I = std::find(Blend.begin(), Blend.end(), H);
     if (I != Blend.end())
         Blend.erase(I);
 }
@@ -48,12 +49,14 @@ void CKinematicsAnimated::Bone_Motion_Start(CBoneData* bd, CBlend* handle)
     for (auto& it : bd->children)
         Bone_Motion_Start(it, handle);
 }
+
 void CKinematicsAnimated::Bone_Motion_Stop(CBoneData* bd, CBlend* handle)
 {
     LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle);
     for (auto& it : bd->children)
         Bone_Motion_Stop(it, handle);
 }
+
 void CKinematicsAnimated::Bone_Motion_Start_IM(CBoneData* bd, CBlend* handle) { LL_GetBlendInstance(bd->GetSelfID()).blend_add(handle); }
 void CKinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle) { LL_GetBlendInstance(bd->GetSelfID()).blend_remove(handle); }
 
@@ -100,8 +103,9 @@ static void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
 void CKinematicsAnimated::LL_DumpBlends_dbg()
 {
     Msg("==================dump blends=================================================");
-    for (auto& it : blend_pool)
-        dump_blend(this, it, u32(&it - blend_pool.begin()));
+
+    for (auto [idx, blend] : xr::views_enumerate(blend_pool))
+        dump_blend(this, blend, idx);
 }
 
 u32 CKinematicsAnimated::LL_PartBlendsCount(u32 bone_part_id) { return blend_cycle(bone_part_id).size(); }
@@ -110,13 +114,17 @@ CBlend* CKinematicsAnimated::LL_PartBlend(u32 bone_part_id, u32 n)
 {
     if (LL_PartBlendsCount(bone_part_id) <= n)
         return nullptr;
+
     return blend_cycle(bone_part_id)[n];
 }
+
 void CKinematicsAnimated::LL_IterateBlends(IterateBlendsCallback& callback)
 {
     for (auto& it : blend_pool)
+    {
         if (it.blend_state() != CBlend::eFREE_SLOT)
             callback(it);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -600,8 +608,10 @@ void CKinematicsAnimated::Spawn()
     m_update_tracks_callback = nullptr;
     channels.init();
 }
+
 void CKinematicsAnimated::ChannelFactorsStartup() { channels.init(); }
 void CKinematicsAnimated::LL_SetChannelFactor(u16 channel, float factor) { channels.set_factor(channel, factor); }
+
 void CKinematicsAnimated::IBlend_Startup()
 {
     _DBG_SINGLE_USE_MARKER;
@@ -718,7 +728,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
     R_ASSERT(m_Motions.size());
 
     m_Partition = m_Motions[0].motions.partition();
-    m_Partition->load(this, N);
+    m_Partition->load(this);
 
     // initialize motions
     for (auto& m_it : m_Motions)
@@ -783,11 +793,13 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
     {
         if (j != 0 && keys.chanel_blend_conts[j] == 0)
             continue;
+
         // data for channel mix cycle based on ch_count
         channels.get_def(j, BC[ch_count]);
-        process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
+        process_single_channel(channel_keys[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
         ++ch_count;
     }
+
     CKey Result;
     // Mix channels
     MixChannels(Result, channel_keys, BC, ch_count);
@@ -795,23 +807,17 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
     Fmatrix RES;
     RES.mk_xform(Result.Q, Result.T);
     bi.mTransform.mul_43(*parent, RES);
+
 #ifdef DEBUG
     if (!check_scale(RES))
-    {
         VERIFY(check_scale(bi.mTransform));
-    }
+
     VERIFY(_valid(bi.mTransform));
+
     Fbox dbg_box;
     float box_size = 100000.f;
     dbg_box.set(-box_size, -box_size, -box_size, box_size, box_size, box_size);
-    // VERIFY(dbg_box.contains(bi.mTransform.c));
     VERIFY2(dbg_box.contains(bi.mTransform.c), (make_string("model: %s has strange bone position, matrix : ", getDebugName().c_str()) + get_string(bi.mTransform)).c_str());
-
-    // if(!is_similar(PrevTransform,RES,0.3f))
-    //{
-    //	Msg("bone %s",*bd->name)	;
-    // }
-    // BONE_INST.mPrevTransform.set(RES);
 #endif
 }
 
@@ -828,7 +834,7 @@ void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi
     LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
     LL_BoneMatrixBuild(bi, parent, keys);
 
-    CalculateBonesAdditionalTransforms(bd, bi, parent, channel_mask); //--#SM+#--
+    CalculateBonesAdditionalTransforms(bd, bi); //--#SM+#--
 }
 
 void CKinematicsAnimated::OnCalculateBones() { UpdateTracks(); }

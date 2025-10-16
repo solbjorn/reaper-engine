@@ -27,18 +27,20 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 
-static const float s_fLandingTime1 = 0.1f; // через сколько снять флаг Landing1 (т.е. включить следующую анимацию)
-static const float s_fLandingTime2 = 0.3f; // через сколько снять флаг Landing2 (т.е. включить следующую анимацию)
-static const float s_fJumpTime = 0.3f;
-static const float s_fJumpGroundTime = 0.1f; // для снятия флажка Jump если на земле
-const float s_fFallTime = 0.2f;
+namespace
+{
+constexpr float s_fLandingTime1{0.1f}; // через сколько снять флаг Landing1 (т.е. включить следующую анимацию)
+constexpr float s_fLandingTime2{0.3f}; // через сколько снять флаг Landing2 (т.е. включить следующую анимацию)
+constexpr float s_fJumpTime{0.3f};
+constexpr float s_fJumpGroundTime{0.1f}; // для снятия флажка Jump если на земле
 
-IC static void generate_orthonormal_basis1(const Fvector& dir, Fvector& updir, Fvector& right)
+IC void generate_orthonormal_basis1(const Fvector& dir, Fvector& updir, Fvector& right)
 {
     right.crossproduct(dir, updir); //. <->
     right.normalize();
     updir.crossproduct(right, dir);
 }
+} // namespace
 
 void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 {
@@ -105,12 +107,12 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
     // Зажало-ли меня/уперся - не двигаюсь
     if (((character_physics_support()->movement()->GetVelocityActual() < 0.2f) && (!(mstate_real & (mcFall | mcJump)))) || character_physics_support()->movement()->bSleep)
     {
-#pragma todo( \
-    "KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно важен, я думаю если актор застрянет - он все равно не будет двигаться.")
+        // TODO: KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно
+        // важен, я думаю если актор застрянет - он все равно не будет двигаться.
         // mstate_real &=~ mcAnyMove;
     }
-    if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
-        character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
+
+    if (character_physics_support()->movement()->Environment() == peOnGround || character_physics_support()->movement()->Environment() == peAtWall)
     {
         // если на земле гарантированно снимать флажок Jump
         if (((s_fJumpTime - m_fJumpTime) > s_fJumpGroundTime) && (mstate_real & mcJump))
@@ -119,7 +121,8 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
             m_fJumpTime = s_fJumpTime;
         }
     }
-    if (character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
+
+    if (character_physics_support()->movement()->Environment() == peAtWall)
     {
         if (!(mstate_real & mcClimb))
         {
@@ -176,7 +179,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
     mstate_old = mstate_real;
     vControlAccel.set(0, 0, 0);
 
-    if (!(mstate_real & mcFall) && (character_physics_support()->movement()->Environment() == CPHMovementControl::peInAir))
+    if (!(mstate_real & mcFall) && (character_physics_support()->movement()->Environment() == peInAir))
     {
         m_fFallTime -= dt;
         if (m_fFallTime <= 0.f)
@@ -209,8 +212,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
     if (mstate_wf & mcRStrafe)
         vControlAccel.x += 1;
 
-    if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
-        character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
+    if (character_physics_support()->movement()->Environment() == peOnGround || character_physics_support()->movement()->Environment() == peAtWall)
     {
         // crouch
         if ((mstate_real & mcCrouch) == 0 && (mstate_wf & mcCrouch))

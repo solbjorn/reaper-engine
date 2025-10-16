@@ -3,7 +3,7 @@
 
 namespace dx10BufferUtils
 {
-HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable, bool bIndexBuffer)
+HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bIndexBuffer)
 {
     D3D_BUFFER_DESC desc{};
     desc.ByteWidth = DataSize;
@@ -16,9 +16,8 @@ HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize,
     return HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
 }
 
-HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable) { return CreateBuffer(ppBuffer, pData, DataSize, bImmutable, false); }
-
-HRESULT CreateIndexBuffer(ID3DIndexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable) { return CreateBuffer(ppBuffer, pData, DataSize, bImmutable, true); }
+HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize) { return CreateBuffer(ppBuffer, pData, DataSize, false); }
+HRESULT CreateIndexBuffer(ID3DIndexBuffer** ppBuffer, const void* pData, UINT DataSize) { return CreateBuffer(ppBuffer, pData, DataSize, true); }
 
 HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
 {

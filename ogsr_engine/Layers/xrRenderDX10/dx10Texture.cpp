@@ -7,14 +7,14 @@ XR_DIAG_IGNORE("-Wc++98-compat-extra-semi");
 
 XR_DIAG_POP();
 
-void fix_texture_name(const char* fn)
+void fix_texture_name(char* fn)
 {
     char* _ext = strext(fn);
     if (_ext && (0 == _stricmp(_ext, ".tga") || 0 == _stricmp(_ext, ".dds") || 0 == _stricmp(_ext, ".bmp") || 0 == _stricmp(_ext, ".ogm")))
         *_ext = 0;
 }
 
-static inline int get_texture_load_lod(const char* fn)
+static inline int get_texture_load_lod([[maybe_unused]] const char* fn)
 {
 #ifdef USE_REDUCE_LOD_TEXTURE_LIST
     xr_strlwr(fn);

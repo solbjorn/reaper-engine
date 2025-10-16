@@ -18,11 +18,11 @@
 #include "PHDestroyable.h"
 #include "PHElement.h"
 
+namespace
+{
 #define F_MAX 3.402823466e+38F
 
-u32 CPHSkeleton::existence_time = 5000;
-
-bool IC CheckObjectSize(IKinematics* K)
+inline bool CheckObjectSize(IKinematics* K)
 {
     u16 bcount = K->LL_BoneCount();
     for (u16 i = 0; i < bcount; ++i)
@@ -36,9 +36,11 @@ bool IC CheckObjectSize(IKinematics* K)
     }
     return false;
 }
+} // namespace
+
+u32 CPHSkeleton::existence_time = 5000;
 
 CPHSkeleton::CPHSkeleton() { Init(); }
-
 CPHSkeleton::~CPHSkeleton() { ClearUnsplited(); }
 
 void CPHSkeleton::RespawnInit()
@@ -136,7 +138,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 
 void CPHSkeleton::Load(LPCSTR section) { existence_time = pSettings->r_u32(section, "remove_time") * 1000; }
 
-void CPHSkeleton::Update(u32 dt)
+void CPHSkeleton::Update(u32)
 {
     CPhysicsShellHolder* obj = PPhysicsShellHolder();
     CPhysicsShell* pPhysicsShell = obj->PPhysicsShell();
@@ -175,7 +177,7 @@ void CPHSkeleton::Update(u32 dt)
 // Вот такая вот сложная цепочка. А LoadNetState(), который был ниже,
 // действительно нигде не использовался. Какой-то кусок старого
 // кода. То, что в нем было, делает CSE_PHSkeleton::load().
-void CPHSkeleton::SaveNetState(NET_Packet& P)
+void CPHSkeleton::SaveNetState(NET_Packet&)
 {
     SyncNetState();
     /* Весь этот код больше не нужен, но оставляю его на всякий

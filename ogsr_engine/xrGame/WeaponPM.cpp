@@ -6,7 +6,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CWeaponPM::CWeaponPM() : CWeaponPistol("PM")
+CWeaponPM::CWeaponPM() : CWeaponPistol{}
 {
     m_weight = .5f;
     SetSlot(FIRST_WEAPON_SLOT);

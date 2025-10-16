@@ -63,7 +63,7 @@ void try_change_current_entity()
 
     typedef xr_vector<ISpatial*> OBJECTS;
     OBJECTS ISpatialResult;
-    g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+    g_SpatialSpace->q_frustum(ISpatialResult, STYPE_COLLIDEABLE, frustum);
 
     float maxlen = 1000.0f;
     CAI_Stalker* nearest_agent = 0;
@@ -98,7 +98,7 @@ void try_change_current_entity()
         return;
 
     Level().SetEntity(nearest_agent);
-    actor->inventory().Items_SetCurrentEntityHud(false);
+    actor->inventory().Items_SetCurrentEntityHud();
 
     Engine.Sheduler.Unregister(actor);
     Engine.Sheduler.Register(actor);
@@ -120,7 +120,7 @@ void restore_actor()
     Engine.Sheduler.Unregister(g_debug_actor);
     Engine.Sheduler.Register(g_debug_actor, TRUE);
 
-    g_debug_actor->inventory().Items_SetCurrentEntityHud(true);
+    g_debug_actor->inventory().Items_SetCurrentEntityHud();
 
     CHudItem* pHudItem = smart_cast<CHudItem*>(g_debug_actor->inventory().ActiveItem());
     if (pHudItem)
@@ -229,7 +229,7 @@ LPCSTR danger_type(const CDangerObject::EDangerType& danger_type)
 
 void CAI_Stalker::debug_planner(const script_planner* planner) { m_debug_planner = planner; }
 
-void CAI_Stalker::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root)
+void CAI_Stalker::OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root)
 {
     inherited::OnHUDDraw(context_id, hud, root);
 

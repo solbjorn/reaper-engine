@@ -100,7 +100,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
     return m_fDispBase + base * m_disp_stand_crouch;
 }
 
-void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
+void CAI_Stalker::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
 {
     //.	VERIFY				(inventory().ActiveItem());
     if (!inventory().ActiveItem())
@@ -256,10 +256,6 @@ void CAI_Stalker::Hit(SHit* pHDS)
                 sound().play(eStalkerSoundInjuringByFriend);
         }
 
-        int weapon_type = -1;
-        if (best_weapon())
-            weapon_type = best_weapon()->object().ef_weapon_type();
-
         if ((HDS.hit_type == ALife::eHitTypeFireWound || HDS.hit_type == ALife::eHitTypeExplosion) && !wounded() && !already_critically_wounded)
         {
             bool became_critically_wounded = update_critical_wounded(HDS.boneID, HDS.power);
@@ -269,7 +265,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
                 float yaw, pitch;
                 D.getHP(yaw, pitch);
 
-#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
+                // TODO: Dima to Dima : forward-back bone impulse direction has been determined incorrectly!
                 float power_factor = m_power_fx_factor * pHDS->damage() / 100.f;
                 clamp(power_factor, 0.f, 1.f);
 
@@ -294,7 +290,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
                     {
                         CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(HDS.who);
                         if (stalker)
-                            stalker->on_critical_wound_initiator(this);
+                            stalker->on_critical_wound_initiator();
                     }
                 }
             }
@@ -792,9 +788,8 @@ void CAI_Stalker::on_weapon_shot_start(CWeapon* weapon)
     }
 }
 
-void CAI_Stalker::on_weapon_shot_stop(CWeapon* weapon) {}
-
-void CAI_Stalker::on_weapon_hide(CWeapon* weapon) {}
+void CAI_Stalker::on_weapon_shot_stop(CWeapon*) {}
+void CAI_Stalker::on_weapon_hide(CWeapon*) {}
 
 void CAI_Stalker::notify_on_wounded_or_killed(CObject* object)
 {
@@ -802,7 +797,7 @@ void CAI_Stalker::notify_on_wounded_or_killed(CObject* object)
     if (!stalker)
         return;
 
-    stalker->on_enemy_wounded_or_killed(this);
+    stalker->on_enemy_wounded_or_killed();
 
     typedef CAgentCorpseManager::MEMBER_CORPSES MEMBER_CORPSES;
 
@@ -1214,7 +1209,7 @@ bool CAI_Stalker::can_cry_enemy_is_wounded() const
 #endif // DEBUG
 }
 
-void CAI_Stalker::on_critical_wound_initiator(const CAI_Stalker* critically_wounded)
+void CAI_Stalker::on_critical_wound_initiator()
 {
     if (!can_cry_enemy_is_wounded())
         return;
@@ -1222,7 +1217,7 @@ void CAI_Stalker::on_critical_wound_initiator(const CAI_Stalker* critically_woun
     sound().play(eStalkerSoundEnemyCriticallyWounded);
 }
 
-void CAI_Stalker::on_enemy_wounded_or_killed(const CAI_Stalker* wounded_or_killed)
+void CAI_Stalker::on_enemy_wounded_or_killed()
 {
     if (!can_cry_enemy_is_wounded())
         return;

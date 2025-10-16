@@ -6,28 +6,16 @@ class CEffectorCam : public SBaseEffector
 {
     RTTI_DECLARE_TYPEINFO(CEffectorCam, SBaseEffector);
 
+    friend class CCameraManager;
+
 protected:
     ECamEffectorType eType;
-
-    friend class CCameraManager;
     float fLifeTime;
-    bool bHudAffect;
+    bool bHudAffect{true};
 
 public:
-    CEffectorCam(ECamEffectorType type, float tm)
-    {
-        eType = type;
-        fLifeTime = tm;
-        bHudAffect = true;
-    }
-
-    CEffectorCam()
-    {
-        eType = (ECamEffectorType)0;
-        fLifeTime = 0.0f;
-        bHudAffect = true;
-    }
-
+    CEffectorCam() : eType{cefDemo}, fLifeTime{0.0f} {}
+    CEffectorCam(ECamEffectorType type, float tm) : eType{type}, fLifeTime{tm} {}
     virtual ~CEffectorCam() {}
 
     void SetType(ECamEffectorType type) { eType = type; }
@@ -36,13 +24,13 @@ public:
     IC ECamEffectorType GetType() { return eType; }
     virtual BOOL Valid() { return fLifeTime > 0.0f; }
 
-    virtual BOOL ProcessCam(SCamEffectorInfo& info)
+    virtual BOOL ProcessCam(SCamEffectorInfo&)
     {
         fLifeTime -= Device.fTimeDelta;
         return Valid();
     }
 
-    virtual void ProcessIfInvalid(SCamEffectorInfo& info) {}
+    virtual void ProcessIfInvalid(SCamEffectorInfo&) {}
     virtual BOOL AllowProcessingIfInvalid() { return FALSE; }
     virtual bool AbsolutePositioning() { return false; }
 };

@@ -3,7 +3,7 @@
 #include "PHIsland.h"
 #include "physics.h"
 
-void CPHIsland::Step(dReal step)
+void CPHIsland::Step(dReal)
 {
     if (!m_flags.is_active())
         return;

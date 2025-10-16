@@ -4,6 +4,8 @@
 #include "UIListBoxItem.h"
 #include "UIScrollBar.h"
 
+#include "../string_table.h"
+
 CUIListBox::CUIListBox()
 {
     m_flags.set(eItemsSelectabe, TRUE);
@@ -29,20 +31,13 @@ bool CUIListBox::OnMouse(float x, float y, EUIMessages mouse_action)
 
     switch (mouse_action)
     {
-    case WINDOW_MOUSE_WHEEL_UP:
-        m_VScrollBar->TryScrollDec();
-        return true;
-        break;
-    case WINDOW_MOUSE_WHEEL_DOWN:
-        m_VScrollBar->TryScrollInc();
-        return true;
-        break;
+    case WINDOW_MOUSE_WHEEL_UP: m_VScrollBar->TryScrollDec(); return true;
+    case WINDOW_MOUSE_WHEEL_DOWN: m_VScrollBar->TryScrollInc(); return true;
+    default: break;
     }
 
     return false;
 }
-
-#include "../string_table.h"
 
 CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
 {
@@ -233,21 +228,16 @@ CUIListBoxItem* CUIListBox::GetItemByText(LPCSTR txt)
 }
 
 void CUIListBox::SetItemHeight(float h) { m_def_item_height = h; }
-
 float CUIListBox::GetItemHeight() { return m_def_item_height; }
 
 void CUIListBox::SetTextColor(u32 color) { m_text_color = color; }
-
 void CUIListBox::SetTextColorS(u32 color) { m_text_color_s = color; }
-
 u32 CUIListBox::GetTextColor() { return m_text_color; }
 
 void CUIListBox::SetFont(CGameFont* pFont) { CUIWindow::SetFont(pFont); }
-
 CGameFont* CUIListBox::GetFont() { return CUIWindow::GetFont(); }
 
 void CUIListBox::SetTextAlignment(ETextAlignment alignment) { m_text_al = alignment; }
-
 ETextAlignment CUIListBox::GetTextAlignment() { return m_text_al; }
 
 float CUIListBox::GetLongestLength()

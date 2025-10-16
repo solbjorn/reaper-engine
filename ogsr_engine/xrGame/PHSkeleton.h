@@ -3,28 +3,29 @@
 
 #include "PHDefs.h"
 #include "PHDestroyableNotificate.h"
+
 class CPhysicsShellHolder;
 class CSE_ALifePHSkeletonObject;
 class CSE_Abstract;
 class CSE_PHSkeleton;
 class NET_Packet;
 
-class CPHSkeleton : public CPHDestroyableNotificate
+class XR_NOVTABLE CPHSkeleton : public CPHDestroyableNotificate
 {
     RTTI_DECLARE_TYPEINFO(CPHSkeleton, CPHDestroyableNotificate);
 
 public:
-    bool b_removing;
+    PHSHELL_PAIR_VECTOR m_unsplited_shels;
+    shared_str m_startup_anim;
+
     static u32 existence_time;
     u32 m_remove_time;
-    PHSHELL_PAIR_VECTOR m_unsplited_shels;
 
-    shared_str m_startup_anim;
     Flags8 m_flags;
+    bool b_removing;
 
 private:
     // Creating
-
     void Init();
 
     void ClearUnsplited();
@@ -37,30 +38,30 @@ private:
     bool ReadyForRemove();
     void RecursiveBonesCheck(u16 id);
 
-protected:
     void UnsplitSingle(CPHSkeleton* SO);
 
 protected:
     virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
-    virtual CPHSkeleton* PHSkeleton() { return this; }
+    [[nodiscard]] virtual CPHSkeleton* PHSkeleton() { return this; }
     virtual void SpawnInitPhysics(CSE_Abstract* D) = 0;
-    virtual void SaveNetState(NET_Packet& P);
-    virtual void RestoreNetState(CSE_PHSkeleton* po);
+    virtual void SaveNetState(NET_Packet&);
+    virtual void RestoreNetState(CSE_PHSkeleton*);
     virtual void InitServerObject(CSE_Abstract* D); //
     virtual void CopySpawnInit();
     void RespawnInit(); // net_Destroy
-    bool Spawn(CSE_Abstract* D); // net_spawn
-    void Update(u32 dt); // shedule update
+    [[nodiscard]] bool Spawn(CSE_Abstract* D); // net_spawn
+    void Update(u32); // shedule update
     void Load(LPCSTR section); // client load
     void SyncNetState();
 
 public:
-    void SetAutoRemove(u32 time = existence_time);
-    void SetNotNeedSave();
-    IC bool IsRemoving() { return b_removing; }
-    u32 DefaultExitenceTime() { return existence_time; }
     CPHSkeleton();
     virtual ~CPHSkeleton();
+
+    void SetAutoRemove(u32 time = existence_time);
+    void SetNotNeedSave();
+    [[nodiscard]] bool IsRemoving() const { return b_removing; }
+    [[nodiscard]] u32 DefaultExitenceTime() const { return existence_time; }
 };
 
 #endif

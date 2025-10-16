@@ -5,7 +5,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition ("Renderable")
-class IRenderable : public virtual RTTI::Enable
+
+class XR_NOVTABLE IRenderable : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRenderable);
 
@@ -15,13 +16,14 @@ public:
         Fmatrix xform;
         IRenderVisual* visual{};
         IRender_ObjectSpecific* pROS{};
-        BOOL pROS_Allowed{true};
+        bool pROS_Allowed{true};
         bool hud{};
     } renderable;
 
 public:
     IRenderable();
     virtual ~IRenderable();
+
     IRender_ObjectSpecific* renderable_ROS();
     virtual bool renderable_HUD() const { return renderable.hud; }
     virtual void renderable_HUD(bool value) { renderable.hud = value; }

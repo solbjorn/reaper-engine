@@ -16,9 +16,6 @@
 #include "MathUtils.h"
 #include "clsid_game.h"
 #include "player_hud.h"
-#ifdef DEBUG
-#include "phdebug.h"
-#endif
 
 #include "game_object_space.h"
 #include "script_callback_ex.h"
@@ -26,12 +23,19 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
+#include "inventory.h"
+#include "inventoryOwner.h"
+
+#ifdef DEBUG
+#include "phdebug.h"
+#endif
+
 namespace
 {
 constexpr const char* grenade_launcher_def_bone_cop = "grenade";
 }
 
-CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name, ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
+CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(ESoundTypes eSoundType) : CWeaponMagazined{eSoundType}
 {
     m_ammoType2 = 0;
     iAmmoElapsed2 = 0;
@@ -261,8 +265,6 @@ bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags)
     return false;
 }
 
-#include "inventory.h"
-#include "inventoryOwner.h"
 void CWeaponMagazinedWGrenade::state_Fire(float dt)
 {
     VERIFY(fTimeToFire > 0.f);

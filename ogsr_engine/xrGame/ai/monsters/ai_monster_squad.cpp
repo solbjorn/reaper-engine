@@ -238,7 +238,7 @@ void CMonsterSquad::unlock_corpse(const CEntityAlive* corpse)
 //////////////////////////////////////////////////////////////////////////
 
 squad_grouping_behaviour::squad_grouping_behaviour(CEntity* _self, Fvector cohesion_factor, Fvector separate_factor, float max_separate_range)
-    : self{_self}, steering_behaviour::grouping::params{cohesion_factor, separate_factor, max_separate_range}
+    : steering_behaviour::grouping::params{cohesion_factor, separate_factor, max_separate_range}, self{_self}
 {
     VERIFY(_self);
 }

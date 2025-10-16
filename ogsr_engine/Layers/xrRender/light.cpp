@@ -75,7 +75,7 @@ void light::set_texture(LPCSTR name)
         return;
     }
 
-#pragma todo("Only shadowed spot implements projective texture")
+    // TODO: only shadowed spot implements projective texture
     string_path temp;
 
     s_spot.create(RImplementation.Target->b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);

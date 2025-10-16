@@ -163,10 +163,9 @@ void CUITaskRootItem::OnSwitchDescriptionClicked(CUIWindow*, void*)
     OnItemClicked(this, nullptr);
 }
 
-void CUITaskRootItem::MarkSelected(bool b) {}
+void CUITaskRootItem::MarkSelected(bool) {}
 
 CUITaskSubItem::CUITaskSubItem(CUIEventsWnd* w) : inherited(w) { Init(); }
-
 CUITaskSubItem::~CUITaskSubItem() {}
 
 void CUITaskSubItem::Init()

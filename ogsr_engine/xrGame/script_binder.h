@@ -22,10 +22,11 @@ protected:
 public:
     CScriptBinder();
     virtual ~CScriptBinder();
+
     void init();
     void clear();
     virtual void reinit();
-    virtual void Load(LPCSTR section);
+    virtual void Load(LPCSTR);
     virtual void reload(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

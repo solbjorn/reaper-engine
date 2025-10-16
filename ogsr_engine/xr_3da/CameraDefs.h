@@ -6,23 +6,26 @@ struct SBaseEffector : public virtual RTTI::Enable
 
 public:
     CallMe::Delegate<void()> m_on_b_remove_callback;
+
     virtual ~SBaseEffector() = default;
 };
 
 struct SCamEffectorInfo
 {
-    Fvector p;
-    Fvector d;
-    Fvector n;
+    Fvector p{};
+    Fvector d{0.0f, 0.0f, 1.0f};
+    Fvector n{0.0f, 1.0f, 0.0f};
     Fvector r;
-    float fFov;
-    float fNear;
-    float fFar;
-    float fAspect;
-    float offsetX; // Required for Nvidia Ansel
-    float offsetY; // Required for Nvidia Ansel
-    bool dont_apply;
-    bool affected_on_hud;
+
+    float fFov{90.0f};
+    float fNear{VIEWPORT_NEAR};
+    float fFar{100.0f};
+    float fAspect{1.0f};
+    float offsetX{}; // Required for Nvidia Ansel
+    float offsetY{}; // Required for Nvidia Ansel
+
+    bool dont_apply{};
+    bool affected_on_hud{true};
 
     SCamEffectorInfo();
     SCamEffectorInfo(const SCamEffectorInfo&);

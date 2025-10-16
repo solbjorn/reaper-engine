@@ -430,7 +430,7 @@ class CCC_ModelPoolStat : public IConsole_Command
 public:
     CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { RImplementation.Models->dump(); }
+    void Execute(LPCSTR) override { RImplementation.Models->dump(); }
 };
 
 //-----------------------------------------------------------------------
@@ -468,7 +468,7 @@ class CCC_VideoMemoryStats : public IConsole_Command
 public:
     CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Msg("memory usage  mb \t \t video    \t managed      \t system");
 
@@ -508,7 +508,7 @@ class CCC_DumpResources : public IConsole_Command
 public:
     CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         RImplementation.Models->dump();
         RImplementation.Resources->Dump(false);
@@ -559,7 +559,7 @@ class CCC_PART_Import : public IConsole_Command
 public:
     CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         if (g_pGameLevel)
         {

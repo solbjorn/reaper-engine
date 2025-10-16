@@ -5,6 +5,7 @@
 //	Oles		- Oles Shishkovtsov
 //	AlexMX		- Alexander Maksimchuk
 //-----------------------------------------------------------------------------
+
 #include "stdafx.h"
 
 #include "igame_level.h"
@@ -296,7 +297,9 @@ struct damn_keys_filter
     }
 };
 
-int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
+namespace
+{
+int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
 {
     HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
     if (!strstr(lpCmdLine, "-multi_instances"))
@@ -322,8 +325,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
     // Title window
 
     DisableProcessWindowsGhosting();
-
-    logoWindow = ShowSplash(hInstance, nCmdShow);
+    logoWindow = ShowSplash(hInstance);
 
     const char* tok = "-max-threads";
     if (strstr(lpCmdLine, tok))
@@ -394,18 +396,17 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
     return 0;
 }
+} // namespace
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, char* lpCmdLine, int)
 {
     gModulesLoaded = true;
-
     Debug._initialize();
 
-    WinMain_impl(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-
+    int ret = WinMain_impl(hInstance, lpCmdLine);
     ExitFromWinMain = true;
 
-    return 0;
+    return ret;
 }
 
 CApplication::CApplication() : loadingScreen(nullptr)

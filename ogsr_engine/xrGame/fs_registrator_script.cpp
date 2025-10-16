@@ -3,6 +3,10 @@
 #include "fs_registrator.h"
 #include "LocatorApi.h"
 
+#include <iomanip>
+#include <filesystem>
+#include <sstream>
+
 static LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
 {
     string_path temp;
@@ -137,10 +141,8 @@ void FS_file_list_ex::Sort(u32 flags)
         std::sort(m_file_items.begin(), m_file_items.end(), modifSorter<false>);
 }
 
-static FS_file_list_ex file_list_open_ex(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
-
+static FS_file_list_ex file_list_open_ex(CLocatorAPI*, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
 static FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
-
 static FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
 
 static LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
@@ -154,9 +156,7 @@ static LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// SCRIPT C++17 FILESYSTEM - START ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
-#include <iomanip>
-#include <sstream>
-#include <filesystem>
+
 namespace stdfs = std::filesystem;
 
 // Путь до папки с движком
@@ -225,7 +225,9 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 
 static void script_register_stdfs(sol::state_view& lua)
 {
-    auto fs = lua.create_named_table("stdfs", "VerifyPath", &VerifyPath, "directory_iterator", &directory_iterator, "recursive_directory_iterator", &recursive_directory_iterator);
+    auto fs = lua.create_named_table(
+        "stdfs", "VerifyPath", [](absl::string_view path) { VerifyPath(path); }, "directory_iterator", &directory_iterator, "recursive_directory_iterator",
+        &recursive_directory_iterator);
 
     using self = stdfs::directory_entry;
     fs.new_usertype<self>("path", sol::no_constructor, sol::call_constructor, sol::constructors<self(const char*)>(),

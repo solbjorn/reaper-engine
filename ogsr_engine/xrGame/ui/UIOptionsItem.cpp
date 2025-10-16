@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIOptionsItem.h"
 #include "UIOptionsManager.h"
 #include "..\..\xr_3da\xr_ioconsole.h"
@@ -15,7 +16,7 @@ void CUIOptionsItem::Register(const char* entry, const char* group)
 
 void CUIOptionsItem::SendMessage2Group(const char* group, const char* message) { m_optionsManager.SendMessage2Group(group, message); }
 
-void CUIOptionsItem::OnMessage(const char* message)
+void CUIOptionsItem::OnMessage(const char*)
 {
     // do nothing
 }
@@ -73,14 +74,12 @@ const xr_token* CUIOptionsItem::GetOptToken()
 
 void CUIOptionsItem::SaveOptTokenValue(const char* val) { SaveOptStringValue(val); }
 
-#pragma todo("KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не буду.")
+// TODO: KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не буду.
 void CUIOptionsItem::SaveValue()
 {
-    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync" ||
-        m_entry == "r2_volumetric_lights" || m_entry == "r3_dynamic_wet_surfaces" || m_entry == "r__detail_radius" ||
-        m_entry == "r2_sun_quality" || m_entry == "r_ao_mode" || m_entry == "r2_ssao" ||
-        m_entry == "r_sslr_enable" || m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" || m_entry == "ssfx_indirect_light"
-        )
+    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync" || m_entry == "r2_volumetric_lights" || m_entry == "r3_dynamic_wet_surfaces" ||
+        m_entry == "r__detail_radius" || m_entry == "r2_sun_quality" || m_entry == "r_ao_mode" || m_entry == "r2_ssao" || m_entry == "r_sslr_enable" ||
+        m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" || m_entry == "ssfx_indirect_light")
         m_optionsManager.DoVidRestart();
 
     if (m_entry == "snd_efx" || m_entry == "snd_device")

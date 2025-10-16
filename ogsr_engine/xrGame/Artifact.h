@@ -48,7 +48,7 @@ public:
 
     virtual void UpdateCL();
     virtual void shedule_Update(u32 dt);
-    void UpdateWorkload(u32 dt);
+    void UpdateWorkload(u32);
 
     virtual bool CanTake() const;
 
@@ -89,8 +89,8 @@ public:
     void ActivateArtefact();
     bool CanBeActivated() { return m_bCanSpawnZone; } // does artefact can spawn anomaly zone
 
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step) {}
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal) override {}
 
     bool m_bCanSpawnZone;
 
@@ -116,8 +116,8 @@ public:
     };
 
 public:
-    virtual void Hide(bool = false);
-    virtual void Show(bool = false);
+    void Hide(bool = false) override;
+    void Show(bool = false) override;
     virtual void UpdateXForm();
     virtual bool Action(s32 cmd, u32 flags);
     virtual void PlayAnimIdle();

@@ -60,16 +60,19 @@ public:
     // Работа с акселератором
     // Код акселератора берется из файла dinput.h, из DirectX SDK.
     // Например: кнопка A - код 0x1E(DIK_A)
+
     void SetAccelerator(int iAccel, int idx)
     {
         VERIFY(idx == 0 || idx == 1);
         m_uAccelerator[idx] = iAccel;
     }
-    const int GetAccelerator(int idx) const
+
+    int GetAccelerator(int idx) const
     {
         VERIFY(idx == 0 || idx == 1);
         return m_uAccelerator[idx];
     }
+
     IC bool IsAccelerator(int dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
 
     void SetAcceleratorAction(EGameActions a) { m_uAcceleratorAction = a; }

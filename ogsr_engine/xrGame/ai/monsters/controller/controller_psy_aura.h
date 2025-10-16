@@ -14,6 +14,9 @@ struct SAuraSound
 
 class CPPEffectorControllerAura : public CPPEffectorCustom
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorControllerAura, CPPEffectorCustom);
+
+private:
     typedef CPPEffectorCustom inherited;
 
     enum
@@ -37,10 +40,12 @@ public:
 
 class CControllerAura : public CPPEffectorCustomController<CPPEffectorControllerAura>
 {
+    RTTI_DECLARE_TYPEINFO(CControllerAura, CPPEffectorCustomController<CPPEffectorControllerAura>);
+
+private:
     typedef CPPEffectorCustomController<CPPEffectorControllerAura> inherited;
 
     CController* m_object;
-    u32 m_time_last_update;
 
     SAuraSound aura_sound;
     float aura_radius;

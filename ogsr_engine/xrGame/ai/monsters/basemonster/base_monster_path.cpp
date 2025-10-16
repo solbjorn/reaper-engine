@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "base_monster.h"
 #include "../corpse_cover.h"
 #include "cover_point.h"
@@ -15,7 +16,7 @@
 #include "../control_direction_base.h"
 
 // каждый монстр может по-разному реализвать эту функ (e.g. кровосос с поворотом головы и т.п.)
-void CBaseMonster::LookPosition(Fvector to_point, float angular_speed)
+void CBaseMonster::LookPosition(Fvector to_point)
 {
     // по-умолчанию просто изменить movement().m_body.target.yaw
     Fvector d;

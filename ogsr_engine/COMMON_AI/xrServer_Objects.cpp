@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects.h"
 #include "game_base_space.h"
@@ -14,8 +15,8 @@
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Shape
 ////////////////////////////////////////////////////////////////////////////
-CSE_Shape::CSE_Shape() {}
 
+CSE_Shape::CSE_Shape() {}
 CSE_Shape::~CSE_Shape() {}
 
 void CSE_Shape::cform_read(NET_Packet& tNetPacket)
@@ -63,30 +64,24 @@ void CSE_Shape::assign_shapes(CShapeData::shape_def* _shapes, u32 _cnt)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Temporary
 ////////////////////////////////////////////////////////////////////////////
-CSE_Temporary::CSE_Temporary(LPCSTR caSection) : CSE_Abstract(caSection) { m_tNodeID = u32(-1); }
 
+CSE_Temporary::CSE_Temporary(LPCSTR caSection) : CSE_Abstract{caSection} {}
 CSE_Temporary::~CSE_Temporary() {}
 
-void CSE_Temporary::__STATE_Read(NET_Packet& tNetPacket, u16 size) { tNetPacket.r_u32(m_tNodeID); }
-
+void CSE_Temporary::__STATE_Read(NET_Packet& tNetPacket, u16) { tNetPacket.r_u32(m_tNodeID); }
 void CSE_Temporary::__STATE_Write(NET_Packet& tNetPacket) { tNetPacket.w_u32(m_tNodeID); }
 
-void CSE_Temporary::UPDATE_Read(NET_Packet& tNetPacket) {}
-
-void CSE_Temporary::UPDATE_Write(NET_Packet& tNetPacket) {}
+void CSE_Temporary::UPDATE_Read(NET_Packet&) {}
+void CSE_Temporary::UPDATE_Write(NET_Packet&) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
 ////////////////////////////////////////////////////////////////////////////
-CSE_PHSkeleton::CSE_PHSkeleton(LPCSTR caSection)
-{
-    source_id = u16(-1);
-    _flags.zero();
-}
 
+CSE_PHSkeleton::CSE_PHSkeleton(LPCSTR) {}
 CSE_PHSkeleton::~CSE_PHSkeleton() {}
 
-void CSE_PHSkeleton::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_PHSkeleton::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
     R_ASSERT(visual);
@@ -128,7 +123,7 @@ void CSE_PHSkeleton::data_save(NET_Packet& tNetPacket)
     //	_flags.set(flSavedData,FALSE);
 }
 
-void CSE_PHSkeleton::load(NET_Packet& tNetPacket)
+void CSE_PHSkeleton::load(NET_Packet&)
 {
     /* это больше не используется. Раньше сюда попадало то, что записывал
        в нетпакет CPHSkeleton::SaveNetState(), который вызывался при
@@ -137,9 +132,8 @@ void CSE_PHSkeleton::load(NET_Packet& tNetPacket)
         _flags.assign				(tNetPacket.r_u8());
         data_load					(tNetPacket);
     */
-    source_id = u16(-1); //.
+    source_id = std::numeric_limits<u16>::max(); //.
 }
 
-void CSE_PHSkeleton::UPDATE_Write(NET_Packet& tNetPacket) {}
-
-void CSE_PHSkeleton::UPDATE_Read(NET_Packet& tNetPacket) {}
+void CSE_PHSkeleton::UPDATE_Write(NET_Packet&) {}
+void CSE_PHSkeleton::UPDATE_Read(NET_Packet&) {}

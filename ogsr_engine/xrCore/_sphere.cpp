@@ -8,10 +8,10 @@ class Basis;
 class Basis
 {
 private:
-    enum
+    enum eDimensions
     {
         d = 3
-    } eDimensions;
+    };
 
     // data members
     int m, s; // size and number of support vectors
@@ -178,7 +178,7 @@ float Miniball::max_excess(It t, It i, It& pivot) const
     return max_e;
 }
 
-Fvector Miniball::center() const { return *((Fvector*)B.center()); }
+Fvector Miniball::center() const { return *((const Fvector*)B.center()); }
 
 float Miniball::squared_radius() const { return B.squared_radius(); }
 

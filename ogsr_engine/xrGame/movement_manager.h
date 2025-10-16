@@ -158,6 +158,7 @@ protected:
 public:
     CMovementManager(CCustomMonster* object);
     virtual ~CMovementManager();
+
     virtual void Load(LPCSTR caSection);
     virtual void reinit();
     virtual void reload(LPCSTR caSection);
@@ -199,7 +200,7 @@ public:
     bool distance_to_destination_greater(const float& distance_to_check) const;
 
     IC bool wait_for_distributed_computation() const;
-    virtual bool can_use_distributed_computations(u32 option) const;
+    [[nodiscard]] virtual bool can_use_distributed_computations() const;
 
     void clear_path();
 

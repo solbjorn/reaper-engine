@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIStatic.h"
 #include "UIWndCallback.h"
 
@@ -86,7 +87,7 @@ public:
     CUIGlobalMap(CUIMapWnd* pMapWnd);
     virtual ~CUIGlobalMap();
 
-    virtual Fvector2 ConvertRealToLocal(const Fvector2& src, bool for_drawing); // pixels->pixels (relatively own left-top pos)
+    Fvector2 ConvertRealToLocal(const Fvector2& src, bool) override; // pixels->pixels (relatively own left-top pos)
 
     IC void SetMinZoom(float zoom) { m_min_zoom = zoom; }
     IC float GetMinZoom() const { return m_min_zoom; }

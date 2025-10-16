@@ -32,11 +32,11 @@ public:
 
     virtual void Load() {}
 
-    virtual void Render_First(u32 context_id) {}
-    virtual void Render_Last(u32 context_id) {}
+    virtual void Render_First(ctx_id_t) {}
+    virtual void Render_Last(ctx_id_t) {}
 
     virtual void OnFrame() {}
-    virtual void OnEvent(EVENT E, u64 P1, u64 P2) {}
+    virtual void OnEvent(EVENT, u64, u64) {}
 
     virtual IC CUI* GetUI() = 0;
     virtual void OnScreenRatioChanged() = 0;

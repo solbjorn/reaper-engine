@@ -25,19 +25,19 @@ class CDUInterface;
 
 #include "..\..\Include\xrRender\DrawUtils.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-
-class ISE_Shape : public virtual RTTI::Enable
+class XR_NOVTABLE ISE_Shape : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ISE_Shape);
 
 public:
-    virtual ~ISE_Shape() = default;
+    virtual ~ISE_Shape() = 0;
+
     virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt) = 0;
 };
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_Visual)
+inline ISE_Shape::~ISE_Shape() = default;
+
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_Visual, XR_NOVTABLE)
 public:
 shared_str visual_name;
 shared_str startup_animation;
@@ -62,9 +62,12 @@ virtual CSE_Visual* __stdcall visual() = 0;
 ;
 
 add_to_type_list(CSE_Visual);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_Visual)
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion) public : shared_str motion_name;
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion, XR_NOVTABLE)
+public:
+shared_str motion_name;
 
 public:
 CSE_Motion(LPCSTR name = nullptr);
@@ -81,13 +84,20 @@ virtual CSE_Motion* __stdcall motion() = 0;
 ;
 
 add_to_type_list(CSE_Motion);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_Motion)
 
-struct ISE_AbstractLEOwner
+struct XR_NOVTABLE ISE_AbstractLEOwner : public virtual RTTI::Enable
 {
-    virtual ~ISE_AbstractLEOwner() = default;
+    RTTI_DECLARE_TYPEINFO(ISE_AbstractLEOwner);
+
+public:
+    virtual ~ISE_AbstractLEOwner() = 0;
+
     virtual void __stdcall get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
 };
+
+inline ISE_AbstractLEOwner::~ISE_AbstractLEOwner() = default;
 
 struct XR_NOVTABLE ISE_Abstract : public virtual RTTI::Enable
 {
@@ -123,5 +133,3 @@ public:
 };
 
 inline ISE_Abstract::~ISE_Abstract() = default;
-
-#pragma warning(pop)

@@ -3,17 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "hit_immunity.h"
 #include "GameObject.h"
 
-CHitImmunity::CHitImmunity()
-{
-    m_HitTypeK.resize(ALife::eHitTypeMax);
-    for (int i = 0; i < ALife::eHitTypeMax; i++)
-        m_HitTypeK[i] = 1.0f;
-}
+CHitImmunity::CHitImmunity() { m_HitTypeK.resize(ALife::eHitTypeMax, 1.0f); }
+CHitImmunity::~CHitImmunity() = default;
 
-CHitImmunity::~CHitImmunity() {}
 void CHitImmunity::LoadImmunities(LPCSTR imm_sect, CInifile* ini)
 {
     R_ASSERT2(ini->section_exist(imm_sect), imm_sect);
@@ -33,38 +29,41 @@ void CHitImmunity::LoadImmunities(LPCSTR imm_sect, CInifile* ini)
 
 float CHitImmunity::AffectHit(float power, ALife::EHitType hit_type) { return power * m_HitTypeK[hit_type]; }
 
-static float get_burn_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeBurn]; }
-static void set_burn_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeBurn] = i; }
+namespace
+{
+[[nodiscard]] float get_burn_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeBurn]; }
+void set_burn_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeBurn] = i; }
 
-static float get_strike_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeStrike]; }
-static void set_strike_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeStrike] = i; }
+[[nodiscard]] float get_strike_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeStrike]; }
+void set_strike_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeStrike] = i; }
 
-static float get_shock_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeShock]; }
-static void set_shock_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeShock] = i; }
+[[nodiscard]] float get_shock_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeShock]; }
+void set_shock_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeShock] = i; }
 
-static float get_wound_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeWound]; }
-static void set_wound_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeWound] = i; }
+[[nodiscard]] float get_wound_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeWound]; }
+void set_wound_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeWound] = i; }
 
-static float get_radiation_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeRadiation]; }
-static void set_radiation_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeRadiation] = i; }
+[[nodiscard]] float get_radiation_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeRadiation]; }
+void set_radiation_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeRadiation] = i; }
 
-static float get_telepatic_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeTelepatic]; }
-static void set_telepatic_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeTelepatic] = i; }
+[[nodiscard]] float get_telepatic_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeTelepatic]; }
+void set_telepatic_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeTelepatic] = i; }
 
-static float get_chemical_burn_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeChemicalBurn]; }
-static void set_chemical_burn_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeChemicalBurn] = i; }
+[[nodiscard]] float get_chemical_burn_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeChemicalBurn]; }
+void set_chemical_burn_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeChemicalBurn] = i; }
 
-static float get_explosion_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeExplosion]; }
-static void set_explosion_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeExplosion] = i; }
+[[nodiscard]] float get_explosion_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeExplosion]; }
+void set_explosion_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeExplosion] = i; }
 
-static float get_fire_wound_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeFireWound]; }
-static void set_fire_wound_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeFireWound] = i; }
+[[nodiscard]] float get_fire_wound_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeFireWound]; }
+void set_fire_wound_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeFireWound] = i; }
 
-static float get_wound_2_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypeWound_2]; }
-static void set_wound_2_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypeWound_2] = i; }
+[[nodiscard]] float get_wound_2_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypeWound_2]; }
+void set_wound_2_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypeWound_2] = i; }
 
-static float get_physic_strike_immunity(CHitImmunity* I) { return I->immunities()[ALife::eHitTypePhysicStrike]; }
-static void set_physic_strike_immunity(CHitImmunity* I, float i) { I->immunities()[ALife::eHitTypePhysicStrike] = i; }
+[[nodiscard]] float get_physic_strike_immunity(const CHitImmunity& I) { return I.immunities()[ALife::eHitTypePhysicStrike]; }
+void set_physic_strike_immunity(CHitImmunity& I, float i) { I.immunities()[ALife::eHitTypePhysicStrike] = i; }
+} // namespace
 
 void CHitImmunity::script_register(sol::state_view& lua)
 {

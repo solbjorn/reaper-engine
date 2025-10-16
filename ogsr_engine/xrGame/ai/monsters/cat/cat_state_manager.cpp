@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "cat.h"
 #include "cat_state_manager.h"
 
@@ -51,6 +52,7 @@ void CStateManagerCat::execute()
             {
             case eStrong: state_id = eStatePanic; break;
             case eWeak: state_id = eStateAttack; break;
+            default: break;
             }
         }
     }

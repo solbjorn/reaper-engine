@@ -75,7 +75,8 @@ void SBinocVisibleObj::Update()
         mx.x = _max(mx.x, p.x);
         mx.y = _max(mx.y, p.y);
     }
-    static Frect screen_rect = {-1.0f, -1.0f, 1.0f, 1.0f};
+
+    constexpr Frect screen_rect{-1.0f, -1.0f, 1.0f, 1.0f};
 
     Frect new_rect;
     new_rect.lt = mn;
@@ -122,6 +123,7 @@ void SBinocVisibleObj::Update()
                     case ALife::eRelationTypeEnemy: clr = C_ON_ENEMY; break;
                     case ALife::eRelationTypeNeutral: clr = C_ON_NEUTRAL; break;
                     case ALife::eRelationTypeFriend: clr = C_ON_FRIEND; break;
+                    default: break;
                     }
                 }
             }

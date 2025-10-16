@@ -22,7 +22,7 @@ struct default_destroy
 
 struct CDestroyer
 {
-    IC static void delete_data(LPCSTR data) {}
+    IC static void delete_data(LPCSTR) {}
 
     IC static void delete_data(LPSTR data) { xr_free(data); }
 
@@ -138,8 +138,7 @@ struct CDestroyer
 };
 
 template <typename T>
-IC void delete_data(const T& data)
+inline void delete_data(T& data)
 {
-    T* temp = const_cast<T*>(&data);
-    CDestroyer::delete_data(*temp);
+    CDestroyer::delete_data(data);
 }

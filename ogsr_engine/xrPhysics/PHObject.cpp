@@ -39,7 +39,7 @@ void CPHObject::activate()
     m_flags.set(st_activated, TRUE);
 }
 
-void CPHObject::EnableObject(CPHObject* obj) { activate(); }
+void CPHObject::EnableObject(CPHObject*) { activate(); }
 
 void CPHObject::deactivate()
 {
@@ -168,12 +168,6 @@ void CPHObject::reinit_single()
     ContactEffectors.empty();
 }
 
-void CPHObject::step_prediction(float time)
-{
-    // general idea:
-    // perform normal step by time as local as possible for this object then return world to
-    // the pervious state
-}
 bool CPHObject::step_single(dReal step)
 {
     CollideDynamics();

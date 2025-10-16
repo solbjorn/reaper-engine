@@ -152,7 +152,7 @@ void CUIWindow::script_register(sol::state_view& lua)
                  // CUITrackBar
                  "TRACKBAR_CHANGED", TRACKBAR_CHANGED,
 
-#pragma todo("KRodin: ивент RADIOBUTTON_SET нигде не вызывается. Надо доделать по необходимости.")
+                 // TODO: KRodin: ивент RADIOBUTTON_SET нигде не вызывается. Надо доделать по необходимости.
                  // CUIRadioButton
                  "RADIOBUTTON_SET", RADIOBUTTON_SET,
 
@@ -180,8 +180,8 @@ void CUIWindow::script_register(sol::state_view& lua)
                  // CUITalkDialogWnd
                  "TALK_DIALOG_TRADE_BUTTON_CLICKED", TALK_DIALOG_TRADE_BUTTON_CLICKED, "TALK_DIALOG_QUESTION_CLICKED", TALK_DIALOG_QUESTION_CLICKED,
 
-#pragma todo( \
-    "KRodin: ивент PDA_CONTACTS_WND_CONTACT_SELECTED нигде не вызывается. Надо доделать по необходимости. Хотя я не очень представляю, для чего он может понадобиться в скриптах.")
+                 // TODO: KRodin: ивент PDA_CONTACTS_WND_CONTACT_SELECTED нигде не вызывается. Надо доделать по необходимости. Хотя я не очень представляю, для чего он может
+                 // понадобиться в скриптах.
                  // CUIPdaContactsWnd
                  "PDA_CONTACTS_WND_CONTACT_SELECTED", PDA_CONTACTS_WND_CONTACT_SELECTED,
 

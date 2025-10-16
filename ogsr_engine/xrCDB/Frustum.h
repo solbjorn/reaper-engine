@@ -83,7 +83,7 @@ public:
     bool CreateFromClipPoly(Fvector* p, size_t count, Fvector& vBase, CFrustum& clip); // returns 'false' if creation failed
     void CreateFromPoints(Fvector* p, size_t count, Fvector& vBase);
     void CreateFromMatrix(const Fmatrix& M, u32 mask);
-    void CreateFromPortal(sPoly* P, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM);
+    void CreateFromPortal(sPoly* P, Fvector& vBase, Fmatrix& mFullXFORM);
     void CreateFromPlanes(Fplane* p, size_t count);
 
     sPoly* ClipPoly(sPoly& src, sPoly& dest) const;
@@ -101,6 +101,7 @@ public:
         sPoly d;
         return !!ClipPoly(src, d);
     }
+
     IC bool testPolyInside(Fvector* p, size_t count) const
     {
         sPoly src(p, count);

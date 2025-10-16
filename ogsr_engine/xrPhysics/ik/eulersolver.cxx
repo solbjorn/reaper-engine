@@ -30,6 +30,7 @@
 
  */
 #include "StdAfx.h"
+
 #include "eulersolver.h"
 
 typedef void (*euler_solver)(const Matrix G, float& t1, float& t2, float& t3, int family);
@@ -115,22 +116,22 @@ void euler_extract(const EulerTableEntry& E, const Matrix R, float vals[3], int 
 {
     float* t[3];
     float v, x[2], y[2];
-    matrix_entry *p, *q;
+    const matrix_entry *p, *q;
 
     t[0] = vals + E.simple_jt;
     t[1] = vals + E.complex_jt1;
     t[2] = vals + E.complex_jt2;
 
-    p = (matrix_entry*)&E.simple_jt_index;
+    p = (const matrix_entry*)&E.simple_jt_index;
     v = p->sign * R[p->row][p->col];
 
-    p = (matrix_entry*)&E.complex_jt1_index1;
-    q = (matrix_entry*)&E.complex_jt1_index2;
+    p = (const matrix_entry*)&E.complex_jt1_index1;
+    q = (const matrix_entry*)&E.complex_jt1_index2;
     y[0] = p->sign * R[p->row][p->col];
     x[0] = q->sign * R[q->row][q->col];
 
-    p = (matrix_entry*)&E.complex_jt2_index1;
-    q = (matrix_entry*)&E.complex_jt2_index2;
+    p = (const matrix_entry*)&E.complex_jt2_index1;
+    q = (const matrix_entry*)&E.complex_jt2_index2;
     y[1] = p->sign * R[p->row][p->col];
     x[1] = q->sign * R[q->row][q->col];
 
@@ -166,7 +167,7 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
 {
     float *t1[3], *t2[3];
     float v, x[2], y[2];
-    matrix_entry *p, *q;
+    const matrix_entry *p, *q;
 
     t1[0] = f1 + E.simple_jt;
     t1[1] = f1 + E.complex_jt1;
@@ -176,16 +177,16 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
     t2[1] = f2 + E.complex_jt1;
     t2[2] = f2 + E.complex_jt2;
 
-    p = (matrix_entry*)&E.simple_jt_index;
+    p = (const matrix_entry*)&E.simple_jt_index;
     v = p->sign * R[p->row][p->col];
 
-    p = (matrix_entry*)&E.complex_jt1_index1;
-    q = (matrix_entry*)&E.complex_jt1_index2;
+    p = (const matrix_entry*)&E.complex_jt1_index1;
+    q = (const matrix_entry*)&E.complex_jt1_index2;
     y[0] = p->sign * R[p->row][p->col];
     x[0] = q->sign * R[q->row][q->col];
 
-    p = (matrix_entry*)&E.complex_jt2_index1;
-    q = (matrix_entry*)&E.complex_jt2_index2;
+    p = (const matrix_entry*)&E.complex_jt2_index1;
+    q = (const matrix_entry*)&E.complex_jt2_index2;
     y[1] = p->sign * R[p->row][p->col];
     x[1] = q->sign * R[q->row][q->col];
 
@@ -207,11 +208,12 @@ void euler_extract2(const EulerTableEntry& E, const Matrix R, float f1[3], float
 
 inline EulerTableEntry* euler_entry(int euler_type)
 {
-    if (euler_type < 0 || euler_type >= (sizeof(EulerTable) / sizeof(EulerTable[0])))
+    if (euler_type < 0 || euler_type >= int{sizeof(EulerTable) / sizeof(EulerTable[0])})
     {
         fprintf(stderr, "bad euler entry %d detected\n", euler_type);
         exit(0);
     }
+
     return EulerTable + euler_type;
 }
 
@@ -344,8 +346,8 @@ void EulerPsiSolver::SolvePsiRanges(AngleIntList psi1[3], AngleIntList psi2[3]) 
     EulerTableEntry* e = euler_entry(euler_type);
 
     j0.PsiLimits(psi1[e->simple_jt], psi2[e->simple_jt]);
-    j1.PsiLimits(num_singular, (float*)singular, psi1[e->complex_jt1], psi2[e->complex_jt1]);
-    j2.PsiLimits(num_singular, (float*)singular, psi1[e->complex_jt2], psi2[e->complex_jt2]);
+    j1.PsiLimits(num_singular, (const float*)singular, psi1[e->complex_jt1], psi2[e->complex_jt1]);
+    j2.PsiLimits(num_singular, (const float*)singular, psi1[e->complex_jt2], psi2[e->complex_jt2]);
 }
 
 //

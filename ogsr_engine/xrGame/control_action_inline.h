@@ -14,14 +14,11 @@ IC void CControlAction::set_object(CAI_Stalker* object)
     m_object = object;
 }
 
-IC bool CControlAction::applicable() const { return (true); }
-
-IC bool CControlAction::completed() const { return (true); }
+IC bool CControlAction::applicable() const { return true; }
+IC bool CControlAction::completed() const { return true; }
 
 IC void CControlAction::initialize() {}
-
 IC void CControlAction::execute() {}
-
 IC void CControlAction::finalize() {}
 
 IC CAI_Stalker& CControlAction::object() const
@@ -30,4 +27,4 @@ IC CAI_Stalker& CControlAction::object() const
     return (*m_object);
 }
 
-IC void CControlAction::remove_links(CObject* object) {}
+IC void CControlAction::remove_links(CObject*) {}

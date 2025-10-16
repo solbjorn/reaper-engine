@@ -7,13 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "damage_manager.h"
 #include "..\xr_3da\xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/bone.h"
 
 CDamageManager::CDamageManager() {}
-
 CDamageManager::~CDamageManager() {}
 
 DLL_Pure* CDamageManager::_construct()
@@ -43,7 +43,7 @@ void CDamageManager::reload(LPCSTR section, CInifile* ini)
     }
 
     // инициализировать default параметрами
-    init_bones(section, ini);
+    init_bones();
 
     // записать поверху прописанные параметры
     if (section_exist)
@@ -58,7 +58,7 @@ void CDamageManager::reload(LPCSTR section, LPCSTR line, CInifile* ini)
         reload(section, nullptr);
 }
 
-void CDamageManager::init_bones(LPCSTR section, CInifile* ini)
+void CDamageManager::init_bones()
 {
     IKinematics* kinematics = smart_cast<IKinematics*>(m_object->Visual());
     VERIFY(kinematics);
@@ -70,6 +70,7 @@ void CDamageManager::init_bones(LPCSTR section, CInifile* ini)
         bone_instance.set_param(2, m_default_wound_factor);
     }
 }
+
 void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 {
     string32 buffer;

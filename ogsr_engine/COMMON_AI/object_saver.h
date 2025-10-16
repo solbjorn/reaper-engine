@@ -87,13 +87,13 @@ struct CSaver
         }
     };
 
-    IC static void save_data(LPSTR data, M& stream, const P& p) { stream.w_stringZ(data); }
+    IC static void save_data(LPSTR data, M& stream, const P&) { stream.w_stringZ(data); }
 
-    IC static void save_data(LPCSTR data, M& stream, const P& p) { stream.w_stringZ(data); }
+    IC static void save_data(LPCSTR data, M& stream, const P&) { stream.w_stringZ(data); }
 
-    IC static void save_data(const shared_str& data, M& stream, const P& p) { stream.w_stringZ(data); }
+    IC static void save_data(const shared_str& data, M& stream, const P&) { stream.w_stringZ(data); }
 
-    IC static void save_data(const xr_string& data, M& stream, const P& p) { stream.w_stringZ(data.c_str()); }
+    IC static void save_data(const xr_string& data, M& stream, const P&) { stream.w_stringZ(data.c_str()); }
 
     template <typename T1, typename T2>
     IC static void save_data(const std::pair<T1, T2>& data, M& stream, const P& p)
@@ -104,7 +104,7 @@ struct CSaver
             CSaver<M, P>::save_data(data.second, stream, p);
     }
 
-    IC static void save_data(const xr_vector<bool>& data, M& stream, const P& p)
+    IC static void save_data(const xr_vector<bool>& data, M& stream, const P&)
     {
         stream.w_u32((u32)data.size());
         xr_vector<bool>::const_iterator I = data.begin();
@@ -178,12 +178,13 @@ namespace detail
 struct CEmptyPredicate
 {
     template <typename T1, typename T2>
-    IC bool operator()(const T1& /*data*/, const T2& /*value*/) const
+    constexpr bool operator()(const T1&, const T2&) const
     {
         return true;
     }
+
     template <typename T1, typename T2>
-    IC bool operator()(const T1& /*data*/, const T2& /*value*/, bool) const
+    constexpr bool operator()(const T1&, const T2&, bool) const
     {
         return true;
     }
@@ -192,13 +193,13 @@ struct CEmptyPredicate
 } // namespace object_saver
 
 template <typename T, typename M, typename P>
-IC void save_data(const T& data, M& stream, const P& p)
+inline void save_data(const T& data, M& stream, const P& p)
 {
     CSaver<M, P>::save_data(data, stream, p);
 }
 
 template <typename T, typename M>
-IC void save_data(const T& data, M& stream)
+inline void save_data(const T& data, M& stream)
 {
-    save_data(data, stream, object_saver::detail::CEmptyPredicate());
+    save_data(data, stream, object_saver::detail::CEmptyPredicate{});
 }

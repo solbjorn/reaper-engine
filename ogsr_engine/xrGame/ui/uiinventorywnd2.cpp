@@ -269,10 +269,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 
         dont_update_belt_flag = _slot == OUTFIT_SLOT;
 
-#ifdef DEBUG
-        bool _result =
-#endif
-            ToBag(slot_cell, false);
+        bool _result = ToBag(slot_cell, false);
         VERIFY(_result);
 
         return ToSlot(itm, false);
@@ -303,11 +300,9 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
         else
             new_owner = m_pUIBagList;
 
-#ifdef DEBUG
-        bool result =
-#endif
-            GetInventory()->Ruck(iitem);
+        bool result = GetInventory()->Ruck(iitem);
         VERIFY(result);
+
         CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
         /************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
@@ -335,18 +330,20 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
     {
         CUIDragDropListEx* old_owner = itm->OwnerList();
         CUIDragDropListEx* new_owner{};
+
         if (b_use_cursor_pos)
         {
             new_owner = CUIDragDropListEx::m_drag_item->BackList();
             VERIFY(new_owner == m_pUIBeltList);
         }
         else
+        {
             new_owner = m_pUIBeltList;
-#ifdef DEBUG
-        bool result =
-#endif
-            GetInventory()->Belt(iitem);
+        }
+
+        bool result = GetInventory()->Belt(iitem);
         VERIFY(result);
+
         CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
         //.	UIBeltList.RearrangeItems();
@@ -374,7 +371,7 @@ void CUIInventoryWnd::AddItemToBag(PIItem pItem)
     m_pUIBagList->SetItem(itm);
 }
 
-bool CUIInventoryWnd::OnItemStartDrag(CUICellItem* itm)
+bool CUIInventoryWnd::OnItemStartDrag(CUICellItem*)
 {
     return false; // default behaviour
 }

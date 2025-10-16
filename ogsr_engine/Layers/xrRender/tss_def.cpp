@@ -370,7 +370,7 @@ void SimulatorStates::UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAM
             case D3DSAMP_ADDRESSW: /* D3DTEXTUREADDRESS for W coordinate */ desc.AddressW = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3)); break;
 
             //	FLOAT MipLODBias
-            case D3DSAMP_MIPMAPLODBIAS: desc.MipLODBias = *((float*)(&(S.v3))); break;
+            case D3DSAMP_MIPMAPLODBIAS: desc.MipLODBias = *((const float*)(&(S.v3))); break;
 
             //	UINT MaxAnisotropy;
             case D3DSAMP_MAXANISOTROPY: desc.MaxAnisotropy = S.v3; break;

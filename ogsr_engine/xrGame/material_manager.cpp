@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "material_manager.h"
 #include "alife_space.h"
 #include "phmovementcontrol.h"
@@ -55,7 +56,7 @@ void CMaterialManager::reinit()
     }
 }
 
-void CMaterialManager::reload(LPCSTR section) {}
+void CMaterialManager::reload(LPCSTR) {}
 
 void CMaterialManager::update(float time_delta, float volume, float step_time, bool standing)
 {

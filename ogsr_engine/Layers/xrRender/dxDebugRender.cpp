@@ -100,7 +100,7 @@ void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
 
 void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
 
-void dxDebugRender::SetAmbient(u32 colour)
+void dxDebugRender::SetAmbient(u32)
 {
     //	TODO: DX10: Check if need this for DX10
     VERIFY(!"Not implemented for DX10");

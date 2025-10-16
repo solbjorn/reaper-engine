@@ -22,7 +22,7 @@ TEMPLATE_SPECIALIZATION
 IC bool CGameManagerTemplate::actual() const { return (inherited::actual(m_object->object().ai_location().game_vertex_id(), dest_vertex_id())); }
 
 TEMPLATE_SPECIALIZATION
-IC void CGameManagerTemplate::before_search(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id) {}
+IC void CGameManagerTemplate::before_search(const _vertex_id_type, const _vertex_id_type) {}
 
 TEMPLATE_SPECIALIZATION
 IC void CGameManagerTemplate::after_search() {}

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIDialogWnd.h"
 #include "UIListItem.h"
 #include "UIWndCallback.h"
@@ -63,7 +64,7 @@ public:
     virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
     void OnSwitchDescriptionClicked(CUIWindow*, void*);
 
-    virtual void MarkSelected(bool b);
+    virtual void MarkSelected(bool);
     virtual bool OnDbClick();
 };
 

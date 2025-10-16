@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "chimera.h"
 #include "chimera_state_manager.h"
 
@@ -42,14 +43,12 @@ void CStateManagerChimera::execute()
 
     if (enemy)
     {
-        // if (check_state(eStateThreaten)) state_id = eStateThreaten;
         switch (object->EnemyMan.get_danger_type())
         {
         case eStrong: state_id = eStatePanic; break;
         case eWeak: state_id = eStateAttack; break;
+        default: break;
         }
-        // 	else if (object->HitMemory.is_hit()) {
-        // 		state_id = eStateHitted;
     }
     else if (object->hear_dangerous_sound)
     {

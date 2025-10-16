@@ -21,20 +21,20 @@ protected:
     T* m_selected;
 
 public:
-    CObjectManager();
-    virtual ~CObjectManager();
-    virtual void Load(LPCSTR section);
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
-    virtual void update();
-    bool add(T* object);
-    virtual bool is_useful(T* object) const;
-    virtual float do_evaluate(T* object) const;
-    virtual void reset();
+    CObjectManager() = default;
+    virtual ~CObjectManager() = default;
 
-public:
-    IC T* selected() const;
-    IC const OBJECTS& objects() const;
+    inline virtual void Load(LPCSTR);
+    inline virtual void reinit();
+    inline virtual void reload(LPCSTR);
+    inline virtual void update();
+    inline bool add(T* object);
+    inline virtual bool is_useful(T* object) const;
+    inline virtual float do_evaluate(T*) const;
+    inline virtual void reset();
+
+    inline T* selected() const;
+    inline const OBJECTS& objects() const;
 };
 
 #include "object_manager_inline.h"

@@ -62,7 +62,7 @@ void CallFunctions(xr_vector<sol::function>& v)
 
 void CUISequenceItem::Start() { CallFunctions(m_start_lua_functions); }
 
-bool CUISequenceItem::Stop(bool bForce)
+bool CUISequenceItem::Stop(bool)
 {
     CallFunctions(m_stop_lua_functions);
     return true;
@@ -303,10 +303,8 @@ void CUISequencer::IR_OnActivate()
             case kACCEL:
             case kL_LOOKOUT:
             case kR_LOOKOUT:
-            case kWPN_FIRE: {
-                IR_OnKeyboardPress(i);
-            }
-            break;
+            case kWPN_FIRE: IR_OnKeyboardPress(i); break;
+            default: break;
             }
         }
     }

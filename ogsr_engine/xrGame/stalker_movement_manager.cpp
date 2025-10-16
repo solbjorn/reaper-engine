@@ -51,7 +51,7 @@ IC void CStalkerMovementManager::setup_head_speed()
         m_head.speed = m_danger_head_speed;
 }
 
-IC void CStalkerMovementManager::add_velocity(int mask, float linear, float compute_angular, float angular)
+void CStalkerMovementManager::add_velocity(int mask, float linear, float compute_angular, float angular)
 {
     detail().add_velocity(mask, CDetailPathManager::STravelParams(linear, compute_angular, angular));
 }
@@ -206,6 +206,7 @@ bool CStalkerMovementManager::script_control()
 void CStalkerMovementManager::setup_movement_params()
 {
     inherited::set_path_type(path_type());
+
     switch (path_type())
     {
     case MovementManager::ePathTypeGamePath:
@@ -213,6 +214,7 @@ void CStalkerMovementManager::setup_movement_params()
         set_desired_position(nullptr);
         break;
     }
+    default: break;
     }
 
     detail().set_path_type(detail_path_type());
@@ -245,7 +247,7 @@ void CStalkerMovementManager::setup_movement_params()
                 u32 vertex_id = level_path().dest_vertex_id();
                 Fvector vertex_position = ai().level_graph().vertex_position(vertex_id);
                 VERIFY2(restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
-                        make_string("vertex_id[%d],position[%f][%f][%f],object[%s]", vertex_id, VPUSH(vertex_position), *object().cName()));
+                        make_string("vertex_id[%u],position[%f][%f][%f],object[%s]", vertex_id, VPUSH(vertex_position), *object().cName()));
                 detail().set_dest_position(vertex_position);
             }
         }
@@ -506,7 +508,7 @@ void CStalkerMovementManager::set_nearest_accessible_position(Fvector desired_po
     set_desired_position(&desired_position);
 }
 
-void CStalkerMovementManager::update(u32 time_delta)
+void CStalkerMovementManager::update(u32)
 {
     if (!enabled())
         return;
@@ -665,7 +667,7 @@ void CStalkerMovementManager::check_for_bad_path()
     if (m_current.m_mental_state != eMentalStateDanger)
         return;
 
-    if (detail().completed(object().Position(), !detail().state_patrol_path()))
+    if (detail().completed(!detail().state_patrol_path()))
         return;
 
     typedef xr_vector<STravelPathPoint> PATH;

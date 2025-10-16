@@ -21,7 +21,7 @@ void CAnimationSequencer::activate()
     play_selected();
 }
 
-void CAnimationSequencer::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
+void CAnimationSequencer::on_event(ControlCom::EEventType type, ControlCom::IEventData*)
 {
     if (type == ControlCom::eventAnimationEnd)
     {

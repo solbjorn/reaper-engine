@@ -3,5 +3,8 @@
 
 #include "TriPrimitiveCollideClassDef.h"
 #include "../MathUtils.h"
+#include "dcTriListCollider.h"
 
-#endif
+TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Sphere);
+
+#endif // D_TRI_SPHERE_H

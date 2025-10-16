@@ -83,7 +83,7 @@ bool CControlRunAttack::check_start_conditions()
     return true;
 }
 
-void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
+void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEventData*)
 {
     switch (type)
     {
@@ -136,5 +136,6 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
         }
     }
     break;
+    default: break;
     }
 }

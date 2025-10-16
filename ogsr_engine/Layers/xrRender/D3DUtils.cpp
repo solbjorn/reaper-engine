@@ -14,15 +14,18 @@
 
 CDrawUtilities DUImpl;
 
+namespace
+{
 #define LINE_DIVISION 32 // не меньше 6!!!!!
 // for drawing sphere
-static Fvector circledef1[LINE_DIVISION];
-static Fvector circledef2[LINE_DIVISION];
-static Fvector circledef3[LINE_DIVISION];
+Fvector circledef1[LINE_DIVISION];
+Fvector circledef2[LINE_DIVISION];
+Fvector circledef3[LINE_DIVISION];
 
-constexpr u32 boxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-constexpr u32 boxvertcount = 48;
-static Fvector boxvert[boxvertcount];
+constexpr u32 boxcolor{D3DCOLOR_RGBA(255, 255, 255, 0)};
+
+constexpr u32 boxvertcount{48};
+Fvector boxvert[boxvertcount];
 
 #define DU_DRAW_RS RCache.dbg_SetRS
 #define DU_DRAW_SH_C(sh, c) \
@@ -48,26 +51,23 @@ static Fvector boxvert[boxvertcount];
 #define SCREEN_QUALITY 1.f
 
 // identity box
-constexpr u32 identboxcolor = D3DCOLOR_RGBA(255, 255, 255, 0);
-constexpr u32 identboxwirecount = 24;
-static constexpr Fvector identboxwire[identboxwirecount] = {{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
-                                                            {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                            {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
-                                                            {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                            {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
+constexpr u32 identboxwirecount{24};
+constexpr Fvector identboxwire[identboxwirecount]{{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
+                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                  {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
+                                                  {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
+                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
 
 #define SIGN(x) ((x < 0) ? -1 : 1)
 
 DEFINE_VECTOR(FVF::L, FLvertexVec, FLvertexIt);
 
-static FLvertexVec m_GridPoints;
+FLvertexVec m_GridPoints;
 
-constexpr u32 m_ColorAxis = 0xff000000;
-constexpr u32 m_ColorGrid = 0xff909090;
-constexpr u32 m_ColorGridTh = 0xffb4b4b4;
-constexpr u32 m_SelectionRect = D3DCOLOR_RGBA(127, 255, 127, 64);
-
-constexpr u32 m_ColorSafeRect = 0xffB040B0;
+constexpr u32 m_ColorGrid{0xff909090};
+constexpr u32 m_ColorGridTh{0xffb4b4b4};
+constexpr u32 m_SelectionRect{D3DCOLOR_RGBA(127, 255, 127, 64)};
+} // namespace
 
 void SPrimitiveBuffer::Destroy()
 {
@@ -702,31 +702,37 @@ void CDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, u32* c
 void CDrawUtilities::DrawBox(const Fvector& offs, const Fvector& Size, BOOL bSolid, BOOL bWire, u32 clr_s, u32 clr_w)
 {
     _VertexStream* Stream = &RImplementation.Vertex;
+
     if (bWire)
     {
         u32 vBase;
+
         FVF::L* pv = (FVF::L*)Stream->Lock(identboxwirecount, vs_L->vb_stride, vBase);
-        for (u32 i = 0; i < identboxwirecount; i++, pv++)
+        for (const auto& wire : identboxwire)
         {
-            pv->p.mul(identboxwire[i], Size);
+            pv->p.mul(wire, Size);
             pv->p.mul(2);
             pv->p.add(offs);
             pv->color = clr_w;
+            pv++;
         }
         Stream->Unlock(identboxwirecount, vs_L->vb_stride);
 
         DU_DRAW_DP(D3DPT_LINELIST, vs_L, vBase, identboxwirecount / 2);
     }
+
     if (bSolid)
     {
         u32 vBase;
+
         FVF::L* pv = (FVF::L*)Stream->Lock(DU_BOX_NUMVERTEX2, vs_L->vb_stride, vBase);
-        for (int i = 0; i < DU_BOX_NUMVERTEX2; i++, pv++)
+        for (const auto& vert : du_box_vertices2)
         {
-            pv->p.mul(du_box_vertices2[i], Size);
+            pv->p.mul(vert, Size);
             pv->p.mul(2);
             pv->p.add(offs);
             pv->color = clr_s;
+            pv++;
         }
         Stream->Unlock(DU_BOX_NUMVERTEX2, vs_L->vb_stride);
 
@@ -817,7 +823,8 @@ constexpr u32 MAX_VERT_COUNT{std::numeric_limits<u16>::max()};
 
 void CDrawUtilities::DD_DrawFace_begin(BOOL bWire)
 {
-    VERIFY(m_DD_pv_start == 0);
+    VERIFY(m_DD_pv_start == nullptr);
+
     m_DD_wire = bWire;
     m_DD_pv_start = (FVF::L*)RImplementation.Vertex.Lock(MAX_VERT_COUNT, vs_L->vb_stride, m_DD_base);
     m_DD_pv = m_DD_pv_start;

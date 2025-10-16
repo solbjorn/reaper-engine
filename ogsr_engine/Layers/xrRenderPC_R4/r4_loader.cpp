@@ -225,7 +225,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
             u32 dcl_len = FVF::GetDeclLength(dcl) + 1;
             _DC[i].resize(dcl_len);
-            fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
+            fs->r(_DC[i].data(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
             // count, size
             u32 vCount = fs->r_u32();
@@ -355,14 +355,16 @@ void CRender::LoadSectors(IReader* fs)
     {
         CDB::Collector CL;
         fs->find_chunk(fsL_PORTALS);
+
         for (u32 i = 0; i < portals_count; i++)
         {
             auto& P = portals_data[i];
             fs->r(&P, sizeof(P));
 
-            for (u32 j = 2; j < P.vertices.size(); j++)
-                CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
+            for (gsl::index j{2}; j < P.vertices.size(); ++j)
+                CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], i);
         }
+
         if (CL.getTS() < 2)
         {
             constexpr Fvector v1{-20000.f, -20000.f, -20000.f};

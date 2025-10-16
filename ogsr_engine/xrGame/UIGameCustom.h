@@ -68,8 +68,8 @@ protected:
 public:
     st_vec m_custom_statics;
     xr_vector<st_vec::size_type> m_custom_statics_sorted;
-    virtual void SetClGame(game_cl_GameState* g) {}
 
+    virtual void SetClGame(game_cl_GameState*) {}
     virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
 
@@ -82,10 +82,10 @@ public:
     virtual void OnFrame();
     virtual void reset_ui();
 
-    virtual bool IR_OnKeyboardPress(int dik);
-    virtual bool IR_OnKeyboardRelease(int dik);
-    virtual bool IR_OnMouseMove(int dx, int dy);
-    virtual bool IR_OnMouseWheel(int direction);
+    virtual bool IR_OnKeyboardPress(int);
+    virtual bool IR_OnKeyboardRelease(int);
+    virtual bool IR_OnMouseMove(int, int);
+    virtual bool IR_OnMouseWheel(int);
 
     void AddDialogToRender(CUIWindow* pDialog);
     void RemoveDialogToRender(CUIWindow* pDialog);
@@ -95,7 +95,7 @@ public:
     virtual void HideShownDialogs() {}
 
     void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color);
-    void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color /*, LPCSTR def_text*/, float flicker);
+    void AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color, float flicker);
     void CustomMessageOut(LPCSTR id, LPCSTR msg, u32 color);
     void RemoveCustomMessage(LPCSTR id);
 

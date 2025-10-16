@@ -89,10 +89,8 @@ void CParticleManager::DestroyActionList(int alist_id)
 }
 
 // control
-void CParticleManager::PlayEffect(int effect_id, int alist_id)
+void CParticleManager::PlayEffect(int alist_id)
 {
-    // effect
-    //    ParticleEffect* pe		= GetEffectPtr(effect_id);
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
     VERIFY(pa);
@@ -102,16 +100,19 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
     pa->lock();
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
+    for (auto act : *pa)
     {
-        VERIFY((*it));
-        if ((*it))
-            switch ((*it)->type)
-            {
-            case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, FALSE); break;
-            case PAExplosionID: static_cast<PAExplosion*>(*it)->age = 0.f; break;
-            case PATurbulenceID: static_cast<PATurbulence*>(*it)->age = 0.f; break;
-            }
+        VERIFY(act);
+        if (!act)
+            continue;
+
+        switch (act->type)
+        {
+        case PASourceID: smart_cast<PASource*>(act)->m_Flags.set(PASource::flSilent, FALSE); break;
+        case PAExplosionID: smart_cast<PAExplosion*>(act)->age = 0.f; break;
+        case PATurbulenceID: smart_cast<PATurbulence*>(act)->age = 0.f; break;
+        default: break;
+        }
     }
 
     pa->unlock();
@@ -128,14 +129,15 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     pa->lock();
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+    for (auto act : *pa)
     {
-        if ((*it))
+        if (!act)
+            continue;
+
+        switch (act->type)
         {
-            switch ((*it)->type)
-            {
-            case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, TRUE); break;
-            }
+        case PASourceID: smart_cast<PASource*>(act)->m_Flags.set(PASource::flSilent, TRUE); break;
+        default: break;
         }
     }
 
@@ -186,17 +188,19 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     mT.translate(full.c);
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+    for (auto act : *pa)
     {
-        if (!(*it))
+        if (!act)
             continue;
 
-        BOOL r = (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
+        BOOL r = act->m_Flags.is(ParticleAction::ALLOW_ROTATE);
         const Fmatrix& m = r ? full : mT;
-        (*it)->Transform(m);
-        switch ((*it)->type)
+        act->Transform(m);
+
+        switch (act->type)
         {
-        case PASourceID: static_cast<PASource*>(*it)->parent_vel = pVector(vel.x, vel.y, vel.z) * static_cast<PASource*>(*it)->parent_motion; break;
+        case PASourceID: smart_cast<PASource*>(act)->parent_vel = pVector(vel.x, vel.y, vel.z) * smart_cast<PASource*>(act)->parent_motion; break;
+        default: break;
         }
     }
 

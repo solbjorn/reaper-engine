@@ -1,6 +1,5 @@
 #ifndef __XR_WEAPON_LR300_H__
 #define __XR_WEAPON_LR300_H__
-#pragma once
 
 #include "WeaponMagazined.h"
 #include "script_export_space.h"

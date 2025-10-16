@@ -24,5 +24,5 @@ public:
     virtual void setup(CAgentManager* object);
     void add_evaluators();
     void add_actions();
-    void remove_links(CObject* object);
+    void remove_links(CObject*);
 };

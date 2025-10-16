@@ -12,7 +12,6 @@
 #include "level.h"
 #include "ParticlesObject.h"
 #include "actor.h"
-#include "game_base_space.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 #include "ActorEffector.h"
@@ -30,9 +29,12 @@
 #include "ai_debug.h"
 #include "xr_task.h"
 
-static void* ode_alloc(size_t size) { return xr_malloc(size); }
-static void* ode_realloc(void* ptr, size_t oldsize, size_t newsize) { return xr_realloc(ptr, newsize); }
-static void ode_free(void* ptr, size_t size) { return xr_free(ptr); }
+namespace
+{
+[[nodiscard]] void* ode_alloc(size_t size) { return xr_malloc(size); }
+[[nodiscard]] void* ode_realloc(void* ptr, size_t, size_t newsize) { return xr_realloc(ptr, newsize); }
+void ode_free(void* ptr, size_t) { return xr_free(ptr); }
+} // namespace
 
 CGamePersistent::CGamePersistent()
 {
@@ -175,8 +177,8 @@ void CGamePersistent::UpdateGameType()
     __super::UpdateGameType();
     m_game_params.m_e_game_type = GAME_SINGLE;
 
-#pragma todo( \
-    "KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на m_game_type. На данный момент парсер может налажать, если встретит скобочки () в имени сейва.")
+    // TODO: KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на m_game_type. На данный
+    // момент парсер может налажать, если встретит скобочки () в имени сейва.
     ASSERT_FMT_DBG(!xr_strcmp(m_game_params.m_game_type, "single"), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
@@ -654,7 +656,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
     }
 }
 
-void CGamePersistent::Statistics(CGameFont* F)
+void CGamePersistent::Statistics([[maybe_unused]] CGameFont* F)
 {
 #ifdef DEBUG
     m_last_stats_frame = m_frame_counter;
@@ -709,7 +711,7 @@ void CGamePersistent::LoadTitle(const char* str)
 
 void CGamePersistent::SetTip() { pApp->LoadTitleInt(); }
 
-bool CGamePersistent::OnKeyboardPress(int dik)
+bool CGamePersistent::OnKeyboardPress()
 {
     if (psActorFlags.test(AF_KEYPRESS_ON_START) && GameAutopaused)
     {

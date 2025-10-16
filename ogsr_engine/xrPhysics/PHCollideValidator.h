@@ -37,7 +37,6 @@ public:
     static void InitObject(CPHObject& obj);
     static void RegisterObjToGroup(CGID group, CPHObject& obj);
     static void RegisterObjToLastGroup(CPHObject& obj);
-    static void RestoreGroupObject(const CPHObject& obj);
     static bool IsGroupObject(const CPHObject& obj);
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT

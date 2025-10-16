@@ -8,12 +8,7 @@
 
 #pragma once
 
-IC CALifeStorageManager::CALifeStorageManager(xrServer* server, LPCSTR section) : inherited(server, section)
-{
-    m_section = section;
-    strcpy_s(m_save_name, "");
-    strcpy_s(m_loaded_save, "");
-}
+IC CALifeStorageManager::CALifeStorageManager(xrServer* server, LPCSTR section) : inherited{server}, m_section{section} {}
 
 IC LPCSTR CALifeStorageManager::save_name(BOOL bLoaded)
 {

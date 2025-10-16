@@ -100,6 +100,7 @@ IC void xrPREAD_MARKER(IReader& fs) { R_ASSERT(xrPID_MARKER == xrPREAD(fs)); }
         switch (ID) \
         { \
         case xrPID_TOKEN: fs.advance(((xrP_TOKEN*)&(data))->Count * sizeof(xrP_TOKEN::Item)); break; \
+        default: break; \
         } \
     } \
     XR_MACRO_END()

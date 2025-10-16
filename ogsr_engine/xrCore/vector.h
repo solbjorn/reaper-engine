@@ -51,36 +51,37 @@ constexpr inline bool fis_zero(T val, T eps = EPS_S)
 namespace implement
 {
 template <class T>
-constexpr T deg2rad(T val)
+constexpr inline T deg2rad(T val)
 {
     return (val * T(M_PI) / T(180));
 }
 
 template <class T>
-constexpr T rad2deg(T val)
+constexpr inline T rad2deg(T val)
 {
     return (val * T(180) / T(M_PI));
 }
 } // namespace implement
 
-constexpr float deg2rad(float val) { return implement::deg2rad(val); }
-constexpr double deg2rad(double val) { return implement::deg2rad(val); }
-constexpr float rad2deg(float val) { return implement::rad2deg(val); }
-constexpr double rad2deg(double val) { return implement::rad2deg(val); }
+constexpr inline float deg2rad(float val) { return implement::deg2rad(val); }
+constexpr inline double deg2rad(double val) { return implement::deg2rad(val); }
+constexpr inline float rad2deg(float val) { return implement::rad2deg(val); }
+constexpr inline double rad2deg(double val) { return implement::rad2deg(val); }
 
 // clamping/snapping
 template <typename T>
-constexpr void clamp(T& val, const T& _low, const T& _high) noexcept
+constexpr inline void clamp(T& val, const T& _low, const T& _high) noexcept
 {
     val = std::clamp(val, _low, _high);
 }
 
-XR_FUNCTION_ALIAS_1(clampr, std::clamp);
+XR_FUNCTION_ALIAS(clampr, std::clamp);
 
-constexpr float snapto(float value, float snap) noexcept
+constexpr inline float snapto(float value, float snap) noexcept
 {
     if (snap <= 0.f)
         return value;
+
     return float(iFloor((value + (snap * 0.5f)) / snap)) * snap;
 }
 

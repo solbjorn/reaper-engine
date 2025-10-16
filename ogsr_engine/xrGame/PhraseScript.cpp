@@ -47,7 +47,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
 
     for (u32 i = 0; i < m_HasInfo.size(); i++)
     {
-#pragma todo("Andy->Andy how to check infoportion existence in XML ?")
+        // TODO: Andy->Andy how to check infoportion existence in XML ?
         /*		INFO_INDEX	result = CInfoPortion::IdToIndex(m_HasInfo[i],NO_INFO_INDEX,true);
                 if (result == NO_INFO_INDEX) {
                     ai().script_engine().script_log(eLuaMessageTypeError,"XML item not found : \"%s\"",*m_HasInfo[i]);
@@ -61,6 +61,7 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
             if (psAI_Flags.test(aiDialogs))
                 Msg("----rejected: [%s] has info %s", pOwner->Name(), *m_HasInfo[i]);
 #endif
+
             return false;
         }
     }
@@ -80,9 +81,11 @@ bool CPhraseScript::CheckInfo(const CInventoryOwner* pOwner) const
             if (psAI_Flags.test(aiDialogs))
                 Msg("----rejected: [%s] dont has info %s", pOwner->Name(), *m_DontHasInfo[i]);
 #endif
+
             return false;
         }
     }
+
     return true;
 }
 
@@ -99,7 +102,7 @@ void CPhraseScript::TransferInfo(const CInventoryOwner* pOwner) const
         Actor()->TransferInfo(m_DisableInfo[i], false);
 }
 
-bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR phrase_id) const
+bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, [[maybe_unused]] LPCSTR dialog_id, [[maybe_unused]] LPCSTR phrase_id) const
 {
     bool predicate_result = true;
 
@@ -144,7 +147,7 @@ bool CPhraseScript::Precondition(const CGameObject* pSpeakerGO, LPCSTR dialog_id
     return predicate_result;
 }
 
-void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR /*phrase_id*/) const
+void CPhraseScript::Action(const CGameObject* pSpeakerGO, LPCSTR dialog_id, LPCSTR) const
 {
     for (const auto& Act : Actions())
     {

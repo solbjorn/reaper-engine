@@ -62,8 +62,6 @@ void CAI_Stalker::Exec_Look(float dt)
     sight().Exec_Look(dt);
 }
 
-bool CAI_Stalker::bfCheckForNodeVisibility(u32 dwNodeID, bool bIfRayPick) { return (memory().visual().visible(dwNodeID, movement().m_head.current.yaw, ffGetFov())); }
-
 BOOL CAI_Stalker::feel_touch_contact(CObject* O)
 {
     if (!inherited::feel_touch_contact(O))

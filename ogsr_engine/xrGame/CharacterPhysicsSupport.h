@@ -112,8 +112,8 @@ public:
     IC bool isAlive() { return !m_pPhysicsShell; }
 
 protected:
-    virtual void SpawnInitPhysics(CSE_Abstract* D);
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() { return m_EntityAlife.PhysicsShellHolder(); }
+    void SpawnInitPhysics(CSE_Abstract*) override;
+    [[nodiscard]] CPhysicsShellHolder* PPhysicsShellHolder() override { return m_EntityAlife.PhysicsShellHolder(); }
 
     virtual bool CanRemoveObject();
 
@@ -148,7 +148,9 @@ public:
     ICollisionHitCallback* get_collision_hit_callback();
     void set_collision_hit_callback(ICollisionHitCallback* cc);
     /////////////////////////////////////////////////////////////////
-    CCharacterPhysicsSupport& operator=(CCharacterPhysicsSupport& /**asup/**/) { R_ASSERT2(false, "Can not assign it"); }
+
+    CCharacterPhysicsSupport& operator=(const CCharacterPhysicsSupport&) = delete;
+
     void SyncNetState();
 
     CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity);

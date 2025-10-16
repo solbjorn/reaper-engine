@@ -1,10 +1,8 @@
 #include "stdafx.h"
+
 #include "weaponBM16.h"
 
-CWeaponBM16::~CWeaponBM16() 
-{ 
-    HUD_SOUND::DestroySound(m_sndReload1);
-}
+CWeaponBM16::~CWeaponBM16() { HUD_SOUND::DestroySound(m_sndReload1); }
 
 void CWeaponBM16::Load(LPCSTR section)
 {
@@ -52,7 +50,7 @@ void CWeaponBM16::OnShot()
         OnShellDrop(get_LastSP(), vel);
         StartFlameParticles();
         ForceUpdateFireParticles();
-        StartSmokeParticles(get_LastFP(), vel);
+        StartSmokeParticles(get_LastFP());
     }
 }
 
@@ -110,9 +108,7 @@ void CWeaponBM16::PlayAnimHide()
 void CWeaponBM16::PlayAnimReload()
 {
     if (m_magazine.size() == 1 || !HaveCartridgeInInventory(2))
-        PlayHUDMotion(
-            {IsMisfire() ? "anm_reload_jammed_1" : (m_magazine.size() == 0 ? "anm_reload_only_0" : "nullptr"), "anim_reload_1", "anm_reload_1"},
-            true, GetState());
+        PlayHUDMotion({IsMisfire() ? "anm_reload_jammed_1" : (m_magazine.size() == 0 ? "anm_reload_only_0" : "nullptr"), "anim_reload_1", "anm_reload_1"}, true, GetState());
     else
         PlayHUDMotion({IsMisfire() ? "anm_reload_jammed_2" : "nullptr", "anim_reload", "anm_reload_2"}, true, GetState());
 }

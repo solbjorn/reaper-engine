@@ -218,7 +218,7 @@ public: //
     virtual CPhysicsElement* get_ParentElement() { return m_parent_element; }
     void SetShell(CPHShell* p); // aux
     virtual dBodyID get_body() { return m_body; } // aux
-    virtual const dBodyID get_bodyConst() const { return m_body; } // aux
+    virtual dBodyID get_bodyConst() const { return m_body; } // aux
     //////////////////////////////////////////////////////Breakable//////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     IC CPHFracturesHolder* FracturesHolder() { return m_fratures_holder; } // aux

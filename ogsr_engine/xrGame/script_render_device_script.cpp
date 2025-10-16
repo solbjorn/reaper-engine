@@ -10,18 +10,21 @@
 
 #include "script_render_device.h"
 
-static bool is_device_paused(CRenderDevice* d) { return !!Device.Paused(); }
-static void set_device_paused(CRenderDevice* d, bool b) { Device.Pause(b, TRUE, FALSE, "set_device_paused_script"); }
-
 extern BOOL g_appLoaded;
 
-static bool is_app_ready() { return !!g_appLoaded; }
+namespace
+{
+[[nodiscard]] bool is_device_paused(const CRenderDevice*) { return !!Device.Paused(); }
+void set_device_paused(const CRenderDevice*, bool b) { Device.Pause(b, TRUE, FALSE, "set_device_paused_script"); }
 
-static u32 time_global(const CRenderDevice* self)
+[[nodiscard]] bool is_app_ready() { return !!g_appLoaded; }
+
+[[nodiscard]] u32 time_global(const CRenderDevice* self)
 {
     THROW(self);
-    return (self->dwTimeGlobal);
+    return self->dwTimeGlobal;
 }
+} // namespace
 
 template <>
 void CScriptRenderDevice::script_register(sol::state_view& lua)

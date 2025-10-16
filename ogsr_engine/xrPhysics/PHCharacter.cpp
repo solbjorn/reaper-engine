@@ -41,12 +41,14 @@ void CPHCharacter::getForce(Fvector& force)
 {
     if (!b_exist)
         return;
-    force.set(*(Fvector*)dBodyGetForce(m_body));
+
+    force.set(*(const Fvector*)dBodyGetForce(m_body));
 }
 void CPHCharacter::setForce(const Fvector& force)
 {
     if (!b_exist)
         return;
+
     dBodySetForce(m_body, force.x, force.y, force.z);
 }
 
@@ -107,8 +109,6 @@ void CPHCharacter::Enable()
     CPHObject::activate();
     dBodyEnable(m_body);
 }
-
-void CarHitCallback(bool& /**do_colide/**/, dContact& /**c/**/) {}
 
 void CPHCharacter::GetSavedVelocity(Fvector& vvel)
 {

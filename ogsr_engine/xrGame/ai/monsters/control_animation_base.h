@@ -13,6 +13,9 @@ struct SEventVelocityBounce : public ControlCom::IEventData
 //////////////////////////////////////////////////////////////////////////
 class CControlAnimationBase : public CControl_ComBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlAnimationBase, CControl_ComBase);
+
+private:
     typedef CControl_ComBase inherited;
 
 protected:

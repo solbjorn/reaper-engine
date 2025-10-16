@@ -743,7 +743,7 @@ int Limb::try_singularities(int solves, float& swivel_angle, float x[])
 // Assumes that either SetGoal or SetGoalPos has been called first
 //
 
-int Limb::Solve(float x[], float* new_swivel, float* new_pos)
+int Limb::Solve(float x[7], float* new_swivel, float* new_pos)
 {
     int success;
     float swivel_angle = -phInfinity;
@@ -787,7 +787,9 @@ int Limb::Solve(float x[], float* new_swivel, float* new_pos)
         swivel_angle = 0.0f;
         success = SolveByAngle(swivel_angle, x);
     }
-    VERIFY(swivel_angle != -phInfinity);
+
+    VERIFY(std::isfinite(swivel_angle));
+
     if (new_swivel)
         *new_swivel = swivel_angle;
     if (new_pos)
@@ -892,7 +894,7 @@ int Limb::SolveByAngle(float swivel_angle, float x[7], float* new_swivel, float*
     return success;
 }
 
-int Limb::SolveByPos(const float pos[3], float x[], float* new_swivel, float* new_pos)
+int Limb::SolveByPos(const float pos[3], float x[7], float* new_swivel, float* new_pos)
 {
     float swivel_angle = solver.PosToAngle(pos);
     return SolveByAngle(swivel_angle, x, new_swivel, new_pos);

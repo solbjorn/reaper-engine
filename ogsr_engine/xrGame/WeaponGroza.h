@@ -10,8 +10,8 @@ class CWeaponGroza : public CWeaponMagazinedWGrenade
 public:
     typedef CWeaponMagazinedWGrenade inherited;
 
-    CWeaponGroza(void);
-    virtual ~CWeaponGroza(void);
+    CWeaponGroza();
+    virtual ~CWeaponGroza();
 
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return Groza; }

@@ -162,9 +162,8 @@ public:
     int GetParent() const { return ID_parent; }
     void Save(IWriter& fs);
     void Load(IReader& fs);
-#ifdef DEBUG
+
     const char* dbg_Name() const;
-#endif
 };
 
 using GameMtlPairVec = xr_vector<SGameMtlPair*>;

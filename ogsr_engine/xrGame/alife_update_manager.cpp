@@ -36,9 +36,9 @@ private:
     CALifeSwitchManager* m_switch_manager;
 
 public:
-    IC CSwitchPredicate(CALifeSwitchManager* switch_manager) { m_switch_manager = switch_manager; }
+    CSwitchPredicate(CALifeSwitchManager* switch_manager) : m_switch_manager{switch_manager} {}
 
-    IC bool operator()(CALifeLevelRegistry::_iterator& i, u64 cycle_count, bool) const
+    bool operator()(CALifeLevelRegistry::_iterator& i, u64 cycle_count, bool) const
     {
         if ((*i).second->m_switch_counter == cycle_count)
             return (false);
@@ -47,11 +47,11 @@ public:
         return (true);
     }
 
-    IC void operator()(CALifeLevelRegistry::_iterator& i, u64 cycle_count) const { m_switch_manager->switch_object((*i).second); }
+    void operator()(CALifeLevelRegistry::_iterator& i, u64) const { m_switch_manager->switch_object((*i).second); }
 };
 
 CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
-    : CALifeSwitchManager(server, section), CALifeSurgeManager(server, section), CALifeStorageManager(server, section), CALifeSimulatorBase(server, section)
+    : CALifeSimulatorBase{server}, CALifeSwitchManager{server, section}, CALifeSurgeManager{server}, CALifeStorageManager{server, section}
 {
     shedule.t_min = pSettings->r_s32(section, "schedule_min");
     shedule.t_max = pSettings->r_s32(section, "schedule_max");
@@ -60,8 +60,6 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
     m_max_process_time = pSettings->r_s32(section, "process_time");
     m_update_monster_factor = pSettings->r_float(section, "update_monster_factor");
     m_objects_per_update = pSettings->r_u32(section, "objects_per_update");
-    m_changing_level = false;
-    m_first_time = true;
 }
 
 CALifeUpdateManager::~CALifeUpdateManager()
@@ -78,8 +76,7 @@ float CALifeUpdateManager::shedule_Scale() const
 void CALifeUpdateManager::update_switch()
 {
     init_ef_storage();
-
-    graph().level().update(CSwitchPredicate(this));
+    graph().level().update(CSwitchPredicate{this});
 }
 
 void CALifeUpdateManager::update_scheduled(bool init_ef)
@@ -116,7 +113,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 void CALifeUpdateManager::set_process_time(int microseconds) { graph().set_process_time(float(microseconds) - float(microseconds) * update_monster_factor() / 1000000.f); }
 
-void CALifeUpdateManager::objects_per_update(const u32& objects_per_update) { scheduled().objects_per_update(objects_per_update); }
+void CALifeUpdateManager::objects_per_update(u32 objects_per_update) { scheduled().objects_per_update(objects_per_update); }
 
 void CALifeUpdateManager::init_ef_storage() const { ai().ef_storage().alife_evaluation(true); }
 

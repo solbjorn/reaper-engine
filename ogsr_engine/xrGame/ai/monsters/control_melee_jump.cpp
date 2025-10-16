@@ -89,10 +89,11 @@ void CControlMeleeJump::on_release()
     m_time_next_melee_jump = Device.dwTimeGlobal + Random.randI(ROTATION_JUMP_DELAY_MIN, ROTATION_JUMP_DELAY_MAX);
 }
 
-void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
+void CControlMeleeJump::on_event(ControlCom::EEventType type, ControlCom::IEventData*)
 {
     switch (type)
     {
     case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventMeleeJumpEnd, nullptr); break;
+    default: break;
     }
 }

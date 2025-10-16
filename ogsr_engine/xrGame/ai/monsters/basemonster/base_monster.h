@@ -83,7 +83,7 @@ public:
     virtual void HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element);
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
-    virtual void SelectAnimation(const Fvector& _view, const Fvector& _move, float speed);
+    void SelectAnimation(const Fvector&, const Fvector&, float) override;
 
     virtual void Load(LPCSTR section);
     virtual void PostLoad(LPCSTR);
@@ -115,11 +115,11 @@ public:
     virtual BOOL feel_touch_on_contact(CObject* O);
     virtual BOOL feel_touch_contact(CObject*);
 
-    virtual bool useful(const CItemManager* manager, const CGameObject* object) const;
-    virtual float evaluate(const CItemManager* manager, const CGameObject* object) const;
+    [[nodiscard]] bool useful(const CItemManager*, const CGameObject* object) const override;
+    [[nodiscard]] float evaluate(const CItemManager*, const CGameObject*) const override;
 
     virtual void OnEvent(NET_Packet& P, u16 type);
-    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override { inherited::OnHUDDraw(context_id, hud, root); }
+    void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override { inherited::OnHUDDraw(context_id, hud, root); }
     virtual u16 PHGetSyncItemsNumber() { return inherited::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited::PHGetSyncItem(item); }
     virtual void PHUnFreeze() { return inherited::PHUnFreeze(); }
@@ -141,11 +141,11 @@ public:
     virtual bool IsTalkEnabled() { return false; }
 
     virtual void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType hit_type = ALife::eHitTypeWound, bool draw_hit_marks = true);
-    virtual void HitEntityInJump(const CEntity* pEntity) {}
+    virtual void HitEntityInJump(const CEntity*) {}
 
     virtual void on_before_sell(CInventoryItem* item);
     float GetSatiety() { return 0.5f; }
-    void ChangeSatiety(float v) {}
+    void ChangeSatiety(float) {}
     // ---------------------------------------------------------------------------------
     // Process scripts
     // ---------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ public:
     bool m_script_processing_active;
     bool m_script_state_must_execute;
 
-    virtual void jump(const Fvector& position, float factor) {}
+    virtual void jump(const Fvector&, float) {}
 
     bool m_skip_transfer_enemy;
     IC void skip_transfer_enemy(bool value) { m_skip_transfer_enemy = value; }
@@ -184,9 +184,9 @@ public:
     virtual void SetTurnAnimation(bool turn_left);
 
     // установка специфических анимаций
-    virtual void CheckSpecParams(u32 /**spec_params/**/) {}
+    virtual void CheckSpecParams(u32) {}
     virtual void ForceFinalAnimation() {}
-    virtual void LookPosition(Fvector to_point, float angular_speed = PI_DIV_3); // каждый монстр может по-разному реализвать эту функ (e.g. кровосос с поворотом головы и т.п.)
+    virtual void LookPosition(Fvector to_point); // каждый монстр может по-разному реализвать эту функ (e.g. кровосос с поворотом головы и т.п.)
 
     // Team
     virtual void ChangeTeam(int team, int squad, int group);
@@ -350,7 +350,7 @@ public:
     u32 m_prev_sound_type;
     u32 get_attack_rebuild_time();
 
-    IC virtual EAction CustomVelocityIndex2Action(u32 velocity_index) { return ACT_STAND_IDLE; }
+    IC virtual EAction CustomVelocityIndex2Action(u32) { return ACT_STAND_IDLE; }
     virtual void TranslateActionToPathParams();
 
     bool state_invisible;

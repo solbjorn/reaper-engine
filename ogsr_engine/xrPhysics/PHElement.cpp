@@ -222,26 +222,31 @@ void CPHElement::getQuaternion(Fquaternion& quaternion)
 {
     if (!isActive())
         return;
+
     const float* q = dBodyGetQuaternion(m_body);
     quaternion.set(-q[0], q[1], q[2], q[3]);
     VERIFY(_valid(quaternion));
 }
+
 void CPHElement::setQuaternion(const Fquaternion& quaternion)
 {
     VERIFY(_valid(quaternion));
     if (!isActive())
         return;
+
     dQuaternion q = {-quaternion.w, quaternion.x, quaternion.y, quaternion.z};
     dBodySetQuaternion(m_body, q);
     CPHDisablingRotational::Reinit();
     m_flags.set(flUpdate, TRUE);
     m_shell->spatial_move();
 }
+
 void CPHElement::GetGlobalPositionDynamic(Fvector* v)
 {
     if (!isActive())
         return;
-    v->set((*(Fvector*)dBodyGetPosition(m_body)));
+
+    v->set((*(const Fvector*)dBodyGetPosition(m_body)));
     VERIFY(_valid(*v));
 }
 
@@ -311,7 +316,8 @@ void CPHElement::Activate(const Fmatrix& transform, const Fvector& lin_vel, cons
         K->LL_GetBoneInstance(m_SelfID).set_callback(bctPhysics, m_shell->GetBonesCallback(), static_cast<CPhysicsElement*>(this));
     }
 }
-void CPHElement::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable)
+
+void CPHElement::Activate(const Fmatrix& m0, float, const Fmatrix& m2, bool disable)
 {
     Fvector lvel, avel;
     lvel.set(m2.c.x - m0.c.x, m2.c.y - m0.c.y, m2.c.z - m0.c.z);
@@ -352,7 +358,7 @@ void CPHElement::Update()
     VERIFY2(_valid(mXFORM), "invalid position in update");
 }
 
-void CPHElement::PhTune(dReal step)
+void CPHElement::PhTune(dReal)
 {
     if (!isActive())
         return;
@@ -361,7 +367,8 @@ void CPHElement::PhTune(dReal step)
         contact_effector->Apply();
     VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)), phBoundaries, PhysicsRefObject(), "PhTune body position");
 }
-void CPHElement::PhDataUpdate(dReal step)
+
+void CPHElement::PhDataUpdate(dReal)
 {
     if (!isActive())
         return;
@@ -1033,7 +1040,7 @@ void CPHElement::getForce(Fvector& force)
     if (!isActive())
         return;
 
-    force.set(*(Fvector*)dBodyGetForce(m_body));
+    force.set(*(const Fvector*)dBodyGetForce(m_body));
     VERIFY(dBodyStateValide(m_body));
 }
 
@@ -1042,7 +1049,7 @@ void CPHElement::getTorque(Fvector& torque)
     if (!isActive())
         return;
 
-    torque.set(*(Fvector*)dBodyGetTorque(m_body));
+    torque.set(*(const Fvector*)dBodyGetTorque(m_body));
     VERIFY(dBodyStateValide(m_body));
 }
 
@@ -1105,7 +1112,7 @@ void CPHElement::applyImpulse(const Fvector& dir, float val) // aux
 void CPHElement::add_Shape(const SBoneShape& shape, const Fmatrix& offset) { CPHGeometryOwner::add_Shape(shape, offset); }
 void CPHElement::add_Shape(const SBoneShape& shape) { CPHGeometryOwner::add_Shape(shape); }
 
-#pragma todo(remake it using Geometry functions)
+// TODO: remake it using Geometry functions
 
 void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture)
 {
@@ -1170,14 +1177,13 @@ void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const 
     dMassTranslate(&m, mc.x, mc.y, mc.z);
     m_mass_center.sub(new_mc);
     dMassTranslate(&m_mass, m_mass_center.x, m_mass_center.y, m_mass_center.z);
+
     if (m_fratures_holder)
-    {
-        m_fratures_holder->DistributeAdditionalMass(u16(m_geoms.size() - 1), m);
-    }
+        m_fratures_holder->DistributeAdditionalMass(m);
+
     if (fracture)
-    {
         fracture->MassAddToSecond(m);
-    }
+
     R_ASSERT2(dMass_valide(&m), "bad bone mass params");
     dMassAdd(&m_mass, &m);
     R_ASSERT2(dMass_valide(&m), "bad result mass params");
@@ -1330,7 +1336,7 @@ void CPHElement::ResetMass(float density)
     dBodySetMass(m_body, &m_mass);
 
     shift_mc.sub(m_mass_center, tmp);
-    tmp.set(*(Fvector*)dBodyGetPosition(m_body));
+    tmp.set(*(const Fvector*)dBodyGetPosition(m_body));
     tmp.add(shift_mc);
 
     // bActivating = true;

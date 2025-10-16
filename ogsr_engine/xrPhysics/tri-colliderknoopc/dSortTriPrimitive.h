@@ -7,6 +7,7 @@
 #include "../MathUtils.h"
 #include "../phworld.h"
 #include "../../XR_3DA/gamemtllib.h"
+
 #ifdef DEBUG
 #include "../debug_output.h"
 #endif
@@ -14,14 +15,12 @@
 IC bool negative_tri_set_ignored_by_positive_tri(const Triangle& neg_tri, const Triangle& pos_tri, const Fvector* V_array)
 {
     bool common0 = (neg_tri.T->verts[0] == pos_tri.T->verts[0]) || (neg_tri.T->verts[0] == pos_tri.T->verts[1]) || (neg_tri.T->verts[0] == pos_tri.T->verts[2]);
-
     bool common1 = (neg_tri.T->verts[1] == pos_tri.T->verts[0]) || (neg_tri.T->verts[1] == pos_tri.T->verts[1]) || (neg_tri.T->verts[1] == pos_tri.T->verts[2]);
-
     bool common2 = (neg_tri.T->verts[2] == pos_tri.T->verts[0]) || (neg_tri.T->verts[2] == pos_tri.T->verts[1]) || (neg_tri.T->verts[2] == pos_tri.T->verts[2]);
 
-    return (common0 && common1 && common2) || (!common0 && !(dDOT(neg_tri.norm, (dReal*)&V_array[pos_tri.T->verts[0]]) > neg_tri.pos)) ||
-        (!common1 && !(dDOT(neg_tri.norm, (dReal*)&V_array[pos_tri.T->verts[1]]) > neg_tri.pos)) ||
-        (!common2 && !(dDOT(neg_tri.norm, (dReal*)&V_array[pos_tri.T->verts[2]]) > neg_tri.pos));
+    return (common0 && common1 && common2) || (!common0 && !(dDOT(neg_tri.norm, (const dReal*)&V_array[pos_tri.T->verts[0]]) > neg_tri.pos)) ||
+        (!common1 && !(dDOT(neg_tri.norm, (const dReal*)&V_array[pos_tri.T->verts[1]]) > neg_tri.pos)) ||
+        (!common2 && !(dDOT(neg_tri.norm, (const dReal*)&V_array[pos_tri.T->verts[2]]) > neg_tri.pos));
 }
 
 IC int SetBackTrajectoryCnt(const dReal* p, const dReal* last_pos, Triangle& neg_tri, dxGeom* o1, dxGeom* o2, dContactGeom* Contacts)
@@ -110,7 +109,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 
     pos_tries.clear();
     dReal neg_depth = dInfinity, b_neg_depth = dInfinity;
-    u32 b_count = 0;
     bool intersect = false;
 
 #ifdef DEBUG
@@ -178,11 +176,13 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 #ifdef DEBUG
         debug_output().dbg_saved_tries_for_active_objects()++;
 #endif
+
         // if(ignored_tries[I-B])continue;
         CDB::TRI* Tr = T_array + *I;
-        const Point vertices[3] = {Point((dReal*)&V_array[Tr->verts[0]]), Point((dReal*)&V_array[Tr->verts[1]]), Point((dReal*)&V_array[Tr->verts[2]])};
-        if (!aabb_tri_aabb(Point(p), Point((float*)&AABB), vertices))
+        const Point vertices[3]{Point((const dReal*)&V_array[Tr->verts[0]]), Point((const dReal*)&V_array[Tr->verts[1]]), Point((const dReal*)&V_array[Tr->verts[2]])};
+        if (!aabb_tri_aabb(Point(p), Point((const float*)&AABB), vertices))
             continue;
+
 #ifdef DEBUG
         if (debug_output().ph_dbg_draw_mask().test(phDBgDrawIntersectedTries))
             debug_output().DBG_DrawTri(Tr, V_array, D3DCOLOR_XRGB(0, 255, 0));
@@ -198,7 +198,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 #endif
             float last_pos_dist = dDOT(last_pos, tri.norm) - tri.pos;
             if ((!(last_pos_dist < 0.f)) || b_pushing)
-                if (__aabb_tri(Point(p), Point((float*)&AABB), vertices))
+                if (__aabb_tri(Point(p), Point((const float*)&AABB), vertices))
                 {
 #ifdef DEBUG
                     if (debug_output().ph_dbg_draw_mask().test(phDBgDrawTriesChangesSign))
@@ -267,7 +267,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                     if (!b_pased && b_passable)
                     {
                         //! contain_pos&&
-                        ++b_count;
                         dReal sidePr = primitive.Proj(o1, tri.norm);
                         tri.depth = sidePr - tri.dist;
                         if (b_neg_depth > tri.depth && (!(*pushing_b_neg || spushing_b_neg) || dDOT(b_neg_tri.norm, tri.norm) > -M_SQRT1_2) &&
@@ -311,7 +310,8 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
                 for (auto& it : pos_tries)
                 {
                     VERIFY(neg_tri.T);
-                    if (TriContainPoint((dReal*)&V_array[it.T->verts[0]], (dReal*)&V_array[it.T->verts[1]], (dReal*)&V_array[it.T->verts[2]], it.norm, it.side0, it.side1, p))
+                    if (TriContainPoint((const dReal*)&V_array[it.T->verts[0]], (const dReal*)&V_array[it.T->verts[1]], (const dReal*)&V_array[it.T->verts[2]], it.norm, it.side0,
+                                        it.side1, p))
                         if (negative_tri_set_ignored_by_positive_tri(neg_tri, it, V_array))
                         {
                             include = false;
@@ -322,7 +322,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 
             if (include)
             {
-                VERIFY(neg_tri.T && neg_tri.dist != -dInfinity);
+                VERIFY(neg_tri.T && std::isfinite(neg_tri.dist));
                 if (neg_tri_contains_point)
                 {
                     int bret = primitive.CollidePlain(neg_tri.side0, neg_tri.side1, neg_tri.norm, neg_tri.T, neg_tri.dist, o1, o2, flags, CONTACT(contact, 0), skip);
@@ -343,7 +343,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
         {
             for (auto& it : pos_tries)
             {
-                VERIFY(b_neg_tri.T && b_neg_tri.dist != -dInfinity);
+                VERIFY(b_neg_tri.T && std::isfinite(b_neg_tri.dist));
                 if (negative_tri_set_ignored_by_positive_tri(b_neg_tri, it, V_array))
                 {
                     include = false;

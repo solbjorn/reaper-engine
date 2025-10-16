@@ -491,7 +491,7 @@ void CActor::Hit(SHit* pHDS)
             mstate_wishful &= ~mcSprint;
     }
 
-    HitMark(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
+    HitMark(HDS.damage(), HDS.dir, HDS.hit_type);
 
     float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 
@@ -510,10 +510,10 @@ void CActor::Hit(SHit* pHDS)
     }
 }
 
-void CActor::HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector position_in_bone_space, float impulse, ALife::EHitType hit_type)
+void CActor::HitMark(float P, Fvector dir, ALife::EHitType hit_type)
 {
     // hit marker
-    if ((hit_type == ALife::eHitTypeFireWound || hit_type == ALife::eHitTypeWound_2) && g_Alive() && Local() && /*(this!=who) && */ (Level().CurrentEntity() == this))
+    if ((hit_type == ALife::eHitTypeFireWound || hit_type == ALife::eHitTypeWound_2) && g_Alive() && Local() && (Level().CurrentEntity() == this))
     {
         HUD().Hit(0, P, dir);
 
@@ -579,13 +579,8 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
     if (g_Alive())
     {
         // stop-motion
-        if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
-            character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
-        {
-            Fvector zeroV;
-            zeroV.set(0, 0, 0);
-            character_physics_support()->movement()->SetVelocity(zeroV);
-        }
+        if (character_physics_support()->movement()->Environment() == peOnGround || character_physics_support()->movement()->Environment() == peAtWall)
+            character_physics_support()->movement()->SetVelocity({});
 
         // check damage bone
         Fvector D;
@@ -597,7 +592,8 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
         IKinematicsAnimated* tpKinematics = smart_cast<IKinematicsAnimated*>(pV);
         IKinematics* pK = smart_cast<IKinematics*>(pV);
         VERIFY(tpKinematics);
-#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
+
+        // TODO: Dima to Dima : forward-back bone impulse direction has been determined incorrectly!
         MotionID motion_ID =
             m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta, yaw) <= PI_DIV_2 ? 0 : 1))];
         float power_factor = perc / 100.f;
@@ -924,7 +920,8 @@ void CActor::shedule_Update(u32 DT)
     // обновление инвентаря
     if (!updated)
         inventory().RestoreBeltOrder();
-    UpdateInventoryOwner(DT);
+
+    UpdateInventoryOwner();
 
     static u32 tasks_update_time = 0;
     if (tasks_update_time > TASKS_UPDATE_TIME)
@@ -1193,11 +1190,13 @@ extern BOOL g_ShowAnimationInfo;
 #endif // DEBUG
 
 // HUD
-void CActor::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) { g_player_hud->render_hud(context_id, root); }
+void CActor::OnHUDDraw(ctx_id_t context_id, CCustomHUD*, IRenderable* root) { g_player_hud->render_hud(context_id, root); }
 
-static float mid_size = 0.097f;
-static float fontsize = 15.0f;
-static float upsize = 0.33f;
+namespace
+{
+constexpr float mid_size{0.097f};
+constexpr float upsize{0.33f};
+} // namespace
 
 void CActor::RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
@@ -1713,7 +1712,7 @@ float CActor::GetCarryWeight() const
 
 float CActor::GetMass() { return g_Alive() ? character_physics_support()->movement()->GetMass() : m_pPhysicsShell ? m_pPhysicsShell->getMass() : 0; }
 
-bool CActor::is_on_ground() { return (character_physics_support()->movement()->Environment() != CPHMovementControl::peInAir); }
+bool CActor::is_on_ground() { return (character_physics_support()->movement()->Environment() != peInAir); }
 
 CCustomOutfit* CActor::GetOutfit() const
 {

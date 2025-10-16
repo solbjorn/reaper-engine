@@ -366,7 +366,7 @@ u64 GetHash(const D3D_SAMPLER_DESC& desc)
     return xxh::XXH3_64bits(&buf[0], sizeof(buf));
 }
 
-void ValidateState(D3D_RASTERIZER_DESC& desc) {}
+void ValidateState(D3D_RASTERIZER_DESC&) {}
 
 void ValidateState(D3D_DEPTH_STENCIL_DESC& desc)
 {
@@ -427,6 +427,7 @@ void ValidateState(D3D_BLEND_DESC& desc)
             case D3D_BLEND_INV_DEST_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
             case D3D_BLEND_SRC1_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
             case D3D_BLEND_INV_SRC1_COLOR: desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
+            default: break;
             }
 
             switch (desc.RenderTarget[i].DestBlendAlpha)
@@ -437,6 +438,7 @@ void ValidateState(D3D_BLEND_DESC& desc)
             case D3D_BLEND_INV_DEST_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
             case D3D_BLEND_SRC1_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
             case D3D_BLEND_INV_SRC1_COLOR: desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
+            default: break;
             }
         }
     }

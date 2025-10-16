@@ -7,14 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restriction.h"
 #include "space_restriction_manager.h"
 #include "ai_space.h"
 #include "level_graph.h"
 #include "space_restriction_base.h"
 #include "profiler.h"
-
-const float dependent_distance = 100.f;
 
 template <bool a>
 struct CMergeInOutPredicate
@@ -256,15 +255,9 @@ u32 CSpaceRestriction::accessible_nearest(const Fvector& position, Fvector& resu
 bool CSpaceRestriction::affect(SpaceRestrictionHolder::CBaseRestrictionPtr bridge, const Fsphere& sphere) const
 {
     if (bridge->inside(sphere))
-        return (false);
+        return false;
 
-    return (true);
-
-    // if (bridge->inside(start_position))
-    //	return						(false);
-    // Fvector							position;
-    // bridge->accessible_nearest		(start_position,position,false);
-    // return							(start_position.distance_to(position) <= radius + dependent_distance);
+    return true;
 }
 
 bool CSpaceRestriction::affect(SpaceRestrictionHolder::CBaseRestrictionPtr bridge, u32 start_vertex_id, float radius) const

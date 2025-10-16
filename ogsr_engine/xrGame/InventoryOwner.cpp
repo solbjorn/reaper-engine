@@ -185,9 +185,10 @@ void CInventoryOwner::load(IReader& input_packet)
     load_data(m_money, input_packet);
 }
 
-void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
+void CInventoryOwner::UpdateInventoryOwner()
 {
     inventory().Update();
+
     if (m_pTrade)
         m_pTrade->UpdateTrade();
 
@@ -203,6 +204,7 @@ void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
         // если мы умерли, то тоже не говорить
         CEntityAlive* pOurEntityAlive = smart_cast<CEntityAlive*>(this);
         R_ASSERT(pOurEntityAlive);
+
         if (!pOurEntityAlive->g_Alive())
             StopTalk();
     }
@@ -344,8 +346,8 @@ LPCSTR CInventoryOwner::Name() const
     return m_game_name.c_str();
 }
 
-void CInventoryOwner::NewPdaContact(CInventoryOwner* pInvOwner) {}
-void CInventoryOwner::LostPdaContact(CInventoryOwner* pInvOwner) {}
+void CInventoryOwner::NewPdaContact(CInventoryOwner*) {}
+void CInventoryOwner::LostPdaContact(CInventoryOwner*) {}
 
 //////////////////////////////////////////////////////////////////////////
 // для работы с relation system
@@ -419,20 +421,22 @@ void CInventoryOwner::OnItemDrop(CInventoryItem* inventory_item)
 
 void CInventoryOwner::OnItemDropUpdate() {}
 
-void CInventoryOwner::OnItemBelt(CInventoryItem* inventory_item, EItemPlace previous_place)
+void CInventoryOwner::OnItemBelt(CInventoryItem* inventory_item, EItemPlace)
 {
     CGameObject* object = smart_cast<CGameObject*>(this);
     VERIFY(object);
     object->callback(GameObject::eOnItemToBelt)(inventory_item->object().lua_game_object());
 }
-void CInventoryOwner::OnItemRuck(CInventoryItem* inventory_item, EItemPlace previous_place)
+
+void CInventoryOwner::OnItemRuck(CInventoryItem* inventory_item, EItemPlace)
 {
     CGameObject* object = smart_cast<CGameObject*>(this);
     VERIFY(object);
     object->callback(GameObject::eOnItemToRuck)(inventory_item->object().lua_game_object());
     detach(inventory_item);
 }
-void CInventoryOwner::OnItemSlot(CInventoryItem* inventory_item, EItemPlace previous_place)
+
+void CInventoryOwner::OnItemSlot(CInventoryItem* inventory_item, EItemPlace)
 {
     CGameObject* object = smart_cast<CGameObject*>(this);
     VERIFY(object);
@@ -442,11 +446,9 @@ void CInventoryOwner::OnItemSlot(CInventoryItem* inventory_item, EItemPlace prev
 
 CInventoryItem* CInventoryOwner::GetCurrentOutfit() const { return inventory().m_slots[OUTFIT_SLOT].m_pIItem; }
 
-void CInventoryOwner::on_weapon_shot_start(CWeapon* weapon) {}
-
-void CInventoryOwner::on_weapon_shot_stop(CWeapon* weapon) {}
-
-void CInventoryOwner::on_weapon_hide(CWeapon* weapon) {}
+void CInventoryOwner::on_weapon_shot_start(CWeapon*) {}
+void CInventoryOwner::on_weapon_shot_stop(CWeapon*) {}
+void CInventoryOwner::on_weapon_hide(CWeapon*) {}
 
 LPCSTR CInventoryOwner::trade_section() const
 {
@@ -494,9 +496,9 @@ void CInventoryOwner::sell_useless_items()
     }
 }
 
-bool CInventoryOwner::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
+bool CInventoryOwner::AllowItemToTrade(CInventoryItem const* item, EItemPlace) const
 {
-    return (trade_parameters().enabled(CTradeParameters::action_sell(nullptr), item->object().cNameSect()));
+    return trade_parameters().enabled(CTradeParameters::action_sell(nullptr), item->object().cNameSect());
 }
 
 void CInventoryOwner::set_money(u32 amount, bool bSendEvent)

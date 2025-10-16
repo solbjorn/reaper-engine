@@ -62,7 +62,7 @@ public:
     virtual void Hit(SHit* pHDS);
     virtual void UpdateCL();
 
-    virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
+    void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
     virtual void g_WeaponBones(int& L, int& R1, int& R2);
     virtual float ffGetFov() const { return 150.f; }
     virtual float ffGetRange() const { return 30.f; }
@@ -92,8 +92,8 @@ public:
     // игровое имя
     virtual LPCSTR Name() const { return CInventoryOwner::Name(); }
 
-    virtual bool can_attach(const CInventoryItem* inventory_item) const;
-    virtual bool use_bolts() const;
+    [[nodiscard]] bool can_attach(const CInventoryItem*) const override;
+    [[nodiscard]] bool use_bolts() const override;
     virtual void spawn_supplies();
 
     virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);

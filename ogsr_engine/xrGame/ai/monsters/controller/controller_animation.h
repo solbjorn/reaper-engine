@@ -8,6 +8,9 @@ class CController;
 
 class CControllerAnimation : public CControlAnimationBase
 {
+    RTTI_DECLARE_TYPEINFO(CControllerAnimation, CControlAnimationBase);
+
+private:
     typedef CControlAnimationBase inherited;
 
     CController* m_controller;

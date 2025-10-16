@@ -8,7 +8,6 @@
 #include "Entity.h"
 #include "actor.h"
 #include "xrserver_objects_alife_monsters.h"
-#include "entity.h"
 #include "level.h"
 #include "seniority_hierarchy_holder.h"
 #include "team_hierarchy_holder.h"
@@ -27,8 +26,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CEntity::CEntity() { m_registered_member = false; }
-
+CEntity::CEntity() = default;
 CEntity::~CEntity() { xr_delete(m_entity_condition); }
 
 CEntityConditionSimple* CEntity::create_entity_condition(CEntityConditionSimple* ec)
@@ -70,7 +68,7 @@ void CEntity::OnEvent(NET_Packet& P, u16 type)
     }
 }
 
-void CEntity::Die(CObject* who)
+void CEntity::Die(CObject*)
 {
     if (!AlreadyDie())
         set_death_time();
@@ -146,7 +144,7 @@ void CEntity::Load(LPCSTR section)
     id_Squad = READ_IF_EXISTS(pSettings, r_s32, section, "squad", -1);
     id_Group = READ_IF_EXISTS(pSettings, r_s32, section, "group", -1);
 
-#pragma todo("Jim to Dima: no specific figures or comments needed")
+    // TODO: Jim to Dima: no specific figures or comments needed
     m_fMorale = 66.f;
 
     m_forget_killer_time = READ_IF_EXISTS(pSettings, r_u32, section, "forget_killer_time", FORGET_KILLER_TIME) * 1000;

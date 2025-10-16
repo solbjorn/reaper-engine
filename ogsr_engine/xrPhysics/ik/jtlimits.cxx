@@ -31,6 +31,7 @@
  */
 
 #include "StdAfx.h"
+
 #include "aint.h"
 #include "jtlimits.h"
 
@@ -635,7 +636,7 @@ void ComplexJtLimit::store_intersections(int n, const float* s, float low, float
 const float tan_0 = tan(eps / 2.0f);
 const float tan_two_pi = (2 * M_PI - eps / 2.0f);
 
-void ComplexJtLimit::PsiLimits(int num_s, float s[], AngleIntList& psi1, AngleIntList& psi2) const
+void ComplexJtLimit::PsiLimits(int num_s, const float s[], AngleIntList& psi1, AngleIntList& psi2) const
 {
     psi1.Clear();
     psi2.Clear();

@@ -239,7 +239,7 @@ void CLevel::ProcessGameSpawns()
     }
 }
 
-void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
+void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type)
 {
     if (type != GE_DESTROY)
         return;

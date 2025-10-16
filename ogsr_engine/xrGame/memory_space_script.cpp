@@ -21,8 +21,6 @@ CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObjec
     return (object.m_object && object.m_object->m_spawned ? object.m_object->lua_game_object() : nullptr);
 }
 
-int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
-
 template <typename T>
 CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
 {

@@ -39,7 +39,7 @@ CSE_ALifeGraphPoint::CSE_ALifeGraphPoint(LPCSTR caSection) : CSE_Abstract(caSect
 
 CSE_ALifeGraphPoint::~CSE_ALifeGraphPoint() {}
 
-void CSE_ALifeGraphPoint::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeGraphPoint::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     tNetPacket.r_stringZ(m_caConnectionPointName);
     if (m_wVersion < 33)
@@ -62,9 +62,8 @@ void CSE_ALifeGraphPoint::__STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_u8(m_tLocations[3]);
 }
 
-void CSE_ALifeGraphPoint::UPDATE_Read(NET_Packet& tNetPacket) {}
-
-void CSE_ALifeGraphPoint::UPDATE_Write(NET_Packet& tNetPacket) {}
+void CSE_ALifeGraphPoint::UPDATE_Read(NET_Packet&) {}
+void CSE_ALifeGraphPoint::UPDATE_Write(NET_Packet&) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeObject
@@ -98,13 +97,10 @@ Fvector CSE_ALifeObject::draw_level_position() const { return (Position()); }
 CSE_ALifeObject::~CSE_ALifeObject() {}
 
 bool CSE_ALifeObject::move_offline() const { return (!m_flags.test(flOfflineNoMove)); }
-
 void CSE_ALifeObject::used_ai_locations(bool value) { m_flags.set(flUsedAI_Locations, value ? TRUE : FALSE); }
-
 void CSE_ALifeObject::move_offline(bool value) { m_flags.set(flOfflineNoMove, !value ? TRUE : FALSE); }
 
 bool CSE_ALifeObject::visible_for_map() const { return (!!m_flags.test(flVisibleForMap)); }
-
 void CSE_ALifeObject::visible_for_map(bool value) { m_flags.set(flVisibleForMap, value ? TRUE : FALSE); }
 
 void CSE_ALifeObject::__STATE_Write(NET_Packet& tNetPacket)
@@ -119,7 +115,7 @@ void CSE_ALifeObject::__STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w(&m_spawn_story_id, sizeof(m_spawn_story_id));
 }
 
-void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     if (m_wVersion >= 1)
     {
@@ -133,11 +129,6 @@ void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         else
         {
             tNetPacket.r_u8();
-            /**
-            u8					l_ucTemp;
-            tNetPacket.r_u8		(l_ucTemp);
-            m_spawn_probability	= (float)l_ucTemp;
-            /**/
         }
         if (m_wVersion < 83)
         {
@@ -189,9 +180,8 @@ void CSE_ALifeObject::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r(&m_spawn_story_id, sizeof(m_spawn_story_id));
 }
 
-void CSE_ALifeObject::UPDATE_Write(NET_Packet& tNetPacket) {}
-
-void CSE_ALifeObject::UPDATE_Read(NET_Packet& tNetPacket) {}
+void CSE_ALifeObject::UPDATE_Write(NET_Packet&) {}
+void CSE_ALifeObject::UPDATE_Read(NET_Packet&) {}
 
 u32 CSE_ALifeObject::ef_equipment_type() const
 {
@@ -256,19 +246,16 @@ bool CSE_ALifeObject::can_switch_offline() const
 }
 
 bool CSE_ALifeObject::can_save() const { return (!!m_flags.is(flCanSave)); }
-
 bool CSE_ALifeObject::interactive() const { return (!!m_flags.is(flInteractive) && !!m_flags.is(flVisibleForAI) && !!m_flags.is(flUsefulForAI)); }
-
 void CSE_ALifeObject::can_switch_online(bool value) { m_flags.set(flSwitchOnline, BOOL(value)); }
-
 void CSE_ALifeObject::can_switch_offline(bool value) { m_flags.set(flSwitchOffline, BOOL(value)); }
-
 void CSE_ALifeObject::interactive(bool value) { m_flags.set(flInteractive, BOOL(value)); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeGroupAbstract
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeGroupAbstract::CSE_ALifeGroupAbstract(LPCSTR caSection)
+
+CSE_ALifeGroupAbstract::CSE_ALifeGroupAbstract(LPCSTR)
 {
     m_tpMembers.clear();
     m_bCreateSpawnPositions = true;
@@ -280,7 +267,7 @@ CSE_Abstract* CSE_ALifeGroupAbstract::init() { return (base()); }
 
 CSE_ALifeGroupAbstract::~CSE_ALifeGroupAbstract() {}
 
-void CSE_ALifeGroupAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeGroupAbstract::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     u16 m_wVersion = base()->m_wVersion;
     u32 dwDummy;
@@ -320,16 +307,15 @@ CSE_ALifeDynamicObject::CSE_ALifeDynamicObject(LPCSTR caSection) : CSE_ALifeObje
 CSE_ALifeDynamicObject::~CSE_ALifeDynamicObject() {}
 
 void CSE_ALifeDynamicObject::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
-
 void CSE_ALifeDynamicObject::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
 
 void CSE_ALifeDynamicObject::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
-
 void CSE_ALifeDynamicObject::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeDynamicObjectVisual
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeDynamicObjectVisual::CSE_ALifeDynamicObjectVisual(LPCSTR caSection) : CSE_ALifeDynamicObject(caSection), CSE_Visual()
 {
     if (pSettings->line_exist(caSection, "visual"))
@@ -354,12 +340,12 @@ void CSE_ALifeDynamicObjectVisual::__STATE_Read(NET_Packet& tNetPacket, u16 size
 }
 
 void CSE_ALifeDynamicObjectVisual::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
-
 void CSE_ALifeDynamicObjectVisual::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifePHSkeletonObject
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifePHSkeletonObject::CSE_ALifePHSkeletonObject(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection), CSE_PHSkeleton(caSection)
 {
     m_flags.set(flUseSwitches, FALSE);
@@ -399,12 +385,12 @@ void CSE_ALifePHSkeletonObject::UPDATE_Read(NET_Packet& tNetPacket)
 }
 
 bool CSE_ALifePHSkeletonObject::can_save() const { return CSE_PHSkeleton::need_save(); }
-
 bool CSE_ALifePHSkeletonObject::used_ai_locations() const { return false; }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeSpaceRestrictor
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeSpaceRestrictor::CSE_ALifeSpaceRestrictor(LPCSTR caSection) : CSE_ALifeDynamicObject(caSection)
 {
     m_flags.set(flUseSwitches, FALSE);
@@ -417,9 +403,7 @@ CSE_ALifeSpaceRestrictor::CSE_ALifeSpaceRestrictor(LPCSTR caSection) : CSE_ALife
 CSE_ALifeSpaceRestrictor::~CSE_ALifeSpaceRestrictor() {}
 
 bool CSE_ALifeSpaceRestrictor::__can_switch_offline() const { return false; }
-
 bool CSE_ALifeSpaceRestrictor::used_ai_locations() const { return (false); }
-
 ISE_Shape* CSE_ALifeSpaceRestrictor::shape() { return (this); }
 
 void CSE_ALifeSpaceRestrictor::__STATE_Read(NET_Packet& tNetPacket, u16 size)
@@ -438,7 +422,6 @@ void CSE_ALifeSpaceRestrictor::__STATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeSpaceRestrictor::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeSpaceRestrictor::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
 xr_token defaul_retrictor_types[] = {{"NOT A restrictor", RestrictionSpace::eRestrictorTypeNone},
@@ -846,10 +829,7 @@ bool CSE_ALifeObjectProjector::used_ai_locations() const { return (false); }
 CSE_ALifeSchedulable::CSE_ALifeSchedulable(LPCSTR) {}
 CSE_ALifeSchedulable::~CSE_ALifeSchedulable() {}
 
-bool CSE_ALifeSchedulable::need_update(CSE_ALifeDynamicObject* object)
-{
-    return (!object || (object->m_bDirectControl && /**object->interactive() && /**/ object->used_ai_locations() && !object->m_bOnline));
-}
+bool CSE_ALifeSchedulable::need_update(CSE_ALifeDynamicObject* object) { return !object || (object->m_bDirectControl && object->used_ai_locations() && !object->m_bOnline); }
 
 CSE_Abstract* CSE_ALifeSchedulable::init() { return (base()); }
 
@@ -1129,39 +1109,27 @@ void CSE_ALifeObjectClimable::__STATE_Write(NET_Packet& tNetPacket)
     cform_write(tNetPacket);
 }
 
-void CSE_ALifeObjectClimable::UPDATE_Read(NET_Packet& tNetPacket)
-{
-    // inherited1::UPDATE_Read		(tNetPacket);
-    // inherited2::UPDATE_Read		(tNetPacket);
-}
+void CSE_ALifeObjectClimable::UPDATE_Read(NET_Packet&) {}
 
-void CSE_ALifeObjectClimable::UPDATE_Write(NET_Packet& tNetPacket)
-{
-    // inherited1::UPDATE_Write		(tNetPacket);
-    // inherited2::UPDATE_Write		(tNetPacket);
-}
+void CSE_ALifeObjectClimable::UPDATE_Write(NET_Packet&) {}
 
-bool CSE_ALifeObjectClimable::used_ai_locations() const { return (false); }
-
+bool CSE_ALifeObjectClimable::used_ai_locations() const { return false; }
 bool CSE_ALifeObjectClimable::__can_switch_offline() const { return false; }
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeMountedWeapon
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeMountedWeapon::CSE_ALifeMountedWeapon(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {}
 
+CSE_ALifeMountedWeapon::CSE_ALifeMountedWeapon(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {}
 CSE_ALifeMountedWeapon::~CSE_ALifeMountedWeapon() {}
 
 void CSE_ALifeMountedWeapon::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
-
 void CSE_ALifeMountedWeapon::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
 void CSE_ALifeMountedWeapon::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeMountedWeapon::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
 
 CSE_ALifeStationaryMgun::CSE_ALifeStationaryMgun(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection) {}
-
 CSE_ALifeStationaryMgun::~CSE_ALifeStationaryMgun() {}
 
 void CSE_ALifeStationaryMgun::UPDATE_Read(NET_Packet& tNetPacket)
@@ -1179,7 +1147,6 @@ void CSE_ALifeStationaryMgun::UPDATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeStationaryMgun::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited::__STATE_Read(tNetPacket, size); }
-
 void CSE_ALifeStationaryMgun::__STATE_Write(NET_Packet& tNetPacket) { inherited::__STATE_Write(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1187,12 +1154,10 @@ void CSE_ALifeStationaryMgun::__STATE_Write(NET_Packet& tNetPacket) { inherited:
 ////////////////////////////////////////////////////////////////////////////
 
 CSE_ALifeSmartZone::CSE_ALifeSmartZone(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection), CSE_ALifeSchedulable(caSection) {}
-
 CSE_ALifeSmartZone::~CSE_ALifeSmartZone() {}
 
-CSE_Abstract* CSE_ALifeSmartZone::base() { return (this); }
-
-const CSE_Abstract* CSE_ALifeSmartZone::base() const { return (this); }
+CSE_Abstract* CSE_ALifeSmartZone::base() { return this; }
+const CSE_Abstract* CSE_ALifeSmartZone::base() const { return this; }
 
 CSE_Abstract* CSE_ALifeSmartZone::init()
 {
@@ -1202,11 +1167,9 @@ CSE_Abstract* CSE_ALifeSmartZone::init()
 }
 
 void CSE_ALifeSmartZone::__STATE_Read(NET_Packet& tNetPacket, u16 size) { inherited1::__STATE_Read(tNetPacket, size); }
-
 void CSE_ALifeSmartZone::__STATE_Write(NET_Packet& tNetPacket) { inherited1::__STATE_Write(tNetPacket); }
 
 void CSE_ALifeSmartZone::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeSmartZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
 bool CSE_ALifeSmartZone::enabled(CSE_ALifeMonsterAbstract* object) const

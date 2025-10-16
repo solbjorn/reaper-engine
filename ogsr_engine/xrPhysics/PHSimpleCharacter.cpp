@@ -19,18 +19,20 @@
 #include "PHCollideValidator.h"
 #include "CalculateTriangle.h"
 #include "game_base_space.h"
-// #include "phvalide.h"
 
-IC bool PhOutOfBoundaries(const Fvector& v) { return v.y < phBoundaries.y1; }
 #ifdef DEBUG
 #include "debug_renderer.h"
 #endif
 
-const float LOSE_CONTROL_DISTANCE = 0.5f; // fly distance to lose control
-const float CLAMB_DISTANCE = 0.5f;
-const float CLIMB_GETUP_HEIGHT = 0.3f;
+namespace
+{
+inline bool PhOutOfBoundaries(const Fvector& v) { return v.y < phBoundaries.y1; }
 
-float IC sgn(float v) { return v < 0.f ? -1.f : 1.f; }
+constexpr float LOSE_CONTROL_DISTANCE{0.5f}; // fly distance to lose control
+constexpr float CLAMB_DISTANCE{0.5f};
+
+constexpr inline float sgn(float v) { return v < 0.f ? -1.f : 1.f; }
+
 bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& fv_dir, const Fvector& box, int tri_id)
 {
     Triangle tri;
@@ -57,25 +59,22 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
         float abs_sd0 = sg_sd0 * sd0;
         float abs_sd1 = sg_sd1 * sd1;
 
-        float sd, abs_sd, sg_sd;
+        float abs_sd, sg_sd;
         u32 v;
         if (fsimilar(sg_sd0, sg_sd1))
         {
-            sd = -sd0 - sd1;
             abs_sd = abs_sd0 + abs_sd1;
             sg_sd = -sg_sd0;
             v = tri.T->verts[2];
         }
         else if (abs_sd0 > abs_sd1)
         {
-            sd = sd0;
             abs_sd = abs_sd0;
             sg_sd = sg_sd0;
             v = tri.T->verts[0];
         }
         else
         {
-            sd = sd1;
             abs_sd = abs_sd1;
             sg_sd = sg_sd1;
             v = tri.T->verts[1];
@@ -125,6 +124,8 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
     }
     return true;
 }
+} // namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////class//CPHSimpleCharacter////////////////////
 CPHSimpleCharacter::CPHSimpleCharacter() : jump_up_velocity{6.f}, m_max_velocity{5.f}
@@ -435,7 +436,7 @@ void CPHSimpleCharacter::ApplyForce(float x, float y, float z)
 
 void CPHSimpleCharacter::ApplyForce(const Fvector& dir, float force) { ApplyForce(dir.x * force, dir.y * force, dir.z * force); }
 
-void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
+void CPHSimpleCharacter::PhDataUpdate(dReal)
 {
     ///////////////////
 
@@ -700,12 +701,14 @@ void CPHSimpleCharacter::PhTune(dReal step)
 #endif
 }
 
-const float CHWON_ACCLEL_SHIFT = 0.4f;
-const float CHWON_AABB_FACTOR = 1.f;
-const float CHWON_ANG_COS = M_SQRT1_2;
-const float CHWON_CALL_UP_SHIFT = 0.05f;
-const float CHWON_CALL_FB_HIGHT = 1.5f;
-const float CHWON_AABB_FB_FACTOR = 1.f;
+namespace
+{
+constexpr float CHWON_ACCLEL_SHIFT{0.4f};
+constexpr float CHWON_AABB_FACTOR{1.0f};
+constexpr float CHWON_CALL_UP_SHIFT{0.05f};
+constexpr float CHWON_CALL_FB_HIGHT{1.5f};
+constexpr float CHWON_AABB_FB_FACTOR{1.0f};
+} // namespace
 
 void CPHSimpleCharacter::ValidateWalkOn()
 {
@@ -1346,8 +1349,10 @@ u16 CPHSimpleCharacter::RetriveContactBone()
                 contact_bone = i;
             }
         }
-        VERIFY(dInfinity != sq_dist);
+
+        VERIFY(std::isfinite(sq_dist));
     }
+
     return contact_bone;
 }
 
@@ -1727,7 +1732,7 @@ constexpr float resolve_depth{0.05f};
 float restrictor_depth{};
 } // namespace
 
-void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     dGeomID g_this{};
     dGeomID g_obj{};

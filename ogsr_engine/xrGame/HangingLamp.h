@@ -46,6 +46,7 @@ private:
 public:
     CHangingLamp();
     virtual ~CHangingLamp();
+
     void TurnOn();
     void TurnOff();
     virtual void Load(LPCSTR section);
@@ -64,13 +65,13 @@ public:
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
     virtual void Hit(SHit* pHDS);
-    virtual void net_Export(CSE_Abstract*);
+    void net_Export(CSE_Abstract*) override;
     virtual BOOL UsedAI_Locations();
 
     virtual void Center(Fvector& C) const;
     virtual float Radius() const;
 
-    void SetLSFParams(float _speed, float _amount, float _jit);
+    void SetLSFParams(float, float, float);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

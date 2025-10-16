@@ -181,11 +181,11 @@ public:
     virtual void UpdateCL();
     virtual void shedule_Update(u32 dt);
     virtual void Think();
-    virtual void SelectAnimation(const Fvector& _view, const Fvector& _move, float speed);
+    void SelectAnimation(const Fvector&, const Fvector&, float) override;
     virtual BOOL UsedAI_Locations();
 
     virtual void g_WeaponBones(int& L, int& R1, int& R2);
-    virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
+    void g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool = false) override;
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
     virtual void Die(CObject* who);
 
@@ -198,14 +198,15 @@ public:
     virtual void PHHit(SHit& H);
     virtual BOOL feel_vision_isRelevant(CObject* who);
     virtual float Radius() const;
+
 #ifdef DEBUG
-    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
+    void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override;
     virtual void OnRender();
 #endif
 
-    virtual bool useful(const CItemManager* manager, const CGameObject* object) const;
-    virtual float evaluate(const CItemManager* manager, const CGameObject* object) const;
-    virtual bool useful(const CEnemyManager* manager, const CEntityAlive* object) const;
+    [[nodiscard]] bool useful(const CItemManager*, const CGameObject* object) const override;
+    [[nodiscard]] float evaluate(const CItemManager*, const CGameObject* object) const override;
+    [[nodiscard]] bool useful(const CEnemyManager*, const CEntityAlive* object) const override;
 
     // PDA && Dialogs
     //	virtual void						ReceivePdaMessage					(u16 who, EPdaMsg msg, shared_str info_id);
@@ -231,7 +232,6 @@ public:
 
     // miscellanious functions
     void DropItemSendMessage(CObject* O);
-    bool bfCheckForNodeVisibility(u32 dwNodeID, bool bIfRyPick = false);
     virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
     virtual const SRotation Orientation() const;
     virtual const MonsterSpace::SBoneRotation& head_orientation() const;
@@ -341,7 +341,7 @@ protected:
     void update_conflicted(CInventoryItem* item, const CWeapon* new_weapon);
     void remove_personal_only_ammo(const CInventoryItem* item);
     void on_after_take(const CGameObject* object);
-    virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
+    [[nodiscard]] bool AllowItemToTrade(CInventoryItem const* item, EItemPlace) const override;
 
 public:
     IC CStalkerAnimationManager& animation() const;
@@ -382,14 +382,15 @@ private:
     CWeaponShotEffector* m_weapon_shot_effector;
 
 public:
-    virtual void on_weapon_shot_start(CWeapon* weapon);
-    virtual void on_weapon_shot_stop(CWeapon* weapon);
-    virtual void on_weapon_hide(CWeapon* weapon);
+    void on_weapon_shot_start(CWeapon* weapon) override;
+    void on_weapon_shot_stop(CWeapon*) override;
+    void on_weapon_hide(CWeapon*) override;
     IC CWeaponShotEffector& weapon_shot_effector() const;
     IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
     virtual void UpdateCamera();
     virtual bool can_attach(const CInventoryItem* inventory_item) const;
     virtual bool use_simplified_visual() const { return already_dead(); }
+
 #ifdef DEBUG
     void debug_planner(const script_planner* planner);
 #endif
@@ -450,18 +451,15 @@ public:
     void best_cover_can_try_advance();
     const CCoverPoint* best_cover(const Fvector& position_to_cover_from);
 
-public:
     void subscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate);
     void unsubscribe_on_best_cover_changed(const on_best_cover_changed_delegate& delegate);
 
-public:
     virtual void on_enemy_change(const CEntityAlive* enemy);
     virtual void on_restrictions_change();
-    void on_cover_blocked(const CCoverPoint* cover);
+    void on_cover_blocked();
     void on_danger_location_add(const CDangerLocation& location);
     void on_danger_location_remove(const CDangerLocation& location);
 
-public:
     void wounded(bool value);
     bool wounded(const CRestrictedObject* object) const;
     IC bool wounded() const;
@@ -544,8 +542,8 @@ public:
 
 private:
     bool can_cry_enemy_is_wounded() const;
-    void on_critical_wound_initiator(const CAI_Stalker* critically_wounded);
-    void on_enemy_wounded_or_killed(const CAI_Stalker* wounded_or_killed);
+    void on_critical_wound_initiator();
+    void on_enemy_wounded_or_killed();
     void notify_on_wounded_or_killed(CObject* object);
     void notify_on_wounded_or_killed();
     void remove_critical_hit();

@@ -31,28 +31,30 @@ class CSE_ALifeDynamicObject;
 class CSE_ALifeGroupAbstract;
 class CSE_ALifeCreatureAbstract;
 
-class CALifeSimulatorBase : public IPureDestroyableObject
+class XR_NOVTABLE CALifeSimulatorBase : public IPureDestroyableObject
 {
     RTTI_DECLARE_TYPEINFO(CALifeSimulatorBase, IPureDestroyableObject);
 
 protected:
     xrServer* m_server;
-    CALifeSimulatorHeader* m_header;
-    CALifeTimeManager* m_time_manager;
-    CALifeSpawnRegistry* m_spawns;
-    CALifeObjectRegistry* m_objects;
-    CALifeGraphRegistry* m_graph_objects;
-    CALifeScheduleRegistry* m_scheduled;
-    CALifeStoryRegistry* m_story_objects;
-    CALifeSmartTerrainRegistry* m_smart_terrains;
-    CALifeGroupRegistry* m_groups;
-    CALifeRegistryContainer* m_registry_container;
-    bool m_initialized;
+    CALifeSimulatorHeader* m_header{};
+    CALifeTimeManager* m_time_manager{};
+    CALifeSpawnRegistry* m_spawns{};
+    CALifeObjectRegistry* m_objects{};
+    CALifeGraphRegistry* m_graph_objects{};
+    CALifeScheduleRegistry* m_scheduled{};
+    CALifeStoryRegistry* m_story_objects{};
+    CALifeSmartTerrainRegistry* m_smart_terrains{};
+    CALifeGroupRegistry* m_groups{};
+    CALifeRegistryContainer* m_registry_container{};
+
     shared_str* m_server_command_line;
-    bool m_can_register_objects;
     // temp
     ALife::SCHEDULE_P_VECTOR m_tpaCombatGroups[2];
-    bool m_unloading;
+
+    bool m_initialized{};
+    bool m_can_register_objects{true};
+    bool m_unloading{};
 
 protected:
     IC CALifeSimulatorHeader& header();
@@ -72,8 +74,9 @@ public:
     IC CALifeRegistryContainer& registry() const;
 
 public:
-    CALifeSimulatorBase(xrServer* server, LPCSTR section);
+    CALifeSimulatorBase(xrServer* server);
     virtual ~CALifeSimulatorBase();
+
     virtual void destroy();
     IC bool initialized() const;
     IC const CALifeSimulatorHeader& header() const;
@@ -95,7 +98,7 @@ protected:
     void unload();
     virtual void reload(LPCSTR section);
     IC void setup_command_line(shared_str* command_line);
-    void assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID, CSE_ALifeSchedulable* tpALifeSchedulable = nullptr);
+    void assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID);
     virtual void setup_simulator(CSE_ALifeObject* object) = 0;
 
 public:

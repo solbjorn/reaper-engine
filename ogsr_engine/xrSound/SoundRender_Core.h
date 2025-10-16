@@ -167,10 +167,10 @@ public:
 
 public:
     CSoundRender_Source* i_create_source(LPCSTR name);
-    void i_destroy_source(CSoundRender_Source* S);
     CSoundRender_Emitter* i_play(ref_sound* S, BOOL _loop, float delay);
     void i_start(CSoundRender_Emitter* E) const;
     bool i_allow_play(const CSoundRender_Emitter* E) const;
+    bool i_locked() const override { return bLocked; }
 
     virtual void object_relcase(CObject* obj);
 

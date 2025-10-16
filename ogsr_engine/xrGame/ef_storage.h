@@ -186,6 +186,7 @@ public:
 
     CEF_Storage();
     virtual ~CEF_Storage();
+
     // CBaseFunction* function(LPCSTR function) const;
     IC void alife_evaluation(bool value);
     IC CNonALifeParams& non_alife();

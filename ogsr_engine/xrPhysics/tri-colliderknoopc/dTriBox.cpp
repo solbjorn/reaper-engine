@@ -4,7 +4,7 @@
 #include "dTriBox.h"
 #include "dcTriListCollider.h"
 
-int dcTriListCollider::dSortedTriBox(const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triAx,
+int dcTriListCollider::dSortedTriBox(const dReal*, const dReal*, const dReal* triAx,
                                      // const dReal* v0,
                                      // const dReal* v1,
                                      // const dReal* v2,

@@ -2,7 +2,6 @@
 #include "stdafx.h"
 
 #include "SkeletonMotions.h"
-// #include 	"SkeletonAnimated.h"
 #include "Fmesh.h"
 #include "motion.h"
 #include "..\Include\xrRender\Kinematics.h"
@@ -21,7 +20,7 @@ u16 CPartition::part_id(const shared_str& name) const
     return u16(-1);
 }
 
-void CPartition::load(IKinematics* V, LPCSTR model_name)
+void CPartition::load(IKinematics* V)
 {
     CInifile* ini = V->LL_UserData();
     if (!ini)

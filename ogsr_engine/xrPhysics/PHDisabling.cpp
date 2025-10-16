@@ -143,9 +143,10 @@ void CPHDisablingTranslational::Reinit()
     dBodyID body = get_body();
     const dReal* position = dBodyGetPosition(body);
     const dReal* velocity = dBodyGetLinearVel(body);
-    m_mean_velocity.UpdatePrevious(*(Fvector*)position);
-    m_mean_acceleration.UpdatePrevious(*(Fvector*)velocity);
+    m_mean_velocity.UpdatePrevious(*(const Fvector*)position);
+    m_mean_acceleration.UpdatePrevious(*(const Fvector*)velocity);
 }
+
 void CPHDisablingTranslational::UpdateL1()
 {
     m_stateL1.Reset();
@@ -153,7 +154,7 @@ void CPHDisablingTranslational::UpdateL1()
     const dReal* position = dBodyGetPosition(body);
     const dReal* velocity = dBodyGetLinearVel(body);
 
-    CPHDisablingBase::UpdateValues(*(Fvector*)position, *(Fvector*)velocity);
+    CPHDisablingBase::UpdateValues(*(const Fvector*)position, *(const Fvector*)velocity);
     // float			velocity_param		=	m_mean_velocity		.Update(* (Fvector*) position)		;
     // float			acceleration_param	=	m_mean_acceleration	.Update(* (Fvector*) velocity)		;
     // CheckState						(m_stateL1,velocity_param*m_frames,acceleration_param*m_frames)					;
@@ -166,6 +167,7 @@ void CPHDisablingTranslational::set_DisableParams(const SAllDDOParams& params)
 }
 
 CPHDisablingRotational::CPHDisablingRotational() { m_params = worldDisablingParams.objects_params.rotational; }
+
 void CPHDisablingRotational::Reinit()
 {
     CPHDisablingBase::Reinit();
@@ -175,8 +177,9 @@ void CPHDisablingRotational::Reinit()
     Fvector vrotation;
     vrotation.set(rotation[9], rotation[2], rotation[4]);
     m_mean_velocity.UpdatePrevious(vrotation);
-    m_mean_acceleration.UpdatePrevious(*(Fvector*)velocity);
+    m_mean_acceleration.UpdatePrevious(*(const Fvector*)velocity);
 }
+
 void CPHDisablingRotational::UpdateL1()
 {
     m_stateL1.Reset();
@@ -186,7 +189,7 @@ void CPHDisablingRotational::UpdateL1()
     Fvector vrotation;
     vrotation.set(rotation[9], rotation[2], rotation[4]);
 
-    CPHDisablingBase::UpdateValues(vrotation, *(Fvector*)velocity);
+    CPHDisablingBase::UpdateValues(vrotation, *(const Fvector*)velocity);
     // float			velocity_param		=	m_mean_velocity		.Update	(			 vrotation	)	;
     // float			acceleration_param	=	m_mean_acceleration	.Update	(* (Fvector*) velocity	)	;
 

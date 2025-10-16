@@ -82,29 +82,27 @@ void CPortal::OnRender()
 
 void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& sectors)
 {
-    const auto* V = data.vertices.cbegin();
-    const auto vcnt = data.vertices.size();
     CSector* face = sectors[data.sector_front];
     CSector* back = sectors[data.sector_back];
 
     // calc sphere
     Fbox BB;
     BB.invalidate();
-    for (u32 v = 0; v < vcnt; v++)
-        BB.modify(V[v]);
+    for (const auto& v : data.vertices)
+        BB.modify(v);
     BB.getsphere(S.P, S.R);
 
     //
-    poly.assign(V, vcnt);
+    const auto vcnt = data.vertices.size();
+    poly.assign(data.vertices.data(), vcnt);
     pFace = face;
     pBack = back;
     marker = 0xffffffff;
 
-    Fvector N, T;
-    N.set(0, 0, 0);
+    Fvector N{}, T;
+    u32 _cnt{};
 
-    u32 _cnt = 0;
-    for (u32 i = 2; i < vcnt; i++)
+    for (gsl::index i{2}; i < vcnt; ++i)
     {
         T.mknormal_non_normalized(poly[0], poly[i - 1], poly[i]);
         float m = T.magnitude();
@@ -114,7 +112,9 @@ void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& 
             _cnt++;
         }
     }
+
     R_ASSERT2(_cnt, "Invalid portal detected");
+
     N.div(float(_cnt));
     P.build(poly[0], N);
 }

@@ -65,8 +65,6 @@ public:
 };
 */
 
-#pragma warning(push)
-#pragma warning(disable : 4512)
 // wrapper
 class adopt_compiler
 {
@@ -174,7 +172,6 @@ public:
         return *this;
     }
 };
-#pragma warning(pop)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -225,9 +222,12 @@ static bool do_file(sol::state_view lua, const char* caScriptName, const char* c
 
 bool namespace_loaded(const char* name, bool remove_from_stack)
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(LSVM);
+        lua_gettop(LSVM)
 #endif
+    };
+
     lua_pushstring(LSVM, GlobalNamespace);
     lua_rawget(LSVM, LUA_GLOBALSINDEX);
     string256 S2;
@@ -283,9 +283,12 @@ bool namespace_loaded(const char* name, bool remove_from_stack)
 
 bool OBJECT_1(const char* identifier, int type)
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(LSVM);
+        lua_gettop(LSVM)
 #endif
+    };
+
     lua_pushnil(LSVM);
     while (lua_next(LSVM, -2))
     {
@@ -306,9 +309,12 @@ bool OBJECT_1(const char* identifier, int type)
 
 bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(LSVM);
+        lua_gettop(LSVM)
 #endif
+    };
+
     if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
     {
         VERIFY(lua_gettop(LSVM) == start);

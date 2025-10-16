@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////
 
 #pragma once
+
 #include "InfoPortionDefs.h"
 #include "pda_space.h"
 #include "attachment_owner.h"
@@ -27,7 +28,7 @@ class CPurchaseList;
 class CWeapon;
 class CCustomOutfit;
 
-class CInventoryOwner : public CAttachmentOwner
+class XR_NOVTABLE CInventoryOwner : public CAttachmentOwner
 {
     RTTI_DECLARE_TYPEINFO(CInventoryOwner, CAttachmentOwner);
 
@@ -53,8 +54,8 @@ public:
     virtual void load(IReader& input_packet);
 
     // обновление
-    virtual void UpdateInventoryOwner(u32 deltaT);
-    virtual bool CanPutInSlot(PIItem item, u32 slot) { return true; }
+    void UpdateInventoryOwner();
+    virtual bool CanPutInSlot(PIItem, u32) { return true; }
 
     CPda* GetPDA() const;
 
@@ -64,8 +65,8 @@ public:
     ////////////////////////////////////
     // торговля и общение с персонажем
 
-    virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
-    virtual void OnFollowerCmd(int cmd) {} // redefine for CAI_Stalkker
+    [[nodiscard]] virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace) const;
+    virtual void OnFollowerCmd(int) {} // redefine for CAI_Stalkker
     // инициализация объекта торговли
     CTrade* GetTrade();
 
@@ -181,9 +182,9 @@ public:
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void OnItemTake(CInventoryItem* inventory_item);
 
-    virtual void OnItemBelt(CInventoryItem* inventory_item, EItemPlace previous_place);
-    virtual void OnItemRuck(CInventoryItem* inventory_item, EItemPlace previous_place);
-    virtual void OnItemSlot(CInventoryItem* inventory_item, EItemPlace previous_place);
+    virtual void OnItemBelt(CInventoryItem* inventory_item, EItemPlace);
+    virtual void OnItemRuck(CInventoryItem* inventory_item, EItemPlace);
+    virtual void OnItemSlot(CInventoryItem* inventory_item, EItemPlace);
 
     virtual void OnItemDrop(CInventoryItem* inventory_item);
 
@@ -207,9 +208,9 @@ public:
 
 public:
     virtual bool unlimited_ammo() = 0;
-    virtual void on_weapon_shot_start(CWeapon* weapon);
-    virtual void on_weapon_shot_stop(CWeapon* weapon);
-    virtual void on_weapon_hide(CWeapon* weapon);
+    virtual void on_weapon_shot_start(CWeapon*);
+    virtual void on_weapon_shot_stop(CWeapon*);
+    virtual void on_weapon_hide(CWeapon*);
 
 public:
     virtual bool use_simplified_visual() const { return false; }
@@ -225,8 +226,8 @@ public:
     float deficit_factor(const shared_str& section) const;
     void buy_supplies(CInifile& ini_file, LPCSTR section);
     void sell_useless_items();
-    virtual void on_before_sell(CInventoryItem* item) {}
-    virtual void on_before_buy(CInventoryItem* item) {}
+    virtual void on_before_sell(CInventoryItem*) {}
+    virtual void on_before_buy(CInventoryItem*) {}
     virtual bool use_default_throw_force();
     virtual float missile_throw_force();
     virtual bool use_throw_randomness();

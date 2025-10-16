@@ -9,6 +9,9 @@
 #include "UITradeWnd.h"
 #include "UICarBodyWnd.h"
 
+#include "../xr_3da/xr_input.h"
+#include "../Level.h"
+
 CUIDragItem* CUIDragDropListEx::m_drag_item{};
 
 void CUICell::Clear()
@@ -97,7 +100,7 @@ void CUIDragDropListEx::Init(float x, float y, float w, float h)
     */
 }
 
-void CUIDragDropListEx::OnScrollV(CUIWindow* w, void* pData) { m_container->SetWndPos(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())); }
+void CUIDragDropListEx::OnScrollV(CUIWindow*, void*) { m_container->SetWndPos(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())); }
 
 void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 {
@@ -107,7 +110,8 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 
     Fvector2 p;
     itm->GetAbsolutePos(p);
-    itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DRAG);
+
+    std::ignore = itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DRAG);
 }
 
 void CUIDragDropListEx::DestroyDragItem()
@@ -154,7 +158,8 @@ void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
     {
         Fvector2 p;
         itm->GetAbsolutePos(p);
-        itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DROP);
+
+        std::ignore = itm->OnMouse(p.x, p.y, EUIMessages::DRAG_DROP_ITEM_DROP);
     }
 
     if (m_f_item_drop(itm))
@@ -205,7 +210,7 @@ void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
     DestroyDragItem();
 }
 
-void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void* pData)
+void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void*)
 {
     m_selected_item = smart_cast<CUICellItem*>(w);
     VERIFY(m_selected_item);
@@ -313,9 +318,6 @@ void CUIDragDropListEx::ReinitScroll()
     m_container->SetWndPos(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos()));
 }
 
-#include "../xr_3da/xr_input.h"
-#include "../Level.h"
-
 bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 {
     bool b = inherited::OnMouse(x, y, mouse_action);
@@ -328,25 +330,28 @@ bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
         {
         case WINDOW_MOUSE_WHEEL_DOWN:
             m_vScrollBar->TryScrollInc();
+
             if (with_shift)
             {
                 m_vScrollBar->TryScrollInc();
                 m_vScrollBar->TryScrollInc();
             }
-            return true;
-            break;
 
+            return true;
         case WINDOW_MOUSE_WHEEL_UP:
             m_vScrollBar->TryScrollDec();
+
             if (with_shift)
             {
                 m_vScrollBar->TryScrollDec();
                 m_vScrollBar->TryScrollDec();
             }
+
             return true;
-            break;
+        default: break;
         }
     }
+
     return b;
 }
 

@@ -1,11 +1,5 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
-
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -14,6 +8,12 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
+
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
@@ -238,6 +238,7 @@ void CCar::SDoor::PlaceInUpdate()
 }
 
 void CCar::SDoor::RemoveFromUpdate() { update = false; }
+
 void CCar::SDoor::Update()
 {
     switch (state)
@@ -255,6 +256,7 @@ void CCar::SDoor::Update()
             open_time = Device.dwTimeGlobal;
             state = opened;
         }
+
         break;
     }
     case opened: {
@@ -263,7 +265,10 @@ void CCar::SDoor::Update()
             ApplyTorque(torque / 5.f, a_vel);
             RemoveFromUpdate();
         }
+
+        break;
     }
+    default: break;
     }
 }
 
@@ -447,15 +452,15 @@ bool CCar::SDoor::IsInArea(const Fvector& pos, const Fvector& dir)
     closed_door_norm.crossproduct(door_axis, closed_door_dir);
     door_norm.crossproduct(door_axis, door_dir);
     anchor_to_pos.sub(pos, closed_door_form.c);
+
     float a, b, c;
     a = anchor_to_pos.dotproduct(closed_door_dir) * signum;
     b = anchor_to_pos.dotproduct(door_dir) * signum;
     c = anchor_to_pos.dotproduct(closed_door_norm) * anchor_to_pos.dotproduct(door_norm);
-    if (a < (signum > 0.f ? hie : -loe) && a > 0.f && b < (signum > 0.f ? hie : -loe) && b > 0.f &&
-        anchor_to_pos.dotproduct(closed_door_norm) * anchor_to_pos.dotproduct(door_norm) < 0.f)
+    if (a < (signum > 0.f ? hie : -loe) && a > 0.f && b < (signum > 0.f ? hie : -loe) && b > 0.f && c < 0.f)
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 bool CCar::SDoor::CanExit(const Fvector& pos, const Fvector& dir)
@@ -643,6 +648,7 @@ void CCar::SDoor::Break()
     case opened:
     case closing: RemoveFromUpdate(); [[fallthrough]];
     case opening: ApplyTorque(torque / 10.f, 0.f); break;
+    default: break;
     }
 
     if (joint)
@@ -781,21 +787,4 @@ void CCar::SDoor::SDoorway::Init(SDoor* adoor)
             }
         }
     }
-    /*
-    switch(door->door_plane_axes.y)
-    {
-    case 0:
-        door_dir.set(door_dir_sign,0.f,0.f);
-        break;
-    case 1:
-        door_dir.set(0.f,door_dir_sign,0.f);
-        break;
-    case 2:
-        door_dir.set(0.f,0.f,door_dir_sign);
-        break;
-    default: NODEFAULT;
-    }
-    */
 }
-
-void CCar::SDoor::SDoorway::Trace(const Fvector& point, const Fvector& dir) {}

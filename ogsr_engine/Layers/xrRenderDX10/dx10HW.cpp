@@ -11,7 +11,6 @@
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
 
-#include "imgui.h"
 #include "imgui_impl_dx11.h"
 
 #include <dxgi1_6.h>

@@ -15,5 +15,5 @@ protected:
 
 private:
     void switchGravity(SZoneObjectInfo& io, bool val);
-    virtual void UpdateWorkload(u32 dt);
+    virtual void UpdateWorkload(u32);
 };

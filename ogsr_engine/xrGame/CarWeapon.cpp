@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "CarWeapon.h"
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
@@ -194,6 +195,7 @@ void CCarWeapon::UpdateBarrelDir()
     }
 #endif
 }
+
 bool CCarWeapon::AllowFire() { return m_allow_fire; }
 
 float CCarWeapon::FireDirDiff()
@@ -205,7 +207,6 @@ float CCarWeapon::FireDirDiff()
 }
 
 const Fvector& CCarWeapon::get_CurrentFirePoint() { return m_fire_pos; }
-
 const Fmatrix& CCarWeapon::get_ParticlesXFORM() { return m_fire_bone_xform; }
 
 void CCarWeapon::FireStart() { inheritedShooting::FireStart(); }
@@ -218,7 +219,7 @@ void CCarWeapon::FireEnd()
 
 void CCarWeapon::OnShot()
 {
-#pragma todo("KRodin: а может тут сразу возвращать id стреляющего, а не машины?")
+    // TODO: KRodin: а может тут сразу возвращать id стреляющего, а не машины?
     FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, m_object->ID(), m_object->ID(), SendHitAllowed(m_object));
 
     StartShotParticles();
@@ -227,8 +228,7 @@ void CCarWeapon::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(m_fire_pos, zero_vel);
-    //	OnShellDrop				(m_fire_pos, zero_vel);
+    StartSmokeParticles(m_fire_pos);
 
     HUD_SOUND::PlaySound(m_sndShot, m_fire_pos, m_object, false);
 }

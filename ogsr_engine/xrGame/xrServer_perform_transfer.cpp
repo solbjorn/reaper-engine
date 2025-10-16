@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrserver.h"
 #include "xrmessages.h"
 #include "xrserver_objects.h"
@@ -47,5 +48,5 @@ void xrServer::Perform_reject(CSE_Abstract* what, CSE_Abstract* from, int delta)
     P.w_u16(what->ID);
     P.w_u8(1);
 
-    Process_event_reject(P, BroadcastCID, time, from->ID, what->ID);
+    Process_event_reject(P, from->ID, what->ID);
 }

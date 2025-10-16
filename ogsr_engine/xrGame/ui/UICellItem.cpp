@@ -42,7 +42,7 @@ void CUICellItem::Draw()
         m_custom_draw->OnDraw(this);
 }
 
-bool CUICellItem::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUICellItem::OnMouse(float, float, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_LBUTTON_DOWN)
     {
@@ -264,7 +264,7 @@ void CUIDragItem::Init(const ui_shader& sh, const Frect& rect, const Frect& text
     m_pos_offset.sub(rect.lt, GetUICursor()->GetCursorPosition());
 }
 
-bool CUIDragItem::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIDragItem::OnMouse(float, float, EUIMessages mouse_action)
 {
     if (mouse_action == WINDOW_LBUTTON_UP)
     {
@@ -275,7 +275,6 @@ bool CUIDragItem::OnMouse(float x, float y, EUIMessages mouse_action)
 }
 
 void CUIDragItem::OnRender() { Draw(); }
-
 void CUIDragItem::OnFrame() { Update(); }
 
 void CUIDragItem::Draw()

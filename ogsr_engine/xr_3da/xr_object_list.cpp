@@ -98,13 +98,11 @@ void CObjectList::SingleUpdate(CObject* O)
         O->dwFrame_UpdateCL = Device.dwFrame;
         O->IAmNotACrowAnyMore();
         O->UpdateCL();
+
+#ifdef DEBUG
         VERIFY3(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'", *O->cName());
-        //		if (O->getDestroy())
-        //		{
-        //			destroy_queue.push_back(O);
-        //.			Msg				("- destroy_queue.push_back %s[%d] frame [%d]",O->cName().c_str(), O->ID(), Device.dwFrame);
-        //		}
-        //		else
+#endif
+
         if (O->H_Parent() && (O->H_Parent()->getDestroy() || O->H_Root()->getDestroy()))
         {
             // Push to destroy-queue if it isn't here already

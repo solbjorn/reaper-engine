@@ -1,8 +1,9 @@
 #ifndef NV_TRISTRIP_OBJECTS_H
 #define NV_TRISTRIP_OBJECTS_H
 
-#include <assert.h>
 #include "VertexCache.h"
+
+#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////////
 //

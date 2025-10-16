@@ -21,10 +21,6 @@
 #include "xrmessages.h"
 #include "../xr_3da/gamemtllib.h"
 #include "clsid_game.h"
-#ifdef DEBUG
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
 #include "Physics.h"
 #include "MathUtils.h"
 #include "phvalidevalues.h"
@@ -33,6 +29,11 @@
 #include "profiler.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "../xr_3da/IGame_Persistent.h"
+
+#ifdef DEBUG
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
 
 namespace
 {
@@ -240,7 +241,7 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
         l_end_p.random_point(l_d);
         l_end_p.add(l_c);
         obj_xform.transform_tiny(l_end_p);
-        GetRaySourcePos(exp_obj, expl_centre, l_source_p);
+        GetRaySourcePos(exp_obj, l_source_p);
         Fvector l_local_source_p;
         inv_obj_form.transform_tiny(l_local_source_p, l_source_p);
         if (l_b1.contains(l_local_source_p))
@@ -638,6 +639,7 @@ void CExplosive::StartLight()
         m_pLight->set_active(true);
     }
 }
+
 void CExplosive::StopLight()
 {
     if (m_pLight)
@@ -648,13 +650,12 @@ void CExplosive::StopLight()
     }
 }
 
-void CExplosive::GetRaySourcePos(CExplosive* exp_obj, const Fvector& expl_center, Fvector& p)
+void CExplosive::GetRaySourcePos(CExplosive* exp_obj, Fvector& p)
 {
     if (exp_obj)
-    {
         exp_obj->GetRayExplosionSourcePos(p);
-    }
 }
+
 void CExplosive::GetRayExplosionSourcePos(Fvector& pos)
 {
     pos.set(m_vExplodeSize);
@@ -662,6 +663,7 @@ void CExplosive::GetRayExplosionSourcePos(Fvector& pos)
     pos.random_point(pos);
     pos.add(m_vExplodePos);
 }
+
 void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysicsShellHolder* l_pGO)
 {
     Fvector l_goPos;
@@ -711,10 +713,12 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
     }
 #endif
 }
+
 struct SRemovePred
 {
     bool operator()(CGameObject* O) { return !!O->getDestroy(); }
 };
+
 void CExplosive::ExplodeWaveProcess()
 {
     BLASTED_OBJECTS_I I = std::remove_if(m_blasted_objects.begin(), m_blasted_objects.end(), SRemovePred());
@@ -731,6 +735,7 @@ void CExplosive::ExplodeWaveProcess()
 
 void CExplosive::GetExplosionBox(Fvector& size) { size.set(m_vExplodeSize); }
 void CExplosive::SetExplosionSize(const Fvector& new_size) { m_vExplodeSize.set(new_size); }
+
 void CExplosive::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos)
 {
     CPhysicsShellHolder* self_obj = smart_cast<CPhysicsShellHolder*>(cast_game_object());
@@ -747,6 +752,7 @@ void CExplosive::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos)
     if (self_shell && self_shell->isActive())
         self_shell->EnableCollision();
 }
+
 void CExplosive::net_Relcase(CObject* O)
 {
     if (O->ID() == m_iCurrentParentID)

@@ -17,10 +17,7 @@
 #include "PHCollideValidator.h"
 #include "PHShell.h"
 #include "MathUtils.h"
-
-#ifdef DEBUG
 #include "PHWorld.h"
-#endif
 
 #include "../Include/xrRender/Kinematics.h"
 
@@ -197,12 +194,13 @@ void CPHDestroyable::RespawnInit()
     m_notificate_objects.clear();
     m_depended_objects = 0;
 }
-void CPHDestroyable::SheduleUpdate(u32 dt)
+
+void CPHDestroyable::SheduleUpdate(u32)
 {
     if (!m_flags.test(fl_destroyed) || !m_flags.test(fl_released))
         return;
-    CPhysicsShellHolder* obj = PPhysicsShellHolder();
 
+    CPhysicsShellHolder* obj = PPhysicsShellHolder();
     if (CanRemoveObject())
     {
         if (obj->Local())

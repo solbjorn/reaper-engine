@@ -6,7 +6,6 @@
 #include "stdafx.h"
 
 #include "ShootingObject.h"
-
 #include "ParticlesObject.h"
 #include "WeaponAmmo.h"
 
@@ -28,9 +27,7 @@ void CShootingObject::reinit() { m_pFlameParticles = nullptr; }
 void CShootingObject::Load(LPCSTR section)
 {
     if (pSettings->line_exist(section, "light_disabled"))
-    {
         m_bLightShotEnabled = !pSettings->r_bool(section, "light_disabled");
-    }
     else
         m_bLightShotEnabled = true;
 
@@ -168,20 +165,20 @@ void CShootingObject::Light_Render(const Fvector& P)
 // Particles
 //////////////////////////////////////////////////////////////////////////
 
-void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel, bool auto_remove_flag)
+void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, bool auto_remove_flag)
 {
     if (!particles_name)
         return;
 
     if (pParticles)
     {
-        UpdateParticles(pParticles, pos, vel);
+        UpdateParticles(pParticles, pos);
         return;
     }
 
     pParticles = CParticlesObject::Create(particles_name, (BOOL)auto_remove_flag);
 
-    UpdateParticles(pParticles, pos, vel);
+    UpdateParticles(pParticles, pos);
     BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
     pParticles->Play(hudMode);
 }
@@ -195,7 +192,7 @@ void CShootingObject::StopParticles(CParticlesObject*& pParticles)
     CParticlesObject::Destroy(pParticles);
 }
 
-void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos, const Fvector& vel)
+void CShootingObject::UpdateParticles(CParticlesObject*& pParticles, const Fvector& pos)
 {
     if (!pParticles)
         return;
@@ -251,6 +248,7 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
+
 void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel)
 {
     if (ParentIsActor())
@@ -260,10 +258,13 @@ void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent
             Actor()->callback(GameObject::eOnWpnShellDrop)(wpn->lua_game_object(), play_pos, parent_vel);
     }
     else if (Core.Features.test(xrCore::Feature::npc_simplified_shooting))
+    {
         return;
+    }
 
     if (!m_sShellParticles)
         return;
+
     if (Device.vCameraPosition.distance_to_sqr(play_pos) > 2 * 2)
         return;
 
@@ -279,13 +280,13 @@ void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent
 }
 
 // партиклы дыма
-void CShootingObject::StartSmokeParticles(const Fvector& play_pos, const Fvector& parent_vel)
+void CShootingObject::StartSmokeParticles(const Fvector& play_pos)
 {
     if (!ParentIsActor() && Core.Features.test(xrCore::Feature::npc_simplified_shooting))
         return;
 
     CParticlesObject* pSmokeParticles{};
-    StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, parent_vel, true);
+    StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, play_pos, true);
 }
 
 void CShootingObject::StartFlameParticles()
@@ -456,5 +457,5 @@ void CShootingObject::FireEnd() { bWorking = false; }
 void CShootingObject::StartShotParticles()
 {
     CParticlesObject* pSmokeParticles{};
-    StartParticles(pSmokeParticles, *m_sShotParticles, m_vCurrentShootPos, m_vCurrentShootDir, true);
+    StartParticles(pSmokeParticles, *m_sShotParticles, m_vCurrentShootPos, true);
 }

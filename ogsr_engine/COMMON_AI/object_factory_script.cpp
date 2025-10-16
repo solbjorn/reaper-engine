@@ -31,7 +31,7 @@ void CObjectFactory::register_script_class(LPCSTR client_class, LPCSTR server_cl
         return;
     }
 
-    add(xr_new<CObjectItemScript>(client, server, TEXT2CLSID(clsid), script_clsid));
+    add(xr_new<CObjectItemScript>(std::move(client), std::move(server), TEXT2CLSID(clsid), script_clsid));
 }
 
 void CObjectFactory::register_script_class(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid)
@@ -44,7 +44,7 @@ void CObjectFactory::register_script_class(LPCSTR unknown_class, LPCSTR clsid, L
         return;
     }
 
-    add(xr_new<CObjectItemScript>(creator, creator, TEXT2CLSID(clsid), script_clsid));
+    add(xr_new<CObjectItemScript>(std::move(creator), sol::function{}, TEXT2CLSID(clsid), script_clsid));
 }
 
 void CObjectFactory::register_script_classes() { ai(); }
@@ -53,12 +53,11 @@ void CObjectFactory::register_script() const
 {
     actualize();
 
-    sol::state_view lua(ai().script_engine().lua());
+    sol::state_view lua{ai().script_engine().lua()};
     sol::table target = lua.create_table(clsids().size(), 0);
 
-    size_t id = 0;
-    for (const auto& item : clsids())
-        target.set(*item->script_clsid(), id++);
+    for (auto [id, item] : xr::views_enumerate(clsids()))
+        target.set(*item->script_clsid(), id);
 
     xr::sol_new_enum(lua, "clsid", target);
 }

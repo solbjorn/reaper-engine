@@ -1,8 +1,9 @@
 #include "stdafx.h"
+
 #include "ScriptXmlInit.h"
 #include "ui\UIXmlInit.h"
 #include "ui\UITextureMaster.h"
-#include "ui\UICheckButton.h" //#include "ui\UI3tButton.h"
+#include "ui\UICheckButton.h"
 #include "ui\UISpinNum.h"
 #include "ui\UISpinText.h"
 #include "ui\UIComboBox.h"
@@ -19,6 +20,8 @@
 #include "ui\UIScrollView.h"
 #include "ui\UIProgressBar.h"
 
+namespace
+{
 void _attach_child(CUIWindow* _child, CUIWindow* _parent)
 {
     if (!_parent)
@@ -30,26 +33,14 @@ void _attach_child(CUIWindow* _child, CUIWindow* _parent)
     else
         _parent->AttachChild(_child);
 }
+} // namespace
 
-CScriptXmlInit::CScriptXmlInit() {}
-
-CScriptXmlInit::CScriptXmlInit(const CScriptXmlInit&)
-{
-    // do nothing
-}
-
-CScriptXmlInit& CScriptXmlInit::operator=(const CScriptXmlInit& other)
-{
-    // do nothing
-    return (*this);
-}
+CScriptXmlInit::CScriptXmlInit() = default;
 
 void CScriptXmlInit::ParseFile(LPCSTR xml_file) { m_xml.Init(CONFIG_PATH, UI_PATH, xml_file); }
-
 void CScriptXmlInit::ParseShTexInfo(LPCSTR xml_file) { CUITextureMaster::ParseShTexInfo(xml_file); }
 
 void CScriptXmlInit::InitWindow(LPCSTR path, int index, CUIWindow* pWnd) { CUIXmlInit::InitWindow(m_xml, path, index, pWnd); }
-
 void CScriptXmlInit::InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd) { CUIXmlInit::InitAutoStaticGroup(m_xml, path, 0, pWnd); }
 
 CUIFrameWindow* CScriptXmlInit::InitFrame(LPCSTR path, CUIWindow* parent)

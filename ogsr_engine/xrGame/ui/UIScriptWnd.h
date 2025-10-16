@@ -34,18 +34,18 @@ private:
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
 protected:
-    bool Load(LPCSTR xml_name);
+    [[nodiscard]] bool Load(LPCSTR);
 
 public:
-    void Register(CUIWindow* pChild);
-    void Register(CUIWindow* pChild, LPCSTR name);
     CUIDialogWndEx();
     virtual ~CUIDialogWndEx() = default;
+
+    void Register(CUIWindow* pChild);
+    void Register(CUIWindow* pChild, LPCSTR name);
     void AddCallback(LPCSTR control_id, s16 event, sol::function function);
     void ClearCallbacks();
     virtual void Update();
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool Dispatch(int cmd, int param) { return true; }
 
     template <typename T>
     IC T* GetControl(LPCSTR name);

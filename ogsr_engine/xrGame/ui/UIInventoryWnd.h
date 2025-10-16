@@ -118,7 +118,7 @@ protected:
     CUIDragDropListEx* GetSlotList(u8 slot_idx);
 
     bool OnItemDrop(CUICellItem* itm);
-    bool OnItemStartDrag(CUICellItem* itm);
+    bool OnItemStartDrag(CUICellItem*);
     bool OnItemDbClick(CUICellItem* itm);
     bool OnItemSelected(CUICellItem* itm);
     bool OnItemRButtonClick(CUICellItem* itm);

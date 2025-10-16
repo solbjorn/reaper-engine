@@ -4,7 +4,7 @@ class CPhysicsShellHolder;
 struct dContact;
 struct SGameMtl;
 
-class CPHCollisionDamageReceiver : public virtual RTTI::Enable
+class XR_NOVTABLE CPHCollisionDamageReceiver : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPHCollisionDamageReceiver);
 
@@ -24,7 +24,8 @@ public:
     DAMAGE_CONTROLED_BONES_V m_controled_bones;
 
 protected:
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
+    [[nodiscard]] virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
+
     void Init();
     void Hit(u16 source_id, u16 bone_id, float power, const Fvector& dir, Fvector& pos);
     void Clear();
@@ -33,5 +34,5 @@ private:
     void BoneInsert(u16 id, float k);
 
     IC DAMAGE_BONES_I FindBone(u16 id) { return std::find_if(m_controled_bones.begin(), m_controled_bones.end(), SFind(id)); }
-    static void CollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
+    static void CollisionCallback(bool&, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 };

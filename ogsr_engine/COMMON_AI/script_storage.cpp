@@ -138,11 +138,12 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
             if (const auto objectClass = obj->crep())
             {
                 auto cpp_name = LUABIND_TYPE_INFO_NAME(objectClass->type());
-
-                xr_sprintf(value, "(%s): %p", cpp_name ? cpp_name : objectClass->name(), obj->ptr());
+                xr_sprintf(value, "(%s): %p", !cpp_name.empty() ? cpp_name.c_str() : objectClass->name(), obj->ptr());
             }
             else
+            {
                 xr_strcpy(value, "[not available]");
+            }
         }
     }
     break;
@@ -202,9 +203,9 @@ void CScriptStorage::reinit(lua_State* LSVM)
 
 void CScriptStorage::print_stack() { Log(get_lua_traceback(lua())); }
 
+#ifdef DEBUG
 void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, ...) // Используется в очень многих местах //Очень много пишет в лог.
 {
-#ifdef DEBUG
     va_list marker;
     va_start(marker, caFormat);
     //
@@ -231,8 +232,8 @@ void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, 
     print_stack();
     Msg("-----------------------------------------");
     va_end(marker);
-#endif
 }
+#endif
 
 bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSize, const char* caScriptName,
                                  const char* caNameSpaceName) // KRodin: эта функция форматирует содержимое скрипта используя FILE_HEADER и после этого загружает его в lua
@@ -302,9 +303,12 @@ bool CScriptStorage::do_file(
 
 bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) // KRodin: видимо, функция проверяет, загружен ли скрипт.
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(lua());
+        lua_gettop(lua())
 #endif
+    };
+
     lua_pushstring(lua(), GlobalNamespace);
     lua_rawget(lua(), LUA_GLOBALSINDEX);
     string256 S2;
@@ -360,9 +364,12 @@ bool CScriptStorage::namespace_loaded(const char* name, bool remove_from_stack) 
 
 bool CScriptStorage::object(const char* identifier, int type)
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(lua());
+        lua_gettop(lua())
 #endif
+    };
+
     lua_pushnil(lua());
     while (lua_next(lua(), -2))
     {
@@ -383,9 +390,12 @@ bool CScriptStorage::object(const char* identifier, int type)
 
 bool CScriptStorage::object(const char* namespace_name, const char* identifier, int type)
 {
+    int start{
 #ifdef DEBUG
-    int start = lua_gettop(lua());
+        lua_gettop(lua())
 #endif
+    };
+
     if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
     {
         VERIFY(lua_gettop(lua()) == start);

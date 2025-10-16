@@ -16,21 +16,22 @@ public:
 
     // получение фразы, виртуальная функция,
     // должна быть переопределена для сталкеров и актера
-    virtual void ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog);
+    virtual void ReceivePhrase(DIALOG_SHARED_PTR&);
     // ответить на сказанную фразу в диалоге
     virtual void SayPhrase(DIALOG_SHARED_PTR& phrase_dialog, const shared_str& phrase_id);
 
     // виртуальная функция, заполняет массив, тем диалогами, которые
     // персонаж может инициировать в данный момент
-    virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
+    virtual void UpdateAvailableDialogs(CPhraseDialogManager*);
 
     DEFINE_VECTOR(DIALOG_SHARED_PTR, DIALOG_VECTOR, DIALOG_VECTOR_IT);
-    const DIALOG_VECTOR& AvailableDialogs() { return m_AvailableDialogs; }
-    const DIALOG_SHARED_PTR& GetDialogByID(const shared_str& dialog_id) const;
-    bool HaveAvailableDialog(const shared_str& dialog_id) const;
+
+    [[nodiscard]] const DIALOG_VECTOR& AvailableDialogs() const { return m_AvailableDialogs; }
+    [[nodiscard]] const DIALOG_SHARED_PTR& GetDialogByID(const shared_str& dialog_id) const;
+    [[nodiscard]] bool HaveAvailableDialog(const shared_str& dialog_id) const;
 
 protected:
-    virtual bool AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager* partner);
+    [[nodiscard]] virtual bool AddAvailableDialog(shared_str dialog_id, CPhraseDialogManager* partner);
 
     // буфферный список диалогов, которые были проверены
     // во время UpdateAvailableDialogs

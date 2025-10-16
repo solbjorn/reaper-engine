@@ -24,5 +24,5 @@ struct CVisionParameters
     float m_fog_pow;
     float m_transparency_factor;
 
-    void Load(LPCSTR section, bool not_a_stalker);
+    void Load(LPCSTR section);
 };

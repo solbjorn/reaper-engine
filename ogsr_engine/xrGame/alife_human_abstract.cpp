@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_objects_ALife_Monsters.h"
 #include "alife_human_brain.h"
 #include "alife_human_object_handler.h"
@@ -30,16 +31,12 @@ ALife::EMeetActionType CSE_ALifeHumanAbstract::tfGetActionType(CSE_ALifeSchedula
 }
 
 void CSE_ALifeHumanAbstract::vfDetachAll(bool bFictitious) { brain().objects().detach_all(bFictitious); }
-
 void CSE_ALifeHumanAbstract::vfUpdateWeaponAmmo() { brain().objects().update_weapon_ammo(); }
-
 void CSE_ALifeHumanAbstract::vfProcessItems() { brain().objects().process_items(); }
+void CSE_ALifeHumanAbstract::vfAttachItems(ALife::ETakeType) { brain().objects().attach_items(); }
 
-void CSE_ALifeHumanAbstract::vfAttachItems(ALife::ETakeType tTakeType) { brain().objects().attach_items(); }
-
-CSE_ALifeDynamicObject* CSE_ALifeHumanAbstract::tpfGetBestDetector() { return (brain().objects().best_detector()); }
-
-CSE_ALifeItemWeapon* CSE_ALifeHumanAbstract::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) { return (brain().objects().best_weapon()); }
+CSE_ALifeDynamicObject* CSE_ALifeHumanAbstract::tpfGetBestDetector() { return brain().objects().best_detector(); }
+CSE_ALifeItemWeapon* CSE_ALifeHumanAbstract::tpfGetBestWeapon(ALife::EHitType&, float&) { return brain().objects().best_weapon(); }
 
 void CSE_ALifeHumanAbstract::__on_register()
 {

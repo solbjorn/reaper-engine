@@ -1,7 +1,12 @@
 #ifndef __XR_CORE_MATRIX_H
 #define __XR_CORE_MATRIX_H
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
+
 #include <DirectXMath.h>
+
+XR_DIAG_POP();
 
 /*
  *	DirectX-compliant, ie row-column order, ie m[Row][Col].

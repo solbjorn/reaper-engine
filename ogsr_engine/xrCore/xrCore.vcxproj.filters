@@ -219,6 +219,9 @@
     <ClInclude Include="vector.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="dump_string.h">
+      <Filter>Math</Filter>
+    </ClInclude>
     <ClInclude Include="xrcpuid.h">
       <Filter>Math\CPU</Filter>
     </ClInclude>

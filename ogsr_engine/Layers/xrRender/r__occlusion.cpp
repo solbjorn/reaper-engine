@@ -104,19 +104,19 @@ void R_occlusion::occq_end(u32& ID, ctx_id_t context_id)
 R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 {
     if (!enabled || ID == iInvalidHandle)
-        return 0xffffffff;
+        return std::numeric_limits<occq_result>::max();
 
     std::scoped_lock slock(lock);
 
     if (!used[ID].Q)
-        return 0xffffffff;
+        return std::numeric_limits<occq_result>::max();
 
     occq_result fragments = 0;
     HRESULT hr;
     CTimer T;
     T.Start();
     Device.Statistic->RenderDUMP_Wait.Begin();
-    VERIFY2(ID < used.size(), make_string("_Pos = %d, size() = %d", ID, used.size()));
+    VERIFY2(ID < used.size(), make_string("_Pos = %u, size() = %zu", ID, used.size()));
     // здесь нужно дождаться результата, т.к. отладка показывает, что
     // очень редко когда он готов немедленно
     while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
@@ -124,15 +124,15 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
         if (!SwitchToThread())
             Sleep(ps_r2_wait_sleep);
 
-        if (T.GetElapsed_ms() > ps_r2_wait_timeout)
+        if (T.GetElapsed_ms() > gsl::narrow_cast<u64>(ps_r2_wait_timeout))
         {
-            fragments = (occq_result)-1; // 0xffffffff;
+            fragments = std::numeric_limits<occq_result>::max();
             break;
         }
     }
     Device.Statistic->RenderDUMP_Wait.End();
     if (hr == D3DERR_DEVICELOST)
-        fragments = 0xffffffff;
+        fragments = std::numeric_limits<occq_result>::max();
 
     if (fragments == 0)
         RImplementation.stats.o_culled++;

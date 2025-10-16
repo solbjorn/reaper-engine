@@ -1,9 +1,10 @@
 #pragma once
+
 #include "state_manager.h"
 #include "state.h"
 
 template <typename _Object>
-class CMonsterStateManager : public IStateManagerBase, public CState<_Object>
+class XR_NOVTABLE CMonsterStateManager : public IStateManagerBase, public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CMonsterStateManager<_Object>, IStateManagerBase, CState<_Object>);
 

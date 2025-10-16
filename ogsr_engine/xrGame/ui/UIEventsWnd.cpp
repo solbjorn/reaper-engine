@@ -22,7 +22,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
 
-CUIEventsWnd::CUIEventsWnd() { m_flags.zero(); }
+CUIEventsWnd::CUIEventsWnd() = default;
 
 CUIEventsWnd::~CUIEventsWnd()
 {
@@ -100,10 +100,9 @@ void CUIEventsWnd::Update()
 }
 
 void CUIEventsWnd::Draw() { inherited::Draw(); }
-
 void CUIEventsWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCallback::OnEvent(pWnd, msg, pData); }
 
-void CUIEventsWnd::OnFilterChanged(CUIWindow* w, void*)
+void CUIEventsWnd::OnFilterChanged(CUIWindow*, void*)
 {
     m_currFilter = (ETaskFilters)m_TaskFilter->GetActiveIndex();
     ReloadList(false);

@@ -56,7 +56,7 @@ int phIterations = 18;
 float phTimefactor = 1.f;
 float phBreakCommonFactor = 0.01f;
 float phRigidBreakWeaponFactor = 1.f;
-Fbox phBoundaries = {1000.f, 1000.f, -1000.f, -1000.f};
+Fbox phBoundaries{1000.f, 1000.f, -1000.f, -1000.f, 0.0f, 0.0f};
 float ph_tri_query_ex_aabb_rate = 1.3f;
 int ph_tri_clear_disable_count = 10;
 dWorldID phWorld;
@@ -74,12 +74,16 @@ public:
 
     void operator()(CPHContactBodyEffector* pointer) const { pointer->Apply(); }
 };
+
 /////////////////////////////////////////////////////////////////////////////
+
 IC void add_contact_body_effector(dBodyID body, const dContact& c, SGameMtl* material)
 {
     CPHContactBodyEffector* effector = (CPHContactBodyEffector*)dBodyGetData(body);
     if (effector)
-        effector->Merge(c, material);
+    {
+        effector->Merge(material);
+    }
     else
     {
         effector = ContactEffectors.add();
@@ -167,10 +171,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 
         if (is_tri_1)
         {
-#pragma warning(push)
-#pragma warning(disable : 4245)
             if (material_1->Flags.test(SGameMtl::flSlowDown) && !(usr_data_2->pushing_neg || usr_data_2->pushing_b_neg))
-#pragma warning(pop)
             {
                 dBodyID body = dGeomGetBody(g2);
                 R_ASSERT2(body, "static - static collision !!!");
@@ -191,10 +192,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
         }
         if (is_tri_2)
         {
-#pragma warning(push)
-#pragma warning(disable : 4245)
             if (material_2->Flags.test(SGameMtl::flSlowDown) && !(usr_data_1->pushing_neg || usr_data_1->pushing_b_neg))
-#pragma warning(pop)
             {
                 dBodyID body = dGeomGetBody(g1);
                 R_ASSERT2(body, "static - static collision !!!");

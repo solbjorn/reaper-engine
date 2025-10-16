@@ -2,9 +2,9 @@
 #ifndef SkeletonMotionsH
 #define SkeletonMotionsH
 
-// #include		"skeletoncustom.h"
 #include "bone.h"
 #include "skeletonmotiondefs.h"
+
 // refs
 class IKinematicsAnimated;
 class CBlend;
@@ -166,7 +166,7 @@ public:
     IC const CPartDef& part(u16 id) const { return P[id]; }
     u16 part_id(const shared_str& name) const;
     u32 mem_usage() { return P[0].mem_usage() * MAX_PARTS; }
-    void load(IKinematics* V, LPCSTR model_name);
+    void load(IKinematics* V);
 
     u8 count() const
     {

@@ -36,7 +36,7 @@ ObjectFactory::CLIENT_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::client
 }
 
 template <typename _unknown_type>
-ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server_object(LPCSTR section) const
+ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server_object(LPCSTR) const
 {
     FATAL("Cannot instantiate server object, because server class is not declared!");
     return nullptr;

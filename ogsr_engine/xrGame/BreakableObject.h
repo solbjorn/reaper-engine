@@ -5,8 +5,6 @@
 #ifndef BreakableObjectH
 #define BreakableObjectH
 
-#pragma once
-
 #include "physicsshellholder.h"
 
 class CPHStaticGeomShell;
@@ -21,7 +19,6 @@ public:
     typedef CPhysicsShellHolder inherited;
 
 private:
-    bool b_resived_damage;
     float m_max_frame_damage;
     static float m_damage_threshold;
     static float m_health_threshhold;
@@ -34,8 +31,9 @@ private:
     CPhysicsShell* m_Shell;
     static u32 m_remove_time;
     u32 m_break_time;
+    bool b_resived_damage;
     bool bRemoved;
-    //		Fbox				m_saved_box;
+
 public:
     CBreakableObject();
     virtual ~CBreakableObject();
@@ -50,7 +48,7 @@ public:
 
     virtual void Hit(SHit* pHDS);
 
-    virtual void net_Export(CSE_Abstract* E);
+    void net_Export(CSE_Abstract*) override;
     virtual BOOL UsedAI_Locations();
 
 private:
@@ -66,7 +64,8 @@ private:
     void ProcessDamage();
     void SendDestroy();
     void enable_notificate();
-    static void ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
+
+    static void ObjectContactCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*);
 };
 
 #endif // BreakableObjectH

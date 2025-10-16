@@ -121,8 +121,12 @@ float CIKLimbsController::StaticObjectShift(const SCalculateData cd[max_size])
     _object_shift.set_taget(shift, _abs(current_shift - shift) / static_shift_object_speed);
     return shift;
 }
-static float doun_shift_to_correct = 0.3f;
-static float doun_shift_correct = 0.1f;
+
+namespace
+{
+constexpr float doun_shift_to_correct{0.3f};
+}
+
 bool CIKLimbsController::PredictObjectShift(const SCalculateData cd[max_size])
 {
     float predict_time_shift_down = FLT_MAX;
@@ -181,7 +185,7 @@ bool CIKLimbsController::PredictObjectShift(const SCalculateData cd[max_size])
     return true;
 }
 
-void CIKLimbsController::ObjectShift(float static_shift, const SCalculateData cd[max_size])
+void CIKLimbsController::ObjectShift(const SCalculateData cd[max_size])
 {
     u16 cnt_in_step = 0;
     const u16 sz = (u16)_bone_chains.size();
@@ -198,7 +202,7 @@ void CIKLimbsController::ObjectShift(float static_shift, const SCalculateData cd
     StaticObjectShift(cd);
 }
 
-void CIKLimbsController::ShiftObject(const SCalculateData cd[max_size])
+void CIKLimbsController::ShiftObject()
 {
     IKinematics* skeleton_animated = m_object->Visual()->dcast_PKinematics();
     VERIFY(skeleton_animated);
@@ -252,7 +256,7 @@ void CIKLimbsController::Calculate()
     root_bi.set_callback(root_bi.callback_type(), nullptr, root_bi.callback_param(), TRUE);
 
     if (ik_shift_object) //&& ! m_object->animation_movement_controlled( )
-        ShiftObject(cd);
+        ShiftObject();
 
     const u16 sz = (u16)_bone_chains.size();
     for (u16 j = 0; sz > j; ++j)
@@ -275,7 +279,8 @@ void CIKLimbsController::Calculate()
         }
 #endif
     }
-    ObjectShift(0, cd);
+
+    ObjectShift(cd);
 
     root_bi.set_callback(root_bi.callback_type(), sv_root_cb, root_bi.callback_param(), sv_root_cb_ovwr);
 }

@@ -14,7 +14,11 @@ public:
     T d;
 
 public:
-    IC SelfRef set(Self& P)
+    constexpr _plane() = default;
+    constexpr _plane(_vector3<T> _n, T _d) : n{_n}, d{_d} {}
+    constexpr _plane(T nx, T ny, T nz, T _d) : n{nx, ny, nz}, d{_d} {}
+
+    constexpr SelfRef set(Self& P)
     {
         n.set(P.n);
         d = P.d;
@@ -29,14 +33,15 @@ public:
             return n.similar(P.n, eps_n) && d == P.d;
     }
 
-    ICF SelfRef build(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
+    constexpr SelfRef build(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
     {
         _vector3<T> t1, t2;
         n.crossproduct(t1.sub(v1, v2), t2.sub(v1, v3)).normalize();
         d = -n.dotproduct(v1);
         return *this;
     }
-    ICF SelfRef build_precise(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
+
+    constexpr SelfRef build_precise(const _vector3<T>& v1, const _vector3<T>& v2, const _vector3<T>& v3)
     {
         _vector3<T> t1, t2;
         n.crossproduct(t1.sub(v1, v2), t2.sub(v1, v3));
@@ -44,37 +49,45 @@ public:
         d = -n.dotproduct(v1);
         return *this;
     }
-    ICF SelfRef build(const _vector3<T>& _p, const _vector3<T>& _n)
+
+    constexpr SelfRef build(const _vector3<T>& _p, const _vector3<T>& _n)
     {
         d = -n.normalize(_n).dotproduct(_p);
         return *this;
     }
-    ICF SelfRef build_unit_normal(const _vector3<T>& _p, const _vector3<T>& _n)
+
+    constexpr SelfRef build_unit_normal(const _vector3<T>& _p, const _vector3<T>& _n)
     {
-        VERIFY(fsimilar(_n.magnitude(), 1, EPS));
+        VERIFY(fsimilar(_n.magnitude(), 1.f, EPS));
         d = -n.set(_n).dotproduct(_p);
         return *this;
     }
-    IC SelfCRef project(_vector3<T>& pdest, _vector3<T> const& psrc) const
+
+    constexpr SelfCRef project(_vector3<T>& pdest, _vector3<T> const& psrc) const
     {
         pdest.mad(psrc, n, -classify(psrc));
         return *this;
     }
-    IC SelfRef project(_vector3<T>& pdest, _vector3<T> const& psrc)
+
+    constexpr SelfRef project(_vector3<T>& pdest, _vector3<T> const& psrc)
     {
         pdest.mad(psrc, n, -classify(psrc));
         return *this;
     }
-    ICF T classify(const _vector3<T>& v) const { return n.dotproduct(v) + d; }
-    IC SelfRef normalize()
+
+    constexpr T classify(const _vector3<T>& v) const { return n.dotproduct(v) + d; }
+
+    constexpr SelfRef normalize()
     {
         T denom = 1.f / n.magnitude();
         n.mul(denom);
         d *= denom;
         return *this;
     }
-    IC T distance(const _vector3<T>& v) { return _abs(classify(v)); }
-    IC BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
+
+    constexpr T distance(const _vector3<T>& v) { return _abs(classify(v)); }
+
+    constexpr BOOL intersectRayDist(const _vector3<T>& P, const _vector3<T>& D, T& dist)
     {
         T numer = classify(P);
         T denom = n.dotproduct(D);
@@ -85,7 +98,8 @@ public:
         dist = -(numer / denom);
         return ((dist > 0.f) || fis_zero(dist));
     }
-    ICF BOOL intersectRayPoint(const _vector3<T>& P, const _vector3<T>& D, _vector3<T>& dest)
+
+    constexpr BOOL intersectRayPoint(const _vector3<T>& P, const _vector3<T>& D, _vector3<T>& dest)
     {
         T numer = classify(P);
         T denom = n.dotproduct(D);
@@ -99,8 +113,9 @@ public:
             return ((dist > 0.f) || fis_zero(dist));
         }
     }
-    IC BOOL intersect(const _vector3<T>& u, const _vector3<T>& v, // segment
-                      _vector3<T>& isect) // intersection point
+
+    constexpr BOOL intersect(const _vector3<T>& u, const _vector3<T>& v, // segment
+                             _vector3<T>& isect) // intersection point
     {
         T denom, dist;
         _vector3<T> t;
@@ -117,8 +132,8 @@ public:
         return true;
     }
 
-    IC BOOL intersect_2(const _vector3<T>& u, const _vector3<T>& v, // segment
-                        _vector3<T>& isect) // intersection point
+    constexpr BOOL intersect_2(const _vector3<T>& u, const _vector3<T>& v, // segment
+                               _vector3<T>& isect) // intersection point
     {
         T dist1, dist2;
         _vector3<T> t;
@@ -134,7 +149,8 @@ public:
 
         return true;
     }
-    IC SelfRef transform(_matrix<T>& M)
+
+    constexpr SelfRef transform(_matrix<T>& M)
     {
         // rotate the normal
         M.transform_dir(n);
@@ -148,7 +164,7 @@ typedef _plane<float> Fplane;
 typedef _plane<double> Dplane;
 
 template <class T>
-BOOL _valid(const _plane<T>& s)
+constexpr inline BOOL _valid(const _plane<T>& s)
 {
     return _valid(s.n) && _valid(s.d);
 }

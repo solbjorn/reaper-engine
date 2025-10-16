@@ -34,7 +34,7 @@ public:
 
     void OnAdd(CUIWindow* w, void* d);
     void OnApply(CUIWindow* w, void* d);
-    void OnExit(CUIWindow* w, void* d);
+    void OnExit(CUIWindow*, void*);
     void Exit();
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);

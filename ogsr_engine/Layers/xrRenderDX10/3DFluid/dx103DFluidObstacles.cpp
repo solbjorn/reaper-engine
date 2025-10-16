@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx103DFluidObstacles.h"
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "../../../xr_3da/xr_object.h"
@@ -144,9 +145,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     box.getradius(size);
 
     // Traverse object database
-    g_SpatialSpace->q_box(m_lstRenderables,
-                          0, // ISpatial_DB::O_ORDERED,
-                          STYPE_RENDERABLE, center, size);
+    g_SpatialSpace->q_box(m_lstRenderables, 0, STYPE_RENDERABLE, center, size);
 
     // Determine visibility for dynamic part of scene
     for (ISpatial* spatial : m_lstRenderables)
@@ -220,7 +219,7 @@ void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const 
 
     float fVelocityScale;
 
-    VERIFY(timestep != 0);
+    VERIFY(!fis_zero(timestep));
 
     fVelocityScale = 1 / timestep;
 
@@ -241,11 +240,11 @@ void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const 
     for (u16 i = 0; i < iShapeNum; ++i)
     {
         if (Element.geometry(i)->collide_fluids())
-            RenderDynamicOOBB(*Element.geometry(i), WorldToFluid, timestep);
+            RenderDynamicOOBB(*Element.geometry(i), WorldToFluid);
     }
 }
 
-void dx103DFluidObstacles::RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid)
 {
     PIX_EVENT(RenderDynamicObstacle);
 

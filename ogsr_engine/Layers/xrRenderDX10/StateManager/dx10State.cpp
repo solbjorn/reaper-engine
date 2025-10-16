@@ -35,10 +35,13 @@ HRESULT dx10State::Apply(CBackend& cmd_list)
 
     VERIFY(m_pRasterizerState);
     cmd_list.StateManager.SetRasterizerState(m_pRasterizerState);
+
     VERIFY(m_pDepthStencilState);
     cmd_list.StateManager.SetDepthStencilState(m_pDepthStencilState);
-    if (m_uiStencilRef != -1)
+
+    if (m_uiStencilRef != std::numeric_limits<u32>::max())
         cmd_list.StateManager.SetStencilRef(m_uiStencilRef);
+
     VERIFY(m_pBlendState);
     cmd_list.StateManager.SetBlendState(m_pBlendState);
     cmd_list.StateManager.SetAlphaRef(m_uiAlphaRef);

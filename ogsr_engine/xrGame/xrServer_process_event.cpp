@@ -11,7 +11,7 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-#pragma todo("KRodin: заменить на прямые вызовы вместо этих всратых ивентов!")
+// TODO: KRodin: заменить на прямые вызовы вместо этих всратых ивентов!
 
 void xrServer::Process_event(NET_Packet& P, ClientID sender)
 {
@@ -60,7 +60,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
     case GE_TRADE_BUY:
     case GE_OWNERSHIP_TAKE:
     case GE_TRANSFER_TAKE: {
-        Process_event_ownership(P, sender, timestamp, destination);
+        Process_event_ownership(P, sender, destination);
         VERIFY(verify_entities());
     }
     break;
@@ -68,7 +68,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
     case GE_OWNERSHIP_REJECT:
     case GE_TRANSFER_REJECT:
     case GE_LAUNCH_ROCKET: {
-        Process_event_reject(P, sender, timestamp, destination, P.r_u16());
+        Process_event_reject(P, destination, P.r_u16());
         VERIFY(verify_entities());
     }
     break;

@@ -78,7 +78,7 @@ public:
     virtual void Load(CUIXml* xml, int idx) = 0;
 
     virtual void Start() = 0;
-    virtual bool Stop(bool bForce = false) = 0;
+    virtual bool Stop(bool = false) = 0;
 
     virtual void Update() = 0;
     virtual void OnRender() = 0;
@@ -98,6 +98,7 @@ class CUISequenceSimpleItem : public CUISequenceItem
 
 public:
     typedef CUISequenceItem inherited;
+
     struct SSubItem
     {
         CUIStatic* m_wnd;
@@ -105,10 +106,10 @@ public:
         float m_length;
         bool m_visible;
 
-    public:
-        virtual void Start();
-        virtual void Stop();
+        void Start();
+        void Stop();
     };
+
     DEFINE_VECTOR(SSubItem, SubItemVec, SubItemVecIt);
     SubItemVec m_subitems;
 
@@ -127,8 +128,9 @@ public:
     };
     xr_vector<SActionItem> m_actions;
 
-    CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem(owner) {}
+    CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem{owner} {}
     virtual ~CUISequenceSimpleItem();
+
     virtual void Load(CUIXml* xml, int idx);
 
     virtual void Start();
@@ -170,7 +172,7 @@ public:
 
     virtual void Update();
     virtual void OnRender();
-    virtual void OnKeyboardPress(int dik) {}
+    void OnKeyboardPress(int) override {}
 
     virtual bool IsPlaying();
 };

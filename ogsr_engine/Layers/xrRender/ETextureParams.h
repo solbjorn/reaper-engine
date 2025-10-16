@@ -93,7 +93,7 @@ struct STextureParams
     u32 border_color;
     u32 fade_color;
     u32 fade_amount;
-    u8 fade_delay;
+    u32 fade_delay;
     u32 mip_filter;
     int width;
     int height;
@@ -113,7 +113,6 @@ struct STextureParams
     STextureParams() { Clear(); }
 
     IC void destroy_shared_str(shared_str& object) { object.~shared_str(); }
-
     IC void construct_shared_str(shared_str& object) { ::new (&object) shared_str(); }
 
     IC void Clear()
@@ -122,13 +121,19 @@ struct STextureParams
         destroy_shared_str(bump_name);
         destroy_shared_str(ext_normal_map_name);
 
-        ZeroMemory(this, sizeof(STextureParams));
+        fmt = tfDXT1;
+        border_color = 0;
+        fade_color = 0;
+        fade_amount = 0;
+        fade_delay = 0;
+        type = ttImage;
+        material_weight = 0;
 
         construct_shared_str(detail_name);
         construct_shared_str(bump_name);
         construct_shared_str(ext_normal_map_name);
 
-        flags.set(flGenerateMipMaps | flDitherColor, TRUE);
+        flags.assign(flGenerateMipMaps | flDitherColor);
         mip_filter = kMIPFilterBox;
         width = 0;
         height = 0;
@@ -143,6 +148,7 @@ struct STextureParams
         // исходная текстура содержит альфа канал
         return flags.is(flHasAlpha);
     }
+
     IC BOOL HasAlphaChannel() // игровая текстура содержит альфа канал
     {
         switch (fmt)
@@ -156,6 +162,7 @@ struct STextureParams
         default: return FALSE;
         }
     }
+
     void Load(IReader& F, const char* dbg_name);
     void Save(IWriter& F);
 };
@@ -177,4 +184,4 @@ struct STextureParams
 #define THUMB_SIZE THUMB_HEIGHT* THUMB_WIDTH
 //----------------------------------------------------
 
-#endif /*_INCDEF_TextureParams_H_*/
+#endif // ETextureParamsH

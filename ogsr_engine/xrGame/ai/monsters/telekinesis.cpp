@@ -174,18 +174,18 @@ void CTelekinesis::schedule_update()
     }
 }
 
-void CTelekinesis::PhDataUpdate(dReal step)
+void CTelekinesis::PhDataUpdate(dReal)
 {
     if (!active)
         return;
 
-    for (u32 i = 0; i < objects.size(); i++)
+    for (auto obj : objects)
     {
-        switch (objects[i]->get_state())
+        switch (obj->get_state())
         {
-        case TS_Raise: objects[i]->raise(step); break;
-        case TS_Keep: objects[i]->keep(); break;
-        case TS_None: break;
+        case TS_Raise: obj->raise(); break;
+        case TS_Keep: obj->keep(); break;
+        default: break;
         }
     }
 }
@@ -202,18 +202,20 @@ void CTelekinesis::clear_notrelevant()
     objects.erase(std::remove_if(objects.begin(), objects.end(), &RemovePred), objects.end());
 }
 
-void CTelekinesis::PhTune(dReal step)
+void CTelekinesis::PhTune(dReal)
 {
     if (!active)
         return;
+
     clear_notrelevant();
-    for (u32 i = 0; i < objects.size(); i++)
+
+    for (auto obj : objects)
     {
-        switch (objects[i]->get_state())
+        switch (obj->get_state())
         {
         case TS_Raise:
-        case TS_Keep: objects[i]->enable(); break;
-        case TS_None: break;
+        case TS_Keep: obj->enable(); break;
+        default: break;
         }
     }
 }

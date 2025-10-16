@@ -21,9 +21,11 @@
 //////////////////////////////////////////////////////////////
 //////////////CPHMesh///////////////////////////////////////////
 ///////////////////////////////////////////////////////////
+
 BOOL g_bDebugDumpPhysicsStep = 0;
 
-void CPHMesh ::Create(dSpaceID space, dWorldID world) { Geom = dCreateTriList(space, nullptr, nullptr); }
+void CPHMesh ::Create(dSpaceID space) { Geom = dCreateTriList(space, nullptr, nullptr); }
+
 /////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////
@@ -107,7 +109,7 @@ void CPHWorld::Create()
 
     ContactGroup = dJointGroupCreate(0);
     dWorldSetGravity(phWorld, 0, -Gravity(), 0); //-2.f*9.81f
-    Mesh.Create(nullptr, phWorld);
+    Mesh.Create(nullptr);
 #ifdef PH_PLAIN
     plane = dCreatePlane(Space, 0, 1, 0, 0.3f);
 #endif

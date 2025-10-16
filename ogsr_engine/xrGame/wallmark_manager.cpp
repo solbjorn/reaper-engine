@@ -42,17 +42,6 @@ void CWalmarkManager::StartWorkflow()
     //.	Fvector			npoint;
     u32 wm_count = 0;
 
-    u32 _ray_test = 0;
-    //	u32 _tri_behind		= 0;
-    u32 _tri_not_plane = 0;
-    u32 _not_dist = 0;
-    /*
-        DBG_OpenCashedDraw		();
-        DBG_DrawAABB			(m_pos,Fvector().set(m_trace_dist,m_trace_dist,m_trace_dist),D3DCOLOR_XRGB(255,0,0));
-        DBG_DrawAABB			(m_pos,Fvector().set(0.05f,0.05f,0.05f),D3DCOLOR_XRGB(0,255,0));
-
-        CTimer T; T.Start();
-    */
     for (auto& Res : *XRC.r_get())
     {
         //.		DBG_DrawTri(Res, D3DCOLOR_XRGB(0,255,0) );
@@ -79,36 +68,21 @@ void CWalmarkManager::StartWorkflow()
         _tri[2] = V_array[_t->verts[2]];
 
         float dist = Distance(m_pos, _tri, pfSParam, pfTParam, end_point, pdir);
-
-        /*
-                if (c==tdBehind){
-                    ++_tri_behind;
-                    continue;
-                }
-        */
         float test = dist - EPS_L;
-
         if (test > 0.f)
         {
             if (Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, nullptr, m_owner))
-            {
-                ++_ray_test;
                 continue;
-            }
         }
+
         if (fis_zero(pfSParam) || fis_zero(pfTParam) || fsimilar(pfSParam, 1.0f) || fsimilar(pfTParam, 1.0f))
-        {
-            ++_tri_not_plane;
             continue;
-        }
 
         if (dist <= m_trace_dist)
         {
             ::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array);
             ++wm_count;
         }
-        else
-            ++_not_dist;
     }
 }
 

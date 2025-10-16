@@ -12,7 +12,7 @@ private:
     typedef CWeaponMagazined inherited;
 
 public:
-    CWeaponCustomPistol(LPCSTR name);
+    CWeaponCustomPistol();
     virtual ~CWeaponCustomPistol();
 
     virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }

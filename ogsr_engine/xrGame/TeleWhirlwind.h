@@ -25,12 +25,11 @@ public:
     virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
     void set_throw_power(float throw_pow);
     virtual bool can_activate(CPhysicsShellHolder* obj);
-    virtual void raise(float step);
+    void raise() override;
     virtual void raise_update();
     virtual void keep();
     virtual void release();
-    virtual void fire(const Fvector& target);
-    virtual void fire(const Fvector& target, float power);
+    void fire(const Fvector&, float) override;
     virtual void switch_state(ETelekineticState new_state);
     virtual bool destroy_object(const Fvector dir, float val);
 };
@@ -59,7 +58,6 @@ public:
     void clear_impacts();
     void set_destroing_particles(const shared_str& destroying_particles) { m_destroying_particles = destroying_particles; }
     const shared_str& destroing_particles() { return m_destroying_particles; }
-    void play_destroy(CTeleWhirlwindObject* obj);
     virtual CTelekineticObject* activate(CPhysicsShellHolder* obj, float strength, float height, u32 max_time_keep, bool rot = true);
     virtual void clear();
     virtual void clear_notrelevant();

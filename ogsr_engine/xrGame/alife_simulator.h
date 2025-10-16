@@ -14,19 +14,17 @@
 
 class CALifeSimulator : public CALifeUpdateManager, public CALifeInteractionManager
 {
+    RTTI_DECLARE_TYPEINFO(CALifeSimulator, CALifeUpdateManager, CALifeInteractionManager);
+
 protected:
-    virtual void setup_simulator(CSE_ALifeObject* object);
-    virtual void reload(LPCSTR section);
+    void setup_simulator(CSE_ALifeObject* object) override;
+    void reload(LPCSTR section) override;
 
 public:
     CALifeSimulator(xrServer* server, shared_str* command_line);
     virtual ~CALifeSimulator();
 
-    virtual void destroy();
-
-#if 0 // def DEBUG
-			void	validate			();
-#endif // DEBUG
+    void destroy() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

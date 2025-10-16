@@ -1,6 +1,5 @@
 #ifndef __XR_HITMARKER_H__
 #define __XR_HITMARKER_H__
-#pragma once
 
 #include "ui_defs.h"
 
@@ -16,6 +15,7 @@ struct SHitMark
 
     SHitMark(const ui_shader& sh, const Fvector& dir);
     ~SHitMark();
+
     bool IsActive();
     void UpdateAnim();
     void Draw(float dir);
@@ -34,7 +34,7 @@ public:
     ~CHitMarker();
 
     void Render();
-    void Hit(int id, const Fvector& dir);
+    void Hit(int, const Fvector& dir);
     void InitShader(LPCSTR tex_name);
 };
 

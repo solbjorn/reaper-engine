@@ -1,7 +1,12 @@
 #ifndef __XR_CORE_VECTOR4_H
 #define __XR_CORE_VECTOR4_H
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
+
 #include <DirectXMath.h>
+
+XR_DIAG_POP();
 
 template <class T>
 struct alignas(16) _ivector4
@@ -51,13 +56,14 @@ public:
     }
 
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
-    constexpr inline T& operator[](int i) const { return *((T*)this + i); }
+    constexpr inline const T& operator[](int i) const { return *((const T*)this + i); }
 
     constexpr inline SelfRef set(T _x, T _y, T _z, T _w = 1)
     {
-        cv = DirectX::XMVECTORI32{_x, _y, _z, _w};
+        cv = DirectX::XMVECTORI32{.i = {_x, _y, _z, _w}};
         return *this;
     }
+
     constexpr inline SelfRef set(const Self& v)
     {
         xr_memcpy16(&mv, &v.mv);
@@ -329,17 +335,18 @@ public:
     }
 
     constexpr inline T& operator[](int i) { return *((T*)this + i); }
-    constexpr inline T& operator[](int i) const { return *((T*)this + i); }
+    constexpr inline const T& operator[](int i) const { return *((const T*)this + i); }
 
     constexpr inline SelfRef set(T _x, T _y, T _z, T _w = 1)
     {
         if (std::is_constant_evaluated())
-            cv = DirectX::XMVECTORF32{_x, _y, _z, _w};
+            cv = DirectX::XMVECTORF32{.f = {_x, _y, _z, _w}};
         else
             mv = DirectX::XMVectorSet(_x, _y, _z, _w);
 
         return *this;
     }
+
     constexpr inline SelfRef set(const Tvector& vec, T _w = 1)
     {
         if (std::is_constant_evaluated())
@@ -358,6 +365,7 @@ public:
 
         return *this;
     }
+
     constexpr inline SelfRef set(const Self& v)
     {
         xr_memcpy16(&mv, &v.mv);

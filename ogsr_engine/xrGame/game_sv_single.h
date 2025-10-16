@@ -23,7 +23,7 @@ public:
     virtual void Create(shared_str& options);
 
     virtual void OnCreate(u16 id_who);
-    virtual BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = FALSE);
+    [[nodiscard]] BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL = FALSE) override;
     virtual void OnDetach(u16 eid_who, u16 eid_what);
 
     // Main
@@ -36,11 +36,11 @@ public:
     virtual float GetEnvironmentGameTimeFactor();
     virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
 
-    virtual bool change_level(NET_Packet& net_packet, ClientID sender);
-    virtual void save_game(NET_Packet& net_packet, ClientID sender);
-    virtual bool load_game(NET_Packet& net_packet, ClientID sender);
-    virtual void switch_distance(NET_Packet& net_packet, ClientID sender);
-    virtual void teleport_object(NET_Packet& packet, u16 id);
+    [[nodiscard]] bool change_level(NET_Packet& net_packet, ClientID sender) override;
+    void save_game(NET_Packet& net_packet, ClientID) override;
+    [[nodiscard]] bool load_game(NET_Packet& net_packet, ClientID sender) override;
+    void switch_distance(NET_Packet& net_packet, ClientID) override;
+    void teleport_object(NET_Packet& packet, u16 id) override;
 
     virtual void add_restriction(NET_Packet& packet, u16 id);
     virtual void remove_restriction(NET_Packet& packet, u16 id);

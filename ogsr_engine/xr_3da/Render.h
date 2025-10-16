@@ -209,7 +209,7 @@ public:
     virtual HRESULT shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result) = 0;
 
     // Information
-    virtual void Statistics(CGameFont* F) {}
+    virtual void Statistics(CGameFont*) {}
 
     virtual LPCSTR getShaderPath() = 0;
     virtual IRenderVisual* getVisual(int id) = 0;
@@ -228,14 +228,14 @@ public:
     // virtual IBlender*				blender_create			(CLASS_ID cls)								= 0;
     // virtual void					blender_destroy			(IBlender* &)								= 0;
 
-    virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) = 0;
+    virtual IRender_ObjectSpecific* ros_create() = 0;
     virtual void ros_destroy(IRender_ObjectSpecific*&) = 0;
 
     // Lighting/glowing
     virtual IRender_Light* light_create() = 0;
-    virtual void light_destroy(IRender_Light* p_) {}
+    virtual void light_destroy(IRender_Light*) {}
     virtual IRender_Glow* glow_create() = 0;
-    virtual void glow_destroy(IRender_Glow* p_) {}
+    virtual void glow_destroy(IRender_Glow*) {}
 
     // Models
     virtual IRenderVisual* model_CreateParticles(LPCSTR name) = 0;
@@ -269,7 +269,7 @@ public:
     virtual ~IRender_interface() = 0;
 
 protected:
-    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
+    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name) = 0;
 };
 
 inline IRender_interface::~IRender_interface() = default;

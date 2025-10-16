@@ -32,12 +32,16 @@ CTrade::CTrade(CInventoryOwner* p_io)
     // Определяем потомка этого экземпляра класса
     pTrader = smart_cast<CAI_Trader*>(p_io);
     if (pTrader)
+    {
         pThis.Set(TT_TRADER, pTrader, p_io);
+    }
     else
     {
         pActor = smart_cast<CActor*>(p_io);
         if (pActor)
+        {
             pThis.Set(TT_ACTOR, pActor, p_io);
+        }
         else
         {
             pStalker = smart_cast<CAI_Stalker*>(p_io);
@@ -110,18 +114,6 @@ void CTrade::StopTrade()
 {
     TradeState = false;
     m_dwLastTradeTime = 0;
-    //	Msg("--TRADE:: [%s]: Trade stopped...",*pThis.base->cName());
-
-    CAI_Trader* pTrader{};
-    if (pThis.type == TT_TRADER)
-    {
-        // pTrader = smart_cast<CAI_Trader*>(pThis.base);
-        // pTrader->OnStopTrade();
-    }
-    else if (pPartner.type == TT_TRADER)
-    {
-        pTrader = smart_cast<CAI_Trader*>(pPartner.base);
-    }
 
     RemovePartner();
 }

@@ -239,6 +239,9 @@ public:
     bool m_exploded;
     bool m_dead;
 
+    // 50fps fixed
+    static constexpr float STEP{0.02f};
+
 protected:
     SHeliEnemy m_enemy;
     SHeliBodyState m_body;
@@ -302,12 +305,12 @@ public:
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E) {}
+    void net_Export(CSE_Abstract*) override {}
     virtual void net_Relcase(CObject* O);
     virtual void save(NET_Packet& output_packet);
     virtual void load(IReader& input_packet);
 
-    virtual void SpawnInitPhysics(CSE_Abstract* D);
+    void SpawnInitPhysics(CSE_Abstract*) override;
     virtual CPhysicsShellHolder* PPhysicsShellHolder() { return PhysicsShellHolder(); }
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && PPhysicsShell()) || m_exploded; }
@@ -347,7 +350,7 @@ public:
     float GetDistanceToDestPosition();
 
     void SetSpeedInDestPoint(float sp);
-    float GetSpeedInDestPoint(float sp);
+    float GetSpeedInDestPoint(float);
 
     void SetOnPointRangeDist(float d);
     float GetOnPointRangeDist();

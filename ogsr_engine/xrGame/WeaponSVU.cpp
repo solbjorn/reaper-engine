@@ -2,9 +2,8 @@
 
 #include "weaponsvu.h"
 
-CWeaponSVU::CWeaponSVU(void) : CWeaponCustomPistol("SVU") {}
-
-CWeaponSVU::~CWeaponSVU(void) {}
+CWeaponSVU::CWeaponSVU() : CWeaponCustomPistol{} {}
+CWeaponSVU::~CWeaponSVU() {}
 
 void CWeaponSVU::script_register(sol::state_view& lua)
 {

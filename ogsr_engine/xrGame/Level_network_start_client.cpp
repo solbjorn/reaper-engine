@@ -10,11 +10,10 @@
 #include "ai_space.h"
 #include "Actor_Flags.h"
 
-extern pureFrame* g_pNetProcessor;
-
-BOOL CLevel::net_Start_client(LPCSTR options) { return FALSE; }
-
 #include "string_table.h"
+#include "xrServer.h"
+
+extern pureFrame* g_pNetProcessor;
 
 bool CLevel::net_start_client1()
 {
@@ -36,8 +35,6 @@ bool CLevel::net_start_client1()
         g_pGamePersistent->LoadTitle				(temp);*/
     return true;
 }
-
-#include "xrServer.h"
 
 bool CLevel::net_start_client2()
 {

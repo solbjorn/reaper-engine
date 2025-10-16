@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <dinput.h>
 #include "HUDmanager.h"
 #include "..\xr_3da\XR_IOConsole.h"
 #include "entity_alive.h"
@@ -36,6 +35,8 @@ extern void restore_actor();
 #endif
 
 #include "embedded_editor/embedded_editor_main.h"
+
+#include <dinput.h>
 
 bool g_bDisableAllInput = false;
 
@@ -83,7 +84,7 @@ void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
 {
-    if (Editor_MouseMove(dx, dy))
+    if (Editor_MouseMove())
         return;
 
     if (g_bDisableAllInput)
@@ -113,7 +114,7 @@ void CLevel::IR_OnKeyboardPress(int key)
     if (Editor_KeyPress(key))
         return;
 
-    if (GamePersistent().OnKeyboardPress(key))
+    if (GamePersistent().OnKeyboardPress())
         return;
 
     EGameActions _curr = get_binded_action(key);
@@ -123,9 +124,7 @@ void CLevel::IR_OnKeyboardPress(int key)
     switch (_curr)
     {
     case kSCREENSHOT: Render->Screenshot(); return;
-
     case kCONSOLE: Console->Show(); return;
-
     case kQUIT: {
         if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
         {
@@ -136,16 +135,18 @@ void CLevel::IR_OnKeyboardPress(int key)
                 HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
         }
         else
+        {
             Console->Execute("main_menu");
+        }
+
         return;
     }
-
     case kPAUSE:
         if (!g_block_pause)
-        {
             Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key");
-        }
+
         return;
+    default: break;
     }
 
     if (g_bDisableAllInput)
@@ -212,20 +213,26 @@ case DIK_BACK: HW.Caps.SceneMode = (HW.Caps.SceneMode + 1) % 3; return;
 case DIK_F4: {
     if (pInput->iGetAsyncKeyState(DIK_LALT))
         break;
-
     if (pInput->iGetAsyncKeyState(DIK_RALT))
         break;
 
     bool bOk = false;
     u32 i = 0, j, n = Objects.o_count();
+
     if (pCurrentEntity)
+    {
         for (; i < n; ++i)
+        {
             if (Objects.o_get_by_iterator(i) == pCurrentEntity)
                 break;
+        }
+    }
+
     if (i < n)
     {
         j = i;
         bOk = false;
+
         for (++i; i < n; ++i)
         {
             CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
@@ -235,7 +242,9 @@ case DIK_F4: {
                 break;
             }
         }
+
         if (!bOk)
+        {
             for (i = 0; i < j; ++i)
             {
                 CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
@@ -245,6 +254,8 @@ case DIK_F4: {
                     break;
                 }
             }
+        }
+
         if (bOk)
         {
             CObject* tpObject = CurrentEntity();
@@ -252,33 +263,35 @@ case DIK_F4: {
             CObject** I = &__I;
 
             SetEntity(*I);
+
             if (tpObject != *I)
             {
                 CActor* pActor = smart_cast<CActor*>(tpObject);
                 if (pActor)
-                    pActor->inventory().Items_SetCurrentEntityHud(false);
+                    pActor->inventory().Items_SetCurrentEntityHud();
             }
+
             if (tpObject)
             {
                 Engine.Sheduler.Unregister(tpObject);
                 Engine.Sheduler.Register(tpObject, TRUE);
-            };
+            }
+
             Engine.Sheduler.Unregister(*I);
             Engine.Sheduler.Register(*I, TRUE);
 
             CActor* pActor = smart_cast<CActor*>(*I);
             if (pActor)
             {
-                pActor->inventory().Items_SetCurrentEntityHud(true);
+                pActor->inventory().Items_SetCurrentEntityHud();
 
                 CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
                 if (pHudItem)
-                {
                     pHudItem->OnStateSwitch(pHudItem->GetState());
-                }
             }
         }
     }
+
     return;
 }
 case MOUSE_1: {
@@ -377,7 +390,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-    if (Editor_KeyHold(key))
+    if (Editor_KeyHold())
         return;
 
     if (g_bDisableAllInput)
@@ -441,6 +454,7 @@ void CLevel::IR_OnActivate()
                 IR_OnKeyboardPress(i);
             }
             break;
+            default: break;
             }
         }
     }

@@ -263,7 +263,7 @@ void CMainMenu::IR_OnMouseMove(int x, int y)
         MainInputReceiver()->IR_OnMouseMove(x, y);
 }
 
-void CMainMenu::IR_OnMouseStop(int x, int y) {}
+void CMainMenu::IR_OnMouseStop(int, int) {}
 
 void CMainMenu::IR_OnKeyboardPress(int dik)
 {

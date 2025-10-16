@@ -2,7 +2,7 @@
 
 class ICollisionForm;
 
-class ICollidable : public virtual RTTI::Enable
+class XR_NOVTABLE ICollidable : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollidable);
 
@@ -13,6 +13,6 @@ public:
     } collidable;
 
 public:
-    ICollidable();
+    ICollidable() = default;
     virtual ~ICollidable();
 };

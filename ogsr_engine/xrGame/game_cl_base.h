@@ -50,6 +50,7 @@ protected:
 public:
     game_cl_GameState();
     virtual ~game_cl_GameState();
+
     LPCSTR type_name() const { return *m_game_type_name; }
     void set_type_name(LPCSTR s);
     virtual void Init() {}
@@ -57,13 +58,13 @@ public:
     virtual void net_import_update(NET_Packet& P);
     virtual void net_import_GameTime(NET_Packet& P); // update GameTime only for remote clients
 
-    bool IR_OnKeyboardPress(int dik);
-    bool IR_OnKeyboardRelease(int dik);
-    bool IR_OnMouseMove(int dx, int dy);
-    bool IR_OnMouseWheel(int direction);
+    [[nodiscard]] bool IR_OnKeyboardPress(int dik);
+    [[nodiscard]] bool IR_OnKeyboardRelease(int dik);
+    [[nodiscard]] bool IR_OnMouseMove(int, int);
+    [[nodiscard]] bool IR_OnMouseWheel(int);
 
-    virtual bool OnKeyboardPress(int key) { return false; }
-    virtual bool OnKeyboardRelease(int key) { return false; }
+    virtual bool OnKeyboardPress(int) { return false; }
+    virtual bool OnKeyboardRelease(int) { return false; }
 
     game_PlayerState* GetPlayerByGameID(u32 GameID);
     game_PlayerState* GetPlayerByOrderID(u32 id);
@@ -79,11 +80,11 @@ public:
 
     virtual void OnRender() {}
     virtual bool IsServerControlHits() { return m_bServerControlHits; }
-    virtual bool IsEnemy(game_PlayerState* ps) { return false; }
-    virtual bool IsEnemy(CEntityAlive* ea1, CEntityAlive* ea2) { return false; }
+    virtual bool IsEnemy(game_PlayerState*) { return false; }
+    virtual bool IsEnemy(CEntityAlive*, CEntityAlive*) { return false; }
 
-    virtual void OnSpawn(CObject* pObj) {}
-    virtual void OnDestroy(CObject* pObj) {}
+    virtual void OnSpawn(CObject*) {}
+    virtual void OnDestroy(CObject*) {}
 
     virtual void SendPickUpEvent(u16 ID_who, u16 ID_what);
 };

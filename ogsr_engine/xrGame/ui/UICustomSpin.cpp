@@ -45,7 +45,7 @@ CUICustomSpin::CUICustomSpin()
 
 CUICustomSpin::~CUICustomSpin() { xr_delete(m_pLines); }
 
-void CUICustomSpin::Init(float x, float y, float width, float height)
+void CUICustomSpin::Init(float x, float y, float width, float)
 {
     CUIWindow::Init(x, y, width, SPIN_HEIGHT);
     m_pFrameLine->Init(0, 0, width, SPIN_HEIGHT);
@@ -58,18 +58,14 @@ void CUICustomSpin::Init(float x, float y, float width, float height)
     m_pLines->Init(0, 0, width - BTN_SIZE - 10, SPIN_HEIGHT);
 }
 
-void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
+void CUICustomSpin::SendMessage(CUIWindow* pWnd, s16 msg, void*)
 {
     if (BUTTON_CLICKED == msg)
     {
         if (m_pBtnUp == pWnd)
-        {
             OnBtnUpClick();
-        }
         else if (m_pBtnDown == pWnd)
-        {
             OnBtnDownClick();
-        }
     }
 }
 
@@ -86,7 +82,6 @@ void CUICustomSpin::Enable(bool status)
 }
 
 void CUICustomSpin::OnBtnUpClick() { GetMessageTarget()->SendMessage(this, BUTTON_CLICKED); }
-
 void CUICustomSpin::OnBtnDownClick() { GetMessageTarget()->SendMessage(this, BUTTON_CLICKED); }
 
 void CUICustomSpin::Draw()
@@ -169,5 +164,4 @@ void CUICustomSpin::Update()
 LPCSTR CUICustomSpin::GetText() { return m_pLines->GetText(); }
 
 void CUICustomSpin::SetTextColor(u32 color) { m_textColor[0] = color; }
-
 void CUICustomSpin::SetTextColorD(u32 color) { m_textColor[1] = color; }

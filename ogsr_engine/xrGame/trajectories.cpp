@@ -150,9 +150,6 @@ bool trajectory_intersects_geometry(float trajectory_time, Fvector const& trajec
                                     Fvector& collide_position, CObject* const self_object, CObject* const ignored_object, collide::rq_results& temp_rq_results,
                                     xr_vector<trajectory_pick>* const out_trajectory_picks, xr_vector<Fvector>* const out_collide_tris, Fvector const& box_size)
 {
-    out_trajectory_picks;
-    out_collide_tris;
-
 #ifdef DEBUG
     if (out_trajectory_picks)
         out_trajectory_picks->resize(0);
@@ -160,8 +157,8 @@ bool trajectory_intersects_geometry(float trajectory_time, Fvector const& trajec
         out_collide_tris->resize(0);
 #endif // #ifdef DEBUG
 
-    const Fvector gravity = Fvector().set(0.f, -ph_world->Gravity(), 0.f);
-    const float epsilon = .1f;
+    const Fvector gravity{0.0f, -ph_world->Gravity(), 0.0f};
+    constexpr float epsilon{0.1f};
 
     float low = 0.f;
     const float high = trajectory_time;

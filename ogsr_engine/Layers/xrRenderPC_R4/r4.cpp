@@ -35,12 +35,12 @@ public:
 
     virtual void set_active(bool b) { bActive = b; }
     virtual bool get_active() { return bActive; }
-    virtual void set_position(const Fvector& P) {}
-    virtual void set_direction(const Fvector& D) {}
-    virtual void set_radius(float R) {}
-    virtual void set_texture(LPCSTR name) {}
-    virtual void set_color(const Fcolor& C) {}
-    virtual void set_color(float r, float g, float b) {}
+    virtual void set_position(const Fvector&) {}
+    virtual void set_direction(const Fvector&) {}
+    virtual void set_radius(float) {}
+    virtual void set_texture(LPCSTR) {}
+    virtual void set_color(const Fcolor&) {}
+    virtual void set_color(float, float, float) {}
 };
 
 bool CRender::is_sun()
@@ -325,7 +325,7 @@ void CRender::AfterUIRender()
 }
 
 // Implementation
-IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) { return xr_new<CROS_impl>(); }
+IRender_ObjectSpecific* CRender::ros_create() { return xr_new<CROS_impl>(); }
 void CRender::ros_destroy(IRender_ObjectSpecific*& p) { xr_delete(p); }
 IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
 IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
@@ -398,12 +398,12 @@ D3DVERTEXELEMENT9* CRender::getVB_Format(int id, BOOL _alt)
     if (_alt)
     {
         VERIFY(id < int(xDC.size()));
-        return xDC[id].begin();
+        return xDC[id].data();
     }
     else
     {
         VERIFY(id < int(nDC.size()));
-        return nDC[id].begin();
+        return nDC[id].data();
     }
 }
 
@@ -568,7 +568,7 @@ void CRender::addShaderOption(const char* name, const char* value)
 namespace
 {
 template <typename T>
-HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, bool const disasm, const char* dbg_name)
+HRESULT create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, const char* dbg_name)
 {
     result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
 
@@ -723,15 +723,15 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
     }
     else if (pTarget[0] == 'c')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SCS*&)result, disasm, dbg_name);
+        _result = create_shader(buffer, buffer_size, file_name, (SCS*&)result, dbg_name);
     }
     else if (pTarget[0] == 'h')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SHS*&)result, disasm, dbg_name);
+        _result = create_shader(buffer, buffer_size, file_name, (SHS*&)result, dbg_name);
     }
     else if (pTarget[0] == 'd')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SDS*&)result, disasm, dbg_name);
+        _result = create_shader(buffer, buffer_size, file_name, (SDS*&)result, dbg_name);
     }
     else
     {
@@ -762,7 +762,7 @@ class includer final : public ID3DInclude
     IReader* R{};
 
 public:
-    STDMETHOD(Open)(D3D10_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+    STDMETHOD(Open)(D3D10_INCLUDE_TYPE, LPCSTR pFileName, LPCVOID, LPCVOID* ppData, UINT* pBytes) override
     {
         string_path pname;
         strconcat(sizeof(pname), pname, RImplementation.getShaderPath(), pFileName);
@@ -969,7 +969,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         IReader* fp = FS.r_open(file);
         fp->skip_bom(file);
 
-        if (fp->elapsed() > 2 * sizeof(xxh))
+        if (fp->elapsed() > gsl::index{2 * sizeof(xxh)})
         {
             xxh::XXH64_hash_t xxh_read = fp->r_u64();
             if (SUCCEEDED(_result) && xxh_read != xxh)

@@ -41,10 +41,11 @@ bool CControlCriticalWound::check_start_conditions()
     return true;
 }
 
-void CControlCriticalWound::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
+void CControlCriticalWound::on_event(ControlCom::EEventType type, ControlCom::IEventData*)
 {
     switch (type)
     {
     case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventCriticalWoundEnd, nullptr); break;
+    default: break;
     }
 }

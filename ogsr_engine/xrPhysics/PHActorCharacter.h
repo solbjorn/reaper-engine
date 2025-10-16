@@ -18,7 +18,7 @@ struct SPHCharacterRestrictor
     void SetObjectContactCallback(ObjectContactCallbackFun* callback);
     void SetMaterial(u16 material);
     void Create(CPHCharacter* ch, dVector3 sizes);
-    void Destroy(void);
+    void Destroy();
     void SetPhysicsRefObject(CPhysicsShellHolder* ref_object);
     void SetRadius(float r);
 };
@@ -28,9 +28,9 @@ struct TPHCharacterRestrictor : public SPHCharacterRestrictor
 {
     TPHCharacterRestrictor() : SPHCharacterRestrictor{Ttype} {}
 
-    void Create(CPHCharacter* ch, dVector3 sizes) { dGeomUserDataSetObjectContactCallback(m_restrictor, RestrictorCallBack); }
+    void Create(CPHCharacter*, dVector3) { dGeomUserDataSetObjectContactCallback(m_restrictor, RestrictorCallBack); }
 
-    static void RestrictorCallBack(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+    static void RestrictorCallBack(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
     {
         do_colide = false;
         dBodyID b1 = dGeomGetBody(c.geom.g1);

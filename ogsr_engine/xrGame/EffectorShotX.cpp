@@ -1,14 +1,15 @@
 #include "stdafx.h"
+
 #include "EffectorShotX.h"
 #include "../xr_3da/CameraBase.h"
 
 CCameraShotEffectorX::CCameraShotEffectorX(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac)
-    : CCameraShotEffector(max_angle, relax_speed, max_angle_horz, step_angle_horz, angle_frac)
+    : CCameraShotEffector{max_angle, relax_speed, max_angle_horz, step_angle_horz, angle_frac}
 {}
 
-CCameraShotEffectorX::~CCameraShotEffectorX() {}
+CCameraShotEffectorX::~CCameraShotEffectorX() = default;
 
-BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo& info) { return TRUE; }
+BOOL CCameraShotEffectorX::ProcessCam(SCamEffectorInfo&) { return true; }
 
 void CCameraShotEffectorX::GetDeltaAngle(Fvector& delta_angle)
 {

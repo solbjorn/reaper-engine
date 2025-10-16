@@ -83,9 +83,9 @@ private:
     virtual bool CanRemoveObject();
     ////////////////////////////////////////////////////////////////////////
     static BONE_P_MAP bone_map; // interface for PhysicsShell
-    static void ActorObstacleCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step);
+    static void ActorObstacleCallback(bool& do_colide, bool, dContact&, SGameMtl* material_1, SGameMtl* material_2);
+    void PhDataUpdate(dReal step) override;
+    void PhTune(dReal) override;
     /////////////////////////////////////////////////////////////////////////
     virtual void ApplyDamage(u16 level);
     virtual float Health() { return GetfHealth(); }
@@ -164,17 +164,18 @@ public:
 
         struct SWheelCollisionParams
         {
-            float spring_factor;
-            float damping_factor;
-            float mu_factor;
-            SWheelCollisionParams();
+            float spring_factor{1.0f};
+            float damping_factor{1.0f};
+            float mu_factor{1.0f};
         } collision_params;
 
         SWheel(CCar* acar) : car{acar} {}
 
-        IC static void applywheelCollisionParams(const dxGeomUserData* ud, bool& do_colide, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
-        static void WheellCollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
+    private:
+        static void applywheelCollisionParams(const dxGeomUserData* ud, dContact& c);
+        static void WheellCollisionCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*);
 
+    public:
         void Init(); // asumptions: bone_map is 1. ini parsed 2. filled in 3. bone_id is set
         void Load(LPCSTR section);
         void RestoreNetState(const CSE_ALifeCar::SWheelState& a_state);
@@ -280,16 +281,18 @@ public:
         float opened_angle{};
         float closed_angle{};
         u32 open_time{};
+
         struct SDoorway
         {
             Fvector2 door_plane_ext;
             _vector2<int> door_plane_axes;
             SDoor* door;
+
             SDoorway();
             void SPass();
             void Init(SDoor* adoor);
-            void Trace(const Fvector& point, const Fvector& dir);
         };
+
         Fvector2 door_plane_ext;
         _vector2<int> door_plane_axes;
         Fvector door_dir_in_door;
@@ -370,8 +373,9 @@ public:
 
         SCarSound(CCar* car);
         ~SCarSound();
-        Fvector relative_pos;
-        float volume;
+
+        Fvector relative_pos{0.0f, 0.5f, -1.0f};
+        float volume{1.0f};
         u32 engine_start_delay{}; // snd_engine starts after engine_start_delay ms by snd_engine_start
         u32 time_state_start{};
         CCar* pcar;
@@ -523,17 +527,17 @@ private:
     static void cb_Steer(CBoneInstance* B);
     virtual void Hit(SHit* pHDS);
     virtual void Die(CObject* who);
-    virtual void PHHit(float P, Fvector& dir, CObject* who, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* =ALife::eHitTypeWound */);
-    bool WheelHit(float P, s16 element, ALife::EHitType hit_type);
+    virtual void PHHit(float, Fvector& dir, CObject*, s16 element, Fvector p_in_object_space, float impulse, ALife::EHitType hit_type);
+    bool WheelHit(float P, s16 element);
     bool DoorHit(float P, s16 element, ALife::EHitType hit_type);
 
 public:
     virtual bool allowWeapon() const { return false; }
     virtual bool HUDView() const;
     virtual Fvector ExitPosition() { return m_exit_position; }
-    virtual Fvector ExitVelocity();
+    XR_SYSV [[nodiscard]] Fvector ExitVelocity() override;
     void GetVelocity(Fvector& vel) { m_pPhysicsShell->get_LinearVel(vel); }
-    void cam_Update(float dt, float fov);
+    void cam_Update(float, float fov) override;
     void detach_Actor();
     bool attach_Actor(CGameObject* actor) override;
     bool is_Door(u16 id, xr_map<u16, std::unique_ptr<SDoor>>::iterator& i);
@@ -573,7 +577,7 @@ public:
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void GetRayExplosionSourcePos(Fvector& pos);
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {}
+    void ActivateExplosionBox(const Fvector&, Fvector&) override {}
     virtual void ResetScriptData(void* P = nullptr);
 
     virtual void Action(int id, u32 flags);
@@ -590,17 +594,22 @@ public:
     // Hits
     virtual void HitSignal(float, Fvector&, CObject*, s16) {}
     virtual void HitImpulse(float, Fvector&, Fvector&) {}
-    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool for_cursor = false) override {}
+    void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) override {}
     virtual u16 Initiator();
+
+#ifdef DEBUG
     // HUD
-    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
+    void OnHUDDraw(ctx_id_t context_id, CCustomHUD* hud, IRenderable* root) override;
+#endif
 
     CCameraBase* Camera() { return active_camera; }
     void SetExplodeTime(u32 et);
     u32 ExplodeTime();
     // Inventory for the car
     CInventory* GetInventory() { return inventory; }
-    void VisualUpdate(float fov = 90.0f);
+
+private:
+    void VisualUpdate();
 
 protected:
     virtual void SpawnInitPhysics(CSE_Abstract* D);

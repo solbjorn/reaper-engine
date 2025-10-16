@@ -30,7 +30,7 @@ class CPHMovementControl
 
 public:
     CElevatorState* ElevatorState();
-    void in_shedule_Update(u32 DT);
+    void in_shedule_Update(u32);
     void PHCaptureObject(CPhysicsShellHolder* object, LPCSTR = nullptr, bool = false);
     void PHCaptureObject(CPhysicsShellHolder* object, u16 element, LPCSTR = nullptr, bool = false);
     CPHCapture* PHCapture() { return m_capture; }
@@ -84,23 +84,18 @@ public:
     int in_dead_area_count;
 
 public:
-    enum EEnvironment
-    {
-        peOnGround,
-        peAtWall,
-        peInAir
-    };
     enum CharacterType
     {
         actor,
         ai
     };
+
     bool isOutBorder() { return in_dead_area_count > 0; }
     void setOutBorder() { in_dead_area_count = 1; }
 
 private:
     void TraceBorder(const Fvector& previous_position);
-    void CheckEnvironment(const Fvector& V);
+    void CheckEnvironment();
 
     CharacterType eCharacterType;
     CPHCharacter* m_character;
@@ -311,13 +306,11 @@ public:
 
     void PathDIrPoint(const xr_vector<DetailPathManager::STravelPathPoint>& path, // in path
                       int index, // in index
-                      float distance, // in distance
                       float precesition, // in precesition
                       Fvector& dir // out dir
     );
     void PathDIrLine(const xr_vector<DetailPathManager::STravelPathPoint>& path, // in path
                      int index, // in point
-                     float distance, // in distance
                      float precesition, // in precesition
                      Fvector& dir // out dir
     );

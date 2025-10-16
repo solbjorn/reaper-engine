@@ -7,9 +7,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_simulator_header.h"
 
-CALifeSimulatorHeader::~CALifeSimulatorHeader() {}
+CALifeSimulatorHeader::~CALifeSimulatorHeader() = default;
 
 void CALifeSimulatorHeader::save(IWriter& memory_stream)
 {

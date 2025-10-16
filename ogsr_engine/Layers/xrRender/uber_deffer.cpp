@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uber_deffer.h"
 
 void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOOL _aref, LPCSTR _detail_replace, bool DO_NOT_FINISH, bool DO_NOT_WRITE)
@@ -134,19 +135,23 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         strconcat(sizeof(hs), hs, "DX11\\tess", params);
         strconcat(sizeof(ds), ds, "DX11\\tess", params);
 
-        VERIFY(strstr(vs, "bump") != 0);
-        VERIFY(strstr(ps, "bump") != 0);
+        VERIFY(strstr(vs, "bump") != nullptr);
+        VERIFY(strstr(ps, "bump") != nullptr);
+
         C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
         C.r_ComputePass("null");
         RImplementation.clearAllShaderOptions();
+
         u32 stage = C.r_dx10Sampler("smp_bump_ds");
-        if (stage != -1)
+        if (stage != std::numeric_limits<u32>::max())
         {
             C.i_dx10Address(stage, D3DTADDRESS_WRAP);
             C.i_dx10FilterAnizo(stage, TRUE);
         }
+
         if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
             C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+
         C.r_dx10Texture("s_tbump", fnameA);
         C.r_dx10Texture("s_tbumpX", fnameB); // should be before base bump
         if (bHasDetailBump)
@@ -286,12 +291,14 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
             C.r_dx10Texture("s_detailBump", texDetailBump);
             C.r_dx10Texture("s_detailBumpX", texDetailBumpX);
         }
+
         u32 stage = C.r_dx10Sampler("smp_bump_ds");
-        if (stage != -1)
+        if (stage != std::numeric_limits<u32>::max())
         {
             C.i_dx10Address(stage, D3DTADDRESS_WRAP);
             C.i_dx10FilterAnizo(stage, TRUE);
         }
+
         if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
             C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
     }

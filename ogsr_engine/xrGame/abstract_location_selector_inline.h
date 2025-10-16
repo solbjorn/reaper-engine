@@ -106,7 +106,7 @@ TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::set_dest_vertex(_vertex_id_type& vertex_id) { dest_vertex_id = &vertex_id; }
 
 TEMPLATE_SPECIALIZATION
-IC void CSelectorTemplate::before_search(_vertex_id_type& vertex_id) {}
+IC void CSelectorTemplate::before_search(_vertex_id_type&) {}
 
 TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::after_search() {}

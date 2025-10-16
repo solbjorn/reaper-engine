@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "space_restriction_bridge.h"
 #include "space_restriction_base.h"
 #include "ai_space.h"
@@ -63,7 +64,7 @@ bool CSpaceRestrictionBridge::on_border(const Fvector& position) const
     if ((I == E) || (ai().level_graph().vertex(*I)->position().xz() != pos.xz()))
         return (false);
 
-    for (I; I != E; ++I)
+    for (; I != E; ++I)
     {
         if (ai().level_graph().vertex(*I)->position().xz() != pos.xz())
             break;

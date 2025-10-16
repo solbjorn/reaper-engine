@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "pseudodog.h"
 #include "pseudodog_state_manager.h"
 
@@ -47,6 +48,7 @@ void CStateManagerPseudodog::execute()
         {
         case eStrong: state_id = eStatePanic; break;
         case eWeak: state_id = eStateAttack; break;
+        default: break;
         }
     }
     else if (object->HitMemory.is_hit())

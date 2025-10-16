@@ -24,7 +24,6 @@
 #include "../../game_object_space.h"
 #include "clsid_game.h"
 #include "trader_animation.h"
-#include "../../game_object_space.h"
 
 CAI_Trader::CAI_Trader() { AnimMan = xr_new<CTraderAnimation>(this); }
 
@@ -230,7 +229,7 @@ void CAI_Trader::DropItemSendMessage(CObject* O)
 void CAI_Trader::shedule_Update(u32 dt)
 {
     inherited::shedule_Update(dt);
-    UpdateInventoryOwner(dt);
+    UpdateInventoryOwner();
 
     if (GetScriptControl())
         ProcessScripts();
@@ -246,7 +245,7 @@ void CAI_Trader::g_WeaponBones(int& L, int& R1, int& R2)
     L = V->LL_BoneID("bip01_l_finger1");
 }
 
-void CAI_Trader::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
+void CAI_Trader::g_fireParams(CHudItem*, Fvector& P, Fvector& D, const bool)
 {
     VERIFY(inventory().ActiveItem());
     if (g_Alive() && inventory().ActiveItem())
@@ -278,7 +277,7 @@ void CAI_Trader::net_Destroy()
 void CAI_Trader::UpdateCL()
 {
     inherited::UpdateCL();
-    sound().update(Device.fTimeDelta);
+    sound().update();
 
     if (!GetScriptControl() && !bfScriptAnimation())
         animation().update_frame();
@@ -300,9 +299,8 @@ void CAI_Trader::OnStopTrade()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CAI_Trader::can_attach(const CInventoryItem* inventory_item) const { return (false); }
-
-bool CAI_Trader::use_bolts() const { return (false); }
+bool CAI_Trader::can_attach(const CInventoryItem*) const { return false; }
+bool CAI_Trader::use_bolts() const { return false; }
 
 void CAI_Trader::spawn_supplies()
 {

@@ -11,7 +11,7 @@ class CSoundRender_Environment;
 class SoundEnvironment_LIB;
 
 constexpr u32 sdef_target_count_submit = 4; // amount of buffers should be submitted to API
-constexpr u32 sdef_target_count_prefill = 10; //
+constexpr gsl::index sdef_target_count_prefill{10}; //
 constexpr u32 sdef_target_block = 100; // ms
 constexpr u32 sdef_env_version = 4; // current version of env-def
 constexpr u32 sdef_level_version = 1; // current version of level-def

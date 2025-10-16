@@ -124,16 +124,9 @@ const Fbox& CObject::BoundingBox() const
 // Class	: CXR_Object
 // Purpose	:
 //----------------------------------------------------------------------
-CObject::CObject() : ISpatial(g_SpatialSpace)
+CObject::CObject() : ISpatial{g_SpatialSpace}
 {
-    // Transform
-    Props.storage = 0;
-
-    Parent = nullptr;
-
-    NameObject = nullptr;
-    NameSection = nullptr;
-    NameVisual = nullptr;
+    spatial.type |= STYPE_COLLIDEABLE | STYPE_RENDERABLE;
 
 #ifdef DEBUG
     dbg_update_shedule = u32(-1) / 2;
@@ -169,7 +162,7 @@ void CObject::Load(LPCSTR section)
     setVisible(false);
 }
 
-BOOL CObject::net_Spawn(CSE_Abstract* data)
+BOOL CObject::net_Spawn(CSE_Abstract*)
 {
     PositionStack.clear();
 
@@ -358,7 +351,7 @@ CObject::SavedPosition CObject::ps_Element(u32 ID) const
     return PositionStack[ID];
 }
 
-void CObject::renderable_Render(u32 context_id, IRenderable* root) { MakeMeCrow(); }
+void CObject::renderable_Render(u32, IRenderable*) { MakeMeCrow(); }
 
 CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
 {
@@ -394,7 +387,7 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
 void CObject::OnH_A_Chield() {}
 void CObject::OnH_B_Chield() { setVisible(false); }
 void CObject::OnH_A_Independent() { setVisible(true); }
-void CObject::OnH_B_Independent(bool just_before_destroy) {}
+void CObject::OnH_B_Independent(bool) {}
 
 void CObject::MakeMeCrow()
 {

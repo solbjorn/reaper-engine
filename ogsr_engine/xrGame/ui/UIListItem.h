@@ -35,7 +35,7 @@ public:
     int GetGroupID() { return m_iGroupID; }
     void SetGroupID(int ID) { m_iGroupID = ID; }
 
-    virtual void MarkSelected(bool b) {}
+    virtual void MarkSelected(bool) {}
     // переопределяем критерий подсвечивания текста
     virtual bool IsHighlightText();
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }

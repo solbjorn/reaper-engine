@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control_combase.h"
 
 #include "anim_triple.h"
@@ -15,6 +16,9 @@ class CEntityAlive;
 
 class CControlManagerCustom : public CControl_ComBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlManagerCustom, CControl_ComBase);
+
+private:
     typedef CControl_ComBase inherited;
 
     xr_vector<CObject*> m_nearest;

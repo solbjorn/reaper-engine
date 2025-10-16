@@ -41,7 +41,7 @@ struct CDataStorageBinaryHeap
         inline void init();
         inline bool is_opened_empty() const;
         inline void add_opened(Vertex& vertex);
-        inline void decrease_opened(Vertex& vertex, const Distance value);
+        inline void decrease_opened(Vertex& vertex);
         inline void remove_best_opened();
         inline void add_best_closed();
         inline Vertex& get_best() const;

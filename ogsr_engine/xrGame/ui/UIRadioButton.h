@@ -13,12 +13,12 @@ class CUIRadioButton : public CUITabButton
     RTTI_DECLARE_TYPEINFO(CUIRadioButton, CUITabButton);
 
 public:
-    CUIRadioButton(void);
-    virtual ~CUIRadioButton(void);
+    CUIRadioButton();
+    virtual ~CUIRadioButton();
 
     virtual void Init(float x, float y, float width, float height);
     virtual void InitTexture(LPCSTR tex_name);
-    virtual void SetTextX(float x) { /*do nothing*/ }
+    void SetTextX(float) override {}
 };
 
 #endif

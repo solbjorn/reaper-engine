@@ -37,7 +37,6 @@ public:
     ALife::_TIME_ID m_time_interval;
 
     // sad, but true
-public:
     void select_task(const bool forced = false);
 
 private:
@@ -49,23 +48,20 @@ public:
     CALifeMonsterBrain(object_type* object);
     virtual ~CALifeMonsterBrain();
 
-public:
-    void on_state_write(NET_Packet& packet);
-    void on_state_read(NET_Packet& packet);
+    void on_state_write(NET_Packet&);
+    void on_state_read(NET_Packet&);
     void on_register();
     void on_unregister();
     void on_location_change();
     void on_switch_online();
     void on_switch_offline();
 
-public:
     void update(const bool forced = false);
     inline void update_script() { this->update(true); } // Принудительный апдейт из скриптов, не зависит от таймаута от прошлого апдейта.
 
     bool perform_attack();
-    ALife::EMeetActionType action_type(CSE_ALifeSchedulable* tpALifeSchedulable, const int& iGroupIndex, const bool& bMutualDetection);
+    [[nodiscard]] ALife::EMeetActionType action_type(CSE_ALifeSchedulable*, const int&, const bool&);
 
-public:
     IC object_type& object() const;
     IC movement_manager_type& movement() const;
     CSE_ALifeSmartZone& smart_terrain();

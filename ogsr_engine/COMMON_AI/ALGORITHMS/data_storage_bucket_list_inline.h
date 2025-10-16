@@ -201,7 +201,7 @@ inline void CBucketList::add_opened(typename TManagerDataStorage::Vertex& vertex
 }
 
 TEMPLATE_SPECIALIZATION
-inline void CBucketList::decrease_opened(typename TManagerDataStorage::Vertex& vertex, const typename TManagerDataStorage::Vertex::Distance /*value*/)
+inline void CBucketList::decrease_opened(typename TManagerDataStorage::Vertex& vertex)
 {
     VERIFY(!is_opened_empty());
     u32 node_bucket_id = compute_bucket_id(vertex);

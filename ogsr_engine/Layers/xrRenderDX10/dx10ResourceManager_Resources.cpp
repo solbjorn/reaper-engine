@@ -172,8 +172,8 @@ void CResourceManager::_DeleteVS(const SVS* vs)
 {
     if (0 == (vs->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    LPSTR N = LPSTR(*vs->cName);
-    map_VS::iterator I = m_vs.find(N);
+
+    auto I = m_vs.find(*vs->cName);
     if (I != m_vs.end())
     {
         m_vs.erase(I);
@@ -189,8 +189,10 @@ void CResourceManager::_DeleteVS(const SVS* vs)
                 (*iDecl)->vs_to_layout.erase(iLayout);
             }
         }
+
         return;
     }
+
     Msg("! ERROR: Failed to find compiled vertex-shader '%s'", *vs->cName);
 }
 
@@ -267,27 +269,30 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         return _ps;
     }
 }
+
 void CResourceManager::_DeletePS(const SPS* ps)
 {
     if (0 == (ps->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    LPSTR N = LPSTR(*ps->cName);
-    map_PS::iterator I = m_ps.find(N);
+
+    auto I = m_ps.find(*ps->cName);
     if (I != m_ps.end())
     {
         m_ps.erase(I);
         return;
     }
+
     Msg("! ERROR: Failed to find compiled pixel-shader '%s'", *ps->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
 SGS* CResourceManager::_CreateGS(LPCSTR name)
 {
-    LPSTR N = LPSTR(name);
-    map_GS::iterator I = m_gs.find(N);
+    auto I = m_gs.find(name);
     if (I != m_gs.end())
+    {
         return I->second;
+    }
     else
     {
         SGS* _gs = xr_new<SGS>();
@@ -327,17 +332,19 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         return _gs;
     }
 }
+
 void CResourceManager::_DeleteGS(const SGS* gs)
 {
     if (0 == (gs->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    LPSTR N = LPSTR(*gs->cName);
-    map_GS::iterator I = m_gs.find(N);
+
+    auto I = m_gs.find(*gs->cName);
     if (I != m_gs.end())
     {
         m_gs.erase(I);
         return;
     }
+
     Msg("! ERROR: Failed to find compiled geometry shader '%s'", *gs->cName);
 }
 
@@ -412,17 +419,20 @@ CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 sam
     R_ASSERT(Name && Name[0] && w && h);
 
     // ***** first pass - search already created RT
-    LPSTR N = LPSTR(Name);
-    map_RT::iterator I = m_rtargets.find(N);
+    auto I = m_rtargets.find(Name);
     if (I != m_rtargets.end())
+    {
         return I->second;
+    }
     else
     {
         CRT* RT = xr_new<CRT>();
         RT->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_rtargets.emplace(RT->set_name(Name), RT);
+
         if (Device.b_is_Ready)
             RT->create(Name, w, h, f, sampleCount, slices_num, flags);
+
         return RT;
     }
 }
@@ -431,13 +441,14 @@ void CResourceManager::_DeleteRT(const CRT* RT)
 {
     if (0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    LPSTR N = LPSTR(*RT->cName);
-    map_RT::iterator I = m_rtargets.find(N);
+
+    auto I = m_rtargets.find(*RT->cName);
     if (I != m_rtargets.end())
     {
         m_rtargets.erase(I);
         return;
     }
+
     Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 
@@ -513,13 +524,14 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
 {
     if (0 == (T->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
-    LPSTR N = LPSTR(*T->cName);
-    map_Texture::iterator I = m_textures.find(N);
+
+    auto I = m_textures.find(*T->cName);
     if (I != m_textures.end())
     {
         m_textures.erase(I);
         return;
     }
+
     Msg("! ERROR: Failed to find texture surface '%s'", *T->cName);
 }
 

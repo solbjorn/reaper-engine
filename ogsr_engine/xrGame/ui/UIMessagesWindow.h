@@ -30,8 +30,7 @@ public:
     virtual void Update();
 
 protected:
-    virtual void Init(float x, float y, float width, float height);
+    virtual void Init(float, float, float, float);
 
     CUIGameLog* m_pGameLog{};
-    //	Frect				m_ListPos2;
 };

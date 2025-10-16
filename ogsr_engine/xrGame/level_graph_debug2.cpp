@@ -138,9 +138,9 @@ void CLevelGraph::draw_nodes()
             }
             else
             {
-                for (u32 t = 0; t < linked.size(); ++t)
+                for (const auto t : linked)
                 {
-                    if (linked[t] == Nid)
+                    if (t == Nid)
                     {
                         bHL = TRUE;
                         CT = CH;
@@ -148,10 +148,9 @@ void CLevelGraph::draw_nodes()
                     }
                 }
             }
+
             if (!m_access_mask[Nid])
-            {
                 CT = D3DCOLOR_XRGB(255, 0, 0);
-            }
 
             // unpack plane
             Fplane PL;

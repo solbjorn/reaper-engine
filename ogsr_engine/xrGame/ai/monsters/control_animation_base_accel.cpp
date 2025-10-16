@@ -102,10 +102,11 @@ bool CControlAnimationBase::accel_chain_test()
 #ifdef DEBUG
     string256 error_msg;
 #endif
+
     // пройти по всем Chain-векторам
     for (auto I = m_accel.chain.begin(); I != m_accel.chain.end(); I++)
     {
-        VERIFY2(I->size() >= 2, error_msg);
+        VERIFY2(I->size() >= 2);
 
         SAnimItem* anim_from = m_anim_storage[*(I->begin())];
         SAnimItem* anim_to;
@@ -115,6 +116,7 @@ bool CControlAnimationBase::accel_chain_test()
         for (auto IT = I->begin() + 1; IT != I->end(); IT++)
         {
             anim_to = m_anim_storage[*IT];
+
 #ifdef DEBUG
             float from = anim_from->velocity.velocity.linear * anim_from->velocity.max_factor;
             float to = anim_to->velocity.velocity.linear * anim_to->velocity.min_factor;
@@ -123,6 +125,7 @@ bool CControlAnimationBase::accel_chain_test()
                       *anim_to->target_name);
             VERIFY2(to < from, error_msg);
 #endif
+
             anim_from = anim_to;
         }
     }

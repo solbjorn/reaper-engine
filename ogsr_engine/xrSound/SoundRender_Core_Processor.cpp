@@ -317,7 +317,7 @@ float CSoundRender_Core::occRayTestSom(const Fvector& pos, const Fvector& dir, f
         for (u32 k = 0; k < r_cnt; k++)
         {
             CDB::RESULT* R = _B + k;
-            occ_value *= *reinterpret_cast<float*>(&R->dummy);
+            occ_value *= std::bit_cast<float>(R->dummy);
             if (fis_zero(occ_value))
                 break;
         }

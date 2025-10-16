@@ -2,21 +2,14 @@
 
 #include "character_hit_animations.h"
 #include "entity_alive.h"
+#include "../Include\xrRender\Kinematics.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
-#include "../Include\xrRender\Kinematics.h"
 
 void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated& ca)
 {
-    // IKinematicsAnimated* ca = smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual());
-    /*
-    bkhit_motion= ca.LL_MotionID("hitback");	//hitback2.skl
-    fvhit_motion= ca.LL_MotionID("hitfront");
-    rthit_motion= ca.LL_MotionID("hitright");
-    lthit_motion= ca.LL_MotionID("hitleft");
-*/
-
     bkhit_motion = ca.LL_MotionID("hitback17"); // hitback2.skl
     fvhit_motion = ca.LL_MotionID("hitfront17");
     rthit_motion = ca.LL_MotionID("hitf_right17"); // hitright
@@ -36,15 +29,6 @@ void character_hit_animation_controller::SetupHitMotions(IKinematicsAnimated& ca
 
 namespace
 {
-ICF int sign(float x) { return x < 0 ? -1 : 1; }
-
-IC void set_blend_params(CBlend* B)
-{
-    if (!B)
-        return;
-    B->blendAmount = 1.0;
-}
-
 IC void play_cycle(IKinematicsAnimated* CA, const MotionID& m, u8 channel, u32& time_block, float base_power)
 {
     const BOOL mixin = TRUE;

@@ -60,7 +60,7 @@ public:
     virtual void update();
     IC u32 last_enemy_time() const;
     IC const CEntityAlive* last_enemy() const;
-    inline void set_useful_callback(sol::function& function, sol::object& object);
+    inline void set_useful_callback(sol::function&& function, sol::object&& object);
     void remove_links(CObject* object);
 
 public:

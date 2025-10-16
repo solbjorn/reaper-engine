@@ -38,7 +38,7 @@
 // KRodin: закомментировано.
 // #include "xrSASH.h"
 
-class IConsole_Command : public virtual RTTI::Enable
+class XR_NOVTABLE IConsole_Command : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IConsole_Command);
 
@@ -108,7 +108,7 @@ public:
 
     BENCH_SEC_SCRAMBLEVTBL2
 
-    virtual void fill_tips(vecTips& tips, u32 mode) { add_LRU_to_tips(tips); }
+    virtual void fill_tips(vecTips& tips) { add_LRU_to_tips(tips); }
 
     virtual void add_to_LRU(shared_str const& arg);
     void add_LRU_to_tips(vecTips& tips);
@@ -125,7 +125,9 @@ protected:
 
 public:
     CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N}, value{V}, mask{M} {}
-    const BOOL GetValue() const { return value->test(mask); }
+
+    BOOL GetValue() const { return value->test(mask); }
+
     virtual void Execute(LPCSTR args)
     {
         if (EQ(args, "on"))
@@ -139,16 +141,16 @@ public:
         else
             InvalidSyntax();
     }
+
     virtual void Status(TStatus& S) { xr_strcpy(S, value->test(mask) ? "on" : "off"); }
     virtual void Info(TInfo& I) { xr_strcpy(I, "'on/off' or '1/0'"); }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
         tips.push_back(str);
 
-        str;
         xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
         tips.push_back(str);
     }
@@ -164,24 +166,26 @@ protected:
 
 public:
     CCC_ToggleMask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N, true}, value{V}, mask{M} {}
-    const BOOL GetValue() const { return value->test(mask); }
-    virtual void Execute(LPCSTR args)
+
+    BOOL GetValue() const { return value->test(mask); }
+
+    virtual void Execute(LPCSTR)
     {
         value->set(mask, !GetValue());
         TStatus S;
         strconcat(sizeof(S), S, cName, " is ", value->test(mask) ? "on" : "off");
         Log(S);
     }
+
     virtual void Status(TStatus& S) { xr_strcpy(S, value->test(mask) ? "on" : "off"); }
     virtual void Info(TInfo& I) { xr_strcpy(I, "'on/off' or '1/0'"); }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
         tips.push_back(str);
 
-        str;
         xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
         tips.push_back(str);
     }
@@ -242,7 +246,7 @@ public:
     }
     virtual const xr_token* GetToken() { return tokens; }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         bool res = false;
@@ -280,7 +284,9 @@ protected:
 
 public:
     CCC_Float(LPCSTR N, float* V, float _min = 0, float _max = 1) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
-    const float GetValue() const { return *value; }
+
+    float GetValue() const { return *value; }
+
     void GetBounds(float& fmin, float& fmax) const
     {
         fmin = min;
@@ -302,12 +308,14 @@ public:
             S[xr_strlen(S) - 1] = 0;
     }
     virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "float value in range [%3.5f,%3.5f]", min, max); }
-    virtual void fill_tips(vecTips& tips, u32 mode)
+
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "%3.5f  (current)  [%3.5f,%3.5f]", *value, min, max);
         tips.push_back(str);
-        IConsole_Command::fill_tips(tips, mode);
+
+        IConsole_Command::fill_tips(tips);
     }
 };
 
@@ -352,12 +360,14 @@ public:
     }
     virtual void Status(TStatus& S) { xr_sprintf(S, sizeof(S), "(%g, %g, %g)", value->x, value->y, value->z); }
     virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "vector3 in range [%g, %g, %g]-[%g, %g, %g]", min.x, min.y, min.z, max.x, max.y, max.z); }
-    virtual void fill_tips(vecTips& tips, u32 mode)
+
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "(%g, %g, %g)  (current)  [(%g, %g, %g)-(%g, %g, %g)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
         tips.push_back(str);
-        IConsole_Command::fill_tips(tips, mode);
+
+        IConsole_Command::fill_tips(tips);
     }
 };
 
@@ -370,7 +380,8 @@ protected:
     int min, max;
 
 public:
-    const int GetValue() const { return *value; }
+    int GetValue() const { return *value; }
+
     void GetBounds(int& imin, int& imax) const
     {
         imin = min;
@@ -389,12 +400,14 @@ public:
     }
     virtual void Status(TStatus& S) { _itoa(*value, S, 10); }
     virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "integer value in range [%d,%d]", min, max); }
-    virtual void fill_tips(vecTips& tips, u32 mode)
+
+    virtual void fill_tips(vecTips& tips)
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "%d  (current)  [%d,%d]", *value, min, max);
         tips.push_back(str);
-        IConsole_Command::fill_tips(tips, mode);
+
+        IConsole_Command::fill_tips(tips);
     }
 };
 
@@ -417,10 +430,11 @@ public:
     virtual void Execute(LPCSTR args) { strncpy_s(value, size, args, size - 1); }
     virtual void Status(TStatus& S) { xr_strcpy(S, value); }
     virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "string with up to %d characters", size); }
-    virtual void fill_tips(vecTips& tips, u32 mode)
+
+    virtual void fill_tips(vecTips& tips)
     {
         tips.push_back((LPCSTR)value);
-        IConsole_Command::fill_tips(tips, mode);
+        IConsole_Command::fill_tips(tips);
     }
 };
 
@@ -429,8 +443,9 @@ class CCC_LoadCFG : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_LoadCFG, IConsole_Command);
 
 public:
-    virtual bool allow(LPCSTR cmd) { return true; }
     CCC_LoadCFG(LPCSTR N);
+
+    virtual bool allow(LPCSTR) { return true; }
     virtual void Execute(LPCSTR args);
 };
 
@@ -491,12 +506,13 @@ public:
 
     virtual void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "vector4 in range [%g, %g, %g, %g]-[%g, %g, %g, %g]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w); }
 
-    virtual void fill_tips(vecTips& tips, u32 mode) override
+    virtual void fill_tips(vecTips& tips) override
     {
         TStatus str;
         xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x,
                    max.y, max.z, max.w);
         tips.push_back(str);
-        IConsole_Command::fill_tips(tips, mode);
+
+        IConsole_Command::fill_tips(tips);
     }
 };

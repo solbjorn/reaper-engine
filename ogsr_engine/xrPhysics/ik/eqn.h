@@ -63,7 +63,7 @@ struct PsiEquation
     unsigned char status, num_crits, num_roots;
     unsigned char *status_ptr, *num_roots_ptr, *num_crits_ptr;
     float alpha, beta, xi;
-    float crit_pts[2], root_pts[2];
+    mutable float crit_pts[2], root_pts[2];
 
     // store temporary computations
     float a2b2;

@@ -376,9 +376,13 @@ BOOL CHOM::visible(const sPoly& P) const
 
     if (xform_b0(min, max, z, m_xform_01, P.front().x, P.front().y, P.front().z))
         return TRUE;
-    for (u32 it = 1; it < P.size(); it++)
+
+    for (gsl::index it{1}; it < P.size(); ++it)
+    {
         if (xform_b1(min, max, z, m_xform_01, P[it].x, P[it].y, P[it].z))
             return TRUE;
+    }
+
     return Raster.test(min.x, min.y, max.x, max.y, z);
 }
 

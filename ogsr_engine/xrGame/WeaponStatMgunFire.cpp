@@ -9,7 +9,6 @@
 #include "EffectorShot.h"
 
 const Fvector& CWeaponStatMgun::get_CurrentFirePoint() { return m_fire_pos; }
-
 const Fmatrix& CWeaponStatMgun::get_ParticlesXFORM() { return m_fire_bone_xform; }
 
 void CWeaponStatMgun::FireStart()
@@ -64,7 +63,7 @@ void CWeaponStatMgun::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(m_fire_pos, zero_vel);
+    StartSmokeParticles(m_fire_pos);
     OnShellDrop(m_fire_pos, zero_vel);
 
     bool b_hud_mode = (Level().CurrentEntity() == smart_cast<CObject*>(Owner()));

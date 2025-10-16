@@ -135,10 +135,11 @@ void CUIPropertiesBox::AutoUpdateSize()
 }
 
 CUIListBoxItem* CUIPropertiesBox::GetClickedItem() { return m_UIListWnd.GetSelectedItem(); }
+
 void CUIPropertiesBox::Update() { inherited::Update(); }
 void CUIPropertiesBox::Draw() { inherited::Draw(); }
 
-bool CUIPropertiesBox::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIPropertiesBox::OnKeyboard(int, EUIMessages)
 {
     Hide();
     return true;

@@ -245,15 +245,14 @@ IC const GameGraph::_LEVEL_ID& CLevelGraph::level_id() const { return (m_level_i
 
 IC void CLevelGraph::level_id(const GameGraph::_LEVEL_ID& level_id) { m_level_id = level_id; }
 
-IC void CLevelGraph::begin(const CVertex& vertex, const_iterator& begin, const_iterator& end) const
+inline void CLevelGraph::begin(const CVertex&, const_iterator& begin, const_iterator& end) const
 {
     begin = 0;
     end = 4;
 }
 
-IC void CLevelGraph::begin(const CVertex* _vertex, const_iterator& _begin, const_iterator& end) const { begin(*_vertex, _begin, end); }
-
-IC void CLevelGraph::begin(const u32 vertex_id, const_iterator& _begin, const_iterator& end) const { begin(vertex(vertex_id), _begin, end); }
+inline void CLevelGraph::begin(const CVertex* _vertex, const_iterator& _begin, const_iterator& end) const { begin(*_vertex, _begin, end); }
+inline void CLevelGraph::begin(const u32 vertex_id, const_iterator& _begin, const_iterator& end) const { begin(vertex(vertex_id), _begin, end); }
 
 IC u32 CLevelGraph::value(const CVertex& vertex, const_iterator& i) const { return (vertex.link(i)); }
 
@@ -272,7 +271,7 @@ IC void CLevelGraph::set_invalid_vertex(u32& vertex_id, CVertex** vertex) const
         *vertex = nullptr;
 }
 
-IC const u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex* vertex) const
+IC u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex* vertex) const
 {
     VERIFY(valid_vertex_id(u32(vertex - m_nodes)));
     return (u32(vertex - m_nodes));
@@ -406,7 +405,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
                 path_node.set_vertex_id(next_vertex_id);
                 tpaOutputPoints.push_back(path_node);
 
-                if (dest_xz == v->position().xz() /**box.contains(dest)/**/)
+                if (dest_xz == v->position().xz())
                 {
                     tIntersectPoint = v3d(dest);
                     if (bAssignY)

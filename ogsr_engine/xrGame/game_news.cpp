@@ -40,12 +40,13 @@ LPCSTR GAME_NEWS_DATA::SingleLineText()
 {
     if (xr_strlen(full_news_text.c_str()))
         return full_news_text.c_str();
+
     string128 time{};
 
     // Calc current time
     u32 years, months, days, hours, minutes, seconds, milliseconds;
     split_time(receive_time, years, months, days, hours, minutes, seconds, milliseconds);
-#pragma todo("Satan->Satan : insert carry-over")
+    // TODO: Satan->Satan : insert carry-over
     // sprintf_s(time, "%02i:%02i \\n", hours, minutes);
     sprintf_s(time, "%02i:%02i ", hours, minutes);
     //	strconcat	(result, locationName, time, newsPhrase);

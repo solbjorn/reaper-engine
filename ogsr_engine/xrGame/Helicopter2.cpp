@@ -14,6 +14,13 @@
 #include "CustomZone.h"
 #include "MathUtils.h"
 
+#include "group_hierarchy_holder.h"
+#include "seniority_hierarchy_holder.h"
+#include "team_hierarchy_holder.h"
+#include "squad_hierarchy_holder.h"
+
+#include "extendedgeom.h"
+
 bool CHelicopter::isObjectVisible(CObject* O)
 {
     Fvector dir_to_object;
@@ -152,7 +159,8 @@ void CHelicopter::SetSpeedInDestPoint(float sp)
         Msg("---SetSpeedInDestPoint %f", sp);
 }
 
-float CHelicopter::GetSpeedInDestPoint(float sp) { return m_movement.GetSpeedInDestPoint(); }
+float CHelicopter::GetSpeedInDestPoint(float) { return m_movement.GetSpeedInDestPoint(); }
+
 void CHelicopter::SetOnPointRangeDist(float d)
 {
     m_movement.onPointRangeDist = d;
@@ -219,11 +227,9 @@ void CHelicopter::Hit(SHit* pHDS)
 #endif
     }
 
-#pragma todo("KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать над этим.")
+    // TODO: KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать над этим.
     if (pHDS->who && (pHDS->who->CLS_ID == CLSID_OBJECT_ACTOR || smart_cast<CAI_Stalker*>(pHDS->who) || smart_cast<CCustomZone*>(pHDS->who)))
-    {
         callback(GameObject::eHelicopterOnHit)(pHDS->damage(), pHDS->impulse, pHDS->hit_type, pHDS->who->ID());
-    }
 
     CPHDestroyable::SetFatalHit(*pHDS);
 }
@@ -234,21 +240,17 @@ void CHelicopter::PHHit(SHit& H)
         inherited::PHHit(H);
 }
 
-#include "group_hierarchy_holder.h"
-#include "seniority_hierarchy_holder.h"
-#include "team_hierarchy_holder.h"
-#include "squad_hierarchy_holder.h"
-
-#include "extendedgeom.h"
-void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+namespace
+{
+void CollisionCallbackDead(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     do_colide = true;
 
     CHelicopter* l_this = bo1 ? smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g1)->ph_ref_object) : smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g2)->ph_ref_object);
-
     if (l_this && !l_this->m_exploded)
         l_this->m_ready_explode = true;
 }
+} // namespace
 
 void CHelicopter::DieHelicopter()
 {

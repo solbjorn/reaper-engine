@@ -1,15 +1,10 @@
 #include "stdafx.h"
 
 #include "uilistwnd.h"
-//.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
 
-//. #define				ACTIVE_BACKGROUND			"ui\\ui_pop_up_active_back"
-//. #define				ACTIVE_BACKGROUND_WIDTH		16
-//. #define				ACTIVE_BACKGROUND_HEIGHT	16
-
-// разделитель для интерактивных строк в листе
-static const char cSeparatorChar = '%';
+#include "../xr_3da/xr_input.h"
+#include "../Level.h"
 
 CUIListWnd::CUIListWnd()
 {
@@ -451,34 +446,33 @@ int CUIListWnd::FindItemWithValue(int iValue)
     return -1;
 }
 
-#include "../xr_3da/xr_input.h"
-#include "../Level.h"
-
 bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
     bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
     switch (mouse_action)
     {
-    case WINDOW_LBUTTON_DB_CLICK: break;
     case WINDOW_MOUSE_WHEEL_DOWN:
         m_ScrollBar->TryScrollInc();
+
         if (with_shift)
         {
             m_ScrollBar->TryScrollInc();
             m_ScrollBar->TryScrollInc();
         }
+
         return true;
-        break;
     case WINDOW_MOUSE_WHEEL_UP:
         m_ScrollBar->TryScrollDec();
+
         if (with_shift)
         {
             m_ScrollBar->TryScrollDec();
             m_ScrollBar->TryScrollDec();
         }
+
         return true;
-        break;
+    default: break;
     }
 
     return inherited::OnMouse(x, y, mouse_action);

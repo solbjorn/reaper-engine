@@ -59,7 +59,7 @@ void CRenderDevice::_SetupStates()
     m_pRender->SetupStates();
 }
 
-void CRenderDevice::_Create(LPCSTR shName)
+void CRenderDevice::_Create()
 {
     Memory.mem_compact();
 
@@ -68,7 +68,7 @@ void CRenderDevice::_Create(LPCSTR shName)
 
     _SetupStates();
 
-    m_pRender->OnDeviceCreate(shName);
+    m_pRender->OnDeviceCreate();
 
     dwFrame = 0;
 }
@@ -122,7 +122,7 @@ void CRenderDevice::Create()
     ClipCursor(&winRect);
     SetActiveWindow(m_hWnd);
 
-    _Create(nullptr);
+    _Create();
 
     PreCache(0, false, false);
 }

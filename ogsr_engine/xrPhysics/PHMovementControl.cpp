@@ -26,8 +26,6 @@
 #define def_Y_SIZE_2 0.8f
 #define def_Z_SIZE_2 0.35f
 
-const u64 after_creation_collision_hit_block_steps_number = 100;
-
 CPHMovementControl::CPHMovementControl(CObject* parent)
 {
     pObject = parent;
@@ -92,6 +90,7 @@ void CPHMovementControl::AddControlVel(const Fvector& vel)
     vExternalImpulse.add(vel);
     bExernalImpulse = true;
 }
+
 void CPHMovementControl::ApplyImpulse(const Fvector& dir, const dReal P)
 {
     if (fis_zero(P))
@@ -103,11 +102,13 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir, const dReal P)
     AddControlVel(force);
     m_character->ApplyImpulse(dir, P);
 }
+
 void CPHMovementControl::SetVelocityLimit(float val)
 {
     if (m_character)
         m_character->SetMaximumVelocity(val);
 }
+
 float CPHMovementControl::VelocityLimit()
 {
     if (!m_character || !m_character->b_exist)
@@ -115,7 +116,7 @@ float CPHMovementControl::VelocityLimit()
     return m_character->GetMaximumVelocity();
 }
 
-void CPHMovementControl::in_shedule_Update(u32 DT)
+void CPHMovementControl::in_shedule_Update(u32)
 {
     if (m_capture)
     {
@@ -124,7 +125,7 @@ void CPHMovementControl::in_shedule_Update(u32 DT)
     }
 }
 
-void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float /**ang_speed/**/, float jump, float /**dt/**/, bool /**bLight/**/)
+void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float, float jump, float, bool)
 {
     Fvector previous_position;
     previous_position.set(vPosition);
@@ -161,7 +162,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
         }
     }
 
-#pragma todo("KRodin: починить этот чертов код, вылетает в Х-18 из за кидающихся полтергейстов. Редко, но не настолько, чтобы это было незаметно.")
+    // TODO: KRodin: починить этот чертов код, вылетает в Х-18 из за кидающихся полтергейстов. Редко, но не настолько, чтобы это было незаметно.
     /*
     auto* cdi = CollisionDamageInfo();
 
@@ -172,7 +173,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
     */
 
     TraceBorder(previous_position);
-    CheckEnvironment(vPosition);
+    CheckEnvironment();
     bSleep = false;
     m_character->Reinit();
 }
@@ -292,9 +293,9 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
             }
             vPosition.set(new_position); // for PathDirLine && PathDirPoint
             if (near_line)
-                PathDIrLine(path, index, m_path_distance, precision, dir);
+                PathDIrLine(path, index, precision, dir);
             else
-                PathDIrPoint(path, index, m_path_distance, precision, dir);
+                PathDIrPoint(path, index, precision, dir);
 
             travel_point = (u32)index;
             m_start_index = index;
@@ -355,7 +356,7 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
         }
     }
 
-    CheckEnvironment(vPosition);
+    CheckEnvironment();
     bSleep = false;
     b_exect_position = false;
     // m_character->Reinit();
@@ -645,7 +646,8 @@ void CPHMovementControl::CorrectPathDir(const Fvector& real_path_dir, const xr_v
         corrected_path_dir.set(real_path_dir);
     }
 }
-void CPHMovementControl::PathDIrLine(const xr_vector<DetailPathManager::STravelPathPoint>& path, int index, float distance, float precesition, Fvector& dir)
+
+void CPHMovementControl::PathDIrLine(const xr_vector<DetailPathManager::STravelPathPoint>& path, int index, float precesition, Fvector& dir)
 {
     Fvector to_path_point;
     Fvector corrected_path_dir;
@@ -666,7 +668,7 @@ void CPHMovementControl::PathDIrLine(const xr_vector<DetailPathManager::STravelP
     dir.normalize_safe();
 }
 
-void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravelPathPoint>& path, int index, float distance, float precesition, Fvector& dir)
+void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravelPathPoint>& path, int index, float precesition, Fvector& dir)
 {
     Fvector to_path_point;
     Fvector corrected_path_dir;
@@ -722,11 +724,13 @@ void CPHMovementControl::PathDIrPoint(const xr_vector<DetailPathManager::STravel
     dir.add(tangent, to_path_point);
     dir.normalize_safe();
 }
+
 void CPHMovementControl::SetActorRestrictorRadius(CPHCharacter::ERestrictionType rt, float r)
 {
     if (m_character && eCharacterType == actor)
         static_cast<CPHActorCharacter*>(m_character)->SetRestrictorRadius(rt, r);
 }
+
 void CPHMovementControl::Load(LPCSTR section)
 {
     // capture
@@ -780,9 +784,10 @@ void CPHMovementControl::Load(LPCSTR section)
     //	ActivateBox	(0);
 }
 
-void CPHMovementControl::CheckEnvironment(const Fvector& /**V/**/)
+void CPHMovementControl::CheckEnvironment()
 {
     eOldEnvironment = eEnvironment;
+
     switch (m_character->CheckInvironment())
     {
     case peOnGround: eEnvironment = peOnGround; break;
@@ -839,7 +844,7 @@ bool CPHMovementControl::TryPosition(Fvector& pos)
 #endif
     if (m_character->b_exist)
     {
-        bool ret = m_character->TryPosition(pos, b_exect_position) && !bExernalImpulse;
+        bool ret = m_character->TryPosition(pos) && !bExernalImpulse;
         m_character->GetPosition(vPosition);
         return (ret);
     }

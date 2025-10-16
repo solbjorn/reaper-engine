@@ -16,9 +16,11 @@ IC CALifeLevelRegistry& CALifeGraphRegistry::level() const
 
 IC void CALifeGraphRegistry::change(CSE_ALifeDynamicObject* object, GameGraph::_GRAPH_ID tGraphPointID, GameGraph::_GRAPH_ID tNextGraphPointID)
 {
-    VERIFY3(object->used_ai_locations() /** && (object->interactive() || object->m_bOnline)/**/, *object->s_name, object->name_replace());
+    VERIFY3(object->used_ai_locations(), *object->s_name, object->name_replace());
+
     remove(object, tGraphPointID);
     add(object, tNextGraphPointID);
+
     object->m_tGraphID = tNextGraphPointID;
     object->o_Position = ai().game_graph().vertex(object->m_tGraphID)->level_point();
     object->m_tNodeID = ai().game_graph().vertex(object->m_tGraphID)->level_vertex_id();
@@ -52,7 +54,7 @@ IC const CALifeGraphRegistry::GRAPH_REGISTRY& CALifeGraphRegistry::objects() con
 template <typename F>
 IC void CALifeGraphRegistry::iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f)
 {
-    iterate(((CGraphPointInfo&)(objects()[game_vertex_id])).objects(), f);
+    iterate(((CGraphPointInfo&)(m_objects[game_vertex_id])).objects(), f);
 }
 
 template <typename F, typename C>

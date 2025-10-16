@@ -1,6 +1,11 @@
 #pragma once
 
-#include "imgui.h"
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wnontrivial-memcall");
+
+#include <imgui.h>
+
+XR_DIAG_POP();
 
 struct ImguiWnd
 {

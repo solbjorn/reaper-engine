@@ -143,8 +143,8 @@ public:
     virtual void net_Save(NET_Packet& net_packet);
     virtual void net_Load(IReader& ireader);
     virtual BOOL net_SaveRelevant();
-    virtual void save(NET_Packet& output_packet);
-    virtual void load(IReader& input_packet);
+    void save(NET_Packet&) override;
+    void load(IReader&) override;
 
     virtual BOOL net_Relevant() { return getLocal(); } // send messages only if active and local
     virtual void spatial_move();
@@ -153,13 +153,13 @@ public:
     virtual void shedule_Update(u32 dt);
     virtual bool shedule_Needed();
 
-    virtual void ForceTransform(const Fmatrix& m) override {}
+    virtual void ForceTransform(const Fmatrix&) override {}
     virtual void ForceTransformAndDirection(const Fmatrix& m) override { ForceTransform(m); }
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void Hit(SHit* pHDS) {}
-    virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir) {}
+    virtual void Hit(SHit*) {}
+    virtual void SetHitInfo(CObject*, CObject*, s16, Fvector, Fvector) {}
 
     // игровое имя объекта
     virtual LPCSTR Name() const;
@@ -196,8 +196,8 @@ public:
 #endif
 
     void init();
-    virtual void reinit();
-    virtual void reload(LPCSTR section);
+    void reinit() override;
+    void reload(LPCSTR) override;
 
 public:
     virtual void dbg_DrawSkeleton();
@@ -245,7 +245,7 @@ public:
 
 protected:
     virtual void spawn_supplies();
-    virtual bool load_upgrades(CSE_Abstract* DC) { return false; }
+    virtual bool load_upgrades(CSE_Abstract*) { return false; }
 
 public:
     IC CAI_ObjectLocation& ai_location() const

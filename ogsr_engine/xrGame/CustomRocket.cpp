@@ -162,7 +162,7 @@ void CCustomRocket::create_physic_shell()
 // Rocket specific functions
 //////////////////////////////////////////////////////////////////////////
 
-void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCustomRocket::ObjectContactCallback(bool& do_colide, bool, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
     do_colide = false;
 
@@ -374,7 +374,6 @@ void CCustomRocket::UpdateCL()
     PlayContact();
     switch (m_eState)
     {
-    case eInactive: break;
     // состояния eEngine и eFlying отличаются, тем
     // что вызывается UpdateEngine у eEngine, остальные
     // функции общие
@@ -383,14 +382,13 @@ void CCustomRocket::UpdateCL()
         UpdateLights();
         UpdateParticles();
         break;
+    default: break;
     }
 
     if (m_eState == eEngine || m_eState == eFlying)
     {
         if (m_time_to_explode < Device.fTimeGlobal)
-        {
             Contact(Position(), Direction());
-        }
     }
 }
 
@@ -488,6 +486,7 @@ void CCustomRocket::StopLights()
 {
     if (!m_bLightsEnabled)
         return;
+
     m_pTrailLight->set_active(false);
 }
 
@@ -495,11 +494,12 @@ void CCustomRocket::UpdateLights()
 {
     if (!m_bLightsEnabled || !m_pTrailLight->get_active())
         return;
+
     m_pTrailLight->set_position(Position());
 }
 
-void CCustomRocket::PhDataUpdate(float step) {}
-void CCustomRocket::PhTune(float step) { UpdateEnginePh(); }
+void CCustomRocket::PhDataUpdate(float) {}
+void CCustomRocket::PhTune(float) { UpdateEnginePh(); }
 
 //////////////////////////////////////////////////////////////////////////
 //	Particles

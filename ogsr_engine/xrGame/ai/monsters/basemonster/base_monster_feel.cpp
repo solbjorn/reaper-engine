@@ -42,7 +42,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
         user_data->accept(sound_user_data_visitor());
 
     // ignore unknown sounds
-    if (eType == 0xffffffff)
+    if (eType == -1)
         return;
 
     // ignore distant sounds

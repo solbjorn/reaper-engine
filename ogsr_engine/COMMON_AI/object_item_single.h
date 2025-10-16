@@ -41,7 +41,7 @@ protected:
 public:
     IC CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
+    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const;
 };
 
 #include "object_item_single_inline.h"

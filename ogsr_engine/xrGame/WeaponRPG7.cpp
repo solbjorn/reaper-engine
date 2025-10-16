@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "weaponrpg7.h"
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
@@ -10,9 +11,8 @@
 
 constexpr const char* grenade_def_bone_cop = "grenade";
 
-CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") {}
-
-CWeaponRPG7::~CWeaponRPG7(void) {}
+CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol{} {}
+CWeaponRPG7::~CWeaponRPG7() {}
 
 void CWeaponRPG7::Load(LPCSTR section)
 {

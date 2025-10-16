@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "WeaponStatMgun.h"
 #include "xr_level_controller.h"
 
@@ -46,4 +47,4 @@ void CWeaponStatMgun::OnKeyboardRelease(int dik)
     }
 }
 
-void CWeaponStatMgun::OnKeyboardHold(int dik) {}
+void CWeaponStatMgun::OnKeyboardHold(int) {}

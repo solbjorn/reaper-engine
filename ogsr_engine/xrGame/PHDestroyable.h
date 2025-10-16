@@ -7,7 +7,7 @@ class CPhysicsShellHolder;
 class CSE_Abstract;
 class CPHDestroyableNotificate;
 
-class CPHDestroyableNotificator : public virtual RTTI::Enable
+class XR_NOVTABLE CPHDestroyableNotificator : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPHDestroyableNotificator);
 
@@ -15,7 +15,7 @@ public:
     virtual void NotificateDestroy(CPHDestroyableNotificate* dn) = 0;
 };
 
-class CPHDestroyable : public CPHDestroyableNotificator
+class XR_NOVTABLE CPHDestroyable : public CPHDestroyableNotificator
 {
     RTTI_DECLARE_TYPEINFO(CPHDestroyable, CPHDestroyableNotificator);
 
@@ -48,10 +48,12 @@ public:
         fl_destroyed = 1 << 1,
         fl_released = 1 << 2,
     };
-    virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
+
+    [[nodiscard]] virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
 
 public:
     CPHDestroyable();
+
     void Init();
     void RespawnInit();
     void SetFatalHit(const SHit& hit);
@@ -59,13 +61,13 @@ public:
     SHit& FatalHit() { return m_fatal_hit; }
     void Load(LPCSTR section);
     void Load(CInifile* ini, LPCSTR section);
-    virtual void NotificateDestroy(CPHDestroyableNotificate* dn);
+    void NotificateDestroy(CPHDestroyableNotificate* dn) override;
     void PhysicallyRemoveSelf();
     IC bool Destroyable() { return !!m_flags.test(fl_destroyable); }
     IC bool Destroyed() { return !!m_flags.test(fl_destroyed); }
     IC bool CanDestroy() { return m_flags.test(fl_destroyable) && !m_flags.test(fl_destroyed); }
     virtual bool CanRemoveObject() { return true; }
-    virtual void SheduleUpdate(u32 dt);
+    virtual void SheduleUpdate(u32);
     virtual void GenSpawnReplace(u16 source_id, LPCSTR section, shared_str visual_name);
     virtual void InitServerObject(CSE_Abstract* D);
 

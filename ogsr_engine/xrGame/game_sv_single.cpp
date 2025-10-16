@@ -27,20 +27,6 @@ void game_sv_Single::Create(shared_str& options)
     switch_Phase(GAME_PHASE_INPROGRESS);
 }
 
-/**
-CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
-{
-    if (!ai().get_alife())
-        return			(inherited::get_entity_from_eid(id));
-
-    CSE_Abstract		*object = ai().alife().objects().object(id,true);
-    if (!object)
-        return			(inherited::get_entity_from_eid(id));
-
-    return				(object);
-}
-/**/
-
 void game_sv_Single::OnCreate(u16 id_who)
 {
     if (!ai().get_alife())
@@ -77,7 +63,7 @@ void game_sv_Single::OnCreate(u16 id_who)
         alife().create(alife_object);
 }
 
-BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
+BOOL game_sv_Single::OnTouch(u16 eid_who, u16 eid_what, BOOL)
 {
     CSE_Abstract* e_who = get_entity_from_eid(eid_who);
     VERIFY(e_who);
@@ -194,18 +180,17 @@ ALife::_TIME_ID game_sv_Single::GetEnvironmentGameTime()
 }
 
 float game_sv_Single::GetEnvironmentGameTimeFactor() { return (inherited::GetGameTimeFactor()); }
-
 void game_sv_Single::SetEnvironmentGameTimeFactor(const float fTimeFactor) { return (inherited::SetGameTimeFactor(fTimeFactor)); }
 
-bool game_sv_Single::change_level(NET_Packet& net_packet, ClientID sender)
+bool game_sv_Single::change_level(NET_Packet& net_packet, ClientID)
 {
     if (ai().get_alife())
-        return (alife().change_level(net_packet));
-    else
-        return (true);
+        return alife().change_level(net_packet);
+
+    return true;
 }
 
-void game_sv_Single::save_game(NET_Packet& net_packet, ClientID sender)
+void game_sv_Single::save_game(NET_Packet& net_packet, ClientID)
 {
     if (!ai().get_alife())
         return;
@@ -222,7 +207,7 @@ bool game_sv_Single::load_game(NET_Packet& net_packet, ClientID sender)
     return (alife().load_game(*game_name, true));
 }
 
-void game_sv_Single::switch_distance(NET_Packet& net_packet, ClientID sender)
+void game_sv_Single::switch_distance(NET_Packet& net_packet, ClientID)
 {
     if (!ai().get_alife())
         return;

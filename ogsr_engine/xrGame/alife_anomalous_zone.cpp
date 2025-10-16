@@ -25,10 +25,7 @@ CSE_ALifeItemWeapon* CSE_ALifeAnomalousZone::tpfGetBestWeapon(ALife::EHitType& t
     return m_tpCurrentBestWeapon;
 }
 
-ALife::EMeetActionType CSE_ALifeAnomalousZone::tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
-{
-    return (ALife::eMeetActionTypeAttack);
-}
+ALife::EMeetActionType CSE_ALifeAnomalousZone::tfGetActionType(CSE_ALifeSchedulable*, int, bool) { return ALife::eMeetActionTypeAttack; }
 
 bool CSE_ALifeAnomalousZone::bfActive() { return !interactive(); }
 
@@ -79,7 +76,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
         return;
 
     u16 itemCount = (u16)_GetItemCount(artefacts);
-    VERIFY2(!(n % 2), "Invalid parameters count in line artefacts for anomalous zone");
+    VERIFY2(!(itemCount % 2), "Invalid parameters count in line artefacts for anomalous zone");
     itemCount >>= 1;
 
     typedef std::pair<shared_str, float> artefact_pair;

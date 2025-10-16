@@ -46,7 +46,13 @@ public:
     virtual ~CScriptStorage();
 
     lua_State* lua() { return m_virtual_machine; }
+
+#ifdef DEBUG
     void XR_PRINTF(3, 4) script_log(ScriptStorage::ELuaMessageType message, const char* caFormat, ...);
+#else
+    void XR_PRINTF(3, 4) script_log(ScriptStorage::ELuaMessageType, const char*, ...) {}
+#endif
+
     static bool print_output(lua_State* L, const char* caScriptName, int iErorCode = 0);
     static constexpr const char* GlobalNamespace = "_G";
     void print_stack();

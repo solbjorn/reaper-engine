@@ -45,10 +45,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
             LineElem += it->elements.size() * 4;
         }
         break;
-        case CStatGraph::stPoint: {
-            //				TriElem += it->elements.size()*4;
-        }
-        break;
+        default: break;
         }
     }
 
@@ -69,6 +66,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
             switch (it->style)
             {
             case CStatGraph::stBar: RenderBars(owner, &pv_Tri, &(it->elements)); break;
+            default: break;
             }
         }
 
@@ -89,6 +87,7 @@ void dxStatGraphRender::OnRender(CStatGraph& owner)
             {
             case CStatGraph::stCurve: RenderLines(owner, &pv_Line, &(it->elements)); break;
             case CStatGraph::stBarLine: RenderBarLines(owner, &pv_Line, &(it->elements)); break;
+            default: break;
             }
         }
 
@@ -301,6 +300,7 @@ void dxStatGraphRender::RenderMarkers(CStatGraph& owner, FVF::TL0uv** ppv, CStat
     {
         CStatGraph::SMarker& CurMarker = *it;
         float X0 = 0, Y0 = 0, X1 = 0, Y1 = 0;
+
         switch (CurMarker.m_eStyle)
         {
         case CStatGraph::stVert: {
@@ -319,7 +319,9 @@ void dxStatGraphRender::RenderMarkers(CStatGraph& owner, FVF::TL0uv** ppv, CStat
             Y1 = Y0;
         }
         break;
+        default: break;
         }
+
         (*ppv)->set(X0, Y0, CurMarker.m_dwColor);
         (*ppv)++;
         (*ppv)->set(X1, Y1, CurMarker.m_dwColor);

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <dinput.h>
 #include "UITalkDialogWnd.h"
 
 #include "xrUIXmlParser.h"
@@ -13,6 +12,8 @@
 #include "../UIGameSP.h"
 #include "UIPdaWnd.h"
 #include "UIDiaryWnd.h"
+
+#include <dinput.h>
 
 #define TALK_XML "talk.xml"
 #define TRADE_CHARACTER_XML "trade_character.xml"
@@ -114,7 +115,7 @@ void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
     GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
 }
 
-void CUITalkDialogWnd::OnTradeClicked(CUIWindow* w, void*) { GetTop()->SendMessage(this, TALK_DIALOG_TRADE_BUTTON_CLICKED); }
+void CUITalkDialogWnd::OnTradeClicked(CUIWindow*, void*) { GetTop()->SendMessage(this, TALK_DIALOG_TRADE_BUTTON_CLICKED); }
 
 // пересылаем сообщение родительскому окну для обработки
 // и фильтруем если оно пришло от нашего дочернего окна
@@ -253,7 +254,7 @@ void CUIQuestionItem::Init(LPCSTR val, LPCSTR text)
     SetHeight(new_h);
 }
 
-void CUIQuestionItem::OnTextClicked(CUIWindow* w, void*) { GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, (void*)this); }
+void CUIQuestionItem::OnTextClicked(CUIWindow*, void*) { GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, (void*)this); }
 
 CUIAnswerItem::CUIAnswerItem(CUIXml* xml_doc, LPCSTR path)
 {

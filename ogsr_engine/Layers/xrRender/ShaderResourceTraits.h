@@ -146,10 +146,7 @@ inline void CResourceManager::DestroyShader(const T* sh)
         return;
 
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-
-    LPSTR N = LPSTR(*sh->cName);
-    auto I = sh_map.find(N);
-
+    auto I = sh_map.find(*sh->cName);
     if (I != sh_map.end())
     {
         sh_map.erase(I);

@@ -18,19 +18,23 @@ class CControl_Com : public virtual RTTI::Enable
 public:
     CControl_Com() { m_inited = false; }
     virtual ~CControl_Com() {}
+
     // common routines
     void init_external(CControl_Manager* cm, CBaseMonster* obj)
     {
         m_man = cm;
         m_object = obj;
     }
-    virtual void load(LPCSTR section) {}
+
+    virtual void load(LPCSTR) {}
+
     virtual void reinit()
     {
         m_active = false;
         m_inited = true;
     }
-    virtual void reload(LPCSTR section) {}
+
+    virtual void reload(LPCSTR) {}
 
     // update
     virtual void update_schedule() {}
@@ -105,8 +109,8 @@ public:
     virtual void reinit() {}
 
     // initialize/finalize controlling com
-    virtual void on_start_control(ControlCom::EControlType type) {}
-    virtual void on_stop_control(ControlCom::EControlType type) {}
+    virtual void on_start_control(ControlCom::EControlType) {}
+    virtual void on_stop_control(ControlCom::EControlType) {}
 
     // event handling
     virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*) {}

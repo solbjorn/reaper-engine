@@ -5,15 +5,6 @@
 #include "tri-colliderknoopc/dTriList.h"
 #include "PHJointDestroyInfo.h"
 
-///////////////////////////////////////////////////////////////
-/// #pragma warning(disable:4995)
-////#include "../ode/src/collision_kernel.h"
-// #include <../ode/src/joint.h>
-// #include <../ode/src/objects.h>
-
-// #pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
-
 #include "ExtendedGeom.h"
 #include "PHElement.h"
 #include "PHJoint.h"
@@ -27,13 +18,6 @@ constexpr float hinge2_damping{1000.f};
 IC dBodyID body_for_joint(CPhysicsElement* e)
 {
     return e->isFixed() ? nullptr : e->get_body(); // return e->get_body();//
-}
-
-IC void SwapLimits(float& lo, float& hi)
-{
-    float t = -lo;
-    lo = -hi;
-    hi = t;
 }
 } // namespace
 
@@ -551,9 +535,6 @@ CPHJoint::CPHJoint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysic
         break;
     }
 }
-
-void CPHJoint::SetLimitsVsFirstElement(const float low, const float high, const int axis_num) {}
-void CPHJoint::SetLimitsVsSecondElement(const float low, const float high, const int axis_num) {}
 
 void CPHJoint::Create()
 {
@@ -1126,7 +1107,7 @@ void CPHJoint::GetAxisSDfactors(float& spring_factor, float& damping_factor, int
 
 u16 CPHJoint::GetAxesNumber() { return u16(axes.size()); }
 
-void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix, const Fmatrix& rotate)
+void CPHJoint::CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix, const Fmatrix&)
 {
     switch (axes[ax_num].vs)
     {

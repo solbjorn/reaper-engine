@@ -22,7 +22,7 @@ public:
 
     virtual void Init(float x, float y, float width, float height);
     virtual void InitTexture(LPCSTR tex_name);
-    virtual void SetTextX(float x) { /*do nothing*/ }
+    void SetTextX(float) override {}
 
     // состояние кнопки
     bool GetCheck() { return m_eButtonState == BUTTON_PUSHED; }

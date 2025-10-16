@@ -68,7 +68,7 @@ void CStalkerPlanner::setup(CAI_Stalker* object)
     m_active = true;
 }
 
-void CStalkerPlanner::update(u32 time_delta)
+void CStalkerPlanner::update(u32)
 {
     if (!active())
         return;

@@ -15,6 +15,7 @@
 
 #ifdef DEBUG
 #include "custommonster.h"
+
 extern bool show_restrictions(CRestrictedObject* object);
 #endif
 
@@ -512,7 +513,7 @@ bool CDetailPathManager::init_build(const xr_vector<u32>& level_path, u32 interm
     return (true);
 }
 
-bool CDetailPathManager::fill_key_points(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest)
+bool CDetailPathManager::fill_key_points(const xr_vector<u32>& level_path, STrajectoryPoint& start, STrajectoryPoint& dest)
 {
     STravelPoint start_point;
     start_point.vertex_id = start.vertex_id;
@@ -705,16 +706,16 @@ void CDetailPathManager::build_path_via_key_points(STrajectoryPoint& start, STra
     m_failed = false;
 }
 
-void CDetailPathManager::postprocess_key_points(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest,
-                                                xr_vector<STravelParamsIndex>& finish_params, u32 straight_line_index, u32 straight_line_index_negative)
+void CDetailPathManager::postprocess_key_points()
 {
     if (m_key_points.size() < 3)
         return;
 
     if (m_key_points[m_key_points.size() - 2].position.similar(m_key_points[m_key_points.size() - 1].position, EPS_S))
         m_key_points.pop_back();
-#pragma todo("KRodin: цикл смысла не имеет. В будущем или выпилить его, или попытаться исправить.")
-    for (int i = 1, n = (int)m_key_points.size() - 1; i < n; ++i)
+
+    // TODO: KRodin: цикл смысла не имеет. В будущем или выпилить его, или попытаться исправить.
+    for (gsl::index i{1}; i < std::ssize(m_key_points); ++i)
     {
         STravelPoint key_point0 = compute_better_key_point(m_key_points[i - 1], m_key_points[i], m_key_points[i + 1], false);
         STravelPoint key_point1 = compute_better_key_point(m_key_points[i + 1], m_key_points[i], m_key_points[i - 1], true);
@@ -722,34 +723,32 @@ void CDetailPathManager::postprocess_key_points(const xr_vector<u32>& level_path
             u32 vertex_id = ai().level_graph().check_position_in_direction(m_key_points[i - 1].vertex_id, m_key_points[i - 1].position, key_point0.position);
             if (!ai().level_graph().valid_vertex_id(vertex_id))
             {
-                vertex_id = vertex_id;
             }
         }
         {
             u32 vertex_id = ai().level_graph().check_position_in_direction(m_key_points[i - 1].vertex_id, m_key_points[i - 1].position, key_point1.position);
             if (!ai().level_graph().valid_vertex_id(vertex_id))
             {
-                vertex_id = vertex_id;
             }
         }
         {
             u32 vertex_id = ai().level_graph().check_position_in_direction(key_point0.vertex_id, key_point0.position, m_key_points[i + 1].position);
             if (!ai().level_graph().valid_vertex_id(vertex_id))
             {
-                vertex_id = vertex_id;
             }
         }
         {
             u32 vertex_id = ai().level_graph().check_position_in_direction(key_point1.vertex_id, key_point1.position, m_key_points[i + 1].position);
             if (!ai().level_graph().valid_vertex_id(vertex_id))
             {
-                vertex_id = vertex_id;
             }
         }
+
         if (better_key_point(m_key_points[i - 1], m_key_points[i + 1], key_point0, key_point1))
             m_key_points[i] = key_point0;
         else
             m_key_points[i] = key_point1;
+
         VERIFY(!m_key_points[i].position.similar(m_key_points[i - 1].position, EPS_S));
     }
 }
@@ -784,9 +783,7 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
     STrajectoryPoint start, dest;
 
     if (!init_build(level_path, intermediate_index, start, dest, straight_line_index, straight_line_index_negative))
-    {
         return;
-    }
 
     if (m_restricted_object)
     {
@@ -808,15 +805,15 @@ void CDetailPathManager::build_smooth_path(const xr_vector<u32>& level_path, u32
 
     xr_vector<STravelParamsIndex>& finish_params = m_use_dest_orientation ? m_start_params : m_dest_params;
 
-    if (!fill_key_points(level_path, intermediate_index, start, dest))
+    if (!fill_key_points(level_path, start, dest))
     {
         if (m_restricted_object)
             m_restricted_object->remove_border();
+
         return;
     }
 
-    postprocess_key_points(level_path, intermediate_index, start, dest, finish_params, straight_line_index, straight_line_index_negative);
-
+    postprocess_key_points();
     build_path_via_key_points(start, dest, finish_params, straight_line_index, straight_line_index_negative);
 
     if (m_restricted_object)

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control_combase.h"
 #include "../../../Include\xrRender\Kinematics.h"
 
@@ -10,6 +11,9 @@ struct SControlMeleeJumpData : public ControlCom::IComData
 
 class CControlMeleeJump : public CControl_ComCustom<SControlMeleeJumpData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlMeleeJump, CControl_ComCustom<SControlMeleeJumpData>);
+
+private:
     typedef CControl_ComCustom<SControlMeleeJumpData> inherited;
 
     u32 m_time_next_melee_jump;
@@ -17,7 +21,7 @@ class CControlMeleeJump : public CControl_ComCustom<SControlMeleeJumpData>
 public:
     virtual void reinit();
 
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
     virtual void activate();
     virtual void on_release();
     virtual bool check_start_conditions();

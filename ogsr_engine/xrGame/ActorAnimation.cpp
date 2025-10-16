@@ -295,7 +295,7 @@ void legs_play_callback(CBlend* blend)
     object->m_current_legs.invalidate();
 }
 
-void CActor::g_SetSprintAnimation(u32 mstate_rl, MotionID& head, MotionID& torso, MotionID& legs)
+void CActor::g_SetSprintAnimation(u32 mstate_rl, MotionID& legs)
 {
     SActorSprintState& sprint = m_anims->m_sprint;
 
@@ -323,12 +323,6 @@ void CActor::g_SetAnimation(u32 mstate_rl)
     {
         if (m_current_legs || m_current_torso)
         {
-            SActorState* ST{};
-            if (mstate_rl & mcCrouch)
-                ST = &m_anims->m_crouch;
-            else
-                ST = &m_anims->m_normal;
-
             mstate_real = 0;
             m_current_legs.invalidate();
             m_current_torso.invalidate();
@@ -398,9 +392,10 @@ void CActor::g_SetAnimation(u32 mstate_rl)
 
     if (mstate_rl & mcSprint)
     {
-        g_SetSprintAnimation(mstate_rl, M_head, M_torso, M_legs);
+        g_SetSprintAnimation(mstate_rl, M_legs);
         moving_idx = STorsoWpn::eSprint;
     }
+
     //---------------------------------------------------------------
     if (this == Level().CurrentViewEntity())
         if (((mstate_rl & mcSprint) != (mstate_old & mcSprint)) || ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove)) || ((mstate_rl & mcCrouch) != (mstate_old & mcCrouch)) ||

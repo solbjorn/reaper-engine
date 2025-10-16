@@ -21,22 +21,24 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeObjectPhysic* po = smart_cast<CSE_ALifeObjectPhysic*>(e);
     R_ASSERT(po);
+
     m_type = EPOType(po->type);
     m_mass = po->mass;
     m_collision_hit_callback = nullptr;
+
     inherited::net_Spawn(DC);
     xr_delete(collidable.model);
+
     switch (m_type)
     {
     case epotBox:
     case epotFixedChain:
     case epotFreeChain:
     case epotSkeleton: collidable.model = xr_new<CCF_Skeleton>(this); break;
-
     default: NODEFAULT;
     }
 
-    CPHSkeleton::Spawn(e);
+    std::ignore = CPHSkeleton::Spawn(e);
     setVisible(TRUE);
     setEnabled(TRUE);
 
@@ -45,9 +47,7 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     if (PPhysicsShell()->Animated())
-    {
         processing_activate();
-    }
 #endif
 
     PHObjectPositionUpdate();
@@ -88,9 +88,7 @@ void CPhysicObject::net_Destroy()
 {
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     if (PPhysicsShell()->Animated())
-    {
         processing_deactivate();
-    }
 #endif
 
     inherited::net_Destroy();
@@ -114,8 +112,10 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
         return;
     if (!Visual())
         return;
+
     LPCSTR fixed_bones = *po->fixed_bones;
     m_pPhysicsShell = P_build_Shell(this, !po->_flags.test(CSE_PHSkeleton::flActive), fixed_bones);
+
     ApplySpawnIniToPhysicShell(&po->spawn_ini(), m_pPhysicsShell, fixed_bones[0] != '\0');
     ApplySpawnIniToPhysicShell(smart_cast<IKinematics*>(Visual())->LL_UserData(), m_pPhysicsShell, fixed_bones[0] != '\0');
 }
@@ -131,6 +131,7 @@ void CPhysicObject::shedule_Update(u32 dt)
     inherited::shedule_Update(dt);
     CPHSkeleton::Update(dt);
 }
+
 void CPhysicObject::UpdateCL()
 {
     inherited::UpdateCL();
@@ -139,13 +140,12 @@ void CPhysicObject::UpdateCL()
     // Если наш физический объект анимированный, то
     // двигаем объект за анимацией
     if (m_pPhysicsShell->PPhysicsShellAnimator())
-    {
         m_pPhysicsShell->PPhysicsShellAnimator()->OnFrame();
-    }
 #endif
 
     PHObjectPositionUpdate();
 }
+
 void CPhysicObject::PHObjectPositionUpdate()
 {
     if (m_pPhysicsShell)
@@ -156,7 +156,9 @@ void CPhysicObject::PHObjectPositionUpdate()
             XFORM().set(m_pPhysicsShell->mXFORM);
         }
         else
+        {
             m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+        }
     }
 }
 
@@ -170,14 +172,15 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
     Fobb bb = K->LL_GetBox(u16(id));
 
     if (bb.m_halfsize.magnitude() < 0.05f)
-    {
         bb.m_halfsize.add(0.05f);
-    }
+
     E->add_Box(bb);
     E->setMass(10.f);
     E->set_ParentElement(root_e);
+
     B.set_callback(bctPhysics, m_pPhysicsShell->GetBonesCallback(), E);
     m_pPhysicsShell->add_Element(E);
+
     if (!(m_type == epotFreeChain && !root_e))
     {
         CPhysicsJoint* J = P_create_Joint(CPhysicsJoint::full_control, root_e, E);
@@ -192,15 +195,14 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 
     CBoneData& BD = K->LL_GetData(u16(id));
     for (vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
-    {
         AddElement(E, (*it)->GetSelfID());
-    }
 }
 
 void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
 {
     if (m_pPhysicsShell)
         return;
+
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     switch (m_type)
     {
@@ -276,7 +278,9 @@ void CPhysicObject::InitServerObject(CSE_Abstract* D)
         return;
     l_tpALifePhysicObject->type = u32(m_type);
 }
+
 ICollisionHitCallback* CPhysicObject::get_collision_hit_callback() { return m_collision_hit_callback; }
+
 void CPhysicObject::set_collision_hit_callback(ICollisionHitCallback* cc)
 {
     xr_delete(m_collision_hit_callback);

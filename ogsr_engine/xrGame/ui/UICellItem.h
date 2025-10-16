@@ -46,11 +46,11 @@ public:
     virtual ~CUICellItem();
 
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action) override;
     virtual void Draw();
     virtual void Update();
 
-    virtual void OnAfterChild(CUIDragDropListEx* parent_list) {}
+    virtual void OnAfterChild(CUIDragDropListEx*) {}
 
     u32 ChildsCount();
     void PushChild(CUICellItem*);
@@ -86,6 +86,7 @@ class CUIDragItem : public CUIWindow, public pureRender, public pureFrame
 
 private:
     typedef CUIWindow inherited;
+
     CUIStatic m_static;
     CUICellItem* m_pParent;
     Fvector2 m_pos_offset;
@@ -93,10 +94,11 @@ private:
 
 public:
     CUIDragItem(CUICellItem* parent);
-    virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     virtual ~CUIDragItem();
+
+    virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     CUIStatic* wnd() { return &m_static; }
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
+    [[nodiscard]] bool OnMouse(float x, float y, EUIMessages mouse_action) override;
     virtual void Draw();
     virtual void OnRender();
     virtual void OnFrame();

@@ -2,7 +2,7 @@
 
 #include "WeaponAK74.h"
 
-CWeaponAK74::CWeaponAK74(LPCSTR name, ESoundTypes eSoundType) : CWeaponMagazinedWGrenade(name, eSoundType) {}
+CWeaponAK74::CWeaponAK74(ESoundTypes eSoundType) : CWeaponMagazinedWGrenade{eSoundType} {}
 CWeaponAK74::~CWeaponAK74() {}
 
 void CWeaponAK74::script_register(sol::state_view& lua)

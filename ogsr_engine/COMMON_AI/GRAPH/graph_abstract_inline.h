@@ -13,9 +13,6 @@
 #define CAbstractGraph CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>
 
 TEMPLATE_SPECIALIZATION
-IC CAbstractGraph::CGraphAbstract() { m_edge_count = 0; }
-
-TEMPLATE_SPECIALIZATION
 IC CAbstractGraph::~CGraphAbstract() { clear(); }
 
 TEMPLATE_SPECIALIZATION
@@ -147,10 +144,10 @@ IC const _edge_weight_type CAbstractGraph::get_edge_weight(const _vertex_id_type
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CAbstractGraph::is_accessible(const _vertex_id_type vertex_index) const { return (true); }
+IC bool CAbstractGraph::is_accessible(const _vertex_id_type) const { return true; }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CAbstractGraph::CVertex* CAbstractGraph::value(const _vertex_id_type vertex_index, const_iterator i) const { return ((*i).vertex()); }
+IC const typename CAbstractGraph::CVertex* CAbstractGraph::value(const _vertex_id_type, const_iterator i) const { return ((*i).vertex()); }
 
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::begin(const CVertex* vertex, const_iterator& b, const_iterator& e) const

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory.h"
@@ -20,7 +21,10 @@
 #include "stalker_animation_data.h"
 #include "stalker_animation_manager_impl.h"
 
-const u32 need_look_back_time_interval = 2000;
+namespace
+{
+constexpr u32 need_look_back_time_interval{2000};
+}
 
 void CStalkerAnimationManager::torso_play_callback(CBlend* blend)
 {
@@ -163,9 +167,9 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
         if (eMovementTypeWalk == movement.movement_type())
         {
             if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
-                return (animation[13 + m_looking_back - 1].A[1 /**1/**/]);
+                return (animation[13 + m_looking_back - 1].A[1]);
             else
-                return (animation[1].A[0 /**2/**/]);
+                return (animation[1].A[0]);
         }
 
         if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())

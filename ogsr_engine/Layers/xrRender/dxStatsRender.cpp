@@ -3,7 +3,7 @@
 #include "dxStatsRender.h"
 #include "../../xr_3da/GameFont.h"
 
-void dxStatsRender::Copy(IStatsRender& _in) {}
+void dxStatsRender::Copy(IStatsRender&) {}
 
 void dxStatsRender::OutData1(CGameFont& F)
 {
@@ -12,7 +12,7 @@ void dxStatsRender::OutData1(CGameFont& F)
     F.OutNext("DIP/DP:      %u", RCache.stat.calls);
 }
 
-void dxStatsRender::OutData2(CGameFont& F)
+void dxStatsRender::OutData2([[maybe_unused]] CGameFont& F)
 {
 #ifdef DEBUG
     F.OutNext("SH/T/M/C:    %u/%u/%u/%u", RCache.stat.states, RCache.stat.textures, RCache.stat.matrices, RCache.stat.constants);

@@ -26,6 +26,7 @@ public:
     Fmatrix mRenderTransform; // final x-form matrix (model_base -> bone -> model)
     Fmatrix mRenderTransform_prev; // Prev x-form matrix
     Fmatrix mRenderTransform_temp; // Temp var
+
 private:
     BoneCallback Callback;
     void* Callback_Param;
@@ -34,15 +35,14 @@ private:
 
 public:
     float param[MAX_BONE_PARAMS]; //
+
     //
     // methods
-public:
-    IC BoneCallback _BCL callback() { return Callback; }
-    IC void* _BCL callback_param() { return Callback_Param; }
-    IC BOOL _BCL callback_overwrite() { return Callback_overwrite; } // performance hint - don't calc anims
-    IC u32 _BCL callback_type() { return Callback_type; }
+    [[nodiscard]] BoneCallback callback() const { return Callback; }
+    [[nodiscard]] void* callback_param() const { return Callback_Param; }
+    [[nodiscard]] bool callback_overwrite() const { return Callback_overwrite; } // performance hint - don't calc anims
+    [[nodiscard]] u32 callback_type() const { return Callback_type; }
 
-public:
     IC void construct()
     {
         mTransform.identity();
@@ -291,8 +291,8 @@ struct SJointIKData
             // F.w_float	(_min(-limits[k].limit.x,-limits[k].limit.y)); // min (swap special for ODE)
             // F.w_float	(_max(-limits[k].limit.x,-limits[k].limit.y)); // max (swap special for ODE)
 
-            VERIFY(_min(-limits[k].limit.x, -limits[k].limit.y) == -limits[k].limit.y);
-            VERIFY(_max(-limits[k].limit.x, -limits[k].limit.y) == -limits[k].limit.x);
+            VERIFY(fsimilar(_min(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.y));
+            VERIFY(fsimilar(_max(-limits[k].limit.x, -limits[k].limit.y), -limits[k].limit.x));
 
             F.w_float(-limits[k].limit.y); // min (swap special for ODE)
             F.w_float(-limits[k].limit.x); // max (swap special for ODE)

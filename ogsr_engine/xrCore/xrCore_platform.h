@@ -21,12 +21,9 @@
 #define NOHELP
 #define NOPROFILER
 #define NOMCX
-#define NOMINMAX
 #define DOSWIN32
 #define _WIN32_DCOM
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <cstring>
 
 #ifndef _INC_STRING
@@ -42,7 +39,6 @@ extern int strcasecmp(const char* left, const char* right);
 
 #include <windows.h>
 #include <windowsx.h>
-#pragma warning(pop)
 
 // KRodin: фикс, чтобы intellisense нормально работал с многочисленными методами типа CUIWindow::SendMessage и тп.
 #ifdef __INTELLISENSE__

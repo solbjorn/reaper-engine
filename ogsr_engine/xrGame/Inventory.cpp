@@ -36,11 +36,8 @@ u32 INV_STATE_LADDER = INV_STATE_BLOCK_ALL;
 u32 INV_STATE_CAR = INV_STATE_BLOCK_ALL;
 
 bool CInventorySlot::CanBeActivated() const { return (m_bVisible && !IsBlocked()); }
-
 bool CInventorySlot::IsBlocked() const { return (m_blockCounter > 0); }
-
 bool CInventorySlot::maySwitchFast() const { return m_maySwitchFast; }
-
 void CInventorySlot::setSwitchFast(bool value) { m_maySwitchFast = value; }
 
 CInventory::CInventory()
@@ -572,7 +569,6 @@ bool CInventory::Action(s32 cmd, u32 flags)
     if (m_iActiveSlot < m_slots.size() && m_slots[m_iActiveSlot].m_pIItem && m_slots[m_iActiveSlot].m_pIItem->Action(cmd, flags))
         return true;
 
-    bool b_send_event = false;
     switch (cmd)
     {
     case kWPN_1:
@@ -584,9 +580,9 @@ bool CInventory::Action(s32 cmd, u32 flags)
         if (flags & CMD_START)
         {
             if (GetActiveSlot() == cmd - kWPN_1 && ActiveItem())
-                b_send_event = Activate(NO_ACTIVE_SLOT);
+                std::ignore = Activate(NO_ACTIVE_SLOT);
             else
-                b_send_event = Activate(cmd - kWPN_1, eKeyAction);
+                std::ignore = Activate(cmd - kWPN_1, eKeyAction);
         }
     }
     break;
@@ -600,14 +596,17 @@ bool CInventory::Action(s32 cmd, u32 flags)
                 break;
 
             if (GetActiveSlot() == PDA_SLOT && ActiveItem())
-                b_send_event = Activate(NO_ACTIVE_SLOT);
+            {
+                std::ignore = Activate(NO_ACTIVE_SLOT);
+            }
             else
             {
                 auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
                 if (pGameSP->InventoryMenu->IsShown())
                     break;
+
                 pGameSP->PdaMenu->SetActiveSubdialog(cmd == kACTIVE_JOBS ? eptQuests : (cmd == kMAP ? eptMap : eptContacts));
-                b_send_event = Activate(PDA_SLOT, eKeyAction);
+                std::ignore = Activate(PDA_SLOT, eKeyAction);
             }
         }
     }
@@ -833,20 +832,6 @@ u32 CInventory::dwfGetSameItemCount(LPCSTR caSection, bool SearchAll)
     return (l_dwCount);
 }
 
-u32 CInventory::dwfGetGrenadeCount(LPCSTR caSection, bool SearchAll)
-{
-    u32 l_dwCount = 0;
-    TIItemContainer& l_list = SearchAll ? m_all : m_ruck;
-    for (TIItemContainer::iterator l_it = l_list.begin(); l_list.end() != l_it; ++l_it)
-    {
-        PIItem l_pIItem = *l_it;
-        if (l_pIItem && (l_pIItem->object().CLS_ID == CLSID_GRENADE_F1 || l_pIItem->object().CLS_ID == CLSID_GRENADE_RGD5))
-            ++l_dwCount;
-    }
-
-    return (l_dwCount);
-}
-
 bool CInventory::bfCheckForObject(ALife::_OBJECT_ID tObjectID)
 {
     TIItemContainer& l_list = m_all;
@@ -1025,10 +1010,8 @@ bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
     if (!inventory_item->CanTake())
         return false;
 
-    for (TIItemContainer::const_iterator it = m_all.begin(); it != m_all.end(); it++)
-        if ((*it)->object().ID() == inventory_item->object().ID())
-            break;
-    VERIFY3(it == m_all.end(), "item already exists in inventory", *inventory_item->object().cName());
+    VERIFY3(std::ranges::find_if(m_all, [inventory_item](const auto item) { return item->object().ID() == inventory_item->object().ID(); }) == m_all.end(),
+            "item already exists in inventory", *inventory_item->object().cName());
 
     CActor* pActor = smart_cast<CActor*>(m_pOwner);
     // актер всегда может взять вещь
@@ -1096,12 +1079,10 @@ bool CInventory::isBeautifulForActiveSlot(CInventoryItem* pIItem)
     return (false);
 }
 
-void CInventory::Items_SetCurrentEntityHud(bool current_entity)
+void CInventory::Items_SetCurrentEntityHud()
 {
-    TIItemContainer::iterator it;
-    for (it = m_all.begin(); m_all.end() != it; ++it)
+    for (auto pIItem : m_all)
     {
-        PIItem pIItem = *it;
         CWeapon* pWeapon = smart_cast<CWeapon*>(pIItem);
         if (pWeapon)
         {
@@ -1114,8 +1095,9 @@ void CInventory::Items_SetCurrentEntityHud(bool current_entity)
 // call this only via Actor()->SetWeaponHideState()
 void CInventory::SetSlotsBlocked(u16 mask, bool bBlock, bool now)
 {
-    bool bChanged = false;
-    for (int i = 0; i < SLOTS_TOTAL; ++i)
+    bool bChanged{};
+
+    for (gsl::index i{}; i < gsl::index{SLOTS_TOTAL}; ++i)
     {
         if (mask & (1 << i))
         {
@@ -1130,10 +1112,12 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock, bool now)
                 --m_slots[i].m_blockCounter;
                 VERIFY2(m_slots[i].m_blockCounter > -5, "block slots underflow");
             }
+
             if (bCanBeActivated != m_slots[i].CanBeActivated())
                 bChanged = true;
         }
     }
+
     if (bChanged)
     {
         u32 ActiveSlot = GetActiveSlot();

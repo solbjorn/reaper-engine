@@ -140,7 +140,12 @@ public:
     IC void fill(const T* game_object, const T* self, const squad_mask_type& mask);
     bool is_valid() const { return m_object && m_object->m_spawned; }
 };
+} // namespace MemorySpace
 
+#include "memory_space_impl.h"
+
+namespace MemorySpace
+{
 struct CVisibleObject : CMemoryObject<CGameObject>
 {
     RTTI_DECLARE_TRIVIAL(CVisibleObject, CMemoryObject<CGameObject>);

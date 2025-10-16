@@ -543,7 +543,7 @@ CRenderTarget::CRenderTarget()
                 generate_jitter(data, TEX_jitter_count);
                 for (u32 it = 0; it < TEX_jitter_count; it++)
                 {
-                    u32* p = (u32*)((u8*)(subData[it].pSysMem) + y * subData[it].SysMemPitch + x * 4);
+                    u32* p = (u32*)((u8*)(const_cast<void*>(subData[it].pSysMem)) + y * subData[it].SysMemPitch + x * 4);
                     *p = data[it];
                 }
             }

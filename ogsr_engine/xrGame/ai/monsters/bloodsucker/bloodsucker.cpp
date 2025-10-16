@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
 #include "../../../actor.h"
@@ -305,42 +306,6 @@ void CAI_Bloodsucker::vfAssignBones()
     Bones.AddBone(bone_head, AXIS_Y);
 }
 
-// #define MAX_BONE_ANGLE PI_DIV_4
-
-void CAI_Bloodsucker::LookDirection(Fvector to_dir, float bone_turn_speed)
-{
-    //// получаем вектор направления к источнику звука и его мировые углы
-    // float		yaw,pitch;
-    // to_dir.getHP(yaw,pitch);
-
-    //// установить параметры вращения по yaw
-    // float cur_yaw = -movement().m_body.current.yaw;						// текущий мировой угол монстра
-    // float bone_angle;											// угол для боны
-
-    // float dy = _abs(angle_normalize_signed(yaw - cur_yaw));		// дельта, на которую нужно поворачиваться
-
-    // if (angle_difference(cur_yaw,yaw) <= MAX_BONE_ANGLE) {		// bone turn only
-    //	bone_angle = dy;
-    // } else {													// torso & bone turn
-    //	if (movement().IsMoveAlongPathFinished() || !movement().enabled()) movement().m_body.target.yaw = angle_normalize(-yaw);
-    //	if (dy / 2 < MAX_BONE_ANGLE) bone_angle = dy / 2;
-    //	else bone_angle = MAX_BONE_ANGLE;
-    // }
-
-    // bone_angle /= 2;
-    // if (from_right(yaw,cur_yaw)) bone_angle *= -1.f;
-
-    // Bones.SetMotion(bone_spine, AXIS_X, bone_angle, bone_turn_speed, 100);
-    // Bones.SetMotion(bone_head,	AXIS_X, bone_angle, bone_turn_speed, 100);
-
-    //// установить параметры вращения по pitch
-    // clamp(pitch, -MAX_BONE_ANGLE, MAX_BONE_ANGLE);
-    // pitch /= 2;
-
-    // Bones.SetMotion(bone_spine, AXIS_Y, pitch, bone_turn_speed, 100);
-    // Bones.SetMotion(bone_head,	AXIS_Y, pitch, bone_turn_speed, 100);
-}
-
 void CAI_Bloodsucker::ActivateVampireEffector()
 {
     Actor()->Cameras().AddCamEffector(xr_new<CVampireCameraEffector>(6.0f, get_head_position(this), get_head_position(Actor())));
@@ -613,7 +578,6 @@ void CAI_Bloodsucker::predator_stop()
 }
 
 void CAI_Bloodsucker::predator_freeze() { control().animation().freeze(); }
-
 void CAI_Bloodsucker::predator_unfreeze() { control().animation().unfreeze(); }
 
 void CAI_Bloodsucker::move_actor_cam(float angle)
@@ -625,9 +589,9 @@ void CAI_Bloodsucker::move_actor_cam(float angle)
     }
 }
 
-void CAI_Bloodsucker::HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType hit_type, bool draw_hit_marks)
+void CAI_Bloodsucker::HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType, bool)
 {
-#pragma todo("KRodin: тут недоперенесено из ЗП, очевидно.")
+    // TODO: KRodin: тут недоперенесено из ЗП, очевидно.
     // bool is_critical = rand()/(float)RAND_MAX <= m_critical_hit_chance;
 
     // if ( is_critical )
@@ -653,6 +617,7 @@ void CAI_Bloodsucker::start_invisible_predator()
     state_invisible = true;
     predator_start();
 }
+
 void CAI_Bloodsucker::stop_invisible_predator()
 {
     state_invisible = false;
@@ -700,7 +665,6 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
     return CBaseMonster::SDebugInfo();
 }
 
-#ifdef DEBUG
 void CAI_Bloodsucker::debug_on_key(int key)
 {
     switch (key)
@@ -716,5 +680,3 @@ void CAI_Bloodsucker::debug_on_key(int key)
     }
 }
 #endif //_DEBUG
-
-#endif // DEBUG

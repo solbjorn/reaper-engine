@@ -16,8 +16,8 @@ protected:
     virtual size_t GetWeaponTypeForCollision() const override { return SniperRifle; }
 
 public:
-    CWeaponSVD(void);
-    virtual ~CWeaponSVD(void);
+    CWeaponSVD();
+    virtual ~CWeaponSVD();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

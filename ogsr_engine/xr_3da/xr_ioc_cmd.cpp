@@ -2,21 +2,20 @@
 
 #include "igame_level.h"
 
-// #include "xr_effgamma.h"
 #include "x_ray.h"
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
-// #include "fbasicvisual.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-#include <regex>
 #include "../Include/xrRender/RenderDeviceRender.h"
 #include "xr_object.h"
 #include "SkeletonMotions.h"
 #include "IGame_Persistent.h"
 #include "LightAnimLibrary.h"
+
+#include <regex>
 
 xr_token* vid_quality_token = nullptr;
 
@@ -59,24 +58,28 @@ void IConsole_Command::add_LRU_to_tips(vecTips& tips)
 
 class CCC_Quit : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Quit, IConsole_Command);
+
 public:
     CCC_Quit(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Console->Hide();
         Engine.Event.Defer("KERNEL:disconnect");
         Engine.Event.Defer("KERNEL:quit");
     }
 };
-//-----------------------------------------------------------------------
+
 #ifdef DEBUG_MEMORY_MANAGER
 class CCC_MemStat : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_MemStat, IConsole_Command);
+
 public:
     CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         string_path fn;
         if (args && args[0])
@@ -88,66 +91,73 @@ public:
         //		g_pSharedMemoryContainer->dump		();
     }
 };
-#endif // DEBUG_MEMORY_MANAGER
 
-#ifdef DEBUG_MEMORY_MANAGER
 class CCC_DbgMemCheck : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgMemCheck, IConsole_Command);
+
 public:
     CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         if (Memory.debug_mode)
-        {
             Memory.dbg_check();
-        }
         else
-        {
             Msg("~ Run with -mem_debug options.");
-        }
     }
 };
 #endif // DEBUG_MEMORY_MANAGER
 
 class CCC_DbgStrCheck : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgStrCheck, IConsole_Command);
+
 public:
     CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { g_pStringContainer->verify(); }
+    void Execute(LPCSTR) override { g_pStringContainer->verify(); }
 };
 
 class CCC_DbgStrDump : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgStrDump, IConsole_Command);
+
 public:
     CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { g_pStringContainer->dump(); }
+    void Execute(LPCSTR) override { g_pStringContainer->dump(); }
 };
 
 class CCC_DbgLALibDump : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DbgLALibDump, IConsole_Command);
+
 public:
     CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { LALib.DbgDumpInfo(); }
+    void Execute(LPCSTR) override { LALib.DbgDumpInfo(); }
 };
 
 //-----------------------------------------------------------------------
 class CCC_MotionsStat : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_MotionsStat, IConsole_Command);
+
 public:
     CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { g_pMotionsContainer->dump(); }
+    void Execute(LPCSTR) override { g_pMotionsContainer->dump(); }
 };
+
 class CCC_TexturesStat : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_TexturesStat, IConsole_Command);
+
 public:
     CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Device.DumpResourcesMemoryUsage();
         // Device.Resources->_DumpMemoryUsage();
@@ -158,18 +168,22 @@ public:
 //-----------------------------------------------------------------------
 class CCC_E_Dump : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_E_Dump, IConsole_Command);
+
 public:
     CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { Engine.Event.Dump(); }
+    void Execute(LPCSTR) override { Engine.Event.Dump(); }
 };
 
 class CCC_E_Signal : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_E_Signal, IConsole_Command);
+
 public:
     CCC_E_Signal(LPCSTR N) : IConsole_Command{N} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         char Event[128], Param[128];
         Event[0] = 0;
@@ -182,10 +196,12 @@ public:
 //-----------------------------------------------------------------------
 class CCC_Help : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Help, IConsole_Command);
+
 public:
     CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Log("- --- Command listing: start ---");
         CConsole::vecCMD_IT it;
@@ -222,12 +238,15 @@ public:
 };
 
 void _dump_open_files(int mode);
+
 class CCC_DumpOpenFiles : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_DumpOpenFiles, IConsole_Command);
+
 public:
     CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         int _mode = atoi(args);
         _dump_open_files(_mode);
@@ -237,10 +256,12 @@ public:
 //-----------------------------------------------------------------------
 class CCC_SaveCFG : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_SaveCFG, IConsole_Command);
+
 public:
     CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         string_path cfg_full_name;
         xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
@@ -268,7 +289,9 @@ public:
             Msg("Config-file [%s] saved successfully", cfg_full_name);
         }
         else
+        {
             Msg("!Cannot store config file [%s]", cfg_full_name);
+        }
     }
 };
 
@@ -306,7 +329,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
                 // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
                 // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
 
-                if (F->elapsed() >= sizeof(u8))
+                if (F->elapsed() >= gsl::index{sizeof(u8)})
                 {
                     if (F->r_u8() == 0)
                     {
@@ -341,6 +364,8 @@ bool CCC_LoadCFG_custom::allow(LPCSTR cmd) { return (cmd == strstr(cmd, m_cmd));
 //-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Start, IConsole_Command);
+
 private:
     std::string parse(const std::string& str)
     {
@@ -362,35 +387,40 @@ public:
 
 class CCC_Disconnect : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Disconnect, IConsole_Command);
+
 public:
     CCC_Disconnect(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { Engine.Event.Defer("KERNEL:disconnect"); }
+    void Execute(LPCSTR) override { Engine.Event.Defer("KERNEL:disconnect"); }
 };
 
 //-----------------------------------------------------------------------
 class CCC_VID_Reset : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_VID_Reset, IConsole_Command);
+
 public:
     CCC_VID_Reset(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         if (Device.b_is_Ready)
-        {
             Device.Reset();
-        }
     }
 };
 
 class CCC_VidMode : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_VidMode, CCC_Token);
+
+private:
     u32 _dummy{};
 
 public:
     CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         u32 _w, _h;
         int cnt = sscanf(args, "%ux%u", &_w, &_h);
@@ -405,11 +435,11 @@ public:
             return;
         }
     }
-    virtual void Status(TStatus& S) { xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]); }
-    virtual const xr_token* GetToken() override { return vid_mode_token; }
-    virtual void Info(TInfo& I) { xr_strcpy(I, sizeof(I), "change screen resolution WxH"); }
+    void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]); }
+    const xr_token* GetToken() override { return vid_mode_token; }
+    void Info(TInfo& I) override { xr_strcpy(I, sizeof(I), "change screen resolution WxH"); }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    void fill_tips(vecTips& tips) override
     {
         TStatus str, cur;
         Status(cur);
@@ -443,10 +473,12 @@ extern void GetMonitorResolution(u32& horizontal, u32& vertical);
 
 class CCC_Screenmode : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
+
 public:
     CCC_Screenmode(LPCSTR N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         u32 prev_mode = g_screenmode;
         CCC_Token::Execute(args);
@@ -481,9 +513,7 @@ public:
             bool fullscreen_to_windowed = (prev_mode == 2) && ((g_screenmode == 0) || (g_screenmode == 1));
             bool reset_required = windowed_to_fullscreen || fullscreen_to_windowed;
             if (Device.b_is_Ready && reset_required)
-            {
                 Device.Reset();
-            }
 
             if (g_screenmode == 0 || g_screenmode == 1)
             {
@@ -506,20 +536,25 @@ public:
 //-----------------------------------------------------------------------
 class CCC_SND_Restart : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_SND_Restart, IConsole_Command);
+
 public:
     CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { Sound->_restart(); }
+    void Execute(LPCSTR) override { Sound->_restart(); }
 };
 
 //-----------------------------------------------------------------------
 float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
+
 class CCC_Gamma : public CCC_Float
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Gamma, CCC_Float);
+
 public:
     CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         CCC_Float::Execute(args);
         // Device.Gamma.Gamma		(ps_gamma);
@@ -537,16 +572,18 @@ public:
 
 class CCC_r2 : public CCC_Token
 {
-    typedef CCC_Token inherited;
+    RTTI_DECLARE_TYPEINFO(CCC_r2, CCC_Token);
 
 private:
+    typedef CCC_Token inherited;
+
     u32 renderer_value{};
 
 public:
     CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
     virtual ~CCC_r2() = default;
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         //	vid_quality_token must be already created!
         tokens = vid_quality_token;
@@ -554,18 +591,19 @@ public:
         inherited::Execute(args);
     }
 
-    virtual void Save(IWriter* F)
+    void Save(IWriter* F) override
     {
         tokens = vid_quality_token;
         inherited::Save(F);
     }
-    virtual const xr_token* GetToken() override
+
+    const xr_token* GetToken() override
     {
         tokens = vid_quality_token;
         return inherited::GetToken();
     }
 
-    virtual void Status(TStatus& S)
+    void Status(TStatus& S) override
     {
         tokens = vid_quality_token;
         inherited::Status(S);
@@ -574,13 +612,16 @@ public:
 
 class CCC_soundDevice : public CCC_Token
 {
+    RTTI_DECLARE_TYPEINFO(CCC_soundDevice, CCC_Token);
+
+private:
     typedef CCC_Token inherited;
 
 public:
     CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
     virtual ~CCC_soundDevice() {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         GetToken();
         if (!tokens)
@@ -588,7 +629,7 @@ public:
         inherited::Execute(args);
     }
 
-    virtual void Status(TStatus& S)
+    void Status(TStatus& S) override
     {
         GetToken();
         if (!tokens)
@@ -596,13 +637,13 @@ public:
         inherited::Status(S);
     }
 
-    virtual const xr_token* GetToken() override
+    const xr_token* GetToken() override
     {
         tokens = snd_devices_token;
         return inherited::GetToken();
     }
 
-    virtual void Save(IWriter* F)
+    void Save(IWriter* F) override
     {
         GetToken();
         if (!tokens)
@@ -613,6 +654,9 @@ public:
 
 class CCC_ExclusiveMode : public CCC_Mask
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ExclusiveMode, CCC_Mask);
+
+private:
     using inherited = CCC_Mask;
 
 public:
@@ -630,20 +674,24 @@ public:
 
 class CCC_HideConsole : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_HideConsole, IConsole_Command);
+
 public:
     CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args) { Console->Hide(); }
-    virtual void Status(TStatus& S) { S[0] = 0; }
-    virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "hide console"); }
+    void Execute(LPCSTR) override { Console->Hide(); }
+    void Status(TStatus& S) override { S[0] = 0; }
+    void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "hide console"); }
 };
 
 class CCC_SoundParamsSmoothing : public CCC_Integer
 {
+    RTTI_DECLARE_TYPEINFO(CCC_SoundParamsSmoothing, CCC_Integer);
+
 public:
     CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         CCC_Integer::Execute(args);
         soundSmoothingParams::alpha = soundSmoothingParams::getAlpha();
@@ -668,7 +716,7 @@ float ps_r2_sun_shafts_value = 1.f;
 
 int ps_framelimiter = 0;
 
-Fvector3 ssfx_wetness_multiplier = Fvector3().set(1.0f, 0.3f, 0.0f);
+Fvector3 ssfx_wetness_multiplier{1.0f, 0.3f, 0.0f};
 
 void CCC_Register()
 {

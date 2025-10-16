@@ -2,7 +2,7 @@
 
 #include "weaponwalther.h"
 
-CWeaponWalther::CWeaponWalther() : CWeaponPistol{"WALTHER"}
+CWeaponWalther::CWeaponWalther() : CWeaponPistol{}
 {
     m_weight = .5f;
     SetSlot(FIRST_WEAPON_SLOT);

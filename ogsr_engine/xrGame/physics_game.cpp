@@ -106,15 +106,16 @@ class CPHFindParticlesComparer : public CPHReqComparerV
     RTTI_DECLARE_TYPEINFO(CPHFindParticlesComparer, CPHReqComparerV);
 
 public:
-    Fvector m_position;
     const CPhysicsShellHolder* m_object;
+    Fvector m_position;
 
-    CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_position(position), m_object(object) {}
+    CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_object{object}, m_position{position} {}
 
 private:
-    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
-    virtual bool compare(const CPHParticlesCondition* v) const { return true; }
-    virtual bool compare(const CPHParticlesPlayCall* v) const
+    [[nodiscard]] virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
+    [[nodiscard]] virtual bool compare(const CPHParticlesCondition*) const { return true; }
+
+    [[nodiscard]] virtual bool compare(const CPHParticlesPlayCall* v) const
     {
         VERIFY(v);
 

@@ -2,7 +2,7 @@
 
 #include "dCylinder/dCylinder.h"
 
-int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip);
+int dCollideCylRay(dxGeom* o1, dxGeom* o2, dContactGeom* contact, int skip);
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -59,10 +59,10 @@ inline void revert_contact(dContactGeom* c)
     c->g2 = tmp;
 }
 
-int dCollideRMCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideRMCyl(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
 {
     dxRayMotions* rm = (dxRayMotions*)dGeomGetClassData(o1);
-    int ret = dCollideCylRay(o2, rm->ray, flags, contact, skip);
+    int ret = dCollideCylRay(o2, rm->ray, contact, skip);
     for (int i = 0; i < ret; i++)
     {
         dContactGeom* c = CONTACT(contact, skip * i);

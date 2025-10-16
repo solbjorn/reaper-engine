@@ -57,12 +57,6 @@ void CChimera::Load(LPCSTR section)
 
     anim().AddAnim(eAnimStandIdle, "stand_idle_", -1, &velocity_none, PS_STAND);
 
-    //@
-
-    IKinematicsAnimated* KA = smart_cast<IKinematicsAnimated*>(Visual());
-    MotionID idle_motion_id1 = KA->LL_MotionID("stand_idle_0");
-    MotionID idle_motion_id2 = KA->LL_MotionID("stand_idle_1");
-
     if (use_cop_anims)
     {
         anim().AddAnim(eAnimWalkFwd, "stand_walk_", -1, &velocity_walk, PS_STAND);
@@ -157,17 +151,7 @@ void CChimera::reinit()
                              MonsterMovement::eChimeraVelocityParameterJumpGround, 0);
 }
 
-void CChimera::CheckSpecParams(u32 spec_params)
-{
-    // 	if ( (spec_params & ASP_THREATEN) == ASP_THREATEN )
-    // 	{
-    // 		anim().SetCurAnim(eAnimThreaten);
-    // 	}
-    // 	if ( (spec_params & ASP_ATTACK_RUN) == ASP_ATTACK_RUN )
-    // 	{
-    // 		anim().SetCurAnim(eAnimAttackRun);
-    // 	}
-}
+void CChimera::CheckSpecParams(u32) {}
 
 void CChimera::HitEntityInJump(const CEntity* pEntity)
 {

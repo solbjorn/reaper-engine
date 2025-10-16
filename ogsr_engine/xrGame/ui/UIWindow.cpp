@@ -428,8 +428,7 @@ bool CUIWindow::HasChildMouseHandler()
 }
 
 void CUIWindow::OnMouseMove() {}
-
-void CUIWindow::OnMouseScroll(float iDirection) {}
+void CUIWindow::OnMouseScroll(float) {}
 
 bool CUIWindow::OnDbClick()
 {
@@ -439,9 +438,8 @@ bool CUIWindow::OnDbClick()
     return false;
 }
 
-bool CUIWindow::OnMouseDown(int mouse_btn) { return false; }
-
-void CUIWindow::OnMouseUp(int mouse_btn) {}
+bool CUIWindow::OnMouseDown(int) { return false; }
+void CUIWindow::OnMouseUp(int) {}
 
 void CUIWindow::OnFocusReceive()
 {

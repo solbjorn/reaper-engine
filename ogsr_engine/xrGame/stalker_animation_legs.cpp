@@ -24,13 +24,12 @@ namespace
 constexpr float right_forward_angle{PI_DIV_4};
 constexpr float left_forward_angle{PI_DIV_4};
 constexpr float standing_turn_angle{PI_DIV_6};
-constexpr float epsilon{EPS_L};
 
 constexpr u32 direction_switch_interval{500};
-constexpr u32 need_look_back_time_delay{};
+constexpr u32 need_look_back_time_delay{0};
 
 constexpr float direction_angles[]{
-    0.f, //	eMovementDirectionForward
+    0.0f, //	eMovementDirectionForward
     PI, //	eMovementDirectionBackward
     PI_DIV_2, //	eMovementDirectionLeft
     -PI_DIV_2 //	eMovementDirectionRight

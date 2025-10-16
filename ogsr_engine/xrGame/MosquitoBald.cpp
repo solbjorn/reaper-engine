@@ -15,8 +15,7 @@ CMosquitoBald::CMosquitoBald()
 CMosquitoBald::~CMosquitoBald() = default;
 
 void CMosquitoBald::Load(LPCSTR section) { inherited::Load(section); }
-
-void CMosquitoBald::Postprocess(f32 /**val/**/) {}
+void CMosquitoBald::Postprocess(f32) {}
 
 bool CMosquitoBald::BlowoutState()
 {

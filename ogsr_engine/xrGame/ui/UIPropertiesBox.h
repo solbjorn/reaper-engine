@@ -20,7 +20,7 @@ public:
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboard(int, EUIMessages) override;
 
     bool AddItem(const char* str, void* pData = nullptr, u32 tag_value = 0);
     bool AddItem_script(const char* str) { return AddItem(str); }

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_simulator_base.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
@@ -23,24 +24,7 @@
 
 using namespace ALife;
 
-CALifeSimulatorBase::CALifeSimulatorBase(xrServer* server, LPCSTR section)
-{
-    m_server = server;
-    m_initialized = false;
-    m_header = nullptr;
-    m_time_manager = nullptr;
-    m_spawns = nullptr;
-    m_objects = nullptr;
-    m_graph_objects = nullptr;
-    m_scheduled = nullptr;
-    m_story_objects = nullptr;
-    m_smart_terrains = nullptr;
-    m_groups = nullptr;
-    m_registry_container = nullptr;
-    m_can_register_objects = true;
-    m_unloading = false;
-}
-
+CALifeSimulatorBase::CALifeSimulatorBase(xrServer* server) : m_server{server} {}
 CALifeSimulatorBase::~CALifeSimulatorBase() { VERIFY(!m_initialized); }
 
 void CALifeSimulatorBase::destroy() { unload(); }
@@ -64,10 +48,10 @@ void CALifeSimulatorBase::unload()
 
 void CALifeSimulatorBase::reload(LPCSTR section)
 {
-    m_header = xr_new<CALifeSimulatorHeader>(section);
+    m_header = xr_new<CALifeSimulatorHeader>();
     m_time_manager = xr_new<CALifeTimeManager>(section);
-    m_spawns = xr_new<CALifeSpawnRegistry>(section);
-    m_objects = xr_new<CALifeObjectRegistry>(section);
+    m_spawns = xr_new<CALifeSpawnRegistry>();
+    m_objects = xr_new<CALifeObjectRegistry>();
     m_graph_objects = xr_new<CALifeGraphRegistry>();
     m_scheduled = xr_new<CALifeScheduleRegistry>();
     m_story_objects = xr_new<CALifeStoryRegistry>();
@@ -299,21 +283,9 @@ void CALifeSimulatorBase::append_item_vector(OBJECT_VECTOR& tObjectVector, ITEM_
     }
 }
 
-void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID, CSE_ALifeSchedulable* tpALifeSchedulable)
+void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID)
 {
     tpALifeCreatureAbstract->fHealth = 0;
-
-    // tpALifeSchedulable всегда 0
-    // if (tpALifeSchedulable) {
-    //	CSE_ALifeAnomalousZone				*l_tpALifeAnomalousZone = smart_cast<CSE_ALifeAnomalousZone*>(tpALifeSchedulable);
-    //	if (l_tpALifeAnomalousZone) {
-    //		spawns().assign_artefact_position(l_tpALifeAnomalousZone,tpALifeCreatureAbstract);
-    //		CSE_ALifeMonsterAbstract		*l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeCreatureAbstract);
-    //		if (l_tpALifeMonsterAbstract)
-    //			l_tpALifeMonsterAbstract->m_tPrevGraphID = l_tpALifeMonsterAbstract->m_tNextGraphID = l_tpALifeMonsterAbstract->m_tGraphID;
-    //		return;
-    //	}
-    //}
 
     CGameGraph::const_spawn_iterator i, e;
     ai().game_graph().begin_spawn(tGraphID, i, e);

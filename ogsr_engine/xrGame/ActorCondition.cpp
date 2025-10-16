@@ -151,13 +151,9 @@ void CActorCondition::UpdateCondition()
     float weight_coef = weight / max_weight;
 
     if ((object().mstate_real & mcAnyMove))
-    {
         ConditionWalk(weight_coef, isActorAccelerated(object().mstate_real, object().IsZoomAimingMode()), (object().mstate_real & mcSprint) != 0);
-    }
     else
-    {
-        ConditionStand(weight_coef);
-    }
+        ConditionStand();
 
     if (m_fPowerLeakSpeed > 0.0f)
     {
@@ -430,6 +426,7 @@ void CActorCondition::ConditionJump(float weight)
     power += m_fJumpWeightPower * weight * (weight > 1.f ? m_fOverweightJumpK : 1.f);
     m_fPower -= HitPowerEffect(power);
 }
+
 void CActorCondition::ConditionWalk(float weight, bool accel, bool sprint)
 {
     float power = m_fWalkPower;
@@ -438,7 +435,7 @@ void CActorCondition::ConditionWalk(float weight, bool accel, bool sprint)
     m_fPower -= HitPowerEffect(power);
 }
 
-void CActorCondition::ConditionStand(float weight)
+void CActorCondition::ConditionStand()
 {
     float power = m_fStandPower;
     power *= m_fDeltaTime;

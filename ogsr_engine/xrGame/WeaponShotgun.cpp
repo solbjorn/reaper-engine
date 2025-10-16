@@ -8,7 +8,7 @@
 #include "level.h"
 #include "actor.h"
 
-CWeaponShotgun::CWeaponShotgun() : CWeaponCustomPistol{"TOZ34"}
+CWeaponShotgun::CWeaponShotgun() : CWeaponCustomPistol{}
 {
     m_eSoundShotBoth = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
     m_eSoundClose = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
@@ -137,9 +137,9 @@ void CWeaponShotgun::OnShotBoth()
     if (ParentIsActor())
     {
         CParticlesObject* pSmokeParticles{};
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), zero_vel, true);
+        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), true);
         pSmokeParticles = nullptr;
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), zero_vel, true);
+        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), true);
     }
 }
 
@@ -345,7 +345,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
     }
     case eSubstateReloadInProcess: {
         AddCartridge(1);
-        if (m_stop_triStateReload || !HaveCartridgeInInventory(1) || m_magazine.size() >= iMagazineSize)
+        if (m_stop_triStateReload || !HaveCartridgeInInventory(1) || std::ssize(m_magazine) >= iMagazineSize)
             m_sub_state = eSubstateReloadEnd;
 
         SwitchState(eReload);

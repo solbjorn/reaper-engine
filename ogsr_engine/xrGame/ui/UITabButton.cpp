@@ -47,7 +47,7 @@ bool CUITabButton::OnMouseDown(int mouse_btn)
 
 void CUITabButton::Update() { CUI3tButton::Update(); }
 
-void CUITabButton::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
+void CUITabButton::SendMessage(CUIWindow* pWnd, s16 msg, void*)
 {
     if (!IsEnabled())
         return;

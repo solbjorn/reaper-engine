@@ -5,9 +5,8 @@
 
 struct local_vector
 {
-    Fvector v;
-    u16 bone;
-    local_vector() : bone(u16(-1)), v(Fvector().set(0, 0, 0)) {}
+    Fvector v{};
+    u16 bone{std::numeric_limits<u16>::max()};
 };
 
 class IKinematics;
@@ -31,7 +30,6 @@ public:
     Fmatrix& ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const;
     Fmatrix& ref_bone_to_foot(Fmatrix& ref_bone) const;
 
-private:
 public:
     IC Fvector& FootNormal(Fvector& foot_normal) const;
 
@@ -47,7 +45,7 @@ public:
     bool GetFootStepMatrix(ik_goal_matrix& m, const SCalculateData& cd, const SIKCollideData& cld, bool collide, bool rotate) const;
     bool GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& gl_nim, const SIKCollideData& cld, bool collide, bool rotate, bool make_shift = true) const;
     void SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatrix& object_matrix) const;
-    void Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O, bool foot_step) const;
+    void Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O) const;
 
 private:
     ik_goal_matrix::e_collide_state CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal, const Fvector& global_bone_pos,

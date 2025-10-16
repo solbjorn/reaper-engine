@@ -89,7 +89,7 @@ public:
     void SetRestrictionType(ERestrictionType rt) { m_new_restriction_type = m_restriction_type = rt; }
     void SetObjectRadius(float R) { m_current_object_radius = R; }
     float ObjectRadius() { return m_current_object_radius; }
-    virtual void ChooseRestrictionType(ERestrictionType my_type, float my_depth, CPHCharacter* ch) {}
+    virtual void ChooseRestrictionType(ERestrictionType, float, CPHCharacter*) {}
     virtual bool UpdateRestrictionType(CPHCharacter* ach) = 0;
     virtual void FreezeContent();
     virtual void UnFreezeContent();
@@ -114,15 +114,15 @@ public:
     void SetPLastMaterialIDX(u16* p) { p_lastMaterialIDX = p; }
     const u16& LastMaterialIDX() const { return *p_lastMaterialIDX; }
     virtual bool TouchRestrictor(ERestrictionType rttype) = 0;
-    virtual void SetElevator(CClimableObject* climable) {}
+    virtual void SetElevator(CClimableObject*) {}
     virtual void SetMaterial(u16 material) = 0;
-    virtual void SetMaximumVelocity(dReal /**vel/**/) {} //!!
+    virtual void SetMaximumVelocity(dReal) {} //!!
     virtual dReal GetMaximumVelocity() { return 0; }
-    virtual void SetJupmUpVelocity(dReal /**velocity/**/) {} //!!
-    virtual void IPosition(Fvector& /**pos/**/) {}
+    virtual void SetJupmUpVelocity(dReal) {} //!!
+    virtual void IPosition(Fvector&) {}
     virtual u16 ContactBone() { return 0; }
-    virtual void DeathPosition(Fvector& /**deathPos/**/) {}
-    virtual void ApplyImpulse(const Fvector& /**dir/**/, const dReal /**P/**/) {}
+    virtual void DeathPosition(Fvector&) {}
+    virtual void ApplyImpulse(const Fvector&, const dReal) {}
     virtual void ApplyForce(const Fvector& force) = 0;
     virtual void ApplyForce(const Fvector& dir, float force) = 0;
     virtual void ApplyForce(float x, float y, float z) = 0;
@@ -132,11 +132,11 @@ public:
     virtual EEnvironment CheckInvironment() = 0;
     virtual bool ContactWas() = 0;
     virtual void GroundNormal(Fvector& norm) = 0;
-    virtual void Create(dVector3 /**sizes/**/) = 0;
+    virtual void Create(dVector3) = 0;
     virtual void Destroy(void) = 0;
     virtual void SetBox(const dVector3& sizes) = 0;
     virtual void SetAcceleration(Fvector accel) = 0;
-    virtual void SetForcedPhysicsControl(bool v) {}
+    virtual void SetForcedPhysicsControl(bool) {}
     virtual bool ForcedPhysicsControl() { return false; }
     virtual void SetCamDir(const Fvector& cam_dir) = 0;
     virtual const Fvector& CamDir() const = 0;
@@ -153,7 +153,7 @@ public:
     virtual void SetVelocity(Fvector vel) = 0;
     virtual void SetAirControlFactor(float factor) = 0;
     virtual void GetPosition(Fvector& vpos) = 0;
-    virtual void GetFootCenter(Fvector& vpos) { vpos.set(*(Fvector*)dBodyGetPosition(m_body)); }
+    virtual void GetFootCenter(Fvector& vpos) { vpos.set(*(const Fvector*)dBodyGetPosition(m_body)); }
     virtual void SetMas(dReal mass) = 0;
     virtual void SetCollisionDamageFactor(float f) = 0;
     virtual float Mass() = 0;
@@ -161,18 +161,17 @@ public:
     virtual CPhysicsShellHolder* PhysicsRefObject() { return m_phys_ref_object; }
 
     // AICharacter
-    virtual void GetDesiredPosition(Fvector& /**dpos/**/) {}
-    virtual void SetDesiredPosition(const Fvector& /**pos/**/) {}
-    virtual void BringToDesired(float /**time/**/, float /**velocity/**/, float force = 1.f) {}
-    virtual bool TryPosition(Fvector /**pos/**/, bool) { return false; }
+    virtual void GetDesiredPosition(Fvector&) {}
+    virtual void SetDesiredPosition(const Fvector&) {}
+    virtual bool TryPosition(Fvector) { return false; }
     virtual bool TouchBorder() { return false; }
     virtual void getForce(Fvector& force);
     virtual void setForce(const Fvector& force);
     virtual float FootRadius() = 0;
     virtual void get_State(SPHNetState& state);
     virtual void set_State(const SPHNetState& state);
-    virtual void cv2obj_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) {}
-    virtual void cv2bone_Xfrom(const Fquaternion& q, const Fvector& pos, Fmatrix& xform) {}
+    virtual void cv2obj_Xfrom(const Fquaternion&, const Fvector&, Fmatrix&) {}
+    virtual void cv2bone_Xfrom(const Fquaternion&, const Fvector&, Fmatrix&) {}
     virtual const Fvector& ControlAccel() const = 0;
     virtual float& FrictionFactor() = 0;
     virtual void CutVelocity(float l_limit, float a_limit);
@@ -188,7 +187,7 @@ public:
     virtual void get_LinearVel(Fvector& velocity) override;
     virtual void get_AngularVel(Fvector& velocity) override;
     virtual u16 numberOfGeoms() override { return 0; }
-    virtual IPhysicsGeometry* geometry(u16 i) const override { return nullptr; }
+    virtual IPhysicsGeometry* geometry(u16) const override { return nullptr; }
     virtual const Fvector& mass_Center() override;
 
 public:

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "relation_registry.h"
 #include "alife_registry_wrappers.h"
 
@@ -45,6 +46,7 @@ struct SAttackGoodwillStorage
         enemy_attack_reputation = pSettings->r_s32(ACTIONS_POINTS_SECT, s);
     }
 };
+
 SAttackGoodwillStorage gw_danger, gw_free;
 
 void load_attack_goodwill()
@@ -155,6 +157,7 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
                 delta_reputation = st->friend_attack_reputation;
             }
             break;
+            default: break;
             }
 
             // сталкер при нападении на членов своей же группировки отношения не меняют
@@ -209,6 +212,7 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
                 delta_reputation = friend_kill_reputation;
             }
             break;
+            default: break;
             }
 
             CHARACTER_GOODWILL community_goodwill =
@@ -264,6 +268,7 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
                 delta_reputation = friend_fight_help_reputation;
             }
             break;
+            default: break;
             }
 
             if (delta_goodwill)
@@ -282,5 +287,6 @@ void RELATION_REGISTRY::Action(CEntityAlive* from, CEntityAlive* to, ERelationAc
         }
     }
     break;
+    default: break;
     }
 }

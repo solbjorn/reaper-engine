@@ -1,4 +1,5 @@
 #pragma once
+
 #include "limb.h"
 #include "IKFoot.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
@@ -33,7 +34,7 @@ public:
     CIKLimb();
     CIKLimb(const CIKLimb& l);
 
-    CIKLimb& operator=(const CIKLimb& l);
+    CIKLimb& operator=(const CIKLimb& l) = delete;
 
 public:
     void Create(u16 id, IKinematicsAnimated* K, bool collide_);
@@ -78,11 +79,10 @@ private:
     bool SetGoalToLimb(const SCalculateData& cd);
     void CalculateBones(SCalculateData& cd);
     Matrix& Goal(Matrix& gl, const Fmatrix& xm, const SCalculateData& cd);
-    Fmatrix& GetHipInvert(Fmatrix& ihip, const SCalculateData& cd);
+    Fmatrix& GetHipInvert(Fmatrix& ihip);
 
-    float SwivelAngle(const Fmatrix& ihip, const SCalculateData& cd);
     void GetKnee(Fvector& knee, const SCalculateData& cd) const;
-    void GetPickDir(Fvector& v, SCalculateData& cd) const;
+    void GetPickDir(Fvector& v) const;
     void ToeTimeDiff(Fvector& v, const SCalculateData& cd) const;
     void ToeTimeDiffPredict(Fvector& v) const;
     IC static void get_start(Fmatrix& start, SCalculateData& D, u16 bone);
@@ -108,9 +108,11 @@ private:
     ik_anim_state anim_state;
     ik_limb_state sv_state;
     ik_limb_state_predict state_predict;
+
 #ifdef DEBUG
     bool dbg_disabled;
 #endif
+
 #ifdef IK_DBG_STATE_SEQUENCE
     friend struct dbg_matrises;
     dbg_matrises m_dbg_matrises;

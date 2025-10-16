@@ -1,4 +1,5 @@
 #include "../stdafx.h"
+
 #include "net_client.h"
 #include "net_server.h"
 #include "net_messages.h"
@@ -74,6 +75,7 @@ NET_Packet* INetQueue::Retreive()
     cs.Leave();
     return P;
 }
+
 void INetQueue::Release()
 {
     cs.Enter();
@@ -92,13 +94,8 @@ void INetQueue::Release()
     cs.Leave();
 }
 
-IPureClient::IPureClient(CTimer* timer)
-{
-    device_timer = timer;
-    net_Syncronised = FALSE; // Добавил инициализацию сюда, тк она хз где была.
-}
-
-IPureClient::~IPureClient() {}
+IPureClient::IPureClient(CTimer* timer) : device_timer{timer} {}
+IPureClient::~IPureClient() = default;
 
 BOOL IPureClient::Connect(LPCSTR) { return TRUE; }
 
@@ -123,4 +120,4 @@ void IPureClient::OnMessage(void* data, u32 size) // Сюда приходят �
     net_Queue.CreateCommit(P);
 }
 
-void IPureClient::Send(NET_Packet& packet, u32 dwFlags, u32 dwTimeout) { FATAL(""); }
+void IPureClient::Send(NET_Packet&, u32, u32) { FATAL(""); }

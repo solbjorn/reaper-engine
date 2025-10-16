@@ -119,7 +119,7 @@ public:
     void mk_rotation(Fvector& dir, SRotation& R);
 
     // stream executors
-    virtual void Exec_Action(float dt);
+    virtual void Exec_Action(float);
     virtual void Exec_Look(float dt);
     void Exec_Visibility();
     void eye_pp_s0();
@@ -141,7 +141,7 @@ public:
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Die(CObject* who);
 
-    virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who);
+    virtual void HitSignal(float, Fvector&, CObject*);
     virtual void g_WeaponBones(int&, int&, int&) {}
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
@@ -156,7 +156,7 @@ public:
     // debug
 #ifdef DEBUG
     virtual void OnRender();
-    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
+    void OnHUDDraw(ctx_id_t, CCustomHUD*, IRenderable*) override;
 #endif
 
     virtual bool bfExecMovement() { return false; }
@@ -211,12 +211,12 @@ public:
     virtual float feel_vision_mtl_transp(CObject* O, u32 element);
     virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
 
-    virtual bool useful(const CItemManager* manager, const CGameObject* object) const;
-    virtual float evaluate(const CItemManager* manager, const CGameObject* object) const;
-    virtual bool useful(const CEnemyManager* manager, const CEntityAlive* object) const;
-    virtual float evaluate(const CEnemyManager* manager, const CEntityAlive* object) const;
-    virtual bool useful(const CDangerManager* manager, const CDangerObject& object) const;
-    virtual float evaluate(const CDangerManager* manager, const CDangerObject& object) const;
+    [[nodiscard]] virtual bool useful(const CItemManager*, const CGameObject* object) const;
+    [[nodiscard]] virtual float evaluate(const CItemManager*, const CGameObject* object) const;
+    [[nodiscard]] virtual bool useful(const CEnemyManager*, const CEntityAlive* object) const;
+    [[nodiscard]] virtual float evaluate(const CEnemyManager*, const CEntityAlive* object) const;
+    [[nodiscard]] virtual bool useful(const CDangerManager*, const CDangerObject& object) const;
+    [[nodiscard]] virtual float evaluate(const CDangerManager*, const CDangerObject& object) const;
 
 protected:
     float m_panic_threshold;
@@ -255,7 +255,7 @@ private:
 public:
     IC const bool& already_dead() const { return m_already_dead; }
     virtual bool use_simplified_visual() const { return already_dead(); }
-    virtual void on_enemy_change(const CEntityAlive* enemy);
+    virtual void on_enemy_change(const CEntityAlive*);
     virtual CVisualMemoryManager* visual_memory() const;
 
 public:

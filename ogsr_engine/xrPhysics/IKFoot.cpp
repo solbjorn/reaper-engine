@@ -57,18 +57,16 @@ void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
 struct envc : public SEnumVerticesCallback
 {
     Fvector& pos;
-    Fvector start_pos;
+    Fvector start_pos{};
     const Fmatrix& i_bind_transform;
     const Fvector& ax;
 
-    envc() = default;
+    envc() = delete;
+    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos) : SEnumVerticesCallback{}, pos{_pos}, i_bind_transform{_i_bind_transform}, ax{_ax} {}
+
     envc(envc&) = delete;
     envc& operator=(envc&) = delete;
 
-    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos) : SEnumVerticesCallback(), i_bind_transform(_i_bind_transform), ax(_ax), pos(_pos)
-    {
-        start_pos.set(0, 0, 0);
-    }
     void operator()(const Fvector& p)
     {
         Fvector lpos;
@@ -78,6 +76,7 @@ struct envc : public SEnumVerticesCallback
             pos.set(lpos);
     }
 };
+
 void CIKFoot::set_toe(u16 bones[4])
 {
     VERIFY(Kinematics());
@@ -379,7 +378,9 @@ u16 CIKFoot::get_ref_bone(const Fmatrix& foot_transform, const Fmatrix& toe_tran
     else
         return 2;
 }
+
 void CIKFoot::set_ref_bone() { set_ref_bone(get_ref_bone(Kinematics()->LL_GetTransform(m_foot_bone_id), Kinematics()->LL_GetTransform(m_toe_bone_id))); }
+
 void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatrix& object_matrix) const
 {
     Fmatrix gl_bone;
@@ -391,8 +392,9 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     Fvector heel;
     Fvector pos_hill;
-#pragma todo( \
-    "KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет, если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?")
+
+    // TODO: KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет,
+    // если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?
     Fmatrix foot = (Fmatrix().mul_43(object_matrix, ref_bone_to_foot(foot, ref_bone)));
     foot.transform_tiny(pos_hill, HeelPosition(heel));
     const Fvector v_m = Fvector().add(pos_toe, pos_hill).mul(0.5f);
@@ -409,11 +411,12 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     fg.set(pos_toe, pos_hill, Fvector().add(v_m, v_side));
 }
-void CIKFoot::Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O, bool foot_step) const
+
+void CIKFoot::Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O) const
 {
     VERIFY(O->Visual()->dcast_PKinematics() == Kinematics());
 
     ik_foot_geom fg;
     SetFootGeom(fg, ref_bone, object_matrix);
-    collider.collide(cld, fg, O, foot_step);
+    collider.collide(cld, fg, O);
 }

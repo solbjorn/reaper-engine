@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_spawn_registry.h"
 #include "object_broker.h"
 #include "game_base.h"
@@ -14,14 +15,7 @@
 #include "game_graph.h"
 #include "script_engine.h"
 
-CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
-{
-    m_spawn_name = "";
-    m_game_graph = nullptr;
-    m_spawn_chunk = nullptr;
-    m_file = nullptr;
-    m_separated_graphs = true;
-}
+CALifeSpawnRegistry::CALifeSpawnRegistry() { m_spawn_name = ""; }
 
 CALifeSpawnRegistry::~CALifeSpawnRegistry()
 {
@@ -103,7 +97,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     R_ASSERT2(!save_guid || (*save_guid == header().guid()), "Saved game doesn't correspond to the spawn : DELETE SAVED GAME!");
 
     bool separated_graphs = false;
-    VERIFY(!m_chunk);
+    VERIFY(!m_spawn_chunk);
     IReader* stream = file_stream.open_chunk(4);
     if (!stream)
     {

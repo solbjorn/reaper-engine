@@ -25,7 +25,7 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::FindParticles(con
     return nullptr;
 }
 
-CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(CObject* object, const shared_str& ps_name)
+CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(const shared_str& ps_name)
 {
     SParticlesInfo* pi = FindParticles(ps_name);
     if (pi)
@@ -139,7 +139,7 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
     if (!pBoneInfo)
         return;
 
-    SParticlesInfo& particles_info = *pBoneInfo->AppendParticles(object, particles_name);
+    SParticlesInfo& particles_info = *pBoneInfo->AppendParticles(particles_name);
 
     particles_info.sender_id = sender_id;
 
@@ -162,7 +162,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
     VERIFY(object);
     for (BoneInfoVecIt it = m_Bones.begin(); it != m_Bones.end(); it++)
     {
-        SParticlesInfo& particles_info = *it->AppendParticles(object, ps_name);
+        SParticlesInfo& particles_info = *it->AppendParticles(ps_name);
         particles_info.sender_id = sender_id;
 
         particles_info.life_time = auto_stop ? life_time : u32(-1);

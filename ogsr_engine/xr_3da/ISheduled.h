@@ -1,6 +1,6 @@
 #pragma once
 
-class ISheduled : public virtual RTTI::Enable
+class XR_NOVTABLE ISheduled : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ISheduled);
 

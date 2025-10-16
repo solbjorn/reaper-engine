@@ -12,7 +12,7 @@ class CMaterialManager;
 class CVisualMemoryManager;
 class CBlend;
 
-class CEntityAlive : public CEntity
+class XR_NOVTABLE CEntityAlive : public CEntity
 {
     RTTI_DECLARE_TYPEINFO(CEntityAlive, CEntity);
 
@@ -59,7 +59,7 @@ public:
     virtual void create_anim_mov_ctrl(CBlend* b);
     virtual void destroy_anim_mov_ctrl();
 
-    virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);
+    void HitImpulse(float, Fvector&, Fvector&) override;
     virtual void Hit(SHit* pHDS);
     virtual void Die(CObject* who);
     virtual void g_WeaponBones(int& L, int& R1, int& R2) = 0;
@@ -75,7 +75,7 @@ public:
     virtual float g_Radiation() const;
     virtual float SetfRadiation(float value);
 
-    virtual float CalcCondition(float hit);
+    float CalcCondition(float) override;
 
     // Visibility related
     virtual float ffGetFov() const = 0;

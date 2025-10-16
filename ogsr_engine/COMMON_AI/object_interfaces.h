@@ -10,7 +10,7 @@
 
 class NET_Packet;
 
-class IPureDestroyableObject : public virtual RTTI::Enable
+class XR_NOVTABLE IPureDestroyableObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureDestroyableObject);
 
@@ -19,7 +19,7 @@ public:
 };
 
 template <typename _storage_type>
-class IPureLoadableObject : public virtual RTTI::Enable
+class XR_NOVTABLE IPureLoadableObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureLoadableObject<_storage_type>);
 
@@ -28,7 +28,7 @@ public:
 };
 
 template <typename _storage_type>
-class IPureSavableObject : public virtual RTTI::Enable
+class XR_NOVTABLE IPureSavableObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureSavableObject<_storage_type>);
 
@@ -37,12 +37,12 @@ public:
 };
 
 template <typename _storage_type_load, typename _storage_type_save>
-class IPureSerializeObject : public IPureLoadableObject<_storage_type_load>, public IPureSavableObject<_storage_type_save>
+class XR_NOVTABLE IPureSerializeObject : public IPureLoadableObject<_storage_type_load>, public IPureSavableObject<_storage_type_save>
 {
     RTTI_DECLARE_TYPEINFO(IPureSerializeObject<_storage_type_load, _storage_type_save>, IPureLoadableObject<_storage_type_load>, IPureSavableObject<_storage_type_save>);
 };
 
-class IPureServerObject : public IPureSerializeObject<IReader, IWriter>
+class XR_NOVTABLE IPureServerObject : public IPureSerializeObject<IReader, IWriter>
 {
     RTTI_DECLARE_TYPEINFO(IPureServerObject, IPureSerializeObject<IReader, IWriter>);
 
@@ -53,7 +53,7 @@ public:
     virtual void UPDATE_Read(NET_Packet& tNetPacket) = 0;
 };
 
-class IPureSchedulableObject : public virtual RTTI::Enable
+class XR_NOVTABLE IPureSchedulableObject : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureSchedulableObject);
 

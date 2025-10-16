@@ -6,7 +6,13 @@
 
 #include "../../xr_3da/stdafx.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
+
 #include <DirectXMath.h>
+
+XR_DIAG_POP();
+
 #include <d3d9.h>
 #include <d3d11_1.h>
 #include <D3DCompiler.h>

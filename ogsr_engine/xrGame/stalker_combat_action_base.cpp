@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_combat_action_base.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -77,7 +78,6 @@ void CStalkerActionCombatBase::aim_ready_force_full()
 
 void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& min_queue_size, u32& max_queue_size, u32& min_queue_interval, u32& max_queue_interval) const
 {
-    /**/
     int weapon_type = 6;
     if (object().best_weapon())
         weapon_type = object().best_weapon()->object().ef_weapon_type();
@@ -186,27 +186,6 @@ void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& m
         }
     }
     }
-    /**
-    if (distance > 30.f) {
-        min_queue_size					= object().min_queue_size_far();
-        max_queue_size					= object().max_queue_size_far();
-        min_queue_interval				= object().min_queue_interval_far();
-        max_queue_interval				= object().max_queue_interval_far();
-    }
-    else
-        if (distance > 15.f) {
-            min_queue_size				= object().min_queue_size_medium();
-            max_queue_size				= object().max_queue_size_medium();
-            min_queue_interval			= object().min_queue_interval_medium();
-            max_queue_interval			= object().max_queue_interval_medium();
-        }
-        else {
-            min_queue_size				= object().min_queue_size_close();
-            max_queue_size				= object().max_queue_size_close();
-            min_queue_interval			= object().min_queue_interval_close();
-            max_queue_interval			= object().max_queue_interval_close();
-        }
-    /**/
 }
 
 void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)

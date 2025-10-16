@@ -1,6 +1,6 @@
 #include "stdafx.h"
+
 #include "UIPdaSpot.h"
-#include <dinput.h>
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
@@ -9,6 +9,8 @@
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "string_table.h"
+
+#include <dinput.h>
 
 CUIPdaSpot::CUIPdaSpot()
 {
@@ -109,7 +111,7 @@ void CUIPdaSpot::OnApply(CUIWindow* ui, void* d)
     OnExit(ui, d);
 }
 
-void CUIPdaSpot::OnExit(CUIWindow* w, void* d) { Exit(); }
+void CUIPdaSpot::OnExit(CUIWindow*, void*) { Exit(); }
 
 void CUIPdaSpot::Exit()
 {

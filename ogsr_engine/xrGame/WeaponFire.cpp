@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "Weapon.h"
 #include "ParticlesObject.h"
 #include "HUDManager.h"
@@ -25,7 +26,7 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
     //	Msg("ammo - %s", l_cartridge.m_ammoSect.c_str());
     VERIFY(u16(-1) != l_cartridge.bullet_material_idx);
     //-------------------------------------------------------------
-#pragma todo("KRodin: мне кажется, или здесь должно быть && вместо & ? Надо б посмотреть, работает ли оно вообще.")
+    // TODO: KRodin: мне кажется, или здесь должно быть && вместо & ? Надо б посмотреть, работает ли оно вообще.
     l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
     if (m_u8TracerColorID != std::numeric_limits<u8>::max())
         l_cartridge.m_u8ColorID = m_u8TracerColorID;
@@ -40,7 +41,9 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
             ChangeCondition(-GetWeaponDeterioration() * l_cartridge.m_impair);
     }
     else
+    {
         ChangeCondition(-GetWeaponDeterioration() * l_cartridge.m_impair);
+    }
 
     float fire_disp = GetFireDispersion(true);
 

@@ -4,6 +4,9 @@
 template <typename _Object>
 class CStateControlHideLite : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControlHideLite<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::object;
@@ -17,7 +20,7 @@ class CStateControlHideLite : public CState<_Object>
     u32 m_time_finished;
 
 public:
-    CStateControlHideLite(_Object* obj) : inherited(obj) {}
+    CStateControlHideLite(_Object* obj) : inherited{obj} {}
     virtual ~CStateControlHideLite() {}
 
     virtual void reinit();
@@ -29,7 +32,7 @@ public:
 
     virtual bool check_completion();
     virtual bool check_start_conditions();
-    virtual void remove_links(CObject* object) {}
+    void remove_links(CObject*) override {}
 
 private:
     void select_target_point();

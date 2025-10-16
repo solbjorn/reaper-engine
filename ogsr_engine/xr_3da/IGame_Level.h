@@ -103,7 +103,7 @@ public:
     virtual void net_Stop();
     virtual void net_Update() = 0;
 
-    virtual BOOL Load(u32 dwNum);
+    virtual BOOL Load(u32);
     virtual BOOL Load_GameSpecific_Before() { return TRUE; } // before object loading
     virtual BOOL Load_GameSpecific_After() { return TRUE; } // after object loading
 
@@ -111,8 +111,8 @@ public:
     virtual bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) = 0;
     virtual void Load_GameSpecific_CFORM(CDB::TRI* T, size_t count) = 0;
 
-    virtual void OnFrame(void);
-    virtual void OnRender(void);
+    void OnFrame() override;
+    void OnRender() override;
 
     // Main interface
     CObject* CurrentEntity(void) const { return pCurrentEntity; }

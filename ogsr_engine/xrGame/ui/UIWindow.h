@@ -57,10 +57,10 @@ public:
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual void OnMouseMove();
-    virtual void OnMouseScroll(float iDirection);
+    virtual void OnMouseScroll(float);
     virtual bool OnDbClick();
-    virtual bool OnMouseDown(int mouse_btn);
-    virtual void OnMouseUp(int mouse_btn);
+    virtual bool OnMouseDown(int);
+    virtual void OnMouseUp(int);
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
     virtual void UpdateFocus(bool = false);

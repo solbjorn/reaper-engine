@@ -11,7 +11,7 @@ class CPHReqBase : public virtual RTTI::Enable
 public:
     virtual ~CPHReqBase() {}
     virtual bool obsolete() const = 0;
-    virtual bool compare(const CPHReqComparerV* v) const { return false; }
+    virtual bool compare(const CPHReqComparerV*) const { return false; }
 };
 
 class CPHCondition : public CPHReqBase

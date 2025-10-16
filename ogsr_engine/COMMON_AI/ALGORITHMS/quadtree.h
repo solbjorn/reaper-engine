@@ -44,9 +44,21 @@ public:
         {
             if (!m_free)
                 createBlock();
+
             T* node = m_free;
             m_free = m_free->next();
-            ZeroMemory(node, sizeof(T));
+
+            if constexpr (std::is_same_v<T, CQuadNode>)
+            {
+                for (auto& neigh : node->m_neighbours)
+                    neigh = nullptr;
+            }
+            else
+            {
+                node->m_object = nullptr;
+                node->m_next = nullptr;
+            }
+
             return node;
         }
 

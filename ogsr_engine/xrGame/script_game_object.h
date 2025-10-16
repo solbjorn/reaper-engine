@@ -439,7 +439,7 @@ public:
     u32 memory_time(const CScriptGameObject& lua_game_object);
     Fvector memory_position(const CScriptGameObject& lua_game_object);
     CScriptGameObject* best_weapon();
-    void explode(u32 level_time);
+    void explode(u32);
     void explode_initiator(u16);
     bool is_exploded();
     bool is_ready_to_explode();
@@ -473,7 +473,7 @@ public:
     u32 add_sound(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, LPCSTR head_anim);
     void remove_sound(u32 internal_type);
     void set_sound_mask(u32 sound_mask);
-    void set_sight(SightManager::ESightType sight_type, const Fvector* vector3d, u32 dwLookOverDelay);
+    void set_sight(SightManager::ESightType sight_type, const Fvector* vector3d, u32);
     void set_sight(SightManager::ESightType sight_type, bool torso_look, bool path);
     void set_sight(SightManager::ESightType sight_type, const Fvector& vector3d, bool torso_look);
     void set_sight(SightManager::ESightType sight_type, const Fvector* vector3d);
@@ -798,8 +798,8 @@ public:
     // alpet: visual functions for CWeapon descedants
     _DECLARE_FUNCTION10(alife_object, CSE_ALifeDynamicObject*);
 
-    u32 play_hud_animation(LPCSTR anim, bool mix_in, u32 state, float speed);
-    u32 play_hud_animation(LPCSTR anim);
+    [[nodiscard]] u32 play_hud_animation(LPCSTR anim, bool mix_in, u32 state, float speed);
+    [[nodiscard]] u32 play_hud_animation(LPCSTR anim);
 
     void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&);
     void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
@@ -827,11 +827,9 @@ public:
     void stalker_disp_base(float, float);
 
     bool controller_psy_hit_active();
-
     bool can_kill_enemy();
 
     void setEnabled(bool value);
-
     void setVisible(bool value);
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

@@ -72,7 +72,7 @@ public:
     IC CCoverEvaluatorCloseToEnemy(CRestrictedObject* object);
     IC void initialize(const Fvector& start_position, bool fake_call = false);
     IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, float deviation = 0.f, const std::function<bool(const CCoverPoint*)>& = {});
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ protected:
 
 public:
     IC CCoverEvaluatorFarFromEnemy(CRestrictedObject* object);
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ public:
     IC CCoverEvaluatorAngle(CRestrictedObject* object);
     IC void setup(const Fvector& enemy_position, float min_enemy_distance, float max_enemy_distance, u32 level_vertex_id, const std::function<bool(const CCoverPoint*)>& = {});
     void initialize(const Fvector& start_position, bool fake_call = false);
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ protected:
 public:
     IC CCoverEvaluatorSafe(CRestrictedObject* object);
     IC void setup(float min_distance, const std::function<bool(const CCoverPoint*)>& = {});
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -187,7 +187,7 @@ protected:
 public:
     IC CCoverEvaluatorRandomGame(CRestrictedObject* object);
     void setup(GameGraph::_GRAPH_ID game_vertex_id, float max_distance, const std::function<bool(const CCoverPoint*)>& = {});
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
     virtual void finalize();
 };
 
@@ -210,7 +210,7 @@ private:
 public:
     IC CCoverEvaluatorAmbush(CRestrictedObject* object);
     void setup(const Fvector& my_position, const Fvector& enemy_position, float min_enemy_distance, const std::function<bool(const CCoverPoint*)>& = {});
-    void evaluate(const CCoverPoint* cover_point, float weight);
+    void evaluate(const CCoverPoint* cover_point, float);
 };
 
 #include "cover_evaluators_inline.h"

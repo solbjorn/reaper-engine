@@ -28,11 +28,11 @@ public:
 private:
     void Calculate();
     void LimbCalculate(SCalculateData& cd);
-    void ShiftObject(const SCalculateData cd[max_size]);
+    void ShiftObject();
     float StaticObjectShift(const SCalculateData cd[max_size]);
     float LegLengthShiftLimit(float current_shift, const SCalculateData cd[max_size]);
     bool PredictObjectShift(const SCalculateData cd[max_size]);
-    void ObjectShift(float static_shift, const SCalculateData cd[max_size]);
+    void ObjectShift(const SCalculateData cd[max_size]);
     void LimbUpdate(CIKLimb& L);
     void LimbSetup();
 

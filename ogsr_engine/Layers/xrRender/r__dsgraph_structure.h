@@ -146,12 +146,12 @@ struct R_dsgraph_structure
 
 private:
     // render primitives
-    void __fastcall sorted_L1(float key, R_dsgraph::_MatrixItemS& val);
-    void __fastcall water_node_ssr(float key, R_dsgraph::_MatrixItemS& val);
-    void __fastcall water_node(float key, R_dsgraph::_MatrixItemS& val);
-    void __fastcall hud_node(float key, R_dsgraph::_MatrixItemS& val);
-    void __fastcall pLandscape_0(float key, R_dsgraph::_MatrixItemS& val);
-    void __fastcall pLandscape_1(float key, R_dsgraph::_MatrixItemS& val);
+    void sorted_L1(float key, R_dsgraph::_MatrixItemS& val);
+    void water_node_ssr(float key, R_dsgraph::_MatrixItemS& val);
+    void water_node(float key, R_dsgraph::_MatrixItemS& val);
+    void hud_node(float key, R_dsgraph::_MatrixItemS& val);
+    void pLandscape_0(R_dsgraph::_MatrixItemS& val);
+    void pLandscape_1(R_dsgraph::_MatrixItemS& val);
 
 public:
     void render_graph(u32 _priority);

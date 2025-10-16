@@ -32,12 +32,13 @@ private:
     REQUEST_REGISTRY m_registry;
 
 protected:
-    void remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, bool no_warning = false);
+    void remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id);
     void merge_spawn_callbacks(CSpawnCallback& new_callback, CSpawnCallback& old_callback);
 
 public:
     IC CClientSpawnManager();
     virtual ~CClientSpawnManager();
+
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function, sol::object object);
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function);
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, const CALLBACK_TYPE& object_callback);
@@ -48,11 +49,13 @@ public:
     void callback(CObject* object);
     void callback(CSpawnCallback& spawn_callback, CObject* object);
     const CSpawnCallback* callback(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id) const;
-#ifdef DEBUG
     IC const REQUEST_REGISTRY& registry() const;
+
+#ifdef DEBUG
     void dump() const;
     void dump(ALife::_OBJECT_ID requesting_id) const;
-#endif // DEBUG
+#endif
+
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
 

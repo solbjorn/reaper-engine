@@ -26,7 +26,7 @@
 #include "PHDebug.h"
 #endif
 
-#pragma todo("KRodin: заменить на прямые вызовы вместо этих всратых ивентов!")
+// TODO: KRodin: заменить на прямые вызовы вместо этих всратых ивентов!
 
 void CActor::OnEvent(NET_Packet& P, u16 type)
 {

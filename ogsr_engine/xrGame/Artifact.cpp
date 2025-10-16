@@ -18,6 +18,9 @@
 #include "actor.h"
 #include "patrol_path_storage.h"
 
+#include "inventoryOwner.h"
+#include "Entity_alive.h"
+
 namespace
 {
 constexpr float FASTMODE_DISTANCE{50.f}; // distance to camera from sphere, when zone switches to fast update sequence
@@ -180,7 +183,7 @@ void CArtefact::UpdateCL()
         UpdateWorkload(Device.dwTimeDelta);
 }
 
-void CArtefact::UpdateWorkload(u32 dt)
+void CArtefact::UpdateWorkload(u32)
 {
     VERIFY(!ph_world->Processing());
     // particles - velocity
@@ -291,11 +294,8 @@ bool CArtefact::CanTake() const
     return !m_activationObj;
 }
 
-void CArtefact::Hide(bool now) { SwitchState(eHiding); }
-void CArtefact::Show(bool now) { SwitchState(eShowing); }
-
-#include "inventoryOwner.h"
-#include "Entity_alive.h"
+void CArtefact::Hide(bool) { SwitchState(eHiding); }
+void CArtefact::Show(bool) { SwitchState(eShowing); }
 
 void CArtefact::UpdateXForm()
 {
@@ -532,7 +532,7 @@ void SArtefactActivation::UpdateActivation()
     UpdateEffects();
 }
 
-void SArtefactActivation::PhDataUpdate(dReal step)
+void SArtefactActivation::PhDataUpdate(dReal)
 {
     if (m_cur_activation_state == eFlying)
     {

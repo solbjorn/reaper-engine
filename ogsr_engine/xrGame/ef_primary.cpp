@@ -229,26 +229,26 @@ float CPersonalIntelligenceFunction::ffGetValue()
 
 float CPersonalRelationFunction::ffGetValue()
 {
-#pragma todo("Dima to Dima : Implement relation function")
-    return (0);
+    // TODO: Dima to Dima : Implement relation function
+    return 0.0f;
 }
 
 float CPersonalGreedFunction::ffGetValue()
 {
-#pragma todo("Dima to Dima : Implement greed function")
-    return (0);
+    // TODO: Dima to Dima : Implement greed function
+    return 0.0f;
 }
 
 float CPersonalAggressivenessFunction::ffGetValue()
 {
-#pragma todo("Dima to Dima : Implement aggressiveness function")
-    return (0);
+    // TODO: Dima to Dima : Implement aggressiveness function
+    return 0.0f;
 }
 
 float CEnemyEquipmentCostFunction::ffGetValue()
 {
-#pragma todo("Dima to Dima : Implement enemy equipment cost function")
-    return (0);
+    // TODO: Dima to Dima : Implement enemy equipment cost function
+    return 0.0f;
 }
 
 float CEnemyRukzakWeightFunction::ffGetValue()
@@ -275,8 +275,8 @@ float CEnemyRukzakWeightFunction::ffGetValue()
 
 float CEnemyAnomalityFunction::ffGetValue()
 {
-#pragma todo("Dima to Dima : Implement enemy anomality function")
-    return (0);
+    // TODO: Dima to Dima : Implement enemy anomality function
+    return 0.0f;
 }
 
 float CGraphPointType0::ffGetValue() { return (ai().game_graph().vertex(ef_storage().alife().member_item()->m_tGraphID)->vertex_type()[0]); }
@@ -350,8 +350,8 @@ float CItemDeterioration::ffGetValue()
         if (weapon)
             return (1.f - weapon->GetCondition());
 
-#pragma todo("Dima to Dima : Append ItemDeterioration with non-ALife non-weapon branch")
-        return (0.f);
+        // TODO: Dima to Dima : Append ItemDeterioration with non-ALife non-weapon branch
+        return 0.0f;
     }
     else
     {
@@ -366,8 +366,8 @@ float CEquipmentPreference::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append EquipmentPreference with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append EquipmentPreference with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -395,8 +395,8 @@ float CMainWeaponPreference::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append MainWeaponPreference with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append MainWeaponPreference with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -411,8 +411,8 @@ float CEquipmentPreference::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append EquipmentPreference with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append EquipmentPreference with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -440,8 +440,8 @@ float CMainWeaponPreference::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append MainWeaponPreference with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append MainWeaponPreference with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -457,8 +457,8 @@ float CItemValue::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append ItemValue with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append ItemValue with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -473,8 +473,8 @@ float CWeaponAmmoCount::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append WeaponAmmoCount with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append WeaponAmmoCount with non-ALife branch
+        return 0.0f;
     }
     else
     {
@@ -489,8 +489,8 @@ float CWeaponAmmoCount::ffGetValue()
 {
     if (ef_storage().non_alife().member())
     {
-#pragma todo("Dima to Dima : Append WeaponAmmoCount with non-ALife branch")
-        return (0);
+        // TODO: Dima to Dima : Append WeaponAmmoCount with non-ALife branch
+        return 0.0f;
     }
     else
     {

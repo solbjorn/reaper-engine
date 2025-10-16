@@ -49,14 +49,14 @@ IC bool CNearestVertexPathManager::is_goal_reached(const _index_type& node_index
 }
 
 TEMPLATE_SPECIALIZATION
-IC _dist_type CNearestVertexPathManager::evaluate(const _index_type& node_index1, const _index_type& node_index2, const _Graph::const_iterator& /**i**/)
+inline _dist_type CNearestVertexPathManager::evaluate(const _index_type&, const _index_type&, const _Graph::const_iterator&)
 {
     VERIFY(this->graph);
     return (m_cell_dist);
 }
 
 TEMPLATE_SPECIALIZATION
-IC _dist_type CNearestVertexPathManager::estimate(const _index_type& node_index) const
+inline _dist_type CNearestVertexPathManager::estimate(const _index_type&) const
 {
     VERIFY(this->graph);
     return (_dist_type(0));
@@ -82,7 +82,7 @@ IC bool CNearestVertexPathManager::is_limit_reached(const _iteration_type iterat
 
 TEMPLATE_SPECIALIZATION
 template <typename T>
-IC void CNearestVertexPathManager::create_path(T& vertex)
+inline void CNearestVertexPathManager::create_path(T&)
 {}
 
 #undef TEMPLATE_SPECIALIZATION

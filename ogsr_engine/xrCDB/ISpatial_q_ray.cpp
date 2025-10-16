@@ -1,11 +1,11 @@
 #include "stdafx.h"
+
 #include "xrcpuid.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
 #include <xmmintrin.h>
-#pragma warning(pop)
 
+namespace
+{
 struct alignas(16) vec_t : public Fvector3
 {
     float pad;
@@ -48,7 +48,8 @@ struct alignas(16) ray_t
     }
 };
 
-ICF u32& uf(float& x) { return (u32&)x; }
+constexpr ICF u32 uf(const float& x) { return std::bit_cast<u32>(x); }
+
 ICF BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
 {
     Fvector MaxT;
@@ -162,9 +163,9 @@ ICF BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fve
 #define rotatelps(ps) _mm_shuffle_ps((ps), (ps), 0x39) // a,b,c,d -> b,c,d,a
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
-static constexpr auto flt_plus_inf = std::numeric_limits<float>::infinity();
-alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf},
-                                   ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
+constexpr auto flt_plus_inf{std::numeric_limits<float>::infinity()};
+constexpr float __declspec(align(16)) ps_cst_plus_inf[]{flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf};
+constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
 ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 {
@@ -275,10 +276,10 @@ public:
             box.min.set	(n_C.x-n_vR, n_C.y-n_vR, n_C.z-n_vR);	box.min.pad = 0;
             box.max.set	(n_C.x+n_vR, n_C.y+n_vR, n_C.z+n_vR);	box.max.pad = 0;
         */
-        __m128 NR = _mm_load_ss((float*)&n_R);
-        __m128 NC = _mm_unpacklo_ps(_mm_load_ss((float*)&n_C.x), _mm_load_ss((float*)&n_C.y));
+        __m128 NR = _mm_load_ss((const float*)&n_R);
+        __m128 NC = _mm_unpacklo_ps(_mm_load_ss((const float*)&n_C.x), _mm_load_ss((const float*)&n_C.y));
         NR = _mm_add_ss(NR, NR);
-        NC = _mm_movelh_ps(NC, _mm_load_ss((float*)&n_C.z));
+        NC = _mm_movelh_ps(NC, _mm_load_ss((const float*)&n_C.z));
         NR = _mm_shuffle_ps(NR, NR, _MM_SHUFFLE(1, 0, 0, 0));
 
         _mm_store_ps((float*)&box.min, _mm_sub_ps(NC, NR));
@@ -325,6 +326,7 @@ public:
                     {
                     case Fsphere::rpOriginInside: range = dist < range ? dist : range; break;
                     case Fsphere::rpOriginOutside: range = dist; break;
+                    default: NODEFAULT;
                     }
                     range2 = range * range;
                 }
@@ -352,6 +354,7 @@ public:
         }
     }
 };
+} // namespace
 
 void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range)
 {

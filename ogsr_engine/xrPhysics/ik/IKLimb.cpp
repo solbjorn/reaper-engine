@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "IKLimb.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "GameObject.h"
@@ -8,7 +9,10 @@
 #include "MathUtils.h"
 #include "matrix_utils.h"
 #include "pose_extrapolation.h"
+
 #include "buffer_vector.h"
+#include "dump_string.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
@@ -19,32 +23,20 @@ int ik_blend_free_foot = 1;
 int ik_local_blending = 0;
 int ik_collide_blend = 0;
 
-constexpr Matrix Midentity = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}; //. in XGlobal
+namespace
+{
+constexpr Fmatrix xm2im{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1};
 
-constexpr Matrix IKLocalJoint = {0, 0, 1, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 1}; //. in XGlobal
-constexpr Fmatrix XLocalJoint = {0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-
-constexpr Fmatrix xm2im = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1};
-
-constexpr Fvector xgproj_axis = {0, 1, 0};
-constexpr Fvector xgpos_axis = {0, 0, 1};
-
-constexpr Fvector xlproj_axis = {1, 0, 0};
-constexpr Fvector xlpos_axis = {0, 0, 1};
 typedef float IVektor[3];
 
-constexpr IVektor lproj_vector = {0, 0, 1};
-constexpr IVektor lpos_vector = {-1, 0, 0};
-
-constexpr IVektor gproj_vector = {0, 0, 1}; //. in XGlobal
-constexpr IVektor gpos_vector = {1, 0, 0};
-
-// const float		ik_timedelta_eps = EPS;
+constexpr IVektor gproj_vector{0, 0, 1}; //. in XGlobal
+constexpr IVektor gpos_vector{1, 0, 0};
 
 IC bool null_frame() { return !!Device.Paused(); }
-IC const Fmatrix& cvm(const Matrix& IM) { return *((Fmatrix*)(&IM)); }
+
 constexpr string256 ik_bones[4] = {"bip01_l_thigh,bip01_l_calf,bip01_l_foot,bip01_l_toe0", "bip01_r_thigh,bip01_r_calf,bip01_r_foot,bip01_r_toe0",
                                    "bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0", "bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0"};
+} // namespace
 
 IC Fmatrix& SCalculateData::goal(Fmatrix& g) const
 {
@@ -54,10 +46,10 @@ IC Fmatrix& SCalculateData::goal(Fmatrix& g) const
 }
 
 CIKLimb::CIKLimb() { Invalidate(); }
-CIKLimb::CIKLimb(const CIKLimb& l)
-    : m_limb(l.m_limb), m_K(l.m_K), m_foot(l.m_foot),
 
-      m_id(l.m_id), m_collide(l.m_collide), collide_data(l.collide_data), anim_state(l.anim_state), collider(l.collider), state_predict(l.state_predict)
+CIKLimb::CIKLimb(const CIKLimb& l)
+    : m_limb{l.m_limb}, m_K{l.m_K}, m_foot{l.m_foot}, collider{l.collider}, m_id{l.m_id}, m_collide{l.m_collide}, collide_data{l.collide_data}, anim_state{l.anim_state},
+      state_predict{l.state_predict}
 {
     m_bones[0] = l.m_bones[0];
     m_bones[1] = l.m_bones[1];
@@ -71,15 +63,6 @@ CIKLimb::CIKLimb(const CIKLimb& l)
 #ifdef DEBUG
     dbg_disabled = l.dbg_disabled;
 #endif
-}
-
-CIKLimb& CIKLimb::operator=(const CIKLimb& l)
-{
-    R_ASSERT(false);
-    // CIKLimb temp ( l );
-    // std::swap( *this, temp );
-    // sv_state	= ik_limb_state( this, l.sv_state );
-    return *this;
 }
 
 void CIKLimb::Invalidate()
@@ -105,18 +88,19 @@ void XM_IM(const Fmatrix& XM, Matrix& IM)
     XM_IM(XM, *((Fmatrix*)(&IM)));
 }
 
-void IM_XM(const Matrix& IM, Fmatrix& XM) { XM.mul_43(xm2im, *((Fmatrix*)(&IM))); }
+void IM_XM(const Matrix& IM, Fmatrix& XM) { XM.mul_43(xm2im, *((const Fmatrix*)(&IM))); }
 
 void XM2IM(const Fmatrix& XM, Fmatrix& IM)
 {
     // IM=xm2im*XM*xm2im^-1
     Fmatrix tmp;
+
     tmp.mul_43(xm2im, XM);
     IM.mul_43(tmp, xm2im);
 }
 
 void XM2IM(const Fmatrix& XM, Matrix& IM) { XM2IM(XM, *((Fmatrix*)(&IM))); }
-void IM2XM(const Matrix& IM, Fmatrix& XM) { XM2IM(*((Fmatrix*)(&IM)), XM); }
+void IM2XM(const Matrix& IM, Fmatrix& XM) { XM2IM(*((const Fmatrix*)(&IM)), XM); }
 void XV2IV(const Fvector& XV, IVektor& IV) { xm2im.transform_dir(cast_fv(IV), XV); }
 void IV2XV(const IVektor& IV, Fvector& XV) { xm2im.transform_dir(XV), cast_fv(IV); }
 
@@ -129,13 +113,14 @@ void CIKLimb::ApplyState(SCalculateData& cd)
     cd.do_collide = m_collide && cd.do_collide;
     cd.state.foot_step = anim_state.step() && collide_data.collided;
 }
+
 void CIKLimb::SetGoal(SCalculateData& cd)
 {
     SetAnimGoal(cd);
     SIKCollideData cld;
     if (cd.do_collide)
     {
-        GetPickDir(collide_data.m_pick_dir, cd);
+        GetPickDir(collide_data.m_pick_dir);
         cld = collide_data;
     }
     transform(cd.state.b2tob3, 2, 3);
@@ -147,6 +132,7 @@ void CIKLimb::SetGoal(SCalculateData& cd)
 #endif
     SetNewGoal(cld, cd);
 }
+
 void CIKLimb::SolveBones(SCalculateData& cd)
 {
     if (cd.apply)
@@ -159,27 +145,6 @@ Fmatrix& CIKLimb::transform(Fmatrix& m, u16 bone0, u16 bone1) const
     VERIFY(bone1 < 4);
     m.mul_43(Fmatrix().invert(Kinematics()->LL_GetTransform(m_bones[bone0])), Kinematics()->LL_GetTransform(m_bones[bone1]));
     return m;
-}
-
-float CIKLimb::SwivelAngle(const Fmatrix& ihip, const SCalculateData& cd)
-{
-    Fvector foot;
-    foot.set(Kinematics()->LL_GetTransform(m_bones[2]).c); // use "0" channal only?
-    ihip.transform_tiny(foot);
-    xm2im.transform_tiny(foot);
-
-    Fvector knee;
-    knee.set(Kinematics()->LL_GetTransform(m_bones[1]).c);
-
-    Fmatrix ih;
-    CBoneData& BD = Kinematics()->LL_GetData(m_bones[0]);
-    ih.mul_43(Kinematics()->LL_GetTransform(BD.GetParentID()), BD.bind_transform);
-    ih.invert();
-
-    ih.transform_tiny(knee);
-    xm2im.transform_tiny(knee);
-
-    return m_limb.KneeAngle(cast_fp(foot), cast_fp(knee));
 }
 
 void CIKLimb::GetKnee(Fvector& knee, const SCalculateData& cd) const
@@ -241,8 +206,9 @@ void CIKLimb::Solve(SCalculateData& cd)
         DBG_DrawPoint(dbg_pos, 0.02f, color_xrgb(255, 255, 255));
     }
 #endif
+
     Fmatrix ihip;
-    GetHipInvert(ihip, cd);
+    GetHipInvert(ihip);
     ihip.transform_tiny(pos);
     xm2im.transform_tiny(pos);
 
@@ -451,15 +417,10 @@ IC void get_blend_speed_limits(float& l, float& a, const SCalculateData& cd, con
     // l = 0.01f; a = 0.01f;
 }
 
-#ifdef DEBUG
-static Fmatrix* dm = 0;
-void print_det()
+namespace
 {
-    if (dm)
-        Msg("det : %f", DET(*dm));
+float det_tolerance{0.2f};
 }
-float det_tolerance = 0.2f;
-#endif
 
 IC void reset_blend_speed(SCalculateData& cd)
 {
@@ -834,8 +795,9 @@ void CIKLimb::ToeTimeDiff(Fvector& v, const SCalculateData& cd) const
 }
 
 void CIKLimb::ToeTimeDiffPredict(Fvector& v) const { v.set(0, -1, 0); }
+
 static const float pick_dir_mix_in_factor = 0.01f;
-static const float pick_dir_mix_in_doun_factor = 0.01f;
+
 void pick_dir_update(Fvector& v, const Fvector& previous_dir, const Fvector& new_dir)
 {
     Fvector dir = new_dir;
@@ -858,42 +820,10 @@ void pick_dir_update(Fvector& v, const Fvector& previous_dir, const Fvector& new
     VERIFY(_valid(v));
 }
 
-IC void CIKLimb::GetPickDir(Fvector& v, SCalculateData& cd) const
-{
-    v.set(0, -1, 0);
-    /*
-        if( !state_valide( sv_state ) )
-        {
-            cd.state.pick = v;
-            VERIFY( _valid( v ) );
-    #ifdef	DEBUG
-            if( ph_dbg_draw_mask.test( phDbgIK ) )
-                Msg( "prev state not valide" );
-    #endif
-            return;
-        }
-    //
-        Fvector dir;
-        ToeTimeDiff( dir, cd );
-
-        Fvector lpick; sv_state.pick( lpick );
-
-        pick_dir_update( v, lpick, dir );
-
-        cd.state.pick =v;
-
-    #ifdef DEBUG
-        if( ph_dbg_draw_mask.test( phDbgDrawIKGoal )  )
-        {
-            Fvector p ; m_foot.ToePosition( p );
-            cd.state.anim_pos.transform_tiny( p );
-            DBG_DrawLine( p, Fvector().add( p, Fvector( ).mul( cd.state.pick, 1 ) ), color_xrgb( 255, 0, 255 ) );
-        }
-    #endif
-    */
-}
+IC void CIKLimb::GetPickDir(Fvector& v) const { v.set(0, -1, 0); }
 
 void CIKLimb::AnimGoal(Fmatrix& gl) { Kinematics()->Bone_GetAnimPos(gl, m_bones[m_foot.ref_bone()], 1 << 0, false); }
+
 void CIKLimb::SetAnimGoal(SCalculateData& cd)
 {
     AnimGoal(cd.state.anim_pos);
@@ -922,7 +852,7 @@ void CIKLimb::Update(CGameObject* O, const CBlend* b, const extrapolation::point
     // Fmatrix foot = Fmatrix().mul_43( Fmatrix().invert( O->XFORM() ) ,sv_state.goal( m ).get() );
     // m_foot.ref_bone_to_foot( foot )
 
-    m_foot.Collide(collide_data, collider, anim_foot, O->XFORM(), O, anim_state.step());
+    m_foot.Collide(collide_data, collider, anim_foot, O->XFORM(), O);
 
     step_predict(O, b, state_predict, object_pose_extrapolation);
 }
@@ -950,14 +880,16 @@ float CIKLimb::get_time_to_step_begin(const CBlend& B) const
 
 struct ssaved_callback
 {
-    ssaved_callback() = default;
+    ssaved_callback() = delete;
+    ssaved_callback(CBoneInstance& bi)
+        : callback{bi.callback()}, callback_param{bi.callback_param()}, callback_overwrite{bi.callback_overwrite()}, callback_type{bi.callback_type()}, _bi{bi}
+    {}
+
     ssaved_callback(ssaved_callback&) = delete;
     ssaved_callback& operator=(ssaved_callback&) = delete;
 
-    ssaved_callback(CBoneInstance& bi)
-        : _bi(bi), callback(bi.callback()), callback_param(bi.callback_param()), callback_overwrite(bi.callback_overwrite()), callback_type(bi.callback_type())
-    {}
     void restore() { _bi.set_callback(callback_type, callback, callback_param, callback_overwrite); }
+
     const BoneCallback callback;
     void* callback_param;
     const BOOL callback_overwrite;
@@ -1039,7 +971,8 @@ void CIKLimb::step_predict(CGameObject* O, const CBlend* b, ik_limb_state_predic
         VERIFY(ref_b == 3);
         m_ref_b = toe;
     }
-    m_foot.Collide(cld, state.collider, m_ref_b, footstep_object, O, true);
+
+    m_foot.Collide(cld, state.collider, m_ref_b, footstep_object, O);
     const Fmatrix gl_goal = Fmatrix().mul_43(footstep_object, m_ref_b);
 
     ik_goal_matrix gl_cl_goal;
@@ -1064,7 +997,7 @@ void CIKLimb::step_predict(CGameObject* O, const CBlend* b, ik_limb_state_predic
     m_foot.set_ref_bone(ref_b_save);
 }
 
-Fmatrix& CIKLimb::GetHipInvert(Fmatrix& ihip, const SCalculateData& cd)
+Fmatrix& CIKLimb::GetHipInvert(Fmatrix& ihip)
 {
     Fmatrix H;
     CBoneData& bd = Kinematics()->LL_GetData(m_bones[0]);
@@ -1075,7 +1008,7 @@ Fmatrix& CIKLimb::GetHipInvert(Fmatrix& ihip, const SCalculateData& cd)
     return ihip;
 }
 
-Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, const SCalculateData& cd)
+Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, [[maybe_unused]] const SCalculateData& cd)
 {
 #ifdef DEBUG
     const Fmatrix& obj = *cd.m_obj;
@@ -1099,7 +1032,7 @@ Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, const SCalculateData& cd)
             }
         }
         Fmatrix DBH;
-        GetHipInvert(DBH, cd);
+        GetHipInvert(DBH);
         DBH.invert();
         DBGG.mul_43(obj, DBH);
         DBG_DrawMatrix(DBGG, 0.2f);
@@ -1107,7 +1040,7 @@ Matrix& CIKLimb::Goal(Matrix& gl, const Fmatrix& xm, const SCalculateData& cd)
 #endif
 
     Fmatrix H;
-    GetHipInvert(H, cd);
+    GetHipInvert(H);
     Fmatrix G;
     G.mul_43(H, xm);
     XM2IM(G, gl);
@@ -1134,28 +1067,25 @@ void CIKLimb::CalculateBones(SCalculateData& cd)
     sv2.restore();
 }
 
-void DBG_DrawRotationLimitsY(const Fmatrix& start, float ang, float l, float h)
+namespace
 {
 #ifdef DEBUG
+void DBG_DrawRotationLimitsY(const Fmatrix& start, float ang, float l, float h)
+{
     DBG_DrawRotationY(start, ang - EPS, ang + EPS, 0.15f, color_xrgb(0, 255, 0), false, 1);
     DBG_DrawRotationY(start, l, h, 0.15f, color_argb(50, 0, 250, 0), true);
-#endif // DEBUG
 }
 
 void DBG_DrawRotationLimitsZ(const Fmatrix& start, float ang, float l, float h)
 {
-#ifdef DEBUG
     DBG_DrawRotationZ(start, ang - EPS, ang + EPS, 0.15f, color_xrgb(0, 0, 255), false, 1);
     DBG_DrawRotationZ(start, l, h, 0.15f, color_argb(50, 0, 0, 250), true);
-#endif // DEBUG
 }
 
 void DBG_DrawRotationLimitsX(const Fmatrix& start, float ang, float l, float h)
 {
-#ifdef DEBUG
     DBG_DrawRotationX(start, ang + EPS, ang - EPS, 0.15f, color_xrgb(255, 0, 0), false, 1);
     DBG_DrawRotationX(start, l, h, 0.15f, color_argb(50, 255, 0, 0), true);
-#endif // DEBUG
 }
 
 void DBG_DrawRotation3(const Fmatrix& start, const float angs[7], const AngleInt limits[7], u16 y, u16 z, u16 x)
@@ -1167,6 +1097,7 @@ void DBG_DrawRotation3(const Fmatrix& start, const float angs[7], const AngleInt
     DBGG.mulB_43(Fmatrix().rotateZ(-angs[z]));
     DBG_DrawRotationLimitsX(DBGG, -angs[x], -limits[x].Low(), -limits[x].High());
 }
+#endif
 
 IC void ang_evaluate(Fmatrix& M, const float ang[3])
 {
@@ -1182,6 +1113,7 @@ IC void ang_evaluate(Fmatrix& M, const float ang[3])
     M.mul_43(Fmatrix().mul_43(ry, rz), rx);
     VERIFY(_valid(M));
 }
+} // namespace
 
 IC void CIKLimb::get_start(Fmatrix& start, SCalculateData& D, u16 bone)
 {

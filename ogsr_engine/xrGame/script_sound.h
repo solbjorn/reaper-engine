@@ -25,6 +25,7 @@ public:
 
     CScriptSound(LPCSTR caSoundName, ESoundTypes game_type = SOUND_TYPE_NO_SOUND, esound_type kind = st_Effect);
     virtual ~CScriptSound();
+
     IC u32 Length();
     IC void Play(CScriptGameObject* object);
     IC void Play(CScriptGameObject* object, float delay);
@@ -44,10 +45,10 @@ public:
     void SetMinDistance(const float fMinDistance);
     IC void SetMaxDistance(const float fMaxDistance);
     Fvector GetPosition() const;
-    IC const float GetFrequency() const;
-    IC const float GetMinDistance() const;
-    IC const float GetMaxDistance() const;
-    IC const float GetVolume() const;
+    inline float GetFrequency() const;
+    inline float GetMinDistance() const;
+    inline float GetMaxDistance() const;
+    inline float GetVolume() const;
     IC bool IsPlaying() const;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

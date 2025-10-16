@@ -1,8 +1,5 @@
-
 #ifndef UI_ANIMATED_STATIC_H_
 #define UI_ANIMATED_STATIC_H_
-
-#pragma once
 
 #include "UIStatic.h"
 
@@ -12,26 +9,32 @@ class CUIAnimatedStatic : public CUIStatic
 
 private:
     typedef CUIStatic inherited;
+
     // Количекство кадров анимации
-    u32 m_uFrameCount;
+    u32 m_uFrameCount{};
     // Текущий фрейм
-    u32 m_uCurFrame;
+    u32 m_uCurFrame{std::numeric_limits<u32>::max()};
     // Размеры текстуры с анимацией в кадрах
-    u32 m_uAnimRows{}, m_uAnimCols{};
+    u32 m_uAnimCols{std::numeric_limits<u32>::max()};
     // Размеры кадра на тектуре
-    u32 m_uFrameWidth, m_uFrameHeight;
+    u32 m_uFrameWidth{};
+    u32 m_uFrameHeight{};
     // Время показа всей анимации в ms.
-    u32 m_uAnimationDuration;
+    u32 m_uAnimationDuration{};
     // Время прошедшее с начала анимации
-    u32 m_uTimeElapsed;
+    u32 m_uTimeElapsed{};
     // флаг-признак необходимости пересчета статичных параметров анимации
-    bool m_bParamsChanged;
+    bool m_bParamsChanged{true};
     // Признак проигрывания анимации
-    bool m_bPlaying;
+    bool m_bPlaying{};
 
-    Fvector2 m_pos;
+public:
+    // Флаг-признак циклического проигрывания
+    bool m_bCyclic{true};
 
-    u32 m_prevTime;
+private:
+    u32 m_prevTime{};
+    Fvector2 m_pos{};
 
     // Инициализация первого кадра
     // Params:	frameNum	- номер кадра: [0..m_uFrameCount)
@@ -76,8 +79,6 @@ public:
         m_uTimeElapsed = delta;
     }
     void SetAnimPos(float pos);
-    // Флаг-признак циклического проигрывания
-    bool m_bCyclic;
 
     virtual void Update();
 };

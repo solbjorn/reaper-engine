@@ -158,13 +158,7 @@ void CUITextBanner::SetTextColor(u32 cl) { m_Cl = cl; }
 
 //////////////////////////////////////////////////////////////////////////
 
-u32 CUITextBanner::GetTextColor()
-{
-    void SetTextColor(u32 cl);
-    u32 GetTextColor();
-
-    return m_Cl;
-}
+u32 CUITextBanner::GetTextColor() { return m_Cl; }
 
 //////////////////////////////////////////////////////////////////////////
 

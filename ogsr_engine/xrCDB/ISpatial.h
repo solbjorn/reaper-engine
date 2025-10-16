@@ -66,7 +66,7 @@ class Sound;
 class IRenderable;
 class IRender_Light;
 
-class ISpatial : public virtual RTTI::Enable
+class XR_NOVTABLE ISpatial : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ISpatial);
 
@@ -76,16 +76,21 @@ public:
         Fsphere sphere{};
         u32 type{};
         Fvector node_center{}; // Cached node center for TBV optimization
-        float node_radius{}; // Cached node bounds for TBV optimization
         ISpatial_NODE* node_ptr{}; // Cached parent node for "empty-members" optimization
+        float node_radius{}; // Cached node bounds for TBV optimization
         sector_id_t sector_id{INVALID_SECTOR_ID};
-        ISpatial_DB* space{}; // allow different spaces
+        ISpatial_DB* space; // allow different spaces
+
+        constexpr _spatial(ISpatial_DB* ins) : space{ins} {}
     } spatial;
 
 private:
     void spatial_updatesector_internal(sector_id_t sector_id);
 
 public:
+    ISpatial(ISpatial_DB* space) : spatial{space} {}
+    virtual ~ISpatial();
+
     bool spatial_inside();
     virtual void spatial_register();
     void spatial_unregister();
@@ -104,9 +109,6 @@ public:
     virtual Feel::Sound* dcast_FeelSound() { return nullptr; }
     virtual IRenderable* dcast_Renderable() { return nullptr; }
     virtual IRender_Light* dcast_Light() { return nullptr; }
-
-    ISpatial(ISpatial_DB* space) { spatial.space = space; }
-    virtual ~ISpatial();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -184,14 +186,13 @@ public:
     {
         O_ONLYFIRST = (1 << 0),
         O_ONLYNEAREST = (1 << 1),
-        O_ORDERED = (1 << 2),
     };
 
     // query
     void q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range);
     void q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_or, const Fvector& _center, const Fvector& _size);
     void q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_or, const Fvector& _center, const float _radius);
-    void q_frustum(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_or, const CFrustum& _frustum);
+    void q_frustum(xr_vector<ISpatial*>& R, u32 _mask_or, const CFrustum& _frustum);
 };
 
 extern ISpatial_DB* g_SpatialSpace;

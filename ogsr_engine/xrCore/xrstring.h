@@ -5,7 +5,7 @@
 #include <absl/hash/hash.h>
 
 //////////////////////////////////////////////////////////////////////////
-#pragma warning(disable : 4200)
+
 struct str_value
 {
     u32 dwReference;
@@ -14,8 +14,6 @@ struct str_value
     str_value* next;
     char value[];
 };
-
-#pragma warning(default : 4200)
 
 struct str_container_impl;
 
@@ -116,8 +114,8 @@ public:
     bool operator!() const { return !p_; }
     const char* operator*() const { return p_ ? p_->value : nullptr; }
 
-    // Чтобы можно было легко кастить в std::string_view как и все остальные строки
-    operator absl::string_view() const { return absl::string_view(data()); }
+    // Чтобы можно было легко кастить в absl::string_view как и все остальные строки
+    XR_SYSV operator absl::string_view() const { return p_ ? absl::string_view{p_->value} : absl::string_view{}; }
 
     const char* c_str() const { return p_ ? p_->value : nullptr; }
 
@@ -165,7 +163,7 @@ public:
     template <typename H>
     friend H AbslHashValue(H h, const shared_str& rhs)
     {
-        return H::combine(std::move(h), (absl::string_view)rhs);
+        return H::combine(std::move(h), absl::string_view{rhs});
     }
 };
 
@@ -212,7 +210,6 @@ using string_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
 namespace xr_string_utils
 {
-
 template <typename T>
 inline bool SplitFilename(T& str)
 {
@@ -255,7 +252,6 @@ inline void strlwr(T& data)
 {
     std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
 }
-
 } // namespace xr_string_utils
 
 #endif

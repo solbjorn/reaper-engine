@@ -7,7 +7,7 @@
 constexpr inline u32 CFS_CompressMark{1ul << 31ul};
 constexpr inline u32 CFS_HeaderChunkID{666};
 
-void VerifyPath(const std::string_view path);
+XR_SYSV void VerifyPath(absl::string_view path);
 
 #ifdef DEBUG
 extern u32 g_file_mapped_memory;
@@ -168,7 +168,7 @@ public:
     virtual ~IReaderBase() {}
 
     IC implementation_type& impl() { return *(implementation_type*)this; }
-    IC const implementation_type& impl() const { return *(implementation_type*)this; }
+    IC const implementation_type& impl() const { return *(const implementation_type*)this; }
 
     IC BOOL eof() const { return impl().elapsed() <= 0; }
 

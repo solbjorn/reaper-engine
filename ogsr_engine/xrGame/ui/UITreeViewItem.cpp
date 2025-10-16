@@ -22,8 +22,6 @@ namespace
 // Смещение относительно родителя
 constexpr int subShift{1};
 constexpr const char* treeItemBackgroundTexture = "ui\\ui_pda_over_list";
-// Цвет непрочитанного элемента
-constexpr u32 unreadColor{0xff00ff00};
 } // namespace
 
 //////////////////////////////////////////////////////////////////////////

@@ -19,17 +19,17 @@ class CPHReqComparerV : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPHReqComparerV);
 
 public:
-    virtual bool compare(const CPHScriptCondition* v) const { return false; }
-    virtual bool compare(const CPHScriptAction* v) const { return false; }
-    virtual bool compare(const CPHScriptObjectCondition* v) const { return false; }
-    virtual bool compare(const CPHScriptObjectAction* v) const { return false; }
-    virtual bool compare(const CPHScriptObjectConditionN* v) const { return false; }
-    virtual bool compare(const CPHScriptObjectActionN* v) const { return false; }
-    virtual bool compare(const CPHScriptGameObjectAction* v) const { return false; }
-    virtual bool compare(const CPHScriptGameObjectCondition* v) const { return false; }
-    virtual bool compare(const CPHConstForceAction* v) const { return false; }
+    virtual bool compare(const CPHScriptCondition*) const { return false; }
+    virtual bool compare(const CPHScriptAction*) const { return false; }
+    virtual bool compare(const CPHScriptObjectCondition*) const { return false; }
+    virtual bool compare(const CPHScriptObjectAction*) const { return false; }
+    virtual bool compare(const CPHScriptObjectConditionN*) const { return false; }
+    virtual bool compare(const CPHScriptObjectActionN*) const { return false; }
+    virtual bool compare(const CPHScriptGameObjectAction*) const { return false; }
+    virtual bool compare(const CPHScriptGameObjectCondition*) const { return false; }
+    virtual bool compare(const CPHConstForceAction*) const { return false; }
 
-    virtual bool compare(const CPHParticlesPlayCall* v) const { return false; }
-    virtual bool compare(const CPHParticlesCondition* v) const { return false; }
-    virtual bool compare(const CPHFindParticlesComparer* v) const { return false; }
+    virtual bool compare(const CPHParticlesPlayCall*) const { return false; }
+    virtual bool compare(const CPHParticlesCondition*) const { return false; }
+    virtual bool compare(const CPHFindParticlesComparer*) const { return false; }
 };

@@ -20,7 +20,7 @@ public:
         return ret;
     }
 
-    void push_back(T& val) { emplace_back() = val; }
+    void push_back(const T& val) { emplace_back() = val; }
 
     IC T& operator[](int i) { return array[position(i)]; }
     IC const T& operator[](int i) const { return array[position(i)]; }

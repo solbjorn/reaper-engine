@@ -12,7 +12,7 @@
 
 class CObject;
 
-class CDangerLocation : public intrusive_base
+class XR_NOVTABLE CDangerLocation : public intrusive_base
 {
     RTTI_DECLARE_TYPEINFO(CDangerLocation, intrusive_base);
 
@@ -20,18 +20,17 @@ public:
     typedef MemorySpace::squad_mask_type squad_mask_type;
     typedef _flags<squad_mask_type> flags;
 
-public:
     u32 m_level_time;
     u32 m_interval;
     float m_radius;
     flags m_mask;
 
-public:
-    IC bool operator==(const Fvector& position) const;
-    virtual bool operator==(const CObject* object) const;
+    inline bool operator==(const Fvector& position) const;
+    inline virtual bool operator==(const CObject*) const;
+
     virtual bool useful() const;
     virtual const Fvector& position() const = 0;
-    IC const flags& mask() const;
+    inline const flags& mask() const;
 };
 
 #include "danger_location_inline.h"

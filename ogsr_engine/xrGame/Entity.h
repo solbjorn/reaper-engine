@@ -3,6 +3,7 @@
 #include "physicsshellholder.h"
 #include "damage_manager.h"
 #include "entitycondition.h"
+
 // refs
 class CCameraBase;
 class C3DSound;
@@ -13,7 +14,7 @@ class CWeaponList;
 class CPHMovementControl;
 class CHudItem;
 
-class CEntity : public CPhysicsShellHolder, public CDamageManager
+class XR_NOVTABLE CEntity : public CPhysicsShellHolder, public CDamageManager
 {
     RTTI_DECLARE_TYPEINFO(CEntity, CPhysicsShellHolder, CDamageManager);
 
@@ -61,6 +62,7 @@ public:
     // General
     CEntity();
     virtual ~CEntity();
+
     virtual DLL_Pure* _construct();
     virtual CEntity* cast_entity() { return this; }
 
@@ -99,15 +101,14 @@ public:
     virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) = 0;
     virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) = 0;
 
-    virtual void Die(CObject* who);
-    //			void			KillEntity			(CObject* who);
+    virtual void Die(CObject*);
     void KillEntity(u16 whoID);
 
     // Events
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     virtual BOOL IsVisibleForHUD() { return g_Alive(); }
-    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool for_cursor = false) {}
+    virtual void g_fireParams(CHudItem*, Fvector&, Fvector&, const bool = false) {}
 
     // time of entity death
     u32 m_level_death_time;
@@ -127,6 +128,6 @@ public:
     virtual void on_after_change_team();
 
 private:
-    bool m_registered_member;
+    bool m_registered_member{};
 };
 XR_SOL_BASE_CLASSES(CEntity);

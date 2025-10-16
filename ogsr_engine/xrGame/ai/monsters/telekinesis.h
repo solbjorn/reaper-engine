@@ -76,6 +76,6 @@ protected:
 
 private:
     // обновление на шагах физики
-    virtual void PhDataUpdate(dReal step);
-    virtual void PhTune(dReal step);
+    void PhDataUpdate(dReal) override;
+    void PhTune(dReal) override;
 };

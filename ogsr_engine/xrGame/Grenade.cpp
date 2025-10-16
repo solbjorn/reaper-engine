@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "grenade.h"
 #include "PhysicsShell.h"
 #include "entity.h"
@@ -14,14 +15,18 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 
-const float default_grenade_detonation_threshold_hit = 100;
-CGrenade::CGrenade(void)
+namespace
+{
+constexpr float default_grenade_detonation_threshold_hit{100.0f};
+}
+
+CGrenade::CGrenade()
 {
     m_destroy_callback = CallMe::Delegate<void(CGrenade*)>();
     m_eSoundCheckout = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
 }
 
-CGrenade::~CGrenade(void) { HUD_SOUND::DestroySound(sndCheckout); }
+CGrenade::~CGrenade() { HUD_SOUND::DestroySound(sndCheckout); }
 
 void CGrenade::Load(LPCSTR section)
 {
@@ -40,6 +45,7 @@ void CGrenade::Hit(SHit* pHDS)
         CExplosive::SetCurrentParentID(pHDS->who->ID());
         Destroy();
     }
+
     inherited::Hit(pHDS);
 }
 
@@ -289,7 +295,7 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 
 BOOL CGrenade::UsedAI_Locations()
 {
-#pragma todo("Dima to Yura : It crashes, because on net_Spawn object doesn't use AI locations, but on net_Destroy it does use them")
+    // TODO: Dima to Yura : It crashes, because on net_Spawn object doesn't use AI locations, but on net_Destroy it does use them
     return TRUE; // m_dwDestroyTime == 0xffffffff;
 }
 

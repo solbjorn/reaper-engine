@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_effector.h"
 #include "actor.h"
 #include "ActorEffector.h"
@@ -18,11 +19,10 @@ BOOL CScriptEffector::Process(SPPInfo& pp)
         return !!inherited::Process(pp);
 
     bool ret = op->second(this, pp);
-    inherited::Process(pp);
+    std::ignore = inherited::Process(pp);
 
     return ret;
 }
 
 void CScriptEffector::Add() { Actor()->Cameras().AddPPEffector(this); }
-
 void CScriptEffector::Remove() { Actor()->Cameras().RemovePPEffector(m_tEffectorType); }

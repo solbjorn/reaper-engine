@@ -15,7 +15,7 @@
 CTelekineticObject::CTelekineticObject() = default;
 CTelekineticObject::~CTelekineticObject() = default;
 
-bool CTelekineticObject::init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot)
+bool CTelekineticObject::init(CTelekinesis*, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot)
 {
     if (!can_activate(obj))
         return false;
@@ -94,15 +94,13 @@ void CTelekineticObject::switch_state(ETelekineticState new_state)
     }
     state = new_state;
 }
-void CTelekineticObject::raise(float step)
+
+void CTelekineticObject::raise()
 {
     if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
         return;
 
-    step *= strength;
-
-    Fvector dir;
-    dir.set(0.f, 1.0f, 0.f);
+    Fvector dir{0.0f, 1.0f, 0.0f};
 
     float elem_size = float(object->m_pPhysicsShell->Elements().size());
     dir.mul(elem_size * elem_size * strength);

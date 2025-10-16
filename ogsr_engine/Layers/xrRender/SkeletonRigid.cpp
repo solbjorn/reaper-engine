@@ -44,7 +44,7 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     check_kinematics(this, dbg_name.c_str());
     Device.Statistic->Animation.End();
 #endif
-    VERIFY(LL_GetBonesVisible() != 0);
+    VERIFY(LL_GetBonesVisible() != VisMask{});
     // Calculate BOXes/Spheres if needed
     UCalc_Visibox++;
     if (UCalc_Visibox >= psSkeletonUpdate)
@@ -169,14 +169,14 @@ void CKinematics::LL_ClearAdditionalTransform(u16 bone_id)
     }
 }
 
-void CKinematics::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
+void CKinematics::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8)
 {
     bi.mTransform.mul_43(*parent, bd->bind_transform);
-    CalculateBonesAdditionalTransforms(bd, bi, parent, channel_mask); //--#SM+#--
+    CalculateBonesAdditionalTransforms(bd, bi); //--#SM+#--
 }
 
 // Добавляем константные смещения к нужным костям --#SM+#--
-void CKinematics::CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /* = (1<<0)*/)
+void CKinematics::CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi)
 {
     // bi.mTransform.c - содержит смещение относительно первой кости модели\центра сцены (0, 0, 0)
     for (auto& it : m_bones_offsets)

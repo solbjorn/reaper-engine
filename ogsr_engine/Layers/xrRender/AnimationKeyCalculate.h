@@ -210,9 +210,9 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
         else
             w = w1 / ws;
 #ifdef DEBUG
-            //.					if (fis_zero(w0+w1) || (!_valid(w))){
-            //.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f, w1: %f, ws:%f, BIS:
-            //%d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
+        //.					if (fis_zero(w0+w1) || (!_valid(w))){
+        //.						Debug.fatal		(DEBUG_INFO,"TO ALEXMX VERY IMPORTANT: (TOTAL: %f) w: %f, w0: %f, w1: %f, ws:%f, BIS:
+        //%d",w0+w1,w,w0,w1,ws,BLEND_INST.Blend.size()); .					}
 #endif
         KEY_Interp(Result, R[0], R[1], clampr(w, 0.f, 1.f));
         /*
@@ -371,22 +371,26 @@ IC void MixFactors(float* F, int b_count)
     for (int i2 = 0; i2 < b_count; i2++)
         F[i2] /= sum;
 }
+
 IC void MixinAdd(CKey& Result, const CKey* R, const float* BA, int b_count)
 {
     for (int i = 0; i < b_count; i++)
         key_mad(Result, Result, R[i], BA[i]);
 }
+
 IC void MixAdd(CKey& Result, const CKey* R, const float* BA, int b_count)
 {
     key_identity(Result);
     MixinAdd(Result, R, BA, b_count);
 }
-IC void process_single_channel(CKey& Result, const animation::channel_def& ch, const CKey* R, const CBlend* const BA[MAX_BLENDED], int b_count)
+
+IC void process_single_channel(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLENDED], int b_count)
 {
     MixInterlerp(Result, R, BA, b_count);
     VERIFY(_valid(Result.T));
     VERIFY(_valid(Result.Q));
 }
+
 IC void MixChannels(CKey& Result, const CKey* R, const animation::channel_def* BA, int b_count)
 {
     VERIFY(b_count > 0);

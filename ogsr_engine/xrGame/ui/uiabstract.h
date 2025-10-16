@@ -68,7 +68,6 @@ public:
 
     virtual void InitTexture(const char* texture) = 0;
     virtual bool GetTextureAvailability() = 0;
-    virtual void SetTextureVisible(bool vis) = 0;
     virtual bool GetTextureVisible() = 0;
 };
 
@@ -85,7 +84,6 @@ public:
         m_bTextureVisible = false;
     }
     virtual bool GetTextureAvailability() { return m_bTextureAvailable; }
-    virtual void SetTextureVisible(bool vis) { m_bTextureVisible = true; }
     virtual bool GetTextureVisible() { return m_bTextureVisible; }
 
 protected:

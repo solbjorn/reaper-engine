@@ -21,7 +21,7 @@
 #include "UITextBanner.h"
 #include "UIMultiTextStatic.h"
 #include "UIAnimatedStatic.h"
-#include "UIListBox.h" //#include "UIScrollView.h"
+#include "UIListBox.h"
 #include "UIComboBox.h"
 #include "UITrackBar.h"
 
@@ -76,7 +76,7 @@ bool CUIXmlInit::InitWindow(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* 
 
     float x = xml_doc.ReadAttribFlt(path, index, "x");
     float y = xml_doc.ReadAttribFlt(path, index, "y");
-    InitAlignment(xml_doc, path, index, x, y, pWnd);
+    InitAlignment(xml_doc, path, index, pWnd);
     float width = xml_doc.ReadAttribFlt(path, index, "width");
     float height = xml_doc.ReadAttribFlt(path, index, "height");
     // Add by Zander
@@ -429,7 +429,7 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
     float width = xml_doc.ReadAttribFlt(path, index, "width");
     float height = xml_doc.ReadAttribFlt(path, index, "height");
 
-    InitAlignment(xml_doc, path, index, x, y, pWnd);
+    InitAlignment(xml_doc, path, index, pWnd);
 
     // Add by Zander |
     bool use_real_pix = (xml_doc.ReadAttribInt(path, index, "as_is", 0));
@@ -544,7 +544,7 @@ bool CUIXmlInit::InitListWnd(CUIXml& xml_doc, LPCSTR path, int index, CUIListWnd
     float x = xml_doc.ReadAttribFlt(path, index, "x");
     float y = xml_doc.ReadAttribFlt(path, index, "y");
 
-    InitAlignment(xml_doc, path, index, x, y, pWnd);
+    InitAlignment(xml_doc, path, index, pWnd);
 
     float width = xml_doc.ReadAttribFlt(path, index, "width");
     float height = xml_doc.ReadAttribFlt(path, index, "height");
@@ -598,7 +598,7 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path, int index, CUIPro
     pos.x = xml_doc.ReadAttribFlt(path, index, "x");
     pos.y = xml_doc.ReadAttribFlt(path, index, "y");
 
-    InitAlignment(xml_doc, path, index, pos.x, pos.y, pWnd);
+    InitAlignment(xml_doc, path, index, pWnd);
 
     size.x = xml_doc.ReadAttribFlt(path, index, "width");
     size.y = xml_doc.ReadAttribFlt(path, index, "height");
@@ -876,7 +876,7 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, const char* path, int index, CUI
     float x = xml_doc.ReadAttribFlt(path, index, "x");
     float y = xml_doc.ReadAttribFlt(path, index, "y");
 
-    InitAlignment(xml_doc, path, index, x, y, pWnd);
+    InitAlignment(xml_doc, path, index, pWnd);
 
     float width = xml_doc.ReadAttribFlt(path, index, "width");
     float height = xml_doc.ReadAttribFlt(path, index, "height");
@@ -884,13 +884,8 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, const char* path, int index, CUI
 
     strconcat(sizeof(buf), buf, path, ":texture");
     shared_str base_name = xml_doc.Read(buf, index, nullptr);
+    VERIFY(base_name.c_str());
 
-    VERIFY(base_name);
-    /*	{
-            pWnd->Init(x, y, width, height);
-            return true;
-        }
-    */
     u32 color = GetColor(xml_doc, buf, index, 0xff);
     pWnd->SetColor(color);
 
@@ -1272,51 +1267,11 @@ bool CUIXmlInit::InitMultiText(CUIXml& xml_doc, LPCSTR path, int index, CUIStati
 
 //////////////////////////////////////////////////////////////////////////
 
-float CUIXmlInit::ApplyAlignX(float coord, u32 align) { return coord; }
-
-//////////////////////////////////////////////////////////////////////////
-
-float CUIXmlInit::ApplyAlignY(float coord, u32 align) { return coord; }
-
-//////////////////////////////////////////////////////////////////////////
-
-void CUIXmlInit::ApplyAlign(float& x, float& y, u32 align)
-{
-    x = ApplyAlignX(x, align);
-    y = ApplyAlignY(y, align);
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-bool CUIXmlInit::InitAlignment(CUIXml& xml_doc, const char* path, int index, float& x, float& y, CUIWindow* pWnd)
+void CUIXmlInit::InitAlignment(CUIXml& xml_doc, const char* path, int index, CUIWindow* pWnd)
 {
     xr_string wnd_alignment = xml_doc.ReadAttrib(path, index, "alignment", "");
-
-    if (strchr(wnd_alignment.c_str(), 'c'))
+    if (strchr(wnd_alignment.c_str(), 'c') != nullptr)
         pWnd->SetAlignment(waCenter);
-
-    // Alignment: right: "r", bottom: "b". Top, left - useless
-    shared_str alignStr = xml_doc.ReadAttrib(path, index, "align", "");
-
-    bool result = false;
-
-    if (strchr(*alignStr, 'r'))
-    {
-        x = ApplyAlignX(x, alRight);
-        result = true;
-    }
-    if (strchr(*alignStr, 'b'))
-    {
-        y = ApplyAlignY(y, alBottom);
-        result = true;
-    }
-    if (strchr(*alignStr, 'c'))
-    {
-        ApplyAlign(x, y, alCenter);
-        result = true;
-    }
-
-    return result;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -36,9 +36,8 @@ private:
 
 struct SIKCollideData
 {
-    ik_foot_geom::e_collide_point m_collide_point;
+    ik_foot_geom::e_collide_point m_collide_point{ik_foot_geom::toe};
     Fplane m_plane{};
-    Fvector m_pick_dir;
-    bool collided;
-    SIKCollideData() : m_pick_dir(Fvector().set(0, -1, 0)), collided(false), m_collide_point(ik_foot_geom::toe) {}
+    Fvector m_pick_dir{0.0f, -1.0f, 0.0f};
+    bool collided{};
 };

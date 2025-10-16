@@ -1,16 +1,15 @@
 #include "stdafx.h"
 
-#include <dinput.h>
-
 #include "..\xr_3da\xr_ioconsole.h"
 #include "..\xr_3da\xr_input.h"
 #include "..\xr_3da\xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
 
-#define DEF_ACTION(a1, a2) {a1, a2, #a2}
+#include <dinput.h>
 
 xr_vector<_action> actions = {
+#define DEF_ACTION(a1, a2) {a1, a2, #a2}
     DEF_ACTION("left", kLEFT),
     DEF_ACTION("right", kRIGHT),
     DEF_ACTION("up", kUP),
@@ -80,6 +79,7 @@ xr_vector<_action> actions = {
 
     DEF_ACTION("hide_hud", kHIDEHUD),
     DEF_ACTION("show_hud", kSHOWHUD),
+#undef DEF_ACTION
 };
 
 xr_vector<_binding> g_key_bindings;
@@ -302,20 +302,6 @@ void remap_keys()
     }
 }
 
-LPCSTR id_to_action_name(int _id)
-{
-    int idx = 0;
-    while (actions[idx].action_name)
-    {
-        if (_id == actions[idx].id)
-            return actions[idx].action_name;
-        ++idx;
-    }
-
-    Msg("! cant find corresponding [action_name] for id");
-    return nullptr;
-}
-
 EGameActions action_name_to_id(LPCSTR _name)
 {
     _action* action = action_name_to_ptr(_name);
@@ -500,7 +486,7 @@ public:
         if (!action_name_to_ptr(action))
             return;
 
-        int action_id = action_name_to_id(action);
+        const EGameActions action_id = action_name_to_id(action);
         if (action_id == kNOTBINDED)
             return;
 
@@ -562,7 +548,7 @@ class CCC_ListActions : public IConsole_Command
 public:
     CCC_ListActions(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Log("- --- Action list start ---");
         for (const auto& pbinding : g_key_bindings)
@@ -576,7 +562,7 @@ class CCC_UnBindAll : public IConsole_Command
 public:
     CCC_UnBindAll(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         for (auto& pbinding : g_key_bindings)
         {
@@ -600,7 +586,7 @@ class CCC_BindList : public IConsole_Command
 public:
     CCC_BindList(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Log("- --- Bind list start ---");
         string512 buff;

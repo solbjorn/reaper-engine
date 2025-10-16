@@ -24,6 +24,8 @@ enum EMovementType : u32;
 
 class CStalkerActionGetItemToKill : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionGetItemToKill, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -40,6 +42,8 @@ public:
 
 class CStalkerActionMakeItemKilling : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionMakeItemKilling, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -56,6 +60,8 @@ public:
 
 class CStalkerActionRetreatFromEnemy : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionRetreatFromEnemy, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -64,7 +70,7 @@ public:
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
-    virtual edge_value_type weight(const CSConditionState& condition0, const CSConditionState& condition1) const;
+    virtual edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -73,12 +79,13 @@ public:
 
 class CStalkerActionGetReadyToKill : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionGetReadyToKill, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 private:
     MonsterSpace::EBodyState m_body_state;
-    MonsterSpace::EMovementType m_movement_type;
     bool m_affect_properties;
     bool m_enable_enemy_change;
 
@@ -95,6 +102,8 @@ public:
 
 class CStalkerActionKillEnemy : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionKillEnemy, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -111,6 +120,8 @@ public:
 
 class CStalkerActionTakeCover : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionTakeCover, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -131,6 +142,8 @@ public:
 
 class CStalkerActionLookOut : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionLookOut, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -150,6 +163,8 @@ public:
 
 class CStalkerActionHoldPosition : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionHoldPosition, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -166,6 +181,8 @@ public:
 
 class CStalkerActionGetDistance : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionGetDistance, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -182,8 +199,7 @@ public:
 
 class CStalkerActionDetourEnemy : public CStalkerActionCombatBase
 {
-private:
-    const CCoverPoint* m_enemy_cover{};
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDetourEnemy, CStalkerActionCombatBase);
 
 protected:
     typedef CStalkerActionCombatBase inherited;
@@ -201,8 +217,7 @@ public:
 
 class CStalkerActionSearchEnemy : public CStalkerActionCombatBase
 {
-private:
-    const CCoverPoint* m_enemy_cover{};
+    RTTI_DECLARE_TYPEINFO(CStalkerActionSearchEnemy, CStalkerActionCombatBase);
 
 protected:
     typedef CStalkerActionCombatBase inherited;
@@ -220,6 +235,8 @@ public:
 
 class CStalkerActionPostCombatWait : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionPostCombatWait, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -236,6 +253,8 @@ public:
 
 class CStalkerActionHideFromGrenade : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionHideFromGrenade, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -252,6 +271,8 @@ public:
 
 class CStalkerActionSuddenAttack : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionSuddenAttack, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -268,6 +289,8 @@ public:
 
 class CStalkerActionKillEnemyIfPlayerOnThePath : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionKillEnemyIfPlayerOnThePath, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -284,6 +307,8 @@ public:
 
 class CStalkerActionCriticalHit : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionCriticalHit, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 

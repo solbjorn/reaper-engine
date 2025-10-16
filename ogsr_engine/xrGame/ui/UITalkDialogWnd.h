@@ -74,7 +74,7 @@ private:
     // Цвет тeкста и шрифт наших реплик
     u32 m_uOurReplicsColor;
 
-    void OnTradeClicked(CUIWindow* w, void*);
+    void OnTradeClicked(CUIWindow*, void*);
     void OnQuestionClicked(CUIWindow* w, void*);
 };
 
@@ -94,7 +94,7 @@ public:
     void Init(LPCSTR val, LPCSTR text);
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
-    void OnTextClicked(CUIWindow* w, void*);
+    void OnTextClicked(CUIWindow*, void*);
 };
 
 class CUIAnswerItem : public CUIWindow

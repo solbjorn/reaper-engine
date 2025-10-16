@@ -18,7 +18,7 @@ void CCameraLook::Load(LPCSTR section)
 
 CCameraLook::~CCameraLook() {}
 
-void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
+void CCameraLook::Update(Fvector& point, Fvector&)
 {
     vPosition.set(point);
     Fmatrix mR;

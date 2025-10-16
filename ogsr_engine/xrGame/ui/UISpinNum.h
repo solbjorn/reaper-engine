@@ -4,6 +4,9 @@
 // author:		Serge Vynnychenko
 //
 
+#ifndef __XR_UISPINNUM_H
+#define __XR_UISPINNUM_H
+
 #include "UICustomSpin.h"
 
 class CUISpinNum : public CUICustomSpin
@@ -34,10 +37,10 @@ protected:
     virtual void IncVal();
     virtual void DecVal();
 
-    int m_iMax;
-    int m_iMin;
-    int m_iStep;
-    int m_iVal;
+    int m_iMax{100};
+    int m_iMin{};
+    int m_iStep{1};
+    int m_iVal{};
 };
 XR_SOL_BASE_CLASSES(CUISpinNum);
 
@@ -68,9 +71,11 @@ protected:
     virtual void IncVal();
     virtual void DecVal();
 
-    float m_fMax;
-    float m_fMin;
-    float m_fStep;
-    float m_fVal;
+    float m_fMax{100.0f};
+    float m_fMin{};
+    float m_fStep{0.1f};
+    float m_fVal{};
 };
 XR_SOL_BASE_CLASSES(CUISpinFlt);
+
+#endif // __XR_UISPINNUM_H

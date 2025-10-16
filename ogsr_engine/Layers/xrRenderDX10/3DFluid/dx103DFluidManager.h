@@ -96,10 +96,10 @@ private:
     void AdvectColor(float timestep, bool bTeperature);
     void AdvectVelocity(float timestep, float fGravity);
     void ApplyVorticityConfinement(float timestep);
-    void ApplyExternalForces(const dx103DFluidData& FluidData, float timestep);
-    void ComputeVelocityDivergence(float timestep);
-    void ComputePressure(float timestep);
-    void ProjectVelocity(float timestep);
+    void ApplyExternalForces(const dx103DFluidData& FluidData);
+    void ComputeVelocityDivergence();
+    void ComputePressure();
+    void ProjectVelocity();
     void UpdateObstacles(const dx103DFluidData& FluidData, float timestep);
 
 private:
@@ -118,8 +118,6 @@ private:
     //	Simulation options
     int m_nIterations{6};
     bool m_bUseBFECC{true};
-    float m_fSaturation{0.78f};
-    bool m_bAddDensity{true};
     float m_fImpulseSize{0.15f};
     float m_fConfinementScale{};
     float m_fDecay{1.0f};

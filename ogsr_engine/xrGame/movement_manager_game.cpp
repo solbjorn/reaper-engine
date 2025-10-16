@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "movement_manager.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"
@@ -109,7 +110,7 @@ void CMovementManager::process_game_path()
             dest_level_vertex_id = restrictions().accessible_nearest(ai().level_graph().vertex_position(dest_level_vertex_id), dest_pos);
         }
 
-        if (can_use_distributed_computations(mtLevelPath))
+        if (can_use_distributed_computations())
         {
             level_path_builder().setup(object().ai_location().level_vertex_id(), dest_level_vertex_id);
             break;
@@ -144,7 +145,7 @@ void CMovementManager::process_game_path()
         detail().set_start_direction(Fvector().setHP(-m_body.current.yaw, 0));
         detail().set_dest_position(ai().level_graph().vertex_position(level_path().intermediate_vertex_id()));
 
-        if (can_use_distributed_computations(mtDetailPath))
+        if (can_use_distributed_computations())
         {
             detail_path_builder().setup(level_path().path(), level_path().intermediate_index());
             break;
@@ -171,7 +172,7 @@ void CMovementManager::process_game_path()
             m_path_state = ePathStateBuildLevelPath;
         else if (!detail().actual())
             m_path_state = ePathStateBuildLevelPath;
-        else if (detail().completed(object().Position(), !detail().state_patrol_path()))
+        else if (detail().completed(!detail().state_patrol_path()))
         {
             m_path_state = ePathStateContinueLevelPath;
             if (level_path().completed())

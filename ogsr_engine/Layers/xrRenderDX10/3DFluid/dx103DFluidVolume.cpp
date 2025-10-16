@@ -1,12 +1,12 @@
 #include "stdafx.h"
+
 #include "dx103DFluidVolume.h"
 #include "dx103DFluidManager.h"
 
 dx103DFluidVolume::dx103DFluidVolume() {}
-
 dx103DFluidVolume::~dx103DFluidVolume() {}
 
-void dx103DFluidVolume::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void dx103DFluidVolume::Load(LPCSTR, IReader* data, u32)
 {
     //	Uncomment this if choose to read from OGF
     //	dxRender_Visual::Load		(N,data,dwFlags);
@@ -132,5 +132,4 @@ void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level O
 }
 
 void dx103DFluidVolume::Copy(dxRender_Visual* pFrom) { dxRender_Visual::Copy(pFrom); }
-
 void dx103DFluidVolume::Release() { dxRender_Visual::Release(); }

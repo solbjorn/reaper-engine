@@ -480,7 +480,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         xr_strcpy(val_name2, "scope_zoom_rotate_y");
     }
     if (pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, val_name2))
-        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2)};
+        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2), 0.0f};
     //
     xr_strconcat(val_name, "scope_grenade_zoom_offset", _prefix);
     if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
@@ -496,7 +496,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         xr_strcpy(val_name2, "scope_grenade_zoom_rotate_y");
     }
     if (pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, val_name2))
-        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2)};
+        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2), 0.0f};
     //
     xr_strconcat(val_name, "grenade_normal_zoom_offset", _prefix);
     if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
@@ -514,7 +514,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         xr_strcpy(val_name2, "grenade_normal_zoom_rotate_y");
     }
     if (pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, val_name2))
-        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_gl_normal] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2)};
+        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_gl_normal] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2), 0.0f};
     else
         m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_gl_normal] = m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim];
     //
@@ -532,7 +532,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         xr_strcpy(val_name2, "scope_grenade_normal_zoom_rotate_y");
     }
     if (pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, val_name2))
-        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_normal_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2)};
+        m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_normal_scope] = Fvector{pSettings->r_float(sect_name, val_name), pSettings->r_float(sect_name, val_name2), 0.0f};
     //
 
     if (useCopFirePoint) // cop configs

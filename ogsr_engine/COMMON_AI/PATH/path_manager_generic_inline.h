@@ -40,7 +40,7 @@ IC _dist_type CGenericPathManager::evaluate(const _index_type& node_index1, cons
 }
 
 TEMPLATE_SPECIALIZATION
-IC _dist_type CGenericPathManager::estimate(const _index_type& vertex_id) const
+IC _dist_type CGenericPathManager::estimate(const _index_type&) const
 {
     VERIFY(graph);
     return (_dist_type(0));

@@ -140,7 +140,7 @@ public:
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector& dir) {}
+    virtual void get_max_area_dir_bt(Fvector&) {}
     virtual void get_mass(dMass& m); // unit dencity mass;
     virtual const Fvector& local_center();
     virtual void get_local_form(Fmatrix& form);
@@ -161,7 +161,7 @@ public:
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
-    virtual void get_max_area_dir_bt(Fvector& dir) {}
+    virtual void get_max_area_dir_bt(Fvector&) {}
     virtual const Fvector& local_center();
     virtual void get_mass(dMass& m); // unit dencity mass;
     virtual void get_local_form(Fmatrix& form);

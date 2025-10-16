@@ -69,6 +69,7 @@ void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
         TL_pv->set(x, y, C, u, v);
         ++TL_pv;
         break;
+    default: NODEFAULT;
     }
 }
 
@@ -91,6 +92,7 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
         TL_start_pv = (FVF::TL*)RImplementation.Vertex.Lock(m_iMaxVerts, hGeom_TL.stride(), vOffset);
         TL_pv = TL_start_pv;
         break;
+    default: NODEFAULT;
     }
 }
 

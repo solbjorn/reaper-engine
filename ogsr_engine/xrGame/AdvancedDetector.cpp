@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "AdvancedDetector.h"
 #include "ui/ArtefactDetectorUI.h"
 #include "player_hud.h"
@@ -14,9 +15,11 @@ void CAdvancedDetector::CreateUI()
 }
 
 CUIArtefactDetectorAdv& CAdvancedDetector::ui() { return *((CUIArtefactDetectorAdv*)m_ui); }
+
 void CAdvancedDetector::UpdateAf()
 {
-    ui().SetValue(0.0f, Fvector{});
+    ui().SetValue({});
+
     if (m_artefacts.m_ItemInfos.empty())
         return;
 
@@ -58,10 +61,6 @@ void CAdvancedDetector::UpdateAf()
     Fvector dir_to_artefact;
     dir_to_artefact.sub(pCurrentAf->Position(), Device.vCameraPosition);
     dir_to_artefact.normalize();
-    float _ang_af = dir_to_artefact.getH();
-    float _ang_cam = Device.vCameraDirection.getH();
-
-    float _diff = angle_difference_signed(_ang_af, _ang_cam);
 
     // sounds
     af_info.cur_period = item_type->freq.x + (item_type->freq.y - item_type->freq.x) * (fRelPow * fRelPow);
@@ -81,7 +80,7 @@ void CAdvancedDetector::UpdateAf()
     else
         af_info.snd_time += Device.fTimeDelta;
 
-    ui().SetValue(_diff, dir_to_artefact);
+    ui().SetValue(dir_to_artefact);
 }
 
 void CUIArtefactDetectorAdv::construct(CAdvancedDetector* p)
@@ -93,7 +92,8 @@ void CUIArtefactDetectorAdv::construct(CAdvancedDetector* p)
     m_bid = u16(-1);
 }
 
-void CUIArtefactDetectorAdv::SetValue(const float val1, const Fvector& val2) { m_target_dir = val2; }
+void CUIArtefactDetectorAdv::SetValue(const Fvector& val2) { m_target_dir = val2; }
+
 void CUIArtefactDetectorAdv::update()
 {
     if (!m_parent->HudItemData() || m_bid == u16(-1))

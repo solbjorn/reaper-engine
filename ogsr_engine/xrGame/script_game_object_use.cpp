@@ -204,7 +204,7 @@ void CScriptGameObject::set_enemy_callback(sol::function function, sol::object o
         return;
     }
 
-    monster->memory().enemy().set_useful_callback(function, object);
+    monster->memory().enemy().set_useful_callback(std::move(function), std::move(object));
 }
 
 void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(function, sol::object{}); }

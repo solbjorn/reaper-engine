@@ -237,7 +237,7 @@ bool need_render_hud()
     return true;
 }
 
-void CHUDManager::Render_First(u32 context_id)
+void CHUDManager::Render_First(ctx_id_t context_id)
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
@@ -255,7 +255,7 @@ void CHUDManager::Render_First(u32 context_id)
     O->renderable_Render(context_id, root);
 }
 
-void CHUDManager::Render_Last(u32 context_id)
+void CHUDManager::Render_Last(ctx_id_t context_id)
 {
     if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
@@ -323,15 +323,13 @@ void CHUDManager::RenderUI()
     }
 }
 
-void CHUDManager::OnEvent(EVENT E, u64 P1, u64 P2) {}
-
+void CHUDManager::OnEvent(EVENT, u64, u64) {}
 collide::rq_result& CHUDManager::GetCurrentRayQuery() { return m_pHUDTarget->RQ; }
 
 void CHUDManager::SetCrosshairDisp(float dispf, float disps) { m_pHUDTarget->HUDCrosshair.SetDispersion(psHUD_Flags.test(HUD_CROSSHAIR_DYNAMIC) ? dispf : disps); }
-
 void CHUDManager::ShowCrosshair(bool show) { m_pHUDTarget->m_bShowCrosshair = show; }
 
-void CHUDManager::Hit(int idx, float power, const Fvector& dir) { HitMarker.Hit(idx, dir); }
+void CHUDManager::Hit(int idx, float, const Fvector& dir) { HitMarker.Hit(idx, dir); }
 
 void CHUDManager::SetHitmarkType(LPCSTR tex_name) { HitMarker.InitShader(tex_name); }
 #include "ui\UIMainInGameWnd.h"

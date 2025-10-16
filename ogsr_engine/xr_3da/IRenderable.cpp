@@ -1,16 +1,8 @@
 #include "stdafx.h"
 
-#include "../xrcdb/ispatial.h"
 #include "irenderable.h"
 
-IRenderable::IRenderable()
-{
-    renderable.xform.identity();
-
-    ISpatial* self = smart_cast<ISpatial*>(this);
-    if (self)
-        self->spatial.type |= STYPE_RENDERABLE;
-}
+IRenderable::IRenderable() { renderable.xform.identity(); }
 
 extern BOOL g_bRendering;
 
@@ -29,7 +21,7 @@ IRenderable::~IRenderable()
 IRender_ObjectSpecific* IRenderable::renderable_ROS()
 {
     if (!renderable.pROS && renderable.pROS_Allowed)
-        renderable.pROS = Render->ros_create(this);
+        renderable.pROS = Render->ros_create();
 
     return renderable.pROS;
 }

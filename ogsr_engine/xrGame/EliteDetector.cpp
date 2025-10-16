@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "EliteDetector.h"
 #include "player_hud.h"
 #include "ui/UIXmlInit.h"
@@ -17,6 +18,7 @@ void CEliteDetector::CreateUI()
 }
 
 CUIArtefactDetectorElite& CEliteDetector::ui() { return *((CUIArtefactDetectorElite*)m_ui); }
+
 void CEliteDetector::UpdateAf()
 {
     ui().Clear();
@@ -25,7 +27,6 @@ void CEliteDetector::UpdateAf()
 
     auto it_b = m_artefacts.m_ItemInfos.begin();
     auto it_e = m_artefacts.m_ItemInfos.end();
-    auto it = it_b;
 
     Fvector detector_pos = Position();
     for (; it_b != it_e; ++it_b)
@@ -214,8 +215,8 @@ void CScientificDetector::UpfateWork()
 
     auto ait_b = m_artefacts.m_ItemInfos.begin();
     auto ait_e = m_artefacts.m_ItemInfos.end();
-    auto ait = ait_b;
     Fvector detector_pos = Position();
+
     for (; ait_b != ait_e; ++ait_b)
     {
         CArtefact* pAf = ait_b->first;
@@ -234,7 +235,6 @@ void CScientificDetector::UpfateWork()
 
     auto zit_b = m_zones.m_ItemInfos.begin();
     auto zit_e = m_zones.m_ItemInfos.end();
-    auto zit = zit_b;
 
     for (; zit_b != zit_e; ++zit_b)
     {

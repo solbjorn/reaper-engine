@@ -20,11 +20,10 @@ extern bool show_restrictions(CRestrictedObject *object);
 #endif
 */
 
-CControlPathBuilder::CControlPathBuilder(CCustomMonster* monster) : CMovementManager(monster) {}
-
+CControlPathBuilder::CControlPathBuilder(CCustomMonster* monster) : CMovementManager{monster} {}
 CControlPathBuilder::~CControlPathBuilder() {}
 
-void CControlPathBuilder::load(LPCSTR section) {}
+void CControlPathBuilder::load(LPCSTR) {}
 
 void CControlPathBuilder::reinit()
 {
@@ -237,7 +236,7 @@ void CControlPathBuilder::fix_position(const Fvector& pos, u32 node, Fvector& re
     */
 }
 
-bool CControlPathBuilder::is_moving_on_path() { return (!detail().completed(inherited_com::m_object->Position()) && enabled()); }
+bool CControlPathBuilder::is_moving_on_path() { return (!detail().completed() && enabled()); }
 
 bool CControlPathBuilder::get_node_in_radius(u32 src_node, float min_radius, float max_radius, u32 attempts, u32& dest_node)
 {
@@ -269,16 +268,18 @@ void CControlPathBuilder::make_inactual()
     enable_movement(!enabled());
 }
 
-bool CControlPathBuilder::can_use_distributed_computations(u32 option) const
+bool CControlPathBuilder::can_use_distributed_computations() const
 {
     if (!g_actor)
         return true;
 
     VERIFY(Actor());
     VERIFY(inherited_com::m_object);
+
     if (Actor()->memory().visual().visible_right_now(inherited_com::m_object))
         return false;
-    return inherited::can_use_distributed_computations(option);
+
+    return inherited::can_use_distributed_computations();
 }
 
 u32 CControlPathBuilder::find_nearest_vertex(const u32& level_vertex_id, const Fvector& target_position, const float& range)

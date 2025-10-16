@@ -261,11 +261,11 @@ class dJointGroup {
   void operator= (const dJointGroup &);
 
 public:
-  dJointGroup (int dummy_arg=0)
+  dJointGroup (int)
     { _id = dJointGroupCreate (0); }
   ~dJointGroup()
     { dJointGroupDestroy (_id); }
-  void create (int dummy_arg=0) {
+  void create (int) {
     if (_id) dJointGroupDestroy (_id);
     _id = dJointGroupCreate (0);
   }

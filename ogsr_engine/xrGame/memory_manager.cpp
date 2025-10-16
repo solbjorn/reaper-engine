@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
 #include "sound_memory_manager.h"
@@ -18,7 +19,7 @@
 #include "ai/stalker/ai_stalker_impl.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
-#include "memory_space_impl.h"
+#include "memory_space.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "profiler.h"
@@ -223,7 +224,7 @@ CMemoryInfo CMemoryManager::memory(const CObject* object) const
         auto I = std::find(hit().objects().begin(), hit().objects().end(), object_id(object));
         if ((hit().objects().end() != I) && (level_time < (*I).m_level_time))
         {
-            (CMemoryObject<CGameObject>&)result = (CMemoryObject<CGameObject>&)(*I);
+            (CMemoryObject<CGameObject>&)result = (const CMemoryObject<CGameObject>&)(*I);
             result.m_object = game_object;
             result.m_hit_info = true;
             VERIFY(result.m_object);

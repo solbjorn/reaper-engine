@@ -70,16 +70,17 @@ bool CControlThreaten::check_start_conditions()
     return true;
 }
 
-void CControlThreaten::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
+void CControlThreaten::on_event(ControlCom::EEventType type, ControlCom::IEventData* data)
 {
     switch (type)
     {
     case ControlCom::eventAnimationEnd: m_man->notify(ControlCom::eventThreatenEnd, nullptr); break;
     case ControlCom::eventAnimationSignal: {
-        SAnimationSignalEventData* event_data = (SAnimationSignalEventData*)dat;
+        SAnimationSignalEventData* event_data = (SAnimationSignalEventData*)data;
         if (event_data->event_id == CControlAnimation::eAnimationCustom)
             m_object->on_threaten_execute();
         break;
     }
+    default: break;
     }
 }

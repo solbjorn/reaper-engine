@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ai_stalker.h"
 #include "ai_stalker_space.h"
 #include "../../bolt.h"
@@ -30,13 +31,16 @@
 #include "../../visual_memory_manager.h"
 #include "../../agent_enemy_manager.h"
 
-const u32 TOLLS_INTERVAL = 2000;
-const u32 GRENADE_INTERVAL = 0 * 1000;
-const float FRIENDLY_GRENADE_ALARM_DIST = 5.f;
-const u32 DANGER_INFINITE_INTERVAL = 60000000;
-const float DANGER_EXPLOSIVE_DISTANCE = 10.f;
+namespace
+{
+constexpr u32 TOLLS_INTERVAL{2000};
+constexpr u32 GRENADE_INTERVAL{0};
+constexpr float FRIENDLY_GRENADE_ALARM_DIST{5.0f};
+constexpr u32 DANGER_INFINITE_INTERVAL{60000000};
+constexpr float DANGER_EXPLOSIVE_DISTANCE{10.f};
+} // namespace
 
-bool CAI_Stalker::useful(const CItemManager* manager, const CGameObject* object) const
+bool CAI_Stalker::useful(const CItemManager*, const CGameObject* object) const
 {
     const CExplosive* explosive = smart_cast<const CExplosive*>(object);
 
@@ -74,14 +78,14 @@ bool CAI_Stalker::useful(const CItemManager* manager, const CGameObject* object)
     return (true);
 }
 
-float CAI_Stalker::evaluate(const CItemManager* manager, const CGameObject* object) const
+float CAI_Stalker::evaluate(const CItemManager*, const CGameObject* object) const
 {
     float distance = Position().distance_to_sqr(object->Position());
     distance = !fis_zero(distance) ? distance : EPS_L;
     return (distance);
 }
 
-bool CAI_Stalker::useful(const CEnemyManager* manager, const CEntityAlive* object) const
+bool CAI_Stalker::useful(const CEnemyManager*, const CEntityAlive* object) const
 {
     if (!agent_manager().enemy().useful_enemy(object, this))
         return (false);
@@ -155,7 +159,6 @@ void CAI_Stalker::process_enemies()
     typedef MemorySpace::squad_mask_type squad_mask_type;
     typedef CVisualMemoryManager::VISIBLES VISIBLES;
 
-    bool found = false;
     squad_mask_type mask = memory().visual().mask();
     VISIBLES::const_iterator I = memory().visual().objects().begin();
     VISIBLES::const_iterator E = memory().visual().objects().end();
@@ -182,7 +185,6 @@ void CAI_Stalker::process_enemies()
         }
 
         memory().make_object_visible_somewhen(member->memory().enemy().selected());
-        found = true;
         break;
     }
 }

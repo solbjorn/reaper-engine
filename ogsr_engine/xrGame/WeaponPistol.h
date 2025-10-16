@@ -9,7 +9,7 @@ class CWeaponPistol : public CWeaponCustomPistol
 public:
     typedef CWeaponCustomPistol inherited;
 
-    CWeaponPistol(LPCSTR name);
+    CWeaponPistol();
     virtual ~CWeaponPistol();
 
     virtual void Load(LPCSTR section);

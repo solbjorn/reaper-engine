@@ -1,20 +1,21 @@
 #pragma once
 
-#include <CallMe.h>
-#include <atomic>
-#include <numeric>
-
 #include "../xrcore/ftimer.h"
 #include "pure.h"
 #include "stats.h"
+
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/RenderDeviceRender.h"
+
+#include <CallMe.h>
+
+#include <atomic>
+#include <numeric>
 
 #define VIEWPORT_NEAR 0.2f
 #define HUD_VIEWPORT_NEAR 0.05f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
-
-#include "../Include/xrRender/FactoryPtr.h"
-#include "../Include/xrRender/RenderDeviceRender.h"
 
 class engine_impl;
 
@@ -133,7 +134,7 @@ private:
 
     CTimer TimerMM;
 
-    void _Create(LPCSTR shName);
+    void _Create();
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
@@ -144,7 +145,7 @@ public:
 
     u32 dwPrecacheTotal;
     float fWidth_2, fHeight_2;
-    void OnWM_Activate(WPARAM wParam, LPARAM lParam);
+    void OnWM_Activate(WPARAM wParam);
 
 public:
     IRenderDeviceRender* m_pRender{};
@@ -205,10 +206,7 @@ public:
     void overdrawBegin();
     void overdrawEnd();
 
-#pragma warning(push)
-#pragma warning(disable : 4366)
     IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }
-#pragma warning(pop)
 
     u32 TimerAsync() { return TimerGlobal.GetElapsed_ms(); }
     u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + Timer_MM_Delta; }
@@ -223,9 +221,10 @@ public:
     void Initialize(void);
 
     void time_factor(const float& time_factor); //--#SM+#--
-    inline const float time_factor() const
+
+    inline float time_factor() const
     {
-        VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
+        VERIFY(fsimilar(Timer.time_factor(), TimerGlobal.time_factor()));
         return (Timer.time_factor());
     }
 
@@ -248,7 +247,7 @@ private:
     void CalcFrameStats();
 
 public:
-    bool on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result);
+    bool on_message(UINT uMsg, WPARAM wParam, LRESULT& result);
 
 private:
     void message_loop();

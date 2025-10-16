@@ -1,14 +1,16 @@
 #ifndef EXTENDED_GEOM
 #define EXTENDED_GEOM
+
 #include "PHObject.h"
 #include "ode_include.h"
 #include "physicscommon.h"
 #include "MathUtils.h"
 
+class CPhysicsShellHolder;
+
 #ifdef DEBUG
 extern u32 dbg_total_saved_tries;
 #endif
-class CPhysicsShellHolder;
 
 class CObjectContactCallback
 {

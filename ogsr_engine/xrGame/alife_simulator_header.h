@@ -16,15 +16,15 @@ class CALifeSimulatorHeader : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CALifeSimulatorHeader);
 
 protected:
-    u32 m_version;
+    u32 m_version{ALIFE_VERSION};
 
 public:
-    IC CALifeSimulatorHeader(LPCSTR section);
+    CALifeSimulatorHeader() = default;
     virtual ~CALifeSimulatorHeader();
+
     virtual void save(IWriter& tMemoryStream);
     virtual void load(IReader& tFileStream);
-    IC u32 version() const;
+
+    [[nodiscard]] inline u32 version() const { return m_version; }
     bool valid(IReader& file_stream) const;
 };
-
-#include "alife_simulator_header_inline.h"

@@ -41,7 +41,7 @@ public:
     int GetActiveIndex() { return m_iPushedIndex; }
     int GetPrevActiveIndex() { return m_iPrevPushedIndex; }
     void SetNewActiveTab(const int iNewTab);
-    const int GetTabsCount() const { return m_TabsArr.size(); }
+    int GetTabsCount() const { return m_TabsArr.size(); }
 
     // Режим клавилатурных акселераторов (вкл/выкл)
     IC bool GetAcceleratorsMode() const { return m_bAcceleratorsEnable; }
@@ -58,19 +58,19 @@ protected:
     TABS_VECTOR m_TabsArr;
 
     // Текущая нажатая кнопка. -1 - ни одна, 0 - первая, 1 - вторая, и т.д.
-    int m_iPushedIndex;
-    int m_iPrevPushedIndex;
+    int m_iPushedIndex{};
+    int m_iPrevPushedIndex{};
 
     // Цвет неактивных элементов
-    u32 m_cGlobalTextColor;
-    u32 m_cGlobalButtonColor;
+    u32 m_cGlobalTextColor{std::numeric_limits<u32>::max()};
+    u32 m_cGlobalButtonColor{std::numeric_limits<u32>::max()};
 
     // Цвет надписи на активном элементе
-    u32 m_cActiveTextColor;
-    u32 m_cActiveButtonColor;
+    u32 m_cActiveTextColor{std::numeric_limits<u32>::max()};
+    u32 m_cActiveButtonColor{std::numeric_limits<u32>::max()};
 
     // Разрешаем/запрещаем клавиатурные акселераторы
-    bool m_bAcceleratorsEnable;
+    bool m_bAcceleratorsEnable{true};
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

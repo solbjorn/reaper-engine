@@ -254,10 +254,9 @@ class type_motion1 : public type_motion
     RTTI_DECLARE_TYPEINFO(type_motion1, type_motion);
 
 public:
-    bool predicate(CEntityAlive& pEntity, const SHit& H, MotionID& m, float& angle) const override
+    bool predicate(CEntityAlive&, const SHit&, MotionID& m, float&) const override
     {
         m = MotionID();
-
         return false;
     }
 };

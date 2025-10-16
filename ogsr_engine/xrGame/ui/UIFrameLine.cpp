@@ -10,13 +10,14 @@
 //=============================================================================
 
 #include "stdafx.h"
+
 #include "UIFrameLine.h"
 #include "../hudmanager.h"
 #include "UITextureMaster.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIFrameLine::CUIFrameLine() : uFlags(0), iSize(0), bHorizontalOrientation(true) { iPos.set(0, 0); }
+CUIFrameLine::CUIFrameLine() = default;
 
 //////////////////////////////////////////////////////////////////////////
 

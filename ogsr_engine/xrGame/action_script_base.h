@@ -14,17 +14,19 @@
 template <typename _object_type>
 class CActionScriptBase : public CScriptActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CActionScriptBase<_object_type>, CScriptActionBase);
+
 protected:
     typedef CScriptActionBase inherited;
 
 public:
     _object_type* m_object;
 
-public:
-    IC CActionScriptBase(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects, _object_type* object = 0, LPCSTR action_name = "");
-    IC CActionScriptBase(_object_type* object = 0, LPCSTR action_name = "");
+    IC CActionScriptBase(const xr_vector<COperatorCondition>& conditions, const xr_vector<COperatorCondition>& effects, _object_type* object = nullptr, LPCSTR action_name = "");
+    IC CActionScriptBase(_object_type* object = nullptr, LPCSTR action_name = "");
     virtual ~CActionScriptBase();
-    virtual void setup(_object_type* object, CPropertyStorage* storage);
+
+    virtual void setup(_object_type* object, CPropertyStorage*);
     virtual void setup(CScriptGameObject* object, CPropertyStorage* storage);
 };
 

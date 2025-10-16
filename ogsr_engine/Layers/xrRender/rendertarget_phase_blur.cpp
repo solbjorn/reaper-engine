@@ -354,8 +354,6 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     float w = float(Device.dwWidth);
     float h = float(Device.dwHeight);
 
-    constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
-
     // Volumetric always at 1/8 res
     RCache.set_viewport_size(w / 8, h / 8);
 
@@ -772,9 +770,8 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
             // Sort Distance
             std::ranges::sort(LightsSort, [](const light* i, const light* j) { return (i->distance < j->distance && i->sss_priority < j->sss_priority); });
 
-            for (int x = 0; x < LightsSort.size(); x++)
+            for (auto L : LightsSort)
             {
-                light* L = LightsSort[x];
                 bool Add = true;
                 int FreeSlot = -1;
 
@@ -818,10 +815,8 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 
                 if (CheckPackage)
                 {
-                    for (int x = 0; x < LightsSort.size(); x++)
+                    for (auto L : LightsSort)
                     {
-                        light* L = LightsSort[x];
-
                         if (L == LightSlot[slot])
                             Remove = false;
                     }

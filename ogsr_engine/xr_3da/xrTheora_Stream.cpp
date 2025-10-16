@@ -198,21 +198,22 @@ BOOL CTheoraStream::Decode(u32 tm_play)
                         VERIFY((0 != d_frame % key_rate) || (0 == d_frame % key_rate) && theora_packet_iskeyframe(&o_packet));
                         continue;
                     }
+
                     VERIFY((d_frame != k_frame) || ((d_frame == k_frame) && theora_packet_iskeyframe(&o_packet)));
+
                     // real decode
-//.					dbg_log					((stderr,"%04d: decode\n",d_frame));
-#ifdef DEBUG
-                    int res =
-#endif
-                        theora_decode_packetin(&t_state, &o_packet);
+                    int res = theora_decode_packetin(&t_state, &o_packet);
                     VERIFY(res != OC_BADPACKET);
-                    //.					dbg_log					((stderr,"%04d: granule frame\n",theora_granule_frame(&t_state,t_state.granulepos)));
+
                     if (d_frame >= t_frame)
                         result = TRUE;
                 }
                 else
+                {
                     break;
+                }
             }
+
             // check eof
             VERIFY(!(FALSE == result && source->eof()));
             if (FALSE == result)
@@ -237,7 +238,8 @@ BOOL CTheoraStream::Decode(u32 tm_play)
 
 BOOL CTheoraStream::Load(const char* fname)
 {
-    VERIFY(0 == source);
+    VERIFY(source == nullptr);
+
     // open source
     source = FS.rs_open(nullptr, fname);
     VERIFY(source);
@@ -246,5 +248,6 @@ BOOL CTheoraStream::Load(const char* fname)
     BOOL res = ParseHeaders();
     // seek to start
     Reset();
+
     return res;
 }

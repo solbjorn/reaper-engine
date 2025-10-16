@@ -31,10 +31,10 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16*
     u32 vBase;
     {
         FVF::L* pv = (FVF::L*)RImplementation.Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
-        for (size_t i = 0; i < vcnt; i++)
-        {
+
+        for (gsl::index i{}; i < vcnt; ++i)
             pv[i] = pVerts[i];
-        }
+
         RImplementation.Vertex.Unlock(vcnt, vs_L->vb_stride);
     }
 
@@ -42,8 +42,10 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16*
     {
         const u32 count = GetIndexCount(T, pcnt);
         u16* indices = RImplementation.Index.Lock(count, iBase);
-        for (size_t i = 0; i < count; i++)
+
+        for (gsl::index i{}; i < gsl::index{count}; ++i)
             indices[i] = pIdx[i];
+
         RImplementation.Index.Unlock(count);
     }
 
@@ -59,10 +61,10 @@ void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const
     u32 vBase;
     {
         FVF::L* pv = (FVF::L*)RImplementation.Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
-        for (size_t i = 0; i < vcnt; i++)
-        {
+
+        for (gsl::index i{}; i < vcnt; ++i)
             pv[i] = pVerts[i];
-        }
+
         RImplementation.Vertex.Unlock(vcnt, vs_L->vb_stride);
     }
 
@@ -70,8 +72,10 @@ void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const
     {
         const u32 count = GetIndexCount(T, pcnt);
         u16* indices = RImplementation.Index.Lock(count, iBase);
-        for (size_t i = 0; i < count; i++)
+
+        for (gsl::index i{}; i < gsl::index{count}; ++i)
             indices[i] = pIdx[i];
+
         RImplementation.Index.Unlock(count);
     }
 

@@ -19,6 +19,7 @@ class CUICarBodyWnd : public CUIDialogWnd
 
 private:
     typedef CUIDialogWnd inherited;
+
     bool m_b_need_update{};
 
 public:
@@ -92,7 +93,7 @@ protected:
     void DropItemsfromCell(bool b_all);
 
     bool OnItemDrop(CUICellItem* itm);
-    bool OnItemStartDrag(CUICellItem* itm);
+    bool OnItemStartDrag(CUICellItem*);
     bool OnItemDbClick(CUICellItem* itm);
     bool OnItemSelected(CUICellItem* itm);
     bool OnItemRButtonClick(CUICellItem* itm);

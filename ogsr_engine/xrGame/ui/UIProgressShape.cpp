@@ -31,11 +31,14 @@ void CUIProgressShape::SetPos(int pos, int max)
 
 void CUIProgressShape::SetTextVisible(bool b) { m_bText = b; }
 
-void _make_rot(Fvector2& pt, const Fvector2& src, float sin_a, float cos_a, float angle)
+namespace
+{
+void _make_rot(Fvector2& pt, const Fvector2& src, float sin_a, float cos_a)
 {
     pt.x = src.x * cos_a + src.y * sin_a;
     pt.y = src.y * cos_a - src.x * sin_a;
 }
+} // namespace
 
 float calc_color(u32 idx, u32 total, float stage, float max_stage, bool blend)
 {
@@ -101,8 +104,8 @@ void CUIProgressShape::Draw()
     start_tex_pt.set(0.0f, -radius_tex);
     prev_tex_pt = start_tex_pt;
 
-    _make_rot(prev_pos_pt, start_pos_pt, sin_a, cos_a, curr_angle);
-    _make_rot(prev_tex_pt, start_tex_pt, sin_a, cos_a, curr_angle);
+    _make_rot(prev_pos_pt, start_pos_pt, sin_a, cos_a);
+    _make_rot(prev_tex_pt, start_tex_pt, sin_a, cos_a);
 
     float angle_range = PI_MUL_2;
     if (m_bClockwise)
@@ -142,8 +145,8 @@ void CUIProgressShape::Draw()
         sin_a = _sin(curr_angle);
         cos_a = _cos(curr_angle);
 
-        _make_rot(prev_pos_pt, start_pos_pt, sin_a, cos_a, curr_angle);
-        _make_rot(prev_tex_pt, start_tex_pt, sin_a, cos_a, curr_angle);
+        _make_rot(prev_pos_pt, start_pos_pt, sin_a, cos_a);
+        _make_rot(prev_tex_pt, start_tex_pt, sin_a, cos_a);
 
         tp.set(prev_pos_pt);
         tp.add(center_pos);

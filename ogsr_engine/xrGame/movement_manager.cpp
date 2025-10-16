@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "movement_manager.h"
 #include "movement_manager_space.h"
 #include "game_location_selector.h"
@@ -25,7 +26,12 @@
 
 using namespace MovementManager;
 
-const float verify_distance = 15.f;
+namespace
+{
+#ifdef USE_FREE_IN_RESTRICTIONS
+constexpr float verify_distance{15.f};
+#endif
+} // namespace
 
 CMovementManager::CMovementManager(CCustomMonster* object)
 {
@@ -144,11 +150,9 @@ void CMovementManager::update_path()
     if (!level_path().evaluator())
         level_path().set_evaluator(base_level_params());
 
-#pragma todo("Optimize this in case of slowdown or not intended behaviour")
+    // TODO: Optimize this in case of slowdown or not intended behaviour
     if (!restrictions().actual())
-    {
         m_path_actuality = false;
-    }
 
     restrictions().actual(true);
 
@@ -312,7 +316,7 @@ void CMovementManager::on_restrictions_change()
     level_path().on_restrictions_change();
 }
 
-bool CMovementManager::can_use_distributed_computations(u32 option) const { return (!m_build_at_once && !object().getDestroy()); }
+bool CMovementManager::can_use_distributed_computations() const { return !m_build_at_once && !object().getDestroy(); }
 
 void CMovementManager::on_frame(CPHMovementControl* movement_control, Fvector& dest_position)
 {

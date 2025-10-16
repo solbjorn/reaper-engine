@@ -41,16 +41,15 @@ CAlienEffectorPP::CAlienEffectorPP(const SPPInfo& ppi, EEffectorPPType type) : C
 }
 
 CAlienEffectorPP::~CAlienEffectorPP() {}
+
 #define PERIOD_SPEED 0.3f
 
 BOOL CAlienEffectorPP::Process(SPPInfo& pp)
 {
-    inherited::Process(pp);
+    std::ignore = inherited::Process(pp);
 
     if (fsimilar(factor, target_factor))
-    {
         target_factor = (target_factor > 0.5f) ? .3f : .6f;
-    }
 
     def_lerp(factor, target_factor, PERIOD_SPEED, Device.fTimeDelta);
     pp.lerp(pp_identity, state, factor);
@@ -71,16 +70,17 @@ void CAlienEffectorPP::Destroy()
 
 class CAlienEffector : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CAlienEffector, CEffectorCam);
+
+private:
     typedef CEffectorCam inherited;
 
-    float m_time_total;
     Fvector dangle_target;
     Fvector dangle_current;
-
     CAI_Bloodsucker* monster;
 
-    float m_current_fov;
     Fmatrix m_prev_eye_matrix;
+    float m_current_fov;
     float m_inertion;
 
 public:

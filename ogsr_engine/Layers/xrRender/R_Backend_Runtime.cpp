@@ -106,7 +106,7 @@ void CBackend::Invalidate()
         textures_vs[vs_it++] = nullptr;
 }
 
-void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
+void CBackend::set_ClipPlanes(u32, Fplane*, u32)
 {
     // TODO: DX10: Implement in the corresponding vertex shaders
     // Use this to set up location, were shader setup code will get data
@@ -114,10 +114,8 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     return;
 }
 
-void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
+void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform, u32 fmask)
 {
-    if (0 == HW.Caps.geometry.dwClipPlanes)
-        return;
     if (!_enable)
     {
         // TODO: DX10: Implement in the corresponding vertex shaders
@@ -125,7 +123,12 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask
         // VERIFY(!"CBackend::set_ClipPlanes not implemented!");
         return;
     }
+
+    if (HW.Caps.geometry.dwClipPlanes == 0)
+        return;
+
     VERIFY(_xform && fmask);
+
     CFrustum F;
     F.CreateFromMatrix(*_xform, fmask);
     set_ClipPlanes(_enable, F.planes, F.p_count);
@@ -137,13 +140,14 @@ void CBackend::set_Textures(STextureList* textures_list)
     // if (T == textures_list) // disabled due to cases when the set of resources the same, but different srv is need to be bind
     //    return;
     T = textures_list;
+
     // If resources weren't set at all we should clear from resource #0.
-    int _last_ps = -1;
-    int _last_vs = -1;
-    int _last_gs = -1;
-    int _last_hs = -1;
-    int _last_ds = -1;
-    int _last_cs = -1;
+    gsl::index _last_ps{-1};
+    gsl::index _last_vs{-1};
+    gsl::index _last_gs{-1};
+    gsl::index _last_hs{-1};
+    gsl::index _last_ds{-1};
+    gsl::index _last_cs{-1};
 
     auto it = textures_list->begin();
     const auto end = textures_list->end();
@@ -151,7 +155,7 @@ void CBackend::set_Textures(STextureList* textures_list)
     for (; it != end; ++it)
     {
         std::pair<u32, ref_texture>& loader = *it;
-        u32 load_id = loader.first;
+        gsl::index load_id{loader.first};
         CTexture* load_surf = loader.second._get();
 
         if (load_id < CTexture::rstVertex)
@@ -159,7 +163,7 @@ void CBackend::set_Textures(STextureList* textures_list)
             // Set up pixel shader resources
             VERIFY(load_id < CTexture::mtMaxPixelShaderTextures);
             // ordinary pixel surface
-            if ((int)load_id > _last_ps)
+            if (load_id > _last_ps)
                 _last_ps = load_id;
             if (textures_ps[load_id] != load_surf || (load_surf && (load_surf->last_slice != load_surf->curr_slice)))
             {
@@ -178,11 +182,11 @@ void CBackend::set_Textures(STextureList* textures_list)
         else if (load_id < CTexture::rstGeometry)
         {
             // Set up pixel shader resources
-            VERIFY(load_id < CTexture::rstVertex + CTexture::mtMaxVertexShaderTextures);
+            VERIFY(load_id < std::to_underlying(CTexture::rstVertex) + std::to_underlying(CTexture::mtMaxVertexShaderTextures));
 
             // vertex only //d-map or vertex
-            u32 load_id_remapped = load_id - CTexture::rstVertex;
-            if ((int)load_id_remapped > _last_vs)
+            gsl::index load_id_remapped{load_id - CTexture::rstVertex};
+            if (load_id_remapped > _last_vs)
                 _last_vs = load_id_remapped;
             if (textures_vs[load_id_remapped] != load_surf)
             {
@@ -200,11 +204,11 @@ void CBackend::set_Textures(STextureList* textures_list)
         else if (load_id < CTexture::rstHull)
         {
             // Set up pixel shader resources
-            VERIFY(load_id < CTexture::rstGeometry + CTexture::mtMaxGeometryShaderTextures);
+            VERIFY(load_id < std::to_underlying(CTexture::rstGeometry) + std::to_underlying(CTexture::mtMaxGeometryShaderTextures));
 
             // vertex only //d-map or vertex
-            u32 load_id_remapped = load_id - CTexture::rstGeometry;
-            if ((int)load_id_remapped > _last_gs)
+            gsl::index load_id_remapped{load_id - CTexture::rstGeometry};
+            if (load_id_remapped > _last_gs)
                 _last_gs = load_id_remapped;
             if (textures_gs[load_id_remapped] != load_surf)
             {
@@ -222,11 +226,11 @@ void CBackend::set_Textures(STextureList* textures_list)
         else if (load_id < CTexture::rstDomain)
         {
             // Set up pixel shader resources
-            VERIFY(load_id < CTexture::rstHull + CTexture::mtMaxHullShaderTextures);
+            VERIFY(load_id < std::to_underlying(CTexture::rstHull) + std::to_underlying(CTexture::mtMaxHullShaderTextures));
 
             // vertex only //d-map or vertex
-            u32 load_id_remapped = load_id - CTexture::rstHull;
-            if ((int)load_id_remapped > _last_hs)
+            gsl::index load_id_remapped{load_id - CTexture::rstHull};
+            if (load_id_remapped > _last_hs)
                 _last_hs = load_id_remapped;
             if (textures_hs[load_id_remapped] != load_surf)
             {
@@ -244,11 +248,11 @@ void CBackend::set_Textures(STextureList* textures_list)
         else if (load_id < CTexture::rstCompute)
         {
             // Set up pixel shader resources
-            VERIFY(load_id < CTexture::rstDomain + CTexture::mtMaxDomainShaderTextures);
+            VERIFY(load_id < std::to_underlying(CTexture::rstDomain) + std::to_underlying(CTexture::mtMaxDomainShaderTextures));
 
             // vertex only //d-map or vertex
-            u32 load_id_remapped = load_id - CTexture::rstDomain;
-            if ((int)load_id_remapped > _last_ds)
+            gsl::index load_id_remapped{load_id - CTexture::rstDomain};
+            if (load_id_remapped > _last_ds)
                 _last_ds = load_id_remapped;
             if (textures_ds[load_id_remapped] != load_surf)
             {
@@ -266,11 +270,11 @@ void CBackend::set_Textures(STextureList* textures_list)
         else if (load_id < CTexture::rstInvalid)
         {
             // Set up pixel shader resources
-            VERIFY(load_id < CTexture::rstCompute + CTexture::mtMaxComputeShaderTextures);
+            VERIFY(load_id < std::to_underlying(CTexture::rstCompute) + std::to_underlying(CTexture::mtMaxComputeShaderTextures));
 
             // vertex only //d-map or vertex
-            u32 load_id_remapped = load_id - CTexture::rstCompute;
-            if ((int)load_id_remapped > _last_cs)
+            gsl::index load_id_remapped{load_id - CTexture::rstCompute};
+            if (load_id_remapped > _last_cs)
                 _last_cs = load_id_remapped;
             if (textures_cs[load_id_remapped] != load_surf)
             {
@@ -286,7 +290,9 @@ void CBackend::set_Textures(STextureList* textures_list)
             }
         }
         else
-            VERIFY("Invalid enum");
+        {
+            VERIFY(load_id >= CTexture::rstInvalid, "Invalid enum");
+        }
     }
 
     // clear remaining stages (PS)

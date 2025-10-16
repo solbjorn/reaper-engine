@@ -112,13 +112,15 @@ void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
 
     switch (Emitter.m_eType)
     {
-    case ET_SimpleDraught:
+    case ET_SimpleDraught: {
         float fPeriod = Emitter.m_DraughtParams.m_fPeriod;
         if (fPeriod < 0.0001f)
             fPeriod = 0.0001f;
         float fFactor = 1.0f + Emitter.m_DraughtParams.m_fAmp * _sin((t + Emitter.m_DraughtParams.m_fPhase) * (2.0f * float(PI)) / fPeriod);
         FlowVelocity.mul(fFactor);
-        break;
+    }
+    break;
+    default: break;
     }
 
     RCache.set_c(strImpulseSize, fRadius);

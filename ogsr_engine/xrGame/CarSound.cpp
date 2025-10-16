@@ -1,24 +1,23 @@
 #include "stdafx.h"
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
-extern CPHWorld* ph_world;
-CCar::SCarSound::SCarSound(CCar* car)
-{
-    volume = 1.f;
-    pcar = car;
-    relative_pos.set(0.f, 0.5f, -1.f);
-}
 
-CCar::SCarSound::~SCarSound() {}
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
+
+extern CPHWorld* ph_world;
+
+CCar::SCarSound::SCarSound(CCar* car) : pcar{car} {}
+CCar::SCarSound::~SCarSound() = default;
+
 void CCar::SCarSound::Init()
 {
     CInifile* ini = smart_cast<IKinematics*>(pcar->Visual())->LL_UserData();
@@ -44,8 +43,10 @@ void CCar::SCarSound::Init()
     {
         Msg("! Car doesn't contain sound params");
     }
+
     eCarSound = sndOff;
 }
+
 void CCar::SCarSound::SetSoundPosition(ref_sound& snd)
 {
     VERIFY(!ph_world->Processing());
@@ -56,6 +57,7 @@ void CCar::SCarSound::SetSoundPosition(ref_sound& snd)
         snd.set_position(pos);
     }
 }
+
 void CCar::SCarSound::UpdateStarting()
 {
     VERIFY(!ph_world->Processing());
@@ -77,6 +79,7 @@ void CCar::SCarSound::UpdateStarting()
     if (!snd_engine_start._feedback())
         Drive();
 }
+
 void CCar::SCarSound::UpdateStoping()
 {
     VERIFY(!ph_world->Processing());
@@ -84,12 +87,14 @@ void CCar::SCarSound::UpdateStoping()
     if (!snd_engine_stop._feedback())
         SwitchOff();
 }
+
 void CCar::SCarSound::UpdateStalling()
 {
     SetSoundPosition(snd_engine_stop);
     if (!snd_engine_stop._feedback())
         SwitchOff();
 }
+
 void CCar::SCarSound::UpdateDrive()
 {
     VERIFY(!ph_world->Processing());
@@ -98,11 +103,13 @@ void CCar::SCarSound::UpdateDrive()
     snd_engine.set_frequency(scale);
     SetSoundPosition(snd_engine);
 }
+
 void CCar::SCarSound::SwitchState(ESoundState new_state)
 {
     eCarSound = new_state;
     time_state_start = Device.dwTimeGlobal;
 }
+
 void CCar::SCarSound::Update()
 {
     VERIFY(!ph_world->Processing());
@@ -115,10 +122,12 @@ void CCar::SCarSound::Update()
     case sndDrive: UpdateDrive(); break;
     case sndStalling: UpdateStalling(); break;
     case sndStoping: UpdateStalling(); break;
+    default: break;
     }
 }
 
 void CCar::SCarSound::SwitchOn() { pcar->processing_activate(); }
+
 void CCar::SCarSound::Destroy()
 {
     SwitchOff();
@@ -176,6 +185,7 @@ void CCar::SCarSound::Drive()
         snd_engine.play(pcar, sm_Looped);
     SetSoundPosition(snd_engine);
 }
+
 void CCar::SCarSound::TransmissionSwitch()
 {
     VERIFY(!ph_world->Processing());

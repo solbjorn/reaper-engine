@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "helicopter.h"
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
@@ -150,7 +151,7 @@ void CHelicopter::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(fire_pos, zero_vel);
+    StartSmokeParticles(fire_pos);
     OnShellDrop(fire_pos, zero_vel);
 
     HUD_SOUND::PlaySound(m_sndShot, fire_pos, this, false);

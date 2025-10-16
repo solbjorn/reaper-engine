@@ -8,18 +8,21 @@
 #define AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_
 
 // Abstract 'Pure' class for DLL interface
-class DLL_Pure : public virtual RTTI::Enable
+class XR_NOVTABLE DLL_Pure : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(DLL_Pure);
 
 public:
-    CLASS_ID CLS_ID;
+    CLASS_ID CLS_ID{};
 
-    DLL_Pure(void* params) { CLS_ID = 0; }
-    DLL_Pure() { CLS_ID = 0; }
+    DLL_Pure() = default;
+    DLL_Pure(void*) {}
+    virtual ~DLL_Pure() = 0;
+
     virtual DLL_Pure* _construct() { return this; }
-    virtual ~DLL_Pure() {}
 };
+
+inline DLL_Pure::~DLL_Pure() = default;
 
 // Class creation/destroying interface
 typedef DLL_Pure* Factory_Create(CLASS_ID CLS_ID);

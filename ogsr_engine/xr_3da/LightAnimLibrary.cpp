@@ -299,13 +299,16 @@ CLAItem* ELightAnimLibrary::FindItem(LPCSTR name)
 
 CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
 {
-    VERIFY2(FindItem(name) == 0, "Duplicate name found.");
+    VERIFY2(FindItem(name) == nullptr, "Duplicate name found.");
+
     CLAItem* I = xr_new<CLAItem>();
     if (src)
         *I = *src;
     else
         I->InitDefault();
+
     I->cName = name;
     Items.push_back(I);
+
     return I;
 }

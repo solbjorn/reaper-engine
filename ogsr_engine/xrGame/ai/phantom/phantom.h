@@ -8,9 +8,11 @@ class CParticlesObject;
 
 class CPhantom : public CEntity
 {
-    typedef CEntity inherited;
+    RTTI_DECLARE_TYPEINFO(CPhantom, CEntity);
 
 private:
+    typedef CEntity inherited;
+
     enum EState
     {
         stInvalid = -2,
@@ -79,8 +81,8 @@ public:
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
 
-    virtual void HitSignal(float HitAmount, Fvector& local_dir, CObject* who, s16 element) {}
-    virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir) {}
+    void HitSignal(float, Fvector&, CObject*, s16) override {}
+    void HitImpulse(float, Fvector&, Fvector&) override {}
     virtual void Hit(SHit* pHDS);
 
     virtual BOOL IsVisibleForHUD() { return false; }

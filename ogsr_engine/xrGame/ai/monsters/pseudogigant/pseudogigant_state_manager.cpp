@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "pseudo_gigant.h"
 #include "pseudogigant_state_manager.h"
 
@@ -45,6 +46,7 @@ void CStateManagerGigant::execute()
             {
             case eStrong: state_id = eStatePanic; break;
             case eWeak: state_id = eStateAttack; break;
+            default: break;
             }
         }
         else if (object->HitMemory.is_hit())
@@ -72,7 +74,9 @@ void CStateManagerGigant::execute()
         }
     }
     else
+    {
         state_id = eStateControlled;
+    }
 
     select_state(state_id);
 

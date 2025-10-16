@@ -3,6 +3,8 @@
 #include "fs_internal.h"
 #include "trivial_encryptor.h"
 
+#include <filesystem>
+
 #ifdef DEBUG
 u32 g_file_mapped_memory = 0;
 u32 g_file_mapped_count = 0;
@@ -52,11 +54,11 @@ void dump_file_mappings()
 // Tools
 //////////////////////////////////////////////////////////////////////
 
-#include <filesystem>
-void VerifyPath(const std::string_view path) // Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
+// Проверяет путь до файла. Если папки в пути отсутствуют - создаёт их.
+void VerifyPath(absl::string_view path)
 {
     const auto lastSepPos = path.find_last_of('\\');
-    const auto foldersPath = (lastSepPos != std::string_view::npos) ? path.substr(0, lastSepPos) : path;
+    const auto foldersPath = (lastSepPos != absl::string_view::npos) ? path.substr(0, lastSepPos) : path;
     std::error_code e;
     namespace stdfs = std::filesystem;
     stdfs::create_directories(stdfs::path(foldersPath.begin(), foldersPath.end()), e);

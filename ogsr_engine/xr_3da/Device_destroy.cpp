@@ -71,7 +71,7 @@ void CRenderDevice::Reset(bool precache)
     Msg("*** RESET [%u ms]", tm_end - tm_start);
 
     //	TODO: Remove this! It may hide crash
-#pragma todo("KRodin: ??? Remove this! It may hide crash ???")
+    // TODO: KRodin: ??? Remove this! It may hide crash ???
     Memory.mem_compact();
 
     seqDeviceReset.Process();

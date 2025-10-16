@@ -207,16 +207,14 @@ void CInventoryItem::Hit(SHit* pHDS)
 }
 
 const char* CInventoryItem::Name() { return *m_name; }
-
 const char* CInventoryItem::NameShort() { return *m_nameShort; }
 
 bool CInventoryItem::Useful() const { return CanTake(); }
 
-bool CInventoryItem::Activate(bool now) { return false; }
+bool CInventoryItem::Activate(bool) { return false; }
+void CInventoryItem::Deactivate(bool) {}
 
-void CInventoryItem::Deactivate(bool now) {}
-
-void CInventoryItem::OnH_B_Independent(bool just_before_destroy)
+void CInventoryItem::OnH_B_Independent(bool)
 {
     UpdateXForm();
     m_eItemPlace = eItemPlaceUndefined;
@@ -433,12 +431,11 @@ void CInventoryItem::reinit()
 }
 
 bool CInventoryItem::can_kill() const { return (false); }
+CInventoryItem* CInventoryItem::can_kill(CInventory*) const { return nullptr; }
+const CInventoryItem* CInventoryItem::can_kill(const xr_vector<const CGameObject*>&) const { return nullptr; }
 
-CInventoryItem* CInventoryItem::can_kill(CInventory* inventory) const { return nullptr; }
-const CInventoryItem* CInventoryItem::can_kill(const xr_vector<const CGameObject*>& items) const { return nullptr; }
-CInventoryItem* CInventoryItem::can_make_killing(const CInventory* inventory) const { return nullptr; }
-
-bool CInventoryItem::ready_to_kill() const { return (false); }
+CInventoryItem* CInventoryItem::can_make_killing(const CInventory*) const { return nullptr; }
+bool CInventoryItem::ready_to_kill() const { return false; }
 
 void CInventoryItem::activate_physic_shell()
 {
@@ -481,9 +478,8 @@ void CInventoryItem::UpdateXForm()
     // Get matrices
     int boneL, boneR, boneR2;
     E->g_WeaponBones(boneL, boneR, boneR2);
-    //	if ((HandDependence() == hd1Hand) || (STATE == eReload) || (!E->g_Alive()))
-    //		boneL = boneR2;
-#pragma todo("TO ALL: serious performance problem")
+
+    // TODO: TO ALL: serious performance problem
     V->CalculateBones();
     Fmatrix& mL = V->LL_GetTransform(u16(boneL));
     Fmatrix& mR = V->LL_GetTransform(u16(boneR));
@@ -547,7 +543,8 @@ void CInventoryItem::modify_holder_params(float& range, float& fov) const
 bool CInventoryItem::CanTrade() const
 {
     bool res = true;
-#pragma todo("Dima to Andy : why CInventoryItem::CanTrade can be called for the item, which doesn't have owner?")
+
+    // TODO: Dima to Andy : why CInventoryItem::CanTrade can be called for the item, which doesn't have owner?
     if (m_pCurrentInventory)
         res = inventory_owner().AllowItemToTrade(this, m_eItemPlace);
 
@@ -610,7 +607,7 @@ void CInventoryItem::OnMoveToBelt()
     }
 }
 
-void CInventoryItem::OnMoveToRuck(EItemPlace prevPlace)
+void CInventoryItem::OnMoveToRuck(EItemPlace)
 {
     if (smart_cast<CActor*>(object().H_Parent()))
     {

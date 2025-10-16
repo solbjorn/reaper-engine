@@ -4,6 +4,7 @@
 #include "shootingobject.h"
 #include "physicsshellholder.h"
 #include "hudsound.h"
+
 class CCartridge;
 class CCameraBase;
 
@@ -53,7 +54,6 @@ private:
     Fmatrix m_i_bind_x_xform, m_i_bind_y_xform, m_fire_bone_xform;
     Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
     CCartridge* m_Ammo;
-    float m_barrel_speed;
     Fvector2 m_dAngle;
     Fvector m_destEnemyDir;
     bool m_allow_fire;
@@ -74,15 +74,16 @@ protected:
     void AddShotEffector();
     void RemoveShotEffector();
     void SetDesiredDir(float h, float p);
-    // HolderCustom
+
 public:
-    virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) { return !Owner(); }
-    virtual void OnMouseMove(int x, int y);
-    virtual void OnKeyboardPress(int dik);
-    virtual void OnKeyboardRelease(int dik);
-    virtual void OnKeyboardHold(int dik);
+    // HolderCustom
+    [[nodiscard]] bool Use(const Fvector&, const Fvector&, const Fvector&) override { return !Owner(); }
+    void OnMouseMove(int x, int y) override;
+    void OnKeyboardPress(int dik) override;
+    void OnKeyboardRelease(int dik) override;
+    void OnKeyboardHold(int) override;
     virtual CInventory* GetInventory() { return nullptr; }
-    virtual void cam_Update(float dt, float fov = 90.0f);
+    void cam_Update(float, float = 90.0f) override;
 
     void renderable_Render(u32 context_id, IRenderable* root) override;
 

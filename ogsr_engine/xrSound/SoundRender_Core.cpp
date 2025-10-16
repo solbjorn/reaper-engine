@@ -5,10 +5,7 @@
 #include "soundrender_source.h"
 #include "soundrender_emitter.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
 #include <eax.h>
-#pragma warning(pop)
 
 BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
@@ -33,7 +30,9 @@ CSoundRender_Core* SoundRender{};
 CSound_manager_interface* Sound{};
 
 //////////////////////////////////////////////////
+
 #include <efx.h>
+
 #define LOAD_PROC(x, type) ((x) = (type)alGetProcAddress(#x))
 static LPALEFFECTF alEffectf;
 static LPALEFFECTI alEffecti;
@@ -80,7 +79,7 @@ CSoundRender_Core::~CSoundRender_Core()
     xr_delete(geom_SOM);
 }
 
-void CSoundRender_Core::_initialize(int stage)
+void CSoundRender_Core::_initialize(int)
 {
     Timer.Start();
 
@@ -201,10 +200,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
     // check version
     R_ASSERT(I->find_chunk(0));
 
-#ifdef DEBUG
-    u32 version =
-#endif
-        I->r_u32();
+    u32 version = I->r_u32();
     VERIFY2(version == 0, "Invalid SOM version");
 
     struct SOM_poly
@@ -229,9 +225,9 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
         const auto end = static_cast<SOM_poly*>(geom->end());
         for (SOM_poly* poly = begin; poly != end; ++poly)
         {
-            CL.add_face_packed_D(poly->v1, poly->v2, poly->v3, *reinterpret_cast<u32*>(&poly->occ), 0.01f);
+            CL.add_face_packed_D(poly->v1, poly->v2, poly->v3, std::bit_cast<u32>(poly->occ), 0.01f);
             if (poly->b2sided)
-                CL.add_face_packed_D(poly->v3, poly->v2, poly->v1, *reinterpret_cast<u32*>(&poly->occ), 0.01f);
+                CL.add_face_packed_D(poly->v3, poly->v2, poly->v1, std::bit_cast<u32>(poly->occ), 0.01f);
         }
         geom->close();
     }
@@ -338,8 +334,6 @@ void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
     S._p->fTimeTotal += s->length_sec();
     if (S._feedback())
         ((CSoundRender_Emitter*)S._feedback())->fTimeToStop += s->length_sec();
-
-    SoundRender->i_destroy_source(s);
 }
 
 void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, u32 game_type)
@@ -463,8 +457,6 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
     }
 
     R_ASSERT(!S.feedback);
-    SoundRender->i_destroy_source((CSoundRender_Source*)S.handle);
-
     S.handle = nullptr;
 }
 

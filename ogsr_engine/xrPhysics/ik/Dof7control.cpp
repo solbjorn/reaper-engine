@@ -30,7 +30,9 @@
   MODIFICATIONS.
 
  */
+
 #include "StdAfx.h"
+
 #include "Dof7control.h"
 #include "mathTrig.h"
 
@@ -163,7 +165,7 @@ static int solve_R_angle(const float g[3], const float s[3], const float t[3], c
 
 float get_circle_equation(const float ee[3], const float axis[3], const float pos_axis[3], float upper_len, float lower_len, float c[3], float u[3], float v[3], float n[3])
 {
-    float wn = norm((float*)ee);
+    float wn = norm((const float*)ee);
     float radius;
 
     cpvector(n, ee);
@@ -194,7 +196,7 @@ float get_circle_equation(const float ee[3], const float axis[3], const float po
         vecscalarmult(n, n, -1.0);
 
     vecscalarmult(temp, n, DOT(axis, n));
-    vecsub(u, (float*)axis, temp);
+    vecsub(u, (const float*)axis, temp);
     unitize(u);
 
     crossproduct(v, n, u);
@@ -267,7 +269,7 @@ int SRS::SetGoalPos(const float eee[3], const Matrix E, float& rangle)
     // the ee in the R1 frame as p_r1 and ee_r1
 
     get_translation(T, p_r1);
-    hmatmult(Temp, (float (*)[4])E, S);
+    hmatmult(Temp, (const float (*)[4])E, S);
     get_translation(Temp, s);
     cpvector(ee, eee);
 
@@ -354,9 +356,9 @@ inline void evalcircle(const float c[3], const float u[3], const float v[3], flo
     float temp[3];
 
     cpvector(p, c);
-    vecscalarmult(temp, (float*)u, radius * _cos(angle));
+    vecscalarmult(temp, (const float*)u, radius * _cos(angle));
     vecadd(p, p, temp);
-    vecscalarmult(temp, (float*)v, radius * _sin(angle));
+    vecscalarmult(temp, (const float*)v, radius * _sin(angle));
     vecadd(p, p, temp);
 }
 
@@ -391,11 +393,11 @@ inline void make_frame(const float p[3], float p_scale, const float q[3], Matrix
     float x[3], y[3], t[3];
 
     // x vector is unit vector from origin to p
-    vecscalarmult(x, (float*)p, p_scale);
+    vecscalarmult(x, (const float*)p, p_scale);
 
     // y vector is unit perpendicular projection of q onto x
     vecscalarmult(t, x, DOT(q, x));
-    vecsub(y, (float*)q, t);
+    vecsub(y, (const float*)q, t);
     unitize(y);
 
     // z vector is x cross y
@@ -496,7 +498,7 @@ float SRS::PosToAngle(const float p[3])
     // Find vector from center of circle to pos and project it onto circle
     float cp[3], pp[3];
 
-    vecsub(cp, (float*)p, c);
+    vecsub(cp, (const float*)p, c);
     project_plane(pp, cp, n);
 
     // Find angle between u and pp. This is the swivel angle
@@ -635,8 +637,8 @@ static void get_aim_circle_equation(const float g[3], const float a[3], const fl
 
     float t1[3], t2[3];
 
-    vecmult(t1, (float*)tb, Ry);
-    vecmult(t2, (float*)ta, Ryt);
+    vecmult(t1, (const float*)tb, Ry);
+    vecmult(t2, (const float*)ta, Ryt);
     float L3 = _sqrt(L1 + L2 + DOT(ta, t1) + DOT(tb, t2));
 
     // Lengths of upper and lower arms
@@ -650,10 +652,10 @@ static void get_aim_circle_equation(const float g[3], const float a[3], const fl
     // h = Ry*tb + ta
     // a = Ry*a
 
-    vecadd(t2, t1, (float*)ta);
+    vecadd(t2, t1, (const float*)ta);
     unitize(t2);
 
-    vecmult(t1, (float*)a, Ry);
+    vecmult(t1, (const float*)a, Ry);
     float alpha = acos(DOT(t1, t2));
 
     //
@@ -675,7 +677,7 @@ static void get_aim_circle_equation(const float g[3], const float a[3], const fl
 
     radius = _sqrt(1 - c_gamma * c_gamma) * L3;
 
-    project_plane(u, (float*)proj_axis, n);
+    project_plane(u, (const float*)proj_axis, n);
     unitize(u);
     crossproduct(v, n, u);
 }

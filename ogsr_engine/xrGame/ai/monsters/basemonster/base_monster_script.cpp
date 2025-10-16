@@ -147,10 +147,8 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
     case eMA_WalkFwd: anim().m_tAction = ACT_WALK_FWD; break;
 
     case eMA_RunWithLeader:
-    case eMA_Run:
-        anim().m_tAction = ACT_RUN;
-        break;
-        //		case eMA_Jump:		anim().m_tAction = ACT_JUMP;		break;
+    case eMA_Run: anim().m_tAction = ACT_RUN; break;
+    default: break;
     }
 
     m_force_real_speed = (l_tMovementAction.m_tSpeedParam == eSP_ForceSpeed);
@@ -181,16 +179,13 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
             control().path_builder().patrol().set_previous_point(l_tMovementAction.m_previous_patrol_point);
         }
         break;
-
     case CScriptMovementAction::eGoalTypePathPosition:
     case CScriptMovementAction::eGoalTypeNoPathPosition:
-
         if (AssignGamePathIfNeeded(l_tMovementAction.m_tDestinationPosition, invalid_vertex_id))
             break;
 
         path().set_target_point(l_tMovementAction.m_tDestinationPosition);
         break;
-
     case CScriptMovementAction::eGoalTypeFollowLeader: {
         CSE_ALifeMonsterAbstract* const i_am = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(ID()));
         VERIFY(i_am);
@@ -239,9 +234,7 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
         break;
     }
-
     case CScriptMovementAction::eGoalTypePathNodePosition:
-
         if (AssignGamePathIfNeeded(l_tMovementAction.m_tDestinationPosition, l_tMovementAction.m_tNodeID))
             break;
 
@@ -254,9 +247,10 @@ bool CBaseMonster::bfAssignMovement(CScriptEntityAction* tpEntityAction)
         com_man().script_jump(l_tMovementAction.m_tDestinationPosition, l_tMovementAction.m_fDistToEnd);
         break;
     }
+    default: break;
     }
 
-    return (true);
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -305,6 +299,7 @@ bool CBaseMonster::bfAssignWatch(CScriptEntityAction* tpEntityAction)
         new_pos.mad(Position(), l_tWatchAction.m_tWatchVector, 2.f);
         LookPosition(new_pos);
         break;
+    default: break;
     }
 
     if (!control().direction().is_turning())
@@ -336,9 +331,10 @@ bool CBaseMonster::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
     case eAA_Rest: anim().m_tAction = ACT_REST; break;
     case eAA_Attack: anim().m_tAction = ACT_ATTACK; break;
     case eAA_LookAround: anim().m_tAction = ACT_LOOK_AROUND; break;
+    default: break;
     }
 
-    return (true);
+    return true;
 }
 
 bool CBaseMonster::bfAssignSound(CScriptEntityAction* tpEntityAction)
@@ -372,9 +368,10 @@ bool CBaseMonster::bfAssignSound(CScriptEntityAction* tpEntityAction)
     case eMonsterSoundPanic:
         sound().play(eMonsterSoundPanic, 0, 0, (l_tAction.m_monster_sound_delay == int(-1)) ? db().m_dwAttackSndDelay : l_tAction.m_monster_sound_delay);
         break;
+    default: break;
     }
 
-    return (true);
+    return true;
 }
 
 bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
@@ -420,10 +417,12 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
         else
             StateMan->force_script_state(eStateRest);
         break;
+    default: break;
     }
 
     m_script_state_must_execute = true;
-    return (!l_tAction.m_bCompleted);
+
+    return !l_tAction.m_bCompleted;
 }
 
 void CBaseMonster::ProcessScripts()
@@ -546,6 +545,7 @@ int CBaseMonster::get_enemy_strength()
         case eStrong: return (3);
         case eNormal: return (2);
         case eWeak: return (1);
+        default: break;
         }
     }
 

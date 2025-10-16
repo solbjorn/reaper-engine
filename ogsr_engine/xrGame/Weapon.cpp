@@ -35,7 +35,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CWeapon::CWeapon(LPCSTR name)
+CWeapon::CWeapon()
 {
     SetState(eHidden);
     SetNextState(eHidden);
@@ -499,7 +499,7 @@ void CWeapon::Load(LPCSTR section)
     m_u8TracerColorID = READ_IF_EXISTS(pSettings, r_u8, section, "tracers_color_ID", std::numeric_limits<u8>::max());
 
     string256 temp;
-    for (int i = egdNovice; i < egdCount; ++i)
+    for (std::underlying_type_t<ESingleGameDifficulty> i{egdNovice}; i < egdCount; ++i)
     {
         strconcat(sizeof(temp), temp, "hit_probability_", get_token_name(difficulty_type_token, i));
         m_hit_probability[i] = READ_IF_EXISTS(pSettings, r_float, section, temp, 1.f);
@@ -1342,7 +1342,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 
 int CWeapon::GetAmmoCount(u8 ammo_type, u32 max) const
 {
-    VERIFY(m_pInventory);
+    VERIFY(m_pCurrentInventory);
     R_ASSERT(ammo_type < m_ammoTypes.size());
 
     return GetAmmoCount_forType(m_ammoTypes[ammo_type], max);
@@ -2178,7 +2178,7 @@ void CWeapon::UpdateVisualBullets()
     HUD_VisualBulletUpdate();
 }
 
-void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
+void CWeapon::HUD_VisualBulletUpdate()
 {
     if (!GetHUDmode())
         return;
@@ -2190,7 +2190,7 @@ void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
 
     // Msg("Print %d bullets", last_hide_bullet);
 
-    if (last_hide_bullet == bullet_cnt || force)
+    if (last_hide_bullet == bullet_cnt)
         hide = false;
 
     for (auto b = 0; b < bullet_cnt; b++)

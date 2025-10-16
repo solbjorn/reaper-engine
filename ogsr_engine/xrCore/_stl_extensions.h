@@ -56,6 +56,15 @@ using xr_multimap = absl::btree_multimap<Key, Value, Compare, Alloc>;
 template <class K, class V, class Hash = absl::DefaultHashContainerHash<K>, class Eq = absl::DefaultHashContainerEq<K>, class Allocator = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = absl::flat_hash_map<K, V, Hash, Eq, Allocator>;
 
+namespace xr
+{
+// Until libc++ implements std::views::enumerate()
+[[nodiscard]] constexpr inline auto views_enumerate(std::ranges::viewable_range auto&& rng)
+{
+    return std::views::zip(std::views::iota(0z, std::ssize(std::forward<decltype(rng)>(rng))), std::forward<decltype(rng)>(rng));
+}
+} // namespace xr
+
 struct pred_str
 {
     bool operator()(const char* x, const char* y) const { return std::strcmp(x, y) < 0; }

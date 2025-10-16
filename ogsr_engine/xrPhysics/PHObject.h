@@ -76,17 +76,16 @@ public:
 
     virtual void FreezeContent();
     virtual void UnFreezeContent();
-    virtual void EnableObject(CPHObject* obj);
+    virtual void EnableObject(CPHObject*);
     virtual bool DoCollideObj();
     virtual bool step_single(dReal step);
     void reinit_single();
-    void step_prediction(float time);
     void step(float time);
     virtual void PhDataUpdate(dReal step) = 0;
     virtual void PhTune(dReal step) = 0;
     virtual void spatial_move();
     virtual void InitContact(dContact* c, bool& do_collide, u16 /*material_idx_1*/, u16 /*material_idx_2*/) = 0;
-    virtual void CutVelocity(float l_limit, float a_limit) {}
+    virtual void CutVelocity(float, float) {}
 
     void Freeze();
     void UnFreeze();
@@ -111,8 +110,8 @@ public:
     void collision_enable();
     virtual void ClearRecentlyDeactivated() {}
     virtual void Collide();
-    virtual void near_callback(CPHObject* obj) {}
-    virtual void RMotionsQuery(qResultVec& res) {}
+    virtual void near_callback(CPHObject*) {}
+    virtual void RMotionsQuery(qResultVec&) {}
     virtual CPHMoveStorage* MoveStorage() { return nullptr; }
     virtual ECastType CastType() { return tpNotDefinite; }
     virtual void vis_update_activate() {}

@@ -16,7 +16,6 @@
 #include "../control_movement_base.h"
 #include "burer_fast_gravi.h"
 #include "../anti_aim_ability.h"
-#include "../anti_aim_ability.h"
 
 #include "../../../Inventory.h"
 #include "../../../ActorCondition.h"
@@ -224,7 +223,7 @@ void CBurer::shedule_Update(u32 dt)
     CTelekinesis::schedule_update();
 }
 
-void CBurer::CheckSpecParams(u32 spec_params) {}
+void CBurer::CheckSpecParams(u32) {}
 
 void CBurer::StaminaHit()
 {

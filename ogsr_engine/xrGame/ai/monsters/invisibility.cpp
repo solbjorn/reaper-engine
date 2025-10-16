@@ -52,8 +52,6 @@ void CInvisibility::stop_blink()
 {
     m_blink = false;
     m_cur_visibility = !active();
-
-    on_change_visibility(m_cur_visibility);
 }
 
 void CInvisibility::update_blink()
@@ -76,8 +74,6 @@ void CInvisibility::update_blink()
         // blink
         m_time_last_blink = cur_time;
         m_cur_visibility = !m_cur_visibility;
-
-        on_change_visibility(m_cur_visibility);
     }
 }
 

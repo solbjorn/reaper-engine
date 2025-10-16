@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "bloodsucker_vampire_effector.h"
 
 CVampirePPEffector::CVampirePPEffector(const SPPInfo& ppi, float life_time) : inherited(EEffectorPPType(eCEHit), life_time)
@@ -14,7 +15,7 @@ CVampirePPEffector::CVampirePPEffector(const SPPInfo& ppi, float life_time) : in
 
 BOOL CVampirePPEffector::Process(SPPInfo& pp)
 {
-    inherited::Process(pp);
+    std::ignore = inherited::Process(pp);
 
     // amount of time passed in percents
     float time_past_perc = (m_total - fLifeTime) / m_total;
@@ -43,11 +44,13 @@ BOOL CVampirePPEffector::Process(SPPInfo& pp)
 //////////////////////////////////////////////////////////////////////////
 // Vampire Camera Effector
 //////////////////////////////////////////////////////////////////////////
+
 #define DELTA_ANGLE_X 10 * PI / 180
 #define DELTA_ANGLE_Y DELTA_ANGLE_X
 #define DELTA_ANGLE_Z DELTA_ANGLE_X
 #define ANGLE_SPEED 0.2f
 #define BEST_DISTANCE 0.3f
+
 CVampireCameraEffector::CVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt) : inherited(eCEVampire, time)
 {
     fLifeTime = time;

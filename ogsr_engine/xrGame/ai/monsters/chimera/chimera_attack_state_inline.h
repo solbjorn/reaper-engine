@@ -10,11 +10,11 @@
 #endif
 */
 
-float const num_scan_points = 10;
-float const scan_angle = deg2rad(360.f) / num_scan_points;
+constexpr inline float num_scan_points{10.0f};
+constexpr inline float scan_angle{deg2rad(360.0f) / num_scan_points};
 
 template <class Object>
-ChimeraAttackState<Object>::ChimeraAttackState(Object* obj) : inherited(obj)
+ChimeraAttackState<Object>::ChimeraAttackState(Object* obj) : inherited{obj}
 {}
 
 template <class Object>
@@ -126,7 +126,7 @@ bool ChimeraAttackState<Object>::jump(Fvector const& target, bool attack_jump)
         return false;
 
     m_allow_jump = true;
-    bool const jumped = object->com_man().jump_if_possible(target, (CEntityAlive*)object->EnemyMan.get_enemy(),
+    bool const jumped = object->com_man().jump_if_possible(target, const_cast<CEntityAlive*>(object->EnemyMan.get_enemy()),
                                                            attack_jump, // use_direction_to_target
                                                            true, // use velocity bounce
                                                            true);
@@ -266,12 +266,10 @@ bool ChimeraAttackState<Object>::select_target_for_jump(enum_action const action
     }
 
     bool left_side_first = true;
-    for (u32 index = 0; index < num_scan_points; ++index)
+    for (u32 index = 0; index < num_scan_points; index += 2)
     {
         if (!(index % 2))
-        {
             left_side_first = !(rand() % 2);
-        }
 
         bool const left_side = (!(index % 2)) ^ left_side_first;
         float const angle = scan_angle * ((index / 2) + 1) * (left_side ? -1.f : +1.f);
@@ -283,8 +281,6 @@ bool ChimeraAttackState<Object>::select_target_for_jump(enum_action const action
             m_target = scan_point;
             return true;
         }
-
-        ++index;
     }
 
     return select_target_for_attack_jump();
@@ -437,7 +433,8 @@ void ChimeraAttackState<Object>::execute()
         }
     }
     else if (object->is_jumping())
-    {}
+    {
+    }
     else if (self2enemy_mag >= m_min_run_distance)
     {
         m_target_vertex = enemy->ai_location().level_vertex_id();

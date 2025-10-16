@@ -61,19 +61,20 @@ private:
 public:
     CHUDManager();
     virtual ~CHUDManager();
-    virtual void OnEvent(EVENT E, u64 P1, u64 P2);
+
+    void OnEvent(EVENT, u64, u64) override;
 
     virtual void Load();
 
-    virtual void Render_First(u32 context_id);
-    virtual void Render_Last(u32 context_id);
-    virtual void OnFrame();
+    void Render_First(ctx_id_t context_id) override;
+    void Render_Last(ctx_id_t context_id) override;
+    void OnFrame() override;
 
     virtual void RenderUI();
 
     virtual IC CUI* GetUI() { return pUI; }
 
-    void Hit(int idx, float power, const Fvector& dir);
+    void Hit(int idx, float, const Fvector& dir);
     CFontManager& Font() { return *(UI()->Font()); }
 
     // текущий предмет на который смотрит HUD

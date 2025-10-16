@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx103DFluidBlenders.h"
 #include "dx103DFluidManager.h"
 #include "dx103DFluidRenderer.h"
@@ -80,29 +81,29 @@ void BindConstants(CBlender_Compile& C)
 
 void SetupSamplers(CBlender_Compile& C)
 {
-    int smp = C.r_dx10Sampler("samPointClamp");
-    if (smp != u32(-1))
+    u32 smp = C.r_dx10Sampler("samPointClamp");
+    if (smp != std::numeric_limits<u32>::max())
     {
         C.i_dx10Address(smp, D3DTADDRESS_CLAMP);
         C.i_dx10Filter(smp, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
     }
 
     smp = C.r_dx10Sampler("samLinear");
-    if (smp != u32(-1))
+    if (smp != std::numeric_limits<u32>::max())
     {
         C.i_dx10Address(smp, D3DTADDRESS_CLAMP);
         C.i_dx10Filter(smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
 
     smp = C.r_dx10Sampler("samLinearClamp");
-    if (smp != u32(-1))
+    if (smp != std::numeric_limits<u32>::max())
     {
         C.i_dx10Address(smp, D3DTADDRESS_CLAMP);
         C.i_dx10Filter(smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
 
     smp = C.r_dx10Sampler("samRepeat");
-    if (smp != u32(-1))
+    if (smp != std::numeric_limits<u32>::max())
     {
         C.i_dx10Address(smp, D3DTADDRESS_WRAP);
         C.i_dx10Filter(smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);

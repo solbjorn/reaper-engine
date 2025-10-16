@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIStalkersRankingWnd.h"
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"
@@ -99,11 +100,12 @@ bool GreaterRankPred(const u16& h1, const u16& h2)
 int get_actor_ranking()
 {
     std::sort(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), GreaterRankPred);
+
     TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(), g_all_statistic_humans.end(), Actor()->ID());
     if (it != g_all_statistic_humans.end())
-        return (int)std::distance(g_all_statistic_humans.begin(), it);
-    else
-        return 1;
+        return std::distance(g_all_statistic_humans.begin(), it);
+
+    return 1;
 }
 
 void CUIStalkersRankingWnd::FillList()
@@ -120,8 +122,8 @@ void CUIStalkersRankingWnd::FillList()
         CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
         int actor_place = get_actor_ranking();
 
-        int i = 0;
-        while (i < 20 && i < g_all_statistic_humans.size())
+        gsl::index i{};
+        while (i < 20 && i < std::ssize(g_all_statistic_humans))
         {
             u16 id = g_all_statistic_humans[i];
             CSE_ALifeTraderAbstract* pT = ch_info_get_from_id(id);
@@ -133,8 +135,11 @@ void CUIStalkersRankingWnd::FillList()
                     AddStalkerItem(&uiXml, i + 1, pT);
             }
             else
-                Msg("! [%s]: i[%d] id[%d] not a CSE_ALifeTraderAbstract", __FUNCTION__, i, id);
-            i++;
+            {
+                Msg("! [%s]: i[%zd] id[%d] not a CSE_ALifeTraderAbstract", __FUNCTION__, i, id);
+            }
+
+            ++i;
         }
 
         UIList->SetSelected(UIList->GetItem(0));
@@ -267,12 +272,11 @@ bool CUIStalkerRankingInfoItem::OnMouseDown(int mouse_btn)
         m_StalkersRankingWnd->GetTopList().SetSelected(this);
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
 
 CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd* w) : inherited(w) {}
 
-void CUIStalkerRankingElipsisItem::SetSelected(bool b) { return; }
-
-bool CUIStalkerRankingElipsisItem::OnMouseDown(int mouse_btn) { return false; }
+void CUIStalkerRankingElipsisItem::SetSelected(bool) {}
+bool CUIStalkerRankingElipsisItem::OnMouseDown(int) { return false; }

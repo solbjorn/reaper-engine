@@ -13,11 +13,13 @@ void CResourceManager::OnDeviceDestroy(BOOL)
     m_textures_description.UnLoad();
 
     // Release blenders
-    for (map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
+    for (auto& b : m_blenders)
     {
-        xr_free((char*&)b->first);
-        IBlenderXr::Destroy(b->second);
+        char* key = const_cast<char*>(b.first);
+        xr_free(key);
+        IBlenderXr::Destroy(b.second);
     }
+
     m_blenders.clear();
 
     // scripting

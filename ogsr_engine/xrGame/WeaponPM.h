@@ -1,8 +1,6 @@
 #ifndef __XR_WEAPON_PM_H__
 #define __XR_WEAPON_PM_H__
 
-#pragma once
-
 #include "WeaponPistol.h"
 #include "script_export_space.h"
 

@@ -74,7 +74,6 @@ public:
 
     void Init();
     void AddNews();
-    void MarkNewsAsRead(bool status);
     virtual void Show(bool status);
 
     void FillNews();

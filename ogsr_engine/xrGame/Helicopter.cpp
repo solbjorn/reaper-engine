@@ -16,9 +16,6 @@
 #include "HudManager.h"
 #include "physicscommon.h"
 
-// 50fps fixed
-float STEP = 0.02f;
-
 CHelicopter::CHelicopter()
 {
     ISpatial* self = smart_cast<ISpatial*>(this);
@@ -120,9 +117,11 @@ void CHelicopter::Load(LPCSTR section)
 
 void CHelicopter::reload(LPCSTR section) { inherited::reload(section); }
 
-void CollisionCallbackAlife(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2) { do_colide = false; }
-
-void ContactCallbackAlife(CDB::TRI* T, dContactGeom* c) {}
+namespace
+{
+void CollisionCallbackAlife(bool& do_colide, bool, dContact&, SGameMtl*, SGameMtl*) { do_colide = false; }
+void ContactCallbackAlife(CDB::TRI*, dContactGeom*) {}
+} // namespace
 
 BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 {
@@ -137,7 +136,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     if (!inherited::net_Spawn(DC))
         return (FALSE);
 
-    CPHSkeleton::Spawn((CSE_Abstract*)(DC));
+    std::ignore = CPHSkeleton::Spawn(DC);
+
     for (u32 i = 0; i < 4; ++i)
         CRocketLauncher::SpawnRocket(*m_sRocketSection, smart_cast<CGameObject*>(this));
 
@@ -230,6 +230,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     TurnEngineSound(false);
     if (pUserData->section_exist("destroyed"))
         CPHDestroyable::Load(pUserData, "destroyed");
+
 #ifdef DEBUG
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1);
 #endif
@@ -252,12 +253,13 @@ void CHelicopter::net_Destroy()
     CParticlesObject::Destroy(m_pParticle);
     m_light_render.destroy();
     m_movement.net_Destroy();
+
 #ifdef DEBUG
     Device.seqRender.Remove(this);
 #endif
 }
 
-void CHelicopter::SpawnInitPhysics(CSE_Abstract* D)
+void CHelicopter::SpawnInitPhysics(CSE_Abstract*)
 {
     PPhysicsShell() = P_build_Shell(this, false);
     if (g_Alive())

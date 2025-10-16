@@ -15,12 +15,14 @@
 #endif
 
 CPHAICharacter::CPHAICharacter() { m_forced_physics_control = false; }
+
 void CPHAICharacter::Create(dVector3 sizes)
 {
     inherited::Create(sizes);
     m_forced_physics_control = false; //.
 }
-bool CPHAICharacter::TryPosition(Fvector pos, bool exact_state)
+
+bool CPHAICharacter::TryPosition(Fvector pos)
 {
     if (!b_exist)
         return false;
@@ -108,46 +110,6 @@ void CPHAICharacter::SetPosition(Fvector pos)
 {
     m_vDesiredPosition.set(pos);
     inherited::SetPosition(pos);
-}
-
-void CPHAICharacter::BringToDesired(float time, float velocity, float /**force/**/)
-{
-    Fvector pos, move;
-    GetPosition(pos);
-
-    move.sub(m_vDesiredPosition, pos);
-    move.y = 0.f;
-    float dist = move.magnitude();
-
-    float vel;
-    if (dist > EPS_L * 100.f)
-    {
-        vel = dist / time;
-        move.mul(1.f / dist);
-    }
-    else if (dist > EPS_L * 10.f)
-    {
-        vel = dist * dist * dist;
-        move.mul(1.f / dist);
-    }
-    else
-    {
-        vel = 0.f;
-        move.set(0, 0, 0);
-    }
-
-    if (vel > velocity) //&&velocity>EPS_L
-        vel = velocity;
-
-    if (velocity < EPS_L / fixed_step)
-    {
-        vel = 0.f;
-        move.set(0, 0, 0);
-    }
-
-    SetMaximumVelocity(vel);
-
-    SetAcceleration(move);
 }
 
 void CPHAICharacter::Jump(const Fvector& jump_velocity)

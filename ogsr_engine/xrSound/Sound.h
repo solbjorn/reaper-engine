@@ -361,6 +361,7 @@ public:
     static void _destroy();
 
     virtual void _restart() = 0;
+    virtual bool i_locked() const = 0;
 
     virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, u32 game_type) = 0;
     virtual void attach_tail(ref_sound& S, LPCSTR fName) = 0;

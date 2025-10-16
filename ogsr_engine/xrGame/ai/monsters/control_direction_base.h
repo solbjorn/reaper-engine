@@ -1,8 +1,12 @@
 #pragma once
+
 #include "control_combase.h"
 
 class CControlDirectionBase : public CControl_ComBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlDirectionBase, CControl_ComBase);
+
+private:
     typedef CControl_ComBase inherited;
 
     u32 m_time_last_faced;
@@ -33,8 +37,8 @@ public:
     virtual void face_target(const CObject* obj, u32 delay = 0, float add_yaw = 0.f);
     IC void set_delay(u32 delay) { m_delay = delay; }
 
-    void set_heading_speed(float value, bool force = false);
-    void set_heading(float value, bool force = false);
+    void set_heading_speed(float value);
+    void set_heading(float value);
 
     IC const SAxis& heading() { return m_heading; }
 };

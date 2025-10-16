@@ -31,22 +31,22 @@ void CALifeSmartTerrainTask::setup_patrol_point(const shared_str& patrol_path_na
 
 GameGraph::_GRAPH_ID CALifeSmartTerrainTask::game_vertex_id() const
 {
+#ifdef DEBUG
     VERIFY3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
+#endif
+
     return (patrol_point().game_vertex_id());
 }
 
 u32 CALifeSmartTerrainTask::level_vertex_id() const
 {
+#ifdef DEBUG
     VERIFY3(ai().game_graph().valid_vertex_id(patrol_point().game_vertex_id()), *m_patrol_path_name, *m_patrol_point->name());
+#endif
+
     return (patrol_point().level_vertex_id());
 }
 
-Fvector CALifeSmartTerrainTask::position() const
-{
-    return (patrol_point().position());
-}
+Fvector CALifeSmartTerrainTask::position() const { return (patrol_point().position()); }
 
-CPatrolPoint* CALifeSmartTerrainTask::point_raw()
-{
-    return const_cast<CPatrolPoint*>(m_patrol_point);
-}
+CPatrolPoint* CALifeSmartTerrainTask::point_raw() { return const_cast<CPatrolPoint*>(m_patrol_point); }

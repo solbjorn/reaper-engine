@@ -37,10 +37,10 @@ IC void CProblemSolverAbstract::clear()
 }
 
 TEMPLATE_SPECIALIZATION
-void CProblemSolverAbstract::init() {}
+inline void CProblemSolverAbstract::init() {}
 
 TEMPLATE_SPECIALIZATION
-void CProblemSolverAbstract::setup()
+inline void CProblemSolverAbstract::setup()
 {
     m_target_state.clear();
     m_current_state.clear();
@@ -181,7 +181,7 @@ IC typename CProblemSolverAbstract::edge_value_type CProblemSolverAbstract::get_
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CProblemSolverAbstract::is_accessible(const _index_type& vertex_index) const { return (m_applied); }
+inline bool CProblemSolverAbstract::is_accessible(const _index_type&) const { return m_applied; }
 
 TEMPLATE_SPECIALIZATION
 IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
@@ -207,7 +207,7 @@ IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::v
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CProblemSolverAbstract::begin(const _index_type& vertex_index, const_iterator& b, const_iterator& e) const
+inline void CProblemSolverAbstract::begin(const _index_type&, const_iterator& b, const_iterator& e) const
 {
     b = m_operators.begin();
     e = m_operators.end();

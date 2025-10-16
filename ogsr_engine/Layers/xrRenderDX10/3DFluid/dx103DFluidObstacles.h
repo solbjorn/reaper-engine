@@ -35,7 +35,7 @@ private:
     void RenderPhysicsElement(IPhysicsElement& Element, const Fmatrix& WorldToFluid, float timestep);
 
     void RenderStaticOOBB(const Fmatrix& Transform);
-    void RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid, float timestep);
+    void RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid);
 
 private:
     Fvector3 m_vGridDim{};

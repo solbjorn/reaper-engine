@@ -7,10 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "patrol_path.h"
 #include "levelgamedef.h"
 
-CPatrolPath::CPatrolPath(shared_str name)
+CPatrolPath::CPatrolPath([[maybe_unused]] shared_str name)
 {
 #ifdef DEBUG
     m_name = name;

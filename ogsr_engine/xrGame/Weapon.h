@@ -37,7 +37,7 @@ private:
     typedef CHudItemObject inherited;
 
 public:
-    CWeapon(LPCSTR name);
+    CWeapon();
     virtual ~CWeapon();
 
     // Generic
@@ -682,7 +682,7 @@ public:
     bool bullet_update = true;
 
     void UpdateVisualBullets();
-    void HUD_VisualBulletUpdate(bool force = false, int force_idx = -1);
+    void HUD_VisualBulletUpdate();
 
 private:
     xr_string current_bullet_texture;

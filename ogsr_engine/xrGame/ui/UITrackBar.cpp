@@ -11,7 +11,7 @@
 #define FRAME_LINE_TEXTURE_D "ui_slider_d"
 #define SLIDER_TEXTURE "ui_slider_button"
 
-CUITrackBar::CUITrackBar() : m_f_min(0), m_f_max(1), m_f_val(0), m_f_back_up(0), m_f_step(0.01f), m_b_is_float(true), m_b_invert(false)
+CUITrackBar::CUITrackBar()
 {
     m_pFrameLine = xr_new<CUIFrameLineWnd>();
     AttachChild(m_pFrameLine);

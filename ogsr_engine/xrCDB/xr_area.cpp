@@ -188,7 +188,7 @@ int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj
 }
 
 //----------------------------------------------------------------------
-static void __stdcall build_callback(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
+static void __stdcall build_callback(Fvector*, size_t, CDB::TRI* T, size_t Tcnt, void*) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
 static void __stdcall serialize_callback(IWriter& writer) { g_pGameLevel->Load_GameSpecific_CFORM_Serialize(writer); }
 static bool __stdcall deserialize_callback(IReader& reader) { return g_pGameLevel->Load_GameSpecific_CFORM_Deserialize(reader); }
 

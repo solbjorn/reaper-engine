@@ -317,7 +317,7 @@ void CUIGlobalMap::ClipByVisRect()
     SetWndPos(r.x1, r.y1);
 }
 
-Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src, bool for_drawing) // pixels->pixels (relatively own left-top pos)
+Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src, bool) // pixels->pixels (relatively own left-top pos)
 {
     Fvector2 res;
     res.x = (src.x - m_BoundRect.lt.x) * GetCurrentZoom();

@@ -14,13 +14,8 @@ void CPHContactBodyEffector::Init(dBodyID body, const dContact& contact, SGameMt
     m_recip_flotation = 1.f - material->fFlotationFactor;
     m_material = material;
 }
-void CPHContactBodyEffector::Merge(const dContact& contact, SGameMtl* material)
-{
-    m_recip_flotation = _max(1.f - material->fFlotationFactor, m_recip_flotation);
-    // m_contact.geom.normal[0]+=contact.geom.normal[0];
-    // m_contact.geom.normal[1]+=contact.geom.normal[1];
-    // m_contact.geom.normal[2]+=contact.geom.normal[2];
-}
+
+void CPHContactBodyEffector::Merge(SGameMtl* material) { m_recip_flotation = _max(1.f - material->fFlotationFactor, m_recip_flotation); }
 
 void CPHContactBodyEffector::Apply()
 {

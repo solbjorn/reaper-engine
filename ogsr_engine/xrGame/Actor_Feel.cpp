@@ -18,7 +18,7 @@
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 // AAAAAA
 
-void CActor::feel_touch_new(CObject* O) {}
+void CActor::feel_touch_new(CObject*) {}
 
 void CActor::feel_touch_delete(CObject* O)
 {
@@ -194,7 +194,7 @@ void CActor::PickupModeUpdate_COD()
 
     //---------------------------------------------------------------------------
     ISpatialResult.clear();
-    g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+    g_SpatialSpace->q_frustum(ISpatialResult, STYPE_COLLIDEABLE, frustum);
     //---------------------------------------------------------------------------
 
     float maxlen = 1000.0f;
@@ -321,7 +321,7 @@ void CActor::PickupInfoDraw(CObject* object)
     HUD().Font().pFontLetterica16Russian->Out(x, y, "%s", draw_str);
 }
 
-void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop)
+void CActor::feel_sound_new(CObject* who, int, CSound_UserDataPtr, const Fvector&, float power, float)
 {
     if (who == this)
         m_snd_noise = _max(m_snd_noise, power);

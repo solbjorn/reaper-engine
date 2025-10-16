@@ -14,7 +14,7 @@
 
 class CSE_Abstract;
 
-const u32 NET_Latency = 50; // time in (ms)
+constexpr inline u32 NET_Latency{50}; // time in (ms)
 
 // t-defs
 typedef xr_map<u16, CSE_Abstract*> xrS_entities;
@@ -45,6 +45,7 @@ struct svs_respawn
     u32 timestamp;
     u16 phantom;
 };
+
 IC bool operator<(const svs_respawn& A, const svs_respawn& B) { return A.timestamp < B.timestamp; }
 
 class xrServer : public IPureServer
@@ -95,7 +96,6 @@ public:
 
     void Export_game_type(IClient* CL);
     void Perform_game_export();
-    BOOL PerformRP(CSE_Abstract* E);
 
     IC void clear_ids() { m_tID_Generator = id_generator_type(); }
     IC u16 PerformIDgen(u16 ID) { return (m_tID_Generator.tfGetID(ID)); }
@@ -110,11 +110,14 @@ public:
     void Process_update(NET_Packet& P, ClientID sender);
     void Process_save(NET_Packet& P, ClientID sender);
     void Process_event(NET_Packet& P, ClientID sender);
-    void Process_event_ownership(NET_Packet& P, ClientID sender, u32 time, u16 ID, BOOL bForced = FALSE);
-    bool Process_event_reject(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
+    void Process_event_ownership(NET_Packet& P, ClientID sender, u16 ID, BOOL bForced = FALSE);
+    bool Process_event_reject(NET_Packet& P, const u16 id_parent, const u16 id_entity, bool send_message = true);
     void Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack);
 
-    xrClientData* SelectBestClientToMigrateTo(CSE_Abstract* E, BOOL bForceAnother = FALSE);
+private:
+    [[nodiscard]] xrClientData* SelectBestClientToMigrateTo() const { return smart_cast<xrClientData*>(SV_Client); }
+
+public:
     void SendConnectResult(IClient* CL, u8 res, u8 res1, const char* ResultStr);
 
     void AttachNewClient(IClient* CL);
@@ -135,12 +138,15 @@ public:
     // extended functionality
     virtual u32 OnMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
     virtual void OnCL_Connected(IClient* CL);
-    virtual void SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+    void SendTo_LL(ClientID ID, void* data, u32 size, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
-    virtual IClient* client_Create(); // create client info
-    virtual IClient* client_Find_Get(ClientID ID); // Find earlier disconnected client
-    virtual void client_Destroy(IClient* C); // destroy client info
+    [[nodiscard]] IClient* client_Create() override; // create client info
+    void client_Destroy(IClient* C) override; // destroy client info
 
+private:
+    [[nodiscard]] IClient* client_Find_Get(ClientID ID); // Find earlier disconnected client
+
+public:
     // utilities
     CSE_Abstract* entity_Create(LPCSTR name);
     void entity_Destroy(CSE_Abstract*& P);
@@ -164,8 +170,9 @@ public:
 public:
     xr_string ent_name_safe(u16 eid);
 
-#ifdef DEBUG
     bool verify_entities() const;
+
+#ifdef DEBUG
     void verify_entity(const CSE_Abstract* entity) const;
 #endif
 };

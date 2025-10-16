@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "WeaponKnife.h"
 #include "Entity.h"
 #include "Actor.h"
@@ -16,7 +17,7 @@
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
-CWeaponKnife::CWeaponKnife() : CWeapon("KNIFE")
+CWeaponKnife::CWeaponKnife() : CWeapon{}
 {
     m_attackStart = false;
     m_attackMotionMarksAvailable = false;

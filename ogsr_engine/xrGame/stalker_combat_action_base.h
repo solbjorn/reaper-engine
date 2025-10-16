@@ -12,11 +12,14 @@
 
 class CStalkerActionCombatBase : public CStalkerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionCombatBase, CStalkerActionBase);
+
 protected:
     typedef CStalkerActionBase inherited;
 
 public:
     CStalkerActionCombatBase(CAI_Stalker* object, LPCSTR action_name = "");
+
     virtual void initialize();
     virtual void finalize();
     void select_queue_params(const float& distance, u32& min_queue_size, u32& max_queue_size, u32& min_queue_interval, u32& max_queue_interval) const;

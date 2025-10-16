@@ -92,28 +92,28 @@ public:
     virtual LPCSTR NameShort();
     //.	virtual LPCSTR				NameComplex			();
     shared_str ItemDescription() { return m_Description; }
-    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {}
+    virtual void GetBriefInfo(xr_string&, xr_string&, xr_string&) {}
     virtual bool NeedBriefInfo() { return m_need_brief_info; }
 
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     virtual bool Useful() const; // !!! Переопределить. (см. в Inventory.cpp)
-    virtual bool Attach(PIItem pIItem, bool b_send_event) { return false; }
-    virtual bool Detach(PIItem pIItem) { return false; }
+    virtual bool Attach(PIItem, bool) { return false; }
+    virtual bool Detach(PIItem) { return false; }
     // при детаче спаунится новая вещь при заданно названии секции
     virtual bool Detach(const char* item_section_name, bool b_spawn_item);
-    virtual bool CanAttach(PIItem pIItem) { return false; }
-    virtual bool CanDetach(LPCSTR item_section_name) { return false; }
+    virtual bool CanAttach(PIItem) { return false; }
+    virtual bool CanDetach(LPCSTR) { return false; }
 
     virtual EHandDependence HandDependence() const { return hd1Hand; }
     virtual bool IsSingleHanded() const { return true; }
     virtual bool Activate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
     virtual void Deactivate(bool = false); // !!! Переопределить. (см. в Inventory.cpp)
-    virtual bool Action(s32 cmd, u32 flags) { return false; } // true если известная команда, иначе false
+    virtual bool Action(s32, u32) { return false; } // true если известная команда, иначе false
 
     virtual void OnH_B_Chield();
     virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    virtual void OnH_B_Independent(bool);
     virtual void OnH_A_Independent();
 
     virtual void save(NET_Packet& output_packet);
@@ -156,7 +156,7 @@ public:
 
     virtual void OnMoveToSlot();
     virtual void OnMoveToBelt();
-    virtual void OnMoveToRuck(EItemPlace prevPlace);
+    virtual void OnMoveToRuck(EItemPlace);
     virtual void OnDrop() {}
     virtual void OnBeforeDrop() {}
 
@@ -198,7 +198,7 @@ public:
     virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
     bool CanTrade() const;
     virtual bool IsNecessaryItem(CInventoryItem* item);
-    virtual bool IsNecessaryItem(const shared_str& item_sect) { return false; }
+    virtual bool IsNecessaryItem(const shared_str&) { return false; }
 
 protected:
     xr_vector<u8> m_slots;
@@ -231,11 +231,12 @@ public:
     virtual void reload(LPCSTR section);
     virtual void reinit();
     virtual bool can_kill() const;
-    virtual CInventoryItem* can_kill(CInventory* inventory) const;
-    virtual const CInventoryItem* can_kill(const xr_vector<const CGameObject*>& items) const;
-    virtual CInventoryItem* can_make_killing(const CInventory* inventory) const;
+    virtual CInventoryItem* can_kill(CInventory*) const;
+    virtual const CInventoryItem* can_kill(const xr_vector<const CGameObject*>&) const;
+    virtual CInventoryItem* can_make_killing(const CInventory*) const;
     virtual bool ready_to_kill() const;
     IC bool useful_for_NPC() const;
+
 #ifdef DEBUG
     virtual void OnRender();
 #endif

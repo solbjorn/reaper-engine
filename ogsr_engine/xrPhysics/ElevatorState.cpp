@@ -11,14 +11,15 @@
 #include "PHDebug.h"
 #endif
 
-static const float getting_on_dist = 0.3f;
-static const float getting_out_dist = 0.4f;
-static const float start_climbing_dist = 0.f;
-static const float stop_climbing_dist = 0.1f;
-static const float out_dist = 1.5f;
+namespace
+{
+constexpr float getting_on_dist{0.3f};
+constexpr float stop_climbing_dist{0.1f};
+constexpr float out_dist{1.5f};
 
-static const float look_angle_cosine = 0.9238795f; // 22.5
-static const float lookup_angle_sine = 0.34202014f; // 20
+constexpr float look_angle_cosine{0.9238795f}; // 22.5
+constexpr float lookup_angle_sine{0.34202014f}; // 20
+} // namespace
 
 extern CPHWorld* ph_world;
 extern bool g_actor_allow_ladder;
@@ -36,7 +37,7 @@ float CElevatorState::ClimbDirection()
     return dir;
 }
 
-void CElevatorState::PhTune(float step)
+void CElevatorState::PhTune(float)
 {
     VERIFY(m_character && m_character->b_exist && m_character->is_active());
     if (!m_ladder)
@@ -64,11 +65,12 @@ void CElevatorState::PhTune(float step)
     case clbClimbingDown: UpdateStClimbingDown(); break;
     case clbDepart: UpdateDepart(); break;
     case clbNoLadder: m_ladder = nullptr; break;
+    default: NODEFAULT;
     }
 }
 
-void CElevatorState::PhDataUpdate(float step) {}
-void CElevatorState::InitContact(dContact* c, bool& do_collide, u16, u16) {}
+void CElevatorState::PhDataUpdate(float) {}
+void CElevatorState::InitContact(dContact*, bool&, u16, u16) {}
 
 void CElevatorState::SetElevator(CClimableObject* climable)
 {
@@ -185,7 +187,7 @@ void CElevatorState::UpdateStClimbingDown()
         SwitchState(clbDepart);
     if (m_ladder->AxDistToLowerP(m_character) - m_character->FootRadius() < stop_climbing_dist)
         SwitchState(clbNearDown);
-    UpdateClimbingCommon(d, to_ax, ca, control_a);
+    UpdateClimbingCommon(d, to_ax, control_a);
 
     if (m_ladder->AxDistToUpperP(m_character) < -m_character->FootRadius())
         SwitchState(clbNoLadder);
@@ -218,13 +220,14 @@ void CElevatorState::UpdateStClimbingUp()
     if (m_ladder->AxDistToUpperP(m_character) + m_character->FootRadius() < stop_climbing_dist)
         SwitchState(clbNearUp);
 
-    UpdateClimbingCommon(d, to_ax, ca, control_a);
+    UpdateClimbingCommon(d, to_ax, control_a);
     // if(to_ax-m_character->FootRadius()>out_dist)
     //										SwitchState((clbNone));
     // if(fis_zero(control_a))
     //	m_character->ApplyForce(d,m_character->Mass());
 }
-void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, const Fvector& control_accel, float ca)
+
+void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, float ca)
 {
     VERIFY(m_ladder && m_character);
     if (to_ax - m_character->FootRadius() > out_dist)
@@ -240,12 +243,14 @@ void CElevatorState::UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, c
         m_character->ApplyForce(d_to_ax, m_character->Mass() * ph_world->Gravity()); //
     }
 }
+
 bool CElevatorState::GetControlDir(Fvector& dir)
 {
     bool ret = true;
     VERIFY(m_ladder && m_character);
     Fvector d;
     float dist;
+
     switch (m_state)
     {
     case clbDepart:
@@ -287,11 +292,15 @@ bool CElevatorState::GetControlDir(Fvector& dir)
             ret = false;
         }
         break;
+    default: NODEFAULT;
     }
+
     return ret;
 }
+
 static const float depart_dist = 2.f;
 static const u32 depart_time = 3000;
+
 void CElevatorState::UpdateDepart()
 {
     VERIFY(m_ladder && m_character);

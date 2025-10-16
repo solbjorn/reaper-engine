@@ -16,12 +16,9 @@
 #include "character_info_defs.h"
 #include "infoportiondefs.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-
 class CSE_ALifeItemAmmo;
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeInventoryItem)
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeInventoryItem, XR_NOVTABLE)
 public:
 enum
 {
@@ -70,6 +67,7 @@ SPHNetState State;
 SERVER_ENTITY_DECLARE_END
 
 add_to_type_list(CSE_ALifeInventoryItem);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeInventoryItem)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeItem, CSE_ALifeDynamicObjectVisual, CSE_ALifeInventoryItem) bool m_physics_disabled;
@@ -87,6 +85,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItem);
 
 add_to_type_list(CSE_ALifeItem);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItem)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch, CSE_ALifeItem)
@@ -108,6 +107,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemTorch);
 
 add_to_type_list(CSE_ALifeItemTorch);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemTorch)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemAmmo, CSE_ALifeItem) u16 a_elapsed;
@@ -122,6 +122,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemAmmo);
 
 add_to_type_list(CSE_ALifeItemAmmo);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemAmmo)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon, CSE_ALifeItem)
@@ -184,6 +185,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemWeapon);
 
 add_to_type_list(CSE_ALifeItemWeapon);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeapon)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazined, CSE_ALifeItemWeapon) u8 m_u8CurFireMode;
@@ -195,6 +197,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemWeaponMagazined);
 
 add_to_type_list(CSE_ALifeItemWeaponMagazined);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponMagazined)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazinedWGL, CSE_ALifeItemWeaponMagazined) bool m_bGrenadeMode;
@@ -208,6 +211,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemWeaponMagazinedWGL);
 
 add_to_type_list(CSE_ALifeItemWeaponMagazinedWGL);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponMagazinedWGL)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponShotGun, CSE_ALifeItemWeaponMagazined) xr_vector<u8> m_AmmoIDs;
@@ -219,6 +223,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemWeaponShotGun);
 
 add_to_type_list(CSE_ALifeItemWeaponShotGun);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemWeaponShotGun)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDetector, CSE_ALifeItem) u32 m_ef_detector_type;
@@ -230,6 +235,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemDetector);
 
 add_to_type_list(CSE_ALifeItemDetector);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemDetector)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact, CSE_ALifeItem) float m_fAnomalyValue;
@@ -240,6 +246,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemArtefact);
 
 add_to_type_list(CSE_ALifeItemArtefact);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemArtefact)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA, CSE_ALifeItem) u16 m_original_owner{std::numeric_limits<u16>::max()};
@@ -253,6 +260,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemPDA);
 
 add_to_type_list(CSE_ALifeItemPDA);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemPDA)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDocument, CSE_ALifeItem) shared_str m_wDoc{};
@@ -262,6 +270,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemDocument);
 
 add_to_type_list(CSE_ALifeItemDocument);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemDocument)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemGrenade, CSE_ALifeItem) u32 m_ef_weapon_type;
@@ -272,6 +281,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemGrenade);
 
 add_to_type_list(CSE_ALifeItemGrenade);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemGrenade)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemExplosive, CSE_ALifeItem) CSE_ALifeItemExplosive(LPCSTR caSection);
@@ -280,6 +290,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemExplosive);
 
 add_to_type_list(CSE_ALifeItemExplosive);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemExplosive)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemBolt, CSE_ALifeItem) u32 m_ef_weapon_type;
@@ -292,6 +303,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemBolt);
 
 add_to_type_list(CSE_ALifeItemBolt);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemBolt)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemCustomOutfit, CSE_ALifeItem) u32 m_ef_equipment_type;
@@ -303,6 +315,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemCustomOutfit);
 
 add_to_type_list(CSE_ALifeItemCustomOutfit);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeItemCustomOutfit)
 
 class CSE_InventoryContainer : public CSE_InventoryBoxAbstract, public CSE_ALifeItem
@@ -328,8 +341,7 @@ public:
 // KRodin: Закомментировал, попытка предотвратить повторную регистрацию cse_alife_item в луабинде.
 // По идее, оно и не нужно, ведь у класса CSE_InventoryContainer нету метода ::script_register()
 // add_to_type_list(CSE_InventoryContainer);
+// #undef script_type_list
 // #define script_type_list save_type_list(CSE_InventoryContainer)
-
-#pragma warning(pop)
 
 #endif

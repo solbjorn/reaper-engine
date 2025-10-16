@@ -33,12 +33,12 @@ vec random_vec();
 // base
 //----------------------------------------------------------
 
-class base : public virtual RTTI::Enable
+class XR_NOVTABLE base : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(base);
 
 public:
-    struct params : public virtual RTTI::Enable
+    struct XR_NOVTABLE params : public virtual RTTI::Enable
     {
         RTTI_DECLARE_TYPEINFO(params);
 
@@ -83,7 +83,7 @@ class evade : public base
     RTTI_DECLARE_TYPEINFO(evade, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -119,7 +119,7 @@ class pursue : public base
     RTTI_DECLARE_TYPEINFO(pursue, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -133,7 +133,7 @@ public:
         float vel{};
 
         params(vec_arg factor, float arrive_range, float change_vel_range, float arrive_vel, float min_factor_dist = base::s_min_factor_dist)
-            : base::params(factor, min_factor_dist), arrive_range(arrive_range), change_vel_range(change_vel_range), arrive_vel(arrive_vel)
+            : base::params{factor, min_factor_dist}, change_vel_range{change_vel_range}, arrive_vel{arrive_vel}, arrive_range{arrive_range}
         {}
 
         virtual bool update() = 0;
@@ -158,7 +158,7 @@ class restrictor : public base
     RTTI_DECLARE_TYPEINFO(restrictor, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -191,7 +191,7 @@ class wander : public base
     RTTI_DECLARE_TYPEINFO(wander, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -239,7 +239,7 @@ class containment : public base
     RTTI_DECLARE_TYPEINFO(containment, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -281,7 +281,7 @@ class grouping : public base
     RTTI_DECLARE_TYPEINFO(grouping, base);
 
 public:
-    struct params : base::params
+    struct XR_NOVTABLE params : base::params
     {
         RTTI_DECLARE_TYPEINFO(params, base::params);
 
@@ -294,8 +294,8 @@ public:
 
         params(vec_arg cohesion_factor, vec_arg separation_factor, float max_separate_range, float min_factor_dist = base::s_min_factor_dist,
                vec (*pf_random_dir)() = &detail::random_vec)
-            : base::params(separation_factor, min_factor_dist), pf_random_dir(pf_random_dir), cohesion_factor(cohesion_factor), separation_factor(separation_factor),
-              max_separate_range(max_separate_range)
+            : base::params{separation_factor, min_factor_dist}, cohesion_factor{cohesion_factor}, separation_factor{separation_factor}, max_separate_range{max_separate_range},
+              pf_random_dir{pf_random_dir}
         {}
 
         // this function should supply nearest object to group with

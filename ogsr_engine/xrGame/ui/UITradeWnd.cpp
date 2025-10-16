@@ -32,6 +32,9 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../xr_3da/xr_input.h"
+
+#include "../xr_level_controller.h"
+
 #include <format>
 
 #define TRADE_XML "trade.xml"
@@ -487,12 +490,10 @@ void CUITradeWnd::PerformTrade()
     SetCurrentItem(nullptr);
 }
 
-#include "../xr_level_controller.h"
-
 bool CUITradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (m_pUIPropertiesBox->GetVisible())
-        m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
+        std::ignore = m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
 
     if (inherited::OnKeyboard(dik, keyboard_action))
         return true;
@@ -643,7 +644,7 @@ void CUITradeWnd::FillList(TIItemContainer& cont, CUIDragDropListEx& dragDropLis
     }
 }
 
-bool CUITradeWnd::OnItemStartDrag(CUICellItem* itm)
+bool CUITradeWnd::OnItemStartDrag(CUICellItem*)
 {
     return false; // default behaviour
 }

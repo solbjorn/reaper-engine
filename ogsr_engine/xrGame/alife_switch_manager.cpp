@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_switch_manager.h"
 #include "xrServer_Objects_ALife.h"
 #include "alife_graph_registry.h"
@@ -16,10 +17,7 @@
 #include "xrserver.h"
 #include "ai_space.h"
 #include "level_graph.h"
-
-#ifdef DEBUG
 #include "level.h"
-#endif // DEBUG
 
 using namespace ALife;
 
@@ -191,7 +189,7 @@ void CALifeSwitchManager::try_switch_online(CSE_ALifeDynamicObject* I)
     }
 
     VERIFY2((ai().game_graph().vertex(I->m_tGraphID)->level_id() != ai().level_graph().level_id()) || !Level().Objects.net_Find(I->ID) || Level().Objects.dump_all_objects(),
-            make_string("frame [%d] time [%d] object [%s] with id [%d] is offline, but is on the level", Device.dwFrame, Device.dwTimeGlobal, I->name_replace(), I->ID));
+            make_string("frame [%u] time [%u] object [%s] with id [%u] is offline, but is on the level", Device.dwFrame, Device.dwTimeGlobal, I->name_replace(), I->ID));
 
     I->try_switch_online();
 

@@ -18,22 +18,23 @@ struct ts_converter;
 template <typename... Ts>
 struct ts_converter<imdexlib::typelist<Ts...>>
 {
-    using handler_type = void (*)(sol::state_view& lua);
-
-    static constexpr handler_type arr[] = {(&Ts::script_register)...};
+private:
 #ifdef DEBUG
-    static constexpr const char* const names[] = {(RTTI::TypeName<Ts>().data())...};
+    static constexpr auto names{std::array {(RTTI::TypeName<Ts>())... }};
 #endif
+    static constexpr auto arr{std::array{(&Ts::script_register)...}};
 
+public:
     static void script_register(sol::state_view& lua)
     {
 #ifdef DEBUG
-        size_t i = 0;
-#endif
+        for (auto [name, handler] : std::views::zip(names, arr))
+#else
         for (auto handler : arr)
+#endif
         {
 #ifdef DEBUG
-            Msg("Exporting [%s]", names[i++]);
+            Msg("Exporting [%s]", name.data());
 #endif
             handler(lua);
         }

@@ -22,10 +22,11 @@ private:
 public:
     IC CServerEntityWrapper(CSE_Abstract* object = nullptr);
     virtual ~CServerEntityWrapper();
+
     virtual void save(IWriter& stream);
     virtual void load(IReader& stream);
-    void save_update(IWriter& stream);
-    void load_update(IReader& stream);
+    void save_update(IWriter&);
+    void load_update(IReader&);
     IC CSE_Abstract& object() const;
 };
 

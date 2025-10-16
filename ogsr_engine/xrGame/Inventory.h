@@ -94,7 +94,6 @@ public:
 
     // get all the items with the same section name
     virtual u32 dwfGetSameItemCount(LPCSTR caSection, bool SearchAll = false);
-    virtual u32 dwfGetGrenadeCount(LPCSTR caSection, bool SearchAll);
     // get all the items with the same object id
     virtual bool bfCheckForObject(ALife::_OBJECT_ID tObjectID);
     PIItem get_object_by_id(ALife::_OBJECT_ID tObjectID);
@@ -149,7 +148,7 @@ public:
 
     u32 ModifyFrame() const { return m_dwModifyFrame; }
     void InvalidateState() { m_dwModifyFrame = Device.dwFrame; }
-    void Items_SetCurrentEntityHud(bool current_entity);
+    void Items_SetCurrentEntityHud();
     bool isBeautifulForActiveSlot(CInventoryItem* pIItem);
     bool IsActiveSlotBlocked() const;
 

@@ -60,7 +60,7 @@ static IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
     return nullptr;
 }
 
-HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
+HWND ShowSplash(HINSTANCE hInstance)
 {
     WNDCLASS wc{};
     wc.lpfnWndProc = DefWindowProc;
@@ -131,15 +131,15 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
     img.AlphaBlend(hDC, 0, 0, splashWidth, splashHeight, 0, 0, splashWidth, splashHeight);
 
     // alpha
-    BLENDFUNCTION blend = {0};
+    BLENDFUNCTION blend{};
     blend.BlendOp = AC_SRC_OVER;
     blend.AlphaFormat = AC_SRC_ALPHA;
     blend.SourceConstantAlpha = 255;
 
-    SIZE sizeWnd = {splashWidth, splashHeight};
+    SIZE sizeWnd{splashWidth, splashHeight};
 
-    POINT ptPos = {0, 0};
-    POINT ptSrc = {0, 0};
+    POINT ptPos{};
+    POINT ptSrc{};
 
     if (const HWND hDT = GetDesktopWindow())
     {

@@ -136,10 +136,12 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 
 class CCC_MemStats : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_MemStats, IConsole_Command);
+
 public:
     CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR) override
     {
         Memory.mem_compact();
 
@@ -583,7 +585,7 @@ public:
         Level().Send(net_packet, net_flags(TRUE));
     }
 
-    virtual void fill_tips(vecTips& tips, u32 mode) { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
+    virtual void fill_tips(vecTips& tips) { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
 };
 
 class CCC_LoadLastSave : public IConsole_Command
@@ -907,7 +909,7 @@ struct CCC_JumpToLevel : public IConsole_Command
         Msg("! There is no level \"%s\" in the game graph!", level);
     }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         if (!ai().get_alife())
         {
@@ -944,7 +946,7 @@ public:
             tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
     }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         if (!ai().get_alife())
         {
@@ -1006,7 +1008,7 @@ public:
         }
     }
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
+    virtual void fill_tips(vecTips& tips)
     {
         if (!ai().get_alife())
         {
@@ -1417,7 +1419,7 @@ public:
         g_pGamePersistent->Environment().SetWeather(args, true);
     }
 
-    void fill_tips(vecTips& tips, u32 mode) override
+    void fill_tips(vecTips& tips) override
     {
         if (!g_pGameLevel)
             return;

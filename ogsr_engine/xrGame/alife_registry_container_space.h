@@ -11,6 +11,6 @@
 #include <typelist.hpp>
 
 #define registry_type_list imdexlib::typelist<>
-#define add_to_registry_type_list(a) using registry_##a = imdexlib::ts_prepend_t<a, registry_type_list>;
-#define define_constant(a) (a*)nullptr
+#define add_to_registry_type_list(a) using registry_##a = imdexlib::ts_prepend_t<a, registry_type_list>
+#define define_constant(a) static_cast<a*>(nullptr)
 #define save_registry_type_list(a) registry_##a

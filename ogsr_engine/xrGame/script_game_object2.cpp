@@ -40,7 +40,7 @@
 #include "detail_path_manager.h"
 #include "CharacterPhysicsSupport.h"
 
-void CScriptGameObject::explode(u32 level_time)
+void CScriptGameObject::explode(u32)
 {
     CExplosive* explosive = smart_cast<CExplosive*>(&object());
     if (object().H_Parent())
@@ -50,7 +50,9 @@ void CScriptGameObject::explode(u32 level_time)
     }
 
     if (!explosive)
+    {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CExplosive : cannot access class member explode!");
+    }
     else
     {
         Fvector normal;
@@ -167,9 +169,8 @@ void CScriptGameObject::Hit(CScriptHit* tpLuaHit)
     object().u_EventSend(P);
 }
 
-#pragma todo("Dima to Dima : find out why user defined conversion operators work incorrect")
-
-CScriptGameObject::operator CObject*() { return (&object()); }
+// TODO: Dima to Dima : find out why user defined conversion operators work incorrect")
+CScriptGameObject::operator CObject*() { return &object(); }
 
 CScriptGameObject* CScriptGameObject::GetBestEnemy()
 {

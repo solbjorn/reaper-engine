@@ -69,6 +69,7 @@ public:
     typedef CUIStalkerRankingInfoItem inherited;
 
     CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
-    virtual void SetSelected(bool b);
-    virtual bool OnMouseDown(int mouse_btn);
+
+    virtual void SetSelected(bool);
+    virtual bool OnMouseDown(int);
 };

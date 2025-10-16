@@ -2,7 +2,7 @@
 
 #include "weaponusp45.h"
 
-CWeaponUSP45::CWeaponUSP45() : CWeaponPistol{"USP"}
+CWeaponUSP45::CWeaponUSP45() : CWeaponPistol{}
 {
     m_weight = .5f;
     SetSlot(FIRST_WEAPON_SLOT);

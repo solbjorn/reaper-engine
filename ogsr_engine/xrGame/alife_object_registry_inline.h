@@ -64,7 +64,7 @@ IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object(const ALife::_OBJECT_ID&
     return ((*I).second);
 }
 
-IC CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(absl::string_view name, bool no_assert) const
+inline CSE_ALifeDynamicObject* CALifeObjectRegistry::object_by_name(absl::string_view name, bool no_assert) const
 {
     const auto it = m_object_ids.find(name);
 

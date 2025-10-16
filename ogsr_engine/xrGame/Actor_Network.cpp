@@ -252,8 +252,9 @@ void CActor::net_Destroy()
 
     Level().MapManager().RemoveMapLocationByObjectID(ID());
 
-#pragma todo("Dima to MadMax : do not comment inventory owner net_Destroy!!!")
+    // TODO: Dima to MadMax : do not comment inventory owner net_Destroy!!!
     CInventoryOwner::net_Destroy();
+
     cam_UnsetLadder();
     character_physics_support()->movement()->DestroyCharacter();
     if (m_pPhysicsShell)
@@ -550,7 +551,7 @@ bool CActor::InventoryAllowSprint()
     return true;
 }
 
-void CActor::On_B_NotCurrentEntity() { inventory().Items_SetCurrentEntityHud(false); }
+void CActor::On_B_NotCurrentEntity() { inventory().Items_SetCurrentEntityHud(); }
 
 void CActor::net_Export(CSE_Abstract* E)
 {

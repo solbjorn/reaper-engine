@@ -30,6 +30,7 @@ public:
         // int					cur_time;	//текущее время существования партикла
         // bool				auto_stop;	//автоматическая остановка партиклов, когда закончится время
     };
+
     DEFINE_VECTOR(SParticlesInfo, ParticlesInfoList, ParticlesInfoListIt);
 
     // структура для косточки с списком запущенных партиклов
@@ -42,10 +43,12 @@ public:
 
     public:
         SBoneInfo(u16 idx, const Fvector& offs) : index{idx}, offset{offs} {}
-        SParticlesInfo* AppendParticles(CObject* object, const shared_str& ps_name);
+
+        [[nodiscard]] SParticlesInfo* AppendParticles(const shared_str& ps_name);
         void StopParticles(const shared_str& ps_name, bool bDestroy);
         void StopParticles(u16 sender_id, bool bDestroy);
     };
+
     DEFINE_VECTOR(SBoneInfo, BoneInfoVec, BoneInfoVecIt);
 
 private:

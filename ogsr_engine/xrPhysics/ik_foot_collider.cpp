@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "ik_foot_collider.h"
 
 #include "../xr_3da/GameMtlLib.h"
@@ -18,6 +19,9 @@
 #endif
 
 ik_foot_collider::ik_foot_collider() {}
+
+namespace
+{
 constexpr Fplane invalide_plane{-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
 
 struct ik_pick_result
@@ -44,13 +48,6 @@ bool ignore_tri(CDB::TRI& tri)
     // material->Flags.test( SGameMtl::flActorObstacle );
 }
 
-bool ignore_static_tri(int tri)
-{
-    VERIFY(Level().ObjectSpace.GetStaticModel()->get_tris_count() > tri);
-    CDB::TRI* triangle = Level().ObjectSpace.GetStaticTris() + tri;
-    return ignore_tri(*triangle);
-}
-
 IC bool ignore_object(CObject* O)
 {
     VERIFY(O);
@@ -59,26 +56,12 @@ IC bool ignore_object(CObject* O)
     return false;
 }
 
-IC bool ignore_result(collide::rq_result& R)
-{
-    if (R.O)
-        return ignore_object(R.O);
-    else
-        return ignore_static_tri(R.element);
-}
-
 IC void tri_plane(const Fvector& v0, const Fvector& v1, const Fvector& v2, Fplane& p)
 {
     p.n.mknormal(v0, v1, v2);
     VERIFY(!fis_zero(p.n.magnitude()));
     p.n.invert();
     p.d = -p.n.dotproduct(v0);
-}
-
-IC void tri_plane(const CDB::TRI& tri, Fplane& p)
-{
-    Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
-    tri_plane(pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]], p);
 }
 
 IC bool get_plane_static(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result& R, float pick_dist, const Fvector& pos, const Fvector& pick_v)
@@ -152,7 +135,8 @@ IC bool get_plane_dynamic(ik_pick_result& r, Fvector& next_pos, float& next_rang
     return false;
 }
 
-static const float reach_dist = 1.5f;
+constexpr float reach_dist{1.5f};
+
 IC bool get_plane(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result R, float pick_dist, const Fvector& pos, const Fvector& pick_v)
 {
     if (!R.O)
@@ -202,18 +186,12 @@ bool Pick(ik_pick_result& r, const ik_pick_query& q, CObject* ignore_object)
     return collided;
 }
 
-// void DBG_DrawTri( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid );
-
-void chose_best_plane(Fplane& p, const Fvector& v, Fplane& p0, Fplane& p1, Fplane& p2)
-{
-    MAX_OF(p0.n.dotproduct(v), p = p0, p1.n.dotproduct(v), p = p1, p2.n.dotproduct(v), p = p2);
-}
-
 #ifdef DEBUG
 void DBG_DrawTri(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid);
 #endif
+} // namespace
 
-void ik_foot_collider::collide(SIKCollideData& cld, const ik_foot_geom& foot_geom, CGameObject* O, bool foot_step)
+void ik_foot_collider::collide(SIKCollideData& cld, const ik_foot_geom& foot_geom, CGameObject* O)
 {
     VERIFY(foot_geom.is_valid());
     cld.collided = false;

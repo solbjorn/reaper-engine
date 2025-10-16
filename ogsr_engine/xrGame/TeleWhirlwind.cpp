@@ -61,8 +61,6 @@ void CTeleWhirlwind::clear_notrelevant()
     objects.erase(std::remove_if(objects.begin(), objects.end(), &RemovePred), objects.end());
 }
 
-void CTeleWhirlwind::play_destroy(CTeleWhirlwindObject* obj) {}
-
 CTeleWhirlwindObject::CTeleWhirlwindObject() = default;
 CTeleWhirlwindObject::~CTeleWhirlwindObject() = default;
 
@@ -89,11 +87,8 @@ bool CTeleWhirlwindObject::init(CTelekinesis* tele, CPhysicsShellHolder* obj, fl
 
     return result;
 }
-void CTeleWhirlwindObject::raise_update()
-{
-    // u32 time=Device.dwTimeGlobal;
-    //	if (time_raise_started + 100000 < time) release();
-}
+
+void CTeleWhirlwindObject::raise_update() {}
 
 void CTeleWhirlwindObject::release()
 {
@@ -157,7 +152,7 @@ bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
     return false;
 }
 
-void CTeleWhirlwindObject::raise(float step)
+void CTeleWhirlwindObject::raise()
 {
     CPhysicsShell* p = get_object()->PPhysicsShell();
 
@@ -312,14 +307,8 @@ void CTeleWhirlwindObject::keep()
         switch_state(TS_Raise);
     }
 }
-void CTeleWhirlwindObject::fire(const Fvector& target)
-{
-    // inherited::fire(target);
-}
-void CTeleWhirlwindObject::fire(const Fvector& target, float power)
-{
-    // inherited:: fire(target,power);
-}
+
+void CTeleWhirlwindObject::fire(const Fvector&, float) {}
 
 void CTeleWhirlwindObject::set_throw_power(float throw_pow) { throw_power = throw_pow; }
 void CTeleWhirlwindObject::switch_state(ETelekineticState new_state) { inherited::switch_state(new_state); }

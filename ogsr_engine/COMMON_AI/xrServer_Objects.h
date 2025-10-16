@@ -150,30 +150,39 @@
 //------------------------------------------------------------------------------
 #define SPAWN_VERSION u16(118)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape, ISE_Shape, CShapeData)
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape, ISE_Shape, CShapeData, XR_NOVTABLE)
 public:
 void cform_read(NET_Packet& P);
 void cform_write(NET_Packet& P);
+
 CSE_Shape();
 virtual ~CSE_Shape();
+
 virtual ISE_Shape* __stdcall shape() = 0;
 virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
 }
 ;
 
 add_to_type_list(CSE_Shape);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_Shape)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary, CSE_Abstract) u32 m_tNodeID;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary, CSE_Abstract)
+public:
+u32 m_tNodeID{std::numeric_limits<u32>::max()};
+
 CSE_Temporary(LPCSTR caSection);
 virtual ~CSE_Temporary();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_Temporary);
 
 add_to_type_list(CSE_Temporary);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_Temporary)
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton) CSE_PHSkeleton(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
+public:
+CSE_PHSkeleton(LPCSTR);
 virtual ~CSE_PHSkeleton();
 
 enum
@@ -183,9 +192,11 @@ enum
     flSavedData = (1 << 2),
     flNotSave = (1 << 3)
 };
+
 Flags8 _flags;
 SPHBonesData saved_bones;
-u16 source_id; // for break only
+u16 source_id{std::numeric_limits<u16>::max()}; // for break only
+
 virtual void load(NET_Packet& tNetPacket);
 virtual bool need_save() const { return (!_flags.test(flNotSave)); }
 virtual void set_sorce_id(u16 si) { source_id = si; }
@@ -200,6 +211,7 @@ public:
 SERVER_ENTITY_DECLARE_END
 
 add_to_type_list(CSE_PHSkeleton);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_PHSkeleton)
 
 extern CSE_Abstract* F_entity_Create(LPCSTR caSection);

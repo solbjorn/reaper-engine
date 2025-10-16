@@ -28,7 +28,7 @@ void dxRenderFactory::DestroyStatGraphRender(IStatGraphRender* pObject) { xr_del
 IConsoleRender* dxRenderFactory::CreateConsoleRender() { return xr_new<dxConsoleRender>(); }
 void dxRenderFactory::DestroyConsoleRender(IConsoleRender* pObject) { xr_delete((dxConsoleRender*&)pObject); }
 IRenderDeviceRender* dxRenderFactory::CreateRenderDeviceRender() { return (IRenderDeviceRender*)&RImplementation; }
-void dxRenderFactory::DestroyRenderDeviceRender(IRenderDeviceRender* pObject) {}
+void dxRenderFactory::DestroyRenderDeviceRender(IRenderDeviceRender*) {}
 #ifdef DEBUG
 IObjectSpaceRender* dxRenderFactory::CreateObjectSpaceRender() { return xr_new<dxObjectSpaceRender>(); }
 void dxRenderFactory::DestroyObjectSpaceRender(IObjectSpaceRender* pObject) { xr_delete((dxObjectSpaceRender*&)pObject); }

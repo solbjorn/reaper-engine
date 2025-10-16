@@ -27,7 +27,7 @@ void CPHCapture::CreateBody()
 
 CPHCapture::~CPHCapture() { Deactivate(); }
 
-void CPHCapture::PhDataUpdate(dReal /**step/**/)
+void CPHCapture::PhDataUpdate(dReal)
 {
     if (b_failed)
         return;
@@ -41,7 +41,7 @@ void CPHCapture::PhDataUpdate(dReal /**step/**/)
     }
 }
 
-void CPHCapture::PhTune(dReal /**step/**/)
+void CPHCapture::PhTune(dReal)
 {
     if (b_failed)
         return;
@@ -236,7 +236,7 @@ void CPHCapture::ReleaseInCallBack()
     b_collide = true;
 }
 
-void CPHCapture::object_contactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void CPHCapture::object_contactCallbackFun(bool& do_colide, bool, dContact& c, SGameMtl*, SGameMtl*)
 {
     dxGeomUserData* l_pUD1{};
     dxGeomUserData* l_pUD2{};

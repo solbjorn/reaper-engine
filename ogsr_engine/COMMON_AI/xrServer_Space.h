@@ -10,16 +10,16 @@
 
 #include "script_export_space.h"
 
-#define SERVER_ENTITY_DECLARE_BEGIN0(__A) \
-    class __A : public virtual RTTI::Enable \
+#define SERVER_ENTITY_DECLARE_BEGIN0(__A, ...) \
+    class __VA_ARGS__ __A : public virtual RTTI::Enable \
     { \
         RTTI_DECLARE_TYPEINFO(__A); \
 \
     public: \
         DECLARE_SCRIPT_REGISTER_FUNCTION();
 
-#define SERVER_ENTITY_DECLARE_BEGIN(__A, __B) \
-    class __A : public __B \
+#define SERVER_ENTITY_DECLARE_BEGIN(__A, __B, ...) \
+    class __VA_ARGS__ __A : public __B \
     { \
         RTTI_DECLARE_TYPEINFO(__A, __B); \
 \
@@ -27,8 +27,8 @@
         typedef __B inherited; \
         DECLARE_SCRIPT_REGISTER_FUNCTION();
 
-#define SERVER_ENTITY_DECLARE_BEGIN2(__A, __B, __C) \
-    class __A : public __B, public __C \
+#define SERVER_ENTITY_DECLARE_BEGIN2(__A, __B, __C, ...) \
+    class __VA_ARGS__ __A : public __B, public __C \
     { \
         RTTI_DECLARE_TYPEINFO(__A, __B, __C); \
 \
@@ -37,8 +37,8 @@
         typedef __C inherited2; \
         DECLARE_SCRIPT_REGISTER_FUNCTION();
 
-#define SERVER_ENTITY_DECLARE_BEGIN3(__A, __B, __C, __D) \
-    class __A : public __B, public __C, public __D \
+#define SERVER_ENTITY_DECLARE_BEGIN3(__A, __B, __C, __D, ...) \
+    class __VA_ARGS__ __A : public __B, public __C, public __D \
     { \
         RTTI_DECLARE_TYPEINFO(__A, __B, __C, __D); \
 \

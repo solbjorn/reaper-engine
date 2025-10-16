@@ -17,12 +17,15 @@ protected:
 
 public:
     CControlAction() = default;
+
     IC void set_object(CAI_Stalker* object);
     IC bool applicable() const;
     IC bool completed() const;
+
     IC void initialize();
     IC void execute();
     IC void finalize();
+
     IC CAI_Stalker& object() const;
     IC void remove_links(CObject* object);
 };

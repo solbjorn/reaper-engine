@@ -10,13 +10,16 @@ struct SAnimationSequencerData : public ControlCom::IComData
 
 class CAnimationSequencer : public CControl_ComCustom<SAnimationSequencerData>
 {
+    RTTI_DECLARE_TYPEINFO(CAnimationSequencer, CControl_ComCustom<SAnimationSequencerData>);
+
+private:
     u32 m_index;
 
 public:
     virtual void reset_data();
     virtual void on_capture();
     virtual void on_release();
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
 
     virtual bool check_start_conditions();
 

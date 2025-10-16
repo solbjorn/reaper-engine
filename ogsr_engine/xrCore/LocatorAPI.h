@@ -4,10 +4,7 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
 #include <io.h>
-#pragma warning(pop)
 
 #include "LocatorAPI_defs.h"
 
@@ -114,8 +111,8 @@ private:
         const char* entry_point_sqfs();
         void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it);
         void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point);
-        IReader* read_sqfs(const char* fname, const struct file& desc, u32 gran);
-        CStreamReader* stream_sqfs(const char* fname, const struct file& desc);
+        IReader* read_sqfs(const char*, const struct file& desc, u32);
+        CStreamReader* stream_sqfs(const char*, const struct file& desc);
         void cleanup_sqfs();
         void close_sqfs();
 
@@ -144,7 +141,7 @@ private:
     files_set files;
     archives_vec archives;
 
-    const CLocatorAPI::file* Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
+    void Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
     void LoadArchive(archive& A);
     void ProcessArchive(LPCSTR path);
     void ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse);
@@ -171,11 +168,11 @@ public:
     u32 dwOpenCounter;
 
 private:
-    void file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc);
-    void file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc);
+    void file_from_cache_impl(IReader*& R, LPSTR fname, const file&);
+    void file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file&);
 
     template <typename T>
-    void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR& source_name);
+    void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR&);
 
     void file_from_archive(IReader*& R, LPCSTR fname, const file& desc);
     void file_from_archive(CStreamReader*& R, LPCSTR fname, const file& desc);

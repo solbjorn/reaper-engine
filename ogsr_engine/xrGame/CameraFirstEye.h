@@ -14,13 +14,13 @@ public:
     virtual ~CCameraFirstEye();
 
     virtual void Load(LPCSTR section);
-    virtual void Move(int cmd, float val = 0, float factor = 1.0f);
+    virtual void Move(int cmd, float val = 0.0f, float factor = 1.0f);
 
     virtual void OnActivate(CCameraBase* old_cam);
     virtual void Update(Fvector& point, Fvector& noise_angle);
 
-    virtual float GetWorldYaw() { return -yaw; }
-    virtual float GetWorldPitch() { return pitch; }
+    float GetWorldYaw() const override { return -yaw; }
+    float GetWorldPitch() const override { return pitch; }
 };
 
 #endif // __CAMERALOOK_H__

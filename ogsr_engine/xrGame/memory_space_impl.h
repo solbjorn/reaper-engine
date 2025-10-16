@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "memory_space.h"
 #include "gameobject.h"
 #include "level.h"
 #include "ai_space.h"
@@ -16,7 +15,7 @@
 #include "level_graph.h"
 
 template <typename T>
-IC SRotation CObjectParams<T>::orientation(const T* object) const
+IC SRotation MemorySpace::CObjectParams<T>::orientation(const T* object) const
 {
     Fvector t;
     object->XFORM().getHPB(t.x, t.y, t.z);
@@ -24,7 +23,7 @@ IC SRotation CObjectParams<T>::orientation(const T* object) const
 }
 
 template <typename T>
-IC void CObjectParams<T>::fill(const T* game_object)
+IC void MemorySpace::CObjectParams<T>::fill(const T* game_object)
 {
 #ifdef USE_ORIENTATION
     m_orientation = game_object ? orientation(game_object) : SRotation(0.f, 0.f, 0.f);
@@ -50,19 +49,19 @@ IC void CObjectParams<T>::fill(const T* game_object)
 }
 
 template <typename T>
-IC CMemoryObject<T>::CMemoryObject()
+IC MemorySpace::CMemoryObject<T>::CMemoryObject()
 {
     m_squad_mask.one();
 }
 
 template <typename T>
-IC bool CMemoryObject<T>::operator==(u16 id) const
+IC bool MemorySpace::CMemoryObject<T>::operator==(u16 id) const
 {
     return (object_id(m_object) == id);
 }
 
 template <typename T>
-IC void CMemoryObject<T>::fill(const T* game_object, const T* self, const squad_mask_type& mask)
+IC void MemorySpace::CMemoryObject<T>::fill(const T* game_object, const T* self, const squad_mask_type& mask)
 {
 #ifdef USE_UPDATE_COUNT
     ++m_update_count;

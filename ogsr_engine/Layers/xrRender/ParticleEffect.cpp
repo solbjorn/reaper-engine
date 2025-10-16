@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ParticleEffect.h"
+
 #include <xmmintrin.h>
 
 using namespace PAPI;
@@ -35,6 +36,7 @@ void PS::OnEffectParticleDead(void*, u32, PAPI::Particle&, u32)
 //------------------------------------------------------------------------------
 // class CParticleEffect
 //------------------------------------------------------------------------------
+
 CParticleEffect::CParticleEffect()
 {
     m_HandleEffect = ParticleManager()->CreateEffect(1);
@@ -50,6 +52,7 @@ CParticleEffect::CParticleEffect()
     m_CollisionCallback = nullptr;
     m_XFORM.identity();
 }
+
 CParticleEffect::~CParticleEffect()
 {
     // Log					("--- destroy PE");
@@ -62,8 +65,9 @@ void CParticleEffect::Play()
 {
     m_RT_Flags.set(flRT_DefferedStop, FALSE);
     m_RT_Flags.set(flRT_Playing, TRUE);
-    ParticleManager()->PlayEffect(m_HandleEffect, m_HandleActionList);
+    ParticleManager()->PlayEffect(m_HandleActionList);
 }
+
 void CParticleEffect::Stop(BOOL bDefferedStop)
 {
     ParticleManager()->StopEffect(m_HandleEffect, m_HandleActionList, bDefferedStop);
@@ -76,6 +80,7 @@ void CParticleEffect::Stop(BOOL bDefferedStop)
         m_RT_Flags.set(flRT_Playing, FALSE);
     }
 }
+
 void CParticleEffect::RefreshShader()
 {
     OnDeviceDestroy();
@@ -235,6 +240,9 @@ void CParticleEffect::OnDeviceDestroy()
 }
 
 //----------------------------------------------------
+
+namespace
+{
 IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float sina,
                    float cosa)
 {
@@ -243,14 +251,14 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& T, const Fvector& R, const Fvec
     _sa = _mm_set1_ps(sina);
     _ca = _mm_set1_ps(cosa);
 
-    _T = _mm_load_ss((float*)&T.x);
-    _T = _mm_loadh_pi(_T, (__m64*)&T.y);
+    _T = _mm_load_ss((const float*)&T.x);
+    _T = _mm_loadh_pi(_T, (const __m64*)&T.y);
 
-    _R = _mm_load_ss((float*)&R.x);
-    _R = _mm_loadh_pi(_R, (__m64*)&R.y);
+    _R = _mm_load_ss((const float*)&R.x);
+    _R = _mm_loadh_pi(_R, (const __m64*)&R.y);
 
-    _pos = _mm_load_ss((float*)&pos.x);
-    _pos = _mm_loadh_pi(_pos, (__m64*)&pos.y);
+    _pos = _mm_load_ss((const float*)&pos.x);
+    _pos = _mm_loadh_pi(_pos, (const __m64*)&pos.y);
 
     _zz = _mm_setzero_ps();
 
@@ -303,11 +311,11 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
 
     // crossproduct
 
-    _t = _mm_load_ss((float*)&T.x);
-    _t = _mm_loadh_pi(_t, (__m64*)&T.y);
+    _t = _mm_load_ss((const float*)&T.x);
+    _t = _mm_loadh_pi(_t, (const __m64*)&T.y);
 
-    _r = _mm_load_ss((float*)&Device.vCameraDirection.x);
-    _r = _mm_loadh_pi(_r, (__m64*)&Device.vCameraDirection.y);
+    _r = _mm_load_ss((const float*)&Device.vCameraDirection.x);
+    _r = _mm_loadh_pi(_r, (const __m64*)&Device.vCameraDirection.y);
 
     _t1 = _mm_shuffle_ps(_t, _t, _MM_SHUFFLE(0, 3, 1, 2));
     _t2 = _mm_shuffle_ps(_t, _t, _MM_SHUFFLE(2, 0, 1, 3));
@@ -343,12 +351,12 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     FillSprite(pv, T, R, pos, lt, rb, r1, r2, clr, sina, cosa);
 }
 
-static ICF void magnitude_sse(Fvector& vec, float& res)
+ICF void magnitude_sse(const Fvector& vec, float& res)
 {
     __m128 tv, tu;
 
-    tv = _mm_load_ss((float*)&vec.x); // tv = 0 | 0 | 0 | x
-    tv = _mm_loadh_pi(tv, (__m64*)&vec.y); // tv = z | y | 0 | x
+    tv = _mm_load_ss((const float*)&vec.x); // tv = 0 | 0 | 0 | x
+    tv = _mm_loadh_pi(tv, (const __m64*)&vec.y); // tv = z | y | 0 | x
     tv = _mm_mul_ps(tv, tv); // tv = zz | yy | 0 | xx
     tu = _mm_movehl_ps(tv, tv); // tu = zz | yy | zz | yy
     tv = _mm_add_ss(tv, tu); // tv = zz | yy | 0 | xx + yy
@@ -357,6 +365,7 @@ static ICF void magnitude_sse(Fvector& vec, float& res)
     tv = _mm_sqrt_ss(tv); // tv = zz | yy | 0 | sqrt( xx + yy + zz )
     _mm_store_ss((float*)&res, tv);
 }
+} // namespace
 
 void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* pv, u32 count)
 {
@@ -372,7 +381,7 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
         lt.set(0.f, 0.f);
         rb.set(1.f, 1.f);
 
-        _mm_prefetch((char*)&particles[i + 1], _MM_HINT_NTA);
+        _mm_prefetch((const char*)&particles[i + 1], _MM_HINT_NTA);
 
         if (!fsimilar(angle, m.rot.x))
         {
@@ -380,7 +389,7 @@ void CParticleEffect::ParticleRenderStream(PAPI::Particle* particles, FVF::LIT* 
             DirectX::XMScalarSinCos(&sina, &cosa, angle);
         }
 
-        _mm_prefetch(64 + (char*)&particles[i + 1], _MM_HINT_NTA);
+        _mm_prefetch(64 + (const char*)&particles[i + 1], _MM_HINT_NTA);
 
         if (m_Def->m_Flags.is(CPEDef::dfFramed))
             m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);

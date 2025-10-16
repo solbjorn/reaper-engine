@@ -41,7 +41,7 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
         names = "$null";
 
     dest.clear();
-    char* P = (char*)names;
+    const char* P = (const char*)names;
     svector<char, 128> N;
 
     while (*P)
@@ -50,17 +50,18 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
         {
             // flush
             N.push_back(0);
-            _strlwr(N.begin());
+            _strlwr(N.data());
 
-            fix_texture_name(N.begin());
+            fix_texture_name(N.data());
+            dest.emplace_back(N.data());
 
-            dest.emplace_back(N.begin());
             N.clear();
         }
         else
         {
             N.push_back(*P);
         }
+
         P++;
     }
 
@@ -68,11 +69,10 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
     {
         // flush
         N.push_back(0);
-        _strlwr(N.begin());
+        _strlwr(N.data());
 
-        fix_texture_name(N.begin());
-
-        dest.emplace_back(N.begin());
+        fix_texture_name(N.data());
+        dest.emplace_back(N.data());
     }
 }
 

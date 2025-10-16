@@ -122,6 +122,7 @@ void CSightAction::execute_position()
         object().sight().SetFirePointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
     else
         object().sight().SetPointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
+
 #ifdef SIGHT_TEST
     Msg("%6d %s", Device.dwTimeGlobal, m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
 #endif
@@ -145,7 +146,7 @@ void CSightAction::execute_object()
     if (m_torso_look)
         object().sight().SetFirePointLookAngles(look_pos, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, m_object_to_look);
     else
-        object().sight().SetPointLookAngles(look_pos, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, m_object_to_look);
+        object().sight().SetPointLookAngles(look_pos, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch);
 
     //	Msg
     //("execute_object(%f)(%s)my_position[%f][%f][%f],object_position[%f][%f][%f]",object().movement().m_head.target.yaw,*m_object_to_look->cName(),VPUSH(m_object->eye_matrix.c),VPUSH(m_object_to_look->Position()));

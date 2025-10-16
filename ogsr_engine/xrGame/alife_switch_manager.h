@@ -39,14 +39,15 @@ public:
     void add_online(CSE_ALifeDynamicObject* object, bool update_registries = true);
 
 public:
-    IC CALifeSwitchManager(xrServer* server, LPCSTR section);
+    inline CALifeSwitchManager(xrServer* server, LPCSTR section);
     virtual ~CALifeSwitchManager();
+
     void switch_object(CSE_ALifeDynamicObject* object);
-    IC float online_distance() const;
-    IC float offline_distance() const;
-    IC float switch_distance() const;
-    IC void set_switch_distance(float switch_distance);
-    IC void set_switch_factor(float switch_factor);
+    [[nodiscard]] inline float online_distance() const;
+    [[nodiscard]] inline float offline_distance() const;
+    [[nodiscard]] inline float switch_distance() const;
+    inline void set_switch_distance(float switch_distance);
+    inline void set_switch_factor(float switch_factor);
 };
 
 #include "alife_switch_manager_inline.h"

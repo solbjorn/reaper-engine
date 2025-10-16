@@ -15,7 +15,7 @@
 #include "..\xr_3da\XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"
 
-xrClientData::xrClientData() : IClient(Device.GetTimerGlobal())
+xrClientData::xrClientData() : IClient{}
 {
     ps = Level().Server->game->createPlayerState();
     ps->clear();
@@ -440,7 +440,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
     }
     break;
     case M_LOAD_GAME: {
-        game->load_game(P, sender);
+        std::ignore = game->load_game(P, sender);
         SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
         VERIFY(verify_entities());
     }
@@ -490,7 +490,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
     return IPureServer::OnMessage(P, sender);
 }
 
-void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32, u32)
 {
     if (SV_Client && SV_Client->ID == ID)
     {

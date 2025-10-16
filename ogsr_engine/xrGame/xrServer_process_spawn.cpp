@@ -59,7 +59,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
 
     // check if we can assign entity to some client
     if (!CL && !net_Players.empty())
-        CL = SelectBestClientToMigrateTo(E);
+        CL = SelectBestClientToMigrateTo();
 
     // check for respawn-capability and create phantom as needed
     if (E->RespawnTime && (0xffff == E->ID_Phantom))
@@ -87,7 +87,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         {
             // Clone from Phantom
             E->ID = PerformIDgen(0xffff);
-            E->owner = CL; //		= SelectBestClientToMigrateTo	(E);
+            E->owner = CL;
             E->s_flags.set(M_SPAWN_OBJECT_PHANTOM, FALSE);
             entities.try_emplace(E->ID, E);
         }
@@ -130,7 +130,6 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
         CL->owner = E;
 
     // PROCESS RP;	 3D position/orientation
-    PerformRP(E);
     E->s_RP = 0xFE; // Use supplied
 
     // Parent-Connect

@@ -133,8 +133,8 @@ public:
     virtual void ClipperOff();
     virtual void ClipperOff(CUIStaticItem& UIStaticItem);
     virtual bool GetClipperState() { return m_bClipper; }
-    void TextureClipper(float offset_x = 0, float offset_y = 0, Frect* pClipRect = nullptr);
-    void TextureClipper(float offset_x, float offset_y, Frect* pClipRect, CUIStaticItem& UIStaticItem);
+    void TextureClipper(Frect* pClipRect = nullptr);
+    void TextureClipper(Frect* pClipRect, CUIStaticItem& UIStaticItem);
 
     void SetShader(const ui_shader& sh);
     CUIStaticItem& GetUIStaticItem() { return m_UIStaticItem; }
@@ -219,9 +219,10 @@ protected:
 
     // Обрезка надписи
     EElipsisPosition m_ElipsisPos{eepNone};
-    void Elipsis(const Frect& rect, EElipsisPosition elipsisPos);
     int m_iElipsisIndent{};
     Frect m_ClipRect;
+
+    void Elipsis(const Frect&, EElipsisPosition elipsisPos);
 
 private:
     Frect m_originalSizeRect;

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "alife_simulator.h"
 #include "alife_schedule_registry.h"
@@ -106,7 +107,7 @@ void CSE_ALifeDynamicObject::add_online(const bool& update_registries)
     alife().graph().remove(this, m_tGraphID, false);
 }
 
-void CSE_ALifeDynamicObject::add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
+void CSE_ALifeDynamicObject::add_offline(const xr_vector<ALife::_OBJECT_ID>&, const bool& update_registries)
 {
     if (!update_registries)
         return;

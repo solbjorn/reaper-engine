@@ -192,10 +192,9 @@ public:
 
     // Starting/Loading
     virtual BOOL net_Start(LPCSTR op_server, LPCSTR op_client);
-    virtual void net_Load(LPCSTR name);
+    void net_Load(LPCSTR) override;
     virtual void net_Save(LPCSTR name);
     virtual void net_Stop();
-    virtual BOOL net_Start_client(LPCSTR name);
     virtual void net_Update();
 
     virtual BOOL Load_GameSpecific_Before();
@@ -206,14 +205,14 @@ public:
     void Load_GameSpecific_CFORM(CDB::TRI* T, size_t count) override;
 
     // Events
-    virtual void OnEvent(EVENT E, u64 P1, u64 P2);
+    void OnEvent(EVENT E, u64 P1, u64) override;
     virtual void OnFrame(void);
     virtual void OnRender();
     void cl_Process_Event(u16 dest, u16 type, NET_Packet& P);
     void cl_Process_Spawn(NET_Packet& P);
     void ProcessGameEvents();
     void ProcessGameSpawns();
-    void ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P);
+    void ProcessGameSpawnsDestroy(u16 dest, u16 type);
 
     // Input
     virtual void IR_OnKeyboardPress(int btn);
@@ -235,9 +234,9 @@ public:
     void ClientSend();
     void ClientSave();
 
-    virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+    void Send(NET_Packet& P, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
-    void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
+    XR_SYSV void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
     void g_sv_Spawn(CSE_Abstract* E); // server reply/command spawning
 
     IC CSpaceRestrictionManager& space_restriction_manager();

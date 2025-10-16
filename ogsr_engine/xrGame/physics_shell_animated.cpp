@@ -33,7 +33,7 @@ physics_shell_animated::~physics_shell_animated()
 
 void physics_shell_animated::create_shell(CPhysicsShellHolder* O)
 {
-    physics_shell = P_build_Shell(O, true, nullptr, true);
+    physics_shell = P_build_Shell(O, true);
     physics_shell->ToAnimBonesPositions(/*mh_unspecified*/);
     physics_shell->DisableCollision();
     physics_shell->SetAnimated(true);

@@ -21,7 +21,7 @@
 CUIMessagesWindow::CUIMessagesWindow() { Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT); }
 CUIMessagesWindow::~CUIMessagesWindow() {}
 
-void CUIMessagesWindow::Init(float x, float y, float width, float height)
+void CUIMessagesWindow::Init(float, float, float, float)
 {
     CUIXml xml;
 
@@ -47,6 +47,7 @@ void CUIMessagesWindow::AddIconedPdaMessage(LPCSTR textureName, Frect originalRe
         pItem->SetHeight(pItem->UIIcon.GetHeight());
     else
         pItem->SetHeight(pItem->UIMsgText.GetHeight());
+
     m_pGameLog->SendMessage(pItem, CHILD_CHANGED_SIZE);
 }
 

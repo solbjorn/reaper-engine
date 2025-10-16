@@ -131,7 +131,6 @@ void CSoundRender_Emitter::set_cursor(u32 p)
         u32 bt = ((CSoundRender_Source*)owner_data->handle)->dwBytesTotal;
         if (m_stream_cursor >= m_cur_handle_cursor + bt)
         {
-            SoundRender->i_destroy_source((CSoundRender_Source*)owner_data->handle);
             owner_data->handle = SoundRender->i_create_source(owner_data->fn_attached[0].c_str());
             owner_data->fn_attached[0] = owner_data->fn_attached[1];
             owner_data->fn_attached[1] = "";
@@ -252,8 +251,8 @@ void CSoundRender_Emitter::fill_all_blocks()
 {
     current_block = 0;
 
-    for (size_t i = 0; i < sdef_target_count_prefill; i++)
-        fill_block(temp_buf[i].data(), temp_buf[i].size());
+    for (auto& block : temp_buf)
+        fill_block(block.data(), block.size());
 
     filled_blocks = sdef_target_count_prefill;
 }
@@ -265,12 +264,12 @@ void CSoundRender_Emitter::dispatch_prefill()
     if (canceling)
         return;
 
-    float fDeltaTime = SoundRender->fTimer_Delta;
+    const float fDeltaTime = SoundRender->fTimer_Delta;
 
     tg->run([this, fDeltaTime] {
         if (filled_blocks < sdef_target_count_prefill)
         {
-            size_t next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
+            gsl::index next_block_to_fill = (current_block + filled_blocks) % sdef_target_count_prefill;
 
             while (filled_blocks < sdef_target_count_prefill)
             {

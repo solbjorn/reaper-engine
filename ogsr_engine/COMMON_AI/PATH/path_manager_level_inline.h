@@ -95,7 +95,7 @@ IC bool CLevelPathManager::is_accessible(const _index_type& vertex_id) const
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CLevelPathManager::begin(const _index_type& vertex_id, const_iterator& begin, const_iterator& end) { this->graph->begin(best_node, begin, end); }
+inline void CLevelPathManager::begin(const _index_type&, const_iterator& begin, const_iterator& end) { this->graph->begin(best_node, begin, end); }
 
 TEMPLATE_SPECIALIZATION
 IC const _index_type CLevelPathManager::get_value(const_iterator& i) const { return this->graph->value(best_node, i); }

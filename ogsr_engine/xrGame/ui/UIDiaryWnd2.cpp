@@ -130,17 +130,15 @@ void CUIDiaryWnd::Init()
 }
 
 void CUIDiaryWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCallback::OnEvent(pWnd, msg, pData); }
-
-void CUIDiaryWnd::OnFilterChanged(CUIWindow* w, void*) { Reload((EDiaryFilter)m_FilterTab->GetActiveIndex()); }
+void CUIDiaryWnd::OnFilterChanged(CUIWindow*, void*) { Reload((EDiaryFilter)m_FilterTab->GetActiveIndex()); }
 
 void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
 {
-    //.	if(m_currFilter==new_filter) return;
-
     switch (m_currFilter)
     {
     case eJournal: UnloadJournalTab(); break;
     case eNews: UnloadNewsTab(); break;
+    default: break;
     }
 
     m_currFilter = new_filter;
@@ -149,11 +147,11 @@ void CUIDiaryWnd::Reload(EDiaryFilter new_filter)
     {
     case eJournal: LoadJournalTab(); break;
     case eNews: LoadNewsTab(); break;
+    default: break;
     }
 }
 
 void CUIDiaryWnd::AddNews() { m_UINewsWnd->AddNews(); }
-void CUIDiaryWnd::MarkNewsAsRead(bool status) {}
 
 void CUIDiaryWnd::UnloadJournalTab()
 {
@@ -190,7 +188,7 @@ void CUIDiaryWnd::LoadNewsTab()
     g_pda_info_state &= ~pda_section::news;
 }
 
-void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow* w, void* p)
+void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow*, void* p)
 {
     CUITreeViewItem* pSelItem = (CUITreeViewItem*)p;
     m_DescrView->Clear();

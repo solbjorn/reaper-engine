@@ -24,10 +24,12 @@ dxRender_Visual::~dxRender_Visual() {}
 
 void dxRender_Visual::Release() {}
 
+namespace
+{
 constexpr const char* vis_shaders_replace = "vis_shaders_replace";
 constexpr const char* vis_shaders_override = "vis_shaders_override";
 
-static bool replaceShadersLine(const char* N, char* fnS, u32 fnS_size, LPCSTR item)
+bool replaceShadersLine(char* fnS, u32 fnS_size, LPCSTR item)
 {
     if (!pSettings->line_exist(vis_shaders_replace, item))
         return false;
@@ -44,7 +46,6 @@ static bool replaceShadersLine(const char* N, char* fnS, u32 fnS_size, LPCSTR it
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
-            // Msg("~~[%s][%s] replaced [%s] by [%s]", __FUNCTION__, N, s1, s2);
             break;
         }
     }
@@ -52,33 +53,33 @@ static bool replaceShadersLine(const char* N, char* fnS, u32 fnS_size, LPCSTR it
     return true;
 }
 
-static bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
+bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
 {
     if (!pSettings->section_exist(vis_shaders_replace))
         return false;
 
-    if (replaceShadersLine(N, fnS, fnS_size, N))
+    if (replaceShadersLine(fnS, fnS_size, N))
         return true;
 
-    std::string s{N};
+    xr_string s{N};
 
     if (strchr(N, ':'))
     {
         s.erase(s.find(":"));
-        if (replaceShadersLine(N, fnS, fnS_size, s.c_str()))
+        if (replaceShadersLine(fnS, fnS_size, s.c_str()))
             return true;
     }
 
     while (xr_string_utils::SplitFilename(s))
     {
-        if (replaceShadersLine(N, fnS, fnS_size, s.c_str()))
+        if (replaceShadersLine(fnS, fnS_size, s.c_str()))
             return true;
     }
 
     return false;
 }
 
-static bool overrideShadersLine(const char* N, char* fnS, u32 fnS_size, const char* item)
+bool overrideShadersLine(char* fnS, u32 fnS_size, const char* item)
 {
     if (!pSettings->line_exist(vis_shaders_override, item))
         return false;
@@ -95,7 +96,6 @@ static bool overrideShadersLine(const char* N, char* fnS, u32 fnS_size, const ch
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
-            // Msg("~~[%s][%s] overridden [%s] by [%s]", __FUNCTION__, N, s1, s2);
             break;
         }
     }
@@ -103,31 +103,32 @@ static bool overrideShadersLine(const char* N, char* fnS, u32 fnS_size, const ch
     return true;
 }
 
-static bool overrideShaders(const char* fnT, char* fnS, u32 fnS_size)
+bool overrideShaders(const char* fnT, char* fnS, u32 fnS_size)
 {
     if (!pSettings->section_exist(vis_shaders_override))
         return false;
 
-    if (overrideShadersLine(fnT, fnS, fnS_size, fnT))
+    if (overrideShadersLine(fnS, fnS_size, fnT))
         return true;
 
-    std::string s{fnT};
+    xr_string s{fnT};
 
     if (strchr(fnT, ':'))
     {
         s.erase(s.find(":"));
-        if (overrideShadersLine(fnT, fnS, fnS_size, s.c_str()))
+        if (overrideShadersLine(fnS, fnS_size, s.c_str()))
             return true;
     }
 
     while (xr_string_utils::SplitFilename(s))
     {
-        if (overrideShadersLine(fnT, fnS, fnS_size, s.c_str()))
+        if (overrideShadersLine(fnS, fnS_size, s.c_str()))
             return true;
     }
 
     return false;
 }
+} // namespace
 
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {

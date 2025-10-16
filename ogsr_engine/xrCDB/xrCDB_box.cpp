@@ -1,7 +1,11 @@
 #include "stdafx.h"
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wcast-qual");
+XR_DIAG_IGNORE("-Wclass-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wunknown-pragmas");
+XR_DIAG_IGNORE("-Wunused-parameter");
 
 #include <Opcode.h>
 
@@ -10,6 +14,8 @@ XR_DIAG_POP();
 using namespace CDB;
 using namespace Opcode;
 
+namespace
+{
 //! This macro quickly finds the min & max values among 3 variables
 #define FINDMINMAX(x0, x1, x2, min, max) \
     min = max = x0; \
@@ -154,6 +160,7 @@ public:
         b_min.sub(C, E);
         b_max.add(C, E);
     }
+
     ICF bool _box(const Fvector& C, const Fvector& E)
     {
         if (b_max.x < C.x - E.x)
@@ -170,6 +177,7 @@ public:
             return false;
         return true;
     }
+
     ICF bool _tri()
     {
         // move everything so that the boxcenter is in (0,0,0)
@@ -248,6 +256,7 @@ public:
         }
         return true;
     }
+
     void _prim(DWORD prim)
     {
         TRI& T = tris[prim];
@@ -272,10 +281,11 @@ public:
         R.verts[2] = v2;
         R.dummy = T.dummy;
     }
+
     void _stab(const AABBNoLeafNode* node)
     {
         // Actual box-box test
-        if (!_box((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents))
+        if (!_box((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents))
             return;
 
         // 1st chield
@@ -298,6 +308,7 @@ public:
             _stab(node->GetNeg());
     }
 };
+} // namespace
 
 void COLLIDER::box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
 {

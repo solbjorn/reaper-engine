@@ -9,33 +9,23 @@
 #pragma once
 
 #define TEMPLATE_SPECIALIZATION template <typename T>
-
 #define CAbstractObjectManager CObjectManager<T>
 
 TEMPLATE_SPECIALIZATION
-CAbstractObjectManager::CObjectManager()
-{
-    //	m_objects.reserve		(100);
-}
+inline void CAbstractObjectManager::Load(LPCSTR) {}
 
 TEMPLATE_SPECIALIZATION
-CAbstractObjectManager::~CObjectManager() {}
-
-TEMPLATE_SPECIALIZATION
-void CAbstractObjectManager::Load(LPCSTR section) {}
-
-TEMPLATE_SPECIALIZATION
-void CAbstractObjectManager::reinit()
+inline void CAbstractObjectManager::reinit()
 {
     m_objects.clear();
     m_selected = nullptr;
 }
 
 TEMPLATE_SPECIALIZATION
-void CAbstractObjectManager::reload(LPCSTR section) {}
+inline void CAbstractObjectManager::reload(LPCSTR) {}
 
 TEMPLATE_SPECIALIZATION
-void CAbstractObjectManager::update()
+inline void CAbstractObjectManager::update()
 {
     float result = flt_max;
     m_selected = nullptr;
@@ -54,10 +44,10 @@ void CAbstractObjectManager::update()
 }
 
 TEMPLATE_SPECIALIZATION
-float CAbstractObjectManager::do_evaluate(T* object) const { return (0.f); }
+inline float CAbstractObjectManager::do_evaluate(T*) const { return 0.0f; }
 
 TEMPLATE_SPECIALIZATION
-bool CAbstractObjectManager::is_useful(T* object) const
+inline bool CAbstractObjectManager::is_useful(T* object) const
 {
     const ISpatial* self = (const ISpatial*)(object);
     if (!self)
@@ -70,7 +60,7 @@ bool CAbstractObjectManager::is_useful(T* object) const
 }
 
 TEMPLATE_SPECIALIZATION
-bool CAbstractObjectManager::add(T* object)
+inline bool CAbstractObjectManager::add(T* object)
 {
     if (!is_useful(object))
         return (false);
@@ -85,17 +75,17 @@ bool CAbstractObjectManager::add(T* object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC T* CAbstractObjectManager::selected() const { return (m_selected); }
+inline T* CAbstractObjectManager::selected() const { return m_selected; }
 
 TEMPLATE_SPECIALIZATION
-void CAbstractObjectManager::reset()
+inline void CAbstractObjectManager::reset()
 {
     m_objects.clear();
     m_selected = nullptr;
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CAbstractObjectManager::OBJECTS& CAbstractObjectManager::objects() const { return (m_objects); }
+inline const typename CAbstractObjectManager::OBJECTS& CAbstractObjectManager::objects() const { return m_objects; }
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CAbstractObjectManager

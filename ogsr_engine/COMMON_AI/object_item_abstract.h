@@ -10,7 +10,7 @@
 
 #include "object_factory_space.h"
 
-class CObjectItemAbstract : public virtual RTTI::Enable
+class XR_NOVTABLE CObjectItemAbstract : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CObjectItemAbstract);
 
@@ -19,9 +19,11 @@ protected:
     shared_str m_script_clsid;
 
 public:
-    IC CObjectItemAbstract(const CLASS_ID& clsid, LPCSTR script_clsid);
-    IC const CLASS_ID& clsid() const;
-    IC shared_str script_clsid() const;
+    inline CObjectItemAbstract(CLASS_ID clsid, LPCSTR script_clsid);
+
+    inline CLASS_ID clsid() const;
+    inline shared_str script_clsid() const;
+
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const = 0;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const = 0;
 };

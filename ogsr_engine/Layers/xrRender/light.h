@@ -121,8 +121,8 @@ public:
     }
 
     virtual void set_volumetric_quality(float fValue) { m_volumetric_quality = fValue; }
-    virtual void set_volumetric_intensity(float fValue) { m_volumetric_intensity = ps_ssfx_volumetric.y; }
-    virtual void set_volumetric_distance(float fValue) { m_volumetric_distance = 1.0f; }
+    void set_volumetric_intensity(float) override { m_volumetric_intensity = ps_ssfx_volumetric.y; }
+    void set_volumetric_distance(float) override { m_volumetric_distance = 1.0f; }
 
     virtual void set_position(const Fvector& P);
     virtual void set_rotation(const Fvector& D, const Fvector& R);

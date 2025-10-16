@@ -188,7 +188,7 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
     }
 }
 
-void CActor::on_weapon_shot_stop(CWeapon* weapon)
+void CActor::on_weapon_shot_stop(CWeapon*)
 {
     //---------------------------------------------
     CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
@@ -201,7 +201,7 @@ void CActor::on_weapon_shot_stop(CWeapon* weapon)
     Cameras().RemoveCamEffector(eCEShot);
 }
 
-void CActor::on_weapon_hide(CWeapon* weapon)
+void CActor::on_weapon_hide(CWeapon*)
 {
     CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
     if (effector && !effector->IsActive())

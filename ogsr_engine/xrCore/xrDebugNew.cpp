@@ -174,6 +174,8 @@ void xrDebug::do_exit(const std::string& message)
         quick_exit(EXIT_SUCCESS);
     else
         DEBUG_INVOKE;
+
+    std::unreachable();
 }
 
 void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function)
@@ -216,24 +218,43 @@ const char* xrDebug::error2string(const DWORD code) const
 void xrDebug::error(const HRESULT hr, const char* expr, const char* file, int line, const char* function)
 {
     backend(DXerror2string(hr), expr, nullptr, nullptr, file, line, function);
+    std::unreachable();
 }
 
 void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char* file, int line, const char* function)
 {
     backend(DXerror2string(hr), expr, e2, nullptr, file, line, function);
+    std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const char* file, int line, const char* function) { backend("assertion failed", e1, nullptr, nullptr, file, line, function); }
+void xrDebug::fail(const char* e1, const char* file, int line, const char* function)
+{
+    backend("assertion failed", e1, nullptr, nullptr, file, line, function);
+    std::unreachable();
+}
 
-void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function) { backend(e1, e2.c_str(), nullptr, nullptr, file, line, function); }
+void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function)
+{
+    backend(e1, e2.c_str(), nullptr, nullptr, file, line, function);
+    std::unreachable();
+}
 
-void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function) { backend(e1, e2, nullptr, nullptr, file, line, function); }
+void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function)
+{
+    backend(e1, e2, nullptr, nullptr, file, line, function);
+    std::unreachable();
+}
 
-void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function) { backend(e1, e2, e3, nullptr, file, line, function); }
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function)
+{
+    backend(e1, e2, e3, nullptr, file, line, function);
+    std::unreachable();
+}
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function)
 {
     backend(e1, e2, e3, e4, file, line, function);
+    std::unreachable();
 }
 
 void __cdecl xrDebug::fatal(const char* file, int line, const char* function, const char* F, ...)
@@ -245,16 +266,7 @@ void __cdecl xrDebug::fatal(const char* file, int line, const char* function, co
     va_end(args);
 
     backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
-}
-
-void xrDebug::on_exception_in_thread()
-{
-    if (!IsDebuggerPresent())
-    {
-        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
-
-        quick_exit(EXIT_SUCCESS);
-    }
+    std::unreachable();
 }
 
 static int out_of_memory_handler(size_t size)
@@ -270,10 +282,7 @@ static int out_of_memory_handler(size_t size)
 }
 
 #ifdef USE_OWN_MINI_DUMP
-#pragma warning(push)
-#pragma warning(disable : 4091) // 'typedef ': ignored on left of '' when no variable is declared
 #include <DbgHelp.h>
-#pragma warning(pop)
 
 #pragma comment(lib, "Version.lib")
 #pragma comment(lib, "dbghelp.lib")
@@ -345,7 +354,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
 }
 #endif
 
-static void format_message(char* buffer, const size_t& buffer_size)
+static void format_message(char* buffer)
 {
     __try
     {
@@ -373,7 +382,7 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS* pExceptionInfo)
     if (!error_after_dialog)
     {
         string1024 error_message;
-        format_message(error_message, sizeof(error_message));
+        format_message(error_message);
         if (*error_message)
             Msg("\n%s", error_message);
 
@@ -396,7 +405,7 @@ static void _terminate() // Вызывается при std::terminate()
 
 static void handler_base(const char* reason_string) { Debug.backend("error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO); }
 
-static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t reserved)
+static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t)
 {
     string4096 expression_;
     string4096 function_;
@@ -425,16 +434,11 @@ static void invalid_parameter_handler(const wchar_t* expression, const wchar_t* 
 }
 
 static void std_out_of_memory_handler() { handler_base("std: out of memory"); }
-
 static void pure_call_handler() { handler_base("pure virtual function call"); }
-
-static void abort_handler(int signal) { handler_base("application is aborting"); }
-
-static void floating_point_handler(int signal) { handler_base("floating point error"); }
-
-static void illegal_instruction_handler(int signal) { handler_base("illegal instruction"); }
-
-static void termination_handler(int signal) { handler_base("termination with exit code 3"); }
+static void abort_handler(int) { handler_base("application is aborting"); }
+static void floating_point_handler(int) { handler_base("floating point error"); }
+static void illegal_instruction_handler(int) { handler_base("illegal instruction"); }
+static void termination_handler(int) { handler_base("termination with exit code 3"); }
 
 /*static void segment_violation( int signal ) {
   handler_base( "Segment violation error" );

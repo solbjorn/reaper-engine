@@ -1,13 +1,15 @@
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "feel_touch.h"
 #include "xr_object.h"
+
 using namespace Feel;
 
 Touch::Touch() : pure_relcase(CallMe::fromMethod<&Touch::feel_touch_relcase>(this)) {}
 Touch::~Touch() {}
 
-BOOL Touch::feel_touch_contact(CObject* O) { return TRUE; }
+BOOL Touch::feel_touch_contact(CObject*) { return TRUE; }
 
 void Touch::feel_touch_deny(CObject* O, DWORD T)
 {

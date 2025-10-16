@@ -669,7 +669,7 @@ void CSkeletonX::_FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm,
     }
 }
 
-void CSkeletonX::_DuplicateIndices(const char* N, IReader* data)
+void CSkeletonX::_DuplicateIndices(IReader* data)
 {
     //	We will have trouble with container since don't know were to take readable indices
     VERIFY(!data->find_chunk(OGF_ICONTAINER));

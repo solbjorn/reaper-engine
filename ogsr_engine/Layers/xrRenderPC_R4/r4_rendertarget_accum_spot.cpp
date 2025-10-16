@@ -32,14 +32,13 @@ void CRenderTarget::accum_spot(light* L)
         }
     }
 
-    BOOL bIntersect = FALSE; // enable_scissor(L);
     {
         // setup xform
         L->xform_calc();
         RCache.set_xform_world(L->m_xform);
         RCache.set_xform_view(Device.mView);
         RCache.set_xform_project(Device.mProject);
-        bIntersect = enable_scissor(L);
+        enable_scissor(L);
 
         // *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
         // *** thus can cope without stencil clear with 127 lights
@@ -243,14 +242,13 @@ void CRenderTarget::accum_volumetric(light* L)
 
     // *** assume accumulator setted up ***
     // *****************************	Mask by stencil		*************************************
-    BOOL bIntersect = FALSE; // enable_scissor(L);
     {
         // setup xform
         L->xform_calc();
         RCache.set_xform_world(L->m_xform);
         RCache.set_xform_view(Device.mView);
         RCache.set_xform_project(Device.mProject);
-        bIntersect = enable_scissor(L);
+        enable_scissor(L);
     }
 
     RCache.set_ColorWriteEnable();

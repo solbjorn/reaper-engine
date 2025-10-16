@@ -42,36 +42,37 @@ protected:
     typedef xr_deque<CScriptEntityAction*> ACTIONS;
 
 private:
-    CGameObject* m_object;
-    CCustomMonster* m_monster;
-    bool m_initialized;
-
-    bool m_can_capture;
+    CGameObject* m_object{};
+    CCustomMonster* m_monster{};
+    bool m_initialized{};
+    bool m_can_capture{};
 
 protected:
+    bool m_bScriptControl{};
+    bool m_use_animation_movement_controller{};
+
     ACTIONS m_tpActionQueue;
-    bool m_bScriptControl;
     shared_str m_caScriptName;
     MotionID m_tpNextAnimation;
-    bool m_use_animation_movement_controller;
-    CScriptEntityAction* m_tpCurrentEntityAction;
+    CScriptEntityAction* m_tpCurrentEntityAction{};
 
 public:
     MotionID m_tpScriptAnimation;
 
 protected:
-    ref_sound* m_current_sound;
+    ref_sound* m_current_sound{};
 
     xr_vector<CSavedSound> m_saved_sounds;
 
 public:
     CScriptEntity();
     virtual ~CScriptEntity();
+
     void init();
     virtual void reinit();
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    [[nodiscard]] virtual BOOL net_Spawn(CSE_Abstract*);
     virtual void net_Destroy();
-    virtual void shedule_Update(u32 DT);
+    virtual void shedule_Update(u32);
     virtual void UpdateCL();
     virtual CScriptEntity* cast_script_entity() { return this; }
     virtual DLL_Pure* _construct();
@@ -91,15 +92,15 @@ public:
     virtual CScriptEntityAction* GetCurrentAction();
     virtual void AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority = false);
     virtual void ProcessScripts();
-    virtual void ResetScriptData(void* P = nullptr);
+    virtual void ResetScriptData(void* = nullptr);
     virtual void ClearActionQueue();
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignWatch(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignAnimation(CScriptEntityAction* tpEntityAction);
+    virtual bool bfAssignWatch(CScriptEntityAction*);
+    virtual bool bfAssignAnimation(CScriptEntityAction*);
     virtual bool bfAssignSound(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignParticles(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
-    virtual bool bfAssignMonsterAction(CScriptEntityAction* tpEntityAction);
+    virtual bool bfAssignObject(CScriptEntityAction*);
+    virtual bool bfAssignMonsterAction(CScriptEntityAction*);
 
     virtual void sound_callback(const CObject* object, int sound_type, const Fvector& position, float sound_power, float time_to_stop);
 

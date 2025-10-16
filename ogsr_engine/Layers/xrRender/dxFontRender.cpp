@@ -56,6 +56,7 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
             {
             case CGameFont::alCenter: X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x; break;
             case CGameFont::alRight: X -= iFloor(fSize) * g_current_font_scale.x; break;
+            default: break;
             }
 
             u32 clr, clr2;

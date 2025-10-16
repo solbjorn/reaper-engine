@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ef_storage.h"
 #include "ai_space.h"
 #include "script_game_object.h"
@@ -15,4 +16,4 @@
 #include "ef_base.h"
 #include "xrServer_Objects_ALife.h"
 
-void CEF_Storage::script_register(sol::state_view& lua) {}
+void CEF_Storage::script_register(sol::state_view&) {}

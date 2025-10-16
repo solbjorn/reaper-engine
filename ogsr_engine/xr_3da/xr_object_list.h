@@ -74,9 +74,7 @@ public:
 
 public:
     void register_object_to_destroy(CObject* object_to_destroy);
-#ifdef DEBUG
     bool registered_object_to_destroy(const CObject* object_to_destroy) const;
-#endif // DEBUG
 };
 
 #endif //__XR_OBJECT_LIST_H__

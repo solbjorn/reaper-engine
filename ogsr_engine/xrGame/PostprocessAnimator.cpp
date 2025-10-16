@@ -5,7 +5,6 @@
 
 // postprocess value LOAD method implementation
 void CPostProcessValue::load(IReader& pReader) { m_Value.Load_2(pReader); }
-
 void CPostProcessValue::save(IWriter& pWriter) { m_Value.Save(pWriter); }
 
 // postprocess color LOAD method implementation
@@ -28,9 +27,7 @@ void CPostProcessColor::save(IWriter& pWriter)
 // main PostProcessAnimator class
 
 CPostprocessAnimator::CPostprocessAnimator() { Create(); }
-
 CPostprocessAnimator::CPostprocessAnimator(int id, bool cyclic) : CEffectorPP((EEffectorPPType)id, 100000, true), m_bCyclic(cyclic) { Create(); }
-
 CPostprocessAnimator::~CPostprocessAnimator() { Clear(); }
 
 BOOL CPostprocessAnimator::Valid()
@@ -137,6 +134,7 @@ void CPostprocessAnimator::Update(float tm)
     for (int a = 0; a < POSTPROCESS_PARAMS_COUNT; a++)
         m_Params[a]->update(tm);
 }
+
 void CPostprocessAnimator::SetDesiredFactor(float f, float sp)
 {
     m_dest_factor = f;
@@ -158,7 +156,7 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
     if (m_bCyclic)
         fLifeTime = 100000;
 
-    CEffectorPP::Process(PPInfo);
+    std::ignore = CEffectorPP::Process(PPInfo);
 
     if (m_start_time < 0.0f)
         m_start_time = Device.fTimeGlobal;

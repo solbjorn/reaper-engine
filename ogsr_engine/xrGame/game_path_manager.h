@@ -26,7 +26,7 @@ public:
     using inherited::path;
 
 protected:
-    IC virtual void before_search(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);
+    IC virtual void before_search(const _vertex_id_type, const _vertex_id_type);
     IC virtual void after_search();
 
 public:

@@ -36,7 +36,7 @@ public:
 
     virtual bool use_center_to_aim() const { return true; }
     virtual bool check_start_conditions(ControlCom::EControlType);
-    void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType hit_type = ALife::eHitTypeWound, bool draw_hit_marks = true) override;
+    void HitEntity(const CEntity* pEntity, float fDamage, float impulse, Fvector& dir, ALife::EHitType = ALife::eHitTypeWound, bool = true) override;
 
     //--------------------------------------------------------------------
     // Utils
@@ -49,7 +49,6 @@ public:
 private:
     static void BoneCallback(CBoneInstance* B);
     void vfAssignBones();
-    void LookDirection(Fvector to_dir, float bone_turn_speed);
 
     bonesManipulation Bones;
 
@@ -145,7 +144,7 @@ public:
     //--------------------------------------------------------------------
 
 public:
-    void set_manual_control(bool value) {}
+    void set_manual_control(bool) {}
     void manual_activate();
     void manual_deactivate();
 

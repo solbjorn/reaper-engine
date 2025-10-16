@@ -27,6 +27,7 @@ class CUIMapWnd : public CUIWindow, public CUIWndCallback
 
 public:
     typedef CUIWindow inherited;
+
     enum EMapToolBtn
     {
         eGlobalMap = 0,
@@ -42,10 +43,11 @@ public:
         lmZoomOut = (1 << 4),
         lmFirst = (1 << 5),
     };
+
     Flags32 m_flags;
 
 private:
-    float m_currentZoom;
+    float m_currentZoom{1.0f};
     CUIGlobalMap* m_GlobalMap{};
     GameMaps m_GameMaps;
 

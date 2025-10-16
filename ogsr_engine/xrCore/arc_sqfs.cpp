@@ -315,7 +315,7 @@ void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, const char* fs_entry_poi
     fs->put(rd);
 }
 
-IReader* CLocatorAPI::archive::read_sqfs(const char* fname, const struct file& desc, u32 gran)
+IReader* CLocatorAPI::archive::read_sqfs(const char*, const struct file& desc, u32)
 {
     sqfs_inode_generic_t* inode;
     auto* rd = fs->get(*this);
@@ -332,7 +332,7 @@ IReader* CLocatorAPI::archive::read_sqfs(const char* fname, const struct file& d
     return xr_new<CTempReader>(dest, desc.size_real, 0uz);
 }
 
-CStreamReader* CLocatorAPI::archive::stream_sqfs(const char* fname, const struct file& desc)
+CStreamReader* CLocatorAPI::archive::stream_sqfs(const char*, const struct file& desc)
 {
     xr_sqfs_stream* st = xr_new<xr_sqfs_stream>();
     st->construct(this, desc.inode, desc.size_real, fs->super.block_size);

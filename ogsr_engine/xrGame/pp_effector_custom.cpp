@@ -6,16 +6,12 @@
 
 #define TRANSLATE_TYPE(val) EEffectorPPType(val ? (this)->typeId() : hash_64(reinterpret_cast<uintptr_t>(this), 32))
 
-#pragma warning(push)
-#pragma warning(disable : 4355) // 'this' : used in base member initializer list
-
 CPPEffectorCustom::CPPEffectorCustom(const SPPInfo& ppi, bool one_instance, bool destroy_from_engine) : inherited(TRANSLATE_TYPE(one_instance), flt_max, destroy_from_engine)
 {
     m_state = ppi;
     m_factor = 0.f;
     m_type = TRANSLATE_TYPE(one_instance);
 }
-#pragma warning(pop)
 
 #define SET_VALUE(def, target, factor) (def + (target - def) * factor)
 

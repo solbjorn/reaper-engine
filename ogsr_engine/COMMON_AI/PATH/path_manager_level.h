@@ -39,6 +39,7 @@ public:
     using const_iterator = typename inherited::const_iterator;
 
     virtual ~CPathManager();
+
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   const _Parameters& params);
     IC void init();
@@ -47,7 +48,7 @@ public:
     IC bool is_goal_reached(const _index_type& node_index);
     IC bool is_limit_reached(const _iteration_type iteration_count) const;
     IC bool is_accessible(const _index_type& vertex_id) const;
-    IC void begin(const _index_type& vertex_id, const_iterator& begin, const_iterator& end);
+    inline void begin(const _index_type&, const_iterator& begin, const_iterator& end);
     IC const _index_type get_value(const_iterator& i) const;
 };
 

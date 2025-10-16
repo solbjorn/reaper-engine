@@ -176,11 +176,6 @@ void CInventoryScript::script_register(sol::state_view& lua)
                                       "SetName", &CInventoryOwner::SetName, sol::base_classes, xr::sol_bases<CInventoryOwner>());
 }
 
-static CParticlesObject* monster_play_particles(CBaseMonster* monster, LPCSTR name, const Fvector& position, const Fvector& dir, BOOL auto_remove, BOOL xformed)
-{
-    return monster->PlayParticles(name, position, dir, auto_remove, xformed);
-}
-
 void CMonsterScript::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CBaseMonster>("CBaseMonster", sol::no_constructor, "agressive", &CBaseMonster::m_bAggressive, "angry", &CBaseMonster::m_bAngry, "damaged",

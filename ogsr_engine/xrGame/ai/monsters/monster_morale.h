@@ -7,7 +7,6 @@ class CMonsterMorale
     // external parameters
     float m_hit_quant;
     float m_attack_success_quant;
-    float m_team_mate_die;
     float m_v_taking_heart;
     float m_v_despondent;
     float m_v_stable;

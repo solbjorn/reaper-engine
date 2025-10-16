@@ -18,10 +18,8 @@ class CALifeMonsterBrain;
 class CALifeHumanBrain;
 class CALifeOnlineOfflineGroupBrain;
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
+SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract, XR_NOVTABLE)
+public:
 enum eTraderFlags : u32
 {
     eTraderFlagInfiniteAmmo = u32(1) << 0,
@@ -86,6 +84,7 @@ virtual void spawn_supplies();
 SERVER_ENTITY_DECLARE_END
 
 add_to_type_list(CSE_ALifeTraderAbstract);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTraderAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract) CSE_ALifeTrader(LPCSTR caSection);
@@ -112,6 +111,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeTrader);
 
 add_to_type_list(CSE_ALifeTrader);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTrader)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone, CSE_ALifeSpaceRestrictor)
@@ -128,9 +128,12 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCustomZone);
 
 add_to_type_list(CSE_ALifeCustomZone);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCustomZone)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone, CSE_ALifeCustomZone) CSE_ALifeItemWeapon* m_tpCurrentBestWeapon{};
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone, CSE_ALifeCustomZone)
+public:
+CSE_ALifeItemWeapon* m_tpCurrentBestWeapon{};
 float m_offline_interactive_radius;
 u32 m_artefact_position_offset{};
 u16 m_artefact_spawn_count;
@@ -148,24 +151,29 @@ virtual u32 ef_creature_type() const;
 #ifdef XRGAME_EXPORTS
 virtual void on_spawn();
 void spawn_artefacts();
-virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
-virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-virtual bool bfActive();
-virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
+[[nodiscard]] virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
+[[nodiscard]] virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable*, int, bool);
+[[nodiscard]] virtual bool bfActive();
+[[nodiscard]] virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
 #endif
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeAnomalousZone);
 
 add_to_type_list(CSE_ALifeAnomalousZone);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeAnomalousZone)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion) CSE_ALifeTorridZone(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion)
+public:
+CSE_ALifeTorridZone(LPCSTR caSection);
 virtual ~CSE_ALifeTorridZone();
+
 virtual CSE_Motion* __stdcall motion();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeTorridZone);
 
 add_to_type_list(CSE_ALifeTorridZone);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTorridZone)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual) shared_str attack_animation;
@@ -176,6 +184,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeZoneVisual);
 
 add_to_type_list(CSE_ALifeZoneVisual);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeZoneVisual)
 
 //---------------------------------------------------------------------------------------------------------
@@ -233,6 +242,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreatureAbstract);
 
 add_to_type_list(CSE_ALifeCreatureAbstract);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract, CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable) GameGraph::_GRAPH_ID m_tNextGraphID;
@@ -294,16 +304,16 @@ IC int Rank() { return m_rank; }
 virtual void update() {};
 #else
 virtual void update();
-virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
-virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-virtual bool bfActive();
-virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
-virtual void vfDetachAll(bool bFictitious = false) {}
+[[nodiscard]] CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) override;
+[[nodiscard]] ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable*, int, bool) override;
+[[nodiscard]] bool bfActive() override;
+[[nodiscard]] CSE_ALifeDynamicObject* tpfGetBestDetector() override;
+virtual void vfDetachAll(bool = false) {}
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 virtual void __on_register();
 virtual void __on_unregister();
-virtual Fvector draw_level_position() const;
+XR_SYSV [[nodiscard]] Fvector draw_level_position() const override;
 virtual bool redundant() const;
 #endif
 virtual bool need_update(CSE_ALifeDynamicObject* object);
@@ -316,6 +326,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeMonsterAbstract);
 
 add_to_type_list(CSE_ALifeMonsterAbstract);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMonsterAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor, CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)
@@ -360,6 +371,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreatureActor);
 
 add_to_type_list(CSE_ALifeCreatureActor);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureActor)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract) CSE_ALifeCreatureCrow(LPCSTR caSection);
@@ -369,6 +381,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreatureCrow);
 
 add_to_type_list(CSE_ALifeCreatureCrow);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureCrow)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract) CSE_ALifeCreaturePhantom(LPCSTR caSection);
@@ -378,6 +391,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreaturePhantom);
 
 add_to_type_list(CSE_ALifeCreaturePhantom);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreaturePhantom)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie, CSE_ALifeMonsterAbstract)
@@ -401,12 +415,16 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeMonsterZombie);
 
 add_to_type_list(CSE_ALifeMonsterZombie);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMonsterZombie)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE_PHSkeleton) u16 m_spec_object_id;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE_PHSkeleton)
+public:
+u16 m_spec_object_id;
 
 CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
+
 virtual void load(NET_Packet& tNetPacket);
 virtual CSE_Abstract* cast_abstract() { return this; }
 virtual void spawn_supplies(LPCSTR) {}
@@ -420,21 +438,29 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeMonsterBase);
 
 add_to_type_list(CSE_ALifeMonsterBase);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeMonsterBase)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase) CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase)
+public:
+CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifePsyDogPhantom();
+
 virtual CSE_Abstract* cast_abstract() { return this; }
-virtual bool bfActive() { return false; }
+[[nodiscard]] bool bfActive() override { return false; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifePsyDogPhantom);
 
 add_to_type_list(CSE_ALifePsyDogPhantom);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifePsyDogPhantom)
 
 //-------------------------------
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract, CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract) public : CSE_ALifeHumanAbstract(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract, CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract)
+public:
+CSE_ALifeHumanAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeHumanAbstract();
+
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -452,14 +478,14 @@ virtual CALifeMonsterBrain* create_brain();
 
 #ifdef XRGAME_EXPORTS
 virtual void update();
-virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
+[[nodiscard]] CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType&, float&) override;
 virtual bool bfPerformAttack();
 virtual void vfUpdateWeaponAmmo();
 virtual void vfProcessItems();
-virtual void vfAttachItems(ALife::ETakeType tTakeType = ALife::eTakeTypeAll);
-virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
-virtual void vfDetachAll(bool bFictitious = false);
+void vfAttachItems(ALife::ETakeType = ALife::eTakeTypeAll) override;
+[[nodiscard]] ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection) override;
+[[nodiscard]] CSE_ALifeDynamicObject* tpfGetBestDetector() override;
+void vfDetachAll(bool bFictitious = false) override;
 virtual void spawn_supplies();
 virtual void __on_register();
 virtual void __on_unregister();
@@ -474,22 +500,30 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeHumanAbstract);
 
 add_to_type_list(CSE_ALifeHumanAbstract);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeHumanAbstract)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_PHSkeleton) shared_str m_start_dialog;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_PHSkeleton)
+public:
+shared_str m_start_dialog;
 
 CSE_ALifeHumanStalker(LPCSTR caSection);
 virtual ~CSE_ALifeHumanStalker();
+
 virtual void load(NET_Packet& tNetPacket);
 virtual CSE_Abstract* cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeHumanStalker);
 
 add_to_type_list(CSE_ALifeHumanStalker);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeHumanStalker)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable) public : CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable)
+public:
+CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
 virtual ~CSE_ALifeOnlineOfflineGroup();
+
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
 virtual CSE_Abstract* init();
@@ -512,10 +546,10 @@ public:
 IC CALifeOnlineOfflineGroupBrain& brain() const;
 
 public:
-virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
-virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-virtual bool bfActive();
-virtual CSE_ALifeDynamicObject* tpfGetBestDetector();
+[[nodiscard]] CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType&, float&) override;
+[[nodiscard]] ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable*, int, bool) override;
+[[nodiscard]] bool bfActive() override;
+[[nodiscard]] CSE_ALifeDynamicObject* tpfGetBestDetector() override;
 virtual void update();
 void register_member(ALife::_OBJECT_ID member_id);
 void unregister_member(ALife::_OBJECT_ID member_id);
@@ -538,8 +572,7 @@ SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeOnlineOfflineGroup);
 
 add_to_type_list(CSE_ALifeOnlineOfflineGroup);
+#undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
-
-#pragma warning(pop)
 
 #endif

@@ -66,7 +66,7 @@ class MODEL : Noncopyable
     };
 
 private:
-    xrCriticalSection cs;
+    mutable xrCriticalSection cs;
     Opcode::Model* tree{};
     u32 status{S_INIT}; // 0=ready, 1=init, 2=building
 
@@ -91,9 +91,9 @@ public:
         if (S_READY != status)
         {
             Log("! WARNING: syncronized CDB::query");
-            xrCriticalSection* C = (xrCriticalSection*)&cs;
-            C->Enter();
-            C->Leave();
+
+            cs.Enter();
+            cs.Leave();
         }
     }
 

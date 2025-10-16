@@ -22,8 +22,8 @@ protected:
     sol::function m_server_creator;
 
 public:
-    CObjectItemScript(sol::function& client_creator, sol::function& server_creator, const CLASS_ID& clsid, LPCSTR script_clsid);
+    CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid);
 
-    virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
-    virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
+    ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
+    ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const override;
 };

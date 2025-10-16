@@ -17,7 +17,6 @@
 #include "../inventory.h"
 
 #include "UIInventoryUtilities.h"
-using namespace InventoryUtilities;
 
 #include "../InfoPortion.h"
 #include "../level.h"
@@ -29,10 +28,17 @@ using namespace InventoryUtilities;
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
 #include "UI3tButton.h"
+
+#include "../xr_level_controller.h"
+
 #include <format>
+
+#include <dinput.h>
 
 #define INVENTORY_ITEM_XML "inventory_item.xml"
 #define INVENTORY_XML "inventory_new.xml"
+
+using namespace InventoryUtilities;
 
 CUIInventoryWnd* g_pInvWnd{};
 
@@ -463,16 +469,13 @@ void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
     lst->m_f_item_rbutton_click = CallMe::fromMethod<&CUIInventoryWnd::OnItemRButtonClick>(this);
 }
 
-#include "../xr_level_controller.h"
-#include <dinput.h>
-
 bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (m_b_need_reinit)
         return true;
 
     if (UIPropertiesBox.GetVisible())
-        UIPropertiesBox.OnKeyboard(dik, keyboard_action);
+        std::ignore = UIPropertiesBox.OnKeyboard(dik, keyboard_action);
 
     if (is_binded(kDROP, dik))
     {

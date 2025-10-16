@@ -24,32 +24,29 @@ private:
     object_type* m_object;
 
 public:
-    IC CALifeHumanObjectHandler(object_type* object);
-    IC object_type& object() const;
+    inline CALifeHumanObjectHandler(object_type* object);
+    inline object_type& object() const;
 
-public:
-    u16 get_available_ammo_count(const CSE_ALifeItemWeapon* weapon, ALife::OBJECT_VECTOR& objects);
-    u16 get_available_ammo_count(const CSE_ALifeItemWeapon* weapon, ALife::ITEM_P_VECTOR& items, ALife::OBJECT_VECTOR* objects = nullptr);
-    void attach_available_ammo(CSE_ALifeItemWeapon* weapon, ALife::ITEM_P_VECTOR& items, ALife::OBJECT_VECTOR* objects = nullptr);
-    bool can_take_item(CSE_ALifeInventoryItem* inventory_item);
+    [[nodiscard]] u16 get_available_ammo_count(const CSE_ALifeItemWeapon*, ALife::OBJECT_VECTOR&);
+    [[nodiscard]] u16 get_available_ammo_count(const CSE_ALifeItemWeapon*, ALife::ITEM_P_VECTOR&, ALife::OBJECT_VECTOR* = nullptr);
+    void attach_available_ammo(CSE_ALifeItemWeapon*, ALife::ITEM_P_VECTOR&, ALife::OBJECT_VECTOR* = nullptr);
+    [[nodiscard]] bool can_take_item(CSE_ALifeInventoryItem*);
     void collect_ammo_boxes();
 
-public:
-    void detach_all(bool fictitious);
+    void detach_all(bool);
     void update_weapon_ammo();
     void process_items();
     CSE_ALifeDynamicObject* best_detector();
     CSE_ALifeItemWeapon* best_weapon();
 
-public:
-    int choose_equipment(ALife::OBJECT_VECTOR* objects = nullptr);
-    int choose_weapon(const ALife::EWeaponPriorityType& weapon_priority_type, ALife::OBJECT_VECTOR* objects = nullptr);
-    int choose_food(ALife::OBJECT_VECTOR* objects = nullptr);
-    int choose_medikit(ALife::OBJECT_VECTOR* objects = nullptr);
+    [[nodiscard]] int choose_equipment(ALife::OBJECT_VECTOR* = nullptr);
+    [[nodiscard]] int choose_weapon(const ALife::EWeaponPriorityType&, ALife::OBJECT_VECTOR* = nullptr);
+    [[nodiscard]] int choose_food(ALife::OBJECT_VECTOR* = nullptr);
+    [[nodiscard]] int choose_medikit(ALife::OBJECT_VECTOR* = nullptr);
 
-    int choose_valuables();
-    bool choose_fast();
-    void choose_group(CSE_ALifeGroupAbstract* group_abstract);
+    [[nodiscard]] int choose_valuables();
+    [[nodiscard]] bool choose_fast();
+    void choose_group(CSE_ALifeGroupAbstract*);
     void attach_items();
 };
 

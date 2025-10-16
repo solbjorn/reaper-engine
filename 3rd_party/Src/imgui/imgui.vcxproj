@@ -46,8 +46,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;_USRDLL;IMGUI_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -Disascii=__isascii -Dalloca=_alloca -Wno-error=deprecated -Wno-error=extra-semi -Wno-error=float-equal -Wno-error=format -Wno-error=format-nonliteral -Wno-error=logical-op-parentheses -Wno-error=nrvo -Wno-error=zero-as-null-pointer-constant</AdditionalOptions>
+      <PreprocessorDefinitions>WIN32;DEBUG;_WINDOWS;_USRDLL;IMGUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>%(AdditionalOptions) -Disascii=__isascii -Dalloca=_alloca -Wno-error</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -67,7 +67,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IMGUI_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>%(AdditionalOptions) -Xclang -std=c++23 -Disascii=__isascii -Dalloca=_alloca -Wno-error=deprecated -Wno-error=extra-semi -Wno-error=float-equal -Wno-error=format -Wno-error=format-nonliteral -Wno-error=logical-op-parentheses -Wno-error=nrvo -Wno-error=zero-as-null-pointer-constant</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) -Disascii=__isascii -Dalloca=_alloca -Wno-error</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

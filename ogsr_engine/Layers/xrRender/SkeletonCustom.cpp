@@ -186,7 +186,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     bone_instances = nullptr;
 
     // Load bones
-#pragma todo("container is created in stack!")
+    // TODO: container is created in stack!
     xr_vector<shared_str> L_parents;
 
     R_ASSERT(data->find_chunk(OGF_S_BONE_NAMES));
@@ -345,11 +345,11 @@ void CKinematics::LL_Validate()
     {
         BOOL bValidBreakable = TRUE;
 
-#pragma todo("container is created in stack!")
+        // TODO: container is created in stack!
         xr_vector<xr_vector<u16>> groups;
         LL_GetBoneGroups(groups);
 
-#pragma todo("container is created in stack!")
+        // TODO: container is created in stack!
         xr_vector<u16> b_parts(LL_BoneCount(), BI_NONE);
         CBoneData* root = &LL_GetData(LL_GetBoneRoot());
         u16 last_id = 0;
@@ -611,12 +611,12 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
     float dist = flt_max;
     BOOL picked = FALSE;
 
-    DEFINE_VECTOR(Fobb, OBBVec, OBBVecIt);
-    OBBVec cache_obb;
-    cache_obb.resize(LL_BoneCount());
+    xr_vector<Fobb> cache_obb(LL_BoneCount());
     IKinematics::pick_result r;
+
     r.normal = normal;
     r.dist = dist;
+
     for (u16 k = 0; k < LL_BoneCount(); k++)
     {
         CBoneData& BD = LL_GetData(k);
@@ -637,6 +637,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
                 }
         }
     }
+
     if (!picked)
         return;
 

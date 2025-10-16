@@ -81,7 +81,7 @@ public:
     virtual void LoadTitle(const char* title_name);
     virtual void SetTip();
 
-    bool OnKeyboardPress(int dik);
+    [[nodiscard]] bool OnKeyboardPress();
 };
 
 IC CGamePersistent& GamePersistent() { return *((CGamePersistent*)g_pGamePersistent); }

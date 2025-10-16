@@ -25,10 +25,10 @@ IC CGameLevelCrossTable::CGameLevelCrossTable(LPCSTR fName)
     m_tpaCrossTable = (CCell*)m_chunk->pointer();
 }
 
-IC CGameLevelCrossTable::CGameLevelCrossTable(const void* buffer, const u32& /*buffer_size*/)
+IC CGameLevelCrossTable::CGameLevelCrossTable(void* buffer, u32)
 {
     memcpy(&m_tCrossTableHeader, buffer, sizeof(m_tCrossTableHeader));
-    buffer = (const u8*)buffer + sizeof(m_tCrossTableHeader);
+    buffer = (u8*)buffer + sizeof(m_tCrossTableHeader);
 
     R_ASSERT(m_tCrossTableHeader.version() == XRAI_CURRENT_VERSION, "Cross table version mismatch!");
 

@@ -49,7 +49,7 @@ struct CDataStorageBucketList
         inline void verify_buckets() const;
         inline void add_to_bucket(typename TManagerDataStorage::Vertex& vertex, u32 bucket_id);
         inline void add_opened(typename TManagerDataStorage::Vertex& vertex);
-        inline void decrease_opened(typename TManagerDataStorage::Vertex& vertex, const typename TManagerDataStorage::Vertex::Distance value);
+        inline void decrease_opened(typename TManagerDataStorage::Vertex& vertex);
         inline void remove_best_opened();
         inline typename TManagerDataStorage::Vertex& get_best();
         inline void set_min_bucket_value(const typename TManagerDataStorage::Vertex::Distance min_bucket_value);

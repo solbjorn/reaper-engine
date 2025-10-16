@@ -33,12 +33,7 @@
 
 void __stdcall ActionCallback(IKinematics* tpKinematics);
 
-CScriptEntity::CScriptEntity() : m_object(nullptr), m_monster(nullptr), m_can_capture(false), m_bScriptControl(false), m_tpCurrentEntityAction(nullptr), m_current_sound(nullptr)
-{
-    m_initialized = false;
-    m_use_animation_movement_controller = false;
-}
-
+CScriptEntity::CScriptEntity() = default;
 CScriptEntity::~CScriptEntity() { ResetScriptData(); }
 
 void CScriptEntity::init()
@@ -59,7 +54,7 @@ DLL_Pure* CScriptEntity::_construct()
     return (m_object);
 }
 
-void CScriptEntity::ResetScriptData(void* pointer)
+void CScriptEntity::ResetScriptData(void*)
 {
     ClearActionQueue();
 
@@ -319,9 +314,9 @@ void CScriptEntity::ProcessScripts()
     bfAssignMonsterAction(l_tpEntityAction);
 }
 
-bool CScriptEntity::bfAssignWatch(CScriptEntityAction* tpEntityAction) { return (GetCurrentAction() && !GetCurrentAction()->m_tWatchAction.m_bCompleted); }
+bool CScriptEntity::bfAssignWatch(CScriptEntityAction*) { return GetCurrentAction() && !GetCurrentAction()->m_tWatchAction.m_bCompleted; }
 
-bool CScriptEntity::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
+bool CScriptEntity::bfAssignMonsterAction(CScriptEntityAction*)
 {
     if (GetCurrentAction() && GetCurrentAction()->m_tMonsterAction.m_bCompleted)
         return (false);
@@ -329,7 +324,7 @@ bool CScriptEntity::bfAssignMonsterAction(CScriptEntityAction* tpEntityAction)
     return (true);
 }
 
-bool CScriptEntity::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
+bool CScriptEntity::bfAssignAnimation(CScriptEntityAction*)
 {
     m_tpNextAnimation.invalidate();
 
@@ -408,22 +403,20 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
     CScriptParticleAction& l_tParticleAction = tpEntityAction->m_tParticleAction;
     if (l_tParticleAction.m_bCompleted)
         return (false);
+
     if (l_tParticleAction.m_tpParticleSystem)
     {
-        if (true /** !l_tParticleAction.m_tpParticleSystem/**/)
+        if (!l_tParticleAction.m_bStartedToPlay)
         {
-            if (!l_tParticleAction.m_bStartedToPlay)
-            {
-                const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
-                Fvector zero_vel = {0.f, 0.f, 0.f};
-                l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, zero_vel);
-                l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
-                l_tParticleAction.m_bStartedToPlay = true;
-            }
-            else
-            {
-                l_tParticleAction.m_bCompleted = true;
-            }
+            const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
+            Fvector zero_vel = {0.f, 0.f, 0.f};
+            l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, zero_vel);
+            l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
+            l_tParticleAction.m_bStartedToPlay = true;
+        }
+        else
+        {
+            l_tParticleAction.m_bCompleted = true;
         }
     }
     else
@@ -434,7 +427,7 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
     return !l_tParticleAction.m_bCompleted;
 }
 
-bool CScriptEntity::bfAssignObject(CScriptEntityAction* tpEntityAction) { return (GetCurrentAction() && !GetCurrentAction()->m_tObjectAction.m_bCompleted); }
+bool CScriptEntity::bfAssignObject(CScriptEntityAction*) { return GetCurrentAction() && !GetCurrentAction()->m_tObjectAction.m_bCompleted; }
 
 bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 {
@@ -549,15 +542,17 @@ LPCSTR CScriptEntity::GetPatrolPathName()
         return "";
     }
 #endif
+
     if (m_tpActionQueue.empty())
     {
         Msg("!![CScriptEntity::GetPatrolPathName] Object [%s] m_tpActionQueue is empty!", *m_object->cName());
         return "";
     }
-    return (*m_tpActionQueue.back()->m_tMovementAction.m_path_name);
+
+    return *m_tpActionQueue.back()->m_tMovementAction.m_path_name;
 }
 
-BOOL CScriptEntity::net_Spawn(CSE_Abstract* DC)
+BOOL CScriptEntity::net_Spawn(CSE_Abstract*)
 {
     m_initialized = true;
 
@@ -567,7 +562,7 @@ BOOL CScriptEntity::net_Spawn(CSE_Abstract* DC)
     return true;
 }
 
-void CScriptEntity::shedule_Update(u32 DT)
+void CScriptEntity::shedule_Update(u32)
 {
     if (m_bScriptControl)
         ProcessScripts();

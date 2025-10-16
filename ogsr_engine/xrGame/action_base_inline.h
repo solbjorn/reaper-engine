@@ -17,10 +17,10 @@ TEMPLATE_SPECIALIZATION
 IC CBaseAction::CActionBase(_object_type* object, LPCSTR action_name) { init(object, action_name); }
 
 TEMPLATE_SPECIALIZATION
-CBaseAction::~CActionBase() {}
+inline CBaseAction::~CActionBase() {}
 
 TEMPLATE_SPECIALIZATION
-void CBaseAction::init(_object_type* object, LPCSTR action_name)
+inline void CBaseAction::init(_object_type* object, [[maybe_unused]] LPCSTR action_name)
 {
     m_storage = nullptr;
     m_object = object;
@@ -36,7 +36,7 @@ void CBaseAction::init(_object_type* object, LPCSTR action_name)
 }
 
 TEMPLATE_SPECIALIZATION
-void CBaseAction::setup(_object_type* object, CPropertyStorage* storage)
+inline void CBaseAction::setup(_object_type* object, CPropertyStorage* storage)
 {
     VERIFY(object);
     VERIFY(storage);
@@ -51,7 +51,7 @@ void CBaseAction::setup(_object_type* object, CPropertyStorage* storage)
 }
 
 TEMPLATE_SPECIALIZATION
-void CBaseAction::initialize()
+inline void CBaseAction::initialize()
 {
 #ifdef LOG_ACTION
     VERIFY3(!m_switched, m_action_name, "::initialize()");
@@ -70,7 +70,7 @@ void CBaseAction::initialize()
 }
 
 TEMPLATE_SPECIALIZATION
-void CBaseAction::execute()
+inline void CBaseAction::execute()
 {
     m_first_time = false;
 #ifdef LOG_ACTION
@@ -87,7 +87,7 @@ void CBaseAction::execute()
 }
 
 TEMPLATE_SPECIALIZATION
-void CBaseAction::finalize()
+inline void CBaseAction::finalize()
 {
 #ifdef LOG_ACTION
     VERIFY3(!m_switched, m_action_name, "::finalize()");
@@ -103,7 +103,7 @@ void CBaseAction::finalize()
 }
 
 TEMPLATE_SPECIALIZATION
-bool CBaseAction::completed() const { return (m_start_level_time + m_inertia_time <= Device.dwTimeGlobal); }
+inline bool CBaseAction::completed() const { return (m_start_level_time + m_inertia_time <= Device.dwTimeGlobal); }
 
 TEMPLATE_SPECIALIZATION
 IC u32 CBaseAction::start_level_time() const { return (m_start_level_time); }
@@ -156,16 +156,17 @@ IC void CBaseAction::set_property(const _condition_type& condition_id, const _va
 }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CBaseAction::_value_type& CBaseAction::property(const _condition_type& condition_id) const
+inline typename CBaseAction::_value_type CBaseAction::property(const _condition_type& condition_id) const
 {
     VERIFY(m_storage);
-    return (m_storage->property(condition_id));
+    return m_storage->property(condition_id);
 }
 
 TEMPLATE_SPECIALIZATION
 IC void CBaseAction::set_weight(const edge_value_type& weight) { m_weight = _max(min_weight(), weight); }
+
 TEMPLATE_SPECIALIZATION
-typename CBaseAction::edge_value_type CBaseAction::weight(const CSConditionState& condition0, const CSConditionState& condition1) const
+inline typename CBaseAction::edge_value_type CBaseAction::weight(const CSConditionState&, const CSConditionState&) const
 {
     edge_value_type _min_weight = min_weight();
     if (m_weight < _min_weight)

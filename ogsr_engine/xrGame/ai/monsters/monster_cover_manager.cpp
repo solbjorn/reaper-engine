@@ -46,21 +46,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-// CControllerCoverPredicate
-class CCoverPredicate
-{
-public:
-    // setup internals here
-    CCoverPredicate();
-    // called from cover_manager for every cover (for suitable cover)
-    bool operator()(const CCoverPoint* cover) const { return true; }
-    // must return a value that is transfered to cover evaluator
-    float weight(const CCoverPoint* cover) const { return 1.f; }
-
-    void finalize(const CCoverPoint* cover) const {}
-};
-
-//////////////////////////////////////////////////////////////////////////
 // CCoverEvaluator Implementation
 //////////////////////////////////////////////////////////////////////////
 

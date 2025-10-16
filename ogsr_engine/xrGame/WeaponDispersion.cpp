@@ -67,25 +67,3 @@ void CWeapon::ClearShotEffector()
     if (pInventoryOwner)
         pInventoryOwner->on_weapon_hide(this);
 }
-
-/**
-const Fvector& CWeapon::GetRecoilDeltaAngle()
-{
-    CActor* pActor		= smart_cast<CActor*>(H_Parent());
-
-    CCameraShotEffector* S = NULL;
-    if(pActor)
-        S = smart_cast<CCameraShotEffector*>(pActor->EffectorManager().GetEffector(eCEShot));
-
-    if(S)
-    {
-        S->GetDeltaAngle(m_vRecoilDeltaAngle);
-        return m_vRecoilDeltaAngle;
-    }
-    else
-    {
-        m_vRecoilDeltaAngle.set(0.f,0.f,0.f);
-        return m_vRecoilDeltaAngle;
-    }
-}
-/**/

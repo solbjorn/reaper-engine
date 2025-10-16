@@ -445,11 +445,8 @@ u32 CMonsterHome::get_place_in_cover()
 }
 
 bool CMonsterHome::at_home() { return at_home(m_object->Position()); }
-
 bool CMonsterHome::at_home(const Fvector& pos) { return at_home(pos, m_radius_max); }
-
 bool CMonsterHome::at_min_home(const Fvector& pos) { return at_home(pos, m_radius_min); }
-
 bool CMonsterHome::at_mid_home(const Fvector& pos) { return at_home(pos, m_radius_middle); }
 
 bool CMonsterHome::at_home(const Fvector& pos, float const radius)
@@ -499,19 +496,18 @@ void CMonsterHome::set_move_dists(u32 min_dist, u32 max_dist)
     }
 }
 
-Fvector CMonsterHome::get_home_point()
+Fvector CMonsterHome::get_home_point() const
 {
     if (!m_path)
     {
         if (ai().level_graph().valid_vertex_id(m_level_vertex_id))
             return ai().level_graph().vertex_position(m_level_vertex_id);
-        else
-            return (m_object->Position());
+
+        return m_object->Position();
     }
 
-    typedef CPatrolPath::CVertex CVertex;
     if (!m_path->vertices().empty())
-        return (ai().level_graph().vertex_position(m_path->vertex(0)->data().level_vertex_id()));
+        return ai().level_graph().vertex_position(m_path->vertex(0)->data().level_vertex_id());
 
-    return (m_object->Position());
+    return m_object->Position();
 }

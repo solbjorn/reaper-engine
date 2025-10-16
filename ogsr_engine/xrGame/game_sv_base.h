@@ -9,7 +9,7 @@ class CSE_Abstract;
 class xrServer;
 class GameEventQueue;
 
-class game_sv_GameState : public game_GameState
+class XR_NOVTABLE game_sv_GameState : public game_GameState
 {
     RTTI_DECLARE_TYPEINFO(game_sv_GameState, game_GameState);
 
@@ -23,13 +23,13 @@ protected:
     //	BOOL							m_bVotingEnabled;
 
     // Events
-    virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
+    virtual void OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID sender);
 
 public:
     BOOL sv_force_sync{};
 
 public:
-    virtual void OnPlayerConnect(ClientID id_who);
+    virtual void OnPlayerConnect(ClientID);
 
 public:
     game_sv_GameState();
@@ -56,33 +56,33 @@ public:
     void u_EventSend(NET_Packet& P, u32 dwFlags = 0x0008);
 
     // Events
-    virtual BOOL OnPreCreate(CSE_Abstract* E) { return TRUE; }
-    virtual void OnCreate(u16 id_who) {}
-    virtual void OnPostCreate(u16 id_who) {}
+    virtual BOOL OnPreCreate(CSE_Abstract*) { return TRUE; }
+    virtual void OnCreate(u16) {}
+    virtual void OnPostCreate(u16) {}
     virtual BOOL OnTouch(u16 eid_who, u16 eid_target, BOOL bForced = FALSE) = 0; // TRUE=allow ownership, FALSE=denied
     virtual void OnDetach(u16 eid_who, u16 eid_target) = 0;
 
     // Main
-    virtual void Create(shared_str& options);
+    virtual void Create(shared_str&);
     virtual void Update();
 
     virtual void net_Export_State(NET_Packet& P, ClientID id_to); // full state
     virtual void net_Export_Update(NET_Packet& P, ClientID id_to, ClientID id); // just incremental update for specific client
     virtual void net_Export_GameTime(NET_Packet& P); // update GameTime only for remote clients
 
-    virtual bool change_level(NET_Packet& net_packet, ClientID sender);
-    virtual void save_game(NET_Packet& net_packet, ClientID sender);
-    virtual bool load_game(NET_Packet& net_packet, ClientID sender);
-    virtual void switch_distance(NET_Packet& net_packet, ClientID sender);
+    [[nodiscard]] virtual bool change_level(NET_Packet&, ClientID);
+    virtual void save_game(NET_Packet&, ClientID);
+    [[nodiscard]] virtual bool load_game(NET_Packet&, ClientID);
+    virtual void switch_distance(NET_Packet&, ClientID);
 
     void AddDelayedEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
     void ProcessDelayedEvent();
 
-    virtual void teleport_object(NET_Packet& packet, u16 id);
+    virtual void teleport_object(NET_Packet&, u16);
 
-    virtual void add_restriction(NET_Packet& packet, u16 id);
-    virtual void remove_restriction(NET_Packet& packet, u16 id);
-    virtual void remove_all_restrictions(NET_Packet& packet, u16 id);
+    virtual void add_restriction(NET_Packet&, u16);
+    virtual void remove_restriction(NET_Packet&, u16);
+    virtual void remove_all_restrictions(NET_Packet&, u16);
 
     virtual bool custom_sls_default() { return false; }
     virtual void sls_default() {}

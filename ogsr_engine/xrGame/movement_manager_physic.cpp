@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "movement_manager.h"
 #include "PHMovementControl.h"
 #include "detail_path_manager.h"
@@ -20,8 +21,8 @@
 
 #ifdef DEBUG
 #include "PHDebug.h"
-#define DBG_PH_MOVE_CONDITIONS(c) c
 
+#define DBG_PH_MOVE_CONDITIONS(c) c
 #else
 #define DBG_PH_MOVE_CONDITIONS(c)
 #endif
@@ -82,7 +83,7 @@ bool CMovementManager::move_along_path() const
     if (detail().path().empty())
         return (false);
 
-    if (detail().completed(object().Position(), true))
+    if (detail().completed(true))
         return (false);
 
     if (detail().curr_travel_point_index() >= detail().path().size() - 1)
@@ -166,7 +167,7 @@ Fvector CMovementManager::path_position(const float& time_to_check)
     if (detail().path().empty())
         return (object().Position());
 
-    if (detail().completed(object().Position(), true))
+    if (detail().completed(true))
         return (object().Position());
 
     Fvector dir_to_target;
@@ -232,11 +233,12 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
 
     if (dist_to_target < EPS_L)
     {
-#pragma todo("Dima to ? : is this correct?")
+        // TODO: Dima to ? : is this correct?
         if (current_travel_point + 1 < detail().path().size())
             detail().m_current_travel_point = current_travel_point + 1;
         else
             detail().m_current_travel_point = (u32)detail().path().size() - 1;
+
         m_speed = 0.f;
         return;
     }
@@ -260,7 +262,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
         velocity.y = 0.8f;
     if (velocity.y < -0.9f)
         velocity.y = -0.8f;
-    velocity.normalize_safe(); //как не странно, mdir - не нормирован
+    velocity.normalize_safe(); // как не странно, mdir - не нормирован
     velocity.mul(desirable_speed); //*1.25f
 
     if (!movement_control->PhysicsOnlyMode())
@@ -301,7 +303,7 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
     m_speed = 0.5f * desirable_speed + 0.5f * real_speed;
 
     // Физика устанавливает позицию в соответствии с нулевой скоростью
-    if (detail().completed(dest_position, true))
+    if (detail().completed(true))
     {
         if (!movement_control->PhysicsOnlyMode())
         {

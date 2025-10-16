@@ -170,7 +170,6 @@ void CBulletManager::UpdateWorkload()
     m_dwTimeRemainder = delta_time % m_dwStepTime;
 
     rq_storage.r_clear();
-    rq_spatial.clear();
 
     int k = m_Bullets.size() - 1;
 
@@ -193,7 +192,7 @@ void CBulletManager::UpdateWorkload()
         // calculate bullet
         for (u32 i = 0; i < cur_step_num; i++)
         {
-            if (!CalcBullet(rq_storage, rq_spatial, &bullet, m_dwStepTime))
+            if (!CalcBullet(rq_storage, &bullet, m_dwStepTime))
             {
                 collide::rq_result res;
                 RegisterEvent(EVENT_REMOVE, FALSE, &bullet, Fvector().set(0, 0, 0), res, (u16)k);
@@ -203,7 +202,7 @@ void CBulletManager::UpdateWorkload()
     }
 }
 
-bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time)
+bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, SBullet* bullet, u32 delta_time)
 {
     VERIFY(bullet);
 
@@ -270,8 +269,9 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, xr_vector<ISpat
         bullet->speed = bullet->dir.magnitude();
         VERIFY(_valid(bullet->speed));
         VERIFY(!fis_zero(bullet->speed));
+
         // вместо normalize(),	 чтоб не считать 2 раза magnitude()
-#pragma todo("а как насчет bullet->speed==0")
+        // TODO: а как насчет bullet->speed==0
         bullet->dir.x /= bullet->speed;
         bullet->dir.y /= bullet->speed;
         bullet->dir.z /= bullet->speed;

@@ -2,6 +2,7 @@
 #ifndef particle_managerH
 #define particle_managerH
 //---------------------------------------------------------------------------
+
 #include "particle_actions.h"
 
 namespace PAPI
@@ -32,7 +33,7 @@ public:
     virtual void DestroyActionList(int alist_id);
 
     // control
-    virtual void PlayEffect(int effect_id, int alist_id);
+    virtual void PlayEffect(int alist_id);
     virtual void StopEffect(int effect_id, int alist_id, BOOL deffered = TRUE);
 
     // update&render
@@ -54,4 +55,5 @@ public:
 } // namespace PAPI
 
 //---------------------------------------------------------------------------
+
 #endif

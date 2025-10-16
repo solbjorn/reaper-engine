@@ -30,7 +30,7 @@ public:
     virtual void OnDeviceCreate() = 0;
     virtual void OnDeviceDestroy() = 0;
     virtual void Clear() = 0;
-    virtual void lerp(CEnvDescriptorMixer& currentEnv, IEnvDescriptorRender* inA, IEnvDescriptorRender* inB) = 0;
+    virtual void lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB) = 0;
 };
 
 inline IEnvironmentRender::~IEnvironmentRender() = default;

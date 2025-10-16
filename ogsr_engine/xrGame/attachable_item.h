@@ -78,7 +78,7 @@ public:
     }
 
     virtual void SaveAttachableParams();
-    virtual void ParseCurrentItem(CGameFont* F);
+    virtual void ParseCurrentItem(CGameFont*);
 };
 
 #include "attachable_item_inline.h"

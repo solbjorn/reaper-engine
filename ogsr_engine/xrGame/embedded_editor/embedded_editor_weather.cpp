@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "imgui.h"
-
 #include "embedded_editor_helper.h"
 #include "embedded_editor_weather.h"
 
@@ -355,9 +353,11 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Checkbox("Script time", &s_ScriptTime);
 
-    for (int i = 0; i != env.CurrentWeather->size(); i++)
-        if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
+    for (gsl::index i{}; i < std::ssize(*env.CurrentWeather); ++i)
+    {
+        if ((*env.CurrentWeather)[i]->m_identifier == cur->m_identifier)
             sel = i;
+    }
 
     ImGui::BeginDisabled(!s_ScriptTime);
     if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
@@ -376,15 +376,18 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Ambient light parameters");
 
-    for (int i = 0; i != env.m_ambients_config->sections_ordered().size(); i++)
-        if (cur->env_ambient->name() == env.m_ambients_config->sections_ordered()[i].second->Name)
+    for (gsl::index i{}; i < std::ssize(env.m_ambients_config->sections_ordered()); ++i)
+    {
+        if (env.m_ambients_config->sections_ordered()[i].second->Name == cur->env_ambient->name())
             sel = i;
+    }
 
     if (ImGui::Combo("ambient", &sel, enumIni, env.m_ambients_config, env.m_ambients_config->sections_ordered().size()))
     {
         cur->env_ambient = env.AppendEnvAmb(env.m_ambients_config->sections_ordered()[sel].second->Name);
         changed = true;
     }
+
     if (ImGui::ColorEdit3("ambient_color", (float*)&cur->ambient))
         changed = true;
 
@@ -447,11 +450,13 @@ void ShowWeatherEditor(bool& show)
     }
 
     ImGui::Text("Sun parameters");
-
     sel = -1;
-    for (int i = 0; i != env.m_suns_config->sections_ordered().size(); i++)
-        if (cur->lens_flare_id == env.m_suns_config->sections_ordered()[i].second->Name)
+
+    for (gsl::index i{}; i < std::ssize(env.m_suns_config->sections_ordered()); ++i)
+    {
+        if (env.m_suns_config->sections_ordered()[i].second->Name == cur->lens_flare_id)
             sel = i;
+    }
 
     if (ImGui::Combo("sun", &sel, enumIni, env.m_suns_config, env.m_suns_config->sections_ordered().size()))
     {
@@ -481,9 +486,12 @@ void ShowWeatherEditor(bool& show)
         changed = true;
 
     sel = 0;
-    for (int i = 0; i != env.m_thunderbolt_collections_config->sections_ordered().size(); i++)
-        if (cur->tb_id == env.m_thunderbolt_collections_config->sections_ordered()[i].second->Name)
+
+    for (gsl::index i{}; i < std::ssize(env.m_thunderbolt_collections_config->sections_ordered()); ++i)
+    {
+        if (env.m_thunderbolt_collections_config->sections_ordered()[i].second->Name == cur->tb_id)
             sel = i + 1;
+    }
 
     ImGui::Text("Thunder bolt parameters");
 

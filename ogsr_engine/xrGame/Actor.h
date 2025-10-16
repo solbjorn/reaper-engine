@@ -130,9 +130,10 @@ public:
     // Render
     void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual BOOL renderable_ShadowGenerate();
-    virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop);
+    void feel_sound_new(CObject* who, int, CSound_UserDataPtr, const Fvector&, float power, float) override;
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     float m_snd_noise;
+
 #ifdef DEBUG
     virtual void OnRender();
 #endif
@@ -215,8 +216,11 @@ public:
     virtual void PHHit(SHit& H);
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
     void HitSector(CObject* who, CObject* weapon);
-    void HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector position_in_bone_space, float impulse, ALife::EHitType hit_type);
 
+private:
+    XR_SYSV void HitMark(float P, Fvector dir, ALife::EHitType hit_type);
+
+public:
     virtual float GetMass();
     virtual float GetCarryWeight() const;
     virtual float Radius() const;
@@ -224,7 +228,6 @@ public:
 
     virtual bool unlimited_ammo();
 
-public:
     // свойства артефактов
     virtual void UpdateArtefactsOnBelt();
 
@@ -330,13 +333,15 @@ public:
     virtual const SRotation Orientation() const { return r_torso; }
     SRotation& Orientation() { return r_torso; }
 
+private:
     void g_SetAnimation(u32 mstate_rl);
-    void g_SetSprintAnimation(u32 mstate_rl, MotionID& head, MotionID& torso, MotionID& legs);
+    void g_SetSprintAnimation(u32 mstate_rl, MotionID& legs);
+
     //////////////////////////////////////////////////////////////////////////
     // HUD
     //////////////////////////////////////////////////////////////////////////
 public:
-    void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) override;
+    void OnHUDDraw(ctx_id_t context_id, CCustomHUD*, IRenderable* root) override;
     BOOL HUDview() const;
 
     // visiblity
@@ -390,7 +395,7 @@ protected:
     // или предметами
     ///////////////////////////////////////////
 public:
-    virtual void feel_touch_new(CObject* O);
+    void feel_touch_new(CObject*) override;
     virtual void feel_touch_delete(CObject* O);
     virtual BOOL feel_touch_contact(CObject* O);
     virtual BOOL feel_touch_on_contact(CObject* O);
@@ -672,11 +677,11 @@ public:
     virtual void OnPrevWeaponSlot();
 
 public:
-    virtual void on_weapon_shot_start(CWeapon* weapon);
-    virtual void on_weapon_shot_stop(CWeapon* weapon);
-    virtual void on_weapon_hide(CWeapon* weapon);
-    Fvector weapon_recoil_delta_angle();
-    Fvector weapon_recoil_last_delta();
+    void on_weapon_shot_start(CWeapon* weapon) override;
+    void on_weapon_shot_stop(CWeapon*) override;
+    void on_weapon_hide(CWeapon*) override;
+    XR_SYSV [[nodiscard]] Fvector weapon_recoil_delta_angle();
+    XR_SYSV [[nodiscard]] Fvector weapon_recoil_last_delta();
 
 protected:
     virtual void update_camera(CCameraShotEffector* effector);
@@ -772,6 +777,8 @@ IC CActorCondition& CActor::conditions() const
 
 extern CActor* g_actor;
 CActor* Actor();
-extern const float s_fFallTime;
+
+constexpr inline float s_fFallTime{0.2f};
+
 extern float cam_HeightInterpolationSpeed;
 extern float cam_LookoutSpeed;

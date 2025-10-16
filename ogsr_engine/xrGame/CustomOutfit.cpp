@@ -19,20 +19,10 @@
 CCustomOutfit::CCustomOutfit()
 {
     SetSlot(OUTFIT_SLOT);
-
     m_flags.set(FUsingCondition, TRUE);
 
-    m_HitTypeProtection.resize(ALife::eHitTypeMax);
-    for (int i = 0; i < ALife::eHitTypeMax; i++)
-        m_HitTypeProtection[i] = 1.0f;
-
+    m_HitTypeProtection.resize(ALife::eHitTypeMax, 1.0f);
     m_boneProtection = xr_new<SBoneProtections>();
-
-    m_fBleedingRestoreSpeed = 0.f;
-    m_fHealthRestoreSpeed = 0.f;
-    m_fPowerRestoreSpeed = 0.f;
-    m_fSatietyRestoreSpeed = 0.f;
-    m_fThirstRestoreSpeed = 0.f;
 }
 
 CCustomOutfit::~CCustomOutfit() { xr_delete(m_boneProtection); }

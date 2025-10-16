@@ -55,10 +55,11 @@ protected:
 
 public:
     u32 m_deactivated_frame;
-    virtual void DestroyInternal(bool bForce);
+
     CMainMenu();
     virtual ~CMainMenu();
 
+    virtual void DestroyInternal(bool bForce);
     virtual void Activate(bool bActive);
     virtual bool IsActive();
     virtual bool CanSkipSceneRendering();
@@ -67,7 +68,7 @@ public:
     virtual void IR_OnMouseRelease(int btn);
     virtual void IR_OnMouseHold(int btn);
     virtual void IR_OnMouseMove(int x, int y);
-    virtual void IR_OnMouseStop(int x, int y);
+    virtual void IR_OnMouseStop(int, int);
 
     virtual void IR_OnKeyboardPress(int dik);
     virtual void IR_OnKeyboardRelease(int dik);

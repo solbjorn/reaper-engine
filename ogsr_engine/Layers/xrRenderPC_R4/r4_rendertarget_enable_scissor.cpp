@@ -3,12 +3,6 @@
 #include "../../xrCDB/cl_intersect.h"
 #include "../xrRender/du_cone.h"
 
-static BOOL tri_vs_sphere_intersect(const Fvector& SC, float R, const Fvector& v0, const Fvector& v1, const Fvector& v2)
-{
-    Fvector e0, e1;
-    return CDB::TestSphereTri(SC, R, v0, e0.sub(v1, v0), e1.sub(v2, v0));
-}
-
 BOOL CRenderTarget::enable_scissor(light* L) // true if intersects near plane
 {
     // Near plane intersection

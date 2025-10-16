@@ -300,32 +300,6 @@ void CAI_Stalker::Die(CObject* who)
 
     // запретить использование слотов в инвенторе
     inventory().SetSlotsUseful(false);
-
-#pragma todo("KD: Поскольку весь лут непися пока обрабатывается в скриптах, в этом месте отключено удаление лута")
-#if 0
-	if (inventory().GetActiveSlot() >= inventory().m_slots.size())
-		return;
-
-	CInventoryItem					*active_item = inventory().m_slots[inventory().GetActiveSlot()].m_pIItem;
-	if (!active_item)
-		return;
-
-	CWeapon							*weapon = smart_cast<CWeapon*>(active_item);
-	if (!weapon)
-		return;
-	{
-		TIItemContainer::iterator	I = inventory().m_all.begin();
-		TIItemContainer::iterator	E = inventory().m_all.end();
-		for ( ; I != E; ++I) {
-			if (std::find(weapon->m_ammoTypes.begin(),weapon->m_ammoTypes.end(),(*I)->object().cNameSect()) == weapon->m_ammoTypes.end())
-				continue;
-
-			NET_Packet				packet;
-			u_EventGen				(packet,GE_DESTROY,(*I)->object().ID());
-			u_EventSend				(packet);
-		}
-	}
-#endif
 }
 
 void CAI_Stalker::Load(LPCSTR section)
@@ -646,18 +620,11 @@ CPHDestroyable* CAI_Stalker::ph_destroyable() { return smart_cast<CPHDestroyable
 
 void CAI_Stalker::shedule_Update(u32 DT)
 {
-    START_PROFILE("stalker")
-    START_PROFILE("stalker/schedule_update")
     VERIFY2(getEnabled() || PPhysicsShell(), *cName());
 
     if (!CObjectHandler::planner().initialized())
-    {
-        START_PROFILE("stalker/client_update/object_handler")
         update_object_handler();
-        STOP_PROFILE
-    }
-    //	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-    //		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
+
     // Queue shrink
     VERIFY(_valid(Position()));
     u32 dwTimeCL = Level().timeServer() - NET_Latency;
@@ -685,29 +652,14 @@ void CAI_Stalker::shedule_Update(u32 DT)
         if (g_mt_config.test(mtAiVision))
             Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>((CCustomMonster*)this));
         else
-        {
-            START_PROFILE("stalker/schedule_update/vision")
             Exec_Visibility();
-            STOP_PROFILE
-        }
 
-        START_PROFILE("stalker/schedule_update/memory")
-
-        START_PROFILE("stalker/schedule_update/memory/process")
         process_enemies();
-        STOP_PROFILE
-
-        START_PROFILE("stalker/schedule_update/memory/update")
         memory().update(dt);
-        STOP_PROFILE
-
-        STOP_PROFILE
         anomaly_detector().update_schedule();
     }
 
-    START_PROFILE("stalker/schedule_update/inherited")
     CEntityAlive::shedule_Update(DT); // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
-    STOP_PROFILE
 
     if (Remote())
     {
@@ -718,6 +670,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
         VERIFY(_valid(Position()));
         m_fTimeUpdateDelta = dt;
         Device.Statistic->AI_Think.Begin();
+
         if (GetScriptControl())
             ProcessScripts();
         else
@@ -725,6 +678,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
             if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
 #endif
             Think();
+
         m_dwLastUpdateTime = Device.dwTimeGlobal;
         Device.Statistic->AI_Think.End();
         VERIFY(_valid(Position()));
@@ -733,15 +687,12 @@ void CAI_Stalker::shedule_Update(u32 DT)
         float temp = conditions().health();
         if (temp > 0)
         {
-            START_PROFILE("stalker/schedule_update/feel_touch")
             Fvector C;
             float R;
             Center(C);
             R = Radius();
             feel_touch_update(C, R);
-            STOP_PROFILE
 
-            START_PROFILE("stalker/schedule_update/net_update")
             net_update uNext;
             uNext.dwTimeStamp = Level().timeServer();
             uNext.o_model = movement().m_body.current.yaw;
@@ -749,11 +700,9 @@ void CAI_Stalker::shedule_Update(u32 DT)
             uNext.p_pos = vNewPosition;
             uNext.fHealth = GetfHealth();
             NET.push_back(uNext);
-            STOP_PROFILE
         }
         else
         {
-            START_PROFILE("stalker/schedule_update/net_update")
             net_update uNext;
             uNext.dwTimeStamp = Level().timeServer();
             uNext.o_model = movement().m_body.current.yaw;
@@ -761,28 +710,16 @@ void CAI_Stalker::shedule_Update(u32 DT)
             uNext.p_pos = vNewPosition;
             uNext.fHealth = GetfHealth();
             NET.push_back(uNext);
-            STOP_PROFILE
         }
     }
+
     VERIFY(_valid(Position()));
 
-    START_PROFILE("stalker/schedule_update/inventory_owner")
-    UpdateInventoryOwner(DT);
-    STOP_PROFILE
+    UpdateInventoryOwner();
 
-    // #ifdef DEBUG
-    //	if (psAI_Flags.test(aiALife)) {
-    //		smart_cast<CSE_ALifeHumanStalker*>(ai().alife().objects().object(ID()))->check_inventory_consistency();
-    //	}
-    // #endif
-
-    START_PROFILE("stalker/schedule_update/physics")
     VERIFY(_valid(Position()));
     m_pPhysics_support->in_shedule_Update(DT);
     VERIFY(_valid(Position()));
-    STOP_PROFILE
-    STOP_PROFILE
-    STOP_PROFILE
 }
 
 float CAI_Stalker::Radius() const
@@ -866,7 +803,7 @@ void CAI_Stalker::Think()
     STOP_PROFILE
 }
 
-void CAI_Stalker::SelectAnimation(const Fvector& view, const Fvector& move, float speed)
+void CAI_Stalker::SelectAnimation(const Fvector&, const Fvector&, float)
 {
     if (!Device.Paused())
         animation().update();

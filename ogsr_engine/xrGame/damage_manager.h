@@ -20,6 +20,7 @@ protected:
 public:
     CDamageManager();
     virtual ~CDamageManager();
+
     virtual DLL_Pure* _construct();
     virtual void reload(LPCSTR section, CInifile* ini);
     virtual void reload(LPCSTR section, LPCSTR sub_section, CInifile* ini);
@@ -29,5 +30,5 @@ public:
 private:
     void load_section(LPCSTR section, CInifile* ini);
     // init default params
-    void init_bones(LPCSTR section, CInifile* ini);
+    void init_bones();
 };

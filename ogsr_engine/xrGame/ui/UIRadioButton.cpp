@@ -8,9 +8,8 @@
 #include ".\uiradiobutton.h"
 #include "UILines.h"
 
-CUIRadioButton::CUIRadioButton(void) { SetTextAlignment(CGameFont::alLeft); }
-
-CUIRadioButton::~CUIRadioButton(void) {}
+CUIRadioButton::CUIRadioButton() { SetTextAlignment(CGameFont::alLeft); }
+CUIRadioButton::~CUIRadioButton() = default;
 
 void CUIRadioButton::Init(float x, float y, float width, float height)
 {

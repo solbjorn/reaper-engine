@@ -27,7 +27,13 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../BottleItem.h"
+
 #include "../xr_3da/xr_input.h"
+#include "../xr_level_controller.h"
+
+#include "../Medkit.h"
+#include "../Antirad.h"
+#include "../CustomOutfit.h"
 
 #define CAR_BODY_XML "carbody_new.xml"
 #define CARBODY_ITEM_XML "carbody_item.xml"
@@ -630,8 +636,6 @@ void CUICarBodyWnd::DropItemsfromCell(bool b_all)
     PlaySnd(eInvDropItem);
 }
 
-#include "../xr_level_controller.h"
-
 bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (m_b_need_update)
@@ -640,7 +644,7 @@ bool CUICarBodyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
     if (keyboard_action == WINDOW_KEY_PRESSED)
     {
         if (m_pUIPropertiesBox->GetVisible())
-            m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
+            std::ignore = m_pUIPropertiesBox->OnKeyboard(dik, keyboard_action);
     }
 
     if (keyboard_action == WINDOW_KEY_PRESSED && is_binded(kUSE, dik))
@@ -676,10 +680,6 @@ bool CUICarBodyWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 
     return false;
 }
-
-#include "../Medkit.h"
-#include "../Antirad.h"
-#include "../CustomOutfit.h"
 
 void CUICarBodyWnd::ActivatePropertiesBox()
 {
@@ -812,7 +812,7 @@ void CUICarBodyWnd::EatItem()
     PlaySnd(eInvItemUse);
 }
 
-bool CUICarBodyWnd::OnItemStartDrag(CUICellItem* itm)
+bool CUICarBodyWnd::OnItemStartDrag(CUICellItem*)
 {
     return false; // default behaviour
 }

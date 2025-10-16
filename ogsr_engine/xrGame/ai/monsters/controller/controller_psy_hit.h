@@ -1,10 +1,14 @@
 #pragma once
+
 #include "../control_combase.h"
 #include "../../../../Include\xrRender\Kinematics.h"
 #include "../../../../xr_3da/bone.h"
 
 class CControllerPsyHit : public CControl_ComCustom<>
 {
+    RTTI_DECLARE_TYPEINFO(CControllerPsyHit, CControl_ComCustom<>);
+
+private:
     typedef CControl_ComCustom<> inherited;
 
     MotionID m_stage[4];
@@ -36,7 +40,7 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
 
     void on_death();
     bool tube_ready() const;

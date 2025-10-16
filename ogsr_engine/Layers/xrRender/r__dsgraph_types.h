@@ -40,12 +40,12 @@ struct _MatrixItemS
 
     constexpr inline _MatrixItemS() = default;
     constexpr inline _MatrixItemS(const _MatrixItemS& i) { xr_memcpy128(this, &i, sizeof(i)); }
-    constexpr inline _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa(s), pObject(nullptr), pVisual(v), Matrix(Fidentity), PrevMatrix(Fidentity), se(e) {}
+    constexpr inline _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa{s}, pObject{nullptr}, pVisual{v}, se{e}, Matrix{Fidentity}, PrevMatrix{Fidentity} {}
     constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, ShaderElement* e)
-        : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(Fidentity), se(e)
+        : ssa{s}, pObject{o}, pVisual{v}, se{e}, Matrix{m}, PrevMatrix{Fidentity}
     {}
     constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p, ShaderElement* e)
-        : ssa(s), pObject(o), pVisual(v), Matrix(m), PrevMatrix(p), se(e)
+        : ssa{s}, pObject{o}, pVisual{v}, se{e}, Matrix{m}, PrevMatrix{p}
     {}
 
     constexpr inline _MatrixItemS& operator=(const _MatrixItemS& i)

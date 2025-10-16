@@ -12,8 +12,6 @@
 
 namespace
 {
-constexpr const char* clDefault = "default";
-
 #define CREATE_LINES() \
     if (!m_pLines) \
     { \
@@ -352,9 +350,9 @@ CGameFont* CUIStatic::GetFont()
     return m_pLines->GetFont();
 }
 
-void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect) { TextureClipper(offset_x, offset_y, pClipRect, m_UIStaticItem); }
+void CUIStatic::TextureClipper(Frect* pClipRect) { TextureClipper(pClipRect, m_UIStaticItem); }
 
-void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect, CUIStaticItem& UIStaticItem)
+void CUIStatic::TextureClipper(Frect* pClipRect, CUIStaticItem& UIStaticItem)
 {
     Frect parent_rect;
 
@@ -417,8 +415,7 @@ void CUIStatic::TextureClipper(float offset_x, float offset_y, Frect* pClipRect,
 void CUIStatic::ClipperOn()
 {
     m_bClipper = true;
-
-    TextureClipper(0, 0);
+    TextureClipper();
 }
 
 void CUIStatic::ClipperOff(CUIStaticItem& UIStaticItem)
@@ -554,9 +551,9 @@ void CUIStatic::SetTextAlign_script(u32 align)
 
 u32 CUIStatic::GetTextAlign_script() { return static_cast<u32>(m_pLines->GetTextAlignment()); }
 
-void CUIStatic::Elipsis(const Frect& rect, EElipsisPosition elipsisPos)
+void CUIStatic::Elipsis(const Frect&, EElipsisPosition)
 {
-#pragma todo("Satan->Satan : need adaptation")
+    // TODO: Satan->Satan : need adaptation
     // if (eepNone == elipsisPos) return;
 
     // CUIStatic::Elipsis(m_sEdit, rect, elipsisPos, GetFont());
@@ -569,7 +566,7 @@ void CUIStatic::Elipsis(const Frect& rect, EElipsisPosition elipsisPos)
 
 void CUIStatic::SetElipsis(EElipsisPosition pos, int indent)
 {
-#pragma todo("Satan->Satan : need adaptation")
+    // TODO: Satan->Satan : need adaptation
     m_ElipsisPos = pos;
     m_iElipsisIndent = indent;
 }

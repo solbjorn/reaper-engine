@@ -5,7 +5,7 @@
 
 ICF ID3D11DeviceContext1* CBackend::context() const { return HW.get_context(context_id); }
 
-IC void CBackend::set_xform(u32 ID, const Fmatrix& M)
+IC void CBackend::set_xform(u32, const Fmatrix&)
 {
     stat.xforms++;
     //	TODO: DX10: Implement CBackend::set_xform
@@ -62,7 +62,7 @@ ICF void CBackend::set_Format(SDeclaration* _decl)
     }
 }
 
-ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
+ICF void CBackend::set_PS(ID3DPixelShader* _ps, [[maybe_unused]] LPCSTR _n)
 {
     if (ps != _ps)
     {
@@ -77,7 +77,7 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
     }
 }
 
-ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
+ICF void CBackend::set_GS(ID3DGeometryShader* _gs, [[maybe_unused]] LPCSTR _n)
 {
     if (gs != _gs)
     {
@@ -93,7 +93,7 @@ ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
     }
 }
 
-ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
+ICF void CBackend::set_HS(ID3D11HullShader* _hs, [[maybe_unused]] LPCSTR _n)
 {
     if (hs != _hs)
     {
@@ -109,7 +109,7 @@ ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
     }
 }
 
-ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
+ICF void CBackend::set_DS(ID3D11DomainShader* _ds, [[maybe_unused]] LPCSTR _n)
 {
     if (ds != _ds)
     {
@@ -125,7 +125,7 @@ ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
     }
 }
 
-ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
+ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, [[maybe_unused]] LPCSTR _n)
 {
     if (cs != _cs)
     {
@@ -143,7 +143,7 @@ ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
 
 ICF bool CBackend::is_TessEnabled() { return ds || hs; }
 
-ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
+ICF void CBackend::set_VS(ID3DVertexShader* _vs, [[maybe_unused]] LPCSTR _n)
 {
     if (vs != _vs)
     {
@@ -246,7 +246,7 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
     context()->Dispatch(ThreadGroupCountX, ThreadGroupCountY, ThreadGroupCountZ);
 }
 
-IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32, u32 countV, u32 startI, u32 PC)
 {
     D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T);
     u32 iIndexCount = GetIndexCount(T, PC);
@@ -350,7 +350,7 @@ IC void CBackend::set_Z(u32 _enable) { StateManager.SetDepthEnable(_enable); }
 
 IC void CBackend::set_ZFunc(u32 _func) { StateManager.SetDepthFunc(_func); }
 
-IC void CBackend::set_AlphaRef(u32 _value)
+IC void CBackend::set_AlphaRef(u32)
 {
     //	TODO: DX10: Implement rasterizer state update to support alpha ref
     VERIFY(!"Not implemented.");

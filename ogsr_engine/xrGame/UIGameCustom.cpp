@@ -84,11 +84,11 @@ void CUIGameCustom::Render()
     }
 }
 
-bool CUIGameCustom::IR_OnKeyboardPress(int dik) { return false; }
-bool CUIGameCustom::IR_OnKeyboardRelease(int dik) { return false; }
+bool CUIGameCustom::IR_OnKeyboardPress(int) { return false; }
+bool CUIGameCustom::IR_OnKeyboardRelease(int) { return false; }
 
-bool CUIGameCustom::IR_OnMouseMove(int dx, int dy) { return false; }
-bool CUIGameCustom::IR_OnMouseWheel(int direction) { return false; }
+bool CUIGameCustom::IR_OnMouseMove(int, int) { return false; }
+bool CUIGameCustom::IR_OnMouseWheel(int) { return false; }
 
 void CUIGameCustom::AddDialogToRender(CUIWindow* pDialog) { HUD().GetUI()->AddDialogToRender(pDialog); }
 void CUIGameCustom::RemoveDialogToRender(CUIWindow* pDialog) { HUD().GetUI()->RemoveDialogToRender(pDialog); }

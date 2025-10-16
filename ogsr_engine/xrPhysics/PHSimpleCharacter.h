@@ -188,7 +188,7 @@ public:
 private:
     void RemoveObjectContactCallback(ObjectContactCallbackFun* callback);
     void AddObjectContactCallback(ObjectContactCallbackFun* callback);
-    static void TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
+    static void TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*);
 
 public:
     virtual ObjectContactCallbackFun* ObjectContactCallBack();

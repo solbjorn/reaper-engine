@@ -1,3 +1,3 @@
 #pragma once
 
-HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow);
+HWND ShowSplash(HINSTANCE hInstance);

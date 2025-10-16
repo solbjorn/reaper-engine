@@ -10,8 +10,6 @@
 #ifndef UI_MULTITEXT_STATIC_H_
 #define UI_MULTITEXT_STATIC_H_
 
-#pragma once
-
 #include "UITextBanner.h"
 
 class CUIMultiTextStatic : public CUIStatic
@@ -26,16 +24,18 @@ public:
     {
         float outX{};
         float outY{};
-        float maxWidth;
-        CUIStatic::EElipsisPosition elipsisPos;
-        CUITextBanner effect;
-        shared_str str;
+        float maxWidth{-1.0f};
 
-        void XR_PRINTF(2, 3) SetText(const char* fmt, ...);
+        CUIStatic::EElipsisPosition elipsisPos{CUIStatic::eepEnd};
+        CUITextBanner effect;
+
+        shared_str str;
+        shared_str key;
 
         // Ctor
         SPh();
-        shared_str key;
+
+        void XR_PRINTF(2, 3) SetText(const char* fmt, ...);
     } SinglePhrase;
 
     typedef xr_vector<SinglePhrase> Phrases;

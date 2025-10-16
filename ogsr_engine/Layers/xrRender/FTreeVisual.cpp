@@ -105,7 +105,7 @@ private:
     }
 };
 
-void FTreeVisual::Render(CBackend& cmd_list, float LOD, bool)
+void FTreeVisual::Render(CBackend& cmd_list, float, bool)
 {
     static FTreeVisual_setup tvs;
     tvs.update();

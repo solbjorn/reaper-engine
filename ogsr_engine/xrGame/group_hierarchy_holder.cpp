@@ -63,7 +63,7 @@ void CGroupHierarchyHolder::register_in_group(CEntity* member)
     m_members.push_back(member);
 }
 
-void CGroupHierarchyHolder::register_in_squad(CEntity* member)
+void CGroupHierarchyHolder::register_in_squad([[maybe_unused]] CEntity* member)
 {
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
     if (!leader() && member->g_Alive())
@@ -110,7 +110,7 @@ void CGroupHierarchyHolder::unregister_in_group(CEntity* member)
         Msg("!![%s][%s] Specified group member cannot be found!", __FUNCTION__, member->cName().c_str());
 }
 
-void CGroupHierarchyHolder::unregister_in_squad(CEntity* member)
+void CGroupHierarchyHolder::unregister_in_squad([[maybe_unused]] CEntity* member)
 {
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
     if (leader() && (leader()->ID() == member->ID()))

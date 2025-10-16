@@ -523,12 +523,11 @@ void ATTACK_ON_RUN_STATE::update_attack()
 
             update_aim_side();
 
-            float attack_animation_length = 0;
+            float attack_animation_length{};
             MotionID motion;
-            EMotionAnim const anim = m_attack_side == left ? eAnimAttackOnRunLeft : eAnimAttackOnRunRight;
-            bool const got_animation_info = object->anim().get_animation_info(anim, m_animation_index[m_attack_side], motion, attack_animation_length);
 
-            got_animation_info;
+            const EMotionAnim anim = m_attack_side == left ? eAnimAttackOnRunLeft : eAnimAttackOnRunRight;
+            const bool got_animation_info = object->anim().get_animation_info(anim, m_animation_index[m_attack_side], motion, attack_animation_length);
             VERIFY(got_animation_info);
 
             m_attack_end_time = current_time() + TTime(1000 * attack_animation_length);
@@ -537,9 +536,7 @@ void ATTACK_ON_RUN_STATE::update_attack()
     }
 
     if (m_is_jumping && !object->is_jumping())
-    {
         set_movement_phaze(go_prepare);
-    }
 
     m_is_jumping = object->is_jumping();
 }

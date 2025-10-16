@@ -206,6 +206,7 @@ public:
         y = (p1.y + p2.y) * .5f;
         return *this;
     }
+
     // average geometric
     constexpr inline SelfRef averageG(Self& p1, Self& p2)
     {
@@ -214,10 +215,16 @@ public:
         return *this;
     }
 
-    constexpr inline T& operator[](int i) const
+    constexpr inline T& operator[](int i)
     {
         // assert:  0 <= i < 2; x and y are packed into 2*sizeof(float) bytes
         return (T&)*(&x + i);
+    }
+
+    constexpr inline const T& operator[](int i) const
+    {
+        // assert:  0 <= i < 2; x and y are packed into 2*sizeof(float) bytes
+        return (const T&)*(&x + i);
     }
 
     constexpr inline SelfRef normalize(void) { return norm(); }
@@ -260,5 +267,11 @@ static_assert(sizeof(Fvector2) == 8);
 
 typedef _vector2<int> Ivector2;
 static_assert(sizeof(Ivector2) == 8);
+
+template <typename T>
+constexpr inline bool _valid(_vector2<T> v)
+{
+    return _valid(v.x) && _valid(v.y);
+}
 
 #endif /* __XR_CORE_VECTOR2_H */

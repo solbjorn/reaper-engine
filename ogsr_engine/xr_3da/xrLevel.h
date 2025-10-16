@@ -77,10 +77,10 @@ class NodePosition
     ICF void y(u16 value) { CopyMemory(data + 3, &value, 2); }
 
 public:
-    ICF u32 xz() const { return ((*((u32*)data)) & 0x00ffffff); }
+    ICF u32 xz() const { return ((*((const u32*)data)) & 0x00ffffff); }
     ICF u32 x(u32 row) const { return (xz() / row); }
     ICF u32 z(u32 row) const { return (xz() % row); }
-    ICF u32 y() const { return (*((u16*)(data + 3))); }
+    ICF u32 y() const { return (*((const u16*)(data + 3))); }
 
     friend class CLevelGraph;
     friend struct CNodePositionCompressor;
@@ -146,10 +146,10 @@ public:
     {
         switch (index)
         {
-        case 0: return ((*(u32*)data) & 0x007fffff);
-        case 1: return (((*(u32*)(data + 2)) >> 7) & 0x007fffff);
-        case 2: return (((*(u32*)(data + 5)) >> 6) & 0x007fffff);
-        case 3: return (((*(u32*)(data + 8)) >> 5) & 0x007fffff);
+        case 0: return ((*(const u32*)data) & 0x007fffff);
+        case 1: return (((*(const u32*)(data + 2)) >> 7) & 0x007fffff);
+        case 2: return (((*(const u32*)(data + 5)) >> 6) & 0x007fffff);
+        case 3: return (((*(const u32*)(data + 8)) >> 5) & 0x007fffff);
         default: NODEFAULT;
         }
 #ifdef DEBUG

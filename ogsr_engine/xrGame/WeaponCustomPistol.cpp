@@ -7,9 +7,10 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CWeaponCustomPistol::CWeaponCustomPistol(LPCSTR name) : CWeaponMagazined(name, SOUND_TYPE_WEAPON_PISTOL) {}
 
+CWeaponCustomPistol::CWeaponCustomPistol() : CWeaponMagazined{SOUND_TYPE_WEAPON_PISTOL} {}
 CWeaponCustomPistol::~CWeaponCustomPistol() {}
+
 void CWeaponCustomPistol::switch2_Fire()
 {
     if (GetCurrentFireMode() == 1)

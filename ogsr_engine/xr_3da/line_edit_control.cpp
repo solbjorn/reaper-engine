@@ -481,7 +481,7 @@ void line_edit_control::on_key_hold(int dik)
     }
 }
 
-void line_edit_control::on_key_release(int dik)
+void line_edit_control::on_key_release()
 {
     m_accel = 1.0f;
     m_rep_time = 0.0f;
@@ -542,7 +542,7 @@ void line_edit_control::update_bufs()
     m_buf2[0] = 0;
     m_buf3[0] = 0;
 
-    size_t edit_size = strlen(m_edit_str);
+    auto edit_size = gsl::narrow_cast<gsl::index>(strlen(m_edit_str));
     int ds = (m_cursor_view && m_insert_mode && m_p2 < edit_size) ? 1 : 0;
     strncpy_s(m_buf0, m_buffer_size, m_edit_str, m_cur_pos);
     strncpy_s(m_buf1, m_buffer_size, m_edit_str, m_p1);
@@ -559,17 +559,13 @@ void line_edit_control::update_bufs()
 void line_edit_control::add_inserted_text()
 {
     if (empty_inserted())
-    {
         return;
-    }
 
-    size_t old_edit_size = strlen(m_edit_str);
-    for (size_t i = 0; i < old_edit_size; ++i)
+    const auto old_edit_size = gsl::narrow_cast<gsl::index>(strlen(m_edit_str));
+    for (gsl::index i{}; i < old_edit_size; ++i)
     {
         if ((m_edit_str[i] == '\n') || (m_edit_str[i] == '\t'))
-        {
             m_edit_str[i] = ' ';
-        }
     }
 
     LPSTR buf = (LPSTR)_alloca((m_buffer_size + 1) * sizeof(char));
@@ -577,25 +573,26 @@ void line_edit_control::add_inserted_text()
     strncpy_s(buf, m_buffer_size, m_edit_str, m_p1); // part 1
     strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
 
-    size_t new_size = strlen(m_inserted);
+    auto new_size = gsl::narrow_cast<gsl::index>(strlen(m_inserted));
     if (m_buffer_size - 1 < m_p1 + new_size)
     {
         m_inserted[m_buffer_size - 1 - m_p1] = 0;
         new_size = strlen(m_inserted);
     }
-    strncpy_s(buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, static_cast<size_t>(m_buffer_size - m_p1))); // part 2
+    strncpy_s(buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, gsl::index{m_buffer_size - m_p1})); // part 2
 
     const u8 ds = (m_insert_mode && m_p2 < old_edit_size) ? 1 : 0;
     strncpy_s(buf + m_p1 + new_size, m_buffer_size - (m_p1 + new_size), m_edit_str + m_p2 + ds, _min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
     buf[m_buffer_size] = 0;
 
-    const size_t szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
+    const gsl::index szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
     if (szn < m_buffer_size)
     {
         strncpy_s(m_edit_str, m_buffer_size, buf, szn); // part 1+2+3
         m_edit_str[m_buffer_size - 1] = 0;
         m_cur_pos = m_p1 + new_size;
     }
+
     clamp_cur_pos();
 }
 

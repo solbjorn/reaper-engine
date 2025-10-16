@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dCylinder.h"
 
 #include "tri-colliderknoopc/dTriColliderCommon.h"
@@ -181,7 +182,7 @@ void lineClosestApproach(const dVector3 pa, const dVector3 ua, const dVector3 pb
 // @@@ some stuff to optimize here, reuse code in contact point calculations.
 
 int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius, const dReal lz, const dVector3 p2, const dMatrix3 R2, const dVector3 side2, dVector3 normal, dReal* depth,
-            int* code, int maxc, dContactGeom* contact, int skip)
+            int* code, dContactGeom* contact, int skip)
 {
     dVector3 p, pp, normalC;
     const dReal* normalR{};
@@ -636,7 +637,7 @@ int dCylBox(const dVector3 p1, const dMatrix3 R1, const dReal radius, const dRea
 //****************************************************************************
 
 int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1, const dReal lz1, const dVector3 p2, const dMatrix3 R2, const dReal radius2, const dReal lz2, dVector3 normal,
-            dReal* depth, int* code, int maxc, dContactGeom* contact, int skip)
+            dReal* depth, int* code, dContactGeom* contact, int skip)
 {
     dVector3 p, pp1, pp2, normalC;
     const dReal* normalR{};
@@ -1099,10 +1100,11 @@ int dCylCyl(const dVector3 p1, const dMatrix3 R1, const dReal radius1, const dRe
     return ret;
 }
 
-#pragma todo(optimize factor == 0.f)
+// TODO: optimize factor == 0.f
+
 //****************************************************************************
 
-int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideCylS(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
 {
     VERIFY(skip >= (int)sizeof(dContactGeom));
     VERIFY(dGeomGetClass(o2) == dSphereClass);
@@ -1127,7 +1129,7 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     p[2] = p2[2] - p1[2];
 
     dReal s, s2;
-    unsigned char code;
+
 #define TEST(expr1, expr2, norm, cc) \
     s2 = dFabs(expr1) - (expr2); \
     if (s2 > 0) \
@@ -1137,17 +1139,16 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
         s = s2; \
         normalR = norm; \
         invert_normal = ((expr1) < 0); \
-        code = (cc); \
     } \
     XR_MACRO_END()
 
     s = -dInfinity;
     invert_normal = 0;
-    code = 0;
 
     // separating axis cyl ax
 
     TEST(dDOT14(p, R + 1), sphereRadius + hl, R + 1, 2);
+
     // note: cross product axes need to be scaled when s is computed.
     // normal (n1,n2,n3) is relative to
 #undef TEST
@@ -1163,7 +1164,6 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
         normalC[1] = (n2); \
         normalC[2] = (n3); \
         invert_normal = ((expr1) < 0); \
-        code = (cc); \
     } \
     XR_MACRO_END()
 
@@ -1233,6 +1233,7 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
         normal[1] = -normal[1];
         normal[2] = -normal[2];
     }
+
     // compute contact point(s)
     contact->depth = -s;
     contact->normal[0] = -normal[0];
@@ -1243,10 +1244,11 @@ int dCollideCylS(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     contact->pos[0] = p2[0] - normal[0] * sphereRadius;
     contact->pos[1] = p2[1] - normal[1] * sphereRadius;
     contact->pos[2] = p2[2] - normal[2] * sphereRadius;
+
     return 1;
 }
 
-int dCollideCylB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideCylB(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
 {
     dVector3 normal;
     dReal depth;
@@ -1255,8 +1257,7 @@ int dCollideCylB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     dVector3 boxSides;
     dGeomCylinderGetParams(o1, &cylRadius, &cylLength);
     dGeomBoxGetLengths(o2, boxSides);
-    int num = dCylBox(dGeomGetPosition(o1), dGeomGetRotation(o1), cylRadius, cylLength, dGeomGetPosition(o2), dGeomGetRotation(o2), boxSides, normal, &depth, &code,
-                      flags & NUMC_MASK, contact, skip);
+    int num = dCylBox(dGeomGetPosition(o1), dGeomGetRotation(o1), cylRadius, cylLength, dGeomGetPosition(o2), dGeomGetRotation(o2), boxSides, normal, &depth, &code, contact, skip);
     for (int i = 0; i < num; ++i)
     {
         CONTACT(contact, i * skip)->normal[0] = -normal[0];
@@ -1268,7 +1269,7 @@ int dCollideCylB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int s
     return num;
 }
 
-int dCollideCylCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideCylCyl(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
 {
     dVector3 normal;
     dReal depth;
@@ -1278,7 +1279,7 @@ int dCollideCylCyl(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int
     dGeomCylinderGetParams(o1, &cylRadius1, &cylLength1);
     dGeomCylinderGetParams(o2, &cylRadius2, &cylLength2);
     int num = dCylCyl(dGeomGetPosition(o1), dGeomGetRotation(o1), cylRadius1, cylLength1, dGeomGetPosition(o2), dGeomGetRotation(o2), cylRadius2, cylLength2, normal, &depth, &code,
-                      flags & NUMC_MASK, contact, skip);
+                      contact, skip);
 
     for (int i = 0; i < num; ++i)
     {
@@ -1296,7 +1297,7 @@ struct dxPlane
     dReal p[4];
 };
 
-int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
 {
     VERIFY(skip >= (int)sizeof(dContactGeom));
     VERIFY(dGeomGetClass(o1) == dCylinderClassUser);
@@ -1406,7 +1407,7 @@ int dCollideCylPlane(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, i
 }
 } // namespace
 
-int dCollideCylRay(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
+int dCollideCylRay(dxGeom* o1, dxGeom* o2, dContactGeom* contact, int skip)
 {
     VERIFY(skip >= (int)sizeof(dContactGeom));
     VERIFY(dGeomGetClass(o1) == dCylinderClassUser);

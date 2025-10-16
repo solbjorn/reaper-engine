@@ -55,13 +55,6 @@ public:
     CPhraseDialog();
     virtual ~CPhraseDialog();
 
-    CPhraseDialog(const CPhraseDialog& pharase_dialog) { *this = pharase_dialog; }
-    CPhraseDialog& operator=(const CPhraseDialog& pharase_dialog)
-    {
-        *this = pharase_dialog;
-        return *this;
-    }
-
     virtual void Load(shared_str dialog_id);
 
     // связь диалога между двумя DialogManager

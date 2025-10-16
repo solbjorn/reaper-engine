@@ -60,9 +60,9 @@ public:
     int iPaused;
     BOOL bMoved;
     BOOL b2D;
+    BOOL bRewind;
     BOOL bStopping;
     float fStoppingSpeed_k{1.f};
-    BOOL bRewind;
     float fTimeStarted; // time of "Start"
     float fTimeToStop; // time to "Stop"
     float fTimeToPropagade;
@@ -81,8 +81,8 @@ private:
     xr_task_group* tg{};
     xr_vector<u8> temp_buf[sdef_target_count_prefill];
 
-    size_t current_block{};
-    int filled_blocks{};
+    gsl::index current_block{};
+    gsl::index filled_blocks{};
 
     void fill_block(void* ptr, u32 size);
     void fill_data(void* dest, u32 offset, u32 size);

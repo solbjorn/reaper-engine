@@ -70,9 +70,12 @@ public:
     virtual void UpdatePower();
 
     void ConditionJump(float weight);
-    void ConditionWalk(float weight, bool accel, bool sprint);
-    void ConditionStand(float weight);
 
+private:
+    void ConditionWalk(float weight, bool accel, bool sprint);
+    void ConditionStand();
+
+public:
     float GetAlcohol() { return m_fAlcohol; }
     float GetPsy() { return 1.0f - GetPsyHealth(); }
     float GetSatiety() { return m_fSatiety; }

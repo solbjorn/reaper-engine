@@ -1,19 +1,17 @@
 #include "stdafx.h"
 
+namespace
+{
 class alignas(8) walker
 {
 public:
-    u32 mask;
-    CFrustum* F;
     ISpatial_DB* space;
+    const CFrustum* F;
+
+    u32 mask;
 
 public:
-    walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F)
-    {
-        mask = _mask;
-        F = (CFrustum*)_F;
-        space = _space;
-    }
+    walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F) : space{_space}, F{_F}, mask{_mask} {}
 
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
     {
@@ -53,8 +51,9 @@ public:
         }
     }
 };
+} // namespace
 
-void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const CFrustum& _frustum)
+void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _mask, const CFrustum& _frustum)
 {
     cs.Enter();
     q_result = &R;

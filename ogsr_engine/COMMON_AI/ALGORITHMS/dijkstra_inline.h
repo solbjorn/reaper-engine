@@ -101,13 +101,12 @@ inline bool CSDijkstra::step(TPathManager& path_manager)
                 {
                     // so, new path is better
                     // assign corresponding values to the node
-                    Distance d = neighbour.f();
                     neighbour.f() = f;
                     // assign correct parent to the node to be able
                     // to retreive a path
                     data_storage().assign_parent(neighbour, &best, path_manager.edge(i));
                     // notify data storage about node decreasing value
-                    data_storage().decrease_opened(neighbour, d);
+                    data_storage().decrease_opened(neighbour);
                     // continue iterating on neighbours
                     continue;
                 }

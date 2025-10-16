@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "ef_storage.h"
 #include "ef_primary.h"
 #include "ef_pattern.h"
@@ -50,29 +51,29 @@ CEF_Storage::CEF_Storage()
     m_fpaBaseFunctions[50] = xr_new<CEnemyDistanceToGraphPoint>(this);
 
     m_pfWeaponEffectiveness = xr_new<CPatternFunction>("common\\WeaponEffectiveness.efd", this);
-    xr_new<CPatternFunction>("common\\CreatureEffectiveness.efd", this);
-    xr_new<CPatternFunction>("common\\IntCreatureEffectiveness.efd", this);
-    xr_new<CPatternFunction>("common\\AccWeaponEffectiveness.efd", this);
-    xr_new<CPatternFunction>("common\\FinCreatureEffectiveness.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\CreatureEffectiveness.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\IntCreatureEffectiveness.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\AccWeaponEffectiveness.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\FinCreatureEffectiveness.efd", this);
     m_pfVictoryProbability = xr_new<CPatternFunction>("common\\VictoryProbability.efd", this);
-    xr_new<CPatternFunction>("common\\EntityCost.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\EntityCost.efd", this);
     m_pfExpediency = xr_new<CPatternFunction>("common\\Expediency.efd", this);
-    xr_new<CPatternFunction>("common\\SurgeDeathProbability.efd", this);
-    xr_new<CPatternFunction>("common\\EquipmentValue.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\SurgeDeathProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("common\\EquipmentValue.efd", this);
     m_pfMainWeaponValue = xr_new<CPatternFunction>("common\\MainWeaponValue.efd", this);
     m_pfSmallWeaponValue = xr_new<CPatternFunction>("common\\SmallWeaponValue.efd", this);
-    xr_new<CPatternFunction>("alife\\TerrainType.efd", this);
-    xr_new<CPatternFunction>("alife\\WeaponAttackTimes.efd", this);
-    xr_new<CPatternFunction>("alife\\WeaponSuccessProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\EnemyDetectability.efd", this);
-    xr_new<CPatternFunction>("alife\\EnemyDetectProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\EnemyRetreatProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\AnomalyDetectProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\AnomalyInteractProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\AnomalyRetreatProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\BirthPercentage.efd", this);
-    xr_new<CPatternFunction>("alife\\BirthProbability.efd", this);
-    xr_new<CPatternFunction>("alife\\BirthSpeed.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\TerrainType.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\WeaponAttackTimes.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\WeaponSuccessProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\EnemyDetectability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\EnemyDetectProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\EnemyRetreatProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\AnomalyDetectProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\AnomalyInteractProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\AnomalyRetreatProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\BirthPercentage.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\BirthProbability.efd", this);
+    std::ignore = xr_new<CPatternFunction>("alife\\BirthSpeed.efd", this);
 }
 
 CEF_Storage::~CEF_Storage()
@@ -81,14 +82,14 @@ CEF_Storage::~CEF_Storage()
         xr_delete(m_fpaBaseFunctions[i]);
 }
 
-//CBaseFunction* CEF_Storage::function(LPCSTR function) const
+// CBaseFunction* CEF_Storage::function(LPCSTR function) const
 //{
-//    for (int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
-//    {
-//        if (!m_fpaBaseFunctions[i])
-//            continue;
-//        if (!xr_strcmp(function, m_fpaBaseFunctions[i]->Name()))
-//            return (m_fpaBaseFunctions[i]);
-//    }
-//    return (0);
-//}
+//     for (int i = 0; i < AI_MAX_EVALUATION_FUNCTION_COUNT; ++i)
+//     {
+//         if (!m_fpaBaseFunctions[i])
+//             continue;
+//         if (!xr_strcmp(function, m_fpaBaseFunctions[i]->Name()))
+//             return (m_fpaBaseFunctions[i]);
+//     }
+//     return (0);
+// }

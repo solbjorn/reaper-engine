@@ -53,17 +53,6 @@ IC LPCSTR get_token_name(const xr_token* tokens, gsl::index key)
     } \
     XR_MACRO_END()
 
-// Allow passing explicit template arguments
-#define XR_FUNCTION_ALIAS_1(highLevelF, lowLevelF) \
-    XR_FUNCTION_ALIAS(highLevelF, lowLevelF); \
-\
-    template <typename A0, typename... Args> \
-    constexpr ICF auto highLevelF(Args&&... args) -> decltype(lowLevelF<A0>(std::forward<Args>(args)...)) \
-    { \
-        return lowLevelF<A0>(std::forward<Args>(args)...); \
-    } \
-    XR_MACRO_END()
-
 XR_FUNCTION_ALIAS(_min, std::min);
 XR_FUNCTION_ALIAS(_max, std::max);
 
@@ -260,7 +249,8 @@ constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 }
 
 // return pointer to ".ext"
-IC char* strext(const char* S) { return (char*)strrchr(S, '.'); }
+inline const char* strext(const char* str) { return std::strrchr(str, '.'); }
+inline char* strext(char* str) { return std::strrchr(str, '.'); }
 
 IC u32 xr_strlen(const char* S) { return (u32)strlen(S); }
 

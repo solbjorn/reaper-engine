@@ -5,10 +5,11 @@
 //
 
 #include "StdAfx.h"
+
 #include "UISpinNum.h"
 #include "UILines.h"
 
-CUISpinNum::CUISpinNum() : m_iVal(0), m_iMin(0), m_iMax(100), m_iStep(1) {}
+CUISpinNum::CUISpinNum() = default;
 
 void CUISpinNum::SetCurrentValue()
 {
@@ -70,10 +71,9 @@ void CUISpinNum::SetValue()
 }
 
 bool CUISpinNum::CanPressUp() { return m_iVal + m_iStep <= m_iMax; }
-
 bool CUISpinNum::CanPressDown() { return m_iVal - m_iStep >= m_iMin; }
 
-CUISpinFlt::CUISpinFlt() : m_fVal(0), m_fMin(0), m_fMax(100), m_fStep(0.1f) {}
+CUISpinFlt::CUISpinFlt() = default;
 
 void CUISpinFlt::SetCurrentValue()
 {

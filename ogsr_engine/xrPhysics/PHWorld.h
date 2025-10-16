@@ -11,13 +11,14 @@ class CPHAction;
 struct SPHNetState;
 class CPHSynchronize;
 typedef xr_vector<std::pair<CPHSynchronize*, SPHNetState>> V_PH_WORLD_STATE;
+
 class CPHMesh
 {
     dGeomID Geom;
 
 public:
     dGeomID GetGeom() { return Geom; }
-    void Create(dSpaceID space, dWorldID world);
+    void Create(dSpaceID space);
     void Destroy();
 };
 

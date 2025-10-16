@@ -14,15 +14,6 @@
 #include "PhysicsShellAnimator.h"
 #endif
 
-///////////////////////////////////////////////////////////////
-/// #pragma warning(disable:4995)
-// #include "ode/src/collision_kernel.h"
-// #include "ode/src/joint.h"
-// #include "ode/src/objects.h"
-
-// #pragma warning(default:4995)
-///////////////////////////////////////////////////////////////////
-
 #include "ExtendedGeom.h"
 #include "PHElement.h"
 #include "PHShell.h"
@@ -38,7 +29,7 @@ void CPHShell::activate(bool disable)
         EnableObject(nullptr);
 }
 
-void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable)
+void CPHShell::Activate(const Fmatrix& m0, float, const Fmatrix& m2, bool disable)
 {
     if (isActive())
         return;

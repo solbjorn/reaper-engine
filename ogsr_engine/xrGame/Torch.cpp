@@ -28,8 +28,6 @@ constexpr float TORCH_INERTION_SPEED_MIN{0.5f};
 constexpr Fvector TORCH_OFFSET{-0.2f, +0.1f, -0.3f};
 constexpr Fvector OMNI_OFFSET{-0.2f, +0.1f, -0.1f};
 constexpr float OPTIMIZATION_DISTANCE{100.f};
-
-bool stalker_use_dynamic_lights{};
 } // namespace
 
 CTorch::CTorch()
@@ -324,7 +322,7 @@ void CTorch::UpdateCL()
         if (actor)
         {
             smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
-#pragma todo("KRodin: переделать под новый рендер!")
+            // TODO: KRodin: переделать под новый рендер!
             // light_render->set_actor_torch(true);
         }
 
@@ -412,7 +410,7 @@ void CTorch::UpdateCL()
     }
     else
     {
-#pragma todo("KRodin: переделать под новый рендер!")
+        // TODO: KRodin: переделать под новый рендер!
         // light_render->set_actor_torch(false);
         if (getVisible() && m_pPhysicsShell)
         {

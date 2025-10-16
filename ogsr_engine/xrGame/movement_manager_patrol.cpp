@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "movement_manager.h"
 #include "patrol_path_manager.h"
 #include "level_path_manager.h"
@@ -42,7 +43,7 @@ void CMovementManager::process_patrol_path()
         [[fallthrough]];
     }
     case ePathStateBuildLevelPath: {
-        if (can_use_distributed_computations(mtLevelPath))
+        if (can_use_distributed_computations())
         {
             level_path_builder().setup(object().ai_location().level_vertex_id(), level_dest_vertex_id());
             break;
@@ -68,7 +69,7 @@ void CMovementManager::process_patrol_path()
         detail().set_start_direction(Fvector().setHP(-m_body.current.yaw, 0));
         detail().set_dest_position(patrol().destination_position());
 
-        if (can_use_distributed_computations(mtDetailPath))
+        if (can_use_distributed_computations())
         {
             detail_path_builder().setup(level_path().path(), level_path().intermediate_index());
             break;
@@ -93,7 +94,7 @@ void CMovementManager::process_patrol_path()
             m_path_state = ePathStateBuildLevelPath;
         else if (!detail().actual())
             m_path_state = ePathStateBuildLevelPath;
-        else if (detail().completed(object().Position(), !detail().state_patrol_path()))
+        else if (detail().completed(!detail().state_patrol_path()))
         {
             m_path_state = ePathStateContinueLevelPath;
             if (level_path().completed())

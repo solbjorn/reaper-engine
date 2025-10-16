@@ -60,8 +60,6 @@ void CROS_impl::add(light* source)
 }
 
 //////////////////////////////////////////////////////////////////////////
-#pragma warning(push)
-#pragma warning(disable : 4305)
 
 static constexpr float hdir[lt_hemisamples][3] = {
     {-0.26287, 0.52573, 0.80902},  {0.27639, 0.44721, 0.85065},   {-0.95106, 0.00000, 0.30902},
@@ -78,7 +76,6 @@ static constexpr float hdir[lt_hemisamples][3] = {
 
     {-0.42533, 0.85065, -0.30902}, {0.68819, 0.52573, 0.50000},
 };
-#pragma warning(pop)
 
 inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 {

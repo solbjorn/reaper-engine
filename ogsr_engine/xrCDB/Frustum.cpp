@@ -243,7 +243,7 @@ void CFrustum::CreateFromPlanes(Fplane* p, size_t count)
     p_count = count;
 }
 
-void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
+void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vBase, Fmatrix& mFullXFORM)
 {
     Fplane P;
     P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
@@ -263,7 +263,7 @@ void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatr
     }
 
     // Base creation
-    CreateFromPoints(poly->begin(), poly->size(), vBase);
+    CreateFromPoints(poly->data(), poly->size(), vBase);
 
     // Near clipping plane
     _add(P);
@@ -374,6 +374,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 {
     sPoly* src = &D;
     sPoly* dest = &S;
+
     for (u32 i = 0; i < p_count; i++)
     {
         // cache plane and swap lists
@@ -383,15 +384,18 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
         // classify all points relative to plane #i
         float cls[FRUSTUM_SAFE];
-        for (u32 j = 0; j < src->size(); j++)
-            cls[j] = P.classify((*src)[j]);
+
+        for (auto [j, pt] : xr::views_enumerate(std::as_const(*src)))
+            cls[j] = P.classify(pt);
 
         // clip everything to this plane
         cls[src->size()] = cls[0];
         src->push_back((*src)[0]);
+
         Fvector D2;
         float denum, t;
-        for (u32 j = 0; j < src->size() - 1; j++)
+
+        for (gsl::index j{}; j < src->size() - 1; ++j)
         {
             if ((*src)[j].similar((*src)[j + 1], EPS_S))
                 continue;
@@ -452,7 +456,7 @@ bool CFrustum::CreateFromClipPoly(Fvector* p, size_t count, Fvector& vBase, CFru
     if (!dest)
         return false;
 
-    CreateFromPoints(dest->begin(), dest->size(), vBase);
+    CreateFromPoints(dest->data(), dest->size(), vBase);
     return true;
 }
 

@@ -69,7 +69,7 @@ public:
     virtual BOOL feel_touch_on_contact(CObject* O);
     virtual float effective_radius();
     virtual float distance_to_center(CObject* O);
-    virtual void Postprocess(float val) {}
+    virtual void Postprocess(float) {}
     virtual void net_Relcase(CObject* O);
     virtual void OnEvent(NET_Packet& P, u16 type);
     void OnOwnershipTake(u16 id);
@@ -169,7 +169,7 @@ public:
 
 protected:
     // воздействие зоной на объект
-    virtual void Affect(SZoneObjectInfo* O) {}
+    virtual void Affect(SZoneObjectInfo*) {}
 
     // воздействовать на все объекты в зоне
     virtual void AffectObjects();

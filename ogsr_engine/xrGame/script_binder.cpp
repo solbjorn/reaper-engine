@@ -18,7 +18,6 @@
 #include "level.h"
 
 CScriptBinder::CScriptBinder() { init(); }
-
 CScriptBinder::~CScriptBinder() { VERIFY(!m_object); }
 
 void CScriptBinder::init() { m_object = nullptr; }
@@ -42,7 +41,7 @@ void CScriptBinder::reinit()
     }
 }
 
-void CScriptBinder::Load(LPCSTR section) {}
+void CScriptBinder::Load(LPCSTR) {}
 
 void CScriptBinder::reload(LPCSTR section)
 {

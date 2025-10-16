@@ -110,9 +110,10 @@ public:
     u16 m_bid;
 
     virtual ~CUIArtefactDetectorAdv() = default;
+
     virtual void update() override;
     void construct(CAdvancedDetector* p);
-    void SetValue(const float v1, const Fvector& v2);
+    void SetValue(const Fvector& v2);
     float CurrentYRotation() const;
     static void BoneCallback(CBoneInstance* B);
     void ResetBoneCallbacks();

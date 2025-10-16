@@ -24,18 +24,20 @@ private:
     GameGraph::_GRAPH_ID m_game_vertex_id;
 
 public:
-    IC CAI_ObjectLocation();
-    IC void init();
-    IC virtual void reinit();
-    /*IC*/ void game_vertex(const GameGraph::CVertex* game_vertex);
-    /*IC*/ void game_vertex(const GameGraph::_GRAPH_ID game_vertex_id);
-    /*IC*/ const GameGraph::CVertex* game_vertex() const;
-    IC const GameGraph::_GRAPH_ID game_vertex_id() const;
-    /*IC*/ void level_vertex(const LevelGraph::CVertex* level_vertex);
-    /*IC*/ void level_vertex(const u32 level_vertex_id);
-    /*IC*/ const LevelGraph::CVertex* level_vertex() const;
+    inline CAI_ObjectLocation();
 
-    IC const u32 level_vertex_id() const;
+    void init();
+    inline virtual void reinit();
+
+    void game_vertex(const GameGraph::CVertex* game_vertex);
+    void game_vertex(const GameGraph::_GRAPH_ID game_vertex_id);
+    [[nodiscard]] const GameGraph::CVertex* game_vertex() const;
+    [[nodiscard]] inline GameGraph::_GRAPH_ID game_vertex_id() const;
+
+    void level_vertex(const LevelGraph::CVertex* level_vertex);
+    void level_vertex(const u32 level_vertex_id);
+    [[nodiscard]] const LevelGraph::CVertex* level_vertex() const;
+    [[nodiscard]] inline u32 level_vertex_id() const;
 };
 
 #include "ai_object_location_inline.h"

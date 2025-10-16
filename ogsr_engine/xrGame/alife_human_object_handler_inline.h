@@ -8,13 +8,9 @@
 
 #pragma once
 
-IC CALifeHumanObjectHandler::CALifeHumanObjectHandler(object_type* object)
-{
-    VERIFY(object);
-    m_object = object;
-}
+inline CALifeHumanObjectHandler::CALifeHumanObjectHandler(object_type* object) : m_object{object} { VERIFY(object); }
 
-IC CALifeHumanObjectHandler::object_type& CALifeHumanObjectHandler::object() const
+inline CALifeHumanObjectHandler::object_type& CALifeHumanObjectHandler::object() const
 {
     VERIFY(m_object);
     return (*m_object);

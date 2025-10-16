@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "WeaponBinoculars.h"
 
+#include "WeaponBinoculars.h"
 #include "xr_level_controller.h"
 
 #include "level.h"
@@ -8,7 +8,8 @@
 #include "WeaponBinocularsVision.h"
 #include "object_broker.h"
 #include "hudmanager.h"
-CWeaponBinoculars::CWeaponBinoculars() : CWeaponCustomPistol("BINOCULARS") {}
+
+CWeaponBinoculars::CWeaponBinoculars() : CWeaponCustomPistol{} {}
 
 CWeaponBinoculars::~CWeaponBinoculars()
 {

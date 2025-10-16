@@ -5,6 +5,9 @@
 
 class CControlMovementBase : public CControl_ComBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlMovementBase, CControl_ComBase);
+
+private:
     typedef CControl_ComBase inherited;
 
     using VELOCITY_MAP = xr_map<u32, SVelocityParam>;

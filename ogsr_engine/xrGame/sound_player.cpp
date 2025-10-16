@@ -46,9 +46,10 @@ void CSoundPlayer::clear_playing_sounds()
 
 void CSoundPlayer::reinit() {}
 
-void CSoundPlayer::reload(LPCSTR section)
+void CSoundPlayer::reload(LPCSTR)
 {
     VERIFY(m_playing_sounds.empty());
+
     clear();
     m_sound_prefix = "";
 }
@@ -128,12 +129,10 @@ bool CSoundPlayer::check_sound_legacy(u32 internal_type) const
     return (true);
 }
 
-void CSoundPlayer::update(float time_delta)
+void CSoundPlayer::update()
 {
-    START_PROFILE("Sound Player")
     remove_inappropriate_sounds(m_sound_mask);
     update_playing_sounds();
-    STOP_PROFILE
 }
 
 void CSoundPlayer::remove_inappropriate_sounds(u32 sound_mask)
@@ -191,21 +190,6 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
     sound_single.m_bone_id = smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(sound.m_bone_name);
 
     sound_single.m_sound = xr_new<ref_sound>();
-    /**
-    sound_single.m_sound->clone	(
-        *(*I).second.second->m_sounds[
-            id == u32(-1)
-            ?
-            (*I).second.second->random(
-                (*I).second.second->m_sounds.size()
-            )
-            :
-            id
-        ],
-        st_Effect,
-        sg_SourceType
-    );
-    /**/
     sound_single.m_sound->clone((*I).second.second->random(id), st_Effect, sg_SourceType);
 
     sound_single.m_sound->_p->g_object = m_object;

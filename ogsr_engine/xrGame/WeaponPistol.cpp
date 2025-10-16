@@ -4,7 +4,7 @@
 #include "ParticlesObject.h"
 #include "actor.h"
 
-CWeaponPistol::CWeaponPistol(LPCSTR name) : CWeaponCustomPistol(name)
+CWeaponPistol::CWeaponPistol() : CWeaponCustomPistol{}
 {
     m_eSoundClose = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING /*| eSoundType*/);
     m_opened = false;

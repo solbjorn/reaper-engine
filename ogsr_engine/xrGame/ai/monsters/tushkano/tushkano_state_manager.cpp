@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "tushkano.h"
 #include "tushkano_state_manager.h"
 
@@ -48,6 +49,7 @@ void CStateManagerTushkano::execute()
             {
             case eStrong: state_id = eStatePanic; break;
             case eWeak: state_id = eStateAttack; break;
+            default: break;
             }
         }
         else if (object->HitMemory.is_hit())

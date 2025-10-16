@@ -1,118 +1,173 @@
 #ifndef FixedVectorH
 #define FixedVectorH
 
-template <class T, size_t dim>
+template <typename T, gsl::index dim>
 class svector
 {
+private:
+    using adapter_t = std::span<T>;
+    using const_adapter_t = std::span<const T>;
+
 public:
-    typedef size_t size_type;
-    typedef T value_type;
-    typedef value_type* iterator;
-    typedef const value_type* const_iterator;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
+    using size_type = std::conditional_t<alignof(T) >= alignof(gsl::index), gsl::index, s32>;
+    using value_type = adapter_t::value_type;
+    using pointer = adapter_t::pointer;
+    using const_pointer = adapter_t::const_pointer;
+    using reference = adapter_t::reference;
+    using const_reference = adapter_t::const_reference;
+    using iterator = adapter_t::iterator;
+#ifdef _LIBCPP_ABI_BOUNDED_ITERATORS
+    using const_iterator = std::__bounded_iter<const_pointer>;
+#else
+    using const_iterator = std::__wrap_iter<const_pointer>;
+#endif
 
 private:
-    value_type array[dim]{};
-    u32 count;
+    std::array<value_type, dim> array{};
+    size_type count{};
+
+    XR_SYSV [[nodiscard]] constexpr adapter_t adapter() { return adapter_t{data(), gsl::narrow_cast<typename adapter_t::size_type>(count)}; }
+    XR_SYSV [[nodiscard]] constexpr const_adapter_t adapter() const { return const_adapter_t{data(), gsl::narrow_cast<typename const_adapter_t::size_type>(count)}; }
 
 public:
-    svector() : count(0) {}
-    svector(iterator p, size_t c) { assign(p, c); }
+    constexpr svector() = default;
+    constexpr svector(const value_type* p, size_type c) { assign(p, c); }
 
-    IC iterator begin() { return array; }
-    IC iterator end() { return array + count; }
-    IC const_iterator begin() const { return array; }
-    IC const_iterator end() const { return array + count; }
-    IC const_iterator cbegin() const { return array; }
-    IC const_iterator cend() const { return array + count; }
-    IC u32 size() const { return count; }
-    IC void clear() { count = 0; }
+    [[nodiscard]] constexpr iterator begin() { return adapter().begin(); }
+    [[nodiscard]] constexpr iterator end() { return adapter().end(); }
+    [[nodiscard]] constexpr const_iterator begin() const { return adapter().begin(); }
+    [[nodiscard]] constexpr const_iterator end() const { return adapter().end(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const { return adapter().begin(); }
+    [[nodiscard]] constexpr const_iterator cend() const { return adapter().end(); }
+    [[nodiscard]] constexpr size_type size() const { return count; }
+    constexpr void clear() { count = 0; }
 
-    IC void resize(size_t c)
+    constexpr void resize(size_type c)
     {
         VERIFY(c <= dim);
         count = c;
     }
 
-    IC void reserve(size_t c) {}
+    constexpr void resize(size_type c, const value_type& fill)
+    {
+        size_type old = count;
+        resize(c);
 
-    IC void push_back(value_type e)
+        if (old >= count)
+            return;
+
+        for (size_type i{old}; i < count; ++i)
+            array[i] = fill;
+    }
+
+    constexpr void reserve(size_type) {}
+
+    constexpr void push_back(const value_type& e)
     {
         VERIFY(count < dim);
         array[count++] = e;
     }
 
-    IC void pop_back()
+    constexpr void push_back(value_type&& e)
+    {
+        VERIFY(count < dim);
+        array[count++] = std::move(e);
+    }
+
+    [[nodiscard]] constexpr value_type pop_back()
     {
         VERIFY(count);
-        count--;
+        return array[--count];
     }
 
-    IC reference operator[](u32 id)
+    [[nodiscard]] constexpr reference operator[](size_type id)
     {
         VERIFY(id < count);
-        return array[id];
+        return adapter()[id];
     }
 
-    IC const_reference operator[](u32 id) const
+    [[nodiscard]] constexpr const_reference operator[](size_type id) const
     {
         VERIFY(id < count);
-        return array[id];
+        return adapter()[id];
     }
 
-    IC reference front() { return array[0]; }
-    IC reference back() { return array[count - 1]; }
+    [[nodiscard]] constexpr value_type* data() { return array.data(); }
+    [[nodiscard]] constexpr const value_type* data() const { return array.data(); }
 
-    IC reference last()
+    [[nodiscard]] constexpr reference front() { return adapter().front(); }
+    [[nodiscard]] constexpr reference back() { return adapter().back(); }
+
+    [[nodiscard]] constexpr reference last()
     {
         VERIFY(count < dim);
         return array[count];
     }
 
-    IC const_reference front() const { return array[0]; }
-    IC const_reference back() const { return array[count - 1]; }
-    IC const_reference last() const
+    [[nodiscard]] constexpr const_reference front() const { return adapter().front(); }
+    [[nodiscard]] constexpr const_reference back() const { return adapter().back(); }
+
+    [[nodiscard]] constexpr const_reference last() const
     {
         VERIFY(count < dim);
         return array[count];
     }
 
-    IC void inc() { count++; }
-    IC bool empty() const { return 0 == count; }
+    constexpr void inc() { count++; }
+    [[nodiscard]] constexpr bool empty() const { return count == 0; }
 
-    IC void erase(u32 id)
+    constexpr void erase(size_type id)
     {
         VERIFY(id < count);
         count--;
-        for (u32 i = id; i < count; i++)
+
+        for (size_type i{id}; i < count; ++i)
             array[i] = array[i + 1];
     }
 
-    IC void erase(iterator it) { erase(u32(it - begin())); }
+    constexpr void erase(iterator it) { erase(it - begin()); }
 
-    IC void insert(u32 id, reference V)
+    constexpr void insert(size_type id, const value_type& V)
     {
         VERIFY(id < count);
-        for (int i = count; i > int(id); i--)
+
+        for (size_type i{count}; i > id; --i)
             array[i] = array[i - 1];
+
         count++;
         array[id] = V;
     }
-    IC void assign(const_iterator p, size_t c)
+
+    constexpr void insert(size_type id, value_type&& V)
+    {
+        VERIFY(id < count);
+
+        for (size_type i{count}; i > id; --i)
+            array[i] = array[i - 1];
+
+        count++;
+        array[id] = std::move(V);
+    }
+
+    constexpr void assign(const value_type* p, size_type c)
     {
         R_ASSERT(c > 0 && c <= dim);
-        CopyMemory(array, p, c * sizeof(value_type));
+        CopyMemory(array.data(), p, c * sizeof(value_type));
         count = c;
     }
-    IC BOOL equal(const svector<value_type, dim>& base) const
+
+    [[nodiscard]] constexpr bool equal(const svector<value_type, dim>& base) const
     {
         if (size() != base.size())
-            return FALSE;
-        for (u32 cmp = 0; cmp < size(); cmp++)
-            if ((*this)[cmp] != base[cmp])
-                return FALSE;
-        return TRUE;
+            return false;
+
+        for (const auto [a, b] : std::views::zip(adapter(), base.adapter()))
+        {
+            if (a != b)
+                return false;
+        }
+
+        return true;
     }
 };
 

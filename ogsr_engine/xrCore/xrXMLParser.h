@@ -94,7 +94,7 @@ protected:
 #endif
 
 public:
-    virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn) { return fn; }
+    virtual shared_str correct_file_name(LPCSTR, LPCSTR fn) { return fn; }
 
 private:
     CXml(const CXml& copy);

@@ -9,10 +9,6 @@ class CEffectorBobbing : public CEffectorCam
 
 public:
     float fTime;
-    Fvector vAngleAmplitude;
-    float fYAmplitude{};
-    float fSpeed{};
-
     u32 dwMState{};
     float fReminderFactor;
     bool is_limping;
@@ -28,6 +24,7 @@ public:
 
     CEffectorBobbing();
     virtual ~CEffectorBobbing();
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
     void SetState(u32 st, bool limping, bool ZoomMode);
 };

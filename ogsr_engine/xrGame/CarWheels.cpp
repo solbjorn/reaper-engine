@@ -1,10 +1,5 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -12,14 +7,13 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "ExtendedGeom.h"
 
-CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
-{
-    spring_factor = 1;
-    damping_factor = 1;
-    mu_factor = 1;
-}
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
 
-IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData* ud, bool& do_colide, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData* ud, dContact& c)
 {
     if (ud && ud->object_callbacks && ud->object_callbacks->HasCallback(WheellCollisionCallback))
     {
@@ -30,16 +24,18 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData* ud, bool& 
     }
 }
 
-void CCar::SWheel::WheellCollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCar::SWheel::WheellCollisionCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*)
 {
     dxGeomUserData* ud1 = retrieveGeomUserData(c.geom.g1);
     dxGeomUserData* ud2 = retrieveGeomUserData(c.geom.g2);
-    applywheelCollisionParams(ud1, do_colide, c, material_1, material_2);
-    applywheelCollisionParams(ud2, do_colide, c, material_1, material_2);
+    applywheelCollisionParams(ud1, c);
+    applywheelCollisionParams(ud2, c);
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool CCar::WheelHit(float P, s16 element, ALife::EHitType hit_type)
+
+bool CCar::WheelHit(float P, s16 element)
 {
     auto i = m_wheels_map.find(element);
     if (i != m_wheels_map.end())
@@ -47,13 +43,15 @@ bool CCar::WheelHit(float P, s16 element, ALife::EHitType hit_type)
         i->second->Hit(P);
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
+
 void CCar::SWheel::Init()
 {
     if (inited)
         return;
+
     BONE_P_PAIR_CIT bone = bone_map.find(bone_id);
     R_ASSERT2(bone->second.element, "No Element was created for wheel. Check collision is set");
     bone->second.element->set_DynamicLimits(default_l_limit, default_w_limit * 100.f);
@@ -70,6 +68,7 @@ void CCar::SWheel::Init()
     e->SetAirResistance(0, 0);
     inited = true;
 }
+
 void CCar::SWheel::Load(LPCSTR section)
 {
     IKinematics* K = PKinematics(car->Visual());
@@ -88,12 +87,14 @@ void CCar::SWheel::Load(LPCSTR section)
         collision_params.mu_factor = ini->r_float("wheels_params", "friction_factor");
     }
 }
+
 void CCar::SWheel::ApplyDriveAxisTorque(float torque)
 {
     if (!joint)
         return;
     dJointSetHinge2Param(joint->GetDJoint(), dParamFMax2, torque); // car->m_axle_friction
 }
+
 void CCar::SWheel::ApplyDriveAxisVel(float vel)
 {
     if (!joint)
@@ -106,6 +107,7 @@ void CCar::SWheel::ApplyDriveAxisVelTorque(float vel, float torque)
     ApplyDriveAxisVel(vel);
     ApplyDriveAxisTorque(torque);
 }
+
 void CCar::SWheel::ApplySteerAxisVel(float vel)
 {
     if (!joint)

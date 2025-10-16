@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+
 #include "UILoadingScreen.h"
 #include "../../xr_3da/GameFont.h"
 #include "UIHelper.h"
@@ -15,12 +16,7 @@
 #include "UIXmlInit.h"
 #include "string_table.h"
 
-UILoadingScreen::UILoadingScreen()
-    : loadingProgress(nullptr), loadingProgressPercent(nullptr), loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr), loadingTipNumber(nullptr),
-      loadingTip(nullptr), maxTip(100), loadingLevelName(nullptr), loadingLevelDescription(nullptr)
-{
-    UILoadingScreen::Initialize();
-}
+UILoadingScreen::UILoadingScreen() { UILoadingScreen::Initialize(); }
 
 void UILoadingScreen::Initialize()
 {

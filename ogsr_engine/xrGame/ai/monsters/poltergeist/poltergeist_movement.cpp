@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "poltergeist_movement.h"
 #include "poltergeist.h"
 #include "../../../detail_path_manager.h"
@@ -14,8 +15,8 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl* movement_co
     dest_position = m_monster->m_current_position;
 
     // Если нет движения по пути
-    if (!enabled() || path_completed() || detail().path().empty() || detail().completed(m_monster->m_current_position, true) ||
-        (detail().curr_travel_point_index() >= detail().path().size() - 1) || fis_zero(old_desirable_speed()))
+    if (!enabled() || path_completed() || detail().path().empty() || detail().completed(true) || (detail().curr_travel_point_index() >= detail().path().size() - 1) ||
+        fis_zero(old_desirable_speed()))
     {
         m_speed = 0.f;
         dest_position = CalculateRealPosition();

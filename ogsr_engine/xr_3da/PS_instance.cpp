@@ -6,21 +6,21 @@
 #include "ps_instance.h"
 #include "IGame_Persistent.h"
 
-CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial(g_SpatialSpace), m_destroy_on_game_load(destroy_on_game_load)
+CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial{g_SpatialSpace}, m_destroy_on_game_load{destroy_on_game_load}
 {
-    g_pGamePersistent->ps_active.insert(this);
-    renderable.pROS_Allowed = FALSE;
+    spatial.type |= STYPE_RENDERABLE;
 
-    m_iLifeTime = int_max;
-    m_bAutoRemove = TRUE;
-    m_bDead = FALSE;
+    g_pGamePersistent->ps_active.insert(this);
+    renderable.pROS_Allowed = false;
 }
+
 extern BOOL g_bRendering;
 
 //----------------------------------------------------
 CPS_Instance::~CPS_Instance()
 {
     VERIFY(!g_bRendering);
+
     auto it = g_pGamePersistent->ps_active.find(this);
     R_ASSERT(it != g_pGamePersistent->ps_active.end());
     g_pGamePersistent->ps_active.erase(it);

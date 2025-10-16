@@ -14,7 +14,7 @@ IC void CDetailPathManager::make_inactual() { m_actuality = false; }
 
 IC bool CDetailPathManager::failed() const { return (m_failed); }
 
-IC bool CDetailPathManager::completed(const Fvector& position, bool bRealCompleted) const
+IC bool CDetailPathManager::completed(bool bRealCompleted) const
 {
     return (m_path.empty() || ((bRealCompleted || !m_state_patrol_path) ? (curr_travel_point_index() == m_path.size() - 1) : curr_travel_point_index() >= m_last_patrol_point));
 }
@@ -120,7 +120,7 @@ IC void CDetailPathManager::set_velocity_mask(const u32 velocity_mask)
     m_velocity_mask = velocity_mask;
 }
 
-IC const u32 CDetailPathManager::velocity_mask() const { return (m_velocity_mask); }
+IC u32 CDetailPathManager::velocity_mask() const { return (m_velocity_mask); }
 
 IC void CDetailPathManager::set_desirable_mask(const u32 desirable_mask)
 {
@@ -128,7 +128,7 @@ IC void CDetailPathManager::set_desirable_mask(const u32 desirable_mask)
     m_desirable_mask = desirable_mask;
 }
 
-IC const u32 CDetailPathManager::desirable_mask() const { return (m_desirable_mask); }
+IC u32 CDetailPathManager::desirable_mask() const { return (m_desirable_mask); }
 
 IC void CDetailPathManager::set_try_min_time(const bool try_min_time)
 {
@@ -136,7 +136,7 @@ IC void CDetailPathManager::set_try_min_time(const bool try_min_time)
     m_try_min_time = try_min_time;
 }
 
-IC const bool CDetailPathManager::try_min_time() const { return (m_try_min_time); }
+IC bool CDetailPathManager::try_min_time() const { return (m_try_min_time); }
 
 IC void CDetailPathManager::set_use_dest_orientation(const bool use_dest_orientation)
 {
@@ -144,7 +144,7 @@ IC void CDetailPathManager::set_use_dest_orientation(const bool use_dest_orienta
     m_use_dest_orientation = use_dest_orientation;
 }
 
-IC const bool CDetailPathManager::use_dest_orientation() const { return (m_use_dest_orientation); }
+IC bool CDetailPathManager::use_dest_orientation() const { return (m_use_dest_orientation); }
 
 IC bool CDetailPathManager::check_mask(u32 mask, u32 test) const { return ((mask & test) == test); }
 
@@ -156,7 +156,7 @@ IC void CDetailPathManager::set_state_patrol_path(const bool state_patrol_path)
 
 IC bool CDetailPathManager::state_patrol_path() const { return (m_state_patrol_path); }
 
-IC const u32 CDetailPathManager::time_path_built() const { return (m_time_path_built); }
+IC u32 CDetailPathManager::time_path_built() const { return (m_time_path_built); }
 
 IC const CDetailPathManager::STravelParams& CDetailPathManager::velocity(const u32& velocity_id) const
 {

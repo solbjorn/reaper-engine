@@ -121,7 +121,7 @@ TEMPLATE_SPECIALIZATION
 IC void CPathManagerTemplate::make_inactual() { m_actuality = false; }
 
 TEMPLATE_SPECIALIZATION
-IC void CPathManagerTemplate::before_search(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id) {}
+IC void CPathManagerTemplate::before_search(const _vertex_id_type, const _vertex_id_type) {}
 
 TEMPLATE_SPECIALIZATION
 IC void CPathManagerTemplate::after_search() {}

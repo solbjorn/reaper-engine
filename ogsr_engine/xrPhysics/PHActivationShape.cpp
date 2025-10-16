@@ -41,7 +41,7 @@ constexpr float erp{1.f};
 #define CHECK_POS(pos, msg, br) XR_MACRO_END()
 #endif
 
-void ActivateTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void ActivateTestDepthCallback(bool& do_colide, bool, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
     if (do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
     {
@@ -55,7 +55,7 @@ void ActivateTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl*
     }
 }
 
-void StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     dJointID contact_joint = dJointCreateContact(nullptr, ContactGroup, &c);
 
@@ -73,7 +73,7 @@ void StaticEnvironment(bool& do_colide, bool bo1, dContact& c, SGameMtl* materia
     do_colide = false;
 }
 
-void GetMaxDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void GetMaxDepthCallback(bool& do_colide, bool, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
     if (do_colide && !material_1->Flags.test(SGameMtl::flPassable) && !material_2->Flags.test(SGameMtl::flPassable))
     {
@@ -121,6 +121,7 @@ void CPHActivationShape::Create(const Fvector start_pos, const Fvector start_siz
     {
     case etBox: m_geom = dCreateBox(nullptr, start_size.x, start_size.y, start_size.z); break;
     case etSphere: m_geom = dCreateSphere(nullptr, start_size.x); break;
+    default: NODEFAULT;
     }
 
     dGeomCreateUserData(m_geom);
@@ -147,7 +148,7 @@ void CPHActivationShape::Destroy()
     m_body = nullptr;
 }
 
-bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_displacement, float max_rotation, bool un_freeze_later /*	=false*/)
+bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float, float max_rotation, bool un_freeze_later)
 {
 #ifdef DEBUG
     if (ph_dbg_draw_mask.test(phDbgDrawDeathActivationBox))
@@ -161,6 +162,7 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
         DBG_DrawOBB(M, v, D3DCOLOR_XRGB(0, 255, 0));
     }
 #endif
+
     VERIFY(m_geom && m_body);
     CPHObject::activate();
     ph_world->Freeze();
@@ -254,15 +256,15 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 const Fvector& CPHActivationShape::Position() { return cast_fv(dBodyGetPosition(m_body)); }
 void CPHActivationShape::Size(Fvector& size) { dGeomBoxGetLengths(m_geom, cast_fp(size)); }
 
-void CPHActivationShape::PhDataUpdate(dReal step) { m_safe_state.new_state(m_body); }
-void CPHActivationShape::PhTune(dReal step) {}
+void CPHActivationShape::PhDataUpdate(dReal) { m_safe_state.new_state(m_body); }
+void CPHActivationShape::PhTune(dReal) {}
 
 dGeomID CPHActivationShape::dSpacedGeom() { return m_geom; }
 void CPHActivationShape::get_spatial_params() { spatialParsFromDGeom(m_geom, spatial.sphere.P, AABB, spatial.sphere.R); }
 
-void CPHActivationShape::InitContact(dContact* c, bool& do_collide, u16, u16) {}
+void CPHActivationShape::InitContact(dContact*, bool&, u16, u16) {}
 
-void CPHActivationShape::CutVelocity(float l_limit, float /*a_limit*/)
+void CPHActivationShape::CutVelocity(float l_limit, float)
 {
     dVector3 limitedl, diffl;
     if (dVectorLimit(dBodyGetLinearVel(m_body), l_limit, limitedl))

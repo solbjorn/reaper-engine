@@ -12,10 +12,10 @@ class CRocketLauncher;
 
 struct SRoketContact
 {
-    bool contact;
+    bool contact{};
+
     Fvector pos;
     Fvector up;
-    SRoketContact() { contact = false; }
 };
 
 class CCustomRocket : public CPhysicItem, public CPHUpdateObject
@@ -55,8 +55,8 @@ public:
     virtual void activate_physic_shell();
     virtual void create_physic_shell();
 
-    virtual void PhDataUpdate(float step);
-    virtual void PhTune(float step);
+    void PhDataUpdate(float) override;
+    void PhTune(float) override;
 
     //////////////////////////////////////////////////////////////////////////
     //	Rocket Properties
@@ -65,6 +65,7 @@ public:
 #ifdef DEBUG
     CGameObject* owner() { return m_pOwner; }
 #endif
+
     virtual void StartEngine();
     virtual void StopEngine();
     virtual void UpdateEngine();
@@ -112,7 +113,7 @@ protected:
     // обработка столкновения
     virtual void Contact(const Fvector& pos, const Fvector& normal);
     void PlayContact();
-    static void ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
+    static void ObjectContactCallback(bool& do_colide, bool, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 
     //////////////////////////////////////////////////////////////////////////
     //	Lights

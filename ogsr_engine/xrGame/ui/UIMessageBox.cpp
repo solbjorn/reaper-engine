@@ -238,6 +238,7 @@ void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                 GetMessageTarget()->SendMessage(this, MESSAGE_BOX_CANCEL_CLICKED);
             }
             break;
+        default: break;
         }
     }
 

@@ -186,9 +186,11 @@ bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
             return true;
         }
         break;
+    default: break;
     }
 
     CUIDialogWnd::OnMouse(x, y, mouse_action);
+
     return true; // always true because StopAnyMove() == false
 }
 
@@ -402,7 +404,6 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash)
     else if (type == pda_section::news)
     {
         UIDiaryWnd->AddNews();
-        UIDiaryWnd->MarkNewsAsRead(UIDiaryWnd->IsShown());
     }
     else if (type == pda_section::quests)
     {
@@ -413,9 +414,10 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash)
         UIPdaContactsWnd->Reload();
         flash = false;
     }
-
     else if (type == pda_section::journal || type == pda_section::info)
+    {
         UIDiaryWnd->ReloadJournal();
+    }
 
     if (flash)
     {

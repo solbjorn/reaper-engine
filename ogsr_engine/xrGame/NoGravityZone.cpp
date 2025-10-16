@@ -21,7 +21,7 @@ void CNoGravityZone::exit_Zone(SZoneObjectInfo& io)
     inherited::exit_Zone(io);
 }
 
-void CNoGravityZone::UpdateWorkload(u32 dt)
+void CNoGravityZone::UpdateWorkload(u32)
 {
     OBJECT_INFO_VEC_IT i = m_ObjectInfoMap.begin(), e = m_ObjectInfoMap.end();
     for (; e != i; i++)
@@ -57,7 +57,7 @@ void CNoGravityZone::switchGravity(SZoneObjectInfo& io, bool val)
         CPHMovementControl* mc = ea->character_physics_support()->movement();
         mc->SetApplyGravity(BOOL(val));
         mc->SetForcedPhysicsControl(!val);
-        if (!val && mc->Environment() == CPHMovementControl::peOnGround)
+        if (!val && mc->Environment() == peOnGround)
         {
             Fvector gn;
             mc->GroundNormal(gn);

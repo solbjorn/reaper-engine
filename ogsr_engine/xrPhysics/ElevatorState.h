@@ -68,7 +68,7 @@ private:
     void UpdateStNearDown();
     void UpdateStClimbingUp();
     void UpdateStClimbingDown();
-    void UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, const Fvector& control_accel, float ca);
+    void UpdateClimbingCommon(const Fvector& d_to_ax, float to_ax, float ca);
     void UpdateDepart();
 };
 

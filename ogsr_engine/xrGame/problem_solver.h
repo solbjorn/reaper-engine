@@ -109,16 +109,17 @@ protected:
 public:
     // common interface
     IC CProblemSolver();
-    virtual ~CProblemSolver();
-    void init();
-    virtual void setup();
+    inline virtual ~CProblemSolver();
+
+    inline void init();
+    inline virtual void setup();
     IC bool actual() const;
 
     // graph interface
     IC edge_value_type get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const;
-    IC bool is_accessible(const _index_type& vertex_index) const;
+    inline bool is_accessible(const _index_type&) const;
     IC const _index_type& value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const;
-    IC void begin(const _index_type& vertex_index, const_iterator& b, const_iterator& e) const;
+    inline void begin(const _index_type&, const_iterator& b, const_iterator& e) const;
     IC bool is_goal_reached(const _index_type& vertex_index) const;
     IC edge_value_type estimate_edge_weight(const _index_type& vertex_index) const;
 
@@ -144,7 +145,7 @@ public:
     // solver interface
     IC void solve();
     IC const xr_vector<_operator_id_type>& solution() const;
-    virtual void clear();
+    inline virtual void clear();
 };
 
 #include "problem_solver_inline.h"

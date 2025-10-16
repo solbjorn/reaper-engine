@@ -52,7 +52,7 @@ public:
         u32 bVerified : 1;
     };
 
-    IClient(CTimer* timer);
+    IClient();
     virtual ~IClient();
 
     ClientID ID;
@@ -99,7 +99,7 @@ protected:
 
     IClient* ID_to_client(ClientID ID, bool ScanAll = false);
 
-    virtual IClient* new_client(SClientConnectData* cl_data) = 0;
+    [[nodiscard]] virtual IClient* new_client(SClientConnectData* cl_data) = 0;
 
 public:
     IPureServer(CTimer* timer);
@@ -109,16 +109,16 @@ public:
     virtual void Disconnect();
 
     // send
-    virtual void SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+    virtual void SendTo_LL(ClientID, void*, u32, u32 = DPNSEND_GUARANTEED, u32 = 0);
 
     void SendTo(ClientID ID, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
     void SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED);
     void SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED);
 
     // extended functionality
-    virtual u32 OnMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
+    [[nodiscard]] virtual u32 OnMessage(NET_Packet&, ClientID); // Non-Zero means broadcasting with "flags" as returned
 
-    virtual IClient* client_Create() = 0; // create client info
+    [[nodiscard]] virtual IClient* client_Create() = 0; // create client info
     virtual void client_Destroy(IClient* C) = 0; // destroy client info
 
     IC u32 client_Count() { return net_Players.size(); }

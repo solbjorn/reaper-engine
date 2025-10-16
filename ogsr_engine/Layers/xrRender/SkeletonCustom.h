@@ -12,11 +12,8 @@ class CBoneData;
 class CSkeletonX;
 struct SEnumVerticesCallback;
 
-#pragma warning(push)
-#pragma warning(disable : 4275)
 class CSkeletonWallmark : public intrusive_base // 4+4+4+12+4+16+16 = 60 + 4 = 64
 {
-#pragma warning(pop)
     RTTI_DECLARE_TYPEINFO(CSkeletonWallmark, intrusive_base);
 
 public:
@@ -25,11 +22,14 @@ public:
     ref_shader m_Shader; // 4
     Fvector3 m_ContactPoint; // 12		model space
     float m_fTimeStart; // 4
+
 public:
 #ifdef DEBUG
     u32 used_in_render;
 #endif
+
     Fsphere m_LocalBounds{}; // 16		model space
+
     struct WMFace
     {
         Fvector3 vert[3];
@@ -38,16 +38,17 @@ public:
         float weight[3][3];
     };
     DEFINE_VECTOR(WMFace, WMFacesVec, WMFacesVecIt);
+
     WMFacesVec m_Faces; // 16
-public:
     Fsphere m_Bounds{}; // 16		world space
-public:
-    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent(p), m_XForm(m), m_Shader(s), m_fTimeStart(ts), m_ContactPoint(cp)
+
+    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent{p}, m_XForm{m}, m_Shader{s}, m_ContactPoint{cp}, m_fTimeStart{ts}
     {
 #ifdef DEBUG
         used_in_render = u32(-1);
 #endif
     }
+
     ~CSkeletonWallmark()
 #ifdef DEBUG
         ;
@@ -79,6 +80,7 @@ struct dbg_marker
     }
     ~dbg_marker() { *lock = FALSE; }
 };
+
 #define _DBG_SINGLE_USE_MARKER dbg_marker _dbg_marker(&dbg_single_use_marker)
 #else
 #define _DBG_SINGLE_USE_MARKER
@@ -123,10 +125,10 @@ public:
     virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
     virtual void OnCalculateBones() {}
 
-    virtual void CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0)); //--#SM+#--
+    virtual void CalculateBonesAdditionalTransforms(const CBoneData* bd, CBoneInstance& bi); //--#SM+#--
     virtual void LL_AddTransformToBone(KinematicsABT::additional_bone_transform& offset); //--#SM+#--
     virtual void LL_ClearAdditionalTransform(u16 bone_id = BI_NONE); //--#SM+#--
-public:
+
     dxRender_Visual* m_lod;
 
 protected:
@@ -166,18 +168,15 @@ public:
     UpdateCallback Update_Callback;
     void* Update_Callback_Param;
 
-public:
     // wallmarks
     void AddWallmark(const Fmatrix* parent, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size);
     void CalculateWallmarks(bool hud);
     void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
     void ClearWallmarks();
 
-public:
     bool PickBone(const Fmatrix& parent_xform, IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
     virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
 
-public:
     CKinematics();
     virtual ~CKinematics();
 
@@ -285,6 +284,7 @@ protected:
 
 public:
 #endif
+
     // General "Visual" stuff
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Load(const char* N, IReader* data, u32 dwFlags);

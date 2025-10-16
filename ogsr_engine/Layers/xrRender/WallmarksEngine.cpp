@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "WallmarksEngine.h"
 
 #include "../../xr_3da/xr_object.h"
@@ -27,10 +28,10 @@ struct wm_slot
 };
 } // namespace WallmarksEngine
 
-constexpr float W_DIST_FADE = 15.f;
-constexpr float W_DIST_FADE_SQR = W_DIST_FADE * W_DIST_FADE;
-constexpr float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
-constexpr u32 MAX_TRIS = 1024 * 16;
+namespace
+{
+constexpr u32 MAX_TRIS{1024 * 16};
+}
 
 IC bool operator==(const CWallmarksEngine::wm_slot* slot, const ref_shader& shader) { return slot->shader == shader; }
 
@@ -149,7 +150,7 @@ void CWallmarksEngine::RecurseTri(u32 t, Fmatrix& mView, CWallmarksEngine::stati
         mView.transform_tiny(UV, (*P)[1]);
         V1.set((*P)[1], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);
 
-        for (u32 i = 2; i < P->size(); i++)
+        for (gsl::index i{2}; i < P->size(); ++i)
         {
             mView.transform_tiny(UV, (*P)[i]);
             V2.set((*P)[i], 0, (1 + UV.x) * .5f, (1 - UV.y) * .5f);

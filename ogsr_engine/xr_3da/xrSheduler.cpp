@@ -108,7 +108,7 @@ void CSheduler::internal_Register(ISheduled* object, bool realTime)
     }
 }
 
-bool CSheduler::internal_Unregister(ISheduled* object, bool realTime, bool warn_on_not_found)
+bool CSheduler::internal_Unregister(ISheduled* object, bool realTime, [[maybe_unused]] bool warn_on_not_found)
 {
     // the object may be already dead
     // VERIFY	(!O->shedule.b_locked)	;

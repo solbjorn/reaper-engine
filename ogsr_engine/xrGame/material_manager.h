@@ -31,9 +31,10 @@ protected:
 public:
     CMaterialManager(CObject* object, CPHMovementControl* movement_control);
     virtual ~CMaterialManager();
+
     virtual void Load(LPCSTR section);
     virtual void reinit();
-    virtual void reload(LPCSTR section);
+    virtual void reload(LPCSTR);
     virtual void set_run_mode(bool run_mode);
     virtual void update(float time_delta, float volume, float step_time, bool standing);
     IC u16 last_material_idx() const;

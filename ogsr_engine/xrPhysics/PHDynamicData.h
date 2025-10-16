@@ -2,15 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "ode_include.h"
-#include "PHInterpolation.h"
-#include "MathUtils.h"
 #if !defined(AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_)
 #define AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "ode_include.h"
+#include "PHInterpolation.h"
+#include "MathUtils.h"
+
 class PHDynamicData;
 
 class PHDynamicData
@@ -89,14 +87,19 @@ public:
 public:
     static inline void DMXPStoFMX(const dReal* R, const dReal* pos, Fmatrix& aTransform)
     {
-        CopyMemory(&aTransform, R, sizeof(dMatrix3));
+        aTransform.mm.r[0] = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&R[0]));
+        aTransform.mm.r[1] = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&R[4]));
+        aTransform.mm.r[2] = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&R[8]));
+
         aTransform.transpose();
-        CopyMemory(&aTransform.c, pos, sizeof(Fvector));
+        aTransform.c = *reinterpret_cast<const Fvector*>(&pos[0]);
+
         aTransform._14 = 0.f;
         aTransform._24 = 0.f;
         aTransform._34 = 0.f;
         aTransform._44 = 1.f;
     }
+
     static inline void DMXtoFMX(const dReal* R, Fmatrix& aTransform)
     {
         aTransform._11 = R[0];

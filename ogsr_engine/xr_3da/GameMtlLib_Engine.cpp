@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "GameMtlLib.h"
 
 void DestroySounds(xr_vector<ref_sound>& lst)
@@ -6,8 +7,6 @@ void DestroySounds(xr_vector<ref_sound>& lst)
     for (auto it : lst)
         it.destroy();
 }
-
-void DestroyPSs(xr_vector<shared_str>& lst) {}
 
 void CreateSounds(xr_vector<ref_sound>& lst, const char* buf)
 {
@@ -43,7 +42,6 @@ SGameMtlPair::~SGameMtlPair()
     DestroySounds(BreakingSounds);
     DestroySounds(StepSounds);
     DestroySounds(CollideSounds);
-    DestroyPSs(CollideParticles);
 }
 
 void SGameMtlPair::Load(IReader& fs)

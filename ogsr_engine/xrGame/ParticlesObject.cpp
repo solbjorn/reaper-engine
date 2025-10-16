@@ -9,8 +9,6 @@
 #include "..\xr_3da\render.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
-const Fvector zero_vel = {0.f, 0.f, 0.f};
-
 CParticlesObject::CParticlesObject(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) : inherited(destroy_on_game_load) { Init(p_name, INVALID_SECTOR_ID, bAutoRemove); }
 
 void CParticlesObject::Init(LPCSTR p_name, sector_id_t sector_id, BOOL bAutoRemove)
@@ -115,7 +113,7 @@ void CParticlesObject::Play(BOOL hudMode)
     V->Play();
     dwLastTime = Device.dwTimeGlobal - 33ul;
     mt_dt = 0;
-    PerformAllTheWork(0);
+    PerformAllTheWork();
     m_bStopping = false;
 }
 
@@ -129,7 +127,7 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
     V->Play();
     dwLastTime = Device.dwTimeGlobal - 33ul;
     mt_dt = 0;
-    PerformAllTheWork(0);
+    PerformAllTheWork();
     m_bStopping = false;
 }
 
@@ -168,7 +166,7 @@ void CParticlesObject::shedule_Update(u32 _dt)
     UpdateSpatial();
 }
 
-void CParticlesObject::PerformAllTheWork(u32 _dt)
+void CParticlesObject::PerformAllTheWork()
 {
     // Update
     u32 dt = Device.dwTimeGlobal - dwLastTime;
@@ -179,6 +177,7 @@ void CParticlesObject::PerformAllTheWork(u32 _dt)
         V->OnFrame(dt);
         dwLastTime = Device.dwTimeGlobal;
     }
+
     UpdateSpatial();
 }
 

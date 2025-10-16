@@ -1,14 +1,16 @@
 #pragma once
+
 #include "UIOptionsManager.h"
 
-class CUIOptionsItem : public virtual RTTI::Enable
+class XR_NOVTABLE CUIOptionsItem : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CUIOptionsItem);
 
-public:
     friend class CUIOptionsManager;
 
+public:
     virtual ~CUIOptionsItem();
+
     virtual void Register(const char* entry, const char* group);
     static CUIOptionsManager* GetOptionsManager() { return &m_optionsManager; }
 
@@ -21,7 +23,7 @@ protected:
     virtual void Undo() { SetCurrentValue(); }
 
     void SendMessage2Group(const char* group, const char* message);
-    virtual void OnMessage(const char* message);
+    virtual void OnMessage(const char*);
 
     // string
     LPCSTR GetOptStringValue();

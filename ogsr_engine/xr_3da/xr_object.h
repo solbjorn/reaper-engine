@@ -22,7 +22,7 @@ constexpr inline float CROW_RADIUS2{60.f};
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
 
-class CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
+class XR_NOVTABLE CObject : public DLL_Pure, public ISpatial, public ISheduled, public IRenderable, public ICollidable
 {
     RTTI_DECLARE_TYPEINFO(CObject, DLL_Pure, ISpatial, ISheduled, IRenderable, ICollidable);
 
@@ -32,6 +32,7 @@ public:
         u32 dwTime;
         Fvector vPosition;
     };
+
     union ObjectProperties
     {
         struct
@@ -47,7 +48,7 @@ public:
             u32 crow : 1;
             u32 bPreDestroy : 1;
         };
-        u32 storage;
+        u32 storage{};
     };
 
 private:
@@ -59,7 +60,7 @@ private:
 
 protected:
     // Parentness
-    CObject* Parent;
+    CObject* Parent{};
 
     // Geometric (transformation)
     svector<SavedPosition, 4> PositionStack;
@@ -68,6 +69,7 @@ public:
 #ifdef DEBUG
     u32 dbg_update_cl;
 #endif
+
     u32 dwFrame_UpdateCL{};
     u32 dwFrame_AsCrow{};
 
@@ -163,18 +165,18 @@ public:
     virtual ~CObject();
 
     virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section) {}
+    virtual void reload(LPCSTR) {}
 
     // Update
     virtual void shedule_Update(u32 dt); // Called by sheduler
-    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
+    void renderable_Render(u32, IRenderable*) override;
 
     virtual void UpdateCL(); // Called each frame, so no need for dt
-    virtual BOOL net_Spawn(CSE_Abstract* data);
+    virtual BOOL net_Spawn(CSE_Abstract*);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E) {} // export to server
+    virtual void net_Export(CSE_Abstract*) {} // export to server
     virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
-    virtual void net_Relcase(CObject* O) {} // destroy all links to another objects
+    virtual void net_Relcase(CObject*) {} // destroy all links to another objects
 
     // Position stack
     IC u32 ps_Size() const { return PositionStack.size(); }
@@ -184,11 +186,11 @@ public:
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
     // HUD
-    virtual void OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) {}
+    virtual void OnHUDDraw(ctx_id_t, CCustomHUD*, IRenderable*) {}
 
     // Active/non active
     virtual void OnH_B_Chield(); // before
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    virtual void OnH_B_Independent(bool);
     virtual void OnH_A_Chield(); // after
     virtual void OnH_A_Independent();
 

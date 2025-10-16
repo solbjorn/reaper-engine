@@ -19,9 +19,6 @@ class CStalkerActionDangerInDirectionTakeCover : public CStalkerActionCombatBase
 protected:
     typedef CStalkerActionCombatBase inherited;
 
-private:
-    bool m_direction_sight{};
-
 public:
     CStalkerActionDangerInDirectionTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
     virtual void initialize();

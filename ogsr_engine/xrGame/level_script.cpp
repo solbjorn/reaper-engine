@@ -808,13 +808,6 @@ static u32 nearest_vertex_id(const Fvector& vec) { return ai().level_graph().ver
 // Also referenced in ui\UIInventoryWnd.cpp
 void update_inventory_window() { HUD().GetUI()->UIGame()->ReInitShownUI(); }
 
-static void update_inventory_weight()
-{
-    CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-    if (pGameSP)
-        pGameSP->InventoryMenu->UpdateWeight();
-}
-
 static void change_level(GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, Fvector pos, Fvector dir)
 {
     NET_Packet p;
@@ -1037,7 +1030,7 @@ static DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
     case eDBGSphere: dbg_obj = xr_new<DBG_ScriptSphere>(); break;
     case eDBGBox: dbg_obj = xr_new<DBG_ScriptBox>(); break;
     case eDBGLine: dbg_obj = xr_new<DBG_ScriptLine>(); break;
-    default: R_ASSERT(false, "Wrong debug object type used!");
+    default: dbg_obj = nullptr; break;
     }
 
     R_ASSERT(dbg_obj);

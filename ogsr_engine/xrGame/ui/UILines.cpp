@@ -141,7 +141,7 @@ void CUILines::DelLeftChar()
 
 void CUILines::DelCurrentChar()
 {
-    if (m_text.empty() || m_iCursorPos >= m_text.size())
+    if (m_text.empty() || m_iCursorPos >= std::ssize(m_text))
         return;
 
     if (m_text_mask.at(m_iCursorPos))

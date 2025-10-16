@@ -148,9 +148,9 @@ protected:
     //	u8								artefactsNum;//ah
     //	u16								artefactBearerID;//ah,ZoneMap
     //	u8								teamInPossession;//ah,ZoneMap
-protected:
+
     virtual void switch_Phase(u32 new_phase);
-    virtual void OnSwitchPhase(u32 old_phase, u32 new_phase) {}
+    virtual void OnSwitchPhase(u32, u32) {}
 
 public:
     game_GameState();
@@ -159,7 +159,7 @@ public:
     u16 Phase() const { return m_phase; }
     s32 Round() const { return m_round; }
     u32 StartTime() const { return m_start_time; }
-    virtual void Create(shared_str& options) {}
+    virtual void Create(shared_str&) {}
     virtual LPCSTR type_name() const { return "base game"; }
     // for scripting enhancement
     static CLASS_ID getCLASS_ID(LPCSTR game_type_name, bool bServer);

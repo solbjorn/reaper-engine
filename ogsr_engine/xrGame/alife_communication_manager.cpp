@@ -10,4 +10,4 @@
 
 #include "alife_communication_manager.h"
 
-CALifeCommunicationManager::CALifeCommunicationManager(xrServer* server, LPCSTR section) : CALifeSimulatorBase(server, section) {}
+CALifeCommunicationManager::CALifeCommunicationManager(xrServer* server) : CALifeSimulatorBase{server} {}

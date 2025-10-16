@@ -203,10 +203,9 @@ void CWeaponStatMgun::UpdateBarrelDir()
     m_cur_y_rot = angle_inertion_var(m_cur_y_rot, m_tgt_y_rot, 0.5f, 3.5f, PI_DIV_6, Device.fTimeDelta);
 }
 
-void CWeaponStatMgun::cam_Update(float dt, float fov)
+void CWeaponStatMgun::cam_Update(float, float)
 {
-    Fvector P, Da;
-    Da.set(0, 0, 0);
+    Fvector P, Da{};
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     K->CalculateBones_Invalidate();

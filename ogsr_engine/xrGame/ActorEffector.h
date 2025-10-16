@@ -178,9 +178,9 @@ protected:
 
 private:
     float m_time_total;
-    float m_time_current;
+    float m_time_current{};
     Fvector m_dangle_target;
-    Fvector m_dangle_current;
+    Fvector m_dangle_current{};
     Fvector m_position_source;
     Fvector m_direction;
     float m_distance;
@@ -188,7 +188,8 @@ private:
     float m_dest_fov;
 
 public:
-    CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
+
+    [[nodiscard]] BOOL ProcessCam(SCamEffectorInfo& info) override;
 };
 //////////////////////////////////////////////////////////////////////////

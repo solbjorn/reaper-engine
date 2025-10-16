@@ -15,6 +15,7 @@ public:
     friend class CUITrackButton;
 
     CUITrackBar();
+
     // CUIOptionsItem
     virtual void SetCurrentValue();
     virtual void SaveValue();
@@ -45,20 +46,21 @@ protected:
     CUI3tButton* m_pSlider;
     CUIFrameLineWnd* m_pFrameLine;
     CUIFrameLineWnd* m_pFrameLine_d;
-    bool m_b_invert;
-    bool m_b_is_float;
 
-    float m_f_max_xml = 0.f;
-    float m_f_min_xml = 0.f;
+    bool m_b_invert{};
+    bool m_b_is_float{true};
+
+    float m_f_max_xml{};
+    float m_f_min_xml{};
 
     union
     {
         struct
         {
-            float m_f_val;
-            float m_f_max;
-            float m_f_min;
-            float m_f_step;
+            float m_f_val{};
+            float m_f_max{1.f};
+            float m_f_min{};
+            float m_f_step{0.01f};
             float m_f_back_up;
         };
         struct

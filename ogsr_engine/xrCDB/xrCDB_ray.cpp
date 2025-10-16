@@ -1,8 +1,13 @@
 #include "stdafx.h"
+
 #include "xrcpuid.h"
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wcast-qual");
+XR_DIAG_IGNORE("-Wclass-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wunknown-pragmas");
+XR_DIAG_IGNORE("-Wunused-parameter");
 
 #include <Opcode.h>
 
@@ -13,6 +18,8 @@ XR_DIAG_POP();
 using namespace CDB;
 using namespace Opcode;
 
+namespace
+{
 struct alignas(16) vec_t : public Fvector3
 {
     float pad;
@@ -55,7 +62,8 @@ struct alignas(16) ray_t
     }
 };
 
-ICF u32& uf(float& x) { return (u32&)x; }
+constexpr ICF u32 uf(const float& x) { return std::bit_cast<u32>(x); }
+
 ICF BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
 {
     Fvector MaxT;
@@ -169,9 +177,9 @@ ICF BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fve
 #define rotatelps(ps) _mm_shuffle_ps((ps), (ps), 0x39) // a,b,c,d -> b,c,d,a
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
-static constexpr auto flt_plus_inf = std::numeric_limits<float>::infinity();
-alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf},
-                                   ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
+constexpr auto flt_plus_inf{std::numeric_limits<float>::infinity()};
+constexpr float __declspec(align(16)) ps_cst_plus_inf[]{flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf};
+constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
 ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 {
@@ -285,8 +293,10 @@ public:
         Fbox BB;
         BB.min.sub(bCenter, bExtents);
         BB.max.add(bCenter, bExtents);
+
         return isect_fpu(BB.min, BB.max, ray, coord);
     }
+
     // sse
     ICF BOOL _box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist)
     {
@@ -295,10 +305,10 @@ public:
             box.min.sub (bCenter,bExtents);	box.min.pad = 0;
             box.max.add	(bCenter,bExtents); box.max.pad = 0;
         */
-        __m128 CN = _mm_unpacklo_ps(_mm_load_ss((float*)&bCenter.x), _mm_load_ss((float*)&bCenter.y));
-        CN = _mm_movelh_ps(CN, _mm_load_ss((float*)&bCenter.z));
-        __m128 EX = _mm_unpacklo_ps(_mm_load_ss((float*)&bExtents.x), _mm_load_ss((float*)&bExtents.y));
-        EX = _mm_movelh_ps(EX, _mm_load_ss((float*)&bExtents.z));
+        __m128 CN = _mm_unpacklo_ps(_mm_load_ss((const float*)&bCenter.x), _mm_load_ss((const float*)&bCenter.y));
+        CN = _mm_movelh_ps(CN, _mm_load_ss((const float*)&bCenter.z));
+        __m128 EX = _mm_unpacklo_ps(_mm_load_ss((const float*)&bExtents.x), _mm_load_ss((const float*)&bExtents.y));
+        EX = _mm_movelh_ps(EX, _mm_load_ss((const float*)&bExtents.z));
 
         _mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
         _mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
@@ -412,17 +422,18 @@ public:
             R.dummy = tris[prim].dummy;
         }
     }
+
     void _stab(const AABBNoLeafNode* node)
     {
         // Should help
-        _mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
+        _mm_prefetch((const char*)node->GetNeg(), _MM_HINT_NTA);
 
         // Actual ray/aabb test
         if constexpr (bUseSSE)
         {
             // use SSE
             float d;
-            if (!_box_sse((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, d))
+            if (!_box_sse((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, d))
                 return;
             if (d > rRange)
                 return;
@@ -431,7 +442,7 @@ public:
         {
             // use FPU
             Fvector P;
-            if (!_box_fpu((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))
+            if (!_box_fpu((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, P))
                 return;
             if (P.distance_to_sqr(ray.pos) > rRange2)
                 return;
@@ -457,6 +468,7 @@ public:
             _stab(node->GetNeg());
     }
 };
+} // namespace
 
 void COLLIDER::ray_query(u32 ray_mode, const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {

@@ -52,7 +52,7 @@ CPHShell::CPHShell()
     m_object_in_root.identity();
 }
 
-void CPHShell::EnableObject(CPHObject* obj)
+void CPHShell::EnableObject(CPHObject*)
 {
     CPHObject::activate();
 
@@ -1409,8 +1409,6 @@ void CPHShell::PlaceBindToElFormsRecursive(Fmatrix parent, u16 id, u16 element, 
     for (vecBonesIt it = bone_data.children.begin(); it != bone_data.children.end(); ++it)
         PlaceBindToElFormsRecursive(mXFORM, (*it)->GetSelfID(), element, mask);
 }
-
-void CPHShell::BonesBindCalculate(u16 id_from) { BonesBindCalculateRecursive(Fidentity, 0); }
 
 void CPHShell::BonesBindCalculateRecursive(Fmatrix parent, u16 id)
 {

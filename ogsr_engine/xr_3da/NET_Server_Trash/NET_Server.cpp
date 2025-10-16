@@ -22,7 +22,7 @@ void ip_address::set(LPCSTR src_string) // Это нужно
     }
 }
 
-IClient::IClient(CTimer* timer)
+IClient::IClient()
 {
     dwTime_LastUpdate = 0;
     flags.bLocal = FALSE;
@@ -84,7 +84,7 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вид�
 
 void IPureServer::Disconnect() {}
 
-void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout) { FATAL(""); }
+void IPureServer::SendTo_LL(ClientID, void*, u32, u32, u32) { FATAL(""); }
 
 void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout) // Отсюда отправляются данные в IPureClient::OnMessage
 {
@@ -118,4 +118,4 @@ void IPureServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
     SendBroadcast_LL(exclude, P.B.data, P.B.count, dwFlags);
 }
 
-u32 IPureServer::OnMessage(NET_Packet& P, ClientID sender) { return 0; }
+u32 IPureServer::OnMessage(NET_Packet&, ClientID) { return 0; }

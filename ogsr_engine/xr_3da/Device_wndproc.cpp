@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-bool CRenderDevice::on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
+bool CRenderDevice::on_message(UINT uMsg, WPARAM wParam, LRESULT& result)
 {
     switch (uMsg)
     {
@@ -8,7 +8,7 @@ bool CRenderDevice::on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         return true;
     }
     case WM_ACTIVATE: {
-        OnWM_Activate(wParam, lParam);
+        OnWM_Activate(wParam);
         return (false);
     }
     case WM_SETCURSOR: {
@@ -34,6 +34,7 @@ bool CRenderDevice::on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
     return (false);
 }
+
 //-----------------------------------------------------------------------------
 // Name: WndProc()
 // Desc: Static msg handler which passes messages to the application class.
@@ -41,8 +42,8 @@ bool CRenderDevice::on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     LRESULT result;
-    if (Device.on_message(hWnd, uMsg, wParam, lParam, result))
-        return (result);
+    if (Device.on_message(uMsg, wParam, result))
+        return result;
 
     return (DefWindowProc(hWnd, uMsg, wParam, lParam));
 }

@@ -23,8 +23,8 @@ protected:
     typedef CALifeSimulatorBase inherited;
 
 protected:
-    string_path m_save_name;
-    string_path m_loaded_save;
+    string_path m_save_name{""};
+    string_path m_loaded_save{""};
     LPCSTR m_section;
 
 private:
@@ -34,6 +34,7 @@ private:
 public:
     IC CALifeStorageManager(xrServer* server, LPCSTR section);
     virtual ~CALifeStorageManager();
+
     bool load(LPCSTR save_name = nullptr);
     void save(LPCSTR save_name = nullptr, bool update_name = true);
     void save(NET_Packet& net_packet);

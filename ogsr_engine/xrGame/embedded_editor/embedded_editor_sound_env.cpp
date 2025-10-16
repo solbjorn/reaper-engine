@@ -1,7 +1,13 @@
 #include "stdafx.h"
 
-#include "imgui.h"
 #include "embedded_editor_sound_env.h"
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wnontrivial-memcall");
+
+#include <imgui.h>
+
+XR_DIAG_POP();
 
 #include <mmeapi.h>
 #include <../eax/eax.h>

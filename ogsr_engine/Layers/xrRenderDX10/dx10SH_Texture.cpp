@@ -97,6 +97,7 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
             case DXGI_FORMAT_R24G8_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
             case DXGI_FORMAT_R32_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
             case DXGI_FORMAT_R16_TYPELESS: ViewDesc.Format = DXGI_FORMAT_R16_FLOAT; break;
+            default: break;
             }
 
             _RELEASE(srv_all);
@@ -198,7 +199,7 @@ void CTexture::apply_theora(CBackend& cmd_list, u32 dwStage)
         u32 _w = pTheora->Width(false);
 
         R_CHK(pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-        R_ASSERT(mapData.RowPitch == int(_w * 4));
+        R_ASSERT(mapData.RowPitch == _w * 4);
         int _pos = 0;
         pTheora->DecompressFrame((u32*)mapData.pData, _w - pTheora->Width(true), _pos);
         VERIFY(u32(_pos) == pTheora->Height(true) * _w);
@@ -221,7 +222,7 @@ void CTexture::apply_avi(CBackend& cmd_list, u32 dwStage) const
         auto* pContext = cmd_list.context();
 
         R_CHK(pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-        R_ASSERT(mapData.RowPitch == int(pAVI->m_dwWidth * 4));
+        R_ASSERT(mapData.RowPitch == pAVI->m_dwWidth * 4);
         BYTE* ptr;
         pAVI->GetFrame(&ptr);
         CopyMemory(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);

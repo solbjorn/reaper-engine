@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "actor.h"
 #include "UIGameSP.h"
 #include "UI.h"
@@ -214,7 +215,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
             info_portion.Load((*it).info_id);
 
             for (u32 i = 0; i < info_portion.DialogNames().size(); i++)
-                AddAvailableDialog(*info_portion.DialogNames()[i], partner);
+                std::ignore = AddAvailableDialog(*info_portion.DialogNames()[i], partner);
         }
     }
 
@@ -223,7 +224,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
     VERIFY(pInvOwnerPartner);
 
     for (u32 i = 0; i < pInvOwnerPartner->CharacterInfo().ActorDialogs().size(); i++)
-        AddAvailableDialog(pInvOwnerPartner->CharacterInfo().ActorDialogs()[i], partner);
+        std::ignore = AddAvailableDialog(pInvOwnerPartner->CharacterInfo().ActorDialogs()[i], partner);
 
     CPhraseDialogManager::UpdateAvailableDialogs(partner);
 }
@@ -303,11 +304,12 @@ void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
     CGameObject* GO = smart_cast<CGameObject*>(pInvOwner);
     if (GO)
     {
-        for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
+        for (std::underlying_type_t<ALife::ERelationType> t{ALife::eRelationTypeFriend}; t < ALife::eRelationTypeLast; ++t)
         {
             ALife::ERelationType tt = (ALife::ERelationType)t;
             Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
         }
+
         Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
     }
 
@@ -315,9 +317,7 @@ void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
     {
         CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
         if (pGameSP)
-        {
             pGameSP->PdaMenu->PdaContentsChanged(pda_section::contacts);
-        }
     }
 }
 

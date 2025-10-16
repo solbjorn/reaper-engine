@@ -24,23 +24,18 @@
 #include "UIPdaSpot.h"
 #include "map_spot.h"
 
-#include <dinput.h> //remove me !!!
 #include "..\..\xr_3da\xr_input.h" //remove me !!!
+
+#include <dinput.h> //remove me !!!
 
 namespace
 {
 constexpr int SCROLLBARS_SHIFT{5};
-constexpr int VSCROLLBAR_STEP{20}; // В пикселях
-constexpr int HSCROLLBAR_STEP{20}; // В пикселях
 
 bool MAP_FLY_MODE = true;
 } // namespace
 
-CUIMapWnd::CUIMapWnd()
-{
-    m_flags.zero();
-    m_currentZoom = 1.0f;
-}
+CUIMapWnd::CUIMapWnd() = default;
 
 CUIMapWnd::~CUIMapWnd()
 {
@@ -432,38 +427,7 @@ bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
                 return true;
             }
             break;
-            /*
-                    case WINDOW_LBUTTON_DOWN:
-                        if (	((mouse_action==WINDOW_LBUTTON_DOWN)&&(m_flags.is_any(lmZoomIn+lmZoomOut))) ||
-                                (mouse_action==WINDOW_MOUSE_WHEEL_DOWN) ||
-                                (mouse_action==WINDOW_MOUSE_WHEEL_UP)
-                            )
-                        {
-                            CUIGlobalMap* gm				= GlobalMap();
-                            if(m_flags.test(lmZoomIn))		SetZoom(GetZoom()*1.5f);
-                            else							SetZoom(GetZoom()/1.5f);
-                            m_tgtCenter						= cursor_pos;
-                            Fvector2 _p;					gm->GetAbsolutePos(_p);
-                            m_tgtCenter.sub					(_p);
-                            m_tgtCenter.div					(gm->GetCurrentZoom());
-                            ResetActionPlanner				();
-                            m_hint->SetOwner				(NULL);
-                            return							true;
-                        }
-                    break;
-
-                    case WINDOW_MOUSE_WHEEL_UP:
-                        m_UIMainScrollV->TryScrollDec		();
-                        m_hint->SetOwner					(NULL);
-                        return								true;
-                    break;
-
-                    case WINDOW_MOUSE_WHEEL_DOWN:
-                        m_UIMainScrollV->TryScrollInc		();
-                        m_hint->SetOwner					(NULL);
-                        return								true;
-                    break;
-            */
+        default: break;
         }
     }
 
@@ -594,10 +558,11 @@ void CUIMapWnd::SetZoom(float value)
     clamp(m_currentZoom, GlobalMap()->GetMinZoom(), GlobalMap()->GetMaxZoom());
 }
 
-void CUIMapWnd::OnToolGlobalMapClicked(CUIWindow* w, void*)
+void CUIMapWnd::OnToolGlobalMapClicked(CUIWindow*, void*)
 {
     if (GlobalMap()->Locked())
         return;
+
     SetTargetMap(GlobalMap());
 }
 

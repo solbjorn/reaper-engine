@@ -11,9 +11,6 @@
 #error DISABLE RTC!
 #endif
 
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4530)
-
 #ifndef _MT // multithreading disabled
 #error Please enable multi-threaded library...
 #endif
@@ -60,6 +57,10 @@
 #endif
 
 #define XR_PRINTF(a, b) __attribute__((__format__(printf, a, b)))
+
+// Force the SysV calling convention to pass objects > 8 bytes in registers,
+// not by an implicit reference
+#define XR_SYSV [[gnu::sysv_abi]]
 
 // Our headers
 

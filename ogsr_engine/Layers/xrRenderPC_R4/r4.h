@@ -197,7 +197,7 @@ public:
     virtual void blender_destroy(IBlenderXr*&);
 
     //
-    virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);
+    virtual IRender_ObjectSpecific* ros_create();
     virtual void ros_destroy(IRender_ObjectSpecific*&);
 
     // Lighting
@@ -249,9 +249,9 @@ private:
     xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
 
 protected:
-    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
+    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name);
 };
 
-void fix_texture_name(const char* fn);
+void fix_texture_name(char* fn);
 
 extern CRender RImplementation;

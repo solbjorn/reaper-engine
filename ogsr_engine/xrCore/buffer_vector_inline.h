@@ -107,7 +107,7 @@ inline void buffer_vector_specialized::resize(size_type const& size)
 }
 
 TEMPLATE_SPECIALIZATION
-inline void buffer_vector_specialized::reserve(size_type const& size)
+inline void buffer_vector_specialized::reserve(size_type const&)
 {
     // nothing to do here
 }

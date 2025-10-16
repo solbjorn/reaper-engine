@@ -15,14 +15,17 @@ class CPHCapture;
 
 #include "../xr_3da/IPhysicsDefinitions.h"
 
-class ICollisionHitCallback : public virtual RTTI::Enable
+class XR_NOVTABLE ICollisionHitCallback : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollisionHitCallback);
 
 public:
+    virtual ~ICollisionHitCallback() = 0;
+
     virtual void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di) = 0;
-    virtual ~ICollisionHitCallback() {}
 };
+
+inline ICollisionHitCallback::~ICollisionHitCallback() = default;
 
 class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer, public IObjectPhysicsCollision
 {
@@ -68,7 +71,7 @@ public:
     virtual CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
     virtual CIKLimbsController* character_ik_controller() { return nullptr; }
     virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
-    virtual void set_collision_hit_callback(ICollisionHitCallback* cc) {}
+    virtual void set_collision_hit_callback(ICollisionHitCallback*) {}
     virtual void enable_notificate() {}
 
     virtual IPhysicsShell* physics_shell() const override;

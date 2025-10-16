@@ -447,7 +447,7 @@ void CEnvironment::lerp(float& current_weight)
 
     // final lerp
     CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
-    m_pRender->lerp(*CurrentEnv, &*Current[0]->m_pDescriptor, &*Current[1]->m_pDescriptor);
+    m_pRender->lerp(&*Current[0]->m_pDescriptor, &*Current[1]->m_pDescriptor);
 }
 
 void CEnvironment::OnFrame()

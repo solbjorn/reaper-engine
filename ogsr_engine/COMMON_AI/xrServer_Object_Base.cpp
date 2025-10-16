@@ -36,13 +36,12 @@ LPCSTR current_version = "current_server_entity_version";
 ////////////////////////////////////////////////////////////////////////////
 // CPureServerObject
 ////////////////////////////////////////////////////////////////////////////
-void CPureServerObject::save(IWriter& tMemoryStream) {}
 
-void CPureServerObject::load(IReader& tFileStream) {}
+void CPureServerObject::save(IWriter&) {}
+void CPureServerObject::load(IReader&) {}
 
-void CPureServerObject::load(NET_Packet& tNetPacket) {}
-
-void CPureServerObject::save(NET_Packet& tNetPacket) {}
+void CPureServerObject::load(NET_Packet&) {}
+void CPureServerObject::save(NET_Packet&) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Abstract
@@ -332,19 +331,3 @@ xr_token game_types[] = {{"any game", GAME_ANY},
                          {nullptr, 0}};
 
 bool CSE_Abstract::validate() { return (true); }
-
-/**
-void CSE_Abstract::save_update				(NET_Packet &tNetPacket)
-{
-    tNetPacket.w				(&m_spawn_count,sizeof(m_spawn_count));
-    tNetPacket.w				(&m_last_spawn_time,sizeof(m_last_spawn_time));
-    tNetPacket.w				(&m_next_spawn_time,sizeof(m_next_spawn_time));
-}
-
-void CSE_Abstract::load_update				(NET_Packet &tNetPacket)
-{
-    tNetPacket.r				(&m_spawn_count,sizeof(m_spawn_count));
-    tNetPacket.r				(&m_last_spawn_time,sizeof(m_last_spawn_time));
-    tNetPacket.r				(&m_next_spawn_time,sizeof(m_next_spawn_time));
-}
-/**/

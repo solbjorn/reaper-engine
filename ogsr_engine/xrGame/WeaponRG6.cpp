@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "WeaponRG6.h"
 #include "entity.h"
 #include "explosiveRocket.h"
@@ -6,6 +7,7 @@
 #include "clsid_game.h"
 
 #include "MathUtils.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif

@@ -79,7 +79,7 @@ bool CControlRotationJump::check_start_conditions()
     return true;
 }
 
-void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEventData* dat)
+void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEventData*)
 {
     switch (type)
     {
@@ -88,7 +88,9 @@ void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEv
             build_line_second();
         else
             m_man->notify(ControlCom::eventRotationJumpEnd, nullptr);
+
         break;
+    default: break;
     }
 }
 

@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "GameObject.h"
 #include "detail_path_manager.h"
 #include "ai_space.h"
 #include "ai_object_location.h"
@@ -16,8 +18,7 @@
 #include "custommonster.h"
 #endif
 
-CDetailPathManager::CDetailPathManager(CRestrictedObject* object) { m_restricted_object = object; }
-
+CDetailPathManager::CDetailPathManager(CRestrictedObject* object) : m_restricted_object{object} {}
 CDetailPathManager::~CDetailPathManager() {}
 
 void CDetailPathManager::reinit()
@@ -152,9 +153,8 @@ void CDetailPathManager::update_distance_to_target()
         m_distance_to_target += (*(I - 1)).position.distance_to((*I).position);
 }
 
-void CDetailPathManager::on_travel_point_change(const u32& previous_travel_point_index) { m_distance_to_target_actual = false; }
+void CDetailPathManager::on_travel_point_change(const u32&) { m_distance_to_target_actual = false; }
 
-#include "GameObject.h"
 u32 CDetailPathManager::location_on_path(const CGameObject* object, float distance, Fvector& result) const
 {
     VERIFY(m_restricted_object);

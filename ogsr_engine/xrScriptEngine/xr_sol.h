@@ -25,6 +25,8 @@
 #define SOL_HEADER_ONLY 1
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wcast-qual");
+XR_DIAG_IGNORE("-Wcharacter-conversion");
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wimplicit-fallthrough");
@@ -57,7 +59,7 @@ using sol_bases = typename RTTI::type_descriptor<T>::base_types ::template to<so
 
 // Generate enum-style table with non-constexpr values (clsids, story IDs etc.)
 template <bool read_only = true>
-sol::table sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table& target)
+XR_SYSV inline sol::table sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table& target)
 {
     if constexpr (read_only)
     {
@@ -76,7 +78,7 @@ sol::table sol_new_enum(sol::state_view& lua, absl::string_view name, sol::table
 
 // Essentially a copy of sol::usertype<T>::tuple_set() which is private, but needed for the function below
 template <typename Class, std::size_t... I, typename... Args>
-sol::usertype<Class>& sol_tuple_set(sol::usertype<Class>& ut, std::index_sequence<I...>, std::tuple<Args...>&& args)
+inline sol::usertype<Class>& sol_tuple_set(sol::usertype<Class>& ut, std::index_sequence<I...>, std::tuple<Args...>&& args)
 {
     std::ignore = sol::detail::swallow{0, (ut.set(std::get<I * 2>(std::move(args)), std::get<I * 2 + 1>(std::move(args))), 0)...};
     return ut;
@@ -85,7 +87,7 @@ sol::usertype<Class>& sol_tuple_set(sol::usertype<Class>& ut, std::index_sequenc
 // sol::table::set() can take varargs; however, sol::usertype<T>::set() can not.
 // Fix this using the same semantics as in the vararg sol::table::new_usertype<T>().
 template <typename Class, typename... Args>
-sol::usertype<Class>& sol_set(sol::usertype<Class>& ut, Args&&... args)
+inline sol::usertype<Class>& sol_set(sol::usertype<Class>& ut, Args&&... args)
 {
     static_assert(!(sizeof...(Args) % 2));
     return sol_tuple_set(ut, std::make_index_sequence<(sizeof...(Args)) / 2>(), std::forward_as_tuple(std::forward<Args>(args)...));

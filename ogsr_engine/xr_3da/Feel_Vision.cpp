@@ -88,14 +88,14 @@ void Vision::feel_vision_relcase(CObject* object)
         }
 }
 
-void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
+void Vision::feel_vision_query(Fmatrix& mFull)
 {
     CFrustum Frustum;
     Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
     // Traverse object database
     r_spatial.clear();
-    g_SpatialSpace->q_frustum(r_spatial, 0, STYPE_VISIBLEFORAI, Frustum);
+    g_SpatialSpace->q_frustum(r_spatial, STYPE_VISIBLEFORAI, Frustum);
 
     // Determine visibility for dynamic part of scene
     clear_and_reserve(seen);

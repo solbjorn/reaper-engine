@@ -22,7 +22,7 @@ public:
     virtual void UpdateCL();
 
     IC virtual bool CanExecRotationJump() { return true; }
-    virtual void CheckSpecParams(u32 spec_params) override {}
+    void CheckSpecParams(u32) override {}
 
     // look at enemy
     static void _BCL BoneCallback(CBoneInstance* B);

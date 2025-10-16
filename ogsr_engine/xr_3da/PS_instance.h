@@ -5,27 +5,29 @@
 #include "isheduled.h"
 #include "irenderable.h"
 
-class CPS_Instance : public ISpatial, public ISheduled, public IRenderable
+class XR_NOVTABLE CPS_Instance : public ISpatial, public ISheduled, public IRenderable
 {
     RTTI_DECLARE_TYPEINFO(CPS_Instance, ISpatial, ISheduled, IRenderable);
 
-public:
+private:
     friend class IGame_Persistent;
+
+protected:
+    int m_iLifeTime{std::numeric_limits<int>::max()};
+    bool m_bAutoRemove{true};
+    bool m_bDead{false};
 
 private:
     bool m_destroy_on_game_load;
 
 protected:
-    int m_iLifeTime;
-    BOOL m_bAutoRemove;
-    BOOL m_bDead;
     virtual void PSI_internal_delete();
 
 public:
     CPS_Instance(bool destroy_on_game_load);
     virtual ~CPS_Instance();
 
-    IC const bool& destroy_on_game_load() const { return m_destroy_on_game_load; }
+    [[nodiscard]] bool destroy_on_game_load() const { return m_destroy_on_game_load; }
     virtual void PSI_destroy();
     IC BOOL PSI_alive() { return m_iLifeTime > 0; }
     IC BOOL PSI_IsAutomatic() { return m_bAutoRemove; }

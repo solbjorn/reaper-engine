@@ -15,8 +15,8 @@ class CSound_UserDataVisitor : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSound_UserDataVisitor);
 
 public:
-    virtual ~CSound_UserDataVisitor() {}
+    virtual ~CSound_UserDataVisitor() = default;
 
-    virtual void visit(CSound_UserData* data) {}
-    virtual void visit(CStalkerSoundData* data) {}
+    virtual void visit(CSound_UserData*) {}
+    virtual void visit(CStalkerSoundData*) {}
 };

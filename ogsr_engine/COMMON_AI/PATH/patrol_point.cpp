@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "patrol_point.h"
 #include "level_graph.h"
 #include "level_graph.h"
@@ -22,7 +23,7 @@
 #include "patrol_path.h"
 #endif
 
-CPatrolPoint::CPatrolPoint(const CPatrolPath* path)
+CPatrolPoint::CPatrolPoint([[maybe_unused]] const CPatrolPath* path)
 {
 #ifdef DEBUG
     m_path = path;
@@ -59,16 +60,18 @@ IC void CPatrolPoint::correct_position(const CLevelGraph* level_graph, const CGa
     m_game_vertex_id = cross->vertex(level_vertex_id(level_graph, cross, game_graph)).game_vertex_id();
 }
 
-CPatrolPoint::CPatrolPoint(const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name)
+CPatrolPoint::CPatrolPoint([[maybe_unused]] const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name)
 {
 #ifdef DEBUG
     VERIFY(path);
     m_path = path;
 #endif
+
     m_position = position;
     m_level_vertex_id = level_vertex_id;
     m_flags = flags;
     m_name = name;
+
 #ifdef DEBUG
     m_initialized = true;
 #endif
@@ -79,19 +82,25 @@ CPatrolPoint& CPatrolPoint::load_raw(const CLevelGraph* level_graph, const CGame
     stream.r_fvector3(m_position);
     m_flags = stream.r_u32();
     stream.r_stringZ(m_name);
+
     if (level_graph && level_graph->valid_vertex_position(m_position))
     {
         Fvector position = m_position;
-        position.y += .15f;
+        position.y += 0.15f;
         m_level_vertex_id = level_graph->vertex_id(position);
     }
     else
-        m_level_vertex_id = u32(-1);
+    {
+        m_level_vertex_id = std::numeric_limits<u32>::max();
+    }
+
 #ifdef DEBUG
     m_initialized = true;
 #endif
+
     correct_position(level_graph, cross, game_graph);
-    return (*this);
+
+    return *this;
 }
 
 CPatrolPoint& CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)

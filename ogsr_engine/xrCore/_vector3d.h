@@ -15,7 +15,8 @@ public:
 
     // access operators
     constexpr ICF T& operator[](int i) { return *((T*)this + i); }
-    constexpr ICF T& operator[](int i) const { return *((T*)this + i); }
+    constexpr ICF const T& operator[](int i) const { return *((const T*)this + i); }
+
     constexpr ICF bool operator==(const Self& Cmp) const { return !!similar(Cmp); }
 
     constexpr ICF SelfRef set(T _x, T _y, T _z)
@@ -643,14 +644,14 @@ typedef _vector3<s32> Ivector;
 typedef _vector3<s32> Ivector3;
 
 template <class T>
-BOOL _valid(const _vector3<T>& v)
+constexpr inline bool _valid(const _vector3<T>& v)
 {
     return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-ICF double rsqrt(double v) { return 1.0 / _sqrt(v); }
+constexpr inline double rsqrt(double v) { return 1.0 / _sqrt(v); }
 
 constexpr inline BOOL exact_normalize(float* a)
 {

@@ -19,7 +19,7 @@ public:
     IC void render();
 
 public:
-    IC void draw_line(const Fmatrix& matrix, const Fvector& vertex0, const Fvector& vertex1, const u32& color, bool hud_mode = false);
+    inline void draw_line(const Fmatrix&, const Fvector& vertex0, const Fvector& vertex1, const u32& color, bool hud_mode = false);
     IC void draw_aabb(const Fvector& center, const float& half_radius_x, const float& half_radius_y, const float& half_radius_z, const u32& color, bool hud_mode = false);
     void draw_obb(const Fmatrix& matrix, const u32& color, bool hud_mode = false);
     void draw_obb(const Fmatrix& matrix, const Fvector& half_size, const u32& color, bool hud_mode = false);

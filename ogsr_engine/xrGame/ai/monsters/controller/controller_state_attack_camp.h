@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStateControlCamp : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControlCamp<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -22,7 +25,7 @@ public:
     virtual bool check_completion();
     virtual bool check_start_conditions();
 
-    virtual void remove_links(CObject* object) {}
+    void remove_links(CObject*) override {}
 
 private:
     virtual void update_target_angle();

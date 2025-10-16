@@ -32,13 +32,14 @@ public:
 public:
     CMincer();
     virtual ~CMincer();
+
     //	virtual void	SwitchZoneState				(EZoneState new_state);
     virtual void OnStateSwitch(EZoneState new_state);
     virtual BOOL feel_touch_contact(CObject* O);
     virtual void feel_touch_new(CObject* O);
     virtual void Load(LPCSTR section);
     virtual bool BlowoutState();
-    virtual void AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) {}
+    void AffectPullDead(CPhysicsShellHolder*, const Fvector&, float) override {}
     virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
     virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
     virtual void ThrowInCenter(Fvector& C);

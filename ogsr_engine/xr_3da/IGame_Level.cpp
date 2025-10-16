@@ -49,7 +49,7 @@ void IGame_Level::net_Stop()
 //-------------------------------------------------------------------------------------------
 // extern CStatTimer				tscreate;
 
-BOOL IGame_Level::Load(u32 dwNum)
+BOOL IGame_Level::Load(u32)
 {
     // Initialize level data
     string_path temp;

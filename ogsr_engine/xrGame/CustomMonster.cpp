@@ -368,7 +368,7 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
     fHealth = A.fHealth * (1.f - f) + B.fHealth * f;
 }
 
-void CCustomMonster::update_sound_player() { sound().update(client_update_fdelta()); }
+void CCustomMonster::update_sound_player() { sound().update(); }
 
 void CCustomMonster::UpdateCL()
 {
@@ -445,8 +445,7 @@ void CCustomMonster::UpdateCL()
 
     if (Local() && g_Alive())
     {
-#pragma todo("Dima to All : this is FAKE, network is not supported here!")
-
+        // TODO: Dima to All : this is FAKE, network is not supported here!
         UpdatePositionAnimation();
     }
 
@@ -538,7 +537,7 @@ void CCustomMonster::eye_pp_s1()
     VERIFY(_valid(eye_matrix));
     mProject.build_projection(deg2rad(new_fov), 1, 0.1f, new_range);
     mFull.mul(mProject, mView);
-    feel_vision_query(mFull, eye_matrix.c);
+    feel_vision_query(mFull);
     Device.Statistic->AI_Vis_Query.End();
 }
 
@@ -580,7 +579,7 @@ void CCustomMonster::UpdateCamera()
     g_pGameLevel->Cameras().Update(eye_matrix.c, eye_matrix.k, eye_matrix.j, new_fov, .75f, new_range, 0);
 }
 
-void CCustomMonster::HitSignal(float /**perc/**/, Fvector& /**vLocalDir/**/, CObject* /**who/**/) {}
+void CCustomMonster::HitSignal(float, Fvector&, CObject*) {}
 
 void CCustomMonster::Die(CObject* who)
 {
@@ -669,12 +668,11 @@ BOOL CCustomMonster::net_Spawn(CSE_Abstract* DC)
 }
 
 #ifdef DEBUG
-void CCustomMonster::OnHUDDraw(u32 context_id, CCustomHUD* hud, IRenderable* root) {}
+void CCustomMonster::OnHUDDraw(ctx_id_t, CCustomHUD*, IRenderable*) {}
 #endif
 
-void CCustomMonster::Exec_Action(float /**dt/**/) {}
+void CCustomMonster::Exec_Action(float) {}
 
-// void CCustomMonster::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type)
 void CCustomMonster::Hit(SHit* pHDS)
 {
     if (!invulnerable())
@@ -780,17 +778,14 @@ void CCustomMonster::feel_sound_new(CObject* who, int type, CSound_UserDataPtr u
     memory().sound().feel_sound_new(who, type, user_data, position, power, time_to_stop);
 }
 
-bool CCustomMonster::useful(const CItemManager* manager, const CGameObject* object) const { return (memory().item().useful(object)); }
+bool CCustomMonster::useful(const CItemManager*, const CGameObject* object) const { return memory().item().useful(object); }
+float CCustomMonster::evaluate(const CItemManager*, const CGameObject* object) const { return memory().item().evaluate(object); }
 
-float CCustomMonster::evaluate(const CItemManager* manager, const CGameObject* object) const { return (memory().item().evaluate(object)); }
+bool CCustomMonster::useful(const CEnemyManager*, const CEntityAlive* object) const { return memory().enemy().useful(object); }
+float CCustomMonster::evaluate(const CEnemyManager*, const CEntityAlive* object) const { return memory().enemy().evaluate(object); }
 
-bool CCustomMonster::useful(const CEnemyManager* manager, const CEntityAlive* object) const { return (memory().enemy().useful(object)); }
-
-float CCustomMonster::evaluate(const CEnemyManager* manager, const CEntityAlive* object) const { return (memory().enemy().evaluate(object)); }
-
-bool CCustomMonster::useful(const CDangerManager* manager, const CDangerObject& object) const { return (memory().danger().useful(object)); }
-
-float CCustomMonster::evaluate(const CDangerManager* manager, const CDangerObject& object) const { return (memory().danger().evaluate(object)); }
+bool CCustomMonster::useful(const CDangerManager*, const CDangerObject& object) const { return memory().danger().useful(object); }
+float CCustomMonster::evaluate(const CDangerManager*, const CDangerObject& object) const { return memory().danger().evaluate(object); }
 
 CMovementManager* CCustomMonster::create_movement_manager() { return (xr_new<CMovementManager>(this)); }
 
@@ -866,7 +861,7 @@ LPCSTR CCustomMonster::visual_name(CSE_Abstract* server_entity)
     return (pSettings->r_string(cNameSect(), "corpse_visual"));
 }
 
-void CCustomMonster::on_enemy_change(const CEntityAlive* enemy) {}
+void CCustomMonster::on_enemy_change(const CEntityAlive*) {}
 
 CVisualMemoryManager* CCustomMonster::visual_memory() const { return (&memory().visual()); }
 

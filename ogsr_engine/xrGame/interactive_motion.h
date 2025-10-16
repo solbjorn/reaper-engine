@@ -4,13 +4,13 @@
 
 class CPhysicsShell;
 
-class interactive_motion : public virtual RTTI::Enable
+class XR_NOVTABLE interactive_motion : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(interactive_motion);
 
 public:
-    MotionID motion;
     CPhysicsShell* shell{};
+    MotionID motion;
 
 protected:
     Flags8 flags;
@@ -23,6 +23,7 @@ protected:
 
 public:
     interactive_motion();
+
     void init();
     void destroy();
     void setup(LPCSTR m, CPhysicsShell* s);
@@ -52,7 +53,6 @@ IC void destroy_motion(interactive_motion*& im)
         return;
 
     im->destroy();
-
     xr_delete(im);
 }
 
@@ -62,10 +62,11 @@ class imotion_velocity : public interactive_motion
 
 public:
     typedef interactive_motion inherited;
-    virtual void move_update(CPhysicsShell* s);
-    virtual void collide(CPhysicsShell* s);
-    virtual void state_end(CPhysicsShell* s);
-    virtual void state_start(CPhysicsShell* s);
+
+    void move_update(CPhysicsShell* s) override;
+    void collide(CPhysicsShell*) override;
+    void state_end(CPhysicsShell* s) override;
+    void state_start(CPhysicsShell* s) override;
 };
 
 class imotion_position : public interactive_motion
@@ -74,8 +75,9 @@ class imotion_position : public interactive_motion
 
 public:
     typedef interactive_motion inherited;
-    virtual void move_update(CPhysicsShell* s);
-    virtual void collide(CPhysicsShell* s);
-    virtual void state_end(CPhysicsShell* s);
-    virtual void state_start(CPhysicsShell* s);
+
+    void move_update(CPhysicsShell* s) override;
+    void collide(CPhysicsShell* s) override;
+    void state_end(CPhysicsShell* s) override;
+    void state_start(CPhysicsShell* s) override;
 };

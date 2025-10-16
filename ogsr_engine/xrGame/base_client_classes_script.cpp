@@ -13,12 +13,12 @@
 #include "script_game_object.h"
 #include "exported_classes_def.h"
 
-#pragma todo("KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.")
+// TODO: KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.
 
 template <>
 void DLL_PureScript::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<DLL_Pure>("DLL_Pure", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<DLL_Pure>), "_construct", &DLL_Pure::_construct);
+    lua.new_usertype<DLL_Pure>("DLL_Pure", sol::no_constructor, "_construct", &DLL_Pure::_construct);
 }
 
 template <>
@@ -36,7 +36,7 @@ void IRenderableScript::script_register(sol::state_view& lua)
 template <>
 void ICollidableScript::script_register(sol::state_view& lua)
 {
-    lua.new_usertype<ICollidable>("ICollidable", sol::no_constructor, sol::call_constructor, sol::constructors<ICollidable()>());
+    lua.new_usertype<ICollidable>("ICollidable", sol::no_constructor);
 }
 
 static Fvector rotation_get_dir(SRotation* R, bool v_inverse)

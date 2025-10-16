@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "script_export_space.h"
 
@@ -14,7 +15,7 @@ public:
     virtual void reinit();
     virtual void UpdateCL();
 
-    virtual void CheckSpecParams(u32 spec_params);
+    void CheckSpecParams(u32) override;
     virtual void HitEntityInJump(const CEntity* pEntity);
     virtual void jump(Fvector const& position, float factor);
 

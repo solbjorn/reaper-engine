@@ -5,16 +5,18 @@
 
 class dx103DFluidVolume : public dxRender_Visual
 {
+    RTTI_DECLARE_TYPEINFO(dx103DFluidVolume, dxRender_Visual);
+
 public:
     dx103DFluidVolume();
     virtual ~dx103DFluidVolume();
 
-    virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-    virtual void Render(CBackend& cmd_list, float, bool) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
-    virtual void Copy(dxRender_Visual* pFrom);
-    virtual void Release();
+    void Load(LPCSTR, IReader* data, u32) override;
+    void Render(CBackend& cmd_list, float, bool) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
+    void Copy(dxRender_Visual* pFrom) override;
+    void Release() override;
 
-    shared_str getProfileName() { return m_FluidData.dbg_name; }
+    [[nodiscard]] shared_str getProfileName() { return m_FluidData.dbg_name; }
 
 private:
     //	For debug purpose only

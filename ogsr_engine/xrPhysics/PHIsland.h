@@ -188,13 +188,16 @@ public:
     IC void AddJoint(dxJoint* joint)
     {
         VERIFY2(m_nj == nj && m_nb == nb && m_flags.is_active(), "can not remove/add during processing phase");
+
         dWorldAddJoint(DWorld(), joint);
         m_first_joint = joint;
+
         if (!m_nj)
         {
-            VERIFY(joint->next == 0);
+            VERIFY(joint->next == nullptr);
             m_joints_tail = (dxJoint**)(&(joint->next));
         }
+
         m_nj++;
     }
 

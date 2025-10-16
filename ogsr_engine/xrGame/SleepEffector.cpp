@@ -26,7 +26,7 @@ CSleepEffectorPP::CSleepEffectorPP(const SPPInfo& ppi, float life_time, float at
 
 BOOL CSleepEffectorPP::Process(SPPInfo& pp)
 {
-    inherited::Process(pp);
+    std::ignore = inherited::Process(pp);
 
     // amount of time passed in percents
     float time_past_perc = (m_total - fLifeTime) / m_total;

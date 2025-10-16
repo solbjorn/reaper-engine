@@ -33,8 +33,8 @@ class CScriptXmlInit
 {
 public:
     CScriptXmlInit();
-    CScriptXmlInit(const CScriptXmlInit& other);
-    CScriptXmlInit& operator=(const CScriptXmlInit& other);
+    CScriptXmlInit(const CScriptXmlInit&) = delete;
+    CScriptXmlInit& operator=(const CScriptXmlInit&) = delete;
 
     void ParseFile(LPCSTR xml_file);
     void ParseShTexInfo(LPCSTR xml_file);

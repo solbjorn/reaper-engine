@@ -50,7 +50,7 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
     split_inf.m_end_jt_num = end_joint;
 
     m_splitters.erase(splitter);
-    PassEndSplitters(split_inf, new_shell_desc, 1, 0);
+    PassEndSplitters(split_inf, new_shell_desc, 1);
 
     InitNewShell(new_shell_desc);
     m_pShell->PassEndElements(start_element, end_element, new_shell_desc);
@@ -65,7 +65,7 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
     return ret;
 }
 
-void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CPHShell* dest, u16 jt_add_shift, u16 el_add_shift)
+void CPHShellSplitterHolder::PassEndSplitters(const CShellSplitInfo& spl_inf, CPHShell* dest, u16 jt_add_shift)
 {
     CPHShellSplitterHolder*& dest_holder = dest->m_spliter_holder;
     if (!dest_holder)
@@ -350,7 +350,7 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture& sp
 
     new_shell_last_desc->add_Element(split_elem.first);
     // pass splitters taking into account that one element was olready added
-    PassEndSplitters(split_elem.second, new_shell_last_desc, 0, 0);
+    PassEndSplitters(split_elem.second, new_shell_last_desc, 0);
 
     InitNewShell(new_shell_last_desc);
     m_pShell->PassEndElements(split_elem.second.m_start_el_num, split_elem.second.m_end_el_num, new_shell_last_desc);
@@ -427,6 +427,7 @@ void CPHShellSplitterHolder::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
     // VERIFY(dBodyStateValide(out_shels.back().first->get_ElementByStoreOrder(0)->get_body()));
     m_has_breaks = false;
 }
+
 void CPHShellSplitterHolder::InitNewShell(CPHShell* shell)
 {
     shell->PresetActive();
@@ -434,7 +435,7 @@ void CPHShellSplitterHolder::InitNewShell(CPHShell* shell)
         CPHCollideValidator::RegisterObjToGroup(m_pShell->collide_bits(), *static_cast<CPHObject*>(shell));
 }
 
-void CPHShellSplitterHolder::PhTune(dReal step)
+void CPHShellSplitterHolder::PhTune(dReal)
 {
     SPLITTER_I i = m_splitters.begin(), e = m_splitters.end();
     for (; i != e; ++i)
@@ -453,7 +454,8 @@ void CPHShellSplitterHolder::PhTune(dReal step)
         }
     }
 }
-void CPHShellSplitterHolder::PhDataUpdate(dReal step)
+
+void CPHShellSplitterHolder::PhDataUpdate(dReal)
 {
     SPLITTER_I i = m_splitters.begin(), e = m_splitters.end();
     for (; i != e; ++i)

@@ -25,7 +25,7 @@ public:
     CPHFracturesHolder() = default;
     ~CPHFracturesHolder();
 
-    void DistributeAdditionalMass(u16 geom_num, const dMass& m); //
+    void DistributeAdditionalMass(const dMass& m); //
     void SubFractureMass(u16 fracture_num);
     void AddImpact(const Fvector& force, const Fvector& point, u16 id);
     PH_IMPACT_STORAGE& Impacts() { return m_impacts; }

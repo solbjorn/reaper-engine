@@ -14,7 +14,7 @@ private:
     void block_create()
     {
         // Allocate
-        VERIFY(0 == list);
+        VERIFY(list == nullptr);
 
         list = xr_alloc<T>(granularity);
         blocks.push_back(list);

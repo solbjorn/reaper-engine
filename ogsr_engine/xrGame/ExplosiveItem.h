@@ -18,8 +18,8 @@ private:
     typedef CInventoryItemObject inherited;
 
 public:
-    CExplosiveItem(void);
-    virtual ~CExplosiveItem(void);
+    CExplosiveItem();
+    virtual ~CExplosiveItem();
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC) { return CInventoryItemObject::net_Spawn(DC); }
@@ -30,7 +30,7 @@ public:
     virtual CExplosive* cast_explosive() { return this; }
     virtual IDamageSource* cast_IDamageSource() { return CExplosive::cast_IDamageSource(); }
     virtual void GetRayExplosionSourcePos(Fvector& pos);
-    virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos);
+    void ActivateExplosionBox(const Fvector&, Fvector&) override;
     virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void Hit(SHit* pHDS);
     virtual void shedule_Update(u32 dt);

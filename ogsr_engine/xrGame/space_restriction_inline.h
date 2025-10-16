@@ -25,7 +25,7 @@ IC shared_str CSpaceRestriction::out_restrictions() const { return (m_out_restri
 IC shared_str CSpaceRestriction::in_restrictions() const { return (m_in_restrictions); }
 
 template <typename T1, typename T2>
-IC void CSpaceRestriction::add_border(T1 p1, T2 p2)
+IC void CSpaceRestriction::add_border([[maybe_unused]] T1 p1, [[maybe_unused]] T2 p2)
 {
     if (!initialized())
         return;

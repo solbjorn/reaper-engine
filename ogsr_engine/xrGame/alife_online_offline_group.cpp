@@ -17,15 +17,9 @@
 #include "game_level_cross_table.h"
 #include "level_graph.h"
 
-CSE_ALifeItemWeapon* CSE_ALifeOnlineOfflineGroup::tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower) { return nullptr; }
-
-ALife::EMeetActionType CSE_ALifeOnlineOfflineGroup::tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
-{
-    return (ALife::eMeetActionTypeIgnore);
-}
-
-bool CSE_ALifeOnlineOfflineGroup::bfActive() { return (false); }
-
+CSE_ALifeItemWeapon* CSE_ALifeOnlineOfflineGroup::tpfGetBestWeapon(ALife::EHitType&, float&) { return nullptr; }
+ALife::EMeetActionType CSE_ALifeOnlineOfflineGroup::tfGetActionType(CSE_ALifeSchedulable*, int, bool) { return ALife::eMeetActionTypeIgnore; }
+bool CSE_ALifeOnlineOfflineGroup::bfActive() { return false; }
 CSE_ALifeDynamicObject* CSE_ALifeOnlineOfflineGroup::tpfGetBestDetector() { return nullptr; }
 
 void CSE_ALifeOnlineOfflineGroup::update() {}

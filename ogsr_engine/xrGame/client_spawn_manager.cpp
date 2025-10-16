@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "client_spawn_manager.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -69,7 +70,7 @@ void CClientSpawnManager::add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID
     merge_spawn_callbacks(spawn_callback, (*J).second);
 }
 
-void CClientSpawnManager::remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, bool no_warning)
+void CClientSpawnManager::remove(REQUESTED_REGISTRY& registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id)
 {
     REQUESTED_REGISTRY::iterator I = registry.find(requested_id);
     if (I == registry.end())
@@ -101,7 +102,7 @@ void CClientSpawnManager::clear(ALife::_OBJECT_ID requested_id)
 {
     for (auto I = m_registry.begin(); I != m_registry.end();)
     {
-        remove((*I).second, (*I).first, requested_id, true);
+        remove((*I).second, (*I).first, requested_id);
         if (!(*I).second.empty())
         {
             ++I;

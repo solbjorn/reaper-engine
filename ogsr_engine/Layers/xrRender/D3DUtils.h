@@ -24,7 +24,8 @@ struct SPrimitiveBuffer
 
 public:
     SPrimitiveBuffer() : OnRender(CallMe::Delegate<void()>()) {}
-    void CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, const void* vertices, u32 _v_cnt, const u16* indices = nullptr, u32 _i_cnt = 0) {}
+
+    void CreateFromData(D3DPRIMITIVETYPE, u32, u32, const void*, u32, const u16* = nullptr, u32 = 0) {}
     void Destroy();
     void Render() { OnRender(); }
 };
@@ -150,9 +151,7 @@ public:
     virtual void __stdcall DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel);
     virtual void __stdcall DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
-    virtual void __stdcall DrawIndexedPrimitive(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size,
-                                                const u32& clr_argb, float scale = 1.0f)
-    {}
+    virtual void __stdcall DrawIndexedPrimitive(int, u32, const Fvector&, const Fvector*, const u32&, const u32*, const u32&, const u32&, float = 1.0f) {}
     virtual void __stdcall DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
     virtual void __stdcall DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
     virtual void __stdcall DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);

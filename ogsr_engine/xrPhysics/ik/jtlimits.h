@@ -274,7 +274,7 @@ public:
     // paramter in case this routine is called repeatedly
     // the singular pts are only computed once.
 
-    void PsiLimits(int num_singular, float singular_pts[], AngleIntList& psi1, AngleIntList& psi2) const;
+    void PsiLimits(int num_singular, const float singular_pts[], AngleIntList& psi1, AngleIntList& psi2) const;
 
     //
     // Returns the values of psi for which tan(theta) = 0
@@ -284,7 +284,7 @@ public:
     //
     // Returns the values for which tan(theta) is singular
     //
-    int Singularities(float psi[4]) const;
+    int Singularities(float psi[2]) const;
 
     int InRange(float t) { return limits.InRange(t); }
     //

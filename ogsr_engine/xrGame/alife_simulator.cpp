@@ -24,7 +24,7 @@ void restart_all()
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
-    : CALifeUpdateManager(server, alife_section), CALifeInteractionManager(server, alife_section), CALifeSimulatorBase(server, alife_section)
+    : CALifeSimulatorBase{server}, CALifeUpdateManager{server, alife_section}, CALifeInteractionManager{server}
 {
     restart_all();
 

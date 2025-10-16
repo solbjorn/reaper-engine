@@ -38,15 +38,16 @@ protected:
 
 public:
     IC CPropertyEvaluator(_object_type* object = nullptr, LPCSTR evaluator_name = "");
-    virtual ~CPropertyEvaluator();
+    inline virtual ~CPropertyEvaluator();
+
     IC void init(_object_type* object, LPCSTR evaluator_name);
-    virtual void setup(_object_type* object, CPropertyStorage* storage);
-    virtual void Load(LPCSTR section);
-    virtual _value_type evaluate();
+    inline virtual void setup(_object_type* object, CPropertyStorage* storage);
+    inline virtual void Load(LPCSTR);
+    inline virtual _value_type evaluate();
     IC _value_type property(const _condition_type& condition_id) const;
 
-    virtual void save(NET_Packet& packet) {}
-    virtual void load(IReader& packet) {}
+    virtual void save(NET_Packet&) {}
+    virtual void load(IReader&) {}
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

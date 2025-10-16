@@ -746,7 +746,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
     }
 
     // Traverse object database
-    g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE + STYPE_LIGHTSOURCE, _frustum);
+    g_SpatialSpace->q_frustum(lstRenderables, STYPE_RENDERABLE + STYPE_LIGHTSOURCE, _frustum);
 
     // Exact sorting order (front-to-back)
     std::ranges::sort(lstRenderables, [](const auto* s1, const auto* s2) {
@@ -846,7 +846,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
 // sub-space rendering - PHASE_SMAP
 void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic)
 {
-    VERIFY(sector_id != INVALID_SECTOR_ID);
+    VERIFY(o_sector_id != INVALID_SECTOR_ID);
     marker++; // !!! critical here
 
     phase = CRender::PHASE_SMAP;
@@ -867,7 +867,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
         return;
 
     // Traverse object database
-    g_SpatialSpace->q_frustum(lstRenderables, ISpatial_DB::O_ORDERED, STYPE_RENDERABLE, _frustum);
+    g_SpatialSpace->q_frustum(lstRenderables, STYPE_RENDERABLE, _frustum);
 
     // Determine visibility for dynamic part of scene
     for (auto* spatial : lstRenderables)

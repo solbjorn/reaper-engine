@@ -21,14 +21,14 @@ class CALifeUpdateManager : public CALifeSwitchManager, public CALifeSurgeManage
 {
     RTTI_DECLARE_TYPEINFO(CALifeUpdateManager, CALifeSwitchManager, CALifeSurgeManager, CALifeStorageManager, ISheduled);
 
-private:
-    bool m_first_time;
-
 protected:
     u64 m_max_process_time;
     float m_update_monster_factor;
     u32 m_objects_per_update;
-    bool m_changing_level;
+    bool m_changing_level{};
+
+private:
+    bool m_first_time{true};
 
 public:
     void update();
@@ -41,6 +41,7 @@ protected:
 public:
     CALifeUpdateManager(xrServer* server, LPCSTR section);
     virtual ~CALifeUpdateManager();
+
     virtual shared_str shedule_Name() const { return shared_str("alife_simulator"); }
     virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
@@ -52,7 +53,7 @@ public:
     IC float update_monster_factor() const;
     bool change_level(NET_Packet& net_packet);
     void set_process_time(int microseconds);
-    void objects_per_update(const u32& objects_per_update);
+    void objects_per_update(u32 objects_per_update);
     void set_switch_online(ALife::_OBJECT_ID id, bool value);
     void set_switch_offline(ALife::_OBJECT_ID id, bool value);
     void set_interactive(ALife::_OBJECT_ID id, bool value);

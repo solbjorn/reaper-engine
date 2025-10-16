@@ -203,9 +203,7 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
     if (!wcslen(wct))
         return false;
 
-    const size_t cnt = wcstombs(dest_str, wct, dest_sz);
-
-    return cnt != -1;
+    return std::wcstombs(dest_str, wct, dest_sz) != std::numeric_limits<size_t>::max();
 }
 
 BOOL CInput::iGetAsyncKeyState(int dik)

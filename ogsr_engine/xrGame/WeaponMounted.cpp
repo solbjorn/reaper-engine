@@ -193,13 +193,14 @@ void CWeaponMounted::OnKeyboardRelease(int dik)
 {
     if (Remote())
         return;
+
     switch (dik)
     {
     case kWPN_FIRE: FireEnd(); break;
     }
 }
 
-void CWeaponMounted::OnKeyboardHold(int dik)
+void CWeaponMounted::OnKeyboardHold(int)
 {
     if (Remote())
         return;
@@ -209,7 +210,7 @@ void CWeaponMounted::OnKeyboardHold(int dik)
     //	}
 }
 
-void CWeaponMounted::cam_Update(float dt, float fov)
+void CWeaponMounted::cam_Update(float, float)
 {
     Fvector P, Da;
     Da.set(0, 0, 0);
@@ -244,7 +245,7 @@ void CWeaponMounted::cam_Update(float dt, float fov)
     Level().Cameras().UpdateFromCamera(Camera());
 }
 
-bool CWeaponMounted::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos) { return !Owner(); }
+bool CWeaponMounted::Use(const Fvector&, const Fvector&, const Fvector&) { return !Owner(); }
 
 bool CWeaponMounted::attach_Actor(CGameObject* actor)
 {
@@ -318,7 +319,7 @@ void CWeaponMounted::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(fire_pos, zero_vel);
+    StartSmokeParticles(fire_pos);
     OnShellDrop(fire_pos, zero_vel);
 
     bool b_hud_mode = (Level().CurrentEntity() == smart_cast<CObject*>(Owner()));

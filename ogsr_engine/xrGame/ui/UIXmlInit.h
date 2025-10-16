@@ -80,11 +80,12 @@ public:
     static Frect GetFRect(CUIXml& xml_doc, const char* path, int index);
     static u32 GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_clr);
 
-public:
+private:
     // Функция чтения алайна из xml файла и применения его к координатам.
     // Return true если для данного окна есть выравнивание
-    static bool InitAlignment(CUIXml& xml_doc, const char* path, int index, float& x, float& y, CUIWindow* pWnd);
+    static void InitAlignment(CUIXml& xml_doc, const char* path, int index, CUIWindow* pWnd);
 
+public:
     // Автоматическая инициализация статических элеменитов
     // Чтобы вернуть указатели на созданые статики (нам бывает необходимо прятать их, например)
     // создадим тип - вектор указателей на статики
@@ -93,15 +94,6 @@ public:
 
     static StaticsVec InitAutoStatic(CUIXml& xml_doc, const char* tag_name, CUIWindow* pParentWnd);
     static StaticsVec InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pParentWnd);
-
-    // Функции для пересчета координат для применения выравнивания
-    // Params:
-    // 1. align - выравнивание (см. EUIItemAlign)
-    // 2. coord - координата к которй будет примененно выравнивание
-    // Return: измененная координата
-    static float ApplyAlignX(float coord, u32 align);
-    static float ApplyAlignY(float coord, u32 align);
-    static void ApplyAlign(float& x, float& y, u32 align);
 
     // Initialize and store predefined colors
     //	typedef std::pair<shared_str, u32> ColorMap;

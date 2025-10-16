@@ -27,7 +27,6 @@ CUICustomEdit::CUICustomEdit()
 }
 
 void CUICustomEdit::SetTextColor(u32 color) { m_textColor[0] = color; }
-
 void CUICustomEdit::SetTextColorD(u32 color) { m_textColor[1] = color; }
 
 void CUICustomEdit::Init(float x, float y, float width, float height)
@@ -46,23 +45,19 @@ void CUICustomEdit::SetLightAnim(LPCSTR lanim)
 }
 
 void CUICustomEdit::SetPasswordMode(bool mode) { m_lines.SetPasswordMode(mode); }
-
 void CUICustomEdit::OnFocusLost() { CUIWindow::OnFocusLost(); }
 
-void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
+void CUICustomEdit::SendMessage(CUIWindow*, s16 msg, void*)
 {
-    //	if(pWnd == GetParent())
-    //	{
     // кто-то другой захватил клавиатуру
     if (msg == WINDOW_KEYBOARD_CAPTURE_LOST)
     {
         m_bInputFocus = false;
         m_iKeyPressAndHold = 0;
     }
-    //	}
 }
 
-bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUICustomEdit::OnMouse(float, float, EUIMessages mouse_action)
 {
     if (m_bFocusByDbClick)
     {
@@ -84,12 +79,11 @@ bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
 
         m_lines.MoveCursorToEnd();
     }
+
     return false;
 }
 
-bool CUICustomEdit::OnKeyboardHold(u32 dik) { return true; }
-
-bool CUICustomEdit::KeyReleased(u32 dik) { return true; }
+bool CUICustomEdit::OnKeyboardHold(u32) { return true; }
 
 bool CUICustomEdit::OnKeyboard(u32 dik, EUIMessages keyboard_action)
 {
@@ -111,9 +105,10 @@ bool CUICustomEdit::OnKeyboard(u32 dik, EUIMessages keyboard_action)
             m_iKeyPressAndHold = 0;
             m_bHoldWaitMode = false;
         }
-        if (KeyReleased(dik))
-            return true;
+
+        return true;
     }
+
     return false;
 }
 

@@ -8,6 +8,16 @@
 // If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
 // https://github.com/ocornut/imgui
 
+#ifndef __XR_IMGUI_IMPL_DX11_H
+#define __XR_IMGUI_IMPL_DX11_H
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wnontrivial-memcall");
+
+#include <imgui.h>
+
+XR_DIAG_POP();
+
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
@@ -19,3 +29,5 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data);
 // Use if you want to reset your rendering device without losing ImGui state.
 void ImGui_ImplDX11_InvalidateDeviceObjects();
 bool ImGui_ImplDX11_CreateDeviceObjects();
+
+#endif // __XR_IMGUI_IMPL_DX11_H

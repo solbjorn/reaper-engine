@@ -63,7 +63,7 @@ bool dcTriListCollider::circleLineIntersection(const dReal* cn, const dReal* cp,
     }
 }
 
-int dcTriListCollider::dSortedTriCyl(const dReal* triSideAx0, const dReal* triSideAx1, const dReal* triAx,
+int dcTriListCollider::dSortedTriCyl(const dReal*, const dReal*, const dReal* triAx,
                                      // const dReal* v0,
                                      // const dReal* v1,
                                      // const dReal* v2,

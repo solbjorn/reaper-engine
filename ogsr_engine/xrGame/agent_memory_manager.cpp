@@ -7,19 +7,20 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "agent_memory_manager.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "entity_alive.h"
-#include "memory_space_impl.h"
+#include "memory_space.h"
 #include "holder_custom.h"
 #include "actor.h"
 
 void CAgentMemoryManager::update() { reset_memory_masks(); }
 
-void CAgentMemoryManager::remove_links(CObject* object) {}
+void CAgentMemoryManager::remove_links(CObject*) {}
 
 template <typename T>
 IC void CAgentMemoryManager::reset_memory_masks(T& objects)

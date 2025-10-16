@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "CustomZone.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "ZoneVisual.h"
@@ -9,14 +10,16 @@
 #include "level.h"
 #include "entity_alive.h"
 #include "CharacterPhysicsSupport.h"
-CAmebaZone::CAmebaZone() { m_fVelocityLimit = 1.f; }
 
-CAmebaZone::~CAmebaZone() {}
+CAmebaZone::CAmebaZone() = default;
+CAmebaZone::~CAmebaZone() = default;
+
 void CAmebaZone::Load(LPCSTR section)
 {
     inherited::Load(section);
     m_fVelocityLimit = pSettings->r_float(section, "max_velocity_in_zone");
 }
+
 bool CAmebaZone::BlowoutState()
 {
     bool result = inherited::BlowoutState();
@@ -53,7 +56,7 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
     float power = Power(distance_to_center(O->object));
     float impulse = m_fHitImpulseScale * power * pGameObject->GetMass();
 
-    //статистика по объекту
+    // статистика по объекту
     O->total_damage += power;
     O->hit_num++;
 
@@ -68,7 +71,7 @@ void CAmebaZone::Affect(SZoneObjectInfo* O)
     }
 }
 
-void CAmebaZone::PhTune(dReal step)
+void CAmebaZone::PhTune(dReal)
 {
     OBJECT_INFO_VEC_IT it;
     for (it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)

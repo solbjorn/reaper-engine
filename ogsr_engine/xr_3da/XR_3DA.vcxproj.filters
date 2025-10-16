@@ -52,6 +52,9 @@
     <Filter Include="Game API\Demo">
       <UniqueIdentifier>{18dde534-ae69-456c-84ab-b5a7fe12752f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game API\Debug">
+      <UniqueIdentifier>{897c02e1-3ef6-4941-ade5-7ca637d3298a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Interfaces\Render\Visuals">
       <UniqueIdentifier>{b580b33d-3ac0-4a6b-9c5f-a4d0aad8afb6}</UniqueIdentifier>
     </Filter>
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="FDemoRecord.h">
       <Filter>Game API\Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectDump.h">
+      <Filter>Game API\Debug</Filter>
     </ClInclude>
     <ClInclude Include="Fmesh.h">
       <Filter>Interfaces\Render\Visuals</Filter>

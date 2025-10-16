@@ -4,11 +4,9 @@
 
 #include "stdafx.h"
 
-#include <direct.h>
-#include <fcntl.h>
-#include <sys\stat.h>
-
-#include <filesystem>
+#include "FS_internal.h"
+#include "stream_reader.h"
+#include "file_stream_reader.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -17,9 +15,11 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 XR_DIAG_POP();
 
-#include "FS_internal.h"
-#include "stream_reader.h"
-#include "file_stream_reader.h"
+#include <filesystem>
+
+#include <direct.h>
+#include <fcntl.h>
+#include <sys\stat.h>
 
 std::unique_ptr<CLocatorAPI> xr_FS;
 
@@ -173,7 +173,7 @@ CLocatorAPI::~CLocatorAPI()
     _dump_open_files(1);
 }
 
-const CLocatorAPI::file* CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif)
+void CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif)
 {
     string256 temp_file_name;
     strcpy_s(temp_file_name, name);
@@ -188,17 +188,17 @@ const CLocatorAPI::file* CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr,
     desc.size_real = size_real;
     desc.size_compressed = size_compressed;
     desc.modif = modif & ~u32(0x3);
-    //	Msg("registering file %s - %d", name, size_real);
+
     //	if file already exist - update info
     files_it I = files.find(desc);
     if (I != files.end())
     {
         desc.name = I->name;
-
         // sad but true, performance option
         // correct way is to erase and then insert new record:
         const_cast<file&>(*I) = desc;
-        return &*I;
+
+        return;
     }
     else
     {
@@ -206,7 +206,7 @@ const CLocatorAPI::file* CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr,
     }
 
     // otherwise insert file
-    auto result = files.insert(desc).first;
+    files.insert(desc);
 
     // Try to register folder(s)
     string_path temp;
@@ -218,6 +218,7 @@ const CLocatorAPI::file* CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr,
         _splitpath(temp, path, folder, nullptr, nullptr);
         if (!folder[0])
             break;
+
         strcat_s(path, folder);
         if (!exist(path))
         {
@@ -229,16 +230,14 @@ const CLocatorAPI::file* CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr,
             desc.modif = u32(-1);
             desc.folder = true;
 
-            std::pair<files_it, bool> I = files.insert(desc);
-
-            R_ASSERT(I.second);
+            auto [it, done] = files.insert(desc);
+            R_ASSERT(done);
         }
+
         strcpy_s(temp, path); // strcpy_s(temp, folder);
         if (xr_strlen(temp))
             temp[xr_strlen(temp) - 1] = 0;
     }
-
-    return &*result;
 }
 
 /* Archives */
@@ -688,25 +687,30 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 void CLocatorAPI::_destroy()
 {
-    for (files_it I = files.begin(); I != files.end(); I++)
+    for (auto& file : files)
     {
-        char* str = LPSTR(I->name);
+        char* str = const_cast<char*>(file.name);
         xr_free(str);
     }
+
     files.clear();
-    for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+
+    for (auto& path : pathes)
     {
-        char* str = LPSTR(p_it->first);
+        char* str = const_cast<char*>(path.first);
         xr_free(str);
-        xr_delete(p_it->second);
+
+        xr_delete(path.second);
     }
+
     pathes.clear();
 
-    for (archives_it a_it = archives.begin(); a_it != archives.end(); a_it++)
+    for (auto& arc : archives)
     {
-        a_it->cleanup();
-        a_it->close();
+        arc.cleanup();
+        arc.close();
     }
+
     archives.clear();
 }
 
@@ -877,8 +881,7 @@ size_t CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR m
             // insert file entry
             if (flags & FS_ClampExt)
             {
-                LPSTR src_ext = strext(entry_begin);
-                if (src_ext)
+                if (LPCSTR src_ext = strext(entry_begin); src_ext != nullptr)
                 {
                     size_t ext_pos = src_ext - entry_begin;
                     fn.replace(ext_pos, strlen(src_ext), "");
@@ -901,12 +904,13 @@ size_t CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR m
             dest.emplace(entry_begin, entry.size_real, entry.modif, fl, !(flags & FS_NoLower));
         }
     }
+
     return dest.size();
 }
 
-void CLocatorAPI::file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc) { R = xr_new<CVirtualFileReader>(fname); }
+void CLocatorAPI::file_from_cache_impl(IReader*& R, LPSTR fname, const file&) { R = xr_new<CVirtualFileReader>(fname); }
 
-void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc)
+void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file&)
 {
     CFileStreamReader* r = xr_new<CFileStreamReader>();
     r->construct(fname, BIG_FILE_READER_WINDOW_SIZE);
@@ -914,7 +918,7 @@ void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, LPSTR fname, const fil
 }
 
 template <typename T>
-void CLocatorAPI::file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR& source_name)
+void CLocatorAPI::file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR&)
 {
     file_from_cache_impl(R, fname, desc);
 }
@@ -1063,8 +1067,10 @@ void CLocatorAPI::file_delete(LPCSTR path, LPCSTR nm)
     {
         // remove file
         _unlink(I->name);
-        char* str = LPSTR(I->name);
+
+        char* str = const_cast<char*>(I->name);
         xr_free(str);
+
         files.erase(I);
     }
 }
@@ -1101,9 +1107,12 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
         {
             if (!bOwerwrite)
                 return;
+
             _unlink(D->name);
-            char* str = LPSTR(D->name);
+
+            char* str = const_cast<char*>(D->name);
             xr_free(str);
+
             files.erase(D);
 
             S = file_find_it(src); // Обновим снова, потому что после erase итератор может быть невалидным
@@ -1111,10 +1120,13 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
         }
 
         file new_desc = *S;
+
         // remove existing item
-        char* str = LPSTR(S->name);
+        char* str = const_cast<char*>(S->name);
         xr_free(str);
+
         files.erase(S);
+
         // insert updated item
         new_desc.name = xr_strlwr(xr_strdup(dest));
         files.insert(new_desc);
@@ -1198,7 +1210,7 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
         {
             // Msg("[rescan_physical_path] erace file: [%s]", entry.name);
             //  erase item
-            char* str = LPSTR(entry.name);
+            char* str = const_cast<char*>(entry.name);
             xr_free(str);
 
             I = files.erase(I);

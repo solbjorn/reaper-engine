@@ -6,9 +6,8 @@
 #include "../../../actor.h"
 #include "IColisiondamageInfo.h"
 
-CPolterTele::CPolterTele(CPoltergeist* polter) : inherited(polter), m_pmt_object_collision_damage(0.5f) {}
-
-CPolterTele::~CPolterTele() {}
+CPolterTele::CPolterTele(CPoltergeist* polter) : inherited{polter} {}
+CPolterTele::~CPolterTele() = default;
 
 void CPolterTele::load(LPCSTR section)
 {
@@ -276,11 +275,13 @@ struct SCollisionHitCallback : public ICollisionHitCallback
 public:
     CPhysicsShellHolder* m_object;
     float m_pmt_object_collision_damage;
-    SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage) : m_object(object), m_pmt_object_collision_damage(pmt_object_collision_damage)
+
+    SCollisionHitCallback(CPhysicsShellHolder* object, float pmt_object_collision_damage) : m_object{object}, m_pmt_object_collision_damage{pmt_object_collision_damage}
     {
         VERIFY(object);
     }
-    void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di) override
+
+    void call(CPhysicsShellHolder*, float min_cs, float, float& cs, float& hl, ICollisionDamageInfo* di) override
     {
         if (cs > min_cs * 0.5f)
             hl = m_pmt_object_collision_damage;

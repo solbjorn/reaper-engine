@@ -3,10 +3,13 @@
 
 #include "..\xr_3da\PS_instance.h"
 
-extern const Fvector zero_vel;
+constexpr inline Fvector zero_vel{};
 
 class CParticlesObject : public CPS_Instance
 {
+    RTTI_DECLARE_TYPEINFO(CParticlesObject, CPS_Instance);
+
+private:
     using inherited = CPS_Instance;
 
     u32 dwLastTime;
@@ -17,7 +20,6 @@ protected:
     bool m_bLooped; // флаг, что система зациклена
     bool m_bStopping; // вызвана функция Stop()
 
-protected:
     u32 mt_dt;
 
 public:
@@ -28,9 +30,12 @@ public:
     virtual float shedule_Scale() const;
     virtual void shedule_Update(u32 dt);
     void renderable_Render(u32 context_id, IRenderable* root) override;
-    void PerformAllTheWork(u32 dt);
+
+private:
+    void PerformAllTheWork();
     void PerformAllTheWork_mt();
 
+public:
     Fvector& Position() const;
     void SetXFORM(const Fmatrix& m);
     IC Fmatrix& XFORM() { return renderable.xform; }

@@ -67,7 +67,7 @@ public:
     void SetVelocityActive(const int axis_num);
     void SetLimitsActive(int axis_num);
     void CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix);
-    void CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix, const Fmatrix& rotate);
+    void CalcAxis(int ax_num, Fvector& axis, float& lo, float& hi, const Fmatrix& first_matrix, const Fmatrix& second_matrix, const Fmatrix&);
     virtual u16 GetAxesNumber();
     virtual void SetAxisSDfactors(float spring_factor, float damping_factor, int axis_num);
     virtual void SetJointSDfactors(float spring_factor, float damping_factor);
@@ -84,8 +84,6 @@ public:
     virtual void SetAxisDirVsSecondElement(const Fvector& orientation, const int axis_num) { SetAxisDirVsSecondElement(orientation.x, orientation.y, orientation.z, axis_num); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void SetLimits(const float low, const float high, const int axis_num);
-    virtual void SetLimitsVsFirstElement(const float low, const float high, const int axis_num);
-    virtual void SetLimitsVsSecondElement(const float low, const float high, const int axis_num);
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void SetAnchor(const float x, const float y, const float z);
     virtual void SetAnchorVsFirstElement(const float x, const float y, const float z);

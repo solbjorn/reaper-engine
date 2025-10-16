@@ -21,7 +21,7 @@ public:
     void Release();
 };
 
-class IPureClient : public virtual RTTI::Enable
+class XR_NOVTABLE IPureClient : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IPureClient);
 
@@ -36,7 +36,6 @@ public:
 protected:
     CTimer* device_timer;
 
-protected:
     ConnectionState net_Connected{};
 
     INetQueue net_Queue;
@@ -56,7 +55,7 @@ public:
     IC void net_msg_Release() { net_Queue.Release(); }
 
     // send
-    virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
+    virtual void Send(NET_Packet&, u32 = DPNSEND_GUARANTEED, u32 = 0);
     virtual void OnMessage(void* data, u32 size);
     virtual void OnConnectRejected() {}
 
@@ -64,8 +63,8 @@ public:
     IC u32 timeServer() { return device_timer->GetElapsed_ms(); }
     IC u32 timeServer_Async() { return device_timer->GetElapsed_ms(); }
 
-    BOOL net_Syncronised;
+    BOOL net_Syncronised{};
     virtual BOOL net_IsSyncronised() { return net_Syncronised; }
 
-    virtual void OnSessionTerminate(LPCSTR reason) {}
+    virtual void OnSessionTerminate(LPCSTR) {}
 };

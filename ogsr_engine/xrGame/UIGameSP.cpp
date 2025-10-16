@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <dinput.h>
-
 #include "uigamesp.h"
 #include "actor.h"
 #include "level.h"
@@ -21,6 +19,8 @@
 #include "ui/UITalkWnd.h"
 #include "ui/UICarBodyWnd.h"
 #include "ui/UIMessageBox.h"
+
+#include <dinput.h>
 
 CUIGameSP::CUIGameSP()
 {
@@ -148,7 +148,9 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
             ss->m_static->SetTextST(*(o->description));
     }
     break;
+    default: break;
     }
+
     return false;
 }
 

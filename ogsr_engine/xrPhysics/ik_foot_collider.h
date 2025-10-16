@@ -1,13 +1,19 @@
 #pragma once
+
 #include "ik_collide_data.h"
+
 class CGameObject;
 
 class ik_pick_query
 {
 public:
-    ik_pick_query() : _point(ik_foot_geom::none), _pos(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), _dir(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), _range(-FLT_MAX) {}
+    ik_pick_query()
+        : _pos{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()},
+          _dir{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()}, _range{-std::numeric_limits<float>::max()},
+          _point{ik_foot_geom::none}
+    {}
 
-    ik_pick_query(ik_foot_geom::e_collide_point point, const Fvector& pos, const Fvector& dir, float range) : _point(point), _pos(pos), _dir(dir), _range(range)
+    ik_pick_query(ik_foot_geom::e_collide_point point, const Fvector& pos, const Fvector& dir, float range) : _pos{pos}, _dir{dir}, _range{range}, _point{point}
     {
         VERIFY(is_valid());
     }
@@ -56,7 +62,7 @@ class ik_foot_collider
 
 public:
     ik_foot_collider();
-    void collide(SIKCollideData& cld, const ik_foot_geom& foot_geom, CGameObject* O, bool foot_step);
+    void collide(SIKCollideData& cld, const ik_foot_geom& foot_geom, CGameObject* O);
 };
 
-constexpr float collide_dist = 0.5f;
+constexpr inline float collide_dist{0.5f};

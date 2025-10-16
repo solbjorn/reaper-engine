@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "tushkano.h"
 #include "tushkano_state_manager.h"
 #include "../monster_velocity_space.h"
@@ -76,15 +77,4 @@ void CTushkano::Load(LPCSTR section)
     PostLoad(section);
 }
 
-void CTushkano::CheckSpecParams(u32 spec_params)
-{
-    // if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
-    //	anim().Seq_Add(eAnimCheckCorpse);
-    //	anim().Seq_Switch();
-    // }
-
-    // if ((spec_params & ASP_STAND_SCARED) == ASP_STAND_SCARED) {
-    //	anim().SetCurAnim(eAnimLookAround);
-    //	return;
-    // }
-}
+void CTushkano::CheckSpecParams(u32) {}

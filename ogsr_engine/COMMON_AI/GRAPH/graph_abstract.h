@@ -34,11 +34,12 @@ public:
 
 private:
     VERTICES m_vertices;
-    size_t m_edge_count;
+    size_t m_edge_count{};
 
 public:
-    IC CGraphAbstract();
+    CGraphAbstract() = default;
     virtual ~CGraphAbstract();
+
     IC bool operator==(const CGraphAbstract& obj) const;
     IC void clear();
     IC void add_vertex(const _data_type& data, const _vertex_id_type& vertex_id);

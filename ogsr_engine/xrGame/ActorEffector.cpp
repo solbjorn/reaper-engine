@@ -324,28 +324,19 @@ void SndShockEffector::Update()
 
 //////////////////////////////////////////////////////////////////////////
 
-#define DELTA_ANGLE_X 0.5f * PI / 180
-#define DELTA_ANGLE_Y 0.5f * PI / 180
-#define DELTA_ANGLE_Z 0.5f * PI / 180
-#define ANGLE_SPEED 1.5f
-
 namespace
 {
-constexpr float _base_fov{170.f};
-constexpr float _max_fov_add{30.f};
+constexpr float DELTA_ANGLE_X{0.5f * PI / 180.f};
+constexpr float DELTA_ANGLE_Y{0.5f * PI / 180.f};
+constexpr float DELTA_ANGLE_Z{0.5f * PI / 180.f};
+constexpr float ANGLE_SPEED{1.5f};
 } // namespace
 
-CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov)
-    : inherited(eCEControllerPsyHit, flt_max)
+CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov)
+    : inherited{eCEControllerPsyHit, flt_max}, m_time_total{time}, m_position_source{src_pos}, m_base_fov{base_fov}, m_dest_fov{dest_fov}
 {
-    m_base_fov = base_fov;
-    m_dest_fov = dest_fov;
-    m_time_total = time;
-    m_time_current = 0;
     m_dangle_target.set(angle_normalize(Random.randFs(DELTA_ANGLE_X)), angle_normalize(Random.randFs(DELTA_ANGLE_Y)), angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
 
-    m_dangle_current.set(0.f, 0.f, 0.f);
-    m_position_source = src_pos;
     m_direction.sub(target_pos, src_pos);
     m_distance = m_direction.magnitude();
     m_direction.normalize();
@@ -387,7 +378,6 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 
     Mdef.c.mad(m_position_source, m_direction, cur_dist);
     info.fFov = m_base_fov + (m_dest_fov - m_base_fov) * perc_past;
-    // info.fFov = _base_fov - _max_fov_add*perc_past;
 
     m_time_current += Device.fTimeDelta;
 

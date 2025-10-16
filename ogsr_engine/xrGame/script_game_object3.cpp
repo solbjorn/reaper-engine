@@ -589,7 +589,7 @@ DetailPathManager::EDetailPathType CScriptGameObject::detail_path_type() const
     return (DetailPathManager::eDetailPathTypeSmooth);
 }
 
-void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const Fvector* vector3d, u32 dwLookOverDelay)
+void CScriptGameObject::set_sight(SightManager::ESightType sight_type, const Fvector* vector3d, u32)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
@@ -839,7 +839,7 @@ Fvector CScriptGameObject::head_orientation() const
     return (Fvector().setHP(-r.yaw, -r.pitch));
 }
 
-void CScriptGameObject::info_add(LPCSTR text)
+void CScriptGameObject::info_add([[maybe_unused]] LPCSTR text)
 {
 #ifdef DEBUG
     DBG().object_info(&object(), this).add_item(text, D3DCOLOR_XRGB(255, 0, 0), 0);

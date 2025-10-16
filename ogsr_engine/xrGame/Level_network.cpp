@@ -16,12 +16,6 @@
 #include "seniority_hierarchy_holder.h"
 #include "LevelDebugScript.h"
 
-namespace
-{
-constexpr int max_objects_size{2 * 1024};
-constexpr int max_objects_size_in_save{6 * 1024};
-} // namespace
-
 void Remove_all_statics();
 
 void CLevel::remove_objects()
@@ -84,6 +78,7 @@ void CLevel::remove_objects()
     if (!client_spawn_manager().registry().empty())
         client_spawn_manager().dump();
 #endif // DEBUG
+
     VERIFY(client_spawn_manager().registry().empty());
     client_spawn_manager().clear();
 
@@ -188,7 +183,7 @@ void CLevel::ClientSave()
 
 extern float phTimefactor;
 
-void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
+void CLevel::Send(NET_Packet& P, u32, u32)
 {
     // optimize the case when server located in our memory
     ClientID _clid;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx103DFluidManager.h"
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "dx103DFluidBlenders.h"
@@ -10,9 +11,6 @@
 
 dx103DFluidManager FluidManager;
 
-// For render call
-// DrawTextureShaderVariable = pEffect->GetVariableByName( "textureNumber")->AsScalar();
-constexpr const char* strDrawTexture("textureNumber");
 // For project, advect
 // ModulateShaderVariable = pEffect->GetVariableByName( "modulate")->AsScalar();
 constexpr const char* strModulate("modulate");
@@ -218,13 +216,10 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
 
     ApplyVorticityConfinement(timestep);
 
-    ApplyExternalForces(FluidData, timestep);
-
-    ComputeVelocityDivergence(timestep);
-
-    ComputePressure(timestep);
-
-    ProjectVelocity(timestep);
+    ApplyExternalForces(FluidData);
+    ComputeVelocityDivergence();
+    ComputePressure();
+    ProjectVelocity();
 
     DetachAndSwapFluidData(FluidData);
 
@@ -396,7 +391,7 @@ void dx103DFluidManager::ApplyVorticityConfinement(float timestep)
     m_pGrid->DrawSlices();
 }
 
-void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData& FluidData, float timestep)
+void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData& FluidData)
 {
     PIX_EVENT(ApplyExternalForces);
 
@@ -407,7 +402,7 @@ void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData& FluidData, f
     m_pEmittersHandler->RenderVelocity(FluidData);
 }
 
-void dx103DFluidManager::ComputeVelocityDivergence(float timestep)
+void dx103DFluidManager::ComputeVelocityDivergence()
 {
     PIX_EVENT(ComputeVelocityDivergence);
 
@@ -419,7 +414,7 @@ void dx103DFluidManager::ComputeVelocityDivergence(float timestep)
     m_pGrid->DrawSlices();
 }
 
-void dx103DFluidManager::ComputePressure(float timestep)
+void dx103DFluidManager::ComputePressure()
 {
     PIX_EVENT(ComputePressure);
 
@@ -446,7 +441,7 @@ void dx103DFluidManager::ComputePressure(float timestep)
     }
 }
 
-void dx103DFluidManager::ProjectVelocity(float timestep)
+void dx103DFluidManager::ProjectVelocity()
 {
     PIX_EVENT(ProjectVelocity);
 

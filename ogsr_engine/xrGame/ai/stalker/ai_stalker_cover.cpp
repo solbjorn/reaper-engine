@@ -217,10 +217,4 @@ void CAI_Stalker::on_danger_location_remove(const CDangerLocation& location)
     }
 }
 
-void CAI_Stalker::on_cover_blocked(const CCoverPoint* cover)
-{
-#ifdef DEBUG
-//	Msg									("* [%6d][%s] cover is blocked",Device.dwTimeGlobal,*cName());
-#endif
-    m_best_cover_actual = false;
-}
+void CAI_Stalker::on_cover_blocked() { m_best_cover_actual = false; }

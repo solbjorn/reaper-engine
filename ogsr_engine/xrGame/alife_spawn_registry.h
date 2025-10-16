@@ -42,10 +42,10 @@ private:
     string_unordered_map<shared_str, ALife::_SPAWN_ID> m_spawn_ids_by_name;
 
 private:
-    IReader* m_file;
-    IReader* m_spawn_chunk;
-    CGameGraph* m_game_graph;
-    bool m_separated_graphs;
+    IReader* m_file{};
+    IReader* m_spawn_chunk{};
+    CGameGraph* m_game_graph{};
+    bool m_separated_graphs{true};
 
 protected:
     // void							save_updates				(IWriter &stream);
@@ -57,13 +57,11 @@ protected:
     IC void process_spawns(xr_vector<ALife::_SPAWN_ID>& spawns);
     IC bool enabled_spawn(CSE_Abstract& abstract) const;
     IC bool count_limit(CSE_Abstract& abstract) const;
-    IC bool time_limit(CSE_Abstract& abstract, ALife::_TIME_ID game_time) const;
-    IC bool spawned_item(SPAWN_GRAPH::CVertex* vertex);
-    IC bool object_existance_limit(CSE_Abstract& abstract) const;
-    IC bool can_spawn(CSE_Abstract& abstract, ALife::_TIME_ID game_time) const;
+    [[nodiscard]] bool time_limit(CSE_Abstract& abstract) const;
+    [[nodiscard]] bool can_spawn(CSE_Abstract& abstract) const;
 
 public:
-    CALifeSpawnRegistry(LPCSTR section);
+    CALifeSpawnRegistry();
     virtual ~CALifeSpawnRegistry();
 
     virtual void load(IReader& file_stream, xrGUID* save_guid = nullptr);

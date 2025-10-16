@@ -35,11 +35,12 @@ protected:
     void add_actions();
 
 public:
-    void on_best_cover_changed(const CCoverPoint* new_cover, const CCoverPoint* old_cover);
+    void on_best_cover_changed(const CCoverPoint*, const CCoverPoint*);
 
 public:
     CStalkerCombatPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
     virtual ~CStalkerCombatPlanner();
+
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();
     virtual void initialize();

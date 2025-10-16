@@ -62,9 +62,9 @@ public:
     void ChangePower(float value);
     void ChangeRadiation(float value);
     void ChangePsyHealth(float value);
-    virtual void ChangeSatiety(float value) {}
-    virtual void ChangeAlcohol(float value) {}
-    virtual void ChangeThirst(float value) {}
+    virtual void ChangeSatiety(float) {}
+    virtual void ChangeAlcohol(float) {}
+    virtual void ChangeThirst(float) {}
 
     IC void SetMaxPower(float val)
     {
@@ -187,7 +187,7 @@ protected:
 public:
     virtual void reinit();
 
-    IC const float fdelta_time() const { return (m_fDeltaTime); }
+    IC float fdelta_time() const { return (m_fDeltaTime); }
     IC const WOUND_VECTOR& wounds() const { return (m_WoundVector); }
     IC float& radiation() { return (m_fRadiation); }
     IC float& hit_bone_scale() { return (m_fHitBoneScale); }

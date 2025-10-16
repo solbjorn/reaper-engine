@@ -15,20 +15,23 @@ void CPHShell::applyHit(const Fvector& pos, const Fvector& dir, float val, const
 {
     if (id == u16(-1))
         return; //
-#pragma todo("Kosya to kosya:this code shold treat all hit types")
+
+    // TODO: Kosya to kosya:this code shold treat all hit types
+
     if (!m_pKinematics)
     {
         applyImpulseTrace(pos, dir, val);
         return;
     }
+
     switch (hit_type)
     {
-    case ALife::eHitTypeExplosion: ExplosionHit(pos, dir, val, id); break;
+    case ALife::eHitTypeExplosion: ExplosionHit(pos, dir, val); break;
     default: applyImpulseTrace(pos, dir, val, id);
     }
 }
 
-void CPHShell::ExplosionHit(const Fvector& pos, const Fvector& dir, float val, const u16 id)
+void CPHShell::ExplosionHit(const Fvector& pos, const Fvector& dir, float val)
 {
     if (!isActive())
         return;

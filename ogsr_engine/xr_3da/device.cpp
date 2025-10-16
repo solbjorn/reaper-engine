@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <mmsystem.h>
-
 #include "x_ray.h"
 #include "render.h"
 #include "xr_input.h"
@@ -9,11 +7,12 @@
 #include "IGame_Level.h"
 #include "igame_persistent.h"
 
-#include "imgui.h"
-#include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
-#include <winternl.h>
+#include "../Layers/xrRenderDX10/imgui_impl_dx11.h"
 
 #include <oneapi/tbb/parallel_invoke.h>
+
+#include <mmsystem.h>
+#include <winternl.h>
 
 CRenderDevice Device;
 CLoadScreenRenderer load_screen_renderer;
@@ -438,7 +437,7 @@ void CRenderDevice::FrameMove()
 
 BOOL bShowPauseString = TRUE;
 
-void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
+void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, [[maybe_unused]] LPCSTR reason)
 {
     static int snd_emitters_ = -1;
 
@@ -504,7 +503,7 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 
 BOOL CRenderDevice::Paused() { return g_pauseMngr->Paused(); }
 
-void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
+void CRenderDevice::OnWM_Activate(WPARAM wParam)
 {
     const u16 fActive = LOWORD(wParam);
     const BOOL fMinimized = (BOOL)HIWORD(wParam);

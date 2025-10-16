@@ -7,29 +7,32 @@ class CPerlinNoiseCustom
 {
 protected:
     int mSeed;
-    bool mReady;
+    bool mReady{};
 
     int p[SAMPLE_SIZE + SAMPLE_SIZE + 2];
 
 protected:
-    int mOctaves;
-    float mFrequency;
-    float mAmplitude;
+    int mOctaves{2};
+    float mFrequency{1.0f};
+    float mAmplitude{1.0f};
     xr_vector<float> mTimes;
 
 public:
-    CPerlinNoiseCustom(int seed) : mOctaves(2), mFrequency(1), mAmplitude(1), mSeed(seed), mReady(false) {}
+    CPerlinNoiseCustom(int seed) : mSeed{seed} {}
+
     IC void SetParams(int oct, float freq, float amp)
     {
         mOctaves = oct;
         mFrequency = freq;
         mAmplitude = amp;
     }
+
     IC void SetOctaves(int oct)
     {
         mOctaves = oct;
         mTimes.resize(mOctaves);
     }
+
     IC void SetFrequency(float freq) { mFrequency = freq; }
     IC void SetAmplitude(float amp) { mAmplitude = amp; }
 };

@@ -42,7 +42,7 @@ CStalkerCombatPlanner::CStalkerCombatPlanner(CAI_Stalker* object, LPCSTR action_
 
 CStalkerCombatPlanner::~CStalkerCombatPlanner() { object().unsubscribe_on_best_cover_changed(CallMe::fromMethod<&CStalkerCombatPlanner::on_best_cover_changed>(this)); }
 
-void CStalkerCombatPlanner::on_best_cover_changed(const CCoverPoint* new_cover, const CCoverPoint* old_cover)
+void CStalkerCombatPlanner::on_best_cover_changed(const CCoverPoint*, const CCoverPoint*)
 {
     CScriptActionPlanner::m_storage.set_property(eWorldPropertyInCover, false);
     CScriptActionPlanner::m_storage.set_property(eWorldPropertyLookedOut, false);

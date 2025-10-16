@@ -71,7 +71,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
     else
     {
         NET_Packet tmpP;
-        if (0xffff != parent_id && Process_event_reject(P, sender, time, parent_id, ID, false))
+        if (0xffff != parent_id && Process_event_reject(P, parent_id, ID, false))
         {
             game->u_EventGen(tmpP, GE_OWNERSHIP_REJECT, parent_id);
             tmpP.w_u16(id_dest);

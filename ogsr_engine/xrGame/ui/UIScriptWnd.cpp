@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "UIScriptWnd.h"
 #include "../HudManager.h"
 #include "../object_broker.h"
@@ -34,7 +35,7 @@ void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     it->fn(this);
 }
 
-bool CUIDialogWndEx::Load(LPCSTR xml_name) { return true; }
+bool CUIDialogWndEx::Load(LPCSTR) { return true; }
 
 void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(control_id, event, function); }
 

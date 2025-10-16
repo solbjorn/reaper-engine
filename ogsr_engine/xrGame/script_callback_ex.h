@@ -104,10 +104,7 @@ class CScriptCallbackEx : public CScriptCallbackEx_<_return_type>
     template <typename T>
     static return_type do_return(T&& value, std::false_type /*is_void*/)
     {
-#pragma warning(push)
-#pragma warning(disable : 4800)
         return return_type(std::forward<T>(value));
-#pragma warning(pop)
     }
 
     template <typename T>

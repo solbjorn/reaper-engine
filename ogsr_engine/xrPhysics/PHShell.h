@@ -57,7 +57,7 @@ public:
     virtual bool AnimToVelocityState(float dt, float l_limit, float a_limit);
     virtual void SetBonesCallbacksOverwrite(bool v);
     void SetPhObjectInElements();
-    virtual void EnableObject(CPHObject* obj);
+    virtual void EnableObject(CPHObject*);
     virtual void DisableObject();
     virtual void SetAirResistance(dReal linear = default_k_l, dReal angular = default_k_w)
     {
@@ -73,11 +73,11 @@ public:
 
     virtual void Update();
 
-    virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false);
+    virtual void Activate(const Fmatrix& m0, float, const Fmatrix& m2, bool disable = false);
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false);
 
     virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false);
-    virtual void Activate(const Fmatrix& start_from, bool disable = false) {}
+    virtual void Activate(const Fmatrix&, bool = false) {}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; }
@@ -218,7 +218,7 @@ public:
     virtual void UnFreeze();
     virtual void NetInterpolationModeON() { CPHObject::NetInterpolationON(); }
     virtual void NetInterpolationModeOFF() { CPHObject::NetInterpolationOFF(); }
-    virtual void StepFrameUpdate(dReal step) {}
+    virtual void StepFrameUpdate(dReal) {}
     virtual CPHMoveStorage* MoveStorage() { return &m_traced_geoms; }
     virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = nullptr);
     virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map);
@@ -267,13 +267,12 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix global_parent, u16 element_number, bool* vis_check);
     void PlaceBindToElFormsRecursive(Fmatrix parent, u16 id, u16 element, VisMask& mask);
-    void BonesBindCalculate(u16 id_from = 0);
     void BonesBindCalculateRecursive(Fmatrix parent, u16 id);
     void ZeroCallbacksRecursive(u16 id);
     void SetCallbacksRecursive(u16 id, u16 element);
     void ResetCallbacksRecursive(u16 id, u16 element, VisMask& mask);
     void SetJointRootGeom(CPhysicsElement* root_e, CPhysicsJoint* J);
     void ReanableObject();
-    void ExplosionHit(const Fvector& pos, const Fvector& dir, float val, const u16 id);
+    void ExplosionHit(const Fvector& pos, const Fvector& dir, float val);
     void ClearBreakInfo();
 };

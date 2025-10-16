@@ -1,14 +1,9 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#include "phworld.h"
-#endif
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
+#include "phworld.h"
 #include "car.h"
 #include "actor.h"
 #include "cameralook.h"
@@ -16,9 +11,15 @@
 #include "level.h"
 #include "../xr_3da/cameramanager.h"
 
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
+
 bool CCar::HUDView() const { return active_camera->tag == ectFirst; }
 
-void CCar::cam_Update(float dt, float fov)
+void CCar::cam_Update(float, float fov)
 {
     VERIFY(!ph_world->Processing());
     Fvector P, Da;

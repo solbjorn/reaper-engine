@@ -152,7 +152,7 @@ struct ts_applier<typelist<Ts...>>
     template <typename Handler>
     static void apply(Handler&& handler)
     {
-        const int fold[] = {(handler(identity<Ts>()), 0)..., 0};
+        [[maybe_unused]] const int fold[]{(handler(identity<Ts>()), 0)..., 0};
     }
 };
 

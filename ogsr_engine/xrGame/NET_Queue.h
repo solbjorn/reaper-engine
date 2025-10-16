@@ -67,20 +67,15 @@ class NET_Queue_Event
 public:
     xr_deque<NET_Event> queue;
 
-public:
     IC void insert(NET_Packet& P)
     {
         NET_Event E;
         E.import(P);
         queue.push_back(E);
     }
-    IC BOOL available(u32 T)
-    {
-        if (queue.empty())
-            return FALSE;
 
-        return TRUE;
-    }
+    bool available() const { return !queue.empty(); }
+
     IC void get(u16& ID, u16& dest, u16& type, NET_Packet& P)
     {
         const NET_Event& E = *queue.begin();

@@ -5,18 +5,15 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "script_engine.h"
 #include "level.h"
-#include "xrserver.h"
 #include "ai_space.h"
 #include "game_sv_event_queue.h"
 #include "..\xr_3da\XR_IOConsole.h"
 #include "..\xr_3da\xr_ioc_cmd.h"
 #include "string_table.h"
 
-BOOL net_sv_control_hit = FALSE;
-
 game_PlayerState* game_sv_GameState::get_it(u32 it)
 {
-    xrClientData* C = (xrClientData*)m_server->client_Get(it);
+    xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(it));
     if (!C)
         return nullptr;
 
@@ -25,7 +22,7 @@ game_PlayerState* game_sv_GameState::get_it(u32 it)
 
 game_PlayerState* game_sv_GameState::get_id(ClientID id)
 {
-    xrClientData* C = (xrClientData*)m_server->ID_to_client(id);
+    xrClientData* C = smart_cast<xrClientData*>(m_server->ID_to_client(id));
     if (!C)
         return nullptr;
 
@@ -34,7 +31,7 @@ game_PlayerState* game_sv_GameState::get_id(ClientID id)
 
 ClientID game_sv_GameState::get_it_2_id(u32 it)
 {
-    xrClientData* C = (xrClientData*)m_server->client_Get(it);
+    xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(it));
     if (!C)
     {
         ClientID clientID;
@@ -50,7 +47,7 @@ u32 game_sv_GameState::get_players_count() { return m_server->client_Count(); }
 
 u16 game_sv_GameState::get_id_2_eid(ClientID id)
 {
-    xrClientData* C = (xrClientData*)m_server->ID_to_client(id);
+    xrClientData* C = smart_cast<xrClientData*>(m_server->ID_to_client(id));
     if (!C)
         return 0xffff;
 
@@ -71,7 +68,7 @@ void* game_sv_GameState::get_client(u16 id) // if exist
     u32 cnt = get_players_count();
     for (u32 it = 0; it < cnt; ++it)
     {
-        xrClientData* C = (xrClientData*)m_server->client_Get(it);
+        xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(it));
         if (!C || !C->ps)
             continue;
         //		game_PlayerState*	ps	=	get_it	(it);
@@ -97,14 +94,14 @@ void game_sv_GameState::net_Export_State(NET_Packet& P, ClientID to)
     P.w_s32(m_round);
     P.w_u32(m_start_time);
     P.w_u8(u8(0 & 0xff));
-    P.w_u8(u8(net_sv_control_hit));
+    P.w_u8(0);
     P.w_u8(u8(0));
 
     // Players
     u32 p_count = 0;
     for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
     {
-        xrClientData* C = (xrClientData*)m_server->client_Get(p_it);
+        xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(p_it));
         if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to))
             continue;
 
@@ -116,7 +113,7 @@ void game_sv_GameState::net_Export_State(NET_Packet& P, ClientID to)
     for (u32 p_it = 0; p_it < get_players_count(); ++p_it)
     {
         string64 p_name;
-        xrClientData* C = (xrClientData*)m_server->client_Get(p_it);
+        xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(p_it));
         game_PlayerState* A = get_it(p_it);
         if (!C->net_Ready || (A->IsSkip() && C->ID != to))
             continue;
@@ -170,9 +167,8 @@ void game_sv_GameState::net_Export_GameTime(NET_Packet& P)
     P.w_float(GetEnvironmentGameTimeFactor());
 }
 
-void game_sv_GameState::OnPlayerConnect(ClientID /**id_who/**/) { signal_Syncronize(); }
-
-void game_sv_GameState::Create(shared_str& options) {}
+void game_sv_GameState::OnPlayerConnect(ClientID) { signal_Syncronize(); }
+void game_sv_GameState::Create(shared_str&) {}
 
 void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {
@@ -188,7 +184,7 @@ void game_sv_GameState::Update()
 {
     for (u32 it = 0; it < m_server->client_Count(); ++it)
     {
-        xrClientData* C = (xrClientData*)m_server->client_Get(it);
+        xrClientData* C = smart_cast<xrClientData*>(m_server->client_Get(it));
         C->ps->ping = u16(0);
     }
 }
@@ -202,15 +198,12 @@ game_sv_GameState::game_sv_GameState()
 
 game_sv_GameState::~game_sv_GameState() { xr_delete(m_event_queue); }
 
-bool game_sv_GameState::change_level(NET_Packet& net_packet, ClientID sender) { return (true); }
+bool game_sv_GameState::change_level(NET_Packet&, ClientID) { return true; }
+void game_sv_GameState::save_game(NET_Packet&, ClientID) {}
+bool game_sv_GameState::load_game(NET_Packet&, ClientID) { return true; }
+void game_sv_GameState::switch_distance(NET_Packet&, ClientID) {}
 
-void game_sv_GameState::save_game(NET_Packet& net_packet, ClientID sender) {}
-
-bool game_sv_GameState::load_game(NET_Packet& net_packet, ClientID sender) { return (true); }
-
-void game_sv_GameState::switch_distance(NET_Packet& net_packet, ClientID sender) {}
-
-void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender)
+void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID sender)
 {
     switch (type)
     {
@@ -275,13 +268,11 @@ void game_sv_GameState::ProcessDelayedEvent()
     }
 }
 
-void game_sv_GameState::teleport_object(NET_Packet& packet, u16 id) {}
+void game_sv_GameState::teleport_object(NET_Packet&, u16) {}
 
-void game_sv_GameState::add_restriction(NET_Packet& packet, u16 id) {}
-
-void game_sv_GameState::remove_restriction(NET_Packet& packet, u16 id) {}
-
-void game_sv_GameState::remove_all_restrictions(NET_Packet& packet, u16 id) {}
+void game_sv_GameState::add_restriction(NET_Packet&, u16) {}
+void game_sv_GameState::remove_restriction(NET_Packet&, u16) {}
+void game_sv_GameState::remove_all_restrictions(NET_Packet&, u16) {}
 
 shared_str game_sv_GameState::level_name(const shared_str& server_options) const
 {

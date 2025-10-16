@@ -6,6 +6,8 @@
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"
 
+#include "..\uicursor.h"
+
 CUIScrollBar::CUIScrollBar()
 {
     m_iMinPos = 1;
@@ -172,7 +174,6 @@ void CUIScrollBar::UpdateScrollBar()
     ClampByViewRect();
 }
 
-#include "..\uicursor.h"
 u32 last_hold_time = 0;
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
@@ -207,14 +208,9 @@ bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
 {
     switch (mouse_action)
     {
-    case WINDOW_MOUSE_WHEEL_DOWN:
-        TryScrollInc();
-        return true;
-        break;
-    case WINDOW_MOUSE_WHEEL_UP:
-        TryScrollDec();
-        return true;
-        break;
+    case WINDOW_MOUSE_WHEEL_DOWN: TryScrollInc(); return true;
+    case WINDOW_MOUSE_WHEEL_UP: TryScrollDec(); return true;
+    default: break;
     }
 
     return inherited::OnMouse(x, y, mouse_action);

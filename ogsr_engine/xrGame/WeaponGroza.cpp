@@ -2,13 +2,13 @@
 
 #include "weapongroza.h"
 
-CWeaponGroza::CWeaponGroza(void) : CWeaponMagazinedWGrenade("GROZA", SOUND_TYPE_WEAPON_SUBMACHINEGUN)
+CWeaponGroza::CWeaponGroza() : CWeaponMagazinedWGrenade{SOUND_TYPE_WEAPON_SUBMACHINEGUN}
 {
     m_weight = 1.5f;
     SetSlot(SECOND_WEAPON_SLOT);
 }
 
-CWeaponGroza::~CWeaponGroza(void) {}
+CWeaponGroza::~CWeaponGroza() {}
 
 void CWeaponGroza::script_register(sol::state_view& lua)
 {

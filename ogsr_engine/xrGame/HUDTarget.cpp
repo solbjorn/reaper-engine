@@ -30,7 +30,13 @@
 #include "Weapon.h"
 #include "PDA.h"
 
-constexpr float C_SIZE = 0.025f, NEAR_LIM = 0.5f, SHOW_INFO_SPEED = 0.5f, HIDE_INFO_SPEED = 10.f;
+namespace
+{
+constexpr float C_SIZE{0.025f};
+constexpr float NEAR_LIM{0.5f};
+constexpr float SHOW_INFO_SPEED{0.5f};
+constexpr float HIDE_INFO_SPEED{10.f};
+} // namespace
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -184,6 +190,7 @@ void CHUDTarget::Render()
                     case ALife::eRelationTypeEnemy: C = C_ON_ENEMY; break;
                     case ALife::eRelationTypeNeutral: C = C_ON_NEUTRAL; break;
                     case ALife::eRelationTypeFriend: C = C_ON_FRIEND; break;
+                    default: break;
                     }
 
                     if (fuzzyShowInfo > 0.5f)
@@ -217,7 +224,7 @@ void CHUDTarget::Render()
     if (auto Wpn = smart_cast<CWeapon*>(Actor->inventory().ActiveItem()); Wpn && (Wpn->IsLaserOn() || Wpn->GetState() == CHUDState::EHudStates::eReload))
         return;
 
-    if (const u32 State = Actor->get_state() & mcSprint)
+    if (Actor->get_state() & mcSprint)
         return;
 
     Fvector2 scr_size;

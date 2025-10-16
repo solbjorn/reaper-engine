@@ -19,7 +19,7 @@ class IRender_Light;
 
 DEFINE_VECTOR(CPhysicsShellHolder*, BLASTED_OBJECTS_V, BLASTED_OBJECTS_I);
 
-class CExplosive : public IDamageSource
+class XR_NOVTABLE CExplosive : public IDamageSource
 {
     RTTI_DECLARE_TYPEINFO(CExplosive, IDamageSource);
 
@@ -79,7 +79,7 @@ protected:
 
 private:
     void PositionUpdate();
-    static void GetRaySourcePos(CExplosive* exp_obj, const Fvector& expl_centre, Fvector& p);
+    static void GetRaySourcePos(CExplosive* exp_obj, Fvector& p);
 
     void ExplodeWaveProcessObject(collide::rq_results& storage, CPhysicsShellHolder* sh);
     void ExplodeWaveProcess();

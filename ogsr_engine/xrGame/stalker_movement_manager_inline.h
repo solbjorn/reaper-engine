@@ -47,27 +47,21 @@ IC void CStalkerMovementManager::set_mental_state(EMentalState mental_state)
 {
     THROW((m_target.m_body_state != eBodyStateCrouch) || (mental_state != eMentalStateFree));
     m_target.m_mental_state = mental_state;
-    //#pragma todo("Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later")
+    // #pragma todo("Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later")
     //.	m_path_actuality			= m_path_actuality && (m_target.m_mental_state == m_current.m_mental_state);
 }
 
 IC void CStalkerMovementManager::set_path_type(EPathType path_type) { m_target.m_path_type = path_type; }
-
 IC void CStalkerMovementManager::set_detail_path_type(EDetailPathType detail_path_type) { m_target.m_detail_path_type = detail_path_type; }
 
-IC const MonsterSpace::EBodyState CStalkerMovementManager::body_state() const { return (m_current.m_body_state); }
+inline MonsterSpace::EBodyState CStalkerMovementManager::body_state() const { return m_current.m_body_state; }
+inline MonsterSpace::EBodyState CStalkerMovementManager::target_body_state() const { return m_target.m_body_state; }
+inline MonsterSpace::EMovementType CStalkerMovementManager::movement_type() const { return m_current.m_movement_type; }
+inline MonsterSpace::EMentalState CStalkerMovementManager::mental_state() const { return m_current.m_mental_state; }
+inline MonsterSpace::EMentalState CStalkerMovementManager::target_mental_state() const { return m_target.m_mental_state; }
 
-IC const MonsterSpace::EBodyState CStalkerMovementManager::target_body_state() const { return (m_target.m_body_state); }
-
-IC const MonsterSpace::EMovementType CStalkerMovementManager::movement_type() const { return (m_current.m_movement_type); }
-
-IC const MonsterSpace::EMentalState CStalkerMovementManager::mental_state() const { return (m_current.m_mental_state); }
-
-IC const MonsterSpace::EMentalState CStalkerMovementManager::target_mental_state() const { return (m_target.m_mental_state); }
-
-IC const MovementManager::EPathType CStalkerMovementManager::path_type() const { return (m_current.m_path_type); }
-
-IC const DetailPathManager::EDetailPathType CStalkerMovementManager::detail_path_type() const { return (m_current.m_detail_path_type); }
+inline MovementManager::EPathType CStalkerMovementManager::path_type() const { return m_current.m_path_type; }
+inline DetailPathManager::EDetailPathType CStalkerMovementManager::detail_path_type() const { return m_current.m_detail_path_type; }
 
 IC const Fvector& CStalkerMovementManager::desired_position() const
 {
@@ -91,6 +85,6 @@ IC CAI_Stalker& CStalkerMovementManager::object() const
     return (*m_object);
 }
 
-IC const MonsterSpace::EMovementType CStalkerMovementManager::target_movement_type() const { return (m_target.m_movement_type); }
+inline MonsterSpace::EMovementType CStalkerMovementManager::target_movement_type() const { return m_target.m_movement_type; }
 
 IC void CStalkerMovementManager::danger_head_speed(const float& speed) { m_danger_head_speed = speed; }

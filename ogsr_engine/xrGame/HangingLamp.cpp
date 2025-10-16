@@ -18,7 +18,6 @@
 //////////////////////////////////////////////////////////////////////
 
 CHangingLamp::CHangingLamp() { Init(); }
-
 CHangingLamp::~CHangingLamp() {}
 
 void CHangingLamp::Init()
@@ -85,16 +84,18 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     //	CInifile* pUserData		= K->LL_UserData();
     //	R_ASSERT3				(pUserData,"Empty HangingLamp user data!",lamp->get_visual());
     xr_delete(collidable.model);
+
     if (Visual())
     {
         IKinematics* K = smart_cast<IKinematics*>(Visual());
-        R_ASSERT(Visual() && smart_cast<IKinematics*>(Visual()));
+        R_ASSERT(Visual() && K);
         light_bone = K->LL_BoneID(*lamp->light_main_bone);
         VERIFY(light_bone != BI_NONE);
         ambient_bone = K->LL_BoneID(*lamp->light_ambient_bone);
         VERIFY(ambient_bone != BI_NONE);
         collidable.model = xr_new<CCF_Skeleton>(this);
     }
+
     fBrightness = lamp->brightness;
     clr.set(lamp->color);
     clr.a = 1.f;
@@ -109,7 +110,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     light_render->set_texture(*lamp->light_texture);
     light_render->set_virtual_size(lamp->m_virtual_size);
 
-#pragma todo("KRodin: адаптировать под новый рендер!")
+    // TODO: KRodin: адаптировать под новый рендер!
     // light_render->set_flare(!!lamp->flags.is(CSE_ALifeObjectHangingLamp::flUseFlare));
     // light_render->set_lsf_params(lamp->m_speed, lamp->m_amount, lamp->m_smap_jitter);
 
@@ -142,31 +143,37 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     }
 
     fHealth = lamp->m_health;
-
     lanim = LALib.FindItem(*lamp->color_animator);
 
-    CPHSkeleton::Spawn(e);
-    if (smart_cast<IKinematicsAnimated*>(Visual()))
-        smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle("idle");
-    if (smart_cast<IKinematics*>(Visual()))
+    std::ignore = CPHSkeleton::Spawn(e);
+
+    IKinematicsAnimated* kanim = smart_cast<IKinematicsAnimated*>(Visual());
+    if (kanim)
+        kanim->PlayCycle("idle");
+
+    IKinematics* kin = smart_cast<IKinematics*>(Visual());
+    if (kin)
     {
-        smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
-        smart_cast<IKinematics*>(Visual())->CalculateBones();
+        kin->CalculateBones_Invalidate();
+        kin->CalculateBones();
         //.intepolate_pos
     }
+
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic) && !Visual())
         Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual", *cName());
-    //.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
+
     if (Alive())
+    {
         TurnOn();
+    }
     else
     {
         processing_activate(); // temporal enable
         TurnOff(); // -> and here is disable :)
     }
 
-    setVisible((BOOL) !!Visual());
-    setEnabled((BOOL) !!collidable.model);
+    setVisible(!!Visual());
+    setEnabled(!!collidable.model);
 
     return (TRUE);
 }
@@ -176,10 +183,12 @@ void CHangingLamp::SpawnInitPhysics(CSE_Abstract* D)
     CSE_ALifeObjectHangingLamp* lamp = smart_cast<CSE_ALifeObjectHangingLamp*>(D);
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic))
         CreateBody(lamp);
-    if (smart_cast<IKinematics*>(Visual()))
+
+    IKinematics* kin = smart_cast<IKinematics*>(Visual());
+    if (kin)
     {
-        smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
-        smart_cast<IKinematics*>(Visual())->CalculateBones();
+        kin->CalculateBones_Invalidate();
+        kin->CalculateBones();
         //.intepolate_pos
     }
 }
@@ -187,6 +196,7 @@ void CHangingLamp::SpawnInitPhysics(CSE_Abstract* D)
 void CHangingLamp::CopySpawnInit()
 {
     CPHSkeleton::CopySpawnInit();
+
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     if (!K->LL_GetBoneVisible(light_bone))
         TurnOff();
@@ -203,7 +213,6 @@ BOOL CHangingLamp::net_SaveRelevant() { return inherited::net_SaveRelevant() || 
 void CHangingLamp::shedule_Update(u32 dt)
 {
     CPHSkeleton::Update(dt);
-
     inherited::shedule_Update(dt);
 }
 
@@ -290,10 +299,8 @@ void CHangingLamp::UpdateCL()
 
     if (light_render)
         light_render->set_active(light_status);
-
     if (glow_render)
         glow_render->set_active(light_status);
-
     if (light_ambient)
         light_ambient->set_active(light_status);
 }
@@ -301,11 +308,13 @@ void CHangingLamp::UpdateCL()
 void CHangingLamp::TurnOn()
 {
     lights_turned_on = true;
+
     light_render->set_active(true);
     if (glow_render)
         glow_render->set_active(true);
     if (light_ambient)
         light_ambient->set_active(true);
+
     if (Visual())
     {
         IKinematics* K = smart_cast<IKinematics*>(Visual());
@@ -313,19 +322,23 @@ void CHangingLamp::TurnOn()
         K->CalculateBones_Invalidate();
         K->CalculateBones();
     }
+
     processing_activate();
 }
 
 void CHangingLamp::TurnOff()
 {
     lights_turned_on = false;
+
     light_render->set_active(false);
     if (glow_render)
         glow_render->set_active(false);
     if (light_ambient)
         light_ambient->set_active(false);
+
     if (Visual())
         smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
+
     processing_deactivate();
 }
 
@@ -405,13 +418,12 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
     ApplySpawnIniToPhysicShell(&lamp->spawn_ini(), m_pPhysicsShell, fixed_bones[0] != '\0');
 }
 
-void CHangingLamp::net_Export(CSE_Abstract* E) { VERIFY(Local()); }
-
+void CHangingLamp::net_Export(CSE_Abstract*) { VERIFY(Local()); }
 BOOL CHangingLamp::UsedAI_Locations() { return (FALSE); }
 
-void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit)
+void CHangingLamp::SetLSFParams(float, float, float)
 {
-#pragma todo("KRodin: адаптировать под новый рендер!")
+    // TODO: KRodin: адаптировать под новый рендер!")
     // light_render->set_lsf_params(_speed, _amount, _jit);
 }
 

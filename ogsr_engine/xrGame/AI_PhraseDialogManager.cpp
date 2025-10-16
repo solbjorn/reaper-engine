@@ -14,6 +14,11 @@
 #include "gameobject.h"
 #include "relation_registry.h"
 
+#include "uigamesp.h"
+#include "hudmanager.h"
+#include "level.h"
+#include "ui/UItalkWnd.h"
+
 CAI_PhraseDialogManager::CAI_PhraseDialogManager() = default;
 CAI_PhraseDialogManager::~CAI_PhraseDialogManager() {}
 
@@ -23,11 +28,6 @@ void CAI_PhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
     AnswerPhrase(phrase_dialog);
     CPhraseDialogManager::ReceivePhrase(phrase_dialog);
 }
-
-#include "uigamesp.h"
-#include "hudmanager.h"
-#include "level.h"
-#include "ui/UItalkWnd.h"
 
 void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
 {
@@ -64,7 +64,6 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
         }
 
         phrase_num = phrases[Random.randI(0, phrases.size())];
-
         shared_str phrase_id = phrase_dialog->PhraseList()[phrase_num]->GetID();
 
         CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -75,9 +74,7 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
 }
 
 void CAI_PhraseDialogManager::SetStartDialog(shared_str phrase_dialog) { m_sStartDialog = phrase_dialog; }
-
 void CAI_PhraseDialogManager::SetDefaultStartDialog(shared_str phrase_dialog) { m_sDefaultStartDialog = phrase_dialog; }
-
 void CAI_PhraseDialogManager::RestoreDefaultStartDialog() { m_sStartDialog = m_sDefaultStartDialog; }
 
 void CAI_PhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partner)
@@ -86,8 +83,8 @@ void CAI_PhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partn
     m_CheckedDialogs.clear();
 
     if (*m_sStartDialog)
-        inherited::AddAvailableDialog(*m_sStartDialog, partner);
-    inherited::AddAvailableDialog("hello_dialog", partner);
+        std::ignore = inherited::AddAvailableDialog(*m_sStartDialog, partner);
 
+    std::ignore = inherited::AddAvailableDialog("hello_dialog", partner);
     inherited::UpdateAvailableDialogs(partner);
 }

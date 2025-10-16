@@ -190,10 +190,8 @@ void CSoundRender_TargetA::update()
 
 void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
 {
-#ifdef DEBUG
     CSoundRender_Emitter* SE = m_pEmitter;
     VERIFY(SE);
-#endif
 
     // 3D params
     VERIFY2(m_pEmitter, SE->source()->file_name());

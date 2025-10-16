@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "actor_defs.h"
+
 class CSE_Abstract;
 class CPhysicItem;
 class NET_Packet;
@@ -14,9 +16,7 @@ struct attachable_hud_item;
 class motion_marks;
 class CMotionDef;
 
-#include "actor_defs.h"
-
-class CHUDState : public virtual RTTI::Enable
+class XR_NOVTABLE CHUDState : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CHUDState);
 
@@ -53,6 +53,7 @@ protected:
 
 public:
     CHUDState() { SetState(eHidden); }
+
     IC u32 GetNextState() const { return m_nextState; }
     IC u32 GetState() const { return m_hud_item_state; }
     IC void SetState(u32 v)
@@ -68,7 +69,7 @@ public:
     virtual void OnStateSwitch(u32 S, u32 oldState) = 0;
 };
 
-class CHudItem : public CHUDState
+class XR_NOVTABLE CHudItem : public CHUDState
 {
     RTTI_DECLARE_TYPEINFO(CHudItem, CHUDState);
 
@@ -112,7 +113,7 @@ public:
     virtual void StopHUDSounds() {}
 
     // для предачи команд владельцем
-    virtual bool Action(s32 cmd, u32 flags);
+    [[nodiscard]] virtual bool Action(s32, u32);
 
     virtual void OnDrawUI() {}
 
@@ -120,17 +121,17 @@ public:
     virtual bool IsHiding() const { return GetState() == eHiding; }
     virtual bool IsShowing() const { return GetState() == eShowing; }
     // посылка сообщения на сервер о смене состояния оружия
-    virtual void SwitchState(u32 S);
+    void SwitchState(u32 S) override;
     // прием сообщения с сервера и его обработка
-    virtual void OnStateSwitch(u32 S, u32 oldState);
+    void OnStateSwitch(u32 S, u32) override;
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     virtual void OnH_A_Chield();
     virtual void OnH_B_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
+    virtual void OnH_B_Independent(bool);
     virtual void OnH_A_Independent();
 
-    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    [[nodiscard]] virtual BOOL net_Spawn(CSE_Abstract*);
     virtual void net_Destroy();
 
     virtual bool Activate(bool = false);
@@ -140,8 +141,8 @@ public:
     virtual void OnHiddenItem() {}
 
     virtual void OnAnimationEnd(u32 state);
-    virtual void OnMotionMark(u32 state, const motion_marks&) {}
-    virtual void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
+    virtual void OnMotionMark(u32, const motion_marks&) {}
+    virtual void OnMovementChanged(ACTOR_DEFS::EMoveCommand);
 
     virtual void PlayAnimIdle();
     bool TryPlayAnimIdle();
@@ -228,21 +229,10 @@ public:
 public:
     class CWeaponBobbing
     {
-    public:
-        CWeaponBobbing() = delete;
-        CWeaponBobbing(CHudItem* parent);
-        ~CWeaponBobbing() = default;
-
-        void Update(Fmatrix& m, Fmatrix& m2);
-        void CheckState();
-
     private:
         CHudItem* parent_hud_item;
-        float fTime;
-        Fvector vAngleAmplitude;
-        float fYAmplitude;
-        float fSpeed;
 
+        float fTime;
         u32 dwMState;
         float fReminderFactor;
         bool is_limping;
@@ -260,7 +250,16 @@ public:
         float m_fCrouchFactor;
         float m_fZoomFactor;
         float m_fScopeZoomFactor;
+
+    public:
+        CWeaponBobbing() = delete;
+        CWeaponBobbing(CHudItem* parent);
+        ~CWeaponBobbing() = default;
+
+        void Update(Fmatrix& m, Fmatrix& m2);
+        void CheckState();
     };
+
     std::unique_ptr<CWeaponBobbing> m_bobbing;
 
     virtual u8 GetCurrentHudOffsetIdx() const { return 0; }

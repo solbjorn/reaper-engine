@@ -89,7 +89,7 @@ ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Point* VRT)
 
 ICF void InitTriangle(CDB::TRI* XTri, Triangle& triangle, const Fvector* V_array)
 {
-    const Point vertices[3] = {Point((dReal*)&V_array[XTri->verts[0]]), Point((dReal*)&V_array[XTri->verts[1]]), Point((dReal*)&V_array[XTri->verts[2]])};
+    const Point vertices[3]{Point((const dReal*)&V_array[XTri->verts[0]]), Point((const dReal*)&V_array[XTri->verts[1]]), Point((const dReal*)&V_array[XTri->verts[2]])};
     InitTriangle(XTri, triangle, vertices);
 }
 

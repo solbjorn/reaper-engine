@@ -192,10 +192,11 @@ void CPHActorCharacter::SetAcceleration(Fvector accel)
         inherited::SetAcceleration(accel);
 }
 
-void CPHActorCharacter::Jump(const Fvector& accel)
+void CPHActorCharacter::Jump(const Fvector&)
 {
     if (!b_exist)
         return;
+
     if (!b_lose_control && (m_ground_contact_normal[1] > 0.5f || m_elevator_state.ClimbingState()))
     {
         b_jump = true;

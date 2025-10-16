@@ -15,8 +15,8 @@ private:
     typedef CInventoryItemObject inherited;
 
 public:
-    CCustomOutfit(void);
-    virtual ~CCustomOutfit(void);
+    CCustomOutfit();
+    virtual ~CCustomOutfit();
 
     virtual void Load(LPCSTR section);
 
@@ -49,7 +49,6 @@ private:
     SBoneProtections* m_boneProtection;
 
     u32 m_ef_equipment_type{};
-
     u32 m_artefact_count{};
 
 public:
@@ -61,11 +60,11 @@ public:
 
     virtual void net_Export(CSE_Abstract* E);
 
-    float m_fBleedingRestoreSpeed;
-    float m_fHealthRestoreSpeed;
-    float m_fPowerRestoreSpeed;
-    float m_fSatietyRestoreSpeed;
-    float m_fThirstRestoreSpeed;
+    float m_fBleedingRestoreSpeed{};
+    float m_fHealthRestoreSpeed{};
+    float m_fPowerRestoreSpeed{};
+    float m_fSatietyRestoreSpeed{};
+    float m_fThirstRestoreSpeed{};
 
     u32 get_artefact_count() const { return m_artefact_count; }
 };

@@ -94,9 +94,8 @@ IC void CGameGraph::begin(const u32& vertex_id, const_iterator& start, const_ite
     end = (start = (const CEdge*)((BYTE*)m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
 }
 
-IC const CGameGraph::_GRAPH_ID& CGameGraph::value(const u32& vertex_id, const_iterator& i) const { return (i->vertex_id()); }
-
-IC const float& CGameGraph::edge_weight(const_iterator i) const { return (i->distance()); }
+inline const CGameGraph::_GRAPH_ID& CGameGraph::value(const u32&, const_iterator& i) const { return i->vertex_id(); }
+inline const float& CGameGraph::edge_weight(const_iterator i) const { return i->distance(); }
 
 IC const CGameGraph::CVertex* CGameGraph::vertex(const u32& vertex_id) const
 {

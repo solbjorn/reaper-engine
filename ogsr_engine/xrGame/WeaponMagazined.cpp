@@ -25,10 +25,11 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
-#include <regex>
 #include "../xr_3da/x_ray.h"
 
-CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon{name}
+#include <regex>
+
+CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon{}
 {
     m_eSoundShow = ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
     m_eSoundHide = ESoundTypes(SOUND_TYPE_ITEM_HIDING | eSoundType);
@@ -93,11 +94,13 @@ BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
 {
     BOOL bRes = inherited::net_Spawn(DC);
     const auto wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>(DC);
+
     m_iCurFireMode = wpn->m_u8CurFireMode;
-    if (HasFireModes() && m_iCurFireMode >= m_aFireModes.size())
+    if (HasFireModes() && m_iCurFireMode >= std::ssize(m_aFireModes))
     {
-        Msg("! [%s]: %s: wrong m_iCurFireMode[%d/%zu]", __FUNCTION__, cName().c_str(), m_iCurFireMode, m_aFireModes.size() - 1);
-        m_iCurFireMode = m_aFireModes.size() - 1;
+        Msg("! [%s]: %s: wrong m_iCurFireMode[%d/%zd]", __FUNCTION__, cName().c_str(), m_iCurFireMode, std::ssize(m_aFireModes) - 1);
+        m_iCurFireMode = std::ssize(m_aFireModes) - 1;
+
         auto se_obj = alife_object();
         if (se_obj)
         {
@@ -105,7 +108,9 @@ BOOL CWeaponMagazined::net_Spawn(CSE_Abstract* DC)
             W->m_u8CurFireMode = m_iCurFireMode;
         }
     }
+
     SetQueueSize(GetCurrentFireMode());
+
     return bRes;
 }
 
@@ -697,7 +702,7 @@ void CWeaponMagazined::UpdateSounds()
         sndAimEnd.set_position(get_LastFP());
 }
 
-void CWeaponMagazined::state_Fire(float dt)
+void CWeaponMagazined::state_Fire(float)
 {
     VERIFY(fTimeToFire > 0.f);
 
@@ -797,7 +802,7 @@ void CWeaponMagazined::OnShot()
 
     // дым из ствола
     ForceUpdateFireParticles();
-    StartSmokeParticles(get_LastFP(), vel);
+    StartSmokeParticles(get_LastFP());
 
     update_visual_bullet_textures();
 }
@@ -1606,22 +1611,28 @@ bool CWeaponMagazined::SwitchMode()
 
 void CWeaponMagazined::OnNextFireMode(bool opt)
 {
-    if (m_aFireModes.size() < 2)
+    if (std::ssize(m_aFireModes) < 2)
         return;
-    if (opt && m_iCurFireMode + 1 == m_aFireModes.size())
+
+    if (opt && m_iCurFireMode + 1 == std::ssize(m_aFireModes))
         return;
-    m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % m_aFireModes.size();
+
+    m_iCurFireMode = (m_iCurFireMode + 1 + std::ssize(m_aFireModes)) % std::ssize(m_aFireModes);
+
     SetQueueSize(GetCurrentFireMode());
     PlaySound(sndFireModes, get_LastFP());
 }
 
 void CWeaponMagazined::OnPrevFireMode(bool opt)
 {
-    if (m_aFireModes.size() < 2)
+    if (std::ssize(m_aFireModes) < 2)
         return;
+
     if (opt && m_iCurFireMode == 0)
         return;
-    m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % m_aFireModes.size();
+
+    m_iCurFireMode = (m_iCurFireMode - 1 + std::ssize(m_aFireModes)) % std::ssize(m_aFireModes);
+
     SetQueueSize(GetCurrentFireMode());
     PlaySound(sndFireModes, get_LastFP());
 }

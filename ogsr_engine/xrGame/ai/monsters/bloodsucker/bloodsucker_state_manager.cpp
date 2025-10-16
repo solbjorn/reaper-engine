@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "bloodsucker_state_manager.h"
 #include "bloodsucker.h"
 
@@ -68,6 +69,7 @@ void CStateManagerBloodsucker::execute()
             {
             case eStrong: state_id = eStatePanic; break;
             case eWeak: state_id = eStateAttack; break;
+            default: break;
             }
         }
     }

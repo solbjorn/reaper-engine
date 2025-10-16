@@ -16,7 +16,7 @@ public:
     virtual ~CTushkano();
 
     virtual void Load(LPCSTR section);
-    virtual void CheckSpecParams(u32 spec_params);
+    void CheckSpecParams(u32) override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

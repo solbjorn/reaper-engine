@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ShootingObject.h"
 #include "HudSound.h"
 #include "../xr_3da/bone.h"
@@ -56,7 +57,7 @@ public:
     void Render_internal();
 
 private:
-    u16 m_rotate_x_bone, m_rotate_y_bone, m_fire_bone, m_camera_bone;
+    u16 m_rotate_x_bone, m_rotate_y_bone, m_fire_bone;
     float m_tgt_x_rot, m_tgt_y_rot, m_cur_x_rot, m_cur_y_rot, m_bind_x_rot, m_bind_y_rot;
     Fvector m_bind_x, m_bind_y;
     Fvector m_fire_dir, m_fire_pos, m_fire_norm;
@@ -65,7 +66,6 @@ private:
     Fvector2 m_lim_x_rot, m_lim_y_rot; // in bone space
     float m_min_gun_speed, m_max_gun_speed;
     CCartridge* m_Ammo;
-    float m_barrel_speed;
     Fvector m_destEnemyDir;
     bool m_allow_fire;
     HUD_SOUND m_sndShot;

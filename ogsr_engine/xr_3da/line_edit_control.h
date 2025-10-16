@@ -5,8 +5,6 @@
 // Description : line edit control class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-
 #pragma once
 
 namespace text_editor
@@ -48,13 +46,13 @@ private:
 
 public:
     line_edit_control(u32 str_buffer_size);
-    void init(u32 str_buffer_size, init_mode mode = im_standart);
     ~line_edit_control();
 
+    void init(u32 str_buffer_size, init_mode mode = im_standart);
     void clear_states();
     void on_key_press(int dik);
     void on_key_hold(int dik);
-    void on_key_release(int dik);
+    void on_key_release();
     void on_frame();
 
     void assign_callback(u32 const dik, key_state state, Callback const& callback);
@@ -164,5 +162,5 @@ private:
     bool m_cursor_view{};
     bool m_need_update{};
     bool m_unselected_mode{};
-}; // class line_edit_control
+};
 } // namespace text_editor

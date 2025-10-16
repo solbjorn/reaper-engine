@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "physicsshellholder.h"
 #include "attachable_item.h"
 #include "inventoryowner.h"
@@ -44,6 +45,7 @@ void CAttachableItem::reload(LPCSTR section)
     m_bone_name = pSettings->r_string(section, "attach_bone_name");
     //	enable							(m_auto_attach = !!(READ_IF_EXISTS(pSettings,r_bool,section,"auto_attach",TRUE)));
     enable(false);
+
 #ifdef DEBUG
     m_valid = true;
 #endif
@@ -51,7 +53,6 @@ void CAttachableItem::reload(LPCSTR section)
 
 void CAttachableItem::OnH_A_Chield()
 {
-    //	VERIFY							(m_valid);
     const CInventoryOwner* inventory_owner = smart_cast<const CInventoryOwner*>(object().H_Parent());
     if (inventory_owner && inventory_owner->attached(&item()))
         object().setVisible(true);
@@ -59,15 +60,10 @@ void CAttachableItem::OnH_A_Chield()
 
 void CAttachableItem::renderable_Render(u32 context_id, IRenderable* root) { ::Render->add_Visual(context_id, root, object().Visual(), object().XFORM()); }
 
-void CAttachableItem::OnH_A_Independent()
-{
-    //	VERIFY							(m_valid);
-    enable(false /*m_auto_attach*/);
-}
+void CAttachableItem::OnH_A_Independent() { enable(false /*m_auto_attach*/); }
 
 void CAttachableItem::enable(bool value)
 {
-    //	VERIFY							(m_valid);
     if (!object().H_Parent())
     {
         m_enabled = value;
@@ -103,7 +99,6 @@ void CAttachableItem::enable(bool value)
 
 bool CAttachableItem::can_be_attached() const
 {
-    //	VERIFY							(m_valid);
     if (!item().m_pCurrentInventory)
         return (false);
 
@@ -117,20 +112,25 @@ bool CAttachableItem::can_be_attached() const
 }
 void CAttachableItem::afterAttach()
 {
+#ifdef DEBUG
     VERIFY(m_valid);
+#endif
+
     object().processing_activate();
 }
 
 void CAttachableItem::afterDetach()
 {
+#ifdef DEBUG
     VERIFY(m_valid);
+#endif
+
     object().processing_deactivate();
 }
 
 extern float adj_delta_pos, adj_delta_rot;
 
-void CAttachableItem::ParseCurrentItem(CGameFont* F) {}
-
+void CAttachableItem::ParseCurrentItem(CGameFont*) {}
 void CAttachableItem::SaveAttachableParams() { Msg("!![%s] It's not implemented now", __FUNCTION__); }
 
 bool attach_adjust_mode_keyb(int dik)

@@ -43,7 +43,7 @@ CPhysicsJoint* P_create_Joint(CPhysicsJoint::enumType type, CPhysicsElement* fir
     return joint;
 }
 
-CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map, bool not_set_bone_callbacks)
+CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map)
 {
     IKinematics* pKinematics = smart_cast<IKinematics*>(obj->Visual());
 

@@ -21,12 +21,12 @@
 #include "interactive_motion.h"
 #include "animation_movement_controller.h"
 
-// const float default_hinge_friction = 5.f;//gray_wolf comment
+#include "../xr_3da/device.h"
+#include "stalker_movement_manager.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif // DEBUG
-
-#include "../xr_3da/device.h"
 
 // #define USE_SMART_HITS
 #define USE_IK
@@ -36,28 +36,15 @@ namespace
 constexpr float IK_CALC_DIST{100.f};
 constexpr float IK_ALWAYS_CALC_DIST{20.f};
 
-void NodynamicsCollide(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
-{
-    dBodyID body1 = dGeomGetBody(c.geom.g1);
-    dBodyID body2 = dGeomGetBody(c.geom.g2);
-    if (!body1 || !body2 || (dGeomUserDataHasCallback(c.geom.g1, NodynamicsCollide) && dGeomUserDataHasCallback(c.geom.g2, NodynamicsCollide)))
-        return;
-    do_colide = false;
-}
-
-void OnCharacterContactInDeath(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void OnCharacterContactInDeath(bool&, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     dSurfaceParameters& surface = c.surface;
     CCharacterPhysicsSupport* l_character_physic_support{};
 
     if (bo1)
-    {
         l_character_physic_support = (CCharacterPhysicsSupport*)retrieveGeomUserData(c.geom.g1)->callback_data;
-    }
     else
-    {
         l_character_physic_support = (CCharacterPhysicsSupport*)retrieveGeomUserData(c.geom.g2)->callback_data;
-    }
 
     surface.mu = l_character_physic_support->m_curr_skin_friction_in_death;
 }
@@ -79,7 +66,7 @@ CCharacterPhysicsSupport::~CCharacterPhysicsSupport()
 }
 
 CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity)
-    : m_pPhysicsShell(aentity->PPhysicsShell()), m_EntityAlife(*aentity), mXFORM(aentity->XFORM()), m_ph_sound_player(aentity)
+    : m_EntityAlife{*aentity}, mXFORM{aentity->XFORM()}, m_pPhysicsShell{aentity->PPhysicsShell()}, m_ph_sound_player{aentity}
 {
     m_PhysicMovementControl = xr_new<CPHMovementControl>(aentity);
     m_flags.assign(0);
@@ -197,24 +184,26 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
                                      /// этот хак нужен, потому что некоторым монстрам
                                      /// анимация после спона, может быть вообще не назначена
     }
+
     ka->dcast_PKinematics()->CalculateBones_Invalidate();
     ka->dcast_PKinematics()->CalculateBones();
 
-    CPHSkeleton::Spawn(e);
+    std::ignore = CPHSkeleton::Spawn(e);
+
     movement()->EnableCharacter();
     movement()->SetPosition(m_EntityAlife.Position());
     movement()->SetVelocity(0, 0, 0);
+
     if (m_eType != etActor)
     {
         m_flags.set(fl_specific_bonce_demager, TRUE);
         m_BonceDamageFactor = 1.f;
     }
-    if (Type() == etStalker)
-    {
-        m_hit_animations.SetupHitMotions(*smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual()));
-    }
-    anim_mov_state.init();
 
+    if (Type() == etStalker)
+        m_hit_animations.SetupHitMotions(*smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual()));
+
+    anim_mov_state.init();
     anim_mov_state.active = m_EntityAlife.animation_movement_controlled();
 }
 
@@ -231,7 +220,7 @@ void CCharacterPhysicsSupport::CreateCharacter()
     m_PhysicMovementControl->SetPosition(m_EntityAlife.Position());
 }
 
-void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
+void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
 {
     // if(!m_physics_skeleton)CreateSkeleton(m_physics_skeleton);
 
@@ -345,41 +334,6 @@ IC bool cmp(const Fmatrix& f0, const Fmatrix& f1)
 
     return ang < cmp_angle && cm.c.square_magnitude() < cmp_ldisp * cmp_ldisp;
 }
-
-bool is_similar(const Fmatrix& m0, const Fmatrix& m1, float param)
-{
-    Fmatrix tmp1;
-    tmp1.invert(m0);
-    Fmatrix tmp2;
-    tmp2.mul(tmp1, m1);
-    Fvector ax;
-    float ang;
-    Fquaternion q;
-    q.set(tmp2);
-    q.get_axis_angle(ax, ang);
-    return _abs(ang) < M_PI / 2.f;
-    /*
-    return  fsimilar(tmp2._11,1.f,param)&&
-            fsimilar(tmp2._22,1.f,param)&&
-            fsimilar(tmp2._33,1.f,param)&&
-            fsimilar(tmp2._41,0.f,param)&&
-            fsimilar(tmp2._42,0.f,param)&&
-            fsimilar(tmp2._43,0.f,param);
-            */
-    /*
-            fsimilar(tmp2._12,0.f,param)&&
-            fsimilar(tmp2._13,0.f,param)&&
-            fsimilar(tmp2._21,0.f,param)&&
-            fsimilar(tmp2._23,0.f,param)&&
-            fsimilar(tmp2._31,0.f,param)&&
-            fsimilar(tmp2._32,0.f,param)&&
-            fsimilar(tmp2._41,0.f,param)&&
-            fsimilar(tmp2._42,0.f,param)&&
-            fsimilar(tmp2._43,0.f,param);
-            */
-}
-
-#include "stalker_movement_manager.h"
 
 void CCharacterPhysicsSupport::KillHit(SHit& H)
 {
@@ -883,9 +837,12 @@ void CCharacterPhysicsSupport::set_collision_hit_callback(ICollisionHitCallback*
     xr_delete(m_collision_hit_callback);
     m_collision_hit_callback = cc;
 }
+
 ICollisionHitCallback* CCharacterPhysicsSupport::get_collision_hit_callback() { return m_collision_hit_callback; }
 
-void StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+namespace
+{
+void StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl*, SGameMtl*)
 {
     dJointID contact_joint = dJointCreateContact(nullptr, ContactGroup, &c);
 
@@ -899,8 +856,10 @@ void StaticEnvironmentCB(bool& do_colide, bool bo1, dContact& c, SGameMtl* mater
         ((CPHIsland*)(retrieveGeomUserData(c.geom.g2)->callback_data))->DActiveIsland()->ConnectJoint(contact_joint);
         dJointAttach(contact_joint, nullptr, dGeomGetBody(c.geom.g2));
     }
+
     do_colide = false;
 }
+} // namespace
 
 void CCharacterPhysicsSupport::FlyTo(const Fvector& disp)
 {

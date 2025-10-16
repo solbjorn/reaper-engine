@@ -36,8 +36,9 @@ protected:
 
 public:
     IC CAgentMemoryManager(CAgentManager* object);
+
     void update();
-    void remove_links(CObject* object);
+    void remove_links(CObject*);
 
 public:
     IC void set_squad_objects(VISIBLES* objects);

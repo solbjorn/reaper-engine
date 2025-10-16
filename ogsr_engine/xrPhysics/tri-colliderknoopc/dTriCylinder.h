@@ -24,4 +24,6 @@ IC float dcTriListCollider::dCylProj(dxGeom* cylinder, const dReal* normal)
     return cos1 * hlz + sin1 * radius;
 }
 
-#endif
+TRI_PRIMITIVE_COLIDE_CLASS_IMPLEMENT(Cyl);
+
+#endif // D_TRI_CYLINDER_H

@@ -12,8 +12,6 @@
 
 IC CScriptValueContainer::~CScriptValueContainer() { clear(); }
 
-IC void CScriptValueContainer::add(CScriptValue* new_value) {}
-
+IC void CScriptValueContainer::add(CScriptValue*) {}
 IC void CScriptValueContainer::assign() {}
-
 IC void CScriptValueContainer::clear() { delete_data(m_values); }

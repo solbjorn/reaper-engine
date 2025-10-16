@@ -7,6 +7,8 @@
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
+XR_DIAG_IGNORE("-Wreorder-ctor");
+XR_DIAG_IGNORE("-Wunused-parameter");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <luabind/luabind.hpp>

@@ -46,7 +46,7 @@ public:
 
 private:
     IC void setup_head_speed();
-    IC void add_velocity(int mask, float linear, float compute_angular, float angular);
+    void add_velocity(int mask, float linear, float compute_angular, float angular);
     IC void add_velocity(int mask, float linear, float compute_angular);
     IC void setup_body_orientation();
     void init_velocity_masks();
@@ -59,10 +59,11 @@ private:
 public:
     CStalkerMovementManager(CAI_Stalker* object);
     virtual ~CStalkerMovementManager();
+
     virtual void Load(LPCSTR section);
     virtual void reinit();
     virtual void reload(LPCSTR section);
-    virtual void update(u32 time_delta);
+    virtual void update(u32);
     virtual void on_travel_point_change(const u32& previous_travel_point_index);
     virtual void on_restrictions_change();
     void initialize();
@@ -86,18 +87,18 @@ public:
     IC const MonsterSpace::SBoneRotation& head_orientation() const;
     IC const Fvector& desired_position() const;
     IC const Fvector& desired_direction() const;
-    IC const MonsterSpace::EBodyState body_state() const;
-    IC const MonsterSpace::EBodyState target_body_state() const;
-    IC const MonsterSpace::EMovementType movement_type() const;
-    IC const MonsterSpace::EMentalState mental_state() const;
-    IC const MonsterSpace::EMentalState target_mental_state() const;
-    IC const EPathType path_type() const;
-    IC const EDetailPathType detail_path_type() const;
+    inline MonsterSpace::EBodyState body_state() const;
+    inline MonsterSpace::EBodyState target_body_state() const;
+    inline MonsterSpace::EMovementType movement_type() const;
+    inline MonsterSpace::EMentalState mental_state() const;
+    inline MonsterSpace::EMentalState target_mental_state() const;
+    inline EPathType path_type() const;
+    inline EDetailPathType detail_path_type() const;
     IC bool use_desired_position() const;
     IC bool use_desired_direction() const;
 
 public:
-    IC const MonsterSpace::EMovementType target_movement_type() const;
+    inline MonsterSpace::EMovementType target_movement_type() const;
 
 public:
     IC CAI_Stalker& object() const;

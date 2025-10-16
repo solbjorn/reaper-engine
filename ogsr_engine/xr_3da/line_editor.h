@@ -5,8 +5,6 @@
 // Description : line editor class, controller of line_edit_control
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-
 #ifndef LINE_EDITOR_H_INCLUDED
 #define LINE_EDITOR_H_INCLUDED
 
@@ -28,13 +26,13 @@ public:
     void on_frame();
 
 protected:
-    virtual void IR_OnKeyboardPress(int dik);
-    virtual void IR_OnKeyboardHold(int dik);
-    virtual void IR_OnKeyboardRelease(int dik);
+    void IR_OnKeyboardPress(int dik) override;
+    void IR_OnKeyboardHold(int dik) override;
+    void IR_OnKeyboardRelease(int) override;
 
 private:
     line_edit_control m_control;
-}; // class line_editor
+};
 } // namespace text_editor
 
 #endif // LINE_EDITOR_H_INCLUDED

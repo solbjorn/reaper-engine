@@ -35,7 +35,10 @@ void CPHStaticGeomShell::Deactivate()
 
 CPHStaticGeomShell::CPHStaticGeomShell() { spatial.type |= STYPE_PHYSIC; }
 
-void cb(CBoneInstance* B) {}
+namespace
+{
+void cb(CBoneInstance*) {}
+} // namespace
 
 void P_BuildStaticGeomShell(CPHStaticGeomShell* pUnbrokenObject, CGameObject* obj, ObjectContactCallbackFun* object_contact_callback, Fobb& b)
 {
@@ -47,6 +50,7 @@ void P_BuildStaticGeomShell(CPHStaticGeomShell* pUnbrokenObject, CGameObject* ob
     pUnbrokenObject->set_ObjectContactCallback(object_contact_callback);
     CPHCollideValidator::SetNonDynamicObject(*pUnbrokenObject);
 }
+
 CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj, ObjectContactCallbackFun* object_contact_callback, Fobb& b)
 {
     CPHStaticGeomShell* pUnbrokenObject = xr_new<CPHStaticGeomShell>();

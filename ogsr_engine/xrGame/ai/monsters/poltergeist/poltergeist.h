@@ -302,7 +302,7 @@ public:
     float m_pmt_raise_speed;
     float m_pmt_fly_velocity;
 
-    float m_pmt_object_collision_damage;
+    float m_pmt_object_collision_damage{0.5f};
 
     ref_sound m_sound_tele_hold;
     ref_sound m_sound_tele_throw;

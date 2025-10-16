@@ -155,7 +155,7 @@ void dxEnvironmentRender::Clear()
     clouds_r_textures.push_back(zero);
 }
 
-void dxEnvironmentRender::lerp(CEnvDescriptorMixer& currentEnv, IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
+void dxEnvironmentRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
 {
     dxEnvDescriptorRender* pA = (dxEnvDescriptorRender*)inA;
     dxEnvDescriptorRender* pB = (dxEnvDescriptorRender*)inB;

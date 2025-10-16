@@ -172,7 +172,7 @@ void CSE_ALifeTraderAbstract::__STATE_Write(NET_Packet& tNetPacket)
     save_data(m_character_name, tNetPacket);
 }
 
-void CSE_ALifeTraderAbstract::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeTraderAbstract::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     u16 m_wVersion = base()->m_wVersion;
     if (m_wVersion > 19)
@@ -425,12 +425,10 @@ void CSE_ALifeTraderAbstract::set_character_profile(shared_str new_profile) { m_
 shared_str CSE_ALifeTraderAbstract::character_profile() { return m_sCharacterProfile; }
 
 #ifdef XRGAME_EXPORTS
-
 // для работы с relation system
 u16 CSE_ALifeTraderAbstract::object_id() const { return base()->ID; }
 
 CHARACTER_COMMUNITY_INDEX CSE_ALifeTraderAbstract::Community() const { return m_community_index; }
-
 LPCSTR CSE_ALifeTraderAbstract::CommunityName() const { return *CHARACTER_COMMUNITY::IndexToId(m_community_index); }
 
 CHARACTER_RANK_VALUE CSE_ALifeTraderAbstract::Rank()
@@ -450,12 +448,10 @@ CHARACTER_REPUTATION_VALUE CSE_ALifeTraderAbstract::Reputation()
     specific_character();
     return m_reputation;
 }
-
 #endif
 
-void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet& tNetPacket) {}
-
-void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet& tNetPacket) {}
+void CSE_ALifeTraderAbstract::UPDATE_Write(NET_Packet&) {}
+void CSE_ALifeTraderAbstract::UPDATE_Read(NET_Packet&) {}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeTrader
@@ -823,7 +819,7 @@ u32 CSE_ALifeCreatureAbstract::ef_detector_type() const
 }
 
 #ifdef XRGAME_EXPORTS
-void CSE_ALifeCreatureAbstract::__on_death(CSE_Abstract* killer)
+void CSE_ALifeCreatureAbstract::__on_death(CSE_Abstract*)
 {
     VERIFY(!m_game_death_time);
     m_game_death_time = Level().GetGameTime();

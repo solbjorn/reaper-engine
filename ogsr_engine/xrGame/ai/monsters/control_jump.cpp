@@ -131,7 +131,6 @@ void CControlJump::start_jump(const Fvector& point)
     m_jump_start_pos = m_object->Position();
     m_time_started = 0;
     m_jump_time = 0;
-    m_last_saved_pos_time = 0;
 
     // ignore collision hit when object is landing
     m_object->set_ignore_collision_hit(true);
@@ -426,10 +425,7 @@ Fvector CControlJump::get_target(CObject* obj)
     Fmatrix global_transform;
     global_transform.mul(obj->XFORM(), bone.mTransform);
 
-    if (m_object->m_monster_type == CBaseMonster::eMonsterTypeOutdoor)
-        return (predict_position(obj, global_transform.c));
-    else
-        return (global_transform.c);
+    return global_transform.c;
 }
 
 void CControlJump::calculate_jump_time(Fvector const& target, bool const check_force_factor)
@@ -709,5 +705,3 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 
     return true;
 }
-
-Fvector CControlJump::predict_position(CObject* obj, const Fvector& pos) { return pos; }

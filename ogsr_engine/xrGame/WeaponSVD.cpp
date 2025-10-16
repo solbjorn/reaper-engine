@@ -3,8 +3,8 @@
 #include "weaponsvd.h"
 #include "game_object_space.h"
 
-CWeaponSVD::CWeaponSVD(void) : CWeaponCustomPistol("SVD") {}
-CWeaponSVD::~CWeaponSVD(void) {}
+CWeaponSVD::CWeaponSVD() : CWeaponCustomPistol{} {}
+CWeaponSVD::~CWeaponSVD() {}
 
 void CWeaponSVD::switch2_Fire()
 {

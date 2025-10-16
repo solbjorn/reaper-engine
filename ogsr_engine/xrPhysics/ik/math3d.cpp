@@ -30,7 +30,9 @@
   MODIFICATIONS.
 
  */
+
 #include "StdAfx.h"
+
 #include "math3d.h"
 
 #ifndef JACK
@@ -65,7 +67,6 @@ void matmult(Matrix A, Matrix B, Matrix C)
     cpmatrix(A, a);
 }
 
-void hmatmult(Matrix A, Matrix B, Matrix C)
 /*
  * Homogeneous transformation multiplication:
  *
@@ -76,10 +77,11 @@ void hmatmult(Matrix A, Matrix B, Matrix C)
  *
  * A *CAN* point to the same matrix as B or C.
  */
+void hmatmult(Matrix A, const Matrix B, const Matrix C)
 {
-    float *a, *b, *c, *bp, *cp;
-    float *bmax, *cmax, *cpmax;
-    float *b32, *c00, *c03;
+    const float *bmax, *cmax, *cpmax;
+    const float *b, *c, *bp, *cp;
+    const float *b32, *c00, *c03;
     Matrix Bt, Ct;
 
     if (A == B)
@@ -108,7 +110,7 @@ void hmatmult(Matrix A, Matrix B, Matrix C)
         c03 = &C[0][3];
     }
 
-    a = (float*)&A[0][0];
+    float* a = (float*)&A[0][0];
 
     while (b < bmax)
     {
@@ -212,11 +214,11 @@ void vecmult0(float y[], float x[], Matrix M)
     y[2] = Y[2];
 }
 
-void vecmult(float y[], float x[], Matrix M)
 /*
  * point transformation:
  * y = x * M, with y[3] = 1
  */
+void vecmult(float y[], const float x[], const Matrix M)
 {
     int i, j;
     float Y[3];
@@ -434,7 +436,7 @@ void project(float p[3], const float u[3], const float v[3])
 //
 // p = Projection of u onto plane whose normal is n
 //
-void project_plane(float p[3], float u[3], float n[3])
+void project_plane(float p[3], const float u[3], const float n[3])
 {
     float un[3];
 
@@ -955,7 +957,8 @@ float unitize4(float u[4])
 
 // length of a vector
 //
-float norm(float v[3]) { return _sqrt(DOT(v, v)); }
+float norm(const float v[3]) { return _sqrt(DOT(v, v)); }
+
 //
 // translation component of a matrix
 //
@@ -1008,10 +1011,11 @@ void get_row(Matrix M, int row, float v[3])
     v[1] = M[row][1];
     v[2] = M[row][2];
 }
+
 float vecdist(const float t[], const float t2[])
 {
     float t3[3];
 
-    vecsub(t3, (float*)t, (float*)t2);
+    vecsub(t3, (const float*)t, (const float*)t2);
     return _sqrt(DOT(t3, t3));
 }

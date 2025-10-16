@@ -13,7 +13,7 @@ using namespace DirectX;
 
 constexpr size_t GAMESAVE_SIZE{768};
 
-void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
+void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name)
 {
     Microsoft::WRL::ComPtr<ID3DResource> pSrcTexture;
     Target->get_base_rt()->GetResource(pSrcTexture.GetAddressOf());
@@ -85,4 +85,4 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     }
 }
 
-void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) { ScreenshotImpl(mode, name, nullptr); }
+void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) { ScreenshotImpl(mode, name); }

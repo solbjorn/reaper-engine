@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control_combase.h"
 #include "../../../Include\xrRender\Kinematics.h"
 #include "../../../Include\xrRender\animation_motion.h"
@@ -49,6 +50,9 @@ struct SControlJumpData : public ControlCom::IComData
 
 class CControlJump : public CControl_ComCustom<SControlJumpData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlJump, CControl_ComCustom<SControlJumpData>);
+
+private:
     typedef CControl_ComCustom<SControlJumpData> inherited;
 
     enum EStateAnimJump
@@ -80,9 +84,6 @@ class CControlJump : public CControl_ComCustom<SControlJumpData>
     float m_blend_speed; // current anim blend speed
     Fvector m_target_position; // save target position for internal needs
 
-    u32 m_last_saved_pos_time;
-    Fvector m_last_saved_pos;
-
     // state flags
     bool m_object_hitted;
     bool m_velocity_bounced;
@@ -99,7 +100,7 @@ public:
     virtual bool check_start_conditions();
     virtual void activate();
     virtual void on_release();
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData* data) override;
 
     float relative_time();
     bool in_auto_aim();
@@ -130,15 +131,12 @@ private:
     // build path after jump
     void grounding();
     // get target position according to object center point
-    Fvector get_target(CObject* obj);
+    XR_SYSV [[nodiscard]] Fvector get_target(CObject* obj);
     // check for hit object
     void hit_test();
 
     // check current jump state
     bool is_on_the_ground();
-
-    // position prediction
-    Fvector predict_position(CObject* obj, const Fvector& pos);
 
     void start_jump(const Fvector& point);
 

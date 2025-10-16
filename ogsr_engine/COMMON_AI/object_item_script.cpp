@@ -32,8 +32,8 @@ ObjectFactory::SERVER_BASE_CLASS* CObjectItemScript::server_object(LPCSTR sectio
     return o;
 }
 
-CObjectItemScript::CObjectItemScript(sol::function& client_creator, sol::function& server_creator, const CLASS_ID& clsid, LPCSTR script_clsid) : inherited(clsid, script_clsid)
+CObjectItemScript::CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid) : inherited{clsid, script_clsid}
 {
-    m_client_creator = client_creator;
-    m_server_creator = server_creator;
+    m_client_creator = std::move(client_creator);
+    m_server_creator = std::move(server_creator);
 }

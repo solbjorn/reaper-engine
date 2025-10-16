@@ -229,12 +229,11 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
             Fbox2 bb;
             bb.invalidate();
             float depth = flt_max;
-            sPoly& p = *P;
-            for (u32 vit = 0; vit < p.size(); vit++)
+
+            for (const auto& v : *P)
             {
-                Fvector4 t;
                 Fmatrix& M = i_mXFORM_01;
-                Fvector& v = p[vit];
+                Fvector4 t;
 
                 t.x = v.x * M._11 + v.y * M._21 + v.z * M._31 + M._41;
                 t.y = v.x * M._12 + v.y * M._22 + v.z * M._32 + M._42;
@@ -253,8 +252,7 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
                 if (t.z < depth)
                     depth = t.z;
             }
-            // Msg  ("bb(%s): (%f,%f)-(%f,%f), d=%f", PORTAL->bDualRender?"true":"false",bb.min.x, bb.min.y, bb.max.x,
-            // bb.max.y,depth);
+
             if (depth < EPS)
             {
                 scissor = R_scissor;
@@ -309,7 +307,7 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
 
         // Create _new_ frustum and recurse
         CFrustum Clip;
-        Clip.CreateFromPortal(P, PORTAL->P.n, i_vBase, i_mXFORM);
+        Clip.CreateFromPortal(P, i_vBase, i_mXFORM);
         PORTAL->marker = i_marker;
         PORTAL->bDualRender = FALSE;
         traverse_sector(pSector, Clip, scissor);

@@ -10,7 +10,7 @@
 
 IC void CDebugRenderer::render() { DRender->Render(); }
 
-IC void CDebugRenderer::draw_line(const Fmatrix& matrix, const Fvector& vertex0, const Fvector& vertex1, const u32& color, bool hud_mode)
+inline void CDebugRenderer::draw_line(const Fmatrix&, const Fvector& vertex0, const Fvector& vertex1, const u32& color, bool hud_mode)
 {
     Fvector vertices[2] = {vertex0, vertex1};
     u16 indices[2] = {0, 1};

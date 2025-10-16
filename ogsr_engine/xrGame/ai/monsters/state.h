@@ -11,7 +11,7 @@
 */
 
 template <typename _Object>
-class CState : public virtual RTTI::Enable
+class XR_NOVTABLE CState : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CState<_Object>);
 
@@ -79,7 +79,7 @@ private:
 };
 
 template <typename _Object>
-class CStateMove : public CState<_Object>
+class XR_NOVTABLE CStateMove : public CState<_Object>
 {
     RTTI_DECLARE_TYPEINFO(CStateMove<_Object>, CState<_Object>);
 

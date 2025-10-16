@@ -21,7 +21,7 @@ public:
 private:
     struct CAlwaysTrueEvaluator
     {
-        IC bool operator()(const Fvector& position) const { return (true); }
+        [[nodiscard]] constexpr inline bool operator()(const Fvector&) const { return true; }
     };
 
 protected:

@@ -9,6 +9,9 @@ class CCoverEvaluatorCloseToEnemy;
 
 class CControlPathBuilderBase : public CControl_ComBase
 {
+    RTTI_DECLARE_TYPEINFO(CControlPathBuilderBase, CControl_ComBase);
+
+private:
     typedef CControl_ComBase inherited;
 
     // -----------------------------------------------------------
@@ -108,7 +111,7 @@ public:
     // Control Interface
     virtual void reinit();
     virtual void update_frame();
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
     virtual void on_start_control(ControlCom::EControlType type);
     virtual void on_stop_control(ControlCom::EControlType type);
 

@@ -1,7 +1,11 @@
 #include "stdafx.h"
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wcast-qual");
+XR_DIAG_IGNORE("-Wclass-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wunknown-pragmas");
+XR_DIAG_IGNORE("-Wunused-parameter");
 
 #include <Opcode.h>
 
@@ -10,6 +14,8 @@ XR_DIAG_POP();
 using namespace CDB;
 using namespace Opcode;
 
+namespace
+{
 template <bool bClass3, bool bFirst>
 class frustum_collider
 {
@@ -27,13 +33,16 @@ public:
         verts = V;
         F = _F;
     }
-    IC EFC_Visible _box(Fvector& C, Fvector& E, u32& mask)
+
+    IC EFC_Visible _box(const Fvector& C, const Fvector& E, u32 mask)
     {
         Fvector mM[2];
         mM[0].sub(C, E);
         mM[1].add(C, E);
+
         return F->testAABB(&mM[0].x, mask);
     }
+
     void _prim(DWORD prim)
     {
         if constexpr (bClass3)
@@ -67,7 +76,7 @@ public:
     void _stab(const AABBNoLeafNode* node, u32 mask)
     {
         // Actual frustum/aabb test
-        EFC_Visible result = _box((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, mask);
+        EFC_Visible result = _box((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, mask);
         if (fcvNone == result)
             return;
 
@@ -91,6 +100,7 @@ public:
             _stab(node->GetNeg(), mask);
     }
 };
+} // namespace
 
 void COLLIDER::frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustum& F)
 {

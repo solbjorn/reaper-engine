@@ -28,18 +28,17 @@ protected:
 
 protected:
     IC void perform_search(const _vertex_id_type game_vertex_id);
-    IC virtual void before_search(_vertex_id_type& vertex_id);
+    IC virtual void before_search(_vertex_id_type&);
     IC virtual void after_search();
 
 public:
     IC CAbstractLocationSelector(CRestrictedObject* object);
     IC virtual ~CAbstractLocationSelector();
+
     IC virtual void reinit(const _Graph* graph = 0);
 
     IC _vertex_id_type get_selected_vertex_id() const;
-
     IC void set_query_interval(const u32 query_interval);
-
     IC void set_evaluator(_VertexEvaluator* evaluator);
 
     IC bool failed() const;

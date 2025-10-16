@@ -266,12 +266,12 @@ bool CAI_Stalker::can_sell(CInventoryItem const* item)
     return ((*I).m_new_owner_id != ID());
 }
 
-bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const
+bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, EItemPlace) const
 {
     if (!g_Alive())
-        return (trade_parameters().enabled(CTradeParameters::action_show(nullptr), item->object().cNameSect()));
+        return trade_parameters().enabled(CTradeParameters::action_show(nullptr), item->object().cNameSect());
 
-    return (const_cast<CAI_Stalker*>(this)->can_sell(item));
+    return const_cast<CAI_Stalker*>(this)->can_sell(item);
 }
 
 bool CAI_Stalker::non_conflicted(const CInventoryItem* item, const CWeapon* new_weapon) const

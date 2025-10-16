@@ -26,17 +26,17 @@ IC void CEvaluator::init(_object_type* object, LPCSTR evaluator_name)
 }
 
 TEMPLATE_SPECIALIZATION
-void CEvaluator::setup(_object_type* object, CPropertyStorage* storage)
+inline void CEvaluator::setup(_object_type* object, CPropertyStorage* storage)
 {
     m_object = object;
     m_storage = storage;
 }
 
 TEMPLATE_SPECIALIZATION
-void CEvaluator::Load(LPCSTR section) {}
+inline void CEvaluator::Load(LPCSTR) {}
 
 TEMPLATE_SPECIALIZATION
-typename CEvaluator::_value_type CEvaluator::evaluate()
+inline typename CEvaluator::_value_type CEvaluator::evaluate()
 {
     auto op = ops.find(evaluator_ops::EVALUATE);
     if (op == ops.end())

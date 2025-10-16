@@ -16,23 +16,26 @@
 
 #ifdef DEBUG
 #include "PHWorld.h"
-
-extern CPHWorld* ph_world;
 #endif
 
-CDestroyablePhysicsObject ::CDestroyablePhysicsObject() { m_fHealth = 1.f; }
+extern CPHWorld* ph_world;
 
+CDestroyablePhysicsObject ::CDestroyablePhysicsObject() { m_fHealth = 1.f; }
 CDestroyablePhysicsObject::~CDestroyablePhysicsObject() {}
+
 void CDestroyablePhysicsObject::OnChangeVisual()
 {
     if (m_pPhysicsShell)
     {
         m_pPhysicsShell->Deactivate();
         xr_delete(m_pPhysicsShell);
-        VERIFY(0 == Visual());
+
+        VERIFY(Visual() == nullptr);
     }
+
     inherited::OnChangeVisual();
 }
+
 CPhysicsShellHolder* CDestroyablePhysicsObject ::PPhysicsShellHolder() { return cast_physics_shell_holder(); }
 
 void CDestroyablePhysicsObject::net_Destroy()

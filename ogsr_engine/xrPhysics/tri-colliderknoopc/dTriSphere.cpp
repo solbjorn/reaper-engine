@@ -1,8 +1,10 @@
 #include "stdafx.h"
+
 #include "dTriColliderCommon.h"
 #include "dTriColliderMath.h"
 #include "dTriSphere.h"
 #include "dctrilistcollider.h"
+
 ////////////////////////////////////////////////////////////////////////////
 IC dReal dcTriListCollider::PointSphereTest(const dReal* center, const dReal radius, const dReal* pt, dReal* norm)
 {
@@ -122,8 +124,7 @@ IC bool dcTriListCollider::PointSphereTest(const dReal* center, const dReal radi
 }
 /////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
-int dcTriListCollider::dSortedTriSphere(const dReal* /**v1/**/, const dReal* /**v2/**/, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int Flags,
-                                        dContactGeom* Contacts, int skip)
+int dcTriListCollider::dSortedTriSphere(const dReal*, const dReal*, const dReal* triAx, CDB::TRI* T, dReal dist, dxGeom* Sphere, dxGeom* Geometry, int, dContactGeom* Contacts, int)
 {
     // const dReal* v1=(dReal*)T->verts[1];
     // const dReal* v2=(dReal*)T->verts[2];
@@ -159,8 +160,7 @@ int dcTriListCollider::dSortedTriSphere(const dReal* /**v1/**/, const dReal* /**
     return 0;
 }
 
-int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* Sphere, dxGeom* Geometry, int Flags, dContactGeom* Contacts,
-                                  int /**skip/**/)
+int dcTriListCollider::dTriSphere(const dReal* v0, const dReal* v1, const dReal* v2, Triangle* T, dxGeom* Sphere, dxGeom* Geometry, int, dContactGeom* Contacts, int)
 {
     const dVector3& triSideAx0 = T->side0;
     const dVector3& triSideAx1 = T->side1;

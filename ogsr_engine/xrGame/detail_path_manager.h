@@ -146,10 +146,9 @@ private:
     void validate_vertex_position(STrajectoryPoint& point) const;
     bool init_build(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest, u32& straight_line_index,
                     u32& straight_line_index_negative);
-    bool fill_key_points(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest);
+    bool fill_key_points(const xr_vector<u32>& level_path, STrajectoryPoint& start, STrajectoryPoint& dest);
     void add_patrol_point();
-    void postprocess_key_points(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest,
-                                xr_vector<STravelParamsIndex>& finish_params, const u32 straight_line_index, const u32 straight_line_index_negative);
+    void postprocess_key_points();
     void build_path_via_key_points(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelParamsIndex>& finish_params, const u32 straight_line_index,
                                    const u32 straight_line_index_negative);
     void build_smooth_path(const xr_vector<u32>& level_path, u32 intermediate_index);
@@ -179,7 +178,7 @@ public:
     bool actual() const;
     IC void make_inactual();
     IC bool failed() const;
-    IC bool completed(const Fvector& position, bool bRealCompleted = true) const;
+    IC bool completed(bool bRealCompleted = true) const;
     bool valid(const Fvector& position) const;
     IC u32 curr_travel_point_index() const;
 
@@ -190,11 +189,11 @@ public:
     IC const Fvector& start_direction() const;
     IC const Fvector& dest_position() const;
     IC const Fvector& dest_direction() const;
-    IC const u32 velocity_mask() const;
-    IC const u32 desirable_mask() const;
-    IC const bool try_min_time() const;
-    IC const bool use_dest_orientation() const;
-    IC const u32 time_path_built() const;
+    IC u32 velocity_mask() const;
+    IC u32 desirable_mask() const;
+    IC bool try_min_time() const;
+    IC bool use_dest_orientation() const;
+    IC u32 time_path_built() const;
     IC const STravelParams& velocity(const u32& velocity_id) const;
     IC const VELOCITIES& velocities() const;
     IC void add_velocity(const u32& velocity_id, const STravelParams& params);
@@ -213,7 +212,7 @@ public:
     IC float extrapolate_length() const;
 
 public:
-    void on_travel_point_change(const u32& previous_travel_point_index);
+    void on_travel_point_change(const u32&);
     IC const float& distance_to_target();
     u32 location_on_path(const CGameObject* object, float distance, Fvector& result) const;
 };

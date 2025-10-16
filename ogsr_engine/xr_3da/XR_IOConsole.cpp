@@ -18,9 +18,7 @@
 
 namespace
 {
-constexpr float UI_BASE_WIDTH{1024.0f};
 constexpr float UI_BASE_HEIGHT{768.0f};
-
 constexpr float LDIST{0.05f};
 
 constexpr u32 cmd_history_max{64};
@@ -112,8 +110,10 @@ bool CConsole::is_mark(Console_mark type)
     case mark9:
     case mark10:
     case mark11:
-    case mark12: return true; break;
+    case mark12: return true;
+    default: break;
     }
+
     return false;
 }
 
@@ -206,7 +206,6 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
     float scr_width = 1.98f * Device.fWidth_2;
     if (str_length > scr_width) // 1024.0f
     {
-        float f = 0.0f;
         int sz = 0;
         int ln = 0;
         LPSTR one_line = (LPSTR)_alloca((CONSOLE_BUF_SIZE + 1) * sizeof(char));
@@ -223,11 +222,6 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
                 pos_y -= lineDistance;
                 pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
                 ln = sz + 1;
-                f = 0.0f;
-            }
-            else
-            {
-                f = t;
             }
 
             ++sz;
@@ -903,35 +897,27 @@ void CConsole::update_tips()
         if (cur[first_lenght] == ' ')
         {
             if (m_tips_mode != 2)
-            {
                 reset_selected_tip();
-            }
 
             vecCMD_IT it = Commands.find(first.c_str());
             if (it != Commands.end())
             {
                 IConsole_Command* cc = it->second;
 
-                u32 mode = 0;
                 if ((first_lenght + 2 <= cur_length) && (cur[first_lenght] == ' ') && (cur[first_lenght + 1] == ' '))
-                {
-                    mode = 1;
                     last.erase(0, 1); // fake: next char
-                }
 
-                cc->fill_tips(m_temp_tips, mode);
+                cc->fill_tips(m_temp_tips);
                 m_tips_mode = 2;
                 m_cur_cmd._set(first.c_str());
                 select_for_filter(last.c_str(), m_temp_tips, m_tips);
 
                 if (m_tips.size() == 0)
-                {
                     m_tips.push_back(TipString("(empty)"));
-                }
-                if ((int)m_tips.size() <= m_select_tip)
-                {
+
+                if (std::ssize(m_tips) <= m_select_tip)
                     reset_selected_tip();
-                }
+
                 return;
             }
         }

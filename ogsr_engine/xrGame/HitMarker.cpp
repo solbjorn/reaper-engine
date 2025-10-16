@@ -1,13 +1,11 @@
 // exxZERO Time Stamp AddIn. Document modified at : Thursday, March 07, 2002 14:12:50 , by user : Oles , from computer : OLES
+
 #include "stdafx.h"
+
 #include "HitMarker.h"
 #include "..\xr_3da\render.h"
 #include "..\xr_3da\LightAnimLibrary.h"
 #include "UIStaticItem.h"
-
-static Fvector2 as_PC[5];
-static Fvector2 as_TC[5];
-const static u32 as_id[4 * 3] = {0, 1, 4, 1, 2, 4, 2, 3, 4, 3, 0, 4};
 
 //--------------------------------------------------------------------
 CHitMarker::CHitMarker() { InitShader(pSettings->r_string("hud_hitmark", "hit_mark_texture")); }
@@ -24,7 +22,7 @@ CHitMarker::~CHitMarker()
     }
 }
 //--------------------------------------------------------------------
-const static float fShowTime = 0.5f;
+
 void CHitMarker::Render()
 {
     float h1, p1;
@@ -43,7 +41,7 @@ void CHitMarker::Render()
 }
 //--------------------------------------------------------------------
 
-void CHitMarker::Hit(int id, const Fvector& dir)
+void CHitMarker::Hit(int, const Fvector& dir)
 {
     Fvector hit_dir = dir;
     hit_dir.mul(-1.0f);

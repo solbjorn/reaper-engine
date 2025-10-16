@@ -4,7 +4,8 @@
 #include "UIScrollBar.h"
 #include "../ui_base.h"
 #include "../UICursor.h"
-#include "..\..\xr_3da\xr_input.h"
+#include "../xr_3da/xr_input.h"
+#include "../Level.h"
 
 CUIScrollView::CUIScrollView()
 {
@@ -213,9 +214,6 @@ void CUIScrollView::OnScrollV(CUIWindow*, void*)
     m_targetScrollPosition = -static_cast<float>(s_pos);
 }
 
-#include "../xr_3da/xr_input.h"
-#include "../Level.h"
-
 bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
 {
     if (inherited::OnMouse(x, y, mouse_action))
@@ -227,22 +225,24 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
     {
     case WINDOW_MOUSE_WHEEL_UP:
         m_VScrollBar->TryScrollDec();
+
         if (with_shift)
         {
             m_VScrollBar->TryScrollDec();
             m_VScrollBar->TryScrollDec();
         }
+
         return true;
-        break;
     case WINDOW_MOUSE_WHEEL_DOWN:
         m_VScrollBar->TryScrollInc();
+
         if (with_shift)
         {
             m_VScrollBar->TryScrollInc();
             m_VScrollBar->TryScrollInc();
         }
+
         return true;
-        break;
     case WINDOW_MOUSE_MOVE:
         if (pInput->iGetAsyncBtnState(0))
         {
@@ -254,9 +254,12 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
             clamp(curr_pad_pos.y, -max_pos, 0.0f);
             m_pad->SetWndPos(curr_pad_pos);
             UpdateScroll();
+
             return true;
         }
+
         break;
+    default: break;
     }
 
     return false;

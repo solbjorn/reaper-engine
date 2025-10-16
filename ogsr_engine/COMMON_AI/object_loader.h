@@ -134,18 +134,18 @@ struct CLoader
         }
     };
 
-    IC static void load_data(LPCSTR& data, M& stream, const P& p) { NODEFAULT; }
+    IC static void load_data(LPCSTR&, M&, const P&) { NODEFAULT; }
 
-    IC static void load_data(LPSTR& data, M& stream, const P& p)
+    IC static void load_data(LPSTR& data, M& stream, const P&)
     {
         shared_str S;
         stream.r_stringZ(S);
         data = xr_strdup(*S);
     }
 
-    IC static void load_data(shared_str& data, M& stream, const P& p) { stream.r_stringZ(data); }
+    IC static void load_data(shared_str& data, M& stream, const P&) { stream.r_stringZ(data); }
 
-    IC static void load_data(xr_string& data, M& stream, const P& p)
+    IC static void load_data(xr_string& data, M& stream, const P&)
     {
         shared_str S;
         stream.r_stringZ(S);
@@ -262,20 +262,23 @@ namespace detail
 struct CEmptyPredicate
 {
     template <typename T1, typename T2>
-    void after_load(T1& /*data*/, T2& /*stream*/) const
+    constexpr void after_load(T1&, T2&) const
     {}
+
     template <typename T1, typename T2>
-    bool operator()(T1& /*data*/, const T2& /*value*/) const
+    constexpr bool operator()(T1&, const T2&) const
     {
         return true;
     }
+
     template <typename T1, typename T2>
-    bool operator()(T1& /*data*/, const T2& /*value*/, bool) const
+    constexpr bool operator()(T1&, const T2&, bool) const
     {
         return true;
     }
-    bool can_clear() const { return true; }
-    bool can_add() const { return true; }
+
+    constexpr bool can_clear() const { return true; }
+    constexpr bool can_add() const { return true; }
 };
 } // namespace detail
 } // namespace object_loader
@@ -284,17 +287,16 @@ struct CEmptyPredicate
 // it will allocate memory if pointers is nullptr,
 // otherwise it will use already allocated object.
 template <typename T, typename M, typename P>
-IC void load_data(const T& data, M& stream, const P& p)
+inline void load_data(T& data, M& stream, const P& p)
 {
-    T* temp = const_cast<T*>(&data);
-    CLoader<M, P>::load_data(*temp, stream, p);
+    CLoader<M, P>::load_data(data, stream, p);
 }
 
 // Be careful with pointer:
 // it will allocate memory if pointers is nullptr,
 // otherwise it will use already allocated object.
 template <typename T, typename M>
-IC void load_data(const T& data, M& stream)
+inline void load_data(T& data, M& stream)
 {
-    load_data(data, stream, object_loader::detail::CEmptyPredicate());
+    load_data(data, stream, object_loader::detail::CEmptyPredicate{});
 }

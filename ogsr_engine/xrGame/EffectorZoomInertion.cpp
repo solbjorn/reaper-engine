@@ -8,11 +8,14 @@
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
 
+namespace
+{
 constexpr const char* EFFECTOR_ZOOM_SECTION = "zoom_inertion_effector";
 
-bool external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
+bool external_zoom_osc{}; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
 
 void switch_zoom_osc(bool bExternal) { external_zoom_osc = bExternal; }
+} // namespace
 
 CEffectorZoomInertion* FindEffectorZoomInertion()
 {
@@ -20,7 +23,7 @@ CEffectorZoomInertion* FindEffectorZoomInertion()
     if (!actor)
         return nullptr;
 
-    const CEffectorCam* eff = actor->Cameras().GetCamEffector(eCEZoom);
+    CEffectorCam* eff = actor->Cameras().GetCamEffector(eCEZoom);
     if (eff)
         return (CEffectorZoomInertion*)(eff);
 

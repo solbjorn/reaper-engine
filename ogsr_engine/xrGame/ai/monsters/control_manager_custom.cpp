@@ -68,6 +68,7 @@ void CControlManagerCustom::add_ability(ControlCom::EControlType type)
         m_critical_wound = xr_new<CControlCriticalWound>();
         m_man->add(m_critical_wound, ControlCom::eComCriticalWound);
         break;
+    default: break;
     }
 }
 
@@ -85,6 +86,7 @@ void CControlManagerCustom::on_start_control(ControlCom::EControlType type)
     case ControlCom::eControlRunAttack: m_man->subscribe(this, ControlCom::eventRunAttackEnd); break;
     case ControlCom::eControlThreaten: m_man->subscribe(this, ControlCom::eventThreatenEnd); break;
     case ControlCom::eComCriticalWound: m_man->subscribe(this, ControlCom::eventCriticalWoundEnd); break;
+    default: break;
     }
 }
 
@@ -100,6 +102,7 @@ void CControlManagerCustom::on_stop_control(ControlCom::EControlType type)
     case ControlCom::eControlRunAttack: m_man->unsubscribe(this, ControlCom::eventRunAttackEnd); break;
     case ControlCom::eControlThreaten: m_man->unsubscribe(this, ControlCom::eventThreatenEnd); break;
     case ControlCom::eComCriticalWound: m_man->unsubscribe(this, ControlCom::eventCriticalWoundEnd); break;
+    default: break;
     }
 }
 
@@ -121,6 +124,7 @@ void CControlManagerCustom::on_event(ControlCom::EEventType type, ControlCom::IE
     case ControlCom::eventRunAttackEnd: m_man->release(this, ControlCom::eControlRunAttack); break;
     case ControlCom::eventThreatenEnd: m_man->release(this, ControlCom::eControlThreaten); break;
     case ControlCom::eventCriticalWoundEnd: m_man->release(this, ControlCom::eComCriticalWound); break;
+    default: break;
     }
 }
 
@@ -443,13 +447,12 @@ bool CControlManagerCustom::check_if_jump_possible(Fvector const& target, bool c
     return m_man->check_start_conditions(ControlCom::eControlJump);
 }
 
-bool CControlManagerCustom::jump_if_possible(Fvector const& target, CEntityAlive* const target_object, bool const use_direction_to_target, bool const use_velocity_bounce,
-                                             bool const check_possibility)
+bool CControlManagerCustom::jump_if_possible(const Fvector& target, CEntityAlive* target_object, bool use_direction_to_target, bool use_velocity_bounce, bool check_possibility)
 {
     if (!m_object->check_start_conditions(ControlCom::eControlJump))
         return false;
 
-    bool const aggressive_jump = target_object ? m_object->can_use_agressive_jump(target_object) : NULL;
+    const bool aggressive_jump = target_object ? m_object->can_use_agressive_jump(target_object) : false;
     if (check_possibility && !m_jump->can_jump(target, aggressive_jump))
         return false;
 

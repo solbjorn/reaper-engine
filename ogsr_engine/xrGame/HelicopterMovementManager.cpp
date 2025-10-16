@@ -134,7 +134,7 @@ void SHeliMovementState::UpdateMovToPoint()
         type = eMovNone;
     }
 }
-extern float STEP;
+
 bool SHeliMovementState::AlreadyOnPoint()
 {
     float dist = GetDistanceToDestPosition();
@@ -147,12 +147,10 @@ bool SHeliMovementState::AlreadyOnPoint()
         Fvector P1 = currP;
         Fvector dir;
         dir.setHP(currPathH, 0.0f);
-        P1.mad(dir, curLinearSpeed * STEP);
+        P1.mad(dir, curLinearSpeed * CHelicopter::STEP);
         float new_dist = desiredPoint.distance_to(P1);
         res = new_dist > dist;
     }
-    //	if(res)
-    //		Msg("--------OnPoint id=[%d] dist=[%f]", currPatrolVertex->vertex_id(), dist);
 
     return res;
 }

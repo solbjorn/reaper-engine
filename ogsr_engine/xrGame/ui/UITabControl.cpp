@@ -5,11 +5,7 @@
 #include "UITabControl.h"
 #include "UITabButton.h"
 
-CUITabControl::CUITabControl()
-    : m_iPushedIndex(0), m_iPrevPushedIndex(0), m_cGlobalTextColor(0xFFFFFFFF), m_cActiveTextColor(0xFFFFFFFF), m_cActiveButtonColor(0xFFFFFFFF), m_cGlobalButtonColor(0xFFFFFFFF),
-      m_bAcceleratorsEnable(true)
-{}
-
+CUITabControl::CUITabControl() = default;
 CUITabControl::~CUITabControl() { RemoveAll(); }
 
 void CUITabControl::SetCurrentValue()

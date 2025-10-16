@@ -20,11 +20,11 @@ public:
     virtual void SetTextColorD(u32 color);
 
     virtual void Init(float x, float y, float width, float height);
-    virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
+    void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
 
-    virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
-    virtual bool OnKeyboard(u32 dik, EUIMessages keyboard_action);
-    virtual bool OnKeyboardHold(u32 dik);
+    [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action);
+    [[nodiscard]] bool OnKeyboard(u32 dik, EUIMessages keyboard_action);
+    [[nodiscard]] bool OnKeyboardHold(u32);
     virtual void OnFocusLost();
 
     virtual void Update();
@@ -49,7 +49,6 @@ public:
 
 protected:
     bool KeyPressed(u32 dik);
-    bool KeyReleased(u32 dik);
 
     virtual void AddChar(const u16 c);
 

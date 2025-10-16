@@ -39,7 +39,7 @@ void CPHCollisionDamageReceiver::Init()
     }
 }
 
-void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CPHCollisionDamageReceiver::CollisionCallback(bool&, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
     if (material_1->Flags.test(SGameMtl::flPassable) || material_2->Flags.test(SGameMtl::flPassable))
         return;
@@ -74,7 +74,7 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide, bool bo1, dC
     Fvector dir;
     dir.set(*(Fvector*)c.geom.normal);
     Fvector pos;
-    pos.sub(*(Fvector*)c.geom.pos, *(Fvector*)dGeomGetPosition(bo1 ? c.geom.g1 : c.geom.g2)); // it is not true pos in bone space
+    pos.sub(*(const Fvector*)c.geom.pos, *(const Fvector*)dGeomGetPosition(bo1 ? c.geom.g1 : c.geom.g2)); // it is not true pos in bone space
     dr->Hit(source_id, ud_self->bone_id, E_NL(b1, b2, c.geom.normal) * damager_material_factor / dfs, dir, pos);
 }
 

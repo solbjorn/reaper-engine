@@ -67,7 +67,7 @@ void CSE_ALifeInventoryItem::__STATE_Write(NET_Packet& tNetPacket)
     State.position = base()->o_Position;
 }
 
-void CSE_ALifeInventoryItem::__STATE_Read(NET_Packet& tNetPacket, u16 size)
+void CSE_ALifeInventoryItem::__STATE_Read(NET_Packet& tNetPacket, u16)
 {
     u16 m_wVersion = base()->m_wVersion;
     if (m_wVersion > 52)

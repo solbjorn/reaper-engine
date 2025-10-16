@@ -59,38 +59,37 @@ protected:
     sol::object priv;
     xr_map<action_ops, sol::function> ops;
 
-#ifdef LOG_ACTION
 public:
+#ifdef LOG_ACTION
     LPCSTR m_action_name;
     bool m_use_log;
     bool m_switched;
 
-public:
     virtual void debug_log(const EActionStates state_state) const;
     virtual void set_use_log(bool value);
     virtual void show(LPCSTR offset = "");
 #endif
 
-public:
     IC CActionBase(_object_type* object = nullptr, LPCSTR action_name = "");
-    virtual ~CActionBase();
-    IC void init(_object_type* object, LPCSTR action_name);
-    virtual void setup(_object_type* object, CPropertyStorage* storage);
-    virtual void initialize();
-    virtual void execute();
-    virtual void finalize();
-    virtual edge_value_type weight(const CSConditionState& condition0, const CSConditionState& condition1) const;
+    inline virtual ~CActionBase();
+
+    inline void init(_object_type* object, LPCSTR action_name);
+    inline virtual void setup(_object_type* object, CPropertyStorage* storage);
+    inline virtual void initialize();
+    inline virtual void execute();
+    inline virtual void finalize();
+    inline virtual edge_value_type weight(const CSConditionState&, const CSConditionState&) const;
     IC void set_inertia_time(u32 inertia_time);
     IC u32 start_level_time() const;
     IC u32 inertia_time() const;
     IC bool completed() const;
     IC void set_property(const _condition_type& condition_id, const _value_type& value);
-    IC const _value_type& property(const _condition_type& condition_id) const;
+    inline _value_type property(const _condition_type& condition_id) const;
     IC void set_weight(const edge_value_type& weight);
     IC bool first_time() const;
 
-    virtual void save(NET_Packet& packet) {}
-    virtual void load(IReader& packet) {}
+    virtual void save(NET_Packet&) {}
+    virtual void load(IReader&) {}
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

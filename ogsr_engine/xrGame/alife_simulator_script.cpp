@@ -102,12 +102,9 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
     result.try_emplace(INVALID_ID_STRING, INVALID_ID);
 }
 
-static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id)
-{
-    alife->kill_entity(monster, game_vertex_id, nullptr);
-}
+static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id) { alife->kill_entity(monster, game_vertex_id); }
 
-static void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID, nullptr); }
+static void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID); }
 
 static void add_in_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, ALife::_OBJECT_ID id)
 {
@@ -287,7 +284,7 @@ static void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJE
         Msg("assign_story_id: specified id is already using");
 }
 
-static void CALifeSimulator__use_ai_locations(CALifeSimulator* self, CSE_Abstract* object, bool _use)
+static void CALifeSimulator__use_ai_locations(CALifeSimulator*, CSE_Abstract* object, bool _use)
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
@@ -308,7 +305,7 @@ static void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*,
     FATAL("INCORRECT ARGUMENTS! Must be: alife():teleport_object(id, position, lvid, gvid)");
 }
 
-static LPCSTR get_level_name(const CALifeSimulator* self, int level_id)
+static LPCSTR get_level_name(const CALifeSimulator*, int level_id)
 {
     LPCSTR result = *ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
     return (result);

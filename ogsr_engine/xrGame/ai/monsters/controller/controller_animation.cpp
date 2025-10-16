@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "controller_animation.h"
 #include "controller.h"
 #include "../../../detail_path_manager.h"
@@ -8,7 +9,10 @@
 #include "controller_direction.h"
 #include "../monster_velocity_space.h"
 
-const float _pmt_psy_attack_time = 0.5f;
+namespace
+{
+constexpr float _pmt_psy_attack_time{0.5f};
+}
 
 void CControllerAnimation::reinit()
 {
@@ -34,6 +38,7 @@ void CControllerAnimation::on_start_control(ControlCom::EControlType type)
 
         on_switch_controller();
         break;
+    default: break;
     }
 }
 
@@ -46,6 +51,7 @@ void CControllerAnimation::on_stop_control(ControlCom::EControlType type)
         m_man->unsubscribe(this, ControlCom::eventTorsoAnimationEnd);
         m_man->unsubscribe(this, ControlCom::eventLegsAnimationEnd);
         break;
+    default: break;
     }
 }
 
@@ -73,27 +79,13 @@ void CControllerAnimation::on_event(ControlCom::EEventType type, ControlCom::IEv
                 check_hit(event_data->motion, event_data->time_perc);
             break;
         }
+        break;
     }
+    default: break;
     }
 }
 
-void CControllerAnimation::update_frame()
-{
-    inherited::update_frame();
-    return;
-
-    // if (m_controller->m_mental_state == CController::eStateIdle) {
-    //	inherited::update_frame();
-    //	return;
-    // }
-    //
-    // if (is_moving()) set_path_direction();
-    //
-    // select_legs_animation	();
-    // select_torso_animation	();
-    //
-    // select_velocity			();
-}
+void CControllerAnimation::update_frame() { inherited::update_frame(); }
 
 void CControllerAnimation::load()
 {
@@ -301,12 +293,10 @@ CControllerAnimation::SPathRotations CControllerAnimation::get_path_rotation(flo
     return (*it_best);
 }
 
-void CControllerAnimation::set_body_state(ETorsoActionType torso, ELegsActionType legs)
+void CControllerAnimation::set_body_state(ETorsoActionType, ELegsActionType)
 {
     m_current_legs_action = CControllerAnimation::eLegsTypeStealMotion;
     m_current_torso_action = CControllerAnimation::eTorsoSteal;
-    // m_current_legs_action		= legs;
-    // m_current_torso_action		= torso;
 }
 
 bool CControllerAnimation::is_moving()

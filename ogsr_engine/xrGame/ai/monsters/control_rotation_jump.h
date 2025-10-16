@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control_combase.h"
 #include "../../../Include\xrRender\Kinematics.h"
 
@@ -19,7 +20,11 @@ struct SControlRotationJumpData : public ControlCom::IComData
 
 class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
 {
+    RTTI_DECLARE_TYPEINFO(CControlRotationJump, CControl_ComCustom<SControlRotationJumpData>);
+
+private:
     typedef CControl_ComCustom<SControlRotationJumpData> inherited;
+
     u32 m_time_next_rotation_jump;
 
     float m_target_velocity;
@@ -42,7 +47,7 @@ class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
 public:
     virtual void reinit();
 
-    virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+    void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
     virtual void activate();
     virtual void on_release();
     virtual bool check_start_conditions();

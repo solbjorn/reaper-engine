@@ -15,7 +15,7 @@ extern float r_ssaGLOD_start, r_ssaGLOD_end;
 static ICF float calcLOD(float ssa /*fDistSq*/, float /*R*/) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f)); }
 
 // ALPHA
-void __fastcall R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
+void R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
@@ -29,7 +29,7 @@ void __fastcall R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
-void __fastcall R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
+void R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V);
@@ -47,7 +47,7 @@ void __fastcall R_dsgraph_structure::water_node_ssr(float key, _MatrixItemS& val
     V->Render(cmd_list, calcLOD(key, V->vis.sphere.R), phase == CRender::PHASE_SMAP);
 }
 
-void __fastcall R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
+void R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V);
@@ -66,7 +66,7 @@ void __fastcall R_dsgraph_structure::water_node(float key, _MatrixItemS& val)
     V->Render(cmd_list, calcLOD(key, V->vis.sphere.R), phase == CRender::PHASE_SMAP);
 }
 
-void __fastcall R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
+void R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
@@ -351,7 +351,7 @@ void R_dsgraph_structure::render_distort()
     cmd_list.set_xform_project(Device.mProject);
 }
 
-void __fastcall R_dsgraph_structure::pLandscape_0(float key, _MatrixItemS& val)
+void R_dsgraph_structure::pLandscape_0(_MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
@@ -363,7 +363,7 @@ void __fastcall R_dsgraph_structure::pLandscape_0(float key, _MatrixItemS& val)
     V->Render(cmd_list, LOD, phase == CRender::PHASE_SMAP);
 }
 
-void __fastcall R_dsgraph_structure::pLandscape_1(float key, _MatrixItemS& val)
+void R_dsgraph_structure::pLandscape_1(_MatrixItemS& val)
 {
     dxRender_Visual* V = val.pVisual;
     VERIFY(V && V->shader._get());
@@ -383,12 +383,12 @@ void R_dsgraph_structure::render_landscape(u32 pass, bool _clear)
     if (pass == 0)
     {
         for (auto& elem : mapLandscape)
-            pLandscape_0(elem.first, elem.second);
+            pLandscape_0(elem.second);
     }
     else
     {
         for (auto& elem : mapLandscape)
-            pLandscape_1(elem.first, elem.second);
+            pLandscape_1(elem.second);
     }
 
     if (_clear)

@@ -42,8 +42,11 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
             }
         }
         else
+        {
             P.r_advance(size);
+        }
     }
+
     if (g_Dump_Update_Read)
         Msg("-------------------- ");
 }

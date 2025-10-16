@@ -37,15 +37,16 @@ private:
     };
 
 protected:
-    float iSize;
-    Fvector2 iPos;
-    u8 uFlags;
-    bool bHorizontalOrientation;
+    Fvector2 iPos{};
+    float iSize{};
+    u8 uFlags{};
+    bool bHorizontalOrientation{true};
 
     void UpdateSize();
 
 public:
     CUIFrameLine();
+
     void Init(LPCSTR base_name, float x, float y, float size, bool horizontal, DWORD align);
     void InitTexture(const char* texture);
     void SetColor(u32 cl);

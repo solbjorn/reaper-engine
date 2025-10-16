@@ -429,7 +429,7 @@ public:
             Fvector3 point;
             points.emplace_back(point.sub(points[E.p0], direction));
             points.emplace_back(point.sub(points[E.p1], direction));
-            _poly& P = polys.emplace_back(_poly());
+            _poly& P = polys.emplace_back();
             const int pend = int(points.size());
             P.points.emplace_back(E.p0);
             P.points.emplace_back(E.p1);
@@ -453,7 +453,7 @@ public:
         // Export
         compute_planes();
         for (_poly& poly : polys)
-            dest.emplace_back(Fplane{poly.planeN, poly.planeD});
+            dest.emplace_back(poly.planeN, poly.planeD);
     }
 };
 

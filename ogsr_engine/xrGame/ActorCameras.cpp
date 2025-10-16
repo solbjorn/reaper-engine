@@ -1,9 +1,12 @@
 #include "stdafx.h"
+
 #include "Actor.h"
 #include "../xr_3da/camerabase.h"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -32,7 +35,9 @@ void CActor::cam_Set(EActorCameras style)
     old_cam->OnDeactivate();
     cam_Active()->OnActivate(old_cam);
 }
+
 float CActor::f_Ladder_cam_limit = 1.f;
+
 void CActor::cam_SetLadder()
 {
     CCameraBase* C = cameras[eacFirstEye];
@@ -51,6 +56,7 @@ void CActor::cam_SetLadder()
         C->bClampYaw = true;
     }
 }
+
 void CActor::camUpdateLadder(float dt)
 {
     if (!character_physics_support()->movement()->ElevatorState())
@@ -96,6 +102,7 @@ void CActor::cam_UnsetLadder()
 }
 
 float cammera_into_collision_shift = 0.05f;
+
 float CActor::CameraHeight()
 {
     Fvector R;
@@ -268,7 +275,7 @@ void CActor::cam_Update(float dt, float fFOV)
     float flCurrentPlayerY = xform.c.y;
 
     // Smooth out stair step ups
-    if ((character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
+    if ((character_physics_support()->movement()->Environment() == peOnGround) && (flCurrentPlayerY - fPrevCamPos > 0))
     {
         fPrevCamPos += dt * 1.5f;
         if (fPrevCamPos > flCurrentPlayerY)

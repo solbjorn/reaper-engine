@@ -20,13 +20,13 @@ IC CAbstractOperator::COperatorAbstract(const CSConditionState& conditions, cons
 {}
 
 TEMPLATE_SPECIALIZATION
-CAbstractOperator::~COperatorAbstract() {}
+inline CAbstractOperator::~COperatorAbstract() {}
 
 TEMPLATE_SPECIALIZATION
-void CAbstractOperator::Load(LPCSTR section) {}
+inline void CAbstractOperator::Load(LPCSTR) {}
 
 TEMPLATE_SPECIALIZATION
-void CAbstractOperator::setup(bool* actuality)
+inline void CAbstractOperator::setup(bool* actuality)
 {
     VERIFY(actuality);
     m_actuality = actuality;
@@ -376,7 +376,7 @@ IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(
 }
 
 TEMPLATE_SPECIALIZATION
-IC _edge_value_type CAbstractOperator::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (min_weight()); }
+inline _edge_value_type CAbstractOperator::weight(const CSConditionState&, const CSConditionState&) const { return min_weight(); }
 
 TEMPLATE_SPECIALIZATION
 IC _edge_value_type CAbstractOperator::min_weight() const

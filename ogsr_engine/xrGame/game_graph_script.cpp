@@ -11,42 +11,43 @@
 #include "ai_space.h"
 #include "game_graph.h"
 
-static const CGameGraph* get_game_graph() { return (&ai().game_graph()); }
+namespace
+{
+[[nodiscard]] const CGameGraph* get_game_graph() { return &ai().game_graph(); }
 
-static const CGameGraph::CHeader* get_header(const CGameGraph* self) { return (&self->header()); }
+[[nodiscard]] bool get_accessible(const CGameGraph* self, u32 vertex_id) { return self->accessible(vertex_id); }
+void set_accessible(const CGameGraph* self, u32 vertex_id, bool value) { self->accessible(vertex_id, value); }
 
-static bool get_accessible1(const CGameGraph* self, const u32& vertex_id) { return (self->accessible(vertex_id)); }
+[[nodiscard]] u32 vertex_count(const CGameGraph* self) { return self->header().vertex_count(); }
 
-static void get_accessible2(const CGameGraph* self, const u32& vertex_id, bool value) { self->accessible(vertex_id, value); }
-
-static u32 vertex_count(const CGameGraph* self) { return self->header().vertex_count(); }
-
-static Fvector CVertex__level_point(const CGameGraph::CVertex* vertex)
+[[nodiscard]] Fvector CVertex__level_point(const CGameGraph::CVertex* vertex)
 {
     THROW(vertex);
-    return (vertex->level_point());
+    return vertex->level_point();
 }
 
-static Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
+[[nodiscard]] Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
 {
     THROW(vertex);
-    return (vertex->game_point());
+    return vertex->game_point();
 }
 
-static const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
+[[nodiscard]] const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
 
-static Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
+[[nodiscard]] Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
 {
-    const u8* mask = vertex->vertex_type();
-    return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
+    const auto mask = std::span{vertex->vertex_type(), 4};
+
+    return Fvector4{gsl::narrow_cast<float>(mask[0]), gsl::narrow_cast<float>(mask[1]), gsl::narrow_cast<float>(mask[2]), gsl::narrow_cast<float>(mask[3])};
 }
+} // namespace
 
 void CGameGraph::script_register(sol::state_view& lua)
 {
     lua.set_function("game_graph", &get_game_graph);
 
-    lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible1, &get_accessible2), "valid_vertex_id",
-                                 &CGameGraph::valid_vertex_id, "vertex", &CGameGraph::vertex, "vertex_id", &CGameGraph::vertex_id, "vertex_count", &vertex_count);
+    lua.new_usertype<CGameGraph>("CGameGraph", sol::no_constructor, "accessible", sol::overload(&get_accessible, &set_accessible), "valid_vertex_id", &CGameGraph::valid_vertex_id,
+                                 "vertex", &CGameGraph::vertex, "vertex_id", &CGameGraph::vertex_id, "vertex_count", &vertex_count);
 
     lua.new_usertype<CVertex>("GameGraph__CVertex", sol::no_constructor, "level_point", &CVertex__level_point, "game_point", &CVertex__game_point, "level_id", &CVertex::level_id,
                               "level_vertex_id", &CVertex::level_vertex_id, "mask", &CVertex__mask_);

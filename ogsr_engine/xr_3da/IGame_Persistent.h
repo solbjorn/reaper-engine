@@ -106,7 +106,7 @@ public:
     virtual void OnGameEnd();
 
     virtual void UpdateGameType() {}
-    virtual void OnSectorChanged(sector_id_t sector) {}
+    virtual void OnSectorChanged(sector_id_t) {}
 
     virtual void RegisterModel(IRenderVisual* V) = 0;
     virtual float MtlTransparent(u32 mtl_idx) = 0;

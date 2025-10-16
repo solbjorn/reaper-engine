@@ -22,15 +22,10 @@ using namespace StalkerSpace;
 
 // #define SIGHT_DEBUG
 
-CSightManager::CSightManager(CAI_Stalker* object) : inherited{object}
-{
-    m_enabled = true;
-    m_turning_in_place = false;
-}
-
+CSightManager::CSightManager(CAI_Stalker* object) : inherited{object} {}
 CSightManager::~CSightManager() {}
 
-void CSightManager::Load(LPCSTR section) {}
+void CSightManager::Load(LPCSTR) {}
 
 void CSightManager::reinit()
 {
@@ -45,15 +40,17 @@ void CSightManager::reload(LPCSTR section)
     m_max_right_angle = deg2rad(READ_IF_EXISTS(pSettings, r_float, section, "max_right_torso_angle", 60.f));
 }
 
-void CSightManager::SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object)
+void CSightManager::SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch)
 {
     Fvector tTemp;
     tTemp.sub(tPosition, m_object->eye_matrix.c);
     tTemp.getHP(yaw, pitch);
+
     VERIFY(_valid(yaw));
     VERIFY(_valid(pitch));
-    yaw *= -1;
-    pitch *= -1;
+
+    yaw *= -1.0f;
+    pitch *= -1.0f;
 }
 
 void CSightManager::SetFirePointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, const CGameObject* object)

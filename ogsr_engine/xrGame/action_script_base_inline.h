@@ -23,7 +23,7 @@ TEMPLATE_SPECIALIZATION
 CScriptBaseAction::~CActionScriptBase() {}
 
 TEMPLATE_SPECIALIZATION
-void CScriptBaseAction::setup(_object_type* object, CPropertyStorage* storage)
+void CScriptBaseAction::setup(_object_type* object, CPropertyStorage*)
 {
     VERIFY(object);
     m_object = object;

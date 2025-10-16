@@ -17,9 +17,11 @@ namespace PAPI
 class pVector : public Fvector
 {
 public:
-    constexpr IC pVector(float ax, float ay, float az) { set(ax, ay, az); }
-    constexpr pVector(const pVector& a) { set(a.x, a.y, a.z); }
     constexpr pVector() = default;
+    constexpr pVector(const pVector&) = default;
+    constexpr pVector(float ax, float ay, float az) { set(ax, ay, az); }
+
+    constexpr pVector& operator=(const pVector&) = default;
 
     constexpr IC float length() const { return _sqrt(x * x + y * y + z * z); }
     constexpr IC float length2() const { return (x * x + y * y + z * z); }
@@ -73,14 +75,6 @@ public:
         x *= b;
         y *= b;
         z *= b;
-        return *this;
-    }
-
-    constexpr IC pVector& operator=(const pVector& a)
-    {
-        x = a.x;
-        y = a.y;
-        z = a.z;
         return *this;
     }
 
@@ -187,7 +181,7 @@ public:
     virtual void DestroyActionList(int alist_id) = 0;
 
     // control
-    virtual void PlayEffect(int effect_id, int alist_id) = 0;
+    virtual void PlayEffect(int alist_id) = 0;
     virtual void StopEffect(int effect_id, int alist_id, BOOL deffered = TRUE) = 0;
 
     // update&render

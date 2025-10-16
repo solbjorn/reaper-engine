@@ -1,8 +1,7 @@
 #include "stdafx.h"
+
 #include "NvTriStripObjects.h"
 #include "NvTriStrip.h"
-
-#pragma warning(disable : 4018)
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // private data

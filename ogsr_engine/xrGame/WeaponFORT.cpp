@@ -2,8 +2,7 @@
 
 #include "WeaponFORT.h"
 
-CWeaponFORT::CWeaponFORT() : CWeaponPistol("FORT") {}
-
+CWeaponFORT::CWeaponFORT() : CWeaponPistol{} {}
 CWeaponFORT::~CWeaponFORT() {}
 
 void CWeaponFORT::script_register(sol::state_view& lua)

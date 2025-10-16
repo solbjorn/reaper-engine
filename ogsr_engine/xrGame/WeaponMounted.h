@@ -80,16 +80,16 @@ public:
     virtual BOOL UsedAI_Locations() { return FALSE; }
 
     // control functions
-    virtual void OnMouseMove(int x, int y);
-    virtual void OnKeyboardPress(int dik);
-    virtual void OnKeyboardRelease(int dik);
-    virtual void OnKeyboardHold(int dik);
+    void OnMouseMove(int x, int y) override;
+    void OnKeyboardPress(int dik) override;
+    void OnKeyboardRelease(int dik) override;
+    void OnKeyboardHold(int) override;
 
     virtual CInventory* GetInventory() { return nullptr; }
 
-    virtual void cam_Update(float dt, float fov = 90.0f);
+    void cam_Update(float, float = 90.0f) override;
 
-    virtual bool Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos);
+    [[nodiscard]] bool Use(const Fvector&, const Fvector&, const Fvector&) override;
     virtual bool attach_Actor(CGameObject* actor);
     virtual void detach_Actor();
     virtual Fvector ExitPosition();

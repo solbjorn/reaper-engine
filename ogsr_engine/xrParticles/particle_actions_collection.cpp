@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "../Layers/xrRender/xrRender_console.h"
 
 #include "particle_actions_collection.h"
 #include "particle_effect.h"
+
+#include "../Layers/xrRender/xrRender_console.h"
 
 using namespace PAPI;
 
@@ -342,9 +343,12 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
         }
     }
     break;
+    default: break;
     }
 }
+
 void PAPI::PAAvoid::Transform(const Fmatrix& m) { position.transform(positionL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 void PABounce::Execute(ParticleEffect* effect, float dt)
@@ -656,13 +660,17 @@ void PABounce::Execute(ParticleEffect* effect, float dt)
             }
         }
     }
+    break;
+    default: break;
     }
 }
+
 void PABounce::Transform(const Fmatrix& m) { position.transform(positionL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Set the secondary position of each particle to be its position.
-void PACopyVertexB::Execute(ParticleEffect* effect, float dt)
+void PACopyVertexB::Execute(ParticleEffect* effect, float)
 {
     u32 i;
 
@@ -685,7 +693,9 @@ void PACopyVertexB::Execute(ParticleEffect* effect, float dt)
         }
     */
 }
+
 void PACopyVertexB::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Dampen velocities
@@ -708,7 +718,9 @@ void PADamping::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PADamping::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Exert force on each particle away from explosion center
@@ -737,7 +749,9 @@ void PAExplosion::Execute(ParticleEffect* effect, float dt)
 
     age += dt;
 }
+
 void PAExplosion::Transform(const Fmatrix& m) { m.transform_tiny(center, centerL); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Follow the next particle in the list
@@ -778,7 +792,9 @@ void PAFollow::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAFollow::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Inter-particle gravitation
@@ -835,7 +851,9 @@ void PAGravitate::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAGravitate::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Acceleration in a constant direction
@@ -849,7 +867,9 @@ void PAGravity::Execute(ParticleEffect* effect, float dt)
         effect->particles[i].vel += ddir;
     }
 }
+
 void PAGravity::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles along a line
@@ -902,11 +922,13 @@ void PAJet::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAJet::Transform(const Fmatrix& m)
 {
     m.transform_tiny(center, centerL);
     acc.transform_dir(accL, m);
 }
+
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles form center
@@ -961,11 +983,13 @@ void PAScatter::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAScatter::Transform(const Fmatrix& m) { m.transform_tiny(center, centerL); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Get rid of older particles
-void PAKillOld::Execute(ParticleEffect* effect, float dt)
+void PAKillOld::Execute(ParticleEffect* effect, float)
 {
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
@@ -976,7 +1000,9 @@ void PAKillOld::Execute(ParticleEffect* effect, float dt)
             effect->Remove(i);
     }
 }
+
 void PAKillOld::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Match velocity to near neighbors
@@ -1033,7 +1059,9 @@ void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAMatchVelocity::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 void PAMove::Execute(ParticleEffect* effect, float dt)
@@ -1049,7 +1077,9 @@ void PAMove::Execute(ParticleEffect* effect, float dt)
         m.pos += m.vel * dt;
     }
 }
+
 void PAMove::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a line
@@ -1105,11 +1135,13 @@ void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAOrbitLine::Transform(const Fmatrix& m)
 {
     m.transform_tiny(p, pL);
     m.transform_dir(axis, axisL);
 }
+
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a point
@@ -1155,7 +1187,9 @@ void PAOrbitPoint::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAOrbitPoint::Transform(const Fmatrix& m) { m.transform_tiny(center, centerL); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate in random direction each time step
@@ -1174,7 +1208,9 @@ void PARandomAccel::Execute(ParticleEffect* effect, float dt)
         m.vel += acceleration * dt;
     }
 }
+
 void PARandomAccel::Transform(const Fmatrix& m) { gen_acc.transform_dir(gen_accL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Immediately displace position randomly
@@ -1193,11 +1229,13 @@ void PARandomDisplace::Execute(ParticleEffect* effect, float dt)
         m.pos += displacement * dt;
     }
 }
+
 void PARandomDisplace::Transform(const Fmatrix& m) { gen_disp.transform_dir(gen_dispL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Immediately assign a random velocity
-void PARandomVelocity::Execute(ParticleEffect* effect, float dt)
+void PARandomVelocity::Execute(ParticleEffect* effect, float)
 {
     for (u32 i = 0; i < effect->p_count; i++)
     {
@@ -1211,7 +1249,9 @@ void PARandomVelocity::Execute(ParticleEffect* effect, float dt)
         m.vel = velocity;
     }
 }
+
 void PARandomVelocity::Transform(const Fmatrix& m) { gen_vel.transform_dir(gen_velL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 #if 0
@@ -1282,11 +1322,13 @@ void PARestore::Execute(ParticleEffect* effect, float dt)
 
     time_left -= dt;
 }
+
 void PARestore::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with positions on wrong side of the specified domain
-void PASink::Execute(ParticleEffect* effect, float dt)
+void PASink::Execute(ParticleEffect* effect, float)
 {
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
@@ -1298,11 +1340,13 @@ void PASink::Execute(ParticleEffect* effect, float dt)
             effect->Remove(i);
     }
 }
+
 void PASink::Transform(const Fmatrix& m) { position.transform(positionL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with velocities on wrong side of the specified domain
-void PASinkVelocity::Execute(ParticleEffect* effect, float dt)
+void PASinkVelocity::Execute(ParticleEffect* effect, float)
 {
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
@@ -1314,7 +1358,9 @@ void PASinkVelocity::Execute(ParticleEffect* effect, float dt)
             effect->Remove(i);
     }
 }
+
 void PASinkVelocity::Transform(const Fmatrix& m) { velocity.transform_dir(velocityL, m); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Randomly add particles to the system
@@ -1370,14 +1416,16 @@ void PASource::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PASource::Transform(const Fmatrix& m)
 {
     position.transform(positionL, m);
     velocity.transform_dir(velocityL, m);
 }
+
 //-------------------------------------------------------------------------------------------------
 
-void PASpeedLimit::Execute(ParticleEffect* effect, float dt)
+void PASpeedLimit::Execute(ParticleEffect* effect, float)
 {
     float min_sqr = min_speed * min_speed;
     float max_sqr = max_speed * max_speed;
@@ -1398,7 +1446,9 @@ void PASpeedLimit::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PASpeedLimit::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 #define STEP_DEFAULT 0.033F
@@ -1428,7 +1478,9 @@ void PATargetColor::Execute(ParticleEffect* effect, float dt)
         m.colorA -= (m.colorA - c_n.a) / COEFF;
     }
 }
+
 void PATargetColor::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Change sizes of all particles toward the specified size
@@ -1448,7 +1500,9 @@ void PATargetSize::Execute(ParticleEffect* effect, float dt)
         m.size += dif;
     }
 }
+
 void PATargetSize::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Change rotation of all particles toward the specified velocity
@@ -1466,7 +1520,9 @@ void PATargetRotate::Execute(ParticleEffect* effect, float dt)
         m.rot.x += dif;
     }
 }
+
 void PATargetRotate::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------
 
 // Change velocity of all particles toward the specified velocity
@@ -1480,7 +1536,9 @@ void PATargetVelocity::Execute(ParticleEffect* effect, float dt)
         m.vel += (velocity - m.vel) * scaleFac;
     }
 }
+
 void PATargetVelocity::Transform(const Fmatrix& m) { m.transform_dir(velocity, velocityL); }
+
 //-------------------------------------------------------------------------------------------------
 
 // Immediately displace position using vortex
@@ -1576,35 +1634,40 @@ void PAVortex::Execute(ParticleEffect* effect, float dt)
         }
     }
 }
+
 void PAVortex::Transform(const Fmatrix& m)
 {
     m.transform_tiny(center, centerL);
     m.transform_dir(axis, axisL);
 }
+
 //-------------------------------------------------------------------------------------------------
 
 // Turbulence
 #include "noise.h"
 
-static int noise_start = 1;
-extern void noise3Init();
-
 #include <xmmintrin.h>
 
-static ICF __m128 _mm_load_fvector(const Fvector& v)
+extern void noise3Init();
+
+namespace
+{
+int noise_start = 1;
+
+ICF __m128 _mm_load_fvector(const Fvector& v)
 {
     __m128 R1, R2;
 
-    R1 = _mm_load_ss((float*)&v.x); // R1 = 0 | 0 | 0 | v.x
-    R2 = _mm_load_ss((float*)&v.y); // R2 = 0 | 0 | 0 | v.y
+    R1 = _mm_load_ss((const float*)&v.x); // R1 = 0 | 0 | 0 | v.x
+    R2 = _mm_load_ss((const float*)&v.y); // R2 = 0 | 0 | 0 | v.y
     R1 = _mm_unpacklo_ps(R1, R2); // R1 = 0 | 0 | v.y | v.x
-    R2 = _mm_load_ss((float*)&v.z); // R2 = 0 | 0 | 0 | v.z
+    R2 = _mm_load_ss((const float*)&v.z); // R2 = 0 | 0 | 0 | v.z
     R1 = _mm_movelh_ps(R1, R2); // R1 = 0 | v.z | v.y | v.x
 
     return R1;
 }
 
-static ICF void _mm_store_fvector(Fvector& v, const __m128 R1)
+ICF void _mm_store_fvector(Fvector& v, const __m128 R1)
 {
     __m128 R2;
 
@@ -1616,7 +1679,7 @@ static ICF void _mm_store_fvector(Fvector& v, const __m128 R1)
     _mm_store_ss((float*)&v.z, R2);
 }
 
-static void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
+void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
 {
     Particle& m = effect->particles[i];
     pVector pV, vX, vY, vZ;
@@ -1667,11 +1730,12 @@ static void PATurbulenceExecuteOne(ParticleEffect* effect, u32 i, pVector offset
     _mm_store_fvector(m.vel, _mvel);
 }
 
-static ICF void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
+ICF void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector offset, float age, float epsilon, float frequency, int octaves, float magnitude)
 {
     for (u32 i = 0; i < p_cnt; i++)
         PATurbulenceExecuteOne(effect, i, offset, age, epsilon, frequency, octaves, magnitude);
 }
+} // namespace
 
 extern float ps_particle_update_coeff;
 
@@ -1692,5 +1756,6 @@ void PATurbulence::Execute(ParticleEffect* effect, float dt)
     PATurbulenceExecuteStream(effect, p_cnt, offset, age, epsilon, frequency, octaves, magnitude * ps_particle_update_coeff);
 }
 
-void PATurbulence::Transform(const Fmatrix& m) {}
+void PATurbulence::Transform(const Fmatrix&) {}
+
 //-------------------------------------------------------------------------------------------------

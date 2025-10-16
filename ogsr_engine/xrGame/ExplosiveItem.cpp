@@ -8,8 +8,8 @@
 
 #include "ExplosiveItem.h"
 
-CExplosiveItem::CExplosiveItem(void) {}
-CExplosiveItem::~CExplosiveItem(void) {}
+CExplosiveItem::CExplosiveItem() = default;
+CExplosiveItem::~CExplosiveItem() = default;
 
 void CExplosiveItem::Load(LPCSTR section)
 {
@@ -41,17 +41,21 @@ void CExplosiveItem::Hit(SHit* pHDS)
         SetInitiator(pHDS->who->ID());
     }
 }
+
 void CExplosiveItem::StartTimerEffects() { CParticlesPlayer::StartParticles(pSettings->r_string(*cNameSect(), "set_timer_particles"), Fvector().set(0, 1, 0), ID()); }
+
 void CExplosiveItem::OnEvent(NET_Packet& P, u16 type)
 {
     CExplosive::OnEvent(P, type);
     inherited::OnEvent(P, type);
 }
+
 void CExplosiveItem::UpdateCL()
 {
     CExplosive::UpdateCL();
     inherited::UpdateCL();
 }
+
 void CExplosiveItem::shedule_Update(u32 dt)
 {
     inherited::shedule_Update(dt);
@@ -72,6 +76,5 @@ void CExplosiveItem::net_Relcase(CObject* O)
     inherited::net_Relcase(O);
 }
 
-void CExplosiveItem::ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) {}
-
+void CExplosiveItem::ActivateExplosionBox(const Fvector&, Fvector&) {}
 void CExplosiveItem::GetRayExplosionSourcePos(Fvector& pos) { random_point_in_object_box(pos, this); }

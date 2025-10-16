@@ -325,9 +325,11 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 #ifdef DEBUG
         Msg("* WARNING: c_EVENT[%d] to [%d]: unknown dest", type, dest);
 #endif // DEBUG
-        ProcessGameSpawnsDestroy(dest, type, P);
+
+        ProcessGameSpawnsDestroy(dest, type);
         return;
     }
+
     CGameObject* GO = smart_cast<CGameObject*>(O);
     if (!GO)
     {
@@ -344,39 +346,31 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 void CLevel::ProcessGameEvents()
 {
     // Game events
+    NET_Packet P;
+
+    m_just_destroyed.clear();
+
+    while (game_events->available())
     {
-        NET_Packet P;
-        u32 svT = timeServer() - NET_Latency;
+        u16 ID, dest, type;
+        game_events->get(ID, dest, type, P);
 
-        /*
-        if (!game_events->queue.empty())
-            Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
-        */
-
-        m_just_destroyed.clear();
-
-        while (game_events->available(svT))
+        switch (ID)
         {
-            u16 ID, dest, type;
-            game_events->get(ID, dest, type, P);
-
-            switch (ID)
-            {
-            case M_SPAWN: {
-                u16 dummy16;
-                P.r_begin(dummy16);
-                cl_Process_Spawn(P);
-            }
-            break;
-            case M_EVENT: {
-                cl_Process_Event(dest, type, P);
-            }
-            break;
-            default: {
-                VERIFY(0);
-            }
-            break;
-            }
+        case M_SPAWN: {
+            u16 dummy16;
+            P.r_begin(dummy16);
+            cl_Process_Spawn(P);
+        }
+        break;
+        case M_EVENT: {
+            cl_Process_Event(dest, type, P);
+        }
+        break;
+        default: {
+            VERIFY(0);
+        }
+        break;
         }
     }
 
@@ -649,7 +643,7 @@ void CLevel::OnRender()
 #endif
 }
 
-void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
+void CLevel::OnEvent(EVENT E, u64 P1, u64)
 {
     if (E == eEntitySpawn)
     {

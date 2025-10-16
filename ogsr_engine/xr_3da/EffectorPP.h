@@ -10,22 +10,22 @@ class CEffectorPP : public SBaseEffector
     RTTI_DECLARE_TYPEINFO(CEffectorPP, SBaseEffector);
 
 public:
-    EEffectorPPType eType{};
+    EEffectorPPType eType;
     bool bFreeOnRemove;
-    bool bOverlap;
+    bool bOverlap{true};
 
 protected:
     float fLifeTime;
 
 public:
-    CEffectorPP(EEffectorPPType type, f32 lifeTime, bool free_on_remove = true);
-    CEffectorPP() : bFreeOnRemove{true}, bOverlap{true}, fLifeTime{0.f} {}
+    CEffectorPP() : eType{ppeNext}, bFreeOnRemove{true}, fLifeTime{0.0f} {}
+    CEffectorPP(EEffectorPPType type, float lifeTime, bool free_on_remove = true);
     virtual ~CEffectorPP();
 
-    virtual BOOL Process(SPPInfo& PPInfo);
-    virtual BOOL Valid() { return fLifeTime > 0.0f; }
-    IC EEffectorPPType Type() const { return eType; }
-    IC bool FreeOnRemove() const { return bFreeOnRemove; }
-    IC void SetType(EEffectorPPType t) { eType = t; }
-    virtual void Stop(float speed) { fLifeTime = 0.0f; }
+    [[nodiscard]] virtual BOOL Process(SPPInfo&);
+    [[nodiscard]] virtual BOOL Valid() { return fLifeTime > 0.0f; }
+    [[nodiscard]] EEffectorPPType Type() const { return eType; }
+    [[nodiscard]] bool FreeOnRemove() const { return bFreeOnRemove; }
+    void SetType(EEffectorPPType t) { eType = t; }
+    virtual void Stop(float) { fLifeTime = 0.0f; }
 };

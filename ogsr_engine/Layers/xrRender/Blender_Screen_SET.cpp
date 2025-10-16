@@ -189,9 +189,10 @@ void CBlender_Screen_SET::Compile(CBlender_Compile& C)
         // C.Stage_Constant	("$null");
         // C.StageEnd			();
         VERIFY(C.L_textures.size() > 0);
+
         C.r_dx10Texture("s_base", C.L_textures[0]);
-        int iSmp = C.r_dx10Sampler("smp_base");
-        if ((oClamp.value) && (iSmp != u32(-1)))
+        u32 iSmp = C.r_dx10Sampler("smp_base");
+        if (oClamp.value && iSmp != std::numeric_limits<u32>::max())
             C.i_dx10Address(iSmp, D3DTADDRESS_CLAMP);
     }
 

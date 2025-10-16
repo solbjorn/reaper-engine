@@ -298,29 +298,31 @@ void CSkeletonX_PM::Render(CBackend& cmd_list, float LOD, bool)
     _Render(cmd_list, rm_geom, SW.num_verts, SW.offset, SW.num_tris);
 }
 
-void CSkeletonX_ST::Render(CBackend& cmd_list, float LOD, bool) { _Render(cmd_list, rm_geom, vCount, 0, dwPrimitives); }
+void CSkeletonX_ST::Render(CBackend& cmd_list, float, bool) { _Render(cmd_list, rm_geom, vCount, 0, dwPrimitives); }
 
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX_PM::Release() { inherited1::Release(); }
 void CSkeletonX_ST::Release() { inherited1::Release(); }
 //////////////////////////////////////////////////////////////////////
+
 void CSkeletonX_PM::Load(const char* N, IReader* data, u32 dwFlags)
 {
     _Load(N, data, vCount);
     void* _verts_ = data->pointer();
     inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
     RImplementation.shader_option_skinning(-1);
-    _DuplicateIndices(N, data);
+    _DuplicateIndices(data);
     vBase = 0;
     _Load_hw(*this, _verts_);
 }
+
 void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 {
     _Load(N, data, vCount);
     void* _verts_ = data->pointer();
     inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
     RImplementation.shader_option_skinning(-1);
-    _DuplicateIndices(N, data);
+    _DuplicateIndices(data);
     vBase = 0;
     _Load_hw(*this, _verts_);
 }
@@ -644,7 +646,7 @@ BOOL CSkeletonX_ext::_PickBoneHW4W(IKinematics::pick_result& r, float dist, cons
     return pick_bone<vertHW_4W>(Parent, r, dist, S, D, V, indices, faces);
 }
 
-BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
+BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id, u32 iBase)
 {
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
@@ -669,43 +671,44 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
 
 BOOL CSkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
-    return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase, iCount);
+    return inherited2::_PickBone(r, dist, start, dir, bone_id, iBase);
 }
 
 BOOL CSkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
     FSlideWindow& SW = nSWI.sw[0];
-    return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
+    return inherited2::_PickBone(r, dist, start, dir, bone_id, iBase + SW.offset);
 }
 
-void CSkeletonX_ST::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) { inherited2::_EnumBoneVertices(C, this, bone_id, iBase, iCount); }
+void CSkeletonX_ST::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) { inherited2::_EnumBoneVertices(C, bone_id, iBase); }
 
 void CSkeletonX_PM::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 {
     FSlideWindow& SW = nSWI.sw[0];
-    inherited2::_EnumBoneVertices(C, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
+    inherited2::_EnumBoneVertices(C, bone_id, iBase + SW.offset);
 }
 
-void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix&, CSkeletonWallmark&, const Fvector&, float, Fvisual*, u16*, CBoneData::FacesVec&)
 {
     R_ASSERT2(false, "Should use _FillVerticesSoft1W on R3!");
 }
-void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+
+void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix&, CSkeletonWallmark&, const Fvector&, float, Fvisual*, u16*, CBoneData::FacesVec&)
 {
     R_ASSERT2(false, "Should use _FillVerticesSoft2W on R3!");
 }
 
-void CSkeletonX_ext::_FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+void CSkeletonX_ext::_FillVerticesHW3W(const Fmatrix&, CSkeletonWallmark&, const Fvector&, float, Fvisual*, u16*, CBoneData::FacesVec&)
 {
     R_ASSERT2(false, "Should use _FillVerticesSoft3W on R3!");
 }
 
-void CSkeletonX_ext::_FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
+void CSkeletonX_ext::_FillVerticesHW4W(const Fmatrix&, CSkeletonWallmark&, const Fvector&, float, Fvisual*, u16*, CBoneData::FacesVec&)
 {
     R_ASSERT2(false, "Should use _FillVerticesSoft4W on R3!");
 }
 
-void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
+void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id, u32 iBase)
 {
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
@@ -727,12 +730,12 @@ void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, c
 
 void CSkeletonX_ST::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)
 {
-    inherited2::_FillVertices(view, wm, normal, size, this, bone_id, iBase, iCount);
+    inherited2::_FillVertices(view, wm, normal, size, bone_id, iBase);
 }
 void CSkeletonX_PM::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)
 {
     FSlideWindow& SW = nSWI.sw[0];
-    inherited2::_FillVertices(view, wm, normal, size, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
+    inherited2::_FillVertices(view, wm, normal, size, bone_id, iBase + SW.offset);
 }
 
 template <typename vertex_buffer_type>
@@ -750,7 +753,7 @@ static void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneDa
     }
 }
 
-void CSkeletonX_ext::_EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) const
+void CSkeletonX_ext::_EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id, u32 iBase) const
 {
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);

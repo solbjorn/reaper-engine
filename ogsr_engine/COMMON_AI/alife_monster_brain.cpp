@@ -58,22 +58,16 @@ CALifeMonsterBrain::~CALifeMonsterBrain()
 #endif
 }
 
-void CALifeMonsterBrain::on_state_write(NET_Packet& packet) {}
-
-void CALifeMonsterBrain::on_state_read(NET_Packet& packet) {}
+void CALifeMonsterBrain::on_state_write(NET_Packet&) {}
+void CALifeMonsterBrain::on_state_read(NET_Packet&) {}
 
 #ifdef XRGAME_EXPORTS
 bool CALifeMonsterBrain::perform_attack() { return (false); }
 
-ALife::EMeetActionType CALifeMonsterBrain::action_type(CSE_ALifeSchedulable* tpALifeSchedulable, const int& iGroupIndex, const bool& bMutualDetection)
-{
-    return (ALife::eMeetActionTypeIgnore);
-}
+ALife::EMeetActionType CALifeMonsterBrain::action_type(CSE_ALifeSchedulable*, const int&, const bool&) { return ALife::eMeetActionTypeIgnore; }
 
 void CALifeMonsterBrain::on_register() {}
-
 void CALifeMonsterBrain::on_unregister() {}
-
 void CALifeMonsterBrain::on_location_change() {}
 
 CSE_ALifeSmartZone& CALifeMonsterBrain::smart_terrain()

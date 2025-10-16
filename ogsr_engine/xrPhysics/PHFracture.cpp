@@ -200,6 +200,7 @@ void CPHFracturesHolder::PhTune(dBodyID body)
         }
     }
 }
+
 bool CPHFracturesHolder::PhDataUpdate(CPHElement* element)
 {
     FRACTURE_I i = m_fractures.begin(), e = m_fractures.end();
@@ -213,17 +214,20 @@ bool CPHFracturesHolder::PhDataUpdate(CPHElement* element)
 }
 
 void CPHFracturesHolder::AddImpact(const Fvector& force, const Fvector& point, u16 id) { m_impacts.emplace_back(force, point, id); }
+
 u16 CPHFracturesHolder::AddFracture(const CPHFracture& fracture)
 {
     m_fractures.push_back(fracture);
     return u16(m_fractures.size() - 1);
 }
+
 CPHFracture& CPHFracturesHolder::Fracture(u16 num)
 {
     R_ASSERT2(num < m_fractures.size(), "out of range!");
     return m_fractures[num];
 }
-void CPHFracturesHolder::DistributeAdditionalMass(u16 geom_num, const dMass& m)
+
+void CPHFracturesHolder::DistributeAdditionalMass(const dMass& m)
 {
     FRACTURE_I f_i = m_fractures.begin(), f_e = m_fractures.end();
     for (; f_i != f_e; ++f_i)
@@ -238,6 +242,7 @@ void CPHFracturesHolder::DistributeAdditionalMass(u16 geom_num, const dMass& m)
         // f_i->MassAddToFirst(m);
     }
 }
+
 void CPHFracturesHolder::SubFractureMass(u16 fracture_num)
 {
     FRACTURE_I f_i = m_fractures.begin(), f_e = m_fractures.end();

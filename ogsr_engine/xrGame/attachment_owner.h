@@ -12,7 +12,7 @@ class CGameObject;
 class CAttachableItem;
 class CInventoryItem;
 
-class CAttachmentOwner : public virtual RTTI::Enable
+class XR_NOVTABLE CAttachmentOwner : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CAttachmentOwner);
 
@@ -27,6 +27,7 @@ public:
 public:
     IC CAttachmentOwner();
     virtual ~CAttachmentOwner();
+
     virtual void reinit();
     virtual void reload(LPCSTR section);
     virtual void net_Destroy();

@@ -47,7 +47,7 @@
 #include "../anti_aim_ability.h"
 #include "../../../game_object_space.h"
 
-CBaseMonster::CBaseMonster() : m_psy_aura{this, "psy"}, m_fire_aura{this, "fire"}, m_radiation_aura{this, "radiation"}, m_base_aura{this, "base"}
+CBaseMonster::CBaseMonster() : m_psy_aura{this, "psy"}, m_radiation_aura{this, "radiation"}, m_fire_aura{this, "fire"}, m_base_aura{this, "base"}
 {
     m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting, this);
     m_pPhysics_support->in_Init();
@@ -385,7 +385,7 @@ void CBaseMonster::PHHit(SHit& H) { m_pPhysics_support->in_Hit(H); }
 
 CPHDestroyable* CBaseMonster::ph_destroyable() { return smart_cast<CPHDestroyable*>(character_physics_support()); }
 
-bool CBaseMonster::useful(const CItemManager* manager, const CGameObject* object) const
+bool CBaseMonster::useful(const CItemManager*, const CGameObject* object) const
 {
     const Fvector& object_pos = object->Position();
     if (!movement().restrictions().accessible(object_pos))
@@ -426,7 +426,7 @@ bool CBaseMonster::useful(const CItemManager* manager, const CGameObject* object
     return false;
 }
 
-float CBaseMonster::evaluate(const CItemManager* manager, const CGameObject* object) const { return (0.f); }
+float CBaseMonster::evaluate(const CItemManager*, const CGameObject*) const { return 0.0f; }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -570,7 +570,6 @@ void CBaseMonster::TranslateActionToPathParams()
             des_mask = MonsterMovement::eVelocityParameterWalkNormal;
         }
         break;
-    case ACT_WALK_BKWD: break;
     case ACT_RUN:
         if (m_bDamaged)
         {
@@ -594,6 +593,7 @@ void CBaseMonster::TranslateActionToPathParams()
         vel_mask = MonsterMovement::eVelocityParamsSteal;
         des_mask = MonsterMovement::eVelocityParameterSteal;
         break;
+    default: break;
     }
 
     if (state_invisible)
@@ -852,20 +852,10 @@ bool CBaseMonster::check_eated_corpse_draggable()
 {
     const CEntity* p_corpse = EatedCorpse;
     if (!p_corpse || !p_corpse->Visual())
-    {
         return false;
-    }
 
-    if (IKinematics* K = p_corpse->Visual()->dcast_PKinematics())
-    {
-        /*
-                if ( CInifile* ini = K->LL_UserData() )
-                {
-                    return ini->section_exist("capture_used_bones") && ini->line_exist("capture_used_bones", "bones");
-                }
-        */
+    if (p_corpse->Visual()->dcast_PKinematics())
         return true;
-    }
 
     return false;
 }

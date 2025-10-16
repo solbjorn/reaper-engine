@@ -15,7 +15,7 @@ CZoneEffector::~CZoneEffector() { Stop(); }
 void CZoneEffector::Load(LPCSTR section)
 {
     m_pp_fname = READ_IF_EXISTS(pSettings, r_string, section, "ppe_file", READ_IF_EXISTS(pSettings, r_string, section, "pp_eff_name", nullptr));
-    VERIFY2(m_pp_fname, section);
+    VERIFY2(m_pp_fname.c_str(), section);
     r_min_perc = pSettings->r_float(section, "radius_min");
     r_max_perc = pSettings->r_float(section, "radius_max");
     VERIFY(r_min_perc <= r_max_perc);

@@ -217,17 +217,14 @@ bool CMonsterEnemyManager::enemy_see_me_now()
 bool CMonsterEnemyManager::is_faced(const CEntityAlive* object0, const CEntityAlive* object1)
 {
     if (object0->Position().distance_to(object1->Position()) > object0->ffGetRange())
-    {
         return false;
-    }
 
-    float yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov, fRange;
+    float yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov;
     Fvector tPosition = object0->Position();
 
     yaw1 = object0->Orientation().yaw;
     pitch1 = object0->Orientation().pitch;
     fYawFov = angle_normalize_signed(object0->ffGetFov() * PI / 180.f);
-    fRange = object0->ffGetRange();
 
     fYawFov = angle_normalize_signed((_abs(fYawFov) + _abs(atanf(1.f / tPosition.distance_to(object1->Position())))) / 2.f);
     fPitchFov = angle_normalize_signed(fYawFov * 1.f);
@@ -238,8 +235,10 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive* object0, const CEntityAl
     pitch1 = angle_normalize_signed(pitch1);
     yaw2 = angle_normalize_signed(yaw2);
     pitch2 = angle_normalize_signed(pitch2);
+
     if ((angle_difference(yaw1, yaw2) <= fYawFov) && (angle_difference(pitch1, pitch2) <= fPitchFov))
         return (true);
+
     return (false);
 }
 

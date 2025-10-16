@@ -8,12 +8,6 @@
 #include "Tracer.h"
 #include "..\xr_3da\render.h"
 
-namespace
-{
-constexpr u32 MAX_TRACERS{1024 * 5};
-constexpr float TRACER_SIZE{0.13f};
-} // namespace
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -42,6 +36,8 @@ CTracer::CTracer()
 
 CTracer::~CTracer() = default;
 
+namespace
+{
 IC void FillSprite_Circle(const Fvector& pos, const float width, const float length, u32 color)
 {
     const Fvector& T = Device.vCameraTop;
@@ -110,13 +106,15 @@ IC void FillSprite_Line(const Fvector& pos, const Fvector& dir, const float widt
     UIRender->PushPoint(a.x + pos.x, a.y + pos.y, a.z + pos.z, color, t_tracer.min.x, t_tracer.min.y);
     UIRender->PushPoint(b.x + pos.x, b.y + pos.y, b.z + pos.z, color, t_tracer.max.x, t_tracer.min.y);
 }
+} // namespace
 
 void CTracer::Render(const Fvector& pos, const Fvector& center, const Fvector& dir, float length, float width, u8 colorID)
 {
-    if (::Render->ViewBase.testSphere_dirty((Fvector&)center, length * .5f))
+    if (::Render->ViewBase.testSphere_dirty(center, length * 0.5f))
     {
         if (colorID >= m_aColors.size())
             colorID = 0;
+
         FillSprite_Circle(pos, width * .5f, width * .5f, m_aColors[colorID]);
         FillSprite_Line(center, dir, width * .5f, length * .5f, m_aColors[colorID]);
     }

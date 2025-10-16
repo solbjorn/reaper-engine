@@ -1,9 +1,11 @@
 #include "stdafx.h"
+
 #include "dx103DFluidRenderer.h"
 #include "dx103DFluidBlenders.h"
 #include "../dx10BufferUtils.h"
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "dx103DFluidData.h"
+
 #include <DirectXPackedVector.h>
 
 // For render call
@@ -406,9 +408,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData& FluidData, Fo
     box.getradius(size);
 
     // Traverse object database
-    g_SpatialSpace->q_box(m_lstRenderables,
-                          0, // ISpatial_DB::O_ORDERED,
-                          STYPE_LIGHTSOURCE, center, size);
+    g_SpatialSpace->q_box(m_lstRenderables, 0, STYPE_LIGHTSOURCE, center, size);
 
     // Determine visibility for dynamic part of scene
     for (ISpatial* spatial : m_lstRenderables)

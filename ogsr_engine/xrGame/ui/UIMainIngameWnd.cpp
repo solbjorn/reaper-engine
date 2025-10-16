@@ -406,11 +406,13 @@ void CUIMainIngameWnd::Update()
             {
                 float v = *rit;
                 SetWarningIconColor(i,
-                                    color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
-                                               clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255), 0));
+                                    color_argb(0xFF, clampr(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0u, 255u),
+                                               clampr(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0u, 255u), 0));
             }
             else
+            {
                 TurnOffWarningIcon(i);
+            }
 
             i = (EWarningIcons)(i + 1);
 

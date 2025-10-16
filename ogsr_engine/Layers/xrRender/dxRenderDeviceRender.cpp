@@ -105,7 +105,7 @@ void dxRenderDeviceRender::SetupStates()
         contexts_pool[id].cmd_list.SetupStates();
 }
 
-void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
+void dxRenderDeviceRender::OnDeviceCreate()
 {
     // Signal everyone - device created
 

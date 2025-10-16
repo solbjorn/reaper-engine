@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ai_monster_effector.h"
 
 #define MONSTER_EFFECTOR_TYPE_ID 5
@@ -22,7 +23,7 @@ CMonsterEffector::CMonsterEffector(const SPPInfo& ppi, float life_time, float at
 
 BOOL CMonsterEffector::Process(SPPInfo& pp)
 {
-    inherited::Process(pp);
+    std::ignore = inherited::Process(pp);
 
     // amount of time passed in percents
     float time_past_perc = (m_total - fLifeTime) / m_total;

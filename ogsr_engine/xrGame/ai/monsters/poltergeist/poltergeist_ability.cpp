@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "poltergeist.h"
 #include "PhysicsShell.h"
 #include "../../../level.h"
@@ -38,7 +39,8 @@ void CPolterSpecialAbility::update_schedule()
 
 void CPolterSpecialAbility::on_hide()
 {
-    VERIFY(m_particles_object == 0);
+    VERIFY(m_particles_object == nullptr);
+
     if (!m_object->g_Alive())
         return;
 
@@ -126,8 +128,6 @@ void CPoltergeist::PhysicalImpulse(const Fvector& position)
     E->applyImpulse(dir, IMPULSE * E->getMass());
 }
 
-#pragma warning(push)
-#pragma warning(disable : 4267)
 void CPoltergeist::StrangeSounds(const Fvector& position)
 {
     if (m_strange_sound._feedback())
@@ -162,4 +162,3 @@ void CPoltergeist::StrangeSounds(const Fvector& position)
         }
     }
 }
-#pragma warning(pop)

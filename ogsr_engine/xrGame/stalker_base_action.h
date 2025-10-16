@@ -18,6 +18,8 @@ class CAI_Stalker;
 
 class CStalkerActionBase : public CActionScriptBase<CAI_Stalker>
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionBase, CActionScriptBase<CAI_Stalker>);
+
 protected:
     typedef CActionScriptBase<CAI_Stalker> inherited;
     typedef GraphEngineSpace::_solver_condition_type _condition_type;
@@ -25,10 +27,12 @@ protected:
 
 public:
     CStalkerActionBase(CAI_Stalker* object, LPCSTR action_name = "");
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
-    IC CAI_Stalker& object() const
+
+    [[nodiscard]] CAI_Stalker& object() const
     {
         VERIFY(m_object);
         return (*m_object);
@@ -37,6 +41,8 @@ public:
 
 class CStalkerActionAlreadyDead : public CStalkerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionAlreadyDead, CStalkerActionBase);
+
 protected:
     typedef CStalkerActionBase inherited;
 
