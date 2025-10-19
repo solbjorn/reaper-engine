@@ -10,23 +10,26 @@
 
 #include "script_reader.h"
 
-static bool r_eof(IReader* self) { return (!!self->eof()); }
+namespace
+{
+bool r_eof(IReader* self) { return !!self->eof(); }
 
-static xr_string r_stringZ(IReader* self)
+xr_string r_stringZ(IReader* self)
 {
     xr_string temp;
     self->r_stringZ(temp);
     return temp;
 }
 
-bool r_bool(IReader* self) { return (!!self->r_u8()); }
+bool r_bool(IReader* self) { return !!self->r_u8(); }
 
-static Fvector3 r_fvector3(IReader& self)
+Fvector3 r_fvector3(IReader& self)
 {
     Fvector3 out;
     self.r_fvector3(out);
     return out;
 }
+} // namespace
 
 template <>
 void CScriptReader::script_register(sol::state_view& lua)

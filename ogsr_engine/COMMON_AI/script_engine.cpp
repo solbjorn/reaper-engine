@@ -13,15 +13,13 @@
 #include "MainMenu.h"
 #include "object_factory.h"
 
-void export_classes(sol::state_view& lua);
+#include "ui/UIWpnParams.h"
 
 CScriptEngine::CScriptEngine()
 {
     m_stack_level = 0;
     m_reload_modules = false;
 }
-
-extern void destroy_lua_wpn_params();
 
 void CScriptEngine::unload()
 {
@@ -40,7 +38,9 @@ void CScriptEngine::unload()
     no_files.clear();
 }
 
-static int auto_load(lua_State* L)
+namespace
+{
+int auto_load(lua_State* L)
 {
     if ((lua_gettop(L) < 2) || !lua_istable(L, 1) || !lua_isstring(L, 2))
     {
@@ -52,7 +52,8 @@ static int auto_load(lua_State* L)
     return 1;
 }
 
-static string_unordered_map<shared_str, shared_str> xray_scripts;
+string_unordered_map<shared_str, shared_str> xray_scripts;
+} // namespace
 
 void CScriptEngine::setup_auto_load()
 {
@@ -115,6 +116,8 @@ void CScriptEngine::parse_script_namespace(const char* name, char* ns, u32 nsSiz
     xr_strcpy(func, funcSize, p + 1);
 }
 
+namespace
+{
 const char* ExtractFileName(const char* fname)
 {
     const char* result = fname;
@@ -181,6 +184,7 @@ bool LookupScript(string_path& fname, const char* base)
     }
     return false;
 }
+} // namespace
 
 bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_not_exist) // KRodin: Функция проверяет существует ли скрипт на диске. Если существует - отправляет
                                                                                           // его в do_file. Вызывается из process_file, auto_load и не только.

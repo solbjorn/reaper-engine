@@ -1,6 +1,8 @@
 #ifndef dRayMotions_h
 #define dRayMotions_h
 
+#include "ode_include.h"
+
 struct dxRayMotions;
 extern int dRayMotionsClassUser;
 

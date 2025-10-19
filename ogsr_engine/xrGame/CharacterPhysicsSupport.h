@@ -180,3 +180,5 @@ private:
 
     void update_animation_collision();
 };
+
+extern BOOL g_bCopDeathAnim;

@@ -1,11 +1,14 @@
 #include "StdAfx.h"
+
 #include "UIOutfitInfo.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"
 #include "UIScrollView.h"
+
 #include "../actor.h"
 #include "../CustomOutfit.h"
 #include "../string_table.h"
+#include "script_game_object.h"
 
 CUIOutfitInfo::CUIOutfitInfo() {}
 
@@ -18,14 +21,16 @@ CUIOutfitInfo::~CUIOutfitInfo()
     }
 }
 
-LPCSTR _imm_names[] = {
+namespace
+{
+constexpr std::array<absl::string_view, 16> _imm_names{
     "health_restore_speed", "radiation_restore_speed", "satiety_restore_speed", "thirst_restore_speed", "power_restore_speed", "bleeding_restore_speed", "psy_health_restore_speed",
 
     "burn_immunity",        "shock_immunity",          "strike_immunity",       "wound_immunity",       "radiation_immunity",  "telepatic_immunity",     "chemical_burn_immunity",
     "explosion_immunity",   "fire_wound_immunity",
 };
 
-LPCSTR _imm_st_names[] = {
+constexpr std::array<absl::string_view, 16> _imm_st_names{
     "ui_inv_health",
     "ui_inv_radiation",
     "ui_inv_satiety",
@@ -45,7 +50,8 @@ LPCSTR _imm_st_names[] = {
     "ui_inv_outfit_fire_wound_protection",
 };
 
-LPCSTR _actor_param_names[] = {"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
+constexpr std::array<absl::string_view, 7> _actor_param_names{"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
+} // namespace
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 {
@@ -62,7 +68,7 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 
     for (u32 i = _item_start; i < _max_item_index; ++i)
     {
-        strconcat(sizeof(_buff), _buff, _base, ":static_", _imm_names[i]);
+        strconcat(sizeof(_buff), _buff, _base, ":static_", _imm_names[i].data());
 
         if (xml_doc.NavigateToNode(_buff, 0))
         {
@@ -90,8 +96,6 @@ float CUIOutfitInfo::GetArtefactParam(ActorRestoreParams params, u32 i)
     return r;
 }
 
-#include "script_game_object.h"
-
 void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 {
     string128 _buff;
@@ -114,7 +118,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
         {
             _val_outfit = GetArtefactParam(artefactEffects, i);
 
-            float _actor_val = pSettings->r_float("actor_condition", _actor_param_names[i]);
+            float _actor_val = pSettings->r_float("actor_condition", _actor_param_names[i].data());
             _val_outfit = (_val_outfit / _actor_val);
         }
         else
@@ -147,7 +151,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
         if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
             _color = (_val_outfit > 0) ? "%c[red]" : "%c[green]";
 
-        LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i]);
+        LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i].data());
 
         int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
         _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn);

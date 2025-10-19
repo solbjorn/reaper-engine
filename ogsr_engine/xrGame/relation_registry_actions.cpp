@@ -47,7 +47,11 @@ struct SAttackGoodwillStorage
     }
 };
 
-SAttackGoodwillStorage gw_danger, gw_free;
+namespace
+{
+SAttackGoodwillStorage gw_danger;
+SAttackGoodwillStorage gw_free;
+} // namespace
 
 void load_attack_goodwill()
 {

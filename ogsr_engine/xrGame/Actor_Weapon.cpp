@@ -111,13 +111,18 @@ void CActor::SetWeaponHideState(u32 State, bool bSet, bool now)
         this->inventory().SetSlotsBlocked(State, bSet, now);
 }
 
+namespace
+{
 #define ENEMY_HIT_SPOT "mp_hit_sector_location"
-BOOL g_bShowHitSectors = TRUE;
+
+constexpr BOOL g_bShowHitSectors{TRUE};
+} // namespace
 
 void CActor::HitSector(CObject* who, CObject* weapon)
 {
     if (!g_bShowHitSectors)
         return;
+
     if (!g_Alive())
         return;
 

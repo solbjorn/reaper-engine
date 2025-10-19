@@ -169,7 +169,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(dxGeom* o1, dxGeom* o2, int f
 
     bool b_pushing = *pushing_neg; //||*pushing_b_neg;
     gl_cl_tries_state.resize(data->cashed_tries.size(), Flags8().assign(0));
-    B = data->cashed_tries.begin(), E = data->cashed_tries.end();
+
+    B = data->cashed_tries.begin();
+    E = data->cashed_tries.end();
     bool gb_pased = false;
     for (I = B; I != E; ++I)
     {

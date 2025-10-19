@@ -319,4 +319,6 @@ public:
     virtual void finalize();
 };
 
+float current_cover(CAI_Stalker* object);
+
 #include "stalker_combat_actions_inline.h"

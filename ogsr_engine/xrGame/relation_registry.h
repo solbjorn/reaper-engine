@@ -127,4 +127,7 @@ private:
     static void clear_reverse_personal(u16, u16);
 };
 
+// relation_registry_actions.cpp
+void load_attack_goodwill();
+
 #include "relation_registry_inline.h"

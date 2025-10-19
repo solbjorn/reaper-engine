@@ -233,3 +233,5 @@ public:
 
 extern std::unique_ptr<CLocatorAPI> xr_FS;
 #define FS (*xr_FS)
+
+void _dump_open_files(int mode);

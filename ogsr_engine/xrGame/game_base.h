@@ -187,3 +187,7 @@ public:
     void SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
     virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
 };
+
+extern float g_fTimeFactor;
+extern u64 g_qwEStartGameTime;
+extern u64 g_qwStartGameTime;

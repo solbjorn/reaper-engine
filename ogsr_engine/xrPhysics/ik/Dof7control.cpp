@@ -67,6 +67,8 @@ void SRS::init(const Matrix T1, const Matrix T2, const float a[3], const float p
     project_to_workspace = 1;
 }
 
+namespace
+{
 //
 // Given the goal position and the position vectors s and t of
 // the S and T matrices, solve for the angle of the R joint
@@ -85,7 +87,7 @@ void SRS::init(const Matrix T1, const Matrix T2, const float a[3], const float p
 //
 // Only return positive solution
 //
-static int solve_R_angle(const float g[3], const float s[3], const float t[3], const Matrix T, float& r_angle)
+int solve_R_angle(const float g[3], const float s[3], const float t[3], const Matrix T, float& r_angle)
 {
     float rhs = DOT(g, g) - DOT(s, s) - DOT(t, t);
 
@@ -246,6 +248,7 @@ int scale_goal(const float l1[3], const float l2[3], float g[3])
 
     return 0;
 }
+} // namespace
 
 //
 // Given a goal position and the projectio naxis, find the

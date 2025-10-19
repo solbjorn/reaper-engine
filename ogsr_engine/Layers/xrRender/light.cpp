@@ -1,9 +1,13 @@
 #include "StdAfx.h"
+
 #include "light.h"
 
-constexpr float RSQRTDIV2 = 0.70710678118654752440084436210485f;
+namespace
+{
+constexpr float RSQRTDIV2{0.70710678118654752440084436210485f};
+}
 
-light::light(void) : ISpatial(g_SpatialSpace)
+light::light() : ISpatial{g_SpatialSpace}
 {
     spatial.type = STYPE_LIGHTSOURCE;
     flags.type = POINT;
@@ -285,9 +289,12 @@ void light::xform_calc()
     }
 }
 
+namespace
+{
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-static constexpr Fvector cmNorm[6] = {{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-static constexpr Fvector cmDir[6] = {{1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, -1.f}};
+constexpr std::array<Fvector, 6> cmNorm{{{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
+constexpr std::array<Fvector, 6> cmDir{{{1.0f, 0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}}};
+} // namespace
 
 void light::export_to(light_Package& package)
 {
@@ -297,9 +304,12 @@ void light::export_to(light_Package& package)
         {
         case IRender_Light::POINT: {
             // tough: create/update 6 shadowed lights
-            if (nullptr == omnipart[0])
+            if (omnipart[0] == nullptr)
+            {
                 for (auto& p_light : omnipart)
                     p_light = xr_new<light>();
+            }
+
             for (int f = 0; f < 6; f++)
             {
                 light* L = omnipart[f];
@@ -363,7 +373,6 @@ void light::set_attenuation_params(float a0, float a1, float a2, float fo)
     falloff = fo;
 }
 
-extern float r_ssaGLOD_start, r_ssaGLOD_end;
 extern float ps_r2_slight_fade;
 
 float light::get_LOD()

@@ -16,10 +16,13 @@
 
 #include "object_factory.h"
 
-LPCSTR script_section = "script";
-LPCSTR current_version = "current_server_entity_version";
+namespace
+{
+constexpr LPCSTR script_section = "script";
+constexpr LPCSTR current_version = "current_server_entity_version";
+} // namespace
 
-/*IC*/ u16 script_server_object_version()
+u16 script_server_object_version()
 {
     static bool initialized = false;
     static u16 script_version = 0;
@@ -305,29 +308,15 @@ void CSE_Abstract::load(NET_Packet& tNetPacket)
 }
 
 CSE_Abstract* CSE_Abstract::base() { return (this); }
-
 const CSE_Abstract* CSE_Abstract::base() const { return (this); }
 
 CSE_Abstract* CSE_Abstract::init() { return (this); }
 
 LPCSTR CSE_Abstract::name() const { return (*s_name); }
-
 LPCSTR CSE_Abstract::name_replace() const { return (s_name_replace); }
 
 Fvector& CSE_Abstract::position() { return (o_Position); }
-
 Fvector& CSE_Abstract::angle() { return (o_Angle); }
-
 Flags16& CSE_Abstract::flags() { return (s_flags); }
-
-xr_token game_types[] = {{"any game", GAME_ANY},
-                         {"single", GAME_SINGLE},
-                         //{ "deathmatch",		GAME_DEATHMATCH },
-                         //	{ "CTF",			GAME_CTF		},
-                         //	{ "assault",		GAME_ASSAULT	},
-                         //{ "counterstrike",	GAME_CS			},
-                         //{ "teamdeathmatch",	GAME_TEAMDEATHMATCH },
-                         //{ "artefacthunt",	GAME_ARTEFACTHUNT },
-                         {nullptr, 0}};
 
 bool CSE_Abstract::validate() { return (true); }

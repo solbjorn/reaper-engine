@@ -8,7 +8,6 @@
 #include "../../level.h"
 #include "../../gameobject.h"
 
-#define KEEP_IMPULSE_UPDATE 200
 #define FIRE_TIME 3000
 #define RAISE_MAX_TIME 5000
 
@@ -134,9 +133,6 @@ bool CTelekineticObject::time_fire_elapsed()
 
 void CTelekineticObject::keep()
 {
-    // проверить время последнего обновления
-    // if (time_keep_updated + KEEP_IMPULSE_UPDATE > Device.dwTimeGlobal) return;
-
     if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
         return;
 

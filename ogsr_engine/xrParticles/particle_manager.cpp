@@ -8,11 +8,14 @@
 using namespace PAPI;
 
 // system
+namespace
+{
 CParticleManager PM;
+}
+
 IParticleManager* PAPI::ParticleManager() { return &PM; }
 
 CParticleManager::CParticleManager() {}
-
 CParticleManager::~CParticleManager() {}
 
 ParticleEffect* CParticleManager::GetEffectPtr(int effect_id)

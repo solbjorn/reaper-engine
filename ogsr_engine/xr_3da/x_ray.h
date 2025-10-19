@@ -59,5 +59,7 @@ public:
     void DestroyLoadingScreen();
 };
 
-extern CApplication* pApp;
 extern bool IS_OGSR_GA;
+extern BOOL g_appLoaded;
+extern string512 g_sBenchmarkName;
+extern CApplication* pApp;

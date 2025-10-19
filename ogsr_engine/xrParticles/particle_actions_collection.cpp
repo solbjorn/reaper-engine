@@ -1648,12 +1648,8 @@ void PAVortex::Transform(const Fmatrix& m)
 
 #include <xmmintrin.h>
 
-extern void noise3Init();
-
 namespace
 {
-int noise_start = 1;
-
 ICF __m128 _mm_load_fvector(const Fvector& v)
 {
     __m128 R1, R2;
@@ -1737,16 +1733,8 @@ ICF void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_cnt, pVector of
 }
 } // namespace
 
-extern float ps_particle_update_coeff;
-
 void PATurbulence::Execute(ParticleEffect* effect, float dt)
 {
-    if (noise_start)
-    {
-        noise_start = 0;
-        noise3Init();
-    }
-
     age += dt;
 
     u32 p_cnt = effect->p_count;

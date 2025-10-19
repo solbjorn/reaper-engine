@@ -22,7 +22,7 @@
 #include "script_game_object.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define PREFETCHED_ARTEFACTS_NUM 1 // количество предварительно проспавненых артефактов
+
 #define WIND_RADIUS (4 * Radius()) // расстояние до актера, когда появляется ветер
 #define FASTMODE_DISTANCE (50.f) // distance to camera from sphere, when zone switches to fast update sequence
 
@@ -1453,14 +1453,6 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
     dir.normalize();
     pArtefact->m_pPhysicsShell->applyImpulse(dir, m_fThrowOutPower);
 }
-
-// void CCustomZone::PrefetchArtefacts()
-//{
-//	if (FALSE==m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty()) return;
-//
-//	for(u32 i = m_SpawnedArtefacts.size(); i < PREFETCHED_ARTEFACTS_NUM; ++i)
-//		SpawnArtefact();
-// }
 
 void CCustomZone::StartWind()
 {

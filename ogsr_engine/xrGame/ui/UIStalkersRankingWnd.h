@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIWindow.h"
 
 class CUIFrameWindow;
@@ -73,3 +74,7 @@ public:
     virtual void SetSelected(bool);
     virtual bool OnMouseDown(int);
 };
+
+void add_human_to_top_list(u16 id);
+int get_actor_ranking();
+void remove_human_from_top_list(u16 id);

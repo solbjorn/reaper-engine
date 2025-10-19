@@ -10,7 +10,7 @@
 
 #include "script_render_device.h"
 
-extern BOOL g_appLoaded;
+#include "../xr_3da/x_ray.h"
 
 namespace
 {

@@ -272,4 +272,20 @@ public:
     bool b_need_user_input{};
 };
 
+// Device_wndproc.cpp
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+// device.cpp
+extern BOOL bShowPauseString;
+extern BOOL g_bLoaded;
+extern BOOL g_bRendering;
 extern CLoadScreenRenderer load_screen_renderer;
+
+void GetMonitorResolution(u32& horizontal, u32& vertical);
+
+// xr_ioc_cmd.cpp
+extern u32 g_screenmode;
+extern int ps_framelimiter;
+
+extern float psHUD_FOV; //--#SM+#--
+extern float psHUD_FOV_def; //--#SM+#--

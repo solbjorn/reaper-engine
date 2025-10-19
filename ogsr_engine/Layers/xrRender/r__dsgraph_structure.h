@@ -166,3 +166,10 @@ public:
     void render_water_ssr();
     void render_water();
 };
+
+// r__dsgraph_build.cpp
+extern float r_ssaDISCARD;
+extern float r_ssaGLOD_end;
+extern float r_ssaGLOD_start;
+extern float r_ssaLOD_A;
+extern float r_ssaLOD_B;

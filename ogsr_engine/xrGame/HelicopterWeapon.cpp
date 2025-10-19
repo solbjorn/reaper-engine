@@ -199,7 +199,10 @@ void CHelicopter::MGunFireEnd()
     m_enemy.fStartFireTime = -1.0f;
 }
 
-bool between(const float& src, const float& min, const float& max) { return ((src > min) && (src < max)); }
+namespace
+{
+inline bool between(float src, float min, float max) { return ((src > min) && (src < max)); }
+} // namespace
 
 void CHelicopter::UpdateWeapons()
 {

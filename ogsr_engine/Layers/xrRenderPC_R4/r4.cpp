@@ -50,6 +50,7 @@ bool CRender::is_sun()
 }
 
 float r_dtex_range = 50.f;
+
 //////////////////////////////////////////////////////////////////////////
 ShaderElement* CRender::rimp_select_sh_dynamic(IRenderable* root, dxRender_Visual* pVisual, float cdist_sq, u32 phase)
 {
@@ -208,8 +209,6 @@ void CRender::destroy()
     PSLibrary.OnDestroy();
     Device.seqFrame.Remove(this);
 }
-
-extern u32 reset_frame;
 
 void CRender::reset_begin()
 {

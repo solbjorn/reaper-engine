@@ -11,6 +11,8 @@
 
 player_hud* g_player_hud{};
 
+namespace
+{
 // Рассчитать стартовую секунду анимации --#SM+#--
 float CalculateMotionStartSeconds(float fStartFromTime, float fMotionLength)
 {
@@ -27,6 +29,7 @@ float CalculateMotionStartSeconds(float fStartFromTime, float fMotionLength)
         return (abs(fStartFromTime) * fMotionLength);
     }
 }
+} // namespace
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {

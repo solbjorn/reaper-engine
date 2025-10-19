@@ -3,12 +3,15 @@
 #include "xrserver.h"
 #include "xrserver_objects.h"
 
+namespace
+{
 void ReplaceOwnershipHeader(NET_Packet& P)
 {
     // способ очень грубый, но на данный момент иного выбора нет. Заранее приношу извинения
     u16 NewType = GE_OWNERSHIP_TAKE;
     CopyMemory(&P.B.data[6], &NewType, 2);
 }
+} // namespace
 
 void xrServer::Process_event_ownership(NET_Packet& P, ClientID sender, u16 ID, BOOL bForced)
 {

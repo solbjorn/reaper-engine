@@ -17,11 +17,6 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/IGame_Persistent.h"
 
-#define GROUND_FRICTION 10.0f
-#define AIR_FRICTION 0.01f
-#define WALL_FRICTION 3.0f
-// #define AIR_RESIST		0.001f
-
 #define def_X_SIZE_2 0.35f
 #define def_Y_SIZE_2 0.8f
 #define def_Z_SIZE_2 0.35f
@@ -32,10 +27,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && stricmp(PH_DBG_ObjectTrack(), *pObject->cName()) == 0)
-    {
         Msg("CPHMovementControl::CPHMovementControl %s (constructor) %f,%f,%pObjectf", PH_DBG_ObjectTrack(), pObject->Position().x, pObject->Position().y, pObject->Position().z);
-    }
-
 #endif
 
     m_material = 0;
@@ -56,10 +48,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
     bExernalImpulse = false;
     fLastMotionMag = 1.f;
     SetPathDir(Fvector().set(0, 0, 1));
-    // fAirFriction		= AIR_FRICTION;
-    // fWallFriction		= WALL_FRICTION;
-    // fGroundFriction		= GROUND_FRICTION;
-    // fFriction			= fAirFriction;
+
     bIsAffectedByGravity = TRUE;
     fActualVelocity = 0;
     m_fGroundDelayFactor = 1.f;

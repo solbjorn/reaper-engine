@@ -35,6 +35,23 @@
 #include "level_graph.h"
 #include "cameralook.h"
 #include "ai_object_location.h"
+#include "player_hud.h"
+
+#include "HUDManager.h"
+#include "UIGameCustom.h"
+#include "../xr_3da/x_ray.h"
+
+#include "map_manager.h"
+#include "alife_graph_registry.h"
+#include "game_graph.h"
+#include "GamePersistent.h"
+
+#include "CharacterPhysicsSupport.h"
+#include "attachable_item.h"
+#include "attachment_owner.h"
+#include "InventoryOwner.h"
+#include "Inventory.h"
+#include "HUDTarget.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -42,41 +59,20 @@
 #include "game_graph.h"
 #endif // DEBUG
 
-#include "hudmanager.h"
-#include "../xr_3da/x_ray.h"
-
 string_path g_last_saved_game;
 
-extern u64 g_qwStartGameTime;
-extern u64 g_qwEStartGameTime;
-
-extern float psHUD_FOV_def;
 extern float psSqueezeVelocity;
-
-extern int psLUA_GCSTEP;
-extern int psLUA_GCTIMEOUT;
-extern u32 ps_lua_gc_method;
 
 extern int x_m_x;
 extern int x_m_z;
+
 #ifdef DEBUG
 extern BOOL g_ShowAnimationInfo;
 #endif // DEBUG
-extern BOOL g_bShowHitSectors;
-extern BOOL g_bDebugDumpPhysicsStep;
-extern ESingleGameDifficulty g_SingleGameDifficulty;
-extern BOOL g_show_wnd_rect;
-extern BOOL g_show_wnd_rect2;
-extern BOOL g_show_wnd_rect_text;
-extern BOOL g_console_show_always;
-//-----------------------------------------------------------
-extern float g_fTimeFactor;
-extern BOOL g_bCopDeathAnim;
-extern int g_bHudAdjustMode;
-extern int g_bHudAdjustItemIdx;
-extern float g_bHudAdjustDeltaPos;
-extern float g_bHudAdjustDeltaRot;
 
+extern ESingleGameDifficulty g_SingleGameDifficulty;
+
+//-----------------------------------------------------------
 float adj_delta_pos = 0.0005f;
 float adj_delta_rot = 0.05f;
 //-----------------------------------------------------------
@@ -101,7 +97,11 @@ extern BOOL b_death_anim_velocity;
 #endif
 int g_AI_inactive_time = 0;
 
-static constexpr xr_token lua_gc_method_token[] = {{"gc_disable", 0}, {"gc_step", 1}, {"gc_timeout", 2}, {"gc_full", 3}, {nullptr, -1}};
+extern void show_animation_stats();
+
+namespace
+{
+constexpr xr_token lua_gc_method_token[] = {{"gc_disable", 0}, {"gc_step", 1}, {"gc_timeout", 2}, {"gc_full", 3}, {nullptr, -1}};
 
 void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 {
@@ -255,6 +255,7 @@ public:
 };
 #endif // DEBUG
 
+#ifndef MASTER_GOLD
 class CCC_ALifeTimeFactor : public IConsole_Command
 {
 public:
@@ -362,8 +363,8 @@ public:
             Log("!Not a single player game!");
     }
 };
+#endif // !MASTER_GOLD
 
-// #ifndef MASTER_GOLD
 class CCC_TimeFactor : public IConsole_Command
 {
 public:
@@ -376,7 +377,6 @@ public:
         Device.time_factor(time_factor);
     }
 };
-// #endif // MASTER_GOLD
 
 //-----------------------------------------------------------------------
 class CCC_DemoRecord : public IConsole_Command
@@ -450,9 +450,6 @@ bool valid_file_name(LPCSTR file_name)
 
     return (true);
 }
-
-#include "UIGameCustom.h"
-#include "HUDManager.h"
 
 class CCC_ALifeSave : public IConsole_Command
 {
@@ -710,8 +707,6 @@ public:
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all infoportions that actor have"); }
 };
 
-#include "map_manager.h"
-
 class CCC_DumpMap : public IConsole_Command
 {
 public:
@@ -720,8 +715,6 @@ public:
     virtual void Execute(LPCSTR args) { Level().MapManager().Dump(); }
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all currentmap locations"); }
 };
-
-#include "alife_graph_registry.h"
 
 class CCC_DumpCreatures : public IConsole_Command
 {
@@ -882,8 +875,6 @@ public:
 };
 
 // #ifndef MASTER_GOLD
-#include "game_graph.h"
-
 struct CCC_JumpToLevel : public IConsole_Command
 {
     CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
@@ -1059,8 +1050,6 @@ public:
     }
 };
 
-#include "GamePersistent.h"
-
 class CCC_MainMenu : public IConsole_Command
 {
 public:
@@ -1084,6 +1073,7 @@ public:
     }
 };
 
+#ifndef MASTER_GOLD
 struct CCC_StartTimeSingle : public IConsole_Command
 {
     CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
@@ -1137,6 +1127,7 @@ struct CCC_TimeFactorSingle : public CCC_Float
         Level().Server->game->SetGameTimeFactor(g_fTimeFactor);
     }
 };
+#endif // !MASTER_GOLD
 
 #ifdef DEBUG
 class CCC_RadioGroupMask2;
@@ -1211,13 +1202,6 @@ struct CCC_DbgBullets : public CCC_Integer
     }
 };
 #endif // DEBUG
-
-#include "attachable_item.h"
-#include "attachment_owner.h"
-#include "InventoryOwner.h"
-#include "Inventory.h"
-#include "HUDManager.h"
-#include "HUDTarget.h"
 
 class CCC_TuneAttachableItem : public IConsole_Command
 {
@@ -1382,8 +1366,6 @@ public:
     }
 };
 
-extern void show_animation_stats();
-
 class CCC_ShowAnimationStats : public IConsole_Command
 {
 public:
@@ -1391,7 +1373,6 @@ public:
 
     virtual void Execute(LPCSTR) { show_animation_stats(); }
 };
-#endif // DEBUG
 
 class CCC_DumpObjects : public IConsole_Command
 {
@@ -1400,6 +1381,7 @@ public:
 
     virtual void Execute(LPCSTR) { Level().Objects.dump_all_objects(); }
 };
+#endif // DEBUG
 
 // Change weather immediately
 class CCC_SetWeather : public IConsole_Command
@@ -1466,6 +1448,7 @@ public:
     virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
 };
 #endif // USE_MEMORY_VALIDATOR
+} // namespace
 
 void CCC_RegisterCommands()
 {

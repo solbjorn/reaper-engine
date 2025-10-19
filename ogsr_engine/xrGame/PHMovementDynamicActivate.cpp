@@ -9,9 +9,10 @@
 #include "../xr_3da/GameMtlLib.h"
 #include "PhysicsShellHolder.h"
 
-extern class CPHWorld* ph_world;
+namespace
+{
 ObjectContactCallbackFun* saved_callback{};
-static float max_depth = 0.f;
+float max_depth{};
 
 struct STestCallbackPars
 {
@@ -33,6 +34,7 @@ float STestCallbackPars::callback_cfm_factor = world_cfm * 0.00001f;
 float STestCallbackPars::callback_erp_factor = 1.f;
 float STestCallbackPars::decrement_depth = 0.f;
 float STestCallbackPars::max_real_depth = 0.2f;
+
 struct STestFootCallbackPars
 {
     static float calback_friction_factor;
@@ -53,6 +55,7 @@ float STestFootCallbackPars::callback_cfm_factor = world_cfm * 0.00001f;
 float STestFootCallbackPars::callback_erp_factor = 1.f;
 float STestFootCallbackPars::decrement_depth = 0.05f;
 float STestFootCallbackPars::max_real_depth = 0.2f;
+
 template <class Pars>
 void TTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
@@ -104,7 +107,9 @@ void TTestDepthCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* materi
 
 ObjectContactCallbackFun* TestDepthCallback = &TTestDepthCallback<STestCallbackPars>;
 ObjectContactCallbackFun* TestFootDepthCallback = &TTestDepthCallback<STestFootCallbackPars>;
+
 ///////////////////////////////////////////////////////////////////////////////////////
+
 class CVelocityLimiter : public CPHUpdateObject
 {
     RTTI_DECLARE_TYPEINFO(CVelocityLimiter, CPHUpdateObject);
@@ -190,107 +195,8 @@ public:
 
     void PhTune(dReal) override { VelocityLimit(); }
 };
-////////////////////////////////////////////////////////////////////////////////////
-class CGetContactForces : public CPHUpdateObject
-{
-    RTTI_DECLARE_TYPEINFO(CGetContactForces, CPHUpdateObject);
+} // namespace
 
-public:
-    dBodyID m_body;
-    float m_max_force_self;
-    float m_max_torque_self;
-
-    float m_max_force_self_y;
-    float m_max_force_self_sd;
-
-    float m_max_force_others;
-    float m_max_torque_others;
-
-    CGetContactForces(dBodyID b)
-    {
-        R_ASSERT(b);
-        m_body = b;
-        InitValues();
-    }
-    float mf_slf() { return m_max_force_self; }
-    float mf_othrs() { return m_max_force_others; }
-    float mt_slf() { return m_max_torque_self; }
-    float mt_othrs() { return m_max_torque_others; }
-
-    float mf_slf_y() { return m_max_force_self_y; }
-    float mf_slf_sd() { return m_max_force_self_sd; }
-
-protected:
-    void PhTune(dReal) override
-    {
-        InitValues();
-        int num = dBodyGetNumJoints(m_body);
-        for (int i = 0; i < num; ++i)
-        {
-            dJointID joint = dBodyGetJoint(m_body, i);
-
-            if (dJointGetType(joint) == dJointTypeContact)
-            {
-                dJointSetFeedback(joint, ContactFeedBacks.add());
-            }
-        }
-    }
-
-    void PhDataUpdate(dReal) override
-    {
-        int num = dBodyGetNumJoints(m_body);
-        for (int i = 0; i < num; i++)
-        {
-            dJointID joint = dBodyGetJoint(m_body, i);
-            if (dJointGetType(joint) == dJointTypeContact)
-            {
-                dJointFeedback* feedback = dJointGetFeedback(joint);
-                R_ASSERT2(feedback, "Feedback was not set!!!");
-                dxJoint* b_joint = (dxJoint*)joint;
-                dBodyID other_body = b_joint->node[1].body;
-                bool b_body_second = (b_joint->node[1].body == m_body);
-                dReal* self_force = feedback->f1;
-                dReal* self_torque = feedback->t1;
-                dReal* othrers_force = feedback->f2;
-                dReal* othrers_torque = feedback->t2;
-                if (b_body_second)
-                {
-                    other_body = b_joint->node[0].body;
-                    self_force = feedback->f2;
-                    self_torque = feedback->t2;
-                    othrers_force = feedback->f1;
-                    othrers_torque = feedback->t1;
-                }
-
-                save_max(m_max_force_self, _sqrt(dDOT(self_force, self_force)));
-                save_max(m_max_torque_self, _sqrt(dDOT(self_torque, self_torque)));
-                save_max(m_max_force_self_y, _abs(self_force[1]));
-                save_max(m_max_force_self_sd, _sqrt(self_force[0] * self_force[0] + self_force[2] * self_force[2]));
-                if (other_body)
-                {
-                    dVector3 shoulder;
-                    dVectorSub(shoulder, dJointGetPositionContact(joint), dBodyGetPosition(other_body));
-                    dReal shoulder_lenght = _sqrt(dDOT(shoulder, shoulder));
-
-                    save_max(m_max_force_others, _sqrt(dDOT(othrers_force, othrers_force)));
-                    if (!fis_zero(shoulder_lenght))
-                        save_max(m_max_torque_others, _sqrt(dDOT(othrers_torque, othrers_torque)) / shoulder_lenght);
-                }
-            }
-        }
-    }
-
-private:
-    void InitValues()
-    {
-        m_max_force_self = 0.f;
-        m_max_torque_self = 0.f;
-        m_max_force_others = 0.f;
-        m_max_torque_others = 0.f;
-        m_max_force_self_y = 0.f;
-        m_max_force_self_sd = 0.f;
-    }
-};
 /////////////////////////////////////////////////////////////////////////////////////
 
 bool CPHMovementControl::ActivateBoxDynamic(DWORD id, int num_it /*=8*/, int num_steps /*5*/, float resolve_depth /*=0.01f*/)

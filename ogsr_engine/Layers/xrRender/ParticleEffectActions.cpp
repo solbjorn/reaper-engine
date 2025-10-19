@@ -7,6 +7,8 @@
 
 using namespace PAPI;
 
+namespace
+{
 #define PARTICLE_ACTION_VERSION_SHOC 0x0000
 #define PARTICLE_ACTION_VERSION_COP 0x0001
 
@@ -51,6 +53,7 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
     pa->type = type;
     return pa;
 }
+} // namespace
 
 _CreateEAction pCreateEAction = pCreateEActionImpl;
 
@@ -246,6 +249,9 @@ void EParticleAction::appendBool(LPCSTR name, BOOL v)
 }
 
 //---------------------------------------------------------------------------
+
+namespace
+{
 void pAvoid(IWriter& F, float magnitude, float epsilon, float look_ahead, pDomain D, BOOL allow_rotate)
 {
     PAAvoid S;
@@ -674,6 +680,7 @@ void pTurbulence(IWriter& F, float freq, int octaves, float magnitude, float eps
 
 //------------------------------------------------------------------------------
 #define EXPAND_DOMAIN(D) D.type, D.f[0], D.f[1], D.f[2], D.f[3], D.f[4], D.f[5], D.f[6], D.f[7], D.f[8]
+} // namespace
 
 EPAAvoid::EPAAvoid() : EParticleAction(PAPI::PAAvoidID)
 {

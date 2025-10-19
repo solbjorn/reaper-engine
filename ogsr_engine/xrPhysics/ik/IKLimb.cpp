@@ -17,14 +17,12 @@
 #include "PHDebug.h"
 #endif
 
-extern int ik_allign_free_foot;
-
-int ik_blend_free_foot = 1;
-int ik_local_blending = 0;
-int ik_collide_blend = 0;
-
 namespace
 {
+constexpr int ik_blend_free_foot{1};
+constexpr int ik_local_blending{0};
+constexpr int ik_collide_blend{0};
+
 constexpr Fmatrix xm2im{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1};
 
 typedef float IVektor[3];
@@ -80,16 +78,8 @@ void CIKLimb::Invalidate()
 #endif
 }
 
-void XM_IM(const Fmatrix& XM, Fmatrix& IM) { IM.mul_43(xm2im, XM); }
-
-void XM_IM(const Fmatrix& XM, Matrix& IM)
+namespace
 {
-    //((Fmatrix*)(&IM))->mul_43(xm2im,XM);
-    XM_IM(XM, *((Fmatrix*)(&IM)));
-}
-
-void IM_XM(const Matrix& IM, Fmatrix& XM) { XM.mul_43(xm2im, *((const Fmatrix*)(&IM))); }
-
 void XM2IM(const Fmatrix& XM, Fmatrix& IM)
 {
     // IM=xm2im*XM*xm2im^-1
@@ -100,9 +90,7 @@ void XM2IM(const Fmatrix& XM, Fmatrix& IM)
 }
 
 void XM2IM(const Fmatrix& XM, Matrix& IM) { XM2IM(XM, *((Fmatrix*)(&IM))); }
-void IM2XM(const Matrix& IM, Fmatrix& XM) { XM2IM(*((const Fmatrix*)(&IM)), XM); }
-void XV2IV(const Fvector& XV, IVektor& IV) { xm2im.transform_dir(cast_fv(IV), XV); }
-void IV2XV(const IVektor& IV, Fvector& XV) { xm2im.transform_dir(XV), cast_fv(IV); }
+} // namespace
 
 IC Fmatrix& CIKLimb::ref_bone_to_foot(Fmatrix& ref_bone) const { return m_foot.ref_bone_to_foot(ref_bone); }
 
@@ -229,6 +217,8 @@ void CIKLimb::Solve(SCalculateData& cd)
 #endif
 }
 
+namespace
+{
 IC void set_limits(float& min, float& max, SJointLimit& l)
 {
     min = -l.limit.y;
@@ -264,6 +254,8 @@ void parse_bones_string(IKinematics* K, LPCSTR S, u16 bones[4])
 }
 
 bool has_ik_settings(IKinematics* K) { return K->LL_UserData() && K->LL_UserData()->section_exist("ik"); }
+} // namespace
+
 void CIKLimb::Create(u16 id, IKinematicsAnimated* K, bool collide_)
 {
     R_ASSERT(K);
@@ -485,11 +477,13 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
     sv_state.save_new_state(cd.state);
 }
 
-static const float linear_tolerance = 0.0000001f, angualar_tolerance = 0.00005f;
+namespace
+{
+constexpr float linear_tolerance{0.0000001f};
+constexpr float angualar_tolerance{0.00005f};
 
 IC bool clamp_change(Fmatrix& m, const Fmatrix& start, float ml, float ma) { return clamp_change(m, start, ml, ma, linear_tolerance, angualar_tolerance); }
-
-void cmp_matrix(bool& eq_linear, bool& eq_angular, const Fmatrix& m0, const Fmatrix& m1) { cmp_matrix(eq_linear, eq_angular, m0, m1, linear_tolerance, angualar_tolerance); }
+} // namespace
 
 bool CIKLimb::blend_collide(ik_goal_matrix& m, const SCalculateData& cd, const ik_goal_matrix& m0, const ik_goal_matrix& m1) const
 {
@@ -510,111 +504,6 @@ bool CIKLimb::blend_collide(ik_goal_matrix& m, const SCalculateData& cd, const i
 #endif
     return ret;
 }
-/*
-bool	CIKLimb::blend_collide( ik_goal_matrix &m, const SCalculateData& cd,  const ik_goal_matrix &m0, const
-ik_goal_matrix &m1 )
-{
-    bool ret = false;
-    VERIFY( m0.collide_state() != ik_goal_matrix::cl_undefined );
-    VERIFY( m1.collide_state() != ik_goal_matrix::cl_undefined );
-
-#ifdef DEBUG
-    Fvector l_toe; m_foot.ToePosition( l_toe );
-#endif
-
-    if(	m0.collide_state() == m1.collide_state() &&
-        (ik_goal_matrix::cl_free == m0.collide_state() ||
-         ik_goal_matrix::cl_aligned == m0.collide_state()
-        )
-    )
-    {
-        Fmatrix fm =  m1.get() ;
-        ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-        m.set( fm, m0.collide_state() );
-        m_foot.GetFootStepMatrix( m, fm, collide_data, true, true );
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-        Fvector	v; fm.transform_tiny( v, l_toe );
-        DBG_DrawPoint( v, 0.1, color_xrgb( 0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255
-,(ik_goal_matrix::cl_aligned == m0.collide_state()) * 255 ) );
-#endif
-        return ret;
-    }
-
-    if( ik_goal_matrix::cl_free == m0.collide_state() )
-    {
-        Fmatrix fm =  m1.get() ;
-        ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-        ik_goal_matrix r;
-        //r.set( fm, m0.collide_state( ) );
-        bool collided = m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );
-        if( r.collide_state() ==  ik_goal_matrix::cl_free )
-        {
-            m = r;
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-            Fvector	v; r.get().transform_tiny( v, l_toe );
-            DBG_DrawPoint( v, 0.1, color_xrgb( (!collided) * 255, 255 , 255 ) );
-#endif
-            return ret;
-        }
-        else
-        {
-            //NR
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-        Fvector	v; r.get().transform_tiny( v, l_toe );
-        DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 0 ) );
-#endif
-            m = r;
-            return false;
-            //bool bl = true, ba = true;
-            //cmp_matrix( bl, ba, m0.get(), m1.get(), linear_tolerance, angular_tolerance );
-
-        }
-    } else if( ik_goal_matrix::cl_free == m1.collide_state() )
-    {
-        Fmatrix fm =  m1.get() ;//m0
-        ret = clamp_change( fm, m0.get(), cd.l, cd.a );//m1
-        ik_goal_matrix r;
-        //r.set( fm, m0.collide_state( ) );
-        m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );
-        if( r.collide_state() == ik_goal_matrix::cl_free )
-        {
-#ifdef DEBUG
-        Fvector	v; r.get().transform_tiny( v, l_toe );
-        DBG_DrawPoint( v, 0.1, color_xrgb( 255, 255 , 0 ) );
-#endif
-            m = r;
-            return ret;
-        }
-        else
-        {
-#ifdef DEBUG
-        Fvector	v; r.get().transform_tiny( v, l_toe );
-        DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 0 ) );
-#endif
-            //NR
-            m = r;
-            return false;
-        }
-
-    } else
-    {
-        Fmatrix fm =  m1.get() ;
-        ret = clamp_change( fm, m0.get(), cd.l, cd.a );
-
-        ik_goal_matrix r;
-        r.set( fm, m0.collide_state( ) );
-        m_foot.GetFootStepMatrix( r, fm, collide_data, true, true );
-
-#ifdef IK_DBG_DRAW_BLEND_COLLIDE
-        Fvector	v; r.get().transform_tiny( v, l_toe );
-        DBG_DrawPoint( v, 0.1, color_xrgb( 255, 0 , 255 ) );
-#endif
-
-        m = r;
-        return ret;
-    }
-}
-*/
 
 void CIKLimb::Blending(SCalculateData& cd)
 {
@@ -795,30 +684,6 @@ void CIKLimb::ToeTimeDiff(Fvector& v, const SCalculateData& cd) const
 }
 
 void CIKLimb::ToeTimeDiffPredict(Fvector& v) const { v.set(0, -1, 0); }
-
-static const float pick_dir_mix_in_factor = 0.01f;
-
-void pick_dir_update(Fvector& v, const Fvector& previous_dir, const Fvector& new_dir)
-{
-    Fvector dir = new_dir;
-    dir.mul(pick_dir_mix_in_factor);
-
-    if (dir.y > 0)
-        dir.y = -dir.y;
-
-    dir.add(previous_dir);
-
-    dir.add(Fvector().set(0, -0.05f, 0));
-
-    float m = dir.magnitude();
-
-    if (m < EPS)
-        v.set(previous_dir);
-    else
-        v.set(dir.mul(1.f / m));
-
-    VERIFY(_valid(v));
-}
 
 IC void CIKLimb::GetPickDir(Fvector& v) const { v.set(0, -1, 0); }
 

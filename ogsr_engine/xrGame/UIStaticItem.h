@@ -84,5 +84,3 @@ public:
     virtual void SetShader(const ui_shader& sh);
     ui_shader& GetShader() { return hShader; }
 };
-
-extern BOOL g_bRendering;

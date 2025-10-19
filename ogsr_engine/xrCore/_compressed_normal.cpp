@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "_compressed_normal.h"
+
 // upper 3 bits
 #define pvSIGN_MASK 0xe000
 #define pvXSIGN_MASK 0x8000
@@ -12,32 +14,44 @@
 // lower 7 bits - ybits
 #define pvBOTTOM_MASK 0x007f
 
-// static lookup table for unit vector3 decompression
-float pvUVAdjustment[0x2000];
-
-void pvInitializeStatics(void)
+namespace
 {
-    for (int idx = 0; idx < 0x2000; idx++)
+// static lookup table for unit vector3 decompression
+class pvUVAdjustment_init
+{
+private:
+    std::array<float, 0x2000> tbl;
+
+public:
+    constexpr pvUVAdjustment_init()
     {
-        long xbits = idx >> 7;
-        long ybits = idx & pvBOTTOM_MASK;
-
-        // map the numbers back to the triangle (0,0)-(0,127)-(127,0)
-        if ((xbits + ybits) >= 127)
+        for (auto [idx, elem] : xr::views_enumerate(tbl))
         {
-            xbits = 127 - xbits;
-            ybits = 127 - ybits;
+            gsl::index xbits{idx >> 7};
+            gsl::index ybits{idx & pvBOTTOM_MASK};
+
+            // map the numbers back to the triangle (0,0)-(0,127)-(127,0)
+            if (xbits + ybits >= 127)
+            {
+                xbits = 127 - xbits;
+                ybits = 127 - ybits;
+            }
+
+            // convert to 3D vectors
+            float x{gsl::narrow<float>(xbits)};
+            float y{gsl::narrow<float>(ybits)};
+            float z{gsl::narrow<float>(126 - xbits - ybits)};
+
+            // calculate the amount of normalization required
+            elem = 1.0f / _sqrt(y * y + z * z + x * x);
         }
-
-        // convert to 3D vectors
-        float x = float(xbits);
-        float y = float(ybits);
-        float z = float(126 - xbits - ybits);
-
-        // calculate the amount of normalization required
-        pvUVAdjustment[idx] = 1.0f / _sqrt(y * y + z * z + x * x);
     }
-}
+
+    [[nodiscard]] constexpr const float& operator[](gsl::index i) const { return tbl[i]; }
+};
+
+const pvUVAdjustment_init pvUVAdjustment;
+} // namespace
 
 u16 pvCompress(const Fvector& vec)
 {

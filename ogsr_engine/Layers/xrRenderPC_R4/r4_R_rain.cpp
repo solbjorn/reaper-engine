@@ -1,23 +1,25 @@
 #include "stdafx.h"
-#include "xr_task.h"
+
+#include "r4_R_sun_support.h"
 
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
 
-#include "r4_R_sun_support.h"
+#include "xr_task.h"
 
+namespace
+{
 constexpr float tweak_rain_COP_initial_offs = 1200.f;
 constexpr float tweak_rain_ortho_xform_initial_offs = 1000.f; //. ?
-
-//	Defined in r2_R_sun.cpp
-extern Fvector3 wform(const Fmatrix& m, const Fvector3& v);
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static constexpr Fvector3 corners[8] = {{-1, -1, 0}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0}, {+1, +1, +1}, {+1, +1, 0}, {+1, -1, +1}, {+1, -1, 0}};
-static constexpr u32 facetable[6][4] = {{0, 3, 5, 7}, {1, 2, 3, 0}, {6, 7, 5, 4}, {4, 2, 1, 6}, {3, 2, 4, 5}, {1, 0, 7, 6}};
+constexpr Fvector3 corners[8]{{-1.0f, -1.0f, 0.0f},  {-1.0f, -1.0f, +1.0f}, {-1.0f, +1.0f, +1.0f}, {-1.0f, +1.0f, 0.0f},
+                              {+1.0f, +1.0f, +1.0f}, {+1.0f, +1.0f, 0.0f},  {+1.0f, -1.0f, +1.0f}, {+1.0f, -1.0f, 0.0f}};
+constexpr u32 facetable[6][4]{{0, 3, 5, 7}, {1, 2, 3, 0}, {6, 7, 5, 4}, {4, 2, 1, 6}, {3, 2, 4, 5}, {1, 0, 7, 6}};
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 void CRender::rain_run()

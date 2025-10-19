@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
+#include "stacktrace_collector.h"
+
 #if __cpp_lib_stacktrace
 
 #include <stacktrace>
 
 std::string BuildStackTrace(const char* header) { return header + std::to_string(std::stacktrace::current()); }
-
 std::string BuildStackTrace(const char* header, PCONTEXT) { return BuildStackTrace(header); }
 
 #else
@@ -16,7 +17,10 @@ std::string BuildStackTrace(const char* header, PCONTEXT) { return BuildStackTra
 
 #pragma comment(lib, "dbghelp.lib")
 
-constexpr u16 MaxFuncNameLength = 4096, maxFramesCount = 512;
+namespace
+{
+constexpr u16 MaxFuncNameLength{4096};
+constexpr u16 maxFramesCount{512};
 
 bool symEngineInitialized = false;
 
@@ -49,6 +53,7 @@ void DeinitializeSymbolEngine()
 #else
 #define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
 #endif
+} // namespace
 
 std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {

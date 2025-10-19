@@ -33,9 +33,6 @@ CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog* monster) : inherit
     add_state(eStateHitted, xr_new<CStateMonsterHitted<CAI_PseudoDog>>(monster));
 }
 
-#define MIN_ANGRY_TIME 10000
-#define MAX_GROWLING_TIME 20000
-
 void CStateManagerPseudodog::execute()
 {
     u32 state_id = u32(-1);

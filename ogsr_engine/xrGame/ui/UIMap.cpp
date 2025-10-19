@@ -56,6 +56,8 @@ void CUICustomMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
     SetWindowName(m_name.c_str());
 }
 
+namespace
+{
 void RotateCoord(float x, float y, const float angle, float& x_, float& y_, float _kx)
 {
     const float _sc = _cos(angle);
@@ -66,6 +68,7 @@ void RotateCoord(float x, float y, const float angle, float& x_, float& y_, floa
 
     x_ *= _kx;
 }
+} // namespace
 
 Fvector2 CUICustomMap::ConvertLocalToReal(const Fvector2& src) const
 {

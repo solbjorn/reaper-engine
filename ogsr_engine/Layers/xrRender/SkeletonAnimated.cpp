@@ -11,7 +11,6 @@
 #include "../../xrcore/dump_string.h"
 #endif
 
-extern int psSkeletonUpdate;
 using namespace animation;
 
 //////////////////////////////////////////////////////////////////////////

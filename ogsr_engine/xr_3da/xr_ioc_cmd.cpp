@@ -9,11 +9,13 @@
 #include "environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
+#include "GameFont.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 #include "xr_object.h"
 #include "SkeletonMotions.h"
 #include "IGame_Persistent.h"
 #include "LightAnimLibrary.h"
+#include "xr_efflensflare.h"
 
 #include <regex>
 
@@ -56,6 +58,8 @@ void IConsole_Command::add_LRU_to_tips(vecTips& tips)
 
 // =======================================================
 
+namespace
+{
 class CCC_Quit : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Quit, IConsole_Command);
@@ -109,6 +113,7 @@ public:
 };
 #endif // DEBUG_MEMORY_MANAGER
 
+#ifdef DEBUG
 class CCC_DbgStrCheck : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrCheck, IConsole_Command);
@@ -128,6 +133,7 @@ public:
 
     void Execute(LPCSTR) override { g_pStringContainer->dump(); }
 };
+#endif // DEBUG
 
 class CCC_DbgLALibDump : public IConsole_Command
 {
@@ -150,6 +156,7 @@ public:
     void Execute(LPCSTR) override { g_pMotionsContainer->dump(); }
 };
 
+#ifdef DEBUG
 class CCC_TexturesStat : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_TexturesStat, IConsole_Command);
@@ -192,6 +199,7 @@ public:
         Engine.Event.Signal(Event, (u64)Param);
     }
 };
+#endif // DEBUG
 
 //-----------------------------------------------------------------------
 class CCC_Help : public IConsole_Command
@@ -237,8 +245,7 @@ public:
     }
 };
 
-void _dump_open_files(int mode);
-
+#ifdef DEBUG
 class CCC_DumpOpenFiles : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpOpenFiles, IConsole_Command);
@@ -252,6 +259,7 @@ public:
         _dump_open_files(_mode);
     }
 };
+#endif
 
 //-----------------------------------------------------------------------
 class CCC_SaveCFG : public IConsole_Command
@@ -294,6 +302,7 @@ public:
         }
     }
 };
+} // namespace
 
 CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command{N} {}
 
@@ -361,6 +370,8 @@ CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd) : CCC_LoadCFG{cmd} { xr_strcp
 
 bool CCC_LoadCFG_custom::allow(LPCSTR cmd) { return (cmd == strstr(cmd, m_cmd)); }
 
+namespace
+{
 //-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
 {
@@ -469,8 +480,6 @@ public:
     }
 };
 
-extern void GetMonitorResolution(u32& horizontal, u32& vertical);
-
 class CCC_Screenmode : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
@@ -545,6 +554,8 @@ public:
 };
 
 //-----------------------------------------------------------------------
+
+#if 0
 float ps_gamma = 1.f, ps_brightness = 1.f, ps_contrast = 1.f;
 
 class CCC_Gamma : public CCC_Float
@@ -567,6 +578,7 @@ public:
         Device.m_pRender->updateGamma();
     }
 };
+#endif
 
 //-----------------------------------------------------------------------
 
@@ -697,19 +709,13 @@ public:
         soundSmoothingParams::alpha = soundSmoothingParams::getAlpha();
     }
 };
+} // namespace
 
 float psHUD_FOV_def = 0.45f;
 float psHUD_FOV = psHUD_FOV_def;
 
-// extern int			psSkeletonUpdate;
 extern int rsDVB_Size;
 extern int rsDIB_Size;
-// extern float		r__dtex_range;
-
-extern int g_ErrorLineCount;
-
-extern float g_fontWidthScale;
-extern float g_fontHeightScale;
 
 float ps_r2_sun_shafts_min = 0.f;
 float ps_r2_sun_shafts_value = 1.f;
@@ -757,7 +763,6 @@ void CCC_Register()
     CMD3(CCC_Mask, "rs_occlusion", &psDeviceFlags, rsOcclusion);
 
     CMD3(CCC_Mask, "rs_detail", &psDeviceFlags, rsDetails);
-    // CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
 
     CMD3(CCC_Mask, "rs_render_statics", &psDeviceFlags, rsDrawStatic);
     CMD3(CCC_Mask, "rs_render_dynamics", &psDeviceFlags, rsDrawDynamic);
@@ -765,6 +770,8 @@ void CCC_Register()
 
     // Render device states
     CMD3(CCC_Mask, "rs_always_active", &psDeviceFlags, rsAlwaysActive);
+
+    CMD4(CCC_Integer, "r_lens_flare", &ps_lens_flare, FALSE, TRUE);
 
     CMD4(CCC_Float, "r2_sunshafts_min", &ps_r2_sun_shafts_min, 0.0, 0.5);
     CMD4(CCC_Float, "r2_sunshafts_value", &ps_r2_sun_shafts_value, 0.5, 2.0);
@@ -776,16 +783,18 @@ void CCC_Register()
     CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.5f);
 
     CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
+
 #ifdef DEBUG
     CMD3(CCC_Mask, "rs_occ_draw", &psDeviceFlags, rsOcclusionDraw);
     CMD3(CCC_Mask, "rs_occ_stats", &psDeviceFlags, rsOcclusionStats);
-    // CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
+#if 0
     // Вместо этих настроек теперь используется ES Color Grading
-    //     CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-    //     CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-    //     CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+    CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
+    CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
+    CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+#endif
 
     //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
     //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
@@ -815,6 +824,8 @@ void CCC_Register()
     // Doppler effect power
     CMD4(CCC_Float, "snd_doppler_power", &soundSmoothingParams::power, 0.f, 5.f);
     CMD4(CCC_SoundParamsSmoothing, "snd_doppler_smoothing", &soundSmoothingParams::steps, 1, 100);
+
+    CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
 
 #ifdef DEBUG
     CMD3(CCC_Mask, "snd_stats", &g_stats_flags, st_sound);

@@ -40,7 +40,7 @@
 typedef float Matrix[4][4];
 typedef float Quaternion[4];
 
-extern Matrix idmat;
+extern const Matrix idmat;
 
 // u = v
 // #define cpmatrix(u,v) memcpy(u,v,sizeof(Matrix))
@@ -119,8 +119,6 @@ constexpr inline void vecadd(float t[], const float u[], const float v[])
 
 #define DOT(u, v) (u[0] * v[0] + u[1] * v[1] + u[2] * v[2])
 
-#endif
-
 //
 // Some miscellaneous useful routines
 //
@@ -168,19 +166,6 @@ inline void set_translation(Matrix M, float x, float y, float z)
     M[3][2] = z;
 }
 
-inline void set_row(Matrix M, int row, const float v[3])
-{
-    M[row][0] = v[0];
-    M[row][1] = v[1];
-    M[row][2] = v[2];
-}
-
-inline void get_row(Matrix M, int row,  float v[3])
-{
-    v[0] = M[row][0];
-    v[1] = M[row][1];
-    v[2] = M[row][2];
-}
 **********************************************************/
 
 //
@@ -224,13 +209,4 @@ void invertrmatrix(Matrix N, Matrix M);
 
 void axisangletomatrix(Matrix m, float axis[], float theta);
 
-/***************
-inline float vecdist(const float t[], const float t2[])
-{
-    float t3[3];
-
-    vecsub(t3, (float*)t, (float*)t2);
-    return sqrt(DOT(t3,t3));
-}
-
-****************************/
+#endif // _MYVECH

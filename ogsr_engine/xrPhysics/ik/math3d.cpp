@@ -36,36 +36,7 @@
 #include "math3d.h"
 
 #ifndef JACK
-
-Matrix idmat = {{1.0, 0.0, 0.0, 0.0}, {0.0, 1.0, 0.0, 0.0}, {0.0, 0.0, 1.0, 0.0}, {0.0, 0.0, 0.0, 1.0}};
-
-void matmult(Matrix A, Matrix B, Matrix C)
-/*
- * Multiply 4x4 matrices:
- *
- *  A = B * C
- *
- * Don't use this if the matrices are homogeneous: use hmatmult instead!
- *
- * A *CAN* point to the same matrix as B or C.
- */
-{
-    int i, j, k;
-    Matrix a;
-
-    for (i = 0; i < 4; i++)
-    {
-        for (j = 0; j < 4; j++)
-        {
-            a[i][j] = 0.0;
-            for (k = 0; k < 4; k++)
-            {
-                a[i][j] += B[i][k] * C[k][j];
-            }
-        }
-    }
-    cpmatrix(A, a);
-}
+const Matrix idmat{{1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}};
 
 /*
  * Homogeneous transformation multiplication:
@@ -784,36 +755,6 @@ void rotation_matrix_to_axis(const Matrix R, float axis[], float& angle)
     }
 }
 
-void linterpmatrix(Matrix R, Matrix A, Matrix B, float t)
-/*
- * Linearly interpolate matrices.  The rotation submatrix is interpolated
- * by finding the axis of rotation between the two matrix and interpolating
- * the angle of rotation. The translation part is just interpolated.
- *
- * t=0 gives A; t=1 gives B.
- *
- * R = (1-t) * A  + t * B
- */
-{
-    Matrix Ainv, T;
-    float angle, axis[3];
-    Quaternion q;
-
-    inverthomomatrix(Ainv, A);
-    matmult(T, B, Ainv);
-    matrixtoq(q, T);
-    qtoaxis(&angle, axis, q);
-
-    angle *= t;
-
-    axistoq(q, angle, axis);
-    qtomatrix(T, q);
-    matmult(R, T, A);
-    vecinterp(R[3], A[3], B[3], t);
-}
-
-#define ATAN2(a, b) ((a == 0.0) && (b == 0.0) ? 0.0 : atan2(a, b))
-
 #define EPSILON 0.001f
 #define W q[0]
 #define X q[1]
@@ -996,26 +937,4 @@ void set_translation(Matrix M, float x, float y, float z)
     M[3][0] = x;
     M[3][1] = y;
     M[3][2] = z;
-}
-
-void set_row(Matrix M, int row, const float v[3])
-{
-    M[row][0] = v[0];
-    M[row][1] = v[1];
-    M[row][2] = v[2];
-}
-
-void get_row(Matrix M, int row, float v[3])
-{
-    v[0] = M[row][0];
-    v[1] = M[row][1];
-    v[2] = M[row][2];
-}
-
-float vecdist(const float t[], const float t2[])
-{
-    float t3[3];
-
-    vecsub(t3, (const float*)t, (const float*)t2);
-    return _sqrt(DOT(t3, t3));
 }

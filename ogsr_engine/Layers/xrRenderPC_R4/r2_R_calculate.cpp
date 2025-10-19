@@ -1,13 +1,11 @@
 #include "stdafx.h"
+
 #include "xr_task.h"
 
+namespace
+{
 float g_fSCREEN;
-
-extern float r_dtex_range;
-extern float r_ssaDISCARD;
-extern float r_ssaLOD_A;
-extern float r_ssaLOD_B;
-extern float r_ssaGLOD_start, r_ssaGLOD_end;
+}
 
 void CRender::Calculate()
 {

@@ -115,7 +115,5 @@ typedef xr_vector<CEntity*> MEMBER_REGISTRY;
     if (a) \
         GO_TO_NEW_STATE_THIS_UPDATE(b);
 
-extern bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY& Members, const xr_set<const CEntityAlive*>& VisibleEnemies, float fMinProbability,
-                                          CBaseFunction& fSuccessProbabilityFunction);
 extern u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam, u32 dwSquad,
                            u32 dwGroup, u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity* tpEntity = nullptr, float fGroupDistance = 100.f);

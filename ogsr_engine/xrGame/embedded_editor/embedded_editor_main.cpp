@@ -7,6 +7,7 @@
 #include "embedded_editor_pos_informer.h"
 #include "embedded_editor_sound_env.h"
 
+#include "script_engine.h"
 #include "../../XR_3DA/xr_input.h"
 #include "xr_level_controller.h"
 
@@ -14,11 +15,11 @@
 
 namespace
 {
-bool show_test_window = false;
-bool show_weather_window = false;
-bool show_hud_editor = false;
-bool show_position_informer = false;
-bool show_sound_env_window = false;
+bool show_test_window{};
+bool show_weather_window{};
+bool show_hud_editor{};
+bool show_position_informer{};
+bool show_sound_env_window{};
 
 /*
 bool show_info_window = false;
@@ -29,7 +30,7 @@ bool show_occ_window = false;
 bool show_node_editor = false;
 */
 
-bool isAlt = false;
+bool isAlt{};
 
 enum class EditorStage
 {
@@ -43,9 +44,7 @@ enum class EditorStage
 EditorStage stage = EditorStage::None;
 
 bool IsEditorActive() { return stage == EditorStage::Full || (stage == EditorStage::Light && isAlt); }
-
 bool IsEditor() { return stage != EditorStage::None; }
-} // namespace
 
 void ShowMain()
 {
@@ -98,6 +97,7 @@ void ShowMain()
 
     ImGui::PlotHistogram("", &frames[0], frames.size(), 0, nullptr, 0.0f, 300.0f, ImVec2(300, 100));
 }
+} // namespace
 
 void ShowEditor()
 {
@@ -138,8 +138,13 @@ void ShowEditor()
     //     ShowLogicEditor(show_logic_editor);
 }
 
-bool isRControl = false, isLControl = false, isRShift = false, isLShift = false;
-extern bool GetShift();
+namespace
+{
+bool isRControl{};
+bool isLControl{};
+bool isRShift{};
+bool isLShift{};
+} // namespace
 
 bool Editor_KeyPress(int key)
 {

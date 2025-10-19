@@ -44,7 +44,11 @@ void object_shift::dbg_draw(const Fmatrix& current_pos, const extrapolation::poi
 }
 #endif
 
-static const float global_max_shift = 1.0f;
+namespace
+{
+constexpr float global_max_shift{1.0f};
+}
+
 float object_shift::shift() const
 {
     float time_global = Device.fTimeGlobal;
@@ -69,6 +73,8 @@ float object_shift::delta_shift(float delta_time) const
     return speed * (delta_time) + accel * sq_time / 2.f + aaccel * sq_time * delta_time / 6.f;
 }
 
+namespace
+{
 bool square_equation(float a, float b, float c, float& x0, float& x1) // returns true if has real roots
 {
     float d = b * b - 4.f * a * c;
@@ -81,42 +87,9 @@ bool square_equation(float a, float b, float c, float& x0, float& x1) // returns
     return true;
 }
 
-// static const float max_possible_shift_speed_up = 4.5f; //
-// static const float max_shift_avr_accel_up = 3.5f; //
-// static const float max_possible_shift_speed_down = 4.5f; //
-// static const float max_shift_avr_accel_down= 3.5f; //
-// float clamp_taget_to_max_possible_shift_speed_return_shift_taget(float &taget, float current, float speed, float time
-// )
-//{
-//	float x			= taget - current ;
-//	return x;
-//	float taget_speed = x/time;
-//
-//		//clamp(taget_speed,-max_possible_shift_speed, max_possible_shift_speed );
-//	save_min( taget_speed, max_possible_shift_speed_up );
-//	save_max( taget_speed, -max_possible_shift_speed_down );
-//
-//	float change_speed = taget_speed - speed;
-//	float avr_accel = change_speed/time;
-//
-//	//clamp( avr_accel,-max_shift_avr_accel, max_shift_avr_accel );
-//	save_min( avr_accel, max_shift_avr_accel_up );
-//	save_max( avr_accel, -max_shift_avr_accel_down );
-//	taget_speed = speed + avr_accel * time;
-//
-//	//clamp(taget_speed,-max_possible_shift_speed, max_possible_shift_speed );
-//	save_min( taget_speed, max_possible_shift_speed_up );
-//	save_max( taget_speed, -max_possible_shift_speed_down );
-//	x = taget_speed * time;
-//
-//	taget = x + current;
-//
-//	return x;
-//
-//
-//}
-float half_shift_restrict_up = 0.1f;
-float half_shift_restrict_down = 0.15f;
+constexpr float half_shift_restrict_up{0.1f};
+constexpr float half_shift_restrict_down{0.15f};
+} // namespace
 
 void object_shift::set_taget(float taget_, float time)
 {

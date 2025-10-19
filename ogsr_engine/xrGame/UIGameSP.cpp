@@ -12,6 +12,7 @@
 #include "GameTaskManager.h"
 #include "GameTask.h"
 #include "PDA.h"
+#include "player_hud.h"
 
 #include "ui/UIInventoryWnd.h"
 #include "ui/UITradeWnd.h"
@@ -66,13 +67,6 @@ void CUIGameSP::SetClGame(game_cl_GameState* g)
     m_game = smart_cast<game_cl_Single*>(g);
     R_ASSERT(m_game);
 }
-
-extern bool attach_adjust_mode_keyb(int dik);
-extern void attach_draw_adjust_mode();
-extern void hud_adjust_mode_keyb(int dik);
-extern void hud_draw_adjust_mode();
-
-extern bool g_actor_allow_pda;
 
 bool CUIGameSP::IR_OnKeyboardPress(int dik)
 {
@@ -196,8 +190,6 @@ void CUIGameSP::ReInitShownUI()
     else if (UICarBodyMenu->IsShown())
         UICarBodyMenu->UpdateLists_delayed();
 }
-
-extern BOOL bShowPauseString;
 
 void CUIGameSP::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b)
 {

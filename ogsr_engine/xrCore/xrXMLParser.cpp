@@ -7,6 +7,8 @@ CXml::~CXml() { ClearInternal(); }
 
 void CXml::ClearInternal() { m_Doc.Clear(); }
 
+namespace
+{
 void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR current_xml_filename)
 {
     xr_string str;
@@ -70,9 +72,12 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR curr
             }
         }
         else
+        {
             W.w_string(str.c_str());
+        }
     }
 }
+} // namespace
 
 bool CXml::Init(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 {

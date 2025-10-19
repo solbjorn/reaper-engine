@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include "object_interfaces.h"
 #include "alife_space.h"
 #include "game_graph_space.h"
@@ -9,6 +9,7 @@ class CMiniMapSpot;
 class CMapSpotPointer;
 class CUICustomMap;
 class CInventoryOwner;
+class CUIXml;
 
 class CMapLocation : public IPureDestroyableObject
 {
@@ -136,3 +137,5 @@ public:
     virtual void Dump();
 #endif
 };
+
+extern CUIXml* g_uiSpotXml;

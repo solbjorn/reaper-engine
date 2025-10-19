@@ -8,21 +8,15 @@
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
 
-extern xr_token* vid_quality_token;
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
-DLL_Pure* xrFactory_Create(CLASS_ID clsid);
-void xrFactory_Destroy(DLL_Pure* O);
 
 CEngineAPI::CEngineAPI() = default;
 CEngineAPI::~CEngineAPI() = default;
 
 void CEngineAPI::Initialize()
 {
-    void AttachRender();
     AttachRender();
 
     Console->Execute("renderer renderer_r4");
@@ -30,7 +24,7 @@ void CEngineAPI::Initialize()
 
     pCreate = &xrFactory_Create;
     pDestroy = &xrFactory_Destroy;
-    void AttachGame();
+
     AttachGame();
 }
 

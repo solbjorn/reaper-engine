@@ -63,3 +63,9 @@ public:
 add_to_type_list(CScriptEngine);
 #undef script_type_list
 #define script_type_list save_type_list(CScriptEngine)
+
+// script_engine_export.cpp
+void export_classes(sol::state_view& lua);
+
+// script_engine_script.cpp
+bool GetShift();

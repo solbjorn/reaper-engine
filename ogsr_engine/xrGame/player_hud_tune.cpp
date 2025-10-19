@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "player_hud.h"
 #include "level.h"
 #include "debug_renderer.h"
@@ -6,8 +7,11 @@
 #include "HudManager.h"
 #include "HudItem.h"
 #include "Weapon.h"
+
 #include <array>
 
+namespace
+{
 enum HUD_ADJUST_MODE : int
 {
     OFF,
@@ -25,7 +29,7 @@ enum HUD_ADJUST_MODE : int
     _HUD_ADJUST_MODES_COUNT_
 };
 
-static constexpr std::array<std::tuple<int, const char*>, _HUD_ADJUST_MODES_COUNT_> ADJUST_MODES_DB{{
+constexpr std::array<std::tuple<int, const char*>, _HUD_ADJUST_MODES_COUNT_> ADJUST_MODES_DB{{
     {DIK_NUMPAD0, ""},
     {DIK_NUMPAD1, "adjusting HUD POSITION"},
     {DIK_NUMPAD2, "adjusting HUD ROTATION"},
@@ -39,18 +43,21 @@ static constexpr std::array<std::tuple<int, const char*>, _HUD_ADJUST_MODES_COUN
     {DIK_1, "adjusting LASER POINT"},
     {DIK_2, "adjusting FLASHLIGHT POINT"},
 }};
+} // namespace
 
 int g_bHudAdjustMode = OFF;
 int g_bHudAdjustItemIdx = 0;
 float g_bHudAdjustDeltaPos = 0.0005f;
 float g_bHudAdjustDeltaRot = 0.05f;
 
-static bool is_attachable_item_tuning_mode()
+namespace
+{
+bool is_attachable_item_tuning_mode()
 {
     return pInput->iGetAsyncKeyState(DIK_LSHIFT) || pInput->iGetAsyncKeyState(DIK_Z) || pInput->iGetAsyncKeyState(DIK_X) || pInput->iGetAsyncKeyState(DIK_C);
 }
 
-static void tune_remap(const Ivector& in_values, Ivector& out_values)
+void tune_remap(const Ivector& in_values, Ivector& out_values)
 {
     if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
     {
@@ -80,7 +87,7 @@ static void tune_remap(const Ivector& in_values, Ivector& out_values)
     }
 }
 
-static void calc_cam_diff_pos(const Fmatrix& item_transform, const Fvector& diff, Fvector& res)
+void calc_cam_diff_pos(const Fmatrix& item_transform, const Fvector& diff, Fvector& res)
 {
     Fmatrix cam_m;
     cam_m.i.set(Device.vCameraRight);
@@ -95,6 +102,7 @@ static void calc_cam_diff_pos(const Fmatrix& item_transform, const Fvector& diff
     item_transform_i.invert(item_transform);
     item_transform_i.transform_dir(res, res1);
 }
+} // namespace
 
 void attachable_hud_item::tune(const Ivector& values)
 {

@@ -9,8 +9,6 @@
 #define BM (SAMPLE_SIZE - 1)
 
 #define N 0x1000
-#define NP 12 /* 2^N */
-#define NM 0xfff
 
 #define s_curve(t) (t * t * (3.0f - 2.0f * t))
 #define lerp(t, a, b) (a + t * (b - a))

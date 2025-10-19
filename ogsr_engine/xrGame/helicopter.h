@@ -393,3 +393,6 @@ XR_SOL_BASE_CLASSES(CHelicopter);
 add_to_type_list(CHelicopter);
 #undef script_type_list
 #define script_type_list save_type_list(CHelicopter)
+
+// Helicopter2.cpp
+float GetCurrAcc(float V0, float V1, float dist, float a0, float a1);

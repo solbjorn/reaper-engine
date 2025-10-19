@@ -308,8 +308,10 @@ bool CMapLocation::Update() // returns actual
     return m_cached.m_Actuality;
 }
 
-extern xr_vector<CLevelChanger*> g_lchangers;
+namespace
+{
 xr_vector<u32> map_point_path;
+}
 
 void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 {

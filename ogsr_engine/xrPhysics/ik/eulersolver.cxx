@@ -40,6 +40,8 @@ void euler_YXZ(const Matrix G, float& t1, float& t2, float& t3, int family);
 void euler_Yxz(const Matrix G, float& t1, float& t2, float& t3, int family);
 void euler_zxY(const Matrix G, float& t1, float& t2, float& t3, int family);
 
+namespace
+{
 //
 // Encodes a location in a matrix and the sign of this term
 //
@@ -216,6 +218,7 @@ inline EulerTableEntry* euler_entry(int euler_type)
 
     return EulerTable + euler_type;
 }
+} // namespace
 
 //
 // Given a rotation matrix and a family to choose from find the euler angles

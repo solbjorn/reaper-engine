@@ -16,21 +16,21 @@ public:
     bool operator>=(const xrTime& other) const { return m_time >= other.m_time; }
     bool operator<=(const xrTime& other) const { return m_time <= other.m_time; }
     bool operator==(const xrTime& other) const { return m_time == other.m_time; }
-    xrTime operator+(const xrTime& other) { return xrTime(m_time + other.m_time); }
-    xrTime operator-(const xrTime& other) { return xrTime(m_time - other.m_time); }
+    xrTime operator+(const xrTime& other) const { return xrTime(m_time + other.m_time); }
+    xrTime operator-(const xrTime& other) const { return xrTime(m_time - other.m_time); }
 
-    float diffSec(const xrTime& other);
+    float diffSec(const xrTime& other) const;
     xrTime& add(const xrTime& other);
     xrTime& sub(const xrTime& other);
 
     xrTime& add_script(xrTime* other) { return add(*other); }
     xrTime& sub_script(xrTime* other) { return sub(*other); }
-    float diffSec_script(xrTime* other) { return diffSec(*other); }
+    float diffSec_script(xrTime* other) const { return diffSec(*other); }
 
     xrTime& setHMS(int h, int m, int s);
     xrTime& setHMSms(int h, int m, int s, int ms);
     xrTime& set(int y, int mo, int d, int h, int mi, int s, int ms);
-    std::tuple<u32, u32, u32, u32, u32, u32, u32> get();
+    std::tuple<u32, u32, u32, u32, u32, u32, u32> get() const;
 
     LPCSTR dateToString(int mode);
     LPCSTR timeToString(int mode);

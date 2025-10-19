@@ -1,8 +1,7 @@
 #include "stdafx.h"
 
+#include "dRayMotions.h"
 #include "dCylinder/dCylinder.h"
-
-int dCollideCylRay(dxGeom* o1, dxGeom* o2, dContactGeom* contact, int skip);
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -21,6 +20,8 @@ struct dxRayMotions
 
 int dRayMotionsClassUser = -1;
 
+namespace
+{
 #define CONTACT(p, skip) ((dContactGeom*)(((char*)p) + (skip)))
 
 int dCollideRMB(dxGeom* o1, dxGeom* o2, int flags, dContactGeom* contact, int skip)
@@ -73,7 +74,7 @@ int dCollideRMCyl(dxGeom* o1, dxGeom* o2, int, dContactGeom* contact, int skip)
     return ret;
 }
 
-static dColliderFn* dRayMotionsColliderFn(int num)
+dColliderFn* dRayMotionsColliderFn(int num)
 {
     if (num == dBoxClass)
         return (dColliderFn*)&dCollideRMB;
@@ -87,7 +88,7 @@ static dColliderFn* dRayMotionsColliderFn(int num)
     return nullptr;
 }
 
-static void dRayMotionsAABB(dxGeom* geom, dReal aabb[6])
+void dRayMotionsAABB(dxGeom* geom, dReal aabb[6])
 {
     dxRayMotions* c = (dxRayMotions*)dGeomGetClassData(geom);
     dGeomGetAABB(c->ray, aabb);
@@ -95,6 +96,7 @@ static void dRayMotionsAABB(dxGeom* geom, dReal aabb[6])
 }
 
 void dGeomRayMotionDestroy(dGeomID ray) { dGeomDestroy(((dxRayMotions*)dGeomGetClassData(ray))->ray); }
+} // namespace
 
 dxGeom* dCreateRayMotions(dSpaceID space)
 {

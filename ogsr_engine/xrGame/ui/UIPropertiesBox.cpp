@@ -8,10 +8,6 @@
 
 #define OFFSET_X (5)
 #define OFFSET_Y (5)
-#define FRAME_BORDER_WIDTH 20
-#define FRAME_BORDER_HEIGHT 22
-
-#define ITEM_HEIGHT (GetFont()->CurrentHeight() + 2.0f)
 
 CUIPropertiesBox::CUIPropertiesBox()
 {

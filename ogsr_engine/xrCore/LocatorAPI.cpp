@@ -23,6 +23,8 @@ XR_DIAG_POP();
 
 std::unique_ptr<CLocatorAPI> xr_FS;
 
+namespace
+{
 struct _open_file
 {
     union
@@ -122,6 +124,7 @@ void _unregister_open_file(T* _r)
     _of._reader = nullptr;
     _lock.Leave();
 }
+} // namespace
 
 void _dump_open_files(int mode)
 {
@@ -412,6 +415,8 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse)
     }
 }
 
+namespace
+{
 bool ignore_name(const char* _name)
 {
     // ignore windows hidden Thumbs.db
@@ -434,6 +439,7 @@ bool ignore_name(const char* _name)
 // be interpolated by FindNextFile()
 
 bool ignore_path(const char* _path) { return !std::filesystem::exists(_path); }
+} // namespace
 
 bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse)
 {

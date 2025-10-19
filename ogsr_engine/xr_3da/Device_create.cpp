@@ -7,8 +7,8 @@
 
 // #include "../xrcdb/xrxrc.h"
 
-extern BOOL* cdb_bDebug;
-
+namespace
+{
 void SetupGPU(IRenderDeviceRender* pRender)
 {
     // Command line
@@ -35,6 +35,7 @@ void SetupGPU(IRenderDeviceRender* pRender)
 
     pRender->SetupGPU(bForceGPU_SW, bForceGPU_NonPure, bForceGPU_REF);
 }
+} // namespace
 
 void CRenderDevice::_SetupStates()
 {
@@ -79,9 +80,6 @@ void CRenderDevice::ConnectToRender()
         m_pRender = RenderFactory->CreateRenderDeviceRender();
 }
 
-extern u32 g_screenmode;
-extern void GetMonitorResolution(u32& horizontal, u32& vertical);
-
 void CRenderDevice::Create()
 {
     if (b_is_Ready)
@@ -93,7 +91,6 @@ void CRenderDevice::Create()
     cdb_clRAY = &Statistic->clRAY; // total: ray-testing
     cdb_clBOX = &Statistic->clBOX; // total: box query
     cdb_clFRUSTUM = &Statistic->clFRUSTUM; // total: frustum query
-    cdb_bDebug = &bDebug;
 #endif
 
     if (!m_pRender)

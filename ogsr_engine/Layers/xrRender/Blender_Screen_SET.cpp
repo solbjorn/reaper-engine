@@ -2,7 +2,6 @@
 
 #include "Blender_Screen_SET.h"
 
-#define VER_2_oBlendCount 7
 #define VER_4_oBlendCount 9
 #define VER_5_oBlendCount 10
 

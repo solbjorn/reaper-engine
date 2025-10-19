@@ -27,11 +27,13 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wcharacter-conversion");
+XR_DIAG_IGNORE("-Wcomma");
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wimplicit-fallthrough");
 XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wunused-template");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <sol/sol.hpp>

@@ -4,8 +4,10 @@
 #include "dx103DFluidManager.h"
 #include "dx103DFluidRenderer.h"
 
+namespace
+{
 // Volume texture width
-static class cl_textureWidth final : public R_constant_setup
+class cl_textureWidth final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -15,7 +17,7 @@ static class cl_textureWidth final : public R_constant_setup
 } binder_textureWidth;
 
 // Volume texture height
-static class cl_textureHeight final : public R_constant_setup
+class cl_textureHeight final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -25,7 +27,7 @@ static class cl_textureHeight final : public R_constant_setup
 } binder_textureHeight;
 
 // Volume texture depth
-static class cl_textureDepth final : public R_constant_setup
+class cl_textureDepth final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -34,7 +36,7 @@ static class cl_textureDepth final : public R_constant_setup
     }
 } binder_textureDepth;
 
-static class cl_gridDim final : public R_constant_setup
+class cl_gridDim final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -45,7 +47,7 @@ static class cl_gridDim final : public R_constant_setup
     }
 } binder_gridDim;
 
-static class cl_recGridDim final : public R_constant_setup
+class cl_recGridDim final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -56,7 +58,7 @@ static class cl_recGridDim final : public R_constant_setup
     }
 } binder_recGridDim;
 
-static class cl_maxDim final : public R_constant_setup
+class cl_maxDim final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -127,6 +129,7 @@ void SetupTextures(CBlender_Compile& C)
     for (int i = 0; i < dx103DFluidRenderer::RRT_NumRT; ++i)
         C.r_dx10Texture(dx103DFluidConsts::m_pResourceRTNames[i], dx103DFluidConsts::m_pRTNames[i]);
 }
+} // namespace
 
 void CBlender_fluid_advect::Compile(CBlender_Compile& C)
 {

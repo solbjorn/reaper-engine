@@ -5,7 +5,12 @@
 #include "soundrender_source.h"
 #include "soundrender_emitter.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+
 #include <eax.h>
+
+XR_DIAG_POP();
 
 BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
@@ -15,7 +20,6 @@ float psSoundOcclusionScale = 0.8f;
 float psSoundOcclusionHf = 0.5f;
 float psSoundOcclusionMtl = 0.4f;
 
-float psSoundCull = 0.01f;
 float psSoundRolloff = 0.8f;
 float psSoundFadeSpeed = 4.f;
 

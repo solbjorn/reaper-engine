@@ -57,4 +57,16 @@ public:
     } \
     XR_MACRO_END()
 
+// xr_ioc_cmd.cpp
+extern xr_token* vid_quality_token;
+
+// xrGame.cpp
+DLL_Pure* xrFactory_Create(CLASS_ID clsid);
+void xrFactory_Destroy(DLL_Pure* O);
+
+void AttachGame();
+
+// xrRender_R4.cpp
+void AttachRender();
+
 #endif // !defined(AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_)

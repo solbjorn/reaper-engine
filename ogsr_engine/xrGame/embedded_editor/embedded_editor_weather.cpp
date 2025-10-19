@@ -12,20 +12,15 @@
 #include "GamePersistent.h"
 #include "Level.h"
 
-float editor_longitude = 0.0;
-float editor_altitude = 0.0;
+namespace
+{
+float editor_longitude{};
+float editor_altitude{};
 
 Fvector convert(const Fvector& v)
 {
     Fvector result;
     result.set(v.z, v.y, v.x);
-    return result;
-}
-
-Fvector4 convert(const Fvector4& v)
-{
-    Fvector4 result;
-    result.set(v.z, v.y, v.x, v.w);
     return result;
 }
 
@@ -65,11 +60,15 @@ bool enumIni(void* data, int idx, const char** item)
     *item = ini->sections_ordered()[idx].second->Name.c_str();
     return true;
 }
+} // namespace
 
 bool s_ScriptWeather{};
 bool s_ScriptTime{};
-bool s_ScriptWeatheParams{};
 bool s_ScriptNoMixer{};
+
+namespace
+{
+bool s_ScriptWeatheParams{};
 
 xr_set<shared_str> modifiedWeathers;
 
@@ -185,17 +184,22 @@ int compare_naturally(const void* a_ptr, const void* b_ptr)
             int diff = a_count - count_digits(b);
             if (diff)
                 return diff;
+
             diff = memcmp(a, b, a_count);
             if (diff)
                 return diff;
+
             a += a_count;
             b += a_count;
         }
+
         if (*a != *b)
             return *a - *b;
         if (*a == '\0')
             return 0;
-        a++, b++;
+
+        a++;
+        b++;
     }
 }
 
@@ -304,6 +308,7 @@ bool SelectTexture(const char* label, shared_str& texName)
     ImGui::PopID();
     return changed;
 }
+} // namespace
 
 void ShowWeatherEditor(bool& show)
 {

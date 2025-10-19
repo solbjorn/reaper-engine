@@ -163,7 +163,6 @@ void CEnvelope::RotateKeys(float angle)
         keys[i]->value += angle;
 }
 
-extern float evalEnvelope(CEnvelope* env, float time);
 float CEnvelope::Evaluate(float time) { return evalEnvelope(this, time); }
 
 void CEnvelope::Save(IWriter& F)

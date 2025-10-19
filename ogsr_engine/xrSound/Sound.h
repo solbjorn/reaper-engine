@@ -29,6 +29,9 @@ extern xr_token* snd_devices_token;
 extern u32 snd_device_id;
 extern float psSoundTimeFactor; //--#SM+#--
 
+// SoundRender_Core.cpp
+extern BOOL bSenvironmentXrExport;
+
 // Flags
 enum : u32
 {

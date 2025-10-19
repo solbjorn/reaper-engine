@@ -24,7 +24,9 @@ public:
     void FreeBuffer();
 
     xr_string m_text;
-    u32 m_color;
     CUISubLine* m_pTempLine{};
+    u32 m_color;
     bool m_last_in_line;
 };
+
+void dump_list_sublines();

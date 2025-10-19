@@ -106,8 +106,6 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
     Render(T, vBase, pcnt);
 }
 
-#define RGBA_GETALPHA(rgb) ((rgb) >> 24)
-
 void CBackend::dbg_DrawOBB(Fmatrix& T, Fvector& half_dim, u32 C)
 {
     Fmatrix mL2W_Transform, mScaleTransform;

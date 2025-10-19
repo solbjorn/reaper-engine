@@ -47,9 +47,6 @@ void CRenderDevice::Destroy(void)
     xr_delete(Statistic);
 }
 
-extern u32 g_screenmode;
-extern void GetMonitorResolution(u32& horizontal, u32& vertical);
-
 void CRenderDevice::Reset(bool precache)
 {
     u32 dwWidth_before = dwWidth;

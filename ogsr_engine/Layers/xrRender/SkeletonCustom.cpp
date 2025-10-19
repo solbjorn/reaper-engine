@@ -556,6 +556,8 @@ void CKinematics::LL_GetBindTransform(xr_vector<Fmatrix>& matrices)
     RecursiveBindTransform(this, matrices, iRoot, Fidentity);
 }
 
+namespace
+{
 void BuildMatrix(Fmatrix& mView, float invsz, const Fvector norm, const Fvector& from)
 {
     // build projection
@@ -571,6 +573,8 @@ void BuildMatrix(Fmatrix& mView, float invsz, const Fvector norm, const Fvector&
     mScale.scale(invsz, invsz, invsz);
     mView.mulA_43(mScale);
 }
+} // namespace
+
 void CKinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 {
     for (u32 i = 0; i < children.size(); i++)

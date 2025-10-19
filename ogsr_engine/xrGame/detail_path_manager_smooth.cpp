@@ -15,8 +15,6 @@
 
 #ifdef DEBUG
 #include "custommonster.h"
-
-extern bool show_restrictions(CRestrictedObject* object);
 #endif
 
 template <typename T>

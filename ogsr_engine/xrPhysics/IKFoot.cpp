@@ -198,7 +198,7 @@ Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const
 }
 
 Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& m) const { return ref_bone_to_foot(m, Fmatrix().set(m)); }
-int ik_allign_free_foot = 0;
+
 ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal, const Fvector& global_bone_pos,
                                                      const Fplane& p, const Fvector& ax) const
 {

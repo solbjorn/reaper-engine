@@ -13,10 +13,7 @@
 #include "ExtendedGeom.h"
 #include "characterphysicssupport.h"
 #include "inventory.h"
-
-#ifdef DEBUG
-#include "phdebug.h"
-#endif
+#include "player_hud.h"
 
 #include "../xr_3da/x_ray.h"
 
@@ -26,8 +23,14 @@
 #include "CalculateTriangle.h"
 #include "tri-colliderknoopc/dcTriangle.h"
 
+#ifdef DEBUG
+#include "phdebug.h"
+#endif
+
 CUIProgressShape* g_MissileForceShape{};
 
+namespace
+{
 void create_force_progress()
 {
     VERIFY(!g_MissileForceShape);
@@ -39,6 +42,7 @@ void create_force_progress()
     g_MissileForceShape = xr_new<CUIProgressShape>();
     xml_init.InitProgressShape(uiXml, "progress", 0, g_MissileForceShape);
 }
+} // namespace
 
 CMissile::CMissile() { m_dwStateTime = 0; }
 
@@ -171,8 +175,6 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
         return;
     }
 }
-
-extern int g_bHudAdjustMode;
 
 void CMissile::DeviceUpdate()
 {

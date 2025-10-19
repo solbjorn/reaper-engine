@@ -1,13 +1,17 @@
 #include "StdAfx.h"
 
+#ifdef IK_DBG_STATE_SEQUENCE
 #include "ik_dbg_matrix.h"
 
 #include "ik/IKLimb.h"
 
-u32 sdbg_state_sequence_number = 130;
+namespace
+{
+constexpr u32 sdbg_state_sequence_number{130};
 
 IC Fmatrix& cvm(Matrix& IM) { return *((Fmatrix*)(&IM)); }
-#ifdef IK_DBG_STATE_SEQUENCE
+} // namespace
+
 void dbg_matrises::next_state(SCalculateData& cd)
 {
     if (old_dbg_m.size() > sdbg_state_sequence_number)

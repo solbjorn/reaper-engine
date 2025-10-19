@@ -329,4 +329,7 @@ public:
 };
 XR_SOL_BASE_CLASSES(CCustomMonster);
 
+// console_commands.cpp
+extern int g_AI_inactive_time;
+
 #include "custommonster_inline.h"

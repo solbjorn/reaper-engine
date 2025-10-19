@@ -128,8 +128,6 @@ void CAttachableItem::afterDetach()
     object().processing_deactivate();
 }
 
-extern float adj_delta_pos, adj_delta_rot;
-
 void CAttachableItem::ParseCurrentItem(CGameFont*) {}
 void CAttachableItem::SaveAttachableParams() { Msg("!![%s] It's not implemented now", __FUNCTION__); }
 

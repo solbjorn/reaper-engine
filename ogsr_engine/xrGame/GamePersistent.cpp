@@ -21,6 +21,7 @@
 #include "string_table.h"
 #include "HUDManager.h"
 #include "..\xr_3da\DiscordRPC.hpp"
+#include "holder_custom.h"
 
 #ifndef MASTER_GOLD
 #include "custommonster.h"
@@ -107,9 +108,6 @@ void CGamePersistent::RegisterModel(IRenderVisual* V)
     break;
     }
 }
-
-extern void clean_game_globals();
-extern void init_game_globals();
 
 void CGamePersistent::OnAppStart()
 {
@@ -499,10 +497,6 @@ void CGamePersistent::update_game_intro()
         m_intro_event = CallMe::Delegate<void()>();
     }
 }
-
-#include "holder_custom.h"
-extern CUISequencer* g_tutorial;
-extern CUISequencer* g_tutorial2;
 
 void CGamePersistent::OnFrame()
 {

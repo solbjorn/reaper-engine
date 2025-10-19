@@ -142,26 +142,6 @@ void CControllerPsyHit::play_anim()
     ctrl_anim->global.actual = false;
 }
 
-namespace detail
-{
-
-bool check_actor_visibility(const Fvector trace_from, const Fvector trace_to, CObject* object)
-{
-    const float dist = trace_from.distance_to(trace_to);
-    Fvector trace_dir;
-    trace_dir.sub(trace_to, trace_from);
-
-    // DBG().level_info(this).add_item	(trace_from,trace_to,D3DCOLOR_XRGB(0,150,150));
-
-    collide::rq_result l_rq;
-    l_rq.O = nullptr;
-    Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, object);
-
-    return l_rq.O == Actor() || (l_rq.range >= dist - 0.1f);
-}
-
-} // namespace detail
-
 bool CControllerPsyHit::see_enemy() { return m_object->EnemyMan.see_enemy_now(Actor()); }
 
 bool CControllerPsyHit::check_conditions_final()

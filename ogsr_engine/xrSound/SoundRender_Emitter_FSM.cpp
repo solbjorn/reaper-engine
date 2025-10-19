@@ -5,11 +5,10 @@
 #include "SoundRender_Source.h"
 #include "SoundRender_Target.h"
 
-extern float psSoundCull;
-
 namespace
 {
-constexpr float TIME_TO_STOP_INFINITE = std::numeric_limits<float>::max();
+constexpr float psSoundCull{0.01f};
+constexpr float TIME_TO_STOP_INFINITE{std::numeric_limits<float>::max()};
 
 inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const float& fFreq, const WAVEFORMATEX& wfx)
 {

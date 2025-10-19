@@ -90,7 +90,6 @@ void _initialize_cpu()
     CPU::qpc_freq = Freq.QuadPart;
 
     Fidentity.identity(); // Identity matrix
-    pvInitializeStatics(); // Lookup table for compressed normals
 }
 
 typedef struct tagTHREADNAME_INFO

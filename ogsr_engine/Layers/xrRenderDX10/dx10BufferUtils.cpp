@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dx10BufferUtils.h"
 
 namespace dx10BufferUtils
@@ -30,13 +31,15 @@ HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
     return HW.pDevice->CreateBuffer(&desc, nullptr, ppBuffer);
 }
 
+namespace
+{
 struct VertexFormatPairs
 {
     D3DDECLTYPE m_dx9FMT;
     DXGI_FORMAT m_dx10FMT;
 };
 
-static constexpr VertexFormatPairs VertexFormatList[] = {
+constexpr VertexFormatPairs VertexFormatList[]{
     {D3DDECLTYPE_FLOAT1, DXGI_FORMAT_R32_FLOAT},
     {D3DDECLTYPE_FLOAT2, DXGI_FORMAT_R32G32_FLOAT},
     {D3DDECLTYPE_FLOAT3, DXGI_FORMAT_R32G32B32_FLOAT},
@@ -77,7 +80,7 @@ struct VertexSemanticPairs
     LPCSTR m_dx10Semantic;
 };
 
-static constexpr VertexSemanticPairs VertexSemanticList[] = {
+constexpr VertexSemanticPairs VertexSemanticList[]{
     {D3DDECLUSAGE_POSITION, "POSITION"}, //	0
     {D3DDECLUSAGE_BLENDWEIGHT, "BLENDWEIGHT"}, // 1
     {D3DDECLUSAGE_BLENDINDICES, "BLENDINDICES"}, // 2
@@ -106,6 +109,7 @@ LPCSTR ConvertSemantic(D3DDECLUSAGE Semantic)
     VERIFY(!"ConvertSemantic didn't find appropriate dx10 input semantic!");
     return nullptr;
 }
+} // namespace
 
 void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vector<D3D_INPUT_ELEMENT_DESC>& declOut)
 {

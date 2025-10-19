@@ -30,6 +30,8 @@
 #include "Weapon.h"
 #include "PDA.h"
 
+#include <ai/monsters/poltergeist/poltergeist.h>
+
 namespace
 {
 constexpr float C_SIZE{0.025f};
@@ -115,10 +117,6 @@ void CHUDTarget::CursorOnFrame()
     if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
         clamp(RQ.range, NEAR_LIM, RQ.range);
 }
-
-extern BOOL g_bRendering;
-
-#include <ai/monsters/poltergeist/poltergeist.h>
 
 void CHUDTarget::Render()
 {

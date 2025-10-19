@@ -44,3 +44,5 @@ public:
 
     void OnRender();
 };
+
+extern xr_vector<CLevelChanger*> g_lchangers;

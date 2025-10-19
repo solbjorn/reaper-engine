@@ -6,7 +6,10 @@
 #include "xrserver_objects.h"
 #include "Level.h"
 
+namespace
+{
 xr_vector<u16> g_perform_spawn_ids;
+}
 
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {

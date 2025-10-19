@@ -10,8 +10,12 @@
 #include "xr_object.h"
 #include "igame_level.h"
 
+namespace
+{
 constexpr float BLEND_DEC_SPEED{4.0f};
-extern int ps_lens_flare;
+}
+
+int ps_lens_flare{};
 
 void CLensFlareDescriptor::SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name)
 {

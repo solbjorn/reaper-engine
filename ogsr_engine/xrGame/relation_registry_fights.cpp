@@ -67,6 +67,8 @@ RELATION_REGISTRY::FIGHT_DATA* RELATION_REGISTRY::FindFight(u16 object_id, bool 
     return nullptr;
 }
 
+namespace
+{
 bool fight_time_pred(RELATION_REGISTRY::FIGHT_DATA& fight_data)
 {
     //(c) время которое про драку помнит реестр (иначе считать неактуальным)
@@ -78,6 +80,7 @@ bool fight_time_pred(RELATION_REGISTRY::FIGHT_DATA& fight_data)
 
     return false;
 }
+} // namespace
 
 void RELATION_REGISTRY::UpdateFightRegister()
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "game_base.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -10,8 +11,6 @@
 u64 g_qwStartGameTime = 12 * 60 * 60 * 1000;
 float g_fTimeFactor;
 u64 g_qwEStartGameTime = 12 * 60 * 60 * 1000;
-
-extern xr_token game_types[];
 
 game_PlayerState::game_PlayerState()
 {

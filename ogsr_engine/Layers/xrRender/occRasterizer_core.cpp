@@ -1,13 +1,17 @@
 #include "stdafx.h"
+
 #include "occRasterizer.h"
 
-static occTri* currentTri = nullptr;
-static u32 dwPixels = 0;
-static float currentA[3], currentB[3], currentC[3];
+namespace
+{
+occTri* currentTri{};
+u32 dwPixels{};
+float currentA[3], currentB[3], currentC[3];
 
-constexpr int BOTTOM = 0, TOP = 1;
+constexpr int BOTTOM{0};
+constexpr int TOP{1};
 
-static void i_order(float* A, float* B, float* C)
+void i_order(float* A, float* B, float* C)
 {
     float *min, *max, *mid;
     if (A[1] <= B[1])
@@ -67,7 +71,7 @@ static void i_order(float* A, float* B, float* C)
 }
 
 // Find the closest min/max pixels of a point
-static void Vclamp(int& v, int a, int b)
+void Vclamp(int& v, int a, int b)
 {
     if (v < a)
         v = a;
@@ -75,7 +79,7 @@ static void Vclamp(int& v, int a, int b)
         v = b - 1;
 }
 
-static BOOL shared(occTri* T1, occTri* T2)
+BOOL shared(occTri* T1, occTri* T2)
 {
     if (T1 == T2)
         return TRUE;
@@ -195,90 +199,6 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     }
 }
 
-IC void i_test_micro(int x, int y)
-{
-    if (x < 1)
-        return;
-    else if (x >= occ_dim - 1)
-        return;
-    if (y < 1)
-        return;
-    else if (y >= occ_dim - 1)
-        return;
-    int pos = y * occ_dim + x;
-    int pos_up = pos - occ_dim;
-    int pos_down = pos + occ_dim;
-
-    occTri** pFrame = Raster.get_frame();
-    occTri* T1 = pFrame[pos_up];
-    occTri* T2 = pFrame[pos_down];
-    if (T1 && shared(T1, T2))
-    {
-        float* pDepth = Raster.get_depth();
-        float ZR = (pDepth[pos_up] + pDepth[pos_down]) / 2;
-        if (ZR < pDepth[pos])
-        {
-            pFrame[pos] = T1;
-            pDepth[pos] = ZR;
-        }
-    }
-}
-
-void i_test(int x, int y)
-{
-    i_test_micro(x, y - 1);
-    i_test_micro(x, y + 1);
-    i_test_micro(x, y);
-}
-
-void i_edge(int x1, int y1, int x2, int y2)
-{
-    int dx = _abs(x2 - x1);
-    int dy = _abs(y2 - y1);
-
-    int sx = x2 >= x1 ? 1 : -1;
-    int sy = y2 >= y1 ? 1 : -1;
-
-    if (dy <= dx)
-    {
-        int d = (dy << 1) - dx;
-        int d1 = dy << 1;
-        int d2 = (dy - dx) << 1;
-
-        i_test(x1, y1);
-        for (int x = x1 + sx, y = y1, i = 1; i <= dx; i++, x += sx)
-        {
-            if (d > 0)
-            {
-                d += d2;
-                y += sy;
-            }
-            else
-                d += d1;
-            i_test(x, y);
-        }
-    }
-    else
-    {
-        int d = (dx << 1) - dy;
-        int d1 = dx << 1;
-        int d2 = (dx - dy) << 1;
-
-        i_test(x1, y1);
-        for (int x = x1, y = y1 + sy, i = 1; i <= dy; i++, y += sy)
-        {
-            if (d > 0)
-            {
-                d += d2;
-                x += sx;
-            }
-            else
-                d += d1;
-            i_test(x, y);
-        }
-    }
-}
-
 /*
 Rasterises 1 section of the triangle a 'section' of a triangle is the portion of a triangle between
 2 horizontal scan lines corresponding to 2 vertices of a triangle
@@ -286,7 +206,7 @@ p2.y >= p1.y, p1, p2 are start/end vertices
 E1 E2 are the triangle edge differences of the 2 bounding edges for this section
 */
 
-static IC void i_section(int Sect, BOOL bMiddle)
+IC void i_section(int Sect, BOOL bMiddle)
 {
     // Find the start/end Y pixel coord, set the starting pts for scan line ends
     int startY, endY;
@@ -400,10 +320,11 @@ static IC void i_section(int Sect, BOOL bMiddle)
     }
 }
 
-void __stdcall i_section_b0() { i_section(BOTTOM, 0); }
-void __stdcall i_section_b1() { i_section(BOTTOM, 1); }
-void __stdcall i_section_t0() { i_section(TOP, 0); }
-void __stdcall i_section_t1() { i_section(TOP, 1); }
+void i_section_b0() { i_section(BOTTOM, 0); }
+void i_section_b1() { i_section(BOTTOM, 1); }
+void i_section_t0() { i_section(TOP, 0); }
+void i_section_t1() { i_section(TOP, 1); }
+} // namespace
 
 u32 occRasterizer::rasterize(occTri* T)
 {
@@ -423,5 +344,6 @@ u32 occRasterizer::rasterize(occTri* T)
         i_section_b0(); // Rasterise First Section
         i_section_t1(); // Rasterise Second Section
     }
+
     return dwPixels;
 }

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "level_changer.h"
 #include "hit.h"
 #include "actor.h"
@@ -28,7 +29,6 @@ xr_vector<CLevelChanger*> g_lchangers;
 CLevelChanger::~CLevelChanger() {}
 
 void CLevelChanger::Center(Fvector& C) const { XFORM().transform_tiny(C, CFORM()->getSphere().P); }
-
 float CLevelChanger::Radius() const { return CFORM()->getRadius(); }
 
 void CLevelChanger::net_Destroy()
@@ -103,8 +103,6 @@ void CLevelChanger::shedule_Update(u32 dt)
 
     update_actor_invitation();
 }
-
-extern bool g_block_all_except_movement;
 
 void CLevelChanger::feel_touch_new(CObject* tpObject)
 {

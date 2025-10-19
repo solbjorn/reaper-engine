@@ -8,10 +8,9 @@
 
 #include "stdafx.h"
 
-#include "location_manager.h"
 #include "gameobject.h"
-
-extern void setup_location_types(GameGraph::TERRAIN_VECTOR& m_vertex_types, CInifile* ini, LPCSTR string);
+#include "location_manager.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 CLocationManager::~CLocationManager() {}
 

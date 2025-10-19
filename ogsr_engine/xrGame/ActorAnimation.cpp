@@ -288,12 +288,15 @@ void CActor::steer_Vehicle(float angle)
         smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(anims.steer_left);
 }
 
+namespace
+{
 void legs_play_callback(CBlend* blend)
 {
     CActor* object = (CActor*)blend->CallbackParam;
     VERIFY(object);
     object->m_current_legs.invalidate();
 }
+} // namespace
 
 void CActor::g_SetSprintAnimation(u32 mstate_rl, MotionID& legs)
 {

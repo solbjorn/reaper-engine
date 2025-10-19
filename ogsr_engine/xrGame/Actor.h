@@ -780,5 +780,11 @@ CActor* Actor();
 
 constexpr inline float s_fFallTime{0.2f};
 
-extern float cam_HeightInterpolationSpeed;
+// Actor_Movement.cpp
 extern float cam_LookoutSpeed;
+
+// ActorCameras.cpp
+extern float cam_HeightInterpolationSpeed;
+
+// ActorInput.cpp
+extern bool g_bAutoClearCrouch;

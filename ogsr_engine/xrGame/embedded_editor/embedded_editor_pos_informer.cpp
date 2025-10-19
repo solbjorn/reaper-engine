@@ -8,6 +8,8 @@
 
 #include <fstream>
 
+namespace
+{
 string256 section_name = "section";
 
 void SavePosition(string256 sect)
@@ -28,6 +30,7 @@ void SavePosition(string256 sect)
         informer << "level_vertex_id = " << Actor()->ai_location().level_vertex_id() << "\n\n";
     }
 }
+} // namespace
 
 void ShowPositionInformer(bool& show)
 {

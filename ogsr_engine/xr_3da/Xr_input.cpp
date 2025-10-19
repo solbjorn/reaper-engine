@@ -3,18 +3,19 @@
 #include "xr_input.h"
 #include "IInputReceiver.h"
 
+#define MOUSEBUFFERSIZE 64
+#define KEYBOARDBUFFERSIZE 64
+
 CInput* pInput{};
+
+namespace
+{
 IInputReceiver dummyController;
+}
 
 float psMouseSens = 1.f;
 float psMouseSensScale = 1.f;
 Flags32 psMouseInvert = {FALSE};
-
-#define MOUSEBUFFERSIZE 64
-#define KEYBOARDBUFFERSIZE 64
-#define _KEYDOWN(name, key) (name[key] & 0x80)
-
-extern u32 g_screenmode;
 
 CInput::CInput(bool bExclusive, int deviceForInit)
 {
@@ -139,7 +140,12 @@ void CInput::exclusive_mode(const bool exclusive)
 }
 
 //-----------------------------------------------------------------------
+
+namespace
+{
 BOOL b_altF4 = FALSE;
+}
+
 void CInput::KeyUpdate()
 {
     HRESULT hr;

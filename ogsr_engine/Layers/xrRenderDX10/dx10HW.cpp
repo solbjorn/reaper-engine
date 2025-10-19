@@ -15,8 +15,11 @@
 
 #include <dxgi1_6.h>
 
+namespace
+{
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
+} // namespace
 
 CHW HW;
 
@@ -120,8 +123,6 @@ void CHW::DestroyD3D()
     _SHOW_REF("refCount:m_pFactory", m_pFactory);
     _RELEASE(m_pFactory);
 }
-
-extern u32 g_screenmode;
 
 void CHW::CreateDevice(HWND hwnd)
 {
@@ -331,8 +332,6 @@ void CHW::Reset(HWND hwnd)
     ImGui_ImplDX11_CreateDeviceObjects();
 }
 
-extern void GetMonitorResolution(u32& horizontal, u32& vertical);
-
 void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
 {
     fill_vid_mode_list(this);
@@ -527,6 +526,8 @@ void CHW::updateWindowProps(HWND m_hWnd)
     pInput->clip_cursor(true);
 }
 
+namespace
+{
 struct _uniq_mode
 {
     _uniq_mode(LPCSTR v) : _val(v) {}
@@ -604,6 +605,7 @@ void fill_vid_mode_list(CHW* _hw)
 #endif // DEBUG
     }
 }
+} // namespace
 
 void CHW::Present()
 {

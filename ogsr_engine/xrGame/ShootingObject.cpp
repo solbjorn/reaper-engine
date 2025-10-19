@@ -16,9 +16,6 @@
 #include "clsid_game.h"
 #include "game_cl_single.h"
 
-#define HIT_POWER_EPSILON 0.05f
-#define WALLMARK_SIZE 0.04f
-
 CShootingObject::CShootingObject() { reinit(); }
 CShootingObject::~CShootingObject() = default;
 

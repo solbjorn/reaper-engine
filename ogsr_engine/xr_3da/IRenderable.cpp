@@ -4,8 +4,6 @@
 
 IRenderable::IRenderable() { renderable.xform.identity(); }
 
-extern BOOL g_bRendering;
-
 IRenderable::~IRenderable()
 {
     VERIFY(!g_bRendering);

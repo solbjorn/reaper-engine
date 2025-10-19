@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "level.h"
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
@@ -9,6 +10,8 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "..\xr_3da\XR_IOConsole.h"
 #include "MainMenu.h"
+
+#include "hudmanager.h"
 
 BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
@@ -156,8 +159,8 @@ bool CLevel::net_start5()
     return true;
 }
 
-#include "hudmanager.h"
-
+namespace
+{
 BOOL g_start_total_res = TRUE;
 xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;
 
@@ -165,7 +168,9 @@ struct LevelLoadFinalizer
 {
     bool net_start_finalizer() { return true; }
 };
+
 LevelLoadFinalizer LF;
+} // namespace
 
 bool CLevel::net_start6()
 {

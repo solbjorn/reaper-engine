@@ -7,10 +7,6 @@
 
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
-#define PRIORITY_HIGH 12
-#define PRIORITY_NORMAL 8
-#define PRIORITY_LOW 4
-
 void resptrcode_texture::create(LPCSTR _name) { _set(RImplementation.Resources->_CreateTexture(_name)); }
 
 //////////////////////////////////////////////////////////////////////

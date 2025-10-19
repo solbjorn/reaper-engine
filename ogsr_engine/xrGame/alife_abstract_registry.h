@@ -29,6 +29,7 @@ public:
 
     IC CALifeAbstractRegistry();
     virtual ~CALifeAbstractRegistry();
+
     virtual void save(IWriter& memory_stream);
     virtual void load(IReader& file_stream);
     IC const OBJECT_REGISTRY& objects() const;

@@ -84,6 +84,13 @@ public:
     [[nodiscard]] bool OnKeyboardPress();
 };
 
-IC CGamePersistent& GamePersistent() { return *((CGamePersistent*)g_pGamePersistent); }
+IC CGamePersistent& GamePersistent() { return *smart_cast<CGamePersistent*>(g_pGamePersistent); }
+
+// console_commands.cpp
+void CCC_RegisterCommands();
+
+// xrgame_dll_detach.cpp
+extern void clean_game_globals();
+extern void init_game_globals();
 
 #endif // GamePersistentH

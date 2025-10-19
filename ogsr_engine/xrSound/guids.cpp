@@ -1,5 +1,12 @@
-
+#include "stdafx.h"
 
 #define INITGUID
-#include <dsound.h>
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+
 #include <eax.h>
+
+XR_DIAG_POP();
+
+#include <dsound.h>

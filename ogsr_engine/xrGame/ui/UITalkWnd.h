@@ -93,3 +93,5 @@ protected:
     bool TopicMode();
     void ToTopicMode();
 };
+
+void UpdateCameraDirection(CGameObject* pTo);

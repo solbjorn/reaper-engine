@@ -115,7 +115,6 @@ class CDangerObject;
 class CScriptGameObject;
 class CProjector;
 
-#ifdef DEBUG
 template <typename _object_type>
 class CActionBase;
 
@@ -125,12 +124,8 @@ class CPropertyEvaluator;
 template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
 class CActionPlanner;
 
-typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
-                       CPropertyEvaluator<CScriptGameObject>*>
-    script_planner;
-#endif
-
-class CScriptGameObject;
+using CScriptActionPlanner = CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
+                                            CPropertyEvaluator<CScriptGameObject>*>;
 
 namespace SightManager
 {
@@ -857,5 +852,8 @@ extern void show_condition(CScriptIniFile* ini_file, LPCSTR section);
 void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor = false);
 void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);
 bool GiveGameNews(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time);
+
+// script_game_object_use.cpp
+CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
 
 #include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "

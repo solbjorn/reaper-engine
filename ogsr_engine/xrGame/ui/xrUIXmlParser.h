@@ -14,3 +14,5 @@ public:
 
     virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn);
 };
+
+void dump_list_xmls();

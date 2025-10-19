@@ -6,6 +6,8 @@
 struct dxCylinder;
 extern int dCylinderClassUser;
 
+int dCollideCylRay(dxGeom* o1, dxGeom* o2, dContactGeom* contact, int skip);
+
 dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz);
 void dGeomCylinderSetParams(dGeomID g, dReal radius, dReal length);
 

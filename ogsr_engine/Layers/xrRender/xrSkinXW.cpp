@@ -7,6 +7,7 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
+XR_DIAG_IGNORE("-Wunused-template");
 
 #include <oneapi/tbb/parallel_for.h>
 

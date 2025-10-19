@@ -76,4 +76,6 @@ private:
     u16 m_toe_bone_id;
 };
 
+constexpr inline int ik_allign_free_foot{0};
+
 #include "IKFoot_inl.h"

@@ -4,7 +4,12 @@
 #include "SoundRender_Core.h"
 #include "OpenALDeviceList.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+
 #include <eax.h>
+
+XR_DIAG_POP();
 
 #ifdef DEBUG
 

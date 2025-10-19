@@ -490,27 +490,6 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 
         ///////////////////////////////////////////////////////////
 
-#define TRI_CONTAIN_POINT(pos) \
-    { \
-        dVector3 cross0, cross1, cross2; \
-        dReal ds0, ds1, ds2; \
-\
-        dCROSS(cross0, =, triAx, triSideAx0); \
-        ds0 = dDOT(cross0, v0); \
-\
-        dCROSS(cross1, =, triAx, triSideAx1); \
-        ds1 = dDOT(cross1, v1); \
-\
-        dCROSS(cross2, =, triAx, triSideAx2); \
-        ds2 = dDOT(cross2, v2); \
-\
-        if (dDOT(cross0, pos) - ds0 > 0.f && dDOT(cross1, pos) - ds1 > 0.f && dDOT(cross2, pos) - ds2 > 0.f) \
-            ++ret; \
-    } \
-    XR_MACRO_END()
-
-        ///////////////////////////////////////////////////////////
-
         // get the second and third contact points by starting from `p' and going
         // along the two sides with the smallest projected length.
 
@@ -543,8 +522,6 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
         } \
     } \
     XR_MACRO_END()
-
-        // TRI_CONTAIN_POINT(CONTACT(contact,ret*skip)->pos)
 
         if (B1 < B2)
         {
@@ -604,7 +581,6 @@ int dcTriListCollider::dTriBox(const dReal* v0, const dReal* v1, const dReal* v2
 #undef FOO
 #undef FOO1
 #undef BAR
-#undef TRI_CONTAIN_POINT
         // done: ;
 
         ////////////////////////////////////////////////////////////// end (from geom.cpp dCollideBP)

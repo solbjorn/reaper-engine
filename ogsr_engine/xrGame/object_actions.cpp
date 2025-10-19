@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "object_actions.h"
 #include "inventory.h"
 #include "ai/stalker/ai_stalker.h"
@@ -17,8 +18,6 @@
 #include "weaponmagazined.h"
 #include "object_handler_space.h"
 #include "stalker_animation_manager.h"
-
-#define ALLOW_STRANGE_BEHAVIOUR
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionCommand

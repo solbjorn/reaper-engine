@@ -13,8 +13,6 @@ namespace xxh
 
 using namespace collide;
 
-extern BOOL g_bLoaded;
-
 void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float time_to_stop)
 {
     if (!g_bLoaded)
@@ -110,11 +108,14 @@ void IGame_Level::SoundEvent_OnDestDestroy(Feel::Sound* obj)
     snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) { return d.dest == obj; }), snd_Events.end());
 }
 
-void __stdcall _sound_event(ref_sound_data_ptr S, float range, float time_to_stop)
+namespace
+{
+void _sound_event(ref_sound_data_ptr S, float range, float time_to_stop)
 {
     if (g_pGameLevel && S && S->feedback)
         g_pGameLevel->SoundEvent_Register(S, range, time_to_stop);
 }
+} // namespace
 
 //----------------------------------------------------------------------
 // Class	: CObjectSpace

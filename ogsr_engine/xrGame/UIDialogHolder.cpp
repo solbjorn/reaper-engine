@@ -1,28 +1,22 @@
 #include "stdafx.h"
 
 #include "UIDialogHolder.h"
+
+#include "HUDManager.h"
 #include "ui\UIDialogWnd.h"
 #include "UICursor.h"
 #include "level.h"
 #include "actor.h"
 #include "xr_level_controller.h"
 
-dlgItem::dlgItem(CUIWindow* pWnd)
-{
-    wnd = pWnd;
-    enabled = true;
-}
+dlgItem::dlgItem(CUIWindow* pWnd) : wnd{pWnd} {}
 
 bool dlgItem::operator<(const dlgItem& itm) const { return (int)enabled > (int)itm.enabled; }
+bool dlgItem::operator==(const dlgItem& that) const { return wnd == that.wnd; }
 
-bool operator==(const dlgItem& i1, const dlgItem& i2) { return i1.wnd == i2.wnd; }
+recvItem::recvItem(CUIDialogWnd* r) : m_item{r} {}
 
-recvItem::recvItem(CUIDialogWnd* r)
-{
-    m_item = r;
-    m_flags.zero();
-}
-bool operator==(const recvItem& i1, const recvItem& i2) { return i1.m_item == i2.m_item; }
+bool recvItem::operator==(const recvItem& that) const { return m_item == that.m_item; }
 
 CDialogHolder::CDialogHolder()
 {
@@ -37,7 +31,6 @@ CDialogHolder::~CDialogHolder()
     shedule_unregister();
     Device.seqFrame.Remove(this);
 }
-#include "HUDManager.h"
 
 void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {

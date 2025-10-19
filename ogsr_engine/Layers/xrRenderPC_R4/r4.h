@@ -252,6 +252,7 @@ protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name);
 };
 
-void fix_texture_name(char* fn);
-
 extern CRender RImplementation;
+extern u32 reset_frame;
+
+void fix_texture_name(char* fn);

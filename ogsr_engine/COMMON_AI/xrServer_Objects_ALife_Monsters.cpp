@@ -31,6 +31,8 @@
 #include "date_time.h"
 #endif
 
+namespace
+{
 void setup_location_types_section(GameGraph::TERRAIN_VECTOR& m_vertex_types, CInifile* ini, LPCSTR section)
 {
     VERIFY3(ini->section_exist(section), "cannot open section", section);
@@ -87,6 +89,7 @@ void setup_location_types_line(GameGraph::TERRAIN_VECTOR& m_vertex_types, LPCSTR
         m_vertex_types.push_back(terrain_mask);
     }
 }
+} // namespace
 
 void setup_location_types(GameGraph::TERRAIN_VECTOR& m_vertex_types, CInifile* ini, LPCSTR string)
 {

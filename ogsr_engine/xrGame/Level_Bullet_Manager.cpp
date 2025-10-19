@@ -16,9 +16,6 @@
 #include "debug_renderer.h"
 #endif
 
-#define HIT_POWER_EPSILON 0.05f
-#define WALLMARK_SIZE 0.04f
-
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 
 SBullet::SBullet() = default;
@@ -287,6 +284,8 @@ bool CBulletManager::CalcBullet(collide::rq_results& rq_storage, SBullet* bullet
 BOOL g_bDrawBulletHit = FALSE;
 #endif
 
+namespace
+{
 float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)
 {
     Fvector diff;
@@ -314,6 +313,7 @@ float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fv
 
     return diff.square_magnitude();
 }
+} // namespace
 
 void CBulletManager::Render()
 {

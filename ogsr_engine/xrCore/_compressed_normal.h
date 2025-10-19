@@ -10,6 +10,5 @@
 
 u16 pvCompress(const Fvector& vec);
 void pvDecompress(Fvector& vec, u16 mVec);
-void pvInitializeStatics(void);
 
 #endif

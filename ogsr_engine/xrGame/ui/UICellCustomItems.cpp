@@ -428,15 +428,20 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams& params, Fvector2 ad
     s->SetWindowName("wpn_addon");
 }
 
+namespace
+{
 CUIStatic* MakeAddonStatic(CUIDragItem* i, CIconParams& params)
 {
     CUIStatic* s = xr_new<CUIStatic>();
+
     params.set_shader(s);
     s->SetAutoDelete(true);
     s->SetColor(i->wnd()->GetColor());
     i->wnd()->AttachChild(s);
+
     return s;
 }
+} // namespace
 
 CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 {

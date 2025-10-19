@@ -405,8 +405,6 @@ void CLevel::OnFrame()
     // Inherited update
     inherited::OnFrame();
 
-    extern bool s_ScriptTime;
-
     if (!s_ScriptTime)
     {
         g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
@@ -474,10 +472,6 @@ void CLevel::script_gc()
     // If script_gc() is performed once a frame, we don't need automatic GC
     lua_gc(state, LUA_GCSTOP, 0);
 }
-
-extern Flags32 dbg_net_Draw_Flags;
-
-extern void draw_wnds_rects();
 
 void CLevel::OnRender()
 {

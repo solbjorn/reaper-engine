@@ -174,7 +174,8 @@ void CPHCapture::PullingUpdate()
         dJointSetAMotorParam(m_ajoint, dParamStopERP3, erp);
         dJointSetAMotorParam(m_ajoint, dParamStopCFM3, cfm);
 
-        sf = 0.1f, df = 10.f;
+        sf = 0.1f;
+        df = 10.f;
         erp = ERP(world_spring * sf, world_damping * df);
         cfm = CFM(world_spring * sf, world_damping * df);
         dJointSetAMotorParam(m_ajoint, dParamCFM, cfm);
@@ -185,10 +186,11 @@ void CPHCapture::PullingUpdate()
         m_taget_element->set_AngularVel(Fvector().set(0, 0, 0));
 
         m_taget_element->set_DynamicLimits();
-
         e_state = cstCaptured;
+
         return;
     }
+
     m_taget_element->applyForce(dir, m_pull_force);
 }
 

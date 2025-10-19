@@ -317,7 +317,8 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
     lock.Leave();
 }
 
-extern float r_ssaDISCARD;
+namespace
+{
 ICF void BeginStream(const ref_geom& hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
 {
     w_offset = 0;
@@ -341,6 +342,7 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
         Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
     }
 }
+} // namespace
 
 void CWallmarksEngine::Render()
 {

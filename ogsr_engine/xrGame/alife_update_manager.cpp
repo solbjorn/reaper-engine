@@ -28,8 +28,6 @@
 
 using namespace ALife;
 
-extern string_path g_last_saved_game;
-
 class CSwitchPredicate
 {
 private:

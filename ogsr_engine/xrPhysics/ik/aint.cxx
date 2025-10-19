@@ -33,8 +33,12 @@
 
 #include "aint.h"
 
+namespace
+{
 inline float min(float x, float y) { return x < y ? x : y; }
 inline float max(float x, float y) { return x > y ? x : y; }
+} // namespace
+
 //
 // Sets the low bound for the interval
 //
@@ -43,6 +47,7 @@ void AngleInt::SetLow(float l) { low = angle_normalize(l); }
 // Sets the high bound for the interval
 //
 void AngleInt::SetHigh(float h) { high = angle_normalize(h); }
+
 AngleInt::AngleInt(float l, float h)
 {
     SetLow(l);
@@ -252,6 +257,8 @@ void AngleIntList::remove(AngleIntListNode* t)
     xr_delete(t);
 }
 
+namespace
+{
 //
 // Given that b is a subset of a within some eps then return
 // c (based on a) such that numerically b ia subset of c
@@ -295,6 +302,7 @@ void swell(const AngleInt& a, const AngleInt& b, AngleInt& c)
         c.Set(l, h);
     }
 }
+} // namespace
 
 //
 // Adds the interval (l,h) to the list. If possible merge it with
@@ -466,12 +474,14 @@ int AngleIntIterator::Next(float& a)
     return 1;
 }
 
+namespace
+{
 //
 // Intersect one psi interval with another and return the
 // list of intersections in c
 //
 
-static void aint_intersect_aux(const AngleInt& a, const AngleInt& b, AngleIntList& c)
+void aint_intersect_aux(const AngleInt& a, const AngleInt& b, AngleIntList& c)
 {
 #if 0
     // Degenerate cases of null intersection at 0/2pi boundary
@@ -497,7 +507,7 @@ static void aint_intersect_aux(const AngleInt& a, const AngleInt& b, AngleIntLis
         c.Add(a.Low(), min(b.High(), a.High()));
 }
 
-static void aint_intersect(const AngleInt& a, const AngleInt& b, AngleIntList& c)
+void aint_intersect(const AngleInt& a, const AngleInt& b, AngleIntList& c)
 {
     if (a.IsFullRange())
         c.Add(b.Low(), b.High());
@@ -550,7 +560,7 @@ static void aint_intersect(const AngleInt& a, const AngleInt& b, AngleIntList& c
 // list of intersections in c
 //
 
-static void aint_union_aux(const AngleInt& a, const AngleInt& b, AngleIntList& c)
+void aint_union_aux(const AngleInt& a, const AngleInt& b, AngleIntList& c)
 {
     const float eps = AINT_EPSILON;
     int in1 = a.InRange(b.Low() + 2 * eps, eps);
@@ -569,7 +579,7 @@ static void aint_union_aux(const AngleInt& a, const AngleInt& b, AngleIntList& c
         c.Add(b.Low(), max(b.High(), a.High()));
 }
 
-static void aint_union(const AngleInt& a, const AngleInt& b, AngleIntList& c)
+void aint_union(const AngleInt& a, const AngleInt& b, AngleIntList& c)
 {
     if (a.IsFullRange())
         c.Add(a.Low(), a.High());
@@ -617,6 +627,7 @@ static void aint_union(const AngleInt& a, const AngleInt& b, AngleIntList& c)
     else
         aint_union_aux(a, b, c);
 }
+} // namespace
 
 void AngleIntList::wrap(float eps)
 {

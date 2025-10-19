@@ -33,7 +33,10 @@
 #include "StdAfx.h"
 #include "limb.h"
 
-constexpr float phInfinity = std::numeric_limits<float>::infinity();
+namespace
+{
+constexpr float phInfinity{std::numeric_limits<float>::infinity()};
+}
 
 enum
 {
@@ -91,6 +94,8 @@ int Limb::check_r_joint(float& v)
     return 0;
 }
 
+namespace
+{
 inline void swap(float& x, float& y)
 {
     float t = x;
@@ -156,6 +161,7 @@ inline float put_angle_in_range(float low, float high, float v)
 
     return (_abs(d1) < _abs(d2)) ? v : v2;
 }
+} // namespace
 
 //
 // Extract the euler angles for the first spherical joint
@@ -460,6 +466,8 @@ float Limb::KneeAngle(const float goal_pos[3], const float knee_pos[3])
     return swivel;
 }
 
+namespace
+{
 //
 // Returns the index of the smallest element in a float array
 //
@@ -633,6 +641,7 @@ int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const Ang
 
     return i;
 }
+} // namespace
 
 //
 // Solve for G and select the joint angles that are closest to satisfying
@@ -909,12 +918,15 @@ int Limb::InLimits(const float x[7]) const
     return 1;
 }
 
+namespace
+{
 float round_up(float x)
 {
     if (x < 0)
         x += 2 * M_PI;
     return x;
 }
+
 void dump_file(char* file, int euler_type, float min[], float max[], Matrix c, Matrix s, Matrix o)
 {
     FILE* fp = fopen(file, "w");
@@ -931,6 +943,7 @@ void dump_file(char* file, int euler_type, float min[], float max[], Matrix c, M
 
     fclose(fp);
 }
+} // namespace
 
 void Limb::Debug(char* file1, char* file2)
 {

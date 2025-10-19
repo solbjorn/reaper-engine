@@ -34,21 +34,7 @@ CSpaceRestrictionManager::~CSpaceRestrictionManager()
     delete_data(m_space_restrictions);
 }
 
-void show_restriction(const shared_str& restrictions)
-{
-    string256 temp;
-    for (int i = 0, n = _GetItemCount(*restrictions); i < n; ++i)
-        Msg("     %s", _GetItem(*restrictions, i, temp));
-}
-
 typedef intrusive_ptr<CSpaceRestriction, RestrictionSpace::CTimeIntrusiveBase> CRestrictionPtr;
-void show_restriction(const CRestrictionPtr& restriction)
-{
-    Msg("out");
-    show_restriction(restriction->out_restrictions());
-    Msg("in");
-    show_restriction(restriction->in_restrictions());
-}
 
 void CSpaceRestrictionManager::clear()
 {

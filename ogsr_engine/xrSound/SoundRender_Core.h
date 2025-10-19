@@ -1,12 +1,11 @@
 #pragma once
 
-#include <al.h>
-#include <efx-presets.h>
-
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 
+#include <al.h>
 #include <efx.h>
+#include <efx-presets.h>
 
 namespace efx_api
 {

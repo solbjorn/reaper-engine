@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_human_brain.h"
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -25,16 +26,13 @@
 #include "alife_smart_terrain_registry.h"
 #include "alife_time_manager.h"
 #include "date_time.h"
+
 #ifdef DEBUG
 #include "level.h"
 #include "map_location.h"
 #include "map_manager.h"
-#endif
-#endif
-
-#define MAX_ITEM_FOOD_COUNT 3
-#define MAX_ITEM_MEDIKIT_COUNT 3
-#define MAX_AMMO_ATTACH_COUNT 10
+#endif // DEBUG
+#endif // XRGAME_EXPORTS
 
 CALifeHumanBrain::CALifeHumanBrain(object_type* object) : inherited(object)
 {

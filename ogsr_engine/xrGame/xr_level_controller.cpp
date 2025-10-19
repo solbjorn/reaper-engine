@@ -84,6 +84,8 @@ xr_vector<_action> actions = {
 
 xr_vector<_binding> g_key_bindings;
 
+namespace
+{
 _keyboard keyboards[] = {{"kESCAPE", DIK_ESCAPE},
                          {"k1", DIK_1},
                          {"k2", DIK_2},
@@ -301,6 +303,7 @@ void remap_keys()
         ++idx;
     }
 }
+} // namespace
 
 EGameActions action_name_to_id(LPCSTR _name)
 {
@@ -351,15 +354,8 @@ _keyboard* dik_to_ptr(int _dik, bool bSafe)
     return nullptr;
 }
 
-int keyname_to_dik(LPCSTR _name)
+namespace
 {
-    _keyboard* kb = keyname_to_ptr(_name);
-    if (kb)
-        return kb->dik;
-
-    return 0;
-}
-
 _keyboard* keyname_to_ptr(LPCSTR _name)
 {
     int idx = 0;
@@ -373,6 +369,16 @@ _keyboard* keyname_to_ptr(LPCSTR _name)
 
     Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
     return nullptr;
+}
+} // namespace
+
+int keyname_to_dik(LPCSTR _name)
+{
+    _keyboard* kb = keyname_to_ptr(_name);
+    if (kb)
+        return kb->dik;
+
+    return 0;
 }
 
 bool is_binded(EGameActions _action_id, int _dik)
@@ -451,6 +457,9 @@ void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 }
 
 ConsoleBindCmds bindConsoleCmds;
+
+namespace
+{
 BOOL bRemapped = FALSE;
 
 class CCC_Bind : public IConsole_Command
@@ -633,6 +642,7 @@ public:
         bindConsoleCmds.unbind(_dik);
     }
 };
+} // namespace
 
 void ConsoleBindCmds::bind(int dik, LPCSTR N)
 {

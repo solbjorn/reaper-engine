@@ -17,8 +17,6 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "Pda.h"
 
-extern float psHUD_FOV_def;
-
 CHudItem::CHudItem()
 {
     m_huditem_flags.zero();

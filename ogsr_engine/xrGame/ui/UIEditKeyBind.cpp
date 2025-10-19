@@ -2,8 +2,9 @@
 
 #include "UIEditKeyBind.h"
 #include "UIColorAnimatorWrapper.h"
-#include "../xr_level_controller.h"
+
 #include "../object_broker.h"
+#include "../xr_level_controller.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim) : m_bPrimary{bPrim}
 {
@@ -15,6 +16,8 @@ CUIEditKeyBind::CUIEditKeyBind(bool bPrim) : m_bPrimary{bPrim}
 
 CUIEditKeyBind::~CUIEditKeyBind() { delete_data(m_pAnimation); }
 
+namespace
+{
 u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
 {
     if (pFont->IsMultibyte())
@@ -23,6 +26,7 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
         VERIFY(nPos < dst_size);
         strncpy(dst, src, nPos);
         dst[nPos] = '\0';
+
         return nPos;
     }
     else
@@ -43,6 +47,7 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
         return xr_strlen(dst);
     }
 }
+} // namespace
 
 void CUIEditKeyBind::SetText(const char* text)
 {

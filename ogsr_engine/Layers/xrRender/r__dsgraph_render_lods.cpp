@@ -1,11 +1,9 @@
 #include "stdafx.h"
+
 #include "flod.h"
 
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
-
-extern float r_ssaLOD_A;
-extern float r_ssaLOD_B;
 
 void R_dsgraph_structure::render_lods()
 {

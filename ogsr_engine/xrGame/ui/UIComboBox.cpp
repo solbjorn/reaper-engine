@@ -17,7 +17,6 @@
 #include <dinput.h>
 
 #define CB_HEIGHT 23.0f
-#define BTN_SIZE 23.0f
 
 CUIComboBox::CUIComboBox()
 {
@@ -50,8 +49,6 @@ void CUIComboBox::Init(float x, float y, float width)
     if (0 == m_iListHeight)
         m_iListHeight = 4;
 
-    //.	width								-= BTN_SIZE;
-
     CUIWindow::Init(x, y, width, CB_HEIGHT);
     // Frame Line
     m_frameLine.Init(0, 0, width, CB_HEIGHT);
@@ -62,8 +59,6 @@ void CUIComboBox::Init(float x, float y, float width)
     m_text.Init(0, 0, width, CB_HEIGHT);
     m_text.SetTextColor(m_textColor[0]);
     m_text.Enable(false);
-    // Button on right side of frame line
-    //.	m_btn.Init							("ui_cb_button", width, 0, BTN_SIZE, BTN_SIZE);
 
     // height of list equal to height of ONE element
     float item_height = CUITextureMaster::GetTextureHeight("ui_cb_listline_b");

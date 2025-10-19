@@ -15,8 +15,7 @@
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
 #include "LevelDebugScript.h"
-
-void Remove_all_statics();
+#include "UIGameCustom.h"
 
 void CLevel::remove_objects()
 {
@@ -209,21 +208,24 @@ void CLevel::net_Update()
     }
 }
 
+namespace
+{
 struct _NetworkProcessor : public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(_NetworkProcessor, pureFrame);
 
 public:
-    virtual void OnFrame()
+    void OnFrame() override
     {
         if (g_pGameLevel && !Device.Paused())
             g_pGameLevel->net_Update();
     }
 } NET_processor;
 
-pureFrame* g_pNetProcessor = &NET_processor;
+constexpr int ConnectionTimeOut{60000}; // 1 min
+} // namespace
 
-const int ConnectionTimeOut = 60000; // 1 min
+pureFrame* g_pNetProcessor = &NET_processor;
 
 BOOL CLevel::Connect2Server(LPCSTR options)
 {

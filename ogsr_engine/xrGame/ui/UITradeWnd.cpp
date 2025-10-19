@@ -27,13 +27,15 @@
 #include "UICellItemFactory.h"
 #include "UIPropertiesBox.h"
 #include "UIListBoxItem.h"
+#include "UITalkWnd.h"
 
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
-#include "../xr_3da/xr_input.h"
-
+#include "../trade_parameters.h"
 #include "../xr_level_controller.h"
+
+#include "../xr_3da/xr_input.h"
 
 #include <format>
 
@@ -77,7 +79,10 @@ struct CUITradeInternal
     SDrawStaticStruct* UIDealMsg;
 };
 
-bool others_zero_trade;
+namespace
+{
+bool others_zero_trade{};
+}
 
 CUITradeWnd::CUITradeWnd()
 {
@@ -250,8 +255,6 @@ void CUITradeWnd::Draw()
         m_uidata->UIDealMsg->Draw();
 }
 
-extern void UpdateCameraDirection(CGameObject* pTo);
-
 void CUITradeWnd::Update()
 {
     EListType et = eNone;
@@ -343,8 +346,6 @@ void CUITradeWnd::StopTrade()
     bStarted = false;
 }
 
-#include "../trade_parameters.h"
-
 bool CUITradeWnd::CanMoveToOther(PIItem pItem, bool our)
 {
     if (pItem->m_flags.test(CInventoryItem::FIAlwaysUntradable))
@@ -371,11 +372,14 @@ bool CUITradeWnd::CanMoveToOther(PIItem pItem, bool our)
     return true;
 }
 
+namespace
+{
 void move_item(CUICellItem* itm, CUIDragDropListEx* from, CUIDragDropListEx* to)
 {
     CUICellItem* _itm = from->RemoveItem(itm, false);
     to->SetItem(_itm);
 }
+} // namespace
 
 bool CUITradeWnd::ToOurTrade(CUICellItem* itm)
 {

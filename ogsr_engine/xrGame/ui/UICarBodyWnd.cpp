@@ -575,6 +575,8 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm)
     SetCurrentItem(nullptr);
 }
 
+namespace
+{
 void SendEvent_Item_Drop(u16 from_id, PIItem pItem)
 {
     pItem->SetDropManual(TRUE);
@@ -584,6 +586,7 @@ void SendEvent_Item_Drop(u16 from_id, PIItem pItem)
     P.w_u16(pItem->object().ID());
     pItem->object().u_EventSend(P);
 }
+} // namespace
 
 void CUICarBodyWnd::DropItemsfromCell(bool b_all)
 {

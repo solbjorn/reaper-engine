@@ -400,11 +400,6 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
     return TRUE;
 }
 
-bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
-{
-    return (c1.p.similar(c2.p, EPS_L) && c1.d.similar(c2.d, EPS_L) && c1.n.similar(c2.n, EPS_L) && c1.r.similar(c2.r, EPS_L));
-}
-
 void CActorCameraManager::UpdateCamEffectors()
 {
     m_cam_info_hud = m_cam_info;
@@ -416,6 +411,8 @@ void CActorCameraManager::UpdateCamEffectors()
     m_cam_info_hud.n.crossproduct(m_cam_info_hud.d, m_cam_info_hud.r);
 }
 
+namespace
+{
 void cam_effector_sub(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2, SCamEffectorInfo& dest)
 {
     dest.p.sub(c1.p, c2.p);
@@ -431,6 +428,7 @@ void cam_effector_add(const SCamEffectorInfo& diff, SCamEffectorInfo& dest)
     dest.n.add(diff.n);
     dest.r.add(diff.r);
 }
+} // namespace
 
 bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 {

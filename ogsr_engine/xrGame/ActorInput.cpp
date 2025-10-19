@@ -38,7 +38,6 @@
 #include "ui/UIPDAWnd.h"
 
 bool g_bAutoClearCrouch = true;
-extern int g_bHudAdjustMode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
@@ -399,8 +398,6 @@ bool CActor::use_Holder(CHolderCustom* holder)
         return b;
     }
 }
-
-extern bool g_bDisableAllInput;
 
 void CActor::ActorUse()
 {

@@ -11,6 +11,7 @@ static void w_vec_q8(NET_Packet& P, const Fvector& vec, const Fvector& min, cons
     P.w_float_q8(vec.y, min.y, max.y);
     P.w_float_q8(vec.z, min.z, max.z);
 }
+
 template <typename src>
 static void r_vec_q8(src& P, Fvector& vec, const Fvector& min, const Fvector& max)
 {
@@ -22,6 +23,7 @@ static void r_vec_q8(src& P, Fvector& vec, const Fvector& min, const Fvector& ma
     clamp(vec.y, min.y, max.y);
     clamp(vec.z, min.z, max.z);
 }
+
 static void w_qt_q8(NET_Packet& P, const Fquaternion& q)
 {
     // Fvector Q;
@@ -67,26 +69,6 @@ static void r_qt_q8(src& P, Fquaternion& q)
     clamp(q.w, -1.f, 1.f);
 }
 
-/////////////////////////////////16////////////////////////////////////////////////////////////////
-
-#ifdef XRGAME_EXPORTS
-template <typename src>
-static void w_qt_q16(src& P, const Fquaternion& q)
-{
-    // Fvector Q;
-    // Q.set(q.x,q.y,q.z);
-    // if(q.w<0.f)	Q.invert();
-    // P.w_float_q16(Q.x,-1.f,1.f);
-    // P.w_float_q16(Q.y,-1.f,1.f);
-    // P.w_float_q16(Q.z,-1.f,1.f);
-    ///////////////////////////////////////////
-    P.w_float_q16(q.x, -1.f, 1.f);
-    P.w_float_q16(q.y, -1.f, 1.f);
-    P.w_float_q16(q.z, -1.f, 1.f);
-    P.w_float_q16(q.w, -1.f, 1.f);
-}
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////////
 void SPHNetState::net_Export(NET_Packet& P)
 {
@@ -101,6 +83,7 @@ void SPHNetState::net_Export(NET_Packet& P)
     // P.w_vec4(*((Fvector4*)&previous_quaternion));
     P.w_u8((u8)enabled);
 }
+
 template <typename src>
 void SPHNetState::read(src& P)
 {
@@ -119,6 +102,7 @@ void SPHNetState::net_Import(NET_Packet& P)
     R_ASSERT(0);
     read(P);
 }
+
 void SPHNetState::net_Import(IReader& P)
 {
     R_ASSERT(0);
@@ -134,6 +118,7 @@ void SPHNetState::net_Load(NET_Packet& P)
     net_Import(P);
     previous_position.set(position);
 }
+
 void SPHNetState::net_Load(IReader& P)
 {
     R_ASSERT(0);
@@ -141,6 +126,7 @@ void SPHNetState::net_Load(IReader& P)
     net_Import(P);
     previous_position.set(position);
 }
+
 void SPHNetState::net_Save(NET_Packet& P, const Fvector& min, const Fvector& max)
 {
     // P.w_vec3(linear_vel);
@@ -154,6 +140,7 @@ void SPHNetState::net_Save(NET_Packet& P, const Fvector& min, const Fvector& max
     // P.w_vec4(*((Fvector4*)&previous_quaternion));
     P.w_u8((u8)enabled);
 }
+
 template <typename src>
 void SPHNetState::read(src& P, const Fvector& min, const Fvector& max)
 {
@@ -174,11 +161,13 @@ void SPHNetState::net_Load(NET_Packet& P, const Fvector& min, const Fvector& max
     VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
     read(P, min, max);
 }
+
 void SPHNetState::net_Load(IReader& P, const Fvector& min, const Fvector& max)
 {
     VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
     read(P, min, max);
 }
+
 SPHBonesData::SPHBonesData()
 {
     bones_mask.set_all();
@@ -190,6 +179,7 @@ SPHBonesData::SPHBonesData()
     _mx.set(100.f, 100.f, 100.f);
     set_min_max(_mn, _mx);
 }
+
 void SPHBonesData::net_Save(NET_Packet& P)
 {
     P.w_u64(bones_mask._visimask.flags);

@@ -2,8 +2,6 @@
 
 #include "SkeletonCustom.h"
 
-extern int psSkeletonUpdate;
-
 #ifdef DEBUG
 void check_kinematics(CKinematics* _k, LPCSTR s);
 #endif

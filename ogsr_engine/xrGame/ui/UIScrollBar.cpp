@@ -174,7 +174,10 @@ void CUIScrollBar::UpdateScrollBar()
     ClampByViewRect();
 }
 
-u32 last_hold_time = 0;
+namespace
+{
+u32 last_hold_time{};
+}
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {

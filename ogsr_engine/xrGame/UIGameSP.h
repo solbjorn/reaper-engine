@@ -1,4 +1,5 @@
 #pragma once
+
 #include "uigamecustom.h"
 #include "ui/UIDialogWnd.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
@@ -78,3 +79,5 @@ public:
     virtual void Hide();
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
 };
+
+extern bool g_block_pause;

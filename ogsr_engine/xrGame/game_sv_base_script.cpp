@@ -38,6 +38,8 @@ void start_tutorial(LPCSTR name)
         g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
 }
 
+namespace
+{
 void stop_tutorial()
 {
     if (g_tutorial)
@@ -52,7 +54,6 @@ u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = tr
 void StopHudMotion() { g_player_hud->script_anim_stop(); }
 
 float MotionLength(LPCSTR hud_section, LPCSTR anm_name, float speed) { return g_player_hud->motion_length_script(hud_section, anm_name, speed); }
-
 bool AllowHudMotion() { return g_player_hud->allow_script_anim(); }
 
 float PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart)
@@ -61,28 +62,26 @@ float PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped,
 }
 
 void StopBlendAnm(LPCSTR name, bool bForce) { g_player_hud->StopBlendAnm(name, bForce); }
-
 void StopAllBlendAnms(bool bForce) { g_player_hud->StopAllBlendAnms(bForce); }
-
 float SetBlendAnmTime(LPCSTR name, float time) { return g_player_hud->SetBlendAnmTime(name, time); }
 
 LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
 
 bool has_active_tutotial() { return !!g_tutorial; }
 
-LPCSTR generate_id()
+xr_string generate_id()
 {
     GUID guid;
     CoCreateGuid(&guid);
 
     // 32 hex chars + 4 hyphens + null terminator
-    char guid_string[37];
-    snprintf(guid_string, sizeof(guid_string), "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2],
-             guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+    xr_string guid_string(37, ' ');
+    snprintf(guid_string.data(), guid_string.size(), "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1],
+             guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
 
-    shared_str r = guid_string;
-    return r.c_str();
+    return guid_string;
 }
+} // namespace
 
 void game_sv_GameState::script_register(sol::state_view& lua)
 {
@@ -97,10 +96,10 @@ void game_sv_GameState::script_register(sol::state_view& lua)
                               "TimeToHours", sol::var(InventoryUtilities::etpTimeToHours), "TimeToMinutes", sol::var(InventoryUtilities::etpTimeToMinutes), "TimeToSeconds",
                               sol::var(InventoryUtilities::etpTimeToSeconds), "TimeToMilisecs", sol::var(InventoryUtilities::etpTimeToMilisecs),
 
-                              "diffSec", &xrTime::diffSec_script, "add", sol::policies(&xrTime::add_script, sol::returns_self()), "sub",
-                              sol::policies(&xrTime::sub_script, sol::returns_self()), "setHMS", sol::policies(&xrTime::setHMS, sol::returns_self()), "setHMSms",
-                              sol::policies(&xrTime::setHMSms, sol::returns_self()), "set", sol::policies(&xrTime::set, sol::returns_self()), "get", &xrTime::get, "dateToString",
-                              &xrTime::dateToString, "timeToString", &xrTime::timeToString);
+                              sol::meta_function::addition, &xrTime::operator+, sol::meta_function::subtraction, &xrTime::operator-, "diffSec", &xrTime::diffSec_script, "add",
+                              sol::policies(&xrTime::add_script, sol::returns_self()), "sub", sol::policies(&xrTime::sub_script, sol::returns_self()), "setHMS",
+                              sol::policies(&xrTime::setHMS, sol::returns_self()), "setHMSms", sol::policies(&xrTime::setHMSms, sol::returns_self()), "set",
+                              sol::policies(&xrTime::set, sol::returns_self()), "get", &xrTime::get, "dateToString", &xrTime::dateToString, "timeToString", &xrTime::timeToString);
 
     game.set("time", &get_time, "get_game_time", &get_time_struct, "start_tutorial", &start_tutorial, "stop_tutorial", &stop_tutorial, "has_active_tutorial", &has_active_tutotial,
              "translate_string", &translate_string, "play_hud_motion", &PlayHudMotion, "stop_hud_motion", &StopHudMotion, "get_motion_length", &MotionLength, "hud_motion_allowed",

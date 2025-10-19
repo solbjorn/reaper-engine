@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "D3DUtils.h"
 #include "dxRenderDeviceRender.h"
+#include "D3DUtils.h"
 #include "dxUIRender.h"
 #include "ResourceManager.h"
 
@@ -9,7 +9,11 @@
 
 #ifdef USE_RENDERDOC
 #include <../RenderDoc/renderdoc_app.h>
+
+namespace
+{
 RENDERDOC_API_1_0_0* g_renderdoc_api{};
+}
 #endif
 
 dxRenderDeviceRender::dxRenderDeviceRender() {}
@@ -39,11 +43,8 @@ void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in)
 }
 
 void dxRenderDeviceRender::setGamma(float fGamma) { m_Gamma.Gamma(fGamma); }
-
 void dxRenderDeviceRender::setBrightness(float fGamma) { m_Gamma.Brightness(fGamma); }
-
 void dxRenderDeviceRender::setContrast(float fGamma) { m_Gamma.Contrast(fGamma); }
-
 void dxRenderDeviceRender::updateGamma() { m_Gamma.Update(); }
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)

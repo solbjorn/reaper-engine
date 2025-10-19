@@ -57,12 +57,10 @@ RELATION_REGISTRY::RELATION_MAP_SPOTS* RELATION_REGISTRY::m_spot_names{};
 //////////////////////////////////////////////////////////////////////////
 
 RELATION_REGISTRY::RELATION_REGISTRY() {}
-
 RELATION_REGISTRY::~RELATION_REGISTRY() {}
 
 //////////////////////////////////////////////////////////////////////////
 
-extern void load_attack_goodwill();
 CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 {
     if (!m_relation_registry)

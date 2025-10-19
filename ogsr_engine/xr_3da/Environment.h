@@ -375,4 +375,14 @@ public:
 extern Flags32 psEnvFlags;
 extern float psVisDistance;
 
+// embedded_editor_weather.cpp
+extern bool s_ScriptNoMixer;
+extern bool s_ScriptTime;
+extern bool s_ScriptWeather;
+
+// xr_ioc_cmd.cpp
+extern float ps_r2_sun_shafts_min;
+extern float ps_r2_sun_shafts_value;
+extern Fvector3 ssfx_wetness_multiplier;
+
 #endif // EnvironmentH

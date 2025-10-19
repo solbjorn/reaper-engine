@@ -14,9 +14,11 @@
 
 #include <format>
 
+namespace
+{
 // KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы luabind'а регистрировались внутри модуля в котором находятся, а не в _G
 // см. luabind/src/create_class.cpp
-static constexpr const char* FILE_HEADER =
+constexpr const char* FILE_HEADER =
     "\
 local function script_name() \
 return '{0}' \
@@ -32,6 +34,7 @@ const char* get_lua_traceback(lua_State* L)
     lua_pop(L, 1);
     return tb;
 }
+} // namespace
 
 //*********************************************************************************************
 void CScriptStorage::dump_state()

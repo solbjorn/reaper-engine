@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uiprogressbar.h"
 
 CUIProgressBar::CUIProgressBar()
@@ -72,7 +73,11 @@ void CUIProgressBar::SetProgressPos(float _Pos)
     UpdateProgressBar();
 }
 
-float _sign(const float& v) { return (v > 0.0f) ? +1.0f : -1.0f; }
+namespace
+{
+inline float _sign(const float& v) { return (v > 0.0f) ? +1.0f : -1.0f; }
+} // namespace
+
 void CUIProgressBar::Update()
 {
     inherited::Update();

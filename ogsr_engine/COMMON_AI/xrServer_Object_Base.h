@@ -201,3 +201,5 @@ virtual CSE_ALifeItemPDA* cast_item_pda() { return nullptr; }
 add_to_type_list(CSE_Abstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_Abstract)
+
+u16 script_server_object_version();

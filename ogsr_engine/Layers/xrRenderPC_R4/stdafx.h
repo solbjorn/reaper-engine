@@ -8,6 +8,7 @@
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wdefaulted-function-deleted");
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
 
 #include <DirectXMath.h>
 

@@ -55,7 +55,9 @@ void CAttachmentOwner::renderable_Render(u32 context_id, IRenderable* root)
         item->renderable_Render(context_id, root);
 }
 
-void __stdcall AttachmentCallback(IKinematics* tpKinematics)
+namespace
+{
+void AttachmentCallback(IKinematics* tpKinematics)
 {
     CGameObject* game_object = smart_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
     VERIFY(game_object);
@@ -71,6 +73,7 @@ void __stdcall AttachmentCallback(IKinematics* tpKinematics)
         it->item().object().XFORM().mulA_43(game_object->XFORM());
     }
 }
+} // namespace
 
 void CAttachmentOwner::attach(CInventoryItem* inventory_item)
 {

@@ -19,7 +19,6 @@
 #include "ai_space.h"
 #include "memory_space.h"
 
-#define BODY_REMOVE_TIME 600000
 #define FORGET_KILLER_TIME 180
 
 //////////////////////////////////////////////////////////////////////

@@ -173,6 +173,8 @@ void CBaseMonster::update_pos_by_grouping_behaviour()
     ai_location().level_vertex(new_vertex);
 }
 
+namespace
+{
 bool accessible_epsilon(CBaseMonster* const object, Fvector const pos, float epsilon)
 {
     Fvector const offsets[] = {Fvector().set(0.f, 0.f, 0.f), Fvector().set(-epsilon, 0.f, 0.f), Fvector().set(+epsilon, 0.f, 0.f), Fvector().set(0.f, 0.f, -epsilon),
@@ -187,7 +189,7 @@ bool accessible_epsilon(CBaseMonster* const object, Fvector const pos, float eps
     return false;
 }
 
-static bool enemy_inaccessible(CBaseMonster* const object)
+bool enemy_inaccessible(CBaseMonster* const object)
 {
     if (object->getDestroy())
         return false;
@@ -221,6 +223,7 @@ static bool enemy_inaccessible(CBaseMonster* const object)
 
     return false;
 }
+} // namespace
 
 bool CBaseMonster::enemy_accessible()
 {

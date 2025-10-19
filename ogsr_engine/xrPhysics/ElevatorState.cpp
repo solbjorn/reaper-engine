@@ -1,14 +1,16 @@
 #include "stdafx.h"
 
 #include "ElevatorState.h"
+
 #include "ClimableObject.h"
+#include "Level.h"
 #include "PHCharacter.h"
 #include "MathUtils.h"
 #include "PHWorld.h"
 
 #ifdef DEBUG
-#include "../xr_3da/Statgraph.h"
 #include "PHDebug.h"
+#include "../xr_3da/Statgraph.h"
 #endif
 
 namespace
@@ -20,9 +22,6 @@ constexpr float out_dist{1.5f};
 constexpr float look_angle_cosine{0.9238795f}; // 22.5
 constexpr float lookup_angle_sine{0.34202014f}; // 20
 } // namespace
-
-extern CPHWorld* ph_world;
-extern bool g_actor_allow_ladder;
 
 CElevatorState::CElevatorState() = default;
 

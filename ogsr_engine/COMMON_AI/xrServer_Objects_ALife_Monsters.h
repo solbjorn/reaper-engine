@@ -575,4 +575,6 @@ add_to_type_list(CSE_ALifeOnlineOfflineGroup);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
 
+void setup_location_types(GameGraph::TERRAIN_VECTOR& m_vertex_types, CInifile* ini, LPCSTR string);
+
 #endif

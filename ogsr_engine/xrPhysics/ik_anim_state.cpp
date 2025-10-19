@@ -5,14 +5,8 @@
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "../xr_3da/Motion.h"
 
-IC bool is_in(const motion_marks::interval& i, float v)
+namespace
 {
-    if (i.first < i.second)
-        return i.first < v && i.second > v;
-    else
-        return i.first < v || i.second > v;
-}
-
 float blend_time(const CBlend& b)
 {
     VERIFY(b.timeTotal > 0.f);
@@ -47,6 +41,7 @@ IC bool b_is_blending(const CBlend* current_blend, const CBlend* b)
 {
     return current_blend && current_blend->blend_state() != CBlend::eFREE_SLOT && current_blend != b && b->blendAmount < b->blendPower - EPS_L;
 }
+} // namespace
 
 void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
 {

@@ -2,6 +2,8 @@
 
 #include "GameMtlLib.h"
 
+namespace
+{
 void DestroySounds(xr_vector<ref_sound>& lst)
 {
     for (auto it : lst)
@@ -35,6 +37,7 @@ void CreatePSs(xr_vector<shared_str>& lst, const char* buf)
     for (int k = 0; k < cnt; ++k)
         lst.emplace_back(_GetItem(buf, k, tmp));
 }
+} // namespace
 
 SGameMtlPair::~SGameMtlPair()
 {

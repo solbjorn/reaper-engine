@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "uistaticitem.h"
 #include "hudmanager.h"
 

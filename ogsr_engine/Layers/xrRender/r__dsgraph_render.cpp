@@ -10,9 +10,10 @@
 
 using namespace R_dsgraph;
 
-extern float r_ssaGLOD_start, r_ssaGLOD_end;
-
-static ICF float calcLOD(float ssa /*fDistSq*/, float /*R*/) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f)); }
+namespace
+{
+ICF float calcLOD(float ssa, float) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f)); }
+} // namespace
 
 // ALPHA
 void R_dsgraph_structure::sorted_L1(float key, _MatrixItemS& val)

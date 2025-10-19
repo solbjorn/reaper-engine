@@ -1,16 +1,13 @@
 #pragma once
 
+#include "../../alife_simulator.h"
+
 #define TEMPLATE_SPECIALIZATION template <typename _Object>
 
 #define CMonsterStateManagerAbstract CMonsterStateManager<_Object>
 
 TEMPLATE_SPECIALIZATION
 void CMonsterStateManagerAbstract::reinit() { inherited::reinit(); }
-
-namespace detail
-{ // helper function implemented in file alife_simulator.cpp
-bool object_exists_in_alife_registry(u32 id);
-} // namespace detail
 
 TEMPLATE_SPECIALIZATION
 void CMonsterStateManagerAbstract::remove_links(CObject* object) { inherited::remove_links(object); }

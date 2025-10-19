@@ -157,4 +157,7 @@ public:
     void Optimize();
 };
 
+// interp.cpp
+float evalEnvelope(CEnvelope* env, float time);
+
 #endif //_ENVELOPE_H_

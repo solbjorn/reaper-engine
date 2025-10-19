@@ -15,8 +15,6 @@
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
 
-extern BOOL bShowPauseString;
-
 //-----------------------------------------------------------------------------
 // Tutorial Item
 //-----------------------------------------------------------------------------
@@ -33,6 +31,8 @@ CUISequenceSimpleItem::~CUISequenceSimpleItem()
 
 bool CUISequenceSimpleItem::IsPlaying() { return (m_time_start + m_time_length) > (Device.dwTimeContinual / 1000.0f); }
 
+namespace
+{
 CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
 {
     auto& wl = parent->GetChildWndList();
@@ -46,6 +46,7 @@ CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
 
     return nullptr;
 }
+} // namespace
 
 void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 {

@@ -56,9 +56,6 @@ void CStateManagerController::reinit()
     object->set_mental_state(CController::eStateIdle);
 }
 
-#define FIND_ENEMY_TIME_ENEMY_HIDDEN 5000
-#define FIND_ENEMY_MAX_DISTANCE 10.f
-
 void CStateManagerController::execute()
 {
     u32 state_id = u32(-1);

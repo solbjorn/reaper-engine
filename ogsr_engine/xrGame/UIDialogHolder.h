@@ -6,10 +6,13 @@ class CUIWindow;
 class dlgItem
 {
 public:
-    dlgItem(CUIWindow* pWnd);
     CUIWindow* wnd;
-    bool enabled;
-    bool operator<(const dlgItem& itm) const;
+    bool enabled{true};
+
+    dlgItem(CUIWindow* pWnd);
+
+    [[nodiscard]] bool operator<(const dlgItem& itm) const;
+    [[nodiscard]] bool operator==(const dlgItem& that) const;
 };
 
 class recvItem
@@ -20,9 +23,13 @@ public:
         eCrosshair = 1 << 0,
         eIndicators = 1 << 1
     };
-    recvItem(CUIDialogWnd*);
+
     CUIDialogWnd* m_item;
     Flags8 m_flags;
+
+    recvItem(CUIDialogWnd* r);
+
+    [[nodiscard]] bool operator==(const recvItem& that) const;
 };
 
 class CDialogHolder : public ISheduled, public pureFrame

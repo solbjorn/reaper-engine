@@ -155,7 +155,6 @@ void CConsole::Initialize()
     reset_selected_tip();
 
     // Commands
-    extern void CCC_Register();
     CCC_Register();
 }
 

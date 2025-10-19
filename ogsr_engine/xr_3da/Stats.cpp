@@ -24,7 +24,11 @@ Flags32 g_stats_flags = {0};
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
+namespace
+{
 BOOL g_bDisableRedText = FALSE;
+}
 
 CStats::CStats() { Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000); }
 
@@ -34,6 +38,8 @@ CStats::~CStats()
     xr_delete(pFont);
 }
 
+namespace
+{
 void _draw_cam_pos(CGameFont* pFont)
 {
     float sz = pFont->GetHeight();
@@ -43,6 +49,7 @@ void _draw_cam_pos(CGameFont* pFont)
     pFont->SetHeight(sz);
     pFont->OnRender();
 }
+} // namespace
 
 void CStats::Show()
 {

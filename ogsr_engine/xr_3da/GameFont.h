@@ -127,3 +127,7 @@ public:
     shared_str m_font_name;
     bool m_bCustom{};
 };
+
+extern Fvector2 g_current_font_scale;
+extern float g_fontHeightScale;
+extern float g_fontWidthScale;

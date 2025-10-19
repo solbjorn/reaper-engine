@@ -30,3 +30,5 @@ protected:
     CUIStatic m_textDamage;
     CUIStatic m_textRPM;
 };
+
+void destroy_lua_wpn_params();

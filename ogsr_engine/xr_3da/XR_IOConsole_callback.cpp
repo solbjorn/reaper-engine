@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "XR_IOConsole.h"
 
 #include "line_editor.h"
@@ -187,7 +188,6 @@ void CConsole::Execute_cmd() // DIK_RETURN, DIK_NUMPADENTER
 }
 
 void CConsole::Show_cmd() { Show(); }
-
 void CConsole::Hide_cmd() { Hide(); }
 
 void CConsole::Hide_cmd_esc()

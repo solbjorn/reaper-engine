@@ -24,6 +24,7 @@ class CSeniorityHierarchyHolder;
 class CClientSpawnManager;
 class CGameObject;
 class CPHCommander;
+class CPHWorld;
 class CLevelDebug;
 class CLevelSoundManager;
 
@@ -297,9 +298,6 @@ protected:
 public:
     IC CBulletManager& BulletManager() { return *m_pBulletManager; }
 
-    // by Mad Max
-    // bool IsServer();
-    // bool IsClient();
     CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
 
 protected:
@@ -326,6 +324,12 @@ public:
 add_to_type_list(CLevel);
 #undef script_type_list
 #define script_type_list save_type_list(CLevel)
+
+struct CKeyBinding
+{
+public:
+    bool ignore{};
+};
 
 IC CLevel& Level() { return *((CLevel*)g_pGameLevel); }
 IC game_cl_GameState& Game() { return *Level().game; }
@@ -366,21 +370,31 @@ IC CPHCommander& CLevel::ph_commander()
     VERIFY(m_ph_commander);
     return *m_ph_commander;
 }
+
 IC CPHCommander& CLevel::ph_commander_scripts()
 {
     VERIFY(m_ph_commander_scripts);
     return *m_ph_commander_scripts;
 }
-// by Mad Max
-// IC bool OnServer() { return Level().IsServer(); }
-// IC bool OnClient() { return Level().IsClient(); }
 
-class CPHWorld;
-extern CPHWorld* ph_world;
+// Level.cpp
 extern BOOL g_bDebugEvents;
+extern CPHWorld* ph_world;
 
-struct CKeyBinding
-{
-public:
-    bool ignore{};
-};
+extern u32 ps_lua_gc_method;
+extern int psLUA_GCSTEP;
+extern int psLUA_GCTIMEOUT;
+
+// Level_network.cpp
+extern pureFrame* g_pNetProcessor;
+
+// level_script.cpp
+extern bool g_bDisableAllInput;
+extern bool g_actor_allow_ladder;
+extern bool g_actor_allow_pda;
+extern bool g_block_all_except_movement;
+
+void update_inventory_window();
+
+// console_commands.cpp
+extern Flags32 dbg_net_Draw_Flags;

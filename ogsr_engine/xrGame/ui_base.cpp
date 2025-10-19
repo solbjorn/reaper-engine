@@ -8,8 +8,6 @@
 CUICursor* GetUICursor() { return UI()->GetUICursor(); }
 ui_core* UI() { return GamePersistent().m_pUI_core; }
 
-extern Fvector2 g_current_font_scale;
-
 void S2DVert::rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx)
 {
     Fvector2 t = pt;

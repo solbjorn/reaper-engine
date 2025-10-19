@@ -18,9 +18,6 @@
 #include "PDA.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
 
-#define MAX_SATIETY 1.0f
-#define START_SATIETY 0.5f
-
 BOOL GodMode() { return psActorFlags.test(AF_GODMODE); }
 
 CActorCondition::CActorCondition(CActor* object) : inherited(object)

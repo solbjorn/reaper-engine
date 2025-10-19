@@ -93,7 +93,6 @@ struct _action
 
 LPCSTR dik_to_keyname(int _dik);
 int keyname_to_dik(LPCSTR _name);
-_keyboard* keyname_to_ptr(LPCSTR _name);
 _keyboard* dik_to_ptr(int _dik, bool bSafe);
 
 EGameActions action_name_to_id(LPCSTR _name);

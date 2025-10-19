@@ -353,8 +353,6 @@ void CPHSkeleton::SpawnCopy()
     }
 }
 
-PHSHELL_PAIR_VECTOR new_shells;
-
 void CPHSkeleton::PHSplit()
 {
     u16 spawned = u16(m_unsplited_shels.size());

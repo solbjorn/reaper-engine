@@ -237,4 +237,9 @@ protected:
 
 extern CConsole* Console;
 
+extern BOOL g_console_show_always;
+
+// xr_ioc_cmd.cpp
+void CCC_Register();
+
 #endif // XR_IOCONSOLE_H_INCLUDED

@@ -30,13 +30,8 @@
 #include "level.h"
 #include "map_location.h"
 #include "map_manager.h"
-#endif
-
-#endif
-
-#define MAX_ITEM_FOOD_COUNT 3
-#define MAX_ITEM_MEDIKIT_COUNT 3
-#define MAX_AMMO_ATTACH_COUNT 10
+#endif // DEBUG
+#endif // XRGAME_EXPORTS
 
 CALifeMonsterBrain::CALifeMonsterBrain(object_type* object) : m_object{object}
 {

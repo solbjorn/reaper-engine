@@ -7,6 +7,7 @@
 #include "../alife_space.h"
 #include "../character_info_defs.h"
 
+class CSE_ALifeTraderAbstract;
 class CUIStatic;
 class CCharacterInfo;
 class CUIXml;
@@ -71,3 +72,5 @@ public:
     }
     const shared_str& IconName() { return m_texture_name; }
 };
+
+CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);

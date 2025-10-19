@@ -33,10 +33,6 @@ bool object_exists_in_alife_registry(u32 id)
 }
 } // namespace detail
 
-typedef xr_map<shared_str, int> STORY_PAIRS;
-typedef STORY_PAIRS SPAWN_STORY_PAIRS;
-LPCSTR _INVALID_STORY_ID = "INVALID_STORY_ID";
-LPCSTR _INVALID_SPAWN_STORY_ID = "INVALID_SPAWN_STORY_ID";
 STORY_PAIRS story_ids;
 SPAWN_STORY_PAIRS spawn_story_ids;
 
@@ -386,7 +382,8 @@ static bool sim_is_unloading(CALifeSimulator* sim) { return sim->is_unloading();
 void CALifeSimulator::script_register(sol::state_view& lua)
 {
     lua.new_usertype<CALifeSimulator>(
-        "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id", &get_level_id, "level_name", &get_level_name, "objects", &alife_objects, "object",
+        "alife_simulator", sol::no_constructor, "valid_object_id", &valid_object_id, "level_id", sol::resolve<u32(CALifeSimulator*)>(&get_level_id), "level_name", &get_level_name,
+        "objects", &alife_objects, "object",
         sol::overload(sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID)>(&alife_object),
                       sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, LPCSTR)>(&alife_object),
                       sol::resolve<CSE_ALifeDynamicObject*(const CALifeSimulator*, ALife::_OBJECT_ID, bool)>(&alife_object)),

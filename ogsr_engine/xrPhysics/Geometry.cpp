@@ -6,7 +6,9 @@
 #include "dcylinder//dCylinder.h"
 // global
 
-static void computeFinalTx(dGeomID geom_transform, dReal* final_pos, dReal* final_R)
+namespace
+{
+void computeFinalTx(dGeomID geom_transform, dReal* final_pos, dReal* final_R)
 {
     R_ASSERT2(dGeomGetClass(geom_transform) == dGeomTransformClass, "is not a geom transform");
     dGeomID obj = dGeomTransformGetGeom(geom_transform);
@@ -55,18 +57,7 @@ void GetSphereExtensions(dGeomID sphere, const dReal* axis, const dReal* pos, fl
     *lo_ext = -radius + dif;
     *hi_ext = radius + dif;
 }
-
-void TransformedGeometryExtensionLocalParams(dGeomID geom_transform, const dReal* axis, float center_prg, dReal* local_axis, dReal& local_center_prg)
-{
-    R_ASSERT2(dGeomGetClass(geom_transform) == dGeomTransformClass, "is not a geom transform");
-    const dReal* rot = dGeomGetRotation(geom_transform);
-    const dReal* pos = dGeomGetPosition(geom_transform);
-    dVector3 local_pos;
-
-    dMULTIPLY1_331(local_axis, rot, axis);
-    dMULTIPLY1_331(local_pos, rot, pos);
-    local_center_prg = center_prg - dDOT(local_pos, local_axis);
-}
+} // namespace
 
 CODEGeom::~CODEGeom()
 {

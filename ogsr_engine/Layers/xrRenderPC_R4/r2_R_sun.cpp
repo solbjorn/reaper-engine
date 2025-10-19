@@ -1,21 +1,25 @@
 #include "stdafx.h"
 
-#include <oneapi/tbb/parallel_invoke.h>
-#include "xr_task.h"
+#include "r4_R_sun_support.h"
+#include "../xrRender/FBasicVisual.h"
 
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/irenderable.h"
-#include "../xrRender/FBasicVisual.h"
 
-#include "r4_R_sun_support.h"
+#include "xr_task.h"
 
+#include <oneapi/tbb/parallel_invoke.h>
+
+namespace
+{
 constexpr float tweak_COP_initial_offs = 1200.f;
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static constexpr Fvector3 corners[8] = {{-1, -1, 0}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0}, {+1, +1, +1}, {+1, +1, 0}, {+1, -1, +1}, {+1, -1, 0}};
-static constexpr u32 facetable[6][4] = {
+constexpr Fvector3 corners[8]{{-1.0f, -1.0f, 0.0f},  {-1.0f, -1.0f, +1.0f}, {-1.0f, +1.0f, +1.0f}, {-1.0f, +1.0f, 0.0f},
+                              {+1.0f, +1.0f, +1.0f}, {+1.0f, +1.0f, 0.0f},  {+1.0f, -1.0f, +1.0f}, {+1.0f, -1.0f, 0.0f}};
+constexpr u32 facetable[6][4]{
     {6, 7, 5, 4},
     {1, 0, 7, 6},
     {1, 2, 3, 0},
@@ -24,9 +28,10 @@ static constexpr u32 facetable[6][4] = {
     {0, 3, 5, 7},
     {1, 6, 4, 2},
 };
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
-Fvector3 wform(const Fmatrix& m, const Fvector3& v)
+Fvector3 wform(const Fmatrix& m, Fvector3 v)
 {
     Fvector4 r;
     r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;

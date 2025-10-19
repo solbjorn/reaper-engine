@@ -13,8 +13,6 @@
 #include "string_table.h"
 #include "xrServer.h"
 
-extern pureFrame* g_pNetProcessor;
-
 bool CLevel::net_start_client1()
 {
     pApp->LoadBegin();

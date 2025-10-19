@@ -25,8 +25,9 @@
 #include "phcollidevalidator.h"
 #include "PHShell.h"
 
-extern float psHUD_FOV; //--#SM+#--
-extern float psHUD_FOV_def; //--#SM+#--
+#include "physics.h"
+#include "PHActivationShape.h"
+#include "debug_renderer.h"
 
 void CActor::cam_Set(EActorCameras style)
 {
@@ -101,7 +102,10 @@ void CActor::cam_UnsetLadder()
     C->bClampYaw = false;
 }
 
-float cammera_into_collision_shift = 0.05f;
+namespace
+{
+constexpr float cammera_into_collision_shift{0.05f};
+}
 
 float CActor::CameraHeight()
 {
@@ -110,6 +114,8 @@ float CActor::CameraHeight()
     return m_fCamHeightFactor * (R.y - cammera_into_collision_shift);
 }
 
+namespace
+{
 IC float viewport_near(float& w, float& h)
 {
     w = 2.f * VIEWPORT_NEAR * tan(deg2rad(Device.fFOV) / 2.f);
@@ -141,13 +147,10 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
     }
     return FALSE;
 }
+} // namespace
 
 // Alex ADD: smooth crouch fix
 float cam_HeightInterpolationSpeed = 8.f;
-
-#include "physics.h"
-#include "PHActivationShape.h"
-#include "debug_renderer.h"
 
 void CActor::cam_Update(float dt, float fFOV)
 {
@@ -393,7 +396,6 @@ void CActor::update_camera(CCameraShotEffector* effector)
 
 #ifdef DEBUG
 void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U);
-extern Flags32 dbg_net_Draw_Flags;
 
 void CActor::OnRender()
 {

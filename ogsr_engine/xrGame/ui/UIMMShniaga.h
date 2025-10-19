@@ -79,3 +79,5 @@ protected:
     Flags32 m_flags;
 };
 XR_SOL_BASE_CLASSES(CUIMMShniaga);
+
+extern bool b_shniaganeed_pp;

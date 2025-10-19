@@ -38,7 +38,6 @@ void _make_rot(Fvector2& pt, const Fvector2& src, float sin_a, float cos_a)
     pt.x = src.x * cos_a + src.y * sin_a;
     pt.y = src.y * cos_a - src.x * sin_a;
 }
-} // namespace
 
 float calc_color(u32 idx, u32 total, float stage, float max_stage, bool blend)
 {
@@ -49,11 +48,11 @@ float calc_color(u32 idx, u32 total, float stage, float max_stage, bool blend)
     }
 
     if ((float)idx < kk)
-    {
         return 1.0f;
-    }
+
     return 0.0f;
 }
+} // namespace
 
 void CUIProgressShape::Draw()
 {

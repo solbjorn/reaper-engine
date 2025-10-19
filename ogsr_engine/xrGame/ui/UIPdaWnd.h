@@ -95,3 +95,7 @@ public:
         target_buttonpress = 0.f;
     }
 };
+
+extern u32 g_pda_info_state;
+
+void draw_sign(CUIStatic* s, Fvector2& pos);

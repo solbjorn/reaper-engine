@@ -6,6 +6,7 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
 XR_DIAG_IGNORE("-Wextra-semi-stmt");
+XR_DIAG_IGNORE("-Wunused-template");
 
 #include <oneapi/tbb/parallel_for_each.h>
 #include <oneapi/tbb/spin_mutex.h>
@@ -26,12 +27,15 @@ public:
     virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.set_c(C, scale, scale, scale, 1 / r__dtex_range); }
 };
 
+namespace
+{
 void fix_texture_thm_name(LPSTR fn)
 {
     LPSTR _ext = strext(fn);
     if (_ext && (!_stricmp(_ext, ".tga") || !_stricmp(_ext, ".thm") || !_stricmp(_ext, ".dds") || !_stricmp(_ext, ".bmp") || !_stricmp(_ext, ".ogm")))
         *_ext = 0;
 }
+} // namespace
 
 void CTextureDescrMngr::LoadLTX(LPCSTR initial)
 {

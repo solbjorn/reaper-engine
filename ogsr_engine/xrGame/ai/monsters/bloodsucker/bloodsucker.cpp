@@ -30,8 +30,6 @@
 #include <dinput.h>
 #endif // DEBUG
 
-#define VAMPIRE_TIME_HOLD 4000
-
 namespace detail
 {
 namespace bloodsucker

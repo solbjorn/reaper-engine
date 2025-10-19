@@ -8,8 +8,10 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "script_net_packet.h"
+#include "xrServer_Object_Base.h"
+
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 
 static bool r_eof(NET_Packet* self) { return (!!self->r_eof()); }
 
@@ -59,8 +61,6 @@ static ClientID r_clientID(NET_Packet* self)
     self->r_clientID(clientID);
     return clientID;
 }
-
-extern u16 script_server_object_version();
 
 template <>
 void CScriptNetPacket::script_register(sol::state_view& lua)

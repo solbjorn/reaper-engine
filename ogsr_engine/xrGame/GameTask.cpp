@@ -24,9 +24,6 @@
 ALife::_STORY_ID story_id(LPCSTR story_id);
 u16 storyId2GameId(ALife::_STORY_ID);
 
-typedef xr_map<shared_str, int> STORY_PAIRS;
-extern STORY_PAIRS story_ids;
-
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
     auto I = story_ids.find(story_id);

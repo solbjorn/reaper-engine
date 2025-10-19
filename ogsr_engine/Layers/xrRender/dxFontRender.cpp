@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dxFontRender.h"
 
 #include "../../xr_3da/GameFont.h"
@@ -16,9 +17,6 @@ void dxFontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
     pShader.create(cShader, cTexture);
     pGeom.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
 }
-
-extern BOOL g_bRendering;
-extern Fvector2 g_current_font_scale;
 
 void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last)
 {

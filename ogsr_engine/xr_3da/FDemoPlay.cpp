@@ -3,12 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "igame_level.h"
 #include "fdemoplay.h"
 #include "xr_ioconsole.h"
 #include "motion.h"
 #include "Render.h"
 #include "CameraManager.h"
+#include "x_ray.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -92,8 +94,6 @@ void CDemoPlay::stat_Start()
     fStartTime = 0;
 }
 
-extern string512 g_sBenchmarkName;
-
 void CDemoPlay::stat_Stop()
 {
     if (!stat_started)
@@ -154,9 +154,12 @@ void CDemoPlay::stat_Stop()
     }
 }
 
+namespace
+{
 #define FIX(a) \
     while (a >= m_count) \
     a -= m_count
+
 void spline1(float t, const Fvector4* p, Fvector4* ret)
 {
     float t2 = t * t;
@@ -179,6 +182,7 @@ void spline1(float t, const Fvector4* p, Fvector4* ret)
     mul.mul(p[3], m.w);
     ret->add(mul);
 }
+} // namespace
 
 BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {

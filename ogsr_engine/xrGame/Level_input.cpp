@@ -26,6 +26,9 @@
 #include "script_callback_ex.h"
 #include "GamePersistent.h"
 #include "MainMenu.h"
+#include "UIGameSP.h"
+
+#include "embedded_editor/embedded_editor_main.h"
 
 #ifdef DEBUG
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -34,13 +37,9 @@ extern void try_change_current_entity();
 extern void restore_actor();
 #endif
 
-#include "embedded_editor/embedded_editor_main.h"
-
 #include <dinput.h>
 
 bool g_bDisableAllInput = false;
-
-extern float g_fTimeFactor;
 
 #define CURRENT_ENTITY() (game ? CurrentEntity() : nullptr)
 
@@ -106,8 +105,6 @@ void CLevel::IR_OnMouseMove(int dx, int dy)
 }
 
 // Обработка нажатия клавиш
-extern bool g_block_pause;
-extern bool g_block_all_except_movement;
 
 void CLevel::IR_OnKeyboardPress(int key)
 {

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "firedeps.h"
 
 #include "../xr_3da/ObjectAnimator.h"
@@ -399,3 +400,12 @@ private:
 };
 
 extern player_hud* g_player_hud;
+
+// player_hud_tune.cpp
+extern float g_bHudAdjustDeltaPos;
+extern float g_bHudAdjustDeltaRot;
+extern int g_bHudAdjustItemIdx;
+extern int g_bHudAdjustMode;
+
+void hud_adjust_mode_keyb(int dik);
+void hud_draw_adjust_mode();

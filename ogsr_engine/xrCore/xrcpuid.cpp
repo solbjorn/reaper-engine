@@ -1,7 +1,11 @@
 #include "stdafx.h"
+
 #include "xrcpuid.h"
+
 #include <intrin.h>
 
+namespace
+{
 decltype(auto) countSetBits(ULONG_PTR bitMask)
 {
     DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
@@ -18,7 +22,7 @@ decltype(auto) countSetBits(ULONG_PTR bitMask)
     return bitSetCount;
 }
 
-static ICF void xr_cpuid(u32* regs, u32 leaf)
+ICF void xr_cpuid(u32* regs, u32 leaf)
 {
 #ifdef __clang__
     __cpuid(leaf, regs[0], regs[1], regs[2], regs[3]);
@@ -26,6 +30,7 @@ static ICF void xr_cpuid(u32* regs, u32 leaf)
     __cpuid(regs, leaf);
 #endif
 }
+} // namespace
 
 _processor_info::_processor_info()
 {
@@ -115,6 +120,8 @@ _processor_info::_processor_info()
     perfomanceInfo = std::make_unique<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]>(m_dwNumberOfProcessors);
 }
 
+namespace
+{
 unsigned long long SubtractTimes(const FILETIME one, const FILETIME two)
 {
     LARGE_INTEGER a, b;
@@ -126,6 +133,7 @@ unsigned long long SubtractTimes(const FILETIME one, const FILETIME two)
 
     return a.QuadPart - b.QuadPart;
 }
+} // namespace
 
 bool _processor_info::getCPULoad(double& val)
 {

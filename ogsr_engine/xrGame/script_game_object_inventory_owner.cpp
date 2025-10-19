@@ -652,10 +652,9 @@ void CScriptGameObject::SwitchToTrade()
         return;
 
     if (pGameSP->TalkMenu->IsShown())
-    {
         pGameSP->TalkMenu->SwitchToTrade();
-    }
 }
+
 void CScriptGameObject::SwitchToTalk() { R_ASSERT("switch_to_talk called ;)"); }
 
 void CScriptGameObject::RunTalkDialog(CScriptGameObject* pToWho)
@@ -673,40 +672,8 @@ void CScriptGameObject::RunTalkDialog(CScriptGameObject* pToWho)
     VERIFY(pPartner);
     pActor->RunTalkDialog(pPartner);
 }
-/*
-void  CScriptGameObject::ActorSleep			(int hours, int minutes)
-{
-    CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
-    pActor->conditions().GoSleep(generate_time(1,1,1,hours, minutes, 0, 0), true);
-}
 
-void  CScriptGameObject::ActorFakeSleep			(int hours, int minutes)
-{
-//.	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
-//.	pActor->conditions().ProcessSleep(generate_time(1,1,1,hours, minutes, 0, 0));
-}
-
-bool CScriptGameObject::IsActorSleepeng()
-{
-    CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return false;
-    return pActor->conditions().IsSleeping();
-}
-*/
 //////////////////////////////////////////////////////////////////////////
-
-void construct_restriction_vector(shared_str restrictions, xr_vector<ALife::_OBJECT_ID>& result)
-{
-    result.clear();
-    string64 temp;
-    u32 n = _GetItemCount(*restrictions);
-    for (u32 i = 0; i < n; ++i)
-    {
-        CObject* object = Level().Objects.FindObjectByName(_GetItem(*restrictions, i, temp));
-        if (!object)
-            continue;
-        result.push_back(object->ID());
-    }
-}
 
 void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
 {
@@ -716,19 +683,6 @@ void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member add_restrictions!");
         return;
     }
-
-    //	xr_vector<ALife::_OBJECT_ID>			temp0;
-    //	xr_vector<ALife::_OBJECT_ID>			temp1;
-
-    //	construct_restriction_vector			(out,temp0);
-    //	construct_restriction_vector			(in,temp1);
-
-    //	if (!xr_strcmp(monster->cName(),"mil_freedom_stalker0004")) {
-    //		int i = 0;
-    //		if (!xr_strcmp(in,"mil_freedom_wall_restrictor")) {
-    //			int j = 0;
-    //		}
-    //	}
 
     monster->movement().restrictions().add_restrictions(out, in);
 }
@@ -741,12 +695,6 @@ void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CRestrictedObject : cannot access class member remove_restrictions!");
         return;
     }
-
-    //	xr_vector<ALife::_OBJECT_ID>			temp0;
-    //	xr_vector<ALife::_OBJECT_ID>			temp1;
-
-    //	construct_restriction_vector			(out,temp0);
-    //	construct_restriction_vector			(in,temp1);
 
     monster->movement().restrictions().remove_restrictions(out, in);
 }

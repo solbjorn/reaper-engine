@@ -37,6 +37,7 @@
 #include "GamePersistent.h"
 #include "EffectorBobbing.h"
 #include "LevelDebugScript.h"
+#include "ui/UIStalkersRankingWnd.h"
 
 static LPCSTR command_line() { return (Core.Params); }
 
@@ -96,8 +97,6 @@ static LPCSTR get_weather() { return (*g_pGamePersistent->Environment().GetWeath
 static LPCSTR get_weather_prev() { return (*g_pGamePersistent->Environment().GetPrevWeather()); }
 
 static u32 get_weather_last_shift() { return g_pGamePersistent->Environment().GetWeatherLastShift(); }
-
-extern bool s_ScriptWeather;
 
 static void set_weather(LPCSTR weather_name, bool forced)
 {
@@ -519,8 +518,6 @@ static void remove_calls_for_object(sol::object lua_object)
 static CPHWorld* physics_world() { return ph_world; }
 static CEnvironment* environment() { return g_pGamePersistent->pEnvironment; }
 
-extern bool g_bDisableAllInput;
-
 static void disable_input()
 {
     g_bDisableAllInput = true;
@@ -641,10 +638,6 @@ static void add_actor_points_str(LPCSTR sect, LPCSTR detail_key, LPCSTR str_valu
 static int get_actor_points(LPCSTR sect) { return Actor()->StatisticMgr().GetSectionPoints(sect); }
 
 static void remove_actor_points(LPCSTR sect, LPCSTR detail_key) { Actor()->StatisticMgr().RemovePoints(sect, detail_key); }
-
-extern int get_actor_ranking();
-extern void add_human_to_top_list(u16 id);
-extern void remove_human_from_top_list(u16 id);
 
 #include "ActorEffector.h"
 

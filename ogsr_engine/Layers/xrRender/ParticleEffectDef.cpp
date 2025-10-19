@@ -8,8 +8,6 @@
 using namespace PAPI;
 using namespace PS;
 
-extern float ps_particle_update_coeff;
-
 //------------------------------------------------------------------------------
 // class CParticleEffectDef
 //------------------------------------------------------------------------------

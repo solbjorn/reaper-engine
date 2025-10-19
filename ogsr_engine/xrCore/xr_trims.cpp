@@ -31,6 +31,8 @@ LPSTR _Trim(LPSTR str)
     return str;
 }
 
+namespace
+{
 LPCSTR _SetPos(LPCSTR src, u32 pos, char separator)
 {
     LPCSTR res = src;
@@ -44,6 +46,7 @@ LPCSTR _SetPos(LPCSTR src, u32 pos, char separator)
 
     return res;
 }
+} // namespace
 
 int _GetItemCount(LPCSTR src, char separator)
 {
@@ -70,6 +73,8 @@ int _GetItemCount(LPCSTR src, char separator)
     return cnt;
 }
 
+namespace
+{
 LPCSTR _CopyVal(LPCSTR src, LPSTR dst, char separator)
 {
     const char* p = strchr(src, separator);
@@ -78,6 +83,7 @@ LPCSTR _CopyVal(LPCSTR src, LPSTR dst, char separator)
     dst[n] = 0;
     return dst;
 }
+} // namespace
 
 LPSTR _GetItem(LPCSTR src, int index, LPSTR dst, char separator, LPCSTR def, bool trim)
 {
@@ -271,6 +277,8 @@ xr_string& _Trim(xr_string& str)
     return str;
 }
 
+namespace
+{
 LPCSTR _CopyVal(LPCSTR src, xr_string& dst, char separator)
 {
     const char* p = strchr(src, separator);
@@ -279,6 +287,7 @@ LPCSTR _CopyVal(LPCSTR src, xr_string& dst, char separator)
     dst = dst.erase(n, dst.length());
     return dst.c_str();
 }
+} // namespace
 
 LPCSTR _GetItem(LPCSTR src, int index, xr_string& dst, char separator, LPCSTR def, bool trim)
 {

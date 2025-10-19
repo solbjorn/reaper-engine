@@ -33,6 +33,8 @@ bool ISpatial::spatial_inside()
     return TRUE;
 }
 
+namespace
+{
 BOOL verify_sp(ISpatial* sp, Fvector& node_center, float node_radius)
 {
     float dr = -(-node_radius + sp->spatial.sphere.R);
@@ -50,6 +52,7 @@ BOOL verify_sp(ISpatial* sp, Fvector& node_center, float node_radius)
         return FALSE;
     return TRUE;
 }
+} // namespace
 
 void ISpatial::spatial_register()
 {

@@ -457,4 +457,7 @@ public:
     }
 };
 
+// r2_R_sun.cpp
+XR_SYSV Fvector3 wform(const Fmatrix& m, Fvector3 v);
+
 #endif //	r3_R_sun_support_included

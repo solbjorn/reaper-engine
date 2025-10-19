@@ -585,4 +585,8 @@ public:
 #endif
 };
 
+// alife_simulator_script.cpp
+u32 get_level_id(u32 gvid);
+LPCSTR get_level_name_by_id(u32 level_id);
+
 #endif

@@ -11,6 +11,8 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_human_brain.h"
 
+namespace
+{
 CALifeMonsterBrain* monster_brain(CSE_ALifeMonsterAbstract* monster)
 {
     THROW(monster);
@@ -46,6 +48,7 @@ ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract* monster)
     THROW(monster);
     return (monster->m_smart_terrain_id);
 }
+} // namespace
 
 void CSE_ALifeMonsterAbstract::script_register(sol::state_view& lua)
 {

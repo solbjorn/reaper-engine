@@ -4,9 +4,7 @@
 #include "envelope.h"
 
 #define EOBJ_OMOTION 0x1100
-#define EOBJ_SMOTION 0x1200
 #define EOBJ_OMOTION_VERSION 0x0005
-#define EOBJ_SMOTION_VERSION 0x0007
 
 #ifdef _LW_EXPORT
 extern void ReplaceSpaceAndLowerCase(shared_str& s);

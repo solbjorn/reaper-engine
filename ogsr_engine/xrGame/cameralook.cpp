@@ -1,9 +1,13 @@
 #include "stdafx.h"
 
 #include "CameraLook.h"
-#include "../xr_3da/Cameramanager.h"
-#include "xr_level_controller.h"
 #include "actor.h"
+#include "actor_memory.h"
+#include "visual_memory_manager.h"
+#include "xr_level_controller.h"
+
+#include "../xr_3da/Cameramanager.h"
+#include "../xr_3da/xr_input.h"
 
 CCameraLook::CCameraLook(CObject* p, u32 flags) : CCameraBase(p, flags) {}
 
@@ -77,13 +81,13 @@ void CCameraLook::OnActivate(CCameraBase* old_cam)
         yaw += PI_MUL_2;
 }
 
-#include "../xr_3da/xr_input.h"
-#include "visual_memory_manager.h"
-#include "actor_memory.h"
-
+namespace
+{
 int cam_dik = DIK_LSHIFT;
+}
 
 Fvector CCameraLook2::m_cam_offset;
+
 void CCameraLook2::OnActivate(CCameraBase* old_cam)
 {
     CCameraLook::OnActivate(old_cam);

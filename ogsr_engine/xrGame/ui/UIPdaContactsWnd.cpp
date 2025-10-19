@@ -1,23 +1,23 @@
 #include "stdafx.h"
+
 #include "UIPdaContactsWnd.h"
 #include "UIPdaAux.h"
 #include "../Pda.h"
 #include "UIXmlInit.h"
 #include "../actor.h"
+#include "UICharacterInfo.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UIAnimatedStatic.h"
 #include "UIScrollView.h"
-#include "../actor.h"
-#include "../string_table.h"
 
-#define PDA_CONTACT_HEIGHT 70
+#include "../game_object_space.h"
+#include "../string_table.h"
 
 #define PDA_CONTACTS_XML "pda_contacts_new.xml"
 
-CUIPdaContactsWnd::CUIPdaContactsWnd() { m_flags.zero(); }
-
-CUIPdaContactsWnd::~CUIPdaContactsWnd() {}
+CUIPdaContactsWnd::CUIPdaContactsWnd() = default;
+CUIPdaContactsWnd::~CUIPdaContactsWnd() = default;
 
 void CUIPdaContactsWnd::Show(bool status)
 {
@@ -129,7 +129,7 @@ void CUIPdaContactsWnd::RemoveContact(CPda* pda)
     }
 }
 
-//удалить все контакты из списка
+// удалить все контакты из списка
 void CUIPdaContactsWnd::RemoveAll()
 {
     UIListWnd->Clear();
@@ -145,11 +145,6 @@ void CUIPdaContactsWnd::Reset()
 }
 
 CUIPdaContactItem::~CUIPdaContactItem() {}
-
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
-
-#include "UICharacterInfo.h"
-#include "..\game_object_space.h"
 
 void CUIPdaContactItem::SetSelected(bool b)
 {

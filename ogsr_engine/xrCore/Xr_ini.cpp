@@ -9,6 +9,9 @@ CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly) { return xr_ne
 void CInifile::Destroy(CInifile* ini) { xr_delete(ini); }
 
 // Тело функций Inifile
+
+namespace
+{
 void _parse(LPSTR dest, LPCSTR src)
 {
     if (src)
@@ -64,6 +67,7 @@ void _decorate(LPSTR dest, LPCSTR src)
     }
     *dest = 0;
 }
+} // namespace
 
 BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val)
 {
@@ -160,6 +164,8 @@ CInifile::~CInifile()
     DATA.clear();
 }
 
+namespace
+{
 void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 {
     auto sect_it = tgt->Data.find(I.first);
@@ -178,6 +184,7 @@ void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
         tgt->Ordered_Data.push_back(I);
     }
 }
+} // namespace
 
 void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CInifile* override, bool root_level, LPCSTR current_file)
 {

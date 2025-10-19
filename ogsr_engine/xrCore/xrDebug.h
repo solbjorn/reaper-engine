@@ -50,7 +50,7 @@ IC XR_PRINTF(1, 2) std::string make_string(const char* format, ...)
 
     auto n = gsl::narrow_cast<size_t>(sz + 1);
     std::string result(n, ' ');
-    std::vsnprintf(&result.front(), n, format, args_copy);
+    std::vsnprintf(result.data(), n, format, args_copy);
 
     va_end(args_copy);
     va_end(args);

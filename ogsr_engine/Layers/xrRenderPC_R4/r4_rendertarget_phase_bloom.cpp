@@ -3,6 +3,8 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 
+namespace
+{
 struct v_build
 {
     Fvector4 p;
@@ -64,6 +66,7 @@ void CalcGauss_wave(Fvector4& w0, // weight
     w0.add(t0);
     w1.add(t1);
 }
+} // namespace
 
 void CRenderTarget::phase_bloom()
 {

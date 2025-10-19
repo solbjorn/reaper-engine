@@ -21,16 +21,16 @@ using pcstr = const char*;
 
 // Type limits
 template <typename T>
-constexpr auto type_max = std::numeric_limits<T>::max();
+constexpr inline auto type_max{std::numeric_limits<T>::max()};
 
 template <typename T>
-constexpr auto type_min = -std::numeric_limits<T>::max();
+constexpr inline auto type_min{-std::numeric_limits<T>::max()};
 
 template <typename T>
-constexpr auto type_zero = std::numeric_limits<T>::min();
+constexpr inline auto type_zero{std::numeric_limits<T>::min()};
 
 template <typename T>
-constexpr auto type_epsilon = std::numeric_limits<T>::epsilon();
+constexpr inline auto type_epsilon{std::numeric_limits<T>::epsilon()};
 
 // TODO: Избавиться от них
 #define type_max(T) type_max<T>
@@ -38,26 +38,26 @@ constexpr auto type_epsilon = std::numeric_limits<T>::epsilon();
 #define type_zero(T) type_zero<T>
 #define type_epsilon(T) type_epsilon<T>
 
-constexpr int int_max = type_max<int>;
-constexpr int int_min = type_min<int>;
-constexpr int int_zero = type_zero<int>;
+constexpr inline int int_max{type_max<int>};
+constexpr inline int int_min{type_min<int>};
+constexpr inline int int_zero{type_zero<int>};
 
-constexpr float flt_max = type_max<float>;
-constexpr float flt_min = type_min<float>;
-constexpr float flt_zero = type_zero<float>;
-constexpr float flt_eps = type_epsilon<float>;
+constexpr inline float flt_max{type_max<float>};
+constexpr inline float flt_min{type_min<float>};
+constexpr inline float flt_zero{type_zero<float>};
+constexpr inline float flt_eps{type_epsilon<float>};
 
 #undef FLT_MAX
 #undef FLT_MIN
 #define FLT_MAX flt_max
 #define FLT_MIN flt_min
 
-constexpr double dbl_max = type_max<double>;
-constexpr double dbl_min = type_min<double>;
-constexpr double dbl_zero = type_zero<double>;
-constexpr double dbl_eps = type_epsilon<double>;
+constexpr inline double dbl_max{type_max<double>};
+constexpr inline double dbl_min{type_min<double>};
+constexpr inline double dbl_zero{type_zero<double>};
+constexpr inline double dbl_eps{type_epsilon<double>};
 
-constexpr int max_path = 260; //_MAX_PATH
+constexpr inline int max_path{260}; //_MAX_PATH
 
 using string16 = char[16];
 using string32 = char[32];

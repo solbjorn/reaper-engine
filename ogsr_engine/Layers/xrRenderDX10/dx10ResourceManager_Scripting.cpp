@@ -1,16 +1,18 @@
 #include "stdafx.h"
 
-#include "../../xrScriptEngine/xr_sol.h"
-#include "../../xr_3da/Render.h"
-
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
 #include "../xrRender/blenders/blender.h"
 #include "../xrRender/blenders/blender_recorder.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
+#include "../../xr_3da/Render.h"
+#include "../../xrScriptEngine/xr_sol.h"
+
 #include <format>
 
+namespace
+{
 // wrapper
 class adopt_dx10sampler
 {
@@ -175,10 +177,10 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static lua_State* LSVM = nullptr;
+lua_State* LSVM{};
 
 constexpr const char* GlobalNamespace = "_G";
-static constexpr const char* FILE_HEADER =
+constexpr const char* FILE_HEADER =
     "\
 local function script_name() \
 return '{0}' \
@@ -187,7 +189,7 @@ local this; \
 module('{0}', package.seeall, function(m) this = m end); \
 {1}";
 
-static bool do_file(sol::state_view lua, const char* caScriptName, const char* caNameSpaceName)
+bool do_file(sol::state_view lua, const char* caScriptName, const char* caNameSpaceName)
 {
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
@@ -326,6 +328,7 @@ bool OBJECT_2(const char* namespace_name, const char* identifier, int type)
 }
 
 void LuaLog(const char* caMessage) { Log(caMessage); }
+} // namespace
 
 // export
 void CResourceManager::LS_Load()

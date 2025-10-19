@@ -52,8 +52,6 @@
 #include "debug_renderer.h"
 #endif
 
-extern int g_AI_inactive_time;
-
 #ifndef MASTER_GOLD
 Flags32 psAI_Flags = {0};
 #endif // MASTER_GOLD

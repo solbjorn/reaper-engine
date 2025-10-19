@@ -8,6 +8,7 @@
 #include "clsid_game.h"
 #include "Car.h"
 #include "ui/UIMessagesWindow.h"
+#include "string_table.h"
 
 CFontManager::CFontManager()
 {
@@ -221,6 +222,8 @@ void CHUDManager::OnFrame()
 }
 //--------------------------------------------------------------------
 
+namespace
+{
 bool need_render_hud()
 {
     CObject* O = (g_pGameLevel) ? g_pGameLevel->CurrentViewEntity() : nullptr;
@@ -236,6 +239,7 @@ bool need_render_hud()
 
     return true;
 }
+} // namespace
 
 void CHUDManager::Render_First(ctx_id_t context_id)
 {
@@ -284,13 +288,7 @@ void CHUDManager::Render_Last(ctx_id_t context_id)
     root->renderable_HUD(false);
 }
 
-extern void draw_wnds_rects();
-
-extern BOOL bShowPauseString;
-
 // отрисовка элементов интерфейса
-#include "string_table.h"
-
 void CHUDManager::RenderUI()
 {
     if (!b_online)

@@ -9,9 +9,11 @@
 
 #include "dxRenderDeviceRender.h"
 
+namespace
+{
 // matrices
 #define BIND_DECLARE(xf) \
-    static class cl_xform_##xf final : public R_constant_setup \
+    class cl_xform_##xf final : public R_constant_setup \
     { \
         void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.xforms.set_c_##xf(C); } \
     } binder_##xf
@@ -23,7 +25,7 @@ BIND_DECLARE(vp);
 BIND_DECLARE(wvp);
 
 #define DECLARE_TREE_BIND(c) \
-    static class cl_tree_##c final : public R_constant_setup \
+    class cl_tree_##c final : public R_constant_setup \
     { \
         void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.tree.set_c_##c(C); } \
     } tree_binder_##c
@@ -36,24 +38,24 @@ DECLARE_TREE_BIND(c_scale);
 DECLARE_TREE_BIND(c_bias);
 DECLARE_TREE_BIND(c_sun);
 
-static class cl_hemi_cube_pos_faces final : public R_constant_setup
+class cl_hemi_cube_pos_faces final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_pos_faces(C); }
 } binder_hemi_cube_pos_faces;
 
-static class cl_hemi_cube_neg_faces final : public R_constant_setup
+class cl_hemi_cube_neg_faces final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_neg_faces(C); }
 } binder_hemi_cube_neg_faces;
 
-static class cl_material final : public R_constant_setup
+class cl_material final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.hemi.set_c_material(C); }
 } binder_material;
 
-static constexpr Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+constexpr Fmatrix mTexelAdjust{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
 
-static class cl_texgen final : public R_constant_setup
+class cl_texgen final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -64,7 +66,7 @@ static class cl_texgen final : public R_constant_setup
     }
 } binder_texgen;
 
-static class cl_VPtexgen final : public R_constant_setup
+class cl_VPtexgen final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -76,7 +78,7 @@ static class cl_VPtexgen final : public R_constant_setup
 } binder_VPtexgen;
 
 // fog
-static class cl_fog_plane final : public R_constant_setup
+class cl_fog_plane final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -98,7 +100,7 @@ static class cl_fog_plane final : public R_constant_setup
 } binder_fog_plane;
 
 // fog-params
-static class cl_fog_params final : public R_constant_setup
+class cl_fog_params final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -114,7 +116,7 @@ static class cl_fog_params final : public R_constant_setup
 } binder_fog_params;
 
 // fog-color
-static class cl_fog_color final : public R_constant_setup
+class cl_fog_color final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -126,7 +128,7 @@ static class cl_fog_color final : public R_constant_setup
     }
 } binder_fog_color;
 
-static class cl_wind_params final : public R_constant_setup
+class cl_wind_params final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -139,7 +141,7 @@ static class cl_wind_params final : public R_constant_setup
 } binder_wind_params;
 
 // times
-static class cl_times final : public R_constant_setup
+class cl_times final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -149,7 +151,7 @@ static class cl_times final : public R_constant_setup
 } binder_times;
 
 // eye-params
-static class cl_eye_P final : public R_constant_setup
+class cl_eye_P final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -159,7 +161,7 @@ static class cl_eye_P final : public R_constant_setup
 } binder_eye_P;
 
 // eye-params
-static class cl_eye_D final : public R_constant_setup
+class cl_eye_D final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -169,7 +171,7 @@ static class cl_eye_D final : public R_constant_setup
 } binder_eye_D;
 
 // eye-params
-static class cl_eye_N final : public R_constant_setup
+class cl_eye_N final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -179,7 +181,7 @@ static class cl_eye_N final : public R_constant_setup
 } binder_eye_N;
 
 // D-Light0
-static class cl_sun0_color final : public R_constant_setup
+class cl_sun0_color final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -191,7 +193,7 @@ static class cl_sun0_color final : public R_constant_setup
     }
 } binder_sun0_color;
 
-static class cl_sun0_dir_w final : public R_constant_setup
+class cl_sun0_dir_w final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -203,7 +205,7 @@ static class cl_sun0_dir_w final : public R_constant_setup
     }
 } binder_sun0_dir_w;
 
-static class cl_sun0_dir_e final : public R_constant_setup
+class cl_sun0_dir_e final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -218,7 +220,7 @@ static class cl_sun0_dir_e final : public R_constant_setup
     }
 } binder_sun0_dir_e;
 
-static class cl_amb_color final : public R_constant_setup
+class cl_amb_color final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -230,7 +232,7 @@ static class cl_amb_color final : public R_constant_setup
     }
 } binder_amb_color;
 
-static class cl_hemi_color final : public R_constant_setup
+class cl_hemi_color final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -239,7 +241,7 @@ static class cl_hemi_color final : public R_constant_setup
     }
 } binder_hemi_color;
 
-static class cl_sky_color final : public R_constant_setup
+class cl_sky_color final : public R_constant_setup
 {
     Fvector4 result{};
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -250,7 +252,7 @@ static class cl_sky_color final : public R_constant_setup
     }
 } binder_sky_color;
 
-static class cl_screen_res final : public R_constant_setup
+class cl_screen_res final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -258,7 +260,7 @@ static class cl_screen_res final : public R_constant_setup
     }
 } binder_screen_res;
 
-static class cl_screen_params final : public R_constant_setup
+class cl_screen_params final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -269,22 +271,22 @@ static class cl_screen_params final : public R_constant_setup
     }
 } binder_screen_params;
 
-static class cl_hud_params final : public R_constant_setup //--#SM+#--
+class cl_hud_params final : public R_constant_setup //--#SM+#--
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.hud_params); }
 } binder_hud_params;
 
-static class cl_script_params final : public R_constant_setup //--#SM+#--
+class cl_script_params final : public R_constant_setup //--#SM+#--
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_script_params); }
 } binder_script_params;
 
-static class cl_blend_mode final : public R_constant_setup //--#SM+#--
+class cl_blend_mode final : public R_constant_setup //--#SM+#--
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
 } binder_blend_mode;
 
-static class cl_rain_params final : public R_constant_setup
+class cl_rain_params final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -292,7 +294,7 @@ static class cl_rain_params final : public R_constant_setup
     }
 } binder_rain_params;
 
-static class cl_artifacts final : public R_constant_setup
+class cl_artifacts final : public R_constant_setup
 {
     Fmatrix result{};
 
@@ -325,7 +327,7 @@ public:
     cl_artifacts(u32 v) : start_val(v) {}
 } binder_artifacts{0}, binder_artifacts2{8}, binder_artifacts3{16};
 
-static class cl_anomalys final : public R_constant_setup
+class cl_anomalys final : public R_constant_setup
 {
     Fmatrix result{};
 
@@ -358,7 +360,7 @@ public:
     cl_anomalys(u32 v) : start_val(v) {}
 } binder_anomalys{0}, binder_anomalys2{8}, binder_anomalys3{16};
 
-static class cl_detector final : public R_constant_setup
+class cl_detector final : public R_constant_setup
 {
     Fvector4 result;
     void setup(CBackend& cmd_list, R_constant* C) override
@@ -369,7 +371,7 @@ static class cl_detector final : public R_constant_setup
     }
 } binder_detector;
 
-static class cl_ogsr_game_time final : public R_constant_setup
+class cl_ogsr_game_time final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -380,12 +382,12 @@ static class cl_ogsr_game_time final : public R_constant_setup
     }
 } binder_ogsr_game_time;
 
-static class cl_inv_v final : public R_constant_setup
+class cl_inv_v final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, cmd_list.xforms.m_invv); }
 } binder_inv_v;
 
-static class cl_pda_params final : public R_constant_setup
+class cl_pda_params final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -394,7 +396,7 @@ static class cl_pda_params final : public R_constant_setup
     }
 } binder_pda_params;
 
-static class cl_actor_params final : public R_constant_setup
+class cl_actor_params final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -402,196 +404,173 @@ static class cl_actor_params final : public R_constant_setup
         cmd_list.set_c(C, P.x, P.y, P.z, g_pGamePersistent->Environment().USED_COP_WEATHER ? 1.0f : 0.0f);
     }
 } binder_actor_params;
+} // namespace
 
 // Screen Space Shaders Stuff
-extern Fvector4 ps_ssfx_pom;
-extern Fvector4 ps_ssfx_terrain_pom;
-
-extern Fvector4 ps_ssfx_bloom_1;
 extern Fvector4 ps_ssfx_bloom_2;
 extern Fvector4 ps_ssfx_il_setup1;
 
-extern float ps_ssfx_hud_hemi;
 extern Fvector4 ps_ssfx_il;
-extern Fvector4 ps_ssfx_il_setup1;
 extern Fvector4 ps_ssfx_ao;
-extern Fvector4 ps_ssfx_ao_setup1;
 extern Fvector4 ps_ssfx_water;
-extern Fvector4 ps_ssfx_water_setup1;
-extern Fvector4 ps_ssfx_water_setup2;
 
 extern Fvector4 ps_ssfx_volumetric;
 extern Fvector4 ps_ssfx_ssr_2;
-extern Fvector4 ps_ssfx_terrain_offset;
 
-extern Fvector3 ps_ssfx_shadow_bias;
-extern Fvector4 ps_ssfx_lut;
 extern Fvector4 ps_ssfx_wind_grass;
 extern Fvector4 ps_ssfx_wind_trees;
-
-extern Fvector4 ps_ssfx_florafixes_1;
-extern Fvector4 ps_ssfx_florafixes_2;
 
 extern float ps_ssfx_gloss_factor;
 extern Fvector3 ps_ssfx_gloss_minmax;
 
-extern Fvector4 ps_ssfx_wetsurfaces_1;
-extern Fvector4 ps_ssfx_wetsurfaces_2;
-
-extern int ps_ssfx_is_underground;
-extern Fvector4 ps_ssfx_lightsetup_1;
-extern Fvector4 ps_ssfx_hud_drops_1;
-extern Fvector4 ps_ssfx_hud_drops_2;
-extern Fvector4 ps_ssfx_blood_decals;
-extern Fvector4 ps_ssfx_wpn_dof_1;
-extern float ps_ssfx_wpn_dof_2;
-
-static class ssfx_wpn_dof_1 final : public R_constant_setup
+namespace
+{
+class ssfx_wpn_dof_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wpn_dof_1); }
 } ssfx_wpn_dof_1;
 
-static class ssfx_wpn_dof_2 final : public R_constant_setup
+class ssfx_wpn_dof_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wpn_dof_2, 0.f, 0.f, 0.f); }
 } ssfx_wpn_dof_2;
 
-static class ssfx_blood_decals final : public R_constant_setup
+class ssfx_blood_decals final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_blood_decals); }
 } ssfx_blood_decals;
 
-static class ssfx_hud_drops_1 final : public R_constant_setup
+class ssfx_hud_drops_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_drops_1); }
 } ssfx_hud_drops_1;
 
-static class ssfx_hud_drops_2 final : public R_constant_setup
+class ssfx_hud_drops_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_drops_2); }
 } ssfx_hud_drops_2;
 
-static class ssfx_lightsetup_1 final : public R_constant_setup
+class ssfx_lightsetup_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_lightsetup_1); }
 } ssfx_lightsetup_1;
 
-static class ssfx_is_underground final : public R_constant_setup
+class ssfx_is_underground final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_is_underground ? 1.f : 0.f, 0.f, 0.f, 0.f); }
 } ssfx_is_underground;
 
-static class ssfx_wetsurfaces_1 final : public R_constant_setup
+class ssfx_wetsurfaces_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wetsurfaces_1); }
 } ssfx_wetsurfaces_1;
 
-static class ssfx_wetsurfaces_2 final : public R_constant_setup
+class ssfx_wetsurfaces_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wetsurfaces_2); }
 } ssfx_wetsurfaces_2;
 
-static class ssfx_gloss final : public R_constant_setup
+class ssfx_gloss final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_gloss_minmax.x, ps_ssfx_gloss_minmax.y, ps_ssfx_gloss_factor, 0.f); }
 } ssfx_gloss;
 
-static class ssfx_florafixes_1 final : public R_constant_setup
+class ssfx_florafixes_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_florafixes_1); }
 } ssfx_florafixes_1;
 
-static class ssfx_florafixes_2 final : public R_constant_setup
+class ssfx_florafixes_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_florafixes_2); }
 } ssfx_florafixes_2;
 
-static class ssfx_wind_grass final : public R_constant_setup
+class ssfx_wind_grass final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wind_grass); }
 } ssfx_wind_grass;
 
-static class ssfx_wind_trees final : public R_constant_setup
+class ssfx_wind_trees final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_wind_trees); }
 } ssfx_wind_trees;
 
-static class ssfx_wind_anim final : public R_constant_setup
+class ssfx_wind_anim final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, g_pGamePersistent->Environment().wind_anim); }
 } ssfx_wind_anim;
 
-static class ssfx_lut final : public R_constant_setup
+class ssfx_lut final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_lut); }
 } ssfx_lut;
 
-static class ssfx_shadow_bias final : public R_constant_setup
+class ssfx_shadow_bias final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_shadow_bias.x, ps_ssfx_shadow_bias.y, 0.f, 0.f); }
 } ssfx_shadow_bias;
 
-static class ssfx_terrain_offset final : public R_constant_setup
+class ssfx_terrain_offset final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_terrain_offset); }
 } ssfx_terrain_offset;
 
-static class ssfx_ssr_2 final : public R_constant_setup
+class ssfx_ssr_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ssr_2); }
 } ssfx_ssr_2;
 
-static class ssfx_volumetric : public R_constant_setup
+class ssfx_volumetric : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_volumetric); }
 } ssfx_volumetric;
 
-static class ssfx_water final : public R_constant_setup
+class ssfx_water final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water); }
 } ssfx_water;
 
-static class ssfx_water_setup1 final : public R_constant_setup
+class ssfx_water_setup1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water_setup1); }
 } ssfx_water_setup1;
 
-static class ssfx_water_setup2 final : public R_constant_setup
+class ssfx_water_setup2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_water_setup2); }
 } ssfx_water_setup2;
 
-static class ssfx_ao final : public R_constant_setup
+class ssfx_ao final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ao); }
 } ssfx_ao;
 
-static class ssfx_ao_setup1 final : public R_constant_setup
+class ssfx_ao_setup1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_ao_setup1); }
 } ssfx_ao_setup1;
 
-static class ssfx_il final : public R_constant_setup
+class ssfx_il final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_il); }
 } ssfx_il;
 
-static class ssfx_il_setup1 final : public R_constant_setup
+class ssfx_il_setup1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_il_setup1); }
 } ssfx_il_setup1;
 
-static class ssfx_hud_hemi final : public R_constant_setup
+class ssfx_hud_hemi final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_hud_hemi, 0.f, 0.f, 0.f); }
 } ssfx_hud_hemi;
 
-static class ssfx_issvp final : public R_constant_setup
+class ssfx_issvp final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, Device.m_SecondViewport.IsSVPFrame() ? 1.f : 0.f, 0.f, 0.f, 0.f); }
 } ssfx_issvp;
 
-static class ssfx_bloom_1 final : public R_constant_setup
+class ssfx_bloom_1 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
@@ -605,65 +584,66 @@ static class ssfx_bloom_1 final : public R_constant_setup
     }
 } ssfx_bloom_1;
 
-static class ssfx_bloom_2 final : public R_constant_setup
+class ssfx_bloom_2 final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_bloom_2); }
 } ssfx_bloom_2;
 
-static class ssfx_terrain_pom final : public R_constant_setup
+class ssfx_terrain_pom final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_terrain_pom); }
 } ssfx_terrain_pom;
 
-static class ssfx_pom final : public R_constant_setup
+class ssfx_pom final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_ssfx_pom); }
 } ssfx_pom;
 
-static class r__color_gamma final : public R_constant_setup
+class r__color_gamma final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_gamma); }
 } r__color_gamma;
 
-static class r__color_slope final : public R_constant_setup
+class r__color_slope final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_slope); }
 } r__color_slope;
 
-static class r__color_offset final : public R_constant_setup
+class r__color_offset final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_offset); }
 } r__color_offset;
 
-static class r__color_power final : public R_constant_setup
+class r__color_power final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_power); }
 } r__color_power;
 
-static class r__color_saturation final : public R_constant_setup
+class r__color_saturation final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_saturation); }
 } r__color_saturation;
 
-static class r__color_contrast final : public R_constant_setup
+class r__color_contrast final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_contrast); }
 } r__color_contrast;
 
-static class r__color_red final : public R_constant_setup
+class r__color_red final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_red); }
 } r__color_red;
 
-static class r__color_green final : public R_constant_setup
+class r__color_green final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_green); }
 } r__color_green;
 
-static class r__color_blue final : public R_constant_setup
+class r__color_blue final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, ps_r__color_blue); }
 } r__color_blue;
+} // namespace
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()

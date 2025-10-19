@@ -3,16 +3,14 @@
 #include "GameFont.h"
 #include "Render.h"
 
-extern BOOL g_bRendering;
-
-Fvector2 g_current_font_scale = {1.f, 1.f};
-
-float g_fontWidthScale = 1.f;
-float g_fontHeightScale = 1.f;
-
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
+
+Fvector2 g_current_font_scale{1.0f, 1.0f};
+
+float g_fontWidthScale{1.0f};
+float g_fontHeightScale{1.0f};
 
 CGameFont::CGameFont(LPCSTR section, u32 flags)
 {

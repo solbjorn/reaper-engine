@@ -153,6 +153,8 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
     (*I).second->change_implementation(shape);
 }
 
+namespace
+{
 bool try_remove_string(shared_str& search_string, const shared_str& string_to_search)
 {
     bool found = false;
@@ -179,6 +181,7 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
     search_string = temp1;
     return (true);
 }
+} // namespace
 
 void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_restrictor)
 {

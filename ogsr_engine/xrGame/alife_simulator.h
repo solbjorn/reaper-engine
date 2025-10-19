@@ -33,4 +33,19 @@ add_to_type_list(CALifeSimulator);
 #undef script_type_list
 #define script_type_list save_type_list(CALifeSimulator)
 
+// alife_simulator.cpp
+extern LPCSTR alife_section;
+
+// alife_simulator_script.cpp
+using STORY_PAIRS = xr_map<shared_str, int>;
+using SPAWN_STORY_PAIRS = STORY_PAIRS;
+
+extern STORY_PAIRS story_ids;
+extern SPAWN_STORY_PAIRS spawn_story_ids;
+
+namespace detail
+{
+bool object_exists_in_alife_registry(u32 id);
+}
+
 #include "alife_simulator_inline.h"

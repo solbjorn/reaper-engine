@@ -10,10 +10,6 @@
 #include "../COMMON_AI/LevelGameDef.h"
 #include "../Layers/xrRender/xrRender_console.h"
 
-extern float ps_r2_sun_shafts_min;
-extern float ps_r2_sun_shafts_value;
-extern Fvector3 ssfx_wetness_multiplier;
-
 void CEnvModifier::load(IReader* fs, u32 version)
 {
     use_flags.one();

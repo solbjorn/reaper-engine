@@ -1,7 +1,9 @@
 #pragma once
+
 #include "hud_item_object.h"
 #include "HudSound.h"
 
+class CUIProgressShape;
 struct dContact;
 struct SGameMtl;
 
@@ -131,3 +133,5 @@ public:
     static void ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 };
 XR_SOL_BASE_CLASSES(CMissile);
+
+extern CUIProgressShape* g_MissileForceShape;

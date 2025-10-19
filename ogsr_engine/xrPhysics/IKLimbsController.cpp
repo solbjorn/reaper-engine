@@ -56,20 +56,14 @@ void CIKLimbsController::LimbUpdate(CIKLimb& L)
     L.Update(m_object, m_legs_blend, _pose_extrapolation);
 }
 
+namespace
+{
 IC void update_blend(CBlend*& b)
 {
     if (b && CBlend::eFREE_SLOT == b->blend_state())
         b = nullptr;
 }
-
-IC float lerp(float t, float a, float b) { return (a + t * (b - a)); }
-
-void y_shift_bones(IKinematics* K, float shift)
-{
-    u16 bc = K->LL_BoneCount();
-    for (u16 i = 0; bc > i; ++i)
-        K->LL_GetTransform(i).c.y += shift;
-}
+} // namespace
 
 float CIKLimbsController::LegLengthShiftLimit(float current_shift, const SCalculateData cd[max_size])
 {
@@ -226,7 +220,11 @@ void CIKLimbsController::ShiftObject()
     //	skeleton_animated->Bone_Calculate(&BD, &Fidentity );
 }
 
-int ik_shift_object = 1;
+namespace
+{
+constexpr int ik_shift_object{1};
+}
+
 void CIKLimbsController::Calculate()
 {
     update_blend(m_legs_blend);

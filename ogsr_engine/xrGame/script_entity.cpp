@@ -31,7 +31,10 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
-void __stdcall ActionCallback(IKinematics* tpKinematics);
+namespace
+{
+void ActionCallback(IKinematics* tpKinematics);
+}
 
 CScriptEntity::CScriptEntity() = default;
 CScriptEntity::~CScriptEntity() { ResetScriptData(); }
@@ -191,7 +194,9 @@ CScriptEntityAction* CScriptEntity::GetCurrentAction()
     return m_tpActionQueue.front();
 }
 
-void __stdcall ActionCallback(IKinematics* tpKinematics)
+namespace
+{
+void ActionCallback(IKinematics* tpKinematics)
 {
     // sounds
     CScriptEntity* l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->GetUpdateCallbackParam()));
@@ -201,6 +206,7 @@ void __stdcall ActionCallback(IKinematics* tpKinematics)
     l_tpScriptMonster->vfUpdateSounds();
     l_tpScriptMonster->vfUpdateParticles();
 }
+} // namespace
 
 void CScriptEntity::vfUpdateParticles()
 {
@@ -568,6 +574,8 @@ void CScriptEntity::shedule_Update(u32)
         ProcessScripts();
 }
 
+namespace
+{
 void ScriptCallBack(CBlend* B)
 {
     CScriptEntity* l_tpScriptMonster = static_cast<CScriptEntity*>(B->CallbackParam);
@@ -583,6 +591,7 @@ void ScriptCallBack(CBlend* B)
             l_tpScriptMonster->ProcessScripts();
     }
 }
+} // namespace
 
 bool CScriptEntity::bfScriptAnimation()
 {

@@ -48,7 +48,6 @@ void CHUDCrosshair::SetDispersion(float disp)
     target_radius = radius_pixels;
 }
 
-extern BOOL g_bRendering;
 void CHUDCrosshair::OnRender(const Fvector2& center, const Fvector2& scr_size)
 {
     VERIFY(g_bRendering);

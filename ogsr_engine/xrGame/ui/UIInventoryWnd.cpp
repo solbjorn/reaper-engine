@@ -40,7 +40,10 @@
 
 using namespace InventoryUtilities;
 
+namespace
+{
 CUIInventoryWnd* g_pInvWnd{};
+}
 
 CUIInventoryWnd::CUIInventoryWnd()
 {
@@ -526,8 +529,5 @@ void CUIInventoryWnd::UpdateOutfit()
     }
 
     if (modified)
-    {
-        extern void update_inventory_window(); // некрасиво, зато просто
         update_inventory_window();
-    }
 }

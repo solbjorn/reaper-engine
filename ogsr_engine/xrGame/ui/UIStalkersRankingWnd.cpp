@@ -15,11 +15,14 @@
 #include "../actor.h"
 #include "../xrServer_Objects_ALife_Monsters.h"
 
+namespace
+{
 #define STALKERS_RANKING_XML "stalkers_ranking.xml"
 #define STALKERS_RANKING_CHARACTER_XML "stalkers_ranking_character.xml"
 
 typedef xr_vector<u16> TOP_LIST;
 TOP_LIST g_all_statistic_humans;
+} // namespace
 
 void CUIStalkersRankingWnd::Init()
 {
@@ -84,8 +87,8 @@ void CUIStalkersRankingWnd::Show(bool status)
         FillList();
 }
 
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
-
+namespace
+{
 bool GreaterRankPred(const u16& h1, const u16& h2)
 {
     CSE_ALifeTraderAbstract* t1 = ch_info_get_from_id(h1);
@@ -94,8 +97,10 @@ bool GreaterRankPred(const u16& h1, const u16& h2)
         return t1->m_rank > t2->m_rank;
     else if (t1)
         return true;
+
     return false;
 }
+} // namespace
 
 int get_actor_ranking()
 {

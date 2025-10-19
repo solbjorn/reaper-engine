@@ -54,9 +54,6 @@ void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fma
 
 void CPortalTraverser::fade_portal(CPortal* _p, float ssa) { f_portals.emplace_back(_p, ssa); }
 
-extern float r_ssaDISCARD;
-extern float r_ssaLOD_A, r_ssaLOD_B;
-
 void CPortalTraverser::fade_render()
 {
     if (f_portals.empty())

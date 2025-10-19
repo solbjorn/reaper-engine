@@ -250,6 +250,7 @@ void CParticleGroup::SItem::Play()
     if (E)
         E->Play();
 }
+
 void CParticleGroup::SItem::Stop(BOOL def_stop)
 {
     // stop all effects
@@ -281,18 +282,24 @@ void CParticleGroup::SItem::Stop(BOOL def_stop)
         _children_free.clear();
     }
 }
+
 BOOL CParticleGroup::SItem::IsPlaying() const
 {
     CParticleEffect* E = static_cast<CParticleEffect*>(_effect);
     return E ? E->IsPlaying() : FALSE;
 }
+
 void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
 {
     CParticleEffect* E = static_cast<CParticleEffect*>(_effect);
     if (E)
         E->UpdateParent(m, velocity, bXFORM);
 }
+
 //------------------------------------------------------------------------------
+
+namespace
+{
 void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 {
     CParticleGroup* PG = static_cast<CParticleGroup*>(owner);
@@ -308,6 +315,7 @@ void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     if (eff->m_Flags.is(CPGDef::SEffect::flOnPlayChild))
         PG->items[param].StartRelatedChild(PE, *eff->m_OnPlayChildName, m);
 }
+
 void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 {
     CParticleGroup* PG = static_cast<CParticleGroup*>(owner);
@@ -323,6 +331,8 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     if (eff->m_Flags.is(CPGDef::SEffect::flOnDeadChild))
         PG->items[param].StartFreeChild(PE, *eff->m_OnDeadChildName, m);
 }
+} // namespace
+
 //------------------------------------------------------------------------------
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {

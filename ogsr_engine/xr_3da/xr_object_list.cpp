@@ -119,12 +119,15 @@ void CObjectList::SingleUpdate(CObject* O)
     }
 }
 
+namespace
+{
 void clear_crow_vec(xr_vector<CObject*>& o)
 {
     for (auto& it : o)
         it->IAmNotACrowAnyMore();
     o.clear();
 }
+} // namespace
 
 void CObjectList::Update(bool bForce)
 {
@@ -327,6 +330,8 @@ void CObjectList::relcase_unregister(int* ID)
     m_relcase_callbacks.pop_back();
 }
 
+namespace
+{
 void dump_list(xr_vector<CObject*>& v, LPCSTR reason)
 {
     xr_vector<CObject*>::iterator it = v.begin();
@@ -336,6 +341,7 @@ void dump_list(xr_vector<CObject*>& v, LPCSTR reason)
         Msg("name [%s] ID[%d] parent[%s] getDestroy()=[%s]", (*it)->cName().c_str(), (*it)->ID(), ((*it)->H_Parent()) ? (*it)->H_Parent()->cName().c_str() : "",
             ((*it)->getDestroy()) ? "yes" : "no");
 }
+} // namespace
 
 bool CObjectList::dump_all_objects()
 {

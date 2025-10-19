@@ -87,4 +87,6 @@ private:
     void reset();
 };
 
+bool show_restrictions(CRestrictedObject* object);
+
 #include "patrol_path_manager_inline.h"

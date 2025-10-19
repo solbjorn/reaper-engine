@@ -414,6 +414,8 @@ void SHeliBodyState::load(IReader& input_packet)
     currBodyHPB.z = input_packet.r_float();
 }
 
+namespace
+{
 float t_xx(float V0, float V1, float a0, float a1, float d, float fSign) { return (V1 + _sqrt(V1 * V1 - (a1 / (a1 - a0)) * (V1 * V1 - V0 * V0 - 2 * a0 * d)) * fSign) / a1; }
 
 float t_1(float t10, float t11)
@@ -433,6 +435,7 @@ float getA(float t0, float a1, float a0)
     float eps = 0.001f;
     return (t0 < eps) ? a1 : a0;
 }
+} // namespace
 
 float GetCurrAcc(float V0, float V1, float dist, float a0, float a1)
 {

@@ -60,8 +60,6 @@ bool det_render_debug = false;
 
 #include "../../xr_3da/gamemtllib.h"
 
-extern float ps_current_detail_scale;
-
 void CDetailManager::cache_Decompress(Slot* S)
 {
     VERIFY(S);

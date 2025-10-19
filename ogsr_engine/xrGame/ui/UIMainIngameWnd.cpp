@@ -37,15 +37,17 @@
 #include "UIArtefactPanel.h"
 #include "UIMap.h"
 
+#include "UIScrollView.h"
+#include "UIColorAnimatorWrapper.h"
+#include "UIProgressShape.h"
+
+#include "map_hint.h"
+#include "../game_news.h"
+
 #ifdef DEBUG
 #include "../attachable_item.h"
 #include "..\..\xr_3da\xr_input.h"
 #endif
-
-#include "UIScrollView.h"
-#include "map_hint.h"
-#include "UIColorAnimatorWrapper.h"
-#include "../game_news.h"
 
 using namespace InventoryUtilities;
 
@@ -110,10 +112,6 @@ CUIMainIngameWnd::CUIMainIngameWnd()
     warn_icon_list[ewiInvincible] = &UIInvincibleIcon;
     warn_icon_list[ewiThirst] = &UIThirstIcon;
 }
-
-#include "UIProgressShape.h"
-
-extern CUIProgressShape* g_MissileForceShape;
 
 CUIMainIngameWnd::~CUIMainIngameWnd()
 {

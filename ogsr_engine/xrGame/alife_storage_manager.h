@@ -41,4 +41,7 @@ public:
     IC LPCSTR save_name(BOOL bLoaded);
 };
 
+// console_commands.cpp
+extern string_path g_last_saved_game;
+
 #include "alife_storage_manager_inline.h"

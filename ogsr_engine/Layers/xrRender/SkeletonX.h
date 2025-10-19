@@ -106,8 +106,14 @@ protected:
 
 inline CSkeletonX::~CSkeletonX() = default;
 
+void get_pos_bones(const vertBoned1W& v, Fvector& p, CKinematics* Parent);
+void get_pos_bones(const vertBoned2W& vert, Fvector& p, CKinematics* Parent);
+void get_pos_bones(const vertBoned3W& vert, Fvector& p, CKinematics* Parent);
+void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent);
+
 template <typename T_vertex, typename T_buffer>
-BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+[[nodiscard]] inline BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices,
+                                    CBoneData::FacesVec& faces)
 {
     for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
     {
@@ -130,7 +136,7 @@ BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result&
 }
 
 template <typename T>
-BOOL pick_bone(CKinematics*, IKinematics::pick_result&, float, const Fvector&, const Fvector&, Fvisual*, u16*, CBoneData::FacesVec&)
+[[nodiscard]] inline BOOL pick_bone(CKinematics*, IKinematics::pick_result&, float, const Fvector&, const Fvector&, Fvisual*, u16*, CBoneData::FacesVec&)
 {
     VERIFY(!"Not implemented");
     return FALSE;

@@ -164,6 +164,8 @@ int SimpleJtLimit::Discontinuity(int family, float x[2]) const
     return n;
 }
 
+namespace
+{
 #if 0
 void sort(int m, float *temp)
 {
@@ -222,6 +224,7 @@ int sort_intersections(int m, float* temp, float psi0, float psi1)
 
     return i;
 }
+} // namespace
 
 //
 // Returns the intervals between psi0 to psi1
@@ -553,6 +556,8 @@ int ComplexJtLimit::Solve(int family, float v, float tan_v, float psi[2]) const
     return m;
 }
 
+namespace
+{
 int angleequal(float x, float y, float eps)
 {
     // Handle case where x = 2*MPI, y = 0 or vice versa
@@ -564,6 +569,7 @@ int angleequal(float x, float y, float eps)
 
     return equal(x, y, eps);
 }
+} // namespace
 
 //
 // Same as Solve but solve for both families
@@ -596,7 +602,10 @@ void ComplexJtLimit::Solve2(float v, float tan_v, int& n1, float psi_1[2], int& 
     }
 }
 
-const float eps = AINT_BIG_EPSILON / 5.0f;
+namespace
+{
+constexpr float eps{AINT_BIG_EPSILON / 5.0f};
+}
 
 void ComplexJtLimit::clip(float low, float high, int family, int n, const float p[], AngleIntList& f) const
 {
@@ -633,8 +642,11 @@ void ComplexJtLimit::store_intersections(int n, const float* s, float low, float
     sort(n2, f2);
 }
 
-const float tan_0 = tan(eps / 2.0f);
-const float tan_two_pi = (2 * M_PI - eps / 2.0f);
+namespace
+{
+const float tan_0{tan(eps / 2.0f)};
+constexpr float tan_two_pi{(2 * M_PI - eps / 2.0f)};
+} // namespace
 
 void ComplexJtLimit::PsiLimits(int num_s, const float s[], AngleIntList& psi1, AngleIntList& psi2) const
 {

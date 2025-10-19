@@ -15,8 +15,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 
-extern CPHWorld* ph_world;
-
+namespace
+{
 void read_bones(IKinematics* K, LPCSTR S, xr_vector<u16>& bones)
 {
     string64 S1;
@@ -32,6 +32,7 @@ void read_bones(IKinematics* K, LPCSTR S, xr_vector<u16>& bones)
         bones.push_back(bone_id);
     }
 }
+} // namespace
 
 void CCarDamageParticles::Init(CCar* car)
 {

@@ -28,7 +28,5 @@ public:
 
 // #define IK_DBG_STATE_SEQUENCE
 #ifdef IK_DBG_STATE_SEQUENCE
-extern u32 sdbg_state_sequence_number;
-
 #include "ik_dbg_matrix.h"
 #endif

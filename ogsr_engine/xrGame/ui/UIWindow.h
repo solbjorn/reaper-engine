@@ -227,3 +227,11 @@ XR_SOL_BASE_CLASSES(CUIWindow);
 add_to_type_list(CUIWindow);
 #undef script_type_list
 #define script_type_list save_type_list(CUIWindow)
+
+extern BOOL g_show_wnd_rect;
+extern BOOL g_show_wnd_rect_text;
+extern BOOL g_show_wnd_rect2;
+
+void clean_wnd_rects();
+void draw_wnds_rects();
+void dump_list_wnd();

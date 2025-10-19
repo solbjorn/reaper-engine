@@ -143,4 +143,5 @@ enum
     st_sound_info_object = (1 << 5),
 };
 
+extern int g_ErrorLineCount;
 extern Flags32 g_stats_flags;

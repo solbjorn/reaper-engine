@@ -11,11 +11,15 @@
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 
-#include <xmmintrin.h>
 #include "xr_task.h"
 
+#include <xmmintrin.h>
+
 //--------------------------------------------------- Decompression
-static constexpr int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
+
+namespace
+{
+constexpr int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
 
 void bwdithermap(int levels, int magic[16][16])
 {
@@ -39,6 +43,8 @@ void bwdithermap(int levels, int magic[16][16])
                 for (u32 l = 0; l < 4; l++)
                     magic[4 * k + i][4 * l + j] = (int)(0.5 + magic4x4[i][j] * magicfact + (magic4x4[k][l] / 16.) * magicfact);
 }
+} // namespace
+
 //--------------------------------------------------- Decompression
 
 void CDetailManager::SSwingValue::lerp(const SSwingValue& A, const SSwingValue& B, float f)
@@ -191,9 +197,6 @@ void CDetailManager::Unload()
     FS.r_close(dtFS);
     dtFS = nullptr;
 }
-
-extern float r_ssaDISCARD;
-extern BOOL ps_no_scale_on_fade;
 
 void CDetailManager::UpdateVisibleM(const Fvector& EYE)
 {

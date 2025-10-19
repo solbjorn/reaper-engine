@@ -2,6 +2,46 @@
 #define xrRender_consoleH
 
 // Common
+
+// SkeletonCustom.cpp
+extern int psSkeletonUpdate;
+// TextureDescrManager.cpp
+extern float r__dtex_range;
+// r4.cpp
+extern float r_dtex_range;
+
+// Screen Space Shaders Stuff
+extern Fvector4 ps_ssfx_pom;
+extern Fvector4 ps_ssfx_terrain_pom;
+
+extern Fvector4 ps_ssfx_bloom_1;
+extern float ps_ssfx_hud_hemi;
+
+extern Fvector4 ps_ssfx_il_setup1;
+extern Fvector4 ps_ssfx_ao_setup1;
+
+extern Fvector4 ps_ssfx_water_setup1;
+extern Fvector4 ps_ssfx_water_setup2;
+
+extern Fvector4 ps_ssfx_terrain_offset;
+extern Fvector3 ps_ssfx_shadow_bias;
+extern Fvector4 ps_ssfx_lut;
+
+extern Fvector4 ps_ssfx_florafixes_1;
+extern Fvector4 ps_ssfx_florafixes_2;
+
+extern Fvector4 ps_ssfx_wetsurfaces_1;
+extern Fvector4 ps_ssfx_wetsurfaces_2;
+
+extern int ps_ssfx_is_underground;
+extern Fvector4 ps_ssfx_lightsetup_1;
+extern Fvector4 ps_ssfx_hud_drops_1;
+extern Fvector4 ps_ssfx_hud_drops_2;
+extern Fvector4 ps_ssfx_blood_decals;
+
+extern Fvector4 ps_ssfx_wpn_dof_1;
+extern float ps_ssfx_wpn_dof_2;
+
 extern Fvector4 ps_ssfx_rain_drops_setup;
 extern int ps_ssfx_terrain_grass_align;
 extern int ps_ssfx_terrain_pom_refine;
@@ -108,6 +148,7 @@ extern float ps_r2_ssaLOD_B;
 // R2-specific
 extern Flags32 ps_r2_ls_flags; // r2-only
 extern Flags32 ps_r2_ls_flags_ext;
+extern BOOL ps_no_scale_on_fade;
 extern float ps_r2_df_parallax_h; // r2-only
 extern float ps_r2_df_parallax_range; // r2-only
 extern float ps_r2_tonemap_middlegray; // r2-only
@@ -147,6 +188,8 @@ extern float ps_r2_slight_fade; // 1.f
 extern int ps_r2_wait_sleep;
 extern int ps_r2_wait_timeout;
 
+extern float ps_r2_lt_smooth;
+
 ////lvutner
 extern Fvector4 ps_r2_mask_control; // r2-only
 extern Fvector ps_r2_drops_control; // r2-only
@@ -164,6 +207,9 @@ extern Fvector4 ps_r__color_blue;
 extern float ps_r3_dyn_wet_surf_near; // 10.0f
 extern float ps_r3_dyn_wet_surf_far; // 30.0f
 extern int ps_r3_dyn_wet_surf_sm_res; // 256
+
+extern float ps_current_detail_scale;
+extern float ps_particle_update_coeff;
 
 // textures
 #ifdef DEBUG

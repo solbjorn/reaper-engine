@@ -75,8 +75,6 @@
 
 using namespace StalkerSpace;
 
-extern int g_AI_inactive_time;
-
 CAI_Stalker::CAI_Stalker() = default;
 
 CAI_Stalker::~CAI_Stalker()

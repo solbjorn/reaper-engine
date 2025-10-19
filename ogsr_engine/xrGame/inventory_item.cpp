@@ -227,15 +227,11 @@ void CInventoryItem::OnH_A_Independent()
 }
 
 void CInventoryItem::OnH_B_Chield() {}
-
 void CInventoryItem::OnH_A_Chield() { inherited::OnH_A_Chield(); }
-#ifdef DEBUG
-extern Flags32 dbg_net_Draw_Flags;
-#endif
 
+#ifdef DEBUG
 void CInventoryItem::UpdateCL()
 {
-#ifdef DEBUG
     if (bDebug)
     {
         if (dbg_net_Draw_Flags.test(1 << 4))
@@ -248,9 +244,8 @@ void CInventoryItem::UpdateCL()
             Device.seqRender.Remove(this);
         }
     }
-
-#endif
 }
+#endif
 
 void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 {

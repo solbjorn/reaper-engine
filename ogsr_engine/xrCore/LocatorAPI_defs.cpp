@@ -117,21 +117,27 @@ bool PatternMatch(LPCSTR s, LPCSTR mask)
         {
             while (*mask == '*')
                 mask++;
+
             return !*mask;
         }
+
         if (*mask == '*')
         {
             if (!*++mask)
                 return true;
+
             mp = mask;
             cp = s + 1;
             continue;
         }
+
         if (*mask == *s || *mask == '?')
         {
-            mask++, s++;
+            mask++;
+            s++;
             continue;
         }
+
         mask = mp;
         s = cp++; //-V769
     }

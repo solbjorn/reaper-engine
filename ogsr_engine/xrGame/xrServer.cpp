@@ -92,7 +92,10 @@ IClient* xrServer::client_Find_Get(ClientID ID)
     return newCL;
 }
 
-INT g_sv_Client_Reconnect_Time = 0;
+namespace
+{
+constexpr INT g_sv_Client_Reconnect_Time{0};
+}
 
 void xrServer::client_Destroy(IClient* C)
 {
@@ -153,11 +156,15 @@ void xrServer::client_Destroy(IClient* C)
 }
 
 //--------------------------------------------------------------------
-int g_Dump_Update_Write = 0;
+
+namespace
+{
+constexpr int g_Dump_Update_Write{0};
 
 #ifdef DEBUG
-INT g_sv_SendUpdate = 0;
+constexpr INT g_sv_SendUpdate{0};
 #endif
+} // namespace
 
 void xrServer::Update()
 {
@@ -340,9 +347,6 @@ void xrServer::SendUpdatesToAll()
     VERIFY(verify_entities());
 }
 
-xr_vector<shared_str> _tmp_log;
-void console_log_cb(LPCSTR text) { _tmp_log.push_back(text); }
-
 u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
     u16 type;
@@ -368,6 +372,7 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
 }
 
 extern float g_fCatchObjectTime;
+
 u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
     u16 type;

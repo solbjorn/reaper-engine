@@ -202,4 +202,7 @@ private:
     }
 };
 
+// ResourceManager_Loader.cpp
+extern BOOL bShadersXrExport;
+
 #endif // ResourceManagerH

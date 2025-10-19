@@ -17,11 +17,14 @@
 
 LPCSTR alife_section = "alife";
 
+namespace
+{
 void restart_all()
 {
     ai().script_engine().unload();
     ai().script_engine().init();
 }
+} // namespace
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
     : CALifeSimulatorBase{server}, CALifeUpdateManager{server, alife_section}, CALifeInteractionManager{server}

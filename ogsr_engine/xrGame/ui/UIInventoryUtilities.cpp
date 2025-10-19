@@ -326,6 +326,8 @@ void InventoryUtilities::UpdateWeight(CUIStatic& wnd, bool withPrefix)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace
+{
 void LoadStrings(CharInfoStrings* container, LPCSTR section, LPCSTR field)
 {
     R_ASSERT(container);
@@ -385,6 +387,7 @@ void InitCharacterInfoStrings()
         LoadStrings(charInfoGoodwillStrings, relationsLtxSection, goodwillField);
     }
 }
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 

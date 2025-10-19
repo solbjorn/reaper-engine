@@ -4,9 +4,10 @@
 #include "GameTaskDefs.h"
 #include "script_export_space.h"
 
+class CGameTask;
 class CGameTaskManager;
 class CMapLocation;
-class CGameTask;
+class CUIXml;
 
 class SScriptObjectiveHelper
 {
@@ -171,3 +172,5 @@ public:
 add_to_type_list(CGameTask);
 #undef script_type_list
 #define script_type_list save_type_list(CGameTask)
+
+extern CUIXml* g_gameTaskXml;

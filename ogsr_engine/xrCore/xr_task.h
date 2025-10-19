@@ -1,7 +1,12 @@
 #ifndef __XRCORE_TASK_H
 #define __XRCORE_TASK_H
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wunused-template");
+
 #include <oneapi/tbb/task_group.h>
+
+XR_DIAG_POP();
 
 class alignas(16) xr_task_group : public oneapi::tbb::task_group
 {

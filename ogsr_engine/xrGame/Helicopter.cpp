@@ -277,8 +277,6 @@ void CHelicopter::net_Save(NET_Packet& P)
     CPHSkeleton::SaveNetState(P);
 }
 
-float GetCurrAcc(float V0, float V1, float dist, float a0, float a1);
-
 void CHelicopter::MoveStep()
 {
     Fvector dir, pathDir;

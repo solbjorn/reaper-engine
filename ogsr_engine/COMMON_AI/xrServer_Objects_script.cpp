@@ -12,6 +12,8 @@
 #include "script_ini_file.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
+namespace
+{
 CScriptIniFile* get_spawn_ini(CSE_Abstract* abstract) { return ((CScriptIniFile*)&abstract->spawn_ini()); }
 
 void save_spawn_ini(CSE_Abstract* abstract)
@@ -27,6 +29,7 @@ void set_ini_string_script(CSE_Abstract* abstract, LPCSTR cd)
     abstract->m_ini_string = cd;
     abstract->m_ini_file = nullptr;
 }
+} // namespace
 
 void CSE_Abstract::script_register(sol::state_view& lua)
 {

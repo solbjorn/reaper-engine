@@ -3,7 +3,12 @@
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+
 #include <eax.h>
+
+XR_DIAG_POP();
 
 CSoundRender_Environment::CSoundRender_Environment()
 {

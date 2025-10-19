@@ -1,8 +1,12 @@
 #include "stdafx.h"
+
 #include "xrServer.h"
 #include "xrServer_Objects.h"
 
-int g_Dump_Update_Read = 0;
+namespace
+{
+constexpr int g_Dump_Update_Read{0};
+}
 
 void xrServer::Process_update(NET_Packet& P, ClientID sender)
 {

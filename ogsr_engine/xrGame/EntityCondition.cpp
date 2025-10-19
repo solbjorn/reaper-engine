@@ -121,9 +121,7 @@ void CEntityCondition::ChangeHealth(float value)
 }
 
 void CEntityCondition::ChangePower(float value) { m_fDeltaPower += value; }
-
 void CEntityCondition::ChangeRadiation(float value) { m_fDeltaRadiation += value; }
-
 void CEntityCondition::ChangePsyHealth(float value) { m_fDeltaPsyHealth += value; }
 
 void CEntityCondition::ChangeBleeding(float percent)
@@ -137,6 +135,8 @@ void CEntityCondition::ChangeBleeding(float percent)
     }
 }
 
+namespace
+{
 bool RemoveWoundPred(CWound* pWound)
 {
     if (pWound->GetDestroy())
@@ -144,8 +144,10 @@ bool RemoveWoundPred(CWound* pWound)
         xr_delete(pWound);
         return true;
     }
+
     return false;
 }
+} // namespace
 
 void CEntityCondition::UpdateWounds()
 {

@@ -3,12 +3,6 @@
 #include "Actor_Flags.h"
 #include "hudmanager.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif // DEBUG
-
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -67,6 +61,12 @@
 #include "location_manager.h"
 #include "PHCapture.h"
 #include "CustomDetector.h"
+
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif // DEBUG
 
 namespace
 {
@@ -604,8 +604,6 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
     }
 }
 
-void start_tutorial(LPCSTR name);
-
 void CActor::Die(CObject* who)
 {
     inherited::Die(who);
@@ -878,9 +876,12 @@ void CActor::UpdateCL()
     }
 }
 
-constexpr u32 TASKS_UPDATE_TIME = 1u;
+namespace
+{
+constexpr u32 TASKS_UPDATE_TIME{1};
 
-float NET_Jump = 0;
+float NET_Jump{};
+} // namespace
 
 void CActor::shedule_Update(u32 DT)
 {
@@ -997,7 +998,7 @@ void CActor::shedule_Update(u32 DT)
             mstate_wishful &= ~mcRLookout;
             mstate_wishful &= ~mcFwd;
             mstate_wishful &= ~mcBack;
-            extern bool g_bAutoClearCrouch;
+
             if (g_bAutoClearCrouch)
                 mstate_wishful &= ~mcCrouch;
             //-----------------------------------------------------

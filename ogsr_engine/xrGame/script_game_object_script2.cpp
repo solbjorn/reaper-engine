@@ -33,8 +33,6 @@
 #include "detail_path_manager_space.h"
 #include "patrol_path_manager_space.h"
 
-extern CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
-
 void CScriptGameObject::script_register1(CScriptGameObject::usertype& lua)
 {
     xr::sol_set(

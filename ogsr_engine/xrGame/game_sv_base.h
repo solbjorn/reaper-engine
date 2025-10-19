@@ -6,8 +6,9 @@
 #include "../xr_3da/NET_Server_Trash/client_id.h"
 
 class CSE_Abstract;
-class xrServer;
+class CUISequencer;
 class GameEventQueue;
+class xrServer;
 
 class XR_NOVTABLE game_sv_GameState : public game_GameState
 {
@@ -96,3 +97,9 @@ public:
 add_to_type_list(game_sv_GameState);
 #undef script_type_list
 #define script_type_list save_type_list(game_sv_GameState)
+
+// game_sv_base_script.cpp
+extern CUISequencer* g_tutorial;
+extern CUISequencer* g_tutorial2;
+
+void start_tutorial(LPCSTR name);

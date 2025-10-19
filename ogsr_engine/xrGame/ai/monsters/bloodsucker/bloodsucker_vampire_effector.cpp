@@ -10,7 +10,6 @@ CVampirePPEffector::CVampirePPEffector(const SPPInfo& ppi, float life_time) : in
 
 #define TIME_ATTACK 0.2f
 #define PERIODS 2
-#define RAD_TO_PERC(rad) ((rad - PI_DIV_2) / (PERIODS * PI_MUL_2))
 #define PERC_TO_RAD(perc) (perc * (PERIODS * PI_MUL_2) + PI_DIV_2)
 
 BOOL CVampirePPEffector::Process(SPPInfo& pp)

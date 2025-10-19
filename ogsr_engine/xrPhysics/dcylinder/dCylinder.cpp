@@ -1537,7 +1537,9 @@ int dCollideCylRay(dxGeom* o1, dxGeom* o2, dContactGeom* contact, int skip)
     return 1;
 }
 
-static dColliderFn* dCylinderColliderFn(int num)
+namespace
+{
+dColliderFn* dCylinderColliderFn(int num)
 {
     if (num == dBoxClass)
         return (dColliderFn*)&dCollideCylB;
@@ -1551,7 +1553,7 @@ static dColliderFn* dCylinderColliderFn(int num)
     return nullptr;
 }
 
-static void dCylinderAABB(dxGeom* geom, dReal aabb[6])
+void dCylinderAABB(dxGeom* geom, dReal aabb[6])
 {
     dReal radius, lz;
     dGeomCylinderGetParams(geom, &radius, &lz);
@@ -1571,6 +1573,7 @@ static void dCylinderAABB(dxGeom* geom, dReal aabb[6])
     aabb[4] = pos[2] - zrange;
     aabb[5] = pos[2] + zrange;
 }
+} // namespace
 
 dxGeom* dCreateCylinder(dSpaceID space, dReal r, dReal lz)
 {

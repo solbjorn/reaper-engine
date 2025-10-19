@@ -15,9 +15,12 @@
 #include "../../../xr_3da/gamemtllib.h"
 #include "../../actor.h"
 
+namespace
+{
 // DEBUG purpose only
 constexpr const char* dbg_action_name_table[] = {"ACT_STAND_IDLE", "ACT_SIT_IDLE", "ACT_LIE_IDLE", "ACT_WALK_FWD", "ACT_WALK_BKWD", "ACT_RUN",         "ACT_EAT",
                                                  "ACT_SLEEP",      "ACT_REST",     "ACT_DRAG",     "ACT_ATTACK",   "ACT_STEAL",     "ACT_LOOK_AROUND", "ACT_JUMP"};
+} // namespace
 
 void SCurrentAnimationInfo::set_motion(EMotionAnim new_motion) { motion = new_motion; }
 
@@ -695,6 +698,8 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
     m_object->MeleeChecker.on_hit_attempt(should_hit);
 }
 
+namespace
+{
 void parse_anim_params(LPCSTR val, SAAParam& anim)
 {
     string16 cur_elem;
@@ -730,6 +735,7 @@ void parse_anim_params(LPCSTR val, SAAParam& anim)
     clamp(anim.foh.from_pitch, -clamp_val, clamp_val);
     clamp(anim.foh.to_pitch, -clamp_val, clamp_val);
 }
+} // namespace
 
 void CControlAnimationBase::AA_reload(LPCSTR section)
 {

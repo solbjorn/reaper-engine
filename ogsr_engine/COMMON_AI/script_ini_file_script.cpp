@@ -10,6 +10,8 @@
 
 #include "script_ini_file.h"
 
+namespace
+{
 std::tuple<bool, xr_string, xr_string> r_line(CScriptIniFile* self, LPCSTR S, int L)
 {
     THROW3(self->section_exist(S), "Cannot find section", S);
@@ -21,7 +23,7 @@ std::tuple<bool, xr_string, xr_string> r_line(CScriptIniFile* self, LPCSTR S, in
     return std::tuple<bool, xr_string, xr_string>(result, n ?: "", v ?: "");
 }
 
-static void iterate_sections(CScriptIniFile& self, sol::function func)
+void iterate_sections(CScriptIniFile& self, sol::function func)
 {
     for (const auto& it : self.sections())
         func(it.first.c_str());
@@ -57,6 +59,7 @@ CScriptIniFile* reload_system_ini()
 
     return ((CScriptIniFile*)pSettings);
 }
+} // namespace
 
 void CScriptIniFile::script_register(sol::state_view& lua)
 {

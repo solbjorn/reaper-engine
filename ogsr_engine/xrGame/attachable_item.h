@@ -81,4 +81,12 @@ public:
     virtual void ParseCurrentItem(CGameFont*);
 };
 
+// attachable_item.cpp
+bool attach_adjust_mode_keyb(int dik);
+void attach_draw_adjust_mode();
+
+// console_commands.cpp
+extern float adj_delta_pos;
+extern float adj_delta_rot;
+
 #include "attachable_item_inline.h"

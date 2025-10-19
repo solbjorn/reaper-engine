@@ -14,5 +14,6 @@ void AttachRender()
     ::DU = &DUImpl;
     UIRender = &UIRenderImpl;
     DRender = &DebugRenderImpl;
+
     xrRender_initconsole();
 }

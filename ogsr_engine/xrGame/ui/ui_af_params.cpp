@@ -2,10 +2,12 @@
 
 #include "ui_af_params.h"
 #include "UIStatic.h"
-#include "../object_broker.h"
 #include "UIXmlInit.h"
 
-CUIArtefactParams::CUIArtefactParams() { Memory.mem_fill(m_info_items, 0, sizeof(m_info_items)); }
+#include "../object_broker.h"
+#include "../string_table.h"
+
+CUIArtefactParams::CUIArtefactParams() = default;
 
 CUIArtefactParams::~CUIArtefactParams()
 {
@@ -16,7 +18,9 @@ CUIArtefactParams::~CUIArtefactParams()
     }
 }
 
-LPCSTR af_item_sect_names[] = {
+namespace
+{
+constexpr std::array<absl::string_view, 18> af_item_sect_names{
     "health_restore_speed",
     "radiation_restore_speed",
     "satiety_restore_speed",
@@ -38,7 +42,7 @@ LPCSTR af_item_sect_names[] = {
     "fire_wound_immunity",
 };
 
-LPCSTR af_item_param_names[] = {
+constexpr std::array<absl::string_view, 18> af_item_param_names{
     "ui_inv_health",
     "ui_inv_radiation",
     "ui_inv_satiety",
@@ -60,7 +64,9 @@ LPCSTR af_item_param_names[] = {
     "ui_inv_outfit_fire_wound_protection", // "(fire_wound_imm)",
 };
 
-LPCSTR af_actor_param_names[] = {"satiety_health_v", "radiation_v", "satiety_v", "thirst_v", "satiety_power_v", "wound_incarnation_v", "psy_health_v"};
+constexpr std::array<absl::string_view, 7> af_actor_param_names{"satiety_health_v", "radiation_v",         "satiety_v",   "thirst_v",
+                                                                "satiety_power_v",  "wound_incarnation_v", "psy_health_v"};
+} // namespace
 
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 {
@@ -73,7 +79,7 @@ void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 
     for (u32 i = _item_start; i < _max_item_index; ++i)
     {
-        strconcat(sizeof(_buff), _buff, _base, ":static_", af_item_sect_names[i]);
+        strconcat(sizeof(_buff), _buff, _base, ":static_", af_item_sect_names[i].data());
 
         if (xml_doc.NavigateToNode(_buff, 0))
         {
@@ -86,8 +92,6 @@ void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 }
 
 bool CUIArtefactParams::Check(const shared_str& af_section) { return !!pSettings->line_exist(af_section, "af_actor_properties"); }
-
-#include "../string_table.h"
 
 void CUIArtefactParams::SetInfo(const shared_str& af_section)
 {
@@ -104,23 +108,23 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
         float _val;
         if (i == _item_additional_inventory_weight)
         {
-            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i], 0.f);
+            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i].data(), 0.0f);
             if (fis_zero(_val))
                 continue;
-            float _val2 = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[_item_additional_inventory_weight2], 0.f);
+            float _val2 = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[_item_additional_inventory_weight2].data(), 0.0f);
             if (fsimilar(_val, _val2))
                 continue;
         }
         else if (i == _item_additional_inventory_weight2)
         {
-            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i], 0.f);
+            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i].data(), 0.0f);
             if (fis_zero(_val))
                 continue;
         }
         else if (i < _max_item_index1)
         {
-            float _actor_val = pSettings->r_float("actor_condition", af_actor_param_names[i]);
-            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i], 0.f);
+            float _actor_val = pSettings->r_float("actor_condition", af_actor_param_names[i].data());
+            _val = READ_IF_EXISTS(pSettings, r_float, af_section, af_item_sect_names[i].data(), 0.0f);
 
             if (fis_zero(_val))
                 continue;
@@ -130,7 +134,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
         else
         {
             shared_str _sect = pSettings->r_string(af_section, "hit_absorbation_sect");
-            _val = pSettings->r_float(_sect, af_item_sect_names[i]);
+            _val = pSettings->r_float(_sect, af_item_sect_names[i].data());
             if (fsimilar(_val, 1.0f))
                 continue;
             _val = (1.0f - _val);
@@ -153,7 +157,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
         if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
             _color = (_val > 0) ? "%c[red]" : "%c[green]";
 
-        sprintf_s(_buff, "%s %s %+.0f%s", CStringTable().translate(af_item_param_names[i]).c_str(), _color, _val, _sn);
+        sprintf_s(_buff, "%s %s %+.0f%s", CStringTable().translate(af_item_param_names[i].data()).c_str(), _color, _val, _sn);
         _s->SetText(_buff);
         _s->SetWndPos(_s->GetWndPos().x, _h);
         _h += _s->GetWndSize().y;

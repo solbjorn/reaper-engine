@@ -9,6 +9,7 @@
 #include "ui/UIXmlInit.h"
 #include "object_broker.h"
 #include "string_table.h"
+#include "ui/UIGameTutorial.h"
 
 void Remove_all_statics()
 {
@@ -155,11 +156,6 @@ void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
         UpdateStaticPriorityIndex();
     }
 }
-
-#include "ui/UIGameTutorial.h"
-
-extern CUISequencer* g_tutorial;
-extern CUISequencer* g_tutorial2;
 
 void CUIGameCustom::reset_ui()
 {

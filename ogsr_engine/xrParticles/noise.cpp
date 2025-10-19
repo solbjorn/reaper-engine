@@ -4,7 +4,9 @@
 
 #include <xmmintrin.h>
 
-__forceinline int iFloor_SSE(float const x) { return _mm_cvtt_ss2si(_mm_set_ss(x)); }
+namespace
+{
+[[nodiscard]] ICF int iFloor_SSE(float x) { return _mm_cvtt_ss2si(_mm_set_ss(x)); }
 
 //==============================================================================
 // Perlin's noise from Texturing and Modeling...
@@ -16,63 +18,76 @@ __forceinline int iFloor_SSE(float const x) { return _mm_cvtt_ss2si(_mm_set_ss(x
 #define LERP(t, a, b) (a + t * (b - a))
 
 #define PN_SETUP(i, b0, b1, r0, r1) \
-    t = vec[i] + 10000.f; \
+    t = vec[i] + 10000.0f; \
     tt = iFloor_SSE(t); \
     b0 = tt & (B - 1); \
     b1 = (b0 + 1) & (B - 1); \
     r0 = t - float(tt); \
-    r1 = r0 - 1.f
-
-static int p[B + B + 2];
-static float g[B + B + 2][3];
+    r1 = r0 - 1.0f
 
 //--------------------------------------------------------------------
-void noise3Init()
+
+class noise3_init
 {
-    int i, j, k;
-    float v[3], s;
-    int rnd;
+private:
+    std::array<int, B + B + 2> p;
+    std::array<std::array<float, 3>, B + B + 2> g;
 
-    srand(1);
-
-    for (i = 0; i < B; i++)
+public:
+    noise3_init()
     {
-        do
+        int i, j, k;
+        float v[3], s;
+        int rnd;
+
+        for (i = 0; i < B; i++)
         {
-            for (j = 0; j < 3; j++)
+            do
             {
-                rnd = rand();
-                v[j] = float((rnd % (B + B)) - B) / B;
-            }
-            s = DOT(v, v);
-        } while (s > 1.0);
-        s = _sqrt(s);
-        for (j = 0; j < 3; j++)
-            g[i][j] = v[j] / s;
+                for (j = 0; j < 3; j++)
+                {
+                    rnd = rand();
+                    v[j] = float((rnd % (B + B)) - B) / B;
+                }
+
+                s = DOT(v, v);
+            } while (s > 1.0f);
+
+            s = _sqrt(s);
+            for (j = 0; j < 3; j++)
+                g[i][j] = v[j] / s;
+        }
+
+        for (i = 0; i < B; i++)
+            p[i] = i;
+
+        for (i = B; i > 0; i -= 2)
+        {
+            rnd = rand();
+            k = p[i];
+
+            p[i] = p[(j = rnd % B)];
+            p[j] = k;
+        }
+
+        for (i = 0; i < B + 2; i++)
+        {
+            p[B + i] = p[i];
+
+            for (j = 0; j < 3; j++)
+                g[B + i][j] = g[i][j];
+        }
     }
 
-    for (i = 0; i < B; i++)
-        p[i] = i;
-
-    for (i = B; i > 0; i -= 2)
-    {
-        rnd = rand();
-        k = p[i];
-        p[i] = p[(j = rnd % B)];
-        p[j] = k;
-    }
-
-    for (i = 0; i < B + 2; i++)
-    {
-        p[B + i] = p[i];
-        for (j = 0; j < 3; j++)
-            g[B + i][j] = g[i][j];
-    }
-}
+    [[nodiscard]] constexpr const auto& gp() const { return p; }
+    [[nodiscard]] constexpr const auto& gg() const { return g; }
+};
 
 //--------------------------------------------------------------------
 float noise3(const Fvector& vec)
 {
+    static const noise3_init ns;
+
     int bx0, bx1;
     int by0, by1;
     int bz0, bz1;
@@ -80,7 +95,6 @@ float noise3(const Fvector& vec)
     float rx0, rx1;
     float ry0, ry1;
     float rz0, rz1;
-    float* q;
     float sx, sy, sz;
     float a, b, c, d, t, u, v;
     int i, j, tt;
@@ -89,41 +103,41 @@ float noise3(const Fvector& vec)
     PN_SETUP(1, by0, by1, ry0, ry1);
     PN_SETUP(2, bz0, bz1, rz0, rz1);
 
-    i = p[bx0];
-    j = p[bx1];
+    i = ns.gp()[bx0];
+    j = ns.gp()[bx1];
 
-    b00 = p[i + by0];
-    b10 = p[j + by0];
-    b01 = p[i + by1];
-    b11 = p[j + by1];
+    b00 = ns.gp()[i + by0];
+    b10 = ns.gp()[j + by0];
+    b01 = ns.gp()[i + by1];
+    b11 = ns.gp()[j + by1];
 
     sx = S_CURVE(rx0);
     sy = S_CURVE(ry0);
     sz = S_CURVE(rz0);
 
-    q = g[b00 + bz0];
+    std::span<const float, 3> q{ns.gg()[b00 + bz0]};
     u = AT(rx0, ry0, rz0);
-    q = g[b10 + bz0];
+    q = ns.gg()[b10 + bz0];
     v = AT(rx1, ry0, rz0);
     a = LERP(sx, u, v);
 
-    q = g[b01 + bz0];
+    q = ns.gg()[b01 + bz0];
     u = AT(rx0, ry1, rz0);
-    q = g[b11 + bz0];
+    q = ns.gg()[b11 + bz0];
     v = AT(rx1, ry1, rz0);
     b = LERP(sx, u, v);
 
     c = LERP(sy, a, b);
 
-    q = g[b00 + bz1];
+    q = ns.gg()[b00 + bz1];
     u = AT(rx0, ry0, rz1);
-    q = g[b10 + bz1];
+    q = ns.gg()[b10 + bz1];
     v = AT(rx1, ry0, rz1);
     a = LERP(sx, u, v);
 
-    q = g[b01 + bz1];
+    q = ns.gg()[b01 + bz1];
     u = AT(rx0, ry1, rz1);
-    q = g[b11 + bz1];
+    q = ns.gg()[b11 + bz1];
     v = AT(rx1, ry1, rz1);
     b = LERP(sx, u, v);
 
@@ -131,12 +145,13 @@ float noise3(const Fvector& vec)
 
     return 1.5f * LERP(sz, c, d);
 }
+} // namespace
 
 //--------------------------------------------------------------------
 float fractalsum3(const Fvector& v, float freq, int octaves)
 {
     int i;
-    float sum = 0.0;
+    float sum{};
     Fvector v_;
     float boost = freq;
     v_[0] = v[0] * freq;
@@ -158,7 +173,7 @@ float fractalsum3(const Fvector& v, float freq, int octaves)
 float turbulence3(const Fvector& v, float freq, int octaves)
 {
     int i;
-    float sum = 0.0;
+    float sum{};
     Fvector v_;
     float boost = freq;
     v_[0] = v[0] * freq;

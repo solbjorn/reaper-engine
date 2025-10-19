@@ -6,9 +6,6 @@
 #include "UIEditBox.h"
 #include "../string_table.h"
 
-#define BUTTON_UP_OFFSET 75
-#define BUTTON_WIDTH 140
-
 CUIMessageBox::CUIMessageBox() = default;
 CUIMessageBox::~CUIMessageBox() { Clear(); }
 

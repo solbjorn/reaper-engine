@@ -10,9 +10,8 @@
 
 #include "xrServer_Objects_ALife_Monsters.h"
 
-extern u32 get_level_id(u32 gvid);
-extern LPCSTR get_level_name_by_id(u32 level_id);
-
+namespace
+{
 u32 se_obj_level_id(CSE_ALifeObject* O) { return get_level_id(O->m_tGraphID); }
 LPCSTR se_obj_level_name(CSE_ALifeObject* O) { return get_level_name_by_id(se_obj_level_id(O)); }
 
@@ -21,9 +20,10 @@ bool se_obj_is_alive(CSE_ALifeObject* O)
     CSE_ALifeCreatureAbstract* cr = smart_cast<CSE_ALifeCreatureAbstract*>(O);
     if (cr)
         return cr->g_Alive();
-    else
-        return false;
+
+    return false;
 }
+} // namespace
 
 void CSE_ALifeSchedulable::script_register(sol::state_view& lua) { lua.new_usertype<CSE_ALifeSchedulable>("cse_alife_schedulable", sol::no_constructor); }
 
@@ -33,9 +33,12 @@ void CSE_ALifeGraphPoint::script_register(sol::state_view& lua)
                                           sol::base_classes, xr::sol_bases<CSE_ALifeGraphPoint>());
 }
 
+namespace
+{
 Flags32& get_flags_ref(CSE_ALifeObject* sobj) { return sobj->m_flags; }
 
 void cse_obj_set_position(CSE_ALifeObject* o, const Fvector& pos) { o->position().set(pos); }
+} // namespace
 
 void CSE_ALifeObject::script_register(sol::state_view& lua)
 {
@@ -78,13 +81,17 @@ void CSE_ALifePHSkeletonObject::script_register(sol::state_view& lua)
                                                 sol::factories(std::make_unique<CSE_ALifePHSkeletonObject, LPCSTR>), sol::base_classes, xr::sol_bases<CSE_ALifePHSkeletonObject>());
 }
 
+namespace
+{
 u8 cse_get_restrictor_type(CSE_ALifeDynamicObject* se_obj)
 {
     CSE_ALifeSpaceRestrictor* SR = smart_cast<CSE_ALifeSpaceRestrictor*>(se_obj);
     if (SR)
         return SR->m_space_restrictor_type;
+
     return 0;
 }
+} // namespace
 
 void CSE_ALifeSpaceRestrictor::script_register(sol::state_view& lua)
 {

@@ -9,7 +9,12 @@
 
 #include "../Layers/xrRenderDX10/imgui_impl_dx11.h"
 
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wunused-template");
+
 #include <oneapi/tbb/parallel_invoke.h>
+
+XR_DIAG_POP();
 
 #include <mmsystem.h>
 #include <winternl.h>
@@ -76,7 +81,6 @@ void CRenderDevice::RenderEnd(void)
 
     g_bRendering = false;
 
-    extern BOOL g_appLoaded;
     if (g_appLoaded)
     {
         ImGui::Render();
@@ -122,6 +126,8 @@ void GetMonitorResolution(u32& horizontal, u32& vertical)
     }
 }
 
+namespace
+{
 float GetMonitorRefresh()
 {
     DEVMODE lpDevMode;
@@ -134,6 +140,7 @@ float GetMonitorRefresh()
 
     return lpDevMode.dmDisplayFrequency;
 }
+} // namespace
 
 void CRenderDevice::CalcFrameStats()
 {
@@ -163,9 +170,6 @@ void CRenderDevice::CalcFrameStats()
     goto out;
 }
 
-extern int ps_framelimiter;
-extern u32 g_screenmode;
-
 xr_list<CallMe::Delegate<bool()>> g_loading_events;
 
 bool CRenderDevice::BeforeFrame()
@@ -192,8 +196,6 @@ bool CRenderDevice::BeforeFrame()
 
     return true;
 }
-
-extern float psHUD_FOV;
 
 void CRenderDevice::OnCameraUpdated()
 {
@@ -399,8 +401,11 @@ void CRenderDevice::Run()
     seqAppEnd.Process();
 }
 
-u32 app_inactive_time = 0;
-u32 app_inactive_time_start = 0;
+namespace
+{
+u32 app_inactive_time{};
+u32 app_inactive_time_start{};
+} // namespace
 
 void CRenderDevice::FrameMove()
 {

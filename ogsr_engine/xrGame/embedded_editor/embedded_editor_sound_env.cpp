@@ -10,7 +10,13 @@ XR_DIAG_IGNORE("-Wnontrivial-memcall");
 XR_DIAG_POP();
 
 #include <mmeapi.h>
+
+XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wmissing-variable-declarations");
+
 #include <../eax/eax.h>
+
+XR_DIAG_POP();
 
 /*
 constexpr const char* env_names[]{"GENERIC",    "PADDEDCELL",      "ROOM",       "BATHROOM",      "LIVINGROOM", "STONEROOM", "AUDITORIUM", "CONCERTHALL", "CAVE",   "ARENA",

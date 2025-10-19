@@ -17,8 +17,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
 #include "UIPdaAux.h"
-
-extern u32 g_pda_info_state;
+#include "UIPdaWnd.h"
 
 CUIDiaryWnd::CUIDiaryWnd()
 {
@@ -217,8 +216,6 @@ void CUIDiaryWnd::OnSrcListItemClicked(CUIWindow*, void* p)
         }
     }
 }
-
-void draw_sign(CUIStatic* s, Fvector2& pos);
 
 void CUIDiaryWnd::Draw()
 {

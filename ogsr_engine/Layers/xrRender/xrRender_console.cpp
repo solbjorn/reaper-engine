@@ -2,25 +2,36 @@
 
 #include "xrRender_console.h"
 
-u32 r2_SmapSize = 2048;
-static constexpr xr_token SmapSizeToken[] = {{"1536x1536", 1536},
-                                             {"2048x2048", 2048},
-                                             {"2560x2560", 2560},
-                                             {"3072x3072", 3072},
-                                             {"4096x4096", 4096},
-                                             {"6144x6144", 6144},
-                                             {"8192x8192", 8192},
-                                             //{ "16384x16384", 16384 },
-                                             {nullptr, 0}};
+#include "../../xr_3da/xr_ioconsole.h"
+#include "../../xr_3da/xr_ioc_cmd.h"
 
+#include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
+#include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
+
+u32 r2_SmapSize = 2048;
 u32 ps_r_sunshafts_mode = SS_COMBINED_MANOWAR;
-static constexpr xr_token sunshafts_mode_token[] = {{"st_opt_off", SS_OFF},
-                                                    {"volumetric", SS_VOLUMETRIC},
-                                                    {"ss_ogse", SS_SS_OGSE},
-                                                    {"ss_manowar", SS_SS_MANOWAR},
-                                                    {"combined_ogse", SS_COMBINED_OGSE},
-                                                    {"combined_manowar", SS_COMBINED_MANOWAR},
-                                                    {nullptr, 0}};
+
+namespace
+{
+constexpr xr_token SmapSizeToken[]{{"1536x1536", 1536},
+                                   {"2048x2048", 2048},
+                                   {"2560x2560", 2560},
+                                   {"3072x3072", 3072},
+                                   {"4096x4096", 4096},
+                                   {"6144x6144", 6144},
+                                   {"8192x8192", 8192},
+                                   //{ "16384x16384", 16384 },
+                                   {nullptr, 0}};
+
+constexpr xr_token sunshafts_mode_token[]{{"st_opt_off", SS_OFF},
+                                          {"volumetric", SS_VOLUMETRIC},
+                                          {"ss_ogse", SS_SS_OGSE},
+                                          {"ss_manowar", SS_SS_MANOWAR},
+                                          {"combined_ogse", SS_COMBINED_OGSE},
+                                          {"combined_manowar", SS_COMBINED_MANOWAR},
+                                          {nullptr, 0}};
+} // namespace
+
 // Sunshafts
 u32 ps_r_sun_shafts = 3;
 float ps_r_ss_sunshafts_length = 0.9f; // 1.0f;
@@ -30,33 +41,29 @@ float ps_r_prop_ss_blend = 0.25f; // 0.066f;
 float ps_r_prop_ss_sample_step_phase0 = 0.09f;
 float ps_r_prop_ss_sample_step_phase1 = 0.07f;
 
-u32 ps_Preset = 2;
-static constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
-
 u32 ps_r_ssao = 3;
-static constexpr xr_token qssao_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {nullptr, 0}};
-
 u32 ps_smaa_quality = 3;
-static constexpr xr_token smaa_quality_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {"st_opt_ultra", 4}, {nullptr, 0}};
-
 u32 ps_r_ao_mode = AO_MODE_SSDO;
-static constexpr xr_token ao_mode_token[] = {{"st_ssdo", AO_MODE_SSDO}, {"st_gtao", AO_MODE_GTAO}, {nullptr, 0}};
-
 u32 ps_r_sun_quality = 1; //	=	0;
-static constexpr xr_token qsun_quality_token[] = {{"st_opt_low", 0}, {"st_opt_medium", 1}, {"st_opt_high", 2}, {"st_opt_ultra", 3}, {"st_opt_extreme", 4}, {nullptr, 0}};
-
 u32 ps_r3_msaa = 0; //	=	0;
-static constexpr xr_token qmsaa_token[] = {{"st_opt_off", 0}, {"2x", 1}, {"4x", 2}, {"8x", 3}, {nullptr, 0}};
+
+namespace
+{
+u32 ps_Preset = 2;
+
+constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
+constexpr xr_token qssao_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {nullptr, 0}};
+constexpr xr_token smaa_quality_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {"st_opt_ultra", 4}, {nullptr, 0}};
+constexpr xr_token ao_mode_token[] = {{"st_ssdo", AO_MODE_SSDO}, {"st_gtao", AO_MODE_GTAO}, {nullptr, 0}};
+constexpr xr_token qsun_quality_token[] = {{"st_opt_low", 0}, {"st_opt_medium", 1}, {"st_opt_high", 2}, {"st_opt_ultra", 3}, {"st_opt_extreme", 4}, {nullptr, 0}};
+constexpr xr_token qmsaa_token[] = {{"st_opt_off", 0}, {"2x", 1}, {"4x", 2}, {"8x", 3}, {nullptr, 0}};
+} // namespace
 
 // Common
-extern int psSkeletonUpdate;
-extern float r__dtex_range;
-
 int ps_r__LightSleepFrames = 10;
 
 float ps_r__Detail_l_ambient = 0.9f;
 float ps_r__Detail_l_aniso = 0.25f;
-float ps_r__Detail_rainbow_hemi = 0.75f;
 
 float ps_r__Tree_w_rot = 10.0f;
 float ps_r__Tree_w_speed = 1.00f;
@@ -138,7 +145,6 @@ float ps_r2_dhemi_light_flow = 0.1f;
 int ps_r2_dhemi_count = 5; // 5
 int ps_r2_wait_sleep = 0;
 int ps_r2_wait_timeout = 500;
-int ps_lens_flare{};
 
 float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
@@ -244,7 +250,11 @@ float ps_r3_dyn_wet_surf_far = 30.f; // 30.0f
 int ps_r3_dyn_wet_surf_sm_res = 256; // 256
 Flags32 psDeviceFlags2 = {0};
 
+namespace
+{
 int ps_r__detail_radius = 49;
+}
+
 u32 dm_size = 24;
 u32 dm_cache1_line = 12; // dm_size*2/dm_cache1_count
 u32 dm_cache_line = 49; // dm_size+1+dm_size
@@ -272,11 +282,8 @@ u32 psCurrentBPP = 32;
 int opt_static = 2;
 int opt_dynamic = 2;
 
-#include "../../xr_3da/xr_ioconsole.h"
-#include "../../xr_3da/xr_ioc_cmd.h"
-
-#include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
-
+namespace
+{
 class CCC_r__color final : public CCC_Vector4
 {
     RTTI_DECLARE_TYPEINFO(CCC_r__color, CCC_Vector4);
@@ -423,6 +430,7 @@ public:
     }
 };
 
+#ifdef DEBUG
 class CCC_ModelPoolStat : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_ModelPoolStat, IConsole_Command);
@@ -432,6 +440,7 @@ public:
 
     void Execute(LPCSTR) override { RImplementation.Models->dump(); }
 };
+#endif
 
 //-----------------------------------------------------------------------
 class CCC_Preset : public CCC_Token
@@ -501,6 +510,7 @@ public:
     }
 };
 
+#ifdef DEBUG
 class CCC_DumpResources : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_DumpResources, IConsole_Command);
@@ -516,10 +526,6 @@ public:
 };
 
 //	Allow real-time fog config reload
-#ifdef DEBUG
-
-#include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
-
 class CCC_Fog_Reload : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Fog_Reload, IConsole_Command);
@@ -575,6 +581,7 @@ public:
         Msg("Importing particles Done!");
     }
 };
+} // namespace
 
 void xrRender_initconsole()
 {
@@ -865,13 +872,7 @@ void xrRender_initconsole()
     CMD1(CCC_PART_Export, "particles_export");
     CMD1(CCC_PART_Import, "particles_import");
 
-    extern BOOL bShadersXrExport;
     CMD4(CCC_Integer, "shaders_xr_export", &bShadersXrExport, FALSE, TRUE);
-
-    extern BOOL bSenvironmentXrExport;
-    CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
-
-    CMD4(CCC_Integer, "r_lens_flare", &ps_lens_flare, FALSE, TRUE);
 
     CMD4(CCC_Float, "particle_update_mod", &ps_particle_update_coeff, 0.04f, 10.f);
 }

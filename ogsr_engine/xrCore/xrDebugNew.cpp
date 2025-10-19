@@ -1,20 +1,21 @@
 #include "stdafx.h"
 
 #include "xrdebug.h"
+#include "stacktrace_collector.h"
+
+#include <sstream>
 
 #include <signal.h> // for signals
 #include <use_ansi.h> // for _set_new_mode
+
+#include <VersionHelpers.h>
+#include <shellapi.h>
 
 xrDebug Debug;
 HWND gGameWindow = nullptr;
 bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
-
-#include "stacktrace_collector.h"
-#include <sstream>
-#include <VersionHelpers.h>
-#include <shellapi.h>
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
@@ -105,6 +106,8 @@ LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS* pExceptionIn
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
+namespace
+{
 void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function,
                  char* assertion_info)
 {
@@ -165,6 +168,7 @@ void gather_info(const char* expression, const char* description, const char* ar
 #endif
     LogStackTrace("!!stack trace:\n");
 }
+} // namespace
 
 void xrDebug::do_exit(const std::string& message)
 {

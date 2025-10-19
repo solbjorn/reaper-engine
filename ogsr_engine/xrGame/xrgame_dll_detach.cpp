@@ -1,17 +1,23 @@
 #include "stdafx.h"
-#include "ai_space.h"
-#include "object_factory.h"
+
 #include "ai/monsters/ai_monster_squad_manager.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
+#include "object_factory.h"
 #include "string_table.h"
 
 #include "entity_alive.h"
 #include "ui/UIInventoryUtilities.h"
+#include "ui/UILine.h"
+#include "ui/UIWpnParams.h"
 #include "UI/UIXmlInit.h"
 
 #include "InfoPortion.h"
 #include "PhraseDialog.h"
+#include "GamePersistent.h"
 #include "GameTask.h"
 #include "encyclopedia_article.h"
+#include "map_location.h"
 
 #include "character_info.h"
 #include "specific_character.h"
@@ -24,18 +30,6 @@
 
 #include "sound_collection_storage.h"
 #include "relation_registry.h"
-
-typedef xr_map<shared_str, int> STORY_PAIRS;
-extern STORY_PAIRS story_ids;
-extern STORY_PAIRS spawn_story_ids;
-
-extern void dump_list_wnd();
-extern void dump_list_lines();
-extern void dump_list_sublines();
-extern void clean_wnd_rects();
-extern void dump_list_xmls();
-
-#include "..\xr_3da\IGame_Persistent.h"
 
 void init_game_globals()
 {
@@ -51,11 +45,6 @@ void init_game_globals()
     CHARACTER_REPUTATION::InitInternal();
     MONSTER_COMMUNITY::InitInternal();
 }
-
-extern CUIXml* g_gameTaskXml;
-extern CUIXml* g_uiSpotXml;
-
-extern void destroy_lua_wpn_params();
 
 void clean_game_globals()
 {

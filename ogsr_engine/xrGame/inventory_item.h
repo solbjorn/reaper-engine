@@ -120,7 +120,11 @@ public:
     virtual void load(IReader& input_packet);
     virtual BOOL net_SaveRelevant() { return TRUE; }
 
+#ifdef DEBUG
     virtual void UpdateCL();
+#else
+    virtual void UpdateCL() {}
+#endif
 
     virtual void Hit(SHit* pHDS);
 

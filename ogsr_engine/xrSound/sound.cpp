@@ -5,7 +5,10 @@
 xr_token* snd_devices_token = nullptr;
 u32 snd_device_id = u32(-1);
 
-CSoundRender_CoreA* impl = nullptr;
+namespace
+{
+CSoundRender_CoreA* impl{};
+}
 
 void CSound_manager_interface::_create(int stage)
 {

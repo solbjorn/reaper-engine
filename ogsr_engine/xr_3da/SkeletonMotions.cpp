@@ -49,6 +49,8 @@ void CPartition::load(IKinematics* V)
     }
 }
 
+namespace
+{
 u16 find_bone_id(vecBones* bones, shared_str nm)
 {
     for (u16 i = 0; i < (u16)bones->size(); i++)
@@ -56,6 +58,7 @@ u16 find_bone_id(vecBones* bones, shared_str nm)
             return i;
     return BI_NONE;
 }
+} // namespace
 
 //-----------------------------------------------------------------------
 BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)

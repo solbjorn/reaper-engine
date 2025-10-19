@@ -12,6 +12,8 @@ XR_DIAG_POP();
 
 CSoundRender_Source::~CSoundRender_Source() { unload(); }
 
+namespace
+{
 bool ov_can_continue_read(long res)
 {
     switch (res)
@@ -38,6 +40,7 @@ bool ov_can_continue_read(long res)
     }
     return false;
 }
+} // namespace
 
 void CSoundRender_Source::decompress(void* dest, u32 byte_offset, u32 size, OggVorbis_File* ovf) const
 {

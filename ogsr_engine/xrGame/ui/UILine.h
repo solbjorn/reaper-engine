@@ -47,3 +47,5 @@ protected:
 
     CUILine* m_tmpLine{};
 };
+
+void dump_list_lines();

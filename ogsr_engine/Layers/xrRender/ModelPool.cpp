@@ -321,8 +321,6 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
     return Model;
 }
 
-extern BOOL g_bRendering;
-
 void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
 {
     VERIFY(!g_bRendering);

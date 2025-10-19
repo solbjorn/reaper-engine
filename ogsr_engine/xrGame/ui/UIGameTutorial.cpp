@@ -54,11 +54,14 @@ bool CUISequenceItem::AllowKey(int dik)
     return false;
 }
 
+namespace
+{
 void CallFunctions(xr_vector<sol::function>& v)
 {
     for (auto& fn : v)
         fn();
 }
+} // namespace
 
 void CUISequenceItem::Start() { CallFunctions(m_start_lua_functions); }
 

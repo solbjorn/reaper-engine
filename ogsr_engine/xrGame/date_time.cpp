@@ -8,6 +8,8 @@
 
 #include "stdafx.h"
 
+#include "date_time.h"
+
 u64 generate_time(u32 years, u32 months, u32 days, u32 hours, u32 minutes, u32 seconds, u32 milliseconds)
 {
     THROW(years > 0);

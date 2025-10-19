@@ -59,7 +59,6 @@ float phRigidBreakWeaponFactor = 1.f;
 Fbox phBoundaries{1000.f, 1000.f, -1000.f, -1000.f, 0.0f, 0.0f};
 float ph_tri_query_ex_aabb_rate = 1.3f;
 int ph_tri_clear_disable_count = 10;
-dWorldID phWorld;
 
 /////////////////////////////////////
 dJointGroupID ContactGroup;
@@ -313,6 +312,9 @@ void dBodyAngAccelFromTorqu(const dBodyID body, dReal* ang_accel, const dReal* t
     dInvertPDMatrix(m.I, invI, 3);
     dMULTIPLY1_333(ang_accel, invI, torque);
 }
+
+namespace
+{
 void FixBody(dBodyID body, float ext_param, float mass_param)
 {
     dMass m;
@@ -325,6 +327,8 @@ void FixBody(dBodyID body, float ext_param, float mass_param)
     dBodySetForce(body, 0, 0, 0);
     dBodySetTorque(body, 0, 0, 0);
 }
+} // namespace
+
 void FixBody(dBodyID body) { FixBody(body, fix_ext_param, fix_mass_param); }
 
 void BodyCutForce(dBodyID body, float l_limit, float w_limit)

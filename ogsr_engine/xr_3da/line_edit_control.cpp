@@ -16,7 +16,10 @@
 
 #include "edit_actions.h"
 
-float g_console_sensitive = 0.15f;
+namespace
+{
+constexpr float g_console_sensitive{0.15f};
+}
 
 namespace text_editor
 {

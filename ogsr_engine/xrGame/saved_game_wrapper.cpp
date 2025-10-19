@@ -24,8 +24,6 @@ namespace zstd
 #include <zstd.h>
 }
 
-extern LPCSTR alife_section;
-
 LPCSTR CSavedGameWrapper::saved_game_full_name(LPCSTR saved_game_name, string_path& result)
 {
     string_path temp;
