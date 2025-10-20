@@ -45,7 +45,7 @@ class dxRender_Visual : public IRenderVisual
 
 public:
     shared_str dbg_name;
-    virtual shared_str _BCL getDebugName() { return dbg_name; }
+    virtual shared_str getDebugName() { return dbg_name; }
 
     // Common data for rendering
     ref_shader shader{}; // pipe state, shared
@@ -70,7 +70,7 @@ public:
     virtual void Spawn() {}
     virtual void Depart() {}
 
-    virtual vis_data& _BCL getVisData() { return vis; }
+    virtual vis_data& getVisData() { return vis; }
     u32 getType() const override { return Type; }
 
     dxRender_Visual();

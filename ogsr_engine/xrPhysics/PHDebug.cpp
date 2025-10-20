@@ -265,7 +265,8 @@ struct SPHDBGOutText : public SPHDBGDrawAbsract
         rendered = true;
     }
 };
-void _cdecl DBG_OutText(LPCSTR s, ...)
+
+void DBG_OutText(LPCSTR s, ...)
 {
     string64 t;
     va_list marker;
@@ -276,6 +277,7 @@ void _cdecl DBG_OutText(LPCSTR s, ...)
 }
 
 void DBG_OpenCashedDraw() { dbg_ph_draw_mode = dmCashed; }
+
 void DBG_ClosedCashedDraw(u32 remove_time)
 {
     dbg_ph_draw_mode = dmSecondaryThread;
@@ -287,6 +289,7 @@ IC void push(PHABS_DBG_V& v, SPHDBGDrawAbsract* a)
     if (v.size() < 500)
         v.push_back(a);
 }
+
 void DBG_DrawPHAbstruct(SPHDBGDrawAbsract* a)
 {
     if (dbg_ph_draw_mode != dmCashed)

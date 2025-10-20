@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-void __stdcall CLSID2TEXT(CLASS_ID id, LPSTR text)
+void CLSID2TEXT(CLASS_ID id, LPSTR text)
 {
     text[8] = 0;
     for (int i = 7; i >= 0; i--)
@@ -9,7 +9,8 @@ void __stdcall CLSID2TEXT(CLASS_ID id, LPSTR text)
         id >>= 8;
     }
 }
-CLASS_ID __stdcall TEXT2CLSID(LPCSTR text)
+
+CLASS_ID TEXT2CLSID(LPCSTR text)
 {
     VERIFY3(xr_strlen(text) <= 8, "Beer from creator CLASS_ID:", text);
     char buf[9];

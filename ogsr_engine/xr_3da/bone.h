@@ -11,7 +11,7 @@ class CBone;
 
 class CBoneInstance;
 // callback
-typedef void _BCL BoneCallbackFunction(CBoneInstance* P);
+typedef void BoneCallbackFunction(CBoneInstance* P);
 typedef BoneCallbackFunction* BoneCallback;
 // typedef void  (* BoneCallback)		(CBoneInstance* P);
 
@@ -58,7 +58,7 @@ public:
         ZeroMemory(&param, sizeof(param));
     }
 
-    void _BCL set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
+    void set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
     {
         Callback = C;
         Callback_Param = Param;
@@ -66,7 +66,7 @@ public:
         Callback_type = Type;
     }
 
-    void _BCL reset_callback()
+    void reset_callback()
     {
         Callback = nullptr;
         Callback_Param = nullptr;
@@ -74,7 +74,7 @@ public:
         Callback_type = 0;
     }
 
-    void _BCL set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
+    void set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
 
     void set_param(u32 idx, float data);
     float get_param(u32 idx);
@@ -444,11 +444,11 @@ public:
     void Load_0(IReader& F);
     void Load_1(IReader& F);
 
-    IC float _BCL engine_lo_limit(u8 k) const { return -IK_data.limits[k].limit.y; }
-    IC float _BCL engine_hi_limit(u8 k) const { return -IK_data.limits[k].limit.x; }
+    IC float engine_lo_limit(u8 k) const { return -IK_data.limits[k].limit.y; }
+    IC float engine_hi_limit(u8 k) const { return -IK_data.limits[k].limit.x; }
 
-    IC float _BCL editor_lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
-    IC float _BCL editor_hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
+    IC float editor_lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
+    IC float editor_hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
 
     void SaveData(IWriter& F);
     void LoadData(IReader& F);
@@ -498,8 +498,8 @@ public:
 #endif
     IC void SetParentID(u16 id) { ParentID = id; }
 
-    IC u16 _BCL GetSelfID() const { return SelfID; }
-    IC u16 _BCL GetParentID() const { return ParentID; }
+    IC u16 GetSelfID() const { return SelfID; }
+    IC u16 GetParentID() const { return ParentID; }
 
     // assign face
     void AppendFace(u16 child_idx, u16 idx) { child_faces[child_idx].push_back(idx); }

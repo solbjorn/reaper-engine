@@ -25,7 +25,7 @@ public:
     void CheckSpecParams(u32) override {}
 
     // look at enemy
-    static void _BCL BoneCallback(CBoneInstance* B);
+    static void BoneCallback(CBoneInstance* B);
 
     float _velocity;
     float _cur_delta, _target_delta;

@@ -168,7 +168,7 @@ public:
 CSE_ALifeTorridZone(LPCSTR caSection);
 virtual ~CSE_ALifeTorridZone();
 
-virtual CSE_Motion* __stdcall motion();
+virtual CSE_Motion* motion();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeTorridZone);
 
@@ -179,7 +179,7 @@ add_to_type_list(CSE_ALifeTorridZone);
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual) shared_str attack_animation;
 CSE_ALifeZoneVisual(LPCSTR caSection);
 virtual ~CSE_ALifeZoneVisual();
-virtual CSE_Visual* __stdcall visual();
+virtual CSE_Visual* visual();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeZoneVisual);
 

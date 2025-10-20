@@ -856,4 +856,4 @@ bool GiveGameNews(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Fr
 // script_game_object_use.cpp
 CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
 
-#include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "
+#include "script_game_object_impl.h"

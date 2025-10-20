@@ -185,7 +185,7 @@ public:
     u16 LL_BoneID(const shared_str& B) const override;
     const char* LL_BoneName_dbg(const u16 ID) const override;
 
-    CInifile* _BCL LL_UserData() { return pUserData; }
+    CInifile* LL_UserData() { return pUserData; }
 
     ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
     {
@@ -204,7 +204,7 @@ public:
         return bone_instances[bone_id];
     }
 
-    CBoneData& _BCL LL_GetData(u16 bone_id)
+    CBoneData& LL_GetData(u16 bone_id)
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
@@ -212,14 +212,14 @@ public:
         return bd;
     }
 
-    virtual const IBoneData& _BCL GetBoneData(u16 bone_id) const
+    virtual const IBoneData& GetBoneData(u16 bone_id) const
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
         CBoneData& bd = *((*bones)[bone_id]);
         return bd;
     }
-    CBoneData* _BCL LL_GetBoneData(u16 bone_id)
+    CBoneData* LL_GetBoneData(u16 bone_id)
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
@@ -229,34 +229,34 @@ public:
         CBoneData* bd = ((*bones)[bone_id]);
         return bd;
     }
-    u16 _BCL LL_BoneCount() const { return u16(bones->size()); }
+    u16 LL_BoneCount() const { return u16(bones->size()); }
     u16 LL_VisibleBoneCount() { return visimask.count(); }
-    ICF Fmatrix& _BCL LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
-    ICF const Fmatrix& _BCL LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
+    ICF Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
+    ICF const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
     ICF Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
     Fobb& LL_GetBox(u16 bone_id)
     {
         ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         return (*bones)[bone_id]->obb;
     }
-    const Fbox& _BCL GetBox() const { return vis.box; }
+    const Fbox& GetBox() const { return vis.box; }
     void LL_GetBindTransform(xr_vector<Fmatrix>& matrices);
     int LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
 
-    u16 _BCL LL_GetBoneRoot() { return iRoot; }
+    u16 LL_GetBoneRoot() { return iRoot; }
     void LL_SetBoneRoot(u16 bone_id)
     {
         VERIFY(bone_id < LL_BoneCount());
         iRoot = bone_id;
     }
 
-    BOOL _BCL LL_GetBoneVisible(u16 bone_id)
+    BOOL LL_GetBoneVisible(u16 bone_id)
     {
         VERIFY(bone_id < LL_BoneCount());
         return visimask.is(bone_id);
     }
     void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
-    VisMask _BCL LL_GetBonesVisible() { return visimask; }
+    VisMask LL_GetBonesVisible() { return visimask; }
     void LL_SetBonesVisible(VisMask mask);
 
     // Main functionality
@@ -280,7 +280,7 @@ public:
     void DebugRender(Fmatrix& XFORM);
 
 protected:
-    virtual shared_str _BCL getDebugName() { return dbg_name; }
+    virtual shared_str getDebugName() { return dbg_name; }
 
 public:
 #endif
@@ -293,8 +293,8 @@ public:
     virtual void Release();
 
     virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
-    virtual IRenderVisual* _BCL dcast_RenderVisual() { return this; }
-    virtual IKinematics* _BCL dcast_PKinematics() { return this; }
+    virtual IRenderVisual* dcast_RenderVisual() { return this; }
+    virtual IKinematics* dcast_PKinematics() { return this; }
     //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
 
     virtual u32 mem_usage(bool bInstance)

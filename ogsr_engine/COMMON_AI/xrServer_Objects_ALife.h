@@ -278,7 +278,7 @@ add_to_type_list(CSE_ALifeDynamicObject);
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeDynamicObjectVisual, CSE_ALifeDynamicObject, CSE_Visual) CSE_ALifeDynamicObjectVisual(LPCSTR caSection);
 virtual ~CSE_ALifeDynamicObjectVisual();
-virtual CSE_Visual* __stdcall visual();
+virtual CSE_Visual* visual();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeDynamicObjectVisual);
 
@@ -305,7 +305,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSpaceRestrictor, CSE_ALifeDynamicObject, C
 
 CSE_ALifeSpaceRestrictor(LPCSTR caSection);
 virtual ~CSE_ALifeSpaceRestrictor();
-virtual ISE_Shape* __stdcall shape();
+virtual ISE_Shape* shape();
 virtual bool __can_switch_offline() const;
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
@@ -435,8 +435,8 @@ virtual ~CSE_ALifeObjectHangingLamp();
 virtual void load(NET_Packet& tNetPacket);
 virtual bool used_ai_locations() const;
 virtual bool match_configuration() const;
-virtual bool __stdcall validate();
-virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
+virtual bool validate();
+virtual void on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
 virtual CSE_Abstract* cast_abstract() { return this; }
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeObjectHangingLamp);
@@ -461,7 +461,7 @@ virtual ~CSE_ALifeHelicopter();
 virtual void load(NET_Packet& tNetPacket);
 virtual bool can_save() const;
 virtual bool used_ai_locations() const;
-virtual CSE_Motion* __stdcall motion();
+virtual CSE_Motion* motion();
 virtual CSE_Abstract* cast_abstract() { return this; }
 
 SERVER_ENTITY_DECLARE_END
@@ -520,7 +520,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable, CSE_Shape, CSE_ALifeDynami
 virtual ~CSE_ALifeObjectClimable();
 virtual bool used_ai_locations() const;
 virtual bool __can_switch_offline() const;
-virtual ISE_Shape* __stdcall shape();
+virtual ISE_Shape* shape();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeObjectClimable);
 

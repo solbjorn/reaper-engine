@@ -32,7 +32,7 @@ class XR_NOVTABLE ISE_Shape : public virtual RTTI::Enable
 public:
     virtual ~ISE_Shape() = 0;
 
-    virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt) = 0;
+    virtual void assign_shapes(CShapeData::shape_def* shapes, u32 cnt) = 0;
 };
 
 inline ISE_Shape::~ISE_Shape() = default;
@@ -57,7 +57,7 @@ void visual_write(NET_Packet& P);
 void set_visual(LPCSTR name);
 LPCSTR get_visual() const { return *visual_name; }
 
-virtual CSE_Visual* __stdcall visual() = 0;
+virtual CSE_Visual* visual() = 0;
 }
 ;
 
@@ -79,7 +79,7 @@ void motion_write(NET_Packet& P);
 void set_motion(LPCSTR name);
 LPCSTR get_motion() const { return *motion_name; }
 
-virtual CSE_Motion* __stdcall motion() = 0;
+virtual CSE_Motion* motion() = 0;
 }
 ;
 
@@ -94,7 +94,7 @@ struct XR_NOVTABLE ISE_AbstractLEOwner : public virtual RTTI::Enable
 public:
     virtual ~ISE_AbstractLEOwner() = 0;
 
-    virtual void __stdcall get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
+    virtual void get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
 };
 
 inline ISE_AbstractLEOwner::~ISE_AbstractLEOwner() = default;
@@ -116,20 +116,20 @@ public:
 
     virtual ~ISE_Abstract() = 0;
 
-    virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal) = 0;
-    virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket) = 0;
-    virtual LPCSTR __stdcall name() const = 0;
-    virtual void __stdcall set_name(LPCSTR) = 0;
-    virtual LPCSTR __stdcall name_replace() const = 0;
-    virtual void __stdcall set_name_replace(LPCSTR) = 0;
-    virtual Fvector& __stdcall position() = 0;
-    virtual Fvector& __stdcall angle() = 0;
-    virtual Flags16& __stdcall flags() = 0;
-    virtual ISE_Shape* __stdcall shape() = 0;
-    virtual CSE_Visual* __stdcall visual() = 0;
-    virtual CSE_Motion* __stdcall motion() = 0;
-    virtual bool __stdcall validate() = 0;
-    virtual void __stdcall on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F) = 0;
+    virtual void Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal) = 0;
+    virtual BOOL Spawn_Read(NET_Packet& tNetPacket) = 0;
+    virtual LPCSTR name() const = 0;
+    virtual void set_name(LPCSTR) = 0;
+    virtual LPCSTR name_replace() const = 0;
+    virtual void set_name_replace(LPCSTR) = 0;
+    virtual Fvector& position() = 0;
+    virtual Fvector& angle() = 0;
+    virtual Flags16& flags() = 0;
+    virtual ISE_Shape* shape() = 0;
+    virtual CSE_Visual* visual() = 0;
+    virtual CSE_Motion* motion() = 0;
+    virtual bool validate() = 0;
+    virtual void on_render(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent, int priority, bool strictB2F) = 0;
 };
 
 inline ISE_Abstract::~ISE_Abstract() = default;

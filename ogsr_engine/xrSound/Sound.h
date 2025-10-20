@@ -341,7 +341,7 @@ public:
 };
 
 /// definition (Sound Callback)
-typedef void __stdcall sound_event(ref_sound_data_ptr S, float range, float time_to_stop);
+typedef void sound_event(ref_sound_data_ptr S, float range, float time_to_stop);
 
 /// definition (Sound Manager Interface)
 class XR_NOVTABLE CSound_manager_interface : public virtual RTTI::Enable

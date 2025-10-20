@@ -140,25 +140,25 @@ virtual void OnEvent(NET_Packet&, u16, u32, ClientID) {}
 virtual BOOL Net_Relevant() { return TRUE; }
 //
 void STATE_Write(NET_Packet& tNetPacket);
-virtual void __stdcall Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal);
+virtual void Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal);
 void STATE_Read(NET_Packet& tNetPacket, u16 size);
-virtual BOOL __stdcall Spawn_Read(NET_Packet& tNetPacket);
-virtual LPCSTR __stdcall name() const;
-virtual LPCSTR __stdcall name_replace() const;
-virtual void __stdcall set_name(LPCSTR s) { s_name = s; }
-virtual void __stdcall set_name_replace(LPCSTR s)
+virtual BOOL Spawn_Read(NET_Packet& tNetPacket);
+virtual LPCSTR name() const;
+virtual LPCSTR name_replace() const;
+virtual void set_name(LPCSTR s) { s_name = s; }
+virtual void set_name_replace(LPCSTR s)
 {
     xr_free(s_name_replace);
     s_name_replace = xr_strdup(s);
 }
-virtual Fvector& __stdcall position();
-virtual Fvector& __stdcall angle();
-virtual Flags16& __stdcall flags();
-virtual CSE_Visual* __stdcall visual();
-virtual ISE_Shape* __stdcall shape();
-virtual CSE_Motion* __stdcall motion();
-virtual bool __stdcall validate();
-virtual void __stdcall on_render(CDUInterface*, ISE_AbstractLEOwner*, bool, const Fmatrix&, int, bool) {}
+virtual Fvector& position();
+virtual Fvector& angle();
+virtual Flags16& flags();
+virtual CSE_Visual* visual();
+virtual ISE_Shape* shape();
+virtual CSE_Motion* motion();
+virtual bool validate();
+virtual void on_render(CDUInterface*, ISE_AbstractLEOwner*, bool, const Fmatrix&, int, bool) {}
 //
 
 IC const Fvector& Position() const { return o_Position; }

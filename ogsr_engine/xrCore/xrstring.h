@@ -134,7 +134,7 @@ public:
 
     bool equal(const shared_str& rhs) const { return (p_ == rhs.p_); }
 
-    shared_str& __cdecl XR_PRINTF(2, 3) sprintf(const char* format, ...)
+    shared_str& XR_PRINTF(2, 3) sprintf(const char* format, ...)
     {
         std::va_list args, args_copy;
 

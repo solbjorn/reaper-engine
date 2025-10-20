@@ -158,8 +158,8 @@ void cform_write(NET_Packet& P);
 CSE_Shape();
 virtual ~CSE_Shape();
 
-virtual ISE_Shape* __stdcall shape() = 0;
-virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
+virtual ISE_Shape* shape() = 0;
+virtual void assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
 }
 ;
 

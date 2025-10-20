@@ -349,11 +349,9 @@ void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords,
     } \
     XR_MACRO_END()
 
-void __cdecl CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt); }
-
-void __cdecl CGameFont::Out(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt); }
-
-void __cdecl CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt); }
+void CGameFont::OutI(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt); }
+void CGameFont::Out(float _x, float _y, LPCSTR fmt, ...) { MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt); }
+void CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, 1.0f, fmt); }
 
 void CGameFont::OutSkip(float val) { fCurrentY += val * CurrentHeight_(); }
 

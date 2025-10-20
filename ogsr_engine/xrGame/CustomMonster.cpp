@@ -65,7 +65,7 @@ void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
     rs = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_rs"));
 }
 
-// void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
+// void CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
 //{
 //	CCustomMonster*		M = static_cast<CCustomMonster*> (B->callback_param());
 //

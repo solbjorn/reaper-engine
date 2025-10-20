@@ -261,7 +261,7 @@ void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e
     std::unreachable();
 }
 
-void __cdecl xrDebug::fatal(const char* file, int line, const char* function, const char* F, ...)
+void xrDebug::fatal(const char* file, int line, const char* function, const char* F, ...)
 {
     string4096 strBuf;
     va_list args;

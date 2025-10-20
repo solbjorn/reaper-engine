@@ -151,12 +151,6 @@ public:
     const char* GetEngineVersion();
 };
 
-// Borland class dll interface
-#define _BCL
-
-// Borland global function dll interface
-#define _BGCL
-
 extern xrCore Core;
 extern bool gModulesLoaded;
 

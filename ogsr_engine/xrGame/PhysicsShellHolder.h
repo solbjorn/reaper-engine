@@ -122,7 +122,7 @@ public:
     Fvector2 CollideSndDist() const;
 
 public: // IPhysicsShellHolder
-    CPHCapture* _BCL PHCapture();
+    CPHCapture* PHCapture();
 
 private:
     Fvector m_overriden_activation_speed;

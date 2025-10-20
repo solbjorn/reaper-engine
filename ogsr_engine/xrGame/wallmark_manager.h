@@ -8,11 +8,13 @@ private:
 
 public:
     CObject* m_owner;
+
     CWalmarkManager();
     ~CWalmarkManager();
+
     void Load(LPCSTR section);
     void Clear();
     void PlaceWallmarks(const Fvector& start_pos);
 
-    void __stdcall StartWorkflow();
+    void StartWorkflow();
 };

@@ -30,7 +30,7 @@ public:
     [[noreturn]] void fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function);
     [[noreturn]] void error(const HRESULT code, const char* e1, const char* file, int line, const char* function);
     [[noreturn]] void error(const HRESULT code, const char* e1, const char* e2, const char* file, int line, const char* function);
-    [[noreturn]] void _cdecl XR_PRINTF(5, 6) fatal(const char* file, int line, const char* function, const char* F, ...);
+    [[noreturn]] void XR_PRINTF(5, 6) fatal(const char* file, int line, const char* function, const char* F, ...);
     void backend(const char* reason, const char* expression, const char* argument0, const char* argument1, const char* file, int line, const char* function);
     [[noreturn]] static void do_exit(const std::string& message);
 };

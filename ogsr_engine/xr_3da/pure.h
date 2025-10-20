@@ -17,7 +17,7 @@ constexpr inline int REG_PRIORITY_INVALID{std::numeric_limits<int>::lowest()};
         virtual ~pure##name() = 0; \
 \
         virtual void On##name() = 0; \
-        static ICF void __fastcall OnPure(pure##name* self) { self->On##name(); } \
+        static ICF void OnPure(pure##name* self) { self->On##name(); } \
     }; \
 \
     inline pure##name::~pure##name() = default

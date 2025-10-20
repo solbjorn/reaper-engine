@@ -119,7 +119,7 @@ void Log(const std::string& str)
 
 void Log(const char* s) { Log(std::string{s}); }
 
-void __cdecl Msg(const char* format, ...)
+void Msg(const char* format, ...)
 {
     string4096 strBuf;
     va_list args;

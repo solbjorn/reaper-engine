@@ -113,7 +113,7 @@ void DBG_DrawMatrix(const Fmatrix& m, float size, u8 a = 255);
 void DBG_DrawRotationX(const Fmatrix& m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7);
 void DBG_DrawRotationY(const Fmatrix& m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7);
 void DBG_DrawRotationZ(const Fmatrix& m, float ang0, float ang1, float size, u32 ac, bool solid = false, u32 tessel = 7);
-void _cdecl XR_PRINTF(1, 2) DBG_OutText(LPCSTR s, ...);
+void XR_PRINTF(1, 2) DBG_OutText(LPCSTR s, ...);
 void DBG_DrawFrameStart();
 void PH_DBG_Render();
 void PH_DBG_Clear();

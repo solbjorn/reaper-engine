@@ -2,7 +2,7 @@
 
 #define VPUSH(a) a.x, a.y, a.z
 
-void __cdecl XR_PRINTF(1, 2) Msg(const char* format, ...);
+void XR_PRINTF(1, 2) Msg(const char* format, ...);
 void Log(const std::string& msg);
 void Log(const char* msg);
 void Log(const char* msg, const Fvector& dop);

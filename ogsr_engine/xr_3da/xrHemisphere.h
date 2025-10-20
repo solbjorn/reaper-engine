@@ -1,7 +1,7 @@
 #ifndef xrHemisphereH
 #define xrHemisphereH
 
-typedef void __stdcall xrHemisphereIterator(float x, float y, float z, float energy, LPVOID param);
+typedef void xrHemisphereIterator(float x, float y, float z, float energy, LPVOID param);
 
 void xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* it, LPVOID param);
 int xrHemisphereVertices(int quality, const Fvector*& verts);

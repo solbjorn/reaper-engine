@@ -97,7 +97,7 @@ public:
     IC void w_angle8(float a) { w_float_q8(angle_normalize(a), 0, PI_MUL_2); }
     IC void w_dir(const Fvector& D) { w_u16(pvCompress(D)); }
     void w_sdir(const Fvector& D);
-    void __cdecl XR_PRINTF(2, 3) w_printf(const char* format, ...);
+    void XR_PRINTF(2, 3) w_printf(const char* format, ...);
 
     // generalized chunking
     u32 align();
