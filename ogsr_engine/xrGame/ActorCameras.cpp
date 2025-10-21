@@ -3,10 +3,6 @@
 #include "Actor.h"
 #include "../xr_3da/camerabase.h"
 
-#ifdef DEBUG
-#include "PHDebug.h"
-#endif
-
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
@@ -29,7 +25,11 @@
 #include "PHActivationShape.h"
 #include "debug_renderer.h"
 
-void CActor::cam_Set(EActorCameras style)
+#ifdef DEBUG
+#include "PHDebug.h"
+#endif
+
+void CActor::cam_Set(ACTOR_DEFS::EActorCameras style)
 {
     CCameraBase* old_cam = cam_Active();
     cam_active = style;
@@ -41,7 +41,7 @@ float CActor::f_Ladder_cam_limit = 1.f;
 
 void CActor::cam_SetLadder()
 {
-    CCameraBase* C = cameras[eacFirstEye];
+    CCameraBase* C = cameras[ACTOR_DEFS::eacFirstEye];
     g_LadderOrient();
     float yaw = (-XFORM().k.getH());
     float& cam_yaw = C->yaw;
@@ -62,11 +62,11 @@ void CActor::camUpdateLadder(float dt)
 {
     if (!character_physics_support()->movement()->ElevatorState())
         return;
-    if (cameras[eacFirstEye]->bClampYaw)
+    if (cameras[ACTOR_DEFS::eacFirstEye]->bClampYaw)
         return;
-    float yaw = (-XFORM().k.getH());
 
-    float& cam_yaw = cameras[eacFirstEye]->yaw;
+    float yaw = (-XFORM().k.getH());
+    float& cam_yaw = cameras[ACTOR_DEFS::eacFirstEye]->yaw;
     float delta = angle_difference_signed(yaw, cam_yaw);
 
     if (-0.05f < delta && 0.05f > delta)
@@ -74,9 +74,9 @@ void CActor::camUpdateLadder(float dt)
         yaw = cam_yaw + delta;
         float lo = (yaw - f_Ladder_cam_limit);
         float hi = (yaw + f_Ladder_cam_limit);
-        cameras[eacFirstEye]->lim_yaw[0] = lo;
-        cameras[eacFirstEye]->lim_yaw[1] = hi;
-        cameras[eacFirstEye]->bClampYaw = true;
+        cameras[ACTOR_DEFS::eacFirstEye]->lim_yaw[0] = lo;
+        cameras[ACTOR_DEFS::eacFirstEye]->lim_yaw[1] = hi;
+        cameras[ACTOR_DEFS::eacFirstEye]->bClampYaw = true;
     }
     else
     {
@@ -86,8 +86,8 @@ void CActor::camUpdateLadder(float dt)
     CElevatorState* es = character_physics_support()->movement()->ElevatorState();
     if (es && es->State() == CElevatorState::clbClimbingDown)
     {
-        float& cam_pitch = cameras[eacFirstEye]->pitch;
-        const float ldown_pitch = cameras[eacFirstEye]->lim_pitch.y;
+        float& cam_pitch = cameras[ACTOR_DEFS::eacFirstEye]->pitch;
+        const float ldown_pitch = cameras[ACTOR_DEFS::eacFirstEye]->lim_pitch.y;
         float delta = angle_difference_signed(ldown_pitch, cam_pitch);
         if (delta > 0.f)
             cam_pitch += delta * std::min(dt * 10.f, 1.f);
@@ -96,7 +96,7 @@ void CActor::camUpdateLadder(float dt)
 
 void CActor::cam_UnsetLadder()
 {
-    CCameraBase* C = cameras[eacFirstEye];
+    CCameraBase* C = cameras[ACTOR_DEFS::eacFirstEye];
     C->lim_yaw[0] = 0;
     C->lim_yaw[1] = 0;
     C->bClampYaw = false;
@@ -164,7 +164,7 @@ void CActor::cam_Update(float dt, float fFOV)
     {
         auto pItem = smart_cast<CHudItem*>(inventory().ActiveItem());
         auto pDet = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-        if (eacFirstEye == cam_active)
+        if (cam_active == ACTOR_DEFS::eacFirstEye)
         {
             if (pItem)
                 psHUD_FOV = pItem->GetHudFov();
@@ -174,12 +174,15 @@ void CActor::cam_Update(float dt, float fFOV)
                 psHUD_FOV = psHUD_FOV_def;
         }
         else
+        {
             psHUD_FOV = psHUD_FOV_def;
+        }
     }
     //--#SM+#--
 
-    if (mstate_real & mcClimb && cam_active != eacFreeLook)
+    if ((mstate_real & ACTOR_DEFS::mcClimb) && cam_active != ACTOR_DEFS::eacFreeLook)
         camUpdateLadder(dt);
+
     current_ik_cam_shift = 0;
 
     // Alex ADD: smooth crouch fix
@@ -304,7 +307,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
     // Подобие коллизии камеры
     float _viewport_near = VIEWPORT_NEAR;
-    if (eacFirstEye == cam_active && psActorFlags.test(AF_CAM_COLLISION))
+    if (cam_active == ACTOR_DEFS::eacFirstEye && psActorFlags.test(AF_CAM_COLLISION))
     {
         float check_dir = VIEWPORT_NEAR + 0.1f;
 
@@ -334,10 +337,10 @@ void CActor::cam_Update(float dt, float fFOV)
     }
     //
 
-    if (eacFirstEye != cam_active)
+    if (cam_active != ACTOR_DEFS::eacFirstEye)
     {
-        cameras[eacFirstEye]->Update(point, dangle);
-        cameras[eacFirstEye]->f_fov = fFOV;
+        cameras[ACTOR_DEFS::eacFirstEye]->Update(point, dangle);
+        cameras[ACTOR_DEFS::eacFirstEye]->f_fov = fFOV;
     }
 
     // if (psActorFlags.test(AF_PSP)) // всегда true
@@ -349,8 +352,8 @@ void CActor::cam_Update(float dt, float fFOV)
     //     Cameras().UpdateFromCamera(cameras[eacFirstEye]);
     // }
 
-    fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
-    vPrevCamDir = cameras[eacFirstEye]->vDirection;
+    fCurAVelocity = vPrevCamDir.sub(cameras[ACTOR_DEFS::eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
+    vPrevCamDir = cameras[ACTOR_DEFS::eacFirstEye]->vDirection;
 
     if (Level().CurrentEntity() == this)
     {

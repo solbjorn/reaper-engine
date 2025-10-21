@@ -16,8 +16,6 @@
 #include "step_manager.h"
 #include "xr_level_controller.h"
 
-using namespace ACTOR_DEFS;
-
 class CInfoPortion;
 struct GAME_NEWS_DATA;
 class CActorCondition;
@@ -253,7 +251,7 @@ protected:
     // media
     SndShockEffector* m_sndShockEffector;
     xr_vector<ref_sound> sndHit[ALife::eHitTypeMax];
-    ref_sound sndDie[SND_DIE_COUNT];
+    ref_sound sndDie[ACTOR_DEFS::SND_DIE_COUNT];
 
     float m_fLandingTime;
     float m_fJumpTime;
@@ -357,14 +355,15 @@ public:
         VERIFY(m_pActorEffector);
         return *m_pActorEffector;
     }
+
     IC CCameraBase* cam_Active() { return cameras[cam_active]; }
-    IC CCameraBase* cam_ByIndex(u16 index) { return (index < eacMaxCam ? cameras[index] : nullptr); }
-    IC CCameraBase* cam_FirstEye() { return cameras[eacFirstEye]; }
-    IC EActorCameras active_cam() { return cam_active; } // KD: need to know which cam active outside actor methods
+    [[nodiscard]] CCameraBase* cam_ByIndex(u16 index) { return (index < ACTOR_DEFS::eacMaxCam ? cameras[index] : nullptr); }
+    [[nodiscard]] CCameraBase* cam_FirstEye() { return cameras[ACTOR_DEFS::eacFirstEye]; }
+    [[nodiscard]] ACTOR_DEFS::EActorCameras active_cam() const { return cam_active; } // KD: need to know which cam active outside actor methods
     CEffectorBobbing* GetEffectorBobbing() { return pCamBobbing; }
 
 protected:
-    void cam_Set(EActorCameras style);
+    void cam_Set(ACTOR_DEFS::EActorCameras style);
     void cam_Update(float dt, float fFOV);
     void camUpdateLadder(float dt);
     void cam_SetLadder();
@@ -372,8 +371,8 @@ protected:
     float currentFOV();
 
     // Cameras
-    CCameraBase* cameras[eacMaxCam];
-    EActorCameras cam_active;
+    CCameraBase* cameras[ACTOR_DEFS::eacMaxCam];
+    ACTOR_DEFS::EActorCameras cam_active;
     float fPrevCamPos;
     float current_ik_cam_shift;
     Fvector vPrevCamDir;
@@ -454,8 +453,8 @@ public:
     bool CanRun();
     void StopAnyMove();
 
-    bool AnyAction() { return (mstate_real & mcAnyAction) != 0; }
-    bool AnyMove() { return (mstate_real & mcAnyMove) != 0; }
+    [[nodiscard]] bool AnyAction() const { return (mstate_real & ACTOR_DEFS::mcAnyAction) != 0; }
+    [[nodiscard]] bool AnyMove() const { return (mstate_real & ACTOR_DEFS::mcAnyMove) != 0; }
 
     bool is_jump();
     bool is_crouch();

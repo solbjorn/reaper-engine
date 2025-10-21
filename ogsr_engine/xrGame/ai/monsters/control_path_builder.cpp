@@ -64,7 +64,7 @@ void CControlPathBuilder::update_schedule()
     // set params only if enable params
     if (m_data.enable)
     {
-        detail().set_path_type(eDetailPathTypeSmooth);
+        detail().set_path_type(DetailPathManager::eDetailPathTypeSmooth);
 
         // установить direction
         detail().set_use_dest_orientation(m_data.use_dest_orientation);
@@ -144,7 +144,7 @@ bool CControlPathBuilder::build_special(const Fvector& target, u32 node, u32 vel
     detail().set_try_min_time(false);
     detail().set_use_dest_orientation(false);
 
-    detail().set_path_type(eDetailPathTypeSmooth);
+    detail().set_path_type(DetailPathManager::eDetailPathTypeSmooth);
     set_path_type(MovementManager::ePathTypeLevelPath);
 
     detail().set_dest_position(target);

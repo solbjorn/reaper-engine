@@ -867,13 +867,12 @@ void CWeapon::OnBeforeDrop() { inherited::OnBeforeDrop(); }
 u8 CWeapon::idle_state()
 {
     auto* actor = smart_cast<CActor*>(H_Parent());
-
     if (actor)
     {
         u32 st = actor->get_state();
-        if (st & mcSprint)
+        if (st & ACTOR_DEFS::mcSprint)
             return eSubstateIdleSprint;
-        else if (st & mcAnyAction && !(st & mcJump) && !(st & mcFall))
+        else if ((st & ACTOR_DEFS::mcAnyAction) && !(st & ACTOR_DEFS::mcJump) && !(st & ACTOR_DEFS::mcFall))
             return eSubstateIdleMoving;
     }
 
@@ -1126,7 +1125,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
             return false;
         }
 
-        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && g_actor->get_state() & mcSprint)
+        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && ParentIsActor() && (g_actor->get_state() & ACTOR_DEFS::mcSprint))
             return true;
 
         if (flags & CMD_START)

@@ -41,15 +41,15 @@ void CStalkerActionDangerInDirectionTakeCover::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_movement_type(::Random.randI(2) ? eMovementTypeRun : eMovementTypeWalk);
+    object().movement().set_movement_type(::Random.randI(2) ? MonsterSpace::eMovementTypeRun : MonsterSpace::eMovementTypeWalk);
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
 void CStalkerActionDangerInDirectionTakeCover::execute()
@@ -107,16 +107,16 @@ void CStalkerActionDangerInDirectionLookOut::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 
-    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
+    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
     object().movement().set_nearest_accessible_position();
 
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
     set_inertia_time(1000);
     //	object().brain().affect_cover				(true);
@@ -181,14 +181,14 @@ void CStalkerActionDangerInDirectionHoldPosition::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
 
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
     set_inertia_time(xr::random_u32(5000, 10000));
 }
@@ -218,7 +218,7 @@ void CStalkerActionDangerInDirectionHoldPosition::execute()
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = position.distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
 void CStalkerActionDangerInDirectionHoldPosition::finalize() { inherited::finalize(); }
@@ -237,13 +237,13 @@ void CStalkerActionDangerInDirectionDetour::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     object().agent_manager().member().member(m_object).cover(nullptr);
 }
 
@@ -254,7 +254,7 @@ void CStalkerActionDangerInDirectionDetour::execute()
     if (!object().memory().danger().selected()->object())
         return;
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().danger().selected()->object());
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().danger().selected()->object());
 
     if (!mem_object.m_object)
         return;
@@ -301,14 +301,14 @@ void CStalkerActionDangerInDirectionSearch::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 
     u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
     float distance = object().memory().danger().selected()->position().distance_to(object().Position());
     select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 
     object().agent_manager().member().member(m_object).cover(nullptr);
 }
@@ -320,8 +320,7 @@ void CStalkerActionDangerInDirectionSearch::execute()
     if (!object().memory().danger().selected()->object())
         return;
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().danger().selected()->object());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().danger().selected()->object());
     if (!mem_object.m_object)
         return;
 

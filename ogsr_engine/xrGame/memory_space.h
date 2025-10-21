@@ -216,7 +216,7 @@ public:
 
 add_to_type_list(CMemoryInfo);
 #undef script_type_list
-#define script_type_list save_type_list(CMemoryInfo)
+#define script_type_list MemorySpace::save_type_list(CMemoryInfo)
 
 template <typename T>
 struct SLevelTimePredicate
@@ -231,5 +231,3 @@ XR_SOL_BASE_CLASSES(MemorySpace::CVisibleObject);
 XR_SOL_BASE_CLASSES(MemorySpace::CHitObject);
 XR_SOL_BASE_CLASSES(MemorySpace::CSoundObject);
 XR_SOL_BASE_CLASSES(MemorySpace::CMemoryInfo);
-
-using namespace MemorySpace;

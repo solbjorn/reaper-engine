@@ -20,7 +20,7 @@ IC bool CStalkerAnimationManager::standing() const
     if (movement.speed(obj.character_physics_support()->movement()) < EPS_L)
         return (true);
 
-    if (eMovementTypeStand == movement.movement_type())
+    if (movement.movement_type() == MonsterSpace::eMovementTypeStand)
         return (true);
 
     return (false);

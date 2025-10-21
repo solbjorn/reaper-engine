@@ -61,9 +61,9 @@ void CStalkerActionSolveZonePuzzle::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeGamePath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateFree);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateFree);
     object().sight().setup(CSightAction(SightManager::eSightTypeCover, false, true));
 #else
 #if 1
@@ -71,21 +71,21 @@ void CStalkerActionSolveZonePuzzle::initialize()
     object().movement().set_desired_direction(0);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateFree);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateFree);
     //		object().sight().setup						(CSightAction(g_actor,true));
     object().sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 #else
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_body_state(eBodyStateStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
     object().movement().set_desired_direction(0);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
     object().sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
-    object().CObjectHandler::set_goal(eObjectActionFire1, object().inventory().m_slots[1].m_pIItem, 0, 1, 2500, 3000);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, object().inventory().m_slots[1].m_pIItem, 0, 1, 2500, 3000);
 #endif
 #endif
 }
@@ -109,23 +109,23 @@ void CStalkerActionSolveZonePuzzle::execute()
 #ifndef GRENADE_TEST
     if (Device.dwTimeGlobal >= m_stop_weapon_handling_time)
         if (!object().best_weapon())
-            object().CObjectHandler::set_goal(eObjectActionIdle);
+            object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         else
-            object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
+            object().CObjectHandler::set_goal(MonsterSpace::eObjectActionStrapped, object().best_weapon());
     else
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon());
 #else
 #if 0
 		object().throw_target					(g_actor->Position());
-		object().CObjectHandler::set_goal		(eObjectActionFire1,object().inventory().m_slots[3].m_pIItem);
+		object().CObjectHandler::set_goal		(MonsterSpace::eObjectActionFire1,object().inventory().m_slots[3].m_pIItem);
 #else
 #if 0
 			const CWeapon							*weapon = smart_cast<const CWeapon*>(object().best_weapon());
 			VERIFY									(weapon);
 			if (!weapon->strapped_mode())
-				object().CObjectHandler::set_goal	(eObjectActionStrapped,object().best_weapon());
+				object().CObjectHandler::set_goal	(MonsterSpace::eObjectActionStrapped,object().best_weapon());
 			else
-				object().CObjectHandler::set_goal	(eObjectActionIdle,object().best_weapon());
+				object().CObjectHandler::set_goal	(MonsterSpace::eObjectActionIdle,object().best_weapon());
 #else
     const CWeapon* weapon = smart_cast<const CWeapon*>(object().best_weapon());
     VERIFY(weapon);
@@ -177,24 +177,24 @@ void CStalkerActionSmartTerrain::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().game_selector().set_selection_type(eSelectionTypeMask);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateFree);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateFree);
     object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 
     if (!object().best_weapon())
     {
-        object().CObjectHandler::set_goal(eObjectActionIdle);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         return;
     }
 
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 
     CWeapon* best_weapon = smart_cast<CWeapon*>(object().best_weapon());
     if (object().CObjectHandler::weapon_strapped(best_weapon))
         return;
 
-    object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon());
 }
 
 void CStalkerActionSmartTerrain::finalize()
@@ -209,7 +209,7 @@ void CStalkerActionSmartTerrain::execute()
     inherited::execute();
 
     if (completed())
-        object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionStrapped, object().best_weapon());
 
     object().sound().play(eStalkerSoundHumming, 60000, 10000);
 

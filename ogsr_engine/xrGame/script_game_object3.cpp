@@ -437,9 +437,10 @@ void CScriptGameObject::set_desired_direction(const Fvector* desired_direction)
         stalker->movement().set_desired_direction(desired_direction);
 }
 
-void CScriptGameObject::set_body_state(EBodyState body_state)
+void CScriptGameObject::set_body_state(MonsterSpace::EBodyState body_state)
 {
-    THROW((body_state == eBodyStateStand) || (body_state == eBodyStateCrouch));
+    THROW(body_state == MonsterSpace::eBodyStateStand || body_state == MonsterSpace::eBodyStateCrouch);
+
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement!");
@@ -447,7 +448,7 @@ void CScriptGameObject::set_body_state(EBodyState body_state)
         stalker->movement().set_body_state(body_state);
 }
 
-void CScriptGameObject::set_movement_type(EMovementType movement_type)
+void CScriptGameObject::set_movement_type(MonsterSpace::EMovementType movement_type)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
@@ -456,11 +457,13 @@ void CScriptGameObject::set_movement_type(EMovementType movement_type)
         stalker->movement().set_movement_type(movement_type);
 }
 
-void CScriptGameObject::set_mental_state(EMentalState mental_state)
+void CScriptGameObject::set_mental_state(MonsterSpace::EMentalState mental_state)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)
+    {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement!");
+    }
     else
     {
 #ifdef DEBUG
@@ -473,6 +476,7 @@ void CScriptGameObject::set_mental_state(EMentalState mental_state)
             }
         }
 #endif // DEBUG
+
         stalker->movement().set_mental_state(mental_state);
     }
 }
@@ -661,7 +665,7 @@ void CScriptGameObject::set_sight(CScriptGameObject* object_to_look, bool torso_
         stalker->sight().setup(CSightAction(&object_to_look->object(), torso_look, fire_object, no_pitch));
 }
 
-void CScriptGameObject::set_sight(const CMemoryInfo* memory_object, bool torso_look)
+void CScriptGameObject::set_sight(const MemorySpace::CMemoryInfo* memory_object, bool torso_look)
 {
     CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
     if (!stalker)

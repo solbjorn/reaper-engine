@@ -222,7 +222,7 @@ void CHUDTarget::Render()
     if (auto Wpn = smart_cast<CWeapon*>(Actor->inventory().ActiveItem()); Wpn && (Wpn->IsLaserOn() || Wpn->GetState() == CHUDState::EHudStates::eReload))
         return;
 
-    if (Actor->get_state() & mcSprint)
+    if (Actor->get_state() & ACTOR_DEFS::mcSprint)
         return;
 
     Fvector2 scr_size;

@@ -12,8 +12,6 @@
 #include "detail_path_manager_space.h"
 #include "associative_vector.h"
 
-using namespace DetailPathManager;
-
 class CDetailPathManager : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDetailPathManager);
@@ -94,7 +92,7 @@ private:
 private:
     bool m_actuality;
     bool m_failed;
-    EDetailPathType m_path_type;
+    DetailPathManager::EDetailPathType m_path_type;
 
 private:
     Fvector m_start_position;
@@ -104,11 +102,11 @@ private:
     Fvector m_dest_direction;
 
 private:
-    xr_vector<STravelPathPoint> m_path;
+    xr_vector<DetailPathManager::STravelPathPoint> m_path;
     xr_vector<STravelPoint> m_key_points;
     xr_vector<STravelParamsIndex> m_start_params;
     xr_vector<STravelParamsIndex> m_dest_params;
-    xr_vector<STravelPathPoint> m_temp_path;
+    xr_vector<DetailPathManager::STravelPathPoint> m_temp_path;
     u32 m_desirable_mask;
     u32 m_velocity_mask;
 
@@ -133,16 +131,18 @@ private:
     IC void compute_circles(STrajectoryPoint& point, SCirclePoint* circles);
     bool compute_tangent(const STrajectoryPoint& start, const SCirclePoint& start_circle, const STrajectoryPoint& dest, const SCirclePoint& dest_circle, SCirclePoint* tangents,
                          const EDirectionType direction_type);
-    bool build_circle_trajectory(const STrajectoryPoint& position, xr_vector<STravelPathPoint>* path, u32* vertex_id, const u32 velocity);
-    bool build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id, xr_vector<STravelPathPoint>* path, const u32 velocity);
-    bool build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<STravelPathPoint>* path, const u32 velocity1, const u32 velocity2,
-                          const u32 velocity3);
-    bool build_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, const SCirclePoint tangents[4][2], const u32 tangent_count, xr_vector<STravelPathPoint>* path,
-                          float& time, const u32 velocity1, const u32 velocity2, const u32 velocity3);
-    bool compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2,
-                            const u32 velocity3, const EDirectionType direction_type);
-    bool compute_path(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelPathPoint>* m_tpTravelLine, const xr_vector<STravelParamsIndex>& m_start_params,
-                      const xr_vector<STravelParamsIndex>& m_dest_params, const u32 straight_line_index, const u32 straight_line_index_negative);
+    bool build_circle_trajectory(const STrajectoryPoint& position, xr_vector<DetailPathManager::STravelPathPoint>* path, u32* vertex_id, const u32 velocity);
+    bool build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id, xr_vector<DetailPathManager::STravelPathPoint>* path,
+                               const u32 velocity);
+    bool build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, const u32 velocity1,
+                          const u32 velocity2, const u32 velocity3);
+    bool build_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, const SCirclePoint tangents[4][2], const u32 tangent_count,
+                          xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2, const u32 velocity3);
+    bool compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1,
+                            const u32 velocity2, const u32 velocity3, const EDirectionType direction_type);
+    bool compute_path(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* m_tpTravelLine,
+                      const xr_vector<STravelParamsIndex>& m_start_params, const xr_vector<STravelParamsIndex>& m_dest_params, const u32 straight_line_index,
+                      const u32 straight_line_index_negative);
     void validate_vertex_position(STrajectoryPoint& point) const;
     bool init_build(const xr_vector<u32>& level_path, u32 intermediate_index, STrajectoryPoint& start, STrajectoryPoint& dest, u32& straight_line_index,
                     u32& straight_line_index_negative);
@@ -171,6 +171,7 @@ protected:
 public:
     CDetailPathManager(CRestrictedObject* object);
     virtual ~CDetailPathManager();
+
     virtual void reinit();
     bool valid() const;
     Fvector direction() const;
@@ -183,8 +184,8 @@ public:
     IC u32 curr_travel_point_index() const;
 
 public:
-    IC const xr_vector<STravelPathPoint>& path() const;
-    IC const STravelPathPoint& curr_travel_point() const;
+    [[nodiscard]] inline const xr_vector<DetailPathManager::STravelPathPoint>& path() const;
+    [[nodiscard]] inline const DetailPathManager::STravelPathPoint& curr_travel_point() const;
     IC const Fvector& start_position() const;
     IC const Fvector& start_direction() const;
     IC const Fvector& dest_position() const;
@@ -201,7 +202,7 @@ public:
     IC void set_start_direction(const Fvector& start_direction);
     IC void set_dest_position(const Fvector& dest_position);
     IC void set_dest_direction(const Fvector& dest_direction);
-    IC void set_path_type(const EDetailPathType path_type);
+    inline void set_path_type(const DetailPathManager::EDetailPathType path_type);
     IC void set_velocity_mask(const u32 mask);
     IC void set_desirable_mask(const u32 mask);
     IC void set_try_min_time(const bool try_min_time);

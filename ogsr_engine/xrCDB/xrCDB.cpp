@@ -7,6 +7,7 @@ XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wclass-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wheader-hygiene");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
 XR_DIAG_IGNORE("-Wunused-parameter");
 

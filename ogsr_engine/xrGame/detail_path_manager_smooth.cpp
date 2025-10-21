@@ -153,10 +153,10 @@ bool CDetailPathManager::compute_tangent(const STrajectoryPoint& start, const SC
     return (true);
 }
 
-bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& position, xr_vector<STravelPathPoint>* path, u32* vertex_id, const u32 velocity)
+bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& position, xr_vector<DetailPathManager::STravelPathPoint>* path, u32* vertex_id, const u32 velocity)
 {
     const float min_dist = .1f;
-    STravelPathPoint t;
+    DetailPathManager::STravelPathPoint t;
     t.velocity = velocity;
     if (position.radius * _abs(position.angle) <= min_dist)
     {
@@ -250,10 +250,11 @@ bool CDetailPathManager::build_circle_trajectory(const STrajectoryPoint& positio
     return (true);
 }
 
-bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id, xr_vector<STravelPathPoint>* path, u32 velocity)
+bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, u32 vertex_id, xr_vector<DetailPathManager::STravelPathPoint>* path,
+                                               u32 velocity)
 {
     VERIFY(ai().level_graph().valid_vertex_id(vertex_id));
-    STravelPathPoint t;
+    DetailPathManager::STravelPathPoint t;
     t.velocity = velocity;
     if (ai().level_graph().inside(vertex_id, dest.point))
     {
@@ -271,8 +272,8 @@ bool CDetailPathManager::build_line_trajectory(const STrajectoryPoint& start, co
                    ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(vertex_id, start.point, dest.point)));
 }
 
-bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<STravelPathPoint>* path, const u32 velocity1, const u32 velocity2,
-                                          const u32 velocity3)
+bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, const u32 velocity1,
+                                          const u32 velocity2, const u32 velocity3)
 {
     u32 vertex_id;
 
@@ -289,7 +290,7 @@ bool CDetailPathManager::build_trajectory(const STrajectoryPoint& start, const S
 }
 
 bool CDetailPathManager::build_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, const SCirclePoint tangents[4][2], const u32 tangent_count,
-                                          xr_vector<STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2, const u32 velocity3)
+                                          xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1, const u32 velocity2, const u32 velocity3)
 {
     time = flt_max;
     SDist dist[4];
@@ -323,7 +324,7 @@ bool CDetailPathManager::build_trajectory(STrajectoryPoint& start, STrajectoryPo
     return (false);
 }
 
-bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<STravelPathPoint>* path, float& time, const u32 velocity1,
+bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectoryPoint& dest, xr_vector<DetailPathManager::STravelPathPoint>* path, float& time, const u32 velocity1,
                                             const u32 velocity2, const u32 velocity3, const EDirectionType direction_type)
 {
     SCirclePoint start_circles[2], dest_circles[2];
@@ -348,7 +349,7 @@ bool CDetailPathManager::compute_trajectory(STrajectoryPoint& start, STrajectory
     return (build_trajectory(start, dest, tangent_points, tangent_count, path, time, velocity1, velocity2, velocity3));
 }
 
-bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint& _dest, xr_vector<STravelPathPoint>* m_tpTravelLine,
+bool CDetailPathManager::compute_path(STrajectoryPoint& _start, STrajectoryPoint& _dest, xr_vector<DetailPathManager::STravelPathPoint>* m_tpTravelLine,
                                       const xr_vector<STravelParamsIndex>& start_params, const xr_vector<STravelParamsIndex>& dest_params, const u32 straight_line_index,
                                       const u32 straight_line_index_negative)
 {
@@ -756,7 +757,7 @@ void CDetailPathManager::add_patrol_point()
     m_last_patrol_point = m_path.size() - 1;
     if ((m_path.size() > 1) && m_state_patrol_path && !fis_zero(extrapolate_length()))
     {
-        STravelPathPoint t;
+        DetailPathManager::STravelPathPoint t;
         Fvector v;
         v.sub(m_path.back().position, m_path[m_last_patrol_point - 1].position);
         v.y = 0.f;

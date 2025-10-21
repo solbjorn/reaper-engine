@@ -24,7 +24,7 @@ void CAgentManagerPlanner::setup(CAgentManager* object)
     add_evaluators();
     add_actions();
 
-    CWorldState goal;
+    GraphEngineSpace::CWorldState goal;
     goal.clear();
     goal.add_condition(CWorldProperty(ePropertyOrders, true));
     set_target_state(goal);

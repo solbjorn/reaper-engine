@@ -781,7 +781,7 @@ void CWeaponMagazined::OnShot()
 {
     // Если актор бежит - останавливаем его
     if (ParentIsActor())
-        Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+        Actor()->set_state_wishful(Actor()->get_state_wishful() & ~ACTOR_DEFS::mcSprint);
 
     // Sound
     PlaySound(*m_pSndShotCurrent, get_LastFP(), true);
@@ -989,10 +989,14 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
     switch (cmd)
     {
     case kWPN_RELOAD: {
-        if (!Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || (!ParentIsActor() || !(g_actor->get_state() & mcSprint)))
+        if (!Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || (!ParentIsActor() || !(g_actor->get_state() & ACTOR_DEFS::mcSprint)))
+        {
             if (flags & CMD_START)
+            {
                 if (iAmmoElapsed < iMagazineSize || (IsMisfire() && !IsGrenadeMode()))
                     Reload();
+            }
+        }
     }
         return true;
     case kWPN_FIREMODE_PREV: {
@@ -1035,6 +1039,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
         {
             HeadLampSwitch = true;
             DeviceSwitch();
+
             return true;
         }
     }
@@ -1045,11 +1050,13 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
         {
             NightVisionSwitch = true;
             DeviceSwitch();
+
             return true;
         }
     }
     break;
     }
+
     return false;
 }
 
@@ -1392,16 +1399,18 @@ const char* CWeaponMagazined::GetAnimAimName()
     {
         if (AnmIdleMovingAllowed())
         {
-            if (const u32 state = pActor->get_state(); state & mcAnyMove)
+            if (const u32 state = pActor->get_state(); state & ACTOR_DEFS::mcAnyMove)
             {
                 if (IsScopeAttached())
                     return xr_strconcat(guns_aim_anm, "anm_idle_aim_scope_moving", IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));
                 else
-                    return xr_strconcat(guns_aim_anm, "anm_idle_aim_moving", (state & mcFwd) ? "_forward" : ((state & mcBack) ? "_back" : ""),
-                                        (state & mcLStrafe) ? "_left" : ((state & mcRStrafe) ? "_right" : ""), IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));
+                    return xr_strconcat(guns_aim_anm, "anm_idle_aim_moving", (state & ACTOR_DEFS::mcFwd) ? "_forward" : ((state & ACTOR_DEFS::mcBack) ? "_back" : ""),
+                                        (state & ACTOR_DEFS::mcLStrafe) ? "_left" : ((state & ACTOR_DEFS::mcRStrafe) ? "_right" : ""),
+                                        IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));
             }
         }
     }
+
     return nullptr;
 }
 

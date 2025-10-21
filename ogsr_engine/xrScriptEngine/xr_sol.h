@@ -33,6 +33,7 @@ XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wimplicit-fallthrough");
 XR_DIAG_IGNORE("-Wnewline-eof");
 XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wundefined-reinterpret-cast");
 XR_DIAG_IGNORE("-Wunused-template");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 

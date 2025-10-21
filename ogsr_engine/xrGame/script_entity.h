@@ -18,8 +18,6 @@ class CEntity;
 class CScriptGameObject;
 class CCustomMonster;
 
-using namespace ScriptEntity;
-
 class CScriptEntity : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CScriptEntity);

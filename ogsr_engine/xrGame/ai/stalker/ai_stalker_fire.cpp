@@ -75,21 +75,21 @@ float CAI_Stalker::GetWeaponAccuracy() const
 
     if (!movement().path_completed())
     {
-        if (movement().movement_type() == eMovementTypeWalk)
+        if (movement().movement_type() == MonsterSpace::eMovementTypeWalk)
         {
-            if (movement().body_state() == eBodyStateStand)
+            if (movement().body_state() == MonsterSpace::eBodyStateStand)
                 return m_fDispBase + base * m_disp_walk_stand;
             return m_fDispBase + base * m_disp_walk_crouch;
         }
-        if (movement().movement_type() == eMovementTypeRun)
+        if (movement().movement_type() == MonsterSpace::eMovementTypeRun)
         {
-            if (movement().body_state() == eBodyStateStand)
+            if (movement().body_state() == MonsterSpace::eBodyStateStand)
                 return m_fDispBase + base * m_disp_run_stand;
             return m_fDispBase + base * m_disp_run_crouch;
         }
     }
 
-    if (movement().body_state() == eBodyStateStand)
+    if (movement().body_state() == MonsterSpace::eBodyStateStand)
     {
         if (zoom_state())
             return m_fDispBase + base * m_disp_stand_stand_zoom;
@@ -710,7 +710,7 @@ bool CAI_Stalker::zoom_state() const
     if (!inventory().ActiveItem())
         return (false);
 
-    if ((movement().movement_type() != eMovementTypeStand) && (movement().body_state() != eBodyStateCrouch) && !movement().path_completed())
+    if (movement().movement_type() != MonsterSpace::eMovementTypeStand && movement().body_state() != MonsterSpace::eBodyStateCrouch && !movement().path_completed())
         return (false);
 
     switch (CObjectHandler::planner().current_action_state_id())
@@ -1129,7 +1129,7 @@ bool CAI_Stalker::critically_wounded()
 
 bool CAI_Stalker::critical_wound_external_conditions_suitable()
 {
-    if (movement().body_state() != eBodyStateStand)
+    if (movement().body_state() != MonsterSpace::eBodyStateStand)
         return (false);
 
     if (animation().non_script_need_update())

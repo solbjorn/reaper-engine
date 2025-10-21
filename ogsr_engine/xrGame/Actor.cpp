@@ -89,8 +89,8 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
     encyclopedia_registry = xr_new<CEncyclopediaRegistryWrapper>();
     game_news_registry = xr_new<CGameNewsRegistryWrapper>();
     // Cameras
-    cameras[eacFirstEye] = xr_new<CCameraFirstEye>(this);
-    cameras[eacFirstEye]->Load("actor_firsteye_cam");
+    cameras[ACTOR_DEFS::eacFirstEye] = xr_new<CCameraFirstEye>(this);
+    cameras[ACTOR_DEFS::eacFirstEye]->Load("actor_firsteye_cam");
 
     if constexpr (true /*strstr(Core.Params,"-psp")*/)
         psActorFlags.set(AF_PSP, TRUE);
@@ -99,18 +99,19 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 
     if (psActorFlags.test(AF_PSP))
     {
-        cameras[eacLookAt] = xr_new<CCameraLook2>(this);
-        cameras[eacLookAt]->Load("actor_look_cam_psp");
+        cameras[ACTOR_DEFS::eacLookAt] = xr_new<CCameraLook2>(this);
+        cameras[ACTOR_DEFS::eacLookAt]->Load("actor_look_cam_psp");
     }
     else
     {
-        cameras[eacLookAt] = xr_new<CCameraLook>(this);
-        cameras[eacLookAt]->Load("actor_look_cam");
+        cameras[ACTOR_DEFS::eacLookAt] = xr_new<CCameraLook>(this);
+        cameras[ACTOR_DEFS::eacLookAt]->Load("actor_look_cam");
     }
-    cameras[eacFreeLook] = xr_new<CCameraLook>(this);
-    cameras[eacFreeLook]->Load("actor_free_cam");
 
-    cam_active = eacFirstEye;
+    cameras[ACTOR_DEFS::eacFreeLook] = xr_new<CCameraLook>(this);
+    cameras[ACTOR_DEFS::eacFreeLook]->Load("actor_free_cam");
+
+    cam_active = ACTOR_DEFS::eacFirstEye;
     fPrevCamPos = 0.0f;
     vPrevCamDir.set(0.f, 0.f, 1.f);
     fCurAVelocity = 0.0f;
@@ -173,7 +174,7 @@ CActor::~CActor()
     Device.seqRender.Remove(this);
 #endif
     // xr_delete(Weapons);
-    for (int i = 0; i < eacMaxCam; ++i)
+    for (int i = 0; i < ACTOR_DEFS::eacMaxCam; ++i)
         xr_delete(cameras[i]);
 
     m_HeavyBreathSnd.destroy();
@@ -367,7 +368,7 @@ void CActor::Load(LPCSTR section)
     // if( psActorFlags.test(AF_PSP) )
     //	cam_Set(eacLookAt);
     // else
-    cam_Set(eacFirstEye);
+    cam_Set(ACTOR_DEFS::eacFirstEye);
 
     // sheduler
     shedule.t_min = shedule.t_max = 1;
@@ -484,11 +485,11 @@ void CActor::Hit(SHit* pHDS)
         HitSector(pLastHitter, pLastHittingWeapon);
     }
 
-    if ((mstate_real & mcSprint) && Level().CurrentControlEntity() == this && conditions().DisableSprint(pHDS))
+    if ((mstate_real & ACTOR_DEFS::mcSprint) && Level().CurrentControlEntity() == this && conditions().DisableSprint(pHDS))
     {
         bool const is_special_burn_hit_2_self = (pHDS->who == this) && (pHDS->boneID == BI_NONE) && (pHDS->hit_type == ALife::eHitTypeBurn);
         if (!is_special_burn_hit_2_self)
-            mstate_wishful &= ~mcSprint;
+            mstate_wishful &= ~ACTOR_DEFS::mcSprint;
     }
 
     HitMark(HDS.damage(), HDS.dir, HDS.hit_type);
@@ -640,13 +641,12 @@ void CActor::Die(CObject* who)
     }
 
     if (!psActorFlags.test(AF_FIRST_PERSON_DEATH))
-    {
-        cam_Set(eacFreeLook);
-    }
-    mstate_wishful &= ~mcAnyMove;
-    mstate_real &= ~mcAnyMove;
+        cam_Set(ACTOR_DEFS::eacFreeLook);
 
-    ::Sound->play_at_pos(sndDie[Random.randI(SND_DIE_COUNT)], this, Position());
+    mstate_wishful &= ~ACTOR_DEFS::mcAnyMove;
+    mstate_real &= ~ACTOR_DEFS::mcAnyMove;
+
+    ::Sound->play_at_pos(sndDie[Random.randI(ACTOR_DEFS::SND_DIE_COUNT)], this, Position());
 
     m_HeavyBreathSnd.stop();
     m_BloodSnd.stop();
@@ -682,14 +682,15 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 
     if (g_Alive())
     {
-        if (mstate_real & mcClimb && !cameras[eacFirstEye]->bClampYaw)
+        if ((mstate_real & ACTOR_DEFS::mcClimb) && !cameras[ACTOR_DEFS::eacFirstEye]->bClampYaw)
             accel.set(0.f, 0.f, 0.f);
+
         character_physics_support()->movement()->Calculate(accel, cameras[cam_active]->vDirection, 0, jump, dt, false);
+
         bool new_border_state = character_physics_support()->movement()->isOutBorder();
         if (m_bOutBorder != new_border_state && Level().CurrentControlEntity() == this)
-        {
             SwitchOutBorder(new_border_state);
-        }
+
         character_physics_support()->movement()->GetPosition(Position());
         character_physics_support()->movement()->bSleep = false;
     }
@@ -731,13 +732,15 @@ float CActor::currentFOV()
 {
     const auto pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
-    if (eacFirstEye == cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
+    if (cam_active == ACTOR_DEFS::eacFirstEye && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
+    {
         if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
             return atanf(tanf(g_fov * (0.5f * PI / 180)) / pWeapon->GetZoomFactor()) / (0.5f * PI / 180);
-        else
-            return pWeapon->GetZoomFactor() * 0.75f;
-    else
-        return g_fov;
+
+        return pWeapon->GetZoomFactor() * 0.75f;
+    }
+
+    return g_fov;
 }
 
 void CActor::UpdateCL()
@@ -991,16 +994,16 @@ void CActor::shedule_Update(u32 DT)
 
         {
             //-----------------------------------------------------
-            mstate_wishful &= ~mcAccel;
-            mstate_wishful &= ~mcLStrafe;
-            mstate_wishful &= ~mcRStrafe;
-            mstate_wishful &= ~mcLLookout;
-            mstate_wishful &= ~mcRLookout;
-            mstate_wishful &= ~mcFwd;
-            mstate_wishful &= ~mcBack;
+            mstate_wishful &= ~ACTOR_DEFS::mcAccel;
+            mstate_wishful &= ~ACTOR_DEFS::mcLStrafe;
+            mstate_wishful &= ~ACTOR_DEFS::mcRStrafe;
+            mstate_wishful &= ~ACTOR_DEFS::mcLLookout;
+            mstate_wishful &= ~ACTOR_DEFS::mcRLookout;
+            mstate_wishful &= ~ACTOR_DEFS::mcFwd;
+            mstate_wishful &= ~ACTOR_DEFS::mcBack;
 
             if (g_bAutoClearCrouch)
-                mstate_wishful &= ~mcCrouch;
+                mstate_wishful &= ~ACTOR_DEFS::mcCrouch;
             //-----------------------------------------------------
         }
     }
@@ -1011,9 +1014,7 @@ void CActor::shedule_Update(u32 DT)
     }
 
     if (this == Level().CurrentViewEntity() && !m_holder)
-    {
         UpdateMotionIcon(mstate_real);
-    }
 
     NET_Jump = 0;
 
@@ -1607,22 +1608,22 @@ void CActor::SetActorVisibility(u16 who, float value)
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
     CUIMotionIcon& motion_icon = HUD().GetUI()->UIMainIngameWnd->MotionIcon();
-    if (mstate_rl & mcClimb)
+    if (mstate_rl & ACTOR_DEFS::mcClimb)
     {
         motion_icon.ShowState(CUIMotionIcon::stClimb);
     }
     else
     {
-        if (mstate_rl & mcCrouch)
+        if (mstate_rl & ACTOR_DEFS::mcCrouch)
         {
             if (!isActorAccelerated(mstate_rl, IsZoomAimingMode()))
                 motion_icon.ShowState(CUIMotionIcon::stCreep);
             else
                 motion_icon.ShowState(CUIMotionIcon::stCrouch);
         }
-        else if (mstate_rl & mcSprint)
+        else if (mstate_rl & ACTOR_DEFS::mcSprint)
             motion_icon.ShowState(CUIMotionIcon::stSprint);
-        else if (mstate_rl & mcAnyMove && isActorAccelerated(mstate_rl, IsZoomAimingMode()))
+        else if ((mstate_rl & ACTOR_DEFS::mcAnyMove) && isActorAccelerated(mstate_rl, IsZoomAimingMode()))
             motion_icon.ShowState(CUIMotionIcon::stRun);
         else
             motion_icon.ShowState(CUIMotionIcon::stNormal);
@@ -1660,7 +1661,7 @@ DLL_Pure* CActor::_construct()
     return (this);
 }
 
-bool CActor::use_center_to_aim() const { return (!(mstate_real & mcCrouch)); }
+bool CActor::use_center_to_aim() const { return (!(mstate_real & ACTOR_DEFS::mcCrouch)); }
 
 bool CActor::can_attach(const CInventoryItem* inventory_item) const
 {
@@ -1712,7 +1713,6 @@ float CActor::GetCarryWeight() const
 }
 
 float CActor::GetMass() { return g_Alive() ? character_physics_support()->movement()->GetMass() : m_pPhysicsShell ? m_pPhysicsShell->getMass() : 0; }
-
 bool CActor::is_on_ground() { return (character_physics_support()->movement()->Environment() != peInAir); }
 
 CCustomOutfit* CActor::GetOutfit() const
@@ -1733,59 +1733,96 @@ void CActor::unblock_action(EGameActions cmd)
 {
     auto iter = m_blocked_actions.find(cmd);
     if (iter != m_blocked_actions.end())
-    {
         m_blocked_actions.erase(iter);
-    }
 }
 
-bool CActor::is_actor_normal() { return mstate_real & (mcAnyAction | mcLookout | mcCrouch | mcClimb | mcSprint) ? false : true; }
+bool CActor::is_actor_normal()
+{
+    return (mstate_real & (ACTOR_DEFS::mcAnyAction | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ? false : true;
+}
 
-bool CActor::is_actor_crouch() { return mstate_real & (mcAnyAction | mcAccel | mcClimb | mcSprint) ? false : mstate_real & mcCrouch ? true : false; }
+bool CActor::is_actor_crouch()
+{
+    return (mstate_real & (ACTOR_DEFS::mcAnyAction | ACTOR_DEFS::mcAccel | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ? false :
+        (mstate_real & ACTOR_DEFS::mcCrouch)                                                                            ? true :
+                                                                                                                          false;
+}
 
-bool CActor::is_actor_creep() { return mstate_real & (mcAnyAction | mcClimb | mcSprint) ? false : (mstate_real & mcCrouch && mstate_real & mcAccel) ? true : false; }
+bool CActor::is_actor_creep()
+{
+    return (mstate_real & (ACTOR_DEFS::mcAnyAction | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ? false :
+        ((mstate_real & ACTOR_DEFS::mcCrouch) && (mstate_real & ACTOR_DEFS::mcAccel))             ? true :
+                                                                                                    false;
+}
 
-bool CActor::is_actor_climb() { return mstate_real & (mcAnyAction | mcCrouch | mcSprint) ? false : mstate_real & mcClimb ? true : false; }
+bool CActor::is_actor_climb()
+{
+    return (mstate_real & (ACTOR_DEFS::mcAnyAction | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcSprint)) ? false : (mstate_real & ACTOR_DEFS::mcClimb) ? true : false;
+}
 
 bool CActor::is_actor_walking()
 {
     bool run = false;
-    if (mstate_real & mcAccel)
+    if (mstate_real & ACTOR_DEFS::mcAccel)
         run = psActorFlags.test(AF_ALWAYSRUN) ? false : true;
     else
         run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
-    return ((mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcCrouch | mcClimb | mcSprint)) || run) ? false : mstate_real & mcAnyMove ? true : false;
+
+    return ((mstate_real &
+             (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcSprint)) ||
+            run) ?
+        false :
+        (mstate_real & ACTOR_DEFS::mcAnyMove) ? true :
+                                                false;
 }
 
 bool CActor::is_actor_running()
 {
     bool run = false;
-    if (mstate_real & mcAccel)
+    if (mstate_real & ACTOR_DEFS::mcAccel)
         run = psActorFlags.test(AF_ALWAYSRUN) ? false : true;
     else
         run = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcClimb | mcSprint) ? false : (mstate_real & mcAnyMove && run) ? true : false;
+
+    return (mstate_real &
+            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb |
+             ACTOR_DEFS::mcSprint)) ?
+        false :
+        ((mstate_real & ACTOR_DEFS::mcAnyMove) && run) ? true :
+                                                         false;
 }
 
 bool CActor::is_actor_sprinting()
 {
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb) ? false :
-        (mstate_real & (mcFwd | mcLStrafe | mcRStrafe) && mstate_real & mcSprint)                              ? true :
-                                                                                                                 false;
+    return (mstate_real &
+            (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcLookout | ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcAccel |
+             ACTOR_DEFS::mcClimb)) ?
+        false :
+        ((mstate_real & (ACTOR_DEFS::mcFwd | ACTOR_DEFS::mcLStrafe | ACTOR_DEFS::mcRStrafe)) && (mstate_real & ACTOR_DEFS::mcSprint)) ? true :
+                                                                                                                                        false;
 }
 
 bool CActor::is_actor_crouching()
 {
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcAccel | mcClimb) ? false : (mstate_real & mcAnyMove && mstate_real & mcCrouch) ? true : false;
+    return (mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcAccel | ACTOR_DEFS::mcClimb)) ? false :
+        ((mstate_real & ACTOR_DEFS::mcAnyMove) && (mstate_real & ACTOR_DEFS::mcCrouch))                                                                           ? true :
+                                                                                                                                                                    false;
 }
 
 bool CActor::is_actor_creeping()
 {
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcClimb) ? false : (mstate_real & mcAnyMove && mstate_real & mcCrouch && mstate_real & mcAccel) ? true : false;
+    return (mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2 | ACTOR_DEFS::mcClimb)) ? false :
+        ((mstate_real & ACTOR_DEFS::mcAnyMove) && (mstate_real & ACTOR_DEFS::mcCrouch) && (mstate_real & ACTOR_DEFS::mcAccel))              ? true :
+                                                                                                                                              false;
 }
 
-bool CActor::is_actor_climbing() { return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2) ? false : (mstate_real & mcAnyMove && mstate_real & mcClimb) ? true : false; }
-
-bool CActor::is_actor_moving() { return mstate_real & mcAnyAction ? true : false; }
+bool CActor::is_actor_climbing()
+{
+    return (mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2)) ? false :
+        ((mstate_real & ACTOR_DEFS::mcAnyMove) && (mstate_real & ACTOR_DEFS::mcClimb))                                ? true :
+                                                                                                                        false;
+}
+bool CActor::is_actor_moving() { return (mstate_real & ACTOR_DEFS::mcAnyAction) ? true : false; }
 
 void CActor::RepackAmmo()
 {

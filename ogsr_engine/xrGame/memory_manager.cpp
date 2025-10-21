@@ -151,7 +151,7 @@ void CMemoryManager::enable(const CObject* object, bool enable)
 template <typename T>
 void CMemoryManager::update(const xr_deque<T>& objects, bool add_enemies)
 {
-    squad_mask_type mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : 0;
+    MemorySpace::squad_mask_type mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : 0;
     auto I = objects.cbegin();
     auto E = objects.cend();
     for (; I != E; ++I)
@@ -186,22 +186,22 @@ void CMemoryManager::update(const xr_deque<T>& objects, bool add_enemies)
     }
 }
 
-CMemoryInfo CMemoryManager::memory(const CObject* object) const
+MemorySpace::CMemoryInfo CMemoryManager::memory(const CObject* object) const
 {
-    CMemoryInfo result;
+    MemorySpace::CMemoryInfo result;
     if (!this->object().g_Alive())
         return (result);
 
     u32 level_time = 0;
     const CGameObject* game_object = smart_cast<const CGameObject*>(object);
     VERIFY(game_object);
-    squad_mask_type mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : squad_mask_type(-1);
+    MemorySpace::squad_mask_type mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : MemorySpace::squad_mask_type(-1);
 
     {
         auto I = std::find(visual().objects().begin(), visual().objects().end(), object_id(object));
         if (visual().objects().end() != I)
         {
-            (CMemoryObject<CGameObject>&)result = (CMemoryObject<CGameObject>&)(*I);
+            (MemorySpace::CMemoryObject<CGameObject>&)result = (MemorySpace::CMemoryObject<CGameObject>&)(*I);
             result.visible((*I).visible(mask));
             result.m_visual_info = true;
             level_time = (*I).m_level_time;
@@ -213,7 +213,7 @@ CMemoryInfo CMemoryManager::memory(const CObject* object) const
         auto I = std::find(sound().objects().begin(), sound().objects().end(), object_id(object));
         if ((sound().objects().end() != I) && (level_time < (*I).m_level_time))
         {
-            (CMemoryObject<CGameObject>&)result = (CMemoryObject<CGameObject>&)(*I);
+            (MemorySpace::CMemoryObject<CGameObject>&)result = (MemorySpace::CMemoryObject<CGameObject>&)(*I);
             result.m_sound_info = true;
             level_time = (*I).m_level_time;
             VERIFY(result.m_object);
@@ -224,7 +224,7 @@ CMemoryInfo CMemoryManager::memory(const CObject* object) const
         auto I = std::find(hit().objects().begin(), hit().objects().end(), object_id(object));
         if ((hit().objects().end() != I) && (level_time < (*I).m_level_time))
         {
-            (CMemoryObject<CGameObject>&)result = (const CMemoryObject<CGameObject>&)(*I);
+            (MemorySpace::CMemoryObject<CGameObject>&)result = (const MemorySpace::CMemoryObject<CGameObject>&)(*I);
             result.m_object = game_object;
             result.m_hit_info = true;
             VERIFY(result.m_object);
@@ -328,7 +328,7 @@ void CMemoryManager::on_restrictions_change()
 
 void CMemoryManager::make_object_visible_somewhen(const CEntityAlive* enemy)
 {
-    squad_mask_type mask = stalker().agent_manager().member().mask(&stalker());
+    MemorySpace::squad_mask_type mask = stalker().agent_manager().member().mask(&stalker());
     MemorySpace::CVisibleObject* obj = visual().visible_object(enemy);
     //	if (obj) {
     //		Msg						("------------------------------------------------------");

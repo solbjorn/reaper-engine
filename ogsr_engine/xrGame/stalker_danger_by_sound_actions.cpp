@@ -30,15 +30,14 @@ void CStalkerActionDangerBySoundListenTo::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 void CStalkerActionDangerBySoundListenTo::execute() { inherited::execute(); }
-
 void CStalkerActionDangerBySoundListenTo::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -54,15 +53,14 @@ void CStalkerActionDangerBySoundCheck::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 void CStalkerActionDangerBySoundCheck::execute() { inherited::execute(); }
-
 void CStalkerActionDangerBySoundCheck::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,15 +76,14 @@ void CStalkerActionDangerBySoundTakeCover::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 void CStalkerActionDangerBySoundTakeCover::execute() { inherited::execute(); }
-
 void CStalkerActionDangerBySoundTakeCover::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -102,15 +99,14 @@ void CStalkerActionDangerBySoundLookOut::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 void CStalkerActionDangerBySoundLookOut::execute() { inherited::execute(); }
-
 void CStalkerActionDangerBySoundLookOut::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -126,13 +122,12 @@ void CStalkerActionDangerBySoundLookAround::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 void CStalkerActionDangerBySoundLookAround::execute() { inherited::execute(); }
-
 void CStalkerActionDangerBySoundLookAround::finalize() { inherited::finalize(); }

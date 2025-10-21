@@ -28,8 +28,8 @@ CROS_impl::CROS_impl()
     value.sun = 0.2f;
     smooth.sun = 0.2f;
 
-    memset(value.hemi_cube, 0, sizeof(value.hemi_cube));
-    memset(smooth.hemi_cube, 0, sizeof(smooth.hemi_cube));
+    value.clear();
+    smooth.clear();
 
     last_position.set(0.0f, 0.0f, 0.0f);
     ticks_to_update = 0;
@@ -135,10 +135,7 @@ void CROS_impl::update(IRenderable* O)
     Fvector direction;
     direction.random_dir();
 
-    static_assert(sizeof(value.hemi_cube) == 3 * sizeof(u64));
-    *reinterpret_cast<u64*>(&value.hemi_cube[0]) = 0;
-    *reinterpret_cast<u64*>(&value.hemi_cube[2]) = 0;
-    *reinterpret_cast<u64*>(&value.hemi_cube[4]) = 0;
+    value.clear();
 
     bool bFirstTime = (0 == result_count);
     calc_sun_value(position, _object);

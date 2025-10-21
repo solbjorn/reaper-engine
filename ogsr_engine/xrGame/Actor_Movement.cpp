@@ -17,15 +17,16 @@
 #include "game_cl_base.h"
 #include "WeaponMagazined.h"
 #include "CharacterPhysicsSupport.h"
-#ifdef DEBUG
-#include "phdebug.h"
-#endif
 #include "../xr_3da/CameraManager.h"
 #include "CameraEffector.h"
 #include "ActorEffector.h"
 #include "player_hud.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
+
+#ifdef DEBUG
+#include "phdebug.h"
+#endif
 
 namespace
 {
@@ -45,51 +46,51 @@ IC void generate_orthonormal_basis1(const Fvector& dir, Fvector& updir, Fvector&
 void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 {
     // Lookout
-    if ((mstate_wf & mcLLookout) && (mstate_wf & mcRLookout))
+    if ((mstate_wf & ACTOR_DEFS::mcLLookout) && (mstate_wf & ACTOR_DEFS::mcRLookout))
     {
         // It's impossible to perform right and left lookouts in the same time
-        mstate_real &= ~mcLookout;
+        mstate_real &= ~ACTOR_DEFS::mcLookout;
     }
-    else if (mstate_wf & mcLookout)
+    else if (mstate_wf & ACTOR_DEFS::mcLookout)
     {
         // Activate one of lookouts
-        mstate_real |= mstate_wf & mcLookout;
+        mstate_real |= mstate_wf & ACTOR_DEFS::mcLookout;
     }
     else
     {
         // No lookouts needed
-        mstate_real &= ~mcLookout;
+        mstate_real &= ~ACTOR_DEFS::mcLookout;
     }
 
-    if (mstate_real & (mcJump | mcFall | mcLanding | mcLanding2))
-        mstate_real &= ~mcLookout;
+    if (mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2))
+        mstate_real &= ~ACTOR_DEFS::mcLookout;
 
     // закончить приземление
-    if (mstate_real & (mcLanding | mcLanding2))
+    if (mstate_real & (ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2))
     {
         m_fLandingTime -= dt;
         if (m_fLandingTime <= 0.f)
         {
-            mstate_real &= ~(mcLanding | mcLanding2);
-            mstate_real &= ~(mcFall | mcJump);
+            mstate_real &= ~(ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2);
+            mstate_real &= ~(ACTOR_DEFS::mcFall | ACTOR_DEFS::mcJump);
         }
     }
     // закончить падение
     if (character_physics_support()->movement()->gcontact_Was)
     {
-        if (mstate_real & mcFall)
+        if (mstate_real & ACTOR_DEFS::mcFall)
         {
             if (character_physics_support()->movement()->GetContactSpeed() > 4.f)
             {
                 if (fis_zero(character_physics_support()->movement()->gcontact_HealthLost))
                 {
                     m_fLandingTime = s_fLandingTime1;
-                    mstate_real |= mcLanding;
+                    mstate_real |= ACTOR_DEFS::mcLanding;
                 }
                 else
                 {
                     m_fLandingTime = s_fLandingTime2;
-                    mstate_real |= mcLanding2;
+                    mstate_real |= ACTOR_DEFS::mcLanding2;
                 }
             }
 
@@ -99,68 +100,67 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
         }
         m_bJumpKeyPressed = TRUE;
         m_fJumpTime = s_fJumpTime;
-        mstate_real &= ~(mcFall | mcJump);
+        mstate_real &= ~(ACTOR_DEFS::mcFall | ACTOR_DEFS::mcJump);
     }
-    if ((mstate_wf & mcJump) == 0)
+
+    if ((mstate_wf & ACTOR_DEFS::mcJump) == 0)
         m_bJumpKeyPressed = FALSE;
 
     // Зажало-ли меня/уперся - не двигаюсь
-    if (((character_physics_support()->movement()->GetVelocityActual() < 0.2f) && (!(mstate_real & (mcFall | mcJump)))) || character_physics_support()->movement()->bSleep)
+    if (((character_physics_support()->movement()->GetVelocityActual() < 0.2f) && (!(mstate_real & (ACTOR_DEFS::mcFall | ACTOR_DEFS::mcJump)))) ||
+        character_physics_support()->movement()->bSleep)
     {
         // TODO: KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно
         // важен, я думаю если актор застрянет - он все равно не будет двигаться.
-        // mstate_real &=~ mcAnyMove;
+        // mstate_real &=~ ACTOR_DEFS::mcAnyMove;
     }
 
     if (character_physics_support()->movement()->Environment() == peOnGround || character_physics_support()->movement()->Environment() == peAtWall)
     {
         // если на земле гарантированно снимать флажок Jump
-        if (((s_fJumpTime - m_fJumpTime) > s_fJumpGroundTime) && (mstate_real & mcJump))
+        if (((s_fJumpTime - m_fJumpTime) > s_fJumpGroundTime) && (mstate_real & ACTOR_DEFS::mcJump))
         {
-            mstate_real &= ~mcJump;
+            mstate_real &= ~ACTOR_DEFS::mcJump;
             m_fJumpTime = s_fJumpTime;
         }
     }
 
     if (character_physics_support()->movement()->Environment() == peAtWall)
     {
-        if (!(mstate_real & mcClimb))
+        if (!(mstate_real & ACTOR_DEFS::mcClimb))
         {
-            mstate_real |= mcClimb;
-            mstate_real &= ~mcSprint;
+            mstate_real |= ACTOR_DEFS::mcClimb;
+            mstate_real &= ~ACTOR_DEFS::mcSprint;
             cam_SetLadder();
         }
     }
     else
     {
-        if (mstate_real & mcClimb)
-        {
+        if (mstate_real & ACTOR_DEFS::mcClimb)
             cam_UnsetLadder();
-        }
-        mstate_real &= ~mcClimb;
+
+        mstate_real &= ~ACTOR_DEFS::mcClimb;
     }
 
     if (mstate_wf != mstate_real)
     {
-        if ((mstate_real & mcCrouch) && ((0 == (mstate_wf & mcCrouch)) || mstate_real & mcClimb))
+        if ((mstate_real & ACTOR_DEFS::mcCrouch) && ((0 == (mstate_wf & ACTOR_DEFS::mcCrouch)) || mstate_real & ACTOR_DEFS::mcClimb))
         {
             character_physics_support()->movement()->EnableCharacter();
             if (character_physics_support()->movement()->ActivateBoxDynamic(0))
             {
-                mstate_real &= ~mcCrouch;
+                mstate_real &= ~ACTOR_DEFS::mcCrouch;
             }
         }
     }
 
     if (!CanAccelerate() && isActorAccelerated(mstate_real, IsZoomAimingMode()))
-    {
-        mstate_real ^= mcAccel;
-    }
+        mstate_real ^= ACTOR_DEFS::mcAccel;
 
     if (this == Level().CurrentControlEntity())
     {
-        bool bOnClimbNow = !!(mstate_real & mcClimb);
-        bool bOnClimbOld = !!(mstate_old & mcClimb);
+        bool bOnClimbNow = !!(mstate_real & ACTOR_DEFS::mcClimb);
+        bool bOnClimbOld = !!(mstate_old & ACTOR_DEFS::mcClimb);
 
         if (bOnClimbNow != bOnClimbOld)
         {
@@ -179,64 +179,64 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
     mstate_old = mstate_real;
     vControlAccel.set(0, 0, 0);
 
-    if (!(mstate_real & mcFall) && (character_physics_support()->movement()->Environment() == peInAir))
+    if (!(mstate_real & ACTOR_DEFS::mcFall) && (character_physics_support()->movement()->Environment() == peInAir))
     {
         m_fFallTime -= dt;
         if (m_fFallTime <= 0.f)
         {
             m_fFallTime = s_fFallTime;
-            mstate_real |= mcFall;
-            mstate_real &= ~mcJump;
+            mstate_real |= ACTOR_DEFS::mcFall;
+            mstate_real &= ~ACTOR_DEFS::mcJump;
         }
     }
 
     if (!CanMove())
     {
-        if (mstate_wf & mcAnyMove)
+        if (mstate_wf & ACTOR_DEFS::mcAnyMove)
         {
             StopAnyMove();
-            mstate_wf &= ~mcAnyMove;
-            mstate_wf &= ~mcJump;
+            mstate_wf &= ~ACTOR_DEFS::mcAnyMove;
+            mstate_wf &= ~ACTOR_DEFS::mcJump;
         }
         // character_physics_support()->movement()->EnableCharacter();
         // return;
     }
 
     // update player accel
-    if (mstate_wf & mcFwd)
+    if (mstate_wf & ACTOR_DEFS::mcFwd)
         vControlAccel.z += 1;
-    if (mstate_wf & mcBack)
+    if (mstate_wf & ACTOR_DEFS::mcBack)
         vControlAccel.z += -1;
-    if (mstate_wf & mcLStrafe)
+    if (mstate_wf & ACTOR_DEFS::mcLStrafe)
         vControlAccel.x += -1;
-    if (mstate_wf & mcRStrafe)
+    if (mstate_wf & ACTOR_DEFS::mcRStrafe)
         vControlAccel.x += 1;
 
     if (character_physics_support()->movement()->Environment() == peOnGround || character_physics_support()->movement()->Environment() == peAtWall)
     {
         // crouch
-        if ((mstate_real & mcCrouch) == 0 && (mstate_wf & mcCrouch))
+        if ((mstate_real & ACTOR_DEFS::mcCrouch) == 0 && (mstate_wf & ACTOR_DEFS::mcCrouch))
         {
-            if (mstate_real & mcClimb)
+            if (mstate_real & ACTOR_DEFS::mcClimb)
             {
-                mstate_wf &= ~mcCrouch;
+                mstate_wf &= ~ACTOR_DEFS::mcCrouch;
             }
             else
             {
                 character_physics_support()->movement()->EnableCharacter();
                 bool Crouched = false;
                 if (isActorAccelerated(mstate_wf, IsZoomAimingMode()))
-                    Crouched = character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & mcAnyMove) ? 3 : 1);
+                    Crouched = character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & ACTOR_DEFS::mcAnyMove) ? 3 : 1);
                 else
-                    Crouched = character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & mcAnyMove) ? 4 : 2);
+                    Crouched = character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & ACTOR_DEFS::mcAnyMove) ? 4 : 2);
                 if (Crouched)
-                    mstate_real |= mcCrouch;
+                    mstate_real |= ACTOR_DEFS::mcCrouch;
             }
         }
         // jump
         m_fJumpTime -= dt;
 
-        if ((mstate_wf & mcJump))
+        if ((mstate_wf & ACTOR_DEFS::mcJump))
         {
             float weight = 0.f;
             if (Core.Features.test(xrCore::Feature::condition_jump_weight_mod))
@@ -246,7 +246,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
 
             if (CanJump(weight))
             {
-                mstate_real |= mcJump;
+                mstate_real |= ACTOR_DEFS::mcJump;
                 m_bJumpKeyPressed = TRUE;
                 Jump = m_fJumpSpeed;
                 m_fJumpTime = s_fJumpTime;
@@ -256,9 +256,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
 
                 // уменьшить силу игрока из-за выполненого прыжка
                 if (!GodMode())
-                {
                     conditions().ConditionJump(weight);
-                }
             }
         }
 
@@ -268,23 +266,23 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
         */
 
         // mask input into "real" state
-        u32 move = mcAnyMove | mcAccel;
+        u32 move = ACTOR_DEFS::mcAnyMove | ACTOR_DEFS::mcAccel;
 
-        if (mstate_real & mcCrouch)
+        if (mstate_real & ACTOR_DEFS::mcCrouch)
         {
             if (!isActorAccelerated(mstate_real, IsZoomAimingMode()) && isActorAccelerated(mstate_wf, IsZoomAimingMode()))
             {
                 character_physics_support()->movement()->EnableCharacter();
-                if (!character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & mcAnyMove) ? 3 : 1))
-                    move &= ~mcAccel;
+                if (!character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & ACTOR_DEFS::mcAnyMove) ? 3 : 1))
+                    move &= ~ACTOR_DEFS::mcAccel;
             }
             else if (isActorAccelerated(mstate_real, IsZoomAimingMode()) && !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
             {
                 character_physics_support()->movement()->EnableCharacter();
-                if (character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & mcAnyMove) ? 4 : 2))
-                    mstate_real &= ~mcAccel;
+                if (character_physics_support()->movement()->ActivateBoxDynamic((mstate_wf & ACTOR_DEFS::mcAnyMove) ? 4 : 2))
+                    mstate_real &= ~ACTOR_DEFS::mcAccel;
             }
-            else if ((mstate_real & mcAnyMove) && !(mstate_wf & mcAnyMove))
+            else if ((mstate_real & ACTOR_DEFS::mcAnyMove) && !(mstate_wf & ACTOR_DEFS::mcAnyMove))
             {
                 character_physics_support()->movement()->EnableCharacter();
                 character_physics_support()->movement()->ActivateBoxDynamic(isActorAccelerated(mstate_wf, IsZoomAimingMode()) ? 1 : 2);
@@ -296,7 +294,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
             {
                 moving_box_delay -= dt;
             }
-            else if ((mstate_real & mcAnyMove) && moving_box_delay <= 0 && !crouch_move)
+            else if ((mstate_real & ACTOR_DEFS::mcAnyMove) && moving_box_delay <= 0 && !crouch_move)
             {
                 character_physics_support()->movement()->EnableCharacter();
                 if (isActorAccelerated(mstate_real, IsZoomAimingMode()))
@@ -304,7 +302,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                     if (!character_physics_support()->movement()->ActivateBoxDynamic(3))
                     {
                         StopAnyMove();
-                        mstate_wf &= ~mcAnyMove;
+                        mstate_wf &= ~ACTOR_DEFS::mcAnyMove;
                     }
                 }
                 else
@@ -312,14 +310,15 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                     if (!character_physics_support()->movement()->ActivateBoxDynamic(4))
                     {
                         StopAnyMove();
-                        mstate_wf &= ~mcAnyMove;
+                        mstate_wf &= ~ACTOR_DEFS::mcAnyMove;
                     }
                 }
+
                 moving_box_delay = .1f;
                 crouch_move = true;
                 crouch_stop = false;
             }
-            else if (!(mstate_real & mcAnyMove) && moving_box_delay <= 0 && !crouch_stop)
+            else if (!(mstate_real & ACTOR_DEFS::mcAnyMove) && moving_box_delay <= 0 && !crouch_stop)
             {
                 DWORD id = isActorAccelerated(mstate_real, IsZoomAimingMode()) ? 1 : 2;
                 character_physics_support()->movement()->EnableCharacter();
@@ -336,35 +335,34 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
             crouch_stop = false;
         }
 
-        if ((mstate_wf & mcSprint) && !CanSprint())
-        {
-            mstate_wf &= ~mcSprint;
-        }
+        if ((mstate_wf & ACTOR_DEFS::mcSprint) && !CanSprint())
+            mstate_wf &= ~ACTOR_DEFS::mcSprint;
 
         mstate_real &= (~move);
         mstate_real |= (mstate_wf & move);
 
-        if (mstate_wf & mcSprint)
-            mstate_real |= mcSprint;
+        if (mstate_wf & ACTOR_DEFS::mcSprint)
+            mstate_real |= ACTOR_DEFS::mcSprint;
         else
-            mstate_real &= ~mcSprint;
+            mstate_real &= ~ACTOR_DEFS::mcSprint;
 
-        if (!(mstate_real & (mcFwd)) || mstate_real & (mcCrouch | mcClimb | mcBack) || !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
+        if (!(mstate_real & ACTOR_DEFS::mcFwd) || (mstate_real & (ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcBack)) ||
+            !isActorAccelerated(mstate_wf, IsZoomAimingMode()))
         {
-            mstate_real &= ~mcSprint;
-            mstate_wishful &= ~mcSprint;
+            mstate_real &= ~ACTOR_DEFS::mcSprint;
+            mstate_wishful &= ~ACTOR_DEFS::mcSprint;
         }
 
         // check player move state
-        if (mstate_real & mcAnyMove)
+        if (mstate_real & ACTOR_DEFS::mcAnyMove)
         {
             BOOL bAccelerated = isActorAccelerated(mstate_real, IsZoomAimingMode()) && CanAccelerate();
 
             // correct "mstate_real" if opposite keys pressed
             if (_abs(vControlAccel.z) < EPS)
-                mstate_real &= ~(mcFwd + mcBack);
+                mstate_real &= ~(ACTOR_DEFS::mcFwd + ACTOR_DEFS::mcBack);
             if (_abs(vControlAccel.x) < EPS)
-                mstate_real &= ~(mcLStrafe + mcRStrafe);
+                mstate_real &= ~(ACTOR_DEFS::mcLStrafe + ACTOR_DEFS::mcRStrafe);
 
             // normalize and analyze crouch and run
             float scale = vControlAccel.magnitude();
@@ -372,21 +370,25 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
             {
                 scale = m_fWalkAccel / scale;
                 if (bAccelerated)
-                    if (mstate_real & mcBack)
+                {
+                    if (mstate_real & ACTOR_DEFS::mcBack)
                         scale *= m_fRunBackFactor * m_fExoFactor;
                     else
                         scale *= m_fRunFactor * m_fExoFactor;
-                else if (mstate_real & mcBack)
+                }
+                else if (mstate_real & ACTOR_DEFS::mcBack)
+                {
                     scale *= m_fWalkBackFactor;
+                }
 
-                if (mstate_real & mcCrouch)
+                if (mstate_real & ACTOR_DEFS::mcCrouch)
                     scale *= m_fCrouchFactor;
-                if (mstate_real & mcClimb)
+                if (mstate_real & ACTOR_DEFS::mcClimb)
                     scale *= m_fClimbFactor;
-                if (mstate_real & mcSprint)
+                if (mstate_real & ACTOR_DEFS::mcSprint)
                     scale *= m_fSprintFactor * m_fExoFactor;
 
-                if (mstate_real & (mcLStrafe | mcRStrafe) && !(mstate_real & mcCrouch))
+                if ((mstate_real & (ACTOR_DEFS::mcLStrafe | ACTOR_DEFS::mcRStrafe)) && !(mstate_real & ACTOR_DEFS::mcCrouch))
                 {
                     if (bAccelerated)
                         scale *= m_fRun_StrafeFactor * m_fExoFactor;
@@ -404,15 +406,15 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
     {
         LPCSTR state_anm = nullptr;
 
-        if (mstate_real & mcSprint && !(mstate_old & mcSprint))
+        if ((mstate_real & ACTOR_DEFS::mcSprint) && !(mstate_old & ACTOR_DEFS::mcSprint))
             state_anm = "sprint";
-        else if (mstate_real & mcLStrafe && !(mstate_old & mcLStrafe))
+        else if ((mstate_real & ACTOR_DEFS::mcLStrafe) && !(mstate_old & ACTOR_DEFS::mcLStrafe))
             state_anm = "strafe_left";
-        else if (mstate_real & mcRStrafe && !(mstate_old & mcRStrafe))
+        else if ((mstate_real & ACTOR_DEFS::mcRStrafe) && !(mstate_old & ACTOR_DEFS::mcRStrafe))
             state_anm = "strafe_right";
-        else if (mstate_real & mcFwd && !(mstate_old & mcFwd))
+        else if ((mstate_real & ACTOR_DEFS::mcFwd) && !(mstate_old & ACTOR_DEFS::mcFwd))
             state_anm = "move_fwd";
-        else if (mstate_real & mcBack && !(mstate_old & mcBack))
+        else if ((mstate_real & ACTOR_DEFS::mcBack) && !(mstate_old & ACTOR_DEFS::mcBack))
             state_anm = "move_back";
 
         if (state_anm)
@@ -462,31 +464,33 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
 
     if (!g_Alive())
         return;
+
     // visual effect of "fwd+strafe" like motion
     float calc_yaw = 0;
-    if (mstate_real & mcClimb)
+    if (mstate_real & ACTOR_DEFS::mcClimb)
     {
         if (g_LadderOrient())
             return;
     }
-    switch (mstate_rl & mcAnyMove)
+
+    switch (mstate_rl & ACTOR_DEFS::mcAnyMove)
     {
-    case mcFwd + mcLStrafe:
+    case ACTOR_DEFS::mcFwd + ACTOR_DEFS::mcLStrafe:
         calc_yaw = +fwd_l_strafe_yaw; //+PI_DIV_4;
         break;
-    case mcBack + mcRStrafe:
+    case ACTOR_DEFS::mcBack + ACTOR_DEFS::mcRStrafe:
         calc_yaw = +back_r_strafe_yaw; //+PI_DIV_4;
         break;
-    case mcFwd + mcRStrafe:
+    case ACTOR_DEFS::mcFwd + ACTOR_DEFS::mcRStrafe:
         calc_yaw = -fwd_r_strafe_yaw; //-PI_DIV_4;
         break;
-    case mcBack + mcLStrafe:
+    case ACTOR_DEFS::mcBack + ACTOR_DEFS::mcLStrafe:
         calc_yaw = -back_l_strafe_yaw; //-PI_DIV_4;
         break;
-    case mcLStrafe:
+    case ACTOR_DEFS::mcLStrafe:
         calc_yaw = +l_strafe_yaw; //+PI_DIV_3-EPS_L;
         break;
-    case mcRStrafe:
+    case ACTOR_DEFS::mcRStrafe:
         calc_yaw = -r_strafe_yaw; //-PI_DIV_4+EPS_L;
         break;
     }
@@ -503,19 +507,21 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
     //-------------------------------------------------
 
     float tgt_roll = 0.f;
-    if (mstate_rl & mcLookout)
+    if (mstate_rl & ACTOR_DEFS::mcLookout)
     {
-        tgt_roll = (mstate_rl & mcLLookout) ? -m_fLookoutAngle : m_fLookoutAngle;
+        tgt_roll = (mstate_rl & ACTOR_DEFS::mcLLookout) ? -m_fLookoutAngle : m_fLookoutAngle;
 
-        if ((mstate_rl & mcLLookout) && (mstate_rl & mcRLookout))
+        if ((mstate_rl & ACTOR_DEFS::mcLLookout) && (mstate_rl & ACTOR_DEFS::mcRLookout))
             tgt_roll = 0.0f;
     }
+
     if (!fsimilar(tgt_roll, r_torso_tgt_roll, EPS))
     {
         r_torso_tgt_roll = angle_inertion_var(r_torso_tgt_roll, tgt_roll, 0.f, CurrentHeight * PI_MUL_2 * cam_LookoutSpeed, PI_DIV_2, dt);
         r_torso_tgt_roll = angle_normalize_signed(r_torso_tgt_roll);
     }
 }
+
 bool CActor::g_LadderOrient()
 {
     Fvector leader_norm;
@@ -565,7 +571,7 @@ bool CActor::g_LadderOrient()
 void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
 {
     // capture camera into torso (only for FirstEye & LookAt cameras)
-    if (eacFreeLook != cam_active)
+    if (cam_active != ACTOR_DEFS::eacFreeLook)
     {
         r_torso.yaw = cam_Active()->GetWorldYaw();
         r_torso.pitch = cam_Active()->GetWorldPitch();
@@ -583,7 +589,7 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
     CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ?
                                                               inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ :
                                                               nullptr);
-    if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
+    if (pWM && pWM->GetCurrentFireMode() == 1 && cam_active != ACTOR_DEFS::eacFirstEye)
     {
         Fvector dangle = weapon_recoil_last_delta();
         r_torso.yaw = unaffected_r_torso.yaw + dangle.y;
@@ -591,10 +597,10 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
     }
 
     // если есть движение - выровнять модель по камере
-    if (mstate_rl & mcAnyMove)
+    if (mstate_rl & ACTOR_DEFS::mcAnyMove)
     {
         r_model_yaw = angle_normalize(r_torso.yaw);
-        mstate_real &= ~mcTurn;
+        mstate_real &= ~ACTOR_DEFS::mcTurn;
     }
     else
     {
@@ -604,30 +610,30 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
         {
             r_model_yaw_dest = ty;
             //
-            mstate_real |= mcTurn;
+            mstate_real |= ACTOR_DEFS::mcTurn;
         }
+
         if (_abs(r_model_yaw - r_model_yaw_dest) < EPS_L)
-        {
-            mstate_real &= ~mcTurn;
-        }
-        if (mstate_rl & mcTurn)
-        {
+            mstate_real &= ~ACTOR_DEFS::mcTurn;
+
+        if (mstate_rl & ACTOR_DEFS::mcTurn)
             angle_lerp(r_model_yaw, r_model_yaw_dest, PI_MUL_2, dt);
-        }
     }
 }
 
 bool isActorAccelerated(u32 mstate, bool ZoomMode)
 {
     bool res = false;
-    if (mstate & mcAccel)
+    if (mstate & ACTOR_DEFS::mcAccel)
         res = psActorFlags.test(AF_ALWAYSRUN) ? false : true;
     else
         res = psActorFlags.test(AF_ALWAYSRUN) ? true : false;
-    if (mstate & (mcCrouch | mcClimb | mcJump | mcLanding | mcLanding2))
+
+    if (mstate & (ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcClimb | ACTOR_DEFS::mcJump | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2))
         return res;
-    if (mstate & mcLookout || ZoomMode)
+    if ((mstate & ACTOR_DEFS::mcLookout) || ZoomMode)
         return false;
+
     return res;
 }
 
@@ -643,7 +649,7 @@ bool CActor::CanAccelerate()
 
 bool CActor::CanRun()
 {
-    bool can_run = !m_bZoomAimingMode && !(mstate_real & mcLookout);
+    bool can_run = !m_bZoomAimingMode && !(mstate_real & ACTOR_DEFS::mcLookout);
     return can_run;
 }
 
@@ -657,7 +663,7 @@ bool CActor::CanSprint()
 bool CActor::CanJump(float weight)
 {
     bool can_Jump = /*!IsLimping() &&*/
-        !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.f) &&
+        !character_physics_support()->movement()->PHCapture() && ((mstate_real & ACTOR_DEFS::mcJump) == 0) && (m_fJumpTime <= 0.f) &&
         (!m_hit_slowmo_jump || (fis_zero(hit_slowmo) && m_time_lock_accel < Device.dwTimeGlobal)) && !m_bJumpKeyPressed // && ((mstate_real&mcCrouch)==0);
         && !conditions().IsCantJump(weight);
 
@@ -668,38 +674,33 @@ bool CActor::CanMove()
 {
     if (conditions().IsCantWalk())
     {
-        if (mstate_wishful & mcAnyMove)
-        {
+        if (mstate_wishful & ACTOR_DEFS::mcAnyMove)
             HUD().GetUI()->AddInfoMessage("cant_walk");
-        }
+
         return false;
     }
     else if (conditions().IsCantWalkWeight())
     {
-        if (mstate_wishful & mcAnyMove)
-        {
+        if (mstate_wishful & ACTOR_DEFS::mcAnyMove)
             HUD().GetUI()->AddInfoMessage("cant_walk_weight");
-        }
+
         return false;
     }
 
     if (IsTalking())
         return false;
-    else
-        return true;
+
+    return true;
 }
 
 void CActor::StopAnyMove()
 {
-    mstate_wishful &= ~mcAnyMove;
-    mstate_real &= ~mcAnyMove;
+    mstate_wishful &= ~ACTOR_DEFS::mcAnyMove;
+    mstate_real &= ~ACTOR_DEFS::mcAnyMove;
 
     if (this == Level().CurrentViewEntity())
-    {
-        g_player_hud->OnMovementChanged((EMoveCommand)0);
-    }
+        g_player_hud->OnMovementChanged((ACTOR_DEFS::EMoveCommand)0);
 }
 
-bool CActor::is_jump() { return ((mstate_real & (mcJump | mcFall | mcLanding | mcLanding2)) != 0); }
-
-bool CActor::is_crouch() { return ((mstate_real & mcCrouch) != 0); }
+bool CActor::is_jump() { return ((mstate_real & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2)) != 0); }
+bool CActor::is_crouch() { return ((mstate_real & ACTOR_DEFS::mcCrouch) != 0); }

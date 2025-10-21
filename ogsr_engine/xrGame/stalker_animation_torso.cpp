@@ -48,22 +48,23 @@ MotionID CStalkerAnimationManager::no_object_animation(const EBodyState& body_st
     const CStalkerMovementManager& movement = stalker.movement();
     const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[0].A;
 
-    if (eMentalStateFree == movement.mental_state() && eBodyStateStand == body_state)
+    if (movement.mental_state() == MonsterSpace::eMentalStateFree && body_state == MonsterSpace::eBodyStateStand)
     {
         if (standing())
-            return (animation[9].A[1]);
+            return animation[9].A[1];
 
-        return (animation[7 + movement.movement_type()].A[1]);
+        return animation[7 + movement.movement_type()].A[1];
     }
 
     if (standing())
-        return (animation[6].A[0]);
+        return animation[6].A[0];
 
-    if (eMovementTypeWalk == movement.movement_type())
-        return (animation[6].A[2]);
+    if (movement.movement_type() == MonsterSpace::eMovementTypeWalk)
+        return animation[6].A[2];
 
-    VERIFY(eMovementTypeRun == movement.movement_type());
-    return (animation[6].A[3]);
+    VERIFY(movement.movement_type() == MonsterSpace::eMovementTypeRun);
+
+    return animation[6].A[3];
 }
 
 MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBodyState& body_state) const
@@ -72,7 +73,7 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
     typedef CStalkerAnimationState STATE;
     const xr_vector<STATE>& part_animations = m_data_storage->m_part_animations.A;
     const xr_vector<CAniVector>& animation = part_animations[body_state].m_torso.A[slot].A;
-    const xr_vector<CAniVector>& animation_stand = part_animations[eBodyStateStand].m_torso.A[slot].A;
+    const xr_vector<CAniVector>& animation_stand = part_animations[MonsterSpace::eBodyStateStand].m_torso.A[slot].A;
 
     // stalker shortcuts
     const CAI_Stalker& stalker = object();
@@ -92,18 +93,18 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
         if (standing())
             return (animation[6].A[0]);
 
-        if (eMovementTypeWalk == movement.movement_type())
+        if (movement.movement_type() == MonsterSpace::eMovementTypeWalk)
         {
-            if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+            if (body_state == MonsterSpace::eBodyStateStand && slot == 2 && need_look_back())
                 return (animation[13 + m_looking_back - 1].A[1]);
             else
                 return (animation[6].A[0]);
         }
 
-        if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+        if (body_state == MonsterSpace::eBodyStateStand && slot == 2 && need_look_back())
             return (animation[13 + m_looking_back - 1].A[0]);
 
-        VERIFY(eMovementTypeRun == movement.movement_type());
+        VERIFY(movement.movement_type() == MonsterSpace::eMovementTypeRun);
         return (animation[6].A[3]);
     }
 
@@ -113,7 +114,7 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
     case ObjectHandlerSpace::eWorldOperatorUnstrapping2Idle: return (animation_stand[12].A[1]);
     }
 
-    if (eMentalStateFree == movement.mental_state() && eBodyStateStand == body_state)
+    if (movement.mental_state() == MonsterSpace::eMentalStateFree && body_state == MonsterSpace::eBodyStateStand)
     {
         if (standing())
             return (animation[9].A[1]);
@@ -124,12 +125,12 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
     if (standing())
         return (animation[6].A[0]);
 
-    if (eMovementTypeWalk == movement.movement_type())
+    if (movement.movement_type() == MonsterSpace::eMovementTypeWalk)
         return (animation[6].A[2]);
 
-    VERIFY(eMovementTypeRun == movement.movement_type());
+    VERIFY(movement.movement_type() == MonsterSpace::eMovementTypeRun);
 
-    if (eBodyStateStand == body_state)
+    if (body_state == MonsterSpace::eBodyStateStand)
         return (animation[6].A[3]);
 
     return (animation[6].A[3]);
@@ -164,18 +165,18 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
         if (standing())
             return (animation[1].A[0]);
 
-        if (eMovementTypeWalk == movement.movement_type())
+        if (movement.movement_type() == MonsterSpace::eMovementTypeWalk)
         {
-            if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+            if (body_state == MonsterSpace::eBodyStateStand && slot == 2 && need_look_back())
                 return (animation[13 + m_looking_back - 1].A[1]);
             else
                 return (animation[1].A[0]);
         }
 
-        if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
+        if (body_state == MonsterSpace::eBodyStateStand && slot == 2 && need_look_back())
             return (animation[13 + m_looking_back - 1].A[0]);
 
-        VERIFY(eMovementTypeRun == movement.movement_type());
+        VERIFY(movement.movement_type() == MonsterSpace::eMovementTypeRun);
         return (animation[1].A[3]);
     }
     }
@@ -187,7 +188,7 @@ MotionID CStalkerAnimationManager::missile_animation(u32 slot, const EBodyState&
 {
     VERIFY(m_missile);
 
-    if (body_state == eBodyStateCrouch)
+    if (body_state == MonsterSpace::eBodyStateCrouch)
         slot = 0;
 
     const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[slot].A;

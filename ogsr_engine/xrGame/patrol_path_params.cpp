@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "patrol_path_params.h"
 #include "patrol_path_manager.h"
 #include "ai_space.h"
@@ -37,13 +38,16 @@ const Fvector& CPatrolPathParams::point(u32 index) const
 {
     VERIFY(m_path);
     VERIFY(!m_path->vertices().empty());
+
     if (!m_path->vertex(index))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Can't get information about patrol point number %u in the patrol way %s", index, *m_path_name);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Can't get information about patrol point number %u in the patrol way %s", index, *m_path_name);
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
+
     VERIFY(m_path->vertex(index));
-    return (m_path->vertex(index)->data().position());
+
+    return m_path->vertex(index)->data().position();
 }
 
 u32 CPatrolPathParams::level_vertex_id(u32 index) const

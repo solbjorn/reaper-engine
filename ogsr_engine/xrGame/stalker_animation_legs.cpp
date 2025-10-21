@@ -47,34 +47,35 @@ void CStalkerAnimationManager::legs_play_callback(CBlend* blend)
 
 IC float CStalkerAnimationManager::legs_switch_factor() const
 {
-    if ((m_target_direction == eMovementDirectionForward) && (m_current_direction == eMovementDirectionBackward))
-        return (0.f);
+    if (m_target_direction == MonsterSpace::eMovementDirectionForward && m_current_direction == MonsterSpace::eMovementDirectionBackward)
+        return 0.0f;
 
-    if ((m_target_direction == eMovementDirectionBackward) && (m_current_direction == eMovementDirectionForward))
-        return (0.f);
+    if (m_target_direction == MonsterSpace::eMovementDirectionBackward && m_current_direction == MonsterSpace::eMovementDirectionForward)
+        return 0.0f;
 
-    if ((m_target_direction == eMovementDirectionLeft) && (m_current_direction == eMovementDirectionRight))
-        return (0.f);
+    if (m_target_direction == MonsterSpace::eMovementDirectionLeft && m_current_direction == MonsterSpace::eMovementDirectionRight)
+        return 0.0f;
 
-    if ((m_target_direction == eMovementDirectionRight) && (m_current_direction == eMovementDirectionLeft))
-        return (0.f);
+    if (m_target_direction == MonsterSpace::eMovementDirectionRight && m_current_direction == MonsterSpace::eMovementDirectionLeft)
+        return 0.0f;
 
-    return (1.f);
+    return 1.0f;
 }
 
 bool CStalkerAnimationManager::need_look_back() const
 {
     if (m_looking_back)
-        return (true);
+        return true;
 
-    if (m_previous_speed_direction != eMovementDirectionBackward)
-        return (false);
+    if (m_previous_speed_direction != MonsterSpace::eMovementDirectionBackward)
+        return false;
 
-    if ((m_change_direction_time + need_look_back_time_delay) > Device.dwTimeGlobal)
-        return (false);
+    if (m_change_direction_time + need_look_back_time_delay > Device.dwTimeGlobal)
+        return false;
 
     m_looking_back = ::Random.randI(2) + 1;
-    return (true);
+
+    return true;
 }
 
 void CStalkerAnimationManager::legs_assign_direction(float switch_factor, const EMovementDirection& direction)
@@ -118,15 +119,15 @@ void CStalkerAnimationManager::legs_process_direction(float yaw)
     float difference = angle_difference(yaw, head_current);
 
     if (difference <= test_angle_forward)
-        legs_assign_direction(switch_factor, eMovementDirectionForward);
+        legs_assign_direction(switch_factor, MonsterSpace::eMovementDirectionForward);
     else
     {
         if (difference > test_angle_backward)
-            legs_assign_direction(switch_factor, eMovementDirectionBackward);
+            legs_assign_direction(switch_factor, MonsterSpace::eMovementDirectionBackward);
         else if (left)
-            legs_assign_direction(switch_factor, eMovementDirectionLeft);
+            legs_assign_direction(switch_factor, MonsterSpace::eMovementDirectionLeft);
         else
-            legs_assign_direction(switch_factor, eMovementDirectionRight);
+            legs_assign_direction(switch_factor, MonsterSpace::eMovementDirectionRight);
     }
 
     movement.m_body.target.yaw = yaw + direction_angles[m_current_direction];
@@ -137,14 +138,13 @@ MotionID CStalkerAnimationManager::legs_move_animation()
     m_no_move_actual = false;
 
     CStalkerMovementManager& movement = object().movement();
+    VERIFY(movement.body_state() == MonsterSpace::eBodyStateStand || movement.mental_state() != MonsterSpace::eMentalStateFree);
 
-    VERIFY((movement.body_state() == eBodyStateStand) || (movement.mental_state() != eMentalStateFree));
-
-    if (eMentalStateDanger != movement.mental_state())
+    if (movement.mental_state() != MonsterSpace::eMentalStateDanger)
     {
-        m_current_speed = movement.speed(eMovementDirectionForward);
+        m_current_speed = movement.speed(MonsterSpace::eMovementDirectionForward);
 
-        return (m_data_storage->m_part_animations.A[body_state()].m_movement.A[movement.movement_type()].A[eMovementDirectionForward].A[1]);
+        return m_data_storage->m_part_animations.A[body_state()].m_movement.A[movement.movement_type()].A[MonsterSpace::eMovementDirectionForward].A[1];
     }
 
     float yaw, pitch;
@@ -168,17 +168,17 @@ MotionID CStalkerAnimationManager::legs_move_animation()
     float difference = angle_difference(yaw, body_current);
 
     if (difference <= test_angle_forward)
-        speed_direction = eMovementDirectionForward;
+        speed_direction = MonsterSpace::eMovementDirectionForward;
     else
     {
         if (difference > test_angle_backward)
-            speed_direction = eMovementDirectionBackward;
+            speed_direction = MonsterSpace::eMovementDirectionBackward;
         else
         {
             if (left)
-                speed_direction = eMovementDirectionLeft;
+                speed_direction = MonsterSpace::eMovementDirectionLeft;
             else
-                speed_direction = eMovementDirectionRight;
+                speed_direction = MonsterSpace::eMovementDirectionRight;
         }
     }
 
@@ -222,18 +222,18 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
     const xr_vector<MotionID>& animation = m_data_storage->m_part_animations.A[body_state].m_in_place->A;
 
     CStalkerMovementManager& movement = object().movement();
-    const SBoneRotation& body_orientation = movement.body_orientation();
+    const MonsterSpace::SBoneRotation& body_orientation = movement.body_orientation();
     float current = body_orientation.current.yaw;
     float target = body_orientation.target.yaw;
     if (angle_difference(target, current) < EPS_L)
     {
         float head_current = movement.head_orientation().current.yaw;
-        if ((movement.mental_state() != eMentalStateFree) || (!object().sight().turning_in_place() && (angle_difference(current, head_current) <= standing_turn_angle)))
+        if (movement.mental_state() != MonsterSpace::eMentalStateFree || (!object().sight().turning_in_place() && angle_difference(current, head_current) <= standing_turn_angle))
         {
-            if (movement.mental_state() == eMentalStateFree)
+            if (movement.mental_state() == MonsterSpace::eMentalStateFree)
                 return (animation[1]);
 
-            if (body_state == eBodyStateCrouch)
+            if (body_state == MonsterSpace::eBodyStateCrouch)
                 return (animation[m_crouch_state]);
 
             return (animation[0]);
@@ -245,13 +245,13 @@ MotionID CStalkerAnimationManager::legs_no_move_animation()
 
     if (left_angle(current, target))
     {
-        if (movement.mental_state() == eMentalStateFree)
+        if (movement.mental_state() == MonsterSpace::eMentalStateFree)
             return (animation[4]);
 
         return (animation[2]);
     }
 
-    if (movement.mental_state() == eMentalStateFree)
+    if (movement.mental_state() == MonsterSpace::eMentalStateFree)
         return (animation[5]);
 
     return (animation[3]);

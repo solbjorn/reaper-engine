@@ -50,7 +50,7 @@ Fvector CDangerObject__position(const CDangerObject* self)
 }
 } // namespace
 
-void CMemoryInfo::script_register(sol::state_view& lua)
+void MemorySpace::CMemoryInfo::script_register(sol::state_view& lua)
 {
 #ifdef USE_ORIENTATION
     lua.new_usertype<SRotation>("rotation", sol::no_constructor, "yaw", sol::readonly(&SRotation::yaw), "pitch", sol::readonly(&SRotation::pitch));

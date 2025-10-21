@@ -65,7 +65,7 @@ IC const Fvector& CDetailPathManager::dest_position() const { return (m_dest_pos
 
 IC const Fvector& CDetailPathManager::dest_direction() const { return (m_dest_direction); }
 
-IC void CDetailPathManager::set_path_type(const EDetailPathType path_type)
+inline void CDetailPathManager::set_path_type(const DetailPathManager::EDetailPathType path_type)
 {
     m_actuality = m_actuality && (path_type == m_path_type);
     m_path_type = path_type;

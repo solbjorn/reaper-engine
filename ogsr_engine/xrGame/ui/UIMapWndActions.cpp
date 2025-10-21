@@ -203,7 +203,7 @@ void CMapActionPlanner::setup(CUIMapWnd* object)
     add_effect(action, ePropTargetMapShown, true);
     add_operator(eOperatorMapMinimize, action);
 
-    CWorldState target_state;
+    GraphEngineSpace::CWorldState target_state;
     target_state.add_condition(CWorldProperty(ePropMapIdle, true));
     set_target_state(target_state);
 }

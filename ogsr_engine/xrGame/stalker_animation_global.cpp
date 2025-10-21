@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory.h"
@@ -45,14 +46,14 @@ MotionID CStalkerAnimationManager::global_critical_hit()
     VERIFY(animation_slot >= 1);
     VERIFY(animation_slot <= 3);
 
-    return (global().select(m_data_storage->m_part_animations.A[eBodyStateStand].m_global.A[object().critical_wound_type() + 6 * (animation_slot - 1)].A,
+    return (global().select(m_data_storage->m_part_animations.A[MonsterSpace::eBodyStateStand].m_global.A[object().critical_wound_type() + 6 * (animation_slot - 1)].A,
                             &object().critical_wound_weights()));
 }
 
 MotionID CStalkerAnimationManager::assign_global_animation()
 {
-    if (eMentalStatePanic != object().movement().mental_state())
-        return (global_critical_hit());
+    if (object().movement().mental_state() != MonsterSpace::eMentalStatePanic)
+        return global_critical_hit();
 
     if (fis_zero(object().movement().speed(object().character_physics_support()->movement())))
         return (MotionID());

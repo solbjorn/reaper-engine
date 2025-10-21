@@ -56,7 +56,7 @@ CHitMemoryManager::~CHitMemoryManager()
 #endif
 }
 
-const CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
+const MemorySpace::CHitObject* CHitMemoryManager::hit(const CEntityAlive* object) const
 {
     VERIFY(m_hits);
 
@@ -116,7 +116,7 @@ void CHitMemoryManager::add(float amount, const Fvector& vLocalDir, const CObjec
     {
         CHitObject hit_object;
 
-        hit_object.fill(entity_alive, m_object, !m_stalker ? squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
+        hit_object.fill(entity_alive, m_object, !m_stalker ? MemorySpace::squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
 
 #ifdef USE_FIRST_GAME_TIME
         hit_object.m_first_game_time = Level().GetGameTime();
@@ -128,7 +128,7 @@ void CHitMemoryManager::add(float amount, const Fvector& vLocalDir, const CObjec
 
         if (m_max_hit_count <= m_hits->size())
         {
-            HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
+            HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), MemorySpace::SLevelTimePredicate<CEntityAlive>());
             VERIFY(m_hits->end() != I);
             m_hits->erase(I);
         }
@@ -166,7 +166,7 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
 #endif
         if (m_max_hit_count <= m_hits->size())
         {
-            HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), SLevelTimePredicate<CEntityAlive>());
+            HITS::iterator I = std::min_element(m_hits->begin(), m_hits->end(), MemorySpace::SLevelTimePredicate<CEntityAlive>());
             VERIFY(m_hits->end() != I);
             m_hits->erase(I);
         }
@@ -181,7 +181,7 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
 
 struct CRemoveOfflinePredicate
 {
-    bool operator()(const CHitObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
+    bool operator()(const MemorySpace::CHitObject& object) const { return !object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent(); }
 };
 
 void CHitMemoryManager::update()

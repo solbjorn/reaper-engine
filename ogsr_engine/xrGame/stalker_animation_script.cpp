@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_engine.h"
@@ -48,7 +49,7 @@ void CStalkerAnimationManager::add_script_animation(LPCSTR animation, bool hand_
     const MotionID& motion = m_skeleton_animated->ID_Cycle_Safe(animation);
     if (!motion)
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "There is no animation %s (object %s)!", animation, *object().cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "There is no animation %s (object %s)!", animation, *object().cName());
         return;
     }
 

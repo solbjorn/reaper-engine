@@ -14,6 +14,8 @@
 
 #include "game_cl_base.h"
 #include "Level.h"
+#include "../xr_3da/camerabase.h"
+#include "script_game_object.h"
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 // AAAAAA
@@ -139,15 +141,12 @@ void CActor::PickupModeUpdate()
             PickupInfoDraw(*it);
 }
 
-#include "../xr_3da/camerabase.h"
-#include "script_game_object.h"
-
 void CActor::PickupModeUpdate_COD()
 {
     if (Level().CurrentViewEntity() != this)
         return;
 
-    if (!g_Alive() || eacFirstEye != cam_active)
+    if (!g_Alive() || cam_active != ACTOR_DEFS::eacFirstEye)
     {
         HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(nullptr);
         return;

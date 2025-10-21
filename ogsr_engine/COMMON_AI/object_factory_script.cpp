@@ -19,7 +19,7 @@ void CObjectFactory::register_script_class(LPCSTR client_class, LPCSTR server_cl
 
     if (!ai().script_engine().function(client_class, client))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", client_class);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot register class %s", client_class);
         return;
     }
 
@@ -27,7 +27,7 @@ void CObjectFactory::register_script_class(LPCSTR client_class, LPCSTR server_cl
 
     if (!ai().script_engine().function(server_class, server))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", server_class);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot register class %s", server_class);
         return;
     }
 
@@ -40,7 +40,7 @@ void CObjectFactory::register_script_class(LPCSTR unknown_class, LPCSTR clsid, L
 
     if (!ai().script_engine().function(unknown_class, creator))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Cannot register class %s", unknown_class);
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot register class %s", unknown_class);
         return;
     }
 

@@ -12,11 +12,13 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "object_broker.h"
 #include "weapon.h"
 #include "PDA.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
+
+#include "UI.h"
+#include "HUDManager.h"
 
 BOOL GodMode() { return psActorFlags.test(AF_GODMODE); }
 
@@ -126,9 +128,6 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 }
 
 // вычисление параметров с ходом времени
-#include "UI.h"
-#include "HUDManager.h"
-
 void CActorCondition::UpdateCondition()
 {
     if (GodMode())
@@ -147,8 +146,8 @@ void CActorCondition::UpdateCondition()
 
     float weight_coef = weight / max_weight;
 
-    if ((object().mstate_real & mcAnyMove))
-        ConditionWalk(weight_coef, isActorAccelerated(object().mstate_real, object().IsZoomAimingMode()), (object().mstate_real & mcSprint) != 0);
+    if (object().mstate_real & ACTOR_DEFS::mcAnyMove)
+        ConditionWalk(weight_coef, isActorAccelerated(object().mstate_real, object().IsZoomAimingMode()), (object().mstate_real & ACTOR_DEFS::mcSprint) != 0);
     else
         ConditionStand();
 

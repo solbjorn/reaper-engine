@@ -35,7 +35,7 @@ struct STorsoWpn
     MotionID fire_idle;
     MotionID fire_end;
 
-    //анимации для атаки для всего тела (когда мы стоим на месте)
+    // анимации для атаки для всего тела (когда мы стоим на месте)
     MotionID all_attack_0;
     MotionID all_attack_1;
     MotionID all_attack_2;
@@ -58,7 +58,7 @@ struct SActorState
     MotionID m_torso_idle;
     MotionID m_head_idle;
 
-    MotionID m_damage[DAMAGE_FX_COUNT];
+    MotionID m_damage[ACTOR_DEFS::DAMAGE_FX_COUNT];
     void Create(IKinematicsAnimated* K, LPCSTR base);
     void CreateClimb(IKinematicsAnimated* K);
 };

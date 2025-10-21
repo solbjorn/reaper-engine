@@ -137,9 +137,7 @@ void CGrenade::Throw()
     {
         CActor* pActor = smart_cast<CActor*>(m_pCurrentInventory->GetOwner());
         if (pActor)
-        {
-            Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
-        }
+            Actor()->set_state_wishful(Actor()->get_state_wishful() & ~ACTOR_DEFS::mcSprint);
     }
 
     m_fake_missile->processing_activate(); //@sliph

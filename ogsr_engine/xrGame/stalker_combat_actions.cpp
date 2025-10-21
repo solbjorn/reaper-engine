@@ -73,10 +73,8 @@ void CStalkerActionGetItemToKill::initialize()
     inherited::initialize();
 
     object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
-
     object().sight().setup(CSightAction(object().m_best_found_item_to_kill ? &object().m_best_found_item_to_kill->object() : nullptr, true));
-
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 }
 
 void CStalkerActionGetItemToKill::finalize()
@@ -108,9 +106,9 @@ void CStalkerActionGetItemToKill::execute()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(object().movement().body_state() == eBodyStateCrouch ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().set_goal(eObjectActionIdle);
+    object().movement().set_body_state(object().movement().body_state() == MonsterSpace::eBodyStateCrouch ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,7 +128,7 @@ void CStalkerActionMakeItemKilling::initialize()
     object().sight().add_action(eSightActionTypeWatchEnemy,
                                 xr_new<CSightControlAction>(1.f, 3000u, CSightAction(SightManager::eSightTypePosition, object().memory().enemy().selected()->Position(), false)));
 
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 }
 
 void CStalkerActionMakeItemKilling::finalize()
@@ -162,10 +160,10 @@ void CStalkerActionMakeItemKilling::execute()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
     object().sight().action(eSightActionTypeWatchEnemy).set_vector3d(object().memory().enemy().selected()->Position());
-    object().set_goal(eObjectActionIdle);
+    object().set_goal(MonsterSpace::eObjectActionIdle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -196,13 +194,13 @@ void CStalkerActionRetreatFromEnemy::execute()
     if (!object().memory().enemy().selected())
         return;
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
 
-    object().movement().set_movement_type(eMovementTypeRun);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStatePanic);
-    object().movement().set_body_state(eBodyStateStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStatePanic);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
 
     object().m_ce_far->setup(mem_object.m_object_params.m_position, 0.f, 300.f);
     const CCoverPoint* point = ai().cover_manager().best_cover(object().Position(), 30.f, *object().m_ce_far, CStalkerMovementRestrictor(m_object, true));
@@ -216,14 +214,14 @@ void CStalkerActionRetreatFromEnemy::execute()
     {
         object().movement().set_level_dest_vertex(point->level_vertex_id());
         object().movement().set_desired_position(&point->position());
-        object().CObjectHandler::set_goal(eObjectActionIdle);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, false));
     }
     else
     {
         if (object().memory().visual().visible_now(object().memory().enemy().selected()))
         {
-            object().movement().set_mental_state(eMentalStateDanger);
+            object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
             //			u32												min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
             //			float											distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
             //			select_queue_params								(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
@@ -234,7 +232,7 @@ void CStalkerActionRetreatFromEnemy::execute()
         }
         else
         {
-            object().CObjectHandler::set_goal(eObjectActionIdle);
+            object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
             object().sight().setup(CSightAction(SightManager::eSightTypeCover, true));
         }
     }
@@ -266,7 +264,7 @@ void CStalkerActionGetReadyToKill::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().movement().set_body_state(m_body_state);
     //	object().movement().set_movement_type				(eMovementTypeRun);
     //	object().sight().setup								(CSightAction(SightManager::eSightTypePathDirection));
@@ -306,22 +304,22 @@ void CStalkerActionGetReadyToKill::execute()
 
     if (object().movement().detail().distance_to_target() < 2.f)
     {
-        object().movement().set_movement_type(eMovementTypeWalk);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
         object().sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
     }
     else
     {
-        object().movement().set_movement_type(eMovementTypeRun);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
         object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
     }
 
     if (object().movement().detail().distance_to_target() > CLOSE_MOVE_DISTANCE)
-        object().movement().set_body_state(eBodyStateStand);
+        object().movement().set_body_state(MonsterSpace::eBodyStateStand);
     //	else {
     //		object().movement().set_movement_type	(m_movement_type);
     //	}
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     Fvector position = mem_object.m_object_params.m_position;
 
     const CCoverPoint* point = object().best_cover(position);
@@ -344,8 +342,8 @@ void CStalkerActionGetReadyToKill::execute()
     else
     {
         object().brain().affect_cover(true);
-        object().movement().set_movement_type(eMovementTypeStand);
-        //		object().movement().set_body_state			(eBodyStateCrouch);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+        //		object().movement().set_body_state			(MonsterSpace::eBodyStateCrouch);
         object().movement().set_nearest_accessible_position();
     }
 
@@ -379,9 +377,9 @@ void CStalkerActionKillEnemy::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_mental_state(eMentalStateDanger);
-    //	object().movement().set_body_state			(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    //	object().movement().set_body_state			(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
     m_storage->set_property(eWorldPropertyLookedOut, false);
     m_storage->set_property(eWorldPropertyPositionHolded, false);
     m_storage->set_property(eWorldPropertyEnemyDetoured, false);
@@ -411,12 +409,9 @@ void CStalkerActionKillEnemy::execute()
 
     if (object().memory().enemy().selected())
     {
-        CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+        MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
         if (mem_object.m_object)
-        {
             object().best_cover(mem_object.m_object_params.m_position);
-        }
     }
 }
 
@@ -432,12 +427,12 @@ void CStalkerActionTakeCover::initialize()
 
     m_body_state = object().movement().body_state();
     //	m_movement_type								= Random.randI(2) ? eMovementTypeRun : eMovementTypeWalk;
-    m_movement_type = eMovementTypeWalk;
+    m_movement_type = MonsterSpace::eMovementTypeWalk;
 
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().movement().set_body_state(m_body_state);
     object().movement().set_movement_type(m_movement_type);
     m_storage->set_property(eWorldPropertyLookedOut, false);
@@ -465,13 +460,12 @@ void CStalkerActionTakeCover::execute()
 
     inherited::execute();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
     if (object().movement().detail().distance_to_target() > CLOSE_MOVE_DISTANCE)
-        object().movement().set_body_state(eBodyStateStand);
+        object().movement().set_body_state(MonsterSpace::eBodyStateStand);
     else
         object().movement().set_movement_type(m_movement_type);
 
@@ -535,10 +529,10 @@ void CStalkerActionLookOut::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 
-    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
+    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
     object().movement().set_nearest_accessible_position();
 
     if (object().ready_to_detour())
@@ -546,7 +540,7 @@ void CStalkerActionLookOut::initialize()
     else
     {
         aim_ready_force_full();
-        object().movement().set_movement_type(eMovementTypeStand);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
     }
 
     set_inertia_time(1000);
@@ -577,8 +571,7 @@ void CStalkerActionLookOut::execute()
 
     inherited::execute();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -615,12 +608,9 @@ void CStalkerActionLookOut::execute()
 
     if (object().memory().enemy().selected())
     {
-        CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+        MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
         if (mem_object.m_object)
-        {
             object().best_cover(mem_object.m_object_params.m_position);
-        }
     }
 }
 
@@ -637,9 +627,9 @@ void CStalkerActionHoldPosition::initialize()
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
     object().movement().set_nearest_accessible_position();
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? eBodyStateCrouch : eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(m_storage->property(eWorldPropertyUseCrouchToLookOut) ? MonsterSpace::eBodyStateCrouch : MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
 
     aim_ready();
 
@@ -657,8 +647,7 @@ void CStalkerActionHoldPosition::execute()
 
     inherited::execute();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -689,12 +678,9 @@ void CStalkerActionHoldPosition::execute()
 
     if (object().memory().enemy().selected())
     {
-        CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+        MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
         if (mem_object.m_object)
-        {
             object().best_cover(mem_object.m_object_params.m_position);
-        }
     }
 }
 
@@ -711,9 +697,9 @@ void CStalkerActionDetourEnemy::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeRun);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
 
     aim_ready();
 
@@ -748,8 +734,7 @@ void CStalkerActionDetourEnemy::execute()
 
     inherited::execute();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -792,9 +777,9 @@ void CStalkerActionSearchEnemy::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
 
     aim_ready();
 
@@ -811,8 +796,7 @@ void CStalkerActionSearchEnemy::execute()
 
     inherited::execute();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -874,11 +858,11 @@ void CStalkerActionPostCombatWait::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
 
-    EObjectAction action = eObjectActionAimReady1;
+    MonsterSpace::EObjectAction action = MonsterSpace::eObjectActionAimReady1;
     if (m_storage->property(eWorldPropertyKilledWounded))
-        action = eObjectActionIdle;
+        action = MonsterSpace::eObjectActionIdle;
 
     if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
         object().set_goal(action, object().best_weapon());
@@ -900,7 +884,6 @@ void CStalkerActionPostCombatWait::initialize()
 }
 
 void CStalkerActionPostCombatWait::execute() { inherited::execute(); }
-
 void CStalkerActionPostCombatWait::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -915,9 +898,9 @@ void CStalkerActionGetDistance::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeRun);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
 }
 
 void CStalkerActionGetDistance::execute()
@@ -931,8 +914,7 @@ void CStalkerActionGetDistance::execute()
     if (!object().memory().enemy().selected())
         return;
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -980,9 +962,9 @@ void CStalkerActionHideFromGrenade::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeRun);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
     object().m_ce_best->invalidate();
 
     m_storage->set_property(eWorldPropertyInCover, false);
@@ -1008,22 +990,23 @@ void CStalkerActionHideFromGrenade::execute()
     {
         object().movement().set_level_dest_vertex(point->level_vertex_id());
         object().movement().set_desired_position(&point->position());
-        object().movement().set_movement_type(eMovementTypeRun);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
     }
     else
     {
-        object().movement().set_movement_type(eMovementTypeStand);
-        object().movement().set_body_state(eBodyStateCrouch);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+        object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
     }
 
     if (!object().memory().enemy().selected())
+    {
         object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
+    }
     else
     {
-        CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+        MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
         if (!mem_object.m_object)
-        { // || (!m_object->memory().visual().visible_now(object().memory().enemy().selected()) && !object().movement().path_completed())) {
+        {
             object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
             aim_ready();
         }
@@ -1044,7 +1027,7 @@ void CStalkerActionHideFromGrenade::execute()
     }
 
     if (object().movement().path_completed())
-        object().movement().set_body_state(eBodyStateCrouch);
+        object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
 }
 
 void CStalkerActionHideFromGrenade::finalize() { inherited::finalize(); }
@@ -1062,7 +1045,7 @@ void CStalkerActionSuddenAttack::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 
     if (!object().memory().enemy().selected())
         return;
@@ -1086,8 +1069,7 @@ void CStalkerActionSuddenAttack::execute()
     if (!object().memory().enemy().selected())
         return;
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
-
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     if (!mem_object.m_object)
         return;
 
@@ -1106,34 +1088,34 @@ void CStalkerActionSuddenAttack::execute()
     float distance = object().Position().distance_to(mem_object.m_object_params.m_position);
     if (distance >= 15.f)
     {
-        object().movement().set_body_state(eBodyStateStand);
-        object().movement().set_movement_type(eMovementTypeRun);
+        object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
     }
     else
     {
         if (distance >= 8.f)
         {
-            object().movement().set_body_state(eBodyStateStand);
-            object().movement().set_movement_type(eMovementTypeWalk);
+            object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+            object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
         }
         else
         {
             if (distance >= 6.f)
             {
-                object().movement().set_body_state(eBodyStateCrouch);
-                object().movement().set_movement_type(eMovementTypeRun);
+                object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
+                object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
             }
             else
             {
                 if ((distance >= 4.f) || !visible_now)
                 {
-                    object().movement().set_body_state(eBodyStateCrouch);
-                    object().movement().set_movement_type(eMovementTypeRun);
+                    object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
+                    object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
                 }
                 else
                 {
-                    object().movement().set_body_state(eBodyStateCrouch);
-                    object().movement().set_movement_type(eMovementTypeStand);
+                    object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
+                    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
 
                     fire();
                 }
@@ -1159,8 +1141,8 @@ void CStalkerActionKillEnemyIfPlayerOnThePath::initialize()
 {
     inherited::initialize();
 
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
     object().movement().force_update(true);
 
     m_storage->set_property(eWorldPropertyInCover, false);
@@ -1189,10 +1171,9 @@ void CStalkerActionKillEnemyIfPlayerOnThePath::execute()
     inherited::execute();
 
     object().sight().setup(CSightAction(object().memory().enemy().selected(), true, true));
-
     fire();
 
-    CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
+    MemorySpace::CMemoryInfo mem_object = object().memory().memory(object().memory().enemy().selected());
     Fvector position = mem_object.m_object_params.m_position;
     const CCoverPoint* point = object().best_cover(position);
     if (point)
@@ -1213,17 +1194,19 @@ void CStalkerActionCriticalHit::initialize()
     inherited::initialize();
 
     object().brain().affect_cover(false);
-    object().movement().set_movement_type(eMovementTypeStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
 
     if (object().memory().enemy().selected())
     {
         u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
         float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
         select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
     }
     else
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
+    {
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon());
+    }
 
     object().sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection, true, true));
     object().sound().play(eStalkerSoundInjuring);

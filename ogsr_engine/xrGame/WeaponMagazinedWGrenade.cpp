@@ -234,14 +234,13 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
 
     m_ammoTypes.swap(m_ammoTypes2);
 
-    swap(m_ammoType, m_ammoType2);
-
-    swap(m_DefaultCartridge, m_DefaultCartridge2);
+    std::swap(m_ammoType, m_ammoType2);
+    std::swap(m_DefaultCartridge, m_DefaultCartridge2);
 
     m_magazine.swap(m_magazine2); // https://github.com/revolucas/CoC-Xray/pull/5/commits/4a396eb30137c5625c5b0dd934e63eaa5b62cbc5
 
-    iAmmoElapsed = (int)m_magazine.size();
-    iAmmoElapsed2 = (int)m_magazine2.size();
+    iAmmoElapsed = std::ssize(m_magazine);
+    iAmmoElapsed2 = std::ssize(m_magazine2);
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags)
@@ -709,13 +708,14 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
             if (auto pActor = smart_cast<CActor*>(H_Parent()))
             {
                 const u32 State = pActor->get_state();
-                if (State & mcSprint)
+                if (State & ACTOR_DEFS::mcSprint)
                 {
                     if (!SprintType)
                     {
                         SwitchState(eSprintStart);
                         return;
                     }
+
                     act_state = AnimStateSprint;
                 }
                 else if (SprintType)
@@ -723,19 +723,23 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
                     SwitchState(eSprintEnd);
                     return;
                 }
-                else if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+                else if ((State & ACTOR_DEFS::mcAnyMove) && AnmIdleMovingAllowed())
                 {
-                    if (!(State & mcCrouch))
+                    if (!(State & ACTOR_DEFS::mcCrouch))
                     {
-                        if (State & mcAccel) // Ходьба медленная (SHIFT)
+                        if (State & ACTOR_DEFS::mcAccel) // Ходьба медленная (SHIFT)
                             act_state = AnimStateMovingSlow;
                         else
                             act_state = AnimStateMoving;
                     }
-                    else if (State & mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+                    else if (State & ACTOR_DEFS::mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+                    {
                         act_state = AnimStateMovingCrouchSlow;
+                    }
                     else
+                    {
                         act_state = AnimStateMovingCrouch;
+                    }
                 }
             }
 

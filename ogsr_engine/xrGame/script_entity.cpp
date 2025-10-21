@@ -95,7 +95,7 @@ void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSci
     if (!(((m_bScriptControl && !bScriptControl) || (!m_bScriptControl && bScriptControl)) &&
           (bScriptControl || (xr_strlen(*m_caScriptName) && !xr_strcmp(caSciptName, m_caScriptName)))))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Invalid sequence of taking an entity under script control");
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Invalid sequence of taking an entity under script control");
         return;
     }
 
@@ -288,7 +288,7 @@ void CScriptEntity::ProcessScripts()
     bool l_bCompleted = l_tpEntityAction->m_tWatchAction.m_bCompleted;
     bfAssignWatch(l_tpEntityAction);
     if (l_tpEntityAction->m_tWatchAction.m_bCompleted && !l_bCompleted)
-        object().callback(GameObject::eActionTypeWatch)(object().lua_game_object(), u32(eActionTypeWatch));
+        object().callback(GameObject::eActionTypeWatch)(object().lua_game_object(), u32(GameObject::eActionTypeWatch));
 
     l_bCompleted = l_tpEntityAction->m_tAnimationAction.m_bCompleted;
     bfAssignAnimation(l_tpEntityAction);
@@ -296,22 +296,22 @@ void CScriptEntity::ProcessScripts()
     l_bCompleted = l_tpEntityAction->m_tSoundAction.m_bCompleted;
     bfAssignSound(l_tpEntityAction);
     if (l_tpEntityAction->m_tSoundAction.m_bCompleted && !l_bCompleted)
-        object().callback(GameObject::eActionTypeSound)(object().lua_game_object(), u32(eActionTypeSound));
+        object().callback(GameObject::eActionTypeSound)(object().lua_game_object(), u32(GameObject::eActionTypeSound));
 
     l_bCompleted = l_tpEntityAction->m_tParticleAction.m_bCompleted;
     bfAssignParticles(l_tpEntityAction);
     if (l_tpEntityAction->m_tParticleAction.m_bCompleted && !l_bCompleted)
-        object().callback(GameObject::eActionTypeParticle)(object().lua_game_object(), u32(eActionTypeParticle));
+        object().callback(GameObject::eActionTypeParticle)(object().lua_game_object(), u32(GameObject::eActionTypeParticle));
 
     l_bCompleted = l_tpEntityAction->m_tObjectAction.m_bCompleted;
     bfAssignObject(l_tpEntityAction);
     if (l_tpEntityAction->m_tObjectAction.m_bCompleted && !l_bCompleted)
-        object().callback(GameObject::eActionTypeObject)(object().lua_game_object(), u32(eActionTypeObject));
+        object().callback(GameObject::eActionTypeObject)(object().lua_game_object(), u32(GameObject::eActionTypeObject));
 
     l_bCompleted = l_tpEntityAction->m_tMovementAction.m_bCompleted;
     bfAssignMovement(l_tpEntityAction);
     if (l_tpEntityAction->m_tMovementAction.m_bCompleted && !l_bCompleted)
-        object().callback(GameObject::eActionTypeMovement)(object().lua_game_object(), u32(eActionTypeMovement), -1);
+        object().callback(GameObject::eActionTypeMovement)(object().lua_game_object(), u32(GameObject::eActionTypeMovement), -1);
 
     // Установить выбранную анимацию
     if (!l_tpEntityAction->m_tAnimationAction.m_bCompleted)
@@ -451,7 +451,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction* tpEntityAction)
 
     if (!m_monster)
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Cannot assign a movement action not to a monster!");
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot assign a movement action not to a monster!");
         return (true);
     }
 
@@ -583,7 +583,7 @@ void ScriptCallBack(CBlend* B)
     if (l_tpScriptMonster->GetCurrentAction() && !B->bone_or_part)
     {
         if (!l_tpScriptMonster->GetCurrentAction()->m_tAnimationAction.m_bCompleted)
-            l_tpScriptMonster->object().callback(GameObject::eActionTypeAnimation)(l_tpScriptMonster->object().lua_game_object(), u32(eActionTypeAnimation));
+            l_tpScriptMonster->object().callback(GameObject::eActionTypeAnimation)(l_tpScriptMonster->object().lua_game_object(), u32(GameObject::eActionTypeAnimation));
 
         l_tpScriptMonster->m_tpScriptAnimation.invalidate();
         l_tpScriptMonster->GetCurrentAction()->m_tAnimationAction.m_bCompleted = true;

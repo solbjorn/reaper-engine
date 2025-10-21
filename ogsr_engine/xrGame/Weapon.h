@@ -276,7 +276,7 @@ public:
     bool ZoomHideCrosshair()
     {
         auto* pA = smart_cast<CActor*>(H_Parent());
-        if (pA && pA->active_cam() == eacLookAt)
+        if (pA && pA->active_cam() == ACTOR_DEFS::eacLookAt)
             return false;
 
         return m_bHideCrosshairInZoom || ZoomTexture();

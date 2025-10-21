@@ -12,8 +12,6 @@
 #include "ai_monster_space.h"
 #include "stalker_movement_params.h"
 
-using namespace MonsterSpace;
-
 class CAI_Stalker;
 class CStalkerVelocityCollection;
 class CGameObject;
@@ -73,14 +71,14 @@ public:
     IC void set_head_orientation(const MonsterSpace::SBoneRotation& orientation);
     void set_desired_position(const Fvector* desired_position);
     IC void set_desired_direction(const Fvector* desired_direction);
-    IC void set_body_state(EBodyState body_state);
-    IC void set_movement_type(EMovementType movement_type);
-    IC void set_mental_state(EMentalState mental_state);
+    IC void set_body_state(MonsterSpace::EBodyState body_state);
+    IC void set_movement_type(MonsterSpace::EMovementType movement_type);
+    IC void set_mental_state(MonsterSpace::EMentalState mental_state);
     IC void set_path_type(EPathType path_type);
     IC void set_detail_path_type(EDetailPathType detail_path_type);
     void set_nearest_accessible_position();
     void set_nearest_accessible_position(Fvector desired_position, u32 level_vertex_id);
-    float speed(const EMovementDirection& movement_direction);
+    float speed(const MonsterSpace::EMovementDirection& movement_direction);
     void setup_speed_from_animation(const float& speed);
 
 public:

@@ -28,7 +28,7 @@ void CDetailPathManager::reinit()
     m_start_position = Fvector().set(0, 0, 0);
     m_dest_position = Fvector().set(0, 0, 0);
     m_current_travel_point = u32(-1);
-    m_path_type = eDetailPathTypeSmooth;
+    m_path_type = DetailPathManager::eDetailPathTypeSmooth;
     m_path.clear();
     m_desirable_mask = u32(-1);
     m_velocity_mask = 0;
@@ -92,15 +92,15 @@ void CDetailPathManager::build_path(const xr_vector<u32>& level_path, u32 interm
     {
         switch (m_path_type)
         {
-        case eDetailPathTypeSmooth: {
+        case DetailPathManager::eDetailPathTypeSmooth: {
             build_smooth_path(level_path, intermediate_index);
             break;
         }
-        case eDetailPathTypeSmoothDodge: {
+        case DetailPathManager::eDetailPathTypeSmoothDodge: {
             build_smooth_path(level_path, intermediate_index);
             break;
         }
-        case eDetailPathTypeSmoothCriteria: {
+        case DetailPathManager::eDetailPathTypeSmoothCriteria: {
             build_smooth_path(level_path, intermediate_index);
             break;
         }
@@ -147,8 +147,8 @@ void CDetailPathManager::update_distance_to_target()
     if (curr_travel_point_index() >= path().size() - 1)
         return;
 
-    xr_vector<STravelPathPoint>::const_iterator I = path().begin() + curr_travel_point_index() + 1;
-    xr_vector<STravelPathPoint>::const_iterator E = path().end();
+    xr_vector<DetailPathManager::STravelPathPoint>::const_iterator I = path().begin() + curr_travel_point_index() + 1;
+    xr_vector<DetailPathManager::STravelPathPoint>::const_iterator E = path().end();
     for (; I != E; ++I)
         m_distance_to_target += (*(I - 1)).position.distance_to((*I).position);
 }
@@ -170,8 +170,8 @@ u32 CDetailPathManager::location_on_path(const CGameObject* object, float distan
         return (vertex_result);
 
     float current_distance = 0.f;
-    xr_vector<STravelPathPoint>::const_iterator I = path().begin() + curr_travel_point_index() + 1;
-    xr_vector<STravelPathPoint>::const_iterator E = path().end();
+    xr_vector<DetailPathManager::STravelPathPoint>::const_iterator I = path().begin() + curr_travel_point_index() + 1;
+    xr_vector<DetailPathManager::STravelPathPoint>::const_iterator E = path().end();
     for (; I != E; ++I)
     {
         float next = (*(I - 1)).position.distance_to((*I).position);

@@ -27,7 +27,7 @@ public:
     }
     constexpr inline SelfRef set(const Self& p)
     {
-        *reinterpret_cast<u64*>(&x) = *reinterpret_cast<const u64*>(&p.x);
+        std::memcpy(this, &p, sizeof(p));
         return *this;
     }
     constexpr inline SelfRef abs(const Self& p)

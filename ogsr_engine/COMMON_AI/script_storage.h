@@ -21,8 +21,6 @@ enum ELuaMessageType : u32
 };
 }
 
-using namespace ScriptStorage;
-
 struct lua_State;
 
 class CScriptStorage : public virtual RTTI::Enable

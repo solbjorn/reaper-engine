@@ -1,14 +1,9 @@
 #include "stdafx.h"
 
-#include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"
 #include "../xr_3da/camerabase.h"
-
-#ifdef DEBUG
-#include "PHDebug.h"
-#endif
 
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -36,6 +31,12 @@
 #include "Missile.h"
 #include "PDA.h"
 #include "ui/UIPDAWnd.h"
+
+#ifdef DEBUG
+#include "PHDebug.h"
+#endif
+
+#include <dinput.h>
 
 bool g_bAutoClearCrouch = true;
 
@@ -68,9 +69,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
     {
     case kWPN_FIRE: {
         if (inventory().ActiveItem() && inventory().ActiveItem()->StopSprintOnFire())
-        {
-            mstate_wishful &= ~mcSprint;
-        }
+            mstate_wishful &= ~ACTOR_DEFS::mcSprint;
     }
     break;
     default: {
@@ -94,25 +93,25 @@ void CActor::IR_OnKeyboardPress(int cmd)
     switch (cmd)
     {
     case kJUMP: {
-        mstate_wishful |= mcJump;
+        mstate_wishful |= ACTOR_DEFS::mcJump;
     }
     break;
     case kCROUCH_TOGGLE: {
         g_bAutoClearCrouch = !g_bAutoClearCrouch;
         if (!g_bAutoClearCrouch)
-            mstate_wishful |= mcCrouch;
+            mstate_wishful |= ACTOR_DEFS::mcCrouch;
     }
     break;
     case kSPRINT_TOGGLE: {
-        if (mstate_wishful & mcSprint)
-            mstate_wishful &= ~mcSprint;
+        if (mstate_wishful & ACTOR_DEFS::mcSprint)
+            mstate_wishful &= ~ACTOR_DEFS::mcSprint;
         else
-            mstate_wishful |= mcSprint;
+            mstate_wishful |= ACTOR_DEFS::mcSprint;
     }
     break;
-    case kCAM_1: cam_Set(eacFirstEye); break;
-    case kCAM_2: cam_Set(eacLookAt); break;
-    case kCAM_3: cam_Set(eacFreeLook); break;
+    case kCAM_1: cam_Set(ACTOR_DEFS::eacFirstEye); break;
+    case kCAM_2: cam_Set(ACTOR_DEFS::eacLookAt); break;
+    case kCAM_3: cam_Set(ACTOR_DEFS::eacFreeLook); break;
     case kNIGHT_VISION: {
         auto act_it = inventory().ActiveItem();
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
@@ -230,7 +229,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
         switch (cmd)
         {
-        case kJUMP: mstate_wishful &= ~mcJump; break;
+        case kJUMP: mstate_wishful &= ~ACTOR_DEFS::mcJump; break;
         case kDROP:
             if (GAME_PHASE_INPROGRESS == Game().Phase())
                 g_PerformDrop();
@@ -289,18 +288,18 @@ void CActor::IR_OnKeyboardHold(int cmd)
     case kHIDEHUD: cam_Active()->Move(cmd); break;
     case kLEFT:
     case kRIGHT:
-        if (eacFreeLook != cam_active)
+        if (cam_active != ACTOR_DEFS::eacFreeLook)
             cam_Active()->Move(cmd, 0, LookFactor);
-        break;
 
-    case kACCEL: mstate_wishful |= mcAccel; break;
-    case kL_STRAFE: mstate_wishful |= mcLStrafe; break;
-    case kR_STRAFE: mstate_wishful |= mcRStrafe; break;
-    case kL_LOOKOUT: mstate_wishful |= mcLLookout; break;
-    case kR_LOOKOUT: mstate_wishful |= mcRLookout; break;
-    case kFWD: mstate_wishful |= mcFwd; break;
-    case kBACK: mstate_wishful |= mcBack; break;
-    case kCROUCH: mstate_wishful |= mcCrouch; break;
+        break;
+    case kACCEL: mstate_wishful |= ACTOR_DEFS::mcAccel; break;
+    case kL_STRAFE: mstate_wishful |= ACTOR_DEFS::mcLStrafe; break;
+    case kR_STRAFE: mstate_wishful |= ACTOR_DEFS::mcRStrafe; break;
+    case kL_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcLLookout; break;
+    case kR_LOOKOUT: mstate_wishful |= ACTOR_DEFS::mcRLookout; break;
+    case kFWD: mstate_wishful |= ACTOR_DEFS::mcFwd; break;
+    case kBACK: mstate_wishful |= ACTOR_DEFS::mcBack; break;
+    case kCROUCH: mstate_wishful |= ACTOR_DEFS::mcCrouch; break;
     }
 }
 
@@ -496,7 +495,7 @@ void CActor::ActorUse()
     PickupModeUpdate_COD();
 }
 
-BOOL CActor::HUDview() const { return IsFocused() && (cam_active == eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())); }
+BOOL CActor::HUDview() const { return IsFocused() && (cam_active == ACTOR_DEFS::eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())); }
 
 // void CActor::IR_OnMousePress(int btn)
 constexpr u32 SlotsToCheck[] = {

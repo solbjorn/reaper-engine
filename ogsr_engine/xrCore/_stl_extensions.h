@@ -14,8 +14,6 @@ XR_DIAG_POP();
 
 #include "xalloc.h"
 
-using std::swap; // TODO: Убрать!
-
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_vector = std::vector<T, allocator>;
 

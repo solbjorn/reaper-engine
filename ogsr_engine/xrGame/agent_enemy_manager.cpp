@@ -29,7 +29,7 @@ namespace
 {
 constexpr float wounded_enemy_reached_distance{3.f};
 
-IC u32 population(const squad_mask_type& b)
+IC u32 population(const MemorySpace::squad_mask_type& b)
 {
     static_assert(sizeof(b) == sizeof(u64));
     return __popcnt64(b);
@@ -39,9 +39,9 @@ struct CEnemyFiller
 {
     typedef CAgentEnemyManager::ENEMIES ENEMIES;
     ENEMIES* m_enemies;
-    squad_mask_type m_mask;
+    MemorySpace::squad_mask_type m_mask;
 
-    IC CEnemyFiller(ENEMIES* enemies, squad_mask_type mask)
+    IC CEnemyFiller(ENEMIES* enemies, MemorySpace::squad_mask_type mask)
     {
         m_enemies = enemies;
         m_mask = mask;

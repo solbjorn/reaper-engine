@@ -77,7 +77,7 @@ static CEntity::SEntityState* get_actor_state(CActor* pActor)
 
 static CActorConditionObject* get_actor_condition(CActor* pActor) { return (CActorConditionObject*)(&pActor->conditions()); }
 static SRotation& get_actor_orientation(CActor* pActor) { return pActor->Orientation(); }
-static EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
+static ACTOR_DEFS::EActorCameras get_active_cam(CActor* pActor) { return pActor->active_cam(); }
 
 static bool IsLimping(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eLimping); }
 static bool IsCantWalk(CActorCondition* C) { return C->m_condition_flags.test(CActorCondition::eCantWalk); }
@@ -148,7 +148,8 @@ void CScriptActor::script_register(sol::state_view& lua)
 
     lua.new_usertype<CActorObject>("CActor", sol::no_constructor, sol::base_classes, xr::sol_bases<CActorObject>());
 
-    lua.new_enum("EActorCameras", "eacFirstEye", eacFirstEye, "eacLookAt", eacLookAt, "eacFreeLook", eacFreeLook, "eacMaxCam", eacMaxCam);
+    lua.new_enum("EActorCameras", "eacFirstEye", ACTOR_DEFS::eacFirstEye, "eacLookAt", ACTOR_DEFS::eacLookAt, "eacFreeLook", ACTOR_DEFS::eacFreeLook, "eacMaxCam",
+                 ACTOR_DEFS::eacMaxCam);
 
     lua.new_enum("inventory_slots", "KNIFE", KNIFE_SLOT, "FIRST_WEAPON", FIRST_WEAPON_SLOT, "SECOND_WEAPON", SECOND_WEAPON_SLOT, "GRENADE", GRENADE_SLOT, "APPARATUS",
                  APPARATUS_SLOT, "BOLT", BOLT_SLOT, "OUTFIT", OUTFIT_SLOT, "PDA", PDA_SLOT, "DETECTOR", DETECTOR_SLOT, "TORCH", TORCH_SLOT, "HELMET", HELMET_SLOT, "NIGHT_VISION",

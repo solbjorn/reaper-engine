@@ -8,7 +8,6 @@
 #include "HudItem.h"
 #include "player_hud.h"
 #include "../xr_3da/gamemtllib.h"
-#include <array>
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ActorCondition.h"
@@ -16,6 +15,8 @@
 #include "../xr_3da/x_ray.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "Pda.h"
+
+#include <array>
 
 CHudItem::CHudItem()
 {
@@ -519,13 +520,14 @@ bool CHudItem::TryPlayAnimIdle()
         if (auto pActor = smart_cast<CActor*>(object().H_Parent()))
         {
             const u32 State = pActor->get_state();
-            if (State & mcSprint)
+            if (State & ACTOR_DEFS::mcSprint)
             {
                 if (!SprintType)
                 {
                     SwitchState(eSprintStart);
                     return true;
                 }
+
                 PlayAnimIdleSprint();
                 return true;
             }
@@ -534,17 +536,18 @@ bool CHudItem::TryPlayAnimIdle()
                 SwitchState(eSprintEnd);
                 return true;
             }
-            else if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+            else if ((State & ACTOR_DEFS::mcAnyMove) && AnmIdleMovingAllowed())
             {
-                if (!(State & mcCrouch))
+                if (!(State & ACTOR_DEFS::mcCrouch))
                 {
-                    if (State & mcAccel) // Ходьба медленная (SHIFT)
+                    if (State & ACTOR_DEFS::mcAccel) // Ходьба медленная (SHIFT)
                         PlayAnimIdleMovingSlow();
                     else
                         PlayAnimIdleMoving();
+
                     return true;
                 }
-                else if (State & mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+                else if (State & ACTOR_DEFS::mcAccel) // Ходьба в присяде (CTRL+SHIFT)
                 {
                     PlayAnimIdleMovingCrouchSlow();
                     return true;
@@ -557,6 +560,7 @@ bool CHudItem::TryPlayAnimIdle()
             }
         }
     }
+
     return false;
 }
 
@@ -904,12 +908,12 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
 
             Fvector current_moving_offs{}, current_moving_rot{};
 
-            if (iMovingState & mcLStrafe) // Двигаемся влево
+            if (iMovingState & ACTOR_DEFS::mcLStrafe) // Двигаемся влево
             {
                 current_moving_offs.set(-m_strafe_offset[0][idx]);
                 current_moving_rot.set(-m_strafe_offset[1][idx]);
             }
-            else if (iMovingState & mcRStrafe) // Двигаемся вправо
+            else if (iMovingState & ACTOR_DEFS::mcRStrafe) // Двигаемся вправо
             {
                 current_moving_offs.set(m_strafe_offset[0][idx]);
                 current_moving_rot.set(m_strafe_offset[1][idx]);
@@ -947,17 +951,17 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
 
             Fvector current_jump_offs{}, current_jump_rot{};
 
-            if (iMovingState & mcJump) // Прыжок
+            if (iMovingState & ACTOR_DEFS::mcJump) // Прыжок
             {
                 current_jump_offs.set(m_jump_offset[0][idx]);
                 current_jump_rot.set(m_jump_offset[1][idx]);
             }
-            else if (iMovingState & mcFall) // Полет
+            else if (iMovingState & ACTOR_DEFS::mcFall) // Полет
             {
                 current_jump_offs.set(m_fall_offset[0][idx]);
                 current_jump_rot.set(m_fall_offset[1][idx]);
             }
-            else if (iMovingState & mcLanding || iMovingState & mcLanding2) // Полет
+            else if ((iMovingState & ACTOR_DEFS::mcLanding) || (iMovingState & ACTOR_DEFS::mcLanding2)) // Полет
             {
                 current_jump_offs.set(m_landing_offset[0][idx]);
                 current_jump_rot.set(m_landing_offset[1][idx]);
@@ -968,7 +972,7 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
                 current_jump_rot.set(Fvector{});
             }
 
-            float koef = iMovingState & mcLanding2 ? 1.3 : 1.0;
+            float koef = (iMovingState & ACTOR_DEFS::mcLanding2) ? 1.3f : 1.0f;
             current_jump_offs.mul(koef);
             current_jump_rot.mul(koef);
             current_jump_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
@@ -996,19 +1000,19 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
             const float fStepPerUpd = Device.fTimeDelta / fLookoutMaxTime; // Величина изменение фактора поворота
 
             float koef{1.f};
-            if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
+            if ((iMovingState & ACTOR_DEFS::mcCrouch) && (iMovingState & ACTOR_DEFS::mcAccel))
                 koef = 0.5; // во сколько раз менять амплитуду при полном присяде
-            else if (iMovingState & mcCrouch)
+            else if (iMovingState & ACTOR_DEFS::mcCrouch)
                 koef = 0.75; // во сколько раз менять амплитуду при присяде
 
             Fvector current_lookout_offs{}, current_lookout_rot{};
 
-            if ((iMovingState & mcLLookout) && !(iMovingState & mcRLookout)) // Выглядываем влево
+            if ((iMovingState & ACTOR_DEFS::mcLLookout) && !(iMovingState & ACTOR_DEFS::mcRLookout)) // Выглядываем влево
             {
                 current_lookout_offs.set(-m_lookout_offset[0][idx]);
                 current_lookout_rot.set(-m_lookout_offset[1][idx]);
             }
-            else if ((iMovingState & mcRLookout) && !(iMovingState & mcLLookout)) // Выглядываем вправо
+            else if ((iMovingState & ACTOR_DEFS::mcRLookout) && !(iMovingState & ACTOR_DEFS::mcLLookout)) // Выглядываем вправо
             {
                 current_lookout_offs.set(m_lookout_offset[0][idx]);
                 current_lookout_rot.set(m_lookout_offset[1][idx]);
@@ -1046,14 +1050,14 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
             const float fStepPerUpd = Device.fTimeDelta / fMoveMaxTime; // Величина изменение фактора поворота
 
             float koef{};
-            if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
+            if ((iMovingState & ACTOR_DEFS::mcCrouch) && (iMovingState & ACTOR_DEFS::mcAccel))
                 koef = 1.0; // во сколько раз менять амплитуду при полном присяде
-            else if (iMovingState & mcCrouch)
+            else if (iMovingState & ACTOR_DEFS::mcCrouch)
                 koef = 0.5; // во сколько раз менять амплитуду при присяде
 
             Fvector current_move_offs{}, current_move_rot{};
 
-            if (iMovingState & mcCrouch) // Выглядываем влево
+            if (iMovingState & ACTOR_DEFS::mcCrouch) // Выглядываем влево
             {
                 current_move_offs.set(m_move_offset[0]);
                 current_move_rot.set(m_move_offset[1]);
@@ -1098,19 +1102,19 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
             const float fStepPerUpd = Device.fTimeDelta / fWalkMaxTime; // Величина изменение фактора поворота
 
             float koef{1.f};
-            if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
+            if ((iMovingState & ACTOR_DEFS::mcCrouch) && (iMovingState & ACTOR_DEFS::mcAccel))
                 koef = 0.5; // во сколько раз менять амплитуду при полном присяде
-            else if (iMovingState & mcCrouch)
+            else if (iMovingState & ACTOR_DEFS::mcCrouch)
                 koef = 0.7; // во сколько раз менять амплитуду при присяде
 
             Fvector current_walk_offs{}, current_walk_rot{};
 
-            if (iMovingState & mcFwd)
+            if (iMovingState & ACTOR_DEFS::mcFwd)
             {
                 current_walk_offs.set(m_walk_offset[0]);
                 current_walk_rot.set(m_walk_offset[1]);
             }
-            else if (iMovingState & mcBack)
+            else if (iMovingState & ACTOR_DEFS::mcBack)
             {
                 current_walk_offs.set(m_walk_offset[0].x, m_walk_offset[0].y, -m_walk_offset[0].z);
                 current_walk_rot.set(m_walk_offset[1]);

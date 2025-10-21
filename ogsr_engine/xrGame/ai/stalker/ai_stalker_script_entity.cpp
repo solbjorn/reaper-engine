@@ -129,13 +129,9 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
     if (!inherited::bfAssignObject(tpEntityAction) || !l_tObjectAction.m_tpObject || !l_tpInventoryItem)
     {
         if (!inventory().ActiveItem())
-        {
-            CObjectHandler::set_goal(eObjectActionIdle);
-        }
+            CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         else
-        {
-            CObjectHandler::set_goal(eObjectActionIdle, inventory().ActiveItem());
-        }
+            CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, inventory().ActiveItem());
 
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
     }
@@ -151,19 +147,19 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
 
     switch (l_tObjectAction.m_tGoalType)
     {
-    case eObjectActionIdle: {
+    case MonsterSpace::eObjectActionIdle: {
         if (!l_tpWeapon)
         {
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
-        CObjectHandler::set_goal(eObjectActionIdle, l_tpInventoryItem);
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, l_tpInventoryItem);
         //			inventory().Action	(kWPN_FIRE,	CMD_STOP);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
         break;
     }
-    case eObjectActionFire1: {
-        CObjectHandler::set_goal(eObjectActionFire1, l_tpInventoryItem);
+    case MonsterSpace::eObjectActionFire1: {
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, l_tpInventoryItem);
         //			if (!l_tpWeapon)
         //				return	((l_tObjectAction.m_bCompleted = true) == false);
         if (inventory().ActiveItem() && l_tpWeapon)
@@ -190,8 +186,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         }
         break;
     }
-    case eObjectActionFire2: {
-        CObjectHandler::set_goal(eObjectActionFire2, l_tpInventoryItem);
+    case MonsterSpace::eObjectActionFire2: {
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionFire2, l_tpInventoryItem);
         //			if (!l_tpWeapon)
         //				return	((l_tObjectAction.m_bCompleted = true) == false);
         if (inventory().ActiveItem())
@@ -218,14 +214,14 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         }
         break;
     }
-    case eObjectActionReload2:
-    case eObjectActionReload1: {
+    case MonsterSpace::eObjectActionReload2:
+    case MonsterSpace::eObjectActionReload1: {
         if (!l_tpWeapon)
         {
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
-        CObjectHandler::set_goal(eObjectActionReload1, l_tpInventoryItem);
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionReload1, l_tpInventoryItem);
         if (inventory().ActiveItem()->object().ID() == l_tObjectAction.m_tpObject->ID())
         {
             //				inventory().Action(kWPN_FIRE,	CMD_STOP);
@@ -250,14 +246,14 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         //				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"cannot reload active item because it is not selected!");
         break;
     }
-    case eObjectActionActivate: {
+    case MonsterSpace::eObjectActionActivate: {
         CTorch* torch = smart_cast<CTorch*>(l_tObjectAction.m_tpObject);
         if (torch)
         {
             torch->Switch(true);
             break;
         }
-        CObjectHandler::set_goal(eObjectActionIdle, l_tpInventoryItem);
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, l_tpInventoryItem);
         //				inventory().Slot(l_tpInventoryItem);
         //				inventory().Activate(l_tpInventoryItem->GetSlot());
         //			if (inventory().ActiveItem() && (inventory().ActiveItem()->ID() == l_tpInventoryItem->ID()))
@@ -267,7 +263,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
 
         break;
     }
-    case eObjectActionDeactivate: {
+    case MonsterSpace::eObjectActionDeactivate: {
         CTorch* torch = smart_cast<CTorch*>(l_tObjectAction.m_tpObject);
         if (torch)
         {
@@ -275,16 +271,16 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
             break;
         }
         //				inventory().Activate(u32(-1));
-        CObjectHandler::set_goal(eObjectActionIdle);
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
         break;
     }
-    case eObjectActionUse: {
-        CObjectHandler::set_goal(eObjectActionUse);
+    case MonsterSpace::eObjectActionUse: {
+        CObjectHandler::set_goal(MonsterSpace::eObjectActionUse);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
         break;
     }
-    case eObjectActionTake: {
+    case MonsterSpace::eObjectActionTake: {
         if (l_tObjectAction.m_tpObject->H_Parent() == this)
         {
             Msg("!![%s] item [%s] is already in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());
@@ -295,7 +291,7 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         l_tObjectAction.m_bCompleted = true;
         break;
     }
-    case eObjectActionDrop: {
+    case MonsterSpace::eObjectActionDrop: {
         if (l_tObjectAction.m_tpObject->H_Parent() != this)
         {
             Msg("!![%s] item [%s] is not in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());

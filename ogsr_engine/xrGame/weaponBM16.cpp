@@ -31,7 +31,7 @@ void CWeaponBM16::OnShot()
 {
     // Если актор бежит - останавливаем его
     if (ParentIsActor())
-        Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+        Actor()->set_state_wishful(Actor()->get_state_wishful() & ~ACTOR_DEFS::mcSprint);
 
     AddShotEffector();
     PlayAnimShoot();
@@ -241,16 +241,17 @@ const char* CWeaponBM16::GetAnimAimName()
     {
         if (AnmIdleMovingAllowed())
         {
-            if (const u32 state = pActor->get_state(); state & mcAnyMove)
+            if (const u32 state = pActor->get_state(); state & ACTOR_DEFS::mcAnyMove)
             {
                 if (IsScopeAttached())
                     return xr_strconcat(guns_bm_aim_anm, "anm_idle_aim_scope_moving", IsMisfire() ? "_jammed_" : "_");
                 else
-                    return xr_strconcat(guns_bm_aim_anm, "anm_idle_aim_moving", (state & mcFwd) ? "_forward" : ((state & mcBack) ? "_back" : ""),
-                                        (state & mcLStrafe) ? "_left" : ((state & mcRStrafe) ? "_right" : ""), IsMisfire() ? "_jammed_" : "_");
+                    return xr_strconcat(guns_bm_aim_anm, "anm_idle_aim_moving", (state & ACTOR_DEFS::mcFwd) ? "_forward" : ((state & ACTOR_DEFS::mcBack) ? "_back" : ""),
+                                        (state & ACTOR_DEFS::mcLStrafe) ? "_left" : ((state & ACTOR_DEFS::mcRStrafe) ? "_right" : ""), IsMisfire() ? "_jammed_" : "_");
             }
         }
     }
+
     return nullptr;
 }
 

@@ -142,16 +142,16 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     // if( psActorFlags.test(AF_PSP) )
     //	cam_Set(eacLookAt);
     // else
-    cam_Set(eacFirstEye);
+    cam_Set(ACTOR_DEFS::eacFirstEye);
 
     cam_Active()->Set(-E->o_torso.yaw, E->o_torso.pitch, 0); // E->o_Angle.z);
 
     // *** movement state - respawn
     mstate_wishful = 0;
     if (m_loaded_ph_box_id == 1 || m_loaded_ph_box_id == 3)
-        mstate_real = mcCrouch;
+        mstate_real = ACTOR_DEFS::mcCrouch;
     else if (m_loaded_ph_box_id == 2 || m_loaded_ph_box_id == 4)
-        mstate_real = mcCrouch | mcAccel;
+        mstate_real = ACTOR_DEFS::mcCrouch | ACTOR_DEFS::mcAccel;
     else
         mstate_real = 0;
     mstate_old = mstate_real;
@@ -205,8 +205,8 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     //-------------------------------------
     if (!g_Alive())
     {
-        mstate_wishful &= ~mcAnyMove;
-        mstate_real &= ~mcAnyMove;
+        mstate_wishful &= ~ACTOR_DEFS::mcAnyMove;
+        mstate_real &= ~ACTOR_DEFS::mcAnyMove;
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
         K->PlayCycle("death_init");
 

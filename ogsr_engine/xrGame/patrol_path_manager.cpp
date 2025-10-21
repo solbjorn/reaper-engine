@@ -92,28 +92,28 @@ void CPatrolPathManager::select_point(const Fvector& position, u32& dest_vertex_
     {
         switch (m_start_type)
         {
-        case ePatrolStartTypeFirst: {
+        case PatrolPathManager::ePatrolStartTypeFirst: {
             vertex = m_path->vertex(0);
             VERIFY3(accessible(vertex) || show_restrictions(m_object), *m_path_name, *m_game_object->cName());
             break;
         }
-        case ePatrolStartTypeLast: {
+        case PatrolPathManager::ePatrolStartTypeLast: {
             vertex = m_path->vertex(m_path->vertices().size() - 1);
             VERIFY3(accessible(vertex) || show_restrictions(m_object), *m_path_name, *m_game_object->cName());
             break;
         }
-        case ePatrolStartTypeNearest: {
+        case PatrolPathManager::ePatrolStartTypeNearest: {
             vertex = m_path->point(position, CAccessabilityEvaluator(this));
             VERIFY3(accessible(vertex) || show_restrictions(m_object), *m_path_name, *m_game_object->cName());
             break;
         }
-        case ePatrolStartTypePoint: {
+        case PatrolPathManager::ePatrolStartTypePoint: {
             VERIFY3(m_path->vertex(m_start_point_index), *m_path_name, *m_game_object->cName());
             vertex = m_path->vertex(m_start_point_index);
             VERIFY3(accessible(vertex) || show_restrictions(m_object), *m_path_name, *m_game_object->cName());
             break;
         }
-        case ePatrolStartTypeNext: {
+        case PatrolPathManager::ePatrolStartTypeNext: {
             if (m_prev_point_index != u32(-1))
             {
                 if ((m_prev_point_index + 1) < m_path->vertex_count())
@@ -197,11 +197,11 @@ void CPatrolPathManager::select_point(const Fvector& position, u32& dest_vertex_
     {
         switch (m_route_type)
         {
-        case ePatrolRouteTypeStop: {
+        case PatrolPathManager::ePatrolRouteTypeStop: {
             m_completed = true;
             return;
         }
-        case ePatrolRouteTypeContinue: {
+        case PatrolPathManager::ePatrolRouteTypeContinue: {
             for (I = vertex->edges().begin(); I != E; ++I)
             {
                 if (!accessible(m_path->vertex((*I).vertex_id())))
@@ -321,13 +321,13 @@ void CPatrolPathManager::set_previous_point(int point_index)
 {
     if (!m_path)
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
         return;
     }
 
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
         return;
     }
     VERIFY(m_path);
@@ -339,14 +339,15 @@ void CPatrolPathManager::set_start_point(int point_index)
 {
     if (!m_path)
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Path not specified (object %s)!", *m_game_object->cName());
         return;
     }
     if (!m_path->vertex(point_index))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Start point violates path bounds %s (object %s)!", *m_path_name, *m_game_object->cName());
         return;
     }
+
     VERIFY(m_path);
     VERIFY(m_path->vertex(point_index));
     m_start_point_index = point_index;
@@ -358,6 +359,6 @@ void CPatrolPathManager::reset()
     m_prev_point_index = u32(-1);
     m_start_point_index = u32(-1);
 
-    m_start_type = ePatrolStartTypeDummy;
-    m_route_type = ePatrolRouteTypeDummy;
+    m_start_type = PatrolPathManager::ePatrolStartTypeDummy;
+    m_route_type = PatrolPathManager::ePatrolRouteTypeDummy;
 }

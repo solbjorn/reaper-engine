@@ -21,8 +21,6 @@ class CScriptCallbackEx;
 class CRestrictedObject;
 class CGameObject;
 
-using namespace PatrolPathManager;
-
 class CPatrolPathManager : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPatrolPathManager);
@@ -36,8 +34,8 @@ private:
 private:
     const CPatrolPath* m_path{};
     shared_str m_path_name;
-    EPatrolStartType m_start_type{ePatrolStartTypeDummy};
-    EPatrolRouteType m_route_type{ePatrolRouteTypeDummy};
+    PatrolPathManager::EPatrolStartType m_start_type{PatrolPathManager::ePatrolStartTypeDummy};
+    PatrolPathManager::EPatrolRouteType m_route_type{PatrolPathManager::ePatrolRouteTypeDummy};
     bool m_actuality{true};
     bool m_failed{};
     bool m_completed{true};
@@ -65,10 +63,10 @@ public:
     IC const CPatrolPath* get_path() const;
     IC void set_path(const CPatrolPath* path, shared_str path_name);
     IC void set_path(shared_str path_name);
-    IC void set_path(shared_str path_name, const EPatrolStartType patrol_start_type = ePatrolStartTypeNearest, const EPatrolRouteType patrol_route_type = ePatrolRouteTypeContinue,
-                     bool random = true);
-    IC void set_start_type(const EPatrolStartType patrol_start_type);
-    IC void set_route_type(const EPatrolRouteType patrol_route_type);
+    IC void set_path(shared_str path_name, const PatrolPathManager::EPatrolStartType patrol_start_type = PatrolPathManager::ePatrolStartTypeNearest,
+                     const PatrolPathManager::EPatrolRouteType patrol_route_type = PatrolPathManager::ePatrolRouteTypeContinue, bool random = true);
+    IC void set_start_type(const PatrolPathManager::EPatrolStartType patrol_start_type);
+    IC void set_route_type(const PatrolPathManager::EPatrolRouteType patrol_route_type);
     IC void set_random(bool random);
     IC bool actual() const;
     shared_str path_name() const;

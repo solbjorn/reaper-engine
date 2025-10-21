@@ -35,19 +35,20 @@ IC bool CStalkerMovementManager::turn_in_place() const
     return (!path_completed() && fis_zero(speed()) && (angle_difference(body_orientation().current.yaw, body_orientation().target.yaw) > EPS_L));
 }
 
-IC void CStalkerMovementManager::set_body_state(EBodyState body_state)
+IC void CStalkerMovementManager::set_body_state(MonsterSpace::EBodyState body_state)
 {
-    THROW((body_state != eBodyStateCrouch) || (m_target.m_mental_state != eMentalStateFree));
+    THROW(body_state != MonsterSpace::eBodyStateCrouch || m_target.m_mental_state != MonsterSpace::eMentalStateFree);
     m_target.m_body_state = body_state;
 }
 
-IC void CStalkerMovementManager::set_movement_type(EMovementType movement_type) { m_target.m_movement_type = movement_type; }
+IC void CStalkerMovementManager::set_movement_type(MonsterSpace::EMovementType movement_type) { m_target.m_movement_type = movement_type; }
 
-IC void CStalkerMovementManager::set_mental_state(EMentalState mental_state)
+IC void CStalkerMovementManager::set_mental_state(MonsterSpace::EMentalState mental_state)
 {
-    THROW((m_target.m_body_state != eBodyStateCrouch) || (mental_state != eMentalStateFree));
+    THROW(m_target.m_body_state != MonsterSpace::eBodyStateCrouch || mental_state != MonsterSpace::eMentalStateFree);
     m_target.m_mental_state = mental_state;
-    // #pragma todo("Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later")
+
+    // TODO: Dima to Dima: this is correct, commented just because of the October presentation, no time right now to fix it correctly, should be fixed sometimes later
     //.	m_path_actuality			= m_path_actuality && (m_target.m_mental_state == m_current.m_mental_state);
 }
 

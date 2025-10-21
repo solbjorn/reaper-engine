@@ -551,17 +551,11 @@ void CAI_Stalker::UpdateCL()
             STOP_PROFILE
         }
 
-        if ((movement().speed(character_physics_support()->movement()) > EPS_L) && (eMovementTypeStand != movement().movement_type()) &&
-            (eMentalStateDanger == movement().mental_state()))
+        if (movement().speed(character_physics_support()->movement()) > EPS_L && movement().movement_type() != MonsterSpace::eMovementTypeStand &&
+            movement().mental_state() == MonsterSpace::eMentalStateDanger)
         {
-            if ((eBodyStateStand == movement().body_state()) && (eMovementTypeRun == movement().movement_type()))
-            {
+            if (movement().body_state() == MonsterSpace::eBodyStateStand && movement().movement_type() == MonsterSpace::eMovementTypeRun)
                 sound().play(eStalkerSoundRunningInDanger);
-            }
-            else
-            {
-                //				sound().play	(eStalkerSoundWalkingInDanger);
-            }
         }
     }
 
@@ -846,7 +840,7 @@ DLL_Pure* CAI_Stalker::_construct()
     return (this);
 }
 
-bool CAI_Stalker::use_center_to_aim() const { return (!wounded() && (movement().body_state() != eBodyStateCrouch)); }
+bool CAI_Stalker::use_center_to_aim() const { return !wounded() && movement().body_state() != MonsterSpace::eBodyStateCrouch; }
 
 void CAI_Stalker::UpdateCamera()
 {

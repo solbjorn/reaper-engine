@@ -42,14 +42,14 @@ IC void CPatrolPathManager::set_path(const CPatrolPath* path, shared_str path_na
     reset();
 }
 
-IC void CPatrolPathManager::set_start_type(const EPatrolStartType patrol_start_type)
+IC void CPatrolPathManager::set_start_type(const PatrolPathManager::EPatrolStartType patrol_start_type)
 {
     m_actuality = m_actuality && (m_start_type == patrol_start_type);
     m_completed = m_completed && m_actuality;
     m_start_type = patrol_start_type;
 }
 
-IC void CPatrolPathManager::set_route_type(const EPatrolRouteType patrol_route_type)
+IC void CPatrolPathManager::set_route_type(const PatrolPathManager::EPatrolRouteType patrol_route_type)
 {
     m_actuality = m_actuality && (m_route_type == patrol_route_type);
     m_completed = m_completed && m_actuality;
@@ -66,13 +66,15 @@ IC void CPatrolPathManager::make_inactual()
 
 IC void CPatrolPathManager::set_path(shared_str path_name) { set_path(ai().patrol_paths().safe_path(path_name, false, true), path_name); }
 
-IC void CPatrolPathManager::set_path(shared_str path_name, const EPatrolStartType patrol_start_type, const EPatrolRouteType patrol_route_type, bool random)
+IC void CPatrolPathManager::set_path(shared_str path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type,
+                                     bool random)
 {
     set_path(ai().patrol_paths().safe_path(path_name, false, true), path_name);
     set_start_type(patrol_start_type);
     set_route_type(patrol_route_type);
     set_random(random);
 }
+
 IC u32 CPatrolPathManager::get_current_point_index() const { return (m_curr_point_index); }
 
 IC CRestrictedObject& CPatrolPathManager::object() const

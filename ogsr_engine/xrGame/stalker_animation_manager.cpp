@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_animation_data_storage.h"
@@ -25,8 +26,8 @@
 void CStalkerAnimationManager::reinit()
 {
     m_direction_start = 0;
-    m_current_direction = eMovementDirectionForward;
-    m_target_direction = eMovementDirectionForward;
+    m_current_direction = MonsterSpace::eMovementDirectionForward;
+    m_target_direction = MonsterSpace::eMovementDirectionForward;
 
     m_change_direction_time = 0;
     m_looking_back = 0;

@@ -49,7 +49,7 @@ void CStalkerActionDangerUnknownTakeCover::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
 
     m_direction_sight = !!::Random.randI(2);
 }
@@ -70,16 +70,17 @@ void CStalkerActionDangerUnknownTakeCover::execute()
     else
         object().movement().set_nearest_accessible_position();
 
-    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon());
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionAimReady1, object().best_weapon());
 
     if (!object().movement().path_completed())
     {
-        object().movement().set_body_state(eBodyStateStand);
-        object().movement().set_movement_type(eMovementTypeRun);
+        object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+        object().movement().set_movement_type(MonsterSpace::eMovementTypeRun);
         if (!m_direction_sight || !object().movement().distance_to_destination_greater(2.f))
             object().sight().setup(CSightAction(SightManager::eSightTypeCover, true, true));
         else
             object().sight().setup(CSightAction(SightManager::eSightTypePathDirection, true, true));
+
         return;
     }
 
@@ -103,9 +104,9 @@ void CStalkerActionDangerUnknownLookAround::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_body_state(eBodyStateCrouch);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateCrouch);
 }
 
 void CStalkerActionDangerUnknownLookAround::execute()

@@ -218,7 +218,7 @@ void CSoundMemoryManager::add(CSoundObject& sound_object, bool check_for_existan
 #endif
     if (m_max_sound_count <= m_sounds->size())
     {
-        auto I = std::min_element(m_sounds->begin(), m_sounds->end(), SLevelTimePredicate<CGameObject>());
+        auto I = std::min_element(m_sounds->begin(), m_sounds->end(), MemorySpace::SLevelTimePredicate<CGameObject>());
         VERIFY(m_sounds->end() != I);
         m_sounds->erase(I);
     }
@@ -281,7 +281,8 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
     {
         CSoundObject sound_object;
 
-        sound_object.fill(game_object, self, ESoundTypes(sound_type), sound_power, !m_stalker ? squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
+        sound_object.fill(game_object, self, ESoundTypes(sound_type), sound_power,
+                          !m_stalker ? MemorySpace::squad_mask_type(-1) : m_stalker->agent_manager().member().mask(m_stalker));
         if (!game_object)
             sound_object.m_object_params.m_position = position;
 #ifdef USE_FIRST_GAME_TIME
@@ -303,7 +304,7 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
 
 struct CRemoveOfflinePredicate
 {
-    bool operator()(const CSoundObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
+    bool operator()(const MemorySpace::CSoundObject& object) const { return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent()); }
 };
 
 void CSoundMemoryManager::update()

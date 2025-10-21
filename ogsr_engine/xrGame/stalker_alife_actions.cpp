@@ -50,9 +50,9 @@ void CStalkerActionNoALife::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeGamePath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateFree);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateFree);
     object().sight().setup(CSightAction(SightManager::eSightTypeCover, false, true));
 
     m_stop_weapon_handling_time = Device.dwTimeGlobal;
@@ -60,9 +60,9 @@ void CStalkerActionNoALife::initialize()
         m_stop_weapon_handling_time += xr::random_u32(30000, 60000);
 
 #else
-    object().movement().set_mental_state(eMentalStateDanger);
-    object().movement().set_movement_type(eMovementTypeStand);
-    object().movement().set_body_state(eBodyStateStand);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeStand);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
@@ -88,17 +88,23 @@ void CStalkerActionNoALife::finalize()
 void CStalkerActionNoALife::execute()
 {
     inherited::execute();
+
 #ifndef STALKER_DEBUG_MODE
     object().sound().play(eStalkerSoundHumming, 60000, 10000);
+
     if (Device.dwTimeGlobal >= m_stop_weapon_handling_time)
+    {
         if (!object().best_weapon())
-            object().CObjectHandler::set_goal(eObjectActionIdle);
+            object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         else
-            object().CObjectHandler::set_goal(eObjectActionStrapped, object().best_weapon());
+            object().CObjectHandler::set_goal(MonsterSpace::eObjectActionStrapped, object().best_weapon());
+    }
     else
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
+    {
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon());
+    }
 #else
-//	object().movement().set_movement_type		(eMovementTypeRun);
+//	object().movement().set_movement_type		(MonsterSpace::eMovementTypeRun);
 #endif
 }
 
@@ -114,14 +120,14 @@ void CStalkerActionGatherItems::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
     if (!object().inventory().ActiveItem())
-        object().CObjectHandler::set_goal(eObjectActionIdle);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
     else
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().inventory().ActiveItem());
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().inventory().ActiveItem());
 }
 
 void CStalkerActionGatherItems::finalize()

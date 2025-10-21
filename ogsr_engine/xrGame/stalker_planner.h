@@ -28,8 +28,8 @@ protected:
 private:
     bool m_active;
     bool m_affect_cover;
-    CWorldState m_alive_goal;
-    CWorldState m_dead_goal;
+    GraphEngineSpace::CWorldState m_alive_goal;
+    GraphEngineSpace::CWorldState m_dead_goal;
 
 protected:
     void add_evaluators();

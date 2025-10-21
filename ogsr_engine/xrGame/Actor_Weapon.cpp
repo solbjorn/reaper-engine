@@ -96,10 +96,10 @@ void CActor::g_WeaponBones(int& L, int& R1, int& R2)
 
 BOOL CActor::g_State(SEntityState& state) const
 {
-    state.bJump = !!(mstate_real & mcJump);
-    state.bCrouch = !!(mstate_real & mcCrouch);
-    state.bFall = !!(mstate_real & mcFall);
-    state.bSprint = !!(mstate_real & mcSprint);
+    state.bJump = !!(mstate_real & ACTOR_DEFS::mcJump);
+    state.bCrouch = !!(mstate_real & ACTOR_DEFS::mcCrouch);
+    state.bFall = !!(mstate_real & ACTOR_DEFS::mcFall);
+    state.bSprint = !!(mstate_real & ACTOR_DEFS::mcSprint);
     state.fVelocity = character_physics_support()->movement()->GetVelocityActual();
     state.fAVelocity = fCurAVelocity;
     return TRUE;

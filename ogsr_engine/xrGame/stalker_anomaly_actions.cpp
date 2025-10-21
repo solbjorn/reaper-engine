@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "stalker_anomaly_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"
@@ -44,15 +45,17 @@ void CStalkerActionGetOutOfAnomaly::initialize()
     object().movement().set_desired_direction(nullptr);
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     object().sight().setup(SightManager::eSightTypeCurrentDirection);
+
     if (object().memory().enemy().selected() && object().inventory().ActiveItem() && object().best_weapon() &&
         (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-        object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, object().best_weapon());
     else
-        object().CObjectHandler::set_goal(eObjectActionIdle);
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
+
     set_property(eWorldPropertyAnomaly, true);
 }
 
@@ -72,9 +75,9 @@ void CStalkerActionGetOutOfAnomaly::execute()
     //
     object().movement().set_path_type(MovementManager::ePathTypeLevelPath);
     object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
-    object().movement().set_body_state(eBodyStateStand);
-    object().movement().set_movement_type(eMovementTypeWalk);
-    object().movement().set_mental_state(eMentalStateDanger);
+    object().movement().set_body_state(MonsterSpace::eBodyStateStand);
+    object().movement().set_movement_type(MonsterSpace::eMovementTypeWalk);
+    object().movement().set_mental_state(MonsterSpace::eMentalStateDanger);
     //
 
     m_temp0.clear();
@@ -117,7 +120,7 @@ void CStalkerActionDetectAnomaly::finalize()
     if (!object().g_Alive())
         return;
 
-    object().CObjectHandler::set_goal(eObjectActionIdle);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
     object().sound().set_sound_mask(0);
 }
 
@@ -131,5 +134,5 @@ void CStalkerActionDetectAnomaly::execute()
         return;
     }
 
-    object().CObjectHandler::set_goal(eObjectActionFire1, object().inventory().m_slots[5].m_pIItem);
+    object().CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, object().inventory().m_slots[5].m_pIItem);
 }

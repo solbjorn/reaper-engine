@@ -268,9 +268,7 @@ void CWeaponKnife::Fire2Start()
     SwitchState(eFire2);
 
     if (ParentIsActor())
-    {
-        Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
-    }
+        Actor()->set_state_wishful(Actor()->get_state_wishful() & ~ACTOR_DEFS::mcSprint);
 }
 
 bool CWeaponKnife::Action(s32 cmd, u32 flags)

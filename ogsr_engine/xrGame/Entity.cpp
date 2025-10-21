@@ -202,12 +202,13 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
     {
         m_registered_member = true;
         auto& squad = Level().seniority_holder().team(g_Team()).squad(g_Squad());
-        while (squad.group(g_Group()).members().size() == sizeof(squad_mask_type) * 8)
+        while (squad.group(g_Group()).members().size() == sizeof(MemorySpace::squad_mask_type) * 8)
         {
             Msg("* [%s]: [%s]: group [team:%d][squad:%d][group:%d] is full (%zu), try next group %d", __FUNCTION__,
                 (E && E->name_replace()[0]) ? E->name_replace() : cName().c_str(), g_Team(), g_Squad(), g_Group(), squad.group(g_Group()).members().size(), g_Group() + 1);
             ++id_Group;
         }
+
         squad.group(g_Group()).register_member(this);
         ++squad.group(g_Group()).m_dwAliveCount;
     }

@@ -342,7 +342,7 @@ void CTorch::UpdateCL()
 
         if (actor)
         {
-            if (actor->active_cam() == eacLookAt)
+            if (actor->active_cam() == ACTOR_DEFS::eacLookAt)
             {
                 m_prev_hp.x =
                     angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);

@@ -17,13 +17,16 @@
 #include "ai_sounds.h"
 #include "inventory.h"
 
-static CUIPdaWnd* GetPdaWindow()
+namespace
+{
+CUIPdaWnd* GetPdaWindow()
 {
     if (auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame()))
         return pGameSP->PdaMenu;
-    else
-        return nullptr;
+
+    return nullptr;
 }
+} // namespace
 
 CPda::CPda()
 {
@@ -186,7 +189,7 @@ void CPda::OnH_A_Chield()
 {
     VERIFY(IsOff());
 
-    //включить PDA только если оно находится у первого владельца
+    // включить PDA только если оно находится у первого владельца
     if (H_Parent()->ID() == m_idOriginalOwner)
     {
         TurnOn();
@@ -210,7 +213,7 @@ void CPda::OnH_B_Independent(bool just_before_destroy)
     else
         CInventoryItemObject::OnH_B_Independent(just_before_destroy);
 
-    //выключить
+    // выключить
     TurnOff();
 
     if (!this_is_3d_pda || !smart_cast<CActor*>(H_Parent()))
@@ -403,20 +406,25 @@ void CPda::PlayAnimIdle()
     {
         const char* moving_postfix{""};
         const u32 State = pActor->get_state();
-        if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+        if ((State & ACTOR_DEFS::mcAnyMove) && AnmIdleMovingAllowed())
         {
-            if (!(State & mcCrouch))
+            if (!(State & ACTOR_DEFS::mcCrouch))
             {
-                if (State & mcAccel) // Ходьба медленная (SHIFT)
+                if (State & ACTOR_DEFS::mcAccel) // Ходьба медленная (SHIFT)
                     moving_postfix = "_moving_slow";
                 else
                     moving_postfix = "_moving";
             }
-            else if (State & mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+            else if (State & ACTOR_DEFS::mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+            {
                 moving_postfix = "_moving_crouch_slow";
+            }
             else
+            {
                 moving_postfix = "_moving_crouch";
+            }
         }
+
         string64 anm_name;
         xr_strconcat(anm_name, "anm_idle", thumb_anim_name.c_str(), moving_postfix);
 

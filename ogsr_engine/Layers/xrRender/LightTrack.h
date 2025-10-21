@@ -7,9 +7,9 @@
 
 #include "../../xrCDB/xr_collide_defs.h"
 
-constexpr float lt_inc = 4.f;
-constexpr float lt_dec = 2.f;
-constexpr int lt_hemisamples = 26;
+constexpr inline float lt_inc{4.0f};
+constexpr inline float lt_dec{2.0f};
+constexpr inline int lt_hemisamples{26};
 
 class CROS_impl : public IRender_ObjectSpecific
 {
@@ -35,17 +35,21 @@ public:
         float test; // note range: (-1[no]..1[yes])
         float energy; //
     };
+
     struct Light
     {
         light* source;
         float energy;
         Fcolor color;
     };
+
     struct alignas(32) lmaterial
     {
         float hemi;
         float sun;
         float hemi_cube[NUM_FACES];
+
+        constexpr void clear() { std::memset(hemi_cube, 0, sizeof(hemi_cube)); }
     };
 
 public:
