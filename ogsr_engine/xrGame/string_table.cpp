@@ -94,15 +94,13 @@ void CStringTable::Load(LPCSTR xml_file)
         LPCSTR string_text = uiXml.Read(uiXml.GetRoot(), node, i, nullptr);
         ASSERT_FMT(string_text, "no attribute '%s' in node %s", node, string_name);
 
-        const STRING_VALUE str_val = ParseLine(string_text, string_name, true);
-        {
-            std::lock_guard guard{pDataMutex};
+        const auto str_val{ParseLine(string_text, string_name, true)};
+        std::scoped_lock lock{pDataMutex};
 
-            if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
-                Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
+        if (WriteErrorsToLog && pData->m_StringTable.contains(string_name))
+            Msg("!![%s] duplicate string table id: [%s]", __FUNCTION__, string_name);
 
-            pData->m_StringTable[string_name] = str_val;
-        }
+        pData->m_StringTable[string_name] = str_val;
     }
 }
 
@@ -112,7 +110,11 @@ void CStringTable::ReparseKeyBindings()
         return;
 
     for (const auto& [key, val] : pData->m_string_key_binding)
-        pData->m_StringTable[key] = ParseLine(val.c_str(), key.c_str(), false);
+    {
+        const auto str{ParseLine(val.c_str(), key.c_str(), false)};
+        std::scoped_lock lock{pDataMutex};
+        pData->m_StringTable[key] = str;
+    }
 }
 
 STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
@@ -157,7 +159,10 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
     }
 
     if (b_hit && bFirst)
+    {
+        std::scoped_lock lock{pDataMutex};
         pData->m_string_key_binding[skey] = str;
+    }
 
     return STRING_VALUE(res.c_str());
 }
