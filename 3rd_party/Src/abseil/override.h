@@ -97,7 +97,7 @@
 // absl::string_view is a typedef of std::string_view, use the feature macro
 // ABSL_USES_STD_STRING_VIEW.
 
-#define ABSL_OPTION_USE_STD_STRING_VIEW 2
+#define ABSL_OPTION_USE_STD_STRING_VIEW 1
 
 // ABSL_OPTION_USE_STD_ORDERING
 //
@@ -124,7 +124,7 @@
 // the ordering types are aliases of std:: ordering types, use the feature macro
 // ABSL_USES_STD_ORDERING.
 
-#define ABSL_OPTION_USE_STD_ORDERING 2
+#define ABSL_OPTION_USE_STD_ORDERING 1
 
 // ABSL_OPTION_USE_INLINE_NAMESPACE
 // ABSL_OPTION_INLINE_NAMESPACE_NAME

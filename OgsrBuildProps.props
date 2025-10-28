@@ -19,9 +19,10 @@
   </PropertyGroup-->
 
   <PropertyGroup Label="UserMacros">
-    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 -Xclang -std=c++23</ConformanceOptions>
-    <LLVMOptions>-march=skylake -mavx2 -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables -Xclang -fcoro-aligned-allocation -Xclang -fopenmp</LLVMOptions>
-    <libcxxOptions>-Xclang -stdlib=libc++ -I $(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST /D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -Dfdopen=_fdopen</libcxxOptions>
+    <ConformanceOptions>/Brepro /bigobj /permissive- /volatile:iso /Zc:inline /Zc:preprocessor /Zc:enumTypes /Zc:lambda /Zc:__STDC__ /Zc:__cplusplus /Zc:externConstexpr /Zc:throwingNew /Zc:checkGwOdr /Zc:templateScope /EHsc /DNOMINMAX -fno-delayed-template-parsing -fstrict-aliasing /D_CRT_STDIO_ISO_WIDE_SPECIFIERS -fno-ms-compatibility -fgnuc-version=0 /clang:-std=c++23</ConformanceOptions>
+    <LLVMOptions>-march=skylake -mavx2 /FIintrin.h -flto -fmerge-all-constants -fforce-emit-vtables -fwhole-program-vtables /clang:-fcoro-aligned-allocation /clang:-fopenmp</LLVMOptions>
+    <libcxxOptions>/clang:-stdlib=libc++ /clang:-stdlib++-isystem /clang:$(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\include\c++\v1 /D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS /D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST /D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES -Dfdopen=_fdopen</libcxxOptions>
+    <libcxxPath>$(SolutionDir)\3rd_party\Src\llvm\_Build\$(Configuration)\$(PlatformShortName)\lib</libcxxPath>
     <WarningOptions>/W4 -Wextra -Wcast-qual -Wcomma -Wdeprecated -Wextra-semi -Wextra-semi-stmt -Wfloat-equal -Wformat -Wformat-nonliteral -Wformat-pedantic -Wformat-signedness -Wformat-type-confusion -Wfunction-effects -Wheader-hygiene -Wimplicit-fallthrough -Wloop-analysis -Wmicrosoft -Wmissing-prototypes -Wmissing-variable-declarations -Wnewline-eof -Wnrvo -Wpacked -Wstrict-aliasing -Wundefined-internal-type -Wundefined-reinterpret-cast -Wunused-macros -Wunused-member-function -Wunused-template -Wweak-vtables -Wzero-as-null-pointer-constant</WarningOptions>
     <ErrorOptions>-Werror -Wno-error=deprecated-declarations -Wno-error=inconsistent-missing-override -Wno-error=invalid-offsetof -Wno-error=nonportable-include-path -Wno-error=overloaded-virtual -Wno-error=unused-command-line-argument</ErrorOptions>
   </PropertyGroup>
@@ -43,6 +44,7 @@
 
     <Link>
       <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalOptions>%(AdditionalOptions) /Brepro</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) /opt:lldlto=3 /opt:lldltocgo=3</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
