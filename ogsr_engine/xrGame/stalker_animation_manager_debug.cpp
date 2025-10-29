@@ -28,13 +28,6 @@ struct animation_id_predicate
     }
 };
 
-// IC	bool shared_str_predicate	(const shared_str &_1, const shared_str &_2)
-//{
-//	return		(_1._get() < _2._get());
-// }
-//
-// typedef xr_set<shared_str,shared_str_predicate>	VISUALS;
-
 struct animation_stats
 {
     //	shared_str	m_visual_id;
@@ -55,10 +48,10 @@ typedef std::pair<ANIMATION_ID, ANIMATION_ID> BLEND_ID;
 
 struct blend_id_predicate
 {
-    IC bool less(const shared_str& _1, const shared_str& _2) const { return (_1._get() < _2._get()); }
+    constexpr bool less(const shared_str& _1, const shared_str& _2) const { return _1 < _2; }
 
     template <typename T>
-    IC bool less(const std::pair<T, T>& _1, const std::pair<T, T>& _2) const
+    constexpr bool less(const std::pair<T, T>& _1, const std::pair<T, T>& _2) const
     {
         if (less(_1.first, _2.first))
             return (true);

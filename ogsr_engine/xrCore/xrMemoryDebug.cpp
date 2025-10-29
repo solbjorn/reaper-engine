@@ -62,7 +62,7 @@ void PointerRegistryDump(float thresholdInKb)
 {
     if (gModulesLoaded)
     {
-        std::scoped_lock lock(gPointerRegistryProtector);
+        std::scoped_lock lock{gPointerRegistryProtector};
 
         // cnt,size
         std::vector<std::pair<const char*, std::tuple<size_t, size_t>>, PointerAllocator<std::pair<const char*, std::tuple<size_t, size_t>>>> tmp;
@@ -72,7 +72,8 @@ void PointerRegistryDump(float thresholdInKb)
 
         for (const auto& pair : gPointerRegistry)
         {
-            if (const auto search = std::find_if(tmp.begin(), tmp.end(), [&pair](const auto& v) { return !strcmp(v.first, pair.second.identity.c_str()); }); search != tmp.end())
+            if (const auto search = std::find_if(tmp.begin(), tmp.end(), [&pair](const auto& v) { return std::is_eq(xr_strcmp(v.first, pair.second.identity)); });
+                search != tmp.end())
             {
                 std::get<0>(search->second) += 1;
                 std::get<1>(search->second) += pair.second.size;

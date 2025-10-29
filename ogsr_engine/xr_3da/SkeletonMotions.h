@@ -72,26 +72,29 @@ public:
         else
             _flags &= ~mask;
     }
-    BOOL test_flag(u8 mask) const { return BOOL(_flags & mask); }
+
+    [[nodiscard]] BOOL test_flag(u8 mask) const { return BOOL(_flags & mask); }
 
     void set_count(u32 cnt)
     {
         VERIFY(cnt);
         _count = cnt;
     }
-    ICF u32 get_count() const { return (u32(_count) & 0x00FFFFFF); }
 
-    float GetLength() { return float(_count) * SAMPLE_SPF; }
+    [[nodiscard]] u32 get_count() const { return (u32(_count) & 0x00FFFFFF); }
+    [[nodiscard]] float GetLength() const { return float(_count) * SAMPLE_SPF; }
 
-    u32 mem_usage()
+    [[nodiscard]] constexpr gsl::index mem_usage() const
     {
-        u32 sz = sizeof(*this);
-        if (_keysR.size())
-            sz += _keysR.size() * sizeof(CKeyQR) / _keysR.ref_count();
-        if (_keysT8.size())
-            sz += _keysT8.size() * sizeof(CKeyQT8) / _keysT8.ref_count();
-        if (_keysT16.size())
-            sz += _keysT16.size() * sizeof(CKeyQT16) / _keysT16.ref_count();
+        auto sz = gsl::index{sizeof(*this)};
+
+        if (!_keysR.empty())
+            sz += _keysR.size() * gsl::index{sizeof(CKeyQR)} / _keysR._get()->dwReference;
+        if (!_keysT8.empty())
+            sz += _keysT8.size() * gsl::index{sizeof(CKeyQT8)} / _keysT8._get()->dwReference;
+        if (!_keysT16.empty())
+            sz += _keysT16.size() * gsl::index{sizeof(CKeyQT16)} / _keysT16._get()->dwReference;
+
         return sz;
     }
 };

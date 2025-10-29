@@ -137,20 +137,16 @@ void ALDeviceList::Enumerate()
         char* str = m_devices[i].name;
 
         if (need_to_trim_prefix && strstr(str, prefix))
-        {
-            str += strlen(prefix);
-        }
+            str += xr_strlen(prefix);
 
         snd_devices_token[i].id = i;
         snd_devices_token[i].name = xr_strdup(str);
     }
 
     if (need_to_trim_prefix && strstr(m_defaultDeviceName, prefix))
-    {
-        xr_strcpy(m_defaultDeviceName, m_defaultDeviceName + strlen(prefix));
-    }
+        xr_strcpy(m_defaultDeviceName, m_defaultDeviceName + xr_strlen(prefix));
 
-    Msg("~~SOUND: OpenAL: Default sound device name is [%s], device name size: [%zu]", m_defaultDeviceName, strlen(m_defaultDeviceName));
+    Msg("~~SOUND: OpenAL: Default sound device name is [%s], device name size: [%zd]", m_defaultDeviceName, xr_strlen(m_defaultDeviceName));
 
     if (0 != GetNumDevices())
     {
@@ -188,14 +184,14 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
             for (int i = 0; snd_devices_token[i].name; i++)
             {
                 // check openAL default device first
-                if (m_defaultDeviceName[0] && _stricmp(m_defaultDeviceName, snd_devices_token[i].name) == 0)
+                if (m_defaultDeviceName[0] != '\0' && std::is_eq(xr::strcasecmp(m_defaultDeviceName, snd_devices_token[i].name)))
                 {
                     new_device_id = i;
                     break;
                 }
 
                 // check OS system default device too
-                if (system_default_device && _stricmp(system_default_device, snd_devices_token[i].name) == 0)
+                if (system_default_device != nullptr && std::is_eq(xr::strcasecmp(system_default_device, snd_devices_token[i].name)))
                 {
                     new_device_id = i;
                     break;

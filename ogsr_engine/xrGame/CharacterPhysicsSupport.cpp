@@ -227,12 +227,13 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
     if (m_EntityAlife.g_Alive())
     {
 #ifdef DEBUG
-        if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *m_EntityAlife.cName()) == 0)
+        if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
         {
             Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s before collision correction %f,%f,%f", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
                 m_EntityAlife.Position().y, m_EntityAlife.Position().z);
         }
 #endif
+
 #ifdef USE_IK
         if (etStalker == m_eType || etActor == m_eType ||
             (m_EntityAlife.Visual()->dcast_PKinematics()->LL_UserData() && m_EntityAlife.Visual()->dcast_PKinematics()->LL_UserData()->section_exist("ik")))
@@ -240,13 +241,15 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract*)
 #endif
         if (!m_EntityAlife.animation_movement_controlled())
             CreateCharacter();
+
 #ifdef DEBUG
-        if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *m_EntityAlife.cName()) == 0)
+        if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), m_EntityAlife.cName())))
         {
             Msg("CCharacterPhysicsSupport::SpawnInitPhysics obj %s after collision correction %f,%f,%f", PH_DBG_ObjectTrack(), m_EntityAlife.Position().x,
                 m_EntityAlife.Position().y, m_EntityAlife.Position().z);
         }
 #endif
+
         // m_PhysicMovementControl.SetMaterial( )
     }
     else

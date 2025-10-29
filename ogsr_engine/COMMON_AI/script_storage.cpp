@@ -243,11 +243,12 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 {
     int l_iErrorCode = 0;
     const std::string_view strbuf{caBuffer, tSize};
-    if (strcmp(GlobalNamespace, caNameSpaceName)) // Все скрипты кроме _G
+
+    if (std::is_neq(xr_strcmp(GlobalNamespace, caNameSpaceName))) // Все скрипты кроме _G
     {
         // KRodin: обращаться к _G только с большой буквы! Иначе он загрузится ещё раз и это неизвестно к чему приведёт!
         // Глобальное пространство инитится один раз после запуска луаджита, и никогда больше.
-        if (!strcmp("_g", caNameSpaceName))
+        if (std::is_eq(xr_strcmp("_g", caNameSpaceName)))
             return false;
 
         const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
@@ -376,7 +377,7 @@ bool CScriptStorage::object(const char* identifier, int type)
     lua_pushnil(lua());
     while (lua_next(lua(), -2))
     {
-        if (lua_type(lua(), -1) == type && !xr_strcmp(identifier, lua_tostring(lua(), -2)))
+        if (lua_type(lua(), -1) == type && std::is_eq(xr_strcmp(identifier, lua_tostring(lua(), -2))))
         {
             VERIFY(lua_gettop(lua()) >= 3);
             lua_pop(lua(), 3);

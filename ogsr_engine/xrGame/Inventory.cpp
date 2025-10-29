@@ -695,8 +695,7 @@ PIItem CInventory::Same(const PIItem pIItem, bool bSearchRuck) const
     for (TIItemContainer::const_iterator it = list.begin(); list.end() != it; ++it)
     {
         const PIItem l_pIItem = *it;
-
-        if ((l_pIItem != pIItem) && !xr_strcmp(l_pIItem->object().cNameSect(), pIItem->object().cNameSect()))
+        if ((l_pIItem != pIItem) && std::is_eq(xr_strcmp(l_pIItem->object().cNameSect(), pIItem->object().cNameSect())))
             return l_pIItem;
     }
 
@@ -730,7 +729,7 @@ PIItem CInventory::Get(const char* name, bool bSearchRuck) const
     for (TIItemContainer::const_iterator it = list.begin(); list.end() != it; ++it)
     {
         PIItem pIItem = *it;
-        if (pIItem && !xr_strcmp(pIItem->object().cNameSect(), name) && pIItem->Useful())
+        if (pIItem && std::is_eq(xr_strcmp(pIItem->object().cNameSect(), name)) && pIItem->Useful())
             return pIItem;
     }
 
@@ -825,7 +824,7 @@ u32 CInventory::dwfGetSameItemCount(LPCSTR caSection, bool SearchAll)
     for (TIItemContainer::iterator l_it = l_list.begin(); l_list.end() != l_it; ++l_it)
     {
         PIItem l_pIItem = *l_it;
-        if (l_pIItem && !xr_strcmp(l_pIItem->object().cNameSect(), caSection))
+        if (l_pIItem && std::is_eq(xr_strcmp(l_pIItem->object().cNameSect(), caSection)))
             ++l_dwCount;
     }
 
@@ -1178,8 +1177,9 @@ PIItem CInventory::GetAmmoMaxCurr(const char* name, bool forActor) const
 {
     PIItem box = nullptr;
     u32 max = 0;
+
     auto callback = [&](const auto pIItem) -> bool {
-        if (!xr_strcmp(pIItem->object().cNameSect(), name))
+        if (std::is_eq(xr_strcmp(pIItem->object().cNameSect(), name)))
         {
             const auto* ammo = smart_cast<CWeaponAmmo*>(pIItem);
             if (ammo->m_boxCurr == ammo->m_boxSize)
@@ -1193,6 +1193,7 @@ PIItem CInventory::GetAmmoMaxCurr(const char* name, bool forActor) const
                 max = ammo->m_boxCurr;
             }
         }
+
         return false;
     };
 
@@ -1231,8 +1232,9 @@ PIItem CInventory::GetAmmoMinCurr(const char* name, bool forActor) const
 {
     PIItem box = nullptr;
     u32 min = 0;
+
     auto callback = [&](const auto pIItem) -> bool {
-        if (!xr_strcmp(pIItem->object().cNameSect(), name))
+        if (std::is_eq(xr_strcmp(pIItem->object().cNameSect(), name)))
         {
             const auto* ammo = smart_cast<CWeaponAmmo*>(pIItem);
             if (ammo->m_boxCurr == 1)
@@ -1246,6 +1248,7 @@ PIItem CInventory::GetAmmoMinCurr(const char* name, bool forActor) const
                 min = ammo->m_boxCurr;
             }
         }
+
         return false;
     };
 

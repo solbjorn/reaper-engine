@@ -333,7 +333,7 @@ int WinMain_impl(HINSTANCE hInstance, char* lpCmdLine)
     if (strstr(lpCmdLine, tok))
     {
         u32 cpus = 0;
-        if (sscanf_s(strstr(lpCmdLine, tok) + strlen(tok) + 1, "%u", &cpus))
+        if (sscanf_s(strstr(lpCmdLine, tok) + xr_strlen(tok) + 1, "%u", &cpus))
             oneapi::tbb::global_control c(oneapi::tbb::global_control::max_allowed_parallelism, cpus);
     }
 
@@ -701,15 +701,17 @@ void CApplication::Level_Set(u32 L)
     loadingScreen->SetLevelText(level_name);
 }
 
-int CApplication::Level_ID(LPCSTR name)
+gsl::index CApplication::Level_ID(gsl::czstring name) const
 {
     char buffer[256];
     strconcat(sizeof(buffer), buffer, name, "\\");
-    for (u32 I = 0; I < Levels.size(); I++)
+
+    for (auto [id, level] : xr::views_enumerate(Levels))
     {
-        if (!_stricmp(buffer, Levels[I].folder))
-            return int(I);
+        if (std::is_eq(xr::strcasecmp(buffer, level.folder)))
+            return id;
     }
+
     return -1;
 }
 

@@ -212,19 +212,13 @@ CModelPool::~CModelPool()
 
 dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 {
-    dxRender_Visual* Model{};
-    xr_vector<ModelDef>::iterator I;
-
-    for (I = Models.begin(); I != Models.end(); I++)
+    for (const auto& model : Models)
     {
-        if (I->name[0] && (0 == xr_strcmp(*I->name, N)))
-        {
-            Model = I->model;
-            break;
-        }
+        if (std::is_eq(xr_strcmp(model.name, N)))
+            return model.model;
     }
 
-    return Model;
+    return nullptr;
 }
 
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)

@@ -24,19 +24,6 @@
 #define DOSWIN32
 #define _WIN32_DCOM
 
-#include <cstring>
-
-#ifndef _INC_STRING
-#error Wrong include order to override UCRT functions
-#endif
-
-// llvm-libc
-extern "C" {
-extern int strcasecmp(const char* left, const char* right);
-}
-
-#define _stricmp(l, r) strcasecmp(l, r)
-
 #include <windows.h>
 #include <windowsx.h>
 

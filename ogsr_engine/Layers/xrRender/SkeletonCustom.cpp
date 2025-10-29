@@ -230,7 +230,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
     {
         shared_str P = L_parents[i];
         CBoneData* B = (*bones)[i];
-        if (!P || !P[0])
+        if (P.empty())
         {
             // no parent - this is root bone
             R_ASSERT(BI_NONE == iRoot);

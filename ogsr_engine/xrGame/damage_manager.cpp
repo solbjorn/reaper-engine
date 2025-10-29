@@ -76,10 +76,12 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
     string32 buffer;
     IKinematics* kinematics = smart_cast<IKinematics*>(m_object->Visual());
     CInifile::Sect& damages = ini->r_section(section);
+
     for (const auto& i : damages.Data)
     {
-        if (xr_strcmp(i.first.c_str(), "default"))
-        { // read all except default line
+        // read all except default line
+        if (std::is_neq(xr_strcmp(i.first, "default")))
+        {
             VERIFY(m_object);
             int bone = kinematics->LL_BoneID(i.first);
             ASSERT_FMT(bone != BI_NONE, "[%s]: bone '%s' not found in %s[%s] visual[%s]", __FUNCTION__, i.first.c_str(), m_object->cName().c_str(), section,

@@ -640,7 +640,7 @@ void CSkeletonX_PM::FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, con
 namespace
 {
 template <typename vertex_buffer_type>
-void TEnumBoneVertices(vertex_buffer_type vertices, u16* indices, CBoneData::FacesVec& faces, SEnumVerticesCallback& C)
+void TEnumBoneVertices(vertex_buffer_type vertices, const u16* indices, CBoneData::FacesVec& faces, SEnumVerticesCallback& C)
 {
     for (u16 face : faces)
     {
@@ -660,7 +660,7 @@ void CSkeletonX_ext::_EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id, u3
     VERIFY(Parent && (ChildIDX != u16(-1)));
     CBoneData& BD = Parent->LL_GetData(bone_id);
     CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
-    u16* indices{};
+    const u16* indices{};
     //.	R_CHK				(V->pIndices->Lock(iBase,iCount,		(void**)&indices,	D3DLOCK_READONLY));
 
     VERIFY(*m_Indices);

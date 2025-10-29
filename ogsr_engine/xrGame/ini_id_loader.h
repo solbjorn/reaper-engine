@@ -83,7 +83,7 @@ public:
         return item ? item->id : default_id;
     }
 
-    static const T_INDEX GetMaxIndex() { return m_pItemDataVector->size() - 1; }
+    static const T_INDEX GetMaxIndex() { return std::ssize(*m_pItemDataVector) - 1; }
 
     // удаление статичекого массива
     static void DeleteIdToIndexData();
@@ -107,34 +107,26 @@ CSINI_IdToIndex::~CIni_IdToIndex() {}
 TEMPLATE_SPECIALIZATION
 const ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)
 {
-    auto it = m_pItemDataVector->begin();
-    for (; m_pItemDataVector->end() != it; it++)
+    for (const auto& item : *m_pItemDataVector)
     {
-        if (!xr_strcmp((*it).id, str_id))
-            break;
+        if (std::is_eq(xr_strcmp(item.id, str_id)))
+            return &item;
     }
 
-    if (m_pItemDataVector->end() == it)
-    {
-        R_ASSERT3(no_assert, "item not found, id", *str_id);
-        return nullptr;
-    }
-
-    return &(*it);
+    R_ASSERT3(no_assert, "item not found, id", *str_id);
+    return nullptr;
 }
 
 TEMPLATE_SPECIALIZATION
 const ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_assert)
 {
-    if ((size_t)index >= m_pItemDataVector->size())
-    {
-        if (!no_assert)
-            Debug.fatal(DEBUG_INFO, "item by index not found in section %s, line %s", section_name, line_name);
+    if (gsl::index{index} < std::ssize(*m_pItemDataVector))
+        return &(*m_pItemDataVector)[index];
 
-        return nullptr;
-    }
+    if (!no_assert)
+        Debug.fatal(DEBUG_INFO, "item by index not found in section %s, line %s", section_name, line_name);
 
-    return &(m_pItemDataVector->at(index));
+    return nullptr;
 }
 
 TEMPLATE_SPECIALIZATION

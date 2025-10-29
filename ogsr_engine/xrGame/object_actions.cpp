@@ -108,13 +108,12 @@ static bool try_advance_ammo(CWeapon const& weapon)
         for (TIItemContainer::iterator l_it = inventory.m_belt.begin(); inventory.m_belt.end() != l_it; ++l_it)
         {
             CWeaponAmmo* l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-
-            if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
+            if (l_pAmmo && std::is_eq(xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)))
             {
                 if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize)
                 {
                     l_pAmmo->m_boxCurr = l_pAmmo->m_boxSize;
-                    return (true);
+                    return true;
                 }
             }
         }
@@ -122,18 +121,18 @@ static bool try_advance_ammo(CWeapon const& weapon)
         for (TIItemContainer::iterator l_it = inventory.m_ruck.begin(); inventory.m_ruck.end() != l_it; ++l_it)
         {
             CWeaponAmmo* l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-            if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
+            if (l_pAmmo && std::is_eq(xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)))
             {
                 if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize)
                 {
                     l_pAmmo->m_boxCurr = l_pAmmo->m_boxSize;
-                    return (true);
+                    return true;
                 }
             }
         }
     }
 
-    return (false);
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////

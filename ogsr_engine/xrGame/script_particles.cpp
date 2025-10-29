@@ -56,7 +56,7 @@ void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)
     if (!m_animator)
         m_animator = xr_new<CObjectAnimator>();
 
-    if (!m_animator->Name() || xr_strcmp(m_animator->Name(), caPathName))
+    if (!m_animator->Name() || std::is_neq(xr_strcmp(m_animator->Name(), caPathName)))
     {
         m_animator->Clear();
         m_animator->Load(caPathName);

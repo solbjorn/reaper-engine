@@ -101,10 +101,9 @@ void CUISequencer::Start(LPCSTR tutor_name)
     for (int i = 0; i < items_count; ++i)
     {
         LPCSTR _tp = uiXml.ReadAttrib("item", i, "type", "");
-        bool bVideo = 0 == _stricmp(_tp, "video");
-        CUISequenceItem* pItem{};
+        CUISequenceItem* pItem;
 
-        if (bVideo)
+        if (std::is_eq(xr::strcasecmp(_tp, "video")))
             pItem = xr_new<CUISequenceVideoItem>(this);
         else
             pItem = xr_new<CUISequenceSimpleItem>(this);

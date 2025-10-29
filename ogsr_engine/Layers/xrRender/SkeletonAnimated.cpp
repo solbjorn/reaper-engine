@@ -156,7 +156,7 @@ u16 CKinematicsAnimated::LL_PartID(LPCSTR B)
         if (!P.Name)
             continue;
 
-        if (!_stricmp(B, *P.Name))
+        if (std::is_eq(xr::strcasecmp(B, P.Name)))
             return id;
     }
 

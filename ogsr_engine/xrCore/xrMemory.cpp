@@ -19,33 +19,6 @@ XR_DIAG_POP();
 #pragma comment(lib, "mimalloc.dll.lib")
 #endif
 
-xrMemory Memory;
-
-void xrMemory::_initialize()
-{
-    SProcessMemInfo memCounters;
-    GetProcessMemInfo(memCounters);
-
-    u64 disableMemoryTotalMb = 32000ull;
-    if (char* str = strstr(Core.Params, "-smem_disable_limit "))
-        sscanf(str + 20, "%llu", &disableMemoryTotalMb);
-    bool disableMemoryPool = memCounters.TotalPhysicalMemory > (disableMemoryTotalMb * (1024ull * 1024ull));
-
-    if (disableMemoryPool)
-    {
-        Msg("--[%s] memory pool disabled due to available memory limit: [%llu MB]", __FUNCTION__, disableMemoryTotalMb);
-    }
-
-    g_pStringContainer = xr_new<str_container>();
-    g_pSharedMemoryContainer = xr_new<smem_container>(disableMemoryPool);
-}
-
-void xrMemory::_destroy()
-{
-    xr_delete(g_pSharedMemoryContainer);
-    xr_delete(g_pStringContainer);
-}
-
 void xrMemory::mem_compact()
 {
 #ifndef USE_MIMALLOC
@@ -59,10 +32,8 @@ void xrMemory::mem_compact()
     HeapCompact(GetProcessHeap(), 0);
 #endif
 
-    if (g_pStringContainer)
-        g_pStringContainer->clean();
-    if (g_pSharedMemoryContainer)
-        g_pSharedMemoryContainer->clean();
+    str_container::clean();
+    smem_container::clean();
 }
 
 [[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc_aligned(size_t size, size_t align) noexcept { return _aligned_malloc(size, align); }

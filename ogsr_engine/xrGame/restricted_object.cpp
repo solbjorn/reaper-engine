@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "restricted_object.h"
 #include "space_restriction_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -27,7 +28,7 @@ CRestrictedObject::~CRestrictedObject() {}
 template <typename StrType>
 static void construct_string(StrType& result, xr_vector<ALife::_OBJECT_ID>& restrictions, const CSE_ALifeMonsterAbstract* monster)
 {
-    u32 count = strlen(result) ? _GetItemCount(result) : 0;
+    u32 count = xr_strlen(result) > 0 ? _GetItemCount(result) : 0;
 
     for (auto iter = restrictions.begin(); iter != restrictions.end();)
     {

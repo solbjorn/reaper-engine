@@ -113,26 +113,17 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
 
     // Тип статьи
     xr_string atricle_type = pXML->ReadAttrib(pNode, "article_type", "encyclopedia");
-    if (!_stricmp(atricle_type.c_str(), "encyclopedia"))
-    {
+
+    if (std::is_eq(xr::strcasecmp(atricle_type, "encyclopedia")))
         data()->articleType = ARTICLE_DATA::eEncyclopediaArticle;
-    }
-    else if (!_stricmp(atricle_type.c_str(), "journal"))
-    {
+    else if (std::is_eq(xr::strcasecmp(atricle_type, "journal")))
         data()->articleType = ARTICLE_DATA::eJournalArticle;
-    }
-    else if (!_stricmp(atricle_type.c_str(), "task"))
-    {
+    else if (std::is_eq(xr::strcasecmp(atricle_type, "task")))
         data()->articleType = ARTICLE_DATA::eTaskArticle;
-    }
-    else if (!_stricmp(atricle_type.c_str(), "info"))
-    {
+    else if (std::is_eq(xr::strcasecmp(atricle_type, "info")))
         data()->articleType = ARTICLE_DATA::eInfoArticle;
-    }
     else
-    {
         Msg("incorrect article type definition for [%s]", *item_data.id);
-    }
 
     data()->ui_template_name = pXML->ReadAttrib(pNode, "ui_template", "common");
     data()->sort = !!pXML->ReadAttribInt(pNode, "sort", 0);

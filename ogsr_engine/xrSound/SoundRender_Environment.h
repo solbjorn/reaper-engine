@@ -40,7 +40,7 @@ public:
 
     void Unload();
 
-    int GetID(LPCSTR name);
+    [[nodiscard]] gsl::index GetID(LPCSTR name) const;
 
     CSoundRender_Environment* Get(int id) const;
 

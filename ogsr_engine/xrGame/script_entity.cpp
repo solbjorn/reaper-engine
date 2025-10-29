@@ -93,7 +93,7 @@ void CScriptEntity::reinit()
 void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSciptName)
 {
     if (!(((m_bScriptControl && !bScriptControl) || (!m_bScriptControl && bScriptControl)) &&
-          (bScriptControl || (xr_strlen(*m_caScriptName) && !xr_strcmp(caSciptName, m_caScriptName)))))
+          (bScriptControl || (xr_strlen(m_caScriptName) > 0 && std::is_eq(xr_strcmp(caSciptName, m_caScriptName))))))
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Invalid sequence of taking an entity under script control");
         return;
@@ -144,17 +144,17 @@ bool CScriptEntity::CheckObjectVisibilityNow(const CGameObject* tpObject)
 bool CScriptEntity::CheckTypeVisibility(const char* section_name)
 {
     if (!m_monster)
-        return (false);
+        return false;
 
-    CVisualMemoryManager::VISIBLES::const_iterator I = m_monster->memory().visual().objects().begin();
-    CVisualMemoryManager::VISIBLES::const_iterator E = m_monster->memory().visual().objects().end();
-    for (; I != E; ++I)
+    for (const auto& vis : m_monster->memory().visual().objects())
     {
-        VERIFY((*I).m_object);
-        if (!xr_strcmp(section_name, *(*I).m_object->cNameSect()))
-            return (true);
+        VERIFY(vis.m_object);
+
+        if (std::is_eq(xr_strcmp(section_name, vis.m_object->cNameSect())))
+            return true;
     }
-    return (false);
+
+    return false;
 }
 
 void CScriptEntity::AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority)

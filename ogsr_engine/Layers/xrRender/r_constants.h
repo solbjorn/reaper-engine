@@ -119,7 +119,7 @@ public:
 
     IC BOOL equal(R_constant& C)
     {
-        return !xr_strcmp(name, C.name) && type == C.type && destination == C.destination && ps.equal(C.ps) && vs.equal(C.vs) && gs.equal(C.gs) && hs.equal(C.hs) &&
+        return std::is_eq(xr_strcmp(name, C.name)) && type == C.type && destination == C.destination && ps.equal(C.ps) && vs.equal(C.vs) && gs.equal(C.gs) && hs.equal(C.hs) &&
             ds.equal(C.ds) && cs.equal(C.cs) && samp.equal(C.samp) && handler == C.handler;
     }
 };

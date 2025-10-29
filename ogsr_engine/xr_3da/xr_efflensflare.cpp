@@ -395,7 +395,9 @@ void CLensFlare::OnFrame(shared_str id)
             fGradientValue = kx * ky * op * fBlend;
         }
         else
+        {
             fGradientValue = 0;
+        }
     }
 }
 
@@ -408,8 +410,8 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
         return;
     if (!m_Current)
         return;
-    VERIFY(m_Current);
 
+    VERIFY(m_Current);
     m_pRender->Render(*this, bSun, bFlares, bGradient);
 }
 
@@ -417,11 +419,15 @@ shared_str CLensFlare::AppendDef(CEnvironment& environment, LPCSTR sect)
 {
     if (!sect || (0 == sect[0]))
         return "";
-    for (LensFlareDescIt it = m_Palette.begin(); it != m_Palette.end(); it++)
-        if (0 == xr_strcmp(*(*it)->section, sect))
-            return sect;
+
+    for (const auto desc : m_Palette)
+    {
+        if (std::is_eq(xr_strcmp(desc->section, sect)))
+            return desc->section;
+    }
 
     environment.add_flare(m_Palette, sect);
+
     return sect;
 }
 
@@ -430,15 +436,15 @@ void CLensFlare::OnDeviceCreate()
     m_pRender->OnDeviceCreate();
 
     // palette
-    for (auto& descr : m_Palette)
-        descr->OnDeviceCreate();
+    for (auto desc : m_Palette)
+        desc->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
     // palette
-    for (auto& descr : m_Palette)
-        descr->OnDeviceDestroy();
+    for (auto desc : m_Palette)
+        desc->OnDeviceDestroy();
 
     m_pRender->OnDeviceDestroy();
 }

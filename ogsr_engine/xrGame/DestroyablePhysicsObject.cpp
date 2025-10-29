@@ -52,7 +52,7 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
     if (visual)
     {
         shared_str N = visual_name(E);
-        if (!(N.c_str() && N[0]))
+        if (N.empty())
         {
             Msg("! [%s]: prevent %s[%u] from spawn because it has no visual", __FUNCTION__, E->name_replace()[0] ? E->name_replace() : E->s_name.c_str(), E->ID);
             return FALSE;

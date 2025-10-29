@@ -54,7 +54,7 @@ bool CSavedGameWrapper::valid_saved_game(IReader& stream)
 
 bool CSavedGameWrapper::valid_saved_game(LPCSTR saved_game_name)
 {
-    if (!saved_game_name || strlen(saved_game_name) == 0)
+    if (saved_game_name == nullptr || xr_strlen(saved_game_name) == 0)
         return false;
 
     string_path file_name;

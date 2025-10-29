@@ -163,15 +163,9 @@ void CSXML_IdToIndex::InitInternal()
             sprintf_s(buf, "id for item don't set, number %d in %s", i, xml_file);
             R_ASSERT2(item_name, buf);
 
-            // проверетить ID на уникальность
-            T_VECTOR::iterator t_it = m_pItemDataVector->begin();
-            for (; m_pItemDataVector->end() != t_it; t_it++)
-            {
-                if (!xr_strcmp((*t_it).id.c_str(), item_name))
-                    break;
-            }
-
-            R_ASSERT3(m_pItemDataVector->end() == t_it, "duplicate item id", item_name);
+            // проверить ID на уникальность
+            for (const auto& item : *m_pItemDataVector)
+                R_ASSERT3(std::is_neq(xr_strcmp(item.id, item_name)), "duplicate item id", item_name);
 
             ITEM_DATA data;
             data.id = item_name;

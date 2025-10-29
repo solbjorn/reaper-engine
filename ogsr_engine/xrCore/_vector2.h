@@ -147,23 +147,28 @@ public:
     }
     constexpr inline T dot(Self& p) { return x * p.x + y * p.y; }
     constexpr inline T dot(const Self& p) const { return x * p.x + y * p.y; }
-    constexpr inline SelfRef norm(void)
+
+    constexpr SelfRef norm()
     {
         float m = _sqrt(x * x + y * y);
         x /= m;
         y /= m;
+
         return *this;
     }
-    constexpr inline SelfRef norm_safe(void)
+
+    constexpr SelfRef norm_safe()
     {
         float m = _sqrt(x * x + y * y);
-        if (m)
+        if (!fis_zero(m))
         {
             x /= m;
             y /= m;
         }
+
         return *this;
     }
+
     constexpr inline T distance_to(const Self& p) const { return _sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y)); }
     constexpr inline T square_magnitude(void) const { return x * x + y * y; }
     constexpr inline T magnitude(void) const { return _sqrt(square_magnitude()); }
@@ -229,23 +234,28 @@ public:
 
     constexpr inline SelfRef normalize(void) { return norm(); }
     constexpr inline SelfRef normalize_safe(void) { return norm_safe(); }
-    constexpr inline SelfRef normalize(const Self& v)
+
+    constexpr SelfRef normalize(const Self& v)
     {
         float m = _sqrt(v.x * v.x + v.y * v.y);
         x = v.x / m;
         y = v.y / m;
+
         return *this;
     }
-    constexpr inline SelfRef normalize_safe(const Self& v)
+
+    constexpr SelfRef normalize_safe(const Self& v)
     {
         float m = _sqrt(v.x * v.x + v.y * v.y);
-        if (m)
+        if (!fis_zero(m))
         {
             x = v.x / m;
             y = v.y / m;
         }
+
         return *this;
     }
+
     constexpr inline float dotproduct(const Self& p) const { return dot(p); }
     constexpr inline float crossproduct(const Self& p) const { return y * p.x - x * p.y; }
     constexpr inline float getH(void) const

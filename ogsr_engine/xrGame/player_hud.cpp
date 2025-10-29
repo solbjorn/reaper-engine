@@ -1846,7 +1846,7 @@ float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, b
 {
     for (script_layer* anm : m_script_layers)
     {
-        if (!xr_strcmp(*anm->m_name, name))
+        if (std::is_eq(xr_strcmp(anm->m_name, name)))
         {
             if (!no_restart)
             {
@@ -1876,7 +1876,7 @@ void player_hud::StopBlendAnm(LPCSTR name, bool bForce)
 {
     for (script_layer* anm : m_script_layers)
     {
-        if (!xr_strcmp(*anm->m_name, name))
+        if (std::is_eq(xr_strcmp(anm->m_name, name)))
         {
             anm->Stop(bForce);
             return;
@@ -1896,7 +1896,7 @@ float player_hud::SetBlendAnmTime(LPCSTR name, float time)
 {
     for (script_layer* anm : m_script_layers)
     {
-        if (!xr_strcmp(*anm->m_name, name))
+        if (std::is_eq(xr_strcmp(anm->m_name, name)))
         {
             if (!anm->anm->IsPlaying())
                 return 0;

@@ -127,7 +127,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_vs.try_emplace(_vs->set_name(name), _vs);
 
-        if (!_stricmp(_name, "null"))
+        if (std::is_eq(xr::strcasecmp(_name, "null")))
             return _vs;
 
         string_path shName;
@@ -227,7 +227,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         _ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_ps.try_emplace(_ps->set_name(name), _ps);
 
-        if (!_stricmp(_name, "null"))
+        if (std::is_eq(xr::strcasecmp(_name, "null")))
         {
             _ps->ps = nullptr;
             return _ps;
@@ -299,7 +299,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         _gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_gs.try_emplace(_gs->set_name(name), _gs);
 
-        if (!_stricmp(name, "null"))
+        if (std::is_eq(xr::strcasecmp(name, "null")))
         {
             _gs->gs = nullptr;
             return _gs;
@@ -545,7 +545,7 @@ void CResourceManager::DBG_VerifyTextures()
         R_ASSERT(I->first);
         R_ASSERT(I->second);
         R_ASSERT(I->second->cName);
-        R_ASSERT(0 == xr_strcmp(I->first, *I->second->cName));
+        R_ASSERT(std::is_eq(xr_strcmp(I->first, I->second->cName)));
     }
 }
 #endif

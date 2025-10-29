@@ -72,20 +72,21 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     strcpy_s(m_pda_section, xml->Read("pda_section", 0, ""));
 
     LPCSTR str = xml->Read("pause_state", 0, "ignore");
-    m_flags.set(etiNeedPauseOn, 0 == _stricmp(str, "on"));
-    m_flags.set(etiNeedPauseOff, 0 == _stricmp(str, "off"));
+    m_flags.set(etiNeedPauseOn, std::is_eq(xr::strcasecmp(str, "on")));
+    m_flags.set(etiNeedPauseOff, std::is_eq(xr::strcasecmp(str, "off")));
 
     LPCSTR str2 = xml->Read("pause_sound", 0, "ignore");
-    m_flags.set(etiNeedPauseSound, 0 == _stricmp(str2, "on"));
+    m_flags.set(etiNeedPauseSound, std::is_eq(xr::strcasecmp(str2, "on")));
 
     str = xml->Read("guard_key", 0, nullptr);
     m_continue_dik_guard = -1;
-    if (str && !_stricmp(str, "any"))
+
+    if (str != nullptr && std::is_eq(xr::strcasecmp(str, "any")))
     {
         m_continue_dik_guard = 9999;
         str = nullptr;
     }
-    if (str)
+    if (str != nullptr)
     {
         EGameActions cmd = action_name_to_id(str);
         m_continue_dik_guard = get_action_dik(cmd);
@@ -213,44 +214,46 @@ void CUISequenceSimpleItem::Start()
     {
         bool bShowPda = false;
         CUIGameSP* ui_game_sp = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-        if (!_stricmp(m_pda_section, "pda_contacts"))
+
+        if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_contacts")))
         {
             ui_game_sp->PdaMenu->SetActiveSubdialog(eptContacts);
             bShowPda = true;
         }
         else
         {
-            if (!_stricmp(m_pda_section, "pda_map"))
+            if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_map")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptMap);
                 bShowPda = true;
             }
-            else if (!_stricmp(m_pda_section, "pda_quests"))
+            else if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_quests")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptQuests);
                 bShowPda = true;
             }
-            else if (!_stricmp(m_pda_section, "pda_diary"))
+            else if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_diary")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptDiary);
                 bShowPda = true;
             }
-            else if (!_stricmp(m_pda_section, "pda_ranking"))
+            else if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_ranking")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptRanking);
                 bShowPda = true;
             }
-            else if (!_stricmp(m_pda_section, "pda_statistics"))
+            else if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_statistics")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptActorStatistic);
                 bShowPda = true;
             }
-            else if (!_stricmp(m_pda_section, "pda_encyclopedia"))
+            else if (std::is_eq(xr::strcasecmp(m_pda_section, "pda_encyclopedia")))
             {
                 ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia); //-V595
                 bShowPda = true;
             }
         }
+
         if (ui_game_sp)
         {
             if ((!ui_game_sp->PdaMenu->IsShown() && bShowPda) || (ui_game_sp->PdaMenu->IsShown() && !bShowPda))

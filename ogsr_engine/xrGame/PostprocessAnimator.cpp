@@ -56,7 +56,7 @@ void CPostprocessAnimator::Load(LPCSTR name)
     LPCSTR ext = strext(full_path);
     if (ext)
     {
-        if (!xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION))
+        if (std::is_eq(xr_strcmp(ext, POSTPROCESS_FILE_EXTENSION)))
         {
             IReader* F = FS.r_open(full_path);
             u32 dwVersion = F->r_u32();

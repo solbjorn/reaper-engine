@@ -366,9 +366,10 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
     {
         CCartridge& l_cartridge = m_magazine.back();
         xr_map<LPCSTR, u16>::iterator l_it;
+
         for (l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it)
         {
-            if (!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first))
+            if (std::is_eq(xr_strcmp(l_cartridge.m_ammoSect, l_it->first)))
             {
                 ++(l_it->second);
                 break;
@@ -468,12 +469,14 @@ void CWeaponMagazined::ReloadMagazine()
     if (Core.Features.test(xrCore::Feature::hard_ammo_reload))
     {
         if (!m_bLockType && !m_magazine.empty())
-            if ((ParentIsActor() && !unlimited_ammo()) || (!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect)))
+        {
+            if ((ParentIsActor() && !unlimited_ammo()) || (!m_pAmmo || std::is_neq(xr_strcmp(m_pAmmo->cNameSect(), m_magazine.back().m_ammoSect))))
                 UnloadMagazine();
+        }
     }
     else
     {
-        if (!m_bLockType && !m_magazine.empty() && (!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect)))
+        if (!m_bLockType && !m_magazine.empty() && (!m_pAmmo || std::is_neq(xr_strcmp(m_pAmmo->cNameSect(), m_magazine.back().m_ammoSect))))
             UnloadMagazine();
     }
 
@@ -1532,7 +1535,7 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& M)
 
     if (state == eReload)
     {
-        if (bHasBulletsToHide && xr_strcmp(M.name.c_str(), "lmg_reload") == 0)
+        if (bHasBulletsToHide && std::is_eq(xr_strcmp(M.name, "lmg_reload")))
         {
             auto ammo_type = m_ammoType;
             int ae = CheckAmmoBeforeReload(ammo_type);
@@ -1762,7 +1765,7 @@ bool CWeaponMagazined::ScopeRespawn(PIItem pIItem)
     if (pSettings->line_exist(cNameSect(), scope_respawn.c_str()))
     {
         LPCSTR S = pSettings->r_string(cNameSect(), scope_respawn.c_str());
-        if (xr_strcmp(cName().c_str(), S) != 0)
+        if (std::is_neq(xr_strcmp(cName(), S)))
         {
             CSE_Abstract* _abstract = Level().spawn_item(S, Position(), ai_location().level_vertex_id(), H_Parent()->ID(), true);
             CSE_ALifeDynamicObject* sobj1 = alife_object();

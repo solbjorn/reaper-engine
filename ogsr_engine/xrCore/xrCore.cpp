@@ -71,8 +71,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
         DWORD sz_comp = sizeof(CompName);
         GetComputerName(CompName, &sz_comp);
 
-        Memory._initialize();
-
         _initialize_cpu();
 
         xr_FS = std::make_unique<CLocatorAPI>();
@@ -98,7 +96,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
         FS._initialize(flags, nullptr, fs_fname);
 
         Msg("[OGSR Engine (%s)] build date: [" __DATE__ " " __TIME__ "]", GetBuildConfiguration());
-        if (strlen(APPVEYOR_BUILD_VERSION))
+        if (xr_strlen(APPVEYOR_BUILD_VERSION) > 0)
             Log("[AppVeyor] build version: [" APPVEYOR_BUILD_VERSION "], repo: [" APPVEYOR_REPO_NAME "]");
 
 #ifdef __clang__
@@ -122,17 +120,12 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
 
 void xrCore::_destroy()
 {
-    --init_counter;
-    if (0 == init_counter)
+    if (--init_counter == 0)
     {
         FS._destroy();
-
         xr_FS.reset();
 
-        Memory._destroy();
-
         CoUninitialize();
-
         timeEndPeriod(1);
     }
 }
@@ -140,7 +133,7 @@ void xrCore::_destroy()
 const char* xrCore::GetEngineVersion()
 {
     static string256 buff;
-    if (strlen(APPVEYOR_BUILD_VERSION))
+    if (xr_strlen(APPVEYOR_BUILD_VERSION) > 0)
         std::snprintf(buff, sizeof(buff), APPVEYOR_BUILD_VERSION " (%s) from repo: [" APPVEYOR_REPO_NAME "]", GetBuildConfiguration());
     else
         std::snprintf(buff, sizeof(buff), "[OGSR Engine %s (build: " __DATE__ " " __TIME__ ")]", GetBuildConfiguration());

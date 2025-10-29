@@ -83,7 +83,7 @@ BOOL CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val)
 
 LPCSTR CInifile::Sect::r_string(LPCSTR L)
 {
-    if (!L || !strlen(L)) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    if (L == nullptr || xr_strlen(L) == 0) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
         Msg("!![ERROR] CInifile::Sect::r_string: S = [%s], L = [%s]", Name.c_str(), L);
 
     const auto A = Data.find(L);
@@ -172,11 +172,9 @@ void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
     if (sect_it != tgt->Data.end() && sect_it->first.equal(I.first))
     {
         sect_it->second = I.second;
-        auto found = std::find_if(tgt->Ordered_Data.begin(), tgt->Ordered_Data.end(), [&](const auto& it) { return xr_strcmp(*it.first, *I.first) == 0; });
+        auto found = std::find_if(tgt->Ordered_Data.begin(), tgt->Ordered_Data.end(), [&](const auto& it) { return std::is_eq(xr_strcmp(it.first, I.first)); });
         if (found != tgt->Ordered_Data.end())
-        {
             found->second = I.second;
-        }
     }
     else
     {
@@ -284,14 +282,16 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                         string_path _fn;
                         strconcat(sizeof(_fn), _fn, inc_path, _name);
 
-                        if (strcmp(current_file, _fn) == 0)
+                        if (std::is_eq(xr_strcmp(current_file, _fn)))
                             continue;
 
                         loadFile(_fn);
                     }
                 }
                 else
+                {
                     loadFile(fn);
+                }
             }
         }
         else if (str[0] && (str[0] == '['))
@@ -513,7 +513,7 @@ BOOL CInifile::section_exist(const shared_str& S) { return section_exist(S.c_str
 
 CInifile::Sect& CInifile::r_section(LPCSTR S)
 {
-    R_ASSERT(S && strlen(S), "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'."); //--#SM+#--
+    R_ASSERT(S != nullptr && xr_strlen(S) > 0, "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'."); //--#SM+#--
 
     char section[256];
     strcpy_s(section, S);
@@ -526,7 +526,7 @@ CInifile::Sect& CInifile::r_section(LPCSTR S)
 
 LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)
 {
-    if (!S || !L || !strlen(S) || !strlen(L)) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
+    if (S == nullptr || L == nullptr || xr_strlen(S) == 0 || xr_strlen(L) == 0) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
         Msg("!![ERROR] CInifile::r_string: S = [%s], L = [%s]", S, L);
 
     Sect& I = r_section(S);
@@ -685,9 +685,13 @@ CLASS_ID CInifile::r_clsid(LPCSTR S, LPCSTR L)
 int CInifile::r_token(LPCSTR S, LPCSTR L, const xr_token* token_list)
 {
     LPCSTR C = r_string(S, L);
+
     for (int i = 0; token_list[i].name; i++)
-        if (!_stricmp(C, token_list[i].name))
+    {
+        if (std::is_eq(xr::strcasecmp(C, token_list[i].name)))
             return token_list[i].id;
+    }
+
     return 0;
 }
 
@@ -868,7 +872,7 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
         R_ASSERT(A != data.Data.end());
         data.Data.erase(A);
 
-        auto found = std::find_if(data.Ordered_Data.begin(), data.Ordered_Data.end(), [&](const auto& it) { return xr_strcmp(*it.first, L) == 0; });
+        auto found = std::find_if(data.Ordered_Data.begin(), data.Ordered_Data.end(), [&](const auto& it) { return std::is_eq(xr_strcmp(it.first, L)); });
         R_ASSERT(found != data.Ordered_Data.end());
         data.Ordered_Data.erase(found);
     }
@@ -885,7 +889,7 @@ void CInifile::remove_section(LPCSTR S)
 
         DATA.erase(I);
 
-        auto found = std::find_if(Ordered_DATA.begin(), Ordered_DATA.end(), [&](const auto& it) { return xr_strcmp(*it.first, S) == 0; });
+        auto found = std::find_if(Ordered_DATA.begin(), Ordered_DATA.end(), [&](const auto& it) { return std::is_eq(xr_strcmp(it.first, S)); });
         R_ASSERT(found != Ordered_DATA.end());
         Ordered_DATA.erase(found);
     }

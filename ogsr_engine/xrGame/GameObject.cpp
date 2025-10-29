@@ -253,20 +253,22 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             bool keep_visual = READ_IF_EXISTS(pSettings, r_bool, cNameSect().c_str(), "keep_visual", false);
             if (keep_visual)
             {
-                if (xr_strcmp(config_visual_file, saved_visual_file))
-                {
+                if (std::is_neq(xr_strcmp(config_visual_file, saved_visual_file)))
                     Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
-                }
             }
             else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file))
             {
                 Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
             }
             else
+            {
                 cNameVisual_set(saved_visual);
+            }
         }
         else
+        {
             cNameVisual_set(saved_visual);
+        }
 
         if (visual->flags.test(CSE_Visual::flObstacle))
         {
@@ -278,12 +280,12 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
     // XForm
     XFORM().setXYZ(E->o_Angle);
     Position().set(E->o_Position);
+
 #ifdef DEBUG
-    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
-    {
+    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
         Msg("CGameObject::net_Spawn obj %s Position set from CSE_Abstract %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
-    }
 #endif
+
     VERIFY(_valid(renderable.xform));
     VERIFY(!fis_zero(DET(renderable.xform)));
     CSE_ALifeObject* O = smart_cast<CSE_ALifeObject*>(E);
@@ -322,12 +324,12 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 
     reinit();
     CScriptBinder::reinit();
+
 #ifdef DEBUG
-    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
-    {
+    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
         Msg("CGameObject::net_Spawn obj %s After Script Binder reinit %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
-    }
 #endif
+
     // load custom user data from server
     if (!E->client_data.empty())
     {
@@ -396,23 +398,20 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
     m_bObjectRemoved = false;
 
     spawn_supplies();
-#ifdef DEBUG
-    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
-    {
-        Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
-    }
-    BOOL ret = CScriptBinder::net_Spawn(DC);
-#else
-    return (CScriptBinder::net_Spawn(DC));
-#endif
 
 #ifdef DEBUG
-    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
-    {
+    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
         Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
-    }
-    return ret;
 #endif
+
+    BOOL ret = CScriptBinder::net_Spawn(DC);
+
+#ifdef DEBUG
+    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
+        Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
+#endif
+
+    return ret;
 }
 
 void CGameObject::net_Save(NET_Packet& net_packet)
@@ -463,19 +462,11 @@ void CGameObject::net_Load(IReader& ireader)
     CScriptBinder::load(ireader);
 
 #ifdef DEBUG
-
     if (psAI_Flags.test(aiSerialize))
-    {
         Msg(">> After load :: reader position = [%i]", ireader.tell());
-    }
-#endif
-    // ----------------------------------------------------------
-#ifdef DEBUG
-    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && stricmp(PH_DBG_ObjectTrack(), *cName()) == 0)
-    {
-        Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
-    }
 
+    if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && std::is_eq(xr::strcasecmp(PH_DBG_ObjectTrack(), cName())))
+        Msg("CGameObject::net_Load obj %s (loaded) %f,%f,%f", PH_DBG_ObjectTrack(), Position().x, Position().y, Position().z);
 #endif
 }
 

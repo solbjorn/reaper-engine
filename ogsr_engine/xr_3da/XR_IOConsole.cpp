@@ -339,10 +339,10 @@ void CConsole::OnRender()
         // переделал тут на символьный вывод. в таком случае оно получше все выглядит
 
         auto draw_string = [&](CGameFont* f, LPCSTR str) {
-            for (size_t c = 0; c < strlen(str); c++)
+            for (const auto c : absl::string_view{str})
             {
-                f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", str[c]);
-                out_pos += f->SizeOf_(str[c]);
+                f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", c);
+                out_pos += f->SizeOf_(c);
             }
         };
 
@@ -565,7 +565,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
         c[0] = mark2;
         c[1] = 0;
 
-        if (!m_last_cmd.c_str() || xr_strcmp(m_last_cmd, edt.c_str()))
+        if (!m_last_cmd.c_str() || std::is_neq(xr_strcmp(m_last_cmd, edt)))
         {
             Msg("%s %s", c, edt.c_str());
             add_cmd_history(edt.c_str());
@@ -584,9 +584,8 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
         if (cc && (cc->bEnabled || allow_disabled))
         {
             if (cc->bLowerCaseArgs)
-            {
-                xr_string_utils::strlwr(last);
-            }
+                xr_strlwr(last);
+
             if (last.empty())
             {
                 if (cc->bEmptyArgsHandled)
@@ -793,7 +792,7 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
         if (name_sz >= in_sz)
         {
             name2.assign(name, in_sz);
-            if (!_stricmp(name2.c_str(), in_str))
+            if (std::is_eq(xr::strcasecmp(name2, in_str)))
             {
                 shared_str temp;
                 temp._set(name);
@@ -807,9 +806,7 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
         }
 
         if (out_v.size() >= MAX_TIPS_COUNT)
-        {
             return res;
-        }
     } // for
 
     // word in internal
@@ -854,29 +851,23 @@ void CConsole::update_tips()
     if (!bVisible)
     {
         reset_tips();
-
         return;
     }
 
     LPCSTR cur = ec().str_edit();
-    size_t cur_length = strlen(cur);
-
+    const auto cur_length = xr_strlen(cur);
     if (cur_length == 0)
     {
         reset_tips();
-
         m_prev_length_str = 0;
 
         return;
     }
 
     if (cur_length == m_prev_str.size() && m_prev_str.equal(cur))
-    {
         return;
-    }
 
     m_prev_str = cur;
-
     reset_tips();
 
     if (m_prev_length_str != cur_length)
@@ -889,8 +880,7 @@ void CConsole::update_tips()
     std::string s_cur{cur}, first, last;
     split_cmd(s_cur, first, last);
 
-    size_t first_lenght = first.length();
-
+    const auto first_lenght = std::ssize(first);
     if ((first_lenght > 2) && (first_lenght + 1 <= cur_length)) // param
     {
         if (cur[first_lenght] == ' ')
@@ -929,15 +919,14 @@ void CConsole::update_tips()
         m_tips_mode = 1;
     }
 
-    if (m_tips.size() == 0)
+    if (m_tips.empty())
     {
         m_tips_mode = 0;
         reset_selected_tip();
     }
-    if ((int)m_tips.size() <= m_select_tip)
-    {
+
+    if (std::ssize(m_tips) <= m_select_tip)
         reset_selected_tip();
-    }
 }
 
 void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v)

@@ -90,9 +90,8 @@ public:
             xr_sprintf(fn, sizeof(fn), "%s.dump", args);
         else
             strcpy_s_s(fn, sizeof(fn), "x:\\$memory$.dump");
+
         Memory.mem_statistic(fn);
-        //		g_pStringContainer->dump			();
-        //		g_pSharedMemoryContainer->dump		();
     }
 };
 
@@ -121,7 +120,7 @@ class CCC_DbgStrCheck : public IConsole_Command
 public:
     CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
 
-    void Execute(LPCSTR) override { g_pStringContainer->verify(); }
+    void Execute(LPCSTR) override { str_container::verify(); }
 };
 
 class CCC_DbgStrDump : public IConsole_Command
@@ -131,7 +130,7 @@ class CCC_DbgStrDump : public IConsole_Command
 public:
     CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
 
-    void Execute(LPCSTR) override { g_pStringContainer->dump(); }
+    void Execute(LPCSTR) override { str_container::dump(); }
 };
 #endif // DEBUG
 
@@ -457,20 +456,22 @@ public:
 
         bool res = false;
         const xr_token* tok = GetToken();
+
         while (tok->name && !res)
         {
-            if (!xr_strcmp(tok->name, cur))
+            if (std::is_eq(xr_strcmp(tok->name, cur)))
             {
                 xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
                 tips.push_back(str);
                 res = true;
             }
+
             tok++;
         }
+
         if (!res)
-        {
             tips.push_back("---  (current)");
-        }
+
         tok = GetToken();
         while (tok->name)
         {

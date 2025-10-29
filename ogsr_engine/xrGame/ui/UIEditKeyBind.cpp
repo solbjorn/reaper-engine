@@ -199,14 +199,14 @@ void CUIEditKeyBind::OnMessage(const char* message)
     if (!m_keyboard)
         return;
 
-    if (xr_strcmp(m_keyboard->key_name, message + eq + 1))
+    if (std::is_neq(xr_strcmp(m_keyboard->key_name, message + eq + 1)))
         return;
 
     string64 command;
     strcpy_s(command, message);
     command[eq] = 0;
 
-    if (!xr_strcmp(m_action->action_name, command))
+    if (std::is_eq(xr_strcmp(m_action->action_name, command)))
         return; // fuck
 
     SetText("---");

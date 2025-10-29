@@ -660,7 +660,7 @@ void CEnvironment::load_level_specific_ambients()
         CInifile* source = (level_ambients && level_ambients->section_exist(section_name)) ? level_ambients : m_ambients_config;
 
         // check and reload if needed
-        if (xr_strcmp(ambient->get_ambients_config_filename().c_str(), source->fname()))
+        if (std::is_neq(xr_strcmp(ambient->get_ambients_config_filename(), source->fname())))
         {
             ambient->destroy();
             ambient->load(*source, *m_sound_channels_config, *m_effects_config, section_name);
@@ -718,8 +718,8 @@ void CEnvironment::load_weathers()
 
         for (const char* file : *file_list)
         {
-            const size_t length = strlen(file);
-            ASSERT_FMT(length >= 4 && !strcmp(".ltx", file + (length - 4)), "Something strange with file [%s]", file);
+            const auto length = xr_strlen(file);
+            ASSERT_FMT(length >= 4 && std::is_eq(xr_strcmp(".ltx", file + (length - 4))), "Something strange with file [%s]", file);
             string256 identifier{};
             strncpy_s(identifier, file, length - 4);
 
@@ -785,8 +785,8 @@ void CEnvironment::load_weather_effects()
 
         for (const char* file : *file_list)
         {
-            const size_t length = strlen(file);
-            ASSERT_FMT(length >= 4 && !strcmp(".ltx", file + (length - 4)), "Something strange with file [%s]", file);
+            const auto length = xr_strlen(file);
+            ASSERT_FMT(length >= 4 && std::is_eq(xr_strcmp(".ltx", file + (length - 4))), "Something strange with file [%s]", file);
             string256 identifier{};
             strncpy_s(identifier, file, length - 4);
 

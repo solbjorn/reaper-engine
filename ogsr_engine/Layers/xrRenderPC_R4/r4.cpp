@@ -572,9 +572,7 @@ HRESULT create_shader(DWORD const* buffer, u32 const buffer_size, LPCSTR const f
     result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
 
     if (result->sh)
-    {
-        result->sh->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
-    }
+        result->sh->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
     ID3DShaderReflection* pReflection{};
 
@@ -613,9 +611,7 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
 
         if (sps_result->ps)
-        {
-            sps_result->ps->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
-        }
+            sps_result->ps->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
 
@@ -649,9 +645,7 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
 
         if (svs_result->vs)
-        {
-            svs_result->vs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
-        }
+            svs_result->vs->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
 
@@ -697,9 +691,7 @@ HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffe
         }
 
         if (sgs_result->gs)
-        {
-            sgs_result->gs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
-        }
+            sgs_result->gs->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(dbg_name), dbg_name);
 
         ID3DShaderReflection* pReflection{};
 

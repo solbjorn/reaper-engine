@@ -238,7 +238,7 @@ void CLocatorAPI::Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 
         }
 
         strcpy_s(temp, path); // strcpy_s(temp, folder);
-        if (xr_strlen(temp))
+        if (xr_strlen(temp) > 0)
             temp[xr_strlen(temp) - 1] = 0;
     }
 }
@@ -314,10 +314,10 @@ void CLocatorAPI::LoadArchive(archive& A)
 {
     // Create base path
     string_path fs_entry_point;
-    fs_entry_point[0] = 0;
+    fs_entry_point[0] = '\0';
 
     shared_str read_path = A.entry_point() ?: "gamedata";
-    if (!_stricmp(read_path.c_str(), "gamedata"))
+    if (std::is_eq(xr::strcasecmp(read_path, "gamedata")))
     {
         read_path = "$fs_root$";
         PathPairIt P = pathes.find(read_path.c_str());
@@ -392,9 +392,9 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse)
         if (bNoRecurse)
             return;
 
-        if (0 == xr_strcmp(F.name, "."))
+        if (std::is_eq(xr_strcmp(F.name, ".")))
             return;
-        if (0 == xr_strcmp(F.name, ".."))
+        if (std::is_eq(xr_strcmp(F.name, "..")))
             return;
 
         strcat_s(N, "\\");
@@ -403,7 +403,8 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse)
     }
     else
     {
-        if (!m_Flags.is(flTargetFolderOnly) && strext(N) && (!strncmp(strext(N), ".db", 3) || !strncmp(strext(N), ".xdb", 4) || !strncmp(strext(N), ".sq", 3)))
+        if (!m_Flags.is(flTargetFolderOnly) && strext(N) != nullptr &&
+            (absl::string_view{strext(N)}.starts_with(".db") || absl::string_view{strext(N)}.starts_with(".sq") || absl::string_view{strext(N)}.starts_with(".xdb")))
         {
             Msg("--Found base arch: [%s], size: [%lu]", N, F.size);
             ProcessArchive(N);
@@ -420,15 +421,15 @@ namespace
 bool ignore_name(const char* _name)
 {
     // ignore windows hidden Thumbs.db
-    if (!strcmp(_name, "Thumbs.db"))
+    if (std::is_eq(xr_strcmp(_name, "Thumbs.db")))
         return true;
 
     // ignore processing ".svn" folders
-    if (!strcmp(_name, ".svn"))
+    if (std::is_eq(xr_strcmp(_name, ".svn")))
         return true;
 
     // ignore processing ".git" folders
-    if (!strcmp(_name, ".git"))
+    if (std::is_eq(xr_strcmp(_name, ".git")))
         return true;
 
     return false;
@@ -500,18 +501,14 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     if (log_if_found)
         Msg("  files: [%zu]", rec_files.size());
 
-    std::ranges::sort(rec_files, [](const _finddata_t& x, const _finddata_t& y) { return xr_strcmp(x.name, y.name) < 0; });
+    std::ranges::sort(rec_files, [](const _finddata_t& x, const _finddata_t& y) { return std::is_lt(xr_strcmp(x.name, y.name)); });
 
     for (const auto& el : rec_files)
-    {
         ProcessOne(path, el, bNoRecurse);
-    }
 
     // insert self
     if (path && path[0])
-    {
         Register(path, VFS_STANDARD_FILE, 0, 0, 0, 0);
-    }
 
     return true;
 }
@@ -565,7 +562,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             {
                 string_path tmpAppPath{};
                 strcpy_s(tmpAppPath, Core.ApplicationPath);
-                if (xr_strlen(tmpAppPath))
+                if (xr_strlen(tmpAppPath) > 0)
                 {
                     tmpAppPath[xr_strlen(tmpAppPath) - 1] = 0;
                     if (strrchr(tmpAppPath, '\\'))
@@ -574,7 +571,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
                     append_path("$fs_root$", tmpAppPath, nullptr, FALSE);
                 }
                 else
+                {
                     append_path("$fs_root$", "", nullptr, FALSE);
+                }
             }
 
             pFSltx = r_open("$fs_root$", fs_ltx);
@@ -609,7 +608,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
             _GetItem(buf, 0, id, '=');
 
-            if (!m_Flags.is(flBuildCopy) && (0 == xr_strcmp(id, "$build_copy$")))
+            if (!m_Flags.is(flBuildCopy) && std::is_eq(xr_strcmp(id, "$build_copy$")))
                 continue;
 
             _GetItem(buf, 1, temp, '=');
@@ -654,9 +653,11 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
         for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
         {
             FS_Path* P = p_it->second;
+
 #ifdef RESTRICT_GAMEDATA
             shared_str id = p_it->first;
-            if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
+            if (std::is_eq(xr_strcmp(id, "$app_data_root$")) || std::is_eq(xr_strcmp(id, "$game_saves$")) || std::is_eq(xr_strcmp(id, "$logs$")) ||
+                std::is_eq(xr_strcmp(id, "$screenshots$")))
                 RecurseScanPhysicalPath(P->m_Path);
 #else
             RecurseScanPhysicalPath(P->m_Path, true, !P->m_Flags.test(FS_Path::flRecurse));
@@ -781,8 +782,9 @@ xr_vector<char*>* CLocatorAPI::file_list_open(const char* _path, u32 flags)
     for (++I; I != files.end(); I++)
     {
         const file& entry = *I;
-        if (0 != strncmp(entry.name, N, base_len))
+        if (!absl::string_view{entry.name}.starts_with(absl::string_view{N, base_len}))
             break; // end of list
+
         const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
         if ((*end_symbol) != '\\')
         {
@@ -852,7 +854,7 @@ size_t CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR m
     for (++I; I != files.end(); I++)
     {
         const file& entry = *I;
-        if (0 != strncmp(entry.name, N, base_len))
+        if (!absl::string_view{entry.name}.starts_with(absl::string_view{N, base_len}))
             break; // end of list
 
         LPCSTR end_symbol = entry.name + xr_strlen(entry.name) - 1;
@@ -890,7 +892,7 @@ size_t CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR m
                 if (LPCSTR src_ext = strext(entry_begin); src_ext != nullptr)
                 {
                     size_t ext_pos = src_ext - entry_begin;
-                    fn.replace(ext_pos, strlen(src_ext), "");
+                    fn.replace(ext_pos, xr_strlen(src_ext), "");
                 }
             }
 
@@ -1197,13 +1199,12 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
     Msg("[rescan_physical_path] files count before: [%d]", files.size());
 #endif
 
-    const size_t base_len = strlen(full_path);
+    const size_t base_len = xr_strlen(full_path);
 
     while (I != files.end())
     {
         const file& entry = *I;
-
-        if (0 != strncmp(entry.name, full_path, base_len))
+        if (!absl::string_view{entry.name}.starts_with(absl::string_view{full_path, base_len}))
             break; // end of list
 
         const char* entry_begin = entry.name + base_len;

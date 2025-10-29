@@ -400,7 +400,7 @@ void CWeapon::Load(LPCSTR section)
     if (pSettings->line_exist(section, "scope_bone"))
     {
         const char* S = pSettings->r_string(section, "scope_bone");
-        if (S && strlen(S))
+        if (S != nullptr && xr_strlen(S) > 0)
         {
             const int count = _GetItemCount(S);
             string128 _scope_bone{};
@@ -411,10 +411,15 @@ void CWeapon::Load(LPCSTR section)
             }
         }
         else
+        {
             m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
+        }
     }
     else
+    {
         m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
+    }
+
     m_sWpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, section, "silencer_bone", wpn_silencer_def_bone);
     m_sWpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, section, "launcher_bone", wpn_launcher_def_bone_shoc);
     m_sWpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, section, "laser_ray_bones", "");
@@ -423,7 +428,7 @@ void CWeapon::Load(LPCSTR section)
     if (pSettings->line_exist(section, "hidden_bones"))
     {
         const char* S = pSettings->r_string(section, "hidden_bones");
-        if (S && strlen(S))
+        if (S != nullptr && xr_strlen(S) > 0)
         {
             const int count = _GetItemCount(S);
             string128 _hidden_bone{};
@@ -439,7 +444,7 @@ void CWeapon::Load(LPCSTR section)
     if (pSettings->line_exist(hud_sect, "scope_bone"))
     {
         const char* S = pSettings->r_string(hud_sect, "scope_bone");
-        if (S && strlen(S))
+        if (S != nullptr && xr_strlen(S) > 0)
         {
             const int count = _GetItemCount(S);
             string128 _scope_bone{};
@@ -450,10 +455,15 @@ void CWeapon::Load(LPCSTR section)
             }
         }
         else
+        {
             m_sHud_wpn_scope_bones = m_sWpn_scope_bones;
+        }
     }
     else
+    {
         m_sHud_wpn_scope_bones = m_sWpn_scope_bones;
+    }
+
     m_sHud_wpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "silencer_bone", m_sWpn_silencer_bone);
     m_sHud_wpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "launcher_bone", m_sWpn_launcher_bone);
     m_sHud_wpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "laser_ray_bones", m_sWpn_laser_bone);
@@ -462,7 +472,7 @@ void CWeapon::Load(LPCSTR section)
     if (pSettings->line_exist(hud_sect, "hidden_bones"))
     {
         const char* S = pSettings->r_string(hud_sect, "hidden_bones");
-        if (S && strlen(S))
+        if (S != nullptr && xr_strlen(S) > 0)
         {
             const int count = _GetItemCount(S);
             string128 _hidden_bone{};
@@ -474,7 +484,9 @@ void CWeapon::Load(LPCSTR section)
         }
     }
     else
+    {
         hud_hidden_bones = hidden_bones;
+    }
 
     // Можно и из конфига прицела читать и наоборот! Пока так.
     m_fSecondVPZoomFactor = 0.0f;

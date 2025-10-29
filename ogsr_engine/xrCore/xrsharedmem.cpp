@@ -1,123 +1,156 @@
 #include "stdafx.h"
 
+#include "xrsharedmem.h"
+
+#include <concurrentqueue.h>
+
 namespace xxh
 {
 #include <xxhash.h>
 }
 
-smem_container* g_pSharedMemoryContainer{};
-
-smem_value* smem_container::dock(u32 dwSize, void* ptr)
+template <>
+struct std::default_delete<smem_value>
 {
-    VERIFY(dwSize && ptr);
+    constexpr void operator()(smem_value* ptr) const noexcept { xr_free(ptr); }
+};
 
-    if (bDisable)
+namespace xr
+{
+namespace
+{
+class smem_container_impl
+{
+private:
+    using val_t = std::unique_ptr<smem_value>;
+    using map_t = xr_unordered_map<xxh::XXH64_hash_t, val_t>;
+
+    moodycamel::ConcurrentQueue<map_t> q;
+
+    class map_vector : public xr_vector<map_t>
     {
-        smem_value* result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
-        result->dwReference = 0;
-        result->dwSize = dwSize;
-        result->dwXXH = std::numeric_limits<xxh::XXH64_hash_t>::max();
-        CopyMemory(result->value, ptr, dwSize);
+    private:
+        decltype(q)& queue;
 
-        return result;
+    public:
+        map_vector() = delete;
+        map_vector(map_vector&&) = delete;
+
+        explicit map_vector(decltype(queue) in) : queue{in}
+        {
+            reserve(queue.size_approx());
+
+            while (true)
+            {
+                map_t map;
+
+                if (!queue.try_dequeue(map))
+                    break;
+
+                emplace_back(std::move(map));
+            }
+        }
+
+        ~map_vector()
+        {
+            for (auto&& map : *this)
+                queue.enqueue(std::move(map));
+        }
+    };
+
+    [[nodiscard]] auto get()
+    {
+        map_t map;
+        q.try_dequeue(map);
+        return map;
     }
 
-    cs.Enter();
-    smem_value* result{};
+public:
+    smem_container_impl() { q.enqueue({}); }
 
-    xxh::XXH64_hash_t dwXXH = xxh::XXH3_64bits(ptr, dwSize);
+    [[nodiscard]] smem_value* insert(gsl::index dwSize, const void* ptr);
+    void clean();
+    [[nodiscard]] gsl::index stat_economy();
 
-    // search a place to insert
-    u8 storage[sizeof(smem_value)];
-    smem_value* value = (smem_value*)storage;
-    value->dwReference = 0;
-    value->dwXXH = dwXXH;
-    value->dwSize = dwSize;
-    cdb::iterator it = std::lower_bound(container.begin(), container.end(), value, smem_search);
-    cdb::iterator saved_place = it;
-    if (container.end() != it)
+    void dump(FILE& f);
+};
+
+smem_value* smem_container_impl::insert(gsl::index dwSize, const void* ptr)
+{
+    if (ptr == nullptr || dwSize == 0) [[unlikely]]
+        return nullptr;
+
+    const auto size = gsl::narrow_cast<size_t>(dwSize);
+    const auto xxh = xxh::XXH3_64bits(ptr, size);
+
+    auto map = get();
+    const auto _ = gsl::finally([this, &map] { q.enqueue(std::move(map)); });
+
+    const auto iter = map.find(xxh);
+    if (iter != map.cend())
+        return iter->second.get();
+
+    auto elem = val_t{static_cast<smem_value*>(xr_malloc(sizeof(smem_value) + size))};
+    elem->dwReference = 0;
+    elem->dwSize = dwSize;
+    elem->hash = xxh;
+    std::memcpy(elem->value, ptr, size);
+
+    return map.emplace(xxh, std::move(elem)).first->second.get();
+}
+
+void smem_container_impl::clean()
+{
+    for (auto& map : map_vector{q})
     {
-        // supposedly found
-        for (;; it++)
+        if (absl::erase_if(map, [](const auto& pair) { return pair.second->dwReference == 0; }) > 0)
+            map.rehash(0);
+    }
+}
+
+gsl::index smem_container_impl::stat_economy()
+{
+    gsl::index ec{-gsl::index{sizeof(smem_container_impl)}};
+
+    for (const auto& map : map_vector{q})
+    {
+        ec -= gsl::index{sizeof(map)};
+
+        for (auto& [_, value] : map)
         {
-            if (it == container.end())
-                break;
-            if ((*it)->dwXXH != dwXXH)
-                break;
-            if ((*it)->dwSize != dwSize)
-                break;
-            if (0 == memcmp((*it)->value, ptr, dwSize))
-            {
-                // really found
-                result = *it;
-                break;
-            }
+            ec -= gsl::index{sizeof(map_t::value_type) + sizeof(smem_value)};
+            ec += (value->dwReference - 1) * value->dwSize;
         }
     }
 
-    // if not found - create new entry
-    if (!result)
-    {
-        result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
-        result->dwReference = 0;
-        result->dwXXH = dwXXH;
-        result->dwSize = dwSize;
-        CopyMemory(result->value, ptr, dwSize);
-        container.insert(saved_place, result);
-    }
-
-    // exit
-    cs.Leave();
-    return result;
+    return ec;
 }
 
-void smem_container::clean()
+void smem_container_impl::dump(FILE& f)
 {
-    cs.Enter();
-
-    for (auto& elem : container)
+    for (const auto& map : map_vector{q})
     {
-        if (!elem->dwReference)
-            xr_free(elem);
+        for (auto& [_, value] : map)
+            fprintf(&f, "%zd : hash[0x%016llx], %zd bytes\n", value->dwReference.load(), value->hash, value->dwSize);
     }
-
-    container.erase(std::remove(container.begin(), container.end(), static_cast<smem_value*>(nullptr)), container.end());
-    if (container.empty())
-        container.clear();
-
-    cs.Leave();
 }
+
+smem_container_impl impl;
+} // namespace
+} // namespace xr
+
+smem_value* smem_container::dock(gsl::index dwSize, const void* ptr) { return xr::impl.insert(dwSize, ptr); }
+void smem_container::clean() { xr::impl.clean(); }
+gsl::index smem_container::stat_economy() { return xr::impl.stat_economy(); }
 
 void smem_container::dump()
 {
-    cs.Enter();
-    cdb::iterator it = container.begin();
-    cdb::iterator end = container.end();
-    FILE* F = fopen("x:\\$smem_dump$.txt", "w");
-    for (; it != end; it++)
-        fprintf(F, "%4u : hash[0x%016llx], %u bytes\n", (*it)->dwReference, (*it)->dwXXH, (*it)->dwSize);
-    fclose(F);
-    cs.Leave();
+    string_path path;
+    FILE* f{};
+
+    FS.update_path(path, "$logs$", "$smem_dump$.txt");
+    R_ASSERT(fopen_s(&f, path, "w") == 0);
+    const auto _ = gsl::finally([f] { fclose(f); });
+
+    xr::impl.dump(*f);
 }
-
-u32 smem_container::stat_economy()
-{
-    cs.Enter();
-    cdb::iterator it = container.begin();
-    cdb::iterator end = container.end();
-    s64 counter = 0;
-    counter -= sizeof(*this);
-    counter -= sizeof(cdb::allocator_type);
-    const int node_size = 20;
-    for (; it != end; it++)
-    {
-        counter -= 16;
-        counter -= node_size;
-        counter += s64((s64((*it)->dwReference) - 1) * s64((*it)->dwSize));
-    }
-    cs.Leave();
-
-    return u32(s64(counter) / s64(1024));
-}
-
-smem_container::~smem_container() { clean(); }

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+
 #include "UIKeyBinding.h"
 #include "UIXmlInit.h"
 #include "xrUIXmlParser.h"
@@ -157,16 +158,18 @@ bool CUIKeyBinding::IsActionExist(LPCSTR action, CUIXml& xml_doc)
         {
             // first field of list item
             shared_str command_id = xml_doc.ReadAttrib("command", j, "exe");
-            if (0 == xr_strcmp(action, *command_id))
+            if (std::is_eq(xr_strcmp(action, command_id)))
             {
                 ret = true;
                 break;
             }
         }
+
         xml_doc.SetLocalRoot(xml_doc.GetRoot());
         if (ret)
             break;
     }
+
     return ret;
 }
 #endif

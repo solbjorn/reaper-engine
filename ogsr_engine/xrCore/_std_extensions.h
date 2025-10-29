@@ -1,10 +1,12 @@
 #ifndef __XRCORE_STD_EXTENSIONS_H
 #define __XRCORE_STD_EXTENSIONS_H
 
-#include <immintrin.h>
+#include <absl/strings/string_view.h>
 
 #include <algorithm>
 #include <memory>
+
+#include <immintrin.h>
 
 #ifdef abs
 #undef abs
@@ -252,11 +254,61 @@ constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 inline const char* strext(const char* str) { return std::strrchr(str, '.'); }
 inline char* strext(char* str) { return std::strrchr(str, '.'); }
 
-IC u32 xr_strlen(const char* S) { return (u32)strlen(S); }
+XR_SYSV [[nodiscard]] constexpr gsl::index xr_strlen(absl::string_view sv) { return std::ssize(sv); }
+[[nodiscard]] constexpr gsl::index xr_strlen(gsl::czstring str) { return xr_strlen(absl::string_view{str}); }
 
 IC char* xr_strlwr(char* S) { return _strlwr(S); }
 
-IC int xr_strcmp(const char* S1, const char* S2) { return strcmp(S1, S2); }
+XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, absl::string_view b) { return a <=> b; }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
+
+XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, gsl::czstring b) { return xr_strcmp(a, absl::string_view{b}); }
+XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
+
+namespace xr
+{
+// From llvm-libc
+[[nodiscard]] constexpr int tolower(int ch)
+{
+    switch (ch)
+    {
+    case 'A': return 'a';
+    case 'B': return 'b';
+    case 'C': return 'c';
+    case 'D': return 'd';
+    case 'E': return 'e';
+    case 'F': return 'f';
+    case 'G': return 'g';
+    case 'H': return 'h';
+    case 'I': return 'i';
+    case 'J': return 'j';
+    case 'K': return 'k';
+    case 'L': return 'l';
+    case 'M': return 'm';
+    case 'N': return 'n';
+    case 'O': return 'o';
+    case 'P': return 'p';
+    case 'Q': return 'q';
+    case 'R': return 'r';
+    case 'S': return 's';
+    case 'T': return 't';
+    case 'U': return 'u';
+    case 'V': return 'v';
+    case 'W': return 'w';
+    case 'X': return 'x';
+    case 'Y': return 'y';
+    case 'Z': return 'z';
+    default: return ch;
+    }
+}
+
+XR_SYSV [[nodiscard]] constexpr auto strcasecmp(absl::string_view a, absl::string_view b)
+{
+    constexpr auto cmp = [](char x, char y) { return gsl::narrow_cast<char>(xr::tolower(x)) <=> gsl::narrow_cast<char>(xr::tolower(y)); };
+
+    return std::lexicographical_compare_three_way(a.cbegin(), a.cend(), b.cbegin(), b.cend(), cmp);
+}
+} // namespace xr
 
 char* xr_strdup(const char* string);
 
@@ -280,6 +332,7 @@ inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... ar
 
 std::string StringToUTF8(const char* in);
 std::string StringFromUTF8(const char* in);
+
 // Определяет есть ли в строке юникодные символы
 inline bool StringHasUTF8(const char* str)
 {

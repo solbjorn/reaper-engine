@@ -108,8 +108,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpaw
     }
 
     // PROCESS NAME; Name this entity
-    const char* name = E->name_replace();
-    if (!name || !name[0] || !xr_strcmp(name, E->s_name.c_str()))
+    gsl::czstring name = E->name_replace();
+    if (name == nullptr || name[0] == '\0' || std::is_eq(xr_strcmp(name, E->s_name)))
     {
         string256 s_name_replace;
         string16 S1;

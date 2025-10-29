@@ -21,12 +21,11 @@ void CObject::cNameSect_set(shared_str N) { NameSection = N; }
 void CObject::cNameVisual_set(shared_str N)
 {
     // check if equal
-    if (*N && *NameVisual)
-        if (N == NameVisual)
-            return;
+    if (N && N == NameVisual)
+        return;
 
     // replace model
-    if (*N && N[0])
+    if (!N.empty())
     {
         IRenderVisual* old_v = renderable.visual;
 

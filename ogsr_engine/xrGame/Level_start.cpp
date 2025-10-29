@@ -78,7 +78,7 @@ bool CLevel::net_start1()
         Server = xr_new<xrServer>();
 
         //		if (!strstr(*m_caServerOptions,"/alife"))
-        if (xr_strcmp(p.m_alife, "alife"))
+        if (std::is_neq(xr_strcmp(p.m_alife, "alife")))
         {
             string64 l_name = "";
             const char* SOpts = *m_caServerOptions;
@@ -206,7 +206,8 @@ void CLevel::InitializeClientGame(NET_Packet& P)
 {
     string256 game_type_name;
     P.r_stringZ(game_type_name);
-    if (game && !xr_strcmp(game_type_name, game->type_name()))
+
+    if (game && std::is_eq(xr_strcmp(game_type_name, game->type_name())))
         return;
 
     xr_delete(game);

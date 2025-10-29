@@ -629,8 +629,9 @@ void CController::TranslateActionToPathParams()
 bool CController::is_relation_enemy(const CEntityAlive* tpEntityAlive) const
 {
     //	MONSTER_COMMUNITY_ID
-    if (xr_strcmp(*(tpEntityAlive->cNameSect()), "stalker_zombied") == 0)
+    if (std::is_eq(xr_strcmp(tpEntityAlive->cNameSect(), "stalker_zombied")))
         return false;
+
     if (is_community_friend_overrides(tpEntityAlive))
         return false;
 

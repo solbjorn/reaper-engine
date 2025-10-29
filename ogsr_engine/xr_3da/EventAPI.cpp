@@ -20,7 +20,7 @@ public:
     LPCSTR GetFull() { return Name; }
     u32 RefCount() { return dwRefCount; }
 
-    BOOL Equal(CEvent& E) { return !_stricmp(Name, E.Name); }
+    [[nodiscard]] bool Equal(const CEvent& E) const { return std::is_eq(xr::strcasecmp(Name, E.Name)); }
 
     void Attach(IEventReceiver* H)
     {
@@ -165,25 +165,28 @@ void CEventAPI::OnFrame()
     CS.Leave();
 }
 
-BOOL CEventAPI::Peek(LPCSTR EName)
+bool CEventAPI::Peek(gsl::czstring EName) const
 {
     CS.Enter();
+
     if (Events_Deferred.empty())
     {
         CS.Leave();
-        return FALSE;
+        return false;
     }
-    for (u32 I = 0; I < Events_Deferred.size(); I++)
+
+    for (const auto& def : Events_Deferred)
     {
-        Deferred& DEF = Events_Deferred[I];
-        if (!_stricmp(DEF.E->GetFull(), EName))
+        if (std::is_eq(xr::strcasecmp(def.E->GetFull(), EName)))
         {
             CS.Leave();
-            return TRUE;
+            return true;
         }
     }
+
     CS.Leave();
-    return FALSE;
+
+    return false;
 }
 
 void CEventAPI::_destroy()

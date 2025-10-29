@@ -254,11 +254,13 @@ void SoundEnvironment_LIB::Unload()
     library.clear();
 }
 
-int SoundEnvironment_LIB::GetID(LPCSTR name)
+gsl::index SoundEnvironment_LIB::GetID(LPCSTR name) const
 {
-    for (SE_IT it = library.begin(); it != library.end(); ++it)
-        if (!_stricmp(name, *(*it)->name))
-            return int(it - library.begin());
+    for (auto [id, env] : xr::views_enumerate(library))
+    {
+        if (std::is_eq(xr::strcasecmp(name, env->name)))
+            return id;
+    }
 
     return -1;
 }

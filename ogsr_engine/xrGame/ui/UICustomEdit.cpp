@@ -129,7 +129,7 @@ bool CUICustomEdit::KeyPressed(u32 dik)
     case DIK_RIGHT:
     case DIKEYBOARD_RIGHT: m_lines.IncCursorPos(); break;
     case DIK_ESCAPE:
-        if (strlen(GetText()))
+        if (xr_strlen(GetText()) > 0)
         {
             SetText("");
             bChanged = true;

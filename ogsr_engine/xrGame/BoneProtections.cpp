@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "BoneProtections.h"
+
 #include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 
@@ -42,13 +44,13 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
         BP.koeff = Koeff;
         BP.armour = Armour;
 
-        if (!xr_strcmp(i.first.c_str(), "default"))
+        if (std::is_eq(xr_strcmp(i.first, "default")))
         {
             m_default = BP;
         }
         else
         {
-            if (!xr_strcmp(i.first.c_str(), "hit_fraction"))
+            if (std::is_eq(xr_strcmp(i.first, "hit_fraction")))
                 continue;
 
             s16 bone_id = kinematics->LL_BoneID(i.first);

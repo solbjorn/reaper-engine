@@ -6,38 +6,33 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-struct str_value
+struct alignas(2 * sizeof(gsl::index)) str_value
 {
-    u32 dwReference;
-    u32 dwLength;
-    u64 dwXXH;
-    str_value* next;
+    std::atomic<gsl::index> dwReference;
+    gsl::index dwLength;
+
+    u64 hash;
+    u64 pad;
+
     char value[];
 };
-
-struct str_container_impl;
+static_assert(offsetof(str_value, value) == sizeof(str_value));
 
 //////////////////////////////////////////////////////////////////////////
+
 class str_container
 {
 public:
-    str_container();
-    ~str_container();
+    [[nodiscard]] static str_value* dock(gsl::czstring value);
+    static void clean();
+    [[nodiscard]] static gsl::index stat_economy();
 
-    str_value* dock(pcstr value) const;
-    void clean() const;
-    void dump() const;
-    void verify() const;
-
-    [[nodiscard]] size_t stat_economy() const;
-
-private:
-    str_container_impl* impl;
+    static void dump();
+    static void verify();
 };
 
-extern str_container* g_pStringContainer;
-
 //////////////////////////////////////////////////////////////////////////
+
 class shared_str
 {
 private:
@@ -45,110 +40,125 @@ private:
 
 protected:
     // ref-counting
-    void _dec()
+    constexpr void _dec()
     {
-        if (!p_)
+        if (p_ == nullptr)
             return;
 
-        p_->dwReference--;
-        if (0 == p_->dwReference)
+        if (--p_->dwReference == 0)
             p_ = nullptr;
     }
 
 public:
-    void _set(const char* rhs)
+    shared_str& _set(gsl::czstring str)
     {
-        str_value* v = g_pStringContainer->dock(rhs);
+        str_value* v = str_container::dock(str);
         if (v)
-            v->dwReference++;
+            ++v->dwReference;
 
         _dec();
         p_ = v;
+
+        return *this;
     }
 
-    void _set(shared_str const& rhs)
+    constexpr shared_str& _set(const shared_str& that)
     {
-        str_value* v = rhs.p_;
+        str_value* v = that.p_;
         if (v)
-            v->dwReference++;
+            ++v->dwReference;
 
         _dec();
         p_ = v;
+
+        return *this;
     }
 
-    const str_value* _get() const { return p_; }
+    constexpr shared_str& _set(shared_str&& that)
+    {
+        _dec();
 
-public:
+        p_ = std::move(that.p_);
+        that.p_ = nullptr;
+
+        return *this;
+    }
+
+    [[nodiscard]] constexpr const str_value* _get() const { return p_; }
+
     // construction
-    shared_str() = default;
-    shared_str(const char* rhs) { _set(rhs); }
-    shared_str(shared_str const& rhs) { _set(rhs); }
-    ~shared_str() { _dec(); }
+    constexpr shared_str() = default;
+    constexpr ~shared_str() { _dec(); }
+
+    shared_str(gsl::czstring that) { _set(that); }
+    constexpr shared_str(const shared_str& that) { _set(that); }
+    constexpr shared_str(shared_str&& that) { _set(std::move(that)); }
 
     // assignment & accessors
-    shared_str& operator=(const char* rhs)
+    shared_str& operator=(gsl::czstring that) { return _set(that); }
+    constexpr shared_str& operator=(const shared_str& that) { return _set(that); }
+    constexpr shared_str& operator=(shared_str&& that) { return _set(std::move(that)); }
+
+    [[nodiscard]] constexpr bool operator==(const shared_str& that) const
     {
-        _set(rhs);
-        return *this;
+        const auto p1 = _get();
+        const auto p2 = that._get();
+
+        return p1 == p2 || (p1 != nullptr && p2 != nullptr && p1->hash == p2->hash);
     }
 
-    shared_str& operator=(shared_str const& rhs)
+    [[nodiscard]] constexpr auto operator<=>(const shared_str& that) const
     {
-        _set(rhs);
-        return *this;
+        using ret_t = std::compare_three_way_result_t<absl::string_view>;
+
+        const auto p1 = _get();
+        const auto p2 = that._get();
+
+        if (p1 == p2)
+            return ret_t::equal;
+        if (p1 == nullptr)
+            return ret_t::less;
+        if (p2 == nullptr)
+            return ret_t::greater;
+
+        if (p1->hash == p2->hash)
+            return ret_t::equal;
+
+        return absl::string_view{*this} < absl::string_view{that} ? ret_t::less : ret_t::greater;
     }
 
-    bool operator==(shared_str const& rhs) const { return _get() == rhs._get(); }
-    bool operator!=(shared_str const& rhs) const { return _get() != rhs._get(); }
-
-    bool operator<(shared_str const& rhs) const
-    {
-        if (!p_)
-            return true;
-        else
-            return strcmp(p_->value, rhs.c_str()) < 0;
-    }
-
-    bool operator>(shared_str const&) const = delete;
-    char operator[](size_t id) const { return p_->value[id]; }
-    bool operator!() const { return !p_; }
-    const char* operator*() const { return p_ ? p_->value : nullptr; }
+    [[nodiscard]] constexpr explicit operator bool() const { return p_ != nullptr; }
+    [[nodiscard]] constexpr gsl::czstring operator*() const { return p_ ? p_->value : nullptr; }
 
     // Чтобы можно было легко кастить в absl::string_view как и все остальные строки
-    XR_SYSV operator absl::string_view() const { return p_ ? absl::string_view{p_->value} : absl::string_view{}; }
+    XR_SYSV [[nodiscard]] constexpr operator absl::string_view() const { return p_ ? absl::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : absl::string_view{}; }
 
-    const char* c_str() const { return p_ ? p_->value : nullptr; }
-
+    [[nodiscard]] constexpr gsl::czstring c_str() const { return p_ ? p_->value : nullptr; }
     // Используется в погодном редакторе.
-    const char* data() const { return p_ ? p_->value : ""; }
+    [[nodiscard]] constexpr gsl::czstring data() const { return p_ ? p_->value : ""; }
 
-    u32 size() const { return p_ ? p_->dwLength : 0; }
-    bool empty() const { return size() == 0; }
+    [[nodiscard]] constexpr gsl::index size() const { return p_ ? p_->dwLength : 0; }
+    [[nodiscard]] constexpr bool empty() const { return size() == 0; }
 
-    void swap(shared_str& rhs)
-    {
-        str_value* tmp = p_;
-        p_ = rhs.p_;
-        rhs.p_ = tmp;
-    }
+    constexpr void swap(shared_str& that) { std::swap(p_, that.p_); }
 
-    bool equal(const shared_str& rhs) const { return (p_ == rhs.p_); }
+    [[nodiscard]] constexpr bool equal(const shared_str& that) const { return *this == that; }
 
-    shared_str& XR_PRINTF(2, 3) sprintf(const char* format, ...)
+    shared_str& XR_PRINTF(2, 3) sprintf(gsl::czstring format, ...)
     {
         std::va_list args, args_copy;
 
         va_start(args, format);
         va_copy(args_copy, args);
 
-        int sz = std::vsnprintf(nullptr, 0, format, args);
+        const auto sz = std::vsnprintf(nullptr, 0, format, args);
         if (sz <= 0)
         {
             p_ = nullptr;
             return *this;
         }
 
-        auto n = gsl::narrow_cast<size_t>(sz + 1);
+        const auto n = gsl::narrow_cast<size_t>(sz + 1);
         std::string result(n, ' ');
         std::vsnprintf(result.data(), n, format, args_copy);
 
@@ -161,9 +171,9 @@ public:
     }
 
     template <typename H>
-    friend H AbslHashValue(H h, const shared_str& rhs)
+    friend constexpr H AbslHashValue(H h, const shared_str& str)
     {
-        return H::combine(std::move(h), absl::string_view{rhs});
+        return H::combine(std::move(h), absl::string_view{str});
     }
 };
 
@@ -173,24 +183,22 @@ using xr_string = std::basic_string<char, std::char_traits<char>, xr_allocator<c
 DEFINE_VECTOR(xr_string, SStringVec, SStringVecIt);
 
 // externally visible standart functionality
-IC void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
+constexpr void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
 
-IC u32 xr_strlen(const shared_str& a) { return a.size(); }
-IC int xr_strcmp(const shared_str& a, const char* b) { return xr_strcmp(*a, b); }
-IC int xr_strcmp(const char* a, const shared_str& b) { return xr_strcmp(a, *b); }
+[[nodiscard]] constexpr gsl::index xr_strlen(const shared_str& a) { return a.size(); }
 
-IC int xr_strcmp(const shared_str& a, const shared_str& b)
+XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
+XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, const shared_str& b) { return xr_strcmp(a, absl::string_view{b}); }
+
+[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, const shared_str& b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
+
+[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, const shared_str& b) { return a <=> b; }
+
+constexpr void xr_strlwr(xr_string& src)
 {
-    if (a.equal(b))
-        return 0;
-    else
-        return xr_strcmp(*a, *b);
-}
-
-IC void xr_strlwr(xr_string& src)
-{
-    for (xr_string::iterator it = src.begin(); it != src.end(); it++)
-        *it = xr_string::value_type(tolower(*it));
+    for (auto& c : src)
+        c = gsl::narrow_cast<char>(xr::tolower(c));
 }
 
 IC void xr_strlwr(shared_str& src)
@@ -244,13 +252,6 @@ inline void trim(T& s)
 {
     rtrim(s);
     ltrim(s);
-}
-////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename T>
-inline void strlwr(T& data)
-{
-    std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
 }
 } // namespace xr_string_utils
 

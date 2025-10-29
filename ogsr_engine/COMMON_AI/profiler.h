@@ -52,7 +52,7 @@ class CProfiler
 private:
     struct pred_rstr
     {
-        IC bool operator()(const shared_str& _1, const shared_str& _2) const { return (xr_strcmp(*_1, *_2) < 0); }
+        [[nodiscard]] constexpr bool operator()(const shared_str& _1, const shared_str& _2) const { return std::is_lt(xr_strcmp(_1, _2)); }
     };
 
 protected:

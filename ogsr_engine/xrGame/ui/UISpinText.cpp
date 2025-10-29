@@ -60,7 +60,7 @@ void CUISpinText::SaveValue()
     SaveOptTokenValue(m_list[m_curItem]._orig.c_str());
 }
 
-bool CUISpinText::IsChanged() { return 0 != xr_strcmp(GetOptTokenValue(), m_list[m_curItem]._orig.c_str()); }
+bool CUISpinText::IsChanged() { return std::is_neq(xr_strcmp(GetOptTokenValue(), m_list[m_curItem]._orig)); }
 
 void CUISpinText::OnBtnUpClick()
 {

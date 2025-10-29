@@ -89,7 +89,7 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
         temp = Ini->r_string_wb(section, N);
 
         R_ASSERT3(!strchr(*temp, ' '), invalid_id_description, *temp);
-        R_ASSERT2(xr_strcmp(*temp, INVALID_ID_STRING), invalid_id_redefinition);
+        R_ASSERT2(std::is_neq(xr_strcmp(temp, INVALID_ID_STRING)), invalid_id_redefinition);
 
         auto ret = result.try_emplace(*temp, atoi(N));
         ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, *temp);

@@ -17,12 +17,12 @@ xrServer::EConnect xrServer::Connect(shared_str& session_name)
         return ErrConnect;
 
     string1024 options;
-    R_ASSERT2(xr_strlen(session_name) <= sizeof(options), "session_name too BIIIGGG!!!");
+    R_ASSERT2(xr_strlen(session_name) <= gsl::index{sizeof(options)}, "session_name too BIIIGGG!!!");
     strcpy_s(options, strchr(*session_name, '/') + 1);
 
     // Parse game type
     string1024 type;
-    R_ASSERT2(xr_strlen(options) <= sizeof(type), "session_name too BIIIGGG!!!");
+    R_ASSERT2(xr_strlen(options) <= gsl::index{sizeof(type)}, "session_name too BIIIGGG!!!");
     strcpy_s(type, options);
     if (strchr(type, '/'))
         *strchr(type, '/') = 0;

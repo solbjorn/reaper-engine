@@ -182,14 +182,14 @@ public:
 
         Log("--------------------------------------------------------------------------------");
 
-        const size_t _process_heap = mem_usage_impl(nullptr, nullptr);
-        const u32 _eco_strings = g_pStringContainer->stat_economy();
-        const u32 _eco_smem = g_pSharedMemoryContainer->stat_economy();
+        const auto _process_heap = mem_usage_impl(nullptr, nullptr);
+        const auto _eco_strings = str_container::stat_economy();
+        const auto _eco_smem = smem_container::stat_economy();
 
         Msg("* [ D3D ]: textures count [%u]", (c_base + c_lmaps));
         Msg("* [ D3D ]: textures[%u K]", (m_base + m_lmaps) / 1024);
         Msg("* [x-ray]: process heap[%zu K]", _process_heap / 1024);
-        Msg("* [x-ray]: economy: strings[%u K], smem[%u K]", _eco_strings / 1024, _eco_smem);
+        Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", _eco_strings / 1024, _eco_smem / 1024);
 
 #ifdef DEBUG
         Msg("* [x-ray]: file mapping: memory[%u K], count[%u]", g_file_mapped_memory / 1024, g_file_mapped_count);
@@ -877,30 +877,35 @@ public:
 // #ifndef MASTER_GOLD
 struct CCC_JumpToLevel : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_JumpToLevel, IConsole_Command);
+
+public:
     CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         if (!ai().get_alife())
         {
             Msg("! ALife simulator is needed to perform specified command!");
             return;
         }
+
         string256 level;
         sscanf(args, "%s", level);
 
-        GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().begin();
-        GameGraph::LEVEL_MAP::const_iterator E = ai().game_graph().header().levels().end();
-        for (; I != E; ++I)
-            if (!xr_strcmp((*I).second.name(), level))
+        for (const auto& lvl : ai().game_graph().header().levels())
+        {
+            if (std::is_eq(xr_strcmp(lvl.second.name(), level)))
             {
                 ai().alife().jump_to_level(level);
                 return;
             }
+        }
+
         Msg("! There is no level \"%s\" in the game graph!", level);
     }
 
-    virtual void fill_tips(vecTips& tips)
+    void fill_tips(vecTips& tips) override
     {
         if (!ai().get_alife())
         {
@@ -908,12 +913,8 @@ struct CCC_JumpToLevel : public IConsole_Command
             return;
         }
 
-        GameGraph::LEVEL_MAP::const_iterator itb = ai().game_graph().header().levels().begin();
-        GameGraph::LEVEL_MAP::const_iterator ite = ai().game_graph().header().levels().end();
-        for (; itb != ite; ++itb)
-        {
-            tips.push_back((*itb).second.name());
-        }
+        for (const auto& lvl : ai().game_graph().header().levels())
+            tips.emplace_back(lvl.second.name());
     }
 };
 
@@ -1391,7 +1392,7 @@ public:
 
     void Execute(LPCSTR args) override
     {
-        if (!strlen(args))
+        if (xr_strlen(args) == 0)
             return;
         if (!g_pGameLevel)
             return;
@@ -1423,10 +1424,8 @@ public:
     {
         float thresholdInKb = 1.f;
 
-        if (strlen(args) > 0)
-        {
+        if (xr_strlen(args) > 0)
             thresholdInKb = atof(args);
-        }
 
         PointerRegistryDump(thresholdInKb);
     }

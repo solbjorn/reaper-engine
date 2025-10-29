@@ -58,7 +58,7 @@ static const char* GetThreadName()
                     WideCharToMultiByte(CP_OEMCP, 0, wThreadName, int(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
                     LocalFree(wThreadName);
 
-                    if (strlen(ResThreadName))
+                    if (xr_strlen(ResThreadName) > 0)
                         return ResThreadName;
                 }
             }
@@ -276,11 +276,14 @@ void xrDebug::fatal(const char* file, int line, const char* function, const char
 static int out_of_memory_handler(size_t size)
 {
     Memory.mem_compact();
-    size_t process_heap = mem_usage_impl(nullptr, nullptr);
-    u32 eco_strings = g_pStringContainer->stat_economy();
-    u32 eco_smem = g_pSharedMemoryContainer->stat_economy();
+
+    const auto process_heap = mem_usage_impl(nullptr, nullptr);
+    const auto eco_strings = str_container::stat_economy();
+    const auto eco_smem = smem_container::stat_economy();
+
     Msg("* [x-ray]: process heap[%zu K]", process_heap / 1024);
-    Msg("* [x-ray]: economy: strings[%u K], smem[%u K]", eco_strings / 1024, eco_smem);
+    Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", eco_strings / 1024, eco_smem / 1024);
+
     FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
     return 1;
 }
@@ -324,7 +327,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
         if (INVALID_HANDLE_VALUE == hFile)
         {
             // try to place into current directory
-            MoveMemory(szDumpPath, szDumpPath + 5, strlen(szDumpPath));
+            MoveMemory(szDumpPath, szDumpPath + 5, xr_strlen(szDumpPath));
             hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         }
         if (hFile != INVALID_HANDLE_VALUE)

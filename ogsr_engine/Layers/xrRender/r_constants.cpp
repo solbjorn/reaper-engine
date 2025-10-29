@@ -12,10 +12,11 @@ void R_constant_table::fatal(LPCSTR S) { FATAL("%s", S); }
 ref_constant R_constant_table::get(LPCSTR S) const
 {
     // assumption - sorted by name
-    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, [](const ref_constant& C, const char* S) { return xr_strcmp(*C->name, S) < 0; });
+    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, [](const ref_constant& C, const char* S) { return std::is_lt(xr_strcmp(C->name, S)); });
 
-    if (I == table.cend() || (0 != xr_strcmp((*I)->name.c_str(), S)))
+    if (I == table.cend() || std::is_neq(xr_strcmp((*I)->name, S)))
         return nullptr;
+
     return *I;
 }
 

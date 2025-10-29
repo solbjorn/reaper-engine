@@ -194,12 +194,10 @@ CAttachableItem* CAttachmentOwner::attachedItem(u16 id) const
 
 CAttachableItem* CAttachmentOwner::attachedItem(const shared_str& section) const
 {
-    xr_vector<CAttachableItem*>::const_iterator I = m_attached_objects.begin();
-    xr_vector<CAttachableItem*>::const_iterator E = m_attached_objects.end();
-    for (; I != E; ++I)
+    for (auto item : m_attached_objects)
     {
-        if (!xr_strcmp((*I)->item().object().cNameSect(), section) && !(*I)->item().IsInvalid())
-            return (*I);
+        if (std::is_eq(xr_strcmp(item->item().object().cNameSect(), section)) && !item->item().IsInvalid())
+            return item;
     }
 
     return nullptr;

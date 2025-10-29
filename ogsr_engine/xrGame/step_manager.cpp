@@ -234,13 +234,13 @@ void CStepManager::load_foot_bones(CInifile::Sect& data)
         u16 index = smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(item.second.c_str());
         VERIFY3(index != BI_NONE, "foot bone not found", item.second.c_str());
 
-        if (xr_strcmp(item.first.c_str(), "front_left") == 0)
+        if (std::is_eq(xr_strcmp(item.first, "front_left")))
             m_foot_bones[eFrontLeft] = index;
-        else if (xr_strcmp(item.first.c_str(), "front_right") == 0)
+        else if (std::is_eq(xr_strcmp(item.first, "front_right")))
             m_foot_bones[eFrontRight] = index;
-        else if (xr_strcmp(item.first.c_str(), "back_right") == 0)
+        else if (std::is_eq(xr_strcmp(item.first, "back_right")))
             m_foot_bones[eBackRight] = index;
-        else if (xr_strcmp(item.first.c_str(), "back_left") == 0)
+        else if (std::is_eq(xr_strcmp(item.first, "back_left")))
             m_foot_bones[eBackLeft] = index;
     }
 }

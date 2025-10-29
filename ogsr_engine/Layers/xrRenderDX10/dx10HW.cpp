@@ -530,9 +530,11 @@ namespace
 {
 struct _uniq_mode
 {
-    _uniq_mode(LPCSTR v) : _val(v) {}
-    LPCSTR _val;
-    bool operator()(LPCSTR _other) { return !_stricmp(_val, _other); }
+    gsl::czstring _val;
+
+    constexpr _uniq_mode(gsl::czstring v) : _val{v} {}
+
+    [[nodiscard]] constexpr bool operator()(gsl::czstring _other) { return std::is_eq(xr::strcasecmp(_val, _other)); }
 };
 
 void free_vid_mode_list()

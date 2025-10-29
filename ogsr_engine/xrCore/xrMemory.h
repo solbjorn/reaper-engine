@@ -21,22 +21,18 @@ extern BOOL g_enable_memory_debug;
 class xrMemory
 {
 public:
-    xrMemory() = default;
-    void _initialize();
-    static void _destroy();
-
     static u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
-    void mem_compact();
+    static void mem_compact();
 
     [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(size_t size, size_t align) noexcept;
     [[nodiscard]] static void* mem_realloc_aligned(void* p, size_t size, size_t align) noexcept;
     static void mem_free_aligned(void* p) noexcept;
 
-    static ICF void mem_copy(void* dst, const void* src, size_t len) { std::memcpy(dst, src, len); }
-    static ICF void mem_fill(void* dst, int c, size_t len) { std::memset(dst, c, len); }
+    constexpr static void mem_copy(void* dst, const void* src, size_t len) { std::memcpy(dst, src, len); }
+    constexpr static void mem_fill(void* dst, int c, size_t len) { std::memset(dst, c, len); }
 };
 
-extern xrMemory Memory;
+const inline xrMemory Memory;
 
 #undef ZeroMemory
 #undef CopyMemory

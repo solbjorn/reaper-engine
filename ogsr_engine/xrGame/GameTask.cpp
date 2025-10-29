@@ -106,13 +106,13 @@ void CGameTask::Load(const TASK_ID& id)
         if (i == 0)
         {
             objective.icon_texture_name = g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, nullptr);
-            if (objective.icon_texture_name.size() && _stricmp(*objective.icon_texture_name, "ui\\ui_icons_task"))
+            if (!objective.icon_texture_name.empty() && std::is_neq(xr::strcasecmp(objective.icon_texture_name, "ui\\ui_icons_task")))
             {
                 objective.icon_rect = CUITextureMaster::GetTextureRect(*objective.icon_texture_name);
                 objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
                 objective.icon_texture_name = CUITextureMaster::GetTextureFileName(*objective.icon_texture_name);
             }
-            else if (objective.icon_texture_name.size())
+            else if (!objective.icon_texture_name.empty())
             {
                 objective.icon_rect.x1 = g_gameTaskXml->ReadAttribFlt(l_root, "icon", 0, "x");
                 objective.icon_rect.y1 = g_gameTaskXml->ReadAttribFlt(l_root, "icon", 0, "y");

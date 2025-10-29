@@ -65,12 +65,12 @@ namespace xr
 
 struct pred_str
 {
-    bool operator()(const char* x, const char* y) const { return std::strcmp(x, y) < 0; }
+    [[nodiscard]] constexpr bool operator()(gsl::czstring x, gsl::czstring y) const { return std::is_lt(xr_strcmp(x, y)); }
 };
 
 struct pred_stri
 {
-    bool operator()(const char* x, const char* y) const { return _stricmp(x, y) < 0; }
+    [[nodiscard]] constexpr bool operator()(gsl::czstring x, gsl::czstring y) const { return std::is_lt(xr::strcasecmp(x, y)); }
 };
 
 // STL extensions

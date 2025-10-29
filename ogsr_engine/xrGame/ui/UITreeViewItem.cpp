@@ -296,7 +296,7 @@ CUITreeViewItem* CUITreeViewItem::Find(LPCSTR text) const
             caption.erase(0, pos);
         }
 
-        if (xr_strcmp(caption.c_str(), text) == 0)
+        if (std::is_eq(xr_strcmp(caption, text)))
             pResult = *it;
 
         if ((*it)->IsRoot() && !pResult)
@@ -521,7 +521,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
         caption.erase(0, 1);
 
         // Ищем не содержит ли он данной иерархии и добавляем новые элементы если не найдено
-        if (0 == xr_strcmp(caption.c_str(), *groupTree.front()))
+        if (std::is_eq(xr_strcmp(caption, groupTree.front())))
         {
             // Уже содержит. Надо искать глубже
             pTVItemChilds = pTVItem;

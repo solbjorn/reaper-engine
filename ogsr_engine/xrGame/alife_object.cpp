@@ -16,13 +16,12 @@ void CSE_ALifeObject::spawn_supplies() { spawn_supplies(*m_ini_string); }
 
 void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 {
-    if (!ini_string)
+    if (ini_string == nullptr)
+        return;
+    if (xr_strlen(ini_string) == 0)
         return;
 
-    if (!xr_strlen(ini_string))
-        return;
-
-    IReader r((void*)(ini_string), strlen(ini_string));
+    IReader r{(void*)(ini_string), gsl::narrow_cast<size_t>(xr_strlen(ini_string))};
     CInifile ini(&r, FS.get_path("$game_config$")->m_Path);
 
     if (ini.section_exist("spawn"))
@@ -31,7 +30,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
         float p;
         for (u32 k = 0, j; ini.r_line("spawn", k, &N, &V); k++)
         {
-            VERIFY(xr_strlen(N));
+            VERIFY(xr_strlen(N) > 0);
 
             float f_cond = 1.0f;
             bool bScope = false;
@@ -41,7 +40,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
             j = 1;
             p = 1.f;
 
-            if (V && xr_strlen(V))
+            if (V != nullptr && xr_strlen(V) > 0)
             {
                 string64 buf;
                 j = atoi(_GetItem(V, 0, buf));

@@ -308,7 +308,7 @@ void CResourceManager::_DumpMemoryUsage()
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 {
-    R_ASSERT(Name && strlen(Name));
+    R_ASSERT(Name != nullptr && xr_strlen(Name) > 0);
 
     string_path filename;
     strcpy_s(filename, Name);

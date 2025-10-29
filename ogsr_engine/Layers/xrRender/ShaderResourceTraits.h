@@ -97,7 +97,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         sh_map.emplace(sh->set_name(name), sh);
-        if (!_stricmp(name, "null"))
+        if (std::is_eq(xr::strcasecmp(name, "null")))
         {
             sh->sh = nullptr;
             return sh;

@@ -66,7 +66,7 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
                 // if (!xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()))
                 if (class1 == class2)
                 {
-                    if (!xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()))
+                    if (std::is_eq(xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect())))
                     {
                         const auto* ammo1 = smart_cast<CWeaponAmmo*>(item1);
                         const auto* ammo2 = smart_cast<CWeaponAmmo*>(item2);
@@ -192,7 +192,7 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
         if (icon_group > 0)
         {
             strcat_s(file, "_");
-            _itoa(icon_group, file + strlen(file), 10);
+            _itoa(icon_group, file + xr_strlen(file), 10);
         }
 
         g_EquipmentIconsShaders[icon_group]->create("hud\\default", file);

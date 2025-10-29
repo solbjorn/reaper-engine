@@ -120,17 +120,16 @@ namespace
 {
 const char* ExtractFileName(const char* fname)
 {
-    const char* result = fname;
-    for (size_t c = 0; c < strlen(fname); c++)
-        if (fname[c] == '\\')
-            result = &fname[c + 1];
-    return result;
+    const auto pos = absl::string_view{fname}.find_last_of('\\');
+
+    return pos == absl::string_view::npos ? fname : &fname[pos + 1];
 }
 
 void CollectScriptFiles(decltype(xray_scripts)& map, const char* path)
 {
-    if (!strlen(path))
+    if (xr_strlen(path) == 0)
         return;
+
     string_path fname;
     auto folders = FS.file_list_open(path, FS_ListFolders);
     if (folders)
@@ -235,11 +234,13 @@ void CScriptEngine::register_script_classes()
 
 bool CScriptEngine::function(const char* function_to_call, sol::function& func)
 {
-    if (!strlen(function_to_call))
+    if (xr_strlen(function_to_call) == 0)
         return false;
+
     string256 name_space, function;
     parse_script_namespace(function_to_call, name_space, sizeof(name_space), function, sizeof(function));
-    if (xr_strcmp(name_space, GlobalNamespace))
+
+    if (std::is_neq(xr_strcmp(name_space, GlobalNamespace)))
     {
         auto file_name = strchr(name_space, '.');
         if (!file_name)
@@ -265,11 +266,13 @@ bool CScriptEngine::function(const char* function_to_call, sol::function& func)
 
 bool CScriptEngine::function_object(const char* function_to_call, luabind::object& object, int type)
 {
-    if (!strlen(function_to_call))
+    if (xr_strlen(function_to_call) == 0)
         return false;
+
     string256 name_space, function;
     parse_script_namespace(function_to_call, name_space, sizeof(name_space), function, sizeof(function));
-    if (xr_strcmp(name_space, GlobalNamespace))
+
+    if (std::is_neq(xr_strcmp(name_space, GlobalNamespace)))
     {
         auto file_name = strchr(name_space, '.');
         if (!file_name)
@@ -284,8 +287,10 @@ bool CScriptEngine::function_object(const char* function_to_call, luabind::objec
 
     if (!this->object(name_space, function, type))
         return false;
+
     auto lua_namespace = this->name_space(name_space);
     object = lua_namespace[function];
+
     return true;
 }
 

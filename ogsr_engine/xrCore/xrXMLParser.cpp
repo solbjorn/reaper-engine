@@ -57,12 +57,10 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR curr
 
                     for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
                     {
-                        LPCSTR file_name = it->name.c_str();
-
-                        if (strcmp(current_xml_filename, file_name) == 0)
+                        if (std::is_eq(xr_strcmp(current_xml_filename, it->name)))
                             continue;
 
-                        loadFile(file_name);
+                        loadFile(it->name.c_str());
                     }
                 }
                 else
@@ -170,10 +168,8 @@ XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name,
     for (int i = 0; i < tabsCount; ++i)
     {
         LPCSTR result = ReadAttrib(root, tag_name, i, attrib_name, "");
-        if (result && xr_strcmp(result, attrib_value) == 0)
-        {
+        if (result != nullptr && std::is_eq(xr_strcmp(result, attrib_value)))
             return NavigateToNode(root, tag_name, i);
-        }
     }
 
     return nullptr;
@@ -444,10 +440,8 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
             LPCSTR attribStr = el->Attribute(attrib);
             LPCSTR valueStr = el->Value();
 
-            if (attribStr && 0 == xr_strcmp(attribStr, attrib_value_pattern) && valueStr && 0 == xr_strcmp(valueStr, tag_name))
-            {
+            if (attribStr != nullptr && std::is_eq(xr_strcmp(attribStr, attrib_value_pattern)) && valueStr != nullptr && std::is_eq(xr_strcmp(valueStr, tag_name)))
                 return el;
-            }
         }
 
         XML_NODE* newEl = (XML_NODE*)start_node->FirstChildElement(tag_name);

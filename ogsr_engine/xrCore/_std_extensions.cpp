@@ -33,16 +33,18 @@ char* timestamp(string64& dest)
 char* xr_strdup(const char* string)
 {
     VERIFY(string);
-    size_t len = strlen(string) + 1;
-    char* memory = (char*)xr_malloc(len);
-    CopyMemory(memory, string, len);
+
+    const auto len = gsl::narrow_cast<size_t>(xr_strlen(string) + 1);
+    char* memory = static_cast<char*>(xr_malloc(len));
+    std::memcpy(memory, string, len);
+
     return memory;
 }
 
 // Очень полезная штука из OpenXRay
 std::string StringToUTF8(const char* in)
 {
-    const size_t len = strlen(in);
+    const auto len = gsl::narrow_cast<size_t>(xr_strlen(in));
     static const std::locale locale{""};
     using wcvt = std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;
     std::wstring wstr(len, L'\0');

@@ -207,13 +207,15 @@ public:
         const xr_token* tok = tokens;
         while (tok->name)
         {
-            if (!_stricmp(tok->name, args))
+            if (std::is_eq(xr::strcasecmp(tok->name, args)))
             {
                 *value = tok->id;
                 break;
             }
+
             tok++;
         }
+
         if (!tok->name)
             InvalidSyntax();
     }

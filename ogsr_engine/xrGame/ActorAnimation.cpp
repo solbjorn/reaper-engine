@@ -114,10 +114,12 @@ void CActor::VehicleHeadCallback(CBoneInstance* B)
 void STorsoWpn::Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1)
 {
     char buf[128];
-    if (!xr_strcmp(base0, "norm") && !xr_strcmp(base1, "_0"))
+
+    if (std::is_eq(xr_strcmp(base0, "norm")) && std::is_eq(xr_strcmp(base1, "_0")))
         moving[eIdle] = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base0, "_torso_5_aim_1"));
     else
         moving[eIdle] = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base0, "_torso", base1, "_aim_1"));
+
     moving[eWalk] = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base0, "_torso", base1, "_aim_2"));
     moving[eRun] = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base0, "_torso", base1, "_aim_3"));
     moving[eSprint] = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base0, "_torso", base1, "_escape_0"));

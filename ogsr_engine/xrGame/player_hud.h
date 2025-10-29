@@ -114,27 +114,23 @@ enum eMovementLayers
 struct movement_layer
 {
     CObjectAnimator* anm;
-    float blend_amount[2];
-    bool active;
-    float m_power;
-    Fmatrix blend;
+    float blend_amount[2]{};
+    float m_power{1.0f};
     u8 m_part{};
+    bool active{};
+    Fmatrix blend;
 
     movement_layer()
     {
         blend.identity();
         anm = xr_new<CObjectAnimator>();
-        blend_amount[0] = 0.f;
-        blend_amount[1] = 0.f;
-        active = false;
-        m_power = 1.f;
     }
 
     ~movement_layer() { xr_delete(anm); }
 
     void Load(LPCSTR name) const
     {
-        if (xr_strcmp(name, anm->Name()))
+        if (std::is_neq(xr_strcmp(name, anm->Name())))
             anm->Load(name);
     }
 

@@ -139,7 +139,7 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 //         return;
 //     size_t index = 0;
 //     for (size_t i = 0; i != files->size(); i++)
-//         if (strcmp((*files)[i], fn) == 0)
+//         if (std::is_eq(xr_strcmp((*files)[i], fn)))
 //         {
 //             index = i;
 //             break;
@@ -278,10 +278,10 @@ bool SelectTexture(const char* label, shared_str& texName)
             strconcat(100, tex, curr_dir, filtered[cur].c_str());
 
             const LPSTR ext = strext(tex);
-            if (ext && (!_stricmp(ext, ".tga") || !_stricmp(ext, ".dds") || !_stricmp(ext, ".bmp") || !_stricmp(ext, ".ogm")))
-            {
-                *ext = 0;
-            }
+            if (ext &&
+                (std::is_eq(xr::strcasecmp(ext, ".tga")) || std::is_eq(xr::strcasecmp(ext, ".dds")) || std::is_eq(xr::strcasecmp(ext, ".bmp")) ||
+                 std::is_eq(xr::strcasecmp(ext, ".ogm"))))
+                *ext = '\0';
 
             texName = tex;
             changed = true;

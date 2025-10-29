@@ -10,8 +10,10 @@ XR_DIAG_POP();
 void fix_texture_name(char* fn)
 {
     char* _ext = strext(fn);
-    if (_ext && (0 == _stricmp(_ext, ".tga") || 0 == _stricmp(_ext, ".dds") || 0 == _stricmp(_ext, ".bmp") || 0 == _stricmp(_ext, ".ogm")))
-        *_ext = 0;
+    if (_ext &&
+        (std::is_eq(xr::strcasecmp(_ext, ".tga")) || std::is_eq(xr::strcasecmp(_ext, ".dds")) || std::is_eq(xr::strcasecmp(_ext, ".bmp")) ||
+         std::is_eq(xr::strcasecmp(_ext, ".ogm"))))
+        *_ext = '\0';
 }
 
 static inline int get_texture_load_lod([[maybe_unused]] const char* fn)

@@ -121,11 +121,10 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 {
     //	LPCSTR str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
     xr_string res;
-    int k = 0;
+    gsl::index k{};
     const char* b;
-#define ACTION_STR "$$ACTION_"
 
-    //.	int LEN				= (int)xr_strlen(ACTION_STR);
+#define ACTION_STR "$$ACTION_"
 #define LEN 9
 
     string256 buff;
@@ -146,17 +145,16 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
         GetActionAllBinding(srcbuff, buff, sizeof(buff));
         res.append(buff, xr_strlen(buff));
 
-        k = (int)(b - str);
+        k = b - str;
         k += len;
         k += LEN;
         k += 2;
+
         b_hit = true;
     }
 
-    if (k < (int)xr_strlen(str))
-    {
+    if (k < xr_strlen(str))
         res.append(str + k);
-    }
 
     if (b_hit && bFirst)
     {

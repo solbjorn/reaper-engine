@@ -31,7 +31,7 @@ class CEventAPI
 private:
     xr_vector<EVENT> Events;
     xr_vector<Deferred> Events_Deferred;
-    xrCriticalSection CS;
+    mutable xrCriticalSection CS;
 
 public:
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -50,7 +50,7 @@ public:
 
     void OnFrame();
     void Dump();
-    BOOL Peek(LPCSTR EName);
+    [[nodiscard]] bool Peek(gsl::czstring EName) const;
 
     void _destroy();
 };

@@ -306,7 +306,7 @@ void CUIPdaWnd::UpdateDateTime()
     strTime += " ";
     strTime += *InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay);
 
-    if (xr_strcmp(strTime.c_str(), prevStrTime))
+    if (std::is_neq(xr_strcmp(strTime, prevStrTime)))
     {
         UITimerBackground->UITitleText.SetText(strTime.c_str());
         prevStrTime = strTime.c_str();

@@ -86,7 +86,7 @@ bool CLocatorAPI::archive::autoload_db()
 {
     for (const auto& excl : excls)
     {
-        if (!strcmp(strext(*path), excl.ext) && size == excl.size)
+        if (std::is_eq(xr_strcmp(strext(*path), excl.ext)) && size == excl.size)
         {
             key = excl.key;
             break;

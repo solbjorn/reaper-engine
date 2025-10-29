@@ -10,13 +10,9 @@
 
 namespace hash_fixed_vertex_manager
 {
-extern u32 to_u32(const GraphEngineSpace::CWorldState& other);
+[[nodiscard]] extern u32 to_u32(const GraphEngineSpace::CWorldState& other);
 
-ICF u32 to_u32(shared_str const& string)
-{
-    const str_value* val = string._get();
-    return *(u32 const*)&val;
-}
+[[nodiscard]] constexpr u32 to_u32(const shared_str& string) { return hash_64(string ? string._get()->hash : absl::Hash<absl::string_view>{}(string), 32); }
 } // namespace hash_fixed_vertex_manager
 
 #define TEMPLATE_SPECIALIZATION \

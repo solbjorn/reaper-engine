@@ -35,7 +35,7 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
     setup_command_line(command_line);
 
     IGame_Persistent::params& p = g_pGamePersistent->m_game_params;
-    R_ASSERT2(xr_strlen(p.m_game_or_spawn) && !xr_strcmp(p.m_alife, "alife") && !xr_strcmp(p.m_game_type, "single"), "Invalid server options!");
+    R_ASSERT2(xr_strlen(p.m_game_or_spawn) > 0 && std::is_eq(xr_strcmp(p.m_alife, "alife")) && std::is_eq(xr_strcmp(p.m_game_type, "single")), "Invalid server options!");
 
     string256 temp;
     strcpy_s(temp, p.m_game_or_spawn);
@@ -51,7 +51,7 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
     R_ASSERT2(ai().script_engine().function(start_game_callback, function), "failed to get start game callback");
     function();
 
-    load(p.m_game_or_spawn, !xr_strcmp(p.m_new_or_load, "load") ? false : true, !xr_strcmp(p.m_new_or_load, "new"));
+    load(p.m_game_or_spawn, std::is_neq(xr_strcmp(p.m_new_or_load, "load")), std::is_eq(xr_strcmp(p.m_new_or_load, "new")));
     RELATION_REGISTRY().build_reverse_personal();
 }
 

@@ -104,11 +104,11 @@ void CPoltergeist::Load(LPCSTR section)
     LPCSTR polter_type = pSettings->r_string(section, "type");
 
     m_fly_around_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_level", 5.f);
-    m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", strcmp(polter_type, "flamer") == 0 ? 8.f : 30.f);
+    m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", std::is_eq(xr_strcmp(polter_type, "flamer")) ? 8.0f : 30.0f);
 
     m_fly_around_change_direction_time = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_change_direction_time", 5);
 
-    if (xr_strcmp(polter_type, "flamer") == 0)
+    if (std::is_eq(xr_strcmp(polter_type, "flamer")))
     {
         m_flame = xr_new<CPolterFlame>(this);
         m_flame->load(section);

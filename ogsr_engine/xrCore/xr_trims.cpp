@@ -66,7 +66,7 @@ int _GetItemCount(LPCSTR src, char separator)
             //     break;
         }
 
-        if (xr_strlen(last_res))
+        if (xr_strlen(last_res) > 0)
             cnt++;
     }
 
@@ -78,8 +78,8 @@ namespace
 LPCSTR _CopyVal(LPCSTR src, LPSTR dst, char separator)
 {
     const char* p = strchr(src, separator);
-    size_t n = p ? (p - src) : strlen(src);
-    strncpy(dst, src, n);
+    gsl::index n{p ? (p - src) : xr_strlen(src)};
+    strncpy(dst, src, gsl::narrow_cast<size_t>(n));
     dst[n] = 0;
     return dst;
 }
@@ -118,8 +118,11 @@ LPSTR _GetItems(LPCSTR src, int idx_start, int idx_end, LPSTR dst, char separato
 u32 _ParseItem(LPCSTR src, xr_token* token_list)
 {
     for (int i = 0; token_list[i].name; i++)
-        if (!_stricmp(src, token_list[i].name))
+    {
+        if (std::is_eq(xr::strcasecmp(src, token_list[i].name)))
             return token_list[i].id;
+    }
+
     return u32(-1);
 }
 
@@ -282,7 +285,7 @@ namespace
 LPCSTR _CopyVal(LPCSTR src, xr_string& dst, char separator)
 {
     const char* p = strchr(src, separator);
-    size_t n = p ? (p - src) : strlen(src);
+    const gsl::index n{p ? (p - src) : xr_strlen(src)};
     dst = src;
     dst = dst.erase(n, dst.length());
     return dst.c_str();

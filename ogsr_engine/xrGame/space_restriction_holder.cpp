@@ -130,7 +130,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
 
         *temp = normalize_string(m_temp_string);
 
-        if (xr_strcmp(*temp, temp1))
+        if (std::is_neq(xr_strcmp(*temp, temp1)))
             on_default_restrictions_changed();
     }
 
@@ -163,10 +163,11 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
     *temp1 = 0;
     for (int i = 0, j = 0, n = _GetItemCount(*search_string); i < n; ++i, ++j)
     {
-        if (xr_strcmp(string_to_search, _GetItem(*search_string, i, temp)))
+        if (std::is_neq(xr_strcmp(string_to_search, _GetItem(*search_string, i, temp))))
         {
             if (j)
                 strcat_s(temp1, ",");
+
             strcat_s(temp1, temp);
             continue;
         }

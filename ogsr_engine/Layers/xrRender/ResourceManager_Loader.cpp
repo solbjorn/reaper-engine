@@ -60,17 +60,13 @@ void CResourceManager::OnDeviceCreate()
 void CResourceManager::LoadShaderFile(LPCSTR fname)
 {
     // Check if file is compressed already
-    string32 ID = "shENGINE";
-
     string32 id;
     IReader* F = FS.r_open(fname);
     R_ASSERT2(F, fname);
     F->r(&id, 8);
 
-    if (0 == strncmp(id, ID, 8))
-    {
+    if (absl::string_view{id, 8}.starts_with("shENGINE"))
         FATAL("Unsupported blender library. Compressed?");
-    }
 
     string_path ini_path;
     strcpy_s(ini_path, fname);

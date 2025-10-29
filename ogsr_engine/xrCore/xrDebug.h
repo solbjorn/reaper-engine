@@ -5,6 +5,7 @@
 #include <string>
 
 #include <gsl/narrow>
+#include <gsl/zstring>
 
 #define DEBUG_INVOKE __debugbreak()
 
@@ -44,11 +45,11 @@ IC XR_PRINTF(1, 2) std::string make_string(const char* format, ...)
     va_start(args, format);
     va_copy(args_copy, args);
 
-    int sz = std::vsnprintf(nullptr, 0, format, args);
+    const auto sz = std::vsnprintf(nullptr, 0, format, args);
     if (sz <= 0)
         return std::string();
 
-    auto n = gsl::narrow_cast<size_t>(sz + 1);
+    const auto n = gsl::narrow_cast<size_t>(sz + 1);
     std::string result(n, ' ');
     std::vsnprintf(result.data(), n, format, args_copy);
 

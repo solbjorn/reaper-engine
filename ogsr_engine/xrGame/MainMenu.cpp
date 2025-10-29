@@ -169,7 +169,7 @@ void CMainMenu::Activate(bool bActivate)
             Discord.Set_active_task_text(nullptr); // Апдейт таска должен быть выше апдейта значка уровня!
 
             const char* menu_status = CStringTable().translate("discord_status_mm").c_str();
-            Discord.Update(!strcmp(menu_status, "discord_status_mm") ? "In main menu" : menu_status);
+            Discord.Update(std::is_eq(xr_strcmp(menu_status, "discord_status_mm")) ? "In main menu" : menu_status);
         }
     }
     else

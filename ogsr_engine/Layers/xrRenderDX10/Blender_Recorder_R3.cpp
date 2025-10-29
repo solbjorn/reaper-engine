@@ -210,7 +210,7 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
     dest.cs = res._CreateCS("null");
 
     // Last Stage - disable
-    if (!_stricmp(_ps, "null"))
+    if (std::is_eq(xr::strcasecmp(_ps, "null")))
     {
         RS.SetTSS(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
         RS.SetTSS(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);

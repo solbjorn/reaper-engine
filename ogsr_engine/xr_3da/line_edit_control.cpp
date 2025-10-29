@@ -399,7 +399,8 @@ void line_edit_control::set_edit(LPCSTR str)
 {
     if (!str)
         str = "";
-    size_t str_size = std::clamp(strlen(str), 0ull, static_cast<size_t>(m_buffer_size - 1));
+
+    gsl::index str_size = std::clamp(xr_strlen(str), 0z, gsl::index{m_buffer_size} - 1);
     strncpy_s(m_edit_str, m_buffer_size, str, str_size);
     m_edit_str[str_size] = 0;
 
@@ -545,7 +546,7 @@ void line_edit_control::update_bufs()
     m_buf2[0] = 0;
     m_buf3[0] = 0;
 
-    auto edit_size = gsl::narrow_cast<gsl::index>(strlen(m_edit_str));
+    auto edit_size = xr_strlen(m_edit_str);
     int ds = (m_cursor_view && m_insert_mode && m_p2 < edit_size) ? 1 : 0;
     strncpy_s(m_buf0, m_buffer_size, m_edit_str, m_cur_pos);
     strncpy_s(m_buf1, m_buffer_size, m_edit_str, m_p1);
@@ -564,7 +565,7 @@ void line_edit_control::add_inserted_text()
     if (empty_inserted())
         return;
 
-    const auto old_edit_size = gsl::narrow_cast<gsl::index>(strlen(m_edit_str));
+    const auto old_edit_size = xr_strlen(m_edit_str);
     for (gsl::index i{}; i < old_edit_size; ++i)
     {
         if ((m_edit_str[i] == '\n') || (m_edit_str[i] == '\t'))
@@ -576,11 +577,11 @@ void line_edit_control::add_inserted_text()
     strncpy_s(buf, m_buffer_size, m_edit_str, m_p1); // part 1
     strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
 
-    auto new_size = gsl::narrow_cast<gsl::index>(strlen(m_inserted));
+    auto new_size = xr_strlen(m_inserted);
     if (m_buffer_size - 1 < m_p1 + new_size)
     {
         m_inserted[m_buffer_size - 1 - m_p1] = 0;
-        new_size = strlen(m_inserted);
+        new_size = xr_strlen(m_inserted);
     }
     strncpy_s(buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, gsl::index{m_buffer_size - m_p1})); // part 2
 
@@ -606,7 +607,7 @@ void line_edit_control::copy_to_clipboard()
     if (m_p1 >= m_p2)
         return;
 
-    size_t edit_len = strlen(m_edit_str);
+    auto edit_len = xr_strlen(m_edit_str);
     LPSTR buf = (LPSTR)_alloca((edit_len + 1) * sizeof(char));
     strncpy_s(buf, edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1);
     buf[edit_len] = 0;
@@ -617,7 +618,7 @@ void line_edit_control::copy_to_clipboard()
 void line_edit_control::paste_from_clipboard()
 {
     os_clipboard::paste_from_clipboard(m_inserted, m_buffer_size - 1);
-    m_inserted_pos += strlen(m_inserted);
+    m_inserted_pos += xr_strlen(m_inserted);
 }
 
 void line_edit_control::cut_to_clipboard()
@@ -637,20 +638,20 @@ void line_edit_control::undo_buf()
 void line_edit_control::select_all_buf()
 {
     m_select_start = 0;
-    m_cur_pos = (int)xr_strlen(m_edit_str);
+    m_cur_pos = xr_strlen(m_edit_str);
     m_mark = false;
 }
 
 void line_edit_control::flip_insert_mode() { m_insert_mode = !m_insert_mode; }
 
 void line_edit_control::delete_selected_back() { delete_selected(true); }
-
 void line_edit_control::delete_selected_forward() { delete_selected(false); }
 
 void line_edit_control::delete_selected(bool back)
 {
     clamp_cur_pos();
-    int edit_len = (int)xr_strlen(m_edit_str);
+
+    auto edit_len = xr_strlen(m_edit_str);
     if (edit_len > 0)
     {
         if (back)
@@ -696,11 +697,9 @@ void line_edit_control::delete_word_forward()
 }
 
 void line_edit_control::move_pos_home() { m_cur_pos = 0; }
-
-void line_edit_control::move_pos_end() { m_cur_pos = (int)xr_strlen(m_edit_str); }
+void line_edit_control::move_pos_end() { m_cur_pos = xr_strlen(m_edit_str); }
 
 void line_edit_control::move_pos_left() { --m_cur_pos; }
-
 void line_edit_control::move_pos_right() { ++m_cur_pos; }
 
 void line_edit_control::move_pos_left_word()
@@ -723,8 +722,9 @@ void line_edit_control::move_pos_left_word()
 
 void line_edit_control::move_pos_right_word()
 {
-    int edit_len = (int)xr_strlen(m_edit_str);
+    auto edit_len = xr_strlen(m_edit_str);
     int i = m_cur_pos + 1;
+
     while (i < edit_len && !terminate_char(m_edit_str[i], true))
     {
         ++i;
@@ -756,7 +756,7 @@ void line_edit_control::compute_positions()
     }
 }
 
-void line_edit_control::clamp_cur_pos() { clamp(m_cur_pos, 0, (int)xr_strlen(m_edit_str)); }
+void line_edit_control::clamp_cur_pos() { clamp(m_cur_pos, 0, gsl::narrow_cast<int>(xr_strlen(m_edit_str))); }
 
 void line_edit_control::SwitchKL()
 {

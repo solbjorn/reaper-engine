@@ -132,29 +132,31 @@ enum EWeaponAddonStatus
 
 IC EHitType g_tfString2HitType(LPCSTR caHitType)
 {
-    if (!_stricmp(caHitType, "burn"))
+    if (std::is_eq(xr::strcasecmp(caHitType, "burn")))
         return (eHitTypeBurn);
-    else if (!_stricmp(caHitType, "shock"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "shock")))
         return (eHitTypeShock);
-    else if (!_stricmp(caHitType, "strike"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "strike")))
         return (eHitTypeStrike);
-    else if (!_stricmp(caHitType, "wound"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "wound")))
         return (eHitTypeWound);
-    else if (!_stricmp(caHitType, "radiation"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "radiation")))
         return (eHitTypeRadiation);
-    else if (!_stricmp(caHitType, "telepatic"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "telepatic")))
         return (eHitTypeTelepatic);
-    else if (!_stricmp(caHitType, "fire_wound"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "fire_wound")))
         return (eHitTypeFireWound);
-    else if (!_stricmp(caHitType, "chemical_burn"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "chemical_burn")))
         return (eHitTypeChemicalBurn);
-    else if (!_stricmp(caHitType, "explosion"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "explosion")))
         return (eHitTypeExplosion);
-    else if (!_stricmp(caHitType, "wound_2"))
+    else if (std::is_eq(xr::strcasecmp(caHitType, "wound_2")))
         return (eHitTypeWound_2);
     else
         FATAL("Unsupported hit type!");
+
     NODEFAULT;
+
 #ifdef DEBUG
     return (eHitTypeMax);
 #endif

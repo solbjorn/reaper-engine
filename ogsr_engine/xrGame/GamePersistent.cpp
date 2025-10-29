@@ -23,12 +23,13 @@
 #include "..\xr_3da\DiscordRPC.hpp"
 #include "holder_custom.h"
 
+#include "ai_debug.h"
+#include "xr_task.h"
+#include "UI/UIGameTutorial.h"
+
 #ifndef MASTER_GOLD
 #include "custommonster.h"
 #endif // MASTER_GOLD
-
-#include "ai_debug.h"
-#include "xr_task.h"
 
 namespace
 {
@@ -177,7 +178,7 @@ void CGamePersistent::UpdateGameType()
 
     // TODO: KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на m_game_type. На данный
     // момент парсер может налажать, если встретит скобочки () в имени сейва.
-    ASSERT_FMT_DBG(!xr_strcmp(m_game_params.m_game_type, "single"), "!!failed to parse the name of the save, rename it and try to load again.");
+    ASSERT_FMT_DBG(std::is_eq(xr_strcmp(m_game_params.m_game_type, "single")), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
 void CGamePersistent::OnGameEnd()
@@ -439,8 +440,6 @@ void CGamePersistent::WeathersUpdate()
     }
 }
 
-#include "UI/UIGameTutorial.h"
-
 void CGamePersistent::start_logo_intro()
 {
     if (!strstr(Core.Params, "-intro"))
@@ -478,9 +477,11 @@ void CGamePersistent::start_game_intro()
     if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
     {
         m_intro_event = CallMe::fromMethod<&CGamePersistent::update_game_intro>(this);
-        if (!_stricmp(m_game_params.m_new_or_load, "new"))
+
+        if (std::is_eq(xr::strcasecmp(m_game_params.m_new_or_load, "new")))
         {
-            VERIFY(NULL == m_intro);
+            VERIFY(m_intro == nullptr);
+
             m_intro = xr_new<CUISequencer>();
             m_intro->Start("intro_game");
             // Msg("Intro start: [%u]", Device.dwFrame);

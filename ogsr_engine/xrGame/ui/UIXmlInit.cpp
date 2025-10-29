@@ -606,34 +606,21 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path, int index, CUIPro
     CUIProgressBar::EOrientMode mode = CUIProgressBar::om_vert;
     int mode_horz = xml_doc.ReadAttribInt(path, index, "horz", 0);
     LPCSTR mode_str = xml_doc.ReadAttrib(path, index, "mode");
+
     if (mode_horz == 1) // om_horz
-    {
         mode = CUIProgressBar::om_horz;
-    }
-    else if (!_stricmp(mode_str, "horz"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "horz")))
         mode = CUIProgressBar::om_horz;
-    }
-    else if (!_stricmp(mode_str, "vert"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "vert")))
         mode = CUIProgressBar::om_vert;
-    }
-    else if (!_stricmp(mode_str, "back"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "back")))
         mode = CUIProgressBar::om_back;
-    }
-    else if (!_stricmp(mode_str, "down"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "down")))
         mode = CUIProgressBar::om_down;
-    }
-    else if (!_stricmp(mode_str, "from_center"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "from_center")))
         mode = CUIProgressBar::om_fromcenter;
-    }
-    else if (!_stricmp(mode_str, "vert_from_center"))
-    {
+    else if (std::is_eq(xr::strcasecmp(mode_str, "vert_from_center")))
         mode = CUIProgressBar::om_vfromcenter;
-    }
 
     pWnd->InitProgressBar(pos, size, mode);
 
@@ -770,55 +757,55 @@ bool CUIXmlInit::InitFont(CUIXml& xml_doc, LPCSTR path, int index, u32& color, C
 
     if (*font_name)
     {
-        if (!xr_strcmp(*font_name, GRAFFITI19_FONT_NAME))
+        if (std::is_eq(xr_strcmp(font_name, GRAFFITI19_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontGraffiti19Russian;
         }
-        else if (!xr_strcmp(*font_name, GRAFFITI22_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI22_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontGraffiti22Russian;
         }
-        else if (!xr_strcmp(*font_name, GRAFFITI32_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI32_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontGraffiti32Russian;
         }
-        else if (!xr_strcmp(*font_name, GRAFFITI40_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI40_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontGraffiti40Russian;
         }
-        else if (!xr_strcmp(*font_name, GRAFFITI50_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI50_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontGraffiti50Russian;
         }
-        else if (!xr_strcmp(*font_name, ARIAL14_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, ARIAL14_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontArial14;
         }
-        else if (!xr_strcmp(*font_name, ARIAL21_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, ARIAL21_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontArial21;
         }
-        else if (!xr_strcmp(*font_name, MEDIUM_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, MEDIUM_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontMedium;
         }
-        else if (!xr_strcmp(*font_name, SMALL_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, SMALL_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontSmall;
         }
-        else if (!xr_strcmp(*font_name, LETTERICA16_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, LETTERICA16_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontLetterica16Russian;
         }
-        else if (!xr_strcmp(*font_name, LETTERICA18_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, LETTERICA18_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontLetterica18Russian;
         }
-        else if (!xr_strcmp(*font_name, LETTERICA25_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, LETTERICA25_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontLetterica25;
         }
-        else if (!xr_strcmp(*font_name, DI_FONT_NAME))
+        else if (std::is_eq(xr_strcmp(font_name, DI_FONT_NAME)))
         {
             pFnt = UI()->Font()->pFontDI;
         }

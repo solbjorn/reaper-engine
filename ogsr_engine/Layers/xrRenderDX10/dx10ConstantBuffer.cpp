@@ -54,14 +54,12 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
     VERIFY(m_pBufferData);
 
     if (m_pBuffer)
-    {
-        m_pBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(Desc.Name), Desc.Name);
-    }
+        m_pBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(Desc.Name), Desc.Name);
 }
 
 bool dx10ConstantBuffer::Similar(dx10ConstantBuffer& _in)
 {
-    if (m_strBufferName._get() != _in.m_strBufferName._get())
+    if (m_strBufferName != _in.m_strBufferName)
         return false;
 
     if (m_eBufferType != _in.m_eBufferType)

@@ -2,6 +2,8 @@
 
 #include "xrstring.h"
 
+#include <concurrentqueue.h>
+
 namespace xxh
 {
 #include <xxhash.h>
@@ -9,233 +11,177 @@ namespace xxh
 
 #pragma comment(lib, "xxhash")
 
-str_container* g_pStringContainer{};
-
-struct str_container_impl
+template <>
+struct std::default_delete<str_value>
 {
-    static constexpr u32 buffer_shift = 18;
-    static constexpr size_t buffer_size = size_t(1) << buffer_shift;
-    static_assert(buffer_size == 1024u * 256u);
-
-    xrCriticalSection cs;
-    str_value* buffer[buffer_size];
-    int num_docs;
-
-    str_container_impl()
-    {
-        num_docs = 0;
-        ZeroMemory(buffer, sizeof(buffer));
-    }
-
-    str_value* find(str_value* value, const char* str) const
-    {
-        str_value* candidate = buffer[hash_64(value->dwXXH, buffer_shift)];
-        while (candidate)
-        {
-            if (candidate->dwXXH == value->dwXXH && candidate->dwLength == value->dwLength && !memcmp(candidate->value, str, value->dwLength))
-            {
-                return candidate;
-            }
-
-            candidate = candidate->next;
-        }
-
-        return nullptr;
-    }
-
-    void insert(str_value* value)
-    {
-        str_value** element = &buffer[hash_64(value->dwXXH, buffer_shift)];
-        value->next = *element;
-        *element = value;
-    }
-
-    void clean()
-    {
-        for (size_t i = 0; i < buffer_size; ++i)
-        {
-            str_value** current = &buffer[i];
-
-            while (*current != nullptr)
-            {
-                str_value* value = *current;
-                if (!value->dwReference)
-                {
-                    *current = value->next;
-                    xr_free(value);
-                }
-                else
-                {
-                    current = &value->next;
-                }
-            }
-        }
-    }
-
-    void verify() const
-    {
-        Msg("strings verify started");
-        for (size_t i = 0; i < buffer_size; ++i)
-        {
-            const str_value* value = buffer[i];
-            while (value)
-            {
-                const xxh::XXH64_hash_t xxh = xxh::XXH3_64bits(value->value, value->dwLength);
-                if (xxh != value->dwXXH)
-                {
-                    string32 xxh_str;
-                    snprintf(xxh_str, 32, "0x%016llx", value->dwXXH);
-                    R_ASSERT(xxh == value->dwXXH, "CorePanic: read-only memory corruption (shared_strings)", xxh_str);
-                }
-                R_ASSERT(value->dwLength == xr_strlen(value->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", value->value);
-                value = value->next;
-            }
-        }
-        Msg("strings verify completed");
-    }
-
-    void dump(FILE* f) const
-    {
-        for (size_t i = 0; i < buffer_size; ++i)
-        {
-            str_value* value = buffer[i];
-            while (value)
-            {
-                fprintf(f, "ref[%4u]-len[%3u]-hash[0x%016llx] : %s\n", value->dwReference, value->dwLength, value->dwXXH, value->value);
-                value = value->next;
-            }
-        }
-    }
-
-    void dump(IWriter* f) const
-    {
-        for (size_t i = 0; i < buffer_size; ++i)
-        {
-            str_value* value = buffer[i];
-            string4096 temp;
-            while (value)
-            {
-                xr_sprintf(temp, sizeof(temp), "ref[%4u]-len[%3u]-hash[0x%016llx] : %s\n", value->dwReference, value->dwLength, value->dwXXH, value->value);
-                f->w_string(temp);
-                value = value->next;
-            }
-        }
-    }
-
-    ptrdiff_t stat_economy() const
-    {
-        ptrdiff_t counter = 0;
-        for (size_t i = 0; i < buffer_size; ++i)
-        {
-            const str_value* value = buffer[i];
-            while (value)
-            {
-                counter -= sizeof(str_value);
-                counter += (value->dwReference - 1) * (value->dwLength + 1);
-                value = value->next;
-            }
-        }
-
-        return counter;
-    }
+    constexpr void operator()(str_value* ptr) const noexcept { xr_free(ptr); }
 };
 
-str_container::str_container() : impl(xr_new<str_container_impl>()) {}
-
-str_value* str_container::dock(pcstr value) const
+namespace xr
 {
-    if (nullptr == value)
+namespace
+{
+class str_container_impl
+{
+private:
+    using val_t = std::unique_ptr<str_value>;
+    using map_t = xr_unordered_map<xxh::XXH64_hash_t, val_t>;
+
+    moodycamel::ConcurrentQueue<map_t> q;
+
+    class map_vector : public xr_vector<map_t>
+    {
+    private:
+        decltype(q)& queue;
+
+    public:
+        map_vector() = delete;
+        map_vector(map_vector&&) = delete;
+
+        explicit map_vector(decltype(queue) in) : queue{in}
+        {
+            reserve(queue.size_approx());
+
+            while (true)
+            {
+                map_t map;
+
+                if (!queue.try_dequeue(map))
+                    break;
+
+                emplace_back(std::move(map));
+            }
+        }
+
+        ~map_vector()
+        {
+            for (auto&& map : *this)
+                queue.enqueue(std::move(map));
+        }
+    };
+
+    static constexpr size_t base_cap{4096};
+    static constexpr size_t first_base_cap{2 * base_cap};
+
+    [[nodiscard]] auto get()
+    {
+        map_t map;
+
+        if (!q.try_dequeue(map))
+            map.reserve(base_cap);
+
+        return map;
+    }
+
+public:
+    str_container_impl()
+    {
+        map_t map;
+        map.reserve(first_base_cap);
+        q.enqueue(std::move(map));
+    }
+
+    [[nodiscard]] str_value* insert(gsl::czstring str);
+    void clean();
+    [[nodiscard]] gsl::index stat_economy();
+
+    void verify();
+    void dump(FILE& f);
+};
+
+str_value* str_container_impl::insert(gsl::czstring str)
+{
+    if (str == nullptr) [[unlikely]]
         return nullptr;
 
-    impl->cs.Enter();
+    const absl::string_view sv{str};
+    const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
-    str_value* result = nullptr;
+    auto map = get();
+    const auto _ = gsl::finally([this, &map] { q.enqueue(std::move(map)); });
 
-    // calc len
-    const auto s_len = xr_strlen(value);
-    const auto s_len_with_zero = s_len + 1;
-    VERIFY(sizeof(str_value) + s_len_with_zero < 4096);
+    const auto iter = map.find(xxh);
+    if (iter != map.cend())
+        return iter->second.get();
 
-    // setup find structure
-    char header[sizeof(str_value)];
-    str_value* sv = (str_value*)header;
-    sv->dwReference = 0;
-    sv->dwLength = static_cast<u32>(s_len);
-    sv->dwXXH = xxh::XXH3_64bits(value, s_len);
+    auto elem = val_t{static_cast<str_value*>(xr_malloc(sizeof(str_value) + sv.size() + 1))};
+    elem->dwReference = 0;
+    elem->dwLength = std::ssize(sv);
+    elem->hash = xxh;
+    std::memcpy(elem->value, sv.data(), sv.size() + 1);
 
-    // search
-    result = impl->find(sv, value);
+    return map.emplace(xxh, std::move(elem)).first->second.get();
+}
 
-#ifdef DEBUG
-    const bool is_leaked_string = !xr_strcmp(value, "enter leaked string here");
-#endif // DEBUG
-
-    // it may be the case, string is not found or has "non-exact" match
-    if (nullptr == result
-#ifdef DEBUG
-        || is_leaked_string
-#endif // DEBUG
-    )
+void str_container_impl::clean()
+{
+    for (auto& map : map_vector{q})
     {
-        result = static_cast<str_value*>(xr_malloc(sizeof(str_value) + s_len_with_zero));
-
-#ifdef DEBUG
-        static int num_leaked_string = 0;
-        if (is_leaked_string)
-        {
-            ++num_leaked_string;
-            Msg("leaked_string: %d 0x%08x", num_leaked_string, result);
-        }
-#endif // DEBUG
-
-        result->dwReference = 0;
-        result->dwLength = sv->dwLength;
-        result->dwXXH = sv->dwXXH;
-        CopyMemory(result->value, value, s_len_with_zero);
-
-        impl->insert(result);
+        if (absl::erase_if(map, [](const auto& pair) { return pair.second->dwReference == 0; }) > 0)
+            map.rehash(0);
     }
-    impl->cs.Leave();
-
-    return result;
 }
 
-void str_container::clean() const
+gsl::index str_container_impl::stat_economy()
 {
-    impl->cs.Enter();
-    impl->clean();
-    impl->cs.Leave();
+    gsl::index ec{-gsl::index{sizeof(str_container_impl)}};
+
+    for (const auto& map : map_vector{q})
+    {
+        ec -= gsl::index{sizeof(map)};
+
+        for (auto& [_, value] : map)
+        {
+            ec -= gsl::index{sizeof(map_t::value_type) + sizeof(str_value)};
+            ec += (value->dwReference - 1) * (value->dwLength + 1);
+        }
+    }
+
+    return ec;
 }
 
-void str_container::verify() const
+void str_container_impl::verify()
 {
-    impl->cs.Enter();
-    impl->verify();
-    impl->cs.Leave();
+    for (const auto& map : map_vector{q})
+    {
+        for (auto& [_, value] : map)
+        {
+            const absl::string_view sv{value->value};
+            ASSERT_FMT(value->dwLength == std::ssize(sv), "corrupted shared string length: %zd bytes, expected %zd bytes", value->dwLength, std::ssize(sv));
+
+            const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
+            ASSERT_FMT(value->hash == xxh, "corrupted shared string hash: 0x%016llx, expected 0x%016llx", value->hash, xxh);
+        }
+    }
 }
 
-void str_container::dump() const
+void str_container_impl::dump(FILE& f)
 {
-    impl->cs.Enter();
-    FILE* F = fopen("d:\\$str_dump$.txt", "w");
-    impl->dump(F);
-    fclose(F);
-    impl->cs.Leave();
+    for (const auto& map : map_vector{q})
+    {
+        for (auto& [_, value] : map)
+            fprintf(&f, "ref[%zd]-len[%zd]-hash[0x%016llx]: %s\n", value->dwReference.load(), value->dwLength, value->hash, value->value);
+    }
 }
 
-size_t str_container::stat_economy() const
-{
-    impl->cs.Enter();
-    ptrdiff_t counter = 0;
-    counter -= sizeof(*this);
-    counter += impl->stat_economy();
-    impl->cs.Leave();
-    return size_t(counter);
-}
+str_container_impl impl;
+} // namespace
+} // namespace xr
 
-str_container::~str_container()
+str_value* str_container::dock(gsl::czstring value) { return xr::impl.insert(value); }
+void str_container::clean() { xr::impl.clean(); }
+gsl::index str_container::stat_economy() { return xr::impl.stat_economy(); }
+
+void str_container::verify() { xr::impl.verify(); }
+
+void str_container::dump()
 {
-    clean();
-    // dump ();
-    xr_delete(impl);
+    string_path path;
+    FILE* f{};
+
+    FS.update_path(path, "$logs$", "$str_dump$.txt");
+    R_ASSERT(fopen_s(&f, path, "w") == 0);
+    const auto _ = gsl::finally([f] { fclose(f); });
+
+    xr::impl.dump(*f);
 }

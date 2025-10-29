@@ -34,7 +34,7 @@ public:
     xr_vector<sLevelInfo> Levels;
     u32 Level_Current;
     void Level_Scan();
-    int Level_ID(LPCSTR name);
+    [[nodiscard]] gsl::index Level_ID(gsl::czstring name) const;
     void Level_Set(u32 ID);
 
     // Loading

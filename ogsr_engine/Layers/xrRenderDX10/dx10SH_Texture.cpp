@@ -277,12 +277,10 @@ void CTexture::Load(const char* Name)
     flags.bLoaded = true;
     flags.memUsage = 0;
 
-    if (!_stricmp(Name, "$null"))
+    if (std::is_eq(xr::strcasecmp(Name, "$null")))
         return;
 
-    // we need to check only the beginning of the string,
-    // so let's use strncmp instead of strstr.
-    if (!strncmp(Name, "$user$", sizeof("$user$") - 1))
+    if (absl::string_view{Name}.starts_with("$user$"))
         return;
 
     Preload(Name);
@@ -387,7 +385,7 @@ void CTexture::Load(const char* Name)
 
         flags.seqCycles = FALSE;
         _fs->r_string(buffer, sizeof(buffer));
-        if (!_stricmp(buffer, "cycled"))
+        if (std::is_eq(xr::strcasecmp(buffer, "cycled")))
         {
             flags.seqCycles = TRUE;
             _fs->r_string(buffer, sizeof(buffer));

@@ -294,7 +294,7 @@ bool OBJECT_1(const char* identifier, int type)
     lua_pushnil(LSVM);
     while (lua_next(LSVM, -2))
     {
-        if (lua_type(LSVM, -1) == type && !xr_strcmp(identifier, lua_tostring(LSVM, -2)))
+        if (lua_type(LSVM, -1) == type && std::is_eq(xr_strcmp(identifier, lua_tostring(LSVM, -2))))
         {
             VERIFY(lua_gettop(LSVM) >= 3);
             lua_pop(LSVM, 3);

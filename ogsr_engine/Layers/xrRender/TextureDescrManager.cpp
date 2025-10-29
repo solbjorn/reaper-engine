@@ -32,8 +32,10 @@ namespace
 void fix_texture_thm_name(LPSTR fn)
 {
     LPSTR _ext = strext(fn);
-    if (_ext && (!_stricmp(_ext, ".tga") || !_stricmp(_ext, ".thm") || !_stricmp(_ext, ".dds") || !_stricmp(_ext, ".bmp") || !_stricmp(_ext, ".ogm")))
-        *_ext = 0;
+    if (_ext &&
+        (std::is_eq(xr::strcasecmp(_ext, ".tga")) || std::is_eq(xr::strcasecmp(_ext, ".thm")) || std::is_eq(xr::strcasecmp(_ext, ".dds")) ||
+         std::is_eq(xr::strcasecmp(_ext, ".bmp")) || std::is_eq(xr::strcasecmp(_ext, ".ogm"))))
+        *_ext = '\0';
 }
 } // namespace
 

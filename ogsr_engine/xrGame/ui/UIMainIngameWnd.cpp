@@ -478,7 +478,7 @@ void CUIMainIngameWnd::RenderQuickInfos()
 
     if (actor_action)
     {
-        if (_stricmp(actor_action, UIStaticQuickHelp.GetText()))
+        if (std::is_neq(xr::strcasecmp(actor_action, UIStaticQuickHelp.GetText())))
             UIStaticQuickHelp.SetTextST(actor_action);
     }
 
