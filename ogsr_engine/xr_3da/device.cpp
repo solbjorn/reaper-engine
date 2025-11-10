@@ -74,7 +74,7 @@ void CRenderDevice::RenderEnd(void)
 
             Memory.mem_compact();
 
-            Msg("* MEMORY USAGE: %u K", Memory.mem_usage() / 1024);
+            Msg("* MEMORY USAGE: %zd K", Memory.mem_usage() / 1024);
             Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
         }
     }

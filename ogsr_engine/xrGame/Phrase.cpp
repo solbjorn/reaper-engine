@@ -4,18 +4,15 @@
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "phrase.h"
 
 #include "ai_space.h"
 #include "gameobject.h"
 #include "script_game_object.h"
 
-CPhrase::CPhrase(void)
-{
-    m_ID = "";
-    m_iGoodwillLevel = 0;
-}
-CPhrase::~CPhrase(void) {}
+CPhrase::CPhrase() { m_ID._set(""); }
+CPhrase::~CPhrase() = default;
 
 LPCSTR CPhrase::GetText() const { return m_text.c_str(); }
 

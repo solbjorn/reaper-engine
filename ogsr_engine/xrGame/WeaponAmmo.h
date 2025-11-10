@@ -1,10 +1,12 @@
 #pragma once
+
 #include "inventory_item_object.h"
 
 class CCartridge
 {
 public:
     CCartridge();
+
     void Load(LPCSTR section, u8 LocalAmmoType);
     float Weight() const;
 
@@ -38,8 +40,8 @@ class CWeaponAmmo : public CInventoryItemObject
 public:
     typedef CInventoryItemObject inherited;
 
-    CWeaponAmmo(void);
-    virtual ~CWeaponAmmo(void);
+    CWeaponAmmo();
+    virtual ~CWeaponAmmo();
 
     virtual CWeaponAmmo* cast_weapon_ammo() { return this; }
     virtual void Load(LPCSTR section);

@@ -40,7 +40,8 @@ public:
         for (int i = 0; i < j; ++i)
         {
             xr_strconcat(S, caBaseName, caBaseNames[i]);
-            A[i] = tpKinematics->ID_Cycle_Safe(S);
+            A[i] = tpKinematics->ID_Cycle_Safe(shared_str{S});
+
 #ifdef DEBUG
             if (A[i] && psAI_Flags.test(aiAnimation))
                 Msg("* Loaded animation %s", S);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIListBox.h"
+
 #include "UIListBoxItem.h"
 #include "UIScrollBar.h"
 
@@ -22,7 +23,7 @@ CUIListBox::CUIListBox()
     Init();
 }
 
-void CUIListBox::SetSelectionTexture(LPCSTR texture) { m_selection_texture = texture; }
+void CUIListBox::SetSelectionTexture(LPCSTR texture) { m_selection_texture._set(texture); }
 
 bool CUIListBox::OnMouse(float x, float y, EUIMessages mouse_action)
 {
@@ -53,7 +54,7 @@ CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
 
     pItem->SetFont(GetFont());
     pItem->SetSelected(false);
-    pItem->SetText(*CStringTable().translate(text));
+    pItem->SetText(*CStringTable().translate(shared_str{text}));
     pItem->SetTextColor(m_text_color, m_text_color_s);
     pItem->SetMessageTarget(this);
     AddWindow(pItem, true);

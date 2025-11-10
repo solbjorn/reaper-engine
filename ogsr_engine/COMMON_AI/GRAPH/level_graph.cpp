@@ -21,15 +21,15 @@ CLevelGraph::CLevelGraph()
     sh_debug->create("editor\\wire"); // sh_debug->create("debug\\ai_nodes", "$null");
 
     string_path file_name;
-    FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
+    std::ignore = FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
 
     m_reader = FS.r_open(file_name);
 
     // m_header & data
-    m_header = (CHeader*)m_reader->pointer();
+    m_header = (const CHeader*)m_reader->pointer();
     R_ASSERT(header().version() == XRAI_CURRENT_VERSION);
     m_reader->advance(sizeof(CHeader));
-    m_nodes = (CVertex*)m_reader->pointer();
+    m_nodes = (const CVertex*)m_reader->pointer();
     m_row_length = iFloor((header().box().max.z - header().box().min.z) / header().cell_size() + EPS_L + 1.5f);
     m_column_length = iFloor((header().box().max.x - header().box().min.x) / header().cell_size() + EPS_L + 1.5f);
     m_access_mask.assign(header().vertex_count(), true);
@@ -179,9 +179,9 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 u32 CLevelGraph::vertex_id(const Fvector& position) const
 {
     CPosition _vertex_position = vertex_position(position);
-    CVertex* B = m_nodes;
-    CVertex* E = m_nodes + header().vertex_count();
-    CVertex* I = std::lower_bound(B, E, _vertex_position.xz());
+    const CVertex* B = m_nodes;
+    const CVertex* E = m_nodes + header().vertex_count();
+    const CVertex* I = std::lower_bound(B, E, _vertex_position.xz());
     if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
         return (u32(-1));
 

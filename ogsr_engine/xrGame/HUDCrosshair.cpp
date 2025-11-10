@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "HUDCrosshair.h"
+
 #include "UIStaticItem.h"
 
 CHUDCrosshair::CHUDCrosshair()
@@ -16,7 +17,7 @@ CHUDCrosshair::CHUDCrosshair()
     radius = 0;
 }
 
-CHUDCrosshair::~CHUDCrosshair() {}
+CHUDCrosshair::~CHUDCrosshair() = default;
 
 void CHUDCrosshair::Load()
 {
@@ -40,7 +41,7 @@ void CHUDCrosshair::Load()
 void CHUDCrosshair::SetDispersion(float disp)
 {
     Fvector4 r;
-    Fvector R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
+    const Fvector R{VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
     Device.mProject.transform(r, R);
 
     const Fvector2 scr_size{float(::Render->getTarget()->get_width(R__IMM_CTX_ID)), float(::Render->getTarget()->get_height(R__IMM_CTX_ID))};

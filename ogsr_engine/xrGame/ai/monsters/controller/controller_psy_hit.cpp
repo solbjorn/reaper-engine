@@ -28,13 +28,13 @@ void CControllerPsyHit::reinit()
     inherited::reinit();
 
     IKinematicsAnimated* skel = smart_cast<IKinematicsAnimated*>(m_object->Visual());
-    m_stage[0] = skel->ID_Cycle_Safe("psy_attack_0");
+    m_stage[0] = skel->ID_Cycle_Safe(shared_str{"psy_attack_0"});
     VERIFY(m_stage[0]);
-    m_stage[1] = skel->ID_Cycle_Safe("psy_attack_1");
+    m_stage[1] = skel->ID_Cycle_Safe(shared_str{"psy_attack_1"});
     VERIFY(m_stage[1]);
-    m_stage[2] = skel->ID_Cycle_Safe("psy_attack_2");
+    m_stage[2] = skel->ID_Cycle_Safe(shared_str{"psy_attack_2"});
     VERIFY(m_stage[2]);
-    m_stage[3] = skel->ID_Cycle_Safe("psy_attack_3");
+    m_stage[3] = skel->ID_Cycle_Safe(shared_str{"psy_attack_3"});
     VERIFY(m_stage[3]);
     m_current_index = 0;
 

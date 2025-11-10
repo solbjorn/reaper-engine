@@ -15,7 +15,7 @@
 CPatrolPathParams::CPatrolPathParams(LPCSTR caPatrolPathToGo, const PatrolPathManager::EPatrolStartType tPatrolPathStart, const PatrolPathManager::EPatrolRouteType tPatrolPathStop,
                                      bool bRandom, u32 index)
 {
-    m_path_name = caPatrolPathToGo;
+    m_path_name._set(caPatrolPathToGo);
     m_path = ai().patrol_paths().safe_path(m_path_name, true);
 
 #ifdef CRASH_ON_INVALID_VERTEX_ID
@@ -64,9 +64,8 @@ GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id(u32 index) const
 
 u32 CPatrolPathParams::point(LPCSTR name) const
 {
-    if (m_path->point(name))
-        return (m_path->point(name)->vertex_id());
-    return (u32(-1));
+    auto pt = m_path->point(shared_str{name});
+    return pt ? pt->vertex_id() : std::numeric_limits<u32>::max();
 }
 
 u32 CPatrolPathParams::point(const Fvector& point) const { return (m_path->point(point)->vertex_id()); }

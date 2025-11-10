@@ -34,7 +34,7 @@ public:
     {
         R_ASSERT(p && count && (B.count + count < NET_PacketSizeLimit));
 
-        CopyMemory(&B.data[B.count], p, count);
+        std::memcpy(&B.data[B.count], p, count);
         B.count += count;
     }
     IC void w_seek(u32 pos, const void* p, u32 count) // random write (only inside allocated region)
@@ -42,7 +42,7 @@ public:
         R_ASSERT(p && count && (pos + count < NET_PacketSizeLimit));
         // ASSERT_FMT_DBG(pos + count <= B.count, "!![%s] pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, pos, count, B.count);
 
-        CopyMemory(&B.data[pos], p, count);
+        std::memcpy(&B.data[pos], p, count);
     }
     IC u32 w_tell() { return B.count; }
     IC void w_advance(u32 count)
@@ -209,7 +209,7 @@ public:
         R_ASSERT(p && count && (r_pos + count < NET_PacketSizeLimit));
         // ASSERT_FMT_DBG(r_pos + count <= B.count, "!![%s] r_pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, r_pos, count, B.count);
 
-        CopyMemory(p, &B.data[r_pos], count);
+        std::memcpy(p, &B.data[r_pos], count);
         r_pos += count;
     }
     IC BOOL r_eof() { return r_pos >= B.count; }
@@ -417,7 +417,7 @@ public:
 
     void r_stringZ(shared_str& dest)
     {
-        dest = LPCSTR(&B.data[r_pos]);
+        dest._set(LPCSTR(&B.data[r_pos]));
         r_advance(dest.size() + 1);
     }
 

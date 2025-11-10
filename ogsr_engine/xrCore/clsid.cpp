@@ -2,10 +2,10 @@
 
 void CLSID2TEXT(CLASS_ID id, LPSTR text)
 {
-    text[8] = 0;
+    text[8] = '\0';
     for (int i = 7; i >= 0; i--)
     {
-        text[i] = char(id & 0xff);
+        text[i] = gsl::narrow_cast<char>(id & std::numeric_limits<u8>::max());
         id >>= 8;
     }
 }
@@ -14,9 +14,9 @@ CLASS_ID TEXT2CLSID(LPCSTR text)
 {
     VERIFY3(xr_strlen(text) <= 8, "Beer from creator CLASS_ID:", text);
     char buf[9];
-    buf[8] = 0;
+    buf[8] = '\0';
     strncpy(buf, text, 8);
-    size_t need = 8 - xr_strlen(buf);
+    gsl::index need = 8 - xr_strlen(buf);
     while (need)
     {
         buf[8 - need] = ' ';

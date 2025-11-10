@@ -44,21 +44,20 @@ void CStepManager::reload(LPCSTR section)
 
     for (u32 i = 0; pSettings->r_line(anim_section, i, &anim_name, &val); ++i)
     {
-        _GetItem(val, 0, cur_elem);
-
+        std::ignore = _GetItem(val, 0, cur_elem);
         param.cycles = u8(atoi(cur_elem));
         R_ASSERT(param.cycles >= 1);
 
         for (u32 j = 0; j < m_legs_count; j++)
         {
-            _GetItem(val, 1 + j * 2, cur_elem);
+            std::ignore = _GetItem(val, 1 + j * 2, cur_elem);
             param.step[j].time = float(atof(cur_elem));
-            _GetItem(val, 1 + j * 2 + 1, cur_elem);
+            std::ignore = _GetItem(val, 1 + j * 2 + 1, cur_elem);
             param.step[j].power = float(atof(cur_elem));
             VERIFY(_valid(param.step[j].power));
         }
 
-        MotionID motion_id = skeleton_animated->ID_Cycle_Safe(anim_name);
+        MotionID motion_id = skeleton_animated->ID_Cycle_Safe(shared_str{anim_name});
         if (!motion_id)
             continue;
 

@@ -35,11 +35,11 @@ public:
         SListener ToRHS() const
         {
             return {
-                {position.x, position.y, -position.z},
+                Fvector{position.x, position.y, -position.z},
                 {
-                    {orientation[0].x, orientation[0].y, -orientation[0].z},
-                    {orientation[1].x, orientation[1].y, -orientation[1].z},
-                    {orientation[2].x, orientation[2].y, -orientation[2].z},
+                    Fvector{orientation[0].x, orientation[0].y, -orientation[0].z},
+                    Fvector{orientation[1].x, orientation[1].y, -orientation[1].z},
+                    Fvector{orientation[2].x, orientation[2].y, -orientation[2].z},
                 },
             };
         }

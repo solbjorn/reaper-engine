@@ -91,9 +91,6 @@ public:
 
 str_value* str_container_impl::insert(gsl::czstring str)
 {
-    if (str == nullptr) [[unlikely]]
-        return nullptr;
-
     const absl::string_view sv{str};
     const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
@@ -104,7 +101,7 @@ str_value* str_container_impl::insert(gsl::czstring str)
     if (iter != map.cend())
         return iter->second.get();
 
-    auto elem = val_t{static_cast<str_value*>(xr_malloc(sizeof(str_value) + sv.size() + 1))};
+    auto elem = val_t{static_cast<str_value*>(xr_malloc(gsl::index{sizeof(str_value)} + std::ssize(sv) + 1))};
     elem->dwReference = 0;
     elem->dwLength = std::ssize(sv);
     elem->hash = xxh;
@@ -179,7 +176,7 @@ void str_container::dump()
     string_path path;
     FILE* f{};
 
-    FS.update_path(path, "$logs$", "$str_dump$.txt");
+    std::ignore = FS.update_path(path, "$logs$", "$str_dump$.txt");
     R_ASSERT(fopen_s(&f, path, "w") == 0);
     const auto _ = gsl::finally([f] { fclose(f); });
 

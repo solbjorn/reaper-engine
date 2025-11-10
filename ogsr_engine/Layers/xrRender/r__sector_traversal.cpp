@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
 #include "fvf.h"
 
-CPortalTraverser::CPortalTraverser() { i_marker = 0xffffffff; }
+#include "../../xr_3da/environment.h"
+#include "../../xr_3da/igame_persistent.h"
+
+CPortalTraverser::CPortalTraverser() = default;
 
 #ifdef DEBUG
 xr_vector<CSector*> dbg_sectors;
@@ -12,7 +13,8 @@ xr_vector<CSector*> dbg_sectors;
 
 void CPortalTraverser::traverse(CSector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
 {
-    constexpr Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
+    static constexpr Fmatrix m_viewport_01{
+        1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f / 2.0f + 0.0f + 0.0f, 1.0f / 2.0f + 0.0f + 0.0f, 0.0f, 1.0f};
 
     if (options & VQ_FADE)
     {

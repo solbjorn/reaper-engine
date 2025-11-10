@@ -16,7 +16,7 @@ public:
     CLASS_ID CLS_ID{};
 
     DLL_Pure() = default;
-    DLL_Pure(void*) {}
+    explicit DLL_Pure(void*) {}
     virtual ~DLL_Pure() = 0;
 
     virtual DLL_Pure* _construct() { return this; }
@@ -61,7 +61,7 @@ public:
 extern xr_token* vid_quality_token;
 
 // xrGame.cpp
-DLL_Pure* xrFactory_Create(CLASS_ID clsid);
+[[nodiscard]] DLL_Pure* xrFactory_Create(CLASS_ID clsid);
 void xrFactory_Destroy(DLL_Pure* O);
 
 void AttachGame();

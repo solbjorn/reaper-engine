@@ -3,7 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "LightTrack.h"
+
 #include "../../include/xrRender/RenderVisual.h"
 #include "../../xr_3da/xr_object.h"
 #include "../../xr_3da/igame_persistent.h"
@@ -146,9 +148,9 @@ void CROS_impl::update(IRenderable* O)
     // Process ambient lighting and approximate average lighting
     // Process our lights to find average luminescences
     const auto& desc = *g_pGamePersistent->Environment().CurrentEnv;
-    Fvector accum = {desc.ambient.x, desc.ambient.y, desc.ambient.z};
-    Fvector hemi = {desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z};
-    Fvector sun_ = {desc.sun_color.x, desc.sun_color.y, desc.sun_color.z};
+    Fvector accum{desc.ambient.x, desc.ambient.y, desc.ambient.z};
+    Fvector hemi{desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z};
+    Fvector sun_{desc.sun_color.x, desc.sun_color.y, desc.sun_color.z};
     if (MODE & IRender_ObjectSpecific::TRACE_HEMI)
         hemi.mul(smooth.hemi);
     else
@@ -172,7 +174,7 @@ void CROS_impl::update(IRenderable* O)
             float a = (1 / (L->attenuation0 + L->attenuation1 * d + L->attenuation2 * d * d) - d * L->falloff) * (L->flags.bStatic ? 1.f : 2.f);
             a = (a > 0) ? a : 0.0f;
 
-            Fvector3 dir;
+            Fvector dir;
             dir.sub(L->position, position);
             dir.normalize_safe();
 
@@ -186,8 +188,7 @@ void CROS_impl::update(IRenderable* O)
             lacc.z += lights[lit].color.b * a;
         }
 
-        const float minHemiValue = 1 / 255.f;
-
+        constexpr float minHemiValue{1.0f / 255.0f};
         float hemi_light = (lacc.x + lacc.y + lacc.z) / 3.0f * ps_r2_dhemi_light_scale;
 
         value.hemi += hemi_light;
@@ -212,7 +213,7 @@ void CROS_impl::update(IRenderable* O)
     if (bFirstTime)
     {
         smooth.hemi = value.hemi;
-        CopyMemory(smooth.hemi_cube, value.hemi_cube, sizeof(value.hemi_cube));
+        std::memcpy(smooth.hemi_cube, value.hemi_cube, sizeof(value.hemi_cube));
     }
 
     update_smooth();
@@ -343,9 +344,12 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
     //	float	l_i				=	1.f-l_f;
     int _pass = 0;
     for (int it = 0; it < result_count; it++)
+    {
         if (result[it])
             _pass++;
-    value.hemi = float(_pass) / float(result_count ? result_count : 1);
+    }
+
+    value.hemi = gsl::narrow_cast<f32>(_pass) / gsl::narrow_cast<f32>(result_count ? result_count : 1);
     value.hemi *= ps_r2_dhemi_sky_scale;
 
     for (int it = 0; it < result_count; it++)
@@ -370,7 +374,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
     if (bTraceLights)
     {
         // Select nearest lights
-        const Fvector bb_size = {radius, radius, radius};
+        const Fvector bb_size{radius, radius, radius};
 
         static xr_vector<ISpatial*> lstSpatial;
         g_SpatialSpace->q_box(lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);

@@ -75,9 +75,9 @@ struct R_constant_load
     // element class
     u16 cls{std::numeric_limits<u16>::max()};
 
-    R_constant_load() = default;
+    constexpr R_constant_load() = default;
 
-    IC BOOL equal(R_constant_load& C) { return (index == C.index) && (cls == C.cls); }
+    [[nodiscard]] constexpr bool equal(const R_constant_load& C) const { return index == C.index && cls == C.cls; }
 };
 
 struct R_constant : public xr_resource
@@ -86,8 +86,8 @@ struct R_constant : public xr_resource
 
 public:
     shared_str name; // HLSL-name
-    u16 type; // float=0/integer=1/boolean=2
-    u32 destination; // pixel/vertex/(or both)/sampler
+    u16 type{std::numeric_limits<u16>::max()}; // float=0/integer=1/boolean=2
+    u32 destination{}; // pixel/vertex/(or both)/sampler
 
     R_constant_load ps;
     R_constant_load vs;
@@ -96,14 +96,13 @@ public:
     R_constant_load ds;
     R_constant_load cs;
     R_constant_load samp;
-    R_constant_setup* handler;
+    R_constant_setup* handler{};
 
-    R_constant() : type(u16(-1)), destination(0), handler(nullptr) {}
+    R_constant() = default;
 
-    IC R_constant_load& get_load(u32 destination)
+    [[nodiscard]] R_constant_load& get_load(u32 destination)
     {
-        static R_constant_load fake;
-        switch (destination & 0xFF)
+        switch (destination & std::numeric_limits<u8>::max())
         {
         case RC_dest_vertex: return vs;
         case RC_dest_pixel: return ps;
@@ -114,16 +113,30 @@ public:
         case RC_dest_compute: return cs;
         default: FATAL("invalid enumeration for shader");
         }
-        return fake;
     }
 
-    IC BOOL equal(R_constant& C)
+    [[nodiscard]] const R_constant_load& get_load(u32 destination) const
+    {
+        switch (destination & std::numeric_limits<u8>::max())
+        {
+        case RC_dest_vertex: return vs;
+        case RC_dest_pixel: return ps;
+        case RC_dest_sampler: return samp;
+        case RC_dest_geometry: return gs;
+        case RC_dest_hull: return hs;
+        case RC_dest_domain: return ds;
+        case RC_dest_compute: return cs;
+        default: FATAL("invalid enumeration for shader");
+        }
+    }
+
+    [[nodiscard]] bool equal(const R_constant& C) const
     {
         return std::is_eq(xr_strcmp(name, C.name)) && type == C.type && destination == C.destination && ps.equal(C.ps) && vs.equal(C.vs) && gs.equal(C.gs) && hs.equal(C.hs) &&
             ds.equal(C.ds) && cs.equal(C.cs) && samp.equal(C.samp) && handler == C.handler;
     }
 };
-typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
+using ref_constant = resptr_core<R_constant, resptr_base<R_constant>>;
 
 // Automatic constant setup
 class XR_NOVTABLE R_constant_setup : public virtual RTTI::Enable
@@ -154,22 +167,22 @@ public:
 private:
     void fatal(LPCSTR s);
 
-    BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
-    BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
+    [[nodiscard]] BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
+    [[nodiscard]] BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 
 public:
     R_constant_table() = default;
     ~R_constant_table();
 
     void clear();
-    BOOL parse(void* desc, u32 destination);
-    void merge(R_constant_table* C);
-    ref_constant get(LPCSTR name) const; // slow search
-    ref_constant get(const shared_str& name) const; // fast search
+    [[nodiscard]] BOOL parse(void* desc, u32 destination);
+    void merge(const R_constant_table* T);
+    [[nodiscard]] ref_constant get(LPCSTR name) const; // slow search
+    [[nodiscard]] ref_constant get(const shared_str& name) const; // fast search
 
-    BOOL equal(const R_constant_table& C) const;
-    BOOL equal(const R_constant_table* C) const { return equal(*C); }
-    BOOL empty() const { return table.empty(); }
+    [[nodiscard]] bool equal(const R_constant_table& C) const;
+    [[nodiscard]] bool equal(const R_constant_table* C) const { return equal(*C); }
+    [[nodiscard]] bool empty() const { return table.empty(); }
 
     void clone(const R_constant_table& from)
     {
@@ -179,7 +192,7 @@ public:
         std::ranges::copy(from.m_CBTable, m_CBTable);
     }
 };
-typedef resptr_core<R_constant_table, resptr_base<R_constant_table>> ref_ctable;
+using ref_ctable = resptr_core<R_constant_table, resptr_base<R_constant_table>>;
 
 #include "../xrRenderDX10/dx10ConstantBuffer_impl.h"
 

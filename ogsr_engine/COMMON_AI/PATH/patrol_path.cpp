@@ -44,18 +44,17 @@ CPatrolPath& CPatrolPath::load_ini(CInifile::Sect& section)
 {
     const char* points = section.r_string("points");
     const int vertex_count = _GetItemCount(points);
-
     string16 prefix;
+
     for (int i = 0; i < vertex_count; ++i)
     {
-        _GetItem(points, i, prefix);
-
+        std::ignore = _GetItem(points, i, prefix);
         add_vertex(CPatrolPoint(this).load_ini(section, prefix), i);
     }
 
     for (int i = 0; i < vertex_count; ++i)
     {
-        _GetItem(points, i, prefix);
+        std::ignore = _GetItem(points, i, prefix);
 
         string256 full_name;
         strconcat(sizeof(full_name), full_name, prefix, ":", "links");
@@ -68,7 +67,7 @@ CPatrolPath& CPatrolPath::load_ini(CInifile::Sect& section)
             string32 link;
             for (int k = 0; k < links_count; ++k)
             {
-                _GetItem(links, k, link);
+                std::ignore = _GetItem(links, k, link);
 
                 u32 vertex_idx;
                 float probability;

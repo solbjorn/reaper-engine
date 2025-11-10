@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "MainMenu.h"
+
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIMMShniaga.h"
@@ -82,7 +83,7 @@ void CMainMenu::ReadTextureInfo()
 
         for (int i = 0; i < itemsCount; i++)
         {
-            _GetItem(itemsList.c_str(), i, single_item);
+            std::ignore = _GetItem(itemsList.c_str(), i, single_item);
             strcat_s(single_item, ".xml");
             CUITextureMaster::ParseShTexInfo(single_item);
         }
@@ -90,20 +91,16 @@ void CMainMenu::ReadTextureInfo()
 
     // autoload
     FS_FileSet fset;
-    FS.file_list(fset, "$game_config$", FS_ListFiles, "ui\\textures_descr\\*.xml");
-    FS_FileSetIt fit = fset.begin();
-    FS_FileSetIt fit_e = fset.end();
+    std::ignore = FS.file_list(fset, "$game_config$", FS_ListFiles, "ui\\textures_descr\\*.xml");
 
-    for (; fit != fit_e; ++fit)
+    for (const auto& file : fset)
     {
         string_path fn1, fn2, fn3;
-        _splitpath((*fit).name.c_str(), fn1, fn2, fn3, nullptr);
+        _splitpath(file.name.c_str(), fn1, fn2, fn3, nullptr);
 
         xr_strcpy(fn1, "textures_descr\\");
         xr_strcat(fn1, fn3);
         xr_strcat(fn1, ".xml");
-
-        // xr_string fn1 = (*fit).name;
 
         CUITextureMaster::ParseShTexInfo(fn1);
     }
@@ -133,19 +130,18 @@ void CMainMenu::Activate(bool bActivate)
                 m_Flags.set(flActive | flNeedChangeCapture, FALSE);
                 return;
             }
+
             xr_delete(m_startDialog);
             m_startDialog = smart_cast<CUIDialogWnd*>(dlg);
             VERIFY(m_startDialog);
         }
 
         m_Flags.set(flRestoreConsole, Console->bVisible);
-
         m_Flags.set(flRestorePause, Device.Paused());
 
         Console->Hide();
 
         m_Flags.set(flRestoreCursor, GetUICursor()->IsVisible());
-
         m_Flags.set(flRestorePauseStr, bShowPauseString);
 
         bShowPauseString = FALSE;
@@ -162,13 +158,14 @@ void CMainMenu::Activate(bool bActivate)
             Device.seqRender.Remove(g_pGameLevel);
             CCameraManager::ResetPP();
         }
+
         Device.seqRender.Add(this, 4); // 1-console 2-cursor 3-tutorial
 
         if (!g_pGameLevel)
         {
             Discord.Set_active_task_text(nullptr); // Апдейт таска должен быть выше апдейта значка уровня!
 
-            const char* menu_status = CStringTable().translate("discord_status_mm").c_str();
+            gsl::czstring menu_status = CStringTable().translate(shared_str{"discord_status_mm"}).c_str();
             Discord.Update(std::is_eq(xr_strcmp(menu_status, "discord_status_mm")) ? "In main menu" : menu_status);
         }
     }

@@ -46,8 +46,8 @@ extern const Matrix idmat;
 // #define cpmatrix(u,v) memcpy(u,v,sizeof(Matrix))
 // #define cpvector(u,v) memcpy(u,v,sizeof(float)*3)
 
-#define cpmatrix(u, v) CopyMemory(u, v, sizeof(Matrix))
-#define cpvector(u, v) CopyMemory(u, v, sizeof(float) * 3)
+#define cpmatrix(u, v) std::memcpy(u, v, sizeof(Matrix))
+#define cpvector(u, v) std::memcpy(u, v, sizeof(float) * 3)
 
 void hmatmult(Matrix A, const Matrix B, const Matrix C);
 void inverthomomatrix(Matrix N, Matrix M);

@@ -91,11 +91,11 @@ static void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR 
         R_ASSERT3(!strchr(*temp, ' '), invalid_id_description, *temp);
         R_ASSERT2(std::is_neq(xr_strcmp(temp, INVALID_ID_STRING)), invalid_id_redefinition);
 
-        auto ret = result.try_emplace(*temp, atoi(N));
+        auto ret = result.try_emplace(temp, atoi(N));
         ASSERT_FMT(ret.second == true, "%s %s!", duplicated_id_description, *temp);
     }
 
-    result.try_emplace(INVALID_ID_STRING, INVALID_ID);
+    result.try_emplace(shared_str{INVALID_ID_STRING}, INVALID_ID);
 }
 
 static void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id) { alife->kill_entity(monster, game_vertex_id); }
@@ -319,15 +319,19 @@ static KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self, const ALife::_OB
     return (self->registry(info_portions).object(id, true));
 }
 
+namespace
+{
 class CFindByIDPred
 {
 public:
-    CFindByIDPred(shared_str element_to_find) { element = element_to_find; }
-    bool operator()(const INFO_DATA& data) const { return data.info_id == element; }
+    constexpr explicit CFindByIDPred(gsl::czstring element_to_find) { element._set(element_to_find); }
+
+    [[nodiscard]] bool operator()(const INFO_DATA& data) const { return data.info_id == element; }
 
 private:
     shared_str element;
 };
+} // namespace
 
 static bool has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& id, LPCSTR info_id)
 {

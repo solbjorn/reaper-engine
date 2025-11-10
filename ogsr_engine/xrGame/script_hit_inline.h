@@ -10,4 +10,4 @@
 
 IC CScriptHit::CScriptHit() : m_caBoneName{""} {}
 
-IC void CScriptHit::set_bone_name(LPCSTR bone_name) { m_caBoneName = bone_name; }
+IC void CScriptHit::set_bone_name(LPCSTR bone_name) { m_caBoneName._set(bone_name); }

@@ -9,13 +9,13 @@
 #include "detailformat.h"
 #include "detailmodel.h"
 
-constexpr int dm_max_decompress = 7;
-constexpr int dm_cache1_count = 4; //
-constexpr int dm_max_objects = 64;
-constexpr int dm_obj_in_slot = 4;
-constexpr float dm_slot_size = DETAIL_SLOT_SIZE;
+constexpr inline int dm_max_decompress{7};
+constexpr inline int dm_cache1_count{4}; //
+constexpr inline int dm_max_objects{64};
+constexpr inline int dm_obj_in_slot{4};
+constexpr inline float dm_slot_size{DETAIL_SLOT_SIZE};
+constexpr inline u32 dm_max_cache_size{62001 * 2}; // assuming max dm_size = 124
 
-constexpr u32 dm_max_cache_size = 62001 * 2; // assuming max dm_size = 124
 extern u32 dm_size;
 extern u32 dm_cache1_line;
 extern u32 dm_cache_line;
@@ -128,7 +128,7 @@ public:
 
     IReader* dtFS{};
     DetailHeader dtH;
-    DetailSlot* dtSlots{}; // note: pointer into VFS
+    const DetailSlot* dtSlots{}; // note: pointer into VFS
     DetailSlot DS_empty;
 
     DetailVec objects;
@@ -164,7 +164,7 @@ private:
                         const Fvector* light_position);
 
     // get unpacked slot
-    DetailSlot& QueryDB(int sx, int sz);
+    const DetailSlot& QueryDB(int sx, int sz);
 
 public:
     void cache_Initialize();

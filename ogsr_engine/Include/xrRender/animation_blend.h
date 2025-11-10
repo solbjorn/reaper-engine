@@ -42,7 +42,7 @@ public:
     PlayCallback Callback;
     void* CallbackParam;
 
-    u32 mem_usage() { return sizeof(*this); }
+    [[nodiscard]] constexpr gsl::index mem_usage() const { return gsl::index{sizeof(*this)}; }
     IC bool update_time(float dt);
     IC void update_play(float dt, PlayCallback _Callback);
     IC bool update_falloff(float dt);

@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 
-#include "QueryHelper.h"
 #include "r__occlusion.h"
+
+#include "QueryHelper.h"
 
 R_occlusion::~R_occlusion() { occq_destroy(); }
 
@@ -49,7 +50,7 @@ u32 R_occlusion::occq_begin(u32& ID, ctx_id_t context_id)
         return 0;
     }
 
-    std::scoped_lock slock(lock);
+    std::scoped_lock slock{lock};
 
     if (last_frame != Device.dwFrame)
     {
@@ -92,7 +93,7 @@ void R_occlusion::occq_end(u32& ID, ctx_id_t context_id)
     if (!enabled || ID == iInvalidHandle)
         return;
 
-    std::scoped_lock slock(lock);
+    std::scoped_lock slock{lock};
 
     if (!used[ID].Q)
         return;
@@ -106,7 +107,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
     if (!enabled || ID == iInvalidHandle)
         return std::numeric_limits<occq_result>::max();
 
-    std::scoped_lock slock(lock);
+    std::scoped_lock slock{lock};
 
     if (!used[ID].Q)
         return std::numeric_limits<occq_result>::max();
@@ -124,7 +125,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
         if (!SwitchToThread())
             Sleep(ps_r2_wait_sleep);
 
-        if (T.GetElapsed_ms() > gsl::narrow_cast<u64>(ps_r2_wait_timeout))
+        if (T.GetElapsed_ms() > ps_r2_wait_timeout)
         {
             fragments = std::numeric_limits<occq_result>::max();
             break;
@@ -146,7 +147,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 
 void R_occlusion::occq_free(u32 ID)
 {
-    std::scoped_lock slock(lock);
+    std::scoped_lock slock{lock};
 
     if (used[ID].Q)
     {

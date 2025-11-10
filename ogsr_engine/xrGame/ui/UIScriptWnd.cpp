@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIScriptWnd.h"
+
 #include "../HudManager.h"
 #include "../object_broker.h"
 #include "../callback_info.h"
@@ -37,7 +38,7 @@ void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 bool CUIDialogWndEx::Load(LPCSTR) { return true; }
 
-void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(control_id, event, function); }
+void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, sol::function function) { m_callbacks.emplace_back(shared_str{control_id}, event, function); }
 
 bool CUIDialogWndEx::OnKeyboard(int dik, EUIMessages keyboard_action)
 {

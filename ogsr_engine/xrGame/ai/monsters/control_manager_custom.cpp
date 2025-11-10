@@ -152,11 +152,11 @@ void CControlManagerCustom::ta_fill_data(SAnimationTripleData& data, LPCSTR s1, 
 {
     // Load triple animations
     IKinematicsAnimated* skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
-    data.pool[0] = skel_animated->ID_Cycle_Safe(s1);
+    data.pool[0] = skel_animated->ID_Cycle_Safe(shared_str{s1});
     VERIFY(data.pool[0]);
-    data.pool[1] = skel_animated->ID_Cycle_Safe(s2);
+    data.pool[1] = skel_animated->ID_Cycle_Safe(shared_str{s2});
     VERIFY(data.pool[1]);
-    data.pool[2] = skel_animated->ID_Cycle_Safe(s3);
+    data.pool[2] = skel_animated->ID_Cycle_Safe(shared_str{s3});
     VERIFY(data.pool[2]);
     data.execute_once = execute_once;
     data.skip_prepare = skip_prep;
@@ -287,27 +287,31 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 
     if (s1)
     {
-        m_jump->setup_data().state_prepare.motion = skel_animated->ID_Cycle_Safe(s1);
+        m_jump->setup_data().state_prepare.motion = skel_animated->ID_Cycle_Safe(shared_str{s1});
         VERIFY(m_jump->setup_data().state_prepare.motion);
     }
     else
+    {
         m_jump->setup_data().state_prepare.motion.invalidate();
+    }
 
     if (s2)
     {
-        m_jump->setup_data().state_prepare_in_move.motion = skel_animated->ID_Cycle_Safe(s2);
+        m_jump->setup_data().state_prepare_in_move.motion = skel_animated->ID_Cycle_Safe(shared_str{s2});
         VERIFY(m_jump->setup_data().state_prepare_in_move.motion);
         m_jump->setup_data().flags.Or(SControlJumpData::ePrepareInMove);
     }
     else
+    {
         m_jump->setup_data().state_prepare_in_move.motion.invalidate();
+    }
 
-    m_jump->setup_data().state_glide.motion = skel_animated->ID_Cycle_Safe(s3);
+    m_jump->setup_data().state_glide.motion = skel_animated->ID_Cycle_Safe(shared_str{s3});
     VERIFY(m_jump->setup_data().state_glide.motion);
 
     if (s4)
     {
-        m_jump->setup_data().state_ground.motion = skel_animated->ID_Cycle_Safe(s4);
+        m_jump->setup_data().state_ground.motion = skel_animated->ID_Cycle_Safe(shared_str{s4});
         VERIFY(m_jump->setup_data().state_ground.motion);
     }
     else
@@ -605,8 +609,8 @@ void CControlManagerCustom::check_threaten()
 void CControlManagerCustom::add_melee_jump_data(LPCSTR left, LPCSTR right)
 {
     IKinematicsAnimated* skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
-    m_melee_jump_data.anim_ls = skel_animated->ID_Cycle_Safe(left);
-    m_melee_jump_data.anim_rs = skel_animated->ID_Cycle_Safe(right);
+    m_melee_jump_data.anim_ls = skel_animated->ID_Cycle_Safe(shared_str{left});
+    m_melee_jump_data.anim_rs = skel_animated->ID_Cycle_Safe(shared_str{right});
 }
 
 void CControlManagerCustom::check_melee_jump()
@@ -640,7 +644,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
     MotionID motion;
     if (left1)
     {
-        motion = skeleton_animated->ID_Cycle_Safe(left1);
+        motion = skeleton_animated->ID_Cycle_Safe(shared_str{left1});
         data.anim_stop_ls = motion;
         m_object->anim().AddAnimTranslation(motion, left1);
     }
@@ -651,7 +655,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 
     if (left2)
     {
-        motion = skeleton_animated->ID_Cycle_Safe(left2);
+        motion = skeleton_animated->ID_Cycle_Safe(shared_str{left2});
         data.anim_run_ls = motion;
         m_object->anim().AddAnimTranslation(motion, left2);
     }
@@ -662,7 +666,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 
     if (right1)
     {
-        motion = skeleton_animated->ID_Cycle_Safe(right1);
+        motion = skeleton_animated->ID_Cycle_Safe(shared_str{right1});
         data.anim_stop_rs = motion;
         m_object->anim().AddAnimTranslation(motion, right1);
     }
@@ -673,7 +677,7 @@ void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData& data, L
 
     if (right2)
     {
-        motion = skeleton_animated->ID_Cycle_Safe(right2);
+        motion = skeleton_animated->ID_Cycle_Safe(shared_str{right2});
         data.anim_run_rs = motion;
         m_object->anim().AddAnimTranslation(motion, right2);
     }

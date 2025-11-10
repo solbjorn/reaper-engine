@@ -22,17 +22,17 @@ IC CGameLevelCrossTable::CGameLevelCrossTable(LPCSTR fName)
 
     m_chunk = m_tpCrossTableVFS->open_chunk(CROSS_TABLE_CHUNK_DATA);
     R_ASSERT2(m_chunk, "Cross table is corrupted!");
-    m_tpaCrossTable = (CCell*)m_chunk->pointer();
+    m_tpaCrossTable = (const CCell*)m_chunk->pointer();
 }
 
-IC CGameLevelCrossTable::CGameLevelCrossTable(void* buffer, u32)
+IC CGameLevelCrossTable::CGameLevelCrossTable(const void* buffer, u32)
 {
     memcpy(&m_tCrossTableHeader, buffer, sizeof(m_tCrossTableHeader));
-    buffer = (u8*)buffer + sizeof(m_tCrossTableHeader);
+    buffer = (const u8*)buffer + sizeof(m_tCrossTableHeader);
 
     R_ASSERT(m_tCrossTableHeader.version() == XRAI_CURRENT_VERSION, "Cross table version mismatch!");
 
-    m_tpaCrossTable = (CCell*)buffer;
+    m_tpaCrossTable = (const CCell*)buffer;
     m_chunk = nullptr;
     m_tpCrossTableVFS = nullptr;
 }

@@ -7,12 +7,12 @@ struct xr_resource : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(xr_resource);
 
 public:
-    std::atomic<u32> ref_count{};
+    std::atomic<gsl::index> ref_count{};
 
     xr_resource() = default;
     virtual ~xr_resource() = default;
 
-    void clone(const xr_resource& from) { ref_count.exchange(from.ref_count); }
+    void clone(const xr_resource& from) { ref_count = from.ref_count.load(); }
 };
 
 struct xr_resource_flagged : public xr_resource
@@ -23,11 +23,11 @@ public:
     enum
     {
         RF_REGISTERED = 1 << 0,
+        RF_HUD_DISABLED = 1 << 1,
     };
 
     u32 dwFlags{};
-    int skinning;
-    bool hud_disabled;
+    s32 skinning{};
 
     void clone(const xr_resource_flagged& from)
     {
@@ -35,7 +35,6 @@ public:
 
         dwFlags = from.dwFlags;
         skinning = from.skinning;
-        hud_disabled = from.hud_disabled;
     }
 };
 
@@ -48,53 +47,53 @@ public:
 
     const char* set_name(const char* name)
     {
-        cName = name;
+        cName._set(name);
         return *cName;
     }
 };
 
 // resptr_BASE
-template <class T>
+template <typename T>
 class resptr_base
 {
 protected:
-    T* p_;
+    T* p_{};
 
     // ref-counting
-    void _inc()
+    constexpr void _inc()
     {
-        if (p_)
-            p_->ref_count++;
+        if (p_ != nullptr)
+            ++p_->ref_count;
     }
 
-    void _dec()
+    constexpr void _dec()
     {
-        if (p_ && !--p_->ref_count)
+        if (p_ != nullptr && --p_->ref_count == 0)
             xr_delete(p_);
     }
 
 public:
-    ICF void _set(T* rhs)
+    constexpr void _set(T* rhs)
     {
-        if (rhs)
-            rhs->ref_count++;
+        if (rhs != nullptr)
+            ++rhs->ref_count;
 
         _dec();
         p_ = rhs;
     }
 
-    ICF void _set(resptr_base<T> const& rhs)
+    constexpr void _set(const resptr_base<T>& rhs)
     {
         T* prhs = rhs._get();
         _set(prhs);
     }
 
-    ICF T* _get() const { return p_; }
-    void _clear() { p_ = nullptr; }
+    [[nodiscard]] constexpr T* _get() const { return p_; }
+    constexpr void _clear() { p_ = nullptr; }
 };
 
 // resptr_CORE
-template <class T, typename C>
+template <typename T, typename C>
 class resptr_core : public C
 {
 protected:
@@ -103,42 +102,42 @@ protected:
 
 public:
     // construction
-    resptr_core() { C::p_ = nullptr; }
+    constexpr resptr_core() { C::p_ = nullptr; }
 
-    resptr_core(T* p, const bool add_ref = true)
+    constexpr explicit resptr_core(T* p, bool add_ref = true)
     {
         C::p_ = p;
         if (add_ref)
             C::_inc();
     }
 
-    resptr_core(const self& rhs)
+    constexpr resptr_core(const self& rhs)
     {
         C::p_ = rhs.p_;
         C::_inc();
     }
 
-    ~resptr_core() { C::_dec(); }
+    constexpr ~resptr_core() { C::_dec(); }
 
     // assignment
-    self& operator=(const self& rhs)
+    constexpr self& operator=(const self& rhs)
     {
         this->_set(rhs);
-        return (self&)*this;
+        return *this;
     }
 
     // accessors
-    T& operator*() const { return *C::p_; }
-    T* operator->() const { return C::p_; }
+    [[nodiscard]] constexpr T& operator*() const { return *C::p_; }
+    [[nodiscard]] constexpr T* operator->() const { return C::p_; }
 
     // unspecified bool type
     typedef T* (resptr_core::*unspecified_bool_type)() const;
-    operator unspecified_bool_type() const { return C::p_ ? &resptr_core::_get : nullptr; }
 
-    bool operator!() const { return !C::p_; }
+    [[nodiscard]] constexpr operator unspecified_bool_type() const { return C::p_ ? &resptr_core::_get : nullptr; }
+    [[nodiscard]] constexpr explicit operator bool() const { return C::p_ != nullptr; }
 
     // fast swapping
-    void swap(self& rhs) { std::swap(this->p_, rhs.p_); }
+    constexpr void swap(self& rhs) { std::swap(this->p_, rhs.p_); }
 };
 
 // res_ptr == res_ptr
@@ -150,77 +149,77 @@ public:
 // res_ptr < res_ptr
 // res_ptr > res_ptr
 
-template <class T, class U, typename D>
-inline bool operator==(resptr_core<T, D> const& a, resptr_core<U, D> const& b)
+template <typename T, typename U, typename D>
+[[nodiscard]] constexpr bool operator==(const resptr_core<T, D>& a, const resptr_core<U, D>& b)
 {
     return a._get() == b._get();
 }
 
-template <class T, class U, typename D>
-inline bool operator!=(resptr_core<T, D> const& a, resptr_core<U, D> const& b)
+template <typename T, typename U, typename D>
+[[nodiscard]] constexpr bool operator!=(const resptr_core<T, D>& a, const resptr_core<U, D>& b)
 {
     return a._get() != b._get();
 }
 
-template <class T, typename D>
-inline bool operator==(resptr_core<T, D> const& a, T* b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator==(const resptr_core<T, D>& a, const T* b)
 {
     return a._get() == b;
 }
 
-template <class T, typename D>
-inline bool operator!=(resptr_core<T, D> const& a, T* b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator!=(const resptr_core<T, D>& a, const T* b)
 {
     return a._get() != b;
 }
 
-template <class T, typename D>
-inline bool operator==(T* a, resptr_core<T, D> const& b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator==(const T* a, const resptr_core<T, D>& b)
 {
     return a == b._get();
 }
 
-template <class T, typename D>
-inline bool operator!=(T* a, resptr_core<T, D> const& b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator!=(const T* a, const resptr_core<T, D>& b)
 {
     return a != b._get();
 }
 
-template <class T, typename D>
-inline bool operator<(resptr_core<T, D> const& a, resptr_core<T, D> const& b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator<(const resptr_core<T, D>& a, const resptr_core<T, D>& b)
 {
     return std::less<T*>()(a._get(), b._get());
 }
 
-template <class T, typename D>
-inline bool operator>(resptr_core<T, D> const& a, resptr_core<T, D> const& b)
+template <typename T, typename D>
+[[nodiscard]] constexpr bool operator>(const resptr_core<T, D>& a, const resptr_core<T, D>& b)
 {
     return std::less<T*>()(b._get(), a._get());
 }
 
 // externally visible swap
-template <class T, typename D>
-void swap(resptr_core<T, D>& lhs, resptr_core<T, D>& rhs)
+template <typename T, typename D>
+constexpr void swap(resptr_core<T, D>& lhs, resptr_core<T, D>& rhs)
 {
     lhs.swap(rhs);
 }
 
 // mem_fn support
-template <class T, typename D>
-T* get_pointer(resptr_core<T, D> const& p)
+template <typename T, typename D>
+[[nodiscard]] constexpr T* get_pointer(const resptr_core<T, D>& p)
 {
     return p.get();
 }
 
 // casting
-template <class T, class U, typename D>
-resptr_core<T, D> static_pointer_cast(resptr_core<U, D> const& p)
+template <typename T, typename U, typename D>
+[[nodiscard]] constexpr resptr_core<T, D> static_pointer_cast(const resptr_core<U, D>& p)
 {
     return static_cast<T*>(p.get());
 }
 
-template <class T, class U, typename D>
-resptr_core<T, D> dynamic_pointer_cast(resptr_core<U, D> const& p)
+template <typename T, typename U, typename D>
+[[nodiscard]] constexpr resptr_core<T, D> dynamic_pointer_cast(const resptr_core<U, D>& p)
 {
     return smart_cast<T*>(p.get());
 }

@@ -36,26 +36,23 @@ CScriptIniFile* reload_system_ini()
     CInifile* tmp{};
     string_path fname;
 
-    FS.update_path(fname, "$game_config$", "system_mods.ltx");
+    std::ignore = FS.update_path(fname, "$game_config$", "system_mods.ltx");
     if (FS.exist(fname))
     {
         tmp = xr_new<CInifile>(fname, TRUE, FALSE);
-
         tmp->load_file(TRUE);
 
         Msg("~ Apply system_mods.ltx...");
     }
 
-    FS.update_path(fname, "$game_config$", "system.ltx");
+    std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
     pSettings = xr_new<CInifile>(fname, TRUE, FALSE);
     pSettings->load_file(FALSE, tmp);
 
     CHECK_OR_EXIT(!pSettings->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
     if (tmp)
-    {
         xr_delete(tmp);
-    }
 
     return ((CScriptIniFile*)pSettings);
 }
@@ -77,7 +74,7 @@ void CScriptIniFile::script_register(sol::state_view& lua)
 
     // чтение ini как текста, без возможности сохранить
     lua.set_function("create_ini_file", [](const char* ini_string) {
-        IReader reader{(void*)ini_string, gsl::narrow_cast<size_t>(xr_strlen(ini_string))};
+        IReader reader{(void*)ini_string, xr_strlen(ini_string)};
         return std::make_unique<CScriptIniFile>(&reader, FS.get_path("$game_config$")->m_Path);
     });
 

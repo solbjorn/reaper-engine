@@ -69,12 +69,11 @@ public:
         psLifeTime = ps->LifeTime();
 
         Fmatrix pos;
-        Fvector zero_vel = {0.f, 0.f, 0.f};
         pos.k.set(*((Fvector*)c.normal));
         Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
         pos.c.set(*((Fvector*)c.pos));
 
-        ps->UpdateParent(pos, zero_vel);
+        ps->UpdateParent(pos, {});
         GamePersistent().ps_needtoplay.push_back(ps);
 
         if (m_object && psLifeTime > 0)
@@ -190,7 +189,7 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
             if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->CollideMarks->empty())
             {
                 wm_shader WallmarkShader = mtl_pair->CollideMarks->GenerateWallmark();
-                Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
+                std::ignore = Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST && !mtl_pair->CollideSounds.empty())
@@ -207,9 +206,7 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                     float volume = collide_volume_min;
 
                     if (vel_cret > Pars::vel_cret_sound)
-                    {
                         volume += vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
-                    }
 
                     if (auto sp = object_snd_player(data); sp)
                         sp->PlayNext(mtl_pair, (Fvector*)c->pos, true, &volume);
@@ -229,10 +226,13 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                     if (!Level().ph_commander().has_call(&find, &find))
                     {
                         MsgDbg("! Adding collide particle for obj id=%d", data->ph_ref_object->ID());
-                        Level().ph_commander().add_call(xr_new<CPHParticlesCondition>(), xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name, data->ph_ref_object));
+                        std::ignore =
+                            Level().ph_commander().add_call(xr_new<CPHParticlesCondition>(), xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name, data->ph_ref_object));
                     }
                     else
+                    {
                         MsgDbg("~ Skip collide particle...");
+                    }
                 }
             }
         }

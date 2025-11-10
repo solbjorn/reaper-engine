@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
+#include "../xrRender/r_constants.h"
+
 #include "../xrRender/ResourceManager.h"
+#include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 #include "../../xrCore/xrPool.h"
-#include "../xrRender/r_constants.h"
-#include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
 {
@@ -94,7 +95,7 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         if (!C)
         {
             C = table.emplace_back(xr_new<R_constant>()); //.g_constant_allocator.create();
-            C->name = name;
+            C->name._set(name);
             C->destination = destination;
             C->type = type;
             R_constant_load& L = C->get_load(destination);
@@ -167,7 +168,7 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
         if (!C)
         {
             C = table.emplace_back(xr_new<R_constant>()); //.g_constant_allocator.create();
-            C->name = ResDesc.Name;
+            C->name._set(ResDesc.Name);
             C->destination = RC_dest_sampler;
             C->type = type;
             R_constant_load& L = C->samp;
@@ -186,7 +187,9 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
     return TRUE;
 }
 
-IC u32 dest_to_shift_value(u32 destination)
+namespace
+{
+[[nodiscard]] constexpr u32 dest_to_shift_value(u32 destination)
 {
     switch (destination & 0xFF)
     {
@@ -201,7 +204,7 @@ IC u32 dest_to_shift_value(u32 destination)
     return 0;
 }
 
-IC u32 dest_to_cbuf_type(u32 destination)
+[[nodiscard]] constexpr u32 dest_to_cbuf_type(u32 destination)
 {
     switch (destination & 0xFF)
     {
@@ -216,6 +219,13 @@ IC u32 dest_to_cbuf_type(u32 destination)
     return 0;
 }
 
+template <class V, class K, class... Args>
+constexpr auto emplace_back(V& v, K&& k, Args&&... args)
+{
+    return v.emplace_back(std::piecewise_construct, std::forward_as_tuple(std::forward<K>(k)), std::forward_as_tuple(std::forward<Args>(args)...));
+}
+} // namespace
+
 BOOL R_constant_table::parse(void* _desc, u32 destination)
 {
     ID3DShaderReflection* pReflection = (ID3DShaderReflection*)_desc;
@@ -223,40 +233,33 @@ BOOL R_constant_table::parse(void* _desc, u32 destination)
     D3D_SHADER_DESC ShaderDesc{};
     pReflection->GetDesc(&ShaderDesc);
 
-    if (ShaderDesc.ConstantBuffers)
+    if (ShaderDesc.ConstantBuffers > 0)
     {
-        for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-            m_CBTable[id].reserve(ShaderDesc.ConstantBuffers);
-
-        //	Parse single constant table
-        ID3DShaderReflectionConstantBuffer* pTable{};
+        for (auto& tbl : m_CBTable)
+            tbl.reserve(ShaderDesc.ConstantBuffers);
 
         for (u16 iBuf = 0; iBuf < ShaderDesc.ConstantBuffers; ++iBuf)
         {
-            pTable = pReflection->GetConstantBufferByIndex(iBuf);
-            if (pTable)
+            //	Parse single constant table
+            ID3DShaderReflectionConstantBuffer* pTable = pReflection->GetConstantBufferByIndex(iBuf);
+            if (pTable != nullptr)
             {
                 //	Encode buffer index into destination
-                u32 updatedDest = destination;
-                updatedDest |= iBuf << dest_to_shift_value(destination);
+                const u32 updatedDest = destination | (iBuf << dest_to_shift_value(destination));
 
                 //	Encode bind dest (pixel/vertex buffer) and bind point index
-                u32 uiBufferIndex = iBuf;
-                uiBufferIndex |= dest_to_cbuf_type(destination);
+                const u32 uiBufferIndex = iBuf | dest_to_cbuf_type(destination);
 
-                parseConstants(pTable, updatedDest);
+                std::ignore = parseConstants(pTable, updatedDest);
 
-                for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-                {
-                    ref_cbuffer tempBuffer = RImplementation.Resources->_CreateConstantBuffer(id, pTable);
-                    m_CBTable[id].emplace_back(uiBufferIndex, tempBuffer);
-                }
+                for (auto [id, tbl] : xr::views_enumerate(m_CBTable))
+                    emplace_back(tbl, uiBufferIndex, RImplementation.Resources->_CreateConstantBuffer(id, pTable));
             }
         }
     }
 
     if (ShaderDesc.BoundResources)
-        parseResources(pReflection, ShaderDesc.BoundResources, destination);
+        std::ignore = parseResources(pReflection, ShaderDesc.BoundResources, destination);
 
     std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
 

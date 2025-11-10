@@ -154,10 +154,10 @@ void CHW::CreateDevice(HWND hwnd)
 
     // Set up the presentation parameters
     DXGI_SWAP_CHAIN_DESC1& sd = m_ChainDesc;
-    ZeroMemory(&sd, sizeof(sd));
+    std::memset(&sd, 0, sizeof(sd));
 
     DXGI_SWAP_CHAIN_FULLSCREEN_DESC& sd_fullscreen = m_ChainDescFullscreen;
-    ZeroMemory(&sd_fullscreen, sizeof(sd_fullscreen));
+    std::memset(&sd_fullscreen, 0, sizeof(sd_fullscreen));
 
     selectResolution(sd.Width, sd.Height, bWindowed);
     sd_fullscreen.Windowed = bWindowed;
@@ -540,7 +540,10 @@ struct _uniq_mode
 void free_vid_mode_list()
 {
     for (int i = 0; vid_mode_token[i].name; i++)
-        xr_free(vid_mode_token[i].name);
+    {
+        auto name = const_cast<gsl::zstring>(vid_mode_token[i].name);
+        xr_free(name);
+    }
 
     xr_free(vid_mode_token);
     vid_mode_token = nullptr;

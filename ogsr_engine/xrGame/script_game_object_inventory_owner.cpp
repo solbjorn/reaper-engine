@@ -11,6 +11,7 @@
 #include "xrMessages.h"
 #include "character_info.h"
 #include "gametask.h"
+#include "GameTaskManager.h"
 #include "actor.h"
 #include "level.h"
 #include "date_time.h"
@@ -44,7 +45,8 @@ bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
     CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
     if (!pInventoryOwner)
         return false;
-    pInventoryOwner->TransferInfo(info_id, true);
+
+    pInventoryOwner->TransferInfo(shared_str{info_id}, true);
     return true;
 }
 
@@ -53,9 +55,11 @@ bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
     CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
     if (!pInventoryOwner)
         return false;
+
     if (!HasInfo(info_id))
         return true;
-    pInventoryOwner->TransferInfo(info_id, false);
+
+    pInventoryOwner->TransferInfo(shared_str{info_id}, false);
     return true;
 }
 
@@ -82,13 +86,13 @@ void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, 
 bool GiveGameNews(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time)
 {
     GAME_NEWS_DATA news_data;
-    news_data.news_text = text;
+    news_data.news_text._set(text);
     if (show_time != 0)
         news_data.show_time = show_time; // override default
 
     VERIFY(xr_strlen(texture_name) > 0);
 
-    news_data.texture_name = texture_name;
+    news_data.texture_name._set(texture_name);
     news_data.tex_rect = tex_rect;
 
     if (delay == 0)
@@ -105,28 +109,29 @@ bool CScriptGameObject::HasInfo(LPCSTR info_id)
     if (!pInventoryOwner)
         return false;
 
-    return pInventoryOwner->HasInfo(info_id);
+    return pInventoryOwner->HasInfo(shared_str{info_id});
 }
+
 bool CScriptGameObject::DontHasInfo(LPCSTR info_id)
 {
     CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
     if (!pInventoryOwner)
         return true;
 
-    return !pInventoryOwner->HasInfo(info_id);
+    return !pInventoryOwner->HasInfo(shared_str{info_id});
 }
 
 xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
 {
     CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
     if (!pInventoryOwner)
-        return xrTime(0);
+        return xrTime{};
 
     INFO_DATA info_data;
-    if (pInventoryOwner->GetInfo(info_id, info_data))
+    if (pInventoryOwner->GetInfo(shared_str{info_id}, info_data))
         return xrTime(info_data.receive_time);
-    else
-        return xrTime(0);
+
+    return xrTime{};
 }
 
 bool CScriptGameObject::IsTalking()
@@ -591,7 +596,8 @@ void CScriptGameObject::SetCharacterCommunity(LPCSTR comm, int squad, int group)
     }
 
     CHARACTER_COMMUNITY community;
-    community.set(comm);
+    community.set(shared_str{comm});
+
     pInventoryOwner->SetCommunity(community.index());
     entity->ChangeTeam(community.team(), squad, group);
 }
@@ -608,8 +614,6 @@ LPCSTR CScriptGameObject::sound_voice_prefix() const
     return pInventoryOwner->SpecificCharacter().sound_voice_prefix();
 }
 
-#include "GameTaskManager.h"
-
 ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id, int objective_num)
 {
     /*	CActor* pActor = smart_cast<CActor*>(&object());
@@ -618,12 +622,11 @@ ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id, int objective_num
             return eTaskStateDummy;
         }
     */
-    shared_str shared_name = task_id;
-    CGameTask* t = Actor()->GameTaskManager().HasGameTask(shared_name);
+    CGameTask* t = Actor()->GameTaskManager().HasGameTask(shared_str{task_id});
     if (!t)
         return eTaskStateDummy;
 
-    if ((std::size_t)objective_num >= t->m_Objectives.size())
+    if (objective_num >= std::ssize(t->m_Objectives))
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "wrong objective num %d for task %s", objective_num, task_id);
         return eTaskStateDummy;
@@ -634,8 +637,7 @@ ETaskState CScriptGameObject::GetGameTaskState(LPCSTR task_id, int objective_num
 
 void CScriptGameObject::SetGameTaskState(ETaskState state, LPCSTR task_id, int objective_num)
 {
-    shared_str shared_name = task_id;
-    Actor()->GameTaskManager().SetTaskState(shared_name, (u16)objective_num, state);
+    Actor()->GameTaskManager().SetTaskState(shared_str{task_id}, (u16)objective_num, state);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -684,7 +686,7 @@ void CScriptGameObject::add_restrictions(LPCSTR out, LPCSTR in)
         return;
     }
 
-    monster->movement().restrictions().add_restrictions(out, in);
+    monster->movement().restrictions().add_restrictions(shared_str{out}, shared_str{in});
 }
 
 void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
@@ -696,7 +698,7 @@ void CScriptGameObject::remove_restrictions(LPCSTR out, LPCSTR in)
         return;
     }
 
-    monster->movement().restrictions().remove_restrictions(out, in);
+    monster->movement().restrictions().remove_restrictions(shared_str{out}, shared_str{in});
 }
 
 void CScriptGameObject::remove_all_restrictions()

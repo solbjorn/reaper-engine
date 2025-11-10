@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIScrollView.h"
+
 #include "UIScrollBar.h"
 #include "../ui_base.h"
 #include "../UICursor.h"
@@ -61,7 +62,7 @@ void CUIScrollView::Init()
     m_VScrollBar->Show(false);
 }
 
-void CUIScrollView::SetScrollBarProfile(LPCSTR profile) { m_scrollbar_profile = profile; }
+void CUIScrollView::SetScrollBarProfile(LPCSTR profile) { m_scrollbar_profile._set(profile); }
 
 void CUIScrollView::AddWindow(CUIWindow* pWnd, bool auto_delete, bool top)
 {

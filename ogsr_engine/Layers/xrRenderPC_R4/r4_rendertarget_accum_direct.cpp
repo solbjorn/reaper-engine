@@ -1,12 +1,18 @@
 #include "stdafx.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
 
+#include "../../xr_3da/environment.h"
+#include "../../xr_3da/igame_persistent.h"
+
+namespace
+{
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-static constexpr Fvector3 corners[8] = {{-1, -1, 0.7}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0.7}, {+1, +1, +1}, {+1, +1, 0.7}, {+1, -1, +1}, {+1, -1, 0.7}};
-static constexpr u16 facetable[16][3] = {{3, 2, 1}, {3, 1, 0}, {7, 6, 5}, {5, 6, 4}, {3, 5, 2}, {4, 2, 5}, {1, 6, 7}, {7, 0, 1}, {5, 3, 0}, {7, 5, 0}, {1, 4, 6}, {2, 4, 1}};
+constexpr std::array<Fvector3, 8> XR_ALIGNED_DEFAULT corners{Fvector3{-1.0f, -1.0f, 0.7f},  Fvector3{-1.0f, -1.0f, +1.0f}, Fvector3{-1.0f, +1.0f, +1.0f},
+                                                             Fvector3{-1.0f, +1.0f, 0.7f},  Fvector3{+1.0f, +1.0f, +1.0f}, Fvector3{+1.0f, +1.0f, 0.7f},
+                                                             Fvector3{+1.0f, -1.0f, +1.0f}, Fvector3{+1.0f, -1.0f, 0.7f}};
+constexpr std::array<u16, 16 * 3> XR_ALIGNED_DEFAULT facetable{3, 2, 1, 3, 1, 0, 7, 6, 5, 5, 6, 4, 3, 5, 2, 4, 2, 5, 1, 6, 7, 7, 0, 1, 5, 3, 0, 7, 5, 0, 1, 4, 6, 2, 4, 1};
+} // namespace
 
 void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, const Fmatrix& xform, const Fmatrix& xform_prev, float fBias)
 {
@@ -102,7 +108,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
 
         // texture adjustment matrix
         const float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-        const Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
+        const Fmatrix m_TexelAdjust{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
 
         // compute xforms
 
@@ -167,7 +173,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, cons
         u32 i_offset;
         {
             u16* pib = RImplementation.Index.Lock(sizeof(facetable) / sizeof(u16), i_offset);
-            CopyMemory(pib, &facetable, sizeof(facetable));
+            std::memcpy(pib, facetable.data(), sizeof(facetable));
             RImplementation.Index.Unlock(sizeof(facetable) / sizeof(u16));
 
             // corners
@@ -315,7 +321,7 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
 
         // Common constants (light-related)
         Fvector L_dir;
-        const Fvector4 L_clr = {sun->color.r, sun->color.g, sun->color.b, 0};
+        const Fvector4 L_clr{sun->color.r, sun->color.g, sun->color.b, 0.0f};
         Device.mView.transform_dir(L_dir, sun->direction);
         L_dir.normalize();
 

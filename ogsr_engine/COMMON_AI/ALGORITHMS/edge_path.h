@@ -31,8 +31,9 @@ struct CEdgePath
         using Index = typename Vertex::Index;
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         inline virtual ~CDataStorage();
+
         inline void assign_parent(Vertex& neighbour, Vertex* parent);
         inline void assign_parent(Vertex& neighbour, Vertex* parent, const TEdge& edge);
         inline void get_edge_path(xr_vector<TEdge>& path, Vertex* best, bool reverse_order = false);

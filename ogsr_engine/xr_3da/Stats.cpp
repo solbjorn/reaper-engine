@@ -6,10 +6,11 @@
 #include "IGame_Persistent.h"
 #include "render.h"
 #include "xr_object.h"
-#include <psapi.h>
-#include <mmsystem.h>
 
 #include "../Include/xrRender/DrawUtils.h"
+
+#include <mmsystem.h>
+#include <psapi.h>
 
 enum DebugTextColor : DWORD
 {
@@ -399,7 +400,7 @@ void CStats::Show_HW_Stats()
         }
 
         // Counting CPU load
-        CPU::ID.getCPULoad(cpuLoad);
+        std::ignore = CPU::ID.getCPULoad(cpuLoad);
         CPU::ID.MTCPULoad();
     }
 

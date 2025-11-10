@@ -42,7 +42,7 @@ public:
     void apply_seq(CBackend& cmd_list, u32 stage);
     void apply_normal(CBackend& cmd_list, u32 stage) const;
 
-    void set_slice(int slice);
+    void set_slice(gsl::index slice);
 
     const char* GetName() const override { return cName.c_str(); }
 
@@ -88,8 +88,9 @@ public: //	Public class members (must be encapsulated further)
 
     CAviPlayerCustom* pAVI{};
     CTheoraSurface* pTheora{};
-    float m_material;
+
     shared_str m_bumpmap;
+    f32 m_material;
 
     union
     {
@@ -97,8 +98,8 @@ public: //	Public class members (must be encapsulated further)
         u32 seqMSPF; // Sequence data milliseconds per frame
     };
 
-    int curr_slice{-1};
-    int last_slice{-1};
+    gsl::index curr_slice{-1};
+    gsl::index last_slice{-1};
 
 private:
     ID3DBaseTexture* pSurface{};

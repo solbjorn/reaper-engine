@@ -38,22 +38,25 @@ private:
     u8* out_iterator;
 
 public:
-    IC int _getb()
+    [[nodiscard]] s32 _getb()
     {
         if (in_iterator == in_end)
             return EOF;
+
         return *in_iterator++;
     }
-    IC void _putb(int c)
+
+    void _putb(s32 c)
     {
         if (out_iterator == out_end)
         {
-            u32 out_size = u32(out_end - out_start);
-            out_start = (u8*)xr_realloc(out_start, out_size + 1024);
+            const auto out_size = out_end - out_start;
+            out_start = static_cast<u8*>(xr_realloc(out_start, out_size + 1024));
             out_iterator = out_start + out_size;
             out_end = out_iterator + 1024;
         }
-        *out_iterator++ = u8(c & 0xFF);
+
+        *out_iterator++ = c & std::numeric_limits<u8>::max();
     }
 
     IC void Init_Input(u8* _start, u8* _end)
@@ -66,63 +69,67 @@ public:
         // bitwise input/output
         getbuf = getlen = putbuf = putlen = 0;
     }
-    IC void Init_Output(int _rsize)
+
+    void Init_Output(s32 _rsize)
     {
         // output
-        out_start = (u8*)xr_malloc(_rsize);
+        out_start = static_cast<u8*>(xr_malloc(_rsize));
         out_end = out_start + _rsize;
         out_iterator = out_start;
     }
-    IC size_t InputSize() { return size_t(in_end - in_start); }
-    IC size_t OutSize() { return size_t(out_iterator - out_start); }
-    IC u8* OutPointer() { return out_start; }
 
-    IC int GetBit(void) /* get one bit */
+    [[nodiscard]] gsl::index InputSize() const { return in_end - in_start; }
+    [[nodiscard]] gsl::index OutSize() const { return out_iterator - out_start; }
+    [[nodiscard]] u8* OutPointer() const { return out_start; }
+
+    [[nodiscard]] s32 GetBit() /* get one bit */
     {
-        unsigned i;
+        u32 i;
 
         while (getlen <= 8)
         {
-            if ((int)(i = _getb()) < 0)
-                i = 0;
+            i = gsl::narrow_cast<u32>(std::max(_getb(), 0));
             getbuf |= i << (8 - getlen);
             getlen += 8;
         }
+
         i = getbuf;
         getbuf <<= 1;
         getlen--;
-        return (int)((i & 0x8000) >> 15);
+
+        return (i & 0x8000) >> 15;
     }
 
-    IC int GetByte(void) /* get one byte */
+    [[nodiscard]] s32 GetByte() /* get one byte */
     {
-        unsigned i;
+        u32 i;
 
         while (getlen <= 8)
         {
-            if ((int)(i = _getb()) < 0)
-                i = 0;
+            i = gsl::narrow_cast<u32>(std::max(_getb(), 0));
             getbuf |= i << (8 - getlen);
             getlen += 8;
         }
+
         i = getbuf;
         getbuf <<= 8;
         getlen -= 8;
-        return (int)((i & 0xff00) >> 8);
+
+        return (i & 0xff00) >> 8;
     }
 
-    IC void PutCode(int l, unsigned c) /* output c bits of code */
+    void PutCode(s32 l, u32 c) /* output c bits of code */
     {
         putbuf |= c >> putlen;
-        if ((putlen += l) >= 8)
+        if ((putlen += gsl::narrow_cast<u32>(l)) >= 8)
         {
             _putb(putbuf >> 8);
             if ((putlen -= 8) >= 8)
             {
-                _putb(putbuf);
+                _putb(gsl::narrow_cast<s32>(putbuf));
                 codesize += 2;
                 putlen -= 8;
-                putbuf = c << (l - putlen);
+                putbuf = c << (gsl::narrow_cast<u32>(l) - putlen);
             }
             else
             {
@@ -131,6 +138,7 @@ public:
             }
         }
     }
+
     IC void PutFlush()
     {
         if (putlen)
@@ -149,12 +157,12 @@ private:
     u32 textsize;
     u8 text_buf[N + F];
 
-    int match_position;
-    int match_length;
+    s32 match_position;
+    s32 match_length;
 
-    int lson[N + 1];
-    int rson[N + 257];
-    int dad[N + 1];
+    s32 lson[N + 1];
+    s32 rson[N + 257];
+    s32 dad[N + 1];
 
     /* frequency table */
     u32 freq[T + 1];
@@ -162,32 +170,32 @@ private:
     /* pointers to parent nodes, except for the */
     /* elements [T..T + N_CHAR - 1] which are used to get */
     /* the positions of leaves corresponding to the codes. */
-    int prnt[T + N_CHAR + 1];
+    s32 prnt[T + N_CHAR + 1];
 
     /* pointers to child nodes (son[], son[] + 1) */
-    int son[T];
+    s32 son[T];
 
     IC void InitTree();
-    void InsertNode(int r);
-    void DeleteNode(int p);
+    void InsertNode(s32 r);
+    void DeleteNode(s32 p);
 
     void StartHuff();
     void reconst();
-    void update(int c);
+    void update(s32 c);
 
     void EncodeChar(u32 c);
     void EncodePosition(u32 c);
     void Encode();
 
-    int DecodeChar();
-    int DecodePosition();
-    bool Decode(int total_size);
+    [[nodiscard]] s32 DecodeChar();
+    [[nodiscard]] s32 DecodePosition();
+    [[nodiscard]] bool Decode(s32 total_size);
 
 public:
     IC LzHuf();
 
-    void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz);
-    bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size);
+    void _compressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz);
+    [[nodiscard]] bool _decompressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz, gsl::index total_size);
 };
 
 IC LzHuf::LzHuf()
@@ -199,7 +207,7 @@ IC LzHuf::LzHuf()
 //************************** Internal FS
 IC void LzHuf::InitTree() /* initialize trees */
 {
-    int i;
+    s32 i;
 
     for (i = N + 1; i <= N + 256; i++)
         rson[i] = NIL; /* root */
@@ -207,11 +215,11 @@ IC void LzHuf::InitTree() /* initialize trees */
         dad[i] = NIL; /* node */
 }
 
-void LzHuf::InsertNode(int r) /* insert to tree */
+void LzHuf::InsertNode(s32 r) /* insert to tree */
 {
-    int i, p, cmp;
+    s32 i, p, cmp;
     u8* key;
-    unsigned c;
+    u32 c;
 
     cmp = 1;
     key = &text_buf[r];
@@ -255,28 +263,29 @@ void LzHuf::InsertNode(int r) /* insert to tree */
             }
             if (i == match_length)
             {
-                if ((c = ((r - p) & (N - 1)) - 1) < (unsigned)match_position)
-                {
-                    match_position = c;
-                }
+                if ((c = ((r - p) & (N - 1)) - 1) < gsl::narrow_cast<u32>(match_position))
+                    match_position = gsl::narrow_cast<s32>(c);
             }
         }
     }
+
     dad[r] = dad[p];
     lson[r] = lson[p];
     rson[r] = rson[p];
     dad[lson[p]] = r;
     dad[rson[p]] = r;
+
     if (rson[dad[p]] == p)
         rson[dad[p]] = r;
     else
         lson[dad[p]] = r;
+
     dad[p] = NIL; /* remove p */
 }
 
-void LzHuf::DeleteNode(int p) /* remove from tree */
+void LzHuf::DeleteNode(s32 p) /* remove from tree */
 {
-    int q;
+    s32 q;
 
     if (dad[p] == NIL)
         return; /* not registered */
@@ -360,7 +369,7 @@ constexpr std::array<u8, 256> d_len{
 
 void LzHuf::StartHuff()
 {
-    int i, j;
+    s32 i, j;
 
     for (i = 0; i < N_CHAR; i++)
     {
@@ -385,8 +394,8 @@ void LzHuf::StartHuff()
 /* reconstruction of tree */
 void LzHuf::reconst()
 {
-    int i, j, k;
-    unsigned f, l;
+    s32 i, j, k;
+    u32 f, l;
 
     /* collect leaf nodes in the first half of the table */
     /* and replace the freq by (freq + 1) / 2. */
@@ -408,10 +417,10 @@ void LzHuf::reconst()
         for (k = j - 1; f < freq[k]; k--)
             ;
         k++;
-        l = (j - k) * sizeof(unsigned);
-        memmove(&freq[k + 1], &freq[k], l);
+        l = gsl::narrow_cast<u32>(j - k) * sizeof(u32);
+        std::memmove(&freq[k + 1], &freq[k], l);
         freq[k] = f;
-        memmove(&son[k + 1], &son[k], l);
+        std::memmove(&son[k + 1], &son[k], l);
         son[k] = i;
     }
     /* connect prnt */
@@ -429,27 +438,27 @@ void LzHuf::reconst()
 }
 
 /* increment frequency of given code by one, and update tree */
-void LzHuf::update(int c)
+void LzHuf::update(s32 c)
 {
-    int i, j, k, l;
+    s32 i, j, k, l;
 
     if (freq[R] == MAX_FREQ)
-    {
         reconst();
-    }
+
     c = prnt[c + T];
+
     do
     {
-        k = ++freq[c];
+        k = gsl::narrow_cast<s32>(++freq[c]);
 
         /* if the order is disturbed, exchange nodes */
-        if ((unsigned)k > freq[l = c + 1])
+        if (gsl::narrow_cast<u32>(k) > freq[l = c + 1])
         {
-            while ((unsigned)k > freq[++l])
+            while (gsl::narrow_cast<u32>(k) > freq[++l])
                 ;
             l--;
             freq[c] = freq[l];
-            freq[l] = k;
+            freq[l] = gsl::narrow_cast<u32>(k);
 
             i = son[c];
             prnt[i] = l;
@@ -471,8 +480,8 @@ void LzHuf::update(int c)
 
 void LzHuf::EncodeChar(u32 c)
 {
-    unsigned i;
-    int j, k;
+    s32 j, k;
+    u32 i;
 
     i = 0;
     j = 0;
@@ -490,66 +499,66 @@ void LzHuf::EncodeChar(u32 c)
         j++;
         k = prnt[k];
     } while (k != R);
+
     fs.PutCode(j, i);
-    update(c);
+    update(gsl::narrow_cast<s32>(c));
 }
 
 void LzHuf::EncodePosition(u32 c)
 {
-    unsigned i;
+    u32 i;
 
     /* output upper 6 bits by table lookup */
     i = c >> 6;
-    fs.PutCode(p_len[i], (unsigned)p_code[i] << 8);
+    fs.PutCode(p_len[i], gsl::narrow_cast<u32>(p_code[i]) << 8);
 
     /* output lower 6 bits verbatim */
     fs.PutCode(6, (c & 0x3f) << 10);
 }
 
-int LzHuf::DecodeChar()
+s32 LzHuf::DecodeChar()
 {
-    unsigned c;
-
-    c = son[R];
+    u32 c = gsl::narrow_cast<u32>(son[R]);
 
     /* travel from root to leaf, */
     /* choosing the smaller child node (son[]) if the read bit is 0, */
     /* the bigger (son[]+1} if 1 */
     while (c < T)
     {
-        c += fs.GetBit();
-        c = son[c];
+        c += gsl::narrow_cast<u32>(fs.GetBit());
+        c = gsl::narrow_cast<u32>(son[c]);
     }
+
     c -= T;
-    update(c);
-    return (int)c;
+    update(gsl::narrow_cast<s32>(c));
+
+    return gsl::narrow_cast<s32>(c);
 }
 
-int LzHuf::DecodePosition()
+s32 LzHuf::DecodePosition()
 {
-    unsigned i, j, c;
+    u32 i, j, c;
 
     /* recover upper 6 bits from table */
-    i = fs.GetByte();
-    c = (unsigned)d_code[i] << 6;
+    i = gsl::narrow_cast<u32>(fs.GetByte());
+    c = gsl::narrow_cast<u32>(d_code[i]) << 6;
     j = d_len[i];
 
     /* read lower 6 bits verbatim */
     j -= 2;
     while (j--)
-    {
-        i = (i << 1) + fs.GetBit();
-    }
-    return (int)(c | (i & 0x3f));
+        i = (i << 1) + gsl::narrow_cast<u32>(fs.GetBit());
+
+    return gsl::narrow_cast<s32>(c | (i & 0x3f));
 }
 
 /* compression */
 void LzHuf::Encode() /* compression */
 {
-    int i, c, r, s, last_match_length;
+    s32 i, c, r, s, last_match_length;
 
-    textsize = fs.InputSize();
-    fs.Init_Output(textsize);
+    textsize = gsl::narrow_cast<u32>(fs.InputSize());
+    fs.Init_Output(gsl::narrow_cast<s32>(textsize));
     fs._putb((textsize & 0xff));
     fs._putb((textsize & 0xff00) >> 8);
     fs._putb((textsize & 0xff0000L) >> 16);
@@ -563,10 +572,10 @@ void LzHuf::Encode() /* compression */
     r = N - F;
     for (i = s; i < r; i++)
         text_buf[i] = 0x20;
-    int len;
+    s32 len;
     for (len = 0; len < F && (c = fs._getb()) != EOF; len++)
-        text_buf[r + len] = (unsigned char)c;
-    textsize = len;
+        text_buf[r + len] = gsl::narrow_cast<u8>(c);
+    textsize = gsl::narrow_cast<u32>(len);
     for (i = 1; i <= F; i++)
         InsertNode(r - i);
     InsertNode(r);
@@ -582,21 +591,21 @@ void LzHuf::Encode() /* compression */
         }
         else
         {
-            EncodeChar(255 - THRESHOLD + match_length);
-            EncodePosition(match_position);
+            EncodeChar(255 - THRESHOLD + gsl::narrow_cast<u32>(match_length));
+            EncodePosition(gsl::narrow_cast<u32>(match_position));
         }
         last_match_length = match_length;
         for (i = 0; i < last_match_length && (c = fs._getb()) != EOF; i++)
         {
             DeleteNode(s);
-            text_buf[s] = (unsigned char)c;
+            text_buf[s] = gsl::narrow_cast<u8>(c);
             if (s < F - 1)
-                text_buf[s + N] = (unsigned char)c;
+                text_buf[s + N] = gsl::narrow_cast<u8>(c);
             s = (s + 1) & (N - 1);
             r = (r + 1) & (N - 1);
             InsertNode(r);
         }
-        textsize += i;
+        textsize += gsl::narrow_cast<u32>(i);
         while (i++ < last_match_length)
         {
             DeleteNode(s);
@@ -609,21 +618,21 @@ void LzHuf::Encode() /* compression */
     fs.PutFlush();
 }
 
-bool LzHuf::Decode(int total_size) /* recover */
+bool LzHuf::Decode(s32 total_size) /* recover */
 {
-    int i, j, k, r, c;
-    unsigned int count;
+    s32 i, j, k, r, c;
+    u32 count;
 
-    textsize = (fs._getb());
-    textsize |= (fs._getb() << 8);
-    textsize |= (fs._getb() << 16);
-    textsize |= (fs._getb() << 24);
+    textsize = gsl::narrow_cast<u32>(fs._getb());
+    textsize |= gsl::narrow_cast<u32>(fs._getb()) << 8;
+    textsize |= gsl::narrow_cast<u32>(fs._getb()) << 16;
+    textsize |= gsl::narrow_cast<u32>(fs._getb()) << 24;
     if (textsize == 0)
         return false;
-    if (total_size != -1 && static_cast<int>(textsize) > total_size)
+    if (total_size != -1 && gsl::narrow_cast<s32>(textsize) > total_size)
         return false;
 
-    fs.Init_Output(textsize);
+    fs.Init_Output(gsl::narrow_cast<s32>(textsize));
 
     StartHuff();
     for (i = 0; i < N - F; i++)
@@ -635,7 +644,7 @@ bool LzHuf::Decode(int total_size) /* recover */
         if (c < 256)
         {
             fs._putb(c);
-            text_buf[r++] = (unsigned char)c;
+            text_buf[r++] = gsl::narrow_cast<u8>(c);
             r &= (N - 1);
             count++;
         }
@@ -647,7 +656,7 @@ bool LzHuf::Decode(int total_size) /* recover */
             {
                 c = text_buf[(i + k) & (N - 1)];
                 fs._putb(c);
-                text_buf[r++] = (unsigned char)c;
+                text_buf[r++] = gsl::narrow_cast<u8>(c);
                 r &= (N - 1);
                 count++;
             }
@@ -657,32 +666,33 @@ bool LzHuf::Decode(int total_size) /* recover */
     return true;
 }
 
-void LzHuf::_compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz)
+void LzHuf::_compressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz)
 {
-    u8* start = (u8*)src;
+    u8* start = const_cast<u8*>(static_cast<const u8*>(src));
     fs.Init_Input(start, start + src_sz);
     Encode();
     *dest = fs.OutPointer();
     *dest_sz = fs.OutSize();
 }
 
-bool LzHuf::_decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size)
+bool LzHuf::_decompressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz, gsl::index total_size)
 {
-    u8* start = (u8*)src;
+    u8* start = const_cast<u8*>(static_cast<const u8*>(src));
     fs.Init_Input(start, start + src_sz);
 
-    if (!Decode(total_size))
+    if (!Decode(gsl::narrow_cast<s32>(total_size)))
         return false;
 
     *dest = fs.OutPointer();
     *dest_sz = fs.OutSize();
+
     return true;
 }
 } // namespace
 
-void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz) { std::make_unique<LzHuf>()->_compressLZ(dest, dest_sz, src, src_sz); }
+void _compressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz) { std::make_unique<LzHuf>()->_compressLZ(dest, dest_sz, src, src_sz); }
 
-bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size)
+bool _decompressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz, gsl::index total_size)
 {
     return std::make_unique<LzHuf>()->_decompressLZ(dest, dest_sz, src, src_sz, total_size);
 }

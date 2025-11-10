@@ -124,5 +124,5 @@ public:
     CUICustomMap* GetMapByIdx(u16 idx);
     u16 GetIdxByName(const shared_str& map_name);
     void UpdateScroll();
-    shared_str cName() const { return "ui_map_wnd"; }
+    [[nodiscard]] shared_str cName() const { return shared_str{"ui_map_wnd"}; }
 };

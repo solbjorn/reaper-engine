@@ -6,7 +6,7 @@ void CRenderTarget::phase_accumulator(CBackend& cmd_list)
     if (dwAccumulatorClearMark == Device.dwFrame)
     {
         // normal operation - setup
-        u_setrt(cmd_list, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Accumulator, {}, {}, rt_MSAADepth);
     }
     else
     {
@@ -14,7 +14,7 @@ void CRenderTarget::phase_accumulator(CBackend& cmd_list)
         dwAccumulatorClearMark = Device.dwFrame;
 
         // clear
-        u_setrt(cmd_list, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(cmd_list, rt_Accumulator, {}, {}, rt_MSAADepth);
         reset_light_marker(cmd_list);
 
         //	Igor: AMD bug workaround. Should be fixed in 8.7 catalyst
@@ -45,7 +45,7 @@ void CRenderTarget::phase_vol_accumulator(CBackend& cmd_list)
             cmd_list.ClearRT(rt_Generic_2, {});
         }
 
-        u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, nullptr);
+        u_setrt(cmd_list, rt_Generic_2, {}, {}, nullptr);
     }
     else
     {
@@ -53,12 +53,12 @@ void CRenderTarget::phase_vol_accumulator(CBackend& cmd_list)
         {
             m_bHasActiveVolumetric = true;
 
-            u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, rt_MSAADepth);
+            u_setrt(cmd_list, rt_Generic_2, {}, {}, rt_MSAADepth);
             cmd_list.ClearRT(rt_Generic_2, {});
         }
         else
         {
-            u_setrt(cmd_list, rt_Generic_2, nullptr, nullptr, rt_MSAADepth);
+            u_setrt(cmd_list, rt_Generic_2, {}, {}, rt_MSAADepth);
         }
     }
 

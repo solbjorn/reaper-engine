@@ -43,6 +43,7 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
 void CSoundRender_Emitter::i_stop()
 {
     bRewind = FALSE;
+
     if (target)
         stop_target();
 
@@ -52,10 +53,12 @@ void CSoundRender_Emitter::i_stop()
     {
         source()->close(ovf);
         Event_ReleaseOwner();
+
         VERIFY(this == owner_data->feedback);
         owner_data->feedback = nullptr;
-        owner_data = nullptr;
+        owner_data._set(nullptr);
     }
+
     m_current_state = stStopped;
     fStoppingSpeed_k = 1.f;
 }

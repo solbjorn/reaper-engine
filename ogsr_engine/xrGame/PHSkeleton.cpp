@@ -66,7 +66,7 @@ void CPHSkeleton::Init()
 {
     m_remove_time = std::numeric_limits<u32>::max();
     b_removing = false;
-    m_startup_anim = nullptr;
+    m_startup_anim._set(nullptr);
 }
 
 bool CPHSkeleton::Spawn(CSE_Abstract* D)
@@ -434,6 +434,7 @@ void CPHSkeleton::SetAutoRemove(u32 time /*=CSE_PHSkeleton::existence_time*/)
 }
 
 static bool removable; // for RecursiveBonesCheck
+
 void CPHSkeleton::RecursiveBonesCheck(u16 id)
 {
     if (!removable)
@@ -453,10 +454,9 @@ void CPHSkeleton::RecursiveBonesCheck(u16 id)
     }
     ///////////////////////////////////////////////
     for (vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
-    {
         RecursiveBonesCheck((*it)->GetSelfID());
-    }
 }
+
 bool CPHSkeleton::ReadyForRemove()
 {
     removable = true;
@@ -479,7 +479,7 @@ void CPHSkeleton::InitServerObject(CSE_Abstract* D)
 
     l_tpALifePhysicObject->source_id = u16(obj->ID());
     l_tpALifePhysicObject->startup_animation = m_startup_anim;
-    D->s_name = "ph_skeleton_object"; //*cNameSect()
+    D->s_name._set("ph_skeleton_object");
     D->set_name_replace("");
     D->s_gameid = u8(GameID());
     D->s_RP = 0xff;

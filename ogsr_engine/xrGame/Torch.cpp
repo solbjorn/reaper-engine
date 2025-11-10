@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "torch.h"
+
 #include "entity.h"
 #include "actor.h"
 #include "../xr_3da/LightAnimLibrary.h"
@@ -32,16 +33,17 @@ constexpr float OPTIMIZATION_DISTANCE{100.f};
 
 CTorch::CTorch()
 {
-    light_render = ::Render->light_create();
+    light_render._set(::Render->light_create());
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
     light_render->set_moveable(true);
-    light_omni = ::Render->light_create();
+
+    light_omni._set(::Render->light_create());
     light_omni->set_type(IRender_Light::POINT);
     light_omni->set_shadow(false);
     light_omni->set_moveable(true);
 
-    glow_render = ::Render->glow_create();
+    glow_render._set(::Render->glow_create());
 
     /*m_NightVisionRechargeTime	= 6.f;
     m_NightVisionRechargeTimeMin= 2.f;
@@ -63,7 +65,7 @@ CTorch::~CTorch()
 void CTorch::Load(LPCSTR section)
 {
     inherited::Load(section);
-    light_trace_bone = pSettings->r_string(section, "light_trace_bone");
+    light_trace_bone._set(pSettings->r_string(section, "light_trace_bone"));
 
     m_bNightVisionEnabled = !!pSettings->r_bool(section, "night_vision");
     if (m_bNightVisionEnabled)
@@ -105,7 +107,7 @@ void CTorch::SwitchNightVision(bool vision_on)
         string512 tmp;
         for (u32 i = 0; i < cnt; ++i)
         {
-            _GetItem(disabled_names, i, tmp);
+            std::ignore = _GetItem(disabled_names, i, tmp);
             if (std::is_eq(xr::strcasecmp(tmp, curr_map)))
             {
                 b_allow = false;
@@ -191,7 +193,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 {
     auto torch = smart_cast<CSE_ALifeItemTorch*>(DC);
     R_ASSERT(torch);
-    cNameVisual_set(torch->get_visual());
+    cNameVisual_set(shared_str{torch->get_visual()});
 
     R_ASSERT(!CFORM());
     R_ASSERT(smart_cast<IKinematics*>(Visual()));

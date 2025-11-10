@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "CustomDetector.h"
+
 #include "ui/ArtefactDetectorUI.h"
 #include "HUDManager.h"
 #include "Inventory.h"
@@ -325,7 +326,7 @@ Fvector CCustomDetector::GetPositionForCollision()
 {
     Fvector det_pos{}, det_dir{};
     // Офсет подобрал через худ аждаст, это скорее всего временно, но такое решение подходит всем детекторам более-менее.
-    GetBoneOffsetPosDir("wpn_body", det_pos, det_dir, Fvector{-0.247499f, -0.810510f, 0.178999f});
+    GetBoneOffsetPosDir(shared_str{"wpn_body"}, det_pos, det_dir, Fvector{-0.247499f, -0.810510f, 0.178999f});
     return det_pos;
 }
 

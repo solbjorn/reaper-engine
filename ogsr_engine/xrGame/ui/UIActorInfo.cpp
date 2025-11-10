@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIActorInfo.h"
+
 #include "UIXmlInit.h"
 #include "UIPdaAux.h"
 #include "../Level.h"
@@ -13,7 +14,6 @@
 #include "UIScrollView.h"
 #include "UICharacterInfo.h"
 #include "UI3tButton.h"
-#include "UIInventoryUtilities.h"
 #include "../actor_statistic_mgr.h"
 #include "../character_community.h"
 #include "../character_reputation.h"
@@ -23,7 +23,7 @@
 #define ACTOR_STATISTIC_XML "actor_statistic.xml"
 #define ACTOR_CHARACTER_XML "pda_dialog_character.xml"
 
-CUIActorInfoWnd::CUIActorInfoWnd() {}
+CUIActorInfoWnd::CUIActorInfoWnd() = default;
 
 void CUIActorInfoWnd::Init()
 {
@@ -114,9 +114,9 @@ void CUIActorInfoWnd::FillPointsInfo()
         CUIActorStaticticHeader* itm = xr_new<CUIActorStaticticHeader>(this);
         itm->Init(&uiXml, "master_part", i);
 
-        if (itm->m_id != "foo")
+        if (std::is_neq(xr_strcmp(itm->m_id, "foo")))
         {
-            if (itm->m_id == "reputation")
+            if (std::is_eq(xr_strcmp(itm->m_id, "reputation")))
             {
                 itm->m_text2->SetTextST(InventoryUtilities::GetReputationAsText(Actor()->Reputation()));
                 itm->m_text2->SetTextColor(InventoryUtilities::GetReputationColor(Actor()->Reputation()));
@@ -137,6 +137,7 @@ void CUIActorInfoWnd::FillPointsInfo()
                 }
             }
         }
+
         UIMasterList->AddWindow(itm, true);
     }
 
@@ -150,9 +151,9 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
     strconcat(sizeof(buff), buff, "actor_stats_wnd:master_part_", key_name.c_str());
     itm->Init(xml, buff, 0);
 
-    if (key_name != "foo")
+    if (std::is_neq(xr_strcmp(key_name, "foo")))
     {
-        if (key_name == "reputation")
+        if (std::is_eq(xr_strcmp(key_name, "reputation")))
         {
             itm->m_text2->SetTextST(InventoryUtilities::GetReputationAsText(Actor()->Reputation()));
             itm->m_text2->SetTextColor(InventoryUtilities::GetReputationColor(Actor()->Reputation()));
@@ -172,6 +173,7 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
             }
         }
     }
+
     UIMasterList->AddWindow(itm, true);
 }
 
@@ -189,12 +191,13 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
     if (!n)
         sprintf_s(path, "detail_part_def");
 
-    if (id == "reputation") // reputation
+    if (std::is_eq(xr_strcmp(id, "reputation"))) // reputation
     {
         UIInfoHeader->GetTitleStatic()->SetTextST("st_detail_list_for_community_relations");
         FillReputationDetails(&uiXml, path);
         return;
     }
+
     string256 str;
     sprintf_s(str, "st_detail_list_for_%s", id.c_str());
     UIInfoHeader->GetTitleStatic()->SetTextST(str);
@@ -268,7 +271,7 @@ void CUIActorInfoWnd::FillReputationDetails(CUIXml* xml, LPCSTR path)
     {
         CUIActorStaticticDetail* itm = xr_new<CUIActorStaticticDetail>();
         itm->Init(xml, path, 0);
-        comm.set(xml->Read(_list_node, "r", i, "unknown_community"));
+        comm.set(shared_str{xml->Read(_list_node, "r", i, "unknown_community")});
         itm->m_text1->SetTextST(*(comm.id()));
 
         CHARACTER_GOODWILL gw = RELATION_REGISTRY().GetCommunityGoodwill(comm.index(), Actor()->ID());
@@ -307,8 +310,7 @@ void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
     xml_init.InitStatic(*xml, "text_2", 0, m_text2);
 
     xml_init.InitAutoStaticGroup(*xml, "auto", 0, this);
-
-    m_id = xml->ReadAttrib(xml->GetLocalRoot(), "id", nullptr);
+    m_id._set(xml->ReadAttrib(xml->GetLocalRoot(), "id", nullptr));
 
     m_stored_alpha = color_get_A(m_text1->GetTextColor());
     xml->SetLocalRoot(_stored_root);
@@ -316,13 +318,13 @@ void CUIActorStaticticHeader::Init(CUIXml* xml, LPCSTR path, int idx_in_xml)
 
 bool CUIActorStaticticHeader::OnMouseDown(int mouse_btn)
 {
-    if (mouse_btn == MOUSE_1 && m_id != "total")
+    if (mouse_btn == MOUSE_1 && std::is_neq(xr_strcmp(m_id, "total")))
     {
         m_actorInfoWnd->MasterList().SetSelected(this);
         return true;
     }
-    else
-        return true;
+
+    return true;
 }
 
 void CUIActorStaticticHeader::SetSelected(bool b)

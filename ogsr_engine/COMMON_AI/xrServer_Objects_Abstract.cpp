@@ -8,13 +8,15 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrServer_Objects_Abstract.h"
+
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Visual
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_Visual::CSE_Visual(LPCSTR name)
 {
     if (name)
@@ -24,18 +26,19 @@ CSE_Visual::CSE_Visual(LPCSTR name)
         if (strext(tmp))
             *strext(tmp) = 0;
         xr_strlwr(tmp);
-        visual_name = tmp;
+
+        visual_name._set(tmp);
     }
     else
     {
-        visual_name = nullptr;
+        visual_name._set(nullptr);
     }
 
-    startup_animation = "$editor";
+    startup_animation._set("$editor");
     flags.zero();
 }
 
-CSE_Visual::~CSE_Visual() {}
+CSE_Visual::~CSE_Visual() = default;
 
 void CSE_Visual::set_visual(LPCSTR name)
 {
@@ -44,7 +47,8 @@ void CSE_Visual::set_visual(LPCSTR name)
     if (strext(tmp))
         *strext(tmp) = 0;
     xr_strlwr(tmp);
-    visual_name = tmp;
+
+    visual_name._set(tmp);
 }
 
 void CSE_Visual::visual_read(NET_Packet& tNetPacket, u16 version)
@@ -63,12 +67,11 @@ void CSE_Visual::visual_write(NET_Packet& tNetPacket)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Animated
 ////////////////////////////////////////////////////////////////////////////
-CSE_Motion::CSE_Motion(LPCSTR name) { motion_name = name; }
 
-CSE_Motion::~CSE_Motion() {}
+CSE_Motion::CSE_Motion(LPCSTR name) { motion_name._set(name); }
+CSE_Motion::~CSE_Motion() = default;
 
-void CSE_Motion::set_motion(LPCSTR name) { motion_name = name; }
+void CSE_Motion::set_motion(LPCSTR name) { motion_name._set(name); }
 
 void CSE_Motion::motion_read(NET_Packet& tNetPacket) { tNetPacket.r_stringZ(motion_name); }
-
 void CSE_Motion::motion_write(NET_Packet& tNetPacket) { tNetPacket.w_stringZ(motion_name); }

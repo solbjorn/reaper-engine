@@ -3,27 +3,45 @@
 
 #include "context.h"
 
-struct alignas(32) vis_marker
+struct XR_TRIVIAL alignas(32) vis_marker
 {
 private:
-    ctx_id_t ctx[R__NUM_CONTEXTS]{};
+    std::array<ctx_id_t, R__NUM_CONTEXTS> ctx{};
 
 public:
-    constexpr inline vis_marker() = default;
-    constexpr inline vis_marker(const vis_marker& m) { xr_memcpy32(this, &m); }
+    constexpr vis_marker() = default;
 
-    constexpr inline vis_marker& operator=(const vis_marker& m)
+    constexpr vis_marker(const vis_marker& that) { xr_memcpy32(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr vis_marker(vis_marker&&) = default;
+#else
+    constexpr vis_marker(vis_marker&& that) { xr_memcpy32(this, &that); }
+#endif
+
+    constexpr vis_marker& operator=(const vis_marker& that)
     {
-        xr_memcpy32(this, &m);
+        xr_memcpy32(this, &that);
         return *this;
     }
 
-    constexpr inline ctx_id_t operator[](int idx) const { return ctx[idx]; }
-    constexpr inline ctx_id_t& operator[](int idx) { return ctx[idx]; }
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr vis_marker& operator=(vis_marker&&) = default;
+#else
+    constexpr vis_marker& operator=(vis_marker&& that)
+    {
+        xr_memcpy32(this, &that);
+        return *this;
+    }
+#endif
+
+    [[nodiscard]] constexpr ctx_id_t& operator[](gsl::index idx) { return ctx[gsl::narrow_cast<size_t>(idx)]; }
+    [[nodiscard]] constexpr const ctx_id_t& operator[](gsl::index idx) const { return ctx[gsl::narrow_cast<size_t>(idx)]; }
 };
 static_assert(sizeof(vis_marker) == 32);
+XR_TRIVIAL_ASSERT(vis_marker);
 
-struct vis_data
+struct XR_TRIVIAL vis_data
 {
     Fsphere sphere; //
     Fbox box; //
@@ -37,16 +55,33 @@ struct vis_data
 
     vis_marker marker; // for different sub-renders
 
-    constexpr inline vis_data() = default;
-    constexpr inline vis_data(const vis_data& v) { xr_memcpy256(this, &v, sizeof(v)); }
+    constexpr vis_data() = default;
 
-    constexpr inline vis_data& operator=(const vis_data& v)
+    constexpr vis_data(const vis_data& that) { xr_memcpy256(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr vis_data(vis_data&&) = default;
+#else
+    constexpr vis_data(vis_data&& that) { xr_memcpy256(this, &that, sizeof(that)); }
+#endif
+
+    constexpr vis_data& operator=(const vis_data& that)
     {
-        xr_memcpy256(this, &v, sizeof(v));
+        xr_memcpy256(this, &that, sizeof(that));
         return *this;
     }
 
-    IC void clear()
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr vis_data& operator=(vis_data&&) = default;
+#else
+    constexpr vis_data& operator=(vis_data&& that)
+    {
+        xr_memcpy256(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
+
+    constexpr void clear()
     {
         static constexpr ctx_id_t __declspec(align(32)) zeros[R__NUM_CONTEXTS]{};
 
@@ -59,5 +94,6 @@ struct vis_data
 };
 static_assert(offsetof(vis_data, accept_frame) == 48);
 static_assert(offsetof(vis_data, pad2) + sizeof(u32) == 64);
+XR_TRIVIAL_ASSERT(vis_data);
 
 #endif

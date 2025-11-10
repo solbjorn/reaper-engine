@@ -117,7 +117,7 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
     xr_strconcat(fext, "*", file_ext);
 
     FS_FileSet files_set;
-    FS.file_list(files_set, dir, FS_ListFiles, fext);
+    std::ignore = FS.file_list(files_set, dir, FS_ListFiles, fext);
     u32 len_str_ext = xr_strlen(file_ext);
 
     FS_FileSetIt itb = files_set.begin();
@@ -127,10 +127,12 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
     {
         LPCSTR fn_ext = (*itb).name.c_str();
         VERIFY(xr_strlen(fn_ext) > len_str_ext);
+
         string_path fn;
         strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
-        files.push_back(fn);
+        files.emplace_back(fn);
     }
+
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
 }
 
@@ -188,7 +190,7 @@ public:
 
         Msg("* [ D3D ]: textures count [%u]", (c_base + c_lmaps));
         Msg("* [ D3D ]: textures[%u K]", (m_base + m_lmaps) / 1024);
-        Msg("* [x-ray]: process heap[%zu K]", _process_heap / 1024);
+        Msg("* [x-ray]: process heap[%zd K]", _process_heap / 1024);
         Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", _eco_strings / 1024, _eco_smem / 1024);
 
 #ifdef DEBUG
@@ -400,7 +402,7 @@ public:
         string_path fn_;
         strconcat(sizeof(fn_), fn_, args, ".xrdemo");
         string_path fn;
-        FS.update_path(fn, "$game_saves$", fn_);
+        std::ignore = FS.update_path(fn, "$game_saves$", fn_);
 
         g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
     }
@@ -420,6 +422,7 @@ public:
         else
         {
             Console->Hide();
+
             string_path fn;
             u32 loops = 0;
             LPSTR comma = strchr(const_cast<LPSTR>(args), ',');
@@ -428,8 +431,10 @@ public:
                 loops = atoi(comma + 1);
                 *comma = 0; //. :)
             }
+
             strconcat(sizeof(fn), fn, args, ".xrdemo");
-            FS.update_path(fn, "$game_saves$", fn);
+            std::ignore = FS.update_path(fn, "$game_saves$", fn);
+
             g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay>(fn, 1.0f, loops));
         }
     }
@@ -473,6 +478,7 @@ public:
         CTimer timer;
         timer.Start();
 #endif
+
         if (!xr_strlen(S))
         {
             strconcat(sizeof(S), S, Core.UserName, "_", "quicksave");
@@ -496,21 +502,25 @@ public:
             net_packet.w_u8(1);
             Level().Send(net_packet, net_flags(TRUE));
         }
+
 #ifdef DEBUG
         Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
+
         SDrawStaticStruct* _s = HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
         _s->m_endTime = Device.fTimeGlobal + 3.0f; // 3sec
+
         string_path save_name;
-        strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
+        strconcat(sizeof(save_name), save_name, *CStringTable().translate(shared_str{"st_game_saved"}), ": ", S);
         _s->wnd()->SetText(save_name);
 
         strcat_s(S, ".dds");
-        FS.update_path(S1, "$game_saves$", S);
+        std::ignore = FS.update_path(S1, "$game_saves$", S);
 
 #ifdef DEBUG
         timer.Start();
 #endif
+
         MainMenu()->Screenshot(IRender_interface::SM_FOR_GAMESAVE, S1);
 
 #ifdef DEBUG
@@ -1235,15 +1245,17 @@ public:
         if (!owner)
             return;
 
-        if (auto itm = owner->attachedItem(args))
+        if (auto itm = owner->attachedItem(shared_str{args}))
+        {
             CAttachableItem::m_dbgItem = itm;
+        }
         else
         {
             auto iowner = smart_cast<CInventoryOwner*>(obj);
-            if (iowner)
+            if (iowner != nullptr)
             {
                 auto active_item = iowner->m_inventory->ActiveItem();
-                if (active_item && active_item->object().cNameSect() == args)
+                if (active_item != nullptr && std::is_eq(xr_strcmp(active_item->object().cNameSect(), args)))
                     CAttachableItem::m_dbgItem = active_item->cast_attachable_item();
             }
         }
@@ -1399,7 +1411,7 @@ public:
         if (!g_pGamePersistent)
             return;
 
-        g_pGamePersistent->Environment().SetWeather(args, true);
+        g_pGamePersistent->Environment().SetWeather(shared_str{args}, true);
     }
 
     void fill_tips(vecTips& tips) override

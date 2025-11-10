@@ -21,7 +21,8 @@ private:
     _vertex_type* m_vertex;
 
 public:
-    IC CEdge(const _edge_weight_type& weight, _vertex_type* vertex);
+    inline explicit CEdge(const _edge_weight_type& weight, _vertex_type* vertex);
+
     IC const _edge_weight_type& weight() const;
     IC _vertex_type* vertex() const;
     IC const typename _vertex_type::vertex_id_type& vertex_id() const;

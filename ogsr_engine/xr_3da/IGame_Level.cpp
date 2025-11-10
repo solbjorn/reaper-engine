@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "igame_level.h"
-#include "igame_persistent.h"
 
+#include "igame_persistent.h"
 #include "x_ray.h"
 #include "std_classes.h"
 #include "customHUD.h"
@@ -64,7 +64,7 @@ BOOL IGame_Level::Load(u32)
 
     // Header
     hdrLEVEL H;
-    fs.r_chunk_safe(fsL_HEADER, &H, sizeof(H));
+    std::ignore = fs.r_chunk_safe(fsL_HEADER, &H, sizeof(H));
     R_ASSERT2(XRCL_PRODUCTION_VERSION == H.XRLC_version, "Incompatible level version.");
 
     // CForms

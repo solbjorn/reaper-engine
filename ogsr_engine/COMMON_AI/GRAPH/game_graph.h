@@ -40,17 +40,17 @@ public:
 private:
     CHeader m_header;
     IReader* m_reader;
-    CVertex* m_nodes;
+    const CVertex* m_nodes;
     bool m_separated_graphs;
     mutable ENABLED m_enabled;
     _GRAPH_ID m_current_level_some_vertex_id;
 
 private:
-    u32* m_cross_tables;
+    const u32* m_cross_tables;
     CGameLevelCrossTable* m_current_level_cross_table;
 
 public:
-    IC CGameGraph(IReader* stream, bool separatedGraphs);
+    inline explicit CGameGraph(IReader* stream, bool separatedGraphs);
     IC virtual ~CGameGraph();
 
     IC const CHeader& header() const;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponRG6.h"
+
 #include "entity.h"
 #include "explosiveRocket.h"
 #include "level.h"
@@ -8,11 +9,14 @@
 
 #include "MathUtils.h"
 
+#include "inventory.h"
+#include "inventoryOwner.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
 
-CWeaponRG6::~CWeaponRG6() {}
+CWeaponRG6::~CWeaponRG6() = default;
 
 BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
@@ -22,19 +26,16 @@ BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 
     if (iAmmoElapsed && !getCurrentRocket())
     {
-        shared_str grenade_name = m_ammoTypes[0];
-        shared_str fake_grenade_name = pSettings->r_string(grenade_name, "fake_grenade_name");
-
-        if (fake_grenade_name.size())
+        gsl::czstring fake_grenade_name = pSettings->r_string(m_ammoTypes[0], "fake_grenade_name");
+        if (fake_grenade_name != nullptr && fake_grenade_name[0] != '\0')
         {
             int k = iAmmoElapsed;
             while (k)
             {
                 k--;
-                inheritedRL::SpawnRocket(*fake_grenade_name, this);
+                inheritedRL::SpawnRocket(fake_grenade_name, this);
             }
         }
-        //			inheritedRL::SpawnRocket(*fake_grenade_name, this);
     }
 
     return l_res;
@@ -45,9 +46,6 @@ void CWeaponRG6::Load(LPCSTR section)
     inheritedRL::Load(section);
     inheritedSG::Load(section);
 }
-
-#include "inventory.h"
-#include "inventoryOwner.h"
 
 void CWeaponRG6::LaunchGrenade(const Fvector& p1, const Fvector& d1)
 {
@@ -62,7 +60,7 @@ void CWeaponRG6::LaunchGrenade(const Fvector& p1, const Fvector& d1)
         {
 #ifdef DEBUG
             CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
-            if (NULL == io->inventory().ActiveItem())
+            if (io->inventory().ActiveItem() == nullptr)
             {
                 Log("current_state", GetState());
                 Log("next_state", GetNextState());
@@ -151,12 +149,14 @@ u8 CWeaponRG6::AddCartridge(u8 cnt)
 {
     u8 t = inheritedSG::AddCartridge(cnt);
     u8 k = cnt - t;
-    shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+    gsl::czstring fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType], "fake_grenade_name");
+
     while (k)
     {
         --k;
-        inheritedRL::SpawnRocket(*fake_grenade_name, this);
+        inheritedRL::SpawnRocket(fake_grenade_name, this);
     }
+
     return k;
 }
 

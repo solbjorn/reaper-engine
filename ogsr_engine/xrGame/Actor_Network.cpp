@@ -207,8 +207,9 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     {
         mstate_wishful &= ~ACTOR_DEFS::mcAnyMove;
         mstate_real &= ~ACTOR_DEFS::mcAnyMove;
+
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
-        K->PlayCycle("death_init");
+        K->PlayCycle(shared_str{"death_init"});
 
         // остановить звук тяжелого дыхания
         m_HeavyBreathSnd.stop();
@@ -217,6 +218,7 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     m_holder_id = E->m_holderID;
     if (E->m_holderID != ALife::_OBJECT_ID(-1))
         Level().client_spawn_manager().add(E->m_holderID, ID(), CallMe::fromMethod<&CActor::on_requested_spawn>(this));
+
     // F
     //-------------------------------------------------------------
     m_iLastHitterID = u16(-1);
@@ -224,8 +226,8 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     m_s16LastHittedElement = -1;
     m_bWasHitted = false;
 
-    Level().MapManager().AddMapLocation("actor_location", ID());
-    Level().MapManager().AddMapLocation("actor_location_p", ID());
+    Level().MapManager().AddMapLocation(shared_str{"actor_location"}, ID());
+    Level().MapManager().AddMapLocation(shared_str{"actor_location_p"}, ID());
 
     m_game_task_manager = xr_new<CGameTaskManager>();
     GameTaskManager().initialize(ID());
@@ -279,7 +281,7 @@ void CActor::net_Destroy()
     m_holder = nullptr;
     m_holderID = u16(-1);
 
-    SetDefaultVisualOutfit(nullptr);
+    SetDefaultVisualOutfit({});
 
     if (g_actor == this)
         g_actor = nullptr;

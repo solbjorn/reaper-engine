@@ -24,7 +24,7 @@ protected:
     virtual void PSI_internal_delete();
 
 public:
-    CPS_Instance(bool destroy_on_game_load);
+    explicit CPS_Instance(bool destroy_on_game_load);
     virtual ~CPS_Instance();
 
     [[nodiscard]] bool destroy_on_game_load() const { return m_destroy_on_game_load; }

@@ -1,25 +1,28 @@
 #include "stdafx.h"
 
 #include "UIOutfitSlot.h"
+
 #include "UIStatic.h"
 #include "UICellItem.h"
 #include "../CustomOutfit.h"
 #include "../actor.h"
 #include "UIInventoryUtilities.h"
 
+#include "../level.h"
+#include "../game_base_space.h"
+
 CUIOutfitDragDropList::CUIOutfitDragDropList()
 {
     m_background = xr_new<CUIStatic>();
     m_background->SetAutoDelete(true);
+
     if (Core.Features.test(xrCore::Feature::old_outfit_slot_style))
         AttachChild(m_background);
-    m_default_outfit = "npc_icon_without_outfit";
+
+    m_default_outfit._set("npc_icon_without_outfit");
 }
 
-CUIOutfitDragDropList::~CUIOutfitDragDropList() {}
-
-#include "../level.h"
-#include "../game_base_space.h"
+CUIOutfitDragDropList::~CUIOutfitDragDropList() = default;
 
 void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 {
@@ -65,7 +68,7 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
     m_background->TextureOn();
 }
 
-void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit) { m_default_outfit = default_outfit; }
+void CUIOutfitDragDropList::SetDefaultOutfit(LPCSTR default_outfit) { m_default_outfit._set(default_outfit); }
 
 void CUIOutfitDragDropList::SetItem(CUICellItem* itm)
 {

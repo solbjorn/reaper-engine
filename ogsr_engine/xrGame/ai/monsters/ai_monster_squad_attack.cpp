@@ -289,7 +289,7 @@ Fvector CMonsterSquad::calc_monster_target_dir(CBaseMonster* monster, const CEnt
         if (enemy2monster_mag < near_zero)
         {
             VERIFY2(false, "Enemy and Monster should not have same pos!");
-            dir = {1.f, 0.f, 0.f}; // happy with random dir then :)
+            dir.set(1.0f, 0.0f, 0.0f); // happy with random dir then :)
             return dir;
         }
 

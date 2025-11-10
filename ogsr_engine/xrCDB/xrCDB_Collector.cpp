@@ -67,23 +67,45 @@ void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fv
     faces.emplace_back(std::move(T));
 }
 
-struct alignas(16) edge
+namespace
+{
+struct XR_TRIVIAL alignas(16) edge
 {
     u32 face_id;
     u32 edge_id;
     u32 vertex_id0;
     u32 vertex_id1;
 
-    constexpr inline edge() = default;
-    constexpr inline edge(const edge& e) { xr_memcpy16(this, &e); }
-    constexpr inline edge& operator=(const edge& e)
+    [[maybe_unused]] constexpr edge() = default;
+
+    constexpr edge(const edge& that) { xr_memcpy16(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr edge(edge&&) = default;
+#else
+    constexpr edge(edge&& that) { xr_memcpy16(this, &that); }
+#endif
+
+    constexpr edge& operator=(const edge& that)
     {
-        xr_memcpy16(this, &e);
+        xr_memcpy16(this, &that);
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr edge& operator=(edge&&) = default;
+#else
+    constexpr edge& operator=(edge&& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+#endif
 };
 static_assert(std::is_same_v<decltype(edge::vertex_id0), std::remove_all_extents_t<decltype(TRI::verts)>>);
 static_assert(std::is_same_v<decltype(edge::vertex_id1), std::remove_all_extents_t<decltype(TRI::verts)>>);
+XR_TRIVIAL_ASSERT(edge);
+} // namespace
 
 void Collector::calc_adjacency(xr_vector<u32>& dest) const
 {
@@ -162,22 +184,33 @@ void Collector::calc_adjacency(xr_vector<u32>& dest) const
         }
     }
 }
-IC BOOL similar(TRI& T1, TRI& T2)
+
+namespace
+{
+[[nodiscard]] constexpr bool similar(const TRI& T1, const TRI& T2)
 {
     if ((T1.verts[0] == T2.verts[0]) && (T1.verts[1] == T2.verts[1]) && (T1.verts[2] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
+        return true;
+
     if ((T1.verts[0] == T2.verts[0]) && (T1.verts[2] == T2.verts[1]) && (T1.verts[1] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
+        return true;
+
     if ((T1.verts[2] == T2.verts[0]) && (T1.verts[0] == T2.verts[1]) && (T1.verts[1] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
+        return true;
+
     if ((T1.verts[2] == T2.verts[0]) && (T1.verts[1] == T2.verts[1]) && (T1.verts[0] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
+        return true;
+
     if ((T1.verts[1] == T2.verts[0]) && (T1.verts[0] == T2.verts[1]) && (T1.verts[2] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
+        return true;
+
     if ((T1.verts[1] == T2.verts[0]) && (T1.verts[2] == T2.verts[1]) && (T1.verts[0] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return TRUE;
-    return FALSE;
+        return true;
+
+    return false;
 }
+} // namespace
+
 void Collector::remove_duplicate_T()
 {
     for (u32 f = 0; f < faces.size(); f++)

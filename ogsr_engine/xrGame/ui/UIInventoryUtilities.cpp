@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIInventoryUtilities.h"
+
 #include "../WeaponAmmo.h"
 #include "../UIStaticItem.h"
 #include "UIStatic.h"
@@ -216,7 +217,6 @@ const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETime
     string64 bufTime{};
 
     u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-
     split_time(time, year, month, day, hours, mins, secs, milisecs);
 
     // Time
@@ -234,7 +234,7 @@ const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETime
     default: R_ASSERT(!"Unknown type of date precision");
     }
 
-    return bufTime;
+    return shared_str{bufTime};
 }
 
 const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDatePrecision datePrec, char dateSeparator)
@@ -242,7 +242,6 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
     string32 bufDate{};
 
     u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-
     split_time(date, year, month, day, hours, mins, secs, milisecs);
 
     // Date
@@ -254,7 +253,7 @@ const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDate
     default: R_ASSERT(!"Unknown type of date precision");
     }
 
-    return bufDate;
+    return shared_str{bufDate};
 }
 
 LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
@@ -269,19 +268,19 @@ LPCSTR InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife
     _buff[0] = 0;
 
     if (month1 != month2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s ", month2 - month1, *CStringTable().translate("ui_st_months"));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s ", month2 - month1, *CStringTable().translate(shared_str{"ui_st_months"}));
 
     if (!cnt && day1 != day2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", day2 - day1, *CStringTable().translate("ui_st_days"));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", day2 - day1, *CStringTable().translate(shared_str{"ui_st_days"}));
 
     if (!cnt && hours1 != hours2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", hours2 - hours1, *CStringTable().translate("ui_st_hours"));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", hours2 - hours1, *CStringTable().translate(shared_str{"ui_st_hours"}));
 
     if (!cnt && mins1 != mins2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", mins2 - mins1, *CStringTable().translate("ui_st_mins"));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", mins2 - mins1, *CStringTable().translate(shared_str{"ui_st_mins"}));
 
     if (!cnt && secs1 != secs2)
-        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", secs2 - secs1, *CStringTable().translate("ui_st_secs"));
+        cnt = sprintf_s(_buff + cnt, buff_sz - cnt, "%d %s", secs2 - secs1, *CStringTable().translate(shared_str{"ui_st_secs"}));
 
     return _buff;
 }
@@ -300,24 +299,16 @@ void InventoryUtilities::UpdateWeight(CUIStatic& wnd, bool withPrefix)
     string16 cl{};
 
     if (total > max)
-    {
         strcpy_s(cl, "%c[red]");
-    }
     else
-    {
         strcpy_s(cl, "%c[UI_orange]");
-    }
 
     string32 prefix{};
 
     if (withPrefix)
-    {
-        sprintf_s(prefix, "%%c[default]%s ", *CStringTable().translate("ui_inv_weight"));
-    }
+        sprintf_s(prefix, "%%c[default]%s ", *CStringTable().translate(shared_str{"ui_inv_weight"}));
     else
-    {
         strcpy_s(prefix, "");
-    }
 
     sprintf_s(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
     wnd.SetText(buf);
@@ -341,17 +332,16 @@ void LoadStrings(CharInfoStrings* container, LPCSTR section, LPCSTR field)
 
     for (u32 k = 0; k < count; k += 2)
     {
-        _GetItem(cfgRecord, k, singleThreshold);
-        id.second = singleThreshold;
+        std::ignore = _GetItem(cfgRecord, k, singleThreshold);
+        id.second._set(singleThreshold);
 
-        _GetItem(cfgRecord, k + 1, singleThreshold);
+        std::ignore = _GetItem(cfgRecord, k + 1, singleThreshold);
         if (k + 1 != count)
             sscanf(singleThreshold, "%i", &upBoundThreshold);
         else
             upBoundThreshold += 1;
 
         id.first = upBoundThreshold;
-
         container->insert(id);
     }
 }
@@ -441,10 +431,8 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
     CActor* actor = smart_cast<CActor*>(Level().CurrentEntity());
-    if (actor)
-    {
-        actor->TransferInfo(info_id, true);
-    }
+    if (actor != nullptr)
+        actor->TransferInfo(shared_str{info_id}, true);
 }
 
 u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)

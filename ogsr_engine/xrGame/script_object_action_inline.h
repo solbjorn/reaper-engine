@@ -27,7 +27,7 @@ IC CScriptObjectAction::CScriptObjectAction(MonsterSpace::EObjectAction tObjectA
 
 IC void CScriptObjectAction::SetObject(LPCSTR caBoneName)
 {
-    m_caBoneName = caBoneName;
+    m_caBoneName._set(caBoneName);
     m_bCompleted = false;
 }
 

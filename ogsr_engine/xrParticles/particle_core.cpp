@@ -14,17 +14,17 @@ ICF pVector RandVec() { return pVector(drand48(), drand48(), drand48()); }
 } // namespace
 
 // Return a random number with a normal distribution.
-float PAPI::NRand(float sigma)
+f32 PAPI::NRand(f32 sigma)
 {
 #define ONE_OVER_SIGMA_EXP (1.0f / 0.7975f)
 
     if (fis_zero(sigma))
-        return 0.f;
+        return 0.0f;
 
-    float y;
+    f32 y;
     do
     {
-        y = -logf(drand48());
+        y = -std::log(drand48());
     } while (drand48() > expf(-_sqr(y - 1.0f) * 0.5f));
 
     if (rand() & 0x1)
@@ -172,7 +172,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1, float a2, float a3, floa
 
         // radius2Sqr stores 1 / (p2.p2)
         // XXX Used to have an actual if.
-        radius2Sqr = p2l2 ? 1.0f / p2l2 : 0.0f;
+        radius2Sqr = !fis_zero(p2l2) ? (1.0f / p2l2) : 0.0f;
 
         // Find a vector3 orthogonal to n.
         pVector basis(1.0f, 0.0f, 0.0f);

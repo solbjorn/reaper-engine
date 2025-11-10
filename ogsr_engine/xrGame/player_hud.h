@@ -186,9 +186,9 @@ struct script_layer
     Fmatrix blend;
     u8 m_part;
 
-    script_layer(LPCSTR name, u8 part, float speed = 1.f, float power = 1.f, bool looped = true)
+    explicit script_layer(LPCSTR name, u8 part, float speed = 1.f, float power = 1.f, bool looped = true)
     {
-        m_name = name;
+        m_name._set(name);
         m_part = part;
         m_power = power;
         blend.identity();
@@ -250,7 +250,7 @@ public:
     // props
     u32 m_upd_firedeps_frame;
 
-    attachable_hud_item(player_hud* pparent) : m_parent(pparent), m_upd_firedeps_frame(u32(-1)) {}
+    explicit attachable_hud_item(player_hud* pparent) : m_parent{pparent}, m_upd_firedeps_frame{std::numeric_limits<u32>::max()} {}
     ~attachable_hud_item();
 
     void load(const shared_str& sect_name);
@@ -289,7 +289,7 @@ public:
     ~player_hud();
 
     void load(const shared_str& model_name, bool force = false);
-    void load_default() { load("actor_hud_05"); }
+    void load_default() { load(shared_str{"actor_hud_05"}); }
     void update(const Fmatrix& trans);
     void render_hud(u32 context_id, IRenderable* root);
     void render_item_ui();

@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "BastArtifact.h"
+
 #include "PhysicsShell.h"
 #include "extendedgeom.h"
 #include "ParticlesObject.h"
@@ -22,7 +23,7 @@ CBastArtefact::CBastArtefact()
     m_fEnergyDecreasePerTime = 1.1f;
 }
 
-CBastArtefact::~CBastArtefact() {}
+CBastArtefact::~CBastArtefact() = default;
 
 // вызывается при столкновении мочалки с чем-то
 void CBastArtefact::ObjectContactCallback(bool&, bool, dContact& c, SGameMtl*, SGameMtl*)
@@ -112,7 +113,7 @@ void CBastArtefact::Load(LPCSTR section)
     m_fEnergyMax = pSettings->r_float(section, "energy_max");
     m_fEnergyDecreasePerTime = pSettings->r_float(section, "energy_decrease_speed");
 
-    m_sParticleName = pSettings->r_string(section, "particle");
+    m_sParticleName._set(pSettings->r_string(section, "particle"));
 }
 
 void CBastArtefact::shedule_Update(u32 dt)

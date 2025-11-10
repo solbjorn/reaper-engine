@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "ai_space.h"
 #include "script_engine.h"
 #include "ActorEffector.h"
@@ -20,12 +21,14 @@ void CAnimatorCamEffectorScriptCB::ProcessIfInvalid(SCamEffectorInfo& info)
 BOOL CAnimatorCamEffectorScriptCB::Valid()
 {
     BOOL res = inherited::Valid();
-    if (!res && cb_name.size())
+    if (!res && !cb_name.empty())
     {
         luabind::functor<LPCSTR> fl;
         R_ASSERT(ai().script_engine().functor<LPCSTR>(*cb_name, fl));
         fl();
-        cb_name = "";
+
+        cb_name._set("");
     }
+
     return res;
 }

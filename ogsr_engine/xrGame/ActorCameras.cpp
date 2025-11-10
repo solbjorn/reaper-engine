@@ -195,7 +195,7 @@ void CActor::cam_Update(float dt, float fFOV)
         CurrentHeight = (CurrentHeight * (1.0f - smoothK)) + (CameraHeight() * smoothK);
     }
 
-    Fvector point = {0, CurrentHeight + current_ik_cam_shift, 0}, dangle = {0, 0, 0};
+    Fvector point{0.0f, CurrentHeight + current_ik_cam_shift, 0.0f}, dangle{};
 
     Fmatrix xform, xformR;
     xform.setXYZ(0, r_torso.yaw, 0);
@@ -245,7 +245,8 @@ void CActor::cam_Update(float dt, float fFOV)
             {
                 float da = 0.f;
                 BOOL bIntersect = FALSE;
-                Fvector ext = {w, h, VIEWPORT_NEAR / 2};
+                const Fvector ext{w, h, VIEWPORT_NEAR / 2};
+
                 if (test_point(xrc, xform, mat, ext, radius, alpha))
                 {
                     da = PI / 1000.f;
@@ -261,6 +262,7 @@ void CActor::cam_Update(float dt, float fFOV)
                     valid_angle = bIntersect ? angle : alpha;
                 }
             }
+
             r_torso.roll = valid_angle * 2.f;
             r_torso_tgt_roll = r_torso.roll;
         }
@@ -270,6 +272,7 @@ void CActor::cam_Update(float dt, float fFOV)
             r_torso.roll = 0.f;
         }
     }
+
     if (!fis_zero(r_torso.roll))
     {
         float radius = point.y * 0.5f;

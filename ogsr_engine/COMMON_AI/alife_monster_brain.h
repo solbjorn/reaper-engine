@@ -45,7 +45,7 @@ private:
     IC bool can_choose_alife_tasks() const;
 
 public:
-    CALifeMonsterBrain(object_type* object);
+    explicit CALifeMonsterBrain(object_type* object);
     virtual ~CALifeMonsterBrain();
 
     void on_state_write(NET_Packet&);

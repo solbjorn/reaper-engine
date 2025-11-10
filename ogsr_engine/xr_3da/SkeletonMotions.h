@@ -64,8 +64,9 @@ public:
     Fvector _sizeT;
 
 public:
-    void set_flags(u8 val) { _flags = val; }
-    void set_flag(u8 mask, u8 val)
+    constexpr void set_flags(u8 val) { _flags = val; }
+
+    constexpr void set_flag(u8 mask, u8 val)
     {
         if (val)
             _flags |= mask;
@@ -73,16 +74,16 @@ public:
             _flags &= ~mask;
     }
 
-    [[nodiscard]] BOOL test_flag(u8 mask) const { return BOOL(_flags & mask); }
+    [[nodiscard]] constexpr BOOL test_flag(u8 mask) const { return BOOL(_flags & mask); }
 
-    void set_count(u32 cnt)
+    constexpr void set_count(u32 cnt)
     {
         VERIFY(cnt);
         _count = cnt;
     }
 
-    [[nodiscard]] u32 get_count() const { return (u32(_count) & 0x00FFFFFF); }
-    [[nodiscard]] float GetLength() const { return float(_count) * SAMPLE_SPF; }
+    [[nodiscard]] constexpr u32 get_count() const { return (u32(_count) & 0x00FFFFFF); }
+    [[nodiscard]] constexpr float GetLength() const { return float(_count) * SAMPLE_SPF; }
 
     [[nodiscard]] constexpr gsl::index mem_usage() const
     {
@@ -115,10 +116,10 @@ public:
     shared_str name;
     void Load(IReader*);
 
-    bool is_empty() const { return intervals.empty(); }
-    const interval* pick_mark(float const& t) const;
-    bool is_mark_between(float const& t0, float const& t1) const;
-    float time_to_next_mark(float time) const;
+    [[nodiscard]] constexpr bool is_empty() const { return intervals.empty(); }
+    [[nodiscard]] const interval* pick_mark(float const& t) const;
+    [[nodiscard]] bool is_mark_between(float const& t0, float const& t1) const;
+    [[nodiscard]] float time_to_next_mark(float time) const;
 };
 
 class CMotionDef
@@ -132,13 +133,13 @@ public:
     xr_vector<motion_marks> marks;
 
     void Load(IReader* MP, u32 fl, u16 vers);
-    u32 mem_usage() { return sizeof(*this); }
+    [[nodiscard]] constexpr gsl::index mem_usage() const { return gsl::index{sizeof(*this)}; }
 
-    inline float Accrue() const { return accrue; }
-    inline float Falloff() const { return falloff; }
-    inline float Speed() const { return speed; }
-    inline float Power() const { return power; }
-    bool StopAtEnd() const;
+    [[nodiscard]] constexpr float Accrue() const { return accrue; }
+    [[nodiscard]] constexpr float Falloff() const { return falloff; }
+    [[nodiscard]] constexpr float Speed() const { return speed; }
+    [[nodiscard]] constexpr float Power() const { return power; }
+    [[nodiscard]] bool StopAtEnd() const;
 };
 
 using accel_map = string_unordered_map<shared_str, u16>;
@@ -157,7 +158,7 @@ public:
 
     CPartDef() = default;
 
-    u32 mem_usage() { return sizeof(*this) + bones.size() * sizeof(u32) + sizeof(Name); }
+    [[nodiscard]] constexpr gsl::index mem_usage() const { return gsl::index{sizeof(*this)} + std::ssize(bones) * gsl::index{sizeof(u32)} + Name.size(); }
 };
 
 class CPartition
@@ -165,13 +166,13 @@ class CPartition
     CPartDef P[MAX_PARTS];
 
 public:
-    IC CPartDef& operator[](u16 id) { return P[id]; }
-    IC const CPartDef& part(u16 id) const { return P[id]; }
-    u16 part_id(const shared_str& name) const;
-    u32 mem_usage() { return P[0].mem_usage() * MAX_PARTS; }
+    [[nodiscard]] constexpr CPartDef& operator[](u16 id) { return P[id]; }
+    [[nodiscard]] constexpr const CPartDef& part(u16 id) const { return P[id]; }
+    [[nodiscard]] u16 part_id(const shared_str& name) const;
+    [[nodiscard]] constexpr gsl::index mem_usage() const { return P[0].mem_usage() * MAX_PARTS; }
     void load(IKinematics* V);
 
-    u8 count() const
+    [[nodiscard]] constexpr u8 count() const
     {
         u8 ret = 0;
         for (u8 i = 0; i < MAX_PARTS; ++i)
@@ -188,24 +189,29 @@ struct motions_value
     accel_map m_cycle; // motion data itself	(shared)
     accel_map m_fx; // motion data itself	(shared)
     CPartition m_partition; // partition
-    u32 m_dwReference;
+    std::atomic<gsl::index> m_dwReference;
     string_unordered_map<shared_str, MotionVec> m_motions;
     MotionDefVec m_mdefs;
 
     shared_str m_id;
 
-    BOOL load(LPCSTR N, IReader* data, vecBones* bones);
-    MotionVec* bone_motions(const shared_str& bone_name);
+    [[nodiscard]] BOOL load(LPCSTR N, IReader* data, vecBones* bones);
+    [[nodiscard]] MotionVec* bone_motions(const shared_str& bone_name);
 
-    u32 mem_usage()
+    [[nodiscard]] constexpr gsl::index mem_usage() const
     {
-        size_t sz = sizeof(*this) + m_motion_map.size() * 6 + m_partition.mem_usage();
-        for (MotionDefVecIt it = m_mdefs.begin(); it != m_mdefs.end(); it++)
-            sz += it->mem_usage();
-        for (auto bm_it = m_motions.begin(); bm_it != m_motions.end(); bm_it++)
-            for (MotionVecIt m_it = bm_it->second.begin(); m_it != bm_it->second.end(); m_it++)
-                sz += m_it->mem_usage();
-        return u32(sz);
+        gsl::index sz = gsl::index{sizeof(*this)} + std::ssize(m_motion_map) * 6 + m_partition.mem_usage();
+
+        for (const auto& def : m_mdefs)
+            sz += def.mem_usage();
+
+        for (auto [name, vec] : m_motions)
+        {
+            for (const auto& mot : vec)
+                sz += mot.mem_usage();
+        }
+
+        return sz;
     }
 };
 
@@ -216,9 +222,10 @@ class motions_container
 public:
     motions_container();
     ~motions_container();
-    bool has(shared_str key);
-    motions_value* dock(shared_str key, IReader* data, vecBones* bones);
-    void dump();
+
+    [[nodiscard]] bool has(shared_str key) const;
+    [[nodiscard]] motions_value* dock(shared_str key, IReader* data, vecBones* bones);
+    void dump() const;
     void clean(bool force_destroy);
 };
 
@@ -231,68 +238,90 @@ private:
 
 protected:
     // ref-counting
-    void destroy()
+    constexpr void destroy()
     {
-        if (!p_)
+        if (p_ == nullptr)
             return;
 
-        p_->m_dwReference--;
-        if (0 == p_->m_dwReference)
+        if (--p_->m_dwReference == 0)
             p_ = nullptr;
     }
 
 public:
-    bool create(shared_str key, IReader* data,
-                vecBones* bones); //{	motions_value* v = g_pMotionsContainer->dock(key,data,bones); if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
-    bool create(shared_motions const& rhs); //	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
-public:
+    [[nodiscard]] bool create(shared_str key, IReader* data, vecBones* bones);
+    [[nodiscard]] bool create(const shared_motions& that);
+
     // construction
-    shared_motions() = default;
-    shared_motions(shared_motions const& rhs) { create(rhs); }
-    ~shared_motions() { destroy(); }
+    constexpr shared_motions() = default;
+    constexpr ~shared_motions() { destroy(); }
+
+    shared_motions(const shared_motions& that) { std::ignore = create(that); }
+
+    constexpr shared_motions(shared_motions&& that)
+    {
+        destroy();
+        p_ = std::move(that.p_);
+        that.p_ = nullptr;
+    }
 
     // assignment & accessors
-    shared_motions& operator=(shared_motions const& rhs)
+    shared_motions& operator=(const shared_motions& that)
     {
-        create(rhs);
+        std::ignore = create(that);
         return *this;
     }
 
-    bool operator==(shared_motions const& rhs) const { return (p_ == rhs.p_); }
+    constexpr shared_motions& operator=(shared_motions&& that)
+    {
+        destroy();
+
+        p_ = std::move(that.p_);
+        that.p_ = nullptr;
+
+        return *this;
+    }
+
+    [[nodiscard]] constexpr bool operator==(const shared_motions& rhs) const { return p_ == rhs.p_; }
+    [[nodiscard]] constexpr explicit operator bool() const { return p_ != nullptr; }
 
     // misc func
-    MotionVec* bone_motions(const shared_str& bone_name)
+    [[nodiscard]] MotionVec* bone_motions(const shared_str& bone_name)
     {
         VERIFY(p_);
         return p_->bone_motions(bone_name);
     }
-    accel_map* motion_map()
+
+    [[nodiscard]] accel_map* motion_map()
     {
         VERIFY(p_);
         return &p_->m_motion_map;
     }
-    accel_map* cycle()
+
+    [[nodiscard]] accel_map* cycle()
     {
         VERIFY(p_);
         return &p_->m_cycle;
     }
-    accel_map* fx()
+
+    [[nodiscard]] accel_map* fx()
     {
         VERIFY(p_);
         return &p_->m_fx;
     }
-    CPartition* partition()
+
+    [[nodiscard]] CPartition* partition()
     {
         VERIFY(p_);
         return &p_->m_partition;
     }
-    CMotionDef* motion_def(u16 idx)
+
+    [[nodiscard]] CMotionDef* motion_def(u16 idx)
     {
         VERIFY(p_);
         return &p_->m_mdefs[idx];
     }
 
-    const shared_str& id() const
+    [[nodiscard]] const shared_str& id() const
     {
         VERIFY(p_);
         return p_->m_id;

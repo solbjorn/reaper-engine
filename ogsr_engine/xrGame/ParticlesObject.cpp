@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "ParticlesObject.h"
+
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 #include "..\xr_3da\render.h"
@@ -101,7 +102,8 @@ const shared_str CParticlesObject::Name()
 {
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
-    return (V) ? V->Name() : "";
+
+    return V != nullptr ? V->Name() : shared_str{""};
 }
 
 //----------------------------------------------------

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
 #include "SkeletonCustom.h"
+
 #include "SkeletonX.h"
+
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/Render.h"
 
@@ -209,7 +211,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
         data->r_stringZ(buf, sizeof(buf));
         _strlwr(buf);
         CBoneData* pBone = CreateBoneData(ID);
-        pBone->name = buf;
+        pBone->name._set(buf);
         pBone->child_faces.resize(children.size());
         bones->push_back(pBone);
 
@@ -218,7 +220,7 @@ void CKinematics::Load(const char* N, IReader* data, u32 dwFlags)
         // It's parent
         data->r_stringZ(buf, sizeof(buf));
         _strlwr(buf);
-        L_parents.push_back(buf);
+        L_parents.emplace_back(buf);
 
         data->r(&pBone->obb, sizeof(Fobb));
         visimask.set(ID, true);
@@ -605,7 +607,7 @@ bool CKinematics::PickBone(const Fmatrix& parent_xform, IKinematics::pick_result
 
 void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size)
 {
-    Fvector S, D, normal = {0, 0, 0};
+    Fvector S, D, normal{};
     // transform ray from world to model
     Fmatrix P;
     P.invert(*parent_xform);

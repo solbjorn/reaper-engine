@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "render.h"
-
 #include "Environment.h"
+
+#include "render.h"
 #include "xr_efflensflare.h"
 #include "rain.h"
 #include "thunderbolt.h"
@@ -41,7 +41,7 @@ CEnvironment::CEnvironment()
 {
     USED_COP_WEATHER = FS.path_exist("$game_weathers$");
 
-    CurrentWeatherName = nullptr;
+    CurrentWeatherName._set(nullptr);
     OnDeviceCreate();
 
     fTimeFactor = 12.f;
@@ -50,13 +50,14 @@ CEnvironment::CEnvironment()
     // fill clouds hemi verts & faces
     const Fvector* verts;
     CloudsVerts.resize(xrHemisphereVertices(2, verts));
-    CopyMemory(&CloudsVerts.front(), verts, CloudsVerts.size() * sizeof(Fvector));
+    std::memcpy(CloudsVerts.data(), verts, CloudsVerts.size() * sizeof(Fvector));
+
     const u16* indices;
     CloudsIndices.resize(xrHemisphereIndices(2, indices));
-    CopyMemory(&CloudsIndices.front(), indices, CloudsIndices.size() * sizeof(u16));
+    std::memcpy(CloudsIndices.data(), indices, CloudsIndices.size() * sizeof(u16));
 
     // perlin noise
-    PerlinNoise1D = xr_new<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
+    PerlinNoise1D = xr_new<CPerlinNoise1D>();
     PerlinNoise1D->SetOctaves(2);
     PerlinNoise1D->SetAmplitude(0.66666f);
 
@@ -624,7 +625,7 @@ void CEnvironment::calculate_dynamic_sun_dir()
 void CEnvironment::create_mixer()
 {
     VERIFY(!CurrentEnv);
-    CurrentEnv = xr_new<CEnvDescriptorMixer>("00:00:00");
+    CurrentEnv = xr_new<CEnvDescriptorMixer>(shared_str{"00:00:00"});
 }
 
 void CEnvironment::destroy_mixer() { xr_delete(CurrentEnv); }

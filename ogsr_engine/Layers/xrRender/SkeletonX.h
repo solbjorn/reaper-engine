@@ -60,7 +60,7 @@ protected:
     void _Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
     void _Load(const char* N, IReader* data, u32& dwVertCount);
 
-    virtual void _Load_hw(Fvisual& V, void* data) = 0;
+    virtual void _Load_hw(Fvisual& V, const void* data) = 0;
     virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount) = 0;
 
     void _FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);

@@ -12,7 +12,7 @@ public:
     void Create();
     void Destroy();
 
-    bool Wait(u32 wait_sleep, u64 timeout);
+    bool Wait(s32 wait_sleep, s64 timeout);
     void End();
 };
 

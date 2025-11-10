@@ -5,23 +5,25 @@ struct VisMask final
     Flags64 _visimask;
     Flags64 _visimask_ex;
 
-    IC VisMask()
+    constexpr VisMask()
     {
         _visimask.zero();
         _visimask_ex.zero();
     }
-    IC VisMask(const VisMask& _second)
+
+    constexpr VisMask(const VisMask& _second)
     {
         _visimask.flags = _second._visimask.flags;
         _visimask_ex.flags = _second._visimask_ex.flags;
     }
-    IC VisMask(u64 _low, u64 _high)
+
+    constexpr explicit VisMask(u64 _low, u64 _high)
     {
         _visimask.assign(_low);
         _visimask_ex.assign(_high);
     }
 
-    IC bool operator!=(const VisMask& _second) const noexcept
+    [[nodiscard]] constexpr bool operator!=(const VisMask& _second) const noexcept
     {
         if (_visimask.flags != _second._visimask.flags)
             return true;
@@ -29,38 +31,48 @@ struct VisMask final
             return true;
         return false;
     }
-    IC bool operator==(const VisMask& _second) const noexcept { return (_visimask.flags == _second._visimask.flags) && (_visimask_ex.flags == _second._visimask_ex.flags); }
-    IC VisMask& operator=(const VisMask& _second)
+
+    [[nodiscard]] constexpr bool operator==(const VisMask& _second) const noexcept
+    {
+        return (_visimask.flags == _second._visimask.flags) && (_visimask_ex.flags == _second._visimask_ex.flags);
+    }
+
+    constexpr VisMask& operator=(const VisMask& _second)
     {
         _visimask.flags = _second._visimask.flags;
         _visimask_ex.flags = _second._visimask_ex.flags;
         return *this;
     }
-    IC void set(u16 _digit, bool _set)
+
+    constexpr void set(u16 _digit, bool _set)
     {
         if (_digit < 64)
             _visimask.set(1ull << _digit, _set);
         else
             _visimask_ex.set(1ull << (_digit - 64), _set);
     }
-    IC void set(u64 _low, u64 _high)
+
+    constexpr void set(u64 _low, u64 _high)
     {
         _visimask.assign(_low);
         _visimask_ex.assign(_high);
     }
-    IC bool is(u16 _digit)
+
+    [[nodiscard]] constexpr bool is(u16 _digit) const
     {
         if (_digit < 64)
             return !!_visimask.is(1ull << _digit);
         else
             return !!_visimask_ex.is(1ull << (_digit - 64));
     }
-    IC void zero()
+
+    constexpr void zero()
     {
         _visimask.zero();
         _visimask_ex.zero();
     }
-    IC u16 count()
+
+    [[nodiscard]] constexpr u16 count() const
     {
         u16 _c = 0;
         for (u16 i = 0; i < 64; ++i)
@@ -71,17 +83,20 @@ struct VisMask final
                 ++_c;
         return _c;
     }
-    IC void set_all()
+
+    constexpr void set_all()
     {
         for (u16 i = 0; i < 128; ++i)
             this->set(i, true);
     }
-    IC void And(const VisMask& _second)
+
+    constexpr void And(const VisMask& _second)
     {
         _visimask.And(_second._visimask.flags);
         _visimask_ex.And(_second._visimask_ex.flags);
     }
-    IC void invert()
+
+    constexpr void invert()
     {
         _visimask.invert();
         _visimask_ex.invert();

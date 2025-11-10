@@ -169,7 +169,7 @@ public:
     CEnvAmbient* env_ambient{};
     void setEnvAmbient(LPCSTR sect, CEnvironment* parent);
 
-    CEnvDescriptor(shared_str const& identifier = nullptr);
+    explicit CEnvDescriptor(const shared_str& identifier = {});
 
     void load(CEnvironment& environment, CInifile& config);
     void load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR S);
@@ -199,7 +199,8 @@ public:
     float fog_far;
 
 public:
-    CEnvDescriptorMixer(shared_str const& identifier);
+    explicit CEnvDescriptorMixer(shared_str const& identifier);
+
     void lerp(CEnvironment* parent, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& M, float m_power);
 };
 
@@ -294,7 +295,6 @@ public:
 
 public:
     CEnvironment();
-
     ~CEnvironment();
 
     void load();

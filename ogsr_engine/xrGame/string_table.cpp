@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "string_table.h"
+
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
 
@@ -32,7 +33,7 @@ void CStringTable::Init()
     pData = xr_new<STRING_TABLE_DATA>();
 
     // имя языка, если не задано (NULL), то первый <text> в <string> в XML
-    pData->m_sLanguage = pSettings->r_string("string_table", "language");
+    pData->m_sLanguage._set(pSettings->r_string("string_table", "language"));
 
     LPCSTR S = pSettings->r_string("string_table", "files");
     if (S && S[0])
@@ -44,7 +45,7 @@ void CStringTable::Init()
             {
                 string128 xml_file;
 
-                _GetItem(S, i, xml_file);
+                std::ignore = _GetItem(S, i, xml_file);
                 Load(xml_file);
             }
         });
@@ -159,7 +160,7 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
     if (b_hit && bFirst)
     {
         std::scoped_lock lock{pDataMutex};
-        pData->m_string_key_binding[skey] = str;
+        pData->m_string_key_binding[skey]._set(str);
     }
 
     return STRING_VALUE(res.c_str());

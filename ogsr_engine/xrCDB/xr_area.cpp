@@ -46,7 +46,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range, float t
     VERIFY(_valid(p->volume));
 
     // Query objects
-    Fvector bb_size = {range, range, range};
+    Fvector bb_size{range, range, range};
     g_SpatialSpace->q_box(snd_ER, 0, STYPE_REACTTOSOUND, snd_position, bb_size);
 
     // Iterate
@@ -166,7 +166,7 @@ int CObjectSpace::GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*
         if (O == ignore_object)
             continue;
 
-        Fsphere mS = {O->spatial.sphere.P, O->spatial.sphere.R};
+        Fsphere mS{O->spatial.sphere.P, O->spatial.sphere.R};
         if (Q.intersect(mS))
             q_nearest.push_back(O);
     }
@@ -204,8 +204,8 @@ void CObjectSpace::Load()
 
     hdrCFORM H;
     F->r(&H, sizeof(hdrCFORM));
-    Fvector* verts = (Fvector*)F->pointer();
-    CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+    const Fvector* verts = (const Fvector*)F->pointer();
+    const CDB::TRI* tris = (const CDB::TRI*)(verts + H.vertcount);
     R_ASSERT(CFORM_CURRENT_VERSION == H.version);
 
     F->seek(0);
@@ -215,7 +215,7 @@ void CObjectSpace::Load()
     xr_strcpy(cache, "levels_cache\\");
     xr_strcat(cache, g_pGameLevel->name().c_str());
     xr_strcat(cache, ".cform");
-    FS.update_path(cache, "$app_data_root$", cache);
+    std::ignore = FS.update_path(cache, "$app_data_root$", cache);
 
     if (!FS.exist(cache) || !Static.deserialize(cache, xxh, deserialize_callback))
     {

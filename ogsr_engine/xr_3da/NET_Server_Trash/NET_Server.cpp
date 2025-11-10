@@ -78,7 +78,7 @@ IPureServer::~IPureServer() { SV_Client = nullptr; }
 
 IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вида [имя_сейва/single/alife]
 {
-    connect_options = options;
+    connect_options._set(options);
     return ErrNoError;
 }
 

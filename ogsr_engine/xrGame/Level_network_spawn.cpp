@@ -81,7 +81,7 @@ void CLevel::g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos)
     VERIFY(E);
 
     // Fill
-    E->s_name = name;
+    E->s_name._set(name);
     E->set_name_replace("");
     E->s_gameid = u8(GameID());
     E->s_RP = rp;
@@ -183,7 +183,7 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 le
         weapon->a_elapsed = weapon->get_ammo_magsize();
 
     // Fill
-    abstract->s_name = section;
+    abstract->s_name._set(section);
     abstract->set_name_replace(section);
     abstract->s_gameid = u8(GameID());
     abstract->o_Position = position;

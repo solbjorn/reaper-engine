@@ -132,7 +132,7 @@ void CStalkerMovementManager::Load(LPCSTR section) { inherited::Load(section); }
 void CStalkerMovementManager::reload(LPCSTR section)
 {
     inherited::reload(section);
-    m_velocities = &stalker_velocity_holder().collection(pSettings->r_string(section, "movement_speeds"));
+    m_velocities = &stalker_velocity_holder().collection(shared_str{pSettings->r_string(section, "movement_speeds")});
     init_velocity_masks();
 }
 

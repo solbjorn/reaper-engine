@@ -55,7 +55,7 @@ public:
         Callback_overwrite = FALSE;
         Callback_type = 0;
 
-        ZeroMemory(&param, sizeof(param));
+        std::memset(&param, 0, sizeof(param));
     }
 
     void set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
@@ -79,7 +79,7 @@ public:
     void set_param(u32 idx, float data);
     float get_param(u32 idx);
 
-    u32 mem_usage() { return sizeof(*this); }
+    [[nodiscard]] gsl::index mem_usage() const { return gsl::index{sizeof(*this)}; }
 };
 
 struct vertBoned1W // (3+3+3+3+2+1)*4 = 15*4 = 60 bytes
@@ -224,8 +224,9 @@ struct SBoneShape
     Fsphere sphere; // 4*4
     Fcylinder cylinder; // 8*4
 
-    SBoneShape() { Reset(); }
-    void Reset()
+    constexpr SBoneShape() { Reset(); }
+
+    constexpr void Reset()
     {
         flags.zero();
         type = stNone;
@@ -234,7 +235,8 @@ struct SBoneShape
         sphere.R = 0.f;
         cylinder.invalidate();
     }
-    bool Valid()
+
+    [[nodiscard]] constexpr bool Valid() const
     {
         switch (type)
         {
@@ -266,8 +268,9 @@ struct SJointIKData
 
     float friction;
 
-    SJointIKData() { Reset(); }
-    void Reset()
+    constexpr SJointIKData() { Reset(); }
+
+    constexpr void Reset()
     {
         limits[0].Reset();
         limits[1].Reset();
@@ -279,7 +282,9 @@ struct SJointIKData
         break_force = 0.f;
         break_torque = 0.f;
     }
+
     void clamp_by_limits(Fvector& dest_xyz);
+
     void Export(IWriter& F)
     {
         F.w_u32(type);
@@ -309,6 +314,7 @@ struct SJointIKData
 
         F.w_float(friction);
     }
+
     bool Import(IReader& F, u16 vers)
     {
         type = (EJointType)F.r_u32();
@@ -387,15 +393,18 @@ public:
 
     void SetName(const char* p)
     {
-        name = p;
+        name._set(p);
         xr_strlwr(name);
     }
+
     void SetParentName(const char* p)
     {
-        parent_name = p;
+        parent_name._set(p);
         xr_strlwr(parent_name);
     }
-    void SetWMap(const char* p) { wmap = p; }
+
+    void SetWMap(const char* p) { wmap._set(p); }
+
     void SetRestParams(float length, const Fvector& offset, const Fvector& rotate)
     {
         rest_offset.set(offset);
@@ -489,9 +498,10 @@ public:
     DEFINE_VECTOR(u16, FacesVec, FacesVecIt);
     DEFINE_VECTOR(FacesVec, ChildFacesVec, ChildFacesVecIt);
     ChildFacesVec child_faces; // shared
-public:
-    CBoneData(u16 ID) : SelfID(ID) { VERIFY(SelfID != BI_NONE); }
-    virtual ~CBoneData() {}
+
+    explicit CBoneData(u16 ID) : SelfID{ID} { VERIFY(SelfID != BI_NONE); }
+    virtual ~CBoneData() = default;
+
 #ifdef DEBUG
     typedef svector<int, 128> BoneDebug;
     void DebugQuery(BoneDebug& L);
@@ -507,11 +517,13 @@ public:
     void CalculateM2B(const Fmatrix& Parent);
 
 public:
-    virtual u32 mem_usage()
+    [[nodiscard]] virtual gsl::index mem_usage() const
     {
-        u32 sz = sizeof(*this) + sizeof(vecBones::value_type) * children.size();
-        for (ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); c_it++)
-            sz += c_it->size() * sizeof(FacesVec::value_type) + sizeof(*c_it);
+        gsl::index sz{gsl::index{sizeof(*this)} + gsl::index{sizeof(vecBones::value_type)} * std::ssize(children)};
+
+        for (auto& face : child_faces)
+            sz += std::ssize(face) * gsl::index{sizeof(FacesVec::value_type)} + gsl::index{sizeof(face)};
+
         return sz;
     }
 };

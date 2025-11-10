@@ -1,10 +1,9 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
-
-#include "x_ray.h"
-#include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
+
+#include "igame_level.h"
+#include "x_ray.h"
 #include "cameramanager.h"
 #include "environment.h"
 #include "xr_input.h"
@@ -22,11 +21,15 @@
 xr_token* vid_quality_token = nullptr;
 
 u32 g_screenmode = 1;
-static constexpr xr_token screen_mode_tokens[] = {{"fullscreen", 2}, {"borderless", 1}, {"windowed", 0}, {nullptr, 0}};
+
+namespace
+{
+constexpr xr_token screen_mode_tokens[]{{"fullscreen", 2}, {"borderless", 1}, {"windowed", 0}, {nullptr, 0}};
 
 #ifdef DEBUG
-static constexpr xr_token vid_bpp_token[] = {{"16", 16}, {"32", 32}, {0, 0}};
+constexpr xr_token vid_bpp_token[]{{"16", 16}, {"32", 32}, {0, 0}};
 #endif
+} // namespace
 
 void IConsole_Command::add_to_LRU(shared_str const& arg)
 {
@@ -274,9 +277,8 @@ public:
         xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
 
         bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
-
         if (!b_abs_name)
-            FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
+            std::ignore = FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
 
         if (strext(cfg_full_name))
             *strext(cfg_full_name) = 0;
@@ -316,8 +318,7 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     xr_strcat(cfg_name, ".ltx");
 
     string_path cfg_full_name;
-
-    FS.update_path(cfg_full_name, "$app_data_root$", cfg_name);
+    std::ignore = FS.update_path(cfg_full_name, "$app_data_root$", cfg_name);
 
     // if( NULL == FS.exist(cfg_full_name) )
     //	FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
@@ -462,7 +463,7 @@ public:
             if (std::is_eq(xr_strcmp(tok->name, cur)))
             {
                 xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
-                tips.push_back(str);
+                tips.emplace_back(str);
                 res = true;
             }
 
@@ -470,12 +471,12 @@ public:
         }
 
         if (!res)
-            tips.push_back("---  (current)");
+            tips.emplace_back("---  (current)");
 
         tok = GetToken();
         while (tok->name)
         {
-            tips.push_back(tok->name);
+            tips.emplace_back(tok->name);
             tok++;
         }
     }

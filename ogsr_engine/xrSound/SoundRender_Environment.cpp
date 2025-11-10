@@ -151,7 +151,7 @@ void CSoundRender_Environment::save(IWriter* fs) const
 
 void CSoundRender_Environment::loadIni(CInifile* ini, LPCSTR name)
 {
-    this->name = name;
+    this->name._set(name);
 
     Room = ini->r_float(name, "root");
     RoomHF = ini->r_float(name, "room_hf");

@@ -1018,10 +1018,10 @@ bool ImGui_ImplDX11_Init(void* hwnd, ID3D11Device* device, ID3D11DeviceContext* 
     io.KeyMap[ImGuiKey_Z] = DIK_Z;
 
     string_path fName;
-    FS.update_path(fName, "$app_data_root$", io.IniFilename);
+    std::ignore = FS.update_path(fName, "$app_data_root$", io.IniFilename);
     io.IniFilename = xr_strdup(fName);
 
-    FS.update_path(fName, "$logs$", io.LogFilename);
+    std::ignore = FS.update_path(fName, "$logs$", io.LogFilename);
     io.LogFilename = xr_strdup(fName);
 
     io.ImeWindowHandle = g_hWnd;
@@ -1039,8 +1039,14 @@ void ImGui_ImplDX11_Shutdown()
     g_hWnd = nullptr;
 
     ImGuiIO& io = ImGui::GetIO();
-    xr_free(io.IniFilename);
-    xr_free(io.LogFilename);
+
+    auto name = const_cast<gsl::zstring>(io.IniFilename);
+    xr_free(name);
+    io.IniFilename = nullptr;
+
+    name = const_cast<gsl::zstring>(io.LogFilename);
+    xr_free(name);
+    io.LogFilename = nullptr;
 }
 
 void ImGui_ImplDX11_NewFrame()

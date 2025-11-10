@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+namespace
+{
 template <bool b_first>
-class alignas(16) walker
+class XR_TRIVIAL alignas(16) walker
 {
 public:
     u32 mask;
@@ -10,22 +12,36 @@ public:
     Fbox box;
     ISpatial_DB* space;
 
-    constexpr inline walker() = default;
-    constexpr inline walker(const walker<b_first>& w) { xr_memcpy128(this, &w, sizeof(w)); }
-    constexpr inline walker<b_first>& operator=(const walker<b_first>& w)
+    constexpr walker() = default;
+
+    constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size) : mask{_mask}, center{_center}, size{_size}, space{_space}
     {
-        xr_memcpy128(this, &w, sizeof(w));
+        box.setb(center, size);
+    }
+
+    constexpr walker(const walker<b_first>& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr walker(walker<b_first>&&) = default;
+#else
+    constexpr walker(walker<b_first>&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr walker<b_first>& operator=(const walker<b_first>& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
 
-    walker(ISpatial_DB* _space, u32 _mask, const Fvector& _center, const Fvector& _size)
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr walker<b_first>& operator=(walker<b_first>&&) = default;
+#else
+    constexpr walker<b_first>& operator=(walker<b_first>&& that)
     {
-        mask = _mask;
-        center = _center;
-        size = _size;
-        box.setb(center, size);
-        space = _space;
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
     }
+#endif
 
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
@@ -73,6 +89,9 @@ public:
         }
     }
 };
+XR_TRIVIAL_ASSERT(walker<false>);
+XR_TRIVIAL_ASSERT(walker<true>);
+} // namespace
 
 void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
@@ -81,12 +100,12 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
     q_result->clear();
     if (_o & O_ONLYFIRST)
     {
-        walker<true> W(this, _mask, _center, _size);
+        walker<true> W{this, _mask, _center, _size};
         W.walk(m_root, m_center, m_bounds);
     }
     else
     {
-        walker<false> W(this, _mask, _center, _size);
+        walker<false> W{this, _mask, _center, _size};
         W.walk(m_root, m_center, m_bounds);
     }
     cs.Leave();
@@ -94,6 +113,6 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
 
 void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)
 {
-    Fvector _size = {_radius, _radius, _radius};
+    Fvector _size{_radius, _radius, _radius};
     q_box(R, _o, _mask, _center, _size);
 }

@@ -9,7 +9,7 @@
 #include "../../Include/xrRender/KinematicsAnimated.h"
 
 //*** Bone Instance *******************************************************************************
-#pragma pack(push, 8)
+
 class CBlendInstance // Bone Instance Blend List (per-bone data)
 {
 public:
@@ -27,15 +27,16 @@ public:
     void blend_add(CBlend* H);
     void blend_remove(CBlend* H);
 
-    u32 mem_usage()
+    [[nodiscard]] constexpr gsl::index mem_usage() const
     {
-        u32 sz = sizeof(*this);
+        gsl::index sz{sizeof(*this)};
+
         for (auto& it : Blend)
             sz += it->mem_usage();
+
         return sz;
     }
 };
-#pragma pack(pop)
 
 // typedef void	( * MotionMarkCallback)		(CBlend*		P);
 
@@ -177,10 +178,9 @@ public:
     CKinematicsAnimated();
     virtual ~CKinematicsAnimated();
 
-    virtual u32 mem_usage(bool bInstance)
+    [[nodiscard]] gsl::index mem_usage(bool bInstance) const override
     {
-        u32 sz = CKinematics::mem_usage(bInstance) + sizeof(*this) + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);
-        return sz;
+        return CKinematics::mem_usage(bInstance) + gsl::index{sizeof(*this)} + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);
     }
 
     IC const BlendSVec& blend_cycle(const u32& bone_part_id) const

@@ -23,19 +23,20 @@ public:
         return *this;
     }
 
-    T& operator*() const { return *m_pObject; }
-    T* operator->() const { return m_pObject; }
+    [[nodiscard]] T& operator*() const { return *m_pObject; }
+    [[nodiscard]] T* operator->() const { return m_pObject; }
 
     // unspecified bool type
     typedef T const* (FactoryPtr::*unspecified_bool_type)() const;
-    operator unspecified_bool_type() const { return m_pObject ? &FactoryPtr::get : nullptr; }
-    bool operator!() const { return !m_pObject; }
+
+    [[nodiscard]] operator unspecified_bool_type() const { return m_pObject ? &FactoryPtr::get : nullptr; }
+    [[nodiscard]] explicit operator bool() const { return m_pObject != nullptr; }
 
 private:
     void CreateObject();
     void DestroyObject();
 
-    T const* get() const { return m_pObject; }
+    [[nodiscard]] T const* get() const { return m_pObject; }
 
     T* m_pObject;
 };

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "actor_statistic_defs.h"
 
 class CActorStatisticsWrapper;
@@ -18,5 +19,5 @@ public:
     s32 GetSectionPoints(const shared_str& key);
     s32 GetSectionCounts(const shared_str& key);
     void RemovePoints(const shared_str& key, const shared_str& detail_key);
-    const vStatSectionData& GetCStorage();
+    const vStatSectionData& GetCStorage() const;
 };

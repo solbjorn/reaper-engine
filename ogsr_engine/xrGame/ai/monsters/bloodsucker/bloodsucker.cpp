@@ -544,12 +544,12 @@ void CAI_Bloodsucker::predator_start()
     if (m_predator)
         return;
 
-    cNameVisual_set(m_visual_predator);
+    cNameVisual_set(shared_str{m_visual_predator});
     CDamageManager::reload(*cNameSect(), "damage", pSettings);
 
     control().animation().restart();
 
-    CParticlesPlayer::StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
+    CParticlesPlayer::StartParticles(shared_str{invisible_particle_name}, Fvector().set(0.0f, 0.1f, 0.0f), ID());
     sound().play(CAI_Bloodsucker::eChangeVisibility);
 
     m_predator = true;
@@ -563,14 +563,14 @@ void CAI_Bloodsucker::predator_stop()
         return;
     }
 
-    cNameVisual_set(*m_visual_default);
+    cNameVisual_set(m_visual_default);
     character_physics_support()->in_ChangeVisual();
 
     CDamageManager::reload(*cNameSect(), "damage", pSettings);
 
     control().animation().restart();
 
-    CParticlesPlayer::StartParticles(invisible_particle_name, Fvector().set(0.0f, 0.1f, 0.0f), ID());
+    CParticlesPlayer::StartParticles(shared_str{invisible_particle_name}, Fvector().set(0.0f, 0.1f, 0.0f), ID());
     sound().play(CAI_Bloodsucker::eChangeVisibility);
     m_predator = false;
 }

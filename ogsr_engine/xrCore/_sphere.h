@@ -1,8 +1,8 @@
 #ifndef _F_SPHERE_H_
 #define _F_SPHERE_H_
 
-template <class T>
-struct alignas(16) _sphere
+template <typename T>
+struct XR_TRIVIAL alignas(16) _sphere
 {
     union
     {
@@ -15,27 +15,34 @@ struct alignas(16) _sphere
     };
 
 public:
-    constexpr inline _sphere() noexcept = default;
-    constexpr inline _sphere(const _vector3<T>& _P, T _R) noexcept { set(_P, _R); }
+    constexpr _sphere() noexcept = default;
+    constexpr explicit _sphere(const _vector3<T>& _P, T _R) noexcept { set(_P, _R); }
 
-    constexpr inline _sphere(const _sphere<T>& s) noexcept { set(s); }
-    constexpr _sphere(_sphere<T>&& that) noexcept { *this = std::move(that); }
+    constexpr _sphere(const _sphere<T>& that) noexcept { set(that); }
 
-    constexpr inline _sphere<T>& operator=(const _sphere<T>& s) noexcept { return set(s); }
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _sphere(_sphere<T>&&) noexcept = default;
+#else
+    constexpr _sphere(_sphere<T>&& that) noexcept { set(that); }
+#endif
 
-    constexpr _sphere<T>& operator=(_sphere<T>&& that) noexcept
+    constexpr _sphere<T>& operator=(const _sphere<T>& that) noexcept { return set(that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _sphere<T>& operator=(_sphere<T>&&) noexcept = default;
+#else
+    constexpr _sphere<T>& operator=(_sphere<T>&& that) noexcept { return set(that); }
+#endif
+
+    constexpr void set(const _vector3<T>& _P, T _R) { v.set(_P, _R); }
+
+    constexpr _sphere<T>& set(const _sphere<T>& that)
     {
-        this->v = std::move(that.v);
+        xr_memcpy16(this, &that);
         return *this;
     }
 
-    constexpr IC void set(const _vector3<T>& _P, T _R) { v.set(_P, _R); }
-    constexpr IC _sphere<T>& set(const _sphere<T>& S)
-    {
-        v = S.v;
-        return *this;
-    }
-    constexpr IC void identity() { v.set(0, 0, 0, 1); }
+    constexpr void identity() { v.set(0, 0, 0, 1); }
 
     enum ERP_Result
     {
@@ -44,8 +51,9 @@ public:
         rpOriginOutside = 2,
         fcv_forcedword = u32(-1)
     };
+
     // Ray-sphere intersection
-    ICF ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
+    [[nodiscard]] constexpr ERP_Result intersect(const _vector3<T>& start, const _vector3<T>& dir, T& dist) const
     {
         T t;
         ERP_Result result = intersect_ray(start, dir, t);
@@ -58,20 +66,22 @@ public:
         return rpNone;
     }
 
-    ICF BOOL intersect(const _vector3<T>& S, const _vector3<T>& D) const
+    [[nodiscard]] constexpr BOOL intersect(const _vector3<T>& S, const _vector3<T>& D) const
     {
         T t;
         return intersect_ray(S, D, t) != rpNone;
     }
-    ICF BOOL intersect(const _sphere<T>& S) const
+
+    [[nodiscard]] constexpr BOOL intersect(const _sphere<T>& S) const
     {
         T SumR = R + S.R;
         return P.distance_to_sqr(S.P) < SumR * SumR;
     }
-    IC BOOL contains(const _vector3<T>& PT) const { return P.distance_to_sqr(PT) <= (R * R + EPS_S); }
+
+    [[nodiscard]] constexpr BOOL contains(const _vector3<T>& PT) const { return P.distance_to_sqr(PT) <= (R * R + EPS_S); }
 
     // returns true if this wholly contains the argument sphere
-    IC BOOL contains(const _sphere<T>& S) const
+    [[nodiscard]] constexpr BOOL contains(const _sphere<T>& S) const
     {
         // can't contain a sphere that's bigger than me !
         const T RDiff = R - S.R;
@@ -82,10 +92,10 @@ public:
     }
 
     // return's volume of sphere
-    IC T volume() const { return T(PI_MUL_4 / 3) * (R * R * R); }
+    [[nodiscard]] constexpr T volume() const { return T(PI_MUL_4 / 3) * (R * R * R); }
 
     // https://gamedev.stackexchange.com/questions/96459/fast-ray-sphere-collision-code
-    ICF ERP_Result intersect_ray(const _vector3<T>& start, const _vector3<T>& dir, T& t) const
+    [[nodiscard]] constexpr ERP_Result intersect_ray(const _vector3<T>& start, const _vector3<T>& dir, T& t) const
     {
         _vector3<T> m;
         m.sub(start, P);
@@ -118,11 +128,12 @@ public:
     }
 };
 
-typedef _sphere<float> Fsphere;
+using Fsphere = _sphere<f32>;
 static_assert(sizeof(Fsphere) == 16);
+XR_TRIVIAL_ASSERT(Fsphere);
 
-template <class T>
-BOOL _valid(const _sphere<T>& s)
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _sphere<T>& s)
 {
     return _valid(s.P) && _valid(s.R);
 }

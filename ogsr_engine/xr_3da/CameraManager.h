@@ -151,7 +151,7 @@ public:
     void ApplyDevice(bool effectOnly = false);
     static void ResetPP();
 
-    CCameraManager(bool bApplyOnUpdate);
+    explicit CCameraManager(bool bApplyOnUpdate);
     ~CCameraManager();
 };
 

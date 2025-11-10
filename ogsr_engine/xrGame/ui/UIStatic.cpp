@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uistatic.h"
+
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"
 #include "uiframewindow.h"
@@ -95,17 +96,15 @@ void CUIStatic::Init(float x, float y, float width, float height)
 void CUIStatic::InitTexture(LPCSTR texture) { InitTextureEx(texture); }
 
 void CUIStatic::CreateShader(const char* tex, const char* sh) { m_UIStaticItem.CreateShader(tex, sh); }
-
 ui_shader& CUIStatic::GetShader() { return m_UIStaticItem.GetShader(); }
 
 void CUIStatic::SetTextureColor(u32 color) { m_UIStaticItem.SetColor(color); }
-
 u32 CUIStatic::GetTextureColor() const { return m_UIStaticItem.GetColor(); }
 
 void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 {
-    m_texture = tex_name;
-    m_shader = sh_name;
+    m_texture._set(tex_name);
+    m_shader._set(sh_name);
 
     LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
     CUITextureMaster::InitTexture(tex_name, res_shname, &m_UIStaticItem);
@@ -188,7 +187,7 @@ void CUIStatic::DrawTexture()
         }
         else
         {
-            Frect r = {0.0f, 0.0f, m_UIStaticItem.GetOriginalRectScaled().width(), m_UIStaticItem.GetOriginalRectScaled().height()};
+            const Frect r{0.0f, 0.0f, m_UIStaticItem.GetOriginalRectScaled().width(), m_UIStaticItem.GetOriginalRectScaled().height()};
             if (r.width() && r.height())
             {
                 if (Heading())
@@ -602,7 +601,7 @@ void CUIStatic::AdjustWidthToText()
     SetWidth(iCeil(_len));
 }
 
-void CUIStatic::SetTextST(LPCSTR str_id) { SetText(*CStringTable().translate(str_id)); }
+void CUIStatic::SetTextST(LPCSTR str_id) { SetText(*CStringTable().translate(shared_str{str_id})); }
 
 void CUIStatic::DrawHighlightedText()
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "dxUIRender.h"
+
 #include "dxUIShader.h"
 
 dxUIRender UIRenderImpl;
@@ -18,8 +19,8 @@ void dxUIRender::DestroyUIGeom()
 
     g_UIShadersCache.clear();
 
-    hGeom_TL = nullptr;
-    hGeom_LIT = nullptr;
+    hGeom_TL._set(nullptr);
+    hGeom_LIT._set(nullptr);
 }
 
 void dxUIRender::SetShader(IUIShader& shader)
@@ -41,7 +42,7 @@ void dxUIRender::SetScissor(Irect* rect)
 void dxUIRender::GetActiveTextureResolution(Fvector2& res)
 {
     CTexture* T = RCache.get_ActiveTexture(0);
-    res.set(float(T->get_Width()), float(T->get_Height()));
+    res.set(gsl::narrow_cast<f32>(T->get_Width()), gsl::narrow_cast<f32>(T->get_Height()));
 }
 
 LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)

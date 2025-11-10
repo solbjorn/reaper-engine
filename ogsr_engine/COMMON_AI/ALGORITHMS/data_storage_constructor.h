@@ -35,7 +35,8 @@ public:
     using Vertex = TCompoundVertex;
     using Index = typename Vertex::Index;
 
-    PriorityQueueConstructor(const u32 vertex_count) : Inherited(vertex_count) {}
+    explicit PriorityQueueConstructor(u32 vertex_count) : Inherited{vertex_count} {}
+
     void init() { Inherited::init(); }
     Vertex& create_vertex(const Index& vertex_id) { return Inherited::create_vertex(Inherited::CDataStorageAllocator::create_vertex(), vertex_id); }
 };

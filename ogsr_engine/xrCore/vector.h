@@ -110,20 +110,22 @@ struct _quaternion;
 #include "_flags.h"
 
 // normalize angle (0..2PI)
-constexpr ICF float angle_normalize_always(float a)
+constexpr f32 angle_normalize_always(f32 a)
 {
-    float div = a / PI_MUL_2;
-    int rnd = (div > 0) ? iFloor(div) : iCeil(div);
-    float frac = div - rnd;
-    if (frac < 0)
-        frac += 1.f;
+    const f32 div{a / PI_MUL_2};
+    const f32 rnd{div > 0.0f ? std::floor(div) : std::ceil(div)};
+
+    f32 frac{div - rnd};
+    if (frac < 0.0f)
+        frac += 1.0f;
+
     return frac * PI_MUL_2;
 }
 
 // normalize angle (0..2PI)
 constexpr ICF float angle_normalize(float a)
 {
-    if (a >= 0 && a <= PI_MUL_2)
+    if (a >= 0.0f && a <= PI_MUL_2)
         return a;
     else
         return angle_normalize_always(a);

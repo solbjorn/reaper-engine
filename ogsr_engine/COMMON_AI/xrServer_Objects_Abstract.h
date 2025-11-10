@@ -48,7 +48,7 @@ enum
 Flags8 flags;
 
 public:
-CSE_Visual(LPCSTR name = nullptr);
+explicit CSE_Visual(LPCSTR name = nullptr);
 virtual ~CSE_Visual();
 
 void visual_read(NET_Packet& P, u16 version);
@@ -70,7 +70,7 @@ public:
 shared_str motion_name;
 
 public:
-CSE_Motion(LPCSTR name = nullptr);
+explicit CSE_Motion(LPCSTR name = nullptr);
 virtual ~CSE_Motion();
 
 void motion_read(NET_Packet& P);

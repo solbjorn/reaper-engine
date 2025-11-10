@@ -18,20 +18,38 @@ constexpr inline u32 clQUERY_STATIC{1 << 5}; // static
 constexpr inline u32 clQUERY_DYNAMIC{1 << 6}; // dynamic
 constexpr inline u32 clCOARSE{1 << 7}; // coarse test (triangles vs obb)
 
-struct alignas(16) clQueryTri
+struct XR_TRIVIAL alignas(16) clQueryTri
 {
     Fvector p[3];
     const CDB::TRI* T;
 
-    constexpr inline clQueryTri() = default;
-    constexpr inline clQueryTri(const clQueryTri& t) { xr_memcpy128(this, &t, sizeof(t)); }
+    constexpr clQueryTri() = default;
 
-    constexpr inline clQueryTri& operator=(const clQueryTri& t)
+    constexpr clQueryTri(const clQueryTri& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr clQueryTri(clQueryTri&&) = default;
+#else
+    constexpr clQueryTri(clQueryTri&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr clQueryTri& operator=(const clQueryTri& that)
     {
-        xr_memcpy128(this, &t, sizeof(t));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr clQueryTri& operator=(clQueryTri&&) = default;
+#else
+    constexpr clQueryTri& operator=(clQueryTri&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
 };
+XR_TRIVIAL_ASSERT(clQueryTri);
 
 struct clQueryCollision
 {
@@ -105,7 +123,7 @@ private:
     ECollisionFormType m_type;
 
 public:
-    ICollisionForm(CObject* _owner, ECollisionFormType tp);
+    explicit ICollisionForm(CObject* _owner, ECollisionFormType tp);
     virtual ~ICollisionForm() = 0;
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
@@ -125,7 +143,12 @@ class CCF_Skeleton : public ICollisionForm
     RTTI_DECLARE_TYPEINFO(CCF_Skeleton, ICollisionForm);
 
 public:
-    struct SElement
+#ifdef XR_TRIVIAL_BROKEN
+    XR_DIAG_PUSH();
+    XR_DIAG_IGNORE("-Wignored-attributes");
+#endif
+
+    struct XR_TRIVIAL SElement
     {
         union
         {
@@ -147,19 +170,42 @@ public:
         u16 type;
         u16 elem_id;
 
-        constexpr inline SElement() : type{0}, elem_id{std::numeric_limits<u16>::max()} {}
-        constexpr inline SElement(u16 id, u16 t) : type{t}, elem_id{id} {}
-        constexpr inline SElement(const SElement& s) { xr_memcpy128(this, &s, sizeof(s)); }
+        constexpr SElement() : type{0}, elem_id{std::numeric_limits<u16>::max()} {}
+        constexpr explicit SElement(u16 id, u16 t) : type{t}, elem_id{id} {}
 
-        constexpr inline SElement& operator=(const SElement& s)
+        constexpr SElement(const SElement& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr SElement(SElement&&) = default;
+#else
+        constexpr SElement(SElement&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+        constexpr SElement& operator=(const SElement& that)
         {
-            xr_memcpy128(this, &s, sizeof(s));
+            xr_memcpy128(this, &that, sizeof(that));
             return *this;
         }
 
-        BOOL valid() const { return (elem_id != (u16(-1))) && (type != 0); }
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr SElement& operator=(SElement&&) = default;
+#else
+        constexpr SElement& operator=(SElement&& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+#endif
+
+        [[nodiscard]] BOOL valid() const { return (elem_id != (u16(-1))) && (type != 0); }
         void center(Fvector& center) const;
     };
+    XR_TRIVIAL_ASSERT(SElement);
+
+#ifdef XR_TRIVIAL_BROKEN
+    XR_DIAG_POP();
+#endif
+
     DEFINE_VECTOR(SElement, ElementVec, ElementVecIt);
 
 private:
@@ -173,7 +219,7 @@ private:
     void BuildTopLevel();
 
 public:
-    CCF_Skeleton(CObject* _owner);
+    explicit CCF_Skeleton(CObject* _owner);
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
 
@@ -192,7 +238,7 @@ class CCF_Shape : public ICollisionForm
     RTTI_DECLARE_TYPEINFO(CCF_Shape, ICollisionForm);
 
 public:
-    union shape_data
+    union XR_TRIVIAL shape_data
     {
         Fsphere sphere;
         struct
@@ -201,32 +247,70 @@ public:
             Fmatrix ibox;
         };
 
-        constexpr inline shape_data() = default;
-        constexpr inline shape_data(const shape_data& d) { xr_memcpy128(this, &d, sizeof(d)); }
+        constexpr shape_data() = default;
 
-        constexpr inline shape_data& operator=(const shape_data& d)
+        constexpr shape_data(const shape_data& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_data(shape_data&&) = default;
+#else
+        constexpr shape_data(shape_data&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+        constexpr shape_data& operator=(const shape_data& that)
         {
-            xr_memcpy128(this, &d, sizeof(d));
+            xr_memcpy128(this, &that, sizeof(that));
             return *this;
         }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_data& operator=(shape_data&&) = default;
+#else
+        constexpr shape_data& operator=(shape_data&& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+#endif
     };
-    struct shape_def
+    XR_TRIVIAL_ASSERT(shape_data);
+
+    struct XR_TRIVIAL shape_def
     {
         int type;
         shape_data data;
 
-        constexpr inline shape_def() = default;
-        constexpr inline shape_def(const shape_def& d) { xr_memcpy128(this, &d, sizeof(d)); }
+        constexpr shape_def() = default;
 
-        constexpr inline shape_def& operator=(const shape_def& d)
+        constexpr shape_def(const shape_def& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_def(shape_def&&) = default;
+#else
+        constexpr shape_def(shape_def&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+        constexpr shape_def& operator=(const shape_def& that)
         {
-            xr_memcpy128(this, &d, sizeof(d));
+            xr_memcpy128(this, &that, sizeof(that));
             return *this;
         }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_def& operator=(shape_def&&) = default;
+#else
+        constexpr shape_def& operator=(shape_def&& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+#endif
     };
+    XR_TRIVIAL_ASSERT(shape_def);
+
     xr_vector<shape_def> shapes;
 
-    CCF_Shape(CObject* _owner);
+    explicit CCF_Shape(CObject* _owner);
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
     // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);

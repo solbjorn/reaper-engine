@@ -44,7 +44,7 @@ public:
     virtual bool allowWeapon() const = 0;
     virtual bool HUDView() const = 0;
     virtual Fvector ExitPosition() = 0;
-    XR_SYSV [[nodiscard]] virtual Fvector ExitVelocity() { return Fvector{}; }
+    [[nodiscard]] virtual Fvector ExitVelocity() { return Fvector{}; }
     virtual CCameraBase* Camera() = 0;
     virtual void Action(int, u32) {}
     virtual void SetParam(int, Fvector2) {}

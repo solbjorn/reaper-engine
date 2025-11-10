@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "r4_R_sun_support.h"
+
 #include "../xrRender/FBasicVisual.h"
 
 #include "../../xr_3da/igame_persistent.h"
@@ -12,13 +13,13 @@
 
 namespace
 {
-constexpr float tweak_COP_initial_offs = 1200.f;
+constexpr f32 tweak_COP_initial_offs{1200.0f};
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-constexpr Fvector3 corners[8]{{-1.0f, -1.0f, 0.0f},  {-1.0f, -1.0f, +1.0f}, {-1.0f, +1.0f, +1.0f}, {-1.0f, +1.0f, 0.0f},
-                              {+1.0f, +1.0f, +1.0f}, {+1.0f, +1.0f, 0.0f},  {+1.0f, -1.0f, +1.0f}, {+1.0f, -1.0f, 0.0f}};
+constexpr Fvector corners[8]{Fvector{-1.0f, -1.0f, 0.0f},  Fvector{-1.0f, -1.0f, +1.0f}, Fvector{-1.0f, +1.0f, +1.0f}, Fvector{-1.0f, +1.0f, 0.0f},
+                             Fvector{+1.0f, +1.0f, +1.0f}, Fvector{+1.0f, +1.0f, 0.0f},  Fvector{+1.0f, -1.0f, +1.0f}, Fvector{+1.0f, -1.0f, 0.0f}};
 constexpr u32 facetable[6][4]{
     {6, 7, 5, 4},
     {1, 0, 7, 6},
@@ -31,7 +32,7 @@ constexpr u32 facetable[6][4]{
 } // namespace
 
 //////////////////////////////////////////////////////////////////////////
-Fvector3 wform(const Fmatrix& m, Fvector3 v)
+Fvector wform(const Fmatrix& m, Fvector v)
 {
     Fvector4 r;
     r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
@@ -40,7 +41,7 @@ Fvector3 wform(const Fmatrix& m, Fvector3 v)
     r.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
     float invW = 1.0f / r.w;
 
-    return {r.x * invW, r.y * invW, r.z * invW};
+    return Fvector{r.x * invW, r.y * invW, r.z * invW};
 }
 
 void CRender::calculate_sun(sun::cascade& cascade)
@@ -124,7 +125,7 @@ void CRender::calculate_sun(sun::cascade& cascade)
 
         // build viewport xform
         float view_dim = float(o.smapsize);
-        Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
+        Fmatrix m_viewport{view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
         Fmatrix m_viewport_inv{};
         m_viewport_inv.invert_44(m_viewport);
 

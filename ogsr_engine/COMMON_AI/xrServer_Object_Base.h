@@ -134,7 +134,7 @@ virtual void load(NET_Packet& tNetPacket);
 
 //////////////////////////////////////////////////////////////////////////
 
-CSE_Abstract(LPCSTR caSection);
+explicit CSE_Abstract(LPCSTR caSection);
 virtual ~CSE_Abstract();
 virtual void OnEvent(NET_Packet&, u16, u32, ClientID) {}
 virtual BOOL Net_Relevant() { return TRUE; }
@@ -145,7 +145,7 @@ void STATE_Read(NET_Packet& tNetPacket, u16 size);
 virtual BOOL Spawn_Read(NET_Packet& tNetPacket);
 virtual LPCSTR name() const;
 virtual LPCSTR name_replace() const;
-virtual void set_name(LPCSTR s) { s_name = s; }
+virtual void set_name(LPCSTR s) { s_name._set(s); }
 virtual void set_name_replace(LPCSTR s)
 {
     xr_free(s_name_replace);

@@ -1,17 +1,19 @@
 #include "stdafx.h"
 
 #include "ObjectAnimator.h"
+
 #include "motion.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 CObjectAnimator::CObjectAnimator()
 {
     bLoop = false;
     m_Current = nullptr;
     m_Speed = 1.f;
-    m_Name = "";
+    m_Name._set("");
 }
 
 CObjectAnimator::~CObjectAnimator() { Clear(); }
@@ -20,6 +22,7 @@ void CObjectAnimator::Clear()
 {
     for (auto& m_Motion : m_Motions)
         xr_delete(m_Motion);
+
     m_Motions.clear();
     SetActiveMotion(nullptr);
 }
@@ -29,6 +32,7 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
     m_Current = mot;
     if (m_Current)
         m_MParam.Set(m_Current);
+
     m_XFORM.identity();
 }
 
@@ -36,8 +40,10 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
 {
     string_path full_path;
     if (!FS.exist(full_path, "$level$", fname))
+    {
         if (!FS.exist(full_path, "$game_anims$", fname))
             Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", fname);
+    }
 
     LPCSTR ext = strext(full_path);
     if (ext)
@@ -72,7 +78,7 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
 
 void CObjectAnimator::Load(const char* name)
 {
-    m_Name = name;
+    m_Name._set(name);
     LoadMotions(name);
     SetActiveMotion(nullptr);
 }
@@ -93,7 +99,7 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 {
     if (name && name[0])
     {
-        auto it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, [](COMotion* a, shared_str b) { return a->name < b; });
+        auto it = std::lower_bound(m_Motions.begin(), m_Motions.end(), name, [](const COMotion* a, gsl::czstring b) { return std::is_lt(xr_strcmp(a->name, b)); });
         if ((it != m_Motions.end()) && (0 == xr_strcmp((*it)->Name(), name)))
         {
             bLoop = loop;

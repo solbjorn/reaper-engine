@@ -107,7 +107,7 @@ CPatrolPoint& CPatrolPoint::load_ini(CInifile::Sect& section, LPSTR prefix)
 {
     string256 full_name;
 
-    m_name = section.r_string(xr_strconcat(full_name, prefix, ":", "name"));
+    m_name._set(section.r_string(xr_strconcat(full_name, prefix, ":", "name")));
     m_position = section.r_fvector3(xr_strconcat(full_name, prefix, ":", "position"));
     m_level_vertex_id = strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "level_vertex_id")), nullptr, 10);
     m_game_vertex_id = strtol(section.r_string(xr_strconcat(full_name, prefix, ":", "game_vertex_id")), nullptr, 10);

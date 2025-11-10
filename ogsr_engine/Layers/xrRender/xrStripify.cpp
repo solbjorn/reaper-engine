@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xrstripify.h"
 
 #include "NvTriStrip.h"
@@ -27,7 +28,7 @@ void xrStripify(xr_vector<u16>& indices, xr_vector<u16>& perturb, int iCacheSize
 
     // Generate strips
     xr_vector<PrimitiveGroup> PGROUP;
-    GenerateStrips(&*indices.begin(), indices.size(), PGROUP);
+    GenerateStrips(indices.data(), indices.size(), PGROUP);
     VERIFY(PGROUP.size() == 1);
     VERIFY(PGROUP[0].type == PT_LIST);
     VERIFY(indices.size() == PGROUP[0].numIndices);
@@ -49,7 +50,7 @@ void xrStripify(xr_vector<u16>& indices, xr_vector<u16>& perturb, int iCacheSize
     }
 
     // Copy indices
-    CopyMemory(&*indices.begin(), xPGROUP[0].indices, indices.size() * sizeof(u16));
+    std::memcpy(indices.data(), xPGROUP[0].indices, indices.size() * sizeof(u16));
 
     // Release memory
     xPGROUP.clear();

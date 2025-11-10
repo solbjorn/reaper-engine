@@ -231,8 +231,9 @@ bool CLevel::PrefetchSound(LPCSTR name)
     strcpy_s(tmp, name);
     xr_strlwr(tmp);
     if (strext(tmp))
-        *strext(tmp) = 0;
-    shared_str snd_name = tmp;
+        *strext(tmp) = '\0';
+
+    shared_str snd_name{tmp};
     // find in registry
     SoundRegistryMapIt it = sound_registry.find(snd_name);
     // if find failed - preload sound
@@ -241,6 +242,7 @@ bool CLevel::PrefetchSound(LPCSTR name)
         sound_registry[snd_name].create(snd_name.c_str(), st_Effect, sg_SourceType);
         return true;
     }
+
     return false;
 }
 

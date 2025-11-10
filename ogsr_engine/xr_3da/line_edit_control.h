@@ -45,7 +45,7 @@ private:
     using Callback = CallMe::Delegate<void()>;
 
 public:
-    line_edit_control(u32 str_buffer_size);
+    explicit line_edit_control(u32 str_buffer_size);
     ~line_edit_control();
 
     void init(u32 str_buffer_size, init_mode mode = im_standart);

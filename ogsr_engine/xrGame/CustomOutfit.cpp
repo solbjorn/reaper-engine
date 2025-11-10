@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "customoutfit.h"
+
 #include "PhysicsShell.h"
 #include "inventory_space.h"
 #include "Inventory.h"
@@ -15,6 +16,8 @@
 #include "ui/UIInventoryWnd.h"
 #include "player_hud.h"
 #include "xrserver_objects_alife_items.h"
+
+#include "torch.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -50,9 +53,9 @@ void CCustomOutfit::Load(LPCSTR section)
     m_HitTypeProtection[ALife::eHitTypePhysicStrike] = READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", 0.0f);
 
     if (pSettings->line_exist(section, "actor_visual"))
-        m_ActorVisual = pSettings->r_string(section, "actor_visual");
+        m_ActorVisual._set(pSettings->r_string(section, "actor_visual"));
     else
-        m_ActorVisual = nullptr;
+        m_ActorVisual._set(nullptr);
 
     m_ef_equipment_type = pSettings->r_u32(section, "ef_equipment_type");
     if (pSettings->line_exist(section, "power_loss"))
@@ -64,11 +67,11 @@ void CCustomOutfit::Load(LPCSTR section)
     m_additional_weight2 = pSettings->r_float(section, "additional_inventory_weight2");
 
     if (pSettings->line_exist(section, "nightvision_sect"))
-        m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
+        m_NightVisionSect._set(pSettings->r_string(section, "nightvision_sect"));
     else
-        m_NightVisionSect = nullptr;
+        m_NightVisionSect._set(nullptr);
 
-    m_full_icon_name = pSettings->r_string(section, "full_icon_name");
+    m_full_icon_name._set(pSettings->r_string(section, "full_icon_name"));
 
     m_fBleedingRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "bleeding_restore_speed", 0.f);
     m_fHealthRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed", 0.f);
@@ -107,8 +110,6 @@ float CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
     return NewHitPower;
 }
 
-#include "torch.h"
-
 void CCustomOutfit::OnMoveToSlot()
 {
     inherited::OnMoveToSlot();
@@ -118,16 +119,13 @@ void CCustomOutfit::OnMoveToSlot()
         if (pActor)
         {
             if (m_ActorVisual.size())
-            {
                 pActor->ChangeVisual(m_ActorVisual);
-            }
+
             if (pSettings->line_exist(cNameSect(), "bones_koeff_protection"))
-            {
-                m_boneProtection->reload(pSettings->r_string(cNameSect(), "bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()));
-            }
+                m_boneProtection->reload(pSettings->r_string<shared_str>(cNameSect(), "bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()));
 
             if (pSettings->line_exist(cNameSect(), "player_hud_section"))
-                g_player_hud->load(pSettings->r_string(cNameSect(), "player_hud_section"));
+                g_player_hud->load(pSettings->r_string<shared_str>(cNameSect(), "player_hud_section"));
             else
                 g_player_hud->load_default();
 

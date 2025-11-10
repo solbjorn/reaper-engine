@@ -34,9 +34,9 @@ char* xr_strdup(const char* string)
 {
     VERIFY(string);
 
-    const auto len = gsl::narrow_cast<size_t>(xr_strlen(string) + 1);
+    const auto len = xr_strlen(string) + 1;
     char* memory = static_cast<char*>(xr_malloc(len));
-    std::memcpy(memory, string, len);
+    std::memcpy(memory, string, gsl::narrow_cast<size_t>(len));
 
     return memory;
 }

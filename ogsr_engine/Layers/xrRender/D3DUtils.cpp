@@ -2,8 +2,9 @@
 
 #include "stdafx.h"
 
+#include "D3DUtils.h"
+
 #include "../../xr_3da/gamefont.h"
-#include "d3dutils.h"
 #include "du_box.h"
 #include "du_sphere.h"
 #include "du_sphere_part.h"
@@ -31,8 +32,9 @@ Fvector boxvert[boxvertcount];
 #define DU_DRAW_SH_C(sh, c) \
     { \
         RCache.set_Shader(sh); \
-        Fvector4 tfactor = {float(color_get_R(c)), float(color_get_G(c)), float(color_get_B(c)), float(color_get_A(c))}; \
-        constexpr Fvector4 divisor = {255.f, 255.f, 255.f, 255.f}; \
+        Fvector4 tfactor{gsl::narrow_cast<f32>(color_get_R(c)), gsl::narrow_cast<f32>(color_get_G(c)), gsl::narrow_cast<f32>(color_get_B(c)), \
+                         gsl::narrow_cast<f32>(color_get_A(c))}; \
+        constexpr Fvector4 divisor{255.0f, 255.0f, 255.0f, 255.0f}; \
         tfactor.div(divisor); \
         RCache.set_c("tfactor", tfactor); \
     } \
@@ -41,7 +43,7 @@ Fvector boxvert[boxvertcount];
 #define DU_DRAW_SH(sh) \
     { \
         RCache.set_Shader(sh); \
-        constexpr Fvector4 tfactor = {1.f, 1.f, 1.f, 1.f}; \
+        constexpr Fvector4 tfactor{1.0f, 1.0f, 1.0f, 1.0f}; \
         RCache.set_c("tfactor", tfactor); \
     } \
     XR_MACRO_END()
@@ -52,11 +54,12 @@ Fvector boxvert[boxvertcount];
 
 // identity box
 constexpr u32 identboxwirecount{24};
-constexpr Fvector identboxwire[identboxwirecount]{{-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
-                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                  {+0.5f, +0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, +0.5f},
-                                                  {-0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, -0.5f}, {-0.5f, +0.5f, +0.5f}, {+0.5f, +0.5f, -0.5f}, {+0.5f, +0.5f, +0.5f},
-                                                  {+0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, +0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}};
+constexpr Fvector identboxwire[identboxwirecount]{Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, -0.5f},
+                                                  Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, -0.5f},
+                                                  Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, +0.5f}, Fvector{+0.5f, -0.5f, +0.5f},
+                                                  Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, +0.5f}, Fvector{-0.5f, +0.5f, +0.5f},
+                                                  Fvector{-0.5f, +0.5f, -0.5f}, Fvector{-0.5f, +0.5f, +0.5f}, Fvector{+0.5f, +0.5f, -0.5f}, Fvector{+0.5f, +0.5f, +0.5f},
+                                                  Fvector{+0.5f, -0.5f, -0.5f}, Fvector{+0.5f, -0.5f, +0.5f}, Fvector{-0.5f, -0.5f, -0.5f}, Fvector{-0.5f, -0.5f, +0.5f}};
 
 #define SIGN(x) ((x < 0) ? -1 : 1)
 
@@ -135,21 +138,23 @@ void CDrawUtilities::OnDeviceCreate()
 {
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 
-    m_SolidBox.CreateFromData(D3DPT_TRIANGLELIST, DU_BOX_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices, DU_BOX_NUMVERTEX, du_box_faces, DU_BOX_NUMFACES * 3);
-    m_SolidCone.CreateFromData(D3DPT_TRIANGLELIST, DU_CONE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices, DU_CONE_NUMVERTEX, du_cone_faces, DU_CONE_NUMFACES * 3);
-    m_SolidSphere.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_vertices, DU_SPHERE_NUMVERTEX, du_sphere_faces,
+    m_SolidBox.CreateFromData(D3DPT_TRIANGLELIST, DU_BOX_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_faces.data(), DU_BOX_NUMFACES * 3);
+    m_SolidCone.CreateFromData(D3DPT_TRIANGLELIST, DU_CONE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices.data(), DU_CONE_NUMVERTEX, du_cone_faces.data(),
+                               DU_CONE_NUMFACES * 3);
+    m_SolidSphere.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_vertices.data(), DU_SPHERE_NUMVERTEX, du_sphere_faces.data(),
                                  DU_SPHERE_NUMFACES * 3);
-    m_SolidSpherePart.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_PART_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices, DU_SPHERE_PART_NUMVERTEX,
-                                     du_sphere_part_faces, DU_SPHERE_PART_NUMFACES * 3);
-    m_SolidCylinder.CreateFromData(D3DPT_TRIANGLELIST, DU_CYLINDER_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices, DU_CYLINDER_NUMVERTEX, du_cylinder_faces,
-                                   DU_CYLINDER_NUMFACES * 3);
-    m_WireBox.CreateFromData(D3DPT_LINELIST, DU_BOX_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices, DU_BOX_NUMVERTEX, du_box_lines, DU_BOX_NUMLINES * 2);
-    m_WireCone.CreateFromData(D3DPT_LINELIST, DU_CONE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices, DU_CONE_NUMVERTEX, du_cone_lines, DU_CONE_NUMLINES * 2);
-    m_WireSphere.CreateFromData(D3DPT_LINELIST, DU_SPHERE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_verticesl, DU_SPHERE_NUMVERTEXL, du_sphere_lines,
+    m_SolidSpherePart.CreateFromData(D3DPT_TRIANGLELIST, DU_SPHERE_PART_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(), DU_SPHERE_PART_NUMVERTEX,
+                                     du_sphere_part_faces.data(), DU_SPHERE_PART_NUMFACES * 3);
+    m_SolidCylinder.CreateFromData(D3DPT_TRIANGLELIST, DU_CYLINDER_NUMFACES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices.data(), DU_CYLINDER_NUMVERTEX,
+                                   du_cylinder_faces.data(), DU_CYLINDER_NUMFACES * 3);
+    m_WireBox.CreateFromData(D3DPT_LINELIST, DU_BOX_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_box_vertices.data(), DU_BOX_NUMVERTEX, du_box_lines.data(), DU_BOX_NUMLINES * 2);
+    m_WireCone.CreateFromData(D3DPT_LINELIST, DU_CONE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cone_vertices.data(), DU_CONE_NUMVERTEX, du_cone_lines.data(),
+                              DU_CONE_NUMLINES * 2);
+    m_WireSphere.CreateFromData(D3DPT_LINELIST, DU_SPHERE_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_verticesl.data(), DU_SPHERE_NUMVERTEXL, du_sphere_lines.data(),
                                 DU_SPHERE_NUMLINES * 2);
-    m_WireSpherePart.CreateFromData(D3DPT_LINELIST, DU_SPHERE_PART_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices, DU_SPHERE_PART_NUMVERTEX, du_sphere_part_lines,
-                                    DU_SPHERE_PART_NUMLINES * 2);
-    m_WireCylinder.CreateFromData(D3DPT_LINELIST, DU_CYLINDER_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices, DU_CYLINDER_NUMVERTEX, du_cylinder_lines,
+    m_WireSpherePart.CreateFromData(D3DPT_LINELIST, DU_SPHERE_PART_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_sphere_part_vertices.data(), DU_SPHERE_PART_NUMVERTEX,
+                                    du_sphere_part_lines.data(), DU_SPHERE_PART_NUMLINES * 2);
+    m_WireCylinder.CreateFromData(D3DPT_LINELIST, DU_CYLINDER_NUMLINES, D3DFVF_XYZ | D3DFVF_DIFFUSE, du_cylinder_vertices.data(), DU_CYLINDER_NUMVERTEX, du_cylinder_lines.data(),
                                   DU_CYLINDER_NUMLINES * 2);
 
     for (u32 i = 0; i < LINE_DIVISION; i++)
@@ -1365,7 +1370,7 @@ void CDrawUtilities::DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* ver
 void CDrawUtilities::DrawLink(const Fvector& p0, const Fvector& p1, float sz, u32 clr)
 {
     DrawLine(p1, p0, clr);
-    Fvector pp[2], D, R, N = {0, 1, 0};
+    Fvector pp[2], D, R, N{0.0f, 1.0f, 0.0f};
     D.sub(p1, p0);
     D.normalize();
     R.crossproduct(N, D);

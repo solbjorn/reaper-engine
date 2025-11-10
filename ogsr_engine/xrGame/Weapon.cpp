@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "Weapon.h"
+
 #include "ParticlesObject.h"
 #include "entity_alive.h"
 #include "player_hud.h"
@@ -63,7 +64,7 @@ CWeapon::CWeapon()
     m_pAmmo = nullptr;
 
     m_pFlameParticles2 = nullptr;
-    m_sFlameParticles2 = nullptr;
+    m_sFlameParticles2._set(nullptr);
 
     m_fCurrentCartirdgeDisp = 1.f;
 
@@ -218,10 +219,13 @@ void CWeapon::ForceUpdateFireParticles()
     }
 }
 
+namespace
+{
 constexpr const char* wpn_scope_def_bone = "wpn_scope";
 constexpr const char* wpn_silencer_def_bone = "wpn_silencer";
 constexpr const char* wpn_launcher_def_bone_shoc = "wpn_launcher";
 constexpr const char* wpn_launcher_def_bone_cop = "wpn_grenade_launcher";
+} // namespace
 
 void CWeapon::Load(LPCSTR section)
 {
@@ -229,7 +233,7 @@ void CWeapon::Load(LPCSTR section)
     CShootingObject::Load(section);
 
     if (pSettings->line_exist(section, "flame_particles_2"))
-        m_sFlameParticles2 = pSettings->r_string(section, "flame_particles_2");
+        m_sFlameParticles2._set(pSettings->r_string(section, "flame_particles_2"));
 
     if (!m_bForcedParticlesHudMode)
         m_bParticlesHudMode = !!pSettings->line_exist(hud_sect, "item_visual");
@@ -260,15 +264,17 @@ void CWeapon::Load(LPCSTR section)
 
     // load ammo classes
     m_ammoTypes.clear();
+
     LPCSTR S = pSettings->r_string(section, "ammo_class");
     if (S && S[0])
     {
         string128 _ammoItem;
         int count = _GetItemCount(S);
+
         for (int it = 0; it < count; ++it)
         {
-            _GetItem(S, it, _ammoItem);
-            m_ammoTypes.push_back(_ammoItem);
+            std::ignore = _GetItem(S, it, _ammoItem);
+            m_ammoTypes.emplace_back(_ammoItem);
         }
     }
 
@@ -358,13 +364,14 @@ void CWeapon::Load(LPCSTR section)
 
     m_allScopeNames.clear();
     m_highlightAddons.clear();
+
     if (m_eScopeStatus == ALife::eAddonAttachable)
     {
-        m_sScopeName = pSettings->r_string(section, "scope_name");
+        m_sScopeName._set(pSettings->r_string(section, "scope_name"));
         m_iScopeX = pSettings->r_s32(section, "scope_x");
         m_iScopeY = pSettings->r_s32(section, "scope_y");
-
         m_allScopeNames.push_back(m_sScopeName);
+
         if (pSettings->line_exist(section, "scope_names"))
         {
             LPCSTR S = pSettings->r_string(section, "scope_names");
@@ -372,11 +379,12 @@ void CWeapon::Load(LPCSTR section)
             {
                 string128 _scopeItem;
                 int count = _GetItemCount(S);
+
                 for (int it = 0; it < count; ++it)
                 {
-                    _GetItem(S, it, _scopeItem);
-                    m_allScopeNames.push_back(_scopeItem);
-                    m_highlightAddons.push_back(_scopeItem);
+                    std::ignore = _GetItem(S, it, _scopeItem);
+                    m_allScopeNames.emplace_back(_scopeItem);
+                    m_highlightAddons.emplace_back(_scopeItem);
                 }
             }
         }
@@ -384,14 +392,14 @@ void CWeapon::Load(LPCSTR section)
 
     if (m_eSilencerStatus == ALife::eAddonAttachable)
     {
-        m_sSilencerName = pSettings->r_string(section, "silencer_name");
+        m_sSilencerName._set(pSettings->r_string(section, "silencer_name"));
         m_iSilencerX = pSettings->r_s32(section, "silencer_x");
         m_iSilencerY = pSettings->r_s32(section, "silencer_y");
     }
 
     if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable)
     {
-        m_sGrenadeLauncherName = pSettings->r_string(section, "grenade_launcher_name");
+        m_sGrenadeLauncherName._set(pSettings->r_string(section, "grenade_launcher_name"));
         m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x");
         m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y");
     }
@@ -404,26 +412,27 @@ void CWeapon::Load(LPCSTR section)
         {
             const int count = _GetItemCount(S);
             string128 _scope_bone{};
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, _scope_bone);
-                m_sWpn_scope_bones.push_back(_scope_bone);
+                std::ignore = _GetItem(S, it, _scope_bone);
+                m_sWpn_scope_bones.emplace_back(_scope_bone);
             }
         }
         else
         {
-            m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
+            m_sWpn_scope_bones.emplace_back(wpn_scope_def_bone);
         }
     }
     else
     {
-        m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
+        m_sWpn_scope_bones.emplace_back(wpn_scope_def_bone);
     }
 
-    m_sWpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, section, "silencer_bone", wpn_silencer_def_bone);
-    m_sWpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, section, "launcher_bone", wpn_launcher_def_bone_shoc);
-    m_sWpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, section, "laser_ray_bones", "");
-    m_sWpn_flashlight_bone = READ_IF_EXISTS(pSettings, r_string, section, "torch_cone_bones", "");
+    m_sWpn_silencer_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "silencer_bone", wpn_silencer_def_bone));
+    m_sWpn_launcher_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "launcher_bone", wpn_launcher_def_bone_shoc));
+    m_sWpn_laser_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "laser_ray_bones", ""));
+    m_sWpn_flashlight_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "torch_cone_bones", ""));
 
     if (pSettings->line_exist(section, "hidden_bones"))
     {
@@ -432,10 +441,11 @@ void CWeapon::Load(LPCSTR section)
         {
             const int count = _GetItemCount(S);
             string128 _hidden_bone{};
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, _hidden_bone);
-                hidden_bones.push_back(_hidden_bone);
+                std::ignore = _GetItem(S, it, _hidden_bone);
+                hidden_bones.emplace_back(_hidden_bone);
             }
         }
     }
@@ -448,10 +458,11 @@ void CWeapon::Load(LPCSTR section)
         {
             const int count = _GetItemCount(S);
             string128 _scope_bone{};
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, _scope_bone);
-                m_sHud_wpn_scope_bones.push_back(_scope_bone);
+                std::ignore = _GetItem(S, it, _scope_bone);
+                m_sHud_wpn_scope_bones.emplace_back(_scope_bone);
             }
         }
         else
@@ -464,10 +475,10 @@ void CWeapon::Load(LPCSTR section)
         m_sHud_wpn_scope_bones = m_sWpn_scope_bones;
     }
 
-    m_sHud_wpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "silencer_bone", m_sWpn_silencer_bone);
-    m_sHud_wpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "launcher_bone", m_sWpn_launcher_bone);
-    m_sHud_wpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "laser_ray_bones", m_sWpn_laser_bone);
-    m_sHud_wpn_flashlight_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "torch_cone_bones", m_sWpn_flashlight_bone);
+    m_sHud_wpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string<shared_str>, hud_sect, "silencer_bone", m_sWpn_silencer_bone);
+    m_sHud_wpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string<shared_str>, hud_sect, "launcher_bone", m_sWpn_launcher_bone);
+    m_sHud_wpn_laser_bone = READ_IF_EXISTS(pSettings, r_string<shared_str>, hud_sect, "laser_ray_bones", m_sWpn_laser_bone);
+    m_sHud_wpn_flashlight_bone = READ_IF_EXISTS(pSettings, r_string<shared_str>, hud_sect, "torch_cone_bones", m_sWpn_flashlight_bone);
 
     if (pSettings->line_exist(hud_sect, "hidden_bones"))
     {
@@ -476,10 +487,11 @@ void CWeapon::Load(LPCSTR section)
         {
             const int count = _GetItemCount(S);
             string128 _hidden_bone{};
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, _hidden_bone);
-                hud_hidden_bones.push_back(_hidden_bone);
+                std::ignore = _GetItem(S, it, _hidden_bone);
+                hud_hidden_bones.emplace_back(_hidden_bone);
             }
         }
     }
@@ -524,9 +536,10 @@ void CWeapon::Load(LPCSTR section)
         {
             string128 _addonItem;
             int count = _GetItemCount(S);
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, _addonItem);
+                std::ignore = _GetItem(S, it, _addonItem);
                 ASSERT_FMT(pSettings->section_exist(_addonItem), "Section [%s] not found!", _addonItem);
                 m_highlightAddons.emplace_back(_addonItem);
             }
@@ -537,7 +550,7 @@ void CWeapon::Load(LPCSTR section)
     {
         has_laser = true;
 
-        laserdot_attach_bone = READ_IF_EXISTS(pSettings, r_string, section, "laserdot_attach_bone", "");
+        laserdot_attach_bone._set(READ_IF_EXISTS(pSettings, r_string, section, "laserdot_attach_bone", ""));
         laserdot_attach_offset =
             Fvector{READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f),
                     READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f)};
@@ -551,7 +564,7 @@ void CWeapon::Load(LPCSTR section)
 
         laser_lanim = LALib.FindItem(READ_IF_EXISTS(pSettings, r_string, m_light_section, "color_animator", ""));
 
-        laser_light_render = ::Render->light_create();
+        laser_light_render._set(::Render->light_create());
         laser_light_render->set_type(IRender_Light::SPOT);
         laser_light_render->set_shadow(true);
         laser_light_render->set_moveable(true);
@@ -569,7 +582,7 @@ void CWeapon::Load(LPCSTR section)
     {
         has_flashlight = true;
 
-        flashlight_attach_bone = pSettings->r_string(section, "torch_light_bone");
+        flashlight_attach_bone._set(pSettings->r_string(section, "torch_light_bone"));
         flashlight_attach_offset = Fvector{pSettings->r_float(section, "torch_attach_offset_x"), pSettings->r_float(section, "torch_attach_offset_y"),
                                            pSettings->r_float(section, "torch_attach_offset_z")};
         flashlight_omni_attach_offset = Fvector{pSettings->r_float(section, "torch_omni_attach_offset_x"), pSettings->r_float(section, "torch_omni_attach_offset_y"),
@@ -586,7 +599,7 @@ void CWeapon::Load(LPCSTR section)
 
         flashlight_lanim = LALib.FindItem(READ_IF_EXISTS(pSettings, r_string, m_light_section, "color_animator", ""));
 
-        flashlight_render = ::Render->light_create();
+        flashlight_render._set(::Render->light_create());
         flashlight_render->set_type(IRender_Light::SPOT);
         flashlight_render->set_shadow(true);
         flashlight_render->set_moveable(true);
@@ -599,7 +612,7 @@ void CWeapon::Load(LPCSTR section)
         flashlight_render->set_cone(deg2rad(READ_IF_EXISTS(pSettings, r_float, m_light_section, "spot_angle", 60.f)));
         flashlight_render->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "spot_texture", nullptr));
 
-        flashlight_omni = ::Render->light_create();
+        flashlight_omni._set(::Render->light_create());
         flashlight_omni->set_type(
             (IRender_Light::LT)(READ_IF_EXISTS(pSettings, r_u8, m_light_section, "omni_type",
                                                2))); // KRodin: вообще omni это обычно поинт, но поинт светит во все стороны от себя, поэтому тут спот используется по умолчанию.
@@ -611,7 +624,7 @@ void CWeapon::Load(LPCSTR section)
         const float orange = READ_IF_EXISTS(pSettings, r_float, m_light_section, b_r2 ? "omni_range_r2" : "omni_range", 0.25f);
         flashlight_omni->set_range(orange);
 
-        flashlight_glow = ::Render->glow_create();
+        flashlight_glow._set(::Render->glow_create());
         flashlight_glow->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "glow_texture", "glow\\glow_torch_r2"));
         flashlight_glow->set_color(clr);
         flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
@@ -626,19 +639,21 @@ void CWeapon::Load(LPCSTR section)
         for (int i{}, count = _GetItemCount(str); i < count;)
         {
             xr_string bullet_tex;
-            _GetItem(str, i++, bullet_tex);
+            std::ignore = _GetItem(str, i++, bullet_tex);
             bullet_textures_in_model.emplace_back(std::move(bullet_tex));
         }
     }
+
     if (pSettings->line_exist(section, "bullet_textures_for_ammos"))
     {
         const char* str = pSettings->r_string(section, "bullet_textures_for_ammos");
         for (int i{}, count = _GetItemCount(str); i < count;)
         {
             xr_string ammo_section, bullet_tex;
-            _GetItem(str, i++, ammo_section);
+            std::ignore = _GetItem(str, i++, ammo_section);
             ASSERT_FMT(i < count, "Incorrect [bullet_textures_for_ammos] in section [%s]", section);
-            _GetItem(str, i++, bullet_tex);
+
+            std::ignore = _GetItem(str, i++, bullet_tex);
             bullet_textures_for_ammos.emplace(std::move(ammo_section), std::move(bullet_tex));
         }
     }
@@ -1288,7 +1303,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
     if (auto l_pA = smart_cast<CSE_ALifeItemAmmo*>(D))
     {
         l_pA->m_boxSize = (u16)pSettings->r_s32(ammoSect, "box_size");
-        D->s_name = ammoSect;
+        D->s_name._set(ammoSect);
         D->set_name_replace("");
         D->s_gameid = u8(GameID());
         D->s_RP = 0xff;
@@ -1449,8 +1464,8 @@ void CWeapon::UpdateHUDAddonsVisibility()
     else if (m_eSilencerStatus == ALife::eAddonPermanent)
         HudItemData()->set_bone_visible(m_sHud_wpn_silencer_bone, TRUE, TRUE);
 
-    if (!HudItemData()->has_bone(m_sHud_wpn_launcher_bone) && HudItemData()->has_bone(wpn_launcher_def_bone_cop))
-        m_sHud_wpn_launcher_bone = wpn_launcher_def_bone_cop;
+    if (!HudItemData()->has_bone(m_sHud_wpn_launcher_bone) && HudItemData()->has_bone(shared_str{wpn_launcher_def_bone_cop}))
+        m_sHud_wpn_launcher_bone._set(wpn_launcher_def_bone_cop);
 
     if (GrenadeLauncherAttachable())
         HudItemData()->set_bone_visible(m_sHud_wpn_launcher_bone, IsGrenadeLauncherAttached());
@@ -2148,7 +2163,7 @@ void CWeapon::SaveAttachableParams()
 {
     const char* sect_name = cNameSect().c_str();
     string_path buff;
-    FS.update_path(buff, "$logs$", make_string("_world\\%s.ltx", sect_name).c_str());
+    std::ignore = FS.update_path(buff, "$logs$", make_string("_world\\%s.ltx", sect_name).c_str());
 
     CInifile pHudCfg(buff, FALSE, FALSE, TRUE);
 

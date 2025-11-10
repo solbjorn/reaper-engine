@@ -1,42 +1,50 @@
 #include "stdafx.h"
 
+#include "xr_trims.h"
+
 LPSTR _TrimLeft(LPSTR str)
 {
     LPSTR p = str;
-    while (*p && (u8(*p) <= u8(' ')))
+    while (*p && gsl::narrow_cast<u8>(*p) <= gsl::narrow_cast<u8>(' '))
         p++;
+
     if (p != str)
     {
         LPSTR t = str;
         for (; *p; t++, p++)
             *t = *p;
-        *t = 0;
+
+        *t = '\0';
     }
+
     return str;
 }
 
 LPSTR _TrimRight(LPSTR str)
 {
     LPSTR p = str + xr_strlen(str);
-    while ((p != str) && (u8(*p) <= u8(' ')))
+    while (p != str && gsl::narrow_cast<u8>(*p) <= gsl::narrow_cast<u8>(' '))
         p--;
-    *(++p) = 0;
+
+    *(++p) = '\0';
+
     return str;
 }
 
 LPSTR _Trim(LPSTR str)
 {
-    _TrimLeft(str);
-    _TrimRight(str);
+    std::ignore = _TrimLeft(str);
+    std::ignore = _TrimRight(str);
+
     return str;
 }
 
 namespace
 {
-LPCSTR _SetPos(LPCSTR src, u32 pos, char separator)
+LPCSTR _SetPos(LPCSTR src, gsl::index pos, char separator)
 {
     LPCSTR res = src;
-    u32 p = 0;
+    gsl::index p{};
 
     while ((p < pos) && (nullptr != (res = strchr(res, separator))))
     {
@@ -48,9 +56,9 @@ LPCSTR _SetPos(LPCSTR src, u32 pos, char separator)
 }
 } // namespace
 
-int _GetItemCount(LPCSTR src, char separator)
+gsl::index _GetItemCount(LPCSTR src, char separator)
 {
-    u32 cnt = 0;
+    gsl::index cnt{};
 
     if (src && src[0])
     {
@@ -79,29 +87,33 @@ LPCSTR _CopyVal(LPCSTR src, LPSTR dst, char separator)
 {
     const char* p = strchr(src, separator);
     gsl::index n{p ? (p - src) : xr_strlen(src)};
+
     strncpy(dst, src, gsl::narrow_cast<size_t>(n));
-    dst[n] = 0;
+    dst[n] = '\0';
+
     return dst;
 }
 } // namespace
 
-LPSTR _GetItem(LPCSTR src, int index, LPSTR dst, char separator, LPCSTR def, bool trim)
+LPSTR _GetItem(LPCSTR src, gsl::index index, LPSTR dst, char separator, LPCSTR def, bool trim)
 {
-    LPCSTR ptr;
-    ptr = _SetPos(src, index, separator);
+    LPCSTR ptr = _SetPos(src, index, separator);
     if (ptr)
         _CopyVal(ptr, dst, separator);
     else
         strcpy(dst, def);
+
     if (trim)
-        _Trim(dst);
+        std::ignore = _Trim(dst);
+
     return dst;
 }
 
-LPSTR _GetItems(LPCSTR src, int idx_start, int idx_end, LPSTR dst, char separator)
+LPSTR _GetItems(LPCSTR src, gsl::index idx_start, gsl::index idx_end, LPSTR dst, char separator)
 {
     LPSTR n = dst;
-    int level = 0;
+    gsl::index level{};
+
     for (LPCSTR p = src; *p != 0; p++)
     {
         if ((level >= idx_start) && (level < idx_end))
@@ -111,172 +123,76 @@ LPSTR _GetItems(LPCSTR src, int idx_start, int idx_end, LPSTR dst, char separato
         if (level >= idx_end)
             break;
     }
+
     *n = '\0';
+
     return dst;
 }
 
-u32 _ParseItem(LPCSTR src, xr_token* token_list)
+gsl::index _ParseItem(LPCSTR src, xr_token* token_list)
 {
-    for (int i = 0; token_list[i].name; i++)
+    for (gsl::index i{}; token_list[i].name; i++)
     {
         if (std::is_eq(xr::strcasecmp(src, token_list[i].name)))
             return token_list[i].id;
     }
 
-    return u32(-1);
+    return -1;
 }
-
-// u32 _ParseItem(LPSTR src, int ind, xr_token* token_list)
-//{
-//     char dst[128];
-//     _GetItem(src, ind, dst);
-//     return _ParseItem(dst, token_list);
-// }
-
-// LPSTR _ReplaceItems(LPCSTR src, int idx_start, int idx_end, LPCSTR new_items, LPSTR dst, char separator)
-//{
-//     LPSTR n = dst;
-//     int level = 0;
-//     bool bCopy = true;
-//     for (LPCSTR p = src; *p != 0; p++)
-//     {
-//         if ((level >= idx_start) && (level < idx_end))
-//         {
-//             if (bCopy)
-//             {
-//                 for (LPCSTR itm = new_items; *itm != 0;)
-//                     *n++ = *itm++;
-//                 bCopy = false;
-//             }
-//             if (*p == separator)
-//                 *n++ = separator;
-//         }
-//         else
-//         {
-//             *n++ = *p;
-//         }
-//         if (*p == separator)
-//             level++;
-//     }
-//     *n = '\0';
-//     return dst;
-// }
-
-// LPSTR _ReplaceItem(LPCSTR src, int index, LPCSTR new_item, LPSTR dst, char separator)
-//{
-//     LPSTR n = dst;
-//     int level = 0;
-//     bool bCopy = true;
-//     for (LPCSTR p = src; *p != 0; p++)
-//     {
-//         if (level == index)
-//         {
-//             if (bCopy)
-//             {
-//                 for (LPCSTR itm = new_item; *itm != 0;)
-//                     *n++ = *itm++;
-//                 bCopy = false;
-//             }
-//             if (*p == separator)
-//                 *n++ = separator;
-//         }
-//         else
-//         {
-//             *n++ = *p;
-//         }
-//         if (*p == separator)
-//             level++;
-//     }
-//     *n = '\0';
-//     return dst;
-// }
-
-// void _SequenceToList(LPSTRVec& lst, LPCSTR in, char separator)
-//{
-//     int t_cnt = _GetItemCount(in, separator);
-//     string1024 T;
-//     for (int i = 0; i < t_cnt; i++)
-//     {
-//         _GetItem(in, i, T, separator, 0);
-//         _Trim(T);
-//         if (xr_strlen(T))
-//             lst.push_back(xr_strdup(T));
-//     }
-// }
-//
-// void _SequenceToList(RStringVec& lst, LPCSTR in, char separator)
-//{
-//     lst.clear();
-//     int t_cnt = _GetItemCount(in, separator);
-//     xr_string T;
-//     for (int i = 0; i < t_cnt; i++)
-//     {
-//         _GetItem(in, i, T, separator, 0);
-//         _Trim(T);
-//         if (T.size())
-//             lst.push_back(T.c_str());
-//     }
-// }
 
 void _SequenceToList(SStringVec& lst, LPCSTR in, char separator)
 {
     lst.clear();
-    int t_cnt = _GetItemCount(in, separator);
+
+    gsl::index t_cnt = _GetItemCount(in, separator);
     xr_string T;
 
-    for (int i = 0; i < t_cnt; i++)
+    for (gsl::index i{}; i < t_cnt; i++)
     {
-        _GetItem(in, i, T, separator, nullptr);
-        _Trim(T);
+        std::ignore = _GetItem(in, i, T, separator, nullptr);
+        std::ignore = _Trim(T);
 
-        if (T.size())
+        if (!T.empty())
             lst.push_back(T.c_str());
     }
 }
-
-// xr_string _ListToSequence(const SStringVec& lst)
-//{
-//     static xr_string out;
-//     out = "";
-//     if (lst.size())
-//     {
-//         out = lst.front();
-//         for (SStringVec::const_iterator s_it = lst.begin() + 1; s_it != lst.end(); s_it++)
-//             out += xr_string(",") + (*s_it);
-//     }
-//     return out;
-// }
 
 xr_string& _TrimLeft(xr_string& str)
 {
     LPCSTR b = str.c_str();
     LPCSTR p = str.c_str();
-    while (*p && (u8(*p) <= u8(' ')))
+
+    while (*p && gsl::narrow_cast<u8>(*p) <= gsl::narrow_cast<u8>(' '))
         p++;
+
     if (p != b)
-        str.erase(0, p - b);
+        str.erase(0, gsl::narrow_cast<size_t>(p - b));
+
     return str;
 }
 
 xr_string& _TrimRight(xr_string& str)
 {
     LPCSTR b = str.c_str();
-    size_t l = str.length();
+    auto l = std::ssize(str);
     if (l)
     {
         LPCSTR p = str.c_str() + l - 1;
-        while ((p != b) && (u8(*p) <= u8(' ')))
+        while (p != b && gsl::narrow_cast<u8>(*p) <= gsl::narrow_cast<u8>(' '))
             p--;
-        if (p != (str + b))
-            str.erase(p - b + 1, l - (p - b));
+
+        if (p != str + b)
+            str.erase(gsl::narrow_cast<size_t>(p - b + 1), gsl::narrow_cast<size_t>(l - (p - b)));
     }
+
     return str;
 }
 
 xr_string& _Trim(xr_string& str)
 {
-    _TrimLeft(str);
-    _TrimRight(str);
+    std::ignore = _TrimLeft(str);
+    std::ignore = _TrimRight(str);
+
     return str;
 }
 
@@ -287,35 +203,21 @@ LPCSTR _CopyVal(LPCSTR src, xr_string& dst, char separator)
     const char* p = strchr(src, separator);
     const gsl::index n{p ? (p - src) : xr_strlen(src)};
     dst = src;
-    dst = dst.erase(n, dst.length());
+    dst = dst.erase(gsl::narrow_cast<size_t>(n), dst.length());
     return dst.c_str();
 }
 } // namespace
 
-LPCSTR _GetItem(LPCSTR src, int index, xr_string& dst, char separator, LPCSTR def, bool trim)
+LPCSTR _GetItem(LPCSTR src, gsl::index index, xr_string& dst, char separator, LPCSTR def, bool trim)
 {
-    LPCSTR ptr;
-    ptr = _SetPos(src, index, separator);
+    LPCSTR ptr = _SetPos(src, index, separator);
     if (ptr)
         _CopyVal(ptr, dst, separator);
     else
         dst = def;
+
     if (trim)
-        _Trim(dst);
+        std::ignore = _Trim(dst);
+
     return dst.c_str();
 }
-
-// shared_str _ListToSequence(const RStringVec& lst)
-//{
-//     xr_string out;
-//     if (lst.size())
-//     {
-//         out = *lst.front();
-//         for (RStringVec::const_iterator s_it = lst.begin() + 1; s_it != lst.end(); s_it++)
-//         {
-//             out += ",";
-//             out += **s_it;
-//         }
-//     }
-//     return shared_str(out.c_str());
-// }

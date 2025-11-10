@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UICellCustomItems.h"
+
 #include "UIInventoryUtilities.h"
 #include "../Weapon.h"
 #include "UIDragDropListEx.h"
@@ -335,19 +336,19 @@ void CUIWeaponCellItem::InitAllAddons(CUIStatic* s_silencer, CUIStatic* s_scope,
 
     if (s_silencer)
     {
-        params.Load(*object()->GetSilencerName());
+        params.Load(object()->GetSilencerName());
         params.set_shader(s_silencer);
         InitAddon(s_silencer, params, m_addon_offset[eSilencer], b_vertical);
     }
     if (s_scope)
     {
-        params.Load(*object()->GetScopeName());
+        params.Load(object()->GetScopeName());
         params.set_shader(s_scope);
         InitAddon(s_scope, params, m_addon_offset[eScope], b_vertical);
     }
     if (s_launcher)
     {
-        params.Load(*object()->GetGrenadeLauncherName());
+        params.Load(object()->GetGrenadeLauncherName());
         params.set_shader(s_launcher);
         InitAddon(s_launcher, params, m_addon_offset[eLauncher], b_vertical);
     }

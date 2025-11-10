@@ -42,10 +42,10 @@ static const char* GetThreadName()
 {
     if (IsWindows10OrGreater())
     {
-        static HMODULE KernelLib = GetModuleHandle("kernel32.dll");
+        static const HMODULE KernelLib = GetModuleHandle("kernel32.dll");
         using FuncGetThreadDescription = HRESULT (*)(HANDLE, PWSTR*);
-        static auto pGetThreadDescription = (FuncGetThreadDescription)GetProcAddress(KernelLib, "GetThreadDescription");
 
+        static const auto pGetThreadDescription = reinterpret_cast<FuncGetThreadDescription>(GetProcAddress(KernelLib, "GetThreadDescription"));
         if (pGetThreadDescription)
         {
             PWSTR wThreadName = nullptr;
@@ -55,7 +55,7 @@ static const char* GetThreadName()
                 {
                     static string64 ResThreadName{};
 
-                    WideCharToMultiByte(CP_OEMCP, 0, wThreadName, int(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
+                    WideCharToMultiByte(CP_OEMCP, 0, wThreadName, gsl::narrow_cast<s32>(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
                     LocalFree(wThreadName);
 
                     if (xr_strlen(ResThreadName) > 0)
@@ -64,6 +64,7 @@ static const char* GetThreadName()
             }
         }
     }
+
     return "UNKNOWN";
 }
 
@@ -108,7 +109,7 @@ LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS* pExceptionIn
 
 namespace
 {
-void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function,
+void gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function,
                  char* assertion_info)
 {
     auto buffer = assertion_info;
@@ -122,7 +123,7 @@ void gather_info(const char* expression, const char* description, const char* ar
         buffer += sprintf(buffer, "%sExpression    : %s%s", prefix, expression, endline);
         buffer += sprintf(buffer, "%sFunction      : %s%s", prefix, function, endline);
         buffer += sprintf(buffer, "%sFile          : %s%s", prefix, file, endline);
-        buffer += sprintf(buffer, "%sLine          : %d%s", prefix, line, endline);
+        buffer += sprintf(buffer, "%sLine          : %zd%s", prefix, line, endline);
 
         if (extended_description)
         {
@@ -182,7 +183,7 @@ void xrDebug::do_exit(const std::string& message)
     std::unreachable();
 }
 
-void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function)
+void xrDebug::backend(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, gsl::index line, const char* function)
 {
     static std::recursive_mutex CS;
     std::scoped_lock<decltype(CS)> lock(CS);
@@ -210,7 +211,7 @@ void xrDebug::backend(const char* expression, const char* description, const cha
         DEBUG_INVOKE;
 }
 
-const char* xrDebug::DXerror2string(const HRESULT code) const { return error2string(code); }
+const char* xrDebug::DXerror2string(const HRESULT code) const { return error2string(gsl::narrow_cast<unsigned long>(code)); }
 
 const char* xrDebug::error2string(const DWORD code) const
 {
@@ -219,49 +220,49 @@ const char* xrDebug::error2string(const DWORD code) const
     return desc_storage;
 }
 
-void xrDebug::error(const HRESULT hr, const char* expr, const char* file, int line, const char* function)
+void xrDebug::error(const HRESULT hr, const char* expr, const char* file, gsl::index line, const char* function)
 {
     backend(DXerror2string(hr), expr, nullptr, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char* file, int line, const char* function)
+void xrDebug::error(const HRESULT hr, const char* expr, const char* e2, const char* file, gsl::index line, const char* function)
 {
     backend(DXerror2string(hr), expr, e2, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const char* file, int line, const char* function)
+void xrDebug::fail(const char* e1, const char* file, gsl::index line, const char* function)
 {
     backend("assertion failed", e1, nullptr, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function)
+void xrDebug::fail(const char* e1, const std::string& e2, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2.c_str(), nullptr, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function)
+void xrDebug::fail(const char* e1, const char* e2, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, nullptr, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function)
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, e3, nullptr, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function)
+void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, gsl::index line, const char* function)
 {
     backend(e1, e2, e3, e4, file, line, function);
     std::unreachable();
 }
 
-void xrDebug::fatal(const char* file, int line, const char* function, const char* F, ...)
+void xrDebug::fatal(const char* file, gsl::index line, const char* function, const char* F, ...)
 {
     string4096 strBuf;
     va_list args;
@@ -281,7 +282,7 @@ static int out_of_memory_handler(size_t size)
     const auto eco_strings = str_container::stat_economy();
     const auto eco_smem = smem_container::stat_economy();
 
-    Msg("* [x-ray]: process heap[%zu K]", process_heap / 1024);
+    Msg("* [x-ray]: process heap[%zd K]", process_heap / 1024);
     Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", eco_strings / 1024, eco_smem / 1024);
 
     FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
@@ -312,7 +313,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
         __try
         {
             if (FS.path_exist("$logs$"))
-                FS.update_path(szDumpPath, "$logs$", szDumpPath);
+                std::ignore = FS.update_path(szDumpPath, "$logs$", szDumpPath);
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
@@ -327,7 +328,7 @@ static void save_mini_dump(_EXCEPTION_POINTERS* pExceptionInfo)
         if (INVALID_HANDLE_VALUE == hFile)
         {
             // try to place into current directory
-            MoveMemory(szDumpPath, szDumpPath + 5, xr_strlen(szDumpPath));
+            std::memmove(szDumpPath, szDumpPath + 5, gsl::narrow_cast<size_t>(xr_strlen(szDumpPath)));
             hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         }
         if (hFile != INVALID_HANDLE_VALUE)
@@ -372,10 +373,11 @@ static void format_message(char* buffer)
             return;
         }
 
-        void* message = nullptr;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&message, 0, nullptr);
+        void* message{};
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                      reinterpret_cast<char*>(&message), 0, nullptr);
 
-        sprintf(buffer, "[error][0x%lx] : [%s]", error_code, (char*)message);
+        sprintf(buffer, "[error][0x%lx] : [%s]", error_code, static_cast<gsl::czstring>(message));
         LocalFree(message);
     }
     __except (EXCEPTION_EXECUTE_HANDLER)

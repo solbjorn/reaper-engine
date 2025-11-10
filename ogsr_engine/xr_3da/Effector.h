@@ -15,7 +15,7 @@ protected:
 
 public:
     CEffectorCam() : eType{cefDemo}, fLifeTime{0.0f} {}
-    CEffectorCam(ECamEffectorType type, float tm) : eType{type}, fLifeTime{tm} {}
+    explicit CEffectorCam(ECamEffectorType type, float tm) : eType{type}, fLifeTime{tm} {}
     virtual ~CEffectorCam() {}
 
     void SetType(ECamEffectorType type) { eType = type; }

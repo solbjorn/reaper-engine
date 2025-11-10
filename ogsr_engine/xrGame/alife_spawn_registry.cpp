@@ -15,7 +15,7 @@
 #include "game_graph.h"
 #include "script_engine.h"
 
-CALifeSpawnRegistry::CALifeSpawnRegistry() { m_spawn_name = ""; }
+CALifeSpawnRegistry::CALifeSpawnRegistry() { m_spawn_name._set(""); }
 
 CALifeSpawnRegistry::~CALifeSpawnRegistry()
 {
@@ -72,7 +72,8 @@ void CALifeSpawnRegistry::load(IReader& file_stream, LPCSTR game_name)
 void CALifeSpawnRegistry::load(LPCSTR spawn_name)
 {
     Msg("* Loading spawn registry...");
-    m_spawn_name = spawn_name;
+
+    m_spawn_name._set(spawn_name);
     string_path file_name;
     R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
 
@@ -98,16 +99,19 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
 
     bool separated_graphs = false;
     VERIFY(!m_spawn_chunk);
+
     IReader* stream = file_stream.open_chunk(4);
     if (!stream)
     {
         string_path file_name;
-        FS.update_path(file_name, _game_data_, GRAPH_NAME);
+        std::ignore = FS.update_path(file_name, _game_data_, GRAPH_NAME);
         stream = FS.r_open(file_name);
         separated_graphs = true;
     }
     else
+    {
         m_spawn_chunk = stream;
+    }
 
     R_ASSERT(stream, "Spawn version mismatch - REBUILD SPAWN!");
 
@@ -156,7 +160,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     if (pSettings->line_exist("engine_custom_spawn", "waypoints_file"))
     {
         string_path fname;
-        FS.update_path(fname, "$game_config$", pSettings->r_string("engine_custom_spawn", "waypoints_file"));
+        std::ignore = FS.update_path(fname, "$game_config$", pSettings->r_string("engine_custom_spawn", "waypoints_file"));
 
         if (FS.exist(fname))
         {

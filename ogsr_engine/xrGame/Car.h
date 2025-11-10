@@ -535,7 +535,7 @@ public:
     virtual bool allowWeapon() const { return false; }
     virtual bool HUDView() const;
     virtual Fvector ExitPosition() { return m_exit_position; }
-    XR_SYSV [[nodiscard]] Fvector ExitVelocity() override;
+    [[nodiscard]] Fvector ExitVelocity() override;
     void GetVelocity(Fvector& vel) { m_pPhysicsShell->get_LinearVel(vel); }
     void cam_Update(float, float fov) override;
     void detach_Actor();

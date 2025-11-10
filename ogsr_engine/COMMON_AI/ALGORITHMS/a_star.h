@@ -50,8 +50,9 @@ protected:
     inline bool step(TPathManager& path_manager);
 
 public:
-    inline CAStar(const u32 max_vertex_count);
+    inline explicit CAStar(const u32 max_vertex_count);
     inline virtual ~CAStar();
+
     template <typename TPathManager>
     inline bool find(TPathManager& path_manager);
 };

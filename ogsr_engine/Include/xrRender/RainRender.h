@@ -1,9 +1,9 @@
 #ifndef RainRender_included
 #define RainRender_included
 
-class CEffect_Rain;
-
 #include "../../xrCore/_sphere.h"
+
+class CEffect_Rain;
 
 class XR_NOVTABLE IRainRender : public virtual RTTI::Enable
 {

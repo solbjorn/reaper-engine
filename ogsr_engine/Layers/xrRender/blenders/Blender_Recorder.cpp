@@ -66,7 +66,7 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
             base = *lst[id];
         }
 
-        if (!desc.GetDetailTexture(base, detail_texture, detail_scaler))
+        if (!desc.GetDetailTexture(shared_str{base}, detail_texture, detail_scaler))
             bDetail = FALSE;
     }
     else
@@ -97,9 +97,9 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     bDetail_Bump = FALSE;
 
     if (bDetail)
-        desc.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+        desc.GetTextureUsage(shared_str{base}, bDetail_Diffuse, bDetail_Bump);
 
-    bUseSteepParallax = desc.UseSteepParallax(base) && BT->canUseSteepParallax();
+    bUseSteepParallax = desc.UseSteepParallax(shared_str{base}) && BT->canUseSteepParallax();
     TessMethod = 0;
 
     // Compile

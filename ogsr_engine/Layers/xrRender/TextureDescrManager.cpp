@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
+
 #include "ETextureParams.h"
 
 XR_DIAG_PUSH();
@@ -21,10 +22,11 @@ class cl_dt_scaler : public R_constant_setup
     RTTI_DECLARE_TYPEINFO(cl_dt_scaler, R_constant_setup);
 
 public:
-    float scale;
+    f32 scale;
 
-    cl_dt_scaler(float s) : scale{s} {}
-    virtual void setup(CBackend& cmd_list, R_constant* C) { cmd_list.set_c(C, scale, scale, scale, 1 / r__dtex_range); }
+    explicit cl_dt_scaler(f32 s) : scale{s} {}
+
+    void setup(CBackend& cmd_list, R_constant* C) override { cmd_list.set_c(C, scale, scale, scale, 1.0f / r__dtex_range); }
 };
 
 namespace
@@ -42,7 +44,7 @@ void fix_texture_thm_name(LPSTR fn)
 void CTextureDescrMngr::LoadLTX(LPCSTR initial)
 {
     FS_FileSet flist;
-    FS.file_list(flist, initial, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
+    std::ignore = FS.file_list(flist, initial, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
 
     Msg("Count of *textures*.ltx files in [%s]: [%zu]", initial, flist.size());
 
@@ -52,8 +54,8 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
     for (const auto& file : flist)
     {
         string_path fn;
-        FS.update_path(fn, initial, file.name.c_str());
-        CInifile ini(fn);
+        std::ignore = FS.update_path(fn, initial, file.name.c_str());
+        CInifile ini{fn};
 
         oneapi::tbb::spin_mutex lock;
         if (ini.section_exist("association"))
@@ -77,7 +79,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
                 float s;
                 int res = sscanf(item.second.c_str(), "%[^,],%f", T, &s);
                 R_ASSERT(res == 2);
-                desc.m_assoc->detail_name = T;
+                desc.m_assoc->detail_name._set(T);
 
                 if (dts)
                     dts->scale = s;
@@ -120,7 +122,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
                 R_ASSERT(res >= 2);
 
                 if ((bmode[0] == 'u') && (bmode[1] == 's') && (bmode[2] == 'e') && (bmode[3] == ':')) // bump-map specified
-                    desc.m_spec->m_bump_name = bmode + 4;
+                    desc.m_spec->m_bump_name._set(bmode + 4);
 
                 desc.m_spec->m_use_steep_parallax = (bparallax[0] == 'y') && (bparallax[1] == 'e') && (bparallax[2] == 's');
             });
@@ -131,7 +133,7 @@ void CTextureDescrMngr::LoadLTX(LPCSTR initial)
 void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 {
     FS_FileSet flist;
-    FS.file_list(flist, initial, FS_ListFiles, "*.thm");
+    std::ignore = FS.file_list(flist, initial, FS_ListFiles, "*.thm");
 
     Msg("Count of .thm files in [%s]: [%zu]", initial, flist.size());
 
@@ -144,13 +146,14 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
     oneapi::tbb::spin_mutex lock;
     oneapi::tbb::parallel_for_each(flist, [&](auto it) {
         string_path fn;
-        FS.update_path(fn, initial, it.name.c_str());
+        std::ignore = FS.update_path(fn, initial, it.name.c_str());
         IReader* F = FS.r_open(fn);
         xr_strcpy(fn, it.name.c_str());
         fix_texture_thm_name(fn);
 
         R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
-        F->r_u32();
+        std::ignore = F->r_u32();
+
         STextureParams tp;
         tp.Load(*F, fn);
         FS.r_close(F);
@@ -255,7 +258,8 @@ shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
             return I->second.m_spec->m_bump_name;
         }
     }
-    return "";
+
+    return shared_str{""};
 }
 
 BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const

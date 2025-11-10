@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Helicopter.h"
+
 #include "level.h"
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
@@ -8,7 +9,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 
-SHeliMovementState::~SHeliMovementState() {}
+SHeliMovementState::~SHeliMovementState() = default;
 
 void SHeliMovementState::net_Destroy()
 {
@@ -82,7 +83,7 @@ void SHeliMovementState::reinit()
     currPatrolPath = nullptr;
     currPatrolVertex = nullptr;
     patrol_begin_idx = 0;
-    patrol_path_name = "";
+    patrol_path_name._set("");
     need_to_del_path = false;
     curLinearSpeed = 0.0f;
     curLinearAcc = 0.0f;
@@ -207,7 +208,7 @@ void SHeliMovementState::goPatrolByPatrolPath(LPCSTR path_name, int start_idx)
     }
 
     patrol_begin_idx = start_idx;
-    patrol_path_name = path_name;
+    patrol_path_name._set(path_name);
 
     currPatrolPath = ai().patrol_paths().safe_path(patrol_path_name, false, true);
     need_to_del_path = false;
@@ -344,9 +345,10 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
         CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
         xr_delete(tmp);
     }
+
     need_to_del_path = true;
     u32 pt_idx = 0;
-    CPatrolPath* pp = xr_new<CPatrolPath>("heli_round_path");
+    CPatrolPath* pp = xr_new<CPatrolPath>(shared_str{"heli_round_path"});
 
     float start_h = 0.0f;
     float end_h = PI_MUL_2 - EPS;
@@ -363,7 +365,7 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
     {
         string128 pt_name;
         sprintf_s(pt_name, "heli_round_path_pt_%d", pt_idx);
-        CPatrolPoint pt{pp, (*it).point, u32(-1), 0, pt_name};
+        CPatrolPoint pt{pp, (*it).point, u32(-1), 0, shared_str{pt_name}};
         pp->add_vertex(pt, pt_idx);
         if (pt_idx)
             pp->add_edge(pt_idx - 1, pt_idx, 1.f);

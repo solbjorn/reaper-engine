@@ -39,6 +39,25 @@
 #include "LevelDebugScript.h"
 #include "ui/UIStalkersRankingWnd.h"
 
+#include "ActorEffector.h"
+#include "actor_statistic_mgr.h"
+#include "ai/monsters/ai_monster_effector.h"
+#include "graph_engine.h"
+#include "postprocessanimator.h"
+#include "relation_registry.h"
+
+#include "UIGameCustom.h"
+#include "ui/UIInventoryWnd.h"
+#include "ui/UITradeWnd.h"
+#include "ui/UITalkWnd.h"
+#include "ui/UICarBodyWnd.h"
+#include "UIGameSP.h"
+#include "HUDManager.h"
+#include "HUDTarget.h"
+#include "InventoryBox.h"
+
+#include "../xr_3da/fdemorecord.h"
+
 static LPCSTR command_line() { return (Core.Params); }
 
 #ifdef DEBUG
@@ -107,7 +126,7 @@ static void set_weather(LPCSTR weather_name, bool forced)
     if (!g_pGamePersistent->Environment().USED_COP_WEATHER)
         forced = true;
 
-    g_pGamePersistent->Environment().SetWeather(weather_name, forced);
+    g_pGamePersistent->Environment().SetWeather(shared_str{weather_name}, forced);
 }
 
 static void set_weather_next(LPCSTR weather_name)
@@ -115,7 +134,7 @@ static void set_weather_next(LPCSTR weather_name)
     if (s_ScriptWeather)
         return;
 
-    g_pGamePersistent->Environment().SetWeatherNext(weather_name);
+    g_pGamePersistent->Environment().SetWeatherNext(shared_str{weather_name});
 }
 
 static bool set_weather_fx(LPCSTR weather_name)
@@ -123,7 +142,7 @@ static bool set_weather_fx(LPCSTR weather_name)
     if (s_ScriptWeather)
         return false;
 
-    return g_pGamePersistent->Environment().SetWeatherFX(weather_name);
+    return g_pGamePersistent->Environment().SetWeatherFX(shared_str{weather_name});
 }
 
 static bool start_weather_fx_from_time(LPCSTR weather_name, float time)
@@ -131,7 +150,7 @@ static bool start_weather_fx_from_time(LPCSTR weather_name, float time)
     if (s_ScriptWeather)
         return false;
 
-    return g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time);
+    return g_pGamePersistent->Environment().StartWeatherFXFromTime(shared_str{weather_name}, time);
 }
 
 static bool is_wfx_playing() { return (g_pGamePersistent->Environment().IsWFXPlaying()); }
@@ -236,56 +255,56 @@ static Fvector vertex_position(u32 level_vertex_id) { return (ai().level_graph()
 
 static void map_add_object_spot(u16 id, LPCSTR spot_type, LPCSTR text)
 {
-    CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type, id);
+    CMapLocation* ml = Level().MapManager().AddMapLocation(shared_str{spot_type}, id);
     if (xr_strlen(text))
-        ml->SetHint(text);
+        ml->SetHint(shared_str{text});
 }
 
 static void map_add_object_spot_ser(u16 id, LPCSTR spot_type, LPCSTR text)
 {
-    CMapLocation* ml = Level().MapManager().AddMapLocation(spot_type, id);
+    CMapLocation* ml = Level().MapManager().AddMapLocation(shared_str{spot_type}, id);
     if (xr_strlen(text))
-        ml->SetHint(text);
+        ml->SetHint(shared_str{text});
 
     ml->SetSerializable(true);
 }
-
-#include "graph_engine.h"
 
 static u16 map_add_user_spot(u8 level_id, Fvector position, LPCSTR spot_type, LPCSTR text)
 {
     shared_str level_name = ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
 
-    CMapLocation* ml = Level().MapManager().AddUserLocation(spot_type, level_name, position);
+    CMapLocation* ml = Level().MapManager().AddUserLocation(shared_str{spot_type}, level_name, position);
     if (xr_strlen(text))
-        ml->SetHint(text);
+        ml->SetHint(shared_str{text});
 
     return ml->ObjectID();
 }
 
 static void map_change_spot_hint(u16 id, LPCSTR spot_type, LPCSTR text)
 {
-    CMapLocation* ml = Level().MapManager().GetMapLocation(spot_type, id);
+    CMapLocation* ml = Level().MapManager().GetMapLocation(shared_str{spot_type}, id);
     if (!ml)
         return;
-    ml->SetHint(text);
+
+    ml->SetHint(shared_str{text});
 }
 
 static void map_change_spot_ser(u16 id, LPCSTR spot_type, BOOL v)
 {
-    CMapLocation* ml = Level().MapManager().GetMapLocation(spot_type, id);
+    CMapLocation* ml = Level().MapManager().GetMapLocation(shared_str{spot_type}, id);
     if (!ml)
         return;
+
     ml->SetSerializable(!!v);
 }
 
 static void prefetch_many_sounds(LPCSTR prefix) { Level().PrefetchManySoundsLater(prefix); }
 
-static void map_remove_object_spot(u16 id, LPCSTR spot_type) { Level().MapManager().RemoveMapLocation(spot_type, id); }
+static void map_remove_object_spot(u16 id, LPCSTR spot_type) { Level().MapManager().RemoveMapLocation(shared_str{spot_type}, id); }
 
-static u16 map_has_object_spot(u16 id, LPCSTR spot_type) { return Level().MapManager().HasMapLocation(spot_type, id); }
+static u16 map_has_object_spot(u16 id, LPCSTR spot_type) { return Level().MapManager().HasMapLocation(shared_str{spot_type}, id); }
 
-static bool patrol_path_exists(LPCSTR patrol_path) { return (!!ai().patrol_paths().path(patrol_path, true)); }
+static bool patrol_path_exists(LPCSTR patrol_path) { return (!!ai().patrol_paths().path(shared_str{patrol_path}, true)); }
 
 static LPCSTR get_name() { return (*Level().name()); }
 
@@ -300,16 +319,6 @@ static void add_dialog_to_render(CUIDialogWnd* pDialog) { HUD().GetUI()->AddDial
 static void remove_dialog_to_render(CUIDialogWnd* pDialog) { HUD().GetUI()->RemoveDialogToRender(pDialog); }
 
 static CUIDialogWnd* main_input_receiver() { return HUD().GetUI()->MainInputReceiver(); }
-
-#include "UIGameCustom.h"
-#include "ui/UIInventoryWnd.h"
-#include "ui/UITradeWnd.h"
-#include "ui/UITalkWnd.h"
-#include "ui/UICarBodyWnd.h"
-#include "UIGameSP.h"
-#include "HUDManager.h"
-#include "HUDTarget.h"
-#include "InventoryBox.h"
 
 static CUIWindow* GetInventoryWindow()
 {
@@ -566,7 +575,7 @@ static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function,
     {
         string_path fn, s;
         LPSTR S = (LPSTR)&s;
-        _GetItem(prefix, j, S);
+        std::ignore = _GetItem(prefix, j, S);
         if (FS.exist(fn, "$game_sounds$", S, ".ogg"))
             callback(prefix);
 
@@ -581,8 +590,6 @@ static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function,
 }
 
 static void iterate_sounds(LPCSTR prefix, u32 max_count, sol::function function) { iterate_sounds(prefix, max_count, function, sol::object{}); }
-
-#include "actoreffector.h"
 
 static float add_cam_effector(LPCSTR fn, int id, bool cyclic, LPCSTR cb_func)
 {
@@ -629,23 +636,18 @@ static void set_music_volume(float v)
     clamp(psSoundVMusicFactor, 0.0f, 1.0f);
 }
 
-#include "actor_statistic_mgr.h"
+static void add_actor_points(LPCSTR sect, LPCSTR detail_key, int cnt, int pts) { return Actor()->StatisticMgr().AddPoints(shared_str{sect}, shared_str{detail_key}, cnt, pts); }
 
-static void add_actor_points(LPCSTR sect, LPCSTR detail_key, int cnt, int pts) { return Actor()->StatisticMgr().AddPoints(sect, detail_key, cnt, pts); }
+static void add_actor_points_str(LPCSTR sect, LPCSTR detail_key, LPCSTR str_value)
+{
+    return Actor()->StatisticMgr().AddPoints(shared_str{sect}, shared_str{detail_key}, shared_str{str_value});
+}
 
-static void add_actor_points_str(LPCSTR sect, LPCSTR detail_key, LPCSTR str_value) { return Actor()->StatisticMgr().AddPoints(sect, detail_key, str_value); }
+static int get_actor_points(LPCSTR sect) { return Actor()->StatisticMgr().GetSectionPoints(shared_str{sect}); }
+static void remove_actor_points(LPCSTR sect, LPCSTR detail_key) { Actor()->StatisticMgr().RemovePoints(shared_str{sect}, shared_str{detail_key}); }
 
-static int get_actor_points(LPCSTR sect) { return Actor()->StatisticMgr().GetSectionPoints(sect); }
-
-static void remove_actor_points(LPCSTR sect, LPCSTR detail_key) { Actor()->StatisticMgr().RemovePoints(sect, detail_key); }
-
-#include "ActorEffector.h"
-
-static void add_complex_effector(LPCSTR section, int id) { AddEffector(Actor(), id, section); }
-
+static void add_complex_effector(LPCSTR section, int id) { AddEffector(Actor(), id, shared_str{section}); }
 static void remove_complex_effector(int id) { RemoveEffector(Actor(), id); }
-
-#include "postprocessanimator.h"
 
 static void add_pp_effector(LPCSTR fn, int id, bool cyclic)
 {
@@ -685,8 +687,6 @@ static bool has_pp_effector(int id)
     return !!pp;
 }
 
-#include "ai/monsters/ai_monster_effector.h"
-
 static void add_monster_cam_effector(float time, float amp, float periods, float power)
 {
     CActor* pA = smart_cast<CActor*>(Level().CurrentEntity());
@@ -695,12 +695,10 @@ static void add_monster_cam_effector(float time, float amp, float periods, float
         Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(time, amp, periods, power));
 }
 
-#include "relation_registry.h"
-
 static int g_community_goodwill(LPCSTR _community, int _entity_id)
 {
     CHARACTER_COMMUNITY c;
-    c.set(_community);
+    c.set(shared_str{_community});
 
     return RELATION_REGISTRY().GetCommunityGoodwill(c.index(), u16(_entity_id));
 }
@@ -708,14 +706,16 @@ static int g_community_goodwill(LPCSTR _community, int _entity_id)
 static void g_set_community_goodwill(LPCSTR _community, int _entity_id, int val)
 {
     CHARACTER_COMMUNITY c;
-    c.set(_community);
+    c.set(shared_str{_community});
+
     RELATION_REGISTRY().SetCommunityGoodwill(c.index(), u16(_entity_id), val);
 }
 
 static void g_change_community_goodwill(LPCSTR _community, int _entity_id, int val)
 {
     CHARACTER_COMMUNITY c;
-    c.set(_community);
+    c.set(shared_str{_community});
+
     RELATION_REGISTRY().ChangeCommunityGoodwill(c.index(), u16(_entity_id), val);
 }
 
@@ -920,11 +920,10 @@ static void iterate_vertices_border(Fvector P, float R, sol::function funct)
 static int get_character_community_team(LPCSTR comm)
 {
     CHARACTER_COMMUNITY community;
-    community.set(comm);
+    community.set(shared_str{comm});
+
     return community.team();
 }
-
-#include "../xr_3da/fdemorecord.h"
 
 static void demo_record_start()
 {
@@ -1155,5 +1154,5 @@ void CLevel::script_register(sol::state_view& lua)
     lua.new_enum("rq_target", "rqtNone", collide::rqtNone, "rqtObject", collide::rqtObject, "rqtStatic", collide::rqtStatic, "rqtShape", collide::rqtShape, "rqtObstacle",
                  collide::rqtObstacle, "rqtBoth", collide::rqtBoth, "rqtDyn", collide::rqtDyn);
 
-    lua.create_named_table("lib", "random_double_below", &xr::random_double_below, "random_s64", &xr::random_s64, "random_u64", &xr::random_u64);
+    lua.create_named_table("lib", "random_f64_below", &xr::random_f64_below, "random_s64", &xr::random_s64, "random_u64", &xr::random_u64);
 }

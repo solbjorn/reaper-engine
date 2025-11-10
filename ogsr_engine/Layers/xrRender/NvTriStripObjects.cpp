@@ -674,7 +674,7 @@ void NvStripifier::RemoveSmallStrips(NvStripInfoVec& allStrips, NvStripInfoVec& 
         return;
 
     bool* bVisitedList = xr_alloc<bool>(tempFaceList.size());
-    ZeroMemory(bVisitedList, tempFaceList.size() * sizeof(bool));
+    std::memset(bVisitedList, 0, tempFaceList.size() * sizeof(bool));
 
     VertexCache* vcache = xr_new<VertexCache>(cacheSize);
 

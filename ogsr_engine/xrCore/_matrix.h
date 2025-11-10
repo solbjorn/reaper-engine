@@ -34,8 +34,8 @@ XR_DIAG_POP();
 // NOTE_3: I,J,K,C equals to R,N,D,T
 // NOTE_4: The rotation sequence is ZXY
 
-template <class T>
-struct alignas(16) _matrix
+template <typename T>
+struct XR_TRIVIAL alignas(16) _matrix
 {
 public:
     typedef T TYPE;
@@ -65,56 +65,63 @@ public:
     };
 
     /* mm.r[0] */
-    constexpr inline T get_11() const
+    [[nodiscard]] constexpr T get_11() const
     {
         if (std::is_constant_evaluated())
             return cm._11;
         else
             return DirectX::XMVectorGetX(mm.r[0]);
     }
-    constexpr inline T get_12() const
+
+    [[nodiscard]] constexpr T get_12() const
     {
         if (std::is_constant_evaluated())
             return cm._12;
         else
             return DirectX::XMVectorGetY(mm.r[0]);
     }
-    constexpr inline T get_13() const
+
+    [[nodiscard]] constexpr T get_13() const
     {
         if (std::is_constant_evaluated())
             return cm._13;
         else
             return DirectX::XMVectorGetZ(mm.r[0]);
     }
-    constexpr inline T get_14() const
+
+    [[nodiscard]] constexpr T get_14() const
     {
         if (std::is_constant_evaluated())
             return cm._14;
         else
             return DirectX::XMVectorGetW(mm.r[0]);
     }
-    constexpr inline void set_11(T x)
+
+    constexpr void set_11(T x)
     {
         if (std::is_constant_evaluated())
             cm._11 = x;
         else
             mm.r[0] = DirectX::XMVectorSetX(mm.r[0], x);
     }
-    constexpr inline void set_12(T y)
+
+    constexpr void set_12(T y)
     {
         if (std::is_constant_evaluated())
             cm._12 = y;
         else
             mm.r[0] = DirectX::XMVectorSetY(mm.r[0], y);
     }
-    constexpr inline void set_13(T z)
+
+    constexpr void set_13(T z)
     {
         if (std::is_constant_evaluated())
             cm._13 = z;
         else
             mm.r[0] = DirectX::XMVectorSetZ(mm.r[0], z);
     }
-    constexpr inline void set_14(T w)
+
+    constexpr void set_14(T w)
     {
         if (std::is_constant_evaluated())
             cm._14 = w;
@@ -123,56 +130,63 @@ public:
     }
 
     /* mm.r[1] */
-    constexpr inline T get_21() const
+    [[nodiscard]] constexpr T get_21() const
     {
         if (std::is_constant_evaluated())
             return cm._21;
         else
             return DirectX::XMVectorGetX(mm.r[1]);
     }
-    constexpr inline T get_22() const
+
+    [[nodiscard]] constexpr T get_22() const
     {
         if (std::is_constant_evaluated())
             return cm._22;
         else
             return DirectX::XMVectorGetY(mm.r[1]);
     }
-    constexpr inline T get_23() const
+
+    [[nodiscard]] constexpr T get_23() const
     {
         if (std::is_constant_evaluated())
             return cm._23;
         else
             return DirectX::XMVectorGetZ(mm.r[1]);
     }
-    constexpr inline T get_24() const
+
+    [[nodiscard]] constexpr T get_24() const
     {
         if (std::is_constant_evaluated())
             return cm._24;
         else
             return DirectX::XMVectorGetW(mm.r[1]);
     }
-    constexpr inline void set_21(T x)
+
+    constexpr void set_21(T x)
     {
         if (std::is_constant_evaluated())
             cm._21 = x;
         else
             mm.r[1] = DirectX::XMVectorSetX(mm.r[1], x);
     }
-    constexpr inline void set_22(T y)
+
+    constexpr void set_22(T y)
     {
         if (std::is_constant_evaluated())
             cm._22 = y;
         else
             mm.r[1] = DirectX::XMVectorSetY(mm.r[1], y);
     }
-    constexpr inline void set_23(T z)
+
+    constexpr void set_23(T z)
     {
         if (std::is_constant_evaluated())
             cm._23 = z;
         else
             mm.r[1] = DirectX::XMVectorSetZ(mm.r[1], z);
     }
-    constexpr inline void set_24(T w)
+
+    constexpr void set_24(T w)
     {
         if (std::is_constant_evaluated())
             cm._24 = w;
@@ -181,56 +195,63 @@ public:
     }
 
     /* mm.r[2] */
-    constexpr inline T get_31() const
+    [[nodiscard]] constexpr T get_31() const
     {
         if (std::is_constant_evaluated())
             return cm._31;
         else
             return DirectX::XMVectorGetX(mm.r[2]);
     }
-    constexpr inline T get_32() const
+
+    [[nodiscard]] constexpr T get_32() const
     {
         if (std::is_constant_evaluated())
             return cm._32;
         else
             return DirectX::XMVectorGetY(mm.r[2]);
     }
-    constexpr inline T get_33() const
+
+    [[nodiscard]] constexpr T get_33() const
     {
         if (std::is_constant_evaluated())
             return cm._33;
         else
             return DirectX::XMVectorGetZ(mm.r[2]);
     }
-    constexpr inline T get_34() const
+
+    [[nodiscard]] constexpr T get_34() const
     {
         if (std::is_constant_evaluated())
             return cm._34;
         else
             return DirectX::XMVectorGetW(mm.r[2]);
     }
-    constexpr inline void set_31(T x)
+
+    constexpr void set_31(T x)
     {
         if (std::is_constant_evaluated())
             cm._31 = x;
         else
             mm.r[2] = DirectX::XMVectorSetX(mm.r[2], x);
     }
-    constexpr inline void set_32(T y)
+
+    constexpr void set_32(T y)
     {
         if (std::is_constant_evaluated())
             cm._32 = y;
         else
             mm.r[2] = DirectX::XMVectorSetY(mm.r[2], y);
     }
-    constexpr inline void set_33(T z)
+
+    constexpr void set_33(T z)
     {
         if (std::is_constant_evaluated())
             cm._33 = z;
         else
             mm.r[2] = DirectX::XMVectorSetZ(mm.r[2], z);
     }
-    constexpr inline void set_34(T w)
+
+    constexpr void set_34(T w)
     {
         if (std::is_constant_evaluated())
             cm._34 = w;
@@ -239,56 +260,63 @@ public:
     }
 
     /* mm.r[3] */
-    constexpr inline T get_41() const
+    [[nodiscard]] constexpr T get_41() const
     {
         if (std::is_constant_evaluated())
             return cm._41;
         else
             return DirectX::XMVectorGetX(mm.r[3]);
     }
-    constexpr inline T get_42() const
+
+    [[nodiscard]] constexpr T get_42() const
     {
         if (std::is_constant_evaluated())
             return cm._42;
         else
             return DirectX::XMVectorGetY(mm.r[3]);
     }
-    constexpr inline T get_43() const
+
+    [[nodiscard]] constexpr T get_43() const
     {
         if (std::is_constant_evaluated())
             return cm._43;
         else
             return DirectX::XMVectorGetZ(mm.r[3]);
     }
-    constexpr inline T get_44() const
+
+    [[nodiscard]] constexpr T get_44() const
     {
         if (std::is_constant_evaluated())
             return cm._44;
         else
             return DirectX::XMVectorGetW(mm.r[3]);
     }
-    constexpr inline void set_41(T x)
+
+    constexpr void set_41(T x)
     {
         if (std::is_constant_evaluated())
             cm._41 = x;
         else
             mm.r[3] = DirectX::XMVectorSetX(mm.r[3], x);
     }
-    constexpr inline void set_42(T y)
+
+    constexpr void set_42(T y)
     {
         if (std::is_constant_evaluated())
             cm._42 = y;
         else
             mm.r[3] = DirectX::XMVectorSetY(mm.r[3], y);
     }
-    constexpr inline void set_43(T z)
+
+    constexpr void set_43(T z)
     {
         if (std::is_constant_evaluated())
             cm._43 = z;
         else
             mm.r[3] = DirectX::XMVectorSetZ(mm.r[3], z);
     }
-    constexpr inline void set_44(T w)
+
+    constexpr void set_44(T w)
     {
         if (std::is_constant_evaluated())
             cm._44 = w;
@@ -313,9 +341,9 @@ public:
     __declspec(property(get = get_43, put = set_43)) T _43;
     __declspec(property(get = get_44, put = set_44)) T _44;
 
-    constexpr inline _matrix() noexcept = default;
+    constexpr _matrix() noexcept = default;
 
-    constexpr inline _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15) noexcept
+    constexpr explicit _matrix(T a0, T a1, T a2, T a3, T a4, T a5, T a6, T a7, T a8, T a9, T a10, T a11, T a12, T a13, T a14, T a15) noexcept
     {
         if (std::is_constant_evaluated())
             cm = DirectX::XMFLOAT4X4A(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
@@ -323,23 +351,24 @@ public:
             mm = DirectX::XMMatrixSet(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15);
     }
 
-    constexpr inline _matrix(const Self& a) noexcept { set(a); }
-    constexpr _matrix(Self&& that) noexcept { *this = std::move(that); }
+    constexpr _matrix(const Self& that) noexcept { set(that); }
 
-    constexpr inline SelfRef operator=(const Self& a) noexcept { return set(a); }
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _matrix(Self&&) noexcept = default;
+#else
+    constexpr _matrix(Self&& that) noexcept { set(that); }
+#endif
 
-    constexpr Self& operator=(Self&& that) noexcept
-    {
-        if (std::is_constant_evaluated())
-            this->cm = std::move(that.cm);
-        else
-            this->mm = std::move(that.mm);
+    constexpr SelfRef operator=(const Self& that) noexcept { return set(that); }
 
-        return *this;
-    }
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr SelfRef operator=(Self&&) noexcept = default;
+#else
+    constexpr SelfRef operator=(Self&& that) noexcept { return set(that); }
+#endif
 
     // Class members
-    constexpr inline SelfRef set(const Self& a)
+    constexpr SelfRef set(const Self& a)
     {
         xr_memcpy16(&vm[0], &a.vm[0]);
         xr_memcpy16(&vm[1], &a.vm[1]);
@@ -348,7 +377,8 @@ public:
 
         return *this;
     }
-    constexpr ICF SelfRef set(const Tvector& R, const Tvector& N, const Tvector& D, const Tvector& C)
+
+    constexpr SelfRef set(const Tvector& R, const Tvector& N, const Tvector& D, const Tvector& C)
     {
         if (std::is_constant_evaluated())
         {
@@ -370,16 +400,18 @@ public:
 
         return *this;
     }
-    constexpr ICF SelfRef identity(void)
+
+    constexpr SelfRef identity()
     {
         mm = DirectX::XMMatrixIdentity();
         return *this;
     }
-    constexpr inline SelfRef rotation(const _quaternion<T>& Q);
-    constexpr ICF SelfRef mk_xform(const _quaternion<T>& Q, const Tvector& V);
+
+    constexpr SelfRef rotation(const _quaternion<T>& Q);
+    constexpr SelfRef mk_xform(const _quaternion<T>& Q, const Tvector& V);
 
     // Multiply RES = A[4x4]*B[4x4] (WITH projection)
-    constexpr ICF SelfRef mul(const Self& A, const Self& B)
+    constexpr SelfRef mul(const Self& A, const Self& B)
     {
         VERIFY((this != &A) && (this != &B));
 
@@ -406,15 +438,18 @@ public:
             _44 = A._14 * B._41 + A._24 * B._42 + A._34 * B._43 + A._44 * B._44;
         }
         else
+        {
             mm = DirectX::XMMatrixMultiply(B.mm, A.mm);
+        }
 
         return *this;
     }
 
     // Multiply RES = A[4x3]*B[4x3] (no projection), faster than ordinary multiply
-    constexpr ICF SelfRef mul_43(const Self& A, const Self& B)
+    constexpr SelfRef mul_43(const Self& A, const Self& B)
     {
         VERIFY((this != &A) && (this != &B));
+
         _11 = A._11 * B._11 + A._21 * B._12 + A._31 * B._13;
         _12 = A._12 * B._11 + A._22 * B._12 + A._32 * B._13;
         _13 = A._13 * B._11 + A._23 * B._12 + A._33 * B._13;
@@ -434,38 +469,45 @@ public:
         _42 = A._12 * B._41 + A._22 * B._42 + A._32 * B._43 + A._42;
         _43 = A._13 * B._41 + A._23 * B._42 + A._33 * B._43 + A._43;
         _44 = 1;
+
         return *this;
     }
-    constexpr inline SelfRef mulA_44(const Self& A) // mul after
+
+    constexpr SelfRef mulA_44(const Self& A) // mul after
     {
         Self B;
         B.set(*this);
         mul(A, B);
         return *this;
     }
-    constexpr inline SelfRef mulB_44(const Self& B) // mul before
+
+    constexpr SelfRef mulB_44(const Self& B) // mul before
     {
         Self A;
         A.set(*this);
         mul(A, B);
         return *this;
     }
-    constexpr ICF SelfRef mulA_43(const Self& A) // mul after (no projection)
+
+    constexpr SelfRef mulA_43(const Self& A) // mul after (no projection)
     {
         Self B;
         B.set(*this);
         mul_43(A, B);
         return *this;
     }
-    constexpr ICF SelfRef mulB_43(const Self& B) // mul before (no projection)
+
+    constexpr SelfRef mulB_43(const Self& B) // mul before (no projection)
     {
         Self A;
         A.set(*this);
         mul_43(A, B);
         return *this;
     }
-    constexpr inline SelfRef invert(const Self& a)
-    { // important: this is 4x3 invert, not the 4x4 one
+
+    constexpr SelfRef invert(const Self& a)
+    {
+        // important: this is 4x3 invert, not the 4x4 one
         // faster than self-invert
         T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
 
@@ -491,16 +533,18 @@ public:
         _42 = -(a._41 * _12 + a._42 * _22 + a._43 * _32);
         _43 = -(a._41 * _13 + a._42 * _23 + a._43 * _33);
         _44 = 1.0f;
+
         return *this;
     }
 
-    constexpr inline bool invert_b(const Self& a)
-    { // important: this is 4x3 invert, not the 4x4 one
+    [[nodiscard]] constexpr bool invert_b(const Self& a)
+    {
+        // important: this is 4x3 invert, not the 4x4 one
         // faster than self-invert
         T fDetInv = (a._11 * (a._22 * a._33 - a._23 * a._32) - a._12 * (a._21 * a._33 - a._23 * a._31) + a._13 * (a._21 * a._32 - a._22 * a._31));
-
         if (_abs(fDetInv) <= flt_zero)
             return false;
+
         fDetInv = 1.0f / fDetInv;
 
         _11 = fDetInv * (a._22 * a._33 - a._23 * a._32);
@@ -522,10 +566,11 @@ public:
         _42 = -(a._41 * _12 + a._42 * _22 + a._43 * _32);
         _43 = -(a._41 * _13 + a._42 * _23 + a._43 * _33);
         _44 = 1.0f;
+
         return true;
     }
 
-    constexpr inline SelfRef invert() // slower than invert other matrix
+    constexpr SelfRef invert() // slower than invert other matrix
     {
         Self a;
         a.set(*this);
@@ -534,7 +579,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef invert_44(const Self& a)
+    constexpr SelfRef invert_44(const Self& a)
     {
         if (std::is_constant_evaluated())
         {
@@ -588,12 +633,14 @@ public:
             _44 = detInv * (a11 * (a22 * a33 - a32 * a23) - a21 * (a12 * a33 - a32 * a13) + a31 * (a12 * a23 - a22 * a13));
         }
         else
+        {
             mm = DirectX::XMMatrixInverse(nullptr, a.mm);
+        }
 
         return *this;
     }
 
-    constexpr inline SelfRef transpose(const Self& matSource) // faster version of transpose
+    constexpr SelfRef transpose(const Self& matSource) // faster version of transpose
     {
         if (std::is_constant_evaluated())
         {
@@ -615,11 +662,14 @@ public:
             _44 = matSource._44;
         }
         else
+        {
             mm = DirectX::XMMatrixTranspose(matSource.mm);
+        }
 
         return *this;
     }
-    constexpr inline SelfRef transpose() // self transpose - slower
+
+    constexpr SelfRef transpose() // self transpose - slower
     {
         if (std::is_constant_evaluated())
         {
@@ -628,11 +678,14 @@ public:
             transpose(a);
         }
         else
+        {
             mm = DirectX::XMMatrixTranspose(mm);
+        }
 
         return *this;
     }
-    constexpr inline SelfRef translate(const Tvector& Loc) // setup translation matrix
+
+    constexpr SelfRef translate(const Tvector& Loc) // setup translation matrix
     {
         mm.r[0] = DirectX::g_XMIdentityR0.v;
         mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -641,7 +694,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef translate(T _x, T _y, T _z) // setup translation matrix
+
+    constexpr SelfRef translate(T _x, T _y, T _z) // setup translation matrix
     {
         mm.r[0] = DirectX::g_XMIdentityR0.v;
         mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -650,36 +704,41 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef translate_over(const Tvector& Loc) // modify only translation
+
+    constexpr SelfRef translate_over(const Tvector& Loc) // modify only translation
     {
         vm[3].set(Loc, vm[3].w);
         return *this;
     }
-    constexpr inline SelfRef translate_over(T _x, T _y, T _z) // modify only translation
+
+    constexpr SelfRef translate_over(T _x, T _y, T _z) // modify only translation
     {
         vm[3].set(_x, _y, _z, vm[3].w);
         return *this;
     }
-    constexpr inline SelfRef translate_add(const Tvector& Loc) // combine translation
+
+    constexpr SelfRef translate_add(const Tvector& Loc) // combine translation
     {
         DirectX::XMVECTOR vec = DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&Loc));
-
         mm.r[3] = DirectX::XMVectorAdd(mm.r[3], vec);
 
         return *this;
     }
-    constexpr inline SelfRef translate_add(T x, T y, T z) { return translate_add(Tvector(x, y, z)); }
-    constexpr inline SelfRef scale(T x, T y, T z) // setup scale matrix
+
+    constexpr SelfRef translate_add(T x, T y, T z) { return translate_add(Tvector(x, y, z)); }
+
+    constexpr SelfRef scale(T x, T y, T z) // setup scale matrix
     {
         mm = DirectX::XMMatrixScaling(x, y, z);
         return *this;
     }
-    constexpr inline SelfRef scale(const Tvector& v) // setup scale matrix
+
+    constexpr SelfRef scale(const Tvector& v) // setup scale matrix
     {
         return scale(v.x, v.y, v.z);
     }
 
-    constexpr inline SelfRef rotateX(T Angle) // rotation about X axis
+    constexpr SelfRef rotateX(T Angle) // rotation about X axis
     {
         if (std::is_constant_evaluated())
         {
@@ -692,11 +751,14 @@ public:
             mm.r[3] = DirectX::g_XMIdentityR3.v;
         }
         else
+        {
             mm = DirectX::XMMatrixRotationX(Angle);
+        }
 
         return *this;
     }
-    constexpr inline SelfRef rotateY(T Angle) // rotation about Y axis
+
+    constexpr SelfRef rotateY(T Angle) // rotation about Y axis
     {
         if (std::is_constant_evaluated())
         {
@@ -709,11 +771,14 @@ public:
             mm.r[3] = DirectX::g_XMIdentityR3.v;
         }
         else
+        {
             mm = DirectX::XMMatrixRotationY(Angle);
+        }
 
         return *this;
     }
-    constexpr inline SelfRef rotateZ(T Angle) // rotation about Z axis
+
+    constexpr SelfRef rotateZ(T Angle) // rotation about Z axis
     {
         if (std::is_constant_evaluated())
         {
@@ -726,12 +791,14 @@ public:
             mm.r[3] = DirectX::g_XMIdentityR3.v;
         }
         else
+        {
             mm = DirectX::XMMatrixRotationZ(Angle);
+        }
 
         return *this;
     }
 
-    constexpr inline SelfRef rotation(const Tvector& vdir, const Tvector& vnorm)
+    constexpr SelfRef rotation(const Tvector& vdir, const Tvector& vnorm)
     {
         Tvector vright;
         vright.crossproduct(vnorm, vdir).normalize();
@@ -744,12 +811,13 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef mapXYZ()
+    constexpr SelfRef mapXYZ()
     {
         identity();
         return *this;
     }
-    constexpr inline SelfRef mapXZY()
+
+    constexpr SelfRef mapXZY()
     {
         mm.r[0] = DirectX::g_XMIdentityR0.v;
         mm.r[1] = DirectX::g_XMIdentityR2.v;
@@ -758,7 +826,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mapYXZ()
+
+    constexpr SelfRef mapYXZ()
     {
         mm.r[0] = DirectX::g_XMIdentityR1.v;
         mm.r[1] = DirectX::g_XMIdentityR0.v;
@@ -767,7 +836,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mapYZX()
+
+    constexpr SelfRef mapYZX()
     {
         mm.r[0] = DirectX::g_XMIdentityR1.v;
         mm.r[1] = DirectX::g_XMIdentityR2.v;
@@ -776,7 +846,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mapZXY()
+
+    constexpr SelfRef mapZXY()
     {
         mm.r[0] = DirectX::g_XMIdentityR2.v;
         mm.r[1] = DirectX::g_XMIdentityR0.v;
@@ -785,7 +856,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mapZYX()
+
+    constexpr SelfRef mapZYX()
     {
         mm.r[0] = DirectX::g_XMIdentityR2.v;
         mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -795,7 +867,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef rotation(const Tvector& axis, T Angle)
+    constexpr SelfRef rotation(const Tvector& axis, T Angle)
     {
         T Sine, Cosine;
 
@@ -810,7 +882,7 @@ public:
     }
 
     // mirror X
-    constexpr inline SelfRef mirrorX()
+    constexpr SelfRef mirrorX()
     {
         mm.r[0] = DirectX::g_XMNegIdentityR0.v;
         mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -819,19 +891,21 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mirrorX_over()
+
+    constexpr SelfRef mirrorX_over()
     {
         vm[0].x = -1;
         return *this;
     }
-    constexpr inline SelfRef mirrorX_add()
+
+    constexpr SelfRef mirrorX_add()
     {
         vm[0].x *= -1;
         return *this;
     }
 
     // mirror Y
-    constexpr inline SelfRef mirrorY()
+    constexpr SelfRef mirrorY()
     {
         mm.r[0] = DirectX::g_XMIdentityR0.v;
         mm.r[1] = DirectX::g_XMNegIdentityR1.v;
@@ -840,19 +914,21 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mirrorY_over()
+
+    constexpr SelfRef mirrorY_over()
     {
         vm[1].y = -1;
         return *this;
     }
-    constexpr inline SelfRef mirrorY_add()
+
+    constexpr SelfRef mirrorY_add()
     {
         vm[1].y *= -1;
         return *this;
     }
 
     // mirror Z
-    constexpr inline SelfRef mirrorZ()
+    constexpr SelfRef mirrorZ()
     {
         mm.r[0] = DirectX::g_XMIdentityR0.v;
         mm.r[1] = DirectX::g_XMIdentityR1.v;
@@ -861,17 +937,20 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mirrorZ_over()
+
+    constexpr SelfRef mirrorZ_over()
     {
         vm[2].z = -1;
         return *this;
     }
-    constexpr inline SelfRef mirrorZ_add()
+
+    constexpr SelfRef mirrorZ_add()
     {
         vm[2].z *= -1;
         return *this;
     }
-    constexpr inline SelfRef mul(const Self& A, T v)
+
+    constexpr SelfRef mul(const Self& A, T v)
     {
         vm[0].mul(A.vm[0], v);
         vm[1].mul(A.vm[1], v);
@@ -880,7 +959,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef mul(T v)
+
+    constexpr SelfRef mul(T v)
     {
         vm[0].mul(v);
         vm[1].mul(v);
@@ -889,7 +969,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef div(const Self& A, T v)
+
+    constexpr SelfRef div(const Self& A, T v)
     {
         VERIFY(_abs(v) > 0.000001f);
 
@@ -900,7 +981,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef div(T v)
+
+    constexpr SelfRef div(T v)
     {
         VERIFY(_abs(v) > 0.000001f);
 
@@ -911,10 +993,12 @@ public:
 
         return *this;
     }
+
     // fov
-    constexpr inline SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane) { return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane); }
+    constexpr SelfRef build_projection(T fFOV, T fAspect, T fNearPlane, T fFarPlane) { return build_projection_HAT(tanf(fFOV / 2.f), fAspect, fNearPlane, fFarPlane); }
+
     // half_fov-angle-tangent
-    constexpr inline SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
+    constexpr SelfRef build_projection_HAT(T HAT, T fAspect, T fNearPlane, T fFarPlane)
     {
         VERIFY(_abs(fFarPlane - fNearPlane) > EPS_S);
         VERIFY(_abs(HAT) > EPS_S);
@@ -931,7 +1015,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef build_projection_ortho(T w, T h, T zn, T zf)
+
+    constexpr SelfRef build_projection_ortho(T w, T h, T zn, T zf)
     {
         vm[0].set(T(2) / w, 0, 0, 0);
         vm[1].set(0, T(2) / h, 0, 0);
@@ -940,7 +1025,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef build_camera(const Tvector& vFrom, const Tvector& vAt, const Tvector& vWorldUp)
+
+    constexpr SelfRef build_camera(const Tvector& vFrom, const Tvector& vAt, const Tvector& vWorldUp)
     {
         // Get the z basis vector3, which points straight ahead. This is the
         // difference from the eyepoint to the lookat point.
@@ -970,7 +1056,8 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef build_camera_dir(const Tvector& vFrom, const Tvector& vView, const Tvector& vWorldUp)
+
+    constexpr SelfRef build_camera_dir(const Tvector& vFrom, const Tvector& vView, const Tvector& vWorldUp)
     {
         // Get the dot product, and calculate the projection of the z basis
         // vector3 onto the up vector3. The projection is the y basis vector3.
@@ -996,7 +1083,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef inertion(const Self& mat, T v)
+    constexpr SelfRef inertion(const Self& mat, T v)
     {
         vm[0].lerp(mat.vm[0], vm[0], v);
         vm[1].lerp(mat.vm[1], vm[1], v);
@@ -1005,37 +1092,43 @@ public:
 
         return *this;
     }
-    constexpr ICF void transform_tiny(Tvector& dest, const Tvector& v) const // preferred to use
+
+    constexpr void transform_tiny(Tvector& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
         dest.z = v.x * _13 + v.y * _23 + v.z * _33 + _43;
     }
-    constexpr ICF void transform_tiny32(Fvector2& dest, const Tvector& v) const // preferred to use
+
+    constexpr void transform_tiny32(Fvector2& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + _41;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32 + _42;
     }
-    constexpr ICF void transform_tiny23(Tvector& dest, const Fvector2& v) const // preferred to use
+
+    constexpr void transform_tiny23(Tvector& dest, const Fvector2& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + _41;
         dest.y = v.x * _12 + v.y * _22 + _42;
         dest.z = v.x * _13 + v.y * _23 + _43;
     }
-    constexpr ICF void transform_dir(Tvector& dest, const Tvector& v) const // preferred to use
+
+    constexpr void transform_dir(Tvector& dest, const Tvector& v) const // preferred to use
     {
         dest.x = v.x * _11 + v.y * _21 + v.z * _31;
         dest.y = v.x * _12 + v.y * _22 + v.z * _32;
         dest.z = v.x * _13 + v.y * _23 + v.z * _33;
     }
-    constexpr inline void transform(Fvector4& dest, const Tvector& v) const // preferred to use
+
+    constexpr void transform(Fvector4& dest, const Tvector& v) const // preferred to use
     {
         dest.w = v.x * _14 + v.y * _24 + v.z * _34 + _44;
         dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) / dest.w;
         dest.y = (v.x * _12 + v.y * _22 + v.z * _32 + _42) / dest.w;
         dest.z = (v.x * _13 + v.y * _23 + v.z * _33 + _43) / dest.w;
     }
-    constexpr inline void transform(Tvector& dest, const Tvector& v) const // preferred to use
+
+    constexpr void transform(Tvector& dest, const Tvector& v) const // preferred to use
     {
         T iw = 1.f / (v.x * _14 + v.y * _24 + v.z * _34 + _44);
         dest.x = (v.x * _11 + v.y * _21 + v.z * _31 + _41) * iw;
@@ -1043,7 +1136,7 @@ public:
         dest.z = (v.x * _13 + v.y * _23 + v.z * _33 + _43) * iw;
     }
 
-    constexpr inline void transform(Fvector4& dest, const Fvector4& v) const // preferred to use
+    constexpr void transform(Fvector4& dest, const Fvector4& v) const // preferred to use
     {
         dest.w = v.x * _14 + v.y * _24 + v.z * _34 + v.w * _44;
         dest.x = v.x * _11 + v.y * _21 + v.z * _31 + v.w * _41;
@@ -1051,25 +1144,28 @@ public:
         dest.z = v.x * _13 + v.y * _23 + v.z * _33 + v.w * _43;
     }
 
-    constexpr ICF void transform_tiny(Tvector& v) const
+    constexpr void transform_tiny(Tvector& v) const
     {
         Tvector res;
         transform_tiny(res, v);
         v.set(res);
     }
-    constexpr inline void transform(Tvector& v) const
+
+    constexpr void transform(Tvector& v) const
     {
         Tvector res;
         transform(res, v);
         v.set(res);
     }
-    constexpr ICF void transform_dir(Tvector& v) const
+
+    constexpr void transform_dir(Tvector& v) const
     {
         Tvector res;
         transform_dir(res, v);
         v.set(res);
     }
-    constexpr ICF SelfRef setHPB(T h, T p, T b)
+
+    constexpr SelfRef setHPB(T h, T p, T b)
     {
         T _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
 
@@ -1089,54 +1185,60 @@ public:
 
         return *this;
     }
-    constexpr inline SelfRef setHPB(Tvector const& hpb) { return setHPB(hpb.x, hpb.y, hpb.z); }
-    constexpr inline SelfRef setXYZ(T x, T y, T z) { return setHPB(y, x, z); }
-    constexpr inline SelfRef setXYZ(Tvector const& xyz) { return setHPB(xyz.y, xyz.x, xyz.z); }
-    constexpr inline SelfRef setXYZi(T x, T y, T z) { return setHPB(-y, -x, -z); }
-    constexpr inline SelfRef setXYZi(Tvector const& xyz) { return setHPB(-xyz.y, -xyz.x, -xyz.z); }
+
+    constexpr SelfRef setHPB(Tvector const& hpb) { return setHPB(hpb.x, hpb.y, hpb.z); }
+    constexpr SelfRef setXYZ(T x, T y, T z) { return setHPB(y, x, z); }
+    constexpr SelfRef setXYZ(Tvector const& xyz) { return setHPB(xyz.y, xyz.x, xyz.z); }
+    constexpr SelfRef setXYZi(T x, T y, T z) { return setHPB(-y, -x, -z); }
+    constexpr SelfRef setXYZi(Tvector const& xyz) { return setHPB(-xyz.y, -xyz.x, -xyz.z); }
+
     //
-    constexpr inline void getHPB(T& h, T& p, T& b) const
+    constexpr void getHPB(T& h, T& p, T& b) const
     {
         T cy = _sqrt(vm[1].y * vm[1].y + vm[0].y * vm[0].y);
         if (cy > 16.0f * type_epsilon(T))
         {
-            h = (T)-atan2(vm[2].x, vm[2].z);
-            p = (T)-atan2(-vm[2].y, cy);
-            b = (T)-atan2(vm[0].y, vm[1].y);
+            h = -std::atan2(vm[2].x, vm[2].z);
+            p = -std::atan2(-vm[2].y, cy);
+            b = -std::atan2(vm[0].y, vm[1].y);
         }
         else
         {
-            h = (T)-atan2(-vm[0].z, vm[0].x);
-            p = (T)-atan2(-vm[2].y, cy);
-            b = 0;
+            h = -std::atan2(-vm[0].z, vm[0].x);
+            p = -std::atan2(-vm[2].y, cy);
+            b = 0.0f;
         }
     }
-    constexpr inline void getHPB(Tvector& hpb) const { getHPB(hpb.x, hpb.y, hpb.z); }
-    constexpr inline void getXYZ(T& x, T& y, T& z) const { getHPB(y, x, z); }
-    constexpr inline void getXYZ(Tvector& xyz) const { getXYZ(xyz.x, xyz.y, xyz.z); }
-    constexpr inline void getXYZi(T& x, T& y, T& z) const
+
+    constexpr void getHPB(Tvector& hpb) const { getHPB(hpb.x, hpb.y, hpb.z); }
+    constexpr void getXYZ(T& x, T& y, T& z) const { getHPB(y, x, z); }
+    constexpr void getXYZ(Tvector& xyz) const { getXYZ(xyz.x, xyz.y, xyz.z); }
+
+    constexpr void getXYZi(T& x, T& y, T& z) const
     {
         getHPB(y, x, z);
         x *= -1.f;
         y *= -1.f;
         z *= -1.f;
     }
-    constexpr inline void getXYZi(Tvector& xyz) const
+
+    constexpr void getXYZi(Tvector& xyz) const
     {
         getXYZ(xyz.x, xyz.y, xyz.z);
         xyz.mul(-1.f);
     }
 };
 
-typedef _matrix<float> Fmatrix;
+using Fmatrix = _matrix<f32>;
 static_assert(sizeof(Fmatrix) == 64);
+XR_TRIVIAL_ASSERT(Fmatrix);
 
-template <class T>
-BOOL _valid(const _matrix<T>& m)
+template <typename T>
+[[nodiscard]] bool _valid(const _matrix<T>& m)
 {
     return _valid(m.i) && _valid(m._14) && _valid(m.j) && _valid(m._24) && _valid(m.k) && _valid(m._34) && _valid(m.c) && _valid(m._44);
 }
 
-extern Fmatrix Fidentity;
+extern const Fmatrix Fidentity;
 
 #endif /* __XR_CORE_MATRIX_H */

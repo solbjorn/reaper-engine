@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "EngineAPI.h"
+
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
 
@@ -40,7 +41,10 @@ void CEngineAPI::Destroy()
     if (vid_quality_token)
     {
         for (int i = 0; vid_quality_token[i].name; i++)
-            xr_free(vid_quality_token[i].name);
+        {
+            gsl::zstring name = const_cast<gsl::zstring>(vid_quality_token[i].name);
+            xr_free(name);
+        }
 
         xr_free(vid_quality_token);
         vid_quality_token = nullptr;

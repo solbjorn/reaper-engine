@@ -55,6 +55,7 @@ protected:
 public:
     CObjectFactory();
     virtual ~CObjectFactory();
+
     void init();
     IC CLIENT_BASE_CLASS* client_object(const CLASS_ID& clsid) const;
     IC SERVER_BASE_CLASS* server_object(const CLASS_ID& clsid, LPCSTR section) const;

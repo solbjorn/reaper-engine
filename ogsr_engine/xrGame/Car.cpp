@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
+#include "car.h"
+
 #include "ParticlesObject.h"
 #include "Physics.h"
 
 #include "hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
 #include "hudmanager.h"
 #include "cameralook.h"
 #include "camerafirsteye.h"
@@ -61,7 +62,7 @@ CCar::CCar()
     ///////////////////////////////
     //////////////////////////////
     /////////////////////////////
-    m_exhaust_particles = "vehiclefx\\exhaust_1";
+    m_exhaust_particles._set("vehiclefx\\exhaust_1");
     m_car_sound = xr_new<SCarSound>(this);
 
     // у машины слотов в инвентаре нет
@@ -763,10 +764,9 @@ void CCar::ParseDefinitions()
     m_rpm_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_decrement_factor", m_rpm_increment_factor);
     m_power_neutral_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_neutral_factor", m_power_neutral_factor);
     R_ASSERT2(m_power_neutral_factor > 0.1f && m_power_neutral_factor < 1.f, "power_neutral_factor must be 0 - 1 !!");
+
     if (ini->line_exist("car_definition", "exhaust_particles"))
-    {
-        m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
-    }
+        m_exhaust_particles._set(ini->r_string("car_definition", "exhaust_particles"));
 
     b_auto_switch_transmission = !!ini->r_bool("car_definition", "auto_transmission");
 
@@ -806,20 +806,16 @@ void CCar::ParseDefinitions()
     m_fuel_consumption = ini->r_float("car_definition", "fuel_consumption");
     m_fuel_consumption /= 100000.f;
     if (ini->line_exist("car_definition", "exhaust_particles"))
-        m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
+        m_exhaust_particles._set(ini->r_string("car_definition", "exhaust_particles"));
     ///////////////////////////////lights///////////////////////////////////////////////////
     m_lights.Init(this);
     m_lights.ParseDefinitions();
 
     if (ini->section_exist("animations"))
-    {
         m_driver_anim_type = ini->r_u16("animations", "driver_animation_type");
-    }
 
     if (ini->section_exist("doors"))
-    {
         m_doors_torque_factor = ini->r_u16("doors", "open_torque_factor");
-    }
 
     m_damage_particles.Init(this);
 }
@@ -832,7 +828,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
     if (K)
     {
-        K->PlayCycle("idle");
+        K->PlayCycle(shared_str{"idle"});
         K->dcast_PKinematics()->CalculateBones();
     }
 
@@ -1842,9 +1838,10 @@ IC void CCar::fill_wheel_vector(LPCSTR S, xr_vector<T>& type_wheels)
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     string64 S1;
     int count = _GetItemCount(S);
+
     for (int i = 0; i < count; ++i)
     {
-        _GetItem(S, i, S1);
+        std::ignore = _GetItem(S, i, S1);
 
         u16 bone_id = pKinematics->LL_BoneID(S1);
 
@@ -1875,9 +1872,10 @@ IC void CCar::fill_exhaust_vector(LPCSTR S, xr_vector<SExhaust>& exhausts)
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     string64 S1;
     int count = _GetItemCount(S);
+
     for (int i = 0; i < count; ++i)
     {
-        _GetItem(S, i, S1);
+        std::ignore = _GetItem(S, i, S1);
 
         u16 bone_id = pKinematics->LL_BoneID(S1);
 
@@ -1895,9 +1893,10 @@ IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, std::unique_ptr<SDoor>>& door
     IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
     string64 S1;
     int count = _GetItemCount(S);
+
     for (int i = 0; i < count; ++i)
     {
-        _GetItem(S, i, S1);
+        std::ignore = _GetItem(S, i, S1);
 
         u16 bone_id = pKinematics->LL_BoneID(S1);
         auto door = std::make_unique<SDoor>(this);

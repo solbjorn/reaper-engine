@@ -299,7 +299,7 @@ void CPHCapture::Release()
     {
         if (e_state == cstCaptured && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() && m_taget_object->PPhysicsShell()->isActive())
         {
-            Fvector dir = {0, -1, 0};
+            constexpr Fvector dir{0.0f, -1.0f, 0.0f};
             m_taget_object->PPhysicsShell()->applyImpulse(dir, 0.5f * m_taget_object->PPhysicsShell()->getMass());
         }
         A->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);

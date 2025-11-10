@@ -1,19 +1,10 @@
 #include "stdafx.h"
+
 #include "actor_statistic_mgr.h"
+
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
-/*
-xr_token actor_stats_token[]={
-    {"total",				100},
-    {"stalkerkills",		1},
-    {"monsterkills",		2},
-    {"quests",				3},
-    {"artefacts",			4},
-    {"reputation",			5},
-    {"foo",					0},
-    {0,						0}
-};
-*/
+
 void SStatDetailBData::save(IWriter& stream) const
 {
     save_data(key, stream);
@@ -49,18 +40,20 @@ void SStatSectionData::load(IReader& stream)
         load_data(tmp, stream); //-V614
         switch (tmp)
         {
-        case 100: key = "total"; break;
-        case 1: key = "stalkerkills"; break;
-        case 2: key = "monsterkills"; break;
-        case 3: key = "quests"; break;
-        case 4: key = "artefacts"; break;
-        case 5: key = "reputation"; break;
-        case 0: key = "foo"; break;
+        case 100: key._set("total"); break;
+        case 1: key._set("stalkerkills"); break;
+        case 2: key._set("monsterkills"); break;
+        case 3: key._set("quests"); break;
+        case 4: key._set("artefacts"); break;
+        case 5: key._set("reputation"); break;
+        case 0: key._set("foo"); break;
         }
         load_data(tmp, stream); // old total_points
     }
     else
+    {
         load_data(key, stream);
+    }
 }
 
 SStatDetailBData& SStatSectionData::GetData(const shared_str& key)
@@ -121,8 +114,7 @@ CActorStatisticMgr::CActorStatisticMgr()
 CActorStatisticMgr::~CActorStatisticMgr() { xr_delete(m_actor_stats_wrapper); }
 
 vStatSectionData& CActorStatisticMgr::GetStorage() { return m_actor_stats_wrapper->registry().objects(); }
-
-const vStatSectionData& CActorStatisticMgr::GetCStorage() { return m_actor_stats_wrapper->registry().objects(); }
+const vStatSectionData& CActorStatisticMgr::GetCStorage() const { return m_actor_stats_wrapper->registry().objects(); }
 
 SStatSectionData& CActorStatisticMgr::GetSection(const shared_str& key)
 {
@@ -156,50 +148,48 @@ void CActorStatisticMgr::AddPoints(const shared_str& key, const shared_str& deta
 
 s32 CActorStatisticMgr::GetSectionPoints(const shared_str& key)
 {
-    if (key != "total")
+    if (std::is_neq(xr_strcmp(key, "total")))
         return GetSection(key).GetTotalPoints();
-    else
-    { // total
-        s32 _total = -1;
-        vStatSectionData& d = GetStorage();
-        vStatSectionData::iterator it = d.begin();
-        vStatSectionData::iterator it_e = d.end();
-        for (; it != it_e; ++it)
+
+    // total
+    s32 _total = -1;
+
+    for (const auto& item : GetStorage())
+    {
+        s32 _p = item.GetTotalPoints();
+        if (_p != -1)
         {
-            s32 _p = (*it).GetTotalPoints();
+            if (_total == -1)
+                _total = 0;
 
-            if (_p != -1)
-            {
-                if (_total == -1)
-                    _total = 0;
-
-                _total += _p;
-            }
+            _total += _p;
         }
-        return _total;
     }
+
+    return _total;
 }
 
 s32 CActorStatisticMgr::GetSectionCounts(const shared_str& key)
 {
-    if (key != "total")
+    if (std::is_neq(xr_strcmp(key, "total")))
         return GetSection(key).GetTotalCounts();
-    else
-    { // total
-        s32 _total = -1;
-        vStatSectionData& d = GetStorage();
-        for (const auto& it : d)
+
+    // total
+    s32 _total = -1;
+
+    for (const auto& item : GetStorage())
+    {
+        s32 _p = item.GetTotalCounts();
+        if (_p != -1)
         {
-            s32 _p = it.GetTotalCounts();
-            if (_p != -1)
-            {
-                if (_total == -1)
-                    _total = 0;
-                _total += _p;
-            }
+            if (_total == -1)
+                _total = 0;
+
+            _total += _p;
         }
-        return _total;
     }
+
+    return _total;
 }
 
 void CActorStatisticMgr::RemovePoints(const shared_str& key, const shared_str& detail_key)

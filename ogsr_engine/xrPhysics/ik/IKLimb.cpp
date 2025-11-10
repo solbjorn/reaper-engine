@@ -238,7 +238,7 @@ IC void free_limits(float& min, float& max)
 u16 get_ik_bone(IKinematics* K, LPCSTR S, u16 i)
 {
     string32 sbone;
-    _GetItem(S, i, sbone);
+    std::ignore = _GetItem(S, i, sbone);
     u16 bone = K->LL_BoneID(sbone);
 
     if (BI_NONE == bone)

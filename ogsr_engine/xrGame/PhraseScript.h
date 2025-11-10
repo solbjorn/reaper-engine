@@ -42,7 +42,7 @@ public:
     void AddDontHasInfo(LPCSTR str);
     void AddGiveInfo(LPCSTR str);
     void AddDisableInfo(LPCSTR str);
-    void SetScriptText(LPCSTR str) { m_sScriptTextFunc = str; }
+    void SetScriptText(LPCSTR str) { m_sScriptTextFunc._set(str); }
     [[nodiscard]] LPCSTR GetScriptText(LPCSTR str_to_translate, const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, LPCSTR dialog_id, LPCSTR phrase_id);
 
 protected:

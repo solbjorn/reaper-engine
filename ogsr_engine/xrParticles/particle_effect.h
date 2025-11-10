@@ -15,8 +15,7 @@ struct ParticleEffect
     u32 param{};
 
 public:
-    ParticleEffect(u32 mp) : max_particles{mp}, particles_allocated{mp} { particles = xr_alloc<Particle>(max_particles); }
-
+    explicit ParticleEffect(u32 mp) : max_particles{mp}, particles_allocated{mp} { particles = xr_alloc<Particle>(max_particles); }
     ~ParticleEffect() { xr_free(particles); }
 
     IC int Resize(u32 max_count)

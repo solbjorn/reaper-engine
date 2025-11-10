@@ -278,7 +278,8 @@ shared_str game_sv_GameState::level_name(const shared_str& server_options) const
 {
     string64 l_name = "";
     VERIFY(_GetItemCount(*server_options, '/'));
-    return (_GetItem(*server_options, 0, l_name, '/'));
+
+    return shared_str{_GetItem(*server_options, 0, l_name, '/')};
 }
 
 void game_sv_GameState::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)

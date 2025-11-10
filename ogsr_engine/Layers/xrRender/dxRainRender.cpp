@@ -1,9 +1,13 @@
 #include "stdafx.h"
-#include "dxRainRender.h"
-#include "../../xr_3da/perlin.h"
 
+#include "dxRainRender.h"
+
+#include "../../xr_3da/iGame_persistent.h"
+#include "../../xr_3da/perlin.h"
 #include "../../xr_3da/Rain.h"
 
+namespace
+{
 // Warning: duplicated in rain.cpp
 constexpr float max_desired_items = 2500;
 constexpr float source_radius = 15; // 12.5f;
@@ -16,12 +20,14 @@ constexpr float drop_max_angle = deg2rad(35.f); // 10
 
 constexpr int particles_cache = 400;
 constexpr float particles_time = .3f;
+} // namespace
 
 dxRainRender::dxRainRender()
 {
-    RainPerlin = std::make_unique<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
+    RainPerlin = std::make_unique<CPerlinNoise1D>();
     RainPerlin->SetOctaves(2);
     RainPerlin->SetAmplitude(0.66666f);
+
     IReader* F = FS.r_open("$game_meshes$", "dm\\rain.dm");
     ASSERT_FMT(F, "Can't open file [dm\\rain.dm]!");
 
@@ -38,8 +44,6 @@ dxRainRender::dxRainRender()
 }
 
 dxRainRender::~dxRainRender() { ::RImplementation.model_Delete(DM_Drop); }
-
-#include "../../xr_3da/iGame_persistent.h"
 
 void dxRainRender::Render(CEffect_Rain& owner)
 {
@@ -91,7 +95,8 @@ void dxRainRender::Render(CEffect_Rain& owner)
             if (!RImplementation.ViewBase.testSphere_dirty(sC, sR))
                 continue;
 
-            constexpr Fvector2 UV[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
+            static constexpr Fvector2 UV[2][4]{{Fvector2{0.0f, 1.0f}, Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{1.0f, 0.0f}},
+                                               {Fvector2{1.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 0.0f}, Fvector2{0.0f, 1.0f}}};
 
             // Everything OK - build vertices
             Fvector P, lineTop, camDir;
@@ -288,7 +293,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     // build source plane
     float b_radius_wrap_sqr = _sqr((rain_radius * 1.5f));
     Fplane src_plane;
-    Fvector norm = {0.f, -1.f, 0.f};
+    constexpr Fvector norm{0.0f, -1.0f, 0.0f};
     Fvector upper;
     upper.set(Device.vCameraPosition.x, Device.vCameraPosition.y + source_offset, Device.vCameraPosition.z);
     src_plane.build(upper, norm);

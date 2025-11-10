@@ -121,7 +121,7 @@ void CRenderTarget::u_setrt(CBackend& cmd_list, u32 W, u32 H, ID3DRenderTargetVi
 // 2D texgen (texture adjustment matrix)
 void CRenderTarget::u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& m_Texgen)
 {
-    static constexpr Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+    static constexpr Fmatrix m_TexelAdjust{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
     m_Texgen.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
 }
 
@@ -129,7 +129,7 @@ void CRenderTarget::u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& m_Texge
 void CRenderTarget::u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& m_Texgen_J)
 {
     // place into	0..1 space
-    Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
+    Fmatrix m_TexelAdjust{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
     m_Texgen_J.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
 
     // rescale - tile it
@@ -484,7 +484,7 @@ CRenderTarget::CRenderTarget()
             xr_sprintf(name, "%s_%d", r2_RT_luminance_pool, it);
             rt_LUM_pool[it].create(name, 1, 1, D3DFMT_R32F);
 
-            Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
+            Fcolor ColorRGBA{127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
             RCache.ClearRT(rt_LUM_pool[it], ColorRGBA);
         }
 
@@ -513,8 +513,11 @@ CRenderTarget::CRenderTarget()
 
     // Build noise table
     {
-        constexpr u32 sampleSize = 4;
-        u32 tempData[TEX_jitter_count][TEX_jitter * TEX_jitter]{};
+        std::array<xr_vector<u32>, TEX_jitter_count> tempData;
+        constexpr u32 sampleSize{4};
+
+        for (auto& tex : tempData)
+            tex.resize(TEX_jitter * TEX_jitter, 0);
 
         D3D_TEXTURE2D_DESC desc{};
         desc.Width = TEX_jitter;
@@ -528,9 +531,9 @@ CRenderTarget::CRenderTarget()
 
         D3D_SUBRESOURCE_DATA subData[TEX_jitter_count]{};
 
-        for (size_t it = 0; it < TEX_jitter_count; it++)
+        for (auto [it, tex] : xr::views_enumerate(tempData))
         {
-            subData[it].pSysMem = tempData[it];
+            subData[it].pSysMem = tex.data();
             subData[it].SysMemPitch = desc.Width * sampleSize;
         }
 
@@ -555,8 +558,9 @@ CRenderTarget::CRenderTarget()
         {
             string_path name;
             xr_sprintf(name, "%s%d", r2_jitter, it);
+
             R_CHK(HW.pDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
-            t_noise[it] = RImplementation.Resources->_CreateTexture(name);
+            t_noise[it]._set(RImplementation.Resources->_CreateTexture(name));
             t_noise[it]->surface_set(t_noise_surf[it]);
         }
 

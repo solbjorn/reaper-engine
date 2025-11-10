@@ -51,12 +51,12 @@ namespace
 {
 u32 ps_Preset = 2;
 
-constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
-constexpr xr_token qssao_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {nullptr, 0}};
-constexpr xr_token smaa_quality_token[] = {{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {"st_opt_ultra", 4}, {nullptr, 0}};
-constexpr xr_token ao_mode_token[] = {{"st_ssdo", AO_MODE_SSDO}, {"st_gtao", AO_MODE_GTAO}, {nullptr, 0}};
-constexpr xr_token qsun_quality_token[] = {{"st_opt_low", 0}, {"st_opt_medium", 1}, {"st_opt_high", 2}, {"st_opt_ultra", 3}, {"st_opt_extreme", 4}, {nullptr, 0}};
-constexpr xr_token qmsaa_token[] = {{"st_opt_off", 0}, {"2x", 1}, {"4x", 2}, {"8x", 3}, {nullptr, 0}};
+constexpr xr_token qpreset_token[]{{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
+constexpr xr_token qssao_token[]{{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {nullptr, 0}};
+constexpr xr_token smaa_quality_token[]{{"st_opt_off", 0}, {"st_opt_low", 1}, {"st_opt_medium", 2}, {"st_opt_high", 3}, {"st_opt_ultra", 4}, {nullptr, 0}};
+constexpr xr_token ao_mode_token[]{{"st_ssdo", AO_MODE_SSDO}, {"st_gtao", AO_MODE_GTAO}, {nullptr, 0}};
+constexpr xr_token qsun_quality_token[]{{"st_opt_low", 0}, {"st_opt_medium", 1}, {"st_opt_high", 2}, {"st_opt_ultra", 3}, {"st_opt_extreme", 4}, {nullptr, 0}};
+constexpr xr_token qmsaa_token[]{{"st_opt_off", 0}, {"2x", 1}, {"4x", 2}, {"8x", 3}, {nullptr, 0}};
 } // namespace
 
 // Common
@@ -68,7 +68,7 @@ float ps_r__Detail_l_aniso = 0.25f;
 float ps_r__Tree_w_rot = 10.0f;
 float ps_r__Tree_w_speed = 1.00f;
 float ps_r__Tree_w_amp = 0.005f;
-Fvector ps_r__Tree_Wave = {.1f, .01f, .11f};
+Fvector ps_r__Tree_Wave{0.1f, 0.01f, 0.11f};
 float ps_r__Tree_SBC = 1.5f; // scale bias correct
 
 float ps_r__WallmarkTTL = 50.f;
@@ -100,10 +100,10 @@ float ps_r2_ssaLOD_A = 64.f;
 float ps_r2_ssaLOD_B = 48.f;
 
 // R2-specific
-Flags32 ps_r2_ls_flags = {R2FLAG_SUN | R2FLAG_MBLUR | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM |
-                          R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS};
+Flags32 ps_r2_ls_flags{R2FLAG_SUN | R2FLAG_MBLUR | R3FLAG_DYN_WET_SURF | R3FLAG_VOLUMETRIC_SMOKE | R2FLAG_DOF | R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM |
+                       R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS};
 
-Flags32 ps_r2_ls_flags_ext = {R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_FONT_SHADOWS};
+Flags32 ps_r2_ls_flags_ext{R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_FONT_SHADOWS};
 
 BOOL ps_no_scale_on_fade = 0; // Alundaio
 float ps_r2_df_parallax_h = 0.02f;
@@ -150,105 +150,105 @@ float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
 
 ///////lvutner
-Fvector4 ps_r2_mask_control = {.0f, .0f, .0f, .0f}; // r2-only
-Fvector ps_r2_drops_control = {.0f, 1.15f, .0f}; // r2-only
+Fvector4 ps_r2_mask_control{0.0f, 0.0f, 0.0f, 0.0f}; // r2-only
+Fvector ps_r2_drops_control{0.0f, 1.15f, 0.0f}; // r2-only
 
 float ps_particle_update_coeff = 0.3f;
 
-Fvector4 ps_r__color_gamma{0, 0, 0, 1};
-Fvector4 ps_r__color_slope{0, 0, 0, 1};
-Fvector4 ps_r__color_offset{0, 0, 0, 0};
-Fvector4 ps_r__color_power{0, 0, 0, 1};
-Fvector4 ps_r__color_saturation{0, 0, 0, 1};
-Fvector4 ps_r__color_contrast{0, 0, 0, 0.7};
-Fvector4 ps_r__color_red{1, 0, 0, 0};
-Fvector4 ps_r__color_green{0, 1, 0, 0};
-Fvector4 ps_r__color_blue{0, 0, 1, 0};
+Fvector4 ps_r__color_gamma{0.0f, 0.0f, 0.0f, 1.0f};
+Fvector4 ps_r__color_slope{0.0f, 0.0f, 0.0f, 1.0f};
+Fvector4 ps_r__color_offset{0.0f, 0.0f, 0.0f, 0.0f};
+Fvector4 ps_r__color_power{0.0f, 0.0f, 0.0f, 1.0f};
+Fvector4 ps_r__color_saturation{0.0f, 0.0f, 0.0f, 1.0f};
+Fvector4 ps_r__color_contrast{0.0f, 0.0f, 0.0f, 0.7f};
+Fvector4 ps_r__color_red{1.0f, 0.0f, 0.0f, 0.0f};
+Fvector4 ps_r__color_green{0.0f, 1.0f, 0.0f, 0.0f};
+Fvector4 ps_r__color_blue{0.0f, 0.0f, 1.0f, 0.0f};
 
 // Screen Space Shaders Stuff
 int ps_ssfx_pom_refine = 0;
-Fvector4 ps_ssfx_pom = {16, 12, 0.035f, 0.4f}; // Samples , Range, Height, AO
+Fvector4 ps_ssfx_pom{16, 12, 0.035f, 0.4f}; // Samples , Range, Height, AO
 
 int ps_ssfx_terrain_grass_align = 0; // Grass align
 float ps_ssfx_terrain_grass_slope = 1.0f; // Grass slope limit // Recommended 0.3f
-Fvector4 ps_ssfx_terrain_pom = {12, 20, 0.04f, 1.0f}; // Samples, Range, Height, Water Limit
+Fvector4 ps_ssfx_terrain_pom{12, 20, 0.04f, 1.0f}; // Samples, Range, Height, Water Limit
 int ps_ssfx_terrain_pom_refine = 0;
 
 int ps_ssfx_bloom_use_presets = 0;
-Fvector4 ps_ssfx_bloom_1 = {3.5f, 3.0f, 0.0f, 0.6f}; // Threshold, Exposure, -, Sky
-Fvector4 ps_ssfx_bloom_2 = {3.0f, 1.5f, 1.5f, 1.0f}; // Blur Radius, Vibrance, Lens, Dirt
+Fvector4 ps_ssfx_bloom_1{3.5f, 3.0f, 0.0f, 0.6f}; // Threshold, Exposure, -, Sky
+Fvector4 ps_ssfx_bloom_2{3.0f, 1.5f, 1.5f, 1.0f}; // Blur Radius, Vibrance, Lens, Dirt
 
-Fvector4 ps_ssfx_sss_quality = {12.0f, 4.0f, 1.0f, 1.0f}; // Dir Samples, Omni Samples, Dir Enable, Omni Enable
-Fvector4 ps_ssfx_sss = {1.0f, 1.0f, 1.0f, 0.0f}; // Dir Len, Omni Len, Grass shadows, -
+Fvector4 ps_ssfx_sss_quality{12.0f, 4.0f, 1.0f, 1.0f}; // Dir Samples, Omni Samples, Dir Enable, Omni Enable
+Fvector4 ps_ssfx_sss{1.0f, 1.0f, 1.0f, 0.0f}; // Dir Len, Omni Len, Grass shadows, -
 
 float ps_ssfx_hud_hemi = 0.15f; // HUD Hemi Offset
 
 int ps_ssfx_il_quality = 32; // IL Samples
-Fvector4 ps_ssfx_il = {6.66f, 1.0f, 1.0f, 5.0f}; // Res, Int, Vibrance, Blur
-Fvector4 ps_ssfx_il_setup1 = {150.0f, 1.0f, 0.5f, 0.0f}; // Distance, HUD, Flora, -
+Fvector4 ps_ssfx_il{6.66f, 1.0f, 1.0f, 5.0f}; // Res, Int, Vibrance, Blur
+Fvector4 ps_ssfx_il_setup1{150.0f, 1.0f, 0.5f, 0.0f}; // Distance, HUD, Flora, -
 
 int ps_ssfx_ao_quality = 4; // AO Samples
-Fvector4 ps_ssfx_ao = {1.0f, 5.0f, 1.0f, 2.5f}; // Res, AO int, Blur, Radius
-Fvector4 ps_ssfx_ao_setup1 = {150.0, 1.0, 1.0, 0.0}; // Distance, HUD, Flora, Max OCC
+Fvector4 ps_ssfx_ao{1.0f, 5.0f, 1.0f, 2.5f}; // Res, AO int, Blur, Radius
+Fvector4 ps_ssfx_ao_setup1{150.0, 1.0, 1.0, 0.0}; // Distance, HUD, Flora, Max OCC
 
-Fvector4 ps_ssfx_water = {1.0f, 0.8f, 1.0f, 0.0f}; // Res, Blur, Blur Perlin, -
-Fvector3 ps_ssfx_water_quality = {1.0, 2.0, 0.0}; // SSR Quality, Parallax Quality, -
-Fvector4 ps_ssfx_water_setup1 = {0.6f, 3.0f, 0.3f, 0.05f}; // Distortion, Turbidity, Softborder, Parallax Height
-Fvector4 ps_ssfx_water_setup2 = {0.8f, 6.0f, 0.3f, 0.5f}; // Reflection, Specular, Caustics, Ripples
+Fvector4 ps_ssfx_water{1.0f, 0.8f, 1.0f, 0.0f}; // Res, Blur, Blur Perlin, -
+Fvector3 ps_ssfx_water_quality{1.0, 2.0, 0.0}; // SSR Quality, Parallax Quality, -
+Fvector4 ps_ssfx_water_setup1{0.6f, 3.0f, 0.3f, 0.05f}; // Distortion, Turbidity, Softborder, Parallax Height
+Fvector4 ps_ssfx_water_setup2{0.8f, 6.0f, 0.3f, 0.5f}; // Reflection, Specular, Caustics, Ripples
 
 int ps_ssfx_ssr_quality = 0; // Quality
-Fvector4 ps_ssfx_ssr = {1.0f, 0.2f, 0.0f, 0.0f}; // Res, Blur, Temp, Noise
-Fvector4 ps_ssfx_ssr_2 = {0.0f, 1.3f, 1.0f, 0.015f}; // Quality, Fade, Int, Wpn Int
+Fvector4 ps_ssfx_ssr{1.0f, 0.2f, 0.0f, 0.0f}; // Res, Blur, Temp, Noise
+Fvector4 ps_ssfx_ssr_2{0.0f, 1.3f, 1.0f, 0.015f}; // Quality, Fade, Int, Wpn Int
 
-Fvector4 ps_ssfx_terrain_quality = {8, 0, 0, 0};
-Fvector4 ps_ssfx_terrain_offset = {0, 0, 0, 0};
+Fvector4 ps_ssfx_terrain_quality{8, 0, 0, 0};
+Fvector4 ps_ssfx_terrain_offset{0, 0, 0, 0};
 
-Fvector3 ps_ssfx_shadows = {256, 1536, 0.0f}; // LOD min res, LOD max res, -
-Fvector4 ps_ssfx_volumetric = {1.0f, 1.0f, 3.0f, 1.0f}; // Force Volumetric, Vol Intensity, Vol Quality, -
+Fvector3 ps_ssfx_shadows{256, 1536, 0.0f}; // LOD min res, LOD max res, -
+Fvector4 ps_ssfx_volumetric{1.0f, 1.0f, 3.0f, 1.0f}; // Force Volumetric, Vol Intensity, Vol Quality, -
 
-Fvector3 ps_ssfx_shadow_bias = {0.4f, 0.03f, 0.0f};
+Fvector3 ps_ssfx_shadow_bias{0.4f, 0.03f, 0.0f};
 
-Fvector4 ps_ssfx_lut = {0.0f, 0.0f, 0.0f, 0.0f};
+Fvector4 ps_ssfx_lut{0.0f, 0.0f, 0.0f, 0.0f};
 
-Fvector4 ps_ssfx_wind_grass = {9.5f, 1.4f, 1.5f, 0.4f};
-Fvector4 ps_ssfx_wind_trees = {11.0f, 0.15f, 0.5f, 0.15f};
+Fvector4 ps_ssfx_wind_grass{9.5f, 1.4f, 1.5f, 0.4f};
+Fvector4 ps_ssfx_wind_trees{11.0f, 0.15f, 0.5f, 0.15f};
 
-Fvector4 ps_ssfx_florafixes_1 = {0.3f, 0.21f, 0.3f, 0.21f}; // Flora fixes 1
-Fvector4 ps_ssfx_florafixes_2 = {2.0f, 1.0f, 0.0f, 0.0f}; // Flora fixes 2
+Fvector4 ps_ssfx_florafixes_1{0.3f, 0.21f, 0.3f, 0.21f}; // Flora fixes 1
+Fvector4 ps_ssfx_florafixes_2{2.0f, 1.0f, 0.0f, 0.0f}; // Flora fixes 2
 
-Fvector4 ps_ssfx_wetsurfaces_1 = {1.0f, 1.0f, 1.0f, 1.0f}; // Wet surfaces 1
-Fvector4 ps_ssfx_wetsurfaces_2 = {1.0f, 1.0f, 1.0f, 1.0f}; // Wet surfaces 2
+Fvector4 ps_ssfx_wetsurfaces_1{1.0f, 1.0f, 1.0f, 1.0f}; // Wet surfaces 1
+Fvector4 ps_ssfx_wetsurfaces_2{1.0f, 1.0f, 1.0f, 1.0f}; // Wet surfaces 2
 
 int ps_ssfx_is_underground = 0;
 int ps_ssfx_gloss_method = 0;
 float ps_ssfx_gloss_factor = 0.5f;
-Fvector3 ps_ssfx_gloss_minmax = {0.0f, 0.92f, 0.0f}; // Gloss
+Fvector3 ps_ssfx_gloss_minmax{0.0f, 0.92f, 0.0f}; // Gloss
 
-Fvector4 ps_ssfx_lightsetup_1 = {0.35f, 0.5f, 0.0f, 0.0f}; // Spec intensity
+Fvector4 ps_ssfx_lightsetup_1{0.35f, 0.5f, 0.0f, 0.0f}; // Spec intensity
 
-Fvector4 ps_ssfx_hud_drops_1 = {1.0f, 1.0f, 1.0f, 1.0f}; // Anim Speed, Int, Reflection, Refraction
-Fvector4 ps_ssfx_hud_drops_2 = {1.5f, 0.85f, 0.0f, 2.0f}; // Density, Size, Extra Gloss, Gloss
+Fvector4 ps_ssfx_hud_drops_1{1.0f, 1.0f, 1.0f, 1.0f}; // Anim Speed, Int, Reflection, Refraction
+Fvector4 ps_ssfx_hud_drops_2{1.5f, 0.85f, 0.0f, 2.0f}; // Density, Size, Extra Gloss, Gloss
 
-Fvector4 ps_ssfx_blood_decals = {0.6f, 0.6f, 0.f, 0.f};
-Fvector4 ps_ssfx_rain_1 = {2.0f, 0.1f, 0.6f, 2.f}; // Len, Width, Speed, Quality
-Fvector4 ps_ssfx_rain_2 = {0.5f, 0.1f, 1.0f, 0.5f}; // Alpha, Brigthness, Refraction, Reflection
-Fvector4 ps_ssfx_rain_3 = {0.5f, 1.0f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
-Fvector4 ps_ssfx_rain_drops_setup = {2500, 15, 0.0f, 0.0f};
+Fvector4 ps_ssfx_blood_decals{0.6f, 0.6f, 0.f, 0.f};
+Fvector4 ps_ssfx_rain_1{2.0f, 0.1f, 0.6f, 2.f}; // Len, Width, Speed, Quality
+Fvector4 ps_ssfx_rain_2{0.5f, 0.1f, 1.0f, 0.5f}; // Alpha, Brigthness, Refraction, Reflection
+Fvector4 ps_ssfx_rain_3{0.5f, 1.0f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
+Fvector4 ps_ssfx_rain_drops_setup{2500, 15, 0.0f, 0.0f};
 
-Fvector3 ps_ssfx_shadow_cascades = {20, 40, 160};
-Fvector4 ps_ssfx_grass_shadows = {.0f, .35f, 30.0f, .0f};
+Fvector3 ps_ssfx_shadow_cascades{20, 40, 160};
+Fvector4 ps_ssfx_grass_shadows{0.0f, 0.35f, 30.0f, 0.0f};
 
-Fvector4 ps_ssfx_grass_interactive = {.0f, .0f, 2000.0f, 1.0f};
-Fvector4 ps_ssfx_int_grass_params_1 = {1.0f, 1.0f, 1.0f, 25.0f};
-Fvector4 ps_ssfx_int_grass_params_2 = {1.0f, 5.0f, 1.0f, 1.0f};
+Fvector4 ps_ssfx_grass_interactive{0.0f, 0.0f, 2000.0f, 1.0f};
+Fvector4 ps_ssfx_int_grass_params_1{1.0f, 1.0f, 1.0f, 25.0f};
+Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
 
-Fvector4 ps_ssfx_wpn_dof_1 = {.0f, .0f, .0f, .0f};
+Fvector4 ps_ssfx_wpn_dof_1{0.0f, 0.0f, 0.0f, 0.0f};
 float ps_ssfx_wpn_dof_2 = 1.0f;
 
 float ps_r3_dyn_wet_surf_near = 10.f; // 10.0f
 float ps_r3_dyn_wet_surf_far = 30.f; // 30.0f
 int ps_r3_dyn_wet_surf_sm_res = 256; // 256
-Flags32 psDeviceFlags2 = {0};
+Flags32 psDeviceFlags2;
 
 namespace
 {
@@ -289,11 +289,11 @@ class CCC_r__color final : public CCC_Vector4
     RTTI_DECLARE_TYPEINFO(CCC_r__color, CCC_Vector4);
 
 public:
-    CCC_r__color(LPCSTR N, Fvector4* V, const Fvector4 _min, const Fvector4 _max) : CCC_Vector4(N, V, _min, _max) {}
+    explicit CCC_r__color(LPCSTR N, Fvector4* V, Fvector4 _min, Fvector4 _max) : CCC_Vector4{N, V, _min, _max} {}
 
     void Execute(LPCSTR args) override
     {
-        float x, y, z, w;
+        f32 x, y, z, w;
 
         if (sscanf(args, "%g,%g,%g,%g", &x, &y, &z, &w) != 4 && sscanf(args, "(%g,%g,%g,%g)", &x, &y, &z, &w) != 4)
         {
@@ -325,12 +325,15 @@ public:
         dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
         dm_current_fade = float(2 * dm_current_size) - .5f;
     }
-    CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max) {}
+
+    explicit CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+
     virtual void Execute(LPCSTR args)
     {
         CCC_Integer::Execute(args);
         apply();
     }
+
     virtual void Status(TStatus& S) { CCC_Integer::Status(S); }
 };
 
@@ -345,12 +348,14 @@ public:
             RImplementation.Details->need_init = true;
     }
 
-    CCC_detail_reset(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float(N, V, _min, _max) {}
+    explicit CCC_detail_reset(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
+
     virtual void Execute(LPCSTR args)
     {
         CCC_Float::Execute(args);
         apply();
     }
+
     virtual void Status(TStatus& S) { CCC_Float::Status(S); }
 };
 
@@ -369,7 +374,7 @@ public:
         SSManager.SetMaxAnisotropy(val);
     }
 
-    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer{N, v, 1, 16} {}
+    explicit CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer{N, v, 1, 16} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -397,7 +402,7 @@ public:
         SSManager.SetMipLODBias(*value);
     }
 
-    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float{N, v, -3.f, +3.f} {}
+    explicit CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float{N, v, -3.f, +3.f} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -417,7 +422,7 @@ class CCC_Screenshot : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Screenshot, IConsole_Command);
 
 public:
-    CCC_Screenshot(LPCSTR N) : IConsole_Command(N) {}
+    explicit CCC_Screenshot(LPCSTR N) : IConsole_Command{N} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -436,7 +441,7 @@ class CCC_ModelPoolStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_ModelPoolStat, IConsole_Command);
 
 public:
-    CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
 
     void Execute(LPCSTR) override { RImplementation.Models->dump(); }
 };
@@ -448,7 +453,7 @@ class CCC_Preset : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_Preset, CCC_Token);
 
 public:
-    CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {}
+    explicit CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token{N, V, T} {}
 
     virtual void Execute(LPCSTR args)
     {
@@ -464,7 +469,8 @@ public:
         case 3: xr_strcpy(_cfg, "rspec_high.ltx"); break;
         case 4: xr_strcpy(_cfg, "rspec_extreme.ltx"); break;
         }
-        FS.update_path(_cfg, "$game_config$", _cfg);
+
+        std::ignore = FS.update_path(_cfg, "$game_config$", _cfg);
         strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
         Console->Execute(cmd);
     }
@@ -475,7 +481,7 @@ class CCC_VideoMemoryStats : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_VideoMemoryStats, IConsole_Command);
 
 public:
-    CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
 
     void Execute(LPCSTR) override
     {
@@ -516,7 +522,7 @@ class CCC_DumpResources : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpResources, IConsole_Command);
 
 public:
-    CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
 
     void Execute(LPCSTR) override
     {
@@ -531,8 +537,9 @@ class CCC_Fog_Reload : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Fog_Reload, IConsole_Command);
 
 public:
-    CCC_Fog_Reload(LPCSTR N) : IConsole_Command{N, true} {}
-    virtual void Execute(LPCSTR args) { FluidManager.UpdateProfiles(); }
+    explicit CCC_Fog_Reload(LPCSTR N) : IConsole_Command{N, true} {}
+
+    void Execute(LPCSTR args) override { FluidManager.UpdateProfiles(); }
 };
 #endif //	DEBUG
 
@@ -541,9 +548,9 @@ class CCC_PART_Export : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PART_Export, IConsole_Command);
 
 public:
-    CCC_PART_Export(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_PART_Export(LPCSTR N) : IConsole_Command{N, true} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         if (g_pGameLevel)
         {
@@ -552,8 +559,10 @@ public:
         }
 
         Msg("Exporting particles...");
+
         RImplementation.PSLibrary.Reload();
         RImplementation.PSLibrary.Save2(0 == xr_strcmp(args, "1"));
+
         Msg("Exporting particles Done!");
     }
 };
@@ -563,7 +572,7 @@ class CCC_PART_Import : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_PART_Import, IConsole_Command);
 
 public:
-    CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
 
     void Execute(LPCSTR) override
     {
@@ -574,10 +583,12 @@ public:
         }
 
         Msg("Importing particles...");
+
         RImplementation.PSLibrary.OnDestroy();
         RImplementation.PSLibrary.Load2();
         RImplementation.PSLibrary.ExportAllAsNew();
         RImplementation.PSLibrary.OnCreate();
+
         Msg("Importing particles Done!");
     }
 };
@@ -700,8 +711,8 @@ void xrRender_initconsole()
     Fvector3 tw_max{1, 2, 1};
     CMD4(CCC_Vector3, "r2_drops_control", &ps_r2_drops_control, tw_min, tw_max);
 
-    Fvector4 tw2_min = {0.5f, 0.5f, 0.5f, -2.f};
-    Fvector4 tw2_max = {2.f, 2.f, 2.f, 2.f};
+    Fvector4 tw2_min{0.5f, 0.5f, 0.5f, -2.f};
+    Fvector4 tw2_max{2.f, 2.f, 2.f, 2.f};
 
     CMD4(CCC_r__color, "r__color_gamma", &ps_r__color_gamma, tw2_min, tw2_max);
     CMD4(CCC_r__color, "r__color_slope", &ps_r__color_slope, tw2_min, tw2_max);

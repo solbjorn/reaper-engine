@@ -37,7 +37,6 @@ bool CLevel::net_start_client1()
 bool CLevel::net_start_client2()
 {
     Server->create_direct_client();
-
     connected_to_server = Connect2Server(*m_caClientOptions);
 
     return true;
@@ -56,14 +55,18 @@ bool CLevel::net_start_client3()
             Disconnect();
             pApp->LoadEnd();
             connected_to_server = FALSE;
-            m_name = level_name;
+
+            m_name._set(level_name);
             m_connect_server_err = xrServer::ErrNoLevel;
+
             return false;
         }
-        m_name = level_name;
+
+        m_name._set(level_name);
         // Load level
         R_ASSERT2(Load(level_id), "Loading failed.");
     }
+
     return true;
 }
 

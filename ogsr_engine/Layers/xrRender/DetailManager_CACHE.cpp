@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "DetailManager.h"
 
 void CDetailManager::cache_Initialize()
@@ -42,7 +43,7 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 {
     int sx = cg2w_X(gx);
     int sz = cg2w_Z(gz);
-    DetailSlot& DS = QueryDB(sx, sz);
+    const DetailSlot& DS = QueryDB(sx, sz);
 
     D->empty = (DS.id0 == DetailSlot::ID_Empty) && (DS.id1 == DetailSlot::ID_Empty) && (DS.id2 == DetailSlot::ID_Empty) && (DS.id3 == DetailSlot::ID_Empty);
 
@@ -243,22 +244,21 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
     }
 }
 
-DetailSlot& CDetailManager::QueryDB(int sx, int sz)
+const DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 {
-    int db_x = sx + dtH.offs_x;
-    int db_z = sz + dtH.offs_z;
-    if ((db_x >= 0) && (db_x < int(dtH.size_x)) && (db_z >= 0) && (db_z < int(dtH.size_z)))
+    const gsl::index db_x{sx + dtH.offs_x};
+    const gsl::index db_z{sz + dtH.offs_z};
+    if (db_x >= 0 && db_x < gsl::index{dtH.size_x} && db_z >= 0 && db_z < gsl::index{dtH.size_z})
     {
-        u32 linear_id = db_z * dtH.size_x + db_x;
+        const gsl::index linear_id{db_z * gsl::index{dtH.size_x} + db_x};
         return dtSlots[linear_id];
     }
-    else
-    {
-        // Empty slot
-        DS_empty.w_id(0, DetailSlot::ID_Empty);
-        DS_empty.w_id(1, DetailSlot::ID_Empty);
-        DS_empty.w_id(2, DetailSlot::ID_Empty);
-        DS_empty.w_id(3, DetailSlot::ID_Empty);
-        return DS_empty;
-    }
+
+    // Empty slot
+    DS_empty.w_id(0, DetailSlot::ID_Empty);
+    DS_empty.w_id(1, DetailSlot::ID_Empty);
+    DS_empty.w_id(2, DetailSlot::ID_Empty);
+    DS_empty.w_id(3, DetailSlot::ID_Empty);
+
+    return DS_empty;
 }

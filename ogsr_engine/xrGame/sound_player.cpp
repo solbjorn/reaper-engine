@@ -25,7 +25,7 @@ CSoundPlayer::CSoundPlayer(CObject* object)
     VERIFY(object);
     m_object = object;
 
-    m_sound_prefix = "";
+    m_sound_prefix._set("");
 }
 
 CSoundPlayer::~CSoundPlayer() { clear(); }
@@ -51,7 +51,7 @@ void CSoundPlayer::reload(LPCSTR)
     VERIFY(m_playing_sounds.empty());
 
     clear();
-    m_sound_prefix = "";
+    m_sound_prefix._set("");
 }
 
 void CSoundPlayer::unload()
@@ -81,8 +81,8 @@ CSoundPlayer::CSoundCollection* CSoundPlayer::add_deferred(LPCSTR prefix, u32 ma
     CSoundCollectionParamsFull sound_params;
     sound_params.m_priority = priority;
     sound_params.m_synchro_mask = mask;
-    sound_params.m_bone_name = bone_name;
-    sound_params.m_sound_prefix = prefix;
+    sound_params.m_bone_name._set(bone_name);
+    sound_params.m_sound_prefix._set(prefix);
     sound_params.m_sound_player_prefix = m_sound_prefix;
     sound_params.m_max_count = max_count;
     sound_params.m_type = type;
@@ -230,11 +230,13 @@ CSoundPlayer::CSoundCollection::CSoundCollection(const CSoundCollectionParams& p
     m_params = params;
 
     m_sounds.clear();
+
     for (int j = 0, N = _GetItemCount(m_params.m_sound_prefix.c_str()); j < N; ++j)
     {
         string_path s, temp;
-        _GetItem(m_params.m_sound_prefix.c_str(), j, temp);
+        std::ignore = _GetItem(m_params.m_sound_prefix.c_str(), j, temp);
         strconcat(sizeof(s), s, m_params.m_sound_player_prefix.c_str(), temp);
+
         Level().PrefetchManySoundsLater(s);
     }
 }
@@ -243,18 +245,22 @@ void CSoundPlayer::CSoundCollection::load()
 {
     if (m_loaded)
         return;
+
     m_loaded = true;
+
     for (int j = 0, N = _GetItemCount(*m_params.m_sound_prefix); j < N; ++j)
     {
         string_path fn, s, temp;
-        _GetItem(*m_params.m_sound_prefix, j, temp);
+        std::ignore = _GetItem(*m_params.m_sound_prefix, j, temp);
         strconcat(sizeof(s), s, *m_params.m_sound_player_prefix, temp);
+
         if (FS.exist(fn, "$game_sounds$", s, ".ogg"))
         {
             ref_sound* temp = add(m_params.m_type, s);
             if (temp)
                 m_sounds.push_back(temp);
         }
+
         for (u32 i = 0; i < m_params.m_max_count; ++i)
         {
             string256 name;

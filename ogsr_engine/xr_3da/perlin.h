@@ -6,80 +6,47 @@
 class CPerlinNoiseCustom
 {
 protected:
-    int mSeed;
-    bool mReady{};
+    s32 p[SAMPLE_SIZE + SAMPLE_SIZE + 2];
 
-    int p[SAMPLE_SIZE + SAMPLE_SIZE + 2];
+    s32 mOctaves{2};
+    f32 mFrequency{1.0f};
+    f32 mAmplitude{1.0f};
 
-protected:
-    int mOctaves{2};
-    float mFrequency{1.0f};
-    float mAmplitude{1.0f};
-    xr_vector<float> mTimes;
+    xr_vector<f32> mTimes;
 
 public:
-    CPerlinNoiseCustom(int seed) : mSeed{seed} {}
+    CPerlinNoiseCustom() { mTimes.resize(mOctaves); }
 
-    IC void SetParams(int oct, float freq, float amp)
+    void SetParams(s32 oct, f32 freq, f32 amp)
     {
-        mOctaves = oct;
-        mFrequency = freq;
-        mAmplitude = amp;
+        SetOctaves(oct);
+        SetFrequency(freq);
+        SetAmplitude(amp);
     }
 
-    IC void SetOctaves(int oct)
+    void SetOctaves(s32 oct)
     {
         mOctaves = oct;
         mTimes.resize(mOctaves);
     }
 
-    IC void SetFrequency(float freq) { mFrequency = freq; }
-    IC void SetAmplitude(float amp) { mAmplitude = amp; }
+    void SetFrequency(f32 freq) { mFrequency = freq; }
+    void SetAmplitude(f32 amp) { mAmplitude = amp; }
 };
 
 class CPerlinNoise1D : public CPerlinNoiseCustom
 {
 private:
-    float noise(float arg);
-    float g1[SAMPLE_SIZE + SAMPLE_SIZE + 2];
+    f32 g1[SAMPLE_SIZE + SAMPLE_SIZE + 2];
+    f32 mPrevContiniousTime{};
 
-    void init();
-    float mPrevContiniousTime;
-
-public:
-    CPerlinNoise1D(int seed) : CPerlinNoiseCustom(seed) { mPrevContiniousTime = 0.0f; }
-    float Get(float x);
-    float GetContinious(float v);
-};
-
-class CPerlinNoise2D : public CPerlinNoiseCustom
-{
-private:
-    float noise(const Fvector2& vec);
-    void normalize(float v[2]);
-
-    float g2[SAMPLE_SIZE + SAMPLE_SIZE + 2][2];
-
-    void init();
+    [[nodiscard]] f32 noise(f32 arg);
 
 public:
-    CPerlinNoise2D(int seed) : CPerlinNoiseCustom(seed) {}
-    float Get(float x, float y);
-};
+    CPerlinNoise1D();
 
-class CPerlinNoise3D : public CPerlinNoiseCustom
-{
-private:
-    float noise(const Fvector3& vec);
-    void normalize(float v[3]);
-
-    float g3[SAMPLE_SIZE + SAMPLE_SIZE + 2][3];
-
-    void init();
-
-public:
-    CPerlinNoise3D(int seed) : CPerlinNoiseCustom(seed) {}
-    float Get(float x, float y, float z);
+    [[nodiscard]] f32 Get(f32 x);
+    [[nodiscard]] f32 GetContinious(f32 v);
 };
 
 #endif

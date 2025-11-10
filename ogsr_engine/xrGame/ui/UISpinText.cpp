@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UISpinText.h"
+
 #include "UILines.h"
 #include "../string_table.h"
 
@@ -9,8 +10,8 @@ CUISpinText::CUISpinText() { m_curItem = -1; }
 void CUISpinText::AddItem_(const char* item, int id)
 {
     SInfo _info;
-    _info._orig = item;
-    _info._transl = CStringTable().translate(item);
+    _info._orig._set(item);
+    _info._transl = CStringTable().translate(shared_str{item});
     _info._id = id;
 
     m_list.push_back(_info);

@@ -221,7 +221,7 @@ void CTexture::apply_avi(CBackend& cmd_list, u32 dwStage) const
         R_ASSERT(mapData.RowPitch == pAVI->m_dwWidth * 4);
         BYTE* ptr;
         pAVI->GetFrame(&ptr);
-        CopyMemory(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
+        std::memcpy(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
         pContext->Unmap(T2D, 0);
     }
 
@@ -253,7 +253,7 @@ void CTexture::apply_seq(CBackend& cmd_list, u32 dwStage)
 
 void CTexture::apply_normal(CBackend& cmd_list, u32 dwStage) const { Apply(cmd_list, dwStage); }
 
-void CTexture::set_slice(int slice)
+void CTexture::set_slice(gsl::index slice)
 {
     m_pSRView = (slice < 0) ? srv_all : srv_per_slice[slice];
     curr_slice = slice;
@@ -263,8 +263,8 @@ void CTexture::Preload() { Preload(cName.c_str()); }
 
 void CTexture::Preload(const char* Name)
 {
-    m_bumpmap = RImplementation.Resources->m_textures_description.GetBumpName(Name);
-    m_material = RImplementation.Resources->m_textures_description.GetMaterial(Name);
+    m_bumpmap = RImplementation.Resources->m_textures_description.GetBumpName(shared_str{Name});
+    m_material = RImplementation.Resources->m_textures_description.GetMaterial(shared_str{Name});
 }
 
 void CTexture::Load() { Load(cName.c_str()); }
@@ -396,7 +396,7 @@ void CTexture::Load(const char* Name)
         while (!_fs->eof())
         {
             _fs->r_string(buffer, sizeof(buffer));
-            _Trim(buffer);
+            std::ignore = _Trim(buffer);
 
             if (buffer[0])
             {

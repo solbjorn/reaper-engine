@@ -36,8 +36,9 @@ struct CDataStorageBinaryHeap
         Vertex** m_heap_tail;
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         inline virtual ~CDataStorage();
+
         inline void init();
         inline bool is_opened_empty() const;
         inline void add_opened(Vertex& vertex);

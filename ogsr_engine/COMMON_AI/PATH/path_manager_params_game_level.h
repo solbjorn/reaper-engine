@@ -17,9 +17,9 @@ struct SGameLevel : public SBaseParameters<_dist_type, _index_type, _iteration_t
     _index_type m_vertex_id;
     xr_vector<_index_type>* m_path;
 
-    IC SGameLevel(u32 level_id, _dist_type max_range = _dist_type(6000), _iteration_type max_iteration_count = _iteration_type(-1),
-                  _index_type max_visited_node_count = _index_type(-1))
-        : SBaseParameters<_dist_type, _index_type, _iteration_type>(max_range, max_iteration_count, max_visited_node_count), m_level_id(level_id)
+    explicit SGameLevel(u32 level_id, _dist_type max_range = _dist_type(6000), _iteration_type max_iteration_count = _iteration_type(-1),
+                        _index_type max_visited_node_count = _index_type(-1))
+        : SBaseParameters<_dist_type, _index_type, _iteration_type>{max_range, max_iteration_count, max_visited_node_count}, m_level_id{level_id}
     {}
 
     IC _index_type selected_vertex_id() const { return (m_vertex_id); }

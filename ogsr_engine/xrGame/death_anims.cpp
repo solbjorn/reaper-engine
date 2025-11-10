@@ -1,15 +1,16 @@
 #include "StdAfx.h"
 
-#include "../xr_3da/IGame_Level.h"
-
 #include "death_anims.h"
+
 #include "CharacterPhysicsSupport.h"
 #include "Weapon.h"
 #include "WeaponShotgun.h"
 #include "Explosive.h"
 #include "..\Include/xrRender/Kinematics.h"
 
-rnd_motion::rnd_motion() {}
+#include "../xr_3da/IGame_Level.h"
+
+rnd_motion::rnd_motion() = default;
 
 rnd_motion* rnd_motion::setup(IKinematicsAnimated* k, const char* s)
 {
@@ -20,17 +21,16 @@ rnd_motion* rnd_motion::setup(IKinematicsAnimated* k, const char* s)
     for (u16 i = 0; nb > i; ++i)
     {
         string64 n;
-        _GetItem(s, i, n);
+        std::ignore = _GetItem(s, i, n);
         MotionID m = k->LL_MotionID(n);
         if (m.valid())
-        {
             motions.push_back(m);
-        }
 #ifdef DEBUG
         else
             Msg("death_anims: motion: %s not found!", n);
 #endif
     }
+
     return this;
 }
 
@@ -111,8 +111,8 @@ type_motion::edirection type_motion::dir(CEntityAlive& ea, const SHit& H, float&
     }
     dir.mul(1.f / m);
 
-    Fvector z_dir = {ea.XFORM().k.x, 0.f, ea.XFORM().k.z};
-    Fvector x_dir = {ea.XFORM().i.x, 0.f, ea.XFORM().i.z};
+    Fvector z_dir{ea.XFORM().k.x, 0.f, ea.XFORM().k.z};
+    Fvector x_dir{ea.XFORM().i.x, 0.f, ea.XFORM().i.z};
     z_dir.normalize_safe();
     x_dir.normalize_safe();
 

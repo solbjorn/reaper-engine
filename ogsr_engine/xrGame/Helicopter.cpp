@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "Actor_Flags.h"
 #include "helicopter.h"
+
+#include "Actor_Flags.h"
 #include "xrserver_objects_alife.h"
 #include "PhysicsShell.h"
 #include "level.h"
@@ -87,10 +88,10 @@ void CHelicopter::Load(LPCSTR section)
 
     UseFireTrail(m_enemy.bUseFireTrail); // temp force reloar disp params
 
-    m_sAmmoType = pSettings->r_string(section, "ammo_class");
+    m_sAmmoType._set(pSettings->r_string(section, "ammo_class"));
     m_CurrentAmmo.Load(*m_sAmmoType, 0);
 
-    m_sRocketSection = pSettings->r_string(section, "rocket_class");
+    m_sRocketSection._set(pSettings->r_string(section, "rocket_class"));
 
     m_use_rocket_on_attack = !!pSettings->r_bool(section, "use_rocket");
     m_use_mgun_on_attack = !!pSettings->r_bool(section, "use_mgun");
@@ -103,7 +104,7 @@ void CHelicopter::Load(LPCSTR section)
     m_barrel_dir_tolerance = pSettings->r_float(section, "barrel_dir_tolerance");
 
     // lighting & sounds
-    m_smoke_particle = pSettings->r_string(section, "smoke_particle");
+    m_smoke_particle._set(pSettings->r_string(section, "smoke_particle"));
 
     m_light_range = pSettings->r_float(section, "light_range");
     m_light_brightness = pSettings->r_float(section, "light_brightness");
@@ -153,7 +154,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     m_rotate_x_bone = K->LL_BoneID(pUserData->r_string("helicopter_definition", "wpn_rotate_x_bone"));
     m_rotate_y_bone = K->LL_BoneID(pUserData->r_string("helicopter_definition", "wpn_rotate_y_bone"));
     m_fire_bone = K->LL_BoneID(pUserData->r_string("helicopter_definition", "wpn_fire_bone"));
-    m_death_bones_to_hide = pUserData->r_string("on_death_mode", "scale_bone");
+    m_death_bones_to_hide._set(pUserData->r_string("on_death_mode", "scale_bone"));
     m_left_rocket_bone = K->LL_BoneID(pUserData->r_string("helicopter_definition", "left_rocket_bone"));
     m_right_rocket_bone = K->LL_BoneID(pUserData->r_string("helicopter_definition", "right_rocket_bone"));
 
@@ -171,9 +172,10 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
         LPCSTR name;
         LPCSTR value;
         s16 boneID;
+
         for (int i = 0; i < lc; ++i)
         {
-            pUserData->r_line(s, i, &name, &value);
+            std::ignore = pUserData->r_line(s, i, &name, &value);
             boneID = K->LL_BoneID(name);
             m_hitBones.try_emplace(boneID, (float)atof(value));
         }
@@ -202,7 +204,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     IKinematicsAnimated* A = smart_cast<IKinematicsAnimated*>(Visual());
     if (A)
     {
-        A->PlayCycle(*heli->startup_animation);
+        A->PlayCycle(heli->startup_animation);
         K->CalculateBones(TRUE);
     }
 
@@ -218,7 +220,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     m_stepRemains = 0.0f;
 
     // lighting
-    m_light_render = ::Render->light_create();
+    m_light_render._set(::Render->light_create());
     m_light_render->set_shadow(psActorFlags.test(AF_FORCE_LIGHTS_SHADOWED));
     m_light_render->set_type(IRender_Light::POINT);
     m_light_render->set_range(m_light_range);
@@ -227,7 +229,9 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
 
     if (g_Alive())
         processing_activate();
+
     TurnEngineSound(false);
+
     if (pUserData->section_exist("destroyed"))
         CPHDestroyable::Load(pUserData, "destroyed");
 

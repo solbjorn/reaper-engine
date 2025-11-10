@@ -1,8 +1,12 @@
 #include "stdafx.h"
 
+#include "FS_internal.h"
+#include "stream_reader.h"
+
 #include <concurrentqueue.h>
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Wold-style-cast");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <sqfs/compressor.h>
@@ -14,9 +18,6 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <sqfs/io.h>
 
 XR_DIAG_POP();
-
-#include "FS_internal.h"
-#include "stream_reader.h"
 
 struct CLocatorAPI::archive::xr_sqfs
 {
@@ -30,12 +31,12 @@ struct CLocatorAPI::archive::xr_sqfs
 private:
     moodycamel::ConcurrentQueue<reader*> q;
 
-    reader* alloc(const archive& arc);
+    [[nodiscard]] reader* alloc(const archive& arc);
 
 public:
     sqfs_super_t super{};
 
-    reader* get(const archive& arc)
+    [[nodiscard]] reader* get(const archive& arc)
     {
         reader* rd;
 
@@ -45,7 +46,7 @@ public:
         return rd;
     }
 
-    bool put(reader* rd) { return q.enqueue(rd); }
+    void put(reader* rd) { q.enqueue(rd); }
 
     void drain();
 };
@@ -90,17 +91,17 @@ private:
     xr_sqfs::reader* rd;
     sqfs_inode_generic_t* inode;
 
-    size_t fbase{};
-    size_t fsize{};
-    size_t foff{};
+    gsl::index fbase{};
+    gsl::index fsize{};
+    gsl::index foff{};
 
-    size_t bsize{};
-    size_t bread{};
-    size_t boff{};
+    gsl::index bsize{};
+    gsl::index bread{};
+    gsl::index boff{};
 
-    u8* buf;
+    std::byte* buf;
     u64 ref{};
-    size_t wnd{};
+    gsl::index wnd{};
 
     void destroy()
     {
@@ -115,14 +116,13 @@ private:
     }
 
 public:
-    void construct(const archive* arcin, u64 inodein, size_t base, size_t sz, size_t wndin);
+    void construct(const archive* arcin, u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin);
+    void construct(const archive* arcin, u64 inodein, gsl::index sz, gsl::index wndin) { construct(arcin, inodein, 0, sz, wndin); }
 
-    void construct(const archive* arcin, u64 inodein, size_t sz, size_t wndin) { construct(arcin, inodein, 0, sz, wndin); }
-
-    intptr_t elapsed() const override { return fsize - tell(); }
-    const size_t& length() const override { return fsize; }
-    size_t tell() const override { return foff + boff; }
-    void seek(const int& offset) override { advance(offset - tell()); }
+    [[nodiscard]] gsl::index elapsed() const override { return fsize - tell(); }
+    [[nodiscard]] gsl::index length() const override { return fsize; }
+    [[nodiscard]] gsl::index tell() const override { return foff + boff; }
+    void seek(gsl::index offset) override { advance(offset - tell()); }
 
     void close() override
     {
@@ -132,23 +132,23 @@ public:
         xr_delete(self);
     }
 
-    void advance(const int& offset) override
+    void advance(gsl::index offset) override
     {
-        s64 noff = s64(boff) + offset;
-        if (noff >= 0 && size_t(noff) < bsize)
+        gsl::index noff = boff + offset;
+        if (noff >= 0 && noff < bsize)
         {
             boff = noff;
-            s64 nread = s64(bread) - offset;
-            bread = std::max<s64>(nread, 0);
+            gsl::index nread = bread - offset;
+            bread = std::max(nread, 0z);
 
             if (offset < 0)
-                R_ASSERT(sqfs_data_reader_read(rd->data, inode, fbase + foff + boff, buf + boff, -offset) == -offset);
+                R_ASSERT(sqfs_data_reader_read(rd->data, inode, gsl::narrow_cast<sqfs_u64>(fbase + foff + boff), buf + boff, gsl::narrow_cast<sqfs_u32>(-offset)) == -offset);
         }
         else
         {
             foff += noff;
 
-            size_t woff = rounddown(foff, wnd);
+            gsl::index woff = xr::rounddown(foff, wnd);
             boff = foff - woff;
             foff = woff;
 
@@ -156,11 +156,11 @@ public:
         }
     }
 
-    void r(void* buffer, size_t buffer_size) override;
-    CStreamReader* open_chunk(const size_t& chunk_id) override;
+    void r(void* buffer, gsl::index buffer_size) override;
+    [[nodiscard]] CStreamReader* open_chunk(u32 chunk_id) override;
 };
 
-void CLocatorAPI::archive::xr_sqfs_stream::construct(const CLocatorAPI::archive* arcin, u64 inodein, size_t base, size_t sz, size_t wndin)
+void CLocatorAPI::archive::xr_sqfs_stream::construct(const CLocatorAPI::archive* arcin, u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin)
 {
     if (arc)
         destroy();
@@ -171,41 +171,41 @@ void CLocatorAPI::archive::xr_sqfs_stream::construct(const CLocatorAPI::archive*
 
     ref = inodein;
     wnd = wndin;
-    R_ASSERT(std::has_single_bit(wnd));
+    R_ASSERT(std::has_single_bit(gsl::narrow_cast<size_t>(wnd)));
 
     rd = arc->fs->get(*arc);
     R_ASSERT(!sqfs_dir_reader_get_inode(rd->dr, ref, &inode));
 
     bsize = std::min(wnd, fsize);
-    buf = xr_alloc<u8>(bsize);
+    buf = xr_alloc<std::byte>(bsize);
 }
 
-void CLocatorAPI::archive::xr_sqfs_stream::r(void* buffer, size_t buffer_size)
+void CLocatorAPI::archive::xr_sqfs_stream::r(void* buffer, gsl::index buffer_size)
 {
-    u8* cbuffer = reinterpret_cast<u8*>(buffer);
+    std::byte* cbuffer = static_cast<std::byte*>(buffer);
 
     while (buffer_size && !eof())
     {
         if (!bread)
         {
-            size_t precache = std::min<s64>(bsize - boff, elapsed());
+            auto precache = std::min(bsize - boff, elapsed());
 
-            R_ASSERT(sqfs_data_reader_read(rd->data, inode, fbase + foff + boff, buf + boff, precache) == (sqfs_s32)precache);
+            R_ASSERT(sqfs_data_reader_read(rd->data, inode, gsl::narrow_cast<sqfs_u64>(fbase + foff + boff), buf + boff, gsl::narrow_cast<sqfs_u32>(precache)) == precache);
             bread += precache;
         }
 
-        size_t copy = std::min(buffer_size, bread);
-        memcpy(cbuffer, buf + boff, copy);
+        gsl::index copy = std::min(buffer_size, bread);
+        std::memcpy(cbuffer, buf + boff, gsl::narrow_cast<size_t>(copy));
 
         cbuffer += copy;
         buffer_size -= copy;
 
-        int off = (int)copy;
+        gsl::index off = copy;
         advance(off);
     }
 }
 
-CStreamReader* CLocatorAPI::archive::xr_sqfs_stream::open_chunk(const size_t& chunk_id)
+CStreamReader* CLocatorAPI::archive::xr_sqfs_stream::open_chunk(u32 chunk_id)
 {
     BOOL compressed;
 
@@ -232,7 +232,7 @@ void CLocatorAPI::archive::open_sqfs()
     R_ASSERT(!sqfs_super_read(&fs->super, file));
 
     sqfs_compressor_config_t cfg;
-    sqfs_compressor_config_init(&cfg, (SQFS_COMPRESSOR)fs->super.compression_id, fs->super.block_size, SQFS_COMP_FLAG_UNCOMPRESS);
+    sqfs_compressor_config_init(&cfg, gsl::narrow<SQFS_COMPRESSOR>(fs->super.compression_id), fs->super.block_size, SQFS_COMP_FLAG_UNCOMPRESS);
 
     R_ASSERT(!sqfs_compressor_create(&cfg, &cmp));
 }
@@ -243,13 +243,13 @@ bool CLocatorAPI::archive::autoload_sqfs()
     return true;
 }
 
-const char* CLocatorAPI::archive::entry_point_sqfs()
+const char* CLocatorAPI::archive::entry_point_sqfs() const
 {
     // Same as above: no meta -> default entry point
     return nullptr;
 }
 
-void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it)
+void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it) const
 {
     sqfs_dir_entry_t* ent;
 
@@ -285,14 +285,14 @@ void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sq
                 .inode = ent->inode,
             };
 
-            loc.Register(full, vfs_idx, attr.ptr, ent->size, attr.size_compressed, 0);
+            loc.Register(full, vfs_idx, attr.ptr, gsl::narrow<s64>(ent->size), attr.size_compressed, ent->mtime);
         }
 
         xr_free(ent);
     }
 }
 
-void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, const char* fs_entry_point)
+void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, const char* fs_entry_point) const
 {
     sqfs_inode_generic_t* inode;
     sqfs_dir_iterator_t* it;
@@ -315,7 +315,7 @@ void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, const char* fs_entry_poi
     fs->put(rd);
 }
 
-IReader* CLocatorAPI::archive::read_sqfs(const char*, const struct file& desc, u32)
+IReader* CLocatorAPI::archive::read_sqfs(const char*, const struct file& desc, u32) const
 {
     sqfs_inode_generic_t* inode;
     auto* rd = fs->get(*this);
@@ -323,16 +323,16 @@ IReader* CLocatorAPI::archive::read_sqfs(const char*, const struct file& desc, u
     if (sqfs_dir_reader_get_inode(rd->dr, desc.inode, &inode))
         return nullptr;
 
-    u8* dest = xr_alloc<u8>(desc.size_real);
-    R_ASSERT(sqfs_data_reader_read(rd->data, inode, 0, dest, desc.size_real) == (s32)desc.size_real);
+    std::byte* dest = xr_alloc<std::byte>(desc.size_real);
+    R_ASSERT(sqfs_data_reader_read(rd->data, inode, 0, dest, gsl::narrow_cast<sqfs_u32>(desc.size_real)) == desc.size_real);
 
     xr_free(inode);
     fs->put(rd);
 
-    return xr_new<CTempReader>(dest, desc.size_real, 0uz);
+    return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }
 
-CStreamReader* CLocatorAPI::archive::stream_sqfs(const char*, const struct file& desc)
+CStreamReader* CLocatorAPI::archive::stream_sqfs(const char*, const struct file& desc) const
 {
     xr_sqfs_stream* st = xr_new<xr_sqfs_stream>();
     st->construct(this, desc.inode, desc.size_real, fs->super.block_size);

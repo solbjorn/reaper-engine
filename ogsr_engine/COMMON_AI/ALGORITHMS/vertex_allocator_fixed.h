@@ -31,6 +31,7 @@ struct CVertexAllocatorFixed
     public:
         inline CDataStorage();
         inline virtual ~CDataStorage();
+
         inline void init();
         inline u32 get_visited_node_count() const;
         inline TCompoundVertex& create_vertex();

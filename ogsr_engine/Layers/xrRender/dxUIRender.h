@@ -5,6 +5,8 @@
 
 class dxUIRender : public IUIRender
 {
+    RTTI_DECLARE_TYPEINFO(dxUIRender, IUIRender);
+
 public:
     dxUIRender() : PrimitiveType{ptNone}, m_PointType{pttNone} {}
 

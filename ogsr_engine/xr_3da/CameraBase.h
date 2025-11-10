@@ -50,7 +50,7 @@ public:
     int tag{};
 
 public:
-    CCameraBase(CObject* p, u32 flags);
+    explicit CCameraBase(CObject* p, u32 flags);
     virtual ~CCameraBase();
 
     virtual void Load(LPCSTR section);

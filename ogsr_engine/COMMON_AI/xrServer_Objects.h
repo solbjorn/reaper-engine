@@ -171,7 +171,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary, CSE_Abstract)
 public:
 u32 m_tNodeID{std::numeric_limits<u32>::max()};
 
-CSE_Temporary(LPCSTR caSection);
+explicit CSE_Temporary(LPCSTR caSection);
 virtual ~CSE_Temporary();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_Temporary);
@@ -182,7 +182,7 @@ add_to_type_list(CSE_Temporary);
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
 public:
-CSE_PHSkeleton(LPCSTR);
+explicit CSE_PHSkeleton(LPCSTR);
 virtual ~CSE_PHSkeleton();
 
 enum

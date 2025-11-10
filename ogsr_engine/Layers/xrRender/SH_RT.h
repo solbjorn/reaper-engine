@@ -17,14 +17,15 @@ public:
 
     CRT() = default;
     ~CRT();
+
     void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, u32 slices_num = 1, Flags32 flags = {});
     void destroy();
     void reset_begin();
     void reset_end();
-    BOOL valid() { return !!pTexture; }
+    [[nodiscard]] bool valid() const { return !!pTexture; }
 
-    void set_slice_read(int slice);
-    void set_slice_write(ctx_id_t context_id, int slice);
+    void set_slice_read(gsl::index slice);
+    void set_slice_write(ctx_id_t context_id, gsl::index slice);
 
     ID3DTexture2D* pSurface{};
     ID3DRenderTargetView* pRT{};
@@ -39,7 +40,7 @@ public:
     u32 dwHeight{};
     D3DFORMAT fmt{};
     u32 sampleCount{};
-    u32 n_slices{};
+    gsl::index n_slices{};
 
     u64 _order{};
 };
@@ -50,6 +51,6 @@ struct resptrcode_crt : public resptr_base<CRT>
     void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, u32 slices_num, Flags32 flags);
     void destroy() { _set(nullptr); }
 };
-typedef resptr_core<CRT, resptrcode_crt> ref_rt;
+using ref_rt = resptr_core<CRT, resptrcode_crt>;
 
 #endif // SH_RT_H

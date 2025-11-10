@@ -586,7 +586,7 @@ bool CControlJump::jump_intersect_geometry(Fvector const& target, CObject* const
     #endif // #ifdef DEBUG
     */
 
-    Fvector const sizes = {0.8f, 1.4f, 0.8f};
+    constexpr Fvector sizes{0.8f, 1.4f, 0.8f};
 
     Fvector const start_to_target = target - m_object->Position();
     if (magnitude(start_to_target) < 1.f)

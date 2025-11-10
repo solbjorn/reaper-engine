@@ -70,25 +70,24 @@ void CSpecificCharacter::load_shared(LPCSTR)
 #ifdef XRGAME_EXPORTS
     LPCSTR start_dialog = pXML->Read("start_dialog", 0, nullptr);
     if (start_dialog)
-    {
-        data()->m_StartDialog = start_dialog;
-    }
+        data()->m_StartDialog._set(start_dialog);
     else
-        data()->m_StartDialog = nullptr;
+        data()->m_StartDialog._set(nullptr);
 
     int dialogs_num = pXML->GetNodesNum(pXML->GetLocalRoot(), "actor_dialog");
     data()->m_ActorDialogs.clear();
+
     for (int i = 0; i < dialogs_num; ++i)
     {
-        shared_str dialog_name = pXML->Read(pXML->GetLocalRoot(), "actor_dialog", i, "");
-        data()->m_ActorDialogs.push_back(dialog_name);
+        gsl::czstring dialog_name = pXML->Read(pXML->GetLocalRoot(), "actor_dialog", i, "");
+        data()->m_ActorDialogs.emplace_back(dialog_name);
     }
 
-    data()->m_icon_name = pXML->Read("icon", 0, "ui_npc_u_barman");
+    data()->m_icon_name._set(pXML->Read("icon", 0, "ui_npc_u_barman"));
 
     // игровое имя персонажа
     data()->m_sGameName = pXML->Read("name", 0, "");
-    data()->m_sBioText = CStringTable().translate(pXML->Read("bio", 0, ""));
+    data()->m_sBioText = CStringTable().translate(shared_str{pXML->Read("bio", 0, "")});
 
     data()->m_fPanic_threshold = pXML->ReadFlt("panic_threshold", 0, 0.f);
     data()->m_fHitProbabilityFactor = pXML->ReadFlt("hit_probability_factor", 0, 1.f);
@@ -117,7 +116,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
     data()->m_sNpcConfigSect = pXML->Read("npc_config", 0, "");
     data()->m_sound_voice_prefix = pXML->Read("snd_config", 0, "");
 
-    data()->m_terrain_sect = pXML->Read("terrain_sect", 0, "");
+    data()->m_terrain_sect._set(pXML->Read("terrain_sect", 0, ""));
 #endif
 
     data()->m_Classes.clear();
@@ -129,7 +128,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
         {
             char* buf_str = xr_strdup(char_class);
             xr_strlwr(buf_str);
-            data()->m_Classes.push_back(buf_str);
+            data()->m_Classes.emplace_back(buf_str);
             xr_free(buf_str);
         }
     }
@@ -140,7 +139,7 @@ void CSpecificCharacter::load_shared(LPCSTR)
 
     char* buf_str = xr_strdup(team);
     xr_strlwr(buf_str);
-    data()->m_Community.set(buf_str);
+    data()->m_Community.set(shared_str{buf_str});
     xr_free(buf_str);
 
     if (data()->m_Community.index() == NO_COMMUNITY_INDEX)

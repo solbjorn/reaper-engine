@@ -7,5 +7,5 @@ constexpr auto MK_CLSID = [](const char& a, const char& b, const char& c, const 
                     (CLASS_ID(f) << CLASS_ID(16)) | (CLASS_ID(g) << CLASS_ID(8)) | (CLASS_ID(h)));
 };
 
-extern void CLSID2TEXT(CLASS_ID id, LPSTR text);
-extern CLASS_ID TEXT2CLSID(LPCSTR text);
+void CLSID2TEXT(CLASS_ID id, LPSTR text);
+[[nodiscard]] CLASS_ID TEXT2CLSID(LPCSTR text);

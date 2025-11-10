@@ -27,9 +27,9 @@ void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color, bool hud_
     matrix.transform_tiny(aabb[6], Fvector().set(+1, +1, +1)); // 6
     matrix.transform_tiny(aabb[7], Fvector().set(+1, -1, +1)); // 7
 
-    u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
+    static constexpr std::array<u16, 12 * 2> XR_ALIGNED_DEFAULT aabb_id{0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
 
-    add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color, hud_mode); //-V706
+    add_lines(aabb, sizeof(aabb) / sizeof(Fvector), aabb_id.data(), sizeof(aabb_id) / (2 * sizeof(u16)), color, hud_mode); //-V706
 }
 
 void CDebugRenderer::draw_obb(const Fmatrix& matrix, const Fvector& half_size, const u32& color, bool hud_mode)
@@ -44,7 +44,7 @@ void CDebugRenderer::draw_obb(const Fmatrix& matrix, const Fvector& half_size, c
 
 namespace
 {
-constexpr float vertices[]{
+constexpr std::array<float, 342> XR_ALIGNED_DEFAULT vertices{
     0.0000f,  0.0000f,  1.0000f,  0.0000f,  0.3827f,  0.9239f,  -0.1464f, 0.3536f,  0.9239f,  -0.2706f, 0.2706f,  0.9239f,  -0.3536f, 0.1464f,  0.9239f,  -0.3827f, 0.0000f,
     0.9239f,  -0.3536f, -0.1464f, 0.9239f,  -0.2706f, -0.2706f, 0.9239f,  -0.1464f, -0.3536f, 0.9239f,  0.0000f,  -0.3827f, 0.9239f,  0.1464f,  -0.3536f, 0.9239f,  0.2706f,
     -0.2706f, 0.9239f,  0.3536f,  -0.1464f, 0.9239f,  0.3827f,  0.0000f,  0.9239f,  0.3536f,  0.1464f,  0.9239f,  0.2706f,  0.2706f,  0.9239f,  0.1464f,  0.3536f,  0.9239f,
@@ -70,7 +70,7 @@ constexpr float vertices[]{
 constexpr u32 nverts{sizeof(vertices) / (3 * sizeof(float))};
 static_assert(nverts == 114);
 
-constexpr u16 pairs[]{
+constexpr std::array<u16, 896> XR_ALIGNED_DEFAULT pairs{
     0,   1,   0,   2,   0,   3,   0,   4,   0,   5,   0,   6,   0,   7,   0,   8,   0,   9,   0,   10,  0,   11,  0,   12,  0,   13,  0,   14,  0,   15,  0,   16,  1,   2,   1,
     17,  1,   18,  2,   3,   2,   18,  2,   19,  3,   4,   3,   19,  3,   20,  4,   5,   4,   20,  4,   21,  5,   6,   5,   21,  5,   22,  6,   7,   6,   22,  6,   23,  7,   8,
     7,   23,  7,   24,  8,   9,   8,   24,  8,   25,  9,   10,  9,   25,  9,   26,  10,  11,  10,  26,  10,  27,  11,  12,  11,  27,  11,  28,  12,  13,  12,  28,  12,  29,  13,
@@ -104,7 +104,7 @@ static_assert(npairs == 448);
 class ellipse_verts
 {
 private:
-    std::array<Fvector, nverts> out;
+    std::array<Fvector, nverts> XR_ALIGNED_DEFAULT out;
 
 public:
     constexpr ellipse_verts(const Fmatrix& matrix);
@@ -114,7 +114,7 @@ public:
 
 constexpr ellipse_verts::ellipse_verts(const Fmatrix& matrix)
 {
-    const std::span src{reinterpret_cast<const Fvector*>(vertices), nverts};
+    const std::span src{reinterpret_cast<const Fvector*>(vertices.data()), nverts};
 
     for (auto [a, b] : std::views::zip(out, src))
         matrix.transform_tiny(a, b);
@@ -123,5 +123,5 @@ constexpr ellipse_verts::ellipse_verts(const Fmatrix& matrix)
 
 void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color, bool hud_mode)
 {
-    add_lines(ellipse_verts{matrix}.data(), nverts, &pairs[0], npairs, color, hud_mode); //-V706
+    add_lines(ellipse_verts{matrix}.data(), nverts, pairs.data(), npairs, color, hud_mode); //-V706
 }

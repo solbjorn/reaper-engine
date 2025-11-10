@@ -35,7 +35,7 @@ void CEliteDetector::UpdateAf()
         if (pAf->H_Parent())
             continue;
 
-        ui().RegisterItemToDraw(pAf->Position(), "af_sign");
+        ui().RegisterItemToDraw(pAf->Position(), shared_str{"af_sign"});
 
         if (pAf->CanBeInvisible())
         {
@@ -86,7 +86,7 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
             for (int idx = 0; idx < num; ++idx)
             {
                 CUIStatic* S = xr_new<CUIStatic>();
-                shared_str name = uiXml.ReadAttrib("palette", idx, "id");
+                shared_str name{uiXml.ReadAttrib("palette", idx, "id")};
                 m_palette[name] = S;
                 CUIXmlInit::InitStatic(uiXml, "palette", idx, S);
                 S->SetAutoDelete(true);

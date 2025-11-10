@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIOutfitInfo.h"
+
 #include "UIXmlInit.h"
 #include "UIStatic.h"
 #include "UIScrollView.h"
@@ -10,7 +11,7 @@
 #include "../string_table.h"
 #include "script_game_object.h"
 
-CUIOutfitInfo::CUIOutfitInfo() {}
+CUIOutfitInfo::CUIOutfitInfo() = default;
 
 CUIOutfitInfo::~CUIOutfitInfo()
 {
@@ -131,9 +132,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
         }
 
         if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f))
-        {
             continue;
-        }
 
         LPCSTR _sn = "";
         if (i != _item_radiation_restore_speed && i != _item_power_restore_speed)
@@ -151,18 +150,15 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
         if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
             _color = (_val_outfit > 0) ? "%c[red]" : "%c[green]";
 
-        LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i].data());
+        LPCSTR _imm_name = *CStringTable().translate(shared_str{_imm_st_names[i].data()});
 
         int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
         _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val_outfit, _sn);
 
         if (!fsimilar(_val_af, 0.0f))
-        {
             _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
-        }
 
         _s->SetText(_buff);
-
         m_listWnd->AddWindow(_s, false);
     }
 

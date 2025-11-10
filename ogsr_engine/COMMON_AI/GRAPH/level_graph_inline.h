@@ -20,7 +20,7 @@ ICF bool CLevelGraph::valid_vertex_id(u32 id) const
     return (b);
 }
 
-ICF CLevelGraph::CVertex* CLevelGraph::vertex(const u32 vertex_id) const
+ICF const CLevelGraph::CVertex* CLevelGraph::vertex(const u32 vertex_id) const
 {
 #ifdef CRASH_ON_INVALID_VERTEX_ID
     ASSERT_FMT(valid_vertex_id(vertex_id), "invalid vertex_id %u", vertex_id);
@@ -92,7 +92,7 @@ ICF const Fvector& CLevelGraph::vertex_position(Fvector& dest_position, const CL
 
 IC const CLevelGraph::CPosition& CLevelGraph::vertex_position(CLevelGraph::CPosition& dest_position, const Fvector& source_position) const
 {
-    const auto [box_x, box_y, box_z] = header().box().min;
+    const auto [box_x, box_y, box_z] = header().box().min.arr;
     const auto cell_size = header().cell_size();
 
     VERIFY(iFloor((source_position.z - box_z) / cell_size + .5f) < (int)m_row_length);
@@ -175,7 +175,7 @@ IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector& position, const 
 
 IC bool CLevelGraph::inside(const u32 vertex_id, const Fvector2& position) const
 {
-    [[maybe_unused]] const auto [box_x, box_y, box_z] = header().box().min;
+    [[maybe_unused]] const auto [box_x, box_y, box_z] = header().box().min.arr;
     const auto cell_size = header().cell_size();
 
     const int packed_xz = iFloor((position.x - box_x) / cell_size + .5f) * m_row_length + iFloor((position.y - box_z) / cell_size + .5f);
@@ -337,7 +337,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
             u32 next_vertex_id = value(cur_vertex_id, I);
             if ((next_vertex_id == prev_vertex_id) || !valid_vertex_id(next_vertex_id))
                 continue;
-            CVertex* v = vertex(next_vertex_id);
+            const CVertex* v = vertex(next_vertex_id);
             unpack_xz(v, temp.x, temp.y);
             box.min = box.max = temp;
             box.grow(identity);
@@ -437,7 +437,7 @@ IC bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& s
 template <typename T>
 IC void CLevelGraph::assign_y_values(xr_vector<T>& path)
 {
-    Fvector DUP = {0, 1, 0}, normal, v1, P = {0, 0, 0};
+    Fvector DUP{0.0f, 1.0f, 0.0f}, normal, v1, P{};
     Fplane PL;
     const CVertex* _vertex;
     u32 prev_id = u32(-1);
@@ -508,7 +508,7 @@ IC void CLevelGraph::clear_mask(u32 vertex_id)
 template <typename P>
 IC void CLevelGraph::iterate_vertices(const Fvector& min_position, const Fvector& max_position, const P& predicate) const
 {
-    CVertex *I, *E;
+    const CVertex *I, *E;
 
     if (valid_vertex_position(min_position))
         I = std::lower_bound(m_nodes, m_nodes + header().vertex_count(), vertex_position(min_position).xz(), &vertex::predicate2);

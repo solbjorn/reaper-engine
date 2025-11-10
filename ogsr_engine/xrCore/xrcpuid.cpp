@@ -6,7 +6,7 @@
 
 namespace
 {
-decltype(auto) countSetBits(ULONG_PTR bitMask)
+[[nodiscard]] constexpr auto countSetBits(ULONG_PTR bitMask)
 {
     DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
     DWORD bitSetCount = 0;
@@ -52,8 +52,8 @@ _processor_info::_processor_info()
     // detect cpu main features
     xr_cpuid(cpinfo, 1);
     stepping = cpinfo[0] & 0xf;
-    model = (u8)((cpinfo[0] >> 4) & 0xf) | ((u8)((cpinfo[0] >> 16) & 0xf) << 4);
-    family = (u8)((cpinfo[0] >> 8) & 0xf) | ((u8)((cpinfo[0] >> 20) & 0xff) << 4);
+    model = ((cpinfo[0] >> 4) & 0xf) | (((cpinfo[0] >> 16) & 0xf) << 4);
+    family = ((cpinfo[0] >> 8) & 0xf) | (((cpinfo[0] >> 20) & 0xff) << 4);
     m_f1_ECX.init(cpinfo[2]);
     m_f1_EDX.init(cpinfo[3]);
 
@@ -63,11 +63,7 @@ _processor_info::_processor_info()
     m_f81_EDX.init(cpinfo[3]);
 
     // get version of OS
-    DWORD dwMajorVersion = 0;
-    DWORD dwVersion = 0;
-    dwVersion = GetVersion();
-
-    dwMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
+    const u32 dwMajorVersion = GetVersion() & std::numeric_limits<u8>::max();
     if (dwMajorVersion <= 5) // XP don't support SSE3+ instruction sets
     {
         m_f1_ECX.clear(0);
@@ -122,20 +118,20 @@ _processor_info::_processor_info()
 
 namespace
 {
-unsigned long long SubtractTimes(const FILETIME one, const FILETIME two)
+[[nodiscard]] constexpr s64 SubtractTimes(FILETIME one, FILETIME two)
 {
-    LARGE_INTEGER a, b;
+    ULARGE_INTEGER a, b;
     a.LowPart = one.dwLowDateTime;
     a.HighPart = one.dwHighDateTime;
 
     b.LowPart = two.dwLowDateTime;
     b.HighPart = two.dwHighDateTime;
 
-    return a.QuadPart - b.QuadPart;
+    return gsl::narrow_cast<s64>(a.QuadPart) - gsl::narrow_cast<s64>(b.QuadPart);
 }
 } // namespace
 
-bool _processor_info::getCPULoad(double& val)
+bool _processor_info::getCPULoad(f64& val)
 {
     FILETIME sysIdle, sysKernel, sysUser;
     // sysKernel include IdleTime
@@ -144,16 +140,16 @@ bool _processor_info::getCPULoad(double& val)
 
     if (prevSysIdle.dwLowDateTime != 0 && prevSysIdle.dwHighDateTime != 0)
     {
-        DWORDLONG sysIdleDiff, sysKernelDiff, sysUserDiff;
+        s64 sysIdleDiff, sysKernelDiff, sysUserDiff;
         sysIdleDiff = SubtractTimes(sysIdle, prevSysIdle);
         sysKernelDiff = SubtractTimes(sysKernel, prevSysKernel);
         sysUserDiff = SubtractTimes(sysUser, prevSysUser);
 
-        DWORDLONG sysTotal = sysKernelDiff + sysUserDiff;
-        DWORDLONG kernelTotal = sysKernelDiff - sysIdleDiff; // kernelTime - IdleTime = kernelTime, because sysKernel include IdleTime
+        s64 sysTotal = sysKernelDiff + sysUserDiff;
+        s64 kernelTotal = sysKernelDiff - sysIdleDiff; // kernelTime - IdleTime = kernelTime, because sysKernel include IdleTime
 
         if (sysTotal > 0) // sometimes kernelTime > idleTime
-            val = (double)(((kernelTotal + sysUserDiff) * 100.0) / sysTotal);
+            val = gsl::narrow_cast<f64>(kernelTotal + sysUserDiff) * 100.0 / gsl::narrow_cast<f64>(sysTotal);
     }
 
     prevSysIdle = sysIdle;
@@ -166,10 +162,10 @@ bool _processor_info::getCPULoad(double& val)
 void _processor_info::MTCPULoad()
 {
     using NTQUERYSYSTEMINFORMATION = NTSTATUS(NTAPI*)(SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);
-    static auto m_pNtQuerySystemInformation = (NTQUERYSYSTEMINFORMATION)GetProcAddress(GetModuleHandle("ntdll.dll"), "NtQuerySystemInformation");
+    static const auto m_pNtQuerySystemInformation = reinterpret_cast<NTQUERYSYSTEMINFORMATION>(GetProcAddress(GetModuleHandle("ntdll.dll"), "NtQuerySystemInformation"));
 
     if (!NT_SUCCESS(m_pNtQuerySystemInformation(SystemProcessorPerformanceInformation, perfomanceInfo.get(),
-                                                sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * (ULONG)m_dwNumberOfProcessors, nullptr)))
+                                                sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * m_dwNumberOfProcessors, nullptr)))
         Msg("!![%s] Can't get NtQuerySystemInformation", __FUNCTION__);
 
     DWORD dwTickCount = GetTickCount();
@@ -178,20 +174,13 @@ void _processor_info::MTCPULoad()
 
     for (DWORD i = 0; i < m_dwNumberOfProcessors; i++)
     {
-        auto* cpuPerfInfo = &perfomanceInfo[i];
-        cpuPerfInfo->KernelTime.QuadPart -= cpuPerfInfo->IdleTime.QuadPart;
+        auto& cpuPerfInfo = perfomanceInfo[i];
+        cpuPerfInfo.KernelTime.QuadPart -= cpuPerfInfo.IdleTime.QuadPart;
 
-        fUsage[i] = 100.0f - 0.01f * (cpuPerfInfo->IdleTime.QuadPart - m_idleTime[i].QuadPart) / ((dwTickCount - m_dwCount));
-        if (fUsage[i] < 0.0f)
-        {
-            fUsage[i] = 0.0f;
-        }
-        if (fUsage[i] > 100.0f)
-        {
-            fUsage[i] = 100.0f;
-        }
+        fUsage[i] = 100.0f - 0.01f * gsl::narrow_cast<f32>(cpuPerfInfo.IdleTime.QuadPart - m_idleTime[i].QuadPart) / gsl::narrow_cast<f32>(dwTickCount - m_dwCount);
+        fUsage[i] = std::clamp(fUsage[i], 0.0f, 100.0f);
 
-        m_idleTime[i] = cpuPerfInfo->IdleTime;
+        m_idleTime[i] = cpuPerfInfo.IdleTime;
     }
 
     m_dwCount = dwTickCount;

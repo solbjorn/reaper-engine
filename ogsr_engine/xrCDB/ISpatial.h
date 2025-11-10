@@ -4,8 +4,8 @@
 
 #include "xr_collide_defs.h"
 
-constexpr inline Fvector c_spatial_offset[8]{{-1.f, -1.f, -1.f}, {1.f, -1.f, -1.f}, {-1.f, 1.f, -1.f}, {1.f, 1.f, -1.f},
-                                             {-1.f, -1.f, 1.f},  {1.f, -1.f, 1.f},  {-1.f, 1.f, 1.f},  {1.f, 1.f, 1.f}};
+constexpr inline Fvector c_spatial_offset[8]{Fvector{-1.0f, -1.0f, -1.0f}, Fvector{1.0f, -1.0f, -1.0f}, Fvector{-1.0f, 1.0f, -1.0f}, Fvector{1.0f, 1.0f, -1.0f},
+                                             Fvector{-1.0f, -1.0f, 1.0f},  Fvector{1.0f, -1.0f, 1.0f},  Fvector{-1.0f, 1.0f, 1.0f},  Fvector{1.0f, 1.0f, 1.0f}};
 
 using sector_id_t = size_t;
 
@@ -88,7 +88,7 @@ private:
     void spatial_updatesector_internal(sector_id_t sector_id);
 
 public:
-    ISpatial(ISpatial_DB* space) : spatial{space} {}
+    explicit ISpatial(ISpatial_DB* space) : spatial{space} {}
     virtual ~ISpatial();
 
     bool spatial_inside();
@@ -172,7 +172,7 @@ private:
     void _remove(ISpatial_NODE* N, ISpatial_NODE* N_sub);
 
 public:
-    ISpatial_DB() {}
+    ISpatial_DB() = default;
     ~ISpatial_DB();
 
     // managing

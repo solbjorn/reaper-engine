@@ -111,8 +111,8 @@ struct PDomain
     void Load(IReader& F);
     void Save(IWriter& F);
 
-    void Load2(CInifile& ini, const shared_str& sect);
-    void Save2(CInifile& ini, const shared_str& sect);
+    void Load2(CInifile& ini, gsl::czstring sect);
+    void Save2(CInifile& ini, gsl::czstring sect);
 };
 
 struct XR_NOVTABLE EParticleAction : public virtual RTTI::Enable
@@ -225,8 +225,8 @@ public:
     virtual bool Load(IReader& F);
     virtual void Save(IWriter& F);
 
-    virtual void Load2(CInifile& ini, const shared_str& sect);
-    virtual void Save2(CInifile& ini, const shared_str& sect);
+    virtual void Load2(CInifile& ini, gsl::czstring sect);
+    virtual void Save2(CInifile& ini, gsl::czstring sect);
 };
 
 inline EParticleAction::~EParticleAction() = default;

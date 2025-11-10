@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "ModelPool.h"
-#include <xr_ini.h>
 
 #include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/fmesh.h"
@@ -14,6 +13,8 @@
 #include "ftreevisual.h"
 #include "ParticleGroup.h"
 #include "ParticleEffect.h"
+
+#include "xr_ini.h"
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
@@ -98,7 +99,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* N, BOOL allow_register)
 
     IReader* data = FS.r_open(fn);
     ogf_header H;
-    data->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
+    std::ignore = data->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
     V = Instance_Create(H.type);
     V->Load(N, data, 0);
     FS.r_close(data);
@@ -116,24 +117,18 @@ dxRender_Visual* CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allo
     dxRender_Visual* V;
 
     ogf_header H;
-    data->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
+    std::ignore = data->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
     V = Instance_Create(H.type);
     V->Load(name, data, 0);
 
     // Registration
     if (allow_register)
         Instance_Register(name, V);
+
     return V;
 }
 
-void CModelPool::Instance_Register(LPCSTR N, dxRender_Visual* V)
-{
-    // Registration
-    ModelDef M;
-    M.name = N;
-    M.model = V;
-    Models.push_back(M);
-}
+void CModelPool::Instance_Register(LPCSTR N, dxRender_Visual* V) { Models.emplace_back(N, V); }
 
 void CModelPool::Destroy()
 {
@@ -164,7 +159,7 @@ void CModelPool::Destroy()
     g_pMotionsContainer->clean(false);
 
     if (vis_prefetch_ini)
-        vis_prefetch_ini->save_as();
+        std::ignore = vis_prefetch_ini->save_as();
 
     m_prefetched.clear();
 }
@@ -177,7 +172,7 @@ CModelPool::CModelPool()
     g_pMotionsContainer = xr_new<motions_container>();
 
     string_path fname;
-    FS.update_path(fname, "$app_data_root$", "vis_prefetch.ltx");
+    std::ignore = FS.update_path(fname, "$app_data_root$", "vis_prefetch.ltx");
 
     if (IReader* F = FS.r_open(fname))
     {
@@ -224,15 +219,15 @@ dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
     string_path low_name;
-    VERIFY(xr_strlen(name) < sizeof(low_name));
+    VERIFY(xr_strlen(name) < gsl::index{sizeof(low_name)});
+
     xr_strcpy(low_name, name);
     _strlwr(low_name);
     if (strext(low_name))
-        *strext(low_name) = 0;
-    //	Msg						("-CREATE %s",low_name);
+        *strext(low_name) = '\0';
 
     // 0. Search POOL
-    POOL_IT it = Pool.find(low_name);
+    POOL_IT it = Pool.find(shared_str{low_name});
     if (it != Pool.end())
     {
         // 1. Instance found
@@ -392,8 +387,8 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
                 if (b_complete || strchr(*name, '#'))
                 {
                     VERIFY(I->refs > 0);
-                    I->refs--;
-                    if (0 == I->refs)
+
+                    if (--I->refs == 0)
                     {
                         bForceDiscard = TRUE;
                         I->model->Release();
@@ -401,19 +396,21 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
                         Models.erase(I);
                         bForceDiscard = FALSE;
                     }
+
                     break;
                 }
                 else
                 {
                     if (I->refs > 0)
                         I->refs--;
+
                     break;
                 }
             }
         }
+
         // Registry
         xr_delete(V);
-        //.		xr_free			(name);
         Registry.erase(it);
     }
     else
@@ -526,19 +523,23 @@ dxRender_Visual* CModelPool::CreatePG(PS::CPGDef* source)
 void CModelPool::dump()
 {
     Log("--- model pool --- begin:");
-    u32 sz = 0;
+
+    gsl::index sz{};
     u32 k = 0;
     for (xr_vector<ModelDef>::iterator I = Models.begin(); I != Models.end(); I++)
     {
         CKinematics* K = PCKinematics(I->model);
         if (K)
         {
-            u32 cur = K->mem_usage(false);
+            const auto cur = K->mem_usage(false);
             sz += cur;
-            Msg("#%3u: [%3u/%5u Kb] - %s", k++, I->refs, cur / 1024, I->name.c_str());
+
+            Msg("#%3u: [%3zd/%5zd Kb] - %s", k++, I->refs.load(), cur / 1024, I->name.c_str());
         }
     }
-    Msg("--- models: %u, mem usage: %u Kb ", k, sz / 1024);
+
+    Msg("--- models: %u, mem usage: %zd Kb ", k, sz / 1024);
+
     sz = 0;
     k = 0;
     u32 free_cnt{};
@@ -548,15 +549,18 @@ void CModelPool::dump()
         VERIFY(K);
         if (K)
         {
-            u32 cur = K->mem_usage(true);
+            const auto cur = K->mem_usage(true);
             sz += cur;
-            bool b_free = (Pool.find(it->second) != Pool.end());
+
+            const bool b_free = Pool.find(it->second) != Pool.end();
             if (b_free)
                 ++free_cnt;
-            Msg("#%3u: [%s] [%5u Kb] - %s", k++, (b_free) ? "free" : "used", cur / 1024, it->second.c_str());
+
+            Msg("#%3u: [%s] [%5zd Kb] - %s", k++, b_free ? "free" : "used", cur / 1024, it->second.c_str());
         }
     }
-    Msg("--- instances: %u, free %u, mem usage: %u Kb ", k, free_cnt, sz / 1024);
+
+    Msg("--- instances: %u, free %u, mem usage: %zd Kb ", k, free_cnt, sz / 1024);
     Log("--- model pool --- end.");
 }
 
@@ -597,7 +601,7 @@ void CModelPool::save_vis_prefetch()
     if (vis_prefetch_ini)
     {
         process_vis_prefetch();
-        vis_prefetch_ini->save_as();
+        std::ignore = vis_prefetch_ini->save_as();
     }
 }
 

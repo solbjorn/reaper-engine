@@ -11,7 +11,7 @@
 IC CAttachableItem::CAttachableItem()
 {
     m_offset.identity();
-    m_bone_name = "";
+    m_bone_name._set("");
 }
 
 IC shared_str CAttachableItem::bone_name() const

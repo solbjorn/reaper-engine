@@ -20,13 +20,17 @@ private:
 
 public:
     using RELCASE_CALLBACK = CallMe::Delegate<void(CObject*)>;
+
     struct SRelcasePair
     {
         int* m_ID;
         RELCASE_CALLBACK m_Callback;
-        SRelcasePair(int* id, const RELCASE_CALLBACK& cb) : m_ID(id), m_Callback(cb) {}
+
+        explicit SRelcasePair(int* id, const RELCASE_CALLBACK& cb) : m_ID{id}, m_Callback{cb} {}
+
         bool operator==(const RELCASE_CALLBACK& cb) const { return m_Callback == cb; }
     };
+
     typedef xr_vector<SRelcasePair> RELCASE_CALLBACK_VEC;
     RELCASE_CALLBACK_VEC m_relcase_callbacks;
 

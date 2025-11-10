@@ -8,15 +8,15 @@ class XR_NOVTABLE CStreamReader : public IReaderBase<CStreamReader>
 public:
     virtual ~CStreamReader() = 0;
 
-    virtual intptr_t elapsed() const = 0;
-    virtual const size_t& length() const = 0;
-    virtual void seek(const int& offset) = 0;
-    virtual size_t tell() const = 0;
+    [[nodiscard]] virtual gsl::index elapsed() const = 0;
+    [[nodiscard]] virtual gsl::index length() const = 0;
+    virtual void seek(gsl::index offset) = 0;
+    [[nodiscard]] virtual gsl::index tell() const = 0;
     virtual void close() = 0;
 
-    virtual void advance(const int& offset) = 0;
-    virtual void r(void* buffer, size_t buffer_size) = 0;
-    virtual CStreamReader* open_chunk(const size_t& chunk_id) = 0;
+    virtual void advance(const gsl::index offset) = 0;
+    virtual void r(void* buffer, gsl::index buffer_size) = 0;
+    [[nodiscard]] virtual CStreamReader* open_chunk(u32 chunk_id) = 0;
 };
 
 inline CStreamReader::~CStreamReader() = default;
@@ -27,41 +27,41 @@ class CMapStreamReader : public CStreamReader
 
 private:
     HANDLE m_file_mapping_handle{};
-    size_t m_start_offset{};
-    size_t m_file_size{};
-    size_t m_archive_size{};
-    size_t m_window_size{};
+    gsl::index m_start_offset{};
+    gsl::index m_file_size{};
+    gsl::index m_archive_size{};
+    gsl::index m_window_size{};
 
-    size_t m_current_offset_from_start{};
-    size_t m_current_window_size{};
-    u8* m_current_map_view_of_file{};
-    u8* m_start_pointer{};
-    u8* m_current_pointer{};
+    gsl::index m_current_offset_from_start{};
+    gsl::index m_current_window_size{};
+    const std::byte* m_current_map_view_of_file{};
+    const std::byte* m_start_pointer{};
+    const std::byte* m_current_pointer{};
 
-    void map(const size_t& new_offset);
-    IC void unmap();
-    IC void remap(const size_t& new_offset);
+    void map(gsl::index new_offset);
+    inline void unmap();
+    inline void remap(gsl::index new_offset);
 
     // should not be called
-    IC CMapStreamReader(const CMapStreamReader& object);
-    IC CMapStreamReader& operator=(const CMapStreamReader&);
+    CMapStreamReader(const CMapStreamReader&) = delete;
+    CMapStreamReader& operator=(const CMapStreamReader&) = delete;
 
 public:
-    IC CMapStreamReader() = default;
+    CMapStreamReader() = default;
 
-    virtual void construct(const HANDLE& file_mapping_handle, const size_t& start_offset, const size_t& file_size, const size_t& archive_size, const size_t& window_size);
+    virtual void construct(const HANDLE& file_mapping_handle, gsl::index start_offset, gsl::index file_size, gsl::index archive_size, gsl::index window_size);
     virtual void destroy();
 
-    IC const HANDLE& file_mapping_handle() const;
-    IC intptr_t elapsed() const;
-    IC const size_t& length() const;
-    IC void seek(const int& offset);
-    IC size_t tell() const;
-    IC void close();
+    [[nodiscard]] inline const HANDLE& file_mapping_handle() const;
+    [[nodiscard]] inline gsl::index elapsed() const override;
+    [[nodiscard]] inline gsl::index length() const override;
+    inline void seek(gsl::index offset) override;
+    [[nodiscard]] inline gsl::index tell() const override;
+    inline void close() override;
 
-    void advance(const int& offset);
-    void r(void* buffer, size_t buffer_size);
-    CStreamReader* open_chunk(const size_t& chunk_id);
+    void advance(gsl::index offset) override;
+    void r(void* buffer, gsl::index buffer_size) override;
+    [[nodiscard]] CStreamReader* open_chunk(u32 chunk_id) override;
 };
 
 #include "stream_reader_inline.h"

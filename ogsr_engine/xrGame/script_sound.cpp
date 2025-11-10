@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_sound.h"
 #include "script_game_object.h"
 #include "gameobject.h"
@@ -15,7 +16,8 @@
 
 CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes game_type, esound_type kind)
 {
-    m_caSoundToPlay = caSoundName;
+    m_caSoundToPlay._set(caSoundName);
+
     string_path l_caFileName;
     VERIFY(::Sound);
     if (FS.exist(l_caFileName, "$game_sounds$", caSoundName, ".ogg"))

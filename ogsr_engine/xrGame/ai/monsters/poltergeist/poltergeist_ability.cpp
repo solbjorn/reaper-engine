@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "poltergeist.h"
+
 #include "PhysicsShell.h"
 #include "../../../level.h"
 #include "../../../material_manager.h"
@@ -44,8 +45,8 @@ void CPolterSpecialAbility::on_hide()
     if (!m_object->g_Alive())
         return;
 
-    m_particles_object = m_object->PlayParticles(m_particles_hidden, m_object->Position(), Fvector().set(0.0f, 0.1f, 0.0f), false);
-    m_particles_object_electro = m_object->PlayParticles(m_particles_idle, m_object->Position(), Fvector().set(0.0f, 0.1f, 0.0f), false);
+    m_particles_object = m_object->PlayParticles(shared_str{m_particles_hidden}, m_object->Position(), Fvector{0.0f, 0.1f, 0.0f}, false);
+    m_particles_object_electro = m_object->PlayParticles(shared_str{m_particles_idle}, m_object->Position(), Fvector{0.0f, 0.1f, 0.0f}, false);
 }
 
 void CPolterSpecialAbility::on_show()
@@ -71,7 +72,7 @@ void CPolterSpecialAbility::on_die()
     particles_position.y += m_object->target_height;
 
     if (m_object->state_invisible)
-        m_object->PlayParticles(m_particles_death, particles_position, Fvector().set(0.0f, 1.0f, 0.0f), TRUE, FALSE);
+        m_object->PlayParticles(shared_str{m_particles_death}, particles_position, Fvector{0.0f, 1.0f, 0.0f}, TRUE, FALSE);
 
     CParticlesObject::Destroy(m_particles_object_electro);
     CParticlesObject::Destroy(m_particles_object);
@@ -92,7 +93,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
             m_bone.transform_tiny(start_pos);
             m_object->XFORM().transform_tiny(start_pos);
 
-            m_object->PlayParticles(m_particles_damage, start_pos, Fvector().set(0.f, 1.f, 0.f));
+            m_object->PlayParticles(shared_str{m_particles_damage}, start_pos, Fvector{0.0f, 1.0f, 0.0f});
         }
     }
 

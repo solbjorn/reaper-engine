@@ -38,7 +38,7 @@ IC CScriptAnimationAction::CScriptAnimationAction(MonsterSpace::EScriptMonsterAn
 
 IC void CScriptAnimationAction::SetAnimation(LPCSTR caAnimationToPlay)
 {
-    m_caAnimationToPlay = caAnimationToPlay;
+    m_caAnimationToPlay._set(caAnimationToPlay);
     m_tMentalState = MonsterSpace::eMentalStateDanger;
     m_tGoalType = eGoalTypeAnimation;
     m_bCompleted = false;

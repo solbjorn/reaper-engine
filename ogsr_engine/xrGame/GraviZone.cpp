@@ -37,14 +37,14 @@ void CBaseGraviZone ::Load(LPCSTR section)
     m_dwTelePause = pSettings->r_u32(section, "tele_pause"); // 1000
 
     if (pSettings->line_exist(section, "tele_particles_big"))
-        m_sTeleParticlesBig = pSettings->r_string(section, "tele_particles_big");
+        m_sTeleParticlesBig._set(pSettings->r_string(section, "tele_particles_big"));
     else
-        m_sTeleParticlesBig = nullptr;
+        m_sTeleParticlesBig._set(nullptr);
 
     if (pSettings->line_exist(section, "tele_particles_small"))
-        m_sTeleParticlesSmall = pSettings->r_string(section, "tele_particles_small");
+        m_sTeleParticlesSmall._set(pSettings->r_string(section, "tele_particles_small"));
     else
-        m_sTeleParticlesSmall = nullptr;
+        m_sTeleParticlesSmall._set(nullptr);
 }
 
 BOOL CBaseGraviZone ::net_Spawn(CSE_Abstract* DC) { return inherited::net_Spawn(DC); }

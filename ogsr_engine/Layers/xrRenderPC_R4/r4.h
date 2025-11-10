@@ -28,6 +28,8 @@ struct light_ctx;
 // definition
 class CRender : public IRender_interface, public dxRenderDeviceRender
 {
+    RTTI_DECLARE_TYPEINFO(CRender, IRender_interface, dxRenderDeviceRender);
+
 public:
     enum
     {
@@ -70,7 +72,7 @@ public:
         u32 ic_total, ic_culled;
     } stats;
 
-    bool is_sun();
+    [[nodiscard]] bool is_sun() const;
 
     // Sector detection and visibility
     sector_id_t last_sector_id{INVALID_SECTOR_ID};

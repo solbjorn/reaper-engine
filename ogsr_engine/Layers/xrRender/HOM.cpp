@@ -3,11 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "HOM.h"
-#include "occRasterizer.h"
-#include "../../xr_3da/GameFont.h"
 
 #include "dxRenderDeviceRender.h"
+#include "occRasterizer.h"
+
+#include "../../xr_3da/GameFont.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
@@ -46,47 +48,46 @@ CHOM::~CHOM()
 #endif
 }
 
+namespace
+{
 struct HOM_poly
 {
     Fvector v1, v2, v3;
     u32 flags;
 };
 
-IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
+constexpr float Area(const Fvector& v0, const Fvector& v1, const Fvector& v2)
 {
     const float e1 = v0.distance_to(v1);
     const float e2 = v0.distance_to(v2);
     const float e3 = v1.distance_to(v2);
-
     const float p = (e1 + e2 + e3) / 2.f;
+
     return _sqrt(p * (p - e1) * (p - e2) * (p - e3));
 }
+} // namespace
 
 void CHOM::Load()
 {
     // Find and open file
     string_path fName;
-    FS.update_path(fName, "$level$", "level.hom");
+    std::ignore = FS.update_path(fName, "$level$", "level.hom");
     if (!FS.exist(fName))
     {
         Msg(" WARNING: Occlusion map '%s' not found.", fName);
         return;
     }
-    Msg("* Loading HOM: %s", fName);
 
+    Msg("* Loading HOM: %s", fName);
     IReader* fs = FS.r_open(fName);
 
     // Load tris and merge them
     CDB::Collector CL;
     {
-        IReader* S = fs->open_chunk(1);
-        const auto begin = static_cast<HOM_poly*>(S->pointer());
-        const auto end = static_cast<HOM_poly*>(S->end());
-        for (HOM_poly* poly = begin; poly != end; ++poly)
-        {
-            CL.add_face_packed_D(poly->v1, poly->v2, poly->v3, poly->flags, 0.01f);
-        }
-        S->close();
+        std::unique_ptr<IReader> S{fs->open_chunk(1)};
+
+        for (auto& poly : std::span{static_cast<const HOM_poly*>(S->pointer()), static_cast<const HOM_poly*>(S->end())})
+            CL.add_face_packed_D(poly.v1, poly.v2, poly.v3, poly.flags, 0.01f);
     }
 
     // Determine adjacency
@@ -138,9 +139,9 @@ void CHOM::Render_DB(CFrustum& base)
 {
     // Update projection matrices on every frame to ensure valid HOM culling
     float view_dim = occ_dim_0;
-    const Fmatrix m_viewport = {view_dim / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0,
-                                view_dim / 2.f + 0 + 0, 0.0f, 1.0f};
-    constexpr Fmatrix m_viewport_01 = {1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
+    const Fmatrix m_viewport{view_dim / 2.f,         0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + 0 + 0,
+                             view_dim / 2.f + 0 + 0, 0.0f, 1.0f};
+    constexpr Fmatrix m_viewport_01{1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -1.f / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.f / 2.f + 0 + 0, 1.f / 2.f + 0 + 0, 0.0f, 1.0f};
     m_xform.mul(m_viewport, Device.mFullTransform);
     m_xform_01.mul(m_viewport_01, Device.mFullTransform);
 

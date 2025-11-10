@@ -30,12 +30,12 @@ void SCarLight::Init(CCarLights* holder) { m_holder = holder; }
 
 void SCarLight::ParseDefinitions(LPCSTR section)
 {
-    light_render = ::Render->light_create();
+    light_render._set(::Render->light_create());
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
     light_render->set_moveable(true);
 
-    glow_render = ::Render->glow_create();
+    glow_render._set(::Render->glow_create());
     //	lanim					= 0;
     //	time2hide				= 0;
 
@@ -141,12 +141,13 @@ void CCarLights::ParseDefinitions()
     LPCSTR S = ini->r_string("lights", "headlights");
     string64 S1;
     int count = _GetItemCount(S);
+
     for (int i = 0; i < count; ++i)
     {
-        _GetItem(S, i, S1);
-        m_lights.push_back(xr_new<SCarLight>());
-        m_lights.back()->Init(this);
-        m_lights.back()->ParseDefinitions(S1);
+        std::ignore = _GetItem(S, i, S1);
+        auto light = m_lights.emplace_back(xr_new<SCarLight>());
+        light->Init(this);
+        light->ParseDefinitions(S1);
     }
 }
 

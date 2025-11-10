@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "map_location.h"
+
 #include "map_spot.h"
 #include "map_manager.h"
 
@@ -43,7 +44,7 @@ CMapLocation::CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc) : m_obj
     m_cached.m_graphID = GameGraph::_GRAPH_ID(-1);
 }
 
-CMapLocation::~CMapLocation() {}
+CMapLocation::~CMapLocation() = default;
 
 void CMapLocation::destroy()
 {
@@ -72,7 +73,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
     strcpy_s(path_base, type);
     R_ASSERT3(g_uiSpotXml->NavigateToNode(path_base, 0), "XML node not found in file map_spots.xml", path_base);
     LPCSTR s = g_uiSpotXml->ReadAttrib(path_base, 0, "hint", "");
-    SetHint(s);
+    SetHint(shared_str{s});
 
     // Real Wolf. 03.08.2014.
     m_type = type;
@@ -560,9 +561,9 @@ void CMapLocation::save(IWriter& stream)
 void CMapLocation::load(IReader& stream)
 {
     u16 c = stream.r_u16();
-    xr_string hint;
+    shared_str hint;
     stream.r_stringZ(hint);
-    SetHint(hint.c_str());
+    SetHint(hint);
     SetRefCount(c);
     m_flags.flags = stream.r_u32();
 
@@ -681,7 +682,7 @@ bool CRelationMapLocation::Update()
     shared_str sname;
 
     if (bAlive == false)
-        sname = "deadbody_location";
+        sname._set("deadbody_location");
     else
         sname = RELATION_REGISTRY().GetSpotName(m_last_relation);
 

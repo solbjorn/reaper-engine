@@ -7,7 +7,7 @@
 struct INFO_DATA
 {
     INFO_DATA() = default;
-    INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id{id}, receive_time{time} {}
+    explicit INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id{id}, receive_time{time} {}
 
     void load(IReader& stream);
     void save(IWriter& stream) const;

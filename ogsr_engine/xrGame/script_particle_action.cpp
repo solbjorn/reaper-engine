@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_particle_action.h"
 #include "particlesobject.h"
 
@@ -17,7 +18,7 @@ CScriptParticleAction::~CScriptParticleAction()
 
 void CScriptParticleAction::SetParticle(LPCSTR caParticleToRun, bool bAutoRemove)
 {
-    m_caParticleToRun = caParticleToRun;
+    m_caParticleToRun._set(caParticleToRun);
     m_tGoalType = eGoalTypeParticleAttached;
     m_tpParticleSystem = CParticlesObject::Create(*m_caParticleToRun, BOOL(m_bAutoRemove = bAutoRemove));
     m_bStartedToPlay = false;

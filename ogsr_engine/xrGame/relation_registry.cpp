@@ -6,8 +6,8 @@
 #include "stdafx.h"
 
 #include "relation_registry.h"
-#include "alife_registry_wrappers.h"
 
+#include "alife_registry_wrappers.h"
 #include "character_community.h"
 #include "character_reputation.h"
 #include "character_rank.h"
@@ -41,13 +41,14 @@ void RELATION_DATA::save(IWriter& stream) const
 
 RELATION_REGISTRY::RELATION_MAP_SPOTS::RELATION_MAP_SPOTS()
 {
-    spot_names[ALife::eRelationTypeFriend] = "friend_location";
-    spot_names[ALife::eRelationTypeNeutral] = "neutral_location";
-    spot_names[ALife::eRelationTypeEnemy] = "enemy_location";
-    spot_names[ALife::eRelationTypeWorstEnemy] = "enemy_location";
-    // spot_names[ALife::eRelationTypeWorstEnemy]	= "enemy_location";
-    spot_names[ALife::eRelationTypeLast] = "neutral_location";
+    spot_names[ALife::eRelationTypeFriend]._set("friend_location");
+    spot_names[ALife::eRelationTypeNeutral]._set("neutral_location");
+    spot_names[ALife::eRelationTypeEnemy]._set("enemy_location");
+    spot_names[ALife::eRelationTypeWorstEnemy]._set("enemy_location");
+    // spot_names[ALife::eRelationTypeWorstEnemy]._set("enemy_location");
+    spot_names[ALife::eRelationTypeLast]._set("neutral_location");
 }
+
 //////////////////////////////////////////////////////////////////////////
 
 CRelationRegistryWrapper* RELATION_REGISTRY::m_relation_registry{};

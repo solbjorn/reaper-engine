@@ -15,8 +15,8 @@ private:
     typedef CFoodItem inherited;
 
 public:
-    CBottleItem(void);
-    virtual ~CBottleItem(void);
+    CBottleItem();
+    virtual ~CBottleItem();
 
     virtual void Load(LPCSTR section);
 

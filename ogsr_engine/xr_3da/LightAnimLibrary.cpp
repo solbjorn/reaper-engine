@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "LightAnimLibrary.h"
+
 //---------------------------------------------------------------------------
 #define LANIM_VERSION 0x0001
 //---------------------------------------------------------------------------
@@ -131,8 +132,8 @@ u32 CLAItem::InterpolateRGB(int frame)
     R_ASSERT(Keys.size() > 1);
 
     // интерполируем цвет
-    Fcolor c0 = A->second;
-    Fcolor c1 = B->second;
+    Fcolor c0{A->second};
+    const Fcolor c1{B->second};
 
     const float a0 = static_cast<float>(A->first);
     const float a1 = static_cast<float>(B->first);
@@ -192,18 +193,18 @@ int CLAItem::NextKeyFrame(int frame)
 //------------------------------------------------------------------------------
 // Library
 //------------------------------------------------------------------------------
-ELightAnimLibrary::ELightAnimLibrary() {}
 
-ELightAnimLibrary::~ELightAnimLibrary() {}
+ELightAnimLibrary::ELightAnimLibrary() = default;
+ELightAnimLibrary::~ELightAnimLibrary() = default;
 
 void ELightAnimLibrary::OnCreate() { Load(); }
-
 void ELightAnimLibrary::OnDestroy() { Unload(); }
 
 void ELightAnimLibrary::Unload()
 {
     for (auto& la : Items)
         xr_delete(la);
+
     Items.clear();
 }
 
@@ -220,7 +221,7 @@ void ELightAnimLibrary::DbgDumpInfo() const
 void ELightAnimLibrary::Load()
 {
     string_path fn;
-    FS.update_path(fn, _game_data_, "lanims.xr");
+    std::ignore = FS.update_path(fn, _game_data_, "lanims.xr");
     IReader* fs = FS.r_open(fn);
     if (fs)
     {
@@ -270,7 +271,7 @@ void ELightAnimLibrary::Save()
     F.close_chunk();
 
     string_path fn;
-    FS.update_path(fn, _game_data_, "lanims.xr");
+    std::ignore = FS.update_path(fn, _game_data_, "lanims.xr");
 
     if (!F.save_to(fn))
         Msg("!Can't save color animations: [%s]", fn);
@@ -307,7 +308,7 @@ CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
     else
         I->InitDefault();
 
-    I->cName = name;
+    I->cName._set(name);
     Items.push_back(I);
 
     return I;

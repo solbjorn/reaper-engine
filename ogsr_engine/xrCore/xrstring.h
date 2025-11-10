@@ -50,10 +50,13 @@ protected:
     }
 
 public:
-    shared_str& _set(gsl::czstring str)
+    constexpr shared_str& _set(gsl::czstring str)
     {
-        str_value* v = str_container::dock(str);
-        if (v)
+        str_value* v{};
+
+        if (str != nullptr)
+            v = str_container::dock(str);
+        if (v != nullptr)
             ++v->dwReference;
 
         _dec();
@@ -65,7 +68,7 @@ public:
     constexpr shared_str& _set(const shared_str& that)
     {
         str_value* v = that.p_;
-        if (v)
+        if (v != nullptr)
             ++v->dwReference;
 
         _dec();
@@ -88,14 +91,13 @@ public:
 
     // construction
     constexpr shared_str() = default;
+    constexpr explicit shared_str(gsl::czstring that) { _set(that); }
     constexpr ~shared_str() { _dec(); }
 
-    shared_str(gsl::czstring that) { _set(that); }
     constexpr shared_str(const shared_str& that) { _set(that); }
     constexpr shared_str(shared_str&& that) { _set(std::move(that)); }
 
     // assignment & accessors
-    shared_str& operator=(gsl::czstring that) { return _set(that); }
     constexpr shared_str& operator=(const shared_str& that) { return _set(that); }
     constexpr shared_str& operator=(shared_str&& that) { return _set(std::move(that)); }
 
@@ -131,7 +133,7 @@ public:
     [[nodiscard]] constexpr gsl::czstring operator*() const { return p_ ? p_->value : nullptr; }
 
     // Чтобы можно было легко кастить в absl::string_view как и все остальные строки
-    XR_SYSV [[nodiscard]] constexpr operator absl::string_view() const { return p_ ? absl::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : absl::string_view{}; }
+    [[nodiscard]] constexpr operator absl::string_view() const { return p_ ? absl::string_view{p_->value, gsl::narrow_cast<size_t>(p_->dwLength)} : absl::string_view{}; }
 
     [[nodiscard]] constexpr gsl::czstring c_str() const { return p_ ? p_->value : nullptr; }
     // Используется в погодном редакторе.
@@ -187,8 +189,8 @@ constexpr void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
 
 [[nodiscard]] constexpr gsl::index xr_strlen(const shared_str& a) { return a.size(); }
 
-XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
-XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, const shared_str& b) { return xr_strcmp(a, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
+[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, const shared_str& b) { return xr_strcmp(a, absl::string_view{b}); }
 
 [[nodiscard]] constexpr auto xr_strcmp(const shared_str& a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
 [[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, const shared_str& b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
@@ -198,7 +200,7 @@ XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, const shared
 constexpr void xr_strlwr(xr_string& src)
 {
     for (auto& c : src)
-        c = gsl::narrow_cast<char>(xr::tolower(c));
+        c = xr::tolower(c);
 }
 
 IC void xr_strlwr(shared_str& src)
@@ -207,7 +209,7 @@ IC void xr_strlwr(shared_str& src)
     {
         LPSTR lp = xr_strdup(*src);
         xr_strlwr(lp);
-        src = lp;
+        src._set(lp);
         xr_free(lp);
     }
 }

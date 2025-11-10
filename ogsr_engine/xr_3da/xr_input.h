@@ -73,7 +73,7 @@ public:
     BOOL iGetAsyncBtnState(int btn);
     void iGetLastMouseDelta(Ivector2& p) { p.set(offs[0], offs[1]); }
 
-    CInput(bool bExclusive = true, int deviceForInit = default_key);
+    explicit CInput(bool bExclusive = true, int deviceForInit = default_key);
     ~CInput();
 
     virtual void OnFrame(void);

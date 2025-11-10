@@ -231,13 +231,13 @@ public:
     //----------------------------------------------------------------------------
 };
 
-typedef _cylinder<float> Fcylinder;
-typedef _cylinder<double> Dcylinder;
+using Fcylinder = _cylinder<f32>;
 
+// https://github.com/OpenXRay/xray-16/commit/8b67bb51a14dfa8b6fb05f048c8778e4b3b78bd1
 template <class T>
-BOOL _valid(const _cylinder<T>& c)
+bool _valid(const _cylinder<T>& c)
 {
     return _valid(c.m_center) && _valid(c.m_direction) && _valid(c.m_height) && _valid(c.m_radius);
-} // https://github.com/OpenXRay/xray-16/commit/8b67bb51a14dfa8b6fb05f048c8778e4b3b78bd1
+}
 
 #endif

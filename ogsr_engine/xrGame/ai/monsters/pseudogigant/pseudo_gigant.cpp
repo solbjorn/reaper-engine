@@ -248,10 +248,10 @@ void CPseudoGigant::on_threaten_execute()
     pos.y += 0.1f;
     m_sound_threaten_hit.play_at_pos(this, pos);
 
-    g_pGamePersistent->GrassBendersAddExplosion(ID(), pos, {0.f, -99.f, 0.f}, 1.33f, 5.0f, ps_ssfx_grass_interactive.w, 20);
+    g_pGamePersistent->GrassBendersAddExplosion(ID(), pos, Fvector{0.f, -99.f, 0.f}, 1.33f, 5.0f, ps_ssfx_grass_interactive.w, 20);
 
     // играть партиклы
-    PlayParticles(m_kick_particles, pos, Direction());
+    PlayParticles(shared_str{m_kick_particles}, pos, Direction());
 
     CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(EnemyMan.get_enemy()));
     if (!pA)

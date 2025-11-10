@@ -216,7 +216,7 @@ public:
     void HitSector(CObject* who, CObject* weapon);
 
 private:
-    XR_SYSV void HitMark(float P, Fvector dir, ALife::EHitType hit_type);
+    void HitMark(float P, Fvector dir, ALife::EHitType hit_type);
 
 public:
     virtual float GetMass();
@@ -679,8 +679,8 @@ public:
     void on_weapon_shot_start(CWeapon* weapon) override;
     void on_weapon_shot_stop(CWeapon*) override;
     void on_weapon_hide(CWeapon*) override;
-    XR_SYSV [[nodiscard]] Fvector weapon_recoil_delta_angle();
-    XR_SYSV [[nodiscard]] Fvector weapon_recoil_last_delta();
+    [[nodiscard]] Fvector weapon_recoil_delta_angle();
+    [[nodiscard]] Fvector weapon_recoil_last_delta();
 
 protected:
     virtual void update_camera(CCameraShotEffector* effector);

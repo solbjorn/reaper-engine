@@ -4,12 +4,12 @@
 
 #include "stdafx.h"
 
+#include "CameraManager.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
-
 #include "Environment.h"
 #include "CameraBase.h"
-#include "CameraManager.h"
 #include "Effector.h"
 #include "EffectorPP.h"
 
@@ -519,7 +519,7 @@ void CCameraManager::ResetPP()
     T->set_color_add(pp_identity.color_add);
     T->set_cm_imfluence(0.0f);
     T->set_cm_interpolate(1.0f);
-    T->set_cm_textures("", "");
+    T->set_cm_textures(shared_str{""}, shared_str{""});
 }
 
 void CCameraManager::Dump()

@@ -19,7 +19,7 @@ protected:
     shared_str m_script_clsid;
 
 public:
-    inline CObjectItemAbstract(CLASS_ID clsid, LPCSTR script_clsid);
+    inline explicit CObjectItemAbstract(CLASS_ID clsid, LPCSTR script_clsid);
 
     inline CLASS_ID clsid() const;
     inline shared_str script_clsid() const;

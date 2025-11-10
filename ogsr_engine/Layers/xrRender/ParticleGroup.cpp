@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
-#include "../../xrParticles/psystem.h"
-
 #include "ParticleGroup.h"
+
 #include "PSLibrary.h"
 #include "ParticleEffect.h"
+
+#include "../../xrParticles/psystem.h"
 
 using namespace PS;
 
@@ -19,6 +20,7 @@ CPGDef::~CPGDef()
 {
     for (auto& e : m_Effects)
         xr_delete(e);
+
     m_Effects.clear();
 }
 
@@ -39,7 +41,7 @@ BOOL CPGDef::Load(IReader& F)
     R_ASSERT(F.find_chunk(PGD_CHUNK_NAME));
     F.r_stringZ(m_Name);
 
-    F.r_chunk(PGD_CHUNK_FLAGS, &m_Flags);
+    std::ignore = F.r_chunk(PGD_CHUNK_FLAGS, &m_Flags);
 
     if (F.find_chunk(PGD_CHUNK_TIME_LIMIT))
         m_fTimeLimit = F.r_float();
@@ -71,27 +73,24 @@ BOOL CPGDef::Load(IReader& F)
 BOOL CPGDef::Load2(CInifile& ini)
 {
     m_Flags.assign(ini.r_u32("_group", "flags"));
-
     m_Effects.resize(ini.r_u32("_group", "effects_count"));
-
     m_fTimeLimit = ini.r_float("_group", "timelimit");
 
-    u32 counter = 0;
-    string256 buff;
-    for (EffectIt it = m_Effects.begin(); it != m_Effects.end(); ++it, ++counter)
+    for (auto [counter, eff] : xr::views_enumerate(m_Effects))
     {
-        *it = xr_new<SEffect>();
+        eff = xr_new<SEffect>();
 
-        xr_sprintf(buff, sizeof(buff), "effect_%04d", counter);
+        string256 buff;
+        xr_sprintf(buff, sizeof(buff), "effect_%04zd", counter);
 
-        (*it)->m_EffectName = ini.r_string(buff, "effect_name");
-        (*it)->m_OnPlayChildName = ini.r_string(buff, "on_play_child");
-        (*it)->m_OnBirthChildName = ini.r_string(buff, "on_birth_child");
-        (*it)->m_OnDeadChildName = ini.r_string(buff, "on_death_child");
+        eff->m_EffectName._set(ini.r_string(buff, "effect_name"));
+        eff->m_OnPlayChildName._set(ini.r_string(buff, "on_play_child"));
+        eff->m_OnBirthChildName._set(ini.r_string(buff, "on_birth_child"));
+        eff->m_OnDeadChildName._set(ini.r_string(buff, "on_death_child"));
 
-        (*it)->m_Time0 = ini.r_float(buff, "time0");
-        (*it)->m_Time1 = ini.r_float(buff, "time1");
-        (*it)->m_Flags.assign(ini.r_u32(buff, "flags"));
+        eff->m_Time0 = ini.r_float(buff, "time0");
+        eff->m_Time1 = ini.r_float(buff, "time1");
+        eff->m_Flags.assign(ini.r_u32(buff, "flags"));
     }
 
     return TRUE;
@@ -111,7 +110,8 @@ void CPGDef::Save(IWriter& F)
 
     F.open_chunk(PGD_CHUNK_EFFECTS);
     F.w_u32(m_Effects.size());
-    for (auto& e : m_Effects)
+
+    for (const auto e : m_Effects)
     {
         F.w_stringZ(e->m_EffectName);
         F.w_stringZ(e->m_OnPlayChildName);
@@ -121,6 +121,7 @@ void CPGDef::Save(IWriter& F)
         F.w_float(e->m_Time1);
         F.w_u32(e->m_Flags.get());
     }
+
     F.close_chunk();
 
     F.open_chunk(PGD_CHUNK_TIME_LIMIT);

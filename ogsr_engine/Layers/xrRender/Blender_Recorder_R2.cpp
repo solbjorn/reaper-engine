@@ -18,16 +18,16 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BO
 
     // Create shaders
     auto& res = *RImplementation.Resources;
-    dest.ps = res._CreatePS(_ps);
+    dest.ps._set(res._CreatePS(_ps));
     ctable.merge(&dest.ps->constants);
 
-    dest.vs = res._CreateVS(_vs);
+    dest.vs._set(res._CreateVS(_vs));
     ctable.merge(&dest.vs->constants);
 
-    dest.gs = res._CreateGS("null");
-    dest.hs = res._CreateHS("null");
-    dest.ds = res._CreateDS("null");
-    dest.cs = res._CreateCS("null");
+    dest.gs._set(res._CreateGS("null"));
+    dest.hs._set(res._CreateHS("null"));
+    dest.ds._set(res._CreateDS("null"));
+    dest.cs._set(res._CreateCS("null"));
 
     // Last Stage - disable
     if (std::is_eq(xr::strcasecmp(_ps, "null")))

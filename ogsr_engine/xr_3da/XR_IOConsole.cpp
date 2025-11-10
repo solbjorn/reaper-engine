@@ -4,8 +4,8 @@
 #include "stdafx.h"
 
 #include "XR_IOConsole.h"
-#include "line_editor.h"
 
+#include "line_editor.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
 
@@ -138,7 +138,7 @@ void CConsole::Initialize()
 
     m_mouse_pos.x = 0;
     m_mouse_pos.y = 0;
-    m_last_cmd = nullptr;
+    m_last_cmd._set(nullptr);
 
     m_cmd_history.reserve(m_cmd_history_max + 2);
     m_cmd_history.clear();
@@ -151,7 +151,7 @@ void CConsole::Initialize()
 
     m_tips_mode = 0;
     m_prev_length_str = 0;
-    m_cur_cmd = nullptr;
+    m_cur_cmd._set(nullptr);
     reset_selected_tip();
 
     // Commands
@@ -568,8 +568,9 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
         if (!m_last_cmd.c_str() || std::is_neq(xr_strcmp(m_last_cmd, edt)))
         {
             Msg("%s %s", c, edt.c_str());
-            add_cmd_history(edt.c_str());
-            m_last_cmd = edt.c_str();
+            shared_str res{edt.c_str()};
+            add_cmd_history(res);
+            m_last_cmd = res;
         }
     }
 
@@ -603,9 +604,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
             {
                 cc->Execute(last.c_str());
                 if (record_cmd)
-                {
-                    cc->add_to_LRU(last.c_str());
-                }
+                    cc->add_to_LRU(shared_str{last.c_str()});
             }
         }
         else
@@ -843,7 +842,7 @@ void CConsole::reset_tips()
     m_temp_tips.clear();
     m_tips.clear();
 
-    m_cur_cmd = nullptr;
+    m_cur_cmd._set(nullptr);
 }
 
 void CConsole::update_tips()
@@ -864,16 +863,14 @@ void CConsole::update_tips()
         return;
     }
 
-    if (cur_length == m_prev_str.size() && m_prev_str.equal(cur))
+    if (cur_length == m_prev_str.size() && std::is_eq(xr_strcmp(m_prev_str, cur)))
         return;
 
-    m_prev_str = cur;
+    m_prev_str._set(cur);
     reset_tips();
 
     if (m_prev_length_str != cur_length)
-    {
         reset_selected_tip();
-    }
 
     m_prev_length_str = cur_length;
 
@@ -901,8 +898,8 @@ void CConsole::update_tips()
                 m_cur_cmd._set(first.c_str());
                 select_for_filter(last.c_str(), m_temp_tips, m_tips);
 
-                if (m_tips.size() == 0)
-                    m_tips.push_back(TipString("(empty)"));
+                if (m_tips.empty())
+                    m_tips.emplace_back(shared_str{"(empty)"});
 
                 if (std::ssize(m_tips) <= m_select_tip)
                     reset_selected_tip();

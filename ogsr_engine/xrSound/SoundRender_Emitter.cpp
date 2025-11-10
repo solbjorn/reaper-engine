@@ -133,7 +133,7 @@ void CSoundRender_Emitter::set_cursor(u32 p)
         {
             owner_data->handle = SoundRender->i_create_source(owner_data->fn_attached[0].c_str());
             owner_data->fn_attached[0] = owner_data->fn_attached[1];
-            owner_data->fn_attached[1] = "";
+            owner_data->fn_attached[1]._set("");
             m_cur_handle_cursor = get_cursor(true);
         }
     }

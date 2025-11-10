@@ -91,34 +91,34 @@ void CControllerAnimation::load()
 {
     IKinematicsAnimated* skeleton = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
-    m_legs[eLegsStand] = skeleton->ID_Cycle_Safe("new_idle_0");
-    m_legs[eLegsSteal] = skeleton->ID_Cycle_Safe("new_cr_idle_0");
-    m_legs[eLegsRun] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsWalk] = skeleton->ID_Cycle_Safe("new_walk_0");
-    m_legs[eLegsBackRun] = skeleton->ID_Cycle_Safe("new_run_beack_0");
-    m_legs[eLegsRunFwdLeft] = skeleton->ID_Cycle_Safe("stand_fwd_ls");
-    m_legs[eLegsRunFwdRight] = skeleton->ID_Cycle_Safe("stand_fwd_rs");
-    m_legs[eLegsRunBkwdLeft] = skeleton->ID_Cycle_Safe("stand_bwd_ls");
-    m_legs[eLegsRunBkwdRight] = skeleton->ID_Cycle_Safe("stand_bwd_rs");
-    m_legs[eLegsStealFwd] = skeleton->ID_Cycle_Safe("new_walk_steal_0");
-    m_legs[eLegsStealBkwd] = skeleton->ID_Cycle_Safe("new_walk_steal_beack_0");
+    m_legs[eLegsStand] = skeleton->ID_Cycle_Safe(shared_str{"new_idle_0"});
+    m_legs[eLegsSteal] = skeleton->ID_Cycle_Safe(shared_str{"new_cr_idle_0"});
+    m_legs[eLegsRun] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsWalk] = skeleton->ID_Cycle_Safe(shared_str{"new_walk_0"});
+    m_legs[eLegsBackRun] = skeleton->ID_Cycle_Safe(shared_str{"new_run_beack_0"});
+    m_legs[eLegsRunFwdLeft] = skeleton->ID_Cycle_Safe(shared_str{"stand_fwd_ls"});
+    m_legs[eLegsRunFwdRight] = skeleton->ID_Cycle_Safe(shared_str{"stand_fwd_rs"});
+    m_legs[eLegsRunBkwdLeft] = skeleton->ID_Cycle_Safe(shared_str{"stand_bwd_ls"});
+    m_legs[eLegsRunBkwdRight] = skeleton->ID_Cycle_Safe(shared_str{"stand_bwd_rs"});
+    m_legs[eLegsStealFwd] = skeleton->ID_Cycle_Safe(shared_str{"new_walk_steal_0"});
+    m_legs[eLegsStealBkwd] = skeleton->ID_Cycle_Safe(shared_str{"new_walk_steal_beack_0"});
 
-    m_legs[eLegsStealFwdLeft] = skeleton->ID_Cycle_Safe("steal_fwd_ls");
-    m_legs[eLegsStealFwdRight] = skeleton->ID_Cycle_Safe("steal_fwd_rs");
-    m_legs[eLegsStealBkwdLeft] = skeleton->ID_Cycle_Safe("steal_bwd_ls");
-    m_legs[eLegsStealBkwdRight] = skeleton->ID_Cycle_Safe("steal_bwd_rs");
+    m_legs[eLegsStealFwdLeft] = skeleton->ID_Cycle_Safe(shared_str{"steal_fwd_ls"});
+    m_legs[eLegsStealFwdRight] = skeleton->ID_Cycle_Safe(shared_str{"steal_fwd_rs"});
+    m_legs[eLegsStealBkwdLeft] = skeleton->ID_Cycle_Safe(shared_str{"steal_bwd_ls"});
+    m_legs[eLegsStealBkwdRight] = skeleton->ID_Cycle_Safe(shared_str{"steal_bwd_rs"});
 
-    m_legs[eLegsStandDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsRunDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsWalkDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsBackRunDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsRunStrafeLeftDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
-    m_legs[eLegsRunStrafeRightDamaged] = skeleton->ID_Cycle_Safe("new_run_fwd_0");
+    m_legs[eLegsStandDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsRunDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsWalkDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsBackRunDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsRunStrafeLeftDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
+    m_legs[eLegsRunStrafeRightDamaged] = skeleton->ID_Cycle_Safe(shared_str{"new_run_fwd_0"});
 
-    m_torso[eTorsoIdle] = skeleton->ID_Cycle_Safe("new_torso_idle_0");
-    m_torso[eTorsoSteal] = skeleton->ID_Cycle_Safe("new_torso_steal_0");
-    m_torso[eTorsoPsyAttack] = skeleton->ID_Cycle_Safe("new_torso_attack_0");
-    m_torso[eTorsoRun] = skeleton->ID_Cycle_Safe("new_torso_run_0");
+    m_torso[eTorsoIdle] = skeleton->ID_Cycle_Safe(shared_str{"new_torso_idle_0"});
+    m_torso[eTorsoSteal] = skeleton->ID_Cycle_Safe(shared_str{"new_torso_steal_0"});
+    m_torso[eTorsoPsyAttack] = skeleton->ID_Cycle_Safe(shared_str{"new_torso_attack_0"});
+    m_torso[eTorsoRun] = skeleton->ID_Cycle_Safe(shared_str{"new_torso_run_0"});
 
     add_path_rotation(eLegsTypeRun, 0, eLegsRun);
     add_path_rotation(eLegsTypeRun, PI, eLegsBackRun);

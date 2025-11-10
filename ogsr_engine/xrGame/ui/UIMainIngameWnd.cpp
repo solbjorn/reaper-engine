@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIMainIngameWnd.h"
+
 #include "UIMessagesWindow.h"
 #include "../UIZoneMap.h"
 
@@ -43,6 +44,12 @@
 
 #include "map_hint.h"
 #include "../game_news.h"
+
+#include "UICellCustomItems.h"
+#include "../game_object_space.h"
+#include "../script_callback_ex.h"
+#include "../script_game_object.h"
+#include "../Actor.h"
 
 #ifdef DEBUG
 #include "../attachable_item.h"
@@ -218,7 +225,7 @@ void CUIMainIngameWnd::Init()
         UIThirstIcon.Show(false);
     }
 
-    constexpr const char* warningStrings[] = {
+    static constexpr const char* warningStrings[]{
         "jammed",     "radiation", "wounds", "starvation",
         "fatigue", // PsyHealth ???
         "invincible", // Not used
@@ -237,7 +244,7 @@ void CUIMainIngameWnd::Init()
         float f = 0;
         for (u32 k = 0; k < count; ++k)
         {
-            _GetItem(cfgRecord, k, singleThreshold);
+            std::ignore = _GetItem(cfgRecord, k, singleThreshold);
             sscanf(singleThreshold, "%f", &f);
 
             m_Thresholds[i].push_back(f);
@@ -589,14 +596,13 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
     {
         pIcon = xr_new<CUIStatic>();
         xml_init.InitStatic(*node, flashingIconNodeName, i, pIcon);
-        shared_str iconType = node->ReadAttrib(flashingIconNodeName, i, "type", "none");
 
         // Теперь запоминаем иконку и ее тип
         EFlashingIcons type = efiPdaTask;
-
-        if (iconType == "pda")
+        gsl::czstring iconType = node->ReadAttrib(flashingIconNodeName, i, "type", "none");
+        if (std::is_eq(xr_strcmp(iconType, "pda")))
             type = efiPdaTask;
-        else if (iconType == "mail")
+        else if (std::is_eq(xr_strcmp(iconType, "mail")))
             type = efiMail;
         else
             R_ASSERT(!"Unknown type of mainingame flashing icon");
@@ -649,12 +655,6 @@ void CUIMainIngameWnd::SetPickUpItem(CInventoryItem* PickUpItem)
     }
 }
 
-#include "UICellCustomItems.h"
-#include "../game_object_space.h"
-#include "../script_callback_ex.h"
-#include "../script_game_object.h"
-#include "../Actor.h"
-
 typedef CUIWeaponCellItem::eAddonType eAddonType;
 
 namespace
@@ -668,7 +668,7 @@ CUIStatic* init_addon(CUIWeaponCellItem* cell_item, LPCSTR sect, float scale, fl
     pos.x *= scale * scale_x;
     pos.y *= scale;
 
-    CIconParams params(sect);
+    CIconParams params{shared_str{sect}};
     Frect rect = params.original_rect();
     params.set_shader(addon);
     addon->SetWndRect(pos.x, pos.y, rect.width() * scale * scale_x, rect.height() * scale);
@@ -756,7 +756,7 @@ void CUIMainIngameWnd::UpdateActiveItemInfo()
         UIWeaponSignAmmo.Show(true);
         UIWeaponBack.SetText(str_name.c_str());
         UIWeaponSignAmmo.SetText(str_count.c_str());
-        SetAmmoIcon(icon_sect_name.c_str());
+        SetAmmoIcon(shared_str{icon_sect_name.c_str()});
 
         //-------------------
         m_pWeapon = smart_cast<CWeapon*>(item);

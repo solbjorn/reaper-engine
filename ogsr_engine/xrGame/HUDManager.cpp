@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "HUDManager.h"
-#include "hudtarget.h"
 
+#include "hudtarget.h"
 #include "actor.h"
 #include "..\xr_3da\igame_level.h"
 #include "clsid_game.h"
@@ -68,7 +68,7 @@ void CFontManager::InitializeFonts()
 
 LPCSTR CFontManager::GetFontTexName(LPCSTR section)
 {
-    constexpr const char* tex_names[] = {"texture800", "texture", "texture1600", "texture_hidpi"};
+    constexpr const char* tex_names[]{"texture800", "texture", "texture1600", "texture_hidpi"};
     int idx, def_idx = 1; // default 1024x768
     u32 h = Device.dwHeight;
 
@@ -102,9 +102,11 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
         m_all_fonts.push_back(F);
     }
     else
+    {
         F->Initialize(sh_name, font_tex_name, section);
+    }
 
-    F->m_font_name = section;
+    F->m_font_name._set(section);
 
     if (!(flags & CGameFont::fsDeviceIndependent))
     {
@@ -312,11 +314,11 @@ void CHUDManager::RenderUI()
         CGameFont* pFont = Font().pFontGraffiti50Russian;
         pFont->SetColor(0x80FF0000);
 
-        Fvector2 _pos;
-        _pos.set(UI_BASE_WIDTH / 2.0f, UI_BASE_HEIGHT / 2.0f);
+        Fvector2 _pos{UI_BASE_WIDTH / 2.0f, UI_BASE_HEIGHT / 2.0f};
         UI()->ClientToScreenScaled(_pos);
+
         pFont->SetAligment(CGameFont::alCenter);
-        pFont->Out(_pos.x, _pos.y, "%s", CStringTable().translate("st_game_paused").c_str());
+        pFont->Out(_pos.x, _pos.y, "%s", CStringTable().translate(shared_str{"st_game_paused"}).c_str());
         pFont->OnRender();
     }
 }

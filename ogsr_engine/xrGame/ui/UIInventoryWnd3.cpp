@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIInventoryWnd.h"
+
 #include "../actor.h"
 #include "../silencer.h"
 #include "../scope.h"
@@ -18,6 +19,7 @@
 #include "UIListBoxItem.h"
 #include "../CustomOutfit.h"
 #include "../string_table.h"
+
 #include <regex>
 
 void CUIInventoryWnd::EatItem(PIItem itm)
@@ -157,13 +159,13 @@ void CUIInventoryWnd::ActivatePropertiesBox()
         if (tgt && tgt->CanAttach(CurrentIItem()))
         {
             // В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
-            const std::string trans_str = "st_attach_addon_to_wpn_in_slot_" + std::to_string(i);
+            const xr_string trans_str = "st_attach_addon_to_wpn_in_slot_" + std::to_string(i);
             string512 str;
 
             XR_DIAG_PUSH();
             XR_DIAG_IGNORE("-Wformat-nonliteral");
 
-            std::snprintf(str, sizeof(str), CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+            std::snprintf(str, sizeof(str), CStringTable().translate(shared_str{trans_str.c_str()}).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
 
             XR_DIAG_POP();
 

@@ -38,7 +38,7 @@ public:
     u32 m_dwTotalMoney;
 
 public:
-    CALifeHumanBrain(object_type* object);
+    explicit CALifeHumanBrain(object_type* object);
     virtual ~CALifeHumanBrain();
 
 public:

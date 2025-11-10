@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "trajectories.h"
 #include "Level.h"
 #include "PHWorld.h"
@@ -105,8 +106,9 @@ static bool trajectory_check_collision(float low, float high, Fvector const& pos
         Fvector box_x_axis;
         if (_abs(box_z_axis.x) > epsilon || _abs(box_z_axis.z) > epsilon)
         {
-            Fvector const down = {0, -1, 0};
+            constexpr Fvector down{0.0f, -1.0f, 0.0f};
             Fvector box_x_axis;
+
             box_x_axis.crossproduct(box_z_axis, down);
             box_y_axis.crossproduct(box_z_axis, box_x_axis);
         }

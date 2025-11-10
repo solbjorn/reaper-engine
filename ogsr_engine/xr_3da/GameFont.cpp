@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "GameFont.h"
+
 #include "Render.h"
 
 #include "../Include/xrAPI/xrAPI.h"
@@ -99,7 +100,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
 
         // Searching for the first valid character
 
-        Fvector vFirstValid = {0, 0, 0};
+        Fvector vFirstValid{};
 
         if (ini->line_exist("mb_symbol_coords", "09608"))
         {
@@ -107,6 +108,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
             vFirstValid.set(v.x, v.y, v.z - v.x + fwc);
         }
         else
+        {
             for (u32 i = 0; i < nNumChars; i++)
             {
                 xr_sprintf(buf, sizeof(buf), "%05d", i);
@@ -117,6 +119,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
                     break;
                 }
             }
+        }
 
         // Filling entire character table
 
@@ -132,7 +135,9 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect
                     fXStep = v.z - v.x + fwc; // реальная ширина пробела в шрифте
             }
             else
+            {
                 TCMap[i] = vFirstValid; // "unassigned" unprintable characters
+            }
         }
 
         // Special case for space

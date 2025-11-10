@@ -10,9 +10,12 @@
 #include "StdAfx.h"
 
 #include "UIComboBox.h"
+
 #include "uilistboxitem.h"
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"
+
+#include "../string_table.h"
 
 #include <dinput.h>
 
@@ -108,8 +111,6 @@ void CUIComboBox::OnListItemSelect()
     }
 }
 
-#include "../string_table.h"
-
 void CUIComboBox::SetCurrentValue()
 {
     m_list.Clear();
@@ -121,7 +122,7 @@ void CUIComboBox::SetCurrentValue()
         tok++;
     }
 
-    LPCSTR cur_val = *CStringTable().translate(GetOptTokenValue());
+    LPCSTR cur_val = *CStringTable().translate(shared_str{GetOptTokenValue()});
     m_text.SetText(cur_val);
     m_list.SetSelectedText(cur_val);
 

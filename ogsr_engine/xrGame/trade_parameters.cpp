@@ -20,7 +20,7 @@ void CTradeParameters::process(action_show, CInifile& ini_file, const shared_str
     CInifile::Sect& S = ini_file.r_section(section);
     for (const auto& I : S.Data)
     {
-        if (!I.second.size())
+        if (I.second.empty())
             m_show.disable(I.first);
     }
 }

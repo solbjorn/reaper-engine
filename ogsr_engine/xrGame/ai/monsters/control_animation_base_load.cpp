@@ -1,19 +1,20 @@
 #include "stdafx.h"
+
 #include "control_animation_base.h"
 
 void CControlAnimationBase::AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s, LPCSTR fx_front, LPCSTR fx_back, LPCSTR fx_left, LPCSTR fx_right)
 {
     SAnimItem* new_item = xr_new<SAnimItem>();
 
-    new_item->target_name = tn;
+    new_item->target_name._set(tn);
     new_item->spec_id = s_id;
     new_item->velocity = *vel;
     new_item->pos_state = p_s;
 
-    new_item->fxs.front = fx_front;
-    new_item->fxs.back = fx_back;
-    new_item->fxs.left = fx_left;
-    new_item->fxs.right = fx_right;
+    new_item->fxs.front._set(fx_front);
+    new_item->fxs.back._set(fx_back);
+    new_item->fxs.left._set(fx_left);
+    new_item->fxs.right._set(fx_right);
 
     new_item->count = 0;
 
@@ -24,7 +25,7 @@ void CControlAnimationBase::AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVeloci
 {
     SAnimItem* new_item = xr_new<SAnimItem>();
 
-    new_item->target_name = tn;
+    new_item->target_name._set(tn);
     new_item->spec_id = s_id;
     new_item->velocity = *vel;
     new_item->pos_state = p_s;

@@ -8,6 +8,8 @@
 
 #include <DirectXPackedVector.h>
 
+namespace
+{
 // For render call
 constexpr const char* strZNear("ZNear");
 constexpr const char* strZFar("ZFar");
@@ -19,17 +21,18 @@ constexpr const char* strRTWidth("RTWidth");
 constexpr const char* strRTHeight("RTHeight");
 
 constexpr const char* strDiffuseLight("DiffuseLight");
+} // namespace
 
-dx103DFluidRenderer::dx103DFluidRenderer() {}
-
+dx103DFluidRenderer::dx103DFluidRenderer() = default;
 dx103DFluidRenderer::~dx103DFluidRenderer() { Destroy(); }
+
 void dx103DFluidRenderer::Initialize(int gridWidth, int gridHeight, int gridDepth)
 {
     Destroy();
 
-    m_vGridDim[0] = float(gridWidth);
-    m_vGridDim[1] = float(gridHeight);
-    m_vGridDim[2] = float(gridDepth);
+    m_vGridDim[0] = gsl::narrow_cast<f32>(gridWidth);
+    m_vGridDim[1] = gsl::narrow_cast<f32>(gridHeight);
+    m_vGridDim[2] = gsl::narrow_cast<f32>(gridDepth);
 
     m_fMaxDim = _max(_max(m_vGridDim[0], m_vGridDim[1]), m_vGridDim[2]);
 
@@ -59,13 +62,13 @@ void dx103DFluidRenderer::Destroy()
     if (!m_bInited)
         return;
 
-    m_JitterTexture = nullptr;
-    m_HHGGTexture = nullptr;
+    m_JitterTexture._set(nullptr);
+    m_HHGGTexture._set(nullptr);
 
-    m_GeomQuadVertex = nullptr;
+    m_GeomQuadVertex._set(nullptr);
     _RELEASE(m_pQuadVertexBuffer);
 
-    m_GeomGridBox = nullptr;
+    m_GeomGridBox._set(nullptr);
     _RELEASE(m_pGridBoxVertexBuffer);
     _RELEASE(m_pGridBoxIndexBuffer);
 
@@ -93,22 +96,22 @@ void dx103DFluidRenderer::InitShaders()
 
 void dx103DFluidRenderer::DestroyShaders()
 {
-    for (size_t i = 0; i < RS_NumShaders; ++i)
+    for (auto& tech : m_RendererTechnique)
     {
         //	Release shader's element.
-        m_RendererTechnique[i] = nullptr;
+        tech._set(nullptr);
     }
 }
 
 void dx103DFluidRenderer::CreateGridBox()
 {
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, dx103DFluidConsts::vertices, sizeof(dx103DFluidConsts::vertices)));
+    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, dx103DFluidConsts::vertices.data(), sizeof(dx103DFluidConsts::vertices)));
 
-    CHK_DX(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, dx103DFluidConsts::indices, sizeof(dx103DFluidConsts::indices)));
+    CHK_DX(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, dx103DFluidConsts::indices.data(), sizeof(dx103DFluidConsts::indices)));
     HW.stats_manager.increment_stats(sizeof(dx103DFluidConsts::indices), enum_stats_buffer_type_index, D3DPOOL_MANAGED);
 
     // Define the input layout
-    static constexpr D3DVERTEXELEMENT9 layout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
+    static constexpr D3DVERTEXELEMENT9 layout[]{{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
 
     // Create the input layout
     m_GeomGridBox.create(layout, m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
@@ -117,21 +120,21 @@ void dx103DFluidRenderer::CreateGridBox()
 void dx103DFluidRenderer::CreateScreenQuad()
 {
     // Create our quad input layout
-    static constexpr D3DVERTEXELEMENT9 quadlayout[] = {{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
-
+    static constexpr D3DVERTEXELEMENT9 quadlayout[]{{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
     // Create a screen quad for all render to texture operations
-    static constexpr Fvector3 svQuad[]{{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}};
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+    static constexpr std::array<Fvector, 4> XR_ALIGNED_DEFAULT svQuad{Fvector{-1.0f, 1.0f, 0.0f}, Fvector{1.0f, 1.0f, 0.0f}, Fvector{-1.0f, -1.0f, 0.0f},
+                                                                      Fvector{1.0f, -1.0f, 0.0f}};
+
+    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad.data(), sizeof(svQuad)));
     m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, nullptr);
 }
 
 void dx103DFluidRenderer::CreateJitterTexture()
 {
-    BYTE data[256 * 256];
-    for (int i = 0; i < 256 * 256; i++)
-    {
-        data[i] = (unsigned char)(rand() / float(RAND_MAX) * 256);
-    }
+    xr_vector<u8> data(256 * 256);
+
+    for (auto& byte : data)
+        byte = gsl::narrow_cast<u8>(xr::random_u32(std::numeric_limits<u8>::max()));
 
     D3D_TEXTURE2D_DESC desc{};
     desc.Width = 256;
@@ -148,19 +151,20 @@ void dx103DFluidRenderer::CreateJitterTexture()
     desc.MiscFlags = 0;
 
     D3D_SUBRESOURCE_DATA dataDesc{};
-    dataDesc.pSysMem = data;
+    dataDesc.pSysMem = data.data();
     dataDesc.SysMemPitch = 256;
 
-    ID3DTexture2D* NoiseTexture = nullptr;
-
+    ID3DTexture2D* NoiseTexture{};
     CHK_DX(HW.pDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
 
-    m_JitterTexture = RImplementation.Resources->_CreateTexture("$user$NVjitterTex");
+    m_JitterTexture._set(RImplementation.Resources->_CreateTexture("$user$NVjitterTex"));
     m_JitterTexture->surface_set(NoiseTexture);
 
     _RELEASE(NoiseTexture);
 }
 
+namespace
+{
 template <size_t iNumSamples>
 struct HHGG_Gen
 {
@@ -187,6 +191,7 @@ struct HHGG_Gen
     }
     float data[4 * iNumSamples]{};
 };
+} // namespace
 
 void dx103DFluidRenderer::CreateHHGGTexture()
 {
@@ -210,17 +215,17 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     dataDesc.pSysMem = converted;
     dataDesc.SysMemPitch = sizeof(converted);
 
-    ID3DTexture1D* HHGGTexture = nullptr;
-
+    ID3DTexture1D* HHGGTexture{};
     CHK_DX(HW.pDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
 
-    m_HHGGTexture = RImplementation.Resources->_CreateTexture("$user$NVHHGGTex");
+    m_HHGGTexture._set(RImplementation.Resources->_CreateTexture("$user$NVHHGGTex"));
     m_HHGGTexture->surface_set(HHGGTexture);
 
     _RELEASE(HHGGTexture);
 }
 
 void dx103DFluidRenderer::SetScreenSize(int width, int height) { CreateRayDataResources(width, height); }
+
 void dx103DFluidRenderer::CalculateRenderTextureSize(int screenWidth, int screenHeight)
 {
     int maxProjectedSide = int(3.0 * _sqrt(3.0) * m_fMaxDim);
@@ -243,12 +248,12 @@ void dx103DFluidRenderer::CreateRayDataResources(int width, int height)
     // find a good resolution for raycasting purposes
     CalculateRenderTextureSize(width, height);
 
-    RT[0] = nullptr;
+    RT[0]._set(nullptr);
     RT[0].create(dx103DFluidConsts::m_pRTNames[0], width, height, dx103DFluidConsts::RTFormats[0]);
 
     for (size_t i = 1; i < RRT_NumRT; ++i)
     {
-        RT[i] = nullptr;
+        RT[i]._set(nullptr);
         RT[i].create(dx103DFluidConsts::m_pRTNames[i], m_iRenderTextureWidth, m_iRenderTextureHeight, dx103DFluidConsts::RTFormats[i]);
     }
 }
@@ -287,7 +292,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
     //  raycasting is done at the smaller resolution, using a fullscreen quad
     RCache.ClearRT(RT[RRT_RayCastTex], {});
 
-    pTarget->u_setrt(RCache, RT[RRT_RayCastTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayCastTex], {}, {}, nullptr); // LDR RT
 
     RImplementation.rmNormal(RCache);
 
@@ -303,9 +308,9 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData& FluidData)
     //  If and edge was detected at the current pixel we will raycast again to avoid
     //  smoke aliasing artifacts at scene edges
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, {}, {}, pTarget->rt_Base_Depth); // LDR RT
     else
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, {}, {}, pTarget->rt_MSAADepth); // LDR RT
 
     if (bRenderFire)
         RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
@@ -326,7 +331,7 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
     RCache.ClearRT(RT[RRT_RayDataTex], {});
 
     CRenderTarget* pTarget = RImplementation.Target;
-    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], {}, {}, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
 
     RImplementation.rmNormal(RCache);
@@ -340,7 +345,7 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
     // Render volume front faces using subtractive blending
     // We output xyz="position in grid space" and w=boxDepth,
     //  unless the pixel is occluded by the scene, in which case we output xyzw=(1,0,0,0)
-    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTex], {}, {}, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
     PrepareCBuffer(FluidData, Device.dwWidth, Device.dwHeight);
 
@@ -351,7 +356,7 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
 void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
 {
     CRenderTarget* pTarget = RImplementation.Target;
-    pTarget->u_setrt(RCache, RT[RRT_RayDataTexSmall], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_RayDataTexSmall], {}, {}, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
 
     // First setup viewport to match the size of the destination low-res texture
@@ -363,7 +368,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
     DrawScreenQuad();
 
     // Create an edge texture, performing edge detection on 'rayDataTexSmall'
-    pTarget->u_setrt(RCache, RT[RRT_EdgeTex], nullptr, nullptr, nullptr); // LDR RT
+    pTarget->u_setrt(RCache, RT[RRT_EdgeTex], {}, {}, nullptr); // LDR RT
     RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
     PrepareCBuffer(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
 

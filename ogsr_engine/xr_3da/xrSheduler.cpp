@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "IGame_Level.h"
 #include "xrSheduler.h"
+
+#include "IGame_Level.h"
 #include "xr_object.h"
 
 // #define DEBUG_SCHEDULER
@@ -407,7 +408,7 @@ void CSheduler::Update()
     // To calculate the time limit, 1/6 part of the rendering time is taken
     float psShedulerCurrent = (stats.RenderTOTAL.result * 10) / stats.fRFPS;
     clamp(psShedulerCurrent, 1.f, stats.RenderTOTAL.result / 2.f);
-    cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000ul + cycles_start;
+    cycles_limit = CPU::qpc_freq * gsl::narrow_cast<gsl::index>(std::ceil(psShedulerCurrent)) / 1000z + cycles_start;
     internal_Registration();
 
 #ifdef DEBUG_SCHEDULER

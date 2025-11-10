@@ -8,6 +8,8 @@
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 
+namespace
+{
 //	For OOBB
 constexpr const char* strOOBBClipPlane("OOBBClipPlane");
 
@@ -18,22 +20,23 @@ constexpr const char* strMassCenter("MassCenter");
 constexpr const char* strOOBBWorldAngularVelocity("OOBBWorldAngularVelocity");
 constexpr const char* strOOBBWorldTranslationVelocity("OOBBWorldTranslationVelocity");
 
-constexpr Fvector4 UnitClipPlanes[] = {
-    {-1.f, 0.0f, 0.0f, 0.5f}, //
-    {1.f, 0.0f, 0.0f, 0.5f}, //
-    {0.0f, -1.f, 0.0f, 0.5f}, //	Top
-    {0.0f, 1.f, 0.0f, 0.5f}, //	Bottom
-    {0.0f, 0.0f, -1.f, 0.5f}, //
-    {0.0f, 0.0f, 1.f, 0.5f}, //
+constexpr Fvector4 UnitClipPlanes[]{
+    Fvector4{-1.0f, 0.0f, 0.0f, 0.5f}, //
+    Fvector4{1.0f, 0.0f, 0.0f, 0.5f}, //
+    Fvector4{0.0f, -1.0f, 0.0f, 0.5f}, //	Top
+    Fvector4{0.0f, 1.0f, 0.0f, 0.5f}, //	Bottom
+    Fvector4{0.0f, 0.0f, -1.0f, 0.5f}, //
+    Fvector4{0.0f, 0.0f, 1.0f, 0.5f}, //
 };
+} // namespace
 
 dx103DFluidObstacles::dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid(pGrid)
 {
     VERIFY(m_pGrid);
 
-    m_vGridDim[0] = float(gridWidth);
-    m_vGridDim[1] = float(gridHeight);
-    m_vGridDim[2] = float(gridDepth);
+    m_vGridDim[0] = gsl::narrow_cast<f32>(gridWidth);
+    m_vGridDim[1] = gsl::narrow_cast<f32>(gridHeight);
+    m_vGridDim[2] = gsl::narrow_cast<f32>(gridDepth);
 
     InitShaders();
 }
@@ -57,10 +60,10 @@ void dx103DFluidObstacles::InitShaders()
 
 void dx103DFluidObstacles::DestroyShaders()
 {
-    for (int i = 0; i < OS_NumShaders; ++i)
+    for (auto& tech : m_ObstacleTechnique)
     {
         //	Release shader's element.
-        m_ObstacleTechnique[i] = nullptr;
+        tech._set(nullptr);
     }
 }
 

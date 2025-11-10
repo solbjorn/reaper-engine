@@ -51,8 +51,8 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
     const CSE_Visual* visual = smart_cast<const CSE_Visual*>(E);
     if (visual)
     {
-        shared_str N = visual_name(E);
-        if (N.empty())
+        gsl::czstring N{visual_name(E)};
+        if (N == nullptr || N[0] == '\0')
         {
             Msg("! [%s]: prevent %s[%u] from spawn because it has no visual", __FUNCTION__, E->name_replace()[0] ? E->name_replace() : E->s_name.c_str(), E->ID);
             return FALSE;
@@ -76,10 +76,12 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
         if (ini->section_exist("sound"))
             m_destroy_sound.create(ini->r_string("sound", "break_sound"), st_Effect, sg_SourceType);
         if (ini->section_exist("particles"))
-            m_destroy_particles = ini->r_string("particles", "destroy_particles");
+            m_destroy_particles._set(ini->r_string("particles", "destroy_particles"));
     }
+
     CParticlesPlayer::LoadParticles(K);
     RunStartupAnim(DC);
+
     return res;
 }
 

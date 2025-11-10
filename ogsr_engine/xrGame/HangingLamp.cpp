@@ -27,9 +27,9 @@ void CHangingLamp::Init()
     ambient_bone = BI_NONE;
     lanim = nullptr;
     ambient_power = 0.f;
-    light_render = nullptr;
-    light_ambient = nullptr;
-    glow_render = nullptr;
+    light_render._set(nullptr);
+    light_ambient._set(nullptr);
+    glow_render._set(nullptr);
 }
 
 void CHangingLamp::RespawnInit()
@@ -101,7 +101,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     clr.a = 1.f;
     clr.mul_rgb(fBrightness);
 
-    light_render = ::Render->light_create();
+    light_render._set(::Render->light_create());
     light_render->set_shadow(lamp->flags.is(CSE_ALifeObjectHangingLamp::flCastShadow) || psActorFlags.test(AF_FORCE_LIGHTS_SHADOWED));
     light_render->set_type(lamp->flags.is(CSE_ALifeObjectHangingLamp::flTypeSpot) ? IRender_Light::SPOT : IRender_Light::POINT);
     light_render->set_range(lamp->range);
@@ -123,7 +123,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 
     if (lamp->glow_texture.size())
     {
-        glow_render = ::Render->glow_create();
+        glow_render._set(::Render->glow_create());
         glow_render->set_texture(*lamp->glow_texture);
         glow_render->set_color(clr);
         glow_render->set_radius(lamp->glow_radius);
@@ -132,7 +132,7 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPointAmbient))
     {
         ambient_power = lamp->m_ambient_power;
-        light_ambient = ::Render->light_create();
+        light_ambient._set(::Render->light_create());
         light_ambient->set_type(IRender_Light::POINT);
         light_ambient->set_shadow(false);
         clr.mul_rgb(ambient_power);
@@ -148,8 +148,8 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     std::ignore = CPHSkeleton::Spawn(e);
 
     IKinematicsAnimated* kanim = smart_cast<IKinematicsAnimated*>(Visual());
-    if (kanim)
-        kanim->PlayCycle("idle");
+    if (kanim != nullptr)
+        kanim->PlayCycle(shared_str{"idle"});
 
     IKinematics* kin = smart_cast<IKinematics*>(Visual());
     if (kin)
@@ -382,7 +382,7 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp* lamp)
         for (int i = 0; i < count; ++i)
         {
             string64 fixed_bone;
-            _GetItem(fixed_bones, i, fixed_bone);
+            std::ignore = _GetItem(fixed_bones, i, fixed_bone);
             u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
             R_ASSERT2(BI_NONE != fixed_bone_id, "wrong fixed bone");
             bone_map.try_emplace(fixed_bone_id);

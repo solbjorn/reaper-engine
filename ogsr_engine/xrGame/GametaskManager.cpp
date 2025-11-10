@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "GameTaskManager.h"
+
 #include "alife_registry_wrappers.h"
 #include "ui/xrUIXmlParser.h"
 #include "GameTask.h"
@@ -20,7 +21,6 @@ shared_str g_active_task_id;
 u16 g_active_task_objective_id = u16(-1);
 
 CGameTaskManager::CGameTaskManager() { m_gametasks = xr_new<CGameTaskWrapper>(); }
-
 CGameTaskManager::~CGameTaskManager() { delete_data(m_gametasks); }
 
 void CGameTaskManager::initialize(u16 id)
@@ -122,7 +122,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     if ((state == eTaskStateFail || state == eTaskStateCompleted) && ml)
     {
         Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
-        o->map_location = nullptr;
+        o->map_location._set(nullptr);
         o->object_id = u16(-1);
     }
 
@@ -131,7 +131,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     // highlight next objective if needed
     if ((isRoot || !t->HasInProgressObjective()) && (ActiveTask() == t))
     {
-        SetActiveTask("", 1);
+        SetActiveTask(shared_str{""}, 1);
     }
     // not last
     else if (!isRoot && bActive && objective_num < (t->m_Objectives.size() - 1))
@@ -305,7 +305,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
             ml->EnablePointer();
     }
 
-    Discord.Set_active_task_text(CStringTable().translate(o ? o->description : "st_no_active_task").c_str());
+    Discord.Set_active_task_text(CStringTable().translate(o ? o->description : shared_str{"st_no_active_task"}).c_str());
 }
 
 SGameTaskObjective* CGameTaskManager::ActiveObjective()

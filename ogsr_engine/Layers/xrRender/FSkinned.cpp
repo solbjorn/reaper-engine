@@ -4,8 +4,9 @@
 
 #include "stdafx.h"
 
-#include "../../xr_3da/fmesh.h"
 #include "FSkinned.h"
+
+#include "../../xr_3da/fmesh.h"
 #include "SkeletonX.h"
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #include "../../xr_3da/EnnumerateVertices.h"
@@ -40,7 +41,7 @@ struct vertHW_1W
     u32 _B;
     float _tc[2];
 
-    void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index)
+    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index)
     {
         N.normalize_safe();
         T.normalize_safe();
@@ -73,7 +74,7 @@ struct vertHW_2W
     u32 _B;
     float _tc_i[4];
 
-    void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, float w)
+    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index0, int index1, float w)
     {
         N.normalize_safe();
         T.normalize_safe();
@@ -108,7 +109,7 @@ struct vertHW_3W
     u32 _B_i;
     float _tc_i[4];
 
-    void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, int index2, float w0, float w1)
+    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index0, int index1, int index2, float w0, float w1)
     {
         N.normalize_safe();
         T.normalize_safe();
@@ -145,7 +146,7 @@ struct vertHW_4W
     float _tc[2];
     u32 _i;
 
-    void set(Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, Fvector2& tc, int index0, int index1, int index2, int index3, float w0, float w1, float w2)
+    void set(const Fvector3& P, Fvector3 N, Fvector3 T, Fvector3 B, const Fvector2& tc, int index0, int index1, int index2, int index3, float w0, float w1, float w2)
     {
         N.normalize_safe();
         T.normalize_safe();
@@ -205,7 +206,7 @@ void CSkeletonX_ST::Release() { inherited1::Release(); }
 void CSkeletonX_PM::Load(const char* N, IReader* data, u32 dwFlags)
 {
     _Load(N, data, vCount);
-    void* _verts_ = data->pointer();
+    const void* _verts_ = data->pointer();
     inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
     RImplementation.shader_option_skinning(-1);
     _DuplicateIndices(data);
@@ -216,7 +217,7 @@ void CSkeletonX_PM::Load(const char* N, IReader* data, u32 dwFlags)
 void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 {
     _Load(N, data, vCount);
-    void* _verts_ = data->pointer();
+    const void* _verts_ = data->pointer();
     inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
     RImplementation.shader_option_skinning(-1);
     _DuplicateIndices(data);
@@ -224,7 +225,7 @@ void CSkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
     _Load_hw(*this, _verts_);
 }
 
-void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
+void CSkeletonX_ext::_Load_hw(Fvisual& V, const void* _verts_)
 {
     // Create HW VB in case this is possible
     //	BOOL	bSoft				= HW.Caps.geometry.bSoftware;
@@ -240,18 +241,18 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         { //	Back up vertex data since we can't read vertex buffer in DX10
             // u32 size = V.vCount * sizeof(vertBoned1W);
             // u32 crc = crc32(_verts_, size);
-            Vertices1W.create(V.vCount, (vertBoned1W*)_verts_);
+            Vertices1W.create(V.vCount, (const vertBoned1W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
         VERIFY(vStride == sizeof(vertHW_1W));
         //			BYTE*	bytes		= 0;
-        VERIFY(NULL == V.p_rm_Vertices);
+        VERIFY(V.p_rm_Vertices == nullptr);
 
         //	TODO: DX10: Check for memory fragmentation
         vertHW_1W* dstOriginal = xr_alloc<vertHW_1W>(V.vCount);
         vertHW_1W* dst = dstOriginal;
-        vertBoned1W* src = (vertBoned1W*)_verts_;
+        const vertBoned1W* src = (const vertBoned1W*)_verts_;
         for (u32 it = 0; it < V.vCount; it++)
         {
             Fvector2 uv;
@@ -272,18 +273,18 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         { //	Back up vertex data since we can't read vertex buffer in DX10
             // u32 size = V.vCount * sizeof(vertBoned2W);
             // u32 crc = crc32(_verts_, size);
-            Vertices2W.create(V.vCount, (vertBoned2W*)_verts_);
+            Vertices2W.create(V.vCount, (const vertBoned2W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
         VERIFY(vStride == sizeof(vertHW_2W));
         //			BYTE* bytes			= 0;
-        VERIFY(NULL == V.p_rm_Vertices);
+        VERIFY(V.p_rm_Vertices == nullptr);
 
         // R_CHK				(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
         // R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
         // vertHW_2W* dst		= (vertHW_2W*)bytes;
-        // vertBoned2W* src	= (vertBoned2W*)_verts_;
+        // const vertBoned2W* src	= (const vertBoned2W*)_verts_;
 
         // for (u32 it=0; it<V.vCount; ++it)
         //{
@@ -296,7 +297,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         //	TODO: DX10: Check for memory fragmentation
         vertHW_2W* dstOriginal = xr_alloc<vertHW_2W>(V.vCount);
         vertHW_2W* dst = dstOriginal;
-        vertBoned2W* src = (vertBoned2W*)_verts_;
+        const vertBoned2W* src = (const vertBoned2W*)_verts_;
         for (u32 it = 0; it < V.vCount; it++)
         {
             Fvector2 uv;
@@ -316,18 +317,18 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         { //	Back up vertex data since we can't read vertex buffer in DX10
             // u32 size = V.vCount * sizeof(vertBoned3W);
             // u32 crc = crc32(_verts_, size);
-            Vertices3W.create(V.vCount, (vertBoned3W*)_verts_);
+            Vertices3W.create(V.vCount, (const vertBoned3W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
         VERIFY(vStride == sizeof(vertHW_3W));
         //			BYTE*	bytes			= 0;
-        VERIFY(NULL == V.p_rm_Vertices);
+        VERIFY(V.p_rm_Vertices == nullptr);
 
         // R_CHK					(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
         // R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
         // vertHW_3W* dst			= (vertHW_3W*)bytes;
-        // vertBoned3W* src		= (vertBoned3W*)_verts_;
+        // const vertBoned3W* src		= (const vertBoned3W*)_verts_;
 
         // for (u32 it=0; it<V.vCount; ++it)
         //{
@@ -341,7 +342,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         //	TODO: DX10: Check for memory fragmentation
         vertHW_3W* dstOriginal = xr_alloc<vertHW_3W>(V.vCount);
         vertHW_3W* dst = dstOriginal;
-        vertBoned3W* src = (vertBoned3W*)_verts_;
+        const vertBoned3W* src = (const vertBoned3W*)_verts_;
         for (u32 it = 0; it < V.vCount; it++)
         {
             Fvector2 uv;
@@ -361,18 +362,18 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         { //	Back up vertex data since we can't read vertex buffer in DX10
             // u32 size = V.vCount * sizeof(vertBoned4W);
             // u32 crc = crc32(_verts_, size);
-            Vertices4W.create(V.vCount, (vertBoned4W*)_verts_);
+            Vertices4W.create(V.vCount, (const vertBoned4W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);
         VERIFY(vStride == sizeof(vertHW_4W));
         //			BYTE*	bytes			= 0;
-        VERIFY(NULL == V.p_rm_Vertices);
+        VERIFY(V.p_rm_Vertices == nullptr);
 
         // R_CHK					(HW.pDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
         // R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
         // vertHW_4W* dst			= (vertHW_4W*)bytes;
-        // vertBoned4W* src		= (vertBoned4W*)_verts_;
+        // const vertBoned4W* src		= (const vertBoned4W*)_verts_;
 
         // for (u32 it=0; it<V.vCount; ++it)
         //{
@@ -386,7 +387,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         //	TODO: DX10: Check for memory fragmentation
         vertHW_4W* dstOriginal = xr_alloc<vertHW_4W>(V.vCount);
         vertHW_4W* dst = dstOriginal;
-        vertBoned4W* src = (vertBoned4W*)_verts_;
+        const vertBoned4W* src = (const vertBoned4W*)_verts_;
         for (u32 it = 0; it < V.vCount; it++)
         {
             Fvector2 uv;

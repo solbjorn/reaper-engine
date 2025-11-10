@@ -15,15 +15,12 @@
 #include <Utilities\FlexibleVertexFormat.h>
 
 SHS* CResourceManager::_CreateHS(LPCSTR Name) { return CreateShader<SHS>(Name); }
-
 void CResourceManager::_DeleteHS(const SHS* HS) { DestroyShader(HS); }
 
 SDS* CResourceManager::_CreateDS(LPCSTR Name) { return CreateShader<SDS>(Name); }
-
 void CResourceManager::_DeleteDS(const SDS* DS) { DestroyShader(DS); }
 
 SCS* CResourceManager::_CreateCS(LPCSTR Name) { return CreateShader<SCS>(Name); }
-
 void CResourceManager::_DeleteCS(const SCS* CS) { DestroyShader(CS); }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -140,7 +137,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
 
         string_path cname;
         strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*_name*/ shName, ".vs");
-        FS.update_path(cname, "$game_shaders$", cname);
+        std::ignore = FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
@@ -242,7 +239,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         // Open file
         string_path cname;
         strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*_name*/ shName, ".ps");
-        FS.update_path(cname, "$game_shaders$", cname);
+        std::ignore = FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
@@ -308,7 +305,7 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         // Open file
         string_path cname;
         strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), name, ".gs");
-        FS.update_path(cname, "$game_shaders$", cname);
+        std::ignore = FS.update_path(cname, "$game_shaders$", cname);
 
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
@@ -471,7 +468,7 @@ SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVerte
 
     SGeometry* Geom = v_geoms.emplace_back(xr_new<SGeometry>());
     Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    Geom->dcl = dcl;
+    Geom->dcl._set(dcl);
     Geom->vb = vb;
     Geom->vb_stride = vb_stride;
     Geom->ib = ib;

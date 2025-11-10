@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_sound_action.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -15,10 +16,11 @@ CScriptSoundAction::~CScriptSoundAction() {}
 
 void CScriptSoundAction::SetSound(LPCSTR caSoundToPlay)
 {
-    m_caSoundToPlay = caSoundToPlay;
+    m_caSoundToPlay._set(caSoundToPlay);
     m_tGoalType = eGoalTypeSoundAttached;
     m_bStartedToPlay = false;
     string_path l_caFileName;
+
     if (FS.exist(l_caFileName, "$game_sounds$", *m_caSoundToPlay, ".ogg"))
     {
         m_bStartedToPlay = false;

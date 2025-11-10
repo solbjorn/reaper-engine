@@ -15,8 +15,8 @@ public:
 
 public:
     constexpr _plane() = default;
-    constexpr _plane(_vector3<T> _n, T _d) : n{_n}, d{_d} {}
-    constexpr _plane(T nx, T ny, T nz, T _d) : n{nx, ny, nz}, d{_d} {}
+    constexpr explicit _plane(_vector3<T> _n, T _d) : n{_n}, d{_d} {}
+    constexpr explicit _plane(T nx, T ny, T nz, T _d) : n{nx, ny, nz}, d{_d} {}
 
     constexpr SelfRef set(Self& P)
     {
@@ -45,8 +45,10 @@ public:
     {
         _vector3<T> t1, t2;
         n.crossproduct(t1.sub(v1, v2), t2.sub(v1, v3));
-        exact_normalize(n);
+
+        std::ignore = exact_normalize(n);
         d = -n.dotproduct(v1);
+
         return *this;
     }
 
@@ -160,11 +162,10 @@ public:
     }
 };
 
-typedef _plane<float> Fplane;
-typedef _plane<double> Dplane;
+using Fplane = _plane<f32>;
 
-template <class T>
-constexpr inline BOOL _valid(const _plane<T>& s)
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _plane<T>& s)
 {
     return _valid(s.n) && _valid(s.d);
 }

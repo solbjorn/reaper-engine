@@ -29,7 +29,7 @@ struct CProfileResultPortion
 
 struct CProfilePortion : public CProfileResultPortion
 {
-    IC CProfilePortion(LPCSTR timer_id);
+    inline explicit CProfilePortion(LPCSTR timer_id);
     IC ~CProfilePortion();
 };
 

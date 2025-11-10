@@ -37,8 +37,8 @@ private:
     bool internal_Unregister(ISheduled* A, bool RT, bool warn_on_not_found = true);
     void internal_Registration();
 
-    u64 cycles_start;
-    u64 cycles_limit;
+    gsl::index cycles_start;
+    gsl::index cycles_limit;
 
 public:
     void ProcessStep();

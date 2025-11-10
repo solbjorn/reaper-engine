@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "UIWindow.h"
+
 #include "../UICursor.h"
 #include "../MainMenu.h"
 #include "HudManager.h"
@@ -734,7 +735,8 @@ void CUIWindow::SetWindowName(const char* wn, bool ifnset)
 {
     if (ifnset && 0 != m_windowName.size()) // alpet: имя обновить, только если оно не установленно ранее
         return;
-    m_windowName = wn;
+
+    m_windowName._set(wn);
 }
 
 void CUIWindow::SetParent(CUIWindow* pNewParent)

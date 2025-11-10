@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
+#include "../../xr_3da/igame_persistent.h"
 
 namespace
 {
@@ -74,7 +74,7 @@ void CRenderTarget::phase_bloom()
     u32 Offset;
 
     // Targets
-    u_setrt(RCache, rt_Bloom_1, nullptr, nullptr, nullptr); // No need for ZBuffer at all
+    u_setrt(RCache, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
 
     // Clear	- don't clear - it's stupid here :)
     // Stencil	- disable
@@ -91,18 +91,18 @@ void CRenderTarget::phase_bloom()
         float th = BLOOM_size_Y;
         float _aspect_w = _2w / tw;
         float _aspect_h = _2h / th;
-        Fvector2 one = {1.f / _w, 1.f / _h};
+        Fvector2 one{1.f / _w, 1.f / _h};
         one.x *= _aspect_w;
         one.y *= _aspect_h;
-        Fvector2 half = {.5f / _w, .5f / _h};
-        Fvector2 a_0 = {half.x + 0, half.y + 0};
-        Fvector2 a_1 = {half.x + one.x, half.y + 0};
-        Fvector2 a_2 = {half.x + 0, half.y + one.y};
-        Fvector2 a_3 = {half.x + one.x, half.y + one.y};
-        Fvector2 b_0 = {1 + a_0.x, 1 + a_0.y};
-        Fvector2 b_1 = {1 + a_1.x, 1 + a_1.y};
-        Fvector2 b_2 = {1 + a_2.x, 1 + a_2.y};
-        Fvector2 b_3 = {1 + a_3.x, 1 + a_3.y};
+        Fvector2 half{.5f / _w, .5f / _h};
+        Fvector2 a_0{half.x + 0, half.y + 0};
+        Fvector2 a_1{half.x + one.x, half.y + 0};
+        Fvector2 a_2{half.x + 0, half.y + one.y};
+        Fvector2 a_3{half.x + one.x, half.y + one.y};
+        Fvector2 b_0{1 + a_0.x, 1 + a_0.y};
+        Fvector2 b_1{1 + a_1.x, 1 + a_1.y};
+        Fvector2 b_2{1 + a_2.x, 1 + a_2.y};
+        Fvector2 b_3{1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
         v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
@@ -155,17 +155,17 @@ void CRenderTarget::phase_bloom()
     {
         float _w = BLOOM_size_X;
         float _h = BLOOM_size_Y;
-        Fvector2 two = {2.f / _w, 2.f / _h};
-        Fvector2 one = {1.f / _w, 1.f / _h};
-        Fvector2 half = {.5f / _w, .5f / _h};
-        Fvector4 a_0 = {half.x, half.y, half.y, half.x}; // center
-        Fvector4 a_1 = {a_0.x - one.x - half.x, half.y, half.y, a_0.w + one.x + half.x}; // -1,+1i
-        Fvector4 a_2 = {a_1.x - two.x, half.y, half.y, a_1.w + two.x}; // -2,+2i
-        Fvector4 a_3 = {a_2.x - two.x, half.y, half.y, a_2.w + two.x}; // -3,+3i
-        Fvector4 a_4 = {a_3.x - two.x, half.y, half.y, a_3.w + two.x}; // -4,+4i
-        Fvector4 a_5 = {a_4.x - two.x, half.y, half.y, a_4.w + two.x}; // -5,+5i
-        Fvector4 a_6 = {a_5.x - two.x, half.y, half.y, a_5.w + two.x}; // -6,+6i
-        Fvector4 a_7 = {a_6.x - two.x, half.y, half.y, a_6.w + two.x}; // -7,+7i
+        Fvector2 two{2.f / _w, 2.f / _h};
+        Fvector2 one{1.f / _w, 1.f / _h};
+        Fvector2 half{.5f / _w, .5f / _h};
+        Fvector4 a_0{half.x, half.y, half.y, half.x}; // center
+        Fvector4 a_1{a_0.x - one.x - half.x, half.y, half.y, a_0.w + one.x + half.x}; // -1,+1i
+        Fvector4 a_2{a_1.x - two.x, half.y, half.y, a_1.w + two.x}; // -2,+2i
+        Fvector4 a_3{a_2.x - two.x, half.y, half.y, a_2.w + two.x}; // -3,+3i
+        Fvector4 a_4{a_3.x - two.x, half.y, half.y, a_3.w + two.x}; // -4,+4i
+        Fvector4 a_5{a_4.x - two.x, half.y, half.y, a_4.w + two.x}; // -5,+5i
+        Fvector4 a_6{a_5.x - two.x, half.y, half.y, a_5.w + two.x}; // -6,+6i
+        Fvector4 a_7{a_6.x - two.x, half.y, half.y, a_6.w + two.x}; // -7,+7i
 
         // Fill vertex buffer
         v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
@@ -222,8 +222,8 @@ void CRenderTarget::phase_bloom()
         // Perform filtering
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g;
-        CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_2, nullptr, nullptr, nullptr); // No need for ZBuffer at all
+        CalcGauss_wave(w0, w1, kernel, kernel / 3.0f, ps_r2_ls_bloom_kernel_scale);
+        u_setrt(RCache, rt_Bloom_2, {}, {}, nullptr); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[1]);
         RCache.set_ca("weight", 0, w0);
         RCache.set_ca("weight", 1, w1);
@@ -235,17 +235,17 @@ void CRenderTarget::phase_bloom()
     {
         float _w = BLOOM_size_X;
         float _h = BLOOM_size_Y;
-        Fvector2 two = {2.f / _w, 2.f / _h};
-        Fvector2 one = {1.f / _w, 1.f / _h};
-        Fvector2 half = {.5f / _w, .5f / _h};
-        Fvector4 a_0 = {half.x, half.y, half.y, half.x}; // center
-        Fvector4 a_1 = {half.x, a_0.y - one.y - half.y, half.y + one.y + a_0.z, half.x}; // -1,+1i
-        Fvector4 a_2 = {half.x, a_1.y - two.y, two.y + a_1.z, half.x}; // -2,+2i
-        Fvector4 a_3 = {half.x, a_2.y - two.y, two.y + a_2.z, half.x}; // -3,+3i
-        Fvector4 a_4 = {half.x, a_3.y - two.y, two.y + a_3.z, half.x}; // -4,+4i
-        Fvector4 a_5 = {half.x, a_4.y - two.y, two.y + a_4.z, half.x}; // -5,+5i
-        Fvector4 a_6 = {half.x, a_5.y - two.y, two.y + a_5.z, half.x}; // -6,+6i
-        Fvector4 a_7 = {half.x, a_6.y - two.y, two.y + a_6.z, half.x}; // -7,+7i
+        Fvector2 two{2.f / _w, 2.f / _h};
+        Fvector2 one{1.f / _w, 1.f / _h};
+        Fvector2 half{.5f / _w, .5f / _h};
+        Fvector4 a_0{half.x, half.y, half.y, half.x}; // center
+        Fvector4 a_1{half.x, a_0.y - one.y - half.y, half.y + one.y + a_0.z, half.x}; // -1,+1i
+        Fvector4 a_2{half.x, a_1.y - two.y, two.y + a_1.z, half.x}; // -2,+2i
+        Fvector4 a_3{half.x, a_2.y - two.y, two.y + a_2.z, half.x}; // -3,+3i
+        Fvector4 a_4{half.x, a_3.y - two.y, two.y + a_3.z, half.x}; // -4,+4i
+        Fvector4 a_5{half.x, a_4.y - two.y, two.y + a_4.z, half.x}; // -5,+5i
+        Fvector4 a_6{half.x, a_5.y - two.y, two.y + a_5.z, half.x}; // -6,+6i
+        Fvector4 a_7{half.x, a_6.y - two.y, two.y + a_6.z, half.x}; // -7,+7i
 
         // Fill vertex buffer
         v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
@@ -303,7 +303,7 @@ void CRenderTarget::phase_bloom()
         Fvector4 w0, w1;
         float kernel = ps_r2_ls_bloom_kernel_g * float(Device.dwHeight) / float(Device.dwWidth);
         CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-        u_setrt(RCache, rt_Bloom_1, nullptr, nullptr, nullptr); // No need for ZBuffer at all
+        u_setrt(RCache, rt_Bloom_1, {}, {}, nullptr); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[2]);
         RCache.set_ca("weight", 0, w0);
         RCache.set_ca("weight", 1, w1);
@@ -333,7 +333,7 @@ void CRenderTarget::phase_ssfx_bloom()
     // Half resolution is the max size for everything
     RCache.set_viewport_size(w / 2.0f, h / 2.0f);
 
-    u_setrt(RCache, rt_ssfx_bloom1, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_bloom1, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -359,7 +359,7 @@ void CRenderTarget::phase_ssfx_bloom()
     {
         RCache.set_viewport_size(w / 4.0f, h / 4.0f);
 
-        u_setrt(RCache, rt_ssfx_bloom_tmp4, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_ssfx_bloom_tmp4, {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -385,7 +385,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         for (int lensblur = 0; lensblur < 2; lensblur++)
         {
-            u_setrt(RCache, *rt_LensBlur[lensblur], nullptr, nullptr, nullptr);
+            u_setrt(RCache, *rt_LensBlur[lensblur], {}, {}, nullptr);
             RCache.set_CullMode(CULL_NONE);
             RCache.set_Stencil(FALSE);
 
@@ -420,7 +420,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Down[downsample], nullptr, nullptr, nullptr);
+        u_setrt(RCache, *rt_Down[downsample], {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -453,7 +453,7 @@ void CRenderTarget::phase_ssfx_bloom()
 
         RCache.set_viewport_size(w / SampleScale, h / SampleScale);
 
-        u_setrt(RCache, *rt_Up[upsample], nullptr, nullptr, nullptr);
+        u_setrt(RCache, *rt_Up[upsample], {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -479,7 +479,7 @@ void CRenderTarget::phase_ssfx_bloom()
     // The Upsample ends with `Half Res`
 
     // BLOOM COMBINE ///////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx_bloom1, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_bloom1, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 

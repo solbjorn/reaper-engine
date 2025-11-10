@@ -80,7 +80,7 @@ void CEntityAlive::Load(LPCSTR section)
         LoadFireParticles("entity_fire_particles");
 
     // биолог. вид к торому принадлежит монстр или персонаж
-    monster_community->set(pSettings->r_string(section, "species"));
+    monster_community->set(shared_str{pSettings->r_string(section, "species")});
 }
 
 void CEntityAlive::LoadBloodyWallmarks(LPCSTR section)
@@ -136,14 +136,12 @@ void CEntityAlive::LoadFireParticles(LPCSTR section)
 
     string256 tmp;
     LPCSTR particles_name = pSettings->r_string(section, "fire_particles");
-
     int cnt = _GetItemCount(particles_name);
 
-    shared_str s;
     for (int k = 0; k < cnt; ++k)
     {
-        s = _GetItem(particles_name, k, tmp);
-        m_pFireParticlesVector->push_back(s);
+        gsl::czstring s = _GetItem(particles_name, k, tmp);
+        m_pFireParticlesVector->emplace_back(s);
     }
 
     m_fStartBurnWoundSize = pSettings->r_float(section, "start_burn_size");

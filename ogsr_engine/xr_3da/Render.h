@@ -47,9 +47,9 @@ public:
 
 public:
     virtual void set_type(LT type) = 0;
-    virtual u32 get_type() const = 0;
+    [[nodiscard]] virtual u32 get_type() const = 0;
     virtual void set_active(bool) = 0;
-    virtual bool get_active() = 0;
+    [[nodiscard]] virtual bool get_active() const = 0;
     virtual void set_shadow(bool) = 0;
     virtual void set_volumetric(bool, bool manual = false) = 0;
     virtual void set_volumetric_quality(float) = 0;
@@ -60,16 +60,16 @@ public:
     virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
     virtual void set_cone(float angle) = 0;
     virtual void set_range(float R) = 0;
-    virtual float get_range() const = 0;
+    [[nodiscard]] virtual f32 get_range() const = 0;
     virtual void set_virtual_size(float R) = 0;
     virtual void set_texture(LPCSTR name) = 0;
 
     virtual void set_color(const Fcolor& C) = 0;
     virtual void set_color(float r, float g, float b) = 0;
-    virtual Fcolor get_color() const = 0;
+    [[nodiscard]] virtual Fcolor get_color() const = 0;
 
     virtual void set_hud_mode(bool b) = 0;
-    virtual bool get_hud_mode() = 0;
+    [[nodiscard]] virtual bool get_hud_mode() const = 0;
 
     virtual void set_moveable(bool) = 0;
 
@@ -90,16 +90,16 @@ class XR_NOVTABLE IRender_Glow : public xr_resource
     RTTI_DECLARE_TYPEINFO(IRender_Glow, xr_resource);
 
 public:
+    virtual ~IRender_Glow();
+
+    [[nodiscard]] virtual bool get_active() const = 0;
     virtual void set_active(bool) = 0;
-    virtual bool get_active() = 0;
     virtual void set_position(const Fvector& P) = 0;
     virtual void set_direction(const Fvector& P) = 0;
     virtual void set_radius(float R) = 0;
     virtual void set_texture(LPCSTR name) = 0;
     virtual void set_color(const Fcolor& C) = 0;
     virtual void set_color(float r, float g, float b) = 0;
-
-    virtual ~IRender_Glow();
 };
 
 struct resptrcode_glow : public resptr_base<IRender_Glow>
@@ -172,8 +172,10 @@ enum class DeviceState
     NeedReset
 };
 
-class XR_NOVTABLE IRender_interface
+class XR_NOVTABLE IRender_interface : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRender_interface);
+
 public:
     enum ScreenshotMode : u32
     {

@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC shared_str CAgentManager::cName() const { return ("agent_manager"); }
+IC shared_str CAgentManager::cName() const { return shared_str{"agent_manager"}; }
 
 IC CAgentCorpseManager& CAgentManager::corpse() const
 {

@@ -36,7 +36,7 @@ void CMonsterHome::load(LPCSTR line)
 
     if (m_object->spawn_ini() && m_object->spawn_ini()->section_exist(line))
     {
-        m_path = ai().patrol_paths().safe_path(m_object->spawn_ini()->r_string(line, "path"), false, true);
+        m_path = ai().patrol_paths().safe_path(shared_str{m_object->spawn_ini()->r_string(line, "path")}, false, true);
         check_path(m_object, m_path);
         if (m_object->spawn_ini()->line_exist(line, "radius_min"))
             m_radius_min = m_object->spawn_ini()->r_float(line, "radius_min");
@@ -75,7 +75,7 @@ void CMonsterHome::load(LPCSTR line)
 
 void CMonsterHome::setup(LPCSTR path_name, float min_radius, float max_radius, bool aggressive, float middle_radius)
 {
-    m_path = ai().patrol_paths().safe_path(path_name, false, true);
+    m_path = ai().patrol_paths().safe_path(shared_str{path_name}, false, true);
     check_path(m_object, m_path);
     m_radius_min = min_radius;
     m_radius_max = max_radius;

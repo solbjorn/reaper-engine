@@ -37,8 +37,9 @@ private:
     using Callback = CallMe::Delegate<void()>;
 
 public:
-    callback_base(Callback const& callback, key_state state);
+    explicit callback_base(Callback const& callback, key_state state);
     virtual ~callback_base();
+
     virtual void on_key_press(line_edit_control* const control);
 
 protected:
@@ -53,8 +54,9 @@ class type_pair : public base
     RTTI_DECLARE_TYPEINFO(type_pair, base);
 
 public:
-    type_pair(u32 dik, char c, char c_shift, bool b_translate);
+    explicit type_pair(u32 dik, char c, char c_shift, bool b_translate);
     virtual ~type_pair();
+
     void init(u32 dik, char c, char c_shift, bool b_translate);
     virtual void on_key_press(line_edit_control* const control);
 
@@ -72,8 +74,9 @@ class key_state_base : public base
     RTTI_DECLARE_TYPEINFO(key_state_base, base);
 
 public:
-    key_state_base(key_state state, base* type_pair);
+    explicit key_state_base(key_state state, base* type_pair);
     virtual ~key_state_base();
+
     virtual void on_key_press(line_edit_control* const control);
 
 private:

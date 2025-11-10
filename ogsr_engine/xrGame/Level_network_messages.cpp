@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "entity.h"
 #include "xrserver_objects.h"
 #include "level.h"
@@ -135,10 +136,10 @@ void CLevel::ClientReceive()
 
                 string4096 NewServerOptions{};
                 sprintf_s(NewServerOptions, "%s/%s", LevelName, GameType);
-
                 if (m_SO)
                     strcat_s(NewServerOptions, m_SO);
-                m_caServerOptions = NewServerOptions;
+
+                m_caServerOptions._set(NewServerOptions);
 
                 Engine.Event.Defer("KERNEL:disconnect");
                 Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));

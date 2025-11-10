@@ -27,5 +27,5 @@ void CLevel::net_Save(LPCSTR name) // Game Save
     fs.close_chunk();
 
     // Save it to file
-    fs.save_to(name);
+    std::ignore = fs.save_to(name);
 }

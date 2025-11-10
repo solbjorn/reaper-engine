@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "artifact.h"
+
 #include "PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "game_cl_base.h"
@@ -76,8 +77,8 @@ CArtefact::CArtefact()
 {
     shedule.t_min = 20;
     shedule.t_max = 50;
-    m_sParticlesName = nullptr;
-    m_pTrailLight = nullptr;
+    m_sParticlesName._set(nullptr);
+    m_pTrailLight._set(nullptr);
     m_activationObj = nullptr;
 }
 
@@ -86,7 +87,7 @@ void CArtefact::Load(LPCSTR section)
     inherited::Load(section);
 
     if (pSettings->line_exist(section, "particles"))
-        m_sParticlesName = pSettings->r_string(section, "particles");
+        m_sParticlesName._set(pSettings->r_string(section, "particles"));
 
     m_bLightsEnabled = !!pSettings->r_bool(section, "lights_enabled");
     if (m_bLightsEnabled)
@@ -119,8 +120,8 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 
     SwitchAfParticles(true);
 
-    VERIFY(m_pTrailLight == NULL);
-    m_pTrailLight = ::Render->light_create();
+    VERIFY(!m_pTrailLight);
+    m_pTrailLight._set(::Render->light_create());
     m_pTrailLight->set_shadow(true);
     m_pTrailLight->set_moveable(true);
 
@@ -130,7 +131,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
     /////////////////////////////////////////
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
     if (K)
-        K->PlayCycle("idle");
+        K->PlayCycle(shared_str{"idle"});
 
     o_fastmode = FALSE; // start initially with fast-mode enabled
     o_render_frame = 0;
@@ -187,7 +188,7 @@ void CArtefact::UpdateWorkload(u32)
 {
     VERIFY(!ph_world->Processing());
     // particles - velocity
-    Fvector vel = {0, 0, 0};
+    Fvector vel{};
     if (H_Parent())
     {
         CPhysicsShellHolder* pPhysicsShellHolder = smart_cast<CPhysicsShellHolder*>(H_Parent());
@@ -469,11 +470,13 @@ SArtefactActivation::SArtefactActivation(CArtefact* af, u32 owner_id)
 {
     m_af = af;
     Load();
-    m_light = ::Render->light_create();
+
+    m_light._set(::Render->light_create());
     m_light->set_moveable(true);
     m_light->set_shadow(true);
     m_owner_id = owner_id;
 }
+
 SArtefactActivation::~SArtefactActivation() { m_light.destroy(); }
 
 void SArtefactActivation::Load()
@@ -536,7 +539,7 @@ void SArtefactActivation::PhDataUpdate(dReal)
 {
     if (m_cur_activation_state == eFlying)
     {
-        Fvector dir = {0, -1.f, 0};
+        Fvector dir{0.0f, -1.0f, 0.0f};
         if (Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth, nullptr, m_af))
         {
             dir.y = ph_world->Gravity() * 1.1f;
@@ -574,7 +577,7 @@ void SArtefactActivation::ChangeEffects()
     {
         IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(m_af->Visual());
         if (K)
-            K->PlayCycle(*state_def.m_animation);
+            K->PlayCycle(state_def.m_animation);
     }
 }
 
@@ -681,17 +684,17 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 
     if (b)
     {
-        LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_particles" : "det_hide_particles");
+        LPCSTR curr = pSettings->r_string(m_parent->cNameSect(), (b) ? "det_show_particles" : "det_hide_particles");
 
         IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
         R_ASSERT2(K, m_parent->cNameSect().c_str());
-        LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+        LPCSTR bone = pSettings->r_string(m_parent->cNameSect(), "particles_bone");
         u16 bone_id = K->LL_BoneID(bone);
         R_ASSERT2(bone_id != BI_NONE, bone);
 
-        m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
+        m_parent->CParticlesPlayer::StartParticles(shared_str{curr}, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
 
-        curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_snd" : "det_hide_snd");
+        curr = pSettings->r_string(m_parent->cNameSect(), (b) ? "det_show_snd" : "det_hide_snd");
         m_sound.create(curr, st_Effect, sg_SourceType);
         m_sound.play_at_pos(nullptr, m_parent->Position(), 0);
     }
@@ -702,15 +705,15 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 
 void SArtefactDetectorsSupport::Blink()
 {
-    LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+    LPCSTR curr = pSettings->r_string(m_parent->cNameSect(), "det_show_particles");
 
     IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
     R_ASSERT2(K, m_parent->cNameSect().c_str());
-    LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+    LPCSTR bone = pSettings->r_string(m_parent->cNameSect(), "particles_bone");
     u16 bone_id = K->LL_BoneID(bone);
     R_ASSERT2(bone_id != BI_NONE, bone);
 
-    m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
+    m_parent->CParticlesPlayer::StartParticles(shared_str{curr}, bone_id, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
 }
 
 void SArtefactDetectorsSupport::UpdateOnFrame()
@@ -758,7 +761,7 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 
 void SArtefactDetectorsSupport::FollowByPath(LPCSTR path_name, int start_idx, Fvector force)
 {
-    m_currPatrolPath = ai().patrol_paths().path(path_name, true);
+    m_currPatrolPath = ai().patrol_paths().path(shared_str{path_name}, true);
     if (m_currPatrolPath)
     {
         m_currPatrolVertex = m_currPatrolPath->vertex(start_idx);

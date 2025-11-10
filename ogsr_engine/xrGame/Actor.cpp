@@ -386,7 +386,7 @@ void CActor::Load(LPCSTR section)
     m_fDispCrouchNoAccelFactor = pSettings->r_float(section, "disp_crouch_no_acc_factor");
 
     LPCSTR default_outfit = READ_IF_EXISTS(pSettings, r_string, section, "default_outfit", nullptr);
-    SetDefaultVisualOutfit(default_outfit);
+    SetDefaultVisualOutfit(shared_str{default_outfit});
 
     //-----------------------------------------
     if (pSettings->line_exist(section, "lookout_angle"))
@@ -395,7 +395,9 @@ void CActor::Load(LPCSTR section)
         m_fLookoutAngle = deg2rad(m_fLookoutAngle);
     }
     else
+    {
         m_fLookoutAngle = ACTOR_LOOKOUT_ANGLE;
+    }
 
     // Alex ADD: for smooth crouch fix
     CurrentHeight = CameraHeight();
@@ -569,7 +571,7 @@ void CActor::HitMark(float P, Fvector dir, ALife::EHitType hit_type)
 
                 string64 sect_name;
                 sprintf_s(sect_name, "effector_fire_hit_%d", id);
-                AddEffector(this, effFireHit, sect_name, P / 100.0f);
+                AddEffector(this, effFireHit, shared_str{sect_name}, P / 100.0f);
             }
         }
     }
@@ -1099,7 +1101,7 @@ void CActor::shedule_Update(u32 DT)
         }
         else if (m_pUsableObject && m_pUsableObject->tip_text())
         {
-            m_sDefaultObjAction = CStringTable().translate(m_pUsableObject->tip_text()).c_str();
+            m_sDefaultObjAction = CStringTable().translate(shared_str{m_pUsableObject->tip_text()}).c_str();
         }
         else if (pEntityAlive)
         {
@@ -1398,7 +1400,7 @@ ActorRestoreParams CActor::ActiveArtefactsOnBelt()
 {
     ActorRestoreParams r;
 
-    Memory.mem_fill(&r, 0, sizeof(r));
+    std::memset(&r, 0, sizeof(r));
 
     for (TIItemContainer::iterator it = inventory().m_belt.begin(); inventory().m_belt.end() != it; ++it)
     {

@@ -1,13 +1,14 @@
 #include "StdAfx.h"
+
 #include "UIIconParams.h"
 #include "UIInventoryUtilities.h"
 
 void CIconParams::Load(const shared_str& item_section)
 {
     // можно все описания иконок потом сгрудить в отдельный файл
-    section = READ_IF_EXISTS(pSettings, r_string, item_section, "icon_section", item_section);
+    section = READ_IF_EXISTS(pSettings, r_string<shared_str>, item_section, "icon_section", item_section);
     icon_group = READ_IF_EXISTS(pSettings, r_u32, section, "icon_group", 0);
-    name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr);
+    name._set(READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr));
     grid_width = pSettings->r_float(section, "inv_grid_width");
     grid_height = pSettings->r_float(section, "inv_grid_height");
     grid_x = pSettings->r_float(section, "inv_grid_x");

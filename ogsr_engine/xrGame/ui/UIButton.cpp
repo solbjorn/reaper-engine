@@ -5,6 +5,7 @@
 #include "stdafx.h"
 
 #include "UIButton.h"
+
 #include "../HUDManager.h"
 #include "UILines.h"
 #include "UIBtnHint.h"
@@ -150,10 +151,12 @@ void CUIButton::DrawTexture()
             m_UIStaticItem.SetPos(rect.left + m_PushOffset.x + m_TextureOffset.x, rect.top + m_PushOffset.y + m_TextureOffset.y);
 
         if (m_bStretchTexture)
+        {
             m_UIStaticItem.SetRect(0, 0, rect.width(), rect.height());
+        }
         else
         {
-            Frect r = {0, 0, m_UIStaticItem.GetOriginalRectScaled().width(), m_UIStaticItem.GetOriginalRectScaled().height()};
+            const Frect r{0, 0, m_UIStaticItem.GetOriginalRectScaled().width(), m_UIStaticItem.GetOriginalRectScaled().height()};
             m_UIStaticItem.SetRect(r);
         }
 

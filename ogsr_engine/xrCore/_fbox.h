@@ -27,7 +27,7 @@ public:
     };
 
     constexpr _box3() = default;
-    constexpr _box3(T _x1, T _y1, T _z1, T _x2, T _y2, T _z2) : min{_x1, _y1, _z1}, max{_x2, _y2, _z2} {}
+    constexpr explicit _box3(T _x1, T _y1, T _z1, T _x2, T _y2, T _z2) : min{_x1, _y1, _z1}, max{_x2, _y2, _z2} {}
 
     constexpr BOOL is_valid() { return (x2 >= x1) && (y2 >= y1) && (z2 >= z1); }
 
@@ -374,7 +374,7 @@ public:
         return false;
     }
 
-    constexpr u32 IR(const T& x) { return std::bit_cast<u32>(x); }
+    [[nodiscard]] constexpr u32 IR(const T& x) { return std::bit_cast<u32>(x); }
 
     enum ERP_Result
     {
@@ -535,10 +535,8 @@ public:
     }
 };
 
-typedef _box3<float> Fbox;
-typedef _box3<float> Fbox3;
-typedef _box3<double> Dbox;
-typedef _box3<double> Dbox3;
+using Fbox = _box3<f32>;
+using Fbox3 = _box3<f32>;
 
 template <class T>
 constexpr inline BOOL _valid(const _box3<T>& c)

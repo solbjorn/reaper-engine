@@ -20,9 +20,9 @@ struct SGameVertex : public SBaseParameters<_dist_type, _index_type, _iteration_
     _index_type m_vertex_id;
     xr_vector<_index_type>* m_path;
 
-    IC SGameVertex(const VERTEX_TYPES& vertex_types, _dist_type max_range = _dist_type(6000), _iteration_type max_iteration_count = _iteration_type(-1),
-                   _index_type max_visited_node_count = _index_type(-1))
-        : SBaseParameters<_dist_type, _index_type, _iteration_type>(max_range, max_iteration_count, max_visited_node_count)
+    explicit SGameVertex(const VERTEX_TYPES& vertex_types, _dist_type max_range = _dist_type(6000), _iteration_type max_iteration_count = _iteration_type(-1),
+                         _index_type max_visited_node_count = _index_type(-1))
+        : SBaseParameters<_dist_type, _index_type, _iteration_type>{max_range, max_iteration_count, max_visited_node_count}
     {
         m_vertex_types = &vertex_types;
     }

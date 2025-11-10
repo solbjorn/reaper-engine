@@ -73,14 +73,14 @@ void CBackend::Invalidate()
     m_bChangedRTorZB = false;
     m_pInputSignature = nullptr;
 
-    for (int i = 0; i < MaxCBuffers; ++i)
+    for (auto [pc, vc, gc, hc, dc, cc] : std::views::zip(m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants))
     {
-        m_aPixelConstants[i] = nullptr;
-        m_aVertexConstants[i] = nullptr;
-        m_aGeometryConstants[i] = nullptr;
-        m_aHullConstants[i] = nullptr;
-        m_aDomainConstants[i] = nullptr;
-        m_aComputeConstants[i] = nullptr;
+        pc._set(nullptr);
+        vc._set(nullptr);
+        gc._set(nullptr);
+        hc._set(nullptr);
+        dc._set(nullptr);
+        cc._set(nullptr);
     }
 
     StateManager.Reset();

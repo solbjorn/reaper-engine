@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bitmap.h"
+
 #include <winternl.h>
 
 struct _processor_info final
@@ -23,23 +24,23 @@ struct _processor_info final
         m_f81_EDX.zero();
     }
 
-    bool hasMMX() const { return m_f1_EDX.test(23); }
-    bool has3DNOWExt() const { return m_f81_EDX.test(30); }
-    bool has3DNOW() const { return m_f81_EDX.test(31); }
-    bool hasMWAIT() const { return m_f1_ECX.test(3); }
-    bool hasSSE4a() const { return m_f81_ECX.test(6); }
+    [[nodiscard]] bool hasMMX() const { return m_f1_EDX.test(23); }
+    [[nodiscard]] bool has3DNOWExt() const { return m_f81_EDX.test(30); }
+    [[nodiscard]] bool has3DNOW() const { return m_f81_EDX.test(31); }
+    [[nodiscard]] bool hasMWAIT() const { return m_f1_ECX.test(3); }
+    [[nodiscard]] bool hasSSE4a() const { return m_f81_ECX.test(6); }
 
     // Always true for AVX2 processors
-    constexpr bool hasSSE() const { return true; }
-    constexpr bool hasSSE2() const { return true; }
-    constexpr bool hasSSE3() const { return true; }
-    constexpr bool hasSSSE3() const { return true; }
-    constexpr bool hasSSE41() const { return true; }
-    constexpr bool hasSSE42() const { return true; }
-    constexpr bool hasAVX() const { return true; }
-    constexpr bool hasAVX2() const { return true; }
+    [[nodiscard]] constexpr bool hasSSE() const { return true; }
+    [[nodiscard]] constexpr bool hasSSE2() const { return true; }
+    [[nodiscard]] constexpr bool hasSSE3() const { return true; }
+    [[nodiscard]] constexpr bool hasSSSE3() const { return true; }
+    [[nodiscard]] constexpr bool hasSSE41() const { return true; }
+    [[nodiscard]] constexpr bool hasSSE42() const { return true; }
+    [[nodiscard]] constexpr bool hasAVX() const { return true; }
+    [[nodiscard]] constexpr bool hasAVX2() const { return true; }
 
-    bool getCPULoad(double& val);
+    [[nodiscard]] bool getCPULoad(f64& val);
     void MTCPULoad();
     DWORD m_dwNumberOfProcessors;
     std::unique_ptr<float[]> fUsage;

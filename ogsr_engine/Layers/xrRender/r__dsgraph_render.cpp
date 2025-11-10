@@ -73,7 +73,7 @@ void R_dsgraph_structure::hud_node(float key, _MatrixItemS& val)
     VERIFY(V && V->shader._get());
     cmd_list.set_xform_world(val.Matrix);
 
-    if (val.se->passes[0]->ps->hud_disabled)
+    if (val.se->passes[0]->ps->dwFlags & xr_resource_flagged::RF_HUD_DISABLED)
         return;
 
     int skinning = val.se->passes[0]->vs->skinning;

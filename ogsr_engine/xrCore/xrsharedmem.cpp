@@ -77,9 +77,6 @@ public:
 
 smem_value* smem_container_impl::insert(gsl::index dwSize, const void* ptr)
 {
-    if (ptr == nullptr || dwSize == 0) [[unlikely]]
-        return nullptr;
-
     const auto size = gsl::narrow_cast<size_t>(dwSize);
     const auto xxh = xxh::XXH3_64bits(ptr, size);
 
@@ -90,7 +87,7 @@ smem_value* smem_container_impl::insert(gsl::index dwSize, const void* ptr)
     if (iter != map.cend())
         return iter->second.get();
 
-    auto elem = val_t{static_cast<smem_value*>(xr_malloc(sizeof(smem_value) + size))};
+    auto elem = val_t{static_cast<smem_value*>(xr_malloc(gsl::index{sizeof(smem_value)} + dwSize))};
     elem->dwReference = 0;
     elem->dwSize = dwSize;
     elem->hash = xxh;
@@ -148,7 +145,7 @@ void smem_container::dump()
     string_path path;
     FILE* f{};
 
-    FS.update_path(path, "$logs$", "$smem_dump$.txt");
+    std::ignore = FS.update_path(path, "$logs$", "$smem_dump$.txt");
     R_ASSERT(fopen_s(&f, path, "w") == 0);
     const auto _ = gsl::finally([f] { fclose(f); });
 

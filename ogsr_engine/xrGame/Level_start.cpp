@@ -27,31 +27,35 @@ BOOL CLevel::net_Start(LPCSTR op_server, LPCSTR op_client)
         strcpy_s(tmp, op_client);
         strcat_s(tmp, "/name=");
         strcat_s(tmp, xr_strlen(Core.UserName) ? Core.UserName : Core.CompName);
-        m_caClientOptions = tmp;
+
+        m_caClientOptions._set(tmp);
     }
     else
     {
         string1024 ret = "";
         LPCSTR begin = NameStart + xr_strlen("/name=");
         sscanf(begin, "%[^/]", ret);
+
         if (!xr_strlen(ret))
         {
             string1024 tmpstr;
             strcpy_s(tmpstr, op_client);
             *(strstr(tmpstr, "name=") + 5) = 0;
             strcat_s(tmpstr, xr_strlen(Core.UserName) ? Core.UserName : Core.CompName);
+
             const char* ptmp = strchr(strstr(op_client, "name="), '/');
             if (ptmp)
                 strcat_s(tmpstr, ptmp);
-            m_caClientOptions = tmpstr;
+
+            m_caClientOptions._set(tmpstr);
         }
         else
         {
-            m_caClientOptions = op_client;
+            m_caClientOptions._set(op_client);
         }
     }
 
-    m_caServerOptions = op_server;
+    m_caServerOptions._set(op_server);
 
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------------
@@ -87,10 +91,9 @@ bool CLevel::net_start1()
             if (strchr(l_name, '/'))
                 *strchr(l_name, '/') = 0;
 
-            m_name = l_name;
+            m_name._set(l_name);
 
             int id = pApp->Level_ID(l_name);
-
             if (id < 0)
             {
                 pApp->LoadEnd();

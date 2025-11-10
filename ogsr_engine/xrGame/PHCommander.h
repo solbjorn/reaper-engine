@@ -4,46 +4,59 @@
 class CPHReqBase;
 class CPHReqComparerV;
 
-class CPHReqBase : public virtual RTTI::Enable
+class XR_NOVTABLE CPHReqBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPHReqBase);
 
 public:
-    virtual ~CPHReqBase() {}
-    virtual bool obsolete() const = 0;
-    virtual bool compare(const CPHReqComparerV*) const { return false; }
+    virtual ~CPHReqBase() = 0;
+
+    [[nodiscard]] virtual bool obsolete() const = 0;
+    [[nodiscard]] virtual bool compare(const CPHReqComparerV*) const { return false; }
 };
 
-class CPHCondition : public CPHReqBase
+inline CPHReqBase::~CPHReqBase() = default;
+
+class XR_NOVTABLE CPHCondition : public CPHReqBase
 {
     RTTI_DECLARE_TYPEINFO(CPHCondition, CPHReqBase);
 
 public:
-    virtual bool is_true() = 0;
+    virtual ~CPHCondition() = 0;
+
+    [[nodiscard]] virtual bool is_true() = 0;
 };
 
-class CPHAction : public CPHReqBase
+inline CPHCondition::~CPHCondition() = default;
+
+class XR_NOVTABLE CPHAction : public CPHReqBase
 {
     RTTI_DECLARE_TYPEINFO(CPHAction, CPHReqBase);
 
 public:
+    virtual ~CPHAction() = 0;
+
     virtual void run() = 0;
 };
+
+inline CPHAction::~CPHAction() = default;
 
 class CPHOnesCondition : public CPHCondition
 {
     RTTI_DECLARE_TYPEINFO(CPHOnesCondition, CPHCondition);
 
 public:
-    bool b_called;
+    bool b_called{};
 
-    CPHOnesCondition() { b_called = false; }
-    virtual bool is_true()
+    CPHOnesCondition() = default;
+
+    [[nodiscard]] bool is_true() override
     {
         b_called = true;
         return true;
     }
-    virtual bool obsolete() const { return b_called; }
+
+    [[nodiscard]] bool obsolete() const override { return b_called; }
 };
 
 class CPHDummiAction : public CPHAction
@@ -51,8 +64,8 @@ class CPHDummiAction : public CPHAction
     RTTI_DECLARE_TYPEINFO(CPHDummiAction, CPHAction);
 
 public:
-    virtual void run() {}
-    virtual bool obsolete() const { return false; }
+    void run() override {}
+    [[nodiscard]] bool obsolete() const override { return false; }
 };
 
 class CPHCall
@@ -64,15 +77,16 @@ class CPHCall
     u32 paused;
 
 public:
-    CPHCall(CPHCondition* condition, CPHAction* action);
+    explicit CPHCall(CPHCondition* condition, CPHAction* action);
     ~CPHCall();
-    void check();
-    bool obsolete();
-    bool equal(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
-    bool is_any(CPHReqComparerV* v);
 
-    bool isPaused();
-    bool isNeedRemove();
+    void check();
+    [[nodiscard]] bool obsolete();
+    [[nodiscard]] bool equal(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
+    [[nodiscard]] bool is_any(CPHReqComparerV* v);
+
+    [[nodiscard]] bool isPaused();
+    [[nodiscard]] bool isNeedRemove();
     void removeLater();
     void setPause(u32 ms);
 };
@@ -86,16 +100,15 @@ class CPHCommander
 public:
     ~CPHCommander();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    CPHCall* add_call_unique(CPHCondition* condition, CPHReqComparerV* cmp_condition, CPHAction* action, CPHReqComparerV* cmp_action);
-    CPHCall* add_call(CPHCondition* condition, CPHAction* action);
+    [[nodiscard]] CPHCall* add_call_unique(CPHCondition* condition, CPHReqComparerV* cmp_condition, CPHAction* action, CPHReqComparerV* cmp_action);
+    [[nodiscard]] CPHCall* add_call(CPHCondition* condition, CPHAction* action);
 
-    bool has_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
-    PHCALL_I find_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
+    [[nodiscard]] bool has_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
+    [[nodiscard]] PHCALL_I find_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
     void remove_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action);
     void remove_calls(CPHReqComparerV* cmp_object);
 
     void update();
-
     void clear();
 };
 

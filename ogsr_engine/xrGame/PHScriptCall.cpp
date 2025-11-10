@@ -1,17 +1,14 @@
 #include "stdafx.h"
 
-#include "..\xr_3da\xr_object.h"
-#include "PHCommander.h"
 #include "PHScriptCall.h"
 
+#include "..\xr_3da\xr_object.h"
+
 CPHScriptCondition::CPHScriptCondition(const sol::function& func) { m_lua_function = func; }
-
 CPHScriptCondition::CPHScriptCondition(const CPHScriptCondition& func) { m_lua_function = func.m_lua_function; }
-
-CPHScriptCondition::~CPHScriptCondition() {}
+CPHScriptCondition::~CPHScriptCondition() = default;
 
 bool CPHScriptCondition::is_true() { return m_lua_function(); }
-
 bool CPHScriptCondition::obsolete() const { return false; }
 
 //
@@ -27,7 +24,7 @@ CPHScriptAction::CPHScriptAction(const CPHScriptAction& action)
     b_obsolete = action.b_obsolete;
 }
 
-CPHScriptAction::~CPHScriptAction() {}
+CPHScriptAction::~CPHScriptAction() = default;
 
 void CPHScriptAction::run()
 {
@@ -41,7 +38,7 @@ bool CPHScriptAction::obsolete() const { return b_obsolete; }
 CPHScriptObjectAction::CPHScriptObjectAction(const sol::object& lua_object, LPCSTR method)
 {
     m_lua_object = lua_object;
-    m_method_name = method;
+    m_method_name._set(method);
 
     b_obsolete = false;
 }
@@ -54,7 +51,7 @@ CPHScriptObjectAction::CPHScriptObjectAction(const CPHScriptObjectAction& object
     b_obsolete = object.b_obsolete;
 }
 
-CPHScriptObjectAction::~CPHScriptObjectAction() {}
+CPHScriptObjectAction::~CPHScriptObjectAction() = default;
 
 bool CPHScriptObjectAction::compare(const CPHScriptObjectAction* v) const { return m_method_name == v->m_method_name && m_lua_object == v->m_lua_object; }
 
@@ -81,7 +78,7 @@ bool CPHScriptObjectAction::obsolete() const { return b_obsolete; }
 CPHScriptObjectCondition::CPHScriptObjectCondition(const sol::object& lua_object, LPCSTR method)
 {
     m_lua_object = lua_object;
-    m_method_name = method;
+    m_method_name._set(method);
 }
 
 CPHScriptObjectCondition::CPHScriptObjectCondition(const CPHScriptObjectCondition& object)
@@ -90,7 +87,7 @@ CPHScriptObjectCondition::CPHScriptObjectCondition(const CPHScriptObjectConditio
     m_method_name = object.m_method_name;
 }
 
-CPHScriptObjectCondition::~CPHScriptObjectCondition() {}
+CPHScriptObjectCondition::~CPHScriptObjectCondition() = default;
 
 bool CPHScriptObjectCondition::compare(const CPHScriptObjectCondition* v) const { return m_method_name == v->m_method_name && m_lua_object == v->m_lua_object; }
 

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
 #include "../xrRender/dxEnvironmentRender.h"
+
+#include "../../xr_3da/environment.h"
+#include "../../xr_3da/igame_persistent.h"
 
 void CRenderTarget::phase_combine()
 {
@@ -60,7 +61,7 @@ void CRenderTarget::phase_combine()
         if (!Device.m_SecondViewport.IsSVPFrame())
         {
             // Clear RT
-            constexpr Fcolor ColorRGBA = {0.0f, 0.0f, 0.0f, 1.0f};
+            constexpr Fcolor ColorRGBA{0.0f, 0.0f, 0.0f, 1.0f};
             RCache.ClearRT(rt_ssfx_temp, ColorRGBA);
             RCache.ClearRT(rt_ssfx_temp2, ColorRGBA);
 
@@ -78,20 +79,20 @@ void CRenderTarget::phase_combine()
         }
     }
 
-    constexpr Fcolor ColorRGBA = {0.0f, 0.0f, 0.0f, 0.0f};
+    constexpr Fcolor ColorRGBA{0.0f, 0.0f, 0.0f, 0.0f};
 
     // low/hi RTs
     if (!RImplementation.o.dx10_msaa)
     {
         RCache.ClearRT(rt_Generic_0, ColorRGBA);
         RCache.ClearRT(rt_Generic_1, ColorRGBA);
-        u_setrt(RCache, rt_Generic_0, rt_Generic_1, nullptr, get_base_zb());
+        u_setrt(RCache, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
     }
     else
     {
         RCache.ClearRT(rt_Generic_0_r, ColorRGBA);
         RCache.ClearRT(rt_Generic_1_r, ColorRGBA);
-        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
     }
 
     RCache.set_CullMode(CULL_NONE);
@@ -114,16 +115,16 @@ void CRenderTarget::phase_combine()
         // Compute params
         CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
         constexpr float minamb = 0.001f;
-        Fvector4 ambclr = {std::max(envdesc.ambient.x * 2.f, minamb), std::max(envdesc.ambient.y * 2.f, minamb), std::max(envdesc.ambient.z * 2.f, minamb), 0.f};
+        Fvector4 ambclr{std::max(envdesc.ambient.x * 2.f, minamb), std::max(envdesc.ambient.y * 2.f, minamb), std::max(envdesc.ambient.z * 2.f, minamb), 0.f};
         ambclr.mul(ps_r2_sun_lumscale_amb);
 
         Fvector4 envclr;
         if (!g_pGamePersistent->Environment().USED_COP_WEATHER)
-            envclr = {envdesc.sky_color.x * 2 + EPS, envdesc.sky_color.y * 2 + EPS, envdesc.sky_color.z * 2 + EPS, envdesc.weight};
+            envclr.set(envdesc.sky_color.x * 2 + EPS, envdesc.sky_color.y * 2 + EPS, envdesc.sky_color.z * 2 + EPS, envdesc.weight);
         else
-            envclr = {envdesc.hemi_color.x * 2 + EPS, envdesc.hemi_color.y * 2 + EPS, envdesc.hemi_color.z * 2 + EPS, envdesc.weight};
+            envclr.set(envdesc.hemi_color.x * 2 + EPS, envdesc.hemi_color.y * 2 + EPS, envdesc.hemi_color.z * 2 + EPS, envdesc.weight);
 
-        Fvector4 fogclr = {envdesc.fog_color.x, envdesc.fog_color.y, envdesc.fog_color.z, 0};
+        Fvector4 fogclr{envdesc.fog_color.x, envdesc.fog_color.y, envdesc.fog_color.z, 0.0f};
         envclr.x *= 2 * ps_r2_sun_lumscale_hemi;
         envclr.y *= 2 * ps_r2_sun_lumscale_hemi;
         envclr.z *= 2 * ps_r2_sun_lumscale_hemi;
@@ -204,15 +205,15 @@ void CRenderTarget::phase_combine()
     // [SSFX] - Water SSR rendering
     if (RImplementation.o.ssfx_water && !Device.m_SecondViewport.IsSVPFrame())
     {
-        constexpr Fcolor ColorRGBA = {0.0f, 0.0f, 0.0f, 1.0f};
+        constexpr Fcolor ColorRGBA{0.0f, 0.0f, 0.0f, 1.0f};
 
         RCache.ClearRT(rt_ssfx_temp, ColorRGBA);
         RCache.ClearRT(rt_ssfx_temp2, ColorRGBA);
 
-        u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_ssfx_temp, {}, {}, nullptr);
 
-        float w = float(Device.dwWidth);
-        float h = float(Device.dwHeight);
+        const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+        const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
         // Render Scale
         RCache.set_viewport_size(w / ps_ssfx_water.x, h / ps_ssfx_water.x);
@@ -235,9 +236,9 @@ void CRenderTarget::phase_combine()
     }
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, nullptr, nullptr, get_base_zb());
+        u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb());
     else
-        u_setrt(RCache, rt_Generic_0_r, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth);
 
     // Final water rendering ( All the code above can be omitted if the Water module isn't installed )
     RCache.set_xform_world(Fidentity);
@@ -249,9 +250,9 @@ void CRenderTarget::phase_combine()
             phase_ssfx_rain(); // Render a small color buffer to do the refraction and more
 
             if (!RImplementation.o.dx10_msaa)
-                u_setrt(RCache, rt_Generic_0, nullptr, nullptr, get_base_zb());
+                u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb());
             else
-                u_setrt(RCache, rt_Generic_0_r, nullptr, nullptr, rt_MSAADepth);
+                u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth);
         }
 
         g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
@@ -263,10 +264,12 @@ void CRenderTarget::phase_combine()
     // Forward rendering
     {
         PIX_EVENT(Forward_rendering);
+
         if (!RImplementation.o.dx10_msaa)
-            u_setrt(RCache, rt_Generic_0, nullptr, nullptr, get_base_zb()); // LDR RT
+            u_setrt(RCache, rt_Generic_0, {}, {}, get_base_zb()); // LDR RT
         else
-            u_setrt(RCache, rt_Generic_0_r, nullptr, nullptr, rt_MSAADepth); // LDR RT
+            u_setrt(RCache, rt_Generic_0_r, {}, {}, rt_MSAADepth); // LDR RT
+
         RCache.set_CullMode(CULL_CCW);
         RCache.set_Stencil(FALSE);
         RCache.set_ColorWriteEnable();
@@ -307,16 +310,16 @@ void CRenderTarget::phase_combine()
     {
         PIX_EVENT(render_distort_objects);
 
-        constexpr Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+        constexpr Fcolor ColorRGBA{127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 
         if (!RImplementation.o.dx10_msaa)
         {
-            u_setrt(RCache, rt_Generic_1, nullptr, nullptr, get_base_zb()); // Now RT is a distortion mask
+            u_setrt(RCache, rt_Generic_1, {}, {}, get_base_zb()); // Now RT is a distortion mask
             RCache.ClearRT(rt_Generic_1, ColorRGBA);
         }
         else
         {
-            u_setrt(RCache, rt_Generic_1_r, nullptr, nullptr, rt_MSAADepth); // Now RT is a distortion mask
+            u_setrt(RCache, rt_Generic_1_r, {}, {}, rt_MSAADepth); // Now RT is a distortion mask
             RCache.ClearRT(rt_Generic_1_r, ColorRGBA);
         }
 
@@ -374,14 +377,14 @@ void CRenderTarget::phase_combine()
     if (RImplementation.o.dx10_msaa)
     {
         if (PP_Complex)
-            u_setrt(RCache, rt_Generic, nullptr, nullptr, get_base_zb()); // LDR RT
+            u_setrt(RCache, rt_Generic, {}, {}, get_base_zb()); // LDR RT
         else
             u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
     else
     {
         if (PP_Complex)
-            u_setrt(RCache, rt_Color, nullptr, nullptr, get_base_zb()); // LDR RT
+            u_setrt(RCache, rt_Color, {}, {}, get_base_zb()); // LDR RT
         else
             u_setrt(RCache, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, get_base_zb());
     }
@@ -556,7 +559,7 @@ void CRenderTarget::phase_wallmarks()
     // Targets
     RCache.set_RT(nullptr, 2);
     RCache.set_RT(nullptr, 1);
-    u_setrt(RCache, rt_Color, nullptr, nullptr, rt_MSAADepth);
+    u_setrt(RCache, rt_Color, {}, {}, rt_MSAADepth);
 
     // Stencil	- draw only where stencil >= 0x1
     RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
@@ -572,9 +575,10 @@ void CRenderTarget::phase_combine_volumetric()
     //	TODO: DX10: Remove half pixel offset here
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, rt_Generic_1, nullptr, get_base_zb());
+        u_setrt(RCache, rt_Generic_0, rt_Generic_1, {}, get_base_zb());
     else
-        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Generic_0_r, rt_Generic_1_r, {}, rt_MSAADepth);
+
     //	Sets limits to both render targets
     RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
     {

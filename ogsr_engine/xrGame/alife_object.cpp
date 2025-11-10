@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "xrServer_Objects_ALife.h"
 #include "alife_simulator.h"
+
+#include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 
 void CSE_ALifeObject::spawn_supplies() { spawn_supplies(*m_ini_string); }
@@ -21,7 +22,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
     if (xr_strlen(ini_string) == 0)
         return;
 
-    IReader r{(void*)(ini_string), gsl::narrow_cast<size_t>(xr_strlen(ini_string))};
+    IReader r{(void*)(ini_string), xr_strlen(ini_string)};
     CInifile ini(&r, FS.get_path("$game_config$")->m_Path);
 
     if (ini.section_exist("spawn"))

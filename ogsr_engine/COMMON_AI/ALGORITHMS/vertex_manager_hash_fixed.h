@@ -38,7 +38,6 @@ struct CVertexManagerHashFixed
         using Index = TIndex;
         using PathId = TPathId;
 
-#pragma pack(push, 1)
         struct IndexVertex
         {
             Vertex* m_vertex;
@@ -47,7 +46,7 @@ struct CVertexManagerHashFixed
             u32 m_hash;
             PathId m_path_id;
         };
-#pragma pack(pop)
+        static_assert(sizeof(IndexVertex) == 32);
 
     protected:
         PathId m_current_path_id;
@@ -59,8 +58,9 @@ struct CVertexManagerHashFixed
         static constexpr auto IndexVertexFixSize = FixSize * sizeof(IndexVertex);
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         inline virtual ~CDataStorage();
+
         inline void init();
         inline bool is_opened(const Vertex& vertex) const;
         inline bool is_visited(const Index& vertex_id) const;

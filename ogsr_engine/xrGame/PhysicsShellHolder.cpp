@@ -95,7 +95,7 @@ void CPhysicsShellHolder::init()
     b_sheduled = false;
     m_activation_speed_is_overriden = false;
     m_ph_sound_player = xr_new<CPHSoundPlayer>(this);
-    m_collide_snd_dist = {-1.f, -1.f};
+    m_collide_snd_dist.set(-1.0f, -1.0f);
 }
 
 void CPhysicsShellHolder::correct_spawn_pos()
@@ -428,9 +428,10 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
     }
     else // Скорее всего K есть всегда, но на всякий случай.
     {
-        P.r_u64();
-        P.r_u16();
+        std::ignore = P.r_u64();
+        std::ignore = P.r_u16();
     }
+
     Fvector min = P.r_vec3();
     Fvector max = P.r_vec3();
 

@@ -168,19 +168,23 @@ void CollectScriptFiles(decltype(xray_scripts)& map, const char* path)
 bool LookupScript(string_path& fname, const char* base)
 {
     string_path lc_base;
+
     if (xray_scripts.empty())
     {
-        FS.update_path(lc_base, "$game_scripts$", "");
+        std::ignore = FS.update_path(lc_base, "$game_scripts$", "");
         CollectScriptFiles(xray_scripts, lc_base);
     }
+
     strcpy_s(lc_base, base);
     _strlwr_s(lc_base);
+
     auto it = xray_scripts.find(lc_base);
     if (it != xray_scripts.end())
     {
         strcpy_s(fname, it->second.c_str());
         return true;
     }
+
     return false;
 }
 } // namespace

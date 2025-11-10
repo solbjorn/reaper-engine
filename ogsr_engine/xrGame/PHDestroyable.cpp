@@ -60,17 +60,17 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id, LPCSTR section, shared_str visu
     // init
 
     // Send
-    D->s_name = section; //*cNameSect()
-    D->ID_Parent = u16(-1);
+    D->s_name._set(section);
+    D->ID_Parent = std::numeric_limits<u16>::max();
     InitServerObject(D);
-    {
-        NET_Packet P;
-        D->Spawn_Write(P, TRUE);
-        Level().Send(P, net_flags(TRUE));
-        // Destroy
-        F_entity_Destroy(D);
-        m_depended_objects++;
-    }
+
+    NET_Packet P;
+    D->Spawn_Write(P, TRUE);
+    Level().Send(P, net_flags(TRUE));
+
+    // Destroy
+    F_entity_Destroy(D);
+    m_depended_objects++;
 }
 
 void CPHDestroyable::InitServerObject(CSE_Abstract* D)
@@ -158,19 +158,23 @@ void CPHDestroyable::Destroy(u16 source_id /*=u16(-1)*/, LPCSTR section /*="ph_s
 void CPHDestroyable::Load(CInifile* ini, LPCSTR section)
 {
     m_flags.set(fl_destroyable, FALSE);
+
     if (ini->line_exist(section, "destroyed_vis_name"))
     {
         m_flags.set(fl_destroyable, TRUE);
-        m_destroyed_obj_visual_names.push_back(ini->r_string(section, "destroyed_vis_name"));
+        m_destroyed_obj_visual_names.emplace_back(ini->r_string(section, "destroyed_vis_name"));
     }
     else
     {
         CInifile::Sect& data = ini->r_section(section);
-        if (data.Data.size() > 0)
+        if (!data.Data.empty())
             m_flags.set(fl_destroyable, TRUE);
+
         for (const auto& I : data.Data)
-            if (I.first.size())
+        {
+            if (!I.first.empty())
                 m_destroyed_obj_visual_names.push_back(I.first);
+        }
     }
 }
 void CPHDestroyable::Load(LPCSTR section)
@@ -180,7 +184,7 @@ void CPHDestroyable::Load(LPCSTR section)
     if (pSettings->line_exist(section, "destroyed_vis_name"))
     {
         m_flags.set(fl_destroyable, TRUE);
-        m_destroyed_obj_visual_names.push_back(pSettings->r_string(section, "destroyed_vis_name"));
+        m_destroyed_obj_visual_names.emplace_back(pSettings->r_string(section, "destroyed_vis_name"));
     }
 }
 

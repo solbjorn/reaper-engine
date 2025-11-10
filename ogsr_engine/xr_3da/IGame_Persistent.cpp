@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "IGame_Persistent.h"
+
 #include "environment.h"
 #include "x_ray.h"
 #include "IGame_Level.h"
@@ -26,7 +27,7 @@ IGame_Persistent::IGame_Persistent()
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
 
-    PerlinNoise1D = xr_new<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
+    PerlinNoise1D = xr_new<CPerlinNoise1D>();
     PerlinNoise1D->SetOctaves(2);
     PerlinNoise1D->SetAmplitude(0.66666f);
 
@@ -268,11 +269,12 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
         if (grass_shader_data.id[idx] == 0)
         {
             data_idx = idx;
-            GrassBendersSet(idx, id, position, {0.f, -99.f, 0.f}, 0.f, 0.f, 0.f, init_radius, BENDER_ANIM_DEFAULT, true);
+            GrassBendersSet(idx, id, position, Fvector{0.0f, -99.0f, 0.0f}, 0.0f, 0.0f, 0.0f, init_radius, BENDER_ANIM_DEFAULT, true);
 
             grass_shader_data.str_target[idx] = init_str;
             grass_shader_data.pos[idx].w = init_radius;
         }
+
         // Back to 0 when the array limit is reached
         grass_shader_data.index = idx < (std::min(static_cast<size_t>(ps_ssfx_grass_interactive.y), std::size(grass_shader_data.id) - 1)) ? idx : 0;
     }
@@ -482,7 +484,7 @@ void IGame_Persistent::GrassBendersRemoveById(const u16 id)
 void IGame_Persistent::GrassBendersReset(const size_t idx)
 {
     // Reset Everything
-    GrassBendersSet(idx, 0, {}, {0.f, -99.f, 0.f}, 0.f, 0.f, 0.f, 0.f, BENDER_ANIM_DEFAULT, true);
+    GrassBendersSet(idx, 0, {}, Fvector{0.0f, -99.0f, 0.0f}, 0.0f, 0.0f, 0.0f, 0.0f, BENDER_ANIM_DEFAULT, true);
     grass_shader_data.str_target[idx] = 0;
 }
 

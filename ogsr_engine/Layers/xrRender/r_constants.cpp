@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "r_constants.h"
+
 #include "ResourceManager.h"
 
 #include "../../xrCore/xrPool.h"
-#include "r_constants.h"
 
 R_constant_table::~R_constant_table() { RImplementation.Resources->_DeleteConstantTable(this); }
 
@@ -12,10 +13,9 @@ void R_constant_table::fatal(LPCSTR S) { FATAL("%s", S); }
 ref_constant R_constant_table::get(LPCSTR S) const
 {
     // assumption - sorted by name
-    c_table::const_iterator I = std::lower_bound(table.cbegin(), table.cend(), S, [](const ref_constant& C, const char* S) { return std::is_lt(xr_strcmp(C->name, S)); });
-
+    const auto I = std::lower_bound(table.cbegin(), table.cend(), S, [](const ref_constant& C, const char* S) { return std::is_lt(xr_strcmp(C->name, S)); });
     if (I == table.cend() || std::is_neq(xr_strcmp((*I)->name, S)))
-        return nullptr;
+        return ref_constant{};
 
     return *I;
 }
@@ -29,37 +29,38 @@ ref_constant R_constant_table::get(const shared_str& S) const
             return C;
     }
 
-    return nullptr;
+    return ref_constant{};
 }
 
-void R_constant_table::merge(R_constant_table* T)
+void R_constant_table::merge(const R_constant_table* T)
 {
-    if (!T)
+    if (T == nullptr)
         return;
 
     // Real merge
     xr_vector<ref_constant> table_tmp;
     table_tmp.reserve(table.size());
 
-    for (ref_constant src : T->table)
+    for (const auto& src : T->table)
     {
         ref_constant C = get(*src->name);
         if (!C)
         {
-            C = xr_new<R_constant>(); //.g_constant_allocator.create();
-            C->name = src->name;
-            C->destination = src->destination;
-            C->type = src->type;
-            C->ps = src->ps;
-            C->vs = src->vs;
-            C->gs = src->gs;
-            C->hs = src->hs;
-            C->ds = src->ds;
-            C->cs = src->cs;
-            C->samp = src->samp;
-            C->handler = src->handler;
+            auto cc = xr_new<R_constant>();
 
-            table_tmp.push_back(C);
+            cc->name = src->name;
+            cc->destination = src->destination;
+            cc->type = src->type;
+            cc->ps = src->ps;
+            cc->vs = src->vs;
+            cc->gs = src->gs;
+            cc->hs = src->hs;
+            cc->ds = src->ds;
+            cc->cs = src->cs;
+            cc->samp = src->samp;
+            cc->handler = src->handler;
+
+            table_tmp.emplace_back(cc);
         }
         else
         {
@@ -79,40 +80,38 @@ void R_constant_table::merge(R_constant_table* T)
         std::ranges::move(table_tmp, std::back_inserter(table));
 
         // Sort
-        std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return xr_strcmp(C1->name, C2->name) < 0; });
+        std::ranges::sort(table, [](const ref_constant& C1, const ref_constant& C2) { return std::is_lt(xr_strcmp(C1->name, C2->name)); });
     }
 
     //	TODO:	DX10:	Implement merge with validity check
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
+    for (auto [tbl, that] : std::views::zip(m_CBTable, T->m_CBTable))
     {
-        m_CBTable[id].reserve(m_CBTable[id].size() + T->m_CBTable[id].size());
-
-        for (u32 i = 0; i < T->m_CBTable[id].size(); ++i)
-            m_CBTable[id].push_back((T->m_CBTable[id])[i]);
+        tbl.reserve(tbl.size() + that.size());
+        tbl.append_range(that);
     }
 }
 
 void R_constant_table::clear()
 {
-    for (u32 it = 0; it < table.size(); it++)
-        table[it] = nullptr;
+    for (auto& c : table)
+        c._set(nullptr);
 
     table.clear();
 
-    for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
-        m_CBTable[id].clear();
+    for (auto& tbl : m_CBTable)
+        tbl.clear();
 }
 
-BOOL R_constant_table::equal(const R_constant_table& C) const
+bool R_constant_table::equal(const R_constant_table& C) const
 {
     if (table.size() != C.table.size())
-        return FALSE;
-    const size_t size = table.size();
-    for (size_t it = 0; it < size; it++)
+        return false;
+
+    for (auto [c, that] : std::views::zip(table, C.table))
     {
-        if (!table[it]->equal(*C.table[it]))
-            return FALSE;
+        if (!c->equal(*that))
+            return false;
     }
 
-    return TRUE;
+    return true;
 }

@@ -6,51 +6,108 @@
 
 namespace
 {
-struct alignas(16) vec_t : public Fvector3
+struct XR_TRIVIAL alignas(16) vec_t : public Fvector3
 {
-    float pad;
+    f32 pad;
 
-    constexpr inline vec_t() = default;
-    constexpr inline vec_t(const vec_t& v) { xr_memcpy16(this, &v); }
-    constexpr inline vec_t& operator=(const vec_t& v)
+    constexpr vec_t() = default;
+
+    constexpr vec_t(const vec_t& that) { xr_memcpy16(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr vec_t(vec_t&&) = default;
+#else
+    [[maybe_unused]] constexpr vec_t(vec_t&& that) { xr_memcpy16(this, &that); }
+#endif
+
+    constexpr vec_t& operator=(const vec_t& that)
     {
-        xr_memcpy16(this, &v);
+        xr_memcpy16(this, &that);
         return *this;
     }
-};
 
-struct alignas(16) aabb_t
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr vec_t& operator=(vec_t&&) = default;
+#else
+    [[maybe_unused]] constexpr vec_t& operator=(vec_t&& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+#endif
+};
+XR_TRIVIAL_ASSERT(vec_t);
+
+struct XR_TRIVIAL alignas(16) aabb_t
 {
     vec_t min;
     vec_t max;
 
-    constexpr inline aabb_t() = default;
-    constexpr inline aabb_t(const aabb_t& v) { xr_memcpy128(this, &v, sizeof(v)); }
-    constexpr inline aabb_t& operator=(const aabb_t& v)
+    constexpr aabb_t() = default;
+
+    constexpr aabb_t(const aabb_t& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr aabb_t(aabb_t&&) = default;
+#else
+    [[maybe_unused]] constexpr aabb_t(aabb_t&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr aabb_t& operator=(const aabb_t& that)
     {
-        xr_memcpy128(this, &v, sizeof(v));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
-};
 
-struct alignas(16) ray_t
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr aabb_t& operator=(aabb_t&&) = default;
+#else
+    [[maybe_unused]] constexpr aabb_t& operator=(aabb_t&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
+};
+XR_TRIVIAL_ASSERT(aabb_t);
+
+struct XR_TRIVIAL alignas(16) ray_t
 {
     vec_t pos;
     vec_t inv_dir;
     vec_t fwd_dir;
 
-    constexpr inline ray_t() = default;
-    constexpr inline ray_t(const ray_t& r) { xr_memcpy128(this, &r, sizeof(r)); }
-    constexpr inline ray_t& operator=(const ray_t& r)
+    constexpr ray_t() = default;
+
+    constexpr ray_t(const ray_t& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr ray_t(ray_t&&) = default;
+#else
+    [[maybe_unused]] constexpr ray_t(ray_t&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr ray_t& operator=(const ray_t& that)
     {
-        xr_memcpy128(this, &r, sizeof(r));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr ray_t& operator=(ray_t&&) = default;
+#else
+    [[maybe_unused]] constexpr ray_t& operator=(ray_t&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
 };
+XR_TRIVIAL_ASSERT(ray_t);
 
-constexpr ICF u32 uf(const float& x) { return std::bit_cast<u32>(x); }
+[[nodiscard]] constexpr u32 uf(const float& x) { return std::bit_cast<u32>(x); }
 
-ICF BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
+constexpr BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
 {
     Fvector MaxT;
     MaxT.x = MaxT.y = MaxT.z = -1.0f;
@@ -212,7 +269,7 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 }
 
 template <bool b_use_sse, bool b_first, bool b_nearest>
-class alignas(16) walker
+class XR_TRIVIAL alignas(16) walker
 {
 public:
     ray_t ray;
@@ -221,15 +278,33 @@ public:
     float range2;
     ISpatial_DB* space;
 
-    constexpr inline walker() = default;
-    constexpr inline walker(const walker& w) { xr_memcpy128(this, &w, sizeof(w)); }
-    constexpr inline walker& operator=(const walker& w)
+    constexpr walker() = default;
+
+    constexpr walker(const walker& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr walker(walker&&) = default;
+#else
+    constexpr walker(walker&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr walker& operator=(const walker& that)
     {
-        xr_memcpy128(this, &w, sizeof(w));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
 
-    walker(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr walker& operator=(walker&&) = default;
+#else
+    constexpr walker& operator=(walker&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
+
+    constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const Fvector& _start, const Fvector& _dir, float _range)
     {
         mask = _mask;
         ray.pos.set(_start);
@@ -354,6 +429,14 @@ public:
         }
     }
 };
+XR_TRIVIAL_ASSERT(walker<true, true, true>);
+XR_TRIVIAL_ASSERT(walker<true, true, false>);
+XR_TRIVIAL_ASSERT(walker<true, false, true>);
+XR_TRIVIAL_ASSERT(walker<true, false, false>);
+XR_TRIVIAL_ASSERT(walker<false, true, true>);
+XR_TRIVIAL_ASSERT(walker<false, true, false>);
+XR_TRIVIAL_ASSERT(walker<false, false, true>);
+XR_TRIVIAL_ASSERT(walker<false, false, false>);
 } // namespace
 
 void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range)
@@ -367,12 +450,12 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fv
         {
             if (_o & O_ONLYNEAREST)
             {
-                walker<true, true, true> W(this, _mask_and, _start, _dir, _range);
+                walker<true, true, true> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
             else
             {
-                walker<true, true, false> W(this, _mask_and, _start, _dir, _range);
+                walker<true, true, false> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
         }
@@ -380,12 +463,12 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fv
         {
             if (_o & O_ONLYNEAREST)
             {
-                walker<true, false, true> W(this, _mask_and, _start, _dir, _range);
+                walker<true, false, true> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
             else
             {
-                walker<true, false, false> W(this, _mask_and, _start, _dir, _range);
+                walker<true, false, false> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
         }
@@ -396,12 +479,12 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fv
         {
             if (_o & O_ONLYNEAREST)
             {
-                walker<false, true, true> W(this, _mask_and, _start, _dir, _range);
+                walker<false, true, true> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
             else
             {
-                walker<false, true, false> W(this, _mask_and, _start, _dir, _range);
+                walker<false, true, false> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
         }
@@ -409,12 +492,12 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const Fv
         {
             if (_o & O_ONLYNEAREST)
             {
-                walker<false, false, true> W(this, _mask_and, _start, _dir, _range);
+                walker<false, false, true> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
             else
             {
-                walker<false, false, false> W(this, _mask_and, _start, _dir, _range);
+                walker<false, false, false> W{this, _mask_and, _start, _dir, _range};
                 W.walk(m_root, m_center, m_bounds);
             }
         }

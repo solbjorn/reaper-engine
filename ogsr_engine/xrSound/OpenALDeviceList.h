@@ -16,7 +16,7 @@ struct ALDeviceDesc
 
     bool is_al_soft{};
 
-    ALDeviceDesc(LPCSTR nm, int mn, int mj, bool al_soft)
+    explicit ALDeviceDesc(LPCSTR nm, int mn, int mj, bool al_soft)
     {
         xr_strcpy(name, nm);
         minor_ver = mn;

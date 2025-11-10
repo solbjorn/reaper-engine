@@ -191,9 +191,9 @@ BOOL CEntity::net_Spawn(CSE_Abstract* DC)
         if (monster)
         {
             MONSTER_COMMUNITY monster_community;
-            monster_community.set(pSettings->r_string(*cNameSect(), "species"));
+            monster_community.set(pSettings->r_string<shared_str>(cNameSect(), "species"));
 
-            if (monster_community.team() != 255)
+            if (monster_community.team() != std::numeric_limits<u8>::max())
                 id_Team = monster_community.team();
         }
     }

@@ -26,15 +26,15 @@ CSpaceRestrictionHolder::~CSpaceRestrictionHolder() { clear(); }
 void CSpaceRestrictionHolder::clear()
 {
     delete_data(m_restrictions);
-    m_default_out_restrictions = "";
-    m_default_in_restrictions = "";
+    m_default_out_restrictions._set("");
+    m_default_in_restrictions._set("");
 }
 
 shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictors)
 {
     u32 n = xr_strlen(space_restrictors);
     if (!n)
-        return ("");
+        return shared_str{""};
 
     // 1. parse the string, copying to temp buffer with leading zeroes, storing pointers in vector
     LPSTR* strings = (LPSTR*)_alloca(MAX_RESTRICTION_PER_TYPE_COUNT * sizeof(LPSTR));
@@ -86,7 +86,7 @@ shared_str CSpaceRestrictionHolder::normalize_string(shared_str space_restrictor
     *(pointer - 1) = 0;
 
     // 4. finally, dock shared_str
-    return (result_string);
+    return shared_str{result_string};
 }
 
 SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction(shared_str space_restrictors)
@@ -128,7 +128,7 @@ void CSpaceRestrictionHolder::register_restrictor(CSpaceRestrictor* space_restri
         else
             strconcat(sizeof(m_temp_string), m_temp_string, **temp, *space_restrictors);
 
-        *temp = normalize_string(m_temp_string);
+        *temp = normalize_string(shared_str{m_temp_string});
 
         if (std::is_neq(xr_strcmp(*temp, temp1)))
             on_default_restrictions_changed();
@@ -177,10 +177,11 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
     }
 
     if (!found)
-        return (false);
+        return false;
 
-    search_string = temp1;
-    return (true);
+    search_string._set(temp1);
+
+    return true;
 }
 } // namespace
 

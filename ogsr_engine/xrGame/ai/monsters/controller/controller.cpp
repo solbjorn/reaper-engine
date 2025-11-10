@@ -229,8 +229,8 @@ void CController::load_friend_community_overrides(LPCSTR section)
     for (int i = 0; i < item_count; i++)
     {
         string128 st;
-        _GetItem(src, i, st);
-        m_friend_community_overrides[i] = st;
+        std::ignore = _GetItem(src, i, st);
+        m_friend_community_overrides[i]._set(st);
     }
 }
 
@@ -498,7 +498,7 @@ void CController::draw_fire_particles()
     dir.sub(position, my_head_pos);
     dir.normalize();
 
-    PlayParticles(particles_fire, my_head_pos, dir);
+    PlayParticles(shared_str{particles_fire}, my_head_pos, dir);
     play_control_sound_hit();
 }
 

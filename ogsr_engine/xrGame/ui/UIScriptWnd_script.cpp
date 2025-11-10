@@ -2,6 +2,7 @@
 
 // UI-controls
 #include "UIScriptWnd.h"
+
 #include "UIButton.h"
 #include "UIMessageBox.h"
 #include "UIPropertiesBox.h"
@@ -18,9 +19,8 @@
 template <typename T>
 IC T* CUIDialogWndEx::GetControl(LPCSTR name)
 {
-    shared_str n = name;
-    CUIWindow* pWnd = FindChild(n);
-    if (!pWnd)
+    CUIWindow* pWnd = FindChild(name);
+    if (pWnd == nullptr)
         return nullptr;
 
     return smart_cast<T*>(pWnd);

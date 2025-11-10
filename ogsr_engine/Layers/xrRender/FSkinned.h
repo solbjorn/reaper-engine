@@ -4,7 +4,6 @@
 
 #ifndef FSkinnedH
 #define FSkinnedH
-#pragma once
 
 #include "FVisual.h"
 #include "FProgressive.h"
@@ -17,7 +16,7 @@ class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
     RTTI_DECLARE_TYPEINFO(CSkeletonX_ext, CSkeletonX);
 
 protected:
-    virtual void _Load_hw(Fvisual& V, void* data);
+    void _Load_hw(Fvisual& V, const void* data) override;
     virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
     void _EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id, u32 iBase) const;
     virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);

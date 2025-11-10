@@ -28,19 +28,23 @@ public:
             u32 m_e_game_type;
         };
         string256 m_params[4];
-        params() { reset(); }
-        void reset()
+
+        constexpr params() { reset(); }
+
+        constexpr void reset()
         {
-            for (int i = 0; i < 4; ++i)
-                strcpy_s(m_params[i], "");
+            for (auto& param : m_params)
+                param[0] = '\0';
         }
+
         void parse_cmd_line(LPCSTR cmd_line)
         {
             reset();
-            int n = _min(4, _GetItemCount(cmd_line, '/'));
-            for (int i = 0; i < n; ++i)
+
+            const auto n = _min(4z, _GetItemCount(cmd_line, '/'));
+            for (gsl::index i{}; i < n; ++i)
             {
-                _GetItem(cmd_line, i, m_params[i], '/');
+                std::ignore = _GetItem(cmd_line, i, m_params[i], '/');
                 _strlwr(m_params[i]);
             }
         }

@@ -28,8 +28,8 @@ LPCSTR CSavedGameWrapper::saved_game_full_name(LPCSTR saved_game_name, string_pa
 {
     string_path temp;
     strconcat(sizeof(temp), temp, saved_game_name, SAVE_EXTENSION);
-    FS.update_path(result, "$game_saves$", temp);
-    return (result);
+    std::ignore = FS.update_path(result, "$game_saves$", temp);
+    return result;
 }
 
 bool CSavedGameWrapper::saved_game_exist(LPCSTR saved_game_name)
@@ -81,7 +81,7 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
         m_game_time = time_manager.game_time();
         m_actor_health = 1.f;
         m_level_id = _LEVEL_ID(-1);
-        m_level_name = "";
+        m_level_name._set("");
         return;
     }
 
@@ -120,37 +120,41 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
                 R->close();
                 F_entity_Destroy(object);
                 m_level_id = _LEVEL_ID(-1);
-                m_level_name = "";
+                m_level_name._set("");
                 return;
             }
+
             sub_chunk->r_stringZ(spawn_file_name, sizeof(spawn_file_name));
             sub_chunk->close();
         }
+
         R->close();
 
         if (!FS.exist(file_name, "$game_spawn$", spawn_file_name, ".spawn"))
         {
             F_entity_Destroy(object);
             m_level_id = _LEVEL_ID(-1);
-            m_level_name = "";
+            m_level_name._set("");
             return;
         }
 
         IReader* spawn = nullptr;
         bool b_destroy_spawn = true;
-        if (ai().get_alife() && ai().alife().spawns().get_spawn_name() == spawn_file_name)
+        if (ai().get_alife() && std::is_eq(xr_strcmp(ai().alife().spawns().get_spawn_name(), spawn_file_name)))
         {
             spawn = ai().alife().spawns().get_spawn_file();
             b_destroy_spawn = false;
         }
         else
+        {
             spawn = FS.r_open(file_name);
+        }
 
         if (!spawn)
         {
             F_entity_Destroy(object);
             m_level_id = _LEVEL_ID(-1);
-            m_level_name = "";
+            m_level_name._set("");
             return;
         }
 
@@ -159,7 +163,7 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
         if (!R)
         {
             string_path graph_path;
-            FS.update_path(graph_path, _game_data_, GRAPH_NAME);
+            std::ignore = FS.update_path(graph_path, _game_data_, GRAPH_NAME);
             R = FS.r_open(graph_path);
             separated_graphs = true;
         }
@@ -169,8 +173,9 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
             F_entity_Destroy(object);
             if (b_destroy_spawn)
                 FS.r_close(spawn);
+
             m_level_id = _LEVEL_ID(-1);
-            m_level_name = "";
+            m_level_name._set("");
             return;
         }
 
@@ -180,7 +185,7 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
             if (graph.header().level_exist(m_level_id))
                 m_level_name = graph.header().level(m_level_id).name();
             else
-                m_level_name = CStringTable().translate("ui_st_error");
+                m_level_name = CStringTable().translate(shared_str{"ui_st_error"});
         }
 
         if (!separated_graphs)

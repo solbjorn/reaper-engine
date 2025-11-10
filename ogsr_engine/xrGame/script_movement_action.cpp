@@ -47,7 +47,7 @@ CScriptMovementAction::CScriptMovementAction()
     SetBodyState(MonsterSpace::eBodyStateStand);
     SetMovementType(MonsterSpace::eMovementTypeStand);
     SetPathType(DetailPathManager::eDetailPathTypeSmooth);
-    SetPatrolPath(nullptr, "");
+    SetPatrolPath(nullptr, shared_str{""});
     SetPatrolStart(PatrolPathManager::ePatrolStartTypeNearest);
     SetPatrolStop(PatrolPathManager::ePatrolRouteTypeContinue);
     SetPatrolRandom(true);

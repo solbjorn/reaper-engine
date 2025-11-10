@@ -271,8 +271,9 @@ void CSoundRender_Emitter::update(float fTime, float dt)
     else if (owner_data)
     {
         VERIFY(this == owner_data->feedback);
+
         owner_data->feedback = nullptr;
-        owner_data = nullptr;
+        owner_data._set(nullptr);
     }
 }
 

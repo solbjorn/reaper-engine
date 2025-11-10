@@ -40,8 +40,9 @@ struct CDataStorageBucketList
         static constexpr auto BucketSize = BucketCount * sizeof(typename TManagerDataStorage::Vertex*);
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         virtual ~CDataStorage();
+
         inline void init();
         inline void add_best_closed();
         inline bool is_opened_empty();

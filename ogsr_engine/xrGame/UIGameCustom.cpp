@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIGameCustom.h"
+
 #include "ui.h"
 #include "ui/UIInventoryUtilities.h"
 #include "level.h"
@@ -98,18 +99,17 @@ CUIDialogWnd* CUIGameCustom::MainInputReceiver() { return HUD().GetUI()->MainInp
 
 void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color /* LPCSTR def_text*/)
 {
-    GameCaptions()->addCustomMessage(id, x, y, font_size, pFont, (CGameFont::EAligment)alignment, color, "");
+    GameCaptions()->addCustomMessage(shared_str{id}, x, y, font_size, pFont, (CGameFont::EAligment)alignment, color, "");
 }
 
 void CUIGameCustom::AddCustomMessage(LPCSTR id, float x, float y, float font_size, CGameFont* pFont, u16 alignment, u32 color, /*LPCSTR def_text,*/ float flicker)
 {
     AddCustomMessage(id, x, y, font_size, pFont, alignment, color);
-    GameCaptions()->customizeMessage(id, CUITextBanner::tbsFlicker)->fPeriod = flicker;
+    GameCaptions()->customizeMessage(shared_str{id}, CUITextBanner::tbsFlicker)->fPeriod = flicker;
 }
 
-void CUIGameCustom::CustomMessageOut(LPCSTR id, LPCSTR msg, u32 color) { GameCaptions()->setCaption(id, msg, color, true); }
-
-void CUIGameCustom::RemoveCustomMessage(LPCSTR id) { GameCaptions()->removeCustomMessage(id); }
+void CUIGameCustom::CustomMessageOut(LPCSTR id, LPCSTR msg, u32 color) { GameCaptions()->setCaption(shared_str{id}, msg, color, true); }
+void CUIGameCustom::RemoveCustomMessage(LPCSTR id) { GameCaptions()->removeCustomMessage(shared_str{id}); }
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance)
 {
@@ -124,8 +124,9 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstanc
     auto& sss = m_custom_statics.emplace_back();
 
     sss.m_static = xr_new<CUIStatic>();
-    sss.m_name = id;
+    sss.m_name._set(id);
     xml_init.InitStatic(*m_msgs_xml, id, 0, sss.m_static);
+
     float ttl = m_msgs_xml->ReadAttribFlt(id, 0, "ttl", -1);
     if (ttl > 0.0f)
         sss.m_endTime = Device.fTimeGlobal + ttl;

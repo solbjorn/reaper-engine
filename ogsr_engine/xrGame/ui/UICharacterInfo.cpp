@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "UIInventoryUtilities.h"
-
 #include "uicharacterinfo.h"
+
+#include "UIInventoryUtilities.h"
 #include "../actor.h"
 #include "../level.h"
 #include "../character_info.h"
@@ -172,13 +172,13 @@ void CUICharacterInfo::InitCharacter(u16 id)
 
     if (m_icons[eUIRank])
     {
-        sprintf_s(str, "%s", *stbl.translate(GetRankAsText(chInfo.Rank().value())));
+        sprintf_s(str, "%s", *stbl.translate(shared_str{GetRankAsText(chInfo.Rank().value())}));
         m_icons[eUIRank]->SetText(str);
     }
 
     if (m_icons[eUIReputation])
     {
-        sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(chInfo.Reputation().value())));
+        sprintf_s(str, "%s", *stbl.translate(shared_str{GetReputationAsText(chInfo.Reputation().value())}));
         m_icons[eUIReputation]->SetText(str);
     }
 
@@ -188,7 +188,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
         m_icons[eUICommunity]->SetText(str);
     }
 
-    m_texture_name = chInfo.IconName().c_str();
+    m_texture_name = chInfo.IconName();
     m_icons[eUIIcon]->InitTexture(m_texture_name.c_str());
     m_icons[eUIIcon]->SetStretchTexture(true);
 
@@ -222,15 +222,12 @@ void CUICharacterInfo::InitCharacter(u16 id)
 
 void CUICharacterInfo::SetRelation(ALife::ERelationType relation, CHARACTER_GOODWILL goodwill)
 {
-    shared_str relation_str;
+    m_icons[eUIRelation]->SetTextColor(GetRelationColor(relation));
 
+    string256 str;
     CStringTable stbl;
 
-    m_icons[eUIRelation]->SetTextColor(GetRelationColor(relation));
-    string256 str;
-
-    sprintf_s(str, "%s", *stbl.translate(GetGoodwillAsText(goodwill)));
-
+    sprintf_s(str, "%s", *stbl.translate(shared_str{GetGoodwillAsText(goodwill)}));
     m_icons[eUIRelation]->SetText(str);
 }
 

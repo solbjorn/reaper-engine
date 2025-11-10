@@ -4,10 +4,10 @@
 
 #pragma once
 
-constexpr inline u32 CFS_CompressMark{1ul << 31ul};
-constexpr inline u32 CFS_HeaderChunkID{666};
+constexpr inline size_t CFS_CompressMark{1ul << 31ul};
+constexpr inline size_t CFS_HeaderChunkID{666};
 
-XR_SYSV void VerifyPath(absl::string_view path);
+void VerifyPath(absl::string_view path);
 
 #ifdef DEBUG
 extern u32 g_file_mapped_memory;
@@ -25,20 +25,20 @@ class XR_NOVTABLE IWriter : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IWriter);
 
 private:
-    xr_stack<size_t> chunk_pos;
+    xr_stack<gsl::index> chunk_pos;
 
 public:
     shared_str fName;
 
 public:
-    IWriter() {}
+    IWriter() = default;
     virtual ~IWriter() { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", *fName); }
 
     // kernel
-    virtual void seek(size_t pos) = 0;
-    virtual size_t tell() = 0;
+    virtual void seek(gsl::index pos) = 0;
+    [[nodiscard]] virtual gsl::index tell() = 0;
 
-    virtual void w(const void* ptr, size_t count) = 0;
+    virtual void w(const void* ptr, gsl::index count) = 0;
 
     // generalized writing functions
     IC void w_u64(u64 d) { w(&d, sizeof(u64)); }
@@ -50,34 +50,34 @@ public:
     IC void w_s16(s16 d) { w(&d, sizeof(s16)); }
     IC void w_s8(s8 d) { w(&d, sizeof(s8)); }
     IC void w_float(float d) { w(&d, sizeof(float)); }
-    IC void w_string(const char* p)
+
+    void w_string(gsl::czstring p)
     {
         w(p, xr_strlen(p));
         w_u8(13);
         w_u8(10);
     }
-    IC void w_stringZ(const char* p) { w(p, xr_strlen(p) + 1); }
-    IC void w_stringZ(const shared_str& p)
+
+    void w_stringZ(gsl::czstring p) { w(p, xr_strlen(p) + 1); }
+
+    void w_stringZ(const shared_str& p)
     {
         w(*p ? *p : "", p.size());
         w_u8(0);
     }
-    IC void w_stringZ(shared_str& p)
+
+    void w_stringZ(const xr_string& p)
     {
-        w(*p ? *p : "", p.size());
+        w(p.c_str() ? p.c_str() : "", std::ssize(p));
         w_u8(0);
     }
-    IC void w_stringZ(const xr_string& p)
-    {
-        w(p.c_str() ? p.c_str() : "", p.size());
-        w_u8(0);
-    }
+
     IC void w_fcolor(const Fcolor& v) { w(&v, sizeof(Fcolor)); }
-    IC void w_fvector4(const Fvector4& v) { w(&v, sizeof(Fvector4)); }
-    IC void w_fvector3(const Fvector3& v) { w(&v, sizeof(Fvector3)); }
+    void w_fvector4(const Fvector4& v) { w(&v, sizeof(Fvector4)); }
+    void w_fvector3(const Fvector3& v) { w(&v, sizeof(Fvector3)); }
     IC void w_fvector2(const Fvector2& v) { w(&v, sizeof(Fvector2)); }
-    IC void w_ivector4(const Ivector4& v) { w(&v, sizeof(Ivector4)); }
-    IC void w_ivector3(const Ivector3& v) { w(&v, sizeof(Ivector3)); }
+    void w_ivector4(const Ivector4& v) { w(&v, sizeof(Ivector4)); }
+    void w_ivector3(const Ivector3& v) { w(&v, sizeof(Ivector3)); }
     IC void w_ivector2(const Ivector2& v) { w(&v, sizeof(Ivector2)); }
 
     // quant writing functions
@@ -100,14 +100,13 @@ public:
     void XR_PRINTF(2, 3) w_printf(const char* format, ...);
 
     // generalized chunking
-    u32 align();
     void open_chunk(u32 type);
     void close_chunk();
-    size_t chunk_size(); // returns size of currently opened chunk, 0 otherwise
-    void w_compressed(void* ptr, size_t count, const bool encrypt = false, const bool is_ww = false);
-    void w_chunk(u32 type, void* data, size_t size, const bool encrypt = false, const bool is_ww = false);
-    virtual bool valid() { return true; }
-    virtual size_t flush() { return 0; } // RvP
+    [[nodiscard]] gsl::index chunk_size(); // returns size of currently opened chunk, 0 otherwise
+    void w_compressed(void* ptr, gsl::index count, bool encrypt = false, bool is_ww = false);
+    void w_chunk(u32 type, void* data, gsl::index size, bool encrypt = false, bool is_ww = false);
+    [[nodiscard]] virtual bool valid() { return true; }
+    [[nodiscard]] virtual gsl::index flush() { return 0; } // RvP
 };
 
 class CMemoryWriter : public IWriter
@@ -115,29 +114,24 @@ class CMemoryWriter : public IWriter
     RTTI_DECLARE_TYPEINFO(CMemoryWriter, IWriter);
 
 public:
-    u8* data;
-    size_t position;
-    size_t mem_size;
-    size_t file_size;
+    std::byte* data{};
+    gsl::index position{};
+    gsl::index mem_size{};
+    gsl::index file_size{};
 
-    CMemoryWriter()
-    {
-        data = nullptr;
-        position = 0;
-        mem_size = 0;
-        file_size = 0;
-    }
+    CMemoryWriter() = default;
     virtual ~CMemoryWriter();
 
     // kernel
-    virtual void w(const void* ptr, size_t count);
+    void w(const void* ptr, gsl::index count) override;
 
-    virtual void seek(size_t pos) { position = pos; }
-    virtual size_t tell() { return position; }
+    void seek(gsl::index pos) override { position = pos; }
+    [[nodiscard]] gsl::index tell() override { return position; }
 
     // specific
-    IC u8* pointer() const { return data; }
-    IC size_t size() const { return file_size; }
+    [[nodiscard]] std::byte* pointer() const { return data; }
+    [[nodiscard]] gsl::index size() const { return file_size; }
+
     IC void clear()
     {
         file_size = 0;
@@ -152,8 +146,8 @@ public:
         xr_free(data);
     }
 
-    bool save_to(LPCSTR fn) const;
-    void reserve(const size_t count);
+    [[nodiscard]] bool save_to(LPCSTR fn) const;
+    void reserve(gsl::index count);
 };
 
 //------------------------------------------------------------------------------------
@@ -165,78 +159,88 @@ class IReaderBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IReaderBase<implementation_type>);
 
 public:
-    virtual ~IReaderBase() {}
+    virtual ~IReaderBase() = default;
 
-    IC implementation_type& impl() { return *(implementation_type*)this; }
-    IC const implementation_type& impl() const { return *(const implementation_type*)this; }
+    [[nodiscard]] implementation_type& impl() { return *smart_cast<implementation_type*>(this); }
+    [[nodiscard]] const implementation_type& impl() const { return *smart_cast<const implementation_type*>(this); }
 
-    IC BOOL eof() const { return impl().elapsed() <= 0; }
+    [[nodiscard]] bool eof() const { return impl().elapsed() <= 0; }
 
-    IC void r(void* p, int cnt) { impl().r(p, cnt); }
+    IC void r(void* p, gsl::index cnt) { impl().r(p, cnt); }
 
-    virtual Fvector r_vec3()
+    [[nodiscard]] virtual Fvector r_vec3()
     {
         Fvector tmp;
         r(&tmp, 3 * sizeof(float));
         return tmp;
     }
-    virtual Fvector4 r_vec4()
+
+    [[nodiscard]] virtual Fvector4 r_vec4()
     {
         Fvector4 tmp;
         r(&tmp, 4 * sizeof(float));
         return tmp;
     }
-    virtual u64 r_u64()
+
+    [[nodiscard]] virtual u64 r_u64()
     {
         u64 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual u32 r_u32()
+
+    [[nodiscard]] virtual u32 r_u32()
     {
         u32 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual u16 r_u16()
+
+    [[nodiscard]] virtual u16 r_u16()
     {
         u16 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual u8 r_u8()
+
+    [[nodiscard]] virtual u8 r_u8()
     {
         u8 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual s64 r_s64()
+
+    [[nodiscard]] virtual s64 r_s64()
     {
         s64 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual s32 r_s32()
+
+    [[nodiscard]] virtual s32 r_s32()
     {
         s32 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual s16 r_s16()
+
+    [[nodiscard]] virtual s16 r_s16()
     {
         s16 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual s8 r_s8()
+
+    [[nodiscard]] virtual s8 r_s8()
     {
         s8 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
-    virtual float r_float()
+
+    [[nodiscard]] virtual float r_float()
     {
-        float tmp;
+        f32 tmp;
         r(&tmp, sizeof(tmp));
         return tmp;
     }
@@ -245,26 +249,28 @@ public:
     virtual void r_fvector3(Fvector3& v) { r(&v, sizeof(Fvector3)); }
     virtual void r_fvector2(Fvector2& v) { r(&v, sizeof(Fvector2)); }
     virtual void r_ivector4(Ivector4& v) { r(&v, sizeof(Ivector4)); }
-    virtual void r_ivector4(Ivector3& v) { r(&v, sizeof(Ivector3)); }
-    virtual void r_ivector4(Ivector2& v) { r(&v, sizeof(Ivector2)); }
+    virtual void r_ivector3(Ivector3& v) { r(&v, sizeof(Ivector3)); }
+    virtual void r_ivector2(Ivector2& v) { r(&v, sizeof(Ivector2)); }
     virtual void r_fcolor(Fcolor& v) { r(&v, sizeof(Fcolor)); }
 
-    virtual float r_float_q16(float min, float max)
+    [[nodiscard]] virtual float r_float_q16(float min, float max)
     {
         u16 val = r_u16();
         float A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
         VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
         return A;
     }
-    virtual float r_float_q8(float min, float max)
+
+    [[nodiscard]] virtual float r_float_q8(float min, float max)
     {
         u8 val = r_u8();
         float A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
         VERIFY((A >= min) && (A <= max));
         return A;
     }
-    IC float r_angle16() { return r_float_q16(0, PI_MUL_2); }
-    IC float r_angle8() { return r_float_q8(0, PI_MUL_2); }
+
+    [[nodiscard]] f32 r_angle16() { return r_float_q16(0, PI_MUL_2); }
+    [[nodiscard]] f32 r_angle8() { return r_float_q8(0, PI_MUL_2); }
 
     virtual void r_dir(Fvector& A)
     {
@@ -279,44 +285,44 @@ public:
         pvDecompress(A, t);
         A.mul(s);
     }
+
     // Set file pointer to start of chunk data (0 for root chunk)
     IC void rewind() { impl().seek(0); }
 
-    IC size_t find_chunk(const u32 ID, BOOL* bCompressed = nullptr)
+    [[nodiscard]] gsl::index find_chunk(u32 ID, BOOL* bCompressed = nullptr)
     {
-        size_t dwSize{}, dwType{};
+        gsl::index dwSize{};
+        size_t dwType{};
         bool success{};
 
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= static_cast<long>(sizeof(u32) * 2))
+            if (impl().elapsed() >= gsl::index{sizeof(u32) * 2})
             {
                 dwType = r_u32();
                 dwSize = r_u32();
 
-                if ((dwType & (~CFS_CompressMark)) == ID)
-                {
+                if ((dwType & ~CFS_CompressMark) == ID)
                     success = true;
-                }
             }
         }
 
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= static_cast<long>(sizeof(u32) * 2)) // while (!eof())
+            while (impl().elapsed() >= gsl::index{sizeof(u32) * 2}) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
-                if ((dwType & (~CFS_CompressMark)) == ID)
+                if ((dwType & ~CFS_CompressMark) == ID)
                 {
                     success = true;
                     break;
                 }
                 else
                 {
-                    if (impl().elapsed() > static_cast<long>(dwSize))
+                    if (impl().elapsed() > dwSize)
                         impl().advance(dwSize);
                     else
                         break;
@@ -330,54 +336,54 @@ public:
             }
         }
 
-        if (bCompressed)
-            *bCompressed = dwType & CFS_CompressMark;
+        if (bCompressed != nullptr)
+            *bCompressed = !!(dwType & CFS_CompressMark);
 
         // Встречаются объекты, в которых dwSize последнего чанка больше чем реальный размер чанка который там есть.
         // К примеру, в одной из моделей гранат получается превышение на 9 байт.
         // Не знаю, от чего такое бывает, но попробуем обработать эту ситуацию.
         // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
 
-        if (impl().elapsed() >= static_cast<long>(dwSize))
+        if (impl().elapsed() >= dwSize)
         {
             m_last_pos = impl().tell() + dwSize;
             return dwSize;
         }
         else
         {
-            Msg("!![%s] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
+            Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
+
             return impl().elapsed();
         }
     }
 
-    size_t find_chunk_thm(const u32 ID, const char* dbg_name)
+    [[nodiscard]] gsl::index find_chunk_thm(u32 ID, const char* dbg_name)
     {
-        size_t dwSize{}, dwType{};
+        gsl::index dwSize{};
+        size_t dwType{};
         bool success{};
 
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= static_cast<long>(sizeof(u32) * 2))
+            if (impl().elapsed() >= gsl::index{sizeof(u32) * 2})
             {
                 dwType = r_u32();
                 dwSize = r_u32();
-                if ((dwType & (~CFS_CompressMark)) == ID)
-                {
+                if ((dwType & ~CFS_CompressMark) == ID)
                     success = true;
-                }
             }
         }
 
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= static_cast<long>(sizeof(u32) * 2)) // while (!eof())
+            while (impl().elapsed() >= gsl::index{sizeof(u32) * 2}) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
-                if ((dwType & (~CFS_CompressMark)) == ID)
+                if ((dwType & ~CFS_CompressMark) == ID)
                 {
                     success = true;
                     break;
@@ -386,9 +392,9 @@ public:
                 {
                     if ((ID & 0x7ffffff0) == 0x810) // is it a thm chunk ID?
                     {
-                        const size_t pos = (u32)impl().tell();
-                        const size_t size = (u32)impl().length();
-                        size_t length = dwSize;
+                        const auto pos = impl().tell();
+                        const auto size = impl().length();
+                        auto length = dwSize;
 
                         if (pos + length != size) // not the last chunk in the file?
                         {
@@ -411,7 +417,7 @@ public:
                                         break; // found start of next section
                                     length++;
                                 }
-                                Msg("!![%s] THM [%s] chunk [%u] fixed, wrong size = [%zu], correct size = [%zu]", __FUNCTION__, dbg_name, ID, dwSize, length);
+                                Msg("!![%s] THM [%s] chunk [%u] fixed, wrong size = [%zd], correct size = [%zd]", __FUNCTION__, dbg_name, ID, dwSize, length);
                             }
                         }
 
@@ -432,34 +438,37 @@ public:
         // см. комментарии выше в функции find_chunk
         // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
 
-        if (impl().elapsed() >= static_cast<long>(dwSize))
+        if (impl().elapsed() >= dwSize)
         {
             m_last_pos = impl().tell() + dwSize;
             return dwSize;
         }
         else
         {
-            Msg("!![%s][%p] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, impl().pointer(), ID, dwSize, impl().elapsed());
+            Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
+
             return impl().elapsed();
         }
     }
 
-    IC BOOL r_chunk(u32 ID, void* dest) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
+    [[nodiscard]] BOOL r_chunk(u32 ID, void* dest) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
     {
-        size_t dwSize = find_chunk(ID);
+        gsl::index dwSize = find_chunk(ID);
         if (dwSize != 0)
         {
             r(dest, dwSize);
             return TRUE;
         }
         else
+        {
             return FALSE;
+        }
     }
 
-    IC BOOL r_chunk_safe(u32 ID, void* dest, size_t dest_size) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
+    [[nodiscard]] BOOL r_chunk_safe(u32 ID, void* dest, gsl::index dest_size) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
     {
-        size_t dwSize = find_chunk(ID);
+        gsl::index dwSize = find_chunk(ID);
         if (dwSize != 0)
         {
             R_ASSERT(dwSize == dest_size);
@@ -467,11 +476,13 @@ public:
             return TRUE;
         }
         else
+        {
             return FALSE;
+        }
     }
 
 private:
-    size_t m_last_pos{};
+    gsl::index m_last_pos{};
 };
 
 class IReader : public IReaderBase<IReader>
@@ -479,41 +490,43 @@ class IReader : public IReaderBase<IReader>
     RTTI_DECLARE_TYPEINFO(IReader, IReaderBase<IReader>);
 
 protected:
-    char* data{};
-    size_t Pos{};
-    size_t Size{};
-    size_t iterpos{};
+    const std::byte* data{};
+    gsl::index Pos{};
+    gsl::index Size{};
+    gsl::index iterpos{};
 
 public:
-    IC IReader() { Pos = 0; }
+    IReader() = default;
 
-    IC IReader(void* _data, size_t _size, size_t _iterpos = 0)
+    explicit IReader(const void* _data, gsl::index _size, gsl::index _iterpos = 0)
     {
-        data = (char*)_data;
+        data = static_cast<const std::byte*>(_data);
         Size = _size;
-        Pos = 0;
         iterpos = _iterpos;
     }
 
-    virtual ~IReader() {}
+    virtual ~IReader() = default;
 
 protected:
-    u32 advance_term_string();
+    [[nodiscard]] gsl::index advance_term_string();
 
 public:
-    IC intptr_t elapsed() const { return Size - Pos; }
-    IC size_t tell() const { return Pos; }
-    IC void seek(size_t ptr)
+    [[nodiscard]] gsl::index elapsed() const { return Size - Pos; }
+    [[nodiscard]] gsl::index tell() const { return Pos; }
+
+    void seek(gsl::index ptr)
     {
         Pos = ptr;
         R_ASSERT((Pos <= Size) && (Pos >= 0));
     }
 
-    IC size_t length() const { return Size; }
-    IC void* pointer() const { return &(data[Pos]); }
-    IC void* begin() const { return data; }
-    IC void* end() const { return data + Size; }
-    IC void advance(intptr_t cnt)
+    [[nodiscard]] gsl::index length() const { return Size; }
+
+    [[nodiscard]] const void* pointer() const { return &(data[Pos]); }
+    [[nodiscard]] const void* begin() const { return data; }
+    [[nodiscard]] const void* end() const { return data + Size; }
+
+    void advance(gsl::index cnt)
     {
         Pos += cnt;
         R_ASSERT((Pos <= Size) && (Pos >= 0));
@@ -522,154 +535,174 @@ public:
     void close();
 
     // поиск XR Chunk'ов - возврат - размер или 0
-    IReader* open_chunk(u32 ID);
+    [[nodiscard]] IReader* open_chunk(u32 ID);
 
     // iterators
-    IReader* open_chunk_iterator(u32& ID, IReader* previous = nullptr); // nullptr => first
+    [[nodiscard]] IReader* open_chunk_iterator(u32& ID, IReader* previous = nullptr); // nullptr => first
 
     void skip_bom(const char* dbg_name);
 
 public:
-    void r(void* p, size_t cnt);
+    void r(void* p, gsl::index cnt);
 
-    void r_string(char* dest, size_t tgt_sz);
+    void r_string(char* dest, gsl::index tgt_sz);
     void r_string(xr_string& dest);
 
     void skip_stringZ();
 
-    void r_stringZ(char* dest, size_t tgt_sz);
+    void r_stringZ(char* dest, gsl::index tgt_sz);
     void r_stringZ(shared_str& dest);
     void r_stringZ(xr_string& dest);
 
-    IC Fvector r_vec3() override
+    [[nodiscard]] Fvector r_vec3() override
     {
-        auto tmp = *reinterpret_cast<Fvector*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const Fvector*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC Fvector4 r_vec4() override
+
+    [[nodiscard]] Fvector4 r_vec4() override
     {
-        auto tmp = *reinterpret_cast<Fvector4*>(&data[Pos]);
+        auto tmp = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&data[Pos]));
+        advance(sizeof(tmp));
+        return *reinterpret_cast<const Fvector4*>(&tmp);
+    }
+
+    [[nodiscard]] u64 r_u64() override
+    {
+        auto tmp = *reinterpret_cast<const u64*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC u64 r_u64() override
+
+    [[nodiscard]] u32 r_u32() override
     {
-        auto tmp = *reinterpret_cast<u64*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const u32*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC u32 r_u32() override
+
+    [[nodiscard]] u16 r_u16() override
     {
-        auto tmp = *reinterpret_cast<u32*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const u16*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC u16 r_u16() override
+
+    [[nodiscard]] u8 r_u8() override
     {
-        auto tmp = *reinterpret_cast<u16*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const u8*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC u8 r_u8() override
+
+    [[nodiscard]] s64 r_s64() override
     {
-        auto tmp = *reinterpret_cast<u8*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const s64*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC s64 r_s64() override
+
+    [[nodiscard]] s32 r_s32() override
     {
-        auto tmp = *reinterpret_cast<s64*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const s32*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC s32 r_s32() override
+
+    [[nodiscard]] s16 r_s16() override
     {
-        auto tmp = *reinterpret_cast<s32*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const s16*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC s16 r_s16() override
+
+    [[nodiscard]] s8 r_s8() override
     {
-        auto tmp = *reinterpret_cast<s16*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const s8*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC s8 r_s8() override
+
+    [[nodiscard]] float r_float() override
     {
-        auto tmp = *reinterpret_cast<s8*>(&data[Pos]);
+        auto tmp = *reinterpret_cast<const f32*>(&data[Pos]);
         advance(sizeof(tmp));
         return tmp;
     }
-    IC float r_float() override
+
+    void r_fvector4(Fvector4& v) override
     {
-        auto tmp = *reinterpret_cast<float*>(&data[Pos]);
-        advance(sizeof(tmp));
-        return tmp;
-    }
-    IC void r_fvector4(Fvector4& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_fvector3(Fvector3& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_fvector2(Fvector2& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_ivector4(Ivector4& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_ivector4(Ivector3& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_ivector4(Ivector2& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
-        advance(sizeof(v));
-    }
-    IC void r_fcolor(Fcolor& v) override
-    {
-        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        *reinterpret_cast<DirectX::XMVECTOR*>(&v) = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&data[Pos]));
         advance(sizeof(v));
     }
 
-    IC float r_float_q16(float min, float max) override
+    void r_fvector3(Fvector3& v) override
     {
-        auto& val = *reinterpret_cast<u16*>(&data[Pos]);
+        v = *reinterpret_cast<const Fvector3*>(&data[Pos]);
+        advance(sizeof(v));
+    }
+
+    void r_fvector2(Fvector2& v) override
+    {
+        v = *reinterpret_cast<const Fvector2*>(&data[Pos]);
+        advance(sizeof(v));
+    }
+
+    void r_ivector4(Ivector4& v) override
+    {
+        *reinterpret_cast<DirectX::XMVECTOR*>(&v) = DirectX::XMLoadInt4(reinterpret_cast<const u32*>(&data[Pos]));
+        advance(sizeof(v));
+    }
+
+    void r_ivector3(Ivector3& v) override
+    {
+        v = *reinterpret_cast<const Ivector3*>(&data[Pos]);
+        advance(sizeof(v));
+    }
+
+    void r_ivector2(Ivector2& v) override
+    {
+        v = *reinterpret_cast<const Ivector2*>(&data[Pos]);
+        advance(sizeof(v));
+    }
+
+    void r_fcolor(Fcolor& v) override
+    {
+        v = *reinterpret_cast<const Fcolor*>(&data[Pos]);
+        advance(sizeof(v));
+    }
+
+    [[nodiscard]] float r_float_q16(float min, float max) override
+    {
+        auto& val = *reinterpret_cast<const u16*>(&data[Pos]);
         advance(sizeof(val));
         float A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
         VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
         return A;
     }
-    IC float r_float_q8(float min, float max) override
+
+    [[nodiscard]] float r_float_q8(float min, float max) override
     {
-        auto& val = *reinterpret_cast<u8*>(&data[Pos]);
+        auto& val = *reinterpret_cast<const u8*>(&data[Pos]);
         advance(sizeof(val));
         float A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
         VERIFY(A >= min && A <= max);
         return A;
     }
-    IC void r_dir(Fvector& A) override
+
+    void r_dir(Fvector& A) override
     {
-        auto& t = *reinterpret_cast<u16*>(&data[Pos]);
+        auto& t = *reinterpret_cast<const u16*>(&data[Pos]);
         advance(sizeof(t));
         pvDecompress(A, t);
     }
-    IC void r_sdir(Fvector& A) override
+
+    void r_sdir(Fvector& A) override
     {
-        auto& t = *reinterpret_cast<u16*>(&data[Pos]);
+        auto& t = *reinterpret_cast<const u16*>(&data[Pos]);
         advance(sizeof(t));
-        auto& s = *reinterpret_cast<float*>(&data[Pos]);
+        auto& s = *reinterpret_cast<const f32*>(&data[Pos]);
         advance(sizeof(s));
         pvDecompress(A, t);
         A.mul(s);

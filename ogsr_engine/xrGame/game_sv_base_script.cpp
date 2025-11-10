@@ -8,9 +8,8 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
-
 #include "game_sv_base.h"
+
 #include "xrMessages.h"
 #include "ui/UIInventoryUtilities.h"
 #include "xr_time.h"
@@ -18,6 +17,8 @@
 #include "string_table.h"
 #include "object_broker.h"
 #include "player_hud.h"
+
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 
 #include <Objbase.h>
 
@@ -65,7 +66,7 @@ void StopBlendAnm(LPCSTR name, bool bForce) { g_player_hud->StopBlendAnm(name, b
 void StopAllBlendAnms(bool bForce) { g_player_hud->StopAllBlendAnms(bForce); }
 float SetBlendAnmTime(LPCSTR name, float time) { return g_player_hud->SetBlendAnmTime(name, time); }
 
-LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
+LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(shared_str{str}); }
 
 bool has_active_tutotial() { return !!g_tutorial; }
 

@@ -12,7 +12,7 @@ class AABBNoLeafNode;
 namespace CDB
 {
 // Triangle
-class alignas(16) TRI //*** 16 bytes total (was 32 :)
+class XR_TRIVIAL alignas(16) TRI //*** 16 bytes total (was 32 :)
 {
 public:
     u32 verts[3]; // 3*4 = 12b
@@ -28,17 +28,36 @@ public:
         };
     };
 
-    constexpr inline TRI() = default;
-    constexpr inline TRI(const TRI& tr) { xr_memcpy16(this, &tr); }
-    constexpr inline TRI& operator=(const TRI& tr)
+    constexpr TRI() = default;
+
+    constexpr TRI(const TRI& that) { xr_memcpy16(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr TRI(TRI&&) = default;
+#else
+    constexpr TRI(TRI&& that) { xr_memcpy16(this, &that); }
+#endif
+
+    constexpr TRI& operator=(const TRI& that)
     {
-        xr_memcpy16(this, &tr);
+        xr_memcpy16(this, &that);
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr TRI& operator=(TRI&&) = default;
+#else
+    constexpr TRI& operator=(TRI&& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+#endif
 
     [[nodiscard]] auto IDvert(size_t ID) const { return verts[ID]; }
 };
 static_assert(sizeof(TRI) == 16);
+XR_TRIVIAL_ASSERT(TRI);
 
 // Build callback
 using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
@@ -97,8 +116,8 @@ public:
         }
     }
 
-    void build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
-    void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
+    void build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
+    void build(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
     size_t memory();
 
     bool serialize(const char* file, u64 xxh, serialize_callback callback = nullptr) const;
@@ -110,7 +129,7 @@ private:
 };
 
 // Collider result
-struct alignas(16) RESULT
+struct XR_TRIVIAL alignas(16) RESULT
 {
     Fvector verts[3];
     union
@@ -129,15 +148,34 @@ struct alignas(16) RESULT
     float u, v;
     u64 pad;
 
-    constexpr inline RESULT() = default;
-    constexpr inline RESULT(const RESULT& res) { xr_memcpy128(this, &res, sizeof(res)); }
-    constexpr inline RESULT& operator=(const RESULT& res)
+    constexpr RESULT() = default;
+
+    constexpr RESULT(const RESULT& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr RESULT(RESULT&&) = default;
+#else
+    constexpr RESULT(RESULT&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr RESULT& operator=(const RESULT& that)
     {
-        xr_memcpy128(this, &res, sizeof(res));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr RESULT& operator=(RESULT&&) = default;
+#else
+    constexpr RESULT& operator=(RESULT&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
 };
 static_assert(sizeof(RESULT) == 64);
+XR_TRIVIAL_ASSERT(RESULT);
 
 // Collider Options
 enum
@@ -156,9 +194,10 @@ class COLLIDER
 
 public:
     COLLIDER() = default;
+    ~COLLIDER();
+
     COLLIDER(const COLLIDER&) = default;
     COLLIDER(COLLIDER&&) = default;
-    ~COLLIDER();
 
     COLLIDER& operator=(const COLLIDER&) = default;
     COLLIDER& operator=(COLLIDER&&) = default;
@@ -222,7 +261,7 @@ private:
     u32 VPack(const Fvector& V);
 
 public:
-    CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000);
+    explicit CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000);
 
     //		__declspec(noinline) CollectorPacked &operator=	(const CollectorPacked &object)
     //		{

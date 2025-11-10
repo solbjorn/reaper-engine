@@ -26,8 +26,8 @@ private:
     std::array<value_type, dim> array{};
     size_type count{};
 
-    XR_SYSV [[nodiscard]] constexpr adapter_t adapter() { return adapter_t{data(), gsl::narrow_cast<typename adapter_t::size_type>(count)}; }
-    XR_SYSV [[nodiscard]] constexpr const_adapter_t adapter() const { return const_adapter_t{data(), gsl::narrow_cast<typename const_adapter_t::size_type>(count)}; }
+    [[nodiscard]] constexpr adapter_t adapter() { return adapter_t{data(), gsl::narrow_cast<typename adapter_t::size_type>(count)}; }
+    [[nodiscard]] constexpr const_adapter_t adapter() const { return const_adapter_t{data(), gsl::narrow_cast<typename const_adapter_t::size_type>(count)}; }
 
 public:
     constexpr svector() = default;
@@ -72,6 +72,13 @@ public:
     {
         VERIFY(count < dim);
         array[count++] = std::move(e);
+    }
+
+    template <typename... Args>
+    constexpr value_type& emplace_back(Args&&... args)
+    {
+        VERIFY(count < dim);
+        return *(new (&array[count++]) value_type{std::forward<Args>(args)...});
     }
 
     [[nodiscard]] constexpr value_type pop_back()
@@ -152,7 +159,8 @@ public:
     constexpr void assign(const value_type* p, size_type c)
     {
         R_ASSERT(c > 0 && c <= dim);
-        CopyMemory(array.data(), p, c * sizeof(value_type));
+
+        std::memcpy(array.data(), p, gsl::narrow_cast<size_t>(c * size_type{sizeof(value_type)}));
         count = c;
     }
 

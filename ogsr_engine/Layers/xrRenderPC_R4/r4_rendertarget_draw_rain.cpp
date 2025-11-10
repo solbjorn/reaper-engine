@@ -55,30 +55,30 @@ void CRenderTarget::draw_rain(const light& RainSetup)
     // Perform lighting
     {
         // texture adjustment matrix
-        constexpr float fRange = 1;
-        constexpr float fBias = -0.0001f;
-        float smapsize = float(RImplementation.o.smapsize);
-        float fTexelOffs = (.5f / smapsize);
+        constexpr float fRange{1.0f};
+        constexpr float fBias{-0.0001f};
+        const f32 smapsize = gsl::narrow_cast<f32>(s32{RImplementation.o.smapsize});
+        const f32 fTexelOffs = 0.5f / smapsize;
         float view_dimX = float(RainSetup.X.D.maxX - RainSetup.X.D.minX) / smapsize;
         float view_dimY = float(RainSetup.X.D.maxX - RainSetup.X.D.minX) / smapsize;
         float view_sx = float(RainSetup.X.D.minX) / smapsize;
         float view_sy = float(RainSetup.X.D.minY) / smapsize;
-        const Fmatrix m_TexelAdjust = {view_dimX / 2.f,
-                                       0.0f,
-                                       0.0f,
-                                       0.0f,
-                                       0.0f,
-                                       -view_dimY / 2.f,
-                                       0.0f,
-                                       0.0f,
-                                       0.0f,
-                                       0.0f,
-                                       fRange,
-                                       0.0f,
-                                       view_dimX / 2.f + view_sx + fTexelOffs,
-                                       view_dimY / 2.f + view_sy + fTexelOffs,
-                                       fBias,
-                                       1.0f};
+        const Fmatrix m_TexelAdjust{view_dimX / 2.f,
+                                    0.0f,
+                                    0.0f,
+                                    0.0f,
+                                    0.0f,
+                                    -view_dimY / 2.f,
+                                    0.0f,
+                                    0.0f,
+                                    0.0f,
+                                    0.0f,
+                                    fRange,
+                                    0.0f,
+                                    view_dimX / 2.f + view_sx + fTexelOffs,
+                                    view_dimY / 2.f + view_sy + fTexelOffs,
+                                    fBias,
+                                    1.0f};
 
         // compute xforms
 
@@ -130,7 +130,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
 
         //	Use for intermediate results
         //	Patch normal
-        u_setrt(RCache, rt_Accumulator, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Accumulator, {}, {}, rt_MSAADepth);
 
         RCache.set_Element(s_rain->E[1]);
         RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.f);
@@ -171,7 +171,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
         RCache.set_c("m_shadow", m_shadow);
         RCache.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Position, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Position, {}, {}, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {
@@ -197,7 +197,7 @@ void CRenderTarget::draw_rain(const light& RainSetup)
         RCache.set_c("m_shadow", m_shadow);
         RCache.set_c("m_sunmask", m_clouds_shadow);
 
-        u_setrt(RCache, rt_Color, nullptr, nullptr, rt_MSAADepth);
+        u_setrt(RCache, rt_Color, {}, {}, rt_MSAADepth);
 
         if (!RImplementation.o.dx10_msaa)
         {

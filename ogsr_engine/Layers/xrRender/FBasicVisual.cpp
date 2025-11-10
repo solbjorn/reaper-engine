@@ -41,8 +41,8 @@ bool replaceShadersLine(char* fnS, u32 fnS_size, LPCSTR item)
     for (u32 i = 0; i < cnt; i += 2)
     {
         string256 s1, s2;
-        _GetItem(overrides, i, s1);
-        _GetItem(overrides, i + 1, s2);
+        std::ignore = _GetItem(overrides, i, s1);
+        std::ignore = _GetItem(overrides, i + 1, s2);
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
@@ -91,8 +91,8 @@ bool overrideShadersLine(char* fnS, u32 fnS_size, const char* item)
     for (u32 i = 0; i < cnt; i += 2)
     {
         string256 s1, s2;
-        _GetItem(overrides, i, s1);
-        _GetItem(overrides, i + 1, s2);
+        std::ignore = _GetItem(overrides, i, s1);
+        std::ignore = _GetItem(overrides, i + 1, s2);
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
@@ -133,7 +133,7 @@ bool overrideShaders(const char* fnT, char* fnS, u32 fnS_size)
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {
     IsHudVisual = RImplementation.hud_loading;
-    dbg_name = N;
+    dbg_name._set(N);
 
     // header
     VERIFY(data);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UITalkWnd.h"
+
 #include "UITradeWnd.h"
 #include "UITalkDialogWnd.h"
 
@@ -22,6 +23,8 @@
 #include "UIInventoryUtilities.h"
 #include "../inventory.h"
 
+#include "../Include/xrRender/Kinematics.h"
+
 CUITalkWnd::CUITalkWnd()
 {
     ToTopicMode();
@@ -32,7 +35,7 @@ CUITalkWnd::CUITalkWnd()
 
 //////////////////////////////////////////////////////////////////////////
 
-CUITalkWnd::~CUITalkWnd() {}
+CUITalkWnd::~CUITalkWnd() = default;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -97,8 +100,8 @@ void CUITalkWnd::InitOthersStartDialog()
 
         // сказать фразу
         CStringTable stbl;
-        AddAnswer(m_pCurrentDialog->GetPhraseText("0"), m_pOthersInvOwner->Name());
-        m_pOthersDialogManager->SayPhrase(m_pCurrentDialog, "0");
+        AddAnswer(shared_str{m_pCurrentDialog->GetPhraseText(shared_str{"0"})}, m_pOthersInvOwner->Name());
+        m_pOthersDialogManager->SayPhrase(m_pCurrentDialog, shared_str{"0"});
 
         // если диалог завершился, перейти в режим выбора темы
         if (!m_pCurrentDialog || m_pCurrentDialog->IsFinished())
@@ -117,11 +120,12 @@ void CUITalkWnd::UpdateQuestions()
     if (!m_pCurrentDialog)
     {
         m_pOurDialogManager->UpdateAvailableDialogs(m_pOthersDialogManager);
+
         int number = 0;
         for (u32 i = 0; i < m_pOurDialogManager->AvailableDialogs().size(); ++i)
         {
             const DIALOG_SHARED_PTR& phrase_dialog = m_pOurDialogManager->AvailableDialogs()[i];
-            AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), number);
+            AddQuestion(shared_str{phrase_dialog->DialogCaption()}, phrase_dialog->GetDialogID(), number);
         }
     }
     else
@@ -143,11 +147,13 @@ void CUITalkWnd::UpdateQuestions()
                 for (PHRASE_VECTOR::const_iterator it = m_pCurrentDialog->PhraseList().begin(); it != m_pCurrentDialog->PhraseList().end(); it++)
                 {
                     CPhrase* phrase = *it;
-                    AddQuestion(phrase->GetText(), phrase->GetID(), number);
+                    AddQuestion(shared_str{phrase->GetText()}, phrase->GetID(), number);
                 }
             }
             else
+            {
                 UpdateQuestions();
+            }
         }
     }
     m_bNeedToUpdateQuestions = false;
@@ -173,8 +179,6 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
     inherited::SendMessage(pWnd, msg, pData);
 }
-
-#include "../Include/xrRender/Kinematics.h"
 
 //////////////////////////////////////////////////////////////////////////
 void UpdateCameraDirection(CGameObject* pTo)
@@ -289,7 +293,7 @@ void CUITalkWnd::AskQuestion()
     // игрок выбрал тему разговора
     if (TopicMode())
     {
-        if ((UITalkDialogWnd->m_ClickedQuestionID == "") || (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
+        if (std::is_eq(xr_strcmp(UITalkDialogWnd->m_ClickedQuestionID, "")) || (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)))
         {
             string128 s;
             sprintf_s(s, "ID = [%s] of selected question is out of range of available dialogs ", UITalkDialogWnd->m_ClickedQuestionID.c_str());
@@ -299,7 +303,7 @@ void CUITalkWnd::AskQuestion()
         m_pCurrentDialog = m_pOurDialogManager->GetDialogByID(UITalkDialogWnd->m_ClickedQuestionID);
 
         m_pOurDialogManager->InitDialog(m_pOthersDialogManager, m_pCurrentDialog);
-        phrase_id = "0";
+        phrase_id._set("0");
     }
     else
     {
@@ -314,7 +318,7 @@ void CUITalkWnd::AskQuestion()
 
 void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 {
-    AddAnswer(m_pCurrentDialog->GetPhraseText(phrase_id), m_pOurInvOwner->Name());
+    AddAnswer(shared_str{m_pCurrentDialog->GetPhraseText(phrase_id)}, m_pOurInvOwner->Name());
     m_pOurDialogManager->SayPhrase(m_pCurrentDialog, phrase_id);
     /*
         //добавить ответ собеседника в список, если он что-то сказал

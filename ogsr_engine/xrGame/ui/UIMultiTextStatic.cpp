@@ -10,12 +10,15 @@
 #include "stdafx.h"
 
 #include "UIMultiTextStatic.h"
+
+#include "../string_table.h"
+
 #include "../../xr_3da/CustomHUD.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 CUIMultiTextStatic::CUIMultiTextStatic() { m_vPhrases.clear(); }
-CUIMultiTextStatic::~CUIMultiTextStatic() {}
+CUIMultiTextStatic::~CUIMultiTextStatic() = default;
 
 CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::AddPhrase()
 {
@@ -94,7 +97,7 @@ void CUIMultiTextStatic::SPh::SetText(const char* fmt, ...)
     msg[0] = '\n';
     va_end(Print);
 
-    str = buf.c_str();
+    str._set(buf.c_str());
 
     /*if (maxWidth > 0 && elipsisPos != CUIStatic::eepNone)
     {
@@ -113,8 +116,6 @@ void CUIMultiTextStatic::SPh::SetText(const char* fmt, ...)
     }*/
 }
 
-#include "../string_table.h"
-
 void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str)
 {
     //	R_ASSERT2( (m_indices.find(msg_name) == m_indices.end()),"message already defined !!!" );
@@ -128,7 +129,7 @@ void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, 
     sp->effect.SetTextColor(color);
     sp->effect.SetFontAlignment(al);
 
-    sp->str = *CStringTable().translate(def_str);
+    sp->str = CStringTable().translate(shared_str{def_str});
     sp->key = msg_name;
 
     //	m_indices[msg_name] = m_vPhrases.size()-1;
@@ -171,7 +172,7 @@ void CUICaption::setCaption(const shared_str& msg_name, LPCSTR message_to_out, u
 {
     //	R_ASSERT2( (m_indices.find(msg_name) != m_indices.end()),"message not defined !!!" );
     SinglePhrase* sp = GetPhraseByIndex(findIndexOf(msg_name));
-    sp->str = *CStringTable().translate(message_to_out);
+    sp->str = CStringTable().translate(shared_str{message_to_out});
 
     if (replaceColor)
         sp->effect.SetTextColor(color);

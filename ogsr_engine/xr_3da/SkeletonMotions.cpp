@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "SkeletonMotions.h"
+
 #include "Fmesh.h"
 #include "motion.h"
 #include "..\Include\xrRender\Kinematics.h"
@@ -29,7 +30,8 @@ void CPartition::load(IKinematics* V)
     if (ini->sections().empty() || !ini->section_exist("part_0"))
         return;
 
-    static const shared_str part_name = "partition_name";
+    static constexpr absl::string_view part_name{"partition_name"};
+
     for (u32 i = 0; i < MAX_PARTS; ++i)
     {
         string64 buff;
@@ -41,7 +43,7 @@ void CPartition::load(IKinematics* V)
 
         for (const auto& [k, v] : S.Data)
         {
-            if (k == part_name)
+            if (std::is_eq(xr_strcmp(k, part_name)))
                 P[i].Name = v;
             else
                 P[i].bones.push_back(V->LL_BoneID(k));
@@ -63,7 +65,7 @@ u16 find_bone_id(vecBones* bones, shared_str nm)
 //-----------------------------------------------------------------------
 BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 {
-    m_id = N;
+    m_id._set(N);
 
     bool bRes = true;
     // Load definitions
@@ -85,14 +87,14 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         {
             CPartDef& PART = m_partition[part_i];
             MP->r_stringZ(buf, sizeof(buf));
-            PART.Name = _strlwr(buf);
+            PART.Name._set(_strlwr(buf));
             PART.bones.resize(MP->r_u16());
 
             for (xr_vector<u32>::iterator b_it = PART.bones.begin(); b_it < PART.bones.end(); b_it++)
             {
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
-                *b_it = find_bone_id(bones, buf);
+                *b_it = find_bone_id(bones, shared_str{buf});
                 ASSERT_FMT_DBG(*b_it != BI_NONE, "!![%s][%s] Can't find bone: [%s]", __FUNCTION__, N, buf);
                 if (bRes)
                     rm_bones[m_idx] = u16(*b_it);
@@ -116,7 +118,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             for (u16 mot_i = 0; mot_i < mot_count; mot_i++)
             {
                 MP->r_stringZ(buf, sizeof(buf));
-                shared_str nm = _strlwr(buf);
+                _strlwr(buf);
                 R_ASSERT(MP->elapsed() >= static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
                          "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
                 u32 dwFlags = MP->r_u32();
@@ -124,11 +126,11 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 D.Load(MP, dwFlags, vers);
 
                 if (dwFlags & esmFX)
-                    m_fx.emplace(nm, mot_i);
+                    m_fx.emplace(buf, mot_i);
                 else
-                    m_cycle.emplace(nm, mot_i);
+                    m_cycle.emplace(buf, mot_i);
 
-                m_motion_map.emplace(nm, mot_i);
+                m_motion_map.emplace(buf, mot_i);
             }
         }
         MP->close();
@@ -146,7 +148,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         return false;
 
     u32 dwCNT = 0;
-    MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
+    std::ignore = MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
     ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![%s][%s] dwCNT is [%u]", __FUNCTION__, N, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
 
     m_motions.reserve(bones->size());
@@ -182,28 +184,28 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 
             if (M.test_flag(flRKeyAbsent))
             {
-                CKeyQR* r = (CKeyQR*)MS->pointer();
+                const CKeyQR* r = (const CKeyQR*)MS->pointer();
                 // u32 crc_q = crc32(r, sizeof(CKeyQR));
                 M._keysR.create(1, r);
                 MS->advance(1 * sizeof(CKeyQR));
             }
             else
             {
-                /*u32 crc_q = */ MS->r_u32();
-                M._keysR.create(dwLen, (CKeyQR*)MS->pointer());
+                std::ignore = MS->r_u32();
+                M._keysR.create(dwLen, (const CKeyQR*)MS->pointer());
                 MS->advance(dwLen * sizeof(CKeyQR));
             }
             if (M.test_flag(flTKeyPresent))
             {
-                /*u32 crc_t = */ MS->r_u32();
+                std::ignore = MS->r_u32();
                 if (M.test_flag(flTKey16IsBit))
                 {
-                    M._keysT16.create(dwLen, (CKeyQT16*)MS->pointer());
+                    M._keysT16.create(dwLen, (const CKeyQT16*)MS->pointer());
                     MS->advance(dwLen * sizeof(CKeyQT16));
                 }
                 else
                 {
-                    M._keysT8.create(dwLen, (CKeyQT8*)MS->pointer());
+                    M._keysT8.create(dwLen, (const CKeyQT8*)MS->pointer());
                     MS->advance(dwLen * sizeof(CKeyQT8));
                 }
 
@@ -241,7 +243,7 @@ motions_container::~motions_container()
     VERIFY(container.empty());
 }
 
-bool motions_container::has(shared_str key) { return (container.find(key) != container.end()); }
+bool motions_container::has(shared_str key) const { return container.contains(key); }
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
@@ -298,18 +300,19 @@ void motions_container::clean(bool force_destroy)
         }
     }
 }
-void motions_container::dump()
+
+void motions_container::dump() const
 {
-    auto it = container.begin();
-    auto _E = container.end();
     Log("--- motion container --- begin:");
-    u32 sz = sizeof(*this);
-    for (u32 k = 0; it != _E; k++, it++)
+    gsl::index sz{sizeof(*this)};
+
+    for (auto [k, kv] : xr::views_enumerate(container))
     {
-        sz += it->second->mem_usage();
-        Msg("#%3u: [%3u/%5u Kb] - %s", k, it->second->m_dwReference, it->second->mem_usage() / 1024, it->first.c_str());
+        sz += kv.second->mem_usage();
+        Msg("#%3zd: [%3zd/%5zd Kb] - %s", k, kv.second->m_dwReference.load(), kv.second->mem_usage() / 1024, kv.first.c_str());
     }
-    Msg("--- items: %zu, mem usage: %u Kb ", container.size(), sz / 1024);
+
+    Msg("--- items: %zd, mem usage: %zd Kb ", std::ssize(container), sz / 1024);
     Log("--- motion container --- end.");
 }
 
@@ -459,7 +462,7 @@ void motion_marks::Load(IReader* R)
 {
     xr_string tmp;
     R->r_string(tmp);
-    name = tmp.c_str();
+    name._set(tmp.c_str());
     u32 cnt = R->r_u32();
     intervals.resize(cnt);
     for (u32 i = 0; i < cnt; ++i)

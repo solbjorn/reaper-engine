@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponBinocularsVision.h"
+
 #include "WeaponBinoculars.h"
 #include "ui\UIFrameWindow.h"
 #include "entity_alive.h"
@@ -63,7 +64,7 @@ void SBinocVisibleObj::Update()
 
     Fmatrix xform;
     xform.mul(Device.mFullTransform, m_object->XFORM());
-    Fvector2 mn = {flt_max, flt_max}, mx = {flt_min, flt_min};
+    Fvector2 mn{flt_max, flt_max}, mx{flt_min, flt_min};
 
     for (u32 k = 0; k < 8; ++k)
     {

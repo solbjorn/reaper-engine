@@ -30,21 +30,21 @@ struct TipString
         HL_finish = 0;
     }
 
-    TipString(shared_str const& tips_text, int start_pos, int finish_pos)
+    explicit TipString(shared_str const& tips_text, int start_pos, int finish_pos)
     {
         text._set(tips_text);
         HL_start = start_pos;
         HL_finish = finish_pos;
     }
 
-    TipString(LPCSTR tips_text, int start_pos, int finish_pos)
+    explicit TipString(LPCSTR tips_text, int start_pos, int finish_pos)
     {
         text._set(tips_text);
         HL_start = start_pos;
         HL_finish = finish_pos;
     }
 
-    TipString(shared_str const& tips_text)
+    explicit TipString(shared_str const& tips_text)
     {
         text._set(tips_text);
         HL_start = 0;
@@ -114,6 +114,7 @@ private:
 public:
     CConsole();
     virtual ~CConsole();
+
     virtual void Initialize();
     // virtual void Destroy();
 

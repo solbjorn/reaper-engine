@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "HudItem.h"
+
 #include "player_hud.h"
 #include "../xr_3da/gamemtllib.h"
 #include "HUDManager.h"
@@ -42,12 +43,12 @@ DLL_Pure* CHudItem::_construct()
 
 void CHudItem::Load(LPCSTR section)
 {
-    world_sect = section;
+    world_sect._set(section);
 
     // загрузить hud, если он нужен
     if (pSettings->line_exist(section, "hud"))
     {
-        hud_sect = pSettings->r_string(section, "hud");
+        hud_sect._set(pSettings->r_string(section, "hud"));
 
         if (pSettings->line_exist(hud_sect, "allow_inertion"))
             EnableHudInertion(pSettings->r_bool(hud_sect, "allow_inertion"));
@@ -55,8 +56,8 @@ void CHudItem::Load(LPCSTR section)
         if (pSettings->line_exist(hud_sect, "allow_bobbing"))
             allow_bobbing = pSettings->r_bool(hud_sect, "allow_bobbing");
 
-        hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef",
-                                         1.35f); // На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
+        // На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
+        hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f);
     }
 
     m_animation_slot = pSettings->r_u32(section, "animation_slot");
@@ -69,18 +70,18 @@ void CHudItem::Load(LPCSTR section)
         // Координаты офсетов для сдвига худа нашел в интернетах :)
         static constexpr std::array<std::tuple<float, float, Fvector, Fvector, float, float>, _CollisionWeaponTypesCount_> CollisionParamsBase{{
             // Min, Max dist, offset, rotate, HudFov, HudFov Aim
-            {0.25f, 0.95f, {-0.0615f, -0.4380f, 0.1235f}, {-0.9219f, -0.0972f, 0.2525f}, 0.5f, 0.25f}, // Общие для всех оружий
-            {0.25f, 0.70f, {-0.1000f, -0.5537f, 0.0350f}, {-1.0630f, 0.1751f, -0.0600f}, 0.5f, 0.20f}, // Пистолеты
-            {0.30f, 1.30f, {-0.0615f, -0.4380f, 0.1235f}, {-0.9219f, -0.0972f, 0.2525f}, 0.5f, 0.25f}, // СВД и прочие длинные снайперки
-            {0.35f, 1.85f, {-0.0399f, 0.0929f, -0.0589f}, {0.3908f, 0.0488f, -0.0193f}, 0.5f, 0.25f}, // РПГ
-            {0.25f, 0.80f, {0.0015f, -0.5655f, 0.1240f}, {-1.0319f, 0.0678f, 0.0700f}, 0.5f, 0.25f}, // РГ-6
-            {0.25f, 0.80f, {-0.0406f, -0.4191f, 0.1718f}, {-0.8981f, -0.1101f, 0.4420f}, 0.5f, 0.25f}, // Гроза
-            {0.25f, 0.80f, {-0.0335f, -0.4618f, 0.1098f}, {-0.9119f, -0.0973f, 0.4143f}, 0.5f, 0.25f}, // ФН2000
-            {0.25f, 0.60f, {-0.0650f, -0.5170f, 0.0465f}, {-1.0405f, 0.1051f, -0.0350f}, 0.5f, 0.25f}, // БМ-16
-            {0.30f, 0.50f, {-0.0025f, -0.4045f, -0.1415f}, {-0.7900f, 0.0100f, 0.f}, 0.5f, 0.25f}, // Болт
-            {0.25f, 0.65f, {0.0120f, -0.4780f, -0.1150f}, {-0.6250f, -0.0725f, -0.1950f}, 0.5f, 1.f}, // Детектор
-            {0.30f, 0.50f, {-0.0025f, -0.4045f, -0.1415f}, {-0.7900f, 0.0100f, 0.f}, 0.5f, 0.25f}, // Нож, гранаты и прочее
-            {0.25f, 0.70f, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, 0.5f, 0.4f}, // Бинокль
+            {0.25f, 0.95f, Fvector{-0.0615f, -0.4380f, 0.1235f}, Fvector{-0.9219f, -0.0972f, 0.2525f}, 0.5f, 0.25f}, // Общие для всех оружий
+            {0.25f, 0.70f, Fvector{-0.1000f, -0.5537f, 0.0350f}, Fvector{-1.0630f, 0.1751f, -0.0600f}, 0.5f, 0.20f}, // Пистолеты
+            {0.30f, 1.30f, Fvector{-0.0615f, -0.4380f, 0.1235f}, Fvector{-0.9219f, -0.0972f, 0.2525f}, 0.5f, 0.25f}, // СВД и прочие длинные снайперки
+            {0.35f, 1.85f, Fvector{-0.0399f, 0.0929f, -0.0589f}, Fvector{0.3908f, 0.0488f, -0.0193f}, 0.5f, 0.25f}, // РПГ
+            {0.25f, 0.80f, Fvector{0.0015f, -0.5655f, 0.1240f}, Fvector{-1.0319f, 0.0678f, 0.0700f}, 0.5f, 0.25f}, // РГ-6
+            {0.25f, 0.80f, Fvector{-0.0406f, -0.4191f, 0.1718f}, Fvector{-0.8981f, -0.1101f, 0.4420f}, 0.5f, 0.25f}, // Гроза
+            {0.25f, 0.80f, Fvector{-0.0335f, -0.4618f, 0.1098f}, Fvector{-0.9119f, -0.0973f, 0.4143f}, 0.5f, 0.25f}, // ФН2000
+            {0.25f, 0.60f, Fvector{-0.0650f, -0.5170f, 0.0465f}, Fvector{-1.0405f, 0.1051f, -0.0350f}, 0.5f, 0.25f}, // БМ-16
+            {0.30f, 0.50f, Fvector{-0.0025f, -0.4045f, -0.1415f}, Fvector{-0.7900f, 0.0100f, 0.f}, 0.5f, 0.25f}, // Болт
+            {0.25f, 0.65f, Fvector{0.0120f, -0.4780f, -0.1150f}, Fvector{-0.6250f, -0.0725f, -0.1950f}, 0.5f, 1.f}, // Детектор
+            {0.30f, 0.50f, Fvector{-0.0025f, -0.4045f, -0.1415f}, Fvector{-0.7900f, 0.0100f, 0.f}, 0.5f, 0.25f}, // Нож, гранаты и прочее
+            {0.25f, 0.70f, Fvector{0.0f, 0.0f, 0.0f}, Fvector{0.0f, 0.0f, 0.0f}, 0.5f, 0.4f}, // Бинокль
         }};
         const size_t type = GetWeaponTypeForCollision();
         const auto& CollisionParams = CollisionParamsBase.at(type);
@@ -389,7 +390,7 @@ u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, c
     }
 
     // Msg("~~[%s] Playing motion [%s] for [%s]", __FUNCTION__, M.c_str(), HudSection().c_str());
-    u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim, speed);
+    u32 anim_time = PlayHUDMotion_noCB(shared_str{M}, bMixIn, randomAnim, speed);
     if (anim_time > 0)
     {
         m_bStopAtEndAnimIsRunning = true;
@@ -399,7 +400,9 @@ u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, c
         m_startedMotionState = state;
     }
     else
+    {
         m_bStopAtEndAnimIsRunning = false;
+    }
 
     return anim_time;
 }
@@ -577,19 +580,21 @@ bool CHudItem::AnimationExist(const char* anim_name) const
         bool is_16x9 = UI()->is_widescreen();
         u16 attach_place_idx = HudItemData()->m_attach_place_idx;
         xr_sprintf(anim_name_r, "%s%s", anim_name, (attach_place_idx == 1 && is_16x9) ? "_16x9" : "");
-        player_hud_motion* anm = HudItemData()->find_motion(anim_name_r);
+        player_hud_motion* anm = HudItemData()->find_motion(shared_str{anim_name_r});
         if (anm)
             return true;
     }
     else // Third person
     {
         const CMotionDef* temp_motion_def;
-        if (g_player_hud->motion_length(anim_name, HudSection(), temp_motion_def) > 100)
+        if (g_player_hud->motion_length(shared_str{anim_name}, HudSection(), temp_motion_def) > 100)
             return true;
     }
+
 #ifdef DEBUG
     Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
 #endif
+
     return false;
 }
 

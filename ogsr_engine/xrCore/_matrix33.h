@@ -55,7 +55,9 @@ public:
             _33 = a._33;
         }
         else
-            CopyMemory(this, &a, sizeof(*this));
+        {
+            std::memcpy(this, &a, sizeof(*this));
+        }
 
         return *this;
     }

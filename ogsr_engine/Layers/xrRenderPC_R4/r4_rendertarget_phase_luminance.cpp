@@ -29,22 +29,22 @@ void CRenderTarget::phase_luminance()
     RCache.set_Z(FALSE);
 
     // 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
-    u_setrt(RCache, rt_LUM_64, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_LUM_64, {}, {}, nullptr);
 
     {
         constexpr float ts = 64;
         float _w = float(BLOOM_size_X);
         float _h = float(BLOOM_size_Y);
-        Fvector2 one = {2.f / _w, 2.f / _h}; // two, infact
-        Fvector2 half = {1.f / _w, 1.f / _h}; // one, infact
-        Fvector2 a_0 = {half.x + 0, half.y + 0};
-        Fvector2 a_1 = {half.x + one.x, half.y + 0};
-        Fvector2 a_2 = {half.x + 0, half.y + one.y};
-        Fvector2 a_3 = {half.x + one.x, half.y + one.y};
-        Fvector2 b_0 = {1 + a_0.x, 1 + a_0.y};
-        Fvector2 b_1 = {1 + a_1.x, 1 + a_1.y};
-        Fvector2 b_2 = {1 + a_2.x, 1 + a_2.y};
-        Fvector2 b_3 = {1 + a_3.x, 1 + a_3.y};
+        Fvector2 one{2.f / _w, 2.f / _h}; // two, infact
+        Fvector2 half{1.f / _w, 1.f / _h}; // one, infact
+        Fvector2 a_0{half.x + 0, half.y + 0};
+        Fvector2 a_1{half.x + one.x, half.y + 0};
+        Fvector2 a_2{half.x + 0, half.y + one.y};
+        Fvector2 a_3{half.x + one.x, half.y + one.y};
+        Fvector2 b_0{1 + a_0.x, 1 + a_0.y};
+        Fvector2 b_1{1 + a_1.x, 1 + a_1.y};
+        Fvector2 b_2{1 + a_2.x, 1 + a_2.y};
+        Fvector2 b_3{1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
         v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
@@ -79,7 +79,7 @@ void CRenderTarget::phase_luminance()
     }
 
     // 111: Perform LUM-SAT, pass 1, 64x64 => 8x8
-    u_setrt(RCache, rt_LUM_8, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_LUM_8, {}, {}, nullptr);
 
     {
         // Build filter-kernel
@@ -120,7 +120,7 @@ void CRenderTarget::phase_luminance()
 
     // 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
     u32 gpu_id = Device.dwFrame % HW.Caps.iGPUNum;
-    u_setrt(RCache, rt_LUM_pool[gpu_id * 2 + 1], nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_LUM_pool[gpu_id * 2 + 1], {}, {}, nullptr);
 
     {
         // Build filter-kernel

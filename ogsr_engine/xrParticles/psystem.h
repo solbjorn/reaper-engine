@@ -1,16 +1,10 @@
 #pragma once
 
 // Actually this must be < sqrt(MAXFLOAT) since we store this value squared.
-#define P_MAXFLOAT 1.0e16f
-
-#ifdef MAXINT
-#define P_MAXINT MAXINT
-#else
-#define P_MAXINT 0x7fffffff
-#endif
+constexpr inline f32 P_MAXFLOAT{1.0e16f};
+constexpr inline s32 P_MAXINT{std::numeric_limits<s32>::max()};
 
 #define drand48() ::Random.randF()
-// #define drand48() (((float) rand())/((float) RAND_MAX))
 
 namespace PAPI
 {
@@ -18,73 +12,81 @@ class pVector : public Fvector
 {
 public:
     constexpr pVector() = default;
+    constexpr explicit pVector(f32 ax, f32 ay, f32 az) { set(ax, ay, az); }
+
     constexpr pVector(const pVector&) = default;
-    constexpr pVector(float ax, float ay, float az) { set(ax, ay, az); }
+    constexpr pVector(pVector&&) = default;
 
     constexpr pVector& operator=(const pVector&) = default;
+    constexpr pVector& operator=(pVector&&) = default;
 
-    constexpr IC float length() const { return _sqrt(x * x + y * y + z * z); }
-    constexpr IC float length2() const { return (x * x + y * y + z * z); }
-    constexpr IC float operator*(const pVector& a) const { return x * a.x + y * a.y + z * a.z; }
-    constexpr IC pVector operator*(const float s) const { return pVector(x * s, y * s, z * s); }
+    [[nodiscard]] constexpr f32 length() const { return _sqrt(x * x + y * y + z * z); }
+    [[nodiscard]] constexpr f32 length2() const { return (x * x + y * y + z * z); }
+    [[nodiscard]] constexpr f32 operator*(const pVector& a) const { return x * a.x + y * a.y + z * a.z; }
+    constexpr pVector operator*(f32 s) const { return pVector(x * s, y * s, z * s); }
 
-    constexpr IC pVector operator/(const float s) const
+    constexpr pVector operator/(f32 s) const
     {
-        float invs = 1.0f / s;
+        f32 invs = 1.0f / s;
         return pVector(x * invs, y * invs, z * invs);
     }
 
-    constexpr IC pVector operator+(const pVector& a) const { return pVector(x + a.x, y + a.y, z + a.z); }
-    constexpr IC pVector operator-(const pVector& a) const { return pVector(x - a.x, y - a.y, z - a.z); }
+    constexpr pVector operator+(const pVector& a) const { return pVector(x + a.x, y + a.y, z + a.z); }
+    constexpr pVector operator-(const pVector& a) const { return pVector(x - a.x, y - a.y, z - a.z); }
 
-    constexpr IC pVector operator-()
+    constexpr pVector operator-()
     {
         x = -x;
         y = -y;
         z = -z;
+
         return *this;
     }
 
-    constexpr IC pVector& operator+=(const pVector& a)
+    constexpr pVector& operator+=(const pVector& a)
     {
         x += a.x;
         y += a.y;
         z += a.z;
+
         return *this;
     }
 
-    constexpr IC pVector& operator-=(const pVector& a)
+    constexpr pVector& operator-=(const pVector& a)
     {
         x -= a.x;
         y -= a.y;
         z -= a.z;
+
         return *this;
     }
 
-    constexpr IC pVector& operator*=(const float a)
+    constexpr pVector& operator*=(f32 a)
     {
         x *= a;
         y *= a;
         z *= a;
+
         return *this;
     }
 
-    constexpr IC pVector& operator/=(const float a)
+    constexpr pVector& operator/=(f32 a)
     {
-        float b = 1.0f / a;
+        f32 b = 1.0f / a;
         x *= b;
         y *= b;
         z *= b;
+
         return *this;
     }
 
-    constexpr IC pVector operator^(const pVector& b) const { return pVector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
+    constexpr pVector operator^(const pVector& b) const { return pVector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
 };
 
 // A single particle
 struct Rotation
 {
-    float x;
+    f32 x;
 };
 
 struct Particle
@@ -99,11 +101,11 @@ struct Particle
     pVector posB; // 12
     pVector vel; // 12
     pVector size; // 12
-    float colorR; // 4
-    float colorG; // 4
-    float colorB; // 4
-    float colorA; // 4
-    float age; // 4
+    f32 colorR; // 4
+    f32 colorG; // 4
+    f32 colorB; // 4
+    f32 colorA; // 4
+    f32 age; // 4
     u16 frame; // 2
     Flags16 flags; // 2
 }; // = 76
@@ -168,10 +170,12 @@ enum PActionEnum : u32
 
 struct ParticleAction;
 
-class XR_NOVTABLE IParticleManager
+class XR_NOVTABLE IParticleManager : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IParticleManager);
+
 public:
-    IParticleManager() {}
+    IParticleManager() = default;
     virtual ~IParticleManager() = 0;
 
     // create&destroy

@@ -61,7 +61,7 @@ void CScriptEntity::ResetScriptData(void*)
 {
     ClearActionQueue();
 
-    m_caScriptName = "";
+    m_caScriptName._set("");
     m_bScriptControl = false;
     m_use_animation_movement_controller = false;
 }
@@ -335,15 +335,16 @@ bool CScriptEntity::bfAssignAnimation(CScriptEntityAction*)
     m_tpNextAnimation.invalidate();
 
     if (GetCurrentAction() && GetCurrentAction()->m_tAnimationAction.m_bCompleted)
-        return (false);
+        return false;
 
     if (!xr_strlen(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay))
-        return (true);
+        return true;
 
     IKinematicsAnimated& tVisualObject = *(smart_cast<IKinematicsAnimated*>(object().Visual()));
-    m_tpNextAnimation = tVisualObject.ID_Cycle_Safe(*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay);
+    m_tpNextAnimation = tVisualObject.ID_Cycle_Safe(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay);
     m_use_animation_movement_controller = GetCurrentAction()->m_tAnimationAction.m_use_animation_movement_controller;
-    return (true);
+
+    return true;
 }
 
 const Fmatrix CScriptEntity::GetUpdatedMatrix(shared_str caBoneName, const Fvector& tPositionOffset, const Fvector& tAngleOffset)
@@ -414,9 +415,8 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
     {
         if (!l_tParticleAction.m_bStartedToPlay)
         {
-            const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
-            Fvector zero_vel = {0.f, 0.f, 0.f};
-            l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, zero_vel);
+            const Fmatrix& l_tMatrix = GetUpdatedMatrix(l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
+            l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, {});
             l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
             l_tParticleAction.m_bStartedToPlay = true;
         }
@@ -607,11 +607,12 @@ bool CScriptEntity::bfScriptAnimation()
         // if (!xr_strcmp("m_stalker_wounded",*object().cName()))
         //	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
 #endif
+
         m_tpScriptAnimation = m_tpNextAnimation;
         IKinematicsAnimated* skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());
-        const char* animation_id = GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay.c_str();
-        const MotionID animation = skeleton_animated->ID_Cycle(animation_id);
+        const MotionID animation = skeleton_animated->ID_Cycle(GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay);
         const CBlend* result = nullptr;
+
         for (u16 i = 0; i < MAX_PARTS; ++i)
         {
             if (result)

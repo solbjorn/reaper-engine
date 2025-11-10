@@ -24,7 +24,8 @@ public:
 
 public:
     IC associative_vector_compare_predicate();
-    IC associative_vector_compare_predicate(const _compare_predicate_type& compare_predicate);
+    inline explicit associative_vector_compare_predicate(const _compare_predicate_type& compare_predicate);
+
     IC bool operator()(const _key_type& lhs, const _key_type& rhs) const;
     IC bool operator()(const value_type& lhs, const value_type& rhs) const;
     IC bool operator()(const value_type& lhs, const _key_type& rhs) const;

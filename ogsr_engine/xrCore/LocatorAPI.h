@@ -22,10 +22,9 @@ public:
     struct file
     {
         const char* name; // low-case name
-        size_t vfs; // VFS_STANDARD_FILE - standart file
 
-        u32 size_real;
-        u32 folder : 1;
+        gsl::index vfs; // VFS_STANDARD_FILE - standart file
+        s64 size_real;
 
         union
         {
@@ -40,29 +39,30 @@ public:
             };
         };
 
-        u32 modif; // for editor
+        s64 modif; // for editor
+        bool folder;
     };
 
 private:
-    static constexpr size_t VFS_STANDARD_FILE = std::numeric_limits<size_t>::max();
-    static constexpr size_t BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
+    static constexpr gsl::index VFS_STANDARD_FILE{-1};
+    static constexpr gsl::index BIG_FILE_READER_WINDOW_SIZE{1024 * 1024};
 
     struct file_pred
     {
-        IC bool operator()(const file& x, const file& y) const { return xr_strcmp(x.name, y.name) < 0; }
+        [[nodiscard]] constexpr bool operator()(const file& x, const file& y) const { return xr_strcmp(x.name, y.name) < 0; }
     };
 
     struct archive
     {
         shared_str path;
-        size_t vfs_idx{VFS_STANDARD_FILE};
-        size_t size{};
+        gsl::index vfs_idx{VFS_STANDARD_FILE};
+        s64 size{};
 
     private:
         class xr_sqfs_stream;
         struct xr_sqfs;
 
-        enum container
+        enum class container
         {
             STANDARD,
             SQFS,
@@ -96,33 +96,33 @@ private:
 
         // Implementation wrappers
         void open();
-        IC bool autoload();
-        IC const char* entry_point();
-        IC void index(CLocatorAPI& loc, const char* fs_entry_point);
-        IC IReader* read(const char* fname, const struct file& desc, u32 gran);
-        IC CStreamReader* stream(const char* fname, const struct file& desc);
+        [[nodiscard]] IC bool autoload();
+        [[nodiscard]] IC const char* entry_point() const;
+        IC void index(CLocatorAPI& loc, const char* fs_entry_point) const;
+        [[nodiscard]] IC IReader* read(const char* fname, const struct file& desc, u32 gran) const;
+        [[nodiscard]] IC CStreamReader* stream(const char* fname, const struct file& desc) const;
         IC void cleanup();
         void close();
 
     private:
         // SquashFS
         void open_sqfs();
-        bool autoload_sqfs();
-        const char* entry_point_sqfs();
-        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it);
-        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point);
-        IReader* read_sqfs(const char*, const struct file& desc, u32);
-        CStreamReader* stream_sqfs(const char*, const struct file& desc);
+        [[nodiscard]] bool autoload_sqfs();
+        [[nodiscard]] const char* entry_point_sqfs() const;
+        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it) const;
+        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point) const;
+        [[nodiscard]] IReader* read_sqfs(const char*, const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_sqfs(const char*, const struct file& desc) const;
         void cleanup_sqfs();
         void close_sqfs();
 
         // DB
         void open_db();
-        bool autoload_db();
-        const char* entry_point_db();
-        void index_db(CLocatorAPI& loc, const char* entry_point);
-        IReader* read_db(const char* fname, const struct file& desc, u32 gran);
-        CStreamReader* stream_db(const char* fname, const struct file& desc);
+        [[nodiscard]] bool autoload_db();
+        [[nodiscard]] const char* entry_point_db() const;
+        void index_db(CLocatorAPI& loc, const char* entry_point) const;
+        [[nodiscard]] IReader* read_db(const char* fname, const struct file& desc, u32 gran) const;
+        [[nodiscard]] CStreamReader* stream_db(const char* fname, const struct file& desc) const;
         void cleanup_db();
         void close_db();
     };
@@ -141,13 +141,13 @@ private:
     files_set files;
     archives_vec archives;
 
-    void Register(LPCSTR name, size_t vfs, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
+    void Register(LPCSTR name, gsl::index vfs, u32 ptr, s64 size_real, u32 size_compressed, s64 modif);
     void LoadArchive(archive& A);
     void ProcessArchive(LPCSTR path);
-    void ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse);
-    bool RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse);
+    void ProcessOne(LPCSTR path, const _FINDDATA_T& F, bool bNoRecurse);
+    [[nodiscard]] bool RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse);
 
-    files_it file_find_it(LPCSTR n);
+    [[nodiscard]] files_it file_find_it(LPCSTR n);
 
 public:
     enum
@@ -177,10 +177,10 @@ private:
     void file_from_archive(IReader*& R, LPCSTR fname, const file& desc);
     void file_from_archive(CStreamReader*& R, LPCSTR fname, const file& desc);
 
-    bool check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc);
+    [[nodiscard]] bool check_for_file(LPCSTR path, LPCSTR _fname, string_path& fname, const file*& desc);
 
     template <typename T>
-    IC T* r_open_impl(LPCSTR path, LPCSTR _fname);
+    [[nodiscard]] IC T* r_open_impl(LPCSTR path, LPCSTR _fname);
 
 public:
     CLocatorAPI();
@@ -189,41 +189,41 @@ public:
     void _initialize(u32 flags, LPCSTR target_folder = nullptr, LPCSTR fs_name = nullptr);
     void _destroy();
 
-    CStreamReader* rs_open(LPCSTR initial, LPCSTR N);
-    IReader* r_open(LPCSTR initial, LPCSTR N);
-    IC IReader* r_open(LPCSTR N) { return r_open(nullptr, N); }
+    [[nodiscard]] CStreamReader* rs_open(LPCSTR initial, LPCSTR N);
+    [[nodiscard]] IReader* r_open(LPCSTR initial, LPCSTR N);
+    [[nodiscard]] IC IReader* r_open(LPCSTR N) { return r_open(nullptr, N); }
     void r_close(IReader*& S);
     void r_close(CStreamReader*& fs);
 
-    IWriter* w_open(LPCSTR initial, LPCSTR N);
-    IC IWriter* w_open(LPCSTR N) { return w_open(nullptr, N); }
-    IWriter* w_open_ex(LPCSTR initial, LPCSTR N);
-    IC IWriter* w_open_ex(LPCSTR N) { return w_open_ex(nullptr, N); }
+    [[nodiscard]] IWriter* w_open(LPCSTR initial, LPCSTR N);
+    [[nodiscard]] IC IWriter* w_open(LPCSTR N) { return w_open(nullptr, N); }
+    [[nodiscard]] IWriter* w_open_ex(LPCSTR initial, LPCSTR N);
+    [[nodiscard]] IC IWriter* w_open_ex(LPCSTR N) { return w_open_ex(nullptr, N); }
     void w_close(IWriter*& S);
 
-    const file* exist(LPCSTR N);
-    const file* exist(LPCSTR path, LPCSTR name);
-    const file* exist(string_path& fn, LPCSTR path, LPCSTR name);
-    const file* exist(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
+    [[nodiscard]] const file* exist(LPCSTR N);
+    [[nodiscard]] const file* exist(LPCSTR path, LPCSTR name);
+    [[nodiscard]] const file* exist(string_path& fn, LPCSTR path, LPCSTR name);
+    [[nodiscard]] const file* exist(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
 
     void file_delete(LPCSTR path, LPCSTR nm);
     void file_delete(LPCSTR full_path) { file_delete(nullptr, full_path); }
     void file_copy(LPCSTR src, LPCSTR dest);
     void file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite = true);
-    int file_length(LPCSTR src);
+    [[nodiscard]] s64 file_length(LPCSTR src);
 
-    u32 get_file_age(LPCSTR nm);
+    [[nodiscard]] s64 get_file_age(LPCSTR nm);
 
-    xr_vector<LPSTR>* file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
-    xr_vector<LPSTR>* file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
+    [[nodiscard]] xr_vector<LPSTR>* file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
+    [[nodiscard]] xr_vector<LPSTR>* file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
     void file_list_close(xr_vector<LPSTR>*& lst);
 
-    bool path_exist(LPCSTR path);
-    FS_Path* get_path(LPCSTR path);
-    FS_Path* append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive);
-    LPCSTR update_path(string_path& dest, LPCSTR initial, LPCSTR src);
+    [[nodiscard]] bool path_exist(LPCSTR path);
+    [[nodiscard]] FS_Path* get_path(LPCSTR path);
+    [[nodiscard]] FS_Path* append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive);
+    [[nodiscard]] LPCSTR update_path(string_path& dest, LPCSTR initial, LPCSTR src);
 
-    size_t file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = nullptr);
+    [[nodiscard]] gsl::index file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = nullptr);
 
     // editor functions
     void rescan_physical_pathes();

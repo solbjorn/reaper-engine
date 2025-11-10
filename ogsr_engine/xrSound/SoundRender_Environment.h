@@ -8,6 +8,7 @@ public:
 
     CSoundRender_Environment();
     ~CSoundRender_Environment();
+
     void set_identity();
     void set_default();
     void clamp();

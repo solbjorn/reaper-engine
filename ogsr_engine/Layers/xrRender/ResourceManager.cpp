@@ -5,9 +5,10 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
-#include "tss.h"
+
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
+#include "tss.h"
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wextra-semi");
@@ -151,7 +152,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_NORMAL_HQ] = _CreateElement(std::move(E));
+        S.E[SE_R1_NORMAL_HQ]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element	(LOD1)
@@ -160,7 +161,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_NORMAL_LQ] = _CreateElement(std::move(E));
+        S.E[SE_R1_NORMAL_LQ]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
@@ -169,7 +170,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LPOINT] = _CreateElement(std::move(E));
+        S.E[SE_R1_LPOINT]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
@@ -178,7 +179,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LSPOT] = _CreateElement(std::move(E));
+        S.E[SE_R1_LSPOT]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
@@ -187,7 +188,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = TRUE; //.$$$ HACK :)
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[SE_R1_LMODELS] = _CreateElement(std::move(E));
+        S.E[SE_R1_LMODELS]._set(_CreateElement(std::move(E)));
     }
 
     // Compile element
@@ -196,20 +197,22 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const c
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[5] = _CreateElement(std::move(E));
+        S.E[5]._set(_CreateElement(std::move(E)));
     }
 
     // Hacky way to remove from the HUD mask transparent stuff. ( Let's try something better later... )
     if (RImplementation.hud_loading)
     {
         if (strstr(s_shader, "lens"))
-            S.E[0]->passes[0]->ps->hud_disabled = TRUE;
+            S.E[0]->passes[0]->ps->dwFlags |= xr_resource_flagged::RF_HUD_DISABLED;
     }
 
     // Search equal in shaders array
-    for (u32 it = 0; it < v_shaders.size(); it++)
-        if (S.equal(v_shaders[it]))
-            return v_shaders[it];
+    for (auto sh : v_shaders)
+    {
+        if (S.equal(sh))
+            return sh;
+    }
 
     // Create _new_ entry
     Shader* N = v_shaders.emplace_back(xr_new<Shader>());

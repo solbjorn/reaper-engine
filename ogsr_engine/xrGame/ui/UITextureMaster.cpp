@@ -10,6 +10,7 @@
 #include "StdAfx.h"
 
 #include "UITextureMaster.h"
+
 #include "uiabstract.h"
 #include "xrUIXmlParser.h"
 
@@ -25,6 +26,7 @@ void CUITextureMaster::WriteLog()
     Msg("UI texture manager work time is %d ms", m_time);
 #endif
 }
+
 void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 {
     CUIXml xml;
@@ -38,7 +40,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
         {
             XML_NODE* root_node = xml.GetLocalRoot();
 
-            shared_str file = xml.ReadAttrib("file", fi, "name");
+            shared_str file{xml.ReadAttrib("file", fi, "name")};
 
             XML_NODE* node = xml.NavigateToNode("file", fi);
             int num = xml.GetNodesNum(node, "texture");
@@ -53,7 +55,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
                 info.rect.y1 = xml.ReadAttribFlt(node, "texture", i, "y");
                 info.rect.y2 = xml.ReadAttribFlt(node, "texture", i, "height") + info.rect.y1;
 
-                shared_str id = xml.ReadAttrib(node, "texture", i, "id");
+                shared_str id{xml.ReadAttrib(node, "texture", i, "id")};
 
                 /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed. */
                 if (m_textures.find(id) == m_textures.end())
@@ -69,7 +71,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
     else
     {
         // ТЧ формат
-        shared_str file = xml.Read("file_name", 0, "");
+        shared_str file{xml.Read("file_name", 0, "")};
 
         int num = xml.GetNodesNum("", 0, "texture");
         for (int i = 0; i < num; i++)
@@ -83,7 +85,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
             info.rect.y1 = xml.ReadAttribFlt("texture", i, "y");
             info.rect.y2 = xml.ReadAttribFlt("texture", i, "height") + info.rect.y1;
 
-            shared_str id = xml.ReadAttrib("texture", i, "id");
+            shared_str id{xml.ReadAttrib("texture", i, "id")};
 
             /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed. */
             if (m_textures.find(id) == m_textures.end())
@@ -102,19 +104,18 @@ void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureCon
     T.Start();
 #endif
 
-    xr_map<shared_str, TEX_INFO>::iterator it;
-
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
     {
         tc->CreateShader(*((*it).second.file));
         tc->SetOriginalRectEx((*it).second.rect);
+
 #ifdef DEBUG
         m_time += T.GetElapsed_ms();
 #endif
         return;
     }
+
     tc->CreateShader(texture_name);
 #ifdef DEBUG
     m_time += T.GetElapsed_ms();
@@ -128,19 +129,18 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
     T.Start();
 #endif
 
-    xr_map<shared_str, TEX_INFO>::iterator it;
-
-    it = m_textures.find(texture_name);
-
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
     {
         tc->CreateShader(*((*it).second.file), shader_name);
         tc->SetOriginalRectEx((*it).second.rect);
+
 #ifdef DEBUG
         m_time += T.GetElapsed_ms();
 #endif
         return;
     }
+
     tc->CreateShader(texture_name, shader_name);
 #ifdef DEBUG
     m_time += T.GetElapsed_ms();
@@ -149,7 +149,7 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
 
 float CUITextureMaster::GetTextureHeight(const char* texture_name)
 {
-    auto it = m_textures.find(texture_name);
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
         return (*it).second.rect.height();
 
@@ -160,7 +160,7 @@ float CUITextureMaster::GetTextureHeight(const char* texture_name)
 
 Frect CUITextureMaster::GetTextureRect(const char* texture_name)
 {
-    auto it = m_textures.find(texture_name);
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
         return (*it).second.rect;
 
@@ -171,7 +171,7 @@ Frect CUITextureMaster::GetTextureRect(const char* texture_name)
 
 float CUITextureMaster::GetTextureWidth(const char* texture_name)
 {
-    auto it = m_textures.find(texture_name);
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
         return (*it).second.rect.width();
 
@@ -182,7 +182,7 @@ float CUITextureMaster::GetTextureWidth(const char* texture_name)
 
 LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
 {
-    auto it = m_textures.find(texture_name);
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
         return *((*it).second.file);
 
@@ -192,10 +192,10 @@ LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name)
 
 TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name)
 {
-    auto it = m_textures.find(texture_name);
+    auto it = m_textures.find(shared_str{texture_name});
     if (it != m_textures.end())
         return (it->second);
 
-    R_ASSERT2(m_textures.find(def_texture_name) != m_textures.end(), texture_name);
+    R_ASSERT2(m_textures.find(shared_str{def_texture_name}) != m_textures.end(), texture_name);
     return FindItem(def_texture_name, nullptr);
 }

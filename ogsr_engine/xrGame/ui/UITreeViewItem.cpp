@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "UITreeViewItem.h"
+
 #include "UIListWnd.h"
 #include "../string_table.h"
 
@@ -493,13 +494,12 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
         if (pos != xr_string::npos)
         {
             oneLevel.assign(group, 0, pos);
-            shared_str str(oneLevel.c_str());
-            groupTree.push_back(CStringTable().translate(str));
+            groupTree.push_back(CStringTable().translate(shared_str{oneLevel.c_str()}));
             group.erase(0, pos + 1);
         }
         else
         {
-            groupTree.push_back(CStringTable().translate(group.c_str()));
+            groupTree.push_back(CStringTable().translate(shared_str{group.c_str()}));
             break;
         }
     }
@@ -567,7 +567,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd* pList
     pTVItem = xr_new<CUITreeViewItem>();
     pTVItem->SetFont(pLeafFont);
     pTVItem->SetReadedColor(leafColor);
-    pTVItem->SetText(*CStringTable().translate(*leafName));
+    pTVItem->SetText(*CStringTable().translate(leafName));
     pTVItem->SetValue(leafProperty);
     pTVItemChilds->AddItem(pTVItem);
     pTVItem->MarkArticleAsRead(markRead);

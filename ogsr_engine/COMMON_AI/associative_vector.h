@@ -45,9 +45,9 @@ private:
     IC void actualize() const; //.
 
 public:
-    inline associative_vector(const key_compare& predicate = key_compare());
+    inline explicit associative_vector(const key_compare& predicate = key_compare());
     template <typename _iterator_type>
-    inline associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate = key_compare());
+    inline explicit associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate = key_compare());
 
     IC iterator begin();
     IC iterator end();

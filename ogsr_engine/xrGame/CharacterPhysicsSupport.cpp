@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "CharacterPhysicsSupport.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
-#include "CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
 #include "CustomMonster.h"
 #include "PhysicsShell.h"
@@ -174,15 +175,15 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
     if (!m_EntityAlife.g_Alive())
     {
         if (m_eType == etStalker)
-            ka->PlayCycle("waunded_1_idle_0");
+            ka->PlayCycle(shared_str{"waunded_1_idle_0"});
         else
-            ka->PlayCycle("death_init");
+            ka->PlayCycle(shared_str{"death_init"});
     }
     else if (!m_EntityAlife.animation_movement_controlled())
     {
-        ka->PlayCycle("death_init"); /// непонятно зачем это вообще надо запускать
-                                     /// этот хак нужен, потому что некоторым монстрам
-                                     /// анимация после спона, может быть вообще не назначена
+        ka->PlayCycle(shared_str{"death_init"}); /// непонятно зачем это вообще надо запускать
+                                                 /// этот хак нужен, потому что некоторым монстрам
+                                                 /// анимация после спона, может быть вообще не назначена
     }
 
     ka->dcast_PKinematics()->CalculateBones_Invalidate();
@@ -415,9 +416,7 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
     }
 
     if (!m_pPhysicsShell && is_killing)
-    {
         KillHit(H);
-    }
 
     if (!(m_pPhysicsShell && m_pPhysicsShell->isActive()))
     {
@@ -426,13 +425,13 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 
 #ifdef USE_SMART_HITS
         if (Type() == etStalker)
-        {
             m_hit_animations.PlayHitMotion(dir, p_in_object_space, element, m_EntityAlife);
-        }
 #endif // USE_SMART_HITS
     }
     else
+    {
         m_pPhysicsShell->applyHit(H.p_in_bone_space, H.dir, H.impulse, H.boneID, H.type());
+    }
 }
 
 IC void CCharacterPhysicsSupport::UpdateDeathAnims()
@@ -441,7 +440,7 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 
     if (!m_flags.test(fl_death_anim_on) && !is_imotion(m_interactive_motion)) //! m_flags.test(fl_use_death_motion)//!b_death_anim_on&&m_pPhysicsShell->isFullActive()
     {
-        smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle("death_init");
+        smart_cast<IKinematicsAnimated*>(m_EntityAlife.Visual())->PlayCycle(shared_str{"death_init"});
         m_flags.set(fl_death_anim_on, TRUE);
     }
 }

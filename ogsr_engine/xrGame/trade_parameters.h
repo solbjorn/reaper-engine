@@ -44,7 +44,7 @@ private:
     IC CTradeBoolParameters& action(action_show);
 
 public:
-    IC CTradeParameters(const shared_str& section = "trade");
+    inline CTradeParameters(const shared_str& section = shared_str{"trade"});
     IC void clear();
 
 public:

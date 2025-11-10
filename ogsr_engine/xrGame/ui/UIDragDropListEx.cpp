@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIDragDropListEx.h"
+
 #include "UIScrollBar.h"
 #include "../object_broker.h"
 #include "UICellItem.h"
@@ -887,10 +888,11 @@ void CUICellContainer::Draw()
     drawLT.set(lt_abs_pos.x + tgt_cells.lt.x * cell_sz.x, lt_abs_pos.y + tgt_cells.lt.y * cell_sz.y);
     UI()->ClientToScreenScaled(drawLT, drawLT.x, drawLT.y);
 
-    constexpr Fvector2 pts[]{{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+    constexpr Fvector2 pts[]{Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 1.0f}, Fvector2{0.0f, 1.0f}};
     constexpr float tx{0.125f}, ty{1.0f};
-    constexpr Fvector2 uvs[]{{0.0f, 0.0f}, {tx, 0.0f}, {tx, ty}, {0.0f, 0.0f}, {tx, ty}, {0.0f, ty}};
-    constexpr Fvector2 tps[]{{tx * 0, 0.0f}, {tx * 1, 0.0f}, {tx * 2, 0.0f}, {tx * 3, 0.0f}, {tx * 4, 0.0f}, {tx * 5, 0.0f}, {tx * 6, 0.0f}, {tx * 7, 0.0f}};
+    constexpr Fvector2 uvs[]{Fvector2{0.0f, 0.0f}, Fvector2{tx, 0.0f}, Fvector2{tx, ty}, Fvector2{0.0f, 0.0f}, Fvector2{tx, ty}, Fvector2{0.0f, ty}};
+    constexpr Fvector2 tps[]{Fvector2{tx * 0, 0.0f}, Fvector2{tx * 1, 0.0f}, Fvector2{tx * 2, 0.0f}, Fvector2{tx * 3, 0.0f},
+                             Fvector2{tx * 4, 0.0f}, Fvector2{tx * 5, 0.0f}, Fvector2{tx * 6, 0.0f}, Fvector2{tx * 7, 0.0f}};
 
     // calculate cell size in screen pixels
     Fvector2 f_len, sp_len;

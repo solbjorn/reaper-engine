@@ -6,11 +6,11 @@ struct _processor_info;
 
 namespace CPU
 {
-extern u64 qpc_freq;
+extern s64 qpc_freq;
 extern u32 qpc_counter;
-
 extern _processor_info ID;
-extern u64 QPC();
+
+[[nodiscard]] s64 QPC();
 } // namespace CPU
 
 void _initialize_cpu();

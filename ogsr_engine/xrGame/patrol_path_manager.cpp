@@ -311,8 +311,9 @@ shared_str CPatrolPathManager::path_name() const
     if (!m_path)
     {
         Msg("!![CPatrolPathManager::path_name] Path not specified (object %s)!", *m_game_object->cName());
-        return ("");
+        return shared_str{""};
     }
+
     VERIFY(m_path);
     return (m_path_name);
 }

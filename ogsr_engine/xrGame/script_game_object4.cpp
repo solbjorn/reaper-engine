@@ -457,7 +457,8 @@ void CScriptGameObject::SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudBoneVisible!");
         return;
     }
-    k->HudItemData()->set_bone_visible(_bone_name, _visible);
+
+    k->HudItemData()->set_bone_visible(shared_str{_bone_name}, _visible);
 }
 
 BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
@@ -468,7 +469,8 @@ BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member GetHudBoneVisible!");
         return FALSE;
     }
-    return k->HudItemData()->get_bone_visible(_bone_name);
+
+    return k->HudItemData()->get_bone_visible(shared_str{_bone_name});
 }
 
 u16 CScriptGameObject::GetBoneID(LPCSTR _bone_name)

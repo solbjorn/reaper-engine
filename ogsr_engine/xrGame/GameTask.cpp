@@ -26,7 +26,7 @@ u16 storyId2GameId(ALife::_STORY_ID);
 
 ALife::_STORY_ID story_id(LPCSTR story_id)
 {
-    auto I = story_ids.find(story_id);
+    auto I = story_ids.find(shared_str{story_id});
     ASSERT_FMT_DBG(I != story_ids.end(), "story_id not found: %s", story_id);
     return I != story_ids.end() ? ALife::_STORY_ID((*I).second) : INVALID_STORY_ID;
 }
@@ -71,7 +71,7 @@ void CGameTask::Load(const TASK_ID& id)
 
     THROW3(task_node, "game task id=", *id);
     g_gameTaskXml->SetLocalRoot(task_node);
-    m_Title = g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr);
+    m_Title._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "title", 0, nullptr));
     m_priority = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "prio", -1);
     m_version = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "version", 0);
     m_objectives_version = g_gameTaskXml->ReadAttribInt(g_gameTaskXml->GetLocalRoot(), "objectives_version", 0);
@@ -96,21 +96,21 @@ void CGameTask::Load(const TASK_ID& id)
 
         //.
         LPCSTR tag_text = g_gameTaskXml->Read(l_root, "text", 0, nullptr);
-        objective.description = tag_text;
+        objective.description._set(tag_text);
         //.
         tag_text = g_gameTaskXml->Read(l_root, "article", 0, nullptr);
-        if (tag_text)
-            objective.article_id = tag_text;
+        if (tag_text != nullptr)
+            objective.article_id._set(tag_text);
 
         //.
         if (i == 0)
         {
-            objective.icon_texture_name = g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, nullptr);
+            objective.icon_texture_name._set(g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, nullptr));
             if (!objective.icon_texture_name.empty() && std::is_neq(xr::strcasecmp(objective.icon_texture_name, "ui\\ui_icons_task")))
             {
                 objective.icon_rect = CUITextureMaster::GetTextureRect(*objective.icon_texture_name);
                 objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
-                objective.icon_texture_name = CUITextureMaster::GetTextureFileName(*objective.icon_texture_name);
+                objective.icon_texture_name._set(CUITextureMaster::GetTextureFileName(*objective.icon_texture_name));
             }
             else if (!objective.icon_texture_name.empty())
             {
@@ -121,7 +121,7 @@ void CGameTask::Load(const TASK_ID& id)
             }
         }
         //.
-        objective.map_location = g_gameTaskXml->Read(l_root, "map_location_type", 0, nullptr);
+        objective.map_location._set(g_gameTaskXml->Read(l_root, "map_location_type", 0, nullptr));
 
         LPCSTR object_story_id = g_gameTaskXml->Read(l_root, "object_story_id", 0, nullptr);
 
@@ -140,7 +140,7 @@ void CGameTask::Load(const TASK_ID& id)
         objective.object_id = u16(-1);
 
         //.
-        objective.map_hint = g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", nullptr);
+        objective.map_hint._set(g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", nullptr));
 
         if (object_story_id)
         {
@@ -150,29 +150,29 @@ void CGameTask::Load(const TASK_ID& id)
 
         //------infoportion_complete
         int info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_complete");
-        objective.m_completeInfos.resize(info_num);
+        objective.m_completeInfos.reserve(info_num);
         int j;
         for (j = 0; j < info_num; ++j)
-            objective.m_completeInfos[j] = g_gameTaskXml->Read(l_root, "infoportion_complete", j, nullptr);
+            objective.m_completeInfos.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_complete", j, nullptr));
 
         //------infoportion_fail
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_fail");
-        objective.m_failInfos.resize(info_num);
+        objective.m_failInfos.reserve(info_num);
 
         for (j = 0; j < info_num; ++j)
-            objective.m_failInfos[j] = g_gameTaskXml->Read(l_root, "infoportion_fail", j, nullptr);
+            objective.m_failInfos.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_fail", j, nullptr));
 
         //------infoportion_set_complete
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_complete");
-        objective.m_infos_on_complete.resize(info_num);
+        objective.m_infos_on_complete.reserve(info_num);
         for (j = 0; j < info_num; ++j)
-            objective.m_infos_on_complete[j] = g_gameTaskXml->Read(l_root, "infoportion_set_complete", j, nullptr);
+            objective.m_infos_on_complete.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_set_complete", j, nullptr));
 
         //------infoportion_set_fail
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_fail");
-        objective.m_infos_on_fail.resize(info_num);
+        objective.m_infos_on_fail.reserve(info_num);
         for (j = 0; j < info_num; ++j)
-            objective.m_infos_on_fail[j] = g_gameTaskXml->Read(l_root, "infoportion_set_fail", j, nullptr);
+            objective.m_infos_on_fail.emplace_back(g_gameTaskXml->Read(l_root, "infoportion_set_fail", j, nullptr));
 
         //------function_complete
         LPCSTR str;
@@ -345,41 +345,35 @@ void SGameTaskObjective::CallAllFuncs(xr_vector<luabind::functor<bool>>& v)
             (*it)(*(parent->m_ID), idx);
     }
 }
-void SGameTaskObjective::SetDescription_script(LPCSTR _descr) { description = _descr; }
 
-void SGameTaskObjective::SetArticleID_script(LPCSTR _id) { article_id = _id; }
+void SGameTaskObjective::SetDescription_script(LPCSTR _descr) { description._set(_descr); }
+void SGameTaskObjective::SetArticleID_script(LPCSTR _id) { article_id._set(_id); }
 
-void SGameTaskObjective::SetMapHint_script(LPCSTR _str) { map_hint = _str; }
-
-void SGameTaskObjective::SetMapLocation_script(LPCSTR _str) { map_location = _str; }
+void SGameTaskObjective::SetMapHint_script(LPCSTR _str) { map_hint._set(_str); }
+void SGameTaskObjective::SetMapLocation_script(LPCSTR _str) { map_location._set(_str); }
 
 void SGameTaskObjective::SetObjectID_script(u16 id) { object_id = id; }
 
 void SGameTaskObjective::SetIconName_script(LPCSTR _str)
 {
-    icon_texture_name = _str;
+    icon_texture_name._set(_str);
     icon_rect = CUITextureMaster::GetTextureRect(icon_texture_name.c_str());
     icon_rect.rb.sub(icon_rect.rb, icon_rect.lt);
-    icon_texture_name = CUITextureMaster::GetTextureFileName(icon_texture_name.c_str());
+    icon_texture_name._set(CUITextureMaster::GetTextureFileName(icon_texture_name.c_str()));
 }
 
-void SGameTaskObjective::AddCompleteInfo_script(LPCSTR _str) { m_completeInfos.push_back(_str); }
+void SGameTaskObjective::AddCompleteInfo_script(LPCSTR _str) { m_completeInfos.emplace_back(_str); }
+void SGameTaskObjective::AddFailInfo_script(LPCSTR _str) { m_failInfos.emplace_back(_str); }
+void SGameTaskObjective::AddOnCompleteInfo_script(LPCSTR _str) { m_infos_on_complete.emplace_back(_str); }
+void SGameTaskObjective::AddOnFailInfo_script(LPCSTR _str) { m_infos_on_fail.emplace_back(_str); }
 
-void SGameTaskObjective::AddFailInfo_script(LPCSTR _str) { m_failInfos.push_back(_str); }
+void SGameTaskObjective::AddCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_complete_lua_functions.emplace_back(_str); }
+void SGameTaskObjective::AddFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_fail_lua_functions.emplace_back(_str); }
+void SGameTaskObjective::AddOnCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_complete.emplace_back(_str); }
+void SGameTaskObjective::AddOnFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_fail.emplace_back(_str); }
 
-void SGameTaskObjective::AddOnCompleteInfo_script(LPCSTR _str) { m_infos_on_complete.push_back(_str); }
-
-void SGameTaskObjective::AddOnFailInfo_script(LPCSTR _str) { m_infos_on_fail.push_back(_str); }
-
-void SGameTaskObjective::AddCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_complete_lua_functions.push_back(_str); }
-void SGameTaskObjective::AddFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_fail_lua_functions.push_back(_str); }
-void SGameTaskObjective::AddOnCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_complete.push_back(_str); }
-void SGameTaskObjective::AddOnFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_fail.push_back(_str); }
-
-void CGameTask::Load_script(LPCSTR _id) { Load(_id); }
-
-void CGameTask::SetTitle_script(LPCSTR _title) { m_Title = _title; }
-
+void CGameTask::Load_script(LPCSTR _id) { Load(shared_str{_id}); }
+void CGameTask::SetTitle_script(LPCSTR _title) { m_Title._set(_title); }
 void CGameTask::SetPriority_script(int _prio) { m_priority = _prio; }
 
 void CGameTask::AddObjective_script(SGameTaskObjective* O)

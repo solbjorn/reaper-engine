@@ -8,12 +8,13 @@
 
 #include "stdafx.h"
 
+#include "x_ray.h"
+
 #include "igame_level.h"
 #include "igame_persistent.h"
 
 #include "xr_input.h"
 #include "xr_ioconsole.h"
-#include "x_ray.h"
 #include "std_classes.h"
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
@@ -64,11 +65,11 @@ string512 g_sBenchmarkName;
 static void InitSettings()
 {
     string_path fname;
-    FS.update_path(fname, "$game_config$", "system.ltx");
+    std::ignore = FS.update_path(fname, "$game_config$", "system.ltx");
     pSettings = xr_new<CInifile>(fname, TRUE);
     CHECK_OR_EXIT(!pSettings->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
-    FS.update_path(fname, "$game_config$", "game.ltx");
+    std::ignore = FS.update_path(fname, "$game_config$", "game.ltx");
     pGameIni = xr_new<CInifile>(fname, TRUE);
     CHECK_OR_EXIT(!pGameIni->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
@@ -145,9 +146,7 @@ static void execUserScript()
     else
     {
         string_path default_full_name;
-
-        FS.update_path(default_full_name, "$game_config$", "rspec_default.ltx");
-
+        std::ignore = FS.update_path(default_full_name, "$game_config$", "rspec_default.ltx");
         Console->ExecuteScript(default_full_name);
     }
 }
@@ -165,7 +164,7 @@ static void Startup(xr_task_group& spatial_tg)
     Discord.Init();
 
     // Main cycle
-    Memory.mem_usage();
+    std::ignore = Memory.mem_usage();
     Device.Run();
 
     // Destroy APP
@@ -232,9 +231,9 @@ struct damn_keys_filter
         dwFilterKeysFlags = 0;
         dwToggleKeysFlags = 0;
 
-        ZeroMemory(&StickyKeysStruct, dwStickyKeysStructSize);
-        ZeroMemory(&FilterKeysStruct, dwFilterKeysStructSize);
-        ZeroMemory(&ToggleKeysStruct, dwToggleKeysStructSize);
+        std::memset(&StickyKeysStruct, 0, dwStickyKeysStructSize);
+        std::memset(&FilterKeysStruct, 0, dwFilterKeysStructSize);
+        std::memset(&ToggleKeysStruct, 0, dwToggleKeysStructSize);
 
         StickyKeysStruct.cbSize = dwStickyKeysStructSize;
         FilterKeysStruct.cbSize = dwFilterKeysStructSize;
@@ -526,11 +525,11 @@ void CApplication::LoadBegin()
 
 void CApplication::LoadEnd()
 {
-    ll_dwReference--;
-    if (0 == ll_dwReference)
+    if (--ll_dwReference == 0)
     {
-        Msg("* phase time: %llu ms", phase_timer.GetElapsed_ms());
-        Msg("* phase cmem: %u K", Memory.mem_usage() / 1024);
+        Msg("* phase time: %lld ms", phase_timer.GetElapsed_ms());
+        Msg("* phase cmem: %zd K", Memory.mem_usage() / 1024);
+
         Console->Execute("stat_memory");
         g_appLoaded = TRUE;
     }
@@ -568,15 +567,14 @@ void CApplication::LoadDraw()
 void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }
 
 void CApplication::SetLoadStageTitle(pcstr _ls_title) { loadingScreen->SetStageTitle(_ls_title); }
-
 void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }
 
 void CApplication::LoadStage()
 {
     VERIFY(ll_dwReference);
 
-    Msg("* phase time: %llu ms", phase_timer.GetElapsed_ms());
-    Msg("* phase cmem: %u K", Memory.mem_usage() / 1024);
+    Msg("* phase time: %lld ms", phase_timer.GetElapsed_ms());
+    Msg("* phase cmem: %zd K", Memory.mem_usage() / 1024);
 
     phase_timer.Start();
 

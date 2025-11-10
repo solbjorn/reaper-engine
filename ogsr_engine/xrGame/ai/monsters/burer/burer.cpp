@@ -401,14 +401,16 @@ void CBurer::StartGraviPrepare()
     if (!pA)
         return;
 
-    pA->CParticlesPlayer::StartParticles(particle_gravi_prepare, Fvector().set(0.0f, 0.1f, 0.0f), pA->ID());
+    pA->CParticlesPlayer::StartParticles(shared_str{particle_gravi_prepare}, Fvector{0.0f, 0.1f, 0.0f}, pA->ID());
 }
+
 void CBurer::StopGraviPrepare()
 {
     CActor* pA = Actor();
     if (!pA)
         return;
-    pA->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
+
+    pA->CParticlesPlayer::StopParticles(shared_str{particle_gravi_prepare}, BI_NONE, true);
 }
 
 void CBurer::StartTeleObjectParticle(CGameObject* pO)
@@ -416,14 +418,17 @@ void CBurer::StartTeleObjectParticle(CGameObject* pO)
     CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pO);
     if (!PP)
         return;
-    PP->StartParticles(particle_tele_object, Fvector().set(0.0f, 0.1f, 0.0f), pO->ID());
+
+    PP->StartParticles(shared_str{particle_tele_object}, Fvector{0.0f, 0.1f, 0.0f}, pO->ID());
 }
+
 void CBurer::StopTeleObjectParticle(CGameObject* pO)
 {
     CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pO);
     if (!PP)
         return;
-    PP->StopParticles(particle_tele_object, BI_NONE, true);
+
+    PP->StopParticles(shared_str{particle_tele_object}, BI_NONE, true);
 }
 
 void CBurer::Hit(SHit* pHDS)
@@ -436,7 +441,7 @@ void CBurer::Hit(SHit* pHDS)
 
         CParticlesObject* ps = CParticlesObject::Create(particle_fire_shield, TRUE);
 
-        ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
+        ps->UpdateParent(pos, {});
         GamePersistent().ps_needtoplay.push_back(ps);
     }
     else if (!m_shield_active)
@@ -452,9 +457,7 @@ void CBurer::Die(CObject* who)
     inherited::Die(who);
 
     if (com_man().ta_is_active())
-    {
         com_man().ta_deactivate();
-    }
 
     CTelekinesis::Deactivate();
 }
@@ -485,18 +488,15 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 void CBurer::face_enemy()
 {
     if (!EnemyMan.get_enemy())
-    {
         return;
-    }
+
     Fvector const enemy_pos = EnemyMan.get_enemy()->Position();
     Fvector const self_pos = Position();
     Fvector const self2enemy = enemy_pos - self_pos;
     bool const good_aiming = angle_between_vectors(self2enemy, Direction()) < deg2rad(20.f);
 
     if (!good_aiming)
-    {
         dir().face_target(enemy_pos);
-    }
 
     set_action(ACT_STAND_IDLE);
 }
@@ -504,15 +504,11 @@ void CBurer::face_enemy()
 bool actor_is_reloading_weapon()
 {
     if (!Actor())
-    {
         return false;
-    }
 
     CWeapon* const active_weapon = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
     if (active_weapon && active_weapon->GetState() == CWeapon::eReload)
-    {
         return true;
-    }
 
     return false;
 }

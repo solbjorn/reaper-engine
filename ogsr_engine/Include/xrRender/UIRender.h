@@ -3,8 +3,10 @@
 
 class IUIShader;
 
-class XR_NOVTABLE IUIRender
+class XR_NOVTABLE IUIRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUIRender);
+
 public:
     enum ePrimitiveType
     {

@@ -3,17 +3,15 @@
 #include "fs_registrator.h"
 #include "LocatorApi.h"
 
-#include <iomanip>
 #include <filesystem>
+#include <iomanip>
 #include <sstream>
 
-static LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
+static xr_string update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
 {
     string_path temp;
-    shared_str temp_2;
-    fs->update_path(temp, initial, src);
-    temp_2 = temp;
-    return *temp_2;
+    std::ignore = fs->update_path(temp, initial, src);
+    return temp;
 }
 
 class FS_file_list
@@ -21,38 +19,38 @@ class FS_file_list
     xr_vector<LPSTR>* m_p;
 
 public:
-    FS_file_list(xr_vector<LPSTR>* p) : m_p{p} {}
+    explicit FS_file_list(xr_vector<LPSTR>* p) : m_p{p} {}
 
-    u32 Size() { return m_p->size(); }
-    LPCSTR GetAt(u32 idx) { return m_p->at(idx); }
+    [[nodiscard]] size_t Size() const { return m_p->size(); }
+    [[nodiscard]] LPCSTR GetAt(size_t idx) const { return (*m_p)[idx]; }
     void Free() { FS.file_list_close(m_p); }
 };
 
 struct FS_item
 {
     string_path name;
-    u32 size;
-    u32 modif;
-    string256 buff;
+    s64 size;
+    s64 modif;
 
-    LPCSTR NameShort() { return name; }
-    LPCSTR NameFull() { return name; }
-    u32 Size() { return size; }
-    LPCSTR Modif()
+    [[nodiscard]] LPCSTR NameShort() const { return name; }
+    [[nodiscard]] LPCSTR NameFull() const { return name; }
+    [[nodiscard]] s64 Size() const { return size; }
+
+    [[nodiscard]] xr_string Modif() const
     {
-        struct tm* newtime;
-        time_t t = modif;
-        newtime = localtime(&t);
-        strcpy_s(buff, asctime(newtime));
+        const auto newtime = xr::localtime(modif);
+        xr_string buff(32, ' ');
+
+        asctime_s(buff.data(), buff.size(), &newtime);
         return buff;
     }
 
-    LPCSTR ModifDigitOnly()
+    [[nodiscard]] xr_string ModifDigitOnly() const
     {
-        struct tm* newtime;
-        time_t t = modif;
-        newtime = localtime(&t);
-        sprintf_s(buff, "%02d:%02d:%4d %02d:%02d", newtime->tm_mday, newtime->tm_mon + 1, newtime->tm_year + 1900, newtime->tm_hour, newtime->tm_min);
+        const auto newtime = xr::localtime(modif);
+        xr_string buff(256, ' ');
+
+        sprintf_s(buff.data(), buff.size(), "%02d:%02d:%4d %02d:%02d", newtime.tm_mday, newtime.tm_mon + 1, newtime.tm_year + 1900, newtime.tm_hour, newtime.tm_min);
         return buff;
     }
 };
@@ -95,12 +93,13 @@ public:
         eSortByModifUp,
         eSortByModifDown
     };
-    FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask);
 
-    u32 Size() { return m_file_items.size(); }
-    FS_item GetAt(u32 idx) { return m_file_items[idx]; }
+    explicit FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask);
+
+    [[nodiscard]] size_t Size() const { return m_file_items.size(); }
+    [[nodiscard]] FS_item GetAt(size_t idx) { return m_file_items[idx]; }
     void Sort(u32 flags);
-    xr_vector<FS_item>& GetAll() { return m_file_items; }
+    [[nodiscard]] xr_vector<FS_item>& GetAll() { return m_file_items; }
 };
 
 FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
@@ -111,15 +110,16 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
     FS.rescan_physical_pathes();
 
     FS_FileSet files;
-    FS.file_list(files, path, flags, mask);
+    std::ignore = FS.file_list(files, path, flags, mask);
 
-    for (FS_FileSetIt it = files.begin(); it != files.end(); ++it)
+    for (const auto& file : files)
     {
         auto& itm = m_file_items.emplace_back();
-        ZeroMemory(itm.name, sizeof(itm.name));
-        strcat_s(itm.name, it->name.c_str());
-        itm.modif = (u32)it->time_write;
-        itm.size = it->size;
+
+        std::memset(itm.name, 0, sizeof(itm.name));
+        strcat_s(itm.name, file.name.c_str());
+        itm.modif = file.time_write;
+        itm.size = file.size;
     }
 
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
@@ -145,12 +145,13 @@ static FS_file_list_ex file_list_open_ex(CLocatorAPI*, LPCSTR path, u32 flags, L
 static FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
 static FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
 
-static LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
+[[nodiscard]] static xr_string get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 {
-    time_t t = fs->get_file_age(nm);
-    struct tm* newtime;
-    newtime = localtime(&t);
-    return asctime(newtime);
+    const auto newtime = xr::localtime(fs->get_file_age(nm));
+    xr_string buff(32, ' ');
+
+    asctime_s(buff.data(), buff.size(), &newtime);
+    return buff;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,8 +170,10 @@ static void directory_iterator(const char* dir, sol::function iterator_func)
         return;
 
     for (const auto& file : stdfs::directory_iterator(dir))
+    {
         if (stdfs::is_regular_file(file)) // Папки не учитываем
             iterator_func(file);
+    }
 }
 
 // Перебор файлов в папке включая подкаталоги.
@@ -180,8 +183,10 @@ static void recursive_directory_iterator(const char* dir, sol::function iterator
         return;
 
     for (const auto& file : stdfs::recursive_directory_iterator(dir))
+    {
         if (stdfs::is_regular_file(file)) // Папки не учитываем
             iterator_func(file);
+    }
 }
 
 // полный путь до файла с расширением.
@@ -211,9 +216,9 @@ static auto format_last_write_time = [](const stdfs::directory_entry& file, cons
 
     ss.str("");
 
-    const auto write_time_c = get_last_write_time(file);
+    const auto write_time_c = xr::localtime(get_last_write_time(file));
 
-    ss << std::put_time(std::localtime(&write_time_c), fmt);
+    ss << std::put_time(&write_time_c, fmt);
     return ss.str();
 };
 
@@ -225,9 +230,7 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 
 static void script_register_stdfs(sol::state_view& lua)
 {
-    auto fs = lua.create_named_table(
-        "stdfs", "VerifyPath", [](absl::string_view path) { VerifyPath(path); }, "directory_iterator", &directory_iterator, "recursive_directory_iterator",
-        &recursive_directory_iterator);
+    auto fs = lua.create_named_table("stdfs", "VerifyPath", &VerifyPath, "directory_iterator", &directory_iterator, "recursive_directory_iterator", &recursive_directory_iterator);
 
     using self = stdfs::directory_entry;
     fs.new_usertype<self>("path", sol::no_constructor, sol::call_constructor, sol::constructors<self(const char*)>(),

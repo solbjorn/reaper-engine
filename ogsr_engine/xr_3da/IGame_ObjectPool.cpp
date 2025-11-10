@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
+#include "igame_objectpool.h"
+
 #include "igame_level.h"
 #include "IGame_Persistent.h"
-#include "igame_objectpool.h"
 #include "xr_object.h"
 
 IGame_ObjectPool::IGame_ObjectPool() = default;
@@ -50,12 +51,10 @@ void IGame_ObjectPool::prefetch()
 void IGame_ObjectPool::clear()
 {
     // Clear POOL
-    ObjectVecIt it = m_PrefetchObjects.begin();
-    ObjectVecIt itE = m_PrefetchObjects.end();
-    for (; it != itE; it++)
+    for (auto& obj : m_PrefetchObjects)
     {
-        (*it)->cNameVisual_set(nullptr);
-        xr_delete(*it);
+        obj->cNameVisual_set({});
+        xr_delete(obj);
     }
 
     m_PrefetchObjects.clear();

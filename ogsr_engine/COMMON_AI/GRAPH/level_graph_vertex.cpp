@@ -265,21 +265,23 @@ u32 CLevelGraph::check_position_in_direction_slow(u32 start_vertex_id, const Fve
         const_iterator I, E;
         begin(cur_vertex_id, I, E);
         bool found = false;
+
         for (; I != E; ++I)
         {
             u32 next_vertex_id = value(cur_vertex_id, I);
             if ((next_vertex_id == prev_vertex_id) || !valid_vertex_id(next_vertex_id))
                 continue;
-            CVertex* v = vertex(next_vertex_id);
+
+            const CVertex* v = vertex(next_vertex_id);
             unpack_xz(v, temp.x, temp.y);
             box.min = box.max = temp;
             box.grow(identity);
+
             if (box.pick_exact(start, dir))
             {
                 if (dest_xz == v->position().xz())
-                {
-                    return (is_accessible(next_vertex_id) ? next_vertex_id : u32(-1));
-                }
+                    return is_accessible(next_vertex_id) ? next_vertex_id : std::numeric_limits<u32>::max();
+
                 Fvector2 temp;
                 temp.add(box.min, box.max);
                 temp.mul(.5f);
@@ -288,7 +290,7 @@ u32 CLevelGraph::check_position_in_direction_slow(u32 start_vertex_id, const Fve
                     continue;
 
                 if (!is_accessible(next_vertex_id))
-                    return (u32(-1));
+                    return std::numeric_limits<u32>::max();
 
                 cur_sqr = dist;
                 found = true;
@@ -297,10 +299,9 @@ u32 CLevelGraph::check_position_in_direction_slow(u32 start_vertex_id, const Fve
                 break;
             }
         }
+
         if (!found)
-        {
-            return (u32(-1));
-        }
+            return std::numeric_limits<u32>::max();
     }
 }
 
@@ -404,15 +405,18 @@ bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& star
         const_iterator I, E;
         begin(cur_vertex_id, I, E);
         bool found = false;
+
         for (; I != E; ++I)
         {
             u32 next_vertex_id = value(cur_vertex_id, I);
             if ((next_vertex_id == prev_vertex_id) || !valid_vertex_id(next_vertex_id))
                 continue;
-            CVertex* v = vertex(next_vertex_id);
+
+            const CVertex* v = vertex(next_vertex_id);
             unpack_xz(v, temp.x, temp.y);
             box.min = box.max = temp;
             box.grow(identity);
+
             if (box.pick_exact(start, dir))
             {
                 Fvector2 temp;
@@ -454,10 +458,12 @@ bool CLevelGraph::create_straight_path(u32 start_vertex_id, const Fvector2& star
                 }
                 VERIFY(_valid(next1));
                 VERIFY(_valid(next2));
+
                 u32 dwIntersect =
                     intersect(start_point.x, start_point.y, finish_point.x, finish_point.y, next1.x, next1.y, next2.x, next2.y, &tIntersectPoint.x, &tIntersectPoint.z);
                 if (!dwIntersect)
                     continue;
+
                 tIntersectPoint.y = vertex_plane_y(vertex(cur_vertex_id), tIntersectPoint.x, tIntersectPoint.z);
 
                 tpaOutputPoints.push_back(tIntersectPoint);

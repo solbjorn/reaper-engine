@@ -13,6 +13,10 @@
 #include "UIPdaWnd.h"
 #include "UIDiaryWnd.h"
 
+#include "../game_news.h"
+#include "../level.h"
+#include "../alife_registry_wrappers.h"
+
 #include <dinput.h>
 
 #define TALK_XML "talk.xml"
@@ -20,7 +24,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-CUITalkDialogWnd::CUITalkDialogWnd() { m_ClickedQuestionID = ""; }
+CUITalkDialogWnd::CUITalkDialogWnd() { m_ClickedQuestionID._set(""); }
 CUITalkDialogWnd::~CUITalkDialogWnd() { xr_delete(m_uiXml); }
 
 void CUITalkDialogWnd::Init(float x, float y, float width, float height)
@@ -159,10 +163,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number)
     UIQuestionsList->AddWindow(itm, true);
     Register(itm);
 }
-#include "../game_news.h"
-#include "../level.h"
-#include "../actor.h"
-#include "../alife_registry_wrappers.h"
+
 void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 {
     CUIAnswerItem* itm = xr_new<CUIAnswerItem>(m_uiXml, bActor ? "actor_answer_item" : "other_answer_item");
@@ -177,8 +178,8 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
     str_ += str;
 
     news_data.m_type = GAME_NEWS_DATA::eTalk;
-    news_data.news_text = str_.c_str();
-    //.	news_data.texture_name			= "ui\\ui_icons_npc";
+    news_data.news_text._set(str_.c_str());
+
     CUICharacterInfo& ci = bActor ? UICharacterInfoLeft : UICharacterInfoRight;
 
     news_data.texture_name = ci.IconName();
@@ -200,6 +201,7 @@ void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect t
     UIAnswersList->AddWindow(itm, true);
     UIAnswersList->ScrollToEnd();
 }
+
 void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 {
     UIOurIcon.Show(!b);
@@ -247,9 +249,10 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 
 void CUIQuestionItem::Init(LPCSTR val, LPCSTR text)
 {
-    m_s_value = val;
+    m_s_value._set(val);
     m_text->SetText(text);
     m_text->AdjustHeightToText();
+
     float new_h = _max(m_min_height, m_text->GetWndPos().y + m_text->GetHeight());
     SetHeight(new_h);
 }

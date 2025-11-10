@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "InfoDocument.h"
+
 #include "PhysicsShell.h"
 #include "PDA.h"
 #include "inventoryowner.h"
@@ -13,9 +14,8 @@
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "actor.h"
 
-CInfoDocument::CInfoDocument(void) {}
-
-CInfoDocument::~CInfoDocument(void) {}
+CInfoDocument::CInfoDocument() = default;
+CInfoDocument::~CInfoDocument() = default;
 
 BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
 {
@@ -35,9 +35,7 @@ BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
     {
         const auto& sect = ini.r_section("known_info");
         for (const auto& I : sect.Data)
-        {
             m_Info.push_back(I.first.c_str());
-        }
     }
 
     if (pSettings->line_exist(l_tpAbstract->name(), "known_info"))
@@ -47,9 +45,10 @@ BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
         {
             string128 info;
             int count = _GetItemCount(S);
+
             for (int it = 0; it < count; ++it)
             {
-                _GetItem(S, it, info);
+                std::ignore = _GetItem(S, it, info);
                 m_Info.push_back(info);
             }
         }
@@ -59,11 +58,9 @@ BOOL CInfoDocument::net_Spawn(CSE_Abstract* DC)
 }
 
 void CInfoDocument::Load(LPCSTR section) { inherited::Load(section); }
-
 void CInfoDocument::net_Destroy() { inherited::net_Destroy(); }
 
 void CInfoDocument::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
-
 void CInfoDocument::UpdateCL() { inherited::UpdateCL(); }
 
 void CInfoDocument::OnH_A_Chield()

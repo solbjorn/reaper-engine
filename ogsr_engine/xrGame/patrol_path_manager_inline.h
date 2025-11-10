@@ -11,7 +11,7 @@
 IC CPatrolPathManager::CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object) : m_object{object}, m_game_object{game_object}
 {
     VERIFY(game_object);
-    m_path_name = "";
+    m_path_name._set("");
 }
 
 IC bool CPatrolPathManager::actual() const { return (m_actuality); }

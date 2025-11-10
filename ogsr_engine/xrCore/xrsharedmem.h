@@ -47,10 +47,13 @@ protected:
     }
 
 public:
-    ref_smem<T>& create(gsl::index dwLength, const T* ptr)
+    constexpr ref_smem<T>& create(gsl::index dwLength, const T* ptr)
     {
-        smem_value* v = smem_container::dock(dwLength * gsl::index{sizeof(T)}, ptr);
-        if (v)
+        smem_value* v{};
+
+        if (ptr != nullptr && dwLength > 0)
+            v = smem_container::dock(dwLength * gsl::index{sizeof(T)}, ptr);
+        if (v != nullptr)
             ++v->dwReference;
 
         _dec();
@@ -62,7 +65,7 @@ public:
     constexpr ref_smem<T>& _set(const ref_smem<T>& that)
     {
         smem_value* v = that.p_;
-        if (v)
+        if (v != nullptr)
             ++v->dwReference;
 
         _dec();
@@ -130,8 +133,8 @@ public:
     [[nodiscard]] constexpr T* operator*() { return p_ ? reinterpret_cast<T*>(p_->value) : nullptr; }
     [[nodiscard]] constexpr const T* operator*() const { return p_ ? reinterpret_cast<const T*>(p_->value) : nullptr; }
 
-    XR_SYSV [[nodiscard]] constexpr operator std::span<T>() { return p_ ? std::span<T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<T>{}; }
-    XR_SYSV [[nodiscard]] constexpr operator std::span<const T>() const { return p_ ? std::span<const T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<const T>{}; }
+    [[nodiscard]] constexpr operator std::span<T>() { return p_ ? std::span<T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<T>{}; }
+    [[nodiscard]] constexpr operator std::span<const T>() const { return p_ ? std::span<const T>{**this, gsl::narrow_cast<size_t>(size())} : std::span<const T>{}; }
 
     [[nodiscard]] constexpr T& operator[](gsl::index id) { return std::span<T>{*this}[gsl::narrow_cast<size_t>(id)]; }
     [[nodiscard]] constexpr const T& operator[](gsl::index id) const { return std::span<const T>{*this}[gsl::narrow_cast<size_t>(id)]; }

@@ -449,63 +449,54 @@ IC void CBackend::set_Constants(R_constant_table* C)
         ref_cbuffer aDomainConstants[MaxCBuffers];
         ref_cbuffer aComputeConstants[MaxCBuffers];
 
-        for (int i = 0; i < MaxCBuffers; ++i)
+        for (auto [pc, mpc, vc, mvc, gc, mgc, hc, mhc, dc, mdc, cc, mcc] :
+             std::views::zip(aPixelConstants, m_aPixelConstants, aVertexConstants, m_aVertexConstants, aGeometryConstants, m_aGeometryConstants, aHullConstants, m_aHullConstants,
+                             aDomainConstants, m_aDomainConstants, aComputeConstants, m_aComputeConstants))
         {
-            aPixelConstants[i] = m_aPixelConstants[i];
-            aVertexConstants[i] = m_aVertexConstants[i];
-            aGeometryConstants[i] = m_aGeometryConstants[i];
-
-            aHullConstants[i] = m_aHullConstants[i];
-            aDomainConstants[i] = m_aDomainConstants[i];
-            aComputeConstants[i] = m_aComputeConstants[i];
-
-            m_aPixelConstants[i] = nullptr;
-            m_aVertexConstants[i] = nullptr;
-            m_aGeometryConstants[i] = nullptr;
-
-            m_aHullConstants[i] = nullptr;
-            m_aDomainConstants[i] = nullptr;
-            m_aComputeConstants[i] = nullptr;
+            std::swap(pc, mpc);
+            std::swap(vc, mvc);
+            std::swap(gc, mgc);
+            std::swap(hc, mhc);
+            std::swap(dc, mdc);
+            std::swap(cc, mcc);
         }
 
-        R_constant_table::cb_table::iterator it = C->m_CBTable[context_id].begin();
-        R_constant_table::cb_table::iterator end = C->m_CBTable[context_id].end();
-        for (; it != end; ++it)
+        for (auto [uiBufferIndex, buf] : C->m_CBTable[context_id])
         {
-            u32 uiBufferIndex = it->first;
-
             if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferPixelShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aPixelConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aPixelConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferVertexShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aVertexConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aVertexConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferGeometryShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aGeometryConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aGeometryConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferHullShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aHullConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aHullConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferDomainShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aDomainConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aDomainConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else if ((uiBufferIndex & CB_BufferTypeMask) == CB_BufferComputeShader)
             {
                 VERIFY((uiBufferIndex & CB_BufferIndexMask) < MaxCBuffers);
-                m_aComputeConstants[uiBufferIndex & CB_BufferIndexMask] = it->second;
+                m_aComputeConstants[uiBufferIndex & CB_BufferIndexMask] = buf;
             }
             else
-                VERIFY("Invalid enumeration");
+            {
+                R_ASSERT(false, "Invalid enumeration");
+            }
         }
 
         ID3DBuffer* tempBuffer[MaxCBuffers];
@@ -601,12 +592,11 @@ IC void CBackend::set_Constants(R_constant_table* C)
     }
 
     // process constant-loaders
-    R_constant_table::c_table::iterator it = C->table.begin();
-    R_constant_table::c_table::iterator end = C->table.end();
-    for (; it != end; it++)
+    for (const auto& cs : C->table)
     {
-        R_constant* Cs = &**it;
+        R_constant* Cs = cs._get();
         VERIFY(Cs);
+
         if (Cs && Cs->handler)
             Cs->handler->setup(*this, Cs);
     }

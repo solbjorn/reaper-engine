@@ -43,7 +43,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
         pType->GetDesc(&m_MembersList[i]);
         //	Buffers with the same layout can contain totally different members
         CHK_DX(pVar->GetDesc(&var_desc));
-        m_MembersNames[i] = var_desc.Name;
+        m_MembersNames[i]._set(var_desc.Name);
     }
 
     m_uiMembersXXH = xxh::XXH3_64bits(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));

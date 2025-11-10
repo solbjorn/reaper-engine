@@ -4,17 +4,22 @@
 
 #include "stdafx.h"
 
-#include "../../xr_3da/Render.h"
 #include "SkeletonX.h"
+
 #include "SkeletonCustom.h"
-#include "../../xr_3da/fmesh.h"
 #include "xrSkinXW.h"
 
+#include "../../xr_3da/Render.h"
+#include "../../xr_3da/fmesh.h"
+
+namespace
+{
 // Для экспериментов
 // #define QUATERNION_SKINNING
 
 constexpr const char* s_bones_array_const = "sbones_array";
 constexpr const char* s_bones_array_prev_const = "sbones_array_prev";
+} // namespace
 
 //////////////////////////////////////////////////////////////////////
 // Body Part
@@ -252,7 +257,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_1L: // 1-Link
     case 1: {
         // size = dwVertCount * sizeof(vertBoned1W);
-        vertBoned1W* pVO = (vertBoned1W*)data->pointer();
+        const vertBoned1W* pVO = (const vertBoned1W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -282,7 +287,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         {
             // software
             // crc = crc32(data->pointer(), size);
-            Vertices1W.create(dwVertCount, (vertBoned1W*)data->pointer());
+            Vertices1W.create(dwVertCount, (const vertBoned1W*)data->pointer());
             RImplementation.shader_option_skinning(-1);
         }
     }
@@ -290,7 +295,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_2L: // 2-Link
     case 2: {
         // size = dwVertCount * sizeof(vertBoned2W);
-        vertBoned2W* pVO = (vertBoned2W*)data->pointer();
+        const vertBoned2W* pVO = (const vertBoned2W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -316,7 +321,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         {
             // software
             // crc = crc32(data->pointer(), size);
-            Vertices2W.create(dwVertCount, (vertBoned2W*)data->pointer());
+            Vertices2W.create(dwVertCount, (const vertBoned2W*)data->pointer());
             RImplementation.shader_option_skinning(-1);
         }
     }
@@ -324,7 +329,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_3L: // 3-Link
     case 3: {
         // size = dwVertCount * sizeof(vertBoned3W);
-        vertBoned3W* pVO = (vertBoned3W*)data->pointer();
+        const vertBoned3W* pVO = (const vertBoned3W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -347,7 +352,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         else
         {
             // crc = crc32(data->pointer(), size);
-            Vertices3W.create(dwVertCount, (vertBoned3W*)data->pointer());
+            Vertices3W.create(dwVertCount, (const vertBoned3W*)data->pointer());
             RImplementation.shader_option_skinning(-1);
         }
     }
@@ -355,7 +360,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_4L: // 4-Link
     case 4: {
         // size = dwVertCount * sizeof(vertBoned4W);
-        vertBoned4W* pVO = (vertBoned4W*)data->pointer();
+        const vertBoned4W* pVO = (const vertBoned4W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -379,7 +384,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         else
         {
             // crc = crc32(data->pointer(), size);
-            Vertices4W.create(dwVertCount, (vertBoned4W*)data->pointer());
+            Vertices4W.create(dwVertCount, (const vertBoned4W*)data->pointer());
             RImplementation.shader_option_skinning(-1);
         }
     }
@@ -680,5 +685,5 @@ void CSkeletonX::_DuplicateIndices(IReader* data)
 
     // u32 size = iCount * 2;
     // u32 crc = crc32(data->pointer(), size);
-    m_Indices.create(iCount, (u16*)data->pointer());
+    m_Indices.create(iCount, (const u16*)data->pointer());
 }

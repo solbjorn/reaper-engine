@@ -43,7 +43,7 @@ CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
     strcat_s(temp, p.m_game_type);
     strcat_s(temp, "/");
     strcat_s(temp, p.m_alife);
-    *command_line = temp;
+    command_line->_set(temp);
 
     LPCSTR start_game_callback = pSettings->r_string(alife_section, "start_game_callback");
     sol::function function;

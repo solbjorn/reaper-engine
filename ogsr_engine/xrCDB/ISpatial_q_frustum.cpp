@@ -2,7 +2,7 @@
 
 namespace
 {
-class alignas(8) walker
+class XR_TRIVIAL walker
 {
 public:
     ISpatial_DB* space;
@@ -11,7 +11,32 @@ public:
     u32 mask;
 
 public:
-    walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F) : space{_space}, F{_F}, mask{_mask} {}
+    constexpr walker() = delete;
+    constexpr explicit walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F) : space{_space}, F{_F}, mask{_mask} {}
+
+    constexpr walker(const walker& that) { xr::memcpy64(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr walker(walker&&) = default;
+#else
+    [[maybe_unused]] constexpr walker(walker&& that) { xr::memcpy64(this, &that, sizeof(that)); }
+#endif
+
+    constexpr walker& operator=(const walker& that)
+    {
+        xr::memcpy64(this, &that, sizeof(that));
+        return *this;
+    }
+
+#ifdef XR_TRIVIAL_BROKEN
+    [[maybe_unused]] constexpr walker& operator=(walker&&) = default;
+#else
+    [[maybe_unused]] constexpr walker& operator=(walker&& that)
+    {
+        xr::memcpy64(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
 
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
     {
@@ -51,6 +76,7 @@ public:
         }
     }
 };
+XR_TRIVIAL_ASSERT(walker);
 } // namespace
 
 void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _mask, const CFrustum& _frustum)
@@ -58,7 +84,7 @@ void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _mask, const CFrustum& 
     cs.Enter();
     q_result = &R;
     q_result->clear();
-    walker W(this, _mask, &_frustum);
+    walker W{this, _mask, &_frustum};
     W.walk(m_root, m_center, m_bounds, _frustum.getMask());
     cs.Leave();
 }

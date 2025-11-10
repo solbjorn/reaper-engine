@@ -90,7 +90,7 @@ protected:
     using inherited = CAnimatorCamEffector;
 
 public:
-    CAnimatorCamEffectorScriptCB(LPCSTR _cb) : cb_name{_cb} {}
+    explicit CAnimatorCamEffectorScriptCB(LPCSTR _cb) : cb_name{_cb} {}
 
     virtual BOOL Valid();
     virtual BOOL AllowProcessingIfInvalid() { return m_bAbsolutePositioning; }
@@ -135,7 +135,7 @@ class CCameraEffectorControlled : public CAnimatorCamLerpEffector
 public:
     CEffectorController* m_controller;
 
-    CCameraEffectorControlled(CEffectorController* c);
+    explicit CCameraEffectorControlled(CEffectorController* c);
     virtual ~CCameraEffectorControlled();
 
     virtual BOOL Valid();
@@ -188,7 +188,7 @@ private:
     float m_dest_fov;
 
 public:
-    CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
+    explicit CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
 
     [[nodiscard]] BOOL ProcessCam(SCamEffectorInfo& info) override;
 };

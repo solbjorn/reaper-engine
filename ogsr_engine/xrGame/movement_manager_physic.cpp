@@ -179,8 +179,6 @@ Fvector CMovementManager::path_position(const float& time_to_check)
 
 void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fvector& dest_position, float time_delta)
 {
-    START_PROFILE("Build Path/Move Along Path")
-
     VERIFY(movement_control);
 
     Fvector motion;
@@ -307,13 +305,10 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
     {
         if (!movement_control->PhysicsOnlyMode())
         {
-            Fvector velocity = {0.f, 0.f, 0.f};
-            movement_control->SetVelocity(velocity);
+            movement_control->SetVelocity({});
             m_speed = 0.f;
         }
     }
 
     Device.Statistic->Physics.End();
-
-    STOP_PROFILE
 }

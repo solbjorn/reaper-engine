@@ -17,8 +17,11 @@ struct ITEM_DATA
     int index;
     int pos_in_file;
     CUIXml* _xml;
+
+    constexpr ITEM_DATA() = default;
+    constexpr explicit ITEM_DATA(gsl::czstring str, int idx, int pos, CUIXml* xml) : index{idx}, pos_in_file{pos}, _xml{xml} { id._set(str); }
 };
-typedef xr_vector<ITEM_DATA> T_VECTOR;
+using T_VECTOR = xr_vector<ITEM_DATA>;
 
 void _destroy_item_data_vector_cont(T_VECTOR* vec);
 
@@ -55,7 +58,7 @@ public:
         return item ? item->index : default_index;
     }
 
-    static const shared_str IndexToId(int index, shared_str default_id = nullptr, bool no_assert = false)
+    static const shared_str IndexToId(int index, shared_str default_id = {}, bool no_assert = false)
     {
         const ITEM_DATA* item = GetByIndex(index, no_assert);
         return item ? item->id : default_id;
@@ -143,7 +146,7 @@ void CSXML_IdToIndex::InitInternal()
     int index = 0;
     for (int it = 0; it < count; ++it)
     {
-        _GetItem(file_str, it, xml_file);
+        std::ignore = _GetItem(file_str, it, xml_file);
 
         CUIXml* uiXml = xr_new<CUIXml>();
         xr_string xml_file_full;
@@ -167,13 +170,7 @@ void CSXML_IdToIndex::InitInternal()
             for (const auto& item : *m_pItemDataVector)
                 R_ASSERT3(std::is_neq(xr_strcmp(item.id, item_name)), "duplicate item id", item_name);
 
-            ITEM_DATA data;
-            data.id = item_name;
-            data.index = index;
-            data.pos_in_file = i;
-            //.				data.file_name		= xml_file;
-            data._xml = uiXml;
-            m_pItemDataVector->push_back(data);
+            m_pItemDataVector->emplace_back(item_name, index, i, uiXml);
 
             index++;
         }

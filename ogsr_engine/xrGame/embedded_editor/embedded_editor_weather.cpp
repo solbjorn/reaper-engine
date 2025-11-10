@@ -123,10 +123,12 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
         // f.w_float(el->m_identifier.c_str(), "dof_kernel", el->dof_kernel);
         // f.w_float(el->m_identifier.c_str(), "dof_sky", el->dof_sky);
     }
+
     string_path fileName;
-    FS.update_path(fileName, "$game_weathers$", name.c_str());
+    std::ignore = FS.update_path(fileName, "$game_weathers$", name.c_str());
+
     strconcat(sizeof(fileName), fileName, fileName, ".ltx");
-    f.save_as(fileName);
+    std::ignore = f.save_as(fileName);
 }
 
 // void nextTexture(char* tex, int texSize, int offset)
@@ -216,7 +218,7 @@ bool SelectTexture(const char* label, shared_str& texName)
     ImGui::PushID(label);
     if (ImGui::InputText("", tex, 100))
     {
-        texName = tex;
+        texName._set(tex);
         changed = true;
     }
     ImGui::SameLine();
@@ -283,7 +285,7 @@ bool SelectTexture(const char* label, shared_str& texName)
                  std::is_eq(xr::strcasecmp(ext, ".ogm"))))
                 *ext = '\0';
 
-            texName = tex;
+            texName._set(tex);
             changed = true;
         }
 
@@ -449,7 +451,7 @@ void ShowWeatherEditor(bool& show)
     {
         string1024 buf;
         xr_strconcat(buf, cur->sky_texture_name.data(), "#small");
-        cur->sky_texture_env_name = buf;
+        cur->sky_texture_env_name._set(buf);
         cur->get();
         changed = true;
     }

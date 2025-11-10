@@ -16,6 +16,8 @@
 #include "ui/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
 
+#include "string_table.h"
+
 /* Декларация о стиле экспорта свойств и методов:
      * Свойства объектов экспортируются по возможности так, как они выглядят в файлах конфигурации (*.ltx), а не так как они названы в исходниках движка
      * Методы объектов экспортируются согласно стилю экспорта для game_object, т.е без использования прописных букв.
@@ -108,13 +110,11 @@ static CScriptGameObject* get_inventory_target(CInventory* I) { return item_lua_
 static LPCSTR get_item_name(CInventoryItem* I) { return I->Name(); }
 static LPCSTR get_item_name_short(CInventoryItem* I) { return I->NameShort(); }
 
-#include "string_table.h"
-
-static void set_item_name(CInventoryItem* item, LPCSTR name) { item->m_name = CStringTable().translate(name); }
-static void set_item_name_short(CInventoryItem* item, LPCSTR name) { item->m_nameShort = CStringTable().translate(name); }
+static void set_item_name(CInventoryItem* item, LPCSTR name) { item->m_name = CStringTable().translate(shared_str{name}); }
+static void set_item_name_short(CInventoryItem* item, LPCSTR name) { item->m_nameShort = CStringTable().translate(shared_str{name}); }
 
 static LPCSTR get_item_description(CInventoryItem* I) { return I->m_Description.c_str(); }
-static void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Description = CStringTable().translate(text); }
+static void set_item_description(CInventoryItem* item, LPCSTR text) { item->m_Description = CStringTable().translate(shared_str{text}); }
 
 static luabind::object get_slots(CInventoryItem* itm)
 {
@@ -264,15 +264,15 @@ static LPCSTR get_scope_name(CWeapon* I) { return I->m_sScopeName.c_str(); }
 static void set_scope_name(CWeapon* item, LPCSTR text)
 {
     item->m_allScopeNames.erase(std::remove(item->m_allScopeNames.begin(), item->m_allScopeNames.end(), item->m_sScopeName), item->m_allScopeNames.end());
-    item->m_sScopeName = text;
+    item->m_sScopeName._set(text);
     item->m_allScopeNames.push_back(item->m_sScopeName);
 }
 
 static LPCSTR get_silencer_name(CWeapon* I) { return I->m_sSilencerName.c_str(); }
-static void set_silencer_name(CWeapon* item, LPCSTR text) { item->m_sSilencerName = text; }
+static void set_silencer_name(CWeapon* item, LPCSTR text) { item->m_sSilencerName._set(text); }
 
 static LPCSTR get_grenade_launcher_name(CWeapon* I) { return I->m_sGrenadeLauncherName.c_str(); }
-static void set_grenade_launcher_name(CWeapon* item, LPCSTR text) { item->m_sGrenadeLauncherName = text; }
+static void set_grenade_launcher_name(CWeapon* item, LPCSTR text) { item->m_sGrenadeLauncherName._set(text); }
 
 void CWeaponScript::script_register(sol::state_view& lua)
 {

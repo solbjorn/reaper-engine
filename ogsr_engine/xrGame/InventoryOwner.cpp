@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "InventoryOwner.h"
+
 #include "entity_alive.h"
 #include "pda.h"
 #include "actor.h"
@@ -107,7 +108,7 @@ BOOL CInventoryOwner::net_Spawn(CSE_Abstract* DC)
     if (m_trade_parameters)
         xr_delete(m_trade_parameters);
 
-    m_trade_parameters = xr_new<CTradeParameters>(trade_section());
+    m_trade_parameters = xr_new<CTradeParameters>(shared_str{trade_section()});
 
     // получить указатель на объект, InventoryOwner
     //  m_inventory->setSlotsBlocked(false);

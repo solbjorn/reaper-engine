@@ -26,7 +26,6 @@
 #include "../../../UI/UIStatic.h"
 #include "../../../ai_object_location.h"
 #include "profiler.h"
-#include "../../../ActorEffector.h"
 #include "../../../../xr_3da/CameraBase.h"
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector& Position, float power, float time_to_stop)
@@ -146,7 +145,7 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
             CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effBigMonsterHit);
             if (!ce)
             {
-                const shared_str& eff_sect = pSettings->r_string(cNameSect(), "actor_hit_effect");
+                const shared_str& eff_sect = pSettings->r_string<shared_str>(cNameSect(), "actor_hit_effect");
                 if (eff_sect.c_str())
                 {
                     int id = -1;
@@ -198,9 +197,9 @@ void CBaseMonster::HitEntity(const CEntity* pEntity, float fDamage, float impuls
                     }
 
                     string64 sect_name;
-
                     sprintf_s(sect_name, "%s_%d", eff_sect.c_str(), id);
-                    AddEffector(Actor(), effBigMonsterHit, sect_name, fDamage);
+
+                    AddEffector(Actor(), effBigMonsterHit, shared_str{sect_name}, fDamage);
                 }
             }
             //////////////////////////////////////////////////////////////////////////
@@ -249,7 +248,7 @@ void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16
     if (!g_Alive())
         return;
 
-    feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, nullptr, who->Position(), 1.f, ::Sound->get_time() + 2.f);
+    feel_sound_new(who, SOUND_TYPE_WEAPON_SHOOTING, {}, who->Position(), 1.f, ::Sound->get_time() + 2.f);
     if (g_Alive())
         sound().play(MonsterSound::eMonsterSoundTakeDamage);
 

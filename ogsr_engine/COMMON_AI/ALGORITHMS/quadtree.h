@@ -38,7 +38,7 @@ public:
     template <typename T>
     struct CPool
     {
-        CPool(u32 max_object_count) : m_max_object_count{max_object_count} {}
+        explicit CPool(u32 max_object_count) : m_max_object_count{max_object_count} {}
 
         T* get_object()
         {
@@ -109,8 +109,9 @@ protected:
     IC void all(xr_vector<_object_type*>& objects, CQuadNode* node, int depth) const;
 
 public:
-    IC CQuadTree(const Fbox& box, float min_cell_size, u32 max_node_count, u32 max_list_item_count);
+    inline explicit CQuadTree(const Fbox& box, float min_cell_size, u32 max_node_count, u32 max_list_item_count);
     virtual ~CQuadTree();
+
     IC void clear();
     IC void insert(_object_type* object);
     IC _object_type* remove(const _object_type* object);

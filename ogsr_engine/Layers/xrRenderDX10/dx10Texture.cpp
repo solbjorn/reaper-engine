@@ -16,7 +16,9 @@ void fix_texture_name(char* fn)
         *_ext = '\0';
 }
 
-static inline int get_texture_load_lod([[maybe_unused]] const char* fn)
+namespace
+{
+[[nodiscard]] inline int get_texture_load_lod([[maybe_unused]] const char* fn)
 {
 #ifdef USE_REDUCE_LOD_TEXTURE_LIST
     xr_strlwr(fn);
@@ -62,23 +64,24 @@ static inline int get_texture_load_lod([[maybe_unused]] const char* fn)
     }
 }
 
-static inline u32 calc_texture_size(const int lod, const size_t mip_cnt, const size_t orig_size)
+[[nodiscard]] constexpr u32 calc_texture_size(int lod, size_t mip_cnt, size_t orig_size)
 {
     if (1 == mip_cnt)
         return orig_size;
 
     int _lod = lod;
-    float res = float(orig_size);
+    f32 res = gsl::narrow_cast<f32>(orig_size);
 
     while (_lod > 0)
     {
         --_lod;
         res -= res / 1.333f;
     }
-    return iFloor(res);
+
+    return gsl::narrow_cast<u32>(std::floor(res));
 }
 
-static inline void reduce(size_t& w, size_t& h, size_t& l, int skip)
+constexpr void reduce(size_t& w, size_t& h, size_t& l, int skip)
 {
     while ((l > 1) && skip)
     {
@@ -93,6 +96,7 @@ static inline void reduce(size_t& w, size_t& h, size_t& l, int skip)
     if (h < 1)
         h = 1;
 }
+} // namespace
 
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
@@ -135,7 +139,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     do
     {
         DirectX::ScratchImage texture{};
-        if (const auto hr = LoadFromDDSMemory(static_cast<std::byte*>(File->pointer()), File->length(), dds_flags, &IMG, texture); FAILED(hr))
+        if (const auto hr = LoadFromDDSMemory(static_cast<const std::byte*>(File->pointer()), File->length(), dds_flags, &IMG, texture); FAILED(hr))
         {
             Msg("! Failed to load DDS texture from memory: [%s], hr: [0x%lx]", fn, gsl::narrow_cast<unsigned long>(hr));
             break;

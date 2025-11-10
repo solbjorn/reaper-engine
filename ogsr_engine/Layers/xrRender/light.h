@@ -106,10 +106,11 @@ public:
     } X;
 
     virtual void set_type(LT type) { flags.type = type; }
-    virtual u32 get_type() const override { return flags.type; }
+    [[nodiscard]] u32 get_type() const override { return flags.type; }
     virtual void set_active(bool b);
-    virtual bool get_active() { return flags.bActive; }
+    [[nodiscard]] bool get_active() const override { return flags.bActive; }
     virtual void set_shadow(bool b) { flags.bShadow = b; }
+
     virtual void set_volumetric(bool b, bool manual = false)
     {
         flags.bVolumetricManual = manual;
@@ -128,18 +129,18 @@ public:
     virtual void set_rotation(const Fvector& D, const Fvector& R);
     virtual void set_cone(float angle);
     virtual void set_range(float R);
-    float get_range() const override { return range; }
+    [[nodiscard]] f32 get_range() const override { return range; }
     virtual void set_virtual_size(float S) { virtual_size = (S > MIN_VIRTUAL_SIZE) ? S : MIN_VIRTUAL_SIZE; }
 
     virtual void set_color(const Fcolor& C) { color.set(C); }
     virtual void set_color(float r, float g, float b) { color.set(r, g, b, 1); }
-    Fcolor get_color() const override { return color; }
+    [[nodiscard]] Fcolor get_color() const override { return color; }
 
     virtual void set_texture(LPCSTR name);
     virtual void set_hud_mode(bool b) { flags.bHudMode = b; }
-    virtual bool get_hud_mode() { return flags.bHudMode; }
+    [[nodiscard]] bool get_hud_mode() const override { return flags.bHudMode; }
 
-    virtual void set_moveable(bool b) override { flags.bMoveable = b; }
+    void set_moveable(bool b) override { flags.bMoveable = b; }
 
     virtual void spatial_move();
     virtual Fvector spatial_sector_point();

@@ -15,7 +15,7 @@ IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
     VERIFY(m_reader);
     m_header.load(m_reader);
     R_ASSERT2(header().version() == XRAI_CURRENT_VERSION, "Graph version mismatch!");
-    m_nodes = (CVertex*)m_reader->pointer();
+    m_nodes = (const CVertex*)m_reader->pointer();
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     m_enabled.assign(header().vertex_count(), true);
 
@@ -26,9 +26,9 @@ IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
     }
     else
     {
-        u8* temp = (u8*)(m_nodes + header().vertex_count());
+        const u8* temp = (const u8*)(m_nodes + header().vertex_count());
         temp += header().edge_count() * sizeof(CGameGraph::CEdge);
-        m_cross_tables = (u32*)(((CLevelPoint*)temp) + header().death_point_count());
+        m_cross_tables = (const u32*)(((const CLevelPoint*)temp) + header().death_point_count());
         m_current_level_cross_table = nullptr;
     }
 }
@@ -91,7 +91,7 @@ IC bool CGameGraph::valid_vertex_id(const u32& vertex_id) const { return (vertex
 
 IC void CGameGraph::begin(const u32& vertex_id, const_iterator& start, const_iterator& end) const
 {
-    end = (start = (const CEdge*)((BYTE*)m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
+    end = (start = (const CEdge*)((const BYTE*)m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
 }
 
 inline const CGameGraph::_GRAPH_ID& CGameGraph::value(const u32&, const_iterator& i) const { return i->vertex_id(); }
@@ -199,7 +199,7 @@ IC const float& GameGraph::CEdge::distance() const { return (m_path_distance); }
 IC void CGameGraph::begin_spawn(const u32& vertex_id, const_spawn_iterator& start, const_spawn_iterator& end) const
 {
     const CVertex* object = vertex(vertex_id);
-    start = (const_spawn_iterator)((u8*)m_nodes + object->death_point_offset());
+    start = (const_spawn_iterator)((const u8*)m_nodes + object->death_point_offset());
     end = start + object->death_point_count();
 }
 
@@ -280,12 +280,12 @@ IC void CGameGraph::set_current_level(const u32& level_id)
     xr_delete(m_current_level_cross_table);
     if (m_cross_tables)
     {
-        u32* current_cross_table = m_cross_tables;
+        const u32* current_cross_table = m_cross_tables;
         for (const auto& levelPair : header().levels())
         {
             if (level_id != levelPair.first)
             {
-                current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
+                current_cross_table = (const u32*)((const u8*)current_cross_table + *current_cross_table);
                 continue;
             }
 
@@ -296,11 +296,13 @@ IC void CGameGraph::set_current_level(const u32& level_id)
     else
     {
         string_path fName;
-        FS.update_path(fName, "$level$", CROSS_TABLE_NAME);
+        std::ignore = FS.update_path(fName, "$level$", CROSS_TABLE_NAME);
         m_current_level_cross_table = xr_new<CGameLevelCrossTable>(fName);
     }
+
     VERIFY(m_current_level_cross_table);
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
+
     for (_GRAPH_ID i = 0, n = header().vertex_count(); i < n; ++i)
     {
         if (level_id != vertex(i)->level_id())

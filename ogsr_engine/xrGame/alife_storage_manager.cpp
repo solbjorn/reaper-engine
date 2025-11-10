@@ -86,7 +86,7 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
     }
 
     string_path temp;
-    FS.update_path(temp, "$game_saves$", m_save_name);
+    std::ignore = FS.update_path(temp, "$game_saves$", m_save_name);
     IWriter* writer = FS.w_open(temp);
     writer->w_u32(u32(-1));
     writer->w_u32(ALIFE_VERSION);
@@ -95,6 +95,7 @@ void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
     writer->w(dest_data, dest_count);
     xr_free(dest_data);
     FS.w_close(writer);
+
 #ifdef DEBUG
     Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, source_count, dest_count + 4);
 #else // DEBUG
@@ -161,7 +162,7 @@ bool CALifeStorageManager::load(LPCSTR save_name)
     strcpy_s(m_loaded_save, sizeof(m_loaded_save) - 1, m_save_name);
 
     string_path file_name;
-    FS.update_path(file_name, "$game_saves$", m_save_name);
+    std::ignore = FS.update_path(file_name, "$game_saves$", m_save_name);
 
     IReader* stream;
     stream = FS.r_open(file_name);

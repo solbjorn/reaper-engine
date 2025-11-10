@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Environment.h"
+
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
 #include "rain.h"
@@ -80,7 +81,7 @@ float CEnvModifier::sum(CEnvModifier& M, Fvector3& view)
 //-----------------------------------------------------------------------------
 void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 {
-    m_load_section = sect;
+    m_load_section._set(sect);
 
     m_sound_dist.x = config.r_float(m_load_section, "min_distance");
     m_sound_dist.y = config.r_float(m_load_section, "max_distance");
@@ -104,7 +105,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
 
     for (u32 k = 0; k < cnt; ++k)
     {
-        _GetItem(snds, k, tmp);
+        std::ignore = _GetItem(snds, k, tmp);
         m_sounds[k].create(tmp, st_Effect, sg_SourceType);
     }
 }
@@ -113,7 +114,7 @@ CEnvAmbient::SEffect* CEnvAmbient::create_effect(CInifile& config, LPCSTR id)
 {
     SEffect* result = xr_new<SEffect>();
     result->life_time = iFloor(config.r_float(id, "life_time") * 1000.f);
-    result->particles = config.r_string(id, "particles");
+    result->particles._set(config.r_string(id, "particles"));
     VERIFY(result->particles.size());
     result->offset = config.r_fvector3(id, "offset");
     result->wind_gust_factor = config.r_float(id, "wind_gust_factor");
@@ -155,7 +156,7 @@ void CEnvAmbient::destroy()
 
 void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_config, CInifile& effects_config, const shared_str& sect)
 {
-    m_ambients_config_filename = ambients_config.fname();
+    m_ambients_config_filename._set(ambients_config.fname());
     m_load_section = sect;
     string_path tmp;
 
@@ -215,9 +216,9 @@ void CEnvAmbient::load_shoc(const shared_str& sect)
             effects.resize(cnt);
             for (u32 k = 0; k < cnt; ++k)
             {
-                _GetItem(effs, k, tmp);
+                std::ignore = _GetItem(effs, k, tmp);
                 effects[k].life_time = iFloor(pSettings->r_float(tmp, "life_time") * 1000.f);
-                effects[k].particles = pSettings->r_string(tmp, "particles");
+                effects[k].particles._set(pSettings->r_string(tmp, "particles"));
                 VERIFY(effects[k].particles.size());
                 effects[k].offset = pSettings->r_fvector3(tmp, "offset");
                 effects[k].wind_gust_factor = pSettings->r_float(tmp, "wind_gust_factor");
@@ -268,8 +269,8 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier{iden
     bloom.set(3.5f, 3.f, 0, 0.6f);
     sky_height = 1.f;
 
-    lens_flare_id = "";
-    tb_id = "";
+    lens_flare_id._set("");
+    tb_id._set("");
 }
 
 #define C_CHECK(C) \
@@ -322,7 +323,7 @@ void CEnvDescriptor::load_common(CInifile* config)
 
 void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 {
-    Ivector3 tm = {0, 0, 0};
+    Ivector3 tm{};
     sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
     R_ASSERT3((tm.x >= 0) && (tm.x < 24) && (tm.y >= 0) && (tm.y < 60) && (tm.z >= 0) && (tm.z < 60), "Incorrect weather time", m_identifier.c_str());
     exec_time = tm.x * 3600.f + tm.y * 60.f + tm.z;
@@ -330,9 +331,9 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     string_path st, st_env;
     xr_strcpy(st, config.r_string(m_identifier.c_str(), "sky_texture"));
     strconcat(sizeof(st_env), st_env, st, "#small");
-    sky_texture_name = st;
-    sky_texture_env_name = st_env;
-    clouds_texture_name = config.r_string(m_identifier.c_str(), "clouds_texture");
+    sky_texture_name._set(st);
+    sky_texture_env_name._set(st_env);
+    clouds_texture_name._set(config.r_string(m_identifier.c_str(), "clouds_texture"));
     LPCSTR cldclr = config.r_string(m_identifier.c_str(), "clouds_color");
     float x, y, z, w, multiplier = 0;
     sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
@@ -377,7 +378,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
                                                    config.r_string(m_identifier.c_str(), "thunderbolt_collection"));
     bolt_period = (tb_id.size()) ? config.r_float(m_identifier.c_str(), "thunderbolt_period") : 0.f;
     bolt_duration = (tb_id.size()) ? config.r_float(m_identifier.c_str(), "thunderbolt_duration") : 0.f;
-    env_ambient = config.line_exist(m_identifier.c_str(), "ambient") ? environment.AppendEnvAmb(config.r_string(m_identifier.c_str(), "ambient")) : nullptr;
+    env_ambient = config.line_exist(m_identifier.c_str(), "ambient") ? environment.AppendEnvAmb(config.r_string<shared_str>(m_identifier, "ambient")) : nullptr;
 
     if (config.line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = config.r_float(m_identifier.c_str(), "sun_shafts_intensity");
@@ -402,15 +403,15 @@ void CEnvDescriptor::load_shoc(CEnvironment& environment, LPCSTR exec_tm, LPCSTR
 
 void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environment)
 {
-    m_identifier = S;
+    m_identifier._set(S);
     exec_time = exec_tm;
     exec_time_loaded = exec_time;
     string_path st, st_env;
     xr_strcpy(st, pSettings->r_string(m_identifier.c_str(), "sky_texture"));
     strconcat(sizeof(st_env), st_env, st, "#small");
-    sky_texture_name = st;
-    sky_texture_env_name = st_env;
-    clouds_texture_name = pSettings->r_string(m_identifier.c_str(), "clouds_texture");
+    sky_texture_name._set(st);
+    sky_texture_env_name._set(st_env);
+    clouds_texture_name._set(pSettings->r_string(m_identifier.c_str(), "clouds_texture"));
     LPCSTR cldclr = pSettings->r_string(m_identifier.c_str(), "clouds_color");
     float x, y, z, w, multiplier = 0;
     sscanf(cldclr, "%f,%f,%f,%f,%f", &x, &y, &z, &w, &multiplier);
@@ -450,7 +451,7 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
     tb_id = environment.eff_Thunderbolt->AppendDef_shoc(environment, pSettings, pSettings->r_string(m_identifier.c_str(), "thunderbolt"));
     bolt_period = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_period") : 0.f;
     bolt_duration = (tb_id.size()) ? pSettings->r_float(m_identifier.c_str(), "bolt_duration") : 0.f;
-    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string(m_identifier.c_str(), "env_ambient")) : nullptr;
+    env_ambient = pSettings->line_exist(m_identifier.c_str(), "env_ambient") ? environment.AppendEnvAmb(pSettings->r_string<shared_str>(m_identifier, "env_ambient")) : nullptr;
 
     if (pSettings->line_exist(m_identifier.c_str(), "sun_shafts_intensity"))
         m_fSunShaftsIntensity = pSettings->r_float(m_identifier.c_str(), "sun_shafts_intensity");
@@ -471,7 +472,7 @@ void CEnvDescriptor::get() { m_pDescriptor->OnDeviceCreate(*this); }
 void CEnvDescriptor::put() { m_pDescriptor->OnDeviceDestroy(); }
 
 void CEnvDescriptor::set_sun(LPCSTR sect, CEnvironment* parent) { lens_flare_id = parent->eff_LensFlare->AppendDef(*parent, sect); }
-void CEnvDescriptor::setEnvAmbient(LPCSTR sect, CEnvironment* parent) { env_ambient = parent->AppendEnvAmb(sect); }
+void CEnvDescriptor::setEnvAmbient(LPCSTR sect, CEnvironment* parent) { env_ambient = parent->AppendEnvAmb(shared_str{sect}); }
 
 //-----------------------------------------------------------------------------
 // Environment Mixer
@@ -575,12 +576,12 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
     string_path temp_name;
 
     if (!A.sky_texture_name.empty() && !B.sky_texture_name.empty())
-        sky_texture_name = xr_strconcat(temp_name, A.sky_texture_name.c_str(), "; ", B.sky_texture_name.c_str());
+        sky_texture_name._set(xr_strconcat(temp_name, A.sky_texture_name.c_str(), "; ", B.sky_texture_name.c_str()));
     else
         sky_texture_name = f < 0.5f ? A.sky_texture_name : B.sky_texture_name;
 
     if (!A.clouds_texture_name.empty() && !B.clouds_texture_name.empty())
-        clouds_texture_name = xr_strconcat(temp_name, A.clouds_texture_name.c_str(), "; ", B.clouds_texture_name.c_str());
+        clouds_texture_name._set(xr_strconcat(temp_name, A.clouds_texture_name.c_str(), "; ", B.clouds_texture_name.c_str()));
     else
         clouds_texture_name = f < 0.5f ? A.clouds_texture_name : B.clouds_texture_name;
 }
@@ -724,10 +725,10 @@ void CEnvironment::load_weathers()
             strncpy_s(identifier, file, length - 4);
 
             string_path file_name;
-            FS.update_path(file_name, "$game_weathers$", file);
-            CInifile config(file_name);
+            std::ignore = FS.update_path(file_name, "$game_weathers$", file);
+            CInifile config{file_name};
 
-            EnvVec& env = WeatherCycles[identifier];
+            EnvVec& env = WeatherCycles[shared_str{identifier}];
             auto& sections = config.sections();
             env.reserve(sections.size());
 
@@ -757,7 +758,7 @@ void CEnvironment::load_weathers()
                 {
                     LPCSTR exec_tm, sect_e;
                     if (pSettings->r_line(sect_w, env_idx, &exec_tm, &sect_e))
-                        WeatherCycles[weather].push_back(create_descriptor_shoc(exec_tm, sect_e));
+                        WeatherCycles[shared_str{weather}].push_back(create_descriptor_shoc(exec_tm, sect_e));
                 }
             }
         }
@@ -771,7 +772,7 @@ void CEnvironment::load_weathers()
     }
 
     R_ASSERT2(!WeatherCycles.empty(), "Empty weathers.");
-    SetWeather((*WeatherCycles.begin()).first.c_str());
+    SetWeather((*WeatherCycles.begin()).first);
 }
 
 void CEnvironment::load_weather_effects()
@@ -791,22 +792,22 @@ void CEnvironment::load_weather_effects()
             strncpy_s(identifier, file, length - 4);
 
             string_path file_name;
-            FS.update_path(file_name, "$game_weather_effects$", file);
-            CInifile config(file_name);
+            std::ignore = FS.update_path(file_name, "$game_weather_effects$", file);
+            CInifile config{file_name};
             auto& sections = config.sections();
 
-            EnvVec& env = WeatherFXs[identifier];
+            EnvVec& env = WeatherFXs[shared_str{identifier}];
             env.reserve(sections.size() + 2);
-            env.push_back(create_descriptor("00:00:00", nullptr));
+            env.push_back(create_descriptor(shared_str{"00:00:00"}, nullptr));
 
             for (const auto& pair : sections)
             {
                 int h, m, s;
-                if (sscanf(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
+                if (sscanf_s(pair.second->Name.c_str(), "%d:%d:%d", &m, &h, &s) == 3)
                     env.push_back(create_descriptor(pair.second->Name, &config));
             }
 
-            env.emplace_back(create_descriptor("24:00:00", nullptr))->exec_time_loaded = DAY_LENGTH;
+            env.emplace_back(create_descriptor(shared_str{"24:00:00"}, nullptr))->exec_time_loaded = DAY_LENGTH;
         }
 
         FS.file_list_close(file_list);
@@ -819,7 +820,7 @@ void CEnvironment::load_weather_effects()
             LPCSTR weather, sect_w;
             if (pSettings->r_line("weather_effects", w_idx, &weather, &sect_w))
             {
-                EnvVec& env = WeatherFXs[weather];
+                EnvVec& env = WeatherFXs[shared_str{weather}];
                 env.emplace_back(xr_new<CEnvDescriptor>())->exec_time_loaded = 0;
                 u32 env_count = pSettings->line_count(sect_w);
                 LPCSTR exec_tm, sect_e;
@@ -893,7 +894,7 @@ void CEnvironment::unload()
     xr_delete(eff_LensFlare);
     xr_delete(eff_Thunderbolt);
     CurrentWeather = nullptr;
-    CurrentWeatherName = nullptr;
+    CurrentWeatherName._set(nullptr);
     m_pRender->Clear();
     Invalidate();
 }

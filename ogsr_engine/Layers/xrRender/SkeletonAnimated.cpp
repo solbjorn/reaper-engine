@@ -468,8 +468,9 @@ void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_ble
     // Cycles
     for (u16 part = 0; part < MAX_PARTS; part++)
     {
-        if (m_Partition->part(part).Name == nullptr)
+        if (!m_Partition->part(part).Name)
             continue;
+
         I = blend_cycles[part].begin();
         E = blend_cycles[part].end();
         for (; I != E; I++)
@@ -667,7 +668,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
         for (u32 k = 0; k < set_cnt; ++k)
         {
             string_path nm;
-            _GetItem(items_nm, k, nm);
+            std::ignore = _GetItem(items_nm, k, nm);
             xr_strcat(nm, ".omf");
             omfs.push_back(nm);
         }
@@ -699,17 +700,24 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
                     FATAL("Can't find motion file [%s]", nm);
                 }
             }
+
             // Check compatibility
             m_Motions.emplace_back();
             bool create_res = true;
-            if (!g_pMotionsContainer->has(nm))
-            { // optimize fs operations
+            shared_str key{nm};
+
+            if (!g_pMotionsContainer->has(key))
+            {
+                // optimize fs operations
                 IReader* MS = FS.r_open(fn);
-                create_res = m_Motions.back().motions.create(nm, MS, bones);
+                create_res = m_Motions.back().motions.create(key, MS, bones);
                 FS.r_close(MS);
             }
+
             if (create_res)
-                m_Motions.back().motions.create(nm, nullptr, bones);
+            {
+                std::ignore = m_Motions.back().motions.create(key, nullptr, bones);
+            }
             else
             {
                 m_Motions.pop_back();
@@ -721,10 +729,10 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
     {
         string_path nm;
         strconcat(sizeof(nm), nm, N, ".ogf");
-        m_Motions.emplace_back().motions.create(nm, data, bones);
+        std::ignore = m_Motions.emplace_back().motions.create(shared_str{nm}, data, bones);
     }
 
-    R_ASSERT(m_Motions.size());
+    R_ASSERT(!m_Motions.empty());
 
     m_Partition = m_Motions[0].motions.partition();
     m_Partition->load(this);

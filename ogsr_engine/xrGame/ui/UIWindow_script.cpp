@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "UIButton.h"
 #include "UIWindow.h"
+
+#include "UIButton.h"
 #include "UIFrameWindow.h"
 #include "UIFrameLineWnd.h"
 #include "UIDialogWnd.h"
@@ -42,7 +43,6 @@ static CGameFont* GetFontCustom(LPCSTR section) { return mngr().InitializeCustom
 static int GetARGB(u16 a, u16 r, u16 g, u16 b) { return color_argb(a, r, g, b); }
 
 static Frect get_texture_rect(LPCSTR icon_name) { return CUITextureMaster::GetTextureRect(icon_name); }
-
 static LPCSTR get_texture_name(LPCSTR icon_name) { return CUITextureMaster::GetTextureFileName(icon_name); }
 
 static TEX_INFO get_texture_info(LPCSTR name, LPCSTR def_name) { return CUITextureMaster::FindItem(name, def_name); }
@@ -84,10 +84,11 @@ void CUIWindow::script_register(sol::state_view& lua)
         "DetachChild", &CUIWindow::DetachChild, "DetachAll", &CUIWindow::DetachAll, "SetAutoDelete", &CUIWindow::SetAutoDelete, "IsAutoDelete", &CUIWindow::IsAutoDelete,
         "SetWndRect", sol::overload(sol::resolve<void(Frect)>(&CUIWindow::SetWndRect_script), sol::resolve<void(float, float, float, float)>(&CUIWindow::SetWndRect_script)),
         "Init", sol::overload(sol::resolve<void(float, float, float, float)>(&CUIWindow::Init), sol::resolve<void(Frect*)>(&CUIWindow::Init)), "GetWndPos", &CUIWindow::GetWndPos,
-        "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize({w, h}); }, "GetWidth",
-        &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight", &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop", &CUIWindow::GetPosTop,
-        "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable, "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown", &CUIWindow::IsShown, "SetFont",
-        &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont, "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName", &CUIWindow::WindowName_script, "SetWindowName",
+        "SetWndPos", sol::resolve<void(float, float)>(&CUIWindow::SetWndPos), "SetWndSize", [](CUIWindow& self, float w, float h) -> void { self.SetWndSize(Fvector2{w, h}); },
+        "GetWidth", &CUIWindow::GetWidth, "SetWidth", &CUIWindow::SetWidth, "GetHeight", &CUIWindow::GetHeight, "SetHeight", &CUIWindow::SetHeight, "GetPosTop",
+        &CUIWindow::GetPosTop, "GetPosLeft", &CUIWindow::GetPosLeft, "Enable", &CUIWindow::Enable, "IsEnabled", &CUIWindow::IsEnabled, "Show", &CUIWindow::Show, "IsShown",
+        &CUIWindow::IsShown, "SetFont", &CUIWindow::SetFont, "GetFont", &CUIWindow::GetFont, "DetachFromParent", &CUIWindow::DetachFromParent, "WindowName",
+        &CUIWindow::WindowName_script, "SetWindowName",
         sol::overload(sol::resolve<void(const char*, bool)>(&CUIWindow::SetWindowName), sol::resolve<void(const char*)>(&CUIWindow::SetWindowName)), "SetPPMode",
         &CUIWindow::SetPPMode, "ResetPPMode", &CUIWindow::ResetPPMode, "GetMousePosX", &CUIWindow::GetMousePosX, "GetMousePosY", &CUIWindow::GetMousePosY, "GetParent",
         &CUIWindow::GetParent, "GetWndRect", sol::resolve<void(Frect&)>(&CUIWindow::GetWndRect_script), "IsChild", &CUIWindow::IsChild, "FindChild",

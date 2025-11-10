@@ -33,8 +33,9 @@ public:
 #endif
 
 public:
-    CPatrolPath(shared_str name = "");
+    explicit CPatrolPath(shared_str name = shared_str{""});
     virtual ~CPatrolPath();
+
     CPatrolPath& load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream);
     CPatrolPath& load_ini(CInifile::Sect& section);
     IC const CVertex* point(shared_str name) const;

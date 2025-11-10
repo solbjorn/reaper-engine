@@ -147,7 +147,7 @@ void CSoundRender_Source::close(OggVorbis_File*& ovf) const
 
 void CSoundRender_Source::LoadWave(LPCSTR pName)
 {
-    pname = pName;
+    pname._set(pName);
 
     // Load file into memory and parse WAV-format
     OggVorbis_File* ovf = xr_new<OggVorbis_File>();
@@ -160,7 +160,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     // verify
     R_ASSERT3(ovi, "Invalid source info:", pName);
 
-    ZeroMemory(&m_wformat, sizeof(WAVEFORMATEX));
+    std::memset(&m_wformat, 0, sizeof(WAVEFORMATEX));
 
     m_wformat.nSamplesPerSec = ovi->rate;
     m_wformat.nChannels = u16(ovi->channels);
@@ -243,15 +243,15 @@ void CSoundRender_Source::load(LPCSTR name)
     if (strext(N))
         *strext(N) = 0;
 
-    fname = N;
+    fname._set(N);
 
     strconcat(sizeof(fn), fn, N, ".ogg");
     if (!FS.exist("$level$", fn))
-        FS.update_path(fn, "$game_sounds$", fn);
+        std::ignore = FS.update_path(fn, "$game_sounds$", fn);
 
     ASSERT_FMT_DBG(FS.exist(fn), "! Can't find sound [%s.ogg]", N);
     if (!FS.exist(fn))
-        FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");
+        std::ignore = FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");
 
     LoadWave(fn);
 }

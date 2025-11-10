@@ -655,11 +655,10 @@ void invertrmatrix(Matrix N, Matrix M)
 //
 void rotation_principal_axis_to_deriv_matrix(char axis, float angle, Matrix m)
 {
-    float cos_a, sin_a;
+    std::memset(m, 0, sizeof(Matrix));
 
-    ZeroMemory(m, sizeof(Matrix));
-    cos_a = _cos(angle);
-    sin_a = _sin(angle);
+    f32 sin_a, cos_a;
+    DirectX::XMScalarSinCos(&sin_a, &cos_a, angle);
 
     switch (axis)
     {

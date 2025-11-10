@@ -27,9 +27,9 @@ void CAttachmentOwner::reload(LPCSTR section)
     LPCSTR attached_sections = pSettings->r_string(section, "attachable_items");
     u32 item_count = _GetItemCount(attached_sections);
     string256 current_item_section;
-    m_attach_item_sections.resize(item_count);
+    m_attach_item_sections.reserve(item_count);
     for (u32 i = 0; i < item_count; ++i)
-        m_attach_item_sections[i] = _GetItem(attached_sections, i, current_item_section);
+        m_attach_item_sections.emplace_back(_GetItem(attached_sections, i, current_item_section));
 }
 
 void CAttachmentOwner::reinit() { VERIFY(m_attached_objects.empty()); }

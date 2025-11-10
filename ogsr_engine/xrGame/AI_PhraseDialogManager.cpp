@@ -8,6 +8,7 @@
 #include "stdafx.h"
 
 #include "AI_PhraseDialogManager.h"
+
 #include "PhraseDialog.h"
 #include "inventoryowner.h"
 #include "character_info.h"
@@ -20,7 +21,7 @@
 #include "ui/UItalkWnd.h"
 
 CAI_PhraseDialogManager::CAI_PhraseDialogManager() = default;
-CAI_PhraseDialogManager::~CAI_PhraseDialogManager() {}
+CAI_PhraseDialogManager::~CAI_PhraseDialogManager() = default;
 
 // PhraseDialogManager
 void CAI_PhraseDialogManager::ReceivePhrase(DIALOG_SHARED_PTR& phrase_dialog)
@@ -67,7 +68,7 @@ void CAI_PhraseDialogManager::AnswerPhrase(DIALOG_SHARED_PTR& phrase_dialog)
         shared_str phrase_id = phrase_dialog->PhraseList()[phrase_num]->GetID();
 
         CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-        pGameSP->TalkMenu->AddAnswer(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->Name());
+        pGameSP->TalkMenu->AddAnswer(shared_str{phrase_dialog->GetPhraseText(phrase_id)}, pInvOwner->Name());
 
         CPhraseDialogManager::SayPhrase(phrase_dialog, phrase_id);
     }
@@ -83,8 +84,8 @@ void CAI_PhraseDialogManager::UpdateAvailableDialogs(CPhraseDialogManager* partn
     m_CheckedDialogs.clear();
 
     if (*m_sStartDialog)
-        std::ignore = inherited::AddAvailableDialog(*m_sStartDialog, partner);
+        std::ignore = inherited::AddAvailableDialog(m_sStartDialog, partner);
 
-    std::ignore = inherited::AddAvailableDialog("hello_dialog", partner);
+    std::ignore = inherited::AddAvailableDialog(shared_str{"hello_dialog"}, partner);
     inherited::UpdateAvailableDialogs(partner);
 }

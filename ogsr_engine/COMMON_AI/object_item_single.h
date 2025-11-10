@@ -9,8 +9,6 @@
 #ifndef object_item_singleH
 #define object_item_singleH
 
-#pragma once
-
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
 
@@ -24,7 +22,8 @@ protected:
     typedef _unknown_type SERVER_TYPE;
 
 public:
-    IC CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+    inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
 };
@@ -39,7 +38,8 @@ protected:
     typedef _unknown_type CLIENT_TYPE;
 
 public:
-    IC CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+    inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const;
 };

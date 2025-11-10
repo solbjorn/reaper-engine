@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "HudSound.h"
+
 #include "../xr_3da/x_ray.h"
 
 void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND& hud_snd, int type)
@@ -35,7 +36,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
     int count = _GetItemCount(str);
     R_ASSERT(count);
 
-    _GetItem(str, 0, buf_str);
+    std::ignore = _GetItem(str, 0, buf_str);
     snd.create(buf_str, st_Effect, type);
 
     if (volume)
@@ -43,7 +44,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
         *volume = 1.f;
         if (count > 1)
         {
-            _GetItem(str, 1, buf_str);
+            std::ignore = _GetItem(str, 1, buf_str);
             if (xr_strlen(buf_str) > 0)
                 *volume = (float)atof(buf_str);
         }
@@ -54,7 +55,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
         *delay = 0;
         if (count > 2)
         {
-            _GetItem(str, 2, buf_str);
+            std::ignore = _GetItem(str, 2, buf_str);
             if (xr_strlen(buf_str) > 0)
                 *delay = (float)atof(buf_str);
         }
@@ -65,7 +66,7 @@ void HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int type,
         *freq = 1.f;
         if (count > 3)
         {
-            _GetItem(str, 3, buf_str);
+            std::ignore = _GetItem(str, 3, buf_str);
             if (xr_strlen(buf_str) > 0)
                 *freq = (float)atof(buf_str);
         }

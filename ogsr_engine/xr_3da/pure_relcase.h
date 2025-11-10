@@ -9,11 +9,12 @@ private:
     int m_ID;
 
 public:
-    pure_relcase(const CObjectList::RELCASE_CALLBACK& cb)
+    explicit pure_relcase(const CObjectList::RELCASE_CALLBACK& cb)
     {
         R_ASSERT(g_pGameLevel);
         g_pGameLevel->Objects.relcase_register(cb, &m_ID);
     }
+
     virtual ~pure_relcase();
 };
 

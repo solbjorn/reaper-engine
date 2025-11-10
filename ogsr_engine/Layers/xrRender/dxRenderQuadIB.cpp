@@ -9,7 +9,7 @@ class IndexBufferGen
     static constexpr gsl::index dwTriCount{4 * 1024};
     static constexpr gsl::index dwIdxCount{dwTriCount * 2 * 3};
 
-    std::array<u16, dwIdxCount> Indices;
+    std::array<u16, dwIdxCount> XR_ALIGNED_DEFAULT Indices;
 
 public:
     constexpr IndexBufferGen()

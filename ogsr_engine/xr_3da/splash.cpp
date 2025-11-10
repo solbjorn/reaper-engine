@@ -49,7 +49,7 @@ static IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
         return nullptr;
     }
 
-    CopyMemory(pvResourceData, pvSourceResourceData, dwResourceSize);
+    std::memcpy(pvResourceData, pvSourceResourceData, dwResourceSize);
 
     GlobalUnlock(hgblResourceData);
 

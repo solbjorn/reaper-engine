@@ -38,7 +38,8 @@ u32 CInventoryContainer::CalcItems(SItemsInfo& info) const
 {
     CObjectList& objs = Level().Objects;
     u32 result = 0;
-    Memory.mem_fill(&info, 0, sizeof(info));
+
+    std::memset(&info, 0, sizeof(info));
 
     for (auto it = m_items.begin(); it != m_items.end(); it++)
     {
@@ -69,13 +70,16 @@ DLL_Pure* CInventoryContainer::_construct() { return inherited::_construct(); }
 BOOL CInventoryContainer::net_Spawn(CSE_Abstract* DC)
 {
     BOOL res = inherited::net_Spawn(DC);
-    if (cNameSect() == "shadow_inventory")
+
+    if (std::is_eq(xr_strcmp(cNameSect(), "shadow_inventory")))
     {
         close();
         inherited::set_tip_text("st_pick_rucksack");
     }
+
     return res;
 }
+
 void CInventoryContainer::OnEvent(NET_Packet& P, u16 type)
 {
     inherited::OnEvent(P, type);

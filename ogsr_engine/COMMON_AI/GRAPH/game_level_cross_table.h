@@ -53,18 +53,17 @@ public:
 
 private:
     CHeader m_tCrossTableHeader;
-    CCell* m_tpaCrossTable;
+    const CCell* m_tpaCrossTable;
 
 private:
     IReader* m_tpCrossTableVFS;
     IReader* m_chunk;
 
 public:
-    IC CGameLevelCrossTable(void* buffer, u32 buffer_size);
-    IC CGameLevelCrossTable(LPCSTR fName);
-
-public:
+    inline explicit CGameLevelCrossTable(const void* buffer, u32 buffer_size);
+    inline explicit CGameLevelCrossTable(LPCSTR fName);
     IC virtual ~CGameLevelCrossTable();
+
     IC const CCell& vertex(u32 level_vertex_id) const;
     IC const CHeader& header() const;
 };

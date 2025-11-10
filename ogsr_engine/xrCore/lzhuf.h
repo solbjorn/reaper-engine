@@ -1,7 +1,7 @@
 #ifndef _LZ_H_
 #define _LZ_H_
 
-extern void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz);
-extern bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size = -1);
+void _compressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz);
+[[nodiscard]] bool _decompressLZ(u8** dest, gsl::index* dest_sz, const void* src, gsl::index src_sz, gsl::index total_size = std::numeric_limits<gsl::index>::max());
 
 #endif

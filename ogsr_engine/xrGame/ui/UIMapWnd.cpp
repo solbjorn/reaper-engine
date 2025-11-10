@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIMapWnd.h"
+
 #include "UIMap.h"
 #include "UIXmlInit.h"
 
@@ -97,7 +98,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
     strconcat(sizeof(pth), pth, start_from, ":main_wnd:map_header_frame_line");
     xml_init.InitFrameLine(uiXml, pth, 0, UIMainMapHeader);
 
-    ZeroMemory(m_ToolBar, sizeof(m_ToolBar));
+    std::memset(m_ToolBar, 0, sizeof(m_ToolBar));
     xr_string sToolbar;
     sToolbar = xr_string(start_from) + ":main_wnd:map_header_frame_line:tool_bar";
 
@@ -163,7 +164,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
     m_GlobalMap = xr_new<CUIGlobalMap>(this);
     m_GlobalMap->SetAutoDelete(true);
-    m_GlobalMap->Init("global_map", gameLtx, "hud\\default");
+    m_GlobalMap->Init(shared_str{"global_map"}, gameLtx, "hud\\default");
 
     m_UILevelFrame->AttachChild(m_GlobalMap);
     m_GlobalMap->OptimalFit(m_UILevelFrame->GetWndRect());

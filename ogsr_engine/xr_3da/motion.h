@@ -40,7 +40,7 @@ struct st_BoneMotion
 
     st_BoneMotion() = default;
 
-    void SetName(LPCSTR nm) { name = nm; }
+    void SetName(LPCSTR nm) { name._set(nm); }
 };
 
 // vector по костям
@@ -73,12 +73,14 @@ public:
     {
         string256 tmp;
         tmp[0] = 0;
+
         if (n)
         {
             strcpy_s(tmp, n);
             _strlwr(tmp);
         }
-        name = tmp;
+
+        name._set(tmp);
     }
     LPCSTR Name() { return name.c_str(); }
     int FrameStart() { return iFrameStart; }
@@ -185,17 +187,21 @@ public:
     struct AnimItem
     {
         shared_str name;
-        u16 slot;
-        AnimItem() : slot(u16(-1)) {}
+        u16 slot{std::numeric_limits<u16>::max()};
+
+        constexpr AnimItem() = default;
+
         void set(shared_str nm, u16 s)
         {
             name = nm;
             slot = s;
         }
-        void clear() { set("", u16(-1)); }
-        bool valid() { return !!(name.size() && (slot != u16(-1))); }
-        bool equal(const AnimItem& d) const { return name.equal(d.name) && (slot == d.slot); }
+
+        void clear() { set(shared_str{""}, std::numeric_limits<u16>::max()); }
+        [[nodiscard]] constexpr bool valid() const { return name && slot != std::numeric_limits<u16>::max(); }
+        [[nodiscard]] constexpr bool equal(const AnimItem& d) const { return name.equal(d.name) && slot == d.slot; }
     };
+
     shared_str name;
     AnimItem cycles[4];
     AnimItem fx;

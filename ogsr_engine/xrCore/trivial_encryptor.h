@@ -3,11 +3,9 @@
 class trivial_encryptor
 {
     using type = u8;
-    using pvoid = void*;
-    using pcvoid = const void*;
 
 public:
-    static constexpr u32 alphabet_size = u32(1 << (8 * sizeof(type)));
+    static constexpr u32 alphabet_size{1u << (8 * sizeof(type))};
 
     enum class key_flag
     {
@@ -40,8 +38,8 @@ private:
 public:
     trivial_encryptor();
 
-    void encode(pcvoid source, const size_t& source_size, pvoid destination, key_flag what = key_flag::worldwide);
-    void decode(pcvoid source, const size_t& source_size, pvoid destination, key_flag what = key_flag::worldwide);
+    void encode(const void* source, gsl::index source_size, void* destination, key_flag what = key_flag::worldwide);
+    void decode(const void* source, gsl::index source_size, void* destination, key_flag what = key_flag::worldwide);
 };
 
 extern trivial_encryptor g_trivial_encryptor;

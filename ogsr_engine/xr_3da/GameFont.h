@@ -64,8 +64,8 @@ public:
     IC const Fvector& GetCharTC(u16 c) const { return TCMap[c]; }
 
 public:
-    CGameFont(LPCSTR section, u32 flags = 0);
-    CGameFont(LPCSTR shader, LPCSTR texture, const char* section, u32 flags = 0);
+    explicit CGameFont(LPCSTR section, u32 flags = 0);
+    explicit CGameFont(LPCSTR shader, LPCSTR texture, const char* section, u32 flags = 0);
     ~CGameFont();
 
     void Initialize(LPCSTR shader, LPCSTR texture, const char* sect);

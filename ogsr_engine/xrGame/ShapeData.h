@@ -11,34 +11,73 @@ public:
         cfSphere = 0,
         cfBox
     };
-    union shape_data
+
+    union XR_TRIVIAL shape_data
     {
         Fsphere sphere;
         Fmatrix box;
 
-        constexpr inline shape_data() = default;
-        constexpr inline shape_data(const shape_data& d) { box = d.box; }
+        constexpr shape_data() = default;
 
-        constexpr inline shape_data& operator=(const shape_data& d)
+        constexpr shape_data(const shape_data& that) { box = that.box; }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_data(shape_data&&) = default;
+#else
+        constexpr shape_data(shape_data&& that) { box = that.box; }
+#endif
+
+        constexpr shape_data& operator=(const shape_data& that)
         {
-            box = d.box;
+            box = that.box;
             return *this;
         }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_data& operator=(shape_data&&) = default;
+#else
+        constexpr shape_data& operator=(shape_data&& that)
+        {
+            box = that.box;
+            return *this;
+        }
+#endif
     };
-    struct shape_def
+    XR_TRIVIAL_ASSERT(shape_data);
+
+    struct XR_TRIVIAL shape_def
     {
         u8 type;
         shape_data data;
 
-        constexpr inline shape_def() = default;
-        constexpr inline shape_def(const shape_def& d) { xr_memcpy128(this, &d, sizeof(d)); }
+        constexpr shape_def() = default;
 
-        constexpr inline shape_def& operator=(const shape_def& d)
+        constexpr shape_def(const shape_def& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_def(shape_def&&) = default;
+#else
+        constexpr shape_def(shape_def&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+        constexpr shape_def& operator=(const shape_def& that)
         {
-            xr_memcpy128(this, &d, sizeof(d));
+            xr_memcpy128(this, &that, sizeof(that));
             return *this;
         }
+
+#ifdef XR_TRIVIAL_BROKEN
+        constexpr shape_def& operator=(shape_def&&) = default;
+#else
+        constexpr shape_def& operator=(shape_def&& that)
+        {
+            xr_memcpy128(this, &that, sizeof(that));
+            return *this;
+        }
+#endif
     };
+    XR_TRIVIAL_ASSERT(shape_def);
+
     DEFINE_VECTOR(shape_def, ShapeVec, ShapeIt);
     ShapeVec shapes;
 };

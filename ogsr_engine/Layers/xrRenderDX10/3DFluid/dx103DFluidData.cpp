@@ -91,9 +91,9 @@ void dx103DFluidData::Load(IReader* data)
 void dx103DFluidData::ParseProfile(const xr_string& Profile)
 {
     string_path fn;
-    FS.update_path(fn, "$game_config$", Profile.c_str());
+    std::ignore = FS.update_path(fn, "$game_config$", Profile.c_str());
 
-    dbg_name = Profile.c_str();
+    dbg_name._set(Profile.c_str());
 
     CInifile ini(fn, TRUE, TRUE, FALSE);
 

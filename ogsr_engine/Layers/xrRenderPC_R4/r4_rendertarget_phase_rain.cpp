@@ -2,22 +2,22 @@
 
 void CRenderTarget::phase_rain()
 {
-    u_setrt(RCache, rt_Color, nullptr, nullptr, rt_MSAADepth);
+    u_setrt(RCache, rt_Color, {}, {}, rt_MSAADepth);
     RImplementation.rmNormal(RCache);
 }
 
 void CRenderTarget::phase_ssfx_rain()
 {
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     RCache.set_viewport_size(w / 8.0f, h / 8.0f);
 
-    u_setrt(RCache, rt_ssfx_rain, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_rain, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 

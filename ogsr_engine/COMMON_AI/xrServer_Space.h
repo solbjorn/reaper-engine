@@ -59,14 +59,10 @@ public: \
 
 struct SRotation
 {
-    float yaw, pitch, roll;
-    SRotation() { yaw = pitch = roll = 0; }
-    SRotation(float y, float p, float r)
-    {
-        yaw = y;
-        pitch = p;
-        roll = r;
-    }
+    f32 yaw{}, pitch{}, roll{};
+
+    constexpr SRotation() = default;
+    constexpr explicit SRotation(f32 y, f32 p, f32 r) : yaw{y}, pitch{p}, roll{r} {}
 };
 
 enum EPOType

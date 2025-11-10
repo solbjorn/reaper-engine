@@ -2,7 +2,9 @@
 
 #include "detailmodel.h"
 
-CDetail::~CDetail() {}
+#include "xrstripify.h"
+
+CDetail::~CDetail() = default;
 
 void CDetail::Unload()
 {
@@ -122,8 +124,6 @@ void CDetail::Load(IReader* S)
     Optimize();
 }
 
-#include "xrstripify.h"
-
 void CDetail::Optimize()
 {
     xr_vector<u16> vec_indices, vec_permute;
@@ -140,7 +140,7 @@ void CDetail::Optimize()
         // Msg					("* DM: %d verts, %d indices, VT: %d/%d",number_vertices,number_indices,vt_old,vt_new);
 
         // Copy faces
-        CopyMemory(indices, &*vec_indices.begin(), vec_indices.size() * sizeof(u16));
+        std::memcpy(indices, vec_indices.data(), vec_indices.size() * sizeof(u16));
 
         // Permute vertices
         xr_vector<fvfVertexIn> verts;

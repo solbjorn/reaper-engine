@@ -1,6 +1,6 @@
 #pragma once
 
-struct Flight
+struct XR_TRIVIAL Flight
 {
 public:
     u32 type; /* Type of light source */
@@ -17,9 +17,19 @@ public:
     float theta; /* Inner angle of spotlight cone */
     float phi; /* Outer angle of spotlight cone */
 
-    IC void set(u32 ltType, float x, float y, float z)
+    constexpr void set(u32 ltType, f32 x, f32 y, f32 z)
     {
-        ZeroMemory(this, sizeof(Flight));
+#ifdef XR_TRIVIAL_BROKEN
+        XR_DIAG_PUSH();
+        XR_DIAG_IGNORE("-Wnontrivial-memcall");
+#endif
+
+        std::memset(this, 0, sizeof(Flight));
+
+#ifdef XR_TRIVIAL_BROKEN
+        XR_DIAG_POP();
+#endif
+
         type = ltType;
         diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
         specular.set(diffuse);
@@ -28,10 +38,12 @@ public:
         direction.normalize_safe();
         range = _sqrt(flt_max);
     }
-    IC void mul(float brightness)
+
+    constexpr void mul(f32 brightness)
     {
         diffuse.mul_rgb(brightness);
         ambient.mul_rgb(brightness);
         specular.mul_rgb(brightness);
     }
 };
+XR_TRIVIAL_ASSERT(Flight);

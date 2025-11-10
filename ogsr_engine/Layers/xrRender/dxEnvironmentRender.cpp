@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dxEnvironmentRender.h"
 
 #include "blenders/blender.h"
@@ -7,21 +8,23 @@
 #include "../../xr_3da/Environment.h"
 #include "../../xr_3da/xr_efflensflare.h"
 
+namespace
+{
 //////////////////////////////////////////////////////////////////////////
 // half box def
-static constexpr Fvector3 hbox_verts[24] = {
-    {-1.f, -1.f, -1.f},  {-1.f, -1.01f, -1.f}, // down
-    {1.f, -1.f, -1.f},   {1.f, -1.01f, -1.f}, // down
-    {-1.f, -1.f, 1.f},   {-1.f, -1.01f, 1.f}, // down
-    {1.f, -1.f, 1.f},    {1.f, -1.01f, 1.f}, // down
-    {-1.f, 1.f, -1.f},   {-1.f, 1.f, -1.f},    {1.f, 1.f, -1.f}, {1.f, 1.f, -1.f},     {-1.f, 1.f, 1.f},
-    {-1.f, 1.f, 1.f},    {1.f, 1.f, 1.f},      {1.f, 1.f, 1.f},  {-1.f, -0.01f, -1.f}, {-1.f, -1.f, -1.f}, // half
-    {1.f, -0.01f, -1.f}, {1.f, -1.f, -1.f}, // half
-    {1.f, -0.01f, 1.f},  {1.f, -1.f, 1.f}, // half
-    {-1.f, -0.01f, 1.f}, {-1.f, -1.f, 1.f} // half
+constexpr std::array<Fvector, 24> XR_ALIGNED_DEFAULT hbox_verts{
+    Fvector{-1.f, -1.f, -1.f},  Fvector{-1.f, -1.01f, -1.f}, // down
+    Fvector{1.f, -1.f, -1.f},   Fvector{1.f, -1.01f, -1.f}, // down
+    Fvector{-1.f, -1.f, 1.f},   Fvector{-1.f, -1.01f, 1.f}, // down
+    Fvector{1.f, -1.f, 1.f},    Fvector{1.f, -1.01f, 1.f}, // down
+    Fvector{-1.f, 1.f, -1.f},   Fvector{-1.f, 1.f, -1.f},    Fvector{1.f, 1.f, -1.f}, Fvector{1.f, 1.f, -1.f},     Fvector{-1.f, 1.f, 1.f},
+    Fvector{-1.f, 1.f, 1.f},    Fvector{1.f, 1.f, 1.f},      Fvector{1.f, 1.f, 1.f},  Fvector{-1.f, -0.01f, -1.f}, Fvector{-1.f, -1.f, -1.f}, // half
+    Fvector{1.f, -0.01f, -1.f}, Fvector{1.f, -1.f, -1.f}, // half
+    Fvector{1.f, -0.01f, 1.f},  Fvector{1.f, -1.f, 1.f}, // half
+    Fvector{-1.f, -0.01f, 1.f}, Fvector{-1.f, -1.f, 1.f} // half
 };
 
-static constexpr u16 __declspec(align(8)) hbox_faces[20 * 3] = {0, 2,  3, 3, 1, 0, 4, 5, 7,  7,  6,  4, 0,  1,  9, 9, 8, 0,  8, 9, 5, 5, 4,  8, 1,  3, 10, 10, 9, 1,
+constexpr std::array<u16, 20 * 3> XR_ALIGNED_DEFAULT hbox_faces{0, 2,  3, 3, 1, 0, 4, 5, 7,  7,  6,  4, 0,  1,  9, 9, 8, 0,  8, 9, 5, 5, 4,  8, 1,  3, 10, 10, 9, 1,
                                                                 9, 10, 7, 7, 5, 9, 3, 2, 11, 11, 10, 3, 10, 11, 6, 6, 7, 10, 2, 0, 8, 8, 11, 2, 11, 8, 4,  4,  6, 11};
 
 struct alignas(8) v_skybox
@@ -75,6 +78,7 @@ public:
         C.r_End();
     }
 };
+} // namespace
 
 void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in)
 {
@@ -114,13 +118,13 @@ void dxEnvironmentRender::Copy(IEnvironmentRender& _in)
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
 {
-    if (owner.sky_texture_name.size())
+    if (!owner.sky_texture_name.empty())
         sky_texture.create(owner.sky_texture_name.c_str());
 
-    if (owner.sky_texture_env_name.size())
+    if (!owner.sky_texture_env_name.empty())
         sky_texture_env.create(owner.sky_texture_env_name.c_str());
 
-    if (owner.clouds_texture_name.size())
+    if (!owner.clouds_texture_name.empty())
         clouds_texture.create(owner.clouds_texture_name.c_str());
 }
 
@@ -142,17 +146,15 @@ dxEnvironmentRender::dxEnvironmentRender()
 
 void dxEnvironmentRender::Clear()
 {
-    std::pair<u32, ref_texture> zero = std::make_pair(u32(0), ref_texture(nullptr));
-
     sky_r_textures.clear();
-    sky_r_textures.push_back(zero);
-    sky_r_textures.push_back(zero);
-    sky_r_textures.push_back(zero);
+    sky_r_textures.emplace_back(0, nullptr);
+    sky_r_textures.emplace_back(0, nullptr);
+    sky_r_textures.emplace_back(0, nullptr);
 
     clouds_r_textures.clear();
-    clouds_r_textures.push_back(zero);
-    clouds_r_textures.push_back(zero);
-    clouds_r_textures.push_back(zero);
+    clouds_r_textures.emplace_back(0, nullptr);
+    clouds_r_textures.emplace_back(0, nullptr);
+    clouds_r_textures.emplace_back(0, nullptr);
 }
 
 void dxEnvironmentRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
@@ -198,7 +200,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
     // Fill index buffer
     u16* pib = RImplementation.Index.Lock(20 * 3, i_offset);
-    CopyMemory(pib, hbox_faces, sizeof(hbox_faces));
+    std::memcpy(pib, hbox_faces.data(), sizeof(hbox_faces));
     RImplementation.Index.Unlock(20 * 3);
 
     // Fill vertex buffer
@@ -255,7 +257,7 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 
     // Fill index buffer
     u16* pib = RImplementation.Index.Lock(env.CloudsIndices.size(), i_offset);
-    CopyMemory(pib, &env.CloudsIndices.front(), env.CloudsIndices.size() * sizeof(u16));
+    std::memcpy(pib, env.CloudsIndices.data(), env.CloudsIndices.size() * sizeof(u16));
     RImplementation.Index.Unlock(env.CloudsIndices.size());
 
     // Fill vertex buffer
@@ -303,8 +305,8 @@ void dxEnvironmentRender::OnDeviceCreate()
             tclouds1_tstage = C->samp.index;
     }
 
-    tonemap_tstage_2sky = sh_2sky->E[0]->passes[0]->T->find_texture_stage(r2_RT_luminance_cur);
-    tonemap_tstage_clouds = clouds_sh->E[0]->passes[0]->T->find_texture_stage(r2_RT_luminance_cur);
+    tonemap_tstage_2sky = sh_2sky->E[0]->passes[0]->T->find_texture_stage(shared_str{r2_RT_luminance_cur});
+    tonemap_tstage_clouds = clouds_sh->E[0]->passes[0]->T->find_texture_stage(shared_str{r2_RT_luminance_cur});
 }
 
 void dxEnvironmentRender::OnDeviceDestroy()

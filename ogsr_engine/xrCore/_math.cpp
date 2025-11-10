@@ -1,9 +1,11 @@
 #include "stdafx.h"
 
 #include "xrcpuid.h"
-#include <powerbase.h>
-#pragma comment(lib, "PowrProf.lib")
+
 #include <VersionHelpers.h>
+#include <powerbase.h>
+
+#pragma comment(lib, "PowrProf.lib")
 
 typedef struct _PROCESSOR_POWER_INFORMATION
 {
@@ -16,19 +18,21 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 } PROCESSOR_POWER_INFORMATION, *PPROCESSOR_POWER_INFORMATION;
 
 // Initialized on startup
-Fmatrix Fidentity;
+const Fmatrix Fidentity{Fmatrix{}.identity()};
 
 namespace CPU
 {
-u64 qpc_freq;
-u32 qpc_counter = 0;
+s64 qpc_freq;
+u32 qpc_counter{};
 _processor_info ID;
-u64 QPC()
+
+s64 QPC()
 {
-    u64 _dest;
-    QueryPerformanceCounter(PLARGE_INTEGER(&_dest));
+    LARGE_INTEGER _dest;
+    QueryPerformanceCounter(&_dest);
     qpc_counter++;
-    return _dest;
+
+    return _dest.QuadPart;
 }
 } // namespace CPU
 
@@ -88,8 +92,6 @@ void _initialize_cpu()
     LARGE_INTEGER Freq;
     QueryPerformanceFrequency(&Freq);
     CPU::qpc_freq = Freq.QuadPart;
-
-    Fidentity.identity(); // Identity matrix
 }
 
 typedef struct tagTHREADNAME_INFO
@@ -104,40 +106,41 @@ static void set_thread_name(HANDLE ThreadHandle, const char* threadName)
 {
     if (IsWindows10OrGreater())
     {
-        static HMODULE KernelLib = GetModuleHandle("kernel32.dll");
         using FuncSetThreadDescription = HRESULT(WINAPI*)(HANDLE, PCWSTR);
-        static auto pSetThreadDescription = (FuncSetThreadDescription)GetProcAddress(KernelLib, "SetThreadDescription");
+        static const HMODULE KernelLib = GetModuleHandle("kernel32.dll");
 
+        static const auto pSetThreadDescription = reinterpret_cast<FuncSetThreadDescription>(GetProcAddress(KernelLib, "SetThreadDescription"));
         if (pSetThreadDescription)
         {
             wchar_t buf[64]{};
             mbstowcs(buf, threadName, std::size(buf));
 
             pSetThreadDescription(ThreadHandle, buf);
-
             return;
         }
         else if (!IsDebuggerPresent())
+        {
             return;
+        }
     }
     else if (!IsDebuggerPresent())
+    {
         return;
+    }
 
-    THREADNAME_INFO info;
+    THREADNAME_INFO info{};
     info.dwType = 0x1000;
     info.szName = threadName;
     info.dwThreadID = GetThreadId(ThreadHandle);
-    info.dwFlags = 0;
 
     __try
     {
-        constexpr DWORD MS_VC_EXCEPTION = 0x406D1388;
-        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+        constexpr DWORD MS_VC_EXCEPTION{0x406D1388};
+        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), reinterpret_cast<ULONG_PTR*>(&info));
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {}
 }
 
 void set_current_thread_name(const char* threadName) { set_thread_name(GetCurrentThread(), threadName); }
-
 void set_thread_name(const char* threadName, std::thread& thread) { set_thread_name(static_cast<HANDLE>(thread.native_handle()), threadName); }

@@ -46,8 +46,8 @@ void anti_aim_ability::load_from_ini(CInifile* ini, pcstr const section)
         for (u32 i = 0; i < num_effectors; ++i)
         {
             char effector_name[1024];
-            _GetItem(effectors, i, effector_name, ',');
-            m_effectors[i] = effector_name;
+            std::ignore = _GetItem(effectors, i, effector_name, ',');
+            m_effectors[i]._set(effector_name);
         }
     }
 }

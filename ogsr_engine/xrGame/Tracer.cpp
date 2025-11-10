@@ -12,7 +12,10 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-#define TRACERS_COLOR_TABLE "tracers_color_table"
+namespace
+{
+constexpr absl::string_view TRACERS_COLOR_TABLE{"tracers_color_table"};
+}
 
 CTracer::CTracer()
 {
@@ -24,12 +27,13 @@ CTracer::CTracer()
 
     for (u8 i = 0; i < 255; i++)
     {
-        shared_str LineName;
-        LineName.sprintf("color_%d", i);
-        if (!pSettings->line_exist(TRACERS_COLOR_TABLE, LineName))
+        std::array<char, 16> LineName;
+        sprintf_s(LineName.data(), LineName.size(), "color_%d", i);
+        if (!pSettings->line_exist(TRACERS_COLOR_TABLE.data(), LineName.data()))
             break;
+
         float r, g, b;
-        sscanf(pSettings->r_string(TRACERS_COLOR_TABLE, *LineName), "%f,%f,%f", &r, &g, &b);
+        sscanf_s(pSettings->r_string(TRACERS_COLOR_TABLE.data(), LineName.data()), "%f,%f,%f", &r, &g, &b);
         m_aColors.push_back(color_argb_f(1.0f, r, g, b));
     }
 }

@@ -515,7 +515,7 @@ u32 CWeaponAmmoCount::dwfGetDiscreteValue(u32 dwDiscretizationValue)
         if (l_tpALifeItemWeapon && l_tpALifeItemWeapon->m_caAmmoSections)
         {
             string32 S;
-            _GetItem(l_tpALifeItemWeapon->m_caAmmoSections, 0, S);
+            std::ignore = _GetItem(l_tpALifeItemWeapon->m_caAmmoSections, 0, S);
             u32 l_dwBoxSize = pSettings->r_s32(S, "box_size");
             if (fTemp <= 3 * l_dwBoxSize)
                 return (iFloor(1 * float(dwDiscretizationValue) / 10 + .5f));

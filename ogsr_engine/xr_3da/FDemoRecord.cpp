@@ -1,23 +1,27 @@
 #include "stdafx.h"
 
+#include "fDemoRecord.h"
+
 #include "igame_level.h"
 #include "x_ray.h"
-#include "gamefont.h"
-#include "fDemoRecord.h"
 #include "xr_ioconsole.h"
 #include "xr_input.h"
 #include "xr_object.h"
 #include "CustomHUD.h"
 
-static Flags32 s_hud_flag{}, s_dev_flags{};
+namespace
+{
+Flags32 s_hud_flag{}, s_dev_flags{};
 
-static Fbox curr_lm_fbox{};
+Fbox curr_lm_fbox{};
 
 // +X, -X, +Y, -Y, +Z, -Z
-constexpr Fvector cmNorm[]{{0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, -1.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, {0.f, 1.f, 0.f}};
-constexpr Fvector cmDir[]{{1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, -1.f}};
+constexpr std::array<Fvector, 6> cmNorm{Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 0.0f, -1.0f},
+                                        Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}};
+constexpr std::array<Fvector, 6> cmDir{Fvector{1.0f, 0.0f, 0.0f},  Fvector{-1.0f, 0.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f},
+                                       Fvector{0.0f, -1.0f, 0.0f}, Fvector{0.0f, 0.0f, 1.0f},  Fvector{0.0f, 0.0f, -1.0f}};
 
-static void setup_lm_screenshot_matrices()
+void setup_lm_screenshot_matrices()
 {
     psHUD_Flags.assign(0);
 
@@ -35,7 +39,7 @@ static void setup_lm_screenshot_matrices()
     Device.mProject.build_projection_ortho(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.min.z, bb.max.z);
 }
 
-static Fbox get_level_screenshot_bound()
+Fbox get_level_screenshot_bound()
 {
     Fbox res = g_pGameLevel->ObjectSpace.GetBoundingVolume();
     if (g_pGameLevel->pLevel->section_exist("level_map") && g_pGameLevel->pLevel->line_exist("level_map", "bound_rect"))
@@ -51,7 +55,7 @@ static Fbox get_level_screenshot_bound()
     return res;
 }
 
-static void GetLM_BBox(Fbox& bb, int Step)
+void GetLM_BBox(Fbox& bb, int Step)
 {
     float half_x = bb.min.x + (bb.max.x - bb.min.x) / 2;
     float half_z = bb.min.z + (bb.max.z - bb.min.z) / 2;
@@ -83,12 +87,13 @@ static void GetLM_BBox(Fbox& bb, int Step)
     }
 }
 
-static void update_whith_timescale(Fvector& v, const Fvector& v_delta)
+void update_whith_timescale(Fvector& v, const Fvector& v_delta)
 {
     VERIFY(!fis_zero(Device.time_factor()));
     float scale = 1.f / Device.time_factor();
     v.mad(v, v_delta, scale);
 }
+} // namespace
 
 CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDemo, life_time)
 {

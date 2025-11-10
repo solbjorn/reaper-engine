@@ -8,10 +8,10 @@
 
 #include "stdafx.h"
 
+#include "xrServer_Objects_ALife_Items.h"
+
 #include "xrMessages.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "clsid_game.h"
-#include "xrServer_Objects_ALife_Items.h"
 #include "clsid_game.h"
 
 #ifdef XRGAME_EXPORTS
@@ -663,8 +663,9 @@ void CSE_ALifeItemPDA::__STATE_Read(NET_Packet& tNetPacket, u16 size)
             int tmp, tmp2;
             tNetPacket.r(&tmp, sizeof(int));
             tNetPacket.r(&tmp2, sizeof(int));
-            m_info_portion = nullptr;
-            m_specific_character = nullptr;
+
+            m_info_portion._set(nullptr);
+            m_specific_character._set(nullptr);
         }
         else
         {
@@ -678,12 +679,13 @@ void CSE_ALifeItemPDA::__STATE_Write(NET_Packet& tNetPacket)
 {
     inherited::__STATE_Write(tNetPacket);
     tNetPacket.w(&m_original_owner, sizeof(m_original_owner));
+
 #ifdef XRGAME_EXPORTS
     tNetPacket.w_stringZ(m_specific_character);
     tNetPacket.w_stringZ(m_info_portion);
 #else
-    shared_str tmp_1{};
-    shared_str tmp_2{};
+    shared_str tmp_1;
+    shared_str tmp_2;
 
     tNetPacket.w_stringZ(tmp_1);
     tNetPacket.w_stringZ(tmp_2);
@@ -691,7 +693,6 @@ void CSE_ALifeItemPDA::__STATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeItemPDA::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeItemPDA::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -709,7 +710,7 @@ void CSE_ALifeItemDocument::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
         u16 tmp;
         tNetPacket.r_u16(tmp);
-        m_wDoc = nullptr;
+        m_wDoc._set(nullptr);
     }
     else
     {

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
 #include "xr_collide_form.h"
+
+#include "igame_level.h"
 #include "xr_object.h"
 #include "x_ray.h"
 #include "xrLevel.h"
@@ -49,7 +50,7 @@ bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 
 IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
 {
-    Fbox E = {-b_hsize.x, -b_hsize.y, -b_hsize.z, b_hsize.x, b_hsize.y, b_hsize.z};
+    Fbox E{-b_hsize.x, -b_hsize.y, -b_hsize.z, b_hsize.x, b_hsize.y, b_hsize.z};
     // XForm world-2-local
     Fvector SL, DL, PL;
     IM.transform_tiny(SL, S);
@@ -67,14 +68,17 @@ IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, co
             return true;
         }
     }
+
     return false;
 }
+
 IC bool RAYvsSPHERE(const Fsphere& s_sphere, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
 {
     Fsphere::ERP_Result rp_res = s_sphere.intersect(S, D, R);
     VERIFY(R >= 0.f);
     return ((rp_res == Fsphere::rpOriginOutside) || (!bCull && (rp_res == Fsphere::rpOriginInside)));
 }
+
 IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
 {
     // Actual test

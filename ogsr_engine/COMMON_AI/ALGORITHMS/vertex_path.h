@@ -25,8 +25,9 @@ struct CVertexPath
         using Index = typename Vertex::Index;
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         inline virtual ~CDataStorage();
+
         inline void init();
         inline void assign_parent(Vertex& neighbour, Vertex* parent);
         template <typename T>

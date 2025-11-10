@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UITaskItem.h"
+
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "../gametask.h"
@@ -16,7 +17,7 @@
 #include "../gametaskmanager.h"
 
 CUITaskItem::CUITaskItem(CUIEventsWnd* w) : m_EventsWnd{w} {}
-CUITaskItem::~CUITaskItem() {}
+CUITaskItem::~CUITaskItem() = default;
 
 void CUITaskItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 {
@@ -148,7 +149,7 @@ void CUITaskRootItem::Update()
     {
         string512 buff, buff2;
         InventoryUtilities::GetTimePeriodAsString(buff, sizeof(buff), Level().GetGameTime(), GameTask()->m_TimeToComplete);
-        sprintf_s(buff2, "%s %s", *CStringTable().translate("ui_st_time_remains"), buff);
+        sprintf_s(buff2, "%s %s", *CStringTable().translate(shared_str{"ui_st_time_remains"}), buff);
         m_remTimeStatic->SetText(buff2);
     }
 }
@@ -249,12 +250,12 @@ bool CUITaskSubItem::OnDbClick()
         return true;
 
     bool bIsActive = (Actor()->GameTaskManager().ActiveObjective() == obj);
-    Actor()->GameTaskManager().SetActiveTask((!bIsActive) ? m_GameTask->m_ID : "", m_TaskObjectiveIdx);
+    Actor()->GameTaskManager().SetActiveTask((!bIsActive) ? m_GameTask->m_ID : shared_str{""}, m_TaskObjectiveIdx);
+
     return true;
 }
 
 void CUITaskSubItem::OnActiveObjectiveClicked() { m_EventsWnd->ShowDescription(GameTask(), ObjectiveIdx()); }
-
 void CUITaskSubItem::OnShowDescriptionClicked(CUIWindow*, void*) { m_EventsWnd->ShowDescription(GameTask(), ObjectiveIdx()); }
 
 void CUITaskSubItem::MarkSelected(bool b) { m_showDescriptionBtn->SetButtonMode(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL); }

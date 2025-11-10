@@ -3,36 +3,32 @@
 void CRenderTarget::phase_blur()
 {
     // Get common data
-    u32 Offset = 0;
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
+    u32 Offset{};
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
     constexpr u32 C = color_rgba(0, 0, 0, 255);
-
-    // Full resolution
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
     ///////////////////////////////////////////////////////////////////////////////////
     ////Horizontal blur
     ///////////////////////////////////////////////////////////////////////////////////
-    w = float(Device.dwWidth) * 0.5f;
-    h = float(Device.dwHeight) * 0.5f;
+    f32 w = gsl::narrow_cast<f32>(Device.dwWidth) * 0.5f;
+    f32 h = gsl::narrow_cast<f32>(Device.dwHeight) * 0.5f;
 
-    u_setrt(RCache, rt_blur_h_2, nullptr, nullptr, rt_blur_2_zb);
+    u_setrt(RCache, rt_blur_h_2, {}, {}, rt_blur_2_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -44,19 +40,19 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_blur_2, nullptr, nullptr, rt_blur_2_zb);
+    u_setrt(RCache, rt_blur_2, {}, {}, rt_blur_2_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -68,22 +64,22 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Horizontal blur / Half res
     ///////////////////////////////////////////////////////////////////////////////////
-    w = float(Device.dwWidth) * 0.25f;
-    h = float(Device.dwHeight) * 0.25f;
+    w = gsl::narrow_cast<f32>(Device.dwWidth) * 0.25f;
+    h = gsl::narrow_cast<f32>(Device.dwHeight) * 0.25f;
 
-    u_setrt(RCache, rt_blur_h_4, nullptr, nullptr, rt_blur_4_zb);
+    u_setrt(RCache, rt_blur_h_4, {}, {}, rt_blur_4_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -95,19 +91,19 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_blur_4, nullptr, nullptr, rt_blur_4_zb);
+    u_setrt(RCache, rt_blur_4, {}, {}, rt_blur_4_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -119,22 +115,22 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Horizontal blur
     ///////////////////////////////////////////////////////////////////////////////////
-    w = float(Device.dwWidth) * 0.125f;
-    h = float(Device.dwHeight) * 0.125f;
+    w = gsl::narrow_cast<f32>(Device.dwWidth) * 0.125f;
+    h = gsl::narrow_cast<f32>(Device.dwHeight) * 0.125f;
 
-    u_setrt(RCache, rt_blur_h_8, nullptr, nullptr, rt_blur_8_zb);
+    u_setrt(RCache, rt_blur_h_8, {}, {}, rt_blur_8_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -146,19 +142,19 @@ void CRenderTarget::phase_blur()
     ///////////////////////////////////////////////////////////////////////////////////
     ////Final blur
     ///////////////////////////////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_blur_8, nullptr, nullptr, rt_blur_8_zb);
+    u_setrt(RCache, rt_blur_8, {}, {}, rt_blur_8_zb);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);
+    pv->set(0, h, d_Z, d_W, C, p0.x, p1.y);
     pv++;
     pv->set(0, 0, d_Z, d_W, C, p0.x, p0.y);
     pv++;
-    pv->set(float(w), float(h), d_Z, d_W, C, p1.x, p1.y);
+    pv->set(w, h, d_Z, d_W, C, p1.x, p1.y);
     pv++;
-    pv->set(float(w), 0, d_Z, d_W, C, p1.x, p0.y);
+    pv->set(w, 0, d_Z, d_W, C, p1.x, p0.y);
     pv++;
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
@@ -173,21 +169,21 @@ void CRenderTarget::phase_blur()
 void CRenderTarget::phase_ssfx_ssr()
 {
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
-    float ScaleFactor = std::min(std::max(ps_ssfx_ssr.x, 1.0f), 2.0f);
+    const f32 ScaleFactor = std::min(std::max(ps_ssfx_ssr.x, 1.0f), 2.0f);
 
     constexpr Fvector2 p0{0.f, 0.f};
     Fvector2 p1{1.f, 1.f};
 
     // GLOSS /////////////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx_temp3, nullptr, nullptr, get_base_zb());
+    u_setrt(RCache, rt_ssfx_temp3, {}, {}, get_base_zb());
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -212,11 +208,11 @@ void CRenderTarget::phase_ssfx_ssr()
     p1.set(1.0f / ScaleFactor, 1.0f / ScaleFactor);
 
     // Fill VB
-    float scale_X = w / ScaleFactor;
-    float scale_Y = h / ScaleFactor;
+    f32 scale_X = w / ScaleFactor;
+    f32 scale_Y = h / ScaleFactor;
 
     // SSR ///////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx, nullptr, nullptr, get_base_zb());
+    u_setrt(RCache, rt_ssfx, {}, {}, get_base_zb());
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -252,7 +248,7 @@ void CRenderTarget::phase_ssfx_ssr()
     // if (ps_ssfx_ssr.y > 0 || ps_ssfx_ssr.x > 1.0)
     {
         // BLUR PHASE 1 //////////////////////////////////////////////////////////
-        u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, get_base_zb());
+        u_setrt(RCache, rt_ssfx_temp, {}, {}, get_base_zb());
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -276,7 +272,7 @@ void CRenderTarget::phase_ssfx_ssr()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // BLUR PHASE 2 //////////////////////////////////////////////////////////
-        u_setrt(RCache, rt_ssfx_temp2, nullptr, nullptr, get_base_zb());
+        u_setrt(RCache, rt_ssfx_temp2, {}, {}, get_base_zb());
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -308,9 +304,9 @@ void CRenderTarget::phase_ssfx_ssr()
     p1.set(1.0f, 1.0f);
 
     if (!RImplementation.o.dx10_msaa)
-        u_setrt(RCache, rt_Generic_0, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_Generic_0, {}, {}, nullptr);
     else
-        u_setrt(RCache, rt_Generic_0_r, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_Generic_0_r, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -347,24 +343,24 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     }
 
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
     FVF::TL* pv;
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     // Volumetric always at 1/8 res
     RCache.set_viewport_size(w / 8, h / 8);
 
     ref_rt* rt_VolBlur[2] = {&rt_ssfx_volumetric_tmp, &rt_ssfx_volumetric};
-    constexpr float pixelsize[4] = {0, 1, 1, 2}; // half pixel + pixelsize
-    constexpr float pixelscale[4] = {2.0f, 0.5f, 2.0f, 0.5f};
+    constexpr float pixelsize[4]{0.0f, 1.0f, 1.0f, 2.0f}; // half pixel + pixelsize
+    constexpr float pixelscale[4]{2.0f, 0.5f, 2.0f, 0.5f};
 
     // BLUR ///////////////////////////////////////////////////////////////////
     for (int b = 0; b < 4; b++)
     {
-        u_setrt(RCache, *rt_VolBlur[b % 2], nullptr, nullptr, nullptr);
+        u_setrt(RCache, *rt_VolBlur[b % 2], {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -391,7 +387,7 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
     RCache.set_viewport_size(w, h);
 
     // COMBINE ////////////////////////////////////////////////////////////////
-    u_setrt(RCache, rt_ssfx_accum, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_accum, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -418,13 +414,13 @@ void CRenderTarget::phase_ssfx_volumetric_blur()
 void CRenderTarget::phase_ssfx_water_blur()
 {
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     constexpr Fvector2 p0{0.f, 0.f};
     Fvector2 p1{0.5f, 0.5f};
@@ -434,7 +430,7 @@ void CRenderTarget::phase_ssfx_water_blur()
     if (ps_ssfx_water.y > 0)
     {
         // BLUR PHASE 1 //////////////////////////////////////////////////////////
-        u_setrt(RCache, rt_ssfx_temp2, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_ssfx_temp2, {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -457,7 +453,7 @@ void CRenderTarget::phase_ssfx_water_blur()
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // BLUR PHASE 2 //////////////////////////////////////////////////////////
-        u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_ssfx_temp, {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -484,7 +480,7 @@ void CRenderTarget::phase_ssfx_water_blur()
     {
         RCache.context()->CopyResource(rt_ssfx_temp2->pTexture->surface_get(), rt_ssfx_temp->pTexture->surface_get());
 
-        u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, nullptr);
+        u_setrt(RCache, rt_ssfx_temp, {}, {}, nullptr);
         RCache.set_CullMode(CULL_NONE);
         RCache.set_Stencil(FALSE);
 
@@ -514,19 +510,19 @@ void CRenderTarget::phase_ssfx_water_blur()
 void CRenderTarget::phase_ssfx_water_waves()
 {
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    u32 w = Device.dwWidth;
-    u32 h = Device.dwHeight;
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
     RCache.set_viewport_size(512, 512);
 
-    u_setrt(RCache, rt_ssfx_water_waves, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_water_waves, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -554,17 +550,17 @@ void CRenderTarget::phase_ssfx_water_waves()
 void CRenderTarget::phase_ssfx_sss()
 {
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(255, 255, 255, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(255, 255, 255, 255)};
 
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    float w = float(Device.dwWidth);
-    float h = float(Device.dwHeight);
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    u_setrt(RCache, rt_ssfx, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -592,7 +588,7 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // BLUR
-    u_setrt(RCache, rt_ssfx_temp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_temp, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -618,7 +614,7 @@ void CRenderTarget::phase_ssfx_sss()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // BLUR
-    u_setrt(RCache, rt_ssfx_temp2, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_temp2, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -666,7 +662,7 @@ ICF void memset128(void* dst, const void* src, size_t size)
 
 void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 {
-    constexpr const char* strLights{"lights_data"};
+    static constexpr const char* strLights{"lights_data"};
     static __declspec(align(sizeof(__m128i))) light* LightSlot[8];
     static u32 sss_currentframe;
 
@@ -677,17 +673,17 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
     }
 
     // Constants
-    u32 Offset = 0;
-    constexpr u32 C = color_rgba(255, 255, 255, 255);
+    u32 Offset{};
+    constexpr u32 C{color_rgba(255, 255, 255, 255)};
 
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    float w = Device.dwWidth;
-    float h = Device.dwHeight;
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    const f32 w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     constexpr Fvector2 p0{0.f, 0.f}, p1{1.f, 1.f};
 
-    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -868,7 +864,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 
     // SSS Ext 2 -------------------------------------------------------
 
-    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -901,7 +897,7 @@ void CRenderTarget::phase_ssfx_sss_ext(light_Package& LP)
 
     // Combine ---------------------------------------------------------
 
-    u_setrt(RCache, rt_ssfx_sss_tmp, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_ssfx_sss_tmp, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);

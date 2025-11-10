@@ -42,20 +42,29 @@ void CRender::level_Load(IReader* fs)
         chunk = fs->open_chunk(fsL_SHADERS);
         R_ASSERT2(chunk, "Level doesn't builded correctly.");
         u32 count = chunk->r_u32();
-        Shaders.resize(count);
+        Shaders.reserve(count);
+
         for (u32 i = 0; i < count; i++) // skip first shader as "reserved" one
         {
             string512 n_sh, n_tlist;
             LPCSTR n = LPCSTR(chunk->pointer());
             chunk->skip_stringZ();
-            if (0 == n[0])
+
+            if (n[0] == '\0')
+            {
+                Shaders.emplace_back();
                 continue;
+            }
+
             xr_strcpy(n_sh, n);
             LPSTR delim = strchr(n_sh, '/');
-            *delim = 0;
+            *delim = '\0';
             xr_strcpy(n_tlist, delim + 1);
-            Shaders[i] = Resources->Create(n_sh, n_tlist);
+
+            Shaders.emplace_back(Resources->Create(n_sh, n_tlist));
         }
+
+        R_ASSERT(Shaders.size() == count);
         chunk->close();
     }
 
@@ -279,7 +288,7 @@ void CRender::LoadVisuals(IReader* fs)
     while ((chunk = fs->open_chunk(index)) != nullptr)
     {
         ogf_header H;
-        chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
+        std::ignore = chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
 
         dxRender_Visual* V = Models->Instance_Create(H.type);
         V->Load(nullptr, chunk, 0);
@@ -354,7 +363,7 @@ void CRender::LoadSectors(IReader* fs)
     if (portals_count)
     {
         CDB::Collector CL;
-        fs->find_chunk(fsL_PORTALS);
+        std::ignore = fs->find_chunk(fsL_PORTALS);
 
         for (u32 i = 0; i < portals_count; i++)
         {

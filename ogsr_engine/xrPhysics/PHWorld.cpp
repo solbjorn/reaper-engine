@@ -455,9 +455,12 @@ void CPHWorld::NetRelcase(CPhysicsShell* s)
     CPHReqComparerHasShell c(s);
     m_commander->remove_calls(&c);
 }
-void CPHWorld::AddCall(CPHCondition* c, CPHAction* a) { m_commander->add_call(c, a); }
+
+void CPHWorld::AddCall(CPHCondition* c, CPHAction* a) { std::ignore = m_commander->add_call(c, a); }
+
 u16 CPHWorld::ObjectsNumber() { return m_objects.count(); }
 u16 CPHWorld::UpdateObjectsNumber() { return m_update_objects.count(); }
+
 void CPHWorld::GetState(V_PH_WORLD_STATE& state)
 {
     state.clear();

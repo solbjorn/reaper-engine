@@ -16,7 +16,7 @@ TEMPLATE_SPECIALIZATION
 inline CBinaryHeap::CDataStorage(const u32 vertex_count) : Inherited(vertex_count)
 {
     m_heap = xr_alloc<Vertex*>(vertex_count);
-    ZeroMemory(m_heap, vertex_count * sizeof(Vertex*));
+    std::memset(m_heap, 0, vertex_count * sizeof(Vertex*));
 }
 
 TEMPLATE_SPECIALIZATION

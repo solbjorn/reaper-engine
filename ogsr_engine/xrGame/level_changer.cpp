@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "level_changer.h"
+
 #include "hit.h"
 #include "actor.h"
 #include "xrserver_objects_alife.h"
@@ -26,7 +27,7 @@
 
 xr_vector<CLevelChanger*> g_lchangers;
 
-CLevelChanger::~CLevelChanger() {}
+CLevelChanger::~CLevelChanger() = default;
 
 void CLevelChanger::Center(Fvector& C) const { XFORM().transform_tiny(C, CFORM()->getSphere().P); }
 float CLevelChanger::Radius() const { return CFORM()->getRadius(); }
@@ -152,7 +153,7 @@ bool CLevelChanger::get_reject_pos(Fvector& p, Fvector& r)
     if (m_ini_file && m_ini_file->section_exist("pt_move_if_reject"))
     {
         LPCSTR p_name = m_ini_file->r_string("pt_move_if_reject", "path");
-        const CPatrolPath* patrol_path = ai().patrol_paths().safe_path(p_name, false, true);
+        const CPatrolPath* patrol_path = ai().patrol_paths().safe_path(shared_str{p_name}, false, true);
         VERIFY(patrol_path);
 
         const CPatrolPoint* pt;

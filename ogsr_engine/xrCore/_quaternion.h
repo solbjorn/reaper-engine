@@ -443,11 +443,10 @@ public:
     }
 };
 
-typedef _quaternion<float> Fquaternion;
-typedef _quaternion<double> Dquaternion;
+using Fquaternion = _quaternion<f32>;
 
-template <class T>
-constexpr inline BOOL _valid(const _quaternion<T>& s)
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _quaternion<T>& s)
 {
     return _valid(s.x) && _valid(s.y) && _valid(s.z) && _valid(s.w);
 }

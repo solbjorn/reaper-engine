@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include "Mincer.h"
+
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
-#include "mincer.h"
 #include "hudmanager.h"
 #include "xrmessages.h"
 #include "level.h"
@@ -43,7 +44,7 @@ void CMincer::Load(LPCSTR section)
 
     m_telekinetics.set_destroing_particles(shared_str(pSettings->r_string(section, "tearing_particles")));
     m_telekinetics.set_throw_power(pSettings->r_float(section, "throw_out_impulse"));
-    m_torn_particles = pSettings->r_string(section, "torn_particles");
+    m_torn_particles._set(pSettings->r_string(section, "torn_particles"));
     m_tearing_sound.create(pSettings->r_string(section, "body_tearing_sound"), st_Effect, sg_SourceType);
     m_fActorBlowoutRadiusPercent = pSettings->r_float(section, "actor_blowout_radius_percent");
     // bak
@@ -82,8 +83,8 @@ void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fve
 {
     inherited::AffectThrow(O, GO, throw_in_dir, dist);
 
-    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x,
-                                                Radius() * 4.0f);
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), Fvector{0.0f, -99.0f, 0.0f}, 1.33f, ps_ssfx_int_grass_params_2.y,
+                                                ps_ssfx_int_grass_params_2.x, Radius() * 4.0f);
 }
 
 bool CMincer::BlowoutState()
@@ -115,7 +116,7 @@ void CMincer ::Center(Fvector& C) const { C.set(Position()); }
 
 void CMincer::NotificateDestroy(CPHDestroyableNotificate* dn)
 {
-    Fvector dir = {0, 0, 0};
+    Fvector dir{};
     float impulse = 0;
     // if(!m_telekinetics.has_impacts()) return;
 

@@ -10,6 +10,7 @@ class XR_NOVTABLE IEnvDescriptorRender : public virtual RTTI::Enable
 
 public:
     virtual ~IEnvDescriptorRender() = 0;
+
     virtual void Copy(IEnvDescriptorRender& _in) = 0;
 
     virtual void OnDeviceCreate(CEnvDescriptor& owner) = 0;
@@ -24,6 +25,7 @@ class XR_NOVTABLE IEnvironmentRender : public virtual RTTI::Enable
 
 public:
     virtual ~IEnvironmentRender() = 0;
+
     virtual void Copy(IEnvironmentRender& _in) = 0;
     virtual void RenderSky(CEnvironment& env) = 0;
     virtual void RenderClouds(CEnvironment& env) = 0;

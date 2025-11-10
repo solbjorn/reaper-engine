@@ -129,7 +129,6 @@ void CActor::HitSector(CObject* who, CObject* weapon)
     bool bShowHitSector = true;
 
     CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(who);
-
     if (!pEntityAlive || this == who)
         bShowHitSector = false;
 
@@ -150,7 +149,8 @@ void CActor::HitSector(CObject* who, CObject* weapon)
 
     if (!bShowHitSector)
         return;
-    Level().MapManager().AddMapLocation(ENEMY_HIT_SPOT, who->ID());
+
+    Level().MapManager().AddMapLocation(shared_str{ENEMY_HIT_SPOT}, who->ID());
 }
 
 void CActor::on_weapon_shot_start(CWeapon* weapon)
@@ -216,21 +216,21 @@ void CActor::on_weapon_hide(CWeapon*)
 Fvector CActor::weapon_recoil_delta_angle()
 {
     CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
-    Fvector result = {0.f, 0.f, 0.f};
+    Fvector result{};
 
     if (effector)
         effector->GetDeltaAngle(result);
 
-    return (result);
+    return result;
 }
 
 Fvector CActor::weapon_recoil_last_delta()
 {
     CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
-    Fvector result = {0.f, 0.f, 0.f};
+    Fvector result{};
 
     if (effector)
         effector->GetLastDelta(result);
 
-    return (result);
+    return result;
 }

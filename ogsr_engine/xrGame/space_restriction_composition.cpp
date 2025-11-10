@@ -81,7 +81,7 @@ void CSpaceRestrictionComposition::initialize()
     {
         LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
         // Msg("space_restrictors = [%s]", space_restrictors);
-        if (!m_space_restriction_holder->restriction(space_restrictors)->initialized())
+        if (!m_space_restriction_holder->restriction(shared_str{space_restrictors})->initialized())
         {
             return;
         }
@@ -93,7 +93,7 @@ void CSpaceRestrictionComposition::initialize()
     {
         LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
         // Msg("space_restrictors 2 = [%s]", space_restrictors);
-        SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(space_restrictors);
+        SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(shared_str{space_restrictors});
 
         merge(restriction);
 

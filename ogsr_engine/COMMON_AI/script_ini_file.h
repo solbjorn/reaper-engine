@@ -12,14 +12,16 @@
 
 class CScriptIniFile : public CInifile
 {
+    RTTI_DECLARE_TYPEINFO(CScriptIniFile, CInifile);
+
 protected:
     typedef CInifile inherited;
 
     static LPCSTR update(LPCSTR file_name);
 
 public:
-    CScriptIniFile(IReader* F, LPCSTR path = nullptr);
-    CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
+    explicit CScriptIniFile(IReader* F, LPCSTR path = nullptr);
+    explicit CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
     virtual ~CScriptIniFile();
 
     bool line_exist(LPCSTR S, LPCSTR L);

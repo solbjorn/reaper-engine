@@ -124,7 +124,7 @@ CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestriction
     shared_str temp = bridge->name();
 
     for (const auto& I : temp_restrictions)
-        temp = strconcat(sizeof(S), S, temp.c_str(), ",", I->name().c_str());
+        temp._set(strconcat(sizeof(S), S, temp.c_str(), ",", I->name().c_str()));
 
     return m_space_restriction_manager->restriction(temp);
 }

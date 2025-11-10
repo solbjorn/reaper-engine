@@ -131,6 +131,6 @@ void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vec
     }
 
     if (iDeclSize >= 0)
-        ZeroMemory(&declOut[iDeclSize], sizeof(declOut[iDeclSize]));
+        std::memset(&declOut[iDeclSize], 0, sizeof(declOut[iDeclSize]));
 }
 } // namespace dx10BufferUtils

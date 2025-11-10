@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UITradeWnd.h"
+
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 
@@ -197,7 +198,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
     m_pInvOwner = pOur;
     m_pOthersInvOwner = pOthers;
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText("%s", *CStringTable().translate("ui_st_opponent_items"));
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText("%s", *CStringTable().translate(shared_str{"ui_st_opponent_items"}));
 
     m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner->object_id());
     m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
@@ -572,9 +573,9 @@ void CUITradeWnd::UpdatePrices()
             m_iOurTradePrice = others_money;
     }
 
-    static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
-    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = std::format("{} {}", m_iOurTradePrice, StMoneyDescr).c_str();
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = std::format("{} {}", m_iOthersTradePrice, StMoneyDescr).c_str();
+    static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
+    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str._set(std::format("{} {}", m_iOurTradePrice, StMoneyDescr).c_str());
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str._set(std::format("{} {}", m_iOthersTradePrice, StMoneyDescr).c_str());
     m_uidata->UIOurMoneyStatic.SetText(std::format("{} {}", m_pInvOwner->get_money(), StMoneyDescr).c_str());
     m_uidata->UIOtherMoneyStatic.SetText(m_pOthersInvOwner->InfinitiveMoney() ? "---" : std::format("{} {}", m_pOthersInvOwner->get_money(), StMoneyDescr).c_str());
 }
@@ -790,7 +791,7 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 
     if (m_uidata->UIItemInfo.UICost)
     {
-        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
+        static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
         m_uidata->UIItemInfo.UICost->SetText(std::format("{} {}", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying), StMoneyDescr).c_str());
     }
 

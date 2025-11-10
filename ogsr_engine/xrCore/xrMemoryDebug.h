@@ -7,7 +7,7 @@ public:
     unsigned int line{};
     bool is_class{};
     bool is_contaner{};
-    size_t size{};
+    gsl::index size{};
 };
 
 template <typename T>
@@ -25,11 +25,11 @@ public:
     pointer address(reference ref) const { return &ref; }
     const_pointer address(const_reference ref) const { return &ref; }
 
-    //PointerAllocator() = default;
-    //PointerAllocator(const PointerAllocator<T>&) = default;
+    // PointerAllocator() = default;
+    // PointerAllocator(const PointerAllocator<T>&) = default;
 
-    //template <class Other>
-    //PointerAllocator(const PointerAllocator<Other>&)
+    // template <class Other>
+    // PointerAllocator(const PointerAllocator<Other>&)
     //{}
 
     template <class Other>
@@ -45,9 +45,7 @@ public:
     }
 
     void deallocate(pointer p, const size_type) const { free(p); }
-
-    void construct(pointer p, const T& val) { new (p) T(val); }
-
+    void construct(pointer p, const T& val) { new (p) T{val}; }
     void destroy(pointer p) { p->~T(); }
 };
 

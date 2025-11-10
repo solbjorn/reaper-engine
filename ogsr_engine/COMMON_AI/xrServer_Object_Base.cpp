@@ -60,7 +60,7 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
     s_gameid = 0;
     s_RP = 0xFE; // Use supplied coords
     s_flags.assign(0);
-    s_name = caSection;
+    s_name._set(caSection);
     o_Angle.set(0.f, 0.f, 0.f);
     o_Position.set(0.f, 0.f, 0.f);
     m_bALifeControl = false;
@@ -86,18 +86,19 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
     if (pSettings->line_exist(caSection, "custom_data"))
     {
         string_path file_name;
-        FS.update_path(file_name, "$game_config$", pSettings->r_string(caSection, "custom_data"));
+        std::ignore = FS.update_path(file_name, "$game_config$", pSettings->r_string(caSection, "custom_data"));
+
         if (!FS.exist(file_name))
         {
             Msg("! cannot open config file %s", file_name);
         }
         else
         {
-            IReader* reader = FS.r_open(file_name);
+            std::unique_ptr<IReader> reader{FS.r_open(file_name)};
             reader->skip_bom(file_name);
-            const xr_string temp{reinterpret_cast<const char*>(reader->pointer()), static_cast<size_t>(reader->elapsed())};
-            m_ini_string = temp.c_str();
-            FS.r_close(reader);
+
+            const xr_string temp{static_cast<gsl::czstring>(reader->pointer()), gsl::narrow_cast<size_t>(reader->elapsed())};
+            m_ini_string._set(temp.c_str());
         }
     }
 

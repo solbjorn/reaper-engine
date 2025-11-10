@@ -33,9 +33,9 @@ light::light() : ISpatial{g_SpatialSpace}
     sss_id = -1;
     sss_refresh = 0;
 
-    ZeroMemory(omnipart, sizeof(omnipart));
-    s_spot = nullptr;
-    s_point = nullptr;
+    std::memset(omnipart, 0, sizeof(omnipart));
+    s_spot._set(nullptr);
+    s_point._set(nullptr);
     vis.frame2test = 0; // xffffffff;
     vis.query_id = 0;
     vis.query_order = 0;
@@ -292,8 +292,10 @@ void light::xform_calc()
 namespace
 {
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
-constexpr std::array<Fvector, 6> cmNorm{{{0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
-constexpr std::array<Fvector, 6> cmDir{{{1.0f, 0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}}};
+constexpr std::array<Fvector, 6> cmNorm{
+    {Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 0.0f, -1.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}}};
+constexpr std::array<Fvector, 6> cmDir{
+    {Fvector{1.0f, 0.0f, 0.0f}, Fvector{-1.0f, 0.0f, 0.0f}, Fvector{0.0f, 1.0f, 0.0f}, Fvector{0.0f, -1.0f, 0.0f}, Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 0.0f, -1.0f}}};
 } // namespace
 
 void light::export_to(light_Package& package)

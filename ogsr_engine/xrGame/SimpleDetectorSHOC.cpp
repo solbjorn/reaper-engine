@@ -46,7 +46,7 @@ void CCustomDetectorSHOC::Load(LPCSTR section)
     m_fRadius = pSettings->r_float(section, "radius");
 
     if (pSettings->line_exist(section, "night_vision_particle"))
-        m_nightvision_particle = pSettings->r_string(section, "night_vision_particle");
+        m_nightvision_particle._set(pSettings->r_string(section, "night_vision_particle"));
 
     u32 i = 1;
     string256 temp;
@@ -74,7 +74,7 @@ void CCustomDetectorSHOC::Load(LPCSTR section)
             sprintf_s(temp, "zone_map_location_%d", i);
 
             if (pSettings->line_exist(section, temp))
-                zone_type.zone_map_location = pSettings->r_string(section, temp);
+                zone_type.zone_map_location._set(pSettings->r_string(section, temp));
 
             sprintf_s(temp, "zone_radius_%d", i);
             zone_type.m_fRadius = READ_IF_EXISTS(pSettings, r_float, section, temp, m_fRadius);
@@ -149,13 +149,13 @@ void CCustomDetectorSHOC::UpdateCL()
         {
             if (pZone->IsEnabled())
             {
-                if (!Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
-                    Level().MapManager().AddMapLocation(*zone_type.zone_map_location, pZone->ID());
+                if (!Level().MapManager().HasMapLocation(zone_type.zone_map_location, pZone->ID()))
+                    Level().MapManager().AddMapLocation(zone_type.zone_map_location, pZone->ID());
             }
             else
             {
-                if (Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
-                    Level().MapManager().RemoveMapLocation(*zone_type.zone_map_location, pZone->ID());
+                if (Level().MapManager().HasMapLocation(zone_type.zone_map_location, pZone->ID()))
+                    Level().MapManager().RemoveMapLocation(zone_type.zone_map_location, pZone->ID());
             }
         }
 
@@ -281,13 +281,13 @@ void CCustomDetectorSHOC::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
     {
         if (bAdd && pZone->IsEnabled())
         {
-            if (!Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
-                Level().MapManager().AddMapLocation(*zone_type.zone_map_location, pZone->ID());
+            if (!Level().MapManager().HasMapLocation(zone_type.zone_map_location, pZone->ID()))
+                Level().MapManager().AddMapLocation(zone_type.zone_map_location, pZone->ID());
         }
         else
         {
-            if (Level().MapManager().HasMapLocation(*zone_type.zone_map_location, pZone->ID()))
-                Level().MapManager().RemoveMapLocation(*zone_type.zone_map_location, pZone->ID());
+            if (Level().MapManager().HasMapLocation(zone_type.zone_map_location, pZone->ID()))
+                Level().MapManager().RemoveMapLocation(zone_type.zone_map_location, pZone->ID());
         }
     }
 }

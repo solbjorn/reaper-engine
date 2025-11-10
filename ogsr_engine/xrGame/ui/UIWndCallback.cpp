@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "UIWndCallback.h"
+
 #include "UIWindow.h"
 #include "../object_broker.h"
 #include "../callback_info.h"
@@ -35,7 +37,7 @@ void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_functi
 {
     SCallbackInfo* c = NewCallback();
     c->m_cpp_callback = f;
-    c->m_controlName = control_id;
+    c->m_controlName._set(control_id);
     c->m_event = event;
 }
 
@@ -43,6 +45,6 @@ void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const 
 {
     SCallbackInfo* c = NewCallback();
     c->m_cpp_callback = f;
-    c->m_controlName = control_id;
+    c->m_controlName._set(control_id);
     c->m_event = event;
 }

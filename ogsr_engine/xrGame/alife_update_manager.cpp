@@ -173,7 +173,7 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
     LPCSTR temp0 = strchr(**m_server_command_line, '/');
     VERIFY(temp0);
     string256 temp;
-    *m_server_command_line = strconcat(sizeof(temp), temp, autoave_name, temp0);
+    m_server_command_line->_set(strconcat(sizeof(temp), temp, autoave_name, temp0));
 
     save(autoave_name);
 
@@ -242,7 +242,7 @@ void CALifeUpdateManager::load(LPCSTR game_name, bool no_assert, bool new_only)
 
 #ifdef DEBUG
     Memory.mem_compact();
-    u32 memory_usage = Memory.mem_usage();
+    const auto memory_usage = Memory.mem_usage();
 #endif
 
     strcpy_s(g_last_saved_game, game_name);
@@ -254,8 +254,9 @@ void CALifeUpdateManager::load(LPCSTR game_name, bool no_assert, bool new_only)
     }
 
 #ifdef DEBUG
-    Msg("* Loading alife simulator is successfully completed (%7.3f Mb)", float(Memory.mem_usage() - memory_usage) / 1048576.0);
+    Msg("* Loading alife simulator is successfully completed (%zd Kb)", (Memory.mem_usage() - memory_usage) / 1024);
 #endif
+
     g_pGamePersistent->LoadTitle("st_server_connecting");
     g_pGamePersistent->SetTip();
 }
@@ -272,20 +273,23 @@ bool CALifeUpdateManager::load_game(LPCSTR game_name, bool no_assert)
     {
         string_path temp, file_name;
         strconcat(sizeof(temp), temp, game_name, SAVE_EXTENSION);
-        FS.update_path(file_name, "$game_saves$", temp);
+        std::ignore = FS.update_path(file_name, "$game_saves$", temp);
+
         if (!FS.exist(file_name))
         {
             R_ASSERT3(no_assert, "There is no saved game ", file_name);
-            return (false);
+            return false;
         }
     }
+
     string512 S, S1;
     strcpy_s(S, **m_server_command_line);
     LPSTR temp = strchr(S, '/');
     R_ASSERT2(temp, "Invalid server options!");
     strconcat(sizeof(S1), S1, game_name, temp);
-    *m_server_command_line = S1;
-    return (true);
+    m_server_command_line->_set(S1);
+
+    return true;
 }
 
 void CALifeUpdateManager::set_switch_online(ALife::_OBJECT_ID id, bool value)

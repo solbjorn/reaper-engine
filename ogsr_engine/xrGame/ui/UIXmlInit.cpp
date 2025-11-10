@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIXmlInit.h"
+
 #include "../hudmanager.h"
 #include "../level.h"
 #include "../UICustomItem.h"
@@ -155,14 +156,14 @@ bool CUIXmlInit::InitOptionsItem(CUIXml& xml_doc, const char* paht, int index, C
 
     if (xml_doc.NavigateToNode(buf, index))
     {
-        shared_str entry = xml_doc.ReadAttrib(buf, index, "entry");
-        shared_str group = xml_doc.ReadAttrib(buf, index, "group");
+        gsl::czstring entry = xml_doc.ReadAttrib(buf, index, "entry");
+        gsl::czstring group = xml_doc.ReadAttrib(buf, index, "group");
 
-        pWnd->Register(*entry, *group);
+        pWnd->Register(entry, group);
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
 
 bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd)
@@ -251,7 +252,7 @@ bool CUIXmlInit::InitSpin(CUIXml& xml_doc, const char* path, int index, CUICusto
 bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd)
 {
     InitText(xml_doc, path, index, (IUITextControl*)pWnd);
-    shared_str al = xml_doc.ReadAttrib(path, index, "vert_align", "");
+    gsl::czstring al = xml_doc.ReadAttrib(path, index, "vert_align", "");
     if (0 == xr_strcmp(al, "c"))
         pWnd->SetVTextAlignment(valCenter);
     else if (0 == xr_strcmp(al, "b"))
@@ -278,8 +279,9 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
     pWnd->SetTextColor(color);
     if (pTmpFont)
         pWnd->SetFont(pTmpFont);
+
     // Load font alignment
-    shared_str al = xml_doc.ReadAttrib(path, index, "align");
+    gsl::czstring al = xml_doc.ReadAttrib(path, index, "align");
     if (0 == xr_strcmp(al, "c"))
         pWnd->SetTextAlignment(CGameFont::alCenter);
     else if (0 == xr_strcmp(al, "r"))
@@ -289,15 +291,14 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
     else if (0 == xr_strcmp(al, "j"))
         pWnd->SetTextAlignment(CGameFont::alJustified);
 
-    shared_str text = xml_doc.Read(path, index, nullptr);
+    gsl::czstring text = xml_doc.Read(path, index, nullptr);
     CStringTable st;
-    if (!!text)
-    {
-        pWnd->SetText(*st.translate(*text));
-    }
+    if (text != nullptr)
+        pWnd->SetText(*st.translate(shared_str{text}));
 
     return true;
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 void CUIXmlInit::InitAccel(CUIXml& xml_doc, const char* path, int index, CUIButton* pWnd)
@@ -369,7 +370,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 
     LPCSTR text_hint = xml_doc.ReadAttrib(path, index, "hint", nullptr);
     if (text_hint)
-        pWnd->m_hint_text = CStringTable().translate(text_hint);
+        pWnd->m_hint_text = CStringTable().translate(shared_str{text_hint});
 
     return true;
 }
@@ -381,14 +382,14 @@ bool CUIXmlInit::InitSound(CUIXml& xml_doc, const char* path, int index, CUI3tBu
     strconcat(sizeof(sound_h), sound_h, path, ":sound_h");
     strconcat(sizeof(sound_t), sound_t, path, ":sound_t");
 
-    shared_str sound_h_result = xml_doc.Read(sound_h, index, "");
-    shared_str sound_t_result = xml_doc.Read(sound_t, index, "");
+    gsl::czstring sound_h_result = xml_doc.Read(sound_h, index, "");
+    gsl::czstring sound_t_result = xml_doc.Read(sound_t, index, "");
 
     if (xr_strlen(sound_h_result) != 0)
-        pWnd->InitSoundH(*sound_h_result);
+        pWnd->InitSoundH(sound_h_result);
 
     if (xr_strlen(sound_t_result) != 0)
-        pWnd->InitSoundT(*sound_t_result);
+        pWnd->InitSoundT(sound_t_result);
 
     return true;
 }
@@ -400,7 +401,6 @@ bool CUIXmlInit::InitButton(CUIXml& xml_doc, LPCSTR path, int index, CUIButton* 
     R_ASSERT3(xml_doc.NavigateToNode(path, index), "XML node not found", path);
 
     InitStatic(xml_doc, path, index, pWnd);
-
     InitAccel(xml_doc, path, index, pWnd);
 
     float shadowOffsetX = xml_doc.ReadAttribFlt(path, index, "shadow_offset_x", 0);
@@ -410,8 +410,8 @@ bool CUIXmlInit::InitButton(CUIXml& xml_doc, LPCSTR path, int index, CUIButton* 
     float pushOffsetY = xml_doc.ReadAttribFlt(path, index, "push_off_y", 3);
 
     LPCSTR text_hint = xml_doc.ReadAttrib(path, index, "hint", nullptr);
-    if (text_hint)
-        pWnd->m_hint_text = CStringTable().translate(text_hint);
+    if (text_hint != nullptr)
+        pWnd->m_hint_text = CStringTable().translate(shared_str{text_hint});
 
     pWnd->SetShadowOffset(Fvector2().set(shadowOffsetX, shadowOffsetY));
     pWnd->SetPushOffset(Fvector2().set(pushOffsetX, pushOffsetY));
@@ -556,8 +556,8 @@ bool CUIXmlInit::InitListWnd(CUIXml& xml_doc, LPCSTR path, int index, CUIListWnd
     CGameFont* LocalFont{};
     u32 cl;
 
-    shared_str text_path = strconcat(sizeof(buf), buf, path, ":font");
-    InitFont(xml_doc, *text_path, index, cl, LocalFont);
+    gsl::czstring text_path = strconcat(sizeof(buf), buf, path, ":font");
+    InitFont(xml_doc, text_path, index, cl, LocalFont);
     if (LocalFont)
     {
         pWnd->SetFont(LocalFont);
@@ -748,76 +748,72 @@ bool CUIXmlInit::InitFont(CUIXml& xml_doc, LPCSTR path, int index, u32& color, C
 {
     color = GetColor(xml_doc, path, index, 0xff);
 
-    shared_str font_name = xml_doc.ReadAttrib(path, index, "font", nullptr);
-    if (!*font_name || xr_strlen(*font_name) < 1)
+    gsl::czstring font_name = xml_doc.ReadAttrib(path, index, "font", nullptr);
+    if (font_name == nullptr || font_name[0] == '\0')
     {
         pFnt = nullptr;
         return false;
     }
 
-    if (*font_name)
+    if (std::is_eq(xr_strcmp(font_name, GRAFFITI19_FONT_NAME)))
     {
-        if (std::is_eq(xr_strcmp(font_name, GRAFFITI19_FONT_NAME)))
+        pFnt = UI()->Font()->pFontGraffiti19Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, GRAFFITI22_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontGraffiti22Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, GRAFFITI32_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontGraffiti32Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, GRAFFITI40_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontGraffiti40Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, GRAFFITI50_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontGraffiti50Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, ARIAL14_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontArial14;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, ARIAL21_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontArial21;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, MEDIUM_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontMedium;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, SMALL_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontSmall;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, LETTERICA16_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontLetterica16Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, LETTERICA18_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontLetterica18Russian;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, LETTERICA25_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontLetterica25;
+    }
+    else if (std::is_eq(xr_strcmp(font_name, DI_FONT_NAME)))
+    {
+        pFnt = UI()->Font()->pFontDI;
+    }
+    else
+    {
+        pFnt = UI()->Font()->InitializeCustomFont(font_name);
+        if (pFnt == nullptr)
         {
-            pFnt = UI()->Font()->pFontGraffiti19Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI22_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontGraffiti22Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI32_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontGraffiti32Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI40_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontGraffiti40Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, GRAFFITI50_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontGraffiti50Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, ARIAL14_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontArial14;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, ARIAL21_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontArial21;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, MEDIUM_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontMedium;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, SMALL_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontSmall;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, LETTERICA16_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontLetterica16Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, LETTERICA18_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontLetterica18Russian;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, LETTERICA25_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontLetterica25;
-        }
-        else if (std::is_eq(xr_strcmp(font_name, DI_FONT_NAME)))
-        {
-            pFnt = UI()->Font()->pFontDI;
-        }
-        else
-        {
-            pFnt = UI()->Font()->InitializeCustomFont(*font_name);
-
-            if (!pFnt)
-            {
-                R_ASSERT3(0, "unknown font", *font_name);
-                pFnt = nullptr;
-            }
+            R_ASSERT3(false, "unknown font", font_name);
+            pFnt = nullptr;
         }
     }
 
@@ -870,13 +866,13 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, const char* path, int index, CUI
     bool vertical = !!xml_doc.ReadAttribInt(path, index, "vertical");
 
     strconcat(sizeof(buf), buf, path, ":texture");
-    shared_str base_name = xml_doc.Read(buf, index, nullptr);
-    VERIFY(base_name.c_str());
+    gsl::czstring base_name = xml_doc.Read(buf, index, nullptr);
+    VERIFY(base_name != nullptr);
 
     u32 color = GetColor(xml_doc, buf, index, 0xff);
     pWnd->SetColor(color);
 
-    pWnd->Init(*base_name, x, y, width, height, !vertical);
+    pWnd->Init(base_name, x, y, width, height, !vertical);
 
     strconcat(sizeof(buf), buf, path, ":title");
     if (xml_doc.NavigateToNode(buf, index))
@@ -959,6 +955,7 @@ bool CUIXmlInit::InitCustomEdit(CUIXml& xml_doc, const char* path, int index, CU
 
     return true;
 }
+
 bool CUIXmlInit::InitEditBoxEx(CUIXml& xml_doc, const char* path, int index, CUIEditBoxEx* pWnd)
 {
     InitCustomEdit(xml_doc, path, index, pWnd);
@@ -981,7 +978,7 @@ bool CUIXmlInit::InitTextBanner(CUIXml& xml_doc, const char* path, int index, CU
 {
     R_ASSERT3(xml_doc.NavigateToNode(path, index), "XML node not found", path);
 
-    xr_map<shared_str, CUITextBanner::TextBannerStyles> conformityTable;
+    xr_map<gsl::czstring, CUITextBanner::TextBannerStyles> conformityTable;
     conformityTable["none"] = CUITextBanner::tbsNone;
     conformityTable["fade"] = CUITextBanner::tbsFade;
     conformityTable["flicker"] = CUITextBanner::tbsFlicker;
@@ -992,11 +989,9 @@ bool CUIXmlInit::InitTextBanner(CUIXml& xml_doc, const char* path, int index, CU
     XML_NODE* old_node = xml_doc.GetLocalRoot();
     xml_doc.SetLocalRoot(tab_node);
 
-    shared_str a;
-
     for (int i = 0; i < animationsCount; ++i)
     {
-        a = xml_doc.ReadAttrib("animation", i, "anim", "none");
+        gsl::czstring a = xml_doc.ReadAttrib("animation", i, "anim", "none");
         EffectParams* param = pBnr->SetStyleParams(conformityTable[a]);
 
         param->bCyclic = !!xml_doc.ReadAttribInt("animation", i, "cyclic", 1);
@@ -1045,8 +1040,7 @@ bool CUIXmlInit::InitMultiTextStatic(CUIXml& xml_doc, const char* path, int inde
         p->effect.SetTextColor(argb);
 
         CStringTable st;
-
-        p->str = st.translate(xml_doc.Read(ph, i, ""));
+        p->str = st.translate(shared_str{xml_doc.Read(ph, i, "")});
     }
 
     xml_doc.SetLocalRoot(xml_doc.GetRoot());
@@ -1087,16 +1081,16 @@ bool CUIXmlInit::InitAnimatedStatic(CUIXml& xml_doc, const char* path, int index
 
 bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMultiTextureOwner* pWnd)
 {
+    gsl::czstring texture{};
     string256 buf;
-    shared_str texture;
 
     strconcat(sizeof(buf), buf, path, ":texture");
     if (xml_doc.NavigateToNode(buf))
         texture = xml_doc.Read(buf, index, nullptr);
 
-    if (!!texture)
+    if (texture != nullptr && texture[0] != '\0')
     {
-        pWnd->InitTexture(*texture);
+        pWnd->InitTexture(texture);
         return true;
     }
 
@@ -1106,8 +1100,8 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMu
 bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd)
 {
     string256 buf;
-    shared_str texture;
-    shared_str shader;
+    gsl::czstring texture{};
+    gsl::czstring shader{};
     strconcat(sizeof(buf), buf, path, ":texture");
 
     if (xml_doc.NavigateToNode(buf))
@@ -1119,9 +1113,9 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISi
     if (!!texture)
     {
         if (!!shader)
-            pWnd->InitTextureEx(*texture, *shader);
+            pWnd->InitTextureEx(texture, shader);
         else
-            pWnd->InitTexture(*texture);
+            pWnd->InitTexture(texture);
     }
 
     Frect rect;
@@ -1163,54 +1157,51 @@ bool CUIXmlInit::InitMultiTexture(CUIXml& xml_doc, LPCSTR path, int index, CUI3t
     bool success = false;
 
     strconcat(sizeof(buff), buff, path, ":texture");
-    shared_str texture = xml_doc.Read(buff, index, nullptr);
-
-    if (texture.size() > 0)
+    gsl::czstring texture = xml_doc.Read(buff, index, nullptr);
+    if (texture != nullptr && texture[0] != '\0')
     {
-        pWnd->InitTexture(*texture);
+        pWnd->InitTexture(texture);
         return true;
     }
 
     strconcat(sizeof(buff), buff, path, ":texture_e");
     texture = xml_doc.Read(buff, index, nullptr);
-    if (texture.size())
+    if (texture != nullptr && texture[0] != '\0')
     {
         auto e = pWnd->m_background.CreateE();
-        e->InitTexture(*texture);
+        e->InitTexture(texture);
         success = true;
     }
 
     strconcat(sizeof(buff), buff, path, ":texture_t");
     texture = xml_doc.Read(buff, index, nullptr);
-    if (texture.size())
+    if (texture != nullptr && texture[0] != '\0')
     {
         auto t = pWnd->m_background.CreateT();
-        t->InitTexture(*texture);
+        t->InitTexture(texture);
         success = true;
     }
 
     strconcat(sizeof(buff), buff, path, ":texture_d");
     texture = xml_doc.Read(buff, index, nullptr);
-    if (texture.size())
+    if (texture != nullptr && texture[0] != '\0')
     {
         auto d = pWnd->m_background.CreateD();
-        d->InitTexture(*texture);
+        d->InitTexture(texture);
         success = true;
     }
 
     strconcat(sizeof(buff), buff, path, ":texture_h");
     texture = xml_doc.Read(buff, index, nullptr);
-    if (texture.size())
+    if (texture != nullptr && texture[0] != '\0')
     {
         auto h = pWnd->m_background.CreateH();
-        h->InitTexture(*texture);
+        h->InitTexture(texture);
         success = true;
     }
 
     if (success)
-    {
         pWnd->TextureOn();
-    }
 
     return success;
 }
@@ -1273,18 +1264,15 @@ void CUIXmlInit::InitColorDefs()
 
     int num = uiXml.GetNodesNum("colors", 0, "color");
 
-    shared_str name;
-    int r, b, g, a;
-
     for (int i = 0; i < num; ++i)
     {
-        name = uiXml.ReadAttrib("color", i, "name", "");
-        r = uiXml.ReadAttribInt("color", i, "r", 0);
-        g = uiXml.ReadAttribInt("color", i, "g", 0);
-        b = uiXml.ReadAttribInt("color", i, "b", 0);
-        a = uiXml.ReadAttribInt("color", i, "a", 255);
+        gsl::czstring name = uiXml.ReadAttrib("color", i, "name", "");
+        int r = uiXml.ReadAttribInt("color", i, "r", 0);
+        int g = uiXml.ReadAttribInt("color", i, "g", 0);
+        int b = uiXml.ReadAttribInt("color", i, "b", 0);
+        int a = uiXml.ReadAttribInt("color", i, "a", 255);
 
-        (*m_pColorDefs)[name] = color_argb(a, r, g, b);
+        (*m_pColorDefs)[shared_str{name}] = color_argb(a, r, g, b);
     }
 }
 
@@ -1374,13 +1362,11 @@ bool CUIXmlInit::InitListBox(CUIXml& xml_doc, const char* path, int index, CUILi
     pWnd->SetTextColorS(t_color);
 
     // Load font alignment
-    shared_str al = xml_doc.ReadAttrib(_path, index, "align");
+    gsl::czstring al = xml_doc.ReadAttrib(_path, index, "align");
     if (0 == xr_strcmp(al, "c"))
         pWnd->SetTextAlignment(CGameFont::alCenter);
-
     else if (0 == xr_strcmp(al, "r"))
         pWnd->SetTextAlignment(CGameFont::alRight);
-
     else if (0 == xr_strcmp(al, "l"))
         pWnd->SetTextAlignment(CGameFont::alLeft);
 
@@ -1456,8 +1442,9 @@ u32 CUIXmlInit::GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_c
     LPCSTR clr_def = xml_doc.ReadAttrib(path, index, "color", nullptr);
     if (clr_def)
     {
-        VERIFY(GetColorDefs()->find(clr_def) != GetColorDefs()->end());
-        return (*m_pColorDefs)[clr_def];
+        const auto it = GetColorDefs()->find(shared_str{clr_def});
+        VERIFY(it != GetColorDefs()->end());
+        return it->second;
     }
     else
     {

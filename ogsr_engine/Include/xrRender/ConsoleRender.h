@@ -7,6 +7,7 @@ class XR_NOVTABLE IConsoleRender : public virtual RTTI::Enable
 
 public:
     virtual ~IConsoleRender() = 0;
+
     virtual void Copy(IConsoleRender& _in) = 0;
     virtual void OnRender(bool bGame) = 0;
 };

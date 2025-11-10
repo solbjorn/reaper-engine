@@ -110,11 +110,10 @@ public:
     }
 };
 
-typedef _plane2<float> Fplane2;
-typedef _plane2<double> Dplane2;
+using Fplane2 = _plane2<f32>;
 
-template <class T>
-BOOL _valid(const _plane2<T>& s)
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _plane2<T>& s)
 {
     return _valid(s.n) && _valid(s.d);
 }

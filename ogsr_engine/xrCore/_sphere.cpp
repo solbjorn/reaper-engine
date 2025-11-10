@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+namespace
+{
 class Miniball;
 class Basis;
 
@@ -35,7 +37,6 @@ public:
     const Fvector* center() const;
     float squared_radius() const;
     int size() const;
-    int support_size() const;
     float excess(const Fvector& p) const;
 
     // modification
@@ -65,8 +66,6 @@ private:
     void pivot_mb(It k);
     void move_to_front(It j);
     float max_excess(It t, It i, It& pivot) const;
-    float abs(float r) const { return (r > 0) ? r : (-r); }
-    float sqr(float r) const { return r * r; }
 
 public:
     // construction
@@ -77,12 +76,6 @@ public:
     // access
     Fvector center() const;
     float squared_radius() const;
-    int num_points() const;
-    Cit points_begin() const;
-    Cit points_end() const;
-    int nr_support_gVectors() const;
-    Cit support_points_begin() const;
-    Cit support_points_end() const;
 };
 
 // Miniball
@@ -178,21 +171,9 @@ float Miniball::max_excess(It t, It i, It& pivot) const
     return max_e;
 }
 
-Fvector Miniball::center() const { return *((const Fvector*)B.center()); }
+Fvector Miniball::center() const { return *B.center(); }
 
 float Miniball::squared_radius() const { return B.squared_radius(); }
-
-int Miniball::num_points() const { return int(L.size()); }
-
-Miniball::Cit Miniball::points_begin() const { return L.begin(); }
-
-Miniball::Cit Miniball::points_end() const { return L.end(); }
-
-int Miniball::nr_support_gVectors() const { return B.support_size(); }
-
-Miniball::Cit Miniball::support_points_begin() const { return L.begin(); }
-
-Miniball::Cit Miniball::support_points_end() const { return support_end; }
 
 //----------------------------------------------------------------------
 // Basis
@@ -202,8 +183,6 @@ const Fvector* Basis::center() const { return current_c; }
 float Basis::squared_radius() const { return current_sqr_r; }
 
 int Basis::size() const { return m; }
-
-int Basis::support_size() const { return s; }
 
 float Basis::excess(const Fvector& p) const
 {
@@ -281,6 +260,7 @@ bool Basis::push(const Fvector& p)
     s = ++m;
     return true;
 }
+} // namespace
 
 void Fsphere_compute(Fsphere& dest, const Fvector* verts, int count)
 {

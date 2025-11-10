@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIEncyclopediaArticleWnd.h"
+
 #include "UIStatic.h"
 #include "../encyclopedia_article.h"
 #include "UIXmlInit.h"
@@ -48,7 +49,7 @@ void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
         m_UIImage->SetWndPos(img_x, m_UIImage->GetWndPos().y);
     }
 
-    m_UIText->SetText(*CStringTable().translate(article->data()->text.c_str()));
+    m_UIText->SetText(*CStringTable().translate(shared_str{article->data()->text.c_str()}));
     m_UIText->AdjustHeightToText();
 
     AdjustLauout();
@@ -63,6 +64,6 @@ void CUIEncyclopediaArticleWnd::AdjustLauout()
 void CUIEncyclopediaArticleWnd::SetArticle(LPCSTR article)
 {
     CEncyclopediaArticle A;
-    A.Load(article);
+    A.Load(shared_str{article});
     SetArticle(&A);
 }

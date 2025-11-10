@@ -196,18 +196,18 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
 
     // Create shaders
     auto& res = *RImplementation.Resources;
-    dest.ps = res._CreatePS(_ps);
+    dest.ps._set(res._CreatePS(_ps));
     ctable.merge(&dest.ps->constants);
 
-    dest.vs = res._CreateVS(_vs);
+    dest.vs._set(res._CreateVS(_vs));
     ctable.merge(&dest.vs->constants);
 
-    dest.gs = res._CreateGS(_gs);
+    dest.gs._set(res._CreateGS(_gs));
     ctable.merge(&dest.gs->constants);
 
-    dest.hs = res._CreateHS("null");
-    dest.ds = res._CreateDS("null");
-    dest.cs = res._CreateCS("null");
+    dest.hs._set(res._CreateHS("null"));
+    dest.ds._set(res._CreateDS("null"));
+    dest.cs._set(res._CreateCS("null"));
 
     // Last Stage - disable
     if (std::is_eq(xr::strcasecmp(_ps, "null")))
@@ -222,8 +222,8 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 {
     r_Pass(vs, gs, ps, bFog, bZtest, bZwrite, bABlend, abSRC, abDST, aTest, aRef);
 
-    dest.hs = RImplementation.Resources->_CreateHS(hs);
-    dest.ds = RImplementation.Resources->_CreateDS(ds);
+    dest.hs._set(RImplementation.Resources->_CreateHS(hs));
+    dest.ds._set(RImplementation.Resources->_CreateDS(ds));
 
     ctable.merge(&dest.hs->constants);
     ctable.merge(&dest.ds->constants);
@@ -231,7 +231,7 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 
 void CBlender_Compile::r_ComputePass(LPCSTR cs)
 {
-    dest.cs = RImplementation.Resources->_CreateCS(cs);
+    dest.cs._set(RImplementation.Resources->_CreateCS(cs));
     ctable.merge(&dest.cs->constants);
 }
 
@@ -241,9 +241,9 @@ void CBlender_Compile::r_End()
 
     SetMapping();
 
-    dest.constants = res._CreateConstantTable(ctable);
-    dest.state = res._CreateState(RS.GetContainer());
-    dest.T = res._CreateTextureList(passTextures);
+    dest.constants._set(res._CreateConstantTable(ctable));
+    dest.state._set(res._CreateState(RS.GetContainer()));
+    dest.T._set(res._CreateTextureList(passTextures));
 
-    SH->passes.push_back(res._CreatePass(dest));
+    SH->passes.emplace_back(res._CreatePass(dest));
 }

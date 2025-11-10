@@ -5,6 +5,7 @@
 
 // refs
 class dxRender_Visual;
+
 namespace PS
 {
 struct SEmitter;
@@ -20,16 +21,45 @@ private:
 
     struct str_pred
     {
-        IC bool operator()(const shared_str& x, const shared_str& y) const { return xr_strcmp(x, y) < 0; }
+        [[nodiscard]] constexpr bool operator()(const shared_str& x, const shared_str& y) const { return std::is_lt(xr_strcmp(x, y)); }
     };
 
     struct ModelDef
     {
         shared_str name;
         dxRender_Visual* model{};
-        u32 refs{};
+        std::atomic<gsl::index> refs{};
 
-        ModelDef() = default;
+        constexpr ModelDef() = default;
+        constexpr explicit ModelDef(gsl::czstring nm, dxRender_Visual* md) : model{md} { name._set(nm); }
+
+        // Non-atomic, for vector purposes only
+        constexpr ModelDef(const ModelDef& that) : name{that.name}, model{that.model}, refs{that.refs.load()} {}
+
+        constexpr ModelDef(ModelDef&& that)
+        {
+            name = std::move(that.name);
+            model = std::move(that.model);
+            refs = that.refs.load();
+        }
+
+        constexpr ModelDef& operator=(const ModelDef& that)
+        {
+            name = that.name;
+            model = that.model;
+            refs = that.refs.load();
+
+            return *this;
+        }
+
+        constexpr ModelDef& operator=(ModelDef&& that)
+        {
+            name = std::move(that.name);
+            model = std::move(that.model);
+            refs = that.refs.load();
+
+            return *this;
+        }
     };
 
     typedef xr_multimap<shared_str, dxRender_Visual*, str_pred> POOL;
@@ -60,6 +90,7 @@ private:
 public:
     CModelPool();
     virtual ~CModelPool();
+
     dxRender_Visual* Instance_Create(u32 Type);
     dxRender_Visual* Instance_Duplicate(dxRender_Visual* V);
     dxRender_Visual* Instance_Load(LPCSTR N, BOOL allow_register);

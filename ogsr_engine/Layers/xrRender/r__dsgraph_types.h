@@ -8,28 +8,49 @@ namespace R_dsgraph
 struct _NormalItem
 {
     dxRender_Visual* pVisual;
+
+    constexpr _NormalItem() = default;
+    constexpr explicit _NormalItem(dxRender_Visual* v) : pVisual{v} {}
 };
 
-struct _MatrixItem
+struct XR_TRIVIAL _MatrixItem
 {
     IRenderable* pObject;
     dxRender_Visual* pVisual;
     Fmatrix Matrix; // matrix (copy)
     Fmatrix PrevMatrix;
 
-    constexpr inline _MatrixItem() = default;
-    constexpr inline _MatrixItem(const _MatrixItem& i) { xr_memcpy128(this, &i, sizeof(i)); }
-    constexpr inline _MatrixItem(IRenderable* o, dxRender_Visual* v, Fmatrix& m) : pObject(o), pVisual(v), Matrix(m), PrevMatrix(Fidentity) {}
-    constexpr inline _MatrixItem(IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p) : pObject(o), pVisual(v), Matrix(m), PrevMatrix(p) {}
+    constexpr _MatrixItem() = default;
+    constexpr explicit _MatrixItem(IRenderable* o, dxRender_Visual* v, Fmatrix& m) : pObject{o}, pVisual{v}, Matrix{m}, PrevMatrix{Fidentity} {}
+    constexpr explicit _MatrixItem(IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p) : pObject{o}, pVisual{v}, Matrix{m}, PrevMatrix{p} {}
 
-    constexpr inline _MatrixItem& operator=(const _MatrixItem& i)
+    constexpr _MatrixItem(const _MatrixItem& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _MatrixItem(_MatrixItem&&) = default;
+#else
+    constexpr _MatrixItem(_MatrixItem&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr _MatrixItem& operator=(const _MatrixItem& that)
     {
-        xr_memcpy128(this, &i, sizeof(i));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
-};
 
-struct _MatrixItemS
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _MatrixItem& operator=(_MatrixItem&&) = default;
+#else
+    constexpr _MatrixItem& operator=(_MatrixItem&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
+};
+XR_TRIVIAL_ASSERT(_MatrixItem);
+
+struct XR_TRIVIAL _MatrixItemS
 {
     float ssa;
     IRenderable* pObject;
@@ -38,38 +59,74 @@ struct _MatrixItemS
     Fmatrix Matrix; // matrix (copy)
     Fmatrix PrevMatrix;
 
-    constexpr inline _MatrixItemS() = default;
-    constexpr inline _MatrixItemS(const _MatrixItemS& i) { xr_memcpy128(this, &i, sizeof(i)); }
-    constexpr inline _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa{s}, pObject{nullptr}, pVisual{v}, se{e}, Matrix{Fidentity}, PrevMatrix{Fidentity} {}
-    constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, ShaderElement* e)
+    constexpr _MatrixItemS() = default;
+    constexpr explicit _MatrixItemS(float s, dxRender_Visual* v, ShaderElement* e) : ssa{s}, pObject{nullptr}, pVisual{v}, se{e}, Matrix{Fidentity}, PrevMatrix{Fidentity} {}
+    constexpr explicit _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, ShaderElement* e)
         : ssa{s}, pObject{o}, pVisual{v}, se{e}, Matrix{m}, PrevMatrix{Fidentity}
     {}
-    constexpr inline _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p, ShaderElement* e)
+    constexpr explicit _MatrixItemS(float s, IRenderable* o, dxRender_Visual* v, Fmatrix& m, Fmatrix& p, ShaderElement* e)
         : ssa{s}, pObject{o}, pVisual{v}, se{e}, Matrix{m}, PrevMatrix{p}
     {}
 
-    constexpr inline _MatrixItemS& operator=(const _MatrixItemS& i)
+    constexpr _MatrixItemS(const _MatrixItemS& that) { xr_memcpy128(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _MatrixItemS(_MatrixItemS&&) = default;
+#else
+    constexpr _MatrixItemS(_MatrixItemS&& that) { xr_memcpy128(this, &that, sizeof(that)); }
+#endif
+
+    constexpr _MatrixItemS& operator=(const _MatrixItemS& that)
     {
-        xr_memcpy128(this, &i, sizeof(i));
+        xr_memcpy128(this, &that, sizeof(that));
         return *this;
     }
-};
 
-struct alignas(16) _LodItem
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _MatrixItemS& operator=(_MatrixItemS&&) = default;
+#else
+    constexpr _MatrixItemS& operator=(_MatrixItemS&& that)
+    {
+        xr_memcpy128(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
+};
+XR_TRIVIAL_ASSERT(_MatrixItemS);
+
+struct XR_TRIVIAL alignas(16) _LodItem
 {
     float ssa;
     dxRender_Visual* pVisual;
 
-    constexpr inline _LodItem() = default;
-    constexpr inline _LodItem(const _LodItem& i) { xr_memcpy16(this, &i); }
-    constexpr inline _LodItem(float s, dxRender_Visual* v) : ssa(s), pVisual(v) {}
+    constexpr _LodItem() = default;
+    constexpr explicit _LodItem(float s, dxRender_Visual* v) : ssa{s}, pVisual{v} {}
 
-    constexpr inline _LodItem& operator=(const _LodItem& i)
+    constexpr _LodItem(const _LodItem& that) { xr_memcpy16(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _LodItem(_LodItem&&) = default;
+#else
+    constexpr _LodItem(_LodItem&& that) { xr_memcpy16(this, &that); }
+#endif
+
+    constexpr _LodItem& operator=(const _LodItem& that)
     {
-        xr_memcpy16(this, &i);
+        xr_memcpy16(this, &that);
         return *this;
     }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _LodItem& operator=(_LodItem&&) = default;
+#else
+    constexpr _LodItem& operator=(_LodItem&& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+#endif
 };
+XR_TRIVIAL_ASSERT(_LodItem);
 
 // NORMAL, key is SSA
 using mapNormalDirect = xr_multimap<float, _NormalItem, std::greater<float>>;

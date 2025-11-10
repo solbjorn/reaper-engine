@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "pda.h"
+
 #include "hudmanager.h"
 #include "PhysicsShell.h"
 #include "Entity.h"
@@ -34,7 +36,7 @@ CPda::CPda()
     m_flags.set(Fruck, TRUE);
 
     m_idOriginalOwner = u16(-1);
-    m_SpecificChracterOwner = nullptr;
+    m_SpecificChracterOwner._set(nullptr);
     TurnOff();
 }
 

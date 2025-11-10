@@ -23,7 +23,6 @@
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
 #include "custommonster.h"
-#include "memory_manager.h"
 #include "visual_memory_manager.h"
 #include "sound_memory_manager.h"
 #include "hit_memory_manager.h"
@@ -129,13 +128,11 @@ void CScriptGameObject::play_cycle(LPCSTR anim, bool mix_in)
     IKinematicsAnimated* sa = smart_cast<IKinematicsAnimated*>(object().Visual());
     if (sa)
     {
-        MotionID m = sa->ID_Cycle(anim);
+        MotionID m = sa->ID_Cycle(shared_str{anim});
         if (m)
             sa->PlayCycle(m, (BOOL)mix_in);
         else
-        {
             ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : has not cycle %s", anim);
-        }
     }
     else
     {
@@ -312,7 +309,8 @@ void CScriptGameObject::SetStartDialog(LPCSTR dialog_id)
     CAI_PhraseDialogManager* pDialogManager = smart_cast<CAI_PhraseDialogManager*>(&object());
     if (!pDialogManager)
         return;
-    pDialogManager->SetStartDialog(dialog_id);
+
+    pDialogManager->SetStartDialog(shared_str{dialog_id});
 }
 
 const char* CScriptGameObject::GetStartDialog()

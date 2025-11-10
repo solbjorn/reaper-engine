@@ -56,7 +56,8 @@ shared_str CSpaceRestrictionManager::in_restrictions(ALife::_OBJECT_ID id)
     CRestrictionPtr client_restriction = restriction(id);
     if (client_restriction)
         return (client_restriction->in_restrictions());
-    return ("");
+
+    return shared_str{""};
 }
 
 shared_str CSpaceRestrictionManager::out_restrictions(ALife::_OBJECT_ID id)
@@ -64,7 +65,8 @@ shared_str CSpaceRestrictionManager::out_restrictions(ALife::_OBJECT_ID id)
     CRestrictionPtr client_restriction = restriction(id);
     if (client_restriction)
         return (client_restriction->out_restrictions());
-    return ("");
+
+    return shared_str{""};
 }
 
 shared_str CSpaceRestrictionManager::base_in_restrictions(ALife::_OBJECT_ID id)
@@ -160,7 +162,7 @@ CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction(
     in_restrictors = normalize_string(in_restrictors);
 
     strconcat(sizeof(m_temp), m_temp, *out_restrictors, "\x01", *in_restrictors);
-    shared_str space_restrictions = m_temp;
+    shared_str space_restrictions{m_temp};
 
     SPACE_RESTRICTIONS::const_iterator I = m_space_restrictions.find(space_restrictions);
     if (I != m_space_restrictions.end())
@@ -196,15 +198,19 @@ IC void CSpaceRestrictionManager::join_restrictions(shared_str& restrictions, sh
     string4096 m_temp1;
     string4096 m_temp2;
     strcpy_s(m_temp2, *restrictions);
+
     for (u32 i = 0, n = _GetItemCount(*update), count = xr_strlen(m_temp2); i < n; ++i)
-        if (!restriction_presented(m_temp2, _GetItem(*update, i, m_temp1)))
+    {
+        if (!restriction_presented(shared_str{m_temp2}, shared_str{_GetItem(*update, i, m_temp1)}))
         {
             if (count)
                 strcat_s(m_temp2, ",");
             strcat_s(m_temp2, m_temp1);
             ++count;
         }
-    restrictions = shared_str(m_temp2);
+    }
+
+    restrictions._set(m_temp2);
 }
 
 IC void CSpaceRestrictionManager::difference_restrictions(shared_str& restrictions, shared_str update)
@@ -212,15 +218,19 @@ IC void CSpaceRestrictionManager::difference_restrictions(shared_str& restrictio
     string4096 m_temp1;
     string4096 m_temp2;
     strcpy_s(m_temp2, "");
+
     for (u32 i = 0, n = _GetItemCount(*restrictions), count = 0; i < n; ++i)
-        if (!restriction_presented(update, _GetItem(*restrictions, i, m_temp1)))
+    {
+        if (!restriction_presented(shared_str{update}, shared_str{_GetItem(*restrictions, i, m_temp1)}))
         {
             if (count)
                 strcat_s(m_temp2, ",");
             strcat_s(m_temp2, m_temp1);
             ++count;
         }
-    restrictions = shared_str(m_temp2);
+    }
+
+    restrictions._set(m_temp2);
 }
 
 void CSpaceRestrictionManager::add_restrictions(ALife::_OBJECT_ID id, shared_str add_out_restrictions, shared_str add_in_restrictions)

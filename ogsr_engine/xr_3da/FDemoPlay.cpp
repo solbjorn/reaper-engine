@@ -4,8 +4,9 @@
 
 #include "stdafx.h"
 
-#include "igame_level.h"
 #include "fdemoplay.h"
+
+#include "igame_level.h"
 #include "xr_ioconsole.h"
 #include "motion.h"
 #include "Render.h"
@@ -60,7 +61,17 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 
         seq.resize(sz / sizeof(Fmatrix));
         m_count = seq.size();
-        CopyMemory(&seq.begin()->cm, fs->pointer(), sz);
+
+#ifdef XR_TRIVIAL_BROKEN
+        XR_DIAG_PUSH();
+        XR_DIAG_IGNORE("-Wnontrivial-memcall");
+#endif
+
+        std::memcpy(seq.data(), fs->pointer(), sz);
+
+#ifdef XR_TRIVIAL_BROKEN
+        XR_DIAG_POP();
+#endif
 
         FS.r_close(fs);
         Msg("~ Total key-frames: [%d]", m_count);
@@ -133,8 +144,8 @@ void CDemoPlay::stat_Stop()
         else
             strcpy_s(fname, sizeof(fname), "benchmark.result");
 
-        FS.update_path(fname, "$app_data_root$", fname);
-        CInifile res(fname, FALSE, FALSE, TRUE);
+        std::ignore = FS.update_path(fname, "$app_data_root$", fname);
+        CInifile res{fname, false, false, true};
         res.w_float("general", "renderer", 9.f);
         res.w_float("general", "min", rfps_min);
         res.w_float("general", "max", rfps_max);

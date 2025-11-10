@@ -86,7 +86,7 @@ public:
     SGameMtl()
     {
         ID = -1;
-        m_Name = "unknown";
+        m_Name._set("unknown");
         Flags.zero();
         // factors
         fFlotationFactor = 1.f;
@@ -104,6 +104,7 @@ public:
         fPHBouncing = 0.1f;
         fDensityFactor = 0.0f;
     }
+
     void Load(IReader& fs);
     void Save(IWriter& fs);
     int GetID() const { return ID; }
@@ -139,7 +140,7 @@ public:
     xr_vector<shared_str> CollideParticles;
     FactoryPtr<IWallMarkArray> CollideMarks;
 
-    SGameMtlPair(CGameMtlLibrary* owner)
+    explicit SGameMtlPair(CGameMtlLibrary* owner)
     {
         mtl0 = -1;
         mtl1 = -1;
@@ -148,6 +149,7 @@ public:
         m_Owner = owner;
         OwnProps.one();
     }
+
     ~SGameMtlPair();
 
     int GetMtl0() const { return mtl0; }
@@ -181,7 +183,8 @@ private:
 
 public:
     CGameMtlLibrary();
-    ~CGameMtlLibrary() {}
+    ~CGameMtlLibrary() = default;
+
     void Unload()
     {
         material_pairs_rt.clear();

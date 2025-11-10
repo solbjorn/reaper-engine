@@ -8,58 +8,58 @@ struct ShaderTypeTraits;
 template <>
 struct ShaderTypeTraits<SHS>
 {
-    typedef CResourceManager::map_HS MapType;
-    typedef ID3D11HullShader DXIface;
+    using MapType = CResourceManager::map_HS;
+    using DXIface = ID3D11HullShader;
 
-    static inline const char* GetShaderExt() { return ".hs"; }
-    static inline const char* GetCompilationTarget() { return "hs_5_0"; }
+    [[nodiscard]] static constexpr const char* GetShaderExt() { return ".hs"; }
+    [[nodiscard]] static constexpr const char* GetCompilationTarget() { return "hs_5_0"; }
 
-    static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
+    [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* hs{};
         R_CHK(HW.pDevice->CreateHullShader(buffer, size, nullptr, &hs));
         return hs;
     }
 
-    static inline u32 GetShaderDest() { return RC_dest_hull; }
+    [[nodiscard]] static constexpr u32 GetShaderDest() { return RC_dest_hull; }
 };
 
 template <>
 struct ShaderTypeTraits<SDS>
 {
-    typedef CResourceManager::map_DS MapType;
-    typedef ID3D11DomainShader DXIface;
+    using MapType = CResourceManager::map_DS;
+    using DXIface = ID3D11DomainShader;
 
-    static inline const char* GetShaderExt() { return ".ds"; }
-    static inline const char* GetCompilationTarget() { return "ds_5_0"; }
+    [[nodiscard]] static constexpr const char* GetShaderExt() { return ".ds"; }
+    [[nodiscard]] static constexpr const char* GetCompilationTarget() { return "ds_5_0"; }
 
-    static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
+    [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* hs{};
         R_CHK(HW.pDevice->CreateDomainShader(buffer, size, nullptr, &hs));
         return hs;
     }
 
-    static inline u32 GetShaderDest() { return RC_dest_domain; }
+    [[nodiscard]] static constexpr u32 GetShaderDest() { return RC_dest_domain; }
 };
 
 template <>
 struct ShaderTypeTraits<SCS>
 {
-    typedef CResourceManager::map_CS MapType;
-    typedef ID3D11ComputeShader DXIface;
+    using MapType = CResourceManager::map_CS;
+    using DXIface = ID3D11ComputeShader;
 
-    static inline const char* GetShaderExt() { return ".cs"; }
-    static inline const char* GetCompilationTarget() { return "cs_5_0"; }
+    [[nodiscard]] static constexpr const char* GetShaderExt() { return ".cs"; }
+    [[nodiscard]] static constexpr const char* GetCompilationTarget() { return "cs_5_0"; }
 
-    static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
+    [[nodiscard]] static DXIface* CreateHWShader(const DWORD* buffer, size_t size)
     {
         DXIface* cs{};
         R_CHK(HW.pDevice->CreateComputeShader(buffer, size, nullptr, &cs));
         return cs;
     }
 
-    static inline u32 GetShaderDest() { return RC_dest_compute; }
+    [[nodiscard]] static constexpr u32 GetShaderDest() { return RC_dest_compute; }
 };
 
 template <>
@@ -80,17 +80,18 @@ inline CResourceManager::map_CS& CResourceManager::GetShaderMap()
     return m_cs;
 }
 
-#define D3DCOMPILE_FLAGS_DEFAULT (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR)
-#define D3DCOMPILE_FLAGS_DEBUG (D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG)
+constexpr inline auto D3DCOMPILE_FLAGS_DEFAULT{D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+constexpr inline auto D3DCOMPILE_FLAGS_DEBUG{D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG};
 
 template <typename T>
 inline T* CResourceManager::CreateShader(const char* name)
 {
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
     auto I = sh_map.find(name);
-
     if (I != sh_map.end())
+    {
         return I->second;
+    }
     else
     {
         T* sh = xr_new<T>();
@@ -112,7 +113,7 @@ inline T* CResourceManager::CreateShader(const char* name)
         // Open file
         string_path cname;
         strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
-        FS.update_path(cname, "$game_shaders$", cname);
+        std::ignore = FS.update_path(cname, "$game_shaders$", cname);
 
         // duplicate and zero-terminate
         IReader* file = FS.r_open(cname);
@@ -129,8 +130,7 @@ inline T* CResourceManager::CreateShader(const char* name)
             Flags |= D3DCOMPILE_FLAGS_DEBUG;
 
         // Compile
-        HRESULT const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
-
+        const HRESULT _hr = RImplementation.shader_compile(name, (const DWORD*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
         FS.r_close(file);
 
         ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
@@ -142,7 +142,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 template <typename T>
 inline void CResourceManager::DestroyShader(const T* sh)
 {
-    if (0 == (sh->dwFlags & xr_resource_flagged::RF_REGISTERED))
+    if (!(sh->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
     auto& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();

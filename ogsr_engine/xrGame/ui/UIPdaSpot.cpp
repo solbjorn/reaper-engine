@@ -19,7 +19,7 @@ CUIPdaSpot::CUIPdaSpot()
     m_position = Fvector();
 
     m_spotID = u16(-1);
-    m_spotType = READ_IF_EXISTS(pSettings, r_string, "user_spots", "spot_type", "red_location");
+    m_spotType._set(READ_IF_EXISTS(pSettings, r_string, "user_spots", "spot_type", "red_location"));
 
     InitControls();
 }
@@ -86,8 +86,8 @@ void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)
     // MsgDbg("--[%s] adding user location: type: [%s], lname: [%s], pos: [%.5f, %.5f, %.5f]. Text: '%s'", __FUNCTION__, m_spotType.c_str(), m_levelName, m_position.x,
     // m_position.y, m_position.z, m_editBox->GetText());
 
-    CMapLocation* ml = Level().MapManager().AddUserLocation(m_spotType, m_levelName, m_position);
-    ml->SetHint(m_editBox->GetText());
+    CMapLocation* ml = Level().MapManager().AddUserLocation(m_spotType, shared_str{m_levelName}, m_position);
+    ml->SetHint(shared_str{m_editBox->GetText()});
     ml->SetSerializable(true);
 
     OnExit(ui, d);
@@ -106,7 +106,7 @@ void CUIPdaSpot::OnApply(CUIWindow* ui, void* d)
         return;
 
     if (m_editBox->GetText() != ml->GetHint())
-        ml->SetHint(m_editBox->GetText());
+        ml->SetHint(shared_str{m_editBox->GetText()});
 
     OnExit(ui, d);
 }

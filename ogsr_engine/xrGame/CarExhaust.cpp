@@ -1,17 +1,17 @@
 #include "stdafx.h"
 
-#ifdef DEBUG
-#include "ode_include.h"
-#include "../xr_3da/StatGraph.h"
-#include "PHDebug.h"
-#endif
-
 #include "alife_space.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
+
+#ifdef DEBUG
+#include "ode_include.h"
+#include "../xr_3da/StatGraph.h"
+#include "PHDebug.h"
+#endif
 
 extern CPHWorld* ph_world;
 
@@ -45,7 +45,7 @@ void CCar::SExhaust::Update()
     dVector3 res;
     Fvector res_vel;
     dBodyGetPointVel(pelement->get_body(), global_transform.c.x, global_transform.c.y, global_transform.c.z, res);
-    CopyMemory(&res_vel, res, sizeof(Fvector));
+    std::memcpy(&res_vel, res, sizeof(Fvector));
     // velocity.mul(0.95f);
     // res_vel.mul(0.05f);
     // velocity.add(res_vel);

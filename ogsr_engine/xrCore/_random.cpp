@@ -3,6 +3,7 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wdeprecated-copy-with-dtor");
 XR_DIAG_IGNORE("-Wfloat-equal");
+XR_DIAG_IGNORE("-Wsign-conversion");
 
 #include <absl/random/random.h>
 
@@ -96,21 +97,21 @@ u64 random_u64(u64 min, u64 max)
     return ret;
 }
 
-float random_float(float min, float max)
+f32 random_f32(f32 min, f32 max)
 {
     std::unique_ptr<absl::BitGen> gen = rnd.get();
 
-    float ret = absl::Uniform<float>(absl::IntervalClosed, *gen, min, max);
+    f32 ret = absl::Uniform<f32>(absl::IntervalClosed, *gen, min, max);
     rnd.put(std::move(gen));
 
     return ret;
 }
 
-double random_double_below(double min, double max)
+f64 random_f64_below(f64 min, f64 max)
 {
     std::unique_ptr<absl::BitGen> gen = rnd.get();
 
-    double ret = absl::Uniform<double>(*gen, min, max);
+    f64 ret = absl::Uniform<f64>(*gen, min, max);
     rnd.put(std::move(gen));
 
     return ret;

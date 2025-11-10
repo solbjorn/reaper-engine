@@ -73,7 +73,7 @@ BOOL CRestrictedObject::net_Spawn(CSE_Abstract* data)
         construct_string(temp1, monster->m_dynamic_in_restrictions, monster);
     }
 
-    Level().space_restriction_manager().restrict(monster->ID, temp0, temp1);
+    Level().space_restriction_manager().restrict(monster->ID, shared_str{temp0}, shared_str{temp1});
 
     actual(true);
 
@@ -206,7 +206,7 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
     for (int i = 0; i < cnt; ++i)
     {
         string256 tmp;
-        _GetItem(current_restrictions.c_str(), i, tmp);
+        std::ignore = _GetItem(current_restrictions.c_str(), i, tmp);
         cur_restrs.emplace_back(std::move(tmp));
     }
 
@@ -271,7 +271,7 @@ void CRestrictedObject::add_restrictions(const xr_vector<ALife::_OBJECT_ID>& out
     construct_restriction_string<CRestrictionPredicate<true>, true>(temp_in_restrictions, in_restrictions, this->in_restrictions(),
                                                                     CRestrictionPredicate<true>(RestrictionSpace::eRestrictorTypeIn), this);
 
-    Level().space_restriction_manager().add_restrictions(object().ID(), temp_out_restrictions, temp_in_restrictions);
+    Level().space_restriction_manager().add_restrictions(object().ID(), shared_str{temp_out_restrictions}, shared_str{temp_in_restrictions});
 
     actual(false);
 }
@@ -288,7 +288,7 @@ void CRestrictedObject::remove_restrictions(const xr_vector<ALife::_OBJECT_ID>& 
     construct_restriction_string<CRestrictionPredicate<false>, false>(temp_in_restrictions, in_restrictions, this->in_restrictions(),
                                                                       CRestrictionPredicate<false>(RestrictionSpace::eRestrictorTypeIn), this);
 
-    Level().space_restriction_manager().remove_restrictions(object().ID(), temp_out_restrictions, temp_in_restrictions);
+    Level().space_restriction_manager().remove_restrictions(object().ID(), shared_str{temp_out_restrictions}, shared_str{temp_in_restrictions});
 
     actual(false);
 }
@@ -298,7 +298,7 @@ void CRestrictedObject::add_restrictions(const shared_str& out_restrictions, con
     if (!out_restrictions.size() && !in_restrictions.size())
         return;
 
-    Level().space_restriction_manager().add_restrictions(object().ID(), *out_restrictions, *in_restrictions);
+    Level().space_restriction_manager().add_restrictions(object().ID(), out_restrictions, in_restrictions);
 
     actual(false);
 }
@@ -308,7 +308,7 @@ void CRestrictedObject::remove_restrictions(const shared_str& out_restrictions, 
     if (!out_restrictions.size() && !in_restrictions.size())
         return;
 
-    Level().space_restriction_manager().remove_restrictions(object().ID(), *out_restrictions, *in_restrictions);
+    Level().space_restriction_manager().remove_restrictions(object().ID(), out_restrictions, in_restrictions);
 
     actual(false);
 }
@@ -329,7 +329,7 @@ void CRestrictedObject::remove_all_restrictions()
     if (Level().space_restriction_manager().in_restrictions(object().ID()).size() || Level().space_restriction_manager().out_restrictions(object().ID()).size())
         actual(false);
 
-    Level().space_restriction_manager().restrict(object().ID(), "", "");
+    Level().space_restriction_manager().restrict(object().ID(), shared_str{""}, shared_str{""});
 }
 
 void CRestrictedObject::actual(bool value)

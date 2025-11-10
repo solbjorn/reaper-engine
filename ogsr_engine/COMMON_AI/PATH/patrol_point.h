@@ -42,8 +42,8 @@ private:
 #endif
 
 public:
-    CPatrolPoint(const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name);
-    CPatrolPoint(const CPatrolPath* path = nullptr);
+    explicit CPatrolPoint(const CPatrolPath* path, const Fvector& position, u32 level_vertex_id, u32 flags, shared_str name);
+    explicit CPatrolPoint(const CPatrolPath* path = nullptr);
 
     void save(IWriter& stream) const;
     void load(IReader& stream);

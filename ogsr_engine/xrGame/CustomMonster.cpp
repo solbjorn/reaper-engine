@@ -59,10 +59,11 @@ Flags32 psAI_Flags = {0};
 void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
     char buf[128];
-    fwd = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_fwd"));
-    back = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_back"));
-    ls = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_ls"));
-    rs = K->ID_Cycle_Safe(strconcat(sizeof(buf), buf, base, "_rs"));
+
+    fwd = K->ID_Cycle_Safe(shared_str{strconcat(sizeof(buf), buf, base, "_fwd")});
+    back = K->ID_Cycle_Safe(shared_str{strconcat(sizeof(buf), buf, base, "_back")});
+    ls = K->ID_Cycle_Safe(shared_str{strconcat(sizeof(buf), buf, base, "_ls")});
+    rs = K->ID_Cycle_Safe(shared_str{strconcat(sizeof(buf), buf, base, "_rs")});
 }
 
 // void CCustomMonster::TorsoSpinCallback(CBoneInstance* B)

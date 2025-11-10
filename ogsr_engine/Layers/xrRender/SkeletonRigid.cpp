@@ -229,7 +229,7 @@ void CKinematics::Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 mask_channel, bool ig
     pos.set(bi.mTransform);
 }
 
-void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix* parent)
+void CKinematics::Bone_Calculate(CBoneData* bd, const Fmatrix* parent)
 {
     u16 SelfID = bd->GetSelfID();
     CBoneInstance& BONE_INST = LL_GetBoneInstance(SelfID);

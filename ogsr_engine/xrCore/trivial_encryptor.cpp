@@ -1,5 +1,3 @@
-#pragma once
-
 #include "stdafx.h"
 
 #include "trivial_encryptor.h"
@@ -17,13 +15,12 @@ private:
 
 public:
     random32() = delete;
+    constexpr explicit random32(u32 seed) : m_seed{seed} {}
 
-    explicit random32(u32 seed) { m_seed = seed; }
-
-    u32 random(u32 range)
+    [[nodiscard]] constexpr u32 random(u32 range)
     {
         m_seed = 0x08088405 * m_seed + 1;
-        return u32(u64(m_seed) * u64(range) >> 32);
+        return (u64{m_seed} * u64{range}) >> 32;
     }
 };
 
@@ -45,14 +42,14 @@ void trivial_encryptor::initialize(key_flag what)
     else if (what == key_flag::worldwide)
         m_key = m_key_worldwide;
     else
-        R_ASSERT(!"Unknown encryption key!");
+        R_ASSERT(false, "Unknown encryption key!");
 
     m_current_key = what;
 
     for (u32 i = 0; i < alphabet_size; ++i)
-        m_alphabet[i] = (type)i;
+        m_alphabet[i] = gsl::narrow_cast<type>(i);
 
-    random32 temp(m_key.m_table_seed);
+    random32 temp{m_key.m_table_seed};
 
     for (u32 i = 0; i < m_key.m_table_iterations; ++i)
     {
@@ -65,37 +62,33 @@ void trivial_encryptor::initialize(key_flag what)
     }
 
     for (u32 i = 0; i < alphabet_size; ++i)
-        m_alphabet_back[m_alphabet[i]] = (type)i;
+        m_alphabet_back[m_alphabet[i]] = gsl::narrow_cast<type>(i);
 }
 
-void trivial_encryptor::encode(pcvoid source, const size_t& source_size, pvoid destination, key_flag what)
+void trivial_encryptor::encode(const void* source, gsl::index source_size, void* destination, key_flag what)
 {
     if (what != m_current_key)
-    {
         initialize(what);
-    }
 
-    random32 temp(m_key.m_encrypt_seed);
+    random32 temp{m_key.m_encrypt_seed};
 
-    const u8* I = (const u8*)source;
-    const u8* E = (const u8*)source + source_size;
-    u8* J = (u8*)destination;
+    const u8* I = static_cast<const u8*>(source);
+    const u8* E = static_cast<const u8*>(source) + source_size;
+    u8* J = static_cast<u8*>(destination);
     for (; I != E; ++I, ++J)
-        *J = m_alphabet[*I] ^ type(temp.random(alphabet_size) & 0xff);
+        *J = m_alphabet[*I] ^ (temp.random(alphabet_size) & std::numeric_limits<u8>::max());
 }
 
-void trivial_encryptor::decode(pcvoid source, const size_t& source_size, pvoid destination, key_flag what)
+void trivial_encryptor::decode(const void* source, gsl::index source_size, void* destination, key_flag what)
 {
     if (what != m_current_key)
-    {
         initialize(what);
-    }
 
-    random32 temp(m_key.m_encrypt_seed);
+    random32 temp{m_key.m_encrypt_seed};
 
-    const u8* I = (const u8*)source;
-    const u8* E = (const u8*)source + source_size;
-    u8* J = (u8*)destination;
+    const u8* I = static_cast<const u8*>(source);
+    const u8* E = static_cast<const u8*>(source) + source_size;
+    u8* J = static_cast<u8*>(destination);
     for (; I != E; ++I, ++J)
-        *J = m_alphabet_back[(*I) ^ type(temp.random(alphabet_size) & 0xff)];
+        *J = m_alphabet_back[(*I) ^ (temp.random(alphabet_size) & std::numeric_limits<u8>::max())];
 }

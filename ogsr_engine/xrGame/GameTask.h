@@ -163,7 +163,7 @@ public:
     void AddObjective_script(SGameTaskObjective* O);
     SGameTaskObjective* GetObjective_script(int objective_id) { return &(Objective(objective_id)); }
     LPCSTR GetID_script() { return *m_ID; }
-    void SetID_script(LPCSTR _id) { m_ID = _id; }
+    void SetID_script(LPCSTR _id) { m_ID._set(_id); }
     int GetObjectiveSize_script() { return m_Objectives.size(); }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();

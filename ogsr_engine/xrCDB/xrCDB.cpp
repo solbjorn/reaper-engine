@@ -42,7 +42,7 @@ MODEL::~MODEL()
     verts_count = 0;
 }
 
-void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
+void MODEL::build(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
 {
     R_ASSERT(S_INIT == status);
     R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
@@ -51,17 +51,27 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
     status = S_READY;
 }
 
-void MODEL::build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
+void MODEL::build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
 {
     // verts
     verts_count = Vcnt;
     verts = xr_alloc<Fvector>(verts_count);
-    CopyMemory(verts, V, verts_count * sizeof(Fvector));
+    std::memcpy(verts, V, verts_count * sizeof(Fvector));
 
     // tris
     tris_count = Tcnt;
     tris = xr_alloc<TRI>(tris_count);
-    CopyMemory(tris, T, tris_count * sizeof(TRI));
+
+#ifdef XR_TRIVIAL_BROKEN
+    XR_DIAG_PUSH();
+    XR_DIAG_IGNORE("-Wnontrivial-memcall");
+#endif
+
+    std::memcpy(tris, T, tris_count * sizeof(TRI));
+
+#ifdef XR_TRIVIAL_BROKEN
+    XR_DIAG_POP();
+#endif
 
     // callback
     if (bc)
@@ -122,7 +132,7 @@ void MODEL::serialize_tree(IWriter* stream) const
 {
     const u32 nodes_num = tree->GetNbNodes();
     const auto* root = ((const AABBNoLeafTree*)tree->GetTree())->GetNodes();
-    const size_t size = roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
+    const size_t size = xr::roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
 
     const model_end_hdr hdr = {
         .model_code = tree->GetModelCode(),
@@ -146,10 +156,10 @@ bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) co
         callback(*wstream);
 
     wstream->w_u64(xxh);
-    wstream->seek(roundup(wstream->tell(), 16uz));
+    wstream->seek(xr::roundup(wstream->tell(), 16z));
 
     const size_t trs = sizeof(TRI) * tris_count;
-    const size_t vrs = roundup(sizeof(Fvector) * verts_count, 16uz);
+    const size_t vrs = xr::roundup(sizeof(Fvector) * verts_count, 16uz);
 
     const model_mid_hdr hdr = {
         .tris_count = tris_count,
@@ -246,7 +256,7 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     if (rstream->r_u64() != xxh)
         goto err_close;
 
-    rstream->seek(roundup(rstream->tell(), 16uz));
+    rstream->seek(xr::roundup(rstream->tell(), 16z));
 
     xr_free(tris);
     xr_free(verts);
@@ -272,7 +282,7 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     }
 
     verts = xr_alloc<Fvector>(verts_count);
-    const size_t vertsSize = roundup(verts_count * sizeof(Fvector), 16uz);
+    const size_t vertsSize = xr::roundup(verts_count * sizeof(Fvector), 16uz);
     xr_memcpy128(verts, rstream->pointer(), vertsSize);
     rstream->advance(vertsSize);
 
@@ -302,5 +312,4 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
 COLLIDER::~COLLIDER() { r_free(); }
 
 RESULT& COLLIDER::r_add() { return rd.emplace_back(); }
-
 void COLLIDER::r_free() { rd.clear(); }

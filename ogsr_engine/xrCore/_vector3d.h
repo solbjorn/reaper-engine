@@ -1,7 +1,7 @@
 #ifndef __XR_CORE_VECTOR3D_H
 #define __XR_CORE_VECTOR3D_H
 
-template <class T>
+template <typename T>
 struct _vector3
 {
 public:
@@ -11,72 +11,79 @@ public:
     typedef const Self& SelfCRef;
 
 public:
-    T x, y, z;
+    union
+    {
+        struct
+        {
+            T x, y, z;
+        };
+        std::array<T, 3> arr;
+    };
+
+    constexpr _vector3() = default;
+    constexpr explicit _vector3(T _x, T _y, T _z) : x{_x}, y{_y}, z{_z} {}
+
+    constexpr _vector3(const Self&) = default;
+    constexpr _vector3(Self&&) = default;
+
+    constexpr Self& operator=(const Self&) = default;
+    constexpr Self& operator=(Self&&) = default;
+
+    [[nodiscard]] constexpr bool operator==(const Self& that) const { return !!similar(that); }
 
     // access operators
-    constexpr ICF T& operator[](int i) { return *((T*)this + i); }
-    constexpr ICF const T& operator[](int i) const { return *((const T*)this + i); }
+    [[nodiscard]] constexpr T& operator[](gsl::index i) { return arr[gsl::narrow_cast<size_t>(i)]; }
+    [[nodiscard]] constexpr const T& operator[](gsl::index i) const { return arr[gsl::narrow_cast<size_t>(i)]; }
 
-    constexpr ICF bool operator==(const Self& Cmp) const { return !!similar(Cmp); }
-
-    constexpr ICF SelfRef set(T _x, T _y, T _z)
+    constexpr SelfRef set(T _x, T _y, T _z)
     {
         x = _x;
         y = _y;
         z = _z;
-        return *this;
-    }
-    constexpr ICF SelfRef set(const _vector3<float>& v)
-    {
-        x = T(v.x);
-        y = T(v.y);
-        z = T(v.z);
-        return *this;
-    }
-    constexpr ICF SelfRef set(const _vector3<double>& v)
-    {
-        x = T(v.x);
-        y = T(v.y);
-        z = T(v.z);
-        return *this;
-    }
-    constexpr ICF SelfRef set(float* p)
-    {
-        x = p[0];
-        y = p[1];
-        z = p[2];
-        return *this;
-    }
-    constexpr ICF SelfRef set(double* p)
-    {
-        x = p[0];
-        y = p[1];
-        z = p[2];
+
         return *this;
     }
 
-    constexpr ICF SelfRef add(const Self& v)
+    constexpr SelfRef set(const Self& v)
+    {
+        arr = v.arr;
+        return *this;
+    }
+
+    constexpr SelfRef set(const T* p)
+    {
+        x = p[0];
+        y = p[1];
+        z = p[2];
+
+        return *this;
+    }
+
+    constexpr SelfRef add(const Self& v)
     {
         x += v.x;
         y += v.y;
         z += v.z;
         return *this;
     }
-    constexpr ICF SelfRef add(T s)
+
+    constexpr SelfRef add(T s)
     {
         x += s;
         y += s;
         z += s;
         return *this;
     }
-    constexpr ICF SelfRef add(const Self& a, const Self& v)
+
+    constexpr SelfRef add(const Self& a, const Self& v)
     {
         x = a.x + v.x;
         y = a.y + v.y;
         z = a.z + v.z;
         return *this;
     }
-    constexpr ICF SelfRef add(const Self& a, T s)
+
+    constexpr SelfRef add(const Self& a, T s)
     {
         x = a.x + s;
         y = a.y + s;
@@ -84,28 +91,31 @@ public:
         return *this;
     }
 
-    constexpr ICF SelfRef sub(const Self& v)
+    constexpr SelfRef sub(const Self& v)
     {
         x -= v.x;
         y -= v.y;
         z -= v.z;
         return *this;
     }
-    constexpr ICF SelfRef sub(T s)
+
+    constexpr SelfRef sub(T s)
     {
         x -= s;
         y -= s;
         z -= s;
         return *this;
     }
-    constexpr ICF SelfRef sub(const Self& a, const Self& v)
+
+    constexpr SelfRef sub(const Self& a, const Self& v)
     {
         x = a.x - v.x;
         y = a.y - v.y;
         z = a.z - v.z;
         return *this;
     }
-    constexpr ICF SelfRef sub(const Self& a, T s)
+
+    constexpr SelfRef sub(const Self& a, T s)
     {
         x = a.x - s;
         y = a.y - s;
@@ -113,28 +123,31 @@ public:
         return *this;
     }
 
-    constexpr ICF SelfRef mul(const Self& v)
+    constexpr SelfRef mul(const Self& v)
     {
         x *= v.x;
         y *= v.y;
         z *= v.z;
         return *this;
     }
-    constexpr ICF SelfRef mul(T s)
+
+    constexpr SelfRef mul(T s)
     {
         x *= s;
         y *= s;
         z *= s;
         return *this;
     }
-    constexpr ICF SelfRef mul(const Self& a, const Self& v)
+
+    constexpr SelfRef mul(const Self& a, const Self& v)
     {
         x = a.x * v.x;
         y = a.y * v.y;
         z = a.z * v.z;
         return *this;
     }
-    constexpr ICF SelfRef mul(const Self& a, T s)
+
+    constexpr SelfRef mul(const Self& a, T s)
     {
         x = a.x * s;
         y = a.y * s;
@@ -142,28 +155,31 @@ public:
         return *this;
     }
 
-    constexpr ICF SelfRef div(const Self& v)
+    constexpr SelfRef div(const Self& v)
     {
         x /= v.x;
         y /= v.y;
         z /= v.z;
         return *this;
     }
-    constexpr ICF SelfRef div(T s)
+
+    constexpr SelfRef div(T s)
     {
         x /= s;
         y /= s;
         z /= s;
         return *this;
     }
-    constexpr ICF SelfRef div(const Self& a, const Self& v)
+
+    constexpr SelfRef div(const Self& a, const Self& v)
     {
         x = a.x / v.x;
         y = a.y / v.y;
         z = a.z / v.z;
         return *this;
     }
-    constexpr ICF SelfRef div(const Self& a, T s)
+
+    constexpr SelfRef div(const Self& a, T s)
     {
         x = a.x / s;
         y = a.y / s;
@@ -171,14 +187,15 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef invert()
+    constexpr SelfRef invert()
     {
         x = -x;
         y = -y;
         z = -z;
         return *this;
     }
-    constexpr inline SelfRef invert(const Self& a)
+
+    constexpr SelfRef invert(const Self& a)
     {
         x = -a.x;
         y = -a.y;
@@ -186,28 +203,31 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef min(const Self& v1, const Self& v2)
+    constexpr SelfRef min(const Self& v1, const Self& v2)
     {
         x = _min(v1.x, v2.x);
         y = _min(v1.y, v2.y);
         z = _min(v1.z, v2.z);
         return *this;
     }
-    constexpr inline SelfRef min(const Self& v)
+
+    constexpr SelfRef min(const Self& v)
     {
         x = _min(x, v.x);
         y = _min(y, v.y);
         z = _min(z, v.z);
         return *this;
     }
-    constexpr inline SelfRef max(const Self& v1, const Self& v2)
+
+    constexpr SelfRef max(const Self& v1, const Self& v2)
     {
         x = _max(v1.x, v2.x);
         y = _max(v1.y, v2.y);
         z = _max(v1.z, v2.z);
         return *this;
     }
-    constexpr inline SelfRef max(const Self& v)
+
+    constexpr SelfRef max(const Self& v)
     {
         x = _max(x, v.x);
         y = _max(y, v.y);
@@ -215,7 +235,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef abs(const Self& v)
+    constexpr SelfRef abs(const Self& v)
     {
         x = _abs(v.x);
         y = _abs(v.y);
@@ -223,7 +243,7 @@ public:
         return *this;
     }
 
-    constexpr ICF BOOL similar(const Self& v, T E = EPS_L) const
+    [[nodiscard]] constexpr BOOL similar(const Self& v, T E = EPS_L) const
     {
         if constexpr (std::is_floating_point_v<T>)
             return fsimilar(x, v.x, E) && fsimilar(y, v.y, E) && fsimilar(z, v.z, E);
@@ -231,14 +251,14 @@ public:
             return x == v.x && y == v.y && z == v.z;
     }
 
-    constexpr inline SelfRef set_length(T l)
+    constexpr SelfRef set_length(T l)
     {
         mul(l / magnitude());
         return *this;
     }
 
     // Align vector3 by axis (!y)
-    constexpr inline SelfRef align()
+    constexpr SelfRef align()
     {
         y = 0;
         if (_abs(z) >= _abs(x))
@@ -255,7 +275,7 @@ public:
     }
 
     // Squeeze
-    constexpr inline SelfRef squeeze(T Epsilon)
+    constexpr SelfRef squeeze(T Epsilon)
     {
         if (_abs(x) < Epsilon)
             x = 0;
@@ -267,7 +287,7 @@ public:
     }
 
     // Clamp vector3
-    constexpr inline SelfRef clamp(const Self& min, const Self& max) // https://github.com/OpenXRay/xray-16/commit/e1cca82fbd1f94e93f0651e676cdcbbd70a04655
+    constexpr SelfRef clamp(const Self& min, const Self& max) // https://github.com/OpenXRay/xray-16/commit/e1cca82fbd1f94e93f0651e676cdcbbd70a04655
     {
         ::clamp(x, min.x, max.x);
         ::clamp(y, min.y, max.y);
@@ -275,7 +295,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef clamp(const Self& _v)
+    constexpr SelfRef clamp(const Self& _v)
     {
         Self v;
         v.x = _abs(_v.x);
@@ -288,7 +308,7 @@ public:
     }
 
     // Interpolate vectors (inertion)
-    constexpr inline SelfRef inertion(const Self& p, T v)
+    constexpr SelfRef inertion(const Self& p, T v)
     {
         T inv = 1.f - v;
         x = v * x + inv * p.x;
@@ -296,21 +316,24 @@ public:
         z = v * z + inv * p.z;
         return *this;
     }
-    constexpr inline SelfRef average(const Self& p)
+
+    constexpr SelfRef average(const Self& p)
     {
         x = (x + p.x) * 0.5f;
         y = (y + p.y) * 0.5f;
         z = (z + p.z) * 0.5f;
         return *this;
     }
-    constexpr inline SelfRef average(const Self& p1, const Self& p2)
+
+    constexpr SelfRef average(const Self& p1, const Self& p2)
     {
         x = (p1.x + p2.x) * 0.5f;
         y = (p1.y + p2.y) * 0.5f;
         z = (p1.z + p2.z) * 0.5f;
         return *this;
     }
-    constexpr inline SelfRef lerp(const Self& p1, const Self& p2, T t)
+
+    constexpr SelfRef lerp(const Self& p1, const Self& p2, T t)
     {
         T invt = 1.f - t;
         x = p1.x * invt + p2.x * t;
@@ -320,28 +343,31 @@ public:
     }
 
     // Direct vector3 from point P by dir D with length M
-    constexpr inline SelfRef mad(const Self& d, T m)
+    constexpr SelfRef mad(const Self& d, T m)
     {
         x += d.x * m;
         y += d.y * m;
         z += d.z * m;
         return *this;
     }
-    constexpr inline SelfRef mad(const Self& p, const Self& d, T m)
+
+    constexpr SelfRef mad(const Self& p, const Self& d, T m)
     {
         x = p.x + d.x * m;
         y = p.y + d.y * m;
         z = p.z + d.z * m;
         return *this;
     }
-    constexpr inline SelfRef mad(const Self& d, const Self& s)
+
+    constexpr SelfRef mad(const Self& d, const Self& s)
     {
         x += d.x * s.x;
         y += d.y * s.y;
         z += d.z * s.z;
         return *this;
     }
-    constexpr inline SelfRef mad(const Self& p, const Self& d, const Self& s)
+
+    constexpr SelfRef mad(const Self& p, const Self& d, const Self& s)
     {
         x = p.x + d.x * s.x;
         y = p.y + d.y * s.y;
@@ -350,12 +376,12 @@ public:
     }
 
     // SQ magnitude
-    constexpr inline T square_magnitude(void) const { return x * x + y * y + z * z; }
+    [[nodiscard]] constexpr T square_magnitude() const { return x * x + y * y + z * z; }
     // magnitude
-    constexpr inline T magnitude(void) const { return _sqrt(square_magnitude()); }
+    [[nodiscard]] constexpr T magnitude() const { return _sqrt(square_magnitude()); }
 
     // Normalize
-    constexpr inline T normalize_magn(void)
+    [[nodiscard]] constexpr T normalize_magn()
     {
         VERIFY(square_magnitude() > std::numeric_limits<T>::min());
         T len = magnitude();
@@ -366,18 +392,20 @@ public:
         return len;
     }
 
-    constexpr ICF SelfRef normalize(void)
+    constexpr SelfRef normalize()
     {
         VERIFY(square_magnitude() > std::numeric_limits<T>::min());
-        T mag = _sqrt(T(1) / (x * x + y * y + z * z));
+
+        T mag = _sqrt(T{1} / (x * x + y * y + z * z));
         x *= mag;
         y *= mag;
         z *= mag;
+
         return *this;
     }
 
     // Safe-Normalize
-    constexpr ICF SelfRef normalize_safe(void)
+    constexpr SelfRef normalize_safe()
     {
         T magnitude = x * x + y * y + z * z;
         if (magnitude > std::numeric_limits<T>::min())
@@ -391,7 +419,7 @@ public:
     }
 
     // Normalize
-    constexpr ICF SelfRef normalize(const Self& v)
+    constexpr SelfRef normalize(const Self& v)
     {
         VERIFY((v.x * v.x + v.y * v.y + v.z * v.z) > flt_zero);
         T mag = _sqrt(1 / (v.x * v.x + v.y * v.y + v.z * v.z));
@@ -402,7 +430,7 @@ public:
     }
 
     // Safe-Normalize
-    constexpr ICF SelfRef normalize_safe(const Self& v)
+    constexpr SelfRef normalize_safe(const Self& v)
     {
         T magnitude = v.x * v.x + v.y * v.y + v.z * v.z;
         if (magnitude > std::numeric_limits<T>::min())
@@ -414,7 +442,8 @@ public:
         }
         return *this;
     }
-    constexpr inline SelfRef random_dir(CRandom& R = ::Random)
+
+    constexpr SelfRef random_dir(CRandom& R = ::Random)
     {
         // z	= R.randF(-1,1);
         z = _cos(R.randF(PI));
@@ -426,7 +455,8 @@ public:
         y = r * sa;
         return *this;
     }
-    constexpr inline SelfRef random_dir(const Self& ConeAxis, float ConeAngle, CRandom& R = ::Random)
+
+    constexpr SelfRef random_dir(const Self& ConeAxis, float ConeAngle, CRandom& R = ::Random)
     {
         Self rnd;
         rnd.random_dir(R);
@@ -434,14 +464,16 @@ public:
         normalize();
         return *this;
     }
-    constexpr inline SelfRef random_point(const Self& BoxSize, CRandom& R = ::Random)
+
+    constexpr SelfRef random_point(const Self& BoxSize, CRandom& R = ::Random)
     {
         x = R.randFs(BoxSize.x);
         y = R.randFs(BoxSize.y);
         z = R.randFs(BoxSize.z);
         return *this;
     }
-    constexpr inline SelfRef random_point(T r, CRandom& R = ::Random)
+
+    constexpr SelfRef random_point(T r, CRandom& R = ::Random)
     {
         random_dir(R);
         mul(R.randF(r));
@@ -449,13 +481,13 @@ public:
     }
 
     // DotProduct
-    constexpr ICF T dotproduct(const Self& v) const // v1*v2
+    constexpr T dotproduct(const Self& v) const // v1*v2
     {
         return x * v.x + y * v.y + z * v.z;
     }
 
     // CrossProduct
-    constexpr ICF SelfRef crossproduct(const Self& v1, const Self& v2) // (v1,v2) -> this
+    constexpr SelfRef crossproduct(const Self& v1, const Self& v2) // (v1,v2) -> this
     {
         x = v1.y * v2.z - v1.z * v2.y;
         y = v1.z * v2.x - v1.x * v2.z;
@@ -464,30 +496,30 @@ public:
     }
 
     // Distance calculation
-    constexpr inline T distance_to_xz(const Self& v) const { return _sqrt((x - v.x) * (x - v.x) + (z - v.z) * (z - v.z)); }
-    constexpr inline T distance_to_xz_sqr(const Self& v) const { return (x - v.x) * (x - v.x) + (z - v.z) * (z - v.z); }
+    [[nodiscard]] constexpr T distance_to_xz(const Self& v) const { return _sqrt((x - v.x) * (x - v.x) + (z - v.z) * (z - v.z)); }
+    [[nodiscard]] constexpr T distance_to_xz_sqr(const Self& v) const { return (x - v.x) * (x - v.x) + (z - v.z) * (z - v.z); }
 
     // Distance calculation
-    constexpr ICF T distance_to_sqr(const Self& v) const { return (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z); }
-
+    [[nodiscard]] constexpr T distance_to_sqr(const Self& v) const { return (x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z); }
     // Distance calculation
-    constexpr ICF T distance_to(const Self& v) const { return _sqrt(distance_to_sqr(v)); }
+    [[nodiscard]] constexpr T distance_to(const Self& v) const { return _sqrt(distance_to_sqr(v)); }
 
     // Barycentric coords
-    constexpr inline SelfRef from_bary(const Self& V1, const Self& V2, const Self& V3, T u, T v, T w)
+    constexpr SelfRef from_bary(const Self& V1, const Self& V2, const Self& V3, T u, T v, T w)
     {
         x = V1.x * u + V2.x * v + V3.x * w;
         y = V1.y * u + V2.y * v + V3.y * w;
         z = V1.z * u + V2.z * v + V3.z * w;
         return *this;
     }
-    constexpr inline SelfRef from_bary(const Self& V1, const Self& V2, const Self& V3, const Self& B)
+
+    constexpr SelfRef from_bary(const Self& V1, const Self& V2, const Self& V3, const Self& B)
     {
         from_bary(V1, V2, V3, B.x, B.y, B.z);
         return *this;
     }
 
-    constexpr inline SelfRef from_bary4(const Self& V1, const Self& V2, const Self& V3, const Self& V4, T u, T v, T w, T t)
+    constexpr SelfRef from_bary4(const Self& V1, const Self& V2, const Self& V3, const Self& V4, T u, T v, T w, T t)
     {
         x = V1.x * u + V2.x * v + V3.x * w + V4.x * t;
         y = V1.y * u + V2.y * v + V3.y * w + V4.y * t;
@@ -495,7 +527,7 @@ public:
         return *this;
     }
 
-    constexpr inline SelfRef mknormal_non_normalized(const Self& p0, const Self& p1, const Self& p2)
+    constexpr SelfRef mknormal_non_normalized(const Self& p0, const Self& p1, const Self& p2)
     {
         _vector3<T> v01, v12;
         v01.sub(p1, p0);
@@ -503,13 +535,15 @@ public:
         crossproduct(v01, v12);
         return *this;
     }
-    constexpr inline SelfRef mknormal(const Self& p0, const Self& p1, const Self& p2)
+
+    constexpr SelfRef mknormal(const Self& p0, const Self& p1, const Self& p2)
     {
         mknormal_non_normalized(p0, p1, p2);
         normalize_safe();
         return *this;
     }
-    constexpr inline SelfRef setHP(T h, T p)
+
+    constexpr SelfRef setHP(T h, T p)
     {
         T _ch = _cos(h), _cp = _cos(p), _sh = _sin(h), _sp = _sin(p);
         x = -_cp * _sh;
@@ -517,7 +551,8 @@ public:
         z = _cp * _ch;
         return *this;
     }
-    constexpr ICF void getHP(T& h, T& p) const
+
+    constexpr void getHP(T& h, T& p) const
     {
         float hyp;
 
@@ -544,7 +579,8 @@ public:
                 p = atanf(y / hyp);
         }
     }
-    constexpr ICF float getH() const
+
+    [[nodiscard]] constexpr float getH() const
     {
         if (fis_zero(x) && fis_zero(z))
         {
@@ -560,7 +596,8 @@ public:
                 return -atanf(x / z);
         }
     }
-    constexpr ICF float getP() const
+
+    [[nodiscard]] constexpr float getP() const
     {
         if (fis_zero(x) && fis_zero(z))
         {
@@ -578,12 +615,16 @@ public:
                 return atanf(y / hyp);
         }
     }
-    constexpr inline SelfRef reflect(const Self& dir, const Self& norm) { return mad(dir, norm, -2 * dir.dotproduct(norm)); }
-    constexpr inline SelfRef slide(const Self& dir, const Self& norm)
-    { // non normalized
+
+    constexpr SelfRef reflect(const Self& dir, const Self& norm) { return mad(dir, norm, -2 * dir.dotproduct(norm)); }
+
+    constexpr SelfRef slide(const Self& dir, const Self& norm)
+    {
+        // non normalized
         return mad(dir, norm, -dir.dotproduct(norm));
     }
-    constexpr inline static void generate_orthonormal_basis(const _vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
+
+    constexpr static void generate_orthonormal_basis(const _vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
     {
         T fInvLength;
 
@@ -606,7 +647,8 @@ public:
 
         right.crossproduct(up, dir); //. <->
     }
-    constexpr inline static void generate_orthonormal_basis_normalized(_vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
+
+    constexpr static void generate_orthonormal_basis_normalized(_vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
     {
         T fInvLength;
         dir.normalize();
@@ -638,40 +680,41 @@ public:
         }
     }
 };
-typedef _vector3<float> Fvector;
-typedef _vector3<float> Fvector3;
-typedef _vector3<s32> Ivector;
-typedef _vector3<s32> Ivector3;
 
-template <class T>
-constexpr inline bool _valid(const _vector3<T>& v)
+using Fvector = _vector3<f32>;
+using Fvector3 = _vector3<f32>;
+static_assert(sizeof(Fvector) == 12);
+
+using Ivector = _vector3<s32>;
+using Ivector3 = _vector3<s32>;
+static_assert(sizeof(Ivector) == 12);
+
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _vector3<T>& v)
 {
-    return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);
+    return _valid(v.x) && _valid(v.y) && _valid(v.z);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-constexpr inline double rsqrt(double v) { return 1.0 / _sqrt(v); }
-
-constexpr inline BOOL exact_normalize(float* a)
+[[nodiscard]] constexpr bool exact_normalize(std::array<f32, 3>& a)
 {
-    double sqr_magnitude = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
-    double epsilon = 1.192092896e-05F;
+    constexpr auto rsqrt = [](f64 v) -> f64 { return 1.0 / _sqrt(v); };
+    f64 l, a0{a[0]}, a1{a[1]}, a2{a[2]};
+    const f64 sqr_magnitude{a0 * a0 + a1 * a1 + a2 * a2};
+    constexpr f64 epsilon{1.192092896e-05};
+
     if (sqr_magnitude > epsilon)
     {
-        double l = rsqrt(sqr_magnitude);
-        a[0] *= l;
-        a[1] *= l;
-        a[2] *= l;
-        return TRUE;
+        l = rsqrt(sqr_magnitude);
+        a[0] = gsl::narrow_cast<f32>(a0 * l);
+        a[1] = gsl::narrow_cast<f32>(a1 * l);
+        a[2] = gsl::narrow_cast<f32>(a2 * l);
+
+        return true;
     }
-    double a0, a1, a2, aa0, aa1, aa2, l;
-    a0 = a[0];
-    a1 = a[1];
-    a2 = a[2];
-    aa0 = _abs(a0);
-    aa1 = _abs(a1);
-    aa2 = _abs(a2);
+
+    f64 aa0{_abs(a0)}, aa1{_abs(a1)}, aa2{_abs(a2)};
     if (aa1 > aa0)
     {
         if (aa2 > aa1)
@@ -679,48 +722,57 @@ constexpr inline BOOL exact_normalize(float* a)
             goto aa2_largest;
         }
         else
-        { // aa1 is largest
+        {
+            // aa1 is largest
             a0 /= aa1;
             a2 /= aa1;
+
             l = rsqrt(a0 * a0 + a2 * a2 + 1);
-            a[0] = a0 * l;
-            a[1] = (double)_copysign(l, a1);
-            a[2] = a2 * l;
+            a[0] = gsl::narrow_cast<f32>(a0 * l);
+            a[1] = gsl::narrow_cast<f32>(std::copysign(l, a1));
+            a[2] = gsl::narrow_cast<f32>(a2 * l);
         }
     }
     else
     {
         if (aa2 > aa0)
         {
-        aa2_largest: // aa2 is largest
+        aa2_largest:
+            // aa2 is largest
             a0 /= aa2;
             a1 /= aa2;
+
             l = rsqrt(a0 * a0 + a1 * a1 + 1);
-            a[0] = a0 * l;
-            a[1] = a1 * l;
-            a[2] = (double)_copysign(l, a2);
+            a[0] = gsl::narrow_cast<f32>(a0 * l);
+            a[1] = gsl::narrow_cast<f32>(a1 * l);
+            a[2] = gsl::narrow_cast<f32>(std::copysign(l, a2));
         }
         else
-        { // aa0 is largest
+        {
+            // aa0 is largest
             if (aa0 <= 0)
             {
                 // dDEBUGMSG ("vector has zero size"); ... this messace is annoying
-                a[0] = 0; // if all a's are zero, this is where we'll end up.
-                a[1] = 1; // return a default unit length vector.
-                a[2] = 0;
-                return FALSE;
+                a[0] = 0.0f; // if all a's are zero, this is where we'll end up.
+                a[1] = 1.0f; // return a default unit length vector.
+                a[2] = 0.0f;
+
+                return false;
             }
+
             a1 /= aa0;
             a2 /= aa0;
+
             l = rsqrt(a1 * a1 + a2 * a2 + 1);
-            a[0] = (double)_copysign(l, a0);
-            a[1] = a1 * l;
-            a[2] = a2 * l;
+            a[0] = gsl::narrow_cast<f32>(std::copysign(l, a0));
+            a[1] = gsl::narrow_cast<f32>(a1 * l);
+            a[2] = gsl::narrow_cast<f32>(a2 * l);
         }
     }
-    return TRUE;
+
+    return true;
 }
 
-constexpr inline BOOL exact_normalize(Fvector3& a) { return exact_normalize(&a.x); }
+[[nodiscard]] constexpr bool exact_normalize(Fvector3& a) { return exact_normalize(a.arr); }
 
 #endif /* __XR_CORE_VECTOR3D_H */

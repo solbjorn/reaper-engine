@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "player_hud.h"
+
 #include "physic_item.h"
 #include "actor.h"
 #include "ActorEffector.h"
@@ -60,19 +61,19 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                 {
                     R_ASSERT2(_GetItemCount(anm.c_str()) == 2, anm.c_str());
                     string512 str_item;
-                    _GetItem(anm.c_str(), 0, str_item);
-                    pm.m_base_name = str_item;
+                    std::ignore = _GetItem(anm.c_str(), 0, str_item);
+                    pm.m_base_name._set(str_item);
 
-                    _GetItem(anm.c_str(), 1, str_item);
-                    pm.m_additional_name = str_item;
+                    std::ignore = _GetItem(anm.c_str(), 1, str_item);
+                    pm.m_additional_name._set(str_item);
                 }
             }
             else
             {
                 string512 str_item;
-                _GetItem(anm.c_str(), 0, str_item);
-                pm.m_base_name = str_item;
-                pm.m_additional_name = str_item;
+                std::ignore = _GetItem(anm.c_str(), 0, str_item);
+                pm.m_base_name._set(str_item);
+                pm.m_additional_name = pm.m_base_name;
             }
 
             string128 speed_param;
@@ -118,13 +119,14 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                     xr_sprintf(buff, "%s%d", pm.m_base_name.c_str(), i);
 
                 {
-                    motion_ID = final_model->ID_Cycle_Safe(buff);
+                    shared_str sbuff{buff};
+                    motion_ID = final_model->ID_Cycle_Safe(sbuff);
 
                     if (motion_ID.valid())
                     {
                         auto& Anim = pm.m_animations.emplace_back();
                         Anim.mid = motion_ID;
-                        Anim.name = buff;
+                        Anim.name = sbuff;
 
                         string128 eff_param;
                         Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);
@@ -144,13 +146,14 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                         xr_sprintf(buff, "%s%d", pm.m_additional_name.c_str(), i);
 
                     {
-                        motion_ID = animatedHudItem->ID_Cycle_Safe(buff);
+                        shared_str sbuff{buff};
+                        motion_ID = animatedHudItem->ID_Cycle_Safe(sbuff);
 
                         if (motion_ID.valid())
                         {
                             auto& Anim = pm.m_additional_animations.emplace_back();
                             Anim.mid = motion_ID;
-                            Anim.name = buff;
+                            Anim.name = sbuff;
 
                             /*string128 eff_param;
                             Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);*/
@@ -186,8 +189,8 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
 
 Fvector& attachable_hud_item::hands_attach_pos() { return m_measures.m_hands_attach[0]; }
 Fvector& attachable_hud_item::hands_attach_rot() { return m_measures.m_hands_attach[1]; }
-Fvector& attachable_hud_item::hands_offset_pos() { return m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][m_parent_hud_item->GetCurrentHudOffsetIdx()]; }
 
+Fvector& attachable_hud_item::hands_offset_pos() { return m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][m_parent_hud_item->GetCurrentHudOffsetIdx()]; }
 Fvector& attachable_hud_item::hands_offset_rot() { return m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][m_parent_hud_item->GetCurrentHudOffsetIdx()]; }
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
@@ -359,7 +362,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         m_prop_flags.set(e_fire_point, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "fire_point"));
         if (m_prop_flags.test(e_fire_point))
         {
-            bone_name = pSettings->r_string(sect_name, "fire_bone");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
             m_fire_bone = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_fire_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_fire_point_offset = pSettings->r_fvector3(sect_name, "fire_point");
@@ -370,7 +373,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         m_prop_flags.set(e_fire_point2, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "fire_point2"));
         if (m_prop_flags.test(e_fire_point2))
         {
-            bone_name = pSettings->r_string(sect_name, "fire_bone");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
             m_fire_bone2 = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_fire_point2_offset = pSettings->r_fvector3(sect_name, "fire_point2");
@@ -378,60 +381,70 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
         else if (m_prop_flags.test(e_fire_point))
         {
             m_prop_flags.set(e_fire_point2, true);
-            bone_name = pSettings->r_string(sect_name, "fire_bone");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
             m_fire_bone2 = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_fire_point2_offset.set(m_fire_point_offset);
         }
         else
+        {
             m_fire_point2_offset.set(0.f, 0.f, 0.f);
+        }
 
         m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "fire_bone") && pSettings->line_exist(sect_name, "shell_point"));
         if (m_prop_flags.test(e_shell_point))
         {
-            bone_name = pSettings->r_string(sect_name, "fire_bone");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
             m_shell_bone = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_shell_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
         }
         else
+        {
             m_shell_point_offset.set(0.f, 0.f, 0.f);
+        }
     }
     else // cop configs
     {
         m_prop_flags.set(e_fire_point, pSettings->line_exist(sect_name, "fire_bone"));
         if (m_prop_flags.test(e_fire_point))
         {
-            bone_name = pSettings->r_string(sect_name, "fire_bone");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone"));
             m_fire_bone = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_fire_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_fire_point_offset = pSettings->r_fvector3(sect_name, "fire_point");
             m_shoot_point_offset = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "shoot_point", (Fvector{m_fire_point_offset.x, m_fire_point_offset.y, -0.5f}));
         }
         else
+        {
             m_fire_point_offset.set(0.f, 0.f, 0.f);
+        }
 
         m_prop_flags.set(e_fire_point2, pSettings->line_exist(sect_name, "fire_bone2"));
         if (m_prop_flags.test(e_fire_point2))
         {
-            bone_name = pSettings->r_string(sect_name, "fire_bone2");
+            bone_name._set(pSettings->r_string(sect_name, "fire_bone2"));
             m_fire_bone2 = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_fire_bone2 != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_fire_point2_offset = pSettings->r_fvector3(sect_name, "fire_point2");
         }
         else
+        {
             m_fire_point2_offset.set(0.f, 0.f, 0.f);
+        }
 
         m_prop_flags.set(e_shell_point, pSettings->line_exist(sect_name, "shell_bone"));
         if (m_prop_flags.test(e_shell_point))
         {
-            bone_name = pSettings->r_string(sect_name, "shell_bone");
+            bone_name._set(pSettings->r_string(sect_name, "shell_bone"));
             m_shell_bone = K->LL_BoneID(bone_name);
             ASSERT_FMT(m_shell_bone != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), sect_name.c_str());
             m_shell_point_offset = pSettings->r_fvector3(sect_name, "shell_point");
         }
         else
+        {
             m_shell_point_offset.set(0.f, 0.f, 0.f);
+        }
     }
 
     strconcat(sizeof(val_name), val_name, "aim_hud_offset_pos", _prefix);
@@ -562,12 +575,12 @@ void attachable_hud_item::load(const shared_str& sect_name)
     // Visual
     if (pSettings->line_exist(sect_name, "visual"))
     {
-        m_visual_name = pSettings->r_string(sect_name, "visual");
+        m_visual_name._set(pSettings->r_string(sect_name, "visual"));
         m_has_separated_hands = false;
     }
     else
     {
-        m_visual_name = pSettings->r_string(sect_name, "item_visual");
+        m_visual_name._set(pSettings->r_string(sect_name, "item_visual"));
         m_has_separated_hands = true;
     }
 
@@ -589,7 +602,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
     bool is_16x9 = UI()->is_widescreen();
     xr_sprintf(anim_name_r, "%s%s", anm_name_b.c_str(), ((m_attach_place_idx == 1) && is_16x9) ? "_16x9" : "");
 
-    player_hud_motion* anm = m_hand_motions.find_motion(anim_name_r);
+    player_hud_motion* anm = m_hand_motions.find_motion(shared_str{anim_name_r});
     ASSERT_FMT(anm, "model [%s] has no motion alias defined [%s]", m_visual_name.c_str(), anim_name_r);
     ASSERT_FMT(anm->m_animations.size(), "model [%s] has no motion defined in motion_alias [%s]", m_visual_name.c_str(), anim_name_r);
 
@@ -635,7 +648,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
         }
 
         if (!M2.valid())
-            M2 = ka->ID_Cycle_Safe("idle");
+            M2 = ka->ID_Cycle_Safe(shared_str{"idle"});
 
         R_ASSERT3(M2.valid(), "model has no motion [idle] ", m_visual_name.c_str());
 
@@ -710,11 +723,11 @@ player_hud::player_hud()
             LPCSTR layer_def = pSettings->r_string("hud_movement_layers", temp);
             R_ASSERT2(_GetItemCount(layer_def) > 0, make_string("Wrong definition for [hud_movement_layers] %s", temp));
 
-            _GetItem(layer_def, 0, tmp);
+            std::ignore = _GetItem(layer_def, 0, tmp);
             anm->Load(tmp);
-            _GetItem(layer_def, 1, tmp);
+            std::ignore = _GetItem(layer_def, 1, tmp);
             anm->anm->Speed() = (atof(tmp) ? atof(tmp) : 1.f);
-            _GetItem(layer_def, 2, tmp);
+            std::ignore = _GetItem(layer_def, 2, tmp);
             anm->m_power = (atof(tmp) ? atof(tmp) : 1.f);
             m_movement_layers.push_back(anm);
         }
@@ -813,8 +826,8 @@ void player_hud::load(const shared_str& player_hud_sect, bool force)
 
     if (!b_reload)
     {
-        m_model->PlayCycle("hand_idle_doun");
-        m_model_2->PlayCycle("hand_idle_doun");
+        m_model->PlayCycle(shared_str{"hand_idle_doun"});
+        m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
     }
     else
     {
@@ -1178,7 +1191,7 @@ u32 player_hud::anim_play(u16 part, const motion_params& P, const motion_descr& 
     {
         u16 part_id = u16(-1);
         if (attached_item(0) && attached_item(1))
-            part_id = m_model->partitions().part_id((part == 0) ? "right_hand" : "left_hand");
+            part_id = m_model->partitions().part_id((part == 0) ? shared_str{"right_hand"} : shared_str{"left_hand"});
 
         if (script_anim_part != std::numeric_limits<u8>::max())
         {
@@ -1313,16 +1326,14 @@ void player_hud::detach_item_idx(u16 idx)
             if (m_attached_items[0])
                 re_sync_anim(2);
             else
-            {
-                m_model_2->PlayCycle("hand_idle_doun");
-            }
+                m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
         }
         else if (idx == 0)
         {
             if (m_attached_items[1])
             {
                 // fix for a rare case where the right hand stays visible on screen after detaching the right hand's attached item
-                player_hud_motion* pm = m_attached_items[1]->find_motion("anm_idle");
+                player_hud_motion* pm = m_attached_items[1]->find_motion(shared_str{"anm_idle"});
                 if (pm)
                 {
                     const motion_descr& M = pm->m_animations[0];
@@ -1332,14 +1343,14 @@ void player_hud::detach_item_idx(u16 idx)
             }
             else
             {
-                m_model->PlayCycle("hand_idle_doun");
+                m_model->PlayCycle(shared_str{"hand_idle_doun"});
             }
         }
 
         if (!m_attached_items[0] && !m_attached_items[1])
         {
-            m_model->PlayCycle("hand_idle_doun");
-            m_model_2->PlayCycle("hand_idle_doun");
+            m_model->PlayCycle(shared_str{"hand_idle_doun"});
+            m_model_2->PlayCycle(shared_str{"hand_idle_doun"});
         }
     }
 
@@ -1568,7 +1579,7 @@ bool player_hud::allow_script_anim()
 void player_hud::load_script(LPCSTR section)
 {
     script_override_arms = false;
-    load(section, true);
+    load(shared_str{section}, true);
     script_override_arms = true;
 }
 
@@ -1592,7 +1603,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
         rot.append("_16x9");
     }
 
-    Fvector def = {0.f, 0.f, 0.f};
+    constexpr Fvector def{};
     Fvector offs = READ_IF_EXISTS(pSettings, r_fvector3, hud_section, pos.c_str(), def);
     Fvector rrot = READ_IF_EXISTS(pSettings, r_fvector3, hud_section, rot.c_str(), def);
 
@@ -1625,7 +1636,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
     script_anim_part = hand;
 
     player_hud_motion_container* pm = get_hand_motions(hud_section, script_anim_item_model);
-    player_hud_motion* phm = pm->find_motion(anm_name);
+    player_hud_motion* phm = pm->find_motion(shared_str{anm_name});
 
     if (!phm)
     {
@@ -1667,7 +1678,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
         }
 
         if (!M2.valid())
-            M2 = script_anim_item_model->ID_Cycle_Safe("idle");
+            M2 = script_anim_item_model->ID_Cycle_Safe(shared_str{"idle"});
 
         R_ASSERT3(M2.valid(), "model %s has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
 
@@ -1776,7 +1787,7 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
     if (!pm)
         return 0;
 
-    player_hud_motion* phm = pm->find_motion(anm_name);
+    player_hud_motion* phm = pm->find_motion(shared_str{anm_name});
     if (!phm)
     {
         Msg("! script motion [%s] not found in section [%s]", anm_name, hud_section);
@@ -1914,13 +1925,13 @@ player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section, IKinem
 {
     for (hand_motions* phm : m_hand_motions)
     {
-        if (phm->section == section)
+        if (std::is_eq(xr_strcmp(phm->section, section)))
             return &phm->pm;
     }
 
     hand_motions* res = xr_new<hand_motions>();
-    res->section = section;
-    res->pm.load(true, m_model, animatedHudItem, section);
+    res->section._set(section);
+    res->pm.load(true, m_model, animatedHudItem, res->section);
     m_hand_motions.push_back(res);
 
     return &res->pm;

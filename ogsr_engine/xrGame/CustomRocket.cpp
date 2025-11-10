@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "customrocket.h"
+
 #include "ParticlesObject.h"
 #include "PhysicsShell.h"
 #include "extendedgeom.h"
@@ -49,7 +50,7 @@ void CCustomRocket::reinit()
     inherited::reinit();
 
     m_pTrailLight.destroy();
-    m_pTrailLight = ::Render->light_create();
+    m_pTrailLight._set(::Render->light_create());
     m_pTrailLight->set_shadow(true);
     m_pTrailLight->set_moveable(true);
 
@@ -291,14 +292,12 @@ void CCustomRocket::reload(LPCSTR section)
     }
 
     if (pSettings->line_exist(section, "engine_particles"))
-        m_sEngineParticles = pSettings->r_string(section, "engine_particles");
+        m_sEngineParticles._set(pSettings->r_string(section, "engine_particles"));
     if (pSettings->line_exist(section, "fly_particles"))
-        m_sFlyParticles = pSettings->r_string(section, "fly_particles");
+        m_sFlyParticles._set(pSettings->r_string(section, "fly_particles"));
 
     if (pSettings->line_exist(section, "snd_fly_sound"))
-    {
         m_flyingSound.create(pSettings->r_string(section, "snd_fly_sound"), st_Effect, sg_SourceType);
-    }
 }
 
 void CCustomRocket::Contact(const Fvector& pos, const Fvector& normal)

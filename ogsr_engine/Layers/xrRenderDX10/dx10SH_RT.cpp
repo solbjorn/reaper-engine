@@ -180,7 +180,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount /*= 1*/
         CHK_DX(HW.pDevice->CreateUnorderedAccessView(pSurface, &UAVDesc, &pUAView));
     }
 
-    pTexture = RImplementation.Resources->_CreateTexture(Name);
+    pTexture._set(RImplementation.Resources->_CreateTexture(Name));
     pTexture->surface_set(pSurface);
 }
 
@@ -190,7 +190,7 @@ void CRT::destroy()
     {
         pTexture->surface_set(nullptr);
         pTexture.destroy();
-        pTexture = nullptr;
+        pTexture._set(nullptr);
     }
 
     _RELEASE(pRT);
@@ -206,13 +206,13 @@ void CRT::destroy()
     _RELEASE(pUAView);
 }
 
-void CRT::set_slice_read(int slice)
+void CRT::set_slice_read(gsl::index slice)
 {
     VERIFY(slice <= n_slices || slice == -1);
     pTexture->set_slice(slice);
 }
 
-void CRT::set_slice_write(ctx_id_t context_id, int slice)
+void CRT::set_slice_write(ctx_id_t context_id, gsl::index slice)
 {
     VERIFY(slice <= n_slices || slice == -1);
     pZRT[context_id] = (slice < 0) ? dsv_all : dsv_per_slice[slice];

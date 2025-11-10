@@ -4,7 +4,7 @@ void CRenderTarget::phase_smap_direct(CBackend& cmd_list, const light* L, u32 su
 {
     // Targets
     rt_smap_depth->set_slice_write(cmd_list.context_id, cmd_list.context_id);
-    u_setrt(cmd_list, nullptr, nullptr, nullptr, rt_smap_depth);
+    u_setrt(cmd_list, {}, {}, {}, rt_smap_depth);
     cmd_list.ClearZB(rt_smap_depth, 1.0f);
 
     //	Prepare viewport for shadow map rendering
@@ -14,7 +14,7 @@ void CRenderTarget::phase_smap_direct(CBackend& cmd_list, const light* L, u32 su
     }
     else
     {
-        const D3D_VIEWPORT VP = {(float)L->X.D.minX, (float)L->X.D.minY, (float)(L->X.D.maxX - L->X.D.minX), (float)(L->X.D.maxY - L->X.D.minY), 0, 1};
+        const D3D_VIEWPORT VP{(float)L->X.D.minX, (float)L->X.D.minY, (float)(L->X.D.maxX - L->X.D.minX), (float)(L->X.D.maxY - L->X.D.minY), 0, 1};
         cmd_list.SetViewport(VP);
     }
 

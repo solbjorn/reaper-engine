@@ -21,37 +21,29 @@ extern BOOL g_enable_memory_debug;
 class xrMemory
 {
 public:
-    static u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
+    [[nodiscard]] static gsl::index mem_usage(gsl::index* pBlocksUsed = nullptr, gsl::index* pBlocksFree = nullptr);
     static void mem_compact();
 
-    [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(size_t size, size_t align) noexcept;
-    [[nodiscard]] static void* mem_realloc_aligned(void* p, size_t size, size_t align) noexcept;
+    [[nodiscard]] XR_RESTRICT static void* mem_alloc_aligned(gsl::index size, gsl::index align) noexcept;
+    [[nodiscard]] static void* mem_realloc_aligned(void* p, gsl::index size, gsl::index align) noexcept;
     static void mem_free_aligned(void* p) noexcept;
-
-    constexpr static void mem_copy(void* dst, const void* src, size_t len) { std::memcpy(dst, src, len); }
-    constexpr static void mem_fill(void* dst, int c, size_t len) { std::memset(dst, c, len); }
 };
 
 const inline xrMemory Memory;
 
-#undef ZeroMemory
-#undef CopyMemory
-#undef FillMemory
-#define ZeroMemory(a, b) std::memset(a, 0, b)
-#define CopyMemory(a, b, c) std::memcpy(a, b, c)
-#define FillMemory(a, b, c) std::memset(a, c, b)
-
 namespace xr
 {
-constexpr inline size_t default_align_v = std::max(16uz, __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+constexpr inline gsl::index default_align_v = std::max(16z, gsl::index{__STDCPP_DEFAULT_NEW_ALIGNMENT__});
 
 template <typename T>
-constexpr inline size_t align_v = std::max(alignof(T), xr::default_align_v);
+constexpr inline gsl::index align_v = std::max(gsl::index{alignof(T)}, xr::default_align_v);
+
+#define XR_ALIGNED_DEFAULT __declspec(align(xr::default_align_v))
 } // namespace xr
 
 #ifdef USE_MEMORY_VALIDATOR
 
-[[nodiscard]] inline void* xr_malloc(size_t size, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] inline void* xr_malloc(gsl::index size, const std::source_location& loc = std::source_location::current())
 {
     void* ptr = Memory.mem_alloc_aligned(size, xr::default_align_v);
 
@@ -64,7 +56,7 @@ constexpr inline size_t align_v = std::max(alignof(T), xr::default_align_v);
     return ptr;
 }
 
-[[nodiscard]] inline void* xr_realloc(void* p, size_t size, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] inline void* xr_realloc(void* p, gsl::index size, const std::source_location& loc = std::source_location::current())
 {
     PointerRegistryRelease(p, loc);
     void* ptr = Memory.mem_realloc_aligned(p, size, xr::default_align_v);
@@ -85,10 +77,10 @@ inline void xr_mfree(void* p, const std::source_location& loc = std::source_loca
 }
 
 // generic "C"-like allocations/deallocations
-template <class T>
-[[nodiscard]] IC T* xr_alloc(size_t count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
+template <typename T>
+[[nodiscard]] inline T* xr_alloc(gsl::index count, const bool is_container = false, const std::source_location& loc = std::source_location::current())
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * sizeof(T), xr::align_v<T>));
+    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * gsl::index{sizeof(T)}, xr::align_v<T>));
 
     if (g_enable_memory_debug)
     {
@@ -100,13 +92,13 @@ template <class T>
     return ptr;
 }
 
-template <class T>
-IC void xr_free(T*& P, const std::source_location& loc = std::source_location::current())
+template <typename T>
+inline void xr_free(T*& P, const std::source_location& loc = std::source_location::current())
 {
     if (P)
     {
-        PointerRegistryRelease((void*)P, loc);
-        Memory.mem_free_aligned((void*)P);
+        PointerRegistryRelease(P, loc);
+        Memory.mem_free_aligned(P);
 
         P = nullptr;
     }
@@ -123,7 +115,7 @@ void registerClass(T* ptr, const std::source_location& loc)
 }
 
 template <typename T>
-[[nodiscard]] constexpr inline T* xr_new(const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{};
@@ -135,7 +127,7 @@ template <typename T>
 }
 
 template <typename T, typename A0>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0)};
@@ -147,7 +139,7 @@ template <typename T, typename A0>
 }
 
 template <typename T, typename A0, typename A1>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1)};
@@ -159,7 +151,7 @@ template <typename T, typename A0, typename A1>
 }
 
 template <typename T, typename A0, typename A1, typename A2>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2)};
@@ -171,7 +163,7 @@ template <typename T, typename A0, typename A1, typename A2>
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)};
@@ -183,7 +175,7 @@ template <typename T, typename A0, typename A1, typename A2, typename A3>
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)};
@@ -195,7 +187,7 @@ template <typename T, typename A0, typename A1, typename A2, typename A3, typena
 }
 
 template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-[[nodiscard]] constexpr inline T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
+[[nodiscard]] constexpr T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::source_location& loc = std::source_location::current())
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)};
@@ -206,8 +198,8 @@ template <typename T, typename A0, typename A1, typename A2, typename A3, typena
     return new (ptr) T{std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)};
 }
 
-template <class T>
-constexpr inline void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())
+template <typename T>
+constexpr void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())
 {
     if (ptr)
     {
@@ -221,14 +213,12 @@ constexpr inline void xr_delete(T*& ptr, const std::source_location& loc = std::
 
             ptr->~T();
             PointerRegistryRelease(_real_ptr, loc, true);
-
             Memory.mem_free_aligned(_real_ptr);
         }
         else
         {
             ptr->~T();
             PointerRegistryRelease(ptr, loc, true);
-
             Memory.mem_free_aligned(ptr);
         }
 
@@ -236,32 +226,31 @@ constexpr inline void xr_delete(T*& ptr, const std::source_location& loc = std::
     }
 }
 
-#else
+#else // !USE_MEMORY_VALIDATOR
 
 #define xr_malloc(size) Memory.mem_alloc_aligned(size, xr::default_align_v)
 #define xr_realloc(p, size) Memory.mem_realloc_aligned(p, size, xr::default_align_v)
 #define xr_mfree(p) Memory.mem_free_aligned(p)
 
 // generic "C"-like allocations/deallocations
-template <class T>
-[[nodiscard]] IC XR_RESTRICT T* xr_alloc(size_t count) noexcept
+template <typename T>
+[[nodiscard]] inline XR_RESTRICT T* xr_alloc(gsl::index count) noexcept
 {
-    T* ptr = static_cast<T*>(Memory.mem_alloc_aligned(count * sizeof(T), xr::align_v<T>));
-    return ptr;
+    return static_cast<T*>(Memory.mem_alloc_aligned(count * gsl::index{sizeof(T)}, xr::align_v<T>));
 }
 
-template <class T>
-IC void xr_free(T*& P) noexcept
+template <typename T>
+inline void xr_free(T*& P) noexcept
 {
     if (P)
     {
-        Memory.mem_free_aligned((void*)P);
+        Memory.mem_free_aligned(P);
         P = nullptr;
     }
 }
 
 template <typename T, typename... Args>
-[[nodiscard]] constexpr inline T* xr_new(Args&&... args)
+[[nodiscard]] constexpr T* xr_new(Args&&... args)
 {
     if (std::is_constant_evaluated())
         return new T{std::forward<Args>(args)...};
@@ -270,8 +259,8 @@ template <typename T, typename... Args>
     return new (ptr) T{std::forward<Args>(args)...};
 }
 
-template <class T>
-constexpr inline void xr_delete(T*& ptr)
+template <typename T>
+constexpr void xr_delete(T*& ptr)
 {
     if (ptr)
     {
@@ -282,8 +271,8 @@ constexpr inline void xr_delete(T*& ptr)
         else if constexpr (std::is_polymorphic_v<T>)
         {
             void* _real_ptr = smart_cast<void*>(ptr);
-            ptr->~T();
 
+            ptr->~T();
             Memory.mem_free_aligned(_real_ptr);
         }
         else
@@ -296,9 +285,9 @@ constexpr inline void xr_delete(T*& ptr)
     }
 }
 
-#endif
+#endif // !USE_MEMORY_VALIDATOR
 
-size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree);
+[[nodiscard]] gsl::index mem_usage_impl(gsl::index* pBlocksUsed, gsl::index* pBlocksFree);
 
 struct SProcessMemInfo
 {

@@ -102,7 +102,7 @@ public:
 
 public:
     ref_sound_data() = default;
-    ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type);
+    explicit ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type);
     virtual ~ref_sound_data();
 
     float get_length_sec() const { return fTimeTotal; }
@@ -410,7 +410,6 @@ extern CSound_manager_interface* Sound;
 /// ********* Sound ********* (utils, accessors, helpers)
 
 IC ref_sound_data::ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type) { ::Sound->_create_data(*this, fName, sound_type, game_type); }
-
 IC ref_sound_data::~ref_sound_data() { ::Sound->_destroy_data(*this); }
 
 IC void ref_sound::create(LPCSTR name, esound_type sound_type, u32 game_type)

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "render.h"
 #include "Thunderbolt.h"
+
+#include "render.h"
 #include "igame_persistent.h"
 #include "LightAnimLibrary.h"
 #include "igame_level.h"
@@ -26,8 +27,8 @@ SThunderboltDesc::~SThunderboltDesc()
 void SThunderboltDesc::create_top_gradient(CInifile& pIni, shared_str const& sect)
 {
     m_GradientTop = xr_new<SFlare>();
-    m_GradientTop->shader = pIni.r_string(sect, "gradient_top_shader");
-    m_GradientTop->texture = pIni.r_string(sect, "gradient_top_texture");
+    m_GradientTop->shader._set(pIni.r_string(sect, "gradient_top_shader"));
+    m_GradientTop->texture._set(pIni.r_string(sect, "gradient_top_texture"));
     m_GradientTop->fRadius = pIni.r_fvector2(sect, "gradient_top_radius");
     m_GradientTop->fOpacity = pIni.r_float(sect, "gradient_top_opacity");
     m_GradientTop->m_pFlare->CreateShader(*m_GradientTop->shader, *m_GradientTop->texture);
@@ -36,8 +37,8 @@ void SThunderboltDesc::create_top_gradient(CInifile& pIni, shared_str const& sec
 void SThunderboltDesc::create_center_gradient(CInifile& pIni, shared_str const& sect)
 {
     m_GradientCenter = xr_new<SFlare>();
-    m_GradientCenter->shader = pIni.r_string(sect, "gradient_center_shader");
-    m_GradientCenter->texture = pIni.r_string(sect, "gradient_center_texture");
+    m_GradientCenter->shader._set(pIni.r_string(sect, "gradient_center_shader"));
+    m_GradientCenter->texture._set(pIni.r_string(sect, "gradient_center_texture"));
     m_GradientCenter->fRadius = pIni.r_fvector2(sect, "gradient_center_radius");
     m_GradientCenter->fOpacity = pIni.r_float(sect, "gradient_center_opacity");
     m_GradientCenter->m_pFlare->CreateShader(*m_GradientCenter->shader, *m_GradientCenter->texture);
@@ -74,8 +75,8 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
 void SThunderboltDesc::create_top_gradient_shoc(CInifile* pIni, shared_str const& sect)
 {
     m_GradientTop = xr_new<SFlare>();
-    m_GradientTop->shader = pIni->r_string(sect, "gradient_top_shader");
-    m_GradientTop->texture = pIni->r_string(sect, "gradient_top_texture");
+    m_GradientTop->shader._set(pIni->r_string(sect, "gradient_top_shader"));
+    m_GradientTop->texture._set(pIni->r_string(sect, "gradient_top_texture"));
     m_GradientTop->fRadius = pIni->r_fvector2(sect, "gradient_top_radius");
     m_GradientTop->fOpacity = pIni->r_float(sect, "gradient_top_opacity");
     m_GradientTop->m_pFlare->CreateShader(*m_GradientTop->shader, *m_GradientTop->texture);
@@ -84,8 +85,8 @@ void SThunderboltDesc::create_top_gradient_shoc(CInifile* pIni, shared_str const
 void SThunderboltDesc::create_center_gradient_shoc(CInifile* pIni, shared_str const& sect)
 {
     m_GradientCenter = xr_new<SFlare>();
-    m_GradientCenter->shader = pIni->r_string(sect, "gradient_center_shader");
-    m_GradientCenter->texture = pIni->r_string(sect, "gradient_center_texture");
+    m_GradientCenter->shader._set(pIni->r_string(sect, "gradient_center_shader"));
+    m_GradientCenter->texture._set(pIni->r_string(sect, "gradient_center_texture"));
     m_GradientCenter->fRadius = pIni->r_fvector2(sect, "gradient_center_radius");
     m_GradientCenter->fOpacity = pIni->r_float(sect, "gradient_center_opacity");
     m_GradientCenter->m_pFlare->CreateShader(*m_GradientCenter->shader, *m_GradientCenter->texture);
@@ -122,29 +123,32 @@ void SThunderboltDesc::load_shoc(CInifile* pIni, shared_str const& sect)
 //----------------------------------------------------------------------------------------------
 // collection
 //----------------------------------------------------------------------------------------------
-SThunderboltCollection::SThunderboltCollection() {}
+
+SThunderboltCollection::SThunderboltCollection() = default;
 
 void SThunderboltCollection::load(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
 {
-    section = sect;
+    section._set(sect);
     int tb_count = pIni->line_count(sect);
+
     for (int tb_idx = 0; tb_idx < tb_count; tb_idx++)
     {
         LPCSTR N, V;
         if (pIni->r_line(sect, tb_idx, &N, &V))
-            palette.push_back(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, N));
+            palette.push_back(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, shared_str{N}));
     }
 }
 
 void SThunderboltCollection::load_shoc(CInifile* pIni, LPCSTR sect)
 {
-    section = sect;
+    section._set(sect);
     int tb_count = pIni->line_count(sect);
+
     for (int tb_idx = 0; tb_idx < tb_count; tb_idx++)
     {
         LPCSTR N, V;
         if (pIni->r_line(sect, tb_idx, &N, &V))
-            palette.push_back(g_pGamePersistent->Environment().thunderbolt_description_shoc(pIni, N));
+            palette.push_back(g_pGamePersistent->Environment().thunderbolt_description_shoc(pIni, shared_str{N}));
     }
 }
 
@@ -172,11 +176,13 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
 shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
 {
     if (!sect || (0 == sect[0]))
-        return "";
+        return shared_str{""};
 
     for (const auto* it : collection)
-        if (it->section == sect)
+    {
+        if (std::is_eq(xr_strcmp(it->section, sect)))
             return it->section;
+    }
 
     return collection.emplace_back(environment.thunderbolt_collection(pIni, thunderbolts, sect))->section;
 }
@@ -184,11 +190,13 @@ shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* p
 shared_str CEffect_Thunderbolt::AppendDef_shoc(CEnvironment& environment, CInifile* pIni, LPCSTR sect)
 {
     if (!sect || (0 == sect[0]))
-        return "";
+        return shared_str{""};
 
     for (const auto* it : collection)
-        if (it->section == sect)
+    {
+        if (std::is_eq(xr_strcmp(it->section, sect)))
             return it->section;
+    }
 
     return collection.emplace_back(environment.thunderbolt_collection_shoc(pIni, sect))->section;
 }
@@ -203,8 +211,8 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
         dist = RQ.range;
     else
     {
-        Fvector N = {0.f, -1.f, 0.f};
-        Fvector P = {0.f, 0.f, 0.f};
+        Fvector N{0.f, -1.f, 0.f};
+        Fvector P{0.f, 0.f, 0.f};
         Fplane PL;
         PL.build(P, N);
         float dst = dist;
@@ -214,7 +222,9 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
             return true;
         }
         else
+        {
             return false;
+        }
     }
 
     return bRes;
@@ -247,7 +257,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     dev.z = Random.randF(-environment.p_tilt, environment.p_tilt);
     XF.setXYZi(dev);
 
-    Fvector light_dir = {0.f, -1.f, 0.f};
+    Fvector light_dir{0.0f, -1.0f, 0.0f};
     XF.transform_dir(light_dir);
     lightning_size = far_plane * 2.f;
     RayPick(pos, light_dir, lightning_size);
@@ -259,7 +269,6 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     current_xform.mul_43(XF, S);
 
     float next_v = Random.randF();
-
     if (next_v < environment.p_second_prop)
     {
         next_lightning_time = Device.fTimeGlobal + lt + EPS_L;

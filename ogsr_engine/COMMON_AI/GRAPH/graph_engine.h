@@ -54,8 +54,9 @@ public:
     CSolverAlgorithm* m_solver_algorithm;
 
 public:
-    IC CGraphEngine(u32 max_vertex_count);
+    inline explicit CGraphEngine(u32 max_vertex_count);
     virtual ~CGraphEngine();
+
     IC const CSolverAlgorithm& solver_algorithm() const;
 
     template <typename _Graph, typename _Parameters>

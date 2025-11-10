@@ -12,7 +12,7 @@ namespace hash_fixed_vertex_manager
 {
 [[nodiscard]] extern u32 to_u32(const GraphEngineSpace::CWorldState& other);
 
-[[nodiscard]] constexpr u32 to_u32(const shared_str& string) { return hash_64(string ? string._get()->hash : absl::Hash<absl::string_view>{}(string), 32); }
+[[nodiscard]] constexpr u32 to_u32(const shared_str& string) { return hash_64(string ? string._get()->hash : 0x2d06800538d394c2, 32); }
 } // namespace hash_fixed_vertex_manager
 
 #define TEMPLATE_SPECIALIZATION \
@@ -27,9 +27,10 @@ TEMPLATE_SPECIALIZATION
 inline CHashFixedVertexManager::CDataStorage(const u32 vertex_count) : CDataStorageBase(vertex_count), CDataStorageAllocator(), m_current_path_id(PathId(0))
 {
     m_hash = xr_alloc<IndexVertex*>(HashSize);
-    ZeroMemory(m_hash, IndexVertexHashSize);
+    std::memset(m_hash, 0, IndexVertexHashSize);
+
     m_vertices = xr_alloc<IndexVertex>(FixSize);
-    ZeroMemory(m_vertices, IndexVertexFixSize);
+    std::memset(m_vertices, 0, IndexVertexFixSize);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -44,20 +45,24 @@ inline void CHashFixedVertexManager::init()
 {
     CDataStorageBase::init();
     CDataStorageAllocator::init();
+
     ++m_current_path_id;
     m_vertex_count = 0;
+
     if (!m_current_path_id)
     {
         ++m_current_path_id;
-        ZeroMemory(m_hash, IndexVertexHashSize);
-        ZeroMemory(m_vertices, IndexVertexFixSize);
+        std::memset(m_hash, 0, IndexVertexHashSize);
+        std::memset(m_vertices, 0, IndexVertexFixSize);
     }
 }
 
 TEMPLATE_SPECIALIZATION
 inline void CHashFixedVertexManager::add_opened(Vertex& vertex) { vertex.opened() = 1; }
+
 TEMPLATE_SPECIALIZATION
 inline void CHashFixedVertexManager::add_closed(Vertex& vertex) { vertex.opened() = 0; }
+
 TEMPLATE_SPECIALIZATION
 inline CHashFixedVertexManagerT::PathId CHashFixedVertexManager::current_path_id() const { return m_current_path_id; }
 

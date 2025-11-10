@@ -308,7 +308,7 @@ void SndShockEffector::Start(CActor* A, float snd_length, float power)
     m_life_time = power * xxx;
     m_end_time = Device.fTimeGlobal + m_life_time;
 
-    AddEffector(A, effHit, "snd_shock_effector", this);
+    AddEffector(A, effHit, shared_str{"snd_shock_effector"}, this);
 }
 
 void SndShockEffector::Update()

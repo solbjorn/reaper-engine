@@ -5,15 +5,18 @@
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 
+namespace
+{
 constexpr const char* strImpulseSize("size");
 constexpr const char* strImpulseCenter("center");
 constexpr const char* strSplatColor("splatColor");
+} // namespace
 
 dx103DFluidEmitters::dx103DFluidEmitters(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid(pGrid)
 {
-    m_vGridDim[0] = float(gridWidth);
-    m_vGridDim[1] = float(gridHeight);
-    m_vGridDim[2] = float(gridDepth);
+    m_vGridDim[0] = gsl::narrow_cast<f32>(gridWidth);
+    m_vGridDim[1] = gsl::narrow_cast<f32>(gridHeight);
+    m_vGridDim[2] = gsl::narrow_cast<f32>(gridDepth);
 
     InitShaders();
 }
@@ -37,10 +40,10 @@ void dx103DFluidEmitters::InitShaders()
 
 void dx103DFluidEmitters::DestroyShaders()
 {
-    for (int i = 0; i < ET_EmittersTypeNum; ++i)
+    for (auto& tech : m_EmitterTechnique)
     {
         //	Release shader's element.
-        m_EmitterTechnique[i] = nullptr;
+        tech._set(nullptr);
     }
 }
 
@@ -97,8 +100,11 @@ void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
     m_pGrid->DrawSlices();
 }
 
+namespace
+{
 //	TODO: DX10: Remove this hack
-static float lilrand() { return (rand() / float(RAND_MAX) - 0.5f) * 5.0f; }
+[[nodiscard]] f32 lilrand() { return xr::random_f32(-2.5f, 2.5f); }
+} // namespace
 
 void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
 {

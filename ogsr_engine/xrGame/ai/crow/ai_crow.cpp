@@ -17,18 +17,20 @@
 
 void CAI_Crow::SAnim::Load(IKinematicsAnimated* visual, LPCSTR prefix)
 {
-    const MotionID& M = visual->ID_Cycle_Safe(prefix);
+    const MotionID& M = visual->ID_Cycle_Safe(shared_str{prefix});
     if (M)
         m_Animations.push_back(M);
+
     for (int i = 0; (i < MAX_ANIM_COUNT) && (m_Animations.size() < MAX_ANIM_COUNT); ++i)
     {
         string128 sh_anim;
         sprintf_s(sh_anim, "%s_%d", prefix, i);
-        const MotionID& M = visual->ID_Cycle_Safe(sh_anim);
+        const MotionID& M = visual->ID_Cycle_Safe(shared_str{sh_anim});
         if (M)
             m_Animations.push_back(M);
     }
-    R_ASSERT(m_Animations.size());
+
+    R_ASSERT(!m_Animations.empty());
 }
 
 void CAI_Crow::SSound::Load(LPCSTR prefix)

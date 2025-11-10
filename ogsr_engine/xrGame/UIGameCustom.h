@@ -22,9 +22,10 @@ struct SDrawStaticStruct
     shared_str m_name;
     void Draw();
     void Update();
-    CUIStatic* wnd() { return m_static; }
-    bool IsActual();
-    bool operator==(LPCSTR str) { return (m_name == str); }
+
+    [[nodiscard]] constexpr CUIStatic* wnd() const { return m_static; }
+    [[nodiscard]] bool IsActual();
+    [[nodiscard]] constexpr bool operator==(gsl::czstring str) const { return std::is_eq(xr_strcmp(m_name, str)); }
 };
 
 template <>

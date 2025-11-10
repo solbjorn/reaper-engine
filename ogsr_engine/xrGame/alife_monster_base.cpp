@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_simulator.h"
 #include "xrServer.h"
@@ -27,7 +28,7 @@ void CSE_ALifeMonsterBase::on_spawn()
         int count = _GetItemCount(item_section);
         for (int i = 0; i < count; i += 2)
         {
-            _GetItem(item_section, i, item);
+            std::ignore = _GetItem(item_section, i, item);
             float spawn_prob = spawn_probability;
             if (i + 1 < count)
             {

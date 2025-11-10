@@ -174,9 +174,7 @@ void CActorCondition::UpdateCondition()
     if ((m_fAlcohol > 0.0001f))
     {
         if (!ce)
-        {
-            AddEffector(m_object, effAlcohol, "effector_alcohol", CallMe::fromMethod<&CActorCondition::GetAlcohol>(this));
-        }
+            AddEffector(m_object, effAlcohol, shared_str{"effector_alcohol"}, CallMe::fromMethod<&CActorCondition::GetAlcohol>(this));
     }
     else
     {
@@ -195,9 +193,7 @@ void CActorCondition::UpdateCondition()
     if (!fsimilar(GetPsyHealth(), 1.0f, 0.05f))
     {
         if (!ppe)
-        {
-            AddEffector(m_object, effPsyHealth, pp_sect_name, CallMe::fromMethod<&CActorCondition::GetPsy>(this));
-        }
+            AddEffector(m_object, effPsyHealth, shared_str{pp_sect_name}, CallMe::fromMethod<&CActorCondition::GetPsy>(this));
     }
     else
     {

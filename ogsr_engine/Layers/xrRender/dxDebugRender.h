@@ -23,7 +23,7 @@ public:
     virtual void SetDebugShader(dbgShaderHandle shdHandle);
     virtual void DestroyDebugShader(dbgShaderHandle shdHandle);
 
-    virtual void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
+    void dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) override;
 
 private:
     xr_unordered_map<u32, xr_vector<FVF::L>> m_line_vertices;

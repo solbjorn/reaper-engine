@@ -8,9 +8,9 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/net_utils.h"
-#include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+
+#include "xrServer_Objects_ALife_Items.h"
 #include "object_broker.h"
 #include "alife_human_brain.h"
 
@@ -20,16 +20,19 @@
 
 #ifdef XRGAME_EXPORTS
 #include "ef_storage.h"
+#include "game_base_space.h"
 #include "game_graph.h"
 #include "alife_simulator.h"
 #include "alife_registry_container.h"
 #include "ef_primary.h"
 #include "string_table.h"
 #include "alife_online_offline_group_brain.h"
-#include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "date_time.h"
+#include "Level.h"
 #endif
+
+#include "../xr_3da/NET_Server_Trash/net_utils.h"
 
 namespace
 {
@@ -123,7 +126,7 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(LPCSTR caSection)
         m_dwMoney = pSettings->r_u32(caSection, "money");
     m_fMaxItemMass = pSettings->r_float(caSection, "max_item_mass");
 
-    m_sCharacterProfile = READ_IF_EXISTS(pSettings, r_string, caSection, "character_profile", "default");
+    m_sCharacterProfile._set(READ_IF_EXISTS(pSettings, r_string, caSection, "character_profile", "default"));
 
 #ifdef XRGAME_EXPORTS
     m_community_index = NO_COMMUNITY_INDEX;
@@ -201,7 +204,7 @@ void CSE_ALifeTraderAbstract::__STATE_Read(NET_Packet& tNetPacket, u16)
             if (tmp != -1)
                 m_SpecificCharacter = CSpecificCharacter::IndexToId(tmp);
             else
-                m_SpecificCharacter = nullptr;
+                m_SpecificCharacter._set(nullptr);
         }
         else if (m_wVersion >= 98)
         {
@@ -239,13 +242,6 @@ void CSE_ALifeTraderAbstract::__STATE_Read(NET_Packet& tNetPacket, u16)
     specific_character();
 #endif
 }
-
-#ifdef XRGAME_EXPORTS
-
-#include "game_base_space.h"
-#include "Level.h"
-
-#endif
 
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
@@ -360,7 +356,6 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     }
 
 #ifdef XRGAME_EXPORTS
-
     if (NO_COMMUNITY_INDEX == m_community_index)
     {
         m_community_index = selected_char.Community().index();
@@ -382,9 +377,9 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     if (NO_REPUTATION == m_reputation)
         m_reputation = selected_char.Reputation();
 
-    m_character_name = *(CStringTable().translate(selected_char.Name()));
-
+    m_character_name = *(CStringTable().translate(shared_str{selected_char.Name()}));
     LPCSTR gen_name = "GENERATE_NAME_";
+
     if (strstr(m_character_name.c_str(), gen_name))
     {
         // select name and lastname
@@ -400,15 +395,16 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
         n += subset;
         n += "_";
         n += _itoa(::Random.randI(name_cnt), S, 10);
-        m_character_name = *(CStringTable().translate(n.c_str()));
+        m_character_name = *(CStringTable().translate(shared_str{n.c_str()}));
         m_character_name += " ";
 
         n = "lname_";
         n += subset;
         n += "_";
         n += _itoa(::Random.randI(last_name_cnt), S, 10);
-        m_character_name += *(CStringTable().translate(n.c_str()));
+        m_character_name += *(CStringTable().translate(shared_str{n.c_str()}));
     }
+
     u32 min_m = selected_char.MoneyDef().min_money;
     u32 max_m = selected_char.MoneyDef().max_money;
     if (min_m != 0 && max_m != 0)
@@ -1505,13 +1501,14 @@ void CSE_ALifeHumanAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 //////////////////////////////////////////////////////////////////////////
 // CSE_ALifeHumanStalker
 //////////////////////////////////////////////////////////////////////////
-CSE_ALifeHumanStalker::CSE_ALifeHumanStalker(LPCSTR caSection) : CSE_ALifeHumanAbstract(caSection), CSE_PHSkeleton(caSection)
+
+CSE_ALifeHumanStalker::CSE_ALifeHumanStalker(LPCSTR caSection) : CSE_ALifeHumanAbstract{caSection}, CSE_PHSkeleton{caSection}
 {
     m_trader_flags.set(eTraderFlagInfiniteAmmo, TRUE);
-    m_start_dialog = "";
+    m_start_dialog._set("");
 }
 
-CSE_ALifeHumanStalker::~CSE_ALifeHumanStalker() {}
+CSE_ALifeHumanStalker::~CSE_ALifeHumanStalker() = default;
 
 void CSE_ALifeHumanStalker::__STATE_Write(NET_Packet& tNetPacket)
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ui_af_params.h"
+
 #include "UIStatic.h"
 #include "UIXmlInit.h"
 
@@ -98,6 +99,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
     string128 _buff;
     float _h = 0.0f;
     DetachAll();
+
     for (u32 i = _item_start; i < _max_item_index; ++i)
     {
         CUIStatic* _s = m_info_items[i];
@@ -133,13 +135,15 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
         }
         else
         {
-            shared_str _sect = pSettings->r_string(af_section, "hit_absorbation_sect");
+            gsl::czstring _sect = pSettings->r_string(af_section, "hit_absorbation_sect");
             _val = pSettings->r_float(_sect, af_item_sect_names[i].data());
             if (fsimilar(_val, 1.0f))
                 continue;
+
             _val = (1.0f - _val);
             _val *= 100.0f;
         }
+
         LPCSTR _sn = "%";
         if (i == _item_radiation_restore_speed || i == _item_power_restore_speed)
         {
@@ -147,7 +151,9 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
             _sn = "";
         }
         else if (i == _item_additional_inventory_weight || i == _item_additional_inventory_weight2)
+        {
             _sn = "";
+        }
 
         LPCSTR _color = (_val > 0) ? "%c[green]" : "%c[red]";
 
@@ -157,11 +163,12 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
         if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
             _color = (_val > 0) ? "%c[red]" : "%c[green]";
 
-        sprintf_s(_buff, "%s %s %+.0f%s", CStringTable().translate(af_item_param_names[i].data()).c_str(), _color, _val, _sn);
+        sprintf_s(_buff, "%s %s %+.0f%s", CStringTable().translate(shared_str{af_item_param_names[i].data()}).c_str(), _color, _val, _sn);
         _s->SetText(_buff);
         _s->SetWndPos(_s->GetWndPos().x, _h);
         _h += _s->GetWndSize().y;
         AttachChild(_s);
     }
+
     SetHeight(_h);
 }

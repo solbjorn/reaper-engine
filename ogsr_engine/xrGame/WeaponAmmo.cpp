@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "weaponammo.h"
+
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "Actor_Flags.h"
@@ -12,12 +13,15 @@
 #include "level.h"
 #include "string_table.h"
 
-#define BULLET_MANAGER_SECTION "bullet_manager"
+namespace
+{
+constexpr absl::string_view BULLET_MANAGER_SECTION{"bullet_manager"};
+}
 
 CCartridge::CCartridge()
 {
     m_flags.assign(cfTracer | cfRicochet);
-    m_ammoSect = nullptr;
+    m_ammoSect._set(nullptr);
     m_kDist = m_kDisp = m_kHit = m_kImpulse = m_kPierce = 1.f;
     m_kAP = 0.0f;
     m_kAirRes = 0.0f;
@@ -30,7 +34,7 @@ CCartridge::CCartridge()
 
 void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 {
-    m_ammoSect = section;
+    m_ammoSect._set(section);
     m_LocalAmmoType = LocalAmmoType;
 
     m_kDist = pSettings->r_float(section, "k_dist");
@@ -45,7 +49,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
     if (pSettings->line_exist(section, "k_air_resistance"))
         m_kAirRes = pSettings->r_float(section, "k_air_resistance");
     else
-        m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
+        m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION.data(), "air_resistance_k");
 
     m_flags.set(cfTracer, pSettings->r_bool(section, "tracer"));
     m_buckShot = pSettings->r_s32(section, "buck_shot");
@@ -54,7 +58,7 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
 
     m_flags.set(cfCanBeUnlimited, TRUE);
 
-    bool allow_ricochet = READ_IF_EXISTS(pSettings, r_bool, BULLET_MANAGER_SECTION, "allow_ricochet", true);
+    bool allow_ricochet = READ_IF_EXISTS(pSettings, r_bool, BULLET_MANAGER_SECTION.data(), "allow_ricochet", true);
     m_flags.set(cfRicochet, READ_IF_EXISTS(pSettings, r_bool, section, "allow_ricochet", allow_ricochet));
 
     if (pSettings->line_exist(section, "can_be_unlimited"))
@@ -67,16 +71,17 @@ void CCartridge::Load(LPCSTR section, u8 LocalAmmoType)
     {
         LPCSTR explode_particles = pSettings->r_string(section, "explode_particles");
         int cnt = _GetItemCount(explode_particles);
+
         xr_string tmp;
         for (int k = 0; k < cnt; ++k)
-            m_ExplodeParticles.push_back(_GetItem(explode_particles, k, tmp));
+            m_ExplodeParticles.emplace_back(_GetItem(explode_particles, k, tmp));
     }
 
     bullet_material_idx = GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
     VERIFY(u16(-1) != bullet_material_idx);
     VERIFY(fWallmarkSize > 0);
 
-    m_InvShortName = CStringTable().translate(READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", pSettings->r_string(section, "inv_name")));
+    m_InvShortName = CStringTable().translate(shared_str{READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", pSettings->r_string(section, "inv_name"))});
 }
 
 float CCartridge::Weight() const
@@ -95,13 +100,13 @@ float CCartridge::Weight() const
     return res;
 }
 
-CWeaponAmmo::CWeaponAmmo(void)
+CWeaponAmmo::CWeaponAmmo()
 {
     m_weight = .2f;
     m_flags.set(Fbelt, TRUE);
 }
 
-CWeaponAmmo::~CWeaponAmmo(void) {}
+CWeaponAmmo::~CWeaponAmmo() = default;
 
 void CWeaponAmmo::Load(LPCSTR section)
 {
@@ -119,7 +124,7 @@ void CWeaponAmmo::Load(LPCSTR section)
     if (pSettings->line_exist(section, "k_air_resistance"))
         m_kAirRes = pSettings->r_float(section, "k_air_resistance");
     else
-        m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION, "air_resistance_k");
+        m_kAirRes = pSettings->r_float(BULLET_MANAGER_SECTION.data(), "air_resistance_k");
 
     m_tracer = !!pSettings->r_bool(section, "tracer");
     m_buckShot = pSettings->r_s32(section, "buck_shot");
@@ -183,6 +188,7 @@ bool CWeaponAmmo::Get(CCartridge& cartridge)
 {
     if (!m_boxCurr)
         return false;
+
     cartridge.m_ammoSect = cNameSect();
     cartridge.m_kDist = m_kDist;
     cartridge.m_kDisp = m_kDisp;
@@ -197,10 +203,12 @@ bool CWeaponAmmo::Get(CCartridge& cartridge)
     cartridge.m_impair = m_impair;
     cartridge.fWallmarkSize = fWallmarkSize;
     cartridge.bullet_material_idx = GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
-    cartridge.m_InvShortName = NameShort();
+    cartridge.m_InvShortName._set(NameShort());
+
     --m_boxCurr;
     if (m_pCurrentInventory)
         m_pCurrentInventory->InvalidateState();
+
     return true;
 }
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uiiteminfo.h"
+
 #include "uistatic.h"
 #include "UIXmlInit.h"
 
@@ -140,7 +141,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     }
     if (UICost)
     {
-        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
+        static const char* StMoneyDescr = CStringTable().translate(shared_str{"ui_st_money_descr"}).c_str();
         UICost->SetText(std::format("{} {}", pInvItem->Cost(), StMoneyDescr).c_str());
     }
 
@@ -179,7 +180,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
         Frect rect = pInvItem->m_icon_params.original_rect();
         UIItemImage->TextureOn();
         UIItemImage->ClipperOn();
-        Frect v_r = {0.0f, 0.0f, rect.width(), rect.height()};
+        Frect v_r{0.0f, 0.0f, rect.width(), rect.height()};
         v_r.x2 *= UI()->get_current_kx();
 
         UIItemImage->GetUIStaticItem().SetRect(v_r);

@@ -9,6 +9,9 @@ namespace PAPI
 {
 class CParticleManager : public IParticleManager
 {
+    RTTI_DECLARE_TYPEINFO(CParticleManager, IParticleManager);
+
+private:
     // These are static because all threads access the same effects.
     // All accesses to these should be locked.
     using ParticleEffectVec = xr_vector<ParticleEffect*>;

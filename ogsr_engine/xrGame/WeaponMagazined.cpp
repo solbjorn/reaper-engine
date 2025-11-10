@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "hudmanager.h"
 #include "WeaponMagazined.h"
+
+#include "hudmanager.h"
 #include "weaponBM16.h"
 #include "entity.h"
 #include "actor.h"
@@ -175,21 +176,25 @@ void CWeaponMagazined::Load(LPCSTR section)
     if (pSettings->line_exist(section, "fire_modes"))
     {
         m_bHasDifferentFireModes = true;
-        shared_str FireModesList = pSettings->r_string(section, "fire_modes");
-        int ModesCount = _GetItemCount(FireModesList.c_str());
+        gsl::czstring FireModesList = pSettings->r_string(section, "fire_modes");
+        int ModesCount = _GetItemCount(FireModesList);
         m_aFireModes.clear();
+
         for (int i = 0; i < ModesCount; i++)
         {
             string16 sItem;
-            _GetItem(FireModesList.c_str(), i, sItem);
+            std::ignore = _GetItem(FireModesList, i, sItem);
             int FireMode = atoi(sItem);
             m_aFireModes.push_back(FireMode);
         }
+
         m_iCurFireMode = ModesCount - 1;
         m_iPrefferedFireMode = READ_IF_EXISTS(pSettings, r_s16, section, "preffered_fire_mode", -1);
     }
     else
+    {
         m_bHasDifferentFireModes = false;
+    }
 
     m_bVision = !!READ_IF_EXISTS(pSettings, r_bool, section, "vision_present", false);
     m_fire_zoomout_time = READ_IF_EXISTS(pSettings, r_u32, section, "fire_zoomout_time", u32(-1));
@@ -202,11 +207,12 @@ void CWeaponMagazined::Load(LPCSTR section)
     {
         bHasBulletsToHide = true;
         LPCSTR str = pSettings->r_string(section, "bullet_bones");
+
         for (int i = 0, count = _GetItemCount(str); i < count; ++i)
         {
             string128 bullet_bone_name;
-            _GetItem(str, i, bullet_bone_name);
-            bullets_bones.push_back(bullet_bone_name);
+            std::ignore = _GetItem(str, i, bullet_bone_name);
+            bullets_bones.emplace_back(bullet_bone_name);
             bullet_cnt++;
         }
     }
@@ -1084,12 +1090,13 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 
 bool CWeaponMagazined::CanDetach(const char* item_section_name)
 {
-    if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) && (m_sScopeName == item_section_name))
+    if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) && std::is_eq(xr_strcmp(m_sScopeName, item_section_name)))
         return true;
-    else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && (m_sSilencerName == item_section_name))
+    else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) &&
+             std::is_eq(xr_strcmp(m_sSilencerName, item_section_name)))
         return true;
     else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-             (m_sGrenadeLauncherName == item_section_name))
+             std::is_eq(xr_strcmp(m_sGrenadeLauncherName, item_section_name)))
         return true;
     else
         return inherited::CanDetach(item_section_name);
@@ -1145,7 +1152,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 
 bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 {
-    if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) && (m_sScopeName == item_section_name))
+    if (m_eScopeStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) && std::is_eq(xr_strcmp(m_sScopeName, item_section_name)))
     {
         m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 
@@ -1157,7 +1164,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 
         return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
     }
-    else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && (m_sSilencerName == item_section_name))
+    else if (m_eSilencerStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) &&
+             std::is_eq(xr_strcmp(m_sSilencerName, item_section_name)))
     {
         m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
@@ -1166,7 +1174,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
         return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
     }
     else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-             (m_sGrenadeLauncherName == item_section_name))
+             std::is_eq(xr_strcmp(m_sGrenadeLauncherName, item_section_name)))
     {
         m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
@@ -1175,7 +1183,9 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
         return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
     }
     else
+    {
         return inherited::Detach(item_section_name, b_spawn_item);
+    }
 }
 
 void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
@@ -1216,18 +1226,17 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
 
     if (useTexture)
     {
-        shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_texture", "");
+        gsl::czstring scope_tex_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_texture", "");
         const bool scope_tex_autoresize = READ_IF_EXISTS(pSettings, r_bool, section, "scope_texture_autoresize", true);
 
-        if (scope_tex_name.size() > 0)
+        if (scope_tex_name != nullptr && scope_tex_name[0] != '\0')
         {
             LPCSTR shader_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_shader", nullptr);
-
-            if (!shader_name)
+            if (shader_name == nullptr)
                 shader_name = (Core.Features.test(xrCore::Feature::scope_textures_autoresize) && scope_tex_autoresize) ? "hud\\scope" : "hud\\default";
 
             m_UIScope = xr_new<CUIStaticItem>();
-            m_UIScope->Init(scope_tex_name.c_str(), shader_name, 0, 0, alNone);
+            m_UIScope->Init(scope_tex_name, shader_name, 0, 0, alNone);
         }
     }
 }
@@ -1242,7 +1251,7 @@ void CWeaponMagazined::InitAddons()
     {
         if (m_eScopeStatus == ALife::eAddonAttachable)
         {
-            m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
+            m_sScopeName._set(pSettings->r_string(cNameSect(), "scope_name"));
             m_iScopeX = pSettings->r_s32(cNameSect(), "scope_x");
             m_iScopeY = pSettings->r_s32(cNameSect(), "scope_y");
 
@@ -1306,8 +1315,8 @@ void CWeaponMagazined::InitAddons()
 
     if (IsSilencerAttached() && SilencerAttachable())
     {
-        m_sFlameParticlesCurrent = m_sSilencerFlameParticles;
-        m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
+        m_sFlameParticlesCurrent._set(m_sSilencerFlameParticles);
+        m_sSmokeParticlesCurrent._set(m_sSilencerSmokeParticles);
         m_pSndShotCurrent = &sndSilencerShot;
 
         // сила выстрела
@@ -1723,7 +1732,7 @@ void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_na
     LPCSTR short_name;
 
     short_name = READ_IF_EXISTS(pSettings, r_string, icon_sect_name.c_str(), "inv_name_short", pSettings->r_string(icon_sect_name.c_str(), "inv_name"));
-    strcpy_s(sItemName, CStringTable().translate(short_name).c_str());
+    strcpy_s(sItemName, CStringTable().translate(shared_str{short_name}).c_str());
 
     if (HasFireModes())
         strcat_s(sItemName, GetCurrentFireModeStr());

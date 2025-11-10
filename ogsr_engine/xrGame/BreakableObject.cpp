@@ -180,7 +180,7 @@ void CBreakableObject::net_Destroy()
     Init();
     // Visual()->getVisData().box.set(m_saved_box);
     Render->model_Delete(renderable.visual, TRUE);
-    cNameVisual_set("");
+    cNameVisual_set(shared_str{""});
 }
 
 void CBreakableObject::Split()

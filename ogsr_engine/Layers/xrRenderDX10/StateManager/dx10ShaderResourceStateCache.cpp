@@ -5,11 +5,11 @@ dx10ShaderResourceStateCache::dx10ShaderResourceStateCache() { ResetDeviceState(
 
 void dx10ShaderResourceStateCache::ResetDeviceState()
 {
-    ZeroMemory(m_PSViews, sizeof(m_PSViews));
-    ZeroMemory(m_GSViews, sizeof(m_GSViews));
-    ZeroMemory(m_VSViews, sizeof(m_VSViews));
-    ZeroMemory(m_HSViews, sizeof(m_HSViews));
-    ZeroMemory(m_DSViews, sizeof(m_DSViews));
+    std::memset(m_PSViews, 0, sizeof(m_PSViews));
+    std::memset(m_GSViews, 0, sizeof(m_GSViews));
+    std::memset(m_VSViews, 0, sizeof(m_VSViews));
+    std::memset(m_HSViews, 0, sizeof(m_HSViews));
+    std::memset(m_DSViews, 0, sizeof(m_DSViews));
 
     m_uiMinPSView = 0xFFFFFFFF;
     m_uiMaxPSView = 0xFFFFFFFF;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "map_manager.h"
+
 #include "alife_registry_wrappers.h"
 #include "inventoryowner.h"
 #include "level.h"
@@ -21,6 +22,7 @@ struct FindLocationBySpotID
     FindLocationBySpotID(const shared_str& s, u16 id) : spot_id(s), object_id(id) {}
     bool operator()(const SLocationKey& key) { return (spot_id == key.spot_type) && (object_id == key.object_id); }
 };
+
 struct FindLocationByID
 {
     u16 object_id;
@@ -109,6 +111,7 @@ void CMapManager::initialize(u16 id)
     VERIFY(0);
     m_locations->registry().init(id); // actor's id
 }
+
 CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 {
     FindLocationBySpotID key(spot_type, id);
@@ -117,12 +120,14 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
     {
         CMapLocation* l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
         Locations().emplace_back(key.spot_id, key.object_id).location = l;
+
         if (g_actor)
             Actor()->callback(GameObject::eMapLocationAdded)(*spot_type, id);
+
         return l;
     }
-    else
-        (*it).location->AddRef();
+
+    (*it).location->AddRef();
 
     return (*it).location;
 }
@@ -139,18 +144,19 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 
     CEntityAlive* pEntAlive = smart_cast<CEntityAlive*>(pInvOwner);
     if (!pEntAlive->g_Alive())
-        sname = "deadbody_location";
+        sname._set("deadbody_location");
 
     FindLocationBySpotID key(sname, pInvOwner->object_id());
     Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
     if (it == Locations().end())
     {
-        CMapLocation* l = xr_new<CRelationMapLocation>(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
+        CMapLocation* l = xr_new<CRelationMapLocation>(key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
         Locations().emplace_back(key.spot_id, key.object_id).location = l;
+
         return l;
     }
-    else
-        (*it).location->AddRef();
+
+    (*it).location->AddRef();
 
     return (*it).location;
 }

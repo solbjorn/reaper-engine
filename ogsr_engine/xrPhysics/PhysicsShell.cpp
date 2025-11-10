@@ -72,7 +72,7 @@ void fix_bones(LPCSTR fixed_bones, CPhysicsShell* shell)
     for (int i = 0; i < count; ++i)
     {
         string64 fixed_bone;
-        _GetItem(fixed_bones, i, fixed_bone);
+        std::ignore = _GetItem(fixed_bones, i, fixed_bone);
         u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
 #ifdef DEBUG
         R_ASSERT2(BI_NONE != fixed_bone_id, make_string("wrong fixed bone [%s] for object with visual [%s]", fixed_bone, pKinematics->getDebugName().c_str()));
@@ -94,7 +94,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP
         for (int i = 0; i < count; ++i)
         {
             string64 fixed_bone;
-            _GetItem(fixed_bones, i, fixed_bone);
+            std::ignore = _GetItem(fixed_bones, i, fixed_bone);
             u16 fixed_bone_id = pKinematics->LL_BoneID(fixed_bone);
             R_ASSERT2(BI_NONE != fixed_bone_id,
                       make_string("wrong fixed bone [%s] for object [%s] with visual [%s]", fixed_bone, obj->cName().c_str(), obj->cNameVisual().c_str()));
@@ -131,7 +131,7 @@ CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, LPCSTR fix
         for (int i = 0; i < count; ++i)
         {
             string64 fixed_bone;
-            _GetItem(fixed_bones, i, fixed_bone);
+            std::ignore = _GetItem(fixed_bones, i, fixed_bone);
             f_bones.push_back(K->LL_BoneID(fixed_bone));
             R_ASSERT2(BI_NONE != f_bones.back(),
                       make_string("wrong fixed bone [%s] for object [%s] with visual [%s]", fixed_bone, obj->cName().c_str(), obj->cNameVisual().c_str()));

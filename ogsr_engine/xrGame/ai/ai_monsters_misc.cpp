@@ -201,12 +201,16 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
 {
     A.clear();
+
     string256 S1, S2;
     MotionID tpMotionDef;
+
     for (int i = 0;; ++i)
-        if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
+    {
+        if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(shared_str{xr_strconcat(S1, caBaseName, _itoa(i, S2, 10))})))
         {
             A.push_back(tpMotionDef);
+
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
                 Msg("* Loaded animation %s", S1);
@@ -215,13 +219,19 @@ void CAniVector::Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
         else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
         {
             A.push_back(tpMotionDef);
+
 #ifdef DEBUG
             if (psAI_Flags.test(aiAnimation))
                 Msg("* Loaded animation fx %s", S1);
 #endif
         }
         else if (i < 10)
+        {
             continue;
+        }
         else
+        {
             break;
+        }
+    }
 }

@@ -283,7 +283,7 @@ void CAI_Dog::start_animation()
 
     b_state_anim = true;
     com_man().script_capture(ControlCom::eControlAnimation);
-    smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(get_current_animation(), TRUE, animation_end, this);
+    smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(shared_str{get_current_animation()}, TRUE, animation_end, this);
     b_state_end = false;
 }
 

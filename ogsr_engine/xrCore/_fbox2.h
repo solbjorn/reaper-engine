@@ -1,7 +1,7 @@
 #pragma once
 
-template <class T>
-class _box2
+template <typename T>
+class XR_TRIVIAL _box2
 {
 public:
     typedef T TYPE;
@@ -24,6 +24,26 @@ public:
             T x2, y2;
         };
     };
+
+    constexpr _box2() = default;
+    constexpr explicit _box2(const Tvector& _min, const Tvector& _max) { set(_min, _max); }
+    constexpr explicit _box2(T x1, T y1, T x2, T y2) { set(x1, y1, x2, y2); }
+
+    constexpr _box2(const Self& that) { set(that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _box2(Self&&) = default;
+#else
+    constexpr _box2(Self&& that) { set(that); }
+#endif
+
+    constexpr Self& operator=(const Self& that) { return set(that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr Self& operator=(Self&&) = default;
+#else
+    constexpr Self& operator=(Self&& that) { return set(that); }
+#endif
 
     constexpr SelfRef set(const Tvector& _min, const Tvector& _max)
     {
@@ -275,7 +295,7 @@ public:
         return false;
     }
 
-    constexpr u32 IR(const T& x) { return std::bit_cast<u32>(x); }
+    [[nodiscard]] constexpr u32 IR(const T& x) { return std::bit_cast<u32>(x); }
 
     constexpr BOOL Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord)
     {
@@ -372,11 +392,12 @@ public:
     }
 };
 
-typedef _box2<float> Fbox2;
-typedef _box2<double> Dbox2;
+using Fbox2 = _box2<f32>;
+static_assert(sizeof(Fbox2) == 16);
+XR_TRIVIAL_ASSERT(Fbox2);
 
-template <class T>
-constexpr inline BOOL _valid(const _box2<T>& c)
+template <typename T>
+[[nodiscard]] constexpr bool _valid(const _box2<T>& c)
 {
     return _valid(c.min) && _valid(c.max);
 }

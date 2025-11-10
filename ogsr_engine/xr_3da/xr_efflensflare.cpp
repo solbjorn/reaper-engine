@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xr_efflensflare.h"
+
 #include "igame_persistent.h"
 #include "Environment.h"
 #include "bone.h"
@@ -20,8 +21,8 @@ int ps_lens_flare{};
 void CLensFlareDescriptor::SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name)
 {
     m_Source.fRadius = fRadius;
-    m_Source.shader = sh_name;
-    m_Source.texture = tex_name;
+    m_Source.shader._set(sh_name);
+    m_Source.texture._set(tex_name);
     m_Source.ignore_color = ign_color;
 }
 
@@ -29,24 +30,23 @@ void CLensFlareDescriptor::SetGradient(float fMaxRadius, float fOpacity, LPCSTR 
 {
     m_Gradient.fRadius = fMaxRadius;
     m_Gradient.fOpacity = fOpacity;
-    m_Gradient.shader = sh_name;
-    m_Gradient.texture = tex_name;
+    m_Gradient.shader._set(sh_name);
+    m_Gradient.texture._set(tex_name);
 }
 
 void CLensFlareDescriptor::AddFlare(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name)
 {
-    SFlare F;
+    SFlare& F = m_Flares.emplace_back();
     F.fRadius = fRadius;
     F.fOpacity = fOpacity;
     F.fPosition = fPosition;
-    F.shader = sh_name;
-    F.texture = tex_name;
-    m_Flares.push_back(F);
+    F.shader._set(sh_name);
+    F.texture._set(tex_name);
 }
 
 void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 {
-    section = sect;
+    section._set(sect);
 
     if (g_pGamePersistent->Environment().USED_COP_WEATHER)
     {
@@ -86,16 +86,17 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
         string256 name;
         for (u32 i = 0; i < tcnt; i++)
         {
-            _GetItem(R, i, name);
+            std::ignore = _GetItem(R, i, name);
             float r = (float)atof(name);
-            _GetItem(O, i, name);
+            std::ignore = _GetItem(O, i, name);
             float o = (float)atof(name);
-            _GetItem(P, i, name);
+            std::ignore = _GetItem(P, i, name);
             float p = (float)atof(name);
-            _GetItem(T, i, name);
+            std::ignore = _GetItem(T, i, name);
             AddFlare(r, o, p, name, S);
         }
     }
+
     m_Flags.set(flGradient, CInifile::IsBOOL(pIni->r_string(sect, "gradient")));
     if (m_Flags.is(flGradient))
     {
@@ -199,9 +200,13 @@ IC void blend_lerp(float& cur, float tgt, float speed, float dt)
     cur += (diff / diff_a) * mot;
 }
 
-constexpr Fvector2 RayDeltas[CLensFlare::MAX_RAYS] = {
-    {0, 0}, {1, 0}, {-1, 0}, {0, -1}, {0, 1},
+namespace
+{
+constexpr std::array<Fvector2, CLensFlare::MAX_RAYS> RayDeltas{
+    Fvector2{0.0f, 0.0f}, Fvector2{1.0f, 0.0f}, Fvector2{-1.0f, 0.0f}, Fvector2{0.0f, -1.0f}, Fvector2{0.0f, 1.0f},
 };
+}
+
 void CLensFlare::OnFrame(shared_str id)
 {
     if (dwFrame == Device.dwFrame)
@@ -418,7 +423,7 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 shared_str CLensFlare::AppendDef(CEnvironment& environment, LPCSTR sect)
 {
     if (!sect || (0 == sect[0]))
-        return "";
+        return shared_str{""};
 
     for (const auto desc : m_Palette)
     {
@@ -426,9 +431,10 @@ shared_str CLensFlare::AppendDef(CEnvironment& environment, LPCSTR sect)
             return desc->section;
     }
 
-    environment.add_flare(m_Palette, sect);
+    shared_str ret{sect};
+    environment.add_flare(m_Palette, ret);
 
-    return sect;
+    return ret;
 }
 
 void CLensFlare::OnDeviceCreate()

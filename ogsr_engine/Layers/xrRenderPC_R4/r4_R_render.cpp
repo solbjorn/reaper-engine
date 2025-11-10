@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "../../xr_3da/igame_persistent.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../../xr_3da/customhud.h"
-#include "../../xr_3da/xr_object.h"
-
 #include "../xrRender/QueryHelper.h"
+
+#include "../../xr_3da/customhud.h"
+#include "../../xr_3da/igame_persistent.h"
+#include "../../xr_3da/xr_object.h"
 
 void CRender::render_menu()
 {
@@ -17,15 +17,15 @@ void CRender::render_menu()
 
     // Main Render
     {
-        Target->u_setrt(RCache, Target->rt_Generic_0, nullptr, nullptr, Target->rt_Base_Depth); // LDR RT
+        Target->u_setrt(RCache, Target->rt_Generic_0, {}, {}, Target->rt_Base_Depth); // LDR RT
         g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
     }
 
     // Distort
     {
-        constexpr Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+        constexpr Fcolor ColorRGBA{127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 
-        Target->u_setrt(RCache, Target->rt_Generic_1, nullptr, nullptr, Target->rt_Base_Depth); // Now RT is a distortion mask
+        Target->u_setrt(RCache, Target->rt_Generic_1, {}, {}, Target->rt_Base_Depth); // Now RT is a distortion mask
         RCache.ClearRT(Target->rt_Generic_1, ColorRGBA);
         g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
     }
@@ -103,10 +103,10 @@ void CRender::Render()
     if (o.ssfx_core)
     {
         // HUD Masking rendering
-        constexpr Fcolor ColorRGBA = {1.0f, 0.0f, 0.0f, 1.0f};
+        constexpr Fcolor ColorRGBA{1.0f, 0.0f, 0.0f, 1.0f};
         RCache.ClearRT(Target->rt_ssfx_hud, ColorRGBA);
 
-        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_hud, nullptr, nullptr, Target->get_base_zb());
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_hud, {}, {}, Target->get_base_zb());
         dsgraph.render_hud(true);
 
         // Reset Depth
@@ -217,7 +217,7 @@ void CRender::Render()
         if (o.ssfx_sss && !Device.m_SecondViewport.IsSVPFrame())
         {
             static bool sss_rendered, sss_extended_rendered;
-            constexpr Fcolor ColorRGBA = {1, 1, 1, 1};
+            constexpr Fcolor ColorRGBA{1.0f, 1.0f, 1.0f, 1.0f};
 
             // SSS Shadows
             if (ps_ssfx_sss_quality.z > 0)
@@ -280,7 +280,7 @@ void CRender::Render()
         // Render Emissive on `rt_ssfx_bloom_emissive`
         RCache.ClearRT(Target->rt_ssfx_bloom_emissive, {});
 
-        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, nullptr, nullptr, Target->rt_MSAADepth);
+        Target->u_setrt(dsgraph.cmd_list, Target->rt_ssfx_bloom_emissive, {}, {}, Target->rt_MSAADepth);
         dsgraph.render_emissive(true, true);
     }
 

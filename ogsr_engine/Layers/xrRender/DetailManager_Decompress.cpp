@@ -1,10 +1,19 @@
 #include "stdafx.h"
 
 #include "DetailManager.h"
+
+#ifdef DEBUG
+#include "dxDebugRender.h"
+#endif
+
 #include "../../xrCDB/cl_intersect.h"
+#include "../../xr_3da/gamemtllib.h"
 
 //--------------------------------------------------- Decompression
-IC float Interpolate(float* base, u32 x, u32 y, u32 size)
+
+namespace
+{
+[[nodiscard]] constexpr float Interpolate(const float* base, u32 x, u32 y, u32 size)
 {
     float f = float(size);
     float fx = float(x) / f;
@@ -23,11 +32,11 @@ IC float Interpolate(float* base, u32 x, u32 y, u32 size)
     return (cx + cy) / 2;
 }
 
-IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 size, int dither[16][16])
+[[nodiscard]] constexpr bool InterpolateAndDither(const float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 size, const int dither[16][16])
 {
     clamp(x, (u32)0, size - 1);
     clamp(y, (u32)0, size - 1);
-    int c = iFloor(Interpolate(alpha255, x, y, size) + .5f);
+    int c = iFloor(Interpolate(alpha255, x, y, size) + 0.5f);
     clamp(c, 0, 255);
 
     u32 row = (y + sy) % 16;
@@ -36,9 +45,7 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
 }
 
 #ifdef DEBUG
-#include "dxDebugRender.h"
-
-static void draw_obb(const Fmatrix& matrix, const u32& color)
+void draw_obb(const Fmatrix& matrix, const u32& color)
 {
     Fvector aabb[8];
     matrix.transform_tiny(aabb[0], Fvector().set(-1, -1, -1)); // 0
@@ -50,15 +57,14 @@ static void draw_obb(const Fmatrix& matrix, const u32& color)
     matrix.transform_tiny(aabb[6], Fvector().set(+1, +1, +1)); // 6
     matrix.transform_tiny(aabb[7], Fvector().set(+1, -1, +1)); // 7
 
-    static constexpr u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
+    static constexpr std::array<u16, 12 * 2> XR_ALIGNED_DEFAULT aabb_id{0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
 
-    rdebug_render->add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color);
+    rdebug_render->add_lines(aabb, sizeof(aabb) / sizeof(Fvector), aabb_id.data(), sizeof(aabb_id) / (2 * sizeof(u16)), color);
 }
 
 bool det_render_debug = false;
 #endif
-
-#include "../../xr_3da/gamemtllib.h"
+} // namespace
 
 void CDetailManager::cache_Decompress(Slot* S)
 {
@@ -68,7 +74,7 @@ void CDetailManager::cache_Decompress(Slot* S)
     if (D.empty)
         return;
 
-    DetailSlot& DS = QueryDB(D.sx, D.sz);
+    const DetailSlot& DS = QueryDB(D.sx, D.sz);
 
     // Select polygons
     Fvector bC, bD;

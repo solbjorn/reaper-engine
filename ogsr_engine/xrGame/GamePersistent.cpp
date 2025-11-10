@@ -15,13 +15,15 @@
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 #include "ActorEffector.h"
-#include "actor.h"
 #include "ui/UILoadingScreen.h"
 #include "../xr_3da/x_ray.h"
 #include "string_table.h"
 #include "HUDManager.h"
 #include "..\xr_3da\DiscordRPC.hpp"
 #include "holder_custom.h"
+
+#include "game_sv_single.h"
+#include "xrServer.h"
 
 #include "ai_debug.h"
 #include "xr_task.h"
@@ -621,9 +623,6 @@ void CGamePersistent::OnFrame()
 #endif
 }
 
-#include "game_sv_single.h"
-#include "xrServer.h"
-
 void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
     if (E == eQuickLoad)
@@ -646,7 +645,9 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
         LPCSTR demo = LPCSTR(P1);
         sprintf_s(cmd, "demo_play %s", demo);
         Console->Execute(cmd);
-        xr_free(demo);
+
+        auto dmem = const_cast<gsl::zstring>(demo);
+        xr_free(dmem);
         uTime2Change = Device.TimerAsync() + u32(P2) * 1000;
     }
 }
@@ -697,7 +698,7 @@ void CGamePersistent::OnRenderPPUI_PP() { MainMenu()->OnRenderPPUI_PP(); }
 
 void CGamePersistent::LoadTitle(const char* str)
 {
-    const char* tittle = CStringTable().translate(str).c_str();
+    const char* tittle = CStringTable().translate(shared_str{str}).c_str();
     pApp->SetLoadStageTitle(tittle);
     pApp->LoadStage();
 

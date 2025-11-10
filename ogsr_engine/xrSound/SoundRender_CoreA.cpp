@@ -270,7 +270,8 @@ void CSoundRender_CoreA::_initialize(int stage)
     // initialize listener
     A_CHK(alListener3f(AL_POSITION, 0.f, 0.f, 0.f));
     A_CHK(alListener3f(AL_VELOCITY, 0.f, 0.f, 0.f));
-    constexpr Fvector orient[2] = {{0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}};
+
+    constexpr Fvector orient[2]{Fvector{0.0f, 0.0f, 1.0f}, Fvector{0.0f, 1.0f, 0.0f}};
     A_CHK(alListenerfv(AL_ORIENTATION, &orient[0].x));
     A_CHK(alListenerf(AL_GAIN, 1.f));
 

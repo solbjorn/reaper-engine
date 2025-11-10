@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "inventory_item.h"
+
 #include "inventory_item_impl.h"
 #include "inventory.h"
 #include "Physics.h"
@@ -46,7 +47,7 @@ CInventoryItem::CInventoryItem()
     m_flags.set(FCanTrade, TRUE);
     m_flags.set(FUsingCondition, FALSE);
 
-    m_Description = "";
+    m_Description._set("");
 }
 
 CInventoryItem::~CInventoryItem()
@@ -68,15 +69,15 @@ CInventoryItem::~CInventoryItem()
 void CInventoryItem::Load(LPCSTR section)
 {
     CHitImmunity::LoadImmunities(pSettings->r_string(section, "immunities_sect"), pSettings);
-    m_icon_params.Load(section);
+    m_icon_params.Load(shared_str{section});
 
     ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
         self->spatial.type |= STYPE_VISIBLEFORAI;
 
     LPCSTR inv_name = pSettings->r_string(section, "inv_name");
-    m_name = CStringTable().translate(inv_name);
-    m_nameShort = CStringTable().translate(READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", inv_name));
+    m_name = CStringTable().translate(shared_str{inv_name});
+    m_nameShort = CStringTable().translate(shared_str{READ_IF_EXISTS(pSettings, r_string, section, "inv_name_short", inv_name)});
 
     //.	NameComplex			();
     m_weight = pSettings->r_float(section, "inv_weight");
@@ -118,7 +119,7 @@ void CInventoryItem::Load(LPCSTR section)
 
     // Description
     if (pSettings->line_exist(section, "description"))
-        m_Description = CStringTable().translate(pSettings->r_string(section, "description"));
+        m_Description = CStringTable().translate(shared_str{pSettings->r_string(section, "description")});
 
     m_flags.set(Fbelt, READ_IF_EXISTS(pSettings, r_bool, section, "belt", FALSE));
     m_flags.set(FRuckDefault, READ_IF_EXISTS(pSettings, r_bool, section, "default_to_ruck", TRUE));
@@ -128,7 +129,7 @@ void CInventoryItem::Load(LPCSTR section)
 
     m_flags.set(FAllowSprint, READ_IF_EXISTS(pSettings, r_bool, section, "sprint_allowed", TRUE));
     m_fControlInertionFactor = READ_IF_EXISTS(pSettings, r_float, section, "control_inertion_factor", 1.0f);
-    m_icon_name = READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr);
+    m_icon_name._set(READ_IF_EXISTS(pSettings, r_string, section, "icon_name", nullptr));
 
     m_fPsyHealthRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "psy_health_restore_speed", 0.f);
     m_fRadiationRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.f);
@@ -281,7 +282,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
         l_tpALifeDynamicObject->m_tNodeID = object().ai_location().level_vertex_id();
 
         // Fill
-        D->s_name = item_section_name;
+        D->s_name._set(item_section_name);
         D->set_name_replace("");
         D->s_gameid = u8(GameID());
         D->s_RP = 0xff;
@@ -374,10 +375,12 @@ void CInventoryItem::load(IReader& packet)
     if (m_eItemPlace == eItemPlaceBeltActor)
     {
         if (Belt())
+        {
             SetLoadedBeltIndex(packet.r_u8());
+        }
         else
         {
-            packet.r_u8();
+            std::ignore = packet.r_u8();
             Msg("! [%s]: move %s from belt, because belt = false", __FUNCTION__, object().cName().c_str());
             m_eItemPlace = eItemPlaceRuck;
         }

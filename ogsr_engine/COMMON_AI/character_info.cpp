@@ -71,25 +71,28 @@ void CCharacterInfo::load_shared(LPCSTR)
     LPCSTR spec_char = pXML->Read("specific_character", 0, nullptr);
     if (!spec_char)
     {
-        data()->m_CharacterId = nullptr;
+        data()->m_CharacterId._set(nullptr);
 
         LPCSTR char_class = pXML->Read("class", 0, nullptr);
-
         if (char_class)
         {
             char* buf_str = xr_strdup(char_class);
             xr_strlwr(buf_str);
-            data()->m_Class = buf_str;
+            data()->m_Class._set(buf_str);
             xr_free(buf_str);
         }
         else
-            data()->m_Class = NO_CHARACTER_CLASS;
+        {
+            data()->m_Class._set(NO_CHARACTER_CLASS);
+        }
 
         data()->m_Rank = pXML->ReadInt("rank", 0, NO_RANK);
         data()->m_Reputation = pXML->ReadInt("reputation", 0, NO_REPUTATION);
     }
     else
-        data()->m_CharacterId = spec_char;
+    {
+        data()->m_CharacterId._set(spec_char);
+    }
 }
 
 #ifdef XRGAME_EXPORTS

@@ -2,19 +2,19 @@
 
 void CRenderTarget::ProcessSMAA()
 {
-    u32 Offset;
-    constexpr float d_Z = EPS_S;
-    constexpr float d_W = 1.0f;
-    constexpr u32 C = color_rgba(0, 0, 0, 255);
+    u32 Offset{};
+    constexpr f32 d_Z{EPS_S};
+    constexpr f32 d_W{1.0f};
+    constexpr u32 C{color_rgba(0, 0, 0, 255)};
 
-    const float _w = float(Device.dwWidth);
-    const float _h = float(Device.dwHeight);
+    const f32 _w = gsl::narrow_cast<f32>(Device.dwWidth);
+    const f32 _h = gsl::narrow_cast<f32>(Device.dwHeight);
 
     // Half-pixel offset (DX9 only)
     constexpr Fvector2 p0{0.0f, 0.0f}, p1{1.0f, 1.0f};
 
     // Phase 0: edge detection ////////////////////////////////////////////////
-    u_setrt(RCache, rt_smaa_edgetex, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_smaa_edgetex, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
@@ -39,7 +39,7 @@ void CRenderTarget::ProcessSMAA()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Phase 1: blend weights calculation ////////////////////////////////////
-    u_setrt(RCache, rt_smaa_blendtex, nullptr, nullptr, nullptr);
+    u_setrt(RCache, rt_smaa_blendtex, {}, {}, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
@@ -65,7 +65,7 @@ void CRenderTarget::ProcessSMAA()
 
     // Phase 2: neighbour blend //////////////////////////////////////////////
     ref_rt& dest_rt = RImplementation.o.dx10_msaa ? rt_Generic : rt_Color;
-    u_setrt(RCache, dest_rt, nullptr, nullptr, nullptr);
+    u_setrt(RCache, dest_rt, {}, {}, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);

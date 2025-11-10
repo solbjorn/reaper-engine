@@ -123,15 +123,15 @@ void CBackend::dbg_DrawOBB(Fmatrix& T, Fvector& half_dim, u32 C)
     aabb[6].set(+1, +1, +1, C); // 6
     aabb[7].set(+1, -1, +1, C); // 7
 
-    u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
-    set_xform_world(mL2W_Transform);
+    static constexpr std::array<u16, 12 * 2> XR_ALIGNED_DEFAULT aabb_id{0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
 
+    set_xform_world(mL2W_Transform);
     set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
-    dbg_Draw(D3DPT_LINELIST, aabb, 8, aabb_id, 12);
+    dbg_Draw(D3DPT_LINELIST, aabb, 8, aabb_id.data(), 12);
 }
 
-void CBackend::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
+void CBackend::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C)
 {
     FVF::L tri[3];
     tri[0].p = p1;
@@ -163,7 +163,7 @@ void CBackend::dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C)
 
 void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 {
-    static constexpr float gVertices[] = {
+    static constexpr std::array<float, 342> XR_ALIGNED_DEFAULT gVertices{
         0.0000f,  0.0000f,  1.0000f,  0.0000f,  0.3827f,  0.9239f,  -0.1464f, 0.3536f,  0.9239f,  -0.2706f, 0.2706f,  0.9239f,  -0.3536f, 0.1464f,  0.9239f,  -0.3827f, 0.0000f,
         0.9239f,  -0.3536f, -0.1464f, 0.9239f,  -0.2706f, -0.2706f, 0.9239f,  -0.1464f, -0.3536f, 0.9239f,  0.0000f,  -0.3827f, 0.9239f,  0.1464f,  -0.3536f, 0.9239f,  0.2706f,
         -0.2706f, 0.9239f,  0.3536f,  -0.1464f, 0.9239f,  0.3827f,  0.0000f,  0.9239f,  0.3536f,  0.1464f,  0.9239f,  0.2706f,  0.2706f,  0.9239f,  0.1464f,  0.3536f,  0.9239f,
@@ -186,7 +186,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
         -0.9239f, 0.3536f,  -0.1464f, -0.9239f, 0.3827f,  0.0000f,  -0.9239f, 0.3536f,  0.1464f,  -0.9239f, 0.2706f,  0.2706f,  -0.9239f, 0.1464f,  0.3536f,  -0.9239f, 0.0000f,
         0.0000f,  -1.0000f};
 
-    static constexpr u16 gFaces[224 * 3] = {
+    static constexpr std::array<u16, 224 * 3> XR_ALIGNED_DEFAULT gFaces{
         0,   1,   2,   0,   2,   3,   0,   3,   4,   0,   4,   5,   0,   5,   6,   0,   6,   7,   0,   7,   8,   0,   8,   9,   0,   9,   10,  0,   10,  11,  0,   11,  12,  0,
         12,  13,  0,   13,  14,  0,   14,  15,  0,   15,  16,  0,   16,  1,   1,   17,  18,  1,   18,  2,   2,   18,  19,  2,   19,  3,   3,   19,  20,  3,   20,  4,   4,   20,
         21,  4,   21,  5,   5,   21,  22,  5,   22,  6,   6,   22,  23,  6,   23,  7,   7,   23,  24,  7,   24,  8,   8,   24,  25,  8,   25,  9,   9,   25,  26,  9,   26,  10,
@@ -220,6 +220,6 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
     set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
 
     set_FillMode(D3DFILL_WIREFRAME);
-    dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces, 224);
+    dbg_Draw(D3DPT_TRIANGLELIST, verts, vcnt, gFaces.data(), 224);
     set_FillMode(D3DFILL_SOLID);
 }

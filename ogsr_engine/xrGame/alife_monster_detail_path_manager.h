@@ -76,7 +76,7 @@ public:
     bool failed() const;
     IC const PATH& path() const;
     IC const float& walked_distance() const;
-    XR_SYSV [[nodiscard]] Fvector draw_level_position() const;
+    [[nodiscard]] Fvector draw_level_position() const;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

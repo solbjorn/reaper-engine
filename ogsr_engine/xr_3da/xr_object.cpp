@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "igame_level.h"
-
 #include "xr_object.h"
+
+#include "igame_level.h"
 #include "render.h"
 #include "xrLevel.h"
 
@@ -52,7 +52,7 @@ void CObject::cNameVisual_set(shared_str N)
     else
     {
         ::Render->model_Delete(renderable.visual);
-        NameVisual = nullptr;
+        NameVisual._set(nullptr);
     }
 
     OnChangeVisual();
@@ -135,17 +135,19 @@ CObject::CObject() : ISpatial{g_SpatialSpace}
 
 CObject::~CObject()
 {
-    cNameVisual_set(nullptr);
-    cName_set(nullptr);
-    cNameSect_set(nullptr);
+    cNameVisual_set({});
+    cName_set({});
+    cNameSect_set({});
 }
 
 void CObject::Load(LPCSTR section)
 {
     // Name
     R_ASSERT(section);
-    cName_set(section);
-    cNameSect_set(section);
+
+    shared_str sect{section};
+    cName_set(sect);
+    cNameSect_set(sect);
 
     // Visual and light-track
     if (pSettings->line_exist(section, "visual"))
@@ -156,8 +158,9 @@ void CObject::Load(LPCSTR section)
             *strext(tmp) = 0;
         xr_strlwr(tmp);
 
-        cNameVisual_set(tmp);
+        cNameVisual_set(shared_str{tmp});
     }
+
     setVisible(false);
 }
 
@@ -169,9 +172,9 @@ BOOL CObject::net_Spawn(CSE_Abstract*)
 
     if (!Visual() && pSettings->line_exist(cNameSect(), "visual"))
     {
-        shared_str visual_name = pSettings->r_string(cNameSect(), "visual");
-        Msg("! [%s]: zero Visual() in %s found, use %s instead", __FUNCTION__, cName().c_str(), visual_name.c_str());
-        cNameVisual_set(visual_name);
+        gsl::czstring visual_name = pSettings->r_string(cNameSect(), "visual");
+        Msg("! [%s]: zero Visual() in %s found, use %s instead", __FUNCTION__, cName().c_str(), visual_name);
+        cNameVisual_set(shared_str{visual_name});
     }
 
     if (!collidable.model)
@@ -208,7 +211,7 @@ void CObject::net_Destroy()
     spatial_unregister();
     //	setDestroy					(true);
     // remove visual
-    cNameVisual_set(nullptr);
+    cNameVisual_set({});
 }
 
 //////////////////////////////////////////////////////////////////////////

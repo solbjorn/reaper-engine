@@ -36,26 +36,27 @@ void CPhantom::Load(LPCSTR section)
     fContactHit = pSettings->r_float(section, "contact_hit");
 
     LPCSTR snd_name{};
-    m_state_data[stBirth].particles = pSettings->r_string(section, "particles_birth");
+    m_state_data[stBirth].particles._set(pSettings->r_string(section, "particles_birth"));
     snd_name = pSettings->r_string(section, "sound_birth");
     if (snd_name && snd_name[0])
         m_state_data[stBirth].sound.create(snd_name, st_Effect, sg_SourceType);
 
-    m_state_data[stFly].particles = pSettings->r_string(section, "particles_fly");
+    m_state_data[stFly].particles._set(pSettings->r_string(section, "particles_fly"));
     snd_name = pSettings->r_string(section, "sound_fly");
     if (snd_name && snd_name[0])
         m_state_data[stFly].sound.create(snd_name, st_Effect, sg_SourceType);
 
-    m_state_data[stContact].particles = pSettings->r_string(section, "particles_contact");
+    m_state_data[stContact].particles._set(pSettings->r_string(section, "particles_contact"));
     snd_name = pSettings->r_string(section, "sound_contact");
     if (snd_name && snd_name[0])
         m_state_data[stContact].sound.create(snd_name, st_Effect, sg_SourceType);
 
-    m_state_data[stShoot].particles = pSettings->r_string(section, "particles_shoot");
+    m_state_data[stShoot].particles._set(pSettings->r_string(section, "particles_shoot"));
     snd_name = pSettings->r_string(section, "sound_shoot");
     if (snd_name && snd_name[0])
         m_state_data[stShoot].sound.create(snd_name, st_Effect, sg_SourceType);
 }
+
 BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
 {
     CSE_ALifeCreaturePhantom* OBJ = smart_cast<CSE_ALifeCreaturePhantom*>(DC);
@@ -97,10 +98,10 @@ BOOL CPhantom::net_Spawn(CSE_Abstract* DC)
 
     // set animation
     IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
-    m_state_data[stBirth].motion = K->ID_Cycle("birth_0");
-    m_state_data[stFly].motion = K->ID_Cycle("fly_0");
-    m_state_data[stContact].motion = K->ID_Cycle("contact_0");
-    m_state_data[stShoot].motion = K->ID_Cycle("shoot_0");
+    m_state_data[stBirth].motion = K->ID_Cycle(shared_str{"birth_0"});
+    m_state_data[stFly].motion = K->ID_Cycle(shared_str{"fly_0"});
+    m_state_data[stContact].motion = K->ID_Cycle(shared_str{"contact_0"});
+    m_state_data[stShoot].motion = K->ID_Cycle(shared_str{"shoot_0"});
 
     VERIFY(K->LL_GetMotionDef(m_state_data[stBirth].motion)->flags & esmStopAtEnd);
     VERIFY(K->LL_GetMotionDef(m_state_data[stContact].motion)->flags & esmStopAtEnd);
@@ -153,7 +154,8 @@ void CPhantom::SwitchToState_internal(EState new_state)
         case stFly: break;
         case stContact: {
             SStateData& sdata = m_state_data[m_CurState];
-            PlayParticles(sdata.particles.c_str(), FALSE, xform);
+            PlayParticles(sdata.particles, FALSE, xform);
+
             Fvector vE, vP;
             m_enemy->Center(vE);
             Center(vP);
@@ -166,7 +168,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
         break;
         case stShoot: {
             SStateData& sdata = m_state_data[m_CurState];
-            PlayParticles(sdata.particles.c_str(), FALSE, xform);
+            PlayParticles(sdata.particles, FALSE, xform);
         }
         break;
         default: break;
@@ -176,7 +178,8 @@ void CPhantom::SwitchToState_internal(EState new_state)
         {
         case stBirth: {
             SStateData& sdata = m_state_data[new_state];
-            PlayParticles(sdata.particles.c_str(), TRUE, xform);
+            PlayParticles(sdata.particles, TRUE, xform);
+
             sdata.sound.play_at_pos(nullptr, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }
@@ -184,7 +187,8 @@ void CPhantom::SwitchToState_internal(EState new_state)
         case stFly: {
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnFlyState>(this);
             SStateData& sdata = m_state_data[new_state];
-            m_fly_particles = PlayParticles(sdata.particles.c_str(), FALSE, xform);
+            m_fly_particles = PlayParticles(sdata.particles, FALSE, xform);
+
             sdata.sound.play_at_pos(nullptr, xform.c, sm_Looped);
             K->PlayCycle(sdata.motion);
         }
@@ -199,7 +203,8 @@ void CPhantom::SwitchToState_internal(EState new_state)
         case stShoot: {
             UpdateEvent = CallMe::fromMethod<&CPhantom::OnDeadState>(this);
             SStateData& sdata = m_state_data[new_state];
-            PlayParticles(sdata.particles.c_str(), TRUE, xform);
+            PlayParticles(sdata.particles, TRUE, xform);
+
             sdata.sound.play_at_pos(nullptr, xform.c);
             K->PlayCycle(sdata.motion, TRUE, animation_end_callback, this);
         }

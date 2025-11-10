@@ -79,6 +79,7 @@ protected:
 public:
     CStatGraph();
     ~CStatGraph();
+
     virtual void OnRender();
     void OnDeviceCreate();
     void OnDeviceDestroy();

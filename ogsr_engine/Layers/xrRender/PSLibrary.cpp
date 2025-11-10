@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PSLibrary.h"
+
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
 
@@ -32,7 +33,8 @@ void CPSLibrary::LoadAll()
 void CPSLibrary::ExportAllAsNew()
 {
     string_path fn;
-    FS.update_path(fn, _game_data_, "particles_cop.new_xr"); // dummy file name
+    std::ignore = FS.update_path(fn, _game_data_, "particles_cop.new_xr"); // dummy file name
+
     Msg("~ Exported all ltx shaders to [%s] in COP format. Rename file to use it.", fn);
     Save(fn);
 }
@@ -197,19 +199,16 @@ bool CPSLibrary::Load2()
     FS_FileSet files;
     string_path _path;
 
-    FS.update_path(_path, "$game_particles$", "");
-    FS.file_list(files, _path, FS_ListFiles, "*.pe,*.pg");
-
-    FS_FileSet::iterator it = files.begin();
-    FS_FileSet::iterator it_e = files.end();
+    std::ignore = FS.update_path(_path, "$game_particles$", "");
+    std::ignore = FS.file_list(files, _path, FS_ListFiles, "*.pe,*.pg");
 
     string_path p_path, p_name, p_ext;
-    for (; it != it_e; ++it)
+
+    for (const auto& f : files)
     {
-        const FS_File& f = (*it);
         _splitpath(f.name.c_str(), nullptr, p_path, p_name, p_ext);
-        FS.update_path(_path, "$game_particles$", f.name.c_str());
-        CInifile ini(_path, TRUE, TRUE, FALSE);
+        std::ignore = FS.update_path(_path, "$game_particles$", f.name.c_str());
+        CInifile ini{_path, true, true, false};
 
         xr_sprintf(_path, sizeof(_path), "%s%s", p_path, p_name);
         something_loaded = true;
@@ -218,14 +217,14 @@ bool CPSLibrary::Load2()
         {
             auto def = std::make_unique<PS::CPEDef>();
             def->m_copFormat = true; // always in cop mode
-            def->m_Name = _path;
+            def->m_Name._set(_path);
             if (def->Load2(ini))
                 m_PEDs[def->m_Name] = std::move(def);
         }
         else if (std::is_eq(xr::strcasecmp(p_ext, ".pg")))
         {
             auto def = std::make_unique<PS::CPGDef>();
-            def->m_Name = _path;
+            def->m_Name._set(_path);
             if (def->Load2(ini))
                 m_PGDs[def->m_Name] = std::move(def);
         }
@@ -243,35 +242,31 @@ bool CPSLibrary::Load2()
 bool CPSLibrary::Save2(bool override)
 {
     if (!FS.path_exist("$game_particles$"))
-    {
         Msg("! Path $game_particles$ is not configured! Cannot export particles to ltx");
-    }
-
-    // FS.dir_delete("$game_particles$", "", TRUE); ???
 
     string_path fn;
 
     for (auto& [m_Name, pe] : m_PEDs)
     {
-        FS.update_path(fn, "$game_particles$", m_Name.c_str());
+        std::ignore = FS.update_path(fn, "$game_particles$", m_Name.c_str());
         strcat(fn, ".pe");
 
         if (FS.exist(fn) && !override)
             continue;
 
-        CInifile ini(fn, FALSE, TRUE, TRUE);
+        CInifile ini{fn, false, true, true};
         pe->Save2(ini);
     }
 
     for (auto& [m_Name, pg] : m_PGDs)
     {
-        FS.update_path(fn, "$game_particles$", m_Name.c_str());
+        std::ignore = FS.update_path(fn, "$game_particles$", m_Name.c_str());
         strcat(fn, ".pg");
 
         if (FS.exist(fn) && !override)
             continue;
 
-        CInifile ini(fn, FALSE, TRUE, TRUE);
+        CInifile ini{fn, false, true, true};
         pg->Save2(ini);
     }
 

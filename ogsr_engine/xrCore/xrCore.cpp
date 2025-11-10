@@ -71,10 +71,14 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
         DWORD sz_comp = sizeof(CompName);
         GetComputerName(CompName, &sz_comp);
 
+        SProcessMemInfo memCounters;
+        GetProcessMemInfo(memCounters);
+
         _initialize_cpu();
 
         xr_FS = std::make_unique<CLocatorAPI>();
     }
+
     if (init_fs)
     {
         u32 flags = 0;

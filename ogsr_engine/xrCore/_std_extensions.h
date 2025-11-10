@@ -82,33 +82,48 @@ constexpr inline bool _valid(T x)
 
 char* timestamp(string64& dest);
 
+namespace xr
+{
 // Round @x to next or prev @a boundary, where @a is a power of two
 
 template <std::unsigned_integral T>
-constexpr ICF T round_mask(T x, T mask)
+[[nodiscard]] constexpr T round_mask(T x, T mask)
 {
     return (x + mask) & ~mask;
 }
 
 template <std::unsigned_integral T>
-constexpr ICF T roundup(T x, T a)
+[[nodiscard]] constexpr T roundup(T x, T a)
 {
-    return round_mask(x, a - 1);
+    return xr::round_mask(x, a - 1);
+}
+
+template <std::signed_integral T>
+[[nodiscard]] constexpr T roundup(T x, T a)
+{
+    return gsl::narrow_cast<T>(xr::roundup(gsl::narrow_cast<std::make_unsigned_t<T>>(x), gsl::narrow_cast<std::make_unsigned_t<T>>(a)));
 }
 
 template <std::unsigned_integral T>
-constexpr ICF T rounddown(T x, T a)
+[[nodiscard]] constexpr T rounddown(T x, T a)
 {
-    return roundup(x - (a - 1), a);
+    return xr::roundup(x - (a - 1), a);
 }
+
+template <std::signed_integral T>
+[[nodiscard]] constexpr T rounddown(T x, T a)
+{
+    return gsl::narrow_cast<T>(xr::rounddown(gsl::narrow_cast<std::make_unsigned_t<T>>(x), gsl::narrow_cast<std::make_unsigned_t<T>>(a)));
+}
+} // namespace xr
 
 // Pack 64-bit value into <= 32 bits
 // https://elixir.bootlin.com/linux/v6.13-rc3/source/include/linux/hash.h#L24
-constexpr ICF u32 hash_64(u64 val, u32 bits)
+[[nodiscard]] constexpr u32 hash_64(u64 val, u32 bits)
 {
     constexpr u64 GOLDEN_RATIO_64{0x61C8864680B583EBull};
 
-    return gsl::narrow_cast<u32>(val * GOLDEN_RATIO_64 >> (64 - bits));
+    return gsl::narrow_cast<u32>((val * GOLDEN_RATIO_64) >> (64 - bits));
 }
 
 constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
@@ -119,6 +134,34 @@ constexpr ICF void xr_memcpy_const(void* dst, const void* src, size_t size)
     for (size_t i = 0; i < size; i++)
         cdst[i] = csrc[i];
 }
+
+namespace xr
+{
+constexpr void memcpy8(void* dst, const void* src)
+{
+    if (std::is_constant_evaluated())
+        xr_memcpy_const(dst, src, 8);
+    else
+        *static_cast<u64*>(std::assume_aligned<sizeof(u64)>(dst)) = *static_cast<const u64*>(std::assume_aligned<sizeof(u64)>(src));
+}
+
+constexpr void memcpy64(void* dst, const void* src, gsl::index size)
+{
+    if (std::is_constant_evaluated())
+        return xr_memcpy_const(dst, src, gsl::narrow_cast<size_t>(size));
+
+    u64* cdst = static_cast<u64*>(std::assume_aligned<sizeof(u64)>(dst));
+    const u64* csrc = static_cast<const u64*>(std::assume_aligned<sizeof(u64)>(src));
+
+    do
+    {
+        *cdst = *csrc;
+        cdst++;
+        csrc++;
+        size -= 8;
+    } while (size >= 8);
+}
+} // namespace xr
 
 constexpr ICF void xr_memcpy16(void* dst, const void* src)
 {
@@ -254,21 +297,21 @@ constexpr ICF void xr_memcpy(void* dst, const void* src, size_t size)
 inline const char* strext(const char* str) { return std::strrchr(str, '.'); }
 inline char* strext(char* str) { return std::strrchr(str, '.'); }
 
-XR_SYSV [[nodiscard]] constexpr gsl::index xr_strlen(absl::string_view sv) { return std::ssize(sv); }
+[[nodiscard]] constexpr gsl::index xr_strlen(absl::string_view sv) { return std::ssize(sv); }
 [[nodiscard]] constexpr gsl::index xr_strlen(gsl::czstring str) { return xr_strlen(absl::string_view{str}); }
 
 IC char* xr_strlwr(char* S) { return _strlwr(S); }
 
-XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, absl::string_view b) { return a <=> b; }
+[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, absl::string_view b) { return a <=> b; }
 [[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, gsl::czstring b) { return xr_strcmp(absl::string_view{a}, absl::string_view{b}); }
 
-XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, gsl::czstring b) { return xr_strcmp(a, absl::string_view{b}); }
-XR_SYSV [[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
+[[nodiscard]] constexpr auto xr_strcmp(absl::string_view a, gsl::czstring b) { return xr_strcmp(a, absl::string_view{b}); }
+[[nodiscard]] constexpr auto xr_strcmp(gsl::czstring a, absl::string_view b) { return xr_strcmp(absl::string_view{a}, b); }
 
 namespace xr
 {
 // From llvm-libc
-[[nodiscard]] constexpr int tolower(int ch)
+[[nodiscard]] constexpr char tolower(char ch)
 {
     switch (ch)
     {
@@ -302,9 +345,9 @@ namespace xr
     }
 }
 
-XR_SYSV [[nodiscard]] constexpr auto strcasecmp(absl::string_view a, absl::string_view b)
+[[nodiscard]] constexpr auto strcasecmp(absl::string_view a, absl::string_view b)
 {
-    constexpr auto cmp = [](char x, char y) { return gsl::narrow_cast<char>(xr::tolower(x)) <=> gsl::narrow_cast<char>(xr::tolower(y)); };
+    constexpr auto cmp = [](char x, char y) { return xr::tolower(x) <=> xr::tolower(y); };
 
     return std::lexicographical_compare_three_way(a.cbegin(), a.cend(), b.cbegin(), b.cend(), cmp);
 }
@@ -382,5 +425,15 @@ inline bool StringHasUTF8(const char* str)
     }
     return true;
 }
+
+namespace xr
+{
+[[nodiscard]] constexpr auto localtime(s64 time)
+{
+    std::tm lt;
+    _localtime64_s(&lt, &time);
+    return lt;
+}
+} // namespace xr
 
 #endif /* __XRCORE_STD_EXTENSIONS_H */

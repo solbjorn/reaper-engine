@@ -18,10 +18,10 @@ void CPhraseDialog::Init(CPhraseDialogManager* speaker_first, CPhraseDialogManag
     m_pSpeakerFirst = speaker_first;
     m_pSpeakerSecond = speaker_second;
 
-    m_SaidPhraseID = "";
+    m_SaidPhraseID._set("");
     m_PhraseVector.clear();
 
-    CPhraseGraph::CVertex* phrase_vertex = data()->m_PhraseGraph.vertex("0");
+    CPhraseGraph::CVertex* phrase_vertex = data()->m_PhraseGraph.vertex(shared_str{"0"});
     THROW(phrase_vertex);
     m_PhraseVector.push_back(phrase_vertex->data());
 
@@ -135,7 +135,7 @@ LPCSTR CPhraseDialog::GetPhraseText(const shared_str& phrase_id, bool current_sp
     return ph->m_PhraseScript.GetScriptText(ph->GetText(), pSpeakerGO1, pSpeakerGO2, m_DialogId.c_str(), phrase_id.c_str());
 }
 
-LPCSTR CPhraseDialog::DialogCaption() { return data()->m_sCaption.size() ? *data()->m_sCaption : GetPhraseText("0"); }
+LPCSTR CPhraseDialog::DialogCaption() { return !data()->m_sCaption.empty() ? *data()->m_sCaption : GetPhraseText(shared_str{"0"}); }
 
 int CPhraseDialog::Priority() { return data()->m_iPriority; }
 
@@ -192,7 +192,7 @@ void CPhraseDialog::load_shared(LPCSTR)
     XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
     if (!phrase_list_node && !GetForceReload())
     {
-        data()->m_sInitFunction = pXML->Read(dialog_node, "init_func", 0, "");
+        data()->m_sInitFunction._set(pXML->Read(dialog_node, "init_func", 0, ""));
 
         luabind::functor<void> lua_function;
         bool functor_exists = ai().script_engine().functor(data()->m_sInitFunction.c_str(), lua_function);
@@ -215,11 +215,10 @@ void CPhraseDialog::load_shared(LPCSTR)
     // ищем стартовую фразу
     XML_NODE* phrase_node = pXML->NavigateToNodeWithAttribute("phrase", "id", "0");
     THROW(phrase_node);
-    AddPhrase(pXML, phrase_node, "0", "");
+    AddPhrase(pXML, phrase_node, shared_str{"0"}, shared_str{""});
 }
 
-void CPhraseDialog::SetCaption(LPCSTR str) { data()->m_sCaption = str; }
-
+void CPhraseDialog::SetCaption(LPCSTR str) { data()->m_sCaption._set(str); }
 void CPhraseDialog::SetPriority(int val) { data()->m_iPriority = val; }
 
 CPhrase* CPhraseDialog::AddPhrase(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
@@ -238,7 +237,7 @@ CPhrase* CPhraseDialog::AddPhrase(LPCSTR text, const shared_str& phrase_id, cons
         data()->m_PhraseGraph.add_vertex(phrase, phrase_id);
     }
 
-    if (prev_phrase_id != "")
+    if (std::is_neq(xr_strcmp(prev_phrase_id, "")))
         data()->m_PhraseGraph.add_edge(prev_phrase_id, phrase_id, 0.f);
 
     return phrase;
@@ -263,7 +262,7 @@ void CPhraseDialog::AddPhrase(CUIXml* pXml, XML_NODE* phrase_node, const shared_
         R_ASSERT2(next_phrase_node, next_phrase_id_str);
         //.		int next_phrase_id				= atoi(next_phrase_id_str);
 
-        AddPhrase(pXml, next_phrase_node, next_phrase_id_str, phrase_id);
+        AddPhrase(pXml, next_phrase_node, shared_str{next_phrase_id_str}, phrase_id);
     }
 }
 

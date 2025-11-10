@@ -8,7 +8,7 @@
 // a compressed unit vector3. reasonable fidelty for unit vectors in a 16 bit
 // package. Good enough for surface normals we hope.
 
-u16 pvCompress(const Fvector& vec);
+[[nodiscard]] u16 pvCompress(const Fvector& vec);
 void pvDecompress(Fvector& vec, u16 mVec);
 
 #endif

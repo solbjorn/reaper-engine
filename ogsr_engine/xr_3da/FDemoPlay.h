@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "effector.h"
 
 // refs
@@ -12,6 +13,9 @@ struct SAnimParams;
 // class
 class CDemoPlay : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CDemoPlay, CEffectorCam);
+
+private:
     COMotion* m_pMotion{};
     SAnimParams* m_MParam{};
 
@@ -34,6 +38,6 @@ class CDemoPlay : public CEffectorCam
 public:
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 
-    CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60 * 60 * 1000);
+    explicit CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60 * 60 * 1000);
     virtual ~CDemoPlay();
 };

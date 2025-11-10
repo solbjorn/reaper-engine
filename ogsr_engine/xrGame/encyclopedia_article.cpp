@@ -63,15 +63,15 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
     // текст
     data()->text = pXML->Read(pNode, "text", 0, "");
     // имя
-    data()->name = pXML->ReadAttrib(pNode, "name", "");
+    data()->name._set(pXML->ReadAttrib(pNode, "name", ""));
     // группа
-    data()->group = pXML->ReadAttrib(pNode, "group", "");
+    data()->group._set(pXML->ReadAttrib(pNode, "group", ""));
+
     // секция ltx, откуда читать данные
     LPCSTR ltx = pXML->Read(pNode, "ltx", 0, nullptr);
-
     if (ltx)
     {
-        CIconParams params(ltx);
+        CIconParams params{shared_str{ltx}};
         params.set_shader(&(data()->image));
         data()->image.ClipperOn();
         data()->image.TextureAvailable(true);
@@ -125,7 +125,7 @@ void CEncyclopediaArticle::load_shared(LPCSTR)
     else
         Msg("incorrect article type definition for [%s]", *item_data.id);
 
-    data()->ui_template_name = pXML->ReadAttrib(pNode, "ui_template", "common");
+    data()->ui_template_name._set(pXML->ReadAttrib(pNode, "ui_template", "common"));
     data()->sort = !!pXML->ReadAttribInt(pNode, "sort", 0);
 }
 

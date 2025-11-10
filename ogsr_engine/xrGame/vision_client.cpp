@@ -99,7 +99,7 @@ shared_str vision_client::shedule_Name() const
 {
     string256 temp;
     sprintf_s(temp, "vision_client[%s]", *object().cName());
-    return (temp);
+    return shared_str{temp};
 }
 
 bool vision_client::shedule_Needed() { return (true); }

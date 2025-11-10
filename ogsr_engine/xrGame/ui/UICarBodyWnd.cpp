@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UICarBodyWnd.h"
+
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 #include "../HUDManager.h"
@@ -179,9 +180,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, IInventoryBox* pInvBox)
     UpdateLists();
 
     if (auto obj = smart_cast<CInventoryBox*>(pInvBox))
-    {
         obj->callback(GameObject::eOnInvBoxOpen)();
-    }
 }
 
 void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
@@ -205,8 +204,8 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
             m_pUICharacterInfoRight->ClearInfo();
             if (monster)
             {
-                shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(), "icon");
-                m_pUICharacterInfoRight->UIIcon().InitTexture(monster_tex_name.c_str());
+                gsl::czstring monster_tex_name = pSettings->r_string(monster->cNameSect(), "icon");
+                m_pUICharacterInfoRight->UIIcon().InitTexture(monster_tex_name);
                 m_pUICharacterInfoRight->UIIcon().SetStretchTexture(true);
             }
         }

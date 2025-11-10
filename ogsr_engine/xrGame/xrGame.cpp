@@ -19,11 +19,13 @@ DLL_Pure* xrFactory_Create(CLASS_ID clsid)
 {
     DLL_Pure* object = object_factory().client_object(clsid);
 #ifdef DEBUG
-    if (!object)
-        return (0);
+    if (object == nullptr)
+        return nullptr;
 #endif
+
     object->CLS_ID = clsid;
-    return (object);
+
+    return object;
 }
 
 void xrFactory_Destroy(DLL_Pure* O) { xr_delete(O); }
@@ -33,12 +35,13 @@ extern shared_str g_active_task_id;
 void AttachGame()
 {
     g_fTimeFactor = pSettings->r_float("alife", "time_factor");
-    g_active_task_id = "";
+    g_active_task_id._set("");
 
     // register console commands
     CCC_RegisterCommands();
     // keyboard binding
     CCC_RegisterInput();
+
 #ifdef DEBUG
     g_profiler = xr_new<CProfiler>();
 #endif

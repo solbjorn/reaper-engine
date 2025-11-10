@@ -2,16 +2,44 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(_PORTAL_H_)
+#ifndef _PORTAL_H_
 #define _PORTAL_H_
 
 class CPortal;
 class CSector;
 
-struct _scissor : public Fbox2
+struct XR_TRIVIAL _scissor : public Fbox2
 {
-    float depth;
+    f32 depth;
+
+    constexpr _scissor() = default;
+
+    constexpr _scissor(const _scissor& that) { xr::memcpy64(this, &that, sizeof(that)); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _scissor(_scissor&&) = default;
+#else
+    constexpr _scissor(_scissor&& that) { xr::memcpy64(this, &that, sizeof(that)); }
+#endif
+
+    constexpr _scissor& operator=(const _scissor& that)
+    {
+        xr::memcpy64(this, &that, sizeof(that));
+        return *this;
+    }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr _scissor& operator=(_scissor&&) = default;
+#else
+    constexpr _scissor& operator=(_scissor&& that)
+    {
+        xr::memcpy64(this, &that, sizeof(that));
+        return *this;
+    }
+#endif
 };
+static_assert(sizeof(_scissor) == 24);
+XR_TRIVIAL_ASSERT(_scissor);
 
 // Connector
 class CPortal : public virtual RTTI::Enable
@@ -49,25 +77,30 @@ public:
 
     void setup(const level_portal_data_t& data, const xr_vector<CSector*>& portals);
 
-    Poly& getPoly() { return poly; }
-    CSector* Back() { return pBack; }
-    CSector* Front() { return pFace; }
-    CSector* getSector(CSector* pFrom) { return pFrom == pFace ? pBack : pFace; }
-    CSector* getSectorFacing(const Fvector& V)
+    [[nodiscard]] Poly& getPoly() { return poly; }
+    [[nodiscard]] const Poly& getPoly() const { return poly; }
+
+    [[nodiscard]] CSector* Back() const { return pBack; }
+    [[nodiscard]] CSector* Front() const { return pFace; }
+    [[nodiscard]] CSector* getSector(const CSector* pFrom) const { return pFrom == pFace ? pBack : pFace; }
+
+    [[nodiscard]] CSector* getSectorFacing(const Fvector& V) const
     {
         if (P.classify(V) > 0)
             return pFace;
         else
             return pBack;
     }
-    CSector* getSectorBack(const Fvector& V)
+
+    [[nodiscard]] CSector* getSectorBack(const Fvector& V) const
     {
         if (P.classify(V) > 0)
             return pBack;
         else
             return pFace;
     }
-    float distance(const Fvector& V) { return _abs(P.classify(V)); }
+
+    [[nodiscard]] f32 distance(const Fvector& V) const { return _abs(P.classify(V)); }
 
     CPortal();
     virtual ~CPortal();
@@ -94,7 +127,7 @@ public:
     sector_id_t unique_id{INVALID_SECTOR_ID};
 
 protected:
-    dxRender_Visual* m_root; // whole geometry of that sector
+    dxRender_Visual* m_root{}; // whole geometry of that sector
 
 public:
     xr_vector<CPortal*> m_portals;
@@ -105,10 +138,10 @@ public:
 
 public:
     // Main interface
-    dxRender_Visual* root() { return m_root; }
+    [[nodiscard]] dxRender_Visual* root() const { return m_root; }
     void setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals);
 
-    CSector() { m_root = nullptr; }
+    CSector() = default;
     virtual ~CSector() = default;
 };
 
@@ -124,7 +157,7 @@ public:
     };
 
 public:
-    u32 i_marker; // input
+    u32 i_marker{std::numeric_limits<u32>::max()}; // input
     u32 i_options; // input:	culling options
     Fvector i_vBase; // input:	"view" point
     Fmatrix i_mXFORM; // input:	4x4 xform
@@ -135,10 +168,12 @@ public:
 
 public:
     CPortalTraverser();
+
     void traverse(CSector* sector, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
     void traverse_sector(CSector* sector, CFrustum& F, _scissor& R);
     void fade_portal(CPortal* _p, float ssa);
     void fade_render();
+
 #ifdef DEBUG
     void dbg_draw();
 #endif

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "weaponrpg7.h"
+
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
 #include "entity.h"
@@ -9,10 +10,13 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 
+namespace
+{
 constexpr const char* grenade_def_bone_cop = "grenade";
+}
 
 CWeaponRPG7::CWeaponRPG7() : CWeaponCustomPistol{} {}
-CWeaponRPG7::~CWeaponRPG7() {}
+CWeaponRPG7::~CWeaponRPG7() = default;
 
 void CWeaponRPG7::Load(LPCSTR section)
 {
@@ -21,10 +25,10 @@ void CWeaponRPG7::Load(LPCSTR section)
 
     m_fScopeZoomFactor = pSettings->r_float(section, "max_zoom_factor");
 
-    m_sGrenadeBoneName = READ_IF_EXISTS(pSettings, r_string, section, "grenade_bone", grenade_def_bone_cop);
-    m_sHudGrenadeBoneName = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_def_bone_cop);
+    m_sGrenadeBoneName._set(READ_IF_EXISTS(pSettings, r_string, section, "grenade_bone", grenade_def_bone_cop));
+    m_sHudGrenadeBoneName._set(READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_def_bone_cop));
 
-    m_sRocketSection = pSettings->r_string(section, "rocket_class");
+    m_sRocketSection._set(pSettings->r_string(section, "rocket_class"));
 
     // РПГ никогда клинить не должен
     misfireProbability = 0.0f;

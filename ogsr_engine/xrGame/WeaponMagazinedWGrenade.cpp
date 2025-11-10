@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "weaponmagazinedwgrenade.h"
+
 #include "HUDManager.h"
 #include "entity.h"
 #include "ParticlesObject.h"
@@ -69,14 +70,12 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
     HUD_SOUND::LoadSound(section, "snd_reload_grenade", sndReloadG, m_eSoundReload);
     HUD_SOUND::LoadSound(section, "snd_switch", sndSwitch, m_eSoundReload);
 
-    m_sFlameParticles2 = pSettings->r_string(section, "grenade_flame_particles");
+    m_sFlameParticles2._set(pSettings->r_string(section, "grenade_flame_particles"));
 
     if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
-    {
         CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
-    }
 
-    grenade_bone_name = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_launcher_def_bone_cop);
+    grenade_bone_name._set(READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_launcher_def_bone_cop));
 
     // load ammo classes SECOND (grenade_class)
     m_ammoTypes2.clear();
@@ -85,10 +84,11 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
     {
         string128 _ammoItem;
         int count = _GetItemCount(S);
+
         for (int it = 0; it < count; ++it)
         {
-            _GetItem(S, it, _ammoItem);
-            m_ammoTypes2.push_back(_ammoItem);
+            std::ignore = _GetItem(S, it, _ammoItem);
+            m_ammoTypes2.emplace_back(_ammoItem);
         }
     }
 
@@ -96,7 +96,6 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 }
 
 void CWeaponMagazinedWGrenade::net_Destroy() { inherited::net_Destroy(); }
-
 void CWeaponMagazinedWGrenade::net_Relcase(CObject* object) { inherited::net_Relcase(object); }
 
 void CWeaponMagazinedWGrenade::OnDrawUI() { inherited::OnDrawUI(); }
@@ -151,13 +150,13 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
     {
         if (m_magazine.size() && pSettings->line_exist(m_magazine.back().m_ammoSect, "fake_grenade_name"))
         {
-            shared_str fake_grenade_name = pSettings->r_string(m_magazine.back().m_ammoSect, "fake_grenade_name");
-            CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+            gsl::czstring fake_grenade_name = pSettings->r_string(m_magazine.back().m_ammoSect, "fake_grenade_name");
+            CRocketLauncher::SpawnRocket(fake_grenade_name, this);
         }
         else if (m_magazine2.size() && pSettings->line_exist(m_magazine2.back().m_ammoSect, "fake_grenade_name"))
         {
-            shared_str fake_grenade_name = pSettings->r_string(m_magazine2.back().m_ammoSect, "fake_grenade_name");
-            CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+            gsl::czstring fake_grenade_name = pSettings->r_string(m_magazine2.back().m_ammoSect, "fake_grenade_name");
+            CRocketLauncher::SpawnRocket(fake_grenade_name, this);
         }
     }
 
@@ -440,10 +439,8 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
     // перезарядка подствольного гранатомета
     if (iAmmoElapsed && !getRocketCount() && m_bGrenadeMode)
     {
-        //.		shared_str fake_grenade_name = pSettings->r_string(*m_pAmmo->cNameSect(), "fake_grenade_name");
-        shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
-
-        CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+        gsl::czstring fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+        CRocketLauncher::SpawnRocket(fake_grenade_name, this);
     }
 }
 

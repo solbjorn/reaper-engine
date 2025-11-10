@@ -52,20 +52,22 @@ void CInfoPortion::load_shared(LPCSTR)
     // список названий диалогов
     int dialogs_num = pXML->GetNodesNum(pNode, "dialog");
     info_data()->m_DialogNames.clear();
+
     for (int i = 0; i < dialogs_num; ++i)
     {
-        shared_str dialog_name = pXML->Read(pNode, "dialog", i, "");
-        info_data()->m_DialogNames.push_back(dialog_name);
+        gsl::czstring dialog_name = pXML->Read(pNode, "dialog", i, "");
+        info_data()->m_DialogNames.emplace_back(dialog_name);
     }
 
     // список названий порций информации, которые деактивируются,
     // после получения этой порции
     int disable_num = pXML->GetNodesNum(pNode, "disable");
     info_data()->m_DisableInfo.clear();
+
     for (int i = 0; i < disable_num; ++i)
     {
-        shared_str info_id = pXML->Read(pNode, "disable", i, "");
-        info_data()->m_DisableInfo.push_back(info_id);
+        gsl::czstring info_id = pXML->Read(pNode, "disable", i, "");
+        info_data()->m_DisableInfo.emplace_back(info_id);
     }
 
     // имена скриптовых функций
@@ -74,29 +76,32 @@ void CInfoPortion::load_shared(LPCSTR)
     // индексы статей
     info_data()->m_Articles.clear();
     int articles_num = pXML->GetNodesNum(pNode, "article");
+
     for (int i = 0; i < articles_num; ++i)
     {
         LPCSTR article_str_id = pXML->Read(pNode, "article", i, nullptr);
         THROW(article_str_id);
-        info_data()->m_Articles.push_back(article_str_id);
+        info_data()->m_Articles.emplace_back(article_str_id);
     }
 
     info_data()->m_ArticlesDisable.clear();
     articles_num = pXML->GetNodesNum(pNode, "article_disable");
+
     for (int i = 0; i < articles_num; ++i)
     {
         LPCSTR article_str_id = pXML->Read(pNode, "article_disable", i, nullptr);
         THROW(article_str_id);
-        info_data()->m_ArticlesDisable.push_back(article_str_id);
+        info_data()->m_ArticlesDisable.emplace_back(article_str_id);
     }
 
     info_data()->m_GameTasks.clear();
     int task_num = pXML->GetNodesNum(pNode, "task");
+
     for (int i = 0; i < task_num; ++i)
     {
         LPCSTR task_str_id = pXML->Read(pNode, "task", i, nullptr);
         THROW(task_str_id);
-        info_data()->m_GameTasks.push_back(task_str_id);
+        info_data()->m_GameTasks.emplace_back(task_str_id);
     }
 }
 

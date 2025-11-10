@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "game_sv_event_queue.h"
 
 //
@@ -70,7 +71,7 @@ GameEvent* GameEventQueue::Create(NET_Packet& P, u16 type, u32 time, ClientID cl
         unused.pop_back();
         ge = ready.back();
     }
-    CopyMemory(&(ge->P), &P, sizeof(NET_Packet));
+    std::memcpy(&(ge->P), &P, sizeof(NET_Packet));
     ge->sender = clientID;
     ge->time = time;
     ge->type = type;

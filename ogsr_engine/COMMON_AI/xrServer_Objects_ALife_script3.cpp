@@ -26,7 +26,7 @@ void CSE_ALifeObjectPhysic::script_register(sol::state_view& lua)
     lua.new_usertype<CSE_ALifeObjectPhysic>(
         "cse_alife_object_physic", sol::no_constructor, sol::call_constructor, sol::factories(std::make_unique<CSE_ALifeObjectPhysic, LPCSTR>), "factory",
         &xr::server_factory<CSE_ALifeObjectPhysic>, "mass", &CSE_ALifeObjectPhysic::mass, "fixed_bones",
-        sol::property([](CSE_ALifeObjectPhysic* self) { return self->fixed_bones.c_str(); }, [](CSE_ALifeObjectPhysic* self, const char* name) { self->fixed_bones = name; }),
+        sol::property([](CSE_ALifeObjectPhysic* self) { return self->fixed_bones.c_str(); }, [](CSE_ALifeObjectPhysic* self, const char* name) { self->fixed_bones._set(name); }),
         sol::base_classes, xr::sol_bases<CSE_ALifeObjectPhysic>());
 }
 

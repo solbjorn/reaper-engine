@@ -28,12 +28,15 @@ static void AddOne(std::string& split, bool first_line)
     auto insert_time = [&] {
         if (first_line)
         {
-            string64 buf, curTime;
             using namespace std::chrono;
+
+            string64 buf, curTime;
             const auto now = system_clock::now();
             const auto time = system_clock::to_time_t(now);
             const auto ms = duration_cast<milliseconds>(now.time_since_epoch()) - duration_cast<seconds>(now.time_since_epoch());
-            std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", std::localtime(&time));
+            const auto lt = xr::localtime(time);
+
+            std::strftime(buf, sizeof(buf), "%d.%m.%y %H:%M:%S", &lt);
             sprintf_s(curTime, "\n[%s.%03lld]", buf, ms.count());
             split = std::format("{0} [{1}] {2}", curTime, std::this_thread::get_id(), split);
         }
@@ -155,12 +158,14 @@ void CreateLog(BOOL nl)
     {
         if (!strstr(Core.Params, "-no_unique_logs"))
         {
-            string32 TimeBuf;
             using namespace std::chrono;
+
+            string32 TimeBuf;
             const auto now = system_clock::now();
             const auto time = system_clock::to_time_t(now);
-            std::strftime(TimeBuf, sizeof(TimeBuf), "%d-%m-%y_%H-%M-%S", std::localtime(&time));
+            const auto lt = xr::localtime(time);
 
+            std::strftime(TimeBuf, sizeof(TimeBuf), "%d-%m-%y_%H-%M-%S", &lt);
             xr_strconcat(logFName, Core.ApplicationName, "_", Core.UserName, "_", TimeBuf, ".log");
         }
         else
@@ -172,10 +177,11 @@ void CreateLog(BOOL nl)
         {
             if (FS.path_exist("$logs$"))
             {
-                FS.update_path(logFName, "$logs$", logFName);
+                std::ignore = FS.update_path(logFName, "$logs$", logFName);
             }
             else
-            { // Для компрессора
+            {
+                // Для компрессора
                 string_path temp;
                 strcpy_s(temp, logFName);
                 xr_strconcat(logFName, "logs\\", temp);

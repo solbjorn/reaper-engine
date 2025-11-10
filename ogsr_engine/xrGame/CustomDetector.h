@@ -87,8 +87,7 @@ public:
             xr_sprintf(temp, "%s_class_%d", prefix, i);
             if (pSettings->line_exist(sect, temp))
             {
-                shared_str item_sect = pSettings->r_string(sect, temp);
-
+                shared_str item_sect{pSettings->r_string(sect, temp)};
                 ITEM_TYPE item_type{};
 
                 xr_sprintf(temp, "%s_freq_%d", prefix, i);
@@ -203,6 +202,8 @@ protected:
 
 class CZoneList : public CDetectList<CCustomZone>
 {
+    RTTI_DECLARE_TYPEINFO(CZoneList, CDetectList<CCustomZone>);
+
 protected:
     virtual BOOL feel_touch_contact(CObject* O) override;
 

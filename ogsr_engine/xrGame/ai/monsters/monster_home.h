@@ -27,7 +27,7 @@ public:
 
     [[nodiscard]] u32 get_place_in_min_home();
     [[nodiscard]] u32 get_place_in_mid_home();
-    XR_SYSV [[nodiscard]] u32 get_place_in_max_home_to_direction(Fvector to_direction);
+    [[nodiscard]] u32 get_place_in_max_home_to_direction(Fvector to_direction);
     [[nodiscard]] u32 get_place_in_max_home();
     [[nodiscard]] u32 get_place();
     [[nodiscard]] u32 get_place_in_cover();
@@ -36,7 +36,7 @@ public:
     [[nodiscard]] bool at_home(const Fvector& pos, float radius);
     [[nodiscard]] bool at_min_home(const Fvector& pos);
     [[nodiscard]] bool at_mid_home(const Fvector& pos);
-    XR_SYSV [[nodiscard]] Fvector get_home_point() const;
+    [[nodiscard]] Fvector get_home_point() const;
     [[nodiscard]] float get_min_radius() const { return m_radius_min; }
     [[nodiscard]] float get_mid_radius() const { return m_radius_middle; }
     [[nodiscard]] float get_max_radius() const { return m_radius_max; }

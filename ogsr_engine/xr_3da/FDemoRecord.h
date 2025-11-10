@@ -2,6 +2,7 @@
 
 #include "iinputreceiver.h"
 #include "effector.h"
+#include "GameFont.h"
 
 class CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
@@ -43,7 +44,7 @@ public:
     void MakeScreenshot();
     void MakeLevelMapScreenshot(bool bHQ);
 
-    CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
+    explicit CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
     virtual ~CDemoRecord();
 
     void IR_OnKeyboardPress(int dik) override;

@@ -11,6 +11,8 @@
 
 dx103DFluidManager FluidManager;
 
+namespace
+{
 // For project, advect
 // ModulateShaderVariable = pEffect->GetVariableByName( "modulate")->AsScalar();
 constexpr const char* strModulate("modulate");
@@ -26,9 +28,9 @@ constexpr const char* strForward("forward");
 constexpr const char* strHalfVolumeDim("halfVolumeDim");
 
 constexpr const char* strGravityBuoyancy("GravityBuoyancy");
+} // namespace
 
-dx103DFluidManager::dx103DFluidManager() {}
-
+dx103DFluidManager::dx103DFluidManager() = default;
 dx103DFluidManager::~dx103DFluidManager() { Destroy(); }
 
 void dx103DFluidManager::Initialize(int width, int height, int depth)
@@ -135,14 +137,14 @@ void dx103DFluidManager::InitShaders()
 
 void dx103DFluidManager::DestroyShaders()
 {
-    for (int i = 0; i < SS_NumShaders; ++i)
+    for (auto& tech : m_SimulationTechnique)
     {
         //	Release shader's element.
-        m_SimulationTechnique[i] = nullptr;
+        tech._set(nullptr);
     }
 }
 
-void dx103DFluidManager::PrepareTexture(int rtIndex) { pRTTextures[rtIndex] = RImplementation.Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex]); }
+void dx103DFluidManager::PrepareTexture(int rtIndex) { pRTTextures[rtIndex]._set(RImplementation.Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex])); }
 
 void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
@@ -151,7 +153,7 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
     ID3DTexture3D* pRT;
 
     // Create the texture
-    CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &pRT));
+    CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, nullptr, &pRT));
     // Create the render target view
     D3D_RENDER_TARGET_VIEW_DESC DescRT{};
     DescRT.Format = TexDesc.Format;
@@ -167,9 +169,10 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
     //	CTexture owns ID3DxxTexture3D interface
     pRT->Release();
 }
+
 void dx103DFluidManager::DestroyRTTextureAndViews(int rtIndex)
 {
-    pRTTextures[rtIndex] = nullptr;
+    pRTTextures[rtIndex]._set(nullptr);
     _RELEASE(pRenderTargetViews[rtIndex]);
 }
 
@@ -195,8 +198,8 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     rtViewport.MinDepth = 0.0f;
     rtViewport.MaxDepth = 1.0f;
 
-    rtViewport.Width = (float)m_iTextureWidth;
-    rtViewport.Height = (float)m_iTextureHeight;
+    rtViewport.Width = gsl::narrow_cast<f32>(m_iTextureWidth);
+    rtViewport.Height = gsl::narrow_cast<f32>(m_iTextureHeight);
 
     RCache.SetViewport(rtViewport);
     RCache.set_ZB(nullptr);
@@ -226,9 +229,9 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, {}, {}, pTarget->rt_Base_Depth); // LDR RT
     else
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, {}, {}, pTarget->rt_MSAADepth); // LDR RT
 
     RImplementation.rmNormal(RCache);
 }
@@ -472,9 +475,9 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
     if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0, {}, {}, pTarget->rt_Base_Depth); // LDR RT
     else
-        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, nullptr, nullptr, pTarget->rt_MSAADepth); // LDR RT
+        pTarget->u_setrt(RCache, pTarget->rt_Generic_0_r, {}, {}, pTarget->rt_MSAADepth); // LDR RT
 
     RImplementation.rmNormal(RCache);
 }

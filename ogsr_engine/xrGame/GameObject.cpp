@@ -222,7 +222,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
     cName_set(E->s_name);
     cNameSect_set(E->s_name);
     if (E->name_replace()[0])
-        cName_set(E->name_replace());
+        cName_set(shared_str{E->name_replace()});
 
     setID(E->ID);
     //	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
@@ -234,13 +234,13 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 
         if (pSettings->line_exist(cNameSect(), "visual"))
         {
-            shared_str config_visual = pSettings->r_string(cNameSect(), "visual");
-
+            gsl::czstring config_visual = pSettings->r_string(cNameSect(), "visual");
             string_path config_visual_file;
-            if (!strext(*config_visual))
-                strconcat(sizeof(config_visual_file), config_visual_file, *config_visual, ".ogf");
+
+            if (!strext(config_visual))
+                strconcat(sizeof(config_visual_file), config_visual_file, config_visual, ".ogf");
             else
-                strcpy_s(config_visual_file, sizeof(config_visual_file), *config_visual);
+                strcpy_s(config_visual_file, sizeof(config_visual_file), config_visual);
             xr_strlwr(config_visual_file);
 
             string_path saved_visual_file;
@@ -254,20 +254,20 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             if (keep_visual)
             {
                 if (std::is_neq(xr_strcmp(config_visual_file, saved_visual_file)))
-                    Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
+                    Msg("! [%s]: changed visual_name[%s] found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual);
             }
             else if (!FS.exist(saved_visual) && !FS.exist("$level$", saved_visual_file) && !FS.exist("$game_meshes$", saved_visual_file))
             {
-                Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual.c_str());
+                Msg("! [%s]: visual_name[%s] not found in %s, keep original %s instead", __FUNCTION__, saved_visual, cName().c_str(), config_visual);
             }
             else
             {
-                cNameVisual_set(saved_visual);
+                cNameVisual_set(shared_str{saved_visual});
             }
         }
         else
         {
-            cNameVisual_set(saved_visual);
+            cNameVisual_set(shared_str{saved_visual});
         }
 
         if (visual->flags.test(CSE_Visual::flObstacle))

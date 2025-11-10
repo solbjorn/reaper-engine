@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ui_base.h"
+
 #include "GamePersistent.h"
 #include "UICursor.h"
 #include "HUDManager.h"
@@ -17,6 +18,7 @@ void S2DVert::rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx)
     pt.x *= kx;
     pt.add(pivot);
 }
+
 void C2DFrustum::CreateFromRect(const Frect& rect)
 {
     m_rect.set(float(rect.x1), float(rect.y1), float(rect.x2), float(rect.y2));
@@ -302,7 +304,8 @@ shared_str ui_core::get_xml_name(LPCSTR fn)
         Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
 #endif
     }
-    return str;
+
+    return shared_str{str};
 }
 
-bool ui_core::is_widescreen() { return float(Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f); }
+bool ui_core::is_widescreen() { return gsl::narrow_cast<f32>(Device.dwWidth) / gsl::narrow_cast<f32>(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f); }

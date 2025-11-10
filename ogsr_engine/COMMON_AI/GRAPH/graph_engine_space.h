@@ -49,7 +49,7 @@ struct CSolverConditionValue
     _solver_condition_type m_condition;
     _solver_value_type m_value;
 
-    IC CSolverConditionValue(const _solver_condition_type& condition, const _solver_value_type& value)
+    explicit CSolverConditionValue(const _solver_condition_type& condition, const _solver_value_type& value)
     {
         m_condition = condition;
         m_value = value;

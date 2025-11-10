@@ -257,7 +257,7 @@ void initialize_bindings()
 
         for (u32 i = 0; i < action_count; ++i)
         {
-            pSettings->r_line(keyboard_section, i, &name, &value);
+            std::ignore = pSettings->r_line(keyboard_section, i, &name, &value);
 
             _action n;
             n.id = (EGameActions)id++;
@@ -586,7 +586,8 @@ public:
 
         string_path _cfg;
         string_path cmd;
-        FS.update_path(_cfg, "$game_config$", "default_controls.ltx");
+
+        std::ignore = FS.update_path(_cfg, "$game_config$", "default_controls.ltx");
         strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
         Console->Execute(cmd);
     }
@@ -615,22 +616,25 @@ public:
 
 class CCC_BindConsoleCmd : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_BindConsoleCmd, IConsole_Command);
+
 public:
     CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
 
-    virtual void Execute(LPCSTR args)
+    void Execute(LPCSTR args) override
     {
         string512 console_command;
         string256 key;
+
         int cnt = _GetItemCount(args, ' ');
-        _GetItems(args, 0, cnt - 1, console_command, ' ');
-        _GetItem(args, cnt - 1, key, ' ');
+        std::ignore = _GetItems(args, 0, cnt - 1, console_command, ' ');
+        std::ignore = _GetItem(args, cnt - 1, key, ' ');
 
         int dik = keyname_to_dik(key);
         bindConsoleCmds.bind(dik, console_command);
     }
 
-    virtual void Save(IWriter* F) { bindConsoleCmds.save(F); }
+    void Save(IWriter* F) override { bindConsoleCmds.save(F); }
 };
 
 class CCC_UnBindConsoleCmd : public IConsole_Command
@@ -646,11 +650,7 @@ public:
 };
 } // namespace
 
-void ConsoleBindCmds::bind(int dik, LPCSTR N)
-{
-    _conCmd& c = m_bindConsoleCmds[dik];
-    c.cmd = N;
-}
+void ConsoleBindCmds::bind(int dik, LPCSTR N) { m_bindConsoleCmds[dik].cmd._set(N); }
 
 void ConsoleBindCmds::unbind(int dik)
 {

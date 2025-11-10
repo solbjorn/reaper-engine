@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "ShootingObject.h"
+
 #include "ParticlesObject.h"
 #include "WeaponAmmo.h"
 
@@ -54,7 +55,7 @@ void CShootingObject::Load(LPCSTR section)
 void CShootingObject::Light_Create()
 {
     // lights
-    light_render = ::Render->light_create();
+    light_render._set(::Render->light_create());
     light_render->set_shadow(true);
     light_render->set_moveable(true);
 }
@@ -214,7 +215,7 @@ void CShootingObject::LoadShellParticles(LPCSTR section, LPCSTR prefix)
 
     if (pSettings->line_exist(section, full_name))
     {
-        m_sShellParticles = pSettings->r_string(section, full_name);
+        m_sShellParticles._set(pSettings->r_string(section, full_name));
         vLoadedShellPoint = pSettings->r_fvector3(section, strconcat(sizeof(full_name), full_name, prefix, "shell_point"));
     }
 }
@@ -226,15 +227,15 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
     // flames
     strconcat(sizeof(full_name), full_name, prefix, "flame_particles");
     if (pSettings->line_exist(section, full_name))
-        m_sFlameParticles = pSettings->r_string(section, full_name);
+        m_sFlameParticles._set(pSettings->r_string(section, full_name));
 
     strconcat(sizeof(full_name), full_name, prefix, "smoke_particles");
     if (pSettings->line_exist(section, full_name))
-        m_sSmokeParticles = pSettings->r_string(section, full_name);
+        m_sSmokeParticles._set(pSettings->r_string(section, full_name));
 
     strconcat(sizeof(full_name), full_name, prefix, "shot_particles");
     if (pSettings->line_exist(section, full_name))
-        m_sShotParticles = pSettings->r_string(section, full_name);
+        m_sShotParticles._set(pSettings->r_string(section, full_name));
 
     // текущие партиклы
     m_sFlameParticlesCurrent = m_sFlameParticles;

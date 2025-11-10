@@ -17,7 +17,8 @@ public:
     u32 m_level_vertex_id;
 
 public:
-    IC CCoverPoint(const Fvector& point, u32 level_vertex_id);
+    inline explicit CCoverPoint(const Fvector& point, u32 level_vertex_id);
+
     IC const Fvector& position() const;
     IC u32 level_vertex_id() const;
     IC bool operator==(const CCoverPoint& point) const;

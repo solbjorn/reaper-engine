@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "psy_dog.h"
+
 #include "Level_graph.h"
 #include "../../../ai_space.h"
 #include "../../../alife_simulator.h"
@@ -256,7 +258,7 @@ void CPsyDogPhantom::Think()
     setVisible(TRUE);
     setEnabled(TRUE);
 
-    CParticlesPlayer::StartParticles(m_particles_appear, Fvector().set(0.0f, 0.1f, 0.0f), ID());
+    CParticlesPlayer::StartParticles(shared_str{m_particles_appear}, Fvector{0.0f, 0.1f, 0.0f}, ID());
 
     if (EnemyMan.get_enemy() != Actor())
         return;
@@ -278,7 +280,7 @@ void CPsyDogPhantom::net_Destroy()
 {
     Fvector center;
     Center(center);
-    PlayParticles(m_particles_disappear, center, Fvector().set(0.f, 1.f, 0.f));
+    PlayParticles(shared_str{m_particles_disappear}, center, Fvector{0.0f, 1.0f, 0.0f});
 
     if (!is_wait_to_destroy_object())
     {
@@ -289,7 +291,7 @@ void CPsyDogPhantom::net_Destroy()
         }
 
         destroy_from_parent();
-    }        
+    }
 
     inherited::net_Destroy();
 }

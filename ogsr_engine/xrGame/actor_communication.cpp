@@ -214,8 +214,8 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
             CInfoPortion info_portion;
             info_portion.Load((*it).info_id);
 
-            for (u32 i = 0; i < info_portion.DialogNames().size(); i++)
-                std::ignore = AddAvailableDialog(*info_portion.DialogNames()[i], partner);
+            for (const auto& dialog : info_portion.DialogNames())
+                std::ignore = AddAvailableDialog(dialog, partner);
         }
     }
 
@@ -310,7 +310,7 @@ void CActor::LostPdaContact(CInventoryOwner* pInvOwner)
             Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), GO->ID());
         }
 
-        Level().MapManager().RemoveMapLocation("deadbody_location", GO->ID());
+        Level().MapManager().RemoveMapLocation(shared_str{"deadbody_location"}, GO->ID());
     }
 
     if (HUD().GetUI())

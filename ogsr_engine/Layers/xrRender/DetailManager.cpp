@@ -127,11 +127,11 @@ void CDetailManager::Load()
     }
 
     string_path fn;
-    FS.update_path(fn, "$level$", "level.details");
+    std::ignore = FS.update_path(fn, "$level$", "level.details");
     dtFS = FS.r_open(fn);
 
     // Header
-    dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
+    std::ignore = dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
     R_ASSERT(dtH.version == DETAIL_VERSION);
 
     u32 m_count = dtH.object_count;
@@ -151,7 +151,7 @@ void CDetailManager::Load()
 
     // Get pointer to database (slots)
     IReader* m_slots = dtFS->open_chunk(2);
-    dtSlots = (DetailSlot*)m_slots->pointer();
+    dtSlots = static_cast<const DetailSlot*>(m_slots->pointer());
     m_slots->close();
 
     // Initialize 'vis' and 'cache'

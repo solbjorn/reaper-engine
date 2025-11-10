@@ -2,22 +2,23 @@
 
 #include "LocatorAPI_defs.h"
 
-#include <io.h>
 #include <direct.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <io.h>
+#include <sys/stat.h>
 
 //////////////////////////////////////////////////////////////////////
 // FS_File
 //////////////////////////////////////////////////////////////////////
+
 // https://github.com/OpenXRay/xray-16/commit/7202f2355cbbb4a2fca1286386df1ffae7a7ad0e
-FS_File::FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr) { set(nm, sz, modif, attr); }
-FS_File::FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower) { set(nm, sz, modif, attr, lower); }
+FS_File::FS_File(const xr_string& nm, s64 sz, s64 modif, u32 attr) { set(nm, sz, modif, attr); }
+FS_File::FS_File(const xr_string& nm, s64 sz, s64 modif, u32 attr, bool lower) { set(nm, sz, modif, attr, lower); }
 FS_File::FS_File(const xr_string& nm) { set(nm, 0, 0, 0); }
 FS_File::FS_File(const _FINDDATA_T& f) { set(f.name, f.size, f.time_write, (f.attrib & _A_SUBDIR) ? flSubDir : 0); }
 FS_File::FS_File(const xr_string& nm, const _FINDDATA_T& f) { set(nm, f.size, f.time_write, (f.attrib & _A_SUBDIR) ? flSubDir : 0); }
 
-void FS_File::set(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower)
+void FS_File::set(const xr_string& nm, s64 sz, s64 modif, u32 attr, bool lower)
 {
     name = nm;
     if (lower)
@@ -30,6 +31,7 @@ void FS_File::set(const xr_string& nm, long sz, time_t modif, unsigned attr, con
 //////////////////////////////////////////////////////////////////////
 // FS_Path
 //////////////////////////////////////////////////////////////////////
+
 FS_Path::FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCaption, u32 flags)
 {
     //	VERIFY			(_Root&&_Root[0]);

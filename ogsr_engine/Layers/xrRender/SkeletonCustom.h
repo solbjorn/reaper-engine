@@ -116,7 +116,7 @@ public:
     void RC_Dump() override;
     /************************* End Add *************************************/
 
-    void Bone_Calculate(CBoneData* bd, Fmatrix* parent);
+    void Bone_Calculate(CBoneData* bd, const Fmatrix* parent) override;
     void CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 
     void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
@@ -297,16 +297,16 @@ public:
     virtual IKinematics* dcast_PKinematics() { return this; }
     //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
 
-    virtual u32 mem_usage(bool bInstance)
+    [[nodiscard]] virtual gsl::index mem_usage(bool bInstance) const
     {
-        u32 sz = sizeof(*this);
-        sz += bone_instances ? bone_instances->mem_usage() : 0;
+        auto sz{gsl::index{sizeof(*this)} + (bone_instances ? bone_instances->mem_usage() : 0)};
+
         if (!bInstance)
         {
-            //			sz					+= pUserData?pUserData->mem_usage():0;
-            for (vecBonesIt b_it = bones->begin(); b_it != bones->end(); b_it++)
-                sz += sizeof(vecBones::value_type) + (*b_it)->mem_usage();
+            for (auto bone : *bones)
+                sz += gsl::index{sizeof(vecBones::value_type)} + bone->mem_usage();
         }
+
         return sz;
     }
 

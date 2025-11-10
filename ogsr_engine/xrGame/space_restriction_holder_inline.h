@@ -10,8 +10,8 @@
 
 IC CSpaceRestrictionHolder::CSpaceRestrictionHolder()
 {
-    m_default_out_restrictions = "";
-    m_default_in_restrictions = "";
+    m_default_out_restrictions._set("");
+    m_default_in_restrictions._set("");
 }
 
 IC shared_str CSpaceRestrictionHolder::default_out_restrictions() const { return (m_default_out_restrictions); }

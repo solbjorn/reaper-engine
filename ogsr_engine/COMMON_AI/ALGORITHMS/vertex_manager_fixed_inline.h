@@ -20,20 +20,22 @@ inline CFixedVertexManager::CDataStorage(const u32 vertex_count) : CDataStorageB
     m_current_path_id = TPathId(0);
     m_max_node_count = vertex_count;
     m_indexes = xr_alloc<IndexVertex>(vertex_count);
-    ZeroMemory(m_indexes, vertex_count * sizeof(IndexVertex));
+    std::memset(m_indexes, 0, vertex_count * sizeof(IndexVertex));
 }
 
 TEMPLATE_SPECIALIZATION
 CFixedVertexManager::~CDataStorage() { xr_free(m_indexes); }
+
 TEMPLATE_SPECIALIZATION
 inline void CFixedVertexManager::init()
 {
     CDataStorageBase::init();
     CDataStorageAllocator::init();
     ++m_current_path_id;
+
     if (!m_current_path_id)
     {
-        ZeroMemory(m_indexes, m_max_node_count * sizeof(IndexVertex));
+        std::memset(m_indexes, 0, m_max_node_count * sizeof(IndexVertex));
         ++m_current_path_id;
     }
 }

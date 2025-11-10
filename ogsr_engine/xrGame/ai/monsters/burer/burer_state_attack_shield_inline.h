@@ -34,7 +34,7 @@ void CStateBurerShield<Object>::execute()
 
     if (m_started && object->m_shield_keep_particle && current_time() > m_next_particle_allowed)
     {
-        object->CParticlesPlayer::StartParticles(object->m_shield_keep_particle, Fvector().set(0, 1, 0), object->ID(), -1, true);
+        object->CParticlesPlayer::StartParticles(shared_str{object->m_shield_keep_particle}, Fvector{0.0f, 1.0f, 0.0f}, object->ID(), -1, true);
 
         m_next_particle_allowed = current_time() + object->m_shield_keep_particle_period;
     }

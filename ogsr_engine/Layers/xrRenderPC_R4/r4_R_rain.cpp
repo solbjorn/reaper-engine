@@ -10,14 +10,14 @@
 
 namespace
 {
-constexpr float tweak_rain_COP_initial_offs = 1200.f;
-constexpr float tweak_rain_ortho_xform_initial_offs = 1000.f; //. ?
+constexpr f32 tweak_rain_COP_initial_offs{1200.0f};
+constexpr f32 tweak_rain_ortho_xform_initial_offs{1000.0f}; //. ?
 
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-constexpr Fvector3 corners[8]{{-1.0f, -1.0f, 0.0f},  {-1.0f, -1.0f, +1.0f}, {-1.0f, +1.0f, +1.0f}, {-1.0f, +1.0f, 0.0f},
-                              {+1.0f, +1.0f, +1.0f}, {+1.0f, +1.0f, 0.0f},  {+1.0f, -1.0f, +1.0f}, {+1.0f, -1.0f, 0.0f}};
+constexpr Fvector corners[8]{Fvector{-1.0f, -1.0f, 0.0f},  Fvector{-1.0f, -1.0f, +1.0f}, Fvector{-1.0f, +1.0f, +1.0f}, Fvector{-1.0f, +1.0f, 0.0f},
+                             Fvector{+1.0f, +1.0f, +1.0f}, Fvector{+1.0f, +1.0f, 0.0f},  Fvector{+1.0f, -1.0f, +1.0f}, Fvector{+1.0f, -1.0f, 0.0f}};
 constexpr u32 facetable[6][4]{{0, 3, 5, 7}, {1, 2, 3, 0}, {6, 7, 5, 4}, {4, 2, 1, 6}, {3, 2, 4, 5}, {1, 0, 7, 6}};
 } // namespace
 
@@ -153,19 +153,19 @@ void CRender::rain_run()
                                                                        bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs);
             cull_xform.mul(mdir_Project, mdir_View);
 
-            const s32 limit = std::min<s32>(o.smapsize, ps_r3_dyn_wet_surf_sm_res);
+            const s32 limit = std::min(s32{o.smapsize}, ps_r3_dyn_wet_surf_sm_res);
 
             // build viewport xform
             const float view_dim = float(limit);
-            const float fTexelOffs = (.5f / o.smapsize);
-            const Fmatrix m_viewport = {
+            const float fTexelOffs = (0.5f / o.smapsize);
+            const Fmatrix m_viewport{
                 view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs, 0.0f, 1.0f};
             Fmatrix m_viewport_inv;
             m_viewport_inv.invert_44(m_viewport);
 
             // snap view-position to pixel
             //	snap zero point to pixel
-            const Fvector cam_proj = wform(cull_xform, Fvector().set(0, 0, 0));
+            const Fvector cam_proj = wform(cull_xform, {});
             Fvector cam_pixel = wform(m_viewport, cam_proj);
             cam_pixel.x = floorf(cam_pixel.x);
             cam_pixel.y = floorf(cam_pixel.y);

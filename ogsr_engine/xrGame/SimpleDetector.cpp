@@ -1,5 +1,7 @@
 #include "StdAfx.h"
+
 #include "SimpleDetector.h"
+
 #include "ui/ArtefactDetectorUI.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "player_hud.h"
@@ -14,6 +16,7 @@ void CSimpleDetector::CreateUI()
 }
 
 CUIArtefactDetectorSimple& CSimpleDetector::ui() { return *((CUIArtefactDetectorSimple*)m_ui); }
+
 void CSimpleDetector::UpdateAf()
 {
     if (m_artefacts.m_ItemInfos.empty())
@@ -54,7 +57,7 @@ void CSimpleDetector::UpdateAf()
     float fRelPow = (dist / m_fAfDetectRadius);
     clamp(fRelPow, 0.f, 1.f);
 
-    //определить текущую частоту срабатывания сигнала
+    // определить текущую частоту срабатывания сигнала
     af_info.cur_period = item_type->freq.x + (item_type->freq.y - item_type->freq.x) * (fRelPow * fRelPow);
 
     float min_snd_freq = 0.9f;
@@ -112,14 +115,16 @@ void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 void CUIArtefactDetectorSimple::setup_internals()
 {
     R_ASSERT(!m_flash_light);
-    m_flash_light = ::Render->light_create();
+
+    m_flash_light._set(::Render->light_create());
     m_flash_light->set_shadow(false);
     m_flash_light->set_type(IRender_Light::POINT);
     m_flash_light->set_range(pSettings->r_float(m_parent->HudItemData()->m_sect_name, "flash_light_range"));
     m_flash_light->set_hud_mode(true);
 
     R_ASSERT(!m_on_off_light);
-    m_on_off_light = ::Render->light_create();
+
+    m_on_off_light._set(::Render->light_create());
     m_on_off_light->set_shadow(false);
     m_on_off_light->set_type(IRender_Light::POINT);
     m_on_off_light->set_range(pSettings->r_float(m_parent->HudItemData()->m_sect_name, "onoff_light_range"));

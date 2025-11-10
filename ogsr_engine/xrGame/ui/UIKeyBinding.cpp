@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIKeyBinding.h"
+
 #include "UIXmlInit.h"
 #include "xrUIXmlParser.h"
 #include "UIEditKeyBind.h"
@@ -46,12 +47,12 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
     for (int i = 0; i < groupsCount; i++)
     {
         // add group
-        shared_str grp_name = xml_doc.ReadAttrib("group", i, "name");
-        R_ASSERT(xr_strlen(grp_name));
+        gsl::czstring grp_name = xml_doc.ReadAttrib("group", i, "name");
+        R_ASSERT(xr_strlen(grp_name) > 0);
 
         CUIStatic* pItem = xr_new<CUIStatic>();
         CUIXmlInit::InitStatic(xml_doc_ui, strconcat(sizeof(buf), buf, path_ui, ":scroll_view:item_group"), 0, pItem);
-        pItem->SetTextST(grp_name.c_str());
+        pItem->SetTextST(grp_name);
         m_scroll_wnd->AddWindow(pItem, true);
 
         // add group items
@@ -62,19 +63,19 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
         for (int j = 0; j < commandsCount; j++)
         {
             // first field of list item
-            shared_str command_id = xml_doc.ReadAttrib("command", j, "id");
+            gsl::czstring command_id = xml_doc.ReadAttrib("command", j, "id");
 
             pItem = xr_new<CUIStatic>();
             CUIXmlInit::InitStatic(xml_doc_ui, strconcat(sizeof(buf), buf, path_ui, ":scroll_view:item_key"), 0, pItem);
-            pItem->SetTextST(command_id.c_str());
+            pItem->SetTextST(command_id);
             m_scroll_wnd->AddWindow(pItem, true);
 
-            shared_str exe = xml_doc.ReadAttrib("command", j, "exe");
+            gsl::czstring exe = xml_doc.ReadAttrib("command", j, "exe");
 
 #ifdef DEBUG
-            if (kNOTBINDED == action_name_to_id(*exe))
+            if (action_name_to_id(exe) == kNOTBINDED)
             {
-                Msg("action [%s] not exist. update data", exe.c_str());
+                Msg("action [%s] not exist. update data", exe);
                 continue;
             }
 #endif
@@ -84,7 +85,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
             CUIEditKeyBind* pEditKB = xr_new<CUIEditKeyBind>(true);
             pEditKB->SetAutoDelete(true);
             pEditKB->Init(item_pos, 0, item_width, pItem->GetWndSize().y);
-            pEditKB->Register(*exe, "key_binding");
+            pEditKB->Register(exe, "key_binding");
             pItem->AttachChild(pEditKB);
 
             if (!Core.Features.test(xrCore::Feature::remove_alt_keybinding))
@@ -94,12 +95,14 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
                 pEditKB = xr_new<CUIEditKeyBind>(false);
                 pEditKB->SetAutoDelete(true);
                 pEditKB->Init(item_pos, 0, item_width, pItem->GetWndSize().y);
-                pEditKB->Register(*exe, "key_binding");
+                pEditKB->Register(exe, "key_binding");
                 pItem->AttachChild(pEditKB);
             }
         }
+
         xml_doc.SetLocalRoot(xml_doc.GetRoot());
     }
+
 #ifdef DEBUG
     CheckStructure(xml_doc);
 #endif
@@ -138,7 +141,9 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
             }
         }
         else
+        {
             break;
+        }
     }
 }
 

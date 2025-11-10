@@ -66,7 +66,7 @@ CSE_Abstract* CALifeSimulatorBase::spawn_item(LPCSTR section, const Fvector& pos
     CSE_Abstract* abstract = F_entity_Create(section);
     R_ASSERT3(abstract, "Cannot find item with section", section);
 
-    abstract->s_name = section;
+    abstract->s_name._set(section);
     abstract->s_gameid = u8(GAME_SINGLE); // GameID()
     abstract->s_RP = 0xff;
     abstract->ID = server().PerformIDgen(0xffff);
@@ -126,7 +126,7 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
     u16 id;
     tNetPacket.r_begin(id);
     k->UPDATE_Read(tNetPacket);
-    k->s_name = S;
+    k->s_name._set(S);
     k->m_tSpawnID = j->m_tSpawnID;
     k->ID = server().PerformIDgen(0xffff);
     k->m_bDirectControl = false;
@@ -237,10 +237,9 @@ void CALifeSimulatorBase::release(CSE_Abstract* abstract, bool alife_query)
 {
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-    {
         Msg("[LSS] Releasing object [%s][%s][%d][%x]", abstract->name_replace(), *abstract->s_name, abstract->ID, smart_cast<void*>(abstract));
-    }
 #endif
+
     CSE_ALifeDynamicObject* object = objects().object(abstract->ID);
     VERIFY(object);
 
@@ -249,7 +248,7 @@ void CALifeSimulatorBase::release(CSE_Abstract* abstract, bool alife_query)
         u32 children_count = object->children.size();
         u32 bytes = children_count * sizeof(ALife::_OBJECT_ID);
         ALife::_OBJECT_ID* children = (ALife::_OBJECT_ID*)_alloca(bytes);
-        CopyMemory(children, &*object->children.begin(), bytes);
+        std::memcpy(children, object->children.data(), bytes);
 
         ALife::_OBJECT_ID* I = children;
         ALife::_OBJECT_ID* E = children + children_count;

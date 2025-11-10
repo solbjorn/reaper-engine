@@ -380,7 +380,7 @@ void CResourceManager::LS_Load()
         if (0 == namesp[0])
             xr_strcpy(namesp, "_G");
         strconcat(sizeof(fn), fn, RImplementation.getShaderPath(), (*folder)[it]);
-        FS.update_path(fn, "$game_shaders$", fn);
+        std::ignore = FS.update_path(fn, "$game_shaders$", fn);
         do_file(lua, fn, namesp);
     }
     FS.file_list_close(folder);
@@ -448,7 +448,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             C.iElement = i;
             C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-            S.E[i] = C._lua_Compile(s_shader, buff);
+            S.E[i]._set(C._lua_Compile(s_shader, buff));
 
             bUseNewWorkflow = true;
         }
@@ -464,9 +464,9 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 
             if (C.bDetail)
-                S.E[0] = C._lua_Compile(s_shader, "normal_hq");
+                S.E[0]._set(C._lua_Compile(s_shader, "normal_hq"));
             else
-                S.E[0] = C._lua_Compile(s_shader, "normal");
+                S.E[0]._set(C._lua_Compile(s_shader, "normal"));
         }
         else
         {
@@ -474,7 +474,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             {
                 C.iElement = 0;
                 C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-                S.E[0] = C._lua_Compile(s_shader, "normal");
+                S.E[0]._set(C._lua_Compile(s_shader, "normal"));
 
                 /// SSS fix water for DX10
                 // Water Flag
@@ -491,7 +491,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             C.iElement = 1;
             C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
-            S.E[1] = C._lua_Compile(s_shader, "normal");
+            S.E[1]._set(C._lua_Compile(s_shader, "normal"));
         }
 
         // Compile element
@@ -499,7 +499,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             C.iElement = 2;
             C.bDetail = FALSE;
-            S.E[2] = C._lua_Compile(s_shader, "l_point");
+            S.E[2]._set(C._lua_Compile(s_shader, "l_point"));
         }
 
         // Compile element
@@ -507,7 +507,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             C.iElement = 3;
             C.bDetail = FALSE;
-            S.E[3] = C._lua_Compile(s_shader, "l_spot");
+            S.E[3]._set(C._lua_Compile(s_shader, "l_spot"));
         }
 
         // Compile element
@@ -515,14 +515,16 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             C.iElement = 4;
             C.bDetail = FALSE;
-            S.E[4] = C._lua_Compile(s_shader, "l_special");
+            S.E[4]._set(C._lua_Compile(s_shader, "l_special"));
         }
     }
 
     // Search equal in shaders array
     for (Shader* v_shader : v_shaders)
+    {
         if (S.equal(v_shader))
             return v_shader;
+    }
 
     // Create _new_ entry
     Shader* N = v_shaders.emplace_back(xr_new<Shader>());

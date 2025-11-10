@@ -44,8 +44,9 @@ struct CVertexManagerFixed
         IndexVertex* m_indexes;
 
     public:
-        inline CDataStorage(const u32 vertex_count);
+        inline explicit CDataStorage(const u32 vertex_count);
         inline virtual ~CDataStorage();
+
         inline void init();
         inline bool is_opened(const TCompoundVertex& vertex) const;
         inline bool is_visited(const TIndex& vertex_id) const;

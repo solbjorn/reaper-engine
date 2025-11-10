@@ -10,8 +10,8 @@
 
 IC CScriptSoundAction::CScriptSoundAction()
 {
-    m_caSoundToPlay = "";
-    m_caBoneName = "";
+    m_caSoundToPlay._set("");
+    m_caBoneName._set("");
     m_tGoalType = eGoalTypeDummy;
     m_bStartedToPlay = false;
     m_bLooped = false;
@@ -122,7 +122,7 @@ IC void CScriptSoundAction::SetPosition(const Fvector& tPosition)
 
 IC void CScriptSoundAction::SetBone(LPCSTR caBoneName)
 {
-    m_caBoneName = caBoneName;
+    m_caBoneName._set(caBoneName);
     m_bStartedToPlay = false;
 }
 

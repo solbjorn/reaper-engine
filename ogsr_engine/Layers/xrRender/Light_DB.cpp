@@ -12,7 +12,7 @@ void CLight_DB::Load(IReader* fs)
 {
     IReader* F = fs->open_chunk(fsL_LIGHT_DYNAMIC);
     // Light itself
-    sun = nullptr;
+    sun._set(nullptr);
 
     const size_t size = F->length();
     const size_t element = sizeof(Flight) + 4;
@@ -38,7 +38,7 @@ void CLight_DB::Load(IReader* fs)
             L->set_shadow(true);
             L->set_rotation(Ldata.direction, tmp_R);
 
-            sun = L;
+            sun._set(L);
         }
         else
         {
@@ -55,14 +55,14 @@ void CLight_DB::Load(IReader* fs)
             L->set_shadow(true);
             L->set_active(true);
 
-            v_static.push_back(L);
+            v_static.emplace_back(L);
         }
     }
 
     F->close();
     R_ASSERT2(sun, "Where is sun?");
 
-    rain = xr_new<light>();
+    rain._set(xr_new<light>());
 }
 
 void CLight_DB::LoadHemi()
@@ -103,7 +103,7 @@ void CLight_DB::LoadHemi()
                     L->spatial.type = STYPE_LIGHTSOURCEHEMI;
                     L->set_attenuation_params(Ldata.attenuation0, Ldata.attenuation1, Ldata.attenuation2, Ldata.falloff);
 
-                    v_hemi.push_back(L);
+                    v_hemi.emplace_back(L);
                 }
             }
 

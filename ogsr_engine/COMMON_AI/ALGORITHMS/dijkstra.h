@@ -47,8 +47,9 @@ protected:
     CDataStorage* m_data_storage;
 
 protected:
-    inline CDijkstra(const u32 max_vertex_count);
+    inline explicit CDijkstra(const u32 max_vertex_count);
     inline virtual ~CDijkstra();
+
     template <typename TPathManager>
     inline void initialize(TPathManager& path_manager);
     template <typename TPathManager>

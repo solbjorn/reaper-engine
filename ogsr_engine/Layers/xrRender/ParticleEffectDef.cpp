@@ -164,7 +164,7 @@ BOOL CPEDef::Load(IReader& F)
         m_Actions.w(F.pointer(), action_list);
     }
 
-    F.r_chunk(PED_CHUNK_FLAGS, &m_Flags);
+    std::ignore = F.r_chunk(PED_CHUNK_FLAGS, &m_Flags);
 
     if (m_Flags.is(dfSprite))
     {
@@ -265,8 +265,8 @@ BOOL CPEDef::Load2(CInifile& ini)
 
     if (m_Flags.is(dfSprite))
     {
-        m_ShaderName = ini.r_string("sprite", "shader");
-        m_TextureName = ini.r_string("sprite", "texture");
+        m_ShaderName._set(ini.r_string("sprite", "shader"));
+        m_TextureName._set(ini.r_string("sprite", "texture"));
     }
 
     if (m_Flags.is(dfFramed))

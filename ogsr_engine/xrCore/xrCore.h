@@ -58,9 +58,22 @@
 
 #define XR_PRINTF(a, b) __attribute__((__format__(printf, a, b)))
 
-// Force the SysV calling convention to pass objects > 8 bytes in registers,
-// not by an implicit reference
-#define XR_SYSV [[gnu::sysv_abi]]
+// Treat the class as trivial even if it has user-defined constructors and/or
+// assignment operators, e.g. the ones using AVX
+#define XR_TRIVIAL [[clang::trivial_abi]]
+
+// As of LLVM 21, [[clang::trivial_abi]] with MSVC ABI barely works:
+// * doesn't work when inheriting a trivial base
+// * doesn't work when a class has a user-defined move
+// * std::is_trivially_copyable_v<T> still returns false
+// See also:
+// https://github.com/llvm/llvm-project/issues/59131
+// https://github.com/llvm/llvm-project/issues/69394
+// https://github.com/llvm/llvm-project/issues/87993
+// https://github.com/llvm/llvm-project/pull/88857
+#define XR_TRIVIAL_BROKEN
+
+#define XR_TRIVIAL_ASSERT(type, ...) static_assert(__builtin_is_cpp_trivially_relocatable(type, ##__VA_ARGS__))
 
 // Our headers
 

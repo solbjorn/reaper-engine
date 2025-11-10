@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UICellItem.h"
+
 #include "../xr_level_controller.h"
 #include "..\..\xr_3da\xr_input.h"
 #include "../HUDManager.h"
@@ -225,14 +226,19 @@ void CUICellItem::UpdateConditionProgressBar()
                 m_condition_auto_width = true;
             }
             else
+            {
                 m_condition_auto_width = false;
+            }
+
             float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
-            m_pConditionState->SetWndPos({x, y});
+            m_pConditionState->SetWndPos(Fvector2{x, y});
             m_pConditionState->SetProgressPos(itm->GetCondition() * 100.0f);
             m_pConditionState->Show(true);
+
             return;
         }
     }
+
     m_pConditionState->Show(false);
 }
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "..\xr_3da\XR_IOConsole.h"
 #include "customzone.h"
+
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "actor.h"
@@ -20,6 +20,8 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
+
+#include "..\xr_3da\XR_IOConsole.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -164,30 +166,32 @@ void CCustomZone::Load(LPCSTR section)
     }
 
     if (pSettings->line_exist(section, "idle_particles"))
-        m_sIdleParticles = pSettings->r_string(section, "idle_particles");
+        m_sIdleParticles._set(pSettings->r_string(section, "idle_particles"));
+
     if (pSettings->line_exist(section, "blowout_particles"))
-        m_sBlowoutParticles = pSettings->r_string(section, "blowout_particles");
+        m_sBlowoutParticles._set(pSettings->r_string(section, "blowout_particles"));
 
     if (pSettings->line_exist(section, "accum_particles"))
-        m_sAccumParticles = pSettings->r_string(section, "accum_particles");
+        m_sAccumParticles._set(pSettings->r_string(section, "accum_particles"));
 
     if (pSettings->line_exist(section, "awake_particles"))
-        m_sAwakingParticles = pSettings->r_string(section, "awake_particles");
+        m_sAwakingParticles._set(pSettings->r_string(section, "awake_particles"));
 
     if (pSettings->line_exist(section, "entrance_small_particles"))
-        m_sEntranceParticlesSmall = pSettings->r_string(section, "entrance_small_particles");
+        m_sEntranceParticlesSmall._set(pSettings->r_string(section, "entrance_small_particles"));
     if (pSettings->line_exist(section, "entrance_big_particles"))
-        m_sEntranceParticlesBig = pSettings->r_string(section, "entrance_big_particles");
+        m_sEntranceParticlesBig._set(pSettings->r_string(section, "entrance_big_particles"));
 
     if (pSettings->line_exist(section, "hit_small_particles"))
-        m_sHitParticlesSmall = pSettings->r_string(section, "hit_small_particles");
+        m_sHitParticlesSmall._set(pSettings->r_string(section, "hit_small_particles"));
     if (pSettings->line_exist(section, "hit_big_particles"))
-        m_sHitParticlesBig = pSettings->r_string(section, "hit_big_particles");
+        m_sHitParticlesBig._set(pSettings->r_string(section, "hit_big_particles"));
 
     if (pSettings->line_exist(section, "idle_small_particles"))
-        m_sIdleObjectParticlesBig = pSettings->r_string(section, "idle_big_particles");
+        m_sIdleObjectParticlesBig._set(pSettings->r_string(section, "idle_big_particles"));
     if (pSettings->line_exist(section, "idle_big_particles"))
-        m_sIdleObjectParticlesSmall = pSettings->r_string(section, "idle_small_particles");
+        m_sIdleObjectParticlesSmall._set(pSettings->r_string(section, "idle_small_particles"));
+
     if (pSettings->line_exist(section, "idle_particles_dont_stop"))
         m_bIdleObjectParticlesDontStop = pSettings->r_bool(section, "idle_particles_dont_stop");
 
@@ -331,9 +335,9 @@ void CCustomZone::Load(LPCSTR section)
         m_fArtefactSpawnProbability = pSettings->r_float(section, "artefact_spawn_probability");
         m_fArtefactSpawnOnDeathProbability = READ_IF_EXISTS(pSettings, r_float, section, "birth_on_death_probability", 0.0f);
         if (pSettings->line_exist(section, "artefact_spawn_particles"))
-            m_sArtefactSpawnParticles = pSettings->r_string(section, "artefact_spawn_particles");
+            m_sArtefactSpawnParticles._set(pSettings->r_string(section, "artefact_spawn_particles"));
         else
-            m_sArtefactSpawnParticles = nullptr;
+            m_sArtefactSpawnParticles._set(nullptr);
 
         if (pSettings->line_exist(section, "artefact_born_sound"))
         {
@@ -359,7 +363,7 @@ void CCustomZone::Load(LPCSTR section)
         for (u16 i = 0; i < m_wItemCount; ++i)
         {
             ARTEFACT_SPAWN& artefact_spawn = m_ArtefactSpawn[i];
-            artefact_spawn.section = _GetItem(l_caParameters, i << 1, l_caBuffer);
+            artefact_spawn.section._set(_GetItem(l_caParameters, i << 1, l_caBuffer));
             artefact_spawn.probability = (float)atof(_GetItem(l_caParameters, (i << 1) | 1, l_caBuffer));
             total_probability += artefact_spawn.probability;
         }
@@ -403,7 +407,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     // добавить источники света
     if (IdleLight)
     {
-        m_pIdleLight = ::Render->light_create();
+        m_pIdleLight._set(::Render->light_create());
         m_pIdleLight->set_shadow(IdleLightShadow);
 
         if (IdleLightVolumetric)
@@ -416,12 +420,12 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     }
     else
     {
-        m_pIdleLight = nullptr;
+        m_pIdleLight._set(nullptr);
     }
 
     if (BlowoutLight)
     {
-        m_pLight = ::Render->light_create();
+        m_pLight._set(::Render->light_create());
         m_pLight->set_shadow(BlowoutLightShadow);
 
         if (BlowLightVolumetric)
@@ -434,7 +438,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     }
     else
     {
-        m_pLight = nullptr;
+        m_pLight._set(nullptr);
     }
 
     setEnabled(TRUE);
@@ -1165,7 +1169,7 @@ void CCustomZone::UpdateBlowout()
         BornArtefact(false);
 
         if (m_BendGrass_Blowout)
-            g_pGamePersistent->GrassBendersAddExplosion(ID(), Position(), {0, -99, 0}, 1.33f, m_BendGrass_Blowout_speed, 1.0f, m_BendGrass_Blowout_radius);
+            g_pGamePersistent->GrassBendersAddExplosion(ID(), Position(), Fvector{0.0f, -99.0f, 0.0f}, 1.33f, m_BendGrass_Blowout_speed, 1.0f, m_BendGrass_Blowout_radius);
     }
 }
 

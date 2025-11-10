@@ -1434,7 +1434,7 @@ void PASpeedLimit::Execute(ParticleEffect* effect, float)
     {
         Particle& m = effect->particles[i];
         float sSqr = m.vel.length2();
-        if (sSqr < min_sqr && sSqr)
+        if (sSqr < min_sqr && !fis_zero(sSqr))
         {
             float s = _sqrt(sSqr);
             m.vel *= (min_speed / s);

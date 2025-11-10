@@ -120,20 +120,20 @@ void UILoadingScreen::SetLevelLogo(const char* name)
 
 void UILoadingScreen::SetLevelText(const char* name)
 {
-    std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
-
     if (!name)
         return;
 
-    string512 levelDescription;
+    std::scoped_lock lock{loadingLock};
 
     if (loadingLevelName)
-        loadingLevelName->SetText(CStringTable().translate(name).c_str());
+        loadingLevelName->SetText(CStringTable().translate(shared_str{name}).c_str());
 
     if (loadingLevelDescription)
     {
+        string512 levelDescription;
         xr_sprintf(levelDescription, "%s_description", name);
-        loadingLevelDescription->SetText(CStringTable().translate(levelDescription).c_str());
+
+        loadingLevelDescription->SetText(CStringTable().translate(shared_str{levelDescription}).c_str());
     }
 }
 
@@ -147,26 +147,24 @@ void UILoadingScreen::SetStageTitle(const char* title)
 
 void UILoadingScreen::SetStageTip()
 {
-    std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
-
-    u8 tip_num = Random.randI(1, maxTip);
-
-    string512 buff;
+    std::scoped_lock lock{loadingLock};
 
     if (loadingHeader)
-    {
-        loadingHeader->SetText(CStringTable().translate("ls_header").c_str());
-    }
+        loadingHeader->SetText(CStringTable().translate(shared_str{"ls_header"}).c_str());
+
+    u8 tip_num = Random.randI(1, maxTip);
+    string512 buff;
+
     if (loadingTipNumber)
     {
-        xr_sprintf(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
-        shared_str tipNumber = buff;
-        loadingTipNumber->SetText(tipNumber.c_str());
+        xr_sprintf(buff, "%s%d:", CStringTable().translate(shared_str{"ls_tip_number"}).c_str(), tip_num);
+        loadingTipNumber->SetText(buff);
     }
+
     if (loadingTip)
     {
         xr_sprintf(buff, "ls_tip_%d", tip_num);
-        loadingTip->SetText(CStringTable().translate(buff).c_str());
+        loadingTip->SetText(CStringTable().translate(shared_str{buff}).c_str());
     }
 }
 

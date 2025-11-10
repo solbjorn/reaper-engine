@@ -55,7 +55,7 @@ bool equal(const T& self, const T& f, typename T::TYPE mask)
 }
 
 template <typename T>
-XR_SYSV void add_flags(sol::state_view& lua, absl::string_view alias)
+void add_flags(sol::state_view& lua, absl::string_view alias)
 {
     lua.new_usertype<T>(alias, sol::no_constructor, sol::call_constructor, sol::constructors<T()>(), "get", &T::get, "zero", &T::zero, "one", &one<T>, "invert",
                         sol::overload(sol::resolve<T&()>(&T::invert), sol::resolve<T&(const T&)>(&T::invert), sol::resolve<T&(const typename T::TYPE)>(&T::invert)), "assign",

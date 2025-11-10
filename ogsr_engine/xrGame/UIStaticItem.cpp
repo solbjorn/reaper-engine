@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uistaticitem.h"
+
 #include "hudmanager.h"
 
 CUIStaticItem::CUIStaticItem()
@@ -11,12 +12,13 @@ CUIStaticItem::CUIStaticItem()
     iRemX = 0.0f;
     iRemY = 0.0f;
     alpha_ref = -1;
+
 #ifdef DEBUG
-    dbg_tex_name = NULL;
+    dbg_tex_name = nullptr;
 #endif
 }
 
-CUIStaticItem::~CUIStaticItem() {}
+CUIStaticItem::~CUIStaticItem() = default;
 
 void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
 {
@@ -25,6 +27,7 @@ void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
 #ifdef DEBUG
     dbg_tex_name = tex;
 #endif
+
     uFlags.set(flValidRect, FALSE);
     // uFlags.set(flValidOriginalRect, FALSE); // вызывать через ResetOriginalRect
 }
@@ -77,11 +80,10 @@ void CUIStaticItem::Render()
     }
 
     // set scissor
-    Frect clip_rect = {iPos.x, iPos.y, iPos.x + iVisRect.x2 * iTileX + iRemX, iPos.y + iVisRect.y2 * iTileY + iRemY};
+    const Frect clip_rect{iPos.x, iPos.y, iPos.x + iVisRect.x2 * iTileX + iRemX, iPos.y + iVisRect.y2 * iTileY + iRemY};
+
     UI()->PushScissor(clip_rect);
-
     UIRender->FlushPrimitive();
-
     UI()->PopScissor();
 
     if (alpha_ref != -1)

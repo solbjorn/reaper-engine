@@ -22,7 +22,7 @@ protected:
     sol::function m_server_creator;
 
 public:
-    CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid);
+    explicit CObjectItemScript(sol::function&& client_creator, sol::function&& server_creator, CLASS_ID clsid, LPCSTR script_clsid);
 
     ObjectFactory::CLIENT_BASE_CLASS* client_object() const override;
     ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const override;

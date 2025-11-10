@@ -1,6 +1,5 @@
 #ifndef DebugShader_included
 #define DebugShader_included
-#pragma once
 
 #include "FactoryPtr.h"
 #include "UIShader.h"

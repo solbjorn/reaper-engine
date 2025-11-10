@@ -237,7 +237,7 @@ public:
 
     void Send(NET_Packet& P, u32 = DPNSEND_GUARANTEED, u32 = 0) override;
 
-    XR_SYSV void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
+    void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
     void g_sv_Spawn(CSE_Abstract* E); // server reply/command spawning
 
     IC CSpaceRestrictionManager& space_restriction_manager();

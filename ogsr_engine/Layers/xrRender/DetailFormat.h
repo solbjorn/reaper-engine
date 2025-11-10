@@ -76,7 +76,8 @@ public:
         c_g = w_qclr(0.f, 15);
         c_b = w_qclr(0.f, 15);
     }
-    u8 r_id(u32 idx)
+
+    [[nodiscard]] u8 r_id(u32 idx) const
     {
         switch (idx)
         {
@@ -90,6 +91,7 @@ public:
         return 0;
 #endif
     }
+
     void w_id(u32 idx, u8 val)
     {
         switch (idx)

@@ -46,7 +46,7 @@ void CPostprocessAnimator::Clear()
 
 void CPostprocessAnimator::Load(LPCSTR name)
 {
-    m_Name = name;
+    m_Name._set(name);
 
     string_path full_path;
     if (!FS.exist(full_path, "$level$", name))

@@ -28,17 +28,17 @@ public:
     Flags32 m_Flags;
 
 public:
-    FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt = nullptr, LPCSTR _FilterString = nullptr, u32 flags = 0);
+    explicit FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt = nullptr, LPCSTR _FilterString = nullptr, u32 flags = 0);
     ~FS_Path();
 
-    LPCSTR _update(string_path& dest, LPCSTR src) const;
-    //.	void		_update		(xr_string& dest, LPCSTR src) const;
+    [[nodiscard]] LPCSTR _update(string_path& dest, LPCSTR src) const;
+
     void _set(LPSTR add);
     void _set_root(LPSTR root);
 };
 
-struct _finddata64i32_t;
-#define _FINDDATA_T _finddata64i32_t
+struct __finddata64_t;
+using _FINDDATA_T = __finddata64_t;
 
 struct FS_File
 {
@@ -47,22 +47,24 @@ struct FS_File
         flSubDir = (1 << 0),
         flVFS = (1 << 1),
     };
-    unsigned attrib{};
-    time_t time_write{};
-    long size{};
+
+    u32 attrib{};
+    s64 time_write{};
+    s64 size{};
     xr_string name; // low-case name
-    void set(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower = true);
+
+    void set(const xr_string& nm, s64 sz, s64 modif, u32 attr, bool lower = true);
 
 public:
-    FS_File() {}
-    FS_File(const xr_string& nm);
-    FS_File(const _FINDDATA_T& f);
-    FS_File(const xr_string& nm, const _FINDDATA_T& f);
-    FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr);
-    FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower);
+    FS_File() = default;
+    explicit FS_File(const xr_string& nm);
+    explicit FS_File(const _FINDDATA_T& f);
+    explicit FS_File(const xr_string& nm, const _FINDDATA_T& f);
+    explicit FS_File(const xr_string& nm, s64 sz, s64 modif, u32 attr);
+    explicit FS_File(const xr_string& nm, s64 sz, s64 modif, u32 attr, bool lower);
 
     [[nodiscard]] constexpr auto operator<=>(const FS_File& _X) const { return xr_strcmp(name, _X.name); }
 };
 DEFINE_SET(FS_File, FS_FileSet, FS_FileSetIt);
 
-extern bool PatternMatch(LPCSTR s, LPCSTR mask);
+[[nodiscard]] bool PatternMatch(LPCSTR s, LPCSTR mask);

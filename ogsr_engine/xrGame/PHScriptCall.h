@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PHCommander.h"
 #include "PHReqComparer.h"
 
 class CPHScriptCondition : public CPHCondition, public CPHReqComparerV

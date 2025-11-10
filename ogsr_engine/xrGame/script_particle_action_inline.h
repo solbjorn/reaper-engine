@@ -10,8 +10,8 @@
 
 IC CScriptParticleAction::CScriptParticleAction()
 {
-    m_caParticleToRun = "";
-    m_caBoneName = "";
+    m_caParticleToRun._set("");
+    m_caBoneName._set("");
     m_bCompleted = false;
 }
 
@@ -42,7 +42,7 @@ IC void CScriptParticleAction::SetPosition(const Fvector& tPosition)
 
 IC void CScriptParticleAction::SetBone(LPCSTR caBoneName)
 {
-    m_caBoneName = caBoneName;
+    m_caBoneName._set(caBoneName);
     m_bStartedToPlay = false;
     m_bCompleted = false;
 }

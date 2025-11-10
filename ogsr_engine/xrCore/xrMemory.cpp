@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <psapi.h>
+
 #include "xrsharedmem.h"
 
 #ifndef __SANITIZE_ADDRESS__
@@ -19,6 +19,8 @@ XR_DIAG_POP();
 #pragma comment(lib, "mimalloc.dll.lib")
 #endif
 
+#include <psapi.h>
+
 void xrMemory::mem_compact()
 {
 #ifndef USE_MIMALLOC
@@ -36,13 +38,19 @@ void xrMemory::mem_compact()
     smem_container::clean();
 }
 
-[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc_aligned(size_t size, size_t align) noexcept { return _aligned_malloc(size, align); }
+[[nodiscard]] XR_RESTRICT void* xrMemory::mem_alloc_aligned(gsl::index size, gsl::index align) noexcept
+{
+    return _aligned_malloc(gsl::narrow<size_t>(size), gsl::narrow<size_t>(align));
+}
 
-[[nodiscard]] void* xrMemory::mem_realloc_aligned(void* P, size_t size, size_t align) noexcept { return _aligned_realloc(P, size, align); }
+[[nodiscard]] void* xrMemory::mem_realloc_aligned(void* P, gsl::index size, gsl::index align) noexcept
+{
+    return _aligned_realloc(P, gsl::narrow<size_t>(size), gsl::narrow<size_t>(align));
+}
 
 void xrMemory::mem_free_aligned(void* P) noexcept { _aligned_free(P); }
 
-u32 xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree) { return u32(mem_usage_impl(pBlocksUsed, pBlocksFree)); }
+gsl::index xrMemory::mem_usage(gsl::index* pBlocksUsed, gsl::index* pBlocksFree) { return mem_usage_impl(pBlocksUsed, pBlocksFree); }
 
 void GetProcessMemInfo(SProcessMemInfo& minfo)
 {
@@ -90,18 +98,20 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
 #endif
 }
 
-size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
+gsl::index mem_usage_impl(gsl::index* pBlocksUsed, gsl::index* pBlocksFree)
 {
-    static bool no_memory_usage = !strstr(Core.Params, "-memory_usage");
+    static const bool no_memory_usage = !strstr(Core.Params, "-memory_usage");
     if (no_memory_usage)
         return 0;
 
     _HEAPINFO hinfo;
     int heapstatus;
     hinfo._pentry = nullptr;
-    size_t total = 0;
-    u32 blocks_free = 0;
-    u32 blocks_used = 0;
+
+    gsl::index total{};
+    gsl::index blocks_free{};
+    gsl::index blocks_used{};
+
     while ((heapstatus = _heapwalk(&hinfo)) == _HEAPOK)
     {
         if (hinfo._useflag == _USEDENTRY)
@@ -114,6 +124,7 @@ size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
             blocks_free += 1;
         }
     }
+
     if (pBlocksFree)
         *pBlocksFree = 1024 * blocks_free;
     if (pBlocksUsed)

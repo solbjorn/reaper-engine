@@ -18,19 +18,20 @@ private:
     friend CPhraseDialog;
 
 public:
-    CPhrase(void);
-    virtual ~CPhrase(void);
+    CPhrase();
+    virtual ~CPhrase();
 
     void SetText(LPCSTR text) { m_text = text; }
-    LPCSTR GetText() const;
+    [[nodiscard]] LPCSTR GetText() const;
 
     void SetID(const shared_str& id) { m_ID = id; }
-    const shared_str& GetID() const { return m_ID; }
+    [[nodiscard]] const shared_str& GetID() const { return m_ID; }
 
-    int GoodwillLevel() const { return m_iGoodwillLevel; }
+    [[nodiscard]] int GoodwillLevel() const { return m_iGoodwillLevel; }
+    [[nodiscard]] bool IsDummy() const;
 
-    bool IsDummy() const;
-    CPhraseScript* GetPhraseScript() { return &m_PhraseScript; }
+    [[nodiscard]] CPhraseScript* GetPhraseScript() { return &m_PhraseScript; }
+    [[nodiscard]] const CPhraseScript* GetPhraseScript() const { return &m_PhraseScript; }
 
 protected:
     // уникальный индекс в списке фраз диалога
@@ -40,7 +41,7 @@ protected:
 
     // минимальный уровень благосклоггости, необходимый для того
     // чтоб фразу можно было сказать
-    int m_iGoodwillLevel;
+    int m_iGoodwillLevel{};
 
     // для вызова скриптовых функций
     CPhraseScript m_PhraseScript;

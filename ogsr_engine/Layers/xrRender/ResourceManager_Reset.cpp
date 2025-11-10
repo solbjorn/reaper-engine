@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
+
 #include "../../xr_3da/Render.h"
 
 void CResourceManager::reset_begin()
@@ -75,15 +76,18 @@ void CResourceManager::reset_end()
     Dump(true);
 }
 
-template <class C>
+namespace
+{
+template <typename C>
 void mdump(C c)
 {
     if (c.empty())
         return;
 
     for (auto& I : c)
-        Msg("*        : %3u: %s", I.second->ref_count.load(), I.second->cName.c_str());
+        Msg("*        : %3zd: %s", I.second->ref_count.load(), I.second->cName.c_str());
 }
+} // namespace
 
 CResourceManager::~CResourceManager() { Dump(false); }
 

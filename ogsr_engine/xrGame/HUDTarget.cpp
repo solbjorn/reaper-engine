@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "hudtarget.h"
+
 #include "hudmanager.h"
 #include "../xr_3da/GameMtlLib.h"
 
@@ -195,7 +196,7 @@ void CHUDTarget::Render()
                     {
                         CStringTable strtbl;
                         F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-                        F->OutNext("%s", *strtbl.translate(others_inv_owner->Name()));
+                        F->OutNext("%s", *strtbl.translate(shared_str{others_inv_owner->Name()}));
                         F->OutNext("%s", *strtbl.translate(others_inv_owner->CharacterInfo().Community().id()));
                     }
                 }

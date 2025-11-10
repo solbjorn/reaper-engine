@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "hudmanager.h"
 #include "game_cl_base.h"
+
+#include "hudmanager.h"
 #include "level.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
@@ -246,7 +247,7 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
     u_EventSend(P);
 }
 
-void game_cl_GameState::set_type_name(LPCSTR s) { m_game_type_name = s; }
+void game_cl_GameState::set_type_name(LPCSTR s) { m_game_type_name._set(s); }
 
 void game_cl_GameState::reset_ui()
 {

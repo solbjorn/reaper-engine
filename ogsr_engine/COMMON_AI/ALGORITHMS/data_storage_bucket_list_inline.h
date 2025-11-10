@@ -20,7 +20,7 @@ inline CBucketList::CDataStorage(const u32 vertex_count) : TManagerDataStorage(v
     m_max_distance = typename TManagerDataStorage::Vertex::Distance(-1);
     m_min_bucket_value = typename TManagerDataStorage::Vertex::Distance(0);
     m_max_bucket_value = typename TManagerDataStorage::Vertex::Distance(1000);
-    ZeroMemory(m_buckets, BucketSize);
+    std::memset(m_buckets, 0, BucketSize);
     m_min_bucket_id = 0;
 }
 
@@ -30,15 +30,16 @@ TEMPLATE_SPECIALIZATION
 inline void CBucketList::init()
 {
     TManagerDataStorage::init();
-    ZeroMemory(m_list_data, 2 * sizeof(typename TManagerDataStorage::Vertex));
+    std::memset(m_list_data, 0, 2 * sizeof(typename TManagerDataStorage::Vertex));
     m_list_head = m_list_data;
     m_list_tail = m_list_data + 1;
     m_list_head->next() = m_list_tail;
     m_list_tail->f() = m_max_distance;
     m_list_tail->prev() = m_list_head;
     m_min_bucket_id = BucketCount;
+
     if constexpr (ClearBuckets)
-        ZeroMemory(m_buckets, BucketSize);
+        std::memset(m_buckets, 0, BucketSize);
 }
 
 TEMPLATE_SPECIALIZATION

@@ -71,7 +71,7 @@ void R_xforms::apply_invw()
 
     if (!m_bInvWValid)
     {
-        m_invw.invert_b(m_w);
+        std::ignore = m_invw.invert_b(m_w);
         m_bInvWValid = true;
     }
 

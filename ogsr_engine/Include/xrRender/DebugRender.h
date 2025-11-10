@@ -1,6 +1,5 @@
 #ifndef DebugRender_included
 #define DebugRender_included
-#pragma once
 
 // #ifdef DEBUG
 
@@ -42,7 +41,7 @@ public:
     virtual void SetDebugShader(dbgShaderHandle shdHandle) = 0;
     virtual void DestroyDebugShader(dbgShaderHandle shdHandle) = 0;
 
-    virtual void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) = 0;
+    virtual void dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) = 0;
 };
 
 inline IDebugRender::~IDebugRender() = default;

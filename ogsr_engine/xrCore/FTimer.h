@@ -11,7 +11,8 @@ class pauseMngr
 
 public:
     pauseMngr();
-    bool Paused() const { return paused; }
+
+    [[nodiscard]] bool Paused() const { return paused; }
     void Pause(const bool b);
     void Register(CTimer_paused& t);
     void UnRegister(CTimer_paused& t);
@@ -28,22 +29,23 @@ public:
     using Duration = Time::duration;
 
 protected:
-    Time startTime;
-    Duration pauseDuration;
-    Duration pauseAccum;
-    bool paused;
+    Time startTime{};
+    Duration pauseDuration{};
+    Duration pauseAccum{};
+    bool paused{};
 
 public:
-    constexpr CTimerBase() noexcept : startTime(), pauseDuration(), pauseAccum(), paused(false) {}
+    constexpr CTimerBase() noexcept = default;
 
-    ICF void Start()
+    void Start()
     {
         if (paused)
             return;
+
         startTime = Now() - pauseAccum;
     }
 
-    virtual Duration getElapsedTime() const
+    [[nodiscard]] virtual Duration getElapsedTime() const
     {
         if (paused)
             return pauseDuration;
@@ -51,48 +53,49 @@ public:
         return Now() - startTime - pauseAccum;
     }
 
-    u64 GetElapsed_ns() const
+    [[nodiscard]] auto GetElapsed_ns() const
     {
         using namespace std::chrono;
         return duration_cast<nanoseconds>(getElapsedTime()).count();
     }
 
-    u64 GetElapsed_ms() const
+    [[nodiscard]] auto GetElapsed_ms() const
     {
         using namespace std::chrono;
         return duration_cast<milliseconds>(getElapsedTime()).count();
     }
 
-    IC float GetElapsed_sec() const
+    [[nodiscard]] f32 GetElapsed_sec() const
     {
         using namespace std::chrono;
-        return duration_cast<duration<float>>(getElapsedTime()).count();
+        return duration_cast<duration<f32>>(getElapsedTime()).count();
     }
 
-    Time Now() const { return Clock::now(); }
+    [[nodiscard]] Time Now() const { return Clock::now(); }
 
-    IC void Dump() const { Msg("* Elapsed time (sec): %f", GetElapsed_sec()); }
+    void Dump() const { Msg("* Elapsed time (sec): %f", GetElapsed_sec()); }
 };
 
 class CTimer : public CTimerBase
 {
     using inherited = CTimerBase;
 
-    float m_time_factor;
-    Duration realTime;
-    Duration time;
+    f32 m_time_factor{1.0f};
+    Duration realTime{};
+    Duration time{};
 
-    inline Duration getElapsedTime(const Duration& current) const
+    [[nodiscard]] Duration getElapsedTime(const Duration& current) const
     {
         const auto delta = current - realTime;
-        const double deltaD = double(delta.count());
-        const double elapsedTime = deltaD * m_time_factor + .5;
-        const auto result = u64(elapsedTime);
-        return Duration(this->time.count() + result);
+        const double deltaD = gsl::narrow_cast<double>(delta.count());
+        const double elapsedTime = deltaD * m_time_factor + 0.5;
+        const auto result = gsl::narrow_cast<s64>(std::round(elapsedTime));
+
+        return Duration{this->time.count() + result};
     }
 
 public:
-    constexpr CTimer() noexcept : m_time_factor(1.f), realTime(0), time(0) {}
+    constexpr CTimer() noexcept = default;
 
     void Start() noexcept
     {
@@ -104,9 +107,9 @@ public:
         inherited::Start();
     }
 
-    float time_factor() const noexcept { return m_time_factor; }
+    [[nodiscard]] f32 time_factor() const noexcept { return m_time_factor; }
 
-    void time_factor(const float time_factor) noexcept
+    void time_factor(f32 time_factor) noexcept
     {
         const Duration current = inherited::getElapsedTime();
         time = getElapsedTime(current);
@@ -114,19 +117,20 @@ public:
         m_time_factor = time_factor;
     }
 
-    Duration getElapsedTime() const override { return getElapsedTime(inherited::getElapsedTime()); }
+    [[nodiscard]] Duration getElapsedTime() const override { return getElapsedTime(inherited::getElapsedTime()); }
 };
 
 class CTimer_paused_ex : public CTimer
 {
-    Time save_clock;
+    Time save_clock{};
 
 public:
-    CTimer_paused_ex() noexcept : save_clock() {}
+    CTimer_paused_ex() noexcept = default;
     virtual ~CTimer_paused_ex() = default;
-    bool Paused() const noexcept { return paused; }
 
-    void Pause(const bool b) noexcept
+    [[nodiscard]] bool Paused() const noexcept { return paused; }
+
+    void Pause(bool b) noexcept
     {
         if (paused == b)
             return;
@@ -141,6 +145,7 @@ public:
         {
             pauseAccum += current - save_clock;
         }
+
         paused = b;
     }
 };
@@ -159,47 +164,50 @@ class CStatTimer
     using Duration = CTimerBase::Duration;
 
 public:
-    CTimer T;
-    Duration accum;
-    float result;
-    u32 count;
+    CTimer T{};
+    Duration accum{};
+    f32 result{};
+    u32 count{};
 
-    CStatTimer() : T(), accum(), result(.0f), count(0) {}
+    constexpr CStatTimer() noexcept = default;
+
     void FrameStart();
     void FrameEnd();
 
-    ICF void Begin()
+    void Begin()
     {
         if (!g_bEnableStatGather)
             return;
+
         count++;
         T.Start();
     }
 
-    ICF void End()
+    void End()
     {
         if (!g_bEnableStatGather)
             return;
+
         accum += T.getElapsedTime();
     }
 
-    Duration getElapsedTime() const { return accum; }
+    [[nodiscard]] Duration getElapsedTime() const { return accum; }
 
-    u64 GetElapsed_ns() const
+    [[nodiscard]] auto GetElapsed_ns() const
     {
         using namespace std::chrono;
         return duration_cast<nanoseconds>(getElapsedTime()).count();
     }
 
-    u64 GetElapsed_ms() const
+    [[nodiscard]] auto GetElapsed_ms() const
     {
         using namespace std::chrono;
         return duration_cast<milliseconds>(getElapsedTime()).count();
     }
 
-    float GetElapsed_sec() const
+    [[nodiscard]] f32 GetElapsed_sec() const
     {
         using namespace std::chrono;
-        return duration_cast<duration<float>>(getElapsedTime()).count();
+        return duration_cast<duration<f32>>(getElapsedTime()).count();
     }
 };

@@ -14,7 +14,7 @@ private:
     HANDLE m_file_handle;
 
 public:
-    virtual void construct(LPCSTR file_name, const size_t& window_size);
+    virtual void construct(LPCSTR file_name, gsl::index window_size);
     virtual void destroy();
 };
 

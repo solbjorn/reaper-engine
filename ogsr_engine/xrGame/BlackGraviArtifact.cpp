@@ -7,6 +7,7 @@
 #include "stdafx.h"
 
 #include "BlackGraviArtifact.h"
+
 #include "PhysicsShell.h"
 #include "entity_alive.h"
 #include "ParticlesObject.h"
@@ -38,7 +39,7 @@ void CBlackGraviArtefact::Load(LPCSTR section)
     m_fImpulseThreshold = pSettings->r_float(section, "impulse_threshold");
     m_fRadius = pSettings->r_float(section, "radius");
     m_fStrikeImpulse = pSettings->r_float(section, "strike_impulse");
-    m_sParticleName = pSettings->r_string(section, "particle");
+    m_sParticleName._set(pSettings->r_string(section, "particle"));
 }
 
 BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)

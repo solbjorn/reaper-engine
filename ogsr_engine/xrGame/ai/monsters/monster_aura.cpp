@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "monster_aura.h"
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
@@ -54,7 +55,7 @@ void monster_aura::load_from_ini(CInifile* ini, pcstr const section, bool enable
     using namespace detail;
     string512 tempBuffer;
     xr_strconcat(tempBuffer, m_name, s_pp_effector_name_string);
-    m_pp_effector_name = READ_IF_EXISTS(ini, r_string, section, tempBuffer, nullptr);
+    m_pp_effector_name._set(READ_IF_EXISTS(ini, r_string, section, tempBuffer, nullptr));
 
     xr_strconcat(tempBuffer, m_name, s_pp_highest_at_string);
     m_pp_highest_at = READ_IF_EXISTS(ini, r_float, section, tempBuffer, 1.f);

@@ -72,7 +72,7 @@ void VerifyPath(absl::string_view path)
 // memory
 CMemoryWriter::~CMemoryWriter() { xr_free(data); }
 
-void CMemoryWriter::w(const void* ptr, size_t count)
+void CMemoryWriter::w(const void* ptr, gsl::index count)
 {
     if (position + count > mem_size)
     {
@@ -83,21 +83,22 @@ void CMemoryWriter::w(const void* ptr, size_t count)
             mem_size *= 2;
 
         if (!data)
-            data = (BYTE*)xr_malloc(mem_size);
+            data = static_cast<std::byte*>(xr_malloc(mem_size));
         else
-            data = (BYTE*)xr_realloc(data, mem_size);
+            data = static_cast<std::byte*>(xr_realloc(data, mem_size));
     }
 
-    CopyMemory(data + position, ptr, count);
+    std::memcpy(data + position, ptr, gsl::narrow_cast<size_t>(count));
     position += count;
+
     if (position > file_size)
         file_size = position;
 }
 
-void CMemoryWriter::reserve(const size_t count)
+void CMemoryWriter::reserve(gsl::index count)
 {
+    data = static_cast<std::byte*>(xr_malloc(mem_size));
     mem_size = count;
-    data = (BYTE*)xr_malloc(mem_size);
 }
 
 bool CMemoryWriter::save_to(LPCSTR fn) const
@@ -118,27 +119,30 @@ void IWriter::open_chunk(u32 type)
     chunk_pos.push(tell());
     w_u32(0); // the place for 'size'
 }
+
 void IWriter::close_chunk()
 {
     VERIFY(!chunk_pos.empty());
 
-    const size_t pos = tell();
+    const auto pos = tell();
     seek(chunk_pos.top());
-    w_u32(pos - chunk_pos.top() - 4);
+    w_u32(gsl::narrow<u32>(pos - chunk_pos.top() - 4));
     seek(pos);
     chunk_pos.pop();
 }
-size_t IWriter::chunk_size()
+
+gsl::index IWriter::chunk_size()
 {
     if (chunk_pos.empty())
         return 0;
+
     return tell() - chunk_pos.top() - 4;
 }
 
-void IWriter::w_compressed(void* ptr, size_t count, const bool encrypt, const bool is_ww)
+void IWriter::w_compressed(void* ptr, gsl::index count, bool encrypt, bool is_ww)
 {
     BYTE* dest{};
-    size_t dest_sz{};
+    gsl::index dest_sz{};
     _compressLZ(&dest, &dest_sz, ptr, count);
 
     if (encrypt)
@@ -149,7 +153,7 @@ void IWriter::w_compressed(void* ptr, size_t count, const bool encrypt, const bo
     xr_free(dest);
 }
 
-void IWriter::w_chunk(u32 type, void* data, size_t size, const bool encrypt, const bool is_ww)
+void IWriter::w_chunk(u32 type, void* data, gsl::index size, bool encrypt, bool is_ww)
 {
     open_chunk(type);
 
@@ -160,6 +164,7 @@ void IWriter::w_chunk(u32 type, void* data, size_t size, const bool encrypt, con
 
     close_chunk();
 }
+
 void IWriter::w_sdir(const Fvector& D)
 {
     Fvector C;
@@ -176,6 +181,7 @@ void IWriter::w_sdir(const Fvector& D)
     w_dir(C);
     w_float(mag);
 }
+
 void IWriter::w_printf(const char* format, ...)
 {
     va_list mark;
@@ -190,14 +196,15 @@ void IWriter::w_printf(const char* format, ...)
 IReader* IReader::open_chunk(u32 ID)
 {
     BOOL bCompressed;
-    const size_t dwSize = find_chunk(ID, &bCompressed);
+    const auto dwSize = find_chunk(ID, &bCompressed);
     if (dwSize != 0)
     {
         if (bCompressed)
         {
-            BYTE* dest;
-            size_t dest_sz;
-            _decompressLZ(&dest, &dest_sz, pointer(), dwSize);
+            BYTE* dest{};
+            gsl::index dest_sz{};
+
+            std::ignore = _decompressLZ(&dest, &dest_sz, pointer(), dwSize);
             return xr_new<CTempReader>(dest, dest_sz, tell() + dwSize);
         }
         else
@@ -230,25 +237,26 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     }
 
     //	open
-    if (elapsed() < static_cast<long>(sizeof(u32) * 2))
+    if (elapsed() < gsl::index{sizeof(u32) * 2})
         return nullptr;
 
     ID = r_u32();
-    size_t _size = r_u32();
+    gsl::index _size{r_u32()};
 
     // На всякий случай тут тоже так сделаем по аналогии с find_chunk()
-    if (elapsed() < static_cast<long>(_size))
+    if (elapsed() < _size)
     {
-        Msg("!![%s] chunk [%u] has invalid size [%zu], return elapsed size [%zd]", __FUNCTION__, ID, _size, elapsed());
+        Msg("!![%s] chunk [%u] has invalid size [%zd], return elapsed size [%zd]", __FUNCTION__, ID, _size, elapsed());
         _size = elapsed();
     }
 
     if (ID & CFS_CompressMark)
     {
         // compressed
-        u8* dest;
-        size_t dest_sz;
-        _decompressLZ(&dest, &dest_sz, pointer(), _size);
+        u8* dest{};
+        gsl::index dest_sz{};
+
+        std::ignore = _decompressLZ(&dest, &dest_sz, pointer(), _size);
         return xr_new<CTempReader>(dest, dest_sz, tell() + _size);
     }
     else
@@ -279,11 +287,12 @@ void IReader::skip_bom(const char* dbg_name)
     Msg("! Skip BOM for file [%s]", dbg_name);
 }
 
-void IReader::r(void* p, size_t cnt)
+void IReader::r(void* p, gsl::index cnt)
 {
     R_ASSERT(Pos + cnt <= Size);
-    CopyMemory(p, pointer(), cnt);
+    std::memcpy(p, pointer(), gsl::narrow_cast<size_t>(cnt));
     advance(cnt);
+
 #ifdef DEBUG
     BOOL bShow = FALSE;
     if (smart_cast<CVirtualFileReader*>(this))
@@ -295,12 +304,16 @@ void IReader::r(void* p, size_t cnt)
 #endif
 }
 
-constexpr bool is_term(const char a) { return a == '\r' || a == '\n'; }
-
-IC u32 IReader::advance_term_string()
+namespace
 {
-    size_t sz = 0;
-    char* src = (char*)data;
+constexpr bool is_term(char a) { return a == '\r' || a == '\n'; }
+} // namespace
+
+gsl::index IReader::advance_term_string()
+{
+    const char* src = reinterpret_cast<const char*>(data);
+    gsl::index sz{};
+
     while (!eof())
     {
         Pos++;
@@ -313,29 +326,31 @@ IC u32 IReader::advance_term_string()
             break;
         }
     }
+
     return sz;
 }
 
-void IReader::r_string(char* dest, size_t tgt_sz)
+void IReader::r_string(char* dest, gsl::index tgt_sz)
 {
-    char* src = (char*)data + Pos;
-    size_t sz = advance_term_string();
+    const char* src = reinterpret_cast<const char*>(data) + Pos;
+    const auto sz = advance_term_string();
     R_ASSERT2(sz < (tgt_sz - 1), "Dest string less than needed.");
-    strncpy(dest, src, sz);
-    dest[sz] = 0;
+
+    strncpy(dest, src, gsl::narrow_cast<size_t>(sz));
+    dest[sz] = '\0';
 }
 
 void IReader::r_string(xr_string& dest)
 {
-    char* src = (char*)data + Pos;
-    size_t sz = advance_term_string();
-    dest.assign(src, sz);
+    const char* src = reinterpret_cast<const char*>(data) + Pos;
+    const auto sz = advance_term_string();
+    dest.assign(src, gsl::narrow_cast<size_t>(sz));
 }
 
-void IReader::r_stringZ(char* dest, size_t tgt_sz)
+void IReader::r_stringZ(char* dest, gsl::index tgt_sz)
 {
-    char* src = (char*)data;
-    size_t sz = 0;
+    const char* src = reinterpret_cast<const char*>(data);
+    gsl::index sz{};
 
     while ((src[Pos] != 0) && (!eof()))
     {
@@ -352,9 +367,9 @@ void IReader::r_stringZ(char* dest, size_t tgt_sz)
 
 void IReader::r_stringZ(shared_str& dest)
 {
-    char* src = (char*)(data + Pos);
+    const char* src = reinterpret_cast<const char*>(data) + Pos;
+    gsl::index size{};
 
-    size_t size = 0;
     while ((src[size] != 0) && (!eof()))
     {
         size++;
@@ -362,29 +377,28 @@ void IReader::r_stringZ(shared_str& dest)
     }
 
     std::string tmp;
-    tmp.assign(src, size);
+    tmp.assign(src, gsl::narrow_cast<size_t>(size));
 
-    dest = tmp.c_str();
+    dest._set(tmp.c_str());
 
     // advance(size);
 
     if (!eof())
         Pos++;
 }
+
 void IReader::r_stringZ(xr_string& dest)
 {
-    char* src = (char*)(data + Pos);
+    const char* src = reinterpret_cast<const char*>(data) + Pos;
+    gsl::index size{};
 
-    size_t size = 0;
     while ((src[size] != 0) && (!eof()))
     {
         size++;
         Pos++;
     }
 
-    dest.assign(src, size);
-
-    // advance(size);
+    dest.assign(src, gsl::narrow_cast<size_t>(size));
 
     if (!eof())
         Pos++;
@@ -392,7 +406,8 @@ void IReader::r_stringZ(xr_string& dest)
 
 void IReader::skip_stringZ()
 {
-    char* src = (char*)data;
+    const char* src = reinterpret_cast<const char*>(data);
+
     while ((src[Pos] != 0) && (!eof()))
         Pos++;
 
@@ -401,7 +416,13 @@ void IReader::skip_stringZ()
 
 //---------------------------------------------------
 // temp stream
-CTempReader::~CTempReader() { xr_free(data); }
+CTempReader::~CTempReader()
+{
+    auto ptr = const_cast<std::byte*>(data);
+    xr_free(ptr);
+
+    data = nullptr;
+}
 
 //---------------------------------------------------
 // pack stream
@@ -415,7 +436,7 @@ CPackReader::~CPackReader()
 }
 //---------------------------------------------------
 
-CVirtualFileReader::CVirtualFileReader(const char* cFileName)
+CVirtualFileReader::CVirtualFileReader(gsl::czstring cFileName)
 {
     Pos = 0;
 
@@ -433,7 +454,7 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
     hSrcMap = CreateFileMapping(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
     R_ASSERT3(hSrcMap != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
 
-    data = (char*)MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, 0, 0);
+    data = static_cast<const std::byte*>(MapViewOfFile(hSrcMap, FILE_MAP_READ, 0, 0, 0));
     R_ASSERT3(!Size || data, cFileName, Debug.error2string(GetLastError()));
 
 #ifdef DEBUG
@@ -447,7 +468,7 @@ CVirtualFileReader::~CVirtualFileReader()
     unregister_file_mapping(data, Size);
 #endif // DEBUG
 
-    UnmapViewOfFile((void*)data);
+    UnmapViewOfFile(data);
     CloseHandle(hSrcMap);
     CloseHandle(hSrcFile);
 }

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "QueryHelper.h"
 #include "r__sync_point.h"
+
+#include "QueryHelper.h"
 
 void R_sync_point::Create()
 {
@@ -11,7 +12,7 @@ void R_sync_point::Create()
     CHK_DX(EndQuery(q_sync_point[0]));
 }
 
-bool R_sync_point::Wait(u32 wait_sleep, u64 timeout)
+bool R_sync_point::Wait(s32 wait_sleep, s64 timeout)
 {
     BOOL result = FALSE;
     CTimer T;

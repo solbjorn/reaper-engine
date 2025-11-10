@@ -287,14 +287,16 @@ public:
     {
         if (ctable)
             return ctable->get(n);
-        return nullptr;
+
+        return ref_constant{};
     }
 
     ICF ref_constant get_c(const shared_str& n)
     {
         if (ctable)
             return ctable->get(n);
-        return nullptr;
+
+        return ref_constant{};
     }
 
     // constants - direct (fast)
@@ -381,6 +383,7 @@ public:
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);
     void dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, const u16* pIdx, int pcnt);
     void dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt);
+
     void dbg_DrawAABB(Fvector& T, float sx, float sy, float sz, u32 C)
     {
         Fvector half_dim;
@@ -389,9 +392,10 @@ public:
         TM.translate(T);
         dbg_DrawOBB(TM, half_dim, C);
     }
+
     void dbg_DrawOBB(Fmatrix& T, Fvector& half_dim, u32 C);
-    void dbg_DrawTRI(Fmatrix& T, Fvector* p, u32 C) { dbg_DrawTRI(T, p[0], p[1], p[2], C); }
-    void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
+    void dbg_DrawTRI(const Fmatrix& T, const Fvector* p, u32 C) { dbg_DrawTRI(T, p[0], p[1], p[2], C); }
+    void dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C);
     void dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
     void dbg_DrawEllipse(Fmatrix& T, u32 C);
 

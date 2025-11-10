@@ -207,9 +207,8 @@ void CScriptGameObject::set_enemy_callback(sol::function function, sol::object o
     monster->memory().enemy().set_useful_callback(std::move(function), std::move(object));
 }
 
-void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(function, sol::object{}); }
-
-void CScriptGameObject::set_enemy_callback() { set_enemy_callback(sol::function{}, sol::object{}); }
+void CScriptGameObject::set_enemy_callback(sol::function function) { set_enemy_callback(function, {}); }
+void CScriptGameObject::set_enemy_callback() { set_enemy_callback({}, {}); }
 
 void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function, sol::object object)
 {
@@ -226,9 +225,8 @@ void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::functio
     }
 }
 
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function) { SetCallback(type, function, sol::object{}); }
-
-void CScriptGameObject::SetCallback(GameObject::ECallbackType type) { SetCallback(type, sol::function{}, sol::object{}); }
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type, sol::function function) { SetCallback(type, function, {}); }
+void CScriptGameObject::SetCallback(GameObject::ECallbackType type) { SetCallback(type, {}, {}); }
 
 void CScriptGameObject::set_fastcall(sol::function function, sol::object object)
 {
@@ -237,7 +235,7 @@ void CScriptGameObject::set_fastcall(sol::function function, sol::object object)
     CPHSriptReqGObjComparer cmpr(m_game_object);
 
     Level().ph_commander_scripts().remove_calls(&cmpr);
-    Level().ph_commander_scripts().add_call(c, a);
+    std::ignore = Level().ph_commander_scripts().add_call(c, a);
 }
 
 void CScriptGameObject::set_const_force(const Fvector& dir, float value, u32 time_interval)

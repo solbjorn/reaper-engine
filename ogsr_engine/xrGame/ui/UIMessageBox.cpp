@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIMessageBox.h"
+
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "UIEditBox.h"
@@ -226,8 +227,7 @@ void CUIMessageBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     inherited::SendMessage(pWnd, msg, pData);
 }
 
-void CUIMessageBox::SetText(LPCSTR str) { m_UIStaticText->SetText(*(CStringTable().translate(str))); }
-
+void CUIMessageBox::SetText(LPCSTR str) { m_UIStaticText->SetText(*(CStringTable().translate(shared_str{str}))); }
 LPCSTR CUIMessageBox::GetText() { return m_UIStaticText->GetText(); }
 
 LPCSTR CUIMessageBox::GetHost()

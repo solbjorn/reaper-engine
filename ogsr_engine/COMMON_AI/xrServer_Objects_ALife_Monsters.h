@@ -62,8 +62,9 @@ xr_vector<shared_str> m_CheckedCharacters;
 xr_vector<shared_str> m_DefaultCharacters;
 
 public:
-CSE_ALifeTraderAbstract(LPCSTR caSection);
+explicit CSE_ALifeTraderAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeTraderAbstract();
+
 // we need this to prevent virtual inheritance :-(
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
@@ -87,8 +88,11 @@ add_to_type_list(CSE_ALifeTraderAbstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTraderAbstract)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract) CSE_ALifeTrader(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader, CSE_ALifeDynamicObjectVisual, CSE_ALifeTraderAbstract)
+public:
+explicit CSE_ALifeTrader(LPCSTR caSection);
 virtual ~CSE_ALifeTrader();
+
 virtual bool interactive() const;
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
@@ -115,14 +119,14 @@ add_to_type_list(CSE_ALifeTrader);
 #define script_type_list save_type_list(CSE_ALifeTrader)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone, CSE_ALifeSpaceRestrictor)
-
+public:
 ALife::EHitType m_tHitType;
 u32 m_owner_id;
 u32 m_enabled_time;
 u32 m_disabled_time;
 u32 m_start_time_shift;
 
-CSE_ALifeCustomZone(LPCSTR caSection);
+explicit CSE_ALifeCustomZone(LPCSTR caSection);
 virtual ~CSE_ALifeCustomZone();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCustomZone);
@@ -138,8 +142,9 @@ float m_offline_interactive_radius;
 u32 m_artefact_position_offset{};
 u16 m_artefact_spawn_count;
 
-CSE_ALifeAnomalousZone(LPCSTR caSection);
+explicit CSE_ALifeAnomalousZone(LPCSTR caSection);
 virtual ~CSE_ALifeAnomalousZone();
+
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -165,7 +170,7 @@ add_to_type_list(CSE_ALifeAnomalousZone);
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone, CSE_ALifeCustomZone, CSE_Motion)
 public:
-CSE_ALifeTorridZone(LPCSTR caSection);
+explicit CSE_ALifeTorridZone(LPCSTR caSection);
 virtual ~CSE_ALifeTorridZone();
 
 virtual CSE_Motion* motion();
@@ -176,9 +181,13 @@ add_to_type_list(CSE_ALifeTorridZone);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeTorridZone)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual) shared_str attack_animation;
-CSE_ALifeZoneVisual(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual, CSE_ALifeAnomalousZone, CSE_Visual)
+public:
+shared_str attack_animation;
+
+explicit CSE_ALifeZoneVisual(LPCSTR caSection);
 virtual ~CSE_ALifeZoneVisual();
+
 virtual CSE_Visual* visual();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeZoneVisual);
@@ -191,7 +200,9 @@ add_to_type_list(CSE_ALifeZoneVisual);
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract, CSE_ALifeDynamicObjectVisual) u8 s_team;
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract, CSE_ALifeDynamicObjectVisual)
+public:
+u8 s_team;
 u8 s_squad;
 u8 s_group;
 float fHealth;
@@ -215,8 +226,9 @@ u32 m_ef_detector_type;
 ALife::_OBJECT_ID m_killer_id;
 ALife::_TIME_ID m_game_death_time;
 
-CSE_ALifeCreatureAbstract(LPCSTR caSection);
+explicit CSE_ALifeCreatureAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeCreatureAbstract();
+
 virtual u8 g_team();
 virtual u8 g_squad();
 virtual u8 g_group();
@@ -245,7 +257,9 @@ add_to_type_list(CSE_ALifeCreatureAbstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureAbstract)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract, CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable) GameGraph::_GRAPH_ID m_tNextGraphID;
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterAbstract, CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable)
+public:
+GameGraph::_GRAPH_ID m_tNextGraphID;
 GameGraph::_GRAPH_ID m_tPrevGraphID;
 float m_fGoingSpeed;
 float m_fCurrentLevelGoingSpeed;
@@ -278,8 +292,9 @@ public:
 ALife::_OBJECT_ID m_group_id;
 
 public:
-CSE_ALifeMonsterAbstract(LPCSTR caSection);
+explicit CSE_ALifeMonsterAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeMonsterAbstract();
+
 IC float g_MaxHealth() const { return m_fMaxHealthValue; }
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base();
@@ -313,7 +328,7 @@ virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
 virtual void __on_register();
 virtual void __on_unregister();
-XR_SYSV [[nodiscard]] Fvector draw_level_position() const override;
+[[nodiscard]] Fvector draw_level_position() const override;
 virtual bool redundant() const;
 #endif
 virtual bool need_update(CSE_ALifeDynamicObject* object);
@@ -330,7 +345,7 @@ add_to_type_list(CSE_ALifeMonsterAbstract);
 #define script_type_list save_type_list(CSE_ALifeMonsterAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor, CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)
-
+public:
 u16 mstate{};
 Fvector accel;
 Fvector velocity;
@@ -348,8 +363,10 @@ SPHNetState m_AliveState{};
 u8 m_BoneDataSize{};
 char m_DeadBodyData[1024]{};
 ///////////////////////////////////////////
-CSE_ALifeCreatureActor(LPCSTR caSection);
+
+explicit CSE_ALifeCreatureActor(LPCSTR caSection);
 virtual ~CSE_ALifeCreatureActor();
+
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
 virtual CSE_Abstract* init();
@@ -374,8 +391,11 @@ add_to_type_list(CSE_ALifeCreatureActor);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureActor)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract) CSE_ALifeCreatureCrow(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow, CSE_ALifeCreatureAbstract)
+public:
+explicit CSE_ALifeCreatureCrow(LPCSTR caSection);
 virtual ~CSE_ALifeCreatureCrow();
+
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreatureCrow);
@@ -384,8 +404,11 @@ add_to_type_list(CSE_ALifeCreatureCrow);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_ALifeCreatureCrow)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract) CSE_ALifeCreaturePhantom(LPCSTR caSection);
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom, CSE_ALifeCreatureAbstract)
+public:
+explicit CSE_ALifeCreaturePhantom(LPCSTR caSection);
 virtual ~CSE_ALifeCreaturePhantom();
+
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeCreaturePhantom);
@@ -395,6 +418,7 @@ add_to_type_list(CSE_ALifeCreaturePhantom);
 #define script_type_list save_type_list(CSE_ALifeCreaturePhantom)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie, CSE_ALifeMonsterAbstract)
+public:
 // Personal characteristics:
 float fEyeFov;
 float fEyeRange;
@@ -409,7 +433,7 @@ u16 u16HitInterval;
 float fAttackDistance;
 float fAttackAngle;
 
-CSE_ALifeMonsterZombie(LPCSTR caSection); // constructor for variable initialization
+explicit CSE_ALifeMonsterZombie(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterZombie();
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeMonsterZombie);
@@ -422,7 +446,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase, CSE_ALifeMonsterAbstract, CSE
 public:
 u16 m_spec_object_id;
 
-CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
+explicit CSE_ALifeMonsterBase(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifeMonsterBase();
 
 virtual void load(NET_Packet& tNetPacket);
@@ -443,7 +467,7 @@ add_to_type_list(CSE_ALifeMonsterBase);
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom, CSE_ALifeMonsterBase)
 public:
-CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
+explicit CSE_ALifePsyDogPhantom(LPCSTR caSection); // constructor for variable initialization
 virtual ~CSE_ALifePsyDogPhantom();
 
 virtual CSE_Abstract* cast_abstract() { return this; }
@@ -458,7 +482,7 @@ add_to_type_list(CSE_ALifePsyDogPhantom);
 //-------------------------------
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract, CSE_ALifeTraderAbstract, CSE_ALifeMonsterAbstract)
 public:
-CSE_ALifeHumanAbstract(LPCSTR caSection);
+explicit CSE_ALifeHumanAbstract(LPCSTR caSection);
 virtual ~CSE_ALifeHumanAbstract();
 
 virtual CSE_Abstract* init();
@@ -507,7 +531,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker, CSE_ALifeHumanAbstract, CSE_
 public:
 shared_str m_start_dialog;
 
-CSE_ALifeHumanStalker(LPCSTR caSection);
+explicit CSE_ALifeHumanStalker(LPCSTR caSection);
 virtual ~CSE_ALifeHumanStalker();
 
 virtual void load(NET_Packet& tNetPacket);
@@ -521,7 +545,7 @@ add_to_type_list(CSE_ALifeHumanStalker);
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeOnlineOfflineGroup, CSE_ALifeDynamicObject, CSE_ALifeSchedulable)
 public:
-CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
+explicit CSE_ALifeOnlineOfflineGroup(LPCSTR caSection);
 virtual ~CSE_ALifeOnlineOfflineGroup();
 
 virtual CSE_Abstract* base();

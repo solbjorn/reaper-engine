@@ -131,7 +131,7 @@ private:
     // build path after jump
     void grounding();
     // get target position according to object center point
-    XR_SYSV [[nodiscard]] Fvector get_target(CObject* obj);
+    [[nodiscard]] Fvector get_target(CObject* obj);
     // check for hit object
     void hit_test();
 

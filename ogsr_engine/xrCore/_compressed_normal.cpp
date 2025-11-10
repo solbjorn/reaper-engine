@@ -20,7 +20,7 @@ namespace
 class pvUVAdjustment_init
 {
 private:
-    std::array<float, 0x2000> tbl;
+    std::array<f32, 0x2000> tbl;
 
 public:
     constexpr pvUVAdjustment_init()
@@ -38,16 +38,16 @@ public:
             }
 
             // convert to 3D vectors
-            float x{gsl::narrow<float>(xbits)};
-            float y{gsl::narrow<float>(ybits)};
-            float z{gsl::narrow<float>(126 - xbits - ybits)};
+            f32 x{gsl::narrow<f32>(xbits)};
+            f32 y{gsl::narrow<f32>(ybits)};
+            f32 z{gsl::narrow<f32>(126 - xbits - ybits)};
 
             // calculate the amount of normalization required
             elem = 1.0f / _sqrt(y * y + z * z + x * x);
         }
     }
 
-    [[nodiscard]] constexpr const float& operator[](gsl::index i) const { return tbl[i]; }
+    [[nodiscard]] constexpr const f32& operator[](gsl::index i) const { return tbl[gsl::narrow_cast<size_t>(i)]; }
 };
 
 const pvUVAdjustment_init pvUVAdjustment;

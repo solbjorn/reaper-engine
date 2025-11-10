@@ -79,7 +79,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
         return FALSE;
     }
 
-    ZeroMemory(&mmckinfoParent, sizeof(mmckinfoParent));
+    std::memset(&mmckinfoParent, 0, sizeof(mmckinfoParent));
     mmckinfoParent.fccType = mmioFOURCC('h', 'd', 'r', 'l');
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoParent, nullptr, MMIO_FINDLIST)))
     {
@@ -88,7 +88,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     }
     //-------------------------------------------------------------------
     //++strl
-    ZeroMemory(&mmckinfoParent, sizeof(mmckinfoParent));
+    std::memset(&mmckinfoParent, 0, sizeof(mmckinfoParent));
     mmckinfoParent.fccType = mmioFOURCC('s', 't', 'r', 'l');
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoParent, nullptr, MMIO_FINDLIST)))
     {
@@ -97,7 +97,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     }
 
     //++strh
-    ZeroMemory(&mmckinfoParent, sizeof(mmckinfoParent));
+    std::memset(&mmckinfoParent, 0, sizeof(mmckinfoParent));
     mmckinfoParent.fccType = mmioFOURCC('s', 't', 'r', 'h');
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoParent, nullptr, MMIO_FINDCHUNK)))
     {
@@ -137,7 +137,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     m_pDecompressedBuf = (BYTE*)xr_malloc(m_dwWidth * m_dwHeight * 4 + 4);
 
     //++strf
-    ZeroMemory(&mmckinfoParent, sizeof(mmckinfoParent));
+    std::memset(&mmckinfoParent, 0, sizeof(mmckinfoParent));
     mmckinfoParent.fccType = mmioFOURCC('s', 't', 'r', 'f');
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoParent, nullptr, MMIO_FINDCHUNK)))
     {
@@ -232,7 +232,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     }
 
     // Найти чанк FOURCC('idx1')
-    ZeroMemory(&mmckinfoSubchunk, sizeof(mmckinfoSubchunk));
+    std::memset(&mmckinfoSubchunk, 0, sizeof(mmckinfoSubchunk));
     mmckinfoSubchunk.fccType = mmioFOURCC('i', 'd', 'x', '1');
 
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoSubchunk, nullptr, MMIO_FINDCHUNK)) || mmckinfoSubchunk.cksize <= 4)

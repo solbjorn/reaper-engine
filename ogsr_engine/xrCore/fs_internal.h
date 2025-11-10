@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lzhuf.h"
+
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
@@ -14,11 +15,13 @@ private:
     FILE* hf;
 
 public:
-    CFileWriter(const char* name, bool exclusive)
+    explicit CFileWriter(gsl::czstring name, bool exclusive)
     {
         R_ASSERT(name && name[0]);
-        fName = name;
+
+        fName._set(name);
         VerifyPath(*fName);
+
         if (exclusive)
         {
             int handle = _sopen(*fName, _O_WRONLY | _O_TRUNC | _O_CREAT | _O_BINARY, _SH_DENYWR);
@@ -27,45 +30,47 @@ public:
         else
         {
             hf = fopen(*fName, "wb");
-            if (!hf)
+            if (hf == nullptr)
                 Msg("!Can't write file: '%s'. Error: '%s'.", *fName, _sys_errlist[errno]);
         }
     }
 
     virtual ~CFileWriter()
     {
-        if (hf)
+        if (hf != nullptr)
         {
-            fclose(hf);
+            _fclose_nolock(hf);
+
             // release RO attrib
-            DWORD dwAttr = GetFileAttributes(*fName);
-            if ((dwAttr != u32(-1)) && (dwAttr & FILE_ATTRIBUTE_READONLY))
+            u32 dwAttr = GetFileAttributes(*fName);
+            if (dwAttr != INVALID_FILE_ATTRIBUTES && (dwAttr & FILE_ATTRIBUTE_READONLY))
             {
-                dwAttr &= ~FILE_ATTRIBUTE_READONLY;
+                dwAttr &= ~u32{FILE_ATTRIBUTE_READONLY};
                 SetFileAttributes(*fName, dwAttr);
             }
         }
     }
 
     // kernel
-    virtual void w(const void* _ptr, size_t count)
+    void w(const void* _ptr, gsl::index count) override
     {
-        if (hf && count)
+        if (hf != nullptr && count > 0)
         {
-            const size_t W = fwrite(_ptr, sizeof(char), count, hf);
-            R_ASSERT3(W == count, "Can't write mem block to file. Disk maybe full.", _sys_errlist[errno]);
+            const auto cnt = gsl::narrow_cast<size_t>(count);
+            const auto W = _fwrite_nolock(_ptr, sizeof(char), cnt, hf);
+            R_ASSERT3(W == cnt, "Can't write mem block to file. Disk maybe full.", _sys_errlist[errno]);
         }
     }
 
-    virtual void seek(size_t pos)
+    void seek(gsl::index pos) override
     {
-        if (hf)
-            fseek(hf, pos, SEEK_SET);
+        if (hf != nullptr)
+            _fseeki64_nolock(hf, pos, SEEK_SET);
     }
 
-    virtual size_t tell() { return hf ? ftell(hf) : 0; }
-    virtual bool valid() { return !!hf; }
-    virtual size_t flush() { return fflush(hf); }
+    [[nodiscard]] gsl::index tell() override { return valid() ? _ftelli64_nolock(hf) : 0; }
+    [[nodiscard]] bool valid() override { return hf != nullptr; }
+    [[nodiscard]] gsl::index flush() override { return _fflush_nolock(hf); }
 };
 
 // It automatically frees memory after destruction
@@ -74,7 +79,7 @@ class CTempReader : public IReader
     RTTI_DECLARE_TYPEINFO(CTempReader, IReader);
 
 public:
-    CTempReader(void* _data, size_t _size, size_t _iterpos) : IReader(_data, _size, _iterpos) {}
+    explicit CTempReader(const void* _data, gsl::index _size, gsl::index _iterpos) : IReader{_data, _size, _iterpos} {}
     virtual ~CTempReader();
 };
 
@@ -83,9 +88,9 @@ class CPackReader : public IReader
     RTTI_DECLARE_TYPEINFO(CPackReader, IReader);
 
 public:
-    void* base_address;
+    const void* base_address;
 
-    CPackReader(void* _base, void* _data, size_t _size) : IReader(_data, _size) { base_address = _base; }
+    explicit CPackReader(const void* _base, const void* _data, gsl::index _size) : IReader{_data, _size}, base_address{_base} {}
     virtual ~CPackReader();
 };
 
@@ -97,6 +102,6 @@ private:
     void *hSrcFile, *hSrcMap;
 
 public:
-    CVirtualFileReader(const char* cFileName);
+    explicit CVirtualFileReader(gsl::czstring cFileName);
     virtual ~CVirtualFileReader();
 };

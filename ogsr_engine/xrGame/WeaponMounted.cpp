@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "WeaponMounted.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "camerafirsteye.h"
 #include "actor.h"
@@ -57,7 +58,7 @@ void CWeaponMounted::Load(LPCSTR section)
     HUD_SOUND::LoadSound(section, "snd_shoot", sndShot, SOUND_TYPE_WEAPON_SHOOTING);
 
     // тип используемых патронов
-    m_sAmmoType = pSettings->r_string(section, "ammo_class");
+    m_sAmmoType._set(pSettings->r_string(section, "ammo_class"));
     m_CurrentAmmo.Load(*m_sAmmoType, 0);
 
     // подбрасывание камеры во время отдачи

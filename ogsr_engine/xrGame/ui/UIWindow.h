@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../xr_level_controller.h"
-
-class CUIWindow;
-
 #include "UIMessages.h"
 #include "../script_export_space.h"
 #include "uiabstract.h"
+
+#include "../xr_level_controller.h"
+
+class CUIWindow;
 
 class CUIWindow : public CUISimpleWindow
 {
@@ -159,7 +159,7 @@ public:
     LPCSTR WindowName_script() { return *m_windowName; }
 
     CUIWindow* FindChild(const shared_str name, u32 max_nested = 15);
-    CUIWindow* FindChild(LPCSTR s) { return FindChild(shared_str(s)); }
+    CUIWindow* FindChild(LPCSTR s) { return FindChild(shared_str{s}); }
 
     IC bool CursorOverWindow() const { return m_bCursorOverWindow; }
 

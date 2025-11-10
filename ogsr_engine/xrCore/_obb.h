@@ -143,8 +143,7 @@ public:
     }
 };
 
-typedef _obb<float> Fobb;
-typedef _obb<double> Dobb;
+using Fobb = _obb<f32>;
 
 template <class T>
 BOOL _valid(const _obb<T>& m)

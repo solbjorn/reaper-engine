@@ -27,42 +27,39 @@ struct elipsoid
 struct ray_cache
 {
     // previous state
-    Fvector start;
-    Fvector dir;
-    float range;
-    BOOL result;
+    Fvector start{};
+    Fvector dir{};
+    f32 range{};
+    bool result{};
 
     // cached vertices
-    Fvector verts[3];
+    Fvector verts[3]{};
 
-    ray_cache()
-    {
-        start.set(0, 0, 0);
-        dir.set(0, 0, 0);
-        range = 0;
-        result = FALSE;
-        verts[0].set(0, 0, 0);
-        verts[1].set(0, 0, 0);
-        verts[2].set(0, 0, 0);
-    }
-    void set(const Fvector& _start, const Fvector& _dir, const float _range, const BOOL _result)
+    constexpr ray_cache() = default;
+
+    constexpr void set(const Fvector& _start, const Fvector& _dir, f32 _range, bool _result)
     {
         start = _start;
         dir = _dir;
         range = _range;
         result = _result;
     }
-    BOOL similar(const Fvector& _start, const Fvector& _dir, const float _range)
+
+    [[nodiscard]] constexpr bool similar(const Fvector& _start, const Fvector& _dir, f32 _range)
     {
         if (!_start.similar(start))
-            return FALSE;
-        if (!fsimilar(1.f, dir.dotproduct(_dir)))
-            return FALSE;
+            return false;
+
+        if (!fsimilar(1.0f, dir.dotproduct(_dir)))
+            return false;
+
         if (!fsimilar(_range, range))
-            return FALSE;
-        return TRUE;
+            return false;
+
+        return true;
     }
 };
+
 enum rq_target
 {
     rqtNone = (0),
@@ -73,14 +70,16 @@ enum rq_target
     rqtBoth = (rqtObject | rqtStatic),
     rqtDyn = (rqtObject | rqtShape | rqtObstacle)
 };
+
 struct ray_defs
 {
     Fvector start;
     Fvector dir;
-    float range;
+    f32 range;
     u32 flags;
     rq_target tgt;
-    ray_defs(const Fvector& _start, const Fvector& _dir, float _range, u32 _flags, rq_target _tgt)
+
+    constexpr explicit ray_defs(const Fvector& _start, const Fvector& _dir, f32 _range, u32 _flags, rq_target _tgt)
     {
         start = _start;
         dir = _dir;
@@ -89,6 +88,7 @@ struct ray_defs
         tgt = _tgt;
     }
 };
+
 struct rq_result
 {
     CObject* O; // if NULL - static

@@ -89,21 +89,19 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
     for (u16 i = 0; i < itemCount; ++i)
     {
         string256 temp0, temp1;
-        _GetItem(artefacts, 2 * i, temp0);
-        _GetItem(artefacts, 2 * i + 1, temp1);
+        std::ignore = _GetItem(artefacts, 2 * i, temp0);
+        std::ignore = _GetItem(artefacts, 2 * i + 1, temp1);
 
         artefact_pair& artefact_spawn = m_weights[i];
-        artefact_spawn.first = temp0;
+        artefact_spawn.first._set(temp0);
         artefact_spawn.second = (float)atof(temp1);
 
         total_probability += artefact_spawn.second;
     }
 
     // нормализировать вероятности
-    for (u32 i = 0; i < m_weights.size(); ++i)
-    {
-        m_weights[i].second = m_weights[i].second / total_probability;
-    }
+    for (auto& weight : m_weights)
+        weight.second /= total_probability;
 
     for (u32 i = 0; i < m_artefact_count; ++i)
     {

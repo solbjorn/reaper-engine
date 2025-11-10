@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "UIPdaWnd.h"
-#include "../Pda.h"
 
+#include "../Pda.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
 #include "UIInventoryUtilities.h"
@@ -284,7 +284,6 @@ void CUIPdaWnd::Show()
         Actor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
 
     InventoryUtilities::SendInfoToActor("ui_pda");
-
     inherited::Show();
 }
 
@@ -301,7 +300,7 @@ void CUIPdaWnd::Hide()
 
 void CUIPdaWnd::UpdateDateTime()
 {
-    static shared_str prevStrTime = " ";
+    static shared_str prevStrTime{" "};
     xr_string strTime = *InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes);
     strTime += " ";
     strTime += *InventoryUtilities::GetGameDateAsString(InventoryUtilities::edpDateToDay);
@@ -309,7 +308,7 @@ void CUIPdaWnd::UpdateDateTime()
     if (std::is_neq(xr_strcmp(strTime, prevStrTime)))
     {
         UITimerBackground->UITitleText.SetText(strTime.c_str());
-        prevStrTime = strTime.c_str();
+        prevStrTime._set(strTime.c_str());
     }
 }
 

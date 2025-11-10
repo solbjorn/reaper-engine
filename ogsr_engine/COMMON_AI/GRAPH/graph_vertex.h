@@ -31,8 +31,9 @@ private:
     size_t* m_edge_count;
 
 public:
-    IC CVertex(const _data_type& data, const _vertex_id_type& vertex_id, size_t* edge_count);
+    inline explicit CVertex(const _data_type& data, const _vertex_id_type& vertex_id, size_t* edge_count);
     IC ~CVertex();
+
     IC bool operator==(const CVertex& obj) const;
     IC void add_edge(CVertex* vertex, const typename _graph_type::CEdge::edge_weight_type& edge_weight);
     IC void remove_edge(const _vertex_id_type& vertex_id);

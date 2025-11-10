@@ -18,7 +18,7 @@ class line_editor : public IInputReceiver
     RTTI_DECLARE_TYPEINFO(line_editor, IInputReceiver);
 
 public:
-    line_editor(u32 str_buffer_size);
+    explicit line_editor(u32 str_buffer_size);
     virtual ~line_editor();
 
     IC line_edit_control& control() { return m_control; }

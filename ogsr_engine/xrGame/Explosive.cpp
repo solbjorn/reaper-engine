@@ -69,7 +69,7 @@ CExplosive::CExplosive()
 
 void CExplosive::LightCreate()
 {
-    m_pLight = ::Render->light_create();
+    m_pLight._set(::Render->light_create());
     m_pLight->set_shadow(true);
     m_pLight->set_moveable(true);
 }
@@ -104,9 +104,9 @@ void CExplosive::Load(CInifile* ini, LPCSTR section)
     fWallmarkSize = ini->r_float(section, "wm_size");
     R_ASSERT(fWallmarkSize > 0);
 
-    m_sExplodeParticles = ini->r_string(section, "explode_particles");
+    m_sExplodeParticles._set(ini->r_string(section, "explode_particles"));
 
-    sscanf(ini->r_string(section, "light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
+    sscanf_s(ini->r_string(section, "light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
     m_fLightRange = ini->r_float(section, "light_range");
     m_fLightTime = ini->r_float(section, "light_time");
 
@@ -118,7 +118,7 @@ void CExplosive::Load(CInifile* ini, LPCSTR section)
 
     m_fExplodeDurationMax = ini->r_float(section, "explode_duration");
 
-    effector.effect_sect_name = ini->r_string("explode_effector", "effect_sect_name");
+    effector.effect_sect_name._set(ini->r_string("explode_effector", "effect_sect_name"));
     //	if( ini->line_exist(section,"wallmark_section") )
     //	{
     m_wallmark_manager.m_owner = cast_game_object();
@@ -166,6 +166,7 @@ struct SExpQParams
 
     float shoot_factor;
 };
+
 // проверка на попадание "осколком" по объекту
 ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 {
@@ -290,6 +291,7 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive* exp_
 #endif
     return effect / TEST_RAYS_PER_OBJECT;
 }
+
 float CExplosive::TestPassEffect(const Fvector& source_p, const Fvector& dir, float range, float ef_radius, collide::rq_results& storage, CObject* blasted_obj)
 {
     float sq_ef_radius = ef_radius * ef_radius;
@@ -313,6 +315,7 @@ float CExplosive::TestPassEffect(const Fvector& source_p, const Fvector& dir, fl
 
     return shoot_factor * dist_factor;
 }
+
 void CExplosive::Explode()
 {
     VERIFY(0xffff != Initiator());
@@ -332,7 +335,7 @@ void CExplosive::Explode()
     }
 #endif
 
-    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), pos, {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x,
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), pos, Fvector{0.0f, -99.0f, 0.0f}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x,
                                                 m_fBlastRadius * 2.0f);
 
     //	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);

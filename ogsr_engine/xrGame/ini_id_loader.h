@@ -77,7 +77,7 @@ public:
         return item ? item->index : default_index;
     }
 
-    static const T_ID IndexToId(T_INDEX index, T_ID default_id = nullptr, bool no_assert = false)
+    static const T_ID IndexToId(T_INDEX index, T_ID default_id = {}, bool no_assert = false)
     {
         const ITEM_DATA* item = GetByIndex(index, no_assert);
         return item ? item->id : default_id;

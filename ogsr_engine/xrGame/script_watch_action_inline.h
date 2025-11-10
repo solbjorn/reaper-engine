@@ -59,7 +59,7 @@ IC void CScriptWatchAction::SetWatchDirection(const Fvector& tDirection)
 
 IC void CScriptWatchAction::SetWatchBone(LPCSTR bone_to_watch)
 {
-    m_bone_to_watch = bone_to_watch;
+    m_bone_to_watch._set(bone_to_watch);
     m_bCompleted = false;
 }
 

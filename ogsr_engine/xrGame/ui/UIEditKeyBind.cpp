@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "UIEditKeyBind.h"
+
 #include "UIColorAnimatorWrapper.h"
 
 #include "../object_broker.h"
@@ -8,7 +9,7 @@
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim) : m_bPrimary{bPrim}
 {
-    m_pAnimation = xr_new<CUIColorAnimatorWrapper>("ui_map_area_anim");
+    m_pAnimation = xr_new<CUIColorAnimatorWrapper>(shared_str{"ui_map_area_anim"});
     m_pAnimation->Cyclic(true);
     m_bChanged = false;
     m_lines.SetTextComplexMode(false);
@@ -18,7 +19,7 @@ CUIEditKeyBind::~CUIEditKeyBind() { delete_data(m_pAnimation); }
 
 namespace
 {
-u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
+[[nodiscard]] u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, f32 length)
 {
     if (pFont->IsMultibyte())
     {
@@ -31,7 +32,7 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
     }
     else
     {
-        float text_len = pFont->SizeOf_(src);
+        f32 text_len = pFont->SizeOf_(src);
         UI()->ClientToScreenScaledWidth(text_len);
         VERIFY(xr_strlen(src) <= dst_size);
         strcpy(dst, src);
@@ -51,14 +52,14 @@ u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, 
 
 void CUIEditKeyBind::SetText(const char* text)
 {
-    if (!text || 0 == xr_strlen(text))
+    if (text == nullptr || xr_strlen(text) == 0)
+    {
         CUILabel::SetText("---");
+    }
     else
     {
         string256 buff;
-
-        cut_string_by_length(CUILinesOwner::GetFont(), text, buff, sizeof(buff), GetWidth());
-
+        std::ignore = cut_string_by_length(CUILinesOwner::GetFont(), text, buff, sizeof(buff), GetWidth());
         CUILabel::SetText(buff);
     }
 }

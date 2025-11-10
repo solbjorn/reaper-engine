@@ -50,8 +50,8 @@ private:
 
 private:
     IReader* m_reader; // level graph virtual storage
-    CHeader* m_header; // level graph header
-    CVertex* m_nodes; // nodes array
+    const CHeader* m_header; // level graph header
+    const CVertex* m_nodes; // nodes array
     xr_vector<bool> m_access_mask;
     GameGraph::_LEVEL_ID m_level_id{}; // unique level identifier
     u32 m_row_length;
@@ -106,7 +106,7 @@ public:
     IC void unpack_xz(const CLevelGraph::CVertex& vertex, T& x, T& z) const;
     template <typename T>
     IC void unpack_xz(const CLevelGraph::CVertex* vertex, T& x, T& z) const;
-    ICF CVertex* vertex(u32 vertex_id) const;
+    ICF const CVertex* vertex(u32 vertex_id) const;
     ICF u32 vertex(const CVertex* vertex_p) const;
     ICF u32 vertex(const CVertex& vertex_r) const;
     IC const Fvector vertex_position(const CLevelGraph::CPosition& source_position) const;
@@ -204,7 +204,7 @@ public:
     IC bool valid_vertex_position(const Fvector& position) const;
     bool neighbour_in_direction(const Fvector& direction, u32 start_vertex_id) const;
 
-    IC CVertex* vertices() { return m_nodes; }
+    const CVertex* vertices() const { return m_nodes; }
 
 private:
     debug_shader sh_debug;

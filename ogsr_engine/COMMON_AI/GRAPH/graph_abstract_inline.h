@@ -216,7 +216,7 @@ IC void CAbstractGraph::load(IReader& stream)
     this->clear();
 
     IReader* chunk0 = stream.open_chunk(0);
-    chunk0->r_u32();
+    std::ignore = chunk0->r_u32();
     chunk0->close();
 
     u32 id;

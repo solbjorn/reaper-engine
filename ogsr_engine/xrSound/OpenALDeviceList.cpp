@@ -41,8 +41,10 @@ ALDeviceList::~ALDeviceList()
 {
     for (int i = 0; snd_devices_token[i].name; i++)
     {
-        xr_free(snd_devices_token[i].name);
+        auto ptr = const_cast<gsl::zstring>(snd_devices_token[i].name);
+        xr_free(ptr);
     }
+
     xr_free(snd_devices_token);
     snd_devices_token = nullptr;
 }

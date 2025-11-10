@@ -19,7 +19,7 @@ private:
     const CBackend& cmd_list;
 
 public:
-    dxPixEventWrapper(const CBackend& cmd_list_in, const wchar_t* wszName) : cmd_list(cmd_list_in) { cmd_list.pAnnotation->BeginEvent(wszName); }
+    explicit dxPixEventWrapper(const CBackend& cmd_list_in, const wchar_t* wszName) : cmd_list{cmd_list_in} { cmd_list.pAnnotation->BeginEvent(wszName); }
     ~dxPixEventWrapper() { cmd_list.pAnnotation->EndEvent(); }
 };
 

@@ -8,9 +8,11 @@
 
 #include "stdafx.h"
 
-#include "../xr_3da/NET_Server_Trash/NET_utils.h"
-#include "script_ini_file.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+
+#include "script_ini_file.h"
+
+#include "../xr_3da/NET_Server_Trash/NET_utils.h"
 
 namespace
 {
@@ -26,7 +28,7 @@ LPCSTR get_ini_string_script(const CSE_Abstract* abstract) { return abstract->m_
 
 void set_ini_string_script(CSE_Abstract* abstract, LPCSTR cd)
 {
-    abstract->m_ini_string = cd;
+    abstract->m_ini_string._set(cd);
     abstract->m_ini_file = nullptr;
 }
 } // namespace
