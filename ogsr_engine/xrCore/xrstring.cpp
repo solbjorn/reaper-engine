@@ -2,7 +2,7 @@
 
 #include "xrstring.h"
 
-#include <concurrentqueue.h>
+#include "bitmap_object_pool.h"
 
 namespace xxh
 {
@@ -27,58 +27,25 @@ private:
     using val_t = std::unique_ptr<str_value>;
     using map_t = xr_unordered_map<xxh::XXH64_hash_t, val_t>;
 
-    moodycamel::ConcurrentQueue<map_t> q;
-
-    class map_vector : public xr_vector<map_t>
+    class StrMapPool : public BitmapObjectPoolImpl<map_t, StrMapPool>
     {
-    private:
-        decltype(q)& queue;
+        friend class BitmapObjectPoolImpl<map_t, StrMapPool>;
 
-    public:
-        map_vector() = delete;
-        map_vector(map_vector&&) = delete;
+        static constexpr size_t base_cap{4096};
 
-        explicit map_vector(decltype(queue) in) : queue{in}
+        void initialize(void* location)
         {
-            reserve(queue.size_approx());
-
-            while (true)
-            {
-                map_t map;
-
-                if (!queue.try_dequeue(map))
-                    break;
-
-                emplace_back(std::move(map));
-            }
-        }
-
-        ~map_vector()
-        {
-            for (auto&& map : *this)
-                queue.enqueue(std::move(map));
+            map_t* newMap = ::new (location) map_t();
+            newMap->reserve(base_cap);
         }
     };
 
-    static constexpr size_t base_cap{4096};
-    static constexpr size_t first_base_cap{2 * base_cap};
-
-    [[nodiscard]] auto get()
-    {
-        map_t map;
-
-        if (!q.try_dequeue(map))
-            map.reserve(base_cap);
-
-        return map;
-    }
+    StrMapPool pool;
 
 public:
     str_container_impl()
     {
-        map_t map;
-        map.reserve(first_base_cap);
-        q.enqueue(std::move(map));
+        pool.acquire_scoped(); // pre-populate 1 map
     }
 
     [[nodiscard]] str_value* insert(gsl::czstring str);
@@ -94,8 +61,8 @@ str_value* str_container_impl::insert(gsl::czstring str)
     const absl::string_view sv{str};
     const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
-    auto map = get();
-    const auto _ = gsl::finally([this, &map] { q.enqueue(std::move(map)); });
+    auto obj = pool.acquire_scoped();
+    auto& map = obj.value;
 
     const auto iter = map.find(xxh);
     if (iter != map.cend())
@@ -112,19 +79,16 @@ str_value* str_container_impl::insert(gsl::czstring str)
 
 void str_container_impl::clean()
 {
-    for (auto& map : map_vector{q})
-    {
+    pool.for_each_available([](map_t& map) {
         if (absl::erase_if(map, [](const auto& pair) { return pair.second->dwReference == 0; }) > 0)
             map.rehash(0);
-    }
+    });
 }
 
 gsl::index str_container_impl::stat_economy()
 {
     gsl::index ec{-gsl::index{sizeof(str_container_impl)}};
-
-    for (const auto& map : map_vector{q})
-    {
+    pool.for_each_available([&ec](const map_t& map) {
         ec -= gsl::index{sizeof(map)};
 
         for (auto& [_, value] : map)
@@ -132,15 +96,13 @@ gsl::index str_container_impl::stat_economy()
             ec -= gsl::index{sizeof(map_t::value_type) + sizeof(str_value)};
             ec += (value->dwReference - 1) * (value->dwLength + 1);
         }
-    }
-
+    });
     return ec;
 }
 
 void str_container_impl::verify()
 {
-    for (const auto& map : map_vector{q})
-    {
+    pool.for_each_available([](const map_t& map) {
         for (auto& [_, value] : map)
         {
             const absl::string_view sv{value->value};
@@ -149,16 +111,15 @@ void str_container_impl::verify()
             const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
             ASSERT_FMT(value->hash == xxh, "corrupted shared string hash: 0x%016llx, expected 0x%016llx", value->hash, xxh);
         }
-    }
+    });
 }
 
 void str_container_impl::dump(FILE& f)
 {
-    for (const auto& map : map_vector{q})
-    {
+    pool.for_each_available([&f](const map_t& map) {
         for (auto& [_, value] : map)
             fprintf(&f, "ref[%zd]-len[%zd]-hash[0x%016llx]: %s\n", value->dwReference.load(), value->dwLength, value->hash, value->value);
-    }
+    });
 }
 
 str_container_impl impl;
