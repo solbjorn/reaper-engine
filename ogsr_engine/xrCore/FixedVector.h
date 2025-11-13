@@ -65,38 +65,48 @@ public:
     constexpr void push_back(const value_type& e)
     {
         VERIFY(count < dim);
-        array[count++] = e;
+
+        array[gsl::narrow_cast<typename decltype(array)::size_type>(count)] = e;
+        ++count;
     }
 
     constexpr void push_back(value_type&& e)
     {
         VERIFY(count < dim);
-        array[count++] = std::move(e);
+
+        array[gsl::narrow_cast<typename decltype(array)::size_type>(count)] = std::move(e);
+        ++count;
     }
 
     template <typename... Args>
     constexpr value_type& emplace_back(Args&&... args)
     {
         VERIFY(count < dim);
-        return *(new (&array[count++]) value_type{std::forward<Args>(args)...});
+
+        auto slot = &array[gsl::narrow_cast<typename decltype(array)::size_type>(count)];
+        ++count;
+
+        return *(new (slot) value_type{std::forward<Args>(args)...});
     }
 
     [[nodiscard]] constexpr value_type pop_back()
     {
         VERIFY(count);
-        return array[--count];
+
+        --count;
+        return array[gsl::narrow_cast<typename decltype(array)::size_type>(count)];
     }
 
     [[nodiscard]] constexpr reference operator[](size_type id)
     {
         VERIFY(id < count);
-        return adapter()[id];
+        return adapter()[gsl::narrow_cast<typename adapter_t::size_type>(id)];
     }
 
     [[nodiscard]] constexpr const_reference operator[](size_type id) const
     {
         VERIFY(id < count);
-        return adapter()[id];
+        return adapter()[gsl::narrow_cast<typename const_adapter_t::size_type>(id)];
     }
 
     [[nodiscard]] constexpr value_type* data() { return array.data(); }
@@ -108,7 +118,7 @@ public:
     [[nodiscard]] constexpr reference last()
     {
         VERIFY(count < dim);
-        return array[count];
+        return array[gsl::narrow_cast<typename decltype(array)::size_type>(count)];
     }
 
     [[nodiscard]] constexpr const_reference front() const { return adapter().front(); }
@@ -117,8 +127,11 @@ public:
     [[nodiscard]] constexpr const_reference last() const
     {
         VERIFY(count < dim);
-        return array[count];
+        return array[gsl::narrow_cast<typename decltype(array)::size_type>(count)];
     }
+
+    [[nodiscard]] constexpr operator adapter_t() { return adapter(); }
+    [[nodiscard]] constexpr operator const_adapter_t() const { return adapter(); }
 
     constexpr void inc() { count++; }
     [[nodiscard]] constexpr bool empty() const { return count == 0; }
@@ -163,6 +176,8 @@ public:
         std::memcpy(array.data(), p, gsl::narrow_cast<size_t>(c * size_type{sizeof(value_type)}));
         count = c;
     }
+
+    constexpr void assign(const_adapter_t range) { assign(range.data(), gsl::narrow_cast<size_type>(std::ssize(range))); }
 
     [[nodiscard]] constexpr bool equal(const svector<value_type, dim>& base) const
     {

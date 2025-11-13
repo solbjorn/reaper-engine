@@ -33,20 +33,14 @@ private:
     svector<SItem_ServerInfo, max_item> data;
 
 public:
-    u32 Size() { return data.size(); }
+    [[nodiscard]] auto Size() const { return data.size(); }
     void ResetData() { data.clear(); }
 
     void AddItem(LPCSTR name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
     void AddItem(shared_str& name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
 
-    IC SItem_ServerInfo& operator[](u32 id)
-    {
-        VERIFY(id < max_item);
-        return data[id];
-    }
-
-    // CServerInfo() {};
-    //~CServerInfo() {};
+    [[nodiscard]] SItem_ServerInfo& operator[](decltype(data)::size_type id) { return data[id]; }
+    [[nodiscard]] const SItem_ServerInfo& operator[](decltype(data)::size_type id) const { return data[id]; }
 };
 
 //-----------------------------------------------------------------------------------------------------------
@@ -109,7 +103,7 @@ public:
 
     virtual void Load_GameSpecific_CFORM_Serialize(IWriter& writer) = 0;
     virtual bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) = 0;
-    virtual void Load_GameSpecific_CFORM(CDB::TRI* T, size_t count) = 0;
+    virtual void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) = 0;
 
     void OnFrame() override;
     void OnRender() override;

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "level.h"
+
 #include "actor.h"
 #include "script_game_object.h"
 #include "patrol_path_storage.h"
@@ -968,9 +969,8 @@ static CEffectorBobbing* get_effector_bobbing() { return Actor()->GetEffectorBob
 static void iterate_nearest(const Fvector& pos, float radius, sol::function function)
 {
     xr_vector<CObject*> m_nearest;
-    Level().ObjectSpace.GetNearest(m_nearest, pos, radius, nullptr);
 
-    if (m_nearest.empty())
+    if (Level().ObjectSpace.GetNearest(m_nearest, pos, radius, nullptr) == 0)
         return;
 
     for (auto item : m_nearest)

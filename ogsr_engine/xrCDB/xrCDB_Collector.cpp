@@ -1,70 +1,55 @@
 #include "stdafx.h"
 
+#include "xrCDB.h"
+
 namespace CDB
 {
-u32 Collector::VPack(const Fvector& V, float eps)
+gsl::index Collector::VPack(const Fvector& V, float eps)
 {
-    for (auto I = verts.begin(); I != verts.end(); ++I)
-        if (I->similar(V, eps))
-            return u32(I - verts.begin());
+    for (auto [id, vert] : xr::views_enumerate(std::as_const(verts)))
+    {
+        if (vert.similar(V, eps))
+            return id;
+    }
 
     verts.emplace_back(V);
-    return verts.size() - 1;
+
+    return std::ssize(verts) - 1;
 }
 
 void Collector::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
                            u32 dummy // misc
 )
 {
-    TRI T;
-    T.verts[0] = verts.size();
-    T.verts[1] = verts.size() + 1;
-    T.verts[2] = verts.size() + 2;
-    T.dummy = dummy;
+    const auto vs = gsl::narrow<u32>(verts.size());
 
     verts.emplace_back(v0);
     verts.emplace_back(v1);
     verts.emplace_back(v2);
-    faces.emplace_back(T);
+    faces.emplace_back(vs, vs + 1, vs + 2, dummy);
 }
 
 void Collector::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector)
 {
-    TRI T;
-    T.verts[0] = verts.size();
-    T.verts[1] = verts.size() + 1;
-    T.verts[2] = verts.size() + 2;
-    T.material = material;
-    T.sector = sector;
+    const auto vs = gsl::narrow<u32>(verts.size());
 
     verts.emplace_back(v0);
     verts.emplace_back(v1);
     verts.emplace_back(v2);
-    faces.emplace_back(T);
+    faces.emplace_back(vs, vs + 1, vs + 2, material, sector);
 }
 
 void Collector::add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
                                 u16 material, u16 sector, // misc
                                 float eps)
 {
-    TRI T;
-    T.verts[0] = VPack(v0, eps);
-    T.verts[1] = VPack(v1, eps);
-    T.verts[2] = VPack(v2, eps);
-    T.material = material;
-    T.sector = sector;
-    faces.emplace_back(T);
+    faces.emplace_back(gsl::narrow<u32>(VPack(v0, eps)), gsl::narrow<u32>(VPack(v1, eps)), gsl::narrow<u32>(VPack(v2, eps)), material, sector);
 }
 
 void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
                                   u32 dummy, float eps)
 {
-    TRI T;
-    T.verts[0] = VPack(v0, eps);
-    T.verts[1] = VPack(v1, eps);
-    T.verts[2] = VPack(v2, eps);
-    T.dummy = dummy;
-    faces.emplace_back(std::move(T));
+    faces.emplace_back(gsl::narrow<u32>(VPack(v0, eps)), gsl::narrow<u32>(VPack(v1, eps)), gsl::narrow<u32>(VPack(v2, eps)), dummy);
 }
 
 namespace
@@ -77,6 +62,7 @@ struct XR_TRIVIAL alignas(16) edge
     u32 vertex_id1;
 
     [[maybe_unused]] constexpr edge() = default;
+    constexpr explicit edge(u32 fid, u32 eid, u32 vid0, u32 vid1) : face_id{fid}, edge_id{eid}, vertex_id0{vid0}, vertex_id1{vid1} {}
 
     constexpr edge(const edge& that) { xr_memcpy16(this, &that); }
 
@@ -110,232 +96,150 @@ XR_TRIVIAL_ASSERT(edge);
 void Collector::calc_adjacency(xr_vector<u32>& dest) const
 {
     const auto edge_count = faces.size() * 3;
-    u8* buf = (u8*)_alloca(edge_count * sizeof(edge) + 16);
-    edge* const edges = reinterpret_cast<edge*>((reinterpret_cast<size_t>(buf) + 15) & ~size_t(0xf));
-    edge* i = edges;
+    xr_inlined_vector<edge, 24> edges;
+    edges.reserve(edge_count);
 
-    const auto B = faces.cbegin();
-    auto I = B, E = faces.cend();
-    for (; I != E; ++I)
+    for (auto [id, face] : xr::views_enumerate(faces))
     {
-        const u32 face_id = u32(I - B);
+        const auto face_id = gsl::narrow<u32>(id);
 
-        (*i).face_id = face_id;
-        (*i).edge_id = 0;
-        (*i).vertex_id0 = (*I).verts[0];
-        (*i).vertex_id1 = (*I).verts[1];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
+        auto& e1 = edges.emplace_back(face_id, 0, face.verts[0], face.verts[1]);
+        if (e1.vertex_id0 > e1.vertex_id1)
+            std::swap(e1.vertex_id0, e1.vertex_id1);
 
-        (*i).face_id = face_id;
-        (*i).edge_id = 1;
-        (*i).vertex_id0 = (*I).verts[1];
-        (*i).vertex_id1 = (*I).verts[2];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
+        auto& e2 = edges.emplace_back(face_id, 1, face.verts[1], face.verts[2]);
+        if (e2.vertex_id0 > e2.vertex_id1)
+            std::swap(e2.vertex_id0, e2.vertex_id1);
 
-        (*i).face_id = face_id;
-        (*i).edge_id = 2;
-        (*i).vertex_id0 = (*I).verts[2];
-        (*i).vertex_id1 = (*I).verts[0];
-        if ((*i).vertex_id0 > (*i).vertex_id1)
-            std::swap((*i).vertex_id0, (*i).vertex_id1);
-        ++i;
+        auto& e3 = edges.emplace_back(face_id, 2, face.verts[2], face.verts[0]);
+        if (e3.vertex_id0 > e3.vertex_id1)
+            std::swap(e3.vertex_id0, e3.vertex_id1);
     }
 
-    std::sort(edges, edges + edge_count, [](const edge& edge0, const edge& edge1) {
+    std::ranges::sort(edges, [](const edge& edge0, const edge& edge1) {
         if (edge0.vertex_id0 < edge1.vertex_id0)
-            return (true);
+            return true;
 
         if (edge1.vertex_id0 < edge0.vertex_id0)
-            return (false);
+            return false;
 
         if (edge0.vertex_id1 < edge1.vertex_id1)
-            return (true);
+            return true;
 
         if (edge1.vertex_id1 < edge0.vertex_id1)
-            return (false);
+            return false;
 
-        return (edge0.face_id < edge1.face_id);
+        return edge0.face_id < edge1.face_id;
     });
 
-    dest.assign(edge_count, u32(-1));
+    dest.assign(edge_count, std::numeric_limits<u32>::max());
 
+    auto I2 = edges.cbegin();
+    auto E2 = edges.cend();
+    for (; I2 != E2; ++I2)
     {
-        edge *I2 = edges, *J;
-        edge* E2 = edges + edge_count;
-        for (; I2 != E2; ++I2)
-        {
-            if (I2 + 1 == E2)
-                continue;
+        if (I2 + 1 == E2)
+            continue;
 
-            J = I2 + 1;
+        auto& I = *I2;
+        auto& J = *(I2 + 1);
 
-            if ((*I2).vertex_id0 != (*J).vertex_id0)
-                continue;
+        if (I.vertex_id0 != J.vertex_id0)
+            continue;
 
-            if ((*I2).vertex_id1 != (*J).vertex_id1)
-                continue;
+        if (I.vertex_id1 != J.vertex_id1)
+            continue;
 
-            dest[(*I2).face_id * 3 + (*I2).edge_id] = (*J).face_id;
-            dest[(*J).face_id * 3 + (*J).edge_id] = (*I2).face_id;
-        }
+        dest[I.face_id * 3 + I.edge_id] = J.face_id;
+        dest[J.face_id * 3 + J.edge_id] = I.face_id;
     }
 }
 
-namespace
-{
-[[nodiscard]] constexpr bool similar(const TRI& T1, const TRI& T2)
-{
-    if ((T1.verts[0] == T2.verts[0]) && (T1.verts[1] == T2.verts[1]) && (T1.verts[2] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    if ((T1.verts[0] == T2.verts[0]) && (T1.verts[2] == T2.verts[1]) && (T1.verts[1] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    if ((T1.verts[2] == T2.verts[0]) && (T1.verts[0] == T2.verts[1]) && (T1.verts[1] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    if ((T1.verts[2] == T2.verts[0]) && (T1.verts[1] == T2.verts[1]) && (T1.verts[0] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    if ((T1.verts[1] == T2.verts[0]) && (T1.verts[0] == T2.verts[1]) && (T1.verts[2] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    if ((T1.verts[1] == T2.verts[0]) && (T1.verts[2] == T2.verts[1]) && (T1.verts[0] == T2.verts[2]) && (T1.dummy == T2.dummy))
-        return true;
-
-    return false;
-}
-} // namespace
-
-void Collector::remove_duplicate_T()
-{
-    for (u32 f = 0; f < faces.size(); f++)
-    {
-        for (u32 t = f + 1; t < faces.size();)
-        {
-            if (t == f)
-                continue;
-            TRI& T1 = faces[f];
-            TRI& T2 = faces[t];
-            if (similar(T1, T2))
-            {
-                faces[t] = faces.back();
-                faces.pop_back();
-            }
-            else
-            {
-                t++;
-            }
-        }
-    }
-}
-
-CollectorPacked::CollectorPacked(const Fbox& bb, int apx_vertices, int apx_faces)
+CollectorPacked::CollectorPacked(const Fbox& bb, gsl::index apx_vertices, gsl::index apx_faces)
 {
     // Params
     VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
     VMmin.set(bb.min);
+
     VMeps.set(VMscale.x / clpMX / 2, VMscale.y / clpMY / 2, VMscale.z / clpMZ / 2);
-    VMeps.x = (VMeps.x < EPS_L) ? VMeps.x : EPS_L;
-    VMeps.y = (VMeps.y < EPS_L) ? VMeps.y : EPS_L;
-    VMeps.z = (VMeps.z < EPS_L) ? VMeps.z : EPS_L;
+    VMeps.x = std::min(VMeps.x, EPS_L);
+    VMeps.y = std::min(VMeps.y, EPS_L);
+    VMeps.z = std::min(VMeps.z, EPS_L);
 
     // Preallocate memory
-    verts.reserve(apx_vertices);
-    faces.reserve(apx_faces);
+    verts.reserve(gsl::narrow_cast<size_t>(apx_vertices));
+    faces.reserve(gsl::narrow_cast<size_t>(apx_faces));
 
-    int _size = (clpMX + 1) * (clpMY + 1) * (clpMZ + 1);
-    int _average = (apx_vertices / _size) / 2;
-    for (u32 ix = 0; ix < clpMX + 1; ix++)
-        for (u32 iy = 0; iy < clpMY + 1; iy++)
-            for (u32 iz = 0; iz < clpMZ + 1; iz++)
+    const gsl::index _size = (clpMX + 1) * (clpMY + 1) * (clpMZ + 1);
+    const auto _average = gsl::narrow_cast<size_t>((apx_vertices / _size) / 2);
+
+    for (gsl::index ix{}; ix < clpMX + 1; ++ix)
+    {
+        for (gsl::index iy{}; iy < clpMY + 1; ++iy)
+        {
+            for (gsl::index iz{}; iz < clpMZ + 1; ++iz)
                 VM[ix][iy][iz].reserve(_average);
+        }
+    }
 }
 
 void CollectorPacked::add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
                                u16 material, u16 sector // misc
 )
 {
-    TRI T;
-    T.verts[0] = VPack(v0);
-    T.verts[1] = VPack(v1);
-    T.verts[2] = VPack(v2);
-    T.material = material;
-    T.sector = sector;
-    faces.emplace_back(T);
+    faces.emplace_back(VPack(v0), VPack(v1), VPack(v2), material, sector);
 }
 
 void CollectorPacked::add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
                                  u32 dummy // misc
 )
 {
-    TRI T;
-    T.verts[0] = VPack(v0);
-    T.verts[1] = VPack(v1);
-    T.verts[2] = VPack(v2);
-    T.dummy = dummy;
-    faces.emplace_back(T);
+    faces.emplace_back(VPack(v0), VPack(v1), VPack(v2), dummy);
 }
 
 u32 CollectorPacked::VPack(const Fvector& V)
 {
-    u32 P = 0xffffffff;
+    auto ix = gsl::narrow_cast<gsl::index>(std::floor((V.x - VMmin.x) / VMscale.x * clpMX));
+    auto iy = gsl::narrow_cast<gsl::index>(std::floor((V.y - VMmin.y) / VMscale.y * clpMY));
+    auto iz = gsl::narrow_cast<gsl::index>(std::floor((V.z - VMmin.z) / VMscale.z * clpMZ));
 
-    u32 ix, iy, iz;
-    ix = iFloor(float(V.x - VMmin.x) / VMscale.x * clpMX);
-    iy = iFloor(float(V.y - VMmin.y) / VMscale.y * clpMY);
-    iz = iFloor(float(V.z - VMmin.z) / VMscale.z * clpMZ);
+    clamp(ix, 0z, clpMX);
+    clamp(iy, 0z, clpMY);
+    clamp(iz, 0z, clpMZ);
 
-    //		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
-    clamp(ix, (u32)0, clpMX);
-    clamp(iy, (u32)0, clpMY);
-    clamp(iz, (u32)0, clpMZ);
-
+    for (auto it : VM[ix][iy][iz])
     {
-        DWORDList* vl = &(VM[ix][iy][iz]);
-        for (u32 it : *vl)
-            if (verts[it].similar(V))
-            {
-                P = it;
-                break;
-            }
+        if (verts[it].similar(V))
+            return it;
     }
-    if (0xffffffff == P)
-    {
-        P = verts.size();
-        verts.emplace_back(V);
 
-        VM[ix][iy][iz].emplace_back(P);
+    const auto P = gsl::narrow<u32>(verts.size());
+    verts.emplace_back(V);
+    VM[ix][iy][iz].emplace_back(P);
 
-        u32 ixE, iyE, izE;
-        ixE = iFloor(float(V.x + VMeps.x - VMmin.x) / VMscale.x * clpMX);
-        iyE = iFloor(float(V.y + VMeps.y - VMmin.y) / VMscale.y * clpMY);
-        izE = iFloor(float(V.z + VMeps.z - VMmin.z) / VMscale.z * clpMZ);
+    auto ixE = gsl::narrow_cast<gsl::index>(std::floor((V.x + VMeps.x - VMmin.x) / VMscale.x * clpMX));
+    auto iyE = gsl::narrow_cast<gsl::index>(std::floor((V.y + VMeps.y - VMmin.y) / VMscale.y * clpMY));
+    auto izE = gsl::narrow_cast<gsl::index>(std::floor((V.z + VMeps.z - VMmin.z) / VMscale.z * clpMZ));
 
-        //			R_ASSERT(ixE<=clpMX && iyE<=clpMY && izE<=clpMZ);
-        clamp(ixE, (u32)0, clpMX);
-        clamp(iyE, (u32)0, clpMY);
-        clamp(izE, (u32)0, clpMZ);
+    clamp(ixE, 0z, clpMX);
+    clamp(iyE, 0z, clpMY);
+    clamp(izE, 0z, clpMZ);
 
-        if (ixE != ix)
-            VM[ixE][iy][iz].emplace_back(P);
-        if (iyE != iy)
-            VM[ix][iyE][iz].emplace_back(P);
-        if (izE != iz)
-            VM[ix][iy][izE].emplace_back(P);
-        if ((ixE != ix) && (iyE != iy))
-            VM[ixE][iyE][iz].emplace_back(P);
-        if ((ixE != ix) && (izE != iz))
-            VM[ixE][iy][izE].emplace_back(P);
-        if ((iyE != iy) && (izE != iz))
-            VM[ix][iyE][izE].emplace_back(P);
-        if ((ixE != ix) && (iyE != iy) && (izE != iz))
-            VM[ixE][iyE][izE].emplace_back(P);
-    }
+    if (ixE != ix)
+        VM[ixE][iy][iz].emplace_back(P);
+    if (iyE != iy)
+        VM[ix][iyE][iz].emplace_back(P);
+    if (izE != iz)
+        VM[ix][iy][izE].emplace_back(P);
+    if (ixE != ix && iyE != iy)
+        VM[ixE][iyE][iz].emplace_back(P);
+    if (ixE != ix && izE != iz)
+        VM[ixE][iy][izE].emplace_back(P);
+    if (iyE != iy && izE != iz)
+        VM[ix][iyE][izE].emplace_back(P);
+    if (ixE != ix && iyE != iy && izE != iz)
+        VM[ixE][iyE][izE].emplace_back(P);
+
     return P;
 }
 
@@ -343,9 +247,14 @@ void CollectorPacked::clear()
 {
     verts.clear();
     faces.clear();
-    for (u32 _x = 0; _x <= clpMX; _x++)
-        for (u32 _y = 0; _y <= clpMY; _y++)
-            for (u32 _z = 0; _z <= clpMZ; _z++)
+
+    for (gsl::index _x{}; _x < clpMX + 1; ++_x)
+    {
+        for (gsl::index _y{}; _y < clpMY + 1; ++_y)
+        {
+            for (gsl::index _z{}; _z < clpMZ + 1; ++_z)
                 VM[_x][_y][_z].clear();
+        }
+    }
 }
 } // namespace CDB

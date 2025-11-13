@@ -3,8 +3,12 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wclass-conversion");
+XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wshorten-64-to-32");
+XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
 XR_DIAG_IGNORE("-Wunused-parameter");
 
@@ -27,7 +31,7 @@ public:
 
     const CFrustum* F;
 
-    IC void _init(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F)
+    constexpr void _init(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F)
     {
         dest = CL;
         tris = T;
@@ -35,7 +39,7 @@ public:
         F = _F;
     }
 
-    IC EFC_Visible _box(const Fvector& C, const Fvector& E, u32 mask)
+    [[nodiscard]] constexpr EFC_Visible _box(const Fvector& C, const Fvector& E, u32 mask) const
     {
         Fvector mM[2];
         mM[0].sub(C, E);
@@ -44,41 +48,32 @@ public:
         return F->testAABB(&mM[0].x, mask);
     }
 
-    void _prim(DWORD prim)
+    constexpr void _prim(u32 prim) const
     {
+        const auto id = gsl::narrow<s32>(prim);
+        const auto& tri = tris[id];
+
         if constexpr (bClass3)
         {
             sPoly src, dst;
             src.resize(3);
-            src[0] = verts[tris[prim].verts[0]];
-            src[1] = verts[tris[prim].verts[1]];
-            src[2] = verts[tris[prim].verts[2]];
+            src[0] = verts[tri.verts[0]];
+            src[1] = verts[tri.verts[1]];
+            src[2] = verts[tri.verts[2]];
+
             if (F->ClipPoly(src, dst))
-            {
-                RESULT& R = dest->r_add();
-                R.id = prim;
-                R.verts[0] = verts[tris[prim].verts[0]];
-                R.verts[1] = verts[tris[prim].verts[1]];
-                R.verts[2] = verts[tris[prim].verts[2]];
-                R.dummy = tris[prim].dummy;
-            }
+                dest->r_add(id, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
         }
         else
         {
-            RESULT& R = dest->r_add();
-            R.id = prim;
-            R.verts[0] = verts[tris[prim].verts[0]];
-            R.verts[1] = verts[tris[prim].verts[1]];
-            R.verts[2] = verts[tris[prim].verts[2]];
-            R.dummy = tris[prim].dummy;
+            dest->r_add(id, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
         }
     }
 
-    void _stab(const AABBNoLeafNode* node, u32 mask)
+    constexpr void _stab(const AABBNoLeafNode* node, u32 mask) const
     {
         // Actual frustum/aabb test
-        EFC_Visible result = _box((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, mask);
-        if (fcvNone == result)
+        if (_box(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), mask) == fcvNone)
             return;
 
         // 1st chield
@@ -90,7 +85,7 @@ public:
         // Early exit for "only first"
         if constexpr (bFirst)
         {
-            if (dest->r_count())
+            if (!dest->r_empty())
                 return;
         }
 
@@ -107,10 +102,13 @@ void COLLIDER::frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustu
 {
     m_def->syncronize();
 
-    // Get nodes
-    const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
+    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
+    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
+    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
+    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
     const AABBNoLeafNode* N = T->GetNodes();
     const DWORD mask = F.getMask();
+
     r_clear();
 
     // Binary dispatcher

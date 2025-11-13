@@ -143,7 +143,7 @@ public:
     void set_moveable(bool b) override { flags.bMoveable = b; }
 
     virtual void spatial_move();
-    virtual Fvector spatial_sector_point();
+    [[nodiscard]] Fvector spatial_sector_point() const override;
 
     virtual IRender_Light* dcast_Light() { return this; }
 

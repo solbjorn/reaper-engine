@@ -1,18 +1,18 @@
 #ifndef xrPoolH
 #define xrPoolH
 
-template <class T, int granularity>
+template <typename T, gsl::index granularity>
 class poolSS
 {
-private:
     T* list{};
     xr_vector<T*> blocks;
 
-private:
-    T** access(T* P) { return (T**)LPVOID(P); }
+    [[nodiscard]] T** access(T* P) { return reinterpret_cast<T**>(P); }
 
     void block_create()
     {
+        constexpr gsl::index count{granularity - 1}; // minus one. Correct. See partition logic below.
+
         // Allocate
         VERIFY(list == nullptr);
 
@@ -20,13 +20,13 @@ private:
         blocks.push_back(list);
 
         // Partition
-        for (int it = 0; it < (granularity - 1); it++)
+        for (gsl::index it{}; it < count; ++it)
         {
             T* E = list + it;
             *access(E) = E + 1;
         }
 
-        *access(list + granularity - 1) = nullptr;
+        *access(list + count) = nullptr;
     }
 
 public:
@@ -34,19 +34,19 @@ public:
 
     ~poolSS()
     {
-        for (u32 b = 0; b < blocks.size(); b++)
-            xr_free(blocks[b]);
+        for (auto& block : blocks)
+            xr_free(block);
     }
 
-    T* create()
+    [[nodiscard]] T* create()
     {
-        if (!list)
+        if (list == nullptr)
             block_create();
 
         T* E = list;
         list = *access(list);
 
-        return new (E) T();
+        return new (E) T{};
     }
 
     void destroy(T*& P)
@@ -62,8 +62,8 @@ public:
     {
         list = nullptr;
 
-        for (u32 b = 0; b < blocks.size(); b++)
-            xr_free(blocks[b]);
+        for (auto& block : blocks)
+            xr_free(block);
 
         blocks.clear();
     }

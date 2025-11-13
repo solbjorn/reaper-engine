@@ -97,7 +97,7 @@ public:
     }
 
 protected:
-    u32 Timer_MM_Delta;
+    s64 Timer_MM_Delta;
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 
@@ -208,8 +208,8 @@ public:
 
     IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }
 
-    u32 TimerAsync() { return TimerGlobal.GetElapsed_ms(); }
-    u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + Timer_MM_Delta; }
+    [[nodiscard]] auto TimerAsync() const { return TimerGlobal.GetElapsed_ms(); }
+    [[nodiscard]] auto TimerAsync_MMT() const { return TimerMM.GetElapsed_ms() + Timer_MM_Delta; }
 
     // Creation & Destroying
     void ConnectToRender();

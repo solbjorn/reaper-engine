@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "CameraLook.h"
+
 #include "actor.h"
 #include "actor_memory.h"
 #include "visual_memory_manager.h"
@@ -41,7 +42,7 @@ void CCameraLook::Update(Fvector& point, Fvector&)
 
     float covariance = VIEWPORT_NEAR * 6.f;
     vDir.invert(vDirection);
-    g_pGameLevel->ObjectSpace.RayPick(point, vDir, dist + covariance, collide::rqtBoth, R, parent);
+    std::ignore = g_pGameLevel->ObjectSpace.RayPick(point, vDir, dist + covariance, collide::rqtBoth, R, parent);
 
     float d = psCamSlideInert * prev_d + (1.f - psCamSlideInert) * (R.range - covariance);
     prev_d = d;

@@ -89,8 +89,8 @@ public:
     ICF u16 ID() const { return Props.net_ID; }
     ICF void setID(u16 _ID) { Props.net_ID = _ID; }
     virtual BOOL Ready() { return Props.net_Ready; }
-    BOOL GetTmpPreDestroy() const { return Props.bPreDestroy; }
-    void SetTmpPreDestroy(BOOL b) { Props.bPreDestroy = b; }
+    [[nodiscard]] bool GetTmpPreDestroy() const { return !!Props.bPreDestroy; }
+    void SetTmpPreDestroy(bool b) { Props.bPreDestroy = b; }
     virtual float shedule_Scale() const { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
     virtual bool shedule_Needed() { return processing_enabled(); }
 
@@ -179,7 +179,7 @@ public:
     virtual void net_Relcase(CObject*) {} // destroy all links to another objects
 
     // Position stack
-    IC u32 ps_Size() const { return PositionStack.size(); }
+    [[nodiscard]] auto ps_Size() const { return PositionStack.size(); }
     virtual SavedPosition ps_Element(u32 ID) const;
 
     virtual void ForceTransform(const Fmatrix& m) = 0;

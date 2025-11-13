@@ -297,21 +297,25 @@ float CExplosive::TestPassEffect(const Fvector& source_p, const Fvector& dir, fl
     float sq_ef_radius = ef_radius * ef_radius;
     float dist_factor = sq_ef_radius / (range * range * (exp_dist_extinction_factor - 1.f) + sq_ef_radius);
     float shoot_factor = 1.f;
+
     if (range > EPS_L)
     {
         VERIFY(!fis_zero(dir.square_magnitude()));
         collide::ray_defs RD(source_p, dir, range, CDB::OPT_CULL, collide::rqtBoth);
         VERIFY(!fis_zero(RD.dir.square_magnitude()));
+
 #ifdef DEBUG
         SExpQParams ep(source_p, dir);
 #else
         SExpQParams ep;
 #endif
-        g_pGameLevel->ObjectSpace.RayQuery(storage, RD, grenade_hit_callback, &ep, nullptr, blasted_obj);
+        std::ignore = g_pGameLevel->ObjectSpace.RayQuery(storage, RD, grenade_hit_callback, &ep, nullptr, blasted_obj);
         shoot_factor = ep.shoot_factor;
     }
     else
+    {
         return dist_factor;
+    }
 
     return shoot_factor * dist_factor;
 }

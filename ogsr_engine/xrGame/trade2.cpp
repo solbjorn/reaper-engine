@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "trade.h"
+
 #include "actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/trader/ai_trader.h"
@@ -20,8 +21,7 @@ bool CTrade::CanTrade()
     CEntity* pEntity;
 
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, pThis.base->Position(), 2.f, nullptr);
-    if (!m_nearest.empty())
+    if (Level().ObjectSpace.GetNearest(m_nearest, pThis.base->Position(), 2.0f, nullptr) > 0)
     {
         for (u32 i = 0, n = m_nearest.size(); i < n; ++i)
         {

@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "level.h"
+
 #include "../xrCDB/frustum.h"
 
 #ifdef DEBUG
@@ -59,7 +61,7 @@ void MK_Frustum(CFrustum& F, float FOV, float _FAR, float A, Fvector& P, Fvector
     _F[2].mad(COP, ProjDirs[2], _FAR);
     _F[3].mad(COP, ProjDirs[3], _FAR);
 
-    F.CreateFromPoints(_F, 4, COP);
+    F.CreateFromPoints(_F, COP);
 }
 
 void dbg_draw_frustum(float FOV, float _FAR, float A, Fvector& P, Fvector& D, Fvector& U)

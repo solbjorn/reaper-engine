@@ -214,7 +214,7 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
 
         // Clip by frustum
         CPortal::Poly& POLY = PORTAL->getPoly();
-        S.assign(&*POLY.begin(), POLY.size());
+        S.assign(POLY);
         D.clear();
         sPoly* P = F.ClipPoly(S, D);
         if (nullptr == P)
@@ -306,7 +306,7 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
 
         // Create _new_ frustum and recurse
         CFrustum Clip;
-        Clip.CreateFromPortal(P, i_vBase, i_mXFORM);
+        Clip.CreateFromPortal(*P, i_vBase, i_mXFORM);
         PORTAL->marker = i_marker;
         PORTAL->bDualRender = FALSE;
         traverse_sector(pSector, Clip, scissor);

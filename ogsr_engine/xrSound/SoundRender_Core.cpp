@@ -235,7 +235,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
     // Create AABB-tree
     geom_SOM = xr_new<CDB::MODEL>();
-    geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()));
+    geom_SOM->build(CL.get_verts(), CL.get_faces());
 }
 
 void CSoundRender_Core::set_geometry_env(IReader* I)
@@ -293,7 +293,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     }
 
     geom_ENV = xr_new<CDB::MODEL>();
-    geom_ENV->build(verts, H.vertcount, tris.data(), std::ssize(tris));
+    geom_ENV->build(std::span{verts, H.vertcount}, tris);
 }
 
 void CSoundRender_Core::set_master_gain(float low_pass, float high_pass)

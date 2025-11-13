@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "Frustum.h"
+
 //////////////////////////////////////////////////////////////////////
 void CFrustum::fplane::cache()
 {
@@ -39,40 +41,54 @@ void CFrustum::fplane::cache()
     }
 }
 
-void CFrustum::_add(Fplane& P)
+void CFrustum::_add(const Fplane& P)
 {
     VERIFY(p_count < FRUSTUM_MAXPLANES);
-    planes[p_count].set(P);
-    planes[p_count].cache();
-    p_count++;
+
+    auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+    plane.set(P);
+    plane.cache();
+
+    ++p_count;
 }
 
-void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
+void CFrustum::_add(const Fvector& P1, const Fvector& P2, const Fvector& P3)
 {
     VERIFY(p_count < FRUSTUM_MAXPLANES);
-    planes[p_count].build_precise(P1, P2, P3);
-    planes[p_count].cache();
-    p_count++;
+
+    auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+    plane.build_precise(P1, P2, P3);
+    plane.cache();
+
+    ++p_count;
 }
 
 //////////////////////////////////////////////////////////////////////
+
 EFC_Visible CFrustum::testSphere(const Fvector& c, float r, u32& test_mask) const
 {
-    u32 bit = 1;
-    for (u32 i = 0; i < p_count; i++, bit <<= 1)
+    u32 bit{1};
+
+    for (auto& plane : plane_span())
     {
         if (test_mask & bit)
         {
-            float cls = planes[i].classify(c);
+            const f32 cls = plane.classify(c);
             if (cls > r)
             {
+                // none  - return
                 test_mask = 0;
                 return fcvNone;
-            } // none  - return
+            }
+
             if (_abs(cls) >= r)
-                test_mask &= ~bit; // fully - no need to test this plane
+                // fully - no need to test this plane
+                test_mask &= ~bit;
         }
+
+        bit <<= 1;
     }
+
     return test_mask ? fcvPartial : fcvFully;
 }
 
@@ -150,225 +166,194 @@ bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
 EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
 {
     // go for trivial rejection or acceptance using "faster overlap test"
-    u32 bit = 1;
+    u32 bit{1};
 
-    for (u32 i = 0; i < p_count; i++, bit <<= 1)
+    for (auto& plane : plane_span())
     {
         if (test_mask & bit)
         {
-            EFC_Visible r = AABB_OverlapPlane(planes[i], mM);
-            if (fcvFully == r)
-                test_mask &= ~bit; // fully - no need to test this plane
-            else if (fcvNone == r)
+            const EFC_Visible r = AABB_OverlapPlane(plane, mM);
+            if (r == fcvFully)
             {
+                // fully - no need to test this plane
+                test_mask &= ~bit;
+            }
+            else if (r == fcvNone)
+            {
+                // none - return
                 test_mask = 0;
                 return fcvNone;
-            } // none - return
+            }
         }
+
+        bit <<= 1;
     }
+
     return test_mask ? fcvPartial : fcvFully;
 }
 
 EFC_Visible CFrustum::testSAABB(const Fvector& c, float r, const float* mM, u32& test_mask) const
 {
-    u32 bit = 1;
-    for (u32 i = 0; i < p_count; i++, bit <<= 1)
+    u32 bit{1};
+
+    for (auto& plane : plane_span())
     {
         if (test_mask & bit)
         {
-            float cls = planes[i].classify(c);
+            const f32 cls = plane.classify(c);
             if (cls > r)
             {
+                // none  - return
                 test_mask = 0;
                 return fcvNone;
-            } // none  - return
+            }
+
             if (_abs(cls) >= r)
-                test_mask &= ~bit; // fully - no need to test this plane
+            {
+                // fully - no need to test this plane
+                test_mask &= ~bit;
+            }
             else
             {
-                EFC_Visible r2 = AABB_OverlapPlane(planes[i], mM);
-                if (fcvFully == r2)
-                    test_mask &= ~bit; // fully - no need to test this plane
-                else if (fcvNone == r2)
+                const EFC_Visible r2 = AABB_OverlapPlane(plane, mM);
+                if (r2 == fcvFully)
                 {
+                    // fully - no need to test this plane
+                    test_mask &= ~bit;
+                }
+                else if (r2 == fcvNone)
+                {
+                    // none - return
                     test_mask = 0;
                     return fcvNone;
-                } // none - return
+                }
             }
         }
+
+        bit <<= 1;
     }
+
     return test_mask ? fcvPartial : fcvFully;
 }
 
-bool CFrustum::testPolyInside_dirty(const Fvector* p, size_t count) const
-{
-    const Fvector* e = p + count;
-    for (size_t i = 0; i < p_count; i++)
-    {
-        const fplane& P = planes[i];
-        for (const Fvector* I = p; I != e; I++)
-            if (P.classify(*I) > 0)
-                return false;
-    }
-    return true;
-}
-
 //////////////////////////////////////////////////////////////////////
-void CFrustum::CreateFromPoints(Fvector* p, size_t count, Fvector& COP)
+
+void CFrustum::CreateFromPoints(std::span<const Fvector> p, const Fvector& COP)
 {
+    const auto count = p.size();
     VERIFY(count < FRUSTUM_MAXPLANES);
     VERIFY(count >= 3);
 
     _clear();
-    for (size_t i = 1; i < count; i++)
+
+    for (size_t i{1}; i < count; ++i)
         _add(COP, p[i - 1], p[i]);
+
     _add(COP, p[count - 1], p[0]);
 }
 
-void CFrustum::CreateFromPlanes(Fplane* p, size_t count)
+void CFrustum::CreateFromPlanes(std::span<const Fplane> p)
 {
-    for (size_t k = 0; k < count; k++)
-        planes[k].set(p[k]);
+    for (auto [dst, src] : std::views::zip(planes, p))
+        dst.set(src);
 
-    for (size_t i = 0; i < count; i++)
+    p_count = std::ssize(p);
+
+    for (auto& plane : plane_span())
     {
-        float denom = 1.0f / planes[i].n.magnitude(); // Get magnitude of Vector
-        planes[i].n.x *= denom;
-        planes[i].n.y *= denom;
-        planes[i].n.z *= denom;
-        planes[i].d *= denom;
-        planes[i].cache();
-    }
+        const f32 denom = 1.0f / plane.n.magnitude(); // Get magnitude of Vector
 
-    p_count = count;
+        plane.n.x *= denom;
+        plane.n.y *= denom;
+        plane.n.z *= denom;
+        plane.d *= denom;
+        plane.cache();
+    }
 }
 
-void CFrustum::CreateFromPortal(sPoly* poly, Fvector& vBase, Fmatrix& mFullXFORM)
+void CFrustum::CreateFromPortal(sPoly& poly, const Fvector& vBase, const Fmatrix& mFullXFORM)
 {
     Fplane P;
-    P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
+    P.build_precise(poly[0], poly[1], poly[2]);
 
-    if (poly->size() > 6)
+    if (poly.size() > 6)
     {
         SimplifyPoly_AABB(poly, P);
-        P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
+        P.build_precise(poly[0], poly[1], poly[2]);
     }
 
     // Check plane orientation relative to viewer
     // and reverse if needed
     if (P.classify(vBase) < 0)
     {
-        std::ranges::reverse(*poly);
-        P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
+        std::ranges::reverse(poly);
+        P.build_precise(poly[0], poly[1], poly[2]);
     }
 
     // Base creation
-    CreateFromPoints(poly->data(), poly->size(), vBase);
+    CreateFromPoints(poly, vBase);
 
     // Near clipping plane
     _add(P);
 
     // Far clipping plane
-    Fmatrix& M = mFullXFORM;
+    const Fmatrix& M = mFullXFORM;
     P.n.x = -(M._14 - M._13);
     P.n.y = -(M._24 - M._23);
     P.n.z = -(M._34 - M._33);
     P.d = -(M._44 - M._43);
-    float denom = 1.0f / P.n.magnitude();
+
+    const f32 denom = 1.0f / P.n.magnitude();
     P.n.x *= denom;
     P.n.y *= denom;
     P.n.z *= denom;
     P.d *= denom;
+
     _add(P);
 }
 
-void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
+void CFrustum::SimplifyPoly_AABB(sPoly& poly, const Fplane& plane)
 {
-    Fmatrix mView, mInv;
-    Fvector from, up, right, y;
-    from.set((*poly)[0]);
-    y.set(0, 1, 0);
+    Fvector y{0.0f, 1.0f, 0.0f};
     if (_abs(plane.n.y) > 0.99f)
-        y.set(1, 0, 0);
+        y.set(1.0f, 0.0f, 0.0f);
+
+    Fvector right, up;
     right.crossproduct(y, plane.n);
     up.crossproduct(plane.n, right);
-    mView.build_camera_dir(from, plane.n, up);
+
+    Fmatrix mView;
+    mView.build_camera_dir(poly[0], plane.n, up);
 
     // Project and find extents
-    Fvector2 min, max;
-    min.set(flt_max, flt_max);
-    max.set(flt_min, flt_min);
-    for (auto& v : *poly)
+    Fvector2 min{flt_max, flt_max};
+    Fvector2 max{flt_min, flt_min};
+
+    for (const auto& v : poly)
     {
         Fvector2 tmp;
         mView.transform_tiny32(tmp, v);
+
         min.min(tmp.x, tmp.y);
         max.max(tmp.x, tmp.y);
     }
 
     // Build other 2 points and inverse project
-    Fvector2 p1, p2;
-    p1.set(min.x, max.y);
-    p2.set(max.x, min.y);
+    const Fvector2 p1{min.x, max.y};
+    const Fvector2 p2{max.x, min.y};
+
+    Fmatrix mInv;
     mInv.invert(mView);
-    poly->clear();
+    poly.clear();
 
-    mInv.transform_tiny23(poly->last(), min);
-    poly->inc();
-    mInv.transform_tiny23(poly->last(), p1);
-    poly->inc();
-    mInv.transform_tiny23(poly->last(), max);
-    poly->inc();
-    mInv.transform_tiny23(poly->last(), p2);
-    poly->inc();
-}
-
-void CFrustum::CreateOccluder(Fvector* p, size_t count, Fvector& vBase, CFrustum& clip)
-{
-    VERIFY(count < FRUSTUM_SAFE);
-    VERIFY(count >= 3);
-
-    bool edge[FRUSTUM_SAFE];
-    float cls[FRUSTUM_SAFE];
-    std::memset(edge, 0, sizeof(edge));
-
-    for (size_t i = 0; i < clip.p_count; i++)
-    {
-        // classify all points relative to plane #i
-        const fplane& P = clip.planes[i];
-        for (size_t j = 0; j < count; j++)
-            cls[j] = _abs(P.classify(p[j]));
-
-        // test edges to see which lies directly on plane
-        for (size_t j = 0; j < count; j++)
-        {
-            if (cls[j] < EPS_L)
-            {
-                size_t next = j + 1;
-                if (next >= count)
-                    next = 0;
-                if (cls[next] < EPS_L)
-                {
-                    // both points lies on plane - mark as 'open'
-                    edge[j] = true;
-                }
-            }
-        }
-    }
-
-    // here we have all edges marked accordenly to 'open' / 'closed' classification
-    _clear();
-    _add(p[0], p[1], p[2]); // main plane
-    for (size_t i = 0; i < count; i++)
-    {
-        if (!edge[i])
-        {
-            size_t next = i + 1;
-            if (next >= count)
-                next = 0;
-            _add(vBase, p[i], p[next]);
-        }
-    }
+    mInv.transform_tiny23(poly.last(), min);
+    poly.inc();
+    mInv.transform_tiny23(poly.last(), p1);
+    poly.inc();
+    mInv.transform_tiny23(poly.last(), max);
+    poly.inc();
+    mInv.transform_tiny23(poly.last(), p2);
+    poly.inc();
 }
 
 sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
@@ -376,10 +361,9 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
     sPoly* src = &D;
     sPoly* dest = &S;
 
-    for (u32 i = 0; i < p_count; i++)
+    for (auto& P : plane_span())
     {
         // cache plane and swap lists
-        const fplane& P = planes[i];
         std::swap(src, dest);
         dest->clear();
 
@@ -398,21 +382,24 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
         for (gsl::index j{}; j < src->size() - 1; ++j)
         {
-            if ((*src)[j].similar((*src)[j + 1], EPS_S))
+            const auto& sj = (*src)[gsl::narrow_cast<typename sPoly::size_type>(j)];
+            const auto& sjn = (*src)[gsl::narrow_cast<typename sPoly::size_type>(j + 1)];
+
+            if (sj.similar(sjn, EPS_S))
                 continue;
 
             if (negative(cls[j]))
             {
-                dest->push_back((*src)[j]);
+                dest->push_back(sj);
                 if (positive(cls[j + 1]))
                 {
                     // segment intersects plane
-                    D2.sub((*src)[j + 1], (*src)[j]);
+                    D2.sub(sjn, sj);
                     denum = P.n.dotproduct(D2);
                     if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().mad((*src)[j], D2, t);
+                        dest->last().mad(sj, D2, t);
                         dest->inc();
                     }
                 }
@@ -424,12 +411,12 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
                 {
                     // J+1  - inside
                     // segment intersects plane
-                    D2.sub((*src)[j + 1], (*src)[j]);
+                    D2.sub(sjn, sj);
                     denum = P.n.dotproduct(D2);
                     if (!fis_zero(denum))
                     {
                         t = -cls[j] / denum; // VERIFY(t<=1.f && t>=0);
-                        dest->last().mad((*src)[j], D2, t);
+                        dest->last().mad(sj, D2, t);
                         dest->inc();
                     }
                 }
@@ -444,23 +431,6 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
     return dest;
 }
 
-bool CFrustum::CreateFromClipPoly(Fvector* p, size_t count, Fvector& vBase, CFrustum& clip)
-{
-    VERIFY(count < FRUSTUM_MAXPLANES);
-    VERIFY(count >= 3);
-
-    sPoly poly1(p, count);
-    sPoly poly2;
-    sPoly* dest = clip.ClipPoly(poly1, poly2);
-
-    // here we end up with complete frustum-polygon in 'dest'
-    if (!dest)
-        return false;
-
-    CreateFromPoints(dest->data(), dest->size(), vBase);
-    return true;
-}
-
 void CFrustum::CreateFromMatrix(const Fmatrix& M, u32 mask)
 {
     VERIFY(_valid(M));
@@ -469,70 +439,89 @@ void CFrustum::CreateFromMatrix(const Fmatrix& M, u32 mask)
     // Left clipping plane
     if (mask & FRUSTUM_P_LEFT)
     {
-        planes[p_count].n.x = -(M._14 + M._11);
-        planes[p_count].n.y = -(M._24 + M._21);
-        planes[p_count].n.z = -(M._34 + M._31);
-        planes[p_count].d = -(M._44 + M._41);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 + M._11);
+        plane.n.y = -(M._24 + M._21);
+        plane.n.z = -(M._34 + M._31);
+        plane.d = -(M._44 + M._41);
+
+        ++p_count;
     }
 
     // Right clipping plane
     if (mask & FRUSTUM_P_RIGHT)
     {
-        planes[p_count].n.x = -(M._14 - M._11);
-        planes[p_count].n.y = -(M._24 - M._21);
-        planes[p_count].n.z = -(M._34 - M._31);
-        planes[p_count].d = -(M._44 - M._41);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 - M._11);
+        plane.n.y = -(M._24 - M._21);
+        plane.n.z = -(M._34 - M._31);
+        plane.d = -(M._44 - M._41);
+
+        ++p_count;
     }
 
     // Top clipping plane
     if (mask & FRUSTUM_P_TOP)
     {
-        planes[p_count].n.x = -(M._14 - M._12);
-        planes[p_count].n.y = -(M._24 - M._22);
-        planes[p_count].n.z = -(M._34 - M._32);
-        planes[p_count].d = -(M._44 - M._42);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 - M._12);
+        plane.n.y = -(M._24 - M._22);
+        plane.n.z = -(M._34 - M._32);
+        plane.d = -(M._44 - M._42);
+
+        ++p_count;
     }
 
     // Bottom clipping plane
     if (mask & FRUSTUM_P_BOTTOM)
     {
-        planes[p_count].n.x = -(M._14 + M._12);
-        planes[p_count].n.y = -(M._24 + M._22);
-        planes[p_count].n.z = -(M._34 + M._32);
-        planes[p_count].d = -(M._44 + M._42);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 + M._12);
+        plane.n.y = -(M._24 + M._22);
+        plane.n.z = -(M._34 + M._32);
+        plane.d = -(M._44 + M._42);
+
+        ++p_count;
     }
 
     // Far clipping plane
     if (mask & FRUSTUM_P_FAR)
     {
-        planes[p_count].n.x = -(M._14 - M._13);
-        planes[p_count].n.y = -(M._24 - M._23);
-        planes[p_count].n.z = -(M._34 - M._33);
-        planes[p_count].d = -(M._44 - M._43);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 - M._13);
+        plane.n.y = -(M._24 - M._23);
+        plane.n.z = -(M._34 - M._33);
+        plane.d = -(M._44 - M._43);
+
+        ++p_count;
     }
 
     // Near clipping plane
     if (mask & FRUSTUM_P_NEAR)
     {
-        planes[p_count].n.x = -(M._14 + M._13);
-        planes[p_count].n.y = -(M._24 + M._23);
-        planes[p_count].n.z = -(M._34 + M._33);
-        planes[p_count].d = -(M._44 + M._43);
-        p_count++;
+        auto& plane = planes[gsl::narrow_cast<size_t>(p_count)];
+
+        plane.n.x = -(M._14 + M._13);
+        plane.n.y = -(M._24 + M._23);
+        plane.n.z = -(M._34 + M._33);
+        plane.d = -(M._44 + M._43);
+
+        ++p_count;
     }
 
-    for (u32 i = 0; i < p_count; i++)
+    for (auto& plane : plane_span())
     {
-        float denom = 1.0f / planes[i].n.magnitude(); // Get magnitude of Vector
-        planes[i].n.x *= denom;
-        planes[i].n.y *= denom;
-        planes[i].n.z *= denom;
-        planes[i].d *= denom;
-        planes[i].cache();
+        const f32 denom = 1.0f / plane.n.magnitude(); // Get magnitude of Vector
+
+        plane.n.x *= denom;
+        plane.n.y *= denom;
+        plane.n.z *= denom;
+        plane.d *= denom;
+        plane.cache();
     }
 }

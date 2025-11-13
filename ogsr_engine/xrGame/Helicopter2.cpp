@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "helicopter.h"
+
 #include "level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
@@ -172,12 +173,10 @@ float CHelicopter::GetOnPointRangeDist() { return m_movement.onPointRangeDist; }
 
 float CHelicopter::GetRealAltitude()
 {
+    constexpr Fvector down_dir{0.0f, -1.0f, 0.0f};
     collide::rq_result cR;
-    Fvector down_dir;
 
-    down_dir.set(0.0f, -1.0f, 0.0f);
-
-    Level().ObjectSpace.RayPick(XFORM().c, down_dir, 1000.0f, collide::rqtStatic, cR, nullptr);
+    std::ignore = Level().ObjectSpace.RayPick(XFORM().c, down_dir, 1000.0f, collide::rqtStatic, cR, nullptr);
 
     return cR.range;
 }

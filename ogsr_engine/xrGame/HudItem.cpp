@@ -723,7 +723,7 @@ void CHudItem::UpdateCollision(Fmatrix& trans)
     const collide::ray_defs RD{GetPositionForCollision(), GetDirectionForCollision(), RQ.range, CDB::OPT_CULL, collide::rqtBoth};
     collide::rq_results RQR;
 
-    Level().ObjectSpace.RayQuery(
+    std::ignore = Level().ObjectSpace.RayQuery(
         RQR, RD,
         [](collide::rq_result& result, LPVOID params) {
             // Копипаст из  CHUDTarget

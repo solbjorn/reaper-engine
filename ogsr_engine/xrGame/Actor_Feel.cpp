@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "actor.h"
+
 #include "weapon.h"
 #include "mercuryball.h"
 #include "inventory.h"
@@ -109,6 +110,7 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
     BOOL bOverlaped = FALSE;
     Fvector dir, to;
     item->Center(to);
+
     float range = dir.sub(to, from).magnitude();
     if (range > 0.25f)
     {
@@ -117,10 +119,12 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
             dir.div(range);
             collide::ray_defs RD(from, dir, range, CDB::OPT_CULL, collide::rqtBoth);
             VERIFY(!fis_zero(RD.dir.square_magnitude()));
+
             RQR.r_clear();
-            Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
+            std::ignore = Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
         }
     }
+
     return !bOverlaped;
 }
 

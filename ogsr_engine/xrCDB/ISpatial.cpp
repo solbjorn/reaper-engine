@@ -4,53 +4,57 @@
 #include "../xr_3da/render.h"
 
 #ifdef DEBUG
-#include "../xrengine/xr_object.h"
-#include "../xrengine/PS_Instance.h"
+#include "../xr_3da/PS_Instance.h"
+#include "../xr_3da/xr_object.h"
 #endif
 
-ISpatial_DB* g_SpatialSpace = nullptr;
-ISpatial_DB* g_SpatialSpacePhysic = nullptr;
+ISpatial_DB* g_SpatialSpace{};
+ISpatial_DB* g_SpatialSpacePhysic{};
 
 //////////////////////////////////////////////////////////////////////////
 
 ISpatial::~ISpatial() { spatial_unregister(); }
 
-bool ISpatial::spatial_inside()
+bool ISpatial::spatial_inside() const
 {
-    float dr = -(-spatial.node_radius + spatial.sphere.R);
+    const f32 dr = -(-spatial.node_radius + spatial.sphere.R);
+
     if (spatial.sphere.P.x < spatial.node_center.x - dr)
-        return FALSE;
+        return false;
     if (spatial.sphere.P.x > spatial.node_center.x + dr)
-        return FALSE;
+        return false;
     if (spatial.sphere.P.y < spatial.node_center.y - dr)
-        return FALSE;
+        return false;
     if (spatial.sphere.P.y > spatial.node_center.y + dr)
-        return FALSE;
+        return false;
     if (spatial.sphere.P.z < spatial.node_center.z - dr)
-        return FALSE;
+        return false;
     if (spatial.sphere.P.z > spatial.node_center.z + dr)
-        return FALSE;
-    return TRUE;
+        return false;
+
+    return true;
 }
 
 namespace
 {
-BOOL verify_sp(ISpatial* sp, Fvector& node_center, float node_radius)
+[[nodiscard]] bool verify_sp(const ISpatial* sp, const Fvector& node_center, f32 node_radius)
 {
-    float dr = -(-node_radius + sp->spatial.sphere.R);
+    const f32 dr = -(-node_radius + sp->spatial.sphere.R);
+
     if (sp->spatial.sphere.P.x < node_center.x - dr)
-        return FALSE;
+        return false;
     if (sp->spatial.sphere.P.x > node_center.x + dr)
-        return FALSE;
+        return false;
     if (sp->spatial.sphere.P.y < node_center.y - dr)
-        return FALSE;
+        return false;
     if (sp->spatial.sphere.P.y > node_center.y + dr)
-        return FALSE;
+        return false;
     if (sp->spatial.sphere.P.z < node_center.z - dr)
-        return FALSE;
+        return false;
     if (sp->spatial.sphere.P.z > node_center.z + dr)
-        return FALSE;
-    return TRUE;
+        return false;
+
+    return true;
 }
 } // namespace
 
@@ -114,10 +118,12 @@ void ISpatial::spatial_updatesector_internal(sector_id_t sector_id)
 }
 
 //////////////////////////////////////////////////////////////////////////
+
 void ISpatial_NODE::_init(ISpatial_NODE* _parent)
 {
     parent = _parent;
-    children[0] = children[1] = children[2] = children[3] = children[4] = children[5] = children[6] = children[7] = nullptr;
+
+    std::memset(children.data(), 0, sizeof(children));
     items.clear();
 }
 
@@ -247,6 +253,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 void ISpatial_DB::insert(ISpatial* S)
 {
     cs.Enter();
+
 #ifdef DEBUG
     stat_insert.Begin();
 
@@ -282,40 +289,35 @@ void ISpatial_DB::insert(ISpatial* S)
         S->spatial.node_center.set(m_center);
         S->spatial.node_radius = m_bounds;
     }
+
 #ifdef DEBUG
     stat_insert.End();
 #endif
+
     cs.Leave();
 }
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 {
-    if (!N)
+    if (N == nullptr)
         return;
 
     //*** we are assured that node contains N_sub and this subnode is empty
-    u32 octant = u32(-1);
-    if (N_sub == N->children[0])
-        octant = 0;
-    else if (N_sub == N->children[1])
-        octant = 1;
-    else if (N_sub == N->children[2])
-        octant = 2;
-    else if (N_sub == N->children[3])
-        octant = 3;
-    else if (N_sub == N->children[4])
-        octant = 4;
-    else if (N_sub == N->children[5])
-        octant = 5;
-    else if (N_sub == N->children[6])
-        octant = 6;
-    else if (N_sub == N->children[7])
-        octant = 7;
+    gsl::index octant{std::ssize(N->children)};
+
+    for (auto [id, ch] : xr::views_enumerate(N->children))
+    {
+        if (N_sub == ch)
+        {
+            octant = id;
+            break;
+        }
+    }
 
     VERIFY(N_sub->_empty());
 
-    if (octant < 8)
-        _node_destroy(N->children[octant]);
+    if (octant < std::ssize(N->children))
+        _node_destroy(N->children[gsl::narrow_cast<size_t>(octant)]);
 
     // Recurse
     if (N->_empty())
@@ -325,9 +327,11 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 void ISpatial_DB::remove(ISpatial* S)
 {
     cs.Enter();
+
 #ifdef DEBUG
     stat_remove.Begin();
 #endif
+
     ISpatial_NODE* N = S->spatial.node_ptr;
     N->_remove(S);
 
@@ -338,16 +342,18 @@ void ISpatial_DB::remove(ISpatial* S)
 #ifdef DEBUG
     stat_remove.End();
 #endif
+
     cs.Leave();
 }
 
-void ISpatial_DB::update(u32 /* nodes =8 */)
-{
 #ifdef DEBUG
-    if (0 == m_root)
+void ISpatial_DB::update()
+{
+    if (m_root == nullptr)
         return;
+
     cs.Enter();
     VERIFY(verify());
     cs.Leave();
-#endif
 }
+#endif

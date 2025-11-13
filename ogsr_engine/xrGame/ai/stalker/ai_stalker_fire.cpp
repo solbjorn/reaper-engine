@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_stalker.h"
+
 #include "ai_stalker_impl.h"
 #include "../../script_entity_action.h"
 #include "../../inventory.h"
@@ -613,8 +614,8 @@ void CAI_Stalker::can_kill_entity(const Fvector& position, const Fvector& direct
     VERIFY(!fis_zero(ray_defs.dir.square_magnitude()));
 
     ray_query_param params(this, memory().visual().transparency_threshold(), distance);
+    std::ignore = Level().ObjectSpace.RayQuery(rq_storage, ray_defs, ray_query_callback, &params, nullptr, this);
 
-    Level().ObjectSpace.RayQuery(rq_storage, ray_defs, ray_query_callback, &params, nullptr, this);
     m_can_kill_enemy = m_can_kill_enemy || params.m_can_kill_enemy;
     m_can_kill_member = m_can_kill_member || params.m_can_kill_member;
     m_pick_distance = _max(m_pick_distance, params.m_pick_distance);
@@ -996,7 +997,7 @@ bool CAI_Stalker::throw_check_error(float low, float high, const Fvector& positi
         m_throw_ignore_object->setEnabled(FALSE);
     }
 
-    Level().ObjectSpace.RayQuery(rq_storage, ray_defs, throw_query_callback, &range, nullptr, this);
+    std::ignore = Level().ObjectSpace.RayQuery(rq_storage, ray_defs, throw_query_callback, &range, nullptr, this);
 
     if (m_throw_ignore_object)
         m_throw_ignore_object->setEnabled(throw_ignore_object_enabled);

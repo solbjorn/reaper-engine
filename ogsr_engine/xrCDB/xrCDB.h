@@ -29,6 +29,15 @@ public:
     };
 
     constexpr TRI() = default;
+    constexpr explicit TRI(u32 v1, u32 v2, u32 v3, u32 d) : verts{v1, v2, v3}, dummy{d} {}
+
+    constexpr explicit TRI(u32 v1, u32 v2, u32 v3, u16 mat, u16 sec) : verts{v1, v2, v3}
+    {
+        material = mat;
+        suppress_shadows = 0;
+        suppress_wm = 0;
+        sector = sec;
+    }
 
     constexpr TRI(const TRI& that) { xr_memcpy16(this, &that); }
 
@@ -54,13 +63,13 @@ public:
     }
 #endif
 
-    [[nodiscard]] auto IDvert(size_t ID) const { return verts[ID]; }
+    [[nodiscard]] constexpr auto IDvert(gsl::index ID) const { return verts[ID]; }
 };
 static_assert(sizeof(TRI) == 16);
 XR_TRIVIAL_ASSERT(TRI);
 
 // Build callback
-using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
+using build_callback = void(std::span<Fvector> V, std::span<TRI> T, void* params);
 using serialize_callback = void(IWriter& writer);
 using deserialize_callback = bool(IReader& reader);
 
@@ -91,21 +100,23 @@ private:
 
     // tris
     TRI* tris{};
-    size_t tris_count{};
+    gsl::index tris_count{};
     Fvector* verts{};
-    size_t verts_count{};
+    gsl::index verts_count{};
 
 public:
     MODEL();
     ~MODEL();
 
-    IC Fvector* get_verts() { return verts; }
-    IC const Fvector* get_verts() const { return verts; }
-    IC size_t get_verts_count() const { return verts_count; }
-    IC const TRI* get_tris() const { return tris; }
-    IC TRI* get_tris() { return tris; }
-    IC size_t get_tris_count() const { return tris_count; }
-    IC void syncronize() const
+    [[nodiscard]] constexpr Fvector* get_verts() { return verts; }
+    [[nodiscard]] constexpr const Fvector* get_verts() const { return verts; }
+    [[nodiscard]] constexpr auto get_verts_count() const { return verts_count; }
+
+    [[nodiscard]] constexpr TRI* get_tris() { return tris; }
+    [[nodiscard]] constexpr const TRI* get_tris() const { return tris; }
+    [[nodiscard]] constexpr auto get_tris_count() const { return tris_count; }
+
+    void syncronize() const
     {
         if (S_READY != status)
         {
@@ -116,16 +127,16 @@ public:
         }
     }
 
-    void build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
-    void build(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc = nullptr, void* bcp = nullptr);
-    size_t memory();
+    void build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
+    void build(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc = nullptr, void* bcp = nullptr);
+    [[nodiscard]] gsl::index memory() const;
 
-    bool serialize(const char* file, u64 xxh, serialize_callback callback = nullptr) const;
-    bool deserialize(const char* file, u64 xxh, deserialize_callback callback = nullptr);
+    [[nodiscard]] bool serialize(const char* file, u64 xxh, serialize_callback callback = nullptr) const;
+    [[nodiscard]] bool deserialize(const char* file, u64 xxh, deserialize_callback callback = nullptr);
 
 private:
     void serialize_tree(IWriter* stream) const;
-    bool deserialize_tree(IReader* stream);
+    [[nodiscard]] bool deserialize_tree(IReader* stream);
 };
 
 // Collider result
@@ -143,12 +154,16 @@ struct XR_TRIVIAL alignas(16) RESULT
             u32 sector : 16; //
         };
     };
-    int id;
-    float range;
-    float u, v;
+    s32 id;
+    f32 range;
+    f32 u, v;
     u64 pad;
 
     constexpr RESULT() = default;
+    constexpr explicit RESULT(s32 i, const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 d) : verts{v0, v1, v2}, dummy{d}, id{i} {}
+    constexpr explicit RESULT(s32 i, f32 r, f32 uu, f32 vv, const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 d)
+        : verts{v0, v1, v2}, dummy{d}, id{i}, range{r}, u{uu}, v{vv}
+    {}
 
     constexpr RESULT(const RESULT& that) { xr_memcpy128(this, &that, sizeof(that)); }
 
@@ -193,26 +208,37 @@ class COLLIDER
     xr_vector<RESULT> rd;
 
 public:
-    COLLIDER() = default;
-    ~COLLIDER();
+    constexpr COLLIDER() = default;
+    constexpr ~COLLIDER() { r_free(); }
 
-    COLLIDER(const COLLIDER&) = default;
-    COLLIDER(COLLIDER&&) = default;
+    constexpr COLLIDER(const COLLIDER&) = default;
+    constexpr COLLIDER(COLLIDER&&) = default;
 
-    COLLIDER& operator=(const COLLIDER&) = default;
-    COLLIDER& operator=(COLLIDER&&) = default;
+    constexpr COLLIDER& operator=(const COLLIDER&) = default;
+    constexpr COLLIDER& operator=(COLLIDER&&) = default;
 
     void ray_query(u32 ray_mode, const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f);
     void box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim);
     void frustum_query(u32 frustum_mode, const MODEL* m_def, const CFrustum& F);
 
-    ICF RESULT* r_begin() { return &*rd.begin(); }
-    ICF xr_vector<RESULT>* r_get() { return &rd; }
-    RESULT& r_add();
-    void r_free();
-    ICF size_t r_count() { return rd.size(); }
-    ICF void r_clear() { rd.clear(); }
-    ICF void r_clear_compact() { rd.clear(); }
+    [[nodiscard]] constexpr RESULT* r_begin() { return rd.data(); }
+    [[nodiscard]] constexpr const RESULT* r_begin() const { return rd.data(); }
+    [[nodiscard]] constexpr xr_vector<RESULT>* r_get() { return &rd; }
+    [[nodiscard]] constexpr const xr_vector<RESULT>* r_get() const { return &rd; }
+
+    template <typename... Args>
+    constexpr RESULT& r_add(Args&&... args)
+    {
+        return rd.emplace_back(std::forward<Args>(args)...);
+    }
+
+    constexpr void r_free() { rd.clear(); }
+
+    [[nodiscard]] constexpr gsl::index r_count() const { return std::ssize(rd); }
+    [[nodiscard]] constexpr bool r_empty() const { return rd.empty(); }
+
+    constexpr void r_clear() { rd.clear(); }
+    constexpr void r_clear_compact() { rd.clear(); }
 };
 
 //
@@ -221,7 +247,7 @@ class Collector
     xr_vector<Fvector> verts;
     xr_vector<TRI> faces;
 
-    u32 VPack(const Fvector& V, float eps);
+    [[nodiscard]] gsl::index VPack(const Fvector& V, float eps);
 
 public:
     void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
@@ -229,53 +255,56 @@ public:
     void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
     void add_face_packed(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, float eps = EPS);
     void add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy, float eps = EPS);
-    void remove_duplicate_T();
     void calc_adjacency(xr_vector<u32>& dest) const;
 
-    Fvector* getV() { return &*verts.begin(); }
-    size_t getVS() { return verts.size(); }
-    TRI* getT() { return &*faces.begin(); }
-    size_t getTS() { return faces.size(); }
-    void clear()
+    [[nodiscard]] constexpr Fvector* getV() { return verts.data(); }
+    [[nodiscard]] constexpr const Fvector* getV() const { return verts.data(); }
+    [[nodiscard]] constexpr gsl::index getVS() const { return std::ssize(verts); }
+    [[nodiscard]] constexpr auto get_verts() { return std::span{verts}; }
+    [[nodiscard]] constexpr auto get_verts() const { return std::span{verts}; }
+
+    [[nodiscard]] constexpr TRI* getT() { return faces.data(); }
+    [[nodiscard]] constexpr const TRI* getT() const { return faces.data(); }
+    [[nodiscard]] constexpr gsl::index getTS() const { return std::ssize(faces); }
+    [[nodiscard]] constexpr auto get_faces() { return std::span{faces}; }
+    [[nodiscard]] constexpr auto get_faces() const { return std::span{faces}; }
+
+    constexpr void clear()
     {
         verts.clear();
         faces.clear();
     }
 };
 
-constexpr inline u32 clpMX{24}, clpMY{16}, clpMZ{24};
-
 class CollectorPacked : public Noncopyable
 {
-    using DWORDList = xr_vector<u32>;
-    using DWORDIt = DWORDList::iterator;
-
 private:
+    static constexpr gsl::index clpMX{24}, clpMY{16}, clpMZ{24};
+
     xr_vector<Fvector> verts;
     xr_vector<TRI> faces;
 
     Fvector VMmin, VMscale;
-    DWORDList VM[clpMX + 1][clpMY + 1][clpMZ + 1];
+    xr_vector<u32> VM[clpMX + 1][clpMY + 1][clpMZ + 1];
     Fvector VMeps;
 
-    u32 VPack(const Fvector& V);
+    [[nodiscard]] u32 VPack(const Fvector& V);
 
 public:
-    explicit CollectorPacked(const Fbox& bb, int apx_vertices = 5000, int apx_faces = 5000);
-
-    //		__declspec(noinline) CollectorPacked &operator=	(const CollectorPacked &object)
-    //		{
-    //			verts
-    //		}
+    explicit CollectorPacked(const Fbox& bb, gsl::index apx_vertices = 5000, gsl::index apx_faces = 5000);
 
     void add_face(const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector);
     void add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy);
 
-    xr_vector<Fvector>& getV_Vec() { return verts; }
-    Fvector* getV() { return &*verts.begin(); }
-    size_t getVS() { return verts.size(); }
-    TRI* getT() { return &*faces.begin(); }
-    size_t getTS() { return faces.size(); }
+    [[nodiscard]] constexpr xr_vector<Fvector>& getV_Vec() { return verts; }
+    [[nodiscard]] constexpr Fvector* getV() { return verts.data(); }
+    [[nodiscard]] constexpr const Fvector* getV() const { return verts.data(); }
+    [[nodiscard]] constexpr gsl::index getVS() const { return std::ssize(verts); }
+
+    [[nodiscard]] constexpr TRI* getT() { return faces.data(); }
+    [[nodiscard]] constexpr const TRI* getT() const { return faces.data(); }
+    [[nodiscard]] constexpr gsl::index getTS() const { return std::ssize(faces); }
+
     void clear();
 };
 } // namespace CDB

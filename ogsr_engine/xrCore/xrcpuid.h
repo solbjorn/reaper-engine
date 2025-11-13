@@ -16,7 +16,7 @@ struct _processor_info final
     u32 threadCount; // number of available threads, both physical and logical
     u32 coresCount; // number of physical cores
 
-    void clearFeatures()
+    constexpr void clearFeatures()
     {
         m_f1_ECX.zero();
         m_f1_EDX.zero();
@@ -31,14 +31,14 @@ struct _processor_info final
     [[nodiscard]] bool hasSSE4a() const { return m_f81_ECX.test(6); }
 
     // Always true for AVX2 processors
-    [[nodiscard]] constexpr bool hasSSE() const { return true; }
-    [[nodiscard]] constexpr bool hasSSE2() const { return true; }
-    [[nodiscard]] constexpr bool hasSSE3() const { return true; }
-    [[nodiscard]] constexpr bool hasSSSE3() const { return true; }
-    [[nodiscard]] constexpr bool hasSSE41() const { return true; }
-    [[nodiscard]] constexpr bool hasSSE42() const { return true; }
-    [[nodiscard]] constexpr bool hasAVX() const { return true; }
-    [[nodiscard]] constexpr bool hasAVX2() const { return true; }
+    [[nodiscard]] static constexpr bool hasSSE() { return true; }
+    [[nodiscard]] static constexpr bool hasSSE2() { return true; }
+    [[nodiscard]] static constexpr bool hasSSE3() { return true; }
+    [[nodiscard]] static constexpr bool hasSSSE3() { return true; }
+    [[nodiscard]] static constexpr bool hasSSE41() { return true; }
+    [[nodiscard]] static constexpr bool hasSSE42() { return true; }
+    [[nodiscard]] static constexpr bool hasAVX() { return true; }
+    [[nodiscard]] static constexpr bool hasAVX2() { return true; }
 
     [[nodiscard]] bool getCPULoad(f64& val);
     void MTCPULoad();

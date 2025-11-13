@@ -4,9 +4,8 @@ struct xrGUID
 {
     u64 g[2];
 
-    ICF bool operator==(const xrGUID& o) const { return ((g[0] == o.g[0]) && (g[1] == o.g[1])); }
-
-    ICF bool operator!=(const xrGUID& o) const { return !(*this == o); }
+    constexpr bool operator==(const xrGUID& o) const { return g[0] == o.g[0] && g[1] == o.g[1]; }
+    constexpr bool operator!=(const xrGUID& o) const { return !(*this == o); }
 };
 
 enum fsL_Chunks : u32
@@ -73,14 +72,24 @@ class NodePosition
 {
     u8 data[5];
 
-    void xz(u32 value) { std::memcpy(data, &value, 3); } //-V512
-    void y(u16 value) { std::memcpy(data + 3, &value, 2); }
+    constexpr void xz(u32 value)
+    {
+        data[0] = gsl::narrow_cast<u8>(value);
+        data[1] = gsl::narrow_cast<u8>(value >> 8);
+        data[2] = gsl::narrow_cast<u8>(value >> 16);
+    }
+
+    constexpr void y(u32 value)
+    {
+        data[3] = gsl::narrow_cast<u8>(value);
+        data[4] = gsl::narrow_cast<u8>(value >> 8);
+    }
 
 public:
-    ICF u32 xz() const { return ((*((const u32*)data)) & 0x00ffffff); }
-    ICF u32 x(u32 row) const { return (xz() / row); }
-    ICF u32 z(u32 row) const { return (xz() % row); }
-    ICF u32 y() const { return (*((const u16*)(data + 3))); }
+    [[nodiscard]] constexpr u32 xz() const { return data[0] | (u32{data[1]} << 8) | (u32{data[2]} << 16); }
+    [[nodiscard]] constexpr u32 x(u32 row) const { return (xz() / row); }
+    [[nodiscard]] constexpr u32 z(u32 row) const { return (xz() % row); }
+    [[nodiscard]] constexpr u32 y() const { return data[3] | (u32{data[4]} << 8); }
 
     friend class CLevelGraph;
     friend struct CNodePositionCompressor;
@@ -96,41 +105,54 @@ public:
     u8 data[12];
 
 private:
-    ICF void link(u8 link_index, u32 value)
+    constexpr void link(s32 link_index, u32 value)
     {
         value &= 0x007fffff;
         switch (link_index)
         {
         case 0: {
-            value |= (*(u32*)data) & 0xff800000;
-            std::memcpy(data, &value, sizeof(u32));
+            value |= (data[0] | (u32{data[1]} << 8) | (u32{data[2]} << 16) | (u32{data[3]} << 24)) & 0xff800000;
+            data[0] = gsl::narrow_cast<u8>(value);
+            data[1] = gsl::narrow_cast<u8>(value >> 8);
+            data[2] = gsl::narrow_cast<u8>(value >> 16);
+            data[3] = gsl::narrow_cast<u8>(value >> 24);
             break;
         }
         case 1: {
             value <<= 7;
-            value |= (*(u32*)(data + 2)) & 0xc000007f;
-            std::memcpy(data + 2, &value, sizeof(u32));
+            value |= (data[2] | (u32{data[3]} << 8) | (u32{data[4]} << 16) | (u32{data[5]} << 24)) & 0xc000007f;
+            data[2] = gsl::narrow_cast<u8>(value);
+            data[3] = gsl::narrow_cast<u8>(value >> 8);
+            data[4] = gsl::narrow_cast<u8>(value >> 16);
+            data[5] = gsl::narrow_cast<u8>(value >> 24);
             break;
         }
         case 2: {
             value <<= 6;
-            value |= (*(u32*)(data + 5)) & 0xe000003f;
-            std::memcpy(data + 5, &value, sizeof(u32));
+            value |= (data[5] | (u32{data[6]} << 8) | (u32{data[7]} << 16) | (u32{data[8]} << 24)) & 0xe000003f;
+            data[5] = gsl::narrow_cast<u8>(value);
+            data[6] = gsl::narrow_cast<u8>(value >> 8);
+            data[7] = gsl::narrow_cast<u8>(value >> 16);
+            data[8] = gsl::narrow_cast<u8>(value >> 24);
             break;
         }
         case 3: {
             value <<= 5;
-            value |= (*(u32*)(data + 8)) & 0xf000001f;
-            std::memcpy(data + 8, &value, sizeof(u32));
+            value |= (data[8] | (u32{data[9]} << 8) | (u32{data[10]} << 16) | (u32{data[11]} << 24)) & 0xf000001f;
+            data[8] = gsl::narrow_cast<u8>(value);
+            data[9] = gsl::narrow_cast<u8>(value >> 8);
+            data[10] = gsl::narrow_cast<u8>(value >> 16);
+            data[11] = gsl::narrow_cast<u8>(value >> 24);
             break;
         }
+        default: NODEFAULT;
         }
     }
 
-    ICF void light(u8 value)
+    constexpr void light(u32 value)
     {
         data[11] &= 0x0f;
-        data[11] |= value << 4;
+        data[11] |= gsl::narrow_cast<u8>(value << 4);
     }
 
 public:
@@ -142,33 +164,35 @@ public:
     NodePosition p;
     // 4 + 4 + 4 + 4 + 16 + 40 + 96 = 168 bits = 21 byte
 
-    ICF u32 link(u8 index) const
+    [[nodiscard]] constexpr u32 link(s32 index) const
     {
         switch (index)
         {
-        case 0: return ((*(const u32*)data) & 0x007fffff);
-        case 1: return (((*(const u32*)(data + 2)) >> 7) & 0x007fffff);
-        case 2: return (((*(const u32*)(data + 5)) >> 6) & 0x007fffff);
-        case 3: return (((*(const u32*)(data + 8)) >> 5) & 0x007fffff);
+        case 0: return ((data[0] | (u32{data[1]} << 8) | (u32{data[2]} << 16) | (u32{data[3]} << 24))) & 0x007fffff;
+        case 1: return ((data[2] | (u32{data[3]} << 8) | (u32{data[4]} << 16) | (u32{data[5]} << 24)) >> 7) & 0x007fffff;
+        case 2: return ((data[5] | (u32{data[6]} << 8) | (u32{data[7]} << 16) | (u32{data[8]} << 24)) >> 6) & 0x007fffff;
+        case 3: return ((data[8] | (u32{data[9]} << 8) | (u32{data[10]} << 16) | (u32{data[11]} << 24)) >> 5) & 0x007fffff;
         default: NODEFAULT;
         }
+
 #ifdef DEBUG
-        return (0);
+        return 0;
 #endif
     }
 
-    ICF u8 light() const { return (data[11] >> 4); }
+    [[nodiscard]] constexpr u32 light() const { return data[11] >> 4; }
 
-    ICF u16 cover(u8 index) const
+    [[nodiscard]] constexpr u32 cover(s32 index) const
     {
         switch (index)
         {
-        case 0: return (cover0);
-        case 1: return (cover1);
-        case 2: return (cover2);
-        case 3: return (cover3);
+        case 0: return cover0;
+        case 1: return cover1;
+        case 2: return cover2;
+        case 3: return cover3;
         default: NODEFAULT;
         }
+
 #ifdef DEBUG
         return std::numeric_limits<u8>::max();
 #endif
@@ -191,9 +215,9 @@ struct SNodePositionOld
 };
 static_assert(sizeof(SNodePositionOld) == 6);
 
-constexpr u32 XRCL_CURRENT_VERSION = 17; // input
-constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output
-constexpr u32 CFORM_CURRENT_VERSION = 4;
-constexpr u32 MAX_NODE_BIT_COUNT = 23;
+constexpr inline u32 XRCL_CURRENT_VERSION{17}; // input
+constexpr inline u32 XRCL_PRODUCTION_VERSION{14}; // output
+constexpr inline u32 CFORM_CURRENT_VERSION{4};
+constexpr inline u32 MAX_NODE_BIT_COUNT{23};
 
-constexpr u32 XRAI_CURRENT_VERSION = 8;
+constexpr inline u32 XRAI_CURRENT_VERSION{8};

@@ -22,7 +22,9 @@ public:
 #ifdef DEBUG
         cdb_clRAY->Begin();
 #endif
+
         CL.ray_query(options, m_def, r_start, r_dir, r_range);
+
 #ifdef DEBUG
         cdb_clRAY->End();
 #endif
@@ -33,7 +35,9 @@ public:
 #ifdef DEBUG
         cdb_clBOX->Begin();
 #endif
+
         CL.box_query(options, m_def, b_center, b_dim);
+
 #ifdef DEBUG
         cdb_clBOX->End();
 #endif
@@ -44,18 +48,26 @@ public:
 #ifdef DEBUG
         cdb_clFRUSTUM->Begin();
 #endif
+
         CL.frustum_query(options, m_def, F);
+
 #ifdef DEBUG
         cdb_clFRUSTUM->End();
 #endif
     }
 
-    IC CDB::RESULT* r_begin() { return CL.r_begin(); }
-    IC xr_vector<CDB::RESULT>* r_get() { return CL.r_get(); }
-    IC void r_free() { CL.r_free(); }
-    [[nodiscard]] IC size_t r_count() { return CL.r_count(); }
-    IC void r_clear() { CL.r_clear(); }
-    IC void r_clear_compact() { CL.r_clear_compact(); }
+    [[nodiscard]] constexpr CDB::RESULT* r_begin() { return CL.r_begin(); }
+    [[nodiscard]] constexpr const CDB::RESULT* r_begin() const { return CL.r_begin(); }
+
+    [[nodiscard]] constexpr xr_vector<CDB::RESULT>* r_get() { return CL.r_get(); }
+    [[nodiscard]] constexpr const xr_vector<CDB::RESULT>* r_get() const { return CL.r_get(); }
+
+    [[nodiscard]] constexpr auto r_count() const { return CL.r_count(); }
+    [[nodiscard]] constexpr bool r_empty() const { return CL.r_empty(); }
+
+    constexpr void r_free() { CL.r_free(); }
+    constexpr void r_clear() { CL.r_clear(); }
+    constexpr void r_clear_compact() { CL.r_clear_compact(); }
 
     xrXRC() = default;
     xrXRC(const xrXRC&) = default;

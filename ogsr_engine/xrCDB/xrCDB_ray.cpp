@@ -5,8 +5,12 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wclass-conversion");
+XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wshorten-64-to-32");
+XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
 XR_DIAG_IGNORE("-Wunused-parameter");
 
@@ -122,10 +126,9 @@ XR_TRIVIAL_ASSERT(ray_t);
 
 [[nodiscard]] constexpr u32 uf(const float& x) { return std::bit_cast<u32>(x); }
 
-constexpr BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
+[[nodiscard]] constexpr bool isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ray, Fvector& coord)
 {
-    Fvector MaxT;
-    MaxT.x = MaxT.y = MaxT.z = -1.0f;
+    Fvector MaxT{-1.0f, -1.0f, -1.0f};
     BOOL Inside = TRUE;
 
     // Find candidate planes.
@@ -220,12 +223,13 @@ constexpr BOOL isect_fpu(const Fvector& min, const Fvector& max, const ray_t& ra
             return false;
         return true;
     }
+
     return false;
 }
 
 // turn those verbose intrinsics into something readable.
-#define loadps(mem) _mm_load_ps((const float* const)(mem))
-#define storess(ss, mem) _mm_store_ss((float* const)(mem), (ss))
+#define loadps(mem) _mm_load_ps(reinterpret_cast<const f32*>(mem))
+#define storess(ss, mem) _mm_store_ss(reinterpret_cast<f32*>(mem), (ss))
 #define minss _mm_min_ss
 #define maxss _mm_max_ss
 #define minps _mm_min_ps
@@ -239,7 +243,7 @@ constexpr auto flt_plus_inf{std::numeric_limits<float>::infinity()};
 constexpr float __declspec(align(16)) ps_cst_plus_inf[]{flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf};
 constexpr float __declspec(align(16)) ps_cst_minus_inf[]{-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
-ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
+[[nodiscard]] constexpr bool isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 {
     // you may already have those values hanging around somewhere
     const __m128 plus_inf = loadps(ps_cst_plus_inf), minus_inf = loadps(ps_cst_minus_inf);
@@ -275,7 +279,7 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
     lmax = minss(lmax, lmax1);
     lmin = maxss(lmin, lmin1);
 
-    const BOOL ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
+    const bool ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
 
     storess(lmin, &dist);
     // storess	(lmax, &rs.t_far);
@@ -364,7 +368,7 @@ public:
     }
 
     // fpu
-    constexpr BOOL _box_fpu(const Fvector& bCenter, const Fvector& bExtents, Fvector& coord)
+    [[nodiscard]] constexpr bool _box_fpu(const Fvector& bCenter, const Fvector& bExtents, Fvector& coord) const
     {
         Fbox BB;
         BB.min.sub(bCenter, bExtents);
@@ -374,25 +378,25 @@ public:
     }
 
     // sse
-    ICF BOOL _box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist)
+    [[nodiscard]] constexpr bool _box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist) const
     {
-        aabb_t box;
-        /*
-            box.min.sub (bCenter,bExtents);	box.min.pad = 0;
-            box.max.add	(bCenter,bExtents); box.max.pad = 0;
-        */
-        __m128 CN = _mm_unpacklo_ps(_mm_load_ss((const float*)&bCenter.x), _mm_load_ss((const float*)&bCenter.y));
-        CN = _mm_movelh_ps(CN, _mm_load_ss((const float*)&bCenter.z));
-        __m128 EX = _mm_unpacklo_ps(_mm_load_ss((const float*)&bExtents.x), _mm_load_ss((const float*)&bExtents.y));
-        EX = _mm_movelh_ps(EX, _mm_load_ss((const float*)&bExtents.z));
+        constexpr auto init = [](const Fvector& bCenter, const Fvector& bExtents) -> aabb_t {
+            __m128 CN = _mm_unpacklo_ps(_mm_load_ss(&bCenter.x), _mm_load_ss(&bCenter.y));
+            CN = _mm_movelh_ps(CN, _mm_load_ss(&bCenter.z));
 
-        _mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
-        _mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
+            __m128 EX = _mm_unpacklo_ps(_mm_load_ss(&bExtents.x), _mm_load_ss(&bExtents.y));
+            EX = _mm_movelh_ps(EX, _mm_load_ss(&bExtents.z));
 
-        return isect_sse(box, ray, dist);
+            aabb_t box;
+            _mm_store_ps(reinterpret_cast<f32*>(&box.min), _mm_sub_ps(CN, EX));
+            _mm_store_ps(reinterpret_cast<f32*>(&box.max), _mm_add_ps(CN, EX));
+            return box;
+        };
+
+        return isect_sse(init(bCenter, bExtents), ray, dist);
     }
 
-    constexpr bool _tri(u32* p, float& u, float& v, float& range)
+    [[nodiscard]] constexpr bool _tri(const u32* p, float& u, float& v, float& range) const
     {
         Fvector edge1, edge2, tvec, pvec, qvec;
         float det, inv_det;
@@ -440,76 +444,64 @@ public:
                 return false;
             range = edge2.dotproduct(qvec) * inv_det; // calculate t, ray intersects triangle
         }
+
         return true;
     }
 
     constexpr void _prim(u32 prim)
     {
-        float u, v, r;
-        if (!_tri(tris[prim].verts, u, v, r))
+        const auto id = gsl::narrow<s32>(prim);
+        const auto& tri = tris[id];
+        f32 u, v, r;
+
+        if (!_tri(tri.verts, u, v, r))
             return;
-        if (r <= 0 || r > rRange)
+        if (r <= 0.0f || r > rRange)
             return;
 
         if constexpr (bNearest)
         {
-            if (dest->r_count())
+            if (!dest->r_empty())
             {
                 RESULT& R = *dest->r_begin();
                 if (r < R.range)
                 {
-                    R.id = prim;
+                    R.id = id;
                     R.range = r;
                     R.u = u;
                     R.v = v;
-                    R.verts[0] = verts[tris[prim].verts[0]];
-                    R.verts[1] = verts[tris[prim].verts[1]];
-                    R.verts[2] = verts[tris[prim].verts[2]];
-                    R.dummy = tris[prim].dummy;
+                    R.verts[0] = verts[tri.verts[0]];
+                    R.verts[1] = verts[tri.verts[1]];
+                    R.verts[2] = verts[tri.verts[2]];
+                    R.dummy = tri.dummy;
                     rRange = r;
                     rRange2 = r * r;
                 }
             }
             else
             {
-                RESULT& R = dest->r_add();
-                R.id = prim;
-                R.range = r;
-                R.u = u;
-                R.v = v;
-                R.verts[0] = verts[tris[prim].verts[0]];
-                R.verts[1] = verts[tris[prim].verts[1]];
-                R.verts[2] = verts[tris[prim].verts[2]];
-                R.dummy = tris[prim].dummy;
+                dest->r_add(id, r, u, v, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
                 rRange = r;
                 rRange2 = r * r;
             }
         }
         else
         {
-            RESULT& R = dest->r_add();
-            R.id = prim;
-            R.range = r;
-            R.u = u;
-            R.v = v;
-            R.verts[0] = verts[tris[prim].verts[0]];
-            R.verts[1] = verts[tris[prim].verts[1]];
-            R.verts[2] = verts[tris[prim].verts[2]];
-            R.dummy = tris[prim].dummy;
+            dest->r_add(id, r, u, v, verts[tri.verts[0]], verts[tri.verts[1]], verts[tri.verts[2]], tri.dummy);
         }
     }
 
-    void _stab(const AABBNoLeafNode* node)
+    constexpr void _stab(const AABBNoLeafNode* node)
     {
         // Should help
-        _mm_prefetch((const char*)node->GetNeg(), _MM_HINT_NTA);
+        _mm_prefetch(reinterpret_cast<const char*>(node->GetNeg()), _MM_HINT_NTA);
 
         // Actual ray/aabb test
         if constexpr (bUseSSE)
         {
             // use SSE
-            float d;
-            if (!_box_sse((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, d))
+            f32 d;
+            if (!_box_sse(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), d))
                 return;
             if (d > rRange)
                 return;
@@ -518,7 +510,7 @@ public:
         {
             // use FPU
             Fvector P;
-            if (!_box_fpu((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents, P))
+            if (!_box_fpu(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents), P))
                 return;
             if (P.distance_to_sqr(ray.pos) > rRange2)
                 return;
@@ -533,7 +525,7 @@ public:
         // Early exit for "only first"
         if constexpr (bFirst)
         {
-            if (dest->r_count())
+            if (!dest->r_empty())
                 return;
         }
 
@@ -566,9 +558,12 @@ void COLLIDER::ray_query(u32 ray_mode, const MODEL* m_def, const Fvector& r_star
 {
     m_def->syncronize();
 
-    // Get nodes
-    const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
+    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
+    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
+    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
+    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
     const AABBNoLeafNode* N = T->GetNodes();
+
     r_clear();
 
     if (CPU::ID.hasSSE())

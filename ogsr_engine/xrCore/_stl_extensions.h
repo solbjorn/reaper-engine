@@ -31,6 +31,9 @@ void clear_and_reserve(xr_vector<T>& vec)
     }
 }
 
+template <typename T, size_t N, typename allocator = xr_allocator<T>>
+using xr_inlined_vector = absl::InlinedVector<T, N, allocator>;
+
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_deque = std::deque<T, allocator>;
 

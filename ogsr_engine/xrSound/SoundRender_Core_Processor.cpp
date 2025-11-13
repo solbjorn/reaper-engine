@@ -259,7 +259,7 @@ float CSoundRender_Core::occRayTestMtl(const Fvector& pos, const Fvector& dir, f
 
     if (geom_DB.r_count() > 0)
     {
-        for (size_t i = 0; i < geom_DB.r_count(); i++)
+        for (gsl::index i{}; i < geom_DB.r_count(); ++i)
         {
             CDB::RESULT* R = geom_DB.r_begin() + i;
             const CDB::TRI& T = geom_OCC->get_tris()[R->id];

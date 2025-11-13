@@ -6,8 +6,12 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wclass-conversion");
+XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wshorten-64-to-32");
+XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
 XR_DIAG_IGNORE("-Wunused-parameter");
 
@@ -42,24 +46,24 @@ MODEL::~MODEL()
     verts_count = 0;
 }
 
-void MODEL::build(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
+void MODEL::build(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc, void* bcp)
 {
     R_ASSERT(S_INIT == status);
-    R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
+    R_ASSERT(V.size() >= 4 && T.size() >= 2);
 
-    build_internal(V, Vcnt, T, Tcnt, bc, bcp);
+    build_internal(V, T, bc, bcp);
     status = S_READY;
 }
 
-void MODEL::build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t Tcnt, build_callback* bc, void* bcp)
+void MODEL::build_internal(std::span<const Fvector> V, std::span<const TRI> T, build_callback* bc, void* bcp)
 {
     // verts
-    verts_count = Vcnt;
+    verts_count = std::ssize(V);
     verts = xr_alloc<Fvector>(verts_count);
-    std::memcpy(verts, V, verts_count * sizeof(Fvector));
+    std::memcpy(verts, V.data(), gsl::narrow_cast<size_t>(verts_count * gsl::index{sizeof(Fvector)}));
 
     // tris
-    tris_count = Tcnt;
+    tris_count = std::ssize(T);
     tris = xr_alloc<TRI>(tris_count);
 
 #ifdef XR_TRIVIAL_BROKEN
@@ -67,7 +71,7 @@ void MODEL::build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t T
     XR_DIAG_IGNORE("-Wnontrivial-memcall");
 #endif
 
-    std::memcpy(tris, T, tris_count * sizeof(TRI));
+    std::memcpy(tris, T.data(), gsl::narrow_cast<size_t>(tris_count * gsl::index{sizeof(TRI)}));
 
 #ifdef XR_TRIVIAL_BROKEN
     XR_DIAG_POP();
@@ -75,14 +79,14 @@ void MODEL::build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t T
 
     // callback
     if (bc)
-        bc(verts, Vcnt, tris, Tcnt, bcp);
+        bc(std::span{verts, gsl::narrow_cast<size_t>(verts_count)}, std::span{tris, gsl::narrow_cast<size_t>(tris_count)}, bcp);
 
     // Release data pointers
     status = S_BUILD;
 
     MeshInterface mif;
-    mif.SetNbTriangles(tris_count);
-    mif.SetNbVertices(verts_count);
+    mif.SetNbTriangles(gsl::narrow_cast<u32>(tris_count));
+    mif.SetNbVertices(gsl::narrow_cast<u32>(verts_count));
     mif.SetPointers(reinterpret_cast<const IceMaths::IndexedTriangle*>(tris), reinterpret_cast<const IceMaths::Point*>(verts));
     mif.SetStrides(sizeof(TRI));
 
@@ -99,22 +103,24 @@ void MODEL::build_internal(const Fvector* V, size_t Vcnt, const TRI* T, size_t T
     }
 }
 
-size_t MODEL::memory()
+gsl::index MODEL::memory() const
 {
     if (S_BUILD == status)
     {
         Msg("! xrCDB: model still isn't ready");
         return 0;
     }
-    const size_t V = verts_count * sizeof(Fvector);
-    const size_t T = tris_count * sizeof(TRI);
-    return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
+
+    const auto V = verts_count * gsl::index{sizeof(Fvector)};
+    const auto T = tris_count * gsl::index{sizeof(TRI)};
+
+    return tree->GetUsedBytes() + V + T + gsl::index{sizeof(*this)} + gsl::index{sizeof(*tree)};
 }
 
 struct alignas(16) model_mid_hdr
 {
-    u64 tris_count;
-    u64 verts_count;
+    s64 tris_count;
+    s64 verts_count;
     xxh::XXH64_hash_t tris_xxh;
     xxh::XXH64_hash_t verts_xxh;
 };
@@ -130,20 +136,23 @@ struct alignas(16) model_end_hdr
 
 void MODEL::serialize_tree(IWriter* stream) const
 {
-    const u32 nodes_num = tree->GetNbNodes();
-    const auto* root = ((const AABBNoLeafTree*)tree->GetTree())->GetNodes();
-    const size_t size = xr::roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
+    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
+    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
+    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
+    const auto* root = reinterpret_cast<const AABBNoLeafTree*>(tree->GetTree())->GetNodes();
+    const auto nodes_num = tree->GetNbNodes();
+    const auto size = xr::roundup(nodes_num * sizeof(AABBNoLeafNode), 16uz);
 
     const model_end_hdr hdr = {
         .model_code = tree->GetModelCode(),
         .nodes_num = nodes_num,
-        .nodes = (uintptr_t)root,
+        .nodes = u64{reinterpret_cast<uintptr_t>(root)},
         .nodes_xxh = xxh::XXH3_64bits(root, size),
         .pad = 0,
     };
 
     stream->w(&hdr, sizeof(hdr));
-    stream->w(root, size);
+    stream->w(root, gsl::narrow_cast<gsl::index>(size));
 }
 
 bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) const
@@ -158,14 +167,14 @@ bool MODEL::serialize(const char* file, u64 xxh, serialize_callback callback) co
     wstream->w_u64(xxh);
     wstream->seek(xr::roundup(wstream->tell(), 16z));
 
-    const size_t trs = sizeof(TRI) * tris_count;
-    const size_t vrs = xr::roundup(sizeof(Fvector) * verts_count, 16uz);
+    const auto trs = tris_count * gsl::index{sizeof(TRI)};
+    const auto vrs = xr::roundup(verts_count * gsl::index{sizeof(Fvector)}, 16z);
 
     const model_mid_hdr hdr = {
         .tris_count = tris_count,
         .verts_count = verts_count,
-        .tris_xxh = xxh::XXH3_64bits(tris, trs),
-        .verts_xxh = xxh::XXH3_64bits(verts, vrs),
+        .tris_xxh = xxh::XXH3_64bits(tris, gsl::narrow_cast<size_t>(trs)),
+        .verts_xxh = xxh::XXH3_64bits(verts, gsl::narrow_cast<size_t>(vrs)),
     };
 
     wstream->w(&hdr, sizeof(hdr));
@@ -188,9 +197,8 @@ bool MODEL::deserialize_tree(IReader* stream)
 
     auto* mTree = xr_new<AABBNoLeafTree>();
     auto* ptr = xr_alloc<AABBNoLeafNode>(hdr.nodes_num);
-    R_ASSERT(mTree && ptr);
 
-    const size_t size = hdr.nodes_num * sizeof(AABBNoLeafNode);
+    const auto size = hdr.nodes_num * sizeof(AABBNoLeafNode);
     xr_memcpy128(ptr, stream->pointer(), size);
 
     if (xxh::XXH3_64bits(ptr, size) != hdr.nodes_xxh)
@@ -201,17 +209,17 @@ bool MODEL::deserialize_tree(IReader* stream)
         return false;
     }
 
-    for (u32 i = 0; i < hdr.nodes_num; i++)
+    for (gsl::index i{}; i < hdr.nodes_num; ++i)
     {
         if (!ptr[i].HasPosLeaf())
         {
             ptr[i].mPosData -= hdr.nodes;
-            ptr[i].mPosData += (uintptr_t)ptr;
+            ptr[i].mPosData += reinterpret_cast<uintptr_t>(ptr);
         }
         if (!ptr[i].HasNegLeaf())
         {
             ptr[i].mNegData -= hdr.nodes;
-            ptr[i].mNegData += (uintptr_t)ptr;
+            ptr[i].mNegData += reinterpret_cast<uintptr_t>(ptr);
         }
     }
 
@@ -270,11 +278,11 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     verts_count = mid.verts_count;
 
     tris = xr_alloc<TRI>(tris_count);
-    const size_t trisSize = tris_count * sizeof(TRI);
-    xr_memcpy128(tris, rstream->pointer(), trisSize);
+    const auto trisSize = tris_count * gsl::index{sizeof(TRI)};
+    xr_memcpy128(tris, rstream->pointer(), gsl::narrow_cast<size_t>(trisSize));
     rstream->advance(trisSize);
 
-    if (xxh::XXH3_64bits(tris, trisSize) != mid.tris_xxh)
+    if (xxh::XXH3_64bits(tris, gsl::narrow_cast<size_t>(trisSize)) != mid.tris_xxh)
     {
     err_tris:
         xr_free(tris);
@@ -282,11 +290,11 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
     }
 
     verts = xr_alloc<Fvector>(verts_count);
-    const size_t vertsSize = xr::roundup(verts_count * sizeof(Fvector), 16uz);
-    xr_memcpy128(verts, rstream->pointer(), vertsSize);
+    const auto vertsSize = xr::roundup(verts_count * gsl::index{sizeof(Fvector)}, 16z);
+    xr_memcpy128(verts, rstream->pointer(), gsl::narrow_cast<size_t>(vertsSize));
     rstream->advance(vertsSize);
 
-    if (xxh::XXH3_64bits(verts, vertsSize) != mid.verts_xxh)
+    if (xxh::XXH3_64bits(verts, gsl::narrow_cast<size_t>(vertsSize)) != mid.verts_xxh)
     {
     err_verts:
         xr_free(verts);
@@ -308,8 +316,3 @@ bool MODEL::deserialize(const char* file, u64 xxh, deserialize_callback callback
 
     return true;
 }
-
-COLLIDER::~COLLIDER() { r_free(); }
-
-RESULT& COLLIDER::r_add() { return rd.emplace_back(); }
-void COLLIDER::r_free() { rd.clear(); }

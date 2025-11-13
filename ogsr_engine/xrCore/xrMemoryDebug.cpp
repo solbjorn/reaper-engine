@@ -86,18 +86,16 @@ void PointerRegistryDump(float thresholdInKb)
             size += pair.second.size;
         }
 
-        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, static_cast<float>(size) / 1024.f);
+        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
         Msg("! xrMemory: dump (large that [%f Kb]):", thresholdInKb);
 
         std::ranges::sort(tmp, [](const auto& a, const auto& b) { return std::get<1>(a.second) > std::get<1>(b.second); });
 
         for (const auto& [name, typle] : tmp)
         {
-            const float total_size = static_cast<float>(std::get<1>(typle)) / 1024.f;
+            const auto total_size = gsl::narrow_cast<f32>(std::get<1>(typle)) / 1024.0f;
             if (total_size > thresholdInKb)
-            {
                 Msg(" total size:[%.3f Kb], instance count:[%u], id: %s", total_size, std::get<0>(typle), name);
-            }
         }
     }
 }
@@ -116,7 +114,7 @@ void PointerRegistryInfo()
             size += pair.second.size;
         }
 
-        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, static_cast<float>(size) / 1024.f);
+        Msg("! xrMemory: instance count [%u]. total size [%.1f Kb]", cnt, gsl::narrow_cast<f32>(size) / 1024.0f);
     }
 }
 

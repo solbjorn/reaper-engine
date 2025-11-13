@@ -131,7 +131,7 @@ void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform, u32 fmask)
 
     CFrustum F;
     F.CreateFromMatrix(*_xform, fmask);
-    set_ClipPlanes(_enable, F.planes, F.p_count);
+    set_ClipPlanes(_enable, F.planes.data(), F.p_count);
 }
 
 void CBackend::set_Textures(STextureList* textures_list)

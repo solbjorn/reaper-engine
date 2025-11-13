@@ -246,7 +246,8 @@ void CMovementManager::move_along_path(CPHMovementControl* movement_control, Fve
 
     // получить физ. объекты в радиусе
     m_nearest_objects.clear();
-    Level().ObjectSpace.GetNearest(m_nearest_objects, dest_position, DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.f), &object());
+    std::ignore =
+        Level().ObjectSpace.GetNearest(m_nearest_objects, dest_position, DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.0f), &object());
 
     // установить позицию
     VERIFY(dist >= 0.f);

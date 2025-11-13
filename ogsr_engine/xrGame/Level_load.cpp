@@ -147,7 +147,7 @@ struct translation_pair
 void CLevel::Load_GameSpecific_CFORM_Serialize(IWriter& writer) { writer.w_u64(GMLib.get_hash()); }
 bool CLevel::Load_GameSpecific_CFORM_Deserialize(IReader& reader) { return reader.r_u64() == GMLib.get_hash(); }
 
-void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
+void CLevel::Load_GameSpecific_CFORM(std::span<CDB::TRI> T)
 {
     typedef xr_vector<translation_pair> ID_INDEX_PAIRS;
     ID_INDEX_PAIRS translator;
@@ -175,42 +175,39 @@ void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 
     if (static_mtl_count < 128)
     {
-        CDB::TRI* I = tris;
-        CDB::TRI* E = tris + count;
-        for (; I != E; ++I)
+        for (auto& I : T)
         {
-            const auto i = std::find(translator.cbegin(), translator.cend(), (u16)(*I).material);
+            const auto i = std::find(translator.cbegin(), translator.cend(), (u16)I.material);
             if (i != translator.end())
             {
-                (*I).material = (*i).m_index;
+                I.material = (*i).m_index;
                 const SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-                (*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-                (*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+                I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+                I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
                 continue;
             }
 
-            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I.material);
         }
+
         return;
     }
 
     std::sort(translator.begin(), translator.end());
     {
-        CDB::TRI* I = tris;
-        CDB::TRI* E = tris + count;
-        for (; I != E; ++I)
+        for (auto& I : T)
         {
-            const auto i = std::lower_bound(translator.cbegin(), translator.cend(), (u16)(*I).material);
-            if ((i != translator.cend()) && ((*i).m_id == (*I).material))
+            const auto i = std::lower_bound(translator.cbegin(), translator.cend(), (u16)I.material);
+            if ((i != translator.cend()) && ((*i).m_id == I.material))
             {
-                (*I).material = (*i).m_index;
+                I.material = (*i).m_index;
                 const SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-                (*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-                (*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+                I.suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+                I.suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
                 continue;
             }
 
-            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+            Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I.material);
         }
     }
 }

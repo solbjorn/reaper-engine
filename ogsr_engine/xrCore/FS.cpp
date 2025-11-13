@@ -275,7 +275,7 @@ void IReader::skip_bom(const char* dbg_name)
 
     for (const auto& bom : boms)
     {
-        if (static_cast<const unsigned char>(data[Pos]) != bom)
+        if (static_cast<unsigned char>(data[Pos]) != bom)
         {
             seek(0);
             return;

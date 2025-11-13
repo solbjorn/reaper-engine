@@ -208,7 +208,7 @@ vis_data& light::get_homdata()
     return hom;
 }
 
-Fvector light::spatial_sector_point() { return position; }
+Fvector light::spatial_sector_point() const { return position; }
 
 //////////////////////////////////////////////////////////////////////////
 // Xforms

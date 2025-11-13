@@ -382,12 +382,14 @@ void CRenderDevice::Run()
     // Startup timers and calculate timer delta
     dwTimeGlobal = 0;
     Timer_MM_Delta = 0;
+
     {
-        u32 time_mm = timeGetTime();
+        const s64 time_mm = timeGetTime();
         while (timeGetTime() == time_mm)
             ; // wait for next tick
-        u32 time_system = timeGetTime();
-        u32 time_local = TimerAsync();
+
+        const s64 time_system = timeGetTime();
+        const s64 time_local = TimerAsync();
         Timer_MM_Delta = time_system - time_local;
     }
 

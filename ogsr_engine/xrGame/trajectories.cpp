@@ -94,7 +94,9 @@ static bool trajectory_check_collision(float low, float high, Fvector const& pos
     bool box_result = false;
 
     if (box_size.magnitude() <= epsilon)
-        Level().ObjectSpace.RayQuery(temp_rq_results, ray_defs, (collide::rq_callback*)trajectory_query_callback, &range, nullptr, self_object);
+    {
+        std::ignore = Level().ObjectSpace.RayQuery(temp_rq_results, ray_defs, (collide::rq_callback*)trajectory_query_callback, &range, nullptr, self_object);
+    }
     else
     {
         Fvector box_center;

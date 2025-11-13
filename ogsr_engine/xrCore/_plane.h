@@ -18,7 +18,7 @@ public:
     constexpr explicit _plane(_vector3<T> _n, T _d) : n{_n}, d{_d} {}
     constexpr explicit _plane(T nx, T ny, T nz, T _d) : n{nx, ny, nz}, d{_d} {}
 
-    constexpr SelfRef set(Self& P)
+    constexpr SelfRef set(const Self& P)
     {
         n.set(P.n);
         d = P.d;

@@ -729,7 +729,7 @@ void R_dsgraph_structure::build_subspace(sector_id_t o_sector_id, CFrustum& _fru
 
         Sectors_xrc.box_query(CDB::OPT_FULL_TEST, RImplementation.rmPortals, Device.vCameraPosition, box_radius);
 
-        for (size_t K = 0; K < Sectors_xrc.r_count(); K++)
+        for (gsl::index K{}; K < Sectors_xrc.r_count(); ++K)
         {
             CPortal* pPortal = Portals[RImplementation.rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
             pPortal->bDualRender = TRUE;

@@ -179,14 +179,14 @@ void CDetailManager::cache_Decompress(Slot* S)
             Fvector3 terrain_normal;
 
             float r_u, r_v, r_range;
-            for (size_t tid = 0; tid < triCount; tid++)
+            for (gsl::index tid{}; tid < triCount; ++tid)
             {
                 CDB::TRI& T = tris[xrc.r_begin()[tid].id];
                 SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
                 if (mtl->Flags.test(SGameMtl::flPassable))
                     continue;
 
-                Fvector Tv[3] = {verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]};
+                const Fvector Tv[3]{verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]};
                 if (CDB::TestRayTri(Item_P, dir, Tv, r_u, r_v, r_range, TRUE))
                 {
                     if (r_range >= 0)

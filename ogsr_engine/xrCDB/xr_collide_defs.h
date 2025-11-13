@@ -3,6 +3,7 @@
 #include "xrcdb.h"
 
 class CObject;
+
 namespace collide
 {
 struct tri
@@ -89,51 +90,87 @@ struct ray_defs
     }
 };
 
-struct rq_result
+struct XR_TRIVIAL alignas(16) rq_result
 {
     CObject* O; // if NULL - static
-    float range; // range to intersection
-    int element; // номер кости/номер треугольника
-    IC rq_result& set(CObject* _O, float _range, int _element)
+    f32 range; // range to intersection
+    s32 element; // номер кости/номер треугольника
+
+    constexpr rq_result() = default;
+    constexpr explicit rq_result(CObject* obj, f32 r, s32 elem) : O{obj}, range{r}, element{elem} {}
+
+    constexpr rq_result(const rq_result& that) { xr_memcpy16(this, &that); }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr rq_result(rq_result&&) = default;
+#else
+    constexpr rq_result(rq_result&& that) { xr_memcpy16(this, &that); }
+#endif
+
+    constexpr rq_result& operator=(const rq_result& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+
+#ifdef XR_TRIVIAL_BROKEN
+    constexpr rq_result& operator=(rq_result&&) = default;
+#else
+    constexpr rq_result& operator=(rq_result&& that)
+    {
+        xr_memcpy16(this, &that);
+        return *this;
+    }
+#endif
+
+    constexpr rq_result& set(CObject* _O, f32 _range, s32 _element)
     {
         O = _O;
         range = _range;
         element = _element;
+
         return *this;
     }
-    IC BOOL set_if_less(CDB::RESULT* I)
+
+    [[nodiscard]] constexpr bool set_if_less(const CDB::RESULT& I)
     {
-        if (I->range < range)
+        if (I.range < range)
         {
-            set(nullptr, I->range, I->id);
-            return TRUE;
+            set(nullptr, I.range, I.id);
+            return true;
         }
-        else
-            return FALSE;
+
+        return false;
     }
-    IC BOOL set_if_less(rq_result* R)
+
+    [[nodiscard]] constexpr bool set_if_less(const rq_result& R)
     {
-        if (R->range < range)
+        if (R.range < range)
         {
-            set(R->O, R->range, R->element);
-            return TRUE;
+            set(R.O, R.range, R.element);
+            return true;
         }
-        else
-            return FALSE;
+
+        return false;
     }
-    IC BOOL set_if_less(CObject* _who, float _range, int _element)
+
+    [[nodiscard]] constexpr bool set_if_less(CObject* _who, f32 _range, s32 _element)
     {
         if (_range < range)
         {
             set(_who, _range, _element);
-            return TRUE;
+            return true;
         }
-        else
-            return FALSE;
+
+        return false;
     }
-    IC BOOL valid() { return (element >= 0); }
+
+    [[nodiscard]] constexpr bool valid() const { return element >= 0; }
 };
-DEFINE_VECTOR(rq_result, rqVec, rqIt);
+static_assert(sizeof(rq_result) == 16);
+XR_TRIVIAL_ASSERT(rq_result);
+
+using rqVec = xr_vector<rq_result>;
 
 class rq_results
 {
@@ -141,7 +178,7 @@ protected:
     rqVec results;
 
 public:
-    IC BOOL append_result(CObject* _who, float _range, int _element, BOOL bNearest)
+    [[nodiscard]] constexpr bool append_result(CObject* _who, f32 _range, s32 _element, bool bNearest)
     {
         if (bNearest && !results.empty())
         {
@@ -151,35 +188,62 @@ public:
                 R.O = _who;
                 R.range = _range;
                 R.element = _element;
-                return TRUE;
+
+                return true;
             }
-            return FALSE;
+
+            return false;
         }
 
-        rq_result& rq = results.emplace_back();
-        rq.range = _range;
-        rq.element = _element;
-        rq.O = _who;
-        return TRUE;
+        results.emplace_back(_who, _range, _element);
+
+        return true;
     }
 
-    IC void append_result(rq_result& res)
+    constexpr void append_result(const CDB::RESULT& res)
     {
-        if (0 == results.capacity())
+        if (results.capacity() == 0)
             results.reserve(8);
-        results.push_back(res);
+
+        results.emplace_back(nullptr, res.range, res.id);
     }
 
-    IC int r_count() { return results.size(); }
-    IC rq_result* r_begin() { return &*results.begin(); }
-    IC rqVec* r_get() { return &results; }
-    IC void r_clear() { results.clear(); }
-    IC void r_sort()
+    constexpr void append_result(const rq_result& res)
+    {
+        if (results.capacity() == 0)
+            results.reserve(8);
+
+        results.emplace_back(res);
+    }
+
+    constexpr void append_result(rq_result&& res)
+    {
+        if (results.capacity() == 0)
+            results.reserve(8);
+
+        results.emplace_back(std::move(res));
+    }
+
+    [[nodiscard]] constexpr auto r_count() const { return std::ssize(results); }
+    [[nodiscard]] constexpr bool r_empty() const { return results.empty(); }
+
+    [[nodiscard]] constexpr rq_result* r_begin() { return results.data(); }
+    [[nodiscard]] constexpr const rq_result* r_begin() const { return results.data(); }
+
+    [[nodiscard]] constexpr rqVec* r_get() { return &results; }
+    [[nodiscard]] constexpr const rqVec* r_get() const { return &results; }
+
+    constexpr void r_clear() { results.clear(); }
+
+    constexpr void r_sort()
     {
         std::ranges::sort(results, [](const rq_result& a, const rq_result& b) { return a.range < b.range; });
     }
-    IC rqVec& r_results() { return results; }
+
+    [[nodiscard]] constexpr rqVec& r_results() { return results; }
+    [[nodiscard]] constexpr const rqVec& r_results() const { return results; }
 };
+
 typedef BOOL rq_callback(rq_result& result, LPVOID user_data);
 typedef BOOL test_callback(const ray_defs& rd, CObject* object, LPVOID user_data);
 } // namespace collide

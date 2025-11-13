@@ -3,8 +3,12 @@
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wcast-qual");
 XR_DIAG_IGNORE("-Wclass-conversion");
+XR_DIAG_IGNORE("-Wfloat-conversion");
 XR_DIAG_IGNORE("-Wfloat-equal");
 XR_DIAG_IGNORE("-Wheader-hygiene");
+XR_DIAG_IGNORE("-Wold-style-cast");
+XR_DIAG_IGNORE("-Wshorten-64-to-32");
+XR_DIAG_IGNORE("-Wsign-conversion");
 XR_DIAG_IGNORE("-Wunknown-pragmas");
 XR_DIAG_IGNORE("-Wunused-parameter");
 
@@ -30,22 +34,28 @@ namespace
     max = x2
 
 //! TO BE DOCUMENTED
-ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const IceMaths::Point& maxbox)
+[[nodiscard]] constexpr bool planeBoxOverlap(const IceMaths::Point& normal, float d, const IceMaths::Point& maxbox)
 {
     IceMaths::Point vmin, vmax;
-    for (udword q = 0; q <= 2; q++)
+    const f32* anorm{normal};
+    const f32* abox{maxbox};
+    f32* amin{vmin};
+    f32* amax{vmax};
+
+    for (gsl::index q{}; q < 3; ++q)
     {
-        if (((const float*)normal)[q] > 0.0f)
+        if (anorm[q] > 0.0f)
         {
-            ((float*)vmin)[q] = -((const float*)maxbox)[q];
-            ((float*)vmax)[q] = ((const float*)maxbox)[q];
+            amin[q] = -abox[q];
+            amax[q] = abox[q];
         }
         else
         {
-            ((float*)vmin)[q] = ((const float*)maxbox)[q];
-            ((float*)vmax)[q] = -((const float*)maxbox)[q];
+            amin[q] = abox[q];
+            amax[q] = -abox[q];
         }
     }
+
     if ((normal | vmin) + d > 0.0f)
         return false;
     if ((normal | vmax) + d >= 0.0f)
@@ -151,7 +161,7 @@ public:
 
     IceMaths::Point mLeafVerts[3];
 
-    IC void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& E)
+    constexpr void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& E)
     {
         dest = CL;
         verts = V;
@@ -162,7 +172,7 @@ public:
         b_max.add(C, E);
     }
 
-    ICF bool _box(const Fvector& C, const Fvector& E)
+    [[nodiscard]] constexpr bool _box(const Fvector& C, const Fvector& E) const
     {
         if (b_max.x < C.x - E.x)
             return false;
@@ -179,7 +189,7 @@ public:
         return true;
     }
 
-    ICF bool _tri()
+    [[nodiscard]] constexpr bool _tri() const
     {
         // move everything so that the boxcenter is in (0,0,0)
         IceMaths::Point v0, v1, v2;
@@ -255,38 +265,40 @@ public:
             AXISTEST_Y1(e2.z, e2.x, fez2, fex2);
             AXISTEST_Z12(e2.y, e2.x, fey2, fex2);
         }
+
         return true;
     }
 
-    void _prim(DWORD prim)
+    constexpr void _prim(u32 prim)
     {
-        TRI& T = tris[prim];
-        Fvector& v0 = verts[T.verts[0]];
+        const auto id = gsl::narrow<s32>(prim);
+        const TRI& T = tris[id];
+
+        const Fvector& v0 = verts[T.verts[0]];
         mLeafVerts[0].x = v0.x;
         mLeafVerts[0].y = v0.y;
         mLeafVerts[0].z = v0.z;
-        Fvector& v1 = verts[T.verts[1]];
+
+        const Fvector& v1 = verts[T.verts[1]];
         mLeafVerts[1].x = v1.x;
         mLeafVerts[1].y = v1.y;
         mLeafVerts[1].z = v1.z;
-        Fvector& v2 = verts[T.verts[2]];
+
+        const Fvector& v2 = verts[T.verts[2]];
         mLeafVerts[2].x = v2.x;
         mLeafVerts[2].y = v2.y;
         mLeafVerts[2].z = v2.z;
+
         if (!_tri())
             return;
-        RESULT& R = dest->r_add();
-        R.id = prim;
-        R.verts[0] = v0;
-        R.verts[1] = v1;
-        R.verts[2] = v2;
-        R.dummy = T.dummy;
+
+        dest->r_add(id, v0, v1, v2, T.dummy);
     }
 
-    void _stab(const AABBNoLeafNode* node)
+    constexpr void _stab(const AABBNoLeafNode* node)
     {
         // Actual box-box test
-        if (!_box((const Fvector&)node->mAABB.mCenter, (const Fvector&)node->mAABB.mExtents))
+        if (!_box(*reinterpret_cast<const Fvector*>(&node->mAABB.mCenter), *reinterpret_cast<const Fvector*>(&node->mAABB.mExtents)))
             return;
 
         // 1st chield
@@ -298,7 +310,7 @@ public:
         // Early exit for "only first"
         if constexpr (bFirst)
         {
-            if (dest->r_count())
+            if (!dest->r_empty())
                 return;
         }
 
@@ -315,9 +327,12 @@ void COLLIDER::box_query(u32 box_mode, const MODEL* m_def, const Fvector& b_cent
 {
     m_def->syncronize();
 
-    // Get nodes
-    const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
+    // This should be smart_cast<>()/dynamic_cast<>(), but OpCoDe doesn't use our custom RTTI.
+    // So we just rely on that `AABBOptimizedTree` starts at offset 0 inside `AABBNoLeafTree`.
+    // OpCoDe itself uses C-style casts for downcasting, which is roughly the same.
+    const AABBNoLeafTree* T = reinterpret_cast<const AABBNoLeafTree*>(m_def->tree->GetTree());
     const AABBNoLeafNode* N = T->GetNodes();
+
     r_clear();
 
     // Binary dispatcher

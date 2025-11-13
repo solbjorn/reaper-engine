@@ -495,7 +495,7 @@ void CControlManagerCustom::check_jump_over_physics()
 
         // получить список объектов вокруг врага
         m_nearest.clear();
-        Level().ObjectSpace.GetNearest(m_nearest, travel_point.position, m_object->Radius(), nullptr);
+        std::ignore = Level().ObjectSpace.GetNearest(m_nearest, travel_point.position, m_object->Radius(), nullptr);
 
         for (u32 k = 0; k < m_nearest.size(); k++)
         {

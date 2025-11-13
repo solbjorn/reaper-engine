@@ -66,7 +66,9 @@ public:
     void o_remove(xr_vector<CObject*>& v, CObject* O);
     void o_activate(CObject* O);
     void o_sleep(CObject* O);
-    IC u32 o_count() { return objects_active.size() + objects_sleeping.size(); }
+
+    [[nodiscard]] gsl::index o_count() const { return std::ssize(objects_active) + std::ssize(objects_sleeping); }
+
     IC CObject* o_get_by_iterator(u32 _it)
     {
         if (_it < objects_active.size())
@@ -74,6 +76,7 @@ public:
         else
             return objects_sleeping[_it - objects_active.size()];
     }
+
     bool dump_all_objects();
 
 public:

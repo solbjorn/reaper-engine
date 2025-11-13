@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "xr_area.h"
 
 #include "../xrCore/_vector3d_ext.h"
@@ -33,7 +34,7 @@ bool CObjectSpace::BoxQuery(Fvector const& box_center, Fvector const& box_z_axis
     planes[near_plane].build(box_center + (z_axis * (box_sizes.z * 0.5f)), z_axis);
 
     CFrustum frustum;
-    frustum.CreateFromPlanes(planes, sizeof(planes) / sizeof(planes[0]));
+    frustum.CreateFromPlanes(planes);
 
     xrXRC xrc;
     xrc.frustum_query(CDB::OPT_FULL_TEST, &Static, frustum);
@@ -48,5 +49,5 @@ bool CObjectSpace::BoxQuery(Fvector const& box_center, Fvector const& box_z_axis
         }
     }
 
-    return !!xrc.r_count();
+    return !xrc.r_empty();
 }

@@ -185,7 +185,7 @@ bool CStateBurerAttackTele<Object>::check_completion()
 template <typename Object>
 void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*>& tpObjects, const Fvector& pos)
 {
-    Level().ObjectSpace.GetNearest(tpObjects, pos, object->m_tele_find_radius, nullptr);
+    std::ignore = Level().ObjectSpace.GetNearest(tpObjects, pos, object->m_tele_find_radius, nullptr);
 
     for (u32 i = 0; i < tpObjects.size(); i++)
     {
@@ -453,7 +453,7 @@ void CStateBurerAttackTele<Object>::HandleGrenades()
     }
 
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, object->Position(), object->m_tele_find_radius, nullptr);
+    std::ignore = Level().ObjectSpace.GetNearest(m_nearest, object->Position(), object->m_tele_find_radius, nullptr);
 
     for (u32 i = 0; i < m_nearest.size(); ++i)
     {

@@ -96,8 +96,10 @@ XR_TRIVIAL_ASSERT(walker<true>);
 void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
     cs.Enter();
+
     q_result = &R;
     q_result->clear();
+
     if (_o & O_ONLYFIRST)
     {
         walker<true> W{this, _mask, _center, _size};
@@ -108,11 +110,12 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
         walker<false> W{this, _mask, _center, _size};
         W.walk(m_root, m_center, m_bounds);
     }
+
     cs.Leave();
 }
 
-void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)
+void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, f32 _radius)
 {
-    Fvector _size{_radius, _radius, _radius};
+    const Fvector _size{_radius, _radius, _radius};
     q_box(R, _o, _mask, _center, _size);
 }

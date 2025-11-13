@@ -241,7 +241,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
         if (res)
         {
             bHIT = TRUE;
-            R.append_result(owner, range, elem.elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
+            std::ignore = R.append_result(owner, range, elem.elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
             if (Q.flags & CDB::OPT_ONLYFIRST)
                 break;
         }
@@ -276,7 +276,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
             if ((rp_res == Fsphere::rpOriginOutside) || (!(Q.flags & CDB::OPT_CULL) && (rp_res == Fsphere::rpOriginInside)))
             {
                 bHIT = TRUE;
-                R.append_result(owner, range, el, Q.flags & CDB::OPT_ONLYNEAREST);
+                std::ignore = R.append_result(owner, range, el, Q.flags & CDB::OPT_ONLYNEAREST);
                 if (Q.flags & CDB::OPT_ONLYFIRST)
                     return TRUE;
             }
@@ -298,7 +298,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
                 {
                     range = _sqrt(d);
                     bHIT = TRUE;
-                    R.append_result(owner, range, el, Q.flags & CDB::OPT_ONLYNEAREST);
+                    std::ignore = R.append_result(owner, range, el, Q.flags & CDB::OPT_ONLYNEAREST);
                     if (Q.flags & CDB::OPT_ONLYFIRST)
                         return TRUE;
                 }

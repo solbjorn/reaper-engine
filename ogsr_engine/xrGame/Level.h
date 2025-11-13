@@ -203,7 +203,7 @@ public:
 
     void Load_GameSpecific_CFORM_Serialize(IWriter& writer) override;
     bool Load_GameSpecific_CFORM_Deserialize(IReader& reader) override;
-    void Load_GameSpecific_CFORM(CDB::TRI* T, size_t count) override;
+    void Load_GameSpecific_CFORM(std::span<CDB::TRI> T) override;
 
     // Events
     void OnEvent(EVENT E, u64 P1, u64) override;

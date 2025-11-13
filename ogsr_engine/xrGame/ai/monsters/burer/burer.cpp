@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "burer.h"
+
 #include "PhysicsShell.h"
 #include "../../../characterphysicssupport.h"
 #include "../../../actor.h"
@@ -355,7 +356,7 @@ void CBurer::UpdateGraviObject()
 
     // hit objects
     m_nearest.clear();
-    Level().ObjectSpace.GetNearest(m_nearest, m_gravi_object.cur_pos, m_gravi.radius, nullptr);
+    std::ignore = Level().ObjectSpace.GetNearest(m_nearest, m_gravi_object.cur_pos, m_gravi.radius, nullptr);
     // xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
     for (u32 i = 0; i < m_nearest.size(); i++)
