@@ -32,6 +32,9 @@
 [submodule "3rd_party/Src/concurrency/concurrentqueue"]
 	path = 3rd_party/Src/concurrency/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "3rd_party/Src/concurrency/cpputils"]
+	path = 3rd_party/Src/concurrency/cpputils
+	url = https://github.com/tzcnt/cpputils.git
 [submodule "3rd_party/Src/concurrency/hwloc/hwloc"]
 	path = 3rd_party/Src/concurrency/hwloc/hwloc
 	url = https://github.com/open-mpi/hwloc.git
