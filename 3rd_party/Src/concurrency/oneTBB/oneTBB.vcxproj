@@ -17,7 +17,7 @@
     <ProjectName>oneTBB</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\3rd_party_lib_properties.props" />
+  <Import Project="$(SolutionDir)\3rd_party\Src\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -44,13 +44,13 @@
       set "PATH=%PATH%;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\CMake\bin;%VSAPPIDDIR%\CommonExtensions\Microsoft\CMake\Ninja"
       md _Build
       cd _Build
-      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE=..\..\3rd_party_toolchain.cmake -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_HWLOC_STATIC_INCLUDE_PATH="$(SolutionDir)\3rd_party\Src\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include" -DCMAKE_HWLOC_STATIC_LIBRARY_PATH="$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\hwloc.lib" -DTBB_TEST=OFF -DTBB_ENABLE_IPO=OFF -DTBB_VERIFY_DEPENDENCY_SIGNATURE=ON ..\oneTBB
+      cmake -G Ninja -DCMAKE_BUILD_TYPE=$(Configuration) -DCMAKE_INSTALL_PREFIX="$(Configuration)\$(PlatformShortName)" -DCMAKE_TOOLCHAIN_FILE="$(SolutionDir)\3rd_party\Src\3rd_party_toolchain.cmake" -DCMAKE_PROJECT_INCLUDE="$(SolutionDir)\3rd_party\Src\3rd_party_properties.cmake" -DCMAKE_HWLOC_STATIC_INCLUDE_PATH="$(SolutionDir)\3rd_party\Src\concurrency\hwloc\_Build\$(Configuration)\$(PlatformShortName)\include" -DCMAKE_HWLOC_STATIC_LIBRARY_PATH="$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\hwloc.lib" -DTBB_TEST=OFF -DTBB_ENABLE_IPO=OFF -DTBB_VERIFY_DEPENDENCY_SIGNATURE=ON ..\oneTBB
       cmake --build . --config $(Configuration)
       cmake --install . --config $(Configuration)
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
-      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbbbind.lib" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbbbind.lib"
-      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbbbind.pdb" "..\..\..\_LIB\$(Configuration)\$(PlatformShortName)\tbbbind.pdb"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbb12.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\tbb12.pdb"
+      copy /Y "$(Configuration)\$(PlatformShortName)\lib\tbbbind.lib" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\tbbbind.lib"
+      copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbbbind.pdb" "$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(PlatformShortName)\tbbbind.pdb"
       md "$(SolutionDir)\bin_$(PlatformShortName)"
       copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.dll" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.dll"
       copy /Y "$(Configuration)\$(PlatformShortName)\bin\tbb12.pdb" "$(SolutionDir)\bin_$(PlatformShortName)\tbb12.pdb"
