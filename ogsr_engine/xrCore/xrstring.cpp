@@ -55,7 +55,7 @@ public:
     [[nodiscard]] gsl::index stat_economy();
 
     void verify();
-    void dump(FILE& f);
+    void dump(std::FILE& f);
 };
 
 str_value* str_container_impl::insert(gsl::czstring str)
@@ -63,7 +63,7 @@ str_value* str_container_impl::insert(gsl::czstring str)
     const absl::string_view sv{str};
     const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
-    auto obj = pool.acquire_scoped();
+    const auto obj = pool.acquire_scoped();
     auto& map = obj.value;
 
     const auto iter = map.find(xxh);
@@ -118,11 +118,11 @@ void str_container_impl::verify()
     });
 }
 
-void str_container_impl::dump(FILE& f)
+void str_container_impl::dump(std::FILE& f)
 {
     pool.for_each_available([&f](const auto& map) {
         for (auto& [_, value] : map)
-            fprintf(&f, "ref[%zd]-len[%zd]-hash[0x%016llx]: %s\n", value->dwReference.load(), value->dwLength, value->hash, value->value);
+            std::fprintf(&f, "ref[%zd]-len[%zd]-hash[0x%016llx]: %s\n", value->dwReference.load(), value->dwLength, value->hash, value->value);
     });
 }
 
@@ -139,11 +139,11 @@ void str_container::verify() { xr::impl.verify(); }
 void str_container::dump()
 {
     string_path path;
-    FILE* f{};
+    std::FILE* f{};
 
     std::ignore = FS.update_path(path, "$logs$", "$str_dump$.txt");
     R_ASSERT(fopen_s(&f, path, "w") == 0);
-    const auto _ = gsl::finally([f] { fclose(f); });
+    const auto _ = gsl::finally([f] { std::fclose(f); });
 
     xr::impl.dump(*f);
 }
