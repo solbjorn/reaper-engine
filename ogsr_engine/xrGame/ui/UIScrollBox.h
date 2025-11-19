@@ -1,12 +1,17 @@
 #pragma once
+
 #include "uibutton.h"
 
 class CUIScrollBox : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIScrollBox, CUIStatic);
+
+private:
     typedef CUIStatic inherited;
 
 public:
     CUIScrollBox();
+    ~CUIScrollBox() override = default;
 
     void SetHorizontal();
     void SetVertical();

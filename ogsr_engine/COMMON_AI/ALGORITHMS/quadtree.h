@@ -110,7 +110,7 @@ protected:
 
 public:
     inline explicit CQuadTree(const Fbox& box, float min_cell_size, u32 max_node_count, u32 max_list_item_count);
-    virtual ~CQuadTree();
+    inline ~CQuadTree() override;
 
     IC void clear();
     IC void insert(_object_type* object);

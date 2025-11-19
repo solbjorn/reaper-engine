@@ -22,7 +22,7 @@ protected:
 
 public:
     CSoundRender_Target() = default;
-    virtual ~CSoundRender_Target() = 0;
+    ~CSoundRender_Target() override = 0;
 
     CSoundRender_Emitter* get_emitter() const { return m_pEmitter; }
     bool get_Rendering() const { return rendering; }

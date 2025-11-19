@@ -11,7 +11,7 @@ public:
     u32 m_max_symb_count;
 
     CUICustomEdit();
-    virtual ~CUICustomEdit() = default;
+    ~CUICustomEdit() override = default;
 
     // CUILinesOwner
     virtual void SetFont(CGameFont* pFont) { CUILinesOwner::SetFont(pFont); }

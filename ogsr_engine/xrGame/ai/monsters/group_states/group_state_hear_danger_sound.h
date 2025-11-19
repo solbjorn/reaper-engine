@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateGroupHearDangerousSound : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupHearDangerousSound<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -19,8 +21,8 @@ protected:
     u32 m_target_node{};
 
 public:
-    CStateGroupHearDangerousSound(_Object* obj);
-    virtual ~CStateGroupHearDangerousSound() {}
+    explicit CStateGroupHearDangerousSound(_Object* obj);
+    ~CStateGroupHearDangerousSound() override = default;
 
     virtual void initialize();
     virtual void reselect_state();

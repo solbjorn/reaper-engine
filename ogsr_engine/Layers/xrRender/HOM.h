@@ -39,6 +39,9 @@ private:
     void Render_DB(CFrustum& base);
 
 public:
+    CHOM();
+    ~CHOM() override;
+
     void Load();
     void Unload();
 
@@ -52,9 +55,6 @@ public:
     BOOL visible(const Fbox3& B) const;
     BOOL visible(const sPoly& P) const;
     BOOL visible(const Fbox2& B, float depth) const; // viewport-space (0..1)
-
-    CHOM();
-    ~CHOM();
 
 #ifdef DEBUG
     virtual void OnRender();

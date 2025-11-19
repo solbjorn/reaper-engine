@@ -29,7 +29,7 @@ public:
     Frect& WorkingArea() { return m_workingArea; }
 
     CUICustomMap();
-    virtual ~CUICustomMap();
+    ~CUICustomMap() override;
 
     virtual void SetActivePoint(const Fvector& vNewPoint);
 
@@ -84,8 +84,8 @@ private:
     float m_max_zoom{};
 
 public:
-    CUIGlobalMap(CUIMapWnd* pMapWnd);
-    virtual ~CUIGlobalMap();
+    explicit CUIGlobalMap(CUIMapWnd* pMapWnd);
+    ~CUIGlobalMap() override;
 
     Fvector2 ConvertRealToLocal(const Fvector2& src, bool) override; // pixels->pixels (relatively own left-top pos)
 
@@ -119,11 +119,8 @@ public:
     CUIMapWnd* m_mapWnd{};
     Frect m_GlobalRect{}; // virtual map size (meters)
 
-    CUILevelMap(const CUILevelMap&) = delete;
-    CUILevelMap& operator=(const CUILevelMap&) = delete;
-
-    CUILevelMap(CUIMapWnd*);
-    virtual ~CUILevelMap();
+    explicit CUILevelMap(CUIMapWnd*);
+    ~CUILevelMap() override;
 
     virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
 
@@ -152,7 +149,7 @@ public:
     typedef CUICustomMap inherited;
 
     CUIMiniMap();
-    virtual ~CUIMiniMap();
+    ~CUIMiniMap() override;
 
     virtual void Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name);
 

@@ -17,7 +17,8 @@ RENDERDOC_API_1_0_0* g_renderdoc_api{};
 }
 #endif
 
-dxRenderDeviceRender::dxRenderDeviceRender() {}
+dxRenderDeviceRender::dxRenderDeviceRender() = default;
+dxRenderDeviceRender::~dxRenderDeviceRender() = default;
 
 void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in)
 {

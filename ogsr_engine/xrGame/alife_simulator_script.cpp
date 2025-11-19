@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_simulator.h"
+
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "alife_story_registry.h"
@@ -180,9 +181,10 @@ static CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self, LPCSTR 
     clientID.set(0xffff);
 
     u16 dummy;
-    packet.r_begin(dummy);
+    std::ignore = packet.r_begin(dummy);
     VERIFY(dummy == M_SPAWN);
-    return (self->server().Process_spawn(packet, clientID));
+
+    return self->server().Process_spawn(packet, clientID);
 }
 
 static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id,
@@ -231,9 +233,10 @@ static CSE_Abstract* CALifeSimulator__spawn_ammo(CALifeSimulator* self, LPCSTR s
     clientID.set(0xffff);
 
     u16 dummy;
-    packet.r_begin(dummy);
+    std::ignore = packet.r_begin(dummy);
     VERIFY(dummy == M_SPAWN);
-    return (self->server().Process_spawn(packet, clientID));
+
+    return self->server().Process_spawn(packet, clientID);
 }
 
 static void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)

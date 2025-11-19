@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../xr_3da/effectorPP.h"
 #include "../xr_3da/cameramanager.h"
 
@@ -11,7 +12,9 @@ class CPPEffectorCustom : public CEffectorPP
 public:
     typedef CEffectorPP inherited;
 
-    CPPEffectorCustom(const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
+    explicit CPPEffectorCustom(const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
+    ~CPPEffectorCustom() override = default;
+
     EEffectorPPType get_type() { return m_type; }
 
 protected:
@@ -37,6 +40,7 @@ class CPPEffectorCustomController : public virtual RTTI::Enable
 
 public:
     CPPEffectorCustomController() = default;
+    ~CPPEffectorCustomController() override = default;
 
     IC virtual void load(LPCSTR section);
     IC virtual bool active() { return !!m_effector; }
@@ -69,23 +73,30 @@ class CPPEffectorController;
 
 class CPPEffectorControlled : public CPPEffectorCustom
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorControlled, CPPEffectorCustom);
+
+private:
     typedef CPPEffectorCustom inherited;
 
     CPPEffectorController* m_controller;
 
 public:
-    CPPEffectorControlled(CPPEffectorController* controller, const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
+    explicit CPPEffectorControlled(CPPEffectorController* controller, const SPPInfo& ppi, bool one_instance = false, bool destroy_from_engine = true);
+    ~CPPEffectorControlled() override = default;
+
     virtual BOOL update();
     IC void set_factor(float value) { m_factor = value; }
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-class CPPEffectorController : public CPPEffectorCustomController<CPPEffectorControlled>
+class XR_NOVTABLE CPPEffectorController : public CPPEffectorCustomController<CPPEffectorControlled>
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorController, CPPEffectorCustomController<CPPEffectorControlled>);
+
 public:
     CPPEffectorController();
-    virtual ~CPPEffectorController();
+    ~CPPEffectorController() override;
 
     virtual void frame_update();
 

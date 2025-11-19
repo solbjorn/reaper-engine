@@ -2,7 +2,6 @@
 #define dxObjectSpaceRender_included
 
 #ifdef DEBUG
-
 #include "..\..\Include\xrRender\ObjectSpaceRender.h"
 #include "..\..\xrengine\xr_collide_form.h"
 
@@ -12,7 +11,8 @@ class dxObjectSpaceRender : public IObjectSpaceRender
 
 public:
     dxObjectSpaceRender();
-    virtual ~dxObjectSpaceRender();
+    ~dxObjectSpaceRender() override;
+
     virtual void Copy(IObjectSpaceRender& _in);
 
     virtual void dbgRender();
@@ -24,7 +24,6 @@ private:
     clQueryCollision q_debug; // MT: dangerous
     xr_vector<std::pair<Fsphere, u32>> dbg_S; // MT: dangerous
 };
-
 #endif // DEBUG
 
 #endif //	ObjectSpaceRender_included

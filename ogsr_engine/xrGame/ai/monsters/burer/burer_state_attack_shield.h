@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename Object>
 class CStateBurerShield : public CState<Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBurerShield<Object>, CState<Object>);
+
 private:
     typedef CState<Object> inherited;
     using inherited::object;
 
 public:
-    CStateBurerShield(Object* obj);
+    explicit CStateBurerShield(Object* obj);
+    ~CStateBurerShield() override = default;
 
     virtual void initialize();
     virtual void execute();

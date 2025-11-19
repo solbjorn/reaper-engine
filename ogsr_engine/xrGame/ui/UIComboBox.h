@@ -32,7 +32,8 @@ public:
     } E_COMBO_STATE;
 
     CUIComboBox();
-    virtual ~CUIComboBox();
+    ~CUIComboBox() override;
+
     // CUIOptionsItem
     virtual void SetCurrentValue();
     virtual void SaveValue();

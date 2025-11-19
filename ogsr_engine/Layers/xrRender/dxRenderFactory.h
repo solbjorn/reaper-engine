@@ -5,6 +5,11 @@
 
 class dxRenderFactory : public IRenderFactory
 {
+    RTTI_DECLARE_TYPEINFO(dxRenderFactory, IRenderFactory);
+
+public:
+    ~dxRenderFactory() override = default;
+
     virtual IUISequenceVideoItem* CreateUISequenceVideoItem();
     virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject);
     virtual IUIShader* CreateUIShader();

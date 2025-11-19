@@ -36,7 +36,7 @@ private:
 
 public:
     CArtefact();
-    virtual ~CArtefact() = default;
+    ~CArtefact() override = default;
 
     virtual void Load(LPCSTR section);
 

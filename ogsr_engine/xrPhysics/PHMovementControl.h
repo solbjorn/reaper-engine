@@ -377,8 +377,8 @@ public:
     void GetDesiredPos(Fvector& dpos) { m_character->GetDesiredPosition(dpos); }
     bool CharacterExist() const { return (m_character && m_character->b_exist); }
 
-    CPHMovementControl(CObject* parent);
-    ~CPHMovementControl(void);
+    explicit CPHMovementControl(CObject* parent);
+    ~CPHMovementControl();
 
 private:
     void UpdateCollisionDamage();

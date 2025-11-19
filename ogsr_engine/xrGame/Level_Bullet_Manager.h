@@ -179,7 +179,7 @@ protected:
 
 public:
     CBulletManager();
-    virtual ~CBulletManager();
+    ~CBulletManager() override;
 
     void Load();
     void Clear();

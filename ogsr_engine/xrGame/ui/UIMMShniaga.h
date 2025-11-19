@@ -16,7 +16,7 @@ public:
     using CUIWindow::Init;
 
     CUIMMShniaga();
-    virtual ~CUIMMShniaga();
+    ~CUIMMShniaga() override;
 
     void Init(CUIXml& xml_doc, LPCSTR path);
     virtual void Update();

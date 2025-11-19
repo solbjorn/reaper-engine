@@ -149,15 +149,13 @@ public:
     void set_collision_hit_callback(ICollisionHitCallback* cc);
     /////////////////////////////////////////////////////////////////
 
-    CCharacterPhysicsSupport& operator=(const CCharacterPhysicsSupport&) = delete;
-
     void SyncNetState();
 
-    CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity);
-    virtual ~CCharacterPhysicsSupport();
+    explicit CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity);
+    ~CCharacterPhysicsSupport() override;
 
-    IC physics_shell_animated* animation_collision() { return m_physics_shell_animated; }
-    IC const physics_shell_animated* animation_collision() const { return m_physics_shell_animated; }
+    [[nodiscard]] physics_shell_animated* animation_collision() { return m_physics_shell_animated; }
+    [[nodiscard]] const physics_shell_animated* animation_collision() const { return m_physics_shell_animated; }
 
     void create_animation_collision();
     void destroy_animation_collision();

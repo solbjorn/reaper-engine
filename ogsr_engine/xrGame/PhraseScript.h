@@ -18,7 +18,7 @@ class CPhraseScript : public virtual RTTI::Enable
 
 public:
     CPhraseScript();
-    virtual ~CPhraseScript();
+    ~CPhraseScript() override;
 
     // загрузка из XML файла
     virtual void Load(CUIXml* ui_xml, XML_NODE* phrase_node);

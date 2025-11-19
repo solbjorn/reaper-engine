@@ -39,7 +39,7 @@ public:
     friend class CInventoryScript;
 
     CInventory();
-    virtual ~CInventory();
+    ~CInventory() override;
 
     float TotalWeight() const;
     float CalcTotalWeight();

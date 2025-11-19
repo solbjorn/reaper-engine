@@ -53,8 +53,8 @@ private:
     ALife::_OBJECT_ID m_last_hit_object_id;
 
 public:
-    IC CHitMemoryManager(CCustomMonster* object, CAI_Stalker* stalker);
-    virtual ~CHitMemoryManager();
+    inline explicit CHitMemoryManager(CCustomMonster* object, CAI_Stalker* stalker);
+    ~CHitMemoryManager() override;
 
     virtual void Load(LPCSTR);
     virtual void reinit();

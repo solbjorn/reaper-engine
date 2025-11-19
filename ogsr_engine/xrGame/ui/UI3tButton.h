@@ -8,6 +8,7 @@
 //
 
 #pragma once
+
 #include "UIButton.h"
 #include "UI_IB_Static.h"
 
@@ -20,7 +21,8 @@ public:
     using CUIButton::SetTextColor;
 
     CUI3tButton();
-    virtual ~CUI3tButton();
+    ~CUI3tButton() override;
+
     // appearance
     using CUIButton::Init;
 

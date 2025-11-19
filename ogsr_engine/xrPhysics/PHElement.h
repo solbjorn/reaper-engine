@@ -247,9 +247,9 @@ public: //
     void RunSimulation(const Fmatrix& start_from); //
     void ClearDestroyInfo();
     void GetAnimBonePos(Fmatrix& bp);
-    //		bool						CheckBreakConsistent					()
+
     CPHElement(); // aux
-    virtual ~CPHElement(); // aux
+    ~CPHElement() override; // aux
 
     virtual IPhysicsGeometry* geometry(u16 i) const override { return CPHGeometryOwner::Geom(i); }
     virtual void SetAnimated(bool v) override { m_flags.set(flAnimated, BOOL(v)); }

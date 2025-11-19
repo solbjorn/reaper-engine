@@ -33,6 +33,7 @@ public:
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
+
 class CDrawUtilities : public CDUInterface, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(CDrawUtilities, CDUInterface, pureRender);
@@ -68,6 +69,7 @@ public:
 
 public:
     CDrawUtilities() = default;
+    ~CDrawUtilities() override = default;
 
     void OnDeviceCreate();
     virtual void OnDeviceDestroy();

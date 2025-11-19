@@ -27,11 +27,11 @@ private:
 #endif
 
 public:
-    IC CAttachableItem();
-    virtual ~CAttachableItem();
+    inline CAttachableItem();
+    ~CAttachableItem() override;
 
-    virtual DLL_Pure* _construct();
-    virtual CAttachableItem* cast_attachable_item() { return this; }
+    [[nodiscard]] virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual CAttachableItem* cast_attachable_item() { return this; }
     virtual void reload(LPCSTR section);
     virtual void OnH_A_Chield();
     virtual void OnH_A_Independent();

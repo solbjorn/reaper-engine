@@ -89,7 +89,7 @@ private:
 
 public:
     CModelPool();
-    virtual ~CModelPool();
+    ~CModelPool() override;
 
     dxRender_Visual* Instance_Create(u32 Type);
     dxRender_Visual* Instance_Duplicate(dxRender_Visual* V);

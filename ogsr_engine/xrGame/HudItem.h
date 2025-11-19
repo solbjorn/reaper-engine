@@ -53,6 +53,7 @@ protected:
 
 public:
     CHUDState() { SetState(eHidden); }
+    ~CHUDState() override = 0;
 
     IC u32 GetNextState() const { return m_nextState; }
     IC u32 GetState() const { return m_hud_item_state; }
@@ -69,13 +70,13 @@ public:
     virtual void OnStateSwitch(u32 S, u32 oldState) = 0;
 };
 
+inline CHUDState::~CHUDState() = default;
+
 class XR_NOVTABLE CHudItem : public CHUDState
 {
     RTTI_DECLARE_TYPEINFO(CHudItem, CHUDState);
 
-protected: // чтоб нельзя было вызвать на прямую
-    CHudItem();
-    virtual ~CHudItem() = default;
+protected:
     virtual DLL_Pure* _construct();
 
     Flags16 m_huditem_flags;
@@ -102,6 +103,9 @@ protected: // чтоб нельзя было вызвать на прямую
     u32 m_dwStateTime{};
 
 public:
+    CHudItem();
+    ~CHudItem() override = 0;
+
     virtual void Load(LPCSTR section);
     virtual CHudItem* cast_hud_item() { return this; }
 
@@ -253,7 +257,7 @@ public:
 
     public:
         CWeaponBobbing() = delete;
-        CWeaponBobbing(CHudItem* parent);
+        explicit CWeaponBobbing(CHudItem* parent);
         ~CWeaponBobbing() = default;
 
         void Update(Fmatrix& m, Fmatrix& m2);
@@ -346,3 +350,5 @@ private:
     bool HudInertionEnabled() const { return m_huditem_flags.test(fl_inertion_enable); }
     void EnableHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
 };
+
+inline CHudItem::~CHudItem() = default;

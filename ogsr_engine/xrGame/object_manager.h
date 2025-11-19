@@ -22,7 +22,7 @@ protected:
 
 public:
     CObjectManager() = default;
-    virtual ~CObjectManager() = default;
+    ~CObjectManager() override = default;
 
     inline virtual void Load(LPCSTR);
     inline virtual void reinit();

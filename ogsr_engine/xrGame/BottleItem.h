@@ -16,7 +16,7 @@ private:
 
 public:
     CBottleItem();
-    virtual ~CBottleItem();
+    ~CBottleItem() override;
 
     virtual void Load(LPCSTR section);
 

@@ -4,8 +4,9 @@
 
 #include "stdafx.h"
 
-#include "hudmanager.h"
 #include "Entity.h"
+
+#include "hudmanager.h"
 #include "actor.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "level.h"
@@ -315,7 +316,7 @@ bool CEntity::IsMyCamera() const { return (smart_cast<const CEntity*>(g_pGameLev
 
 DLL_Pure* CEntity::_construct()
 {
-    inherited::_construct();
+    std::ignore = inherited::_construct();
     CDamageManager::_construct();
 
     m_entity_condition = create_entity_condition(nullptr);

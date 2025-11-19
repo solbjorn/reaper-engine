@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStateControlFire : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControlFire<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -10,8 +13,8 @@ class CStateControlFire : public CState<_Object>
     u32 m_time_state_last_execute;
 
 public:
-    CStateControlFire(_Object* obj) : inherited(obj) {}
-    virtual ~CStateControlFire() {}
+    explicit CStateControlFire(_Object* obj) : inherited{obj} {}
+    ~CStateControlFire() override = default;
 
     virtual void reinit();
     virtual void initialize();

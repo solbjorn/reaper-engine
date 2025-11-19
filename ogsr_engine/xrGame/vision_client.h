@@ -39,8 +39,8 @@ private:
     void eye_pp_s2();
 
 public:
-    vision_client(CEntity* object, const u32& update_interval);
-    virtual ~vision_client();
+    explicit vision_client(CEntity* object, const u32& update_interval);
+    ~vision_client() override;
 
 public:
     virtual float shedule_Scale() const;

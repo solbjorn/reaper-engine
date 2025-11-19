@@ -16,7 +16,7 @@ public:
     using CUISimpleWindow::Init;
 
     CUIWindow();
-    virtual ~CUIWindow();
+    ~CUIWindow() override;
 
     ////////////////////////////////////
     // инициализация

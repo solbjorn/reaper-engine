@@ -38,8 +38,8 @@ public:
 
     friend class CControl_Manager;
 
-    CControlPathBuilder(CCustomMonster* monster);
-    virtual ~CControlPathBuilder();
+    explicit CControlPathBuilder(CCustomMonster* monster);
+    ~CControlPathBuilder() override;
 
     virtual void load(LPCSTR);
     virtual void reinit();

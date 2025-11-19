@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)
+#ifndef AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 #define AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_
 
 #include "../../xr_3da/properties.h"
@@ -57,7 +57,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     IBlender();
-    virtual ~IBlender() = 0;
+    ~IBlender() override = 0;
 };
 
 inline IBlender::~IBlender() = default;
@@ -76,6 +76,8 @@ protected:
     static void ReadToken(CInifile* ini_file, LPCSTR section, LPCSTR line, xrP_TOKEN& v);
 
 public:
+    ~IBlenderXr() override = default;
+
     static IBlenderXr* Create(CLASS_ID cls);
     static void Destroy(IBlenderXr*& B);
 
@@ -86,4 +88,4 @@ public:
     virtual void LoadIni(CInifile* ini_file, LPCSTR section);
 };
 
-#endif // !defined(AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_)
+#endif // AFX_BLENDER_H__A023332E_C09B_4D93_AA53_57C052CCC075__INCLUDED_

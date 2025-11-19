@@ -95,6 +95,8 @@ private:
     u32 m_last_time_added_impulse;
 
 public:
+    ~CControlJump() override = default;
+
     virtual void load(LPCSTR section);
     virtual void reinit();
     virtual bool check_start_conditions();

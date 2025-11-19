@@ -13,6 +13,8 @@
 #include "xrDebug.h"
 #include "xrServer.h"
 
+#include "../xr_3da/feel_touch.h"
+
 class CHUDManager;
 class CParticlesObject;
 class xrServer;
@@ -42,15 +44,13 @@ class CMapManager;
 
 class DBG_ScriptObject;
 
-#include "../xr_3da/feel_touch.h"
-
 class GlobalFeelTouch : public Feel::Touch
 {
     RTTI_DECLARE_TYPEINFO(GlobalFeelTouch, Feel::Touch);
 
 public:
     GlobalFeelTouch();
-    virtual ~GlobalFeelTouch();
+    ~GlobalFeelTouch() override;
 
     void update();
     bool is_object_denied(CObject const* O);
@@ -251,7 +251,7 @@ public:
 
     // C/D
     CLevel();
-    virtual ~CLevel();
+    ~CLevel() override;
 
     // название текущего уровня
     virtual shared_str name() const;

@@ -60,7 +60,7 @@ class XR_NOVTABLE CPropertyBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPropertyBase);
 
 public:
-    virtual ~CPropertyBase() = 0;
+    ~CPropertyBase() override = 0;
 
     virtual void Save(IWriter& fs) = 0;
     virtual void Load(IReader& fs, u16 version) = 0;

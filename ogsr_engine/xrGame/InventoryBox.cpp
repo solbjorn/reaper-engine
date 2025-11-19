@@ -1,12 +1,15 @@
 #include "stdafx.h"
 
 #include "InventoryBox.h"
+
 #include "level.h"
 #include "actor.h"
 #include "game_object_space.h"
 
 #include "script_callback_ex.h"
 #include "script_game_object.h"
+
+#include "inventory_item.h"
 
 IInventoryBox::IInventoryBox() : m_items()
 {
@@ -74,8 +77,6 @@ void IInventoryBox::ProcessEvent(CGameObject* O, NET_Packet& P, u16 type)
     break;
     }
 }
-
-#include "inventory_item.h"
 
 void IInventoryBox::AddAvailableItems(TIItemContainer& items_container) const
 {

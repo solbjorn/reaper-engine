@@ -11,7 +11,7 @@ public:
     typedef CWeaponCustomPistol inherited;
 
     CWeaponSVU();
-    virtual ~CWeaponSVU();
+    ~CWeaponSVU() override;
 
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return SniperRifle; } // Вообще СВУ короткая, мб и не надо её относить к длинным снайперкам типа СВД

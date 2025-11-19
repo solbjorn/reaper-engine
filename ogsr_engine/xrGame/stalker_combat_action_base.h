@@ -18,7 +18,8 @@ protected:
     typedef CStalkerActionBase inherited;
 
 public:
-    CStalkerActionCombatBase(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionCombatBase(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionCombatBase() override = default;
 
     virtual void initialize();
     virtual void finalize();

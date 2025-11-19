@@ -3,14 +3,17 @@
 template <typename _Object>
 class CStateMonsterHittedHide : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHittedHide<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::object;
     using inherited::time_state_started;
 
 public:
-    CStateMonsterHittedHide(_Object* obj) : inherited(obj) {}
-    virtual ~CStateMonsterHittedHide() {}
+    explicit CStateMonsterHittedHide(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterHittedHide() override = default;
 
     virtual void initialize();
     virtual void execute();

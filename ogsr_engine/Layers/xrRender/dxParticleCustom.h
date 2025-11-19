@@ -7,6 +7,7 @@
 #include "FBasicVisual.h"
 
 //---------------------------------------------------------------------------
+
 class dxParticleCustom : public dxRender_Visual, public IParticleCustom
 {
     RTTI_DECLARE_TYPEINFO(dxParticleCustom, dxRender_Visual, IParticleCustom);
@@ -15,7 +16,8 @@ public:
     // geometry-format
     ref_geom geom;
 
-    virtual ~dxParticleCustom() {}
+    ~dxParticleCustom() override = default;
+
     virtual IParticleCustom* dcast_ParticleCustom() { return this; }
 };
 

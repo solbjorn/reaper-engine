@@ -38,8 +38,8 @@ public:
     void on_best_cover_changed(const CCoverPoint*, const CCoverPoint*);
 
 public:
-    CStalkerCombatPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
-    virtual ~CStalkerCombatPlanner();
+    explicit CStalkerCombatPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    ~CStalkerCombatPlanner() override;
 
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();

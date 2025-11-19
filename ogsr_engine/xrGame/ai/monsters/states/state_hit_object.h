@@ -1,9 +1,13 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterHitObject : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHitObject<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -12,7 +16,8 @@ class CStateMonsterHitObject : public CState<_Object>
     bool m_hitted;
 
 public:
-    CStateMonsterHitObject(_Object* obj) : inherited(obj) {}
+    explicit CStateMonsterHitObject(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterHitObject() override = default;
 
     virtual void initialize();
     virtual void execute();

@@ -62,7 +62,7 @@ private:
 public:
     inline explicit CGameLevelCrossTable(const void* buffer, u32 buffer_size);
     inline explicit CGameLevelCrossTable(LPCSTR fName);
-    IC virtual ~CGameLevelCrossTable();
+    inline ~CGameLevelCrossTable() override;
 
     IC const CCell& vertex(u32 level_vertex_id) const;
     IC const CHeader& header() const;

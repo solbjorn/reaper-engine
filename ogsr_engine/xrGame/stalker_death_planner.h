@@ -20,8 +20,9 @@ private:
     typedef CActionPlannerActionScript<CAI_Stalker> inherited;
 
 public:
-    CStalkerDeathPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
-    virtual ~CStalkerDeathPlanner();
+    explicit CStalkerDeathPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    ~CStalkerDeathPlanner() override;
+
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     void add_evaluators();
     void add_actions();

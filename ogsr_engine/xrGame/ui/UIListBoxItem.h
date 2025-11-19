@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UILabel.h"
 
 class CUIListBoxItem : public CUILabel, public CUISelectable
@@ -9,7 +10,7 @@ public:
     using CUILabel::SetTextColor;
 
     CUIListBoxItem();
-    virtual ~CUIListBoxItem();
+    ~CUIListBoxItem() override;
 
     virtual void SetSelected(bool b);
     //	virtual void	Update();

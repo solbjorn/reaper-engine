@@ -15,7 +15,7 @@ private:
 
 public:
     CUIMessageBox();
-    virtual ~CUIMessageBox();
+    ~CUIMessageBox() override;
 
     // разновидности MessageBox
     typedef enum

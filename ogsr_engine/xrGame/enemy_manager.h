@@ -51,7 +51,9 @@ protected:
     bool expedient(const CEntityAlive* object) const;
 
 public:
-    CEnemyManager(CCustomMonster* object);
+    explicit CEnemyManager(CCustomMonster* object);
+    ~CEnemyManager() override = default;
+
     virtual void reload(LPCSTR section);
     virtual bool useful(const CEntityAlive* object) const;
     virtual bool is_useful(const CEntityAlive* object) const;

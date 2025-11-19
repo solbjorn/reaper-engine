@@ -6,6 +6,8 @@
 template <typename _Object>
 class CStateMonsterAttack : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttack<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -22,10 +24,10 @@ protected:
     u32 m_time_start_behinder;
 
 public:
-    CStateMonsterAttack(_Object* obj);
-    CStateMonsterAttack(_Object* obj, state_ptr state_move2home);
-    CStateMonsterAttack(_Object* obj, state_ptr state_run, state_ptr state_melee);
-    virtual ~CStateMonsterAttack();
+    explicit CStateMonsterAttack(_Object* obj);
+    explicit CStateMonsterAttack(_Object* obj, state_ptr state_move2home);
+    explicit CStateMonsterAttack(_Object* obj, state_ptr state_run, state_ptr state_melee);
+    ~CStateMonsterAttack() override;
 
     virtual void initialize();
     virtual void execute();

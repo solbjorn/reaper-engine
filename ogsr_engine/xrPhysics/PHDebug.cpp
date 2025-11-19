@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "physics.h"
 #include "MathUtils.h"
@@ -51,10 +52,14 @@ u32 cash_draw_remove_time = u32(-1);
 
 struct SPHDBGDrawTri : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawTri, SPHDBGDrawAbsract);
+
+public:
     Fvector v[3];
     u32 c;
     bool solid;
-    SPHDBGDrawTri(CDB::RESULT* T, u32 ac)
+
+    explicit SPHDBGDrawTri(CDB::RESULT* T, u32 ac)
     {
         v[0].set(T->verts[0]);
         v[1].set(T->verts[1]);
@@ -62,7 +67,8 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
         c = ac;
         solid = false;
     }
-    SPHDBGDrawTri(CDB::TRI* T, const Fvector* V_array, u32 ac)
+
+    explicit SPHDBGDrawTri(CDB::TRI* T, const Fvector* V_array, u32 ac)
     {
         v[0].set(V_array[T->verts[0]]);
         v[1].set(V_array[T->verts[1]]);
@@ -70,7 +76,8 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
         c = ac;
         solid = false;
     }
-    SPHDBGDrawTri(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid_)
+
+    explicit SPHDBGDrawTri(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid_)
     {
         v[0].set(v0);
         v[1].set(v1);
@@ -78,6 +85,9 @@ struct SPHDBGDrawTri : public SPHDBGDrawAbsract
         c = ac;
         solid = solid_;
     }
+
+    ~SPHDBGDrawTri() override = default;
+
     virtual void render()
     {
         if (solid)
@@ -111,14 +121,21 @@ void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c) { DBG_DrawPHAbstruc
 
 struct SPHDBGDrawLine : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawLine, SPHDBGDrawAbsract);
+
+public:
     Fvector p[2];
     u32 c;
-    SPHDBGDrawLine(const Fvector& p0, const Fvector& p1, u32 ca)
+
+    explicit SPHDBGDrawLine(const Fvector& p0, const Fvector& p1, u32 ca)
     {
         p[0].set(p0);
         p[1].set(p1);
         c = ca;
     }
+
+    ~SPHDBGDrawLine() override = default;
+
     virtual void render() { Level().debug_renderer().draw_line(Fidentity, p[0], p[1], c); }
 };
 
@@ -200,14 +217,21 @@ void DBG_DrawRotationZ(const Fmatrix& m, float ang0, float ang1, float size, u32
 
 struct SPHDBGDrawAABB : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawAABB, SPHDBGDrawAbsract);
+
+public:
     Fvector p[2];
     u32 c;
-    SPHDBGDrawAABB(const Fvector& center, const Fvector& AABB, u32 ac)
+
+    explicit SPHDBGDrawAABB(const Fvector& center, const Fvector& AABB, u32 ac)
     {
         p[0].set(center);
         p[1].set(AABB);
         c = ac;
     }
+
+    ~SPHDBGDrawAABB() override = default;
+
     virtual void render() { Level().debug_renderer().draw_aabb(p[0], p[1].x, p[1].y, p[1].z, c); }
 };
 
@@ -215,28 +239,44 @@ void DBG_DrawAABB(const Fvector& center, const Fvector& AABB, u32 c) { DBG_DrawP
 
 struct SPHDBGDrawOBB : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawOBB, SPHDBGDrawAbsract);
+
+public:
     Fmatrix m;
     Fvector h;
     u32 c;
-    SPHDBGDrawOBB(const Fmatrix am, const Fvector ah, u32 ac)
+
+    explicit SPHDBGDrawOBB(const Fmatrix am, const Fvector ah, u32 ac)
     {
         m.set(am);
         h.set(ah);
         c = ac;
     }
+
+    ~SPHDBGDrawOBB() override = default;
+
     virtual void render() { Level().debug_renderer().draw_obb(m, h, c); }
 };
+
 void DBG_DrawOBB(const Fmatrix& m, const Fvector h, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawOBB>(m, h, c)); };
+
 struct SPHDBGDrawPoint : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawPoint, SPHDBGDrawAbsract);
+
+public:
     Fvector p;
     float size;
     u32 c;
-    SPHDBGDrawPoint(const Fvector ap, float s, u32 ac)
+
+    explicit SPHDBGDrawPoint(const Fvector ap, float s, u32 ac)
     {
         p.set(ap), size = s;
         c = ac;
     }
+
+    ~SPHDBGDrawPoint() override = default;
+
     virtual void render()
     {
         // Level().debug_renderer().draw_aabb(p,size,size,size,c);
@@ -247,17 +287,25 @@ struct SPHDBGDrawPoint : public SPHDBGDrawAbsract
         Level().debug_renderer().draw_ellipse(m, c);
     }
 };
+
 void DBG_DrawPoint(const Fvector& p, float size, u32 c) { DBG_DrawPHAbstruct(xr_new<SPHDBGDrawPoint>(p, size, c)); }
 
 struct SPHDBGOutText : public SPHDBGDrawAbsract
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGOutText, SPHDBGDrawAbsract);
+
+public:
     string64 s;
     bool rendered;
-    SPHDBGOutText(LPCSTR t)
+
+    explicit SPHDBGOutText(LPCSTR t)
     {
         strcpy(s, t);
         rendered = false;
     }
+
+    ~SPHDBGOutText() override = default;
+
     virtual void render()
     {
         // if(rendered) return;
@@ -676,4 +724,4 @@ void PH_DBG_SetTrackObject(LPCSTR obj)
     strcpy(s_dbg_tsrace_obj, obj);
     dbg_trace_object = s_dbg_tsrace_obj;
 }
-#endif
+#endif // DEBUG

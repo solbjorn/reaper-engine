@@ -9,8 +9,11 @@ class dxEnvDescriptorRender : public IEnvDescriptorRender
 {
     RTTI_DECLARE_TYPEINFO(dxEnvDescriptorRender, IEnvDescriptorRender);
 
-public:
+private:
     friend class dxEnvironmentRender;
+
+public:
+    ~dxEnvDescriptorRender() override = default;
 
     virtual void OnDeviceCreate(CEnvDescriptor& owner);
     virtual void OnDeviceDestroy();
@@ -29,6 +32,8 @@ class dxEnvironmentRender : public IEnvironmentRender
 
 public:
     dxEnvironmentRender();
+    ~dxEnvironmentRender() override;
+
     virtual void Copy(IEnvironmentRender& _in);
 
     virtual void RenderSky(CEnvironment& env);

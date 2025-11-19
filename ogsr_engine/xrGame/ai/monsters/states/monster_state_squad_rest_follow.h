@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateMonsterSquadRestFollow : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterSquadRestFollow<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -19,8 +21,8 @@ protected:
     Fvector last_point;
 
 public:
-    CStateMonsterSquadRestFollow(_Object* obj);
-    virtual ~CStateMonsterSquadRestFollow();
+    explicit CStateMonsterSquadRestFollow(_Object* obj);
+    ~CStateMonsterSquadRestFollow() override;
 
     virtual void initialize();
     virtual void reselect_state();

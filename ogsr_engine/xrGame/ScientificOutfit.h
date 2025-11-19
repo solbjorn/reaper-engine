@@ -16,5 +16,5 @@ private:
 
 public:
     CScientificOutfit();
-    virtual ~CScientificOutfit();
+    ~CScientificOutfit() override;
 };

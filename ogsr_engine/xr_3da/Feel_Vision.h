@@ -9,10 +9,10 @@ class ISpatial;
 
 namespace Feel
 {
-constexpr inline float fuzzy_update_vis{1000.f}; // speed of fuzzy-logic desisions
-constexpr inline float fuzzy_update_novis{1000.f}; // speed of fuzzy-logic desisions
-constexpr inline float fuzzy_guaranteed{0.001f}; // distance which is supposed 100% visible
-constexpr inline float lr_granularity{0.1f}; // assume similar positions
+constexpr inline f32 fuzzy_update_vis{1000.0f}; // speed of fuzzy-logic desisions
+constexpr inline f32 fuzzy_update_novis{1000.0f}; // speed of fuzzy-logic desisions
+constexpr inline f32 fuzzy_guaranteed{0.001f}; // distance which is supposed 100% visible
+constexpr inline f32 lr_granularity{0.1f}; // assume similar positions
 
 class Vision : public virtual RTTI::Enable, private pure_relcase
 {
@@ -34,7 +34,7 @@ private:
 
 public:
     Vision();
-    virtual ~Vision();
+    ~Vision() override;
 
     struct feel_visible_Item
     {

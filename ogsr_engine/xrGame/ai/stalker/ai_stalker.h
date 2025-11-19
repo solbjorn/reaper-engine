@@ -143,7 +143,7 @@ public:
 
 public:
     CAI_Stalker();
-    virtual ~CAI_Stalker();
+    ~CAI_Stalker() override;
 
 public:
     virtual CCharacterPhysicsSupport* character_physics_support() { return m_pPhysics_support; }

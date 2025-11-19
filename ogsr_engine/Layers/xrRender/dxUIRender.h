@@ -8,7 +8,8 @@ class dxUIRender : public IUIRender
     RTTI_DECLARE_TYPEINFO(dxUIRender, IUIRender);
 
 public:
-    dxUIRender() : PrimitiveType{ptNone}, m_PointType{pttNone} {}
+    dxUIRender() = default;
+    ~dxUIRender() override = default;
 
     virtual void CreateUIGeom();
     virtual void DestroyUIGeom();
@@ -33,8 +34,8 @@ private:
     ref_geom hGeom_TL;
     ref_geom hGeom_LIT;
 
-    ePrimitiveType PrimitiveType;
-    ePointType m_PointType;
+    ePrimitiveType PrimitiveType{ptNone};
+    ePointType m_PointType{pttNone};
 
     //	Vertex buffer attributes
     u32 m_iMaxVerts;

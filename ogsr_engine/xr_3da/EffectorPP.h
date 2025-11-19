@@ -20,7 +20,7 @@ protected:
 public:
     CEffectorPP() : eType{ppeNext}, bFreeOnRemove{true}, fLifeTime{0.0f} {}
     explicit CEffectorPP(EEffectorPPType type, float lifeTime, bool free_on_remove = true);
-    virtual ~CEffectorPP();
+    ~CEffectorPP() override;
 
     [[nodiscard]] virtual BOOL Process(SPPInfo&);
     [[nodiscard]] virtual BOOL Valid() { return fLifeTime > 0.0f; }

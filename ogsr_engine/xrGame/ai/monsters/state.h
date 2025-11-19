@@ -18,8 +18,8 @@ class XR_NOVTABLE CState : public virtual RTTI::Enable
 public:
     typedef CState<_Object> CSState;
 
-    CState(_Object* obj, void* data = nullptr);
-    virtual ~CState();
+    explicit CState(_Object* obj, void* data = nullptr);
+    ~CState() override;
 
     virtual void reinit();
     virtual void remove_links(CObject* object) = 0;
@@ -87,8 +87,8 @@ protected:
     using inherited = CState<_Object>;
 
 public:
-    CStateMove(_Object* obj, void* data = nullptr) : inherited{obj, data} {}
-    virtual ~CStateMove() {}
+    explicit CStateMove(_Object* obj, void* data = nullptr) : inherited{obj, data} {}
+    ~CStateMove() override = default;
 
     virtual void initialize()
     {

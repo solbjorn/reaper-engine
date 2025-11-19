@@ -23,11 +23,15 @@ typedef CPropertyEvaluatorMember<CAgentManager> CAgentManagerPropertyEvaluatorMe
 
 class CAgentManagerPropertyEvaluatorItem : public CAgentManagerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorItem, CAgentManagerPropertyEvaluator);
+
 protected:
     typedef CAgentManagerPropertyEvaluator inherited;
 
 public:
-    IC CAgentManagerPropertyEvaluatorItem(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    inline explicit CAgentManagerPropertyEvaluatorItem(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    ~CAgentManagerPropertyEvaluatorItem() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -37,11 +41,15 @@ public:
 
 class CAgentManagerPropertyEvaluatorEnemy : public CAgentManagerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorEnemy, CAgentManagerPropertyEvaluator);
+
 protected:
     typedef CAgentManagerPropertyEvaluator inherited;
 
 public:
-    IC CAgentManagerPropertyEvaluatorEnemy(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    inline explicit CAgentManagerPropertyEvaluatorEnemy(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    ~CAgentManagerPropertyEvaluatorEnemy() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -51,11 +59,15 @@ public:
 
 class CAgentManagerPropertyEvaluatorDanger : public CAgentManagerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerPropertyEvaluatorDanger, CAgentManagerPropertyEvaluator);
+
 protected:
     typedef CAgentManagerPropertyEvaluator inherited;
 
 public:
-    IC CAgentManagerPropertyEvaluatorDanger(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    inline explicit CAgentManagerPropertyEvaluatorDanger(CAgentManager* object = nullptr, LPCSTR evaluator_name = "");
+    ~CAgentManagerPropertyEvaluatorDanger() override = default;
+
     virtual _value_type evaluate();
 };
 

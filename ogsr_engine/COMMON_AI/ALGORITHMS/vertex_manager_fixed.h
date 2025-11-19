@@ -45,7 +45,7 @@ struct CVertexManagerFixed
 
     public:
         inline explicit CDataStorage(const u32 vertex_count);
-        inline virtual ~CDataStorage();
+        inline ~CDataStorage() override;
 
         inline void init();
         inline bool is_opened(const TCompoundVertex& vertex) const;

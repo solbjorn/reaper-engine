@@ -10,8 +10,8 @@ class CCameraFirstEye : public CCameraBase
 public:
     typedef CCameraBase inherited;
 
-    CCameraFirstEye(CObject* p, u32 flags = 0);
-    virtual ~CCameraFirstEye();
+    explicit CCameraFirstEye(CObject* p, u32 flags = 0);
+    ~CCameraFirstEye() override;
 
     virtual void Load(LPCSTR section);
     virtual void Move(int cmd, float val = 0.0f, float factor = 1.0f);

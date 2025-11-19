@@ -77,10 +77,10 @@ public:
     Fvector parent_vel;
 
 public:
-    CParticlesPlayer(void);
-    virtual ~CParticlesPlayer(void);
-    void LoadParticles(IKinematics* K);
+    CParticlesPlayer();
+    ~CParticlesPlayer() override;
 
+    void LoadParticles(IKinematics* K);
     void DestroyParticles();
 
     void net_DestroyParticles();

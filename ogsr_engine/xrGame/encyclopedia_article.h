@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////
 // SInfoPortionData: данные для InfoProtion
 //////////////////////////////////////////////////////////////////////////
+
 struct SArticleData : CSharedResource
 {
     RTTI_DECLARE_TYPEINFO(SArticleData, CSharedResource);
@@ -36,6 +37,8 @@ public:
     shared_str ui_template_name;
 
     bool sort;
+
+    ~SArticleData() override = default;
 };
 
 class CEncyclopediaArticle;
@@ -52,7 +55,7 @@ private:
 
 public:
     CEncyclopediaArticle();
-    virtual ~CEncyclopediaArticle();
+    ~CEncyclopediaArticle() override;
 
     virtual void Load(shared_str str_id);
 

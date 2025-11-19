@@ -32,7 +32,7 @@ public:
 
 public:
     IWriter() = default;
-    virtual ~IWriter() { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", *fName); }
+    ~IWriter() override { R_ASSERT3(chunk_pos.empty(), "Opened chunk not closed.", *fName); }
 
     // kernel
     virtual void seek(gsl::index pos) = 0;
@@ -120,7 +120,7 @@ public:
     gsl::index file_size{};
 
     CMemoryWriter() = default;
-    virtual ~CMemoryWriter();
+    ~CMemoryWriter() override;
 
     // kernel
     void w(const void* ptr, gsl::index count) override;
@@ -153,13 +153,14 @@ public:
 //------------------------------------------------------------------------------------
 // Read
 //------------------------------------------------------------------------------------
+
 template <typename implementation_type>
 class IReaderBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IReaderBase<implementation_type>);
 
 public:
-    virtual ~IReaderBase() = default;
+    ~IReaderBase() override = default;
 
     [[nodiscard]] implementation_type& impl() { return *smart_cast<implementation_type*>(this); }
     [[nodiscard]] const implementation_type& impl() const { return *smart_cast<const implementation_type*>(this); }
@@ -505,7 +506,7 @@ public:
         iterpos = _iterpos;
     }
 
-    virtual ~IReader() = default;
+    ~IReader() override = default;
 
 protected:
     [[nodiscard]] gsl::index advance_term_string();
@@ -563,7 +564,7 @@ public:
 
     [[nodiscard]] Fvector4 r_vec4() override
     {
-        auto tmp = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&data[Pos]));
+        const auto tmp = DirectX::XMLoadFloat4(reinterpret_cast<const DirectX::XMFLOAT4*>(&data[Pos]));
         advance(sizeof(tmp));
         return *reinterpret_cast<const Fvector4*>(&tmp);
     }

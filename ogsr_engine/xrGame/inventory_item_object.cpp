@@ -7,17 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "inventory_item_object.h"
 
-CInventoryItemObject::CInventoryItemObject() {}
-
-CInventoryItemObject::~CInventoryItemObject() {}
+CInventoryItemObject::CInventoryItemObject() = default;
+CInventoryItemObject::~CInventoryItemObject() = default;
 
 DLL_Pure* CInventoryItemObject::_construct()
 {
     CInventoryItem::_construct();
-    CPhysicItem::_construct();
-    return (this);
+    std::ignore = CPhysicItem::_construct();
+
+    return this;
 }
 
 void CInventoryItemObject::Load(LPCSTR section)

@@ -67,6 +67,8 @@ protected:
     }
 
 public:
+    ~CDetectList() override = default;
+
     void destroy()
     {
         auto it = m_TypesMap.begin();
@@ -125,12 +127,16 @@ public:
 
 class CAfList : public CDetectList<CArtefact>
 {
+    RTTI_DECLARE_TYPEINFO(CAfList, CDetectList<CArtefact>);
+
 protected:
     virtual BOOL feel_touch_contact(CObject* O) override;
 
 public:
-    CAfList() : m_af_rank(0) {}
-    int m_af_rank;
+    CAfList() = default;
+    ~CAfList() override = default;
+
+    int m_af_rank{};
 };
 
 class CUIArtefactDetectorBase;
@@ -149,7 +155,7 @@ protected:
 
 public:
     CCustomDetector() = default;
-    virtual ~CCustomDetector();
+    ~CCustomDetector() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section) override;
@@ -209,5 +215,5 @@ protected:
 
 public:
     CZoneList() = default;
-    virtual ~CZoneList();
+    ~CZoneList() override;
 };

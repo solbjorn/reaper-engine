@@ -15,7 +15,7 @@ public:
     using inherited = CHudItemObject;
 
     CPda();
-    virtual ~CPda();
+    ~CPda() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC) override;
     virtual void Load(LPCSTR section) override;

@@ -42,8 +42,8 @@ private:
     xr_string on_before_add;
 
 public:
-    IC CDangerManager(CCustomMonster* object);
-    virtual ~CDangerManager();
+    inline explicit CDangerManager(CCustomMonster* object);
+    ~CDangerManager() override;
 
     virtual void Load(LPCSTR);
     virtual void reinit();

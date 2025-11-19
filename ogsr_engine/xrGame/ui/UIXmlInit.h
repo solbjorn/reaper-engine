@@ -34,11 +34,13 @@ class CUIDragDropListEx;
 class CUIComboBox;
 class CUITrackBar;
 
-class CUIXmlInit
+class CUIXmlInit : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUIXmlInit);
+
 public:
     CUIXmlInit() = default;
-    virtual ~CUIXmlInit();
+    ~CUIXmlInit() override;
 
     static bool InitWindow(CUIXml& xml_doc, const char* path, int index, CUIWindow* pWnd);
     static bool InitFrameWindow(CUIXml& xml_doc, const char* path, int index, CUIFrameWindow* pWnd);

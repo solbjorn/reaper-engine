@@ -12,8 +12,8 @@ class CWeaponMagazinedWGrenade : public CWeaponMagazined, public CRocketLauncher
 public:
     typedef CWeaponMagazined inherited;
 
-    CWeaponMagazinedWGrenade(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
-    virtual ~CWeaponMagazinedWGrenade();
+    explicit CWeaponMagazinedWGrenade(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
+    ~CWeaponMagazinedWGrenade() override;
 
     virtual void Load(LPCSTR section);
 

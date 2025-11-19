@@ -6,12 +6,14 @@ class CDamagableItem : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CDamagableItem);
 
 protected:
-    u16 m_levels_num;
-    float m_max_health;
-    u16 m_level_applied;
+    float m_max_health{};
+    u16 m_levels_num{std::numeric_limits<u16>::max()};
+    u16 m_level_applied{std::numeric_limits<u16>::max()};
 
 public:
-    CDamagableItem();
+    CDamagableItem() = default;
+    ~CDamagableItem() override = default;
+
     virtual void Init(float max_health, u16 level_num);
     void HitEffect();
     void RestoreEffect();
@@ -32,6 +34,8 @@ private:
     float m_health;
 
 public:
+    ~CDamagableHealthItem() override = default;
+
     virtual void Init(float max_health, u16 level_num);
     void Hit(float P);
     void SetHealth(float health) { m_health = health; }

@@ -9,7 +9,7 @@ class dxThunderboltRender : public IThunderboltRender
 
 public:
     dxThunderboltRender();
-    virtual ~dxThunderboltRender();
+    ~dxThunderboltRender() override;
 
     virtual void Copy(IThunderboltRender& _in);
 

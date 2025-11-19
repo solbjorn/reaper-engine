@@ -67,8 +67,11 @@ typedef struct tagSoundElement
     }
 } SoundElem;
 
-class CMonsterSoundMemory
+class CMonsterSoundMemory : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterSoundMemory);
+
+private:
     TTime time_memory{}; // время хранения звуков
     xr_vector<SoundElem> Sounds;
 
@@ -79,7 +82,7 @@ class CMonsterSoundMemory
 
 public:
     CMonsterSoundMemory();
-    virtual ~CMonsterSoundMemory();
+    ~CMonsterSoundMemory() override;
 
     void init_external(CBaseMonster* M, TTime mem_time);
 

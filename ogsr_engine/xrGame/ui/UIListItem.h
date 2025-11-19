@@ -4,16 +4,16 @@
 
 class CUIListItem : public CUIButton
 {
-    friend class CUIListWnd;
-
     RTTI_DECLARE_TYPEINFO(CUIListItem, CUIButton);
 
 private:
+    friend class CUIListWnd;
+
     typedef CUIButton inherited;
 
 public:
-    CUIListItem(void);
-    virtual ~CUIListItem(void);
+    CUIListItem();
+    ~CUIListItem() override;
 
     virtual void Init(float x, float y, float width, float height);
     virtual void Init(const char* str, float x, float y, float width, float height);

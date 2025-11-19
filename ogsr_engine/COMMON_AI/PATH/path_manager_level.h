@@ -14,6 +14,9 @@ template <typename _DataStorage, typename _dist_type, typename _index_type, type
 class CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
     : public CPathManagerGeneric<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 {
+    RTTI_DECLARE_TYPEINFO(CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>,
+                          CPathManagerGeneric<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>);
+
 protected:
     typedef CLevelGraph _Graph;
     typedef SBaseParameters<_dist_type, _index_type, _iteration_type> _Parameters;
@@ -38,7 +41,7 @@ protected:
 public:
     using const_iterator = typename inherited::const_iterator;
 
-    virtual ~CPathManager();
+    ~CPathManager() override = default;
 
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   const _Parameters& params);

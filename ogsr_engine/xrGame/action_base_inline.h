@@ -17,9 +17,6 @@ TEMPLATE_SPECIALIZATION
 IC CBaseAction::CActionBase(_object_type* object, LPCSTR action_name) { init(object, action_name); }
 
 TEMPLATE_SPECIALIZATION
-inline CBaseAction::~CActionBase() {}
-
-TEMPLATE_SPECIALIZATION
 inline void CBaseAction::init(_object_type* object, [[maybe_unused]] LPCSTR action_name)
 {
     m_storage = nullptr;

@@ -32,8 +32,8 @@ protected:
     PATROL_REGISTRY m_registry;
 
 public:
-    IC CPatrolPathStorage();
-    virtual ~CPatrolPathStorage();
+    CPatrolPathStorage() = default;
+    ~CPatrolPathStorage() override;
 
     virtual void load(IReader& stream);
     virtual void save(IWriter& stream);

@@ -46,6 +46,7 @@ protected:
 
 public:
     CUIFrameLine();
+    ~CUIFrameLine() override = default;
 
     void Init(LPCSTR base_name, float x, float y, float size, bool horizontal, DWORD align);
     void InitTexture(const char* texture);

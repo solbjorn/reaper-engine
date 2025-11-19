@@ -9,7 +9,7 @@ class XR_NOVTABLE IStatsRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IStatsRender);
 
 public:
-    virtual ~IStatsRender() = 0;
+    ~IStatsRender() override = 0;
 
     virtual void Copy(IStatsRender& _in) = 0;
     virtual void OutData1(CGameFont& F) = 0;

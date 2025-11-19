@@ -11,7 +11,7 @@ public:
     typedef CWeaponMagazined inherited;
 
     CWeaponVintorez();
-    virtual ~CWeaponVintorez();
+    ~CWeaponVintorez() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

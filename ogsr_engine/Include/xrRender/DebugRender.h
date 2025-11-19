@@ -24,7 +24,7 @@ public:
     };
 
 public:
-    virtual ~IDebugRender() = 0;
+    ~IDebugRender() override = 0;
 
     virtual void Render() = 0;
 

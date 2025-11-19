@@ -37,8 +37,8 @@ protected:
     xr_map<evaluator_ops, sol::function> ops;
 
 public:
-    IC CPropertyEvaluator(_object_type* object = nullptr, LPCSTR evaluator_name = "");
-    inline virtual ~CPropertyEvaluator();
+    inline explicit CPropertyEvaluator(_object_type* object = nullptr, LPCSTR evaluator_name = "");
+    inline ~CPropertyEvaluator() override;
 
     IC void init(_object_type* object, LPCSTR evaluator_name);
     inline virtual void setup(_object_type* object, CPropertyStorage* storage);

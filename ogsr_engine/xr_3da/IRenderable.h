@@ -22,7 +22,7 @@ public:
 
 public:
     IRenderable();
-    virtual ~IRenderable();
+    ~IRenderable() override;
 
     IRender_ObjectSpecific* renderable_ROS();
     virtual bool renderable_HUD() const { return renderable.hud; }

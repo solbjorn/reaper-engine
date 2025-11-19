@@ -48,7 +48,7 @@ public:
     typedef CInventoryItemObject inherited;
 
     CCustomDetectorSHOC();
-    virtual ~CCustomDetectorSHOC();
+    ~CCustomDetectorSHOC() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);
@@ -111,5 +111,5 @@ class CSimpleDetectorSHOC : public CCustomDetectorSHOC
 
 public:
     CSimpleDetectorSHOC();
-    virtual ~CSimpleDetectorSHOC();
+    ~CSimpleDetectorSHOC() override;
 };

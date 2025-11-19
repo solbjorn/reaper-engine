@@ -22,7 +22,7 @@ protected:
 public:
     explicit CScriptIniFile(IReader* F, LPCSTR path = nullptr);
     explicit CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
-    virtual ~CScriptIniFile();
+    ~CScriptIniFile() override;
 
     bool line_exist(LPCSTR S, LPCSTR L);
     bool section_exist_script(LPCSTR S);

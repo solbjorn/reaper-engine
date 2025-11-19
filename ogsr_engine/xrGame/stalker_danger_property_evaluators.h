@@ -25,11 +25,15 @@ typedef CWrapperAbstract2<CAI_Stalker, CPropertyEvaluatorMember> CStalkerPropert
 
 class CStalkerPropertyEvaluatorDangers : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangers, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangers(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangers(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangers() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -39,11 +43,15 @@ public:
 
 class CStalkerPropertyEvaluatorDangerUnknown : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerUnknown, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangerUnknown(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerUnknown(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerUnknown() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -53,11 +61,15 @@ public:
 
 class CStalkerPropertyEvaluatorDangerInDirection : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerInDirection, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangerInDirection(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerInDirection(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerInDirection() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -67,11 +79,15 @@ public:
 
 class CStalkerPropertyEvaluatorDangerWithGrenade : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerWithGrenade, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangerWithGrenade(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerWithGrenade(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerWithGrenade() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -81,11 +97,15 @@ public:
 
 class CStalkerPropertyEvaluatorDangerBySound : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerBySound, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangerBySound(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerBySound(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerBySound() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -95,6 +115,8 @@ public:
 
 class CStalkerPropertyEvaluatorDangerUnknownCoverActual : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerUnknownCoverActual, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
@@ -102,7 +124,9 @@ private:
     Fvector m_cover_selection_position;
 
 public:
-    CStalkerPropertyEvaluatorDangerUnknownCoverActual(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerUnknownCoverActual(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerUnknownCoverActual() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -112,11 +136,15 @@ public:
 
 class CStalkerPropertyEvaluatorDangerGrenadeExploded : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorDangerGrenadeExploded, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorDangerGrenadeExploded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorDangerGrenadeExploded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorDangerGrenadeExploded() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -126,11 +154,15 @@ public:
 
 class CStalkerPropertyEvaluatorGrenadeToExplode : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorGrenadeToExplode, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorGrenadeToExplode(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorGrenadeToExplode(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorGrenadeToExplode() override = default;
+
     virtual _value_type evaluate();
 };
 
@@ -140,10 +172,14 @@ public:
 
 class CStalkerPropertyEvaluatorEnemyWounded : public CStalkerPropertyEvaluator
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerPropertyEvaluatorEnemyWounded, CStalkerPropertyEvaluator);
+
 protected:
     typedef CStalkerPropertyEvaluator inherited;
 
 public:
-    CStalkerPropertyEvaluatorEnemyWounded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    explicit CStalkerPropertyEvaluatorEnemyWounded(CAI_Stalker* object = nullptr, LPCSTR evaluator_name = "");
+    ~CStalkerPropertyEvaluatorEnemyWounded() override = default;
+
     virtual _value_type evaluate();
 };

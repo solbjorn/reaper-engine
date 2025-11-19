@@ -11,7 +11,8 @@ class CUIMessageBoxEx : public CUIDialogWnd, public CUIWndCallback
 
 public:
     CUIMessageBoxEx();
-    virtual ~CUIMessageBoxEx();
+    ~CUIMessageBoxEx() override;
+
     void SetText(LPCSTR text);
     LPCSTR GetText();
     virtual void Init(LPCSTR xml_template);

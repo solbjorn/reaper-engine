@@ -94,7 +94,7 @@ protected:
 
 public:
     CGameObject();
-    virtual ~CGameObject();
+    ~CGameObject() override;
 
 public:
     // functions used for avoiding most of the smart_cast

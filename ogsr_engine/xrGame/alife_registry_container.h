@@ -19,6 +19,9 @@ template <typename... Ts>
 struct CLinearRegistryType<imdexlib::typelist<Ts...>> : Ts...
 {
     RTTI_DECLARE_TYPEINFO(CLinearRegistryType<imdexlib::typelist<Ts...>>, Ts...);
+
+public:
+    ~CLinearRegistryType() override = default;
 };
 
 class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list>
@@ -27,6 +30,8 @@ class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list>
 
 public:
     using TYPE_LIST = registry_type_list;
+
+    ~CALifeRegistryContainer() override = default;
 
     template <typename T>
     IC T& operator()(const T*);

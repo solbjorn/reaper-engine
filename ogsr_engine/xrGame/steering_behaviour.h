@@ -15,7 +15,6 @@
 
 namespace steering_behaviour
 {
-
 //----------------------------------------------------------
 // Helper and Types
 //----------------------------------------------------------
@@ -26,8 +25,7 @@ typedef const vec& vec_arg;
 namespace detail
 {
 vec random_vec();
-
-} // namespace detail
+}
 
 //----------------------------------------------------------
 // base
@@ -47,22 +45,21 @@ public:
         vec factor;
         float min_factor_dist;
 
-        params(vec_arg factor, float min_factor_dist = base::s_min_factor_dist) : enabled(true), factor(factor), min_factor_dist(min_factor_dist) {}
+        explicit params(vec_arg factor, float min_factor_dist = base::s_min_factor_dist) : enabled{true}, factor{factor}, min_factor_dist{min_factor_dist} {}
+        ~params() override = default;
 
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    base(params* params_) : m_p_params(params_) {}
+    explicit base(params* params_) : m_p_params{params_} {}
+    ~base() override { xr_delete(m_p_params); }
 
     virtual vec calc_acceleration() = 0;
 
     void set_enabled(bool value) { m_p_params->enabled = value; }
     bool is_enabled() const { return m_p_params->enabled; }
     params* get_supplier() { return m_p_params; }
-
-    virtual ~base() { xr_delete(m_p_params); }
 
 protected:
     float calc_dist_factor(float dist) const;
@@ -93,16 +90,18 @@ public:
         float max_evade_range;
         vec (*pf_random_dir)(); // randomizer func in case we're in 0 dist from dest
 
-        params(float max_evade_range, vec_arg factor, float min_factor_dist = base::s_min_factor_dist, vec (*pf_random_dir)() = &detail::random_vec)
-            : base::params(factor, min_factor_dist), max_evade_range(max_evade_range), pf_random_dir(pf_random_dir)
+        explicit params(float max_evade_range, vec_arg factor, float min_factor_dist = base::s_min_factor_dist, vec (*pf_random_dir)() = &detail::random_vec)
+            : base::params{factor, min_factor_dist}, max_evade_range{max_evade_range}, pf_random_dir{pf_random_dir}
         {}
 
+        ~params() override = default;
+
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    evade(params* params_) : base(params_), m_p_params(params_) {}
+    explicit evade(params* params_) : base{params_}, m_p_params{params_} {}
+    ~evade() override = default;
 
     virtual vec calc_acceleration();
 
@@ -132,16 +131,18 @@ public:
         float arrive_range;
         float vel{};
 
-        params(vec_arg factor, float arrive_range, float change_vel_range, float arrive_vel, float min_factor_dist = base::s_min_factor_dist)
+        explicit params(vec_arg factor, float arrive_range, float change_vel_range, float arrive_vel, float min_factor_dist = base::s_min_factor_dist)
             : base::params{factor, min_factor_dist}, change_vel_range{change_vel_range}, arrive_vel{arrive_vel}, arrive_range{arrive_range}
         {}
 
+        ~params() override = default;
+
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    pursue(params* params_) : base(params_), m_p_params(params_) {}
+    explicit pursue(params* params_) : base{params_}, m_p_params{params_} {}
+    ~pursue() override = default;
 
     virtual vec calc_acceleration();
 
@@ -167,14 +168,18 @@ public:
         vec restrictor_pos;
         float max_allowed_range;
 
-        params(vec_arg restrictor_pos, float max_allowed_range, vec_arg factor) : base::params(factor), restrictor_pos(restrictor_pos), max_allowed_range(max_allowed_range) {}
+        explicit params(vec_arg restrictor_pos, float max_allowed_range, vec_arg factor)
+            : base::params{factor}, restrictor_pos{restrictor_pos}, max_allowed_range{max_allowed_range}
+        {}
+
+        ~params() override = default;
 
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    restrictor(params* params_) : base(params_), m_p_params(params_) {}
+    explicit restrictor(params* params_) : base{params_}, m_p_params{params_} {}
+    ~restrictor() override = default;
 
     virtual vec calc_acceleration();
 
@@ -207,16 +212,18 @@ public:
         float angle_change; // how big angle changes can be? (radians)
         vec dir;
 
-        params(plane_t plane, float conservativeness, float angle_change, float factor)
-            : base::params(cr_fvector3(factor, 0, 0)), plane(plane), conservativeness(conservativeness), angle_change(angle_change)
+        explicit params(plane_t plane, float conservativeness, float angle_change, float factor)
+            : base::params{cr_fvector3(factor, 0, 0)}, plane{plane}, conservativeness{conservativeness}, angle_change{angle_change}
         {}
 
+        ~params() override = default;
+
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    wander(params* params_) : base(params_), m_p_params(params_), m_wander_angle(0) {}
+    explicit wander(params* params_) : base{params_}, m_p_params{params_}, m_wander_angle{0} {}
+    ~wander() override = default;
 
     virtual vec calc_acceleration();
 
@@ -253,18 +260,19 @@ public:
         typedef xr_vector<vec> Probes;
         Probes probes; // obstacle-scanners (vectors in local (dir,up) space)
 
-        params(float turn_factor, vec_arg thrust_factor, float min_factor_dist = base::s_min_factor_dist)
-            : base::params(thrust_factor, min_factor_dist), turn_factor(turn_factor), thrust_factor(thrust_factor)
+        explicit params(float turn_factor, vec_arg thrust_factor, float min_factor_dist = base::s_min_factor_dist)
+            : base::params{thrust_factor, min_factor_dist}, turn_factor{turn_factor}, thrust_factor{thrust_factor}
         {}
+
+        ~params() override = default;
 
         virtual bool update() = 0;
         virtual bool test_obstacle(const vec& dest, vec& obstacle, vec& normal) = 0;
-
-        virtual ~params() {}
     };
 
 public:
-    containment(params* params_) : base(params_), m_p_params(params_) {}
+    explicit containment(params* params_) : base{params_}, m_p_params{params_} {}
+    ~containment() override = default;
 
     virtual vec calc_acceleration();
 
@@ -292,11 +300,13 @@ public:
         float max_separate_range;
         vec (*pf_random_dir)();
 
-        params(vec_arg cohesion_factor, vec_arg separation_factor, float max_separate_range, float min_factor_dist = base::s_min_factor_dist,
-               vec (*pf_random_dir)() = &detail::random_vec)
+        explicit params(vec_arg cohesion_factor, vec_arg separation_factor, float max_separate_range, float min_factor_dist = base::s_min_factor_dist,
+                        vec (*pf_random_dir)() = &detail::random_vec)
             : base::params{separation_factor, min_factor_dist}, cohesion_factor{cohesion_factor}, separation_factor{separation_factor}, max_separate_range{max_separate_range},
               pf_random_dir{pf_random_dir}
         {}
+
+        ~params() override = default;
 
         // this function should supply nearest object to group with
         virtual void first_nearest(vec& v) = 0; // start supplying nearest
@@ -304,11 +314,11 @@ public:
         virtual void next_nearest(vec& v) = 0; // next nearest, false if finished
 
         virtual bool update() = 0;
-        virtual ~params() {}
     };
 
 public:
-    grouping(params* params_) : base(params_), m_p_params(params_) {}
+    explicit grouping(params* params_) : base{params_}, m_p_params{params_} {}
+    ~grouping() override = default;
 
     virtual vec calc_acceleration();
 
@@ -330,7 +340,7 @@ public:
     void schedule_remove(base* behaviour);
     void clear();
 
-    virtual ~manager() { clear(); }
+    ~manager() override { clear(); }
 
 protected:
     void remove_scheduled();
@@ -341,7 +351,6 @@ protected:
     Behaviours m_behaviours;
     Behaviours m_schedule_remove;
 };
-
 } // namespace steering_behaviour
 
 #endif

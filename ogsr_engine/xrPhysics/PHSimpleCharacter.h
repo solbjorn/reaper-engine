@@ -128,7 +128,7 @@ protected:
 
 public:
     CPHSimpleCharacter();
-    virtual ~CPHSimpleCharacter() { Destroy(); }
+    ~CPHSimpleCharacter() override { Destroy(); }
 
     /////////////////CPHObject//////////////////////////////////////////////
     virtual void PhDataUpdate(dReal step);
@@ -261,5 +261,5 @@ public:
 #endif
 };
 
-const dReal def_spring_rate = 0.5f;
-const dReal def_dumping_rate = 20.1f;
+constexpr inline dReal def_spring_rate{0.5f};
+constexpr inline dReal def_dumping_rate{20.1f};

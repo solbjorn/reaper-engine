@@ -1,9 +1,13 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateBloodsuckerVampireHide : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBloodsuckerVampireHide<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::current_substate;
@@ -14,7 +18,8 @@ class CStateBloodsuckerVampireHide : public CState<_Object>
     using inherited::select_state;
 
 public:
-    CStateBloodsuckerVampireHide(_Object* obj);
+    explicit CStateBloodsuckerVampireHide(_Object* obj);
+    ~CStateBloodsuckerVampireHide() override = default;
 
     virtual void reselect_state();
     virtual void setup_substates();

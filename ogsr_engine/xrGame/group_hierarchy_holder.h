@@ -85,8 +85,9 @@ private:
     void unregister_in_group_senses(CEntity* member);
 
 public:
-    IC CGroupHierarchyHolder(CSquadHierarchyHolder* squad, u32);
-    virtual ~CGroupHierarchyHolder();
+    inline explicit CGroupHierarchyHolder(CSquadHierarchyHolder* squad, u32);
+    ~CGroupHierarchyHolder() override;
+
     IC CAgentManager& agent_manager() const;
     IC const MEMBER_REGISTRY& members() const;
     void register_member(CEntity* member);

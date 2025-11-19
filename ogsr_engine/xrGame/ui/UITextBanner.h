@@ -33,8 +33,10 @@ private:
 //  Класс анимироанного баннера
 //-----------------------------------------------------------------------------/
 
-class CUITextBanner
+class CUITextBanner : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CUITextBanner);
+
 public:
     enum TextBannerStyles
     {
@@ -45,6 +47,7 @@ public:
 
     // Ctor and Dtor
     CUITextBanner() = default;
+    ~CUITextBanner() override = default;
 
     virtual void Update();
     void XR_PRINTF(4, 5) Out(float x, float y, const char* fmt, ...);

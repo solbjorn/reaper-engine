@@ -17,7 +17,7 @@ private:
 
 public:
     CUIMapHint();
-    virtual ~CUIMapHint();
+    ~CUIMapHint() override;
 
     void Init();
     void SetText(LPCSTR text);

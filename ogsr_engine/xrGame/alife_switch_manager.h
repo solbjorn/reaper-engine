@@ -10,7 +10,7 @@
 
 #include "alife_simulator_base.h"
 
-class CALifeSwitchManager : public virtual CALifeSimulatorBase
+class XR_NOVTABLE CALifeSwitchManager : public virtual CALifeSimulatorBase
 {
     RTTI_DECLARE_TYPEINFO(CALifeSwitchManager, CALifeSimulatorBase);
 
@@ -39,8 +39,8 @@ public:
     void add_online(CSE_ALifeDynamicObject* object, bool update_registries = true);
 
 public:
-    inline CALifeSwitchManager(xrServer* server, LPCSTR section);
-    virtual ~CALifeSwitchManager();
+    inline explicit CALifeSwitchManager(LPCSTR section);
+    ~CALifeSwitchManager() override;
 
     void switch_object(CSE_ALifeDynamicObject* object);
     [[nodiscard]] inline float online_distance() const;

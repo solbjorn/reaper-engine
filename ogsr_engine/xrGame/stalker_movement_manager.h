@@ -55,8 +55,8 @@ private:
     void check_for_bad_path();
 
 public:
-    CStalkerMovementManager(CAI_Stalker* object);
-    virtual ~CStalkerMovementManager();
+    explicit CStalkerMovementManager(CAI_Stalker* object);
+    ~CStalkerMovementManager() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

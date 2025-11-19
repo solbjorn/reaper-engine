@@ -13,7 +13,7 @@ class CUIWpnParams : public CUIWindow
 
 public:
     CUIWpnParams();
-    virtual ~CUIWpnParams();
+    ~CUIWpnParams() override;
 
     void InitFromXml(CUIXml& xml_doc);
     void SetInfo(CPhysicsShellHolder& obj /*const shared_str& wpn_section*/);

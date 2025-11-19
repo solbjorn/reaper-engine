@@ -13,7 +13,7 @@
 
 class CSE_ALifeTrader;
 
-class CALifeSurgeManager : public virtual CALifeSimulatorBase
+class XR_NOVTABLE CALifeSurgeManager : public virtual CALifeSimulatorBase
 {
     RTTI_DECLARE_TYPEINFO(CALifeSurgeManager, CALifeSimulatorBase);
 
@@ -30,8 +30,8 @@ protected:
     void spawn_new_objects();
 
 public:
-    inline CALifeSurgeManager(xrServer* server);
-    virtual ~CALifeSurgeManager();
+    CALifeSurgeManager() = default;
+    ~CALifeSurgeManager() override = 0;
 };
 
-#include "alife_surge_manager_inline.h"
+inline CALifeSurgeManager::~CALifeSurgeManager() = default;

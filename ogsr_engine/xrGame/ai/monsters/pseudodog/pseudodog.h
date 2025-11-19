@@ -24,7 +24,7 @@ public:
     };
 
     CAI_PseudoDog();
-    virtual ~CAI_PseudoDog();
+    ~CAI_PseudoDog() override;
 
     virtual DLL_Pure* _construct();
 

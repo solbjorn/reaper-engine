@@ -28,9 +28,11 @@ class CInventoryItem;
 
 class CUIMainIngameWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIMainIngameWnd, CUIWindow);
+
 public:
     CUIMainIngameWnd();
-    virtual ~CUIMainIngameWnd();
+    ~CUIMainIngameWnd() override;
 
     virtual void Init();
     virtual void Draw();

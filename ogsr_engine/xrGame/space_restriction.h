@@ -75,7 +75,9 @@ protected:
     bool affect(CBaseRestrictionPtr bridge, u32 start_vertex_id, u32 dest_vertex_id) const;
 
 public:
-    CSpaceRestriction(CSpaceRestrictionManager* space_restriction_manager, shared_str out_restrictions, shared_str in_restrictions);
+    inline explicit CSpaceRestriction(CSpaceRestrictionManager* space_restriction_manager, shared_str out_restrictions, shared_str in_restrictions);
+    ~CSpaceRestriction() override = default;
+
     void initialize();
     void remove_border();
     template <typename T1, typename T2>

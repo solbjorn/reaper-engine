@@ -1,12 +1,12 @@
 #pragma once
 
+#include "ui_defs.h"
+
 #define UI_BASE_WIDTH 1024.0f
 #define UI_BASE_HEIGHT 768.0f
 
-struct CFontManager;
 class CUICursor;
-
-#include "ui_defs.h"
+struct CFontManager;
 
 class CDeviceResetNotifier : public pureDeviceReset
 {
@@ -14,7 +14,8 @@ class CDeviceResetNotifier : public pureDeviceReset
 
 public:
     CDeviceResetNotifier() { Device.seqDeviceReset.Add(this, REG_PRIORITY_NORMAL); }
-    virtual ~CDeviceResetNotifier() { Device.seqDeviceReset.Remove(this); }
+    ~CDeviceResetNotifier() override { Device.seqDeviceReset.Remove(this); }
+
     virtual void OnDeviceReset() {}
 };
 
@@ -43,8 +44,10 @@ struct S2DVert
     }
     void rotate_pt(const Fvector2& pivot, float cosA, float sinA, float kx);
 };
+
 #define UI_FRUSTUM_MAXPLANES 12
 #define UI_FRUSTUM_SAFE (UI_FRUSTUM_MAXPLANES * 4)
+
 typedef svector<S2DVert, UI_FRUSTUM_SAFE> sPoly2D;
 
 class C2DFrustum
@@ -87,7 +90,8 @@ public:
     xr_stack<Frect> m_Scissors;
 
     ui_core();
-    ~ui_core();
+    ~ui_core() override;
+
     CFontManager* Font() { return m_pFontManager; }
     CUICursor* GetUICursor() { return m_pUICursor; }
 

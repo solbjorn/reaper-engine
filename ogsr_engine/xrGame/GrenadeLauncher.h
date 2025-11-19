@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "inventory_item_object.h"
 
 class CGrenadeLauncher : public CInventoryItemObject
@@ -14,8 +15,8 @@ private:
     typedef CInventoryItemObject inherited;
 
 public:
-    CGrenadeLauncher(void);
-    virtual ~CGrenadeLauncher(void);
+    CGrenadeLauncher();
+    ~CGrenadeLauncher() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);

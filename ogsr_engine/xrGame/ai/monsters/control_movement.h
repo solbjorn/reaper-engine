@@ -17,6 +17,8 @@ public:
 
     float m_velocity_current;
 
+    ~CControlMovement() override = default;
+
     virtual void reinit();
     virtual void update_frame();
 

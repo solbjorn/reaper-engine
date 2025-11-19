@@ -88,7 +88,7 @@ protected:
 
 public:
     CSoundRender_CoreA();
-    virtual ~CSoundRender_CoreA();
+    ~CSoundRender_CoreA() override;
 
     virtual void _initialize(int stage);
     virtual void _clear();

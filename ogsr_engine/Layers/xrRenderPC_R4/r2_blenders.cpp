@@ -14,6 +14,8 @@
 #include "../xrRender/Blender_Model_EbB.h"
 #include "../xrRender/blender_Lm(EbB).h"
 
+namespace
+{
 class CBlender_Editor_Selection : public IBlenderXr
 {
     RTTI_DECLARE_TYPEINFO(CBlender_Editor_Selection, IBlenderXr);
@@ -44,7 +46,7 @@ public:
     }
 
     CBlender_Editor_Selection() { description.CLS = B_EDITOR_SEL; }
-    virtual ~CBlender_Editor_Selection() {}
+    ~CBlender_Editor_Selection() override = default;
 };
 
 class CBlender_Editor_Wire : public IBlenderXr
@@ -76,8 +78,9 @@ public:
     }
 
     CBlender_Editor_Wire() { description.CLS = B_EDITOR_WIRE; }
-    virtual ~CBlender_Editor_Wire() {}
+    ~CBlender_Editor_Wire() override = default;
 };
+} // namespace
 
 IBlenderXr* CRender::blender_create(CLASS_ID cls)
 {

@@ -9,6 +9,7 @@ class dxConsoleRender : public IConsoleRender
 
 public:
     dxConsoleRender();
+    ~dxConsoleRender() override = default;
 
     virtual void Copy(IConsoleRender& _in);
     virtual void OnRender(bool bGame);

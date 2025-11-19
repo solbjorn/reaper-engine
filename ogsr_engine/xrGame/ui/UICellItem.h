@@ -13,7 +13,8 @@ class XR_NOVTABLE ICustomDrawCell : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ICustomDrawCell);
 
 public:
-    virtual ~ICustomDrawCell() = 0;
+    ~ICustomDrawCell() override = 0;
+
     virtual void OnDraw(CUICellItem* cell) = 0;
 };
 
@@ -43,7 +44,7 @@ protected:
 
 public:
     CUICellItem();
-    virtual ~CUICellItem();
+    ~CUICellItem() override;
 
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     [[nodiscard]] bool OnMouse(float, float, EUIMessages mouse_action) override;
@@ -93,8 +94,8 @@ private:
     CUIDragDropListEx* m_back_list{};
 
 public:
-    CUIDragItem(CUICellItem* parent);
-    virtual ~CUIDragItem();
+    explicit CUIDragItem(CUICellItem* parent);
+    ~CUIDragItem() override;
 
     virtual void Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
     CUIStatic* wnd() { return &m_static; }

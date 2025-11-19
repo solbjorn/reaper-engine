@@ -12,10 +12,13 @@
 #include "alife_combat_manager.h"
 #include "alife_communication_manager.h"
 
-class CALifeInteractionManager : public CALifeCombatManager, public CALifeCommunicationManager
+class XR_NOVTABLE CALifeInteractionManager : public CALifeCombatManager, public CALifeCommunicationManager
 {
     RTTI_DECLARE_TYPEINFO(CALifeInteractionManager, CALifeCombatManager, CALifeCommunicationManager);
 
 public:
-    CALifeInteractionManager(xrServer* server);
+    CALifeInteractionManager() = default;
+    ~CALifeInteractionManager() override = 0;
 };
+
+inline CALifeInteractionManager::~CALifeInteractionManager() = default;

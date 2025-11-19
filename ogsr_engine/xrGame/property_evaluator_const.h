@@ -24,7 +24,9 @@ protected:
     val_type m_value;
 
 public:
-    IC CPropertyEvaluatorConst(val_type value, LPCSTR evaluator_name = "");
+    inline explicit CPropertyEvaluatorConst(val_type value, LPCSTR evaluator_name = "");
+    ~CPropertyEvaluatorConst() override = default;
+
     virtual val_type evaluate();
 };
 

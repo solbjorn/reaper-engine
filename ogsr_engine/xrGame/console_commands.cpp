@@ -141,7 +141,8 @@ class CCC_MemStats : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MemStats, IConsole_Command);
 
 public:
-    CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MemStats(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_MemStats() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -204,7 +205,8 @@ public:
 class CCC_GameDifficulty : public CCC_Token
 {
 public:
-    CCC_GameDifficulty(LPCSTR N) : CCC_Token{N, (u32*)&g_SingleGameDifficulty, difficulty_type_token} {}
+    explicit CCC_GameDifficulty(LPCSTR N) : CCC_Token{N, (u32*)&g_SingleGameDifficulty, difficulty_type_token} {}
+    ~CCC_GameDifficulty() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -226,7 +228,8 @@ public:
 class CCC_ALifePath : public IConsole_Command
 {
 public:
-    CCC_ALifePath(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifePath(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifePath() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -261,7 +264,8 @@ public:
 class CCC_ALifeTimeFactor : public IConsole_Command
 {
 public:
-    CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeTimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifeTimeFactor() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -279,7 +283,8 @@ public:
 class CCC_ALifeSwitchDistance : public IConsole_Command
 {
 public:
-    CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifeSwitchDistance() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -305,7 +310,8 @@ public:
 class CCC_ALifeProcessTime : public IConsole_Command
 {
 public:
-    CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifeProcessTime() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -328,7 +334,8 @@ public:
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command
 {
 public:
-    CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifeObjectsPerUpdate() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -348,7 +355,8 @@ public:
 class CCC_ALifeSwitchFactor : public IConsole_Command
 {
 public:
-    CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ALifeSwitchFactor() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -370,7 +378,8 @@ public:
 class CCC_TimeFactor : public IConsole_Command
 {
 public:
-    CCC_TimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TimeFactor(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_TimeFactor() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -384,7 +393,8 @@ public:
 class CCC_DemoRecord : public IConsole_Command
 {
 public:
-    CCC_DemoRecord(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DemoRecord(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DemoRecord() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -411,7 +421,8 @@ public:
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
-    CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DemoPlay(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DemoPlay() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -459,7 +470,8 @@ bool valid_file_name(LPCSTR file_name)
 class CCC_ALifeSave : public IConsole_Command
 {
 public:
-    CCC_ALifeSave(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ALifeSave(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_ALifeSave() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -532,7 +544,8 @@ public:
 class CCC_ALifeLoadFrom : public IConsole_Command
 {
 public:
-    CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_ALifeLoadFrom() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -598,7 +611,8 @@ public:
 class CCC_LoadLastSave : public IConsole_Command
 {
 public:
-    CCC_LoadLastSave(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_LoadLastSave(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_LoadLastSave() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -638,7 +652,8 @@ public:
 class CCC_FloatBlock : public CCC_Float
 {
 public:
-    CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
+    explicit CCC_FloatBlock(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
+    ~CCC_FloatBlock() override = default;
 
     virtual void Execute(LPCSTR args) { CCC_Float::Execute(args); }
 };
@@ -647,7 +662,8 @@ public:
 class CCC_DrawGameGraphAll : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DrawGameGraphAll() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -661,7 +677,8 @@ public:
 class CCC_DrawGameGraphCurrent : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DrawGameGraphCurrent() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -675,7 +692,8 @@ public:
 class CCC_DrawGameGraphLevel : public IConsole_Command
 {
 public:
-    CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DrawGameGraphLevel() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -706,7 +724,8 @@ public:
 class CCC_DumpInfos : public IConsole_Command
 {
 public:
-    CCC_DumpInfos(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpInfos(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DumpInfos() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -720,7 +739,8 @@ public:
 class CCC_DumpMap : public IConsole_Command
 {
 public:
-    CCC_DumpMap(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpMap(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DumpMap() override = default;
 
     virtual void Execute(LPCSTR args) { Level().MapManager().Dump(); }
     virtual void Info(TInfo& I) { strcpy_s(I, "dumps all currentmap locations"); }
@@ -729,7 +749,8 @@ public:
 class CCC_DumpCreatures : public IConsole_Command
 {
 public:
-    CCC_DumpCreatures(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpCreatures(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DumpCreatures() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -752,7 +773,8 @@ public:
 class CCC_DebugFonts : public IConsole_Command
 {
 public:
-    CCC_DebugFonts(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DebugFonts(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DebugFonts() override = default;
 
     virtual void Execute(LPCSTR args) { HUD().GetUI()->StartStopMenu(xr_new<CUIDebugFonts>(), true); }
 };
@@ -760,7 +782,8 @@ public:
 class CCC_DebugNode : public IConsole_Command
 {
 public:
-    CCC_DebugNode(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DebugNode(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DebugNode() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -790,7 +813,8 @@ public:
 class CCC_ShowMonsterInfo : public IConsole_Command
 {
 public:
-    CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_ShowMonsterInfo(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_ShowMonsterInfo() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -813,7 +837,8 @@ public:
 class CCC_DbgPhTrackObj : public IConsole_Command
 {
 public:
-    CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DbgPhTrackObj() override = default;
 
     virtual void Execute(LPCSTR args /**/)
     {
@@ -837,7 +862,8 @@ public:
 class CCC_PHIterations : public CCC_Integer
 {
 public:
-    CCC_PHIterations(LPCSTR N) : CCC_Integer{N, &phIterations, 15, 50} {}
+    explicit CCC_PHIterations(LPCSTR N) : CCC_Integer{N, &phIterations, 15, 50} {}
+    ~CCC_PHIterations() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -849,7 +875,8 @@ public:
 class CCC_PHGravity : public IConsole_Command
 {
 public:
-    CCC_PHGravity(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_PHGravity(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_PHGravity() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -872,7 +899,8 @@ public:
 class CCC_PHFps : public IConsole_Command
 {
 public:
-    CCC_PHFps(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_PHFps(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_PHFps() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -890,7 +918,8 @@ struct CCC_JumpToLevel : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_JumpToLevel, IConsole_Command);
 
 public:
-    CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_JumpToLevel(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_JumpToLevel() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -931,7 +960,8 @@ public:
 class CCC_Spawn : public IConsole_Command
 {
 public:
-    CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
+    explicit CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
+    ~CCC_Spawn() override = default;
 
     void Execute(LPCSTR args)
     {
@@ -975,8 +1005,11 @@ public:
 
 class CCC_SpawnToInventory : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_SpawnToInventory, IConsole_Command);
+
 public:
-    CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) {}
+    explicit CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) {}
+    ~CCC_SpawnToInventory() override = default;
 
     void Execute(LPCSTR args)
     {
@@ -1004,8 +1037,9 @@ public:
             clientID.set(0xffff);
 
             u16 dummy;
-            packet.r_begin(dummy);
+            std::ignore = packet.r_begin(dummy);
             VERIFY(dummy == M_SPAWN);
+
             tpGame->alife().server().Process_spawn(packet, clientID);
         }
     }
@@ -1037,7 +1071,8 @@ public:
 class CCC_LuaGCMethod : public CCC_Token
 {
 public:
-    CCC_LuaGCMethod(pcstr name) : CCC_Token(name, &ps_lua_gc_method, lua_gc_method_token) {}
+    explicit CCC_LuaGCMethod(pcstr name) : CCC_Token(name, &ps_lua_gc_method, lua_gc_method_token) {}
+    ~CCC_LuaGCMethod() override = default;
 
     void Execute(pcstr args) override
     {
@@ -1064,7 +1099,8 @@ public:
 class CCC_MainMenu : public IConsole_Command
 {
 public:
-    CCC_MainMenu(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MainMenu(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_MainMenu() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -1087,7 +1123,8 @@ public:
 #ifndef MASTER_GOLD
 struct CCC_StartTimeSingle : public IConsole_Command
 {
-    CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_StartTimeSingle(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_StartTimeSingle() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -1120,7 +1157,8 @@ struct CCC_StartTimeSingle : public IConsole_Command
 
 struct CCC_TimeFactorSingle : public CCC_Float
 {
-    CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float{N, V, _min, _max} {}
+    explicit CCC_TimeFactorSingle(LPCSTR N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float{N, V, _min, _max} {}
+    ~CCC_TimeFactorSingle() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -1148,7 +1186,8 @@ class CCC_RadioMask : public CCC_Mask
     CCC_RadioGroupMask2* group{};
 
 public:
-    CCC_RadioMask(LPCSTR N, Flags32* V, u32 M) : CCC_Mask{N, V, M} {}
+    explicit CCC_RadioMask(LPCSTR N, Flags32* V, u32 M) : CCC_Mask{N, V, M} {}
+    ~CCC_RadioMask() override = default;
 
     void SetGroup(CCC_RadioGroupMask2* G) { group = G; }
     virtual void Execute(LPCSTR args);
@@ -1162,13 +1201,15 @@ class CCC_RadioGroupMask2
     CCC_RadioMask* mask1;
 
 public:
-    CCC_RadioGroupMask2(CCC_RadioMask* m0, CCC_RadioMask* m1)
+    explicit CCC_RadioGroupMask2(CCC_RadioMask* m0, CCC_RadioMask* m1)
     {
         mask0 = m0;
         mask1 = m1;
         mask0->SetGroup(this);
         mask1->SetGroup(this);
     }
+
+    ~CCC_RadioGroupMask2() override = default;
 
     void Execute(CCC_RadioMask& m, LPCSTR args)
     {
@@ -1201,7 +1242,8 @@ void CCC_RadioMask::Execute(LPCSTR args)
 
 struct CCC_DbgBullets : public CCC_Integer
 {
-    CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    explicit CCC_DbgBullets(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    ~CCC_DbgBullets() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -1217,7 +1259,8 @@ struct CCC_DbgBullets : public CCC_Integer
 class CCC_TuneAttachableItem : public IConsole_Command
 {
 public:
-    CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TuneAttachableItem(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_TuneAttachableItem() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -1272,7 +1315,8 @@ public:
 class CCC_TuneAttachableItemInSlot : public IConsole_Command
 {
 public:
-    CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_TuneAttachableItemInSlot(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_TuneAttachableItemInSlot() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -1325,7 +1369,8 @@ public:
 class CCC_Crash : public IConsole_Command
 {
 public:
-    CCC_Crash(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Crash(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_Crash() override = default;
 
     virtual void Execute(LPCSTR)
     {
@@ -1338,7 +1383,8 @@ public:
 class CCC_DumpModelBones : public IConsole_Command
 {
 public:
-    CCC_DumpModelBones(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DumpModelBones(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DumpModelBones() override = default;
 
     virtual void Execute(LPCSTR arguments)
     {
@@ -1382,7 +1428,8 @@ public:
 class CCC_ShowAnimationStats : public IConsole_Command
 {
 public:
-    CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ShowAnimationStats(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_ShowAnimationStats() override = default;
 
     virtual void Execute(LPCSTR) { show_animation_stats(); }
 };
@@ -1390,7 +1437,8 @@ public:
 class CCC_DumpObjects : public IConsole_Command
 {
 public:
-    CCC_DumpObjects(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DumpObjects(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DumpObjects() override = default;
 
     virtual void Execute(LPCSTR) { Level().Objects.dump_all_objects(); }
 };
@@ -1400,7 +1448,8 @@ public:
 class CCC_SetWeather : public IConsole_Command
 {
 public:
-    CCC_SetWeather(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_SetWeather(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_SetWeather() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -1430,7 +1479,8 @@ public:
 class CCC_DbgMemoryDump : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryDump(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgMemoryDump() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -1446,7 +1496,8 @@ public:
 class CCC_DbgMemoryClear : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryClear(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgMemoryClear() override = default;
 
     virtual void Execute(LPCSTR args) { PointerRegistryClear(); }
 };
@@ -1454,7 +1505,8 @@ public:
 class CCC_DbgMemoryInfo : public IConsole_Command
 {
 public:
-    CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemoryInfo(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgMemoryInfo() override = default;
 
     virtual void Execute(LPCSTR args) { PointerRegistryInfo(); }
 };

@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterHittedMoveOut : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHittedMoveOut<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::object;
@@ -17,8 +20,8 @@ class CStateMonsterHittedMoveOut : public CState<_Object>
     } target{};
 
 public:
-    CStateMonsterHittedMoveOut(_Object* obj) : inherited(obj) {}
-    virtual ~CStateMonsterHittedMoveOut() {}
+    explicit CStateMonsterHittedMoveOut(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterHittedMoveOut() override = default;
 
     virtual void initialize();
     virtual void execute();

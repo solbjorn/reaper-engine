@@ -99,6 +99,7 @@ public:
     R_constant_setup* handler{};
 
     R_constant() = default;
+    ~R_constant() override = default;
 
     [[nodiscard]] R_constant_load& get_load(u32 destination)
     {
@@ -145,7 +146,7 @@ class XR_NOVTABLE R_constant_setup : public virtual RTTI::Enable
 
 public:
     R_constant_setup() = default;
-    virtual ~R_constant_setup() = 0;
+    ~R_constant_setup() override = 0;
 
     virtual void setup(CBackend& cmd_list, R_constant* C) = 0;
 };
@@ -172,7 +173,7 @@ private:
 
 public:
     R_constant_table() = default;
-    ~R_constant_table();
+    ~R_constant_table() override;
 
     void clear();
     [[nodiscard]] BOOL parse(void* desc, u32 destination);

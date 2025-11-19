@@ -15,7 +15,9 @@ private:
 
 public:
     using CUIWindow::Draw;
+
     CUIFrameWindow();
+    ~CUIFrameWindow() override = default;
 
     virtual void Init(LPCSTR base_name, float x, float y, float width, float height);
     virtual void Init(float x, float y, float width, float height);

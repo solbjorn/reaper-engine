@@ -22,7 +22,7 @@ public:
     float m_radius{};
 
     CClimableObject();
-    ~CClimableObject();
+    ~CClimableObject() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

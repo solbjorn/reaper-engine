@@ -32,7 +32,7 @@ struct CEdgePath
 
     public:
         inline explicit CDataStorage(const u32 vertex_count);
-        inline virtual ~CDataStorage();
+        inline ~CDataStorage() override;
 
         inline void assign_parent(Vertex& neighbour, Vertex* parent);
         inline void assign_parent(Vertex& neighbour, Vertex* parent, const TEdge& edge);

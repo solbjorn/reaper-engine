@@ -24,7 +24,7 @@ public:
 
 protected:
     CShootingObject();
-    virtual ~CShootingObject();
+    ~CShootingObject() override;
 
     void reinit();
     void reload(LPCSTR) {}

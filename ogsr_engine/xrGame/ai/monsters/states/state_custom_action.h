@@ -6,6 +6,9 @@
 template <typename _Object>
 class CStateMonsterCustomAction : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterCustomAction<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -13,8 +16,8 @@ class CStateMonsterCustomAction : public CState<_Object>
     SStateDataAction data;
 
 public:
-    CStateMonsterCustomAction(_Object* obj);
-    virtual ~CStateMonsterCustomAction();
+    explicit CStateMonsterCustomAction(_Object* obj);
+    ~CStateMonsterCustomAction() override;
 
     virtual void execute();
     virtual bool check_completion();

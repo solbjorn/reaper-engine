@@ -128,8 +128,8 @@ private:
     bool check_sound_legacy(u32 internal_type) const;
 
 public:
-    CSoundPlayer(CObject* object);
-    virtual ~CSoundPlayer();
+    explicit CSoundPlayer(CObject* object);
+    ~CSoundPlayer() override;
 
     virtual void reinit();
     virtual void reload(LPCSTR);

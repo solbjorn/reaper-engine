@@ -55,8 +55,9 @@ protected:
     IC bool accessible(const CPatrolPath::CVertex* vertex) const;
 
 public:
-    IC CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object);
-    virtual ~CPatrolPathManager();
+    inline explicit CPatrolPathManager(CRestrictedObject* object, CGameObject* game_object);
+    ~CPatrolPathManager() override;
+
     virtual void reinit();
     IC CExtrapolateCallback& extrapolate_callback();
     IC void make_inactual();

@@ -13,6 +13,10 @@
 template <typename _VertexEvaluator, typename _vertex_id_type, typename _index_type>
 class CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type> : public CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
+    RTTI_DECLARE_TYPEINFO(CBasePathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>,
+                          CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type>);
+
+private:
     typedef CAbstractPathManager<CLevelGraph, _VertexEvaluator, _vertex_id_type, _index_type> inherited;
 
 public:
@@ -33,7 +37,8 @@ protected:
     IC virtual bool check_vertex(const _vertex_id_type vertex_id) const;
 
 public:
-    IC CBasePathManager(CRestrictedObject* object);
+    inline explicit CBasePathManager(CRestrictedObject* object);
+    ~CBasePathManager() override = default;
 
     IC void reinit(const CLevelGraph* graph = nullptr);
     IC bool actual() const;

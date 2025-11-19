@@ -1,6 +1,7 @@
 // UICharacterInfo.h:  окошко, с информацией о персонаже
 //
 //////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 #include "uiwindow.h"
@@ -50,7 +51,7 @@ protected:
 
 public:
     CUICharacterInfo();
-    virtual ~CUICharacterInfo();
+    ~CUICharacterInfo() override;
 
     void Init(float x, float y, float width, float height, CUIXml* xml_doc);
     void Init(float x, float y, float width, float height, const char* xml_name);

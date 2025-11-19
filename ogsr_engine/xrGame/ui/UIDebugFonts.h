@@ -9,15 +9,16 @@
 #pragma once
 
 #ifdef DEBUG
-
 #include "UIListWnd.h"
 #include "UIDialogWnd.h"
 
 class CUIDebugFonts : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CUIDebugFonts, CUIDialogWnd);
+
 public:
     CUIDebugFonts();
-    virtual ~CUIDebugFonts();
+    ~CUIDebugFonts() override;
 
     virtual void Init(float x, float y, float width, float height);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
@@ -26,5 +27,4 @@ public:
 protected:
     CUIStatic m_background;
 };
-
-#endif
+#endif // DEBUG

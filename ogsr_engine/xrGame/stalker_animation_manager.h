@@ -145,6 +145,8 @@ private:
     static void script_play_callback(CBlend* blend);
 
 public:
+    ~CStalkerAnimationManager() override = default;
+
     virtual void reinit();
     virtual void reload(CAI_Stalker* object);
     virtual void update();

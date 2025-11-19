@@ -19,11 +19,13 @@ class CEntityAlive;
 
 //////////////////////////////////////////////////////////////////////////
 
-struct RELATION_REGISTRY
+struct RELATION_REGISTRY : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(RELATION_REGISTRY);
+
 public:
     RELATION_REGISTRY();
-    virtual ~RELATION_REGISTRY();
+    ~RELATION_REGISTRY() override;
 
 public:
     template <typename T>

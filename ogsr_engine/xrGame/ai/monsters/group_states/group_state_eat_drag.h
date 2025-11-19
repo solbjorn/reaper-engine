@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStateGroupDrag : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupDrag<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -13,8 +16,8 @@ class CStateGroupDrag : public CState<_Object>
     Fvector m_corpse_start_position;
 
 public:
-    CStateGroupDrag(_Object* obj);
-    virtual ~CStateGroupDrag();
+    explicit CStateGroupDrag(_Object* obj);
+    ~CStateGroupDrag() override;
 
     virtual void initialize();
     virtual void execute();

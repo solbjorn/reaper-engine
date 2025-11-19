@@ -12,7 +12,7 @@ private:
 
 public:
     CUIButton();
-    virtual ~CUIButton();
+    ~CUIButton() override;
 
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual void OnClick();

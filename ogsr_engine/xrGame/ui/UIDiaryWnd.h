@@ -66,7 +66,7 @@ protected:
 
 public:
     CUIDiaryWnd();
-    virtual ~CUIDiaryWnd();
+    ~CUIDiaryWnd() override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     virtual void Draw();

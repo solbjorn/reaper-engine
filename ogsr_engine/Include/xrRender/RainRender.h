@@ -10,7 +10,7 @@ class XR_NOVTABLE IRainRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IRainRender);
 
 public:
-    virtual ~IRainRender() = 0;
+    ~IRainRender() override = 0;
 
     virtual void Calculate(CEffect_Rain& owner) = 0;
     virtual void Render(CEffect_Rain& owner) = 0;

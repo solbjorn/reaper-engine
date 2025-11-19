@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterAttackCamp : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttackCamp<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -18,7 +21,8 @@ class CStateMonsterAttackCamp : public CState<_Object>
     u32 m_target_node{};
 
 public:
-    CStateMonsterAttackCamp(_Object* obj);
+    explicit CStateMonsterAttackCamp(_Object* obj);
+    ~CStateMonsterAttackCamp() override = default;
 
     virtual void initialize();
     virtual void finalize();

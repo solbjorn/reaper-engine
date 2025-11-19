@@ -22,7 +22,7 @@ private:
 
 public:
     CBaseGraviZone();
-    virtual ~CBaseGraviZone();
+    ~CBaseGraviZone() override;
 
     virtual void Load(LPCSTR section);
 

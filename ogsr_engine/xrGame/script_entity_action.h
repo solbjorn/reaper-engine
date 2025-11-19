@@ -34,8 +34,8 @@ public:
     void* m_user_data{};
     bool m_started{};
 
-    IC CScriptEntityAction() = default;
-    virtual ~CScriptEntityAction() = default;
+    CScriptEntityAction() = default;
+    ~CScriptEntityAction() override = default;
 
     template <typename T>
     IC void SetAction(const T& t, T& tt);

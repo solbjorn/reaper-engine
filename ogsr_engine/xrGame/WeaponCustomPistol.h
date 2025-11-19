@@ -13,7 +13,7 @@ private:
 
 public:
     CWeaponCustomPistol();
-    virtual ~CWeaponCustomPistol();
+    ~CWeaponCustomPistol() override;
 
     virtual int GetCurrentFireMode() { return m_bHasDifferentFireModes ? m_aFireModes[m_iCurFireMode] : 1; }
 

@@ -22,7 +22,8 @@ public:
     bool m_ready_to_destroy;
 
     CPhysicItem();
-    virtual ~CPhysicItem();
+    ~CPhysicItem() override;
+
     void init();
     virtual void reinit();
     virtual void Load(LPCSTR section);

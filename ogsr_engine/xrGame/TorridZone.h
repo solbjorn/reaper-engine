@@ -14,7 +14,7 @@ private:
 
 public:
     CTorridZone();
-    virtual ~CTorridZone();
+    ~CTorridZone() override;
 
     virtual void UpdateWorkload(u32 dt);
     virtual void shedule_Update(u32 dt);

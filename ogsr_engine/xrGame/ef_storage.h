@@ -86,7 +86,11 @@ class CEF_Storage;
 template <typename T>
 struct CEnemyFunction : public T
 {
-    IC CEnemyFunction(CEF_Storage* storage) : T(storage) {}
+    RTTI_DECLARE_TYPEINFO(CEnemyFunction<T>, T);
+
+public:
+    explicit CEnemyFunction(CEF_Storage* storage) : T{storage} {}
+    ~CEnemyFunction() override = default;
 
     template <typename P>
     IC float get_value(P& params)
@@ -185,7 +189,7 @@ public:
     // CPatternFunction* m_pfBirthSpeed;
 
     CEF_Storage();
-    virtual ~CEF_Storage();
+    ~CEF_Storage() override;
 
     // CBaseFunction* function(LPCSTR function) const;
     IC void alife_evaluation(bool value);

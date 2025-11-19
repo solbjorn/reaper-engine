@@ -6,6 +6,7 @@
 // (через m_dwPeriod заряжается с 0 до m_fMaxPower)
 //
 /////////////////////////////////////////////////////
+
 #pragma once
 
 #include "gravizone.h"
@@ -31,7 +32,7 @@ public:
 
 public:
     CMincer();
-    virtual ~CMincer();
+    ~CMincer() override;
 
     //	virtual void	SwitchZoneState				(EZoneState new_state);
     virtual void OnStateSwitch(EZoneState new_state);

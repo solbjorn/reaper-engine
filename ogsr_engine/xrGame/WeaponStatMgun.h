@@ -32,7 +32,7 @@ public:
     // general
 public:
     CWeaponStatMgun();
-    virtual ~CWeaponStatMgun();
+    ~CWeaponStatMgun() override;
 
     virtual void Load(LPCSTR section);
 

@@ -50,15 +50,3 @@ IC void CALifeGraphRegistry::set_process_time(const float& process_time)
 IC CSE_ALifeCreatureActor* CALifeGraphRegistry::actor() const { return (m_actor); }
 
 IC const CALifeGraphRegistry::GRAPH_REGISTRY& CALifeGraphRegistry::objects() const { return (m_objects); }
-
-template <typename F>
-IC void CALifeGraphRegistry::iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f)
-{
-    iterate(((CGraphPointInfo&)(m_objects[game_vertex_id])).objects(), f);
-}
-
-template <typename F, typename C>
-IC void CALifeGraphRegistry::iterate(C& c, const F& f)
-{
-    c.update(f);
-}

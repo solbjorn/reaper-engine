@@ -1,9 +1,13 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterRestMoveToHomePoint : public CStateMove<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRestMoveToHomePoint<_Object>, CStateMove<_Object>);
+
+private:
     typedef CStateMove<_Object> inherited;
     typedef CStateMove<_Object>* state_ptr;
     using inherited::inherited::object;
@@ -11,7 +15,9 @@ class CStateMonsterRestMoveToHomePoint : public CStateMove<_Object>
     u32 m_target_node{};
 
 public:
-    CStateMonsterRestMoveToHomePoint(_Object* obj) : inherited(obj) {}
+    explicit CStateMonsterRestMoveToHomePoint(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterRestMoveToHomePoint() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual bool check_start_conditions();

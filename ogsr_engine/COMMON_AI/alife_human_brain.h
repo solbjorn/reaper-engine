@@ -39,7 +39,7 @@ public:
 
 public:
     explicit CALifeHumanBrain(object_type* object);
-    virtual ~CALifeHumanBrain();
+    ~CALifeHumanBrain() override;
 
 public:
     void on_state_write(NET_Packet& packet);

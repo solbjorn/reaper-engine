@@ -13,7 +13,7 @@ class XR_NOVTABLE CDUInterface : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CDUInterface);
 
 public:
-    virtual ~CDUInterface() = 0;
+    ~CDUInterface() override = 0;
 
     //----------------------------------------------------
     virtual void DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45 = false) = 0;

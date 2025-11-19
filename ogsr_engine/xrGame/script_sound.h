@@ -23,8 +23,8 @@ public:
 
     friend class CScriptSoundAction;
 
-    CScriptSound(LPCSTR caSoundName, ESoundTypes game_type = SOUND_TYPE_NO_SOUND, esound_type kind = st_Effect);
-    virtual ~CScriptSound();
+    explicit CScriptSound(LPCSTR caSoundName, ESoundTypes game_type = SOUND_TYPE_NO_SOUND, esound_type kind = st_Effect);
+    ~CScriptSound() override;
 
     IC u32 Length();
     IC void Play(CScriptGameObject* object);

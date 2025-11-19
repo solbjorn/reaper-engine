@@ -19,6 +19,6 @@ public:
     void PlayNext(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
 
     CPHSoundPlayer() = default;
-    CPHSoundPlayer(CPhysicsShellHolder* m_object);
-    virtual ~CPHSoundPlayer();
+    explicit CPHSoundPlayer(CPhysicsShellHolder* m_object);
+    ~CPHSoundPlayer() override;
 };

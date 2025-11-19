@@ -53,7 +53,7 @@ public:
     };
 
     IClient();
-    virtual ~IClient();
+    ~IClient() override;
 
     ClientID ID;
     string128 m_guid;
@@ -102,8 +102,8 @@ protected:
     [[nodiscard]] virtual IClient* new_client(SClientConnectData* cl_data) = 0;
 
 public:
-    IPureServer(CTimer* timer);
-    virtual ~IPureServer();
+    explicit IPureServer(CTimer* timer);
+    ~IPureServer() override;
 
     virtual EConnect Connect(LPCSTR session_name);
     virtual void Disconnect();

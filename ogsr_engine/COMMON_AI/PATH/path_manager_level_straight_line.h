@@ -14,6 +14,9 @@ template <typename _DataStorage, typename _dist_type, typename _index_type, type
 class CPathManager<CLevelGraph, _DataStorage, SStraightLineParams<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
     : public CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 {
+    RTTI_DECLARE_TYPEINFO(CPathManager<CLevelGraph, _DataStorage, SStraightLineParams<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>,
+                          CPathManager<CLevelGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>);
+
 protected:
     typedef CLevelGraph _Graph;
     typedef SStraightLineParams<_dist_type, _index_type, _iteration_type> _Parameters;
@@ -23,7 +26,8 @@ protected:
     _Parameters* m_parameters;
 
 public:
-    virtual ~CPathManager();
+    ~CPathManager() override = default;
+
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   _Parameters& params);
     template <typename T>

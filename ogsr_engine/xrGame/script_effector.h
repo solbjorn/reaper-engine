@@ -30,8 +30,8 @@ private:
     xr_map<effector_ops, sol::function> ops;
 
 public:
-    IC CScriptEffector(int iType, float time);
-    virtual ~CScriptEffector() = default;
+    inline explicit CScriptEffector(int iType, float time);
+    ~CScriptEffector() override = default;
 
     virtual BOOL Process(SPPInfo& pp);
     virtual void Add();

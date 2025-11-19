@@ -16,6 +16,8 @@ class CScriptGameObject;
 
 class CScriptObjectAction : public CScriptAbstractAction
 {
+    RTTI_DECLARE_TYPEINFO(CScriptObjectAction, CScriptAbstractAction);
+
 public:
     CObject* m_tpObject{};
     MonsterSpace::EObjectAction m_tGoalType{MonsterSpace::eObjectActionIdle};
@@ -23,11 +25,12 @@ public:
     shared_str m_caBoneName;
 
 public:
-    IC CScriptObjectAction();
-    IC CScriptObjectAction(CScriptGameObject* tpLuaGameObject, MonsterSpace::EObjectAction tObjectActionType, u32 dwQueueSize = u32(-1));
-    IC CScriptObjectAction(LPCSTR caBoneName, MonsterSpace::EObjectAction tObjectActionType);
-    IC CScriptObjectAction(MonsterSpace::EObjectAction tObjectActionType);
-    virtual ~CScriptObjectAction();
+    inline CScriptObjectAction();
+    inline explicit CScriptObjectAction(CScriptGameObject* tpLuaGameObject, MonsterSpace::EObjectAction tObjectActionType, u32 dwQueueSize = u32(-1));
+    inline explicit CScriptObjectAction(LPCSTR caBoneName, MonsterSpace::EObjectAction tObjectActionType);
+    inline explicit CScriptObjectAction(MonsterSpace::EObjectAction tObjectActionType);
+    ~CScriptObjectAction() override;
+
     void SetObject(CScriptGameObject* tpLuaGameObject);
     IC void SetObject(LPCSTR caBoneName);
     IC void SetObjectAction(MonsterSpace::EObjectAction tObjectActionType);

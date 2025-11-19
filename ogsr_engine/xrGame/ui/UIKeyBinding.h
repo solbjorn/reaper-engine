@@ -15,6 +15,7 @@ class CUIKeyBinding : public CUIWindow
 
 public:
     CUIKeyBinding();
+    ~CUIKeyBinding() override = default;
 
     void InitFromXml(CUIXml& xml_doc, LPCSTR path);
 #ifdef DEBUG

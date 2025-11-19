@@ -34,7 +34,7 @@ public:
 
 public:
     explicit CPatrolPath(shared_str name = shared_str{""});
-    virtual ~CPatrolPath();
+    ~CPatrolPath() override;
 
     CPatrolPath& load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream);
     CPatrolPath& load_ini(CInifile::Sect& section);

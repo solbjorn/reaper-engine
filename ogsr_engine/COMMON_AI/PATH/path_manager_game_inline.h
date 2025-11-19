@@ -13,9 +13,6 @@
 #define CGamePathManager CPathManager<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-CGamePathManager::~CPathManager() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CGamePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
                                 const _index_type& _goal_node_index, const _Parameters& parameters)
 {

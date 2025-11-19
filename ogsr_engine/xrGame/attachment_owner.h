@@ -25,8 +25,8 @@ public:
     virtual CAttachmentOwner* cast_attachment_owner() { return this; }
 
 public:
-    IC CAttachmentOwner();
-    virtual ~CAttachmentOwner();
+    CAttachmentOwner() = default;
+    ~CAttachmentOwner() override;
 
     virtual void reinit();
     virtual void reload(LPCSTR section);

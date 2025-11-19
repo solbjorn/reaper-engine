@@ -26,8 +26,7 @@ void restart_all()
 }
 } // namespace
 
-CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line)
-    : CALifeSimulatorBase{server}, CALifeUpdateManager{server, alife_section}, CALifeInteractionManager{server}
+CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) : CALifeSimulatorBase{server}, CALifeUpdateManager{alife_section}
 {
     restart_all();
 

@@ -264,6 +264,8 @@ class CLoadScreenRenderer : public pureRender
 
 public:
     CLoadScreenRenderer();
+    ~CLoadScreenRenderer() override = default;
+
     void start(bool b_user_input);
     void stop();
     virtual void OnRender();

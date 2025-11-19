@@ -58,6 +58,9 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
 _CreateEAction pCreateEAction = pCreateEActionImpl;
 
 //---------------------------------------------------------------------------
+
+EParticleAction::~EParticleAction() = default;
+
 bool EParticleAction::Load(IReader& F)
 {
     u32 vers = F.r_u32();

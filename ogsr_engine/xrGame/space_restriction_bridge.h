@@ -16,6 +16,8 @@ class CSpaceRestrictionBase;
 
 class CSpaceRestrictionBridge : public RestrictionSpace::CTimeIntrusiveBase
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionBridge, RestrictionSpace::CTimeIntrusiveBase);
+
 protected:
     CSpaceRestrictionBase* m_object;
 
@@ -23,8 +25,9 @@ public:
     IC CSpaceRestrictionBase& object() const;
 
 public:
-    IC CSpaceRestrictionBridge(CSpaceRestrictionBase* object);
-    virtual ~CSpaceRestrictionBridge();
+    inline explicit CSpaceRestrictionBridge(CSpaceRestrictionBase* object);
+    ~CSpaceRestrictionBridge() override;
+
     void change_implementation(CSpaceRestrictionBase* object);
     const xr_vector<u32>& border() const;
     bool initialized() const;

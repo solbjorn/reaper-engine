@@ -10,7 +10,7 @@
 
 #include "space_restriction_abstract.h"
 
-class CSpaceRestrictionBase : public CSpaceRestrictionAbstract
+class XR_NOVTABLE CSpaceRestrictionBase : public CSpaceRestrictionAbstract
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionBase, CSpaceRestrictionAbstract);
 
@@ -27,6 +27,8 @@ protected:
     void process_borders();
 
 public:
+    ~CSpaceRestrictionBase() override = 0;
+
     bool inside(u32 level_vertex_id, bool partially_inside);
     bool inside(u32 level_vertex_id, bool partially_inside, float radius);
     virtual bool inside(const Fsphere& sphere) = 0;
@@ -39,5 +41,7 @@ public:
     IC bool correct() const;
 #endif
 };
+
+inline CSpaceRestrictionBase::~CSpaceRestrictionBase() = default;
 
 #include "space_restriction_base_inline.h"

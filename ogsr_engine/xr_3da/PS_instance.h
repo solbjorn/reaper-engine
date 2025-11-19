@@ -25,7 +25,7 @@ protected:
 
 public:
     explicit CPS_Instance(bool destroy_on_game_load);
-    virtual ~CPS_Instance();
+    ~CPS_Instance() override;
 
     [[nodiscard]] bool destroy_on_game_load() const { return m_destroy_on_game_load; }
     virtual void PSI_destroy();

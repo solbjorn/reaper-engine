@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_direct();
-    virtual ~CBlender_accum_direct();
+    ~CBlender_accum_direct() override;
 };
 
 class CBlender_accum_direct_msaa : public IBlender
@@ -31,7 +31,7 @@ public:
     LPCSTR Definition{};
 
     CBlender_accum_direct_msaa();
-    virtual ~CBlender_accum_direct_msaa();
+    ~CBlender_accum_direct_msaa() override;
 };
 
 class CBlender_accum_direct_volumetric_msaa : public IBlender
@@ -49,7 +49,7 @@ public:
     }
 
     CBlender_accum_direct_volumetric_msaa();
-    virtual ~CBlender_accum_direct_volumetric_msaa();
+    ~CBlender_accum_direct_volumetric_msaa() override;
 
     LPCSTR Name{};
     LPCSTR Definition{};
@@ -70,7 +70,7 @@ public:
     }
 
     CBlender_accum_direct_volumetric_sun_msaa();
-    virtual ~CBlender_accum_direct_volumetric_sun_msaa();
+    ~CBlender_accum_direct_volumetric_sun_msaa() override;
 
     LPCSTR Name{};
     LPCSTR Definition{};

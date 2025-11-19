@@ -16,7 +16,7 @@ public:
     typedef CHudItemObject inherited;
 
     CMissile();
-    virtual ~CMissile();
+    ~CMissile() override;
 
     virtual BOOL AlwaysTheCrow() { return TRUE; }
     virtual void OnDrawUI();

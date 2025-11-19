@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateGroupEat : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupEat<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -21,8 +23,8 @@ protected:
     u32 m_time_last_eat{};
 
 public:
-    CStateGroupEat(_Object* obj);
-    virtual ~CStateGroupEat();
+    explicit CStateGroupEat(_Object* obj);
+    ~CStateGroupEat() override;
 
     virtual void reinit();
     virtual void initialize();

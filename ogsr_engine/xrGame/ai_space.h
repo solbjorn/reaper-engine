@@ -48,7 +48,7 @@ private:
 
 public:
     CAI_Space();
-    virtual ~CAI_Space();
+    ~CAI_Space() override;
 
     void init();
     IC CGameGraph& game_graph() const;

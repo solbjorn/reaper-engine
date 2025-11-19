@@ -14,11 +14,13 @@
 
 class CBaseMonster;
 
-class CMonsterStateInterface
+class CMonsterStateInterface : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterStateInterface);
+
 public:
-    CMonsterStateInterface(CBaseMonster* p_object) : m_object(p_object) {}
-    virtual ~CMonsterStateInterface() {}
+    explicit CMonsterStateInterface(CBaseMonster* p_object) : m_object{p_object} {}
+    ~CMonsterStateInterface() override = default;
 
     virtual void* get_data() = 0 {}
     virtual void initialize() { time_state_started = Device.dwTimeGlobal; }
@@ -33,14 +35,17 @@ protected:
 template <typename _Object>
 class CMonsterStateAdapter : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterStateAdapter<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
 
 public:
     template <class Impl>
-    CMonsterStateAdapter(Impl* p_impl, _Object* obj) : m_impl(p_impl), inherited(obj, p_impl->get_data())
+    explicit CMonsterStateAdapter(Impl* p_impl, _Object* obj) : m_impl{p_impl}, inherited{obj, p_impl->get_data()}
     {}
 
-    virtual ~CMonsterStateAdapter() { xr_delete(m_impl); }
+    ~CMonsterStateAdapter() override { xr_delete(m_impl); }
 
     virtual void initialize() { m_impl->initialize(); }
     virtual void execute() { m_impl->execute(); }

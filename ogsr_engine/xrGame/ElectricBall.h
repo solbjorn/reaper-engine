@@ -16,7 +16,7 @@ private:
 
 public:
     CElectricBall();
-    virtual ~CElectricBall();
+    ~CElectricBall() override;
 
     virtual void Load(LPCSTR section);
 

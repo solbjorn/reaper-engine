@@ -3,12 +3,15 @@
 template <typename _Object>
 class CStateGroupPanicRun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupPanicRun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateGroupPanicRun(_Object* obj) : inherited(obj) {}
-    virtual ~CStateGroupPanicRun() {}
+    explicit CStateGroupPanicRun(_Object* obj) : inherited{obj} {}
+    ~CStateGroupPanicRun() override = default;
 
     virtual void initialize();
     virtual void execute();

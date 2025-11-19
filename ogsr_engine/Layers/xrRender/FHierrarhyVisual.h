@@ -15,7 +15,7 @@ public:
     BOOL bDontDelete;
 
     FHierrarhyVisual();
-    virtual ~FHierrarhyVisual();
+    ~FHierrarhyVisual() override;
 
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);

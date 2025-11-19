@@ -19,7 +19,7 @@ public:
     float m_radius{1.f};
 
     CPsyAura();
-    virtual ~CPsyAura();
+    ~CPsyAura() override;
 
     void init_external(CBaseMonster* obj) { m_object = obj; }
     [[nodiscard]] BOOL feel_touch_contact(CObject*) override { return false; }

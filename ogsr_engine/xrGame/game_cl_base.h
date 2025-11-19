@@ -49,7 +49,7 @@ protected:
 
 public:
     game_cl_GameState();
-    virtual ~game_cl_GameState();
+    ~game_cl_GameState() override;
 
     LPCSTR type_name() const { return *m_game_type_name; }
     void set_type_name(LPCSTR s);

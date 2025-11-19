@@ -13,7 +13,7 @@ private:
 
 public:
     CWeaponRPG7();
-    virtual ~CWeaponRPG7();
+    ~CWeaponRPG7() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void OnStateSwitch(u32 S, u32 oldState);

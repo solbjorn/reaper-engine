@@ -2,10 +2,12 @@
 #define ObjectSpaceRender_included
 
 #ifdef DEBUG
-class XR_NOVTABLE IObjectSpaceRender
+class XR_NOVTABLE IObjectSpaceRender : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IObjectSpaceRender);
+
 public:
-    virtual ~IObjectSpaceRender() = 0;
+    ~IObjectSpaceRender() override = 0;
 
     virtual void Copy(IObjectSpaceRender& _in) = 0;
 

@@ -2,9 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(SHADER__INCLUDED_)
+#ifndef SHADER__INCLUDED_
 #define SHADER__INCLUDED_
-#pragma once
 
 #include "r_constants.h"
 #include "../../xrCore/xr_resource.h"
@@ -23,14 +22,16 @@ class IBlenderXr;
 #define SHADER_ELEMENTS_MAX 16
 
 //////////////////////////////////////////////////////////////////////////
+
 struct STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
     RTTI_DECLARE_TYPEINFO(STextureList, xr_resource_flagged);
 
 public:
     using inherited_vec = xr_vector<std::pair<u32, ref_texture>>;
+
     STextureList() = default;
-    ~STextureList();
+    ~STextureList() override;
 
     IC BOOL equal(const STextureList& base) const
     {
@@ -61,6 +62,7 @@ public:
 typedef resptr_core<STextureList, resptr_base<STextureList>> ref_texture_list;
 
 //////////////////////////////////////////////////////////////////////////
+
 struct SGeometry : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(SGeometry, xr_resource_flagged);
@@ -70,8 +72,9 @@ public:
     ID3DVertexBuffer* vb;
     ID3DIndexBuffer* ib;
     u32 vb_stride;
+
     SGeometry() = default;
-    ~SGeometry();
+    ~SGeometry() override;
 };
 
 struct resptrcode_geom : public resptr_base<SGeometry>
@@ -85,6 +88,7 @@ struct resptrcode_geom : public resptr_base<SGeometry>
 typedef resptr_core<SGeometry, resptrcode_geom> ref_geom;
 
 //////////////////////////////////////////////////////////////////////////
+
 struct SPass : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(SPass, xr_resource_flagged);
@@ -102,13 +106,14 @@ public:
     ref_texture_list T;
 
     SPass() = default;
-    ~SPass();
+    ~SPass() override;
 
     bool equal(const SPass& other) const;
 };
 typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 
 //////////////////////////////////////////////////////////////////////////
+
 struct ShaderElement : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(ShaderElement, xr_resource_flagged);
@@ -130,7 +135,7 @@ public:
     svector<ref_pass, SHADER_PASSES_MAX> passes;
 
     ShaderElement();
-    ~ShaderElement();
+    ~ShaderElement() override;
 
     bool equal(const ShaderElement& S) const;
 
@@ -146,6 +151,7 @@ public:
 using ref_selement = resptr_core<ShaderElement, resptr_base<ShaderElement>>;
 
 //////////////////////////////////////////////////////////////////////////
+
 struct Shader : public xr_resource_flagged
 {
     RTTI_DECLARE_TYPEINFO(Shader, xr_resource_flagged);
@@ -155,7 +161,7 @@ public:
                        // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
 
     Shader() = default;
-    ~Shader();
+    ~Shader() override;
 
     bool equal(const Shader* S) const;
     bool equal(const Shader* S, int index) const;
@@ -202,4 +208,4 @@ enum SE_R1
 //	E[4] - distortion or self illumination(self emission).
 //	E[4] Can use for lightmap capturing.
 
-#endif // !defined(AFX_SHADER_H__9CBD70DD_E147_446B_B4EE_5DA321EB726F__INCLUDED_)
+#endif // SHADER__INCLUDED_

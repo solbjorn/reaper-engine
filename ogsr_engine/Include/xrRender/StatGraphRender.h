@@ -8,7 +8,7 @@ class XR_NOVTABLE IStatGraphRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IStatGraphRender);
 
 public:
-    virtual ~IStatGraphRender() = 0;
+    ~IStatGraphRender() override = 0;
 
     virtual void Copy(IStatGraphRender& _in) = 0;
 

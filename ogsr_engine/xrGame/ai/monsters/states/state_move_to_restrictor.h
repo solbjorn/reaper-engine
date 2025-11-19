@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterMoveToRestrictor : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToRestrictor<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterMoveToRestrictor(_Object* obj) : inherited(obj) {}
-    virtual ~CStateMonsterMoveToRestrictor() {}
+    explicit CStateMonsterMoveToRestrictor(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterMoveToRestrictor() override = default;
 
     virtual void initialize();
     virtual void execute();

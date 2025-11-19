@@ -17,9 +17,6 @@
 #define CSolverPathManager CPathManager<CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-IC CSolverPathManager::~CPathManager() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CSolverPathManager::setup(const _Graph* _graph, _DataStorage* _data_storage, xr_vector<_edge_type>* _path, const _index_type& _start_node_index,
                                   const _index_type& _goal_node_index, const _Parameters& params)
 {

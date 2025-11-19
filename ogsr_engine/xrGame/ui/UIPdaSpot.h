@@ -27,7 +27,7 @@ public:
     shared_str m_spotType;
 
     CUIPdaSpot();
-    ~CUIPdaSpot() = default;
+    ~CUIPdaSpot() override = default;
 
     void Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd);
     void InitControls();

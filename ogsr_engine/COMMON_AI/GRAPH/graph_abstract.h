@@ -38,7 +38,7 @@ private:
 
 public:
     CGraphAbstract() = default;
-    virtual ~CGraphAbstract();
+    inline ~CGraphAbstract() override;
 
     IC bool operator==(const CGraphAbstract& obj) const;
     IC void clear();
@@ -76,6 +76,8 @@ public:
     using inherited::add_vertex;
     using inherited::clear;
     using inherited::vertices;
+
+    ~CGraphAbstractSerialize() override = default;
 
     virtual void save(IWriter& stream);
     virtual void load(IReader& stream);

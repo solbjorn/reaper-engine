@@ -18,23 +18,23 @@ class CALifeGraphRegistry : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CALifeGraphRegistry);
 
 public:
-    typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject, std::less<ALife::_OBJECT_ID>, false> OBJECT_REGISTRY;
+    using OBJECT_REGISTRY = CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject, std::less<ALife::_OBJECT_ID>, false>;
 
-public:
     class CGraphPointInfo
     {
     protected:
-        OBJECT_REGISTRY m_objects;
+        std::unique_ptr<OBJECT_REGISTRY> m_objects;
 
     public:
-        IC OBJECT_REGISTRY& objects() { return (m_objects); }
+        constexpr CGraphPointInfo() : m_objects{std::make_unique<OBJECT_REGISTRY>()} {}
 
-        IC const OBJECT_REGISTRY& objects() const { return (m_objects); }
+        [[nodiscard]] constexpr OBJECT_REGISTRY& objects() { return *m_objects; }
+        [[nodiscard]] constexpr const OBJECT_REGISTRY& objects() const { return *m_objects; }
     };
 
 public:
-    typedef xr_vector<CGraphPointInfo> GRAPH_REGISTRY;
-    typedef xr_vector<GameGraph::_GRAPH_ID> TERRAIN_REGISTRY;
+    using GRAPH_REGISTRY = xr_vector<CGraphPointInfo>;
+    using TERRAIN_REGISTRY = xr_vector<GameGraph::_GRAPH_ID>;
 
 protected:
     GRAPH_REGISTRY m_objects;
@@ -46,12 +46,10 @@ protected:
 
 protected:
     void setup_current_level();
-    template <typename F, typename C>
-    IC void iterate(C& c, const F& f);
 
 public:
     CALifeGraphRegistry();
-    virtual ~CALifeGraphRegistry();
+    ~CALifeGraphRegistry() override;
 
     void on_load();
     void update(CSE_ALifeDynamicObject* object);
@@ -65,8 +63,6 @@ public:
     IC void set_process_time(const float& process_time);
     IC CSE_ALifeCreatureActor* actor() const;
     IC const GRAPH_REGISTRY& objects() const;
-    template <typename F>
-    IC void iterate_objects(GameGraph::_GRAPH_ID game_vertex_id, const F& f);
 };
 
 #include "alife_graph_registry_inline.h"

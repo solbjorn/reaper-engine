@@ -197,8 +197,11 @@ private:
 
 class squad_grouping_behaviour : public steering_behaviour::grouping::params
 {
+    RTTI_DECLARE_TYPEINFO(squad_grouping_behaviour, steering_behaviour::grouping::params);
+
 public:
-    squad_grouping_behaviour(CEntity* self, Fvector cohesion_factor, Fvector separate_factor, float max_separate_range);
+    explicit squad_grouping_behaviour(CEntity* self, Fvector cohesion_factor, Fvector separate_factor, float max_separate_range);
+    ~squad_grouping_behaviour() override = default;
 
     void set_squad(CMonsterSquad* squad);
     virtual void first_nearest(Fvector& v);

@@ -15,9 +15,6 @@ TEMPLATE_SPECIALIZATION
 IC CPlanner::CActionPlannerAction(_object_type* object, LPCSTR action_name) : inherited_action(object, action_name) {}
 
 TEMPLATE_SPECIALIZATION
-CPlanner::~CActionPlannerAction() {}
-
-TEMPLATE_SPECIALIZATION
 void CPlanner::setup(_object_type* object, CPropertyStorage* storage)
 {
     inherited_planner::setup(object);

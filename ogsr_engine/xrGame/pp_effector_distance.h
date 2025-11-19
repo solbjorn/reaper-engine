@@ -1,11 +1,16 @@
 #pragma once
+
 #include "pp_effector_custom.h"
 
 //////////////////////////////////////////////////////////////////////////
 // CPPEffectorDistance
 //////////////////////////////////////////////////////////////////////////
+
 class CPPEffectorDistance : public CPPEffectorController
 {
+    RTTI_DECLARE_TYPEINFO(CPPEffectorDistance, CPPEffectorController);
+
+private:
     typedef CPPEffectorController inherited;
 
     float m_r_min_perc; // min_radius (percents [0..1])
@@ -14,6 +19,8 @@ class CPPEffectorDistance : public CPPEffectorController
     float m_dist;
 
 public:
+    ~CPPEffectorDistance() override = default;
+
     virtual void load(LPCSTR section);
     IC void set_radius(float r) { m_radius = r; }
     IC void set_current_dist(float dist) { m_dist = dist; }

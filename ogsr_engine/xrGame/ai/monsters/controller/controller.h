@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "../anim_triple.h"
 #include "script_export_space.h"
@@ -71,7 +72,7 @@ public:
 
 public:
     CController();
-    virtual ~CController();
+    ~CController() override;
 
     virtual void Load(LPCSTR section);
     virtual void reload(LPCSTR section);

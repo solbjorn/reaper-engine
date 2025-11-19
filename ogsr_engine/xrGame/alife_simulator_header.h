@@ -20,7 +20,7 @@ protected:
 
 public:
     CALifeSimulatorHeader() = default;
-    virtual ~CALifeSimulatorHeader();
+    ~CALifeSimulatorHeader() override;
 
     virtual void save(IWriter& tMemoryStream);
     virtual void load(IReader& tFileStream);

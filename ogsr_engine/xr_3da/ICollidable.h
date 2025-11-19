@@ -14,5 +14,5 @@ public:
 
 public:
     ICollidable() = default;
-    virtual ~ICollidable();
+    ~ICollidable() override;
 };

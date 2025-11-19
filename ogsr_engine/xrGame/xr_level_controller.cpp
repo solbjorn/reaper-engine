@@ -466,10 +466,14 @@ BOOL bRemapped = FALSE;
 
 class CCC_Bind : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_Bind, IConsole_Command);
+
+private:
     int m_work_idx;
 
 public:
-    CCC_Bind(LPCSTR N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
+    explicit CCC_Bind(LPCSTR N, int idx) : IConsole_Command{N}, m_work_idx{idx} {}
+    ~CCC_Bind() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -539,10 +543,14 @@ public:
 
 class CCC_UnBind : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_UnBind, IConsole_Command);
+
+private:
     int m_work_idx;
 
 public:
-    CCC_UnBind(LPCSTR N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
+    explicit CCC_UnBind(LPCSTR N, int idx) : IConsole_Command{N, true}, m_work_idx{idx} {}
+    ~CCC_UnBind() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -556,8 +564,11 @@ public:
 
 class CCC_ListActions : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_ListActions, IConsole_Command);
+
 public:
-    CCC_ListActions(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_ListActions(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_ListActions() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -570,8 +581,11 @@ public:
 
 class CCC_UnBindAll : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_UnBindAll, IConsole_Command);
+
 public:
-    CCC_UnBindAll(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_UnBindAll(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_UnBindAll() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -595,8 +609,11 @@ public:
 
 class CCC_BindList : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_BindList, IConsole_Command);
+
 public:
-    CCC_BindList(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_BindList(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_BindList() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -619,7 +636,8 @@ class CCC_BindConsoleCmd : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_BindConsoleCmd, IConsole_Command);
 
 public:
-    CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_BindConsoleCmd() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -639,8 +657,11 @@ public:
 
 class CCC_UnBindConsoleCmd : public IConsole_Command
 {
+    RTTI_DECLARE_TYPEINFO(CCC_UnBindConsoleCmd, IConsole_Command);
+
 public:
-    CCC_UnBindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_UnBindConsoleCmd(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_UnBindConsoleCmd() override = default;
 
     virtual void Execute(LPCSTR args)
     {

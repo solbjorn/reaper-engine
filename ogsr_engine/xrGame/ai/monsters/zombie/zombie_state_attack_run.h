@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateZombieAttackRun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateZombieAttackRun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -12,8 +15,8 @@ class CStateZombieAttackRun : public CState<_Object>
     EAction action;
 
 public:
-    CStateZombieAttackRun(_Object* obj);
-    virtual ~CStateZombieAttackRun();
+    explicit CStateZombieAttackRun(_Object* obj);
+    ~CStateZombieAttackRun() override;
 
     virtual void initialize();
     virtual void execute();

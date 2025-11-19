@@ -203,7 +203,7 @@ public:
     bool need_init{};
 
     CDetailManager();
-    virtual ~CDetailManager();
+    ~CDetailManager() override;
 };
 
 #endif // DetailManagerH

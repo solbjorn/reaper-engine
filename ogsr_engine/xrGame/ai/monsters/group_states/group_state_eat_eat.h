@@ -1,9 +1,12 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateGroupEating : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupEating<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     using inherited::object;
@@ -13,8 +16,8 @@ protected:
     u32 time_last_eat{};
 
 public:
-    CStateGroupEating(_Object* obj);
-    virtual ~CStateGroupEating();
+    explicit CStateGroupEating(_Object* obj);
+    ~CStateGroupEating() override;
 
     virtual void initialize();
     virtual void execute();

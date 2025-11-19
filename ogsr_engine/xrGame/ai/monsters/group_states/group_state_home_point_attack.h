@@ -1,9 +1,12 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateGroupAttackMoveToHomePoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupAttackMoveToHomePoint<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -23,7 +26,9 @@ protected:
     TTime m_state_started{};
 
 public:
-    CStateGroupAttackMoveToHomePoint(_Object* obj);
+    explicit CStateGroupAttackMoveToHomePoint(_Object* obj);
+    ~CStateGroupAttackMoveToHomePoint() override = default;
+
     virtual void initialize();
     virtual void finalize();
     virtual void critical_finalize();

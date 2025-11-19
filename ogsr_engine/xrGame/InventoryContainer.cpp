@@ -5,12 +5,16 @@
 //	Author		: Alexander Petrov
 //	Description : Mobile container class, based on inventory item
 ////////////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
-#include "Level.h"
+
 #include "InventoryContainer.h"
+
+#include "Level.h"
 #include "Artifact.h"
 
-CInventoryContainer::CInventoryContainer() : CCustomInventoryBox<CInventoryItemObject>() { open(); }
+CInventoryContainer::CInventoryContainer() { open(); }
+CInventoryContainer::~CInventoryContainer() = default;
 
 u32 CInventoryContainer::Cost() const
 {

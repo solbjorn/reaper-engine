@@ -25,7 +25,9 @@ private:
     CCustomMonster* m_object;
 
 public:
-    IC CItemManager(CCustomMonster* object);
+    inline explicit CItemManager(CCustomMonster* object);
+    ~CItemManager() override = default;
+
     virtual bool useful(const CGameObject* object) const;
     virtual bool is_useful(const CGameObject* object) const;
     virtual float evaluate(const CGameObject* object) const;

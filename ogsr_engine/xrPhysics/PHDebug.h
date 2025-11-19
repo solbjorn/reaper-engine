@@ -1,8 +1,11 @@
 #ifndef PH_DEBUG_H
 #define PH_DEBUG_H
+
 #ifdef DEBUG
 struct dContact;
+
 #include "../xr_3da/StatGraph.h"
+
 #define DRAW_CONTACTS
 
 extern Flags32 ph_dbg_draw_mask;
@@ -19,8 +22,8 @@ extern u32 dbg_islands_num;
 extern u32 dbg_contacts_num;
 extern float dbg_vel_collid_damage_to_display;
 extern LPCSTR dbg_trace_object;
-#ifdef DRAW_CONTACTS
 
+#ifdef DRAW_CONTACTS
 struct SPHContactDBGDraw
 {
     int geomClass;
@@ -28,10 +31,13 @@ struct SPHContactDBGDraw
     Fvector pos;
     float depth;
 };
+
 DEFINE_VECTOR(SPHContactDBGDraw, CONTACT_VECTOR, CONTACT_I);
+
 extern CONTACT_VECTOR Contacts0;
 extern CONTACT_VECTOR Contacts1;
 #endif
+
 /// ph_dbg_draw_mask
 enum
 {
@@ -84,16 +90,26 @@ struct SPHObjDBGDraw
 };
 
 DEFINE_VECTOR(SPHObjDBGDraw, PHOBJ_DBG_V, PHOBJ_DBG_I);
+
 extern PHOBJ_DBG_V dbg_draw_objects0;
 extern PHOBJ_DBG_V dbg_draw_objects1;
+
 class CPHObject;
 
-struct SPHDBGDrawAbsract
+struct SPHDBGDrawAbsract : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(SPHDBGDrawAbsract);
+
+public:
+    ~SPHDBGDrawAbsract() override = 0;
+
     virtual void render() = 0;
-    virtual ~SPHDBGDrawAbsract() {};
 };
+
+inline SPHDBGDrawAbsract::~SPHDBGDrawAbsract() = default;
+
 DEFINE_VECTOR(SPHDBGDrawAbsract*, PHABS_DBG_V, PHABS_DBG_I);
+
 extern PHABS_DBG_V dbg_draw_abstruct0;
 extern PHABS_DBG_V dbg_draw_abstruct1;
 void DBG_DrawStatBeforeFrameStep();
@@ -154,5 +170,6 @@ public:
         return s;
     }
 };
-#endif
-#endif
+#endif // DEBUG
+
+#endif // PH_DEBUG_H

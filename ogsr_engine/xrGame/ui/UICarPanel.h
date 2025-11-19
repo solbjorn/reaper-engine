@@ -13,6 +13,8 @@ private:
     CUIProgressBar UICarHealthBar;
 
 public:
+    ~CUICarPanel() override = default;
+
     // Установить
     void SetCarHealth(float value);
     void SetSpeed(float) {}

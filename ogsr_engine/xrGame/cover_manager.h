@@ -41,7 +41,7 @@ private:
 
 public:
     CCoverManager() = default;
-    virtual ~CCoverManager();
+    ~CCoverManager() override;
 
     void compute_static_cover();
     IC CPointQuadTree& covers() const;

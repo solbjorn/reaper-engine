@@ -9,8 +9,10 @@
 #pragma once
 
 template <typename _Graph, typename _DataStorage, typename _Parameters, typename _dist_type, typename _index_type, typename _iteration_type>
-class CPathManagerGeneric
+class CPathManagerGeneric : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>);
+
 public:
     const _Graph* graph{};
     xr_vector<_index_type>* path{};
@@ -28,7 +30,7 @@ public:
     typedef typename _Graph::const_iterator const_iterator;
 
     CPathManagerGeneric() = default;
-    virtual ~CPathManagerGeneric();
+    ~CPathManagerGeneric() override = default;
 
     IC void init();
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,

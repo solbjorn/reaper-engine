@@ -1,15 +1,20 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateChimeraThreatenRoar : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateChimeraThreatenRoar<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
 
 public:
-    IC CStateChimeraThreatenRoar(_Object* obj) : inherited(obj) {}
+    explicit CStateChimeraThreatenRoar(_Object* obj) : inherited{obj} {}
+    ~CStateChimeraThreatenRoar() override = default;
 
     virtual void initialize();
     virtual void execute();

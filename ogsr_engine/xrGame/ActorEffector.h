@@ -20,8 +20,9 @@ protected:
     virtual bool ProcessCameraEffector(CEffectorCam* eff);
 
 public:
-    CActorCameraManager() : inherited(false) {}
-    virtual ~CActorCameraManager() {}
+    CActorCameraManager() : inherited{false} {}
+    ~CActorCameraManager() override = default;
+
     IC void hud_camera_Matrix(Fmatrix& M) { M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p); }
 };
 
@@ -43,7 +44,7 @@ protected:
 
 public:
     CEffectorController() = default;
-    virtual ~CEffectorController();
+    ~CEffectorController() override;
 
     void SetPP(CEffectorPP* p) { m_pe = p; }
     void SetCam(CEffectorCam* p) { m_ce = p; }
@@ -55,9 +56,6 @@ class CAnimatorCamEffector : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CAnimatorCamEffector, CEffectorCam);
 
-public:
-    bool m_bCyclic;
-
 protected:
     using inherited = CEffectorCam;
 
@@ -65,11 +63,12 @@ protected:
     CObjectAnimator* m_objectAnimator;
 
 public:
+    bool m_bCyclic;
     bool m_bAbsolutePositioning;
-    float m_fov = 0.0f;
+    f32 m_fov{};
 
     CAnimatorCamEffector();
-    virtual ~CAnimatorCamEffector();
+    ~CAnimatorCamEffector() override;
 
     void Start(LPCSTR fn);
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
@@ -91,6 +90,7 @@ protected:
 
 public:
     explicit CAnimatorCamEffectorScriptCB(LPCSTR _cb) : cb_name{_cb} {}
+    ~CAnimatorCamEffectorScriptCB() override = default;
 
     virtual BOOL Valid();
     virtual BOOL AllowProcessingIfInvalid() { return m_bAbsolutePositioning; }
@@ -106,6 +106,8 @@ protected:
     GET_KOEFF_FUNC m_func;
 
 public:
+    ~CAnimatorCamLerpEffector() override = default;
+
     void SetFactorFunc(GET_KOEFF_FUNC f) { m_func = f; }
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };
@@ -119,6 +121,7 @@ protected:
 
 public:
     CAnimatorCamLerpEffectorConst();
+    ~CAnimatorCamLerpEffectorConst() override = default;
 
     void SetFactor(float v)
     {
@@ -136,7 +139,7 @@ public:
     CEffectorController* m_controller;
 
     explicit CCameraEffectorControlled(CEffectorController* c);
-    virtual ~CCameraEffectorControlled();
+    ~CCameraEffectorControlled() override;
 
     virtual BOOL Valid();
 };
@@ -158,7 +161,7 @@ public:
 
 public:
     SndShockEffector();
-    virtual ~SndShockEffector();
+    ~SndShockEffector() override;
 
     void Start(CActor* A, float snd_length, float power);
     void Update();
@@ -169,6 +172,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+
 class CControllerPsyHitCamEffector : public CEffectorCam
 {
     RTTI_DECLARE_TYPEINFO(CControllerPsyHitCamEffector, CEffectorCam);
@@ -189,7 +193,9 @@ private:
 
 public:
     explicit CControllerPsyHitCamEffector(const Fvector& src_pos, const Fvector& target_pos, float time, float base_fov, float dest_fov);
+    ~CControllerPsyHitCamEffector() override = default;
 
     [[nodiscard]] BOOL ProcessCam(SCamEffectorInfo& info) override;
 };
+
 //////////////////////////////////////////////////////////////////////////

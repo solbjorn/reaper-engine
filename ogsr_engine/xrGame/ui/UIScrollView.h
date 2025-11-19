@@ -51,7 +51,7 @@ public:
     using CUIWindow::Init;
 
     CUIScrollView();
-    virtual ~CUIScrollView();
+    ~CUIScrollView() override;
 
     void Init(); // need parent to be initialized
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);

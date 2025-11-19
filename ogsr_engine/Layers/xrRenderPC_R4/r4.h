@@ -242,7 +242,7 @@ public:
 
     // Constructor/destructor/loader
     CRender();
-    virtual ~CRender();
+    ~CRender() override;
 
     void addShaderOption(const char* name, const char* value);
     void clearAllShaderOptions() { m_ShaderOptions.clear(); }

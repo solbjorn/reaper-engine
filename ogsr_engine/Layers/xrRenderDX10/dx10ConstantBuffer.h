@@ -11,8 +11,8 @@ class dx10ConstantBuffer : public xr_resource_named
     RTTI_DECLARE_TYPEINFO(dx10ConstantBuffer, xr_resource_named);
 
 public:
-    dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
-    ~dx10ConstantBuffer();
+    explicit dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
+    ~dx10ConstantBuffer() override;
 
     bool Similar(dx10ConstantBuffer& _in);
     ID3DBuffer* GetBuffer() { return m_pBuffer; }

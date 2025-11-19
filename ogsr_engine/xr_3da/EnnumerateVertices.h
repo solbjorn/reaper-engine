@@ -1,8 +1,11 @@
 #pragma once
 
-struct XR_NOVTABLE SEnumVerticesCallback
+struct XR_NOVTABLE SEnumVerticesCallback : public virtual RTTI::Enable
 {
-    virtual ~SEnumVerticesCallback() = 0;
+    RTTI_DECLARE_TYPEINFO(SEnumVerticesCallback);
+
+public:
+    ~SEnumVerticesCallback() override = 0;
 
     virtual void operator()(const Fvector& p) = 0;
 };

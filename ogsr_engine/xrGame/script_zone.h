@@ -21,7 +21,8 @@ public:
     typedef CSpaceRestrictor inherited;
 
     CScriptZone();
-    virtual ~CScriptZone();
+    ~CScriptZone() override;
+
     virtual void reinit();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

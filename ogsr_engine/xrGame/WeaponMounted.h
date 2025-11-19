@@ -32,7 +32,7 @@ private:
 
 public:
     CWeaponMounted();
-    virtual ~CWeaponMounted();
+    ~CWeaponMounted() override;
 
     // for shooting object
     virtual const Fvector& get_CurrentFirePoint() { return fire_pos; }

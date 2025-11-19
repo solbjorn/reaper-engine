@@ -30,7 +30,8 @@ CSE_ALifeDynamicObject* m_tpBestDetector{};
 u64 m_schedule_counter{std::numeric_limits<u64>::max()};
 
 explicit CSE_ALifeSchedulable(LPCSTR caSection);
-virtual ~CSE_ALifeSchedulable();
+~CSE_ALifeSchedulable() override;
+
 // we need this to prevent virtual inheritance :-(
 virtual CSE_Abstract* base() = 0;
 virtual const CSE_Abstract* base() const = 0;
@@ -69,7 +70,7 @@ shared_str m_caConnectionPointName;
 u8 m_tLocations[GameGraph::LOCATION_TYPE_COUNT];
 
 explicit CSE_ALifeGraphPoint(LPCSTR caSection);
-virtual ~CSE_ALifeGraphPoint();
+~CSE_ALifeGraphPoint() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeGraphPoint);
 
@@ -111,7 +112,7 @@ CALifeSimulator* m_alife_simulator{};
 #endif
 
 explicit CSE_ALifeObject(LPCSTR caSection);
-virtual ~CSE_ALifeObject();
+~CSE_ALifeObject() override;
 
 virtual bool used_ai_locations() const;
 virtual bool can_save() const;
@@ -156,7 +157,7 @@ u16 m_wCount;
 ALife::_TIME_ID m_tNextBirthTime;
 
 explicit CSE_ALifeGroupAbstract(LPCSTR caSection);
-virtual ~CSE_ALifeGroupAbstract();
+~CSE_ALifeGroupAbstract() override;
 
 virtual CSE_Abstract* init();
 virtual CSE_Abstract* base() = 0;
@@ -190,7 +191,7 @@ public:
         : __A{pSettings->line_exist(caSection, "monster_section") ? pSettings->r_string(caSection, "monster_section") : caSection}, CSE_ALifeGroupAbstract{caSection}
     {}
 
-    virtual ~CSE_ALifeGroupTemplate() {}
+    ~CSE_ALifeGroupTemplate() override = default;
 
     virtual void __STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
@@ -252,7 +253,7 @@ ALife::_TIME_ID m_tTimeID;
 u64 m_switch_counter;
 
 explicit CSE_ALifeDynamicObject(LPCSTR caSection);
-virtual ~CSE_ALifeDynamicObject();
+~CSE_ALifeDynamicObject() override;
 
 #ifdef XRGAME_EXPORTS
 virtual void on_spawn();
@@ -284,7 +285,7 @@ add_to_type_list(CSE_ALifeDynamicObject);
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeDynamicObjectVisual, CSE_ALifeDynamicObject, CSE_Visual)
 public:
 explicit CSE_ALifeDynamicObjectVisual(LPCSTR caSection);
-virtual ~CSE_ALifeDynamicObjectVisual();
+~CSE_ALifeDynamicObjectVisual() override;
 
 virtual CSE_Visual* visual();
 SERVER_ENTITY_DECLARE_END
@@ -297,7 +298,7 @@ add_to_type_list(CSE_ALifeDynamicObjectVisual);
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifePHSkeletonObject, CSE_ALifeDynamicObjectVisual, CSE_PHSkeleton)
 public:
 explicit CSE_ALifePHSkeletonObject(LPCSTR caSection);
-virtual ~CSE_ALifePHSkeletonObject();
+~CSE_ALifePHSkeletonObject() override;
 
 virtual bool can_save() const;
 virtual bool used_ai_locations() const;
@@ -317,7 +318,7 @@ public:
 u8 m_space_restrictor_type;
 
 explicit CSE_ALifeSpaceRestrictor(LPCSTR caSection);
-virtual ~CSE_ALifeSpaceRestrictor();
+~CSE_ALifeSpaceRestrictor() override;
 
 virtual ISE_Shape* shape();
 virtual bool __can_switch_offline() const;
@@ -340,7 +341,7 @@ shared_str m_caLevelPointToChange;
 u8 m_SilentMode;
 
 explicit CSE_ALifeLevelChanger(LPCSTR caSection);
-virtual ~CSE_ALifeLevelChanger();
+~CSE_ALifeLevelChanger() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeLevelChanger);
 
@@ -351,7 +352,7 @@ add_to_type_list(CSE_ALifeLevelChanger);
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSmartZone, CSE_ALifeSpaceRestrictor, CSE_ALifeSchedulable)
 public:
 explicit CSE_ALifeSmartZone(LPCSTR caSection);
-virtual ~CSE_ALifeSmartZone();
+~CSE_ALifeSmartZone() override;
 
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -389,7 +390,7 @@ f32 mass;
 shared_str fixed_bones;
 
 explicit CSE_ALifeObjectPhysic(LPCSTR caSection);
-virtual ~CSE_ALifeObjectPhysic();
+~CSE_ALifeObjectPhysic() override;
 
 virtual bool used_ai_locations() const;
 virtual bool can_save() const;
@@ -451,7 +452,7 @@ float m_amount = 0.f;
 float m_smap_jitter = 0.f;
 
 explicit CSE_ALifeObjectHangingLamp(LPCSTR caSection);
-virtual ~CSE_ALifeObjectHangingLamp();
+~CSE_ALifeObjectHangingLamp() override;
 
 virtual void load(NET_Packet& tNetPacket);
 virtual bool used_ai_locations() const;
@@ -469,7 +470,7 @@ add_to_type_list(CSE_ALifeObjectHangingLamp);
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectProjector, CSE_ALifeDynamicObjectVisual)
 public:
 explicit CSE_ALifeObjectProjector(LPCSTR caSection);
-virtual ~CSE_ALifeObjectProjector();
+~CSE_ALifeObjectProjector() override;
 
 virtual bool used_ai_locations() const;
 SERVER_ENTITY_DECLARE_END
@@ -484,7 +485,7 @@ public:
 shared_str engine_sound;
 
 explicit CSE_ALifeHelicopter(LPCSTR caSection);
-virtual ~CSE_ALifeHelicopter();
+~CSE_ALifeHelicopter() override;
 
 virtual void load(NET_Packet& tNetPacket);
 virtual bool can_save() const;
@@ -519,7 +520,7 @@ xr_vector<SWheelState> wheel_states;
 float health;
 
 explicit CSE_ALifeCar(LPCSTR caSection);
-virtual ~CSE_ALifeCar();
+~CSE_ALifeCar() override;
 
 virtual bool used_ai_locations() const;
 virtual void load(NET_Packet& tNetPacket);
@@ -541,7 +542,7 @@ public:
 float m_health;
 
 explicit CSE_ALifeObjectBreakable(LPCSTR caSection);
-virtual ~CSE_ALifeObjectBreakable();
+~CSE_ALifeObjectBreakable() override;
 
 virtual bool used_ai_locations() const;
 virtual bool __can_switch_offline() const;
@@ -555,7 +556,7 @@ add_to_type_list(CSE_ALifeObjectBreakable);
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable, CSE_Shape, CSE_ALifeDynamicObject)
 public:
 explicit CSE_ALifeObjectClimable(LPCSTR caSection);
-virtual ~CSE_ALifeObjectClimable();
+~CSE_ALifeObjectClimable() override;
 
 virtual bool used_ai_locations() const;
 virtual bool __can_switch_offline() const;
@@ -570,7 +571,7 @@ add_to_type_list(CSE_ALifeObjectClimable);
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMountedWeapon, CSE_ALifeDynamicObjectVisual)
 public:
 explicit CSE_ALifeMountedWeapon(LPCSTR caSection);
-virtual ~CSE_ALifeMountedWeapon();
+~CSE_ALifeMountedWeapon() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeMountedWeapon);
 
@@ -584,7 +585,7 @@ bool m_bWorking{};
 Fvector m_destEnemyDir;
 
 explicit CSE_ALifeStationaryMgun(LPCSTR caSection);
-virtual ~CSE_ALifeStationaryMgun();
+~CSE_ALifeStationaryMgun() override;
 SERVER_ENTITY_DECLARE_END
 
 // add_to_type_list(CSE_ALifeStationaryMgun);
@@ -603,6 +604,7 @@ protected:
 
 public:
     CSE_InventoryBoxAbstract() = default;
+    ~CSE_InventoryBoxAbstract() override = default;
 };
 
 class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual, public CSE_InventoryBoxAbstract
@@ -611,7 +613,7 @@ class CSE_InventoryBox : public CSE_ALifeDynamicObjectVisual, public CSE_Invento
 
 public:
     explicit CSE_InventoryBox(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual{caSection} {}
-    virtual ~CSE_InventoryBox() {}
+    ~CSE_InventoryBox() override = default;
 
 #ifdef XRGAME_EXPORTS
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)

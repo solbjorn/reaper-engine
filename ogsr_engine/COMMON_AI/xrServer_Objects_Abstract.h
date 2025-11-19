@@ -30,7 +30,7 @@ class XR_NOVTABLE ISE_Shape : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ISE_Shape);
 
 public:
-    virtual ~ISE_Shape() = 0;
+    ~ISE_Shape() override = 0;
 
     virtual void assign_shapes(CShapeData::shape_def* shapes, u32 cnt) = 0;
 };
@@ -49,7 +49,7 @@ Flags8 flags;
 
 public:
 explicit CSE_Visual(LPCSTR name = nullptr);
-virtual ~CSE_Visual();
+~CSE_Visual() override;
 
 void visual_read(NET_Packet& P, u16 version);
 void visual_write(NET_Packet& P);
@@ -71,7 +71,7 @@ shared_str motion_name;
 
 public:
 explicit CSE_Motion(LPCSTR name = nullptr);
-virtual ~CSE_Motion();
+~CSE_Motion() override;
 
 void motion_read(NET_Packet& P);
 void motion_write(NET_Packet& P);
@@ -92,7 +92,7 @@ struct XR_NOVTABLE ISE_AbstractLEOwner : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ISE_AbstractLEOwner);
 
 public:
-    virtual ~ISE_AbstractLEOwner() = 0;
+    ~ISE_AbstractLEOwner() override = 0;
 
     virtual void get_bone_xform(LPCSTR name, Fmatrix& xform) = 0;
 };
@@ -114,7 +114,7 @@ public:
     Flags32 m_editor_flags;
     IC void set_editor_flag(u32 mask) { m_editor_flags.set(mask, TRUE); }
 
-    virtual ~ISE_Abstract() = 0;
+    ~ISE_Abstract() override = 0;
 
     virtual void Spawn_Write(NET_Packet& tNetPacket, BOOL bLocal) = 0;
     virtual BOOL Spawn_Read(NET_Packet& tNetPacket) = 0;

@@ -9,7 +9,7 @@ class CRocketLauncher : public virtual RTTI::Enable
 
 public:
     CRocketLauncher();
-    ~CRocketLauncher();
+    ~CRocketLauncher() override;
 
     virtual void Load(LPCSTR section);
 
@@ -27,6 +27,7 @@ protected:
     CCustomRocket* getCurrentRocket();
     void dropCurrentRocket();
     u32 getRocketCount();
+
     // начальная скорость, придаваемая ракете во время
     // старта
     float m_fLaunchSpeed;

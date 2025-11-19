@@ -39,10 +39,10 @@ private:
 public:
     // General
     CEntityAlive();
-    virtual ~CEntityAlive();
+    ~CEntityAlive() override;
 
     // Core events
-    virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual DLL_Pure* _construct();
     virtual void Load(LPCSTR section);
     virtual void reinit();
     virtual void reload(LPCSTR section);

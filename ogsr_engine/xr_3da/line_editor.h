@@ -19,7 +19,7 @@ class line_editor : public IInputReceiver
 
 public:
     explicit line_editor(u32 str_buffer_size);
-    virtual ~line_editor();
+    ~line_editor() override;
 
     IC line_edit_control& control() { return m_control; }
 

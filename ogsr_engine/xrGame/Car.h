@@ -169,7 +169,8 @@ public:
             float mu_factor{1.0f};
         } collision_params;
 
-        SWheel(CCar* acar) : car{acar} {}
+        explicit SWheel(CCar* acar) : car{acar} {}
+        ~SWheel() override = default;
 
     private:
         static void applywheelCollisionParams(const dxGeomUserData* ud, dContact& c);
@@ -336,7 +337,8 @@ public:
         };
         eState state{closed};
 
-        SDoor(CCar* acar) : pcar{acar} {}
+        explicit SDoor(CCar* acar) : pcar{acar} {}
+        ~SDoor() override = default;
     };
 
     struct SCarSound
@@ -621,12 +623,12 @@ protected:
     void SyncNetState();
 
 public:
-    CCar(void);
-    virtual ~CCar(void);
-    virtual BOOL AlwaysTheCrow();
+    CCar();
+    ~CCar() override;
 
-public:
+    virtual BOOL AlwaysTheCrow();
     virtual CEntity* cast_entity() { return this; }
+
     bool IsEngineOn();
     bool IsLightsOn();
     void SwitchLights();

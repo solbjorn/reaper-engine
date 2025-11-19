@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "net_client.h"
+
 #include "net_server.h"
 #include "net_messages.h"
 
@@ -116,8 +117,6 @@ void IPureClient::OnMessage(void* data, u32 size) // Сюда приходят �
     P->timeReceive = timeServer_Async();
 
     u16 tmp_type;
-    P->r_begin(tmp_type);
+    std::ignore = P->r_begin(tmp_type);
     net_Queue.CreateCommit(P);
 }
-
-void IPureClient::Send(NET_Packet&, u32, u32) { FATAL(""); }

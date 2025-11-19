@@ -84,8 +84,8 @@ protected:
     virtual void state_Fire(float);
 
 public:
-    CWeaponMagazined(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
-    virtual ~CWeaponMagazined();
+    explicit CWeaponMagazined(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
+    ~CWeaponMagazined() override;
 
     virtual void Load(LPCSTR section);
     virtual CWeaponMagazined* cast_weapon_magazined() { return this; }

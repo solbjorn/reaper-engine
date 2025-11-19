@@ -20,7 +20,10 @@ protected:
 
 public:
     IInputReceiver* m_pStoredInputReceiver{};
+
     CUISequencer();
+    ~CUISequencer() override = default;
+
     void Start(LPCSTR tutor_name);
     void Stop();
     void Next();
@@ -72,8 +75,8 @@ protected:
     CUISequencer* m_owner;
 
 public:
-    CUISequenceItem(CUISequencer* owner) : m_owner(owner) { m_flags.zero(); }
-    virtual ~CUISequenceItem() = 0;
+    explicit CUISequenceItem(CUISequencer* owner) : m_owner(owner) { m_flags.zero(); }
+    ~CUISequenceItem() override = 0;
 
     virtual void Load(CUIXml* xml, int idx) = 0;
 
@@ -128,8 +131,8 @@ public:
     };
     xr_vector<SActionItem> m_actions;
 
-    CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem{owner} {}
-    virtual ~CUISequenceSimpleItem();
+    explicit CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem{owner} {}
+    ~CUISequenceSimpleItem() override;
 
     virtual void Load(CUIXml* xml, int idx);
 
@@ -163,8 +166,9 @@ public:
     u32 m_time_start{};
     u32 m_sync_time{};
 
-    CUISequenceVideoItem(CUISequencer* owner);
-    virtual ~CUISequenceVideoItem();
+    explicit CUISequenceVideoItem(CUISequencer* owner);
+    ~CUISequenceVideoItem() override;
+
     virtual void Load(CUIXml* xml, int idx);
 
     virtual void Start();

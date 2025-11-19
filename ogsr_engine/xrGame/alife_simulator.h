@@ -21,8 +21,8 @@ protected:
     void reload(LPCSTR section) override;
 
 public:
-    CALifeSimulator(xrServer* server, shared_str* command_line);
-    virtual ~CALifeSimulator();
+    explicit CALifeSimulator(xrServer* server, shared_str* command_line);
+    ~CALifeSimulator() override;
 
     void destroy() override;
 
@@ -47,5 +47,3 @@ namespace detail
 {
 bool object_exists_in_alife_registry(u32 id);
 }
-
-#include "alife_simulator_inline.h"

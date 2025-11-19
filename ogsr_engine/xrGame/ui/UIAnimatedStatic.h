@@ -42,6 +42,7 @@ private:
 
 public:
     CUIAnimatedStatic();
+    ~CUIAnimatedStatic() override = default;
 
     // Устанавливаем параметры
     void SetOffset(float x, float y) { m_pos.set(x, y); }

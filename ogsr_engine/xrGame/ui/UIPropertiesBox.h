@@ -14,7 +14,7 @@ private:
 
 public:
     CUIPropertiesBox();
-    virtual ~CUIPropertiesBox();
+    ~CUIPropertiesBox() override;
 
     virtual void Init(float x, float y, float width, float height);
 

@@ -42,7 +42,7 @@ public:
 
 public:
     CEffectorZoomInertion();
-    virtual ~CEffectorZoomInertion();
+    ~CEffectorZoomInertion() override;
 
     void Load();
     void SetParams(float disp);

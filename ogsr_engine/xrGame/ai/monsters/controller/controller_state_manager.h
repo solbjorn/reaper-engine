@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../monster_state_manager.h"
 
 class CController;
 
 class CStateManagerController : public CMonsterStateManager<CController>
 {
+    RTTI_DECLARE_TYPEINFO(CStateManagerController, CMonsterStateManager<CController>);
+
+private:
     typedef CMonsterStateManager<CController> inherited;
 
 public:
-    CStateManagerController(CController* obj);
-    virtual ~CStateManagerController();
+    explicit CStateManagerController(CController* obj);
+    ~CStateManagerController() override;
 
     virtual void reinit();
     virtual void execute();

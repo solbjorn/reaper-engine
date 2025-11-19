@@ -11,7 +11,8 @@ public:
     shared_str m_destroy_particles;
 
     CDestroyablePhysicsObject();
-    virtual ~CDestroyablePhysicsObject();
+    ~CDestroyablePhysicsObject() override;
+
     virtual CPhysicsShellHolder* PPhysicsShellHolder();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

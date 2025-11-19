@@ -92,7 +92,7 @@ private:
 
 public:
     explicit ISpatial(ISpatial_DB* space) : spatial{space} {}
-    virtual ~ISpatial();
+    ~ISpatial() override;
 
     [[nodiscard]] bool spatial_inside() const;
     virtual void spatial_register();

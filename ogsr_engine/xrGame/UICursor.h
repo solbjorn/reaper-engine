@@ -10,14 +10,14 @@ class CUICursor : public pureRender
     RTTI_DECLARE_TYPEINFO(CUICursor, pureRender);
 
 public:
-    bool bVisible{};
     Fvector2 vPos{}, vPrevPos{};
     std::unique_ptr<CUIStatic> m_static;
-
-    void InitInternal();
+    bool bVisible{};
 
     CUICursor();
-    virtual ~CUICursor();
+    ~CUICursor() override;
+
+    void InitInternal();
     void OnRender() override;
 
     Fvector2 GetCursorPositionDelta() const;

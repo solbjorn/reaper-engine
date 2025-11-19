@@ -7,17 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "eatable_item_object.h"
 
-CEatableItemObject::CEatableItemObject() {}
-
-CEatableItemObject::~CEatableItemObject() {}
+CEatableItemObject::CEatableItemObject() = default;
+CEatableItemObject::~CEatableItemObject() = default;
 
 DLL_Pure* CEatableItemObject::_construct()
 {
     CEatableItem::_construct();
-    CPhysicItem::_construct();
-    return (this);
+    std::ignore = CPhysicItem::_construct();
+
+    return this;
 }
 
 void CEatableItemObject::Load(LPCSTR section)

@@ -12,6 +12,7 @@ class IMainMenu;
 class CPS_Instance;
 
 //-----------------------------------------------------------------------------------------------------------
+
 class XR_NOVTABLE IGame_Persistent : public DLL_Pure, public pureAppStart, public pureAppEnd, public pureAppActivate, public pureAppDeactivate, public pureFrame
 {
     RTTI_DECLARE_TYPEINFO(IGame_Persistent, DLL_Pure, pureAppStart, pureAppEnd, pureAppActivate, pureAppDeactivate, pureFrame);
@@ -116,7 +117,7 @@ public:
     virtual float MtlTransparent(u32 mtl_idx) = 0;
 
     IGame_Persistent();
-    virtual ~IGame_Persistent();
+    ~IGame_Persistent() override;
 
     u32 GameType() { return m_game_params.m_e_game_type; }
     virtual void Statistics(CGameFont* F) = 0;
@@ -131,7 +132,7 @@ class XR_NOVTABLE IMainMenu : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IMainMenu);
 
 public:
-    virtual ~IMainMenu() = 0;
+    ~IMainMenu() override = 0;
 
     virtual void Activate(bool bActive) = 0;
     virtual bool IsActive() = 0;

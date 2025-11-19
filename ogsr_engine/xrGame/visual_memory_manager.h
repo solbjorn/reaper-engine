@@ -85,10 +85,11 @@ private:
     void initialize();
 
 public:
-    CVisualMemoryManager(CCustomMonster* object);
-    CVisualMemoryManager(CAI_Stalker* stalker);
-    CVisualMemoryManager(vision_client* client);
-    virtual ~CVisualMemoryManager();
+    explicit CVisualMemoryManager(CCustomMonster* object);
+    explicit CVisualMemoryManager(CAI_Stalker* stalker);
+    explicit CVisualMemoryManager(vision_client* client);
+    ~CVisualMemoryManager() override;
+
     virtual void reinit();
     virtual void reload(LPCSTR section);
     virtual void update(float time_delta);

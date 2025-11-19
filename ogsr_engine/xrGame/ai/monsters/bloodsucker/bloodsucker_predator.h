@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateBloodsuckerPredator : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBloodsuckerPredator<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::current_substate;
@@ -18,7 +21,8 @@ class CStateBloodsuckerPredator : public CState<_Object>
     u32 m_time_start_camp;
 
 public:
-    CStateBloodsuckerPredator(_Object* obj);
+    explicit CStateBloodsuckerPredator(_Object* obj);
+    ~CStateBloodsuckerPredator() override = default;
 
     virtual void reinit();
 

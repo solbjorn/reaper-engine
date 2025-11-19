@@ -46,8 +46,9 @@ private:
     bool prepared_inside(const Fsphere& sphere) const;
 
 public:
-    IC CSpaceRestrictor();
-    virtual ~CSpaceRestrictor();
+    inline CSpaceRestrictor();
+    ~CSpaceRestrictor() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
     bool inside(const Fsphere& sphere);

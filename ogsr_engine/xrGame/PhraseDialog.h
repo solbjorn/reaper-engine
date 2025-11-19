@@ -14,7 +14,7 @@ struct SPhraseDialogData : CSharedResource
 
 public:
     SPhraseDialogData();
-    virtual ~SPhraseDialogData();
+    ~SPhraseDialogData() override;
 
     // заголовок диалога, если NULL, то принимается за стартовую фразу
     shared_str m_sCaption;
@@ -53,7 +53,7 @@ private:
 
 public:
     CPhraseDialog();
-    virtual ~CPhraseDialog();
+    ~CPhraseDialog() override;
 
     virtual void Load(shared_str dialog_id);
 

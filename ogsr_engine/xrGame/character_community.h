@@ -31,7 +31,7 @@ private:
 
 public:
     CHARACTER_COMMUNITY();
-    ~CHARACTER_COMMUNITY();
+    ~CHARACTER_COMMUNITY() override;
 
     void set(CHARACTER_COMMUNITY_ID);
     void set(CHARACTER_COMMUNITY_INDEX index) { m_current_index = index; }

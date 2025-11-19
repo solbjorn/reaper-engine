@@ -14,6 +14,9 @@
 
 class CSleepEffectorPP : public CEffectorPP
 {
+    RTTI_DECLARE_TYPEINFO(CSleepEffectorPP, CEffectorPP);
+
+private:
     typedef CEffectorPP inherited;
 
     SPPInfo state; // current state
@@ -22,7 +25,9 @@ class CSleepEffectorPP : public CEffectorPP
     float m_release; // release time in percents	[0..1]
 
 public:
-    CSleepEffectorPP(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f);
+    explicit CSleepEffectorPP(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f);
+    ~CSleepEffectorPP() override = default;
+
     virtual BOOL Process(SPPInfo& pp);
 
     // текущий статус сна

@@ -17,7 +17,7 @@ protected:
 
 public:
     CWeaponSVD();
-    virtual ~CWeaponSVD();
+    ~CWeaponSVD() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -121,7 +121,7 @@ public:
 
 public:
     CBurer();
-    virtual ~CBurer();
+    ~CBurer() override;
 
     virtual void reinit();
     virtual void reload(LPCSTR section);

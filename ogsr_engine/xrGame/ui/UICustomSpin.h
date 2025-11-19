@@ -21,7 +21,7 @@ class XR_NOVTABLE CUICustomSpin : public CUIWindow, public CUIOptionsItem
 
 public:
     CUICustomSpin();
-    virtual ~CUICustomSpin();
+    ~CUICustomSpin() override;
 
     // CUIWindow
     void Init(float x, float y, float width, float) override;

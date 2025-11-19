@@ -7,7 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "alife_surge_manager.h"
+
 #include "alife_object_registry.h"
 #include "alife_spawn_registry.h"
 #include "alife_time_manager.h"
@@ -22,8 +24,6 @@
 #include "alife_human_brain.h"
 
 using namespace ALife;
-
-CALifeSurgeManager::~CALifeSurgeManager() {}
 
 void CALifeSurgeManager::spawn_new_spawns()
 {

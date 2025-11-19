@@ -25,6 +25,8 @@ public:
     float m_radius;
     flags m_mask;
 
+    ~CDangerLocation() override = 0;
+
     inline bool operator==(const Fvector& position) const;
     inline virtual bool operator==(const CObject*) const;
 
@@ -32,5 +34,7 @@ public:
     virtual const Fvector& position() const = 0;
     inline const flags& mask() const;
 };
+
+inline CDangerLocation::~CDangerLocation() = default;
 
 #include "danger_location_inline.h"

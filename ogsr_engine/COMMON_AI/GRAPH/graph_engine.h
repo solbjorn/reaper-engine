@@ -55,7 +55,7 @@ public:
 
 public:
     inline explicit CGraphEngine(u32 max_vertex_count);
-    virtual ~CGraphEngine();
+    inline ~CGraphEngine() override;
 
     IC const CSolverAlgorithm& solver_algorithm() const;
 

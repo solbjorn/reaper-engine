@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "../telekinesis.h"
 #include "../energy_holder.h"
@@ -49,7 +50,7 @@ public:
     bool m_detect_without_sight;
 
     CPoltergeist();
-    virtual ~CPoltergeist();
+    ~CPoltergeist() override;
 
     virtual void Load(LPCSTR section);
     virtual void reload(LPCSTR section);
@@ -176,8 +177,8 @@ protected:
     CPoltergeist* m_object;
 
 public:
-    CPolterSpecialAbility(CPoltergeist* polter);
-    virtual ~CPolterSpecialAbility();
+    explicit CPolterSpecialAbility(CPoltergeist* polter);
+    ~CPolterSpecialAbility() override;
 
     virtual void load(LPCSTR section);
     virtual void update_schedule();
@@ -192,6 +193,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // Flame
 //////////////////////////////////////////////////////////////////////////
+
 class CPolterFlame : public CPolterSpecialAbility
 {
     RTTI_DECLARE_TYPEINFO(CPolterFlame, CPolterSpecialAbility);
@@ -261,8 +263,8 @@ private:
     FLAME_ELEMS_VEC m_flames;
 
 public:
-    CPolterFlame(CPoltergeist* polter);
-    virtual ~CPolterFlame();
+    explicit CPolterFlame(CPoltergeist* polter);
+    ~CPolterFlame() override;
 
     virtual void load(LPCSTR section);
     virtual void update_schedule();
@@ -278,6 +280,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 // TELE
 //////////////////////////////////////////////////////////////////////////
+
 class CPolterTele : public CPolterSpecialAbility
 {
     RTTI_DECLARE_TYPEINFO(CPolterTele, CPolterSpecialAbility);
@@ -319,8 +322,8 @@ public:
     u32 m_time_next;
 
 public:
-    CPolterTele(CPoltergeist* polter);
-    virtual ~CPolterTele();
+    explicit CPolterTele(CPoltergeist* polter);
+    ~CPolterTele() override;
 
     virtual void load(LPCSTR section);
     virtual void update_schedule();

@@ -33,9 +33,8 @@ class CALifeRegistryWrapperObject : public virtual RTTI::Enable
 public:
     T* m_registry;
 
-    IC CALifeRegistryWrapperObject() { m_registry = xr_new<T>(); }
-
-    virtual ~CALifeRegistryWrapperObject() { xr_delete(m_registry); }
+    CALifeRegistryWrapperObject() { m_registry = xr_new<T>(); }
+    ~CALifeRegistryWrapperObject() override { xr_delete(m_registry); }
 
     IC T& registry() const
     {
@@ -47,39 +46,63 @@ public:
 class CKnownContactsRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CKnownContactsRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CKnownContactsRegistry>>);
+
+public:
+    ~CKnownContactsRegistryWrapper() override = default;
 };
 
 class CEncyclopediaRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CEncyclopediaRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CEncyclopediaRegistry>>);
+
+public:
+    ~CEncyclopediaRegistryWrapper() override = default;
 };
 
 class CGameNewsRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CGameNewsRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameNewsRegistry>>);
+
+public:
+    ~CGameNewsRegistryWrapper() override = default;
 };
 
 class CInfoPortionWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CInfoPortionWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CInfoPortionRegistry>>);
+
+public:
+    ~CInfoPortionWrapper() override = default;
 };
 
 class CRelationRegistryWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CRelationRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CRelationRegistryWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CRelationRegistry>>);
+
+public:
+    ~CRelationRegistryWrapper() override = default;
 };
 
 class CMapLocationWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CMapLocationRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CMapLocationWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CMapLocationRegistry>>);
+
+public:
+    ~CMapLocationWrapper() override = default;
 };
 
 class CGameTaskWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameTaskRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CGameTaskWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CGameTaskRegistry>>);
+
+public:
+    ~CGameTaskWrapper() override = default;
 };
 
 class CActorStatisticsWrapper : public CALifeRegistryWrapperObject<CALifeRegistryWrapper<CActorStatisticRegistry>>
 {
     RTTI_DECLARE_TYPEINFO(CActorStatisticsWrapper, CALifeRegistryWrapperObject<CALifeRegistryWrapper<CActorStatisticRegistry>>);
+
+public:
+    ~CActorStatisticsWrapper() override = default;
 };

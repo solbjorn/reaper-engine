@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../action_planner.h"
 #include "../property_evaluator_const.h"
 
@@ -15,7 +16,8 @@ private:
 
 public:
     CMapActionPlanner();
-    virtual ~CMapActionPlanner();
+    ~CMapActionPlanner() override;
+
     virtual void setup(CUIMapWnd* object);
     virtual LPCSTR object_name() const;
 };

@@ -31,7 +31,7 @@ public:
 #endif
 
     CUIStaticItem();
-    virtual ~CUIStaticItem();
+    ~CUIStaticItem() override;
 
     void SetAlphaRef(int val) { alpha_ref = val; }
 

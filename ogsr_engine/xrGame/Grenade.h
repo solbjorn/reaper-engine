@@ -14,7 +14,7 @@ public:
     typedef CMissile inherited;
 
     CGrenade();
-    virtual ~CGrenade();
+    ~CGrenade() override;
 
     virtual void Load(LPCSTR section);
 

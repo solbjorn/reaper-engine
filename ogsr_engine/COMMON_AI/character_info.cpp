@@ -18,7 +18,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 SCharacterProfile::SCharacterProfile() = default;
-SCharacterProfile::~SCharacterProfile() {}
+SCharacterProfile::~SCharacterProfile() = default;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ CCharacterInfo::CCharacterInfo()
 #endif
 }
 
-CCharacterInfo::~CCharacterInfo() {}
+CCharacterInfo::~CCharacterInfo() = default;
 
 void CCharacterInfo::Load(shared_str id)
 {

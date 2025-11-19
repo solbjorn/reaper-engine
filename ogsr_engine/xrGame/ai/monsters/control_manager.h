@@ -39,7 +39,7 @@ class CControl_Manager
     CControlPathBuilder* m_path;
 
 public:
-    CControl_Manager(CBaseMonster*);
+    explicit CControl_Manager(CBaseMonster*);
     ~CControl_Manager();
 
     // common routines

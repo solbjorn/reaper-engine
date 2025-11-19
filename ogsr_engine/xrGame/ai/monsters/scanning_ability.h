@@ -1,8 +1,11 @@
 #pragma once
 
 template <typename _Object>
-class CScanningAbility
+class CScanningAbility : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CScanningAbility<_Object>);
+
+private:
     _Object* object;
 
     // external members
@@ -34,6 +37,8 @@ class CScanningAbility
     bool m_this_scan;
 
 public:
+    ~CScanningAbility() override = default;
+
     void init_external(_Object* obj) { object = obj; }
     void on_destroy();
 

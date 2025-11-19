@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "PHWorld.h"
+
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
 #include "Level.h"
@@ -9,14 +10,14 @@
 #include "PHCollideValidator.h"
 #include "../xr_3da/gamemtllib.h"
 
-#ifdef DEBUG
-#include "PHDebug.h"
-#endif
-
 #include "PHCommander.h"
 #include "PHSimpleCalls.h"
 #include "PHSynchronize.h"
 #include "phnetstate.h"
+
+#ifdef DEBUG
+#include "PHDebug.h"
+#endif
 
 //////////////////////////////////////////////////////////////
 //////////////CPHMesh///////////////////////////////////////////
@@ -65,6 +66,8 @@ CPHWorld::CPHWorld()
     m_gravity = default_world_gravity;
     b_exist = false;
 }
+
+CPHWorld::~CPHWorld() = default;
 
 void CPHWorld::SetStep(dReal s)
 {

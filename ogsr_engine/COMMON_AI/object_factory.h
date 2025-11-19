@@ -54,7 +54,7 @@ protected:
 
 public:
     CObjectFactory();
-    virtual ~CObjectFactory();
+    ~CObjectFactory() override;
 
     void init();
     IC CLIENT_BASE_CLASS* client_object(const CLASS_ID& clsid) const;

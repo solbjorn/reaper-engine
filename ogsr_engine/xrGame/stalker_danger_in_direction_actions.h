@@ -16,11 +16,15 @@
 
 class CStalkerActionDangerInDirectionTakeCover : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionTakeCover, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerInDirectionTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerInDirectionTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerInDirectionTakeCover() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -32,11 +36,15 @@ public:
 
 class CStalkerActionDangerInDirectionLookOut : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionLookOut, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerInDirectionLookOut(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerInDirectionLookOut() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -48,11 +56,15 @@ public:
 
 class CStalkerActionDangerInDirectionHoldPosition : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionHoldPosition, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerInDirectionHoldPosition(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerInDirectionHoldPosition(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerInDirectionHoldPosition() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -64,11 +76,15 @@ public:
 
 class CStalkerActionDangerInDirectionDetour : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionDetour, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerInDirectionDetour(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerInDirectionDetour(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerInDirectionDetour() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -80,11 +96,15 @@ public:
 
 class CStalkerActionDangerInDirectionSearch : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerInDirectionSearch, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerInDirectionSearch(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerInDirectionSearch(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerInDirectionSearch() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();

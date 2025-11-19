@@ -1,10 +1,14 @@
 #pragma once
+
 #include "../state.h"
 #include "state_data.h"
 
 template <typename _Object>
 class CStateMonsterMoveToPoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToPoint<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -12,8 +16,8 @@ class CStateMonsterMoveToPoint : public CState<_Object>
     SStateDataMoveToPoint data;
 
 public:
-    CStateMonsterMoveToPoint(_Object* obj) : inherited(obj, &data) {}
-    virtual ~CStateMonsterMoveToPoint() {}
+    explicit CStateMonsterMoveToPoint(_Object* obj) : inherited{obj, &data} {}
+    ~CStateMonsterMoveToPoint() override = default;
 
     virtual void initialize();
     virtual void execute();
@@ -25,6 +29,9 @@ public:
 template <typename _Object>
 class CStateMonsterMoveToPointEx : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterMoveToPointEx<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -33,8 +40,9 @@ protected:
     SStateDataMoveToPointEx data;
 
 public:
-    CStateMonsterMoveToPointEx(_Object* obj) : inherited(obj, &data) {}
-    virtual ~CStateMonsterMoveToPointEx() {}
+    explicit CStateMonsterMoveToPointEx(_Object* obj) : inherited{obj, &data} {}
+    ~CStateMonsterMoveToPointEx() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual bool check_completion();

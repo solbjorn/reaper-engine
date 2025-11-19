@@ -30,7 +30,8 @@ protected:
     IC virtual void after_search();
 
 public:
-    IC CBasePathManager(CRestrictedObject* object);
+    inline explicit CBasePathManager(CRestrictedObject* object);
+    ~CBasePathManager() override = default;
 
     IC virtual void reinit(const CGameGraph* graph = nullptr);
     IC bool actual() const;

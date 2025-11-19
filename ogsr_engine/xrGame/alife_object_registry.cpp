@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_object_registry.h"
+
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "ai_debug.h"
 
@@ -114,17 +115,18 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
     // Spawn
     tNetPacket.B.count = file_stream.r_u16();
     file_stream.r(tNetPacket.B.data, tNetPacket.B.count);
-    tNetPacket.r_begin(u_id);
+
+    std::ignore = tNetPacket.r_begin(u_id);
     R_ASSERT2(M_SPAWN == u_id, "Invalid packet ID (!= M_SPAWN)");
 
     string64 s_name;
     tNetPacket.r_stringZ(s_name);
+
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
-    {
         Msg("Loading object %s", s_name);
-    }
 #endif
+
     // create entity
     CSE_Abstract* tpSE_Abstract = F_entity_Create(s_name);
     R_ASSERT2(tpSE_Abstract, "Can't create entity.");
@@ -135,11 +137,12 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
     // Update
     tNetPacket.B.count = file_stream.r_u16();
     file_stream.r(tNetPacket.B.data, tNetPacket.B.count);
-    tNetPacket.r_begin(u_id);
+
+    std::ignore = tNetPacket.r_begin(u_id);
     R_ASSERT2(M_UPDATE == u_id, "Invalid packet ID (!= M_UPDATE)");
     tpALifeDynamicObject->UPDATE_Read(tNetPacket);
 
-    return (tpALifeDynamicObject);
+    return tpALifeDynamicObject;
 }
 
 void CALifeObjectRegistry::load(IReader& file_stream)

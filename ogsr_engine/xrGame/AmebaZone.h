@@ -10,7 +10,7 @@ public:
     float m_fVelocityLimit{1.0f};
 
     CAmebaZone();
-    virtual ~CAmebaZone();
+    ~CAmebaZone() override;
 
     virtual void Affect(SZoneObjectInfo* O);
 

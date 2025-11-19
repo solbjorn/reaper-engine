@@ -12,7 +12,7 @@ struct CFontManager : public pureDeviceReset
 
 public:
     CFontManager();
-    ~CFontManager();
+    ~CFontManager() override;
 
     xr_vector<CGameFont*> m_all_fonts;
 
@@ -60,7 +60,7 @@ private:
 
 public:
     CHUDManager();
-    virtual ~CHUDManager();
+    ~CHUDManager() override;
 
     void OnEvent(EVENT, u64, u64) override;
 

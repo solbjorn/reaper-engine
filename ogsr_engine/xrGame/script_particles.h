@@ -17,12 +17,15 @@ class CScriptParticles;
 
 class CScriptParticlesCustom : public CParticlesObject
 {
+    RTTI_DECLARE_TYPEINFO(CScriptParticlesCustom, CParticlesObject);
+
+private:
     CObjectAnimator* m_animator{};
     CScriptParticles* m_owner;
 
 public:
-    CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
-    virtual ~CScriptParticlesCustom();
+    explicit CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
+    ~CScriptParticlesCustom() override;
 
     virtual void shedule_Update(u32 dt);
 
@@ -44,8 +47,9 @@ private:
 
 public:
     CScriptParticlesCustom* m_particles;
-    CScriptParticles(LPCSTR caParticlesName);
-    virtual ~CScriptParticles();
+
+    explicit CScriptParticles(LPCSTR caParticlesName);
+    ~CScriptParticles() override;
 
     void Play(bool bHudMode = false) const;
     void PlayAtPos(const Fvector& pos, bool bHudMode = false);

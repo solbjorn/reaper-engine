@@ -13,6 +13,8 @@ public:
     bool m_forced_physics_control;
 
     CPHAICharacter();
+    ~CPHAICharacter() override = default;
+
     virtual CPHAICharacter* CastAICharacter() { return this; }
     virtual void SetPosition(Fvector pos);
     virtual void SetDesiredPosition(const Fvector& pos) { m_vDesiredPosition.set(pos); }
@@ -25,6 +27,7 @@ public:
     virtual void SetForcedPhysicsControl(bool v) { m_forced_physics_control = v; }
     virtual bool ForcedPhysicsControl() { return m_forced_physics_control; }
     virtual void Create(dVector3 sizes);
+
 #ifdef DEBUG
     virtual void OnRender();
 #endif

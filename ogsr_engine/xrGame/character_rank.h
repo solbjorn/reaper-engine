@@ -33,7 +33,7 @@ private:
 
 public:
     CHARACTER_RANK() = default;
-    ~CHARACTER_RANK() = default;
+    ~CHARACTER_RANK() override = default;
 
     void set(CHARACTER_RANK_VALUE);
 

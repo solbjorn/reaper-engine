@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateMonsterHearInterestingSound : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHearInterestingSound<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -17,8 +19,8 @@ protected:
     using inherited::select_state;
 
 public:
-    CStateMonsterHearInterestingSound(_Object* obj);
-    virtual ~CStateMonsterHearInterestingSound() {}
+    explicit CStateMonsterHearInterestingSound(_Object* obj);
+    ~CStateMonsterHearInterestingSound() override = default;
 
     virtual void reselect_state();
     virtual void setup_substates();

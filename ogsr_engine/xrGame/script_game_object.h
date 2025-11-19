@@ -147,8 +147,9 @@ public:
     mutable CGameObject* m_game_object;
     mutable lua_State* m_lua_state{};
 
-    CScriptGameObject(CGameObject* tpGameObject);
-    virtual ~CScriptGameObject();
+    explicit CScriptGameObject(CGameObject* tpGameObject);
+    ~CScriptGameObject() override;
+
     operator CObject*();
 
     IC CGameObject& object() const;

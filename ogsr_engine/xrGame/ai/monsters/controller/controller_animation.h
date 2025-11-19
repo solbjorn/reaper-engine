@@ -87,6 +87,8 @@ private:
     bool m_wait_torso_anim_end;
 
 public:
+    ~CControllerAnimation() override = default;
+
     virtual void reinit();
     virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
     virtual void on_start_control(ControlCom::EControlType type);

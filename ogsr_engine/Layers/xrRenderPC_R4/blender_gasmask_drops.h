@@ -10,5 +10,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_gasmask_drops();
-    virtual ~CBlender_gasmask_drops();
+    ~CBlender_gasmask_drops() override;
 };

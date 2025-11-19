@@ -13,7 +13,8 @@ struct intrusive_base : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(intrusive_base);
 
 public:
-    intrusive_base() : m_ref_count(0) {}
+    intrusive_base() = default;
+    ~intrusive_base() override = default;
 
     template <typename T>
     void release(T* object)
@@ -26,13 +27,11 @@ public:
     }
 
     void acquire() { ++m_ref_count; }
-
-    bool release() { return --m_ref_count == 0; }
-
-    bool released() const { return m_ref_count == 0; }
+    [[nodiscard]] bool release() { return --m_ref_count == 0; }
+    [[nodiscard]] bool released() const { return m_ref_count == 0; }
 
 private:
-    size_t m_ref_count;
+    std::atomic<gsl::index> m_ref_count{};
 };
 
 template <typename ObjectType, typename BaseType = intrusive_base>

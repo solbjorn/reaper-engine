@@ -29,7 +29,7 @@ public:
     static CSE_ALifeDynamicObject* get_object(IReader& file_stream);
 
     CALifeObjectRegistry();
-    virtual ~CALifeObjectRegistry();
+    ~CALifeObjectRegistry() override;
 
     virtual void save(IWriter& memory_stream);
     void load(IReader& file_stream);

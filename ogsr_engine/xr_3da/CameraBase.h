@@ -51,7 +51,7 @@ public:
 
 public:
     explicit CCameraBase(CObject* p, u32 flags);
-    virtual ~CCameraBase();
+    ~CCameraBase() override;
 
     virtual void Load(LPCSTR section);
 

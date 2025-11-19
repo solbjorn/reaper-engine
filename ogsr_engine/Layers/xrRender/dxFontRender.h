@@ -9,7 +9,7 @@ class dxFontRender : public IFontRender
 
 public:
     dxFontRender();
-    virtual ~dxFontRender();
+    ~dxFontRender() override;
 
     virtual void Initialize(LPCSTR cShader, LPCSTR cTexture);
     virtual void OnRender(CGameFont& owner);

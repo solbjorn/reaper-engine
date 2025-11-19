@@ -16,15 +16,18 @@ class CScriptGameObject;
 
 class CScriptMonsterAction : public CScriptAbstractAction
 {
+    RTTI_DECLARE_TYPEINFO(CScriptMonsterAction, CScriptAbstractAction);
+
 public:
     MonsterSpace::EScriptMonsterGlobalAction m_tAction;
     CObject* m_tObject{};
 
 public:
-    IC CScriptMonsterAction();
-    IC CScriptMonsterAction(MonsterSpace::EScriptMonsterGlobalAction action);
-    IC CScriptMonsterAction(MonsterSpace::EScriptMonsterGlobalAction action, CScriptGameObject* tObj);
-    virtual ~CScriptMonsterAction();
+    inline CScriptMonsterAction();
+    inline explicit CScriptMonsterAction(MonsterSpace::EScriptMonsterGlobalAction action);
+    inline explicit CScriptMonsterAction(MonsterSpace::EScriptMonsterGlobalAction action, CScriptGameObject* tObj);
+    ~CScriptMonsterAction() override;
+
     void SetObject(CScriptGameObject* tObj);
 
     inline void clone(const CScriptMonsterAction& from);

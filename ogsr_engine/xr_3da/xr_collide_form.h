@@ -124,7 +124,7 @@ private:
 
 public:
     explicit ICollisionForm(CObject* _owner, ECollisionFormType tp);
-    virtual ~ICollisionForm() = 0;
+    ~ICollisionForm() override = 0;
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R) = 0;
     // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags)	= 0;
@@ -220,6 +220,7 @@ private:
 
 public:
     explicit CCF_Skeleton(CObject* _owner);
+    ~CCF_Skeleton() override = default;
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
 
@@ -311,6 +312,7 @@ public:
     xr_vector<shape_def> shapes;
 
     explicit CCF_Shape(CObject* _owner);
+    ~CCF_Shape() override = default;
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
     // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);

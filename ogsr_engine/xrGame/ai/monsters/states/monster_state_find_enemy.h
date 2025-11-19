@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateMonsterFindEnemy : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterFindEnemy<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -17,8 +19,9 @@ protected:
     using inherited::select_state;
 
 public:
-    CStateMonsterFindEnemy(_Object* obj);
-    virtual ~CStateMonsterFindEnemy();
+    explicit CStateMonsterFindEnemy(_Object* obj);
+    ~CStateMonsterFindEnemy() override;
+
     virtual void remove_links(CObject* object) { inherited::remove_links(object); }
 
     virtual void reselect_state();

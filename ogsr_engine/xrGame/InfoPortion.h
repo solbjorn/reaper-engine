@@ -15,7 +15,7 @@ struct SInfoPortionData : CSharedResource
 
 public:
     SInfoPortionData();
-    virtual ~SInfoPortionData();
+    ~SInfoPortionData() override;
 
     // массив с именами диалогов, которые могут быть инициированы
     // из этого InfoPortion
@@ -55,7 +55,7 @@ private:
 
 public:
     CInfoPortion();
-    virtual ~CInfoPortion();
+    ~CInfoPortion() override;
 
     // инициализация info данными
     // если info с таким id раньше не использовался

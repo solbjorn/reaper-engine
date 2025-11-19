@@ -17,8 +17,8 @@ private:
     u32 m_time_next_updated;
 
 public:
-    CStateControlCamp(_Object* obj) : inherited(obj) {}
-    virtual ~CStateControlCamp() {}
+    explicit CStateControlCamp(_Object* obj) : inherited{obj} {}
+    ~CStateControlCamp() override = default;
 
     virtual void initialize();
     virtual void execute();

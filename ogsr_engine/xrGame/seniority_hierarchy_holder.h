@@ -29,8 +29,9 @@ private:
     TEAM_REGISTRY m_teams;
 
 public:
-    IC CSeniorityHierarchyHolder();
-    virtual ~CSeniorityHierarchyHolder();
+    inline CSeniorityHierarchyHolder();
+    ~CSeniorityHierarchyHolder() override;
+
     CTeamHierarchyHolder& team(u32 team_id);
     IC const TEAM_REGISTRY& teams() const;
 };

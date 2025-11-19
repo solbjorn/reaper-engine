@@ -32,6 +32,7 @@ extern int g_3dscopes_fps_factor;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
+
 class XR_NOVTABLE IRender_Light : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(IRender_Light, xr_resource);
@@ -73,7 +74,7 @@ public:
 
     virtual void set_moveable(bool) = 0;
 
-    virtual ~IRender_Light();
+    ~IRender_Light() override;
 };
 
 struct resptrcode_light : public resptr_base<IRender_Light>
@@ -85,12 +86,13 @@ typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Glow)
+
 class XR_NOVTABLE IRender_Glow : public xr_resource
 {
     RTTI_DECLARE_TYPEINFO(IRender_Glow, xr_resource);
 
 public:
-    virtual ~IRender_Glow();
+    ~IRender_Glow() override;
 
     [[nodiscard]] virtual bool get_active() const = 0;
     virtual void set_active(bool) = 0;
@@ -111,6 +113,7 @@ typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Per-object render-specific data)
+
 class XR_NOVTABLE IRender_ObjectSpecific : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_ObjectSpecific);
@@ -129,13 +132,14 @@ public:
     virtual float get_luminocity_hemi() = 0;
     virtual float* get_luminocity_hemi_cube() = 0;
 
-    virtual ~IRender_ObjectSpecific() = 0;
+    ~IRender_ObjectSpecific() override = 0;
 };
 
 inline IRender_ObjectSpecific::~IRender_ObjectSpecific() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
+
 class XR_NOVTABLE IRender_Target : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_Target);
@@ -157,7 +161,7 @@ public:
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
 
-    virtual ~IRender_Target() = 0;
+    ~IRender_Target() override = 0;
 };
 
 inline IRender_Target::~IRender_Target() = default;
@@ -268,7 +272,7 @@ public:
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr) = 0;
 
     // Constructor/destructor
-    virtual ~IRender_interface() = 0;
+    ~IRender_interface() override = 0;
 
 protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name) = 0;
@@ -281,7 +285,7 @@ class XR_NOVTABLE ITexture : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ITexture);
 
 public:
-    virtual ~ITexture() = 0;
+    ~ITexture() override = 0;
 
     virtual const char* GetName() const = 0;
 
@@ -296,7 +300,7 @@ class XR_NOVTABLE IResourceManager : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IResourceManager);
 
 public:
-    virtual ~IResourceManager() = 0;
+    ~IResourceManager() override = 0;
 
     virtual xr_vector<ITexture*> FindTexture(const char* Name) const = 0;
 };

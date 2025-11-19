@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_point();
-    virtual ~CBlender_accum_point();
+    ~CBlender_accum_point() override;
 };
 
 class CBlender_accum_point_msaa : public IBlender
@@ -23,7 +23,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_point_msaa();
-    virtual ~CBlender_accum_point_msaa();
+    ~CBlender_accum_point_msaa() override;
 
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {

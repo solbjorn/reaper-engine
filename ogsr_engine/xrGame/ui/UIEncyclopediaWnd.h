@@ -23,6 +23,8 @@ class CUITreeViewItem;
 
 class CUIEncyclopediaWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIEncyclopediaWnd, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
     enum
@@ -33,7 +35,7 @@ private:
 
 public:
     CUIEncyclopediaWnd();
-    virtual ~CUIEncyclopediaWnd();
+    ~CUIEncyclopediaWnd() override;
 
     virtual void Init();
     virtual void Show(bool status);

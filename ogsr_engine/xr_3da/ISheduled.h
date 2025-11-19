@@ -19,7 +19,7 @@ public:
 #endif
 
     ISheduled();
-    virtual ~ISheduled();
+    ~ISheduled() override;
 
     void shedule_register();
     void shedule_unregister();

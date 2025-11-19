@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename Object>
 class CStateBurerAntiAim : public CState<Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBurerAntiAim<Object>, CState<Object>);
+
 private:
     typedef CState<Object> inherited;
     using inherited::object;
 
 public:
-    CStateBurerAntiAim(Object* obj);
+    explicit CStateBurerAntiAim(Object* obj);
+    ~CStateBurerAntiAim() override = default;
 
     virtual void initialize();
     virtual void execute();

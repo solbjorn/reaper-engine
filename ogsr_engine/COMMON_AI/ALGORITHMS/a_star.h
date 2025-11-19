@@ -51,7 +51,7 @@ protected:
 
 public:
     inline explicit CAStar(const u32 max_vertex_count);
-    inline virtual ~CAStar();
+    inline ~CAStar() override;
 
     template <typename TPathManager>
     inline bool find(TPathManager& path_manager);

@@ -13,7 +13,7 @@ public:
     typedef CControlledEntity<CAI_Boar> CControlled;
 
     CAI_Boar();
-    virtual ~CAI_Boar();
+    ~CAI_Boar() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

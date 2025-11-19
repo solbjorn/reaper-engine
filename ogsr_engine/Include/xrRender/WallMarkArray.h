@@ -11,7 +11,7 @@ class XR_NOVTABLE IWallMarkArray : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IWallMarkArray);
 
 public:
-    virtual ~IWallMarkArray() = 0;
+    ~IWallMarkArray() override = 0;
 
     virtual void Copy(IWallMarkArray& _in) = 0;
 

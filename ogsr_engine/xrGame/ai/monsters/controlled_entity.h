@@ -20,11 +20,13 @@ struct SControlledInfo
     float m_radius;
 };
 
-class CControlledEntityBase : public virtual RTTI::Enable
+class XR_NOVTABLE CControlledEntityBase : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CControlledEntityBase);
 
 public:
+    ~CControlledEntityBase() override = 0;
+
     virtual bool is_under_control() = 0;
 
     virtual void set_data(const SControlledInfo& info) = 0;
@@ -40,6 +42,8 @@ public:
     virtual void on_die() = 0;
     virtual void on_destroy() = 0;
 };
+
+inline CControlledEntityBase::~CControlledEntityBase() = default;
 
 template <typename _Object>
 class CControlledEntity : public CControlledEntityBase
@@ -58,6 +62,8 @@ public:
 
     _Object* m_object;
     CController* m_controller;
+
+    ~CControlledEntity() override = default;
 
     virtual bool is_under_control() { return !!m_controller; }
 

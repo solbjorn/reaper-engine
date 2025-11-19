@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Effector controlling class
 ////////////////////////////////////////////////////////////////////////
+
 #include "../../../pp_effector_custom.h"
 
 class CPPEffectorPsyDogAura : public CPPEffectorCustom
@@ -23,7 +24,9 @@ public:
     u32 m_time_to_fade;
 
 public:
-    CPPEffectorPsyDogAura(const SPPInfo& ppi, u32 time_to_fade);
+    explicit CPPEffectorPsyDogAura(const SPPInfo& ppi, u32 time_to_fade);
+    ~CPPEffectorPsyDogAura() override = default;
+
     virtual BOOL update();
     void switch_off();
 };
@@ -43,7 +46,9 @@ public:
     u32 m_time_phantom_saw_actor;
 
 public:
-    CPsyDogAura(CPsyDog* dog) : m_object(dog) {}
+    explicit CPsyDogAura(CPsyDog* dog) : m_object{dog} {}
+    ~CPsyDogAura() override = default;
+
     void reinit();
     void on_death();
     void update_schedule();

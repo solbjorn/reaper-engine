@@ -1,4 +1,5 @@
 #pragma once
+
 #include "state_defs.h"
 #include "control_com_defs.h"
 
@@ -14,7 +15,8 @@ class XR_NOVTABLE IStateManagerBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IStateManagerBase);
 
 public:
-    virtual ~IStateManagerBase() = 0;
+    ~IStateManagerBase() override = 0;
+
     virtual void reinit() = 0;
     virtual void update() = 0;
     virtual void force_script_state(EMonsterState state) = 0;

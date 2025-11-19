@@ -112,7 +112,7 @@ protected:
 
 public:
     CSoundRender_Core();
-    virtual ~CSoundRender_Core();
+    ~CSoundRender_Core() override;
 
     // General
     virtual void _initialize(int stage) = 0;

@@ -42,7 +42,7 @@ public:
 
 public:
     CStalkerPlanner();
-    virtual ~CStalkerPlanner();
+    ~CStalkerPlanner() override;
 
     virtual void setup(CAI_Stalker* object);
     virtual void update(u32);

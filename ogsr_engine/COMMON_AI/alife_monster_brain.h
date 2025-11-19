@@ -46,7 +46,7 @@ private:
 
 public:
     explicit CALifeMonsterBrain(object_type* object);
-    virtual ~CALifeMonsterBrain();
+    ~CALifeMonsterBrain() override;
 
     void on_state_write(NET_Packet&);
     void on_state_read(NET_Packet&);

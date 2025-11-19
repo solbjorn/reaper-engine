@@ -11,7 +11,7 @@ class XR_NOVTABLE IRenderVisual : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IRenderVisual);
 
 public:
-    virtual ~IRenderVisual() = 0;
+    ~IRenderVisual() override = 0;
 
     virtual vis_data& getVisData() = 0;
     virtual u32 getType() const = 0;

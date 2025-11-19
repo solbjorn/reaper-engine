@@ -23,6 +23,7 @@ protected:
 
 public:
     interactive_motion();
+    ~interactive_motion() override = 0;
 
     void init();
     void destroy();
@@ -47,6 +48,8 @@ private:
     static void anim_callback(CBlend* B);
 };
 
+inline interactive_motion::~interactive_motion() = default;
+
 IC void destroy_motion(interactive_motion*& im)
 {
     if (!im)
@@ -63,6 +66,8 @@ class imotion_velocity : public interactive_motion
 public:
     typedef interactive_motion inherited;
 
+    ~imotion_velocity() override = default;
+
     void move_update(CPhysicsShell* s) override;
     void collide(CPhysicsShell*) override;
     void state_end(CPhysicsShell* s) override;
@@ -75,6 +80,8 @@ class imotion_position : public interactive_motion
 
 public:
     typedef interactive_motion inherited;
+
+    ~imotion_position() override = default;
 
     void move_update(CPhysicsShell* s) override;
     void collide(CPhysicsShell* s) override;

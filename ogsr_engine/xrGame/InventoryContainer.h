@@ -5,7 +5,9 @@
 //	Author		: Alexander Petrov
 //	Description : Mobile container class, based on inventory item
 ////////////////////////////////////////////////////////////////////////////
+
 #pragma once
+
 #include "InventoryBox.h"
 #include "inventory_item.h"
 #include "inventory_item_object.h"
@@ -30,6 +32,8 @@ private:
 
 public:
     CInventoryContainer();
+    ~CInventoryContainer() override;
+
     virtual bool CanTrade() const;
     virtual u32 Cost() const;
     virtual float Weight() const;

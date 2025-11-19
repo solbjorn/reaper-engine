@@ -11,7 +11,7 @@ public:
     typedef CWeaponMagazinedWGrenade inherited;
 
     CWeaponGroza();
-    virtual ~CWeaponGroza();
+    ~CWeaponGroza() override;
 
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return Groza; }

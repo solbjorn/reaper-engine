@@ -6,7 +6,7 @@ class XR_NOVTABLE IUISequenceVideoItem : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUISequenceVideoItem);
 
 public:
-    virtual ~IUISequenceVideoItem() = 0;
+    ~IUISequenceVideoItem() override = 0;
 
     virtual void Copy(IUISequenceVideoItem& _in) = 0;
 

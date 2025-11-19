@@ -19,7 +19,7 @@ private:
 
 public:
     CEatableItem();
-    virtual ~CEatableItem();
+    ~CEatableItem() override;
 
     virtual DLL_Pure* _construct();
     virtual CEatableItem* cast_eatable_item() { return this; }

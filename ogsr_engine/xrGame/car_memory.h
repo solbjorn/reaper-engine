@@ -15,6 +15,8 @@ class CCar;
 
 class car_memory : public vision_client
 {
+    RTTI_DECLARE_TYPEINFO(car_memory, vision_client);
+
 private:
     typedef vision_client inherited;
 
@@ -28,7 +30,8 @@ private:
     Fvector m_view_normal;
 
 public:
-    car_memory(CCar* object);
+    explicit car_memory(CCar* object);
+    ~car_memory() override = default;
 
     virtual void reload(LPCSTR section);
 

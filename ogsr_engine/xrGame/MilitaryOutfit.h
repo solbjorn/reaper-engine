@@ -16,5 +16,5 @@ private:
 
 public:
     CMilitaryOutfit();
-    virtual ~CMilitaryOutfit();
+    ~CMilitaryOutfit() override;
 };

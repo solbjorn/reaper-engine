@@ -6,21 +6,22 @@
 #include "stdafx.h"
 
 #include "ExplosiveRocket.h"
+
 #include "xrserver_objects_alife_items.h"
 #include "level.h"
 #include "level_graph.h"
 #include "ai_object_location.h"
 #include "actor.h"
 
-CExplosiveRocket::CExplosiveRocket() {}
-
-CExplosiveRocket::~CExplosiveRocket() {}
+CExplosiveRocket::CExplosiveRocket() = default;
+CExplosiveRocket::~CExplosiveRocket() = default;
 
 DLL_Pure* CExplosiveRocket::_construct()
 {
-    CCustomRocket::_construct();
+    std::ignore = CCustomRocket::_construct();
     CInventoryItem::_construct();
-    return (this);
+
+    return this;
 }
 
 void CExplosiveRocket::Load(LPCSTR section)

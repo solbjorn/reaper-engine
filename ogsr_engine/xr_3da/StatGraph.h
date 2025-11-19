@@ -78,7 +78,7 @@ protected:
     //	virtual	void	RenderMarkers	( FVF::TL0uv** ppv, MarkersDeq* pmarkers );
 public:
     CStatGraph();
-    ~CStatGraph();
+    ~CStatGraph() override;
 
     virtual void OnRender();
     void OnDeviceCreate();

@@ -13,7 +13,8 @@ private:
 
 public:
     CUIProgressShape();
-    virtual ~CUIProgressShape();
+    ~CUIProgressShape() override;
+
     void SetPos(int pos, int max);
     void SetPos(float pos);
     void SetTextVisible(bool b);

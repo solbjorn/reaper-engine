@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStateControlHide : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControlHide<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::object;
@@ -20,8 +23,8 @@ class CStateControlHide : public CState<_Object>
     bool m_state_fast_run;
 
 public:
-    CStateControlHide(_Object* obj) : inherited(obj) {}
-    virtual ~CStateControlHide() {}
+    explicit CStateControlHide(_Object* obj) : inherited{obj} {}
+    ~CStateControlHide() override = default;
 
     virtual void initialize();
     virtual void execute();

@@ -15,6 +15,8 @@
 
 class CALifeScheduleRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>
 {
+    RTTI_DECLARE_TYPEINFO(CALifeScheduleRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeSchedulable, std::less<ALife::_OBJECT_ID>, false>);
+
 private:
     struct CUpdatePredicate
     {
@@ -47,7 +49,7 @@ protected:
 
 public:
     CALifeScheduleRegistry() = default;
-    ~CALifeScheduleRegistry();
+    ~CALifeScheduleRegistry() override;
 
     void add(CSE_ALifeDynamicObject* object);
     void remove(CSE_ALifeDynamicObject* object, bool no_assert = false);

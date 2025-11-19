@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CBlackDrops : public CArtefact
@@ -14,11 +15,9 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CBlackDrops(void);
-    virtual ~CBlackDrops(void);
+    CBlackDrops();
+    ~CBlackDrops() override;
 
     virtual void Load(LPCSTR section);
-
-protected:
 };
 XR_SOL_BASE_CLASSES(CBlackDrops);

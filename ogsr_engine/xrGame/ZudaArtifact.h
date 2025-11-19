@@ -16,7 +16,7 @@ private:
 
 public:
     CZudaArtefact();
-    virtual ~CZudaArtefact();
+    ~CZudaArtefact() override;
 
     virtual void Load(LPCSTR section);
 };

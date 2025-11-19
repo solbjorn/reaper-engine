@@ -21,6 +21,8 @@ CScriptEngine::CScriptEngine()
     m_reload_modules = false;
 }
 
+CScriptEngine::~CScriptEngine() = default;
+
 void CScriptEngine::unload()
 {
     // lua_settop(lua(), m_stack_level);

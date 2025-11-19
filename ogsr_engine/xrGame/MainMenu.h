@@ -1,15 +1,15 @@
 #pragma once
 
-class CUIWindow;
-class CUIDialogWnd;
-class CUICursor;
-class CUIMessageBoxEx;
-
 #include "..\xr_3da\iinputreceiver.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "UIDialogHolder.h"
 #include "ui/UIWndCallback.h"
 #include "ui_base.h"
+
+class CUIWindow;
+class CUIDialogWnd;
+class CUICursor;
+class CUIMessageBoxEx;
 
 class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, public CDialogHolder, public CUIWndCallback, public CDeviceResetNotifier
 {
@@ -57,7 +57,7 @@ public:
     u32 m_deactivated_frame;
 
     CMainMenu();
-    virtual ~CMainMenu();
+    ~CMainMenu() override;
 
     virtual void DestroyInternal(bool bForce);
     virtual void Activate(bool bActive);

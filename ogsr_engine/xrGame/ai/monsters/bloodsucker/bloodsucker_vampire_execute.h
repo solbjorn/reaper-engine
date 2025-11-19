@@ -1,9 +1,13 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateBloodsuckerVampireExecute : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBloodsuckerVampireExecute<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -22,7 +26,8 @@ class CStateBloodsuckerVampireExecute : public CState<_Object>
     bool m_health_loss_activated;
 
 public:
-    CStateBloodsuckerVampireExecute(_Object* obj) : inherited(obj) {}
+    explicit CStateBloodsuckerVampireExecute(_Object* obj) : inherited{obj} {}
+    ~CStateBloodsuckerVampireExecute() override = default;
 
     virtual void initialize();
     virtual void execute();

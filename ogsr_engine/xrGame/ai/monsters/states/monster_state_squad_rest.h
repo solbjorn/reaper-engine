@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateMonsterSquadRest : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterSquadRest<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -19,8 +21,8 @@ protected:
     u32 time_next_state_reselect{};
 
 public:
-    CStateMonsterSquadRest(_Object* obj);
-    virtual ~CStateMonsterSquadRest();
+    explicit CStateMonsterSquadRest(_Object* obj);
+    ~CStateMonsterSquadRest() override;
 
     virtual void reselect_state();
     virtual void setup_substates();

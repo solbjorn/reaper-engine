@@ -41,8 +41,8 @@ protected:
     INetQueue net_Queue;
 
 public:
-    IPureClient(CTimer* tm);
-    virtual ~IPureClient();
+    explicit IPureClient(CTimer* tm);
+    ~IPureClient() override;
 
     BOOL Connect(LPCSTR server_name);
     void Disconnect();
@@ -55,7 +55,7 @@ public:
     IC void net_msg_Release() { net_Queue.Release(); }
 
     // send
-    virtual void Send(NET_Packet&, u32 = DPNSEND_GUARANTEED, u32 = 0);
+    virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) = 0;
     virtual void OnMessage(void* data, u32 size);
     virtual void OnConnectRejected() {}
 

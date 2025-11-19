@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_spot();
-    virtual ~CBlender_accum_spot();
+    ~CBlender_accum_spot() override;
 };
 
 class CBlender_accum_spot_msaa : public IBlender
@@ -29,7 +29,7 @@ public:
     }
 
     CBlender_accum_spot_msaa();
-    virtual ~CBlender_accum_spot_msaa();
+    ~CBlender_accum_spot_msaa() override;
 
     LPCSTR Name;
     LPCSTR Definition;
@@ -51,7 +51,7 @@ public:
     }
 
     CBlender_accum_volumetric_msaa();
-    virtual ~CBlender_accum_volumetric_msaa();
+    ~CBlender_accum_volumetric_msaa() override;
 
     LPCSTR Name;
     LPCSTR Definition;

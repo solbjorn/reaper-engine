@@ -53,7 +53,7 @@ public:
     EVENT eDemoStart;
 
     CGamePersistent();
-    virtual ~CGamePersistent();
+    ~CGamePersistent() override;
 
     void PreStart(LPCSTR op) override;
     virtual void Start(LPCSTR op);

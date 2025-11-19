@@ -5,12 +5,15 @@
 template <typename _Object>
 class CStateMonsterAttackMelee : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttackMelee<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterAttackMelee(_Object* obj);
-    virtual ~CStateMonsterAttackMelee();
+    explicit CStateMonsterAttackMelee(_Object* obj);
+    ~CStateMonsterAttackMelee() override;
 
     virtual void execute();
 

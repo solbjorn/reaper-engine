@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "Actor.h"
+
 #include "Actor_Flags.h"
 #include "hudmanager.h"
 
@@ -26,7 +28,6 @@
 #include "../xr_3da/xr_input.h"
 
 //
-#include "Actor.h"
 #include "actor_anim_defs.h"
 #include "HudItem.h"
 #include "ai_sounds.h"
@@ -1656,11 +1657,12 @@ CEntityConditionSimple* CActor::create_entity_condition(CEntityConditionSimple* 
 DLL_Pure* CActor::_construct()
 {
     m_pPhysics_support = xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etActor, this);
-    CEntityAlive::_construct();
+
+    std::ignore = CEntityAlive::_construct();
     CInventoryOwner::_construct();
     CStepManager::_construct();
 
-    return (this);
+    return this;
 }
 
 bool CActor::use_center_to_aim() const { return (!(mstate_real & ACTOR_DEFS::mcCrouch)); }

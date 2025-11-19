@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "artifact.h"
 
 class CDummyArtefact : public CArtefact
@@ -14,8 +15,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CDummyArtefact(void);
-    virtual ~CDummyArtefact(void);
+    CDummyArtefact();
+    ~CDummyArtefact() override;
 
     virtual void Load(LPCSTR section);
 };

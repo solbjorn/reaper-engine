@@ -42,7 +42,7 @@ public:
 
     const CPhysicsShellHolder* m_object;
 
-    CPHParticlesPlayCall(const dContactGeom& contact, bool invert_n, LPCSTR psn, const CPhysicsShellHolder* object = nullptr)
+    explicit CPHParticlesPlayCall(const dContactGeom& contact, bool invert_n, LPCSTR psn, const CPhysicsShellHolder* object = nullptr)
     {
         ps_name = psn;
         c = contact;
@@ -57,6 +57,8 @@ public:
         constexpr u32 time_to_call_remove = 3000;
         remove_time = Device.dwTimeGlobal + time_to_call_remove;
     }
+
+    ~CPHParticlesPlayCall() override = default;
 
     virtual void run()
     {
@@ -92,6 +94,9 @@ class CPHParticlesCondition : public CPHCondition, public CPHReqComparerV
 {
     RTTI_DECLARE_TYPEINFO(CPHParticlesCondition, CPHCondition, CPHReqComparerV);
 
+public:
+    ~CPHParticlesCondition() override = default;
+
 private:
     virtual bool compare(const CPHReqComparerV* v) const noexcept { return v->compare(this); }
 
@@ -108,7 +113,8 @@ public:
     const CPhysicsShellHolder* m_object;
     Fvector m_position;
 
-    CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_object{object}, m_position{position} {}
+    explicit CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_object{object}, m_position{position} {}
+    ~CPHFindParticlesComparer() override = default;
 
 private:
     [[nodiscard]] virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
@@ -137,12 +143,14 @@ public:
     Fvector pos;
     CDB::TRI* T;
 
-    CPHWallMarksCall(const Fvector& p, CDB::TRI* Tri, const wm_shader& s)
+    explicit CPHWallMarksCall(const Fvector& p, CDB::TRI* Tri, const wm_shader& s)
     {
         pWallmarkShader = s;
         pos.set(p);
         T = Tri;
     }
+
+    ~CPHWallMarksCall() override = default;
 
     virtual void run()
     {

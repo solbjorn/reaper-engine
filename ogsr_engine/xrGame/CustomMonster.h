@@ -130,7 +130,7 @@ public:
 
 public:
     CCustomMonster();
-    virtual ~CCustomMonster();
+    ~CCustomMonster() override;
 
 public:
     virtual CEntityAlive* cast_entity_alive() { return this; }

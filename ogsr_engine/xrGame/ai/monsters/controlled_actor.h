@@ -19,6 +19,8 @@ public:
     u32 m_lock_run_started;
     u32 m_lock_run_period;
 
+    ~CControlledActor() override = default;
+
     virtual void reinit();
     virtual float mouse_scale_factor() { return flt_max; }
     virtual void release();

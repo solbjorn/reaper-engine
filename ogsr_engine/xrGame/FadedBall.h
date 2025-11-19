@@ -16,7 +16,7 @@ private:
 
 public:
     CFadedBall();
-    virtual ~CFadedBall();
+    ~CFadedBall() override;
 
     virtual void Load(LPCSTR section);
 };

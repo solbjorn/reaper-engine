@@ -19,6 +19,8 @@ class CPHReqComparerV : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPHReqComparerV);
 
 public:
+    ~CPHReqComparerV() override = default;
+
     virtual bool compare(const CPHScriptCondition*) const { return false; }
     virtual bool compare(const CPHScriptAction*) const { return false; }
     virtual bool compare(const CPHScriptObjectCondition*) const { return false; }

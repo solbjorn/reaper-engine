@@ -5,6 +5,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Detail Model)
+
 class XR_NOVTABLE IRender_DetailModel : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IRender_DetailModel);
@@ -36,10 +37,10 @@ public:
     u32 number_indices;
 
 public:
+    ~IRender_DetailModel() override = 0;
+
     virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset) = 0;
     virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset, float du, float dv) = 0;
-
-    virtual ~IRender_DetailModel() = 0;
 };
 
 inline IRender_DetailModel::~IRender_DetailModel() = default;

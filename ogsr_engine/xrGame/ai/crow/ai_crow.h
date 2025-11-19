@@ -113,7 +113,7 @@ public:
 
 public:
     CAI_Crow();
-    virtual ~CAI_Crow();
+    ~CAI_Crow() override;
 
     virtual void Load(LPCSTR section);
     void init();

@@ -16,11 +16,15 @@
 
 class CStalkerActionDangerBySoundListenTo : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundListenTo, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerBySoundListenTo(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerBySoundListenTo(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerBySoundListenTo() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -32,11 +36,15 @@ public:
 
 class CStalkerActionDangerBySoundCheck : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundCheck, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerBySoundCheck(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerBySoundCheck(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerBySoundCheck() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -48,11 +56,15 @@ public:
 
 class CStalkerActionDangerBySoundTakeCover : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundTakeCover, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerBySoundTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerBySoundTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerBySoundTakeCover() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -64,11 +76,15 @@ public:
 
 class CStalkerActionDangerBySoundLookOut : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundLookOut, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerBySoundLookOut(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerBySoundLookOut(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerBySoundLookOut() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -80,11 +96,15 @@ public:
 
 class CStalkerActionDangerBySoundLookAround : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerBySoundLookAround, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerBySoundLookAround(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerBySoundLookAround(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerBySoundLookAround() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();

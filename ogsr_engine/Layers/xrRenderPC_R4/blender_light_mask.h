@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_direct_mask();
-    virtual ~CBlender_accum_direct_mask();
+    ~CBlender_accum_direct_mask() override;
 };
 
 class CBlender_accum_direct_mask_msaa : public IBlender
@@ -29,7 +29,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_direct_mask_msaa();
-    virtual ~CBlender_accum_direct_mask_msaa();
+    ~CBlender_accum_direct_mask_msaa() override;
 
     LPCSTR Name{};
     LPCSTR Definition{};

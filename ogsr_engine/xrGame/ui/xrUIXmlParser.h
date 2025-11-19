@@ -10,7 +10,7 @@ public:
     int m_dbg_id;
 
     CUIXml();
-    virtual ~CUIXml();
+    ~CUIXml() override;
 
     virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn);
 };

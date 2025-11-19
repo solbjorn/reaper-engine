@@ -25,7 +25,8 @@ protected:
     OBJECTS m_objects;
 
 public:
-    virtual ~CALifeGroupRegistry();
+    ~CALifeGroupRegistry() override;
+
     void add(CSE_ALifeDynamicObject* object);
     void remove(CSE_ALifeDynamicObject* object);
     OBJECT& object(const ALife::_OBJECT_ID& id) const;

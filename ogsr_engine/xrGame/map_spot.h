@@ -14,8 +14,10 @@ public:
 
     bool m_bScale;
     Fvector2 m_originSize;
-    CMapSpot(CMapLocation*);
-    virtual ~CMapSpot();
+
+    explicit CMapSpot(CMapLocation*);
+    ~CMapSpot() override;
+
     virtual void Load(CUIXml* xml, LPCSTR path);
     CMapLocation* MapLocation() { return m_map_location; }
     virtual LPCSTR GetHint();
@@ -32,8 +34,9 @@ public:
     typedef CMapSpot inherited;
     xr_string m_pointer_hint;
 
-    CMapSpotPointer(CMapLocation*);
-    virtual ~CMapSpotPointer();
+    explicit CMapSpotPointer(CMapLocation*);
+    ~CMapSpotPointer() override;
+
     virtual LPCSTR GetHint();
 };
 
@@ -46,8 +49,9 @@ public:
     ui_shader m_icon_above, m_icon_normal, m_icon_below;
     Frect m_tex_rect_above, m_tex_rect_normal, m_tex_rect_below;
 
-    CMiniMapSpot(CMapLocation*);
-    virtual ~CMiniMapSpot();
+    explicit CMiniMapSpot(CMapLocation*);
+    ~CMiniMapSpot() override;
+
     virtual void Load(CUIXml* xml, LPCSTR path);
     virtual void Draw();
 };

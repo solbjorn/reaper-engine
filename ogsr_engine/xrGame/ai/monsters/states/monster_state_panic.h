@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterPanic : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterPanic<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -16,8 +19,8 @@ class CStateMonsterPanic : public CState<_Object>
     using inherited::select_state;
 
 public:
-    CStateMonsterPanic(_Object* obj);
-    virtual ~CStateMonsterPanic();
+    explicit CStateMonsterPanic(_Object* obj);
+    ~CStateMonsterPanic() override;
 
     virtual void initialize();
     virtual void reselect_state();

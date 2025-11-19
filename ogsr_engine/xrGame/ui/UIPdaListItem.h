@@ -20,7 +20,7 @@ private:
 
 public:
     CUIPdaListItem();
-    virtual ~CUIPdaListItem();
+    ~CUIPdaListItem() override;
 
     virtual void Init(float x, float y, float width, float height);
     virtual void InitCharacter(CInventoryOwner* pInvOwner);

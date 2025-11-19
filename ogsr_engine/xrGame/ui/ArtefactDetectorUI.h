@@ -17,7 +17,8 @@ class CUIArtefactDetectorBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CUIArtefactDetectorBase);
 
 public:
-    virtual ~CUIArtefactDetectorBase() = default;
+    ~CUIArtefactDetectorBase() override = default;
+
     virtual void update() {}
 };
 
@@ -34,6 +35,7 @@ protected:
 
 public:
     CUIDetectorWave() = default;
+    ~CUIDetectorWave() override = default;
 
     void InitFromXML(CUIXml& xml, LPCSTR path);
     void SetVelocity(float v);
@@ -58,7 +60,8 @@ public:
     CLAItem* m_pFlashLAnim;
     void setup_internals();
 
-    virtual ~CUIArtefactDetectorSimple();
+    ~CUIArtefactDetectorSimple() override;
+
     void update() override;
     void Flash(bool bOn, float fRelPower);
 
@@ -88,6 +91,8 @@ public:
 
     CUIWindow* m_wrk_area{};
 
+    ~CUIArtefactDetectorElite() override = default;
+
     virtual void update() override;
     virtual void Draw() override;
 
@@ -109,7 +114,7 @@ public:
     float m_curr_ang_speed;
     u16 m_bid;
 
-    virtual ~CUIArtefactDetectorAdv() = default;
+    ~CUIArtefactDetectorAdv() override = default;
 
     virtual void update() override;
     void construct(CAdvancedDetector* p);

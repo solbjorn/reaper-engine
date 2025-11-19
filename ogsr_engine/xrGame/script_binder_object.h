@@ -40,8 +40,9 @@ protected:
     xr_map<binder_ops, sol::function> ops;
 
 public:
-    CScriptBinderObject(CScriptGameObject* object);
-    virtual ~CScriptBinderObject();
+    explicit CScriptBinderObject(CScriptGameObject* object);
+    ~CScriptBinderObject() override;
+
     virtual void reinit();
     virtual void reload(LPCSTR section);
     virtual bool net_Spawn(SpawnType DC);

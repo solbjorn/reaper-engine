@@ -21,8 +21,8 @@ private:
     CGameObject* m_object;
 
 public:
-    IC CLocationManager(CGameObject* object);
-    virtual ~CLocationManager();
+    inline explicit CLocationManager(CGameObject* object);
+    ~CLocationManager() override;
 
     virtual void Load(LPCSTR section);
     virtual void reload(LPCSTR);

@@ -9,7 +9,7 @@ class CChimera : public CBaseMonster
 
 public:
     CChimera();
-    virtual ~CChimera();
+    ~CChimera() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

@@ -36,7 +36,7 @@ public:
     friend class CInventoryScript;
 
     CInventoryOwner();
-    virtual ~CInventoryOwner();
+    ~CInventoryOwner() override;
 
     virtual CInventoryOwner* cast_inventory_owner() { return this; }
 

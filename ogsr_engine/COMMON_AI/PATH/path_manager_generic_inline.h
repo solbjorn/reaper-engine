@@ -13,9 +13,6 @@
 #define CGenericPathManager CPathManagerGeneric<_Graph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-CGenericPathManager::~CPathManagerGeneric() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CGenericPathManager::init() {}
 
 TEMPLATE_SPECIALIZATION

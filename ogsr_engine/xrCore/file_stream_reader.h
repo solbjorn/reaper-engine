@@ -14,6 +14,8 @@ private:
     HANDLE m_file_handle;
 
 public:
+    ~CFileStreamReader() override = default;
+
     virtual void construct(LPCSTR file_name, gsl::index window_size);
     virtual void destroy();
 };

@@ -6,11 +6,16 @@
 template <typename _Object>
 class CStateBurerAttackMelee : public CStateMonsterAttack<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBurerAttackMelee<_Object>, CStateMonsterAttack<_Object>);
+
+private:
     typedef CStateMonsterAttack<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateBurerAttackMelee(_Object* obj);
+    explicit CStateBurerAttackMelee(_Object* obj);
+    ~CStateBurerAttackMelee() override = default;
+
     virtual bool check_start_conditions();
     virtual bool check_completion();
 };

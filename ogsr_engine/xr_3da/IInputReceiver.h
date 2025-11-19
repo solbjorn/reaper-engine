@@ -9,6 +9,8 @@ class IInputReceiver : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IInputReceiver);
 
 public:
+    ~IInputReceiver() override = default;
+
     static void IR_GetLastMouseDelta(Ivector2& p);
     static void IR_GetMousePosScreen(Ivector2& p);
     static void IR_GetMousePosReal(HWND hwnd, Ivector2& p);

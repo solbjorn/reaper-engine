@@ -24,7 +24,8 @@ class CUIGameLog : public CUIScrollView
 
 public:
     CUIGameLog();
-    virtual ~CUIGameLog();
+    ~CUIGameLog() override;
+
     CUIPdaMsgListItem* AddPdaMessage(LPCSTR msg, float delay);
     virtual void Update();
 

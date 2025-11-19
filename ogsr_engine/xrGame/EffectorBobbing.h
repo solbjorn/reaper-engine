@@ -23,7 +23,7 @@ public:
     float m_fSpeedLimp;
 
     CEffectorBobbing();
-    virtual ~CEffectorBobbing();
+    ~CEffectorBobbing() override;
 
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
     void SetState(u32 st, bool limping, bool ZoomMode);

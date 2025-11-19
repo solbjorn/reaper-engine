@@ -1,7 +1,10 @@
 #pragma once
 
-class CInvisibility
+class CInvisibility : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CInvisibility);
+
+private:
     u32 m_time_start_blink;
     u32 m_time_last_blink;
     bool m_blink;
@@ -26,6 +29,8 @@ protected:
     virtual void on_deactivate() {}
 
 public:
+    ~CInvisibility() override = default;
+
     void activate();
     void deactivate();
     IC float energy() { return m_energy; }

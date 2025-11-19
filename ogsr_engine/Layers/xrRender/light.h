@@ -157,7 +157,7 @@ public:
     float get_LOD();
 
     light();
-    virtual ~light();
+    ~light() override;
 };
 
 #endif // #define LAYERS_XRRENDER_LIGHT_H_INCLUDED

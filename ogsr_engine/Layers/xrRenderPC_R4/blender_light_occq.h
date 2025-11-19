@@ -10,5 +10,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_light_occq();
-    virtual ~CBlender_light_occq();
+    ~CBlender_light_occq() override;
 };

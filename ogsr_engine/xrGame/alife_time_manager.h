@@ -25,8 +25,9 @@ private:
     ALife::_TIME_ID m_start_game_time;
 
 public:
-    CALifeTimeManager(LPCSTR section);
-    virtual ~CALifeTimeManager();
+    explicit CALifeTimeManager(LPCSTR section);
+    ~CALifeTimeManager() override;
+
     virtual void save(IWriter& memory_stream);
     virtual void load(IReader& file_stream);
     void init(LPCSTR section);

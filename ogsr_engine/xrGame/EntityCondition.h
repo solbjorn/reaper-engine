@@ -20,7 +20,7 @@ public:
     float m_fHealthMax;
 
     CEntityConditionSimple();
-    virtual ~CEntityConditionSimple();
+    ~CEntityConditionSimple() override;
 
     IC float GetHealth() const { return m_fHealth; }
     IC float GetMaxHealth() const { return m_fHealthMax; }
@@ -39,8 +39,8 @@ private:
     CEntityAlive* m_object;
 
 public:
-    CEntityCondition(CEntityAlive* object);
-    virtual ~CEntityCondition(void);
+    explicit CEntityCondition(CEntityAlive* object);
+    ~CEntityCondition() override;
 
     virtual void LoadCondition(LPCSTR section);
     virtual void remove_links(const CObject* object);

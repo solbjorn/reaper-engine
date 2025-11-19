@@ -1,6 +1,5 @@
 #ifndef __ppanimator_included__
 #define __ppanimator_included__
-#pragma once
 
 #include "..\xr_3da\envelope.h"
 #include "..\xr_3da\EffectorPP.h"
@@ -31,17 +30,21 @@ typedef enum _pp_params
     pp_force_dword = 0x7fffffff
 } pp_params;
 
-class CPostProcessParam : public virtual RTTI::Enable
+class XR_NOVTABLE CPostProcessParam : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CPostProcessParam);
 
 public:
+    ~CPostProcessParam() override = 0;
+
     virtual void update(float dt) = 0;
     virtual void load(IReader& pReader) = 0;
     virtual void save(IWriter& pWriter) = 0;
     virtual float get_length() = 0;
     virtual size_t get_keys_count() = 0;
 };
+
+inline CPostProcessParam::~CPostProcessParam() = default;
 
 class CPostProcessValue : public CPostProcessParam
 {
@@ -52,7 +55,9 @@ protected:
     float* m_pfParam;
 
 public:
-    CPostProcessValue(float* pfparam) { m_pfParam = pfparam; }
+    explicit CPostProcessValue(float* pfparam) : m_pfParam{pfparam} {}
+    ~CPostProcessValue() override = default;
+
     virtual void update(float dt) { *m_pfParam = m_Value.Evaluate(dt); }
     virtual void load(IReader& pReader);
     virtual void save(IWriter& pWriter);
@@ -76,7 +81,9 @@ protected:
     SPPInfo::SColor* m_pColor;
 
 public:
-    CPostProcessColor(SPPInfo::SColor* pcolor) { m_pColor = pcolor; }
+    explicit CPostProcessColor(SPPInfo::SColor* pcolor) : m_pColor{pcolor} {}
+    ~CPostProcessColor() override = default;
+
     virtual void update(float dt)
     {
         m_pColor->r = m_Red.Evaluate(dt);
@@ -113,9 +120,10 @@ protected:
     void Update(float tm);
 
 public:
-    CPostprocessAnimator(int id, bool cyclic);
     CPostprocessAnimator();
-    virtual ~CPostprocessAnimator();
+    explicit CPostprocessAnimator(int id, bool cyclic);
+    ~CPostprocessAnimator() override;
+
     void Clear();
     void Load(LPCSTR name);
     IC LPCSTR Name() { return *m_Name; }
@@ -137,6 +145,8 @@ protected:
     CallMe::Delegate<float()> m_get_factor_func;
 
 public:
+    ~CPostprocessAnimatorLerp() override = default;
+
     void SetFactorFunc(CallMe::Delegate<float()> f) { m_get_factor_func = f; }
     virtual BOOL Process(SPPInfo& PPInfo);
 };
@@ -146,11 +156,13 @@ class CPostprocessAnimatorLerpConst : public CPostprocessAnimator
     RTTI_DECLARE_TYPEINFO(CPostprocessAnimatorLerpConst, CPostprocessAnimator);
 
 protected:
-    float m_power;
+    f32 m_power{1.0f};
 
 public:
-    CPostprocessAnimatorLerpConst() { m_power = 1.0f; }
-    void SetPower(float val) { m_power = val; }
+    CPostprocessAnimatorLerpConst() = default;
+    ~CPostprocessAnimatorLerpConst() override = default;
+
+    void SetPower(f32 val) { m_power = val; }
     virtual BOOL Process(SPPInfo& PPInfo);
 };
 
@@ -161,8 +173,9 @@ class CPostprocessAnimatorControlled : public CPostprocessAnimatorLerp
 public:
     CEffectorController* m_controller;
 
-    virtual ~CPostprocessAnimatorControlled();
-    CPostprocessAnimatorControlled(CEffectorController* c);
+    explicit CPostprocessAnimatorControlled(CEffectorController* c);
+    ~CPostprocessAnimatorControlled() override;
+
     virtual BOOL Valid();
 };
 

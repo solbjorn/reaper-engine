@@ -23,7 +23,8 @@ protected:
     STORY_REGISTRY m_objects;
 
 public:
-    virtual ~CALifeStoryRegistry();
+    ~CALifeStoryRegistry() override;
+
     void add(ALife::_STORY_ID id, CSE_ALifeDynamicObject* object, bool no_assert = false);
     IC void remove(ALife::_STORY_ID id, bool no_assert = false);
     IC const STORY_REGISTRY& objects() const;

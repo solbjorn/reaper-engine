@@ -31,7 +31,7 @@ private:
 
 public:
     CUIInventoryWnd();
-    virtual ~CUIInventoryWnd();
+    ~CUIInventoryWnd() override;
 
     virtual void Init();
 

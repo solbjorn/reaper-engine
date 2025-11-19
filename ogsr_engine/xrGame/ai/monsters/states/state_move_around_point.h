@@ -6,14 +6,17 @@
 template <typename _Object>
 class CStateMonsterMoveAroundPoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterMoveAroundPoint<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
     SStateDataMoveAroundPoint data;
 
 public:
-    CStateMonsterMoveAroundPoint(_Object* obj) : inherited(obj, &data) {}
-    virtual ~CStateMonsterMoveAroundPoint() {}
+    explicit CStateMonsterMoveAroundPoint(_Object* obj) : inherited{obj, &data} {}
+    ~CStateMonsterMoveAroundPoint() override = default;
 
     virtual void initialize();
     virtual void execute();

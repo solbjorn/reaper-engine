@@ -20,7 +20,7 @@ public:
     friend class CUICustomEdit;
 
     CUILines();
-    virtual ~CUILines();
+    ~CUILines() override;
 
     // IUITextControl methods
     virtual void SetText(LPCSTR text);
@@ -113,8 +113,10 @@ private:
 
 class CUILinesOwner : public IUITextControl
 {
+    RTTI_DECLARE_TYPEINFO(CUILinesOwner, IUITextControl);
+
 public:
-    virtual ~CUILinesOwner() {}
+    ~CUILinesOwner() override = default;
 
     // IUIFontControl{
     virtual void SetTextColor(u32 color) { m_lines.SetTextColor(color); }

@@ -23,7 +23,7 @@ private:
 
 public:
     CBastArtefact();
-    virtual ~CBastArtefact();
+    ~CBastArtefact() override;
 
     virtual void Load(LPCSTR section);
     virtual void shedule_Update(u32 dt);

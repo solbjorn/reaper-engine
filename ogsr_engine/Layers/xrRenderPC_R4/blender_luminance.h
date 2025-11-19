@@ -10,5 +10,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_luminance();
-    virtual ~CBlender_luminance();
+    ~CBlender_luminance() override;
 };

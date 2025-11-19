@@ -1,6 +1,5 @@
 #ifndef __XR_UIFRAMERECT_H__
 #define __XR_UIFRAMERECT_H__
-#pragma once
 
 #include "uistaticitem.h"
 #include "ui/uiabstract.h"
@@ -23,12 +22,19 @@ public:
         fmLB,
         fmMax
     };
+
+protected:
+    CUIStaticItem frame[fmMax];
+
+public:
     Flags16 m_itm_mask;
 
     friend class CUIFrameWindow;
     using CUISimpleWindow::Init;
 
     CUIFrameRect();
+    ~CUIFrameRect() override;
+
     virtual void Init(LPCSTR base_name, float x, float y, float w, float h); //, DWORD align);
     virtual void InitTexture(const char* texture);
     virtual void Draw();
@@ -44,14 +50,13 @@ public:
     void SetVisiblePart(EFramePart p, BOOL b) { m_itm_mask.set(u16(1 << p), b); }
 
 protected:
-    CUIStaticItem frame[fmMax];
-
     enum
     {
         flValidSize = (1 << 0),
         flSingleTex = (1 << 1),
     };
     Flags8 uFlags;
+
     void UpdateSize();
 };
 

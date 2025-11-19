@@ -16,7 +16,7 @@ private:
 
 public:
     CRustyHairArtefact();
-    virtual ~CRustyHairArtefact();
+    ~CRustyHairArtefact() override;
 
     virtual void Load(LPCSTR section);
 };

@@ -30,7 +30,7 @@ private:
 
 public:
     CSoundRender_Source() noexcept = default;
-    ~CSoundRender_Source();
+    ~CSoundRender_Source() override;
 
     void load(LPCSTR name);
     void unload();

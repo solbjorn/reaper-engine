@@ -40,7 +40,7 @@ public:
 
 public:
     CTelekineticObject();
-    ~CTelekineticObject();
+    ~CTelekineticObject() override;
 
     [[nodiscard]] virtual bool init(CTelekinesis*, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
     void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);

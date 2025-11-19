@@ -11,7 +11,7 @@ public:
     typedef CWeaponPistol inherited;
 
     CWeaponWalther();
-    virtual ~CWeaponWalther();
+    ~CWeaponWalther() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

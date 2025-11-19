@@ -44,8 +44,9 @@ protected:
     IC void remove_object_restriction(ALife::_OBJECT_ID id, const RestrictionSpace::ERestrictorTypes& restrictor_type);
 
 public:
-    IC CRestrictedObject(CCustomMonster* object);
-    virtual ~CRestrictedObject();
+    inline explicit CRestrictedObject(CCustomMonster* object);
+    ~CRestrictedObject() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
     void add_border(u32 start_vertex_id, float radius) const;

@@ -17,16 +17,16 @@ class CUI : public CDialogHolder
 
 public:
     CUIGameCustom* pUIGame{};
-    bool m_bShowGameIndicators;
-
     CHUDManager* m_Parent;
     CUIMainIngameWnd* UIMainIngameWnd;
     CUIMessagesWindow* m_pMessagesWnd;
+
+    bool m_bShowGameIndicators;
     bool hud_disabled_by_user{};
 
 public:
-    CUI(CHUDManager* p);
-    virtual ~CUI();
+    explicit CUI(CHUDManager* p);
+    ~CUI() override;
 
     bool Render();
     void UIOnFrame();

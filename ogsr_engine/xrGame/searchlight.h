@@ -36,7 +36,7 @@ public:
     } _start{}, _current{}, _target{};
 
     CProjector();
-    virtual ~CProjector();
+    ~CProjector() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

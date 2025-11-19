@@ -18,6 +18,8 @@ public:
     typedef CUIWindow inherited;
 
     CUIActorInfoWnd();
+    ~CUIActorInfoWnd() override = default;
+
     virtual void Init();
     virtual void Show(bool status);
     CUIScrollView& DetailList() { return *UIDetailList; }
@@ -57,7 +59,9 @@ public:
     CUIStatic* m_text2;
 
 public:
-    CUIActorStaticticHeader(CUIActorInfoWnd* w);
+    explicit CUIActorStaticticHeader(CUIActorInfoWnd* w);
+    ~CUIActorStaticticHeader() override = default;
+
     void Init(CUIXml* xml, LPCSTR path, int idx_in_xml);
     virtual bool OnMouseDown(int mouse_btn);
     virtual void SetSelected(bool b);
@@ -74,6 +78,8 @@ public:
     CUIStatic* m_text1;
     CUIStatic* m_text2;
     CUIStatic* m_text3;
+
+    ~CUIActorStaticticDetail() override = default;
 
     void Init(CUIXml* xml, LPCSTR path, int xml_idx);
 };

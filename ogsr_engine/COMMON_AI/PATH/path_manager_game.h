@@ -14,6 +14,9 @@ template <typename _DataStorage, typename _Parameters, typename _dist_type, type
 class CPathManager<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
     : public CPathManagerGeneric<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>
 {
+    RTTI_DECLARE_TYPEINFO(CPathManager<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>,
+                          CPathManagerGeneric<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type>);
+
 protected:
     typedef CPathManagerGeneric<CGameGraph, _DataStorage, _Parameters, _dist_type, _index_type, _iteration_type> inherited;
 
@@ -21,7 +24,8 @@ protected:
     const CGameGraph::CVertex* goal_vertex;
 
 public:
-    virtual ~CPathManager();
+    ~CPathManager() override = default;
+
     IC void setup(const CGameGraph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   const _Parameters& params);
     IC _dist_type evaluate(const _index_type& node_index1, const _index_type& node_index2, const CGameGraph::const_iterator& i) const;

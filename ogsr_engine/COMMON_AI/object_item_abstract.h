@@ -20,6 +20,7 @@ protected:
 
 public:
     inline explicit CObjectItemAbstract(CLASS_ID clsid, LPCSTR script_clsid);
+    ~CObjectItemAbstract() override = default;
 
     inline CLASS_ID clsid() const;
     inline shared_str script_clsid() const;

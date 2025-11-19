@@ -34,7 +34,7 @@ public:
     game_PlayerState* ps;
 
     xrClientData();
-    virtual ~xrClientData();
+    ~xrClientData() override;
 
     virtual void Clear();
 };
@@ -133,7 +133,7 @@ protected:
 public:
     // constr / destr
     xrServer();
-    virtual ~xrServer();
+    ~xrServer() override;
 
     // extended functionality
     virtual u32 OnMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned

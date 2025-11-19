@@ -28,8 +28,8 @@ private:
     u32 m_enemy_vertex;
 
 public:
-    CStateControlMoveOut(_Object* obj) : inherited(obj) {}
-    virtual ~CStateControlMoveOut() {}
+    explicit CStateControlMoveOut(_Object* obj) : inherited{obj} {}
+    ~CStateControlMoveOut() override = default;
 
     virtual void initialize();
     virtual void execute();

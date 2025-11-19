@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "entity_alive.h"
+
 #include "inventoryowner.h"
 #include "inventory.h"
 #include "physicsshell.h"
@@ -607,10 +608,12 @@ float CEntityAlive::g_Radiation() const { return conditions().GetRadiation() * 1
 
 DLL_Pure* CEntityAlive::_construct()
 {
-    inherited::_construct();
+    std::ignore = inherited::_construct();
+
     if (character_physics_support())
         m_material_manager = xr_new<CMaterialManager>(this, character_physics_support()->movement());
-    return (this);
+
+    return this;
 }
 
 u32 CEntityAlive::ef_creature_type() const { return (m_ef_creature_type); }

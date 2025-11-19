@@ -4,8 +4,9 @@
 
 #include "stdafx.h"
 
-#include "ai_debug.h"
 #include "CustomMonster.h"
+
+#include "ai_debug.h"
 #include "hudmanager.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -802,7 +803,7 @@ DLL_Pure* CCustomMonster::_construct()
     m_movement_manager = create_movement_manager();
     m_sound_player = xr_new<CSoundPlayer>(this);
 
-    inherited::_construct();
+    std::ignore = inherited::_construct();
     CScriptEntity::_construct();
 
     return (this);

@@ -23,6 +23,6 @@ public:
 
     virtual void Compile(CBlender_Compile& C);
 
-    CBlender_deffer_aref(bool _lmapped = false);
-    virtual ~CBlender_deffer_aref();
+    explicit CBlender_deffer_aref(bool _lmapped = false);
+    ~CBlender_deffer_aref() override;
 };

@@ -60,7 +60,7 @@ protected:
 
 public:
     CWeaponKnife();
-    virtual ~CWeaponKnife();
+    ~CWeaponKnife() override;
 
     void Load(LPCSTR section);
 

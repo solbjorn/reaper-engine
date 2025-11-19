@@ -21,7 +21,7 @@ protected:
 
 public:
     CScriptBinder();
-    virtual ~CScriptBinder();
+    ~CScriptBinder() override;
 
     void init();
     void clear();

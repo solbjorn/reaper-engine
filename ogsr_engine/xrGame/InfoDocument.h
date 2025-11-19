@@ -18,7 +18,7 @@ private:
 
 public:
     CInfoDocument();
-    virtual ~CInfoDocument();
+    ~CInfoDocument() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);

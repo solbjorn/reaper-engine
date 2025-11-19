@@ -155,7 +155,7 @@ public:
     virtual u32 play_time();
 
     CSoundRender_Emitter();
-    ~CSoundRender_Emitter();
+    ~CSoundRender_Emitter() override;
 
 private:
     void stop_target();

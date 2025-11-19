@@ -8,7 +8,7 @@ class dxRainRender : public IRainRender
 
 public:
     dxRainRender();
-    virtual ~dxRainRender();
+    ~dxRainRender() override;
 
     virtual void Render(CEffect_Rain& owner);
     virtual void Calculate(CEffect_Rain& owner) override;

@@ -18,6 +18,8 @@ extern int g_restriction_checker;
 
 class CSpaceRestrictionComposition : public CSpaceRestrictionBase
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionComposition, CSpaceRestrictionBase);
+
 public:
     using CSpaceRestrictionBase::inside;
 
@@ -40,8 +42,9 @@ protected:
     IC void merge(CBaseRestrictionPtr restriction);
 
 public:
-    IC CSpaceRestrictionComposition(CSpaceRestrictionHolder* space_restriction_holder, shared_str space_restrictors);
-    virtual ~CSpaceRestrictionComposition();
+    inline explicit CSpaceRestrictionComposition(CSpaceRestrictionHolder* space_restriction_holder, shared_str space_restrictors);
+    ~CSpaceRestrictionComposition() override;
+
     virtual void initialize();
     virtual bool inside(const Fsphere& sphere);
     IC virtual shared_str name() const;

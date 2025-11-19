@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UICellItem.h"
 #include "../Weapon.h"
 
@@ -13,7 +14,10 @@ protected:
     bool b_auto_drag_childs;
 
 public:
-    CUIInventoryCellItem(CInventoryItem* itm);
+    explicit CUIInventoryCellItem(CInventoryItem* itm);
+    // Real Wolf: Для метода get_cell_item(). 25.07.2014.
+    ~CUIInventoryCellItem() override;
+
     virtual void Update();
     virtual bool EqualTo(CUICellItem* itm);
     virtual CUIDragItem* CreateDragItem();
@@ -23,8 +27,6 @@ public:
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
     virtual bool OnMouse(float, float, EUIMessages);
-    // Real Wolf: Для метода get_cell_item(). 25.07.2014.
-    virtual ~CUIInventoryCellItem();
 };
 
 class CUIAmmoCellItem : public CUIInventoryCellItem
@@ -38,7 +40,9 @@ protected:
     virtual void UpdateItemText();
 
 public:
-    CUIAmmoCellItem(CWeaponAmmo* itm);
+    explicit CUIAmmoCellItem(CWeaponAmmo* itm);
+    ~CUIAmmoCellItem() override = default;
+
     virtual void Update();
     virtual bool EqualTo(CUICellItem* itm);
     CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
@@ -72,8 +76,9 @@ protected:
     bool is_launcher();
 
 public:
-    CUIWeaponCellItem(CWeapon* itm);
-    virtual ~CUIWeaponCellItem();
+    explicit CUIWeaponCellItem(CWeapon* itm);
+    ~CUIWeaponCellItem() override;
+
     virtual void Update();
     CWeapon* object() { return (CWeapon*)m_pData; }
     virtual void OnAfterChild(CUIDragDropListEx* parent_list);
@@ -92,6 +97,8 @@ public:
     string16 m_string;
 
 public:
-    CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont);
+    explicit CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont);
+    ~CBuyItemCustomDrawCell() override = default;
+
     virtual void OnDraw(CUICellItem* cell);
 };

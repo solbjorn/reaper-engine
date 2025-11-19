@@ -20,8 +20,8 @@ private:
     u32 m_time_finished;
 
 public:
-    CStateControlHideLite(_Object* obj) : inherited{obj} {}
-    virtual ~CStateControlHideLite() {}
+    explicit CStateControlHideLite(_Object* obj) : inherited{obj} {}
+    ~CStateControlHideLite() override = default;
 
     virtual void reinit();
 

@@ -7,7 +7,7 @@ struct SBaseEffector : public virtual RTTI::Enable
 public:
     CallMe::Delegate<void()> m_on_b_remove_callback;
 
-    virtual ~SBaseEffector() = default;
+    ~SBaseEffector() override = default;
 };
 
 struct SCamEffectorInfo

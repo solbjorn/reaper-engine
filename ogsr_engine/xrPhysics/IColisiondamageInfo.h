@@ -8,7 +8,7 @@ class XR_NOVTABLE ICollisionDamageInfo : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ICollisionDamageInfo);
 
 public:
-    virtual ~ICollisionDamageInfo() = 0;
+    ~ICollisionDamageInfo() override = 0;
 
     virtual float ContactVelocity() const = 0;
     virtual void HitDir(Fvector& dir) const = 0;

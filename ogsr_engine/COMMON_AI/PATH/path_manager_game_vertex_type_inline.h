@@ -13,9 +13,6 @@
 #define CGameVertexTypePathManager CPathManager<CGameGraph, _DataStorage, SVertexType<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 
 TEMPLATE_SPECIALIZATION
-CGameVertexTypePathManager::~CPathManager() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CGameVertexTypePathManager::setup(const CGameGraph* _graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index,
                                           const _index_type& _goal_node_index, _Parameters& parameters)
 {

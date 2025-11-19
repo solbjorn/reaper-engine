@@ -105,7 +105,7 @@ private:
 
 public:
     CControlPathBuilderBase();
-    virtual ~CControlPathBuilderBase();
+    ~CControlPathBuilderBase() override;
 
     // -------------------------------------------------------------------
     // Control Interface

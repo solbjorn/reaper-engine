@@ -26,7 +26,7 @@ struct CVertexPath
 
     public:
         inline explicit CDataStorage(const u32 vertex_count);
-        inline virtual ~CDataStorage();
+        inline ~CDataStorage() override;
 
         inline void init();
         inline void assign_parent(Vertex& neighbour, Vertex* parent);

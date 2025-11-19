@@ -12,11 +12,11 @@ protected:
     bool update_velocity;
 
 public:
-    physics_shell_animated(CPhysicsShellHolder* ca, bool _update_velocity);
-    virtual ~physics_shell_animated();
+    explicit physics_shell_animated(CPhysicsShellHolder* ca, bool _update_velocity);
+    ~physics_shell_animated() override;
 
-    CPhysicsShell* shell() const { return physics_shell; }
-    CPhysicsShell* shell() { return physics_shell; }
+    [[nodiscard]] CPhysicsShell* shell() const { return physics_shell; }
+    [[nodiscard]] CPhysicsShell* shell() { return physics_shell; }
 
 public:
     bool update(const Fmatrix& xrorm);

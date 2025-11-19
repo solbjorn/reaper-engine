@@ -103,7 +103,7 @@ public:
 
     virtual void SetAnimated(bool v) = 0;
 
-    virtual ~CPhysicsBase() = 0;
+    ~CPhysicsBase() override = 0;
 };
 
 inline CPhysicsBase::~CPhysicsBase() = default;
@@ -155,7 +155,7 @@ public:
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual ~CPhysicsElement() = 0;
+    ~CPhysicsElement() override = 0;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };
@@ -192,8 +192,9 @@ public:
     };
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     enumType eType; // type of the joint
+
 public:
-    virtual ~CPhysicsJoint() = 0;
+    ~CPhysicsJoint() override = 0;
 
     virtual u16 BoneID() = 0;
     virtual void SetBoneID(u16 bone_id) = 0;
@@ -364,8 +365,8 @@ public:
     virtual Fmatrix& ObjectInRoot() = 0;
     virtual void ObjectToRootForm(const Fmatrix& form) = 0;
     virtual void SetPrefereExactIntegration() = 0;
-    virtual ~CPhysicsShell();
-    // build_FromKinematics		in returns elements  & joint pointers according bone IDs;
+
+    ~CPhysicsShell() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

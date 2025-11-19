@@ -15,6 +15,7 @@ class CUISpinNum : public CUICustomSpin
 
 public:
     CUISpinNum();
+    ~CUISpinNum() override = default;
 
     virtual void Init(float x, float y, float width, float height);
 
@@ -50,6 +51,7 @@ class CUISpinFlt : public CUICustomSpin
 
 public:
     CUISpinFlt();
+    ~CUISpinFlt() override = default;
 
     virtual void Init(float x, float y, float width, float height);
 

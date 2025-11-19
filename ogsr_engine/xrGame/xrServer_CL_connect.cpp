@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "xrserver.h"
+
 #include "xrmessages.h"
 #include "hudmanager.h"
 #include "xrserver_objects.h"
@@ -114,6 +115,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* Resul
         P.w_u8(1);
     else
         P.w_u8(0);
+
     P.w_stringZ(Level().m_caServerOptions);
 
     SendTo(CL->ID, P);
@@ -122,7 +124,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* Resul
 void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
     u16 Type;
-    P.r_begin(Type);
+    std::ignore = P.r_begin(Type);
     u64 _our = 0;
     u64 _him = P.r_u64();
 
@@ -132,13 +134,9 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 #endif // DEBUG
 
     if (_our != _him)
-    {
         SendConnectResult(CL, 0, 0, "Data verification failed. Cheater? [3]");
-    }
     else
-    {
         Check_BuildVersion_Success(CL);
-    }
 }
 
 void xrServer::Check_BuildVersion_Success(IClient* CL)

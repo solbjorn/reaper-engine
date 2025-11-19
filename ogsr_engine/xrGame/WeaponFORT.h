@@ -1,8 +1,6 @@
 #ifndef __XR_WEAPON_FORT_H__
 #define __XR_WEAPON_FORT_H__
 
-#pragma once
-
 #include "WeaponPistol.h"
 #include "script_export_space.h"
 
@@ -17,7 +15,7 @@ private:
 
 public:
     CWeaponFORT();
-    virtual ~CWeaponFORT();
+    ~CWeaponFORT() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

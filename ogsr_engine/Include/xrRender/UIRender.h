@@ -33,7 +33,7 @@ public:
     };
 
 public:
-    virtual ~IUIRender() = 0;
+    ~IUIRender() override = 0;
 
     virtual void CreateUIGeom() = 0;
     virtual void DestroyUIGeom() = 0;

@@ -14,8 +14,8 @@ class CALifeRegistryWrapper : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CALifeRegistryWrapper<_registry_type>);
 
 public:
-    IC CALifeRegistryWrapper() = default;
-    virtual ~CALifeRegistryWrapper() { delete_data(local_registry); }
+    CALifeRegistryWrapper() = default;
+    ~CALifeRegistryWrapper() override { delete_data(local_registry); }
 
     IC void init(u16 id) { holder_id = id; }
 

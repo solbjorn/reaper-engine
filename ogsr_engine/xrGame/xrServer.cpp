@@ -6,6 +6,7 @@
 
 #include "xrServer.h"
 #include "xrMessages.h"
+
 #include "xrServer_Objects_ALife_All.h"
 #include "level.h"
 #include "game_cl_base.h"
@@ -189,9 +190,11 @@ void xrServer::Update()
         //
         CSE_Abstract* E = ID_to_entity(R.phantom);
         E->Spawn_Write(Packet, FALSE);
+
         u16 ID;
-        Packet.r_begin(ID);
+        std::ignore = Packet.r_begin(ID);
         R_ASSERT(M_SPAWN == ID);
+
         ClientID clientID;
         clientID.set(0xffff);
         Process_spawn(Packet, clientID);
@@ -350,7 +353,7 @@ void xrServer::SendUpdatesToAll()
 u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
     u16 type;
-    P.r_begin(type);
+    std::ignore = P.r_begin(type);
 
     csPlayers.Enter();
 
@@ -376,7 +379,7 @@ extern float g_fCatchObjectTime;
 u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
     u16 type;
-    P.r_begin(type);
+    std::ignore = P.r_begin(type);
 
     csPlayers.Enter();
 

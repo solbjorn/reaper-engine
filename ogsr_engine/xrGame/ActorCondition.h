@@ -46,8 +46,8 @@ private:
     void UpdateThirst();
 
 public:
-    CActorCondition(CActor* object);
-    virtual ~CActorCondition(void);
+    explicit CActorCondition(CActor* object);
+    ~CActorCondition() override;
 
     virtual void LoadCondition(LPCSTR section);
     virtual void reinit();

@@ -11,7 +11,7 @@ class CUIArtefactParams : public CUIWindow
 
 public:
     CUIArtefactParams();
-    virtual ~CUIArtefactParams();
+    ~CUIArtefactParams() override;
 
     void InitFromXml(CUIXml& xml_doc);
     bool Check(const shared_str& af_section);

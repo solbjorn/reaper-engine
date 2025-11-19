@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateGroupAttackRun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupAttackRun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -24,7 +27,8 @@ class CStateGroupAttackRun : public CState<_Object>
     Fvector m_predicted_vel;
 
 public:
-    IC CStateGroupAttackRun(_Object* obj);
+    inline explicit CStateGroupAttackRun(_Object* obj);
+    ~CStateGroupAttackRun() override = default;
 
     virtual void initialize();
     virtual void execute();

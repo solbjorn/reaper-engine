@@ -8,13 +8,15 @@ class dxUIShader : public IUIShader
 {
     RTTI_DECLARE_TYPEINFO(dxUIShader, IUIShader);
 
-public:
+private:
     friend class dxUIRender;
     friend class dxDebugRender;
     friend class dxWallMarkArray;
     friend class CRender;
 
-    virtual ~dxUIShader() {}
+public:
+    ~dxUIShader() override = default;
+
     virtual void Copy(IUIShader& _in);
     virtual void create(LPCSTR sh, LPCSTR tex = nullptr, bool no_cache = false);
     virtual bool inited() { return hShader; }

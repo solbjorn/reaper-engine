@@ -9,7 +9,7 @@ class XR_NOVTABLE CPHReqBase : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPHReqBase);
 
 public:
-    virtual ~CPHReqBase() = 0;
+    ~CPHReqBase() override = 0;
 
     [[nodiscard]] virtual bool obsolete() const = 0;
     [[nodiscard]] virtual bool compare(const CPHReqComparerV*) const { return false; }
@@ -22,7 +22,7 @@ class XR_NOVTABLE CPHCondition : public CPHReqBase
     RTTI_DECLARE_TYPEINFO(CPHCondition, CPHReqBase);
 
 public:
-    virtual ~CPHCondition() = 0;
+    ~CPHCondition() override = 0;
 
     [[nodiscard]] virtual bool is_true() = 0;
 };
@@ -34,7 +34,7 @@ class XR_NOVTABLE CPHAction : public CPHReqBase
     RTTI_DECLARE_TYPEINFO(CPHAction, CPHReqBase);
 
 public:
-    virtual ~CPHAction() = 0;
+    ~CPHAction() override = 0;
 
     virtual void run() = 0;
 };
@@ -49,6 +49,7 @@ public:
     bool b_called{};
 
     CPHOnesCondition() = default;
+    ~CPHOnesCondition() override = default;
 
     [[nodiscard]] bool is_true() override
     {
@@ -64,6 +65,8 @@ class CPHDummiAction : public CPHAction
     RTTI_DECLARE_TYPEINFO(CPHDummiAction, CPHAction);
 
 public:
+    ~CPHDummiAction() override = default;
+
     void run() override {}
     [[nodiscard]] bool obsolete() const override { return false; }
 };

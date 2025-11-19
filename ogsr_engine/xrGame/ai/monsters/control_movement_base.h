@@ -17,6 +17,8 @@ private:
     float m_accel;
 
 public:
+    ~CControlMovementBase() override = default;
+
     virtual void load(LPCSTR section);
 
     virtual void reinit();

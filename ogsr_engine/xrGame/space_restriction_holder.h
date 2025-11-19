@@ -25,7 +25,7 @@ namespace SpaceRestrictionHolder
 typedef intrusive_ptr<CSpaceRestrictionBridge, RestrictionSpace::CTimeIntrusiveBase> CBaseRestrictionPtr;
 }
 
-class CSpaceRestrictionHolder : public virtual RTTI::Enable
+class XR_NOVTABLE CSpaceRestrictionHolder : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionHolder);
 
@@ -49,8 +49,9 @@ protected:
     void clear();
 
 public:
-    IC CSpaceRestrictionHolder();
-    virtual ~CSpaceRestrictionHolder();
+    inline CSpaceRestrictionHolder();
+    ~CSpaceRestrictionHolder() override;
+
     SpaceRestrictionHolder::CBaseRestrictionPtr restriction(shared_str space_restrictors);
     void register_restrictor(CSpaceRestrictor* space_restrictor, const RestrictionSpace::ERestrictorTypes& restrictor_type);
     void unregister_restrictor(CSpaceRestrictor* space_restrictor);

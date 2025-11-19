@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIWindow.h"
 #include "../UIStaticItem.h"
 #include "../inventory_space.h"
@@ -9,9 +10,11 @@ class CArtefact;
 
 class CUIArtefactPanel : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIArtefactPanel, CUIWindow);
+
 public:
     CUIArtefactPanel() = default;
-    ~CUIArtefactPanel() = default;
+    ~CUIArtefactPanel() override = default;
 
     virtual void InitIcons(const TIItemContainer& artefacts);
     virtual void Draw();

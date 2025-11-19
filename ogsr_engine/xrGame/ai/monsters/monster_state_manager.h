@@ -20,7 +20,9 @@ public:
     using inherited::prev_substate;
     using inherited::select_state;
 
-    CMonsterStateManager(_Object* obj) : inherited(obj) {}
+    explicit CMonsterStateManager(_Object* obj) : inherited{obj} {}
+    ~CMonsterStateManager() override = 0;
+
     virtual void reinit();
     virtual void update();
     virtual void force_script_state(EMonsterState state);
@@ -36,5 +38,8 @@ protected:
     bool can_eat();
     bool check_state(u32 state_id);
 };
+
+template <typename _Object>
+inline CMonsterStateManager<_Object>::~CMonsterStateManager() = default;
 
 #include "monster_state_manager_inline.h"

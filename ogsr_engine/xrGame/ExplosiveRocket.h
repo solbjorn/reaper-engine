@@ -18,11 +18,11 @@ private:
     friend CRocketLauncher;
 
 public:
-    CExplosiveRocket(void);
-    virtual ~CExplosiveRocket(void);
-    virtual DLL_Pure* _construct();
+    CExplosiveRocket();
+    ~CExplosiveRocket() override;
 
-public:
+    [[nodiscard]] virtual DLL_Pure* _construct();
+
     virtual CExplosive* cast_explosive() { return this; }
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }

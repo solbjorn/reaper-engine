@@ -1,12 +1,6 @@
 #include "stdafx.h"
-#include "DelayedActionFuse.h"
 
-CDelayedActionFuse::CDelayedActionFuse()
-{
-    m_dafflags.assign(0);
-    m_fTime = 0.f;
-    m_fSpeedChangeCondition = 0.f;
-}
+#include "DelayedActionFuse.h"
 
 void CDelayedActionFuse::SetTimer(float current_condition)
 {
@@ -21,6 +15,7 @@ void CDelayedActionFuse::SetTimer(float current_condition)
     // Msg("expl moment %f",m_fTime);
     StartTimerEffects();
 }
+
 float CDelayedActionFuse::Time()
 {
     VERIFY(isInitialized());
@@ -29,6 +24,7 @@ float CDelayedActionFuse::Time()
     else
         return m_fTime - Device.fTimeGlobal;
 }
+
 void CDelayedActionFuse::Initialize(float time, float critical_condition)
 {
     if (isActive())
@@ -49,6 +45,7 @@ void CDelayedActionFuse::Initialize(float time, float critical_condition)
         m_dafflags.set(flNoConditionChange, TRUE);
     m_dafflags.set(flInitialized, TRUE);
 }
+
 bool CDelayedActionFuse::Update(float current_condition)
 {
     VERIFY(isActive());

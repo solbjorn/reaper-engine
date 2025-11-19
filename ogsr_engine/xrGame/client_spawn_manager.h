@@ -36,8 +36,8 @@ protected:
     void merge_spawn_callbacks(CSpawnCallback& new_callback, CSpawnCallback& old_callback);
 
 public:
-    IC CClientSpawnManager();
-    virtual ~CClientSpawnManager();
+    inline CClientSpawnManager();
+    ~CClientSpawnManager() override;
 
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function, sol::object object);
     void add(ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, sol::function function);

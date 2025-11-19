@@ -16,7 +16,7 @@ private:
 
 public:
     CCustomOutfit();
-    virtual ~CCustomOutfit();
+    ~CCustomOutfit() override;
 
     virtual void Load(LPCSTR section);
 

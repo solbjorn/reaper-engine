@@ -9,7 +9,7 @@ class XR_NOVTABLE CUIOptionsItem : public virtual RTTI::Enable
     friend class CUIOptionsManager;
 
 public:
-    virtual ~CUIOptionsItem();
+    ~CUIOptionsItem() override;
 
     virtual void Register(const char* entry, const char* group);
     static CUIOptionsManager* GetOptionsManager() { return &m_optionsManager; }

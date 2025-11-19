@@ -19,6 +19,8 @@ class CUIPdaContactsWnd;
 
 class CUIPdaWnd : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CUIPdaWnd, CUIDialogWnd);
+
 private:
     typedef CUIDialogWnd inherited;
 
@@ -59,7 +61,7 @@ public:
 
 public:
     CUIPdaWnd();
-    virtual ~CUIPdaWnd();
+    ~CUIPdaWnd() override;
 
     virtual void Init();
 

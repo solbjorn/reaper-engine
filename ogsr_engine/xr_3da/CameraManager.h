@@ -152,7 +152,7 @@ public:
     static void ResetPP();
 
     explicit CCameraManager(bool bApplyOnUpdate);
-    ~CCameraManager();
+    ~CCameraManager() override;
 };
 
 extern SPPInfo pp_identity;

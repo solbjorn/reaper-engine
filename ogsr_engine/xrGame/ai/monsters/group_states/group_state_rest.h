@@ -7,6 +7,8 @@
 template <typename _Object>
 class CStateGroupRest : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupRest<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -22,8 +24,8 @@ protected:
     u32 time_for_sleep;
 
 public:
-    CStateGroupRest(_Object* obj);
-    virtual ~CStateGroupRest();
+    explicit CStateGroupRest(_Object* obj);
+    ~CStateGroupRest() override;
 
     virtual void initialize();
     virtual void execute();

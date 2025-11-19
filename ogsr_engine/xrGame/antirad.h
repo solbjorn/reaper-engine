@@ -16,7 +16,8 @@ private:
 
 public:
     CAntirad();
-    virtual ~CAntirad();
+    ~CAntirad() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);
     virtual void net_Destroy();

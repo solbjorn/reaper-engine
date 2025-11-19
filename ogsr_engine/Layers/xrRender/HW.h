@@ -1,4 +1,4 @@
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
+#ifndef AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 
 // HW.h: interface for the CHW class.
@@ -20,7 +20,7 @@ class CHW : public pureAppActivate, public pureAppDeactivate
 public:
     //	Functions section
     CHW();
-    ~CHW();
+    ~CHW() override;
 
     void CreateD3D();
     void DestroyD3D();
@@ -85,4 +85,4 @@ public:
 
 extern CHW HW;
 
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
+#endif // AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_

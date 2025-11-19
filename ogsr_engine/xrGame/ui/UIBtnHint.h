@@ -17,7 +17,7 @@ public:
     bool m_enabledOnFrame{};
 
     CUIButtonHint();
-    virtual ~CUIButtonHint();
+    ~CUIButtonHint() override;
 
     CUIWindow* Owner() { return m_ownerWnd; }
     void Discard() { m_ownerWnd = nullptr; }

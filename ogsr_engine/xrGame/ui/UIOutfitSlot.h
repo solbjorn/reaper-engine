@@ -1,8 +1,12 @@
 #pragma once
+
 #include "UIDragDropListEx.h"
 
 class CUIOutfitDragDropList : public CUIDragDropListEx
 {
+    RTTI_DECLARE_TYPEINFO(CUIOutfitDragDropList, CUIDragDropListEx);
+
+private:
     typedef CUIDragDropListEx inherited;
     CUIStatic* m_background;
     shared_str m_default_outfit;
@@ -10,7 +14,7 @@ class CUIOutfitDragDropList : public CUIDragDropListEx
 
 public:
     CUIOutfitDragDropList();
-    virtual ~CUIOutfitDragDropList();
+    ~CUIOutfitDragDropList() override;
 
     virtual void SetItem(CUICellItem* itm); // auto
     virtual void SetItem(CUICellItem* itm, Fvector2 abs_pos); // start at cursor pos

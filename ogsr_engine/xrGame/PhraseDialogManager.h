@@ -9,7 +9,7 @@ class CPhraseDialogManager : public virtual RTTI::Enable
 
 public:
     CPhraseDialogManager();
-    virtual ~CPhraseDialogManager();
+    ~CPhraseDialogManager() override;
 
     virtual void InitDialog(CPhraseDialogManager* dialog_partner, DIALOG_SHARED_PTR& phrase_dialog);
     virtual void AddDialog(DIALOG_SHARED_PTR& phrase_dialog);

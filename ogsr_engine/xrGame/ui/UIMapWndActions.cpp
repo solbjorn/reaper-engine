@@ -22,7 +22,8 @@ private:
     typedef WORLD_OPERATOR inherited;
 
 public:
-    CSomeMapAction(LPCSTR action_name) : inherited{static_cast<CUIMapWnd*>(nullptr), action_name} {}
+    explicit CSomeMapAction(LPCSTR action_name) : inherited{static_cast<CUIMapWnd*>(nullptr), action_name} {}
+    ~CSomeMapAction() override = default;
 
     virtual void initialize() { inherited::initialize(); }
     virtual void execute() { inherited::execute(); }
@@ -44,7 +45,8 @@ protected:
     void update_target_state();
 
 public:
-    CMapActionZoomControl(LPCSTR action_name) : inherited{action_name} {}
+    explicit CMapActionZoomControl(LPCSTR action_name) : inherited{action_name} {}
+    ~CMapActionZoomControl() override = default;
 
     virtual void execute();
     virtual void initialize();
@@ -59,7 +61,8 @@ private:
     typedef CMapActionZoomControl inherited;
 
 public:
-    CMapActionResize(LPCSTR action_name) : inherited{action_name} {}
+    explicit CMapActionResize(LPCSTR action_name) : inherited{action_name} {}
+    ~CMapActionResize() override = default;
 
     virtual void initialize();
     virtual void finalize();
@@ -73,7 +76,8 @@ private:
     typedef CMapActionZoomControl inherited;
 
 public:
-    CMapActionMinimize(LPCSTR action_name) : inherited{action_name} {}
+    explicit CMapActionMinimize(LPCSTR action_name) : inherited{action_name} {}
+    ~CMapActionMinimize() override = default;
 
     virtual void initialize();
     virtual void finalize();
@@ -87,7 +91,8 @@ private:
     typedef CSomeMapAction inherited;
 
 public:
-    CMapActionIdle(LPCSTR action_name) : inherited{action_name} {}
+    explicit CMapActionIdle(LPCSTR action_name) : inherited{action_name} {}
+    ~CMapActionIdle() override = default;
 
     virtual void initialize();
     virtual void execute();
@@ -103,8 +108,8 @@ private:
     typedef CPropertyEvaluator<CUIMapWnd> inherited;
 
 public:
-    CSomeMapEvaluator(LPCSTR evaluator_name) : inherited{static_cast<CUIMapWnd*>(nullptr), evaluator_name} {}
-    virtual ~CSomeMapEvaluator() = default;
+    explicit CSomeMapEvaluator(LPCSTR evaluator_name) : inherited{static_cast<CUIMapWnd*>(nullptr), evaluator_name} {}
+    ~CSomeMapEvaluator() override = default;
 };
 
 class CEvaluatorTargetMapShown : public CSomeMapEvaluator
@@ -115,7 +120,8 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorTargetMapShown(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    explicit CEvaluatorTargetMapShown(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    ~CEvaluatorTargetMapShown() override = default;
 
     virtual bool evaluate();
 };
@@ -128,7 +134,8 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapMinimized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    explicit CEvaluatorMapMinimized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    ~CEvaluatorMapMinimized() override = default;
 
     virtual bool evaluate();
 };
@@ -141,21 +148,23 @@ private:
     typedef CSomeMapEvaluator inherited;
 
 public:
-    CEvaluatorMapResized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    explicit CEvaluatorMapResized(LPCSTR evaluator_name = nullptr) : inherited{evaluator_name} {}
+    ~CEvaluatorMapResized() override = default;
 
     virtual bool evaluate();
 };
 
 class CEvaluatorMapConst : public CSomeMapEvaluator
 {
-    RTTI_DECLARE_TYPEINFO(CEvaluatorMapResized, CSomeMapEvaluator);
+    RTTI_DECLARE_TYPEINFO(CEvaluatorMapConst, CSomeMapEvaluator);
 
 private:
     typedef CSomeMapEvaluator inherited;
     bool ret_value;
 
 public:
-    CEvaluatorMapConst(bool val = false, LPCSTR evaluator_name = nullptr) : inherited{evaluator_name}, ret_value{val} {}
+    explicit CEvaluatorMapConst(bool val = false, LPCSTR evaluator_name = nullptr) : inherited{evaluator_name}, ret_value{val} {}
+    ~CEvaluatorMapConst() override = default;
 
     virtual bool evaluate() { return ret_value; }
 };
@@ -163,8 +172,8 @@ public:
 
 using namespace UIMapWndActionsSpace;
 
-CMapActionPlanner::CMapActionPlanner() {}
-CMapActionPlanner::~CMapActionPlanner() {}
+CMapActionPlanner::CMapActionPlanner() = default;
+CMapActionPlanner::~CMapActionPlanner() = default;
 
 LPCSTR CMapActionPlanner::object_name() const { return (""); }
 

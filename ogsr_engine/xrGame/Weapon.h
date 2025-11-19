@@ -38,7 +38,7 @@ private:
 
 public:
     CWeapon();
-    virtual ~CWeapon();
+    ~CWeapon() override;
 
     // Generic
     virtual void Load(LPCSTR section);

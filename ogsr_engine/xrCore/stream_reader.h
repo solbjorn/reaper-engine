@@ -6,7 +6,7 @@ class XR_NOVTABLE CStreamReader : public IReaderBase<CStreamReader>
     RTTI_DECLARE_TYPEINFO(CStreamReader, IReaderBase<CStreamReader>);
 
 public:
-    virtual ~CStreamReader() = 0;
+    ~CStreamReader() override = 0;
 
     [[nodiscard]] virtual gsl::index elapsed() const = 0;
     [[nodiscard]] virtual gsl::index length() const = 0;
@@ -42,12 +42,9 @@ private:
     inline void unmap();
     inline void remap(gsl::index new_offset);
 
-    // should not be called
-    CMapStreamReader(const CMapStreamReader&) = delete;
-    CMapStreamReader& operator=(const CMapStreamReader&) = delete;
-
 public:
     CMapStreamReader() = default;
+    ~CMapStreamReader() override = default;
 
     virtual void construct(const HANDLE& file_mapping_handle, gsl::index start_offset, gsl::index file_size, gsl::index archive_size, gsl::index window_size);
     virtual void destroy();

@@ -43,7 +43,7 @@ public:
     using CUISimpleWindow::SetWndRect;
 
     CUIStatic();
-    virtual ~CUIStatic();
+    ~CUIStatic() override;
 
     // IUISimpleWindow--------------------------------------------------------------------------------------
     virtual void Init(float x, float y, float width, float height);

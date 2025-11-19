@@ -16,8 +16,9 @@ public:
     bool m_bCompleted;
 
 public:
-    IC CScriptAbstractAction();
-    virtual ~CScriptAbstractAction();
+    inline CScriptAbstractAction();
+    ~CScriptAbstractAction() override;
+
     virtual bool completed();
 
     inline void clone(const CScriptAbstractAction& from);

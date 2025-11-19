@@ -2,6 +2,7 @@
 
 #include "UIFrameLineWnd.h"
 #include "UILines.h"
+
 class CLAItem;
 
 class CUILabel : public CUIFrameLineWnd, public CUILinesOwner // IUITextControl
@@ -23,6 +24,8 @@ public:
 
     // own
     CUILabel();
+    ~CUILabel() override = default;
+
     void SetLightAnim(LPCSTR lanim);
 };
 XR_SOL_BASE_CLASSES(CUILabel);

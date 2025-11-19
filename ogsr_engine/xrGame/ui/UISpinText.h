@@ -12,6 +12,8 @@ class CUISpinText : public CUICustomSpin
 
 public:
     CUISpinText();
+    ~CUISpinText() override = default;
+
     // CUIOptionsItem
     virtual void SetCurrentValue();
     virtual void SaveValue();

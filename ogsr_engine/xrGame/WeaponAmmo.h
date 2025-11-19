@@ -41,7 +41,7 @@ public:
     typedef CInventoryItemObject inherited;
 
     CWeaponAmmo();
-    virtual ~CWeaponAmmo();
+    ~CWeaponAmmo() override;
 
     virtual CWeaponAmmo* cast_weapon_ammo() { return this; }
     virtual void Load(LPCSTR section);

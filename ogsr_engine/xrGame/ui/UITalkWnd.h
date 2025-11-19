@@ -14,12 +14,15 @@ class CInventoryOwner;
 class CPhraseDialogManager;
 class CUITalkDialogWnd;
 class CUITradeWnd;
+
 ///////////////////////////////////////
 //
 ///////////////////////////////////////
 
 class CUITalkWnd : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CUITalkWnd, CUIDialogWnd);
+
 private:
     typedef CUIDialogWnd inherited;
     ref_sound m_sound;
@@ -28,7 +31,7 @@ private:
 
 public:
     CUITalkWnd();
-    virtual ~CUITalkWnd();
+    ~CUITalkWnd() override;
 
     virtual void Init();
 

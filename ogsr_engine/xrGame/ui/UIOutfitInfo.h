@@ -14,7 +14,7 @@ class CUIOutfitInfo : public CUIWindow
 
 public:
     CUIOutfitInfo();
-    virtual ~CUIOutfitInfo();
+    ~CUIOutfitInfo() override;
 
     void Update(CCustomOutfit* outfit);
     void InitFromXml(CUIXml& xml_doc);

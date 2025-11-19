@@ -11,8 +11,10 @@
 #include "ai/ai_monsters_anims.h"
 #include "stalker_animation_names.h"
 
-class CStalkerAnimationState
+class CStalkerAnimationState : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerAnimationState);
+
 public:
     typedef CAniCollection<CAniVector, movement_action_names> MOVEMENT_ACTIONS;
     typedef CAniCollection<CAniVector, weapon_action_names> WEAPON_ACTIONS;
@@ -30,6 +32,7 @@ public:
 public:
     CStalkerAnimationState();
     CStalkerAnimationState(const CStalkerAnimationState& animations);
-    virtual ~CStalkerAnimationState();
+    ~CStalkerAnimationState() override;
+
     void Load(IKinematicsAnimated* kinematics, LPCSTR base_name);
 };

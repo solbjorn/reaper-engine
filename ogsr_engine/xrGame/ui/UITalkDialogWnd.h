@@ -24,7 +24,7 @@ private:
 
 public:
     CUITalkDialogWnd();
-    virtual ~CUITalkDialogWnd();
+    ~CUITalkDialogWnd() override;
 
     virtual void Init(float x, float y, float width, float height);
 
@@ -90,7 +90,10 @@ public:
     CUIStatic* m_num_text{};
     CUI3tButton* m_text;
     shared_str m_s_value;
-    CUIQuestionItem(CUIXml* xml_doc, LPCSTR path);
+
+    explicit CUIQuestionItem(CUIXml* xml_doc, LPCSTR path);
+    ~CUIQuestionItem() override = default;
+
     void Init(LPCSTR val, LPCSTR text);
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
@@ -110,7 +113,9 @@ public:
     CUIStatic* m_name;
 
 public:
-    CUIAnswerItem(CUIXml* xml_doc, LPCSTR path);
+    explicit CUIAnswerItem(CUIXml* xml_doc, LPCSTR path);
+    ~CUIAnswerItem() override = default;
+
     void Init(LPCSTR text, LPCSTR name);
 };
 
@@ -123,6 +128,8 @@ public:
     CUIStatic* m_icon;
 
 public:
-    CUIAnswerItemIconed(CUIXml* xml_doc, LPCSTR path);
+    explicit CUIAnswerItemIconed(CUIXml* xml_doc, LPCSTR path);
+    ~CUIAnswerItemIconed() override = default;
+
     void Init(LPCSTR text, LPCSTR texture_name, Frect texture_rect);
 };

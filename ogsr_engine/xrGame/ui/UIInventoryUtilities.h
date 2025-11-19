@@ -24,7 +24,6 @@ class CUIStatic;
 
 namespace InventoryUtilities
 {
-
 // сравнивает элементы по пространству занимаемому ими в рюкзаке
 // для сортировки
 bool GreaterRoomInRuck(PIItem item1, PIItem item2);

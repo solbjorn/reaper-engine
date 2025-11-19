@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
 #include "bloodsucker_alien.h"
+
 #include "bloodsucker.h"
+
 #include "../../../level.h"
 #include "../../../actor.h"
 #include "../../../inventory.h"
@@ -14,8 +16,12 @@
 ////////////////////////////////////////////////////////////////////////////////////
 // CAlienEffectorPP
 ////////////////////////////////////////////////////////////////////////////////////
+
 class CAlienEffectorPP : public CEffectorPP
 {
+    RTTI_DECLARE_TYPEINFO(CAlienEffectorPP, CEffectorPP);
+
+private:
     typedef CEffectorPP inherited;
 
     SPPInfo state;
@@ -23,8 +29,8 @@ class CAlienEffectorPP : public CEffectorPP
     float target_factor;
 
 public:
-    CAlienEffectorPP(const SPPInfo& ppi, EEffectorPPType type);
-    virtual ~CAlienEffectorPP();
+    explicit CAlienEffectorPP(const SPPInfo& ppi, EEffectorPPType type);
+    ~CAlienEffectorPP() override = default;
 
     void Update(float new_factor) { factor = new_factor; }
     void Destroy();
@@ -39,8 +45,6 @@ CAlienEffectorPP::CAlienEffectorPP(const SPPInfo& ppi, EEffectorPPType type) : C
     factor = 0.f;
     target_factor = 1.f;
 }
-
-CAlienEffectorPP::~CAlienEffectorPP() {}
 
 #define PERIOD_SPEED 0.3f
 
@@ -84,7 +88,9 @@ private:
     float m_inertion;
 
 public:
-    CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj);
+    explicit CAlienEffector(ECamEffectorType type, CAI_Bloodsucker* obj);
+    ~CAlienEffector() override = default;
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };
 

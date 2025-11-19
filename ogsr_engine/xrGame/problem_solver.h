@@ -108,8 +108,8 @@ protected:
 
 public:
     // common interface
-    IC CProblemSolver();
-    inline virtual ~CProblemSolver();
+    inline CProblemSolver();
+    inline ~CProblemSolver() override;
 
     inline void init();
     inline virtual void setup();

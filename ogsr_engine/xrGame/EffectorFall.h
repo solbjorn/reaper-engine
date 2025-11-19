@@ -11,6 +11,8 @@ public:
     float fPower;
     float fPhase;
 
-    CEffectorFall(float power, float life_time = 1);
+    explicit CEffectorFall(float power, float life_time = 1.0f);
+    ~CEffectorFall() override = default;
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

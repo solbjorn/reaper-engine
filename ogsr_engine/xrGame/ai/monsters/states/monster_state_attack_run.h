@@ -5,13 +5,17 @@
 template <typename _Object>
 class CStateMonsterAttackRun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttackRun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
     TTime m_time_path_rebuild{};
 
 public:
-    IC CStateMonsterAttackRun(_Object* obj) : inherited(obj) {}
+    explicit CStateMonsterAttackRun(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterAttackRun() override = default;
 
     virtual void initialize();
     virtual void execute();

@@ -169,8 +169,8 @@ protected:
 #endif
 
 public:
-    CDetailPathManager(CRestrictedObject* object);
-    virtual ~CDetailPathManager();
+    explicit CDetailPathManager(CRestrictedObject* object);
+    ~CDetailPathManager() override;
 
     virtual void reinit();
     bool valid() const;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "uiFrameRect.h"
+
 #include "hudmanager.h"
 #include "ui\uitexturemaster.h"
 
@@ -13,6 +14,9 @@ CUIFrameRect::CUIFrameRect()
     uFlags.zero();
     m_itm_mask.one();
 }
+
+CUIFrameRect::~CUIFrameRect() = default;
+
 //--------------------------------------------------------------------
 
 void CUIFrameRect::Init(LPCSTR texture, float x, float y, float w, float h) //, DWORD align)

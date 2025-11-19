@@ -28,7 +28,7 @@ public:
     bool m_aggressive;
 
     CEnergyHolder();
-    virtual ~CEnergyHolder();
+    ~CEnergyHolder() override;
 
     virtual void reinit();
     virtual void reload(LPCSTR section, LPCSTR prefix = "", LPCSTR suffix = "");

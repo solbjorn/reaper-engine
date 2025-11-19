@@ -103,7 +103,7 @@ public:
     void destroy();
 
     CODEGeom() = default;
-    virtual ~CODEGeom();
+    ~CODEGeom() override;
 };
 
 class CBoxGeom : public CODEGeom
@@ -114,8 +114,9 @@ public:
     typedef CODEGeom inherited;
     Fobb m_box;
 
-    CBoxGeom(const Fobb& box);
-    //	virtual					~CBoxGeom			(const Fobb& box)													;
+    explicit CBoxGeom(const Fobb& box);
+    ~CBoxGeom() override = default;
+
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
@@ -136,7 +137,9 @@ public:
     typedef CODEGeom inherited;
     Fsphere m_sphere;
 
-    CSphereGeom(const Fsphere& sphere);
+    explicit CSphereGeom(const Fsphere& sphere);
+    ~CSphereGeom() override = default;
+
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);
@@ -157,7 +160,9 @@ public:
     typedef CODEGeom inherited;
     Fcylinder m_cylinder;
 
-    CCylinderGeom(const Fcylinder& cyl);
+    explicit CCylinderGeom(const Fcylinder& cyl);
+    ~CCylinderGeom() override = default;
+
     virtual float volume();
     virtual float radius();
     virtual void get_extensions_bt(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext);

@@ -58,7 +58,8 @@ protected:
 
 public:
     CObjectHandler();
-    virtual ~CObjectHandler();
+    ~CObjectHandler() override;
+
     virtual void Load(LPCSTR section);
     virtual void reinit(CAI_Stalker* object);
     virtual void reload(LPCSTR section);

@@ -8,6 +8,9 @@ class CController;
 
 class CControllerDirection : public CControlDirectionBase
 {
+    RTTI_DECLARE_TYPEINFO(CControllerDirection, CControlDirectionBase);
+
+private:
     typedef CControlDirectionBase inherited;
 
     CController* m_controller;
@@ -21,6 +24,8 @@ class CControllerDirection : public CControlDirectionBase
     Fvector m_head_look_point;
 
 public:
+    ~CControllerDirection() override = default;
+
     virtual void reinit();
     virtual void update_schedule();
 

@@ -29,8 +29,8 @@ protected:
     u16 m_last_material_idx{};
 
 public:
-    CMaterialManager(CObject* object, CPHMovementControl* movement_control);
-    virtual ~CMaterialManager();
+    explicit CMaterialManager(CObject* object, CPHMovementControl* movement_control);
+    ~CMaterialManager() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

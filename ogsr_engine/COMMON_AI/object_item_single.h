@@ -23,6 +23,7 @@ protected:
 
 public:
     inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+    ~CObjectItemSingle() override = default;
 
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
@@ -39,6 +40,7 @@ protected:
 
 public:
     inline explicit CObjectItemSingle(const CLASS_ID& clsid, LPCSTR script_clsid);
+    ~CObjectItemSingle() override = default;
 
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR) const;

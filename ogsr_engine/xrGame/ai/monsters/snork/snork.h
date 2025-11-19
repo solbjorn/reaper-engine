@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "script_export_space.h"
 
@@ -13,7 +14,7 @@ public:
     SVelocityParam m_fsVelocityJumpGround;
 
     CSnork();
-    virtual ~CSnork();
+    ~CSnork() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

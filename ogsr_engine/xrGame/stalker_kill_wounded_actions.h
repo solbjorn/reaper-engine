@@ -16,11 +16,15 @@
 
 class CStalkerActionReachWounded : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionReachWounded, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionReachWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionReachWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionReachWounded() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -32,6 +36,8 @@ public:
 
 class CStalkerActionAimWounded : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionAimWounded, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -39,7 +45,9 @@ private:
     //	float				m_speed;
 
 public:
-    CStalkerActionAimWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionAimWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionAimWounded() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -51,11 +59,15 @@ public:
 
 class CStalkerActionPrepareWounded : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionPrepareWounded, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionPrepareWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionPrepareWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionPrepareWounded() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -67,11 +79,15 @@ public:
 
 class CStalkerActionKillWounded : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionKillWounded, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionKillWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionKillWounded(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionKillWounded() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -83,11 +99,15 @@ public:
 
 class CStalkerActionPauseAfterKill : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionPauseAfterKill, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionPauseAfterKill(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionPauseAfterKill(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionPauseAfterKill() override = default;
+
     virtual void initialize();
     virtual void execute();
 };

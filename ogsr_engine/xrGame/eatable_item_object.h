@@ -17,7 +17,8 @@ class CEatableItemObject : public CEatableItem, public CPhysicItem
 
 public:
     CEatableItemObject();
-    virtual ~CEatableItemObject();
+    ~CEatableItemObject() override;
+
     virtual DLL_Pure* _construct();
 
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }

@@ -16,7 +16,7 @@ private:
 
 public:
     CGalantineArtefact();
-    virtual ~CGalantineArtefact();
+    ~CGalantineArtefact() override;
 
     virtual void Load(LPCSTR section);
 };

@@ -8,8 +8,9 @@
 
 #include "stdafx.h"
 
-#include "gameobject.h"
 #include "patrol_path_manager.h"
+
+#include "gameobject.h"
 #include "script_game_object.h"
 #include "restricted_object.h"
 #include "ai_space.h"
@@ -48,7 +49,7 @@ bool show_restrictions(CRestrictedObject* object)
 }
 #endif
 
-CPatrolPathManager::~CPatrolPathManager() {}
+CPatrolPathManager::~CPatrolPathManager() = default;
 
 bool CPatrolPathManager::extrapolate_path()
 {

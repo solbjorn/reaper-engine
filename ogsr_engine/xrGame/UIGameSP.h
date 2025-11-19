@@ -28,7 +28,7 @@ private:
 
 public:
     CUIGameSP();
-    virtual ~CUIGameSP();
+    ~CUIGameSP() override;
 
     virtual void reset_ui();
     virtual void shedule_Update(u32 dt);
@@ -56,8 +56,12 @@ public:
 
 class CChangeLevelWnd : public CUIDialogWnd
 {
+    RTTI_DECLARE_TYPEINFO(CChangeLevelWnd, CUIDialogWnd);
+
+private:
     CUIMessageBox* m_messageBox;
     typedef CUIDialogWnd inherited;
+
     void OnCancel();
     void OnOk();
 
@@ -71,7 +75,7 @@ public:
     bool m_b_position_cancel;
 
     CChangeLevelWnd();
-    virtual ~CChangeLevelWnd() {}
+    ~CChangeLevelWnd() override = default;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     virtual bool WorkInPause() const { return true; }

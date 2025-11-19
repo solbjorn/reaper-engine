@@ -489,22 +489,25 @@ void CSE_ALifeTrader::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     inherited1::__STATE_Read(tNetPacket, size);
     inherited2::__STATE_Read(tNetPacket, size);
+
     if ((m_wVersion > 35) && (m_wVersion < 118))
-        tNetPacket.r_u32();
+        std::ignore = tNetPacket.r_u32();
 
     if ((m_wVersion > 29) && (m_wVersion < 118))
     {
         u32 l_dwCount = tNetPacket.r_u32();
+
         for (int i = 0; i < (int)l_dwCount; ++i)
         {
             shared_str temp;
             tNetPacket.r_stringZ(temp);
-            tNetPacket.r_u32();
+            std::ignore = tNetPacket.r_u32();
+
             for (int i = 0, n = tNetPacket.r_u32(); i < n; ++i)
             {
                 tNetPacket.r_stringZ(temp);
-                tNetPacket.r_u32();
-                tNetPacket.r_u32();
+                std::ignore = tNetPacket.r_u32();
+                std::ignore = tNetPacket.r_u32();
             }
         }
     }
@@ -513,12 +516,13 @@ void CSE_ALifeTrader::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     {
         u32 count = tNetPacket.r_u32();
         shared_str temp;
+
         for (u32 i = 0; i < count; ++i)
         {
             tNetPacket.r_stringZ(temp);
-            tNetPacket.r_u32();
-            tNetPacket.r_float();
-            tNetPacket.r_float();
+            std::ignore = tNetPacket.r_u32();
+            std::ignore = tNetPacket.r_float();
+            std::ignore = tNetPacket.r_float();
         }
     }
 }
@@ -540,19 +544,22 @@ bool CSE_ALifeTrader::interactive() const { return (false); }
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeCustomZone
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeCustomZone::CSE_ALifeCustomZone(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
 {
     m_owner_id = u32(-1);
+
     if (pSettings->line_exist(caSection, "hit_type"))
         m_tHitType = ALife::g_tfString2HitType(pSettings->r_string(caSection, "hit_type"));
     else
         m_tHitType = ALife::eHitTypeMax;
+
     m_enabled_time = 0;
     m_disabled_time = 0;
     m_start_time_shift = 0;
 }
 
-CSE_ALifeCustomZone::~CSE_ALifeCustomZone() {}
+CSE_ALifeCustomZone::~CSE_ALifeCustomZone() = default;
 
 void CSE_ALifeCustomZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
@@ -563,14 +570,12 @@ void CSE_ALifeCustomZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 
     if (m_wVersion < 113)
     {
-        tNetPacket.r_float();
-        tNetPacket.r_u32();
+        std::ignore = tNetPacket.r_float();
+        std::ignore = tNetPacket.r_u32();
     }
 
     if ((m_wVersion > 66) && (m_wVersion < 118))
-    {
-        tNetPacket.r_u32();
-    }
+        std::ignore = tNetPacket.r_u32();
 
     if (m_wVersion > 102)
         tNetPacket.r_u32(m_owner_id);
@@ -580,10 +585,9 @@ void CSE_ALifeCustomZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r_u32(m_enabled_time);
         tNetPacket.r_u32(m_disabled_time);
     }
+
     if (m_wVersion > 106)
-    {
         tNetPacket.r_u32(m_start_time_shift);
-    }
 }
 
 void CSE_ALifeCustomZone::__STATE_Write(NET_Packet& tNetPacket)
@@ -623,6 +627,7 @@ void CSE_ALifeCustomZone::UPDATE_Write(NET_Packet& tNetPacket)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeAnomalousZone
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(LPCSTR caSection) : CSE_ALifeCustomZone(caSection)
 {
     m_offline_interactive_radius = 30.f;
@@ -640,7 +645,7 @@ CSE_Abstract* CSE_ALifeAnomalousZone::base() { return (inherited::base()); }
 
 const CSE_Abstract* CSE_ALifeAnomalousZone::base() const { return (inherited::base()); }
 
-CSE_ALifeAnomalousZone::~CSE_ALifeAnomalousZone() {}
+CSE_ALifeAnomalousZone::~CSE_ALifeAnomalousZone() = default;
 
 u32 CSE_ALifeAnomalousZone::ef_anomaly_type() const { return (pSettings->r_u32(name(), "ef_anomaly_type")); }
 
@@ -657,7 +662,7 @@ void CSE_ALifeAnomalousZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r_float(m_offline_interactive_radius);
         if (m_wVersion < 113)
         {
-            tNetPacket.r_float();
+            std::ignore = tNetPacket.r_float();
 
             shared_str temp;
             for (u16 i = 0, n = tNetPacket.r_u16(); i < n; ++i)
@@ -665,9 +670,9 @@ void CSE_ALifeAnomalousZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
                 tNetPacket.r_stringZ(temp);
 
                 if (m_wVersion > 26)
-                    tNetPacket.r_float();
+                    std::ignore = tNetPacket.r_float();
                 else
-                    tNetPacket.r_u32();
+                    std::ignore = tNetPacket.r_u32();
             }
         }
     }
@@ -679,18 +684,16 @@ void CSE_ALifeAnomalousZone::__STATE_Read(NET_Packet& tNetPacket, u16 size)
     }
 
     if ((m_wVersion < 67) && (m_wVersion > 27))
-    {
-        tNetPacket.r_u32();
-    }
+        std::ignore = tNetPacket.r_u32();
 
     if ((m_wVersion > 38) && (m_wVersion < 113))
-        tNetPacket.r_float();
+        std::ignore = tNetPacket.r_float();
 
     if ((m_wVersion > 78) && (m_wVersion < 113))
     {
-        tNetPacket.r_float();
-        tNetPacket.r_float();
-        tNetPacket.r_float();
+        std::ignore = tNetPacket.r_float();
+        std::ignore = tNetPacket.r_float();
+        std::ignore = tNetPacket.r_float();
     }
 
     if (m_wVersion == 102)
@@ -710,15 +713,14 @@ void CSE_ALifeAnomalousZone::__STATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeAnomalousZone::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeAnomalousZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
 
 //////////////////////////////////////////////////////////////////////////
 // SE_ALifeTorridZone
 //////////////////////////////////////////////////////////////////////////
-CSE_ALifeTorridZone::CSE_ALifeTorridZone(LPCSTR caSection) : CSE_ALifeCustomZone(caSection), CSE_Motion() {}
 
-CSE_ALifeTorridZone::~CSE_ALifeTorridZone() {}
+CSE_ALifeTorridZone::CSE_ALifeTorridZone(LPCSTR caSection) : CSE_ALifeCustomZone(caSection), CSE_Motion() {}
+CSE_ALifeTorridZone::~CSE_ALifeTorridZone() = default;
 
 CSE_Motion* CSE_ALifeTorridZone::motion() { return (this); }
 
@@ -736,12 +738,12 @@ void CSE_ALifeTorridZone::__STATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeTorridZone::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeTorridZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
 //////////////////////////////////////////////////////////////////////////
 // CSE_ALifeZoneVisual
 //////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeZoneVisual::CSE_ALifeZoneVisual(LPCSTR caSection) : CSE_ALifeAnomalousZone(caSection), CSE_Visual(caSection)
 {
     if (pSettings->line_exist(caSection, "visual"))
@@ -750,9 +752,10 @@ CSE_ALifeZoneVisual::CSE_ALifeZoneVisual(LPCSTR caSection) : CSE_ALifeAnomalousZ
     //		attack_animation=pSettings->r_string(caSection,"blast_animation");
 }
 
-CSE_ALifeZoneVisual::~CSE_ALifeZoneVisual() {}
+CSE_ALifeZoneVisual::~CSE_ALifeZoneVisual() = default;
 
 CSE_Visual* CSE_ALifeZoneVisual::visual() { return static_cast<CSE_Visual*>(this); }
+
 void CSE_ALifeZoneVisual::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     inherited1::__STATE_Read(tNetPacket, size);
@@ -770,13 +773,13 @@ void CSE_ALifeZoneVisual::__STATE_Write(NET_Packet& tNetPacket)
 }
 
 void CSE_ALifeZoneVisual::UPDATE_Read(NET_Packet& tNetPacket) { inherited1::UPDATE_Read(tNetPacket); }
-
 void CSE_ALifeZoneVisual::UPDATE_Write(NET_Packet& tNetPacket) { inherited1::UPDATE_Write(tNetPacket); }
 
 //-------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeCreatureAbstract
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeCreatureAbstract::CSE_ALifeCreatureAbstract(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection)
 {
     s_team = s_squad = s_group = 0;
@@ -797,7 +800,7 @@ CSE_ALifeCreatureAbstract::CSE_ALifeCreatureAbstract(LPCSTR caSection) : CSE_ALi
     flags = 0;
 }
 
-CSE_ALifeCreatureAbstract::~CSE_ALifeCreatureAbstract() {}
+CSE_ALifeCreatureAbstract::~CSE_ALifeCreatureAbstract() = default;
 
 #ifdef DEBUG
 bool CSE_ALifeCreatureAbstract::match_configuration() const { return (!strstr(Core.Params, "-designer")); }
@@ -1492,9 +1495,9 @@ void CSE_ALifeHumanAbstract::UPDATE_Read(NET_Packet& tNetPacket)
 
     if (m_wVersion < 110)
     {
-        tNetPacket.r_u32();
-        tNetPacket.r_u32();
-        tNetPacket.r_u32();
+        std::ignore = tNetPacket.r_u32();
+        std::ignore = tNetPacket.r_u32();
+        std::ignore = tNetPacket.r_u32();
     }
 }
 
@@ -1524,7 +1527,7 @@ void CSE_ALifeHumanStalker::__STATE_Read(NET_Packet& tNetPacket, u16 size)
         inherited2::__STATE_Read(tNetPacket, size);
 
     if ((m_wVersion > 90) && (m_wVersion < 111))
-        tNetPacket.r_u8();
+        std::ignore = tNetPacket.r_u8();
 }
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet& tNetPacket)

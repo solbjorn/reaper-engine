@@ -42,14 +42,15 @@ public:
     WMFacesVec m_Faces; // 16
     Fsphere m_Bounds{}; // 16		world space
 
-    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent{p}, m_XForm{m}, m_Shader{s}, m_ContactPoint{cp}, m_fTimeStart{ts}
+    explicit CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts)
+        : m_Parent{p}, m_XForm{m}, m_Shader{s}, m_ContactPoint{cp}, m_fTimeStart{ts}
     {
 #ifdef DEBUG
         used_in_render = u32(-1);
 #endif
     }
 
-    ~CSkeletonWallmark()
+    ~CSkeletonWallmark() override
 #ifdef DEBUG
         ;
 #else
@@ -178,7 +179,7 @@ public:
     virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
 
     CKinematics();
-    virtual ~CKinematics();
+    ~CKinematics() override;
 
     // Low level interface
     u16 LL_BoneID(const char* B) const override;

@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_simulator_base.h"
+
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
 #include "alife_spawn_registry.h"
@@ -123,9 +124,11 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
     k->Spawn_Read(tNetPacket);
     tNetPacket.w_begin(M_UPDATE);
     j->UPDATE_Write(tNetPacket);
+
     u16 id;
-    tNetPacket.r_begin(id);
+    std::ignore = tNetPacket.r_begin(id);
     k->UPDATE_Read(tNetPacket);
+
     k->s_name._set(S);
     k->m_tSpawnID = j->m_tSpawnID;
     k->ID = server().PerformIDgen(0xffff);
@@ -147,7 +150,8 @@ CSE_Abstract* CALifeSimulatorBase::create(CSE_ALifeGroupAbstract* tpALifeGroupAb
     register_object(k, true);
     k->spawn_supplies();
     k->on_spawn();
-    return (k);
+
+    return k;
 }
 
 void CALifeSimulatorBase::create(CSE_ALifeDynamicObject*& i, CSE_ALifeDynamicObject* j, const _SPAWN_ID& tSpawnID)
@@ -162,8 +166,9 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject*& i, CSE_ALifeDynamicObj
     i->Spawn_Read(tNetPacket);
     tNetPacket.w_begin(M_UPDATE);
     j->UPDATE_Write(tNetPacket);
+
     u16 id;
-    tNetPacket.r_begin(id);
+    std::ignore = tNetPacket.r_begin(id);
     i->UPDATE_Read(tNetPacket);
 
     R_ASSERT3(!(i->used_ai_locations()) || (i->m_tNodeID != u32(-1)), "Invalid vertex for object ", i->name_replace());

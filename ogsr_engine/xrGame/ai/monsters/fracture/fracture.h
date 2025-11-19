@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "script_export_space.h"
 
@@ -12,7 +13,7 @@ public:
     typedef CBaseMonster inherited;
 
     CFracture();
-    virtual ~CFracture();
+    ~CFracture() override;
 
     virtual void Load(LPCSTR section);
     virtual void CheckSpecParams(u32 spec_params);

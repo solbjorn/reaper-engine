@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_trader.h"
+
 #include "../../trade.h"
 #include "../../script_entity_action.h"
 #include "../../script_game_object.h"
@@ -338,11 +339,11 @@ DLL_Pure* CAI_Trader::_construct()
 {
     m_sound_player = xr_new<CSoundPlayer>(this);
 
-    CEntityAlive::_construct();
+    std::ignore = CEntityAlive::_construct();
     CInventoryOwner::_construct();
     CScriptEntity::_construct();
 
-    return (this);
+    return this;
 }
 
 bool CAI_Trader::AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const

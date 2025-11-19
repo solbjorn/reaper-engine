@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterControlledFollow : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterControlledFollow<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -16,7 +19,9 @@ class CStateMonsterControlledFollow : public CState<_Object>
     using inherited::select_state;
 
 public:
-    CStateMonsterControlledFollow(_Object* obj);
+    explicit CStateMonsterControlledFollow(_Object* obj);
+    ~CStateMonsterControlledFollow() override = default;
+
     virtual void reselect_state();
     virtual void setup_substates();
     virtual void remove_links(CObject* object) { inherited::remove_links(object); }

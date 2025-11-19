@@ -9,11 +9,10 @@
 #include "stdafx.h"
 
 #include "alife_combat_manager.h"
+
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_graph_registry.h"
 #include "alife_schedule_registry.h"
-
-CALifeCombatManager::CALifeCombatManager(xrServer* server) : CALifeSimulatorBase{server} {}
 
 void CALifeCombatManager::kill_entity(CSE_ALifeMonsterAbstract* l_tpALifeMonsterAbstract, const GameGraph::_GRAPH_ID& l_tGraphID)
 {

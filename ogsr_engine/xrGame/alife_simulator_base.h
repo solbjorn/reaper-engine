@@ -74,8 +74,8 @@ public:
     IC CALifeRegistryContainer& registry() const;
 
 public:
-    CALifeSimulatorBase(xrServer* server);
-    virtual ~CALifeSimulatorBase();
+    explicit CALifeSimulatorBase(xrServer* server);
+    ~CALifeSimulatorBase() override;
 
     virtual void destroy();
     IC bool initialized() const;

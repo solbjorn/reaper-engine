@@ -11,7 +11,7 @@ class CWeaponUSP45 : public CWeaponPistol
 
 public:
     CWeaponUSP45();
-    virtual ~CWeaponUSP45();
+    ~CWeaponUSP45() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

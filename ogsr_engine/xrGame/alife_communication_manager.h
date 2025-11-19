@@ -18,10 +18,13 @@ class CSE_ALifeTraderAbstract;
 // TODO: Dima to Dima : Be attentive with this speed optimization - it doesn't suit to the OOP paradigm!
 #define FAST_OWNERSHIP
 
-class CALifeCommunicationManager : public virtual CALifeSimulatorBase
+class XR_NOVTABLE CALifeCommunicationManager : public virtual CALifeSimulatorBase
 {
     RTTI_DECLARE_TYPEINFO(CALifeCommunicationManager, CALifeSimulatorBase);
 
 public:
-    CALifeCommunicationManager(xrServer* server);
+    CALifeCommunicationManager() = default;
+    ~CALifeCommunicationManager() override = 0;
 };
+
+inline CALifeCommunicationManager::~CALifeCommunicationManager() = default;

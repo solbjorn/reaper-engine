@@ -21,7 +21,7 @@ private:
 
 public:
     inline explicit CServerEntityWrapper(CSE_Abstract* object = nullptr);
-    virtual ~CServerEntityWrapper();
+    ~CServerEntityWrapper() override;
 
     virtual void save(IWriter& stream);
     virtual void load(IReader& stream);

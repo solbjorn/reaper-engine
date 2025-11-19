@@ -18,7 +18,7 @@ public:
 
 public:
     CSingleton() = default;
-    virtual ~CSingleton() { _self = nullptr; }
+    ~CSingleton() override { _self = nullptr; }
 
     static void DestroySingleton()
     {
@@ -73,19 +73,16 @@ public:
 
     CSharedObj() = default;
 
-    virtual ~CSharedObj()
+    ~CSharedObj() override
     {
-        for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it)
-        {
-            xr_delete(it->second);
-        }
+        for (auto& it : _shared_tab)
+            xr_delete(it.second);
     }
 
     // Access to data
     SHARED_TYPE* get_shared(KEY_TYPE id)
     {
         SHARED_DATA_MAP_IT shared_it = _shared_tab.find(id);
-
         SHARED_TYPE* _data;
 
         // if not found - create appropriate shared data object
@@ -95,7 +92,9 @@ public:
             _shared_tab.try_emplace(id, _data);
         }
         else
+        {
             _data = shared_it->second;
+        }
 
         return _data;
     }
@@ -106,9 +105,10 @@ class CSharedResource : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSharedResource);
 
 public:
-    bool loaded;
+    bool loaded{};
 
-    CSharedResource() { loaded = false; }
+    CSharedResource() = default;
+    ~CSharedResource() override = default;
 
     bool IsLoaded() { return loaded; }
     void SetLoad(bool l = true) { loaded = l; }
@@ -128,7 +128,8 @@ public:
         pSharedObj = CSharedObj<SHARED_TYPE, KEY_TYPE>::Instance();
         pSharedObj->_on_self_delete = auto_delete;
     }
-    virtual ~CSharedClass() { pSharedObj->FreeInst(); }
+
+    ~CSharedClass() override { pSharedObj->FreeInst(); }
 
     static void DeleteSharedData() { CSharedObj<SHARED_TYPE, KEY_TYPE>::DestroySingleton(); }
 
@@ -156,6 +157,7 @@ public:
             return false;
         return true;
     }
+
     void finish_load_shared() { get_sd()->SetLoad(); }
 };
 

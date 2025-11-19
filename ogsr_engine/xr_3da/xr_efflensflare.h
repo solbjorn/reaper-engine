@@ -115,7 +115,7 @@ protected:
 
 public:
     CLensFlare();
-    virtual ~CLensFlare();
+    ~CLensFlare() override;
 
     void OnFrame(shared_str id);
     void Render(BOOL bSun, BOOL bFlares, BOOL bGradient);

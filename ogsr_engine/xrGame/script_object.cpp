@@ -7,17 +7,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "script_object.h"
 
-CScriptObject::CScriptObject() {}
-
-CScriptObject::~CScriptObject() {}
+CScriptObject::CScriptObject() = default;
+CScriptObject::~CScriptObject() = default;
 
 DLL_Pure* CScriptObject::_construct()
 {
-    CGameObject::_construct();
+    std::ignore = CGameObject::_construct();
     CScriptEntity::_construct();
-    return (this);
+
+    return this;
 }
 
 void CScriptObject::reinit()

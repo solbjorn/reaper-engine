@@ -9,6 +9,8 @@ class dxStatGraphRender : public IStatGraphRender
     RTTI_DECLARE_TYPEINFO(dxStatGraphRender, IStatGraphRender);
 
 public:
+    ~dxStatGraphRender() override = default;
+
     virtual void Copy(IStatGraphRender& _in);
 
     virtual void OnDeviceCreate();

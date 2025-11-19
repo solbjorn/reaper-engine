@@ -25,7 +25,7 @@ public:
     MotionID motion() const;
 };
 
-class type_motion : public virtual RTTI::Enable
+class XR_NOVTABLE type_motion : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(type_motion);
 
@@ -38,11 +38,12 @@ public:
         right,
         not_definite
     };
-    static const u16 dirs_number = 4;
+    static constexpr u16 dirs_number{4};
 
 public:
-    type_motion() {}
-    virtual ~type_motion();
+    type_motion() = default;
+    ~type_motion() override;
+
     type_motion* setup(IKinematicsAnimated* k, CInifile* ini, LPCSTR section, LPCSTR type);
     MotionID motion(edirection dr) const;
     virtual bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const = 0;
@@ -63,6 +64,7 @@ class death_anims
 public:
     death_anims();
     ~death_anims();
+
     void setup(IKinematicsAnimated* k, LPCSTR section, CInifile* ini);
     void clear();
     MotionID motion(CEntityAlive& ea, const SHit& H, float& angle) const;

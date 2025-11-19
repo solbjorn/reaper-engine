@@ -96,14 +96,14 @@ public:
 
 private:
     typedef CEntityAlive inherited;
+
     //////////////////////////////////////////////////////////////////////////
     // General fucntions
     //////////////////////////////////////////////////////////////////////////
 public:
     CActor();
-    virtual ~CActor();
+    ~CActor() override;
 
-public:
     virtual BOOL AlwaysTheCrow() { return TRUE; }
 
     virtual CAttachmentOwner* cast_attachment_owner() { return this; }

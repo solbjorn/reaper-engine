@@ -83,9 +83,8 @@ public:
 
 public:
     CInventoryItem();
-    virtual ~CInventoryItem();
+    ~CInventoryItem() override;
 
-public:
     virtual void Load(LPCSTR section);
 
     virtual LPCSTR Name();

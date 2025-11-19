@@ -45,6 +45,8 @@ private:
     IKinematicsAnimated* m_skeleton_animated;
 
 public:
+    ~CControlRotationJump() override = default;
+
     virtual void reinit();
 
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;

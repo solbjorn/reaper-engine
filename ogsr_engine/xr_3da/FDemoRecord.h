@@ -36,6 +36,9 @@ public:
 
     std::unique_ptr<CGameFont> pFontSystem;
 
+    explicit CDemoRecord(const char* name, float life_time = 60.0f * 60.0f * 1000.0f);
+    ~CDemoRecord() override;
+
     void MakeCubeMapFace(Fvector& D, Fvector& N);
     void MakeLevelMapProcess();
     void MakeScreenshotFace();
@@ -43,9 +46,6 @@ public:
     void MakeCubemap();
     void MakeScreenshot();
     void MakeLevelMapScreenshot(bool bHQ);
-
-    explicit CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
-    virtual ~CDemoRecord();
 
     void IR_OnKeyboardPress(int dik) override;
     void IR_OnKeyboardHold(int dik) override;

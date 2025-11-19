@@ -17,7 +17,7 @@ protected:
 
 public:
     game_sv_Single();
-    virtual ~game_sv_Single();
+    ~game_sv_Single() override;
 
     virtual LPCSTR type_name() const { return "single"; }
     virtual void Create(shared_str& options);

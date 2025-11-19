@@ -36,6 +36,7 @@ public:
     using Index = typename Vertex::Index;
 
     explicit PriorityQueueConstructor(u32 vertex_count) : Inherited{vertex_count} {}
+    ~PriorityQueueConstructor() override = default;
 
     void init() { Inherited::init(); }
     Vertex& create_vertex(const Index& vertex_id) { return Inherited::create_vertex(Inherited::CDataStorageAllocator::create_vertex(), vertex_id); }

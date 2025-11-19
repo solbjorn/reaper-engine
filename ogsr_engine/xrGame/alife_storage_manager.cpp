@@ -31,8 +31,6 @@ namespace zstd
 
 using namespace ALife;
 
-CALifeStorageManager::~CALifeStorageManager() = default;
-
 void CALifeStorageManager::save(LPCSTR save_name, bool update_name)
 {
     strcpy_s(g_last_saved_game, save_name);

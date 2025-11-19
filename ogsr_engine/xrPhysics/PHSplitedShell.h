@@ -5,7 +5,11 @@
 
 class CPHSplitedShell : public CPHShell
 {
-    float m_max_AABBradius;
+    RTTI_DECLARE_TYPEINFO(CPHSplitedShell, CPHShell);
+
+private:
+    float m_max_AABBradius{dInfinity};
+
     virtual void SetMaxAABBRadius(float size) { m_max_AABBradius = size; }
 
 protected:
@@ -13,9 +17,9 @@ protected:
     virtual void get_spatial_params();
     virtual void DisableObject();
 
-private:
 public:
-    CPHSplitedShell() { m_max_AABBradius = dInfinity; }
+    CPHSplitedShell() = default;
+    ~CPHSplitedShell() override = default;
 };
 
 #endif

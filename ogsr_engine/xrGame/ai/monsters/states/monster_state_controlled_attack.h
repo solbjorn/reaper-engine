@@ -6,11 +6,16 @@
 template <typename _Object>
 class CStateMonsterControlledAttack : public CStateMonsterAttack<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterControlledAttack<_Object>, CStateMonsterAttack<_Object>);
+
+private:
     typedef CStateMonsterAttack<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterControlledAttack(_Object* obj);
+    explicit CStateMonsterControlledAttack(_Object* obj);
+    ~CStateMonsterControlledAttack() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();

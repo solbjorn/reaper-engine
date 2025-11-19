@@ -9,8 +9,10 @@
 #pragma once
 
 template <typename _key_type, typename _data_type, typename _predicate = std::less<_key_type>, bool use_time_limit = true, typename _cycle_type = u64, bool use_first_update = true>
-class CSafeMapIterator
+class CSafeMapIterator : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CSafeMapIterator<_key_type, _data_type, _predicate, use_time_limit, _cycle_type, use_first_update>);
+
 public:
     typedef xr_map<_key_type, _data_type*, _predicate> _REGISTRY;
     typedef typename _REGISTRY::iterator _iterator;
@@ -30,12 +32,15 @@ protected:
     IC bool time_over();
 
 public:
-    IC CSafeMapIterator();
+    inline CSafeMapIterator();
+    ~CSafeMapIterator() override = default;
 
     IC void add(const _key_type& id, _data_type* value, bool no_assert = false);
     IC void remove(const _key_type& id, bool no_assert = false);
+
     template <typename _update_predicate>
     IC u32 update(const _update_predicate& predicate);
+
     IC void set_process_time(const float& process_time);
     IC const _REGISTRY& objects() const;
     IC void clear();

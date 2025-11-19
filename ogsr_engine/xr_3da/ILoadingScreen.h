@@ -6,6 +6,7 @@
 //
 //  Copyright (C) GSC Game World - 2018
 ////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 class XR_NOVTABLE ILoadingScreen : public virtual RTTI::Enable
@@ -13,7 +14,7 @@ class XR_NOVTABLE ILoadingScreen : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ILoadingScreen);
 
 public:
-    virtual ~ILoadingScreen() = 0;
+    ~ILoadingScreen() override = 0;
 
     virtual void Initialize() = 0;
 

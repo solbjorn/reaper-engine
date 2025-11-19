@@ -14,6 +14,8 @@ class CAI_Stalker;
 
 class CStalkerDangerBySoundPlanner : public CActionPlannerActionScript<CAI_Stalker>
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerDangerBySoundPlanner, CActionPlannerActionScript<CAI_Stalker>);
+
 private:
     typedef CActionPlannerActionScript<CAI_Stalker> inherited;
 
@@ -22,7 +24,9 @@ protected:
     void add_actions();
 
 public:
-    CStalkerDangerBySoundPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    explicit CStalkerDangerBySoundPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    ~CStalkerDangerBySoundPlanner() override = default;
+
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void initialize();
     virtual void update();

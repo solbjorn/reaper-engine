@@ -1,14 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterSteal : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterSteal<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterSteal(_Object* obj);
+    explicit CStateMonsterSteal(_Object* obj);
+    ~CStateMonsterSteal() override = default;
 
     virtual void initialize();
     virtual void execute();

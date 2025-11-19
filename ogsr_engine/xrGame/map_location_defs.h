@@ -43,5 +43,10 @@ DEFINE_VECTOR(SLocationKey, Locations, Locations_it);
 
 struct CMapLocationRegistry : public CALifeAbstractRegistry<u16, Locations>
 {
+    RTTI_DECLARE_TYPEINFO(CMapLocationRegistry, CALifeAbstractRegistry<u16, Locations>);
+
+public:
+    ~CMapLocationRegistry() override = default;
+
     virtual void save(IWriter& stream);
 };

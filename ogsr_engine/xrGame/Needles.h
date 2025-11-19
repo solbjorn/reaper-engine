@@ -16,5 +16,5 @@ private:
 
 public:
     CNeedles();
-    virtual ~CNeedles();
+    ~CNeedles() override;
 };

@@ -6,9 +6,11 @@
 template <typename _Object>
 class CStateGroupAttack : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupAttack<_Object>, CState<_Object>);
+
 public:
-    CStateGroupAttack(_Object* obj);
-    virtual ~CStateGroupAttack();
+    explicit CStateGroupAttack(_Object* obj);
+    ~CStateGroupAttack() override;
 
     virtual void initialize();
     virtual void execute();

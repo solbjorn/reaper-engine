@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "script_export_space.h"
 
@@ -10,7 +11,7 @@ public:
     typedef CBaseMonster inherited;
 
     CCat();
-    virtual ~CCat();
+    ~CCat() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

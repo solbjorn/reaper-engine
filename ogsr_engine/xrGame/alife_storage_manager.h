@@ -12,7 +12,7 @@
 
 class NET_Packet;
 
-class CALifeStorageManager : public virtual CALifeSimulatorBase
+class XR_NOVTABLE CALifeStorageManager : public virtual CALifeSimulatorBase
 {
     RTTI_DECLARE_TYPEINFO(CALifeStorageManager, CALifeSimulatorBase);
 
@@ -32,14 +32,16 @@ private:
     void load(void* buffer, const u32& buffer_size, LPCSTR file_name);
 
 public:
-    IC CALifeStorageManager(xrServer* server, LPCSTR section);
-    virtual ~CALifeStorageManager();
+    inline explicit CALifeStorageManager(LPCSTR section);
+    ~CALifeStorageManager() override = 0;
 
     bool load(LPCSTR save_name = nullptr);
     void save(LPCSTR save_name = nullptr, bool update_name = true);
     void save(NET_Packet& net_packet);
     IC LPCSTR save_name(BOOL bLoaded);
 };
+
+inline CALifeStorageManager::~CALifeStorageManager() = default;
 
 // console_commands.cpp
 extern string_path g_last_saved_game;

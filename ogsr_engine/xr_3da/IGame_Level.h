@@ -13,6 +13,7 @@ class CCameraManager;
 class CCursor;
 class CCustomHUD;
 class ISpatial;
+
 namespace Feel
 {
 class Sound;
@@ -44,6 +45,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------------
+
 class XR_NOVTABLE IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
 {
     RTTI_DECLARE_TYPEINFO(IGame_Level, DLL_Pure, IInputReceiver, pureRender, pureFrame, IEventReceiver);
@@ -87,7 +89,7 @@ public: // deferred sound events
 public:
     // Main, global functions
     IGame_Level();
-    virtual ~IGame_Level();
+    ~IGame_Level() override;
 
     virtual shared_str name() const = 0;
 

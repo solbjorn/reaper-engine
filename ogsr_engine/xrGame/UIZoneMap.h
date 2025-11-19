@@ -4,6 +4,7 @@
 
 class CActor;
 class CUICustomMap;
+
 //////////////////////////////////////////////////////////////////////////
 
 class CUIZoneMap : public virtual RTTI::Enable
@@ -25,7 +26,7 @@ public:
     u32 m_alpha{};
 
     CUIZoneMap();
-    virtual ~CUIZoneMap();
+    ~CUIZoneMap() override;
 
     void SetHeading(float angle) const;
     void Init();

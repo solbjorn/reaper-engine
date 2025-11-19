@@ -1,4 +1,5 @@
 #pragma once
+
 #include "uiwindow.h"
 
 class CUI3tButton;
@@ -7,6 +8,8 @@ class CUIStaticItem;
 
 class CUIScrollBar : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUIScrollBar, CUIWindow);
+
 private:
     typedef CUIWindow inherited;
 
@@ -46,8 +49,8 @@ protected:
     }
 
 public:
-    CUIScrollBar(void);
-    virtual ~CUIScrollBar(void);
+    CUIScrollBar();
+    ~CUIScrollBar() override;
 
     void SetEnabled(bool b)
     {

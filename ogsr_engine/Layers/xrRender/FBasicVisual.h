@@ -31,7 +31,7 @@ public:
     u32 dwPrimitives;
 
     IRender_Mesh() = default;
-    virtual ~IRender_Mesh();
+    ~IRender_Mesh() override;
 
 private:
     IRender_Mesh(const IRender_Mesh& other);
@@ -74,7 +74,7 @@ public:
     u32 getType() const override { return Type; }
 
     dxRender_Visual();
-    virtual ~dxRender_Visual();
+    ~dxRender_Visual() override;
 };
 
 #endif // !FBasicVisualH

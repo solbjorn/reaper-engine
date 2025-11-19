@@ -10,6 +10,8 @@ class CUIListBox : public CUIScrollView, public IUIFontControl
 
 public:
     CUIListBox();
+    ~CUIListBox() override = default;
+
     CUIListBoxItem* AddItem(LPCSTR text);
     CUIListBoxItem* GetItemByTAG(u32 tag_value);
     CUIListBoxItem* GetItemByIDX(u32 idx);

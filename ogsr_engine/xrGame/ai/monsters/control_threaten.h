@@ -16,6 +16,8 @@ private:
     typedef CControl_ComCustom<SControlThreatenData> inherited;
 
 public:
+    ~CControlThreaten() override = default;
+
     virtual void reinit();
     virtual void update_schedule();
     void on_event(ControlCom::EEventType type, ControlCom::IEventData* data) override;

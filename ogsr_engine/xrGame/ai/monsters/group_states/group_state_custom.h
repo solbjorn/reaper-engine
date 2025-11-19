@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateCustomGroup : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateCustomGroup<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -17,8 +19,8 @@ protected:
     using inherited::select_state;
 
 public:
-    CStateCustomGroup(_Object* obj);
-    virtual ~CStateCustomGroup();
+    explicit CStateCustomGroup(_Object* obj);
+    ~CStateCustomGroup() override;
 
     virtual void execute();
     virtual void setup_substates();

@@ -156,8 +156,8 @@ protected:
     virtual void teleport(u32 game_vertex_id);
 
 public:
-    CMovementManager(CCustomMonster* object);
-    virtual ~CMovementManager();
+    explicit CMovementManager(CCustomMonster* object);
+    ~CMovementManager() override;
 
     virtual void Load(LPCSTR caSection);
     virtual void reinit();

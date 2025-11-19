@@ -24,7 +24,7 @@ protected:
 
 public:
     CTheoraSurface();
-    virtual ~CTheoraSurface();
+    ~CTheoraSurface() override;
 
     BOOL Valid();
     BOOL Load(const char* fname);

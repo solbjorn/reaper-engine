@@ -40,7 +40,7 @@ protected:
 
 public:
     CUICustomItem();
-    virtual ~CUICustomItem();
+    ~CUICustomItem() override;
 
     IC void SetRect(float x1, float y1, float x2, float y2)
     {

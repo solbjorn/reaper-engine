@@ -31,7 +31,7 @@ protected:
 
 public:
     CWeaponShotEffector();
-    virtual ~CWeaponShotEffector() {}
+    ~CWeaponShotEffector() override = default;
 
     void Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
     IC BOOL IsActive() { return bActive; }
@@ -57,8 +57,8 @@ protected:
     CActor* m_pActor;
 
 public:
-    CCameraShotEffector(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
-    virtual ~CCameraShotEffector();
+    explicit CCameraShotEffector(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
+    ~CCameraShotEffector() override;
 
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 

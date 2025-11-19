@@ -68,7 +68,8 @@ class CCC_Quit : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Quit, IConsole_Command);
 
 public:
-    CCC_Quit(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Quit(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_Quit() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -84,7 +85,8 @@ class CCC_MemStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MemStat, IConsole_Command);
 
 public:
-    CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MemStat(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_MemStat() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -103,7 +105,8 @@ class CCC_DbgMemCheck : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgMemCheck, IConsole_Command);
 
 public:
-    CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgMemCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgMemCheck() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -121,7 +124,8 @@ class CCC_DbgStrCheck : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrCheck, IConsole_Command);
 
 public:
-    CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgStrCheck(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgStrCheck() override = default;
 
     void Execute(LPCSTR) override { str_container::verify(); }
 };
@@ -131,7 +135,8 @@ class CCC_DbgStrDump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgStrDump, IConsole_Command);
 
 public:
-    CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgStrDump(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgStrDump() override = default;
 
     void Execute(LPCSTR) override { str_container::dump(); }
 };
@@ -142,7 +147,8 @@ class CCC_DbgLALibDump : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DbgLALibDump, IConsole_Command);
 
 public:
-    CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_DbgLALibDump(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DbgLALibDump() override = default;
 
     void Execute(LPCSTR) override { LALib.DbgDumpInfo(); }
 };
@@ -153,7 +159,8 @@ class CCC_MotionsStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_MotionsStat, IConsole_Command);
 
 public:
-    CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_MotionsStat(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_MotionsStat() override = default;
 
     void Execute(LPCSTR) override { g_pMotionsContainer->dump(); }
 };
@@ -164,7 +171,8 @@ class CCC_TexturesStat : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_TexturesStat, IConsole_Command);
 
 public:
-    CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_TexturesStat(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_TexturesStat() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -174,13 +182,16 @@ public:
         // VERIFY(0);
     }
 };
+
 //-----------------------------------------------------------------------
+
 class CCC_E_Dump : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_E_Dump, IConsole_Command);
 
 public:
-    CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_E_Dump(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_E_Dump() override = default;
 
     void Execute(LPCSTR) override { Engine.Event.Dump(); }
 };
@@ -190,7 +201,8 @@ class CCC_E_Signal : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_E_Signal, IConsole_Command);
 
 public:
-    CCC_E_Signal(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_E_Signal(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_E_Signal() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -204,12 +216,14 @@ public:
 #endif // DEBUG
 
 //-----------------------------------------------------------------------
+
 class CCC_Help : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_Help, IConsole_Command);
 
 public:
-    CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Help(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_Help() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -253,7 +267,8 @@ class CCC_DumpOpenFiles : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_DumpOpenFiles, IConsole_Command);
 
 public:
-    CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
+    explicit CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_DumpOpenFiles() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -264,12 +279,14 @@ public:
 #endif
 
 //-----------------------------------------------------------------------
+
 class CCC_SaveCFG : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SaveCFG, IConsole_Command);
 
 public:
-    CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_SaveCFG(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_SaveCFG() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -387,7 +404,8 @@ private:
     }
 
 public:
-    CCC_Start(const char* N) : IConsole_Command{N} {}
+    explicit CCC_Start(const char* N) : IConsole_Command{N} {}
+    ~CCC_Start() override = default;
 
     void Execute(const char* args) override
     {
@@ -401,18 +419,21 @@ class CCC_Disconnect : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_Disconnect, IConsole_Command);
 
 public:
-    CCC_Disconnect(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_Disconnect(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_Disconnect() override = default;
 
     void Execute(LPCSTR) override { Engine.Event.Defer("KERNEL:disconnect"); }
 };
 
 //-----------------------------------------------------------------------
+
 class CCC_VID_Reset : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_VID_Reset, IConsole_Command);
 
 public:
-    CCC_VID_Reset(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_VID_Reset(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_VID_Reset() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -429,7 +450,8 @@ private:
     u32 _dummy{};
 
 public:
-    CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
+    explicit CCC_VidMode(LPCSTR N) : CCC_Token{N, &_dummy, nullptr} { bEmptyArgsHandled = false; }
+    ~CCC_VidMode() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -487,7 +509,8 @@ class CCC_Screenmode : public CCC_Token
     RTTI_DECLARE_TYPEINFO(CCC_Screenmode, CCC_Token);
 
 public:
-    CCC_Screenmode(LPCSTR N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
+    explicit CCC_Screenmode(LPCSTR N) : CCC_Token{N, &g_screenmode, screen_mode_tokens} {}
+    ~CCC_Screenmode() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -544,13 +567,16 @@ public:
         ClipCursor(&winRect);
     }
 };
+
 //-----------------------------------------------------------------------
+
 class CCC_SND_Restart : public IConsole_Command
 {
     RTTI_DECLARE_TYPEINFO(CCC_SND_Restart, IConsole_Command);
 
 public:
-    CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_SND_Restart(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_SND_Restart() override = default;
 
     void Execute(LPCSTR) override { Sound->_restart(); }
 };
@@ -565,7 +591,8 @@ class CCC_Gamma : public CCC_Float
     RTTI_DECLARE_TYPEINFO(CCC_Gamma, CCC_Float);
 
 public:
-    CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
+    explicit CCC_Gamma(LPCSTR N, float* V) : CCC_Float(N, V, 0.5f, 1.5f) {}
+    ~CCC_Gamma() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -594,8 +621,8 @@ private:
     u32 renderer_value{};
 
 public:
-    CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
-    virtual ~CCC_r2() = default;
+    explicit CCC_r2(LPCSTR N) : inherited{N, &renderer_value, nullptr} {}
+    ~CCC_r2() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -632,8 +659,8 @@ private:
     typedef CCC_Token inherited;
 
 public:
-    CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
-    virtual ~CCC_soundDevice() {}
+    explicit CCC_soundDevice(LPCSTR N) : inherited{N, &snd_device_id, nullptr} {}
+    ~CCC_soundDevice() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -674,7 +701,8 @@ private:
     using inherited = CCC_Mask;
 
 public:
-    CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited{N, V, M} {}
+    explicit CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited{N, V, M} {}
+    ~CCC_ExclusiveMode() override = default;
 
     void Execute(const char* args) override
     {
@@ -691,7 +719,8 @@ class CCC_HideConsole : public IConsole_Command
     RTTI_DECLARE_TYPEINFO(CCC_HideConsole, IConsole_Command);
 
 public:
-    CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
+    explicit CCC_HideConsole(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_HideConsole() override = default;
 
     void Execute(LPCSTR) override { Console->Hide(); }
     void Status(TStatus& S) override { S[0] = 0; }
@@ -703,7 +732,8 @@ class CCC_SoundParamsSmoothing : public CCC_Integer
     RTTI_DECLARE_TYPEINFO(CCC_SoundParamsSmoothing, CCC_Integer);
 
 public:
-    CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    explicit CCC_SoundParamsSmoothing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    ~CCC_SoundParamsSmoothing() override = default;
 
     void Execute(LPCSTR args) override
     {

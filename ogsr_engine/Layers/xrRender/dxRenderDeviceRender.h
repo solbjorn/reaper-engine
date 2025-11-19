@@ -14,6 +14,7 @@ class dxRenderDeviceRender : public IRenderDeviceRender, public pureFrame
 
 public:
     dxRenderDeviceRender();
+    ~dxRenderDeviceRender() override;
 
     virtual void Copy(IRenderDeviceRender& _in);
 

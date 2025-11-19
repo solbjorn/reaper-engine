@@ -16,5 +16,5 @@ private:
 
 public:
     CExoOutfit();
-    virtual ~CExoOutfit();
+    ~CExoOutfit() override;
 };

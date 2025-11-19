@@ -19,6 +19,8 @@ private:
     u32 m_time_next_melee_jump;
 
 public:
+    ~CControlMeleeJump() override = default;
+
     virtual void reinit();
 
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;

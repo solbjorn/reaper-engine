@@ -16,7 +16,7 @@ private:
 
 public:
     CThornArtefact();
-    virtual ~CThornArtefact();
+    ~CThornArtefact() override;
 
     virtual void Load(LPCSTR section);
 };

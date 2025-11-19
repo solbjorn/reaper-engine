@@ -17,7 +17,8 @@ class CScriptObject : public CGameObject, public CScriptEntity
 
 public:
     CScriptObject();
-    virtual ~CScriptObject();
+    ~CScriptObject() override;
+
     virtual DLL_Pure* _construct();
     virtual void reinit();
     virtual BOOL net_Spawn(CSE_Abstract* DC);

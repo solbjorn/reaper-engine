@@ -5,6 +5,8 @@
 template <typename _Object>
 class CPoltergeistStateRest : public CStateMonsterRest<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CPoltergeistStateRest<_Object>, CStateMonsterRest<_Object>);
+
 protected:
     typedef CStateMonsterRest<_Object> inherited;
     using inherited::add_state;
@@ -16,7 +18,9 @@ protected:
     using inherited::select_state;
 
 public:
-    CPoltergeistStateRest(_Object* obj) : inherited(obj) {}
+    explicit CPoltergeistStateRest(_Object* obj) : inherited{obj} {}
+    ~CPoltergeistStateRest() override = default;
+
     virtual void execute();
 };
 

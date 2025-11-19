@@ -14,7 +14,7 @@ class CHitImmunity : public virtual RTTI::Enable
 
 public:
     CHitImmunity();
-    virtual ~CHitImmunity();
+    ~CHitImmunity() override;
 
     virtual void LoadImmunities(LPCSTR section, CInifile* ini);
 

@@ -38,7 +38,7 @@ protected:
 
 public:
     CUIDialogWndEx();
-    virtual ~CUIDialogWndEx() = default;
+    ~CUIDialogWndEx() override = default;
 
     void Register(CUIWindow* pChild);
     void Register(CUIWindow* pChild, LPCSTR name);

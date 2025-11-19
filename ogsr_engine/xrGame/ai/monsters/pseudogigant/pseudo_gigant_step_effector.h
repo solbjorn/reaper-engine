@@ -1,8 +1,12 @@
 #pragma once
+
 #include "../../../CameraEffector.h"
 
 class CPseudogigantStepEffector : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CPseudogigantStepEffector, CEffectorCam);
+
+private:
     typedef CEffectorCam inherited;
 
     float total;
@@ -11,6 +15,8 @@ class CPseudogigantStepEffector : public CEffectorCam
     float power;
 
 public:
-    CPseudogigantStepEffector(float time, float amp, float periods, float power);
+    explicit CPseudogigantStepEffector(float time, float amp, float periods, float power);
+    ~CPseudogigantStepEffector() override = default;
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

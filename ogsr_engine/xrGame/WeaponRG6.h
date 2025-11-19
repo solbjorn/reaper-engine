@@ -12,7 +12,9 @@ public:
     typedef CRocketLauncher inheritedRL;
     typedef CWeaponShotgun inheritedSG;
 
-    virtual ~CWeaponRG6();
+    CWeaponRG6() = default;
+    ~CWeaponRG6() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void Load(LPCSTR section);
     virtual void OnEvent(NET_Packet& P, u16 type);

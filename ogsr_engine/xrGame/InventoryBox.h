@@ -1,8 +1,9 @@
 #pragma once
+
 #include "inventory_space.h"
 #include "GameObject.h"
 
-class IInventoryBox : public virtual RTTI::Enable
+class XR_NOVTABLE IInventoryBox : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IInventoryBox);
 
@@ -13,7 +14,10 @@ protected:
 
 public:
     bool m_in_use;
+
     IInventoryBox();
+    ~IInventoryBox() override = 0;
+
     void AddAvailableItems(TIItemContainer& items_container) const;
     bool IsEmpty() const;
     u32 GetSize() const;
@@ -26,12 +30,16 @@ public:
     virtual bool IsOpened() const { return true; }
 };
 
+inline IInventoryBox::~IInventoryBox() = default;
+
 template <class Based>
 class CCustomInventoryBox : public Based, public IInventoryBox
 {
     RTTI_DECLARE_TYPEINFO(CCustomInventoryBox<Based>, Based, IInventoryBox);
 
 public:
+    ~CCustomInventoryBox() override = default;
+
     typedef Based inherited;
     typedef IInventoryBox inherited2;
 
@@ -59,5 +67,6 @@ class CInventoryBox : public CCustomInventoryBox<CGameObject> // CBasicInventory
 
 public:
     CInventoryBox() = default;
+    ~CInventoryBox() override = default;
 };
 XR_SOL_BASE_CLASSES(CInventoryBox);

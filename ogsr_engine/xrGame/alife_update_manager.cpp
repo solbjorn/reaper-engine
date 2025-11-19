@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_update_manager.h"
+
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
 #include "alife_graph_registry.h"
@@ -48,8 +49,7 @@ public:
     void operator()(CALifeLevelRegistry::_iterator& i, u64) const { m_switch_manager->switch_object((*i).second); }
 };
 
-CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
-    : CALifeSimulatorBase{server}, CALifeSwitchManager{server, section}, CALifeSurgeManager{server}, CALifeStorageManager{server, section}
+CALifeUpdateManager::CALifeUpdateManager(LPCSTR section) : CALifeSwitchManager{section}, CALifeStorageManager{section}
 {
     shedule.t_min = pSettings->r_s32(section, "schedule_min");
     shedule.t_max = pSettings->r_s32(section, "schedule_max");

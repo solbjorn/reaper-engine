@@ -16,6 +16,8 @@
 
 class CStalkerActionGetOutOfAnomaly : public CStalkerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionGetOutOfAnomaly, CStalkerActionBase);
+
 private:
     xr_vector<ALife::_OBJECT_ID> m_temp0;
     xr_vector<ALife::_OBJECT_ID> m_temp1;
@@ -24,7 +26,9 @@ protected:
     typedef CStalkerActionBase inherited;
 
 public:
-    CStalkerActionGetOutOfAnomaly(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionGetOutOfAnomaly(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionGetOutOfAnomaly() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -36,11 +40,15 @@ public:
 
 class CStalkerActionDetectAnomaly : public CStalkerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDetectAnomaly, CStalkerActionBase);
+
 protected:
     typedef CStalkerActionBase inherited;
 
 public:
-    CStalkerActionDetectAnomaly(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDetectAnomaly(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDetectAnomaly() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();

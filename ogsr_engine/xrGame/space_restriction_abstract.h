@@ -11,7 +11,7 @@
 #include "ai_space.h"
 #include "level_graph.h"
 
-class CSpaceRestrictionAbstract : public virtual RTTI::Enable
+class XR_NOVTABLE CSpaceRestrictionAbstract : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CSpaceRestrictionAbstract);
 
@@ -29,8 +29,9 @@ private:
     IC void prepare_accessible_neighbour_border(T& restriction, bool out_restriction);
 
 public:
-    IC CSpaceRestrictionAbstract();
-    virtual ~CSpaceRestrictionAbstract() {}
+    inline CSpaceRestrictionAbstract();
+    ~CSpaceRestrictionAbstract() override = 0;
+
     virtual void initialize() = 0;
     IC const xr_vector<u32>& border();
     IC bool initialized() const;
@@ -42,5 +43,7 @@ public:
 public:
     virtual shared_str name() const = 0;
 };
+
+inline CSpaceRestrictionAbstract::~CSpaceRestrictionAbstract() = default;
 
 #include "space_restriction_abstract_inline.h"

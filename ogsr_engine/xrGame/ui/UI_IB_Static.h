@@ -17,6 +17,8 @@ class CUI_IB_Static : public CUIInteractiveBackground<CUIStatic>
     RTTI_DECLARE_TYPEINFO(CUI_IB_Static, CUIInteractiveBackground<CUIStatic>);
 
 public:
+    ~CUI_IB_Static() override = default;
+
     virtual void SetTextureOffset(float x, float y);
     virtual void SetStretchTexture(bool stretch_texture);
     virtual void EnableHeading(bool b);

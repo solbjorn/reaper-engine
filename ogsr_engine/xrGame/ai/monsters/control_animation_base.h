@@ -11,6 +11,7 @@ struct SEventVelocityBounce : public ControlCom::IEventData
 };
 
 //////////////////////////////////////////////////////////////////////////
+
 class CControlAnimationBase : public CControl_ComBase
 {
     RTTI_DECLARE_TYPEINFO(CControlAnimationBase, CControl_ComBase);
@@ -81,7 +82,7 @@ public:
 
 public:
     CControlAnimationBase();
-    virtual ~CControlAnimationBase();
+    ~CControlAnimationBase() override;
 
     // Control_ComBase interface
     virtual void reinit();

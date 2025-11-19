@@ -18,7 +18,7 @@ CPatrolPath::CPatrolPath([[maybe_unused]] shared_str name)
 #endif
 }
 
-CPatrolPath::~CPatrolPath() {}
+CPatrolPath::~CPatrolPath() = default;
 
 CPatrolPath& CPatrolPath::load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream)
 {

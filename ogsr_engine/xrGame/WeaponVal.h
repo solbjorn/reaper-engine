@@ -11,7 +11,7 @@ public:
     typedef CWeaponMagazined inherited;
 
     CWeaponVal();
-    virtual ~CWeaponVal();
+    ~CWeaponVal() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

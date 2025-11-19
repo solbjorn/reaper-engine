@@ -48,7 +48,7 @@ protected:
 
 protected:
     inline explicit CDijkstra(const u32 max_vertex_count);
-    inline virtual ~CDijkstra();
+    inline ~CDijkstra() override;
 
     template <typename TPathManager>
     inline void initialize(TPathManager& path_manager);

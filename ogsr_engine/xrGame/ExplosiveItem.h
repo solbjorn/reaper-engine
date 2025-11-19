@@ -19,7 +19,7 @@ private:
 
 public:
     CExplosiveItem();
-    virtual ~CExplosiveItem();
+    ~CExplosiveItem() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC) { return CInventoryItemObject::net_Spawn(DC); }

@@ -60,7 +60,7 @@ public:
     typedef CCustomMonster inherited;
 
     CBaseMonster();
-    virtual ~CBaseMonster();
+    ~CBaseMonster() override;
 
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     virtual CCharacterPhysicsSupport* character_physics_support() { return m_pPhysics_support; }

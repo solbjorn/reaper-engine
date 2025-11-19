@@ -187,10 +187,12 @@ IC bool CBlend::update(float dt, PlayCallback _Callback)
     return false;
 }
 
-class XR_NOVTABLE IBlendDestroyCallback
+class XR_NOVTABLE IBlendDestroyCallback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IBlendDestroyCallback);
+
 public:
-    virtual ~IBlendDestroyCallback() = 0;
+    ~IBlendDestroyCallback() override = 0;
 
     virtual void BlendDestroy(CBlend& blend) = 0;
 };

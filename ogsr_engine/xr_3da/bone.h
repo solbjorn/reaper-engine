@@ -16,6 +16,7 @@ typedef BoneCallbackFunction* BoneCallback;
 // typedef void  (* BoneCallback)		(CBoneInstance* P);
 
 //*** Bone Instance *******************************************************************************
+
 class CBoneInstance : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CBoneInstance);
@@ -38,6 +39,8 @@ public:
 
     //
     // methods
+    ~CBoneInstance() override = default;
+
     [[nodiscard]] BoneCallback callback() const { return Callback; }
     [[nodiscard]] void* callback_param() const { return Callback_Param; }
     [[nodiscard]] bool callback_overwrite() const { return Callback_overwrite; } // performance hint - don't calc anims
@@ -333,10 +336,15 @@ struct SJointIKData
 };
 static_assert(sizeof(SJointIKData) == 80);
 
-class IBoneData : public virtual RTTI::Enable
+class XR_NOVTABLE IBoneData : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(IBoneData);
+
+public:
+    ~IBoneData() override = 0;
 };
+
+inline IBoneData::~IBoneData() = default;
 
 // static const Fobb	dummy ;//= Fobb().identity();
 //  refs
@@ -389,7 +397,7 @@ public:
 
 public:
     CBone();
-    virtual ~CBone();
+    ~CBone() override;
 
     void SetName(const char* p)
     {
@@ -500,7 +508,7 @@ public:
     ChildFacesVec child_faces; // shared
 
     explicit CBoneData(u16 ID) : SelfID{ID} { VERIFY(SelfID != BI_NONE); }
-    virtual ~CBoneData() = default;
+    ~CBoneData() override = default;
 
 #ifdef DEBUG
     typedef svector<int, 128> BoneDebug;

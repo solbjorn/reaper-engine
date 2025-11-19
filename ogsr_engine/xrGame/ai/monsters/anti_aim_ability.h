@@ -8,13 +8,14 @@ class CBaseMonster;
 
 class anti_aim_ability : public CControl_ComCustom<>
 {
+    RTTI_DECLARE_TYPEINFO(anti_aim_ability, CControl_ComCustom<>);
+
 public:
     using hit_callback = CallMe::Delegate<void()>;
 
 private:
     typedef CControl_ComCustom<> inherited;
 
-private:
     CBaseMonster* m_object;
 
     // settings
@@ -39,8 +40,8 @@ private:
     hit_callback m_callback;
 
 public:
-    anti_aim_ability(CBaseMonster* object);
-    ~anti_aim_ability();
+    explicit anti_aim_ability(CBaseMonster* object);
+    ~anti_aim_ability() override;
 
     void load_from_ini(CInifile* ini, pcstr section);
     void update_schedule();

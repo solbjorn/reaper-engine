@@ -1,8 +1,6 @@
 #ifndef __XR_WEAPON_HPSA_H__
 #define __XR_WEAPON_HPSA_H__
 
-#pragma once
-
 #include "WeaponPistol.h"
 #include "script_export_space.h"
 
@@ -15,7 +13,7 @@ private:
 
 public:
     CWeaponHPSA();
-    virtual ~CWeaponHPSA();
+    ~CWeaponHPSA() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

@@ -6,9 +6,10 @@
 
 class CUIProgressBar : public CUIWindow
 {
-    friend class CUIXmlInit;
-
     RTTI_DECLARE_TYPEINFO(CUIProgressBar, CUIWindow);
+
+private:
+    friend class CUIXmlInit;
 
 public:
     typedef CUIWindow inherited;
@@ -51,7 +52,7 @@ public:
     CUIStatic m_UIBackgroundItem;
 
     CUIProgressBar();
-    virtual ~CUIProgressBar() = default;
+    ~CUIProgressBar() override = default;
 
     void InitProgressBar(Fvector2 pos, Fvector2 size, EOrientMode mode);
 

@@ -18,17 +18,11 @@ class DBG_ScriptObject : public virtual RTTI::Enable
 
 public:
     Fcolor m_color;
-    bool m_visible;
-    bool m_hud;
+    bool m_visible{true};
+    bool m_hud{false};
 
-    DBG_ScriptObject()
-    {
-        m_color.set(1, 0, 0, 1);
-        m_visible = true;
-        m_hud = false;
-    }
-
-    virtual ~DBG_ScriptObject() {}
+    DBG_ScriptObject() { m_color.set(1, 0, 0, 1); }
+    ~DBG_ScriptObject() override = default;
 
     virtual DBG_ScriptSphere* cast_dbg_sphere() { return nullptr; }
     virtual DBG_ScriptBox* cast_dbg_box() { return nullptr; }
@@ -44,9 +38,8 @@ class DBG_ScriptSphere : public DBG_ScriptObject
 public:
     Fmatrix m_mat;
 
-    DBG_ScriptSphere() { m_mat = Fidentity; }
-
-    virtual ~DBG_ScriptSphere() {}
+    DBG_ScriptSphere() : m_mat{Fidentity} {}
+    ~DBG_ScriptSphere() override = default;
 
     virtual DBG_ScriptSphere* cast_dbg_sphere() { return this; }
 
@@ -60,15 +53,10 @@ class DBG_ScriptBox : public DBG_ScriptObject
 
 public:
     Fmatrix m_mat;
-    Fvector m_size;
+    Fvector m_size{1.0f, 1.0f, 1.0f};
 
-    DBG_ScriptBox()
-    {
-        m_mat = Fidentity;
-        m_size.set(1, 1, 1);
-    }
-
-    virtual ~DBG_ScriptBox() {}
+    DBG_ScriptBox() : m_mat{Fidentity} {}
+    ~DBG_ScriptBox() override = default;
 
     virtual DBG_ScriptBox* cast_dbg_box() { return this; }
 
@@ -81,15 +69,11 @@ class DBG_ScriptLine : public DBG_ScriptObject
     RTTI_DECLARE_TYPEINFO(DBG_ScriptLine, DBG_ScriptObject);
 
 public:
-    Fvector m_point_a, m_point_b;
+    Fvector m_point_a{};
+    Fvector m_point_b{};
 
-    DBG_ScriptLine()
-    {
-        m_point_a.set(0, 0, 0);
-        m_point_b.set(0, 0, 0);
-    }
-
-    virtual ~DBG_ScriptLine() {}
+    DBG_ScriptLine() = default;
+    ~DBG_ScriptLine() override = default;
 
     virtual DBG_ScriptLine* cast_dbg_line() { return this; }
 

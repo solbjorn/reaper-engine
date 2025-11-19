@@ -20,6 +20,5 @@ IC CALifeMonsterBrain::movement_manager_type& CALifeMonsterBrain::movement() con
     return (*m_movement_manager);
 }
 
-IC bool CALifeMonsterBrain::can_choose_alife_tasks() const { return (m_can_choose_alife_tasks); }
-
-IC void CALifeMonsterBrain::can_choose_alife_tasks(bool value) { m_can_choose_alife_tasks = value; }
+inline bool CALifeMonsterBrain::can_choose_alife_tasks() const { return m_can_choose_alife_tasks; }
+inline void CALifeMonsterBrain::can_choose_alife_tasks(bool value) { m_can_choose_alife_tasks = value; }

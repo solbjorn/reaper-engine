@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "actor.h"
+
 #include "customdetector.h"
 #include "uigamesp.h"
 #include "hudmanager.h"
@@ -166,12 +167,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
     case GEG_PLAYER_DETACH_HOLDER: {
         if (!m_holder)
             break;
-#ifdef DEBUG
-        u32 id =
-#endif
-            P.r_u32();
 
+        const u32 id = P.r_u32();
         VERIFY(id == smart_cast<CGameObject*>(m_holder)->ID());
+
         use_Holder(nullptr);
     }
     break;

@@ -14,8 +14,8 @@ class CWound : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CWound);
 
 public:
-    CWound(u16 bone_num);
-    virtual ~CWound();
+    explicit CWound(u16 bone_num);
+    ~CWound() override;
 
     // serialization
     virtual void save(NET_Packet& output_packet);

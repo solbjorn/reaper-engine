@@ -24,7 +24,8 @@ public:
     using inherited::m_graph;
     using inherited::m_restricted_object;
 
-    IC CBaseLocationSelector(CRestrictedObject* object);
+    inline explicit CBaseLocationSelector(CRestrictedObject* object);
+    ~CBaseLocationSelector() override = default;
 
 protected:
     IC virtual void before_search(_vertex_id_type& vertex_id);

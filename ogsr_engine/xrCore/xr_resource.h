@@ -10,7 +10,7 @@ public:
     std::atomic<gsl::index> ref_count{};
 
     xr_resource() = default;
-    virtual ~xr_resource() = default;
+    ~xr_resource() override = default;
 
     void clone(const xr_resource& from) { ref_count = from.ref_count.load(); }
 };
@@ -29,6 +29,8 @@ public:
     u32 dwFlags{};
     s32 skinning{};
 
+    ~xr_resource_flagged() override = default;
+
     void clone(const xr_resource_flagged& from)
     {
         xr_resource::clone(from);
@@ -44,6 +46,8 @@ struct xr_resource_named : public xr_resource_flagged
 
 public:
     shared_str cName{};
+
+    ~xr_resource_named() override = default;
 
     const char* set_name(const char* name)
     {

@@ -14,7 +14,7 @@ constexpr inline int REG_PRIORITY_INVALID{std::numeric_limits<int>::lowest()};
         RTTI_DECLARE_TYPEINFO(pure##name); \
 \
     public: \
-        virtual ~pure##name() = 0; \
+        ~pure##name() override = 0; \
 \
         virtual void On##name() = 0; \
         static ICF void OnPure(pure##name* self) { self->On##name(); } \

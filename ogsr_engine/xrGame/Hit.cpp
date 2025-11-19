@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "alife_space.h"
 #include "hit.h"
+
 #include "ode_include.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "xrMessages.h"
@@ -71,7 +71,8 @@ void SHit::GenHeader(u16 PacketType, u16 ID)
 void SHit::Read_Packet(NET_Packet Packet)
 {
     u16 type_dummy;
-    Packet.r_begin(type_dummy);
+    std::ignore = Packet.r_begin(type_dummy);
+
     Packet.r_u32(Time);
     Packet.r_u16(PACKET_TYPE);
     Packet.r_u16(DestID);

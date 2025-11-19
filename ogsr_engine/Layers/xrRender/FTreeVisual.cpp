@@ -7,8 +7,8 @@
 
 #include "ftreevisual.h"
 
-FTreeVisual::FTreeVisual() {}
-FTreeVisual::~FTreeVisual() {}
+FTreeVisual::FTreeVisual() = default;
+FTreeVisual::~FTreeVisual() = default;
 
 void FTreeVisual::Release() { dxRender_Visual::Release(); }
 
@@ -186,8 +186,9 @@ void FTreeVisual::Copy(dxRender_Visual* pSrc)
 //-----------------------------------------------------------------------------------
 // Stripified Tree
 //-----------------------------------------------------------------------------------
-FTreeVisual_ST::FTreeVisual_ST(void) {}
-FTreeVisual_ST::~FTreeVisual_ST(void) {}
+
+FTreeVisual_ST::FTreeVisual_ST() = default;
+FTreeVisual_ST::~FTreeVisual_ST() = default;
 
 void FTreeVisual_ST::Release() { inherited::Release(); }
 void FTreeVisual_ST::Load(const char* N, IReader* data, u32 dwFlags) { inherited::Load(N, data, dwFlags); }
@@ -205,13 +206,9 @@ void FTreeVisual_ST::Copy(dxRender_Visual* pSrc) { inherited::Copy(pSrc); }
 //-----------------------------------------------------------------------------------
 // Progressive Tree
 //-----------------------------------------------------------------------------------
-FTreeVisual_PM::FTreeVisual_PM(void)
-{
-    pSWI = nullptr;
-    last_lod = 0;
-}
 
-FTreeVisual_PM::~FTreeVisual_PM(void) {}
+FTreeVisual_PM::FTreeVisual_PM() = default;
+FTreeVisual_PM::~FTreeVisual_PM() = default;
 
 void FTreeVisual_PM::Release() { inherited::Release(); }
 

@@ -31,6 +31,8 @@ private:
     void submit_all_buffers() const;
 
 public:
+    ~CSoundRender_TargetA() override = default;
+
     bool _initialize() override;
     void _destroy() override;
     void _restart() override;

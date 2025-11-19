@@ -12,8 +12,12 @@ class XR_NOVTABLE CPHDestroyableNotificator : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CPHDestroyableNotificator);
 
 public:
+    ~CPHDestroyableNotificator() override = 0;
+
     virtual void NotificateDestroy(CPHDestroyableNotificate* dn) = 0;
 };
+
+inline CPHDestroyableNotificator::~CPHDestroyableNotificator() = default;
 
 class XR_NOVTABLE CPHDestroyable : public CPHDestroyableNotificator
 {
@@ -53,6 +57,7 @@ public:
 
 public:
     CPHDestroyable();
+    ~CPHDestroyable() override = 0;
 
     void Init();
     void RespawnInit();
@@ -75,5 +80,7 @@ private:
     void NotificatePart(CPHDestroyableNotificate* dn);
     void PhysicallyRemovePart(CPHDestroyableNotificate* dn);
 };
+
+inline CPHDestroyable::~CPHDestroyable() = default;
 
 #endif

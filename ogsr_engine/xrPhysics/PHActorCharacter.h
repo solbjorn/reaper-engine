@@ -102,6 +102,9 @@ public:
     typedef TPHCharacterRestrictor<CPHCharacter::rtStalkerSmall> stalker_small_restrictor;
     typedef TPHCharacterRestrictor<CPHCharacter::rtMonsterMedium> medium_monster_restrictor;
 
+    CPHActorCharacter();
+    ~CPHActorCharacter() override;
+
     virtual CPHActorCharacter* CastActorCharacter() { return this; }
     virtual void SetObjectContactCallback(ObjectContactCallbackFun* callback);
     virtual void SetMaterial(u16 material);
@@ -114,8 +117,6 @@ public:
     virtual void InitContact(dContact* c, bool& do_collide, u16 material_idx_1, u16 material_idx_2);
     void SetRestrictorRadius(CPHCharacter::ERestrictionType rtype, float r);
     virtual void ChooseRestrictionType(ERestrictionType my_type, float my_depth, CPHCharacter* ch);
-    CPHActorCharacter();
-    virtual ~CPHActorCharacter(void);
 
 private:
     void ClearRestrictors();

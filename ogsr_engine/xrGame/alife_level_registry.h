@@ -19,17 +19,23 @@ class CSE_ALifeDynamicObject;
 
 class CALifeLevelRegistry : public CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>
 {
+    RTTI_DECLARE_TYPEINFO(CALifeLevelRegistry, CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>);
+
 protected:
     typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject> inherited;
 
     GameGraph::_LEVEL_ID m_level_id;
 
 public:
-    IC CALifeLevelRegistry(const GameGraph::_LEVEL_ID& level_id);
+    inline explicit CALifeLevelRegistry(const GameGraph::_LEVEL_ID& level_id);
+    ~CALifeLevelRegistry() override = default;
+
     IC void add(CSE_ALifeDynamicObject* tpALifeDynamicObject);
     IC void remove(CSE_ALifeDynamicObject* tpALifeDynamicObject, bool no_assert = false);
+
     template <typename _update_predicate>
     IC void update(const _update_predicate& predicate);
+
     IC GameGraph::_LEVEL_ID level_id() const;
     IC CSE_ALifeDynamicObject* object(const ALife::_OBJECT_ID& id, bool no_assert = false) const;
 };

@@ -41,6 +41,7 @@ public:
 // typedef void	( * MotionMarkCallback)		(CBlend*		P);
 
 //*** The visual itself ***************************************************************************
+
 class CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
 {
     RTTI_DECLARE_TYPEINFO(CKinematicsAnimated, CKinematics, IKinematicsAnimated);
@@ -176,7 +177,7 @@ public:
     virtual IKinematics* dcast_PKinematics() { return this; }
 
     CKinematicsAnimated();
-    virtual ~CKinematicsAnimated();
+    ~CKinematicsAnimated() override;
 
     [[nodiscard]] gsl::index mem_usage(bool bInstance) const override
     {

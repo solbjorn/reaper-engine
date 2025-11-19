@@ -13,26 +13,24 @@ class CAI_Rat;
 
 namespace steering_behaviour
 {
-
-class base
+class base : public virtual RTTI::Enable
 {
-public:
-    base(CAI_Rat const* object);
+    RTTI_DECLARE_TYPEINFO(base);
 
-    base(const base& other) = delete;
-    base& operator=(const base& other) = delete;
-    virtual ~base() {}
+public:
+    explicit base(const CAI_Rat* object);
+    ~base() override = default;
+
     virtual Fvector direction() = 0;
 
 public:
-    IC void enabled(bool const& value);
+    IC void enabled(const bool& value);
     IC bool const& enabled() const;
 
 private:
     CAI_Rat const* m_object;
     bool m_enabled;
 };
-
 } // namespace steering_behaviour
 
 #include "steering_behaviour_base_inline.h"

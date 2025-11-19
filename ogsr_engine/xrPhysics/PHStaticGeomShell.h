@@ -10,6 +10,7 @@ class CPHStaticGeomShell : public CPHGeometryOwner, public CPHObject, public CPH
 
 public:
     CPHStaticGeomShell();
+    ~CPHStaticGeomShell() override;
 
     void get_spatial_params();
     virtual void EnableObject(CPHObject*) { CPHUpdateObject::Activate(); }

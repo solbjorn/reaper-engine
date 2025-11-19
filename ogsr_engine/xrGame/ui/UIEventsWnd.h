@@ -57,7 +57,7 @@ public:
 
 public:
     CUIEventsWnd();
-    virtual ~CUIEventsWnd();
+    ~CUIEventsWnd() override;
 
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
     void Init();

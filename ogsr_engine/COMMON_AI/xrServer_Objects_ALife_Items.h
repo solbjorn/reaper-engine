@@ -47,7 +47,7 @@ CSE_ALifeObject* m_self{};
 u32 m_last_update_time;
 
 explicit CSE_ALifeInventoryItem(LPCSTR caSection);
-virtual ~CSE_ALifeInventoryItem();
+~CSE_ALifeInventoryItem() override;
 
 // we need this to prevent virtual inheritance :-(
 virtual CSE_Abstract* base() = 0;
@@ -76,7 +76,7 @@ public:
 bool m_physics_disabled;
 
 explicit CSE_ALifeItem(LPCSTR caSection);
-virtual ~CSE_ALifeItem();
+~CSE_ALifeItem() override;
 
 virtual CSE_Abstract* base();
 virtual const CSE_Abstract* base() const;
@@ -106,7 +106,7 @@ bool m_nightvision_active;
 bool m_attached;
 
 explicit CSE_ALifeItemTorch(LPCSTR caSection);
-virtual ~CSE_ALifeItemTorch();
+~CSE_ALifeItemTorch() override;
 
 virtual BOOL Net_Relevant();
 SERVER_ENTITY_DECLARE_END
@@ -122,7 +122,7 @@ u16 a_elapsed;
 u16 m_boxSize;
 
 explicit CSE_ALifeItemAmmo(LPCSTR caSection);
-virtual ~CSE_ALifeItemAmmo();
+~CSE_ALifeItemAmmo() override;
 
 virtual CSE_ALifeItemAmmo* cast_item_ammo() { return this; }
 virtual bool __can_switch_online() const;
@@ -178,7 +178,7 @@ u32 m_ef_main_weapon_type;
 u32 m_ef_weapon_type;
 
 explicit CSE_ALifeItemWeapon(LPCSTR caSection);
-virtual ~CSE_ALifeItemWeapon();
+~CSE_ALifeItemWeapon() override;
 
 virtual void OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender);
 virtual u32 ef_main_weapon_type() const;
@@ -203,7 +203,7 @@ public:
 u8 m_u8CurFireMode;
 
 explicit CSE_ALifeItemWeaponMagazined(LPCSTR caSection);
-virtual ~CSE_ALifeItemWeaponMagazined();
+~CSE_ALifeItemWeaponMagazined() override;
 
 virtual CSE_ALifeItemWeapon* cast_item_weapon() { return this; }
 SERVER_ENTITY_DECLARE_END
@@ -220,7 +220,7 @@ u8 ammo_type2;
 u16 a_elapsed2;
 
 explicit CSE_ALifeItemWeaponMagazinedWGL(LPCSTR caSection);
-virtual ~CSE_ALifeItemWeaponMagazinedWGL();
+~CSE_ALifeItemWeaponMagazinedWGL() override;
 
 virtual CSE_ALifeItemWeapon* cast_item_weapon() { return this; }
 SERVER_ENTITY_DECLARE_END
@@ -235,7 +235,7 @@ public:
 xr_vector<u8> m_AmmoIDs;
 
 explicit CSE_ALifeItemWeaponShotGun(LPCSTR caSection);
-virtual ~CSE_ALifeItemWeaponShotGun();
+~CSE_ALifeItemWeaponShotGun() override;
 
 virtual CSE_ALifeItemWeapon* cast_item_weapon() { return this; }
 SERVER_ENTITY_DECLARE_END
@@ -250,7 +250,7 @@ public:
 u32 m_ef_detector_type;
 
 explicit CSE_ALifeItemDetector(LPCSTR caSection);
-virtual ~CSE_ALifeItemDetector();
+~CSE_ALifeItemDetector() override;
 
 virtual u32 ef_detector_type() const;
 virtual CSE_ALifeItemDetector* cast_item_detector() { return this; }
@@ -266,7 +266,7 @@ public:
 float m_fAnomalyValue;
 
 explicit CSE_ALifeItemArtefact(LPCSTR caSection);
-virtual ~CSE_ALifeItemArtefact();
+~CSE_ALifeItemArtefact() override;
 
 virtual BOOL Net_Relevant();
 SERVER_ENTITY_DECLARE_END
@@ -283,7 +283,7 @@ shared_str m_specific_character{};
 shared_str m_info_portion{};
 
 explicit CSE_ALifeItemPDA(LPCSTR caSection);
-virtual ~CSE_ALifeItemPDA();
+~CSE_ALifeItemPDA() override;
 
 virtual CSE_ALifeItemPDA* cast_item_pda() { return this; }
 SERVER_ENTITY_DECLARE_END
@@ -298,7 +298,7 @@ public:
 shared_str m_wDoc;
 
 explicit CSE_ALifeItemDocument(LPCSTR caSection);
-virtual ~CSE_ALifeItemDocument();
+~CSE_ALifeItemDocument() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemDocument);
 
@@ -311,7 +311,7 @@ public:
 u32 m_ef_weapon_type;
 
 explicit CSE_ALifeItemGrenade(LPCSTR caSection);
-virtual ~CSE_ALifeItemGrenade();
+~CSE_ALifeItemGrenade() override;
 
 virtual u32 ef_weapon_type() const;
 SERVER_ENTITY_DECLARE_END
@@ -324,7 +324,7 @@ add_to_type_list(CSE_ALifeItemGrenade);
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemExplosive, CSE_ALifeItem)
 public:
 explicit CSE_ALifeItemExplosive(LPCSTR caSection);
-virtual ~CSE_ALifeItemExplosive();
+~CSE_ALifeItemExplosive() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_ALifeItemExplosive);
 
@@ -337,7 +337,7 @@ public:
 u32 m_ef_weapon_type;
 
 explicit CSE_ALifeItemBolt(LPCSTR caSection);
-virtual ~CSE_ALifeItemBolt();
+~CSE_ALifeItemBolt() override;
 
 virtual bool can_save() const;
 virtual bool used_ai_locations() const;
@@ -354,7 +354,7 @@ public:
 u32 m_ef_equipment_type;
 
 explicit CSE_ALifeItemCustomOutfit(LPCSTR caSection);
-virtual ~CSE_ALifeItemCustomOutfit();
+~CSE_ALifeItemCustomOutfit() override;
 
 virtual u32 ef_equipment_type() const;
 virtual BOOL Net_Relevant();
@@ -371,13 +371,14 @@ class CSE_InventoryContainer : public CSE_InventoryBoxAbstract, public CSE_ALife
 
 public:
     explicit CSE_InventoryContainer(LPCSTR caSection) : CSE_ALifeItem{caSection} {}
-    virtual ~CSE_InventoryContainer() {}
+    ~CSE_InventoryContainer() override = default;
 
     virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries)
     {
         add_offline_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), saved_children, update_registries);
         CSE_ALifeItem::add_offline(saved_children, update_registries);
     }
+
     virtual void add_online(const bool& update_registries)
     {
         add_online_impl(smart_cast<CSE_ALifeDynamicObjectVisual*>(this), update_registries);

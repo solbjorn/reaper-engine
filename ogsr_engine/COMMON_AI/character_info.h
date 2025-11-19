@@ -31,7 +31,7 @@ struct SCharacterProfile : CSharedResource
 
 public:
     SCharacterProfile();
-    virtual ~SCharacterProfile();
+    ~SCharacterProfile() override;
 
     // если задано, то выбирается именно такой профиль,
     // иначе ищется случайно,удовлетворяющее шаблону
@@ -60,7 +60,7 @@ private:
 
 public:
     CCharacterInfo();
-    ~CCharacterInfo();
+    ~CCharacterInfo() override;
 
     virtual void Load(shared_str id);
 

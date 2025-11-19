@@ -98,7 +98,7 @@ public:
     // virtual void StepFrameUpdate(dReal step)=0;
 
     CPHObject();
-    virtual ~CPHObject() = 0;
+    ~CPHObject() override = 0;
 
     void activate();
     IC bool is_active() { return !!m_flags.test(st_activated) /*b_activated*/; }
@@ -134,7 +134,8 @@ public:
     bool b_activated;
 
     CPHUpdateObject();
-    virtual ~CPHUpdateObject() { Deactivate(); }
+    ~CPHUpdateObject() override { Deactivate(); }
+
     void Activate();
     void Deactivate();
     IC bool IsActive() { return b_activated; }

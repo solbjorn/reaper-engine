@@ -31,14 +31,15 @@ public:
     MonsterSpace::EScriptMonsterAnimAction m_tAnimAction;
     int anim_index{};
 
-    IC CScriptAnimationAction();
-    IC CScriptAnimationAction(LPCSTR caAnimationToPlay, bool use_animation_movement_controller = false);
-    IC CScriptAnimationAction(MonsterSpace::EMentalState tMentalState);
+    inline CScriptAnimationAction();
+    inline explicit CScriptAnimationAction(LPCSTR caAnimationToPlay, bool use_animation_movement_controller = false);
+    inline explicit CScriptAnimationAction(MonsterSpace::EMentalState tMentalState);
     // -------------------------------------------------------------------------------------------------
     // Monster
     // -------------------------------------------------------------------------------------------------
-    IC CScriptAnimationAction(MonsterSpace::EScriptMonsterAnimAction tAnimAction, int index);
-    virtual ~CScriptAnimationAction();
+    inline explicit CScriptAnimationAction(MonsterSpace::EScriptMonsterAnimAction tAnimAction, int index);
+    ~CScriptAnimationAction() override;
+
     IC void SetAnimation(LPCSTR caAnimationToPlay);
     IC void SetMentalState(MonsterSpace::EMentalState tMentalState);
     IC void initialize();

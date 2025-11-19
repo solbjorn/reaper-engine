@@ -64,8 +64,8 @@ protected:
     static LPCSTR line_name;
 
 public:
-    CIni_IdToIndex();
-    virtual ~CIni_IdToIndex();
+    CIni_IdToIndex() = default;
+    ~CIni_IdToIndex() override = default;
 
     static void InitInternal();
     static const ITEM_DATA* GetById(const T_ID& str_id, bool no_assert = false);
@@ -97,12 +97,6 @@ LPCSTR CSINI_IdToIndex::section_name{};
 
 TEMPLATE_SPECIALIZATION
 LPCSTR CSINI_IdToIndex::line_name{};
-
-TEMPLATE_SPECIALIZATION
-CSINI_IdToIndex::CIni_IdToIndex() {}
-
-TEMPLATE_SPECIALIZATION
-CSINI_IdToIndex::~CIni_IdToIndex() {}
 
 TEMPLATE_SPECIALIZATION
 const ITEM_DATA* CSINI_IdToIndex::GetById(const T_ID& str_id, bool no_assert)

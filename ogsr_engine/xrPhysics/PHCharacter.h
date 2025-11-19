@@ -81,6 +81,9 @@ protected:
     float m_current_object_radius;
 
 public:
+    CPHCharacter();
+    ~CPHCharacter() override = 0;
+
     virtual ECastType CastType() { return CPHObject::tpCharacter; }
     virtual CPHActorCharacter* CastActorCharacter() { return nullptr; }
     virtual CPHAICharacter* CastAICharacter() { return nullptr; }
@@ -192,10 +195,6 @@ public:
 
 public:
     virtual void step(float dt) = 0; //{ step( dt ); }
-
-public:
-    CPHCharacter();
-    virtual ~CPHCharacter() = 0;
 };
 
 inline CPHCharacter::~CPHCharacter() = default;

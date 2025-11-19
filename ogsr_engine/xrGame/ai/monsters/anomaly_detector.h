@@ -1,4 +1,5 @@
 #pragma once
+
 #include "..\xr_3da\feel_touch.h"
 #include "../../customzone.h"
 
@@ -40,8 +41,8 @@ private:
     ANOMALY_INFO_VEC m_storage;
 
 public:
-    CAnomalyDetector(CCustomMonster* monster);
-    virtual ~CAnomalyDetector();
+    explicit CAnomalyDetector(CCustomMonster* monster);
+    ~CAnomalyDetector() override;
 
     void load(LPCSTR section);
     void reinit();

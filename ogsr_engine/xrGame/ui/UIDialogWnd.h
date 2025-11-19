@@ -30,7 +30,7 @@ public:
     bool m_bWorkInPause{};
 
     CUIDialogWnd();
-    virtual ~CUIDialogWnd();
+    ~CUIDialogWnd() override;
 
     virtual void Show();
     virtual void Hide();

@@ -1,9 +1,13 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateBloodsuckerVampire : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBloodsuckerVampire<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::current_substate;
@@ -16,7 +20,8 @@ class CStateBloodsuckerVampire : public CState<_Object>
     const CEntityAlive* enemy;
 
 public:
-    CStateBloodsuckerVampire(_Object* obj);
+    explicit CStateBloodsuckerVampire(_Object* obj);
+    ~CStateBloodsuckerVampire() override = default;
 
     virtual void reinit();
 

@@ -28,6 +28,8 @@ public:
     } m_heading, m_pitch;
 
 public:
+    ~CControlDirectionBase() override = default;
+
     virtual void reinit();
     virtual void update_frame();
 

@@ -9,7 +9,7 @@ class XR_NOVTABLE IUIFontControl : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUIFontControl);
 
 public:
-    virtual ~IUIFontControl() = 0;
+    ~IUIFontControl() override = 0;
 
     virtual void SetTextColor(u32 color) = 0;
     virtual u32 GetTextColor() = 0;
@@ -33,7 +33,7 @@ class XR_NOVTABLE IUITextControl : public IUIFontControl
     RTTI_DECLARE_TYPEINFO(IUITextControl, IUIFontControl);
 
 public:
-    virtual ~IUITextControl() = 0;
+    ~IUITextControl() override = 0;
 
     virtual void SetText(LPCSTR text) = 0;
     virtual LPCSTR GetText() = 0;
@@ -47,7 +47,7 @@ class XR_NOVTABLE IUISimpleTextureControl : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUISimpleTextureControl);
 
 public:
-    virtual ~IUISimpleTextureControl() = 0;
+    ~IUISimpleTextureControl() override = 0;
 
     virtual void CreateShader(const char* tex, const char* sh = "hud\\default") = 0;
     virtual void SetShader(const ui_shader& sh) = 0;
@@ -64,7 +64,7 @@ class XR_NOVTABLE IUIMultiTextureOwner : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUIMultiTextureOwner);
 
 public:
-    virtual ~IUIMultiTextureOwner() = 0;
+    ~IUIMultiTextureOwner() override = 0;
 
     virtual void InitTexture(const char* texture) = 0;
     virtual bool GetTextureAvailability() = 0;
@@ -78,17 +78,15 @@ class CUIMultiTextureOwner : public IUIMultiTextureOwner
     RTTI_DECLARE_TYPEINFO(CUIMultiTextureOwner, IUIMultiTextureOwner);
 
 public:
-    CUIMultiTextureOwner()
-    {
-        m_bTextureAvailable = false;
-        m_bTextureVisible = false;
-    }
+    CUIMultiTextureOwner() = default;
+    ~CUIMultiTextureOwner() override = default;
+
     virtual bool GetTextureAvailability() { return m_bTextureAvailable; }
     virtual bool GetTextureVisible() { return m_bTextureVisible; }
 
 protected:
-    bool m_bTextureAvailable;
-    bool m_bTextureVisible;
+    bool m_bTextureAvailable{};
+    bool m_bTextureVisible{};
 };
 
 class XR_NOVTABLE IUISingleTextureOwner : public CUIMultiTextureOwner, public IUISimpleTextureControl
@@ -96,7 +94,7 @@ class XR_NOVTABLE IUISingleTextureOwner : public CUIMultiTextureOwner, public IU
     RTTI_DECLARE_TYPEINFO(IUISingleTextureOwner, CUIMultiTextureOwner, IUISimpleTextureControl);
 
 public:
-    virtual ~IUISingleTextureOwner() = 0;
+    ~IUISingleTextureOwner() override = 0;
 
     virtual void InitTextureEx(const char* texture, const char* shader) = 0;
     virtual void SetStretchTexture(bool stretch) = 0;
@@ -110,6 +108,9 @@ class CUISingleTextureOwner : public IUISingleTextureOwner
     RTTI_DECLARE_TYPEINFO(CUISingleTextureOwner, IUISingleTextureOwner);
 
 public:
+    CUISingleTextureOwner() = default;
+    ~CUISingleTextureOwner() override = default;
+
     virtual void SetStretchTexture(bool stretch) { m_bStretchTexture = stretch; }
     virtual bool GetStretchTexture() { return m_bStretchTexture; }
 
@@ -133,10 +134,7 @@ class XR_NOVTABLE IUISimpleWindow : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUISimpleWindow);
 
 public:
-    IUISimpleWindow() = default;
-    IUISimpleWindow(const IUISimpleWindow&) = delete;
-    void operator=(const IUISimpleWindow&) = delete;
-    virtual ~IUISimpleWindow() = 0;
+    ~IUISimpleWindow() override = 0;
 
     virtual void Init(float x, float y, float width, float height) = 0;
     virtual void Draw() = 0;
@@ -162,12 +160,9 @@ class CUISimpleWindow : public IUISimpleWindow
     RTTI_DECLARE_TYPEINFO(CUISimpleWindow, IUISimpleWindow);
 
 public:
-    CUISimpleWindow()
-    {
-        m_alignment = waNone;
-        m_wndPos.set(0, 0);
-        m_wndSize.set(0, 0);
-    }
+    CUISimpleWindow() = default;
+    ~CUISimpleWindow() override = default;
+
     virtual void Init(float x, float y, float width, float height)
     {
         m_wndPos.set(x, y);
@@ -219,10 +214,10 @@ public:
     void MoveWndDelta(const Fvector2& d) { MoveWndDelta(d.x, d.y); }
 
 protected:
+    Fvector2 m_wndPos{};
+    Fvector2 m_wndSize{};
+    EWindowAlignment m_alignment{waNone};
     bool m_bShowMe{};
-    Fvector2 m_wndPos;
-    Fvector2 m_wndSize;
-    EWindowAlignment m_alignment;
 };
 
 class CUISelectable : public virtual RTTI::Enable
@@ -230,10 +225,12 @@ class CUISelectable : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CUISelectable);
 
 protected:
-    bool m_bSelected;
+    bool m_bSelected{};
 
 public:
-    CUISelectable() : m_bSelected(false) {}
+    CUISelectable() = default;
+    ~CUISelectable() override = default;
+
     bool GetSelected() const { return m_bSelected; }
     virtual void SetSelected(bool b) { m_bSelected = b; }
 };

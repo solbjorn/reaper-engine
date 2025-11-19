@@ -12,7 +12,7 @@ private:
 
 public:
     CMosquitoBald();
-    virtual ~CMosquitoBald();
+    ~CMosquitoBald() override;
 
     virtual void Load(LPCSTR section);
     virtual void Postprocess(f32);

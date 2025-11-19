@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_bloom_build();
-    virtual ~CBlender_bloom_build();
+    ~CBlender_bloom_build() override;
 };
 
 class CBlender_bloom_build_msaa : public IBlender
@@ -23,7 +23,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_bloom_build_msaa();
-    virtual ~CBlender_bloom_build_msaa();
+    ~CBlender_bloom_build_msaa() override;
 };
 
 class CBlender_postprocess_msaa : public IBlender
@@ -36,7 +36,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_postprocess_msaa();
-    virtual ~CBlender_postprocess_msaa();
+    ~CBlender_postprocess_msaa() override;
 };
 
 class CBlender_ssfx_bloom_build : public IBlender
@@ -49,7 +49,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_ssfx_bloom_build();
-    virtual ~CBlender_ssfx_bloom_build();
+    ~CBlender_ssfx_bloom_build() override;
 };
 
 class CBlender_ssfx_bloom_lens : public IBlender
@@ -62,7 +62,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_ssfx_bloom_lens();
-    virtual ~CBlender_ssfx_bloom_lens();
+    ~CBlender_ssfx_bloom_lens() override;
 };
 
 class CBlender_ssfx_bloom_downsample : public IBlender
@@ -75,7 +75,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_ssfx_bloom_downsample();
-    virtual ~CBlender_ssfx_bloom_downsample();
+    ~CBlender_ssfx_bloom_downsample() override;
 };
 
 class CBlender_ssfx_bloom_upsample : public IBlender
@@ -88,5 +88,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_ssfx_bloom_upsample();
-    virtual ~CBlender_ssfx_bloom_upsample();
+    ~CBlender_ssfx_bloom_upsample() override;
 };

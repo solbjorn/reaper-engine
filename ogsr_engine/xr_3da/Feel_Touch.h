@@ -31,7 +31,7 @@ public:
 
 public:
     Touch();
-    virtual ~Touch();
+    ~Touch() override;
 
     [[nodiscard]] virtual BOOL feel_touch_contact(CObject*);
     virtual void feel_touch_update(Fvector&, float, const std::function<void(CObject*, bool)>& = {}, const std::function<bool(CObject*)>& = {});

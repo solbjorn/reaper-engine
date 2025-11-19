@@ -36,8 +36,8 @@ private:
     void stat_Stop();
 
 public:
-    virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    explicit CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60.0f * 60.0f * 1000.0f);
+    ~CDemoPlay() override;
 
-    explicit CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60 * 60 * 1000);
-    virtual ~CDemoPlay();
+    virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

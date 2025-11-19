@@ -2,6 +2,9 @@
 
 class CUIMotionIcon : public CUIStatic
 {
+    RTTI_DECLARE_TYPEINFO(CUIMotionIcon, CUIStatic);
+
+private:
     typedef CUIWindow inherited;
 
 public:
@@ -35,8 +38,9 @@ private:
     float m_luminosity;
 
 public:
-    virtual ~CUIMotionIcon();
     CUIMotionIcon();
+    ~CUIMotionIcon() override;
+
     virtual void Update();
     void Init();
     void ShowState(EState state);

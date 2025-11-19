@@ -11,13 +11,14 @@ class CControl_ComControlling;
 
 //////////////////////////////////////////////////////////////////////////
 // Base
+
 class CControl_Com : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CControl_Com);
 
 public:
-    CControl_Com() { m_inited = false; }
-    virtual ~CControl_Com() {}
+    CControl_Com() = default;
+    ~CControl_Com() override = default;
 
     // common routines
     void init_external(CControl_Manager* cm, CBaseMonster* obj)
@@ -64,16 +65,19 @@ protected:
 
 private:
     bool m_active;
-    bool m_inited;
+    bool m_inited{};
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Controlled with data
+
 class CControl_ComControlled : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComControlled);
 
 public:
+    ~CControl_ComControlled() override = default;
+
     virtual void reinit()
     {
         m_locked = false;
@@ -100,12 +104,14 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 // Controlling
+
 class CControl_ComControlling : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComControlling);
 
 public:
-    virtual ~CControl_ComControlling() {}
+    ~CControl_ComControlling() override = default;
+
     virtual void reinit() {}
 
     // initialize/finalize controlling com
@@ -122,12 +128,15 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 // Data Storage
+
 template <class T>
 class CControl_ComControlledStorage : public CControl_ComControlled
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComControlledStorage<T>, CControl_ComControlled);
 
 public:
+    ~CControl_ComControlledStorage() override = default;
+
     virtual ControlCom::IComData* data() { return &m_data; }
 
 protected:
@@ -136,13 +145,17 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 // Pure
+
 template <class T>
 class CControl_ComPure : public CControl_Com, public CControl_ComControlledStorage<T>
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComPure<T>, CControl_Com, CControl_ComControlledStorage<T>);
 
 public:
+    ~CControl_ComPure() override = default;
+
     virtual CControl_ComControlled* ced() { return this; }
+
     virtual void reinit()
     {
         CControl_Com::reinit();
@@ -150,14 +163,19 @@ public:
         set_active();
     }
 };
+
 //////////////////////////////////////////////////////////////////////////
 // Base
+
 class CControl_ComBase : public CControl_Com, public CControl_ComControlling
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComBase, CControl_Com, CControl_ComControlling);
 
 public:
+    ~CControl_ComBase() override = default;
+
     virtual CControl_ComControlling* cing() { return this; }
+
     virtual void reinit()
     {
         CControl_Com::reinit();
@@ -165,16 +183,21 @@ public:
         set_active();
     }
 };
+
 //////////////////////////////////////////////////////////////////////////
 // Custom
+
 template <class T = ControlCom::IComData>
 class CControl_ComCustom : public CControl_Com, public CControl_ComControlledStorage<T>, public CControl_ComControlling
 {
     RTTI_DECLARE_TYPEINFO(CControl_ComCustom<T>, CControl_Com, CControl_ComControlledStorage<T>, CControl_ComControlling);
 
 public:
+    ~CControl_ComCustom() override = default;
+
     virtual CControl_ComControlled* ced() { return this; }
     virtual CControl_ComControlling* cing() { return this; }
+
     virtual void reinit()
     {
         CControl_Com::reinit();

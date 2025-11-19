@@ -1,15 +1,19 @@
 #pragma once
+
 #include "CustomDetector.h"
 
 class CUIArtefactDetectorSimple;
 
 class CSimpleDetector : public CCustomDetector
 {
+    RTTI_DECLARE_TYPEINFO(CSimpleDetector, CCustomDetector);
+
+private:
     typedef CCustomDetector inherited;
 
 public:
     CSimpleDetector();
-    virtual ~CSimpleDetector() = default;
+    ~CSimpleDetector() override = default;
 
 protected:
     virtual void UpdateAf() override;

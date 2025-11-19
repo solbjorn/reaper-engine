@@ -6,6 +6,9 @@
 template <typename _Object>
 class CStateMonsterLookToPoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterLookToPoint<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -13,8 +16,8 @@ class CStateMonsterLookToPoint : public CState<_Object>
     SStateDataLookToPoint data;
 
 public:
-    CStateMonsterLookToPoint(_Object* obj);
-    virtual ~CStateMonsterLookToPoint();
+    explicit CStateMonsterLookToPoint(_Object* obj);
+    ~CStateMonsterLookToPoint() override;
 
     virtual void initialize();
     virtual void execute();

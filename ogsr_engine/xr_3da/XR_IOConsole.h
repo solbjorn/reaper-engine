@@ -113,7 +113,7 @@ private:
 
 public:
     CConsole();
-    virtual ~CConsole();
+    ~CConsole() override;
 
     virtual void Initialize();
     // virtual void Destroy();

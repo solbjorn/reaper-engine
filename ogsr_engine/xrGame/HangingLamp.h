@@ -4,7 +4,6 @@
 
 #ifndef HangingLampH
 #define HangingLampH
-#pragma once
 
 #include "gameobject.h"
 #include "physicsshellholder.h"
@@ -45,7 +44,7 @@ private:
 
 public:
     CHangingLamp();
-    virtual ~CHangingLamp();
+    ~CHangingLamp() override;
 
     void TurnOn();
     void TurnOff();

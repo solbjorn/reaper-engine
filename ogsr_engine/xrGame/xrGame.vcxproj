@@ -470,7 +470,6 @@
     <ClInclude Include="agent_manager_properties.h" />
     <ClInclude Include="agent_manager_properties_inline.h" />
     <ClInclude Include="alife_simulator.h" />
-    <ClInclude Include="alife_simulator_inline.h" />
     <ClInclude Include="..\COMMON_AI\alife_space.h" />
     <ClInclude Include="alife_interaction_manager.h" />
     <ClInclude Include="alife_communication_manager.h" />
@@ -529,7 +528,6 @@
     <ClInclude Include="alife_storage_manager.h" />
     <ClInclude Include="alife_storage_manager_inline.h" />
     <ClInclude Include="alife_surge_manager.h" />
-    <ClInclude Include="alife_surge_manager_inline.h" />
     <ClInclude Include="alife_switch_manager.h" />
     <ClInclude Include="alife_switch_manager_inline.h" />
     <ClInclude Include="saved_game_wrapper.h" />
@@ -1479,8 +1477,6 @@
     <ClCompile Include="alife_simulator.cpp" />
     <ClCompile Include="alife_simulator_script.cpp" />
     <ClCompile Include="..\COMMON_AI\alife_space.cpp" />
-    <ClCompile Include="alife_interaction_manager.cpp" />
-    <ClCompile Include="alife_communication_manager.cpp" />
     <ClCompile Include="alife_combat_manager.cpp" />
     <ClCompile Include="alife_anomalous_zone.cpp" />
     <ClCompile Include="alife_creature_abstract.cpp" />

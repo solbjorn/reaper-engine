@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStatePoltergeistAttackHidden : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStatePoltergeistAttackHidden<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -17,8 +19,8 @@ protected:
     using inherited::select_state;
 
 public:
-    CStatePoltergeistAttackHidden(_Object* obj);
-    virtual ~CStatePoltergeistAttackHidden() {}
+    explicit CStatePoltergeistAttackHidden(_Object* obj);
+    ~CStatePoltergeistAttackHidden() override = default;
 
     virtual void initialize();
     virtual void execute();

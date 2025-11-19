@@ -51,7 +51,7 @@ private:
 
 public:
     inline explicit CGameGraph(IReader* stream, bool separatedGraphs);
-    IC virtual ~CGameGraph();
+    inline ~CGameGraph() override;
 
     IC const CHeader& header() const;
     IC const CGameLevelCrossTable& cross_table() const;

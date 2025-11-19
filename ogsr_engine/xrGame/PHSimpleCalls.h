@@ -15,6 +15,8 @@ public:
     u64 m_step;
 
     CPHCallOnStepCondition();
+    ~CPHCallOnStepCondition() override = default;
+
     virtual bool obsolete() const;
     virtual bool is_true();
     IC void set_step(u64 step) { m_step = step; }
@@ -39,6 +41,9 @@ class CPHExpireOnStepCondition : public CPHCallOnStepCondition
     RTTI_DECLARE_TYPEINFO(CPHExpireOnStepCondition, CPHCallOnStepCondition);
 
 public:
+    CPHExpireOnStepCondition() = default;
+    ~CPHExpireOnStepCondition() override = default;
+
     virtual bool is_true() { return true; }
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
@@ -57,7 +62,8 @@ protected:
     CPhysicsShell* m_shell;
 
 public:
-    CPHShellBasedAction(CPhysicsShell* shell);
+    explicit CPHShellBasedAction(CPhysicsShell* shell);
+    ~CPHShellBasedAction() override = default;
 
     virtual bool compare(const CPhysicsShell* shl) const { return shl == m_shell; }
     virtual bool obsolete() const;
@@ -70,7 +76,9 @@ class CPHConstForceAction : public CPHShellBasedAction
 public:
     Fvector m_force;
 
-    CPHConstForceAction(CPhysicsShell* shell, const Fvector& force);
+    explicit CPHConstForceAction(CPhysicsShell* shell, const Fvector& force);
+    ~CPHConstForceAction() override = default;
+
     virtual void run();
 
     virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
@@ -90,6 +98,8 @@ class CPHReqComparerHasShell : public CPHReqComparerV
 public:
     CPhysicsShell* m_shell;
 
-    CPHReqComparerHasShell(CPhysicsShell* shl);
+    explicit CPHReqComparerHasShell(CPhysicsShell* shl);
+    ~CPHReqComparerHasShell() override = default;
+
     virtual bool compare(const CPHConstForceAction* v) const { return v->compare(m_shell); }
 };

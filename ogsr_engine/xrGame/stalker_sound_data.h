@@ -18,8 +18,9 @@ private:
     CAI_Stalker* m_object;
 
 public:
-    IC CStalkerSoundData(CAI_Stalker* object);
-    virtual ~CStalkerSoundData();
+    inline explicit CStalkerSoundData(CAI_Stalker* object);
+    ~CStalkerSoundData() override;
+
     virtual void invalidate();
     virtual void accept(CSound_UserDataVisitor* visitor);
     IC CAI_Stalker& object() const;

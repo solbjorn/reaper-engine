@@ -20,18 +20,8 @@
 CUIMultiTextStatic::CUIMultiTextStatic() { m_vPhrases.clear(); }
 CUIMultiTextStatic::~CUIMultiTextStatic() = default;
 
-CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::AddPhrase()
-{
-    m_vPhrases.resize(m_vPhrases.size() + 1);
-    return &m_vPhrases.back();
-}
-
-void CUIMultiTextStatic::RemovePhraseByIndex(u32 idx)
-{
-    Phrases_it it = m_vPhrases.begin();
-    std::advance(it, idx);
-    m_vPhrases.erase(it);
-}
+CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::AddPhrase() { return m_vPhrases.emplace_back(std::make_unique<SinglePhrase>()).get(); }
+void CUIMultiTextStatic::RemovePhraseByIndex(u32 idx) { m_vPhrases.erase(m_vPhrases.begin() + idx); }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -40,10 +30,8 @@ void CUIMultiTextStatic::Draw()
     Fvector2 p;
     GetAbsolutePos(p);
 
-    for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
-    {
-        it->effect.Out(it->outX + p.x, it->outY + p.y, "%s", *it->str);
-    }
+    for (const auto& ptr : m_vPhrases)
+        ptr->effect.Out(ptr->outX + p.x, ptr->outY + p.y, "%s", ptr->str.c_str());
 
     inherited::Draw();
 }
@@ -52,22 +40,15 @@ void CUIMultiTextStatic::Draw()
 
 void CUIMultiTextStatic::Update()
 {
-    for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
-    {
-        it->effect.Update();
-    }
+    for (const auto& ptr : m_vPhrases)
+        ptr->effect.Update();
 
     inherited::Update();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::GetPhraseByIndex(u32 idx)
-{
-    R_ASSERT(idx < m_vPhrases.size());
-
-    return &m_vPhrases[idx];
-}
+CUIMultiTextStatic::SinglePhrase* CUIMultiTextStatic::GetPhraseByIndex(u32 idx) { return m_vPhrases[idx].get(); }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -135,17 +116,18 @@ void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, 
     //	m_indices[msg_name] = m_vPhrases.size()-1;
 }
 
-u32 CUICaption::findIndexOf_(const shared_str& key_)
+u32 CUICaption::findIndexOf_(const shared_str& key_) const
 {
-    for (Phrases_it it = m_vPhrases.begin(); it != m_vPhrases.end(); ++it)
+    for (auto [idx, ptr] : xr::views_enumerate(m_vPhrases))
     {
-        if ((*it).key == key_)
-            return (u32)std::distance(m_vPhrases.begin(), it);
+        if (ptr->key == key_)
+            return gsl::narrow_cast<u32>(idx);
     }
-    return u32(-1);
+
+    return std::numeric_limits<u32>::max();
 }
 
-u32 CUICaption::findIndexOf(const shared_str& key_)
+u32 CUICaption::findIndexOf(const shared_str& key_) const
 {
     u32 res = findIndexOf_(key_);
     R_ASSERT3(res != u32(-1), "cannot find msg ", *key_);

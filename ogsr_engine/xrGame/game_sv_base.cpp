@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "game_sv_base.h"
+
 #include "xrServer.h"
 #include "LevelGameDef.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -215,7 +217,7 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32, ClientID 
     break;
 
     case GAME_EVENT_ON_HIT: {
-        tNetPacket.r_u16();
+        std::ignore = tNetPacket.r_u16();
         u16 id_src = tNetPacket.r_u16();
         CSE_Abstract* e_src = get_entity_from_eid(id_src);
 

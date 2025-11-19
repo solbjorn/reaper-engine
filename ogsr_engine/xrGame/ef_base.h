@@ -14,7 +14,7 @@ class CEntityAlive;
 class CSE_ALifeObject;
 class CEF_Storage;
 
-class CBaseFunction : public virtual RTTI::Enable
+class XR_NOVTABLE CBaseFunction : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CBaseFunction);
 
@@ -25,13 +25,13 @@ protected:
     CEF_Storage* m_storage;
 
 public:
-    CBaseFunction(CEF_Storage* storage)
+    explicit CBaseFunction(CEF_Storage* storage)
     {
         m_storage = storage;
         VERIFY(m_storage);
     }
 
-    virtual ~CBaseFunction() {}
+    ~CBaseFunction() override = 0;
 
     IC CEF_Storage& ef_storage() const
     {
@@ -63,3 +63,5 @@ public:
     IC CLASS_ID clsid_member_item() const;
     IC CLASS_ID clsid_enemy_item() const;
 };
+
+inline CBaseFunction::~CBaseFunction() = default;

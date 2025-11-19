@@ -20,7 +20,7 @@ private:
 
 public:
     CUIListItemEx();
-    virtual ~CUIListItemEx();
+    ~CUIListItemEx() override;
 
     void SendMessage(CUIWindow*, s16 msg, void*) override;
     virtual void SetSelectionColor(u32 dwColor);

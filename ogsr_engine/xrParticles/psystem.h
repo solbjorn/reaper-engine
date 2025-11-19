@@ -176,7 +176,7 @@ class XR_NOVTABLE IParticleManager : public virtual RTTI::Enable
 
 public:
     IParticleManager() = default;
-    virtual ~IParticleManager() = 0;
+    ~IParticleManager() override = 0;
 
     // create&destroy
     virtual int CreateEffect(u32 max_particles) = 0;

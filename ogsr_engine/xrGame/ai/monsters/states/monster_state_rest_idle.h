@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterRestIdle : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRestIdle<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -18,7 +21,9 @@ class CStateMonsterRestIdle : public CState<_Object>
     u32 m_target_node{};
 
 public:
-    CStateMonsterRestIdle(_Object* obj);
+    explicit CStateMonsterRestIdle(_Object* obj);
+    ~CStateMonsterRestIdle() override = default;
+
     virtual void initialize();
     virtual void finalize();
     virtual void critical_finalize();

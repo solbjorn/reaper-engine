@@ -11,8 +11,8 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-FProgressive::FProgressive() : Fvisual{} {}
-FProgressive::~FProgressive() {}
+FProgressive::FProgressive() = default;
+FProgressive::~FProgressive() = default;
 
 void FProgressive::Release()
 {

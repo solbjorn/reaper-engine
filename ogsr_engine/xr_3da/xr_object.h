@@ -162,7 +162,7 @@ public:
 
     //---------------------------------------------------------------------
     CObject();
-    virtual ~CObject();
+    ~CObject() override;
 
     virtual void Load(LPCSTR section);
     virtual void reload(LPCSTR) {}

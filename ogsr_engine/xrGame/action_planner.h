@@ -70,7 +70,7 @@ public:
 
 public:
     CActionPlanner() = default;
-    virtual ~CActionPlanner();
+    inline ~CActionPlanner() override;
 
     virtual void setup(_object_type* object);
     virtual void update();

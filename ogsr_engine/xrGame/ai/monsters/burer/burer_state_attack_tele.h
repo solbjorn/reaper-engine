@@ -1,10 +1,14 @@
 #pragma once
+
 #include "../state.h"
 #include "../../../grenade.h"
 
 template <typename Object>
 class CStateBurerAttackTele : public CState<Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBurerAttackTele<Object>, CState<Object>);
+
+private:
     typedef CState<Object> inherited;
     using inherited::object;
 
@@ -24,7 +28,8 @@ class CStateBurerAttackTele : public CState<Object>
     } m_action;
 
 public:
-    CStateBurerAttackTele(Object* obj);
+    explicit CStateBurerAttackTele(Object* obj);
+    ~CStateBurerAttackTele() override = default;
 
     virtual void initialize();
     virtual void execute();

@@ -32,8 +32,8 @@ private:
     bool m_turning_in_place{};
 
 public:
-    CSightManager(CAI_Stalker* object);
-    virtual ~CSightManager();
+    explicit CSightManager(CAI_Stalker* object);
+    ~CSightManager() override;
 
     virtual void Load(LPCSTR);
     virtual void reinit();

@@ -6,21 +6,30 @@
 
 class CVampirePPEffector : public CEffectorPP
 {
+    RTTI_DECLARE_TYPEINFO(CVampirePPEffector, CEffectorPP);
+
+private:
     typedef CEffectorPP inherited;
 
     SPPInfo state; // current state
     float m_total; // total PP time
 
 public:
-    CVampirePPEffector(const SPPInfo& ppi, float life_time);
+    explicit CVampirePPEffector(const SPPInfo& ppi, float life_time);
+    ~CVampirePPEffector() override = default;
+
     virtual BOOL Process(SPPInfo& pp);
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Vampire Camera Effector
 //////////////////////////////////////////////////////////////////////////
+
 class CVampireCameraEffector : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CVampireCameraEffector, CEffectorCam);
+
+private:
     typedef CEffectorCam inherited;
 
     float m_time_total;
@@ -31,6 +40,8 @@ class CVampireCameraEffector : public CEffectorCam
     Fvector m_direction;
 
 public:
-    CVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt);
+    explicit CVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt);
+    ~CVampireCameraEffector() override = default;
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

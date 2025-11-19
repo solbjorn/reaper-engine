@@ -43,7 +43,7 @@ private:
 
 public:
     CControlManagerCustom();
-    ~CControlManagerCustom();
+    ~CControlManagerCustom() override;
 
     virtual void reinit();
     virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);

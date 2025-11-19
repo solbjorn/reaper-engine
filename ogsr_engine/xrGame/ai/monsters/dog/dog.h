@@ -13,7 +13,7 @@ public:
     typedef CControlledEntity<CAI_Dog> CControlled;
 
     CAI_Dog();
-    virtual ~CAI_Dog();
+    ~CAI_Dog() override;
 
     virtual void Load(LPCSTR section);
     virtual void reinit();

@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateGroupRestIdle : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateGroupRestIdle<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -19,7 +22,9 @@ class CStateGroupRestIdle : public CState<_Object>
     int m_move_type;
 
 public:
-    CStateGroupRestIdle(_Object* obj);
+    explicit CStateGroupRestIdle(_Object* obj);
+    ~CStateGroupRestIdle() override = default;
+
     virtual void initialize();
     virtual void finalize();
     virtual void critical_finalize();

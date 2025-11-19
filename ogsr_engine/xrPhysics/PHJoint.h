@@ -123,10 +123,11 @@ public:
     void ReattachFirstElement(CPHElement* new_element);
     CODEGeom*& RootGeom() { return pFirstGeom; }
     virtual CPHJointDestroyInfo* JointDestroyInfo() { return m_destroy_info; }
-    CPHJoint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysicsElement* second);
-    virtual ~CPHJoint();
-    void SetShell(CPHShell* p);
 
+    explicit CPHJoint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysicsElement* second);
+    ~CPHJoint() override;
+
+    void SetShell(CPHShell* p);
     void ClearDestroyInfo();
 };
 

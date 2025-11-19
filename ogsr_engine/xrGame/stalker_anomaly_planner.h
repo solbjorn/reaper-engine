@@ -20,8 +20,9 @@ private:
     typedef CActionPlannerActionScript<CAI_Stalker> inherited;
 
 public:
-    CStalkerAnomalyPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
-    virtual ~CStalkerAnomalyPlanner();
+    explicit CStalkerAnomalyPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    ~CStalkerAnomalyPlanner() override;
+
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();
     void add_evaluators();

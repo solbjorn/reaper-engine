@@ -38,15 +38,14 @@ public:
         void XR_PRINTF(2, 3) SetText(const char* fmt, ...);
     } SinglePhrase;
 
-    typedef xr_vector<SinglePhrase> Phrases;
-    typedef Phrases::iterator Phrases_it;
+    using Phrases = xr_vector<std::unique_ptr<SinglePhrase>>;
 
 protected:
     Phrases m_vPhrases;
 
 public:
     CUIMultiTextStatic();
-    virtual ~CUIMultiTextStatic();
+    ~CUIMultiTextStatic() override;
 
     virtual void Draw();
     virtual void Update();
@@ -62,13 +61,15 @@ class CUICaption : public virtual RTTI::Enable, protected CUIMultiTextStatic
 {
     RTTI_DECLARE_TYPEINFO(CUICaption, CUIMultiTextStatic);
 
-public:
+private:
     typedef CUIMultiTextStatic inherited;
 
-    u32 findIndexOf(const shared_str& key);
-    u32 findIndexOf_(const shared_str& key);
+    u32 findIndexOf(const shared_str& key) const;
+    u32 findIndexOf_(const shared_str& key) const;
 
 public:
+    ~CUICaption() override = default;
+
     virtual void Draw();
     void addCustomMessage(const shared_str& msg_name, float x, float y, float font_size, CGameFont* pFont, CGameFont::EAligment al, u32 color, LPCSTR def_str = "");
     EffectParams* customizeMessage(const shared_str& msg_name, const CUITextBanner::TextBannerStyles styleName);

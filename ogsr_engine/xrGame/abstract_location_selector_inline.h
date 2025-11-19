@@ -19,9 +19,6 @@ TEMPLATE_SPECIALIZATION
 IC CSelectorTemplate::CAbstractLocationSelector(CRestrictedObject* object) : m_restricted_object{object} { VERIFY(m_restricted_object); }
 
 TEMPLATE_SPECIALIZATION
-IC CSelectorTemplate::~CAbstractLocationSelector() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CSelectorTemplate::reinit(const _Graph* graph)
 {
     m_failed = false;

@@ -16,11 +16,15 @@
 
 class CStalkerActionDangerGrenadeTakeCover : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeTakeCover, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerGrenadeTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerGrenadeTakeCover(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerGrenadeTakeCover() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -32,11 +36,15 @@ public:
 
 class CStalkerActionDangerGrenadeWaitForExplosion : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeWaitForExplosion, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerGrenadeWaitForExplosion(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerGrenadeWaitForExplosion() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -48,6 +56,8 @@ public:
 
 class CStalkerActionDangerGrenadeTakeCoverAfterExplosion : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeTakeCoverAfterExplosion, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
@@ -55,7 +65,9 @@ private:
     bool m_direction_sight{};
 
 public:
-    CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerGrenadeTakeCoverAfterExplosion(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerGrenadeTakeCoverAfterExplosion() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -67,11 +79,15 @@ public:
 
 class CStalkerActionDangerGrenadeLookAround : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeLookAround, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerGrenadeLookAround(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerGrenadeLookAround(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerGrenadeLookAround() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -83,11 +99,15 @@ public:
 
 class CStalkerActionDangerGrenadeSearch : public CStalkerActionCombatBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDangerGrenadeSearch, CStalkerActionCombatBase);
+
 protected:
     typedef CStalkerActionCombatBase inherited;
 
 public:
-    CStalkerActionDangerGrenadeSearch(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDangerGrenadeSearch(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDangerGrenadeSearch() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();

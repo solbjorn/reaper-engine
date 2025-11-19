@@ -1,9 +1,12 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterDangerMoveToHomePoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterDangerMoveToHomePoint<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -21,7 +24,9 @@ protected:
     Fvector m_danger_pos;
 
 public:
-    CStateMonsterDangerMoveToHomePoint(_Object* obj);
+    explicit CStateMonsterDangerMoveToHomePoint(_Object* obj);
+    ~CStateMonsterDangerMoveToHomePoint() override = default;
+
     virtual void initialize();
     virtual void finalize();
     virtual void critical_finalize();

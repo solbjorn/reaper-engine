@@ -6,10 +6,12 @@
 #include "r__sector.h"
 
 // feedback for receiving visuals
-class XR_NOVTABLE R_feedback
+class XR_NOVTABLE R_feedback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(R_feedback);
+
 public:
-    virtual ~R_feedback() = 0;
+    ~R_feedback() override = 0;
 
     virtual void rfeedback_static(dxRender_Visual* V) = 0;
 };

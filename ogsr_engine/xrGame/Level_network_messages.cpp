@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
+#include "level.h"
+
 #include "entity.h"
 #include "xrserver_objects.h"
-#include "level.h"
 #include "xrmessages.h"
 #include "game_cl_base.h"
 #include "net_queue.h"
@@ -28,8 +29,9 @@ void CLevel::ClientReceive()
         m_dwRPC++;
         m_dwRPS += P->B.count;
         //-----------------------------------------------------
+
         u16 m_type;
-        P->r_begin(m_type);
+        std::ignore = P->r_begin(m_type);
         switch (m_type)
         {
         case M_SPAWN: {

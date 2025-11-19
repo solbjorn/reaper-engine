@@ -26,7 +26,7 @@ protected:
 
 public:
     CObjectAnimator();
-    virtual ~CObjectAnimator();
+    ~CObjectAnimator() override;
 
     bool bLoop;
     SAnimParams m_MParam;

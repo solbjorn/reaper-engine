@@ -20,7 +20,7 @@ public:
     typedef CUI3tButton inherited;
 
     CUITabButton();
-    virtual ~CUITabButton();
+    ~CUITabButton() override;
 
     // behavior
     //.	virtual void AssociateWindow(CUIFrameWindow* pWindow);

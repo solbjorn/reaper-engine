@@ -56,7 +56,7 @@ protected:
 
 public:
     CPHSkeleton();
-    virtual ~CPHSkeleton();
+    ~CPHSkeleton() override;
 
     void SetAutoRemove(u32 time = existence_time);
     void SetNotNeedSave();

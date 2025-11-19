@@ -10,7 +10,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_combine();
-    virtual ~CBlender_combine();
+    ~CBlender_combine() override;
 };
 
 class CBlender_combine_msaa : public IBlender
@@ -23,7 +23,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_combine_msaa();
-    virtual ~CBlender_combine_msaa();
+    ~CBlender_combine_msaa() override;
 
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {

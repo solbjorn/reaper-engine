@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateBurerAttackRunAround : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBurerAttackRunAround<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -14,7 +17,9 @@ class CStateBurerAttackRunAround : public CState<_Object>
     Fvector dest_direction;
 
 public:
-    CStateBurerAttackRunAround(_Object* obj);
+    explicit CStateBurerAttackRunAround(_Object* obj);
+    ~CStateBurerAttackRunAround() override = default;
+
     virtual void initialize();
     virtual void execute();
 

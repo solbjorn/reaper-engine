@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterFindEnemyRun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterFindEnemyRun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
@@ -12,8 +15,8 @@ class CStateMonsterFindEnemyRun : public CState<_Object>
     u32 target_vertex{};
 
 public:
-    CStateMonsterFindEnemyRun(_Object* obj);
-    virtual ~CStateMonsterFindEnemyRun();
+    explicit CStateMonsterFindEnemyRun(_Object* obj);
+    ~CStateMonsterFindEnemyRun() override;
 
     virtual void initialize();
     virtual void execute();

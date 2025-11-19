@@ -14,14 +14,17 @@ class CActor;
 
 class CActorMemory : public vision_client
 {
+    RTTI_DECLARE_TYPEINFO(CActorMemory, vision_client);
+
 private:
     typedef vision_client inherited;
 
-private:
     CActor* m_actor;
 
 public:
-    CActorMemory(CActor* actor);
+    explicit CActorMemory(CActor* actor);
+    ~CActorMemory() override = default;
+
     virtual BOOL feel_vision_isRelevant(CObject* object);
     virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane);
 };

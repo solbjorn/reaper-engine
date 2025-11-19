@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Level.h"
+
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
 #include "xrmessages.h"
@@ -297,8 +298,10 @@ void CLevel::OnConnectResult(NET_Packet* P)
 {
     // multiple results can be sent during connection they should be "AND-ed"
     m_bConnectResultReceived = true;
+
     u8 result = P->r_u8();
-    /*u8  res1					=*/P->r_u8(); // Оставлено для совместимости сейвов
+    std::ignore = P->r_u8(); // Оставлено для совместимости сейвов
+
     string128 ResultStr;
     P->r_stringZ(ResultStr);
     if (!result)

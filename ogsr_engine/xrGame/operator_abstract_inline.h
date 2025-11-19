@@ -20,9 +20,6 @@ IC CAbstractOperator::COperatorAbstract(const CSConditionState& conditions, cons
 {}
 
 TEMPLATE_SPECIALIZATION
-inline CAbstractOperator::~COperatorAbstract() {}
-
-TEMPLATE_SPECIALIZATION
 inline void CAbstractOperator::Load(LPCSTR) {}
 
 TEMPLATE_SPECIALIZATION

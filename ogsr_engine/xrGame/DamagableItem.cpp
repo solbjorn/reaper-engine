@@ -2,13 +2,6 @@
 
 #include "DamagableItem.h"
 
-CDamagableItem::CDamagableItem()
-{
-    m_max_health = 0.f;
-    m_levels_num = u16(-1);
-    m_level_applied = u16(-1);
-}
-
 u16 CDamagableItem::DamageLevel()
 {
     float health = Health();

@@ -90,7 +90,7 @@ protected:
     void set_body(dBodyID body);
 
     CPHGeometryOwner();
-    virtual ~CPHGeometryOwner();
+    ~CPHGeometryOwner() override;
 };
 
 #endif

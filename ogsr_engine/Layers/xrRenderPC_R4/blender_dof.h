@@ -10,5 +10,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_dof();
-    virtual ~CBlender_dof();
+    ~CBlender_dof() override;
 };

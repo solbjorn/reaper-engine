@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "UILabel.h"
 #include "../script_export_space.h"
 #include "UIOptionsItem.h"
@@ -21,7 +22,7 @@ class CUIEditBox : public CUIMultiTextureOwner, public CUIOptionsItem, public CU
 
 public:
     CUIEditBox();
-    virtual ~CUIEditBox();
+    ~CUIEditBox() override;
 
     virtual void Init(float x, float y, float width, float heigt);
 

@@ -17,7 +17,7 @@ public:
     typedef CUIWindow inherited;
 
     CUITabControl();
-    virtual ~CUITabControl();
+    ~CUITabControl() override;
 
     // options item
     virtual void SetCurrentValue();

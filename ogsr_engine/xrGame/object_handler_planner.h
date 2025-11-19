@@ -74,6 +74,8 @@ public:
     IC CAI_Stalker& object() const;
 
 public:
+    ~CObjectHandlerPlanner() override = default;
+
     virtual void setup(CAI_Stalker* object);
     virtual void update();
     void add_item(CInventoryItem* inventory_item);

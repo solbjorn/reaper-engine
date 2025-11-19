@@ -21,6 +21,8 @@ private:
     typedef CActionPlanner<CAgentManager> inherited;
 
 public:
+    ~CAgentManagerPlanner() override = default;
+
     virtual void setup(CAgentManager* object);
     void add_evaluators();
     void add_actions();

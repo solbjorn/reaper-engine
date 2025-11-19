@@ -5,6 +5,9 @@
 template <typename _Object>
 class CStateMonsterFindEnemyLook : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterFindEnemyLook<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -30,8 +33,8 @@ class CStateMonsterFindEnemyLook : public CState<_Object>
     };
 
 public:
-    CStateMonsterFindEnemyLook(_Object* obj);
-    virtual ~CStateMonsterFindEnemyLook();
+    explicit CStateMonsterFindEnemyLook(_Object* obj);
+    ~CStateMonsterFindEnemyLook() override;
 
     virtual void initialize();
     virtual void reselect_state();

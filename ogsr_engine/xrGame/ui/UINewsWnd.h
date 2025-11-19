@@ -2,11 +2,15 @@
 
 #include "UIWindow.h"
 #include "xrUIXmlParser.h"
+
 class CUIScrollView;
 struct GAME_NEWS_DATA;
 
 class CUINewsWnd : public CUIWindow
 {
+    RTTI_DECLARE_TYPEINFO(CUINewsWnd, CUIWindow);
+
+private:
     typedef CUIWindow inherited;
     enum eFlag
     {
@@ -17,7 +21,7 @@ class CUINewsWnd : public CUIWindow
 
 public:
     CUINewsWnd();
-    virtual ~CUINewsWnd();
+    ~CUINewsWnd() override;
 
     void Init();
     void Init(LPCSTR xml_name, LPCSTR start_from);

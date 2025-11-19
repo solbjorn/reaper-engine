@@ -26,7 +26,8 @@ protected:
     typedef GraphEngineSpace::_solver_value_type _value_type;
 
 public:
-    CStalkerActionBase(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionBase(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionBase() override = default;
 
     virtual void initialize();
     virtual void execute();
@@ -47,7 +48,8 @@ protected:
     typedef CStalkerActionBase inherited;
 
 public:
-    CStalkerActionAlreadyDead(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionAlreadyDead(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionAlreadyDead() override = default;
 
     virtual void execute();
 };

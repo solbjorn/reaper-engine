@@ -19,9 +19,6 @@ TEMPLATE_SPECIALIZATION
 IC CPathManagerTemplate::CAbstractPathManager(CRestrictedObject* object) : m_object{object} {}
 
 TEMPLATE_SPECIALIZATION
-IC CPathManagerTemplate::~CAbstractPathManager() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CPathManagerTemplate::reinit(const _Graph* graph)
 {
     m_actuality = false;

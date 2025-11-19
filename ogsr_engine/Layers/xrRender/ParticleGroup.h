@@ -105,7 +105,8 @@ public:
     std::recursive_mutex lock;
 
     CParticleGroup();
-    virtual ~CParticleGroup();
+    ~CParticleGroup() override;
+
     virtual void OnFrame(u32 dt);
 
     virtual void Copy(dxRender_Visual*) { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }

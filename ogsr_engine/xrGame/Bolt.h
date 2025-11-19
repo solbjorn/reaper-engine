@@ -12,7 +12,7 @@ public:
     u16 m_thrower_id;
 
     CBolt();
-    virtual ~CBolt();
+    ~CBolt() override;
 
     virtual void OnH_A_Chield();
     virtual void OnEvent(NET_Packet& P, u16 type);

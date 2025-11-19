@@ -13,6 +13,8 @@ class CUIPdaMsgListItem : public CUIStatic
     RTTI_DECLARE_TYPEINFO(CUIPdaMsgListItem, CUIStatic);
 
 public:
+    ~CUIPdaMsgListItem() override = default;
+
     virtual void Init(float x, float y, float width, float height);
     virtual void InitCharacter(CInventoryOwner* pInvOwner);
     virtual void SetTextColor(u32 color);

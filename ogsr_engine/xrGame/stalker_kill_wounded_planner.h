@@ -24,8 +24,9 @@ private:
     void add_actions();
 
 public:
-    CStalkerKillWoundedPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
-    virtual ~CStalkerKillWoundedPlanner();
+    explicit CStalkerKillWoundedPlanner(CAI_Stalker* object = nullptr, LPCSTR action_name = "");
+    ~CStalkerKillWoundedPlanner() override;
+
     virtual void setup(CAI_Stalker* object, CPropertyStorage* storage);
     virtual void update();
     virtual void initialize();

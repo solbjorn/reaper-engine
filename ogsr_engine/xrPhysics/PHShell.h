@@ -43,8 +43,10 @@ protected:
 
 public:
     Fmatrix m_object_in_root;
+
     CPHShell();
-    virtual ~CPHShell();
+    ~CPHShell() override;
+
     virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val, const u16 id);
     virtual void applyHit(const Fvector& pos, const Fvector& dir, float val, const u16 id, ALife::EHitType hit_type);
 

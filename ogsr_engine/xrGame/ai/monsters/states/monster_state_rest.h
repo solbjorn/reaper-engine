@@ -6,6 +6,8 @@
 template <typename _Object>
 class CStateMonsterRest : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRest<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -21,8 +23,8 @@ protected:
     u32 time_idle_selected;
 
 public:
-    CStateMonsterRest(_Object* obj);
-    virtual ~CStateMonsterRest();
+    explicit CStateMonsterRest(_Object* obj);
+    ~CStateMonsterRest() override;
 
     virtual void initialize();
     virtual void execute();

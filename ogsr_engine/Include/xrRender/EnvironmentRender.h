@@ -9,7 +9,7 @@ class XR_NOVTABLE IEnvDescriptorRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IEnvDescriptorRender);
 
 public:
-    virtual ~IEnvDescriptorRender() = 0;
+    ~IEnvDescriptorRender() override = 0;
 
     virtual void Copy(IEnvDescriptorRender& _in) = 0;
 
@@ -24,7 +24,7 @@ class XR_NOVTABLE IEnvironmentRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IEnvironmentRender);
 
 public:
-    virtual ~IEnvironmentRender() = 0;
+    ~IEnvironmentRender() override = 0;
 
     virtual void Copy(IEnvironmentRender& _in) = 0;
     virtual void RenderSky(CEnvironment& env) = 0;

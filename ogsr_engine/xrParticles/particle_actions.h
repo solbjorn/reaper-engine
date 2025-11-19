@@ -17,11 +17,11 @@ public:
         ALLOW_ROTATE = (1 << 1)
     };
     bool m_copFormat{};
-    Flags32 m_Flags;
+    Flags32 m_Flags{};
     PActionEnum type{}; // Type field
 
-    ParticleAction() { m_Flags.zero(); }
-    virtual ~ParticleAction() = 0;
+    ParticleAction() = default;
+    ~ParticleAction() override = 0;
 
     virtual void Execute(ParticleEffect* pe, const float dt) = 0;
     virtual void Transform(const Fmatrix& m) = 0;

@@ -28,7 +28,7 @@ private:
 
 public:
     CPhysicObject();
-    virtual ~CPhysicObject();
+    ~CPhysicObject() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void CreatePhysicsShell(CSE_Abstract* e);

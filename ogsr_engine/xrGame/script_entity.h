@@ -64,7 +64,7 @@ protected:
 
 public:
     CScriptEntity();
-    virtual ~CScriptEntity();
+    ~CScriptEntity() override;
 
     void init();
     virtual void reinit();

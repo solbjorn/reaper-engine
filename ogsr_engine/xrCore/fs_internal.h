@@ -35,7 +35,7 @@ public:
         }
     }
 
-    virtual ~CFileWriter()
+    ~CFileWriter() override
     {
         if (hf != nullptr)
         {
@@ -80,7 +80,7 @@ class CTempReader : public IReader
 
 public:
     explicit CTempReader(const void* _data, gsl::index _size, gsl::index _iterpos) : IReader{_data, _size, _iterpos} {}
-    virtual ~CTempReader();
+    ~CTempReader() override;
 };
 
 class CPackReader : public IReader
@@ -91,7 +91,7 @@ public:
     const void* base_address;
 
     explicit CPackReader(const void* _base, const void* _data, gsl::index _size) : IReader{_data, _size}, base_address{_base} {}
-    virtual ~CPackReader();
+    ~CPackReader() override;
 };
 
 class CVirtualFileReader : public IReader
@@ -103,5 +103,5 @@ private:
 
 public:
     explicit CVirtualFileReader(gsl::czstring cFileName);
-    virtual ~CVirtualFileReader();
+    ~CVirtualFileReader() override;
 };

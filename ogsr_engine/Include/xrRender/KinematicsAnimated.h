@@ -15,20 +15,37 @@ struct CKey;
 class CInifile;
 class IKinematicsAnimated;
 class IRenderVisual;
-struct IterateBlendsCallback
+
+struct IterateBlendsCallback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IterateBlendsCallback);
+
+public:
+    ~IterateBlendsCallback() override = 0;
+
     virtual void operator()(CBlend& B) = 0;
 };
-struct IUpdateTracksCallback
+
+inline IterateBlendsCallback::~IterateBlendsCallback() = default;
+
+struct IUpdateTracksCallback : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IUpdateTracksCallback);
+
+public:
+    ~IUpdateTracksCallback() override = 0;
+
     virtual bool operator()(float dt, IKinematicsAnimated& k) = 0;
 };
+
+inline IUpdateTracksCallback::~IUpdateTracksCallback() = default;
 
 struct SKeyTable
 {
     CKey keys[MAX_CHANNELS][MAX_BLENDED]; // all keys
     CBlend* blends[MAX_CHANNELS][MAX_BLENDED]; // blend pointers
     int chanel_blend_conts[MAX_CHANNELS]; // channel counts
+
     SKeyTable() { std::fill_n(chanel_blend_conts, MAX_CHANNELS, 0); }
 };
 
@@ -37,7 +54,7 @@ class XR_NOVTABLE IKinematicsAnimated : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IKinematicsAnimated);
 
 public:
-    virtual ~IKinematicsAnimated() = 0;
+    ~IKinematicsAnimated() override = 0;
 
     // Calculation
     virtual void OnCalculateBones() = 0;

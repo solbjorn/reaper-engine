@@ -17,10 +17,10 @@ class CInventoryItemObject : public CInventoryItem, public CPhysicItem
 
 public:
     CInventoryItemObject();
-    virtual ~CInventoryItemObject();
+    ~CInventoryItemObject() override;
+
     virtual DLL_Pure* _construct();
 
-public:
     virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
     virtual CInventoryItem* cast_inventory_item() { return this; }
     virtual CAttachableItem* cast_attachable_item() { return this; }

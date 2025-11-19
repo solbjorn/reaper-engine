@@ -43,8 +43,9 @@ private:
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
 public:
-    IC CSquadHierarchyHolder(CTeamHierarchyHolder* team, u32);
-    virtual ~CSquadHierarchyHolder();
+    inline explicit CSquadHierarchyHolder(CTeamHierarchyHolder* team, u32);
+    ~CSquadHierarchyHolder() override;
+
     CGroupHierarchyHolder& group(u32 group_id) const;
     IC CTeamHierarchyHolder& team() const;
     IC const GROUP_REGISTRY& groups() const;

@@ -15,6 +15,7 @@ public:
     friend class CUITrackButton;
 
     CUITrackBar();
+    ~CUITrackBar() override = default;
 
     // CUIOptionsItem
     virtual void SetCurrentValue();

@@ -15,7 +15,8 @@ public:
     void import(NET_Packet& P)
     {
         data.clear();
-        P.r_begin(ID); // VERIFY(M_EVENT==ID);
+
+        std::ignore = P.r_begin(ID); // VERIFY(M_EVENT==ID);
         switch (ID)
         {
         case M_SPAWN: {

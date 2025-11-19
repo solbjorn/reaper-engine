@@ -125,7 +125,7 @@ private:
     dVector3 m_safe_position;
 
 public:
-    CVelocityLimiter(dBodyID b, float l, float yl)
+    explicit CVelocityLimiter(dBodyID b, float l, float yl)
     {
         R_ASSERT(b);
         m_body = b;
@@ -135,7 +135,7 @@ public:
         y_limit = yl;
     }
 
-    virtual ~CVelocityLimiter()
+    ~CVelocityLimiter() override
     {
         Deactivate();
         m_body = nullptr;

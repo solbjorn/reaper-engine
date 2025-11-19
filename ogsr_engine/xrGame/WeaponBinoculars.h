@@ -24,7 +24,7 @@ protected:
 
 public:
     CWeaponBinoculars();
-    virtual ~CWeaponBinoculars();
+    ~CWeaponBinoculars() override;
 
     void Load(LPCSTR section);
 

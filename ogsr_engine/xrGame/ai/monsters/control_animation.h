@@ -83,6 +83,8 @@ public:
     bool m_torso_animation_end;
 
 public:
+    ~CControlAnimation() override = default;
+
     virtual void reinit();
     virtual void update_frame();
     virtual void reset_data();

@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 CROS_impl::CROS_impl()
 {
     approximate.set(0, 0, 0);
@@ -39,6 +40,8 @@ CROS_impl::CROS_impl()
 
     MODE = IRender_ObjectSpecific::TRACE_ALL;
 }
+
+CROS_impl::~CROS_impl() = default;
 
 void CROS_impl::add(light* source)
 {

@@ -130,22 +130,21 @@ void dxDebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
 void dxDebugRender::dbg_DrawTRI(const Fmatrix& T, const Fvector& p1, const Fvector& p2, const Fvector& p3, u32 C) { RCache.dbg_DrawTRI(T, p1, p2, p3, C); }
 
 #ifdef DEBUG
-
 struct RDebugRender : public dxDebugRender, public pureRender
 {
     RTTI_DECLARE_TYPEINFO(RDebugRender, dxDebugRender, pureRender);
 
 public:
     RDebugRender() { Device.seqRender.Add(this, REG_PRIORITY_LOW - 100); }
-
-    virtual ~RDebugRender() { Device.seqRender.Remove(this); }
+    ~RDebugRender() override { Device.seqRender.Remove(this); }
 
     void OnRender() { Render(); }
+
     virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
     {
         __super::add_lines(vertices, vertex_count, pairs, pair_count, color);
     }
 } rdebug_render_impl;
-dxDebugRender* rdebug_render = &rdebug_render_impl;
 
-#endif
+dxDebugRender* rdebug_render = &rdebug_render_impl;
+#endif // DEBUG

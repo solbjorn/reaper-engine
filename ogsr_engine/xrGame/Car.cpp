@@ -1910,9 +1910,10 @@ IC void CCar::fill_doors_map(LPCSTR S, xr_map<u16, std::unique_ptr<SDoor>>& door
 
 DLL_Pure* CCar::_construct()
 {
-    inherited::_construct();
+    std::ignore = inherited::_construct();
     CScriptEntity::_construct();
-    return (this);
+
+    return this;
 }
 
 u16 CCar::Initiator()

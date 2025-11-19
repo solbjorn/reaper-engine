@@ -290,6 +290,7 @@ class CCC_r__color final : public CCC_Vector4
 
 public:
     explicit CCC_r__color(LPCSTR N, Fvector4* V, Fvector4 _min, Fvector4 _max) : CCC_Vector4{N, V, _min, _max} {}
+    ~CCC_r__color() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -312,6 +313,7 @@ public:
 };
 
 //-----------------------------------------------------------------------
+
 class CCC_detail_radius : public CCC_Integer
 {
     RTTI_DECLARE_TYPEINFO(CCC_detail_radius, CCC_Integer);
@@ -327,6 +329,7 @@ public:
     }
 
     explicit CCC_detail_radius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer{N, V, _min, _max} {}
+    ~CCC_detail_radius() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -349,6 +352,7 @@ public:
     }
 
     explicit CCC_detail_reset(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float{N, V, _min, _max} {}
+    ~CCC_detail_reset() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -375,6 +379,7 @@ public:
     }
 
     explicit CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer{N, v, 1, 16} {}
+    ~CCC_tf_Aniso() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -403,6 +408,7 @@ public:
     }
 
     explicit CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float{N, v, -3.f, +3.f} {}
+    ~CCC_tf_MipBias() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -423,6 +429,7 @@ class CCC_Screenshot : public IConsole_Command
 
 public:
     explicit CCC_Screenshot(LPCSTR N) : IConsole_Command{N} {}
+    ~CCC_Screenshot() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -442,18 +449,21 @@ class CCC_ModelPoolStat : public IConsole_Command
 
 public:
     explicit CCC_ModelPoolStat(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_ModelPoolStat() override = default;
 
     void Execute(LPCSTR) override { RImplementation.Models->dump(); }
 };
 #endif
 
 //-----------------------------------------------------------------------
+
 class CCC_Preset : public CCC_Token
 {
     RTTI_DECLARE_TYPEINFO(CCC_Preset, CCC_Token);
 
 public:
     explicit CCC_Preset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token{N, V, T} {}
+    ~CCC_Preset() override = default;
 
     virtual void Execute(LPCSTR args)
     {
@@ -482,6 +492,7 @@ class CCC_VideoMemoryStats : public IConsole_Command
 
 public:
     explicit CCC_VideoMemoryStats(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_VideoMemoryStats() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -523,6 +534,7 @@ class CCC_DumpResources : public IConsole_Command
 
 public:
     explicit CCC_DumpResources(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_DumpResources() override = default;
 
     void Execute(LPCSTR) override
     {
@@ -538,6 +550,7 @@ class CCC_Fog_Reload : public IConsole_Command
 
 public:
     explicit CCC_Fog_Reload(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_Fog_Reload() override = default;
 
     void Execute(LPCSTR args) override { FluidManager.UpdateProfiles(); }
 };
@@ -549,6 +562,7 @@ class CCC_PART_Export : public IConsole_Command
 
 public:
     explicit CCC_PART_Export(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_PART_Export() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -573,6 +587,7 @@ class CCC_PART_Import : public IConsole_Command
 
 public:
     explicit CCC_PART_Import(LPCSTR N) : IConsole_Command{N, true} {}
+    ~CCC_PART_Import() override = default;
 
     void Execute(LPCSTR) override
     {

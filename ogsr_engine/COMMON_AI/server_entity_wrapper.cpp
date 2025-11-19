@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "server_entity_wrapper.h"
+
 #include "xrServer_Objects.h"
 #include "xrmessages.h"
 #include "../../xr_3da/NET_Server_Trash/net_utils.h"
@@ -59,7 +60,7 @@ void CServerEntityWrapper::load(IReader& stream)
 
     chunk->close();
 
-    net_packet.r_begin(ID);
+    std::ignore = net_packet.r_begin(ID);
     R_ASSERT2(M_SPAWN == ID, "Invalid packet ID (!= M_SPAWN)!");
 
     string64 s_name;
@@ -81,8 +82,9 @@ void CServerEntityWrapper::load(IReader& stream)
 
     chunk->close();
 
-    net_packet.r_begin(ID);
+    std::ignore = net_packet.r_begin(ID);
     R_ASSERT2(M_UPDATE == ID, "Invalid packet ID (!= M_UPDATE)!");
+
     m_object->UPDATE_Read(net_packet);
 }
 

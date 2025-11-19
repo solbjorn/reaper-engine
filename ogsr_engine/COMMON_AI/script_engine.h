@@ -15,20 +15,21 @@ class CScriptEngine : public CScriptStorage
 {
     RTTI_DECLARE_TYPEINFO(CScriptEngine, CScriptStorage);
 
-private:
-    bool m_reload_modules;
-
 protected:
     int m_stack_level;
 
 private:
+    bool m_reload_modules;
+
     string_unordered_map<shared_str, bool> no_files;
+
     inline bool no_file_exists(const char* file_name) const { return no_files.contains(file_name); }
     inline void add_no_file(const char* file_name) { no_files.emplace(file_name, true); }
 
 public:
     CScriptEngine();
-    virtual ~CScriptEngine() = default;
+    ~CScriptEngine() override;
+
     void init();
     virtual void unload();
     void setup_auto_load();

@@ -7,8 +7,12 @@
 //////////////////////////////////////////////////////////////////////////
 // CMonsterEffector
 //////////////////////////////////////////////////////////////////////////
+
 class CMonsterEffector : public CEffectorPP
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterEffector, CEffectorPP);
+
+private:
     typedef CEffectorPP inherited;
 
     SPPInfo state; // current state
@@ -19,15 +23,21 @@ class CMonsterEffector : public CEffectorPP
     float m_spec_factor;
 
 public:
-    CMonsterEffector(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f, float spec_factor = 1.f);
+    explicit CMonsterEffector(const SPPInfo& ppi, float life_time, float attack_time = 0.0f, float release_time = 0.0f, float spec_factor = 1.f);
+    ~CMonsterEffector() override = default;
+
     virtual BOOL Process(SPPInfo& pp);
 };
 
 //////////////////////////////////////////////////////////////////////////
 // CMonsterEffectorHit
 //////////////////////////////////////////////////////////////////////////
+
 class CMonsterEffectorHit : public CEffectorCam
 {
+    RTTI_DECLARE_TYPEINFO(CMonsterEffectorHit, CEffectorCam);
+
+private:
     float total;
     float max_amp;
     float period_number;
@@ -36,6 +46,8 @@ class CMonsterEffectorHit : public CEffectorCam
     Fvector offset;
 
 public:
-    CMonsterEffectorHit(float time, float amp, float periods, float power);
+    explicit CMonsterEffectorHit(float time, float amp, float periods, float power);
+    ~CMonsterEffectorHit() override = default;
+
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };

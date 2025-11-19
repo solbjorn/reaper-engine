@@ -16,6 +16,8 @@
 
 class CStalkerActionDead : public CStalkerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CStalkerActionDead, CStalkerActionBase);
+
 protected:
     typedef CStalkerActionBase inherited;
 
@@ -23,7 +25,9 @@ private:
     bool fire() const;
 
 public:
-    CStalkerActionDead(CAI_Stalker* object, LPCSTR action_name = "");
+    explicit CStalkerActionDead(CAI_Stalker* object, LPCSTR action_name = "");
+    ~CStalkerActionDead() override = default;
+
     virtual void initialize();
     virtual void execute();
 };

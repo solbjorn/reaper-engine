@@ -27,6 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeInventoryItem
 ////////////////////////////////////////////////////////////////////////////
+
 CSE_ALifeInventoryItem::CSE_ALifeInventoryItem(LPCSTR caSection)
 {
     // текущее состояние вещи
@@ -172,19 +173,19 @@ u32 CSE_ALifeInventoryItem::update_rate() const { return (1000); }
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItem
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItem::CSE_ALifeItem(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection), CSE_ALifeInventoryItem(caSection) { m_physics_disabled = false; }
 
-CSE_ALifeItem::~CSE_ALifeItem() {}
+CSE_ALifeItem::CSE_ALifeItem(LPCSTR caSection) : CSE_ALifeDynamicObjectVisual(caSection), CSE_ALifeInventoryItem(caSection) { m_physics_disabled = false; }
+CSE_ALifeItem::~CSE_ALifeItem() = default;
 
 CSE_Abstract* CSE_ALifeItem::init()
 {
     inherited1::init();
     inherited2::init();
-    return (base());
+
+    return base();
 }
 
 CSE_Abstract* CSE_ALifeItem::base() { return (inherited1::base()); }
-
 const CSE_Abstract* CSE_ALifeItem::base() const { return (inherited1::base()); }
 
 void CSE_ALifeItem::__STATE_Write(NET_Packet& tNetPacket)
@@ -196,12 +197,14 @@ void CSE_ALifeItem::__STATE_Write(NET_Packet& tNetPacket)
 void CSE_ALifeItem::__STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
     inherited1::__STATE_Read(tNetPacket, size);
+
     if ((m_tClassID == CLSID_OBJECT_W_BINOCULAR) && (m_wVersion < 37))
     {
-        tNetPacket.r_u16();
-        tNetPacket.r_u16();
-        tNetPacket.r_u8();
+        std::ignore = tNetPacket.r_u16();
+        std::ignore = tNetPacket.r_u16();
+        std::ignore = tNetPacket.r_u8();
     }
+
     inherited2::__STATE_Read(tNetPacket, size);
 }
 
@@ -396,11 +399,11 @@ void CSE_ALifeItemWeapon::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Cl
     case GE_WPN_STATE_CHANGE: {
         tNetPacket.r_u8(wpn_state);
         //				u8 sub_state =
-        tNetPacket.r_u8();
+        std::ignore = tNetPacket.r_u8();
         //				u8 NewAmmoType =
-        tNetPacket.r_u8();
+        std::ignore = tNetPacket.r_u8();
         //				u8 AmmoElapsed =
-        tNetPacket.r_u8();
+        std::ignore = tNetPacket.r_u8();
     }
     break;
     }

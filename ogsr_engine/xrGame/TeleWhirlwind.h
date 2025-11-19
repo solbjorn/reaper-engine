@@ -20,7 +20,7 @@ public:
     bool b_destroyable{};
 
     CTeleWhirlwindObject();
-    virtual ~CTeleWhirlwindObject();
+    ~CTeleWhirlwindObject() override;
 
     virtual bool init(CTelekinesis* tele, CPhysicsShellHolder* obj, float s, float h, u32 ttk, bool rot = true);
     void set_throw_power(float throw_pow);
@@ -36,6 +36,9 @@ public:
 
 class CTeleWhirlwind : public CTelekinesis
 {
+    RTTI_DECLARE_TYPEINFO(CTeleWhirlwind, CTelekinesis);
+
+private:
     typedef CTelekinesis inherited;
 
     Fvector m_center{};
@@ -47,7 +50,7 @@ class CTeleWhirlwind : public CTelekinesis
 
 public:
     CTeleWhirlwind();
-    virtual ~CTeleWhirlwind();
+    ~CTeleWhirlwind() override;
 
     CGameObject* OwnerObject() const { return m_owner_object; }
     const Fvector& Center() const { return m_center; }

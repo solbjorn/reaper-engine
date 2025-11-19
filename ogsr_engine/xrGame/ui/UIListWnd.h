@@ -25,7 +25,7 @@ private:
 
 public:
     CUIListWnd();
-    virtual ~CUIListWnd();
+    ~CUIListWnd() override;
 
     virtual void Init(float x, float y, float width, float height);
     virtual void Init(float x, float y, float width, float height, float item_height);

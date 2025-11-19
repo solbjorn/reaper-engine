@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStateControlAttack : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControlAttack<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
 
     enum
@@ -17,8 +20,8 @@ class CStateControlAttack : public CState<_Object>
     u32 time_control_started;
 
 public:
-    CStateControlAttack(_Object* p);
-    virtual ~CStateControlAttack();
+    explicit CStateControlAttack(_Object* p);
+    ~CStateControlAttack() override;
 
     virtual void initialize();
     virtual void execute();

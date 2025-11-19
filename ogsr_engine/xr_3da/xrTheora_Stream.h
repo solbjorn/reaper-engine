@@ -1,8 +1,9 @@
 #ifndef xrTheora_StreamH
 #define xrTheora_StreamH
 
-#include <theora/theora.h>
 #include "../xrCore/Stream_Reader.h"
+
+#include <theora/theora.h>
 
 class CTheoraStream : public virtual RTTI::Enable
 {
@@ -32,7 +33,7 @@ protected:
 
 public:
     CTheoraStream();
-    virtual ~CTheoraStream();
+    ~CTheoraStream() override;
 
     BOOL Load(const char* fname);
 

@@ -55,8 +55,9 @@ void CHelicopter::init()
 
 DLL_Pure* CHelicopter::_construct()
 {
-    CEntity::_construct();
+    std::ignore = CEntity::_construct();
     init();
+
     return this;
 }
 

@@ -28,7 +28,7 @@ private:
 
 public:
     CUIItemInfo();
-    virtual ~CUIItemInfo();
+    ~CUIItemInfo() override;
 
     void Init(float x, float y, float width, float height, LPCSTR xml_name);
     void Init(LPCSTR xml_name);

@@ -8,7 +8,8 @@ class dxWallMarkArray : public IWallMarkArray
     RTTI_DECLARE_TYPEINFO(dxWallMarkArray, IWallMarkArray);
 
 public:
-    virtual ~dxWallMarkArray();
+    ~dxWallMarkArray() override;
+
     virtual void Copy(IWallMarkArray& _in);
 
     virtual void AppendMark(LPCSTR s_textures);

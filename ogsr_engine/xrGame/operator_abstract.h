@@ -32,9 +32,9 @@ protected:
     IC void actual(bool value);
 
 public:
-    IC COperatorAbstract();
-    IC COperatorAbstract(const CSConditionState& conditions, const CSConditionState& effects);
-    inline virtual ~COperatorAbstract();
+    inline COperatorAbstract();
+    inline explicit COperatorAbstract(const CSConditionState& conditions, const CSConditionState& effects);
+    ~COperatorAbstract() override = default;
 
     inline virtual void Load(LPCSTR);
     inline virtual void setup(bool* actuality);

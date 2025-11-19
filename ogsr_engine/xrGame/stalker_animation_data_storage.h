@@ -23,7 +23,8 @@ private:
     OBJECTS m_objects;
 
 public:
-    virtual ~CStalkerAnimationDataStorage();
+    ~CStalkerAnimationDataStorage() override;
+
     const CStalkerAnimationData* object(IKinematicsAnimated* skeleton_animated);
     void clear();
 };

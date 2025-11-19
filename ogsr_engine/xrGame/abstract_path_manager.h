@@ -46,10 +46,10 @@ protected:
     IC virtual bool check_vertex(const _vertex_id_type vertex_id) const;
 
 public:
-    IC CAbstractPathManager(CRestrictedObject* object);
-    IC virtual ~CAbstractPathManager();
+    inline explicit CAbstractPathManager(CRestrictedObject* object);
+    ~CAbstractPathManager() override = default;
 
-    IC void reinit(const _Graph* graph = 0);
+    IC void reinit(const _Graph* graph = nullptr);
     IC bool actual(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id) const;
     IC void set_evaluator(_VertexEvaluator* evaluator);
     IC void set_dest_vertex(const _vertex_id_type vertex_id);
@@ -73,4 +73,7 @@ template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type, 
 class CBasePathManager : public CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>
 {
     RTTI_DECLARE_TYPEINFO(CBasePathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>, CAbstractPathManager<_Graph, _VertexEvaluator, _vertex_id_type, _index_type>);
+
+public:
+    ~CBasePathManager() override = default;
 };

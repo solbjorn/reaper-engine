@@ -156,7 +156,7 @@ void cform_read(NET_Packet& P);
 void cform_write(NET_Packet& P);
 
 CSE_Shape();
-virtual ~CSE_Shape();
+~CSE_Shape() override;
 
 virtual ISE_Shape* shape() = 0;
 virtual void assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
@@ -172,7 +172,7 @@ public:
 u32 m_tNodeID{std::numeric_limits<u32>::max()};
 
 explicit CSE_Temporary(LPCSTR caSection);
-virtual ~CSE_Temporary();
+~CSE_Temporary() override;
 SERVER_ENTITY_DECLARE_END
 XR_SOL_BASE_CLASSES(CSE_Temporary);
 
@@ -183,7 +183,7 @@ add_to_type_list(CSE_Temporary);
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
 public:
 explicit CSE_PHSkeleton(LPCSTR);
-virtual ~CSE_PHSkeleton();
+~CSE_PHSkeleton() override;
 
 enum
 {

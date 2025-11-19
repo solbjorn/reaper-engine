@@ -23,7 +23,7 @@ private:
     u16 m_joint;
 
 public:
-    CPHShellSplitter(CPHShellSplitter::EType type, u16 element, u16 joint);
+    explicit CPHShellSplitter(CPHShellSplitter::EType type, u16 element, u16 joint);
     CPHShellSplitter();
 };
 
@@ -36,6 +36,9 @@ typedef xr_vector<CPHShellSplitter>::reverse_iterator SPLITTER_RI;
 
 class CPHShellSplitterHolder : public CPHUpdateObject // call all Fractures and Breakable Joints Updates
 {
+    RTTI_DECLARE_TYPEINFO(CPHShellSplitterHolder, CPHUpdateObject);
+
+private:
     friend class CPHShell;
     bool m_has_breaks;
     bool m_unbreakable;
@@ -50,9 +53,11 @@ class CPHShellSplitterHolder : public CPHUpdateObject // call all Fractures and 
     void SplitElement(u16 aspl, PHSHELL_PAIR_VECTOR& out_shels); //
     void PassEndSplitters(const CShellSplitInfo& spl_inf, CPHShell* dest, u16 jt_add_shift);
     void InitNewShell(CPHShell* shell); // inits new active shell
+
 public:
-    CPHShellSplitterHolder(CPHShell* shell);
-    virtual ~CPHShellSplitterHolder();
+    explicit CPHShellSplitterHolder(CPHShell* shell);
+    ~CPHShellSplitterHolder() override;
+
     void Activate();
     void Deactivate();
     void AddSplitter(CPHShellSplitter::EType type, u16 element, u16 joint);

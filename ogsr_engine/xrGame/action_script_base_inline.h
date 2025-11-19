@@ -20,9 +20,6 @@ TEMPLATE_SPECIALIZATION
 IC CScriptBaseAction::CActionScriptBase(_object_type* object, LPCSTR action_name) : inherited{object ? object->lua_game_object() : nullptr, action_name}, m_object{object} {}
 
 TEMPLATE_SPECIALIZATION
-CScriptBaseAction::~CActionScriptBase() {}
-
-TEMPLATE_SPECIALIZATION
 void CScriptBaseAction::setup(_object_type* object, CPropertyStorage*)
 {
     VERIFY(object);

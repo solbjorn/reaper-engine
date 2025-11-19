@@ -23,7 +23,7 @@ class CUIMessagesWindow : public CUIWindow
 
 public:
     CUIMessagesWindow();
-    virtual ~CUIMessagesWindow();
+    ~CUIMessagesWindow() override;
 
     void AddIconedPdaMessage(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay);
 

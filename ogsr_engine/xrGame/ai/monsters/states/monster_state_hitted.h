@@ -5,6 +5,8 @@
 template <typename _Object>
 class CStateMonsterHitted : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHitted<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -17,8 +19,8 @@ protected:
     using inherited::select_state;
 
 public:
-    CStateMonsterHitted(_Object* obj);
-    virtual ~CStateMonsterHitted();
+    explicit CStateMonsterHitted(_Object* obj);
+    ~CStateMonsterHitted() override;
 
     virtual void reselect_state();
     virtual void remove_links(CObject* object) { inherited::remove_links(object); }

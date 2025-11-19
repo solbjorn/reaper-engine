@@ -78,7 +78,7 @@ private:
 
 public:
     CLevelGraph();
-    virtual ~CLevelGraph();
+    ~CLevelGraph() override;
 
     IC const_vertex_iterator begin() const;
     IC const_vertex_iterator end() const;

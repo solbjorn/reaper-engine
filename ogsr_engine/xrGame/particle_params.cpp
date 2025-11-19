@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #include "particle_params.h"
 
-CParticleParams::~CParticleParams() {}
+CParticleParams::~CParticleParams() = default;

@@ -2,6 +2,7 @@
 #define SH_RT_H
 
 //////////////////////////////////////////////////////////////////////////
+
 class CRT : public xr_resource_named
 {
     RTTI_DECLARE_TYPEINFO(CRT, xr_resource_named);
@@ -16,7 +17,7 @@ public:
     };
 
     CRT() = default;
-    ~CRT();
+    ~CRT() override;
 
     void create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, u32 slices_num = 1, Flags32 flags = {});
     void destroy();

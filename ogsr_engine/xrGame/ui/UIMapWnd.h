@@ -80,8 +80,9 @@ public:
 
     CUICustomMap* m_tgtMap{};
     Fvector2 m_tgtCenter;
+
     CUIMapWnd();
-    virtual ~CUIMapWnd();
+    ~CUIMapWnd() override;
 
     virtual void Init(LPCSTR xml_name, LPCSTR start_from);
     virtual void Show(bool status);

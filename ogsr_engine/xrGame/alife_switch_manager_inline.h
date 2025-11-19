@@ -8,7 +8,7 @@
 
 #pragma once
 
-inline CALifeSwitchManager::CALifeSwitchManager(xrServer* server, LPCSTR section) : inherited{server}
+inline CALifeSwitchManager::CALifeSwitchManager(LPCSTR section)
 {
     m_switch_distance = pSettings->r_float(section, "switch_distance");
     m_switch_factor = pSettings->r_float(section, "switch_factor");

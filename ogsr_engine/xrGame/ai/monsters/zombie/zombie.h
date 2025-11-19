@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../BaseMonster/base_monster.h"
 #include "../controlled_entity.h"
 #include "../ai_monster_bones.h"
@@ -18,7 +19,7 @@ public:
     bonesManipulation Bones;
 
     CZombie();
-    virtual ~CZombie();
+    ~CZombie() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

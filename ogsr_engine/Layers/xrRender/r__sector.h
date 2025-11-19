@@ -103,7 +103,7 @@ public:
     [[nodiscard]] f32 distance(const Fvector& V) const { return _abs(P.classify(V)); }
 
     CPortal();
-    virtual ~CPortal();
+    ~CPortal() override;
 
 #ifdef DEBUG
     virtual void OnRender();
@@ -142,7 +142,7 @@ public:
     void setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals);
 
     CSector() = default;
-    virtual ~CSector() = default;
+    ~CSector() override = default;
 };
 
 class CPortalTraverser

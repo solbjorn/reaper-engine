@@ -32,8 +32,9 @@ private:
     u32 team_id;
 
 public:
-    IC CTeamHierarchyHolder(CSeniorityHierarchyHolder* m_seniority_manager, u32);
-    virtual ~CTeamHierarchyHolder();
+    inline explicit CTeamHierarchyHolder(CSeniorityHierarchyHolder* m_seniority_manager, u32);
+    ~CTeamHierarchyHolder() override;
+
     CSquadHierarchyHolder& squad(u32 squad_id) const;
     IC CSeniorityHierarchyHolder& team() const;
     IC const SQUAD_REGISTRY& squads() const;

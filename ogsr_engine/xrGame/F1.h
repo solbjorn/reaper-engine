@@ -11,7 +11,7 @@ public:
     typedef CGrenade inherited;
 
     CF1();
-    virtual ~CF1();
+    ~CF1() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

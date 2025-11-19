@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////
 // SSpecificCharacterData: данные о конкретном персонаже
 //////////////////////////////////////////////////////////////////////////
+
 struct SSpecificCharacterData : CSharedResource
 {
 #ifdef XRGAME_EXPORTS
@@ -24,7 +25,7 @@ struct SSpecificCharacterData : CSharedResource
 
 public:
     SSpecificCharacterData();
-    virtual ~SSpecificCharacterData();
+    ~SSpecificCharacterData() override;
 
     // игровое имя персонажа
     xr_string m_sGameName;
@@ -105,7 +106,7 @@ private:
 
 public:
     CSpecificCharacter();
-    ~CSpecificCharacter();
+    ~CSpecificCharacter() override;
 
     virtual void Load(shared_str id);
 
@@ -115,6 +116,7 @@ protected:
         VERIFY(inherited_shared::get_sd());
         return inherited_shared::get_sd();
     }
+
     SSpecificCharacterData* data()
     {
         VERIFY(inherited_shared::get_sd());

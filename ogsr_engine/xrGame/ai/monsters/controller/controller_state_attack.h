@@ -6,6 +6,8 @@
 template <typename _Object>
 class CStateControllerAttack : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateControllerAttack<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -18,8 +20,8 @@ protected:
     using inherited::select_state;
 
 public:
-    CStateControllerAttack(_Object* obj);
-    virtual ~CStateControllerAttack() {}
+    explicit CStateControllerAttack(_Object* obj);
+    ~CStateControllerAttack() override = default;
 
     virtual void initialize();
     virtual void finalize();

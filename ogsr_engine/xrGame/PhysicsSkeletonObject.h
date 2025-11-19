@@ -13,8 +13,8 @@ class CPhysicsSkeletonObject : public CPhysicsShellHolder, public CPHSkeleton
 public:
     typedef CPhysicsShellHolder inherited;
 
-    CPhysicsSkeletonObject(void);
-    virtual ~CPhysicsSkeletonObject(void);
+    CPhysicsSkeletonObject();
+    ~CPhysicsSkeletonObject() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();

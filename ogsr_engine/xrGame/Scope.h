@@ -17,7 +17,7 @@ private:
 
 public:
     CScope();
-    virtual ~CScope();
+    ~CScope() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

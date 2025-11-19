@@ -44,6 +44,8 @@ public:
         }
     } m_heading, m_pitch;
 
+    ~CControlDirection() override = default;
+
     virtual void reinit();
     virtual void update_frame();
 

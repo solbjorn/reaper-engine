@@ -1,14 +1,20 @@
 #pragma once
+
 #include "CustomDetector.h"
+
 class CUIArtefactDetectorAdv;
 
 class CAdvancedDetector : public CCustomDetector
 {
+    RTTI_DECLARE_TYPEINFO(CAdvancedDetector, CCustomDetector);
+
+private:
     typedef CCustomDetector inherited;
 
 public:
     CAdvancedDetector();
-    virtual ~CAdvancedDetector() = default;
+    ~CAdvancedDetector() override = default;
+
     virtual void on_a_hud_attach() override;
     virtual void on_b_hud_detach() override;
 

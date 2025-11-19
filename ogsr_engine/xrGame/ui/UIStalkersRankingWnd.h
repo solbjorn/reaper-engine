@@ -18,6 +18,8 @@ class CUIStalkersRankingWnd : public CUIWindow
 public:
     typedef CUIWindow inherited;
 
+    ~CUIStalkersRankingWnd() override = default;
+
     void Init();
     virtual void Show(bool status);
     void ShowHumanDetails();
@@ -55,7 +57,8 @@ public:
     CUIStatic* m_text2;
     CUIStatic* m_text3;
 
-    CUIStalkerRankingInfoItem(CUIStalkersRankingWnd*);
+    explicit CUIStalkerRankingInfoItem(CUIStalkersRankingWnd*);
+    ~CUIStalkerRankingInfoItem() override = default;
 
     void Init(CUIXml* xml, LPCSTR path, int idx);
     virtual void SetSelected(bool b);
@@ -69,7 +72,8 @@ class CUIStalkerRankingElipsisItem : public CUIStalkerRankingInfoItem
 public:
     typedef CUIStalkerRankingInfoItem inherited;
 
-    CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
+    explicit CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
+    ~CUIStalkerRankingElipsisItem() override = default;
 
     virtual void SetSelected(bool);
     virtual bool OnMouseDown(int);

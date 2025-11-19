@@ -19,7 +19,7 @@ private:
 
 public:
     CHolderCustom() = default;
-    virtual ~CHolderCustom() = 0;
+    ~CHolderCustom() override = 0;
 
     CGameObject* Owner() { return m_owner; }
     CGameObject* Owner() const { return m_owner; }

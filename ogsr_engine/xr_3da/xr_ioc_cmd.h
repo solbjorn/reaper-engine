@@ -76,7 +76,7 @@ public:
         m_LRU.clear();
     }
 
-    virtual ~IConsole_Command()
+    ~IConsole_Command() override
     {
         if (Console)
             Console->RemoveCommand(this);
@@ -126,6 +126,7 @@ protected:
 
 public:
     explicit CCC_Mask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N}, value{V}, mask{M} {}
+    ~CCC_Mask() override = default;
 
     [[nodiscard]] BOOL GetValue() const { return value->test(mask); }
 
@@ -167,6 +168,7 @@ protected:
 
 public:
     explicit CCC_ToggleMask(LPCSTR N, Flags32* V, u32 M) : IConsole_Command{N, true}, value{V}, mask{M} {}
+    ~CCC_ToggleMask() override = default;
 
     [[nodiscard]] BOOL GetValue() const { return value->test(mask); }
 
@@ -202,6 +204,7 @@ protected:
 
 public:
     explicit CCC_Token(LPCSTR N, u32* V, const xr_token* T) : IConsole_Command{N}, value{V}, tokens{T} {}
+    ~CCC_Token() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -288,6 +291,7 @@ protected:
 
 public:
     explicit CCC_Float(LPCSTR N, f32* V, f32 _min = 0.0f, f32 _max = 1.0f) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
+    ~CCC_Float() override = default;
 
     [[nodiscard]] f32 GetValue() const { return *value; }
 
@@ -339,6 +343,8 @@ public:
         min.set(_min);
         max.set(_max);
     }
+
+    ~CCC_Vector3() override = default;
 
     [[nodiscard]] const Fvector GetValue() const { return *value; }
     [[nodiscard]] Fvector* GetValuePtr() const { return value; }
@@ -396,6 +402,7 @@ public:
     }
 
     explicit CCC_Integer(LPCSTR N, int* V, int _min = 0, int _max = 999) : IConsole_Command{N}, value{V}, min{_min}, max{_max} {}
+    ~CCC_Integer() override = default;
 
     void Execute(LPCSTR args) override
     {
@@ -435,6 +442,8 @@ public:
         R_ASSERT(size > 1);
     }
 
+    ~CCC_String() override = default;
+
     void Execute(LPCSTR args) override { strncpy_s(value, size, args, size - 1); }
     void Status(TStatus& S) override { xr_strcpy(S, value); }
     void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "string with up to %d characters", size); }
@@ -452,6 +461,7 @@ class CCC_LoadCFG : public IConsole_Command
 
 public:
     explicit CCC_LoadCFG(LPCSTR N);
+    ~CCC_LoadCFG() override = default;
 
     [[nodiscard]] virtual bool allow(LPCSTR) { return true; }
     void Execute(LPCSTR args) override;
@@ -466,6 +476,7 @@ private:
 
 public:
     explicit CCC_LoadCFG_custom(LPCSTR cmd);
+    ~CCC_LoadCFG_custom() override = default;
 
     [[nodiscard]] bool allow(LPCSTR cmd) override;
 };
@@ -484,6 +495,8 @@ public:
         min.set(_min);
         max.set(_max);
     }
+
+    ~CCC_Vector4() override = default;
 
     [[nodiscard]] const Fvector4 GetValue() const { return *value; }
     [[nodiscard]] Fvector4* GetValuePtr() const { return value; }

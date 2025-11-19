@@ -23,6 +23,8 @@ public:
 
     DAMAGE_CONTROLED_BONES_V m_controled_bones;
 
+    ~CPHCollisionDamageReceiver() override = 0;
+
 protected:
     [[nodiscard]] virtual CPhysicsShellHolder* PPhysicsShellHolder() = 0;
 
@@ -36,3 +38,5 @@ private:
     IC DAMAGE_BONES_I FindBone(u16 id) { return std::find_if(m_controled_bones.begin(), m_controled_bones.end(), SFind(id)); }
     static void CollisionCallback(bool&, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
 };
+
+inline CPHCollisionDamageReceiver::~CPHCollisionDamageReceiver() = default;

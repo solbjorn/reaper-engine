@@ -37,8 +37,9 @@ protected:
     bool m_actuality{};
 
 public:
-    IC CSetupManager(_object_type* object);
-    virtual ~CSetupManager();
+    inline explicit CSetupManager(_object_type* object);
+    ~CSetupManager() override;
+
     virtual void reinit();
     virtual void update();
     IC void add_action(const _action_id_type& action_id, _action_type* action);

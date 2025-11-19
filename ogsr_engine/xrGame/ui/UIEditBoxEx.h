@@ -10,7 +10,7 @@ class CUIEditBoxEx : public CUIMultiTextureOwner, public CUICustomEdit
 
 public:
     CUIEditBoxEx();
-    virtual ~CUIEditBoxEx();
+    ~CUIEditBoxEx() override;
 
     // CUIWindow
     virtual void Init(float x, float y, float width, float heigt);

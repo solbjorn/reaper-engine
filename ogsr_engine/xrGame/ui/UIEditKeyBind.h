@@ -16,8 +16,9 @@ public:
     _keyboard* m_keyboard{};
     bool m_bPrimary;
 
-    CUIEditKeyBind(bool bPrim);
-    virtual ~CUIEditKeyBind();
+    explicit CUIEditKeyBind(bool bPrim);
+    ~CUIEditKeyBind() override;
+
     // options item
     virtual void Register(const char* entry, const char* group);
     virtual void SetCurrentValue();

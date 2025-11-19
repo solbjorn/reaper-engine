@@ -52,8 +52,9 @@ protected:
     void update(const xr_deque<T>& objects, bool add_enemies);
 
 public:
-    CMemoryManager(CEntityAlive* entity_alive, CSound_UserDataVisitor* visitor);
-    virtual ~CMemoryManager();
+    explicit CMemoryManager(CEntityAlive* entity_alive, CSound_UserDataVisitor* visitor);
+    ~CMemoryManager() override;
+
     virtual void Load(LPCSTR section);
     virtual void reinit();
     virtual void reload(LPCSTR section);

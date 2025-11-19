@@ -9,6 +9,8 @@ class dxUISequenceVideoItem : public IUISequenceVideoItem
 
 public:
     dxUISequenceVideoItem();
+    ~dxUISequenceVideoItem() override = default;
+
     virtual void Copy(IUISequenceVideoItem& _in);
 
     virtual bool HasTexture() { return !!m_texture; }

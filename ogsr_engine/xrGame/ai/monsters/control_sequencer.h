@@ -16,6 +16,8 @@ private:
     u32 m_index;
 
 public:
+    ~CAnimationSequencer() override = default;
+
     virtual void reset_data();
     virtual void on_capture();
     virtual void on_release();

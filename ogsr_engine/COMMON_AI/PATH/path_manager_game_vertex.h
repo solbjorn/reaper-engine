@@ -15,6 +15,9 @@ template <typename _DataStorage, typename _dist_type, typename _index_type, type
 class CPathManager<CGameGraph, _DataStorage, SGameVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
     : public CPathManager<CGameGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>
 {
+    RTTI_DECLARE_TYPEINFO(CPathManager<CGameGraph, _DataStorage, SGameVertex<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>,
+                          CPathManager<CGameGraph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type>);
+
 protected:
     using _Graph = CGameGraph;
     using _Parameters = SGameVertex<_dist_type, _index_type, _iteration_type>;
@@ -25,6 +28,8 @@ protected:
     bool m_start_is_accessible{true};
 
 public:
+    ~CPathManager() override = default;
+
     IC void setup(const _Graph* graph, _DataStorage* _data_storage, xr_vector<_index_type>* _path, const _index_type& _start_node_index, const _index_type& _goal_node_index,
                   _Parameters& params);
     IC bool is_accessible(const _index_type& vertex_id) const;

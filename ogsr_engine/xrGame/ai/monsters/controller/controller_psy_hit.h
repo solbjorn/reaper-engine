@@ -33,6 +33,8 @@ private:
     u32 m_time_last_tube;
 
 public:
+    ~CControllerPsyHit() override = default;
+
     virtual void load(LPCSTR section);
     virtual void reinit();
     virtual void update_frame();

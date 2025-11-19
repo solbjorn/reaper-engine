@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../state.h"
 
 #include "../../../alife_smart_terrain_task.h"
@@ -6,6 +7,9 @@
 template <typename _Object>
 class CStateMonsterSmartTerrainTask : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterSmartTerrainTask<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
     using inherited::add_state;
@@ -19,8 +23,8 @@ class CStateMonsterSmartTerrainTask : public CState<_Object>
     CALifeSmartTerrainTask* m_current_task;
 
 public:
-    CStateMonsterSmartTerrainTask(_Object* obj);
-    virtual ~CStateMonsterSmartTerrainTask();
+    explicit CStateMonsterSmartTerrainTask(_Object* obj);
+    ~CStateMonsterSmartTerrainTask() override;
 
     virtual void initialize();
     virtual void reselect_state();

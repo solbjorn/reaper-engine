@@ -1,7 +1,9 @@
 #pragma once
+
 ////////////////////////////////////////////////////////////////////////
 // Effector controlling class
 ////////////////////////////////////////////////////////////////////////
+
 #include "../../../pp_effector_custom.h"
 
 class CController;
@@ -33,7 +35,9 @@ private:
     ref_sound m_snd_right;
 
 public:
-    CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left, const ref_sound& snd_right);
+    explicit CPPEffectorControllerAura(const SPPInfo& ppi, u32 time_to_fade, const ref_sound& snd_left, const ref_sound& snd_right);
+    ~CPPEffectorControllerAura() override = default;
+
     virtual BOOL update();
     void switch_off();
 };
@@ -60,7 +64,9 @@ private:
     u32 m_time_started;
 
 public:
-    CControllerAura(CController* monster) : m_object(monster) {}
+    explicit CControllerAura(CController* monster) : m_object{monster} {}
+    ~CControllerAura() override = default;
+
     virtual void load(LPCSTR section);
 
     void on_death();

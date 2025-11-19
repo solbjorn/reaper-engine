@@ -51,7 +51,7 @@ public:
 
     // Other
     CApplication();
-    ~CApplication();
+    ~CApplication() override;
 
     virtual void OnFrame();
     void load_draw_internal();

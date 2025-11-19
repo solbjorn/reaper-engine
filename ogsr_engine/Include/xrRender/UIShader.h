@@ -6,7 +6,7 @@ class XR_NOVTABLE IUIShader : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IUIShader);
 
 public:
-    virtual ~IUIShader() = 0;
+    ~IUIShader() override = 0;
 
     virtual void Copy(IUIShader& _in) = 0;
     virtual void create(LPCSTR sh, LPCSTR tex = nullptr, bool no_cache = false) = 0;

@@ -22,7 +22,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_deffer_model();
-    virtual ~CBlender_deffer_model();
+    ~CBlender_deffer_model() override;
 
 private:
     xrP_TOKEN oTessellation;

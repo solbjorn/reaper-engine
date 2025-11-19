@@ -12,7 +12,9 @@ public:
 
     HUD_SOUND m_sndReload1;
 
-    virtual ~CWeaponBM16();
+    CWeaponBM16() = default;
+    ~CWeaponBM16() override;
+
     virtual void Load(LPCSTR section);
 
 protected:

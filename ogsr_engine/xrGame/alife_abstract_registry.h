@@ -28,7 +28,7 @@ public:
     typedef _data_type _data;
 
     IC CALifeAbstractRegistry();
-    virtual ~CALifeAbstractRegistry();
+    ~CALifeAbstractRegistry() override;
 
     virtual void save(IWriter& memory_stream);
     virtual void load(IReader& file_stream);

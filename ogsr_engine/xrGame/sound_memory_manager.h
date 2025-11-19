@@ -85,8 +85,8 @@ protected:
     IC void priority(const ESoundTypes& sound_type, u32 priority);
 
 public:
-    IC CSoundMemoryManager(CCustomMonster* object, CAI_Stalker* stalker, CSound_UserDataVisitor* visitor);
-    virtual ~CSoundMemoryManager();
+    inline explicit CSoundMemoryManager(CCustomMonster* object, CAI_Stalker* stalker, CSound_UserDataVisitor* visitor);
+    ~CSoundMemoryManager() override;
 
     virtual void Load(LPCSTR);
     virtual void reinit();

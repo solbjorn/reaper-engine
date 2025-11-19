@@ -17,7 +17,7 @@ protected:
 
 public:
     CTelekinesis();
-    virtual ~CTelekinesis();
+    ~CTelekinesis() override;
 
     // allocates relevant TelekineticObject
 

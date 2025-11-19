@@ -11,7 +11,7 @@ public:
     typedef CGrenade inherited;
 
     CRGD5();
-    virtual ~CRGD5();
+    ~CRGD5() override;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION();
 };

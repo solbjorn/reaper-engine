@@ -15,6 +15,8 @@ class CSpaceRestrictor;
 
 class CSpaceRestrictionShape : public CSpaceRestrictionBase
 {
+    RTTI_DECLARE_TYPEINFO(CSpaceRestrictionShape, CSpaceRestrictionBase);
+
 private:
     friend struct CBorderMergePredicate;
 
@@ -32,7 +34,9 @@ protected:
     void fill_shape(const CCF_Shape::shape_def& shape);
 
 public:
-    IC CSpaceRestrictionShape(CSpaceRestrictor* space_restrictor, bool default_restrictor);
+    inline explicit CSpaceRestrictionShape(CSpaceRestrictor* space_restrictor, bool default_restrictor);
+    ~CSpaceRestrictionShape() override = default;
+
     IC virtual void initialize();
     virtual bool inside(const Fsphere& sphere);
     virtual shared_str name() const;

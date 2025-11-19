@@ -4,8 +4,11 @@
 class CObject;
 
 //-----------------------------------------------------------------------------------------------------------
-class IGame_ObjectPool
+
+class IGame_ObjectPool : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IGame_ObjectPool);
+
     /*
     private:
         struct str_pred
@@ -30,6 +33,7 @@ public:
     void destroy(CObject* O);
 
     IGame_ObjectPool();
-    virtual ~IGame_ObjectPool();
+    ~IGame_ObjectPool() override;
 };
+
 //-----------------------------------------------------------------------------------------------------------

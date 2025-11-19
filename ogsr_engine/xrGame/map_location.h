@@ -13,6 +13,8 @@ class CUIXml;
 
 class CMapLocation : public IPureDestroyableObject
 {
+    RTTI_DECLARE_TYPEINFO(CMapLocation, IPureDestroyableObject);
+
 public:
     enum ELocationFlags
     {
@@ -55,9 +57,6 @@ protected:
     };
     SCachedValues m_cached;
 
-private:
-    CMapLocation(const CMapLocation&) = delete; // disable copy ctor
-
 protected:
     void LoadSpot(LPCSTR type, bool bReload);
     void UpdateSpot(CUICustomMap* map, CMapSpot* sp);
@@ -66,8 +65,9 @@ protected:
     CMapSpot* GetSpotBorder(CMapSpot* sp);
 
 public:
-    CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc = false);
-    virtual ~CMapLocation();
+    explicit CMapLocation(LPCSTR type, u16 object_id, bool is_user_loc = false);
+    ~CMapLocation() override;
+
     virtual void destroy();
     LPCSTR GetHint();
     void SetHint(const shared_str& hint);
@@ -115,6 +115,9 @@ public:
 
 class CRelationMapLocation : public CMapLocation
 {
+    RTTI_DECLARE_TYPEINFO(CRelationMapLocation, CMapLocation);
+
+private:
     typedef CMapLocation inherited;
     shared_str m_curr_spot_name;
     u16 m_pInvOwnerEntityID;
@@ -126,8 +129,9 @@ protected:
     bool IsVisible();
 
 public:
-    CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID, u16 pInvOwnerEntityID);
-    virtual ~CRelationMapLocation();
+    explicit CRelationMapLocation(const shared_str& type, u16 object_id, u16 pInvOwnerActorID, u16 pInvOwnerEntityID);
+    ~CRelationMapLocation() override;
+
     virtual bool Update(); // returns actual
 
     virtual void UpdateMiniMap(CUICustomMap* map);

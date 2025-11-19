@@ -33,10 +33,15 @@ struct SAnimationTripleData : public ControlCom::IComData
 
 class CAnimationTriple : public CControl_ComCustom<SAnimationTripleData>
 {
+    RTTI_DECLARE_TYPEINFO(CAnimationTriple, CControl_ComCustom<SAnimationTripleData>);
+
+private:
     EStateAnimTriple m_current_state;
     EStateAnimTriple m_previous_state;
 
 public:
+    ~CAnimationTriple() override = default;
+
     virtual void reset_data();
     virtual void on_capture();
     virtual void on_release();

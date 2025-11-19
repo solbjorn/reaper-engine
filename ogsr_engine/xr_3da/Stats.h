@@ -19,6 +19,8 @@ public:
     CStatTimer ph_collision; // collision
     CStatTimer ph_core; // integrate
     CStatTimer Physics; // movement+collision
+
+    ~CStatsPhysics() override = default;
 };
 
 class CStats : public pureRender, public CStatsPhysics
@@ -119,13 +121,11 @@ public:
     void OnDeviceCreate(void);
     void OnDeviceDestroy(void);
 
-public:
     xr_vector<shared_str> errors;
     MessageRegistry<pureStats> seqStats;
 
-public:
     CStats();
-    ~CStats();
+    ~CStats() override;
 
     IC CGameFont* Font() { return pFont; }
 

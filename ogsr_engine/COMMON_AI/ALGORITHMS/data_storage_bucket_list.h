@@ -41,7 +41,7 @@ struct CDataStorageBucketList
 
     public:
         inline explicit CDataStorage(const u32 vertex_count);
-        virtual ~CDataStorage();
+        ~CDataStorage() override;
 
         inline void init();
         inline void add_best_closed();

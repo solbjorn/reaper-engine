@@ -31,7 +31,7 @@ private:
 
 public:
     CHARACTER_REPUTATION() = default;
-    ~CHARACTER_REPUTATION() = default;
+    ~CHARACTER_REPUTATION() override = default;
 
     void set(CHARACTER_REPUTATION_VALUE);
 

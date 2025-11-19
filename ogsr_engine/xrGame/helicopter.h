@@ -289,7 +289,7 @@ public:
     void ExplodeHelicopter();
 
     CHelicopter();
-    virtual ~CHelicopter();
+    ~CHelicopter() override;
 
     CHelicopter::EHeliState state() { return m_curState; }
     int state_script() { return m_curState; }

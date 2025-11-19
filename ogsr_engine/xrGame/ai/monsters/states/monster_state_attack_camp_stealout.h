@@ -3,12 +3,16 @@
 template <typename _Object>
 class CStateMonsterAttackCampStealOut : public CStateMove<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterAttackCampStealOut<_Object>, CStateMove<_Object>);
+
+private:
     typedef CStateMove<_Object> inherited;
     using inherited::time_state_started;
     using inherited::inherited::object;
 
 public:
-    CStateMonsterAttackCampStealOut(_Object* obj);
+    explicit CStateMonsterAttackCampStealOut(_Object* obj);
+    ~CStateMonsterAttackCampStealOut() override = default;
 
     virtual void execute();
     virtual bool check_completion();

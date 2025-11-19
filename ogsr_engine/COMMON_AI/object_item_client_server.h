@@ -24,6 +24,7 @@ protected:
 
 public:
     inline explicit CObjectItemClientServer(const CLASS_ID& clsid, LPCSTR script_clsid);
+    ~CObjectItemClientServer() override = default;
 
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;
@@ -38,6 +39,7 @@ public:
     typedef CObjectItemAbstract inherited;
 
     inline explicit CObjectItemClientServerSingleMp(const CLASS_ID& clsid, LPCSTR script_clsid);
+    ~CObjectItemClientServerSingleMp() override = default;
 
     virtual ObjectFactory::CLIENT_BASE_CLASS* client_object() const;
     virtual ObjectFactory::SERVER_BASE_CLASS* server_object(LPCSTR section) const;

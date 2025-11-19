@@ -68,7 +68,7 @@ public:
     BOOL video_IsPlaying() const;
 
     CTexture();
-    virtual ~CTexture();
+    ~CTexture() override;
 
     ID3DShaderResourceView* get_SRView() { return m_pSRView; }
 

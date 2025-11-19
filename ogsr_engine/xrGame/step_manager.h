@@ -23,7 +23,7 @@ public:
     u32 m_time_anim_started;
 
     CStepManager();
-    virtual ~CStepManager();
+    ~CStepManager() override;
 
     // init on construction
     virtual DLL_Pure* _construct();

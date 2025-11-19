@@ -11,7 +11,7 @@ private:
 
 public:
     CRadioactiveZone();
-    virtual ~CRadioactiveZone();
+    ~CRadioactiveZone() override;
 
     virtual void Load(LPCSTR section);
     virtual void Affect(SZoneObjectInfo* O);

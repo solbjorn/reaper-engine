@@ -47,6 +47,7 @@ struct st_BoneMotion
 DEFINE_VECTOR(st_BoneMotion, BoneMotionVec, BoneMotionIt);
 
 //--------------------------------------------------------------------------
+
 class XR_NOVTABLE CCustomMotion : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CCustomMotion);
@@ -67,7 +68,7 @@ public:
 
 public:
     CCustomMotion();
-    virtual ~CCustomMotion() = 0;
+    ~CCustomMotion() override = 0;
 
     void SetName(const char* n)
     {
@@ -109,6 +110,7 @@ public:
 inline CCustomMotion::~CCustomMotion() = default;
 
 //--------------------------------------------------------------------------
+
 class COMotion : public CCustomMotion
 {
     RTTI_DECLARE_TYPEINFO(COMotion, CCustomMotion);
@@ -117,7 +119,7 @@ public:
     CEnvelope* envs[ctMaxChannel];
 
     COMotion();
-    virtual ~COMotion();
+    ~COMotion() override;
 
     void Clear();
 
@@ -181,8 +183,10 @@ public:
     void Pause(bool val) { bPlay = !val; }
 };
 
-class CClip
+class CClip : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CClip);
+
 public:
     struct AnimItem
     {
@@ -209,7 +213,8 @@ public:
     float fx_power;
     float length;
 
-public:
+    ~CClip() override = default;
+
     virtual void Save(IWriter& F);
     virtual bool Load(IReader& F);
     bool Equal(CClip* c);

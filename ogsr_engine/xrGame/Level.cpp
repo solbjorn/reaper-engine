@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
+#include "Level.h"
+
 #include "../xr_3da/fdemorecord.h"
 #include "../xr_3da/fdemoplay.h"
 #include "../xr_3da/environment.h"
 #include "../xr_3da/IGame_Persistent.h"
 #include "ParticlesObject.h"
-#include "Level.h"
 #include "xrServer.h"
 #include "net_queue.h"
 #include "game_cl_base.h"
@@ -361,7 +362,7 @@ void CLevel::ProcessGameEvents()
         {
         case M_SPAWN: {
             u16 dummy16;
-            P.r_begin(dummy16);
+            std::ignore = P.r_begin(dummy16);
             cl_Process_Spawn(P);
         }
         break;

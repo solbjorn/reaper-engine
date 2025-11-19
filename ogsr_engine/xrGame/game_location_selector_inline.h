@@ -22,9 +22,6 @@ IC CGameLocationSelector::CBaseLocationSelector(CRestrictedObject* object, CLoca
 }
 
 TEMPLATE_SPECIALIZATION
-IC CGameLocationSelector::~CBaseLocationSelector() {}
-
-TEMPLATE_SPECIALIZATION
 IC void CGameLocationSelector::set_selection_type(const ESelectionType selection_type) { m_selection_type = selection_type; }
 
 TEMPLATE_SPECIALIZATION

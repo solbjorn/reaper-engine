@@ -19,7 +19,7 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_deffer_flat();
-    virtual ~CBlender_deffer_flat();
+    ~CBlender_deffer_flat() override;
 
 private:
     xrP_TOKEN oTessellation;

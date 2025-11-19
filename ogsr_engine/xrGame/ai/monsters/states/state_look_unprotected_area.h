@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../state.h"
 #include "state_data.h"
 #include "../../../ai_object_location.h"
@@ -8,6 +9,9 @@
 template <typename _Object>
 class CStateMonsterLookToUnprotectedArea : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterLookToUnprotectedArea<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -17,8 +21,8 @@ class CStateMonsterLookToUnprotectedArea : public CState<_Object>
     Fvector target_point;
 
 public:
-    CStateMonsterLookToUnprotectedArea(_Object* obj);
-    virtual ~CStateMonsterLookToUnprotectedArea();
+    explicit CStateMonsterLookToUnprotectedArea(_Object* obj);
+    ~CStateMonsterLookToUnprotectedArea() override;
 
     virtual void initialize();
     virtual void execute();

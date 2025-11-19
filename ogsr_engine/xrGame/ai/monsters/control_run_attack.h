@@ -16,6 +16,8 @@ private:
     u32 m_time_next_attack;
 
 public:
+    ~CControlRunAttack() override = default;
+
     virtual void load(LPCSTR section);
     virtual void reinit();
 

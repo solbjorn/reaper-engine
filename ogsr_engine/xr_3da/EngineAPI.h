@@ -4,7 +4,7 @@
 // Support for extension DLLs
 //****************************************************************************
 
-#if !defined(AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_)
+#ifndef AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_
 #define AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_
 
 // Abstract 'Pure' class for DLL interface
@@ -17,9 +17,9 @@ public:
 
     DLL_Pure() = default;
     explicit DLL_Pure(void*) {}
-    virtual ~DLL_Pure() = 0;
+    ~DLL_Pure() override = 0;
 
-    virtual DLL_Pure* _construct() { return this; }
+    [[nodiscard]] virtual DLL_Pure* _construct() { return this; }
 };
 
 inline DLL_Pure::~DLL_Pure() = default;
@@ -69,4 +69,4 @@ void AttachGame();
 // xrRender_R4.cpp
 void AttachRender();
 
-#endif // !defined(AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_)
+#endif // AFX_ENGINEAPI_H__CF21372B_C8B8_4891_82FC_D872C84E1DD4__INCLUDED_

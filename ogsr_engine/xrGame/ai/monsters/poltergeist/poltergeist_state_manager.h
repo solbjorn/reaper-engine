@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../monster_state_manager.h"
 
 class CPoltergeist;
 
 class CStateManagerPoltergeist : public CMonsterStateManager<CPoltergeist>
 {
+    RTTI_DECLARE_TYPEINFO(CStateManagerPoltergeist, CMonsterStateManager<CPoltergeist>);
+
+private:
     typedef CMonsterStateManager<CPoltergeist> inherited;
 
 public:
-    CStateManagerPoltergeist(CPoltergeist* obj);
-    virtual ~CStateManagerPoltergeist();
+    explicit CStateManagerPoltergeist(CPoltergeist* obj);
+    ~CStateManagerPoltergeist() override;
 
     virtual void reinit();
     virtual void execute();

@@ -32,10 +32,10 @@ protected:
     IC virtual void after_search();
 
 public:
-    IC CAbstractLocationSelector(CRestrictedObject* object);
-    IC virtual ~CAbstractLocationSelector();
+    inline explicit CAbstractLocationSelector(CRestrictedObject* object);
+    ~CAbstractLocationSelector() override = default;
 
-    IC virtual void reinit(const _Graph* graph = 0);
+    IC virtual void reinit(const _Graph* graph = nullptr);
 
     IC _vertex_id_type get_selected_vertex_id() const;
     IC void set_query_interval(const u32 query_interval);
@@ -56,4 +56,7 @@ template <typename _Graph, typename _VertexEvaluator, typename _vertex_id_type>
 class CBaseLocationSelector : public CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>
 {
     RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<_Graph, _VertexEvaluator, _vertex_id_type>);
+
+public:
+    ~CBaseLocationSelector() override = default;
 };

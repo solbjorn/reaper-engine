@@ -10,5 +10,5 @@ public:
     virtual void Compile(CBlender_Compile& C);
 
     CBlender_gasmask_dudv();
-    virtual ~CBlender_gasmask_dudv();
+    ~CBlender_gasmask_dudv() override;
 };

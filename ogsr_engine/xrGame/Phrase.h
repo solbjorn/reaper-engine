@@ -19,7 +19,7 @@ private:
 
 public:
     CPhrase();
-    virtual ~CPhrase();
+    ~CPhrase() override;
 
     void SetText(LPCSTR text) { m_text = text; }
     [[nodiscard]] LPCSTR GetText() const;

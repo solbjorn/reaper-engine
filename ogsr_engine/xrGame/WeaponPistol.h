@@ -10,7 +10,7 @@ public:
     typedef CWeaponCustomPistol inherited;
 
     CWeaponPistol();
-    virtual ~CWeaponPistol();
+    ~CWeaponPistol() override;
 
     virtual void Load(LPCSTR section);
 

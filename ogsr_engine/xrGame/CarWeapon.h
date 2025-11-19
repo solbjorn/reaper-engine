@@ -8,6 +8,8 @@ class CPhysicsShellHolder;
 
 class CCarWeapon : public CShootingObject
 {
+    RTTI_DECLARE_TYPEINFO(CCarWeapon, CShootingObject);
+
 protected:
     typedef CShootingObject inheritedShooting;
 
@@ -37,8 +39,10 @@ public:
         eWpnAutoFire,
         eWpnToDefaultDir,
     };
-    CCarWeapon(CPhysicsShellHolder* obj);
-    virtual ~CCarWeapon();
+
+    explicit CCarWeapon(CPhysicsShellHolder* obj);
+    ~CCarWeapon() override;
+
     static void BoneCallbackX(CBoneInstance* B);
     static void BoneCallbackY(CBoneInstance* B);
     void Load(LPCSTR section);

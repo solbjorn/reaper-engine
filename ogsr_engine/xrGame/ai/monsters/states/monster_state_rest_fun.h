@@ -6,6 +6,9 @@
 template <typename _Object>
 class CStateMonsterRestFun : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRestFun<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -13,7 +16,9 @@ class CStateMonsterRestFun : public CState<_Object>
     u32 time_last_hit{};
 
 public:
-    CStateMonsterRestFun(_Object* obj);
+    explicit CStateMonsterRestFun(_Object* obj);
+    ~CStateMonsterRestFun() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual bool check_completion();

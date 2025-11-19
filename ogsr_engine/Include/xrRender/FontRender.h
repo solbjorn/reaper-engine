@@ -8,7 +8,7 @@ class XR_NOVTABLE IFontRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IFontRender);
 
 public:
-    virtual ~IFontRender() = 0;
+    ~IFontRender() override = 0;
 
     virtual void Initialize(LPCSTR cShader, LPCSTR cTexture) = 0;
     virtual void OnRender(CGameFont& owner) = 0;

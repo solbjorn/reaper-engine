@@ -65,6 +65,8 @@ class CBlender_skybox : public IBlender
     RTTI_DECLARE_TYPEINFO(CBlender_skybox, IBlender);
 
 public:
+    ~CBlender_skybox() override = default;
+
     const char* getComment() override { return "INTERNAL: combiner"; }
 
     void Compile(CBlender_Compile& C) override
@@ -143,6 +145,8 @@ dxEnvironmentRender::dxEnvironmentRender()
     t_envmap_1.create(r2_T_envs1);
     tonemap.create(r2_RT_luminance_cur);
 }
+
+dxEnvironmentRender::~dxEnvironmentRender() = default;
 
 void dxEnvironmentRender::Clear()
 {

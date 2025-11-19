@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "alife_switch_manager.h"
+
 #include "xrServer_Objects_ALife.h"
 #include "alife_graph_registry.h"
 #include "alife_object_registry.h"
@@ -41,7 +42,7 @@ struct remove_non_savable_predicate
     }
 };
 
-CALifeSwitchManager::~CALifeSwitchManager() {}
+CALifeSwitchManager::~CALifeSwitchManager() = default;
 
 void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update_registries)
 {

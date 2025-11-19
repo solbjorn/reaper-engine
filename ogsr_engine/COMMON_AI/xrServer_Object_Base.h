@@ -35,7 +35,9 @@ class CSE_ALifeOnlineOfflineGroup;
 class CSE_ALifeItemPDA;
 
 SERVER_ENTITY_DECLARE_BEGIN(CPureServerObject, IPureServerObject)
-virtual ~CPureServerObject() {}
+public:
+~CPureServerObject() override = default;
+
 virtual void load(IReader& tFileStream);
 virtual void save(IWriter& tMemoryStream);
 virtual void load(NET_Packet& tNetPacket);
@@ -135,7 +137,8 @@ virtual void load(NET_Packet& tNetPacket);
 //////////////////////////////////////////////////////////////////////////
 
 explicit CSE_Abstract(LPCSTR caSection);
-virtual ~CSE_Abstract();
+~CSE_Abstract() override;
+
 virtual void OnEvent(NET_Packet&, u16, u32, ClientID) {}
 virtual BOOL Net_Relevant() { return TRUE; }
 //

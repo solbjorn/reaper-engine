@@ -29,7 +29,7 @@ public:
         Fvector tri[3];
     };
 
-    virtual ~IKinematics() = 0;
+    ~IKinematics() override = 0;
 
     /************************* Add by Zander *******************************/
     // Устанавливает видимость меша с указанным индексом

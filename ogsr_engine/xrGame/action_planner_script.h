@@ -24,7 +24,8 @@ public:
     _object_type* m_object{};
 
 public:
-    IC CActionPlannerScript() = default;
+    CActionPlannerScript() = default;
+    ~CActionPlannerScript() override = default;
 
     virtual void setup(_object_type* object);
 };

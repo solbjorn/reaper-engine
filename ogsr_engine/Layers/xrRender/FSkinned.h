@@ -11,9 +11,12 @@
 
 struct SEnumVerticesCallback;
 
-class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
+class XR_NOVTABLE CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonX_ext, CSkeletonX);
+
+public:
+    ~CSkeletonX_ext() override = 0;
 
 protected:
     void _Load_hw(Fvisual& V, const void* data) override;
@@ -33,6 +36,8 @@ protected:
     virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16 bone_id, u32 iBase);
 };
 
+inline CSkeletonX_ext::~CSkeletonX_ext() = default;
+
 class CSkeletonX_ST : public Fvisual, public CSkeletonX_ext
 {
     RTTI_DECLARE_TYPEINFO(CSkeletonX_ST, Fvisual, CSkeletonX_ext);
@@ -42,8 +47,9 @@ private:
     typedef CSkeletonX_ext inherited2;
 
 public:
-    CSkeletonX_ST() {}
-    virtual ~CSkeletonX_ST() {}
+    CSkeletonX_ST() = default;
+    ~CSkeletonX_ST() override = default;
+
     virtual void Render(CBackend& cmd_list, float LOD, bool) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
@@ -52,10 +58,6 @@ public:
     virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
     virtual BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
     virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
-
-private:
-    CSkeletonX_ST(const CSkeletonX_ST& other);
-    void operator=(const CSkeletonX_ST& other);
 };
 
 class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
@@ -67,8 +69,9 @@ private:
     typedef CSkeletonX_ext inherited2;
 
 public:
-    CSkeletonX_PM() {}
-    virtual ~CSkeletonX_PM() {}
+    CSkeletonX_PM() = default;
+    ~CSkeletonX_PM() override = default;
+
     virtual void Render(CBackend& cmd_list, float LOD, bool) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
@@ -77,10 +80,6 @@ public:
     virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
     virtual BOOL PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
     virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
-
-private:
-    CSkeletonX_PM(const CSkeletonX_PM& other);
-    void operator=(const CSkeletonX_PM& other);
 };
 
 #endif // FSkinnedH

@@ -21,8 +21,10 @@ public:
 extern pauseMngr* g_pauseMngr;
 extern pauseMngr& g_pauseMngr_get();
 
-class CTimerBase
+class CTimerBase : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(CTimerBase);
+
 public:
     using Clock = std::chrono::high_resolution_clock;
     using Time = std::chrono::time_point<Clock>;
@@ -35,7 +37,8 @@ protected:
     bool paused{};
 
 public:
-    constexpr CTimerBase() noexcept = default;
+    CTimerBase() noexcept = default;
+    ~CTimerBase() override = default;
 
     void Start()
     {
@@ -78,6 +81,9 @@ public:
 
 class CTimer : public CTimerBase
 {
+    RTTI_DECLARE_TYPEINFO(CTimer, CTimerBase);
+
+private:
     using inherited = CTimerBase;
 
     f32 m_time_factor{1.0f};
@@ -95,7 +101,8 @@ class CTimer : public CTimerBase
     }
 
 public:
-    constexpr CTimer() noexcept = default;
+    CTimer() noexcept = default;
+    ~CTimer() override = default;
 
     void Start() noexcept
     {
@@ -122,11 +129,14 @@ public:
 
 class CTimer_paused_ex : public CTimer
 {
+    RTTI_DECLARE_TYPEINFO(CTimer_paused_ex, CTimer);
+
+private:
     Time save_clock{};
 
 public:
     CTimer_paused_ex() noexcept = default;
-    virtual ~CTimer_paused_ex() = default;
+    ~CTimer_paused_ex() override = default;
 
     [[nodiscard]] bool Paused() const noexcept { return paused; }
 
@@ -152,6 +162,8 @@ public:
 
 class CTimer_paused final : public CTimer_paused_ex
 {
+    RTTI_DECLARE_TYPEINFO(CTimer_paused, CTimer_paused_ex);
+
 public:
     CTimer_paused() { g_pauseMngr_get().Register(*this); }
     ~CTimer_paused() override { g_pauseMngr_get().UnRegister(*this); }

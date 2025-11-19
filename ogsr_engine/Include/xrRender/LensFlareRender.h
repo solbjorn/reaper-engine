@@ -6,7 +6,7 @@ class XR_NOVTABLE IFlareRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IFlareRender);
 
 public:
-    virtual ~IFlareRender() = 0;
+    ~IFlareRender() override = 0;
 
     virtual void Copy(IFlareRender& _in) = 0;
 
@@ -23,7 +23,7 @@ class XR_NOVTABLE ILensFlareRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(ILensFlareRender);
 
 public:
-    virtual ~ILensFlareRender() = 0;
+    ~ILensFlareRender() override = 0;
 
     virtual void Copy(ILensFlareRender& _in) = 0;
 

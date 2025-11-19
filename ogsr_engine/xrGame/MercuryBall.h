@@ -16,8 +16,8 @@ private:
     typedef CArtefact inherited;
 
 public:
-    CMercuryBall(void);
-    virtual ~CMercuryBall(void);
+    CMercuryBall();
+    ~CMercuryBall() override;
 
     virtual void Load(LPCSTR section);
 
@@ -36,27 +36,10 @@ protected:
 XR_SOL_BASE_CLASSES(CMercuryBall);
 
 /*
-
-#pragma once
-#include "gameobject.h"
-#include "PhysicsShell.h"
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Ртутный шар
 // Появляется после выброса, держится недолго, после чего испаряется.
 // Цены:  от 50 до 200 рублей, в зависимости от размера
 // Специфика: опасное аномальное образование, хранить только в защищенном контейнере,
 // например в капсуле R1.
-class CMercuryBall : public CGameObject {
-typedef	CGameObject	inherited;
-public:
-    CMercuryBall(void);
-    virtual ~CMercuryBall(void);
-
-    virtual void OnH_A_Chield();
-    virtual void OnH_B_Independent(bool just_before_destroy);
-
-
-    virtual BOOL			net_Spawn			(CSE_Abstract* DC);
-};
 */

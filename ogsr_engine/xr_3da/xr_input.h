@@ -7,10 +7,10 @@ class IInputReceiver;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //описание класса
-const int mouse_device_key = 1;
-const int keyboard_device_key = 2;
-const int all_device_key = mouse_device_key | keyboard_device_key;
-const int default_key = mouse_device_key | keyboard_device_key;
+constexpr inline int mouse_device_key{1};
+constexpr inline int keyboard_device_key{2};
+constexpr inline int all_device_key{mouse_device_key | keyboard_device_key};
+constexpr inline int default_key{mouse_device_key | keyboard_device_key};
 
 class CInput : public pureFrame, public pureAppActivate, public pureAppDeactivate
 {
@@ -74,7 +74,7 @@ public:
     void iGetLastMouseDelta(Ivector2& p) { p.set(offs[0], offs[1]); }
 
     explicit CInput(bool bExclusive = true, int deviceForInit = default_key);
-    ~CInput();
+    ~CInput() override;
 
     virtual void OnFrame(void);
     virtual void OnAppActivate(void);

@@ -62,7 +62,7 @@ protected:
 
 public:
     CALifeSpawnRegistry();
-    virtual ~CALifeSpawnRegistry();
+    ~CALifeSpawnRegistry() override;
 
     virtual void load(IReader& file_stream, xrGUID* save_guid = nullptr);
     virtual void save(IWriter& memory_stream);

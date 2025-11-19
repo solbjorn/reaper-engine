@@ -15,6 +15,8 @@ private:
     typedef CControl_ComCustom<SControlCriticalWoundData> inherited;
 
 public:
+    ~CControlCriticalWound() override = default;
+
     void on_event(ControlCom::EEventType type, ControlCom::IEventData*) override;
     virtual void activate();
     virtual void on_release();

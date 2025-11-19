@@ -6,12 +6,15 @@
 template <typename _Object>
 class CStateMonsterRestSleep : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRestSleep<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterRestSleep(_Object* obj);
-    virtual ~CStateMonsterRestSleep();
+    explicit CStateMonsterRestSleep(_Object* obj);
+    ~CStateMonsterRestSleep() override;
 
     virtual void initialize();
     virtual void execute();

@@ -15,8 +15,7 @@
 
 CScriptIniFile::CScriptIniFile(LPCSTR szFileName, bool updatePath) : inherited(updatePath ? update(szFileName) : szFileName, TRUE, TRUE, TRUE) {}
 CScriptIniFile::CScriptIniFile(IReader* F, LPCSTR path) : inherited(F, path) {}
-
-CScriptIniFile::~CScriptIniFile() {}
+CScriptIniFile::~CScriptIniFile() = default;
 
 LPCSTR CScriptIniFile::update(LPCSTR file_name)
 {

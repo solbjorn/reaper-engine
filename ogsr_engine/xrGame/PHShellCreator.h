@@ -8,6 +8,9 @@ class CPHShellSimpleCreator : public IPhysicShellCreator
     RTTI_DECLARE_TYPEINFO(CPHShellSimpleCreator, IPhysicShellCreator);
 
 public:
+    ~CPHShellSimpleCreator() override = default;
+
     virtual void CreatePhysicsShell();
 };
-#endif
+
+#endif // PHSHELL_CREATOR_H

@@ -23,9 +23,6 @@ IC CSActionPlannerActionScript::CActionPlannerActionScript(_object_type* object,
 {}
 
 TEMPLATE_SPECIALIZATION
-CSActionPlannerActionScript::~CActionPlannerActionScript() {}
-
-TEMPLATE_SPECIALIZATION
 void CSActionPlannerActionScript::setup(_object_type* object, CPropertyStorage*)
 {
     VERIFY(object);

@@ -17,7 +17,7 @@ namespace RestrictionSpace
 enum ERestrictorTypes : u32;
 }
 
-class CALifeUpdateManager : public CALifeSwitchManager, public CALifeSurgeManager, public CALifeStorageManager, public ISheduled
+class XR_NOVTABLE CALifeUpdateManager : public CALifeSwitchManager, public CALifeSurgeManager, public CALifeStorageManager, public ISheduled
 {
     RTTI_DECLARE_TYPEINFO(CALifeUpdateManager, CALifeSwitchManager, CALifeSurgeManager, CALifeStorageManager, ISheduled);
 
@@ -39,8 +39,8 @@ protected:
     virtual void reload(LPCSTR section);
 
 public:
-    CALifeUpdateManager(xrServer* server, LPCSTR section);
-    virtual ~CALifeUpdateManager();
+    explicit CALifeUpdateManager(LPCSTR section);
+    ~CALifeUpdateManager() override;
 
     virtual shared_str shedule_Name() const { return shared_str("alife_simulator"); }
     virtual float shedule_Scale() const;

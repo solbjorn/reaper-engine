@@ -24,7 +24,7 @@ private:
 
 public:
     CUICarBodyWnd();
-    virtual ~CUICarBodyWnd();
+    ~CUICarBodyWnd() override;
 
     virtual void Init();
     virtual bool StopAnyMove() { return true; }

@@ -12,6 +12,8 @@ public:
     typedef CUIWindow inherited;
 
     CUIFrameLineWnd();
+    ~CUIFrameLineWnd() override = default;
+
     virtual void Init(float x, float y, float width, float height);
     virtual void Init(LPCSTR base_name, float x, float y, float width, float height, bool horizontal = true);
     virtual void InitTexture(LPCSTR tex_name, bool horizontal = true);

@@ -8,6 +8,7 @@ class game_cl_Single : public game_cl_GameState
 
 public:
     game_cl_Single();
+    ~game_cl_Single() override = default;
 
     virtual CUIGameCustom* createGameUI();
     virtual bool IsServerControlHits() { return true; }

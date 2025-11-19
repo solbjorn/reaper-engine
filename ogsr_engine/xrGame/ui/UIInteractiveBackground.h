@@ -30,7 +30,7 @@ class CUIInteractiveBackground : public CUIWindow
 
 public:
     CUIInteractiveBackground() = default;
-    virtual ~CUIInteractiveBackground();
+    ~CUIInteractiveBackground() override = default;
 
     virtual void Init(float x, float y, float width, float height);
     virtual void Init(LPCSTR texture_e, float x, float y, float width, float height);
@@ -59,10 +59,6 @@ protected:
     T* m_stateHighlighted{};
     T* m_stateTouched{};
 };
-
-template <class T>
-CUIInteractiveBackground<T>::~CUIInteractiveBackground()
-{}
 
 template <class T>
 void CUIInteractiveBackground<T>::Init(float x, float y, float width, float height)

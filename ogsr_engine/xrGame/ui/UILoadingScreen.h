@@ -6,6 +6,7 @@
 //
 //  Copyright (C) GSC Game World - 2018
 ////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 #include "../../xr_3da/ILoadingScreen.h"
@@ -36,6 +37,7 @@ public:
 
 public:
     UILoadingScreen();
+    ~UILoadingScreen() override = default;
 
     void Initialize() override;
 

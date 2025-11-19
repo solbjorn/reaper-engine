@@ -61,10 +61,10 @@ public:
 
     // General
     CEntity();
-    virtual ~CEntity();
+    ~CEntity() override;
 
-    virtual DLL_Pure* _construct();
-    virtual CEntity* cast_entity() { return this; }
+    [[nodiscard]] virtual DLL_Pure* _construct();
+    [[nodiscard]] virtual CEntity* cast_entity() { return this; }
 
 public:
     // Core events

@@ -3,6 +3,9 @@
 template <typename _Object>
 class CStatePsyDogHide : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStatePsyDogHide<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
 
@@ -13,8 +16,8 @@ class CStatePsyDogHide : public CState<_Object>
     } target;
 
 public:
-    CStatePsyDogHide(_Object* obj) : inherited(obj) {}
-    virtual ~CStatePsyDogHide() {}
+    explicit CStatePsyDogHide(_Object* obj) : inherited{obj} {}
+    ~CStatePsyDogHide() override = default;
 
     virtual void initialize();
     virtual void execute();

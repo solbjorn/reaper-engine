@@ -12,6 +12,9 @@ namespace PS
 {
 class CParticleEffect : public dxParticleCustom
 {
+    RTTI_DECLARE_TYPEINFO(CParticleEffect, dxParticleCustom);
+
+private:
     //		friend void ParticleRenderStream( LPVOID lpvParams );
     friend class CPEDef;
 
@@ -48,7 +51,7 @@ protected:
 
 public:
     CParticleEffect();
-    virtual ~CParticleEffect();
+    ~CParticleEffect() override;
 
     void OnFrame(u32 dt);
 
@@ -97,9 +100,10 @@ public:
 
     virtual u32 ParticlesCount();
 };
+
 void OnEffectParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx);
 void OnEffectParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx);
-
 } // namespace PS
+
 //---------------------------------------------------------------------------
 #endif

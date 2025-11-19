@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "PhysicsShell.h"
 #include "PHObject.h"
 #include "PHWorld.h"
@@ -9,6 +10,7 @@
 #include "PHSplitedShell.h"
 #include "Physics.h"
 #include "SpaceUtils.h"
+
 void CPHSplitedShell::Collide()
 {
     ///////////////////////////////

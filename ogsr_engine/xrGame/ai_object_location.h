@@ -25,6 +25,7 @@ private:
 
 public:
     inline CAI_ObjectLocation();
+    ~CAI_ObjectLocation() override = default;
 
     void init();
     inline virtual void reinit();

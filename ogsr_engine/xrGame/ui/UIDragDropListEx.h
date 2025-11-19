@@ -82,8 +82,10 @@ protected:
 
 public:
     static CUIDragItem* m_drag_item;
+
     CUIDragDropListEx();
-    virtual ~CUIDragDropListEx();
+    ~CUIDragDropListEx() override;
+
     void Init(float x, float y, float w, float h);
 
     using DRAG_DROP_EVENT = CallMe::Delegate<bool(CUICellItem*)>;
@@ -198,8 +200,8 @@ protected:
     u32 GetCellsInRange(const Irect& rect, UI_CELLS_VEC& res);
 
 public:
-    CUICellContainer(CUIDragDropListEx* parent);
-    virtual ~CUICellContainer();
+    explicit CUICellContainer(CUIDragDropListEx* parent);
+    ~CUICellContainer() override;
 
 protected:
     virtual void Draw();

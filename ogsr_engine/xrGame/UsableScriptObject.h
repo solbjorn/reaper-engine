@@ -8,7 +8,7 @@ class CUsableScriptObject : public virtual RTTI::Enable
 
 public:
     CUsableScriptObject();
-    ~CUsableScriptObject();
+    ~CUsableScriptObject() override;
 
     virtual bool use(CGameObject* who_use);
 

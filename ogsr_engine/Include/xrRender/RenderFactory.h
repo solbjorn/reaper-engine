@@ -22,10 +22,12 @@ class IConsoleRender;
 class IUIShader;
 class IUISequenceVideoItem;
 
-class XR_NOVTABLE IRenderFactory
+class XR_NOVTABLE IRenderFactory : public virtual RTTI::Enable
 {
+    RTTI_DECLARE_TYPEINFO(IRenderFactory);
+
 public:
-    virtual ~IRenderFactory() = 0;
+    ~IRenderFactory() override = 0;
 
     virtual IUISequenceVideoItem* CreateUISequenceVideoItem() = 0;
     virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject) = 0;

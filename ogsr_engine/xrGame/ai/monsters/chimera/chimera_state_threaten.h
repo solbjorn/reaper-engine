@@ -1,9 +1,12 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateChimeraThreaten : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateChimeraThreaten<_Object>, CState<_Object>);
+
 protected:
     typedef CState<_Object> inherited;
     typedef CState<_Object>* state_ptr;
@@ -21,8 +24,8 @@ protected:
     u32 m_last_time_threaten{};
 
 public:
-    CStateChimeraThreaten(_Object* obj);
-    virtual ~CStateChimeraThreaten();
+    explicit CStateChimeraThreaten(_Object* obj);
+    ~CStateChimeraThreaten() override;
 
     virtual void reinit();
 

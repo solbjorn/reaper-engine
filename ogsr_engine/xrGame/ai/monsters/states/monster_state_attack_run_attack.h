@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
@@ -11,7 +12,8 @@ private:
     using inherited::object;
 
 public:
-    CStateMonsterAttackRunAttack(_Object* obj) : inherited{obj} {}
+    explicit CStateMonsterAttackRunAttack(_Object* obj) : inherited{obj} {}
+    ~CStateMonsterAttackRunAttack() override = default;
 
     virtual void initialize();
     virtual void execute();

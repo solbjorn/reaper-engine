@@ -13,7 +13,7 @@ public:
     typedef CControlledEntity<CTushkano> CControlled;
 
     CTushkano();
-    virtual ~CTushkano();
+    ~CTushkano() override;
 
     virtual void Load(LPCSTR section);
     void CheckSpecParams(u32) override;

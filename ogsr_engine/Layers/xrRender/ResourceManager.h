@@ -72,7 +72,7 @@ private:
 public:
     CTextureDescrMngr m_textures_description;
     xr_vector<std::pair<shared_str, R_constant_setup*>> v_constant_setup;
-    BOOL bDeferredLoad;
+    bool bDeferredLoad{true};
 
 private:
     void LS_Load();
@@ -92,8 +92,8 @@ private:
     void LoadShaderLtxFile(LPCSTR name);
 
 public:
-    CResourceManager() : bDeferredLoad(TRUE) {}
-    ~CResourceManager();
+    CResourceManager() = default;
+    ~CResourceManager() override;
 
     void _GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
     void _DumpMemoryUsage();

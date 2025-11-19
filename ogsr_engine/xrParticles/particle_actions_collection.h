@@ -24,6 +24,8 @@ public:
     float magnitude; // what percent of the way to go each time
     float epsilon; // add to r^2 for softening
 
+    ~PAAvoid() override = default;
+
     _METHODS;
 };
 
@@ -38,6 +40,8 @@ public:
     float resilience; // Resilence perpendicular to surface
     float cutoffSqr; // cutoff velocity; friction applies iff v > cutoff
 
+    ~PABounce() override = default;
+
     _METHODS;
 };
 
@@ -47,6 +51,8 @@ struct PACopyVertexB : public ParticleAction
 
 public:
     BOOL copy_pos; // True to copy pos to posB.
+
+    ~PACopyVertexB() override = default;
 
     _METHODS;
 };
@@ -59,6 +65,8 @@ public:
     pVector damping; // Damping constant applied to velocity
     float vlowSqr; // Low and high cutoff velocities
     float vhighSqr;
+
+    ~PADamping() override = default;
 
     _METHODS;
 };
@@ -76,6 +84,8 @@ public:
     float age; // How long it's been going on
     float epsilon; // Softening parameter
 
+    ~PAExplosion() override = default;
+
     _METHODS;
 };
 
@@ -87,6 +97,8 @@ public:
     float magnitude; // The grav of each particle
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
+
+    ~PAFollow() override = default;
 
     _METHODS;
 };
@@ -100,6 +112,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAGravitate() override = default;
+
     _METHODS;
 };
 
@@ -110,6 +124,8 @@ struct PAGravity : public ParticleAction
 public:
     pVector directionL; // Amount to increment velocity (in local space)
     pVector direction; // Amount to increment velocity
+
+    ~PAGravity() override = default;
 
     _METHODS;
 };
@@ -127,6 +143,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAJet() override = default;
+
     _METHODS;
 };
 
@@ -137,6 +155,8 @@ struct PAKillOld : public ParticleAction
 public:
     float age_limit; // Exact age at which to kill particles.
     BOOL kill_less_than; // True to kill particles less than limit.
+
+    ~PAKillOld() override = default;
 
     _METHODS;
 };
@@ -150,6 +170,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAMatchVelocity() override = default;
+
     _METHODS;
 };
 
@@ -158,6 +180,8 @@ struct PAMove : public ParticleAction
     RTTI_DECLARE_TYPEINFO(PAMove, ParticleAction);
 
 public:
+    ~PAMove() override = default;
+
     _METHODS;
 };
 
@@ -171,6 +195,8 @@ public:
     float magnitude; // Scales acceleration
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
+
+    ~PAOrbitLine() override = default;
 
     _METHODS;
 };
@@ -186,6 +212,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAOrbitPoint() override = default;
+
     _METHODS;
 };
 
@@ -196,6 +224,8 @@ struct PARandomAccel : public ParticleAction
 public:
     pDomain gen_accL; // The domain of random accelerations.(in local space)
     pDomain gen_acc; // The domain of random accelerations.
+
+    ~PARandomAccel() override = default;
 
     _METHODS;
 };
@@ -208,6 +238,8 @@ public:
     pDomain gen_dispL; // The domain of random displacements.(in local space)
     pDomain gen_disp; // The domain of random displacements.
 
+    ~PARandomDisplace() override = default;
+
     _METHODS;
 };
 
@@ -219,6 +251,8 @@ public:
     pDomain gen_velL; // The domain of random velocities.(in local space)
     pDomain gen_vel; // The domain of random velocities.
 
+    ~PARandomVelocity() override = default;
+
     _METHODS;
 };
 
@@ -228,6 +262,8 @@ struct PARestore : public ParticleAction
 
 public:
     float time_left; // Time remaining until they should be in position.
+
+    ~PARestore() override = default;
 
     _METHODS;
 };
@@ -243,6 +279,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAScatter() override = default;
+
     _METHODS;
 };
 
@@ -254,6 +292,8 @@ public:
     BOOL kill_inside; // True to dispose of particles *inside* domain
     pDomain positionL; // Disposal region (in local space)
     pDomain position; // Disposal region
+
+    ~PASink() override = default;
 
     _METHODS;
 };
@@ -267,6 +307,8 @@ public:
     pDomain velocityL; // Disposal region (in local space)
     pDomain velocity; // Disposal region
 
+    ~PASinkVelocity() override = default;
+
     _METHODS;
 };
 
@@ -277,6 +319,8 @@ struct PASpeedLimit : public ParticleAction
 public:
     float min_speed; // Clamp speed to this minimum.
     float max_speed; // Clamp speed to this maximum.
+
+    ~PASpeedLimit() override = default;
 
     _METHODS;
 };
@@ -307,6 +351,8 @@ public:
     pVector parent_vel;
     float parent_motion;
 
+    ~PASource() override = default;
+
     _METHODS;
 };
 
@@ -321,6 +367,8 @@ public:
     float timeFrom{0.f};
     float timeTo{1.f};
 
+    ~PATargetColor() override = default;
+
     _METHODS;
 };
 
@@ -331,6 +379,8 @@ struct PATargetSize : public ParticleAction
 public:
     pVector size; // Size to shift towards
     pVector scale; // Amount to shift by per frame (1 == all the way)
+
+    ~PATargetSize() override = default;
 
     _METHODS;
 };
@@ -343,6 +393,8 @@ public:
     pVector rot; // Rotation to shift towards
     float scale; // Amount to shift by per frame (1 == all the way)
 
+    ~PATargetRotate() override = default;
+
     _METHODS;
 };
 
@@ -354,6 +406,8 @@ public:
     pVector velocityL; // Velocity to shift towards (in local space)
     pVector velocity; // Velocity to shift towards
     float scale; // Amount to shift by (1 == all the way)
+
+    ~PATargetVelocity() override = default;
 
     _METHODS;
 };
@@ -371,6 +425,8 @@ public:
     float epsilon; // Softening parameter
     float max_radius; // Only influence particles within max_radius
 
+    ~PAVortex() override = default;
+
     _METHODS;
 };
 
@@ -385,6 +441,8 @@ public:
     float epsilon; // Softening parameter
     pVector offset; // Offset
     float age;
+
+    ~PATurbulence() override = default;
 
     _METHODS;
 };

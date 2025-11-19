@@ -31,7 +31,7 @@ private:
 
 public:
     CExplosive();
-    virtual ~CExplosive();
+    ~CExplosive() override;
 
     virtual void Load(LPCSTR section);
     virtual void Load(CInifile* ini, LPCSTR section);

@@ -34,7 +34,7 @@ public:
 
 public:
     game_sv_GameState();
-    virtual ~game_sv_GameState();
+    ~game_sv_GameState() override;
 
     // Main accessors
     virtual void* get_client(u16 id); // if exist

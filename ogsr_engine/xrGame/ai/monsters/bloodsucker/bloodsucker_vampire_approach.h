@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateBloodsuckerVampireApproach : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateBloodsuckerVampireApproach<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateBloodsuckerVampireApproach(_Object* obj);
-    virtual ~CStateBloodsuckerVampireApproach();
+    explicit CStateBloodsuckerVampireApproach(_Object* obj);
+    ~CStateBloodsuckerVampireApproach() override;
 
     virtual void initialize();
     virtual void execute();

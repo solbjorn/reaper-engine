@@ -21,6 +21,9 @@ enum ESelectionType : u32
 template <typename _VertexEvaluator, typename _vertex_id_type>
 class CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type> : public CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>
 {
+    RTTI_DECLARE_TYPEINFO(CBaseLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>, CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type>);
+
+private:
     typedef CGameGraph _Graph;
     typedef CAbstractLocationSelector<CGameGraph, _VertexEvaluator, _vertex_id_type> inherited;
 
@@ -40,8 +43,8 @@ protected:
     IC bool accessible(const _vertex_id_type vertex_id) const;
 
 public:
-    IC CBaseLocationSelector(CRestrictedObject* object, CLocationManager* location_manager);
-    IC virtual ~CBaseLocationSelector();
+    inline explicit CBaseLocationSelector(CRestrictedObject* object, CLocationManager* location_manager);
+    ~CBaseLocationSelector() override = default;
 
     IC void init();
     IC virtual void reinit(const _Graph* graph = nullptr);

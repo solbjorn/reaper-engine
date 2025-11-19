@@ -61,7 +61,7 @@ public:
 public:
     explicit CInifile(IReader*, LPCSTR = nullptr);
     explicit CInifile(LPCSTR, BOOL ReadOnly = TRUE, BOOL bLoad = TRUE, BOOL SaveAtEnd = TRUE);
-    virtual ~CInifile();
+    ~CInifile() override;
 
     [[nodiscard]] virtual const Root& sections() const { return DATA; }
     [[nodiscard]] virtual const xr_vector<RootItem>& sections_ordered() const { return Ordered_DATA; }

@@ -20,7 +20,7 @@ private:
     SCallbackInfo* NewCallback();
 
 public:
-    virtual ~CUIWndCallback() = default;
+    ~CUIWndCallback() override = default;
 
     virtual void OnEvent(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
     void Register(CUIWindow* pChild);

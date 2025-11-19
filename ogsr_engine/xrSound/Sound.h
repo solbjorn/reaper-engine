@@ -73,7 +73,7 @@ class XR_NOVTABLE CSound_UserData : public xr_resource
     RTTI_DECLARE_TYPEINFO(CSound_UserData, xr_resource);
 
 public:
-    virtual ~CSound_UserData() = 0;
+    ~CSound_UserData() override = 0;
 
     virtual void accept(CSound_UserDataVisitor*) = 0;
     virtual void invalidate() = 0;
@@ -103,7 +103,7 @@ public:
 public:
     ref_sound_data() = default;
     explicit ref_sound_data(LPCSTR fName, esound_type sound_type, u32 game_type);
-    virtual ~ref_sound_data();
+    ~ref_sound_data() override;
 
     float get_length_sec() const { return fTimeTotal; }
 };
@@ -182,7 +182,7 @@ class XR_NOVTABLE CSound_source : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSound_source);
 
 public:
-    virtual ~CSound_source() = 0;
+    ~CSound_source() override = 0;
 
     virtual float length_sec() const = 0;
     virtual u32 game_type() const = 0;
@@ -280,7 +280,7 @@ class XR_NOVTABLE CSound_emitter : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CSound_emitter);
 
 public:
-    virtual ~CSound_emitter() = 0;
+    ~CSound_emitter() override = 0;
 
     virtual bool is_2D() const = 0;
     virtual void switch_to_2D() = 0;
@@ -358,7 +358,7 @@ protected:
     virtual void _destroy_data(ref_sound_data& S) = 0;
 
 public:
-    virtual ~CSound_manager_interface() = 0;
+    ~CSound_manager_interface() override = 0;
 
     static void _create(int stage);
     static void _destroy();

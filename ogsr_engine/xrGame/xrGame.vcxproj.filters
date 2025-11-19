@@ -2634,9 +2634,6 @@
     <ClInclude Include="alife_simulator.h">
       <Filter>AI\ALife</Filter>
     </ClInclude>
-    <ClInclude Include="alife_simulator_inline.h">
-      <Filter>AI\ALife</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\alife_space.h">
       <Filter>AI\ALife</Filter>
     </ClInclude>
@@ -2809,9 +2806,6 @@
       <Filter>AI\ALife\update_manager\storage_manager</Filter>
     </ClInclude>
     <ClInclude Include="alife_surge_manager.h">
-      <Filter>AI\ALife\update_manager\surge_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="alife_surge_manager_inline.h">
       <Filter>AI\ALife\update_manager\surge_manager</Filter>
     </ClInclude>
     <ClInclude Include="alife_switch_manager.h">
@@ -6144,12 +6138,6 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\alife_space.cpp">
       <Filter>AI\ALife</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_interaction_manager.cpp">
-      <Filter>AI\ALife\interaction_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="alife_communication_manager.cpp">
-      <Filter>AI\ALife\interaction_manager\communication_manager</Filter>
     </ClCompile>
     <ClCompile Include="alife_combat_manager.cpp">
       <Filter>AI\ALife\interaction_manager\combat_manager</Filter>

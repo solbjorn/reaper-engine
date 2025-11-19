@@ -36,7 +36,7 @@ private:
 
 public:
     CTorch();
-    virtual ~CTorch();
+    ~CTorch() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* DC);

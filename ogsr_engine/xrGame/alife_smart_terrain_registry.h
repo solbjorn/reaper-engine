@@ -24,7 +24,8 @@ protected:
     OBJECTS m_objects;
 
 public:
-    virtual ~CALifeSmartTerrainRegistry();
+    ~CALifeSmartTerrainRegistry() override;
+
     void add(CSE_ALifeDynamicObject* object);
     void remove(CSE_ALifeDynamicObject* object);
     IC const OBJECTS& objects() const;

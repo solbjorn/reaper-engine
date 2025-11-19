@@ -70,8 +70,8 @@ public:
     virtual void show(LPCSTR offset = "");
 #endif
 
-    IC CActionBase(_object_type* object = nullptr, LPCSTR action_name = "");
-    inline virtual ~CActionBase();
+    inline explicit CActionBase(_object_type* object = nullptr, LPCSTR action_name = "");
+    ~CActionBase() override = default;
 
     inline void init(_object_type* object, LPCSTR action_name);
     inline virtual void setup(_object_type* object, CPropertyStorage* storage);

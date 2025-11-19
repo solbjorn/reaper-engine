@@ -19,7 +19,7 @@ protected:
 
 public:
     CDamageManager();
-    virtual ~CDamageManager();
+    ~CDamageManager() override;
 
     virtual DLL_Pure* _construct();
     virtual void reload(LPCSTR section, CInifile* ini);

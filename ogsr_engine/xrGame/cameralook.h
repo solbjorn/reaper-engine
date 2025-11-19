@@ -12,8 +12,8 @@ public:
     Fvector2 lim_zoom;
     float dist, prev_d;
 
-    CCameraLook(CObject* p, u32 flags = 0);
-    virtual ~CCameraLook();
+    explicit CCameraLook(CObject* p, u32 flags = 0);
+    ~CCameraLook() override;
 
     virtual void Load(LPCSTR section);
     virtual void Move(int cmd, float val = 0.0f, float factor = 1.0f);
@@ -40,8 +40,8 @@ protected:
     void UpdateAutoAim();
 
 public:
-    CCameraLook2(CObject* p, u32 flags = 0) : CCameraLook{p, flags} {}
-    virtual ~CCameraLook2() {}
+    explicit CCameraLook2(CObject* p, u32 flags = 0) : CCameraLook{p, flags} {}
+    ~CCameraLook2() override = default;
 
     virtual void OnActivate(CCameraBase* old_cam);
     void Update(Fvector& point, Fvector&) override;

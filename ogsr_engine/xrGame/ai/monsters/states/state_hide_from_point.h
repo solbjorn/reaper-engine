@@ -6,6 +6,9 @@
 template <typename _Object>
 class CStateMonsterHideFromPoint : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterHideFromPoint<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
     using inherited::time_state_started;
@@ -13,8 +16,8 @@ class CStateMonsterHideFromPoint : public CState<_Object>
     SStateHideFromPoint data;
 
 public:
-    CStateMonsterHideFromPoint(_Object* obj) : inherited(obj, &data) {}
-    virtual ~CStateMonsterHideFromPoint() {}
+    explicit CStateMonsterHideFromPoint(_Object* obj) : inherited{obj, &data} {}
+    ~CStateMonsterHideFromPoint() override = default;
 
     virtual void initialize();
     virtual void execute();

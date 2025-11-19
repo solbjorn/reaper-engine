@@ -36,7 +36,7 @@ struct object_destroyer::default_destroy<SDrawStaticStruct>
 
 using st_vec = xr_vector<SDrawStaticStruct>;
 
-class CUIGameCustom : public DLL_Pure, public ISheduled
+class XR_NOVTABLE CUIGameCustom : public DLL_Pure, public ISheduled
 {
     RTTI_DECLARE_TYPEINFO(CUIGameCustom, DLL_Pure, ISheduled);
 
@@ -75,7 +75,7 @@ public:
     virtual void shedule_Update(u32 dt);
 
     CUIGameCustom();
-    virtual ~CUIGameCustom();
+    ~CUIGameCustom() override;
 
     virtual void Init() {}
 

@@ -80,6 +80,8 @@ public:
 
     DEFINE_VECTOR(shape_def, ShapeVec, ShapeIt);
     ShapeVec shapes;
+
+    ~CShapeData() override = default;
 };
 
 #endif

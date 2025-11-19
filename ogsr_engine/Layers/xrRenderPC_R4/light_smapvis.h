@@ -2,6 +2,8 @@
 
 class smapvis : public R_feedback
 {
+    RTTI_DECLARE_TYPEINFO(smapvis, R_feedback);
+
 public:
     enum
     {
@@ -23,7 +25,7 @@ public:
 
 public:
     smapvis();
-    ~smapvis();
+    ~smapvis() override;
 
     void invalidate();
     void begin(); // should be called before 'marker++' and before graph-build
@@ -34,5 +36,5 @@ public:
     void resetoccq();
 
     IC bool sleep() { return Device.dwFrame > frame_sleep; }
-    virtual void rfeedback_static(dxRender_Visual* V) override;
+    void rfeedback_static(dxRender_Visual* V) override;
 };

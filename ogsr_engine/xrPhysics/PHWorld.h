@@ -49,7 +49,7 @@ public:
     bool b_world_freezed;
     bool b_processing;
     bool b_exist;
-    static const u32 update_delay = 1;
+    static constexpr u32 update_delay{1};
     ///	dSpaceID					Space														;
 
     CPHMesh Mesh{};
@@ -73,8 +73,9 @@ public:
     float m_update_time{};
     u16 disable_count;
     float m_gravity;
+
     CPHWorld();
-    virtual ~CPHWorld() {}
+    ~CPHWorld() override;
 
     // IC	dSpaceID					GetSpace						()			{return Space;}	;
     IC bool Exist() { return b_exist; }

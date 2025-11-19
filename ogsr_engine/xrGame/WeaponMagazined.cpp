@@ -1787,17 +1787,18 @@ bool CWeaponMagazined::ScopeRespawn(PIItem pIItem)
             sobj1->STATE_Write(P);
             u16 size = u16(P.w_tell() - position);
             P.w_seek(position, &size, sizeof(u16));
-            u16 id;
-            P.r_begin(id);
-            P.r_u16(size);
-            sobj2->STATE_Read(P, size);
 
+            u16 id;
+            std::ignore = P.r_begin(id);
+            P.r_u16(size);
+
+            sobj2->STATE_Read(P, size);
             net_Export(_abstract);
 
             auto io = smart_cast<CInventoryOwner*>(H_Parent());
-            auto ii = smart_cast<CInventoryItem*>(this);
-            if (io)
+            if (io != nullptr)
             {
+                auto ii = smart_cast<CInventoryItem*>(this);
                 if (io->inventory().InSlot(ii))
                     io->SetNextItemSlot(ii->GetSlot());
                 else

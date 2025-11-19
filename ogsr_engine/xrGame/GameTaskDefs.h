@@ -58,6 +58,8 @@ struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, GameTasks>
     RTTI_DECLARE_TYPEINFO(CGameTaskRegistry, CALifeAbstractRegistry<u16, GameTasks>);
 
 public:
+    ~CGameTaskRegistry() override = default;
+
     virtual void save(IWriter& stream)
     {
         CALifeAbstractRegistry<u16, GameTasks>::save(stream);

@@ -1,6 +1,6 @@
 #pragma once
 
-class CDelayedActionFuse : public virtual RTTI::Enable
+class XR_NOVTABLE CDelayedActionFuse : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(CDelayedActionFuse);
 
@@ -11,9 +11,13 @@ public:
         flInitialized = 1 << 1,
         flNoConditionChange = 1 << 2
     };
+
     Flags8 m_dafflags;
-    float m_fTime;
-    float m_fSpeedChangeCondition;
+    float m_fTime{};
+    float m_fSpeedChangeCondition{};
+
+    CDelayedActionFuse() = default;
+    ~CDelayedActionFuse() override = 0;
 
     void SetTimer(float current_condition);
     void Initialize(float time, float critical_condition);
@@ -33,7 +37,8 @@ public:
     float Time();
 
 protected:
-    CDelayedActionFuse();
     virtual void ChangeCondition(float fDeltaCondition) = 0;
     virtual void StartTimerEffects() = 0;
 };
+
+inline CDelayedActionFuse::~CDelayedActionFuse() = default;

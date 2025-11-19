@@ -35,8 +35,9 @@ protected:
     IC CAgentManager& object() const;
 
 public:
-    IC CAgentMemberManager(CAgentManager* object);
-    virtual ~CAgentMemberManager();
+    inline explicit CAgentMemberManager(CAgentManager* object);
+    ~CAgentMemberManager() override;
+
     void update();
     void add(CEntity* member);
     void remove(CEntity* member);

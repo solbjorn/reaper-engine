@@ -15,7 +15,7 @@ public:
     typedef CBaseMonster inherited;
 
     CAI_Bloodsucker();
-    virtual ~CAI_Bloodsucker();
+    ~CAI_Bloodsucker() override;
 
     virtual void reinit();
     virtual void reload(LPCSTR section);

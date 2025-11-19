@@ -28,8 +28,9 @@ protected:
     void Init();
 
 public:
-    CUITaskItem(CUIEventsWnd* w);
-    virtual ~CUITaskItem();
+    explicit CUITaskItem(CUIEventsWnd* w);
+    ~CUITaskItem() override;
+
     virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
     virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
@@ -58,8 +59,9 @@ protected:
     void Init();
 
 public:
-    CUITaskRootItem(CUIEventsWnd* w);
-    virtual ~CUITaskRootItem();
+    explicit CUITaskRootItem(CUIEventsWnd* w);
+    ~CUITaskRootItem() override;
+
     virtual void Update();
     virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
     void OnSwitchDescriptionClicked(CUIWindow*, void*);
@@ -87,8 +89,9 @@ protected:
     void Init();
 
 public:
-    CUITaskSubItem(CUIEventsWnd* w);
-    virtual ~CUITaskSubItem();
+    explicit CUITaskSubItem(CUIEventsWnd* w);
+    ~CUITaskSubItem() override;
+
     virtual void Update();
     virtual void SetGameTask(CGameTask* gt, u16 obj_idx);
     void OnActiveObjectiveClicked();

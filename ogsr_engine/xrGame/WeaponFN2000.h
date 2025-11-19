@@ -12,7 +12,7 @@ private:
 
 public:
     CWeaponFN2000();
-    virtual ~CWeaponFN2000();
+    ~CWeaponFN2000() override;
 
 protected:
     virtual size_t GetWeaponTypeForCollision() const override { return FN2000; }

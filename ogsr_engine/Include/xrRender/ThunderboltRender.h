@@ -8,7 +8,7 @@ class XR_NOVTABLE IThunderboltRender : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IThunderboltRender);
 
 public:
-    virtual ~IThunderboltRender() = 0;
+    ~IThunderboltRender() override = 0;
 
     virtual void Copy(IThunderboltRender& _in) = 0;
 

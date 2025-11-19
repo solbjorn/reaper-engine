@@ -30,7 +30,7 @@ struct CVertexAllocatorFixed
 
     public:
         inline CDataStorage();
-        inline virtual ~CDataStorage();
+        inline ~CDataStorage() override;
 
         inline void init();
         inline u32 get_visited_node_count() const;

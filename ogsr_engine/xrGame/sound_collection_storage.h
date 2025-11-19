@@ -24,7 +24,8 @@ private:
     OBJECTS m_objects;
 
 public:
-    virtual ~CSoundCollectionStorage();
+    ~CSoundCollectionStorage() override;
+
     const SOUND_COLLECTION_PAIR& object(const CSoundCollectionParams& params);
 };
 

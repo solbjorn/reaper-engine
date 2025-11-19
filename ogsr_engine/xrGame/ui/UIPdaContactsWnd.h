@@ -1,6 +1,6 @@
-
 #pragma once
 
+#include "UIPdaListItem.h"
 #include "UIWindow.h"
 
 class CUIFrameWindow;
@@ -24,7 +24,7 @@ private:
 
 public:
     CUIPdaContactsWnd();
-    virtual ~CUIPdaContactsWnd();
+    ~CUIPdaContactsWnd() override;
 
     void Init();
 
@@ -49,8 +49,6 @@ protected:
     CUIAnimatedStatic* UIAnimation;
 };
 
-#include "UIPdaListItem.h"
-
 class CUIPdaContactItem : public CUIPdaListItem, public CUISelectable
 {
     RTTI_DECLARE_TYPEINFO(CUIPdaContactItem, CUIPdaListItem, CUISelectable);
@@ -59,8 +57,9 @@ public:
     CUIPdaContactsWnd* m_cw;
 
 public:
-    CUIPdaContactItem(CUIPdaContactsWnd* cw) { m_cw = cw; }
-    virtual ~CUIPdaContactItem();
+    explicit CUIPdaContactItem(CUIPdaContactsWnd* cw) : m_cw{cw} {}
+    ~CUIPdaContactItem() override;
+
     virtual void SetSelected(bool b);
     virtual bool OnMouseDown(int mouse_btn);
 };

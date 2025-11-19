@@ -1,15 +1,19 @@
 #pragma once
+
 #include "../state.h"
 
 template <typename _Object>
 class CStateMonsterRestWalkGraph : public CState<_Object>
 {
+    RTTI_DECLARE_TYPEINFO(CStateMonsterRestWalkGraph<_Object>, CState<_Object>);
+
+private:
     typedef CState<_Object> inherited;
     using inherited::object;
 
 public:
-    CStateMonsterRestWalkGraph(_Object* obj);
-    virtual ~CStateMonsterRestWalkGraph();
+    explicit CStateMonsterRestWalkGraph(_Object* obj);
+    ~CStateMonsterRestWalkGraph() override;
 
     virtual void execute();
     virtual void remove_links(CObject* object) { inherited::remove_links(object); }

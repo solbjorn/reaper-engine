@@ -1,4 +1,5 @@
 #pragma once
+
 #include "pseudodog.h"
 #include "script_export_space.h"
 
@@ -32,7 +33,7 @@ public:
     TTime* m_phantoms_die_time;
 
     CPsyDog();
-    virtual ~CPsyDog();
+    ~CPsyDog() override;
 
     virtual void Load(LPCSTR section);
     virtual BOOL net_Spawn(CSE_Abstract* dc);
@@ -96,7 +97,8 @@ public:
     u32 m_time_spawned;
 
     CPsyDogPhantom();
-    virtual ~CPsyDogPhantom();
+    ~CPsyDogPhantom() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* dc);
     virtual void Think();
     virtual void Hit(SHit* pHDS);

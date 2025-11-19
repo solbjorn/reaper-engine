@@ -31,7 +31,8 @@ private:
     void ChangeLevel();
 
 public:
-    virtual ~CLevelChanger();
+    ~CLevelChanger() override;
+
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
     virtual void Center(Fvector& C) const;

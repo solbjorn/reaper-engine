@@ -15,17 +15,13 @@ class CHudItemObject : public CInventoryItemObject, public CHudItem
 {
     RTTI_DECLARE_TYPEINFO(CHudItemObject, CInventoryItemObject, CHudItem);
 
-protected: // чтоб нельзя было вызвать на прямую
+public:
     CHudItemObject();
-    virtual ~CHudItemObject();
+    ~CHudItemObject() override;
 
-public:
     virtual DLL_Pure* _construct();
-
-public:
     virtual CHudItem* cast_hud_item() { return this; }
 
-public:
     virtual void Load(LPCSTR section);
     virtual bool Action(s32 cmd, u32 flags);
     virtual void SwitchState(u32 S);

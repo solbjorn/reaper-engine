@@ -1,4 +1,5 @@
 #pragma once
+
 #include "UIWindow.h"
 #include "../inventory_space.h"
 
@@ -21,7 +22,7 @@ private:
 
 public:
     CUITradeWnd();
-    virtual ~CUITradeWnd();
+    ~CUITradeWnd() override;
 
     virtual void Init();
 

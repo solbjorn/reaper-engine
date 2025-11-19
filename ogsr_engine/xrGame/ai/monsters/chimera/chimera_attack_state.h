@@ -4,11 +4,16 @@
 template <typename Object>
 class ChimeraAttackState : public CState<Object>
 {
+    RTTI_DECLARE_TYPEINFO(ChimeraAttackState<Object>, CState<Object>);
+
+private:
     using inherited = CState<Object>;
     using inherited::object;
 
 public:
-    ChimeraAttackState(Object* obj);
+    explicit ChimeraAttackState(Object* obj);
+    ~ChimeraAttackState() override = default;
+
     virtual void initialize();
     virtual void execute();
     virtual void finalize();
@@ -75,8 +80,7 @@ private:
     bool m_attack_jump;
 
     float m_min_run_distance;
-
-}; // ChimeraAttackState
+};
 
 #include "chimera_attack_state_inline.h"
 

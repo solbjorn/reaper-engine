@@ -19,12 +19,11 @@ class CBlackGraviArtefact : public CGraviArtefact, public Feel::Touch
 private:
     collide::rq_results rq_storage;
 
-private:
     typedef CGraviArtefact inherited;
 
 public:
     CBlackGraviArtefact();
-    virtual ~CBlackGraviArtefact();
+    ~CBlackGraviArtefact() override;
 
     virtual BOOL net_Spawn(CSE_Abstract* DC);
 

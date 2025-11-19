@@ -7,6 +7,9 @@ class CActorInputHandler : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CActorInputHandler);
 
 public:
+    CActorInputHandler() = default;
+    ~CActorInputHandler() override = default;
+
     virtual void reinit();
 
     virtual void install();

@@ -9,7 +9,7 @@ class CUICheckButton : public CUI3tButton, public CUIOptionsItem
 
 public:
     CUICheckButton();
-    virtual ~CUICheckButton();
+    ~CUICheckButton() override;
 
     virtual void Update();
 

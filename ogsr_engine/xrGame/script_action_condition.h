@@ -34,9 +34,10 @@ public:
     ALife::_TIME_ID m_tStartTime;
 
 public:
-    IC CScriptActionCondition();
-    IC CScriptActionCondition(u32 dwFlags, double dTime = -1);
-    virtual ~CScriptActionCondition();
+    inline CScriptActionCondition();
+    inline explicit CScriptActionCondition(u32 dwFlags, double dTime = -1);
+    ~CScriptActionCondition() override;
+
     IC void initialize();
 
     inline void clone(const CScriptActionCondition& from);

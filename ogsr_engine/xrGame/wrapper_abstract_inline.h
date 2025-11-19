@@ -25,9 +25,6 @@ IC CWrapper::CWrapperAbstract(T1 t1, T2 t2, T3 t3) : inherited{t1, t2, t3}
 {}
 
 TEMPLATE_SPECIALIZATION
-CWrapper::~CWrapperAbstract() {}
-
-TEMPLATE_SPECIALIZATION
 void CWrapper::setup(_object_type* object)
 {
     VERIFY(object);
@@ -86,9 +83,6 @@ TEMPLATE_SPECIALIZATION
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 IC CWrapper2::CWrapperAbstract2(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) : inherited{t1, t2, t3, t4, t5}
 {}
-
-TEMPLATE_SPECIALIZATION
-CWrapper2::~CWrapperAbstract2() {}
 
 TEMPLATE_SPECIALIZATION
 void CWrapper2::setup(_object_type* object, CPropertyStorage* storage)

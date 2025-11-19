@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "ParticlesPlayer.h"
 
+#include "../xr_3da/IPhysicsDefinitions.h"
+
 class CPHDestroyable;
 class CPHCollisionDamageReceiver;
 class CPHSoundPlayer;
@@ -13,14 +15,12 @@ class ICollisionDamageInfo;
 class CIKLimbsController;
 class CPHCapture;
 
-#include "../xr_3da/IPhysicsDefinitions.h"
-
 class XR_NOVTABLE ICollisionHitCallback : public virtual RTTI::Enable
 {
     RTTI_DECLARE_TYPEINFO(ICollisionHitCallback);
 
 public:
-    virtual ~ICollisionHitCallback() = 0;
+    ~ICollisionHitCallback() override = 0;
 
     virtual void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di) = 0;
 };

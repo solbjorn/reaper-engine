@@ -20,11 +20,15 @@ typedef CActionBase<CAgentManager> CAgentManagerActionBase;
 
 class CAgentManagerActionNoOrders : public CAgentManagerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerActionNoOrders, CAgentManagerActionBase);
+
 protected:
     typedef CAgentManagerActionBase inherited;
 
 public:
-    CAgentManagerActionNoOrders(CAgentManager* object, LPCSTR action_name = "");
+    explicit CAgentManagerActionNoOrders(CAgentManager* object, LPCSTR action_name = "");
+    ~CAgentManagerActionNoOrders() override = default;
+
     virtual void finalize();
 };
 
@@ -34,11 +38,14 @@ public:
 
 class CAgentManagerActionGatherItems : public CAgentManagerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerActionGatherItems, CAgentManagerActionBase);
+
 protected:
     typedef CAgentManagerActionBase inherited;
 
 public:
-    CAgentManagerActionGatherItems(CAgentManager* object, LPCSTR action_name = "");
+    explicit CAgentManagerActionGatherItems(CAgentManager* object, LPCSTR action_name = "");
+    ~CAgentManagerActionGatherItems() override = default;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -47,11 +54,15 @@ public:
 
 class CAgentManagerActionKillEnemy : public CAgentManagerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerActionKillEnemy, CAgentManagerActionBase);
+
 protected:
     typedef CAgentManagerActionBase inherited;
 
 public:
-    CAgentManagerActionKillEnemy(CAgentManager* object, LPCSTR action_name = "");
+    explicit CAgentManagerActionKillEnemy(CAgentManager* object, LPCSTR action_name = "");
+    ~CAgentManagerActionKillEnemy() override = default;
+
     virtual void initialize();
     virtual void finalize();
     virtual void execute();
@@ -63,11 +74,15 @@ public:
 
 class CAgentManagerActionReactOnDanger : public CAgentManagerActionBase
 {
+    RTTI_DECLARE_TYPEINFO(CAgentManagerActionReactOnDanger, CAgentManagerActionBase);
+
 protected:
     typedef CAgentManagerActionBase inherited;
 
 public:
-    CAgentManagerActionReactOnDanger(CAgentManager* object, LPCSTR action_name = "");
+    explicit CAgentManagerActionReactOnDanger(CAgentManager* object, LPCSTR action_name = "");
+    ~CAgentManagerActionReactOnDanger() override = default;
+
     virtual void initialize();
     virtual void execute();
 };

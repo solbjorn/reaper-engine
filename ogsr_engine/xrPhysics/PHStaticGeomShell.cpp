@@ -1,10 +1,15 @@
 #include "stdafx.h"
+
 #include "PHStaticGeomShell.h"
 #include "SpaceUtils.h"
 #include "GameObject.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHCollideValidator.h"
+
+CPHStaticGeomShell::CPHStaticGeomShell() { spatial.type |= STYPE_PHYSIC; }
+CPHStaticGeomShell::~CPHStaticGeomShell() = default;
+
 void CPHStaticGeomShell::get_spatial_params()
 {
     Fvector AABB;
@@ -18,6 +23,7 @@ void CPHStaticGeomShell::PhDataUpdate(dReal step)
     PhysicsRefObject()->enable_notificate();
     CPHUpdateObject::Deactivate();
 }
+
 void CPHStaticGeomShell::Activate(const Fmatrix& form)
 {
     build();
@@ -32,8 +38,6 @@ void CPHStaticGeomShell::Deactivate()
     CPHUpdateObject::Deactivate();
     destroy();
 }
-
-CPHStaticGeomShell::CPHStaticGeomShell() { spatial.type |= STYPE_PHYSIC; }
 
 namespace
 {

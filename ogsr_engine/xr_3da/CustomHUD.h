@@ -28,7 +28,7 @@ class XR_NOVTABLE CCustomHUD : public DLL_Pure, public IEventReceiver
 
 public:
     CCustomHUD();
-    virtual ~CCustomHUD();
+    ~CCustomHUD() override;
 
     virtual void Load() {}
 

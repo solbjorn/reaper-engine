@@ -15,11 +15,11 @@ SSpecificCharacterData::SSpecificCharacterData()
     m_ActorDialogs.clear();
 }
 
-SSpecificCharacterData::~SSpecificCharacterData() {}
+SSpecificCharacterData::~SSpecificCharacterData() = default;
 #endif
 
 CSpecificCharacter::CSpecificCharacter() = default;
-CSpecificCharacter::~CSpecificCharacter() {}
+CSpecificCharacter::~CSpecificCharacter() = default;
 
 void CSpecificCharacter::InitXmlIdToIndex()
 {

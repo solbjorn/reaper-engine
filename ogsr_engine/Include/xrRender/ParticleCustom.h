@@ -6,7 +6,7 @@ class XR_NOVTABLE IParticleCustom : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(IParticleCustom);
 
 public:
-    virtual ~IParticleCustom() = 0;
+    ~IParticleCustom() override = 0;
 
     virtual void OnDeviceCreate() = 0;
     virtual void OnDeviceDestroy() = 0;

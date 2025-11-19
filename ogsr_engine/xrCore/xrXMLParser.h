@@ -7,6 +7,7 @@ constexpr inline LPCSTR GAME_PATH = "gameplay";
 constexpr inline LPCSTR STRING_TABLE_PATH = "text";
 
 XR_DIAG_PUSH();
+XR_DIAG_IGNORE("-Winconsistent-missing-destructor-override");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 
 #include <tinyxml2.h>
@@ -24,7 +25,7 @@ public:
     string_path m_xml_file_name{};
 
     CXml();
-    virtual ~CXml();
+    ~CXml() override;
 
     void ClearInternal();
 
@@ -97,9 +98,6 @@ public:
     virtual shared_str correct_file_name(LPCSTR, LPCSTR fn) { return shared_str{fn}; }
 
 private:
-    CXml(const CXml& copy);
-    void operator=(const CXml& copy);
-
     using XML_ELEM = tinyxml2::XMLElement;
     using XML_TEXT = tinyxml2::XMLText;
 

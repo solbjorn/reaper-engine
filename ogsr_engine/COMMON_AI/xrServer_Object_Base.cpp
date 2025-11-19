@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "xrServer_Objects.h"
+
 #include "xrMessages.h"
 #include "game_base_space.h"
 #include "script_value_container_impl.h"
@@ -203,7 +204,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 {
     u16 dummy16;
     // generic
-    tNetPacket.r_begin(dummy16);
+    std::ignore = tNetPacket.r_begin(dummy16);
     R_ASSERT(M_SPAWN == dummy16);
     tNetPacket.r_stringZ(s_name);
 
@@ -259,30 +260,34 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
     if (m_wVersion < 112)
     {
         if (m_wVersion > 82)
-            tNetPacket.r_float(); // m_spawn_probability);
+            std::ignore = tNetPacket.r_float(); // m_spawn_probability);
 
         if (m_wVersion > 83)
         {
-            tNetPacket.r_u32(); // m_spawn_flags.assign(tNetPacket.r_u32());
+            std::ignore = tNetPacket.r_u32(); // m_spawn_flags.assign(tNetPacket.r_u32());
+
             xr_string temp;
             tNetPacket.r_stringZ(temp); // tNetPacket.r_stringZ(m_spawn_control);
-            tNetPacket.r_u32(); // m_max_spawn_count);
+
+            std::ignore = tNetPacket.r_u32(); // m_max_spawn_count);
             // this stuff we do not need even in case of uncomment
-            tNetPacket.r_u32(); // m_spawn_count);
-            tNetPacket.r_u64(); // m_last_spawn_time);
+            std::ignore = tNetPacket.r_u32(); // m_spawn_count);
+            std::ignore = tNetPacket.r_u64(); // m_last_spawn_time);
         }
 
         if (m_wVersion > 84)
         {
-            tNetPacket.r_u64(); // m_min_spawn_interval);
-            tNetPacket.r_u64(); // m_max_spawn_interval);
+            std::ignore = tNetPacket.r_u64(); // m_min_spawn_interval);
+            std::ignore = tNetPacket.r_u64(); // m_max_spawn_interval);
         }
     }
 
     u16 size;
     tNetPacket.r_u16(size); // size
     R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "cannot read object, which is not successfully saved :(", name_replace());
+
     STATE_Read(tNetPacket, size);
+
     return TRUE;
 }
 

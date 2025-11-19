@@ -13,7 +13,7 @@ class CScriptValue : public virtual RTTI::Enable
     RTTI_DECLARE_TYPEINFO(CScriptValue);
 
 public:
-    virtual ~CScriptValue() {}
+    ~CScriptValue() override = default;
 };
 
 class CScriptValueContainer : public virtual RTTI::Enable
@@ -24,7 +24,7 @@ protected:
     xr_vector<CScriptValue*> m_values;
 
 public:
-    virtual ~CScriptValueContainer();
+    ~CScriptValueContainer() override;
 
     IC void assign();
     IC void clear();
