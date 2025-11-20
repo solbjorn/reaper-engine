@@ -84,7 +84,7 @@ void CHOM::Load()
     // Load tris and merge them
     CDB::Collector CL;
     {
-        std::unique_ptr<IReader> S{fs->open_chunk(1)};
+        const auto S = absl::WrapUnique(fs->open_chunk(1));
 
         for (auto& poly : std::span{static_cast<const HOM_poly*>(S->pointer()), static_cast<const HOM_poly*>(S->end())})
             CL.add_face_packed_D(poly.v1, poly.v2, poly.v3, poly.flags, 0.01f);

@@ -219,7 +219,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
     CDB::Collector CL;
     {
         // load geometry
-        std::unique_ptr<IReader> geom{I->open_chunk(1)};
+        const auto geom = absl::WrapUnique(I->open_chunk(1));
         VERIFY2(geom, "Corrupted SOM file");
         if (!geom)
             return;
@@ -262,7 +262,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     names->close();
 
     // Load geometry
-    std::unique_ptr<IReader> geom{I->open_chunk(1)};
+    const auto geom = absl::WrapUnique(I->open_chunk(1));
 
     hdrCFORM H;
     geom->r(&H, sizeof(hdrCFORM));

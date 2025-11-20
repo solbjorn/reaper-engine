@@ -95,7 +95,7 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
         }
         else
         {
-            std::unique_ptr<IReader> reader{FS.r_open(file_name)};
+            const auto reader = absl::WrapUnique(FS.r_open(file_name));
             reader->skip_bom(file_name);
 
             const xr_string temp{static_cast<gsl::czstring>(reader->pointer()), gsl::narrow_cast<size_t>(reader->elapsed())};

@@ -31,7 +31,7 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
     Fvisual::Load(N, data, dwFlags);
 
     // normal SWI
-    std::unique_ptr<IReader> lods{data->open_chunk(OGF_SWIDATA)};
+    const auto lods = absl::WrapUnique(data->open_chunk(OGF_SWIDATA));
 
     nSWI.reserved[0] = lods->r_u32(); // reserved 16 bytes
     nSWI.reserved[1] = lods->r_u32();
@@ -45,8 +45,8 @@ void FProgressive::Load(const char* N, IReader* data, u32 dwFlags)
     // fast
     if (m_fast)
     {
-        std::unique_ptr<IReader> geomdef{data->open_chunk(OGF_FASTPATH)};
-        std::unique_ptr<IReader> def{geomdef->open_chunk(OGF_SWIDATA)};
+        const auto geomdef = absl::WrapUnique(data->open_chunk(OGF_FASTPATH));
+        const auto def = absl::WrapUnique(geomdef->open_chunk(OGF_SWIDATA));
 
         xSWI = xr_new<FSlideWindowItem>();
         xSWI->reserved[0] = def->r_u32(); // reserved 16 bytes

@@ -62,8 +62,8 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         // check for fast-vertices
         if (data->find_chunk(OGF_FASTPATH))
         {
-            std::unique_ptr<IReader> geomdef{data->open_chunk(OGF_FASTPATH)};
-            std::unique_ptr<IReader> def{geomdef->open_chunk(OGF_GCONTAINER)};
+            const auto geomdef = absl::WrapUnique(data->open_chunk(OGF_FASTPATH));
+            const auto def = absl::WrapUnique(geomdef->open_chunk(OGF_GCONTAINER));
 
             // we have fast-mesh
             m_fast = xr_new<IRender_Mesh>();

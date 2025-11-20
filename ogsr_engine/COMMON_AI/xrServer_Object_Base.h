@@ -205,4 +205,13 @@ add_to_type_list(CSE_Abstract);
 #undef script_type_list
 #define script_type_list save_type_list(CSE_Abstract)
 
+namespace xr
+{
+template <typename T>
+inline std::unique_ptr<CSE_Abstract> server_factory(std::unique_ptr<T>& self)
+{
+    return absl::WrapUnique(static_cast<CSE_Abstract*>(self.release()));
+}
+} // namespace xr
+
 u16 script_server_object_version();
