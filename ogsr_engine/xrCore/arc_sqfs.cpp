@@ -1,10 +1,14 @@
 #include "stdafx.h"
 
+#include "LocatorAPI.h"
+
 #include "FS_internal.h"
 #include "stream_reader.h"
 
-#include <concurrentqueue.h>
+#include <bitmap_object_pool.hpp>
 
+namespace sqfs
+{
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wold-style-cast");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -18,66 +22,94 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <sqfs/io.h>
 
 XR_DIAG_POP();
+} // namespace sqfs
 
-struct CLocatorAPI::archive::xr_sqfs
+template <>
+struct std::default_delete<sqfs::sqfs_data_reader_t>
 {
-    struct reader
+    constexpr void operator()(sqfs::sqfs_data_reader_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_dir_entry_t>
+{
+    constexpr void operator()(sqfs::sqfs_dir_entry_t* ptr) const noexcept { xr_free(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_dir_iterator_t>
+{
+    constexpr void operator()(sqfs::sqfs_dir_iterator_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_dir_reader_t>
+{
+    constexpr void operator()(sqfs::sqfs_dir_reader_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_file_t>
+{
+    constexpr void operator()(sqfs::sqfs_file_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_id_table_t>
+{
+    constexpr void operator()(sqfs::sqfs_id_table_t* ptr) const noexcept { sqfs::sqfs_drop(ptr); }
+};
+
+template <>
+struct std::default_delete<sqfs::sqfs_inode_generic_t>
+{
+    constexpr void operator()(sqfs::sqfs_inode_generic_t* ptr) const noexcept { xr_free(ptr); }
+};
+
+class CLocatorAPI::archive::xr_sqfs
+{
+public:
+    class reader
     {
-        sqfs_file_t* file;
-        sqfs_dir_reader_t* dr;
-        sqfs_data_reader_t* data;
+    public:
+        std::unique_ptr<sqfs::sqfs_file_t> file;
+        std::unique_ptr<sqfs::sqfs_dir_reader_t> dr;
+        std::unique_ptr<sqfs::sqfs_data_reader_t> data;
+
+        reader() = delete;
+        explicit reader(const archive& arc);
     };
 
 private:
-    moodycamel::ConcurrentQueue<reader*> q;
+    class pool_t final : public tzcnt_utils::BitmapObjectPoolImpl<reader, pool_t>
+    {
+        friend class tzcnt_utils::BitmapObjectPoolImpl<reader, pool_t>;
 
-    [[nodiscard]] reader* alloc(const archive& arc);
+        void initialize(void* location, const archive& arc) { new (location) reader{arc}; }
+    };
+
+    pool_t pool;
 
 public:
-    sqfs_super_t super{};
+    sqfs::sqfs_super_t super{};
 
-    [[nodiscard]] reader* get(const archive& arc)
-    {
-        reader* rd;
+    xr_sqfs() = delete;
+    explicit xr_sqfs(sqfs::sqfs_file_t& file) { R_ASSERT(sqfs::sqfs_super_read(&super, &file) == 0); }
 
-        if (!q.try_dequeue(rd))
-            rd = alloc(arc);
-
-        return rd;
-    }
-
-    void put(reader* rd) { q.enqueue(rd); }
-
-    void drain();
+    [[nodiscard]] auto acquire_scoped(const archive& arc) { return pool.acquire_scoped(arc); }
 };
 
-CLocatorAPI::archive::xr_sqfs::reader* CLocatorAPI::archive::xr_sqfs::alloc(const archive& arc)
+CLocatorAPI::archive::xr_sqfs::reader::reader(const archive& arc)
 {
-    reader* rd = xr_new<reader>();
+    sqfs::sqfs_file_t* f;
+    R_ASSERT(sqfs::sqfs_file_open(&f, arc.path.c_str(), sqfs::SQFS_FILE_OPEN_READ_ONLY | sqfs::SQFS_FILE_OPEN_NO_CHARSET_XFRM) == 0);
+    file = absl::WrapUnique(f);
 
-    R_ASSERT(!sqfs_file_open(&rd->file, *arc.path, SQFS_FILE_OPEN_READ_ONLY));
+    dr = absl::WrapUnique(sqfs::sqfs_dir_reader_create(&arc.fs->super, arc.cmp, file.get(), 0));
+    data = absl::WrapUnique(sqfs::sqfs_data_reader_create(file.get(), arc.fs->super.block_size, arc.cmp, 0));
+    R_ASSERT(dr && data);
 
-    rd->dr = sqfs_dir_reader_create(&arc.fs->super, arc.cmp, rd->file, 0);
-    rd->data = sqfs_data_reader_create(rd->file, arc.fs->super.block_size, arc.cmp, 0);
-
-    R_ASSERT(rd->dr && rd->data);
-    R_ASSERT(!sqfs_data_reader_load_fragment_table(rd->data, &arc.fs->super));
-
-    return rd;
-}
-
-void CLocatorAPI::archive::xr_sqfs::drain()
-{
-    reader* rd;
-
-    while (q.try_dequeue(rd))
-    {
-        sqfs_drop(rd->data);
-        sqfs_drop(rd->dr);
-        sqfs_drop(rd->file);
-
-        xr_delete(rd);
-    }
+    R_ASSERT(sqfs::sqfs_data_reader_load_fragment_table(data.get(), &arc.fs->super) == 0);
 }
 
 /* Stream reader for a file inside squashfs */
@@ -87,121 +119,106 @@ class CLocatorAPI::archive::xr_sqfs_stream : public CStreamReader
     RTTI_DECLARE_TYPEINFO(CLocatorAPI::archive::xr_sqfs_stream, CStreamReader);
 
 private:
-    const archive* arc{};
-    xr_sqfs::reader* rd;
-    sqfs_inode_generic_t* inode;
+    const decltype(std::declval<xr_sqfs>().acquire_scoped(std::declval<archive>())) obj;
+    std::unique_ptr<sqfs::sqfs_inode_generic_t> inode;
 
-    gsl::index fbase{};
-    gsl::index fsize{};
+    xr_vector<std::byte> buf;
+    gsl::index wnd;
+
+    gsl::index fbase;
+    gsl::index fsize;
     gsl::index foff{};
 
-    gsl::index bsize{};
+    gsl::index bsize;
     gsl::index bread{};
     gsl::index boff{};
 
-    std::byte* buf;
-    u64 ref{};
-    gsl::index wnd{};
+    const archive& arc;
+    sqfs::sqfs_u64 ref;
 
-    void destroy()
-    {
-        if (!arc)
-            return;
-
-        xr_free(buf);
-        xr_free(inode);
-        arc->fs->put(rd);
-
-        memset(reinterpret_cast<u8*>(this) + offsetof(xr_sqfs_stream, arc), 0, offsetof(xr_sqfs_stream, wnd) + sizeof(wnd) - offsetof(xr_sqfs_stream, arc));
-    }
+    [[nodiscard]] const auto& rd() const { return obj.value; }
 
 public:
-    void construct(const archive* arcin, u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin);
-    void construct(const archive* arcin, u64 inodein, gsl::index sz, gsl::index wndin) { construct(arcin, inodein, 0, sz, wndin); }
+    xr_sqfs_stream() = delete;
+    explicit xr_sqfs_stream(const archive& arcin, sqfs::sqfs_u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin);
+    ~xr_sqfs_stream() override = default;
+
+    void close() override;
 
     [[nodiscard]] gsl::index elapsed() const override { return fsize - tell(); }
     [[nodiscard]] gsl::index length() const override { return fsize; }
     [[nodiscard]] gsl::index tell() const override { return foff + boff; }
     void seek(gsl::index offset) override { advance(offset - tell()); }
 
-    void close() override
-    {
-        destroy();
-
-        xr_sqfs_stream* self = this;
-        xr_delete(self);
-    }
-
-    void advance(gsl::index offset) override
-    {
-        gsl::index noff = boff + offset;
-        if (noff >= 0 && noff < bsize)
-        {
-            boff = noff;
-            gsl::index nread = bread - offset;
-            bread = std::max(nread, 0z);
-
-            if (offset < 0)
-                R_ASSERT(sqfs_data_reader_read(rd->data, inode, gsl::narrow_cast<sqfs_u64>(fbase + foff + boff), buf + boff, gsl::narrow_cast<sqfs_u32>(-offset)) == -offset);
-        }
-        else
-        {
-            foff += noff;
-
-            gsl::index woff = xr::rounddown(foff, wnd);
-            boff = foff - woff;
-            foff = woff;
-
-            bread = 0;
-        }
-    }
-
+    void advance(gsl::index offset) override;
     void r(void* buffer, gsl::index buffer_size) override;
     [[nodiscard]] CStreamReader* open_chunk(u32 chunk_id) override;
 };
 
-void CLocatorAPI::archive::xr_sqfs_stream::construct(const CLocatorAPI::archive* arcin, u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin)
+CLocatorAPI::archive::xr_sqfs_stream::xr_sqfs_stream(const archive& arcin, sqfs::sqfs_u64 inodein, gsl::index base, gsl::index sz, gsl::index wndin)
+    : obj{arcin.fs->acquire_scoped(arcin)}, wnd{wndin}, fbase{base}, fsize{sz}, arc{arcin}, ref{inodein}
 {
-    if (arc)
-        destroy();
-
-    arc = arcin;
-    fbase = base;
-    fsize = sz;
-
-    ref = inodein;
-    wnd = wndin;
     R_ASSERT(std::has_single_bit(gsl::narrow_cast<size_t>(wnd)));
 
-    rd = arc->fs->get(*arc);
-    R_ASSERT(!sqfs_dir_reader_get_inode(rd->dr, ref, &inode));
+    sqfs::sqfs_inode_generic_t* in;
+    R_ASSERT(sqfs::sqfs_dir_reader_get_inode(rd().dr.get(), ref, &in) == 0);
+    inode = absl::WrapUnique(in);
 
     bsize = std::min(wnd, fsize);
-    buf = xr_alloc<std::byte>(bsize);
+    buf.resize(gsl::narrow_cast<size_t>(bsize));
+}
+
+void CLocatorAPI::archive::xr_sqfs_stream::close()
+{
+    auto self = this;
+    xr_delete(self);
+}
+
+void CLocatorAPI::archive::xr_sqfs_stream::advance(gsl::index offset)
+{
+    const auto noff = boff + offset;
+    if (noff >= 0 && noff < bsize)
+    {
+        boff = noff;
+        bread = std::max(bread - offset, 0z);
+
+        if (offset < 0)
+            R_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff + boff), &buf[gsl::narrow_cast<size_t>(boff)],
+                                                 gsl::narrow_cast<sqfs::sqfs_u32>(-offset)) == -offset);
+    }
+    else
+    {
+        foff += noff;
+
+        const auto woff = xr::rounddown(foff, wnd);
+        boff = foff - woff;
+        foff = woff;
+
+        bread = 0;
+    }
 }
 
 void CLocatorAPI::archive::xr_sqfs_stream::r(void* buffer, gsl::index buffer_size)
 {
     std::byte* cbuffer = static_cast<std::byte*>(buffer);
 
-    while (buffer_size && !eof())
+    while (buffer_size > 0 && !eof())
     {
-        if (!bread)
+        if (bread == 0)
         {
-            auto precache = std::min(bsize - boff, elapsed());
+            const auto precache = std::min(bsize - boff, elapsed());
 
-            R_ASSERT(sqfs_data_reader_read(rd->data, inode, gsl::narrow_cast<sqfs_u64>(fbase + foff + boff), buf + boff, gsl::narrow_cast<sqfs_u32>(precache)) == precache);
+            R_ASSERT(sqfs::sqfs_data_reader_read(rd().data.get(), inode.get(), gsl::narrow_cast<sqfs::sqfs_u64>(fbase + foff + boff), &buf[gsl::narrow_cast<size_t>(boff)],
+                                                 gsl::narrow_cast<sqfs::sqfs_u32>(precache)) == precache);
             bread += precache;
         }
 
-        gsl::index copy = std::min(buffer_size, bread);
-        std::memcpy(cbuffer, buf + boff, gsl::narrow_cast<size_t>(copy));
+        const auto copy = std::min(buffer_size, bread);
+        std::memcpy(cbuffer, &buf[gsl::narrow_cast<size_t>(boff)], gsl::narrow_cast<size_t>(copy));
 
         cbuffer += copy;
         buffer_size -= copy;
-
-        gsl::index off = copy;
-        advance(off);
+        advance(copy);
     }
 }
 
@@ -210,15 +227,12 @@ CStreamReader* CLocatorAPI::archive::xr_sqfs_stream::open_chunk(u32 chunk_id)
     BOOL compressed;
 
     const auto size = find_chunk(chunk_id, &compressed);
-    if (!size)
+    if (size == 0)
         return nullptr;
 
-    R_ASSERT2(!compressed, "cannot use xr_sqfs_stream on compressed chunks");
+    R_ASSERT2(compressed == false, "cannot use xr_sqfs_stream on compressed chunks");
 
-    xr_sqfs_stream* st = xr_new<xr_sqfs_stream>();
-    st->construct(arc, ref, tell(), size, wnd);
-
-    return st;
+    return xr_new<xr_sqfs_stream>(arc, ref, tell(), size, wnd);
 }
 
 /* SquashFS */
@@ -226,15 +240,14 @@ CStreamReader* CLocatorAPI::archive::xr_sqfs_stream::open_chunk(u32 chunk_id)
 void CLocatorAPI::archive::open_sqfs()
 {
     type = container::SQFS;
-    fs = xr_new<xr_sqfs>();
 
-    R_ASSERT(!sqfs_file_open(&file, *path, SQFS_FILE_OPEN_READ_ONLY));
-    R_ASSERT(!sqfs_super_read(&fs->super, file));
+    R_ASSERT(sqfs::sqfs_file_open(&file, path.c_str(), sqfs::SQFS_FILE_OPEN_READ_ONLY | sqfs::SQFS_FILE_OPEN_NO_CHARSET_XFRM) == 0);
+    fs = xr_new<xr_sqfs>(*file);
 
-    sqfs_compressor_config_t cfg;
-    sqfs_compressor_config_init(&cfg, gsl::narrow<SQFS_COMPRESSOR>(fs->super.compression_id), fs->super.block_size, SQFS_COMP_FLAG_UNCOMPRESS);
+    sqfs::sqfs_compressor_config_t cfg;
+    sqfs::sqfs_compressor_config_init(&cfg, gsl::narrow<sqfs::SQFS_COMPRESSOR>(fs->super.compression_id), fs->super.block_size, sqfs::SQFS_COMP_FLAG_UNCOMPRESS);
 
-    R_ASSERT(!sqfs_compressor_create(&cfg, &cmp));
+    R_ASSERT(sqfs::sqfs_compressor_create(&cfg, &cmp) == 0);
 }
 
 bool CLocatorAPI::archive::autoload_sqfs()
@@ -243,39 +256,38 @@ bool CLocatorAPI::archive::autoload_sqfs()
     return true;
 }
 
-const char* CLocatorAPI::archive::entry_point_sqfs() const
+gsl::czstring CLocatorAPI::archive::entry_point_sqfs() const
 {
     // Same as above: no meta -> default entry point
     return nullptr;
 }
 
-void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it) const
+void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, gsl::czstring path, sqfs::sqfs_dir_iterator_t& it) const
 {
-    sqfs_dir_entry_t* ent;
-
     for (;;)
     {
-        if (it->next(it, &ent))
+        sqfs::sqfs_dir_entry_t* ep;
+        if (it.next(&it, &ep) != 0)
             break;
 
-        string256 full;
-        strconcat(sizeof(full), full, path, ent->name);
+        const auto ent = absl::WrapUnique(ep);
+        string_path full;
+        xr_strconcat(full, path, ent->name);
 
-        if ((ent->mode & SQFS_INODE_MODE_MASK) == SQFS_INODE_MODE_DIR)
+        if ((ent->mode & sqfs::SQFS_INODE_MODE_MASK) == sqfs::SQFS_INODE_MODE_DIR)
         {
-            strconcat(sizeof(full), full, full, "\\");
+            xr_strcat(full, "\\");
 
-            sqfs_dir_iterator_t* sub;
+            sqfs::sqfs_dir_iterator_t* subp;
+            R_ASSERT(it.open_subdir(&it, &subp) == 0);
 
-            it->open_subdir(it, &sub);
-            index_dir_sqfs(loc, full, sub);
-            sqfs_drop(sub);
+            index_dir_sqfs(loc, full, *absl::WrapUnique(subp));
         }
         else
         {
             union
             {
-                u64 inode;
+                sqfs::sqfs_u64 inode;
                 struct
                 {
                     u32 ptr;
@@ -287,56 +299,49 @@ void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sq
 
             loc.Register(full, vfs_idx, attr.ptr, gsl::narrow<s64>(ent->size), attr.size_compressed, ent->mtime);
         }
-
-        xr_free(ent);
     }
 }
 
-void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, const char* fs_entry_point) const
+void CLocatorAPI::archive::index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
-    sqfs_inode_generic_t* inode;
-    sqfs_dir_iterator_t* it;
-    sqfs_id_table_t* idt;
+    const auto idt = absl::WrapUnique(sqfs::sqfs_id_table_create(0));
+    R_ASSERT(idt && sqfs::sqfs_id_table_read(idt.get(), file, &fs->super, cmp) == 0);
 
-    idt = sqfs_id_table_create(0);
-    R_ASSERT(idt);
-    R_ASSERT(!sqfs_id_table_read(idt, file, &fs->super, cmp));
+    const auto obj = fs->acquire_scoped(*this);
+    const auto& rd = obj.value;
 
-    auto* rd = fs->get(*this);
-    R_ASSERT(!sqfs_dir_reader_get_root_inode(rd->dr, &inode));
+    const auto it = [&idt, &rd] {
+        sqfs::sqfs_inode_generic_t* inp;
+        R_ASSERT(sqfs::sqfs_dir_reader_get_root_inode(rd.dr.get(), &inp) == 0);
+        const auto inode = absl::WrapUnique(inp);
 
-    R_ASSERT(!sqfs_dir_iterator_create(rd->dr, idt, rd->data, nullptr, inode, &it));
-    xr_free(inode);
+        sqfs::sqfs_dir_iterator_t* itp;
+        R_ASSERT(sqfs::sqfs_dir_iterator_create(rd.dr.get(), idt.get(), rd.data.get(), nullptr, inode.get(), &itp) == 0);
+        return absl::WrapUnique(itp);
+    };
 
-    index_dir_sqfs(loc, fs_entry_point, it);
-    sqfs_drop(it);
-
-    sqfs_drop(idt);
-    fs->put(rd);
+    index_dir_sqfs(loc, fs_entry_point, *it());
 }
 
-IReader* CLocatorAPI::archive::read_sqfs(const char*, const struct file& desc, u32) const
+IReader* CLocatorAPI::archive::read_sqfs(gsl::czstring, const struct file& desc, u32) const
 {
-    sqfs_inode_generic_t* inode;
-    auto* rd = fs->get(*this);
+    const auto obj = fs->acquire_scoped(*this);
+    const auto& rd = obj.value;
 
-    if (sqfs_dir_reader_get_inode(rd->dr, desc.inode, &inode))
+    sqfs::sqfs_inode_generic_t* inp;
+    if (sqfs::sqfs_dir_reader_get_inode(rd.dr.get(), desc.inode, &inp) != 0)
         return nullptr;
 
+    const auto inode = absl::WrapUnique(inp);
     std::byte* dest = xr_alloc<std::byte>(desc.size_real);
-    R_ASSERT(sqfs_data_reader_read(rd->data, inode, 0, dest, gsl::narrow_cast<sqfs_u32>(desc.size_real)) == desc.size_real);
-
-    xr_free(inode);
-    fs->put(rd);
+    R_ASSERT(sqfs::sqfs_data_reader_read(rd.data.get(), inode.get(), 0, dest, gsl::narrow_cast<sqfs::sqfs_u32>(desc.size_real)) == desc.size_real);
 
     return xr_new<CTempReader>(dest, desc.size_real, 0z);
 }
 
-CStreamReader* CLocatorAPI::archive::stream_sqfs(const char*, const struct file& desc) const
+CStreamReader* CLocatorAPI::archive::stream_sqfs(gsl::czstring, const struct file& desc) const
 {
-    xr_sqfs_stream* st = xr_new<xr_sqfs_stream>();
-    st->construct(this, desc.inode, desc.size_real, fs->super.block_size);
-    return st;
+    return xr_new<xr_sqfs_stream>(*this, desc.inode, 0, desc.size_real, fs->super.block_size);
 }
 
 void CLocatorAPI::archive::cleanup_sqfs()
@@ -346,14 +351,11 @@ void CLocatorAPI::archive::cleanup_sqfs()
 
 void CLocatorAPI::archive::close_sqfs()
 {
-    fs->drain();
-
-    sqfs_drop(cmp);
+    sqfs::sqfs_drop(cmp);
     cmp = nullptr;
 
     xr_delete(fs);
-    fs = nullptr;
 
-    sqfs_drop(file);
+    sqfs::sqfs_drop(file);
     file = nullptr;
 }

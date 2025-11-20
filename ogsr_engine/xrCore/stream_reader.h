@@ -21,6 +21,12 @@ public:
 
 inline CStreamReader::~CStreamReader() = default;
 
+template <>
+struct std::default_delete<CStreamReader>
+{
+    constexpr void operator()(CStreamReader* ptr) const noexcept { ptr->close(); }
+};
+
 class CMapStreamReader : public CStreamReader
 {
     RTTI_DECLARE_TYPEINFO(CMapStreamReader, CStreamReader);

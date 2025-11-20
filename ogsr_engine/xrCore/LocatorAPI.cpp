@@ -10,6 +10,8 @@
 
 #include <filesystem>
 
+namespace sqfs
+{
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wold-style-cast");
 XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
@@ -17,6 +19,7 @@ XR_DIAG_IGNORE("-Wzero-as-null-pointer-constant");
 #include <sqfs/super.h>
 
 XR_DIAG_POP();
+} // namespace sqfs
 
 #include <direct.h>
 #include <fcntl.h>
@@ -275,9 +278,9 @@ void CLocatorAPI::archive::open()
 }
 
 IC bool CLocatorAPI::archive::autoload() { return type == container::SQFS ? autoload_sqfs() : autoload_db(); }
-IC const char* CLocatorAPI::archive::entry_point() const { return type == container::SQFS ? entry_point_sqfs() : entry_point_db(); }
+IC gsl::czstring CLocatorAPI::archive::entry_point() const { return type == container::SQFS ? entry_point_sqfs() : entry_point_db(); }
 
-IC void CLocatorAPI::archive::index(CLocatorAPI& loc, const char* fs_entry_point) const
+IC void CLocatorAPI::archive::index(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
     if (type == container::SQFS)
         index_sqfs(loc, fs_entry_point);
@@ -285,12 +288,12 @@ IC void CLocatorAPI::archive::index(CLocatorAPI& loc, const char* fs_entry_point
         index_db(loc, fs_entry_point);
 }
 
-IC IReader* CLocatorAPI::archive::read(const char* fname, const struct file& desc, u32 gran) const
+IC IReader* CLocatorAPI::archive::read(gsl::czstring fname, const struct file& desc, u32 gran) const
 {
     return type == container::SQFS ? read_sqfs(fname, desc, gran) : read_db(fname, desc, gran);
 }
 
-IC CStreamReader* CLocatorAPI::archive::stream(const char* fname, const struct file& desc) const
+IC CStreamReader* CLocatorAPI::archive::stream(gsl::czstring fname, const struct file& desc) const
 {
     return type == container::SQFS ? stream_sqfs(fname, desc) : stream_db(fname, desc);
 }

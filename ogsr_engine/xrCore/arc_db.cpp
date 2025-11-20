@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "LocatorAPI.h"
+
 #include "FS_internal.h"
 #include "stream_reader.h"
 #include "trivial_encryptor.h"
@@ -26,7 +28,7 @@ constexpr struct
 #undef EXCL_RU
 };
 
-IReader* open_chunk(void* ptr, u32 ID, const char* archiveName, s64 archiveSize, u32 key = 0)
+IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSize, u32 key = 0)
 {
     u32 dwType = INVALID_SET_FILE_POINTER;
     unsigned long read_byte{};
@@ -113,9 +115,9 @@ bool CLocatorAPI::archive::autoload_db()
     return load;
 }
 
-const char* CLocatorAPI::archive::entry_point_db() const { return header ? header->r_string("header", "entry_point") : nullptr; }
+gsl::czstring CLocatorAPI::archive::entry_point_db() const { return header ? header->r_string("header", "entry_point") : nullptr; }
 
-void CLocatorAPI::archive::index_db(CLocatorAPI& loc, const char* fs_entry_point) const
+void CLocatorAPI::archive::index_db(CLocatorAPI& loc, gsl::czstring fs_entry_point) const
 {
     IReader* hdr = open_chunk(hSrcFile, 1, path.c_str(), size, key);
     R_ASSERT(hdr);
@@ -159,7 +161,7 @@ void CLocatorAPI::archive::index_db(CLocatorAPI& loc, const char* fs_entry_point
     hdr->close();
 }
 
-IReader* CLocatorAPI::archive::read_db(const char* fname, const struct file& desc, u32 gran) const
+IReader* CLocatorAPI::archive::read_db(gsl::czstring fname, const struct file& desc, u32 gran) const
 {
     gsl::index start = (desc.ptr / gran) * gran;
     gsl::index end = (desc.ptr + desc.size_compressed) / gran;
@@ -192,7 +194,7 @@ IReader* CLocatorAPI::archive::read_db(const char* fname, const struct file& des
     return xr_new<CPackReader>(ptr, ptr + ptr_offs, desc.size_real);
 }
 
-CStreamReader* CLocatorAPI::archive::stream_db(const char* fname, const struct file& desc) const
+CStreamReader* CLocatorAPI::archive::stream_db(gsl::czstring fname, const struct file& desc) const
 {
     R_ASSERT2(desc.size_compressed == desc.size_real, make_string("cannot use stream reading for compressed data %s, do not compress data to be streamed", fname));
 

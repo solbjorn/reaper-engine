@@ -10,9 +10,12 @@
 
 class CStreamReader;
 
+namespace sqfs
+{
 struct sqfs_compressor_t;
 struct sqfs_dir_iterator_t;
 struct sqfs_file_t;
+} // namespace sqfs
 
 class CLocatorAPI
 {
@@ -59,8 +62,8 @@ private:
         s64 size{};
 
     private:
+        class xr_sqfs;
         class xr_sqfs_stream;
-        struct xr_sqfs;
 
         enum class container
         {
@@ -75,8 +78,8 @@ private:
             // SquashFS
             struct
             {
-                sqfs_file_t* file{};
-                sqfs_compressor_t* cmp{};
+                sqfs::sqfs_file_t* file{};
+                sqfs::sqfs_compressor_t* cmp{};
                 xr_sqfs* fs{};
             };
 
@@ -97,10 +100,10 @@ private:
         // Implementation wrappers
         void open();
         [[nodiscard]] IC bool autoload();
-        [[nodiscard]] IC const char* entry_point() const;
-        IC void index(CLocatorAPI& loc, const char* fs_entry_point) const;
-        [[nodiscard]] IC IReader* read(const char* fname, const struct file& desc, u32 gran) const;
-        [[nodiscard]] IC CStreamReader* stream(const char* fname, const struct file& desc) const;
+        [[nodiscard]] IC gsl::czstring entry_point() const;
+        IC void index(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IC IReader* read(gsl::czstring fname, const struct file& desc, u32 gran) const;
+        [[nodiscard]] IC CStreamReader* stream(gsl::czstring fname, const struct file& desc) const;
         IC void cleanup();
         void close();
 
@@ -108,21 +111,21 @@ private:
         // SquashFS
         void open_sqfs();
         [[nodiscard]] bool autoload_sqfs();
-        [[nodiscard]] const char* entry_point_sqfs() const;
-        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it) const;
-        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point) const;
-        [[nodiscard]] IReader* read_sqfs(const char*, const struct file& desc, u32) const;
-        [[nodiscard]] CStreamReader* stream_sqfs(const char*, const struct file& desc) const;
+        [[nodiscard]] gsl::czstring entry_point_sqfs() const;
+        void index_dir_sqfs(CLocatorAPI& loc, gsl::czstring path, sqfs::sqfs_dir_iterator_t& it) const;
+        void index_sqfs(CLocatorAPI& loc, gsl::czstring fs_entry_point) const;
+        [[nodiscard]] IReader* read_sqfs(gsl::czstring, const struct file& desc, u32) const;
+        [[nodiscard]] CStreamReader* stream_sqfs(gsl::czstring, const struct file& desc) const;
         void cleanup_sqfs();
         void close_sqfs();
 
         // DB
         void open_db();
         [[nodiscard]] bool autoload_db();
-        [[nodiscard]] const char* entry_point_db() const;
-        void index_db(CLocatorAPI& loc, const char* entry_point) const;
-        [[nodiscard]] IReader* read_db(const char* fname, const struct file& desc, u32 gran) const;
-        [[nodiscard]] CStreamReader* stream_db(const char* fname, const struct file& desc) const;
+        [[nodiscard]] gsl::czstring entry_point_db() const;
+        void index_db(CLocatorAPI& loc, gsl::czstring entry_point) const;
+        [[nodiscard]] IReader* read_db(gsl::czstring fname, const struct file& desc, u32 gran) const;
+        [[nodiscard]] CStreamReader* stream_db(gsl::czstring fname, const struct file& desc) const;
         void cleanup_db();
         void close_db();
     };

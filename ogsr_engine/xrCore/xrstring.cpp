@@ -34,10 +34,10 @@ private:
     {
         friend class tzcnt_utils::BitmapObjectPoolImpl<map_t, pool_t>;
 
-        void initialize(void* location)
+        void initialize(void* location, size_t cap)
         {
             auto* map = new (location) map_t{};
-            map->reserve(base_cap);
+            map->reserve(cap);
         }
     };
 
@@ -47,7 +47,7 @@ public:
     str_container_impl()
     {
         // Pre-populate 1 map with doubled default capacity
-        pool.acquire_scoped().value.reserve(first_base_cap);
+        pool.acquire_scoped(first_base_cap);
     }
 
     [[nodiscard]] str_value* insert(gsl::czstring str);
@@ -63,7 +63,7 @@ str_value* str_container_impl::insert(gsl::czstring str)
     const absl::string_view sv{str};
     const auto xxh = xxh::XXH3_64bits(sv.data(), sv.size());
 
-    const auto obj = pool.acquire_scoped();
+    const auto obj = pool.acquire_scoped(base_cap);
     auto& map = obj.value;
 
     const auto iter = map.find(xxh);
