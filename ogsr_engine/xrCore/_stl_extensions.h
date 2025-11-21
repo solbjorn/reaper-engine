@@ -11,6 +11,8 @@ XR_DIAG_POP();
 #include <absl/container/flat_hash_map.h>
 #include <absl/hash/hash.h>
 
+#include <plf_bitset.h>
+
 #include <stack>
 
 #include "xalloc.h"
@@ -31,8 +33,14 @@ void clear_and_reserve(xr_vector<T>& vec)
     }
 }
 
+namespace xr
+{
 template <typename T, size_t N, typename allocator = xr_allocator<T>>
-using xr_inlined_vector = absl::InlinedVector<T, N, allocator>;
+using inlined_vector = absl::InlinedVector<T, N, allocator>;
+
+template <size_t total_size, typename storage_type = size_t>
+using bitset = plf::bitset<total_size, storage_type, true>;
+} // namespace xr
 
 template <typename T, typename allocator = xr_allocator<T>>
 using xr_deque = std::deque<T, allocator>;

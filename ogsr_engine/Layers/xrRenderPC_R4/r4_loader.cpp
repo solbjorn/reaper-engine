@@ -399,7 +399,7 @@ void CRender::LoadSectors(IReader* fs)
         dsgraph.load(sectors_data, portals_data);
     }
 
-    contexts_used.zero();
+    contexts_used.reset();
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)

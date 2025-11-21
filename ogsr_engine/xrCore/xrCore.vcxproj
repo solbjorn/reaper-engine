@@ -175,7 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
-    <ClInclude Include="bitmap.h" />
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
     <ClInclude Include="FTimer.h" />

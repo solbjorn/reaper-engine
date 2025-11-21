@@ -30,6 +30,16 @@ ICF void xr_cpuid(u32* regs, u32 leaf)
     __cpuid(regs, leaf);
 #endif
 }
+
+template <typename T, std::unsigned_integral In>
+constexpr void from_unsigned(T& set, In in)
+{
+    for (size_t pos{}; pos < std::min(set.size(), sizeof(In) * 8); ++pos)
+    {
+        if (in & (In{1} << pos))
+            set.set(pos);
+    }
+}
 } // namespace
 
 _processor_info::_processor_info()
@@ -54,24 +64,24 @@ _processor_info::_processor_info()
     stepping = cpinfo[0] & 0xf;
     model = ((cpinfo[0] >> 4) & 0xf) | (((cpinfo[0] >> 16) & 0xf) << 4);
     family = ((cpinfo[0] >> 8) & 0xf) | (((cpinfo[0] >> 20) & 0xff) << 4);
-    m_f1_ECX.init(cpinfo[2]);
-    m_f1_EDX.init(cpinfo[3]);
+    from_unsigned(m_f1_ECX, cpinfo[2]);
+    from_unsigned(m_f1_EDX, cpinfo[3]);
 
     // and check 3DNow! support
     xr_cpuid(cpinfo, 0x80000001);
-    m_f81_ECX.init(cpinfo[2]);
-    m_f81_EDX.init(cpinfo[3]);
+    from_unsigned(m_f81_ECX, cpinfo[2]);
+    from_unsigned(m_f81_EDX, cpinfo[3]);
 
     // get version of OS
     const u32 dwMajorVersion = GetVersion() & std::numeric_limits<u8>::max();
     if (dwMajorVersion <= 5) // XP don't support SSE3+ instruction sets
     {
-        m_f1_ECX.clear(0);
-        m_f1_ECX.clear(9);
-        m_f1_ECX.clear(19);
-        m_f1_ECX.clear(20);
-        m_f1_ECX.clear(28);
-        m_f81_ECX.clear(6);
+        m_f1_ECX.reset(0);
+        m_f1_ECX.reset(9);
+        m_f1_ECX.reset(19);
+        m_f1_ECX.reset(20);
+        m_f1_ECX.reset(28);
+        m_f81_ECX.reset(6);
     }
 
     // Calculate available processors

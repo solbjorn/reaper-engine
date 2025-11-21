@@ -96,7 +96,7 @@ XR_TRIVIAL_ASSERT(edge);
 void Collector::calc_adjacency(xr_vector<u32>& dest) const
 {
     const auto edge_count = faces.size() * 3;
-    xr_inlined_vector<edge, 24> edges;
+    xr::inlined_vector<edge, 24> edges;
     edges.reserve(edge_count);
 
     for (auto [id, face] : xr::views_enumerate(faces))

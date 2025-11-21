@@ -13,7 +13,7 @@
       <ObjectFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
       <AdditionalOptions>%(AdditionalOptions) /FI$(SolutionDir)\3rd_party\Src\abseil\override.h /source-charset:utf-8 /we4566 /we4828 /we4715 /we4189 /we4595 /we4834 /we4018 /we4101 /we4552</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\DirectXMath\Inc;$(SolutionDir)\3rd_party\Src\GSL\include;$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\callme\Impl;$(SolutionDir)\3rd_party\Src\rtti\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\DirectXMath\Inc;$(SolutionDir)\3rd_party\Src\GSL\include;$(SolutionDir)\3rd_party\Src\abseil\abseil-cpp;$(SolutionDir)\3rd_party\Src\callme\Impl;$(SolutionDir)\3rd_party\Src\plf_bitsets;$(SolutionDir)\3rd_party\Src\rtti\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>

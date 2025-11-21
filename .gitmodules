@@ -62,6 +62,9 @@
 [submodule "3rd_party/Src/openal-soft/openal-soft"]
 	path = 3rd_party/Src/openal-soft/openal-soft
 	url = https://github.com/kcat/openal-soft.git
+[submodule "3rd_party/Src/plf_bitsets"]
+	path = 3rd_party/Src/plf_bitsets
+	url = https://github.com/mattreecebentley/plf_bitsets
 [submodule "3rd_party/Src/rtti"]
 	path = 3rd_party/Src/rtti
 	url = https://github.com/solbjorn/rtti.git

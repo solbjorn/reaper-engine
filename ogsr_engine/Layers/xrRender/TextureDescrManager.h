@@ -2,7 +2,6 @@
 #define _TextureDescrManager_included_
 
 #include "ETextureParams.h"
-#include "bitmap.h"
 
 class cl_dt_scaler;
 
@@ -11,7 +10,7 @@ class CTextureDescrMngr
     struct texture_assoc
     {
         shared_str detail_name;
-        xr_bitmap<2> usage{};
+        xr::bitset<2> usage;
 
         enum
         {

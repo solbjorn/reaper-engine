@@ -1,7 +1,5 @@
 #pragma once
 
-#include "bitmap.h"
-
 #include "..\..\Include\xrRender\RenderDeviceRender.h"
 #include "r__dsgraph_structure.h"
 #include "xr_effgamma.h"
@@ -92,7 +90,7 @@ public:
         VERIFY(contexts_used.test(id));
         VERIFY(contexts_pool[id].context_id != R__INVALID_CTX_ID);
 
-        contexts_used.clear(id);
+        contexts_used.reset(id);
     }
 
     ICF R_dsgraph_structure& get_imm_context() { return contexts_pool[R__IMM_CTX_ID]; }
@@ -100,7 +98,7 @@ public:
     void cleanup_contexts();
 
 protected:
-    xr_bitmap<R__NUM_CONTEXTS> contexts_used;
+    xr::bitset<R__NUM_CONTEXTS> contexts_used;
     R_dsgraph_structure contexts_pool[R__NUM_CONTEXTS];
 
 private:

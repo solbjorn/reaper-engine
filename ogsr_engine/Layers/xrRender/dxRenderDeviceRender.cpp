@@ -291,8 +291,8 @@ IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return smar
 
 ctx_id_t dxRenderDeviceRender::alloc_context()
 {
-    ctx_id_t id = contexts_used.ffz();
-    if (id == contexts_used.size())
+    const auto id = contexts_used.first_zero();
+    if (id == std::numeric_limits<size_t>::max())
         return R__INVALID_CTX_ID;
 
     contexts_used.set(id);
@@ -311,5 +311,5 @@ void dxRenderDeviceRender::cleanup_contexts()
     for (ctx_id_t id = 0; id < R__NUM_CONTEXTS; id++)
         contexts_pool[id].reset();
 
-    contexts_used.zero();
+    contexts_used.reset();
 }

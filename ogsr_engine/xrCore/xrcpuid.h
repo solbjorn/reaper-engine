@@ -1,7 +1,5 @@
 #pragma once
 
-#include "bitmap.h"
-
 #include <winternl.h>
 
 struct _processor_info final
@@ -18,17 +16,17 @@ struct _processor_info final
 
     constexpr void clearFeatures()
     {
-        m_f1_ECX.zero();
-        m_f1_EDX.zero();
-        m_f81_ECX.zero();
-        m_f81_EDX.zero();
+        m_f1_ECX.reset();
+        m_f1_EDX.reset();
+        m_f81_ECX.reset();
+        m_f81_EDX.reset();
     }
 
-    [[nodiscard]] bool hasMMX() const { return m_f1_EDX.test(23); }
-    [[nodiscard]] bool has3DNOWExt() const { return m_f81_EDX.test(30); }
-    [[nodiscard]] bool has3DNOW() const { return m_f81_EDX.test(31); }
-    [[nodiscard]] bool hasMWAIT() const { return m_f1_ECX.test(3); }
-    [[nodiscard]] bool hasSSE4a() const { return m_f81_ECX.test(6); }
+    [[nodiscard]] constexpr bool hasMMX() const { return m_f1_EDX.test(23); }
+    [[nodiscard]] constexpr bool has3DNOWExt() const { return m_f81_EDX.test(30); }
+    [[nodiscard]] constexpr bool has3DNOW() const { return m_f81_EDX.test(31); }
+    [[nodiscard]] constexpr bool hasMWAIT() const { return m_f1_ECX.test(3); }
+    [[nodiscard]] constexpr bool hasSSE4a() const { return m_f81_ECX.test(6); }
 
     // Always true for AVX2 processors
     [[nodiscard]] static constexpr bool hasSSE() { return true; }
@@ -46,10 +44,10 @@ struct _processor_info final
     std::unique_ptr<float[]> fUsage;
 
 private:
-    xr_bitmap<32> m_f1_ECX;
-    xr_bitmap<32> m_f1_EDX;
-    xr_bitmap<32> m_f81_ECX;
-    xr_bitmap<32> m_f81_EDX;
+    xr::bitset<32, u32> m_f1_ECX;
+    xr::bitset<32, u32> m_f1_EDX;
+    xr::bitset<32, u32> m_f81_ECX;
+    xr::bitset<32, u32> m_f81_EDX;
 
     DWORD m_dwCount = 0;
     FILETIME prevSysIdle{}, prevSysKernel{}, prevSysUser{};

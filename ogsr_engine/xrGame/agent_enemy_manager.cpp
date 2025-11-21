@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "agent_enemy_manager.h"
+
 #include "agent_manager.h"
 #include "agent_memory_manager.h"
 #include "agent_member_manager.h"
@@ -27,13 +28,9 @@
 
 namespace
 {
-constexpr float wounded_enemy_reached_distance{3.f};
+constexpr f32 wounded_enemy_reached_distance{3.0f};
 
-IC u32 population(const MemorySpace::squad_mask_type& b)
-{
-    static_assert(sizeof(b) == sizeof(u64));
-    return __popcnt64(b);
-}
+XR_FUNCTION_ALIAS(population, std::popcount);
 
 struct CEnemyFiller
 {
@@ -459,10 +456,10 @@ void CAgentEnemyManager::assign_wounded()
         }
     }
 
-    u32 combat_member_count = population(object().member().combat_mask());
-    VERIFY(combat_member_count == object().member().combat_members().size());
+    const auto combat_member_count = population(object().member().combat_mask());
+    VERIFY(combat_member_count == std::ssize(object().member().combat_members()));
 
-    u32 population_level = 0;
+    gsl::index population_level{};
     while (population(assigned) < combat_member_count)
     {
         CMemberEnemy* enemy{};
