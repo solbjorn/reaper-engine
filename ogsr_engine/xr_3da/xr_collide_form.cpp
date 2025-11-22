@@ -466,7 +466,6 @@ BOOL CCF_Shape::Contact(CObject* O)
                 break;
             return TRUE;
         }
-        break;
         }
     }
     return FALSE;

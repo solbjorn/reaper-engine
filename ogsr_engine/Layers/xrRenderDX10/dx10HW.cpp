@@ -651,14 +651,11 @@ DeviceState CHW::GetDeviceState()
     switch (m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
     {
     case S_OK: doPresentTest = false; break;
-
     case DXGI_STATUS_OCCLUDED:
         // Do not render until we become visible again
         return DeviceState::Lost;
-
     case DXGI_ERROR_DEVICE_RESET: return DeviceState::NeedReset;
-
-    case DXGI_ERROR_DEVICE_REMOVED: FATAL("Graphics driver was updated or GPU was physically removed from computer.\nPlease, restart the game."); break;
+    case DXGI_ERROR_DEVICE_REMOVED: FATAL("Graphics driver was updated or GPU was physically removed from computer.\nPlease, restart the game.");
     }
 
     return DeviceState::Normal;

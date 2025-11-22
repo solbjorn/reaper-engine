@@ -25,12 +25,8 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
     R_ASSERT(Name && Name[0]);
 
     auto I = m_blenders.find(Name);
-
     if (I == m_blenders.end())
-    {
         FATAL("!![%s] DX10: Shader [%s] not found in library.", __FUNCTION__, Name);
-        return nullptr;
-    }
 
     return I->second;
 }
@@ -38,6 +34,7 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
 void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
     if (nullptr == names || 0 == names[0])
@@ -115,11 +112,10 @@ Shader* CResourceManager::Create(const char* s_shader, const char* s_textures)
         return _lua_Create(s_shader, s_textures);
 
     Shader* pShader = _cpp_Create(s_shader, s_textures);
-    if (pShader)
+    if (pShader != nullptr)
         return pShader;
 
     FATAL("Can't find %s", s_shader);
-    return nullptr;
 }
 
 Shader* CResourceManager::_cpp_Create(const char* s_shader, const char* s_textures)

@@ -379,7 +379,6 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 
         return true;
     }
-    break;
     }
 
     return false;

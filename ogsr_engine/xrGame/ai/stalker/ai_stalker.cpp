@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_stalker.h"
+
 #include "../ai_monsters_misc.h"
 #include "../../weapon.h"
 #include "../../hit.h"
@@ -641,7 +642,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #if 0 // def DEBUG
 		memory().visual().check_visibles();
 #endif
-        if (g_mt_config.test(mtAiVision))
+        if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
             Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>((CCustomMonster*)this));
         else
             Exec_Visibility();

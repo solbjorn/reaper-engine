@@ -9,6 +9,7 @@
 #include "stdafx.h"
 
 #include "ai_stalker.h"
+
 #include "../../stalker_animation_manager.h"
 #include "../../script_entity_action.h"
 #include "../../torch.h"
@@ -156,7 +157,6 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle, l_tpInventoryItem);
         //			inventory().Action	(kWPN_FIRE,	CMD_STOP);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
-        break;
     }
     case MonsterSpace::eObjectActionFire1: {
         CObjectHandler::set_goal(MonsterSpace::eObjectActionFire1, l_tpInventoryItem);
@@ -260,8 +260,6 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         //				if (l_tpWeapon && (CWeapon::eIdle == l_tpWeapon->STATE))
         //				l_tObjectAction.m_bCompleted = true;
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
-
-        break;
     }
     case MonsterSpace::eObjectActionDeactivate: {
         CTorch* torch = smart_cast<CTorch*>(l_tObjectAction.m_tpObject);
@@ -273,12 +271,10 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         //				inventory().Activate(u32(-1));
         CObjectHandler::set_goal(MonsterSpace::eObjectActionIdle);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
-        break;
     }
     case MonsterSpace::eObjectActionUse: {
         CObjectHandler::set_goal(MonsterSpace::eObjectActionUse);
         return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
-        break;
     }
     case MonsterSpace::eObjectActionTake: {
         if (l_tObjectAction.m_tpObject->H_Parent() == this)

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "controller.h"
+
 #include "controller_state_manager.h"
 #include "../controlled_entity.h"
 #include "../../../Actor.h"
@@ -552,16 +553,6 @@ void CController::tube_fire() { control().activate(ControlCom::eComCustom1); }
 bool CController::can_tube_fire()
 {
     using namespace detail::controller;
-
-    if (0 && m_tube_at_once)
-    {
-        if (EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions())
-        {
-            return true;
-        }
-
-        return false;
-    }
 
     if (!EnemyMan.get_enemy())
         return false;

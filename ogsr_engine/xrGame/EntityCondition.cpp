@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "entitycondition.h"
+
 #include "inventoryowner.h"
 #include "customoutfit.h"
 #include "inventory.h"
@@ -24,7 +25,7 @@ CEntityConditionSimple::CEntityConditionSimple()
     health() = MAX_HEALTH;
 }
 
-CEntityConditionSimple::~CEntityConditionSimple() {}
+CEntityConditionSimple::~CEntityConditionSimple() = default;
 
 CEntityCondition::CEntityCondition(CEntityAlive* object) : CEntityConditionSimple{}, m_object{object}
 {
@@ -359,10 +360,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
         m_fDeltaPower -= hit_power * m_fPowerHitPart;
         bAddWound = false;
         break;
-    case ALife::eHitTypeRadiation:
-        m_fDeltaRadiation += hit_power;
-        return nullptr;
-        break;
+    case ALife::eHitTypeRadiation: m_fDeltaRadiation += hit_power; return nullptr;
     case ALife::eHitTypeExplosion:
     case ALife::eHitTypeStrike:
     case ALife::eHitTypePhysicStrike:

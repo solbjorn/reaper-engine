@@ -83,10 +83,7 @@ void SimpleJtLimit::init(int jt_type, float a, float b, float c, float low, floa
     {
     case SinJtLimit:
     case CosJtLimit: type = jt_type; break;
-    default:
-        printf("Invalid Joint Type passed to SimpleJtLimit %d\n", jt_type);
-        exit(0);
-        break;
+    default: FATAL("Invalid Joint Type passed to SimpleJtLimit %d", jt_type);
     }
 }
 
@@ -375,10 +372,7 @@ void ComplexJtLimit::init(int jt_type, float a1, float b1, float c1, float a2, f
     {
     case SinJtLimit:
     case CosJtLimit: type = jt_type; break;
-    default:
-        printf("Invalid Joint Type passed to ComplexJtLimit %d\n", jt_type);
-        exit(0);
-        break;
+    default: FATAL("Invalid Joint Type passed to ComplexJtLimit %d", jt_type);
     }
 }
 

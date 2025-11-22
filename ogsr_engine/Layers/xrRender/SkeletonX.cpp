@@ -389,9 +389,10 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         }
     }
     break;
-    default: Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N); break;
+    default: Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N);
     }
-    if (bids.size() > 0)
+
+    if (!bids.empty())
     {
         // crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
         BonesUsed.create(bids.size(), &*bids.begin());

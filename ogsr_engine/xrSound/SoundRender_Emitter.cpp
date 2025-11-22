@@ -200,7 +200,7 @@ void CSoundRender_Emitter::fill_block(void* ptr, u32 size)
             } while (0 != (size - hw_position));
         }
         break;
-        default: FATAL("SOUND: Invalid emitter state"); break;
+        default: FATAL("SOUND: Invalid emitter state");
         }
     }
     else

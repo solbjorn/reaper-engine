@@ -5,8 +5,8 @@
 #include "stdafx.h"
 
 #include "xrServer.h"
-#include "xrMessages.h"
 
+#include "xrMessages.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "level.h"
 #include "game_cl_base.h"
@@ -234,13 +234,6 @@ void xrServer::SendUpdatesToAll()
         // Initialize process and check for available bandwidth
         xrClientData* Client = (xrClientData*)net_Players[client];
         if (!Client->net_Ready)
-            continue;
-        if (false
-
-#ifdef DEBUG
-            && !g_sv_SendUpdate
-#endif
-        )
             continue;
 
         // Send relevant entities to client

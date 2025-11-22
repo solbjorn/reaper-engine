@@ -201,7 +201,6 @@ namespace
     case RC_dest_compute: return RC_dest_compute_cb_index_shift;
     default: FATAL("invalid enumeration for shader");
     }
-    return 0;
 }
 
 [[nodiscard]] constexpr u32 dest_to_cbuf_type(u32 destination)
@@ -216,7 +215,6 @@ namespace
     case RC_dest_compute: return CB_BufferComputeShader;
     default: FATAL("invalid enumeration for shader");
     }
-    return 0;
 }
 
 template <class V, class K, class... Args>

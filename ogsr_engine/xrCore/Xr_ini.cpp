@@ -101,10 +101,8 @@ LPCSTR CInifile::Sect::r_string(LPCSTR L)
     const auto A = Data.find(L);
     if (A != Data.end())
         return A->second.c_str();
-    else
-        FATAL("Can't find variable %s in [%s]", L, Name.c_str());
 
-    return nullptr;
+    FATAL("Can't find variable %s in [%s]", L, Name.c_str());
 }
 
 float CInifile::Sect::r_float(LPCSTR L)
@@ -543,10 +541,8 @@ LPCSTR CInifile::r_string(LPCSTR S, LPCSTR L)
     const auto A = I.Data.find(L);
     if (A != I.Data.end())
         return A->second.c_str();
-    else
-        FATAL("Can't find variable %s in [%s]", L, S);
 
-    return nullptr;
+    FATAL("Can't find variable %s in [%s]", L, S);
 }
 
 shared_str CInifile::r_string_wb(LPCSTR S, LPCSTR L)

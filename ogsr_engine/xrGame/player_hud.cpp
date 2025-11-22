@@ -1656,10 +1656,6 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
         if (phm->m_base_name != phm->m_additional_name)
         {
             u8 rnd_idx2 = 0;
-
-            if (false) // randomAnim
-                rnd_idx2 = (u8)Random.randI(phm->m_additional_animations.size());
-
             motion_descr& additional = phm->m_additional_animations[rnd_idx2];
 
             if (bDebug)

@@ -2,6 +2,7 @@
 
 XR_DIAG_PUSH();
 XR_DIAG_IGNORE("-Wnrvo");
+XR_DIAG_IGNORE("-Wredundant-parens");
 
 #include <absl/container/btree_map.h>
 

@@ -108,7 +108,7 @@ void CSoundRender_Emitter::cancel()
         stop_target();
         m_current_state = stSimulatingLooped;
         break;
-    default: FATAL("Non playing ref_sound forced out of render queue"); break;
+    default: FATAL("Non playing ref_sound forced out of render queue");
     }
 
     canceling = false;

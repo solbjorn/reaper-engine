@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "actorcondition.h"
+
 #include "actor.h"
 #include "actorEffector.h"
 #include "inventory.h"
@@ -154,15 +155,9 @@ void CActorCondition::UpdateCondition()
     if (m_fPowerLeakSpeed > 0.0f)
     {
         float k_max_power = 1.0f;
+        float base_w = object().MaxCarryWeight();
 
-        if (true)
-        {
-            float base_w = object().MaxCarryWeight();
-
-            k_max_power = 1.0f + _min(weight, base_w) / base_w + _max(0.0f, (weight - base_w) / 10.0f);
-        }
-        else
-            k_max_power = 1.0f;
+        k_max_power = 1.0f + _min(weight, base_w) / base_w + _max(0.0f, (weight - base_w) / 10.0f);
 
         SetMaxPower(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power);
     }

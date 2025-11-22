@@ -632,11 +632,12 @@ CBlend* CKinematicsAnimated::IBlend_Create()
     _DBG_SINGLE_USE_MARKER;
 
     for (auto& it : blend_pool)
+    {
         if (it.blend_state() == CBlend::eFREE_SLOT)
             return &it;
+    }
 
     FATAL("Too many blended motions requisted");
-    return nullptr;
 }
 
 void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)

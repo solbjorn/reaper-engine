@@ -272,7 +272,7 @@ void CCustomMonster::shedule_Update(u32 DT)
     // *** general stuff
     if (g_Alive())
     {
-        if (g_mt_config.test(mtAiVision))
+        if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
             Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::Exec_Visibility>(this));
 #else // DEBUG
@@ -388,7 +388,7 @@ void CCustomMonster::UpdateCL()
     }
     */
 
-    if (g_mt_config.test(mtSoundPlayer))
+    if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtSoundPlayer))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CCustomMonster::update_sound_player>(this));
     else
         update_sound_player();

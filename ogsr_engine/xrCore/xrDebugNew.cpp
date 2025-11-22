@@ -286,7 +286,6 @@ static int out_of_memory_handler(size_t size)
     Msg("* [x-ray]: economy: strings[%zd K], smem[%zd K]", eco_strings / 1024, eco_smem / 1024);
 
     FATAL("Out of memory. Memory request: [%zu K]", size / 1024);
-    return 1;
 }
 
 #ifdef USE_OWN_MINI_DUMP

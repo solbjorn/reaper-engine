@@ -581,27 +581,12 @@ float CUILines::GetIndentByAlign() const
 {
     switch (m_eTextAlign)
     {
-    case CGameFont::alCenter: {
-        return (m_wndSize.x) / 2;
-    }
-    break;
-    case CGameFont::alLeft: {
-        return 0;
-    }
-    break;
-    case CGameFont::alRight: {
-        return (m_wndSize.x);
-    }
-    break;
-    case CGameFont::alJustified: {
-        return 0;
-    }
-    break;
+    case CGameFont::alCenter: return (m_wndSize.x) / 2;
+    case CGameFont::alLeft: return 0;
+    case CGameFont::alRight: return m_wndSize.x;
+    case CGameFont::alJustified: return 0;
     default: NODEFAULT;
     }
-#ifdef DEBUG
-    return 0;
-#endif
 }
 
 float CUILines::GetVIndentByAlign()

@@ -400,7 +400,7 @@ void CLevel::OnFrame()
 
     ProcessGameEvents();
 
-    if (g_mt_config.test(mtMap))
+    if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtMap))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CMapManager::Update>(m_map_manager));
     else
         MapManager().Update();
@@ -422,7 +422,7 @@ void CLevel::OnFrame()
     Device.Statistic->TEST0.End();
 
     // update static sounds
-    if (g_mt_config.test(mtLevelSounds))
+    if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLevelSounds))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevelSoundManager::Update>(m_level_sound_manager));
     else
         m_level_sound_manager->Update();
@@ -431,7 +431,7 @@ void CLevel::OnFrame()
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::PrefetchDeferredSounds>(this));
 
     // defer LUA-GC-STEP
-    if (g_mt_config.test(mtLUA_GC))
+    if XR_RELEASE_CONSTEXPR (g_mt_config.test(mtLUA_GC))
         Device.add_to_seq_parallel(CallMe::fromMethod<&CLevel::script_gc>(this));
     else
         script_gc();

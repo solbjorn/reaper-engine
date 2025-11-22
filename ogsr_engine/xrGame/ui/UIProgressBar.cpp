@@ -127,7 +127,7 @@ void CUIProgressBar::Draw()
         progress_rect.set(0, center - m_CurrentLength, GetWidth(), center + m_CurrentLength);
         break;
     }
-    default: NODEFAULT; break;
+    default: NODEFAULT;
     }
 
     if (m_CurrentLength > 0)

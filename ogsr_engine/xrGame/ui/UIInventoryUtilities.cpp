@@ -475,12 +475,9 @@ u32 InventoryUtilities::GetRelationColor(ALife::ERelationType relation)
 {
     switch (relation)
     {
-    case ALife::eRelationTypeFriend: return 0xff00ff00; break;
-    case ALife::eRelationTypeNeutral: return 0xffc0c0c0; break;
-    case ALife::eRelationTypeEnemy: return 0xffff0000; break;
+    case ALife::eRelationTypeFriend: return 0xff00ff00;
+    case ALife::eRelationTypeNeutral: return 0xffc0c0c0;
+    case ALife::eRelationTypeEnemy: return 0xffff0000;
     default: NODEFAULT;
     }
-#ifdef DEBUG
-    return 0xffffffff;
-#endif
 }

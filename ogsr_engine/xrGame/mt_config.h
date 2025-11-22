@@ -20,12 +20,16 @@
 #define mtALife (1 << 8)
 #define mtMap (1 << 9)
 
-constexpr Flags32 g_mt_default = {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
+constexpr inline Flags32 g_mt_default{mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
 
 #ifdef MASTER_GOLD
-constexpr Flags32 g_mt_config = g_mt_default;
+constexpr inline Flags32 g_mt_config{g_mt_default};
+
+#define XR_RELEASE_CONSTEXPR constexpr
 #else
 extern Flags32 g_mt_config;
+
+#define XR_RELEASE_CONSTEXPR
 #endif
 
-#endif /* __XRGAME_MT_CONFIG_H */
+#endif // __XRGAME_MT_CONFIG_H

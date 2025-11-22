@@ -77,8 +77,6 @@ IReader* open_chunk(void* ptr, u32 ID, gsl::czstring archiveName, s64 archiveSiz
             R_ASSERT3(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
         }
     }
-
-    return nullptr;
 }
 } // namespace
 

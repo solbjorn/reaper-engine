@@ -444,6 +444,7 @@ void line_edit_control::on_key_hold(int dik)
 {
     update_key_states();
     update_bufs();
+
     switch (dik)
     {
     case DIK_TAB:
@@ -452,7 +453,7 @@ void line_edit_control::on_key_hold(int dik)
     case DIK_LCONTROL:
     case DIK_RCONTROL:
     case DIK_LALT:
-    case DIK_RALT: return; break;
+    case DIK_RALT: return;
     }
 
     if (m_repeat_mode && m_last_key_time > 3.0f * g_console_sensitive)

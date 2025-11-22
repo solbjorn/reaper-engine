@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "missile.h"
+
 #include "PhysicsShell.h"
 #include "actor.h"
 #include "torch.h"
@@ -587,8 +588,6 @@ bool CMissile::Action(s32 cmd, u32 flags)
         }
         return true;
     }
-    break;
-
     case kWPN_ZOOM: {
         m_constpower = false;
         if (flags & CMD_START)
@@ -609,7 +608,6 @@ bool CMissile::Action(s32 cmd, u32 flags)
         }
         return true;
     }
-    break;
     case kTORCH: {
         auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
         if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
@@ -619,7 +617,6 @@ bool CMissile::Action(s32 cmd, u32 flags)
         }
         return true;
     }
-    break;
     case kNIGHT_VISION: {
         auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
         if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
@@ -629,7 +626,6 @@ bool CMissile::Action(s32 cmd, u32 flags)
         }
         return true;
     }
-    break;
     }
     return false;
 }

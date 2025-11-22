@@ -39,9 +39,9 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
     case MT_LOD: V = xr_new<FLOD>(); break;
     case MT_TREE_ST: V = xr_new<FTreeVisual_ST>(); break;
     case MT_TREE_PM: V = xr_new<FTreeVisual_PM>(); break;
-
-    default: FATAL("Unknown visual type"); break;
+    default: FATAL("Unknown visual type");
     }
+
     R_ASSERT(V);
 
     V->Type = type;
